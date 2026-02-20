@@ -35,7 +35,7 @@ localPort = 5000
 externalPort = 80
 
 [deployment]
-deploymentTarget = "vm"
+deploymentTarget = "autoscale"
 publicDir = "build/web"
-build = ["echo", "Using pre-built web assets"]
-run = ["dart", "run", "server.dart"]
+build = ["bash", "-c", "cd deploy && dart pub get"]
+run = ["bash", "-c", "cd deploy && dart run bin/server.dart"]
