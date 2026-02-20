@@ -35,3 +35,8 @@ app.*.map.json
 
 *.g.dart
 *.mocks.dart
+
+deploy/public/canvaskit/
+deploy/public/main.dart.js
+deploy/public/main.dart.js.map
+deploy/public/*.symbols
