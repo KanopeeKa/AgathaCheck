@@ -1,2 +1,35 @@
+modules = ["dart-3.10"]
 [agent]
 expertMode = true
+
+[nix]
+channel = "stable-25_05"
+packages = ["flutter", "chromium"]
+
+[workflows]
+runButton = "Project"
+
+[[workflows.workflow]]
+name = "Project"
+mode = "parallel"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "Start application"
+
+[[workflows.workflow]]
+name = "Start application"
+author = "agent"
+
+[workflows.workflow.metadata]
+outputType = "webview"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "cd /home/runner/workspace && flutter build web --release --pwa-strategy=none 2>/dev/null && $HOME/.pub-cache/bin/dhttpd --host=0.0.0.0 --port=5000 --path=build/web --headers='Cache-Control: no-cache'"
+waitForPort = 5000
+
+[[ports]]
+localPort = 5000
+externalPort = 80
