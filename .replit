@@ -37,5 +37,5 @@ externalPort = 80
 [deployment]
 deploymentTarget = "autoscale"
 publicDir = "build/web"
-build = ["bash", "-c", "flutter build web --release --pwa-strategy=none && dart pub global activate dhttpd"]
-run = ["bash", "-c", "$HOME/.pub-cache/bin/dhttpd --host=0.0.0.0 --port=5000 --path=build/web --headers='Cache-Control: no-cache'"]
+build = ["sh", "-c", "flutter pub get && flutter build web --release --pwa-strategy=none"]
+run = ["dart", "run", "server.dart"]
