@@ -1,11 +1,12 @@
 import 'dart:io';
 
 Future<void> main() async {
-  final port = int.fromEnvironment('PORT', defaultValue: 5000);
+  final portStr = Platform.environment['PORT'] ?? '5000';
+  final port = int.parse(portStr);
   final server = await HttpServer.bind('0.0.0.0', port);
   print('Serving on http://0.0.0.0:$port');
 
-  final webDir = Directory('public');
+  final webDir = Directory('deploy/public');
   if (!webDir.existsSync()) {
     print('Error: public directory not found.');
     exit(1);

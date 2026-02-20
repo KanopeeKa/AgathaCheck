@@ -27,7 +27,7 @@ outputType = "webview"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "cd /home/runner/workspace && flutter build web --release --pwa-strategy=none 2>/dev/null && $HOME/.pub-cache/bin/dhttpd --host=0.0.0.0 --port=5000 --path=build/web --headers='Cache-Control: no-cache'"
+args = "cd /home/runner/workspace && dart run bin/server.dart"
 waitForPort = 5000
 
 [[ports]]
@@ -35,7 +35,7 @@ localPort = 5000
 externalPort = 80
 
 [deployment]
-deploymentTarget = "static"
+deploymentTarget = "autoscale"
 publicDir = "deploy/public"
-build = ["echo", "skip"]
-run = ["bash", "-c", "cd deploy && dart run bin/server.dart"]
+build = ["dart", "pub", "get"]
+run = ["dart", "run", "bin/server.dart"]
