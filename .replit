@@ -37,5 +37,5 @@ externalPort = 80
 [deployment]
 deploymentTarget = "vm"
 publicDir = "build/web"
-build = ["sh", "-c", "flutter pub get && flutter build web --release --pwa-strategy=none"]
+build = ["echo", "Using pre-built web assets"]
 run = ["dart", "run", "server.dart"]
