@@ -35,7 +35,7 @@ localPort = 5000
 externalPort = 80
 
 [deployment]
-deploymentTarget = "autoscale"
-publicDir = "build/web"
-build = ["bash", "-c", "cd deploy && dart pub get"]
+deploymentTarget = "static"
+publicDir = "deploy/public"
+build = ["echo", "skip"]
 run = ["bash", "-c", "cd deploy && dart run bin/server.dart"]
