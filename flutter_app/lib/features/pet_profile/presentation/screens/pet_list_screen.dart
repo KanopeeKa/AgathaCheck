@@ -22,6 +22,13 @@ class PetListScreen extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text(AppConstants.appTitle),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.medical_services),
+            tooltip: 'Health Tracking',
+            onPressed: () => context.go('/health'),
+          ),
+        ],
       ),
       body: petListAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
