@@ -1,8 +1,19 @@
 import 'package:flutter/material.dart';
 
+/// Provides the application's Material 3 theme configuration.
+///
+/// Uses a purple seed color to generate a cohesive color scheme
+/// and configures component themes for cards, inputs, buttons,
+/// tabs, and more.
 class AppTheme {
+  /// Private constructor to prevent instantiation.
   AppTheme._();
 
+  /// The light [ThemeData] for the application.
+  ///
+  /// Built from a [ColorScheme] seeded with purple, this theme
+  /// configures Material 3 components including app bars, cards,
+  /// input fields, floating action buttons, and tab bars.
   static ThemeData get lightTheme {
     final colorScheme = ColorScheme.fromSeed(
       seedColor: const Color(0xFF6750A4),

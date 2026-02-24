@@ -1,4 +1,10 @@
+/// Represents a veterinarian entity in the domain layer.
+///
+/// This is the core business object that holds all information
+/// about a veterinarian contact. It is immutable and uses
+/// value-based equality on [id].
 class Vet {
+  /// Creates a new [Vet] instance.
   const Vet({
     required this.id,
     required this.name,
@@ -11,16 +17,34 @@ class Vet {
     this.updatedAt,
   });
 
+  /// The unique identifier for this veterinarian.
   final String id;
+
+  /// The name of the veterinarian or veterinary practice.
   final String name;
+
+  /// The phone number of the veterinarian.
   final String phone;
+
+  /// The email address of the veterinarian.
   final String email;
+
+  /// The website URL of the veterinarian or practice.
   final String website;
+
+  /// The physical address of the veterinary practice.
   final String address;
+
+  /// Additional notes about the veterinarian.
   final String notes;
+
+  /// The timestamp when this veterinarian record was created.
   final DateTime? createdAt;
+
+  /// The timestamp when this veterinarian record was last updated.
   final DateTime? updatedAt;
 
+  /// Creates a copy of this [Vet] with the given fields replaced.
   Vet copyWith({
     String? id,
     String? name,

@@ -7,9 +7,18 @@ import '../../../pet_profile/presentation/providers/pet_providers.dart';
 import '../../domain/entities/vet.dart';
 import '../providers/vet_providers.dart';
 
+/// Screen for creating or editing a veterinarian record.
+///
+/// When [vetId] is provided, the screen operates in edit mode and
+/// loads existing data. Otherwise, it operates in creation mode.
 class VetFormScreen extends ConsumerStatefulWidget {
+  /// Creates a [VetFormScreen].
+  ///
+  /// If [vetId] is provided, the form is pre-populated with the
+  /// existing veterinarian's data for editing.
   const VetFormScreen({super.key, this.vetId});
 
+  /// The ID of the veterinarian to edit, or `null` to create a new one.
   final String? vetId;
 
   @override
@@ -207,6 +216,10 @@ class _VetFormScreenState extends ConsumerState<VetFormScreen> {
   }
 }
 
+/// Widget section that displays pets linked to a specific veterinarian.
+///
+/// Shows linked pets with an option to unlink them, and available
+/// (unlinked) pets with an option to link them to this veterinarian.
 class _LinkedPetsSection extends ConsumerWidget {
   const _LinkedPetsSection({required this.vetId});
 

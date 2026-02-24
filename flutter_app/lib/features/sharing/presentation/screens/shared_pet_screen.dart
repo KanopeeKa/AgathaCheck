@@ -1,17 +1,21 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/foundation.dart' show kIsWeb;
 
-import '../../../health_tracking/domain/entities/health_entry.dart';
-
+/// Screen that displays a shared pet's profile in read-only mode.
+///
+/// Fetches pet data, health entries, and vet information from the
+/// server using the provided [shareCode]. This screen is accessible
+/// via a shareable URL and does not require authentication.
 class SharedPetScreen extends ConsumerStatefulWidget {
+  /// Creates a [SharedPetScreen] for the given [shareCode].
   const SharedPetScreen({super.key, required this.shareCode});
 
+  /// The unique share code used to fetch the shared pet data.
   final String shareCode;
 
   @override

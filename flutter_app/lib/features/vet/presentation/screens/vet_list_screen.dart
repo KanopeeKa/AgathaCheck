@@ -5,7 +5,13 @@ import 'package:go_router/go_router.dart';
 import '../../../pet_profile/presentation/providers/pet_providers.dart';
 import '../providers/vet_providers.dart';
 
+/// Screen that displays the list of veterinarians.
+///
+/// Shows a scrollable list of vet cards with options to edit or delete
+/// each entry. Includes a floating action button to add new veterinarians
+/// and pull-to-refresh functionality.
 class VetListScreen extends ConsumerWidget {
+  /// Creates a [VetListScreen].
   const VetListScreen({super.key});
 
   @override
@@ -130,6 +136,9 @@ class VetListScreen extends ConsumerWidget {
     );
   }
 
+  /// Builds a subtitle widget showing the vet's contact info and linked pets.
+  ///
+  /// Returns `null` if there is no information to display.
   Widget? _buildSubtitle(vet, List linkedPets) {
     final parts = <String>[];
     if (vet.phone.isNotEmpty) parts.add(vet.phone);
@@ -142,6 +151,7 @@ class VetListScreen extends ConsumerWidget {
     return Text(parts.join(' \u2022 '));
   }
 
+  /// Shows a confirmation dialog before deleting a veterinarian.
   void _confirmDelete(BuildContext context, WidgetRef ref, vet) async {
     final confirmed = await showDialog<bool>(
       context: context,

@@ -2,7 +2,7 @@
 ///
 /// Import this file to access all pet profile functionality
 /// from outside the feature module.
-library pet_profile;
+library;
 
 export 'domain/entities/pet.dart';
 export 'domain/repositories/pet_repository.dart';

@@ -4,21 +4,51 @@ import 'package:http/http.dart' as http;
 
 import '../models/vet_model.dart';
 
+/// Abstract interface for the veterinarian remote data source.
+///
+/// Defines the contract for communicating with the remote API
+/// to perform CRUD operations on [VetModel] records.
 abstract class VetRemoteDataSource {
+  /// Fetches all veterinarians from the remote API.
   Future<List<VetModel>> getAllVets();
+
+  /// Fetches a single veterinarian by [id] from the remote API.
+  ///
+  /// Returns `null` if the veterinarian is not found.
   Future<VetModel?> getVet(String id);
+
+  /// Creates a new veterinarian via the remote API.
+  ///
+  /// Returns the created [VetModel] with server-assigned fields.
   Future<VetModel> createVet(VetModel vet);
+
+  /// Updates an existing veterinarian via the remote API.
+  ///
+  /// Returns the updated [VetModel].
   Future<VetModel> updateVet(VetModel vet);
+
+  /// Deletes the veterinarian with the given [id] via the remote API.
   Future<void> deleteVet(String id);
 }
 
+/// Implementation of [VetRemoteDataSource] using HTTP requests.
+///
+/// Communicates with the REST API at [baseUrl] to manage
+/// veterinarian records. Uses [http.Client] for making requests.
 class VetRemoteDataSourceImpl implements VetRemoteDataSource {
+  /// Creates a [VetRemoteDataSourceImpl] with the given [baseUrl].
+  ///
+  /// An optional [client] can be provided for testing; otherwise,
+  /// a default [http.Client] is used.
   VetRemoteDataSourceImpl({
     required this.baseUrl,
     http.Client? client,
   }) : _client = client ?? http.Client();
 
+  /// The base URL of the remote API.
   final String baseUrl;
+
+  /// The HTTP client used for making requests.
   final http.Client _client;
 
   @override
@@ -71,6 +101,8 @@ class VetRemoteDataSourceImpl implements VetRemoteDataSource {
     _checkResponse(response);
   }
 
+  /// Validates the HTTP [response] and throws an [Exception] if the
+  /// status code indicates an error (>= 400).
   void _checkResponse(http.Response response) {
     if (response.statusCode >= 400) {
       final body = response.body;
