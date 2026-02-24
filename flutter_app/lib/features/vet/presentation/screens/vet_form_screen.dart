@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../pet_profile/domain/entities/pet.dart';
+import '../../../pet_profile/presentation/providers/pet_providers.dart';
 import '../../domain/entities/vet.dart';
 import '../providers/vet_providers.dart';
 
@@ -147,6 +149,10 @@ class _VetFormScreenState extends ConsumerState<VetFormScreen> {
                       ),
                       maxLines: 3,
                     ),
+                    if (_isEdit) ...[
+                      const SizedBox(height: 24),
+                      _LinkedPetsSection(vetId: widget.vetId!),
+                    ],
                     const SizedBox(height: 24),
                     FilledButton.icon(
                       onPressed: _isLoading ? null : _submit,
@@ -198,5 +204,106 @@ class _VetFormScreenState extends ConsumerState<VetFormScreen> {
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }
+  }
+}
+
+class _LinkedPetsSection extends ConsumerWidget {
+  const _LinkedPetsSection({required this.vetId});
+
+  final String vetId;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final petsAsync = ref.watch(petListProvider);
+    final theme = Theme.of(context);
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Icon(Icons.pets, color: theme.colorScheme.primary, size: 20),
+            const SizedBox(width: 8),
+            Text('Linked Pets',
+                style: theme.textTheme.titleMedium
+                    ?.copyWith(fontWeight: FontWeight.bold)),
+          ],
+        ),
+        const SizedBox(height: 8),
+        petsAsync.when(
+          loading: () => const Center(child: CircularProgressIndicator()),
+          error: (e, _) => Text('Could not load pets: $e'),
+          data: (pets) {
+            if (pets.isEmpty) {
+              return Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8),
+                child: Text('No pets yet. Add pets first to link them.',
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                        color: theme.colorScheme.onSurfaceVariant)),
+              );
+            }
+
+            final linked = pets.where((p) => p.vetId == vetId).toList();
+            final unlinked = pets.where((p) => p.vetId != vetId).toList();
+
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                if (linked.isNotEmpty) ...[
+                  ...linked.map((pet) => Card(
+                        margin: const EdgeInsets.only(bottom: 4),
+                        child: ListTile(
+                          dense: true,
+                          leading: Icon(Icons.pets,
+                              color: theme.colorScheme.primary),
+                          title: Text(pet.name),
+                          subtitle: Text(pet.species),
+                          trailing: TextButton.icon(
+                            icon: const Icon(Icons.link_off, size: 18),
+                            label: const Text('Unlink'),
+                            onPressed: () => _unlinkPet(ref, pet),
+                          ),
+                        ),
+                      )),
+                ],
+                if (unlinked.isNotEmpty) ...[
+                  const SizedBox(height: 8),
+                  Text('Available pets:',
+                      style: theme.textTheme.bodySmall?.copyWith(
+                          color: theme.colorScheme.onSurfaceVariant)),
+                  const SizedBox(height: 4),
+                  ...unlinked.map((pet) => Card(
+                        margin: const EdgeInsets.only(bottom: 4),
+                        color: theme.colorScheme.surfaceContainerLow,
+                        child: ListTile(
+                          dense: true,
+                          leading: Icon(Icons.pets,
+                              color: theme.colorScheme.outline),
+                          title: Text(pet.name),
+                          subtitle: Text(pet.species),
+                          trailing: TextButton.icon(
+                            icon: const Icon(Icons.link, size: 18),
+                            label: const Text('Link'),
+                            onPressed: () => _linkPet(ref, pet),
+                          ),
+                        ),
+                      )),
+                ],
+              ],
+            );
+          },
+        ),
+      ],
+    );
+  }
+
+  Future<void> _linkPet(WidgetRef ref, Pet pet) async {
+    final updated = pet.copyWith(vetId: vetId);
+    await ref.read(petListProvider.notifier).updatePet(updated);
+  }
+
+  Future<void> _unlinkPet(WidgetRef ref, Pet pet) async {
+    final updated = pet.copyWith(clearVetId: true);
+    await ref.read(petListProvider.notifier).updatePet(updated);
   }
 }

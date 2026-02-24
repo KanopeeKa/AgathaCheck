@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../pet_profile/presentation/providers/pet_providers.dart';
 import '../providers/vet_providers.dart';
 
 class VetListScreen extends ConsumerWidget {
@@ -63,6 +64,9 @@ class VetListScreen extends ConsumerWidget {
             );
           }
 
+          final petsAsync = ref.watch(petListProvider);
+          final pets = petsAsync.valueOrNull ?? [];
+
           return RefreshIndicator(
             onRefresh: () => ref.read(vetListProvider.notifier).refresh(),
             child: ListView.builder(
@@ -70,6 +74,8 @@ class VetListScreen extends ConsumerWidget {
               itemCount: vets.length,
               itemBuilder: (context, index) {
                 final vet = vets[index];
+                final linkedPets =
+                    pets.where((p) => p.vetId == vet.id).toList();
                 return Card(
                   margin: const EdgeInsets.only(bottom: 8),
                   child: ListTile(
@@ -80,7 +86,7 @@ class VetListScreen extends ConsumerWidget {
                     ),
                     title: Text(vet.name,
                         style: theme.textTheme.titleMedium),
-                    subtitle: _buildSubtitle(vet),
+                    subtitle: _buildSubtitle(vet, linkedPets),
                     trailing: PopupMenuButton<String>(
                       onSelected: (value) {
                         if (value == 'edit') {
@@ -124,12 +130,16 @@ class VetListScreen extends ConsumerWidget {
     );
   }
 
-  Widget? _buildSubtitle(vet) {
+  Widget? _buildSubtitle(vet, List linkedPets) {
     final parts = <String>[];
     if (vet.phone.isNotEmpty) parts.add(vet.phone);
     if (vet.email.isNotEmpty) parts.add(vet.email);
+    if (linkedPets.isNotEmpty) {
+      final petNames = linkedPets.map((p) => p.name).join(', ');
+      parts.add('Pets: $petNames');
+    }
     if (parts.isEmpty) return null;
-    return Text(parts.join(' • '));
+    return Text(parts.join(' \u2022 '));
   }
 
   void _confirmDelete(BuildContext context, WidgetRef ref, vet) async {
