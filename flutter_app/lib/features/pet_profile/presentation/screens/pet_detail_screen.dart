@@ -74,8 +74,8 @@ class _PetDetailScreenState extends ConsumerState<PetDetailScreen>
           body: NestedScrollView(
             headerSliverBuilder: (context, innerBoxIsScrolled) => [
               SliverAppBar(
-                expandedHeight: 200,
                 pinned: true,
+                title: Text(pet.name),
                 leading: IconButton(
                   icon: const Icon(Icons.arrow_back),
                   onPressed: () => context.go('/'),
@@ -87,13 +87,9 @@ class _PetDetailScreenState extends ConsumerState<PetDetailScreen>
                     onPressed: () => context.go('/edit/${pet.id}'),
                   ),
                 ],
-                flexibleSpace: FlexibleSpaceBar(
-                  title: Text(pet.name),
-                  background: _PetHeader(pet: pet),
-                ),
               ),
               SliverToBoxAdapter(
-                child: _PetInfoSection(pet: pet),
+                child: _PetProfileCard(pet: pet),
               ),
               SliverToBoxAdapter(
                 child: Padding(
@@ -147,53 +143,8 @@ class _PetDetailScreenState extends ConsumerState<PetDetailScreen>
   }
 }
 
-class _PetHeader extends StatelessWidget {
-  const _PetHeader({required this.pet});
-
-  final Pet pet;
-
-  @override
-  Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-
-    if (pet.photoPath != null && pet.photoPath!.isNotEmpty) {
-      try {
-        final bytes = base64Decode(pet.photoPath!);
-        return Container(
-          decoration: BoxDecoration(
-            image: DecorationImage(
-              image: MemoryImage(bytes),
-              fit: BoxFit.cover,
-            ),
-          ),
-          child: Container(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: [Colors.transparent, Colors.black.withAlpha(150)],
-              ),
-            ),
-          ),
-        );
-      } catch (_) {}
-    }
-
-    return Container(
-      color: colorScheme.primaryContainer,
-      child: Center(
-        child: Icon(
-          Icons.pets,
-          size: 80,
-          color: colorScheme.onPrimaryContainer.withAlpha(100),
-        ),
-      ),
-    );
-  }
-}
-
-class _PetInfoSection extends StatelessWidget {
-  const _PetInfoSection({required this.pet});
+class _PetProfileCard extends StatelessWidget {
+  const _PetProfileCard({required this.pet});
 
   final Pet pet;
 
@@ -205,46 +156,86 @@ class _PetInfoSection extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.all(16),
       child: Card(
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+        clipBehavior: Clip.antiAlias,
+        child: IntrinsicHeight(
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Row(
-                children: [
-                  _InfoChip(
-                      icon: Icons.category, label: pet.species),
-                  if (pet.breed.isNotEmpty) ...[
-                    const SizedBox(width: 8),
-                    _InfoChip(icon: Icons.pets, label: pet.breed),
-                  ],
-                ],
+              SizedBox(
+                width: 140,
+                child: _PetPhoto(pet: pet),
               ),
-              if (pet.age != null || pet.weight != null) ...[
-                const SizedBox(height: 8),
-                Row(
-                  children: [
-                    if (pet.age != null)
-                      _InfoChip(
-                          icon: Icons.cake,
-                          label: '${pet.age!.toStringAsFixed(1)} yrs'),
-                    if (pet.age != null && pet.weight != null)
-                      const SizedBox(width: 8),
-                    if (pet.weight != null)
-                      _InfoChip(
-                          icon: Icons.monitor_weight,
-                          label: '${pet.weight!.toStringAsFixed(1)} kg'),
-                  ],
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(pet.name, style: theme.textTheme.headlineSmall
+                          ?.copyWith(fontWeight: FontWeight.bold)),
+                      const SizedBox(height: 10),
+                      Wrap(
+                        spacing: 8,
+                        runSpacing: 8,
+                        children: [
+                          _InfoChip(icon: Icons.category, label: pet.species),
+                          if (pet.breed.isNotEmpty)
+                            _InfoChip(icon: Icons.pets, label: pet.breed),
+                          if (pet.age != null)
+                            _InfoChip(
+                                icon: Icons.cake,
+                                label: '${pet.age!.toStringAsFixed(1)} yrs'),
+                          if (pet.weight != null)
+                            _InfoChip(
+                                icon: Icons.monitor_weight,
+                                label:
+                                    '${pet.weight!.toStringAsFixed(1)} kg'),
+                        ],
+                      ),
+                      if (pet.bio.isNotEmpty) ...[
+                        const SizedBox(height: 12),
+                        Text(pet.bio,
+                            style: theme.textTheme.bodyMedium?.copyWith(
+                                color: colorScheme.onSurfaceVariant)),
+                      ],
+                    ],
+                  ),
                 ),
-              ],
-              if (pet.bio.isNotEmpty) ...[
-                const SizedBox(height: 12),
-                Text(pet.bio,
-                    style: theme.textTheme.bodyMedium
-                        ?.copyWith(color: colorScheme.onSurfaceVariant)),
-              ],
+              ),
             ],
           ),
+        ),
+      ),
+    );
+  }
+}
+
+class _PetPhoto extends StatelessWidget {
+  const _PetPhoto({required this.pet});
+
+  final Pet pet;
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
+    if (pet.photoPath != null && pet.photoPath!.isNotEmpty) {
+      try {
+        final bytes = base64Decode(pet.photoPath!);
+        return Image.memory(
+          bytes,
+          fit: BoxFit.cover,
+        );
+      } catch (_) {}
+    }
+
+    return Container(
+      color: colorScheme.primaryContainer,
+      child: Center(
+        child: Icon(
+          Icons.pets,
+          size: 56,
+          color: colorScheme.onPrimaryContainer.withAlpha(100),
         ),
       ),
     );
