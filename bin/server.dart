@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'dart:math';
 
 import 'package:postgres/postgres.dart';
 
@@ -26,6 +27,18 @@ Future<void> main() async {
     settings: ConnectionSettings(sslMode: SslMode.disable),
   );
   print('Connected to PostgreSQL');
+
+  await _db.execute(Sql('''
+    CREATE TABLE IF NOT EXISTS shared_pets (
+      id SERIAL PRIMARY KEY,
+      share_code VARCHAR(12) UNIQUE NOT NULL,
+      pet_data JSONB NOT NULL,
+      pet_id VARCHAR(255) NOT NULL,
+      created_at TIMESTAMPTZ DEFAULT NOW(),
+      updated_at TIMESTAMPTZ DEFAULT NOW()
+    )
+  '''));
+  print('shared_pets table ready');
 
   final server = await HttpServer.bind('0.0.0.0', port);
   server.defaultResponseHeaders.remove('x-frame-options', 'SAMEORIGIN');
@@ -104,6 +117,10 @@ Future<void> _handleApi(HttpRequest request) async {
   } else if (RegExp(r'^/api/vets/[^/]+$').hasMatch(path) &&
       method == 'DELETE') {
     await _deleteVet(request);
+  } else if (path == '/api/share' && method == 'POST') {
+    await _createShare(request);
+  } else if (RegExp(r'^/api/share/[^/]+$').hasMatch(path) && method == 'GET') {
+    await _getShare(request);
   } else {
     _jsonResponse(request, 404, {'error': 'Not found'});
   }
@@ -485,6 +502,104 @@ Future<void> _deleteVet(HttpRequest request) async {
   }
 
   _jsonResponse(request, 200, {'deleted': true});
+}
+
+String _generateShareCode() {
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789';
+  final rng = Random.secure();
+  return List.generate(8, (_) => chars[rng.nextInt(chars.length)]).join();
+}
+
+Future<void> _createShare(HttpRequest request) async {
+  final body = await _readJson(request);
+  if (body == null) return;
+
+  final petData = body['pet'] as Map<String, dynamic>?;
+  final petId = body['pet_id'] as String? ?? '';
+
+  if (petData == null || petId.isEmpty) {
+    _jsonResponse(request, 400, {'error': 'pet and pet_id required'});
+    return;
+  }
+
+  final existing = await _db.execute(
+    Sql.named('SELECT share_code FROM shared_pets WHERE pet_id = @petId'),
+    parameters: {'petId': petId},
+  );
+
+  if (existing.isNotEmpty) {
+    final code = existing.first.toColumnMap()['share_code'].toString();
+    await _db.execute(
+      Sql.named('''
+        UPDATE shared_pets SET pet_data = @petData::jsonb, updated_at = NOW()
+        WHERE pet_id = @petId
+      '''),
+      parameters: {
+        'petId': petId,
+        'petData': json.encode(petData),
+      },
+    );
+    _jsonResponse(request, 200, {'share_code': code});
+    return;
+  }
+
+  final code = _generateShareCode();
+  await _db.execute(
+    Sql.named('''
+      INSERT INTO shared_pets (share_code, pet_data, pet_id)
+      VALUES (@code, @petData::jsonb, @petId)
+    '''),
+    parameters: {
+      'code': code,
+      'petData': json.encode(petData),
+      'petId': petId,
+    },
+  );
+
+  _jsonResponse(request, 201, {'share_code': code});
+}
+
+Future<void> _getShare(HttpRequest request) async {
+  final code = request.uri.pathSegments.last;
+
+  final result = await _db.execute(
+    Sql.named('SELECT * FROM shared_pets WHERE share_code = @code'),
+    parameters: {'code': code},
+  );
+
+  if (result.isEmpty) {
+    _jsonResponse(request, 404, {'error': 'Share not found'});
+    return;
+  }
+
+  final cols = result.first.toColumnMap();
+  final petData = cols['pet_data'];
+  final petId = cols['pet_id'].toString();
+
+  final healthResult = await _db.execute(
+    Sql.named(
+        'SELECT * FROM health_entries WHERE pet_id = @petId ORDER BY next_due_date ASC'),
+    parameters: {'petId': petId},
+  );
+  final healthEntries = healthResult.map(_rowToMap).toList();
+
+  final vetId = (petData is Map) ? petData['vetId'] : null;
+  Map<String, dynamic>? vet;
+  if (vetId != null && vetId.toString().isNotEmpty) {
+    final vetResult = await _db.execute(
+      Sql.named('SELECT * FROM vets WHERE id = @id'),
+      parameters: {'id': int.tryParse(vetId.toString()) ?? 0},
+    );
+    if (vetResult.isNotEmpty) {
+      vet = _vetRowToMap(vetResult.first);
+    }
+  }
+
+  _jsonResponse(request, 200, {
+    'pet': petData,
+    'health_entries': healthEntries,
+    'vet': vet,
+  });
 }
 
 Map<String, dynamic> _vetRowToMap(ResultRow row) {

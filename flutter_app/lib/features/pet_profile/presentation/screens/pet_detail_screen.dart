@@ -1,12 +1,16 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:http/http.dart' as http;
 import '../../../health_tracking/domain/entities/health_entry.dart';
 import '../../../health_tracking/presentation/providers/health_providers.dart';
 import '../../../health_tracking/presentation/widgets/health_entry_card.dart';
 import '../../../vet/presentation/providers/vet_providers.dart';
+import '../../data/models/pet_model.dart';
 import '../../domain/entities/pet.dart';
 import '../providers/pet_providers.dart';
 
@@ -48,6 +52,80 @@ class _PetDetailScreenState extends ConsumerState<PetDetailScreen>
     super.dispose();
   }
 
+  Future<void> _sharePet(BuildContext context, Pet pet) async {
+    final baseUrl = kIsWeb ? '' : 'http://localhost:5000';
+    final petJson = PetModel.fromEntity(pet).toJson();
+    petJson.remove('photoPath');
+
+    try {
+      final response = await http.post(
+        Uri.parse('$baseUrl/api/share'),
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode({'pet': petJson, 'pet_id': pet.id}),
+      );
+
+      if (!context.mounted) return;
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        final data = json.decode(response.body);
+        final code = data['share_code'] as String;
+        final uri = Uri.base;
+        final shareUrl = '${uri.scheme}://${uri.host}'
+            '${uri.port != 80 && uri.port != 443 ? ':${uri.port}' : ''}'
+            '/shared/$code';
+
+        showDialog(
+          context: context,
+          builder: (ctx) => AlertDialog(
+            title: const Text('Share Link'),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text('Share this link so others can view ${pet.name}\'s profile:'),
+                const SizedBox(height: 16),
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: Theme.of(ctx).colorScheme.surfaceContainerHighest,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: SelectableText(shareUrl,
+                      style: const TextStyle(fontSize: 13)),
+                ),
+              ],
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(ctx),
+                child: const Text('Close'),
+              ),
+              FilledButton.icon(
+                onPressed: () {
+                  Clipboard.setData(ClipboardData(text: shareUrl));
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Link copied to clipboard')),
+                  );
+                  Navigator.pop(ctx);
+                },
+                icon: const Icon(Icons.copy),
+                label: const Text('Copy'),
+              ),
+            ],
+          ),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Failed to create share link')),
+        );
+      }
+    } catch (e) {
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error sharing: $e')),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final petListAsync = ref.watch(petListProvider);
@@ -81,6 +159,11 @@ class _PetDetailScreenState extends ConsumerState<PetDetailScreen>
                   onPressed: () => context.go('/'),
                 ),
                 actions: [
+                  IconButton(
+                    icon: const Icon(Icons.share),
+                    tooltip: 'Share Pet',
+                    onPressed: () => _sharePet(context, pet),
+                  ),
                   IconButton(
                     icon: const Icon(Icons.edit),
                     tooltip: 'Edit Pet',

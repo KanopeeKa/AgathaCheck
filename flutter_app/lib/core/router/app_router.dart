@@ -6,6 +6,7 @@ import '../../features/health_tracking/presentation/screens/health_entry_form_sc
 import '../../features/pet_profile/presentation/screens/pet_detail_screen.dart';
 import '../../features/pet_profile/presentation/screens/pet_form_screen.dart';
 import '../../features/pet_profile/presentation/screens/pet_list_screen.dart';
+import '../../features/sharing/presentation/screens/shared_pet_screen.dart';
 import '../../features/vet/presentation/screens/vet_form_screen.dart';
 import '../../features/vet/presentation/screens/vet_list_screen.dart';
 
@@ -108,6 +109,14 @@ class AppRouter {
         builder: (context, state) {
           final vetId = state.pathParameters['id']!;
           return VetFormScreen(vetId: vetId);
+        },
+      ),
+      GoRoute(
+        path: '/shared/:code',
+        name: 'sharedPet',
+        builder: (context, state) {
+          final code = state.pathParameters['code']!;
+          return SharedPetScreen(shareCode: code);
         },
       ),
     ],

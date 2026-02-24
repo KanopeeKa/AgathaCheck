@@ -50,6 +50,7 @@ pubspec.yaml           - Root: pure Dart + postgres for deployment
 - `/vets` - Vet list
 - `/vets/add` - Add new vet
 - `/vets/edit/:id` - Edit vet
+- `/shared/:code` - View shared pet (read-only, no auth needed)
 
 ## Health Tracking Feature
 - **Relationship**: 1 pet -> many health entries (via pet_id foreign key)
@@ -77,6 +78,15 @@ pubspec.yaml           - Root: pure Dart + postgres for deployment
   - DELETE /api/vets/:id - Delete vet
 - **UI**: Vet list screen with cards, add/edit form, vet dropdown in pet form, vet info card on pet detail screen
 
+## Sharing Feature
+- **Database**: PostgreSQL shared_pets table (id, share_code, pet_data JSONB, pet_id, created_at, updated_at)
+- **Flow**: User taps share on pet detail → app sends pet data to server → server stores in shared_pets and returns 8-char share code → user copies link → recipient opens `/shared/:code` → read-only view of pet profile + health entries + vet info
+- **API Endpoints**:
+  - POST /api/share - Create/update share (sends pet JSON + pet_id, returns share_code; re-shares update existing)
+  - GET /api/share/:code - Get shared pet data (returns pet, health_entries, vet)
+- **UI**: Share button in pet detail app bar, dialog with copyable link, SharedPetScreen (read-only view)
+- **Files**: flutter_app/lib/features/sharing/presentation/screens/shared_pet_screen.dart
+
 ## Deployment Strategy
 Root pubspec.yaml is a pure Dart project with postgres package (no Flutter deps), allowing `dart pub get` to succeed in deployment. The Dart server in `bin/server.dart` serves both API endpoints and pre-built Flutter web files from `deploy/public/`. Deployment type: Autoscale. Server removes default X-Frame-Options header to allow Replit webview embedding.
 
@@ -89,7 +99,7 @@ Root pubspec.yaml is a pure Dart project with postgres package (no Flutter deps)
 - http package for Flutter-to-API communication
 - image_picker for photo selection
 - mockito for test mocking
-- Material 3 design system with teal theme
+- Material 3 design system with deep purple/violet theme
 
 ## Key Commands
 - `cd flutter_app && flutter pub get` - Install Flutter dependencies
