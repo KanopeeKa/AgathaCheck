@@ -11,10 +11,13 @@ import '../providers/health_providers.dart';
 /// Otherwise, creates a new entry.
 class HealthEntryFormScreen extends ConsumerStatefulWidget {
   /// Creates the [HealthEntryFormScreen].
-  const HealthEntryFormScreen({super.key, this.entryId});
+  const HealthEntryFormScreen({super.key, this.entryId, this.petId});
 
   /// The ID of the entry to edit, or null for a new entry.
   final String? entryId;
+
+  /// The pet this entry belongs to. Required for new entries.
+  final String? petId;
 
   @override
   ConsumerState<HealthEntryFormScreen> createState() =>
@@ -35,10 +38,12 @@ class _HealthEntryFormScreenState
   DateTime _nextDueDate = DateTime.now();
   bool _isLoading = false;
   bool _isEdit = false;
+  String _petId = '';
 
   @override
   void initState() {
     super.initState();
+    _petId = widget.petId ?? '';
     if (widget.entryId != null) {
       _isEdit = true;
       _loadEntry();
@@ -60,6 +65,7 @@ class _HealthEntryFormScreenState
           _frequency = entry.frequency;
           _startDate = entry.startDate;
           _nextDueDate = entry.nextDueDate;
+          _petId = entry.petId;
           if (entry.frequencyDays != null) {
             _customDaysController.text = entry.frequencyDays.toString();
           }
@@ -92,7 +98,13 @@ class _HealthEntryFormScreenState
         title: Text(_isEdit ? 'Edit Entry' : 'New Health Entry'),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
-          onPressed: () => context.go('/health'),
+          onPressed: () {
+            if (_petId.isNotEmpty) {
+              context.go('/pet/$_petId');
+            } else {
+              context.go('/health');
+            }
+          },
         ),
       ),
       body: _isLoading
@@ -229,7 +241,7 @@ class _HealthEntryFormScreenState
     try {
       final entry = HealthEntry(
         id: widget.entryId ?? '',
-        petId: '',
+        petId: _petId,
         name: _nameController.text.trim(),
         type: _type,
         dosage: _dosageController.text.trim(),
@@ -250,12 +262,19 @@ class _HealthEntryFormScreenState
       }
 
       if (mounted) {
+        if (_petId.isNotEmpty) {
+          ref.invalidate(petHealthEntriesProvider(_petId));
+        }
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
               content:
                   Text(_isEdit ? 'Entry updated' : 'Entry created')),
         );
-        context.go('/health');
+        if (_petId.isNotEmpty) {
+          context.go('/pet/$_petId');
+        } else {
+          context.go('/health');
+        }
       }
     } catch (e) {
       if (mounted) {

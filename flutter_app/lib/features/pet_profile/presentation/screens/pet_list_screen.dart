@@ -84,7 +84,7 @@ class PetListScreen extends ConsumerWidget {
                 padding: const EdgeInsets.only(bottom: 8),
                 child: PetCard(
                   pet: pet,
-                  onTap: () => context.push('/edit/${pet.id}'),
+                  onTap: () => context.go('/pet/${pet.id}'),
                   onDelete: () async {
                     final confirmed = await showDialog<bool>(
                       context: context,

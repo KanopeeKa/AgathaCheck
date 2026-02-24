@@ -1,0 +1,394 @@
+import 'dart:convert';
+
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+
+import '../../../health_tracking/domain/entities/health_entry.dart';
+import '../../../health_tracking/presentation/providers/health_providers.dart';
+import '../../../health_tracking/presentation/widgets/health_entry_card.dart';
+import '../../domain/entities/pet.dart';
+import '../providers/pet_providers.dart';
+
+/// Detail screen for a single pet showing profile info and health entries.
+///
+/// Displays the pet's profile at the top and their linked health entries
+/// below, organized by type tabs.
+class PetDetailScreen extends ConsumerStatefulWidget {
+  /// Creates the [PetDetailScreen] for the pet with [petId].
+  const PetDetailScreen({super.key, required this.petId});
+
+  /// The ID of the pet to display.
+  final String petId;
+
+  @override
+  ConsumerState<PetDetailScreen> createState() => _PetDetailScreenState();
+}
+
+class _PetDetailScreenState extends ConsumerState<PetDetailScreen>
+    with SingleTickerProviderStateMixin {
+  late TabController _tabController;
+
+  static const _tabs = [
+    null,
+    HealthEntryType.medication,
+    HealthEntryType.preventive,
+    HealthEntryType.vaccine,
+  ];
+
+  @override
+  void initState() {
+    super.initState();
+    _tabController = TabController(length: _tabs.length, vsync: this);
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final petListAsync = ref.watch(petListProvider);
+    final theme = Theme.of(context);
+
+    return petListAsync.when(
+      loading: () => const Scaffold(
+        body: Center(child: CircularProgressIndicator()),
+      ),
+      error: (error, _) => Scaffold(
+        appBar: AppBar(title: const Text('Pet Details')),
+        body: Center(child: Text('Error: $error')),
+      ),
+      data: (pets) {
+        final pet = pets.where((p) => p.id == widget.petId).firstOrNull;
+        if (pet == null) {
+          return Scaffold(
+            appBar: AppBar(title: const Text('Pet Details')),
+            body: const Center(child: Text('Pet not found')),
+          );
+        }
+
+        return Scaffold(
+          body: NestedScrollView(
+            headerSliverBuilder: (context, innerBoxIsScrolled) => [
+              SliverAppBar(
+                expandedHeight: 200,
+                pinned: true,
+                leading: IconButton(
+                  icon: const Icon(Icons.arrow_back),
+                  onPressed: () => context.go('/'),
+                ),
+                actions: [
+                  IconButton(
+                    icon: const Icon(Icons.edit),
+                    tooltip: 'Edit Pet',
+                    onPressed: () => context.go('/edit/${pet.id}'),
+                  ),
+                ],
+                flexibleSpace: FlexibleSpaceBar(
+                  title: Text(pet.name),
+                  background: _PetHeader(pet: pet),
+                ),
+              ),
+              SliverToBoxAdapter(
+                child: _PetInfoSection(pet: pet),
+              ),
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  child: Row(
+                    children: [
+                      Icon(Icons.medical_services,
+                          color: theme.colorScheme.primary),
+                      const SizedBox(width: 8),
+                      Text('Health Tracking',
+                          style: theme.textTheme.titleLarge),
+                    ],
+                  ),
+                ),
+              ),
+              SliverPersistentHeader(
+                pinned: true,
+                delegate: _TabBarDelegate(
+                  TabBar(
+                    controller: _tabController,
+                    tabs: const [
+                      Tab(text: 'All'),
+                      Tab(text: 'Medications'),
+                      Tab(text: 'Preventives'),
+                      Tab(text: 'Vaccines'),
+                    ],
+                  ),
+                  theme.colorScheme.surface,
+                ),
+              ),
+            ],
+            body: TabBarView(
+              controller: _tabController,
+              children: _tabs
+                  .map((type) => _PetEntryList(
+                        petId: widget.petId,
+                        type: type,
+                      ))
+                  .toList(),
+            ),
+          ),
+          floatingActionButton: FloatingActionButton.extended(
+            onPressed: () => context.go('/pet/${widget.petId}/health/add'),
+            icon: const Icon(Icons.add),
+            label: const Text('Add Entry'),
+          ),
+        );
+      },
+    );
+  }
+}
+
+class _PetHeader extends StatelessWidget {
+  const _PetHeader({required this.pet});
+
+  final Pet pet;
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
+    if (pet.photoPath != null && pet.photoPath!.isNotEmpty) {
+      try {
+        final bytes = base64Decode(pet.photoPath!);
+        return Container(
+          decoration: BoxDecoration(
+            image: DecorationImage(
+              image: MemoryImage(bytes),
+              fit: BoxFit.cover,
+            ),
+          ),
+          child: Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [Colors.transparent, Colors.black.withAlpha(150)],
+              ),
+            ),
+          ),
+        );
+      } catch (_) {}
+    }
+
+    return Container(
+      color: colorScheme.primaryContainer,
+      child: Center(
+        child: Icon(
+          Icons.pets,
+          size: 80,
+          color: colorScheme.onPrimaryContainer.withAlpha(100),
+        ),
+      ),
+    );
+  }
+}
+
+class _PetInfoSection extends StatelessWidget {
+  const _PetInfoSection({required this.pet});
+
+  final Pet pet;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
+    return Padding(
+      padding: const EdgeInsets.all(16),
+      child: Card(
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  _InfoChip(
+                      icon: Icons.category, label: pet.species),
+                  if (pet.breed.isNotEmpty) ...[
+                    const SizedBox(width: 8),
+                    _InfoChip(icon: Icons.pets, label: pet.breed),
+                  ],
+                ],
+              ),
+              if (pet.age != null || pet.weight != null) ...[
+                const SizedBox(height: 8),
+                Row(
+                  children: [
+                    if (pet.age != null)
+                      _InfoChip(
+                          icon: Icons.cake,
+                          label: '${pet.age!.toStringAsFixed(1)} yrs'),
+                    if (pet.age != null && pet.weight != null)
+                      const SizedBox(width: 8),
+                    if (pet.weight != null)
+                      _InfoChip(
+                          icon: Icons.monitor_weight,
+                          label: '${pet.weight!.toStringAsFixed(1)} kg'),
+                  ],
+                ),
+              ],
+              if (pet.bio.isNotEmpty) ...[
+                const SizedBox(height: 12),
+                Text(pet.bio,
+                    style: theme.textTheme.bodyMedium
+                        ?.copyWith(color: colorScheme.onSurfaceVariant)),
+              ],
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _InfoChip extends StatelessWidget {
+  const _InfoChip({required this.icon, required this.label});
+
+  final IconData icon;
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+      decoration: BoxDecoration(
+        color: colorScheme.secondaryContainer,
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 16, color: colorScheme.onSecondaryContainer),
+          const SizedBox(width: 4),
+          Text(label,
+              style: TextStyle(
+                  fontSize: 13,
+                  color: colorScheme.onSecondaryContainer,
+                  fontWeight: FontWeight.w500)),
+        ],
+      ),
+    );
+  }
+}
+
+class _PetEntryList extends ConsumerWidget {
+  const _PetEntryList({required this.petId, this.type});
+
+  final String petId;
+  final HealthEntryType? type;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final entriesAsync =
+        ref.watch(petHealthEntriesProvider(petId));
+
+    return entriesAsync.when(
+      loading: () => const Center(child: CircularProgressIndicator()),
+      error: (error, _) => Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(Icons.error_outline,
+                size: 48, color: Theme.of(context).colorScheme.error),
+            const SizedBox(height: 16),
+            Text('Error: $error', textAlign: TextAlign.center),
+            const SizedBox(height: 16),
+            FilledButton(
+              onPressed: () => ref.invalidate(petHealthEntriesProvider(petId)),
+              child: const Text('Retry'),
+            ),
+          ],
+        ),
+      ),
+      data: (allEntries) {
+        final entries = type == null
+            ? allEntries
+            : allEntries.where((e) => e.type == type).toList();
+
+        if (entries.isEmpty) {
+          return Center(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(Icons.medical_services_outlined,
+                    size: 48, color: Theme.of(context).colorScheme.outline),
+                const SizedBox(height: 12),
+                Text(
+                  type == null
+                      ? 'No health entries yet'
+                      : 'No ${type!.label.toLowerCase()}s yet',
+                  style: Theme.of(context).textTheme.bodyLarge,
+                ),
+              ],
+            ),
+          );
+        }
+
+        return ListView.builder(
+          padding: const EdgeInsets.all(16),
+          itemCount: entries.length,
+          itemBuilder: (context, index) {
+            final entry = entries[index];
+            return Padding(
+              padding: const EdgeInsets.only(bottom: 8),
+              child: HealthEntryCard(
+                entry: entry,
+                onTap: () =>
+                    context.go('/pet/$petId/health/edit/${entry.id}'),
+                onMarkTaken: () {
+                  ref
+                      .read(healthEntriesNotifierProvider.notifier)
+                      .markTaken(entry.id);
+                  ref.invalidate(petHealthEntriesProvider(petId));
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                        content: Text('${entry.name} marked as taken')),
+                  );
+                },
+                onDelete: () async {
+                  await ref
+                      .read(healthEntriesNotifierProvider.notifier)
+                      .delete(entry.id);
+                  ref.invalidate(petHealthEntriesProvider(petId));
+                },
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+}
+
+class _TabBarDelegate extends SliverPersistentHeaderDelegate {
+  const _TabBarDelegate(this.tabBar, this.backgroundColor);
+
+  final TabBar tabBar;
+  final Color backgroundColor;
+
+  @override
+  double get minExtent => tabBar.preferredSize.height;
+
+  @override
+  double get maxExtent => tabBar.preferredSize.height;
+
+  @override
+  Widget build(
+      BuildContext context, double shrinkOffset, bool overlapsContent) {
+    return Container(color: backgroundColor, child: tabBar);
+  }
+
+  @override
+  bool shouldRebuild(covariant _TabBarDelegate oldDelegate) => false;
+}

@@ -6,6 +6,7 @@ A modular Flutter application for managing pet profiles and health tracking usin
 ## Current State
 - Pet profile feature fully implemented with CRUD operations (SharedPreferences)
 - Health tracking feature (MVP) with medications, preventives, vaccines (PostgreSQL)
+- Pet-to-health relationship: each pet has their own health entries shown in pet detail screen
 - API server with REST endpoints for health entries
 - 74 tests passing (unit, widget, integration)
 - Deployed as static Flutter web files served by a Dart API server
@@ -19,6 +20,10 @@ flutter_app/           - Flutter source code (development)
     core/              - App-wide: theme, router, constants
     features/
       pet_profile/     - Pet CRUD with data/domain/presentation layers
+        presentation/screens/
+          pet_list_screen.dart    - Home screen with pet cards
+          pet_detail_screen.dart  - Pet profile + health entries (tabbed)
+          pet_form_screen.dart    - Add/edit pet form
       health_tracking/ - Health tracking with data/domain/presentation layers
   test/                - Unit and widget tests (74 total)
   test_integration/    - Integration tests
@@ -27,7 +32,19 @@ flutter_app/           - Flutter source code (development)
 pubspec.yaml           - Root: pure Dart + postgres for deployment
 ```
 
+## Navigation / Routes
+- `/` - Pet list (home)
+- `/add` - Add new pet
+- `/edit/:id` - Edit pet
+- `/pet/:petId` - Pet detail screen (profile info + health entries)
+- `/pet/:petId/health/add` - Add health entry for a specific pet
+- `/pet/:petId/health/edit/:id` - Edit health entry for a specific pet
+- `/health` - Global health dashboard (all pets, all entries)
+- `/health/add` - Add health entry (unscoped)
+- `/health/edit/:id` - Edit health entry (unscoped)
+
 ## Health Tracking Feature
+- **Relationship**: 1 pet -> many health entries (via pet_id foreign key)
 - **Database**: PostgreSQL with health_entries and health_history tables
 - **API Endpoints**:
   - GET /api/health-entries - List entries (filter by pet_id, type)

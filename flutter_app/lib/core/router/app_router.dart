@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../features/health_tracking/presentation/screens/health_dashboard_screen.dart';
 import '../../features/health_tracking/presentation/screens/health_entry_form_screen.dart';
+import '../../features/pet_profile/presentation/screens/pet_detail_screen.dart';
 import '../../features/pet_profile/presentation/screens/pet_form_screen.dart';
 import '../../features/pet_profile/presentation/screens/pet_list_screen.dart';
 
@@ -12,9 +13,12 @@ import '../../features/pet_profile/presentation/screens/pet_list_screen.dart';
 /// - `/` : Pet list (home) screen
 /// - `/add` : Add new pet form
 /// - `/edit/:id` : Edit existing pet form
-/// - `/health` : Health tracking dashboard
-/// - `/health/add` : Add new health entry
-/// - `/health/edit/:id` : Edit existing health entry
+/// - `/pet/:petId` : Pet detail with health entries
+/// - `/pet/:petId/health/add` : Add health entry for a pet
+/// - `/pet/:petId/health/edit/:id` : Edit health entry for a pet
+/// - `/health` : Global health tracking dashboard (all pets)
+/// - `/health/add` : Add health entry (unscoped)
+/// - `/health/edit/:id` : Edit health entry (unscoped)
 class AppRouter {
   AppRouter._();
 
@@ -38,6 +42,31 @@ class AppRouter {
         builder: (context, state) {
           final petId = state.pathParameters['id']!;
           return PetFormScreen(petId: petId);
+        },
+      ),
+      GoRoute(
+        path: '/pet/:petId',
+        name: 'petDetail',
+        builder: (context, state) {
+          final petId = state.pathParameters['petId']!;
+          return PetDetailScreen(petId: petId);
+        },
+      ),
+      GoRoute(
+        path: '/pet/:petId/health/add',
+        name: 'addPetHealthEntry',
+        builder: (context, state) {
+          final petId = state.pathParameters['petId']!;
+          return HealthEntryFormScreen(petId: petId);
+        },
+      ),
+      GoRoute(
+        path: '/pet/:petId/health/edit/:id',
+        name: 'editPetHealthEntry',
+        builder: (context, state) {
+          final petId = state.pathParameters['petId']!;
+          final entryId = state.pathParameters['id']!;
+          return HealthEntryFormScreen(entryId: entryId, petId: petId);
         },
       ),
       GoRoute(

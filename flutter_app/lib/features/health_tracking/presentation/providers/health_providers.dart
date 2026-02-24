@@ -119,6 +119,12 @@ final filteredHealthEntriesProvider =
   });
 });
 
+/// Provides health entries filtered by a specific pet.
+final petHealthEntriesProvider =
+    FutureProvider.family<List<HealthEntry>, String>((ref, petId) {
+  return ref.read(getHealthEntriesProvider).call(petId: petId);
+});
+
 /// Provides history for a specific entry.
 final entryHistoryProvider =
     FutureProvider.family<List<HealthHistoryEntry>, String>((ref, entryId) {
