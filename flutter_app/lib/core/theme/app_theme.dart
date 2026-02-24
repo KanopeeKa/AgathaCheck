@@ -1,30 +1,28 @@
 import 'package:flutter/material.dart';
 
-/// Provides the application-wide Material 3 theme configuration.
-///
-/// Uses a teal color scheme with rounded shapes and modern typography
-/// suitable for a pet profile management application.
 class AppTheme {
   AppTheme._();
 
-  /// The light theme for the application using Material 3.
   static ThemeData get lightTheme {
     final colorScheme = ColorScheme.fromSeed(
-      seedColor: Colors.teal,
+      seedColor: const Color(0xFF6750A4),
       brightness: Brightness.light,
     );
 
     return ThemeData(
       useMaterial3: true,
       colorScheme: colorScheme,
+      scaffoldBackgroundColor: colorScheme.surface,
       appBarTheme: AppBarTheme(
         centerTitle: true,
         elevation: 0,
+        scrolledUnderElevation: 1,
         backgroundColor: colorScheme.surface,
         foregroundColor: colorScheme.onSurface,
       ),
       cardTheme: CardThemeData(
-        elevation: 2,
+        elevation: 0,
+        color: colorScheme.surfaceContainerLow,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
         ),
@@ -34,6 +32,15 @@ class AppTheme {
         fillColor: colorScheme.surfaceContainerLowest,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(color: colorScheme.outlineVariant),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(color: colorScheme.outlineVariant),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(color: colorScheme.primary, width: 2),
         ),
         contentPadding: const EdgeInsets.symmetric(
           horizontal: 16,
@@ -41,10 +48,19 @@ class AppTheme {
         ),
       ),
       floatingActionButtonTheme: FloatingActionButtonThemeData(
-        backgroundColor: colorScheme.primaryContainer,
-        foregroundColor: colorScheme.onPrimaryContainer,
+        backgroundColor: colorScheme.primary,
+        foregroundColor: colorScheme.onPrimary,
+        elevation: 2,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
+        ),
+      ),
+      filledButtonTheme: FilledButtonThemeData(
+        style: FilledButton.styleFrom(
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
         ),
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
@@ -54,6 +70,14 @@ class AppTheme {
             borderRadius: BorderRadius.circular(12),
           ),
         ),
+      ),
+      tabBarTheme: TabBarThemeData(
+        labelColor: colorScheme.primary,
+        unselectedLabelColor: colorScheme.onSurfaceVariant,
+        indicatorColor: colorScheme.primary,
+      ),
+      dividerTheme: DividerThemeData(
+        color: colorScheme.outlineVariant.withAlpha(80),
       ),
     );
   }
