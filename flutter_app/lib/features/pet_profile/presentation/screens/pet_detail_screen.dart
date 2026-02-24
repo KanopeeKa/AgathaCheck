@@ -91,10 +91,6 @@ class _PetDetailScreenState extends ConsumerState<PetDetailScreen>
               SliverToBoxAdapter(
                 child: _PetProfileCard(pet: pet),
               ),
-              if (pet.vetId != null && pet.vetId!.isNotEmpty)
-                SliverToBoxAdapter(
-                  child: _VetInfoSection(vetId: pet.vetId!),
-                ),
               SliverToBoxAdapter(
                 child: Padding(
                   padding:
@@ -147,15 +143,24 @@ class _PetDetailScreenState extends ConsumerState<PetDetailScreen>
   }
 }
 
-class _PetProfileCard extends StatelessWidget {
+class _PetProfileCard extends ConsumerWidget {
   const _PetProfileCard({required this.pet});
 
   final Pet pet;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
+
+    String? vetName;
+    if (pet.vetId != null && pet.vetId!.isNotEmpty) {
+      final vetsAsync = ref.watch(vetListProvider);
+      vetName = vetsAsync.valueOrNull
+          ?.where((v) => v.id == pet.vetId)
+          .firstOrNull
+          ?.name;
+    }
 
     return Padding(
       padding: const EdgeInsets.all(16),
@@ -196,6 +201,20 @@ class _PetProfileCard extends StatelessWidget {
                                     '${pet.weight!.toStringAsFixed(1)} kg'),
                         ],
                       ),
+                      if (vetName != null) ...[
+                        const SizedBox(height: 10),
+                        Row(
+                          children: [
+                            Icon(Icons.local_hospital, size: 16,
+                                color: colorScheme.primary),
+                            const SizedBox(width: 6),
+                            Text(vetName,
+                                style: theme.textTheme.bodyMedium?.copyWith(
+                                    color: colorScheme.primary,
+                                    fontWeight: FontWeight.w500)),
+                          ],
+                        ),
+                      ],
                       if (pet.bio.isNotEmpty) ...[
                         const SizedBox(height: 12),
                         Text(pet.bio,
@@ -242,96 +261,6 @@ class _PetPhoto extends StatelessWidget {
           color: colorScheme.onPrimaryContainer.withAlpha(100),
         ),
       ),
-    );
-  }
-}
-
-class _VetInfoSection extends ConsumerWidget {
-  const _VetInfoSection({required this.vetId});
-
-  final String vetId;
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final vetsAsync = ref.watch(vetListProvider);
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
-
-    return vetsAsync.when(
-      loading: () => const SizedBox.shrink(),
-      error: (_, __) => const SizedBox.shrink(),
-      data: (vets) {
-        final vet = vets.where((v) => v.id == vetId).firstOrNull;
-        if (vet == null) return const SizedBox.shrink();
-
-        return Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: Card(
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Icon(Icons.local_hospital,
-                          color: colorScheme.primary, size: 20),
-                      const SizedBox(width: 8),
-                      Text('Veterinarian',
-                          style: theme.textTheme.titleMedium
-                              ?.copyWith(fontWeight: FontWeight.bold)),
-                    ],
-                  ),
-                  const SizedBox(height: 8),
-                  Text(vet.name, style: theme.textTheme.bodyLarge),
-                  if (vet.phone.isNotEmpty) ...[
-                    const SizedBox(height: 4),
-                    Row(
-                      children: [
-                        Icon(Icons.phone, size: 16,
-                            color: colorScheme.onSurfaceVariant),
-                        const SizedBox(width: 6),
-                        Text(vet.phone,
-                            style: theme.textTheme.bodyMedium?.copyWith(
-                                color: colorScheme.onSurfaceVariant)),
-                      ],
-                    ),
-                  ],
-                  if (vet.email.isNotEmpty) ...[
-                    const SizedBox(height: 4),
-                    Row(
-                      children: [
-                        Icon(Icons.email, size: 16,
-                            color: colorScheme.onSurfaceVariant),
-                        const SizedBox(width: 6),
-                        Text(vet.email,
-                            style: theme.textTheme.bodyMedium?.copyWith(
-                                color: colorScheme.onSurfaceVariant)),
-                      ],
-                    ),
-                  ],
-                  if (vet.address.isNotEmpty) ...[
-                    const SizedBox(height: 4),
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Icon(Icons.location_on, size: 16,
-                            color: colorScheme.onSurfaceVariant),
-                        const SizedBox(width: 6),
-                        Expanded(
-                          child: Text(vet.address,
-                              style: theme.textTheme.bodyMedium?.copyWith(
-                                  color: colorScheme.onSurfaceVariant)),
-                        ),
-                      ],
-                    ),
-                  ],
-                ],
-              ),
-            ),
-          ),
-        );
-      },
     );
   }
 }
