@@ -3,10 +3,10 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-
 import '../../../health_tracking/domain/entities/health_entry.dart';
 import '../../../health_tracking/presentation/providers/health_providers.dart';
 import '../../../health_tracking/presentation/widgets/health_entry_card.dart';
+import '../../../vet/presentation/providers/vet_providers.dart';
 import '../../domain/entities/pet.dart';
 import '../providers/pet_providers.dart';
 
@@ -91,6 +91,10 @@ class _PetDetailScreenState extends ConsumerState<PetDetailScreen>
               SliverToBoxAdapter(
                 child: _PetProfileCard(pet: pet),
               ),
+              if (pet.vetId != null && pet.vetId!.isNotEmpty)
+                SliverToBoxAdapter(
+                  child: _VetInfoSection(vetId: pet.vetId!),
+                ),
               SliverToBoxAdapter(
                 child: Padding(
                   padding:
@@ -238,6 +242,96 @@ class _PetPhoto extends StatelessWidget {
           color: colorScheme.onPrimaryContainer.withAlpha(100),
         ),
       ),
+    );
+  }
+}
+
+class _VetInfoSection extends ConsumerWidget {
+  const _VetInfoSection({required this.vetId});
+
+  final String vetId;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final vetsAsync = ref.watch(vetListProvider);
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
+    return vetsAsync.when(
+      loading: () => const SizedBox.shrink(),
+      error: (_, __) => const SizedBox.shrink(),
+      data: (vets) {
+        final vet = vets.where((v) => v.id == vetId).firstOrNull;
+        if (vet == null) return const SizedBox.shrink();
+
+        return Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: Card(
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Icon(Icons.local_hospital,
+                          color: colorScheme.primary, size: 20),
+                      const SizedBox(width: 8),
+                      Text('Veterinarian',
+                          style: theme.textTheme.titleMedium
+                              ?.copyWith(fontWeight: FontWeight.bold)),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  Text(vet.name, style: theme.textTheme.bodyLarge),
+                  if (vet.phone.isNotEmpty) ...[
+                    const SizedBox(height: 4),
+                    Row(
+                      children: [
+                        Icon(Icons.phone, size: 16,
+                            color: colorScheme.onSurfaceVariant),
+                        const SizedBox(width: 6),
+                        Text(vet.phone,
+                            style: theme.textTheme.bodyMedium?.copyWith(
+                                color: colorScheme.onSurfaceVariant)),
+                      ],
+                    ),
+                  ],
+                  if (vet.email.isNotEmpty) ...[
+                    const SizedBox(height: 4),
+                    Row(
+                      children: [
+                        Icon(Icons.email, size: 16,
+                            color: colorScheme.onSurfaceVariant),
+                        const SizedBox(width: 6),
+                        Text(vet.email,
+                            style: theme.textTheme.bodyMedium?.copyWith(
+                                color: colorScheme.onSurfaceVariant)),
+                      ],
+                    ),
+                  ],
+                  if (vet.address.isNotEmpty) ...[
+                    const SizedBox(height: 4),
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Icon(Icons.location_on, size: 16,
+                            color: colorScheme.onSurfaceVariant),
+                        const SizedBox(width: 6),
+                        Expanded(
+                          child: Text(vet.address,
+                              style: theme.textTheme.bodyMedium?.copyWith(
+                                  color: colorScheme.onSurfaceVariant)),
+                        ),
+                      ],
+                    ),
+                  ],
+                ],
+              ),
+            ),
+          ),
+        );
+      },
     );
   }
 }

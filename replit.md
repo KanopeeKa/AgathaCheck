@@ -1,14 +1,15 @@
 # PetProfileApp
 
 ## Overview
-A modular Flutter application for managing pet profiles and health tracking using clean architecture. Built with Material 3, Riverpod state management, GoRouter navigation, SharedPreferences local storage for pets, and PostgreSQL for health entries.
+A modular Flutter application for managing pet profiles, health tracking, and veterinarian contacts using clean architecture. Built with Material 3, Riverpod state management, GoRouter navigation, SharedPreferences local storage for pets, and PostgreSQL for health entries and vets.
 
 ## Current State
 - Pet profile feature fully implemented with CRUD operations (SharedPreferences)
 - Health tracking feature (MVP) with medications, preventives, vaccines (PostgreSQL)
+- Veterinarian management feature with CRUD operations (PostgreSQL)
 - Pet-to-health relationship: each pet has their own health entries shown in pet detail screen
-- API server with REST endpoints for health entries
-- 74 tests passing (unit, widget, integration)
+- Pet-to-vet relationship: each pet can be linked to a veterinarian
+- API server with REST endpoints for health entries and vets
 - Deployed as static Flutter web files served by a Dart API server
 
 ## Project Architecture
@@ -22,10 +23,14 @@ flutter_app/           - Flutter source code (development)
       pet_profile/     - Pet CRUD with data/domain/presentation layers
         presentation/screens/
           pet_list_screen.dart    - Home screen with pet cards
-          pet_detail_screen.dart  - Pet profile + health entries (tabbed)
-          pet_form_screen.dart    - Add/edit pet form
+          pet_detail_screen.dart  - Pet profile + vet info + health entries (tabbed)
+          pet_form_screen.dart    - Add/edit pet form (with vet dropdown)
       health_tracking/ - Health tracking with data/domain/presentation layers
-  test/                - Unit and widget tests (74 total)
+      vet/             - Vet management with data/domain/presentation layers
+        presentation/screens/
+          vet_list_screen.dart    - List of vets with edit/delete
+          vet_form_screen.dart    - Add/edit vet form
+  test/                - Unit and widget tests
   test_integration/    - Integration tests
   web/                 - Flutter web template
   pubspec.yaml         - Flutter dependencies
@@ -36,12 +41,15 @@ pubspec.yaml           - Root: pure Dart + postgres for deployment
 - `/` - Pet list (home)
 - `/add` - Add new pet
 - `/edit/:id` - Edit pet
-- `/pet/:petId` - Pet detail screen (profile info + health entries)
+- `/pet/:petId` - Pet detail screen (profile info + vet info + health entries)
 - `/pet/:petId/health/add` - Add health entry for a specific pet
 - `/pet/:petId/health/edit/:id` - Edit health entry for a specific pet
 - `/health` - Global health dashboard (all pets, all entries)
 - `/health/add` - Add health entry (unscoped)
 - `/health/edit/:id` - Edit health entry (unscoped)
+- `/vets` - Vet list
+- `/vets/add` - Add new vet
+- `/vets/edit/:id` - Edit vet
 
 ## Health Tracking Feature
 - **Relationship**: 1 pet -> many health entries (via pet_id foreign key)
@@ -58,15 +66,26 @@ pubspec.yaml           - Root: pure Dart + postgres for deployment
 - **Scheduling**: Auto-calculates next due dates (daily/weekly/monthly/custom)
 - **UI**: Tabbed dashboard (All/Medications/Preventives/Vaccines), entry cards with frequency badges, mark-taken button, add/edit form
 
+## Veterinarian Feature
+- **Database**: PostgreSQL vets table (id, name, phone, email, website, address, notes)
+- **Relationship**: 1 vet -> many pets (via vetId stored in pet's SharedPreferences data)
+- **API Endpoints**:
+  - GET /api/vets - List all vets
+  - POST /api/vets - Create vet (name required, rest optional)
+  - GET /api/vets/:id - Get single vet
+  - PUT /api/vets/:id - Update vet
+  - DELETE /api/vets/:id - Delete vet
+- **UI**: Vet list screen with cards, add/edit form, vet dropdown in pet form, vet info card on pet detail screen
+
 ## Deployment Strategy
-Root pubspec.yaml is a pure Dart project with postgres package (no Flutter deps), allowing `dart pub get` to succeed in deployment. The Dart server in `bin/server.dart` serves both API endpoints and pre-built Flutter web files from `deploy/public/`. Deployment type: Autoscale.
+Root pubspec.yaml is a pure Dart project with postgres package (no Flutter deps), allowing `dart pub get` to succeed in deployment. The Dart server in `bin/server.dart` serves both API endpoints and pre-built Flutter web files from `deploy/public/`. Deployment type: Autoscale. Server removes default X-Frame-Options header to allow Replit webview embedding.
 
 ## Tech Stack
 - Flutter 3.32.0, Dart 3.8.0
 - flutter_riverpod for state management
 - go_router for navigation
 - shared_preferences for pet profile storage
-- PostgreSQL (via postgres package) for health tracking
+- PostgreSQL (via postgres package) for health tracking and vets
 - http package for Flutter-to-API communication
 - image_picker for photo selection
 - mockito for test mocking
@@ -76,7 +95,7 @@ Root pubspec.yaml is a pure Dart project with postgres package (no Flutter deps)
 - `cd flutter_app && flutter pub get` - Install Flutter dependencies
 - `cd flutter_app && flutter build web --release` - Build web release
 - `dart run bin/server.dart` - Start API + static file server
-- `cd flutter_app && flutter test` - Run all tests (74)
+- `cd flutter_app && flutter test` - Run all tests
 - `cd flutter_app && flutter analyze` - Lint/analyze code
 
 ## User Preferences

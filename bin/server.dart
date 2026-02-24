@@ -93,6 +93,17 @@ Future<void> _handleApi(HttpRequest request) async {
     await _getHistory(request);
   } else if (path == '/api/health-entries/export' && method == 'GET') {
     await _exportCsv(request);
+  } else if (path == '/api/vets' && method == 'GET') {
+    await _getVets(request);
+  } else if (path == '/api/vets' && method == 'POST') {
+    await _createVet(request);
+  } else if (RegExp(r'^/api/vets/[^/]+$').hasMatch(path) && method == 'GET') {
+    await _getVet(request);
+  } else if (RegExp(r'^/api/vets/[^/]+$').hasMatch(path) && method == 'PUT') {
+    await _updateVet(request);
+  } else if (RegExp(r'^/api/vets/[^/]+$').hasMatch(path) &&
+      method == 'DELETE') {
+    await _deleteVet(request);
   } else {
     _jsonResponse(request, 404, {'error': 'Not found'});
   }
@@ -367,6 +378,128 @@ Future<void> _exportCsv(HttpRequest request) async {
       .set('Content-Disposition', 'attachment; filename="health_entries.csv"');
   request.response.write(buffer.toString());
   await request.response.close();
+}
+
+Future<void> _getVets(HttpRequest request) async {
+  final result = await _db.execute(
+    Sql.named('SELECT * FROM vets ORDER BY name ASC'),
+  );
+  final vets = result.map(_vetRowToMap).toList();
+  _jsonResponse(request, 200, vets);
+}
+
+Future<void> _getVet(HttpRequest request) async {
+  final id = request.uri.pathSegments.last;
+  final result = await _db.execute(
+    Sql.named('SELECT * FROM vets WHERE id = @id'),
+    parameters: {'id': int.tryParse(id) ?? 0},
+  );
+
+  if (result.isEmpty) {
+    _jsonResponse(request, 404, {'error': 'Vet not found'});
+    return;
+  }
+
+  _jsonResponse(request, 200, _vetRowToMap(result.first));
+}
+
+Future<void> _createVet(HttpRequest request) async {
+  final body = await _readJson(request);
+  if (body == null) return;
+
+  final name = body['name'] as String? ?? '';
+  if (name.isEmpty) {
+    _jsonResponse(request, 400, {'error': 'name is required'});
+    return;
+  }
+
+  final result = await _db.execute(
+    Sql.named('''
+      INSERT INTO vets (name, phone, email, website, address, notes)
+      VALUES (@name, @phone, @email, @website, @address, @notes)
+      RETURNING *
+    '''),
+    parameters: {
+      'name': name,
+      'phone': body['phone'] as String? ?? '',
+      'email': body['email'] as String? ?? '',
+      'website': body['website'] as String? ?? '',
+      'address': body['address'] as String? ?? '',
+      'notes': body['notes'] as String? ?? '',
+    },
+  );
+
+  _jsonResponse(request, 201, _vetRowToMap(result.first));
+}
+
+Future<void> _updateVet(HttpRequest request) async {
+  final id = request.uri.pathSegments.last;
+  final body = await _readJson(request);
+  if (body == null) return;
+
+  final existing = await _db.execute(
+    Sql.named('SELECT * FROM vets WHERE id = @id'),
+    parameters: {'id': int.tryParse(id) ?? 0},
+  );
+
+  if (existing.isEmpty) {
+    _jsonResponse(request, 404, {'error': 'Vet not found'});
+    return;
+  }
+
+  final row = _vetRowToMap(existing.first);
+
+  final result = await _db.execute(
+    Sql.named('''
+      UPDATE vets SET
+        name = @name, phone = @phone, email = @email,
+        website = @website, address = @address, notes = @notes,
+        updated_at = NOW()
+      WHERE id = @id
+      RETURNING *
+    '''),
+    parameters: {
+      'id': int.tryParse(id) ?? 0,
+      'name': body['name'] ?? row['name'],
+      'phone': body['phone'] ?? row['phone'],
+      'email': body['email'] ?? row['email'],
+      'website': body['website'] ?? row['website'],
+      'address': body['address'] ?? row['address'],
+      'notes': body['notes'] ?? row['notes'],
+    },
+  );
+
+  _jsonResponse(request, 200, _vetRowToMap(result.first));
+}
+
+Future<void> _deleteVet(HttpRequest request) async {
+  final id = request.uri.pathSegments.last;
+  final result = await _db.execute(
+    Sql.named('DELETE FROM vets WHERE id = @id RETURNING id'),
+    parameters: {'id': int.tryParse(id) ?? 0},
+  );
+
+  if (result.isEmpty) {
+    _jsonResponse(request, 404, {'error': 'Vet not found'});
+    return;
+  }
+
+  _jsonResponse(request, 200, {'deleted': true});
+}
+
+Map<String, dynamic> _vetRowToMap(ResultRow row) {
+  final cols = row.toColumnMap();
+  return {
+    'id': cols['id'].toString(),
+    'name': cols['name'].toString(),
+    'phone': cols['phone'].toString(),
+    'email': cols['email'].toString(),
+    'website': cols['website'].toString(),
+    'address': cols['address'].toString(),
+    'notes': cols['notes'].toString(),
+    'created_at': cols['created_at'].toString(),
+    'updated_at': cols['updated_at'].toString(),
+  };
 }
 
 String _csvEscape(String value) {

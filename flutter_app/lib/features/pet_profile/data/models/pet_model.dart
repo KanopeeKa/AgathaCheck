@@ -7,7 +7,6 @@ import '../../domain/entities/pet.dart';
 /// Extends the domain [Pet] entity with the ability to convert
 /// to and from JSON for local storage persistence.
 class PetModel {
-  /// Creates a [PetModel] from individual field values.
   const PetModel({
     required this.id,
     required this.name,
@@ -17,9 +16,9 @@ class PetModel {
     this.weight,
     this.bio = '',
     this.photoPath,
+    this.vetId,
   });
 
-  /// Creates a [PetModel] from a JSON map.
   factory PetModel.fromJson(Map<String, dynamic> json) {
     return PetModel(
       id: json['id'] as String,
@@ -30,10 +29,10 @@ class PetModel {
       weight: (json['weight'] as num?)?.toDouble(),
       bio: (json['bio'] as String?) ?? '',
       photoPath: json['photoPath'] as String?,
+      vetId: json['vetId'] as String?,
     );
   }
 
-  /// Creates a [PetModel] from a domain [Pet] entity.
   factory PetModel.fromEntity(Pet pet) {
     return PetModel(
       id: pet.id,
@@ -44,10 +43,10 @@ class PetModel {
       weight: pet.weight,
       bio: pet.bio,
       photoPath: pet.photoPath,
+      vetId: pet.vetId,
     );
   }
 
-  /// Creates a [PetModel] from a JSON string.
   factory PetModel.fromJsonString(String jsonString) {
     return PetModel.fromJson(
       json.decode(jsonString) as Map<String, dynamic>,
@@ -62,8 +61,8 @@ class PetModel {
   final double? weight;
   final String bio;
   final String? photoPath;
+  final String? vetId;
 
-  /// Converts this model to a JSON map.
   Map<String, dynamic> toJson() {
     return {
       'id': id,
@@ -74,13 +73,12 @@ class PetModel {
       'weight': weight,
       'bio': bio,
       'photoPath': photoPath,
+      'vetId': vetId,
     };
   }
 
-  /// Converts this model to a JSON string.
   String toJsonString() => json.encode(toJson());
 
-  /// Converts this model to a domain [Pet] entity.
   Pet toEntity() {
     return Pet(
       id: id,
@@ -91,6 +89,7 @@ class PetModel {
       weight: weight,
       bio: bio,
       photoPath: photoPath,
+      vetId: vetId,
     );
   }
 }

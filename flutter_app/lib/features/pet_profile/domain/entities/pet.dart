@@ -14,33 +14,19 @@ class Pet {
     this.weight,
     this.bio = '',
     this.photoPath,
+    this.vetId,
   });
 
-  /// Unique identifier for the pet.
   final String id;
-
-  /// The pet's name.
   final String name;
-
-  /// The species of the pet (e.g., Dog, Cat, Bird).
   final String species;
-
-  /// The breed of the pet.
   final String breed;
-
-  /// The age of the pet in years.
   final double? age;
-
-  /// The weight of the pet in kilograms.
   final double? weight;
-
-  /// A short biography or description of the pet.
   final String bio;
-
-  /// File path or base64 string for the pet's photo.
   final String? photoPath;
+  final String? vetId;
 
-  /// Creates a copy of this pet with the given fields replaced.
   Pet copyWith({
     String? id,
     String? name,
@@ -50,6 +36,8 @@ class Pet {
     double? weight,
     String? bio,
     String? photoPath,
+    String? vetId,
+    bool clearVetId = false,
   }) {
     return Pet(
       id: id ?? this.id,
@@ -60,6 +48,7 @@ class Pet {
       weight: weight ?? this.weight,
       bio: bio ?? this.bio,
       photoPath: photoPath ?? this.photoPath,
+      vetId: clearVetId ? null : (vetId ?? this.vetId),
     );
   }
 

@@ -1,12 +1,12 @@
 import 'dart:convert';
 
-import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../../../../core/utils/constants.dart';
+import '../../../vet/presentation/providers/vet_providers.dart';
 import '../../domain/entities/pet.dart';
 import '../providers/pet_providers.dart';
 
@@ -37,6 +37,7 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
 
   String _selectedSpecies = AppConstants.species.first;
   String? _photoBase64;
+  String? _selectedVetId;
   bool _isLoading = false;
   bool _isInitialized = false;
 
@@ -60,6 +61,7 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
     _bioController.text = pet.bio;
     _selectedSpecies = pet.species;
     _photoBase64 = pet.photoPath;
+    _selectedVetId = pet.vetId;
   }
 
   Future<void> _pickImage() async {
@@ -109,6 +111,7 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
           weight: weight,
           bio: _bioController.text.trim(),
           photoPath: _photoBase64,
+          vetId: _selectedVetId,
         );
         await ref.read(petListProvider.notifier).updatePet(pet);
       } else {
@@ -120,6 +123,7 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
               weight: weight,
               bio: _bioController.text.trim(),
               photoPath: _photoBase64,
+              vetId: _selectedVetId,
             );
       }
 
@@ -279,6 +283,8 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
                 maxLines: 4,
                 maxLength: 500,
               ),
+              const SizedBox(height: 16),
+              _buildVetDropdown(),
               const SizedBox(height: 24),
               FilledButton.icon(
                 onPressed: _isLoading ? null : _savePet,
@@ -295,6 +301,53 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildVetDropdown() {
+    final vetsAsync = ref.watch(vetListProvider);
+
+    return vetsAsync.when(
+      loading: () => const InputDecorator(
+        decoration: InputDecoration(
+          labelText: 'Veterinarian',
+          prefixIcon: Icon(Icons.local_hospital),
+        ),
+        child: Text('Loading vets...'),
+      ),
+      error: (_, __) => const InputDecorator(
+        decoration: InputDecoration(
+          labelText: 'Veterinarian',
+          prefixIcon: Icon(Icons.local_hospital),
+        ),
+        child: Text('Could not load vets'),
+      ),
+      data: (vets) {
+        return DropdownButtonFormField<String?>(
+          value: vets.any((v) => v.id == _selectedVetId) ? _selectedVetId : null,
+          decoration: InputDecoration(
+            labelText: 'Veterinarian',
+            prefixIcon: const Icon(Icons.local_hospital),
+            suffixIcon: _selectedVetId != null
+                ? IconButton(
+                    icon: const Icon(Icons.clear),
+                    onPressed: () => setState(() => _selectedVetId = null),
+                  )
+                : null,
+          ),
+          items: [
+            const DropdownMenuItem<String?>(
+              value: null,
+              child: Text('No vet assigned'),
+            ),
+            ...vets.map((vet) => DropdownMenuItem<String?>(
+                  value: vet.id,
+                  child: Text(vet.name),
+                )),
+          ],
+          onChanged: (value) => setState(() => _selectedVetId = value),
+        );
+      },
     );
   }
 

@@ -6,6 +6,8 @@ import '../../features/health_tracking/presentation/screens/health_entry_form_sc
 import '../../features/pet_profile/presentation/screens/pet_detail_screen.dart';
 import '../../features/pet_profile/presentation/screens/pet_form_screen.dart';
 import '../../features/pet_profile/presentation/screens/pet_list_screen.dart';
+import '../../features/vet/presentation/screens/vet_form_screen.dart';
+import '../../features/vet/presentation/screens/vet_list_screen.dart';
 
 /// Defines all application routes using [GoRouter].
 ///
@@ -19,6 +21,9 @@ import '../../features/pet_profile/presentation/screens/pet_list_screen.dart';
 /// - `/health` : Global health tracking dashboard (all pets)
 /// - `/health/add` : Add health entry (unscoped)
 /// - `/health/edit/:id` : Edit health entry (unscoped)
+/// - `/vets` : Vet list
+/// - `/vets/add` : Add new vet
+/// - `/vets/edit/:id` : Edit existing vet
 class AppRouter {
   AppRouter._();
 
@@ -85,6 +90,24 @@ class AppRouter {
         builder: (context, state) {
           final entryId = state.pathParameters['id']!;
           return HealthEntryFormScreen(entryId: entryId);
+        },
+      ),
+      GoRoute(
+        path: '/vets',
+        name: 'vetList',
+        builder: (context, state) => const VetListScreen(),
+      ),
+      GoRoute(
+        path: '/vets/add',
+        name: 'addVet',
+        builder: (context, state) => const VetFormScreen(),
+      ),
+      GoRoute(
+        path: '/vets/edit/:id',
+        name: 'editVet',
+        builder: (context, state) {
+          final vetId = state.pathParameters['id']!;
+          return VetFormScreen(vetId: vetId);
         },
       ),
     ],

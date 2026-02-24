@@ -65,6 +65,7 @@ class PetListNotifier extends AsyncNotifier<List<Pet>> {
     double? weight,
     String bio = '',
     String? photoPath,
+    String? vetId,
   }) async {
     final pet = Pet(
       id: const Uuid().v4(),
@@ -75,6 +76,7 @@ class PetListNotifier extends AsyncNotifier<List<Pet>> {
       weight: weight,
       bio: bio,
       photoPath: photoPath,
+      vetId: vetId,
     );
     await ref.read(addPetUseCaseProvider).call(pet);
     ref.invalidateSelf();

@@ -24,6 +24,11 @@ class PetListScreen extends ConsumerWidget {
         title: const Text(AppConstants.appTitle),
         actions: [
           IconButton(
+            icon: const Icon(Icons.local_hospital),
+            tooltip: 'Veterinarians',
+            onPressed: () => context.go('/vets'),
+          ),
+          IconButton(
             icon: const Icon(Icons.medical_services),
             tooltip: 'Health Tracking',
             onPressed: () => context.go('/health'),
