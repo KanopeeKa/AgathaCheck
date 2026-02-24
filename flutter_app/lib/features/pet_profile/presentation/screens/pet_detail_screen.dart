@@ -153,14 +153,11 @@ class _PetProfileCard extends ConsumerWidget {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
-    String? vetName;
-    if (pet.vetId != null && pet.vetId!.isNotEmpty) {
-      final vetsAsync = ref.watch(vetListProvider);
-      vetName = vetsAsync.valueOrNull
-          ?.where((v) => v.id == pet.vetId)
-          .firstOrNull
-          ?.name;
-    }
+    final vetsAsync = ref.watch(vetListProvider);
+    final vets = vetsAsync.valueOrNull ?? [];
+    final assignedVet = (pet.vetId != null && pet.vetId!.isNotEmpty)
+        ? vets.where((v) => v.id == pet.vetId).firstOrNull
+        : null;
 
     return Padding(
       padding: const EdgeInsets.all(16),
@@ -201,20 +198,9 @@ class _PetProfileCard extends ConsumerWidget {
                                     '${pet.weight!.toStringAsFixed(1)} kg'),
                         ],
                       ),
-                      if (vetName != null) ...[
-                        const SizedBox(height: 10),
-                        Row(
-                          children: [
-                            Icon(Icons.local_hospital, size: 16,
-                                color: colorScheme.primary),
-                            const SizedBox(width: 6),
-                            Text(vetName,
-                                style: theme.textTheme.bodyMedium?.copyWith(
-                                    color: colorScheme.primary,
-                                    fontWeight: FontWeight.w500)),
-                          ],
-                        ),
-                      ],
+                      const SizedBox(height: 10),
+                      _buildVetRow(context, ref, assignedVet, vets,
+                          theme, colorScheme),
                       if (pet.bio.isNotEmpty) ...[
                         const SizedBox(height: 12),
                         Text(pet.bio,
@@ -229,6 +215,82 @@ class _PetProfileCard extends ConsumerWidget {
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildVetRow(BuildContext context, WidgetRef ref, dynamic assignedVet,
+      List vets, ThemeData theme, ColorScheme colorScheme) {
+    if (vets.isEmpty) {
+      return GestureDetector(
+        onTap: () => GoRouter.of(context).go('/vets/add'),
+        child: Row(
+          children: [
+            Icon(Icons.local_hospital, size: 16,
+                color: colorScheme.onSurfaceVariant),
+            const SizedBox(width: 6),
+            Text('No vet assigned',
+                style: theme.textTheme.bodyMedium?.copyWith(
+                    color: colorScheme.onSurfaceVariant)),
+            const SizedBox(width: 4),
+            Text('— Add one',
+                style: theme.textTheme.bodyMedium?.copyWith(
+                    color: colorScheme.primary,
+                    fontWeight: FontWeight.w500)),
+          ],
+        ),
+      );
+    }
+
+    return Row(
+      children: [
+        Icon(Icons.local_hospital, size: 16,
+            color: assignedVet != null
+                ? colorScheme.primary
+                : colorScheme.onSurfaceVariant),
+        const SizedBox(width: 6),
+        Expanded(
+          child: PopupMenuButton<String?>(
+            padding: EdgeInsets.zero,
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  assignedVet != null ? assignedVet.name : 'No vet assigned',
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: assignedVet != null
+                        ? colorScheme.primary
+                        : colorScheme.onSurfaceVariant,
+                    fontWeight: assignedVet != null
+                        ? FontWeight.w500
+                        : FontWeight.normal,
+                  ),
+                ),
+                const SizedBox(width: 4),
+                Icon(Icons.arrow_drop_down, size: 20,
+                    color: colorScheme.onSurfaceVariant),
+              ],
+            ),
+            onSelected: (vetId) async {
+              final updated = vetId == null
+                  ? pet.copyWith(clearVetId: true)
+                  : pet.copyWith(vetId: vetId);
+              await ref.read(petListProvider.notifier).updatePet(updated);
+            },
+            itemBuilder: (context) => [
+              if (assignedVet != null)
+                const PopupMenuItem<String?>(
+                  value: null,
+                  child: Text('Remove vet'),
+                ),
+              ...vets.map((vet) => PopupMenuItem<String?>(
+                    value: vet.id,
+                    enabled: assignedVet?.id != vet.id,
+                    child: Text(vet.name),
+                  )),
+            ],
+          ),
+        ),
+      ],
     );
   }
 }
