@@ -28,6 +28,9 @@ Future<void> main() async {
   print('Connected to PostgreSQL');
 
   final server = await HttpServer.bind('0.0.0.0', port);
+  server.defaultResponseHeaders.remove('x-frame-options', 'SAMEORIGIN');
+  server.defaultResponseHeaders.remove('x-xss-protection', '1; mode=block');
+  server.defaultResponseHeaders.remove('x-content-type-options', 'nosniff');
   print('Serving on http://0.0.0.0:$port');
 
   final webDir = Directory('deploy/public');
@@ -53,6 +56,7 @@ Future<void> main() async {
       } else {
         await _serveStatic(request, webDir);
       }
+
     } catch (e, st) {
       print('Error handling ${request.uri}: $e\n$st');
       request.response.statusCode = 500;
