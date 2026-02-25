@@ -22,7 +22,22 @@ class PetListScreen extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text(AppConstants.appTitle),
+        title: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ClipRRect(
+              borderRadius: BorderRadius.circular(6),
+              child: Image.asset(
+                'assets/logo.png',
+                height: 32,
+                width: 32,
+                fit: BoxFit.cover,
+              ),
+            ),
+            const SizedBox(width: 8),
+            const Text(AppConstants.appTitle),
+          ],
+        ),
         actions: [
           IconButton(
             icon: const Icon(Icons.local_hospital),
