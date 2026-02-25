@@ -6,4 +6,4 @@ version: 1.0.0
 environment:
   sdk: ^3.8.0
 dependencies:
-  postgres: ^3.5.7
+  postgres: 3.5.7
