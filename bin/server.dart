@@ -16,16 +16,25 @@ Future<void> main() async {
     exit(1);
   }
 
-  _db = await Connection.open(
-    Endpoint(
-      host: Platform.environment['PGHOST'] ?? 'localhost',
-      port: int.parse(Platform.environment['PGPORT'] ?? '5432'),
-      database: Platform.environment['PGDATABASE'] ?? 'postgres',
-      username: Platform.environment['PGUSER'] ?? 'postgres',
-      password: Platform.environment['PGPASSWORD'] ?? '',
-    ),
-    settings: ConnectionSettings(sslMode: SslMode.disable),
+  final endpoint = Endpoint(
+    host: Platform.environment['PGHOST'] ?? 'localhost',
+    port: int.parse(Platform.environment['PGPORT'] ?? '5432'),
+    database: Platform.environment['PGDATABASE'] ?? 'postgres',
+    username: Platform.environment['PGUSER'] ?? 'postgres',
+    password: Platform.environment['PGPASSWORD'] ?? '',
   );
+
+  try {
+    _db = await Connection.open(
+      endpoint,
+      settings: ConnectionSettings(sslMode: SslMode.disable),
+    );
+  } catch (_) {
+    _db = await Connection.open(
+      endpoint,
+      settings: ConnectionSettings(sslMode: SslMode.require),
+    );
+  }
   print('Connected to PostgreSQL');
 
   await _db.execute(Sql('''
