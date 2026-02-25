@@ -1,11 +1,11 @@
 {
-    "name": "pet_profile_app",
-    "short_name": "pet_profile_app",
+    "name": "Agatha",
+    "short_name": "Agatha",
     "start_url": ".",
     "display": "standalone",
-    "background_color": "#0175C2",
-    "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+    "background_color": "#6750A4",
+    "theme_color": "#6750A4",
+    "description": "Pet profile and health management app.",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [

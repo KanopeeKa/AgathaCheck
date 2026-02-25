@@ -3,21 +3,17 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/utils/constants.dart';
+import '../../../auth/presentation/providers/auth_providers.dart';
 import '../providers/pet_providers.dart';
 import '../widgets/pet_card.dart';
 
-/// The home screen displaying a list of all pet profiles.
-///
-/// Shows pet cards in a scrollable list. Users can tap a card
-/// to edit the pet, or tap the FAB to add a new pet.
 class PetListScreen extends ConsumerWidget {
-  /// Creates a [PetListScreen].
   const PetListScreen({super.key});
 
-  /// Builds the pet list UI with loading, error, empty, and data states.
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final petListAsync = ref.watch(petListProvider);
+    final auth = ref.watch(authProvider);
     final theme = Theme.of(context);
 
     return Scaffold(
@@ -49,6 +45,76 @@ class PetListScreen extends ConsumerWidget {
             tooltip: 'Health Tracking',
             onPressed: () => context.go('/health'),
           ),
+          if (auth.isLoggedIn)
+            PopupMenuButton<String>(
+              icon: CircleAvatar(
+                radius: 16,
+                backgroundColor: theme.colorScheme.primaryContainer,
+                child: Text(
+                  ((auth.user?.name.isNotEmpty ?? false)
+                          ? auth.user!.name[0]
+                          : auth.user?.email[0] ?? 'U')
+                      .toUpperCase(),
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                    color: theme.colorScheme.onPrimaryContainer,
+                  ),
+                ),
+              ),
+              onSelected: (value) async {
+                if (value == 'details') {
+                  context.push('/my-details');
+                } else if (value == 'logout') {
+                  await ref.read(authProvider.notifier).logout();
+                }
+              },
+              itemBuilder: (context) => [
+                PopupMenuItem<String>(
+                  enabled: false,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        auth.user?.name.isNotEmpty == true
+                            ? auth.user!.name
+                            : 'User',
+                        style: theme.textTheme.titleSmall,
+                      ),
+                      Text(
+                        auth.user?.email ?? '',
+                        style: theme.textTheme.bodySmall?.copyWith(
+                            color: theme.colorScheme.onSurfaceVariant),
+                      ),
+                    ],
+                  ),
+                ),
+                const PopupMenuDivider(),
+                const PopupMenuItem<String>(
+                  value: 'details',
+                  child: ListTile(
+                    leading: Icon(Icons.person_outlined),
+                    title: Text('My Details'),
+                    dense: true,
+                    contentPadding: EdgeInsets.zero,
+                  ),
+                ),
+                const PopupMenuItem<String>(
+                  value: 'logout',
+                  child: ListTile(
+                    leading: Icon(Icons.logout),
+                    title: Text('Log Out'),
+                    dense: true,
+                    contentPadding: EdgeInsets.zero,
+                  ),
+                ),
+              ],
+            )
+          else
+            TextButton(
+              onPressed: () => context.push('/login'),
+              child: const Text('Sign In'),
+            ),
         ],
       ),
       body: petListAsync.when(

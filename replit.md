@@ -1,7 +1,7 @@
-# PetProfileApp
+# Agatha (PetProfileApp)
 
 ## Overview
-A modular Flutter application for managing pet profiles, health tracking, and veterinarian contacts using clean architecture. Built with Material 3, Riverpod state management, GoRouter navigation, SharedPreferences local storage for pets, and PostgreSQL for health entries and vets.
+A modular Flutter application for managing pet profiles, health tracking, and veterinarian contacts using clean architecture. Built with Material 3, Riverpod state management, GoRouter navigation, SharedPreferences local storage for pets, and PostgreSQL for health entries, vets, and authentication.
 
 ## Current State
 - Pet profile feature fully implemented with CRUD operations (SharedPreferences)
@@ -9,36 +9,45 @@ A modular Flutter application for managing pet profiles, health tracking, and ve
 - Veterinarian management feature with CRUD operations (PostgreSQL)
 - Pet-to-health relationship: each pet has their own health entries shown in pet detail screen
 - Pet-to-vet relationship: each pet can be linked to a veterinarian
-- API server with REST endpoints for health entries and vets
-- Deployed as static Flutter web files served by a Dart API server
+- Authentication: JWT-based email/password auth with signup, login, refresh, logout, profile management, password change
+- API server with REST endpoints for health entries, vets, sharing, and auth
+- Deployed as static Flutter web files served by a Dart API server (AOT compiled)
 
 ## Project Architecture
 ```
-bin/server.dart        - Dart API server + static file server
+bin/server.dart        - Dart API server + static file server (auth, health, vets, sharing)
 deploy/public/         - Pre-built Flutter web files (static assets)
 flutter_app/           - Flutter source code (development)
   lib/
     core/              - App-wide: theme, router, constants
     features/
+      auth/            - Authentication feature
+        data/auth_service.dart           - REST API client for auth endpoints
+        presentation/providers/auth_providers.dart - Riverpod auth state management
+        presentation/screens/
+          login_screen.dart              - Login form
+          signup_screen.dart             - Registration form
+          my_details_screen.dart         - Profile view + password change
       pet_profile/     - Pet CRUD with data/domain/presentation layers
         presentation/screens/
-          pet_list_screen.dart    - Home screen with pet cards
+          pet_list_screen.dart    - Home screen with pet cards + user menu
           pet_detail_screen.dart  - Pet profile + vet info + health entries (tabbed)
           pet_form_screen.dart    - Add/edit pet form (with vet dropdown)
       health_tracking/ - Health tracking with data/domain/presentation layers
       vet/             - Vet management with data/domain/presentation layers
-        presentation/screens/
-          vet_list_screen.dart    - List of vets with edit/delete
-          vet_form_screen.dart    - Add/edit vet form
+      sharing/         - Pet sharing feature
   test/                - Unit and widget tests
   test_integration/    - Integration tests
   web/                 - Flutter web template
   pubspec.yaml         - Flutter dependencies
-pubspec.yaml           - Root: pure Dart + postgres for deployment
+pubspec.yaml           - Root: pure Dart + postgres + dart_jsonwebtoken + dbcrypt
 ```
 
 ## Navigation / Routes
-- `/` - Pet list (home)
+- `/` - Pet list (home) — shows "Sign In" button when logged out, user avatar menu when logged in
+- `/login` - Login screen
+- `/signup` - Signup screen
+- `/my-details` - User profile + change password
 - `/add` - Add new pet
 - `/edit/:id` - Edit pet
 - `/pet/:petId` - Pet detail screen (profile info + vet info + health entries)
@@ -51,6 +60,22 @@ pubspec.yaml           - Root: pure Dart + postgres for deployment
 - `/vets/add` - Add new vet
 - `/vets/edit/:id` - Edit vet
 - `/shared/:code` - View shared pet (read-only, no auth needed)
+
+## Authentication Feature
+- **Database**: PostgreSQL users table (id, email, password_hash, name, created_at, updated_at) + refresh_tokens table
+- **Password hashing**: bcrypt via dbcrypt package
+- **Tokens**: JWT access tokens (30min expiry) + refresh tokens (30 day expiry) stored in DB
+- **JWT Secret**: Uses SESSION_SECRET environment variable
+- **API Endpoints**:
+  - POST /api/auth/signup - Create account (email, password, name) → user + tokens
+  - POST /api/auth/login - Login (email, password) → user + tokens
+  - POST /api/auth/refresh - Refresh access token
+  - POST /api/auth/logout - Invalidate refresh token
+  - GET /api/auth/me - Get current user (requires Bearer token)
+  - PUT /api/auth/me - Update profile (name)
+  - POST /api/auth/change-password - Change password (invalidates all refresh tokens)
+- **Frontend**: Tokens stored in SharedPreferences, auth state managed by Riverpod StateNotifier
+- **UI**: User avatar menu in app bar (My Details, Log Out), login/signup screens with logo, My Details screen with profile editing and password change form
 
 ## Health Tracking Feature
 - **Relationship**: 1 pet -> many health entries (via pet_id foreign key)
@@ -85,17 +110,18 @@ pubspec.yaml           - Root: pure Dart + postgres for deployment
   - POST /api/share - Create/update share (sends pet JSON + pet_id, returns share_code; re-shares update existing)
   - GET /api/share/:code - Get shared pet data (returns pet, health_entries, vet)
 - **UI**: Share button in pet detail app bar, dialog with copyable link, SharedPetScreen (read-only view)
-- **Files**: flutter_app/lib/features/sharing/presentation/screens/shared_pet_screen.dart
 
 ## Deployment Strategy
-Root pubspec.yaml is a pure Dart project with postgres package (no Flutter deps), allowing `dart pub get` to succeed in deployment. The Dart server in `bin/server.dart` serves both API endpoints and pre-built Flutter web files from `deploy/public/`. Deployment type: Autoscale. Server removes default X-Frame-Options header to allow Replit webview embedding.
+Root pubspec.yaml is a pure Dart project with postgres, dart_jsonwebtoken, and dbcrypt packages (no Flutter deps). Build step: `dart compile exe bin/server.dart -o bin/server`. Run step: `./bin/server`. The compiled binary serves both API endpoints and pre-built Flutter web files from `deploy/public/`. Deployment type: Autoscale. SSL mode auto-detected (disabled locally, required in deployment).
 
 ## Tech Stack
 - Flutter 3.32.0, Dart 3.8.0
 - flutter_riverpod for state management
 - go_router for navigation
-- shared_preferences for pet profile storage
-- PostgreSQL (via postgres package) for health tracking and vets
+- shared_preferences for pet profile storage + auth token persistence
+- PostgreSQL (via postgres package) for health tracking, vets, users, refresh tokens
+- dart_jsonwebtoken for JWT access tokens
+- dbcrypt for bcrypt password hashing
 - http package for Flutter-to-API communication
 - image_picker for photo selection
 - mockito for test mocking

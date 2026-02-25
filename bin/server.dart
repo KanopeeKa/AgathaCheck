@@ -1,10 +1,31 @@
+// Agatha Pet Profile App — Dart API Server
+// Serves REST API endpoints and pre-built Flutter web files.
+//
+// Auth endpoints:
+//   POST /api/auth/signup   — Create account (email, password, name)
+//   POST /api/auth/login    — Login (email, password) → tokens
+//   POST /api/auth/refresh  — Refresh access token
+//   POST /api/auth/logout   — Invalidate refresh token
+//   GET  /api/auth/me       — Get current user
+//   PUT  /api/auth/me       — Update user profile (name)
+//   POST /api/auth/change-password — Change password
+//
+// Environment variables:
+//   DATABASE_URL, PGHOST, PGPORT, PGDATABASE, PGUSER, PGPASSWORD
+//   SESSION_SECRET — Used as JWT signing key
+
 import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
 
+import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart';
+import 'package:dbcrypt/dbcrypt.dart';
 import 'package:postgres/postgres.dart';
 
 late Connection _db;
+late String _jwtSecret;
+const _accessTokenExpiry = Duration(minutes: 30);
+const _refreshTokenExpiry = Duration(days: 30);
 
 Future<void> main() async {
   final portStr = Platform.environment['PORT'] ?? '5000';
@@ -15,6 +36,8 @@ Future<void> main() async {
     print('Error: DATABASE_URL not set.');
     exit(1);
   }
+
+  _jwtSecret = Platform.environment['SESSION_SECRET'] ?? 'dev-secret-change-me';
 
   final endpoint = Endpoint(
     host: Platform.environment['PGHOST'] ?? 'localhost',
@@ -49,11 +72,58 @@ Future<void> main() async {
   '''));
   print('shared_pets table ready');
 
+  await _db.execute(Sql('''
+    CREATE TABLE IF NOT EXISTS users (
+      id SERIAL PRIMARY KEY,
+      email VARCHAR(255) UNIQUE NOT NULL,
+      password_hash VARCHAR(255) NOT NULL,
+      name VARCHAR(255) NOT NULL DEFAULT '',
+      created_at TIMESTAMPTZ DEFAULT NOW(),
+      updated_at TIMESTAMPTZ DEFAULT NOW()
+    )
+  '''));
+  print('users table ready');
+
+  await _db.execute(Sql('''
+    CREATE TABLE IF NOT EXISTS refresh_tokens (
+      id SERIAL PRIMARY KEY,
+      user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      token VARCHAR(255) UNIQUE NOT NULL,
+      expires_at TIMESTAMPTZ NOT NULL,
+      created_at TIMESTAMPTZ DEFAULT NOW()
+    )
+  '''));
+  print('refresh_tokens table ready');
+
   final server = await HttpServer.bind('0.0.0.0', port);
   server.defaultResponseHeaders.remove('x-frame-options', 'SAMEORIGIN');
   server.defaultResponseHeaders.remove('x-xss-protection', '1; mode=block');
   server.defaultResponseHeaders.remove('x-content-type-options', 'nosniff');
   print('Serving on http://0.0.0.0:$port');
+
+  print('\n--- Auth API Ready ---');
+  print('POST /api/auth/signup   — Create account');
+  print('POST /api/auth/login    — Login');
+  print('POST /api/auth/refresh  — Refresh token');
+  print('POST /api/auth/logout   — Logout');
+  print('GET  /api/auth/me       — Get current user');
+  print('PUT  /api/auth/me       — Update profile');
+  print('POST /api/auth/change-password — Change password');
+  print('');
+  print('Example signup:');
+  print('  curl -X POST http://localhost:$port/api/auth/signup \\');
+  print('    -H "Content-Type: application/json" \\');
+  print('    -d \'{"email":"user@example.com","password":"secret123","name":"Jane"}\'');
+  print('');
+  print('Example login:');
+  print('  curl -X POST http://localhost:$port/api/auth/login \\');
+  print('    -H "Content-Type: application/json" \\');
+  print('    -d \'{"email":"user@example.com","password":"secret123"}\'');
+  print('');
+  print('Example protected call (use accessToken from login response):');
+  print('  curl http://localhost:$port/api/auth/me \\');
+  print('    -H "Authorization: Bearer <accessToken>"');
+  print('----------------------\n');
 
   final webDir = Directory('deploy/public');
 
@@ -63,7 +133,7 @@ Future<void> main() async {
       request.response.headers.set('Access-Control-Allow-Methods',
           'GET, POST, PUT, DELETE, OPTIONS');
       request.response.headers.set(
-          'Access-Control-Allow-Headers', 'Content-Type');
+          'Access-Control-Allow-Headers', 'Content-Type, Authorization');
 
       if (request.method == 'OPTIONS') {
         request.response.statusCode = 200;
@@ -89,11 +159,75 @@ Future<void> main() async {
   }
 }
 
+// ── JWT helpers ──────────────────────────────────────────────
+
+String _createAccessToken(int userId, String email) {
+  final jwt = JWT({
+    'sub': userId.toString(),
+    'email': email,
+    'type': 'access',
+  });
+  return jwt.sign(SecretKey(_jwtSecret), expiresIn: _accessTokenExpiry);
+}
+
+String _createRefreshTokenValue() {
+  final rng = Random.secure();
+  final bytes = List<int>.generate(32, (_) => rng.nextInt(256));
+  return base64Url.encode(bytes);
+}
+
+Map<String, dynamic>? _verifyAccessToken(String token) {
+  try {
+    final jwt = JWT.verify(token, SecretKey(_jwtSecret));
+    final payload = jwt.payload as Map<String, dynamic>;
+    if (payload['type'] != 'access') return null;
+    return payload;
+  } catch (_) {
+    return null;
+  }
+}
+
+Future<Map<String, dynamic>?> _authenticateRequest(HttpRequest request) async {
+  final authHeader = request.headers.value('authorization');
+  if (authHeader == null || !authHeader.startsWith('Bearer ')) return null;
+  final token = authHeader.substring(7);
+  return _verifyAccessToken(token);
+}
+
+// ── Password helpers ─────────────────────────────────────────
+
+String _hashPassword(String password) {
+  return DBCrypt().hashpw(password, DBCrypt().gensalt());
+}
+
+bool _checkPassword(String password, String hash) {
+  return DBCrypt().checkpw(password, hash);
+}
+
+// ── API routing ──────────────────────────────────────────────
+
 Future<void> _handleApi(HttpRequest request) async {
   final path = request.uri.path;
   final method = request.method;
 
-  if (path == '/api/health-entries' && method == 'GET') {
+  // Auth endpoints
+  if (path == '/api/auth/signup' && method == 'POST') {
+    await _authSignup(request);
+  } else if (path == '/api/auth/login' && method == 'POST') {
+    await _authLogin(request);
+  } else if (path == '/api/auth/refresh' && method == 'POST') {
+    await _authRefresh(request);
+  } else if (path == '/api/auth/logout' && method == 'POST') {
+    await _authLogout(request);
+  } else if (path == '/api/auth/me' && method == 'GET') {
+    await _authMe(request);
+  } else if (path == '/api/auth/me' && method == 'PUT') {
+    await _authUpdateMe(request);
+  } else if (path == '/api/auth/change-password' && method == 'POST') {
+    await _authChangePassword(request);
+  }
+  // Health entries
+  else if (path == '/api/health-entries' && method == 'GET') {
     await _getHealthEntries(request);
   } else if (path == '/api/health-entries' && method == 'POST') {
     await _createHealthEntry(request);
@@ -115,7 +249,9 @@ Future<void> _handleApi(HttpRequest request) async {
     await _getHistory(request);
   } else if (path == '/api/health-entries/export' && method == 'GET') {
     await _exportCsv(request);
-  } else if (path == '/api/vets' && method == 'GET') {
+  }
+  // Vets
+  else if (path == '/api/vets' && method == 'GET') {
     await _getVets(request);
   } else if (path == '/api/vets' && method == 'POST') {
     await _createVet(request);
@@ -126,7 +262,9 @@ Future<void> _handleApi(HttpRequest request) async {
   } else if (RegExp(r'^/api/vets/[^/]+$').hasMatch(path) &&
       method == 'DELETE') {
     await _deleteVet(request);
-  } else if (path == '/api/share' && method == 'POST') {
+  }
+  // Sharing
+  else if (path == '/api/share' && method == 'POST') {
     await _createShare(request);
   } else if (RegExp(r'^/api/share/[^/]+$').hasMatch(path) && method == 'GET') {
     await _getShare(request);
@@ -134,6 +272,310 @@ Future<void> _handleApi(HttpRequest request) async {
     _jsonResponse(request, 404, {'error': 'Not found'});
   }
 }
+
+// ── Auth handlers ────────────────────────────────────────────
+
+Future<void> _authSignup(HttpRequest request) async {
+  final body = await _readJson(request);
+  if (body == null) return;
+
+  final email = (body['email'] as String? ?? '').trim().toLowerCase();
+  final password = body['password'] as String? ?? '';
+  final name = (body['name'] as String? ?? '').trim();
+
+  if (email.isEmpty || password.isEmpty) {
+    _jsonResponse(request, 400, {'error': 'email and password are required'});
+    return;
+  }
+
+  if (password.length < 6) {
+    _jsonResponse(request, 400, {'error': 'Password must be at least 6 characters'});
+    return;
+  }
+
+  final existing = await _db.execute(
+    Sql.named('SELECT id FROM users WHERE email = @email'),
+    parameters: {'email': email},
+  );
+  if (existing.isNotEmpty) {
+    _jsonResponse(request, 409, {'error': 'An account with this email already exists'});
+    return;
+  }
+
+  final hash = _hashPassword(password);
+  final result = await _db.execute(
+    Sql.named('''
+      INSERT INTO users (email, password_hash, name)
+      VALUES (@email, @hash, @name)
+      RETURNING id, email, name, created_at, updated_at
+    '''),
+    parameters: {'email': email, 'hash': hash, 'name': name},
+  );
+
+  final userRow = result.first.toColumnMap();
+  final userId = userRow['id'] as int;
+  final accessToken = _createAccessToken(userId, email);
+  final refreshToken = _createRefreshTokenValue();
+
+  await _db.execute(
+    Sql.named('''
+      INSERT INTO refresh_tokens (user_id, token, expires_at)
+      VALUES (@userId, @token, @expiresAt)
+    '''),
+    parameters: {
+      'userId': userId,
+      'token': refreshToken,
+      'expiresAt': DateTime.now().add(_refreshTokenExpiry).toIso8601String(),
+    },
+  );
+
+  _jsonResponse(request, 201, {
+    'user': {
+      'id': userId.toString(),
+      'email': userRow['email'].toString(),
+      'name': userRow['name'].toString(),
+      'created_at': userRow['created_at'].toString(),
+      'updated_at': userRow['updated_at'].toString(),
+    },
+    'accessToken': accessToken,
+    'refreshToken': refreshToken,
+  });
+}
+
+Future<void> _authLogin(HttpRequest request) async {
+  final body = await _readJson(request);
+  if (body == null) return;
+
+  final email = (body['email'] as String? ?? '').trim().toLowerCase();
+  final password = body['password'] as String? ?? '';
+
+  if (email.isEmpty || password.isEmpty) {
+    _jsonResponse(request, 400, {'error': 'email and password are required'});
+    return;
+  }
+
+  final result = await _db.execute(
+    Sql.named('SELECT * FROM users WHERE email = @email'),
+    parameters: {'email': email},
+  );
+
+  if (result.isEmpty) {
+    _jsonResponse(request, 401, {'error': 'Invalid email or password'});
+    return;
+  }
+
+  final userRow = result.first.toColumnMap();
+  final hash = userRow['password_hash'].toString();
+
+  if (!_checkPassword(password, hash)) {
+    _jsonResponse(request, 401, {'error': 'Invalid email or password'});
+    return;
+  }
+
+  final userId = userRow['id'] as int;
+  final accessToken = _createAccessToken(userId, email);
+  final refreshToken = _createRefreshTokenValue();
+
+  await _db.execute(
+    Sql.named('''
+      INSERT INTO refresh_tokens (user_id, token, expires_at)
+      VALUES (@userId, @token, @expiresAt)
+    '''),
+    parameters: {
+      'userId': userId,
+      'token': refreshToken,
+      'expiresAt': DateTime.now().add(_refreshTokenExpiry).toIso8601String(),
+    },
+  );
+
+  _jsonResponse(request, 200, {
+    'user': {
+      'id': userId.toString(),
+      'email': userRow['email'].toString(),
+      'name': userRow['name'].toString(),
+      'created_at': userRow['created_at'].toString(),
+      'updated_at': userRow['updated_at'].toString(),
+    },
+    'accessToken': accessToken,
+    'refreshToken': refreshToken,
+  });
+}
+
+Future<void> _authRefresh(HttpRequest request) async {
+  final body = await _readJson(request);
+  if (body == null) return;
+
+  final refreshToken = body['refreshToken'] as String? ?? '';
+  if (refreshToken.isEmpty) {
+    _jsonResponse(request, 400, {'error': 'refreshToken is required'});
+    return;
+  }
+
+  final result = await _db.execute(
+    Sql.named('''
+      SELECT rt.*, u.email, u.name FROM refresh_tokens rt
+      JOIN users u ON u.id = rt.user_id
+      WHERE rt.token = @token AND rt.expires_at > NOW()
+    '''),
+    parameters: {'token': refreshToken},
+  );
+
+  if (result.isEmpty) {
+    _jsonResponse(request, 401, {'error': 'Invalid or expired refresh token'});
+    return;
+  }
+
+  final row = result.first.toColumnMap();
+  final userId = row['user_id'] as int;
+  final email = row['email'].toString();
+
+  final newAccessToken = _createAccessToken(userId, email);
+
+  _jsonResponse(request, 200, {
+    'accessToken': newAccessToken,
+  });
+}
+
+Future<void> _authLogout(HttpRequest request) async {
+  final body = await _readJson(request);
+  if (body == null) return;
+
+  final refreshToken = body['refreshToken'] as String? ?? '';
+  if (refreshToken.isNotEmpty) {
+    await _db.execute(
+      Sql.named('DELETE FROM refresh_tokens WHERE token = @token'),
+      parameters: {'token': refreshToken},
+    );
+  }
+
+  _jsonResponse(request, 200, {'message': 'Logged out'});
+}
+
+Future<void> _authMe(HttpRequest request) async {
+  final payload = await _authenticateRequest(request);
+  if (payload == null) {
+    _jsonResponse(request, 401, {'error': 'Not authenticated'});
+    return;
+  }
+
+  final userId = payload['sub'].toString();
+  final result = await _db.execute(
+    Sql.named('SELECT id, email, name, created_at, updated_at FROM users WHERE id = @id'),
+    parameters: {'id': int.parse(userId)},
+  );
+
+  if (result.isEmpty) {
+    _jsonResponse(request, 404, {'error': 'User not found'});
+    return;
+  }
+
+  final row = result.first.toColumnMap();
+  _jsonResponse(request, 200, {
+    'id': row['id'].toString(),
+    'email': row['email'].toString(),
+    'name': row['name'].toString(),
+    'created_at': row['created_at'].toString(),
+    'updated_at': row['updated_at'].toString(),
+  });
+}
+
+Future<void> _authUpdateMe(HttpRequest request) async {
+  final payload = await _authenticateRequest(request);
+  if (payload == null) {
+    _jsonResponse(request, 401, {'error': 'Not authenticated'});
+    return;
+  }
+
+  final body = await _readJson(request);
+  if (body == null) return;
+
+  final userId = int.parse(payload['sub'].toString());
+  final name = body['name'] as String?;
+
+  if (name == null) {
+    _jsonResponse(request, 400, {'error': 'name is required'});
+    return;
+  }
+
+  final result = await _db.execute(
+    Sql.named('''
+      UPDATE users SET name = @name, updated_at = NOW()
+      WHERE id = @id
+      RETURNING id, email, name, created_at, updated_at
+    '''),
+    parameters: {'id': userId, 'name': name.trim()},
+  );
+
+  if (result.isEmpty) {
+    _jsonResponse(request, 404, {'error': 'User not found'});
+    return;
+  }
+
+  final row = result.first.toColumnMap();
+  _jsonResponse(request, 200, {
+    'id': row['id'].toString(),
+    'email': row['email'].toString(),
+    'name': row['name'].toString(),
+    'created_at': row['created_at'].toString(),
+    'updated_at': row['updated_at'].toString(),
+  });
+}
+
+Future<void> _authChangePassword(HttpRequest request) async {
+  final payload = await _authenticateRequest(request);
+  if (payload == null) {
+    _jsonResponse(request, 401, {'error': 'Not authenticated'});
+    return;
+  }
+
+  final body = await _readJson(request);
+  if (body == null) return;
+
+  final currentPassword = body['currentPassword'] as String? ?? '';
+  final newPassword = body['newPassword'] as String? ?? '';
+
+  if (currentPassword.isEmpty || newPassword.isEmpty) {
+    _jsonResponse(request, 400, {'error': 'currentPassword and newPassword are required'});
+    return;
+  }
+
+  if (newPassword.length < 6) {
+    _jsonResponse(request, 400, {'error': 'New password must be at least 6 characters'});
+    return;
+  }
+
+  final userId = int.parse(payload['sub'].toString());
+  final userResult = await _db.execute(
+    Sql.named('SELECT password_hash FROM users WHERE id = @id'),
+    parameters: {'id': userId},
+  );
+
+  if (userResult.isEmpty) {
+    _jsonResponse(request, 404, {'error': 'User not found'});
+    return;
+  }
+
+  final currentHash = userResult.first.toColumnMap()['password_hash'].toString();
+  if (!_checkPassword(currentPassword, currentHash)) {
+    _jsonResponse(request, 401, {'error': 'Current password is incorrect'});
+    return;
+  }
+
+  final newHash = _hashPassword(newPassword);
+  await _db.execute(
+    Sql.named('UPDATE users SET password_hash = @hash, updated_at = NOW() WHERE id = @id'),
+    parameters: {'id': userId, 'hash': newHash},
+  );
+
+  await _db.execute(
+    Sql.named('DELETE FROM refresh_tokens WHERE user_id = @userId'),
+    parameters: {'userId': userId},
+  );
+
+  _jsonResponse(request, 200, {'message': 'Password changed successfully. Please log in again.'});
+}
+
+// ── Health entries ───────────────────────────────────────────
 
 Future<void> _getHealthEntries(HttpRequest request) async {
   final petId = request.uri.queryParameters['pet_id'];
@@ -406,6 +848,8 @@ Future<void> _exportCsv(HttpRequest request) async {
   await request.response.close();
 }
 
+// ── Vets ─────────────────────────────────────────────────────
+
 Future<void> _getVets(HttpRequest request) async {
   final result = await _db.execute(
     Sql.named('SELECT * FROM vets ORDER BY name ASC'),
@@ -513,6 +957,8 @@ Future<void> _deleteVet(HttpRequest request) async {
   _jsonResponse(request, 200, {'deleted': true});
 }
 
+// ── Sharing ──────────────────────────────────────────────────
+
 String _generateShareCode() {
   const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789';
   final rng = Random.secure();
@@ -610,6 +1056,8 @@ Future<void> _getShare(HttpRequest request) async {
     'vet': vet,
   });
 }
+
+// ── Helpers ──────────────────────────────────────────────────
 
 Map<String, dynamic> _vetRowToMap(ResultRow row) {
   final cols = row.toColumnMap();

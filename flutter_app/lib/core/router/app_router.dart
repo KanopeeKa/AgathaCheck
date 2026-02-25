@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../features/auth/presentation/screens/login_screen.dart';
+import '../../features/auth/presentation/screens/my_details_screen.dart';
+import '../../features/auth/presentation/screens/signup_screen.dart';
 import '../../features/health_tracking/presentation/screens/health_dashboard_screen.dart';
 import '../../features/health_tracking/presentation/screens/health_entry_form_screen.dart';
 import '../../features/pet_profile/presentation/screens/pet_detail_screen.dart';
@@ -10,27 +13,9 @@ import '../../features/sharing/presentation/screens/shared_pet_screen.dart';
 import '../../features/vet/presentation/screens/vet_form_screen.dart';
 import '../../features/vet/presentation/screens/vet_list_screen.dart';
 
-/// Defines all application routes using [GoRouter].
-///
-/// Routes:
-/// - `/` : Pet list (home) screen
-/// - `/add` : Add new pet form
-/// - `/edit/:id` : Edit existing pet form
-/// - `/pet/:petId` : Pet detail with health entries
-/// - `/pet/:petId/health/add` : Add health entry for a pet
-/// - `/pet/:petId/health/edit/:id` : Edit health entry for a pet
-/// - `/health` : Global health tracking dashboard (all pets)
-/// - `/health/add` : Add health entry (unscoped)
-/// - `/health/edit/:id` : Edit health entry (unscoped)
-/// - `/vets` : Vet list
-/// - `/vets/add` : Add new vet
-/// - `/vets/edit/:id` : Edit existing vet
-/// - `/shared/:code` : Shared pet view (read-only, no auth required)
 class AppRouter {
-  /// Private constructor to prevent instantiation.
   AppRouter._();
 
-  /// The configured [GoRouter] instance for the application.
   static final GoRouter router = GoRouter(
     initialLocation: '/',
     routes: [
@@ -38,6 +23,21 @@ class AppRouter {
         path: '/',
         name: 'home',
         builder: (context, state) => const PetListScreen(),
+      ),
+      GoRoute(
+        path: '/login',
+        name: 'login',
+        builder: (context, state) => const LoginScreen(),
+      ),
+      GoRoute(
+        path: '/signup',
+        name: 'signup',
+        builder: (context, state) => const SignupScreen(),
+      ),
+      GoRoute(
+        path: '/my-details',
+        name: 'myDetails',
+        builder: (context, state) => const MyDetailsScreen(),
       ),
       GoRoute(
         path: '/add',
