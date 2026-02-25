@@ -14,6 +14,7 @@ class PetListScreen extends ConsumerWidget {
   /// Creates a [PetListScreen].
   const PetListScreen({super.key});
 
+  /// Builds the pet list UI with loading, error, empty, and data states.
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final petListAsync = ref.watch(petListProvider);

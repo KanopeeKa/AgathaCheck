@@ -18,6 +18,7 @@ class SharedPetScreen extends ConsumerStatefulWidget {
   /// The unique share code used to fetch the shared pet data.
   final String shareCode;
 
+  /// Creates the mutable state for this widget.
   @override
   ConsumerState<SharedPetScreen> createState() => _SharedPetScreenState();
 }

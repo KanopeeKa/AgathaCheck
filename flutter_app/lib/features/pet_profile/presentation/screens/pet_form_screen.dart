@@ -23,6 +23,7 @@ class PetFormScreen extends ConsumerStatefulWidget {
   /// The ID of the pet to edit, or null to add a new pet.
   final String? petId;
 
+  /// Creates the mutable state for this widget.
   @override
   ConsumerState<PetFormScreen> createState() => _PetFormScreenState();
 }

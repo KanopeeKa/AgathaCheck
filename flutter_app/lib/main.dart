@@ -32,6 +32,7 @@ class PetProfileApp extends StatelessWidget {
   /// Creates the [PetProfileApp].
   const PetProfileApp({super.key});
 
+  /// Builds the [MaterialApp] with Material 3 theming and GoRouter navigation.
   @override
   Widget build(BuildContext context) {
     return MaterialApp.router(

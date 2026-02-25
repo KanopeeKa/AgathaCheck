@@ -25,6 +25,7 @@ class PetDetailScreen extends ConsumerStatefulWidget {
   /// The ID of the pet to display.
   final String petId;
 
+  /// Creates the mutable state for this widget.
   @override
   ConsumerState<PetDetailScreen> createState() => _PetDetailScreenState();
 }

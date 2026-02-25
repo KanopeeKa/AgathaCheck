@@ -25,7 +25,9 @@ import '../../features/vet/presentation/screens/vet_list_screen.dart';
 /// - `/vets` : Vet list
 /// - `/vets/add` : Add new vet
 /// - `/vets/edit/:id` : Edit existing vet
+/// - `/shared/:code` : Shared pet view (read-only, no auth required)
 class AppRouter {
+  /// Private constructor to prevent instantiation.
   AppRouter._();
 
   /// The configured [GoRouter] instance for the application.

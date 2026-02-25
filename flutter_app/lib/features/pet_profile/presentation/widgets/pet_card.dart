@@ -26,6 +26,7 @@ class PetCard extends StatelessWidget {
   /// Called when the delete button is pressed.
   final VoidCallback? onDelete;
 
+  /// Builds the pet card with photo, name, breed, species, and delete action.
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);

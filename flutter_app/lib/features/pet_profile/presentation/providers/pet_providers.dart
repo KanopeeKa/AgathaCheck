@@ -51,6 +51,7 @@ final deletePetUseCaseProvider = Provider<DeletePet>((ref) {
 /// Provides reactive state management for the pet list,
 /// automatically notifying listeners when the list changes.
 class PetListNotifier extends AsyncNotifier<List<Pet>> {
+  /// Loads all pets from the repository via the [GetAllPets] use case.
   @override
   Future<List<Pet>> build() async {
     return ref.read(getAllPetsUseCaseProvider).call();
