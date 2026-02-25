@@ -37,5 +37,5 @@ externalPort = 80
 [deployment]
 deploymentTarget = "autoscale"
 publicDir = "deploy/public"
-build = ["dart", "pub", "get"]
+build = ["bash", "-c", "cd /home/runner/workspace && dart pub get"]
 run = ["dart", "run", "bin/server.dart"]
