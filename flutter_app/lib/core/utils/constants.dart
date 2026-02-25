@@ -6,7 +6,7 @@ class AppConstants {
   static const String petsStorageKey = 'pets_data';
 
   /// The application title displayed in the app bar.
-  static const String appTitle = 'PetProfileApp';
+  static const String appTitle = 'Agatha';
 
   /// List of supported pet species.
   static const List<String> species = [

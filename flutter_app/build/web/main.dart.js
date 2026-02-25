@@ -92009,7 +92009,7 @@ A.Z3.prototype={}
 A.v4.prototype={
 G(a){var s=null,r=this.c
 r=r==null?s:"GoException: "+r.a
-return A.DN(!0,A.cu(A.cm(A.b([B.XD,B.a1,A.ae(r==null?"page not found":r,s,s,s,s,s,s,s,s),B.a1,new A.FR(new A.a7l(a),B.XH,s)],t.p),B.y,B.fi,B.G),s,s),B.aa,!0)}}
+return A.DN(!0,A.cu(A.cm(A.b([B.XE,B.a1,A.ae(r==null?"page not found":r,s,s,s,s,s,s,s,s),B.a1,new A.FR(new A.a7l(a),B.XI,s)],t.p),B.y,B.fi,B.G),s,s),B.aa,!0)}}
 A.a7l.prototype={
 $0(){return A.dp(this.a).dt("/",null)},
 $S:0}
@@ -92056,7 +92056,7 @@ return new A.aO(A.b7(s,s,s,s,s,s,s,s,s,s,s,s,s,s,s,s,s,s,s,s,s,s,s,s,s,s,s,s,s,s
 oR(a,b,c,d){return this.$ti.h("h_<1>").a(this.c).CW.$4(a,b,c,d)}}
 A.rA.prototype={}
 A.vP.prototype={
-G(a){var s=null,r=A.i2(s,s,s,!0,s,s,1,s,s,s,!1,s,!1,s,s,s,s,!0,s,s,s,s,s,B.XC,s,s,s,1,s,!0),q=this.c
+G(a){var s=null,r=A.i2(s,s,s,!0,s,s,1,s,s,s,!1,s,!1,s,s,s,s,!0,s,s,s,s,s,B.XD,s,s,s,1,s,!0),q=this.c
 q=q==null?s:"GoException: "+q.a
 return A.hJ(r,A.cu(A.cm(A.b([A.aFs(q==null?"page not found":q,s),A.la(!1,B.Xn,s,s,s,s,s,s,new A.aeg(a),s,s)],t.p),B.y,B.fi,B.G),s,s),s)}}
 A.aeg.prototype={
@@ -94022,7 +94022,7 @@ s.l()
 this.a7f()},
 G(a){var s=null,r=A.eb(s,s,s,B.dQ,s,s,new A.att(a),s,s,s,s),q=A.b([A.eb(s,s,s,B.I9,s,s,this.gabN(),s,s,s,"Export CSV")],t.p),p=this.w
 p===$&&A.a()
-r=A.i2(q,s,s,!0,s,A.aLL(p,!1,B.p8),1,s,s,s,!1,s,!1,s,s,r,s,!0,s,s,s,s,s,B.Xw,s,s,s,1,s,!0)
+r=A.i2(q,s,s,!0,s,A.aLL(p,!1,B.p8),1,s,s,s,!1,s,!1,s,s,r,s,!0,s,s,s,s,s,B.Xx,s,s,s,1,s,!0)
 p=this.w
 q=t.aV
 q=A.a_(new A.Y(B.p5,new A.atu(),q),q.h("ak.E"))
@@ -94063,7 +94063,7 @@ $0(){return A.dp(this.a).dt("/health/add",null)},
 $S:0}
 A.ats.prototype={
 $1(a){var s=null,r=A.Ru(A.aFs(this.a,B.X0),s,B.a_,s,s,B.aj)
-return A.zi(A.b([A.la(!1,B.m7,s,s,s,s,s,s,new A.atr(a),s,s)],t.p),r,B.XM)},
+return A.zi(A.b([A.la(!1,B.m7,s,s,s,s,s,s,new A.atr(a),s,s)],t.p),r,B.XN)},
 $S:53}
 A.atr.prototype={
 $0(){return A.ef(this.a,!1).eG()},
@@ -94436,7 +94436,7 @@ $0(){return this.a.agN(this.b)},
 $S:0}
 A.a9s.prototype={
 $1(a){var s=null,r=this.a,q=A.ae('Delete "'+r.c.c+'"? This cannot be undone.',s,s,s,s,s,s,s,s)
-return A.zi(A.b([A.la(!1,B.m6,s,s,s,s,s,s,new A.a9q(a),s,s),A.B5(!1,B.iN,B.u,s,s,s,s,s,new A.a9r(r,a),s,A.aJc(A.D(this.b).ax.fy,s,s,s,s))],t.p),q,B.Xz)},
+return A.zi(A.b([A.la(!1,B.m6,s,s,s,s,s,s,new A.a9q(a),s,s),A.B5(!1,B.iN,B.u,s,s,s,s,s,new A.a9r(r,a),s,A.aJc(A.D(this.b).ax.fy,s,s,s,s))],t.p),q,B.XA)},
 $S:53}
 A.a9q.prototype={
 $0(){return A.ef(this.a,!1).eG()},
@@ -95248,7 +95248,7 @@ $0(){return this.a.ay=this.b},
 $S:0}
 A.w2.prototype={
 kU(a,b){var s=null,r=b.cW($.kn(),t.QS),q=A.D(a)
-return A.hJ(A.i2(A.b([A.eb(s,s,s,B.kP,s,s,new A.ag0(a),s,s,s,"Veterinarians"),A.eb(s,s,s,B.oN,s,s,new A.ag1(a),s,s,s,"Health Tracking")],t.p),s,s,!0,s,s,1,s,s,s,!1,s,!1,s,s,s,s,!0,s,s,s,s,s,B.XQ,s,s,s,1,s,!0),A.q7(r,new A.ag2(q,b),new A.ag3(q,b),new A.ag4(),t.Dy,t.jK),A.a7y(B.hH,B.XA,new A.ag5(a)))}}
+return A.hJ(A.i2(A.b([A.eb(s,s,s,B.kP,s,s,new A.ag0(a),s,s,s,"Veterinarians"),A.eb(s,s,s,B.oN,s,s,new A.ag1(a),s,s,s,"Health Tracking")],t.p),s,s,!0,s,s,1,s,s,s,!1,s,!1,s,s,s,s,!0,s,s,s,s,s,B.Xv,s,s,s,1,s,!0),A.q7(r,new A.ag2(q,b),new A.ag3(q,b),new A.ag4(),t.Dy,t.jK),A.a7y(B.hH,B.XB,new A.ag5(a)))}}
 A.ag0.prototype={
 $0(){return A.dp(this.a).dt("/vets",null)},
 $S:0}
@@ -95304,7 +95304,7 @@ return A.I($async$$0,r)},
 $S:9}
 A.afW.prototype={
 $1(a){var s=null,r=A.ae("Are you sure you want to delete "+this.a.b+"?",s,s,s,s,s,s,s,s)
-return A.zi(A.b([A.la(!1,B.m6,s,s,s,s,s,s,new A.afU(a),s,s),A.B5(!1,B.iN,B.u,s,s,s,s,s,new A.afV(a),s,s)],t.p),r,B.XJ)},
+return A.zi(A.b([A.la(!1,B.m6,s,s,s,s,s,s,new A.afU(a),s,s),A.B5(!1,B.iN,B.u,s,s,s,s,s,new A.afV(a),s,s)],t.p),r,B.XK)},
 $S:53}
 A.afU.prototype={
 $0(){return A.ef(this.a,!1).kw(!1)},
@@ -95379,7 +95379,7 @@ case 1:return A.G(p.at(-1),r)}})
 return A.I($async$A_,r)},
 G(a4){var s,r,q,p,o,n,m,l,k,j,i,h,g,f,e,d,c,b,a=this,a0=null,a1="name",a2=A.D(a4),a3=a2.ax
 if(a.z)return B.zf
-if(a.Q!=null||a.w==null){s=A.i2(a0,a0,a0,!0,a0,a0,1,a0,a0,a0,!1,a0,!1,a0,a0,a0,a0,!0,a0,a0,a0,a0,a0,B.XN,a0,a0,a0,1,a0,!0)
+if(a.Q!=null||a.w==null){s=A.i2(a0,a0,a0,!0,a0,a0,1,a0,a0,a0,!1,a0,!1,a0,a0,a0,a0,!0,a0,a0,a0,a0,a0,B.XO,a0,a0,a0,1,a0,!0)
 r=a3.ry
 if(r==null){r=a3.p
 if(r==null)r=a3.k3}r=A.bY(B.oB,r,a0,64)
@@ -95905,7 +95905,7 @@ $1(a){return a.x!==this.a.e},
 $S:96}
 A.auV.prototype={
 $1(a){var s=null,r=A.bY(B.bz,this.b.ax.b,s,s),q=A.ae(a.b,s,s,s,s,s,s,s,s)
-return A.lC(A.aby(!0,r,s,A.ae(a.c,s,s,s,s,s,s,s,s),q,A.aLS(B.Ig,B.Xy,new A.auS(this.a,this.c,a))),s,s,s,B.o1)},
+return A.lC(A.aby(!0,r,s,A.ae(a.c,s,s,s,s,s,s,s,s),q,A.aLS(B.Ig,B.Xz,new A.auS(this.a,this.c,a))),s,s,s,B.o1)},
 $S:230}
 A.auS.prototype={
 $0(){return this.a.AQ(this.b,this.c)},
@@ -95918,14 +95918,14 @@ if(s==null){s=q.p
 q=s==null?q.k3:s}else q=s
 q=A.bY(B.bz,q,r,r)
 s=A.ae(a.b,r,r,r,r,r,r,r,r)
-return A.lC(A.aby(!0,q,r,A.ae(a.c,r,r,r,r,r,r,r,r),s,A.aLS(B.Ik,B.XK,new A.auR(this.a,this.c,a))),r,p,r,B.o1)},
+return A.lC(A.aby(!0,q,r,A.ae(a.c,r,r,r,r,r,r,r,r),s,A.aLS(B.Ik,B.XL,new A.auR(this.a,this.c,a))),r,p,r,B.o1)},
 $S:230}
 A.auR.prototype={
 $0(){return this.a.zY(this.b,this.c)},
 $S:0}
 A.xt.prototype={
 kU(a,b){var s=null,r=b.cW($.ub(),t.Lb),q=A.D(a)
-return A.hJ(A.i2(s,s,s,!0,s,s,1,s,s,s,!1,s,!1,s,s,A.eb(s,s,s,B.dQ,s,s,new A.aoe(a),s,s,s,s),s,!0,s,s,s,s,s,B.XP,s,s,s,1,s,!0),A.q7(r,new A.aof(this,q,b),new A.aog(q,b),new A.aoh(),t.uB,t.jK),A.a7y(B.hH,B.XL,new A.aoi(a)))},
+return A.hJ(A.i2(s,s,s,!0,s,s,1,s,s,s,!1,s,!1,s,s,A.eb(s,s,s,B.dQ,s,s,new A.aoe(a),s,s,s,s),s,!0,s,s,s,s,s,B.XQ,s,s,s,1,s,!0),A.q7(r,new A.aof(this,q,b),new A.aog(q,b),new A.aoh(),t.uB,t.jK),A.a7y(B.hH,B.XM,new A.aoi(a)))},
 a97(a,b){var s=null,r=A.b([],t.s),q=a.c
 if(q.length!==0)r.push(q)
 q=a.d
@@ -96011,7 +96011,7 @@ $1(a){return a.gcw()},
 $S:83}
 A.ao6.prototype={
 $1(a){var s=null,r=A.ae("Are you sure you want to delete "+this.a.b+"?",s,s,s,s,s,s,s,s)
-return A.zi(A.b([A.la(!1,B.m6,s,s,s,s,s,s,new A.ao4(a),s,s),A.B5(!1,B.iN,B.u,s,s,s,s,s,new A.ao5(a),s,s)],t.p),r,B.XI)},
+return A.zi(A.b([A.la(!1,B.m6,s,s,s,s,s,s,new A.ao4(a),s,s),A.B5(!1,B.iN,B.u,s,s,s,s,s,new A.ao5(a),s,s)],t.p),r,B.XJ)},
 $S:53}
 A.ao4.prototype={
 $0(){return A.ef(this.a,!1).kw(!1)},
@@ -96043,7 +96043,7 @@ q=A.aLM(j,j,j,j,k,j,k,j,j,j,j,j,j,j,j,q==null?g:q,j)
 if(o){p=i.p
 g=p==null?g:p}else g=p
 q=A.xe(f,j,new A.qf(j,e,j,j,0,j,new A.cY(s,B.q)),i,new A.qz(g.ev(80),j,j,j,j),new A.v1(n),new A.v6(m),l,r,h,q,!0)
-return new A.vN($.aP9(),"PetProfileApp",q,!1,j)}}
+return new A.vN($.aP9(),"Agatha",q,!1,j)}}
 A.agn.prototype={
 OR(a){$.aDA().m(0,this,a)}}
 A.kq.prototype={}
@@ -101377,8 +101377,8 @@ B.Ed=new A.M2(1,"viewport")
 B.nc=new A.M4(0,"rear")
 B.Ee=new A.M4(1,"front")
 B.Ei=new A.qf(null,null,null,null,null,null,null)
-B.XE=new A.bM("Pet not found",null,null,null,null,null,null,null,null,null,null)
-B.Ej=new A.fu(B.W,null,null,B.XE,null)
+B.XF=new A.bM("Pet not found",null,null,null,null,null,null,null,null,null,null)
+B.Ej=new A.fu(B.W,null,null,B.XF,null)
 B.a06=new A.aoM(0,"material")
 B.En=new A.kw(null,null,null,null,null,null,null,null,null,null)
 B.cf=new A.fu(B.W,null,null,B.En,null)
@@ -101619,8 +101619,8 @@ B.jZ=new A.Ng(0,"down")
 B.a_=new A.Ng(1,"start")
 B.Gb=new A.Ni(null)
 B.Gc=new A.AO(null,null,null,null,null,null,null,null,null)
-B.XF=new A.bM("No vet assigned",null,null,null,null,null,null,null,null,null,null)
-B.Gd=new A.e8(null,B.XF,B.er,null,t.YQ)
+B.XG=new A.bM("No vet assigned",null,null,null,null,null,null,null,null,null,null)
+B.Gd=new A.e8(null,B.XG,B.er,null,t.YQ)
 B.Ge=new A.AP(null,null,null)
 B.x=new A.b0(0)
 B.bc=new A.b0(1e5)
@@ -101979,10 +101979,10 @@ B.HZ=new A.c8(B.HK,null,null,null,null)
 B.J_=new A.dN(null,null,null,"Name *",null,null,null,null,null,null,null,null,null,null,null,null,!0,!0,null,null,null,null,null,null,null,null,null,B.HZ,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,!0,null,null,null)
 B.a_Y=new A.dN(null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,!0,!0,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,!0,null,null,null)
 B.oR=new A.dN(null,null,null,"Veterinarian",null,null,null,null,null,null,null,null,null,null,null,null,!0,!0,null,null,null,null,null,null,null,null,null,B.kP,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,!0,null,null,null)
-B.Xv=new A.bM("Could not load vets",null,null,null,null,null,null,null,null,null,null)
-B.J0=new A.ig(B.oR,null,null,null,!1,!1,!1,!1,B.Xv,null)
-B.XO=new A.bM("Loading vets...",null,null,null,null,null,null,null,null,null,null)
-B.J1=new A.ig(B.oR,null,null,null,!1,!1,!1,!1,B.XO,null)
+B.Xw=new A.bM("Could not load vets",null,null,null,null,null,null,null,null,null,null)
+B.J0=new A.ig(B.oR,null,null,null,!1,!1,!1,!1,B.Xw,null)
+B.XP=new A.bM("Loading vets...",null,null,null,null,null,null,null,null,null,null)
+B.J1=new A.ig(B.oR,null,null,null,!1,!1,!1,!1,B.XP,null)
 B.J3=new A.da(0.25,0.5,B.O)
 B.oS=new A.da(0.5,1,B.al)
 B.oT=new A.da(0,0.6666666666666666,B.O)
@@ -103296,8 +103296,8 @@ B.Py=new A.jW("delete",!0,B.Jz,null,t.wI)
 B.Xs=new A.bM("Edit",null,null,null,null,null,null,null,null,null,null)
 B.Jy=new A.od(B.oJ,B.Xs,null,null,null,B.aa,null,null)
 B.Pz=new A.jW("edit",!0,B.Jy,null,t.wI)
-B.XB=new A.bM("Remove vet",null,null,null,null,null,null,null,null,null,null)
-B.PA=new A.jW(null,!0,B.XB,null,t.Em)
+B.XC=new A.bM("Remove vet",null,null,null,null,null,null,null,null,null,null)
+B.PA=new A.jW(null,!0,B.XC,null,t.Em)
 B.PB=new A.wb(null,null,null,null,null,null,null,null,null,null,null,null,null)
 B.PC=new A.wg(null,null,null,null,null,null,null,null,null,null,null,null,null,null,null)
 B.PD=new A.D5(null,null,null,null,null,null)
@@ -103621,10 +103621,10 @@ B.Si=new A.l5(3,"hide")
 B.a03=new A.l5(4,"remove")
 B.Aq=new A.l5(5,"timeout")
 B.Sj=new A.wR(null,null,null,null,null,null,null,null,null,null,null,null,null,null)
-B.XG=new A.bM("Link copied to clipboard",null,null,null,null,null,null,null,null,null,null)
-B.Sk=new A.p_(B.XG,null,null,null,null,null,null,null,null,null,null,null,null,B.b4,null,null,null,B.A,null)
-B.Xx=new A.bM("Failed to create share link",null,null,null,null,null,null,null,null,null,null)
-B.Sl=new A.p_(B.Xx,null,null,null,null,null,null,null,null,null,null,null,null,B.b4,null,null,null,B.A,null)
+B.XH=new A.bM("Link copied to clipboard",null,null,null,null,null,null,null,null,null,null)
+B.Sk=new A.p_(B.XH,null,null,null,null,null,null,null,null,null,null,null,null,B.b4,null,null,null,B.A,null)
+B.Xy=new A.bM("Failed to create share link",null,null,null,null,null,null,null,null,null,null)
+B.Sl=new A.p_(B.Xy,null,null,null,null,null,null,null,null,null,null,null,null,B.b4,null,null,null,B.A,null)
 B.Ar=new A.Eu(0,"permissive")
 B.Sm=new A.Eu(1,"normal")
 B.Sn=new A.Eu(2,"forced")
@@ -104002,25 +104002,25 @@ B.Xr=new A.bM("View History",null,null,null,null,null,null,null,null,null,null)
 B.m7=new A.bM("Close",null,null,null,null,null,null,null,null,null,null)
 B.Xt=new A.bM("Share Link",null,null,null,null,null,null,null,null,null,null)
 B.Xu=new A.bM("Mark Taken",null,null,null,null,null,null,null,null,null,null)
+B.Xv=new A.bM("Agatha",null,null,null,null,null,null,null,null,null,null)
 B.iO=new A.bM("Retry",null,null,null,null,null,null,null,null,null,null)
-B.Xw=new A.bM("Health Tracking",null,null,null,null,null,null,null,null,null,null)
-B.Xy=new A.bM("Unlink",null,null,null,null,null,null,null,null,null,null)
-B.Xz=new A.bM("Delete Entry",null,null,null,null,null,null,null,null,null,null)
-B.XA=new A.bM("Add Pet",null,null,null,null,null,null,null,null,null,null)
-B.XC=new A.bM("Page Not Found",null,null,null,null,null,null,null,null,null,null)
-B.XD=new A.bM("Page Not Found",null,B.iM,null,null,null,null,null,null,null,null)
+B.Xx=new A.bM("Health Tracking",null,null,null,null,null,null,null,null,null,null)
+B.Xz=new A.bM("Unlink",null,null,null,null,null,null,null,null,null,null)
+B.XA=new A.bM("Delete Entry",null,null,null,null,null,null,null,null,null,null)
+B.XB=new A.bM("Add Pet",null,null,null,null,null,null,null,null,null,null)
+B.XD=new A.bM("Page Not Found",null,null,null,null,null,null,null,null,null,null)
+B.XE=new A.bM("Page Not Found",null,B.iM,null,null,null,null,null,null,null,null)
 B.B0=new A.bM("Pet Details",null,null,null,null,null,null,null,null,null,null)
 B.Uo=new A.q(!0,B.k,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null)
-B.XH=new A.bM("Go to home page",null,B.Uo,null,null,null,null,null,null,null,null)
-B.XJ=new A.bM("Delete Pet",null,null,null,null,null,null,null,null,null,null)
-B.XI=new A.bM("Delete Vet",null,null,null,null,null,null,null,null,null,null)
+B.XI=new A.bM("Go to home page",null,B.Uo,null,null,null,null,null,null,null,null)
+B.XK=new A.bM("Delete Pet",null,null,null,null,null,null,null,null,null,null)
+B.XJ=new A.bM("Delete Vet",null,null,null,null,null,null,null,null,null,null)
 B.B1=new A.bM("Add Entry",null,null,null,null,null,null,null,null,null,null)
-B.XK=new A.bM("Link",null,null,null,null,null,null,null,null,null,null)
-B.XL=new A.bM("Add Vet",null,null,null,null,null,null,null,null,null,null)
-B.XM=new A.bM("CSV Export",null,null,null,null,null,null,null,null,null,null)
-B.XN=new A.bM("Shared Pet",null,null,null,null,null,null,null,null,null,null)
-B.XP=new A.bM("Veterinarians",null,null,null,null,null,null,null,null,null,null)
-B.XQ=new A.bM("PetProfileApp",null,null,null,null,null,null,null,null,null,null)
+B.XL=new A.bM("Link",null,null,null,null,null,null,null,null,null,null)
+B.XM=new A.bM("Add Vet",null,null,null,null,null,null,null,null,null,null)
+B.XN=new A.bM("CSV Export",null,null,null,null,null,null,null,null,null,null)
+B.XO=new A.bM("Shared Pet",null,null,null,null,null,null,null,null,null,null)
+B.XQ=new A.bM("Veterinarians",null,null,null,null,null,null,null,null,null,null)
 B.a05=new A.ano(0,"system")
 B.Oi=new A.i(0.056,0.024)
 B.Ox=new A.i(0.108,0.3085)
