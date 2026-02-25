@@ -37,5 +37,5 @@ externalPort = 80
 [deployment]
 deploymentTarget = "autoscale"
 publicDir = "deploy/public"
-build = ["dart", "pub", "get"]
-run = ["dart", "run", "bin/server.dart"]
+build = ["dart", "compile", "exe", "bin/server.dart", "-o", "bin/server"]
+run = ["./bin/server"]
