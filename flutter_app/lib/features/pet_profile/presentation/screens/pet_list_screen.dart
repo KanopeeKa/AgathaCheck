@@ -7,9 +7,16 @@ import '../../../auth/presentation/providers/auth_providers.dart';
 import '../providers/pet_providers.dart';
 import '../widgets/pet_card.dart';
 
+/// Screen that displays the list of all pets owned by the user.
+///
+/// Shows a scrollable list of [PetCard] widgets for each pet,
+/// with options to add new pets, navigate to pet details, and
+/// access veterinarian and health tracking features from the app bar.
 class PetListScreen extends ConsumerWidget {
+  /// Creates a [PetListScreen].
   const PetListScreen({super.key});
 
+  /// Builds the pet list screen with app bar, pet cards, and a FAB to add pets.
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final petListAsync = ref.watch(petListProvider);

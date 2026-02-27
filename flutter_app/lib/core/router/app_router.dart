@@ -13,9 +13,24 @@ import '../../features/sharing/presentation/screens/shared_pet_screen.dart';
 import '../../features/vet/presentation/screens/vet_form_screen.dart';
 import '../../features/vet/presentation/screens/vet_list_screen.dart';
 
+/// Configures the application's route hierarchy using [GoRouter].
+///
+/// Defines all navigable routes including pet profiles, health tracking,
+/// veterinarian management, authentication, and shared pet views.
 class AppRouter {
+  /// Private constructor to prevent instantiation.
   AppRouter._();
 
+  /// The [GoRouter] instance that manages navigation for the entire app.
+  ///
+  /// Routes include:
+  /// - `/` — Home screen with the pet list
+  /// - `/pet/:petId` — Pet detail screen
+  /// - `/add`, `/edit/:id` — Pet form screens
+  /// - `/health`, `/health/add`, `/health/edit/:id` — Health tracking
+  /// - `/vets`, `/vets/add`, `/vets/edit/:id` — Veterinarian management
+  /// - `/shared/:code` — Shared pet view (public, no auth required)
+  /// - `/login`, `/signup`, `/my-details` — Authentication screens
   static final GoRouter router = GoRouter(
     initialLocation: '/',
     routes: [
