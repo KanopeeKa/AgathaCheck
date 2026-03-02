@@ -956,12 +956,7 @@ class _PetPhoto extends StatelessWidget {
         border: Border(left: BorderSide(color: petColor, width: 5)),
       ),
       child: Center(
-        child: Icon(
-          Icons.pets,
-          size: 56,
-          color: petColor.withOpacity(0.6),
-          semanticLabel: 'No photo for ${pet.name}',
-        ),
+        child: AppConstants.speciesIconWidget(pet.species, size: 56, color: petColor.withOpacity(0.6)),
       ),
     );
   }
