@@ -435,12 +435,47 @@ class _HealthEntryFormScreenState
       return;
     }
 
+    bool markCompleted = false;
+    final today = DateTime.now();
+    final startDateOnly = DateTime(_startDate.year, _startDate.month, _startDate.day);
+    final todayOnly = DateTime(today.year, today.month, today.day);
+
+    if (!_isEdit &&
+        _frequency == HealthFrequency.once &&
+        !startDateOnly.isAfter(todayOnly)) {
+      final result = await showDialog<bool>(
+        context: context,
+        builder: (ctx) => AlertDialog(
+          title: const Text('Mark as Completed?'),
+          content: Text(
+            startDateOnly.isBefore(todayOnly)
+                ? 'This event is in the past. Would you like to mark it as completed?'
+                : 'This event is today. Would you like to mark it as completed?',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(ctx, false),
+              child: const Text('Keep Active'),
+            ),
+            FilledButton(
+              onPressed: () => Navigator.pop(ctx, true),
+              child: const Text('Mark Completed'),
+            ),
+          ],
+        ),
+      );
+      if (result == null) return;
+      markCompleted = result;
+    }
+
     setState(() => _isLoading = true);
     try {
       final notifier = ref.read(healthEntriesNotifierProvider.notifier);
 
       final effectiveRepeatEndDate =
           _frequency == HealthFrequency.once ? null : _repeatEndDate;
+
+      final completedDueDate = DateTime(9999, 12, 31);
 
       if (_isEdit) {
         final entry = HealthEntry(
@@ -478,7 +513,7 @@ class _HealthEntryFormScreenState
                 : null,
             repeatEndDate: effectiveRepeatEndDate,
             startDate: _startDate,
-            nextDueDate: _startDate,
+            nextDueDate: markCompleted ? completedDueDate : _startDate,
             notes: _notesController.text.trim(),
           );
           final created = await createUseCase.call(entry);
