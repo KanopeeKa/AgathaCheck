@@ -27,28 +27,7 @@ class PetDetailScreen extends ConsumerStatefulWidget {
   ConsumerState<PetDetailScreen> createState() => _PetDetailScreenState();
 }
 
-class _PetDetailScreenState extends ConsumerState<PetDetailScreen>
-    with SingleTickerProviderStateMixin {
-  late TabController _tabController;
-
-  static const _tabs = [
-    null,
-    HealthEntryType.medication,
-    HealthEntryType.preventive,
-    HealthEntryType.vaccine,
-  ];
-
-  @override
-  void initState() {
-    super.initState();
-    _tabController = TabController(length: _tabs.length, vsync: this);
-  }
-
-  @override
-  void dispose() {
-    _tabController.dispose();
-    super.dispose();
-  }
+class _PetDetailScreenState extends ConsumerState<PetDetailScreen> {
 
   Future<void> _sharePet(BuildContext context, Pet pet) async {
     final baseUrl = kIsWeb ? '' : 'http://localhost:5000';
@@ -127,7 +106,6 @@ class _PetDetailScreenState extends ConsumerState<PetDetailScreen>
   @override
   Widget build(BuildContext context) {
     final petListAsync = ref.watch(petListProvider);
-    final theme = Theme.of(context);
 
     return petListAsync.when(
       loading: () => const Scaffold(
@@ -147,8 +125,8 @@ class _PetDetailScreenState extends ConsumerState<PetDetailScreen>
         }
 
         return Scaffold(
-          body: NestedScrollView(
-            headerSliverBuilder: (context, innerBoxIsScrolled) => [
+          body: CustomScrollView(
+            slivers: [
               SliverAppBar(
                 pinned: true,
                 title: Text(pet.name),
@@ -176,50 +154,12 @@ class _PetDetailScreenState extends ConsumerState<PetDetailScreen>
                 child: _WeightTrackingSection(petId: widget.petId),
               ),
               SliverToBoxAdapter(
-                child: Padding(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                  child: Row(
-                    children: [
-                      Icon(Icons.medical_services,
-                          color: theme.colorScheme.primary),
-                      const SizedBox(width: 8),
-                      Text('Health Tracking',
-                          style: theme.textTheme.titleLarge),
-                    ],
-                  ),
-                ),
+                child: _HealthEventsSection(petId: widget.petId),
               ),
-              SliverPersistentHeader(
-                pinned: true,
-                delegate: _TabBarDelegate(
-                  TabBar(
-                    controller: _tabController,
-                    tabs: const [
-                      Tab(text: 'All'),
-                      Tab(text: 'Medications'),
-                      Tab(text: 'Preventives'),
-                      Tab(text: 'Vaccines'),
-                    ],
-                  ),
-                  theme.colorScheme.surface,
-                ),
+              const SliverToBoxAdapter(
+                child: SizedBox(height: 32),
               ),
             ],
-            body: TabBarView(
-              controller: _tabController,
-              children: _tabs
-                  .map((type) => _PetEntryList(
-                        petId: widget.petId,
-                        type: type,
-                      ))
-                  .toList(),
-            ),
-          ),
-          floatingActionButton: FloatingActionButton.extended(
-            onPressed: () => context.go('/pet/${widget.petId}/health/add'),
-            icon: const Icon(Icons.add),
-            label: const Text('Add Entry'),
           ),
         );
       },
@@ -825,113 +765,206 @@ class _InfoChip extends StatelessWidget {
   }
 }
 
-class _PetEntryList extends ConsumerWidget {
-  const _PetEntryList({required this.petId, this.type});
+class _HealthEventsSection extends ConsumerStatefulWidget {
+  const _HealthEventsSection({required this.petId});
 
   final String petId;
-  final HealthEntryType? type;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final entriesAsync =
-        ref.watch(petHealthEntriesProvider(petId));
+  ConsumerState<_HealthEventsSection> createState() =>
+      _HealthEventsSectionState();
+}
 
-    return entriesAsync.when(
-      loading: () => const Center(child: CircularProgressIndicator()),
-      error: (error, _) => Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
+class _HealthEventsSectionState extends ConsumerState<_HealthEventsSection> {
+  HealthEntryType? _selectedFilter;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final entriesAsync = ref.watch(petHealthEntriesProvider(widget.petId));
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: Card(
+        clipBehavior: Clip.antiAlias,
+        child: ExpansionTile(
+          leading: Icon(Icons.medical_services, color: colorScheme.primary),
+          title: Text('Health Events',
+              style: theme.textTheme.titleMedium
+                  ?.copyWith(fontWeight: FontWeight.w600)),
           children: [
-            Icon(Icons.error_outline,
-                size: 48, color: Theme.of(context).colorScheme.error),
-            const SizedBox(height: 16),
-            Text('Error: $error', textAlign: TextAlign.center),
-            const SizedBox(height: 16),
-            FilledButton(
-              onPressed: () => ref.invalidate(petHealthEntriesProvider(petId)),
-              child: const Text('Retry'),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  FilledButton.tonalIcon(
+                    onPressed: () =>
+                        context.go('/pet/${widget.petId}/health/add'),
+                    icon: const Icon(Icons.add, size: 18),
+                    label: const Text('Add Entry'),
+                  ),
+                ],
+              ),
             ),
+            const SizedBox(height: 8),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  children: [
+                    _FilterChipWidget(
+                      label: 'All',
+                      selected: _selectedFilter == null,
+                      onSelected: () =>
+                          setState(() => _selectedFilter = null),
+                    ),
+                    const SizedBox(width: 8),
+                    _FilterChipWidget(
+                      label: 'Medications',
+                      selected:
+                          _selectedFilter == HealthEntryType.medication,
+                      onSelected: () => setState(
+                          () => _selectedFilter = HealthEntryType.medication),
+                    ),
+                    const SizedBox(width: 8),
+                    _FilterChipWidget(
+                      label: 'Preventives',
+                      selected:
+                          _selectedFilter == HealthEntryType.preventive,
+                      onSelected: () => setState(
+                          () => _selectedFilter = HealthEntryType.preventive),
+                    ),
+                    const SizedBox(width: 8),
+                    _FilterChipWidget(
+                      label: 'Vaccines',
+                      selected: _selectedFilter == HealthEntryType.vaccine,
+                      onSelected: () => setState(
+                          () => _selectedFilter = HealthEntryType.vaccine),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(height: 8),
+            entriesAsync.when(
+              loading: () => const Padding(
+                padding: EdgeInsets.all(32),
+                child: Center(child: CircularProgressIndicator()),
+              ),
+              error: (error, _) => Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  children: [
+                    Icon(Icons.error_outline, size: 48,
+                        color: colorScheme.error),
+                    const SizedBox(height: 16),
+                    Text('Error: $error', textAlign: TextAlign.center),
+                    const SizedBox(height: 16),
+                    FilledButton(
+                      onPressed: () => ref
+                          .invalidate(petHealthEntriesProvider(widget.petId)),
+                      child: const Text('Retry'),
+                    ),
+                  ],
+                ),
+              ),
+              data: (allEntries) {
+                final entries = _selectedFilter == null
+                    ? allEntries
+                    : allEntries
+                        .where((e) => e.type == _selectedFilter)
+                        .toList();
+
+                if (entries.isEmpty) {
+                  return Padding(
+                    padding: const EdgeInsets.all(24),
+                    child: Column(
+                      children: [
+                        Icon(Icons.medical_services_outlined, size: 48,
+                            color: colorScheme.outline),
+                        const SizedBox(height: 8),
+                        Text(
+                          _selectedFilter == null
+                              ? 'No health events yet'
+                              : 'No ${_selectedFilter!.label.toLowerCase()}s yet',
+                          style: theme.textTheme.bodyLarge?.copyWith(
+                              color: colorScheme.onSurfaceVariant),
+                        ),
+                        const SizedBox(height: 4),
+                        Text('Tap "Add Entry" to start tracking',
+                            style: theme.textTheme.bodySmall?.copyWith(
+                                color: colorScheme.outline)),
+                      ],
+                    ),
+                  );
+                }
+
+                return ListView.builder(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  itemCount: entries.length,
+                  itemBuilder: (context, index) {
+                    final entry = entries[index];
+                    return Padding(
+                      padding: const EdgeInsets.only(bottom: 8),
+                      child: HealthEntryCard(
+                        entry: entry,
+                        onTap: () => context.go(
+                            '/pet/${widget.petId}/health/edit/${entry.id}'),
+                        onMarkTaken: () {
+                          ref
+                              .read(healthEntriesNotifierProvider.notifier)
+                              .markTaken(entry.id);
+                          ref.invalidate(
+                              petHealthEntriesProvider(widget.petId));
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                                content:
+                                    Text('${entry.name} marked as taken')),
+                          );
+                        },
+                        onDelete: () async {
+                          await ref
+                              .read(healthEntriesNotifierProvider.notifier)
+                              .delete(entry.id);
+                          ref.invalidate(
+                              petHealthEntriesProvider(widget.petId));
+                        },
+                      ),
+                    );
+                  },
+                );
+              },
+            ),
+            const SizedBox(height: 8),
           ],
         ),
       ),
-      data: (allEntries) {
-        final entries = type == null
-            ? allEntries
-            : allEntries.where((e) => e.type == type).toList();
-
-        if (entries.isEmpty) {
-          return Center(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(Icons.medical_services_outlined,
-                    size: 48, color: Theme.of(context).colorScheme.outline),
-                const SizedBox(height: 12),
-                Text(
-                  type == null
-                      ? 'No health entries yet'
-                      : 'No ${type!.label.toLowerCase()}s yet',
-                  style: Theme.of(context).textTheme.bodyLarge,
-                ),
-              ],
-            ),
-          );
-        }
-
-        return ListView.builder(
-          padding: const EdgeInsets.all(16),
-          itemCount: entries.length,
-          itemBuilder: (context, index) {
-            final entry = entries[index];
-            return Padding(
-              padding: const EdgeInsets.only(bottom: 8),
-              child: HealthEntryCard(
-                entry: entry,
-                onTap: () =>
-                    context.go('/pet/$petId/health/edit/${entry.id}'),
-                onMarkTaken: () {
-                  ref
-                      .read(healthEntriesNotifierProvider.notifier)
-                      .markTaken(entry.id);
-                  ref.invalidate(petHealthEntriesProvider(petId));
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                        content: Text('${entry.name} marked as taken')),
-                  );
-                },
-                onDelete: () async {
-                  await ref
-                      .read(healthEntriesNotifierProvider.notifier)
-                      .delete(entry.id);
-                  ref.invalidate(petHealthEntriesProvider(petId));
-                },
-              ),
-            );
-          },
-        );
-      },
     );
   }
 }
 
-class _TabBarDelegate extends SliverPersistentHeaderDelegate {
-  const _TabBarDelegate(this.tabBar, this.backgroundColor);
+class _FilterChipWidget extends StatelessWidget {
+  const _FilterChipWidget({
+    required this.label,
+    required this.selected,
+    required this.onSelected,
+  });
 
-  final TabBar tabBar;
-  final Color backgroundColor;
+  final String label;
+  final bool selected;
+  final VoidCallback onSelected;
 
   @override
-  double get minExtent => tabBar.preferredSize.height;
-
-  @override
-  double get maxExtent => tabBar.preferredSize.height;
-
-  @override
-  Widget build(
-      BuildContext context, double shrinkOffset, bool overlapsContent) {
-    return Container(color: backgroundColor, child: tabBar);
+  Widget build(BuildContext context) {
+    return FilterChip(
+      label: Text(label),
+      selected: selected,
+      onSelected: (_) => onSelected(),
+    );
   }
-
-  @override
-  bool shouldRebuild(covariant _TabBarDelegate oldDelegate) => false;
 }
