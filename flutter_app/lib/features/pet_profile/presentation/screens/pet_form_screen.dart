@@ -553,11 +553,23 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
                             semanticLabel: 'Pet photo',
                           ),
                         )
-                      : Icon(
-                          Icons.add_a_photo,
-                          size: 40,
-                          color: theme.colorScheme.onSurfaceVariant,
-                          semanticLabel: 'Add photo',
+                      : Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              AppConstants.speciesIcon(_selectedSpecies),
+                              size: 40,
+                              color: theme.colorScheme.primary.withAlpha(180),
+                              semanticLabel: '$_selectedSpecies icon',
+                            ),
+                            const SizedBox(height: 4),
+                            Icon(
+                              Icons.add_a_photo,
+                              size: 18,
+                              color: theme.colorScheme.onSurfaceVariant,
+                              semanticLabel: 'Add photo',
+                            ),
+                          ],
                         ),
                 ),
                 const SizedBox(height: 8),

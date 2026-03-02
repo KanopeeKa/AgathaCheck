@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 
+import '../../../../core/utils/constants.dart';
 import '../../domain/entities/pet.dart';
 
 /// A Material 3 card widget that displays a pet's summary information.
@@ -188,7 +189,7 @@ class PetCard extends StatelessWidget {
         border: Border.all(color: petColor, width: 3),
       ),
       child: Icon(
-        _speciesIcon(pet.species),
+        AppConstants.speciesIcon(pet.species),
         size: 32,
         color: petColor,
         semanticLabel: '${pet.species} icon',
@@ -196,20 +197,4 @@ class PetCard extends StatelessWidget {
     );
   }
 
-  IconData _speciesIcon(String species) {
-    switch (species.toLowerCase()) {
-      case 'dog':
-        return Icons.pets;
-      case 'cat':
-        return Icons.pets;
-      case 'bird':
-        return Icons.flutter_dash;
-      case 'fish':
-        return Icons.water;
-      case 'rabbit':
-        return Icons.cruelty_free;
-      default:
-        return Icons.pets;
-    }
-  }
 }

@@ -1,3 +1,5 @@
+import 'package:flutter/material.dart';
+
 /// Application-wide constants.
 class AppConstants {
   AppConstants._();
@@ -81,6 +83,31 @@ class AppConstants {
             'is a small, permanent form of identification implanted '
             'under your pet\'s skin. Contact your vet to get your pet '
             'chipped and add the ID number to their profile.';
+    }
+  }
+
+  static IconData speciesIcon(String species) {
+    switch (species.toLowerCase()) {
+      case 'dog':
+        return Icons.pets;
+      case 'cat':
+        return Icons.pets;
+      case 'bird':
+        return Icons.flutter_dash;
+      case 'fish':
+        return Icons.water;
+      case 'rabbit':
+        return Icons.cruelty_free;
+      case 'hamster':
+        return Icons.cruelty_free;
+      case 'ferret':
+        return Icons.pets;
+      case 'horse / poney':
+        return Icons.agriculture;
+      case 'reptile':
+        return Icons.pest_control;
+      default:
+        return Icons.pets;
     }
   }
 }

@@ -288,7 +288,7 @@ class _PetProfileCard extends ConsumerWidget {
                         spacing: 8,
                         runSpacing: 8,
                         children: [
-                          _InfoChip(icon: Icons.category, label: pet.species),
+                          _InfoChip(icon: AppConstants.speciesIcon(pet.species), label: pet.species),
                           if (pet.breed.isNotEmpty)
                             _InfoChip(icon: Icons.pets, label: pet.breed),
                           if (pet.gender != null && pet.gender!.isNotEmpty)
