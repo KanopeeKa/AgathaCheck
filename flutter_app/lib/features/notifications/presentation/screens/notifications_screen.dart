@@ -41,13 +41,19 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
             tooltip: 'Notification Settings',
             onPressed: () => context.push('/notifications/settings'),
           ),
-          IconButton(
-            icon: const Icon(Icons.done_all),
-            tooltip: 'Mark All as Read',
+          TextButton.icon(
+            icon: const Icon(Icons.done_all, size: 18),
+            label: const Text('Mark all read'),
             onPressed: () async {
               await ref
                   .read(notificationsProvider.notifier)
                   .markAllAsRead();
+              if (context.mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                      content: Text('All notifications marked as read')),
+                );
+              }
             },
           ),
         ],
