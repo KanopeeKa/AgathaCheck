@@ -1779,70 +1779,98 @@ class _HealthIssuesSectionState extends ConsumerState<_HealthIssuesSection> {
     final titleController = TextEditingController();
     final descriptionController = TextEditingController();
     final formKey = GlobalKey<FormState>();
+    DateTime? startDate;
+    DateTime? endDate;
 
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      builder: (ctx) => Padding(
-        padding: EdgeInsets.only(
-          left: 24,
-          right: 24,
-          top: 24,
-          bottom: MediaQuery.of(ctx).viewInsets.bottom + 24,
-        ),
-        child: Form(
-          key: formKey,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Text('New Health Issue',
-                  style: Theme.of(ctx)
-                      .textTheme
-                      .titleMedium
-                      ?.copyWith(fontWeight: FontWeight.bold)),
-              const SizedBox(height: 16),
-              TextFormField(
-                key: const Key('health_issue_title_field'),
-                controller: titleController,
-                decoration: const InputDecoration(
-                  labelText: 'Title',
-                  hintText: 'e.g., Skin allergy, Hip dysplasia',
-                  prefixIcon: Icon(Icons.title),
+      builder: (ctx) => StatefulBuilder(
+        builder: (ctx, setSheetState) => Padding(
+          padding: EdgeInsets.only(
+            left: 24,
+            right: 24,
+            top: 24,
+            bottom: MediaQuery.of(ctx).viewInsets.bottom + 24,
+          ),
+          child: Form(
+            key: formKey,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Text('New Health Issue',
+                    style: Theme.of(ctx)
+                        .textTheme
+                        .titleMedium
+                        ?.copyWith(fontWeight: FontWeight.bold)),
+                const SizedBox(height: 16),
+                TextFormField(
+                  key: const Key('health_issue_title_field'),
+                  controller: titleController,
+                  decoration: const InputDecoration(
+                    labelText: 'Title',
+                    hintText: 'e.g., Skin allergy, Hip dysplasia',
+                    prefixIcon: Icon(Icons.title),
+                  ),
+                  validator: (val) =>
+                      val == null || val.trim().isEmpty ? 'Title is required' : null,
                 ),
-                validator: (val) =>
-                    val == null || val.trim().isEmpty ? 'Title is required' : null,
-              ),
-              const SizedBox(height: 12),
-              TextFormField(
-                key: const Key('health_issue_description_field'),
-                controller: descriptionController,
-                decoration: const InputDecoration(
-                  labelText: 'Description (optional)',
-                  hintText: 'Details about the condition',
-                  prefixIcon: Icon(Icons.description),
+                const SizedBox(height: 12),
+                TextFormField(
+                  key: const Key('health_issue_description_field'),
+                  controller: descriptionController,
+                  decoration: const InputDecoration(
+                    labelText: 'Description (optional)',
+                    hintText: 'Details about the condition',
+                    prefixIcon: Icon(Icons.description),
+                  ),
+                  maxLines: 3,
                 ),
-                maxLines: 3,
-              ),
-              const SizedBox(height: 16),
-              FilledButton(
-                key: const Key('save_health_issue_button'),
-                onPressed: () async {
-                  if (!formKey.currentState!.validate()) return;
-                  final issue = HealthIssue(
-                    id: '',
-                    petId: widget.petId,
-                    title: titleController.text.trim(),
-                    description: descriptionController.text.trim(),
-                  );
-                  await ref
-                      .read(healthIssueNotifierProvider(widget.petId).notifier)
-                      .create(issue);
-                  if (ctx.mounted) Navigator.pop(ctx);
-                },
-                child: const Text('Create'),
-              ),
-            ],
+                const SizedBox(height: 12),
+                Row(
+                  children: [
+                    Expanded(
+                      child: _OptionalDateField(
+                        label: 'Start Date',
+                        date: startDate,
+                        onChanged: (d) => setSheetState(() => startDate = d),
+                        onClear: () => setSheetState(() => startDate = null),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: _OptionalDateField(
+                        label: 'End Date',
+                        date: endDate,
+                        onChanged: (d) => setSheetState(() => endDate = d),
+                        onClear: () => setSheetState(() => endDate = null),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 16),
+                FilledButton(
+                  key: const Key('save_health_issue_button'),
+                  onPressed: () async {
+                    if (!formKey.currentState!.validate()) return;
+                    final issue = HealthIssue(
+                      id: '',
+                      petId: widget.petId,
+                      title: titleController.text.trim(),
+                      description: descriptionController.text.trim(),
+                      startDate: startDate,
+                      endDate: endDate,
+                    );
+                    await ref
+                        .read(healthIssueNotifierProvider(widget.petId).notifier)
+                        .create(issue);
+                    if (ctx.mounted) Navigator.pop(ctx);
+                  },
+                  child: const Text('Create'),
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -1854,63 +1882,93 @@ class _HealthIssuesSectionState extends ConsumerState<_HealthIssuesSection> {
     final descriptionController =
         TextEditingController(text: issue.description);
     final formKey = GlobalKey<FormState>();
+    DateTime? startDate = issue.startDate;
+    DateTime? endDate = issue.endDate;
 
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      builder: (ctx) => Padding(
-        padding: EdgeInsets.only(
-          left: 24,
-          right: 24,
-          top: 24,
-          bottom: MediaQuery.of(ctx).viewInsets.bottom + 24,
-        ),
-        child: Form(
-          key: formKey,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Text('Edit Health Issue',
-                  style: Theme.of(ctx)
-                      .textTheme
-                      .titleMedium
-                      ?.copyWith(fontWeight: FontWeight.bold)),
-              const SizedBox(height: 16),
-              TextFormField(
-                controller: titleController,
-                decoration: const InputDecoration(
-                  labelText: 'Title',
-                  prefixIcon: Icon(Icons.title),
+      builder: (ctx) => StatefulBuilder(
+        builder: (ctx, setSheetState) => Padding(
+          padding: EdgeInsets.only(
+            left: 24,
+            right: 24,
+            top: 24,
+            bottom: MediaQuery.of(ctx).viewInsets.bottom + 24,
+          ),
+          child: Form(
+            key: formKey,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Text('Edit Health Issue',
+                    style: Theme.of(ctx)
+                        .textTheme
+                        .titleMedium
+                        ?.copyWith(fontWeight: FontWeight.bold)),
+                const SizedBox(height: 16),
+                TextFormField(
+                  controller: titleController,
+                  decoration: const InputDecoration(
+                    labelText: 'Title',
+                    prefixIcon: Icon(Icons.title),
+                  ),
+                  validator: (val) =>
+                      val == null || val.trim().isEmpty ? 'Title is required' : null,
                 ),
-                validator: (val) =>
-                    val == null || val.trim().isEmpty ? 'Title is required' : null,
-              ),
-              const SizedBox(height: 12),
-              TextFormField(
-                controller: descriptionController,
-                decoration: const InputDecoration(
-                  labelText: 'Description (optional)',
-                  prefixIcon: Icon(Icons.description),
+                const SizedBox(height: 12),
+                TextFormField(
+                  controller: descriptionController,
+                  decoration: const InputDecoration(
+                    labelText: 'Description (optional)',
+                    prefixIcon: Icon(Icons.description),
+                  ),
+                  maxLines: 3,
                 ),
-                maxLines: 3,
-              ),
-              const SizedBox(height: 16),
-              FilledButton(
-                onPressed: () async {
-                  if (!formKey.currentState!.validate()) return;
-                  final updated = issue.copyWith(
-                    title: titleController.text.trim(),
-                    description: descriptionController.text.trim(),
-                  );
-                  await ref
-                      .read(healthIssueNotifierProvider(widget.petId).notifier)
-                      .updateIssue(updated);
-                  if (ctx.mounted) Navigator.pop(ctx);
-                },
-                child: const Text('Save'),
-              ),
-            ],
+                const SizedBox(height: 12),
+                Row(
+                  children: [
+                    Expanded(
+                      child: _OptionalDateField(
+                        label: 'Start Date',
+                        date: startDate,
+                        onChanged: (d) => setSheetState(() => startDate = d),
+                        onClear: () => setSheetState(() => startDate = null),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: _OptionalDateField(
+                        label: 'End Date',
+                        date: endDate,
+                        onChanged: (d) => setSheetState(() => endDate = d),
+                        onClear: () => setSheetState(() => endDate = null),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 16),
+                FilledButton(
+                  onPressed: () async {
+                    if (!formKey.currentState!.validate()) return;
+                    final updated = issue.copyWith(
+                      title: titleController.text.trim(),
+                      description: descriptionController.text.trim(),
+                      startDate: startDate,
+                      endDate: endDate,
+                      clearStartDate: startDate == null,
+                      clearEndDate: endDate == null,
+                    );
+                    await ref
+                        .read(healthIssueNotifierProvider(widget.petId).notifier)
+                        .updateIssue(updated);
+                    if (ctx.mounted) Navigator.pop(ctx);
+                  },
+                  child: const Text('Save'),
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -1968,6 +2026,13 @@ class _HealthIssueCard extends ConsumerStatefulWidget {
 class _HealthIssueCardState extends ConsumerState<_HealthIssueCard> {
   bool _expanded = false;
 
+  String _formatDateRange(DateTime? start, DateTime? end) {
+    final fmt = DateFormat('MMM d, yyyy');
+    if (start != null && end != null) return '${fmt.format(start)} – ${fmt.format(end)}';
+    if (start != null) return 'From ${fmt.format(start)}';
+    return 'Until ${fmt.format(end!)}';
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -2009,6 +2074,24 @@ class _HealthIssueCardState extends ConsumerState<_HealthIssueCard> {
                                       color: colorScheme.onSurfaceVariant),
                                   maxLines: 2,
                                   overflow: TextOverflow.ellipsis),
+                            if (issue.startDate != null || issue.endDate != null)
+                              Padding(
+                                padding: const EdgeInsets.only(top: 4),
+                                child: Row(
+                                  children: [
+                                    ExcludeSemantics(
+                                      child: Icon(Icons.calendar_today,
+                                          size: 12, color: colorScheme.outline),
+                                    ),
+                                    const SizedBox(width: 4),
+                                    Text(
+                                      _formatDateRange(issue.startDate, issue.endDate),
+                                      style: theme.textTheme.bodySmall?.copyWith(
+                                          color: colorScheme.outline, fontSize: 11),
+                                    ),
+                                  ],
+                                ),
+                              ),
                           ],
                         ),
                       ),
@@ -2140,5 +2223,65 @@ class _HealthIssueCardState extends ConsumerState<_HealthIssueCard> {
       case HealthEntryType.procedure:
         return Icons.more_horiz;
     }
+  }
+}
+
+class _OptionalDateField extends StatelessWidget {
+  const _OptionalDateField({
+    required this.label,
+    required this.date,
+    required this.onChanged,
+    required this.onClear,
+  });
+
+  final String label;
+  final DateTime? date;
+  final ValueChanged<DateTime> onChanged;
+  final VoidCallback onClear;
+
+  @override
+  Widget build(BuildContext context) {
+    final dateFormat = DateFormat('MMM d, yyyy');
+    return Semantics(
+      label: date != null
+          ? '$label: ${dateFormat.format(date!)}. Tap to change.'
+          : '$label: not set. Tap to pick a date.',
+      button: true,
+      child: InkWell(
+        onTap: () async {
+          final picked = await showDatePicker(
+            context: context,
+            initialDate: date ?? DateTime.now(),
+            firstDate: DateTime(2000),
+            lastDate: DateTime.now().add(const Duration(days: 3650)),
+          );
+          if (picked != null) onChanged(picked);
+        },
+        child: InputDecorator(
+          decoration: InputDecoration(
+            labelText: label,
+            isDense: true,
+            contentPadding:
+                const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+            suffixIcon: date != null
+                ? IconButton(
+                    icon: const Icon(Icons.clear, size: 16),
+                    tooltip: 'Clear $label',
+                    onPressed: onClear,
+                    padding: EdgeInsets.zero,
+                    constraints: const BoxConstraints(),
+                  )
+                : null,
+          ),
+          child: Text(
+            date != null ? dateFormat.format(date!) : 'Not set',
+            style: TextStyle(
+              fontSize: 13,
+              color: date != null ? null : Theme.of(context).colorScheme.outline,
+            ),
+          ),
+        ),
+      ),
+    );
   }
 }

@@ -7,6 +7,8 @@ class HealthIssueModel extends HealthIssue {
     required super.title,
     super.description,
     super.eventIds,
+    super.startDate,
+    super.endDate,
     super.createdAt,
     super.updatedAt,
   });
@@ -21,6 +23,12 @@ class HealthIssueModel extends HealthIssue {
               ?.map((e) => e.toString())
               .toList() ??
           const [],
+      startDate: json['start_date'] != null
+          ? DateTime.tryParse(json['start_date'] as String)
+          : null,
+      endDate: json['end_date'] != null
+          ? DateTime.tryParse(json['end_date'] as String)
+          : null,
       createdAt: json['created_at'] != null
           ? DateTime.tryParse(json['created_at'] as String)
           : null,
@@ -37,6 +45,8 @@ class HealthIssueModel extends HealthIssue {
       title: issue.title,
       description: issue.description,
       eventIds: issue.eventIds,
+      startDate: issue.startDate,
+      endDate: issue.endDate,
       createdAt: issue.createdAt,
       updatedAt: issue.updatedAt,
     );
@@ -49,6 +59,8 @@ class HealthIssueModel extends HealthIssue {
       'title': title,
       'description': description,
       'event_ids': eventIds,
+      'start_date': startDate?.toIso8601String(),
+      'end_date': endDate?.toIso8601String(),
     };
   }
 
@@ -59,6 +71,8 @@ class HealthIssueModel extends HealthIssue {
       title: title,
       description: description,
       eventIds: eventIds,
+      startDate: startDate,
+      endDate: endDate,
       createdAt: createdAt,
       updatedAt: updatedAt,
     );

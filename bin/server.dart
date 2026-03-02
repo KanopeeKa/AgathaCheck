@@ -225,6 +225,8 @@ Future<void> main() async {
       pet_id VARCHAR(255) NOT NULL,
       title VARCHAR(255) NOT NULL,
       description TEXT DEFAULT '',
+      start_date DATE,
+      end_date DATE,
       created_at TIMESTAMPTZ DEFAULT NOW(),
       updated_at TIMESTAMPTZ DEFAULT NOW()
     )
@@ -241,6 +243,9 @@ Future<void> main() async {
   await _db.execute(Sql('''
     ALTER TABLE health_entries ADD COLUMN IF NOT EXISTS health_issue_id INT REFERENCES health_issues(id) ON DELETE SET NULL
   '''));
+
+  await _db.execute(Sql('ALTER TABLE health_issues ADD COLUMN IF NOT EXISTS start_date DATE'));
+  await _db.execute(Sql('ALTER TABLE health_issues ADD COLUMN IF NOT EXISTS end_date DATE'));
 
   print('health_issues tables ready');
 
@@ -2458,6 +2463,8 @@ Map<String, dynamic> _healthIssueToMap(ResultRow row) {
     'pet_id': cols['pet_id'].toString(),
     'title': cols['title'].toString(),
     'description': (cols['description'] ?? '').toString(),
+    'start_date': cols['start_date']?.toString(),
+    'end_date': cols['end_date']?.toString(),
     'created_at': cols['created_at'].toString(),
     'updated_at': cols['updated_at'].toString(),
   };
@@ -2497,6 +2504,8 @@ Future<void> _createHealthIssue(HttpRequest request) async {
   final petId = body['pet_id'] as String? ?? '';
   final title = body['title'] as String? ?? '';
   final description = body['description'] as String? ?? '';
+  final startDate = body['start_date'] as String?;
+  final endDate = body['end_date'] as String?;
 
   if (petId.isEmpty || title.isEmpty) {
     _jsonResponse(request, 400, {'error': 'pet_id and title are required'});
@@ -2505,11 +2514,17 @@ Future<void> _createHealthIssue(HttpRequest request) async {
 
   final result = await _db.execute(
     Sql.named('''
-      INSERT INTO health_issues (pet_id, title, description)
-      VALUES (@petId, @title, @description)
+      INSERT INTO health_issues (pet_id, title, description, start_date, end_date)
+      VALUES (@petId, @title, @description, ${startDate != null ? '@startDate::date' : 'NULL'}, ${endDate != null ? '@endDate::date' : 'NULL'})
       RETURNING *
     '''),
-    parameters: {'petId': petId, 'title': title, 'description': description},
+    parameters: {
+      'petId': petId,
+      'title': title,
+      'description': description,
+      if (startDate != null) 'startDate': startDate,
+      if (endDate != null) 'endDate': endDate,
+    },
   );
 
   final issue = _healthIssueToMap(result.first);
@@ -2539,10 +2554,18 @@ Future<void> _updateHealthIssue(HttpRequest request) async {
 
   final row = _healthIssueToMap(existing.first);
 
+  final hasStartDate = body.containsKey('start_date');
+  final hasEndDate = body.containsKey('end_date');
+  final newStartDate = hasStartDate ? body['start_date'] as String? : (row['start_date'] as String?);
+  final newEndDate = hasEndDate ? body['end_date'] as String? : (row['end_date'] as String?);
+
   final result = await _db.execute(
     Sql.named('''
       UPDATE health_issues SET
-        title = @title, description = @description, updated_at = NOW()
+        title = @title, description = @description,
+        start_date = ${newStartDate != null ? '@startDate::date' : 'NULL'},
+        end_date = ${newEndDate != null ? '@endDate::date' : 'NULL'},
+        updated_at = NOW()
       WHERE id = @id
       RETURNING *
     '''),
@@ -2550,6 +2573,8 @@ Future<void> _updateHealthIssue(HttpRequest request) async {
       'id': id,
       'title': body['title'] ?? row['title'],
       'description': body['description'] ?? row['description'],
+      if (newStartDate != null) 'startDate': newStartDate,
+      if (newEndDate != null) 'endDate': newEndDate,
     },
   );
 
