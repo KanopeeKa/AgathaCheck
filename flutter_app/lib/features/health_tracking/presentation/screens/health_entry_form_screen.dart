@@ -27,7 +27,7 @@ class _HealthEntryFormScreenState
   final _customDaysController = TextEditingController();
 
   HealthEntryType _type = HealthEntryType.medication;
-  HealthFrequency _frequency = HealthFrequency.daily;
+  HealthFrequency _frequency = HealthFrequency.once;
   DateTime _startDate = DateTime.now();
   DateTime _nextDueDate = DateTime.now();
   bool _isLoading = false;

@@ -60,10 +60,10 @@ void main() {
       expect(model.type, HealthEntryType.medication);
     });
 
-    test('fromJson defaults unknown frequency to daily', () {
+    test('fromJson defaults unknown frequency to once', () {
       final json = {...testJson, 'frequency': 'biweekly'};
       final model = HealthEntryModel.fromJson(json);
-      expect(model.frequency, HealthFrequency.daily);
+      expect(model.frequency, HealthFrequency.once);
     });
 
     test('toJson produces correct map', () {

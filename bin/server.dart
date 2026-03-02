@@ -815,6 +815,9 @@ Future<void> _markTaken(HttpRequest request) async {
   DateTime nextDue;
 
   switch (frequency) {
+    case 'once':
+      nextDue = currentDue;
+      break;
     case 'daily':
       nextDue = currentDue.add(const Duration(days: 1));
       break;
@@ -830,7 +833,7 @@ Future<void> _markTaken(HttpRequest request) async {
       nextDue = currentDue.add(Duration(days: days));
       break;
     default:
-      nextDue = currentDue.add(const Duration(days: 1));
+      nextDue = currentDue;
   }
 
   final updated = await _db.execute(

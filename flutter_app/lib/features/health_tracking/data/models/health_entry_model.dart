@@ -29,7 +29,7 @@ class HealthEntryModel extends HealthEntry {
       name: json['name'] as String? ?? '',
       type: _parseType(json['type'] as String? ?? 'medication'),
       dosage: json['dosage'] as String? ?? '',
-      frequency: _parseFrequency(json['frequency'] as String? ?? 'daily'),
+      frequency: _parseFrequency(json['frequency'] as String? ?? 'once'),
       frequencyDays: json['frequency_days'] as int?,
       startDate: DateTime.tryParse(json['start_date'] as String? ?? '') ??
           DateTime.now(),
@@ -95,6 +95,8 @@ class HealthEntryModel extends HealthEntry {
 
   static HealthFrequency _parseFrequency(String value) {
     switch (value) {
+      case 'once':
+        return HealthFrequency.once;
       case 'daily':
         return HealthFrequency.daily;
       case 'weekly':
@@ -104,7 +106,7 @@ class HealthEntryModel extends HealthEntry {
       case 'custom':
         return HealthFrequency.custom;
       default:
-        return HealthFrequency.daily;
+        return HealthFrequency.once;
     }
   }
 }

@@ -139,6 +139,9 @@ enum HealthEntryType {
 
 /// How frequently a health entry is due.
 enum HealthFrequency {
+  /// Does not repeat — one-time event.
+  once,
+
   /// Once per day.
   daily,
 
@@ -154,6 +157,8 @@ enum HealthFrequency {
   /// Human-readable label for this frequency.
   String get label {
     switch (this) {
+      case HealthFrequency.once:
+        return 'Does not repeat';
       case HealthFrequency.daily:
         return 'Daily';
       case HealthFrequency.weekly:
