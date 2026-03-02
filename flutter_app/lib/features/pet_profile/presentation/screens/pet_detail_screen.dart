@@ -1489,7 +1489,7 @@ class _ReportSelectionSheetState extends ConsumerState<_ReportSelectionSheet> {
           CheckboxListTile(
             value: _includeHealth,
             onChanged: (v) => setState(() => _includeHealth = v ?? false),
-            title: const Text('Health Events'),
+            title: const Text('Events'),
             subtitle: const Text('Medications, preventives, vet visits'),
             secondary: Icon(Icons.list_alt, color: colorScheme.primary),
             dense: true,
