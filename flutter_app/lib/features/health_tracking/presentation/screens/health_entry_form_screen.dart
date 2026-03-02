@@ -29,7 +29,7 @@ class _HealthEntryFormScreenState
   HealthEntryType _type = HealthEntryType.medication;
   HealthFrequency _frequency = HealthFrequency.once;
   DateTime _startDate = DateTime.now();
-  DateTime _nextDueDate = DateTime.now();
+  DateTime? _nextDueDate;
   DateTime? _repeatEndDate;
   bool _isLoading = false;
   bool _isEdit = false;
@@ -270,12 +270,6 @@ class _HealthEntryFormScreenState
                       onChanged: (d) => setState(() => _startDate = d),
                     ),
                     const SizedBox(height: 16),
-                    _DatePickerField(
-                      label: 'Next Due Date',
-                      date: _nextDueDate,
-                      onChanged: (d) => setState(() => _nextDueDate = d),
-                    ),
-                    const SizedBox(height: 16),
                     TextFormField(
                       controller: _notesController,
                       decoration: const InputDecoration(
@@ -340,7 +334,7 @@ class _HealthEntryFormScreenState
               : null,
           repeatEndDate: effectiveRepeatEndDate,
           startDate: _startDate,
-          nextDueDate: _nextDueDate,
+          nextDueDate: _nextDueDate ?? _startDate,
           notes: _notesController.text.trim(),
         );
         await notifier.updateEntry(entry);
@@ -361,7 +355,7 @@ class _HealthEntryFormScreenState
                 : null,
             repeatEndDate: effectiveRepeatEndDate,
             startDate: _startDate,
-            nextDueDate: _nextDueDate,
+            nextDueDate: _startDate,
             notes: _notesController.text.trim(),
           );
           await notifier.create(entry);
