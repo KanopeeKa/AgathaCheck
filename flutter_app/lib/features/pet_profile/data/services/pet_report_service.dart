@@ -323,7 +323,7 @@ class PetReportService {
           2: pw.Alignment.centerLeft,
         },
         headers: ['Date', 'Weight', 'Notes'],
-        data: sorted.reversed.map((e) {
+        data: sorted.reversed.take(3).map((e) {
           return [
             dateFormat.format(e.date),
             _formatWeight(e.weight, weightUnit),
