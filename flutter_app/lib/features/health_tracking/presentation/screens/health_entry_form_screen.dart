@@ -210,6 +210,7 @@ class _HealthEntryFormScreenState
         title: Text(_isEdit ? 'Edit Entry' : 'New Health Entry'),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
+          tooltip: 'Back',
           onPressed: () {
             if (widget.petId != null && widget.petId!.isNotEmpty) {
               context.go('/pet/${widget.petId}');
@@ -273,6 +274,7 @@ class _HealthEntryFormScreenState
                     ),
                     const SizedBox(height: 16),
                     TextFormField(
+                      key: const Key('health_name_field'),
                       controller: _nameController,
                       decoration: const InputDecoration(
                         labelText: 'Name',
@@ -286,6 +288,7 @@ class _HealthEntryFormScreenState
                     ),
                     const SizedBox(height: 16),
                     TextFormField(
+                      key: const Key('health_dosage_field'),
                       controller: _dosageController,
                       decoration: const InputDecoration(
                         labelText: 'Dosage / Amount',
@@ -379,6 +382,7 @@ class _HealthEntryFormScreenState
                     ),
                     const SizedBox(height: 16),
                     TextFormField(
+                      key: const Key('health_notes_field'),
                       controller: _notesController,
                       decoration: const InputDecoration(
                         labelText: 'Notes',
@@ -402,6 +406,7 @@ class _HealthEntryFormScreenState
                     ),
                     const SizedBox(height: 24),
                     FilledButton.icon(
+                      key: const Key('save_health_entry_button'),
                       onPressed: _submit,
                       icon: Icon(_isEdit ? Icons.save : Icons.add),
                       label: Text(_isEdit
@@ -746,26 +751,31 @@ class _DatePickerField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      onTap: () async {
-        final picked = await showDatePicker(
-          context: context,
-          initialDate: date,
-          firstDate: DateTime(2020),
-          lastDate: DateTime(2030),
-        );
-        if (picked != null) {
-          onChanged(DateTime(picked.year, picked.month, picked.day,
-              date.hour, date.minute));
-        }
-      },
-      child: InputDecorator(
-        decoration: InputDecoration(
-          labelText: label,
-          prefixIcon: const Icon(Icons.calendar_today),
-        ),
-        child: Text(
-          '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}',
+    return Semantics(
+      label: '$label: ${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}',
+      button: true,
+      hint: 'Tap to change date',
+      child: InkWell(
+        onTap: () async {
+          final picked = await showDatePicker(
+            context: context,
+            initialDate: date,
+            firstDate: DateTime(2020),
+            lastDate: DateTime(2030),
+          );
+          if (picked != null) {
+            onChanged(DateTime(picked.year, picked.month, picked.day,
+                date.hour, date.minute));
+          }
+        },
+        child: InputDecorator(
+          decoration: InputDecoration(
+            labelText: label,
+            prefixIcon: const Icon(Icons.calendar_today),
+          ),
+          child: Text(
+            '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}',
+          ),
         ),
       ),
     );
@@ -926,16 +936,20 @@ class _PhotosSection extends StatelessWidget {
           Positioned(
             top: 4,
             right: 4,
-            child: GestureDetector(
-              onTap: () => onDelete(photo),
-              child: Container(
-                padding: const EdgeInsets.all(4),
-                decoration: BoxDecoration(
-                  color: Colors.black54,
-                  borderRadius: BorderRadius.circular(12),
+            child: Semantics(
+              label: 'Delete photo',
+              button: true,
+              child: GestureDetector(
+                onTap: () => onDelete(photo),
+                child: Container(
+                  padding: const EdgeInsets.all(4),
+                  decoration: BoxDecoration(
+                    color: Colors.black54,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child:
+                      const Icon(Icons.close, size: 16, color: Colors.white),
                 ),
-                child:
-                    const Icon(Icons.close, size: 16, color: Colors.white),
               ),
             ),
           ),
@@ -986,16 +1000,20 @@ class _PhotosSection extends StatelessWidget {
             Positioned(
               top: 4,
               right: 4,
-              child: GestureDetector(
-                onTap: () => onRemovePending(pendingIndex),
-                child: Container(
-                  padding: const EdgeInsets.all(4),
-                  decoration: BoxDecoration(
-                    color: Colors.black54,
-                    borderRadius: BorderRadius.circular(12),
+              child: Semantics(
+                label: 'Remove pending photo',
+                button: true,
+                child: GestureDetector(
+                  onTap: () => onRemovePending(pendingIndex),
+                  child: Container(
+                    padding: const EdgeInsets.all(4),
+                    decoration: BoxDecoration(
+                      color: Colors.black54,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child:
+                        const Icon(Icons.close, size: 16, color: Colors.white),
                   ),
-                  child:
-                      const Icon(Icons.close, size: 16, color: Colors.white),
                 ),
               ),
             ),
@@ -1023,6 +1041,7 @@ class _PhotosSection extends StatelessWidget {
               right: 8,
               child: IconButton(
                 icon: const Icon(Icons.close, color: Colors.white, size: 28),
+                tooltip: 'Close',
                 onPressed: () => Navigator.pop(ctx),
               ),
             ),

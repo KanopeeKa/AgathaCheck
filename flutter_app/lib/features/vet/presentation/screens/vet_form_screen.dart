@@ -90,6 +90,7 @@ class _VetFormScreenState extends ConsumerState<VetFormScreen> {
         title: Text(_isEdit ? 'Edit Vet' : 'Add Vet'),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
+          tooltip: 'Back to veterinarians',
           onPressed: () => context.go('/vets'),
         ),
       ),
@@ -103,6 +104,7 @@ class _VetFormScreenState extends ConsumerState<VetFormScreen> {
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     TextFormField(
+                      key: const Key('vet_name_field'),
                       controller: _nameController,
                       decoration: const InputDecoration(
                         labelText: 'Name *',
@@ -114,6 +116,7 @@ class _VetFormScreenState extends ConsumerState<VetFormScreen> {
                     ),
                     const SizedBox(height: 16),
                     TextFormField(
+                      key: const Key('vet_phone_field'),
                       controller: _phoneController,
                       decoration: const InputDecoration(
                         labelText: 'Phone',
@@ -123,6 +126,7 @@ class _VetFormScreenState extends ConsumerState<VetFormScreen> {
                     ),
                     const SizedBox(height: 16),
                     TextFormField(
+                      key: const Key('vet_email_field'),
                       controller: _emailController,
                       decoration: const InputDecoration(
                         labelText: 'Email',
@@ -132,6 +136,7 @@ class _VetFormScreenState extends ConsumerState<VetFormScreen> {
                     ),
                     const SizedBox(height: 16),
                     TextFormField(
+                      key: const Key('vet_website_field'),
                       controller: _websiteController,
                       decoration: const InputDecoration(
                         labelText: 'Website',
@@ -141,6 +146,7 @@ class _VetFormScreenState extends ConsumerState<VetFormScreen> {
                     ),
                     const SizedBox(height: 16),
                     TextFormField(
+                      key: const Key('vet_address_field'),
                       controller: _addressController,
                       decoration: const InputDecoration(
                         labelText: 'Address',
@@ -150,6 +156,7 @@ class _VetFormScreenState extends ConsumerState<VetFormScreen> {
                     ),
                     const SizedBox(height: 16),
                     TextFormField(
+                      key: const Key('vet_notes_field'),
                       controller: _notesController,
                       decoration: const InputDecoration(
                         labelText: 'Notes',
@@ -164,6 +171,7 @@ class _VetFormScreenState extends ConsumerState<VetFormScreen> {
                     ],
                     const SizedBox(height: 24),
                     FilledButton.icon(
+                      key: const Key('save_vet_button'),
                       onPressed: _isLoading ? null : _submit,
                       icon: Icon(_isEdit ? Icons.save : Icons.add),
                       label: Text(_isEdit ? 'Save Changes' : 'Add Vet'),

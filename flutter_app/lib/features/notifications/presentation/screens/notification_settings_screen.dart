@@ -44,6 +44,7 @@ class _NotificationSettingsScreenState
         title: const Text('Notification Settings'),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
+          tooltip: 'Back to notifications',
           onPressed: () => context.pop(),
         ),
       ),
@@ -105,6 +106,7 @@ class _NotificationSettingsScreenState
                     children: [
                       IconButton(
                         icon: const Icon(Icons.remove_circle_outline),
+                        tooltip: 'Decrease reminder days',
                         onPressed: _reminderDays > 1
                             ? () => setState(() => _reminderDays--)
                             : null,
@@ -115,6 +117,7 @@ class _NotificationSettingsScreenState
                       ),
                       IconButton(
                         icon: const Icon(Icons.add_circle_outline),
+                        tooltip: 'Increase reminder days',
                         onPressed: _reminderDays < 14
                             ? () => setState(() => _reminderDays++)
                             : null,
@@ -138,6 +141,7 @@ class _NotificationSettingsScreenState
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: FilledButton.icon(
+                key: const Key('save_notification_settings_button'),
                 onPressed: _saving ? null : _save,
                 icon: _saving
                     ? const SizedBox(

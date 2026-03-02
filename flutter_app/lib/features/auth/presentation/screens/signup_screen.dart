@@ -62,7 +62,10 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                   ClipRRect(
                     borderRadius: BorderRadius.circular(16),
                     child: Image.asset('assets/logo.png',
-                        height: 80, width: 80, fit: BoxFit.cover),
+                        height: 80,
+                        width: 80,
+                        fit: BoxFit.cover,
+                        semanticLabel: 'Agatha Check logo'),
                   ),
                   const SizedBox(height: 16),
                   Text(AppConstants.appTitle,
@@ -78,6 +81,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                     child: Column(
                       children: [
                         TextFormField(
+                          key: const Key('signup_name_field'),
                           controller: _nameController,
                           decoration: const InputDecoration(
                             labelText: 'Name',
@@ -88,6 +92,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                         ),
                         const SizedBox(height: 16),
                         TextFormField(
+                          key: const Key('signup_email_field'),
                           controller: _emailController,
                           decoration: const InputDecoration(
                             labelText: 'Email',
@@ -105,11 +110,15 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                         ),
                         const SizedBox(height: 16),
                         TextFormField(
+                          key: const Key('signup_password_field'),
                           controller: _passwordController,
                           decoration: InputDecoration(
                             labelText: 'Password',
                             prefixIcon: const Icon(Icons.lock_outlined),
                             suffixIcon: IconButton(
+                              tooltip: _obscurePassword
+                                  ? 'Show password'
+                                  : 'Hide password',
                               icon: Icon(_obscurePassword
                                   ? Icons.visibility_off
                                   : Icons.visibility),
@@ -131,6 +140,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                         ),
                         const SizedBox(height: 16),
                         TextFormField(
+                          key: const Key('signup_confirm_password_field'),
                           controller: _confirmController,
                           decoration: const InputDecoration(
                             labelText: 'Confirm Password',
@@ -147,23 +157,28 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                         ),
                         if (auth.error != null) ...[
                           const SizedBox(height: 16),
-                          Container(
-                            padding: const EdgeInsets.all(12),
-                            decoration: BoxDecoration(
-                              color: theme.colorScheme.errorContainer,
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            child: Row(
-                              children: [
-                                Icon(Icons.error_outline,
-                                    color: theme.colorScheme.error, size: 20),
-                                const SizedBox(width: 8),
-                                Expanded(
-                                  child: Text(auth.error!,
-                                      style: TextStyle(
-                                          color: theme.colorScheme.error)),
-                                ),
-                              ],
+                          MergeSemantics(
+                            child: Container(
+                              padding: const EdgeInsets.all(12),
+                              decoration: BoxDecoration(
+                                color: theme.colorScheme.errorContainer,
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: Row(
+                                children: [
+                                  ExcludeSemantics(
+                                    child: Icon(Icons.error_outline,
+                                        color: theme.colorScheme.error,
+                                        size: 20),
+                                  ),
+                                  const SizedBox(width: 8),
+                                  Expanded(
+                                    child: Text(auth.error!,
+                                        style: TextStyle(
+                                            color: theme.colorScheme.error)),
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
                         ],
@@ -171,6 +186,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                         SizedBox(
                           width: double.infinity,
                           child: FilledButton(
+                            key: const Key('signup_submit_button'),
                             onPressed: auth.isLoading ? null : _submit,
                             child: auth.isLoading
                                 ? const SizedBox(

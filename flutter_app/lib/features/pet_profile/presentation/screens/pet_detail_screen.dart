@@ -149,15 +149,18 @@ class _PetDetailScreenState extends ConsumerState<PetDetailScreen> {
                 title: Text(pet.name),
                 leading: IconButton(
                   icon: const Icon(Icons.arrow_back),
+                  tooltip: 'Go back',
                   onPressed: () => context.go('/'),
                 ),
                 actions: [
                   IconButton(
+                    key: const Key('share_pet_button'),
                     icon: const Icon(Icons.share),
                     tooltip: 'Share Pet',
                     onPressed: () => _sharePet(context, pet),
                   ),
                   IconButton(
+                    key: const Key('edit_pet_button'),
                     icon: const Icon(Icons.edit),
                     tooltip: 'Edit Pet',
                     onPressed: () => context.go('/edit/${pet.id}'),
@@ -165,7 +168,9 @@ class _PetDetailScreenState extends ConsumerState<PetDetailScreen> {
                 ],
               ),
               SliverToBoxAdapter(
-                child: _PetProfileCard(pet: pet),
+                child: MergeSemantics(
+                  child: _PetProfileCard(pet: pet),
+                ),
               ),
               SliverToBoxAdapter(
                 child: _WeightTrackingSection(petId: widget.petId),
@@ -284,7 +289,10 @@ class _PetProfileCard extends ConsumerWidget {
   Widget _buildVetRow(BuildContext context, WidgetRef ref, dynamic assignedVet,
       List vets, ThemeData theme, ColorScheme colorScheme) {
     if (vets.isEmpty) {
-      return GestureDetector(
+      return Semantics(
+        label: 'Add a veterinarian. No vets yet.',
+        button: true,
+        child: GestureDetector(
         onTap: () => GoRouter.of(context).go('/vets/add'),
         child: Row(
           children: [
@@ -301,6 +309,7 @@ class _PetProfileCard extends ConsumerWidget {
                     fontWeight: FontWeight.w500)),
           ],
         ),
+      ),
       );
     }
 
@@ -313,6 +322,7 @@ class _PetProfileCard extends ConsumerWidget {
         const SizedBox(width: 6),
         Expanded(
           child: PopupMenuButton<String?>(
+            tooltip: 'Select veterinarian',
             padding: EdgeInsets.zero,
             child: Row(
               mainAxisSize: MainAxisSize.min,
@@ -399,11 +409,14 @@ class _WeightTrackingSection extends ConsumerWidget {
                     ),
                   ),
                   const Spacer(),
-                  FilledButton.tonalIcon(
-                    onPressed: () =>
-                        _showAddWeightSheet(context, ref, unit, unitLabel),
-                    icon: const Icon(Icons.add, size: 18),
-                    label: const Text('Add Entry'),
+                  Tooltip(
+                    message: 'Add weight entry',
+                    child: FilledButton.tonalIcon(
+                      onPressed: () =>
+                          _showAddWeightSheet(context, ref, unit, unitLabel),
+                      icon: const Icon(Icons.add, size: 18),
+                      label: const Text('Add Entry'),
+                    ),
                   ),
                 ],
               ),
@@ -510,7 +523,10 @@ class _WeightTrackingSection extends ConsumerWidget {
                     style: theme.textTheme.titleLarge
                         ?.copyWith(fontWeight: FontWeight.bold)),
                 const SizedBox(height: 20),
-                InkWell(
+                Semantics(
+                  label: 'Select date for weight entry',
+                  button: true,
+                  child: InkWell(
                   onTap: () async {
                     final picked = await showDatePicker(
                       context: ctx,
@@ -530,6 +546,7 @@ class _WeightTrackingSection extends ConsumerWidget {
                     ),
                     child: Text(DateFormat.yMMMd().format(selectedDate)),
                   ),
+                ),
                 ),
                 const SizedBox(height: 16),
                 TextField(
@@ -609,25 +626,28 @@ class _WeightEntryTile extends StatelessWidget {
     final displayWeight = convertWeight(entry.weight, unit);
     final label = weightUnitLabel(unit);
 
-    return ListTile(
-      contentPadding: EdgeInsets.zero,
-      leading: CircleAvatar(
-        backgroundColor: colorScheme.primaryContainer,
-        child: Icon(Icons.monitor_weight, size: 20,
-            color: colorScheme.onPrimaryContainer),
-      ),
-      title: Text('${displayWeight.toStringAsFixed(1)} $label',
-          style: theme.textTheme.titleSmall
-              ?.copyWith(fontWeight: FontWeight.w600)),
-      subtitle: Text(
-        DateFormat.yMMMd().format(entry.date) +
-            (entry.notes.isNotEmpty ? ' — ${entry.notes}' : ''),
-        style: theme.textTheme.bodySmall
-            ?.copyWith(color: colorScheme.onSurfaceVariant),
-      ),
-      trailing: IconButton(
-        icon: Icon(Icons.delete_outline, color: colorScheme.error, size: 20),
-        onPressed: onDelete,
+    return MergeSemantics(
+      child: ListTile(
+        contentPadding: EdgeInsets.zero,
+        leading: CircleAvatar(
+          backgroundColor: colorScheme.primaryContainer,
+          child: Icon(Icons.monitor_weight, size: 20,
+              color: colorScheme.onPrimaryContainer),
+        ),
+        title: Text('${displayWeight.toStringAsFixed(1)} $label',
+            style: theme.textTheme.titleSmall
+                ?.copyWith(fontWeight: FontWeight.w600)),
+        subtitle: Text(
+          DateFormat.yMMMd().format(entry.date) +
+              (entry.notes.isNotEmpty ? ' — ${entry.notes}' : ''),
+          style: theme.textTheme.bodySmall
+              ?.copyWith(color: colorScheme.onSurfaceVariant),
+        ),
+        trailing: IconButton(
+          icon: Icon(Icons.delete_outline, color: colorScheme.error, size: 20),
+          tooltip: 'Delete weight entry',
+          onPressed: onDelete,
+        ),
       ),
     );
   }
@@ -664,7 +684,9 @@ class _WeightChart extends StatelessWidget {
       return FlSpot(x, weights[i]);
     });
 
-    return LineChart(
+    return Semantics(
+      label: 'Weight chart showing ${entries.length} entries',
+      child: LineChart(
       LineChartData(
         minY: effectiveYMin,
         maxY: effectiveYMax,
@@ -756,6 +778,7 @@ class _WeightChart extends StatelessWidget {
           ),
         ],
       ),
+      ),
     );
   }
 }
@@ -775,6 +798,7 @@ class _PetPhoto extends StatelessWidget {
         return Image.memory(
           bytes,
           fit: BoxFit.cover,
+          semanticLabel: 'Photo of ${pet.name}',
         );
       } catch (_) {}
     }
@@ -786,6 +810,7 @@ class _PetPhoto extends StatelessWidget {
           Icons.pets,
           size: 56,
           color: colorScheme.onPrimaryContainer.withAlpha(100),
+          semanticLabel: 'No photo for ${pet.name}',
         ),
       ),
     );
@@ -857,11 +882,14 @@ class _HealthEventsSectionState extends ConsumerState<_HealthEventsSection> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  FilledButton.tonalIcon(
-                    onPressed: () =>
-                        context.go('/pet/${widget.petId}/health/add'),
-                    icon: const Icon(Icons.add, size: 18),
-                    label: const Text('Add Entry'),
+                  Tooltip(
+                    message: 'Add health entry',
+                    child: FilledButton.tonalIcon(
+                      onPressed: () =>
+                          context.go('/pet/${widget.petId}/health/add'),
+                      icon: const Icon(Icons.add, size: 18),
+                      label: const Text('Add Entry'),
+                    ),
                   ),
                 ],
               ),
@@ -1231,7 +1259,8 @@ class _SharingSection extends ConsumerWidget {
                               ? 'Guardian'
                               : 'Shared';
 
-                          return ListTile(
+                          return MergeSemantics(
+                            child: ListTile(
                             contentPadding: EdgeInsets.zero,
                             leading: avatar,
                             title: Row(
@@ -1245,18 +1274,21 @@ class _SharingSection extends ConsumerWidget {
                                   ),
                                 ),
                                 const SizedBox(width: 8),
-                                Container(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 8, vertical: 2),
-                                  decoration: BoxDecoration(
-                                    color: roleBadgeColor.withAlpha(30),
-                                    borderRadius: BorderRadius.circular(8),
+                                Semantics(
+                                  label: 'Role: $roleBadgeLabel',
+                                  child: Container(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 8, vertical: 2),
+                                    decoration: BoxDecoration(
+                                      color: roleBadgeColor.withAlpha(30),
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                    child: Text(roleBadgeLabel,
+                                        style: TextStyle(
+                                            fontSize: 11,
+                                            color: roleBadgeColor,
+                                            fontWeight: FontWeight.w600)),
                                   ),
-                                  child: Text(roleBadgeLabel,
-                                      style: TextStyle(
-                                          fontSize: 11,
-                                          color: roleBadgeColor,
-                                          fontWeight: FontWeight.w600)),
                                 ),
                               ],
                             ),
@@ -1267,6 +1299,7 @@ class _SharingSection extends ConsumerWidget {
                                 : null,
                             trailing: isGuardian && !isCurrentUser
                                 ? PopupMenuButton<String>(
+                                    tooltip: 'Manage user access',
                                     itemBuilder: (ctx) => [
                                       PopupMenuItem(
                                         value: 'toggle_role',
@@ -1301,6 +1334,7 @@ class _SharingSection extends ConsumerWidget {
                                     },
                                   )
                                 : null,
+                          ),
                           );
                         },
                       ),
@@ -1329,6 +1363,7 @@ class _DownloadReportSection extends ConsumerWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: FilledButton.icon(
+        key: const Key('download_report_button'),
         onPressed: () => _showReportSheet(context, ref),
         icon: const Icon(Icons.description),
         label: const Text('Download Pet Report'),
@@ -1604,7 +1639,10 @@ class _DatePickerField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final dateFormat = DateFormat('MMM d, yyyy');
-    return InkWell(
+    return Semantics(
+      label: '$label: ${dateFormat.format(date)}. Tap to change.',
+      button: true,
+      child: InkWell(
       onTap: () async {
         final picked = await showDatePicker(
           context: context,
@@ -1624,6 +1662,7 @@ class _DatePickerField extends StatelessWidget {
         child: Text(dateFormat.format(date),
             style: const TextStyle(fontSize: 13)),
       ),
+    ),
     );
   }
 }

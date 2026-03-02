@@ -182,6 +182,7 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
         title: Text(_isEditing ? 'Edit Pet' : 'Add Pet'),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
+          tooltip: 'Go back',
           onPressed: () => context.go('/'),
         ),
       ),
@@ -195,6 +196,7 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
               _buildPhotoSection(theme),
               const SizedBox(height: 24),
               TextFormField(
+                key: const Key('pet_name_field'),
                 controller: _nameController,
                 decoration: const InputDecoration(
                   labelText: 'Name *',
@@ -209,6 +211,7 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
               ),
               const SizedBox(height: 16),
               DropdownButtonFormField<String>(
+                key: const Key('pet_species_field'),
                 value: _selectedSpecies,
                 decoration: const InputDecoration(
                   labelText: 'Species *',
@@ -225,6 +228,7 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
               ),
               const SizedBox(height: 16),
               TextFormField(
+                key: const Key('pet_breed_field'),
                 controller: _breedController,
                 decoration: const InputDecoration(
                   labelText: 'Breed',
@@ -233,6 +237,7 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
               ),
               const SizedBox(height: 16),
               DropdownButtonFormField<String?>(
+                key: const Key('pet_gender_field'),
                 value: _selectedGender,
                 decoration: InputDecoration(
                   labelText: 'Gender',
@@ -240,6 +245,7 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
                   suffixIcon: _selectedGender != null
                       ? IconButton(
                           icon: const Icon(Icons.clear),
+                          tooltip: 'Clear gender',
                           onPressed: () =>
                               setState(() => _selectedGender = null),
                         )
@@ -261,6 +267,7 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
                 children: [
                   Expanded(
                     child: TextFormField(
+                      key: const Key('pet_age_field'),
                       controller: _ageController,
                       decoration: const InputDecoration(
                         labelText: 'Age (years)',
@@ -282,6 +289,7 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
                   const SizedBox(width: 16),
                   Expanded(
                     child: TextFormField(
+                      key: const Key('pet_weight_field'),
                       controller: _weightController,
                       decoration: const InputDecoration(
                         labelText: 'Weight (kg)',
@@ -304,6 +312,7 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
               ),
               const SizedBox(height: 16),
               TextFormField(
+                key: const Key('pet_bio_field'),
                 controller: _bioController,
                 decoration: const InputDecoration(
                   labelText: 'Bio',
@@ -317,6 +326,7 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
               _buildVetDropdown(),
               const SizedBox(height: 24),
               FilledButton.icon(
+                key: const Key('save_pet_button'),
                 onPressed: _isLoading ? null : _savePet,
                 icon: _isLoading
                     ? const SizedBox(
@@ -361,6 +371,7 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
             suffixIcon: _selectedVetId != null
                 ? IconButton(
                     icon: const Icon(Icons.clear),
+                    tooltip: 'Clear veterinarian',
                     onPressed: () => setState(() => _selectedVetId = null),
                   )
                 : null,
@@ -383,44 +394,55 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
 
   Widget _buildPhotoSection(ThemeData theme) {
     return Center(
-      child: GestureDetector(
-        onTap: _pickImage,
-        child: Column(
-          children: [
-            Container(
-              width: 120,
-              height: 120,
-              decoration: BoxDecoration(
-                color: theme.colorScheme.surfaceContainerHighest,
-                borderRadius: BorderRadius.circular(16),
-                border: Border.all(
-                  color: theme.colorScheme.outline.withValues(alpha: 0.3),
-                ),
-              ),
-              child: _photoBase64 != null && _photoBase64!.isNotEmpty
-                  ? ClipRRect(
-                      borderRadius: BorderRadius.circular(16),
-                      child: Image.memory(
-                        base64Decode(_photoBase64!),
-                        fit: BoxFit.cover,
-                        width: 120,
-                        height: 120,
-                      ),
-                    )
-                  : Icon(
-                      Icons.add_a_photo,
-                      size: 40,
-                      color: theme.colorScheme.onSurfaceVariant,
+      child: Semantics(
+        label: _photoBase64 != null && _photoBase64!.isNotEmpty
+            ? 'Pet photo. Tap to change photo'
+            : 'No pet photo. Tap to add photo',
+        button: true,
+        child: GestureDetector(
+          onTap: _pickImage,
+          child: Tooltip(
+            message: 'Pick pet photo',
+            child: Column(
+              children: [
+                Container(
+                  width: 120,
+                  height: 120,
+                  decoration: BoxDecoration(
+                    color: theme.colorScheme.surfaceContainerHighest,
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(
+                      color: theme.colorScheme.outline.withValues(alpha: 0.3),
                     ),
+                  ),
+                  child: _photoBase64 != null && _photoBase64!.isNotEmpty
+                      ? ClipRRect(
+                          borderRadius: BorderRadius.circular(16),
+                          child: Image.memory(
+                            base64Decode(_photoBase64!),
+                            fit: BoxFit.cover,
+                            width: 120,
+                            height: 120,
+                            semanticLabel: 'Pet photo',
+                          ),
+                        )
+                      : Icon(
+                          Icons.add_a_photo,
+                          size: 40,
+                          color: theme.colorScheme.onSurfaceVariant,
+                          semanticLabel: 'Add photo',
+                        ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  'Tap to add photo',
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: theme.colorScheme.onSurfaceVariant,
+                  ),
+                ),
+              ],
             ),
-            const SizedBox(height: 8),
-            Text(
-              'Tap to add photo',
-              style: theme.textTheme.bodySmall?.copyWith(
-                color: theme.colorScheme.onSurfaceVariant,
-              ),
-            ),
-          ],
+          ),
         ),
       ),
     );

@@ -57,3 +57,13 @@ The Dart API server is the shared backend for both Flutter and a future SwiftUI 
 - **Dates**: Server returns ISO 8601 strings; use `ISO8601DateFormatter` in Swift.
 - **IDs**: Returned as strings in JSON (even when numeric in DB). Use `String` type in Swift models.
 - **Platform PDF**: `pdf_saver.dart` uses conditional exports — `pdf_saver_mobile.dart` (printing package share sheet) maps to `UIActivityViewController` in SwiftUI.
+
+## Accessibility
+Comprehensive accessibility support is implemented across all 17 screen files:
+- **Tooltips**: All IconButtons, FABs, and PopupMenuButtons have descriptive tooltips (39 total)
+- **Keys**: Interactive widgets have test-automation Keys following `feature_action` naming convention (53 total)
+- **Semantics**: Custom tappable areas, date pickers, and profile cards wrapped with descriptive Semantics labels (44 total)
+- **MergeSemantics**: Complex cards (pet card, health entry card, vet card, notification tile, profile card) wrapped for unified screen reader announcements (13 total)
+- **ExcludeSemantics**: Decorative icons, dividers, and status indicators that duplicate text content are excluded from the semantic tree (13 total)
+- **semanticLabel**: Logo images, pet photos, and meaningful icons have descriptive labels (10 total)
+- **Form fields**: All TextFormFields use `labelText` for screen reader compatibility

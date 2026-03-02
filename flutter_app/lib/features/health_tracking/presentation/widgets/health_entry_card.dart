@@ -43,7 +43,18 @@ class HealthEntryCard extends StatelessWidget {
                     ? Colors.amber.shade700
                     : colorScheme.primary;
 
-    return Card(
+    final statusText = entry.isCompleted
+        ? 'completed'
+        : entry.isOverdue
+            ? 'overdue'
+            : entry.isDueToday
+                ? 'due today'
+                : 'upcoming';
+
+    return MergeSemantics(
+      child: Semantics(
+        label: '${entry.name}, ${entry.type.label}, $statusText',
+        child: Card(
       elevation: 1,
       child: InkWell(
         onTap: onTap,
@@ -55,8 +66,10 @@ class HealthEntryCard extends StatelessWidget {
             children: [
               Row(
                 children: [
-                  Icon(_typeIcon(entry.type),
-                      color: colorScheme.primary, size: 24),
+                  ExcludeSemantics(
+                    child: Icon(_typeIcon(entry.type),
+                        color: colorScheme.primary, size: 24),
+                  ),
                   const SizedBox(width: 12),
                   Expanded(
                     child: Column(
@@ -78,7 +91,9 @@ class HealthEntryCard extends StatelessWidget {
               const SizedBox(height: 12),
               Row(
                 children: [
-                  Icon(Icons.schedule, size: 16, color: statusColor),
+                  ExcludeSemantics(
+                    child: Icon(Icons.schedule, size: 16, color: statusColor),
+                  ),
                   const SizedBox(width: 4),
                   Text(
                     _formatDueDate(entry),
@@ -118,6 +133,8 @@ class HealthEntryCard extends StatelessWidget {
           ),
         ),
       ),
+    ),
+    ),
     );
   }
 

@@ -50,6 +50,7 @@ class _HealthDashboardScreenState extends ConsumerState<HealthDashboardScreen>
         title: const Text('Health Events'),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
+          tooltip: 'Back to home',
           onPressed: () => context.go('/'),
         ),
         actions: [
@@ -62,11 +63,11 @@ class _HealthDashboardScreenState extends ConsumerState<HealthDashboardScreen>
         bottom: TabBar(
           controller: _tabController,
           tabs: const [
-            Tab(text: 'All'),
-            Tab(text: 'Medications'),
-            Tab(text: 'Preventives'),
-            Tab(text: 'Vaccines'),
-            Tab(text: 'Procedures'),
+            Tab(key: Key('health_tab_all'), text: 'All'),
+            Tab(key: Key('health_tab_medications'), text: 'Medications'),
+            Tab(key: Key('health_tab_preventives'), text: 'Preventives'),
+            Tab(key: Key('health_tab_vaccines'), text: 'Vaccines'),
+            Tab(key: Key('health_tab_procedures'), text: 'Procedures'),
           ],
           isScrollable: false,
         ),
@@ -76,6 +77,8 @@ class _HealthDashboardScreenState extends ConsumerState<HealthDashboardScreen>
         children: _tabs.map((type) => _EntryList(type: type)).toList(),
       ),
       floatingActionButton: FloatingActionButton.extended(
+        key: const Key('add_health_entry_button'),
+        tooltip: 'Add health entry',
         onPressed: () => context.go('/health/add'),
         icon: const Icon(Icons.add),
         label: const Text('Add Entry'),
@@ -129,6 +132,7 @@ class _EntryList extends ConsumerWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             Icon(Icons.error_outline,
+                semanticLabel: 'Error',
                 size: 48, color: Theme.of(context).colorScheme.error),
             const SizedBox(height: 16),
             Text('Error loading entries:\n$error',
@@ -148,8 +152,10 @@ class _EntryList extends ConsumerWidget {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(Icons.list_alt,
+            ExcludeSemantics(
+              child: Icon(Icons.list_alt,
                     size: 64, color: Theme.of(context).colorScheme.outline),
+            ),
                 const SizedBox(height: 16),
                 Text(
                   type == null

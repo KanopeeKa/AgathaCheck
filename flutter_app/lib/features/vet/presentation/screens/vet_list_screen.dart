@@ -24,6 +24,7 @@ class VetListScreen extends ConsumerWidget {
         title: const Text('Veterinarians'),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
+          tooltip: 'Back to home',
           onPressed: () => context.go('/'),
         ),
       ),
@@ -82,45 +83,54 @@ class VetListScreen extends ConsumerWidget {
                 final vet = vets[index];
                 final linkedPets =
                     pets.where((p) => p.vetId == vet.id).toList();
-                return Card(
-                  margin: const EdgeInsets.only(bottom: 8),
-                  child: ListTile(
-                    leading: CircleAvatar(
-                      backgroundColor: theme.colorScheme.primaryContainer,
-                      child: Icon(Icons.local_hospital,
-                          color: theme.colorScheme.onPrimaryContainer),
-                    ),
-                    title: Text(vet.name,
-                        style: theme.textTheme.titleMedium),
-                    subtitle: _buildSubtitle(vet, linkedPets),
-                    trailing: PopupMenuButton<String>(
-                      onSelected: (value) {
-                        if (value == 'edit') {
-                          context.go('/vets/edit/${vet.id}');
-                        } else if (value == 'delete') {
-                          _confirmDelete(context, ref, vet);
-                        }
-                      },
-                      itemBuilder: (context) => [
-                        const PopupMenuItem(
-                          value: 'edit',
-                          child: ListTile(
-                            leading: Icon(Icons.edit),
-                            title: Text('Edit'),
-                            contentPadding: EdgeInsets.zero,
+                return MergeSemantics(
+                  child: Card(
+                    key: Key('vet_card_${vet.name}'),
+                    margin: const EdgeInsets.only(bottom: 8),
+                    child: Semantics(
+                      label: 'Veterinarian: ${vet.name}${vet.phone.isNotEmpty ? ', Phone: ${vet.phone}' : ''}${vet.address.isNotEmpty ? ', Address: ${vet.address}' : ''}',
+                      child: ListTile(
+                        leading: CircleAvatar(
+                          backgroundColor: theme.colorScheme.primaryContainer,
+                          child: ExcludeSemantics(
+                            child: Icon(Icons.local_hospital,
+                                color: theme.colorScheme.onPrimaryContainer),
                           ),
                         ),
-                        const PopupMenuItem(
-                          value: 'delete',
-                          child: ListTile(
-                            leading: Icon(Icons.delete),
-                            title: Text('Delete'),
-                            contentPadding: EdgeInsets.zero,
-                          ),
+                        title: Text(vet.name,
+                            style: theme.textTheme.titleMedium),
+                        subtitle: _buildSubtitle(vet, linkedPets),
+                        trailing: PopupMenuButton<String>(
+                          tooltip: 'Vet options',
+                          onSelected: (value) {
+                            if (value == 'edit') {
+                              context.go('/vets/edit/${vet.id}');
+                            } else if (value == 'delete') {
+                              _confirmDelete(context, ref, vet);
+                            }
+                          },
+                          itemBuilder: (context) => [
+                            const PopupMenuItem(
+                              value: 'edit',
+                              child: ListTile(
+                                leading: Icon(Icons.edit),
+                                title: Text('Edit'),
+                                contentPadding: EdgeInsets.zero,
+                              ),
+                            ),
+                            const PopupMenuItem(
+                              value: 'delete',
+                              child: ListTile(
+                                leading: Icon(Icons.delete),
+                                title: Text('Delete'),
+                                contentPadding: EdgeInsets.zero,
+                              ),
+                            ),
+                          ],
                         ),
-                      ],
+                        onTap: () => context.go('/vets/edit/${vet.id}'),
+                      ),
                     ),
-                    onTap: () => context.go('/vets/edit/${vet.id}'),
                   ),
                 );
               },
@@ -129,7 +139,9 @@ class VetListScreen extends ConsumerWidget {
         },
       ),
       floatingActionButton: FloatingActionButton.extended(
+        key: const Key('add_vet_button'),
         onPressed: () => context.go('/vets/add'),
+        tooltip: 'Add a new veterinarian',
         icon: const Icon(Icons.add),
         label: const Text('Add Vet'),
       ),

@@ -121,20 +121,23 @@ class _SharedPetScreenState extends ConsumerState<SharedPetScreen> {
         title: Text(name),
         leading: IconButton(
           icon: const Icon(Icons.home),
+          tooltip: 'Go to My Pets',
           onPressed: () => context.go('/'),
         ),
         actions: [
           Padding(
             padding: const EdgeInsets.only(right: 8),
-            child: Chip(
-              avatar: Icon(Icons.visibility, size: 16,
-                  color: colorScheme.onSecondaryContainer),
-              label: Text('View Only',
-                  style: TextStyle(
-                      fontSize: 12,
-                      color: colorScheme.onSecondaryContainer)),
-              backgroundColor: colorScheme.secondaryContainer,
-              side: BorderSide.none,
+            child: ExcludeSemantics(
+              child: Chip(
+                avatar: Icon(Icons.visibility, size: 16,
+                    color: colorScheme.onSecondaryContainer),
+                label: Text('View Only',
+                    style: TextStyle(
+                        fontSize: 12,
+                        color: colorScheme.onSecondaryContainer)),
+                backgroundColor: colorScheme.secondaryContainer,
+                side: BorderSide.none,
+              ),
             ),
           ),
         ],
@@ -142,17 +145,18 @@ class _SharedPetScreenState extends ConsumerState<SharedPetScreen> {
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
-          Card(
-            clipBehavior: Clip.antiAlias,
-            child: IntrinsicHeight(
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  SizedBox(
-                    width: 140,
-                    child: _buildPhoto(photoPath, colorScheme),
-                  ),
-                  Expanded(
+          MergeSemantics(
+            child: Card(
+              clipBehavior: Clip.antiAlias,
+              child: IntrinsicHeight(
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    SizedBox(
+                      width: 140,
+                      child: _buildPhoto(photoPath, colorScheme),
+                    ),
+                    Expanded(
                     child: Padding(
                       padding: const EdgeInsets.all(16),
                       child: Column(
@@ -204,6 +208,7 @@ class _SharedPetScreenState extends ConsumerState<SharedPetScreen> {
                 ],
               ),
             ),
+          ),
           ),
 
           const SizedBox(height: 16),
@@ -286,6 +291,7 @@ class _SharedPetScreenState extends ConsumerState<SharedPetScreen> {
                   textAlign: TextAlign.center),
               const SizedBox(height: 12),
               FilledButton.icon(
+                key: const Key('accept_share_button'),
                 onPressed: _accepting
                     ? null
                     : () async {
@@ -430,16 +436,18 @@ class _SharedPetScreenState extends ConsumerState<SharedPetScreen> {
       );
     }
 
-    return Card(
-      color: colorScheme.secondaryContainer.withAlpha(80),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            avatar,
-            const SizedBox(width: 16),
-            Expanded(
+    return Semantics(
+      label: 'Shared by ${fullName.isNotEmpty ? fullName : 'unknown'}, $categoryLabel',
+      child: Card(
+        color: colorScheme.secondaryContainer.withAlpha(80),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              avatar,
+              const SizedBox(width: 16),
+              Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -478,6 +486,7 @@ class _SharedPetScreenState extends ConsumerState<SharedPetScreen> {
             ),
           ],
         ),
+      ),
       ),
     );
   }

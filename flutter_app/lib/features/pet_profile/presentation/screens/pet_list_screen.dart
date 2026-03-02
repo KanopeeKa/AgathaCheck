@@ -49,6 +49,7 @@ class _PetListScreenState extends ConsumerState<PetListScreen> {
                 height: 32,
                 width: 32,
                 fit: BoxFit.cover,
+                semanticLabel: 'App logo',
               ),
             ),
             const SizedBox(width: 8),
@@ -101,6 +102,7 @@ class _PetListScreenState extends ConsumerState<PetListScreen> {
             onPressed: () => context.go('/health'),
           ),
           PopupMenuButton<String>(
+            tooltip: 'User menu',
             icon: CircleAvatar(
               radius: 16,
               backgroundColor: theme.colorScheme.primaryContainer,
@@ -189,10 +191,12 @@ class _PetListScreenState extends ConsumerState<PetListScreen> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Icon(
-                    Icons.pets,
-                    size: 80,
-                    color: theme.colorScheme.outline,
+                  ExcludeSemantics(
+                    child: Icon(
+                      Icons.pets,
+                      size: 80,
+                      color: theme.colorScheme.outline,
+                    ),
                   ),
                   const SizedBox(height: 16),
                   Text(
@@ -252,7 +256,9 @@ class _PetListScreenState extends ConsumerState<PetListScreen> {
         },
       ),
       floatingActionButton: FloatingActionButton.extended(
+        key: const Key('add_pet_button'),
         onPressed: () => context.push('/add'),
+        tooltip: 'Add a new pet',
         icon: const Icon(Icons.add),
         label: const Text('Add Pet'),
       ),

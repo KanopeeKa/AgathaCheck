@@ -133,219 +133,241 @@ class _MyDetailsScreenState extends ConsumerState<MyDetailsScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Card(
-                  child: Padding(
-                    padding: const EdgeInsets.all(20),
-                    child: Stack(
-                      children: [
-                        SizedBox(
-                          width: double.infinity,
-                          child: Column(
-                            children: [
-                              CircleAvatar(
-                                radius: 48,
-                                backgroundColor:
-                                    theme.colorScheme.primaryContainer,
-                                backgroundImage: user.photoUrl.isNotEmpty
-                                    ? NetworkImage(
-                                        _resolvePhotoUrl(user.photoUrl))
-                                    : null,
-                                child: user.photoUrl.isNotEmpty
-                                    ? null
-                                    : Text(
-                                        user.initials,
-                                        style: theme.textTheme.headlineMedium
-                                            ?.copyWith(
-                                          color: theme
-                                              .colorScheme.onPrimaryContainer,
-                                        ),
-                                      ),
+                MergeSemantics(
+                  child: Semantics(
+                    label: '${user.displayName}, ${user.email}, ${user.category == 'professional_multi_pet' ? 'Professional Multi Pet' : 'Pet Guardian'}',
+                    child: Card(
+                      child: Padding(
+                        padding: const EdgeInsets.all(20),
+                        child: Stack(
+                          children: [
+                            SizedBox(
+                              width: double.infinity,
+                              child: Column(
+                                children: [
+                                  CircleAvatar(
+                                    radius: 48,
+                                    backgroundColor:
+                                        theme.colorScheme.primaryContainer,
+                                    backgroundImage: user.photoUrl.isNotEmpty
+                                        ? NetworkImage(
+                                            _resolvePhotoUrl(user.photoUrl))
+                                        : null,
+                                    child: user.photoUrl.isNotEmpty
+                                        ? null
+                                        : Text(
+                                            user.initials,
+                                            style: theme.textTheme.headlineMedium
+                                                ?.copyWith(
+                                              color: theme
+                                                  .colorScheme.onPrimaryContainer,
+                                            ),
+                                          ),
+                                  ),
+                                  const SizedBox(height: 12),
+                                  Text(
+                                    user.displayName,
+                                    style: theme.textTheme.titleLarge
+                                        ?.copyWith(fontWeight: FontWeight.bold),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    user.email,
+                                    style: theme.textTheme.bodySmall?.copyWith(
+                                      color: theme.colorScheme.onSurfaceVariant,
+                                    ),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                  const SizedBox(height: 12),
+                                  Semantics(
+                                    label: user.category == 'professional_multi_pet'
+                                        ? 'Category: Professional Multi Pet'
+                                        : 'Category: Pet Guardian',
+                                    child: _CategoryBadge(category: user.category),
+                                  ),
+                                  if (user.bio.isNotEmpty) ...[
+                                    const SizedBox(height: 12),
+                                    Text(
+                                      user.bio,
+                                      style: theme.textTheme.bodyMedium,
+                                      textAlign: TextAlign.center,
+                                    ),
+                                  ],
+                                ],
                               ),
-                              const SizedBox(height: 12),
-                              Text(
-                                user.displayName,
-                                style: theme.textTheme.titleLarge
-                                    ?.copyWith(fontWeight: FontWeight.bold),
-                                textAlign: TextAlign.center,
+                            ),
+                            Positioned(
+                              top: 0,
+                              right: 0,
+                              child: IconButton(
+                                tooltip: 'Edit profile',
+                                icon: const Icon(Icons.edit),
+                                onPressed: _openEditorSheet,
                               ),
-                              const SizedBox(height: 4),
-                              Text(
-                                user.email,
-                                style: theme.textTheme.bodySmall?.copyWith(
-                                  color: theme.colorScheme.onSurfaceVariant,
-                                ),
-                                textAlign: TextAlign.center,
-                              ),
-                              const SizedBox(height: 12),
-                              _CategoryBadge(category: user.category),
-                              if (user.bio.isNotEmpty) ...[
-                                const SizedBox(height: 12),
-                                Text(
-                                  user.bio,
-                                  style: theme.textTheme.bodyMedium,
-                                  textAlign: TextAlign.center,
-                                ),
-                              ],
-                            ],
-                          ),
+                            ),
+                          ],
                         ),
-                        Positioned(
-                          top: 0,
-                          right: 0,
-                          child: IconButton(
-                            icon: const Icon(Icons.edit),
-                            onPressed: _openEditorSheet,
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 12),
+                ExcludeSemantics(
+                  child: Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: theme.colorScheme.secondaryContainer,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Row(
+                      children: [
+                        Icon(Icons.info_outline,
+                            size: 20,
+                            color: theme.colorScheme.onSecondaryContainer),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Text(
+                            'These details are visible to people you share pets with',
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              color: theme.colorScheme.onSecondaryContainer,
+                            ),
                           ),
                         ),
                       ],
                     ),
                   ),
                 ),
-                const SizedBox(height: 12),
-                Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: theme.colorScheme.secondaryContainer,
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Row(
-                    children: [
-                      Icon(Icons.info_outline,
-                          size: 20,
-                          color: theme.colorScheme.onSecondaryContainer),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: Text(
-                          'These details are visible to people you share pets with',
-                          style: theme.textTheme.bodySmall?.copyWith(
-                            color: theme.colorScheme.onSecondaryContainer,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
                 const SizedBox(height: 24),
-                Card(
-                  child: Padding(
-                    padding: const EdgeInsets.all(20),
-                    child: Form(
-                      key: _passwordFormKey,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text('Change Password',
-                              style: theme.textTheme.titleLarge),
-                          const SizedBox(height: 16),
-                          TextFormField(
-                            controller: _currentPasswordController,
-                            decoration: InputDecoration(
-                              labelText: 'Current Password',
-                              prefixIcon: const Icon(Icons.lock_outlined),
-                              suffixIcon: IconButton(
-                                icon: Icon(_obscureCurrent
-                                    ? Icons.visibility_off
-                                    : Icons.visibility),
-                                onPressed: () => setState(
-                                    () => _obscureCurrent = !_obscureCurrent),
-                              ),
-                            ),
-                            obscureText: _obscureCurrent,
-                            validator: (v) {
-                              if (v == null || v.isEmpty) {
-                                return 'Current password is required';
-                              }
-                              return null;
-                            },
-                          ),
-                          const SizedBox(height: 16),
-                          TextFormField(
-                            controller: _newPasswordController,
-                            decoration: InputDecoration(
-                              labelText: 'New Password',
-                              prefixIcon: const Icon(Icons.lock_reset),
-                              suffixIcon: IconButton(
-                                icon: Icon(_obscureNew
-                                    ? Icons.visibility_off
-                                    : Icons.visibility),
-                                onPressed: () => setState(
-                                    () => _obscureNew = !_obscureNew),
-                              ),
-                            ),
-                            obscureText: _obscureNew,
-                            validator: (v) {
-                              if (v == null || v.isEmpty) {
-                                return 'New password is required';
-                              }
-                              if (v.length < 6) {
-                                return 'At least 6 characters';
-                              }
-                              return null;
-                            },
-                          ),
-                          const SizedBox(height: 16),
-                          TextFormField(
-                            controller: _confirmPasswordController,
-                            decoration: const InputDecoration(
-                              labelText: 'Confirm New Password',
-                              prefixIcon: Icon(Icons.lock_reset),
-                            ),
-                            obscureText: true,
-                            validator: (v) {
-                              if (v != _newPasswordController.text) {
-                                return 'Passwords do not match';
-                              }
-                              return null;
-                            },
-                          ),
-                          if (_passwordMessage != null) ...[
+                MergeSemantics(
+                  child: Card(
+                    child: Padding(
+                      padding: const EdgeInsets.all(20),
+                      child: Form(
+                        key: _passwordFormKey,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text('Change Password',
+                                style: theme.textTheme.titleLarge),
                             const SizedBox(height: 16),
-                            Container(
-                              padding: const EdgeInsets.all(12),
-                              decoration: BoxDecoration(
-                                color: _passwordSuccess
-                                    ? Colors.green.shade50
-                                    : theme.colorScheme.errorContainer,
-                                borderRadius: BorderRadius.circular(8),
+                            TextFormField(
+                              controller: _currentPasswordController,
+                              decoration: InputDecoration(
+                                labelText: 'Current Password',
+                                prefixIcon: const Icon(Icons.lock_outlined),
+                                suffixIcon: IconButton(
+                                  tooltip: _obscureCurrent
+                                      ? 'Show current password'
+                                      : 'Hide current password',
+                                  icon: Icon(_obscureCurrent
+                                      ? Icons.visibility_off
+                                      : Icons.visibility),
+                                  onPressed: () => setState(
+                                      () => _obscureCurrent = !_obscureCurrent),
+                                ),
                               ),
-                              child: Row(
-                                children: [
-                                  Icon(
-                                    _passwordSuccess
-                                        ? Icons.check_circle
-                                        : Icons.error_outline,
-                                    color: _passwordSuccess
-                                        ? Colors.green
-                                        : theme.colorScheme.error,
-                                    size: 20,
-                                  ),
-                                  const SizedBox(width: 8),
-                                  Expanded(
-                                      child: Text(_passwordMessage!,
-                                          style: TextStyle(
-                                              color: _passwordSuccess
-                                                  ? Colors.green.shade800
-                                                  : theme.colorScheme.error))),
-                                ],
+                              obscureText: _obscureCurrent,
+                              validator: (v) {
+                                if (v == null || v.isEmpty) {
+                                  return 'Current password is required';
+                                }
+                                return null;
+                              },
+                            ),
+                            const SizedBox(height: 16),
+                            TextFormField(
+                              controller: _newPasswordController,
+                              decoration: InputDecoration(
+                                labelText: 'New Password',
+                                prefixIcon: const Icon(Icons.lock_reset),
+                                suffixIcon: IconButton(
+                                  tooltip: _obscureNew
+                                      ? 'Show new password'
+                                      : 'Hide new password',
+                                  icon: Icon(_obscureNew
+                                      ? Icons.visibility_off
+                                      : Icons.visibility),
+                                  onPressed: () => setState(
+                                      () => _obscureNew = !_obscureNew),
+                                ),
+                              ),
+                              obscureText: _obscureNew,
+                              validator: (v) {
+                                if (v == null || v.isEmpty) {
+                                  return 'New password is required';
+                                }
+                                if (v.length < 6) {
+                                  return 'At least 6 characters';
+                                }
+                                return null;
+                              },
+                            ),
+                            const SizedBox(height: 16),
+                            TextFormField(
+                              controller: _confirmPasswordController,
+                              decoration: const InputDecoration(
+                                labelText: 'Confirm New Password',
+                                prefixIcon: Icon(Icons.lock_reset),
+                              ),
+                              obscureText: true,
+                              validator: (v) {
+                                if (v != _newPasswordController.text) {
+                                  return 'Passwords do not match';
+                                }
+                                return null;
+                              },
+                            ),
+                            if (_passwordMessage != null) ...[
+                              const SizedBox(height: 16),
+                              Container(
+                                padding: const EdgeInsets.all(12),
+                                decoration: BoxDecoration(
+                                  color: _passwordSuccess
+                                      ? Colors.green.shade50
+                                      : theme.colorScheme.errorContainer,
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: Row(
+                                  children: [
+                                    Icon(
+                                      _passwordSuccess
+                                          ? Icons.check_circle
+                                          : Icons.error_outline,
+                                      color: _passwordSuccess
+                                          ? Colors.green
+                                          : theme.colorScheme.error,
+                                      size: 20,
+                                    ),
+                                    const SizedBox(width: 8),
+                                    Expanded(
+                                        child: Text(_passwordMessage!,
+                                            style: TextStyle(
+                                                color: _passwordSuccess
+                                                    ? Colors.green.shade800
+                                                    : theme.colorScheme.error))),
+                                  ],
+                                ),
+                              ),
+                            ],
+                            const SizedBox(height: 20),
+                            SizedBox(
+                              width: double.infinity,
+                              child: OutlinedButton(
+                                key: const Key('change_password_button'),
+                                onPressed:
+                                    _changingPassword ? null : _changePassword,
+                                child: _changingPassword
+                                    ? const SizedBox(
+                                        height: 20,
+                                        width: 20,
+                                        child: CircularProgressIndicator(
+                                            strokeWidth: 2))
+                                    : const Text('Change Password'),
                               ),
                             ),
                           ],
-                          const SizedBox(height: 20),
-                          SizedBox(
-                            width: double.infinity,
-                            child: OutlinedButton(
-                              onPressed:
-                                  _changingPassword ? null : _changePassword,
-                              child: _changingPassword
-                                  ? const SizedBox(
-                                      height: 20,
-                                      width: 20,
-                                      child: CircularProgressIndicator(
-                                          strokeWidth: 2))
-                                  : const Text('Change Password'),
-                            ),
-                          ),
-                        ],
+                        ),
                       ),
                     ),
                   ),
@@ -509,14 +531,16 @@ class _ProfileEditorSheetState extends State<_ProfileEditorSheet> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Center(
-              child: Container(
-                width: 40,
-                height: 4,
-                margin: const EdgeInsets.only(bottom: 16),
-                decoration: BoxDecoration(
-                  color: theme.colorScheme.onSurfaceVariant.withAlpha(102),
-                  borderRadius: BorderRadius.circular(2),
+            ExcludeSemantics(
+              child: Center(
+                child: Container(
+                  width: 40,
+                  height: 4,
+                  margin: const EdgeInsets.only(bottom: 16),
+                  decoration: BoxDecoration(
+                    color: theme.colorScheme.onSurfaceVariant.withAlpha(102),
+                    borderRadius: BorderRadius.circular(2),
+                  ),
                 ),
               ),
             ),
@@ -528,46 +552,50 @@ class _ProfileEditorSheetState extends State<_ProfileEditorSheet> {
             ),
             const SizedBox(height: 24),
             Center(
-              child: GestureDetector(
-                onTap: _pickPhoto,
-                child: Stack(
-                  children: [
-                    CircleAvatar(
-                      radius: 48,
-                      backgroundColor: theme.colorScheme.primaryContainer,
-                      backgroundImage: _selectedPhotoBytes != null
-                          ? MemoryImage(_selectedPhotoBytes!)
-                          : (photoUrl.isNotEmpty
-                              ? NetworkImage(
-                                      widget.resolvePhotoUrl(photoUrl))
-                                  as ImageProvider
-                              : null),
-                      child: (_selectedPhotoBytes == null &&
-                              photoUrl.isEmpty)
-                          ? Text(
-                              initials,
-                              style:
-                                  theme.textTheme.headlineMedium?.copyWith(
-                                color:
-                                    theme.colorScheme.onPrimaryContainer,
-                              ),
-                            )
-                          : null,
-                    ),
-                    Positioned(
-                      bottom: 0,
-                      right: 0,
-                      child: Container(
-                        padding: const EdgeInsets.all(6),
-                        decoration: BoxDecoration(
-                          color: theme.colorScheme.primary,
-                          shape: BoxShape.circle,
-                        ),
-                        child: Icon(Icons.camera_alt,
-                            size: 16, color: theme.colorScheme.onPrimary),
+              child: Semantics(
+                label: 'Profile photo. Tap to change',
+                button: true,
+                child: GestureDetector(
+                  onTap: _pickPhoto,
+                  child: Stack(
+                    children: [
+                      CircleAvatar(
+                        radius: 48,
+                        backgroundColor: theme.colorScheme.primaryContainer,
+                        backgroundImage: _selectedPhotoBytes != null
+                            ? MemoryImage(_selectedPhotoBytes!)
+                            : (photoUrl.isNotEmpty
+                                ? NetworkImage(
+                                        widget.resolvePhotoUrl(photoUrl))
+                                    as ImageProvider
+                                : null),
+                        child: (_selectedPhotoBytes == null &&
+                                photoUrl.isEmpty)
+                            ? Text(
+                                initials,
+                                style:
+                                    theme.textTheme.headlineMedium?.copyWith(
+                                  color:
+                                      theme.colorScheme.onPrimaryContainer,
+                                ),
+                              )
+                            : null,
                       ),
-                    ),
-                  ],
+                      Positioned(
+                        bottom: 0,
+                        right: 0,
+                        child: Container(
+                          padding: const EdgeInsets.all(6),
+                          decoration: BoxDecoration(
+                            color: theme.colorScheme.primary,
+                            shape: BoxShape.circle,
+                          ),
+                          child: Icon(Icons.camera_alt,
+                              size: 16, color: theme.colorScheme.onPrimary),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -624,6 +652,7 @@ class _ProfileEditorSheetState extends State<_ProfileEditorSheet> {
             ),
             const SizedBox(height: 24),
             FilledButton(
+              key: const Key('save_profile_button'),
               onPressed: _isSaving ? null : _save,
               child: _isSaving
                   ? const SizedBox(

@@ -32,53 +32,60 @@ class PetCard extends StatelessWidget {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
-    return Card(
-      clipBehavior: Clip.antiAlias,
-      child: InkWell(
-        onTap: onTap,
-        child: Padding(
-          padding: const EdgeInsets.all(12),
-          child: Row(
-            children: [
-              _buildAvatar(colorScheme),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      pet.name,
-                      style: theme.textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      pet.breed.isNotEmpty
-                          ? '${pet.species} - ${pet.breed}'
-                          : pet.species,
-                      style: theme.textTheme.bodyMedium?.copyWith(
-                        color: colorScheme.onSurfaceVariant,
-                      ),
-                    ),
-                    if (pet.age != null) ...[
-                      const SizedBox(height: 2),
-                      Text(
-                        '${pet.age!.toStringAsFixed(1)} years old',
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          color: colorScheme.onSurfaceVariant,
+    return MergeSemantics(
+      child: Semantics(
+        label: 'Pet: ${pet.name}, ${pet.species}',
+        child: Card(
+          key: Key('pet_card_${pet.name}'),
+          clipBehavior: Clip.antiAlias,
+          child: InkWell(
+            onTap: onTap,
+            child: Padding(
+              padding: const EdgeInsets.all(12),
+              child: Row(
+                children: [
+                  _buildAvatar(colorScheme),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          pet.name,
+                          style: theme.textTheme.titleMedium?.copyWith(
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
-                      ),
-                    ],
-                  ],
-                ),
+                        const SizedBox(height: 4),
+                        Text(
+                          pet.breed.isNotEmpty
+                              ? '${pet.species} - ${pet.breed}'
+                              : pet.species,
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            color: colorScheme.onSurfaceVariant,
+                          ),
+                        ),
+                        if (pet.age != null) ...[
+                          const SizedBox(height: 2),
+                          Text(
+                            '${pet.age!.toStringAsFixed(1)} years old',
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              color: colorScheme.onSurfaceVariant,
+                            ),
+                          ),
+                        ],
+                      ],
+                    ),
+                  ),
+                  if (onDelete != null)
+                    IconButton(
+                      icon: Icon(Icons.delete_outline, color: colorScheme.error),
+                      tooltip: 'Delete ${pet.name}',
+                      onPressed: onDelete,
+                    ),
+                ],
               ),
-              if (onDelete != null)
-                IconButton(
-                  icon: Icon(Icons.delete_outline, color: colorScheme.error),
-                  onPressed: onDelete,
-                ),
-            ],
+            ),
           ),
         ),
       ),
@@ -114,6 +121,7 @@ class PetCard extends StatelessWidget {
         _speciesIcon(pet.species),
         size: 32,
         color: colorScheme.onPrimaryContainer,
+        semanticLabel: '${pet.species} icon',
       ),
     );
   }

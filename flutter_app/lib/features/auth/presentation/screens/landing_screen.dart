@@ -123,7 +123,12 @@ class _LandingScreenState extends ConsumerState<LandingScreen>
       crossAxisAlignment: CrossAxisAlignment.center,
       mainAxisSize: MainAxisSize.min,
       children: [
-        Image.asset('assets/logo.png', height: 120, width: 120),
+        Image.asset(
+          'assets/logo.png',
+          height: 120,
+          width: 120,
+          semanticLabel: 'Agatha Check logo',
+        ),
         const SizedBox(height: 20),
         Text(
           'Agatha Check',
@@ -134,14 +139,17 @@ class _LandingScreenState extends ConsumerState<LandingScreen>
           textAlign: TextAlign.center,
         ),
         const SizedBox(height: 20),
-        Text(
-          "Agatha Check keeps your pet's health organized, so you don't have to.",
-          style: theme.textTheme.titleMedium?.copyWith(
-            fontWeight: FontWeight.w600,
-            color: theme.colorScheme.onSurface,
-            height: 1.4,
+        Semantics(
+          label: 'App tagline',
+          child: Text(
+            "Agatha Check keeps your pet's health organized, so you don't have to.",
+            style: theme.textTheme.titleMedium?.copyWith(
+              fontWeight: FontWeight.w600,
+              color: theme.colorScheme.onSurface,
+              height: 1.4,
+            ),
+            textAlign: TextAlign.center,
           ),
-          textAlign: TextAlign.center,
         ),
         const SizedBox(height: 12),
         Text(
@@ -207,6 +215,7 @@ class _LandingScreenState extends ConsumerState<LandingScreen>
       child: Column(
         children: [
           TextFormField(
+            key: const Key('login_email_field'),
             controller: _loginEmailController,
             decoration: const InputDecoration(
               labelText: 'Email',
@@ -222,11 +231,13 @@ class _LandingScreenState extends ConsumerState<LandingScreen>
           ),
           const SizedBox(height: 16),
           TextFormField(
+            key: const Key('login_password_field'),
             controller: _loginPasswordController,
             decoration: InputDecoration(
               labelText: 'Password',
               prefixIcon: const Icon(Icons.lock_outlined),
               suffixIcon: IconButton(
+                tooltip: _loginObscure ? 'Show password' : 'Hide password',
                 icon: Icon(
                     _loginObscure ? Icons.visibility_off : Icons.visibility),
                 onPressed: () =>
@@ -246,6 +257,7 @@ class _LandingScreenState extends ConsumerState<LandingScreen>
           SizedBox(
             width: double.infinity,
             child: FilledButton(
+              key: const Key('login_submit_button'),
               onPressed: auth.isLoading ? null : _submitLogin,
               child: auth.isLoading
                   ? const SizedBox(
@@ -266,6 +278,7 @@ class _LandingScreenState extends ConsumerState<LandingScreen>
       child: Column(
         children: [
           TextFormField(
+            key: const Key('signup_name_field'),
             controller: _signupNameController,
             decoration: const InputDecoration(
               labelText: 'Name',
@@ -276,6 +289,7 @@ class _LandingScreenState extends ConsumerState<LandingScreen>
           ),
           const SizedBox(height: 16),
           TextFormField(
+            key: const Key('signup_email_field'),
             controller: _signupEmailController,
             decoration: const InputDecoration(
               labelText: 'Email',
@@ -291,11 +305,13 @@ class _LandingScreenState extends ConsumerState<LandingScreen>
           ),
           const SizedBox(height: 16),
           TextFormField(
+            key: const Key('signup_password_field'),
             controller: _signupPasswordController,
             decoration: InputDecoration(
               labelText: 'Password',
               prefixIcon: const Icon(Icons.lock_outlined),
               suffixIcon: IconButton(
+                tooltip: _signupObscure ? 'Show password' : 'Hide password',
                 icon: Icon(
                     _signupObscure ? Icons.visibility_off : Icons.visibility),
                 onPressed: () =>
@@ -312,6 +328,7 @@ class _LandingScreenState extends ConsumerState<LandingScreen>
           ),
           const SizedBox(height: 16),
           TextFormField(
+            key: const Key('signup_confirm_password_field'),
             controller: _signupConfirmController,
             decoration: const InputDecoration(
               labelText: 'Confirm Password',
@@ -331,6 +348,7 @@ class _LandingScreenState extends ConsumerState<LandingScreen>
           SizedBox(
             width: double.infinity,
             child: FilledButton(
+              key: const Key('signup_submit_button'),
               onPressed: auth.isLoading ? null : _submitSignup,
               child: auth.isLoading
                   ? const SizedBox(
@@ -349,22 +367,26 @@ class _LandingScreenState extends ConsumerState<LandingScreen>
     if (auth.error == null) return const SizedBox.shrink();
     return Padding(
       padding: const EdgeInsets.only(top: 16),
-      child: Container(
-        padding: const EdgeInsets.all(12),
-        decoration: BoxDecoration(
-          color: theme.colorScheme.errorContainer,
-          borderRadius: BorderRadius.circular(8),
-        ),
-        child: Row(
-          children: [
-            Icon(Icons.error_outline,
-                color: theme.colorScheme.error, size: 20),
-            const SizedBox(width: 8),
-            Expanded(
-              child: Text(auth.error!,
-                  style: TextStyle(color: theme.colorScheme.error)),
-            ),
-          ],
+      child: MergeSemantics(
+        child: Container(
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            color: theme.colorScheme.errorContainer,
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Row(
+            children: [
+              ExcludeSemantics(
+                child: Icon(Icons.error_outline,
+                    color: theme.colorScheme.error, size: 20),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(auth.error!,
+                    style: TextStyle(color: theme.colorScheme.error)),
+              ),
+            ],
+          ),
         ),
       ),
     );

@@ -33,6 +33,7 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
         title: const Text('Notifications'),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
+          tooltip: 'Back to home',
           onPressed: () => context.go('/'),
         ),
         actions: [
@@ -42,6 +43,7 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
             onPressed: () => context.push('/notifications/settings'),
           ),
           TextButton.icon(
+            key: const Key('mark_all_read_button'),
             icon: const Icon(Icons.done_all, size: 18),
             label: const Text('Mark all read'),
             onPressed: () async {
@@ -223,58 +225,67 @@ class _NotificationTile extends StatelessWidget {
         break;
     }
 
-    return ListTile(
-      leading: CircleAvatar(
-        backgroundColor: iconColor.withAlpha(30),
-        child: Icon(icon, color: iconColor, size: 22),
-      ),
-      title: Text(
-        notification.title,
-        style: theme.textTheme.bodyLarge?.copyWith(
-          fontWeight: isUnread ? FontWeight.bold : FontWeight.normal,
-        ),
-      ),
-      subtitle: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(notification.message,
-              maxLines: 2, overflow: TextOverflow.ellipsis),
-          if (notification.petName != null && notification.petName!.isNotEmpty)
-            Padding(
-              padding: const EdgeInsets.only(top: 2),
-              child: Text(
-                notification.petName!,
-                style: theme.textTheme.labelSmall?.copyWith(
-                  color: theme.colorScheme.primary,
-                ),
-              ),
-            ),
-        ],
-      ),
-      trailing: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text(
-            _formatTime(notification.createdAt),
-            style: theme.textTheme.labelSmall?.copyWith(
-              color: theme.colorScheme.onSurfaceVariant,
+    return MergeSemantics(
+      child: Semantics(
+        label: '${notification.type.name} notification: ${notification.title}, ${_formatTime(notification.createdAt)}${isUnread ? ', unread' : ''}',
+        child: ListTile(
+          leading: CircleAvatar(
+            backgroundColor: iconColor.withAlpha(30),
+            child: ExcludeSemantics(
+              child: Icon(icon, color: iconColor, size: 22),
             ),
           ),
-          if (isUnread)
-            Container(
-              margin: const EdgeInsets.only(top: 4),
-              width: 8,
-              height: 8,
-              decoration: BoxDecoration(
-                color: theme.colorScheme.primary,
-                shape: BoxShape.circle,
-              ),
+          title: Text(
+            notification.title,
+            style: theme.textTheme.bodyLarge?.copyWith(
+              fontWeight: isUnread ? FontWeight.bold : FontWeight.normal,
             ),
-        ],
+          ),
+          subtitle: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(notification.message,
+                  maxLines: 2, overflow: TextOverflow.ellipsis),
+              if (notification.petName != null && notification.petName!.isNotEmpty)
+                Padding(
+                  padding: const EdgeInsets.only(top: 2),
+                  child: Text(
+                    notification.petName!,
+                    style: theme.textTheme.labelSmall?.copyWith(
+                      color: theme.colorScheme.primary,
+                    ),
+                  ),
+                ),
+            ],
+          ),
+          trailing: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                _formatTime(notification.createdAt),
+                style: theme.textTheme.labelSmall?.copyWith(
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
+              ),
+              if (isUnread)
+                ExcludeSemantics(
+                  child: Container(
+                    margin: const EdgeInsets.only(top: 4),
+                    width: 8,
+                    height: 8,
+                    decoration: BoxDecoration(
+                      color: theme.colorScheme.primary,
+                      shape: BoxShape.circle,
+                    ),
+                  ),
+                ),
+            ],
+          ),
+          tileColor:
+              isUnread ? theme.colorScheme.primaryContainer.withAlpha(40) : null,
+          onTap: onTap,
+        ),
       ),
-      tileColor:
-          isUnread ? theme.colorScheme.primaryContainer.withAlpha(40) : null,
-      onTap: onTap,
     );
   }
 
