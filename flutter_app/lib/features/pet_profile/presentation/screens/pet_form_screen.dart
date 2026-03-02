@@ -35,6 +35,7 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
   final _ageController = TextEditingController();
   final _weightController = TextEditingController();
   final _bioController = TextEditingController();
+  final _insuranceController = TextEditingController();
 
   String _selectedSpecies = AppConstants.species.first;
   String? _selectedGender;
@@ -53,6 +54,7 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
     _ageController.dispose();
     _weightController.dispose();
     _bioController.dispose();
+    _insuranceController.dispose();
     super.dispose();
   }
 
@@ -62,6 +64,7 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
     _ageController.text = pet.age?.toString() ?? '';
     _weightController.text = pet.weight?.toString() ?? '';
     _bioController.text = pet.bio;
+    _insuranceController.text = pet.insurance;
     _selectedSpecies = pet.species;
     _selectedGender = pet.gender;
     _photoBase64 = pet.photoPath;
@@ -116,6 +119,7 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
           weight: weight,
           gender: _selectedGender,
           bio: _bioController.text.trim(),
+          insurance: _insuranceController.text.trim(),
           photoPath: _photoBase64,
           vetId: _selectedVetId,
           colorValue: _existingColorValue,
@@ -130,6 +134,7 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
               weight: weight,
               gender: _selectedGender,
               bio: _bioController.text.trim(),
+              insurance: _insuranceController.text.trim(),
               photoPath: _photoBase64,
               vetId: _selectedVetId,
             );
@@ -327,6 +332,18 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
               ),
               const SizedBox(height: 16),
               _buildVetDropdown(),
+              const SizedBox(height: 16),
+              TextFormField(
+                key: const Key('pet_insurance_field'),
+                controller: _insuranceController,
+                decoration: const InputDecoration(
+                  labelText: 'Insurance',
+                  prefixIcon: Icon(Icons.shield),
+                  alignLabelWithHint: true,
+                ),
+                maxLines: 4,
+                maxLength: 500,
+              ),
               const SizedBox(height: 24),
               FilledButton.icon(
                 key: const Key('save_pet_button'),

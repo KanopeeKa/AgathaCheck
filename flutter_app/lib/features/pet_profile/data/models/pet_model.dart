@@ -16,6 +16,7 @@ class PetModel {
     this.weight,
     this.gender,
     this.bio = '',
+    this.insurance = '',
     this.photoPath,
     this.vetId,
     this.colorValue,
@@ -31,6 +32,7 @@ class PetModel {
       weight: (json['weight'] as num?)?.toDouble(),
       gender: json['gender'] as String?,
       bio: (json['bio'] as String?) ?? '',
+      insurance: (json['insurance'] as String?) ?? '',
       photoPath: json['photoPath'] as String?,
       vetId: json['vetId'] as String?,
       colorValue: json['colorValue'] as int?,
@@ -47,6 +49,7 @@ class PetModel {
       weight: pet.weight,
       gender: pet.gender,
       bio: pet.bio,
+      insurance: pet.insurance,
       photoPath: pet.photoPath,
       vetId: pet.vetId,
       colorValue: pet.colorValue,
@@ -67,6 +70,7 @@ class PetModel {
   final double? weight;
   final String? gender;
   final String bio;
+  final String insurance;
   final String? photoPath;
   final String? vetId;
   final int? colorValue;
@@ -81,6 +85,7 @@ class PetModel {
       'weight': weight,
       'gender': gender,
       'bio': bio,
+      'insurance': insurance,
       'photoPath': photoPath,
       'vetId': vetId,
       'colorValue': colorValue,
@@ -99,6 +104,7 @@ class PetModel {
       weight: weight,
       gender: gender,
       bio: bio,
+      insurance: insurance,
       photoPath: photoPath,
       vetId: vetId,
       colorValue: colorValue,

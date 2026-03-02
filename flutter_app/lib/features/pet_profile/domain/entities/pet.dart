@@ -14,6 +14,7 @@ class Pet {
     this.weight,
     this.gender,
     this.bio = '',
+    this.insurance = '',
     this.photoPath,
     this.vetId,
     this.colorValue,
@@ -27,6 +28,7 @@ class Pet {
   final double? weight;
   final String? gender;
   final String bio;
+  final String insurance;
   final String? photoPath;
   final String? vetId;
   final int? colorValue;
@@ -62,6 +64,7 @@ class Pet {
     double? weight,
     String? gender,
     String? bio,
+    String? insurance,
     String? photoPath,
     String? vetId,
     int? colorValue,
@@ -77,6 +80,7 @@ class Pet {
       weight: weight ?? this.weight,
       gender: clearGender ? null : (gender ?? this.gender),
       bio: bio ?? this.bio,
+      insurance: insurance ?? this.insurance,
       photoPath: photoPath ?? this.photoPath,
       vetId: clearVetId ? null : (vetId ?? this.vetId),
       colorValue: colorValue ?? this.colorValue,

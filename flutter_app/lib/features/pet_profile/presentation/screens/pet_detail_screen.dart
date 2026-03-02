@@ -280,6 +280,35 @@ class _PetProfileCard extends ConsumerWidget {
                             style: theme.textTheme.bodyMedium?.copyWith(
                                 color: colorScheme.onSurfaceVariant)),
                       ],
+                      if (pet.insurance.isNotEmpty) ...[
+                        const SizedBox(height: 12),
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Icon(Icons.shield, size: 18,
+                                color: colorScheme.primary),
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text('Insurance',
+                                      style: theme.textTheme.labelMedium
+                                          ?.copyWith(
+                                              color: colorScheme.primary,
+                                              fontWeight: FontWeight.bold)),
+                                  const SizedBox(height: 2),
+                                  Text(pet.insurance,
+                                      style: theme.textTheme.bodyMedium
+                                          ?.copyWith(
+                                              color: colorScheme
+                                                  .onSurfaceVariant)),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
                     ],
                   ),
                 ),

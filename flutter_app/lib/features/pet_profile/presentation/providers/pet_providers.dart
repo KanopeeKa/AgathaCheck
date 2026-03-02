@@ -91,6 +91,7 @@ class PetListNotifier extends AsyncNotifier<List<Pet>> {
     double? weight,
     String? gender,
     String bio = '',
+    String insurance = '',
     String? photoPath,
     String? vetId,
   }) async {
@@ -115,6 +116,7 @@ class PetListNotifier extends AsyncNotifier<List<Pet>> {
       weight: weight,
       gender: gender,
       bio: bio,
+      insurance: insurance,
       photoPath: photoPath,
       vetId: vetId,
       colorValue: color,

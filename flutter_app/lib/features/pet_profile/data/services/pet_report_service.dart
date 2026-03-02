@@ -258,6 +258,8 @@ class PetReportService {
               _detailRow('Current Weight', _formatWeight(latestWeight, weightUnit),
                   highlight: true),
             if (pet.bio.isNotEmpty) _detailRow('Bio', pet.bio),
+            if (pet.insurance.isNotEmpty)
+              _detailRow('Insurance', pet.insurance),
             if (vet != null)
               _detailRow('Vet', [
                 vet.name,
