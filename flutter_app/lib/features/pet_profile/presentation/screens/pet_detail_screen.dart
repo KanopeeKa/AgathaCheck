@@ -1535,7 +1535,9 @@ class _NeuterReminderCard extends ConsumerWidget {
                   const SizedBox(width: 10),
                   Expanded(
                     child: Text(
-                      'Consider neutering ${pet.name}',
+                      pet.species == 'Other'
+                          ? 'Has ${pet.name} been neutered or spayed?'
+                          : 'Consider neutering ${pet.name}',
                       style: theme.textTheme.titleSmall?.copyWith(
                         fontWeight: FontWeight.bold,
                         color: colorScheme.onTertiaryContainer,
@@ -1546,11 +1548,16 @@ class _NeuterReminderCard extends ConsumerWidget {
               ),
               const SizedBox(height: 10),
               Text(
-                'Neutering or spaying helps prevent certain cancers, '
-                'reduces unwanted behaviours, and helps control the pet '
-                'population. It can also lower the risk of infections and '
-                'increase your pet\'s lifespan. Talk to your vet about the '
-                'best time for the procedure.',
+                pet.species == 'Other'
+                    ? 'Neutering or spaying is not suitable for every species. '
+                      'If your pet is a species where neutering applies, it can '
+                      'help prevent certain health issues and control the population. '
+                      'Talk to your vet to find out if it is appropriate for your pet.'
+                    : 'Neutering or spaying helps prevent certain cancers, '
+                      'reduces unwanted behaviours, and helps control the pet '
+                      'population. It can also lower the risk of infections and '
+                      'increase your pet\'s lifespan. Talk to your vet about the '
+                      'best time for the procedure.',
                 style: theme.textTheme.bodySmall?.copyWith(
                   color: colorScheme.onTertiaryContainer.withAlpha(200),
                 ),

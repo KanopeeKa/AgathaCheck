@@ -77,6 +77,11 @@ class AppConstants {
         return 'Rabbits can be microchipped by a vet, which is recommended in case they escape. '
             'Identification helps prove ownership and track health records. '
             'Contact your vet to get your rabbit chipped and add the ID number to their profile.';
+      case 'Other':
+        return 'Identification methods vary widely depending on the species. '
+            'Options may include microchipping, leg bands, photo documentation, '
+            'unique markings, tank labels, or a personal reference number. '
+            'Choose the method best suited to your pet and add the details to their profile.';
       default:
         return 'Microchipping is a legal requirement in many countries '
             'and helps reunite lost pets with their owners. A microchip '
