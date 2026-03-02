@@ -2,6 +2,7 @@ enum NotificationType {
   dueSoon,
   overdue,
   reminder,
+  completed,
   general,
 }
 

@@ -19,6 +19,7 @@ class _NotificationSettingsScreenState
   int _reminderDays = 1;
   bool _notifyOverdue = true;
   bool _notifyDueSoon = true;
+  bool _notifyCompleted = true;
   bool _initialized = false;
   bool _saving = false;
 
@@ -33,6 +34,7 @@ class _NotificationSettingsScreenState
         _reminderDays = prefs.reminderDaysBefore;
         _notifyOverdue = prefs.notifyOverdue;
         _notifyDueSoon = prefs.notifyDueSoon;
+        _notifyCompleted = prefs.notifyCompleted;
         _initialized = true;
       }
     });
@@ -69,6 +71,15 @@ class _NotificationSettingsScreenState
               onChanged: (v) => setState(() => _notifyDueSoon = v),
               secondary:
                   Icon(Icons.schedule, color: Colors.orange),
+            ),
+            SwitchListTile(
+              title: const Text('Completed Alerts'),
+              subtitle:
+                  const Text('Get notified when health entries are completed'),
+              value: _notifyCompleted,
+              onChanged: (v) => setState(() => _notifyCompleted = v),
+              secondary:
+                  Icon(Icons.check_circle, color: Colors.green),
             ),
             const Divider(),
             _SectionHeader(title: 'Email Reminders', theme: theme),
@@ -155,6 +166,7 @@ class _NotificationSettingsScreenState
             reminderDaysBefore: _reminderDays,
             notifyOverdue: _notifyOverdue,
             notifyDueSoon: _notifyDueSoon,
+            notifyCompleted: _notifyCompleted,
           ));
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(

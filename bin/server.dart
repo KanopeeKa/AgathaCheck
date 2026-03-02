@@ -115,9 +115,13 @@ Future<void> main() async {
       user_id INTEGER PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
       email_reminders_enabled BOOLEAN NOT NULL DEFAULT FALSE,
       reminder_days_before INTEGER NOT NULL DEFAULT 1,
+      notify_completed BOOLEAN NOT NULL DEFAULT TRUE,
       created_at TIMESTAMPTZ DEFAULT NOW(),
       updated_at TIMESTAMPTZ DEFAULT NOW()
     )
+  '''));
+  await _db.execute(Sql('''
+    ALTER TABLE notification_preferences ADD COLUMN IF NOT EXISTS notify_completed BOOLEAN NOT NULL DEFAULT TRUE
   '''));
   print('notification_preferences table ready');
 
@@ -771,7 +775,39 @@ Future<void> _createHealthEntry(HttpRequest request) async {
     },
   );
 
-  _jsonResponse(request, 201, _rowToMap(result.first));
+  final createdRow = _rowToMap(result.first);
+
+  final parsedNextDue = DateTime.tryParse(nextDueDate);
+  if (frequency == 'once' && parsedNextDue != null && parsedNextDue.year >= 9999) {
+    final payload = await _authenticateRequest(request);
+    if (payload != null) {
+      final userId = int.parse(payload['sub'].toString());
+      final prefResult = await _db.execute(
+        Sql.named('SELECT notify_completed FROM notification_preferences WHERE user_id = @userId'),
+        parameters: {'userId': userId},
+      );
+      final notifyCompleted = prefResult.isEmpty || (prefResult.first.toColumnMap()['notify_completed'] as bool? ?? true);
+      if (notifyCompleted) {
+        final petName = body['pet_name'] as String? ?? '';
+        final petPrefix = petName.isNotEmpty ? '$petName - ' : '';
+        await _db.execute(
+          Sql.named('''
+            INSERT INTO notifications (user_id, pet_id, health_entry_id, title, message, type)
+            VALUES (@userId, @petId, @entryId, @title, @message, 'completed')
+          '''),
+          parameters: {
+            'userId': userId,
+            'petId': petId,
+            'entryId': createdRow['id'].toString(),
+            'title': '${petPrefix}Completed: $name',
+            'message': '$name has been completed',
+          },
+        );
+      }
+    }
+  }
+
+  _jsonResponse(request, 201, createdRow);
 }
 
 Future<void> _updateHealthEntry(HttpRequest request) async {
@@ -902,6 +938,37 @@ Future<void> _markTaken(HttpRequest request) async {
     '''),
     parameters: {'id': id, 'nextDue': nextDue.toIso8601String()},
   );
+
+  if (frequency == 'once' && nextDue.year >= 9999) {
+    final payload = await _authenticateRequest(request);
+    if (payload != null) {
+      final userId = int.parse(payload['sub'].toString());
+      final prefResult = await _db.execute(
+        Sql.named('SELECT notify_completed FROM notification_preferences WHERE user_id = @userId'),
+        parameters: {'userId': userId},
+      );
+      final notifyCompleted = prefResult.isEmpty || (prefResult.first.toColumnMap()['notify_completed'] as bool? ?? true);
+      if (notifyCompleted) {
+        final entryName = row['name'].toString();
+        final petId = row['pet_id'].toString();
+        final petName = body?['pet_name'] as String? ?? '';
+        final petPrefix = petName.isNotEmpty ? '$petName - ' : '';
+        await _db.execute(
+          Sql.named('''
+            INSERT INTO notifications (user_id, pet_id, health_entry_id, title, message, type)
+            VALUES (@userId, @petId, @entryId, @title, @message, 'completed')
+          '''),
+          parameters: {
+            'userId': userId,
+            'petId': petId,
+            'entryId': id,
+            'title': '${petPrefix}Completed: $entryName',
+            'message': '$entryName has been completed',
+          },
+        );
+      }
+    }
+  }
 
   _jsonResponse(request, 200, _rowToMap(updated.first));
 }
@@ -1659,6 +1726,7 @@ Future<void> _getNotificationPreferences(HttpRequest request) async {
     'user_id': row['user_id'].toString(),
     'email_reminders_enabled': row['email_reminders_enabled'] as bool,
     'reminder_days_before': row['reminder_days_before'] as int,
+    'notify_completed': row['notify_completed'] as bool,
   });
 }
 
@@ -1675,20 +1743,23 @@ Future<void> _updateNotificationPreferences(HttpRequest request) async {
   final userId = int.parse(payload['sub'].toString());
   final emailEnabled = body['email_reminders_enabled'] as bool?;
   final reminderDays = body['reminder_days_before'] as int?;
+  final notifyCompleted = body['notify_completed'] as bool?;
 
   await _db.execute(
     Sql.named('''
-      INSERT INTO notification_preferences (user_id, email_reminders_enabled, reminder_days_before, updated_at)
-      VALUES (@userId, @emailEnabled, @reminderDays, NOW())
+      INSERT INTO notification_preferences (user_id, email_reminders_enabled, reminder_days_before, notify_completed, updated_at)
+      VALUES (@userId, @emailEnabled, @reminderDays, @notifyCompleted, NOW())
       ON CONFLICT (user_id) DO UPDATE SET
         email_reminders_enabled = COALESCE(@emailEnabled, notification_preferences.email_reminders_enabled),
         reminder_days_before = COALESCE(@reminderDays, notification_preferences.reminder_days_before),
+        notify_completed = COALESCE(@notifyCompleted, notification_preferences.notify_completed),
         updated_at = NOW()
     '''),
     parameters: {
       'userId': userId,
       'emailEnabled': emailEnabled ?? false,
       'reminderDays': reminderDays ?? 1,
+      'notifyCompleted': notifyCompleted ?? true,
     },
   );
 
@@ -1702,6 +1773,7 @@ Future<void> _updateNotificationPreferences(HttpRequest request) async {
     'user_id': row['user_id'].toString(),
     'email_reminders_enabled': row['email_reminders_enabled'] as bool,
     'reminder_days_before': row['reminder_days_before'] as int,
+    'notify_completed': row['notify_completed'] as bool,
   });
 }
 

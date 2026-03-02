@@ -213,6 +213,10 @@ class _NotificationTile extends StatelessWidget {
         icon = Icons.notifications_active;
         iconColor = theme.colorScheme.primary;
         break;
+      case NotificationType.completed:
+        icon = Icons.check_circle;
+        iconColor = Colors.green;
+        break;
       case NotificationType.general:
         icon = Icons.info_outline;
         iconColor = theme.colorScheme.onSurfaceVariant;

@@ -53,6 +53,8 @@ class NotificationModel extends AppNotification {
         return NotificationType.overdue;
       case 'reminder':
         return NotificationType.reminder;
+      case 'completed':
+        return NotificationType.completed;
       default:
         return NotificationType.general;
     }
@@ -64,12 +66,14 @@ class NotificationPreferencesModel {
   final int reminderDaysBefore;
   final bool notifyOverdue;
   final bool notifyDueSoon;
+  final bool notifyCompleted;
 
   const NotificationPreferencesModel({
     this.emailRemindersEnabled = false,
     this.reminderDaysBefore = 1,
     this.notifyOverdue = true,
     this.notifyDueSoon = true,
+    this.notifyCompleted = true,
   });
 
   factory NotificationPreferencesModel.fromJson(Map<String, dynamic> json) {
@@ -78,6 +82,7 @@ class NotificationPreferencesModel {
       reminderDaysBefore: (json['reminder_days_before'] as num?)?.toInt() ?? 1,
       notifyOverdue: json['notify_overdue'] != false,
       notifyDueSoon: json['notify_due_soon'] != false,
+      notifyCompleted: json['notify_completed'] != false,
     );
   }
 
@@ -87,6 +92,7 @@ class NotificationPreferencesModel {
       'reminder_days_before': reminderDaysBefore,
       'notify_overdue': notifyOverdue,
       'notify_due_soon': notifyDueSoon,
+      'notify_completed': notifyCompleted,
     };
   }
 }
