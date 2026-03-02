@@ -36,3 +36,24 @@ The application follows a clean architecture approach, separating concerns into 
 - **http**: For Flutter-to-API communication
 - **image_picker**: Photo selection for health entries
 - **pdf**, **printing**: PDF generation and sharing
+
+## SwiftUI Migration Notes
+The Dart API server is the shared backend for both Flutter and a future SwiftUI native client. All API responses use consistent `snake_case` JSON field naming (e.g., `access_token`, `refresh_token`, `first_name`, `photo_url`). The server accepts both `snake_case` and `camelCase` input for backward compatibility on refresh/logout endpoints.
+
+**API contract ready for native iOS:**
+- Auth: `POST /api/auth/signup`, `/login`, `/refresh`, `/logout`, `GET/PUT /api/auth/me`, `POST /api/auth/me/photo`, `POST /api/auth/change-password`
+- Health: `GET/POST /api/health-entries`, `PUT/DELETE /api/health-entries/:id`, `POST /:id/mark-taken`, `GET /:id/history`, photos via multipart
+- Weight: `GET/POST /api/weight-entries`, `PUT/DELETE /:id`, `GET /latest`
+- Vets: `GET/POST /api/vets`, `PUT/DELETE /:id`
+- Notifications: `GET /api/notifications`, `GET /unread-count`, `PUT /read-all`, `GET/PUT /preferences`, `POST /check-due`
+- Sharing: `POST /api/share`, `GET /api/share/:code`, `POST /api/share/:code/accept`, `GET /api/pets/:petId/access`, `PUT /api/pets/:petId/access/:userId/role`, `DELETE /api/pets/:petId/access/:userId`
+
+**SwiftUI-specific considerations:**
+- **Tokens**: Store in Keychain (not UserDefaults). JWT access tokens expire in 30 min; use refresh flow.
+- **Pet profiles**: Currently stored locally (SharedPreferences/Flutter). A future migration should add server-side pet CRUD (`POST/GET/PUT/DELETE /api/pets`) for cross-device sync.
+- **Pet photos**: Currently Base64-encoded in local storage. Migrate to server upload (same pattern as `/api/auth/me/photo`) for cross-device access.
+- **Image uploads**: Use standard `multipart/form-data` with field name `photo` (max 2MB).
+- **PDF reports**: Re-implement using `UIGraphicsPDFRenderer` or `PDFKit` on iOS; report content logic stays client-side.
+- **Dates**: Server returns ISO 8601 strings; use `ISO8601DateFormatter` in Swift.
+- **IDs**: Returned as strings in JSON (even when numeric in DB). Use `String` type in Swift models.
+- **Platform PDF**: `pdf_saver.dart` uses conditional exports — `pdf_saver_mobile.dart` (printing package share sheet) maps to `UIActivityViewController` in SwiftUI.

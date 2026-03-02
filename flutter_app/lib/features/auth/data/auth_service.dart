@@ -99,8 +99,8 @@ class AuthService {
     final data = json.decode(response.body) as Map<String, dynamic>;
     return AuthResult(
       user: AuthUser.fromJson(data['user'] as Map<String, dynamic>),
-      accessToken: data['accessToken'] as String,
-      refreshToken: data['refreshToken'] as String,
+      accessToken: (data['access_token'] ?? data['accessToken']) as String,
+      refreshToken: (data['refresh_token'] ?? data['refreshToken']) as String,
     );
   }
 
@@ -120,8 +120,8 @@ class AuthService {
     final data = json.decode(response.body) as Map<String, dynamic>;
     return AuthResult(
       user: AuthUser.fromJson(data['user'] as Map<String, dynamic>),
-      accessToken: data['accessToken'] as String,
-      refreshToken: data['refreshToken'] as String,
+      accessToken: (data['access_token'] ?? data['accessToken']) as String,
+      refreshToken: (data['refresh_token'] ?? data['refreshToken']) as String,
     );
   }
 
@@ -129,20 +129,20 @@ class AuthService {
     final response = await _client.post(
       Uri.parse('$baseUrl/api/auth/refresh'),
       headers: {'Content-Type': 'application/json'},
-      body: json.encode({'refreshToken': refreshToken}),
+      body: json.encode({'refresh_token': refreshToken}),
     );
     if (response.statusCode >= 400) {
       throw Exception('Session expired. Please log in again.');
     }
     final data = json.decode(response.body) as Map<String, dynamic>;
-    return data['accessToken'] as String;
+    return (data['access_token'] ?? data['accessToken']) as String;
   }
 
   Future<void> logout(String refreshToken) async {
     await _client.post(
       Uri.parse('$baseUrl/api/auth/logout'),
       headers: {'Content-Type': 'application/json'},
-      body: json.encode({'refreshToken': refreshToken}),
+      body: json.encode({'refresh_token': refreshToken}),
     );
   }
 

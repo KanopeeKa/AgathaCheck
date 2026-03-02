@@ -532,8 +532,8 @@ Future<void> _authSignup(HttpRequest request) async {
 
   _jsonResponse(request, 201, {
     'user': userJson,
-    'accessToken': accessToken,
-    'refreshToken': refreshToken,
+    'access_token': accessToken,
+    'refresh_token': refreshToken,
   });
 }
 
@@ -586,8 +586,8 @@ Future<void> _authLogin(HttpRequest request) async {
   final userJson = _userToJson(result.first);
   _jsonResponse(request, 200, {
     'user': userJson,
-    'accessToken': accessToken,
-    'refreshToken': refreshToken,
+    'access_token': accessToken,
+    'refresh_token': refreshToken,
   });
 }
 
@@ -595,9 +595,9 @@ Future<void> _authRefresh(HttpRequest request) async {
   final body = await _readJson(request);
   if (body == null) return;
 
-  final refreshToken = body['refreshToken'] as String? ?? '';
+  final refreshToken = (body['refresh_token'] ?? body['refreshToken']) as String? ?? '';
   if (refreshToken.isEmpty) {
-    _jsonResponse(request, 400, {'error': 'refreshToken is required'});
+    _jsonResponse(request, 400, {'error': 'refresh_token is required'});
     return;
   }
 
@@ -622,7 +622,7 @@ Future<void> _authRefresh(HttpRequest request) async {
   final newAccessToken = _createAccessToken(userId, email);
 
   _jsonResponse(request, 200, {
-    'accessToken': newAccessToken,
+    'access_token': newAccessToken,
   });
 }
 
@@ -630,7 +630,7 @@ Future<void> _authLogout(HttpRequest request) async {
   final body = await _readJson(request);
   if (body == null) return;
 
-  final refreshToken = body['refreshToken'] as String? ?? '';
+  final refreshToken = (body['refresh_token'] ?? body['refreshToken']) as String? ?? '';
   if (refreshToken.isNotEmpty) {
     await _db.execute(
       Sql.named('DELETE FROM refresh_tokens WHERE token = @token'),
