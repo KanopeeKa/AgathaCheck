@@ -237,7 +237,21 @@ class _MyDetailsScreenState extends ConsumerState<MyDetailsScreen> {
                     ),
                   ),
                 ),
-                const SizedBox(height: 24),
+                const SizedBox(height: 16),
+                Card(
+                  child: ListTile(
+                    key: const Key('subscription_tile'),
+                    leading: Icon(
+                      Icons.workspace_premium,
+                      color: theme.colorScheme.primary,
+                    ),
+                    title: const Text('Subscription'),
+                    subtitle: const Text('Manage your plan'),
+                    trailing: const Icon(Icons.chevron_right),
+                    onTap: () => context.push('/subscription'),
+                  ),
+                ),
+                const SizedBox(height: 16),
                 MergeSemantics(
                   child: Card(
                     child: Padding(

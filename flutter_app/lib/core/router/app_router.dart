@@ -13,6 +13,7 @@ import '../../features/pet_profile/presentation/screens/pet_detail_screen.dart';
 import '../../features/pet_profile/presentation/screens/pet_form_screen.dart';
 import '../../features/pet_profile/presentation/screens/pet_list_screen.dart';
 import '../../features/sharing/presentation/screens/shared_pet_screen.dart';
+import '../../features/subscription/presentation/screens/paywall_screen.dart';
 import '../../features/vet/presentation/screens/vet_form_screen.dart';
 import '../../features/vet/presentation/screens/vet_list_screen.dart';
 
@@ -168,6 +169,11 @@ final routerProvider = Provider<GoRouter>((ref) {
           final vetId = state.pathParameters['id']!;
           return VetFormScreen(vetId: vetId);
         },
+      ),
+      GoRoute(
+        path: '/subscription',
+        name: 'subscription',
+        builder: (context, state) => const PaywallScreen(),
       ),
       GoRoute(
         path: '/shared/:code',

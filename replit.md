@@ -24,6 +24,7 @@ The application follows a clean architecture approach, separating concerns into 
 - **Notification System**: In-app notification center with server-side due-entry checking and email reminder capabilities. Two notification categories: "Due Soon Alerts" (reminder/overdue types, clock icon) and "General" (bell icon, auto-generated on event/issue/share create/update/delete). Per-pet mute option in notification settings (stored server-side in `notification_preferences.muted_pet_ids`). Muted pets are filtered from the notification list and unread count. Data stored in PostgreSQL.
 - **Sharing Feature**: Multi-user pet access system with guardian/shared roles. Guardians can invite others via share links, manage access, and toggle roles. Shared users see only the guardian who invited them. Each share link is tied to a specific guardian. `pet_access` table tracks per-user access with roles. Shared pet views include owner profile card. Accept-share flow for logged-in users. Data stored in PostgreSQL.
 - **Pet Report Generation**: Generates comprehensive PDF reports for individual pets, including customizable sections for profile, weight tracking, health events, health issues (with linked events), and sharing (access list with roles).
+- **Subscription (RevenueCat)**: In-app subscription management via RevenueCat SDK (`purchases_flutter`, `purchases_ui_flutter`). Entitlement: "Agatah Check Unlimited". On web: gracefully skipped (no-op). On iOS/Android: full initialization, paywall presentation via `RevenueCatUI.presentPaywall()`, customer center via `RevenueCatUI.presentCustomerCenter()`, entitlement checking, purchase restore, and customer info listener. Singleton `RevenueCatService` initialized in `main()`. Auth-synced login/logout via `SubscriptionNotifier` listening to `authProvider`. Subscription screen accessible from My Details. Providers: `subscriptionStatusProvider`, `hasUnlimitedProvider`, `revenueCatServiceProvider`.
 - **Deployment**: The Flutter web frontend is served statically by a Dart API server, which is AOT compiled for production.
 
 ## External Dependencies
@@ -39,6 +40,7 @@ The application follows a clean architecture approach, separating concerns into 
 - **http**: For Flutter-to-API communication
 - **image_picker**: Photo selection for health entries
 - **pdf**, **printing**: PDF generation and sharing
+- **purchases_flutter**, **purchases_ui_flutter**: RevenueCat in-app subscriptions
 
 ## SwiftUI Migration Notes
 The Dart API server is the shared backend for both Flutter and a future SwiftUI native client. All API responses use consistent `snake_case` JSON field naming (e.g., `access_token`, `refresh_token`, `first_name`, `photo_url`). The server accepts both `snake_case` and `camelCase` input for backward compatibility on refresh/logout endpoints.
