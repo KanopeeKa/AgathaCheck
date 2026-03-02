@@ -14,17 +14,11 @@ class PetCard extends StatelessWidget {
     super.key,
     required this.pet,
     this.onTap,
-    this.onDelete,
-    this.onPassedAway,
   });
 
   final Pet pet;
 
   final VoidCallback? onTap;
-
-  final VoidCallback? onDelete;
-
-  final VoidCallback? onPassedAway;
 
   /// Builds the pet card with photo, name, breed, species, and delete action.
   @override
@@ -77,37 +71,12 @@ class PetCard extends StatelessWidget {
                       ],
                     ),
                   ),
-                  if (!pet.passedAway && onPassedAway != null)
-                    IconButton(
-                      icon: ShaderMask(
-                        shaderCallback: (bounds) => const LinearGradient(
-                          colors: [
-                            Color(0xFFFF0000),
-                            Color(0xFFFF8800),
-                            Color(0xFFFFFF00),
-                            Color(0xFF00CC00),
-                            Color(0xFF0066FF),
-                            Color(0xFF8800CC),
-                          ],
-                        ).createShader(bounds),
-                        blendMode: BlendMode.srcIn,
-                        child: const Icon(Icons.air, size: 22),
-                      ),
-                      tooltip: 'Passed Away',
-                      style: IconButton.styleFrom(
-                        backgroundColor: const Color(0xFF424242),
-                        shape: const CircleBorder(),
-                        padding: const EdgeInsets.all(6),
-                        minimumSize: const Size(34, 34),
-                      ),
-                      onPressed: onPassedAway,
+                  ExcludeSemantics(
+                    child: Icon(
+                      Icons.chevron_right,
+                      color: colorScheme.onSurfaceVariant,
                     ),
-                  if (onDelete != null)
-                    IconButton(
-                      icon: Icon(Icons.delete_outline, color: colorScheme.error),
-                      tooltip: 'Delete ${pet.name}',
-                      onPressed: onDelete,
-                    ),
+                  ),
                 ],
               ),
             ),

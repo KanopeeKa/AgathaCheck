@@ -1285,13 +1285,12 @@ class _SharingSection extends ConsumerWidget {
 
                 return Column(
                   children: [
-                    if (isGuardian)
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                        child: Row(
-                          children: [
-                            const Spacer(),
-                            FilledButton.tonalIcon(
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          FilledButton.tonalIcon(
                               onPressed: () async {
                                 final petJson = PetModel.fromEntity(pet).toJson();
                                 petJson.remove('photoPath');
@@ -1359,7 +1358,7 @@ class _SharingSection extends ConsumerWidget {
                       ),
                     if (accessList.isEmpty)
                       Padding(
-                        padding: const EdgeInsets.all(24),
+                        padding: const EdgeInsets.only(left: 24, right: 24, bottom: 24),
                         child: Column(
                           children: [
                             Icon(Icons.people_outline, size: 48,
@@ -1368,10 +1367,6 @@ class _SharingSection extends ConsumerWidget {
                             Text('No one else has access yet',
                                 style: theme.textTheme.bodyLarge?.copyWith(
                                     color: colorScheme.onSurfaceVariant)),
-                            const SizedBox(height: 4),
-                            Text('Tap "Share Pet" to generate a share link',
-                                style: theme.textTheme.bodySmall?.copyWith(
-                                    color: colorScheme.outline)),
                           ],
                         ),
                       )
@@ -2064,6 +2059,7 @@ class _HealthIssuesSectionState extends ConsumerState<_HealthIssuesSection> {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               child: Row(
+                mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   Tooltip(
                     message: 'Add health issue',

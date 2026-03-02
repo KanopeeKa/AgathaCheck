@@ -39,6 +39,7 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
   bool? _isNeutered;
   bool _neuterDismissed = false;
   bool _chipDismissed = false;
+  bool _passedAway = false;
   bool _isLoading = false;
   bool _isInitialized = false;
 
@@ -73,6 +74,7 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
     _isNeutered = pet.neuteredDate != null ? true : null;
     _neuterDismissed = pet.neuterDismissed;
     _chipDismissed = pet.chipDismissed;
+    _passedAway = pet.passedAway;
   }
 
   Future<void> _pickImage() async {
@@ -113,6 +115,132 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
         _neuterDismissed = false;
       });
     }
+  }
+
+  Future<void> _confirmDeletePet() async {
+    final petName = _nameController.text.trim();
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Delete Pet'),
+        content: Text(
+          'Are you sure you want to delete $petName? '
+          'This will permanently remove all linked health events, '
+          'health issues, weight records, notifications, and '
+          'shared access for this pet.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(false),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            style: FilledButton.styleFrom(
+              backgroundColor: Theme.of(ctx).colorScheme.error,
+            ),
+            onPressed: () => Navigator.of(ctx).pop(true),
+            child: const Text('Delete'),
+          ),
+        ],
+      ),
+    );
+    if (confirmed == true && mounted) {
+      await ref.read(petListProvider.notifier).deletePet(widget.petId!);
+      if (mounted) context.go('/');
+    }
+  }
+
+  Future<void> _confirmPassedAway() async {
+    final petName = _nameController.text.trim();
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Row(
+          children: [
+            Icon(Icons.favorite, color: Colors.grey[400], size: 22),
+            const SizedBox(width: 8),
+            const Text('Passed Away'),
+          ],
+        ),
+        content: Text(
+          'Are you sure you would like to mark $petName as having passed away?',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(false),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            style: FilledButton.styleFrom(
+              backgroundColor: Colors.grey[600],
+            ),
+            onPressed: () => Navigator.of(ctx).pop(true),
+            child: const Text('Continue'),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true || !mounted) return;
+
+    final hasSharedUsers = await ref
+        .read(petListProvider.notifier)
+        .markPassedAway(widget.petId!);
+
+    if (!mounted) return;
+
+    await showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (ctx) {
+        final theme = Theme.of(ctx);
+        return AlertDialog(
+          title: Row(
+            children: [
+              Icon(Icons.favorite, color: Colors.grey[400], size: 22),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  'In loving memory of $petName',
+                  style: theme.textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'We are deeply sorry for your loss. $petName has crossed the rainbow bridge, and we know how much they meant to you.',
+                style: theme.textTheme.bodyMedium,
+              ),
+              if (hasSharedUsers) ...[
+                const SizedBox(height: 16),
+                Text(
+                  'A notification has been sent to everyone who shared $petName\'s profile to let them know of their passing.',
+                  style: theme.textTheme.bodyMedium,
+                ),
+              ],
+              const SizedBox(height: 16),
+              Text(
+                'We will remove any further health reminders and notifications. $petName\'s profile will be kept in your archive so you can always look back on their memories.',
+                style: theme.textTheme.bodyMedium,
+              ),
+            ],
+          ),
+          actions: [
+            FilledButton(
+              onPressed: () => Navigator.of(ctx).pop(),
+              child: const Text('Thank you'),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (mounted) context.go('/');
   }
 
   Future<void> _savePet() async {
@@ -388,6 +516,49 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
                     : const Icon(Icons.save),
                 label: Text(_isEditing ? 'Update Pet' : 'Save Pet'),
               ),
+              if (_isEditing) ...[
+                const SizedBox(height: 32),
+                const Divider(),
+                const SizedBox(height: 16),
+                OutlinedButton.icon(
+                  key: const Key('delete_pet_button'),
+                  onPressed: _isLoading ? null : _confirmDeletePet,
+                  icon: Icon(Icons.delete_outline, color: theme.colorScheme.error),
+                  label: Text(
+                    'Delete Pet',
+                    style: TextStyle(color: theme.colorScheme.error),
+                  ),
+                  style: OutlinedButton.styleFrom(
+                    side: BorderSide(color: theme.colorScheme.error.withAlpha(120)),
+                  ),
+                ),
+                if (!_passedAway) ...[
+                  const SizedBox(height: 12),
+                  OutlinedButton.icon(
+                    key: const Key('passed_away_button'),
+                    onPressed: _isLoading ? null : _confirmPassedAway,
+                    icon: ShaderMask(
+                      shaderCallback: (bounds) => const LinearGradient(
+                        colors: [
+                          Color(0xFFFF0000),
+                          Color(0xFFFF8800),
+                          Color(0xFFFFFF00),
+                          Color(0xFF00CC00),
+                          Color(0xFF0066FF),
+                          Color(0xFF8800CC),
+                        ],
+                      ).createShader(bounds),
+                      blendMode: BlendMode.srcIn,
+                      child: const Icon(Icons.air, size: 20),
+                    ),
+                    label: const Text('Passed Away'),
+                    style: OutlinedButton.styleFrom(
+                      side: BorderSide(color: theme.colorScheme.outline.withAlpha(80)),
+                    ),
+                  ),
+                ],
+                const SizedBox(height: 16),
+              ],
             ],
           ),
         ),
