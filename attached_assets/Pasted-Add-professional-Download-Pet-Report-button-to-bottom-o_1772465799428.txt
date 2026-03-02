@@ -1,0 +1,41 @@
+Add professional "Download Pet Report" button to bottom of pet detail screen (new section after health events). Generate nicely formatted PDF report with user-selected sections using pdf package. Design cross-platform for SwiftUI migration (standard Flutter widgets, no platform channels). It needs to follow the branding of the website, but make sure the background is white, that the contrast is good and easy to read. 
+Button & Selection Flow:
+1. FAB/Button at screen bottom: "📄 Download Pet Report" (prominent, styled)
+2. Modal Bottom Sheet on tap:
+    * Checkbox: "Pet Profile" (always selected/required)
+    * Checkbox: "Weight Tracking" (graph + table)
+    * Checkbox: "Health Events" → sub-dialog if selected:
+        * Date range pickers: From [DatePicker] To [DatePicker] (default last 6 months)
+        * Toggle: "Include full log for each event" (default off)
+    * "Generate PDF" button
+PDF Generation (pdf + printing packages): Add to pubspec: pdf, pdf/widgets, printing, intl
+PDF Structure (A4 portrait, branded header with pet photo/name):
+
+text
+[Pet Photo + Name/Breed/Age at top]
+
+1. PET PROFILE [always]
+   - All pet details in clean table/cards
+   - Current weight prominently displayed
+
+2. WEIGHT TRACKING [if selected]
+   - Line graph (screenshot/export from fl_chart or generate via pdf charts)
+   - Data table: date | weight | notes
+   
+3. HEALTH EVENTS [if selected, filtered by date range]
+   Section A: CURRENT & RECURRING EVENTS
+     - Event name | next due | details
+   
+   Section B: EVENTS IN PERIOD [from-to dates]
+     - Chronological list/table
+     - Per event: name | date | details | photos (thumbnails)
+     - If "full log": show complete history (admin/doses)
+
+Footer: Generated [date] | Pet app branding
+Technical:
+* Use pdf package for generation, printing for download/share
+* Generate graph image: render fl_chart to PNG via RepaintBoundary + screenshot
+* Server endpoint if needed: GET /api/pet/:id/report-data?sections=...&from=...&to=...&fullLog=...
+* Handle empty sections gracefully ("No data")
+Deliverables: Complete flow (selection → PDF gen → download), test all section combos/timeframes/full log toggle. SwiftUI notes: pdf → SwiftPDF or html→pdf via WKWebView.
+PDF auto-downloads on web/mobile, supports print/share.

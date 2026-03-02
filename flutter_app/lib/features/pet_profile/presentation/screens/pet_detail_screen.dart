@@ -8,6 +8,7 @@ import 'package:go_router/go_router.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'package:printing/printing.dart';
 import '../../../health_tracking/domain/entities/health_entry.dart';
 import '../../../health_tracking/presentation/providers/health_providers.dart';
 import '../../../health_tracking/presentation/widgets/health_entry_card.dart';
@@ -15,6 +16,7 @@ import '../../../vet/presentation/providers/vet_providers.dart';
 import '../../../weight_tracking/domain/entities/weight_entry.dart';
 import '../../../weight_tracking/presentation/providers/weight_providers.dart';
 import '../../data/models/pet_model.dart';
+import '../../data/services/pet_report_service.dart';
 import '../../domain/entities/pet.dart';
 import '../providers/pet_providers.dart';
 
@@ -155,6 +157,9 @@ class _PetDetailScreenState extends ConsumerState<PetDetailScreen> {
               ),
               SliverToBoxAdapter(
                 child: _HealthEventsSection(petId: widget.petId),
+              ),
+              SliverToBoxAdapter(
+                child: _DownloadReportSection(pet: pet),
               ),
               const SliverToBoxAdapter(
                 child: SizedBox(height: 32),
@@ -1010,6 +1015,313 @@ class _FilterChipWidget extends StatelessWidget {
       label: Text(label),
       selected: selected,
       onSelected: (_) => onSelected(),
+    );
+  }
+}
+
+class _DownloadReportSection extends ConsumerWidget {
+  const _DownloadReportSection({required this.pet});
+
+  final Pet pet;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      child: FilledButton.icon(
+        onPressed: () => _showReportSheet(context, ref),
+        icon: const Icon(Icons.description),
+        label: const Text('Download Pet Report'),
+        style: FilledButton.styleFrom(
+          minimumSize: const Size(double.infinity, 52),
+          backgroundColor: colorScheme.primary,
+          foregroundColor: colorScheme.onPrimary,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _showReportSheet(BuildContext context, WidgetRef ref) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (_) => _ReportSelectionSheet(pet: pet),
+    );
+  }
+}
+
+class _ReportSelectionSheet extends ConsumerStatefulWidget {
+  const _ReportSelectionSheet({required this.pet});
+
+  final Pet pet;
+
+  @override
+  ConsumerState<_ReportSelectionSheet> createState() =>
+      _ReportSelectionSheetState();
+}
+
+class _ReportSelectionSheetState extends ConsumerState<_ReportSelectionSheet> {
+  final bool _includeProfile = true;
+  bool _includeWeight = true;
+  bool _includeHealth = true;
+  bool _includeFullLog = false;
+  bool _isGenerating = false;
+
+  late DateTime _healthFrom;
+  late DateTime _healthTo;
+
+  @override
+  void initState() {
+    super.initState();
+    final now = DateTime.now();
+    _healthTo = now;
+    _healthFrom = DateTime(now.year, now.month - 6, now.day);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
+    return Padding(
+      padding: EdgeInsets.only(
+        left: 24,
+        right: 24,
+        top: 16,
+        bottom: MediaQuery.of(context).viewInsets.bottom + 24,
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Center(
+            child: Container(
+              width: 40,
+              height: 4,
+              decoration: BoxDecoration(
+                color: colorScheme.outlineVariant,
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+          ),
+          const SizedBox(height: 16),
+          Text('Pet Report',
+              style: theme.textTheme.titleLarge
+                  ?.copyWith(fontWeight: FontWeight.bold)),
+          const SizedBox(height: 4),
+          Text('Choose which sections to include',
+              style: theme.textTheme.bodyMedium
+                  ?.copyWith(color: colorScheme.onSurfaceVariant)),
+          const SizedBox(height: 20),
+          CheckboxListTile(
+            value: _includeProfile,
+            onChanged: null,
+            title: const Text('Pet Profile'),
+            subtitle: const Text('Basic info, vet details'),
+            secondary: Icon(Icons.pets, color: colorScheme.primary),
+            dense: true,
+            contentPadding: EdgeInsets.zero,
+          ),
+          CheckboxListTile(
+            value: _includeWeight,
+            onChanged: (v) => setState(() => _includeWeight = v ?? false),
+            title: const Text('Weight Tracking'),
+            subtitle: const Text('Chart and data table'),
+            secondary: Icon(Icons.monitor_weight, color: colorScheme.primary),
+            dense: true,
+            contentPadding: EdgeInsets.zero,
+          ),
+          CheckboxListTile(
+            value: _includeHealth,
+            onChanged: (v) => setState(() => _includeHealth = v ?? false),
+            title: const Text('Health Events'),
+            subtitle: const Text('Medications, vaccines, procedures'),
+            secondary: Icon(Icons.list_alt, color: colorScheme.primary),
+            dense: true,
+            contentPadding: EdgeInsets.zero,
+          ),
+          if (_includeHealth) ...[
+            Padding(
+              padding: const EdgeInsets.only(left: 40),
+              child: Column(
+                children: [
+                  Row(
+                    children: [
+                      Expanded(
+                        child: _DatePickerField(
+                          label: 'From',
+                          date: _healthFrom,
+                          onChanged: (d) =>
+                              setState(() => _healthFrom = d),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: _DatePickerField(
+                          label: 'To',
+                          date: _healthTo,
+                          onChanged: (d) =>
+                              setState(() => _healthTo = d),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 4),
+                  CheckboxListTile(
+                    value: _includeFullLog,
+                    onChanged: (v) =>
+                        setState(() => _includeFullLog = v ?? false),
+                    title: const Text('Include full log for each event'),
+                    dense: true,
+                    contentPadding: EdgeInsets.zero,
+                    controlAffinity: ListTileControlAffinity.leading,
+                  ),
+                ],
+              ),
+            ),
+          ],
+          const SizedBox(height: 20),
+          FilledButton.icon(
+            onPressed: _isGenerating ? null : _generateReport,
+            icon: _isGenerating
+                ? const SizedBox(
+                    width: 18,
+                    height: 18,
+                    child: CircularProgressIndicator(
+                        strokeWidth: 2, color: Colors.white),
+                  )
+                : const Icon(Icons.picture_as_pdf),
+            label: Text(_isGenerating ? 'Generating...' : 'Generate PDF'),
+            style: FilledButton.styleFrom(
+              minimumSize: const Size(double.infinity, 48),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _generateReport() async {
+    setState(() => _isGenerating = true);
+
+    try {
+      final pet = widget.pet;
+
+      final weightEntries =
+          await ref.read(weightEntriesNotifierProvider(pet.id).future);
+
+      List<HealthEntry> healthEntries = [];
+      Map<String, List<Map<String, dynamic>>> histories = {};
+
+      if (_includeHealth) {
+        healthEntries =
+            await ref.read(petHealthEntriesProvider(pet.id).future);
+
+        if (_includeFullLog) {
+          final repo = ref.read(healthRepositoryProvider);
+          for (final entry in healthEntries) {
+            try {
+              final h = await repo.getHistory(entry.id);
+              histories[entry.id] = h
+                  .map((he) => {
+                        'taken_at': he.takenAt.toIso8601String(),
+                        'notes': he.notes,
+                      })
+                  .toList();
+            } catch (_) {}
+          }
+        }
+      }
+
+      final vetsAsync = ref.read(vetListProvider);
+      final vets = vetsAsync.valueOrNull ?? [];
+      final assignedVet = (pet.vetId != null && pet.vetId!.isNotEmpty)
+          ? vets.where((v) => v.id == pet.vetId).firstOrNull
+          : null;
+
+      final unit = ref.read(weightUnitProvider(pet.id));
+      final unitLabel = unit == WeightUnit.lb ? 'lb' : 'kg';
+
+      final service = PetReportService();
+      final pdfBytes = await service.generateReport(
+        pet: pet,
+        sections: ReportSections(
+          petProfile: _includeProfile,
+          weightTracking: _includeWeight,
+          healthEvents: _includeHealth,
+          healthFrom: _healthFrom,
+          healthTo: _healthTo,
+          includeFullLog: _includeFullLog,
+        ),
+        vet: assignedVet,
+        weightEntries: weightEntries,
+        healthEntries: healthEntries,
+        healthHistories: histories,
+        weightUnit: unitLabel,
+      );
+
+      if (!mounted) return;
+      Navigator.pop(context);
+
+      await Printing.sharePdf(
+        bytes: pdfBytes,
+        filename: '${pet.name.replaceAll(' ', '_')}_report.pdf',
+      );
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to generate report: $e')),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _isGenerating = false);
+    }
+  }
+}
+
+class _DatePickerField extends StatelessWidget {
+  const _DatePickerField({
+    required this.label,
+    required this.date,
+    required this.onChanged,
+  });
+
+  final String label;
+  final DateTime date;
+  final ValueChanged<DateTime> onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    final dateFormat = DateFormat('MMM d, yyyy');
+    return InkWell(
+      onTap: () async {
+        final picked = await showDatePicker(
+          context: context,
+          initialDate: date,
+          firstDate: DateTime(2000),
+          lastDate: DateTime.now().add(const Duration(days: 365)),
+        );
+        if (picked != null) onChanged(picked);
+      },
+      child: InputDecorator(
+        decoration: InputDecoration(
+          labelText: label,
+          isDense: true,
+          contentPadding:
+              const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+        ),
+        child: Text(dateFormat.format(date),
+            style: const TextStyle(fontSize: 13)),
+      ),
     );
   }
 }
