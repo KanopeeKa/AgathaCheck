@@ -218,42 +218,13 @@ class PetReportService {
               _detailRow('Current Weight', _formatWeight(latestWeight, weightUnit),
                   highlight: true),
             if (pet.bio.isNotEmpty) _detailRow('Bio', pet.bio),
-            if (vet != null) ...[
-              pw.SizedBox(height: 8),
-              pw.Container(
-                padding: const pw.EdgeInsets.all(10),
-                decoration: pw.BoxDecoration(
-                  color: _brandPurpleLight,
-                  borderRadius: pw.BorderRadius.circular(4),
-                ),
-                child: pw.Column(
-                  crossAxisAlignment: pw.CrossAxisAlignment.start,
-                  children: [
-                    pw.Text('Veterinarian',
-                        style: pw.TextStyle(
-                            fontSize: 10,
-                            fontWeight: pw.FontWeight.bold,
-                            color: _brandPurple)),
-                    pw.SizedBox(height: 4),
-                    pw.Text(vet.name,
-                        style: pw.TextStyle(
-                            fontSize: 11, fontWeight: pw.FontWeight.bold)),
-                    if (vet.phone.isNotEmpty)
-                      pw.Text(vet.phone,
-                          style:
-                              const pw.TextStyle(fontSize: 9, color: _textMuted)),
-                    if (vet.email.isNotEmpty)
-                      pw.Text(vet.email,
-                          style:
-                              const pw.TextStyle(fontSize: 9, color: _textMuted)),
-                    if (vet.address.isNotEmpty)
-                      pw.Text(vet.address,
-                          style:
-                              const pw.TextStyle(fontSize: 9, color: _textMuted)),
-                  ],
-                ),
-              ),
-            ],
+            if (vet != null)
+              _detailRow('Vet', [
+                vet.name,
+                if (vet.phone.isNotEmpty) vet.phone,
+                if (vet.email.isNotEmpty) vet.email,
+                if (vet.address.isNotEmpty) vet.address,
+              ].join(' - ')),
           ],
         ),
       ),
