@@ -340,8 +340,10 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
                 ],
               ),
               const SizedBox(height: 16),
-              _buildNeuteredDateField(theme),
-              const SizedBox(height: 16),
+              if (!AppConstants.speciesWithoutNeutering.contains(_selectedSpecies))
+                _buildNeuteredDateField(theme),
+              if (!AppConstants.speciesWithoutNeutering.contains(_selectedSpecies))
+                const SizedBox(height: 16),
               TextFormField(
                 key: const Key('pet_bio_field'),
                 controller: _bioController,

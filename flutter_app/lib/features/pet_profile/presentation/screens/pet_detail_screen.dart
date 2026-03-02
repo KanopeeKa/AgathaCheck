@@ -8,6 +8,7 @@ import 'package:go_router/go_router.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:fl_chart/fl_chart.dart';
+import '../../../../core/utils/constants.dart';
 import '../../data/services/pdf_saver.dart' as pdf_saver;
 import '../../../auth/presentation/providers/auth_providers.dart';
 import '../../../notifications/presentation/providers/notification_providers.dart';
@@ -191,7 +192,7 @@ class _PetDetailScreenState extends ConsumerState<PetDetailScreen> {
                   child: _PetProfileCard(pet: pet),
                 ),
               ),
-              if (pet.neuteredDate == null && !pet.neuterDismissed)
+              if (pet.neuteredDate == null && !pet.neuterDismissed && !AppConstants.speciesWithoutNeutering.contains(pet.species))
                 SliverToBoxAdapter(
                   child: _NeuterReminderCard(pet: pet),
                 ),
@@ -1599,7 +1600,7 @@ class _ChipReminderCard extends ConsumerWidget {
                   const SizedBox(width: 10),
                   Expanded(
                     child: Text(
-                      '${pet.name} has no microchip ID',
+                      AppConstants.identificationTitle(pet.species, pet.name),
                       style: theme.textTheme.titleSmall?.copyWith(
                         fontWeight: FontWeight.bold,
                         color: colorScheme.onSecondaryContainer,
@@ -1610,11 +1611,7 @@ class _ChipReminderCard extends ConsumerWidget {
               ),
               const SizedBox(height: 10),
               Text(
-                'Microchipping is a legal requirement in many countries '
-                'and helps reunite lost pets with their owners. A microchip '
-                'is a small, permanent form of identification implanted '
-                'under your pet\'s skin. Contact your vet to get your pet '
-                'chipped and add the ID number to their profile.',
+                AppConstants.identificationMessage(pet.species),
                 style: theme.textTheme.bodySmall?.copyWith(
                   color: colorScheme.onSecondaryContainer.withAlpha(200),
                 ),
