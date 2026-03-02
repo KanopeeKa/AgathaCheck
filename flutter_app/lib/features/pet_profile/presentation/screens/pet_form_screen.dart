@@ -729,11 +729,10 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
                       : Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Icon(
-                              AppConstants.speciesIcon(_selectedSpecies),
+                            AppConstants.speciesIconWidget(
+                              _selectedSpecies,
                               size: 40,
                               color: theme.colorScheme.primary.withAlpha(180),
-                              semanticLabel: '$_selectedSpecies icon',
                             ),
                             const SizedBox(height: 4),
                             Icon(

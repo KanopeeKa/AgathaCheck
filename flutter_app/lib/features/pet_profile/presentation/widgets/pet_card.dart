@@ -120,28 +120,34 @@ class PetCard extends StatelessWidget {
     }
 
     if (pet.passedAway) {
-      return Stack(
-        alignment: Alignment.center,
-        children: [
-          ColorFiltered(
-            colorFilter: const ColorFilter.mode(
-              Color(0x88FFFFFF),
-              BlendMode.lighten,
-            ),
-            child: avatar,
-          ),
-          SizedBox(
-            width: 52,
-            height: 52,
-            child: Opacity(
-              opacity: 0.7,
-              child: Image.asset(
-                'assets/rainbow_wings.png',
-                fit: BoxFit.contain,
+      return ClipOval(
+        child: SizedBox(
+          width: 68,
+          height: 68,
+          child: Stack(
+            alignment: Alignment.center,
+            children: [
+              ColorFiltered(
+                colorFilter: const ColorFilter.mode(
+                  Color(0xBBFFFFFF),
+                  BlendMode.lighten,
+                ),
+                child: avatar,
               ),
-            ),
+              SizedBox(
+                width: 50,
+                height: 50,
+                child: Opacity(
+                  opacity: 0.45,
+                  child: Image.asset(
+                    'assets/rainbow_wings.png',
+                    fit: BoxFit.contain,
+                  ),
+                ),
+              ),
+            ],
           ),
-        ],
+        ),
       );
     }
 
@@ -157,12 +163,7 @@ class PetCard extends StatelessWidget {
         shape: BoxShape.circle,
         border: Border.all(color: petColor, width: 3),
       ),
-      child: Icon(
-        AppConstants.speciesIcon(pet.species),
-        size: 32,
-        color: petColor,
-        semanticLabel: '${pet.species} icon',
-      ),
+      child: AppConstants.speciesIconWidget(pet.species, size: 32, color: petColor),
     );
   }
 

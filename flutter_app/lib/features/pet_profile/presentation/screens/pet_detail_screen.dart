@@ -288,7 +288,7 @@ class _PetProfileCard extends ConsumerWidget {
                         spacing: 8,
                         runSpacing: 8,
                         children: [
-                          _InfoChip(icon: AppConstants.speciesIcon(pet.species), label: pet.species),
+                          _InfoChipWidget(iconWidget: AppConstants.speciesIconWidget(pet.species, size: 18), label: pet.species),
                           if (pet.breed.isNotEmpty)
                             _InfoChip(icon: Icons.pets, label: pet.breed),
                           if (pet.gender != null && pet.gender!.isNotEmpty)
@@ -926,14 +926,14 @@ class _PetPhoto extends StatelessWidget {
         children: [
           ColorFiltered(
             colorFilter: const ColorFilter.mode(
-              Color(0x88FFFFFF),
+              Color(0xBBFFFFFF),
               BlendMode.lighten,
             ),
             child: photoContent,
           ),
           Center(
             child: Opacity(
-              opacity: 0.6,
+              opacity: 0.45,
               child: Image.asset(
                 'assets/rainbow_wings.png',
                 width: 80,
@@ -986,6 +986,37 @@ class _InfoChip extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           Icon(icon, size: 16, color: colorScheme.onSecondaryContainer),
+          const SizedBox(width: 4),
+          Text(label,
+              style: TextStyle(
+                  fontSize: 13,
+                  color: colorScheme.onSecondaryContainer,
+                  fontWeight: FontWeight.w500)),
+        ],
+      ),
+    );
+  }
+}
+
+class _InfoChipWidget extends StatelessWidget {
+  const _InfoChipWidget({required this.iconWidget, required this.label});
+
+  final Widget iconWidget;
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+      decoration: BoxDecoration(
+        color: colorScheme.secondaryContainer,
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          iconWidget,
           const SizedBox(width: 4),
           Text(label,
               style: TextStyle(

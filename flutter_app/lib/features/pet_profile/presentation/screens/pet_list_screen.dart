@@ -385,9 +385,8 @@ class _DueEventsSection extends ConsumerWidget {
                                               Row(
                                                 children: [
                                                   if (pet != null) ...[
-                                                    Icon(
-                                                      AppConstants.speciesIcon(
-                                                          pet.species),
+                                                    AppConstants.speciesIconWidget(
+                                                      pet.species,
                                                       size: 14,
                                                       color: petColor,
                                                     ),

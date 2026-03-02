@@ -20,14 +20,12 @@ class AppConstants {
     'Hamster',
     'Ferret',
     'Horse / Poney',
-    'Reptile',
     'Other',
   ];
 
   static const List<String> speciesWithoutNeutering = [
     'Bird',
     'Fish',
-    'Reptile',
     'Hamster',
     'Ferret',
     'Horse / Poney',
@@ -38,8 +36,6 @@ class AppConstants {
       case 'Fish':
         return '$petName has no identification';
       case 'Bird':
-        return '$petName has no identification';
-      case 'Reptile':
         return '$petName has no identification';
       case 'Horse / Poney':
         return '$petName has no identification';
@@ -57,10 +53,6 @@ class AppConstants {
         return 'Birds can be identified with a closed leg ring fitted at a young age, or with a microchip implanted by a vet. '
             'Identification is important for proof of ownership and in case your bird escapes. '
             'Contact your vet or breeder to discuss the best option and add the ID to their profile.';
-      case 'Reptile':
-        return 'Reptiles can be identified with a microchip implanted by an experienced vet, or through photo documentation of unique markings. '
-            'Some species may also be registered with a CITES permit number. '
-            'Contact your vet for the best identification method and add the ID to their profile.';
       case 'Hamster':
         return 'Hamsters are rarely microchipped due to their small size. '
             'You can identify your hamster using distinct markings, photos, or an internal reference number. '
@@ -108,11 +100,23 @@ class AppConstants {
       case 'ferret':
         return Icons.pets;
       case 'horse / poney':
-        return Icons.agriculture;
-      case 'reptile':
-        return Icons.pest_control;
+        return Icons.pets;
       default:
         return Icons.pets;
     }
+  }
+
+  static Widget speciesIconWidget(String species, {double size = 32, Color? color}) {
+    if (species.toLowerCase() == 'horse / poney') {
+      return Text(
+        '🐴',
+        style: TextStyle(fontSize: size * 0.85),
+      );
+    }
+    return Icon(
+      speciesIcon(species),
+      size: size,
+      color: color,
+    );
   }
 }
