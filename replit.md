@@ -10,7 +10,8 @@ A modular Flutter application for managing pet profiles, health tracking, and ve
 - Pet-to-health relationship: each pet has their own health entries shown in pet detail screen
 - Pet-to-vet relationship: each pet can be linked to a veterinarian
 - Authentication: JWT-based email/password auth with signup, login, refresh, logout, profile management, password change
-- API server with REST endpoints for health entries, vets, sharing, and auth
+- Notification system: in-app notification center with bell icon + badge, server-side due-entry checking, email reminder stubs
+- API server with REST endpoints for health entries, vets, sharing, auth, and notifications
 - Deployed as static Flutter web files served by a Dart API server (AOT compiled)
 
 ## Project Architecture
@@ -35,6 +36,7 @@ flutter_app/           - Flutter source code (development)
           pet_form_screen.dart    - Add/edit pet form (with vet dropdown)
       health_tracking/ - Health tracking with data/domain/presentation layers
       vet/             - Vet management with data/domain/presentation layers
+      notifications/   - Notification center with data/domain/presentation layers
       sharing/         - Pet sharing feature
   test/                - Unit and widget tests
   test_integration/    - Integration tests
@@ -58,6 +60,8 @@ pubspec.yaml           - Root: pure Dart + postgres + dart_jsonwebtoken + dbcryp
 - `/vets` - Vet list
 - `/vets/add` - Add new vet
 - `/vets/edit/:id` - Edit vet
+- `/notifications` - Notification center (all notifications grouped by date)
+- `/notifications/settings` - Notification settings (email reminders, alert toggles)
 - `/shared/:code` - View shared pet (read-only, no auth needed)
 
 ## Authentication Feature
@@ -103,6 +107,22 @@ pubspec.yaml           - Root: pure Dart + postgres + dart_jsonwebtoken + dbcryp
   - DELETE /api/vets/:id - Delete vet
 - **UI**: Vet list screen with cards, add/edit form, vet dropdown in pet form, vet info card on pet detail screen
 
+## Notification Feature
+- **Database**: PostgreSQL notifications table (id, user_id, pet_id, health_entry_id, title, message, type, is_read, created_at) + notification_preferences table (user_id, email_reminders_enabled, reminder_days_before)
+- **Server-side check**: POST /api/notifications/check-due queries health_entries where next_due_date <= NOW() + reminder_days, creates notification records (deduplicated within 1 day), optionally sends email if enabled
+- **Email reminders**: Stub function logs email details; requires SENDGRID_API_KEY env var for actual sending
+- **API Endpoints**:
+  - GET /api/notifications - List notifications for authenticated user (sorted newest first)
+  - GET /api/notifications/unread-count - Get unread count
+  - PUT /api/notifications/:id/read - Mark single notification as read
+  - PUT /api/notifications/read-all - Mark all as read
+  - GET /api/notifications/preferences - Get user notification preferences
+  - PUT /api/notifications/preferences - Update preferences (email_reminders_enabled, reminder_days_before)
+  - POST /api/notifications/check-due - Check for due/overdue entries and create notifications
+- **Frontend**: Notification bell icon with unread badge in pet list app bar; notifications screen grouped by date; notification settings screen with email toggle and reminder days selector
+- **Architecture**: Clean architecture (domain/data/presentation) with Riverpod providers, following same patterns as health tracking feature
+- **Future**: Local push notifications section shown in settings as placeholder for native mobile app migration
+
 ## Sharing Feature
 - **Database**: PostgreSQL shared_pets table (id, share_code, pet_data JSONB, pet_id, created_at, updated_at)
 - **Flow**: User taps share on pet detail → app sends pet data to server → server stores in shared_pets and returns 8-char share code → user copies link → recipient opens `/shared/:code` → read-only view of pet profile + health entries + vet info
@@ -122,6 +142,7 @@ Root pubspec.yaml is a pure Dart project with postgres, dart_jsonwebtoken, and d
 - PostgreSQL (via postgres package) for health tracking, vets, users, refresh tokens
 - dart_jsonwebtoken for JWT access tokens
 - dbcrypt for bcrypt password hashing
+- intl for date formatting
 - http package for Flutter-to-API communication
 - image_picker for photo selection
 - mockito for test mocking

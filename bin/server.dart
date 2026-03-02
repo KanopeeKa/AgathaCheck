@@ -95,6 +95,32 @@ Future<void> main() async {
   '''));
   print('refresh_tokens table ready');
 
+  await _db.execute(Sql('''
+    CREATE TABLE IF NOT EXISTS notifications (
+      id SERIAL PRIMARY KEY,
+      user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      pet_id VARCHAR(255),
+      health_entry_id VARCHAR(255),
+      title VARCHAR(500) NOT NULL,
+      message TEXT NOT NULL DEFAULT '',
+      type VARCHAR(50) NOT NULL DEFAULT 'reminder',
+      is_read BOOLEAN NOT NULL DEFAULT FALSE,
+      created_at TIMESTAMPTZ DEFAULT NOW()
+    )
+  '''));
+  print('notifications table ready');
+
+  await _db.execute(Sql('''
+    CREATE TABLE IF NOT EXISTS notification_preferences (
+      user_id INTEGER PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
+      email_reminders_enabled BOOLEAN NOT NULL DEFAULT FALSE,
+      reminder_days_before INTEGER NOT NULL DEFAULT 1,
+      created_at TIMESTAMPTZ DEFAULT NOW(),
+      updated_at TIMESTAMPTZ DEFAULT NOW()
+    )
+  '''));
+  print('notification_preferences table ready');
+
   final server = await HttpServer.bind('0.0.0.0', port);
   server.defaultResponseHeaders.remove('x-frame-options', 'SAMEORIGIN');
   server.defaultResponseHeaders.remove('x-xss-protection', '1; mode=block');
@@ -262,6 +288,22 @@ Future<void> _handleApi(HttpRequest request) async {
   } else if (RegExp(r'^/api/vets/[^/]+$').hasMatch(path) &&
       method == 'DELETE') {
     await _deleteVet(request);
+  }
+  // Notifications
+  else if (path == '/api/notifications' && method == 'GET') {
+    await _getNotifications(request);
+  } else if (path == '/api/notifications/unread-count' && method == 'GET') {
+    await _getUnreadCount(request);
+  } else if (path == '/api/notifications/read-all' && method == 'PUT') {
+    await _markAllNotificationsRead(request);
+  } else if (path == '/api/notifications/preferences' && method == 'GET') {
+    await _getNotificationPreferences(request);
+  } else if (path == '/api/notifications/preferences' && method == 'PUT') {
+    await _updateNotificationPreferences(request);
+  } else if (path == '/api/notifications/check-due' && method == 'POST') {
+    await _checkDueNotifications(request);
+  } else if (RegExp(r'^/api/notifications/\d+/read$').hasMatch(path) && method == 'PUT') {
+    await _markNotificationRead(request);
   }
   // Sharing
   else if (path == '/api/share' && method == 'POST') {
@@ -1055,6 +1097,281 @@ Future<void> _getShare(HttpRequest request) async {
     'health_entries': healthEntries,
     'vet': vet,
   });
+}
+
+// ── Notifications ────────────────────────────────────────────
+
+Future<void> _getNotifications(HttpRequest request) async {
+  final payload = await _authenticateRequest(request);
+  if (payload == null) {
+    _jsonResponse(request, 401, {'error': 'Not authenticated'});
+    return;
+  }
+
+  final userId = int.parse(payload['sub'].toString());
+  final result = await _db.execute(
+    Sql.named('SELECT * FROM notifications WHERE user_id = @userId ORDER BY created_at DESC'),
+    parameters: {'userId': userId},
+  );
+
+  final notifications = result.map(_notificationRowToMap).toList();
+  _jsonResponse(request, 200, notifications);
+}
+
+Future<void> _getUnreadCount(HttpRequest request) async {
+  final payload = await _authenticateRequest(request);
+  if (payload == null) {
+    _jsonResponse(request, 401, {'error': 'Not authenticated'});
+    return;
+  }
+
+  final userId = int.parse(payload['sub'].toString());
+  final result = await _db.execute(
+    Sql.named('SELECT COUNT(*) as count FROM notifications WHERE user_id = @userId AND is_read = FALSE'),
+    parameters: {'userId': userId},
+  );
+
+  final count = result.first.toColumnMap()['count'] as int;
+  _jsonResponse(request, 200, {'unread_count': count});
+}
+
+Future<void> _markNotificationRead(HttpRequest request) async {
+  final payload = await _authenticateRequest(request);
+  if (payload == null) {
+    _jsonResponse(request, 401, {'error': 'Not authenticated'});
+    return;
+  }
+
+  final userId = int.parse(payload['sub'].toString());
+  final segments = request.uri.pathSegments;
+  final notifId = int.tryParse(segments[segments.length - 2]);
+  if (notifId == null) {
+    _jsonResponse(request, 400, {'error': 'Invalid notification id'});
+    return;
+  }
+
+  final result = await _db.execute(
+    Sql.named('UPDATE notifications SET is_read = TRUE WHERE id = @id AND user_id = @userId RETURNING *'),
+    parameters: {'id': notifId, 'userId': userId},
+  );
+
+  if (result.isEmpty) {
+    _jsonResponse(request, 404, {'error': 'Notification not found'});
+    return;
+  }
+
+  _jsonResponse(request, 200, _notificationRowToMap(result.first));
+}
+
+Future<void> _markAllNotificationsRead(HttpRequest request) async {
+  final payload = await _authenticateRequest(request);
+  if (payload == null) {
+    _jsonResponse(request, 401, {'error': 'Not authenticated'});
+    return;
+  }
+
+  final userId = int.parse(payload['sub'].toString());
+  await _db.execute(
+    Sql.named('UPDATE notifications SET is_read = TRUE WHERE user_id = @userId AND is_read = FALSE'),
+    parameters: {'userId': userId},
+  );
+
+  _jsonResponse(request, 200, {'message': 'All notifications marked as read'});
+}
+
+Future<void> _getNotificationPreferences(HttpRequest request) async {
+  final payload = await _authenticateRequest(request);
+  if (payload == null) {
+    _jsonResponse(request, 401, {'error': 'Not authenticated'});
+    return;
+  }
+
+  final userId = int.parse(payload['sub'].toString());
+  var result = await _db.execute(
+    Sql.named('SELECT * FROM notification_preferences WHERE user_id = @userId'),
+    parameters: {'userId': userId},
+  );
+
+  if (result.isEmpty) {
+    await _db.execute(
+      Sql.named('INSERT INTO notification_preferences (user_id) VALUES (@userId)'),
+      parameters: {'userId': userId},
+    );
+    result = await _db.execute(
+      Sql.named('SELECT * FROM notification_preferences WHERE user_id = @userId'),
+      parameters: {'userId': userId},
+    );
+  }
+
+  final row = result.first.toColumnMap();
+  _jsonResponse(request, 200, {
+    'user_id': row['user_id'].toString(),
+    'email_reminders_enabled': row['email_reminders_enabled'] as bool,
+    'reminder_days_before': row['reminder_days_before'] as int,
+  });
+}
+
+Future<void> _updateNotificationPreferences(HttpRequest request) async {
+  final payload = await _authenticateRequest(request);
+  if (payload == null) {
+    _jsonResponse(request, 401, {'error': 'Not authenticated'});
+    return;
+  }
+
+  final body = await _readJson(request);
+  if (body == null) return;
+
+  final userId = int.parse(payload['sub'].toString());
+  final emailEnabled = body['email_reminders_enabled'] as bool?;
+  final reminderDays = body['reminder_days_before'] as int?;
+
+  await _db.execute(
+    Sql.named('''
+      INSERT INTO notification_preferences (user_id, email_reminders_enabled, reminder_days_before, updated_at)
+      VALUES (@userId, @emailEnabled, @reminderDays, NOW())
+      ON CONFLICT (user_id) DO UPDATE SET
+        email_reminders_enabled = COALESCE(@emailEnabled, notification_preferences.email_reminders_enabled),
+        reminder_days_before = COALESCE(@reminderDays, notification_preferences.reminder_days_before),
+        updated_at = NOW()
+    '''),
+    parameters: {
+      'userId': userId,
+      'emailEnabled': emailEnabled ?? false,
+      'reminderDays': reminderDays ?? 1,
+    },
+  );
+
+  final result = await _db.execute(
+    Sql.named('SELECT * FROM notification_preferences WHERE user_id = @userId'),
+    parameters: {'userId': userId},
+  );
+
+  final row = result.first.toColumnMap();
+  _jsonResponse(request, 200, {
+    'user_id': row['user_id'].toString(),
+    'email_reminders_enabled': row['email_reminders_enabled'] as bool,
+    'reminder_days_before': row['reminder_days_before'] as int,
+  });
+}
+
+Future<void> _checkDueNotifications(HttpRequest request) async {
+  final payload = await _authenticateRequest(request);
+  if (payload == null) {
+    _jsonResponse(request, 401, {'error': 'Not authenticated'});
+    return;
+  }
+
+  final userId = int.parse(payload['sub'].toString());
+
+  var prefResult = await _db.execute(
+    Sql.named('SELECT * FROM notification_preferences WHERE user_id = @userId'),
+    parameters: {'userId': userId},
+  );
+
+  int reminderDays = 1;
+  bool emailEnabled = false;
+  if (prefResult.isNotEmpty) {
+    final prefRow = prefResult.first.toColumnMap();
+    reminderDays = prefRow['reminder_days_before'] as int;
+    emailEnabled = prefRow['email_reminders_enabled'] as bool;
+  }
+
+  final dueEntries = await _db.execute(
+    Sql.named('''
+      SELECT he.* FROM health_entries he
+      WHERE he.next_due_date <= NOW() + make_interval(days => @reminderDays)
+      AND he.next_due_date IS NOT NULL
+    '''),
+    parameters: {'reminderDays': reminderDays},
+  );
+
+  int created = 0;
+  String? userEmail;
+
+  if (emailEnabled) {
+    final userResult = await _db.execute(
+      Sql.named('SELECT email FROM users WHERE id = @userId'),
+      parameters: {'userId': userId},
+    );
+    if (userResult.isNotEmpty) {
+      userEmail = userResult.first.toColumnMap()['email'].toString();
+    }
+  }
+
+  for (final entry in dueEntries) {
+    final cols = entry.toColumnMap();
+    final entryId = cols['id'].toString();
+    final petId = cols['pet_id'].toString();
+    final entryName = cols['name'].toString();
+    final entryType = cols['type'].toString();
+    final nextDue = cols['next_due_date'].toString();
+
+    final existing = await _db.execute(
+      Sql.named('''
+        SELECT id FROM notifications
+        WHERE user_id = @userId AND health_entry_id = @entryId
+        AND created_at > NOW() - INTERVAL '1 day'
+      '''),
+      parameters: {'userId': userId, 'entryId': entryId},
+    );
+
+    if (existing.isNotEmpty) continue;
+
+    final isOverdue = DateTime.tryParse(nextDue)?.isBefore(DateTime.now()) ?? false;
+    final title = isOverdue
+        ? 'Overdue: $entryName'
+        : 'Upcoming: $entryName';
+    final message = isOverdue
+        ? '$entryName ($entryType) was due on $nextDue'
+        : '$entryName ($entryType) is due on $nextDue';
+
+    await _db.execute(
+      Sql.named('''
+        INSERT INTO notifications (user_id, pet_id, health_entry_id, title, message, type)
+        VALUES (@userId, @petId, @entryId, @title, @message, @type)
+      '''),
+      parameters: {
+        'userId': userId,
+        'petId': petId,
+        'entryId': entryId,
+        'title': title,
+        'message': message,
+        'type': isOverdue ? 'overdue' : 'reminder',
+      },
+    );
+    created++;
+
+    if (emailEnabled && userEmail != null) {
+      await _sendEmailReminder(userEmail, title, message);
+    }
+  }
+
+  _jsonResponse(request, 200, {
+    'message': 'Check complete',
+    'notifications_created': created,
+  });
+}
+
+Future<void> _sendEmailReminder(String toEmail, String subject, String body) async {
+  // TODO: Implement actual email sending via SendGrid or similar service.
+  // Requires SENDGRID_API_KEY environment variable.
+  // For now, log the email that would be sent.
+  print('[EMAIL STUB] To: $toEmail | Subject: $subject | Body: $body');
+}
+
+Map<String, dynamic> _notificationRowToMap(ResultRow row) {
+  final cols = row.toColumnMap();
+  return {
+    'id': cols['id'].toString(),
+    'user_id': cols['user_id'].toString(),
+    'pet_id': cols['pet_id']?.toString() ?? '',
+    'health_entry_id': cols['health_entry_id']?.toString() ?? '',
+    'title': cols['title'].toString(),
+    'message': cols['message'].toString(),
+    'type': cols['type'].toString(),
+    'is_read': cols['is_read'] as bool,
+    'created_at': cols['created_at'].toString(),
+  };
 }
 
 // ── Helpers ──────────────────────────────────────────────────

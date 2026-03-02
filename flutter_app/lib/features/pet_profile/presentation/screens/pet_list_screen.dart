@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../core/utils/constants.dart';
 import '../../../auth/presentation/providers/auth_providers.dart';
+import '../../../notifications/presentation/providers/notification_providers.dart';
 import '../providers/pet_providers.dart';
 import '../widgets/pet_card.dart';
 
@@ -12,15 +13,28 @@ import '../widgets/pet_card.dart';
 /// Shows a scrollable list of [PetCard] widgets for each pet,
 /// with options to add new pets, navigate to pet details, and
 /// access veterinarian and health tracking features from the app bar.
-class PetListScreen extends ConsumerWidget {
+class PetListScreen extends ConsumerStatefulWidget {
   /// Creates a [PetListScreen].
   const PetListScreen({super.key});
 
-  /// Builds the pet list screen with app bar, pet cards, and a FAB to add pets.
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<PetListScreen> createState() => _PetListScreenState();
+}
+
+class _PetListScreenState extends ConsumerState<PetListScreen> {
+  @override
+  void initState() {
+    super.initState();
+    Future.microtask(() {
+      ref.read(notificationsProvider.notifier).checkDueEntries();
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final petListAsync = ref.watch(petListProvider);
     final auth = ref.watch(authProvider);
+    final unreadCount = ref.watch(unreadNotificationCountProvider);
     final theme = Theme.of(context);
 
     return Scaffold(
@@ -42,6 +56,40 @@ class PetListScreen extends ConsumerWidget {
           ],
         ),
         actions: [
+          Stack(
+            children: [
+              IconButton(
+                icon: const Icon(Icons.notifications_outlined),
+                tooltip: 'Notifications',
+                onPressed: () => context.go('/notifications'),
+              ),
+              if (unreadCount > 0)
+                Positioned(
+                  right: 4,
+                  top: 4,
+                  child: Container(
+                    padding: const EdgeInsets.all(2),
+                    decoration: BoxDecoration(
+                      color: theme.colorScheme.error,
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    constraints: const BoxConstraints(
+                      minWidth: 16,
+                      minHeight: 16,
+                    ),
+                    child: Text(
+                      unreadCount > 99 ? '99+' : '$unreadCount',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 10,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                ),
+            ],
+          ),
           IconButton(
             icon: const Icon(Icons.local_hospital),
             tooltip: 'Veterinarians',
