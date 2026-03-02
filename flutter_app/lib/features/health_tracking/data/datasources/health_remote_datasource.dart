@@ -1,37 +1,49 @@
 import 'dart:convert';
+import 'dart:typed_data';
 
 import 'package:http/http.dart' as http;
 
 import '../models/health_entry_model.dart';
 import '../models/health_history_model.dart';
 
-/// Remote data source for health tracking via the REST API.
-///
-/// Communicates with the Dart server's /api/health-entries endpoints.
+class EventPhoto {
+  final int id;
+  final String eventId;
+  final String photoPath;
+  final String caption;
+  final String createdAt;
+
+  EventPhoto({
+    required this.id,
+    required this.eventId,
+    required this.photoPath,
+    this.caption = '',
+    this.createdAt = '',
+  });
+
+  factory EventPhoto.fromJson(Map<String, dynamic> json) {
+    return EventPhoto(
+      id: json['id'] as int,
+      eventId: json['event_id'] as String? ?? '',
+      photoPath: json['photo_path'] as String? ?? '',
+      caption: json['caption'] as String? ?? '',
+      createdAt: json['created_at'] as String? ?? '',
+    );
+  }
+}
+
 abstract class HealthRemoteDataSource {
-  /// Retrieves all health entries, optionally filtered by [petId] and [type].
   Future<List<HealthEntryModel>> getEntries({String? petId, String? type});
-
-  /// Retrieves a single health entry by [id].
   Future<HealthEntryModel?> getEntry(String id);
-
-  /// Creates a new health entry.
   Future<HealthEntryModel> createEntry(HealthEntryModel entry);
-
-  /// Updates an existing health entry.
   Future<HealthEntryModel> updateEntry(HealthEntryModel entry);
-
-  /// Deletes a health entry by [id].
   Future<void> deleteEntry(String id);
-
-  /// Marks an entry as taken and advances the next due date.
   Future<HealthEntryModel> markTaken(String id, {String notes});
-
-  /// Retrieves history for a health entry.
   Future<List<HealthHistoryModel>> getHistory(String entryId);
-
-  /// Exports health entries as CSV text.
   Future<String> exportCsv({String? petId});
+  Future<List<EventPhoto>> getPhotos(String entryId);
+  Future<EventPhoto> uploadPhoto(String entryId, Uint8List bytes, String filename, {String caption});
+  Future<void> deletePhoto(String entryId, int photoId);
 }
 
 /// Implementation of [HealthRemoteDataSource] using HTTP.
@@ -139,6 +151,41 @@ class HealthRemoteDataSourceImpl implements HealthRemoteDataSource {
     final response = await _client.get(uri);
     _checkResponse(response);
     return response.body;
+  }
+
+  @override
+  Future<List<EventPhoto>> getPhotos(String entryId) async {
+    final response = await _client
+        .get(Uri.parse('$baseUrl/api/health-entries/$entryId/photos'));
+    _checkResponse(response);
+    final list = json.decode(response.body) as List<dynamic>;
+    return list
+        .map((e) => EventPhoto.fromJson(e as Map<String, dynamic>))
+        .toList();
+  }
+
+  @override
+  Future<EventPhoto> uploadPhoto(String entryId, Uint8List bytes,
+      String filename, {String caption = ''}) async {
+    final request = http.MultipartRequest(
+        'POST', Uri.parse('$baseUrl/api/health-entries/$entryId/photos'));
+    request.files
+        .add(http.MultipartFile.fromBytes('photo', bytes, filename: filename));
+    if (caption.isNotEmpty) {
+      request.fields['caption'] = caption;
+    }
+    final streamedResponse = await request.send();
+    final response = await http.Response.fromStream(streamedResponse);
+    _checkResponse(response);
+    return EventPhoto.fromJson(
+        json.decode(response.body) as Map<String, dynamic>);
+  }
+
+  @override
+  Future<void> deletePhoto(String entryId, int photoId) async {
+    final response = await _client.delete(
+        Uri.parse('$baseUrl/api/health-entries/$entryId/photos/$photoId'));
+    _checkResponse(response);
   }
 
   void _checkResponse(http.Response response) {

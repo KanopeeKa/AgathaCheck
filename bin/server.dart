@@ -150,6 +150,22 @@ Future<void> main() async {
   '''));
   print('health_entries schema updated');
 
+  await _db.execute(Sql('''
+    CREATE TABLE IF NOT EXISTS health_event_photos (
+      id SERIAL PRIMARY KEY,
+      event_id VARCHAR(255) NOT NULL,
+      photo_path TEXT NOT NULL,
+      caption TEXT DEFAULT '',
+      created_at TIMESTAMPTZ DEFAULT NOW()
+    )
+  '''));
+  print('health_event_photos table ready');
+
+  final uploadsDir = Directory('uploads');
+  if (!uploadsDir.existsSync()) {
+    uploadsDir.createSync(recursive: true);
+  }
+
   final server = await HttpServer.bind('0.0.0.0', port);
   server.defaultResponseHeaders.remove('x-frame-options', 'SAMEORIGIN');
   server.defaultResponseHeaders.remove('x-xss-protection', '1; mode=block');
@@ -200,6 +216,8 @@ Future<void> main() async {
 
       if (path.startsWith('/api/')) {
         await _handleApi(request);
+      } else if (path.startsWith('/uploads/')) {
+        await _serveUpload(request);
       } else {
         await _serveStatic(request, webDir);
       }
@@ -347,6 +365,17 @@ Future<void> _handleApi(HttpRequest request) async {
   } else if (RegExp(r'^/api/weight-entries/[^/]+$').hasMatch(path) &&
       method == 'DELETE') {
     await _deleteWeightEntry(request);
+  }
+  // Health event photos
+  else if (RegExp(r'^/api/health-entries/[^/]+/photos$').hasMatch(path) &&
+      method == 'GET') {
+    await _getEventPhotos(request);
+  } else if (RegExp(r'^/api/health-entries/[^/]+/photos$').hasMatch(path) &&
+      method == 'POST') {
+    await _uploadEventPhoto(request);
+  } else if (RegExp(r'^/api/health-entries/[^/]+/photos/\d+$').hasMatch(path) &&
+      method == 'DELETE') {
+    await _deleteEventPhoto(request);
   }
   // Sharing
   else if (path == '/api/share' && method == 'POST') {
@@ -1190,6 +1219,235 @@ Future<void> _getLatestWeight(HttpRequest request) async {
   }
 
   _jsonResponse(request, 200, _weightRowToMap(result.first));
+}
+
+// ── Health event photos ──────────────────────────────────────
+
+Future<void> _getEventPhotos(HttpRequest request) async {
+  final segments = request.uri.pathSegments;
+  final eventId = segments[segments.length - 2];
+  final result = await _db.execute(
+    Sql.named('SELECT * FROM health_event_photos WHERE event_id = @eventId ORDER BY created_at ASC'),
+    parameters: {'eventId': eventId},
+  );
+  final photos = result.map((r) => {
+    'id': r[0],
+    'event_id': r[1].toString(),
+    'photo_path': r[2].toString(),
+    'caption': r[3].toString(),
+    'created_at': r[4].toString(),
+  }).toList();
+  _jsonResponse(request, 200, photos);
+}
+
+Future<void> _uploadEventPhoto(HttpRequest request) async {
+  final segments = request.uri.pathSegments;
+  final eventId = segments[segments.length - 2];
+
+  final contentType = request.headers.contentType;
+  if (contentType == null || contentType.mimeType != 'multipart/form-data') {
+    _jsonResponse(request, 400, {'error': 'Expected multipart/form-data'});
+    return;
+  }
+
+  final boundary = contentType.parameters['boundary'];
+  if (boundary == null) {
+    _jsonResponse(request, 400, {'error': 'Missing boundary'});
+    return;
+  }
+
+  final countResult = await _db.execute(
+    Sql.named('SELECT COUNT(*) FROM health_event_photos WHERE event_id = @eventId'),
+    parameters: {'eventId': eventId},
+  );
+  final currentCount = countResult.first[0] as int;
+  if (currentCount >= 4) {
+    _jsonResponse(request, 400, {'error': 'Maximum 4 photos per event'});
+    return;
+  }
+
+  final rawBytes = await request.fold<List<int>>([], (prev, chunk) => prev..addAll(chunk));
+  if (rawBytes.length > 2 * 1024 * 1024) {
+    _jsonResponse(request, 400, {'error': 'File too large (max 2MB)'});
+    return;
+  }
+
+  final parts = _parseMultipart(rawBytes, boundary);
+
+  List<int>? fileBytes;
+  String? fileName;
+  String caption = '';
+
+  for (final part in parts) {
+    if (part.name == 'photo' && part.bytes != null) {
+      fileBytes = part.bytes;
+      fileName = part.filename ?? 'photo.jpg';
+    } else if (part.name == 'caption') {
+      caption = utf8.decode(part.bytes ?? []);
+    }
+  }
+
+  if (fileBytes == null || fileBytes.isEmpty) {
+    _jsonResponse(request, 400, {'error': 'No photo file provided'});
+    return;
+  }
+
+  final ext = fileName != null && fileName.contains('.')
+      ? fileName.substring(fileName.lastIndexOf('.'))
+      : '.jpg';
+  final ts = DateTime.now().millisecondsSinceEpoch;
+  final rng = Random.secure();
+  final uniqueName = '${eventId}_${ts}_${rng.nextInt(9999)}$ext';
+
+  final eventDir = Directory('uploads/health/$eventId');
+  if (!eventDir.existsSync()) {
+    eventDir.createSync(recursive: true);
+  }
+
+  final filePath = 'uploads/health/$eventId/$uniqueName';
+  File(filePath).writeAsBytesSync(fileBytes);
+
+  final result = await _db.execute(
+    Sql.named('''
+      INSERT INTO health_event_photos (event_id, photo_path, caption)
+      VALUES (@eventId, @photoPath, @caption)
+      RETURNING *
+    '''),
+    parameters: {
+      'eventId': eventId,
+      'photoPath': filePath,
+      'caption': caption,
+    },
+  );
+
+  final row = result.first;
+  _jsonResponse(request, 201, {
+    'id': row[0],
+    'event_id': row[1].toString(),
+    'photo_path': row[2].toString(),
+    'caption': row[3].toString(),
+    'created_at': row[4].toString(),
+  });
+}
+
+Future<void> _deleteEventPhoto(HttpRequest request) async {
+  final segments = request.uri.pathSegments;
+  final photoId = int.tryParse(segments.last);
+  if (photoId == null) {
+    _jsonResponse(request, 400, {'error': 'Invalid photo ID'});
+    return;
+  }
+
+  final result = await _db.execute(
+    Sql.named('SELECT photo_path FROM health_event_photos WHERE id = @id'),
+    parameters: {'id': photoId},
+  );
+
+  if (result.isEmpty) {
+    _jsonResponse(request, 404, {'error': 'Photo not found'});
+    return;
+  }
+
+  final filePath = result.first[0].toString();
+  final file = File(filePath);
+  if (file.existsSync()) {
+    file.deleteSync();
+  }
+
+  await _db.execute(
+    Sql.named('DELETE FROM health_event_photos WHERE id = @id'),
+    parameters: {'id': photoId},
+  );
+
+  _jsonResponse(request, 200, {'deleted': true});
+}
+
+Future<void> _serveUpload(HttpRequest request) async {
+  final path = request.uri.path.substring(1);
+  final file = File(path);
+  if (!file.existsSync()) {
+    request.response.statusCode = 404;
+    request.response.write('Not found');
+    await request.response.close();
+    return;
+  }
+
+  final ext = path.contains('.') ? path.substring(path.lastIndexOf('.') + 1).toLowerCase() : '';
+  final mimeTypes = {
+    'jpg': 'image/jpeg',
+    'jpeg': 'image/jpeg',
+    'png': 'image/png',
+    'gif': 'image/gif',
+    'webp': 'image/webp',
+  };
+  request.response.headers.set('Content-Type', mimeTypes[ext] ?? 'application/octet-stream');
+  request.response.headers.set('Cache-Control', 'public, max-age=86400');
+  await request.response.addStream(file.openRead());
+  await request.response.close();
+}
+
+class _MultipartPart {
+  final String? name;
+  final String? filename;
+  final List<int>? bytes;
+  _MultipartPart({this.name, this.filename, this.bytes});
+}
+
+List<_MultipartPart> _parseMultipart(List<int> body, String boundary) {
+  final parts = <_MultipartPart>[];
+  final boundaryBytes = utf8.encode('--$boundary');
+
+  int findBytes(List<int> haystack, List<int> needle, int start) {
+    for (var i = start; i <= haystack.length - needle.length; i++) {
+      var found = true;
+      for (var j = 0; j < needle.length; j++) {
+        if (haystack[i + j] != needle[j]) {
+          found = false;
+          break;
+        }
+      }
+      if (found) return i;
+    }
+    return -1;
+  }
+
+  var pos = findBytes(body, boundaryBytes, 0);
+  if (pos == -1) return parts;
+
+  while (true) {
+    pos += boundaryBytes.length;
+    if (pos + 2 >= body.length) break;
+    if (body[pos] == 0x2D && body[pos + 1] == 0x2D) break;
+
+    while (pos < body.length && (body[pos] == 0x0D || body[pos] == 0x0A)) pos++;
+
+    final headerEnd = findBytes(body, utf8.encode('\r\n\r\n'), pos);
+    if (headerEnd == -1) break;
+
+    final headerStr = utf8.decode(body.sublist(pos, headerEnd));
+    pos = headerEnd + 4;
+
+    final nextBoundary = findBytes(body, boundaryBytes, pos);
+    if (nextBoundary == -1) break;
+
+    var endPos = nextBoundary;
+    if (endPos >= 2 && body[endPos - 2] == 0x0D && body[endPos - 1] == 0x0A) {
+      endPos -= 2;
+    }
+    final dataBytes = body.sublist(pos, endPos);
+
+    String? name;
+    String? filename;
+    final dispMatch = RegExp(r'name="([^"]*)"').firstMatch(headerStr);
+    if (dispMatch != null) name = dispMatch.group(1);
+    final fileMatch = RegExp(r'filename="([^"]*)"').firstMatch(headerStr);
+    if (fileMatch != null) filename = fileMatch.group(1);
+
+    parts.add(_MultipartPart(name: name, filename: filename, bytes: dataBytes));
+    pos = nextBoundary;
+  }
+
+  return parts;
 }
 
 // ── Sharing ──────────────────────────────────────────────────

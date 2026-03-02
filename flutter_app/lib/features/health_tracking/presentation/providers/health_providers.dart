@@ -29,6 +29,11 @@ final healthRemoteDataSourceProvider = Provider<HealthRemoteDataSource>((ref) {
   return HealthRemoteDataSourceImpl(baseUrl: baseUrl);
 });
 
+final healthDataSourceProvider = Provider<HealthRemoteDataSourceImpl>((ref) {
+  final baseUrl = ref.watch(apiBaseUrlProvider);
+  return HealthRemoteDataSourceImpl(baseUrl: baseUrl);
+});
+
 /// Provides the health repository implementation.
 final healthRepositoryProvider = Provider<HealthRepository>((ref) {
   final dataSource = ref.watch(healthRemoteDataSourceProvider);

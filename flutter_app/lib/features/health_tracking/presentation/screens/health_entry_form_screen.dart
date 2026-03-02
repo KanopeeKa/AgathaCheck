@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:image_picker/image_picker.dart';
 
 import '../../../pet_profile/domain/entities/pet.dart';
 import '../../../pet_profile/presentation/providers/pet_providers.dart';
+import '../../data/datasources/health_remote_datasource.dart';
 import '../../domain/entities/health_entry.dart';
 import '../providers/health_providers.dart';
 
@@ -33,6 +35,8 @@ class _HealthEntryFormScreenState
   DateTime? _repeatEndDate;
   bool _isLoading = false;
   bool _isEdit = false;
+  bool _isUploadingPhoto = false;
+  List<EventPhoto> _photos = [];
 
   final Set<String> _selectedPetIds = {};
 
@@ -45,6 +49,80 @@ class _HealthEntryFormScreenState
     if (widget.entryId != null) {
       _isEdit = true;
       _loadEntry();
+      _loadPhotos();
+    }
+  }
+
+  Future<void> _loadPhotos() async {
+    if (widget.entryId == null) return;
+    try {
+      final ds = ref.read(healthDataSourceProvider);
+      final photos = await ds.getPhotos(widget.entryId!);
+      if (mounted) setState(() => _photos = photos);
+    } catch (_) {}
+  }
+
+  Future<void> _pickAndUploadPhoto(ImageSource source) async {
+    if (widget.entryId == null) return;
+    if (_photos.length >= 4) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Maximum 4 photos per event')),
+      );
+      return;
+    }
+
+    try {
+      final picker = ImagePicker();
+      final picked = await picker.pickImage(
+          source: source, maxWidth: 1200, maxHeight: 1200, imageQuality: 80);
+      if (picked == null) return;
+
+      setState(() => _isUploadingPhoto = true);
+      final bytes = await picked.readAsBytes();
+      final ds = ref.read(healthDataSourceProvider);
+      await ds.uploadPhoto(widget.entryId!, bytes, picked.name);
+      await _loadPhotos();
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to upload photo: $e')),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _isUploadingPhoto = false);
+    }
+  }
+
+  Future<void> _deletePhoto(EventPhoto photo) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Delete Photo'),
+        content: const Text('Remove this photo? This cannot be undone.'),
+        actions: [
+          TextButton(
+              onPressed: () => Navigator.pop(ctx, false),
+              child: const Text('Cancel')),
+          FilledButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            style:
+                FilledButton.styleFrom(backgroundColor: Theme.of(context).colorScheme.error),
+            child: const Text('Delete'),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true || widget.entryId == null) return;
+    try {
+      final ds = ref.read(healthDataSourceProvider);
+      await ds.deletePhoto(widget.entryId!, photo.id);
+      await _loadPhotos();
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to delete photo: $e')),
+        );
+      }
     }
   }
 
@@ -279,6 +357,19 @@ class _HealthEntryFormScreenState
                       ),
                       maxLines: 3,
                     ),
+                    if (_isEdit) ...[
+                      const SizedBox(height: 24),
+                      _PhotosSection(
+                        photos: _photos,
+                        isUploading: _isUploadingPhoto,
+                        baseUrl: ref.watch(apiBaseUrlProvider),
+                        onPickCamera: () =>
+                            _pickAndUploadPhoto(ImageSource.camera),
+                        onPickGallery: () =>
+                            _pickAndUploadPhoto(ImageSource.gallery),
+                        onDelete: _deletePhoto,
+                      ),
+                    ],
                     const SizedBox(height: 24),
                     FilledButton.icon(
                       onPressed: _submit,
@@ -601,6 +692,189 @@ class _DatePickerField extends StatelessWidget {
         ),
         child: Text(
           '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}',
+        ),
+      ),
+    );
+  }
+}
+
+class _PhotosSection extends StatelessWidget {
+  const _PhotosSection({
+    required this.photos,
+    required this.isUploading,
+    required this.baseUrl,
+    required this.onPickCamera,
+    required this.onPickGallery,
+    required this.onDelete,
+  });
+
+  final List<EventPhoto> photos;
+  final bool isUploading;
+  final String baseUrl;
+  final VoidCallback onPickCamera;
+  final VoidCallback onPickGallery;
+  final ValueChanged<EventPhoto> onDelete;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Icon(Icons.photo_library, size: 20, color: colorScheme.primary),
+            const SizedBox(width: 8),
+            Text('Photos',
+                style: theme.textTheme.titleSmall
+                    ?.copyWith(fontWeight: FontWeight.w600)),
+            const Spacer(),
+            if (photos.length < 4)
+              PopupMenuButton<String>(
+                icon: Icon(Icons.add_a_photo,
+                    size: 20, color: colorScheme.primary),
+                tooltip: 'Add Photo',
+                onSelected: (value) {
+                  if (value == 'camera') {
+                    onPickCamera();
+                  } else {
+                    onPickGallery();
+                  }
+                },
+                itemBuilder: (_) => [
+                  const PopupMenuItem(
+                      value: 'camera',
+                      child: ListTile(
+                        leading: Icon(Icons.camera_alt),
+                        title: Text('Camera'),
+                        contentPadding: EdgeInsets.zero,
+                      )),
+                  const PopupMenuItem(
+                      value: 'gallery',
+                      child: ListTile(
+                        leading: Icon(Icons.photo_library),
+                        title: Text('Gallery / Files'),
+                        contentPadding: EdgeInsets.zero,
+                      )),
+                ],
+              ),
+          ],
+        ),
+        const SizedBox(height: 8),
+        if (isUploading)
+          const Padding(
+            padding: EdgeInsets.all(16),
+            child: Center(child: CircularProgressIndicator()),
+          ),
+        if (photos.isEmpty && !isUploading)
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              border: Border.all(color: colorScheme.outlineVariant),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Column(
+              children: [
+                Icon(Icons.add_photo_alternate,
+                    size: 36, color: colorScheme.outline),
+                const SizedBox(height: 8),
+                Text('No photos yet',
+                    style: theme.textTheme.bodyMedium
+                        ?.copyWith(color: colorScheme.onSurfaceVariant)),
+                const SizedBox(height: 4),
+                Text('Tap + to add photos (max 4)',
+                    style: theme.textTheme.bodySmall
+                        ?.copyWith(color: colorScheme.outline)),
+              ],
+            ),
+          ),
+        if (photos.isNotEmpty)
+          GridView.builder(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2,
+              crossAxisSpacing: 8,
+              mainAxisSpacing: 8,
+            ),
+            itemCount: photos.length,
+            itemBuilder: (context, index) {
+              final photo = photos[index];
+              final imageUrl = '$baseUrl/${photo.photoPath}';
+              return GestureDetector(
+                onTap: () => _showFullScreen(context, imageUrl),
+                child: Stack(
+                  fit: StackFit.expand,
+                  children: [
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(8),
+                      child: Image.network(
+                        imageUrl,
+                        fit: BoxFit.cover,
+                        errorBuilder: (_, __, ___) => Container(
+                          color: colorScheme.surfaceContainerHighest,
+                          child: Icon(Icons.broken_image,
+                              color: colorScheme.outline),
+                        ),
+                      ),
+                    ),
+                    Positioned(
+                      top: 4,
+                      right: 4,
+                      child: GestureDetector(
+                        onTap: () => onDelete(photo),
+                        child: Container(
+                          padding: const EdgeInsets.all(4),
+                          decoration: BoxDecoration(
+                            color: Colors.black54,
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: const Icon(Icons.close,
+                              size: 16, color: Colors.white),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            },
+          ),
+        if (photos.isNotEmpty)
+          Padding(
+            padding: const EdgeInsets.only(top: 4),
+            child: Text('${photos.length}/4 photos',
+                style: theme.textTheme.bodySmall
+                    ?.copyWith(color: colorScheme.outline)),
+          ),
+      ],
+    );
+  }
+
+  void _showFullScreen(BuildContext context, String imageUrl) {
+    showDialog(
+      context: context,
+      builder: (ctx) => Dialog(
+        backgroundColor: Colors.black,
+        insetPadding: const EdgeInsets.all(16),
+        child: Stack(
+          children: [
+            Center(
+              child: InteractiveViewer(
+                child: Image.network(imageUrl, fit: BoxFit.contain),
+              ),
+            ),
+            Positioned(
+              top: 8,
+              right: 8,
+              child: IconButton(
+                icon: const Icon(Icons.close, color: Colors.white, size: 28),
+                onPressed: () => Navigator.pop(ctx),
+              ),
+            ),
+          ],
         ),
       ),
     );
