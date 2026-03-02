@@ -1495,6 +1495,19 @@ class _ReportSelectionSheetState extends ConsumerState<_ReportSelectionSheet> {
             dense: true,
             contentPadding: EdgeInsets.zero,
           ),
+          if (_includeHealth)
+            Padding(
+              padding: const EdgeInsets.only(left: 40),
+              child: CheckboxListTile(
+                value: _includeFullLog,
+                onChanged: (v) =>
+                    setState(() => _includeFullLog = v ?? false),
+                title: const Text('Include full log for each event'),
+                dense: true,
+                contentPadding: EdgeInsets.zero,
+                controlAffinity: ListTileControlAffinity.leading,
+              ),
+            ),
           CheckboxListTile(
             value: _includeHealthIssues,
             onChanged: (v) =>
@@ -1515,46 +1528,37 @@ class _ReportSelectionSheetState extends ConsumerState<_ReportSelectionSheet> {
             dense: true,
             contentPadding: EdgeInsets.zero,
           ),
-          if (_includeHealth) ...[
-            Padding(
-              padding: const EdgeInsets.only(left: 40),
-              child: Column(
-                children: [
-                  Row(
-                    children: [
-                      Expanded(
-                        child: _DatePickerField(
-                          label: 'From',
-                          date: _healthFrom,
-                          onChanged: (d) =>
-                              setState(() => _healthFrom = d),
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: _DatePickerField(
-                          label: 'To',
-                          date: _healthTo,
-                          onChanged: (d) =>
-                              setState(() => _healthTo = d),
-                        ),
-                      ),
-                    ],
+          const SizedBox(height: 12),
+          ListTile(
+            leading: Icon(Icons.calendar_month, color: colorScheme.primary),
+            title: const Text('Print events range'),
+            dense: true,
+            contentPadding: EdgeInsets.zero,
+          ),
+          Padding(
+            padding: const EdgeInsets.only(left: 40),
+            child: Row(
+              children: [
+                Expanded(
+                  child: _DatePickerField(
+                    label: 'From',
+                    date: _healthFrom,
+                    onChanged: (d) =>
+                        setState(() => _healthFrom = d),
                   ),
-                  const SizedBox(height: 4),
-                  CheckboxListTile(
-                    value: _includeFullLog,
-                    onChanged: (v) =>
-                        setState(() => _includeFullLog = v ?? false),
-                    title: const Text('Include full log for each event'),
-                    dense: true,
-                    contentPadding: EdgeInsets.zero,
-                    controlAffinity: ListTileControlAffinity.leading,
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: _DatePickerField(
+                    label: 'To',
+                    date: _healthTo,
+                    onChanged: (d) =>
+                        setState(() => _healthTo = d),
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
-          ],
+          ),
           const SizedBox(height: 20),
           FilledButton.icon(
             onPressed: _isGenerating ? null : _generateReport,
