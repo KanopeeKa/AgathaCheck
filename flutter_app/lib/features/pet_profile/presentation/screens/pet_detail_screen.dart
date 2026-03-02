@@ -226,10 +226,16 @@ class _PetProfileCard extends ConsumerWidget {
                                 icon: Icons.cake,
                                 label: '${pet.age!.toStringAsFixed(1)} yrs'),
                           if (displayWeight != null)
-                            _InfoChip(
-                                icon: Icons.monitor_weight,
-                                label:
-                                    '${displayWeight.toStringAsFixed(1)} kg'),
+                            Consumer(builder: (context, ref, _) {
+                              final unit =
+                                  ref.watch(weightUnitProvider(pet.id));
+                              final converted =
+                                  convertWeight(displayWeight, unit);
+                              return _InfoChip(
+                                  icon: Icons.monitor_weight,
+                                  label:
+                                      '${converted.toStringAsFixed(1)} ${weightUnitLabel(unit)}');
+                            }),
                         ],
                       ),
                       const SizedBox(height: 10),
@@ -337,6 +343,8 @@ class _WeightTrackingSection extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final entriesAsync = ref.watch(weightEntriesNotifierProvider(petId));
+    final unit = ref.watch(weightUnitProvider(petId));
+    final unitLabel = weightUnitLabel(unit);
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
@@ -353,10 +361,24 @@ class _WeightTrackingSection extends ConsumerWidget {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.end,
                 children: [
+                  SegmentedButton<WeightUnit>(
+                    segments: const [
+                      ButtonSegment(value: WeightUnit.kg, label: Text('kg')),
+                      ButtonSegment(value: WeightUnit.lb, label: Text('lb')),
+                    ],
+                    selected: {unit},
+                    onSelectionChanged: (sel) => ref
+                        .read(weightUnitProvider(petId).notifier)
+                        .setUnit(sel.first),
+                    style: SegmentedButton.styleFrom(
+                      visualDensity: VisualDensity.compact,
+                    ),
+                  ),
+                  const Spacer(),
                   FilledButton.tonalIcon(
-                    onPressed: () => _showAddWeightSheet(context, ref),
+                    onPressed: () =>
+                        _showAddWeightSheet(context, ref, unit, unitLabel),
                     icon: const Icon(Icons.add, size: 18),
                     label: const Text('Add Entry'),
                   ),
@@ -402,7 +424,8 @@ class _WeightTrackingSection extends ConsumerWidget {
                         padding: const EdgeInsets.symmetric(horizontal: 16),
                         child: SizedBox(
                           height: 200,
-                          child: _WeightChart(entries: entries),
+                          child:
+                              _WeightChart(entries: entries, unit: unit),
                         ),
                       ),
                     if (entries.length >= 2) const SizedBox(height: 12),
@@ -416,6 +439,7 @@ class _WeightTrackingSection extends ConsumerWidget {
                         final entry = entries[entries.length - 1 - index];
                         return _WeightEntryTile(
                           entry: entry,
+                          unit: unit,
                           onDelete: () async {
                             await ref
                                 .read(weightEntriesNotifierProvider(petId)
@@ -436,7 +460,8 @@ class _WeightTrackingSection extends ConsumerWidget {
     );
   }
 
-  void _showAddWeightSheet(BuildContext context, WidgetRef ref) {
+  void _showAddWeightSheet(
+      BuildContext context, WidgetRef ref, WeightUnit unit, String unitLabel) {
     final weightController = TextEditingController();
     final notesController = TextEditingController();
     var selectedDate = DateTime.now();
@@ -488,10 +513,10 @@ class _WeightTrackingSection extends ConsumerWidget {
                   controller: weightController,
                   keyboardType:
                       const TextInputType.numberWithOptions(decimal: true),
-                  decoration: const InputDecoration(
-                    labelText: 'Weight (kg)',
-                    prefixIcon: Icon(Icons.monitor_weight),
-                    border: OutlineInputBorder(),
+                  decoration: InputDecoration(
+                    labelText: 'Weight ($unitLabel)',
+                    prefixIcon: const Icon(Icons.monitor_weight),
+                    border: const OutlineInputBorder(),
                   ),
                 ),
                 const SizedBox(height: 16),
@@ -509,8 +534,8 @@ class _WeightTrackingSection extends ConsumerWidget {
                   onPressed: () async {
                     final weightText = weightController.text.trim();
                     if (weightText.isEmpty) return;
-                    final weight = double.tryParse(weightText);
-                    if (weight == null || weight <= 0) {
+                    final inputWeight = double.tryParse(weightText);
+                    if (inputWeight == null || inputWeight <= 0) {
                       ScaffoldMessenger.of(ctx).showSnackBar(
                         const SnackBar(
                             content: Text('Please enter a valid weight')),
@@ -518,11 +543,13 @@ class _WeightTrackingSection extends ConsumerWidget {
                       return;
                     }
 
+                    final weightInKg = convertToKg(inputWeight, unit);
+
                     final entry = WeightEntry(
                       id: 0,
                       petId: petId,
                       date: selectedDate,
-                      weight: weight,
+                      weight: weightInKg,
                       notes: notesController.text.trim(),
                     );
 
@@ -545,15 +572,19 @@ class _WeightTrackingSection extends ConsumerWidget {
 }
 
 class _WeightEntryTile extends StatelessWidget {
-  const _WeightEntryTile({required this.entry, required this.onDelete});
+  const _WeightEntryTile(
+      {required this.entry, required this.onDelete, required this.unit});
 
   final WeightEntry entry;
   final VoidCallback onDelete;
+  final WeightUnit unit;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
+    final displayWeight = convertWeight(entry.weight, unit);
+    final label = weightUnitLabel(unit);
 
     return ListTile(
       contentPadding: EdgeInsets.zero,
@@ -562,7 +593,7 @@ class _WeightEntryTile extends StatelessWidget {
         child: Icon(Icons.monitor_weight, size: 20,
             color: colorScheme.onPrimaryContainer),
       ),
-      title: Text('${entry.weight.toStringAsFixed(1)} kg',
+      title: Text('${displayWeight.toStringAsFixed(1)} $label',
           style: theme.textTheme.titleSmall
               ?.copyWith(fontWeight: FontWeight.w600)),
       subtitle: Text(
@@ -580,22 +611,23 @@ class _WeightEntryTile extends StatelessWidget {
 }
 
 class _WeightChart extends StatelessWidget {
-  const _WeightChart({required this.entries});
+  const _WeightChart({required this.entries, required this.unit});
 
   final List<WeightEntry> entries;
+  final WeightUnit unit;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
+    final label = weightUnitLabel(unit);
 
     final sorted = List<WeightEntry>.from(entries)
       ..sort((a, b) => a.date.compareTo(b.date));
 
-    final minWeight =
-        sorted.map((e) => e.weight).reduce((a, b) => a < b ? a : b);
-    final maxWeight =
-        sorted.map((e) => e.weight).reduce((a, b) => a > b ? a : b);
+    final weights = sorted.map((e) => convertWeight(e.weight, unit)).toList();
+    final minWeight = weights.reduce((a, b) => a < b ? a : b);
+    final maxWeight = weights.reduce((a, b) => a > b ? a : b);
     final range = maxWeight - minWeight;
     final yMin = (minWeight - (range * 0.2)).clamp(0.0, double.infinity);
     final yMax = maxWeight + (range * 0.2);
@@ -604,10 +636,10 @@ class _WeightChart extends StatelessWidget {
 
     final firstDate = sorted.first.date;
 
-    final spots = sorted.map((e) {
-      final x = e.date.difference(firstDate).inDays.toDouble();
-      return FlSpot(x, e.weight);
-    }).toList();
+    final spots = List.generate(sorted.length, (i) {
+      final x = sorted[i].date.difference(firstDate).inDays.toDouble();
+      return FlSpot(x, weights[i]);
+    });
 
     return LineChart(
       LineChartData(
@@ -630,9 +662,9 @@ class _WeightChart extends StatelessWidget {
           leftTitles: AxisTitles(
             sideTitles: SideTitles(
               showTitles: true,
-              reservedSize: 44,
+              reservedSize: 52,
               getTitlesWidget: (value, meta) {
-                return Text(value.toStringAsFixed(1),
+                return Text('${value.toStringAsFixed(1)} $label',
                     style: theme.textTheme.labelSmall
                         ?.copyWith(color: colorScheme.onSurfaceVariant));
               },
@@ -663,7 +695,7 @@ class _WeightChart extends StatelessWidget {
                 final date =
                     firstDate.add(Duration(days: spot.x.toInt()));
                 return LineTooltipItem(
-                  '${spot.y.toStringAsFixed(1)} kg\n${DateFormat.yMMMd().format(date)}',
+                  '${spot.y.toStringAsFixed(1)} $label\n${DateFormat.yMMMd().format(date)}',
                   TextStyle(
                     color: colorScheme.onPrimary,
                     fontWeight: FontWeight.w600,

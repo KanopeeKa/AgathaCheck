@@ -99,8 +99,11 @@ pubspec.yaml           - Root: pure Dart + postgres + dart_jsonwebtoken + dbcryp
 - **UI**: Tabbed dashboard (All/Medications/Preventives/Vaccines), entry cards with frequency badges, mark-taken button, add/edit form with multi-pet selector (FilterChip chips, Select All/Clear, creates 1 entry per selected pet)
 
 ## Weight Tracking Feature
-- **Database**: PostgreSQL weight_entries table (id, pet_id, date, weight, notes, created_at)
+- **Database**: PostgreSQL weight_entries table (id, pet_id, date, weight, notes, created_at). Weight always stored in kg.
 - **Relationship**: 1 pet -> many weight entries (via pet_id)
+- **Unit selection**: SegmentedButton (kg/lb) at top of weight tracking section. Preference stored per pet in SharedPreferences (key: `pet_${petId}_weightUnit`, default 'kg'). All display/input converts using lb = kg * 2.20462.
+- **State**: `WeightUnit` enum + `WeightUnitNotifier` (StateNotifier) in weight_providers.dart; `weightUnitProvider` is `StateNotifierProvider.family<WeightUnitNotifier, WeightUnit, String>`
+- **SwiftUI migration notes**: SharedPreferences → UserDefaults; StateNotifier → @Observable class; Riverpod → SwiftUI @Environment
 - **API Endpoints**:
   - GET /api/weight-entries?pet_id=X - List weight entries sorted by date ASC
   - POST /api/weight-entries - Create weight entry

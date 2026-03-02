@@ -1,10 +1,53 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../health_tracking/presentation/providers/health_providers.dart';
 import '../../data/datasources/weight_remote_datasource.dart';
 import '../../data/repositories/weight_repository_impl.dart';
 import '../../domain/entities/weight_entry.dart';
 import '../../domain/repositories/weight_repository.dart';
+
+enum WeightUnit { kg, lb }
+
+const double _kgToLb = 2.20462;
+
+double convertWeight(double kg, WeightUnit unit) {
+  return unit == WeightUnit.lb ? kg * _kgToLb : kg;
+}
+
+double convertToKg(double value, WeightUnit unit) {
+  return unit == WeightUnit.lb ? value / _kgToLb : value;
+}
+
+String weightUnitLabel(WeightUnit unit) {
+  return unit == WeightUnit.kg ? 'kg' : 'lb';
+}
+
+final weightUnitProvider =
+    StateNotifierProvider.family<WeightUnitNotifier, WeightUnit, String>(
+        (ref, petId) => WeightUnitNotifier(petId));
+
+class WeightUnitNotifier extends StateNotifier<WeightUnit> {
+  WeightUnitNotifier(this._petId) : super(WeightUnit.kg) {
+    _load();
+  }
+
+  final String _petId;
+
+  Future<void> _load() async {
+    final prefs = await SharedPreferences.getInstance();
+    final stored = prefs.getString('pet_${_petId}_weightUnit');
+    if (stored == 'lb') {
+      state = WeightUnit.lb;
+    }
+  }
+
+  Future<void> setUnit(WeightUnit unit) async {
+    state = unit;
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('pet_${_petId}_weightUnit', unit.name);
+  }
+}
 
 final weightRemoteDataSourceProvider =
     Provider<WeightRemoteDataSource>((ref) {
