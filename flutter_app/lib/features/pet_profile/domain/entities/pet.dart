@@ -15,6 +15,8 @@ class Pet {
     this.gender,
     this.bio = '',
     this.insurance = '',
+    this.neuteredDate,
+    this.neuterDismissed = false,
     this.photoPath,
     this.vetId,
     this.colorValue,
@@ -29,6 +31,8 @@ class Pet {
   final String? gender;
   final String bio;
   final String insurance;
+  final DateTime? neuteredDate;
+  final bool neuterDismissed;
   final String? photoPath;
   final String? vetId;
   final int? colorValue;
@@ -65,11 +69,14 @@ class Pet {
     String? gender,
     String? bio,
     String? insurance,
+    DateTime? neuteredDate,
+    bool? neuterDismissed,
     String? photoPath,
     String? vetId,
     int? colorValue,
     bool clearVetId = false,
     bool clearGender = false,
+    bool clearNeuteredDate = false,
   }) {
     return Pet(
       id: id ?? this.id,
@@ -81,6 +88,8 @@ class Pet {
       gender: clearGender ? null : (gender ?? this.gender),
       bio: bio ?? this.bio,
       insurance: insurance ?? this.insurance,
+      neuteredDate: clearNeuteredDate ? null : (neuteredDate ?? this.neuteredDate),
+      neuterDismissed: neuterDismissed ?? this.neuterDismissed,
       photoPath: photoPath ?? this.photoPath,
       vetId: clearVetId ? null : (vetId ?? this.vetId),
       colorValue: colorValue ?? this.colorValue,

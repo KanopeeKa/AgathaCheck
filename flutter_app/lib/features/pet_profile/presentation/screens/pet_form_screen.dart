@@ -4,26 +4,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:intl/intl.dart';
 
 import '../../../../core/utils/constants.dart';
 import '../../../vet/presentation/providers/vet_providers.dart';
 import '../../domain/entities/pet.dart';
 import '../providers/pet_providers.dart';
 
-/// Form screen for adding or editing a pet profile.
-///
-/// When [petId] is provided, the form loads existing pet data
-/// for editing. Otherwise, it creates a new pet profile.
 class PetFormScreen extends ConsumerStatefulWidget {
-  /// Creates a [PetFormScreen].
-  ///
-  /// Pass [petId] to edit an existing pet, or leave null to add new.
   const PetFormScreen({super.key, this.petId});
 
-  /// The ID of the pet to edit, or null to add a new pet.
   final String? petId;
 
-  /// Creates the mutable state for this widget.
   @override
   ConsumerState<PetFormScreen> createState() => _PetFormScreenState();
 }
@@ -42,6 +34,8 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
   String? _photoBase64;
   String? _selectedVetId;
   int? _existingColorValue;
+  DateTime? _neuteredDate;
+  bool _neuterDismissed = false;
   bool _isLoading = false;
   bool _isInitialized = false;
 
@@ -70,6 +64,8 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
     _photoBase64 = pet.photoPath;
     _selectedVetId = pet.vetId;
     _existingColorValue = pet.colorValue;
+    _neuteredDate = pet.neuteredDate;
+    _neuterDismissed = pet.neuterDismissed;
   }
 
   Future<void> _pickImage() async {
@@ -93,6 +89,22 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
           SnackBar(content: Text('Could not pick image: $e')),
         );
       }
+    }
+  }
+
+  Future<void> _pickNeuteredDate() async {
+    final now = DateTime.now();
+    final picked = await showDatePicker(
+      context: context,
+      initialDate: _neuteredDate ?? now,
+      firstDate: DateTime(1990),
+      lastDate: now,
+    );
+    if (picked != null) {
+      setState(() {
+        _neuteredDate = picked;
+        _neuterDismissed = false;
+      });
     }
   }
 
@@ -120,6 +132,8 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
           gender: _selectedGender,
           bio: _bioController.text.trim(),
           insurance: _insuranceController.text.trim(),
+          neuteredDate: _neuteredDate,
+          neuterDismissed: _neuterDismissed,
           photoPath: _photoBase64,
           vetId: _selectedVetId,
           colorValue: _existingColorValue,
@@ -135,6 +149,8 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
               gender: _selectedGender,
               bio: _bioController.text.trim(),
               insurance: _insuranceController.text.trim(),
+              neuteredDate: _neuteredDate,
+              neuterDismissed: _neuterDismissed,
               photoPath: _photoBase64,
               vetId: _selectedVetId,
             );
@@ -208,7 +224,6 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
                 controller: _nameController,
                 decoration: const InputDecoration(
                   labelText: 'Name *',
-                  prefixIcon: Icon(Icons.pets),
                 ),
                 validator: (value) {
                   if (value == null || value.trim().isEmpty) {
@@ -223,7 +238,6 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
                 value: _selectedSpecies,
                 decoration: const InputDecoration(
                   labelText: 'Species *',
-                  prefixIcon: Icon(Icons.category),
                 ),
                 items: AppConstants.species
                     .map((s) => DropdownMenuItem(value: s, child: Text(s)))
@@ -240,7 +254,6 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
                 controller: _breedController,
                 decoration: const InputDecoration(
                   labelText: 'Breed',
-                  prefixIcon: Icon(Icons.label_outline),
                 ),
               ),
               const SizedBox(height: 16),
@@ -249,7 +262,6 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
                 value: _selectedGender,
                 decoration: InputDecoration(
                   labelText: 'Gender',
-                  prefixIcon: const Icon(Icons.wc),
                   suffixIcon: _selectedGender != null
                       ? IconButton(
                           icon: const Icon(Icons.clear),
@@ -279,7 +291,6 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
                       controller: _ageController,
                       decoration: const InputDecoration(
                         labelText: 'Age (years)',
-                        prefixIcon: Icon(Icons.cake),
                       ),
                       keyboardType:
                           const TextInputType.numberWithOptions(decimal: true),
@@ -301,7 +312,6 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
                       controller: _weightController,
                       decoration: const InputDecoration(
                         labelText: 'Weight (kg)',
-                        prefixIcon: Icon(Icons.monitor_weight),
                       ),
                       keyboardType:
                           const TextInputType.numberWithOptions(decimal: true),
@@ -319,12 +329,13 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
                 ],
               ),
               const SizedBox(height: 16),
+              _buildNeuteredDateField(theme),
+              const SizedBox(height: 16),
               TextFormField(
                 key: const Key('pet_bio_field'),
                 controller: _bioController,
                 decoration: const InputDecoration(
                   labelText: 'Bio',
-                  prefixIcon: Icon(Icons.description),
                   alignLabelWithHint: true,
                 ),
                 maxLines: 4,
@@ -338,7 +349,6 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
                 controller: _insuranceController,
                 decoration: const InputDecoration(
                   labelText: 'Insurance',
-                  prefixIcon: Icon(Icons.shield),
                   alignLabelWithHint: true,
                 ),
                 maxLines: 4,
@@ -364,6 +374,36 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
     );
   }
 
+  Widget _buildNeuteredDateField(ThemeData theme) {
+    final dateFormat = DateFormat.yMMMd();
+    return InkWell(
+      key: const Key('pet_neutered_date_field'),
+      onTap: _pickNeuteredDate,
+      child: InputDecorator(
+        decoration: InputDecoration(
+          labelText: 'Neutered / Spayed',
+          suffixIcon: _neuteredDate != null
+              ? IconButton(
+                  icon: const Icon(Icons.clear),
+                  tooltip: 'Clear date',
+                  onPressed: () => setState(() => _neuteredDate = null),
+                )
+              : null,
+        ),
+        child: Text(
+          _neuteredDate != null
+              ? dateFormat.format(_neuteredDate!)
+              : 'Not set',
+          style: theme.textTheme.bodyLarge?.copyWith(
+            color: _neuteredDate != null
+                ? null
+                : theme.colorScheme.onSurfaceVariant,
+          ),
+        ),
+      ),
+    );
+  }
+
   Widget _buildVetDropdown() {
     final vetsAsync = ref.watch(vetListProvider);
 
@@ -371,14 +411,12 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
       loading: () => const InputDecorator(
         decoration: InputDecoration(
           labelText: 'Veterinarian',
-          prefixIcon: Icon(Icons.local_hospital),
         ),
         child: Text('Loading vets...'),
       ),
       error: (_, __) => const InputDecorator(
         decoration: InputDecoration(
           labelText: 'Veterinarian',
-          prefixIcon: Icon(Icons.local_hospital),
         ),
         child: Text('Could not load vets'),
       ),
@@ -387,7 +425,6 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
           value: vets.any((v) => v.id == _selectedVetId) ? _selectedVetId : null,
           decoration: InputDecoration(
             labelText: 'Veterinarian',
-            prefixIcon: const Icon(Icons.local_hospital),
             suffixIcon: _selectedVetId != null
                 ? IconButton(
                     icon: const Icon(Icons.clear),

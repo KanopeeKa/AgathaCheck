@@ -191,6 +191,10 @@ class _PetDetailScreenState extends ConsumerState<PetDetailScreen> {
                   child: _PetProfileCard(pet: pet),
                 ),
               ),
+              if (pet.neuteredDate == null && !pet.neuterDismissed)
+                SliverToBoxAdapter(
+                  child: _NeuterReminderCard(pet: pet),
+                ),
               SliverToBoxAdapter(
                 child: _WeightTrackingSection(petId: widget.petId),
               ),
@@ -313,6 +317,19 @@ class _PetProfileCard extends ConsumerWidget {
                         Text(pet.bio,
                             style: theme.textTheme.bodyMedium?.copyWith(
                                 color: colorScheme.onSurfaceVariant)),
+                      ],
+                      if (pet.neuteredDate != null) ...[
+                        const SizedBox(height: 12),
+                        Row(
+                          children: [
+                            Icon(Icons.check_circle, size: 18,
+                                color: Colors.green),
+                            const SizedBox(width: 8),
+                            Text('Neutered / Spayed: ${DateFormat.yMMMd().format(pet.neuteredDate!)}',
+                                style: theme.textTheme.bodyMedium?.copyWith(
+                                    color: colorScheme.onSurfaceVariant)),
+                          ],
+                        ),
                       ],
                       if (pet.insurance.isNotEmpty) ...[
                         const SizedBox(height: 12),
@@ -1419,6 +1436,85 @@ class _SharingSection extends ConsumerWidget {
               },
             ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+class _NeuterReminderCard extends ConsumerWidget {
+  const _NeuterReminderCard({required this.pet});
+
+  final Pet pet;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+      child: Card(
+        color: colorScheme.tertiaryContainer.withAlpha(80),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Icon(Icons.info_outline, color: colorScheme.tertiary),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Text(
+                      'Consider neutering ${pet.name}',
+                      style: theme.textTheme.titleSmall?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: colorScheme.onTertiaryContainer,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 10),
+              Text(
+                'Neutering or spaying helps prevent certain cancers, '
+                'reduces unwanted behaviours, and helps control the pet '
+                'population. It can also lower the risk of infections and '
+                'increase your pet\'s lifespan. Talk to your vet about the '
+                'best time for the procedure.',
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: colorScheme.onTertiaryContainer.withAlpha(200),
+                ),
+              ),
+              const SizedBox(height: 14),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  TextButton(
+                    key: const Key('neuter_dismiss_button'),
+                    onPressed: () async {
+                      final updated = pet.copyWith(neuterDismissed: true);
+                      await ref.read(petListProvider.notifier).updatePet(updated);
+                    },
+                    child: const Text('I don\'t want to neuter'),
+                  ),
+                  const SizedBox(width: 8),
+                  FilledButton.tonal(
+                    key: const Key('neuter_snooze_button'),
+                    onPressed: () {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Reminder snoozed. We\'ll remind you again later.'),
+                        ),
+                      );
+                    },
+                    child: const Text('Snooze'),
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );

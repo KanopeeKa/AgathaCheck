@@ -17,6 +17,8 @@ class PetModel {
     this.gender,
     this.bio = '',
     this.insurance = '',
+    this.neuteredDate,
+    this.neuterDismissed = false,
     this.photoPath,
     this.vetId,
     this.colorValue,
@@ -33,6 +35,10 @@ class PetModel {
       gender: json['gender'] as String?,
       bio: (json['bio'] as String?) ?? '',
       insurance: (json['insurance'] as String?) ?? '',
+      neuteredDate: json['neuteredDate'] != null
+          ? DateTime.tryParse(json['neuteredDate'] as String)
+          : null,
+      neuterDismissed: json['neuterDismissed'] == true,
       photoPath: json['photoPath'] as String?,
       vetId: json['vetId'] as String?,
       colorValue: json['colorValue'] as int?,
@@ -50,6 +56,8 @@ class PetModel {
       gender: pet.gender,
       bio: pet.bio,
       insurance: pet.insurance,
+      neuteredDate: pet.neuteredDate,
+      neuterDismissed: pet.neuterDismissed,
       photoPath: pet.photoPath,
       vetId: pet.vetId,
       colorValue: pet.colorValue,
@@ -71,6 +79,8 @@ class PetModel {
   final String? gender;
   final String bio;
   final String insurance;
+  final DateTime? neuteredDate;
+  final bool neuterDismissed;
   final String? photoPath;
   final String? vetId;
   final int? colorValue;
@@ -86,6 +96,8 @@ class PetModel {
       'gender': gender,
       'bio': bio,
       'insurance': insurance,
+      'neuteredDate': neuteredDate?.toIso8601String(),
+      'neuterDismissed': neuterDismissed,
       'photoPath': photoPath,
       'vetId': vetId,
       'colorValue': colorValue,
@@ -105,6 +117,8 @@ class PetModel {
       gender: gender,
       bio: bio,
       insurance: insurance,
+      neuteredDate: neuteredDate,
+      neuterDismissed: neuterDismissed,
       photoPath: photoPath,
       vetId: vetId,
       colorValue: colorValue,
