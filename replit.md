@@ -21,7 +21,7 @@ The application follows a clean architecture approach, separating concerns into 
 - **Veterinarian Management**: CRUD operations for veterinarian contacts, linkable to individual pets. Data stored in PostgreSQL.
 - **Notification System**: In-app notification center with server-side due-entry checking and email reminder capabilities. Data stored in PostgreSQL.
 - **Sharing Feature**: Multi-user pet access system with guardian/shared roles. Guardians can invite others via share links, manage access, and toggle roles. Shared users see only the guardian who invited them. Each share link is tied to a specific guardian. `pet_access` table tracks per-user access with roles. Shared pet views include owner profile card. Accept-share flow for logged-in users. Data stored in PostgreSQL.
-- **Pet Report Generation**: Generates comprehensive PDF reports for individual pets, including customizable sections for profile, weight tracking, and health events.
+- **Pet Report Generation**: Generates comprehensive PDF reports for individual pets, including customizable sections for profile, weight tracking, health events, health issues (with linked events), and sharing (access list with roles).
 - **Deployment**: The Flutter web frontend is served statically by a Dart API server, which is AOT compiled for production.
 
 ## External Dependencies

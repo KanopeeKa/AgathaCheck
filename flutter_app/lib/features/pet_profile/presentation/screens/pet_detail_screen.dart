@@ -1417,6 +1417,8 @@ class _ReportSelectionSheetState extends ConsumerState<_ReportSelectionSheet> {
   final bool _includeProfile = true;
   bool _includeWeight = true;
   bool _includeHealth = true;
+  bool _includeHealthIssues = true;
+  bool _includeSharing = false;
   bool _includeFullLog = false;
   bool _isGenerating = false;
 
@@ -1493,6 +1495,26 @@ class _ReportSelectionSheetState extends ConsumerState<_ReportSelectionSheet> {
             dense: true,
             contentPadding: EdgeInsets.zero,
           ),
+          CheckboxListTile(
+            value: _includeHealthIssues,
+            onChanged: (v) =>
+                setState(() => _includeHealthIssues = v ?? false),
+            title: const Text('Health Issues'),
+            subtitle: const Text('Ongoing conditions and linked events'),
+            secondary:
+                Icon(Icons.health_and_safety, color: colorScheme.primary),
+            dense: true,
+            contentPadding: EdgeInsets.zero,
+          ),
+          CheckboxListTile(
+            value: _includeSharing,
+            onChanged: (v) => setState(() => _includeSharing = v ?? false),
+            title: const Text('Sharing'),
+            subtitle: const Text('People with access to this pet'),
+            secondary: Icon(Icons.people, color: colorScheme.primary),
+            dense: true,
+            contentPadding: EdgeInsets.zero,
+          ),
           if (_includeHealth) ...[
             Padding(
               padding: const EdgeInsets.only(left: 40),
@@ -1566,11 +1588,11 @@ class _ReportSelectionSheetState extends ConsumerState<_ReportSelectionSheet> {
       List<HealthEntry> healthEntries = [];
       Map<String, List<Map<String, dynamic>>> histories = {};
 
-      if (_includeHealth) {
+      if (_includeHealth || _includeHealthIssues) {
         healthEntries =
             await ref.read(petHealthEntriesProvider(pet.id).future);
 
-        if (_includeFullLog) {
+        if (_includeHealth && _includeFullLog) {
           final repo = ref.read(healthRepositoryProvider);
           for (final entry in healthEntries) {
             try {
@@ -1584,6 +1606,21 @@ class _ReportSelectionSheetState extends ConsumerState<_ReportSelectionSheet> {
             } catch (_) {}
           }
         }
+      }
+
+      List<HealthIssue> healthIssues = [];
+      if (_includeHealthIssues) {
+        try {
+          healthIssues =
+              await ref.read(petHealthIssuesProvider(pet.id).future);
+        } catch (_) {}
+      }
+
+      List<PetAccess> accessList = [];
+      if (_includeSharing) {
+        try {
+          accessList = await ref.read(petAccessProvider(pet.id).future);
+        } catch (_) {}
       }
 
       final vetsAsync = ref.read(vetListProvider);
@@ -1608,6 +1645,8 @@ class _ReportSelectionSheetState extends ConsumerState<_ReportSelectionSheet> {
           petProfile: _includeProfile,
           weightTracking: _includeWeight,
           healthEvents: _includeHealth,
+          healthIssues: _includeHealthIssues,
+          sharing: _includeSharing,
           healthFrom: _healthFrom,
           healthTo: _healthTo,
           includeFullLog: _includeFullLog,
@@ -1615,6 +1654,8 @@ class _ReportSelectionSheetState extends ConsumerState<_ReportSelectionSheet> {
         vet: assignedVet,
         weightEntries: weightEntries,
         healthEntries: healthEntries,
+        healthIssues: healthIssues,
+        accessList: accessList,
         healthHistories: histories,
         weightUnit: unitLabel,
         logoBytes: logoBytes,
