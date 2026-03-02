@@ -1,0 +1,65 @@
+You are a senior Flutter architect (10+ years exp). Analyze my current Flutter Replit project and implement recurring reminders with in-app notifications and emails. Output ONLY: new files, modified files (with clear comments), pubspec.yaml updates, tests, docs. Keep portable for SwiftUI migration (use JSON-serializable models, no platform locks).
+
+Core Feature: Recurring reminders (daily/weekly/monthly/custom) with local notifications + email sends.
+
+1. **Packages** (add to pubspec.yaml):
+   - flutter_local_notifications: ^17.0.0 (recurring notifs)[web:29][web:36]
+   - workmanager: ^0.5.2 (background checks)
+   - timezone: ^0.9.2
+   - http: ^1.2.1 (emails)
+   - hive_flutter: ^1.1.0 or sqflite (persist reminders)
+   - flutter_riverpod or provider (state mgmt)
+   - intl: ^0.19.0 (dates)
+
+2. **Data Model** (lib/models/reminder.dart):
+   - Reminder class: id, title, description, DateTime triggerTime, RepeatInterval enum (daily,weekly,monthly,custom int days), bool enabled, String? userEmail, String? notifId.
+   - JSON encode/decode for persistence/migration.
+
+3. **Local Notifications** (services/notification_service.dart):
+   - Init plugin, request permissions.
+   - zonedSchedule with matchDateTimeComponents: DateTimeComponents.time (daily), .dayOfWeekAndTime (weekly)[web:36][web:27]
+   - Schedule on create/edit: store payload with reminder JSON.
+   - UI: on tap navigate to detail.
+   - Cancel/reschedule via ID.
+
+4. **Email Integration** (services/email_service.dart):
+   - SendGrid/Resend API via HTTP POST (store API key in secure_shared_preferences or env).
+   - Template: "Reminder: {title}\n{desc}" HTML.
+   - Trigger on notif tap or manual.
+
+5. **Background Logic** (services/background_service.dart):
+   - Workmanager: daily periodic task to check due reminders, fire missed ones, update nextTrigger.
+   - Register callbackDispatcher.
+
+6. **UI Updates**:
+   - Add to existing reminder form: DropdownButton repeatInterval, TextField email.
+   - List: Switch enabled, chip for repeat type.
+   - Settings: API key input, test reminder button.
+   - Material 3 design, responsive.
+
+7. **Persistence** (lib/repositories/reminder_repo.dart):
+   - CRUD with Hive/Box.
+   - On app start: load & reschedule active reminders.
+
+8. **State Management**:
+   - Riverpod/Provider: RemindersNotifier with add/update/delete/schedule.
+
+9. **Edge Cases**:
+   - Timezone (use local TZ).
+   - App kill/restart reschedule.
+   - Doze mode (exactAllowWhileIdle).
+   - iOS/Android parity.
+
+10. **Testing** (test/):
+    - unit: Reminder model, schedule calc.
+    - widget: form submission, list.
+    - integration: mock notifs/emails.
+
+11. **Docs**:
+    - README.md: setup (API keys), arch diagram (PlantUML), migration to SwiftUI notes (models->Codable).
+    - API docs in code.
+
+12. **AndroidManifest/iOS Config**:
+    - List exact permissions, receivers.
+
+Implement fully on my project. 
