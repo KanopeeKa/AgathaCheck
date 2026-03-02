@@ -1,0 +1,70 @@
+Enhance the existing "Download Pet Report" PDF feature with these specific improvements:
+
+New Features:
+
+Add "Past Health Events" checkbox in the modal bottom sheet (separate from "Health Events"):
+
+When selected: Include historical completed events (no logs/doses)
+
+Appears alongside existing checkboxes (Pet Profile, Weight Tracking, Health Events)
+
+Vet Information Display:
+
+In PET PROFILE section, display full vet details in same style as Name/Species/Breed
+
+Format: "Vet: Dr. Smith - Smith Vet Clinic - 123-456-7890" (all info in single line)
+
+Weight Tracking Table: Show only last 3 entries (most recent) instead of full history
+
+Keep the graph showing all data points for trend visualization
+
+Overall Layout: Make entire PDF more compact:
+
+Reduce font sizes slightly
+
+Tighter spacing between sections/tables
+
+Smaller thumbnails (photos/health event images)
+
+Maintain readability while fitting more content per page
+
+Updated PDF Structure:
+
+text
+[Pet Photo + Name/Breed/Age + Vet: Dr. Smith - Clinic - Phone]
+
+1. PET PROFILE [always]
+   - Compact table: Name, Species, Breed, Age, Current Weight, Vet (full info)
+
+2. WEIGHT TRACKING [if selected]
+   - Line graph (all data points)
+   - Table: LAST 3 entries only (date | weight | notes)
+
+3. HEALTH EVENTS [if selected, date range]
+   - Current & Recurring Events
+   - Events in Period [date range]
+
+4. PAST HEALTH EVENTS [if selected]
+   - Historical completed events (no logs)
+   - Compact list/table format
+
+Footer: Generated [date] | App branding
+Modal Bottom Sheet Updated:
+
+text
+☑ Pet Profile [always]
+☐ Weight Tracking
+☐ Health Events → [date range + full log toggle]
+☐ Past Health Events
+[Generate PDF]
+Technical Notes:
+
+Query past events: completed events outside selected date range (status='done' OR similar)
+
+Reuse existing provider methods with new filters
+
+Test all combinations: Past Events only, Past + Current, with/without date filters
+
+Maintain server endpoint compatibility if used
+
+Deliverables: Update modal UI, PDF generation logic, test all section combinations, verify compact layout works on A4/Letter. Ensure vet info displays fully, weight table shows only 3 rows, past events exclude logs.
