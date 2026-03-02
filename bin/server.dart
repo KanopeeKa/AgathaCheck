@@ -1025,6 +1025,8 @@ Future<void> _createHealthEntry(HttpRequest request) async {
   }
 
   _jsonResponse(request, 201, createdRow);
+
+  await _createGeneralNotification(request, petId, 'Event created: $name', '$name ($type) has been added');
 }
 
 Future<void> _updateHealthEntry(HttpRequest request) async {
@@ -1095,11 +1097,24 @@ Future<void> _updateHealthEntry(HttpRequest request) async {
     }
   }
 
-  _jsonResponse(request, 200, _rowToMap(result.first));
+  final updatedRow = _rowToMap(result.first);
+  _jsonResponse(request, 200, updatedRow);
+
+  final updatedName = updatedRow['name']?.toString() ?? '';
+  final updatedPetId = updatedRow['pet_id']?.toString() ?? '';
+  await _createGeneralNotification(request, updatedPetId, 'Event updated: $updatedName', '$updatedName has been updated');
 }
 
 Future<void> _deleteHealthEntry(HttpRequest request) async {
   final id = request.uri.pathSegments.last;
+
+  final existing = await _db.execute(
+    Sql.named('SELECT name, pet_id FROM health_entries WHERE id = @id'),
+    parameters: {'id': id},
+  );
+  final entryName = existing.isNotEmpty ? existing.first.toColumnMap()['name']?.toString() ?? '' : '';
+  final entryPetId = existing.isNotEmpty ? existing.first.toColumnMap()['pet_id']?.toString() ?? '' : '';
+
   final result = await _db.execute(
     Sql.named('DELETE FROM health_entries WHERE id = @id RETURNING id'),
     parameters: {'id': id},
@@ -1111,6 +1126,10 @@ Future<void> _deleteHealthEntry(HttpRequest request) async {
   }
 
   _jsonResponse(request, 200, {'deleted': true});
+
+  if (entryName.isNotEmpty) {
+    await _createGeneralNotification(request, entryPetId, 'Event deleted: $entryName', '$entryName has been removed');
+  }
 }
 
 Future<void> _markTaken(HttpRequest request) async {
@@ -1843,6 +1862,8 @@ Future<void> _createShare(HttpRequest request) async {
   }
 
   _jsonResponse(request, 200, {'share_code': code});
+
+  await _createGeneralNotification(request, petId, 'Share link created', 'A share link has been generated');
 }
 
 Future<void> _getShare(HttpRequest request) async {
@@ -2590,6 +2611,29 @@ Future<void> _checkDueNotifications(HttpRequest request) async {
   });
 }
 
+Future<void> _createGeneralNotification(HttpRequest request, String petId, String title, String message) async {
+  try {
+    final payload = await _authenticateRequest(request);
+    if (payload == null) return;
+    final userId = int.parse(payload['sub'].toString());
+
+    await _db.execute(
+      Sql.named('''
+        INSERT INTO notifications (user_id, pet_id, title, message, type)
+        VALUES (@userId, ${petId.isNotEmpty ? '@petId' : 'NULL'}, @title, @message, 'general')
+      '''),
+      parameters: {
+        'userId': userId,
+        if (petId.isNotEmpty) 'petId': petId,
+        'title': title,
+        'message': message,
+      },
+    );
+  } catch (e) {
+    print('General notification error: $e');
+  }
+}
+
 Future<void> _sendEmailReminder(String toEmail, String subject, String body) async {
   // TODO: Implement actual email sending via SendGrid or similar service.
   // Requires SENDGRID_API_KEY environment variable.
@@ -2673,6 +2717,8 @@ Future<void> _createHealthIssue(HttpRequest request) async {
   final issue = _healthIssueToMap(result.first);
   issue['event_ids'] = <String>[];
   _jsonResponse(request, 201, issue);
+
+  await _createGeneralNotification(request, petId, 'Health issue created: $title', '$title has been added');
 }
 
 Future<void> _updateHealthIssue(HttpRequest request) async {
@@ -2728,6 +2774,10 @@ Future<void> _updateHealthIssue(HttpRequest request) async {
   );
   issue['event_ids'] = eventsResult.map((r) => r.toColumnMap()['health_entry_id'].toString()).toList();
   _jsonResponse(request, 200, issue);
+
+  final updatedTitle = issue['title']?.toString() ?? '';
+  final updatedPetId = issue['pet_id']?.toString() ?? '';
+  await _createGeneralNotification(request, updatedPetId, 'Health issue updated: $updatedTitle', '$updatedTitle has been updated');
 }
 
 Future<void> _deleteHealthIssue(HttpRequest request) async {
@@ -2736,6 +2786,13 @@ Future<void> _deleteHealthIssue(HttpRequest request) async {
     _jsonResponse(request, 400, {'error': 'Invalid issue ID'});
     return;
   }
+
+  final existingIssue = await _db.execute(
+    Sql.named('SELECT title, pet_id FROM health_issues WHERE id = @id'),
+    parameters: {'id': id},
+  );
+  final issueTitle = existingIssue.isNotEmpty ? existingIssue.first.toColumnMap()['title']?.toString() ?? '' : '';
+  final issuePetId = existingIssue.isNotEmpty ? existingIssue.first.toColumnMap()['pet_id']?.toString() ?? '' : '';
 
   final result = await _db.execute(
     Sql.named('DELETE FROM health_issues WHERE id = @id RETURNING id'),
@@ -2753,6 +2810,10 @@ Future<void> _deleteHealthIssue(HttpRequest request) async {
   );
 
   _jsonResponse(request, 200, {'deleted': true});
+
+  if (issueTitle.isNotEmpty) {
+    await _createGeneralNotification(request, issuePetId, 'Health issue deleted: $issueTitle', '$issueTitle has been removed');
+  }
 }
 
 Future<void> _linkHealthIssueEvent(HttpRequest request) async {

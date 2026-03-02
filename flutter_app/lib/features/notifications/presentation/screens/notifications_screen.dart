@@ -219,7 +219,7 @@ class _NotificationTile extends ConsumerWidget {
         iconColor = Colors.orange;
         break;
       case NotificationType.reminder:
-        icon = Icons.notifications_active;
+        icon = Icons.schedule;
         iconColor = theme.colorScheme.primary;
         break;
       case NotificationType.completed:
@@ -227,8 +227,8 @@ class _NotificationTile extends ConsumerWidget {
         iconColor = Colors.green;
         break;
       case NotificationType.general:
-        icon = Icons.info_outline;
-        iconColor = theme.colorScheme.onSurfaceVariant;
+        icon = Icons.notifications;
+        iconColor = theme.colorScheme.primary;
         break;
     }
 
