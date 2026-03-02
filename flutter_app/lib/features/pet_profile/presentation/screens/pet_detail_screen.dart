@@ -360,7 +360,7 @@ class _PetProfileCard extends ConsumerWidget {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text('Insurance',
+                                  Text('Insurance Details',
                                       style: theme.textTheme.labelMedium
                                           ?.copyWith(
                                               color: colorScheme.primary,

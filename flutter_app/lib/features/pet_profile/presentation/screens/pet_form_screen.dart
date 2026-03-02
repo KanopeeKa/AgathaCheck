@@ -359,7 +359,7 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
                 key: const Key('pet_insurance_field'),
                 controller: _insuranceController,
                 decoration: const InputDecoration(
-                  labelText: 'Insurance',
+                  labelText: 'Insurance Details',
                   alignLabelWithHint: true,
                 ),
                 maxLines: 4,

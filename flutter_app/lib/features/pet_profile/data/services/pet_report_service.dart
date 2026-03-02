@@ -263,7 +263,7 @@ class PetReportService {
             if (pet.chipId.isNotEmpty)
               _detailRow('ID / Microchip', pet.chipId),
             if (pet.insurance.isNotEmpty)
-              _detailRow('Insurance', pet.insurance),
+              _detailRow('Insurance Details', pet.insurance),
             if (vet != null)
               _detailRow('Vet', [
                 vet.name,
