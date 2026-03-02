@@ -1,4 +1,6 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:http/http.dart' as http;
 import 'package:uuid/uuid.dart';
 
 import '../../../../core/providers/shared_preferences_provider.dart';
@@ -139,8 +141,12 @@ class PetListNotifier extends AsyncNotifier<List<Pet>> {
     ref.invalidateSelf();
   }
 
-  /// Deletes a pet by its [id].
+  /// Deletes a pet by its [id], cleaning up all server-side data first.
   Future<void> deletePet(String id) async {
+    final baseUrl = kIsWeb ? '' : 'http://localhost:5000';
+    try {
+      await http.delete(Uri.parse('$baseUrl/api/pets/$id/data'));
+    } catch (_) {}
     await ref.read(deletePetUseCaseProvider).call(id);
     ref.invalidateSelf();
   }

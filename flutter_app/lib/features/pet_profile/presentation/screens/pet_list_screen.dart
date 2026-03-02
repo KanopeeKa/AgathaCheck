@@ -231,7 +231,10 @@ class _PetListScreenState extends ConsumerState<PetListScreen> {
                       builder: (ctx) => AlertDialog(
                         title: const Text('Delete Pet'),
                         content: Text(
-                          'Are you sure you want to delete ${pet.name}?',
+                          'Are you sure you want to delete ${pet.name}? '
+                          'This will permanently remove all linked health events, '
+                          'health issues, weight records, notifications, and '
+                          'shared access for this pet.',
                         ),
                         actions: [
                           TextButton(
@@ -239,6 +242,9 @@ class _PetListScreenState extends ConsumerState<PetListScreen> {
                             child: const Text('Cancel'),
                           ),
                           FilledButton(
+                            style: FilledButton.styleFrom(
+                              backgroundColor: Theme.of(ctx).colorScheme.error,
+                            ),
                             onPressed: () => Navigator.of(ctx).pop(true),
                             child: const Text('Delete'),
                           ),

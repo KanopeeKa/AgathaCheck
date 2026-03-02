@@ -478,6 +478,10 @@ Future<void> _handleApi(HttpRequest request) async {
   } else if (RegExp(r'^/api/share/[^/]+$').hasMatch(path) && method == 'GET') {
     await _getShare(request);
   }
+  // Pet data cleanup
+  else if (RegExp(r'^/api/pets/[^/]+/data$').hasMatch(path) && method == 'DELETE') {
+    await _deletePetData(request);
+  }
   // Pet access management
   else if (RegExp(r'^/api/pets/[^/]+/access$').hasMatch(path) && method == 'GET') {
     await _getPetAccess(request);
@@ -2014,6 +2018,78 @@ Future<Map<String, dynamic>> _petAccessRowToJson(ResultRow row) async {
     'created_at': cols['created_at'].toString(),
     'user': userInfo,
   };
+}
+
+Future<void> _deletePetData(HttpRequest request) async {
+  final segments = request.uri.pathSegments;
+  final petId = segments[2];
+
+  try {
+    await _db.execute(
+      Sql.named('DELETE FROM health_issue_events WHERE health_issue_id IN (SELECT id FROM health_issues WHERE pet_id = @petId)'),
+      parameters: {'petId': petId},
+    );
+
+    await _db.execute(
+      Sql.named('UPDATE health_entries SET health_issue_id = NULL WHERE pet_id = @petId'),
+      parameters: {'petId': petId},
+    );
+
+    await _db.execute(
+      Sql.named('DELETE FROM health_issues WHERE pet_id = @petId'),
+      parameters: {'petId': petId},
+    );
+
+    final photoRows = await _db.execute(
+      Sql.named('SELECT p.id, p.photo_path FROM health_event_photos p INNER JOIN health_entries e ON p.event_id = e.id::text WHERE e.pet_id = @petId'),
+      parameters: {'petId': petId},
+    );
+    for (final row in photoRows) {
+      final cols = row.toColumnMap();
+      final photoPath = cols['photo_path']?.toString();
+      if (photoPath != null && photoPath.isNotEmpty) {
+        final file = File(photoPath);
+        if (await file.exists()) {
+          await file.delete();
+        }
+      }
+    }
+
+    await _db.execute(
+      Sql.named('DELETE FROM health_event_photos WHERE event_id IN (SELECT id::text FROM health_entries WHERE pet_id = @petId)'),
+      parameters: {'petId': petId},
+    );
+
+    await _db.execute(
+      Sql.named('DELETE FROM health_entries WHERE pet_id = @petId'),
+      parameters: {'petId': petId},
+    );
+
+    await _db.execute(
+      Sql.named('DELETE FROM weight_entries WHERE pet_id = @petId'),
+      parameters: {'petId': petId},
+    );
+
+    await _db.execute(
+      Sql.named('DELETE FROM notifications WHERE pet_id = @petId'),
+      parameters: {'petId': petId},
+    );
+
+    await _db.execute(
+      Sql.named('DELETE FROM pet_access WHERE pet_id = @petId'),
+      parameters: {'petId': petId},
+    );
+
+    await _db.execute(
+      Sql.named('DELETE FROM shared_pets WHERE pet_id = @petId'),
+      parameters: {'petId': petId},
+    );
+
+    _jsonResponse(request, 200, {'deleted': true, 'pet_id': petId});
+  } catch (e) {
+    print('Error deleting pet data for $petId: $e');
+    _jsonResponse(request, 500, {'error': 'Failed to delete pet data'});
+  }
 }
 
 Future<void> _getPetAccess(HttpRequest request) async {
