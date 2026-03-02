@@ -44,17 +44,19 @@ class PetAccessModel extends PetAccess {
 
   factory PetAccessModel.fromJson(Map<String, dynamic> json) {
     return PetAccessModel(
-      id: json['id'] as int,
+      id: json['id'] is int ? json['id'] as int : int.tryParse(json['id']?.toString() ?? '0') ?? 0,
       petId: json['pet_id']?.toString() ?? '',
-      userId: json['user_id'] as int,
+      userId: json['user_id'] is int ? json['user_id'] as int : int.tryParse(json['user_id']?.toString() ?? '0') ?? 0,
       role: json['role'] == 'guardian'
           ? PetAccessRole.guardian
           : PetAccessRole.shared,
-      invitedBy: json['invited_by'] as int?,
+      invitedBy: json['invited_by'] != null
+          ? (json['invited_by'] is int ? json['invited_by'] as int : int.tryParse(json['invited_by'].toString()))
+          : null,
       shareCode: json['share_code']?.toString(),
       createdAt: DateTime.tryParse(json['created_at']?.toString() ?? '') ??
           DateTime.now(),
-      user: json['user'] != null
+      user: json['user'] != null && json['user'] is Map<String, dynamic>
           ? PetAccessUserModel.fromJson(json['user'] as Map<String, dynamic>)
           : null,
     );
