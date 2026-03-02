@@ -28,6 +28,7 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
   final _weightController = TextEditingController();
   final _bioController = TextEditingController();
   final _insuranceController = TextEditingController();
+  final _chipIdController = TextEditingController();
 
   String _selectedSpecies = AppConstants.species.first;
   String? _selectedGender;
@@ -36,6 +37,7 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
   int? _existingColorValue;
   DateTime? _neuteredDate;
   bool _neuterDismissed = false;
+  bool _chipDismissed = false;
   bool _isLoading = false;
   bool _isInitialized = false;
 
@@ -49,6 +51,7 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
     _weightController.dispose();
     _bioController.dispose();
     _insuranceController.dispose();
+    _chipIdController.dispose();
     super.dispose();
   }
 
@@ -59,6 +62,7 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
     _weightController.text = pet.weight?.toString() ?? '';
     _bioController.text = pet.bio;
     _insuranceController.text = pet.insurance;
+    _chipIdController.text = pet.chipId;
     _selectedSpecies = pet.species;
     _selectedGender = pet.gender;
     _photoBase64 = pet.photoPath;
@@ -66,6 +70,7 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
     _existingColorValue = pet.colorValue;
     _neuteredDate = pet.neuteredDate;
     _neuterDismissed = pet.neuterDismissed;
+    _chipDismissed = pet.chipDismissed;
   }
 
   Future<void> _pickImage() async {
@@ -134,6 +139,8 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
           insurance: _insuranceController.text.trim(),
           neuteredDate: _neuteredDate,
           neuterDismissed: _neuterDismissed,
+          chipId: _chipIdController.text.trim(),
+          chipDismissed: _chipDismissed,
           photoPath: _photoBase64,
           vetId: _selectedVetId,
           colorValue: _existingColorValue,
@@ -151,6 +158,8 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
               insurance: _insuranceController.text.trim(),
               neuteredDate: _neuteredDate,
               neuterDismissed: _neuterDismissed,
+              chipId: _chipIdController.text.trim(),
+              chipDismissed: _chipDismissed,
               photoPath: _photoBase64,
               vetId: _selectedVetId,
             );
@@ -353,6 +362,14 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
                 ),
                 maxLines: 4,
                 maxLength: 500,
+              ),
+              const SizedBox(height: 16),
+              TextFormField(
+                key: const Key('pet_chip_id_field'),
+                controller: _chipIdController,
+                decoration: const InputDecoration(
+                  labelText: 'ID / Microchip Number',
+                ),
               ),
               const SizedBox(height: 24),
               FilledButton.icon(

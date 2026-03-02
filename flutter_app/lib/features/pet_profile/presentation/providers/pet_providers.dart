@@ -94,6 +94,8 @@ class PetListNotifier extends AsyncNotifier<List<Pet>> {
     String insurance = '',
     DateTime? neuteredDate,
     bool neuterDismissed = false,
+    String chipId = '',
+    bool chipDismissed = false,
     String? photoPath,
     String? vetId,
   }) async {
@@ -121,6 +123,8 @@ class PetListNotifier extends AsyncNotifier<List<Pet>> {
       insurance: insurance,
       neuteredDate: neuteredDate,
       neuterDismissed: neuterDismissed,
+      chipId: chipId,
+      chipDismissed: chipDismissed,
       photoPath: photoPath,
       vetId: vetId,
       colorValue: color,

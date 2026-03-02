@@ -260,6 +260,8 @@ class PetReportService {
             if (pet.bio.isNotEmpty) _detailRow('Bio', pet.bio),
             if (pet.neuteredDate != null)
               _detailRow('Neutered / Spayed', DateFormat.yMMMd().format(pet.neuteredDate!)),
+            if (pet.chipId.isNotEmpty)
+              _detailRow('ID / Microchip', pet.chipId),
             if (pet.insurance.isNotEmpty)
               _detailRow('Insurance', pet.insurance),
             if (vet != null)

@@ -195,6 +195,10 @@ class _PetDetailScreenState extends ConsumerState<PetDetailScreen> {
                 SliverToBoxAdapter(
                   child: _NeuterReminderCard(pet: pet),
                 ),
+              if (pet.chipId.isEmpty && !pet.chipDismissed)
+                SliverToBoxAdapter(
+                  child: _ChipReminderCard(pet: pet),
+                ),
               SliverToBoxAdapter(
                 child: _WeightTrackingSection(petId: widget.petId),
               ),
@@ -326,6 +330,19 @@ class _PetProfileCard extends ConsumerWidget {
                                 color: Colors.green),
                             const SizedBox(width: 8),
                             Text('Neutered / Spayed: ${DateFormat.yMMMd().format(pet.neuteredDate!)}',
+                                style: theme.textTheme.bodyMedium?.copyWith(
+                                    color: colorScheme.onSurfaceVariant)),
+                          ],
+                        ),
+                      ],
+                      if (pet.chipId.isNotEmpty) ...[
+                        const SizedBox(height: 12),
+                        Row(
+                          children: [
+                            Icon(Icons.memory, size: 18,
+                                color: colorScheme.primary),
+                            const SizedBox(width: 8),
+                            Text('ID: ${pet.chipId}',
                                 style: theme.textTheme.bodyMedium?.copyWith(
                                     color: colorScheme.onSurfaceVariant)),
                           ],
@@ -1502,6 +1519,85 @@ class _NeuterReminderCard extends ConsumerWidget {
                   const SizedBox(width: 8),
                   FilledButton.tonal(
                     key: const Key('neuter_snooze_button'),
+                    onPressed: () {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Reminder snoozed. We\'ll remind you again later.'),
+                        ),
+                      );
+                    },
+                    child: const Text('Snooze'),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _ChipReminderCard extends ConsumerWidget {
+  const _ChipReminderCard({required this.pet});
+
+  final Pet pet;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+      child: Card(
+        color: colorScheme.secondaryContainer.withAlpha(80),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Icon(Icons.memory, color: colorScheme.secondary),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Text(
+                      '${pet.name} has no microchip ID',
+                      style: theme.textTheme.titleSmall?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: colorScheme.onSecondaryContainer,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 10),
+              Text(
+                'Microchipping is a legal requirement in many countries '
+                'and helps reunite lost pets with their owners. A microchip '
+                'is a small, permanent form of identification implanted '
+                'under your pet\'s skin. Contact your vet to get your pet '
+                'chipped and add the ID number to their profile.',
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: colorScheme.onSecondaryContainer.withAlpha(200),
+                ),
+              ),
+              const SizedBox(height: 14),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  TextButton(
+                    key: const Key('chip_dismiss_button'),
+                    onPressed: () async {
+                      final updated = pet.copyWith(chipDismissed: true);
+                      await ref.read(petListProvider.notifier).updatePet(updated);
+                    },
+                    child: const Text('I don\'t want to chip / identify my pet'),
+                  ),
+                  const SizedBox(width: 8),
+                  FilledButton.tonal(
+                    key: const Key('chip_snooze_button'),
                     onPressed: () {
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(

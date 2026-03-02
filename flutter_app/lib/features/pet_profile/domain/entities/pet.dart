@@ -17,6 +17,8 @@ class Pet {
     this.insurance = '',
     this.neuteredDate,
     this.neuterDismissed = false,
+    this.chipId = '',
+    this.chipDismissed = false,
     this.photoPath,
     this.vetId,
     this.colorValue,
@@ -33,6 +35,8 @@ class Pet {
   final String insurance;
   final DateTime? neuteredDate;
   final bool neuterDismissed;
+  final String chipId;
+  final bool chipDismissed;
   final String? photoPath;
   final String? vetId;
   final int? colorValue;
@@ -71,6 +75,8 @@ class Pet {
     String? insurance,
     DateTime? neuteredDate,
     bool? neuterDismissed,
+    String? chipId,
+    bool? chipDismissed,
     String? photoPath,
     String? vetId,
     int? colorValue,
@@ -90,6 +96,8 @@ class Pet {
       insurance: insurance ?? this.insurance,
       neuteredDate: clearNeuteredDate ? null : (neuteredDate ?? this.neuteredDate),
       neuterDismissed: neuterDismissed ?? this.neuterDismissed,
+      chipId: chipId ?? this.chipId,
+      chipDismissed: chipDismissed ?? this.chipDismissed,
       photoPath: photoPath ?? this.photoPath,
       vetId: clearVetId ? null : (vetId ?? this.vetId),
       colorValue: colorValue ?? this.colorValue,
