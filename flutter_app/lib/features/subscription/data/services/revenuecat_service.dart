@@ -4,8 +4,7 @@ import 'package:purchases_flutter/purchases_flutter.dart';
 import '../../domain/entities/subscription_status.dart';
 
 class RevenueCatConfig {
-  static const String appleApiKey = 'test_mChvbdszQBlZxZxjoINftJrAbTx';
-  static const String googleApiKey = 'test_mChvbdszQBlZxZxjoINftJrAbTx';
+  static const String publicApiKey = 'test_mChvbdszQBlZxZxjoINftJrAbTx';
   static const String entitlementId = 'Agatah Check Unlimited';
 }
 
@@ -16,38 +15,18 @@ class RevenueCatService {
 
   bool _initialized = false;
 
-  bool get isSupported => !kIsWeb;
   bool get isInitialized => _initialized;
 
   Future<void> initialize() async {
-    if (kIsWeb) {
-      debugPrint('RevenueCat: Skipped on web platform');
-      return;
-    }
-
     if (_initialized) return;
 
     try {
-      final String apiKey;
-      switch (defaultTargetPlatform) {
-        case TargetPlatform.iOS:
-        case TargetPlatform.macOS:
-          apiKey = RevenueCatConfig.appleApiKey;
-          break;
-        case TargetPlatform.android:
-          apiKey = RevenueCatConfig.googleApiKey;
-          break;
-        default:
-          debugPrint('RevenueCat: Unsupported platform $defaultTargetPlatform');
-          return;
-      }
-
-      final configuration = PurchasesConfiguration(apiKey)
+      final configuration = PurchasesConfiguration(RevenueCatConfig.publicApiKey)
         ..appUserID = null;
 
       await Purchases.configure(configuration);
       _initialized = true;
-      debugPrint('RevenueCat: Initialized successfully');
+      debugPrint('RevenueCat: Initialized successfully (platform: ${kIsWeb ? "web" : defaultTargetPlatform})');
     } catch (e) {
       debugPrint('RevenueCat: Initialization failed: $e');
     }

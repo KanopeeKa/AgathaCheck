@@ -39,3 +39,8 @@ deploymentTarget = "autoscale"
 publicDir = "deploy/public"
 build = ["dart", "compile", "exe", "bin/server.dart", "-o", "bin/server"]
 run = ["./bin/server"]
+
+[userenv]
+
+[userenv.shared]
+REVENUECAT_API_SECRET = "sk_hOhscihmVbyDGjZulKdDiYPVNRuBe"

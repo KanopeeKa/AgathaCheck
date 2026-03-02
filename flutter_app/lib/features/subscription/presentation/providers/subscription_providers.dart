@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../auth/presentation/providers/auth_providers.dart';
 import '../../data/services/revenuecat_service.dart';
@@ -36,7 +35,6 @@ class SubscriptionNotifier extends StateNotifier<SubscriptionStatus> {
 
   Future<void> _init() async {
     final service = _ref.read(revenueCatServiceProvider);
-    if (!service.isSupported) return;
 
     if (!service.isInitialized) {
       await service.initialize();
@@ -80,7 +78,6 @@ class SubscriptionNotifier extends StateNotifier<SubscriptionStatus> {
 }
 
 final hasUnlimitedProvider = Provider<bool>((ref) {
-  if (kIsWeb) return false;
   final status = ref.watch(subscriptionStatusProvider);
   return status.hasUnlimited;
 });

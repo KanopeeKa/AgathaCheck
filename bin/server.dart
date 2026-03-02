@@ -523,6 +523,8 @@ Future<void> _handleApi(HttpRequest request) async {
     await _updateHealthIssue(request);
   } else if (RegExp(r'^/api/health-issues/\d+$').hasMatch(path) && method == 'DELETE') {
     await _deleteHealthIssue(request);
+  } else if (RegExp(r'^/api/premium/[^/]+$').hasMatch(path) && method == 'GET') {
+    await _getPremiumStatus(request);
   } else {
     _jsonResponse(request, 404, {'error': 'Not found'});
   }
@@ -3131,6 +3133,83 @@ Future<Map<String, dynamic>?> _readJson(HttpRequest request) async {
   } catch (e) {
     _jsonResponse(request, 400, {'error': 'Invalid JSON'});
     return null;
+  }
+}
+
+// ── Premium status (RevenueCat) ──────────────────────────────
+
+Future<void> _getPremiumStatus(HttpRequest request) async {
+  final segments = request.uri.pathSegments;
+  final userId = segments.last;
+
+  final rcSecret = Platform.environment['REVENUECAT_API_SECRET'] ?? '';
+  if (rcSecret.isEmpty) {
+    _jsonResponse(request, 200, {
+      'is_premium': false,
+      'error': 'RevenueCat not configured',
+    });
+    return;
+  }
+
+  try {
+    final client = HttpClient();
+    final rcRequest = await client.getUrl(
+      Uri.parse('https://api.revenuecat.com/v1/subscribers/$userId'),
+    );
+    rcRequest.headers.set('Authorization', 'Bearer $rcSecret');
+    rcRequest.headers.set('Content-Type', 'application/json');
+
+    final rcResponse = await rcRequest.close();
+    final rcBody = await utf8.decoder.bind(rcResponse).join();
+    client.close();
+
+    if (rcResponse.statusCode != 200) {
+      _jsonResponse(request, 200, {
+        'is_premium': false,
+        'user_id': userId,
+      });
+      return;
+    }
+
+    final data = json.decode(rcBody) as Map<String, dynamic>;
+    final subscriber = data['subscriber'] as Map<String, dynamic>? ?? {};
+    final entitlements = subscriber['entitlements'] as Map<String, dynamic>? ?? {};
+
+    bool isPremium = false;
+    String? expires;
+    String? productId;
+
+    for (final entry in entitlements.entries) {
+      final ent = entry.value as Map<String, dynamic>;
+      final expiresDate = ent['expires_date'] as String?;
+      if (expiresDate != null) {
+        final expiry = DateTime.tryParse(expiresDate);
+        if (expiry != null && expiry.isAfter(DateTime.now())) {
+          isPremium = true;
+          expires = expiresDate;
+          productId = ent['product_identifier'] as String?;
+          break;
+        }
+      } else {
+        isPremium = true;
+        productId = ent['product_identifier'] as String?;
+        break;
+      }
+    }
+
+    _jsonResponse(request, 200, {
+      'is_premium': isPremium,
+      'user_id': userId,
+      if (expires != null) 'expires': expires,
+      if (productId != null) 'product_id': productId,
+    });
+  } catch (e) {
+    print('RevenueCat API error: $e');
+    _jsonResponse(request, 200, {
+      'is_premium': false,
+      'user_id': userId,
+      'error': 'Failed to check subscription status',
+    });
   }
 }
 
