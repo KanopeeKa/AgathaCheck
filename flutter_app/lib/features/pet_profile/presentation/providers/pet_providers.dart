@@ -1,7 +1,8 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
 
+import '../../../../core/providers/shared_preferences_provider.dart';
+import '../../../auth/presentation/providers/auth_providers.dart';
 import '../../data/datasources/pet_local_datasource.dart';
 import '../../data/repositories/pet_repository_impl.dart';
 import '../../domain/entities/pet.dart';
@@ -11,14 +12,13 @@ import '../../domain/usecases/delete_pet.dart';
 import '../../domain/usecases/get_all_pets.dart';
 import '../../domain/usecases/update_pet.dart';
 
-/// Provider for the SharedPreferences instance.
-final sharedPreferencesProvider = Provider<SharedPreferences>((ref) {
-  throw UnimplementedError('Must be overridden in ProviderScope');
-});
+export '../../../../core/providers/shared_preferences_provider.dart';
 
-/// Provider for the local data source.
+/// Provider for the local data source, scoped to the current user.
 final petLocalDataSourceProvider = Provider<PetLocalDataSource>((ref) {
-  return PetLocalDataSourceImpl(ref.watch(sharedPreferencesProvider));
+  final authState = ref.watch(authProvider);
+  final userId = authState.user?.id;
+  return PetLocalDataSourceImpl(ref.watch(sharedPreferencesProvider), userId: userId);
 });
 
 /// Provider for the pet repository.

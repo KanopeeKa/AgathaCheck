@@ -29,12 +29,35 @@ abstract class PetLocalDataSource {
 /// Implementation of [PetLocalDataSource] backed by SharedPreferences.
 class PetLocalDataSourceImpl implements PetLocalDataSource {
   /// Creates a [PetLocalDataSourceImpl] with the given [SharedPreferences].
-  PetLocalDataSourceImpl(this._prefs);
+  PetLocalDataSourceImpl(this._prefs, {this.userId});
 
   final SharedPreferences _prefs;
+  final String? userId;
+
+  String get _storageKey =>
+      userId != null && userId!.isNotEmpty
+          ? '${AppConstants.petsStorageKey}_$userId'
+          : AppConstants.petsStorageKey;
+
+  bool _migrated = false;
+
+  void _migrateIfNeeded() {
+    if (_migrated) return;
+    _migrated = true;
+    if (userId == null || userId!.isEmpty) return;
+    final userKey = _storageKey;
+    final existing = _prefs.getString(userKey);
+    if (existing != null && existing.isNotEmpty) return;
+    final oldData = _prefs.getString(AppConstants.petsStorageKey);
+    if (oldData != null && oldData.isNotEmpty) {
+      _prefs.setString(userKey, oldData);
+      _prefs.remove(AppConstants.petsStorageKey);
+    }
+  }
 
   List<PetModel> _loadPets() {
-    final jsonString = _prefs.getString(AppConstants.petsStorageKey);
+    _migrateIfNeeded();
+    final jsonString = _prefs.getString(_storageKey);
     if (jsonString == null || jsonString.isEmpty) return [];
     final list = json.decode(jsonString) as List<dynamic>;
     return list
@@ -44,7 +67,7 @@ class PetLocalDataSourceImpl implements PetLocalDataSource {
 
   Future<void> _savePets(List<PetModel> pets) async {
     final jsonString = json.encode(pets.map((p) => p.toJson()).toList());
-    await _prefs.setString(AppConstants.petsStorageKey, jsonString);
+    await _prefs.setString(_storageKey, jsonString);
   }
 
   @override
