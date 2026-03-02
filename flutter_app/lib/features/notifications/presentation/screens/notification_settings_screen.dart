@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../domain/entities/notification_preferences.dart';
 import '../providers/notification_providers.dart';
+import '../../../pet_profile/presentation/providers/pet_providers.dart';
 
 class NotificationSettingsScreen extends ConsumerStatefulWidget {
   const NotificationSettingsScreen({super.key});
@@ -20,6 +21,7 @@ class _NotificationSettingsScreenState
   bool _notifyOverdue = true;
   bool _notifyDueSoon = true;
   bool _notifyCompleted = true;
+  List<String> _mutedPetIds = [];
   bool _initialized = false;
   bool _saving = false;
 
@@ -35,6 +37,7 @@ class _NotificationSettingsScreenState
         _notifyOverdue = prefs.notifyOverdue;
         _notifyDueSoon = prefs.notifyDueSoon;
         _notifyCompleted = prefs.notifyCompleted;
+        _mutedPetIds = List<String>.from(prefs.mutedPetIds);
         _initialized = true;
       }
     });
@@ -128,6 +131,17 @@ class _NotificationSettingsScreenState
               ),
             ],
             const Divider(),
+            _SectionHeader(title: 'Muted Pets', theme: theme),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+              child: Text(
+                'Muted pets will not trigger any notifications.',
+                style: theme.textTheme.bodySmall?.copyWith(
+                    color: theme.colorScheme.onSurfaceVariant),
+              ),
+            ),
+            _buildMutedPetsSection(theme),
+            const Divider(),
             _SectionHeader(title: 'Local Notifications', theme: theme),
             ListTile(
               leading: Icon(Icons.phone_android,
@@ -160,6 +174,62 @@ class _NotificationSettingsScreenState
     );
   }
 
+  Widget _buildMutedPetsSection(ThemeData theme) {
+    final petsAsync = ref.watch(petListProvider);
+    final pets = petsAsync.valueOrNull ?? [];
+
+    if (pets.isEmpty) {
+      return Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        child: Text('No pets found.',
+            style: theme.textTheme.bodyMedium?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant)),
+      );
+    }
+
+    return Column(
+      children: pets.map((pet) {
+        final isMuted = _mutedPetIds.contains(pet.id);
+        final petColor = pet.colorValue != null
+            ? Color(pet.colorValue!)
+            : theme.colorScheme.primary;
+        return SwitchListTile(
+          title: Row(
+            children: [
+              Container(
+                width: 12,
+                height: 12,
+                decoration: BoxDecoration(
+                  color: petColor,
+                  shape: BoxShape.circle,
+                ),
+              ),
+              const SizedBox(width: 10),
+              Expanded(child: Text(pet.name)),
+            ],
+          ),
+          subtitle: Text(isMuted ? 'Muted' : 'Active'),
+          value: isMuted,
+          onChanged: (v) {
+            setState(() {
+              if (v) {
+                _mutedPetIds.add(pet.id);
+              } else {
+                _mutedPetIds.remove(pet.id);
+              }
+            });
+          },
+          secondary: Icon(
+            isMuted ? Icons.notifications_off : Icons.notifications_active,
+            color: isMuted
+                ? theme.colorScheme.onSurfaceVariant
+                : petColor,
+          ),
+        );
+      }).toList(),
+    );
+  }
+
   Future<void> _save() async {
     setState(() => _saving = true);
     try {
@@ -171,6 +241,7 @@ class _NotificationSettingsScreenState
             notifyOverdue: _notifyOverdue,
             notifyDueSoon: _notifyDueSoon,
             notifyCompleted: _notifyCompleted,
+            mutedPetIds: _mutedPetIds,
           ));
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(

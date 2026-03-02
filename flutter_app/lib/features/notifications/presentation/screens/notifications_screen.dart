@@ -80,7 +80,13 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
             ],
           ),
         ),
-        data: (notifications) {
+        data: (allNotifications) {
+          final prefs = ref.watch(notificationPreferencesProvider).valueOrNull;
+          final mutedIds = prefs?.mutedPetIds ?? [];
+          final notifications = allNotifications
+              .where((n) => n.petId == null || !mutedIds.contains(n.petId))
+              .toList();
+
           if (notifications.isEmpty) {
             return Center(
               child: Column(

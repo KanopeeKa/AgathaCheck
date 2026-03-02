@@ -67,8 +67,13 @@ class NotificationsNotifier extends AsyncNotifier<List<AppNotification>> {
 
 final unreadNotificationCountProvider = Provider<int>((ref) {
   final notifs = ref.watch(notificationsProvider);
+  final prefs = ref.watch(notificationPreferencesProvider).valueOrNull;
+  final mutedIds = prefs?.mutedPetIds ?? [];
   return notifs.whenOrNull(
-        data: (list) => list.where((n) => !n.isRead).length,
+        data: (list) => list
+            .where((n) => !n.isRead)
+            .where((n) => n.petId == null || !mutedIds.contains(n.petId))
+            .length,
       ) ??
       0;
 });

@@ -162,6 +162,9 @@ Future<void> main() async {
   await _db.execute(Sql('''
     ALTER TABLE notification_preferences ADD COLUMN IF NOT EXISTS notify_completed BOOLEAN NOT NULL DEFAULT TRUE
   '''));
+  await _db.execute(Sql('''
+    ALTER TABLE notification_preferences ADD COLUMN IF NOT EXISTS muted_pet_ids TEXT NOT NULL DEFAULT ''
+  '''));
   print('notification_preferences table ready');
 
   await _db.execute(Sql('''
@@ -2283,11 +2286,14 @@ Future<void> _getNotificationPreferences(HttpRequest request) async {
   }
 
   final row = result.first.toColumnMap();
+  final mutedRaw = (row['muted_pet_ids'] as String?) ?? '';
+  final mutedList = mutedRaw.isEmpty ? <String>[] : mutedRaw.split(',');
   _jsonResponse(request, 200, {
     'user_id': row['user_id'].toString(),
     'email_reminders_enabled': row['email_reminders_enabled'] as bool,
     'reminder_days_before': row['reminder_days_before'] as int,
     'notify_completed': row['notify_completed'] as bool,
+    'muted_pet_ids': mutedList,
   });
 }
 
@@ -2305,15 +2311,19 @@ Future<void> _updateNotificationPreferences(HttpRequest request) async {
   final emailEnabled = body['email_reminders_enabled'] as bool?;
   final reminderDays = body['reminder_days_before'] as int?;
   final notifyCompleted = body['notify_completed'] as bool?;
+  final mutedPetIds = body.containsKey('muted_pet_ids')
+      ? (body['muted_pet_ids'] as List<dynamic>?)?.map((e) => e.toString()).join(',') ?? ''
+      : null;
 
   await _db.execute(
     Sql.named('''
-      INSERT INTO notification_preferences (user_id, email_reminders_enabled, reminder_days_before, notify_completed, updated_at)
-      VALUES (@userId, @emailEnabled, @reminderDays, @notifyCompleted, NOW())
+      INSERT INTO notification_preferences (user_id, email_reminders_enabled, reminder_days_before, notify_completed, muted_pet_ids, updated_at)
+      VALUES (@userId, @emailEnabled, @reminderDays, @notifyCompleted, @mutedPetIds, NOW())
       ON CONFLICT (user_id) DO UPDATE SET
         email_reminders_enabled = COALESCE(@emailEnabled, notification_preferences.email_reminders_enabled),
         reminder_days_before = COALESCE(@reminderDays, notification_preferences.reminder_days_before),
         notify_completed = COALESCE(@notifyCompleted, notification_preferences.notify_completed),
+        muted_pet_ids = COALESCE(@mutedPetIds, notification_preferences.muted_pet_ids),
         updated_at = NOW()
     '''),
     parameters: {
@@ -2321,6 +2331,7 @@ Future<void> _updateNotificationPreferences(HttpRequest request) async {
       'emailEnabled': emailEnabled ?? false,
       'reminderDays': reminderDays ?? 1,
       'notifyCompleted': notifyCompleted ?? true,
+      'mutedPetIds': mutedPetIds ?? '',
     },
   );
 
@@ -2330,11 +2341,14 @@ Future<void> _updateNotificationPreferences(HttpRequest request) async {
   );
 
   final row = result.first.toColumnMap();
+  final mutedRaw = (row['muted_pet_ids'] as String?) ?? '';
+  final mutedList = mutedRaw.isEmpty ? <String>[] : mutedRaw.split(',');
   _jsonResponse(request, 200, {
     'user_id': row['user_id'].toString(),
     'email_reminders_enabled': row['email_reminders_enabled'] as bool,
     'reminder_days_before': row['reminder_days_before'] as int,
     'notify_completed': row['notify_completed'] as bool,
+    'muted_pet_ids': mutedList,
   });
 }
 

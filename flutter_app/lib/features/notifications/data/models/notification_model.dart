@@ -67,6 +67,7 @@ class NotificationPreferencesModel {
   final bool notifyOverdue;
   final bool notifyDueSoon;
   final bool notifyCompleted;
+  final List<String> mutedPetIds;
 
   const NotificationPreferencesModel({
     this.emailRemindersEnabled = false,
@@ -74,6 +75,7 @@ class NotificationPreferencesModel {
     this.notifyOverdue = true,
     this.notifyDueSoon = true,
     this.notifyCompleted = true,
+    this.mutedPetIds = const [],
   });
 
   factory NotificationPreferencesModel.fromJson(Map<String, dynamic> json) {
@@ -83,6 +85,10 @@ class NotificationPreferencesModel {
       notifyOverdue: json['notify_overdue'] != false,
       notifyDueSoon: json['notify_due_soon'] != false,
       notifyCompleted: json['notify_completed'] != false,
+      mutedPetIds: (json['muted_pet_ids'] as List<dynamic>?)
+              ?.map((e) => e.toString())
+              .toList() ??
+          const [],
     );
   }
 
@@ -93,6 +99,7 @@ class NotificationPreferencesModel {
       'notify_overdue': notifyOverdue,
       'notify_due_soon': notifyDueSoon,
       'notify_completed': notifyCompleted,
+      'muted_pet_ids': mutedPetIds,
     };
   }
 }

@@ -39,6 +39,7 @@ class NotificationRepositoryImpl implements NotificationRepository {
       notifyOverdue: model.notifyOverdue,
       notifyDueSoon: model.notifyDueSoon,
       notifyCompleted: model.notifyCompleted,
+      mutedPetIds: model.mutedPetIds,
     );
   }
 
@@ -51,6 +52,7 @@ class NotificationRepositoryImpl implements NotificationRepository {
       notifyOverdue: preferences.notifyOverdue,
       notifyDueSoon: preferences.notifyDueSoon,
       notifyCompleted: preferences.notifyCompleted,
+      mutedPetIds: preferences.mutedPetIds,
     );
     final result = await _dataSource.updatePreferences(_tokenGetter(), model);
     return NotificationPreferences(
@@ -59,6 +61,7 @@ class NotificationRepositoryImpl implements NotificationRepository {
       notifyOverdue: result.notifyOverdue,
       notifyDueSoon: result.notifyDueSoon,
       notifyCompleted: result.notifyCompleted,
+      mutedPetIds: result.mutedPetIds,
     );
   }
 
