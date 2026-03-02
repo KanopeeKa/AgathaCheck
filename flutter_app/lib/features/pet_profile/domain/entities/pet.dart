@@ -16,6 +16,7 @@ class Pet {
     this.bio = '',
     this.photoPath,
     this.vetId,
+    this.colorValue,
   });
 
   final String id;
@@ -28,6 +29,29 @@ class Pet {
   final String bio;
   final String? photoPath;
   final String? vetId;
+  final int? colorValue;
+
+  static const List<int> palette = [
+    0xFF7E57C2, // deep purple
+    0xFF26A69A, // teal
+    0xFFEF5350, // red
+    0xFF42A5F5, // blue
+    0xFFFF7043, // deep orange
+    0xFF66BB6A, // green
+    0xFFAB47BC, // purple
+    0xFFFFCA28, // amber
+    0xFF26C6DA, // cyan
+    0xFFEC407A, // pink
+    0xFF8D6E63, // brown
+    0xFF5C6BC0, // indigo
+    0xFF9CCC65, // light green
+    0xFFFF8A65, // light deep orange
+    0xFF78909C, // blue grey
+  ];
+
+  static int pickColor(int index) {
+    return palette[index % palette.length];
+  }
 
   Pet copyWith({
     String? id,
@@ -40,6 +64,7 @@ class Pet {
     String? bio,
     String? photoPath,
     String? vetId,
+    int? colorValue,
     bool clearVetId = false,
     bool clearGender = false,
   }) {
@@ -54,6 +79,7 @@ class Pet {
       bio: bio ?? this.bio,
       photoPath: photoPath ?? this.photoPath,
       vetId: clearVetId ? null : (vetId ?? this.vetId),
+      colorValue: colorValue ?? this.colorValue,
     );
   }
 

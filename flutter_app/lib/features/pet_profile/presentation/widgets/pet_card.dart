@@ -93,16 +93,27 @@ class PetCard extends StatelessWidget {
   }
 
   Widget _buildAvatar(ColorScheme colorScheme) {
+    final petColor = pet.colorValue != null
+        ? Color(pet.colorValue!)
+        : colorScheme.primary;
+
     if (pet.photoPath != null && pet.photoPath!.isNotEmpty) {
       try {
         final bytes = base64Decode(pet.photoPath!);
-        return ClipRRect(
-          borderRadius: BorderRadius.circular(12),
-          child: Image.memory(
-            bytes,
-            width: 64,
-            height: 64,
-            fit: BoxFit.cover,
+        return Container(
+          width: 68,
+          height: 68,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            border: Border.all(color: petColor, width: 3),
+          ),
+          child: ClipOval(
+            child: Image.memory(
+              bytes,
+              width: 62,
+              height: 62,
+              fit: BoxFit.cover,
+            ),
           ),
         );
       } catch (_) {
@@ -111,16 +122,17 @@ class PetCard extends StatelessWidget {
     }
 
     return Container(
-      width: 64,
-      height: 64,
+      width: 68,
+      height: 68,
       decoration: BoxDecoration(
-        color: colorScheme.primaryContainer,
-        borderRadius: BorderRadius.circular(12),
+        color: petColor.withOpacity(0.15),
+        shape: BoxShape.circle,
+        border: Border.all(color: petColor, width: 3),
       ),
       child: Icon(
         _speciesIcon(pet.species),
         size: 32,
-        color: colorScheme.onPrimaryContainer,
+        color: petColor,
         semanticLabel: '${pet.species} icon',
       ),
     );

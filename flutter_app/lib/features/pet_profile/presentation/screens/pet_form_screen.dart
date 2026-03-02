@@ -40,6 +40,7 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
   String? _selectedGender;
   String? _photoBase64;
   String? _selectedVetId;
+  int? _existingColorValue;
   bool _isLoading = false;
   bool _isInitialized = false;
 
@@ -65,6 +66,7 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
     _selectedGender = pet.gender;
     _photoBase64 = pet.photoPath;
     _selectedVetId = pet.vetId;
+    _existingColorValue = pet.colorValue;
   }
 
   Future<void> _pickImage() async {
@@ -116,6 +118,7 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
           bio: _bioController.text.trim(),
           photoPath: _photoBase64,
           vetId: _selectedVetId,
+          colorValue: _existingColorValue,
         );
         await ref.read(petListProvider.notifier).updatePet(pet);
       } else {

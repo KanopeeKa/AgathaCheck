@@ -54,7 +54,32 @@ class PetListNotifier extends AsyncNotifier<List<Pet>> {
   /// Loads all pets from the repository via the [GetAllPets] use case.
   @override
   Future<List<Pet>> build() async {
-    return ref.read(getAllPetsUseCaseProvider).call();
+    final pets = await ref.read(getAllPetsUseCaseProvider).call();
+    final needsMigration = pets.any((p) => p.colorValue == null);
+    if (needsMigration) {
+      final usedColors = <int>{};
+      final updated = <Pet>[];
+      for (final p in pets) {
+        if (p.colorValue != null) {
+          usedColors.add(p.colorValue!);
+          updated.add(p);
+        } else {
+          int color = Pet.palette[0];
+          for (final c in Pet.palette) {
+            if (!usedColors.contains(c)) {
+              color = c;
+              break;
+            }
+          }
+          usedColors.add(color);
+          final patched = p.copyWith(colorValue: color);
+          await ref.read(updatePetUseCaseProvider).call(patched);
+          updated.add(patched);
+        }
+      }
+      return updated;
+    }
+    return pets;
   }
 
   /// Adds a new pet with the given details.
@@ -69,6 +94,18 @@ class PetListNotifier extends AsyncNotifier<List<Pet>> {
     String? photoPath,
     String? vetId,
   }) async {
+    final existing = state.valueOrNull ?? [];
+    final usedColors = existing
+        .where((p) => p.colorValue != null)
+        .map((p) => p.colorValue!)
+        .toSet();
+    int color = Pet.palette[0];
+    for (final c in Pet.palette) {
+      if (!usedColors.contains(c)) {
+        color = c;
+        break;
+      }
+    }
     final pet = Pet(
       id: const Uuid().v4(),
       name: name,
@@ -80,6 +117,7 @@ class PetListNotifier extends AsyncNotifier<List<Pet>> {
       bio: bio,
       photoPath: photoPath,
       vetId: vetId,
+      colorValue: color,
     );
     await ref.read(addPetUseCaseProvider).call(pet);
     ref.invalidateSelf();

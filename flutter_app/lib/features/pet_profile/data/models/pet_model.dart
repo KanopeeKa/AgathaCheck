@@ -18,6 +18,7 @@ class PetModel {
     this.bio = '',
     this.photoPath,
     this.vetId,
+    this.colorValue,
   });
 
   factory PetModel.fromJson(Map<String, dynamic> json) {
@@ -32,6 +33,7 @@ class PetModel {
       bio: (json['bio'] as String?) ?? '',
       photoPath: json['photoPath'] as String?,
       vetId: json['vetId'] as String?,
+      colorValue: json['colorValue'] as int?,
     );
   }
 
@@ -47,6 +49,7 @@ class PetModel {
       bio: pet.bio,
       photoPath: pet.photoPath,
       vetId: pet.vetId,
+      colorValue: pet.colorValue,
     );
   }
 
@@ -66,6 +69,7 @@ class PetModel {
   final String bio;
   final String? photoPath;
   final String? vetId;
+  final int? colorValue;
 
   Map<String, dynamic> toJson() {
     return {
@@ -79,6 +83,7 @@ class PetModel {
       'bio': bio,
       'photoPath': photoPath,
       'vetId': vetId,
+      'colorValue': colorValue,
     };
   }
 
@@ -96,6 +101,7 @@ class PetModel {
       bio: bio,
       photoPath: photoPath,
       vetId: vetId,
+      colorValue: colorValue,
     );
   }
 }

@@ -169,15 +169,19 @@ class _PetStrip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final petColor = pet?.colorValue != null
+        ? Color(pet!.colorValue!)
+        : colorScheme.surfaceContainerHighest;
+
     return Container(
       width: 52,
       decoration: BoxDecoration(
-        color: colorScheme.surfaceContainerHighest.withOpacity(0.5),
+        color: petColor.withOpacity(0.18),
       ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          _buildAvatar(),
+          _buildAvatar(petColor),
           const SizedBox(height: 2),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 2),
@@ -198,20 +202,32 @@ class _PetStrip extends StatelessWidget {
     );
   }
 
-  Widget _buildAvatar() {
+  Widget _buildAvatar(Color petColor) {
     if (pet?.photoPath != null && pet!.photoPath!.isNotEmpty) {
       try {
         final bytes = base64Decode(pet!.photoPath!);
-        return CircleAvatar(
-          radius: 14,
-          backgroundImage: MemoryImage(bytes),
+        return Container(
+          width: 30,
+          height: 30,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            border: Border.all(color: petColor, width: 2),
+          ),
+          child: ClipOval(
+            child: Image.memory(bytes, width: 26, height: 26, fit: BoxFit.cover),
+          ),
         );
       } catch (_) {}
     }
-    return CircleAvatar(
-      radius: 14,
-      backgroundColor: colorScheme.primaryContainer,
-      child: Icon(Icons.pets, size: 14, color: colorScheme.onPrimaryContainer),
+    return Container(
+      width: 30,
+      height: 30,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        color: petColor.withOpacity(0.25),
+        border: Border.all(color: petColor, width: 2),
+      ),
+      child: Icon(Icons.pets, size: 14, color: petColor),
     );
   }
 }

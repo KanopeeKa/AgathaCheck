@@ -791,25 +791,36 @@ class _PetPhoto extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
+    final petColor = pet.colorValue != null
+        ? Color(pet.colorValue!)
+        : colorScheme.primary;
 
     if (pet.photoPath != null && pet.photoPath!.isNotEmpty) {
       try {
         final bytes = base64Decode(pet.photoPath!);
-        return Image.memory(
-          bytes,
-          fit: BoxFit.cover,
-          semanticLabel: 'Photo of ${pet.name}',
+        return Container(
+          decoration: BoxDecoration(
+            border: Border(left: BorderSide(color: petColor, width: 5)),
+          ),
+          child: Image.memory(
+            bytes,
+            fit: BoxFit.cover,
+            semanticLabel: 'Photo of ${pet.name}',
+          ),
         );
       } catch (_) {}
     }
 
     return Container(
-      color: colorScheme.primaryContainer,
+      decoration: BoxDecoration(
+        color: petColor.withOpacity(0.12),
+        border: Border(left: BorderSide(color: petColor, width: 5)),
+      ),
       child: Center(
         child: Icon(
           Icons.pets,
           size: 56,
-          color: colorScheme.onPrimaryContainer.withAlpha(100),
+          color: petColor.withOpacity(0.6),
           semanticLabel: 'No photo for ${pet.name}',
         ),
       ),
