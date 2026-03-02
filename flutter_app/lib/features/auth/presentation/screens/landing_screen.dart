@@ -91,7 +91,7 @@ class _LandingScreenState extends ConsumerState<LandingScreen>
               constraints: const BoxConstraints(maxWidth: 900),
               child: isWide
                   ? Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         Expanded(child: _buildBrandingSection(theme)),
                         const SizedBox(width: 48),
@@ -102,6 +102,7 @@ class _LandingScreenState extends ConsumerState<LandingScreen>
                       ],
                     )
                   : Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         _buildBrandingSection(theme),
                         const SizedBox(height: 32),
