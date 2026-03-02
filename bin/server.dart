@@ -842,7 +842,7 @@ Future<void> _markTaken(HttpRequest request) async {
 
   switch (frequency) {
     case 'once':
-      nextDue = currentDue;
+      nextDue = DateTime(9999, 12, 31);
       break;
     case 'daily':
       nextDue = currentDue.add(const Duration(days: 1));

@@ -59,8 +59,13 @@ class HealthEntry {
   /// When this entry was last updated.
   final DateTime? updatedAt;
 
+  /// Whether a one-time entry has been completed (marked taken).
+  bool get isCompleted =>
+      frequency == HealthFrequency.once && nextDueDate.year >= 9999;
+
   /// Whether this entry is overdue (before today, not including today).
   bool get isOverdue {
+    if (isCompleted) return false;
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
     final dueDay = DateTime(nextDueDate.year, nextDueDate.month, nextDueDate.day);

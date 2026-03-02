@@ -33,13 +33,15 @@ class HealthEntryCard extends StatelessWidget {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
-    final statusColor = entry.isOverdue
-        ? colorScheme.error
-        : entry.isDueToday
-            ? Colors.orange
-            : entry.isDueSoon
-                ? Colors.amber.shade700
-                : colorScheme.primary;
+    final statusColor = entry.isCompleted
+        ? Colors.green
+        : entry.isOverdue
+            ? colorScheme.error
+            : entry.isDueToday
+                ? Colors.orange
+                : entry.isDueSoon
+                    ? Colors.amber.shade700
+                    : colorScheme.primary;
 
     return Card(
       elevation: 1,
@@ -95,10 +97,21 @@ class HealthEntryCard extends StatelessWidget {
                           const BoxConstraints(minWidth: 36, minHeight: 36),
                     ),
                   const SizedBox(width: 4),
-                  FilledButton.tonal(
-                    onPressed: onMarkTaken,
-                    child: const Text('Mark Taken'),
-                  ),
+                  if (entry.isCompleted)
+                    Chip(
+                      label: const Text('Completed'),
+                      backgroundColor: Colors.green.shade50,
+                      labelStyle: TextStyle(
+                          color: Colors.green.shade700,
+                          fontWeight: FontWeight.w600),
+                      side: BorderSide(color: Colors.green.shade200),
+                      visualDensity: VisualDensity.compact,
+                    )
+                  else
+                    FilledButton.tonal(
+                      onPressed: onMarkTaken,
+                      child: const Text('Mark Taken'),
+                    ),
                 ],
               ),
             ],
@@ -148,6 +161,9 @@ class HealthEntryCard extends StatelessWidget {
   }
 
   String _formatDueDate(HealthEntry entry) {
+    if (entry.isCompleted) {
+      return 'Done';
+    }
     if (entry.isOverdue) {
       return 'Overdue';
     }
