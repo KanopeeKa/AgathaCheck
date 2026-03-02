@@ -47,7 +47,7 @@ class _HealthDashboardScreenState extends ConsumerState<HealthDashboardScreen>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Health Tracking'),
+        title: const Text('Health Events'),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () => context.go('/'),
