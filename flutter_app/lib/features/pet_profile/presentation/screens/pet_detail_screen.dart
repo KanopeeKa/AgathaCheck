@@ -664,6 +664,9 @@ class _WeightChart extends StatelessWidget {
               showTitles: true,
               reservedSize: 52,
               getTitlesWidget: (value, meta) {
+                if (value == meta.min || value == meta.max) {
+                  return const SizedBox.shrink();
+                }
                 return Text('${value.toStringAsFixed(1)} $label',
                     style: theme.textTheme.labelSmall
                         ?.copyWith(color: colorScheme.onSurfaceVariant));
