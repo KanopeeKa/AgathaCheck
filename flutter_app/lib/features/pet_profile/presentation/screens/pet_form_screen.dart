@@ -36,6 +36,7 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
   String? _selectedVetId;
   int? _existingColorValue;
   DateTime? _neuteredDate;
+  bool? _isNeutered;
   bool _neuterDismissed = false;
   bool _chipDismissed = false;
   bool _isLoading = false;
@@ -69,6 +70,7 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
     _selectedVetId = pet.vetId;
     _existingColorValue = pet.colorValue;
     _neuteredDate = pet.neuteredDate;
+    _isNeutered = pet.neuteredDate != null ? true : null;
     _neuterDismissed = pet.neuterDismissed;
     _chipDismissed = pet.chipDismissed;
   }
@@ -393,31 +395,80 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
 
   Widget _buildNeuteredDateField(ThemeData theme) {
     final dateFormat = DateFormat.yMMMd();
-    return InkWell(
-      key: const Key('pet_neutered_date_field'),
-      onTap: _pickNeuteredDate,
-      child: InputDecorator(
-        decoration: InputDecoration(
-          labelText: 'Neutered / Spayed',
-          suffixIcon: _neuteredDate != null
-              ? IconButton(
-                  icon: const Icon(Icons.clear),
-                  tooltip: 'Clear date',
-                  onPressed: () => setState(() => _neuteredDate = null),
-                )
-              : null,
-        ),
-        child: Text(
-          _neuteredDate != null
-              ? dateFormat.format(_neuteredDate!)
-              : 'Not set',
-          style: theme.textTheme.bodyLarge?.copyWith(
-            color: _neuteredDate != null
-                ? null
-                : theme.colorScheme.onSurfaceVariant,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Neutered / Spayed',
+          style: theme.textTheme.bodyMedium?.copyWith(
+            color: theme.colorScheme.onSurfaceVariant,
           ),
         ),
-      ),
+        const SizedBox(height: 4),
+        Row(
+          children: [
+            Expanded(
+              child: RadioListTile<bool>(
+                key: const Key('pet_neutered_yes'),
+                title: const Text('Yes'),
+                value: true,
+                groupValue: _isNeutered,
+                dense: true,
+                contentPadding: EdgeInsets.zero,
+                onChanged: (val) {
+                  setState(() {
+                    _isNeutered = true;
+                    _neuterDismissed = false;
+                  });
+                },
+              ),
+            ),
+            Expanded(
+              child: RadioListTile<bool>(
+                key: const Key('pet_neutered_no'),
+                title: const Text('No'),
+                value: false,
+                groupValue: _isNeutered,
+                dense: true,
+                contentPadding: EdgeInsets.zero,
+                onChanged: (val) {
+                  setState(() {
+                    _isNeutered = false;
+                    _neuteredDate = null;
+                  });
+                },
+              ),
+            ),
+          ],
+        ),
+        if (_isNeutered == true)
+          InkWell(
+            key: const Key('pet_neutered_date_field'),
+            onTap: _pickNeuteredDate,
+            child: InputDecorator(
+              decoration: InputDecoration(
+                labelText: 'Date',
+                suffixIcon: _neuteredDate != null
+                    ? IconButton(
+                        icon: const Icon(Icons.clear),
+                        tooltip: 'Clear date',
+                        onPressed: () => setState(() => _neuteredDate = null),
+                      )
+                    : null,
+              ),
+              child: Text(
+                _neuteredDate != null
+                    ? dateFormat.format(_neuteredDate!)
+                    : 'Select date (optional)',
+                style: theme.textTheme.bodyLarge?.copyWith(
+                  color: _neuteredDate != null
+                      ? null
+                      : theme.colorScheme.onSurfaceVariant,
+                ),
+              ),
+            ),
+          ),
+      ],
     );
   }
 

@@ -78,8 +78,27 @@ class PetCard extends StatelessWidget {
                   ),
                   if (!pet.passedAway && onPassedAway != null)
                     IconButton(
-                      icon: const Icon(Icons.favorite_border, color: Color(0xFF9E9E9E)),
+                      icon: ShaderMask(
+                        shaderCallback: (bounds) => const LinearGradient(
+                          colors: [
+                            Color(0xFFFF0000),
+                            Color(0xFFFF8800),
+                            Color(0xFFFFFF00),
+                            Color(0xFF00CC00),
+                            Color(0xFF0066FF),
+                            Color(0xFF8800CC),
+                          ],
+                        ).createShader(bounds),
+                        blendMode: BlendMode.srcIn,
+                        child: const Icon(Icons.air, size: 22),
+                      ),
                       tooltip: 'Passed Away',
+                      style: IconButton.styleFrom(
+                        backgroundColor: const Color(0xFF424242),
+                        shape: const CircleBorder(),
+                        padding: const EdgeInsets.all(6),
+                        minimumSize: const Size(34, 34),
+                      ),
                       onPressed: onPassedAway,
                     ),
                   if (onDelete != null)
