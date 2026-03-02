@@ -232,4 +232,38 @@ class AuthService {
     }
     return data['message'] as String;
   }
+
+  Future<String> forgotPassword({required String email}) async {
+    final response = await _client.post(
+      Uri.parse('$baseUrl/api/auth/forgot-password'),
+      headers: {'Content-Type': 'application/json'},
+      body: json.encode({'email': email}),
+    );
+    final data = json.decode(response.body) as Map<String, dynamic>;
+    if (response.statusCode >= 400) {
+      throw Exception(data['error'] ?? 'Request failed');
+    }
+    return data['message'] as String;
+  }
+
+  Future<String> resetPassword({
+    required String email,
+    required String code,
+    required String newPassword,
+  }) async {
+    final response = await _client.post(
+      Uri.parse('$baseUrl/api/auth/reset-password'),
+      headers: {'Content-Type': 'application/json'},
+      body: json.encode({
+        'email': email,
+        'code': code,
+        'new_password': newPassword,
+      }),
+    );
+    final data = json.decode(response.body) as Map<String, dynamic>;
+    if (response.statusCode >= 400) {
+      throw Exception(data['error'] ?? 'Reset failed');
+    }
+    return data['message'] as String;
+  }
 }

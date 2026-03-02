@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../features/auth/presentation/providers/auth_providers.dart';
+import '../../features/auth/presentation/screens/forgot_password_screen.dart';
 import '../../features/auth/presentation/screens/landing_screen.dart';
 import '../../features/auth/presentation/screens/my_details_screen.dart';
 import '../../features/health_tracking/presentation/screens/health_dashboard_screen.dart';
@@ -60,6 +61,7 @@ final routerProvider = Provider<GoRouter>((ref) {
 
       if (!isLoggedIn) {
         if (path == '/landing') return null;
+        if (path == '/forgot-password') return null;
         if (path.startsWith('/shared/')) return null;
         return '/landing';
       }
@@ -75,6 +77,11 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: '/landing',
         name: 'landing',
         builder: (context, state) => const LandingScreen(),
+      ),
+      GoRoute(
+        path: '/forgot-password',
+        name: 'forgotPassword',
+        builder: (context, state) => const ForgotPasswordScreen(),
       ),
       GoRoute(
         path: '/',

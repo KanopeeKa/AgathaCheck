@@ -272,8 +272,21 @@ class _LandingScreenState extends ConsumerState<LandingScreen>
             },
             onFieldSubmitted: (_) => _submitLogin(),
           ),
+          Align(
+            alignment: Alignment.centerRight,
+            child: TextButton(
+              key: const Key('forgot_password_link'),
+              onPressed: () => context.go('/forgot-password'),
+              child: Text(
+                'Forgot Password?',
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: theme.colorScheme.primary,
+                ),
+              ),
+            ),
+          ),
           _buildErrorBanner(theme, auth),
-          const SizedBox(height: 24),
+          const SizedBox(height: 8),
           SizedBox(
             width: double.infinity,
             child: FilledButton(

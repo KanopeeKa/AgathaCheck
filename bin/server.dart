@@ -135,6 +135,18 @@ Future<void> main() async {
   print('refresh_tokens table ready');
 
   await _db.execute(Sql('''
+    CREATE TABLE IF NOT EXISTS password_reset_tokens (
+      id SERIAL PRIMARY KEY,
+      user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      code VARCHAR(6) NOT NULL,
+      expires_at TIMESTAMPTZ NOT NULL,
+      used BOOLEAN DEFAULT FALSE,
+      created_at TIMESTAMPTZ DEFAULT NOW()
+    )
+  '''));
+  print('password_reset_tokens table ready');
+
+  await _db.execute(Sql('''
     CREATE TABLE IF NOT EXISTS notifications (
       id SERIAL PRIMARY KEY,
       user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
@@ -391,6 +403,10 @@ Future<void> _handleApi(HttpRequest request) async {
     await _uploadUserPhoto(request);
   } else if (path == '/api/auth/change-password' && method == 'POST') {
     await _authChangePassword(request);
+  } else if (path == '/api/auth/forgot-password' && method == 'POST') {
+    await _authForgotPassword(request);
+  } else if (path == '/api/auth/reset-password' && method == 'POST') {
+    await _authResetPassword(request);
   }
   // Health entries
   else if (path == '/api/health-entries' && method == 'GET') {
@@ -892,6 +908,128 @@ Future<void> _authChangePassword(HttpRequest request) async {
   );
 
   _jsonResponse(request, 200, {'message': 'Password changed successfully. Please log in again.'});
+}
+
+Future<void> _authForgotPassword(HttpRequest request) async {
+  final body = await _readJson(request);
+  if (body == null) return;
+
+  final email = (body['email'] as String? ?? '').trim().toLowerCase();
+  if (email.isEmpty) {
+    _jsonResponse(request, 400, {'error': 'Email is required'});
+    return;
+  }
+
+  final recentCount = await _db.execute(
+    Sql.named('''
+      SELECT COUNT(*) as cnt FROM password_reset_tokens
+      WHERE created_at > NOW() - INTERVAL '1 hour'
+      AND user_id IN (SELECT id FROM users WHERE email = @email)
+    '''),
+    parameters: {'email': email},
+  );
+  final count = recentCount.isNotEmpty ? (recentCount.first.toColumnMap()['cnt'] ?? 0) : 0;
+  if (count is int && count >= 5) {
+    _jsonResponse(request, 429, {'error': 'Too many reset attempts. Please try again later.'});
+    return;
+  }
+
+  final userResult = await _db.execute(
+    Sql.named('SELECT id FROM users WHERE email = @email'),
+    parameters: {'email': email},
+  );
+
+  if (userResult.isEmpty) {
+    _jsonResponse(request, 200, {'message': 'If an account with that email exists, a reset code has been sent.'});
+    return;
+  }
+
+  final userId = userResult.first.toColumnMap()['id'];
+
+  await _db.execute(
+    Sql.named('UPDATE password_reset_tokens SET used = TRUE WHERE user_id = @userId AND used = FALSE'),
+    parameters: {'userId': userId},
+  );
+
+  final rng = Random.secure();
+  final code = List.generate(6, (_) => rng.nextInt(10)).join();
+
+  await _db.execute(
+    Sql.named('''
+      INSERT INTO password_reset_tokens (user_id, code, expires_at)
+      VALUES (@userId, @code, NOW() + INTERVAL '15 minutes')
+    '''),
+    parameters: {'userId': userId, 'code': code},
+  );
+
+  print('Password reset code for $email: $code');
+
+  _jsonResponse(request, 200, {'message': 'If an account with that email exists, a reset code has been sent.'});
+}
+
+Future<void> _authResetPassword(HttpRequest request) async {
+  final body = await _readJson(request);
+  if (body == null) return;
+
+  final email = (body['email'] as String? ?? '').trim().toLowerCase();
+  final code = (body['code'] as String? ?? '').trim();
+  final newPassword = body['new_password'] as String? ?? body['newPassword'] as String? ?? '';
+
+  if (email.isEmpty || code.isEmpty || newPassword.isEmpty) {
+    _jsonResponse(request, 400, {'error': 'Email, code, and new password are required'});
+    return;
+  }
+
+  if (newPassword.length < 6) {
+    _jsonResponse(request, 400, {'error': 'Password must be at least 6 characters'});
+    return;
+  }
+
+  final userResult = await _db.execute(
+    Sql.named('SELECT id FROM users WHERE email = @email'),
+    parameters: {'email': email},
+  );
+
+  if (userResult.isEmpty) {
+    _jsonResponse(request, 400, {'error': 'Invalid email or reset code'});
+    return;
+  }
+
+  final userId = userResult.first.toColumnMap()['id'];
+
+  final tokenResult = await _db.execute(
+    Sql.named('''
+      SELECT id FROM password_reset_tokens
+      WHERE user_id = @userId AND code = @code AND used = FALSE AND expires_at > NOW()
+      ORDER BY created_at DESC LIMIT 1
+    '''),
+    parameters: {'userId': userId, 'code': code},
+  );
+
+  if (tokenResult.isEmpty) {
+    _jsonResponse(request, 400, {'error': 'Invalid or expired reset code'});
+    return;
+  }
+
+  final tokenId = tokenResult.first.toColumnMap()['id'];
+
+  final newHash = _hashPassword(newPassword);
+  await _db.execute(
+    Sql.named('UPDATE users SET password_hash = @hash, updated_at = NOW() WHERE id = @id'),
+    parameters: {'id': userId, 'hash': newHash},
+  );
+
+  await _db.execute(
+    Sql.named('UPDATE password_reset_tokens SET used = TRUE WHERE id = @id'),
+    parameters: {'id': tokenId},
+  );
+
+  await _db.execute(
+    Sql.named('DELETE FROM refresh_tokens WHERE user_id = @userId'),
+    parameters: {'userId': userId},
+  );
+
+  _jsonResponse(request, 200, {'message': 'Password has been reset successfully. You can now log in with your new password.'});
 }
 
 // ── Health entries ───────────────────────────────────────────
