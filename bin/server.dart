@@ -1877,7 +1877,7 @@ Future<void> _getShare(HttpRequest request) async {
   Map<String, dynamic>? guardianInfo;
   final accessResult = await _db.execute(
     Sql.named('''
-      SELECT pa.*, u.first_name, u.last_name, u.category, u.bio, u.photo_url
+      SELECT pa.*, u.name AS user_name, u.first_name, u.last_name, u.category, u.bio, u.photo_url
       FROM pet_access pa
       JOIN users u ON u.id = pa.user_id
       WHERE pa.share_code = @code
@@ -1892,10 +1892,20 @@ Future<void> _getShare(HttpRequest request) async {
 
   if (accessResult.isNotEmpty) {
     final aCols = accessResult.first.toColumnMap();
+    var gFirstName = (aCols['first_name'] ?? '').toString();
+    var gLastName = (aCols['last_name'] ?? '').toString();
+    if (gFirstName.isEmpty && gLastName.isEmpty) {
+      final fallback = (aCols['user_name'] ?? '').toString().trim();
+      if (fallback.isNotEmpty) {
+        final parts = fallback.split(' ');
+        gFirstName = parts.first;
+        if (parts.length > 1) gLastName = parts.sublist(1).join(' ');
+      }
+    }
     guardianInfo = {
       'user_id': aCols['user_id'].toString(),
-      'first_name': (aCols['first_name'] ?? '').toString(),
-      'last_name': (aCols['last_name'] ?? '').toString(),
+      'first_name': gFirstName,
+      'last_name': gLastName,
       'category': (aCols['category'] ?? 'pet_guardian').toString(),
       'bio': (aCols['bio'] ?? '').toString(),
       'photo_url': (aCols['photo_url'] ?? '').toString(),
@@ -1939,10 +1949,20 @@ Future<void> _getShare(HttpRequest request) async {
     );
     if (ownerResult.isNotEmpty) {
       final ownerRow = ownerResult.first.toColumnMap();
+      var ownerFirstName = (ownerRow['first_name'] ?? '').toString();
+      var ownerLastName = (ownerRow['last_name'] ?? '').toString();
+      if (ownerFirstName.isEmpty && ownerLastName.isEmpty) {
+        final fallback = (ownerRow['name'] ?? '').toString().trim();
+        if (fallback.isNotEmpty) {
+          final parts = fallback.split(' ');
+          ownerFirstName = parts.first;
+          if (parts.length > 1) ownerLastName = parts.sublist(1).join(' ');
+        }
+      }
       owner = {
         'user_id': ownerRow['id'].toString(),
-        'first_name': (ownerRow['first_name'] ?? '').toString(),
-        'last_name': (ownerRow['last_name'] ?? '').toString(),
+        'first_name': ownerFirstName,
+        'last_name': ownerLastName,
         'category': (ownerRow['category'] ?? 'pet_guardian').toString(),
         'bio': (ownerRow['bio'] ?? '').toString(),
         'photo_url': (ownerRow['photo_url'] ?? '').toString(),
@@ -2010,15 +2030,23 @@ Future<Map<String, dynamic>> _petAccessRowToJson(ResultRow row) async {
   final userId = cols['user_id'] as int;
 
   final userResult = await _db.execute(
-    Sql.named('SELECT id, first_name, last_name, category, bio, photo_url FROM users WHERE id = @id'),
+    Sql.named('SELECT id, name, first_name, last_name, category, bio, photo_url FROM users WHERE id = @id'),
     parameters: {'id': userId},
   );
 
   Map<String, dynamic> userInfo = {};
   if (userResult.isNotEmpty) {
     final u = userResult.first.toColumnMap();
-    final firstName = (u['first_name'] ?? '').toString();
-    final lastName = (u['last_name'] ?? '').toString();
+    var firstName = (u['first_name'] ?? '').toString();
+    var lastName = (u['last_name'] ?? '').toString();
+    if (firstName.isEmpty && lastName.isEmpty) {
+      final fallbackName = (u['name'] ?? '').toString().trim();
+      if (fallbackName.isNotEmpty) {
+        final parts = fallbackName.split(' ');
+        firstName = parts.first;
+        if (parts.length > 1) lastName = parts.sublist(1).join(' ');
+      }
+    }
     final displayName = '$firstName $lastName'.trim();
     final initials = ((firstName.isNotEmpty ? firstName[0] : '') + (lastName.isNotEmpty ? lastName[0] : '')).toUpperCase();
     userInfo = {
