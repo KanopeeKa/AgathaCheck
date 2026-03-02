@@ -176,7 +176,7 @@ class _PetDetailScreenState extends ConsumerState<PetDetailScreen> {
                 child: _WeightTrackingSection(petId: widget.petId),
               ),
               SliverToBoxAdapter(
-                child: _HealthEventsSection(petId: widget.petId),
+                child: _HealthEventsSection(petId: widget.petId, pet: pet),
               ),
               SliverToBoxAdapter(
                 child: _SharingSection(petId: widget.petId, pet: pet),
@@ -860,9 +860,10 @@ class _InfoChip extends StatelessWidget {
 }
 
 class _HealthEventsSection extends ConsumerStatefulWidget {
-  const _HealthEventsSection({required this.petId});
+  const _HealthEventsSection({required this.petId, this.pet});
 
   final String petId;
+  final Pet? pet;
 
   @override
   ConsumerState<_HealthEventsSection> createState() =>
@@ -1018,6 +1019,7 @@ class _HealthEventsSectionState extends ConsumerState<_HealthEventsSection> {
                       padding: const EdgeInsets.only(bottom: 8),
                       child: HealthEntryCard(
                         entry: entry,
+                        pet: widget.pet,
                         onTap: () => context.go(
                             '/pet/${widget.petId}/health/edit/${entry.id}'),
                         onMarkTaken: () async {
