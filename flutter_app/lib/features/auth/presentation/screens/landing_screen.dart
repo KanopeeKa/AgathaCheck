@@ -182,6 +182,25 @@ class _LandingScreenState extends ConsumerState<LandingScreen>
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
+            ClipRRect(
+              borderRadius: BorderRadius.circular(12),
+              child: Image.asset(
+                'assets/logo.png',
+                height: 64,
+                width: 64,
+                fit: BoxFit.cover,
+                semanticLabel: 'Agatha Check logo',
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'Agatha Check',
+              style: theme.textTheme.titleLarge?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: theme.colorScheme.primary,
+              ),
+            ),
+            const SizedBox(height: 16),
             TabBar(
               controller: _tabController,
               tabs: const [
