@@ -16,6 +16,7 @@ class HealthEntry {
     this.frequencyDays,
     this.repeatEndDate,
     this.notes = '',
+    this.healthIssueId,
     this.createdAt,
     this.updatedAt,
   });
@@ -52,6 +53,9 @@ class HealthEntry {
 
   /// Additional notes.
   final String notes;
+
+  /// The health issue this entry is linked to, if any.
+  final String? healthIssueId;
 
   /// When this entry was created.
   final DateTime? createdAt;
@@ -99,6 +103,8 @@ class HealthEntry {
     DateTime? startDate,
     DateTime? nextDueDate,
     String? notes,
+    String? healthIssueId,
+    bool clearHealthIssueId = false,
     DateTime? createdAt,
     DateTime? updatedAt,
   }) {
@@ -114,6 +120,7 @@ class HealthEntry {
       startDate: startDate ?? this.startDate,
       nextDueDate: nextDueDate ?? this.nextDueDate,
       notes: notes ?? this.notes,
+      healthIssueId: clearHealthIssueId ? null : (healthIssueId ?? this.healthIssueId),
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
     );

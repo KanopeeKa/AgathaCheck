@@ -18,6 +18,7 @@ class HealthEntryModel extends HealthEntry {
     super.frequencyDays,
     super.repeatEndDate,
     super.notes,
+    super.healthIssueId,
     super.createdAt,
     super.updatedAt,
   });
@@ -41,6 +42,7 @@ class HealthEntryModel extends HealthEntry {
           DateTime.tryParse(json['next_due_date'] as String? ?? '') ??
               DateTime.now(),
       notes: json['notes'] as String? ?? '',
+      healthIssueId: json['health_issue_id'] as String?,
       createdAt: json['created_at'] != null
           ? DateTime.tryParse(json['created_at'] as String)
           : null,
@@ -64,6 +66,7 @@ class HealthEntryModel extends HealthEntry {
       startDate: entry.startDate,
       nextDueDate: entry.nextDueDate,
       notes: entry.notes,
+      healthIssueId: entry.healthIssueId,
       createdAt: entry.createdAt,
       updatedAt: entry.updatedAt,
     );
@@ -83,6 +86,7 @@ class HealthEntryModel extends HealthEntry {
       'start_date': startDate.toIso8601String().split('T').first,
       'next_due_date': nextDueDate.toIso8601String(),
       'notes': notes,
+      if (healthIssueId != null) 'health_issue_id': healthIssueId,
     };
   }
 

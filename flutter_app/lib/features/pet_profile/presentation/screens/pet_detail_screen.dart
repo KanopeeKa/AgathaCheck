@@ -11,6 +11,8 @@ import 'package:fl_chart/fl_chart.dart';
 import '../../data/services/pdf_saver.dart' as pdf_saver;
 import '../../../auth/presentation/providers/auth_providers.dart';
 import '../../../health_tracking/domain/entities/health_entry.dart';
+import '../../../health_tracking/domain/entities/health_issue.dart';
+import '../../../health_tracking/presentation/providers/health_issue_providers.dart';
 import '../../../health_tracking/presentation/providers/health_providers.dart';
 import '../../../health_tracking/presentation/widgets/health_entry_card.dart';
 import '../../../sharing/domain/entities/pet_access.dart';
@@ -177,6 +179,9 @@ class _PetDetailScreenState extends ConsumerState<PetDetailScreen> {
               ),
               SliverToBoxAdapter(
                 child: _HealthEventsSection(petId: widget.petId, pet: pet),
+              ),
+              SliverToBoxAdapter(
+                child: _HealthIssuesSection(petId: widget.petId, pet: pet),
               ),
               SliverToBoxAdapter(
                 child: _SharingSection(petId: widget.petId, pet: pet),
@@ -1670,5 +1675,470 @@ class _DatePickerField extends StatelessWidget {
       ),
     ),
     );
+  }
+}
+
+class _HealthIssuesSection extends ConsumerStatefulWidget {
+  const _HealthIssuesSection({required this.petId, this.pet});
+
+  final String petId;
+  final Pet? pet;
+
+  @override
+  ConsumerState<_HealthIssuesSection> createState() =>
+      _HealthIssuesSectionState();
+}
+
+class _HealthIssuesSectionState extends ConsumerState<_HealthIssuesSection> {
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final issuesAsync = ref.watch(healthIssueNotifierProvider(widget.petId));
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: Card(
+        clipBehavior: Clip.antiAlias,
+        child: ExpansionTile(
+          leading: Icon(Icons.health_and_safety, color: colorScheme.primary),
+          title: Text('Health Issues',
+              style: theme.textTheme.titleMedium
+                  ?.copyWith(fontWeight: FontWeight.w600)),
+          children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              child: Row(
+                children: [
+                  Tooltip(
+                    message: 'Add health issue',
+                    child: FilledButton.tonalIcon(
+                      key: const Key('add_health_issue_button'),
+                      onPressed: () => _showCreateIssueSheet(context),
+                      icon: const Icon(Icons.add, size: 18),
+                      label: const Text('Add Issue'),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            issuesAsync.when(
+              loading: () => const Padding(
+                padding: EdgeInsets.all(32),
+                child: Center(child: CircularProgressIndicator()),
+              ),
+              error: (error, _) => Padding(
+                padding: const EdgeInsets.all(16),
+                child: Text('Error: $error',
+                    style: TextStyle(color: colorScheme.error)),
+              ),
+              data: (issues) {
+                if (issues.isEmpty) {
+                  return Padding(
+                    padding: const EdgeInsets.all(24),
+                    child: Column(
+                      children: [
+                        Icon(Icons.health_and_safety_outlined,
+                            size: 40, color: colorScheme.outline),
+                        const SizedBox(height: 8),
+                        Text('No health issues yet',
+                            style: theme.textTheme.bodyMedium
+                                ?.copyWith(color: colorScheme.outline)),
+                      ],
+                    ),
+                  );
+                }
+                return ListView.separated(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                  itemCount: issues.length,
+                  separatorBuilder: (_, __) => const SizedBox(height: 4),
+                  itemBuilder: (context, index) {
+                    final issue = issues[index];
+                    return _HealthIssueCard(
+                      key: Key('health_issue_card_${issue.id}'),
+                      issue: issue,
+                      petId: widget.petId,
+                      onEdit: () => _showEditIssueSheet(context, issue),
+                      onDelete: () => _confirmDeleteIssue(context, issue),
+                    );
+                  },
+                );
+              },
+            ),
+            const SizedBox(height: 8),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showCreateIssueSheet(BuildContext context) {
+    final titleController = TextEditingController();
+    final descriptionController = TextEditingController();
+    final formKey = GlobalKey<FormState>();
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      builder: (ctx) => Padding(
+        padding: EdgeInsets.only(
+          left: 24,
+          right: 24,
+          top: 24,
+          bottom: MediaQuery.of(ctx).viewInsets.bottom + 24,
+        ),
+        child: Form(
+          key: formKey,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Text('New Health Issue',
+                  style: Theme.of(ctx)
+                      .textTheme
+                      .titleMedium
+                      ?.copyWith(fontWeight: FontWeight.bold)),
+              const SizedBox(height: 16),
+              TextFormField(
+                key: const Key('health_issue_title_field'),
+                controller: titleController,
+                decoration: const InputDecoration(
+                  labelText: 'Title',
+                  hintText: 'e.g., Skin allergy, Hip dysplasia',
+                  prefixIcon: Icon(Icons.title),
+                ),
+                validator: (val) =>
+                    val == null || val.trim().isEmpty ? 'Title is required' : null,
+              ),
+              const SizedBox(height: 12),
+              TextFormField(
+                key: const Key('health_issue_description_field'),
+                controller: descriptionController,
+                decoration: const InputDecoration(
+                  labelText: 'Description (optional)',
+                  hintText: 'Details about the condition',
+                  prefixIcon: Icon(Icons.description),
+                ),
+                maxLines: 3,
+              ),
+              const SizedBox(height: 16),
+              FilledButton(
+                key: const Key('save_health_issue_button'),
+                onPressed: () async {
+                  if (!formKey.currentState!.validate()) return;
+                  final issue = HealthIssue(
+                    id: '',
+                    petId: widget.petId,
+                    title: titleController.text.trim(),
+                    description: descriptionController.text.trim(),
+                  );
+                  await ref
+                      .read(healthIssueNotifierProvider(widget.petId).notifier)
+                      .create(issue);
+                  if (ctx.mounted) Navigator.pop(ctx);
+                },
+                child: const Text('Create'),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _showEditIssueSheet(BuildContext context, HealthIssue issue) {
+    final titleController = TextEditingController(text: issue.title);
+    final descriptionController =
+        TextEditingController(text: issue.description);
+    final formKey = GlobalKey<FormState>();
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      builder: (ctx) => Padding(
+        padding: EdgeInsets.only(
+          left: 24,
+          right: 24,
+          top: 24,
+          bottom: MediaQuery.of(ctx).viewInsets.bottom + 24,
+        ),
+        child: Form(
+          key: formKey,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Text('Edit Health Issue',
+                  style: Theme.of(ctx)
+                      .textTheme
+                      .titleMedium
+                      ?.copyWith(fontWeight: FontWeight.bold)),
+              const SizedBox(height: 16),
+              TextFormField(
+                controller: titleController,
+                decoration: const InputDecoration(
+                  labelText: 'Title',
+                  prefixIcon: Icon(Icons.title),
+                ),
+                validator: (val) =>
+                    val == null || val.trim().isEmpty ? 'Title is required' : null,
+              ),
+              const SizedBox(height: 12),
+              TextFormField(
+                controller: descriptionController,
+                decoration: const InputDecoration(
+                  labelText: 'Description (optional)',
+                  prefixIcon: Icon(Icons.description),
+                ),
+                maxLines: 3,
+              ),
+              const SizedBox(height: 16),
+              FilledButton(
+                onPressed: () async {
+                  if (!formKey.currentState!.validate()) return;
+                  final updated = issue.copyWith(
+                    title: titleController.text.trim(),
+                    description: descriptionController.text.trim(),
+                  );
+                  await ref
+                      .read(healthIssueNotifierProvider(widget.petId).notifier)
+                      .updateIssue(updated);
+                  if (ctx.mounted) Navigator.pop(ctx);
+                },
+                child: const Text('Save'),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Future<void> _confirmDeleteIssue(
+      BuildContext context, HealthIssue issue) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Delete Health Issue'),
+        content: Text(
+            'Are you sure you want to delete "${issue.title}"? Linked events will be unlinked but not deleted.'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            style: FilledButton.styleFrom(
+                backgroundColor: Theme.of(ctx).colorScheme.error),
+            child: const Text('Delete'),
+          ),
+        ],
+      ),
+    );
+    if (confirmed == true) {
+      await ref
+          .read(healthIssueNotifierProvider(widget.petId).notifier)
+          .deleteIssue(issue.id);
+    }
+  }
+}
+
+class _HealthIssueCard extends ConsumerStatefulWidget {
+  const _HealthIssueCard({
+    super.key,
+    required this.issue,
+    required this.petId,
+    required this.onEdit,
+    required this.onDelete,
+  });
+
+  final HealthIssue issue;
+  final String petId;
+  final VoidCallback onEdit;
+  final VoidCallback onDelete;
+
+  @override
+  ConsumerState<_HealthIssueCard> createState() => _HealthIssueCardState();
+}
+
+class _HealthIssueCardState extends ConsumerState<_HealthIssueCard> {
+  bool _expanded = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final issue = widget.issue;
+    final eventCount = issue.eventIds.length;
+
+    return MergeSemantics(
+      child: Semantics(
+        label: 'Health issue: ${issue.title}, $eventCount linked events',
+        child: Card(
+          elevation: 0.5,
+          margin: EdgeInsets.zero,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              InkWell(
+                onTap: () => setState(() => _expanded = !_expanded),
+                child: Padding(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                  child: Row(
+                    children: [
+                      ExcludeSemantics(
+                        child: Icon(Icons.health_and_safety,
+                            color: colorScheme.primary, size: 20),
+                      ),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(issue.title,
+                                style: theme.textTheme.titleSmall?.copyWith(
+                                    fontWeight: FontWeight.bold)),
+                            if (issue.description.isNotEmpty)
+                              Text(issue.description,
+                                  style: theme.textTheme.bodySmall?.copyWith(
+                                      color: colorScheme.onSurfaceVariant),
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis),
+                          ],
+                        ),
+                      ),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 8, vertical: 3),
+                        decoration: BoxDecoration(
+                          color: colorScheme.secondaryContainer,
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: Text(
+                          '$eventCount event${eventCount != 1 ? 's' : ''}',
+                          style: theme.textTheme.labelSmall?.copyWith(
+                              color: colorScheme.onSecondaryContainer,
+                              fontWeight: FontWeight.w600,
+                              fontSize: 11),
+                        ),
+                      ),
+                      const SizedBox(width: 4),
+                      IconButton(
+                        icon: const Icon(Icons.edit_outlined, size: 18),
+                        tooltip: 'Edit health issue',
+                        onPressed: widget.onEdit,
+                        visualDensity: VisualDensity.compact,
+                      ),
+                      IconButton(
+                        icon: Icon(Icons.delete_outline,
+                            size: 18, color: colorScheme.error),
+                        tooltip: 'Delete health issue',
+                        onPressed: widget.onDelete,
+                        visualDensity: VisualDensity.compact,
+                      ),
+                      Icon(
+                        _expanded ? Icons.expand_less : Icons.expand_more,
+                        size: 20,
+                        color: colorScheme.onSurfaceVariant,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              if (_expanded) _buildLinkedEvents(theme, colorScheme),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildLinkedEvents(ThemeData theme, ColorScheme colorScheme) {
+    final issue = widget.issue;
+    if (issue.eventIds.isEmpty) {
+      return Padding(
+        padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
+        child: Text('No events linked yet',
+            style: theme.textTheme.bodySmall
+                ?.copyWith(color: colorScheme.outline)),
+      );
+    }
+
+    final healthEntriesAsync =
+        ref.watch(petHealthEntriesProvider(widget.petId));
+    return healthEntriesAsync.when(
+      loading: () => const Padding(
+        padding: EdgeInsets.all(16),
+        child: Center(
+            child: SizedBox(
+                width: 20,
+                height: 20,
+                child: CircularProgressIndicator(strokeWidth: 2))),
+      ),
+      error: (_, __) => const SizedBox.shrink(),
+      data: (entries) {
+        final linked =
+            entries.where((e) => issue.eventIds.contains(e.id)).toList();
+        if (linked.isEmpty) {
+          return Padding(
+            padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
+            child: Text('Linked events not found',
+                style: theme.textTheme.bodySmall
+                    ?.copyWith(color: colorScheme.outline)),
+          );
+        }
+        return Padding(
+          padding: const EdgeInsets.fromLTRB(12, 0, 12, 8),
+          child: Column(
+            children: linked.map((entry) {
+              return Padding(
+                padding: const EdgeInsets.only(bottom: 4),
+                child: Row(
+                  children: [
+                    ExcludeSemantics(
+                      child: Icon(
+                        _entryIcon(entry.type),
+                        size: 16,
+                        color: colorScheme.primary,
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(entry.name,
+                          style: theme.textTheme.bodySmall,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis),
+                    ),
+                    Text(
+                      entry.type.label,
+                      style: theme.textTheme.labelSmall?.copyWith(
+                          color: colorScheme.onSurfaceVariant, fontSize: 10),
+                    ),
+                  ],
+                ),
+              );
+            }).toList(),
+          ),
+        );
+      },
+    );
+  }
+
+  IconData _entryIcon(HealthEntryType type) {
+    switch (type) {
+      case HealthEntryType.medication:
+        return Icons.medication;
+      case HealthEntryType.preventive:
+        return Icons.shield;
+      case HealthEntryType.vetVisit:
+        return Icons.local_hospital;
+      case HealthEntryType.procedure:
+        return Icons.more_horiz;
+    }
   }
 }

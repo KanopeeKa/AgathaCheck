@@ -9,6 +9,7 @@ import '../../../pet_profile/domain/entities/pet.dart';
 import '../../../pet_profile/presentation/providers/pet_providers.dart';
 import '../../data/datasources/health_remote_datasource.dart';
 import '../../domain/entities/health_entry.dart';
+import '../providers/health_issue_providers.dart';
 import '../providers/health_providers.dart';
 
 class HealthEntryFormScreen extends ConsumerStatefulWidget {
@@ -41,6 +42,7 @@ class _HealthEntryFormScreenState
   List<EventPhoto> _photos = [];
   final List<XFile> _pendingPhotos = [];
 
+  String? _selectedHealthIssueId;
   final Set<String> _selectedPetIds = {};
 
   @override
@@ -174,6 +176,7 @@ class _HealthEntryFormScreenState
           _selectedPetIds.clear();
           _selectedPetIds.add(entry.petId);
           _repeatEndDate = entry.repeatEndDate;
+          _selectedHealthIssueId = entry.healthIssueId;
           if (entry.frequencyDays != null) {
             _customDaysController.text = entry.frequencyDays.toString();
           }
@@ -188,6 +191,39 @@ class _HealthEntryFormScreenState
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }
+  }
+
+  Widget _buildHealthIssueDropdown() {
+    if (_selectedPetIds.isEmpty) return const SizedBox.shrink();
+    final petId = _selectedPetIds.first;
+    final issuesAsync = ref.watch(healthIssueNotifierProvider(petId));
+
+    return issuesAsync.when(
+      loading: () => const SizedBox.shrink(),
+      error: (_, __) => const SizedBox.shrink(),
+      data: (issues) {
+        if (issues.isEmpty) return const SizedBox.shrink();
+        return DropdownButtonFormField<String?>(
+          key: const Key('health_issue_dropdown'),
+          value: _selectedHealthIssueId,
+          decoration: const InputDecoration(
+            labelText: 'Health Issue (optional)',
+            prefixIcon: Icon(Icons.health_and_safety),
+          ),
+          items: [
+            const DropdownMenuItem<String?>(
+              value: null,
+              child: Text('None'),
+            ),
+            ...issues.map((issue) => DropdownMenuItem<String?>(
+                  value: issue.id,
+                  child: Text(issue.title),
+                )),
+          ],
+          onChanged: (val) => setState(() => _selectedHealthIssueId = val),
+        );
+      },
+    );
   }
 
   @override
@@ -253,6 +289,7 @@ class _HealthEntryFormScreenState
                           onChanged: (ids) => setState(() {
                             _selectedPetIds.clear();
                             _selectedPetIds.addAll(ids);
+                            _selectedHealthIssueId = null;
                           }),
                         );
                       },
@@ -381,6 +418,10 @@ class _HealthEntryFormScreenState
                       onChanged: (d) => setState(() => _startDate = d),
                     ),
                     const SizedBox(height: 16),
+                    if (_selectedPetIds.length == 1)
+                      _buildHealthIssueDropdown(),
+                    if (_selectedPetIds.length == 1)
+                      const SizedBox(height: 16),
                     TextFormField(
                       key: const Key('health_notes_field'),
                       controller: _notesController,
@@ -508,6 +549,7 @@ class _HealthEntryFormScreenState
           startDate: _startDate,
           nextDueDate: _nextDueDate ?? _startDate,
           notes: _notesController.text.trim(),
+          healthIssueId: _selectedHealthIssueId,
         );
         await notifier.updateEntry(entry);
         if (mounted) {
@@ -531,6 +573,7 @@ class _HealthEntryFormScreenState
             startDate: _startDate,
             nextDueDate: markCompleted ? completedDueDate : _startDate,
             notes: _notesController.text.trim(),
+            healthIssueId: _selectedHealthIssueId,
           );
           final created = await createUseCase.call(entry);
           createdEntryIds.add(created.id);

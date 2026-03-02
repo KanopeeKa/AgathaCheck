@@ -219,6 +219,31 @@ Future<void> main() async {
   '''));
   print('health_event_photos table ready');
 
+  await _db.execute(Sql('''
+    CREATE TABLE IF NOT EXISTS health_issues (
+      id SERIAL PRIMARY KEY,
+      pet_id VARCHAR(255) NOT NULL,
+      title VARCHAR(255) NOT NULL,
+      description TEXT DEFAULT '',
+      created_at TIMESTAMPTZ DEFAULT NOW(),
+      updated_at TIMESTAMPTZ DEFAULT NOW()
+    )
+  '''));
+
+  await _db.execute(Sql('''
+    CREATE TABLE IF NOT EXISTS health_issue_events (
+      health_issue_id INT NOT NULL REFERENCES health_issues(id) ON DELETE CASCADE,
+      health_entry_id UUID NOT NULL,
+      PRIMARY KEY (health_issue_id, health_entry_id)
+    )
+  '''));
+
+  await _db.execute(Sql('''
+    ALTER TABLE health_entries ADD COLUMN IF NOT EXISTS health_issue_id INT REFERENCES health_issues(id) ON DELETE SET NULL
+  '''));
+
+  print('health_issues tables ready');
+
   final uploadsDir = Directory('uploads');
   if (!uploadsDir.existsSync()) {
     uploadsDir.createSync(recursive: true);
@@ -452,6 +477,20 @@ Future<void> _handleApi(HttpRequest request) async {
     await _updatePetAccessRole(request);
   } else if (RegExp(r'^/api/pets/[^/]+/access/\d+$').hasMatch(path) && method == 'DELETE') {
     await _deletePetAccess(request);
+  }
+  // Health issues
+  else if (path == '/api/health-issues' && method == 'GET') {
+    await _getHealthIssues(request);
+  } else if (path == '/api/health-issues' && method == 'POST') {
+    await _createHealthIssue(request);
+  } else if (RegExp(r'^/api/health-issues/\d+/events/[a-f0-9\-]+$').hasMatch(path) && method == 'DELETE') {
+    await _unlinkHealthIssueEvent(request);
+  } else if (RegExp(r'^/api/health-issues/\d+/events$').hasMatch(path) && method == 'POST') {
+    await _linkHealthIssueEvent(request);
+  } else if (RegExp(r'^/api/health-issues/\d+$').hasMatch(path) && method == 'PUT') {
+    await _updateHealthIssue(request);
+  } else if (RegExp(r'^/api/health-issues/\d+$').hasMatch(path) && method == 'DELETE') {
+    await _deleteHealthIssue(request);
   } else {
     _jsonResponse(request, 404, {'error': 'Not found'});
   }
@@ -894,6 +933,7 @@ Future<void> _createHealthEntry(HttpRequest request) async {
   final nextDueDate = body['next_due_date'] as String? ?? startDate;
   final notes = body['notes'] as String? ?? '';
   final petId = body['pet_id'] as String? ?? '';
+  final healthIssueId = body['health_issue_id'] != null ? int.tryParse(body['health_issue_id'].toString()) : null;
 
   if (name.isEmpty || type.isEmpty || frequency.isEmpty || startDate.isEmpty) {
     _jsonResponse(
@@ -903,8 +943,8 @@ Future<void> _createHealthEntry(HttpRequest request) async {
 
   final result = await _db.execute(
     Sql.named('''
-      INSERT INTO health_entries (pet_id, name, type, dosage, frequency, frequency_days, repeat_end_date, start_date, next_due_date, notes)
-      VALUES (@petId, @name, @type, @dosage, @frequency, @frequencyDays, ${repeatEndDate != null ? '@repeatEndDate::date' : 'NULL'}, @startDate::date, @nextDueDate::timestamptz, @notes)
+      INSERT INTO health_entries (pet_id, name, type, dosage, frequency, frequency_days, repeat_end_date, start_date, next_due_date, notes, health_issue_id)
+      VALUES (@petId, @name, @type, @dosage, @frequency, @frequencyDays, ${repeatEndDate != null ? '@repeatEndDate::date' : 'NULL'}, @startDate::date, @nextDueDate::timestamptz, @notes, ${healthIssueId != null ? '@healthIssueId' : 'NULL'})
       RETURNING *
     '''),
     parameters: {
@@ -918,8 +958,23 @@ Future<void> _createHealthEntry(HttpRequest request) async {
       'startDate': startDate,
       'nextDueDate': nextDueDate,
       'notes': notes,
+      if (healthIssueId != null) 'healthIssueId': healthIssueId,
     },
   );
+
+  if (healthIssueId != null) {
+    final createdId = result.first.toColumnMap()['id'].toString();
+    if (createdId.isNotEmpty) {
+      await _db.execute(
+        Sql.named('''
+          INSERT INTO health_issue_events (health_issue_id, health_entry_id)
+          VALUES (@healthIssueId, @entryId::uuid)
+          ON CONFLICT DO NOTHING
+        '''),
+        parameters: {'healthIssueId': healthIssueId, 'entryId': createdId},
+      );
+    }
+  }
 
   final createdRow = _rowToMap(result.first);
 
@@ -976,6 +1031,12 @@ Future<void> _updateHealthEntry(HttpRequest request) async {
   final hasRepeatEndDate = body.containsKey('repeat_end_date');
   final repeatEndDateVal = hasRepeatEndDate ? body['repeat_end_date'] : row['repeat_end_date'];
 
+  final hasHealthIssueId = body.containsKey('health_issue_id');
+  final newHealthIssueId = hasHealthIssueId
+      ? (body['health_issue_id'] != null ? int.tryParse(body['health_issue_id'].toString()) : null)
+      : (row['health_issue_id'] != null ? int.tryParse(row['health_issue_id'].toString()) : null);
+  final oldHealthIssueId = row['health_issue_id'] != null ? int.tryParse(row['health_issue_id'].toString()) : null;
+
   final result = await _db.execute(
     Sql.named('''
       UPDATE health_entries SET
@@ -983,7 +1044,8 @@ Future<void> _updateHealthEntry(HttpRequest request) async {
         frequency = @frequency, frequency_days = @frequencyDays,
         repeat_end_date = ${repeatEndDateVal != null ? '@repeatEndDate::date' : 'NULL'},
         start_date = @startDate::date, next_due_date = @nextDueDate::timestamptz,
-        notes = @notes, updated_at = NOW()
+        notes = @notes, health_issue_id = ${newHealthIssueId != null ? '@healthIssueId' : 'NULL'},
+        updated_at = NOW()
       WHERE id = @id
       RETURNING *
     '''),
@@ -998,8 +1060,24 @@ Future<void> _updateHealthEntry(HttpRequest request) async {
       'startDate': body['start_date'] ?? row['start_date'],
       'nextDueDate': body['next_due_date'] ?? row['next_due_date'],
       'notes': body['notes'] ?? row['notes'],
+      if (newHealthIssueId != null) 'healthIssueId': newHealthIssueId,
     },
   );
+
+  if (hasHealthIssueId) {
+    if (oldHealthIssueId != null && oldHealthIssueId != newHealthIssueId) {
+      await _db.execute(
+        Sql.named('DELETE FROM health_issue_events WHERE health_issue_id = @oldId AND health_entry_id = @entryId::uuid'),
+        parameters: {'oldId': oldHealthIssueId, 'entryId': id},
+      );
+    }
+    if (newHealthIssueId != null && newHealthIssueId != oldHealthIssueId) {
+      await _db.execute(
+        Sql.named('INSERT INTO health_issue_events (health_issue_id, health_entry_id) VALUES (@newId, @entryId::uuid) ON CONFLICT DO NOTHING'),
+        parameters: {'newId': newHealthIssueId, 'entryId': id},
+      );
+    }
+  }
 
   _jsonResponse(request, 200, _rowToMap(result.first));
 }
@@ -2371,6 +2449,205 @@ Future<void> _sendEmailReminder(String toEmail, String subject, String body) asy
   print('[EMAIL STUB] To: $toEmail | Subject: $subject | Body: $body');
 }
 
+// ── Health Issues ─────────────────────────────────────────────
+
+Map<String, dynamic> _healthIssueToMap(ResultRow row) {
+  final cols = row.toColumnMap();
+  return {
+    'id': cols['id'].toString(),
+    'pet_id': cols['pet_id'].toString(),
+    'title': cols['title'].toString(),
+    'description': (cols['description'] ?? '').toString(),
+    'created_at': cols['created_at'].toString(),
+    'updated_at': cols['updated_at'].toString(),
+  };
+}
+
+Future<void> _getHealthIssues(HttpRequest request) async {
+  final petId = request.uri.queryParameters['pet_id'];
+  if (petId == null || petId.isEmpty) {
+    _jsonResponse(request, 400, {'error': 'pet_id is required'});
+    return;
+  }
+
+  final result = await _db.execute(
+    Sql.named('SELECT * FROM health_issues WHERE pet_id = @petId ORDER BY created_at DESC'),
+    parameters: {'petId': petId},
+  );
+
+  final issues = <Map<String, dynamic>>[];
+  for (final row in result) {
+    final issue = _healthIssueToMap(row);
+    final issueId = int.tryParse(issue['id'].toString()) ?? 0;
+    final eventsResult = await _db.execute(
+      Sql.named('SELECT health_entry_id FROM health_issue_events WHERE health_issue_id = @issueId'),
+      parameters: {'issueId': issueId},
+    );
+    issue['event_ids'] = eventsResult.map((r) => r.toColumnMap()['health_entry_id'].toString()).toList();
+    issues.add(issue);
+  }
+
+  _jsonResponse(request, 200, issues);
+}
+
+Future<void> _createHealthIssue(HttpRequest request) async {
+  final body = await _readJson(request);
+  if (body == null) return;
+
+  final petId = body['pet_id'] as String? ?? '';
+  final title = body['title'] as String? ?? '';
+  final description = body['description'] as String? ?? '';
+
+  if (petId.isEmpty || title.isEmpty) {
+    _jsonResponse(request, 400, {'error': 'pet_id and title are required'});
+    return;
+  }
+
+  final result = await _db.execute(
+    Sql.named('''
+      INSERT INTO health_issues (pet_id, title, description)
+      VALUES (@petId, @title, @description)
+      RETURNING *
+    '''),
+    parameters: {'petId': petId, 'title': title, 'description': description},
+  );
+
+  final issue = _healthIssueToMap(result.first);
+  issue['event_ids'] = <String>[];
+  _jsonResponse(request, 201, issue);
+}
+
+Future<void> _updateHealthIssue(HttpRequest request) async {
+  final id = int.tryParse(request.uri.pathSegments.last);
+  if (id == null) {
+    _jsonResponse(request, 400, {'error': 'Invalid issue ID'});
+    return;
+  }
+
+  final body = await _readJson(request);
+  if (body == null) return;
+
+  final existing = await _db.execute(
+    Sql.named('SELECT * FROM health_issues WHERE id = @id'),
+    parameters: {'id': id},
+  );
+
+  if (existing.isEmpty) {
+    _jsonResponse(request, 404, {'error': 'Health issue not found'});
+    return;
+  }
+
+  final row = _healthIssueToMap(existing.first);
+
+  final result = await _db.execute(
+    Sql.named('''
+      UPDATE health_issues SET
+        title = @title, description = @description, updated_at = NOW()
+      WHERE id = @id
+      RETURNING *
+    '''),
+    parameters: {
+      'id': id,
+      'title': body['title'] ?? row['title'],
+      'description': body['description'] ?? row['description'],
+    },
+  );
+
+  final issue = _healthIssueToMap(result.first);
+  final eventsResult = await _db.execute(
+    Sql.named('SELECT health_entry_id FROM health_issue_events WHERE health_issue_id = @issueId'),
+    parameters: {'issueId': id},
+  );
+  issue['event_ids'] = eventsResult.map((r) => r.toColumnMap()['health_entry_id'].toString()).toList();
+  _jsonResponse(request, 200, issue);
+}
+
+Future<void> _deleteHealthIssue(HttpRequest request) async {
+  final id = int.tryParse(request.uri.pathSegments.last);
+  if (id == null) {
+    _jsonResponse(request, 400, {'error': 'Invalid issue ID'});
+    return;
+  }
+
+  final result = await _db.execute(
+    Sql.named('DELETE FROM health_issues WHERE id = @id RETURNING id'),
+    parameters: {'id': id},
+  );
+
+  if (result.isEmpty) {
+    _jsonResponse(request, 404, {'error': 'Health issue not found'});
+    return;
+  }
+
+  await _db.execute(
+    Sql.named('UPDATE health_entries SET health_issue_id = NULL WHERE health_issue_id = @id'),
+    parameters: {'id': id},
+  );
+
+  _jsonResponse(request, 200, {'deleted': true});
+}
+
+Future<void> _linkHealthIssueEvent(HttpRequest request) async {
+  final segments = request.uri.pathSegments;
+  final issueId = int.tryParse(segments[segments.length - 2]);
+  if (issueId == null) {
+    _jsonResponse(request, 400, {'error': 'Invalid issue ID'});
+    return;
+  }
+
+  final body = await _readJson(request);
+  if (body == null) return;
+
+  final entryId = body['health_entry_id']?.toString();
+  if (entryId == null || entryId.isEmpty) {
+    _jsonResponse(request, 400, {'error': 'health_entry_id is required'});
+    return;
+  }
+
+  final issueExists = await _db.execute(
+    Sql.named('SELECT id FROM health_issues WHERE id = @id'),
+    parameters: {'id': issueId},
+  );
+  if (issueExists.isEmpty) {
+    _jsonResponse(request, 404, {'error': 'Health issue not found'});
+    return;
+  }
+
+  await _db.execute(
+    Sql.named('INSERT INTO health_issue_events (health_issue_id, health_entry_id) VALUES (@issueId, @entryId::uuid) ON CONFLICT DO NOTHING'),
+    parameters: {'issueId': issueId, 'entryId': entryId},
+  );
+
+  await _db.execute(
+    Sql.named('UPDATE health_entries SET health_issue_id = @issueId WHERE id = @entryId::uuid'),
+    parameters: {'issueId': issueId, 'entryId': entryId},
+  );
+
+  _jsonResponse(request, 200, {'linked': true});
+}
+
+Future<void> _unlinkHealthIssueEvent(HttpRequest request) async {
+  final segments = request.uri.pathSegments;
+  final issueId = int.tryParse(segments[segments.length - 3]);
+  final entryId = segments.last;
+  if (issueId == null || entryId.isEmpty) {
+    _jsonResponse(request, 400, {'error': 'Invalid issue or entry ID'});
+    return;
+  }
+
+  await _db.execute(
+    Sql.named('DELETE FROM health_issue_events WHERE health_issue_id = @issueId AND health_entry_id = @entryId::uuid'),
+    parameters: {'issueId': issueId, 'entryId': entryId},
+  );
+
+  await _db.execute(
+    Sql.named('UPDATE health_entries SET health_issue_id = NULL WHERE id = @entryId::uuid AND health_issue_id = @issueId'),
+    parameters: {'entryId': entryId, 'issueId': issueId},
+  );
+
+  _jsonResponse(request, 200, {'unlinked': true});
+}
+
 Map<String, dynamic> _notificationRowToMap(ResultRow row) {
   final cols = row.toColumnMap();
   return {
@@ -2436,6 +2713,7 @@ Map<String, dynamic> _rowToMap(ResultRow row) {
     'start_date': cols['start_date'].toString(),
     'next_due_date': cols['next_due_date'].toString(),
     'notes': cols['notes'].toString(),
+    'health_issue_id': cols['health_issue_id']?.toString(),
     'created_at': cols['created_at'].toString(),
     'updated_at': cols['updated_at'].toString(),
   };

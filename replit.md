@@ -43,6 +43,7 @@ The Dart API server is the shared backend for both Flutter and a future SwiftUI 
 **API contract ready for native iOS:**
 - Auth: `POST /api/auth/signup`, `/login`, `/refresh`, `/logout`, `GET/PUT /api/auth/me`, `POST /api/auth/me/photo`, `POST /api/auth/change-password`
 - Health: `GET/POST /api/health-entries`, `PUT/DELETE /api/health-entries/:id`, `POST /:id/mark-taken`, `GET /:id/history`, photos via multipart
+- Health Issues: `GET /api/health-issues?pet_id=X`, `POST /api/health-issues`, `PUT/DELETE /api/health-issues/:id`, `POST /api/health-issues/:id/events`, `DELETE /api/health-issues/:id/events/:entryId`
 - Weight: `GET/POST /api/weight-entries`, `PUT/DELETE /:id`, `GET /latest`
 - Vets: `GET/POST /api/vets`, `PUT/DELETE /:id`
 - Notifications: `GET /api/notifications`, `GET /unread-count`, `PUT /read-all`, `GET/PUT /preferences`, `POST /check-due`
