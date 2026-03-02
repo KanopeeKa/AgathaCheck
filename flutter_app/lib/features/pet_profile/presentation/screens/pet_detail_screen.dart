@@ -937,14 +937,14 @@ class _HealthEventsSectionState extends ConsumerState<_HealthEventsSection> {
                     ),
                     const SizedBox(width: 8),
                     _FilterChipWidget(
-                      label: 'Vaccines',
-                      selected: _selectedFilter == HealthEntryType.vaccine,
+                      label: 'Vet Visits',
+                      selected: _selectedFilter == HealthEntryType.vetVisit,
                       onSelected: () => setState(
-                          () => _selectedFilter = HealthEntryType.vaccine),
+                          () => _selectedFilter = HealthEntryType.vetVisit),
                     ),
                     const SizedBox(width: 8),
                     _FilterChipWidget(
-                      label: 'Procedures',
+                      label: 'Other',
                       selected:
                           _selectedFilter == HealthEntryType.procedure,
                       onSelected: () => setState(
@@ -1482,7 +1482,7 @@ class _ReportSelectionSheetState extends ConsumerState<_ReportSelectionSheet> {
             value: _includeHealth,
             onChanged: (v) => setState(() => _includeHealth = v ?? false),
             title: const Text('Health Events'),
-            subtitle: const Text('Medications, vaccines, procedures'),
+            subtitle: const Text('Medications, preventives, vet visits'),
             secondary: Icon(Icons.list_alt, color: colorScheme.primary),
             dense: true,
             contentPadding: EdgeInsets.zero,

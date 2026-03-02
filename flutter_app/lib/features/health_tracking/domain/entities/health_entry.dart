@@ -1,7 +1,7 @@
 /// Represents a health tracking entry in the domain layer.
 ///
-/// A health entry tracks medications, preventives, or vaccines
-/// for a pet with scheduling and dosage information.
+/// A health entry tracks medications, preventives, vet visits,
+/// or other health events for a pet with scheduling and dosage information.
 class HealthEntry {
   /// Creates a new [HealthEntry] instance.
   const HealthEntry({
@@ -26,10 +26,10 @@ class HealthEntry {
   /// The pet this entry belongs to.
   final String petId;
 
-  /// Name of the medication, preventive, or vaccine.
+  /// Name of the medication, preventive, vet visit, or other event.
   final String name;
 
-  /// Type of entry: medication, preventive, or vaccine.
+  /// Type of entry: medication, preventive, vet visit, or other.
   final HealthEntryType type;
 
   /// Dosage or amount information.
@@ -138,10 +138,10 @@ enum HealthEntryType {
   /// A preventive treatment (flea, tick, heartworm, etc.).
   preventive,
 
-  /// A vaccine.
-  vaccine,
+  /// A vet visit (checkup, dental, surgery, etc.).
+  vetVisit,
 
-  /// A medical procedure (surgery, dental, checkup, etc.).
+  /// Any other health event.
   procedure;
 
   /// Human-readable label for this type.
@@ -151,8 +151,8 @@ enum HealthEntryType {
         return 'Medication';
       case HealthEntryType.preventive:
         return 'Preventive';
-      case HealthEntryType.vaccine:
-        return 'Vaccine';
+      case HealthEntryType.vetVisit:
+        return 'Vet Visit';
       case HealthEntryType.procedure:
         return 'Other';
     }

@@ -10,7 +10,7 @@ import '../widgets/health_entry_card.dart';
 
 /// Dashboard screen displaying health entries organized by type tabs.
 ///
-/// Shows tabs for All, Medications, Preventives, and Vaccines
+/// Shows tabs for All, Medications, Preventives, Vet Visits, and Other
 /// with a floating action button to add new entries.
 class HealthDashboardScreen extends ConsumerStatefulWidget {
   /// Creates the [HealthDashboardScreen].
@@ -29,7 +29,7 @@ class _HealthDashboardScreenState extends ConsumerState<HealthDashboardScreen>
     null,
     HealthEntryType.medication,
     HealthEntryType.preventive,
-    HealthEntryType.vaccine,
+    HealthEntryType.vetVisit,
     HealthEntryType.procedure,
   ];
 
@@ -68,7 +68,7 @@ class _HealthDashboardScreenState extends ConsumerState<HealthDashboardScreen>
             Tab(key: Key('health_tab_all'), text: 'All'),
             Tab(key: Key('health_tab_medications'), text: 'Medications'),
             Tab(key: Key('health_tab_preventives'), text: 'Preventives'),
-            Tab(key: Key('health_tab_vaccines'), text: 'Vaccines'),
+            Tab(key: Key('health_tab_vet_visits'), text: 'Vet Visits'),
             Tab(key: Key('health_tab_other'), text: 'Other'),
           ],
           isScrollable: false,

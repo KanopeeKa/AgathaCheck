@@ -130,10 +130,10 @@ class HealthEntryCard extends StatelessWidget {
         return Icons.medication;
       case HealthEntryType.preventive:
         return Icons.shield;
-      case HealthEntryType.vaccine:
-        return Icons.vaccines;
-      case HealthEntryType.procedure:
+      case HealthEntryType.vetVisit:
         return Icons.local_hospital;
+      case HealthEntryType.procedure:
+        return Icons.more_horiz;
     }
   }
 

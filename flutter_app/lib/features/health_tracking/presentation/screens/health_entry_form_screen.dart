@@ -278,7 +278,7 @@ class _HealthEntryFormScreenState
                       controller: _nameController,
                       decoration: const InputDecoration(
                         labelText: 'Name',
-                        hintText: 'e.g., Heartgard, Rabies Vaccine',
+                        hintText: 'e.g., Heartgard, Annual Checkup',
                         prefixIcon: Icon(Icons.medical_services),
                       ),
                       validator: (val) =>

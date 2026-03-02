@@ -75,7 +75,7 @@ class HealthEntryModel extends HealthEntry {
       'id': id,
       'pet_id': petId,
       'name': name,
-      'type': type.name,
+      'type': type == HealthEntryType.vetVisit ? 'vet_visit' : type.name,
       'dosage': dosage,
       'frequency': frequency.name,
       'frequency_days': frequencyDays,
@@ -92,8 +92,10 @@ class HealthEntryModel extends HealthEntry {
         return HealthEntryType.medication;
       case 'preventive':
         return HealthEntryType.preventive;
+      case 'vet_visit':
+      case 'vetVisit':
       case 'vaccine':
-        return HealthEntryType.vaccine;
+        return HealthEntryType.vetVisit;
       case 'procedure':
         return HealthEntryType.procedure;
       default:

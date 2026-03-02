@@ -199,9 +199,10 @@ Future<void> main() async {
       ALTER TABLE health_entries DROP CONSTRAINT IF EXISTS health_entries_frequency_check;
       ALTER TABLE health_entries ADD CONSTRAINT health_entries_frequency_check
         CHECK (frequency = ANY (ARRAY['once','daily','weekly','monthly','custom']));
+      UPDATE health_entries SET type = 'vet_visit' WHERE type = 'vaccine';
       ALTER TABLE health_entries DROP CONSTRAINT IF EXISTS health_entries_type_check;
       ALTER TABLE health_entries ADD CONSTRAINT health_entries_type_check
-        CHECK (type = ANY (ARRAY['medication','preventive','vaccine','procedure']));
+        CHECK (type = ANY (ARRAY['medication','preventive','vet_visit','procedure']));
     EXCEPTION WHEN OTHERS THEN NULL;
     END \$\$;
   '''));
