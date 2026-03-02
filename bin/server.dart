@@ -121,6 +121,18 @@ Future<void> main() async {
   '''));
   print('notification_preferences table ready');
 
+  await _db.execute(Sql('''
+    CREATE TABLE IF NOT EXISTS weight_entries (
+      id SERIAL PRIMARY KEY,
+      pet_id VARCHAR(255) NOT NULL,
+      date DATE NOT NULL,
+      weight DOUBLE PRECISION NOT NULL,
+      notes TEXT DEFAULT '',
+      created_at TIMESTAMPTZ DEFAULT NOW()
+    )
+  '''));
+  print('weight_entries table ready');
+
   final server = await HttpServer.bind('0.0.0.0', port);
   server.defaultResponseHeaders.remove('x-frame-options', 'SAMEORIGIN');
   server.defaultResponseHeaders.remove('x-xss-protection', '1; mode=block');
@@ -304,6 +316,20 @@ Future<void> _handleApi(HttpRequest request) async {
     await _checkDueNotifications(request);
   } else if (RegExp(r'^/api/notifications/\d+/read$').hasMatch(path) && method == 'PUT') {
     await _markNotificationRead(request);
+  }
+  // Weight entries
+  else if (path == '/api/weight-entries/latest' && method == 'GET') {
+    await _getLatestWeight(request);
+  } else if (path == '/api/weight-entries' && method == 'GET') {
+    await _getWeightEntries(request);
+  } else if (path == '/api/weight-entries' && method == 'POST') {
+    await _createWeightEntry(request);
+  } else if (RegExp(r'^/api/weight-entries/[^/]+$').hasMatch(path) &&
+      method == 'PUT') {
+    await _updateWeightEntry(request);
+  } else if (RegExp(r'^/api/weight-entries/[^/]+$').hasMatch(path) &&
+      method == 'DELETE') {
+    await _deleteWeightEntry(request);
   }
   // Sharing
   else if (path == '/api/share' && method == 'POST') {
@@ -999,6 +1025,140 @@ Future<void> _deleteVet(HttpRequest request) async {
   _jsonResponse(request, 200, {'deleted': true});
 }
 
+// ── Weight entries ───────────────────────────────────────────
+
+Future<void> _getWeightEntries(HttpRequest request) async {
+  final petId = request.uri.queryParameters['pet_id'];
+
+  var query = 'SELECT * FROM weight_entries WHERE 1=1';
+  final params = <String, dynamic>{};
+
+  if (petId != null && petId.isNotEmpty) {
+    query += ' AND pet_id = @petId';
+    params['petId'] = petId;
+  }
+
+  query += ' ORDER BY date ASC';
+
+  final result = await _db.execute(Sql.named(query),
+      parameters: params.isEmpty ? null : params);
+  final entries = result.map(_weightRowToMap).toList();
+  _jsonResponse(request, 200, entries);
+}
+
+Future<void> _createWeightEntry(HttpRequest request) async {
+  final body = await _readJson(request);
+  if (body == null) return;
+
+  final petId = body['pet_id'] as String? ?? '';
+  final date = body['date'] as String? ?? '';
+  final weight = body['weight'];
+  final notes = body['notes'] as String? ?? '';
+
+  if (petId.isEmpty || date.isEmpty || weight == null) {
+    _jsonResponse(request, 400, {'error': 'pet_id, date, and weight are required'});
+    return;
+  }
+
+  final weightValue = (weight is num) ? weight.toDouble() : double.tryParse(weight.toString());
+  if (weightValue == null || weightValue <= 0) {
+    _jsonResponse(request, 400, {'error': 'weight must be a positive number'});
+    return;
+  }
+
+  final result = await _db.execute(
+    Sql.named('''
+      INSERT INTO weight_entries (pet_id, date, weight, notes)
+      VALUES (@petId, @date::date, @weight, @notes)
+      RETURNING *
+    '''),
+    parameters: {
+      'petId': petId,
+      'date': date,
+      'weight': weightValue,
+      'notes': notes,
+    },
+  );
+
+  _jsonResponse(request, 201, _weightRowToMap(result.first));
+}
+
+Future<void> _updateWeightEntry(HttpRequest request) async {
+  final id = request.uri.pathSegments.last;
+  final body = await _readJson(request);
+  if (body == null) return;
+
+  final existing = await _db.execute(
+    Sql.named('SELECT * FROM weight_entries WHERE id = @id'),
+    parameters: {'id': int.tryParse(id) ?? 0},
+  );
+
+  if (existing.isEmpty) {
+    _jsonResponse(request, 404, {'error': 'Weight entry not found'});
+    return;
+  }
+
+  final row = _weightRowToMap(existing.first);
+
+  final weight = body['weight'];
+  final weightValue = weight != null
+      ? ((weight is num) ? weight.toDouble() : double.tryParse(weight.toString()))
+      : double.tryParse(row['weight'].toString());
+
+  final result = await _db.execute(
+    Sql.named('''
+      UPDATE weight_entries SET
+        date = @date::date, weight = @weight, notes = @notes
+      WHERE id = @id
+      RETURNING *
+    '''),
+    parameters: {
+      'id': int.tryParse(id) ?? 0,
+      'date': body['date'] ?? row['date'],
+      'weight': weightValue,
+      'notes': body['notes'] ?? row['notes'],
+    },
+  );
+
+  _jsonResponse(request, 200, _weightRowToMap(result.first));
+}
+
+Future<void> _deleteWeightEntry(HttpRequest request) async {
+  final id = request.uri.pathSegments.last;
+  final result = await _db.execute(
+    Sql.named('DELETE FROM weight_entries WHERE id = @id RETURNING id'),
+    parameters: {'id': int.tryParse(id) ?? 0},
+  );
+
+  if (result.isEmpty) {
+    _jsonResponse(request, 404, {'error': 'Weight entry not found'});
+    return;
+  }
+
+  _jsonResponse(request, 200, {'deleted': true});
+}
+
+Future<void> _getLatestWeight(HttpRequest request) async {
+  final petId = request.uri.queryParameters['pet_id'];
+
+  if (petId == null || petId.isEmpty) {
+    _jsonResponse(request, 400, {'error': 'pet_id is required'});
+    return;
+  }
+
+  final result = await _db.execute(
+    Sql.named('SELECT * FROM weight_entries WHERE pet_id = @petId ORDER BY date DESC LIMIT 1'),
+    parameters: {'petId': petId},
+  );
+
+  if (result.isEmpty) {
+    _jsonResponse(request, 404, {'error': 'No weight entries found'});
+    return;
+  }
+
+  _jsonResponse(request, 200, _weightRowToMap(result.first));
+}
+
 // ── Sharing ──────────────────────────────────────────────────
 
 String _generateShareCode() {
@@ -1375,6 +1535,18 @@ Map<String, dynamic> _notificationRowToMap(ResultRow row) {
 }
 
 // ── Helpers ──────────────────────────────────────────────────
+
+Map<String, dynamic> _weightRowToMap(ResultRow row) {
+  final cols = row.toColumnMap();
+  return {
+    'id': cols['id'].toString(),
+    'pet_id': cols['pet_id'].toString(),
+    'date': cols['date'].toString(),
+    'weight': cols['weight'],
+    'notes': (cols['notes'] ?? '').toString(),
+    'created_at': cols['created_at'].toString(),
+  };
+}
 
 Map<String, dynamic> _vetRowToMap(ResultRow row) {
   final cols = row.toColumnMap();

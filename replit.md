@@ -10,8 +10,9 @@ A modular Flutter application for managing pet profiles, health tracking, and ve
 - Pet-to-health relationship: each pet has their own health entries shown in pet detail screen
 - Pet-to-vet relationship: each pet can be linked to a veterinarian
 - Authentication: JWT-based email/password auth with signup, login, refresh, logout, profile management, password change
+- Weight tracking: per-pet weight history with line chart, add/delete entries (PostgreSQL)
 - Notification system: in-app notification center with bell icon + badge, server-side due-entry checking, email reminder stubs
-- API server with REST endpoints for health entries, vets, sharing, auth, and notifications
+- API server with REST endpoints for health entries, weight entries, vets, sharing, auth, and notifications
 - Deployed as static Flutter web files served by a Dart API server (AOT compiled)
 
 ## Project Architecture
@@ -35,6 +36,7 @@ flutter_app/           - Flutter source code (development)
           pet_detail_screen.dart  - Pet profile + vet info + health entries (tabbed)
           pet_form_screen.dart    - Add/edit pet form (with vet dropdown, gender)
       health_tracking/ - Health tracking with data/domain/presentation layers
+      weight_tracking/ - Weight tracking with data/domain/presentation layers
       vet/             - Vet management with data/domain/presentation layers
       notifications/   - Notification center with data/domain/presentation layers
       sharing/         - Pet sharing feature
@@ -96,6 +98,19 @@ pubspec.yaml           - Root: pure Dart + postgres + dart_jsonwebtoken + dbcryp
 - **Scheduling**: Auto-calculates next due dates (daily/weekly/monthly/custom)
 - **UI**: Tabbed dashboard (All/Medications/Preventives/Vaccines), entry cards with frequency badges, mark-taken button, add/edit form with multi-pet selector (FilterChip chips, Select All/Clear, creates 1 entry per selected pet)
 
+## Weight Tracking Feature
+- **Database**: PostgreSQL weight_entries table (id, pet_id, date, weight, notes, created_at)
+- **Relationship**: 1 pet -> many weight entries (via pet_id)
+- **API Endpoints**:
+  - GET /api/weight-entries?pet_id=X - List weight entries sorted by date ASC
+  - POST /api/weight-entries - Create weight entry
+  - PUT /api/weight-entries/:id - Update weight entry
+  - DELETE /api/weight-entries/:id - Delete weight entry
+  - GET /api/weight-entries/latest?pet_id=X - Get latest weight entry
+- **UI**: Collapsible ExpansionTile on pet detail screen with line chart (fl_chart), chronological entry list with delete, add entry bottom sheet (date picker, weight, notes)
+- **Profile integration**: Weight chip in pet profile card shows latest tracked weight (falls back to pet.weight if no entries)
+- **Architecture**: Clean architecture (domain/data/presentation) with Riverpod providers, following same patterns as health tracking feature
+
 ## Veterinarian Feature
 - **Database**: PostgreSQL vets table (id, name, phone, email, website, address, notes)
 - **Relationship**: 1 vet -> many pets (via vetId stored in pet's SharedPreferences data)
@@ -143,6 +158,7 @@ Root pubspec.yaml is a pure Dart project with postgres, dart_jsonwebtoken, and d
 - dart_jsonwebtoken for JWT access tokens
 - dbcrypt for bcrypt password hashing
 - intl for date formatting
+- fl_chart for interactive weight tracking charts
 - http package for Flutter-to-API communication
 - image_picker for photo selection
 - mockito for test mocking

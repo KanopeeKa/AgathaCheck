@@ -6,26 +6,23 @@ import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
+import 'package:fl_chart/fl_chart.dart';
 import '../../../health_tracking/domain/entities/health_entry.dart';
 import '../../../health_tracking/presentation/providers/health_providers.dart';
 import '../../../health_tracking/presentation/widgets/health_entry_card.dart';
 import '../../../vet/presentation/providers/vet_providers.dart';
+import '../../../weight_tracking/domain/entities/weight_entry.dart';
+import '../../../weight_tracking/presentation/providers/weight_providers.dart';
 import '../../data/models/pet_model.dart';
 import '../../domain/entities/pet.dart';
 import '../providers/pet_providers.dart';
 
-/// Detail screen for a single pet showing profile info and health entries.
-///
-/// Displays the pet's profile at the top and their linked health entries
-/// below, organized by type tabs.
 class PetDetailScreen extends ConsumerStatefulWidget {
-  /// Creates the [PetDetailScreen] for the pet with [petId].
   const PetDetailScreen({super.key, required this.petId});
 
-  /// The ID of the pet to display.
   final String petId;
 
-  /// Creates the mutable state for this widget.
   @override
   ConsumerState<PetDetailScreen> createState() => _PetDetailScreenState();
 }
@@ -176,6 +173,9 @@ class _PetDetailScreenState extends ConsumerState<PetDetailScreen>
                 child: _PetProfileCard(pet: pet),
               ),
               SliverToBoxAdapter(
+                child: _WeightTrackingSection(petId: widget.petId),
+              ),
+              SliverToBoxAdapter(
                 child: Padding(
                   padding:
                       const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -243,6 +243,10 @@ class _PetProfileCard extends ConsumerWidget {
         ? vets.where((v) => v.id == pet.vetId).firstOrNull
         : null;
 
+    final latestWeightAsync = ref.watch(latestWeightProvider(pet.id));
+    final latestWeight = latestWeightAsync.valueOrNull;
+    final displayWeight = latestWeight?.weight ?? pet.weight;
+
     return Padding(
       padding: const EdgeInsets.all(16),
       child: Card(
@@ -281,11 +285,11 @@ class _PetProfileCard extends ConsumerWidget {
                             _InfoChip(
                                 icon: Icons.cake,
                                 label: '${pet.age!.toStringAsFixed(1)} yrs'),
-                          if (pet.weight != null)
+                          if (displayWeight != null)
                             _InfoChip(
                                 icon: Icons.monitor_weight,
                                 label:
-                                    '${pet.weight!.toStringAsFixed(1)} kg'),
+                                    '${displayWeight.toStringAsFixed(1)} kg'),
                         ],
                       ),
                       const SizedBox(height: 10),
@@ -381,6 +385,379 @@ class _PetProfileCard extends ConsumerWidget {
           ),
         ),
       ],
+    );
+  }
+}
+
+class _WeightTrackingSection extends ConsumerWidget {
+  const _WeightTrackingSection({required this.petId});
+
+  final String petId;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final entriesAsync = ref.watch(weightEntriesNotifierProvider(petId));
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: Card(
+        clipBehavior: Clip.antiAlias,
+        child: ExpansionTile(
+          leading: Icon(Icons.monitor_weight, color: colorScheme.primary),
+          title: Text('Weight Tracking',
+              style: theme.textTheme.titleMedium
+                  ?.copyWith(fontWeight: FontWeight.w600)),
+          children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  FilledButton.tonalIcon(
+                    onPressed: () => _showAddWeightSheet(context, ref),
+                    icon: const Icon(Icons.add, size: 18),
+                    label: const Text('Add Entry'),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 8),
+            entriesAsync.when(
+              loading: () => const Padding(
+                padding: EdgeInsets.all(32),
+                child: Center(child: CircularProgressIndicator()),
+              ),
+              error: (error, _) => Padding(
+                padding: const EdgeInsets.all(16),
+                child: Text('Error loading weight data: $error',
+                    style: TextStyle(color: colorScheme.error)),
+              ),
+              data: (entries) {
+                if (entries.isEmpty) {
+                  return Padding(
+                    padding: const EdgeInsets.all(24),
+                    child: Column(
+                      children: [
+                        Icon(Icons.scale_outlined, size: 48,
+                            color: colorScheme.outline),
+                        const SizedBox(height: 8),
+                        Text('No weight data yet',
+                            style: theme.textTheme.bodyLarge?.copyWith(
+                                color: colorScheme.onSurfaceVariant)),
+                        const SizedBox(height: 4),
+                        Text('Tap "Add Entry" to start tracking',
+                            style: theme.textTheme.bodySmall?.copyWith(
+                                color: colorScheme.outline)),
+                      ],
+                    ),
+                  );
+                }
+
+                return Column(
+                  children: [
+                    if (entries.length >= 2)
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        child: SizedBox(
+                          height: 200,
+                          child: _WeightChart(entries: entries),
+                        ),
+                      ),
+                    if (entries.length >= 2) const SizedBox(height: 12),
+                    ListView.separated(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      itemCount: entries.length,
+                      separatorBuilder: (_, __) => const Divider(height: 1),
+                      itemBuilder: (context, index) {
+                        final entry = entries[entries.length - 1 - index];
+                        return _WeightEntryTile(
+                          entry: entry,
+                          onDelete: () async {
+                            await ref
+                                .read(weightEntriesNotifierProvider(petId)
+                                    .notifier)
+                                .deleteEntry(entry.id);
+                          },
+                        );
+                      },
+                    ),
+                    const SizedBox(height: 8),
+                  ],
+                );
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showAddWeightSheet(BuildContext context, WidgetRef ref) {
+    final weightController = TextEditingController();
+    final notesController = TextEditingController();
+    var selectedDate = DateTime.now();
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      builder: (ctx) => StatefulBuilder(
+        builder: (ctx, setSheetState) {
+          final theme = Theme.of(ctx);
+          return Padding(
+            padding: EdgeInsets.only(
+              left: 24,
+              right: 24,
+              top: 24,
+              bottom: MediaQuery.of(ctx).viewInsets.bottom + 24,
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Text('Add Weight Entry',
+                    style: theme.textTheme.titleLarge
+                        ?.copyWith(fontWeight: FontWeight.bold)),
+                const SizedBox(height: 20),
+                InkWell(
+                  onTap: () async {
+                    final picked = await showDatePicker(
+                      context: ctx,
+                      initialDate: selectedDate,
+                      firstDate: DateTime(2000),
+                      lastDate: DateTime.now(),
+                    );
+                    if (picked != null) {
+                      setSheetState(() => selectedDate = picked);
+                    }
+                  },
+                  child: InputDecorator(
+                    decoration: const InputDecoration(
+                      labelText: 'Date',
+                      prefixIcon: Icon(Icons.calendar_today),
+                      border: OutlineInputBorder(),
+                    ),
+                    child: Text(DateFormat.yMMMd().format(selectedDate)),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                TextField(
+                  controller: weightController,
+                  keyboardType:
+                      const TextInputType.numberWithOptions(decimal: true),
+                  decoration: const InputDecoration(
+                    labelText: 'Weight (kg)',
+                    prefixIcon: Icon(Icons.monitor_weight),
+                    border: OutlineInputBorder(),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                TextField(
+                  controller: notesController,
+                  decoration: const InputDecoration(
+                    labelText: 'Notes (optional)',
+                    prefixIcon: Icon(Icons.notes),
+                    border: OutlineInputBorder(),
+                  ),
+                  maxLines: 2,
+                ),
+                const SizedBox(height: 20),
+                FilledButton(
+                  onPressed: () async {
+                    final weightText = weightController.text.trim();
+                    if (weightText.isEmpty) return;
+                    final weight = double.tryParse(weightText);
+                    if (weight == null || weight <= 0) {
+                      ScaffoldMessenger.of(ctx).showSnackBar(
+                        const SnackBar(
+                            content: Text('Please enter a valid weight')),
+                      );
+                      return;
+                    }
+
+                    final entry = WeightEntry(
+                      id: 0,
+                      petId: petId,
+                      date: selectedDate,
+                      weight: weight,
+                      notes: notesController.text.trim(),
+                    );
+
+                    await ref
+                        .read(
+                            weightEntriesNotifierProvider(petId).notifier)
+                        .addEntry(entry);
+
+                    if (ctx.mounted) Navigator.pop(ctx);
+                  },
+                  child: const Text('Save'),
+                ),
+              ],
+            ),
+          );
+        },
+      ),
+    );
+  }
+}
+
+class _WeightEntryTile extends StatelessWidget {
+  const _WeightEntryTile({required this.entry, required this.onDelete});
+
+  final WeightEntry entry;
+  final VoidCallback onDelete;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
+    return ListTile(
+      contentPadding: EdgeInsets.zero,
+      leading: CircleAvatar(
+        backgroundColor: colorScheme.primaryContainer,
+        child: Icon(Icons.monitor_weight, size: 20,
+            color: colorScheme.onPrimaryContainer),
+      ),
+      title: Text('${entry.weight.toStringAsFixed(1)} kg',
+          style: theme.textTheme.titleSmall
+              ?.copyWith(fontWeight: FontWeight.w600)),
+      subtitle: Text(
+        DateFormat.yMMMd().format(entry.date) +
+            (entry.notes.isNotEmpty ? ' — ${entry.notes}' : ''),
+        style: theme.textTheme.bodySmall
+            ?.copyWith(color: colorScheme.onSurfaceVariant),
+      ),
+      trailing: IconButton(
+        icon: Icon(Icons.delete_outline, color: colorScheme.error, size: 20),
+        onPressed: onDelete,
+      ),
+    );
+  }
+}
+
+class _WeightChart extends StatelessWidget {
+  const _WeightChart({required this.entries});
+
+  final List<WeightEntry> entries;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
+    final sorted = List<WeightEntry>.from(entries)
+      ..sort((a, b) => a.date.compareTo(b.date));
+
+    final minWeight =
+        sorted.map((e) => e.weight).reduce((a, b) => a < b ? a : b);
+    final maxWeight =
+        sorted.map((e) => e.weight).reduce((a, b) => a > b ? a : b);
+    final range = maxWeight - minWeight;
+    final yMin = (minWeight - (range * 0.2)).clamp(0.0, double.infinity);
+    final yMax = maxWeight + (range * 0.2);
+    final effectiveYMin = range < 0.1 ? minWeight - 1 : yMin;
+    final effectiveYMax = range < 0.1 ? maxWeight + 1 : yMax;
+
+    final firstDate = sorted.first.date;
+
+    final spots = sorted.map((e) {
+      final x = e.date.difference(firstDate).inDays.toDouble();
+      return FlSpot(x, e.weight);
+    }).toList();
+
+    return LineChart(
+      LineChartData(
+        minY: effectiveYMin,
+        maxY: effectiveYMax,
+        gridData: FlGridData(
+          show: true,
+          drawVerticalLine: false,
+          horizontalInterval: range < 0.1 ? 0.5 : null,
+          getDrawingHorizontalLine: (value) => FlLine(
+            color: colorScheme.outlineVariant.withAlpha(80),
+            strokeWidth: 1,
+          ),
+        ),
+        titlesData: FlTitlesData(
+          rightTitles:
+              const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+          topTitles:
+              const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+          leftTitles: AxisTitles(
+            sideTitles: SideTitles(
+              showTitles: true,
+              reservedSize: 44,
+              getTitlesWidget: (value, meta) {
+                return Text(value.toStringAsFixed(1),
+                    style: theme.textTheme.labelSmall
+                        ?.copyWith(color: colorScheme.onSurfaceVariant));
+              },
+            ),
+          ),
+          bottomTitles: AxisTitles(
+            sideTitles: SideTitles(
+              showTitles: true,
+              reservedSize: 28,
+              getTitlesWidget: (value, meta) {
+                final date =
+                    firstDate.add(Duration(days: value.toInt()));
+                return Padding(
+                  padding: const EdgeInsets.only(top: 6),
+                  child: Text(DateFormat('M/d').format(date),
+                      style: theme.textTheme.labelSmall
+                          ?.copyWith(color: colorScheme.onSurfaceVariant)),
+                );
+              },
+            ),
+          ),
+        ),
+        borderData: FlBorderData(show: false),
+        lineTouchData: LineTouchData(
+          touchTooltipData: LineTouchTooltipData(
+            getTooltipItems: (touchedSpots) {
+              return touchedSpots.map((spot) {
+                final date =
+                    firstDate.add(Duration(days: spot.x.toInt()));
+                return LineTooltipItem(
+                  '${spot.y.toStringAsFixed(1)} kg\n${DateFormat.yMMMd().format(date)}',
+                  TextStyle(
+                    color: colorScheme.onPrimary,
+                    fontWeight: FontWeight.w600,
+                    fontSize: 12,
+                  ),
+                );
+              }).toList();
+            },
+          ),
+        ),
+        lineBarsData: [
+          LineChartBarData(
+            spots: spots,
+            isCurved: true,
+            curveSmoothness: 0.3,
+            color: colorScheme.primary,
+            barWidth: 3,
+            dotData: FlDotData(
+              show: true,
+              getDotPainter: (spot, percent, barData, index) =>
+                  FlDotCirclePainter(
+                radius: 4,
+                color: colorScheme.primary,
+                strokeWidth: 2,
+                strokeColor: colorScheme.surface,
+              ),
+            ),
+            belowBarData: BarAreaData(
+              show: true,
+              color: colorScheme.primary.withAlpha(30),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
