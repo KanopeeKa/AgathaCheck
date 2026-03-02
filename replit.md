@@ -90,7 +90,7 @@ pubspec.yaml           - Root: pure Dart + postgres + dart_jsonwebtoken + dbcryp
   - GET /api/health-entries/:id/history - View administration history
   - GET /api/health-entries/export - Export CSV
 - **Scheduling**: Auto-calculates next due dates (daily/weekly/monthly/custom)
-- **UI**: Tabbed dashboard (All/Medications/Preventives/Vaccines), entry cards with frequency badges, mark-taken button, add/edit form
+- **UI**: Tabbed dashboard (All/Medications/Preventives/Vaccines), entry cards with frequency badges, mark-taken button, add/edit form with multi-pet selector (FilterChip chips, Select All/Clear, creates 1 entry per selected pet)
 
 ## Veterinarian Feature
 - **Database**: PostgreSQL vets table (id, name, phone, email, website, address, notes)

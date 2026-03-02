@@ -2,21 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../pet_profile/domain/entities/pet.dart';
+import '../../../pet_profile/presentation/providers/pet_providers.dart';
 import '../../domain/entities/health_entry.dart';
 import '../providers/health_providers.dart';
 
-/// Form screen for creating or editing a health entry.
-///
-/// When [entryId] is provided, loads the existing entry for editing.
-/// Otherwise, creates a new entry.
 class HealthEntryFormScreen extends ConsumerStatefulWidget {
-  /// Creates the [HealthEntryFormScreen].
   const HealthEntryFormScreen({super.key, this.entryId, this.petId});
 
-  /// The ID of the entry to edit, or null for a new entry.
   final String? entryId;
-
-  /// The pet this entry belongs to. Required for new entries.
   final String? petId;
 
   @override
@@ -38,12 +32,15 @@ class _HealthEntryFormScreenState
   DateTime _nextDueDate = DateTime.now();
   bool _isLoading = false;
   bool _isEdit = false;
-  String _petId = '';
+
+  final Set<String> _selectedPetIds = {};
 
   @override
   void initState() {
     super.initState();
-    _petId = widget.petId ?? '';
+    if (widget.petId != null && widget.petId!.isNotEmpty) {
+      _selectedPetIds.add(widget.petId!);
+    }
     if (widget.entryId != null) {
       _isEdit = true;
       _loadEntry();
@@ -65,7 +62,8 @@ class _HealthEntryFormScreenState
           _frequency = entry.frequency;
           _startDate = entry.startDate;
           _nextDueDate = entry.nextDueDate;
-          _petId = entry.petId;
+          _selectedPetIds.clear();
+          _selectedPetIds.add(entry.petId);
           if (entry.frequencyDays != null) {
             _customDaysController.text = entry.frequencyDays.toString();
           }
@@ -93,14 +91,18 @@ class _HealthEntryFormScreenState
 
   @override
   Widget build(BuildContext context) {
+    final petListAsync = ref.watch(petListProvider);
+    final theme = Theme.of(context);
+    final primaryPetId = _selectedPetIds.isNotEmpty ? _selectedPetIds.first : '';
+
     return Scaffold(
       appBar: AppBar(
         title: Text(_isEdit ? 'Edit Entry' : 'New Health Entry'),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () {
-            if (_petId.isNotEmpty) {
-              context.go('/pet/$_petId');
+            if (widget.petId != null && widget.petId!.isNotEmpty) {
+              context.go('/pet/${widget.petId}');
             } else {
               context.go('/health');
             }
@@ -116,6 +118,35 @@ class _HealthEntryFormScreenState
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
+                    petListAsync.when(
+                      loading: () => const LinearProgressIndicator(),
+                      error: (e, _) => Text('Failed to load pets: $e'),
+                      data: (pets) {
+                        if (pets.isEmpty) {
+                          return Container(
+                            padding: const EdgeInsets.all(16),
+                            decoration: BoxDecoration(
+                              color: theme.colorScheme.errorContainer,
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Text(
+                              'No pets found. Please add a pet first.',
+                              style: TextStyle(color: theme.colorScheme.error),
+                            ),
+                          );
+                        }
+                        return _PetSelector(
+                          pets: pets,
+                          selectedPetIds: _selectedPetIds,
+                          isEdit: _isEdit,
+                          onChanged: (ids) => setState(() {
+                            _selectedPetIds.clear();
+                            _selectedPetIds.addAll(ids);
+                          }),
+                        );
+                      },
+                    ),
+                    const SizedBox(height: 16),
                     DropdownButtonFormField<HealthEntryType>(
                       value: _type,
                       decoration: const InputDecoration(
@@ -217,7 +248,11 @@ class _HealthEntryFormScreenState
                     FilledButton.icon(
                       onPressed: _submit,
                       icon: Icon(_isEdit ? Icons.save : Icons.add),
-                      label: Text(_isEdit ? 'Save Changes' : 'Add Entry'),
+                      label: Text(_isEdit
+                          ? 'Save Changes'
+                          : _selectedPetIds.length > 1
+                              ? 'Add Entry for ${_selectedPetIds.length} Pets'
+                              : 'Add Entry'),
                     ),
                     if (_isEdit) ...[
                       const SizedBox(height: 12),
@@ -237,41 +272,74 @@ class _HealthEntryFormScreenState
   Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
 
+    if (_selectedPetIds.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please select at least one pet')),
+      );
+      return;
+    }
+
     setState(() => _isLoading = true);
     try {
-      final entry = HealthEntry(
-        id: widget.entryId ?? '',
-        petId: _petId,
-        name: _nameController.text.trim(),
-        type: _type,
-        dosage: _dosageController.text.trim(),
-        frequency: _frequency,
-        frequencyDays: _frequency == HealthFrequency.custom
-            ? int.tryParse(_customDaysController.text.trim())
-            : null,
-        startDate: _startDate,
-        nextDueDate: _nextDueDate,
-        notes: _notesController.text.trim(),
-      );
-
       final notifier = ref.read(healthEntriesNotifierProvider.notifier);
+
       if (_isEdit) {
+        final entry = HealthEntry(
+          id: widget.entryId ?? '',
+          petId: _selectedPetIds.first,
+          name: _nameController.text.trim(),
+          type: _type,
+          dosage: _dosageController.text.trim(),
+          frequency: _frequency,
+          frequencyDays: _frequency == HealthFrequency.custom
+              ? int.tryParse(_customDaysController.text.trim())
+              : null,
+          startDate: _startDate,
+          nextDueDate: _nextDueDate,
+          notes: _notesController.text.trim(),
+        );
         await notifier.updateEntry(entry);
+        if (mounted) {
+          ref.invalidate(petHealthEntriesProvider(_selectedPetIds.first));
+        }
       } else {
-        await notifier.create(entry);
+        for (final petId in _selectedPetIds) {
+          final entry = HealthEntry(
+            id: '',
+            petId: petId,
+            name: _nameController.text.trim(),
+            type: _type,
+            dosage: _dosageController.text.trim(),
+            frequency: _frequency,
+            frequencyDays: _frequency == HealthFrequency.custom
+                ? int.tryParse(_customDaysController.text.trim())
+                : null,
+            startDate: _startDate,
+            nextDueDate: _nextDueDate,
+            notes: _notesController.text.trim(),
+          );
+          await notifier.create(entry);
+        }
+        if (mounted) {
+          for (final petId in _selectedPetIds) {
+            ref.invalidate(petHealthEntriesProvider(petId));
+          }
+        }
       }
 
       if (mounted) {
-        if (_petId.isNotEmpty) {
-          ref.invalidate(petHealthEntriesProvider(_petId));
-        }
+        final count = _selectedPetIds.length;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-              content:
-                  Text(_isEdit ? 'Entry updated' : 'Entry created')),
+            content: Text(_isEdit
+                ? 'Entry updated'
+                : count > 1
+                    ? '$count entries created'
+                    : 'Entry created'),
+          ),
         );
-        if (_petId.isNotEmpty) {
-          context.go('/pet/$_petId');
+        if (widget.petId != null && widget.petId!.isNotEmpty) {
+          context.go('/pet/${widget.petId}');
         } else {
           context.go('/health');
         }
@@ -341,6 +409,118 @@ class _HealthEntryFormScreenState
   String _formatDateTime(DateTime dt) {
     return '${dt.year}-${dt.month.toString().padLeft(2, '0')}-${dt.day.toString().padLeft(2, '0')} '
         '${dt.hour.toString().padLeft(2, '0')}:${dt.minute.toString().padLeft(2, '0')}';
+  }
+}
+
+class _PetSelector extends StatelessWidget {
+  const _PetSelector({
+    required this.pets,
+    required this.selectedPetIds,
+    required this.isEdit,
+    required this.onChanged,
+  });
+
+  final List<Pet> pets;
+  final Set<String> selectedPetIds;
+  final bool isEdit;
+  final ValueChanged<Set<String>> onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    if (isEdit) {
+      final pet = pets.where((p) => selectedPetIds.contains(p.id)).firstOrNull;
+      return InputDecorator(
+        decoration: const InputDecoration(
+          labelText: 'Pet',
+          prefixIcon: Icon(Icons.pets),
+        ),
+        child: Text(pet?.name ?? 'Unknown pet'),
+      );
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Select Pets',
+          style: theme.textTheme.titleSmall?.copyWith(
+            color: theme.colorScheme.onSurfaceVariant,
+          ),
+        ),
+        if (selectedPetIds.isEmpty)
+          Padding(
+            padding: const EdgeInsets.only(top: 4),
+            child: Text(
+              'At least one pet must be selected',
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: theme.colorScheme.error,
+              ),
+            ),
+          ),
+        if (pets.length > 1)
+          Padding(
+            padding: const EdgeInsets.only(top: 4, bottom: 4),
+            child: Text(
+              'Select multiple pets to create an entry for each',
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
+            ),
+          ),
+        const SizedBox(height: 8),
+        Wrap(
+          spacing: 8,
+          runSpacing: 8,
+          children: pets.map((pet) {
+            final isSelected = selectedPetIds.contains(pet.id);
+            return FilterChip(
+              avatar: isSelected
+                  ? null
+                  : CircleAvatar(
+                      backgroundColor: theme.colorScheme.surfaceContainerHighest,
+                      child: Text(
+                        pet.name.isNotEmpty ? pet.name[0].toUpperCase() : '?',
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: theme.colorScheme.onSurface,
+                        ),
+                      ),
+                    ),
+              label: Text(pet.name),
+              selected: isSelected,
+              onSelected: (selected) {
+                final newSet = Set<String>.from(selectedPetIds);
+                if (selected) {
+                  newSet.add(pet.id);
+                } else {
+                  newSet.remove(pet.id);
+                }
+                onChanged(newSet);
+              },
+            );
+          }).toList(),
+        ),
+        if (pets.length > 1) ...[
+          const SizedBox(height: 4),
+          Row(
+            children: [
+              TextButton.icon(
+                onPressed: () => onChanged(pets.map((p) => p.id).toSet()),
+                icon: const Icon(Icons.select_all, size: 18),
+                label: const Text('Select All'),
+              ),
+              TextButton.icon(
+                onPressed: () => onChanged({}),
+                icon: const Icon(Icons.deselect, size: 18),
+                label: const Text('Clear'),
+              ),
+            ],
+          ),
+        ],
+      ],
+    );
   }
 }
 
