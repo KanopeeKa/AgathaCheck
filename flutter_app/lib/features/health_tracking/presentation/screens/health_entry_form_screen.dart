@@ -208,7 +208,6 @@ class _HealthEntryFormScreenState
           value: _selectedHealthIssueId,
           decoration: const InputDecoration(
             labelText: 'Health Issue (optional)',
-            prefixIcon: Icon(Icons.health_and_safety),
           ),
           items: [
             const DropdownMenuItem<String?>(
@@ -299,7 +298,6 @@ class _HealthEntryFormScreenState
                       value: _type,
                       decoration: const InputDecoration(
                         labelText: 'Type',
-                        prefixIcon: Icon(Icons.category),
                       ),
                       items: HealthEntryType.values.map((t) {
                         return DropdownMenuItem(
@@ -316,7 +314,6 @@ class _HealthEntryFormScreenState
                       decoration: const InputDecoration(
                         labelText: 'Name',
                         hintText: 'e.g., Heartgard, Annual Checkup',
-                        prefixIcon: Icon(Icons.medical_services),
                       ),
                       validator: (val) =>
                           val == null || val.trim().isEmpty
@@ -330,7 +327,6 @@ class _HealthEntryFormScreenState
                       decoration: const InputDecoration(
                         labelText: 'Dosage / Amount',
                         hintText: 'e.g., 1 tablet, 0.5ml',
-                        prefixIcon: Icon(Icons.straighten),
                       ),
                     ),
                     const SizedBox(height: 16),
@@ -338,7 +334,6 @@ class _HealthEntryFormScreenState
                       value: _frequency,
                       decoration: const InputDecoration(
                         labelText: 'Frequency',
-                        prefixIcon: Icon(Icons.repeat),
                       ),
                       items: HealthFrequency.values.map((f) {
                         return DropdownMenuItem(
@@ -355,7 +350,6 @@ class _HealthEntryFormScreenState
                         decoration: const InputDecoration(
                           labelText: 'Interval (days)',
                           hintText: 'e.g., 14',
-                          prefixIcon: Icon(Icons.calendar_today),
                         ),
                         keyboardType: TextInputType.number,
                         validator: (val) {
@@ -377,7 +371,6 @@ class _HealthEntryFormScreenState
                       InputDecorator(
                         decoration: const InputDecoration(
                           labelText: 'Repeat ends by',
-                          prefixIcon: Icon(Icons.event_busy),
                         ),
                         child: Row(
                           children: [
@@ -428,7 +421,6 @@ class _HealthEntryFormScreenState
                       decoration: const InputDecoration(
                         labelText: 'Notes',
                         hintText: 'Additional information...',
-                        prefixIcon: Icon(Icons.notes),
                       ),
                       maxLines: 3,
                     ),
@@ -746,7 +738,6 @@ class _PetSelector extends StatelessWidget {
       return InputDecorator(
         decoration: const InputDecoration(
           labelText: 'Pet',
-          prefixIcon: Icon(Icons.pets),
         ),
         child: Text(pet?.name ?? 'Unknown pet'),
       );
@@ -869,7 +860,6 @@ class _DatePickerField extends StatelessWidget {
         child: InputDecorator(
           decoration: InputDecoration(
             labelText: label,
-            prefixIcon: const Icon(Icons.calendar_today),
           ),
           child: Text(
             '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}',
