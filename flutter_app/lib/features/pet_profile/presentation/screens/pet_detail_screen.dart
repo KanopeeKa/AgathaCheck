@@ -1172,7 +1172,21 @@ class _HealthEventsSectionState extends ConsumerState<_HealthEventsSection> {
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
                                   content:
-                                      Text('${entry.name} marked as taken')),
+                                      Text('${entry.name} marked as done')),
+                            );
+                          }
+                        },
+                        onSnooze: (days) async {
+                          await ref
+                              .read(healthEntriesNotifierProvider.notifier)
+                              .snooze(entry.id, days);
+                          ref.invalidate(
+                              petHealthEntriesProvider(widget.petId));
+                          if (context.mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                  content: Text(
+                                      '${entry.name} snoozed for $days ${days == 1 ? 'day' : 'days'}')),
                             );
                           }
                         },

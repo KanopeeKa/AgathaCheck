@@ -111,6 +111,17 @@ class HealthEntriesNotifier extends AsyncNotifier<List<HealthEntry>> {
     await ref.read(markEntryTakenProvider).call(id, notes: notes);
     await refresh();
   }
+
+  /// Snoozes a health entry by pushing its next due date forward by [days].
+  Future<void> snooze(String id, int days) async {
+    final entries = state.valueOrNull ?? [];
+    final entry = entries.where((e) => e.id == id).firstOrNull;
+    if (entry == null) return;
+    final newDueDate = entry.nextDueDate.add(Duration(days: days));
+    final updated = entry.copyWith(nextDueDate: newDueDate);
+    await ref.read(updateHealthEntryProvider).call(updated);
+    await refresh();
+  }
 }
 
 /// Provides filtered entries by type.

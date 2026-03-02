@@ -197,6 +197,7 @@ class _EntryList extends ConsumerWidget {
                   healthIssueName: entry.healthIssueName,
                   onTap: () => context.go('/health/edit/${entry.id}'),
                   onMarkTaken: () => _markTaken(context, ref, entry),
+                  onSnooze: (days) => _snooze(context, ref, entry, days),
                 ),
               );
             },
@@ -210,7 +211,16 @@ class _EntryList extends ConsumerWidget {
     await ref.read(healthEntriesNotifierProvider.notifier).markTaken(entry.id);
     if (context.mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('${entry.name} marked as taken')),
+        SnackBar(content: Text('${entry.name} marked as done')),
+      );
+    }
+  }
+
+  Future<void> _snooze(BuildContext context, WidgetRef ref, HealthEntry entry, int days) async {
+    await ref.read(healthEntriesNotifierProvider.notifier).snooze(entry.id, days);
+    if (context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('${entry.name} snoozed for $days ${days == 1 ? 'day' : 'days'}')),
       );
     }
   }
