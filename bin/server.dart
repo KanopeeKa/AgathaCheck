@@ -133,6 +133,20 @@ Future<void> main() async {
   '''));
   print('weight_entries table ready');
 
+  await _db.execute(Sql('''
+    ALTER TABLE health_entries ADD COLUMN IF NOT EXISTS repeat_end_date DATE
+  '''));
+
+  await _db.execute(Sql('''
+    DO \$\$ BEGIN
+      ALTER TABLE health_entries DROP CONSTRAINT IF EXISTS health_entries_frequency_check;
+      ALTER TABLE health_entries ADD CONSTRAINT health_entries_frequency_check
+        CHECK (frequency = ANY (ARRAY['once','daily','weekly','monthly','custom']));
+    EXCEPTION WHEN OTHERS THEN NULL;
+    END \$\$;
+  '''));
+  print('health_entries schema updated');
+
   final server = await HttpServer.bind('0.0.0.0', port);
   server.defaultResponseHeaders.remove('x-frame-options', 'SAMEORIGIN');
   server.defaultResponseHeaders.remove('x-xss-protection', '1; mode=block');
@@ -693,6 +707,7 @@ Future<void> _createHealthEntry(HttpRequest request) async {
   final dosage = body['dosage'] as String? ?? '';
   final frequency = body['frequency'] as String? ?? '';
   final frequencyDays = body['frequency_days'] as int?;
+  final repeatEndDate = body['repeat_end_date'] as String?;
   final startDate = body['start_date'] as String? ?? '';
   final nextDueDate = body['next_due_date'] as String? ?? startDate;
   final notes = body['notes'] as String? ?? '';
@@ -706,8 +721,8 @@ Future<void> _createHealthEntry(HttpRequest request) async {
 
   final result = await _db.execute(
     Sql.named('''
-      INSERT INTO health_entries (pet_id, name, type, dosage, frequency, frequency_days, start_date, next_due_date, notes)
-      VALUES (@petId, @name, @type, @dosage, @frequency, @frequencyDays, @startDate::date, @nextDueDate::timestamptz, @notes)
+      INSERT INTO health_entries (pet_id, name, type, dosage, frequency, frequency_days, repeat_end_date, start_date, next_due_date, notes)
+      VALUES (@petId, @name, @type, @dosage, @frequency, @frequencyDays, ${repeatEndDate != null ? '@repeatEndDate::date' : 'NULL'}, @startDate::date, @nextDueDate::timestamptz, @notes)
       RETURNING *
     '''),
     parameters: {
@@ -717,6 +732,7 @@ Future<void> _createHealthEntry(HttpRequest request) async {
       'dosage': dosage,
       'frequency': frequency,
       'frequencyDays': frequencyDays,
+      if (repeatEndDate != null) 'repeatEndDate': repeatEndDate,
       'startDate': startDate,
       'nextDueDate': nextDueDate,
       'notes': notes,
@@ -743,11 +759,15 @@ Future<void> _updateHealthEntry(HttpRequest request) async {
 
   final row = _rowToMap(existing.first);
 
+  final hasRepeatEndDate = body.containsKey('repeat_end_date');
+  final repeatEndDateVal = hasRepeatEndDate ? body['repeat_end_date'] : row['repeat_end_date'];
+
   final result = await _db.execute(
     Sql.named('''
       UPDATE health_entries SET
         name = @name, type = @type, dosage = @dosage,
         frequency = @frequency, frequency_days = @frequencyDays,
+        repeat_end_date = ${repeatEndDateVal != null ? '@repeatEndDate::date' : 'NULL'},
         start_date = @startDate::date, next_due_date = @nextDueDate::timestamptz,
         notes = @notes, updated_at = NOW()
       WHERE id = @id
@@ -760,6 +780,7 @@ Future<void> _updateHealthEntry(HttpRequest request) async {
       'dosage': body['dosage'] ?? row['dosage'],
       'frequency': body['frequency'] ?? row['frequency'],
       'frequencyDays': body['frequency_days'] ?? row['frequency_days'],
+      if (repeatEndDateVal != null) 'repeatEndDate': repeatEndDateVal.toString(),
       'startDate': body['start_date'] ?? row['start_date'],
       'nextDueDate': body['next_due_date'] ?? row['next_due_date'],
       'notes': body['notes'] ?? row['notes'],
@@ -812,6 +833,8 @@ Future<void> _markTaken(HttpRequest request) async {
 
   final frequency = row['frequency'] as String;
   final currentDue = DateTime.parse(row['next_due_date'].toString());
+  final repeatEndDateStr = row['repeat_end_date']?.toString();
+  final repeatEndDate = repeatEndDateStr != null ? DateTime.tryParse(repeatEndDateStr) : null;
   DateTime nextDue;
 
   switch (frequency) {
@@ -834,6 +857,10 @@ Future<void> _markTaken(HttpRequest request) async {
       break;
     default:
       nextDue = currentDue;
+  }
+
+  if (repeatEndDate != null && nextDue.isAfter(repeatEndDate)) {
+    nextDue = currentDue;
   }
 
   final updated = await _db.execute(
@@ -1583,6 +1610,7 @@ Map<String, dynamic> _rowToMap(ResultRow row) {
     'dosage': cols['dosage'].toString(),
     'frequency': cols['frequency'].toString(),
     'frequency_days': cols['frequency_days'],
+    'repeat_end_date': cols['repeat_end_date']?.toString(),
     'start_date': cols['start_date'].toString(),
     'next_due_date': cols['next_due_date'].toString(),
     'notes': cols['notes'].toString(),

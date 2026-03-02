@@ -16,6 +16,7 @@ class HealthEntryModel extends HealthEntry {
     required super.nextDueDate,
     super.dosage,
     super.frequencyDays,
+    super.repeatEndDate,
     super.notes,
     super.createdAt,
     super.updatedAt,
@@ -31,6 +32,9 @@ class HealthEntryModel extends HealthEntry {
       dosage: json['dosage'] as String? ?? '',
       frequency: _parseFrequency(json['frequency'] as String? ?? 'once'),
       frequencyDays: json['frequency_days'] as int?,
+      repeatEndDate: json['repeat_end_date'] != null
+          ? DateTime.tryParse(json['repeat_end_date'] as String)
+          : null,
       startDate: DateTime.tryParse(json['start_date'] as String? ?? '') ??
           DateTime.now(),
       nextDueDate:
@@ -56,6 +60,7 @@ class HealthEntryModel extends HealthEntry {
       dosage: entry.dosage,
       frequency: entry.frequency,
       frequencyDays: entry.frequencyDays,
+      repeatEndDate: entry.repeatEndDate,
       startDate: entry.startDate,
       nextDueDate: entry.nextDueDate,
       notes: entry.notes,
@@ -74,6 +79,7 @@ class HealthEntryModel extends HealthEntry {
       'dosage': dosage,
       'frequency': frequency.name,
       'frequency_days': frequencyDays,
+      'repeat_end_date': repeatEndDate?.toIso8601String().split('T').first,
       'start_date': startDate.toIso8601String().split('T').first,
       'next_due_date': nextDueDate.toIso8601String(),
       'notes': notes,

@@ -14,6 +14,7 @@ class HealthEntry {
     required this.nextDueDate,
     this.dosage = '',
     this.frequencyDays,
+    this.repeatEndDate,
     this.notes = '',
     this.createdAt,
     this.updatedAt,
@@ -39,6 +40,9 @@ class HealthEntry {
 
   /// Custom interval in days (used when [frequency] is [HealthFrequency.custom]).
   final int? frequencyDays;
+
+  /// When repeating ends (null = never).
+  final DateTime? repeatEndDate;
 
   /// When this health entry started.
   final DateTime startDate;
@@ -80,6 +84,8 @@ class HealthEntry {
     String? dosage,
     HealthFrequency? frequency,
     int? frequencyDays,
+    DateTime? repeatEndDate,
+    bool clearRepeatEndDate = false,
     DateTime? startDate,
     DateTime? nextDueDate,
     String? notes,
@@ -94,6 +100,7 @@ class HealthEntry {
       dosage: dosage ?? this.dosage,
       frequency: frequency ?? this.frequency,
       frequencyDays: frequencyDays ?? this.frequencyDays,
+      repeatEndDate: clearRepeatEndDate ? null : (repeatEndDate ?? this.repeatEndDate),
       startDate: startDate ?? this.startDate,
       nextDueDate: nextDueDate ?? this.nextDueDate,
       notes: notes ?? this.notes,

@@ -30,6 +30,7 @@ class _HealthEntryFormScreenState
   HealthFrequency _frequency = HealthFrequency.once;
   DateTime _startDate = DateTime.now();
   DateTime _nextDueDate = DateTime.now();
+  DateTime? _repeatEndDate;
   bool _isLoading = false;
   bool _isEdit = false;
 
@@ -64,6 +65,7 @@ class _HealthEntryFormScreenState
           _nextDueDate = entry.nextDueDate;
           _selectedPetIds.clear();
           _selectedPetIds.add(entry.petId);
+          _repeatEndDate = entry.repeatEndDate;
           if (entry.frequencyDays != null) {
             _customDaysController.text = entry.frequencyDays.toString();
           }
@@ -222,6 +224,45 @@ class _HealthEntryFormScreenState
                         },
                       ),
                     ],
+                    if (_frequency != HealthFrequency.once) ...[
+                      const SizedBox(height: 16),
+                      InputDecorator(
+                        decoration: const InputDecoration(
+                          labelText: 'Repeat ends by',
+                          prefixIcon: Icon(Icons.event_busy),
+                        ),
+                        child: Row(
+                          children: [
+                            ChoiceChip(
+                              label: const Text('Never'),
+                              selected: _repeatEndDate == null,
+                              onSelected: (_) =>
+                                  setState(() => _repeatEndDate = null),
+                            ),
+                            const SizedBox(width: 8),
+                            ChoiceChip(
+                              label: Text(_repeatEndDate != null
+                                  ? _formatDate(_repeatEndDate!)
+                                  : 'Pick a date'),
+                              selected: _repeatEndDate != null,
+                              onSelected: (_) async {
+                                final picked = await showDatePicker(
+                                  context: context,
+                                  initialDate: _repeatEndDate ??
+                                      DateTime.now()
+                                          .add(const Duration(days: 30)),
+                                  firstDate: DateTime.now(),
+                                  lastDate: DateTime(2100),
+                                );
+                                if (picked != null) {
+                                  setState(() => _repeatEndDate = picked);
+                                }
+                              },
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
                     const SizedBox(height: 16),
                     _DatePickerField(
                       label: 'Start Date',
@@ -283,6 +324,9 @@ class _HealthEntryFormScreenState
     try {
       final notifier = ref.read(healthEntriesNotifierProvider.notifier);
 
+      final effectiveRepeatEndDate =
+          _frequency == HealthFrequency.once ? null : _repeatEndDate;
+
       if (_isEdit) {
         final entry = HealthEntry(
           id: widget.entryId ?? '',
@@ -294,6 +338,7 @@ class _HealthEntryFormScreenState
           frequencyDays: _frequency == HealthFrequency.custom
               ? int.tryParse(_customDaysController.text.trim())
               : null,
+          repeatEndDate: effectiveRepeatEndDate,
           startDate: _startDate,
           nextDueDate: _nextDueDate,
           notes: _notesController.text.trim(),
@@ -314,6 +359,7 @@ class _HealthEntryFormScreenState
             frequencyDays: _frequency == HealthFrequency.custom
                 ? int.tryParse(_customDaysController.text.trim())
                 : null,
+            repeatEndDate: effectiveRepeatEndDate,
             startDate: _startDate,
             nextDueDate: _nextDueDate,
             notes: _notesController.text.trim(),
@@ -404,6 +450,10 @@ class _HealthEntryFormScreenState
         );
       }
     }
+  }
+
+  String _formatDate(DateTime dt) {
+    return '${dt.year}-${dt.month.toString().padLeft(2, '0')}-${dt.day.toString().padLeft(2, '0')}';
   }
 
   String _formatDateTime(DateTime dt) {
