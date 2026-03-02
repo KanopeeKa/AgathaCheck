@@ -1714,6 +1714,15 @@ Future<void> _checkDueNotifications(HttpRequest request) async {
 
   final userId = int.parse(payload['sub'].toString());
 
+  Map<String, String> petNames = {};
+  try {
+    final body = await _readJson(request);
+    if (body != null && body['pet_names'] is Map) {
+      final raw = body['pet_names'] as Map;
+      petNames = raw.map((k, v) => MapEntry(k.toString(), v.toString()));
+    }
+  } catch (_) {}
+
   var prefResult = await _db.execute(
     Sql.named('SELECT * FROM notification_preferences WHERE user_id = @userId'),
     parameters: {'userId': userId},
@@ -1768,10 +1777,12 @@ Future<void> _checkDueNotifications(HttpRequest request) async {
 
     if (existing.isNotEmpty) continue;
 
+    final petName = petNames[petId] ?? '';
+    final petPrefix = petName.isNotEmpty ? '$petName - ' : '';
     final isOverdue = DateTime.tryParse(nextDue)?.isBefore(DateTime.now()) ?? false;
     final title = isOverdue
-        ? 'Overdue: $entryName'
-        : 'Upcoming: $entryName';
+        ? '${petPrefix}Overdue: $entryName'
+        : '${petPrefix}Upcoming: $entryName';
     final message = isOverdue
         ? '$entryName ($entryType) was due on $nextDue'
         : '$entryName ($entryType) is due on $nextDue';

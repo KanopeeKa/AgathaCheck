@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../auth/presentation/providers/auth_providers.dart';
 import '../../../health_tracking/presentation/providers/health_providers.dart';
+import '../../../pet_profile/presentation/providers/pet_providers.dart';
 import '../../data/datasources/notification_remote_datasource.dart';
 import '../../data/repositories/notification_repository_impl.dart';
 import '../../domain/entities/app_notification.dart';
@@ -56,7 +57,9 @@ class NotificationsNotifier extends AsyncNotifier<List<AppNotification>> {
     final auth = ref.read(authProvider);
     if (!auth.isLoggedIn || auth.accessToken == null) return;
     try {
-      await _getRepo().checkDueEntries();
+      final pets = ref.read(petListProvider).valueOrNull ?? [];
+      final petNames = {for (final p in pets) p.id: p.name};
+      await _getRepo().checkDueEntries(petNames: petNames);
       await refresh();
     } catch (_) {}
   }

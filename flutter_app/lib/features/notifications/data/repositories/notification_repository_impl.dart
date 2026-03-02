@@ -60,7 +60,7 @@ class NotificationRepositoryImpl implements NotificationRepository {
   }
 
   @override
-  Future<void> checkDueEntries() async {
-    await _dataSource.checkDueEntries(_tokenGetter());
+  Future<void> checkDueEntries({Map<String, String> petNames = const {}}) async {
+    await _dataSource.checkDueEntries(_tokenGetter(), petNames: petNames);
   }
 }

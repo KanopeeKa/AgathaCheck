@@ -9,5 +9,5 @@ abstract class NotificationRepository {
   Future<NotificationPreferences> getPreferences();
   Future<NotificationPreferences> updatePreferences(
       NotificationPreferences preferences);
-  Future<void> checkDueEntries();
+  Future<void> checkDueEntries({Map<String, String> petNames = const {}});
 }

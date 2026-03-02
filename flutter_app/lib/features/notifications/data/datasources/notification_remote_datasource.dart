@@ -12,7 +12,7 @@ abstract class NotificationRemoteDataSource {
   Future<NotificationPreferencesModel> getPreferences(String token);
   Future<NotificationPreferencesModel> updatePreferences(
       String token, NotificationPreferencesModel preferences);
-  Future<void> checkDueEntries(String token);
+  Future<void> checkDueEntries(String token, {Map<String, String> petNames = const {}});
 }
 
 class NotificationRemoteDataSourceImpl implements NotificationRemoteDataSource {
@@ -96,10 +96,11 @@ class NotificationRemoteDataSourceImpl implements NotificationRemoteDataSource {
   }
 
   @override
-  Future<void> checkDueEntries(String token) async {
+  Future<void> checkDueEntries(String token, {Map<String, String> petNames = const {}}) async {
     final response = await _client.post(
       Uri.parse('$baseUrl/api/notifications/check-due'),
       headers: _headers(token),
+      body: json.encode({'pet_names': petNames}),
     );
     _checkResponse(response);
   }
