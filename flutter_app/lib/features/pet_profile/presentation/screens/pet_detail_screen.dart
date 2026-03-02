@@ -844,6 +844,14 @@ class _HealthEventsSectionState extends ConsumerState<_HealthEventsSection> {
                       onSelected: () => setState(
                           () => _selectedFilter = HealthEntryType.vaccine),
                     ),
+                    const SizedBox(width: 8),
+                    _FilterChipWidget(
+                      label: 'Procedures',
+                      selected:
+                          _selectedFilter == HealthEntryType.procedure,
+                      onSelected: () => setState(
+                          () => _selectedFilter = HealthEntryType.procedure),
+                    ),
                   ],
                 ),
               ),

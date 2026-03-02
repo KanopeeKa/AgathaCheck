@@ -129,7 +129,10 @@ enum HealthEntryType {
   preventive,
 
   /// A vaccine.
-  vaccine;
+  vaccine,
+
+  /// A medical procedure (surgery, dental, checkup, etc.).
+  procedure;
 
   /// Human-readable label for this type.
   String get label {
@@ -140,6 +143,8 @@ enum HealthEntryType {
         return 'Preventive';
       case HealthEntryType.vaccine:
         return 'Vaccine';
+      case HealthEntryType.procedure:
+        return 'Procedure';
     }
   }
 }

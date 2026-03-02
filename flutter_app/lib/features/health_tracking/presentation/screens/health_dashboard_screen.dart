@@ -28,12 +28,13 @@ class _HealthDashboardScreenState extends ConsumerState<HealthDashboardScreen>
     HealthEntryType.medication,
     HealthEntryType.preventive,
     HealthEntryType.vaccine,
+    HealthEntryType.procedure,
   ];
 
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: _tabs.length, vsync: this);
+    _tabController = TabController(length: 5, vsync: this);
   }
 
   @override
@@ -65,6 +66,7 @@ class _HealthDashboardScreenState extends ConsumerState<HealthDashboardScreen>
             Tab(text: 'Medications'),
             Tab(text: 'Preventives'),
             Tab(text: 'Vaccines'),
+            Tab(text: 'Procedures'),
           ],
           isScrollable: false,
         ),

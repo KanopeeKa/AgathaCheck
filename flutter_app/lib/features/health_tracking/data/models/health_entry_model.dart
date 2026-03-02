@@ -94,6 +94,8 @@ class HealthEntryModel extends HealthEntry {
         return HealthEntryType.preventive;
       case 'vaccine':
         return HealthEntryType.vaccine;
+      case 'procedure':
+        return HealthEntryType.procedure;
       default:
         return HealthEntryType.medication;
     }
