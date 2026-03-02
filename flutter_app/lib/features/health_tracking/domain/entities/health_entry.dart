@@ -154,7 +154,7 @@ enum HealthEntryType {
       case HealthEntryType.vaccine:
         return 'Vaccine';
       case HealthEntryType.procedure:
-        return 'Procedure';
+        return 'Other';
     }
   }
 }

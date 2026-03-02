@@ -245,7 +245,7 @@ class _SharedPetScreenState extends ConsumerState<SharedPetScreen> {
             children: [
               Icon(Icons.list_alt, color: colorScheme.primary),
               const SizedBox(width: 8),
-              Text('Health Events', style: theme.textTheme.titleLarge),
+              Text('Events', style: theme.textTheme.titleLarge),
             ],
           ),
           const SizedBox(height: 8),

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../pet_profile/domain/entities/pet.dart';
+import '../../../pet_profile/presentation/providers/pet_providers.dart';
 import '../../domain/entities/health_entry.dart';
 import '../providers/health_providers.dart';
 import '../widgets/health_entry_card.dart';
@@ -47,7 +49,7 @@ class _HealthDashboardScreenState extends ConsumerState<HealthDashboardScreen>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Health Events'),
+        title: const Text('Events'),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           tooltip: 'Back to home',
@@ -67,7 +69,7 @@ class _HealthDashboardScreenState extends ConsumerState<HealthDashboardScreen>
             Tab(key: Key('health_tab_medications'), text: 'Medications'),
             Tab(key: Key('health_tab_preventives'), text: 'Preventives'),
             Tab(key: Key('health_tab_vaccines'), text: 'Vaccines'),
-            Tab(key: Key('health_tab_procedures'), text: 'Procedures'),
+            Tab(key: Key('health_tab_other'), text: 'Other'),
           ],
           isScrollable: false,
         ),
@@ -124,6 +126,10 @@ class _EntryList extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final entriesAsync = ref.watch(filteredHealthEntriesProvider(type));
+    final petsAsync = ref.watch(petListProvider);
+
+    final pets = petsAsync.valueOrNull ?? <Pet>[];
+    final petMap = {for (final p in pets) p.id: p};
 
     return entriesAsync.when(
       loading: () => const Center(child: CircularProgressIndicator()),
@@ -159,8 +165,8 @@ class _EntryList extends ConsumerWidget {
                 const SizedBox(height: 16),
                 Text(
                   type == null
-                      ? 'No health entries yet'
-                      : 'No ${type!.label.toLowerCase()}s yet',
+                      ? 'No entries yet'
+                      : 'No ${type!.label.toLowerCase()} entries yet',
                   style: Theme.of(context).textTheme.titleMedium,
                 ),
                 const SizedBox(height: 8),
@@ -178,19 +184,18 @@ class _EntryList extends ConsumerWidget {
           onRefresh: () =>
               ref.read(healthEntriesNotifierProvider.notifier).refresh(),
           child: ListView.builder(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.all(12),
             itemCount: entries.length,
             itemBuilder: (context, index) {
               final entry = entries[index];
+              final pet = petMap[entry.petId];
               return Padding(
-                padding: const EdgeInsets.only(bottom: 8),
+                padding: const EdgeInsets.only(bottom: 6),
                 child: HealthEntryCard(
                   entry: entry,
+                  pet: pet,
                   onTap: () => context.go('/health/edit/${entry.id}'),
                   onMarkTaken: () => _markTaken(context, ref, entry),
-                  onDelete: () => ref
-                      .read(healthEntriesNotifierProvider.notifier)
-                      .delete(entry.id),
                 ),
               );
             },

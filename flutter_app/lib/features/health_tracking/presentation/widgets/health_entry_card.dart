@@ -1,32 +1,24 @@
-import 'package:flutter/material.dart';
+import 'dart:convert';
 
+import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+
+import '../../../pet_profile/domain/entities/pet.dart';
 import '../../domain/entities/health_entry.dart';
 
-/// Displays a single health entry as a Material 3 card.
-///
-/// Shows the entry name, next due date, frequency badge,
-/// and a button to mark it as taken.
 class HealthEntryCard extends StatelessWidget {
-  /// Creates a [HealthEntryCard] for the given [entry].
   const HealthEntryCard({
     super.key,
     required this.entry,
+    this.pet,
     this.onMarkTaken,
     this.onTap,
-    this.onDelete,
   });
 
-  /// The health entry to display.
   final HealthEntry entry;
-
-  /// Called when the user taps the 'Mark Taken' button.
+  final Pet? pet;
   final VoidCallback? onMarkTaken;
-
-  /// Called when the user taps the card.
   final VoidCallback? onTap;
-
-  /// Called when the user confirms deletion.
-  final VoidCallback? onDelete;
 
   @override
   Widget build(BuildContext context) {
@@ -44,7 +36,7 @@ class HealthEntryCard extends StatelessWidget {
                     : colorScheme.primary;
 
     final statusText = entry.isCompleted
-        ? 'completed'
+        ? 'done'
         : entry.isOverdue
             ? 'overdue'
             : entry.isDueToday
@@ -53,113 +45,81 @@ class HealthEntryCard extends StatelessWidget {
 
     return MergeSemantics(
       child: Semantics(
-        label: '${entry.name}, ${entry.type.label}, $statusText',
+        label: '${entry.name}, ${entry.type.label}, $statusText${pet != null ? ', for ${pet!.name}' : ''}',
         child: Card(
-      elevation: 1,
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(12),
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
+          elevation: 0.5,
+          clipBehavior: Clip.antiAlias,
+          margin: EdgeInsets.zero,
+          child: InkWell(
+            onTap: onTap,
+            child: IntrinsicHeight(
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  ExcludeSemantics(
-                    child: Icon(_typeIcon(entry.type),
-                        color: colorScheme.primary, size: 24),
-                  ),
-                  const SizedBox(width: 12),
+                  _PetStrip(pet: pet, colorScheme: colorScheme),
                   Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(entry.name,
-                            style: theme.textTheme.titleMedium
-                                ?.copyWith(fontWeight: FontWeight.bold)),
-                        if (entry.dosage.isNotEmpty)
-                          Text(entry.dosage,
-                              style: theme.textTheme.bodySmall
-                                  ?.copyWith(color: colorScheme.outline)),
-                      ],
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Row(
+                            children: [
+                              ExcludeSemantics(
+                                child: Icon(_typeIcon(entry.type),
+                                    color: colorScheme.primary, size: 18),
+                              ),
+                              const SizedBox(width: 8),
+                              Expanded(
+                                child: Text(entry.name,
+                                    style: theme.textTheme.titleSmall
+                                        ?.copyWith(fontWeight: FontWeight.bold),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis),
+                              ),
+                              if (entry.isCompleted)
+                                _DoneChip(entry: entry)
+                              else
+                                SizedBox(
+                                  height: 28,
+                                  child: FilledButton.tonal(
+                                    onPressed: onMarkTaken,
+                                    style: FilledButton.styleFrom(
+                                      padding: const EdgeInsets.symmetric(horizontal: 10),
+                                      textStyle: const TextStyle(fontSize: 11),
+                                      visualDensity: VisualDensity.compact,
+                                    ),
+                                    child: const Text('Mark Taken'),
+                                  ),
+                                ),
+                            ],
+                          ),
+                          const SizedBox(height: 4),
+                          Row(
+                            children: [
+                              ExcludeSemantics(
+                                child: Icon(Icons.schedule, size: 13, color: statusColor),
+                              ),
+                              const SizedBox(width: 3),
+                              Text(
+                                _formatDueDate(entry),
+                                style: theme.textTheme.bodySmall?.copyWith(
+                                    color: statusColor, fontWeight: FontWeight.w600, fontSize: 11),
+                              ),
+                              const Spacer(),
+                              _FrequencyBadge(frequency: entry.frequency),
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
                   ),
-                  _FrequencyBadge(frequency: entry.frequency),
                 ],
               ),
-              const SizedBox(height: 12),
-              Row(
-                children: [
-                  ExcludeSemantics(
-                    child: Icon(Icons.schedule, size: 16, color: statusColor),
-                  ),
-                  const SizedBox(width: 4),
-                  Text(
-                    _formatDueDate(entry),
-                    style: theme.textTheme.bodySmall
-                        ?.copyWith(color: statusColor, fontWeight: FontWeight.w600),
-                  ),
-                  const Spacer(),
-                  if (onDelete != null)
-                    IconButton(
-                      icon: Icon(Icons.delete_outline,
-                          size: 20, color: colorScheme.error),
-                      onPressed: () => _confirmDelete(context),
-                      tooltip: 'Delete',
-                      padding: EdgeInsets.zero,
-                      constraints:
-                          const BoxConstraints(minWidth: 36, minHeight: 36),
-                    ),
-                  const SizedBox(width: 4),
-                  if (entry.isCompleted)
-                    Chip(
-                      label: const Text('Completed'),
-                      backgroundColor: Colors.green.shade50,
-                      labelStyle: TextStyle(
-                          color: Colors.green.shade700,
-                          fontWeight: FontWeight.w600),
-                      side: BorderSide(color: Colors.green.shade200),
-                      visualDensity: VisualDensity.compact,
-                    )
-                  else
-                    FilledButton.tonal(
-                      onPressed: onMarkTaken,
-                      child: const Text('Mark Taken'),
-                    ),
-                ],
-              ),
-            ],
+            ),
           ),
         ),
-      ),
-    ),
-    ),
-    );
-  }
-
-  void _confirmDelete(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text('Delete Entry'),
-        content: Text('Delete "${entry.name}"? This cannot be undone.'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(ctx).pop(),
-            child: const Text('Cancel'),
-          ),
-          FilledButton(
-            onPressed: () {
-              Navigator.of(ctx).pop();
-              onDelete?.call();
-            },
-            style: FilledButton.styleFrom(
-              backgroundColor: Theme.of(context).colorScheme.error,
-            ),
-            child: const Text('Delete'),
-          ),
-        ],
       ),
     );
   }
@@ -200,6 +160,97 @@ class HealthEntryCard extends StatelessWidget {
   }
 }
 
+class _PetStrip extends StatelessWidget {
+  const _PetStrip({this.pet, required this.colorScheme});
+
+  final Pet? pet;
+  final ColorScheme colorScheme;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Container(
+      width: 52,
+      decoration: BoxDecoration(
+        color: colorScheme.surfaceContainerHighest.withOpacity(0.5),
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          _buildAvatar(),
+          const SizedBox(height: 2),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 2),
+            child: Text(
+              pet?.name ?? '?',
+              style: theme.textTheme.labelSmall?.copyWith(
+                fontSize: 9,
+                fontWeight: FontWeight.w600,
+                color: colorScheme.onSurfaceVariant,
+              ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              textAlign: TextAlign.center,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildAvatar() {
+    if (pet?.photoPath != null && pet!.photoPath!.isNotEmpty) {
+      try {
+        final bytes = base64Decode(pet!.photoPath!);
+        return CircleAvatar(
+          radius: 14,
+          backgroundImage: MemoryImage(bytes),
+        );
+      } catch (_) {}
+    }
+    return CircleAvatar(
+      radius: 14,
+      backgroundColor: colorScheme.primaryContainer,
+      child: Icon(Icons.pets, size: 14, color: colorScheme.onPrimaryContainer),
+    );
+  }
+}
+
+class _DoneChip extends StatelessWidget {
+  const _DoneChip({required this.entry});
+
+  final HealthEntry entry;
+
+  @override
+  Widget build(BuildContext context) {
+    final doneDate = entry.updatedAt ?? entry.startDate;
+    final dateStr = DateFormat('d MMM').format(doneDate);
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+      decoration: BoxDecoration(
+        color: Colors.green.shade50,
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: Colors.green.shade200, width: 0.5),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(Icons.check_circle, size: 12, color: Colors.green.shade700),
+          const SizedBox(width: 3),
+          Text(
+            'Done $dateStr',
+            style: TextStyle(
+              fontSize: 10,
+              fontWeight: FontWeight.w600,
+              color: Colors.green.shade700,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 class _FrequencyBadge extends StatelessWidget {
   const _FrequencyBadge({required this.frequency});
 
@@ -209,14 +260,15 @@ class _FrequencyBadge extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
       decoration: BoxDecoration(
         color: theme.colorScheme.secondaryContainer,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(8),
       ),
       child: Text(
         frequency.label,
         style: theme.textTheme.labelSmall?.copyWith(
+          fontSize: 10,
           color: theme.colorScheme.onSecondaryContainer,
           fontWeight: FontWeight.w600,
         ),

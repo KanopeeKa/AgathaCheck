@@ -98,7 +98,7 @@ class _PetListScreenState extends ConsumerState<PetListScreen> {
           ),
           IconButton(
             icon: const Icon(Icons.list_alt),
-            tooltip: 'Health Events',
+            tooltip: 'Events',
             onPressed: () => context.go('/health'),
           ),
           PopupMenuButton<String>(

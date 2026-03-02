@@ -422,6 +422,17 @@ class _HealthEntryFormScreenState
                         icon: const Icon(Icons.history),
                         label: const Text('View History'),
                       ),
+                      const SizedBox(height: 12),
+                      OutlinedButton.icon(
+                        key: const Key('delete_health_entry_button'),
+                        onPressed: _confirmDelete,
+                        icon: Icon(Icons.delete_outline, color: Theme.of(context).colorScheme.error),
+                        style: OutlinedButton.styleFrom(
+                          foregroundColor: Theme.of(context).colorScheme.error,
+                          side: BorderSide(color: Theme.of(context).colorScheme.error.withOpacity(0.5)),
+                        ),
+                        label: const Text('Delete Entry'),
+                      ),
                     ],
                   ],
                 ),
@@ -611,6 +622,50 @@ class _HealthEntryFormScreenState
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Failed to load history: $e')),
+        );
+      }
+    }
+  }
+
+  Future<void> _confirmDelete() async {
+    if (widget.entryId == null) return;
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Delete Entry'),
+        content: Text('Delete "${_nameController.text}"? This cannot be undone.'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(false),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.of(ctx).pop(true),
+            style: FilledButton.styleFrom(
+              backgroundColor: Theme.of(context).colorScheme.error,
+            ),
+            child: const Text('Delete'),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true) return;
+    try {
+      await ref.read(healthEntriesNotifierProvider.notifier).delete(widget.entryId!);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Entry deleted')),
+        );
+        if (widget.petId != null && widget.petId!.isNotEmpty) {
+          context.go('/pet/${widget.petId}');
+        } else {
+          context.go('/health');
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to delete: $e')),
         );
       }
     }

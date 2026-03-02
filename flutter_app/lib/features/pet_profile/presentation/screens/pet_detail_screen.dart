@@ -873,7 +873,7 @@ class _HealthEventsSectionState extends ConsumerState<_HealthEventsSection> {
         clipBehavior: Clip.antiAlias,
         child: ExpansionTile(
           leading: Icon(Icons.list_alt, color: colorScheme.primary),
-          title: Text('Health Events',
+          title: Text('Events',
               style: theme.textTheme.titleMedium
                   ?.copyWith(fontWeight: FontWeight.w600)),
           children: [
@@ -1022,13 +1022,6 @@ class _HealthEventsSectionState extends ConsumerState<_HealthEventsSection> {
                                       Text('${entry.name} marked as taken')),
                             );
                           }
-                        },
-                        onDelete: () async {
-                          await ref
-                              .read(healthEntriesNotifierProvider.notifier)
-                              .delete(entry.id);
-                          ref.invalidate(
-                              petHealthEntriesProvider(widget.petId));
                         },
                       ),
                     );
