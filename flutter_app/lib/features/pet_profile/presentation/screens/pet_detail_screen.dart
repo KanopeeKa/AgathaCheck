@@ -1251,6 +1251,12 @@ class _ReportSelectionSheetState extends ConsumerState<_ReportSelectionSheet> {
       final unit = ref.read(weightUnitProvider(pet.id));
       final unitLabel = unit == WeightUnit.lb ? 'lb' : 'kg';
 
+      Uint8List? logoBytes;
+      try {
+        final logoData = await rootBundle.load('assets/logo.png');
+        logoBytes = logoData.buffer.asUint8List();
+      } catch (_) {}
+
       final service = PetReportService();
       final pdfBytes = await service.generateReport(
         pet: pet,
@@ -1267,6 +1273,7 @@ class _ReportSelectionSheetState extends ConsumerState<_ReportSelectionSheet> {
         healthEntries: healthEntries,
         healthHistories: histories,
         weightUnit: unitLabel,
+        logoBytes: logoBytes,
       );
 
       if (!mounted) return;

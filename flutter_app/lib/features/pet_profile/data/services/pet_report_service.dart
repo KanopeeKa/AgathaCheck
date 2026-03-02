@@ -44,6 +44,7 @@ class PetReportService {
     List<HealthEntry> healthEntries = const [],
     Map<String, List<Map<String, dynamic>>> healthHistories = const {},
     String weightUnit = 'kg',
+    Uint8List? logoBytes,
   }) async {
     final pdf = pw.Document(
       title: '${pet.name} - Pet Report',
@@ -53,11 +54,20 @@ class PetReportService {
     final dateFormat = DateFormat('MMM d, yyyy');
     final now = DateTime.now();
 
+    pw.ImageProvider? logoImage;
+    if (logoBytes != null) {
+      try {
+        logoImage = pw.MemoryImage(logoBytes);
+      } catch (_) {}
+    }
+
     pdf.addPage(
       pw.MultiPage(
         pageFormat: PdfPageFormat.a4,
-        margin: const pw.EdgeInsets.all(40),
-        header: (context) => _buildHeader(pet, dateFormat),
+        margin: const pw.EdgeInsets.all(32),
+        header: (context) => context.pageNumber == 1
+            ? _buildHeader(pet, dateFormat, logoImage)
+            : pw.SizedBox.shrink(),
         footer: (context) => _buildFooter(context, now, dateFormat),
         build: (context) {
           final widgets = <pw.Widget>[];
@@ -90,10 +100,11 @@ class PetReportService {
     return pdf.save();
   }
 
-  pw.Widget _buildHeader(Pet pet, DateFormat dateFormat) {
+  pw.Widget _buildHeader(
+      Pet pet, DateFormat dateFormat, pw.ImageProvider? logoImage) {
     return pw.Container(
-      margin: const pw.EdgeInsets.only(bottom: 20),
-      padding: const pw.EdgeInsets.all(16),
+      margin: const pw.EdgeInsets.only(bottom: 14),
+      padding: const pw.EdgeInsets.all(12),
       decoration: pw.BoxDecoration(
         color: _brandPurple,
         borderRadius: pw.BorderRadius.circular(8),
@@ -102,12 +113,12 @@ class PetReportService {
         children: [
           if (pet.photoPath != null && pet.photoPath!.isNotEmpty)
             pw.Container(
-              width: 60,
-              height: 60,
-              margin: const pw.EdgeInsets.only(right: 16),
+              width: 48,
+              height: 48,
+              margin: const pw.EdgeInsets.only(right: 12),
               decoration: pw.BoxDecoration(
-                borderRadius: pw.BorderRadius.circular(30),
-                border: pw.Border.all(color: _white, width: 2),
+                borderRadius: pw.BorderRadius.circular(24),
+                border: pw.Border.all(color: _white, width: 1.5),
               ),
               child: pw.ClipOval(
                 child: _buildPetImage(pet.photoPath!),
@@ -120,12 +131,12 @@ class PetReportService {
                 pw.Text(
                   pet.name,
                   style: pw.TextStyle(
-                    fontSize: 22,
+                    fontSize: 18,
                     fontWeight: pw.FontWeight.bold,
                     color: _white,
                   ),
                 ),
-                pw.SizedBox(height: 4),
+                pw.SizedBox(height: 2),
                 pw.Text(
                   [
                     pet.species,
@@ -133,32 +144,44 @@ class PetReportService {
                     if (pet.age != null) '${pet.age!.toStringAsFixed(1)} years',
                   ].join(' | '),
                   style: pw.TextStyle(
-                    fontSize: 11,
+                    fontSize: 10,
                     color: PdfColor.fromInt(0xFFE8DEF8),
                   ),
                 ),
               ],
             ),
           ),
-          pw.Column(
-            crossAxisAlignment: pw.CrossAxisAlignment.end,
+          pw.Row(
+            mainAxisSize: pw.MainAxisSize.min,
             children: [
-              pw.Text(
-                'AGATHA CHECK',
-                style: pw.TextStyle(
-                  fontSize: 10,
-                  fontWeight: pw.FontWeight.bold,
-                  color: PdfColor.fromInt(0xFFE8DEF8),
-                  letterSpacing: 1.5,
+              if (logoImage != null)
+                pw.Container(
+                  width: 20,
+                  height: 20,
+                  margin: const pw.EdgeInsets.only(right: 5),
+                  child: pw.Image(logoImage, fit: pw.BoxFit.contain),
                 ),
-              ),
-              pw.SizedBox(height: 2),
-              pw.Text(
-                'Pet Health Report',
-                style: pw.TextStyle(
-                  fontSize: 9,
-                  color: PdfColor.fromInt(0xFFD0BCFF),
-                ),
+              pw.Column(
+                crossAxisAlignment: pw.CrossAxisAlignment.end,
+                children: [
+                  pw.Text(
+                    'AGATHA CHECK',
+                    style: pw.TextStyle(
+                      fontSize: 9,
+                      fontWeight: pw.FontWeight.bold,
+                      color: PdfColor.fromInt(0xFFE8DEF8),
+                      letterSpacing: 1.5,
+                    ),
+                  ),
+                  pw.SizedBox(height: 1),
+                  pw.Text(
+                    'Pet Health Report',
+                    style: pw.TextStyle(
+                      fontSize: 8,
+                      color: PdfColor.fromInt(0xFFD0BCFF),
+                    ),
+                  ),
+                ],
               ),
             ],
           ),
@@ -170,8 +193,8 @@ class PetReportService {
   pw.Widget _buildFooter(
       pw.Context context, DateTime generatedAt, DateFormat dateFormat) {
     return pw.Container(
-      margin: const pw.EdgeInsets.only(top: 12),
-      padding: const pw.EdgeInsets.only(top: 8),
+      margin: const pw.EdgeInsets.only(top: 8),
+      padding: const pw.EdgeInsets.only(top: 6),
       decoration: const pw.BoxDecoration(
         border: pw.Border(top: pw.BorderSide(color: _borderColor, width: 0.5)),
       ),
@@ -200,7 +223,7 @@ class PetReportService {
     return [
       _sectionTitle('Pet Profile'),
       pw.Container(
-        padding: const pw.EdgeInsets.all(16),
+        padding: const pw.EdgeInsets.all(10),
         decoration: pw.BoxDecoration(
           border: pw.Border.all(color: _borderColor, width: 0.5),
           borderRadius: pw.BorderRadius.circular(6),
@@ -228,7 +251,7 @@ class PetReportService {
           ],
         ),
       ),
-      pw.SizedBox(height: 20),
+      pw.SizedBox(height: 14),
     ];
   }
 
@@ -245,14 +268,14 @@ class PetReportService {
     final sorted = List<WeightEntry>.from(entries)
       ..sort((a, b) => a.date.compareTo(b.date));
 
-    final chartHeight = 120.0;
+    final chartHeight = 100.0;
 
     return [
       _sectionTitle('Weight Tracking'),
       if (sorted.length >= 2)
         pw.Container(
-          height: chartHeight + 40,
-          padding: const pw.EdgeInsets.all(12),
+          height: chartHeight + 30,
+          padding: const pw.EdgeInsets.all(8),
           decoration: pw.BoxDecoration(
             border: pw.Border.all(color: _borderColor, width: 0.5),
             borderRadius: pw.BorderRadius.circular(6),
@@ -280,14 +303,14 @@ class PetReportService {
             ],
           ),
         ),
-      pw.SizedBox(height: 12),
+      pw.SizedBox(height: 8),
       pw.TableHelper.fromTextArray(
         border: pw.TableBorder.all(color: _borderColor, width: 0.5),
         headerStyle: pw.TextStyle(
-            fontSize: 9, fontWeight: pw.FontWeight.bold, color: _white),
+            fontSize: 8, fontWeight: pw.FontWeight.bold, color: _white),
         headerDecoration: const pw.BoxDecoration(color: _brandPurple),
-        cellStyle: const pw.TextStyle(fontSize: 9, color: _textDark),
-        cellPadding: const pw.EdgeInsets.symmetric(horizontal: 8, vertical: 5),
+        cellStyle: const pw.TextStyle(fontSize: 8, color: _textDark),
+        cellPadding: const pw.EdgeInsets.symmetric(horizontal: 6, vertical: 3),
         cellAlignments: {
           0: pw.Alignment.centerLeft,
           1: pw.Alignment.center,
@@ -302,7 +325,7 @@ class PetReportService {
           ];
         }).toList(),
       ),
-      pw.SizedBox(height: 20),
+      pw.SizedBox(height: 14),
     ];
   }
 
@@ -377,11 +400,11 @@ class PetReportService {
         pw.TableHelper.fromTextArray(
           border: pw.TableBorder.all(color: _borderColor, width: 0.5),
           headerStyle: pw.TextStyle(
-              fontSize: 9, fontWeight: pw.FontWeight.bold, color: _white),
+              fontSize: 8, fontWeight: pw.FontWeight.bold, color: _white),
           headerDecoration: const pw.BoxDecoration(color: _brandPurple),
-          cellStyle: const pw.TextStyle(fontSize: 9, color: _textDark),
+          cellStyle: const pw.TextStyle(fontSize: 8, color: _textDark),
           cellPadding:
-              const pw.EdgeInsets.symmetric(horizontal: 8, vertical: 5),
+              const pw.EdgeInsets.symmetric(horizontal: 6, vertical: 3),
           headers: ['Name', 'Type', 'Frequency', 'Next Due', 'Dosage'],
           data: currentRecurring.map((e) {
             return [
@@ -396,7 +419,7 @@ class PetReportService {
           }).toList(),
         ),
       );
-      widgets.add(pw.SizedBox(height: 16));
+      widgets.add(pw.SizedBox(height: 10));
     }
 
     widgets.add(_subSectionTitle(
@@ -411,7 +434,7 @@ class PetReportService {
       }
     }
 
-    widgets.add(pw.SizedBox(height: 20));
+    widgets.add(pw.SizedBox(height: 14));
     return widgets;
   }
 
@@ -424,8 +447,8 @@ class PetReportService {
     final history = histories[entry.id] ?? [];
 
     return pw.Container(
-      margin: const pw.EdgeInsets.only(bottom: 8),
-      padding: const pw.EdgeInsets.all(10),
+      margin: const pw.EdgeInsets.only(bottom: 6),
+      padding: const pw.EdgeInsets.all(8),
       decoration: pw.BoxDecoration(
         border: pw.Border.all(color: _borderColor, width: 0.5),
         borderRadius: pw.BorderRadius.circular(4),
@@ -527,8 +550,8 @@ class PetReportService {
 
   pw.Widget _sectionTitle(String title) {
     return pw.Container(
-      margin: const pw.EdgeInsets.only(bottom: 10),
-      padding: const pw.EdgeInsets.only(bottom: 6),
+      margin: const pw.EdgeInsets.only(bottom: 6),
+      padding: const pw.EdgeInsets.only(bottom: 4),
       decoration: const pw.BoxDecoration(
         border:
             pw.Border(bottom: pw.BorderSide(color: _brandPurple, width: 1.5)),
@@ -536,7 +559,7 @@ class PetReportService {
       child: pw.Text(
         title.toUpperCase(),
         style: pw.TextStyle(
-          fontSize: 14,
+          fontSize: 12,
           fontWeight: pw.FontWeight.bold,
           color: _brandPurple,
           letterSpacing: 1,
@@ -547,11 +570,11 @@ class PetReportService {
 
   pw.Widget _subSectionTitle(String title) {
     return pw.Padding(
-      padding: const pw.EdgeInsets.only(bottom: 8),
+      padding: const pw.EdgeInsets.only(bottom: 5),
       child: pw.Text(
         title,
         style: pw.TextStyle(
-          fontSize: 11,
+          fontSize: 10,
           fontWeight: pw.FontWeight.bold,
           color: _textDark,
         ),
@@ -561,34 +584,34 @@ class PetReportService {
 
   pw.Widget _emptyMessage(String msg) {
     return pw.Container(
-      padding: const pw.EdgeInsets.all(12),
+      padding: const pw.EdgeInsets.all(8),
       decoration: pw.BoxDecoration(
         border: pw.Border.all(color: _borderColor, width: 0.5),
         borderRadius: pw.BorderRadius.circular(4),
       ),
       child: pw.Text(msg,
-          style: const pw.TextStyle(fontSize: 10, color: _textMuted)),
+          style: const pw.TextStyle(fontSize: 9, color: _textMuted)),
     );
   }
 
   pw.Widget _detailRow(String label, String value, {bool highlight = false}) {
     return pw.Padding(
-      padding: const pw.EdgeInsets.symmetric(vertical: 3),
+      padding: const pw.EdgeInsets.symmetric(vertical: 2),
       child: pw.Row(
         crossAxisAlignment: pw.CrossAxisAlignment.start,
         children: [
           pw.SizedBox(
-            width: 110,
+            width: 100,
             child: pw.Text(label,
                 style: pw.TextStyle(
-                    fontSize: 10,
+                    fontSize: 9,
                     fontWeight: pw.FontWeight.bold,
                     color: _textMuted)),
           ),
           pw.Expanded(
             child: pw.Text(value,
                 style: pw.TextStyle(
-                  fontSize: 10,
+                  fontSize: 9,
                   color: _textDark,
                   fontWeight:
                       highlight ? pw.FontWeight.bold : pw.FontWeight.normal,
