@@ -409,7 +409,8 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
         const SizedBox(height: 4),
         Row(
           children: [
-            Expanded(
+            SizedBox(
+              width: 120,
               child: RadioListTile<bool>(
                 key: const Key('pet_neutered_yes'),
                 title: const Text('Yes'),
@@ -425,7 +426,8 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
                 },
               ),
             ),
-            Expanded(
+            SizedBox(
+              width: 120,
               child: RadioListTile<bool>(
                 key: const Key('pet_neutered_no'),
                 title: const Text('No'),
