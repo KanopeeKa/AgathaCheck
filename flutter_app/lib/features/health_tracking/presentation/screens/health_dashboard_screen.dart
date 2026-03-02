@@ -148,7 +148,7 @@ class _EntryList extends ConsumerWidget {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(Icons.medical_services_outlined,
+                Icon(Icons.list_alt,
                     size: 64, color: Theme.of(context).colorScheme.outline),
                 const SizedBox(height: 16),
                 Text(

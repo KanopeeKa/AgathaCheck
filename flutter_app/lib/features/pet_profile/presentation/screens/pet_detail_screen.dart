@@ -789,7 +789,7 @@ class _HealthEventsSectionState extends ConsumerState<_HealthEventsSection> {
       child: Card(
         clipBehavior: Clip.antiAlias,
         child: ExpansionTile(
-          leading: Icon(Icons.medical_services, color: colorScheme.primary),
+          leading: Icon(Icons.list_alt, color: colorScheme.primary),
           title: Text('Health Events',
               style: theme.textTheme.titleMedium
                   ?.copyWith(fontWeight: FontWeight.w600)),
@@ -891,7 +891,7 @@ class _HealthEventsSectionState extends ConsumerState<_HealthEventsSection> {
                     padding: const EdgeInsets.all(24),
                     child: Column(
                       children: [
-                        Icon(Icons.medical_services_outlined, size: 48,
+                        Icon(Icons.list_alt, size: 48,
                             color: colorScheme.outline),
                         const SizedBox(height: 8),
                         Text(
