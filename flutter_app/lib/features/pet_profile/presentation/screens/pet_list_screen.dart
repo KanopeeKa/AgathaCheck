@@ -52,76 +52,70 @@ class PetListScreen extends ConsumerWidget {
             tooltip: 'Health Tracking',
             onPressed: () => context.go('/health'),
           ),
-          if (auth.isLoggedIn)
-            PopupMenuButton<String>(
-              icon: CircleAvatar(
-                radius: 16,
-                backgroundColor: theme.colorScheme.primaryContainer,
-                child: Text(
-                  ((auth.user?.name.isNotEmpty ?? false)
-                          ? auth.user!.name[0]
-                          : auth.user?.email[0] ?? 'U')
-                      .toUpperCase(),
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold,
-                    color: theme.colorScheme.onPrimaryContainer,
-                  ),
+          PopupMenuButton<String>(
+            icon: CircleAvatar(
+              radius: 16,
+              backgroundColor: theme.colorScheme.primaryContainer,
+              child: Text(
+                ((auth.user?.name.isNotEmpty ?? false)
+                        ? auth.user!.name[0]
+                        : auth.user?.email[0] ?? 'U')
+                    .toUpperCase(),
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.bold,
+                  color: theme.colorScheme.onPrimaryContainer,
                 ),
               ),
-              onSelected: (value) async {
-                if (value == 'details') {
-                  context.push('/my-details');
-                } else if (value == 'logout') {
-                  await ref.read(authProvider.notifier).logout();
-                }
-              },
-              itemBuilder: (context) => [
-                PopupMenuItem<String>(
-                  enabled: false,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        auth.user?.name.isNotEmpty == true
-                            ? auth.user!.name
-                            : 'User',
-                        style: theme.textTheme.titleSmall,
-                      ),
-                      Text(
-                        auth.user?.email ?? '',
-                        style: theme.textTheme.bodySmall?.copyWith(
-                            color: theme.colorScheme.onSurfaceVariant),
-                      ),
-                    ],
-                  ),
-                ),
-                const PopupMenuDivider(),
-                const PopupMenuItem<String>(
-                  value: 'details',
-                  child: ListTile(
-                    leading: Icon(Icons.person_outlined),
-                    title: Text('My Details'),
-                    dense: true,
-                    contentPadding: EdgeInsets.zero,
-                  ),
-                ),
-                const PopupMenuItem<String>(
-                  value: 'logout',
-                  child: ListTile(
-                    leading: Icon(Icons.logout),
-                    title: Text('Log Out'),
-                    dense: true,
-                    contentPadding: EdgeInsets.zero,
-                  ),
-                ),
-              ],
-            )
-          else
-            TextButton(
-              onPressed: () => context.push('/login'),
-              child: const Text('Sign In'),
             ),
+            onSelected: (value) async {
+              if (value == 'details') {
+                context.push('/my-details');
+              } else if (value == 'logout') {
+                await ref.read(authProvider.notifier).logout();
+              }
+            },
+            itemBuilder: (context) => [
+              PopupMenuItem<String>(
+                enabled: false,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      auth.user?.name.isNotEmpty == true
+                          ? auth.user!.name
+                          : 'User',
+                      style: theme.textTheme.titleSmall,
+                    ),
+                    Text(
+                      auth.user?.email ?? '',
+                      style: theme.textTheme.bodySmall?.copyWith(
+                          color: theme.colorScheme.onSurfaceVariant),
+                    ),
+                  ],
+                ),
+              ),
+              const PopupMenuDivider(),
+              const PopupMenuItem<String>(
+                value: 'details',
+                child: ListTile(
+                  leading: Icon(Icons.person_outlined),
+                  title: Text('My Details'),
+                  dense: true,
+                  contentPadding: EdgeInsets.zero,
+                ),
+              ),
+              const PopupMenuItem<String>(
+                value: 'logout',
+                child: ListTile(
+                  leading: Icon(Icons.logout),
+                  title: Text('Log Out'),
+                  dense: true,
+                  contentPadding: EdgeInsets.zero,
+                ),
+              ),
+            ],
+          ),
         ],
       ),
       body: petListAsync.when(

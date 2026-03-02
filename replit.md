@@ -44,10 +44,9 @@ pubspec.yaml           - Root: pure Dart + postgres + dart_jsonwebtoken + dbcryp
 ```
 
 ## Navigation / Routes
-- `/` - Pet list (home) — shows "Sign In" button when logged out, user avatar menu when logged in
-- `/login` - Login screen
-- `/signup` - Signup screen
-- `/my-details` - User profile + change password
+- `/landing` - Landing page with branding text + login/signup tabs (shown to unauthenticated users)
+- `/` - Pet list (home, requires auth) — user avatar menu with My Details and Log Out
+- `/my-details` - User profile + change password (requires auth)
 - `/add` - Add new pet
 - `/edit/:id` - Edit pet
 - `/pet/:petId` - Pet detail screen (profile info + vet info + health entries)
@@ -75,7 +74,8 @@ pubspec.yaml           - Root: pure Dart + postgres + dart_jsonwebtoken + dbcryp
   - PUT /api/auth/me - Update profile (name)
   - POST /api/auth/change-password - Change password (invalidates all refresh tokens)
 - **Frontend**: Tokens stored in SharedPreferences, auth state managed by Riverpod StateNotifier
-- **UI**: User avatar menu in app bar (My Details, Log Out), login/signup screens with logo, My Details screen with profile editing and password change form
+- **Route guard**: GoRouter redirect sends unauthenticated users to `/landing`; only `/landing` and `/shared/:code` are public
+- **UI**: Landing page with branding text + login/signup tabs; user avatar menu in app bar (My Details, Log Out); My Details screen with profile editing and password change form
 
 ## Health Tracking Feature
 - **Relationship**: 1 pet -> many health entries (via pet_id foreign key)

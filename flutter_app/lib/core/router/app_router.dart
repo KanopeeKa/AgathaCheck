@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../features/auth/presentation/screens/login_screen.dart';
+import '../../features/auth/presentation/providers/auth_providers.dart';
+import '../../features/auth/presentation/screens/landing_screen.dart';
 import '../../features/auth/presentation/screens/my_details_screen.dart';
-import '../../features/auth/presentation/screens/signup_screen.dart';
 import '../../features/health_tracking/presentation/screens/health_dashboard_screen.dart';
 import '../../features/health_tracking/presentation/screens/health_entry_form_screen.dart';
 import '../../features/pet_profile/presentation/screens/pet_detail_screen.dart';
@@ -13,41 +14,69 @@ import '../../features/sharing/presentation/screens/shared_pet_screen.dart';
 import '../../features/vet/presentation/screens/vet_form_screen.dart';
 import '../../features/vet/presentation/screens/vet_list_screen.dart';
 
-/// Configures the application's route hierarchy using [GoRouter].
-///
-/// Defines all navigable routes including pet profiles, health tracking,
-/// veterinarian management, authentication, and shared pet views.
-class AppRouter {
-  /// Private constructor to prevent instantiation.
-  AppRouter._();
+class AuthChangeNotifier extends ChangeNotifier {
+  AuthState _authState;
 
-  /// The [GoRouter] instance that manages navigation for the entire app.
-  ///
-  /// Routes include:
-  /// - `/` — Home screen with the pet list
-  /// - `/pet/:petId` — Pet detail screen
-  /// - `/add`, `/edit/:id` — Pet form screens
-  /// - `/health`, `/health/add`, `/health/edit/:id` — Health tracking
-  /// - `/vets`, `/vets/add`, `/vets/edit/:id` — Veterinarian management
-  /// - `/shared/:code` — Shared pet view (public, no auth required)
-  /// - `/login`, `/signup`, `/my-details` — Authentication screens
-  static final GoRouter router = GoRouter(
+  AuthChangeNotifier(this._authState);
+
+  void update(AuthState newState) {
+    final wasLoggedIn = _authState.isLoggedIn;
+    final isNowLoggedIn = newState.isLoggedIn;
+    _authState = newState;
+    if (wasLoggedIn != isNowLoggedIn) {
+      notifyListeners();
+    }
+  }
+
+  bool get isLoggedIn => _authState.isLoggedIn;
+  bool get isLoading => _authState.isLoading;
+  bool get hasToken => _authState.accessToken != null;
+}
+
+final authChangeNotifierProvider = Provider<AuthChangeNotifier>((ref) {
+  final notifier = AuthChangeNotifier(ref.read(authProvider));
+  ref.listen<AuthState>(authProvider, (_, next) {
+    notifier.update(next);
+  });
+  return notifier;
+});
+
+final routerProvider = Provider<GoRouter>((ref) {
+  final authNotifier = ref.watch(authChangeNotifierProvider);
+
+  return GoRouter(
     initialLocation: '/',
+    refreshListenable: authNotifier,
+    redirect: (context, state) {
+      final isLoggedIn = authNotifier.isLoggedIn;
+      final path = state.uri.path;
+
+      if (authNotifier.isLoading && authNotifier.hasToken) {
+        return null;
+      }
+
+      if (!isLoggedIn) {
+        if (path == '/landing') return null;
+        if (path.startsWith('/shared/')) return null;
+        return '/landing';
+      }
+
+      if (isLoggedIn && path == '/landing') {
+        return '/';
+      }
+
+      return null;
+    },
     routes: [
+      GoRoute(
+        path: '/landing',
+        name: 'landing',
+        builder: (context, state) => const LandingScreen(),
+      ),
       GoRoute(
         path: '/',
         name: 'home',
         builder: (context, state) => const PetListScreen(),
-      ),
-      GoRoute(
-        path: '/login',
-        name: 'login',
-        builder: (context, state) => const LoginScreen(),
-      ),
-      GoRoute(
-        path: '/signup',
-        name: 'signup',
-        builder: (context, state) => const SignupScreen(),
       ),
       GoRoute(
         path: '/my-details',
@@ -143,4 +172,4 @@ class AppRouter {
       ),
     ),
   );
-}
+});
