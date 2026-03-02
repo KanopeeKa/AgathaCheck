@@ -8,7 +8,7 @@ import 'package:go_router/go_router.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:fl_chart/fl_chart.dart';
-import 'dart:html' as html;
+import '../../data/services/pdf_saver.dart' as pdf_saver;
 import '../../../health_tracking/domain/entities/health_entry.dart';
 import '../../../health_tracking/presentation/providers/health_providers.dart';
 import '../../../health_tracking/presentation/widgets/health_entry_card.dart';
@@ -1273,12 +1273,7 @@ class _ReportSelectionSheetState extends ConsumerState<_ReportSelectionSheet> {
       Navigator.pop(context);
 
       final filename = '${pet.name.replaceAll(' ', '_')}_report.pdf';
-      final blob = html.Blob([pdfBytes], 'application/pdf');
-      final url = html.Url.createObjectUrlFromBlob(blob);
-      html.AnchorElement(href: url)
-        ..setAttribute('download', filename)
-        ..click();
-      html.Url.revokeObjectUrl(url);
+      await pdf_saver.savePdf(pdfBytes, filename);
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
