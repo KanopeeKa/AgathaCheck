@@ -161,12 +161,6 @@ class _PetDetailScreenState extends ConsumerState<PetDetailScreen> {
                     tooltip: 'Share Pet',
                     onPressed: () => _sharePet(context, pet),
                   ),
-                  IconButton(
-                    key: const Key('edit_pet_button'),
-                    icon: const Icon(Icons.edit),
-                    tooltip: 'Edit Pet',
-                    onPressed: () => context.go('/edit/${pet.id}'),
-                  ),
                 ],
               ),
               SliverToBoxAdapter(
@@ -238,8 +232,25 @@ class _PetProfileCard extends ConsumerWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(pet.name, style: theme.textTheme.headlineSmall
-                          ?.copyWith(fontWeight: FontWeight.bold)),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Text(pet.name,
+                                style: theme.textTheme.headlineSmall
+                                    ?.copyWith(fontWeight: FontWeight.bold)),
+                          ),
+                          IconButton(
+                            key: const Key('edit_pet_button'),
+                            icon: Icon(Icons.edit,
+                                size: 20, color: colorScheme.primary),
+                            tooltip: 'Edit Pet',
+                            onPressed: () => context.go('/edit/${pet.id}'),
+                            visualDensity: VisualDensity.compact,
+                            padding: EdgeInsets.zero,
+                            constraints: const BoxConstraints(),
+                          ),
+                        ],
+                      ),
                       const SizedBox(height: 10),
                       Wrap(
                         spacing: 8,
