@@ -1025,6 +1025,7 @@ class _HealthEventsSectionState extends ConsumerState<_HealthEventsSection> {
                       child: HealthEntryCard(
                         entry: entry,
                         pet: widget.pet,
+                        healthIssueName: entry.healthIssueName,
                         onTap: () => context.go(
                             '/pet/${widget.petId}/health/edit/${entry.id}'),
                         onMarkTaken: () async {
@@ -2033,6 +2034,31 @@ class _HealthIssueCardState extends ConsumerState<_HealthIssueCard> {
     return 'Until ${fmt.format(end!)}';
   }
 
+  Future<void> _unlinkEvent(HealthIssue issue, HealthEntry entry) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Unlink Event'),
+        content: Text('Remove "${entry.name}" from "${issue.title}"?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: const Text('Unlink'),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true) return;
+    await ref
+        .read(healthIssueNotifierProvider(widget.petId).notifier)
+        .unlinkEvent(issue.id, entry.id);
+    ref.invalidate(petHealthEntriesProvider(widget.petId));
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -2201,6 +2227,19 @@ class _HealthIssueCardState extends ConsumerState<_HealthIssueCard> {
                       entry.type.label,
                       style: theme.textTheme.labelSmall?.copyWith(
                           color: colorScheme.onSurfaceVariant, fontSize: 10),
+                    ),
+                    const SizedBox(width: 4),
+                    Tooltip(
+                      message: 'Unlink event',
+                      child: InkWell(
+                        onTap: () => _unlinkEvent(issue, entry),
+                        borderRadius: BorderRadius.circular(12),
+                        child: Padding(
+                          padding: const EdgeInsets.all(4),
+                          child: Icon(Icons.link_off, size: 16,
+                              color: colorScheme.error),
+                        ),
+                      ),
                     ),
                   ],
                 ),

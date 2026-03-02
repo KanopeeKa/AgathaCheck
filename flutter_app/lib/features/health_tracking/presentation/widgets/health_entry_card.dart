@@ -13,12 +13,14 @@ class HealthEntryCard extends StatelessWidget {
     this.pet,
     this.onMarkTaken,
     this.onTap,
+    this.healthIssueName,
   });
 
   final HealthEntry entry;
   final Pet? pet;
   final VoidCallback? onMarkTaken;
   final VoidCallback? onTap;
+  final String? healthIssueName;
 
   @override
   Widget build(BuildContext context) {
@@ -95,6 +97,30 @@ class HealthEntryCard extends StatelessWidget {
                                 ),
                             ],
                           ),
+                          if (healthIssueName != null)
+                            Padding(
+                              padding: const EdgeInsets.only(top: 3),
+                              child: Row(
+                                children: [
+                                  ExcludeSemantics(
+                                    child: Icon(Icons.health_and_safety,
+                                        size: 12, color: colorScheme.tertiary),
+                                  ),
+                                  const SizedBox(width: 4),
+                                  Flexible(
+                                    child: Text(
+                                      healthIssueName!,
+                                      style: theme.textTheme.bodySmall?.copyWith(
+                                          color: colorScheme.tertiary,
+                                          fontSize: 11,
+                                          fontWeight: FontWeight.w500),
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
                           const SizedBox(height: 4),
                           Row(
                             children: [

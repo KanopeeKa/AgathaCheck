@@ -889,19 +889,19 @@ Future<void> _getHealthEntries(HttpRequest request) async {
   final petId = request.uri.queryParameters['pet_id'];
   final type = request.uri.queryParameters['type'];
 
-  var query = 'SELECT * FROM health_entries WHERE 1=1';
+  var query = 'SELECT he.*, hi.title AS health_issue_title FROM health_entries he LEFT JOIN health_issues hi ON he.health_issue_id = hi.id WHERE 1=1';
   final params = <String, dynamic>{};
 
   if (petId != null && petId.isNotEmpty) {
-    query += ' AND pet_id = @petId';
+    query += ' AND he.pet_id = @petId';
     params['petId'] = petId;
   }
   if (type != null && type.isNotEmpty) {
-    query += ' AND type = @type';
+    query += ' AND he.type = @type';
     params['type'] = type;
   }
 
-  query += ' ORDER BY next_due_date ASC';
+  query += ' ORDER BY he.next_due_date ASC';
 
   final result = await _db.execute(Sql.named(query),
       parameters: params.isEmpty ? null : params);
@@ -912,7 +912,7 @@ Future<void> _getHealthEntries(HttpRequest request) async {
 Future<void> _getHealthEntry(HttpRequest request) async {
   final id = request.uri.pathSegments.last;
   final result = await _db.execute(
-    Sql.named('SELECT * FROM health_entries WHERE id = @id'),
+    Sql.named('SELECT he.*, hi.title AS health_issue_title FROM health_entries he LEFT JOIN health_issues hi ON he.health_issue_id = hi.id WHERE he.id = @id'),
     parameters: {'id': id},
   );
 
@@ -2739,6 +2739,7 @@ Map<String, dynamic> _rowToMap(ResultRow row) {
     'next_due_date': cols['next_due_date'].toString(),
     'notes': cols['notes'].toString(),
     'health_issue_id': cols['health_issue_id']?.toString(),
+    'health_issue_title': cols.containsKey('health_issue_title') ? cols['health_issue_title']?.toString() : null,
     'created_at': cols['created_at'].toString(),
     'updated_at': cols['updated_at'].toString(),
   };

@@ -194,6 +194,7 @@ class _EntryList extends ConsumerWidget {
                 child: HealthEntryCard(
                   entry: entry,
                   pet: pet,
+                  healthIssueName: entry.healthIssueName,
                   onTap: () => context.go('/health/edit/${entry.id}'),
                   onMarkTaken: () => _markTaken(context, ref, entry),
                 ),
