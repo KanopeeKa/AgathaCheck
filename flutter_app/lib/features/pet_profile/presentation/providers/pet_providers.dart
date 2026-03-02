@@ -150,6 +150,40 @@ class PetListNotifier extends AsyncNotifier<List<Pet>> {
     await ref.read(deletePetUseCaseProvider).call(id);
     ref.invalidateSelf();
   }
+
+  Future<bool> markPassedAway(String petId) async {
+    final pets = state.valueOrNull ?? [];
+    final pet = pets.where((p) => p.id == petId).firstOrNull;
+    if (pet == null) return false;
+
+    final updated = pet.copyWith(
+      passedAway: true,
+      colorValue: 0xFFFFFFFF,
+    );
+    await ref.read(updatePetUseCaseProvider).call(updated);
+
+    final baseUrl = kIsWeb ? '' : 'http://localhost:5000';
+    bool hasSharedUsers = false;
+    try {
+      final prefs = ref.read(sharedPreferencesProvider);
+      final token = prefs.getString('access_token') ?? '';
+      final response = await http.post(
+        Uri.parse('$baseUrl/api/pets/$petId/passed-away'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+        body: '{"pet_name": "${pet.name}"}',
+      );
+      if (response.statusCode == 200) {
+        final body = response.body;
+        hasSharedUsers = body.contains('"notified_count"') && !body.contains('"notified_count":0');
+      }
+    } catch (_) {}
+
+    ref.invalidateSelf();
+    return hasSharedUsers;
+  }
 }
 
 /// The main provider for the pet list state.

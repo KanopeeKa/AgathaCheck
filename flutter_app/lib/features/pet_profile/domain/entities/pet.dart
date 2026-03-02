@@ -22,6 +22,7 @@ class Pet {
     this.photoPath,
     this.vetId,
     this.colorValue,
+    this.passedAway = false,
   });
 
   final String id;
@@ -40,6 +41,7 @@ class Pet {
   final String? photoPath;
   final String? vetId;
   final int? colorValue;
+  final bool passedAway;
 
   static const List<int> palette = [
     0xFF7E57C2, // deep purple
@@ -80,6 +82,7 @@ class Pet {
     String? photoPath,
     String? vetId,
     int? colorValue,
+    bool? passedAway,
     bool clearVetId = false,
     bool clearGender = false,
     bool clearNeuteredDate = false,
@@ -101,6 +104,7 @@ class Pet {
       photoPath: photoPath ?? this.photoPath,
       vetId: clearVetId ? null : (vetId ?? this.vetId),
       colorValue: colorValue ?? this.colorValue,
+      passedAway: passedAway ?? this.passedAway,
     );
   }
 

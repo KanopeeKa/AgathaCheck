@@ -225,6 +225,96 @@ class _PetListScreenState extends ConsumerState<PetListScreen> {
                 child: PetCard(
                   pet: pet,
                   onTap: () => context.go('/pet/${pet.id}'),
+                  onPassedAway: () async {
+                    final confirmed = await showDialog<bool>(
+                      context: context,
+                      builder: (ctx) => AlertDialog(
+                        title: Row(
+                          children: [
+                            Icon(Icons.favorite, color: Colors.grey[400], size: 22),
+                            const SizedBox(width: 8),
+                            const Text('Passed Away'),
+                          ],
+                        ),
+                        content: Text(
+                          'Are you sure you would like to mark ${pet.name} as having passed away?',
+                        ),
+                        actions: [
+                          TextButton(
+                            onPressed: () => Navigator.of(ctx).pop(false),
+                            child: const Text('Cancel'),
+                          ),
+                          FilledButton(
+                            style: FilledButton.styleFrom(
+                              backgroundColor: Colors.grey[600],
+                            ),
+                            onPressed: () => Navigator.of(ctx).pop(true),
+                            child: const Text('Continue'),
+                          ),
+                        ],
+                      ),
+                    );
+                    if (confirmed != true) return;
+                    if (!context.mounted) return;
+
+                    final hasSharedUsers = await ref
+                        .read(petListProvider.notifier)
+                        .markPassedAway(pet.id);
+
+                    if (!context.mounted) return;
+
+                    await showDialog<void>(
+                      context: context,
+                      barrierDismissible: false,
+                      builder: (ctx) {
+                        final theme = Theme.of(ctx);
+                        return AlertDialog(
+                          title: Row(
+                            children: [
+                              Icon(Icons.favorite, color: Colors.grey[400], size: 22),
+                              const SizedBox(width: 8),
+                              Expanded(
+                                child: Text(
+                                  'In loving memory of ${pet.name}',
+                                  style: theme.textTheme.titleMedium?.copyWith(
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          content: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'We are deeply sorry for your loss. ${pet.name} has crossed the rainbow bridge, and we know how much they meant to you.',
+                                style: theme.textTheme.bodyMedium,
+                              ),
+                              if (hasSharedUsers) ...[
+                                const SizedBox(height: 16),
+                                Text(
+                                  'A notification has been sent to everyone who shared ${pet.name}\'s profile to let them know of their passing.',
+                                  style: theme.textTheme.bodyMedium,
+                                ),
+                              ],
+                              const SizedBox(height: 16),
+                              Text(
+                                'We will remove any further health reminders and notifications. ${pet.name}\'s profile will be kept in your archive so you can always look back on their memories.',
+                                style: theme.textTheme.bodyMedium,
+                              ),
+                            ],
+                          ),
+                          actions: [
+                            FilledButton(
+                              onPressed: () => Navigator.of(ctx).pop(),
+                              child: const Text('Thank you'),
+                            ),
+                          ],
+                        );
+                      },
+                    );
+                  },
                   onDelete: () async {
                     final confirmed = await showDialog<bool>(
                       context: context,

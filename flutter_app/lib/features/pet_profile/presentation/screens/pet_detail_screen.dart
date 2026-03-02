@@ -897,10 +897,12 @@ class _PetPhoto extends StatelessWidget {
         ? Color(pet.colorValue!)
         : colorScheme.primary;
 
+    Widget photoContent;
+
     if (pet.photoPath != null && pet.photoPath!.isNotEmpty) {
       try {
         final bytes = base64Decode(pet.photoPath!);
-        return Container(
+        photoContent = Container(
           decoration: BoxDecoration(
             border: Border(left: BorderSide(color: petColor, width: 5)),
           ),
@@ -910,9 +912,43 @@ class _PetPhoto extends StatelessWidget {
             semanticLabel: 'Photo of ${pet.name}',
           ),
         );
-      } catch (_) {}
+      } catch (_) {
+        photoContent = _buildPlaceholder(petColor);
+      }
+    } else {
+      photoContent = _buildPlaceholder(petColor);
     }
 
+    if (pet.passedAway) {
+      return Stack(
+        fit: StackFit.expand,
+        children: [
+          ColorFiltered(
+            colorFilter: const ColorFilter.mode(
+              Color(0x88FFFFFF),
+              BlendMode.lighten,
+            ),
+            child: photoContent,
+          ),
+          Center(
+            child: Opacity(
+              opacity: 0.6,
+              child: Image.asset(
+                'assets/rainbow_wings.png',
+                width: 80,
+                height: 80,
+                fit: BoxFit.contain,
+              ),
+            ),
+          ),
+        ],
+      );
+    }
+
+    return photoContent;
+  }
+
+  Widget _buildPlaceholder(Color petColor) {
     return Container(
       decoration: BoxDecoration(
         color: petColor.withOpacity(0.12),

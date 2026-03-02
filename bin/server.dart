@@ -478,6 +478,10 @@ Future<void> _handleApi(HttpRequest request) async {
   } else if (RegExp(r'^/api/share/[^/]+$').hasMatch(path) && method == 'GET') {
     await _getShare(request);
   }
+  // Pet passed away
+  else if (RegExp(r'^/api/pets/[^/]+/passed-away$').hasMatch(path) && method == 'POST') {
+    await _markPetPassedAway(request);
+  }
   // Pet data cleanup
   else if (RegExp(r'^/api/pets/[^/]+/data$').hasMatch(path) && method == 'DELETE') {
     await _deletePetData(request);
@@ -2018,6 +2022,55 @@ Future<Map<String, dynamic>> _petAccessRowToJson(ResultRow row) async {
     'created_at': cols['created_at'].toString(),
     'user': userInfo,
   };
+}
+
+Future<void> _markPetPassedAway(HttpRequest request) async {
+  final payload = await _authenticateRequest(request);
+  if (payload == null) {
+    _jsonResponse(request, 401, {'error': 'Not authenticated'});
+    return;
+  }
+  final userId = int.parse(payload['sub'].toString());
+
+  final segments = request.uri.pathSegments;
+  final petId = segments[2];
+  final body = await _readJson(request);
+  final petName = (body?['pet_name'] as String?) ?? 'Your pet';
+
+  try {
+    final accessRows = await _db.execute(
+      Sql.named('SELECT user_id FROM pet_access WHERE pet_id = @petId AND user_id != @userId'),
+      parameters: {'petId': petId, 'userId': userId},
+    );
+
+    int notifiedCount = 0;
+    for (final row in accessRows) {
+      final sharedUserId = row.toColumnMap()['user_id'] as int;
+      await _db.execute(
+        Sql.named('''
+          INSERT INTO notifications (user_id, pet_id, title, message, type)
+          VALUES (@userId, @petId, @title, @message, 'memorial')
+        '''),
+        parameters: {
+          'userId': sharedUserId,
+          'petId': petId,
+          'title': 'In loving memory of $petName',
+          'message': 'We are deeply sorry to let you know that $petName has crossed the rainbow bridge. Their profile will be kept as an archive in their guardian\'s account.',
+        },
+      );
+      notifiedCount++;
+    }
+
+    await _db.execute(
+      Sql.named('DELETE FROM notifications WHERE pet_id = @petId AND type IN (\'reminder\', \'overdue\') AND is_read = FALSE'),
+      parameters: {'petId': petId},
+    );
+
+    _jsonResponse(request, 200, {'success': true, 'pet_id': petId, 'notified_count': notifiedCount});
+  } catch (e) {
+    print('Error marking pet passed away: $e');
+    _jsonResponse(request, 500, {'error': 'Failed to process passed away request'});
+  }
 }
 
 Future<void> _deletePetData(HttpRequest request) async {

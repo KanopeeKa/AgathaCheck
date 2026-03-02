@@ -9,22 +9,21 @@ import '../../domain/entities/pet.dart';
 /// Shows the pet's photo (or a placeholder icon), name, breed,
 /// and species. Tapping the card triggers [onTap].
 class PetCard extends StatelessWidget {
-  /// Creates a [PetCard] for the given [pet].
   const PetCard({
     super.key,
     required this.pet,
     this.onTap,
     this.onDelete,
+    this.onPassedAway,
   });
 
-  /// The pet to display.
   final Pet pet;
 
-  /// Called when the card is tapped.
   final VoidCallback? onTap;
 
-  /// Called when the delete button is pressed.
   final VoidCallback? onDelete;
+
+  final VoidCallback? onPassedAway;
 
   /// Builds the pet card with photo, name, breed, species, and delete action.
   @override
@@ -77,6 +76,12 @@ class PetCard extends StatelessWidget {
                       ],
                     ),
                   ),
+                  if (!pet.passedAway && onPassedAway != null)
+                    IconButton(
+                      icon: const Icon(Icons.favorite_border, color: Color(0xFF9E9E9E)),
+                      tooltip: 'Passed Away',
+                      onPressed: onPassedAway,
+                    ),
                   if (onDelete != null)
                     IconButton(
                       icon: Icon(Icons.delete_outline, color: colorScheme.error),
@@ -97,10 +102,12 @@ class PetCard extends StatelessWidget {
         ? Color(pet.colorValue!)
         : colorScheme.primary;
 
+    Widget avatar;
+
     if (pet.photoPath != null && pet.photoPath!.isNotEmpty) {
       try {
         final bytes = base64Decode(pet.photoPath!);
-        return Container(
+        avatar = Container(
           width: 68,
           height: 68,
           decoration: BoxDecoration(
@@ -117,10 +124,42 @@ class PetCard extends StatelessWidget {
           ),
         );
       } catch (_) {
-        // Fall through to placeholder
+        avatar = _buildPlaceholder(petColor);
       }
+    } else {
+      avatar = _buildPlaceholder(petColor);
     }
 
+    if (pet.passedAway) {
+      return Stack(
+        alignment: Alignment.center,
+        children: [
+          ColorFiltered(
+            colorFilter: const ColorFilter.mode(
+              Color(0x88FFFFFF),
+              BlendMode.lighten,
+            ),
+            child: avatar,
+          ),
+          SizedBox(
+            width: 52,
+            height: 52,
+            child: Opacity(
+              opacity: 0.7,
+              child: Image.asset(
+                'assets/rainbow_wings.png',
+                fit: BoxFit.contain,
+              ),
+            ),
+          ),
+        ],
+      );
+    }
+
+    return avatar;
+  }
+
+  Widget _buildPlaceholder(Color petColor) {
     return Container(
       width: 68,
       height: 68,
