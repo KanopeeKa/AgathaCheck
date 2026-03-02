@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -37,6 +39,7 @@ class _HealthEntryFormScreenState
   bool _isEdit = false;
   bool _isUploadingPhoto = false;
   List<EventPhoto> _photos = [];
+  final List<XFile> _pendingPhotos = [];
 
   final Set<String> _selectedPetIds = {};
 
@@ -53,6 +56,8 @@ class _HealthEntryFormScreenState
     }
   }
 
+  int get _totalPhotoCount => _photos.length + _pendingPhotos.length;
+
   Future<void> _loadPhotos() async {
     if (widget.entryId == null) return;
     try {
@@ -62,9 +67,8 @@ class _HealthEntryFormScreenState
     } catch (_) {}
   }
 
-  Future<void> _pickAndUploadPhoto(ImageSource source) async {
-    if (widget.entryId == null) return;
-    if (_photos.length >= 4) {
+  Future<void> _pickPhoto(ImageSource source) async {
+    if (_totalPhotoCount >= 4) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Maximum 4 photos per event')),
       );
@@ -77,19 +81,45 @@ class _HealthEntryFormScreenState
           source: source, maxWidth: 1200, maxHeight: 1200, imageQuality: 80);
       if (picked == null) return;
 
-      setState(() => _isUploadingPhoto = true);
-      final bytes = await picked.readAsBytes();
-      final ds = ref.read(healthDataSourceProvider);
-      await ds.uploadPhoto(widget.entryId!, bytes, picked.name);
-      await _loadPhotos();
+      if (_isEdit) {
+        setState(() => _isUploadingPhoto = true);
+        final bytes = await picked.readAsBytes();
+        final ds = ref.read(healthDataSourceProvider);
+        await ds.uploadPhoto(widget.entryId!, bytes, picked.name);
+        await _loadPhotos();
+        if (mounted) setState(() => _isUploadingPhoto = false);
+      } else {
+        setState(() => _pendingPhotos.add(picked));
+      }
     } catch (e) {
       if (mounted) {
+        setState(() => _isUploadingPhoto = false);
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to upload photo: $e')),
+          SnackBar(content: Text('Failed to add photo: $e')),
         );
       }
-    } finally {
-      if (mounted) setState(() => _isUploadingPhoto = false);
+    }
+  }
+
+  void _removePendingPhoto(int index) {
+    setState(() => _pendingPhotos.removeAt(index));
+  }
+
+  Future<void> _uploadPendingPhotos(String entryId) async {
+    if (_pendingPhotos.isEmpty) return;
+    final ds = ref.read(healthDataSourceProvider);
+    final filesToUpload = List<XFile>.from(_pendingPhotos);
+    for (final file in filesToUpload) {
+      try {
+        final bytes = await file.readAsBytes();
+        await ds.uploadPhoto(entryId, bytes, file.name);
+      } catch (e) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Failed to upload photo "${file.name}": $e')),
+          );
+        }
+      }
     }
   }
 
@@ -357,19 +387,19 @@ class _HealthEntryFormScreenState
                       ),
                       maxLines: 3,
                     ),
-                    if (_isEdit) ...[
-                      const SizedBox(height: 24),
-                      _PhotosSection(
-                        photos: _photos,
-                        isUploading: _isUploadingPhoto,
-                        baseUrl: ref.watch(apiBaseUrlProvider),
-                        onPickCamera: () =>
-                            _pickAndUploadPhoto(ImageSource.camera),
-                        onPickGallery: () =>
-                            _pickAndUploadPhoto(ImageSource.gallery),
-                        onDelete: _deletePhoto,
-                      ),
-                    ],
+                    const SizedBox(height: 24),
+                    _PhotosSection(
+                      photos: _photos,
+                      pendingPhotos: _pendingPhotos,
+                      isUploading: _isUploadingPhoto,
+                      baseUrl: ref.watch(apiBaseUrlProvider),
+                      onPickCamera: () =>
+                          _pickPhoto(ImageSource.camera),
+                      onPickGallery: () =>
+                          _pickPhoto(ImageSource.gallery),
+                      onDelete: _deletePhoto,
+                      onRemovePending: _removePendingPhoto,
+                    ),
                     const SizedBox(height: 24),
                     FilledButton.icon(
                       onPressed: _submit,
@@ -433,6 +463,8 @@ class _HealthEntryFormScreenState
           ref.invalidate(petHealthEntriesProvider(_selectedPetIds.first));
         }
       } else {
+        final createdEntryIds = <String>[];
+        final createUseCase = ref.read(createHealthEntryProvider);
         for (final petId in _selectedPetIds) {
           final entry = HealthEntry(
             id: '',
@@ -449,8 +481,15 @@ class _HealthEntryFormScreenState
             nextDueDate: _startDate,
             notes: _notesController.text.trim(),
           );
-          await notifier.create(entry);
+          final created = await createUseCase.call(entry);
+          createdEntryIds.add(created.id);
         }
+        if (_pendingPhotos.isNotEmpty) {
+          for (final entryId in createdEntryIds) {
+            await _uploadPendingPhotos(entryId);
+          }
+        }
+        await notifier.refresh();
         if (mounted) {
           for (final petId in _selectedPetIds) {
             ref.invalidate(petHealthEntriesProvider(petId));
@@ -701,19 +740,25 @@ class _DatePickerField extends StatelessWidget {
 class _PhotosSection extends StatelessWidget {
   const _PhotosSection({
     required this.photos,
+    required this.pendingPhotos,
     required this.isUploading,
     required this.baseUrl,
     required this.onPickCamera,
     required this.onPickGallery,
     required this.onDelete,
+    required this.onRemovePending,
   });
 
   final List<EventPhoto> photos;
+  final List<XFile> pendingPhotos;
   final bool isUploading;
   final String baseUrl;
   final VoidCallback onPickCamera;
   final VoidCallback onPickGallery;
   final ValueChanged<EventPhoto> onDelete;
+  final ValueChanged<int> onRemovePending;
+
+  int get _totalCount => photos.length + pendingPhotos.length;
 
   @override
   Widget build(BuildContext context) {
@@ -731,7 +776,7 @@ class _PhotosSection extends StatelessWidget {
                 style: theme.textTheme.titleSmall
                     ?.copyWith(fontWeight: FontWeight.w600)),
             const Spacer(),
-            if (photos.length < 4)
+            if (_totalCount < 4)
               PopupMenuButton<String>(
                 icon: Icon(Icons.add_a_photo,
                     size: 20, color: colorScheme.primary),
@@ -768,7 +813,7 @@ class _PhotosSection extends StatelessWidget {
             padding: EdgeInsets.all(16),
             child: Center(child: CircularProgressIndicator()),
           ),
-        if (photos.isEmpty && !isUploading)
+        if (_totalCount == 0 && !isUploading)
           Container(
             width: double.infinity,
             padding: const EdgeInsets.all(20),
@@ -791,7 +836,7 @@ class _PhotosSection extends StatelessWidget {
               ],
             ),
           ),
-        if (photos.isNotEmpty)
+        if (_totalCount > 0)
           GridView.builder(
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
@@ -800,56 +845,128 @@ class _PhotosSection extends StatelessWidget {
               crossAxisSpacing: 8,
               mainAxisSpacing: 8,
             ),
-            itemCount: photos.length,
+            itemCount: _totalCount,
             itemBuilder: (context, index) {
-              final photo = photos[index];
-              final imageUrl = '$baseUrl/${photo.photoPath}';
-              return GestureDetector(
-                onTap: () => _showFullScreen(context, imageUrl),
-                child: Stack(
-                  fit: StackFit.expand,
-                  children: [
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(8),
-                      child: Image.network(
-                        imageUrl,
-                        fit: BoxFit.cover,
-                        errorBuilder: (_, __, ___) => Container(
-                          color: colorScheme.surfaceContainerHighest,
-                          child: Icon(Icons.broken_image,
-                              color: colorScheme.outline),
-                        ),
-                      ),
-                    ),
-                    Positioned(
-                      top: 4,
-                      right: 4,
-                      child: GestureDetector(
-                        onTap: () => onDelete(photo),
-                        child: Container(
-                          padding: const EdgeInsets.all(4),
-                          decoration: BoxDecoration(
-                            color: Colors.black54,
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: const Icon(Icons.close,
-                              size: 16, color: Colors.white),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              );
+              if (index < photos.length) {
+                return _buildSavedPhoto(context, photos[index], colorScheme);
+              }
+              final pendingIndex = index - photos.length;
+              return _buildPendingPhoto(
+                  context, pendingPhotos[pendingIndex], pendingIndex, colorScheme);
             },
           ),
-        if (photos.isNotEmpty)
+        if (_totalCount > 0)
           Padding(
             padding: const EdgeInsets.only(top: 4),
-            child: Text('${photos.length}/4 photos',
+            child: Text(
+                '$_totalCount/4 photos'
+                '${pendingPhotos.isNotEmpty ? ' (${pendingPhotos.length} will upload on save)' : ''}',
                 style: theme.textTheme.bodySmall
                     ?.copyWith(color: colorScheme.outline)),
           ),
       ],
+    );
+  }
+
+  Widget _buildSavedPhoto(
+      BuildContext context, EventPhoto photo, ColorScheme colorScheme) {
+    final imageUrl = '$baseUrl/${photo.photoPath}';
+    return GestureDetector(
+      onTap: () => _showFullScreen(context, imageUrl),
+      child: Stack(
+        fit: StackFit.expand,
+        children: [
+          ClipRRect(
+            borderRadius: BorderRadius.circular(8),
+            child: Image.network(
+              imageUrl,
+              fit: BoxFit.cover,
+              errorBuilder: (_, __, ___) => Container(
+                color: colorScheme.surfaceContainerHighest,
+                child:
+                    Icon(Icons.broken_image, color: colorScheme.outline),
+              ),
+            ),
+          ),
+          Positioned(
+            top: 4,
+            right: 4,
+            child: GestureDetector(
+              onTap: () => onDelete(photo),
+              child: Container(
+                padding: const EdgeInsets.all(4),
+                decoration: BoxDecoration(
+                  color: Colors.black54,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child:
+                    const Icon(Icons.close, size: 16, color: Colors.white),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPendingPhoto(BuildContext context, XFile file, int pendingIndex,
+      ColorScheme colorScheme) {
+    return FutureBuilder<Uint8List>(
+      future: file.readAsBytes(),
+      builder: (context, snapshot) {
+        return Stack(
+          fit: StackFit.expand,
+          children: [
+            ClipRRect(
+              borderRadius: BorderRadius.circular(8),
+              child: snapshot.hasData
+                  ? Image.memory(snapshot.data!, fit: BoxFit.cover)
+                  : Container(
+                      color: colorScheme.surfaceContainerHighest,
+                      child: const Center(child: CircularProgressIndicator()),
+                    ),
+            ),
+            Positioned(
+              bottom: 0,
+              left: 0,
+              right: 0,
+              child: Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                decoration: BoxDecoration(
+                  color: colorScheme.primaryContainer.withValues(alpha: 0.9),
+                  borderRadius: const BorderRadius.only(
+                    bottomLeft: Radius.circular(8),
+                    bottomRight: Radius.circular(8),
+                  ),
+                ),
+                child: Text('Pending',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                        fontSize: 11,
+                        color: colorScheme.onPrimaryContainer,
+                        fontWeight: FontWeight.w500)),
+              ),
+            ),
+            Positioned(
+              top: 4,
+              right: 4,
+              child: GestureDetector(
+                onTap: () => onRemovePending(pendingIndex),
+                child: Container(
+                  padding: const EdgeInsets.all(4),
+                  decoration: BoxDecoration(
+                    color: Colors.black54,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child:
+                      const Icon(Icons.close, size: 16, color: Colors.white),
+                ),
+              ),
+            ),
+          ],
+        );
+      },
     );
   }
 
