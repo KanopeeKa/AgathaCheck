@@ -33,7 +33,7 @@ flutter_app/           - Flutter source code (development)
         presentation/screens/
           pet_list_screen.dart    - Home screen with pet cards + user menu
           pet_detail_screen.dart  - Pet profile + vet info + health entries (tabbed)
-          pet_form_screen.dart    - Add/edit pet form (with vet dropdown)
+          pet_form_screen.dart    - Add/edit pet form (with vet dropdown, gender)
       health_tracking/ - Health tracking with data/domain/presentation layers
       vet/             - Vet management with data/domain/presentation layers
       notifications/   - Notification center with data/domain/presentation layers

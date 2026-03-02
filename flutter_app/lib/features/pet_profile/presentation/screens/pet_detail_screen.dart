@@ -271,6 +271,12 @@ class _PetProfileCard extends ConsumerWidget {
                           _InfoChip(icon: Icons.category, label: pet.species),
                           if (pet.breed.isNotEmpty)
                             _InfoChip(icon: Icons.pets, label: pet.breed),
+                          if (pet.gender != null && pet.gender!.isNotEmpty)
+                            _InfoChip(
+                                icon: pet.gender == 'Male'
+                                    ? Icons.male
+                                    : Icons.female,
+                                label: pet.gender!),
                           if (pet.age != null)
                             _InfoChip(
                                 icon: Icons.cake,

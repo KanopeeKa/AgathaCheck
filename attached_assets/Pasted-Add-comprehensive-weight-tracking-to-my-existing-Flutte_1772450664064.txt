@@ -1,0 +1,30 @@
+Add comprehensive weight tracking to my existing Flutter pet management app. Design for easy migration to native Xcode SwiftUI later—use only standard Flutter widgets, Provider state management, sqflite database, intl package for dates, and syncable model classes. Assume existing pet detail screen has description section (with current weight field) and medication section.
+
+Requirements:
+
+Database (sqflite): Create new weight_entries table with fields: id (auto), petId (foreign key), date (ISO string), weight (double), notes (optional string). Add DB methods for CRUD operations by petId, sorted by date ascending, plus method to get latest weight by petId.
+
+Model: Create WeightEntry class with all fields, fromJson/toJson methods for future sync.
+
+State Management: Create WeightTrackingProvider (ChangeNotifier) with methods to load entries by petId, add/update/delete entries, get current weight.
+
+UI Updates (pet detail screen):
+
+Description section: Replace editable "current weight" field with read-only display showing latest weight from provider (or "No data").
+
+New section (above medications): Collapsible "Weight Tracking" using ExpansionTile with scale icon.
+
+Inside expansion:
+
+FloatingActionButton or button to "Add Entry" opens bottom sheet dialog with DatePicker (default today), weight TextField (double input), optional notes field.
+
+Chronological ListView of entries showing date/weight/notes with delete icon per entry.
+
+Interactive line graph below list using fl_chart package (x-axis: earliest date to today, y-axis: auto-scale from 0, line with data points and tooltips).
+
+Graph Details: Line chart from fl_chart package, responsive design, shows weight trend over time, handles empty data gracefully.
+
+Migration Prep: Use only cross-platform code, Theme.of(context) styling, full null safety, proper error handling and empty states.
+
+Deliverables: Update pubspec.yaml (add sqflite, intl, fl_chart, provider if missing), implement all features, test add/edit/delete/graph updates/current weight display. Provide SwiftUI migration notes explaining model→struct, Provider→@Observable mapping.
+

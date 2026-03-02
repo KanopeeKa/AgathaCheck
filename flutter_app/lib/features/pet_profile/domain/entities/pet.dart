@@ -12,6 +12,7 @@ class Pet {
     this.breed = '',
     this.age,
     this.weight,
+    this.gender,
     this.bio = '',
     this.photoPath,
     this.vetId,
@@ -23,6 +24,7 @@ class Pet {
   final String breed;
   final double? age;
   final double? weight;
+  final String? gender;
   final String bio;
   final String? photoPath;
   final String? vetId;
@@ -34,10 +36,12 @@ class Pet {
     String? breed,
     double? age,
     double? weight,
+    String? gender,
     String? bio,
     String? photoPath,
     String? vetId,
     bool clearVetId = false,
+    bool clearGender = false,
   }) {
     return Pet(
       id: id ?? this.id,
@@ -46,6 +50,7 @@ class Pet {
       breed: breed ?? this.breed,
       age: age ?? this.age,
       weight: weight ?? this.weight,
+      gender: clearGender ? null : (gender ?? this.gender),
       bio: bio ?? this.bio,
       photoPath: photoPath ?? this.photoPath,
       vetId: clearVetId ? null : (vetId ?? this.vetId),

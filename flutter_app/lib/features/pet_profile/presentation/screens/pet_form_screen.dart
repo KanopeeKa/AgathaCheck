@@ -37,6 +37,7 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
   final _bioController = TextEditingController();
 
   String _selectedSpecies = AppConstants.species.first;
+  String? _selectedGender;
   String? _photoBase64;
   String? _selectedVetId;
   bool _isLoading = false;
@@ -61,6 +62,7 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
     _weightController.text = pet.weight?.toString() ?? '';
     _bioController.text = pet.bio;
     _selectedSpecies = pet.species;
+    _selectedGender = pet.gender;
     _photoBase64 = pet.photoPath;
     _selectedVetId = pet.vetId;
   }
@@ -110,6 +112,7 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
           breed: _breedController.text.trim(),
           age: age,
           weight: weight,
+          gender: _selectedGender,
           bio: _bioController.text.trim(),
           photoPath: _photoBase64,
           vetId: _selectedVetId,
@@ -122,6 +125,7 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
               breed: _breedController.text.trim(),
               age: age,
               weight: weight,
+              gender: _selectedGender,
               bio: _bioController.text.trim(),
               photoPath: _photoBase64,
               vetId: _selectedVetId,
@@ -226,6 +230,31 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
                   labelText: 'Breed',
                   prefixIcon: Icon(Icons.label_outline),
                 ),
+              ),
+              const SizedBox(height: 16),
+              DropdownButtonFormField<String?>(
+                value: _selectedGender,
+                decoration: InputDecoration(
+                  labelText: 'Gender',
+                  prefixIcon: const Icon(Icons.wc),
+                  suffixIcon: _selectedGender != null
+                      ? IconButton(
+                          icon: const Icon(Icons.clear),
+                          onPressed: () =>
+                              setState(() => _selectedGender = null),
+                        )
+                      : null,
+                ),
+                items: const [
+                  DropdownMenuItem<String?>(
+                    value: null,
+                    child: Text('Not specified'),
+                  ),
+                  DropdownMenuItem(value: 'Male', child: Text('Male')),
+                  DropdownMenuItem(value: 'Female', child: Text('Female')),
+                ],
+                onChanged: (value) =>
+                    setState(() => _selectedGender = value),
               ),
               const SizedBox(height: 16),
               Row(
