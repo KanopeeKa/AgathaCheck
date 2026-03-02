@@ -923,17 +923,19 @@ class _HealthEventsSectionState extends ConsumerState<_HealthEventsSection> {
                         entry: entry,
                         onTap: () => context.go(
                             '/pet/${widget.petId}/health/edit/${entry.id}'),
-                        onMarkTaken: () {
-                          ref
+                        onMarkTaken: () async {
+                          await ref
                               .read(healthEntriesNotifierProvider.notifier)
                               .markTaken(entry.id);
                           ref.invalidate(
                               petHealthEntriesProvider(widget.petId));
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                                content:
-                                    Text('${entry.name} marked as taken')),
-                          );
+                          if (context.mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                  content:
+                                      Text('${entry.name} marked as taken')),
+                            );
+                          }
                         },
                         onDelete: () async {
                           await ref

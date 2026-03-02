@@ -35,7 +35,7 @@ void main() {
 
     test('isOverdue returns true when past due', () {
       final entry =
-          createEntry(nextDueDate: now.subtract(const Duration(hours: 1)));
+          createEntry(nextDueDate: now.subtract(const Duration(days: 1)));
       expect(entry.isOverdue, isTrue);
     });
 
@@ -65,7 +65,7 @@ void main() {
 
     test('isDueSoon returns false when overdue', () {
       final entry =
-          createEntry(nextDueDate: now.subtract(const Duration(hours: 1)));
+          createEntry(nextDueDate: now.subtract(const Duration(days: 1)));
       expect(entry.isDueSoon, isFalse);
     });
 

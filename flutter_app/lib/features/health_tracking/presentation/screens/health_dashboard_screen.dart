@@ -194,10 +194,12 @@ class _EntryList extends ConsumerWidget {
     );
   }
 
-  void _markTaken(BuildContext context, WidgetRef ref, HealthEntry entry) {
-    ref.read(healthEntriesNotifierProvider.notifier).markTaken(entry.id);
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('${entry.name} marked as taken')),
-    );
+  Future<void> _markTaken(BuildContext context, WidgetRef ref, HealthEntry entry) async {
+    await ref.read(healthEntriesNotifierProvider.notifier).markTaken(entry.id);
+    if (context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('${entry.name} marked as taken')),
+      );
+    }
   }
 }

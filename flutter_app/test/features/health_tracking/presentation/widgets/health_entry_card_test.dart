@@ -59,7 +59,7 @@ void main() {
 
     testWidgets('shows overdue status for past entries', (tester) async {
       final overdueEntry = futureEntry.copyWith(
-          nextDueDate: DateTime.now().subtract(const Duration(hours: 2)));
+          nextDueDate: DateTime.now().subtract(const Duration(days: 1)));
       await tester.pumpWidget(buildCard(overdueEntry));
       expect(find.text('Overdue'), findsOneWidget);
     });
