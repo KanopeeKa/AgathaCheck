@@ -131,7 +131,7 @@ class PetReportService {
                     pet.species,
                     if (pet.breed.isNotEmpty) pet.breed,
                     if (pet.age != null) '${pet.age!.toStringAsFixed(1)} years',
-                  ].join(' • '),
+                  ].join(' | '),
                   style: pw.TextStyle(
                     fontSize: 11,
                     color: PdfColor.fromInt(0xFFE8DEF8),

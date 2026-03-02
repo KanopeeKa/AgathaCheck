@@ -124974,7 +124974,7 @@ r=o.d
 if(r.length!==0)s.push(r)
 o=o.e
 if(o!=null)s.push(B.n.aj(o,1)+" years")
-l.push(A.W8(A.zD(A.a([k,new A.eX(q,4,q),A.fs(B.m.bT(s," \u2022 "),A.im(q,A.atX(p),q,q,q,q,q,q,q,B.bF,q,q,11,q,q,q,!0,q,q,q,q),q,q)],m),B.h2)))
+l.push(A.W8(A.zD(A.a([k,new A.eX(q,4,q),A.fs(B.m.bT(s," | "),A.im(q,A.atX(p),q,q,q,q,q,q,q,B.bF,q,q,11,q,q,q,!0,q,q,q,q),q,q)],m),B.h2)))
 l.push(A.zD(A.a([A.fs("AGATHA CHECK",A.im(q,A.atX(p),q,q,q,q,q,q,q,B.bF,q,q,10,q,B.bY,q,!0,1.5,q,q,q),q,q),new A.eX(q,2,q),A.fs("Pet Health Report",A.im(q,A.atX(4291869951),q,q,q,q,q,q,q,B.bF,q,q,9,q,q,q,!0,q,q,q,q),q,q)],m),B.VC))
 return A.kI(q,A.L0(l,B.eZ,B.jg),q,q,n,q,B.X2,B.wI,q)},
 $S:271}
