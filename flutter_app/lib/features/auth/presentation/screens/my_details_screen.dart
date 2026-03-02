@@ -194,6 +194,31 @@ class _MyDetailsScreenState extends ConsumerState<MyDetailsScreen> {
                                       textAlign: TextAlign.center,
                                     ),
                                   ],
+                                  const SizedBox(height: 16),
+                                  Container(
+                                    padding: const EdgeInsets.all(10),
+                                    decoration: BoxDecoration(
+                                      color: theme.colorScheme.secondaryContainer.withAlpha(120),
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                    child: Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Icon(Icons.info_outline,
+                                            size: 16,
+                                            color: theme.colorScheme.onSecondaryContainer),
+                                        const SizedBox(width: 6),
+                                        Flexible(
+                                          child: Text(
+                                            'These details are visible to people you share pets with',
+                                            style: theme.textTheme.bodySmall?.copyWith(
+                                              color: theme.colorScheme.onSecondaryContainer,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
                                 ],
                               ),
                             ),
@@ -209,32 +234,6 @@ class _MyDetailsScreenState extends ConsumerState<MyDetailsScreen> {
                           ],
                         ),
                       ),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 12),
-                ExcludeSemantics(
-                  child: Container(
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: theme.colorScheme.secondaryContainer,
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Row(
-                      children: [
-                        Icon(Icons.info_outline,
-                            size: 20,
-                            color: theme.colorScheme.onSecondaryContainer),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          child: Text(
-                            'These details are visible to people you share pets with',
-                            style: theme.textTheme.bodySmall?.copyWith(
-                              color: theme.colorScheme.onSecondaryContainer,
-                            ),
-                          ),
-                        ),
-                      ],
                     ),
                   ),
                 ),
