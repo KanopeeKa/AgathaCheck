@@ -6,6 +6,9 @@ import 'package:go_router/go_router.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/foundation.dart' show kIsWeb;
 
+import '../../../auth/presentation/providers/auth_providers.dart';
+import '../providers/sharing_providers.dart';
+
 /// Screen that displays a shared pet's profile in read-only mode.
 ///
 /// Fetches pet data, health entries, and vet information from the
@@ -30,6 +33,7 @@ class _SharedPetScreenState extends ConsumerState<SharedPetScreen> {
   Map<String, dynamic>? _ownerData;
   bool _loading = true;
   String? _error;
+  bool _accepting = false;
 
   String get _baseUrl => kIsWeb ? '' : 'http://localhost:5000';
 
@@ -202,6 +206,9 @@ class _SharedPetScreenState extends ConsumerState<SharedPetScreen> {
             ),
           ),
 
+          const SizedBox(height: 16),
+          _buildAcceptSection(theme, colorScheme),
+
           if (_ownerData != null) ...[
             const SizedBox(height: 24),
             Row(
@@ -257,6 +264,95 @@ class _SharedPetScreenState extends ConsumerState<SharedPetScreen> {
           else
             ..._healthEntries.map((e) => _buildHealthEntryCard(e, theme, colorScheme)),
         ],
+      ),
+    );
+  }
+
+  Widget _buildAcceptSection(ThemeData theme, ColorScheme colorScheme) {
+    final authState = ref.watch(authProvider);
+
+    if (authState.isLoggedIn) {
+      return Card(
+        color: colorScheme.primaryContainer.withAlpha(80),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            children: [
+              Icon(Icons.person_add, size: 32, color: colorScheme.primary),
+              const SizedBox(height: 8),
+              Text('Want to add this pet to your account?',
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                      fontWeight: FontWeight.w500),
+                  textAlign: TextAlign.center),
+              const SizedBox(height: 12),
+              FilledButton.icon(
+                onPressed: _accepting
+                    ? null
+                    : () async {
+                        setState(() => _accepting = true);
+                        try {
+                          final ds = ref.read(sharingDataSourceProvider);
+                          final petId = await ds.acceptShare(
+                              widget.shareCode, authState.accessToken!);
+                          if (!mounted) return;
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                                content: Text('Pet added to your account!')),
+                          );
+                          context.go('/pet/$petId');
+                        } catch (e) {
+                          if (!mounted) return;
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text('Error: ${e.toString().replaceFirst("Exception: ", "")}')),
+                          );
+                        } finally {
+                          if (mounted) setState(() => _accepting = false);
+                        }
+                      },
+                icon: _accepting
+                    ? const SizedBox(
+                        width: 18,
+                        height: 18,
+                        child: CircularProgressIndicator(
+                            strokeWidth: 2, color: Colors.white))
+                    : const Icon(Icons.add),
+                label: Text(_accepting ? 'Adding...' : 'Accept & Add to My Pets'),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    return Card(
+      color: colorScheme.secondaryContainer.withAlpha(80),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          children: [
+            Icon(Icons.login, size: 32, color: colorScheme.onSurfaceVariant),
+            const SizedBox(height: 8),
+            Text('Sign up or log in to add this pet to your account',
+                style: theme.textTheme.bodyMedium?.copyWith(
+                    color: colorScheme.onSurfaceVariant),
+                textAlign: TextAlign.center),
+            const SizedBox(height: 12),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                OutlinedButton(
+                  onPressed: () => context.go('/login'),
+                  child: const Text('Log In'),
+                ),
+                const SizedBox(width: 12),
+                FilledButton(
+                  onPressed: () => context.go('/signup'),
+                  child: const Text('Sign Up'),
+                ),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }

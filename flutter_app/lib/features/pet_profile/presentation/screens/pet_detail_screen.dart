@@ -9,9 +9,12 @@ import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:fl_chart/fl_chart.dart';
 import '../../data/services/pdf_saver.dart' as pdf_saver;
+import '../../../auth/presentation/providers/auth_providers.dart';
 import '../../../health_tracking/domain/entities/health_entry.dart';
 import '../../../health_tracking/presentation/providers/health_providers.dart';
 import '../../../health_tracking/presentation/widgets/health_entry_card.dart';
+import '../../../sharing/domain/entities/pet_access.dart';
+import '../../../sharing/presentation/providers/sharing_providers.dart';
 import '../../../vet/presentation/providers/vet_providers.dart';
 import '../../../weight_tracking/domain/entities/weight_entry.dart';
 import '../../../weight_tracking/presentation/providers/weight_providers.dart';
@@ -32,6 +35,15 @@ class PetDetailScreen extends ConsumerStatefulWidget {
 class _PetDetailScreenState extends ConsumerState<PetDetailScreen> {
 
   Future<void> _sharePet(BuildContext context, Pet pet) async {
+    final authState = ref.read(authProvider);
+    final token = authState.accessToken;
+    if (token == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please log in to share pets')),
+      );
+      return;
+    }
+
     final baseUrl = kIsWeb ? '' : 'http://localhost:5000';
     final petJson = PetModel.fromEntity(pet).toJson();
     petJson.remove('photoPath');
@@ -39,7 +51,10 @@ class _PetDetailScreenState extends ConsumerState<PetDetailScreen> {
     try {
       final response = await http.post(
         Uri.parse('$baseUrl/api/share'),
-        headers: {'Content-Type': 'application/json'},
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
         body: json.encode({'pet': petJson, 'pet_id': pet.id}),
       );
 
@@ -157,6 +172,9 @@ class _PetDetailScreenState extends ConsumerState<PetDetailScreen> {
               ),
               SliverToBoxAdapter(
                 child: _HealthEventsSection(petId: widget.petId),
+              ),
+              SliverToBoxAdapter(
+                child: _SharingSection(petId: widget.petId, pet: pet),
               ),
               SliverToBoxAdapter(
                 child: _DownloadReportSection(pet: pet),
@@ -1015,6 +1033,285 @@ class _FilterChipWidget extends StatelessWidget {
       label: Text(label),
       selected: selected,
       onSelected: (_) => onSelected(),
+    );
+  }
+}
+
+class _SharingSection extends ConsumerWidget {
+  const _SharingSection({required this.petId, required this.pet});
+
+  final String petId;
+  final Pet pet;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final authState = ref.watch(authProvider);
+    final baseUrl = kIsWeb ? '' : 'http://localhost:5000';
+
+    if (!authState.isLoggedIn) {
+      return const SizedBox.shrink();
+    }
+
+    final currentUserId = int.tryParse(authState.user?.id ?? '') ?? 0;
+    final accessAsync = ref.watch(petAccessNotifierProvider(petId));
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: Card(
+        clipBehavior: Clip.antiAlias,
+        child: ExpansionTile(
+          leading: Icon(Icons.people, color: colorScheme.primary),
+          title: Text('Sharing',
+              style: theme.textTheme.titleMedium
+                  ?.copyWith(fontWeight: FontWeight.w600)),
+          children: [
+            accessAsync.when(
+              loading: () => const Padding(
+                padding: EdgeInsets.all(32),
+                child: Center(child: CircularProgressIndicator()),
+              ),
+              error: (error, _) => Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  children: [
+                    Icon(Icons.error_outline, size: 48,
+                        color: colorScheme.error),
+                    const SizedBox(height: 8),
+                    Text('Could not load sharing info',
+                        style: theme.textTheme.bodyMedium),
+                    const SizedBox(height: 8),
+                    FilledButton.tonal(
+                      onPressed: () => ref
+                          .read(petAccessNotifierProvider(petId).notifier)
+                          .refresh(),
+                      child: const Text('Retry'),
+                    ),
+                  ],
+                ),
+              ),
+              data: (accessList) {
+                final isGuardian = accessList.any(
+                    (a) => a.userId == currentUserId && a.role == PetAccessRole.guardian);
+
+                return Column(
+                  children: [
+                    if (isGuardian)
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                        child: Row(
+                          children: [
+                            const Spacer(),
+                            FilledButton.tonalIcon(
+                              onPressed: () async {
+                                final petJson = PetModel.fromEntity(pet).toJson();
+                                petJson.remove('photoPath');
+                                try {
+                                  final ds = ref.read(sharingDataSourceProvider);
+                                  final code = await ds.createShare(
+                                      petId, petJson, authState.accessToken!);
+                                  if (!context.mounted) return;
+                                  final uri = Uri.base;
+                                  final shareUrl = '${uri.scheme}://${uri.host}'
+                                      '${uri.port != 80 && uri.port != 443 ? ':${uri.port}' : ''}'
+                                      '/shared/$code';
+                                  showDialog(
+                                    context: context,
+                                    builder: (ctx) => AlertDialog(
+                                      title: const Text('Share Link'),
+                                      content: Column(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          Text('Share this link so others can view ${pet.name}\'s profile:'),
+                                          const SizedBox(height: 16),
+                                          Container(
+                                            padding: const EdgeInsets.all(12),
+                                            decoration: BoxDecoration(
+                                              color: Theme.of(ctx).colorScheme.surfaceContainerHighest,
+                                              borderRadius: BorderRadius.circular(8),
+                                            ),
+                                            child: SelectableText(shareUrl,
+                                                style: const TextStyle(fontSize: 13)),
+                                          ),
+                                        ],
+                                      ),
+                                      actions: [
+                                        TextButton(
+                                          onPressed: () => Navigator.pop(ctx),
+                                          child: const Text('Close'),
+                                        ),
+                                        FilledButton.icon(
+                                          onPressed: () {
+                                            Clipboard.setData(ClipboardData(text: shareUrl));
+                                            ScaffoldMessenger.of(context).showSnackBar(
+                                              const SnackBar(content: Text('Link copied to clipboard')),
+                                            );
+                                            Navigator.pop(ctx);
+                                          },
+                                          icon: const Icon(Icons.copy),
+                                          label: const Text('Copy'),
+                                        ),
+                                      ],
+                                    ),
+                                  );
+                                  ref.read(petAccessNotifierProvider(petId).notifier).refresh();
+                                } catch (e) {
+                                  if (!context.mounted) return;
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(content: Text('Error: $e')),
+                                  );
+                                }
+                              },
+                              icon: const Icon(Icons.share, size: 18),
+                              label: const Text('Share Pet'),
+                            ),
+                          ],
+                        ),
+                      ),
+                    if (accessList.isEmpty)
+                      Padding(
+                        padding: const EdgeInsets.all(24),
+                        child: Column(
+                          children: [
+                            Icon(Icons.people_outline, size: 48,
+                                color: colorScheme.outline),
+                            const SizedBox(height: 8),
+                            Text('No one else has access yet',
+                                style: theme.textTheme.bodyLarge?.copyWith(
+                                    color: colorScheme.onSurfaceVariant)),
+                            const SizedBox(height: 4),
+                            Text('Tap "Share Pet" to generate a share link',
+                                style: theme.textTheme.bodySmall?.copyWith(
+                                    color: colorScheme.outline)),
+                          ],
+                        ),
+                      )
+                    else
+                      ListView.builder(
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        itemCount: accessList.length,
+                        itemBuilder: (context, index) {
+                          final access = accessList[index];
+                          final user = access.user;
+                          final displayName = user?.displayName ?? 'User #${access.userId}';
+                          final initials = user?.initials ?? '?';
+                          final photoUrl = user?.photoUrl ?? '';
+                          final category = user?.category ?? 'pet_guardian';
+                          final isProfessional = category == 'professional_multi_pet';
+                          final isCurrentUser = access.userId == currentUserId;
+
+                          Widget avatar;
+                          if (photoUrl.isNotEmpty) {
+                            final imageUrl = photoUrl.startsWith('http')
+                                ? photoUrl
+                                : '$baseUrl/$photoUrl';
+                            avatar = CircleAvatar(
+                              radius: 20,
+                              backgroundImage: NetworkImage(imageUrl),
+                            );
+                          } else {
+                            avatar = CircleAvatar(
+                              radius: 20,
+                              backgroundColor: colorScheme.primaryContainer,
+                              child: Text(initials,
+                                  style: TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.bold,
+                                      color: colorScheme.onPrimaryContainer)),
+                            );
+                          }
+
+                          final roleBadgeColor = access.role == PetAccessRole.guardian
+                              ? Colors.deepPurple
+                              : Colors.grey;
+                          final roleBadgeLabel = access.role == PetAccessRole.guardian
+                              ? 'Guardian'
+                              : 'Shared';
+
+                          return ListTile(
+                            contentPadding: EdgeInsets.zero,
+                            leading: avatar,
+                            title: Row(
+                              children: [
+                                Flexible(
+                                  child: Text(
+                                    displayName + (isCurrentUser ? ' (you)' : ''),
+                                    overflow: TextOverflow.ellipsis,
+                                    style: theme.textTheme.bodyMedium?.copyWith(
+                                        fontWeight: FontWeight.w600),
+                                  ),
+                                ),
+                                const SizedBox(width: 8),
+                                Container(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 8, vertical: 2),
+                                  decoration: BoxDecoration(
+                                    color: roleBadgeColor.withAlpha(30),
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  child: Text(roleBadgeLabel,
+                                      style: TextStyle(
+                                          fontSize: 11,
+                                          color: roleBadgeColor,
+                                          fontWeight: FontWeight.w600)),
+                                ),
+                              ],
+                            ),
+                            subtitle: isProfessional
+                                ? Text('Professional Multi Pet',
+                                    style: theme.textTheme.bodySmall?.copyWith(
+                                        color: Colors.teal))
+                                : null,
+                            trailing: isGuardian && !isCurrentUser
+                                ? PopupMenuButton<String>(
+                                    itemBuilder: (ctx) => [
+                                      PopupMenuItem(
+                                        value: 'toggle_role',
+                                        child: Text(access.role == PetAccessRole.guardian
+                                            ? 'Demote to Shared'
+                                            : 'Promote to Guardian'),
+                                      ),
+                                      const PopupMenuItem(
+                                        value: 'remove',
+                                        child: Text('Remove Access'),
+                                      ),
+                                    ],
+                                    onSelected: (action) async {
+                                      final notifier = ref.read(
+                                          petAccessNotifierProvider(petId).notifier);
+                                      try {
+                                        if (action == 'toggle_role') {
+                                          final newRole = access.role == PetAccessRole.guardian
+                                              ? PetAccessRole.shared
+                                              : PetAccessRole.guardian;
+                                          await notifier.updateRole(access.userId, newRole);
+                                        } else if (action == 'remove') {
+                                          await notifier.removeAccess(access.userId);
+                                        }
+                                      } catch (e) {
+                                        if (context.mounted) {
+                                          ScaffoldMessenger.of(context).showSnackBar(
+                                            SnackBar(content: Text('Error: $e')),
+                                          );
+                                        }
+                                      }
+                                    },
+                                  )
+                                : null,
+                          );
+                        },
+                      ),
+                    const SizedBox(height: 8),
+                  ],
+                );
+              },
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

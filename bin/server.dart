@@ -177,6 +177,20 @@ Future<void> main() async {
   print('weight_entries table ready');
 
   await _db.execute(Sql('''
+    CREATE TABLE IF NOT EXISTS pet_access (
+      id SERIAL PRIMARY KEY,
+      pet_id VARCHAR(255) NOT NULL,
+      user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      role VARCHAR(20) NOT NULL DEFAULT 'shared',
+      invited_by INTEGER REFERENCES users(id),
+      share_code VARCHAR(12) UNIQUE,
+      created_at TIMESTAMPTZ DEFAULT NOW(),
+      UNIQUE(pet_id, user_id)
+    )
+  '''));
+  print('pet_access table ready');
+
+  await _db.execute(Sql('''
     ALTER TABLE health_entries ADD COLUMN IF NOT EXISTS repeat_end_date DATE
   '''));
 
@@ -425,8 +439,18 @@ Future<void> _handleApi(HttpRequest request) async {
   // Sharing
   else if (path == '/api/share' && method == 'POST') {
     await _createShare(request);
+  } else if (RegExp(r'^/api/share/[^/]+/accept$').hasMatch(path) && method == 'POST') {
+    await _acceptShare(request);
   } else if (RegExp(r'^/api/share/[^/]+$').hasMatch(path) && method == 'GET') {
     await _getShare(request);
+  }
+  // Pet access management
+  else if (RegExp(r'^/api/pets/[^/]+/access$').hasMatch(path) && method == 'GET') {
+    await _getPetAccess(request);
+  } else if (RegExp(r'^/api/pets/[^/]+/access/\d+/role$').hasMatch(path) && method == 'PUT') {
+    await _updatePetAccessRole(request);
+  } else if (RegExp(r'^/api/pets/[^/]+/access/\d+$').hasMatch(path) && method == 'DELETE') {
+    await _deletePetAccess(request);
   } else {
     _jsonResponse(request, 404, {'error': 'Not found'});
   }
@@ -1648,10 +1672,11 @@ String _generateShareCode() {
 
 Future<void> _createShare(HttpRequest request) async {
   final payload = await _authenticateRequest(request);
-  int? authUserId;
-  if (payload != null) {
-    authUserId = int.tryParse(payload['sub'].toString());
+  if (payload == null) {
+    _jsonResponse(request, 401, {'error': 'Not authenticated'});
+    return;
   }
+  final authUserId = int.parse(payload['sub'].toString());
 
   final body = await _readJson(request);
   if (body == null) return;
@@ -1664,43 +1689,65 @@ Future<void> _createShare(HttpRequest request) async {
     return;
   }
 
-  final existing = await _db.execute(
-    Sql.named('SELECT share_code FROM shared_pets WHERE pet_id = @petId'),
+  await _db.execute(
+    Sql.named('''
+      INSERT INTO pet_access (pet_id, user_id, role)
+      VALUES (@petId, @userId, 'guardian')
+      ON CONFLICT (pet_id, user_id) DO UPDATE SET role = 'guardian'
+    '''),
+    parameters: {'petId': petId, 'userId': authUserId},
+  );
+
+  final existingAccess = await _db.execute(
+    Sql.named('SELECT share_code FROM pet_access WHERE pet_id = @petId AND user_id = @userId AND share_code IS NOT NULL'),
+    parameters: {'petId': petId, 'userId': authUserId},
+  );
+
+  String code;
+  if (existingAccess.isNotEmpty && existingAccess.first.toColumnMap()['share_code'] != null) {
+    code = existingAccess.first.toColumnMap()['share_code'].toString();
+  } else {
+    code = _generateShareCode();
+    await _db.execute(
+      Sql.named('UPDATE pet_access SET share_code = @code WHERE pet_id = @petId AND user_id = @userId'),
+      parameters: {'code': code, 'petId': petId, 'userId': authUserId},
+    );
+  }
+
+  final existingShared = await _db.execute(
+    Sql.named('SELECT id FROM shared_pets WHERE pet_id = @petId'),
     parameters: {'petId': petId},
   );
 
-  if (existing.isNotEmpty) {
-    final code = existing.first.toColumnMap()['share_code'].toString();
+  if (existingShared.isNotEmpty) {
     await _db.execute(
       Sql.named('''
-        UPDATE shared_pets SET pet_data = @petData::jsonb, updated_at = NOW(), user_id = COALESCE(@userId, user_id)
+        UPDATE shared_pets SET pet_data = @petData::jsonb, updated_at = NOW(), user_id = @userId, share_code = @code
         WHERE pet_id = @petId
       '''),
       parameters: {
         'petId': petId,
         'petData': json.encode(petData),
         'userId': authUserId,
+        'code': code,
       },
     );
-    _jsonResponse(request, 200, {'share_code': code});
-    return;
+  } else {
+    await _db.execute(
+      Sql.named('''
+        INSERT INTO shared_pets (share_code, pet_data, pet_id, user_id)
+        VALUES (@code, @petData::jsonb, @petId, @userId)
+      '''),
+      parameters: {
+        'code': code,
+        'petData': json.encode(petData),
+        'petId': petId,
+        'userId': authUserId,
+      },
+    );
   }
 
-  final code = _generateShareCode();
-  await _db.execute(
-    Sql.named('''
-      INSERT INTO shared_pets (share_code, pet_data, pet_id, user_id)
-      VALUES (@code, @petData::jsonb, @petId, @userId)
-    '''),
-    parameters: {
-      'code': code,
-      'petData': json.encode(petData),
-      'petId': petId,
-      'userId': authUserId,
-    },
-  );
-
-  _jsonResponse(request, 201, {'share_code': code});
+  _jsonResponse(request, 200, {'share_code': code});
 }
 
 Future<void> _getShare(HttpRequest request) async {
@@ -1710,6 +1757,34 @@ Future<void> _getShare(HttpRequest request) async {
     Sql.named('SELECT * FROM shared_pets WHERE share_code = @code'),
     parameters: {'code': code},
   );
+
+  Map<String, dynamic>? guardianInfo;
+  final accessResult = await _db.execute(
+    Sql.named('''
+      SELECT pa.*, u.first_name, u.last_name, u.category, u.bio, u.photo_url
+      FROM pet_access pa
+      JOIN users u ON u.id = pa.user_id
+      WHERE pa.share_code = @code
+    '''),
+    parameters: {'code': code},
+  );
+
+  if (result.isEmpty && accessResult.isEmpty) {
+    _jsonResponse(request, 404, {'error': 'Share not found'});
+    return;
+  }
+
+  if (accessResult.isNotEmpty) {
+    final aCols = accessResult.first.toColumnMap();
+    guardianInfo = {
+      'user_id': aCols['user_id'].toString(),
+      'first_name': (aCols['first_name'] ?? '').toString(),
+      'last_name': (aCols['last_name'] ?? '').toString(),
+      'category': (aCols['category'] ?? 'pet_guardian').toString(),
+      'bio': (aCols['bio'] ?? '').toString(),
+      'photo_url': (aCols['photo_url'] ?? '').toString(),
+    };
+  }
 
   if (result.isEmpty) {
     _jsonResponse(request, 404, {'error': 'Share not found'});
@@ -1740,8 +1815,8 @@ Future<void> _getShare(HttpRequest request) async {
     }
   }
 
-  Map<String, dynamic>? owner;
-  if (shareUserId != null) {
+  Map<String, dynamic>? owner = guardianInfo;
+  if (owner == null && shareUserId != null) {
     final ownerResult = await _db.execute(
       Sql.named('SELECT id, email, name, first_name, last_name, category, bio, photo_url, created_at, updated_at FROM users WHERE id = @id'),
       parameters: {'id': shareUserId},
@@ -1749,6 +1824,7 @@ Future<void> _getShare(HttpRequest request) async {
     if (ownerResult.isNotEmpty) {
       final ownerRow = ownerResult.first.toColumnMap();
       owner = {
+        'user_id': ownerRow['id'].toString(),
         'first_name': (ownerRow['first_name'] ?? '').toString(),
         'last_name': (ownerRow['last_name'] ?? '').toString(),
         'category': (ownerRow['category'] ?? 'pet_guardian').toString(),
@@ -1763,7 +1839,259 @@ Future<void> _getShare(HttpRequest request) async {
     'health_entries': healthEntries,
     'vet': vet,
     'owner': owner,
+    'guardian': guardianInfo,
   });
+}
+
+Future<void> _acceptShare(HttpRequest request) async {
+  final payload = await _authenticateRequest(request);
+  if (payload == null) {
+    _jsonResponse(request, 401, {'error': 'Not authenticated'});
+    return;
+  }
+  final userId = int.parse(payload['sub'].toString());
+
+  final segments = request.uri.pathSegments;
+  final code = segments[segments.length - 2];
+
+  final accessResult = await _db.execute(
+    Sql.named('SELECT pet_id, user_id FROM pet_access WHERE share_code = @code'),
+    parameters: {'code': code},
+  );
+
+  if (accessResult.isEmpty) {
+    _jsonResponse(request, 404, {'error': 'Share code not found'});
+    return;
+  }
+
+  final accessCols = accessResult.first.toColumnMap();
+  final petId = accessCols['pet_id'].toString();
+  final guardianUserId = accessCols['user_id'] as int;
+
+  if (guardianUserId == userId) {
+    _jsonResponse(request, 400, {'error': 'You are already a guardian of this pet'});
+    return;
+  }
+
+  await _db.execute(
+    Sql.named('''
+      INSERT INTO pet_access (pet_id, user_id, role, invited_by)
+      VALUES (@petId, @userId, 'shared', @invitedBy)
+      ON CONFLICT (pet_id, user_id) DO NOTHING
+    '''),
+    parameters: {
+      'petId': petId,
+      'userId': userId,
+      'invitedBy': guardianUserId,
+    },
+  );
+
+  _jsonResponse(request, 200, {'pet_id': petId, 'message': 'Access granted'});
+}
+
+Future<Map<String, dynamic>> _petAccessRowToJson(ResultRow row) async {
+  final cols = row.toColumnMap();
+  final userId = cols['user_id'] as int;
+
+  final userResult = await _db.execute(
+    Sql.named('SELECT id, first_name, last_name, category, bio, photo_url FROM users WHERE id = @id'),
+    parameters: {'id': userId},
+  );
+
+  Map<String, dynamic> userInfo = {};
+  if (userResult.isNotEmpty) {
+    final u = userResult.first.toColumnMap();
+    final firstName = (u['first_name'] ?? '').toString();
+    final lastName = (u['last_name'] ?? '').toString();
+    final displayName = '$firstName $lastName'.trim();
+    final initials = ((firstName.isNotEmpty ? firstName[0] : '') + (lastName.isNotEmpty ? lastName[0] : '')).toUpperCase();
+    userInfo = {
+      'id': u['id'].toString(),
+      'first_name': firstName,
+      'last_name': lastName,
+      'category': (u['category'] ?? 'pet_guardian').toString(),
+      'bio': (u['bio'] ?? '').toString(),
+      'photo_url': (u['photo_url'] ?? '').toString(),
+      'display_name': displayName.isNotEmpty ? displayName : 'User',
+      'initials': initials.isNotEmpty ? initials : 'U',
+    };
+  }
+
+  return {
+    'id': cols['id'].toString(),
+    'pet_id': cols['pet_id'].toString(),
+    'user_id': cols['user_id'].toString(),
+    'role': cols['role'].toString(),
+    'invited_by': cols['invited_by']?.toString(),
+    'share_code': cols['share_code']?.toString(),
+    'created_at': cols['created_at'].toString(),
+    'user': userInfo,
+  };
+}
+
+Future<void> _getPetAccess(HttpRequest request) async {
+  final payload = await _authenticateRequest(request);
+  if (payload == null) {
+    _jsonResponse(request, 401, {'error': 'Not authenticated'});
+    return;
+  }
+  final userId = int.parse(payload['sub'].toString());
+
+  final segments = request.uri.pathSegments;
+  final petId = segments[segments.length - 2];
+
+  final callerAccess = await _db.execute(
+    Sql.named('SELECT role, invited_by FROM pet_access WHERE pet_id = @petId AND user_id = @userId'),
+    parameters: {'petId': petId, 'userId': userId},
+  );
+
+  if (callerAccess.isEmpty) {
+    _jsonResponse(request, 403, {'error': 'No access to this pet'});
+    return;
+  }
+
+  final callerCols = callerAccess.first.toColumnMap();
+  final callerRole = callerCols['role'].toString();
+
+  List<Map<String, dynamic>> accessList;
+
+  if (callerRole == 'guardian') {
+    final result = await _db.execute(
+      Sql.named('SELECT * FROM pet_access WHERE pet_id = @petId ORDER BY created_at ASC'),
+      parameters: {'petId': petId},
+    );
+    accessList = [];
+    for (final row in result) {
+      accessList.add(await _petAccessRowToJson(row));
+    }
+  } else {
+    final invitedBy = callerCols['invited_by'];
+    if (invitedBy != null) {
+      final result = await _db.execute(
+        Sql.named('SELECT * FROM pet_access WHERE pet_id = @petId AND user_id = @invitedBy'),
+        parameters: {'petId': petId, 'invitedBy': invitedBy},
+      );
+      accessList = [];
+      for (final row in result) {
+        accessList.add(await _petAccessRowToJson(row));
+      }
+    } else {
+      accessList = [];
+    }
+  }
+
+  _jsonResponse(request, 200, {'access': accessList, 'caller_role': callerRole});
+}
+
+Future<void> _updatePetAccessRole(HttpRequest request) async {
+  final payload = await _authenticateRequest(request);
+  if (payload == null) {
+    _jsonResponse(request, 401, {'error': 'Not authenticated'});
+    return;
+  }
+  final callerId = int.parse(payload['sub'].toString());
+
+  final segments = request.uri.pathSegments;
+  final petId = segments[segments.length - 4];
+  final targetUserId = int.tryParse(segments[segments.length - 2]);
+  if (targetUserId == null) {
+    _jsonResponse(request, 400, {'error': 'Invalid user ID'});
+    return;
+  }
+
+  final callerAccess = await _db.execute(
+    Sql.named('SELECT role FROM pet_access WHERE pet_id = @petId AND user_id = @userId'),
+    parameters: {'petId': petId, 'userId': callerId},
+  );
+
+  if (callerAccess.isEmpty || callerAccess.first.toColumnMap()['role'].toString() != 'guardian') {
+    _jsonResponse(request, 403, {'error': 'Only guardians can change roles'});
+    return;
+  }
+
+  final body = await _readJson(request);
+  if (body == null) return;
+
+  final newRole = body['role'] as String? ?? '';
+  if (newRole != 'guardian' && newRole != 'shared') {
+    _jsonResponse(request, 400, {'error': 'Role must be guardian or shared'});
+    return;
+  }
+
+  if (newRole == 'shared' && targetUserId == callerId) {
+    final guardianCount = await _db.execute(
+      Sql.named('SELECT COUNT(*) as cnt FROM pet_access WHERE pet_id = @petId AND role = \'guardian\''),
+      parameters: {'petId': petId},
+    );
+    final count = guardianCount.first.toColumnMap()['cnt'] as int;
+    if (count <= 1) {
+      _jsonResponse(request, 400, {'error': 'Cannot demote the last guardian'});
+      return;
+    }
+  }
+
+  final result = await _db.execute(
+    Sql.named('UPDATE pet_access SET role = @role WHERE pet_id = @petId AND user_id = @targetUserId RETURNING *'),
+    parameters: {'role': newRole, 'petId': petId, 'targetUserId': targetUserId},
+  );
+
+  if (result.isEmpty) {
+    _jsonResponse(request, 404, {'error': 'User access not found'});
+    return;
+  }
+
+  _jsonResponse(request, 200, await _petAccessRowToJson(result.first));
+}
+
+Future<void> _deletePetAccess(HttpRequest request) async {
+  final payload = await _authenticateRequest(request);
+  if (payload == null) {
+    _jsonResponse(request, 401, {'error': 'Not authenticated'});
+    return;
+  }
+  final callerId = int.parse(payload['sub'].toString());
+
+  final segments = request.uri.pathSegments;
+  final petId = segments[segments.length - 3];
+  final targetUserId = int.tryParse(segments.last);
+  if (targetUserId == null) {
+    _jsonResponse(request, 400, {'error': 'Invalid user ID'});
+    return;
+  }
+
+  final callerAccess = await _db.execute(
+    Sql.named('SELECT role FROM pet_access WHERE pet_id = @petId AND user_id = @userId'),
+    parameters: {'petId': petId, 'userId': callerId},
+  );
+
+  if (callerAccess.isEmpty || callerAccess.first.toColumnMap()['role'].toString() != 'guardian') {
+    _jsonResponse(request, 403, {'error': 'Only guardians can remove access'});
+    return;
+  }
+
+  if (targetUserId == callerId) {
+    final guardianCount = await _db.execute(
+      Sql.named('SELECT COUNT(*) as cnt FROM pet_access WHERE pet_id = @petId AND role = \'guardian\''),
+      parameters: {'petId': petId},
+    );
+    final count = guardianCount.first.toColumnMap()['cnt'] as int;
+    if (count <= 1) {
+      _jsonResponse(request, 400, {'error': 'Cannot remove the last guardian'});
+      return;
+    }
+  }
+
+  final result = await _db.execute(
+    Sql.named('DELETE FROM pet_access WHERE pet_id = @petId AND user_id = @targetUserId RETURNING id'),
+    parameters: {'petId': petId, 'targetUserId': targetUserId},
+  );
+
+  if (result.isEmpty) {
+    _jsonResponse(request, 404, {'error': 'User access not found'});
+    return;
+  }
+
+  _jsonResponse(request, 200, {'deleted': true});
 }
 
 // ── Notifications ────────────────────────────────────────────

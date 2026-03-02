@@ -19,7 +19,7 @@ The application follows a clean architecture approach, separating concerns into 
 - **Weight Tracking**: Per-pet weight history with line charts and unit selection (kg/lb). Data stored in PostgreSQL.
 - **Veterinarian Management**: CRUD operations for veterinarian contacts, linkable to individual pets. Data stored in PostgreSQL.
 - **Notification System**: In-app notification center with server-side due-entry checking and email reminder capabilities. Data stored in PostgreSQL.
-- **Sharing Feature**: Allows sharing pet profiles and health data via a unique code for read-only access. Shared views include owner profile card (name, category, bio, photo). Data stored in PostgreSQL.
+- **Sharing Feature**: Multi-user pet access system with guardian/shared roles. Guardians can invite others via share links, manage access, and toggle roles. Shared users see only the guardian who invited them. Each share link is tied to a specific guardian. `pet_access` table tracks per-user access with roles. Shared pet views include owner profile card. Accept-share flow for logged-in users. Data stored in PostgreSQL.
 - **Pet Report Generation**: Generates comprehensive PDF reports for individual pets, including customizable sections for profile, weight tracking, and health events.
 - **Deployment**: The Flutter web frontend is served statically by a Dart API server, which is AOT compiled for production.
 
