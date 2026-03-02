@@ -129,7 +129,7 @@ class PetCard extends StatelessWidget {
             children: [
               ColorFiltered(
                 colorFilter: const ColorFilter.mode(
-                  Color(0xBBFFFFFF),
+                  Color(0xDDFFFFFF),
                   BlendMode.lighten,
                 ),
                 child: avatar,
@@ -138,7 +138,7 @@ class PetCard extends StatelessWidget {
                 width: 50,
                 height: 50,
                 child: Opacity(
-                  opacity: 0.45,
+                  opacity: 0.35,
                   child: Image.asset(
                     'assets/rainbow_wings.png',
                     fit: BoxFit.contain,

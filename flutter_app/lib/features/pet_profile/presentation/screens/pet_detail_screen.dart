@@ -921,28 +921,30 @@ class _PetPhoto extends StatelessWidget {
     }
 
     if (pet.passedAway) {
-      return Stack(
-        fit: StackFit.expand,
-        children: [
-          ColorFiltered(
-            colorFilter: const ColorFilter.mode(
-              Color(0xBBFFFFFF),
-              BlendMode.lighten,
+      return ClipRect(
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            ColorFiltered(
+              colorFilter: const ColorFilter.mode(
+                Color(0xDDFFFFFF),
+                BlendMode.lighten,
+              ),
+              child: photoContent,
             ),
-            child: photoContent,
-          ),
-          Center(
-            child: Opacity(
-              opacity: 0.45,
-              child: Image.asset(
-                'assets/rainbow_wings.png',
-                width: 80,
-                height: 80,
-                fit: BoxFit.contain,
+            Center(
+              child: Opacity(
+                opacity: 0.35,
+                child: Image.asset(
+                  'assets/rainbow_wings.png',
+                  width: 80,
+                  height: 80,
+                  fit: BoxFit.contain,
+                ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       );
     }
 
