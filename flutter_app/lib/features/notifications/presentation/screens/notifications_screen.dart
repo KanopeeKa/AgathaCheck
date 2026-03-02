@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 
 import '../../domain/entities/app_notification.dart';
 import '../providers/notification_providers.dart';
+import '../../../pet_profile/presentation/providers/pet_providers.dart';
 
 class NotificationsScreen extends ConsumerStatefulWidget {
   const NotificationsScreen({super.key});
@@ -186,7 +187,7 @@ class _NotificationGroup {
   _NotificationGroup({required this.label, required this.notifications});
 }
 
-class _NotificationTile extends StatelessWidget {
+class _NotificationTile extends ConsumerWidget {
   const _NotificationTile({
     required this.notification,
     required this.onTap,
@@ -196,7 +197,7 @@ class _NotificationTile extends StatelessWidget {
   final VoidCallback onTap;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
     final isUnread = !notification.isRead;
 
@@ -225,9 +226,15 @@ class _NotificationTile extends StatelessWidget {
         break;
     }
 
+    final pets = ref.watch(petListProvider).valueOrNull ?? [];
+    final pet = notification.petId != null
+        ? pets.where((p) => p.id == notification.petId).firstOrNull
+        : null;
+    final petColor = pet?.colorValue != null ? Color(pet!.colorValue!) : null;
+
     return MergeSemantics(
       child: Semantics(
-        label: '${notification.type.name} notification: ${notification.title}, ${_formatTime(notification.createdAt)}${isUnread ? ', unread' : ''}',
+        label: '${notification.type.name} notification: ${notification.title}, ${_formatTime(notification.createdAt)}${isUnread ? ', unread' : ''}${notification.petName != null ? ', pet: ${notification.petName}' : ''}',
         child: ListTile(
           leading: CircleAvatar(
             backgroundColor: iconColor.withAlpha(30),
@@ -248,12 +255,30 @@ class _NotificationTile extends StatelessWidget {
                   maxLines: 2, overflow: TextOverflow.ellipsis),
               if (notification.petName != null && notification.petName!.isNotEmpty)
                 Padding(
-                  padding: const EdgeInsets.only(top: 2),
-                  child: Text(
-                    notification.petName!,
-                    style: theme.textTheme.labelSmall?.copyWith(
-                      color: theme.colorScheme.primary,
-                    ),
+                  padding: const EdgeInsets.only(top: 4),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Container(
+                        width: 10,
+                        height: 10,
+                        decoration: BoxDecoration(
+                          color: petColor ?? theme.colorScheme.primary,
+                          shape: BoxShape.circle,
+                        ),
+                      ),
+                      const SizedBox(width: 6),
+                      Icon(Icons.pets, size: 13,
+                          color: petColor ?? theme.colorScheme.primary),
+                      const SizedBox(width: 4),
+                      Text(
+                        notification.petName!,
+                        style: theme.textTheme.labelMedium?.copyWith(
+                          color: petColor ?? theme.colorScheme.primary,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
             ],
