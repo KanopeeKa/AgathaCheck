@@ -96,6 +96,13 @@ pubspec.yaml           - Root: pure Dart + postgres + dart_jsonwebtoken + dbcryp
   - GET /api/health-entries/:id/history - View administration history
   - GET /api/health-entries/export - Export CSV
 - **Scheduling**: Auto-calculates next due dates (daily/weekly/monthly/custom)
+- **Photo Attachments**:
+  - Database: health_event_photos table (id, health_entry_id, photo_path, caption, created_at)
+  - Max 4 photos per event, 2MB per file, stored at uploads/health/{eventId}/
+  - API: POST /api/health-entries/:id/photos (multipart upload), GET (list), DELETE (remove)
+  - Create mode: photos held in-memory as pending XFile objects, uploaded after entry saved with real ID
+  - Edit mode: photos upload immediately to server
+  - UI: _PhotosSection widget shows saved + pending photos in a 2-column grid, pending photos show "Pending" label, fullscreen viewer on tap
 - **UI**: Tabbed dashboard (All/Medications/Preventives/Vaccines), entry cards with frequency badges, mark-taken button, add/edit form with multi-pet selector (FilterChip chips, Select All/Clear, creates 1 entry per selected pet)
 
 ## Weight Tracking Feature
