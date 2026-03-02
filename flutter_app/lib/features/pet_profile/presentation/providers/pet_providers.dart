@@ -190,8 +190,8 @@ class PetListNotifier extends AsyncNotifier<List<Pet>> {
 final petListProvider =
     AsyncNotifierProvider<PetListNotifier, List<Pet>>(PetListNotifier.new);
 
-/// Provider that retrieves a single pet by ID.
+/// Provider that retrieves a single pet by ID, derived from the pet list.
 final petByIdProvider = FutureProvider.family<Pet?, String>((ref, id) async {
-  final repo = ref.watch(petRepositoryProvider);
-  return repo.getPetById(id);
+  final pets = await ref.watch(petListProvider.future);
+  return pets.where((p) => p.id == id).firstOrNull;
 });

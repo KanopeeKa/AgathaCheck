@@ -274,6 +274,7 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
           photoPath: _photoBase64,
           vetId: _selectedVetId,
           colorValue: _existingColorValue,
+          passedAway: _passedAway,
         );
         await ref.read(petListProvider.notifier).updatePet(pet);
       } else {
