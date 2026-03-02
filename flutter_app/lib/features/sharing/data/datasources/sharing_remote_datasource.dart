@@ -54,11 +54,22 @@ class SharingRemoteDataSource {
         'Authorization': 'Bearer $token',
       },
     );
+    if (response.statusCode == 403) {
+      return [];
+    }
     if (response.statusCode >= 400) {
       final data = json.decode(response.body);
       throw Exception(data['error'] ?? 'Failed to get access list');
     }
-    final list = json.decode(response.body) as List;
+    final decoded = json.decode(response.body);
+    final List list;
+    if (decoded is Map<String, dynamic> && decoded.containsKey('access')) {
+      list = decoded['access'] as List;
+    } else if (decoded is List) {
+      list = decoded;
+    } else {
+      list = [];
+    }
     return list
         .map((e) => PetAccessModel.fromJson(e as Map<String, dynamic>))
         .toList();
