@@ -27,6 +27,7 @@ class _SharedPetScreenState extends ConsumerState<SharedPetScreen> {
   Map<String, dynamic>? _petData;
   List<Map<String, dynamic>> _healthEntries = [];
   Map<String, dynamic>? _vetData;
+  Map<String, dynamic>? _ownerData;
   bool _loading = true;
   String? _error;
 
@@ -51,6 +52,7 @@ class _SharedPetScreenState extends ConsumerState<SharedPetScreen> {
                   ?.cast<Map<String, dynamic>>() ??
               [];
           _vetData = data['vet'] as Map<String, dynamic>?;
+          _ownerData = data['owner'] as Map<String, dynamic>?;
           _loading = false;
         });
       } else {
@@ -200,6 +202,19 @@ class _SharedPetScreenState extends ConsumerState<SharedPetScreen> {
             ),
           ),
 
+          if (_ownerData != null) ...[
+            const SizedBox(height: 24),
+            Row(
+              children: [
+                Icon(Icons.person, color: colorScheme.primary),
+                const SizedBox(width: 8),
+                Text('Shared by', style: theme.textTheme.titleLarge),
+              ],
+            ),
+            const SizedBox(height: 8),
+            _buildOwnerCard(theme, colorScheme),
+          ],
+
           if (_vetData != null) ...[
             const SizedBox(height: 24),
             Row(
@@ -282,6 +297,106 @@ class _SharedPetScreenState extends ConsumerState<SharedPetScreen> {
         ],
       ),
     );
+  }
+
+  Widget _buildOwnerCard(ThemeData theme, ColorScheme colorScheme) {
+    final owner = _ownerData!;
+    final firstName = owner['first_name']?.toString() ?? '';
+    final lastName = owner['last_name']?.toString() ?? '';
+    final fullName = '$firstName $lastName'.trim();
+    final category = owner['category']?.toString() ?? 'pet_guardian';
+    final ownerBio = owner['bio']?.toString() ?? '';
+    final photoUrl = owner['photo_url']?.toString() ?? '';
+
+    final initials = _ownerInitials(firstName, lastName, fullName);
+
+    final isProfessional = category == 'professional_multi_pet';
+    final categoryLabel = isProfessional ? 'Professional Multi Pet' : 'Pet Guardian';
+    final categoryIcon = isProfessional ? Icons.business_center : Icons.pets;
+    final categoryColor = isProfessional ? Colors.teal : Colors.deepPurple;
+
+    Widget avatar;
+    if (photoUrl.isNotEmpty) {
+      final imageUrl = photoUrl.startsWith('http') ? photoUrl : '$_baseUrl/$photoUrl';
+      avatar = CircleAvatar(
+        radius: 28,
+        backgroundImage: NetworkImage(imageUrl),
+      );
+    } else {
+      avatar = CircleAvatar(
+        radius: 28,
+        backgroundColor: colorScheme.primaryContainer,
+        child: Text(initials,
+            style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: colorScheme.onPrimaryContainer)),
+      );
+    }
+
+    return Card(
+      color: colorScheme.secondaryContainer.withAlpha(80),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            avatar,
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  if (fullName.isNotEmpty)
+                    Text(fullName,
+                        style: theme.textTheme.titleMedium
+                            ?.copyWith(fontWeight: FontWeight.bold)),
+                  const SizedBox(height: 6),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: categoryColor.withAlpha(30),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(categoryIcon, size: 14, color: categoryColor),
+                        const SizedBox(width: 4),
+                        Text(categoryLabel,
+                            style: TextStyle(
+                                fontSize: 12,
+                                color: categoryColor,
+                                fontWeight: FontWeight.w600)),
+                      ],
+                    ),
+                  ),
+                  if (ownerBio.isNotEmpty) ...[
+                    const SizedBox(height: 8),
+                    Text(ownerBio,
+                        style: theme.textTheme.bodySmall?.copyWith(
+                            color: colorScheme.onSurfaceVariant)),
+                  ],
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  String _ownerInitials(String firstName, String lastName, String fullName) {
+    if (firstName.isNotEmpty && lastName.isNotEmpty) {
+      return '${firstName[0]}${lastName[0]}'.toUpperCase();
+    }
+    if (fullName.length >= 2) {
+      return fullName.substring(0, 2).toUpperCase();
+    }
+    if (fullName.isNotEmpty) {
+      return fullName[0].toUpperCase();
+    }
+    return '?';
   }
 
   Widget _buildVetCard(ThemeData theme, ColorScheme colorScheme) {

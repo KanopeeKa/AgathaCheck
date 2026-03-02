@@ -1,5 +1,4 @@
-// Auth providers — Riverpod state management for authentication.
-// Manages user session, tokens, and auth state across the app.
+import 'dart:typed_data';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -138,12 +137,40 @@ class AuthNotifier extends StateNotifier<AuthState> {
     state = const AuthState();
   }
 
-  Future<void> updateProfile({required String name}) async {
+  Future<void> updateProfile({
+    String? name,
+    String? firstName,
+    String? lastName,
+    String? category,
+    String? bio,
+  }) async {
     if (state.accessToken == null) return;
     state = state.copyWith(isLoading: true, clearError: true);
     try {
-      final user =
-          await _authService.updateMe(state.accessToken!, name: name);
+      final user = await _authService.updateMe(
+        state.accessToken!,
+        name: name,
+        firstName: firstName,
+        lastName: lastName,
+        category: category,
+        bio: bio,
+      );
+      state = state.copyWith(user: user, isLoading: false);
+    } catch (e) {
+      state = state.copyWith(
+          isLoading: false, error: e.toString().replaceFirst('Exception: ', ''));
+    }
+  }
+
+  Future<void> uploadPhoto(Uint8List bytes, String filename) async {
+    if (state.accessToken == null) return;
+    state = state.copyWith(isLoading: true, clearError: true);
+    try {
+      final user = await _authService.uploadPhoto(
+        state.accessToken!,
+        bytes,
+        filename,
+      );
       state = state.copyWith(user: user, isLoading: false);
     } catch (e) {
       state = state.copyWith(

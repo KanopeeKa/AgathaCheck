@@ -14,12 +14,12 @@ The application follows a clean architecture approach, separating concerns into 
 
 **Key Technical Implementations & Features:**
 - **Pet Profile Management**: CRUD operations for pet profiles, including linking vets and health entries. Uses `SharedPreferences` for local pet data storage.
-- **Authentication**: JWT-based email/password authentication with signup, login, refresh, logout, profile management, and password change functionalities. Tokens are stored in `SharedPreferences`.
+- **Authentication & User Profile**: JWT-based email/password authentication with signup, login, refresh, logout, profile management, and password change. Enhanced user profile with first/last name, category (Pet Guardian / Professional Multi Pet), bio, and photo upload. Profile card displayed on "My Details" screen with edit bottom sheet. Profile info shared with pet-sharing recipients. Tokens stored in `SharedPreferences`.
 - **Health Tracking**: Comprehensive health entry management (medications, preventives, vaccines) with scheduling, photo attachments, and a tabbed dashboard view. Data stored in PostgreSQL.
 - **Weight Tracking**: Per-pet weight history with line charts and unit selection (kg/lb). Data stored in PostgreSQL.
 - **Veterinarian Management**: CRUD operations for veterinarian contacts, linkable to individual pets. Data stored in PostgreSQL.
 - **Notification System**: In-app notification center with server-side due-entry checking and email reminder capabilities. Data stored in PostgreSQL.
-- **Sharing Feature**: Allows sharing pet profiles and health data via a unique code for read-only access. Data stored in PostgreSQL.
+- **Sharing Feature**: Allows sharing pet profiles and health data via a unique code for read-only access. Shared views include owner profile card (name, category, bio, photo). Data stored in PostgreSQL.
 - **Pet Report Generation**: Generates comprehensive PDF reports for individual pets, including customizable sections for profile, weight tracking, and health events.
 - **Deployment**: The Flutter web frontend is served statically by a Dart API server, which is AOT compiled for production.
 

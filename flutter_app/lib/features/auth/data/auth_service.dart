@@ -1,8 +1,5 @@
-// Auth service — handles REST API calls for authentication.
-// Endpoints: POST /api/auth/signup, /login, /refresh, /logout
-//            GET /api/auth/me, PUT /api/auth/me, POST /api/auth/change-password
-
 import 'dart:convert';
+import 'dart:typed_data';
 
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:http/http.dart' as http;
@@ -11,6 +8,11 @@ class AuthUser {
   final String id;
   final String email;
   final String name;
+  final String firstName;
+  final String lastName;
+  final String category;
+  final String bio;
+  final String photoUrl;
   final String createdAt;
   final String updatedAt;
 
@@ -18,6 +20,11 @@ class AuthUser {
     required this.id,
     required this.email,
     required this.name,
+    required this.firstName,
+    required this.lastName,
+    required this.category,
+    required this.bio,
+    required this.photoUrl,
     required this.createdAt,
     required this.updatedAt,
   });
@@ -27,9 +34,31 @@ class AuthUser {
       id: json['id']?.toString() ?? '',
       email: json['email']?.toString() ?? '',
       name: json['name']?.toString() ?? '',
+      firstName: json['first_name']?.toString() ?? '',
+      lastName: json['last_name']?.toString() ?? '',
+      category: json['category']?.toString() ?? 'pet_guardian',
+      bio: json['bio']?.toString() ?? '',
+      photoUrl: json['photo_url']?.toString() ?? '',
       createdAt: json['created_at']?.toString() ?? '',
       updatedAt: json['updated_at']?.toString() ?? '',
     );
+  }
+
+  String get displayName {
+    final full = '$firstName $lastName'.trim();
+    if (full.isNotEmpty) return full;
+    if (name.isNotEmpty) return name;
+    return email;
+  }
+
+  String get initials {
+    if (firstName.isNotEmpty && lastName.isNotEmpty) {
+      return '${firstName[0]}${lastName[0]}'.toUpperCase();
+    }
+    final dn = displayName;
+    if (dn.length >= 2) return dn.substring(0, 2).toUpperCase();
+    if (dn.isNotEmpty) return dn[0].toUpperCase();
+    return '';
   }
 }
 
@@ -129,18 +158,53 @@ class AuthService {
         json.decode(response.body) as Map<String, dynamic>);
   }
 
-  Future<AuthUser> updateMe(String accessToken, {required String name}) async {
+  Future<AuthUser> updateMe(
+    String accessToken, {
+    String? name,
+    String? firstName,
+    String? lastName,
+    String? category,
+    String? bio,
+  }) async {
+    final body = <String, dynamic>{};
+    if (name != null) body['name'] = name;
+    if (firstName != null) body['first_name'] = firstName;
+    if (lastName != null) body['last_name'] = lastName;
+    if (category != null) body['category'] = category;
+    if (bio != null) body['bio'] = bio;
+
     final response = await _client.put(
       Uri.parse('$baseUrl/api/auth/me'),
       headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer $accessToken',
       },
-      body: json.encode({'name': name}),
+      body: json.encode(body),
     );
     if (response.statusCode >= 400) {
-      final body = json.decode(response.body);
-      throw Exception(body['error'] ?? 'Update failed');
+      final data = json.decode(response.body);
+      throw Exception(data['error'] ?? 'Update failed');
+    }
+    return AuthUser.fromJson(
+        json.decode(response.body) as Map<String, dynamic>);
+  }
+
+  Future<AuthUser> uploadPhoto(
+      String accessToken, Uint8List bytes, String filename) async {
+    final uri = Uri.parse('$baseUrl/api/auth/me/photo');
+    final request = http.MultipartRequest('POST', uri)
+      ..headers['Authorization'] = 'Bearer $accessToken'
+      ..files.add(http.MultipartFile.fromBytes(
+        'photo',
+        bytes,
+        filename: filename,
+      ));
+
+    final streamedResponse = await _client.send(request);
+    final response = await http.Response.fromStream(streamedResponse);
+    if (response.statusCode >= 400) {
+      final data = json.decode(response.body);
+      throw Exception(data['error'] ?? 'Photo upload failed');
     }
     return AuthUser.fromJson(
         json.decode(response.body) as Map<String, dynamic>);

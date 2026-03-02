@@ -82,7 +82,46 @@ Future<void> main() async {
       updated_at TIMESTAMPTZ DEFAULT NOW()
     )
   '''));
+
+  await _db.execute(Sql('''
+    DO \$\$ BEGIN
+      ALTER TABLE users ADD COLUMN first_name VARCHAR(100) DEFAULT '';
+    EXCEPTION WHEN OTHERS THEN NULL;
+    END \$\$;
+  '''));
+  await _db.execute(Sql('''
+    DO \$\$ BEGIN
+      ALTER TABLE users ADD COLUMN last_name VARCHAR(100) DEFAULT '';
+    EXCEPTION WHEN OTHERS THEN NULL;
+    END \$\$;
+  '''));
+  await _db.execute(Sql('''
+    DO \$\$ BEGIN
+      ALTER TABLE users ADD COLUMN category VARCHAR(50) DEFAULT 'pet_guardian';
+    EXCEPTION WHEN OTHERS THEN NULL;
+    END \$\$;
+  '''));
+  await _db.execute(Sql('''
+    DO \$\$ BEGIN
+      ALTER TABLE users ADD COLUMN bio TEXT DEFAULT '';
+    EXCEPTION WHEN OTHERS THEN NULL;
+    END \$\$;
+  '''));
+  await _db.execute(Sql('''
+    DO \$\$ BEGIN
+      ALTER TABLE users ADD COLUMN photo_url TEXT DEFAULT '';
+    EXCEPTION WHEN OTHERS THEN NULL;
+    END \$\$;
+  '''));
   print('users table ready');
+
+  await _db.execute(Sql('''
+    DO \$\$ BEGIN
+      ALTER TABLE shared_pets ADD COLUMN user_id INTEGER DEFAULT NULL;
+    EXCEPTION WHEN OTHERS THEN NULL;
+    END \$\$;
+  '''));
+  print('shared_pets user_id column ready');
 
   await _db.execute(Sql('''
     CREATE TABLE IF NOT EXISTS refresh_tokens (
@@ -300,6 +339,8 @@ Future<void> _handleApi(HttpRequest request) async {
     await _authMe(request);
   } else if (path == '/api/auth/me' && method == 'PUT') {
     await _authUpdateMe(request);
+  } else if (path == '/api/auth/me/photo' && method == 'POST') {
+    await _uploadUserPhoto(request);
   } else if (path == '/api/auth/change-password' && method == 'POST') {
     await _authChangePassword(request);
   }
@@ -391,6 +432,24 @@ Future<void> _handleApi(HttpRequest request) async {
   }
 }
 
+// ── User JSON helper ─────────────────────────────────────────
+
+Map<String, dynamic> _userToJson(ResultRow row) {
+  final cols = row.toColumnMap();
+  return {
+    'id': cols['id'].toString(),
+    'email': cols['email'].toString(),
+    'name': (cols['name'] ?? '').toString(),
+    'first_name': (cols['first_name'] ?? '').toString(),
+    'last_name': (cols['last_name'] ?? '').toString(),
+    'category': (cols['category'] ?? 'pet_guardian').toString(),
+    'bio': (cols['bio'] ?? '').toString(),
+    'photo_url': (cols['photo_url'] ?? '').toString(),
+    'created_at': cols['created_at'].toString(),
+    'updated_at': cols['updated_at'].toString(),
+  };
+}
+
 // ── Auth handlers ────────────────────────────────────────────
 
 Future<void> _authSignup(HttpRequest request) async {
@@ -425,13 +484,13 @@ Future<void> _authSignup(HttpRequest request) async {
     Sql.named('''
       INSERT INTO users (email, password_hash, name)
       VALUES (@email, @hash, @name)
-      RETURNING id, email, name, created_at, updated_at
+      RETURNING id, email, name, first_name, last_name, category, bio, photo_url, created_at, updated_at
     '''),
     parameters: {'email': email, 'hash': hash, 'name': name},
   );
 
-  final userRow = result.first.toColumnMap();
-  final userId = userRow['id'] as int;
+  final userJson = _userToJson(result.first);
+  final userId = int.parse(userJson['id']);
   final accessToken = _createAccessToken(userId, email);
   final refreshToken = _createRefreshTokenValue();
 
@@ -448,13 +507,7 @@ Future<void> _authSignup(HttpRequest request) async {
   );
 
   _jsonResponse(request, 201, {
-    'user': {
-      'id': userId.toString(),
-      'email': userRow['email'].toString(),
-      'name': userRow['name'].toString(),
-      'created_at': userRow['created_at'].toString(),
-      'updated_at': userRow['updated_at'].toString(),
-    },
+    'user': userJson,
     'accessToken': accessToken,
     'refreshToken': refreshToken,
   });
@@ -473,7 +526,7 @@ Future<void> _authLogin(HttpRequest request) async {
   }
 
   final result = await _db.execute(
-    Sql.named('SELECT * FROM users WHERE email = @email'),
+    Sql.named('SELECT id, email, password_hash, name, first_name, last_name, category, bio, photo_url, created_at, updated_at FROM users WHERE email = @email'),
     parameters: {'email': email},
   );
 
@@ -506,14 +559,9 @@ Future<void> _authLogin(HttpRequest request) async {
     },
   );
 
+  final userJson = _userToJson(result.first);
   _jsonResponse(request, 200, {
-    'user': {
-      'id': userId.toString(),
-      'email': userRow['email'].toString(),
-      'name': userRow['name'].toString(),
-      'created_at': userRow['created_at'].toString(),
-      'updated_at': userRow['updated_at'].toString(),
-    },
+    'user': userJson,
     'accessToken': accessToken,
     'refreshToken': refreshToken,
   });
@@ -578,7 +626,7 @@ Future<void> _authMe(HttpRequest request) async {
 
   final userId = payload['sub'].toString();
   final result = await _db.execute(
-    Sql.named('SELECT id, email, name, created_at, updated_at FROM users WHERE id = @id'),
+    Sql.named('SELECT id, email, name, first_name, last_name, category, bio, photo_url, created_at, updated_at FROM users WHERE id = @id'),
     parameters: {'id': int.parse(userId)},
   );
 
@@ -587,14 +635,7 @@ Future<void> _authMe(HttpRequest request) async {
     return;
   }
 
-  final row = result.first.toColumnMap();
-  _jsonResponse(request, 200, {
-    'id': row['id'].toString(),
-    'email': row['email'].toString(),
-    'name': row['name'].toString(),
-    'created_at': row['created_at'].toString(),
-    'updated_at': row['updated_at'].toString(),
-  });
+  _jsonResponse(request, 200, _userToJson(result.first));
 }
 
 Future<void> _authUpdateMe(HttpRequest request) async {
@@ -608,20 +649,32 @@ Future<void> _authUpdateMe(HttpRequest request) async {
   if (body == null) return;
 
   final userId = int.parse(payload['sub'].toString());
-  final name = body['name'] as String?;
-
-  if (name == null) {
-    _jsonResponse(request, 400, {'error': 'name is required'});
-    return;
-  }
+  final firstName = (body['first_name'] as String? ?? '').trim();
+  final lastName = (body['last_name'] as String? ?? '').trim();
+  final category = body['category'] as String? ?? 'pet_guardian';
+  final bio = body['bio'] as String? ?? '';
+  final name = '$firstName $lastName'.trim();
 
   final result = await _db.execute(
     Sql.named('''
-      UPDATE users SET name = @name, updated_at = NOW()
+      UPDATE users SET
+        name = @name,
+        first_name = @firstName,
+        last_name = @lastName,
+        category = @category,
+        bio = @bio,
+        updated_at = NOW()
       WHERE id = @id
-      RETURNING id, email, name, created_at, updated_at
+      RETURNING id, email, name, first_name, last_name, category, bio, photo_url, created_at, updated_at
     '''),
-    parameters: {'id': userId, 'name': name.trim()},
+    parameters: {
+      'id': userId,
+      'name': name,
+      'firstName': firstName,
+      'lastName': lastName,
+      'category': category,
+      'bio': bio,
+    },
   );
 
   if (result.isEmpty) {
@@ -629,14 +682,82 @@ Future<void> _authUpdateMe(HttpRequest request) async {
     return;
   }
 
-  final row = result.first.toColumnMap();
-  _jsonResponse(request, 200, {
-    'id': row['id'].toString(),
-    'email': row['email'].toString(),
-    'name': row['name'].toString(),
-    'created_at': row['created_at'].toString(),
-    'updated_at': row['updated_at'].toString(),
-  });
+  _jsonResponse(request, 200, _userToJson(result.first));
+}
+
+Future<void> _uploadUserPhoto(HttpRequest request) async {
+  final payload = await _authenticateRequest(request);
+  if (payload == null) {
+    _jsonResponse(request, 401, {'error': 'Not authenticated'});
+    return;
+  }
+
+  final userId = int.parse(payload['sub'].toString());
+
+  final contentType = request.headers.contentType;
+  if (contentType == null || contentType.mimeType != 'multipart/form-data') {
+    _jsonResponse(request, 400, {'error': 'Expected multipart/form-data'});
+    return;
+  }
+
+  final boundary = contentType.parameters['boundary'];
+  if (boundary == null) {
+    _jsonResponse(request, 400, {'error': 'Missing boundary'});
+    return;
+  }
+
+  final rawBytes = await request.fold<List<int>>([], (prev, chunk) => prev..addAll(chunk));
+  if (rawBytes.length > 2 * 1024 * 1024) {
+    _jsonResponse(request, 400, {'error': 'File too large (max 2MB)'});
+    return;
+  }
+
+  final parts = _parseMultipart(rawBytes, boundary);
+
+  List<int>? fileBytes;
+  String? fileName;
+
+  for (final part in parts) {
+    if (part.name == 'photo' && part.bytes != null) {
+      fileBytes = part.bytes;
+      fileName = part.filename ?? 'avatar.jpg';
+    }
+  }
+
+  if (fileBytes == null || fileBytes.isEmpty) {
+    _jsonResponse(request, 400, {'error': 'No photo file provided'});
+    return;
+  }
+
+  final ext = fileName != null && fileName.contains('.')
+      ? fileName.substring(fileName.lastIndexOf('.'))
+      : '.jpg';
+  final ts = DateTime.now().millisecondsSinceEpoch;
+  final uniqueName = '${userId}_$ts$ext';
+
+  final avatarDir = Directory('uploads/avatars');
+  if (!avatarDir.existsSync()) {
+    avatarDir.createSync(recursive: true);
+  }
+
+  final filePath = 'uploads/avatars/$uniqueName';
+  File(filePath).writeAsBytesSync(fileBytes);
+
+  final result = await _db.execute(
+    Sql.named('''
+      UPDATE users SET photo_url = @photoUrl, updated_at = NOW()
+      WHERE id = @id
+      RETURNING id, email, name, first_name, last_name, category, bio, photo_url, created_at, updated_at
+    '''),
+    parameters: {'id': userId, 'photoUrl': filePath},
+  );
+
+  if (result.isEmpty) {
+    _jsonResponse(request, 404, {'error': 'User not found'});
+    return;
+  }
+
+  _jsonResponse(request, 200, _userToJson(result.first));
 }
 
 Future<void> _authChangePassword(HttpRequest request) async {
@@ -1526,6 +1647,12 @@ String _generateShareCode() {
 }
 
 Future<void> _createShare(HttpRequest request) async {
+  final payload = await _authenticateRequest(request);
+  int? authUserId;
+  if (payload != null) {
+    authUserId = int.tryParse(payload['sub'].toString());
+  }
+
   final body = await _readJson(request);
   if (body == null) return;
 
@@ -1546,12 +1673,13 @@ Future<void> _createShare(HttpRequest request) async {
     final code = existing.first.toColumnMap()['share_code'].toString();
     await _db.execute(
       Sql.named('''
-        UPDATE shared_pets SET pet_data = @petData::jsonb, updated_at = NOW()
+        UPDATE shared_pets SET pet_data = @petData::jsonb, updated_at = NOW(), user_id = COALESCE(@userId, user_id)
         WHERE pet_id = @petId
       '''),
       parameters: {
         'petId': petId,
         'petData': json.encode(petData),
+        'userId': authUserId,
       },
     );
     _jsonResponse(request, 200, {'share_code': code});
@@ -1561,13 +1689,14 @@ Future<void> _createShare(HttpRequest request) async {
   final code = _generateShareCode();
   await _db.execute(
     Sql.named('''
-      INSERT INTO shared_pets (share_code, pet_data, pet_id)
-      VALUES (@code, @petData::jsonb, @petId)
+      INSERT INTO shared_pets (share_code, pet_data, pet_id, user_id)
+      VALUES (@code, @petData::jsonb, @petId, @userId)
     '''),
     parameters: {
       'code': code,
       'petData': json.encode(petData),
       'petId': petId,
+      'userId': authUserId,
     },
   );
 
@@ -1590,6 +1719,7 @@ Future<void> _getShare(HttpRequest request) async {
   final cols = result.first.toColumnMap();
   final petData = cols['pet_data'];
   final petId = cols['pet_id'].toString();
+  final shareUserId = cols['user_id'];
 
   final healthResult = await _db.execute(
     Sql.named(
@@ -1610,10 +1740,29 @@ Future<void> _getShare(HttpRequest request) async {
     }
   }
 
+  Map<String, dynamic>? owner;
+  if (shareUserId != null) {
+    final ownerResult = await _db.execute(
+      Sql.named('SELECT id, email, name, first_name, last_name, category, bio, photo_url, created_at, updated_at FROM users WHERE id = @id'),
+      parameters: {'id': shareUserId},
+    );
+    if (ownerResult.isNotEmpty) {
+      final ownerRow = ownerResult.first.toColumnMap();
+      owner = {
+        'first_name': (ownerRow['first_name'] ?? '').toString(),
+        'last_name': (ownerRow['last_name'] ?? '').toString(),
+        'category': (ownerRow['category'] ?? 'pet_guardian').toString(),
+        'bio': (ownerRow['bio'] ?? '').toString(),
+        'photo_url': (ownerRow['photo_url'] ?? '').toString(),
+      };
+    }
+  }
+
   _jsonResponse(request, 200, {
     'pet': petData,
     'health_entries': healthEntries,
     'vet': vet,
+    'owner': owner,
   });
 }
 
