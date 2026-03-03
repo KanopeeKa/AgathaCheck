@@ -133,17 +133,8 @@ Future<void> main() async {
     password: Platform.environment['PGPASSWORD'] ?? '',
   );
 
-  SslMode sslMode;
-  try {
-    final testConn = await Connection.open(
-      endpoint,
-      settings: ConnectionSettings(sslMode: SslMode.disable),
-    );
-    await testConn.close();
-    sslMode = SslMode.disable;
-  } catch (_) {
-    sslMode = SslMode.require;
-  }
+  final needsSsl = dbUrl.contains('neon.tech') || dbUrl.contains('sslmode=require');
+  final sslMode = needsSsl ? SslMode.require : SslMode.disable;
 
   _pool = Pool.withEndpoints(
     [endpoint],
@@ -152,7 +143,7 @@ Future<void> main() async {
       sslMode: sslMode,
     ),
   );
-  print('Connected to PostgreSQL (pool)');
+  print('Connected to PostgreSQL (pool, ssl=$needsSsl)');
 
   await _pool.execute(Sql('''
     CREATE TABLE IF NOT EXISTS shared_pets (
