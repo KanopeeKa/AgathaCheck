@@ -633,6 +633,10 @@ Future<void> _handleApi(HttpRequest request) async {
           .hasMatch(path) &&
       method == 'POST') {
     await _markTaken(request);
+  } else if (RegExp(r'^/api/health-entries/[^/]+/undo-complete$')
+          .hasMatch(path) &&
+      method == 'POST') {
+    await _undoComplete(request);
   } else if (RegExp(r'^/api/health-entries/[^/]+/history$').hasMatch(path) &&
       method == 'GET') {
     await _getHistory(request);
@@ -1878,6 +1882,42 @@ Future<void> _markTaken(HttpRequest request) async {
       }
     }
   }
+
+  _jsonResponse(request, 200, _rowToMap(updated.first));
+}
+
+Future<void> _undoComplete(HttpRequest request) async {
+  final segments = request.uri.pathSegments;
+  final id = segments[segments.length - 2];
+
+  final existing = await _pool.execute(
+    Sql.named('SELECT * FROM health_entries WHERE id = @id'),
+    parameters: {'id': id},
+  );
+
+  if (existing.isEmpty) {
+    _jsonResponse(request, 404, {'error': 'Entry not found'});
+    return;
+  }
+
+  final row = _rowToMap(existing.first);
+  final frequency = row['frequency'] as String;
+  final nextDue = DateTime.parse(row['next_due_date'].toString());
+
+  if (frequency != 'once' || nextDue.year < 9999) {
+    _jsonResponse(request, 400, {'error': 'Entry is not completed'});
+    return;
+  }
+
+  final startDate = row['start_date'].toString();
+
+  final updated = await _pool.execute(
+    Sql.named('''
+      UPDATE health_entries SET next_due_date = @nextDue, updated_at = NOW()
+      WHERE id = @id RETURNING *
+    '''),
+    parameters: {'id': id, 'nextDue': startDate},
+  );
 
   _jsonResponse(request, 200, _rowToMap(updated.first));
 }

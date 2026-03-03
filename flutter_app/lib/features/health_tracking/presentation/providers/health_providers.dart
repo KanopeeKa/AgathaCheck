@@ -112,6 +112,11 @@ class HealthEntriesNotifier extends AsyncNotifier<List<HealthEntry>> {
     await refresh();
   }
 
+  Future<void> undoComplete(String id) async {
+    await ref.read(healthRepositoryProvider).undoComplete(id);
+    await refresh();
+  }
+
   /// Snoozes a health entry by pushing its next due date forward by [days].
   Future<void> snooze(String id, int days) async {
     final entries = state.valueOrNull ?? [];

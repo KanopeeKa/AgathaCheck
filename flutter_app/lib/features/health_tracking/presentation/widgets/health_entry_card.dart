@@ -15,6 +15,7 @@ class HealthEntryCard extends StatelessWidget {
     this.onMarkTaken,
     this.onSnooze,
     this.onTap,
+    this.onUndoComplete,
     this.healthIssueName,
   });
 
@@ -23,6 +24,7 @@ class HealthEntryCard extends StatelessWidget {
   final VoidCallback? onMarkTaken;
   final void Function(int days)? onSnooze;
   final VoidCallback? onTap;
+  final VoidCallback? onUndoComplete;
   final String? healthIssueName;
 
   @override
@@ -146,6 +148,12 @@ class HealthEntryCard extends StatelessWidget {
                     petStripWidth: 52,
                   ),
                 ],
+                if (entry.isCompleted) ...[
+                  _UndoCompleteButton(
+                    onPressed: onUndoComplete,
+                    petStripWidth: 52,
+                  ),
+                ],
               ],
             ),
           ),
@@ -222,6 +230,47 @@ class _MarkDoneButton extends StatelessWidget {
                     fontWeight: FontWeight.bold,
                     fontSize: 11,
                   ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _UndoCompleteButton extends StatelessWidget {
+  const _UndoCompleteButton({this.onPressed, required this.petStripWidth});
+
+  final VoidCallback? onPressed;
+  final double petStripWidth;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final l = AppLocalizations.of(context)!;
+    return SizedBox(
+      width: petStripWidth * 2,
+      child: Material(
+        color: Colors.orange.shade50,
+        child: InkWell(
+          onTap: onPressed,
+          splashColor: Colors.orange.shade100,
+          child: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(Icons.undo, size: 22, color: Colors.orange.shade700),
+                const SizedBox(height: 4),
+                Text(
+                  l.undoComplete,
+                  style: theme.textTheme.labelSmall?.copyWith(
+                    color: Colors.orange.shade700,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 11,
+                  ),
+                  textAlign: TextAlign.center,
                 ),
               ],
             ),

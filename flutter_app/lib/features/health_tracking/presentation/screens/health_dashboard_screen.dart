@@ -389,6 +389,7 @@ class _EntryList extends ConsumerWidget {
                   onTap: () => context.go('/health/edit/${item.entry.id}'),
                   onMarkTaken: () => _markTaken(context, ref, item.entry),
                   onSnooze: (days) => _snooze(context, ref, item.entry, days),
+                  onUndoComplete: () => _undoComplete(context, ref, item.entry),
                 ),
               );
             },
@@ -530,6 +531,16 @@ class _EntryList extends ConsumerWidget {
       final l = AppLocalizations.of(context)!;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(l.markedAsDone(entry.name))),
+      );
+    }
+  }
+
+  Future<void> _undoComplete(BuildContext context, WidgetRef ref, HealthEntry entry) async {
+    await ref.read(healthEntriesNotifierProvider.notifier).undoComplete(entry.id);
+    if (context.mounted) {
+      final l = AppLocalizations.of(context)!;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l.undoCompleteDone(entry.name))),
       );
     }
   }

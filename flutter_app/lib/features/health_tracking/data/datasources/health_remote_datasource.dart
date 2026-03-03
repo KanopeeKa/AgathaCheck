@@ -39,6 +39,7 @@ abstract class HealthRemoteDataSource {
   Future<HealthEntryModel> updateEntry(HealthEntryModel entry);
   Future<void> deleteEntry(String id);
   Future<HealthEntryModel> markTaken(String id, {String notes});
+  Future<HealthEntryModel> undoComplete(String id);
   Future<List<HealthHistoryModel>> getHistory(String entryId);
   Future<String> exportCsv({String? petId});
   Future<List<EventPhoto>> getPhotos(String entryId);
@@ -124,6 +125,18 @@ class HealthRemoteDataSourceImpl implements HealthRemoteDataSource {
       Uri.parse('$baseUrl/api/health-entries/$id/mark-taken'),
       headers: {'Content-Type': 'application/json'},
       body: json.encode({'notes': notes}),
+    );
+    _checkResponse(response);
+    return HealthEntryModel.fromJson(
+        json.decode(response.body) as Map<String, dynamic>);
+  }
+
+  @override
+  Future<HealthEntryModel> undoComplete(String id) async {
+    final response = await _client.post(
+      Uri.parse('$baseUrl/api/health-entries/$id/undo-complete'),
+      headers: {'Content-Type': 'application/json'},
+      body: json.encode({}),
     );
     _checkResponse(response);
     return HealthEntryModel.fromJson(

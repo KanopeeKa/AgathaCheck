@@ -44,6 +44,11 @@ class HealthRepositoryImpl implements HealthRepository {
   }
 
   @override
+  Future<HealthEntry> undoComplete(String id) {
+    return dataSource.undoComplete(id);
+  }
+
+  @override
   Future<List<HealthHistoryEntry>> getHistory(String entryId) {
     return dataSource.getHistory(entryId);
   }

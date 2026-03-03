@@ -1503,4 +1503,12 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get daysBefore => 'jour(s) avant';
+
+  @override
+  String get undoComplete => 'Annuler\nTerminé';
+
+  @override
+  String undoCompleteDone(String name) {
+    return '$name marqué comme non terminé';
+  }
 }

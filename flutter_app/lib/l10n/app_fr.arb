@@ -482,5 +482,8 @@
   "memberCount": "{count} membres",
   "petCount": "{count} animaux",
   "remindBefore": "Me rappeler",
-  "daysBefore": "jour(s) avant"
+  "daysBefore": "jour(s) avant",
+  "undoComplete": "Annuler\nTerminé",
+  "undoCompleteDone": "{name} marqué comme non terminé",
+  "@undoCompleteDone": { "placeholders": { "name": { "type": "String" } } }
 }

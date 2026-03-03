@@ -24,6 +24,8 @@ abstract class HealthRepository {
   /// Marks a health entry as taken and advances the next due date.
   Future<HealthEntry> markTaken(String id, {String notes});
 
+  Future<HealthEntry> undoComplete(String id);
+
   /// Retrieves the history of administrations for a health entry.
   Future<List<HealthHistoryEntry>> getHistory(String entryId);
 

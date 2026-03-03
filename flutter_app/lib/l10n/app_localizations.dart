@@ -2827,6 +2827,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'day(s) before'**
   String get daysBefore;
+
+  /// No description provided for @undoComplete.
+  ///
+  /// In en, this message translates to:
+  /// **'Undo\nComplete'**
+  String get undoComplete;
+
+  /// No description provided for @undoCompleteDone.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} marked as not completed'**
+  String undoCompleteDone(String name);
 }
 
 class _AppLocalizationsDelegate

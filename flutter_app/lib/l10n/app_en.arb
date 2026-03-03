@@ -533,5 +533,8 @@
   "petCount": "{count} pets",
   "@petCount": { "placeholders": { "count": { "type": "int" } } },
   "remindBefore": "Remind me",
-  "daysBefore": "day(s) before"
+  "daysBefore": "day(s) before",
+  "undoComplete": "Undo\nComplete",
+  "undoCompleteDone": "{name} marked as not completed",
+  "@undoCompleteDone": { "placeholders": { "name": { "type": "String" } } }
 }
