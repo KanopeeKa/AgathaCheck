@@ -222,7 +222,7 @@ class EventsPdfService {
                     pw.Expanded(
                       child: pw.Text(
                         entry.dosage.isNotEmpty
-                            ? '${entry.name}  •  ${entry.dosage}'
+                            ? '${entry.name}  -  ${entry.dosage}'
                             : entry.name,
                         style: pw.TextStyle(
                           fontSize: 10,

@@ -562,8 +562,8 @@ class PetReportService {
                     return pw.Padding(
                       padding: const pw.EdgeInsets.only(bottom: 2),
                       child: pw.Text(
-                        '• ${dt != null ? dateFormat.format(dt) : takenAt}'
-                        '${notes.isNotEmpty ? ' — $notes' : ''}',
+                        '- ${dt != null ? dateFormat.format(dt) : takenAt}'
+                        '${notes.isNotEmpty ? ' - $notes' : ''}',
                         style: const pw.TextStyle(
                             fontSize: 8, color: _textDark),
                       ),
@@ -676,7 +676,7 @@ class PetReportService {
                       ...linked.map((e) => pw.Padding(
                             padding: const pw.EdgeInsets.only(bottom: 2),
                             child: pw.Text(
-                              '• ${e.name} (${e.type.name})',
+                              '- ${e.name} (${e.type.name})',
                               style: const pw.TextStyle(
                                   fontSize: 8, color: _textDark),
                             ),
