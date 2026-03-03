@@ -902,6 +902,52 @@ class _PhotosSection extends StatelessWidget {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
+    Widget addPhotoButton() {
+      return PopupMenuButton<String>(
+        tooltip: 'Add Photo',
+        onSelected: (value) {
+          if (value == 'camera') {
+            onPickCamera();
+          } else {
+            onPickGallery();
+          }
+        },
+        itemBuilder: (_) => [
+          const PopupMenuItem(
+              value: 'camera',
+              child: ListTile(
+                leading: Icon(Icons.camera_alt),
+                title: Text('Camera'),
+                contentPadding: EdgeInsets.zero,
+              )),
+          const PopupMenuItem(
+              value: 'gallery',
+              child: ListTile(
+                leading: Icon(Icons.photo_library),
+                title: Text('Gallery / Files'),
+                contentPadding: EdgeInsets.zero,
+              )),
+        ],
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+          decoration: BoxDecoration(
+            border: Border.all(color: colorScheme.outline),
+            borderRadius: BorderRadius.circular(20),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(Icons.add_a_photo, size: 18, color: colorScheme.primary),
+              const SizedBox(width: 8),
+              Text('Add photo',
+                  style: theme.textTheme.labelLarge
+                      ?.copyWith(color: colorScheme.primary)),
+            ],
+          ),
+        ),
+      );
+    }
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -912,36 +958,6 @@ class _PhotosSection extends StatelessWidget {
             Text('Photos',
                 style: theme.textTheme.titleSmall
                     ?.copyWith(fontWeight: FontWeight.w600)),
-            const Spacer(),
-            if (_totalCount < 4)
-              PopupMenuButton<String>(
-                icon: Icon(Icons.add_a_photo,
-                    size: 20, color: colorScheme.primary),
-                tooltip: 'Add Photo',
-                onSelected: (value) {
-                  if (value == 'camera') {
-                    onPickCamera();
-                  } else {
-                    onPickGallery();
-                  }
-                },
-                itemBuilder: (_) => [
-                  const PopupMenuItem(
-                      value: 'camera',
-                      child: ListTile(
-                        leading: Icon(Icons.camera_alt),
-                        title: Text('Camera'),
-                        contentPadding: EdgeInsets.zero,
-                      )),
-                  const PopupMenuItem(
-                      value: 'gallery',
-                      child: ListTile(
-                        leading: Icon(Icons.photo_library),
-                        title: Text('Gallery / Files'),
-                        contentPadding: EdgeInsets.zero,
-                      )),
-                ],
-              ),
           ],
         ),
         const SizedBox(height: 8),
@@ -950,57 +966,48 @@ class _PhotosSection extends StatelessWidget {
             padding: EdgeInsets.all(16),
             child: Center(child: CircularProgressIndicator()),
           ),
-        if (_totalCount == 0 && !isUploading)
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              border: Border.all(color: colorScheme.outlineVariant),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Column(
-              children: [
-                Icon(Icons.add_photo_alternate,
-                    size: 36, color: colorScheme.outline),
-                const SizedBox(height: 8),
-                Text('No photos yet',
-                    style: theme.textTheme.bodyMedium
-                        ?.copyWith(color: colorScheme.onSurfaceVariant)),
-                const SizedBox(height: 4),
-                Text('Tap + to add photos (max 4)',
-                    style: theme.textTheme.bodySmall
-                        ?.copyWith(color: colorScheme.outline)),
-              ],
-            ),
+        Container(
+          width: double.infinity,
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            border: Border.all(color: colorScheme.outlineVariant),
+            borderRadius: BorderRadius.circular(12),
           ),
-        if (_totalCount > 0)
-          GridView.builder(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 2,
-              crossAxisSpacing: 8,
-              mainAxisSpacing: 8,
-            ),
-            itemCount: _totalCount,
-            itemBuilder: (context, index) {
-              if (index < photos.length) {
-                return _buildSavedPhoto(context, photos[index], colorScheme);
-              }
-              final pendingIndex = index - photos.length;
-              return _buildPendingPhoto(
-                  context, pendingPhotos[pendingIndex], pendingIndex, colorScheme);
-            },
-          ),
-        if (_totalCount > 0)
-          Padding(
-            padding: const EdgeInsets.only(top: 4),
-            child: Text(
-                '$_totalCount/4 photos'
-                '${pendingPhotos.isNotEmpty ? ' (${pendingPhotos.length} will upload on save)' : ''}',
+          child: Column(
+            children: [
+              if (_totalCount > 0)
+                GridView.builder(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    crossAxisSpacing: 8,
+                    mainAxisSpacing: 8,
+                  ),
+                  itemCount: _totalCount,
+                  itemBuilder: (context, index) {
+                    if (index < photos.length) {
+                      return _buildSavedPhoto(context, photos[index], colorScheme);
+                    }
+                    final pendingIndex = index - photos.length;
+                    return _buildPendingPhoto(
+                        context, pendingPhotos[pendingIndex], pendingIndex, colorScheme);
+                  },
+                ),
+              if (_totalCount > 0) const SizedBox(height: 12),
+              if (_totalCount < 4 && !isUploading) addPhotoButton(),
+              const SizedBox(height: 8),
+              Text(
+                _totalCount > 0
+                    ? '$_totalCount/4 photos${pendingPhotos.isNotEmpty ? ' (${pendingPhotos.length} will upload on save)' : ''}'
+                    : 'You can add up to 4 pictures, max 2 MB per photo',
                 style: theme.textTheme.bodySmall
-                    ?.copyWith(color: colorScheme.outline)),
+                    ?.copyWith(color: colorScheme.outline),
+                textAlign: TextAlign.center,
+              ),
+            ],
           ),
+        ),
       ],
     );
   }
