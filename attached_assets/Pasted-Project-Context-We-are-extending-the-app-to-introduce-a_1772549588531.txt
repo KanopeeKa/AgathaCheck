@@ -1,0 +1,48 @@
+Project Context:
+We are extending the app to introduce a new entity type called “Organisation” (UK English - but use US if the rest is US). The app is used by both private users and professionals such as shelters or boarding facilities.
+Objective:
+Add full support for Organisations, which can be either Professional or Charity. Each Organisation can have multiple users (with super users who manage settings, billing, and data). Pets created by users within an Organisation belong to that Organisation rather than to an individual. When a pet is adopted or transferred, its ownership moves to a private user, and the Organisation keeps only an archived record in PDF format.
+Implementation Expectations:
+Please generate a complete technical implementation overview that includes:
+
+
+Model & Data Layer:
+ERD and model relationships for User, Organisation, Pet, OrganisationUser, PetStay, FosterRecord, and ArchivedPet.
+Details on data inheritance (Organisation shares similar fields with User).
+Rules for entity ownership and linking (pets linked to Organisation rather than user).
+Scalability for multi-Organisation membership per user.
+
+API & Backend Architecture:
+Propose REST or GraphQL endpoints for Organisation management, user invitations, pet assignment, and archiving workflows.
+Clarify how authentication and authorisation (RBAC) applies across users, pets, and Organisations.
+Suggest data caching and offline handling strategies for Flutter.
+Ensure eventual compatibility with a SwiftUI frontend through modular APIs.
+
+UI & State Management (Flutter-first):
+Recommend a clean architectural pattern (e.g., MVVM or Clean Architecture).
+Describe state management approach (Bloc, Riverpod, MobX, etc.) appropriate for real-time multi-user updates.
+Define the structure for nested views: user dashboard (My Pets, Organisation Pets), Organisation management views, and adoption/transfer flows.
+
+Workflow Logic:
+Define how super users manage users, invite codes, and permissions.
+Outline pet adoption and transfer workflow (with archiving).
+Timeline generation for pet histories within an Organisation.
+Handling visibility constraints (private users vs Organisation members).
+
+Data Persistence & Synchronisation:
+Recommended best practices for syncing Organisation data (members, pets) between offline Flutter clients and backend (especially for volunteer use).
+Long-term evolution to SwiftUI with cross-platform shared API layer.
+
+Testing & Deployment:
+
+Unit, integration, and E2E test layers.
+Suggestions for CI/CD integration and code modularisation.
+
+Guidance for Replit AI:
+Please review and confirm the coherence of these architectural decisions.
+Suggest any improvements to the data model or flow to enhance performance, clarity, or scalability.
+Recognise that additional functionalities may be added later (e.g., billing modules, multi-tier Organisations, or advanced analytics).
+If possible, propose naming and structuring conventions consistent with both Flutter (Dart) and future SwiftUI (Swift) ecosystems.
+
+Output Format:
+Provide your response structured as a clear technical plan and brief rationale behind major decisions. Do suggest any improvements.
