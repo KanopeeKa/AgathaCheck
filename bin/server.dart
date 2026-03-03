@@ -464,6 +464,8 @@ Future<void> _handleApi(HttpRequest request) async {
     await _getHealthEntries(request);
   } else if (path == '/api/health-entries' && method == 'POST') {
     await _createHealthEntry(request);
+  } else if (path == '/api/health-entries/export' && method == 'GET') {
+    await _exportCsv(request);
   } else if (RegExp(r'^/api/health-entries/[^/]+$').hasMatch(path) &&
       method == 'GET') {
     await _getHealthEntry(request);
@@ -480,8 +482,6 @@ Future<void> _handleApi(HttpRequest request) async {
   } else if (RegExp(r'^/api/health-entries/[^/]+/history$').hasMatch(path) &&
       method == 'GET') {
     await _getHistory(request);
-  } else if (path == '/api/health-entries/export' && method == 'GET') {
-    await _exportCsv(request);
   }
   // Vets
   else if (path == '/api/vets' && method == 'GET') {
