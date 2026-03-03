@@ -30,10 +30,9 @@ class _HealthEntryFormScreenState
   final _nameController = TextEditingController();
   final _dosageController = TextEditingController();
   final _notesController = TextEditingController();
-  final _customDaysController = TextEditingController();
-
   HealthEntryType _type = HealthEntryType.medication;
   HealthFrequency _frequency = HealthFrequency.once;
+  int _frequencyInterval = 1;
   DateTime _startDate = DateTime.now();
   DateTime? _nextDueDate;
   DateTime? _repeatEndDate;
@@ -174,16 +173,18 @@ class _HealthEntryFormScreenState
           _dosageController.text = entry.dosage;
           _notesController.text = entry.notes;
           _type = entry.type;
-          _frequency = entry.frequency;
+          _frequency = entry.frequency == HealthFrequency.custom
+              ? HealthFrequency.daily
+              : entry.frequency;
+          _frequencyInterval = entry.frequency == HealthFrequency.custom
+              ? (entry.frequencyDays ?? 1)
+              : entry.frequencyInterval;
           _startDate = entry.startDate;
           _nextDueDate = entry.nextDueDate;
           _selectedPetIds.clear();
           _selectedPetIds.add(entry.petId);
           _repeatEndDate = entry.repeatEndDate;
           _selectedHealthIssueId = entry.healthIssueId;
-          if (entry.frequencyDays != null) {
-            _customDaysController.text = entry.frequencyDays.toString();
-          }
         });
       }
     } catch (e) {
@@ -248,7 +249,6 @@ class _HealthEntryFormScreenState
     _nameController.dispose();
     _dosageController.dispose();
     _notesController.dispose();
-    _customDaysController.dispose();
     super.dispose();
   }
 
@@ -353,7 +353,9 @@ class _HealthEntryFormScreenState
                       decoration: const InputDecoration(
                         labelText: 'Frequency',
                       ),
-                      items: HealthFrequency.values.map((f) {
+                      items: HealthFrequency.values
+                          .where((f) => f != HealthFrequency.custom)
+                          .map((f) {
                         return DropdownMenuItem(
                             value: f, child: Text(f.label));
                       }).toList(),
@@ -361,27 +363,44 @@ class _HealthEntryFormScreenState
                         if (val != null) setState(() => _frequency = val);
                       },
                     ),
-                    if (_frequency == HealthFrequency.custom) ...[
+                    if (_frequency != HealthFrequency.once) ...[
                       const SizedBox(height: 16),
-                      TextFormField(
-                        controller: _customDaysController,
-                        decoration: const InputDecoration(
-                          labelText: 'Interval (days)',
-                          hintText: 'e.g., 14',
-                        ),
-                        keyboardType: TextInputType.number,
-                        validator: (val) {
-                          if (_frequency == HealthFrequency.custom) {
-                            if (val == null || val.trim().isEmpty) {
-                              return 'Enter number of days';
-                            }
-                            final n = int.tryParse(val.trim());
-                            if (n == null || n < 1) {
-                              return 'Enter a valid number of days';
-                            }
-                          }
-                          return null;
-                        },
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Expanded(
+                            child: DropdownButtonFormField<int>(
+                              value: _frequencyInterval.clamp(1, 12),
+                              decoration: const InputDecoration(
+                                labelText: 'Every',
+                              ),
+                              items: List.generate(12, (i) => i + 1)
+                                  .map((n) => DropdownMenuItem(
+                                      value: n, child: Text('$n')))
+                                  .toList(),
+                              onChanged: (val) {
+                                if (val != null) {
+                                  setState(() => _frequencyInterval = val);
+                                }
+                              },
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            flex: 2,
+                            child: InputDecorator(
+                              decoration: const InputDecoration(
+                                labelText: 'Period',
+                              ),
+                              child: Text(
+                                _frequencyInterval == 1
+                                    ? _frequency.label
+                                    : '${_frequency.label}s',
+                                style: Theme.of(context).textTheme.bodyLarge,
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                     if (_frequency != HealthFrequency.once) ...[
@@ -552,9 +571,7 @@ class _HealthEntryFormScreenState
           type: _type,
           dosage: _dosageController.text.trim(),
           frequency: _frequency,
-          frequencyDays: _frequency == HealthFrequency.custom
-              ? int.tryParse(_customDaysController.text.trim())
-              : null,
+          frequencyInterval: _frequency == HealthFrequency.once ? 1 : _frequencyInterval,
           repeatEndDate: effectiveRepeatEndDate,
           startDate: _startDate,
           nextDueDate: _nextDueDate ?? _startDate,
@@ -576,9 +593,7 @@ class _HealthEntryFormScreenState
             type: _type,
             dosage: _dosageController.text.trim(),
             frequency: _frequency,
-            frequencyDays: _frequency == HealthFrequency.custom
-                ? int.tryParse(_customDaysController.text.trim())
-                : null,
+            frequencyInterval: _frequency == HealthFrequency.once ? 1 : _frequencyInterval,
             repeatEndDate: effectiveRepeatEndDate,
             startDate: _startDate,
             nextDueDate: markCompleted ? completedDueDate : _startDate,

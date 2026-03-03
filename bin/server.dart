@@ -211,9 +211,10 @@ Future<void> main() async {
 
   await _db.execute(Sql('''
     DO \$\$ BEGIN
+      ALTER TABLE health_entries ADD COLUMN IF NOT EXISTS frequency_interval INT DEFAULT 1;
       ALTER TABLE health_entries DROP CONSTRAINT IF EXISTS health_entries_frequency_check;
       ALTER TABLE health_entries ADD CONSTRAINT health_entries_frequency_check
-        CHECK (frequency = ANY (ARRAY['once','daily','weekly','monthly','custom']));
+        CHECK (frequency = ANY (ARRAY['once','daily','weekly','monthly','yearly','custom']));
       UPDATE health_entries SET type = 'vet_visit' WHERE type = 'vaccine';
       ALTER TABLE health_entries DROP CONSTRAINT IF EXISTS health_entries_type_check;
       ALTER TABLE health_entries ADD CONSTRAINT health_entries_type_check
@@ -1368,6 +1369,7 @@ Future<void> _createHealthEntry(HttpRequest request) async {
   final dosage = body['dosage'] as String? ?? '';
   final frequency = body['frequency'] as String? ?? '';
   final frequencyDays = body['frequency_days'] as int?;
+  final frequencyInterval = body['frequency_interval'] as int? ?? 1;
   final repeatEndDate = body['repeat_end_date'] as String?;
   final startDate = body['start_date'] as String? ?? '';
   final nextDueDate = body['next_due_date'] as String? ?? startDate;
@@ -1383,8 +1385,8 @@ Future<void> _createHealthEntry(HttpRequest request) async {
 
   final result = await _db.execute(
     Sql.named('''
-      INSERT INTO health_entries (pet_id, name, type, dosage, frequency, frequency_days, repeat_end_date, start_date, next_due_date, notes, health_issue_id)
-      VALUES (@petId, @name, @type, @dosage, @frequency, @frequencyDays, ${repeatEndDate != null ? '@repeatEndDate::date' : 'NULL'}, @startDate::date, @nextDueDate::timestamptz, @notes, ${healthIssueId != null ? '@healthIssueId' : 'NULL'})
+      INSERT INTO health_entries (pet_id, name, type, dosage, frequency, frequency_days, frequency_interval, repeat_end_date, start_date, next_due_date, notes, health_issue_id)
+      VALUES (@petId, @name, @type, @dosage, @frequency, @frequencyDays, @frequencyInterval, ${repeatEndDate != null ? '@repeatEndDate::date' : 'NULL'}, @startDate::date, @nextDueDate::timestamptz, @notes, ${healthIssueId != null ? '@healthIssueId' : 'NULL'})
       RETURNING *
     '''),
     parameters: {
@@ -1394,6 +1396,7 @@ Future<void> _createHealthEntry(HttpRequest request) async {
       'dosage': dosage,
       'frequency': frequency,
       'frequencyDays': frequencyDays,
+      'frequencyInterval': frequencyInterval,
       if (repeatEndDate != null) 'repeatEndDate': repeatEndDate,
       'startDate': startDate,
       'nextDueDate': nextDueDate,
@@ -1484,6 +1487,7 @@ Future<void> _updateHealthEntry(HttpRequest request) async {
       UPDATE health_entries SET
         name = @name, type = @type, dosage = @dosage,
         frequency = @frequency, frequency_days = @frequencyDays,
+        frequency_interval = @frequencyInterval,
         repeat_end_date = ${repeatEndDateVal != null ? '@repeatEndDate::date' : 'NULL'},
         start_date = @startDate::date, next_due_date = @nextDueDate::timestamptz,
         notes = @notes, health_issue_id = ${newHealthIssueId != null ? '@healthIssueId' : 'NULL'},
@@ -1498,6 +1502,7 @@ Future<void> _updateHealthEntry(HttpRequest request) async {
       'dosage': body['dosage'] ?? row['dosage'],
       'frequency': body['frequency'] ?? row['frequency'],
       'frequencyDays': body['frequency_days'] ?? row['frequency_days'],
+      'frequencyInterval': body['frequency_interval'] ?? row['frequency_interval'] ?? 1,
       if (repeatEndDateVal != null) 'repeatEndDate': repeatEndDateVal.toString(),
       'startDate': body['start_date'] ?? row['start_date'],
       'nextDueDate': body['next_due_date'] ?? row['next_due_date'],
@@ -1583,6 +1588,7 @@ Future<void> _markTaken(HttpRequest request) async {
   );
 
   final frequency = row['frequency'] as String;
+  final interval = (row['frequency_interval'] as int?) ?? 1;
   final currentDue = DateTime.parse(row['next_due_date'].toString());
   final repeatEndDateStr = row['repeat_end_date']?.toString();
   final repeatEndDate = repeatEndDateStr != null ? DateTime.tryParse(repeatEndDateStr) : null;
@@ -1593,13 +1599,17 @@ Future<void> _markTaken(HttpRequest request) async {
       nextDue = DateTime(9999, 12, 31);
       break;
     case 'daily':
-      nextDue = currentDue.add(const Duration(days: 1));
+      nextDue = currentDue.add(Duration(days: 1 * interval));
       break;
     case 'weekly':
-      nextDue = currentDue.add(const Duration(days: 7));
+      nextDue = currentDue.add(Duration(days: 7 * interval));
       break;
     case 'monthly':
-      nextDue = DateTime(currentDue.year, currentDue.month + 1, currentDue.day,
+      nextDue = DateTime(currentDue.year, currentDue.month + interval, currentDue.day,
+          currentDue.hour, currentDue.minute);
+      break;
+    case 'yearly':
+      nextDue = DateTime(currentDue.year + interval, currentDue.month, currentDue.day,
           currentDue.hour, currentDue.minute);
       break;
     case 'custom':
@@ -3390,6 +3400,7 @@ Map<String, dynamic> _rowToMap(ResultRow row) {
     'dosage': cols['dosage'].toString(),
     'frequency': cols['frequency'].toString(),
     'frequency_days': cols['frequency_days'],
+    'frequency_interval': cols['frequency_interval'] ?? 1,
     'repeat_end_date': cols['repeat_end_date']?.toString(),
     'start_date': cols['start_date'].toString(),
     'next_due_date': cols['next_due_date'].toString(),

@@ -124,7 +124,7 @@ class HealthEntryCard extends StatelessWidget {
                                     color: statusColor, fontWeight: FontWeight.w600, fontSize: 11),
                               ),
                               const Spacer(),
-                              _FrequencyBadge(frequency: entry.frequency),
+                              _FrequencyBadge(frequency: entry.frequency, interval: entry.frequencyInterval),
                             ],
                           ),
                         ],
@@ -452,9 +452,18 @@ class _DoneChip extends StatelessWidget {
 }
 
 class _FrequencyBadge extends StatelessWidget {
-  const _FrequencyBadge({required this.frequency});
+  const _FrequencyBadge({required this.frequency, this.interval = 1});
 
   final HealthFrequency frequency;
+  final int interval;
+
+  String get _displayLabel {
+    if (frequency == HealthFrequency.once) return 'Does not repeat';
+    if (frequency == HealthFrequency.custom) return 'Custom';
+    final period = frequency.label;
+    if (interval == 1) return 'Every $period';
+    return 'Every $interval ${period}s';
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -466,7 +475,7 @@ class _FrequencyBadge extends StatelessWidget {
         borderRadius: BorderRadius.circular(8),
       ),
       child: Text(
-        frequency.label,
+        _displayLabel,
         style: theme.textTheme.labelSmall?.copyWith(
           fontSize: 10,
           color: theme.colorScheme.onSecondaryContainer,

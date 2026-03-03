@@ -16,6 +16,7 @@ class HealthEntryModel extends HealthEntry {
     required super.nextDueDate,
     super.dosage,
     super.frequencyDays,
+    super.frequencyInterval,
     super.repeatEndDate,
     super.notes,
     super.healthIssueId,
@@ -34,6 +35,7 @@ class HealthEntryModel extends HealthEntry {
       dosage: json['dosage'] as String? ?? '',
       frequency: _parseFrequency(json['frequency'] as String? ?? 'once'),
       frequencyDays: json['frequency_days'] as int?,
+      frequencyInterval: json['frequency_interval'] as int? ?? 1,
       repeatEndDate: json['repeat_end_date'] != null
           ? DateTime.tryParse(json['repeat_end_date'] as String)
           : null,
@@ -64,6 +66,7 @@ class HealthEntryModel extends HealthEntry {
       dosage: entry.dosage,
       frequency: entry.frequency,
       frequencyDays: entry.frequencyDays,
+      frequencyInterval: entry.frequencyInterval,
       repeatEndDate: entry.repeatEndDate,
       startDate: entry.startDate,
       nextDueDate: entry.nextDueDate,
@@ -85,6 +88,7 @@ class HealthEntryModel extends HealthEntry {
       'dosage': dosage,
       'frequency': frequency.name,
       'frequency_days': frequencyDays,
+      'frequency_interval': frequencyInterval,
       'repeat_end_date': repeatEndDate?.toIso8601String().split('T').first,
       'start_date': startDate.toIso8601String().split('T').first,
       'next_due_date': nextDueDate.toIso8601String(),
@@ -120,6 +124,8 @@ class HealthEntryModel extends HealthEntry {
         return HealthFrequency.weekly;
       case 'monthly':
         return HealthFrequency.monthly;
+      case 'yearly':
+        return HealthFrequency.yearly;
       case 'custom':
         return HealthFrequency.custom;
       default:

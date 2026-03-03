@@ -14,6 +14,7 @@ class HealthEntry {
     required this.nextDueDate,
     this.dosage = '',
     this.frequencyDays,
+    this.frequencyInterval = 1,
     this.repeatEndDate,
     this.notes = '',
     this.healthIssueId,
@@ -42,6 +43,9 @@ class HealthEntry {
 
   /// Custom interval in days (used when [frequency] is [HealthFrequency.custom]).
   final int? frequencyDays;
+
+  /// Interval multiplier for the frequency (e.g., every 2 weeks = interval 2 + weekly).
+  final int frequencyInterval;
 
   /// When repeating ends (null = never).
   final DateTime? repeatEndDate;
@@ -102,6 +106,7 @@ class HealthEntry {
     String? dosage,
     HealthFrequency? frequency,
     int? frequencyDays,
+    int? frequencyInterval,
     DateTime? repeatEndDate,
     bool clearRepeatEndDate = false,
     DateTime? startDate,
@@ -121,6 +126,7 @@ class HealthEntry {
       dosage: dosage ?? this.dosage,
       frequency: frequency ?? this.frequency,
       frequencyDays: frequencyDays ?? this.frequencyDays,
+      frequencyInterval: frequencyInterval ?? this.frequencyInterval,
       repeatEndDate: clearRepeatEndDate ? null : (repeatEndDate ?? this.repeatEndDate),
       startDate: startDate ?? this.startDate,
       nextDueDate: nextDueDate ?? this.nextDueDate,
@@ -177,16 +183,19 @@ enum HealthFrequency {
   /// Does not repeat — one-time event.
   once,
 
-  /// Once per day.
+  /// Repeats per day(s).
   daily,
 
-  /// Once per week.
+  /// Repeats per week(s).
   weekly,
 
-  /// Once per month.
+  /// Repeats per month(s).
   monthly,
 
-  /// Custom interval in days.
+  /// Repeats per year(s).
+  yearly,
+
+  /// Custom interval in days (legacy).
   custom;
 
   /// Human-readable label for this frequency.
@@ -195,11 +204,13 @@ enum HealthFrequency {
       case HealthFrequency.once:
         return 'Does not repeat';
       case HealthFrequency.daily:
-        return 'Daily';
+        return 'Day';
       case HealthFrequency.weekly:
-        return 'Weekly';
+        return 'Week';
       case HealthFrequency.monthly:
-        return 'Monthly';
+        return 'Month';
+      case HealthFrequency.yearly:
+        return 'Year';
       case HealthFrequency.custom:
         return 'Custom';
     }
