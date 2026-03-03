@@ -480,5 +480,7 @@
   "orgUpdated": "Organisation mise à jour",
   "orgDeleted": "Organisation supprimée",
   "memberCount": "{count} membres",
-  "petCount": "{count} animaux"
+  "petCount": "{count} animaux",
+  "remindBefore": "Me rappeler",
+  "daysBefore": "jour(s) avant"
 }

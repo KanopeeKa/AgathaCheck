@@ -531,5 +531,7 @@
   "memberCount": "{count} members",
   "@memberCount": { "placeholders": { "count": { "type": "int" } } },
   "petCount": "{count} pets",
-  "@petCount": { "placeholders": { "count": { "type": "int" } } }
+  "@petCount": { "placeholders": { "count": { "type": "int" } } },
+  "remindBefore": "Remind me",
+  "daysBefore": "day(s) before"
 }

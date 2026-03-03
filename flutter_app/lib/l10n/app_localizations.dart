@@ -2815,6 +2815,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{count} pets'**
   String petCount(int count);
+
+  /// No description provided for @remindBefore.
+  ///
+  /// In en, this message translates to:
+  /// **'Remind me'**
+  String get remindBefore;
+
+  /// No description provided for @daysBefore.
+  ///
+  /// In en, this message translates to:
+  /// **'day(s) before'**
+  String get daysBefore;
 }
 
 class _AppLocalizationsDelegate

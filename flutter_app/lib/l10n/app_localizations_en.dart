@@ -1492,4 +1492,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String petCount(int count) {
     return '$count pets';
   }
+
+  @override
+  String get remindBefore => 'Remind me';
+
+  @override
+  String get daysBefore => 'day(s) before';
 }

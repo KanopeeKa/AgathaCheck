@@ -43,6 +43,7 @@ class _HealthEntryFormScreenState
   List<EventPhoto> _photos = [];
   final List<XFile> _pendingPhotos = [];
 
+  int _remindDaysBefore = 1;
   String? _selectedHealthIssueId;
   final Set<String> _selectedPetIds = {};
 
@@ -185,6 +186,7 @@ class _HealthEntryFormScreenState
           _selectedPetIds.clear();
           _selectedPetIds.add(entry.petId);
           _repeatEndDate = entry.repeatEndDate;
+          _remindDaysBefore = entry.remindDaysBefore;
           _selectedHealthIssueId = entry.healthIssueId;
         });
       }
@@ -455,6 +457,46 @@ class _HealthEntryFormScreenState
                       }),
                     ),
                     const SizedBox(height: 16),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: InputDecorator(
+                            decoration: InputDecoration(
+                              labelText: l.remindBefore,
+                              prefixIcon: const Icon(Icons.notifications_active, size: 20),
+                            ),
+                            child: Row(
+                              children: [
+                                SizedBox(
+                                  width: 60,
+                                  child: TextFormField(
+                                    key: const Key('remind_days_field'),
+                                    initialValue: _remindDaysBefore.toString(),
+                                    keyboardType: TextInputType.number,
+                                    decoration: const InputDecoration(
+                                      border: InputBorder.none,
+                                      isDense: true,
+                                      contentPadding: EdgeInsets.zero,
+                                    ),
+                                    onChanged: (v) {
+                                      final val = int.tryParse(v);
+                                      if (val != null && val >= 0) {
+                                        setState(() => _remindDaysBefore = val);
+                                      }
+                                    },
+                                  ),
+                                ),
+                                Text(
+                                  l.daysBefore,
+                                  style: Theme.of(context).textTheme.bodyMedium,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
                     if (_selectedPetIds.length == 1)
                       _buildHealthIssueDropdown(),
                     if (_selectedPetIds.length == 1)
@@ -584,6 +626,7 @@ class _HealthEntryFormScreenState
           nextDueDate: _nextDueDate ?? _startDate,
           notes: _notesController.text.trim(),
           healthIssueId: _selectedHealthIssueId,
+          remindDaysBefore: _remindDaysBefore,
         );
         await notifier.updateEntry(entry);
         if (mounted) {
@@ -606,6 +649,7 @@ class _HealthEntryFormScreenState
             nextDueDate: markCompleted ? completedDueDate : _startDate,
             notes: _notesController.text.trim(),
             healthIssueId: _selectedHealthIssueId,
+            remindDaysBefore: _remindDaysBefore,
           );
           final created = await createUseCase.call(entry);
           createdEntryIds.add(created.id);

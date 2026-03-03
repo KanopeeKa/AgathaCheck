@@ -313,6 +313,9 @@ Future<void> main() async {
     EXCEPTION WHEN OTHERS THEN NULL;
     END \$\$;
   '''));
+  await _pool.execute(Sql('''
+    ALTER TABLE health_entries ADD COLUMN IF NOT EXISTS remind_days_before INTEGER NOT NULL DEFAULT 1
+  '''));
   print('health_entries schema updated');
 
   await _pool.execute(Sql('''
@@ -1583,6 +1586,7 @@ Future<void> _createHealthEntry(HttpRequest request) async {
   final notes = body['notes'] as String? ?? '';
   final petId = body['pet_id'] as String? ?? '';
   final healthIssueId = body['health_issue_id'] != null ? int.tryParse(body['health_issue_id'].toString()) : null;
+  final remindDaysBefore = body['remind_days_before'] as int? ?? 1;
 
   if (name.isEmpty || type.isEmpty || frequency.isEmpty || startDate.isEmpty) {
     _jsonResponse(
@@ -1592,8 +1596,8 @@ Future<void> _createHealthEntry(HttpRequest request) async {
 
   final result = await _pool.execute(
     Sql.named('''
-      INSERT INTO health_entries (pet_id, name, type, dosage, frequency, frequency_days, frequency_interval, repeat_end_date, start_date, next_due_date, notes, health_issue_id)
-      VALUES (@petId, @name, @type, @dosage, @frequency, @frequencyDays, @frequencyInterval, ${repeatEndDate != null ? '@repeatEndDate::date' : 'NULL'}, @startDate::date, @nextDueDate::timestamptz, @notes, ${healthIssueId != null ? '@healthIssueId' : 'NULL'})
+      INSERT INTO health_entries (pet_id, name, type, dosage, frequency, frequency_days, frequency_interval, repeat_end_date, start_date, next_due_date, notes, health_issue_id, remind_days_before)
+      VALUES (@petId, @name, @type, @dosage, @frequency, @frequencyDays, @frequencyInterval, ${repeatEndDate != null ? '@repeatEndDate::date' : 'NULL'}, @startDate::date, @nextDueDate::timestamptz, @notes, ${healthIssueId != null ? '@healthIssueId' : 'NULL'}, @remindDaysBefore)
       RETURNING *
     '''),
     parameters: {
@@ -1609,6 +1613,7 @@ Future<void> _createHealthEntry(HttpRequest request) async {
       'nextDueDate': nextDueDate,
       'notes': notes,
       if (healthIssueId != null) 'healthIssueId': healthIssueId,
+      'remindDaysBefore': remindDaysBefore,
     },
   );
 
@@ -1699,6 +1704,7 @@ Future<void> _updateHealthEntry(HttpRequest request) async {
         repeat_end_date = ${repeatEndDateVal != null ? '@repeatEndDate::date' : 'NULL'},
         start_date = @startDate::date, next_due_date = @nextDueDate::timestamptz,
         notes = @notes, health_issue_id = ${newHealthIssueId != null ? '@healthIssueId' : 'NULL'},
+        remind_days_before = @remindDaysBefore,
         updated_at = NOW()
       WHERE id = @id
       RETURNING *
@@ -1716,6 +1722,7 @@ Future<void> _updateHealthEntry(HttpRequest request) async {
       'nextDueDate': body['next_due_date'] ?? row['next_due_date'],
       'notes': body['notes'] ?? row['notes'],
       if (newHealthIssueId != null) 'healthIssueId': newHealthIssueId,
+      'remindDaysBefore': body['remind_days_before'] ?? row['remind_days_before'] ?? 1,
     },
   );
 
@@ -3197,11 +3204,9 @@ Future<void> _checkDueNotifications(HttpRequest request) async {
     parameters: {'userId': userId},
   );
 
-  int reminderDays = 1;
   bool emailEnabled = false;
   if (prefResult.isNotEmpty) {
     final prefRow = prefResult.first.toColumnMap();
-    reminderDays = prefRow['reminder_days_before'] as int;
     emailEnabled = prefRow['email_reminders_enabled'] as bool;
   }
 
@@ -3209,12 +3214,12 @@ Future<void> _checkDueNotifications(HttpRequest request) async {
     Sql.named('''
       SELECT he.* FROM health_entries he
       JOIN pets p ON p.id::text = he.pet_id
-      WHERE he.next_due_date <= NOW() + make_interval(days => @reminderDays)
+      WHERE he.next_due_date <= NOW() + make_interval(days => he.remind_days_before)
       AND he.next_due_date IS NOT NULL
       AND (p.user_id = @userId
            OR p.id::text IN (SELECT pet_id FROM pet_access WHERE user_id = @userId))
     '''),
-    parameters: {'reminderDays': reminderDays, 'userId': userId},
+    parameters: {'userId': userId},
   );
 
   int created = 0;
@@ -3637,6 +3642,7 @@ Map<String, dynamic> _rowToMap(ResultRow row) {
     'notes': cols['notes'].toString(),
     'health_issue_id': cols['health_issue_id']?.toString(),
     'health_issue_title': cols.containsKey('health_issue_title') ? cols['health_issue_title']?.toString() : null,
+    'remind_days_before': cols['remind_days_before'] ?? 1,
     'created_at': cols['created_at'].toString(),
     'updated_at': cols['updated_at'].toString(),
   };

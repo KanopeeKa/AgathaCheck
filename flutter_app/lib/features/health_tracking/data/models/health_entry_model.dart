@@ -21,6 +21,7 @@ class HealthEntryModel extends HealthEntry {
     super.notes,
     super.healthIssueId,
     super.healthIssueName,
+    super.remindDaysBefore,
     super.createdAt,
     super.updatedAt,
   });
@@ -47,6 +48,7 @@ class HealthEntryModel extends HealthEntry {
       notes: json['notes'] as String? ?? '',
       healthIssueId: json['health_issue_id'] as String?,
       healthIssueName: json['health_issue_title'] as String?,
+      remindDaysBefore: json['remind_days_before'] as int? ?? 1,
       createdAt: json['created_at'] != null
           ? DateTime.tryParse(json['created_at'] as String)
           : null,
@@ -73,6 +75,7 @@ class HealthEntryModel extends HealthEntry {
       notes: entry.notes,
       healthIssueId: entry.healthIssueId,
       healthIssueName: entry.healthIssueName,
+      remindDaysBefore: entry.remindDaysBefore,
       createdAt: entry.createdAt,
       updatedAt: entry.updatedAt,
     );
@@ -94,6 +97,7 @@ class HealthEntryModel extends HealthEntry {
       'next_due_date': nextDueDate.toIso8601String(),
       'notes': notes,
       if (healthIssueId != null) 'health_issue_id': healthIssueId,
+      'remind_days_before': remindDaysBefore,
     };
   }
 
