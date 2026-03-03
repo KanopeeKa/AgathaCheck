@@ -381,8 +381,10 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
               TextFormField(
                 key: const Key('pet_name_field'),
                 controller: _nameController,
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   labelText: 'Name *',
+                  helperText: 'Your pet\'s name or nickname',
+                  suffixIcon: _infoTooltip('The name your pet responds to'),
                 ),
                 validator: (value) {
                   if (value == null || value.trim().isEmpty) {
@@ -395,8 +397,10 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
               DropdownButtonFormField<String>(
                 key: const Key('pet_species_field'),
                 value: _selectedSpecies,
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   labelText: 'Species *',
+                  helperText: 'Select the type of animal',
+                  suffixIcon: _infoTooltip('Choose the species that best matches your pet'),
                 ),
                 items: AppConstants.species
                     .map((s) => DropdownMenuItem(value: s, child: Text(s)))
@@ -411,8 +415,10 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
               TextFormField(
                 key: const Key('pet_breed_field'),
                 controller: _breedController,
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   labelText: 'Breed',
+                  helperText: 'Breed or variety, if known',
+                  suffixIcon: _infoTooltip('e.g. Labrador, Siamese, Budgerigar'),
                 ),
               ),
               const SizedBox(height: 16),
@@ -421,6 +427,7 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
                 value: _selectedGender,
                 decoration: InputDecoration(
                   labelText: 'Gender',
+                  helperText: 'Useful for health and behaviour tracking',
                   suffixIcon: _selectedGender != null
                       ? IconButton(
                           icon: const Icon(Icons.clear),
@@ -428,7 +435,7 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
                           onPressed: () =>
                               setState(() => _selectedGender = null),
                         )
-                      : null,
+                      : _infoTooltip('Helps vets and caregivers with gender-specific care'),
                 ),
                 items: const [
                   DropdownMenuItem<String?>(
@@ -464,6 +471,7 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
                         child: InputDecorator(
                           decoration: InputDecoration(
                             labelText: 'Date of Birth',
+                            helperText: 'Used to calculate your pet\'s age',
                             suffixIcon: _dateOfBirth != null
                                 ? IconButton(
                                     icon: const Icon(Icons.clear, size: 18),
@@ -560,9 +568,11 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
               TextFormField(
                 key: const Key('pet_bio_field'),
                 controller: _bioController,
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   labelText: 'Bio',
                   alignLabelWithHint: true,
+                  helperText: 'Personality traits, likes, quirks',
+                  suffixIcon: _infoTooltip('Anything a caregiver should know about your pet\'s temperament or habits'),
                 ),
                 maxLines: 4,
                 maxLength: 500,
@@ -573,9 +583,20 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
               TextFormField(
                 key: const Key('pet_insurance_field'),
                 controller: _insuranceController,
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   labelText: 'Insurance Details',
                   alignLabelWithHint: true,
+                  helperText: 'Policy info for emergencies or vet visits',
+                  suffixIcon: _infoTooltip(
+                    'Include details someone else would need to use your pet\'s insurance:\n\n'
+                    '\u2022 Insurance company name\n'
+                    '\u2022 Policy or contract number\n'
+                    '\u2022 Policyholder name (if different from you)\n'
+                    '\u2022 Coverage type (accident only, illness, wellness)\n'
+                    '\u2022 Excess/deductible amount\n'
+                    '\u2022 Emergency helpline number\n\n'
+                    'This is especially useful if a pet-sitter or family member needs to take your pet to the vet and claim on your behalf.',
+                  ),
                 ),
                 maxLines: 4,
                 maxLength: 500,
@@ -584,8 +605,20 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
               TextFormField(
                 key: const Key('pet_chip_id_field'),
                 controller: _chipIdController,
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   labelText: 'ID / Microchip Number',
+                  helperText: 'Identification number for your pet',
+                  suffixIcon: _infoTooltip(
+                    'Enter the identification number relevant to your pet:\n\n'
+                    '\u2022 Dogs & Cats: microchip number (usually 15 digits), often required by law\n'
+                    '\u2022 Horses & Ponies: passport or microchip number\n'
+                    '\u2022 Ferrets & Rabbits: microchip number if implanted\n'
+                    '\u2022 Birds: leg ring or band number\n'
+                    '\u2022 Fish: tank or habitat label\n'
+                    '\u2022 Other pets: any ID tag or registration number\n\n'
+                    'This is essential if your pet is lost or needs emergency vet care. '
+                    'The number is usually found on adoption papers, vet records, or the registration database.',
+                  ),
                 ),
               ),
               const SizedBox(height: 24),
@@ -651,16 +684,51 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
     );
   }
 
+  Widget _infoTooltip(String message) {
+    return IconButton(
+      icon: Icon(Icons.info_outline,
+          size: 18, color: Theme.of(context).colorScheme.outline),
+      tooltip: message,
+      onPressed: () {
+        showDialog(
+          context: context,
+          builder: (ctx) => AlertDialog(
+            content: Text(message),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(ctx),
+                child: const Text('OK'),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
   Widget _buildNeuteredDateField(ThemeData theme) {
     final dateFormat = DateFormat.yMMMd();
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          'Neutered / Spayed',
-          style: theme.textTheme.bodyMedium?.copyWith(
-            color: theme.colorScheme.onSurfaceVariant,
-          ),
+        Row(
+          children: [
+            Text(
+              'Neutered / Spayed',
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
+            ),
+            const SizedBox(width: 4),
+            _infoTooltip(
+              'Whether your pet has been surgically sterilised:\n\n'
+              '\u2022 Neutered: male animals (castration)\n'
+              '\u2022 Spayed: female animals (ovariectomy / ovariohysterectomy)\n\n'
+              'This applies to dogs, cats, rabbits, and other mammals. '
+              'Recording the date helps your vet track recovery and adjust any health recommendations.\n\n'
+              'If your pet is not yet neutered/spayed, selecting "No" will show a reminder on their profile.',
+            ),
+          ],
         ),
         const SizedBox(height: 4),
         Row(
