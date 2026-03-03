@@ -447,7 +447,12 @@ class _HealthEntryFormScreenState
                     _DatePickerField(
                       label: l.startDate,
                       date: _startDate,
-                      onChanged: (d) => setState(() => _startDate = d),
+                      onChanged: (d) => setState(() {
+                        _startDate = d;
+                        if (_isEdit) {
+                          _nextDueDate = d;
+                        }
+                      }),
                     ),
                     const SizedBox(height: 16),
                     if (_selectedPetIds.length == 1)
