@@ -2267,93 +2267,170 @@ class _HealthIssuesSectionState extends ConsumerState<_HealthIssuesSection> {
     final formKey = GlobalKey<FormState>();
     DateTime? startDate = issue.startDate;
     DateTime? endDate = issue.endDate;
+    final selectedEventIds = Set<String>.from(issue.eventIds);
 
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       builder: (ctx) => StatefulBuilder(
-        builder: (ctx, setSheetState) => Padding(
-          padding: EdgeInsets.only(
-            left: 24,
-            right: 24,
-            top: 24,
-            bottom: MediaQuery.of(ctx).viewInsets.bottom + 24,
-          ),
-          child: Form(
-            key: formKey,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Text('Edit Health Issue',
-                    style: Theme.of(ctx)
-                        .textTheme
-                        .titleMedium
-                        ?.copyWith(fontWeight: FontWeight.bold)),
-                const SizedBox(height: 16),
-                TextFormField(
-                  controller: titleController,
-                  decoration: const InputDecoration(
-                    labelText: 'Title',
-                    prefixIcon: Icon(Icons.title),
-                  ),
-                  validator: (val) =>
-                      val == null || val.trim().isEmpty ? 'Title is required' : null,
-                ),
-                const SizedBox(height: 12),
-                TextFormField(
-                  controller: descriptionController,
-                  decoration: const InputDecoration(
-                    labelText: 'Description (optional)',
-                    prefixIcon: Icon(Icons.description),
-                  ),
-                  maxLines: 3,
-                ),
-                const SizedBox(height: 12),
-                Row(
+        builder: (ctx, setSheetState) {
+          final entriesAsync = ref.watch(petHealthEntriesProvider(widget.petId));
+          final theme = Theme.of(ctx);
+
+          return Padding(
+            padding: EdgeInsets.only(
+              left: 24,
+              right: 24,
+              top: 24,
+              bottom: MediaQuery.of(ctx).viewInsets.bottom + 24,
+            ),
+            child: Form(
+              key: formKey,
+              child: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    Expanded(
-                      child: _OptionalDateField(
-                        label: 'Start Date',
-                        date: startDate,
-                        onChanged: (d) => setSheetState(() => startDate = d),
-                        onClear: () => setSheetState(() => startDate = null),
+                    Text('Edit Health Issue',
+                        style: theme.textTheme.titleMedium
+                            ?.copyWith(fontWeight: FontWeight.bold)),
+                    const SizedBox(height: 16),
+                    TextFormField(
+                      controller: titleController,
+                      decoration: const InputDecoration(
+                        labelText: 'Title',
+                        prefixIcon: Icon(Icons.title),
                       ),
+                      validator: (val) =>
+                          val == null || val.trim().isEmpty ? 'Title is required' : null,
                     ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: _OptionalDateField(
-                        label: 'End Date',
-                        date: endDate,
-                        onChanged: (d) => setSheetState(() => endDate = d),
-                        onClear: () => setSheetState(() => endDate = null),
+                    const SizedBox(height: 12),
+                    TextFormField(
+                      controller: descriptionController,
+                      decoration: const InputDecoration(
+                        labelText: 'Description (optional)',
+                        prefixIcon: Icon(Icons.description),
                       ),
+                      maxLines: 3,
+                    ),
+                    const SizedBox(height: 12),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: _OptionalDateField(
+                            label: 'Start Date',
+                            date: startDate,
+                            onChanged: (d) => setSheetState(() => startDate = d),
+                            onClear: () => setSheetState(() => startDate = null),
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: _OptionalDateField(
+                            label: 'End Date',
+                            date: endDate,
+                            onChanged: (d) => setSheetState(() => endDate = d),
+                            onClear: () => setSheetState(() => endDate = null),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+                    Text('Linked Events',
+                        style: theme.textTheme.titleSmall
+                            ?.copyWith(fontWeight: FontWeight.w600)),
+                    const SizedBox(height: 8),
+                    entriesAsync.when(
+                      loading: () => const Center(
+                          child: Padding(
+                              padding: EdgeInsets.all(8),
+                              child: CircularProgressIndicator(strokeWidth: 2))),
+                      error: (_, __) => Text('Could not load events',
+                          style: theme.textTheme.bodySmall
+                              ?.copyWith(color: theme.colorScheme.error)),
+                      data: (entries) {
+                        if (entries.isEmpty) {
+                          return Padding(
+                            padding: const EdgeInsets.only(bottom: 8),
+                            child: Text('No events for this pet yet.',
+                                style: theme.textTheme.bodySmall
+                                    ?.copyWith(color: theme.colorScheme.outline)),
+                          );
+                        }
+                        return Container(
+                          constraints: const BoxConstraints(maxHeight: 200),
+                          decoration: BoxDecoration(
+                            border: Border.all(color: theme.colorScheme.outlineVariant),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: ListView.builder(
+                            shrinkWrap: true,
+                            padding: const EdgeInsets.symmetric(vertical: 4),
+                            itemCount: entries.length,
+                            itemBuilder: (_, i) {
+                              final entry = entries[i];
+                              final isSelected = selectedEventIds.contains(entry.id);
+                              return CheckboxListTile(
+                                dense: true,
+                                value: isSelected,
+                                onChanged: (checked) {
+                                  setSheetState(() {
+                                    if (checked == true) {
+                                      selectedEventIds.add(entry.id);
+                                    } else {
+                                      selectedEventIds.remove(entry.id);
+                                    }
+                                  });
+                                },
+                                title: Text(entry.name,
+                                    style: theme.textTheme.bodyMedium),
+                                subtitle: Text(
+                                    entry.type.name[0].toUpperCase() +
+                                        entry.type.name.substring(1),
+                                    style: theme.textTheme.bodySmall
+                                        ?.copyWith(color: theme.colorScheme.outline)),
+                              );
+                            },
+                          ),
+                        );
+                      },
+                    ),
+                    const SizedBox(height: 16),
+                    FilledButton(
+                      onPressed: () async {
+                        if (!formKey.currentState!.validate()) return;
+                        final updated = issue.copyWith(
+                          title: titleController.text.trim(),
+                          description: descriptionController.text.trim(),
+                          startDate: startDate,
+                          endDate: endDate,
+                          clearStartDate: startDate == null,
+                          clearEndDate: endDate == null,
+                        );
+                        await ref
+                            .read(healthIssueNotifierProvider(widget.petId).notifier)
+                            .updateIssue(updated);
+                        final originalIds = Set<String>.from(issue.eventIds);
+                        final toLink = selectedEventIds.difference(originalIds);
+                        final toUnlink = originalIds.difference(selectedEventIds);
+                        final notifier = ref.read(
+                            healthIssueNotifierProvider(widget.petId).notifier);
+                        for (final id in toLink) {
+                          await notifier.linkEvent(issue.id, id);
+                        }
+                        for (final id in toUnlink) {
+                          await notifier.unlinkEvent(issue.id, id);
+                        }
+                        if (ctx.mounted) Navigator.pop(ctx);
+                      },
+                      child: const Text('Save'),
                     ),
                   ],
                 ),
-                const SizedBox(height: 16),
-                FilledButton(
-                  onPressed: () async {
-                    if (!formKey.currentState!.validate()) return;
-                    final updated = issue.copyWith(
-                      title: titleController.text.trim(),
-                      description: descriptionController.text.trim(),
-                      startDate: startDate,
-                      endDate: endDate,
-                      clearStartDate: startDate == null,
-                      clearEndDate: endDate == null,
-                    );
-                    await ref
-                        .read(healthIssueNotifierProvider(widget.petId).notifier)
-                        .updateIssue(updated);
-                    if (ctx.mounted) Navigator.pop(ctx);
-                  },
-                  child: const Text('Save'),
-                ),
-              ],
+              ),
             ),
-          ),
-        ),
+          );
+        },
       ),
     );
   }
