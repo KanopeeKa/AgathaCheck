@@ -2004,7 +2004,9 @@ class _ReportSelectionSheetState extends ConsumerState<_ReportSelectionSheet> {
       if (!mounted) return;
       Navigator.pop(context);
 
-      final filename = '${pet.name.replaceAll(' ', '_')}_report.pdf';
+      final now = DateTime.now();
+      final dateStr = '${now.year}${now.month.toString().padLeft(2, '0')}${now.day.toString().padLeft(2, '0')}';
+      final filename = '${pet.name.replaceAll(' ', '_')}_report_$dateStr.pdf';
       await pdf_saver.savePdf(pdfBytes, filename);
     } catch (e) {
       if (mounted) {
