@@ -278,7 +278,7 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
         );
         await ref.read(petListProvider.notifier).updatePet(pet);
       } else {
-        await ref.read(petListProvider.notifier).addPet(
+        final newPetId = await ref.read(petListProvider.notifier).addPet(
               name: _nameController.text.trim(),
               species: _selectedSpecies,
               breed: _breedController.text.trim(),
@@ -294,6 +294,8 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
               photoPath: _photoBase64,
               vetId: _selectedVetId,
             );
+        if (mounted) context.go('/pet/$newPetId');
+        return;
       }
 
       if (mounted) context.go('/');

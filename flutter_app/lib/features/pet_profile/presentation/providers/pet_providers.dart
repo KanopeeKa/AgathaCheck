@@ -89,7 +89,7 @@ class PetListNotifier extends AsyncNotifier<List<Pet>> {
     return pets;
   }
 
-  Future<void> addPet({
+  Future<String> addPet({
     required String name,
     required String species,
     String breed = '',
@@ -137,6 +137,7 @@ class PetListNotifier extends AsyncNotifier<List<Pet>> {
     );
     await ref.read(addPetUseCaseProvider).call(pet);
     ref.invalidateSelf();
+    return pet.id;
   }
 
   Future<void> updatePet(Pet pet) async {
