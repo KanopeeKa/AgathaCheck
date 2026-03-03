@@ -1297,4 +1297,199 @@ class AppLocalizationsEn extends AppLocalizations {
   String pdfEveryN(int n, String periods) {
     return 'Every $n $periods';
   }
+
+  @override
+  String get myOrganizations => 'My Organizations';
+
+  @override
+  String get organizations => 'Organizations';
+
+  @override
+  String get createOrganization => 'Create Organization';
+
+  @override
+  String get editOrganization => 'Edit Organization';
+
+  @override
+  String get deleteOrganization => 'Delete Organization';
+
+  @override
+  String get organizationName => 'Organization Name';
+
+  @override
+  String get organizationType => 'Type';
+
+  @override
+  String get orgTypeProfessional => 'Professional';
+
+  @override
+  String get orgTypeCharity => 'Charity';
+
+  @override
+  String get orgEmail => 'Email';
+
+  @override
+  String get orgPhone => 'Phone';
+
+  @override
+  String get orgAddress => 'Address';
+
+  @override
+  String get orgWebsite => 'Website';
+
+  @override
+  String get orgBio => 'Bio';
+
+  @override
+  String get orgMembers => 'Members';
+
+  @override
+  String get orgPets => 'Pets';
+
+  @override
+  String get orgArchived => 'Archived Pets';
+
+  @override
+  String get orgNoOrganizations => 'No organizations yet';
+
+  @override
+  String get orgCreateFirst => 'Create your first organization to get started';
+
+  @override
+  String get orgSuperUser => 'Super User';
+
+  @override
+  String get orgMember => 'Member';
+
+  @override
+  String get orgInviteMember => 'Invite Member';
+
+  @override
+  String get orgInviteLinkCopied => 'Invite link copied to clipboard';
+
+  @override
+  String get orgInviteExpiry => 'This invite link expires in 7 days';
+
+  @override
+  String get orgJoinSuccess => 'Successfully joined organization';
+
+  @override
+  String get orgLeave => 'Leave Organization';
+
+  @override
+  String get orgLeaveConfirm =>
+      'Are you sure you want to leave this organization?';
+
+  @override
+  String get orgRemoveMember => 'Remove Member';
+
+  @override
+  String get orgRemoveMemberConfirm =>
+      'Are you sure you want to remove this member?';
+
+  @override
+  String get orgChangeRole => 'Change Role';
+
+  @override
+  String get orgPromoteToSuperUser => 'Promote to Super User';
+
+  @override
+  String get orgDemoteToMember => 'Demote to Member';
+
+  @override
+  String get orgDeleteConfirm =>
+      'Are you sure you want to delete this organization? This action cannot be undone.';
+
+  @override
+  String get orgDeleteRequireNoPets =>
+      'Transfer or remove all pets before deleting';
+
+  @override
+  String get orgNoPets => 'No pets in this organization';
+
+  @override
+  String get orgNoMembers => 'No members';
+
+  @override
+  String get orgNoArchived => 'No archived records';
+
+  @override
+  String get orgAddPet => 'Add Pet';
+
+  @override
+  String get transferPet => 'Transfer Pet';
+
+  @override
+  String get transferToUser => 'Transfer to User';
+
+  @override
+  String get transferToOrganization => 'Transfer to Organization';
+
+  @override
+  String get transferType => 'Transfer Type';
+
+  @override
+  String get transferTypeAdoption => 'Adoption';
+
+  @override
+  String get transferTypeTransfer => 'Transfer';
+
+  @override
+  String get transferTypeRelease => 'Release';
+
+  @override
+  String get transferTypeOther => 'Other';
+
+  @override
+  String get recipientEmail => 'Recipient Email';
+
+  @override
+  String get transferNotes => 'Notes (optional)';
+
+  @override
+  String get confirmTransfer => 'Confirm Transfer';
+
+  @override
+  String get transferConfirmTitle => 'Confirm Transfer';
+
+  @override
+  String transferConfirmMessage(String petName) {
+    return 'Are you sure you want to transfer $petName? This action cannot be undone.';
+  }
+
+  @override
+  String get transferSuccess => 'Pet transferred successfully';
+
+  @override
+  String get archivedPets => 'Archived Pets';
+
+  @override
+  String archivedOn(String date) {
+    return 'Archived on $date';
+  }
+
+  @override
+  String get noArchivedPets => 'No archived pets';
+
+  @override
+  String get orgNameRequired => 'Organization name is required';
+
+  @override
+  String get orgCreated => 'Organization created';
+
+  @override
+  String get orgUpdated => 'Organization updated';
+
+  @override
+  String get orgDeleted => 'Organization deleted';
+
+  @override
+  String memberCount(int count) {
+    return '$count members';
+  }
+
+  @override
+  String petCount(int count) {
+    return '$count pets';
+  }
 }

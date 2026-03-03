@@ -2449,6 +2449,372 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Every {n} {periods}'**
   String pdfEveryN(int n, String periods);
+
+  /// No description provided for @myOrganizations.
+  ///
+  /// In en, this message translates to:
+  /// **'My Organizations'**
+  String get myOrganizations;
+
+  /// No description provided for @organizations.
+  ///
+  /// In en, this message translates to:
+  /// **'Organizations'**
+  String get organizations;
+
+  /// No description provided for @createOrganization.
+  ///
+  /// In en, this message translates to:
+  /// **'Create Organization'**
+  String get createOrganization;
+
+  /// No description provided for @editOrganization.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Organization'**
+  String get editOrganization;
+
+  /// No description provided for @deleteOrganization.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Organization'**
+  String get deleteOrganization;
+
+  /// No description provided for @organizationName.
+  ///
+  /// In en, this message translates to:
+  /// **'Organization Name'**
+  String get organizationName;
+
+  /// No description provided for @organizationType.
+  ///
+  /// In en, this message translates to:
+  /// **'Type'**
+  String get organizationType;
+
+  /// No description provided for @orgTypeProfessional.
+  ///
+  /// In en, this message translates to:
+  /// **'Professional'**
+  String get orgTypeProfessional;
+
+  /// No description provided for @orgTypeCharity.
+  ///
+  /// In en, this message translates to:
+  /// **'Charity'**
+  String get orgTypeCharity;
+
+  /// No description provided for @orgEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'Email'**
+  String get orgEmail;
+
+  /// No description provided for @orgPhone.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone'**
+  String get orgPhone;
+
+  /// No description provided for @orgAddress.
+  ///
+  /// In en, this message translates to:
+  /// **'Address'**
+  String get orgAddress;
+
+  /// No description provided for @orgWebsite.
+  ///
+  /// In en, this message translates to:
+  /// **'Website'**
+  String get orgWebsite;
+
+  /// No description provided for @orgBio.
+  ///
+  /// In en, this message translates to:
+  /// **'Bio'**
+  String get orgBio;
+
+  /// No description provided for @orgMembers.
+  ///
+  /// In en, this message translates to:
+  /// **'Members'**
+  String get orgMembers;
+
+  /// No description provided for @orgPets.
+  ///
+  /// In en, this message translates to:
+  /// **'Pets'**
+  String get orgPets;
+
+  /// No description provided for @orgArchived.
+  ///
+  /// In en, this message translates to:
+  /// **'Archived Pets'**
+  String get orgArchived;
+
+  /// No description provided for @orgNoOrganizations.
+  ///
+  /// In en, this message translates to:
+  /// **'No organizations yet'**
+  String get orgNoOrganizations;
+
+  /// No description provided for @orgCreateFirst.
+  ///
+  /// In en, this message translates to:
+  /// **'Create your first organization to get started'**
+  String get orgCreateFirst;
+
+  /// No description provided for @orgSuperUser.
+  ///
+  /// In en, this message translates to:
+  /// **'Super User'**
+  String get orgSuperUser;
+
+  /// No description provided for @orgMember.
+  ///
+  /// In en, this message translates to:
+  /// **'Member'**
+  String get orgMember;
+
+  /// No description provided for @orgInviteMember.
+  ///
+  /// In en, this message translates to:
+  /// **'Invite Member'**
+  String get orgInviteMember;
+
+  /// No description provided for @orgInviteLinkCopied.
+  ///
+  /// In en, this message translates to:
+  /// **'Invite link copied to clipboard'**
+  String get orgInviteLinkCopied;
+
+  /// No description provided for @orgInviteExpiry.
+  ///
+  /// In en, this message translates to:
+  /// **'This invite link expires in 7 days'**
+  String get orgInviteExpiry;
+
+  /// No description provided for @orgJoinSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Successfully joined organization'**
+  String get orgJoinSuccess;
+
+  /// No description provided for @orgLeave.
+  ///
+  /// In en, this message translates to:
+  /// **'Leave Organization'**
+  String get orgLeave;
+
+  /// No description provided for @orgLeaveConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to leave this organization?'**
+  String get orgLeaveConfirm;
+
+  /// No description provided for @orgRemoveMember.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove Member'**
+  String get orgRemoveMember;
+
+  /// No description provided for @orgRemoveMemberConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to remove this member?'**
+  String get orgRemoveMemberConfirm;
+
+  /// No description provided for @orgChangeRole.
+  ///
+  /// In en, this message translates to:
+  /// **'Change Role'**
+  String get orgChangeRole;
+
+  /// No description provided for @orgPromoteToSuperUser.
+  ///
+  /// In en, this message translates to:
+  /// **'Promote to Super User'**
+  String get orgPromoteToSuperUser;
+
+  /// No description provided for @orgDemoteToMember.
+  ///
+  /// In en, this message translates to:
+  /// **'Demote to Member'**
+  String get orgDemoteToMember;
+
+  /// No description provided for @orgDeleteConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to delete this organization? This action cannot be undone.'**
+  String get orgDeleteConfirm;
+
+  /// No description provided for @orgDeleteRequireNoPets.
+  ///
+  /// In en, this message translates to:
+  /// **'Transfer or remove all pets before deleting'**
+  String get orgDeleteRequireNoPets;
+
+  /// No description provided for @orgNoPets.
+  ///
+  /// In en, this message translates to:
+  /// **'No pets in this organization'**
+  String get orgNoPets;
+
+  /// No description provided for @orgNoMembers.
+  ///
+  /// In en, this message translates to:
+  /// **'No members'**
+  String get orgNoMembers;
+
+  /// No description provided for @orgNoArchived.
+  ///
+  /// In en, this message translates to:
+  /// **'No archived records'**
+  String get orgNoArchived;
+
+  /// No description provided for @orgAddPet.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Pet'**
+  String get orgAddPet;
+
+  /// No description provided for @transferPet.
+  ///
+  /// In en, this message translates to:
+  /// **'Transfer Pet'**
+  String get transferPet;
+
+  /// No description provided for @transferToUser.
+  ///
+  /// In en, this message translates to:
+  /// **'Transfer to User'**
+  String get transferToUser;
+
+  /// No description provided for @transferToOrganization.
+  ///
+  /// In en, this message translates to:
+  /// **'Transfer to Organization'**
+  String get transferToOrganization;
+
+  /// No description provided for @transferType.
+  ///
+  /// In en, this message translates to:
+  /// **'Transfer Type'**
+  String get transferType;
+
+  /// No description provided for @transferTypeAdoption.
+  ///
+  /// In en, this message translates to:
+  /// **'Adoption'**
+  String get transferTypeAdoption;
+
+  /// No description provided for @transferTypeTransfer.
+  ///
+  /// In en, this message translates to:
+  /// **'Transfer'**
+  String get transferTypeTransfer;
+
+  /// No description provided for @transferTypeRelease.
+  ///
+  /// In en, this message translates to:
+  /// **'Release'**
+  String get transferTypeRelease;
+
+  /// No description provided for @transferTypeOther.
+  ///
+  /// In en, this message translates to:
+  /// **'Other'**
+  String get transferTypeOther;
+
+  /// No description provided for @recipientEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'Recipient Email'**
+  String get recipientEmail;
+
+  /// No description provided for @transferNotes.
+  ///
+  /// In en, this message translates to:
+  /// **'Notes (optional)'**
+  String get transferNotes;
+
+  /// No description provided for @confirmTransfer.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm Transfer'**
+  String get confirmTransfer;
+
+  /// No description provided for @transferConfirmTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm Transfer'**
+  String get transferConfirmTitle;
+
+  /// No description provided for @transferConfirmMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to transfer {petName}? This action cannot be undone.'**
+  String transferConfirmMessage(String petName);
+
+  /// No description provided for @transferSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Pet transferred successfully'**
+  String get transferSuccess;
+
+  /// No description provided for @archivedPets.
+  ///
+  /// In en, this message translates to:
+  /// **'Archived Pets'**
+  String get archivedPets;
+
+  /// No description provided for @archivedOn.
+  ///
+  /// In en, this message translates to:
+  /// **'Archived on {date}'**
+  String archivedOn(String date);
+
+  /// No description provided for @noArchivedPets.
+  ///
+  /// In en, this message translates to:
+  /// **'No archived pets'**
+  String get noArchivedPets;
+
+  /// No description provided for @orgNameRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Organization name is required'**
+  String get orgNameRequired;
+
+  /// No description provided for @orgCreated.
+  ///
+  /// In en, this message translates to:
+  /// **'Organization created'**
+  String get orgCreated;
+
+  /// No description provided for @orgUpdated.
+  ///
+  /// In en, this message translates to:
+  /// **'Organization updated'**
+  String get orgUpdated;
+
+  /// No description provided for @orgDeleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Organization deleted'**
+  String get orgDeleted;
+
+  /// No description provided for @memberCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} members'**
+  String memberCount(int count);
+
+  /// No description provided for @petCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} pets'**
+  String petCount(int count);
 }
 
 class _AppLocalizationsDelegate

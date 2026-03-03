@@ -18,6 +18,7 @@ import '../../../health_tracking/domain/entities/health_issue.dart';
 import '../../../health_tracking/presentation/providers/health_issue_providers.dart';
 import '../../../health_tracking/presentation/providers/health_providers.dart';
 import '../../../health_tracking/presentation/widgets/health_entry_card.dart';
+import '../../../organization/presentation/providers/organization_providers.dart';
 import '../../../sharing/domain/entities/pet_access.dart';
 import '../../../sharing/presentation/providers/sharing_providers.dart';
 import '../../../vet/presentation/providers/vet_providers.dart';
@@ -38,7 +39,6 @@ class PetDetailScreen extends ConsumerStatefulWidget {
 }
 
 class _PetDetailScreenState extends ConsumerState<PetDetailScreen> {
-
 
   @override
   Widget build(BuildContext context) {
@@ -1270,6 +1270,110 @@ class _SharingSection extends ConsumerWidget {
   final String petId;
   final Pet pet;
 
+  void _showTransferToOrgDialog(BuildContext context, WidgetRef ref, Pet pet) {
+    final l = AppLocalizations.of(context)!;
+    final orgListAsync = ref.read(organizationListProvider);
+    final orgs = orgListAsync.valueOrNull ?? [];
+
+    if (orgs.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l.orgNoOrganizations)),
+      );
+      return;
+    }
+
+    int? selectedOrgId;
+    String transferType = 'transfer';
+    final notesController = TextEditingController();
+
+    showDialog(
+      context: context,
+      builder: (ctx) => StatefulBuilder(
+        builder: (ctx, setDialogState) => AlertDialog(
+          title: Text(l.transferToOrganization),
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Text(l.transferConfirmMessage(pet.name),
+                    style: Theme.of(ctx).textTheme.bodyMedium),
+                const SizedBox(height: 16),
+                DropdownButtonFormField<int>(
+                  key: const Key('transfer_org_select'),
+                  decoration: InputDecoration(labelText: l.organizations),
+                  items: orgs.map((org) => DropdownMenuItem(
+                    value: org.id,
+                    child: Text(org.name),
+                  )).toList(),
+                  onChanged: (v) => setDialogState(() => selectedOrgId = v),
+                ),
+                const SizedBox(height: 12),
+                DropdownButtonFormField<String>(
+                  key: const Key('transfer_type_select'),
+                  value: transferType,
+                  decoration: InputDecoration(labelText: l.transferType),
+                  items: [
+                    DropdownMenuItem(value: 'adoption', child: Text(l.transferTypeAdoption)),
+                    DropdownMenuItem(value: 'transfer', child: Text(l.transferTypeTransfer)),
+                    DropdownMenuItem(value: 'release', child: Text(l.transferTypeRelease)),
+                    DropdownMenuItem(value: 'other', child: Text(l.transferTypeOther)),
+                  ],
+                  onChanged: (v) => setDialogState(() => transferType = v ?? 'transfer'),
+                ),
+                const SizedBox(height: 12),
+                TextField(
+                  key: const Key('transfer_notes_field'),
+                  controller: notesController,
+                  decoration: InputDecoration(labelText: l.transferNotes),
+                  maxLines: 2,
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(ctx),
+              child: Text(l.cancel),
+            ),
+            FilledButton(
+              key: const Key('transfer_to_org_confirm'),
+              onPressed: selectedOrgId == null ? null : () async {
+                Navigator.pop(ctx);
+                try {
+                  final ds = ref.read(orgRemoteDataSourceProvider);
+                  final token = ref.read(authProvider).accessToken!;
+                  await ds.transferPetToOrg(
+                    pet.id,
+                    selectedOrgId!,
+                    transferType: transferType,
+                    notes: notesController.text.trim(),
+                    token: token,
+                  );
+                  ref.invalidate(petListProvider);
+                  ref.invalidate(organizationListProvider);
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text(l.transferSuccess)),
+                    );
+                    GoRouter.of(context).go('/');
+                  }
+                } catch (e) {
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('$e')),
+                    );
+                  }
+                }
+              },
+              child: Text(l.confirmTransfer),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
@@ -1400,6 +1504,15 @@ class _SharingSection extends ConsumerWidget {
                               },
                               icon: const Icon(Icons.share, size: 18),
                               label: Text(AppLocalizations.of(context)!.sharePet),
+                            ),
+                            const SizedBox(width: 8),
+                            OutlinedButton.icon(
+                              key: const Key('transfer_to_org_button'),
+                              onPressed: () {
+                                _showTransferToOrgDialog(context, ref, pet);
+                              },
+                              icon: const Icon(Icons.swap_horiz, size: 18),
+                              label: Text(AppLocalizations.of(context)!.transferToOrganization),
                             ),
                           ],
                         ),

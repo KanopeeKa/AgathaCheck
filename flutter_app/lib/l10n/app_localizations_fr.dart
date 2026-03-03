@@ -1301,4 +1301,200 @@ class AppLocalizationsFr extends AppLocalizations {
   String pdfEveryN(int n, String periods) {
     return 'Tous les $n $periods';
   }
+
+  @override
+  String get myOrganizations => 'Mes organisations';
+
+  @override
+  String get organizations => 'Organisations';
+
+  @override
+  String get createOrganization => 'Créer une organisation';
+
+  @override
+  String get editOrganization => 'Modifier l\'organisation';
+
+  @override
+  String get deleteOrganization => 'Supprimer l\'organisation';
+
+  @override
+  String get organizationName => 'Nom de l\'organisation';
+
+  @override
+  String get organizationType => 'Type';
+
+  @override
+  String get orgTypeProfessional => 'Professionnel';
+
+  @override
+  String get orgTypeCharity => 'Association';
+
+  @override
+  String get orgEmail => 'E-mail';
+
+  @override
+  String get orgPhone => 'Téléphone';
+
+  @override
+  String get orgAddress => 'Adresse';
+
+  @override
+  String get orgWebsite => 'Site web';
+
+  @override
+  String get orgBio => 'Description';
+
+  @override
+  String get orgMembers => 'Membres';
+
+  @override
+  String get orgPets => 'Animaux';
+
+  @override
+  String get orgArchived => 'Animaux archivés';
+
+  @override
+  String get orgNoOrganizations => 'Aucune organisation';
+
+  @override
+  String get orgCreateFirst =>
+      'Créez votre première organisation pour commencer';
+
+  @override
+  String get orgSuperUser => 'Super utilisateur';
+
+  @override
+  String get orgMember => 'Membre';
+
+  @override
+  String get orgInviteMember => 'Inviter un membre';
+
+  @override
+  String get orgInviteLinkCopied => 'Lien d\'invitation copié';
+
+  @override
+  String get orgInviteExpiry => 'Ce lien d\'invitation expire dans 7 jours';
+
+  @override
+  String get orgJoinSuccess => 'Organisation rejointe avec succès';
+
+  @override
+  String get orgLeave => 'Quitter l\'organisation';
+
+  @override
+  String get orgLeaveConfirm =>
+      'Êtes-vous sûr de vouloir quitter cette organisation ?';
+
+  @override
+  String get orgRemoveMember => 'Retirer le membre';
+
+  @override
+  String get orgRemoveMemberConfirm =>
+      'Êtes-vous sûr de vouloir retirer ce membre ?';
+
+  @override
+  String get orgChangeRole => 'Changer le rôle';
+
+  @override
+  String get orgPromoteToSuperUser => 'Promouvoir en super utilisateur';
+
+  @override
+  String get orgDemoteToMember => 'Rétrograder en membre';
+
+  @override
+  String get orgDeleteConfirm =>
+      'Êtes-vous sûr de vouloir supprimer cette organisation ? Cette action est irréversible.';
+
+  @override
+  String get orgDeleteRequireNoPets =>
+      'Transférez ou retirez tous les animaux avant de supprimer';
+
+  @override
+  String get orgNoPets => 'Aucun animal dans cette organisation';
+
+  @override
+  String get orgNoMembers => 'Aucun membre';
+
+  @override
+  String get orgNoArchived => 'Aucun enregistrement archivé';
+
+  @override
+  String get orgAddPet => 'Ajouter un animal';
+
+  @override
+  String get transferPet => 'Transférer l\'animal';
+
+  @override
+  String get transferToUser => 'Transférer à un utilisateur';
+
+  @override
+  String get transferToOrganization => 'Transférer à une organisation';
+
+  @override
+  String get transferType => 'Type de transfert';
+
+  @override
+  String get transferTypeAdoption => 'Adoption';
+
+  @override
+  String get transferTypeTransfer => 'Transfert';
+
+  @override
+  String get transferTypeRelease => 'Libération';
+
+  @override
+  String get transferTypeOther => 'Autre';
+
+  @override
+  String get recipientEmail => 'E-mail du destinataire';
+
+  @override
+  String get transferNotes => 'Notes (facultatif)';
+
+  @override
+  String get confirmTransfer => 'Confirmer le transfert';
+
+  @override
+  String get transferConfirmTitle => 'Confirmer le transfert';
+
+  @override
+  String transferConfirmMessage(String petName) {
+    return 'Êtes-vous sûr de vouloir transférer $petName ? Cette action est irréversible.';
+  }
+
+  @override
+  String get transferSuccess => 'Animal transféré avec succès';
+
+  @override
+  String get archivedPets => 'Animaux archivés';
+
+  @override
+  String archivedOn(String date) {
+    return 'Archivé le $date';
+  }
+
+  @override
+  String get noArchivedPets => 'Aucun animal archivé';
+
+  @override
+  String get orgNameRequired => 'Le nom de l\'organisation est requis';
+
+  @override
+  String get orgCreated => 'Organisation créée';
+
+  @override
+  String get orgUpdated => 'Organisation mise à jour';
+
+  @override
+  String get orgDeleted => 'Organisation supprimée';
+
+  @override
+  String memberCount(int count) {
+    return '$count membres';
+  }
+
+  @override
+  String petCount(int count) {
+    return '$count animaux';
+  }
 }

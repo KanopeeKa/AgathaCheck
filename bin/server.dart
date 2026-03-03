@@ -64,6 +64,16 @@ const _translations = {
     'share_granted_msg': 'You have been given access to {pet}',
     'share_revoked': 'Access revoked for {pet}',
     'share_revoked_msg': 'Your access to {pet} has been revoked',
+    'org_pet_transferred_out': '{pet} has been transferred',
+    'org_pet_transferred_out_msg': '{pet} has been transferred to {recipient}',
+    'org_pet_received': 'You received {pet}',
+    'org_pet_received_msg': '{pet} has been transferred to you from {org}',
+    'org_member_joined': 'New member in {org}',
+    'org_member_joined_msg': '{member} has joined {org}',
+    'org_member_left': 'Member left {org}',
+    'org_member_left_msg': '{member} has left {org}',
+    'org_pet_donated': '{pet} transferred to {org}',
+    'org_pet_donated_msg': '{pet} has been transferred to organization {org}',
   },
   'fr': {
     'completed_title': '{pet}{name} terminé',
@@ -90,6 +100,16 @@ const _translations = {
     'share_granted_msg': 'Vous avez reçu l\'accès à {pet}',
     'share_revoked': 'Accès révoqué pour {pet}',
     'share_revoked_msg': 'Votre accès à {pet} a été révoqué',
+    'org_pet_transferred_out': '{pet} a été transféré',
+    'org_pet_transferred_out_msg': '{pet} a été transféré à {recipient}',
+    'org_pet_received': 'Vous avez reçu {pet}',
+    'org_pet_received_msg': '{pet} vous a été transféré depuis {org}',
+    'org_member_joined': 'Nouveau membre dans {org}',
+    'org_member_joined_msg': '{member} a rejoint {org}',
+    'org_member_left': 'Membre parti de {org}',
+    'org_member_left_msg': '{member} a quitté {org}',
+    'org_pet_donated': '{pet} transféré à {org}',
+    'org_pet_donated_msg': '{pet} a été transféré à l\'organisation {org}',
   },
 };
 
@@ -365,6 +385,66 @@ Future<void> main() async {
   await _db.execute(Sql('ALTER TABLE pets ADD COLUMN IF NOT EXISTS date_of_birth DATE'));
   await _db.execute(Sql('ALTER TABLE pets ALTER COLUMN color_value TYPE BIGINT'));
   print('pets table ready');
+
+  await _db.execute(Sql('''
+    CREATE TABLE IF NOT EXISTS organizations (
+      id SERIAL PRIMARY KEY,
+      name VARCHAR(255) NOT NULL,
+      type VARCHAR(50) NOT NULL DEFAULT 'professional',
+      email VARCHAR(255) DEFAULT '',
+      phone VARCHAR(100) DEFAULT '',
+      address TEXT DEFAULT '',
+      website VARCHAR(255) DEFAULT '',
+      bio TEXT DEFAULT '',
+      photo_url TEXT DEFAULT '',
+      created_by INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      created_at TIMESTAMPTZ DEFAULT NOW(),
+      updated_at TIMESTAMPTZ DEFAULT NOW()
+    )
+  '''));
+  print('organizations table ready');
+
+  await _db.execute(Sql('''
+    CREATE TABLE IF NOT EXISTS organization_users (
+      id SERIAL PRIMARY KEY,
+      organization_id INTEGER NOT NULL REFERENCES organizations(id) ON DELETE CASCADE,
+      user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      role VARCHAR(20) NOT NULL DEFAULT 'member',
+      invited_by INTEGER REFERENCES users(id),
+      invite_code VARCHAR(20) UNIQUE,
+      invite_expires_at TIMESTAMPTZ,
+      created_at TIMESTAMPTZ DEFAULT NOW(),
+      UNIQUE(organization_id, user_id)
+    )
+  '''));
+  print('organization_users table ready');
+
+  await _db.execute(Sql('''
+    CREATE TABLE IF NOT EXISTS archived_pets (
+      id SERIAL PRIMARY KEY,
+      organization_id INTEGER REFERENCES organizations(id) ON DELETE SET NULL,
+      user_id INTEGER REFERENCES users(id) ON DELETE SET NULL,
+      pet_id VARCHAR(255) NOT NULL,
+      pet_name VARCHAR(255) NOT NULL DEFAULT '',
+      species VARCHAR(100) NOT NULL DEFAULT '',
+      pdf_data TEXT DEFAULT '',
+      transfer_type VARCHAR(50) NOT NULL DEFAULT 'other',
+      transferred_to_user_id INTEGER REFERENCES users(id) ON DELETE SET NULL,
+      transferred_to_org_id INTEGER REFERENCES organizations(id) ON DELETE SET NULL,
+      notes TEXT DEFAULT '',
+      archived_at TIMESTAMPTZ DEFAULT NOW(),
+      created_at TIMESTAMPTZ DEFAULT NOW()
+    )
+  '''));
+  print('archived_pets table ready');
+
+  await _db.execute(Sql('''
+    DO \$\$ BEGIN
+      ALTER TABLE pets ADD COLUMN organization_id INTEGER REFERENCES organizations(id) ON DELETE SET NULL;
+    EXCEPTION WHEN OTHERS THEN NULL;
+    END \$\$;
+  '''));
+  print('pets organization_id column ready');
 
   final uploadsDir = Directory('uploads');
   if (!uploadsDir.existsSync()) {
@@ -648,6 +728,48 @@ Future<void> _handleApi(HttpRequest request) async {
     await _deleteHealthIssue(request);
   } else if (RegExp(r'^/api/premium/[^/]+$').hasMatch(path) && method == 'GET') {
     await _getPremiumStatus(request);
+  }
+  // Organizations
+  else if (path == '/api/organizations' && method == 'GET') {
+    await _getOrganizations(request);
+  } else if (path == '/api/organizations' && method == 'POST') {
+    await _createOrganization(request);
+  } else if (RegExp(r'^/api/organizations/join/[^/]+$').hasMatch(path) && method == 'POST') {
+    await _joinOrganization(request);
+  } else if (RegExp(r'^/api/organizations/\d+/photo$').hasMatch(path) && method == 'POST') {
+    await _uploadOrgPhoto(request);
+  } else if (RegExp(r'^/api/organizations/\d+/members/me$').hasMatch(path) && method == 'DELETE') {
+    await _leaveOrganization(request);
+  } else if (RegExp(r'^/api/organizations/\d+/members/\d+/role$').hasMatch(path) && method == 'PUT') {
+    await _updateOrgMemberRole(request);
+  } else if (RegExp(r'^/api/organizations/\d+/members/\d+$').hasMatch(path) && method == 'DELETE') {
+    await _removeOrgMember(request);
+  } else if (RegExp(r'^/api/organizations/\d+/members$').hasMatch(path) && method == 'GET') {
+    await _getOrgMembers(request);
+  } else if (RegExp(r'^/api/organizations/\d+/invite$').hasMatch(path) && method == 'POST') {
+    await _createOrgInvite(request);
+  } else if (RegExp(r'^/api/organizations/\d+/pets/[^/]+/transfer$').hasMatch(path) && method == 'POST') {
+    await _transferOrgPet(request);
+  } else if (RegExp(r'^/api/organizations/\d+/pets$').hasMatch(path) && method == 'GET') {
+    await _getOrgPets(request);
+  } else if (RegExp(r'^/api/organizations/\d+/pets$').hasMatch(path) && method == 'POST') {
+    await _createOrgPet(request);
+  } else if (RegExp(r'^/api/organizations/\d+/archived$').hasMatch(path) && method == 'GET') {
+    await _getOrgArchivedPets(request);
+  } else if (RegExp(r'^/api/organizations/\d+$').hasMatch(path) && method == 'GET') {
+    await _getOrganization(request);
+  } else if (RegExp(r'^/api/organizations/\d+$').hasMatch(path) && method == 'PUT') {
+    await _updateOrganization(request);
+  } else if (RegExp(r'^/api/organizations/\d+$').hasMatch(path) && method == 'DELETE') {
+    await _deleteOrganization(request);
+  }
+  // Pet transfer to org (individual -> org)
+  else if (RegExp(r'^/api/pets/[^/]+/transfer-to-org$').hasMatch(path) && method == 'POST') {
+    await _transferPetToOrg(request);
+  }
+  // User's personal archived pets
+  else if (path == '/api/archived-pets' && method == 'GET') {
+    await _getUserArchivedPets(request);
   } else {
     _jsonResponse(request, 404, {'error': 'Not found'});
   }
@@ -706,6 +828,7 @@ Map<String, dynamic> _petRowToJson(ResultRow row) {
     'vetId': cols['vet_id']?.toString(),
     'colorValue': cols['color_value'],
     'passedAway': cols['passed_away'] == true,
+    'organization_id': cols['organization_id']?.toString(),
     'created_at': cols['created_at']?.toString(),
     'updated_at': cols['updated_at']?.toString(),
   };
@@ -719,7 +842,7 @@ Future<void> _getPets(HttpRequest request) async {
   }
 
   final result = await _db.execute(
-    Sql.named('SELECT * FROM pets WHERE user_id = @userId ORDER BY created_at'),
+    Sql.named('SELECT * FROM pets WHERE user_id = @userId AND organization_id IS NULL ORDER BY created_at'),
     parameters: {'userId': userId},
   );
   final pets = result.map(_petRowToJson).toList();
@@ -3611,6 +3734,859 @@ Future<void> _getPremiumStatus(HttpRequest request) async {
       'error': 'Failed to check subscription status',
     });
   }
+}
+
+// ── Organization helpers ──────────────────────────────────────
+
+Map<String, dynamic> _orgRowToJson(ResultRow row) {
+  final cols = row.toColumnMap();
+  return {
+    'id': cols['id'].toString(),
+    'name': (cols['name'] ?? '').toString(),
+    'type': (cols['type'] ?? 'professional').toString(),
+    'email': (cols['email'] ?? '').toString(),
+    'phone': (cols['phone'] ?? '').toString(),
+    'address': (cols['address'] ?? '').toString(),
+    'website': (cols['website'] ?? '').toString(),
+    'bio': (cols['bio'] ?? '').toString(),
+    'photo_url': (cols['photo_url'] ?? '').toString(),
+    'created_by': cols['created_by'].toString(),
+    'created_at': cols['created_at']?.toString(),
+    'updated_at': cols['updated_at']?.toString(),
+  };
+}
+
+Future<Map<String, dynamic>?> _requireOrgMember(HttpRequest request, int orgId) async {
+  final userId = _getUserIdFromRequest(request);
+  if (userId == null) {
+    _jsonResponse(request, 401, {'error': 'Authentication required'});
+    return null;
+  }
+  final r = await _db.execute(
+    Sql.named('SELECT role FROM organization_users WHERE organization_id = @orgId AND user_id = @userId'),
+    parameters: {'orgId': orgId, 'userId': userId},
+  );
+  if (r.isEmpty) {
+    _jsonResponse(request, 403, {'error': 'Not a member of this organization'});
+    return null;
+  }
+  return {'userId': userId, 'role': r.first.toColumnMap()['role'].toString()};
+}
+
+Future<int?> _requireOrgSuperUser(HttpRequest request, int orgId) async {
+  final member = await _requireOrgMember(request, orgId);
+  if (member == null) return null;
+  if (member['role'] != 'super_user') {
+    _jsonResponse(request, 403, {'error': 'Super user access required'});
+    return null;
+  }
+  return member['userId'] as int;
+}
+
+// ── Organization CRUD ────────────────────────────────────────
+
+Future<void> _getOrganizations(HttpRequest request) async {
+  final userId = _getUserIdFromRequest(request);
+  if (userId == null) {
+    _jsonResponse(request, 401, {'error': 'Authentication required'});
+    return;
+  }
+  final result = await _db.execute(
+    Sql.named('''
+      SELECT o.*, ou.role as member_role,
+        (SELECT COUNT(*) FROM organization_users ou2 WHERE ou2.organization_id = o.id) as member_count,
+        (SELECT COUNT(*) FROM pets p WHERE p.organization_id = o.id) as pet_count
+      FROM organizations o
+      JOIN organization_users ou ON ou.organization_id = o.id AND ou.user_id = @userId
+      ORDER BY o.name
+    '''),
+    parameters: {'userId': userId},
+  );
+  final orgs = result.map((row) {
+    final m = _orgRowToJson(row);
+    final cols = row.toColumnMap();
+    m['role'] = (cols['member_role'] ?? 'member').toString();
+    m['member_count'] = cols['member_count'];
+    m['pet_count'] = cols['pet_count'];
+    return m;
+  }).toList();
+  _jsonResponse(request, 200, orgs);
+}
+
+Future<void> _createOrganization(HttpRequest request) async {
+  final userId = _getUserIdFromRequest(request);
+  if (userId == null) {
+    _jsonResponse(request, 401, {'error': 'Authentication required'});
+    return;
+  }
+  final body = json.decode(await utf8.decodeStream(request)) as Map<String, dynamic>;
+  final name = (body['name'] as String?)?.trim() ?? '';
+  if (name.isEmpty) {
+    _jsonResponse(request, 400, {'error': 'Name is required'});
+    return;
+  }
+  final type = body['type'] as String? ?? 'professional';
+  final email = body['email'] as String? ?? '';
+  final phone = body['phone'] as String? ?? '';
+  final address = body['address'] as String? ?? '';
+  final website = body['website'] as String? ?? '';
+  final bio = body['bio'] as String? ?? '';
+
+  final result = await _db.execute(
+    Sql.named('''
+      INSERT INTO organizations (name, type, email, phone, address, website, bio, created_by)
+      VALUES (@name, @type, @email, @phone, @address, @website, @bio, @createdBy)
+      RETURNING *
+    '''),
+    parameters: {
+      'name': name, 'type': type, 'email': email, 'phone': phone,
+      'address': address, 'website': website, 'bio': bio, 'createdBy': userId,
+    },
+  );
+  final org = _orgRowToJson(result.first);
+  final orgId = int.parse(org['id']);
+
+  await _db.execute(
+    Sql.named('''
+      INSERT INTO organization_users (organization_id, user_id, role)
+      VALUES (@orgId, @userId, 'super_user')
+    '''),
+    parameters: {'orgId': orgId, 'userId': userId},
+  );
+  org['role'] = 'super_user';
+  org['member_count'] = 1;
+  org['pet_count'] = 0;
+  _jsonResponse(request, 201, org);
+}
+
+Future<void> _getOrganization(HttpRequest request) async {
+  final path = request.uri.path;
+  final orgId = int.parse(path.split('/')[3]);
+  final member = await _requireOrgMember(request, orgId);
+  if (member == null) return;
+
+  final result = await _db.execute(
+    Sql.named('''
+      SELECT o.*,
+        (SELECT COUNT(*) FROM organization_users ou WHERE ou.organization_id = o.id) as member_count,
+        (SELECT COUNT(*) FROM pets p WHERE p.organization_id = o.id) as pet_count
+      FROM organizations o WHERE o.id = @id
+    '''),
+    parameters: {'id': orgId},
+  );
+  if (result.isEmpty) {
+    _jsonResponse(request, 404, {'error': 'Organization not found'});
+    return;
+  }
+  final org = _orgRowToJson(result.first);
+  final cols = result.first.toColumnMap();
+  org['role'] = member['role'];
+  org['member_count'] = cols['member_count'];
+  org['pet_count'] = cols['pet_count'];
+  _jsonResponse(request, 200, org);
+}
+
+Future<void> _updateOrganization(HttpRequest request) async {
+  final path = request.uri.path;
+  final orgId = int.parse(path.split('/')[3]);
+  final userId = await _requireOrgSuperUser(request, orgId);
+  if (userId == null) return;
+
+  final body = json.decode(await utf8.decodeStream(request)) as Map<String, dynamic>;
+  final name = body['name'] as String?;
+  final type = body['type'] as String?;
+  final email = body['email'] as String?;
+  final phone = body['phone'] as String?;
+  final address = body['address'] as String?;
+  final website = body['website'] as String?;
+  final bio = body['bio'] as String?;
+
+  final result = await _db.execute(
+    Sql.named('''
+      UPDATE organizations SET
+        name = COALESCE(@name, name),
+        type = COALESCE(@type, type),
+        email = COALESCE(@email, email),
+        phone = COALESCE(@phone, phone),
+        address = COALESCE(@address, address),
+        website = COALESCE(@website, website),
+        bio = COALESCE(@bio, bio),
+        updated_at = NOW()
+      WHERE id = @id
+      RETURNING *
+    '''),
+    parameters: {
+      'id': orgId, 'name': name, 'type': type, 'email': email,
+      'phone': phone, 'address': address, 'website': website, 'bio': bio,
+    },
+  );
+  if (result.isEmpty) {
+    _jsonResponse(request, 404, {'error': 'Organization not found'});
+    return;
+  }
+  _jsonResponse(request, 200, _orgRowToJson(result.first));
+}
+
+Future<void> _deleteOrganization(HttpRequest request) async {
+  final path = request.uri.path;
+  final orgId = int.parse(path.split('/')[3]);
+  final userId = await _requireOrgSuperUser(request, orgId);
+  if (userId == null) return;
+
+  final orgR = await _db.execute(
+    Sql.named('SELECT created_by FROM organizations WHERE id = @id'),
+    parameters: {'id': orgId},
+  );
+  if (orgR.isEmpty) {
+    _jsonResponse(request, 404, {'error': 'Organization not found'});
+    return;
+  }
+  if (int.parse(orgR.first.toColumnMap()['created_by'].toString()) != userId) {
+    _jsonResponse(request, 403, {'error': 'Only the creator can delete this organization'});
+    return;
+  }
+
+  final petCount = await _db.execute(
+    Sql.named('SELECT COUNT(*) as cnt FROM pets WHERE organization_id = @id'),
+    parameters: {'id': orgId},
+  );
+  final cnt = petCount.first.toColumnMap()['cnt'];
+  if (cnt != null && (cnt as int) > 0) {
+    _jsonResponse(request, 400, {'error': 'Transfer or remove all pets before deleting the organization'});
+    return;
+  }
+
+  await _db.execute(Sql.named('DELETE FROM organizations WHERE id = @id'), parameters: {'id': orgId});
+  _jsonResponse(request, 200, {'success': true});
+}
+
+Future<void> _uploadOrgPhoto(HttpRequest request) async {
+  final path = request.uri.path;
+  final orgId = int.parse(path.split('/')[3]);
+  final userId = await _requireOrgSuperUser(request, orgId);
+  if (userId == null) return;
+
+  final contentType = request.headers.contentType;
+  if (contentType == null || contentType.primaryType != 'multipart') {
+    _jsonResponse(request, 400, {'error': 'Multipart form data required'});
+    return;
+  }
+  final boundary = contentType.parameters['boundary'];
+  if (boundary == null) {
+    _jsonResponse(request, 400, {'error': 'Missing boundary'});
+    return;
+  }
+
+  final bytes = await request.fold<List<int>>([], (prev, chunk) => prev..addAll(chunk));
+  final bodyStr = String.fromCharCodes(bytes);
+  final parts = bodyStr.split('--$boundary');
+
+  for (final part in parts) {
+    if (part.contains('name="photo"')) {
+      final headerEnd = part.indexOf('\r\n\r\n');
+      if (headerEnd == -1) continue;
+      final photoBytes = bytes.sublist(
+        bodyStr.indexOf(part) + headerEnd + 4,
+        bodyStr.indexOf(part) + part.lastIndexOf('\r\n'),
+      );
+      if (photoBytes.length > 2 * 1024 * 1024) {
+        _jsonResponse(request, 400, {'error': 'Photo must be less than 2MB'});
+        return;
+      }
+      final fileName = 'org_${orgId}_${DateTime.now().millisecondsSinceEpoch}.jpg';
+      final file = File('uploads/$fileName');
+      await file.writeAsBytes(photoBytes);
+      final photoUrl = '/uploads/$fileName';
+      await _db.execute(
+        Sql.named('UPDATE organizations SET photo_url = @url, updated_at = NOW() WHERE id = @id'),
+        parameters: {'url': photoUrl, 'id': orgId},
+      );
+      _jsonResponse(request, 200, {'photo_url': photoUrl});
+      return;
+    }
+  }
+  _jsonResponse(request, 400, {'error': 'No photo found in request'});
+}
+
+// ── Organization Members ──────────────────────────────────────
+
+Future<void> _getOrgMembers(HttpRequest request) async {
+  final path = request.uri.path;
+  final orgId = int.parse(path.split('/')[3]);
+  final member = await _requireOrgMember(request, orgId);
+  if (member == null) return;
+
+  final result = await _db.execute(
+    Sql.named('''
+      SELECT ou.id, ou.organization_id, ou.user_id, ou.role, ou.created_at,
+        u.email, u.name, u.first_name, u.last_name, u.photo_url as user_photo_url
+      FROM organization_users ou
+      JOIN users u ON u.id = ou.user_id
+      WHERE ou.organization_id = @orgId
+      ORDER BY ou.created_at
+    '''),
+    parameters: {'orgId': orgId},
+  );
+  final members = result.map((row) {
+    final cols = row.toColumnMap();
+    return {
+      'id': cols['id'].toString(),
+      'organization_id': cols['organization_id'].toString(),
+      'user_id': cols['user_id'].toString(),
+      'role': cols['role'].toString(),
+      'email': (cols['email'] ?? '').toString(),
+      'name': (cols['name'] ?? '').toString(),
+      'first_name': (cols['first_name'] ?? '').toString(),
+      'last_name': (cols['last_name'] ?? '').toString(),
+      'photo_url': (cols['user_photo_url'] ?? '').toString(),
+      'created_at': cols['created_at']?.toString(),
+    };
+  }).toList();
+  _jsonResponse(request, 200, members);
+}
+
+Future<void> _createOrgInvite(HttpRequest request) async {
+  final path = request.uri.path;
+  final orgId = int.parse(path.split('/')[3]);
+  final userId = await _requireOrgSuperUser(request, orgId);
+  if (userId == null) return;
+
+  final rng = Random.secure();
+  final code = List.generate(12, (_) => 'abcdefghijklmnopqrstuvwxyz0123456789'[rng.nextInt(36)]).join();
+  final expiresAt = DateTime.now().add(Duration(days: 7));
+
+  await _db.execute(
+    Sql.named('''
+      INSERT INTO organization_users (organization_id, user_id, role, invited_by, invite_code, invite_expires_at)
+      VALUES (@orgId, @userId, 'invite_placeholder', @invitedBy, @code, @expires)
+      ON CONFLICT DO NOTHING
+    '''),
+    parameters: {'orgId': orgId, 'userId': userId, 'invitedBy': userId, 'code': code, 'expires': expiresAt.toIso8601String()},
+  );
+
+  _jsonResponse(request, 201, {'invite_code': code, 'expires_at': expiresAt.toIso8601String()});
+}
+
+Future<void> _joinOrganization(HttpRequest request) async {
+  final path = request.uri.path;
+  final code = path.split('/').last;
+  final userId = _getUserIdFromRequest(request);
+  if (userId == null) {
+    _jsonResponse(request, 401, {'error': 'Authentication required'});
+    return;
+  }
+
+  final inviteR = await _db.execute(
+    Sql.named('SELECT * FROM organization_users WHERE invite_code = @code'),
+    parameters: {'code': code},
+  );
+  if (inviteR.isEmpty) {
+    _jsonResponse(request, 404, {'error': 'Invalid invite code'});
+    return;
+  }
+  final inviteCols = inviteR.first.toColumnMap();
+  final orgId = inviteCols['organization_id'] as int;
+  final expiresAt = inviteCols['invite_expires_at'];
+  if (expiresAt != null) {
+    final exp = DateTime.parse(expiresAt.toString());
+    if (DateTime.now().isAfter(exp)) {
+      await _db.execute(Sql.named('DELETE FROM organization_users WHERE invite_code = @code'), parameters: {'code': code});
+      _jsonResponse(request, 400, {'error': 'Invite code has expired'});
+      return;
+    }
+  }
+
+  final existingR = await _db.execute(
+    Sql.named('SELECT id FROM organization_users WHERE organization_id = @orgId AND user_id = @userId'),
+    parameters: {'orgId': orgId, 'userId': userId},
+  );
+  if (existingR.isNotEmpty) {
+    _jsonResponse(request, 400, {'error': 'Already a member of this organization'});
+    return;
+  }
+
+  final invitedBy = inviteCols['invited_by'] ?? inviteCols['user_id'];
+
+  await _db.execute(
+    Sql.named('''
+      INSERT INTO organization_users (organization_id, user_id, role, invited_by)
+      VALUES (@orgId, @userId, 'member', @invitedBy)
+    '''),
+    parameters: {'orgId': orgId, 'userId': userId, 'invitedBy': invitedBy},
+  );
+
+  await _db.execute(Sql.named('DELETE FROM organization_users WHERE invite_code = @code'), parameters: {'code': code});
+
+  final orgR = await _db.execute(Sql.named('SELECT name FROM organizations WHERE id = @id'), parameters: {'id': orgId});
+  final orgName = orgR.isNotEmpty ? orgR.first.toColumnMap()['name'].toString() : 'Organization';
+
+  final userR = await _db.execute(Sql.named('SELECT name FROM users WHERE id = @id'), parameters: {'id': userId});
+  final userName = userR.isNotEmpty ? userR.first.toColumnMap()['name'].toString() : 'User';
+
+  final superUsers = await _db.execute(
+    Sql.named("SELECT user_id FROM organization_users WHERE organization_id = @orgId AND role = 'super_user'"),
+    parameters: {'orgId': orgId},
+  );
+  for (final su in superUsers) {
+    final suId = su.toColumnMap()['user_id'] as int;
+    final locale = await _getUserLocale(suId);
+    await _db.execute(
+      Sql.named('''
+        INSERT INTO notifications (user_id, pet_id, type, title, message)
+        VALUES (@userId, '', 'general', @title, @message)
+      '''),
+      parameters: {
+        'userId': suId,
+        'title': _t(locale, 'org_member_joined', {'org': orgName}),
+        'message': _t(locale, 'org_member_joined_msg', {'member': userName, 'org': orgName}),
+      },
+    );
+  }
+
+  _jsonResponse(request, 200, {'success': true, 'organization_id': orgId.toString()});
+}
+
+Future<void> _updateOrgMemberRole(HttpRequest request) async {
+  final parts = request.uri.path.split('/');
+  final orgId = int.parse(parts[3]);
+  final targetUserId = int.parse(parts[5]);
+  final userId = await _requireOrgSuperUser(request, orgId);
+  if (userId == null) return;
+
+  final body = json.decode(await utf8.decodeStream(request)) as Map<String, dynamic>;
+  final newRole = body['role'] as String? ?? 'member';
+  if (newRole != 'super_user' && newRole != 'member') {
+    _jsonResponse(request, 400, {'error': 'Role must be super_user or member'});
+    return;
+  }
+
+  if (newRole == 'member') {
+    final suCount = await _db.execute(
+      Sql.named("SELECT COUNT(*) as cnt FROM organization_users WHERE organization_id = @orgId AND role = 'super_user'"),
+      parameters: {'orgId': orgId},
+    );
+    final cnt = suCount.first.toColumnMap()['cnt'] as int;
+    if (cnt <= 1) {
+      final currentRole = await _db.execute(
+        Sql.named('SELECT role FROM organization_users WHERE organization_id = @orgId AND user_id = @targetId'),
+        parameters: {'orgId': orgId, 'targetId': targetUserId},
+      );
+      if (currentRole.isNotEmpty && currentRole.first.toColumnMap()['role'].toString() == 'super_user') {
+        _jsonResponse(request, 400, {'error': 'Cannot demote the last super user'});
+        return;
+      }
+    }
+  }
+
+  await _db.execute(
+    Sql.named('UPDATE organization_users SET role = @role WHERE organization_id = @orgId AND user_id = @targetId'),
+    parameters: {'role': newRole, 'orgId': orgId, 'targetId': targetUserId},
+  );
+  _jsonResponse(request, 200, {'success': true});
+}
+
+Future<void> _removeOrgMember(HttpRequest request) async {
+  final parts = request.uri.path.split('/');
+  final orgId = int.parse(parts[3]);
+  final targetUserId = int.parse(parts[5]);
+  final userId = await _requireOrgSuperUser(request, orgId);
+  if (userId == null) return;
+
+  if (targetUserId == userId) {
+    _jsonResponse(request, 400, {'error': 'Use the leave endpoint to remove yourself'});
+    return;
+  }
+
+  final targetR = await _db.execute(
+    Sql.named('SELECT role FROM organization_users WHERE organization_id = @orgId AND user_id = @targetId'),
+    parameters: {'orgId': orgId, 'targetId': targetUserId},
+  );
+  if (targetR.isEmpty) {
+    _jsonResponse(request, 404, {'error': 'Member not found'});
+    return;
+  }
+
+  await _db.execute(
+    Sql.named('DELETE FROM organization_users WHERE organization_id = @orgId AND user_id = @targetId'),
+    parameters: {'orgId': orgId, 'targetId': targetUserId},
+  );
+
+  final orgR = await _db.execute(Sql.named('SELECT name FROM organizations WHERE id = @id'), parameters: {'id': orgId});
+  final orgName = orgR.isNotEmpty ? orgR.first.toColumnMap()['name'].toString() : 'Organization';
+  final locale = await _getUserLocale(targetUserId);
+  final userR = await _db.execute(Sql.named('SELECT name FROM users WHERE id = @id'), parameters: {'id': targetUserId});
+  final memberName = userR.isNotEmpty ? userR.first.toColumnMap()['name'].toString() : 'User';
+
+  await _db.execute(
+    Sql.named('''
+      INSERT INTO notifications (user_id, pet_id, type, title, message)
+      VALUES (@userId, '', 'general', @title, @message)
+    '''),
+    parameters: {
+      'userId': targetUserId,
+      'title': _t(locale, 'org_member_left', {'org': orgName}),
+      'message': _t(locale, 'org_member_left_msg', {'member': memberName, 'org': orgName}),
+    },
+  );
+
+  _jsonResponse(request, 200, {'success': true});
+}
+
+Future<void> _leaveOrganization(HttpRequest request) async {
+  final parts = request.uri.path.split('/');
+  final orgId = int.parse(parts[3]);
+  final userId = _getUserIdFromRequest(request);
+  if (userId == null) {
+    _jsonResponse(request, 401, {'error': 'Authentication required'});
+    return;
+  }
+
+  final memberR = await _db.execute(
+    Sql.named('SELECT role FROM organization_users WHERE organization_id = @orgId AND user_id = @userId'),
+    parameters: {'orgId': orgId, 'userId': userId},
+  );
+  if (memberR.isEmpty) {
+    _jsonResponse(request, 404, {'error': 'Not a member'});
+    return;
+  }
+
+  if (memberR.first.toColumnMap()['role'].toString() == 'super_user') {
+    final suCount = await _db.execute(
+      Sql.named("SELECT COUNT(*) as cnt FROM organization_users WHERE organization_id = @orgId AND role = 'super_user'"),
+      parameters: {'orgId': orgId},
+    );
+    if ((suCount.first.toColumnMap()['cnt'] as int) <= 1) {
+      _jsonResponse(request, 400, {'error': 'Cannot leave as the last super user. Promote another member first.'});
+      return;
+    }
+  }
+
+  await _db.execute(
+    Sql.named('DELETE FROM organization_users WHERE organization_id = @orgId AND user_id = @userId'),
+    parameters: {'orgId': orgId, 'userId': userId},
+  );
+
+  final orgR = await _db.execute(Sql.named('SELECT name FROM organizations WHERE id = @id'), parameters: {'id': orgId});
+  final orgName = orgR.isNotEmpty ? orgR.first.toColumnMap()['name'].toString() : 'Organization';
+  final userR = await _db.execute(Sql.named('SELECT name FROM users WHERE id = @id'), parameters: {'id': userId});
+  final memberName = userR.isNotEmpty ? userR.first.toColumnMap()['name'].toString() : 'User';
+
+  final superUsers = await _db.execute(
+    Sql.named("SELECT user_id FROM organization_users WHERE organization_id = @orgId AND role = 'super_user'"),
+    parameters: {'orgId': orgId},
+  );
+  for (final su in superUsers) {
+    final suId = su.toColumnMap()['user_id'] as int;
+    final locale = await _getUserLocale(suId);
+    await _db.execute(
+      Sql.named('''
+        INSERT INTO notifications (user_id, pet_id, type, title, message)
+        VALUES (@userId, '', 'general', @title, @message)
+      '''),
+      parameters: {
+        'userId': suId,
+        'title': _t(locale, 'org_member_left', {'org': orgName}),
+        'message': _t(locale, 'org_member_left_msg', {'member': memberName, 'org': orgName}),
+      },
+    );
+  }
+
+  _jsonResponse(request, 200, {'success': true});
+}
+
+// ── Organization Pets ────────────────────────────────────────
+
+Future<void> _getOrgPets(HttpRequest request) async {
+  final orgId = int.parse(request.uri.path.split('/')[3]);
+  final member = await _requireOrgMember(request, orgId);
+  if (member == null) return;
+
+  final result = await _db.execute(
+    Sql.named('SELECT * FROM pets WHERE organization_id = @orgId ORDER BY created_at'),
+    parameters: {'orgId': orgId},
+  );
+  _jsonResponse(request, 200, result.map(_petRowToJson).toList());
+}
+
+Future<void> _createOrgPet(HttpRequest request) async {
+  final orgId = int.parse(request.uri.path.split('/')[3]);
+  final member = await _requireOrgMember(request, orgId);
+  if (member == null) return;
+  final userId = member['userId'] as int;
+
+  final body = json.decode(await utf8.decodeStream(request)) as Map<String, dynamic>;
+  final id = body['id'] as String? ?? DateTime.now().millisecondsSinceEpoch.toString();
+  final name = body['name'] as String? ?? '';
+  final species = body['species'] as String? ?? '';
+
+  final result = await _db.execute(
+    Sql.named('''
+      INSERT INTO pets (id, user_id, organization_id, name, species, breed, weight, gender, bio, insurance, chip_id, color_value, date_of_birth, neutered_date)
+      VALUES (@id, @userId, @orgId, @name, @species, @breed, @weight, @gender, @bio, @insurance, @chipId, @colorValue, @dob, @neuteredDate)
+      RETURNING *
+    '''),
+    parameters: {
+      'id': id, 'userId': userId, 'orgId': orgId,
+      'name': name, 'species': species,
+      'breed': body['breed'] as String? ?? '',
+      'weight': body['weight'] as num?,
+      'gender': body['gender'] as String?,
+      'bio': body['bio'] as String? ?? '',
+      'insurance': body['insurance'] as String? ?? '',
+      'chipId': body['chipId'] as String? ?? body['chip_id'] as String? ?? '',
+      'colorValue': body['colorValue'] as int? ?? body['color_value'] as int?,
+      'dob': body['dateOfBirth'] as String? ?? body['date_of_birth'] as String?,
+      'neuteredDate': body['neuteredDate'] as String? ?? body['neutered_date'] as String?,
+    },
+  );
+  _jsonResponse(request, 201, _petRowToJson(result.first));
+}
+
+// ── Transfer: Org → User ─────────────────────────────────────
+
+Future<void> _transferOrgPet(HttpRequest request) async {
+  final parts = request.uri.path.split('/');
+  final orgId = int.parse(parts[3]);
+  final petId = parts[5];
+  final userId = await _requireOrgSuperUser(request, orgId);
+  if (userId == null) return;
+
+  final body = json.decode(await utf8.decodeStream(request)) as Map<String, dynamic>;
+  final recipientEmail = (body['recipient_email'] as String?)?.trim().toLowerCase() ?? '';
+  final transferType = body['transfer_type'] as String? ?? 'adoption';
+  final notes = body['notes'] as String? ?? '';
+
+  if (recipientEmail.isEmpty) {
+    _jsonResponse(request, 400, {'error': 'Recipient email is required'});
+    return;
+  }
+
+  final recipientR = await _db.execute(
+    Sql.named('SELECT id, name FROM users WHERE LOWER(email) = @email'),
+    parameters: {'email': recipientEmail},
+  );
+  if (recipientR.isEmpty) {
+    _jsonResponse(request, 404, {'error': 'Recipient user not found. They must have an account.'});
+    return;
+  }
+  final recipientId = recipientR.first.toColumnMap()['id'] as int;
+  final recipientName = recipientR.first.toColumnMap()['name'].toString();
+
+  final petR = await _db.execute(
+    Sql.named('SELECT * FROM pets WHERE id = @id AND organization_id = @orgId'),
+    parameters: {'id': petId, 'orgId': orgId},
+  );
+  if (petR.isEmpty) {
+    _jsonResponse(request, 404, {'error': 'Pet not found in this organization'});
+    return;
+  }
+  final pet = _petRowToJson(petR.first);
+  final petName = pet['name'] ?? '';
+
+  await _db.execute(
+    Sql.named('''
+      INSERT INTO archived_pets (organization_id, pet_id, pet_name, species, transfer_type, transferred_to_user_id, notes)
+      VALUES (@orgId, @petId, @petName, @species, @transferType, @recipientId, @notes)
+    '''),
+    parameters: {
+      'orgId': orgId, 'petId': petId, 'petName': petName,
+      'species': pet['species'] ?? '', 'transferType': transferType,
+      'recipientId': recipientId, 'notes': notes,
+    },
+  );
+
+  await _db.execute(
+    Sql.named('UPDATE pets SET organization_id = NULL, user_id = @recipientId, updated_at = NOW() WHERE id = @petId'),
+    parameters: {'recipientId': recipientId, 'petId': petId},
+  );
+
+  await _db.execute(
+    Sql.named('DELETE FROM pet_access WHERE pet_id = @petId'),
+    parameters: {'petId': petId},
+  );
+  await _db.execute(
+    Sql.named('''
+      INSERT INTO pet_access (pet_id, user_id, role)
+      VALUES (@petId, @recipientId, 'guardian')
+      ON CONFLICT (pet_id, user_id) DO UPDATE SET role = 'guardian'
+    '''),
+    parameters: {'petId': petId, 'recipientId': recipientId},
+  );
+
+  final orgR = await _db.execute(Sql.named('SELECT name FROM organizations WHERE id = @id'), parameters: {'id': orgId});
+  final orgName = orgR.isNotEmpty ? orgR.first.toColumnMap()['name'].toString() : 'Organization';
+
+  final recipientLocale = await _getUserLocale(recipientId);
+  await _db.execute(
+    Sql.named('''
+      INSERT INTO notifications (user_id, pet_id, type, title, message)
+      VALUES (@userId, @petId, 'general', @title, @message)
+    '''),
+    parameters: {
+      'userId': recipientId, 'petId': petId,
+      'title': _t(recipientLocale, 'org_pet_received', {'pet': petName}),
+      'message': _t(recipientLocale, 'org_pet_received_msg', {'pet': petName, 'org': orgName}),
+    },
+  );
+
+  final orgMembers = await _db.execute(
+    Sql.named('SELECT user_id FROM organization_users WHERE organization_id = @orgId'),
+    parameters: {'orgId': orgId},
+  );
+  for (final m in orgMembers) {
+    final mId = m.toColumnMap()['user_id'] as int;
+    final locale = await _getUserLocale(mId);
+    await _db.execute(
+      Sql.named('''
+        INSERT INTO notifications (user_id, pet_id, type, title, message)
+        VALUES (@userId, @petId, 'general', @title, @message)
+      '''),
+      parameters: {
+        'userId': mId, 'petId': petId,
+        'title': _t(locale, 'org_pet_transferred_out', {'pet': petName}),
+        'message': _t(locale, 'org_pet_transferred_out_msg', {'pet': petName, 'recipient': recipientName}),
+      },
+    );
+  }
+
+  _jsonResponse(request, 200, {'success': true, 'pet_id': petId});
+}
+
+// ── Transfer: User → Org ─────────────────────────────────────
+
+Future<void> _transferPetToOrg(HttpRequest request) async {
+  final path = request.uri.path;
+  final petId = path.split('/')[3];
+  final userId = _getUserIdFromRequest(request);
+  if (userId == null) {
+    _jsonResponse(request, 401, {'error': 'Authentication required'});
+    return;
+  }
+
+  final accessR = await _db.execute(
+    Sql.named("SELECT role FROM pet_access WHERE pet_id = @petId AND user_id = @userId AND role = 'guardian'"),
+    parameters: {'petId': petId, 'userId': userId},
+  );
+  if (accessR.isEmpty) {
+    _jsonResponse(request, 403, {'error': 'Only guardians can transfer pets'});
+    return;
+  }
+
+  final body = json.decode(await utf8.decodeStream(request)) as Map<String, dynamic>;
+  final orgId = int.tryParse((body['organization_id'] ?? '').toString());
+  final transferType = body['transfer_type'] as String? ?? 'transfer';
+  final notes = body['notes'] as String? ?? '';
+
+  if (orgId == null) {
+    _jsonResponse(request, 400, {'error': 'Organization ID is required'});
+    return;
+  }
+
+  final memberCheck = await _db.execute(
+    Sql.named('SELECT role FROM organization_users WHERE organization_id = @orgId AND user_id = @userId'),
+    parameters: {'orgId': orgId, 'userId': userId},
+  );
+  if (memberCheck.isEmpty) {
+    _jsonResponse(request, 403, {'error': 'You must be a member of the organization'});
+    return;
+  }
+
+  final petR = await _db.execute(
+    Sql.named('SELECT * FROM pets WHERE id = @id AND user_id = @userId AND organization_id IS NULL'),
+    parameters: {'id': petId, 'userId': userId},
+  );
+  if (petR.isEmpty) {
+    _jsonResponse(request, 404, {'error': 'Pet not found or already belongs to an organization'});
+    return;
+  }
+  final pet = _petRowToJson(petR.first);
+  final petName = pet['name'] ?? '';
+
+  await _db.execute(
+    Sql.named('''
+      INSERT INTO archived_pets (user_id, pet_id, pet_name, species, transfer_type, transferred_to_org_id, notes)
+      VALUES (@userId, @petId, @petName, @species, @transferType, @orgId, @notes)
+    '''),
+    parameters: {
+      'userId': userId, 'petId': petId, 'petName': petName,
+      'species': pet['species'] ?? '', 'transferType': transferType,
+      'orgId': orgId, 'notes': notes,
+    },
+  );
+
+  await _db.execute(
+    Sql.named('UPDATE pets SET organization_id = @orgId, updated_at = NOW() WHERE id = @petId'),
+    parameters: {'orgId': orgId, 'petId': petId},
+  );
+
+  await _db.execute(
+    Sql.named('DELETE FROM pet_access WHERE pet_id = @petId'),
+    parameters: {'petId': petId},
+  );
+
+  final orgR = await _db.execute(Sql.named('SELECT name FROM organizations WHERE id = @id'), parameters: {'id': orgId});
+  final orgName = orgR.isNotEmpty ? orgR.first.toColumnMap()['name'].toString() : 'Organization';
+
+  final locale = await _getUserLocale(userId);
+  await _db.execute(
+    Sql.named('''
+      INSERT INTO notifications (user_id, pet_id, type, title, message)
+      VALUES (@userId, @petId, 'general', @title, @message)
+    '''),
+    parameters: {
+      'userId': userId, 'petId': petId,
+      'title': _t(locale, 'org_pet_donated', {'pet': petName, 'org': orgName}),
+      'message': _t(locale, 'org_pet_donated_msg', {'pet': petName, 'org': orgName}),
+    },
+  );
+
+  _jsonResponse(request, 200, {'success': true, 'pet_id': petId});
+}
+
+// ── Archived Pets ────────────────────────────────────────────
+
+Future<void> _getOrgArchivedPets(HttpRequest request) async {
+  final orgId = int.parse(request.uri.path.split('/')[3]);
+  final member = await _requireOrgMember(request, orgId);
+  if (member == null) return;
+
+  final result = await _db.execute(
+    Sql.named('SELECT * FROM archived_pets WHERE organization_id = @orgId ORDER BY archived_at DESC'),
+    parameters: {'orgId': orgId},
+  );
+  _jsonResponse(request, 200, result.map(_archivedPetToJson).toList());
+}
+
+Future<void> _getUserArchivedPets(HttpRequest request) async {
+  final userId = _getUserIdFromRequest(request);
+  if (userId == null) {
+    _jsonResponse(request, 401, {'error': 'Authentication required'});
+    return;
+  }
+  final result = await _db.execute(
+    Sql.named('SELECT * FROM archived_pets WHERE user_id = @userId ORDER BY archived_at DESC'),
+    parameters: {'userId': userId},
+  );
+  _jsonResponse(request, 200, result.map(_archivedPetToJson).toList());
+}
+
+Map<String, dynamic> _archivedPetToJson(ResultRow row) {
+  final cols = row.toColumnMap();
+  return {
+    'id': cols['id'].toString(),
+    'organization_id': cols['organization_id']?.toString(),
+    'user_id': cols['user_id']?.toString(),
+    'pet_id': cols['pet_id'].toString(),
+    'pet_name': (cols['pet_name'] ?? '').toString(),
+    'species': (cols['species'] ?? '').toString(),
+    'pdf_data': (cols['pdf_data'] ?? '').toString(),
+    'transfer_type': (cols['transfer_type'] ?? 'other').toString(),
+    'transferred_to_user_id': cols['transferred_to_user_id']?.toString(),
+    'transferred_to_org_id': cols['transferred_to_org_id']?.toString(),
+    'notes': (cols['notes'] ?? '').toString(),
+    'archived_at': cols['archived_at']?.toString(),
+    'created_at': cols['created_at']?.toString(),
+  };
 }
 
 Future<void> _serveStatic(HttpRequest request, Directory webDir) async {

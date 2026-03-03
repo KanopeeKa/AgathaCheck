@@ -14,6 +14,13 @@ import '../../features/notifications/presentation/screens/notifications_screen.d
 import '../../features/pet_profile/presentation/screens/pet_detail_screen.dart';
 import '../../features/pet_profile/presentation/screens/pet_form_screen.dart';
 import '../../features/pet_profile/presentation/screens/pet_list_screen.dart';
+import '../../features/organization/presentation/screens/archived_pets_screen.dart';
+import '../../features/organization/presentation/screens/organization_detail_screen.dart';
+import '../../features/organization/presentation/screens/organization_form_screen.dart';
+import '../../features/organization/presentation/screens/organization_list_screen.dart';
+import '../../features/organization/presentation/screens/organization_members_screen.dart';
+import '../../features/organization/presentation/screens/organization_pets_screen.dart';
+import '../../features/organization/presentation/screens/transfer_pet_screen.dart';
 import '../../features/sharing/presentation/screens/shared_pet_screen.dart';
 import '../../features/subscription/presentation/screens/paywall_screen.dart';
 import '../../features/vet/presentation/screens/vet_form_screen.dart';
@@ -200,6 +207,77 @@ final routerProvider = Provider<GoRouter>((ref) {
           final code = state.pathParameters['code']!;
           return SharedPetScreen(shareCode: code);
         },
+      ),
+      GoRoute(
+        path: '/organizations',
+        name: 'organizations',
+        builder: (context, state) => const OrganizationListScreen(),
+      ),
+      GoRoute(
+        path: '/organizations/new',
+        name: 'createOrganization',
+        builder: (context, state) => const OrganizationFormScreen(),
+      ),
+      GoRoute(
+        path: '/organizations/join/:code',
+        name: 'joinOrganization',
+        builder: (context, state) {
+          return const OrganizationListScreen();
+        },
+      ),
+      GoRoute(
+        path: '/organizations/:id',
+        name: 'organizationDetail',
+        builder: (context, state) {
+          final id = int.parse(state.pathParameters['id']!);
+          return OrganizationDetailScreen(orgId: id);
+        },
+      ),
+      GoRoute(
+        path: '/organizations/:id/edit',
+        name: 'editOrganization',
+        builder: (context, state) {
+          final id = int.parse(state.pathParameters['id']!);
+          return OrganizationFormScreen(orgId: id);
+        },
+      ),
+      GoRoute(
+        path: '/organizations/:id/members',
+        name: 'organizationMembers',
+        builder: (context, state) {
+          final id = int.parse(state.pathParameters['id']!);
+          return OrganizationMembersScreen(orgId: id);
+        },
+      ),
+      GoRoute(
+        path: '/organizations/:id/pets',
+        name: 'organizationPets',
+        builder: (context, state) {
+          final id = int.parse(state.pathParameters['id']!);
+          return OrganizationPetsScreen(orgId: id);
+        },
+      ),
+      GoRoute(
+        path: '/organizations/:id/transfer/:petId',
+        name: 'transferPet',
+        builder: (context, state) {
+          final orgId = int.parse(state.pathParameters['id']!);
+          final petId = state.pathParameters['petId']!;
+          return TransferPetScreen(orgId: orgId, petId: petId);
+        },
+      ),
+      GoRoute(
+        path: '/organizations/:id/archived',
+        name: 'organizationArchived',
+        builder: (context, state) {
+          final id = int.parse(state.pathParameters['id']!);
+          return ArchivedPetsScreen(orgId: id);
+        },
+      ),
+      GoRoute(
+        path: '/archived-pets',
+        name: 'userArchivedPets',
+        builder: (context, state) => const ArchivedPetsScreen(),
       ),
     ],
     errorBuilder: (context, state) => Scaffold(
