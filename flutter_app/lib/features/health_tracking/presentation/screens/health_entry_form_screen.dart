@@ -13,10 +13,11 @@ import '../providers/health_issue_providers.dart';
 import '../providers/health_providers.dart';
 
 class HealthEntryFormScreen extends ConsumerStatefulWidget {
-  const HealthEntryFormScreen({super.key, this.entryId, this.petId});
+  const HealthEntryFormScreen({super.key, this.entryId, this.petId, this.initialType});
 
   final String? entryId;
   final String? petId;
+  final HealthEntryType? initialType;
 
   @override
   ConsumerState<HealthEntryFormScreen> createState() =>
@@ -48,6 +49,9 @@ class _HealthEntryFormScreenState
   @override
   void initState() {
     super.initState();
+    if (widget.initialType != null) {
+      _type = widget.initialType!;
+    }
     if (widget.petId != null && widget.petId!.isNotEmpty) {
       _selectedPetIds.add(widget.petId!);
     }

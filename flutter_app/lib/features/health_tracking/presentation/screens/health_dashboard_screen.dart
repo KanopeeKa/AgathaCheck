@@ -81,7 +81,15 @@ class _HealthDashboardScreenState extends ConsumerState<HealthDashboardScreen>
       floatingActionButton: FloatingActionButton.extended(
         key: const Key('add_health_entry_button'),
         tooltip: 'Add health entry',
-        onPressed: () => context.go('/health/add'),
+        onPressed: () {
+          final tabIndex = _tabController.index;
+          final type = tabIndex < _tabs.length ? _tabs[tabIndex] : null;
+          if (type != null) {
+            context.go('/health/add?type=${type.name}');
+          } else {
+            context.go('/health/add');
+          }
+        },
         icon: const Icon(Icons.add),
         label: const Text('Add Entry'),
       ),

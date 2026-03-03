@@ -1064,8 +1064,12 @@ class _HealthEventsSectionState extends ConsumerState<_HealthEventsSection> {
                   Tooltip(
                     message: 'Add health entry',
                     child: FilledButton.tonalIcon(
-                      onPressed: () =>
-                          context.go('/pet/${widget.petId}/health/add'),
+                      onPressed: () {
+                        final uri = _selectedFilter != null
+                            ? '/pet/${widget.petId}/health/add?type=${_selectedFilter!.name}'
+                            : '/pet/${widget.petId}/health/add';
+                        context.go(uri);
+                      },
                       icon: const Icon(Icons.add, size: 18),
                       label: const Text('Add Entry'),
                     ),

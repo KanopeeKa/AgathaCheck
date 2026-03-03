@@ -6,6 +6,7 @@ import '../../features/auth/presentation/providers/auth_providers.dart';
 import '../../features/auth/presentation/screens/forgot_password_screen.dart';
 import '../../features/auth/presentation/screens/landing_screen.dart';
 import '../../features/auth/presentation/screens/my_details_screen.dart';
+import '../../features/health_tracking/domain/entities/health_entry.dart';
 import '../../features/health_tracking/presentation/screens/health_dashboard_screen.dart';
 import '../../features/health_tracking/presentation/screens/health_entry_form_screen.dart';
 import '../../features/notifications/presentation/screens/notification_settings_screen.dart';
@@ -119,7 +120,11 @@ final routerProvider = Provider<GoRouter>((ref) {
         name: 'addPetHealthEntry',
         builder: (context, state) {
           final petId = state.pathParameters['petId']!;
-          return HealthEntryFormScreen(petId: petId);
+          final typeParam = state.uri.queryParameters['type'];
+          final initialType = typeParam != null
+              ? HealthEntryType.values.where((t) => t.name == typeParam).firstOrNull
+              : null;
+          return HealthEntryFormScreen(petId: petId, initialType: initialType);
         },
       ),
       GoRoute(
@@ -139,7 +144,13 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/health/add',
         name: 'addHealthEntry',
-        builder: (context, state) => const HealthEntryFormScreen(),
+        builder: (context, state) {
+          final typeParam = state.uri.queryParameters['type'];
+          final initialType = typeParam != null
+              ? HealthEntryType.values.where((t) => t.name == typeParam).firstOrNull
+              : null;
+          return HealthEntryFormScreen(initialType: initialType);
+        },
       ),
       GoRoute(
         path: '/health/edit/:id',
