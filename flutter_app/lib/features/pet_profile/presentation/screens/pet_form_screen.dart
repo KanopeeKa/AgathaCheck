@@ -8,6 +8,8 @@ import 'package:intl/intl.dart';
 
 import '../../../../core/utils/constants.dart';
 import '../../../vet/presentation/providers/vet_providers.dart';
+import '../../../weight_tracking/domain/entities/weight_entry.dart';
+import '../../../weight_tracking/presentation/providers/weight_providers.dart';
 import '../../domain/entities/pet.dart';
 import '../providers/pet_providers.dart';
 
@@ -42,6 +44,8 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
   bool _passedAway = false;
   bool _isLoading = false;
   bool _isInitialized = false;
+  bool _showWeightInput = false;
+  final _newWeightController = TextEditingController();
 
   bool get _isEditing => widget.petId != null;
 
@@ -50,6 +54,7 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
     _nameController.dispose();
     _breedController.dispose();
     _weightController.dispose();
+    _newWeightController.dispose();
     _bioController.dispose();
     _insuranceController.dispose();
     _chipIdController.dispose();
@@ -274,12 +279,15 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
         );
         await ref.read(petListProvider.notifier).updatePet(pet);
       } else {
+        final initialWeight = _showWeightInput && _newWeightController.text.isNotEmpty
+            ? double.tryParse(_newWeightController.text)
+            : null;
         final newPetId = await ref.read(petListProvider.notifier).addPet(
               name: _nameController.text.trim(),
               species: _selectedSpecies,
               breed: _breedController.text.trim(),
               dateOfBirth: _dateOfBirth,
-              weight: weight,
+              weight: initialWeight,
               gender: _selectedGender,
               bio: _bioController.text.trim(),
               insurance: _insuranceController.text.trim(),
@@ -290,6 +298,18 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
               photoPath: _photoBase64,
               vetId: _selectedVetId,
             );
+        if (initialWeight != null) {
+          try {
+            final repo = ref.read(weightRepositoryProvider);
+            await repo.createEntry(WeightEntry(
+              id: 0,
+              petId: newPetId,
+              date: DateTime.now(),
+              weight: initialWeight,
+              notes: 'Initial weight',
+            ));
+          } catch (_) {}
+        }
         if (mounted) context.go('/pet/$newPetId');
         return;
       }
@@ -463,26 +483,72 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
                     ),
                   ),
                   const SizedBox(width: 16),
-                  Expanded(
-                    child: TextFormField(
-                      key: const Key('pet_weight_field'),
-                      controller: _weightController,
-                      decoration: const InputDecoration(
-                        labelText: 'Weight (kg)',
-                      ),
-                      keyboardType:
-                          const TextInputType.numberWithOptions(decimal: true),
-                      validator: (value) {
-                        if (value != null && value.isNotEmpty) {
-                          final num = double.tryParse(value);
-                          if (num == null || num < 0) {
-                            return 'Invalid weight';
+                  if (_isEditing)
+                    Expanded(
+                      child: TextFormField(
+                        key: const Key('pet_weight_field'),
+                        controller: _weightController,
+                        decoration: const InputDecoration(
+                          labelText: 'Weight (kg)',
+                        ),
+                        keyboardType:
+                            const TextInputType.numberWithOptions(decimal: true),
+                        validator: (value) {
+                          if (value != null && value.isNotEmpty) {
+                            final num = double.tryParse(value);
+                            if (num == null || num < 0) {
+                              return 'Invalid weight';
+                            }
                           }
-                        }
-                        return null;
-                      },
+                          return null;
+                        },
+                      ),
+                    )
+                  else
+                    Expanded(
+                      child: _showWeightInput
+                          ? TextFormField(
+                              key: const Key('pet_initial_weight_field'),
+                              controller: _newWeightController,
+                              decoration: InputDecoration(
+                                labelText: 'Weight (kg)',
+                                suffixIcon: IconButton(
+                                  icon: const Icon(Icons.close, size: 18),
+                                  tooltip: 'Remove weight entry',
+                                  onPressed: () {
+                                    setState(() {
+                                      _showWeightInput = false;
+                                      _newWeightController.clear();
+                                    });
+                                  },
+                                ),
+                              ),
+                              keyboardType:
+                                  const TextInputType.numberWithOptions(decimal: true),
+                              autofocus: true,
+                              validator: (value) {
+                                if (value != null && value.isNotEmpty) {
+                                  final num = double.tryParse(value);
+                                  if (num == null || num <= 0) {
+                                    return 'Invalid weight';
+                                  }
+                                }
+                                return null;
+                              },
+                            )
+                          : Tooltip(
+                              message: 'Add initial weight entry',
+                              child: OutlinedButton.icon(
+                                key: const Key('add_weight_entry_button'),
+                                onPressed: () => setState(() => _showWeightInput = true),
+                                icon: const Icon(Icons.monitor_weight_outlined, size: 18),
+                                label: const Text('Add Weight'),
+                                style: OutlinedButton.styleFrom(
+                                  minimumSize: const Size(0, 48),
+                                ),
+                              ),
+                            ),
                     ),
-                  ),
                 ],
               ),
               const SizedBox(height: 16),

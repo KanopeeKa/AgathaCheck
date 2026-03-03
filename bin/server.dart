@@ -283,13 +283,14 @@ Future<void> main() async {
       chip_dismissed BOOLEAN DEFAULT FALSE,
       photo_path TEXT,
       vet_id VARCHAR(255),
-      color_value INTEGER,
+      color_value BIGINT,
       passed_away BOOLEAN DEFAULT FALSE,
       created_at TIMESTAMPTZ DEFAULT NOW(),
       updated_at TIMESTAMPTZ DEFAULT NOW()
     )
   '''));
   await _db.execute(Sql('ALTER TABLE pets ADD COLUMN IF NOT EXISTS date_of_birth DATE'));
+  await _db.execute(Sql('ALTER TABLE pets ALTER COLUMN color_value TYPE BIGINT'));
   print('pets table ready');
 
   final uploadsDir = Directory('uploads');
