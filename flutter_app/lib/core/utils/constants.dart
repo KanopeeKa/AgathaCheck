@@ -108,9 +108,16 @@ class AppConstants {
 
   static Widget speciesIconWidget(String species, {double size = 32, Color? color}) {
     if (species.toLowerCase() == 'horse / poney') {
-      return Text(
-        '🐴',
-        style: TextStyle(fontSize: size * 0.85),
+      return SizedBox(
+        width: size,
+        height: size,
+        child: Center(
+          child: Text(
+            '🐴',
+            style: TextStyle(fontSize: size * 0.75, height: 1),
+            textAlign: TextAlign.center,
+          ),
+        ),
       );
     }
     return Icon(
