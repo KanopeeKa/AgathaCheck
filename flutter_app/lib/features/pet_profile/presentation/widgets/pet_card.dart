@@ -59,10 +59,13 @@ class PetCard extends StatelessWidget {
                             color: colorScheme.onSurfaceVariant,
                           ),
                         ),
-                        if (pet.ageDisplay != null) ...[
+                        if (pet.ageDisplay != null || (pet.gender != null && pet.gender!.isNotEmpty)) ...[
                           const SizedBox(height: 2),
                           Text(
-                            '${pet.ageDisplay!} old',
+                            [
+                              if (pet.ageDisplay != null) '${pet.ageDisplay!} old',
+                              if (pet.gender != null && pet.gender!.isNotEmpty) pet.gender!,
+                            ].join(' · '),
                             style: theme.textTheme.bodySmall?.copyWith(
                               color: colorScheme.onSurfaceVariant,
                             ),
