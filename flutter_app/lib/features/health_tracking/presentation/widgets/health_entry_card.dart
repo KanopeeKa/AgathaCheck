@@ -78,7 +78,10 @@ class HealthEntryCard extends StatelessWidget {
                               ),
                               const SizedBox(width: 8),
                               Expanded(
-                                child: Text(entry.name,
+                                child: Text(
+                                    entry.dosage.isNotEmpty
+                                        ? '${entry.name} · ${entry.dosage}'
+                                        : entry.name,
                                     style: theme.textTheme.titleSmall
                                         ?.copyWith(fontWeight: FontWeight.bold),
                                     maxLines: 1,
