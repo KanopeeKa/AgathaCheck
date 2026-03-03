@@ -201,29 +201,43 @@ class _HealthEntryFormScreenState
     if (_selectedPetIds.isEmpty) return const SizedBox.shrink();
     final petId = _selectedPetIds.first;
     final issuesAsync = ref.watch(healthIssueNotifierProvider(petId));
+    final theme = Theme.of(context);
 
     return issuesAsync.when(
       loading: () => const SizedBox.shrink(),
       error: (_, __) => const SizedBox.shrink(),
       data: (issues) {
-        if (issues.isEmpty) return const SizedBox.shrink();
-        return DropdownButtonFormField<String?>(
-          key: const Key('health_issue_dropdown'),
-          value: _selectedHealthIssueId,
-          decoration: const InputDecoration(
-            labelText: 'Health Issue (optional)',
-          ),
-          items: [
-            const DropdownMenuItem<String?>(
-              value: null,
-              child: Text('None'),
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            DropdownButtonFormField<String?>(
+              key: const Key('health_issue_dropdown'),
+              value: _selectedHealthIssueId,
+              decoration: const InputDecoration(
+                labelText: 'Related to a Health Issue',
+              ),
+              items: [
+                const DropdownMenuItem<String?>(
+                  value: null,
+                  child: Text('None'),
+                ),
+                ...issues.map((issue) => DropdownMenuItem<String?>(
+                      value: issue.id,
+                      child: Text(issue.title),
+                    )),
+              ],
+              onChanged: (val) => setState(() => _selectedHealthIssueId = val),
             ),
-            ...issues.map((issue) => DropdownMenuItem<String?>(
-                  value: issue.id,
-                  child: Text(issue.title),
-                )),
+            if (issues.isEmpty)
+              Padding(
+                padding: const EdgeInsets.only(top: 6, left: 12),
+                child: Text(
+                  'You can create health issues from the pet\'s profile page',
+                  style: theme.textTheme.bodySmall
+                      ?.copyWith(color: theme.colorScheme.outline),
+                ),
+              ),
           ],
-          onChanged: (val) => setState(() => _selectedHealthIssueId = val),
         );
       },
     );
