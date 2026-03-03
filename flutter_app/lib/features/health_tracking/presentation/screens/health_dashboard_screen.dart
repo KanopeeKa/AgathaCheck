@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
 
 import '../../../pet_profile/domain/entities/pet.dart';
 import '../../../pet_profile/presentation/providers/pet_providers.dart';
+import '../../../pet_profile/data/services/pdf_saver.dart' as pdf_saver;
+import '../../data/services/events_pdf_service.dart';
 import '../../domain/entities/health_entry.dart';
 import '../providers/health_providers.dart';
 import '../widgets/health_entry_card.dart';
@@ -95,6 +98,11 @@ class _HealthDashboardScreenState extends ConsumerState<HealthDashboardScreen>
             ],
           ),
           IconButton(
+            icon: const Icon(Icons.picture_as_pdf),
+            tooltip: 'Export PDF',
+            onPressed: _exportPdf,
+          ),
+          IconButton(
             icon: const Icon(Icons.download),
             tooltip: 'Export CSV',
             onPressed: _exportCsv,
@@ -163,6 +171,128 @@ class _HealthDashboardScreenState extends ConsumerState<HealthDashboardScreen>
         SnackBar(content: Text('Export failed: $e')),
       );
     }
+  }
+
+  Future<void> _exportPdf() async {
+    try {
+      final tabIndex = _tabController.index;
+      final typeFilter = tabIndex < _tabs.length ? _tabs[tabIndex] : null;
+
+      final entriesAsync = ref.read(filteredHealthEntriesProvider(typeFilter));
+      final petsAsync = ref.read(petListProvider);
+      final entries = entriesAsync.valueOrNull ?? [];
+      final pets = petsAsync.valueOrNull ?? <Pet>[];
+      final petMap = {for (final p in pets) p.id: p};
+
+      final groups = _buildPdfGroups(entries, petMap, _groupMode);
+
+      final filterLabel = typeFilter == null ? 'All Events' : typeFilter.label;
+      final groupLabel = switch (_groupMode) {
+        _GroupMode.dueDate => 'By Due Date',
+        _GroupMode.pet => 'By Pet',
+        _GroupMode.petType => 'By Species',
+      };
+
+      final bytes = await EventsPdfService().generate(
+        groups: groups,
+        petMap: petMap,
+        filterLabel: filterLabel,
+        groupLabel: groupLabel,
+      );
+
+      final dateStr = DateFormat('yyyyMMdd').format(DateTime.now());
+      await pdf_saver.savePdf(bytes, 'Events_${dateStr}.pdf');
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('PDF export failed: $e')),
+      );
+    }
+  }
+
+  List<MapEntry<String?, List<HealthEntry>>> _buildPdfGroups(
+      List<HealthEntry> entries, Map<String, Pet> petMap, _GroupMode mode) {
+    switch (mode) {
+      case _GroupMode.dueDate:
+        return _pdfGroupByDueDate(entries);
+      case _GroupMode.pet:
+        return _pdfGroupByPet(entries, petMap);
+      case _GroupMode.petType:
+        return _pdfGroupByPetType(entries, petMap);
+    }
+  }
+
+  List<MapEntry<String?, List<HealthEntry>>> _pdfGroupByDueDate(
+      List<HealthEntry> entries) {
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final tomorrow = today.add(const Duration(days: 1));
+    final endOfWeek = today.add(const Duration(days: 7));
+
+    final buckets = <String, List<HealthEntry>>{
+      'Overdue': [],
+      'Today': [],
+      'Tomorrow': [],
+      'This Week': [],
+      'Later': [],
+      'Completed': [],
+    };
+
+    for (final e in entries) {
+      if (e.isCompleted) {
+        buckets['Completed']!.add(e);
+      } else {
+        final due = DateTime(e.nextDueDate.year, e.nextDueDate.month, e.nextDueDate.day);
+        if (due.isBefore(today)) {
+          buckets['Overdue']!.add(e);
+        } else if (due.isAtSameMomentAs(today)) {
+          buckets['Today']!.add(e);
+        } else if (due.isAtSameMomentAs(tomorrow)) {
+          buckets['Tomorrow']!.add(e);
+        } else if (due.isBefore(endOfWeek)) {
+          buckets['This Week']!.add(e);
+        } else {
+          buckets['Later']!.add(e);
+        }
+      }
+    }
+
+    final result = <MapEntry<String?, List<HealthEntry>>>[];
+    for (final key in ['Overdue', 'Today', 'Tomorrow', 'This Week', 'Later', 'Completed']) {
+      if (buckets[key]!.isNotEmpty) {
+        result.add(MapEntry(key, buckets[key]!));
+      }
+    }
+    return result;
+  }
+
+  List<MapEntry<String?, List<HealthEntry>>> _pdfGroupByPet(
+      List<HealthEntry> entries, Map<String, Pet> petMap) {
+    final grouped = <String, List<HealthEntry>>{};
+    for (final e in entries) {
+      final petName = petMap[e.petId]?.name ?? 'Unknown Pet';
+      grouped.putIfAbsent(petName, () => []).add(e);
+    }
+    final sortedKeys = grouped.keys.toList()..sort();
+    return sortedKeys.map((name) {
+      final sorted = grouped[name]!..sort((a, b) => a.nextDueDate.compareTo(b.nextDueDate));
+      return MapEntry<String?, List<HealthEntry>>(name, sorted);
+    }).toList();
+  }
+
+  List<MapEntry<String?, List<HealthEntry>>> _pdfGroupByPetType(
+      List<HealthEntry> entries, Map<String, Pet> petMap) {
+    final grouped = <String, List<HealthEntry>>{};
+    for (final e in entries) {
+      final species = petMap[e.petId]?.species ?? 'Other';
+      grouped.putIfAbsent(species, () => []).add(e);
+    }
+    final sortedKeys = grouped.keys.toList()..sort();
+    return sortedKeys.map((species) {
+      final label = species.endsWith('s') ? species : '${species}s';
+      final sorted = grouped[species]!..sort((a, b) => a.nextDueDate.compareTo(b.nextDueDate));
+      return MapEntry<String?, List<HealthEntry>>(label, sorted);
+    }).toList();
   }
 }
 
