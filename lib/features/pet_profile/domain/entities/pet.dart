@@ -10,56 +10,119 @@ class Pet {
     required this.name,
     required this.species,
     this.breed = '',
-    this.age,
+    this.dateOfBirth,
     this.weight,
+    this.gender,
     this.bio = '',
+    this.insurance = '',
+    this.neuteredDate,
+    this.neuterDismissed = false,
+    this.chipId = '',
+    this.chipDismissed = false,
     this.photoPath,
+    this.vetId,
+    this.colorValue,
+    this.passedAway = false,
   });
 
-  /// Unique identifier for the pet.
   final String id;
-
-  /// The pet's name.
   final String name;
-
-  /// The species of the pet (e.g., Dog, Cat, Bird).
   final String species;
-
-  /// The breed of the pet.
   final String breed;
-
-  /// The age of the pet in years.
-  final double? age;
-
-  /// The weight of the pet in kilograms.
+  final DateTime? dateOfBirth;
   final double? weight;
-
-  /// A short biography or description of the pet.
+  final String? gender;
   final String bio;
-
-  /// File path or base64 string for the pet's photo.
+  final String insurance;
+  final DateTime? neuteredDate;
+  final bool neuterDismissed;
+  final String chipId;
+  final bool chipDismissed;
   final String? photoPath;
+  final String? vetId;
+  final int? colorValue;
+  final bool passedAway;
 
-  /// Creates a copy of this pet with the given fields replaced.
+  double? get age {
+    if (dateOfBirth == null) return null;
+    final now = DateTime.now();
+    final diff = now.difference(dateOfBirth!).inDays;
+    return diff / 365.25;
+  }
+
+  String? get ageDisplay {
+    final a = age;
+    if (a == null) return null;
+    if (a < 1) {
+      final months = (a * 12).round();
+      return months <= 1 ? '1 month' : '$months months';
+    }
+    return '${a.toStringAsFixed(1)} yrs';
+  }
+
+  static const List<int> palette = [
+    0xFF7E57C2, // deep purple
+    0xFF26A69A, // teal
+    0xFFEF5350, // red
+    0xFF42A5F5, // blue
+    0xFFFF7043, // deep orange
+    0xFF66BB6A, // green
+    0xFFAB47BC, // purple
+    0xFFFFCA28, // amber
+    0xFF26C6DA, // cyan
+    0xFFEC407A, // pink
+    0xFF8D6E63, // brown
+    0xFF5C6BC0, // indigo
+    0xFF9CCC65, // light green
+    0xFFFF8A65, // light deep orange
+    0xFF78909C, // blue grey
+  ];
+
+  static int pickColor(int index) {
+    return palette[index % palette.length];
+  }
+
   Pet copyWith({
     String? id,
     String? name,
     String? species,
     String? breed,
-    double? age,
+    DateTime? dateOfBirth,
     double? weight,
+    String? gender,
     String? bio,
+    String? insurance,
+    DateTime? neuteredDate,
+    bool? neuterDismissed,
+    String? chipId,
+    bool? chipDismissed,
     String? photoPath,
+    String? vetId,
+    int? colorValue,
+    bool? passedAway,
+    bool clearVetId = false,
+    bool clearGender = false,
+    bool clearNeuteredDate = false,
+    bool clearDateOfBirth = false,
   }) {
     return Pet(
       id: id ?? this.id,
       name: name ?? this.name,
       species: species ?? this.species,
       breed: breed ?? this.breed,
-      age: age ?? this.age,
+      dateOfBirth: clearDateOfBirth ? null : (dateOfBirth ?? this.dateOfBirth),
       weight: weight ?? this.weight,
+      gender: clearGender ? null : (gender ?? this.gender),
       bio: bio ?? this.bio,
+      insurance: insurance ?? this.insurance,
+      neuteredDate: clearNeuteredDate ? null : (neuteredDate ?? this.neuteredDate),
+      neuterDismissed: neuterDismissed ?? this.neuterDismissed,
+      chipId: chipId ?? this.chipId,
+      chipDismissed: chipDismissed ?? this.chipDismissed,
       photoPath: photoPath ?? this.photoPath,
+      vetId: clearVetId ? null : (vetId ?? this.vetId),
+      colorValue: colorValue ?? this.colorValue,
+      passedAway: passedAway ?? this.passedAway,
     );
   }
 

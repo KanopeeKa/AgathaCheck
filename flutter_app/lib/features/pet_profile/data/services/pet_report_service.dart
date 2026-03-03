@@ -158,7 +158,7 @@ class PetReportService {
                   [
                     pet.species,
                     if (pet.breed.isNotEmpty) pet.breed,
-                    if (pet.age != null) '${pet.age!.toStringAsFixed(1)} years',
+                    if (pet.ageDisplay != null) pet.ageDisplay!,
                   ].join(' | '),
                   style: pw.TextStyle(
                     fontSize: 10,
@@ -252,8 +252,10 @@ class PetReportService {
             if (pet.breed.isNotEmpty) _detailRow('Breed', pet.breed),
             if (pet.gender != null && pet.gender!.isNotEmpty)
               _detailRow('Gender', pet.gender!),
-            if (pet.age != null)
-              _detailRow('Age', '${pet.age!.toStringAsFixed(1)} years'),
+            if (pet.ageDisplay != null)
+              _detailRow('Age', pet.ageDisplay!),
+            if (pet.dateOfBirth != null)
+              _detailRow('Date of Birth', '${pet.dateOfBirth!.day}/${pet.dateOfBirth!.month}/${pet.dateOfBirth!.year}'),
             if (latestWeight != null)
               _detailRow('Current Weight', _formatWeight(latestWeight, weightUnit),
                   highlight: true),

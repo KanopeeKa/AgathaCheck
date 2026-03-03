@@ -17,12 +17,12 @@ void main() {
     updatePet = UpdatePet(mockRepository);
   });
 
-  const testPet = Pet(
+  final testPet = Pet(
     id: 'test-id-1',
     name: 'Buddy Updated',
     species: 'Dog',
     breed: 'Golden Retriever',
-    age: 4.0,
+    dateOfBirth: DateTime(2021, 6, 1),
     weight: 32.0,
   );
 

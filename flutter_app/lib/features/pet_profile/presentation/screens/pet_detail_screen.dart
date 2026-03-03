@@ -297,10 +297,10 @@ class _PetProfileCard extends ConsumerWidget {
                                     ? Icons.male
                                     : Icons.female,
                                 label: pet.gender!),
-                          if (pet.age != null)
+                          if (pet.ageDisplay != null)
                             _InfoChip(
                                 icon: Icons.cake,
-                                label: '${pet.age!.toStringAsFixed(1)} yrs'),
+                                label: pet.ageDisplay!),
                           if (displayWeight != null)
                             Consumer(builder: (context, ref, _) {
                               final unit =

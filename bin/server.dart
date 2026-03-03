@@ -272,6 +272,7 @@ Future<void> main() async {
       species VARCHAR(100) NOT NULL,
       breed VARCHAR(255) DEFAULT '',
       age DOUBLE PRECISION,
+      date_of_birth DATE,
       weight DOUBLE PRECISION,
       gender VARCHAR(50),
       bio TEXT DEFAULT '',
@@ -288,6 +289,7 @@ Future<void> main() async {
       updated_at TIMESTAMPTZ DEFAULT NOW()
     )
   '''));
+  await _db.execute(Sql('ALTER TABLE pets ADD COLUMN IF NOT EXISTS date_of_birth DATE'));
   print('pets table ready');
 
   final uploadsDir = Directory('uploads');
@@ -606,6 +608,8 @@ Map<String, dynamic> _petRowToJson(ResultRow row) {
     'species': (cols['species'] ?? '').toString(),
     'breed': (cols['breed'] ?? '').toString(),
     'age': cols['age'],
+    'dateOfBirth': cols['date_of_birth']?.toString(),
+    'date_of_birth': cols['date_of_birth']?.toString(),
     'weight': cols['weight'],
     'gender': cols['gender']?.toString(),
     'bio': (cols['bio'] ?? '').toString(),
@@ -665,7 +669,8 @@ Future<void> _createPet(HttpRequest request) async {
     await _db.execute(
       Sql.named('''
         UPDATE pets SET user_id = @userId, name = @name, species = @species,
-          breed = @breed, age = ${body['age'] != null ? '@age' : 'NULL'},
+          breed = @breed,
+          date_of_birth = ${body['dateOfBirth'] != null ? '@dateOfBirth::date' : 'NULL'},
           weight = ${body['weight'] != null ? '@weight' : 'NULL'},
           gender = ${body['gender'] != null ? '@gender' : 'NULL'},
           bio = @bio, insurance = @insurance,
@@ -686,7 +691,7 @@ Future<void> _createPet(HttpRequest request) async {
         'name': name,
         'species': species,
         'breed': (body['breed'] ?? '').toString(),
-        if (body['age'] != null) 'age': (body['age'] as num).toDouble(),
+        if (body['dateOfBirth'] != null) 'dateOfBirth': body['dateOfBirth'].toString(),
         if (body['weight'] != null) 'weight': (body['weight'] as num).toDouble(),
         if (body['gender'] != null) 'gender': body['gender'].toString(),
         'bio': (body['bio'] ?? '').toString(),
@@ -711,8 +716,8 @@ Future<void> _createPet(HttpRequest request) async {
 
   await _db.execute(
     Sql.named('''
-      INSERT INTO pets (id, user_id, name, species, breed, age, weight, gender, bio, insurance, neutered_date, neuter_dismissed, chip_id, chip_dismissed, photo_path, vet_id, color_value, passed_away)
-      VALUES (@id, @userId, @name, @species, @breed, ${body['age'] != null ? '@age' : 'NULL'}, ${body['weight'] != null ? '@weight' : 'NULL'}, ${body['gender'] != null ? '@gender' : 'NULL'}, @bio, @insurance, ${body['neuteredDate'] != null ? '@neuteredDate::date' : 'NULL'}, @neuterDismissed, @chipId, @chipDismissed, ${body['photoPath'] != null ? '@photoPath' : 'NULL'}, ${body['vetId'] != null ? '@vetId' : 'NULL'}, ${body['colorValue'] != null ? '@colorValue' : 'NULL'}, @passedAway)
+      INSERT INTO pets (id, user_id, name, species, breed, date_of_birth, weight, gender, bio, insurance, neutered_date, neuter_dismissed, chip_id, chip_dismissed, photo_path, vet_id, color_value, passed_away)
+      VALUES (@id, @userId, @name, @species, @breed, ${body['dateOfBirth'] != null ? '@dateOfBirth::date' : 'NULL'}, ${body['weight'] != null ? '@weight' : 'NULL'}, ${body['gender'] != null ? '@gender' : 'NULL'}, @bio, @insurance, ${body['neuteredDate'] != null ? '@neuteredDate::date' : 'NULL'}, @neuterDismissed, @chipId, @chipDismissed, ${body['photoPath'] != null ? '@photoPath' : 'NULL'}, ${body['vetId'] != null ? '@vetId' : 'NULL'}, ${body['colorValue'] != null ? '@colorValue' : 'NULL'}, @passedAway)
     '''),
     parameters: {
       'id': id,
@@ -720,7 +725,7 @@ Future<void> _createPet(HttpRequest request) async {
       'name': name,
       'species': species,
       'breed': (body['breed'] ?? '').toString(),
-      if (body['age'] != null) 'age': (body['age'] as num).toDouble(),
+      if (body['dateOfBirth'] != null) 'dateOfBirth': body['dateOfBirth'].toString(),
       if (body['weight'] != null) 'weight': (body['weight'] as num).toDouble(),
       if (body['gender'] != null) 'gender': body['gender'].toString(),
       'bio': (body['bio'] ?? '').toString(),
@@ -767,7 +772,7 @@ Future<void> _updatePet(HttpRequest request) async {
     Sql.named('''
       UPDATE pets SET
         name = @name, species = @species, breed = @breed,
-        age = ${body['age'] != null ? '@age' : 'NULL'},
+        date_of_birth = ${body['dateOfBirth'] != null ? '@dateOfBirth::date' : 'NULL'},
         weight = ${body['weight'] != null ? '@weight' : 'NULL'},
         gender = ${body['gender'] != null ? '@gender' : 'NULL'},
         bio = @bio, insurance = @insurance,
@@ -788,7 +793,7 @@ Future<void> _updatePet(HttpRequest request) async {
       'name': (body['name'] ?? '').toString(),
       'species': (body['species'] ?? '').toString(),
       'breed': (body['breed'] ?? '').toString(),
-      if (body['age'] != null) 'age': (body['age'] as num).toDouble(),
+      if (body['dateOfBirth'] != null) 'dateOfBirth': body['dateOfBirth'].toString(),
       if (body['weight'] != null) 'weight': (body['weight'] as num).toDouble(),
       if (body['gender'] != null) 'gender': body['gender'].toString(),
       'bio': (body['bio'] ?? '').toString(),

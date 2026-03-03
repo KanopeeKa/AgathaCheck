@@ -10,7 +10,7 @@ class Pet {
     required this.name,
     required this.species,
     this.breed = '',
-    this.age,
+    this.dateOfBirth,
     this.weight,
     this.gender,
     this.bio = '',
@@ -29,7 +29,7 @@ class Pet {
   final String name;
   final String species;
   final String breed;
-  final double? age;
+  final DateTime? dateOfBirth;
   final double? weight;
   final String? gender;
   final String bio;
@@ -42,6 +42,23 @@ class Pet {
   final String? vetId;
   final int? colorValue;
   final bool passedAway;
+
+  double? get age {
+    if (dateOfBirth == null) return null;
+    final now = DateTime.now();
+    final diff = now.difference(dateOfBirth!).inDays;
+    return diff / 365.25;
+  }
+
+  String? get ageDisplay {
+    final a = age;
+    if (a == null) return null;
+    if (a < 1) {
+      final months = (a * 12).round();
+      return months <= 1 ? '1 month' : '$months months';
+    }
+    return '${a.toStringAsFixed(1)} yrs';
+  }
 
   static const List<int> palette = [
     0xFF7E57C2, // deep purple
@@ -70,7 +87,7 @@ class Pet {
     String? name,
     String? species,
     String? breed,
-    double? age,
+    DateTime? dateOfBirth,
     double? weight,
     String? gender,
     String? bio,
@@ -86,13 +103,14 @@ class Pet {
     bool clearVetId = false,
     bool clearGender = false,
     bool clearNeuteredDate = false,
+    bool clearDateOfBirth = false,
   }) {
     return Pet(
       id: id ?? this.id,
       name: name ?? this.name,
       species: species ?? this.species,
       breed: breed ?? this.breed,
-      age: age ?? this.age,
+      dateOfBirth: clearDateOfBirth ? null : (dateOfBirth ?? this.dateOfBirth),
       weight: weight ?? this.weight,
       gender: clearGender ? null : (gender ?? this.gender),
       bio: bio ?? this.bio,

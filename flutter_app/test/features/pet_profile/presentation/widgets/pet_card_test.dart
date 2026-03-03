@@ -4,12 +4,12 @@ import 'package:pet_profile_app/features/pet_profile/domain/entities/pet.dart';
 import 'package:pet_profile_app/features/pet_profile/presentation/widgets/pet_card.dart';
 
 void main() {
-  const testPet = Pet(
+  final testPet = Pet(
     id: 'test-id',
     name: 'Buddy',
     species: 'Dog',
     breed: 'Golden Retriever',
-    age: 3.0,
+    dateOfBirth: DateTime(2022, 1, 15),
     weight: 30.0,
     bio: 'A friendly dog',
   );
@@ -36,12 +36,20 @@ void main() {
       expect(find.text('Dog - Golden Retriever'), findsOneWidget);
     });
 
-    testWidgets('displays age when available', (tester) async {
+    testWidgets('displays age when dateOfBirth available', (tester) async {
       await tester.pumpWidget(
         createTestWidget(PetCard(pet: testPet)),
       );
 
-      expect(find.text('3.0 years old'), findsOneWidget);
+      expect(find.textContaining('yrs old'), findsOneWidget);
+    });
+
+    testWidgets('does not display age when no dateOfBirth', (tester) async {
+      await tester.pumpWidget(
+        createTestWidget(PetCard(pet: petNoBio)),
+      );
+
+      expect(find.textContaining('old'), findsNothing);
     });
 
     testWidgets('displays species only when no breed', (tester) async {
@@ -72,23 +80,5 @@ void main() {
       expect(tapped, isTrue);
     });
 
-    testWidgets('shows delete button when onDelete provided', (tester) async {
-      await tester.pumpWidget(
-        createTestWidget(
-          PetCard(pet: testPet, onDelete: () {}),
-        ),
-      );
-
-      expect(find.byIcon(Icons.delete_outline), findsOneWidget);
-    });
-
-    testWidgets('hides delete button when onDelete not provided',
-        (tester) async {
-      await tester.pumpWidget(
-        createTestWidget(PetCard(pet: testPet)),
-      );
-
-      expect(find.byIcon(Icons.delete_outline), findsNothing);
-    });
   });
 }

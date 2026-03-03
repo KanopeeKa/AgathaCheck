@@ -111,7 +111,18 @@ class _SharedPetScreenState extends ConsumerState<SharedPetScreen> {
     final name = pet['name'] as String? ?? 'Unknown';
     final species = pet['species'] as String? ?? '';
     final breed = pet['breed'] as String? ?? '';
-    final age = (pet['age'] as num?)?.toDouble();
+    final dobStr = (pet['dateOfBirth'] ?? pet['date_of_birth']) as String?;
+    final dateOfBirth = dobStr != null ? DateTime.tryParse(dobStr) : null;
+    String? ageDisplay;
+    if (dateOfBirth != null) {
+      final diff = DateTime.now().difference(dateOfBirth).inDays / 365.25;
+      if (diff < 1) {
+        final months = (diff * 12).round();
+        ageDisplay = months <= 1 ? '1 month' : '$months months';
+      } else {
+        ageDisplay = '${diff.toStringAsFixed(1)} yrs';
+      }
+    }
     final weight = (pet['weight'] as num?)?.toDouble();
     final bio = pet['bio'] as String? ?? '';
     final photoPath = pet['photoPath'] as String?;
@@ -173,9 +184,9 @@ class _SharedPetScreenState extends ConsumerState<SharedPetScreen> {
                               _buildChip(Icons.category, species, colorScheme),
                               if (breed.isNotEmpty)
                                 _buildChip(Icons.pets, breed, colorScheme),
-                              if (age != null)
+                              if (ageDisplay != null)
                                 _buildChip(Icons.cake,
-                                    '${age.toStringAsFixed(1)} yrs', colorScheme),
+                                    ageDisplay!, colorScheme),
                               if (weight != null)
                                 _buildChip(Icons.monitor_weight,
                                     '${weight.toStringAsFixed(1)} kg', colorScheme),

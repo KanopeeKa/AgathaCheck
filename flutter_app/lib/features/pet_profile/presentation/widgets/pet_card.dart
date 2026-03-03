@@ -59,10 +59,10 @@ class PetCard extends StatelessWidget {
                             color: colorScheme.onSurfaceVariant,
                           ),
                         ),
-                        if (pet.age != null) ...[
+                        if (pet.ageDisplay != null) ...[
                           const SizedBox(height: 2),
                           Text(
-                            '${pet.age!.toStringAsFixed(1)} years old',
+                            '${pet.ageDisplay!} old',
                             style: theme.textTheme.bodySmall?.copyWith(
                               color: colorScheme.onSurfaceVariant,
                             ),

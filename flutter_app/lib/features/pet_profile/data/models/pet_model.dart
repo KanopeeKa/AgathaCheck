@@ -2,17 +2,13 @@ import 'dart:convert';
 
 import '../../domain/entities/pet.dart';
 
-/// Data model for [Pet] with JSON serialization support.
-///
-/// Extends the domain [Pet] entity with the ability to convert
-/// to and from JSON for local storage persistence.
 class PetModel {
   const PetModel({
     required this.id,
     required this.name,
     required this.species,
     this.breed = '',
-    this.age,
+    this.dateOfBirth,
     this.weight,
     this.gender,
     this.bio = '',
@@ -33,7 +29,11 @@ class PetModel {
       name: json['name'] as String,
       species: json['species'] as String,
       breed: (json['breed'] as String?) ?? '',
-      age: (json['age'] as num?)?.toDouble(),
+      dateOfBirth: json['dateOfBirth'] != null
+          ? DateTime.tryParse(json['dateOfBirth'] as String)
+          : (json['date_of_birth'] != null
+              ? DateTime.tryParse(json['date_of_birth'] as String)
+              : null),
       weight: (json['weight'] as num?)?.toDouble(),
       gender: json['gender'] as String?,
       bio: (json['bio'] as String?) ?? '',
@@ -57,7 +57,7 @@ class PetModel {
       name: pet.name,
       species: pet.species,
       breed: pet.breed,
-      age: pet.age,
+      dateOfBirth: pet.dateOfBirth,
       weight: pet.weight,
       gender: pet.gender,
       bio: pet.bio,
@@ -83,7 +83,7 @@ class PetModel {
   final String name;
   final String species;
   final String breed;
-  final double? age;
+  final DateTime? dateOfBirth;
   final double? weight;
   final String? gender;
   final String bio;
@@ -103,7 +103,7 @@ class PetModel {
       'name': name,
       'species': species,
       'breed': breed,
-      'age': age,
+      'dateOfBirth': dateOfBirth?.toIso8601String(),
       'weight': weight,
       'gender': gender,
       'bio': bio,
@@ -127,7 +127,7 @@ class PetModel {
       name: name,
       species: species,
       breed: breed,
-      age: age,
+      dateOfBirth: dateOfBirth,
       weight: weight,
       gender: gender,
       bio: bio,

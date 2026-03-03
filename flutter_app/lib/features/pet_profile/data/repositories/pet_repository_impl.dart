@@ -29,7 +29,7 @@ class PetRepositoryImpl implements PetRepository {
               name: rp.name,
               species: rp.species,
               breed: rp.breed,
-              age: rp.age,
+              dateOfBirth: rp.dateOfBirth,
               weight: rp.weight,
               gender: rp.gender,
               bio: rp.bio,

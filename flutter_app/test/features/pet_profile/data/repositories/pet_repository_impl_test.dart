@@ -18,22 +18,22 @@ void main() {
     repository = PetRepositoryImpl(mockDataSource);
   });
 
-  const testModel = PetModel(
+  final testModel = PetModel(
     id: 'test-id',
     name: 'Buddy',
     species: 'Dog',
     breed: 'Golden Retriever',
-    age: 3.0,
+    dateOfBirth: DateTime(2022, 1, 15),
     weight: 30.0,
     bio: 'A friendly dog',
   );
 
-  const testPet = Pet(
+  final testPet = Pet(
     id: 'test-id',
     name: 'Buddy',
     species: 'Dog',
     breed: 'Golden Retriever',
-    age: 3.0,
+    dateOfBirth: DateTime(2022, 1, 15),
     weight: 30.0,
     bio: 'A friendly dog',
   );

@@ -24,7 +24,6 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
   final _breedController = TextEditingController();
-  final _ageController = TextEditingController();
   final _weightController = TextEditingController();
   final _bioController = TextEditingController();
   final _insuranceController = TextEditingController();
@@ -35,6 +34,7 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
   String? _photoBase64;
   String? _selectedVetId;
   int? _existingColorValue;
+  DateTime? _dateOfBirth;
   DateTime? _neuteredDate;
   bool? _isNeutered;
   bool _neuterDismissed = false;
@@ -49,7 +49,6 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
   void dispose() {
     _nameController.dispose();
     _breedController.dispose();
-    _ageController.dispose();
     _weightController.dispose();
     _bioController.dispose();
     _insuranceController.dispose();
@@ -60,7 +59,6 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
   void _populateForm(Pet pet) {
     _nameController.text = pet.name;
     _breedController.text = pet.breed;
-    _ageController.text = pet.age?.toString() ?? '';
     _weightController.text = pet.weight?.toString() ?? '';
     _bioController.text = pet.bio;
     _insuranceController.text = pet.insurance;
@@ -70,6 +68,7 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
     _photoBase64 = pet.photoPath;
     _selectedVetId = pet.vetId;
     _existingColorValue = pet.colorValue;
+    _dateOfBirth = pet.dateOfBirth;
     _neuteredDate = pet.neuteredDate;
     _isNeutered = pet.neuteredDate != null ? true : null;
     _neuterDismissed = pet.neuterDismissed;
@@ -249,9 +248,6 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
     setState(() => _isLoading = true);
 
     try {
-      final age = _ageController.text.isNotEmpty
-          ? double.tryParse(_ageController.text)
-          : null;
       final weight = _weightController.text.isNotEmpty
           ? double.tryParse(_weightController.text)
           : null;
@@ -262,7 +258,7 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
           name: _nameController.text.trim(),
           species: _selectedSpecies,
           breed: _breedController.text.trim(),
-          age: age,
+          dateOfBirth: _dateOfBirth,
           weight: weight,
           gender: _selectedGender,
           bio: _bioController.text.trim(),
@@ -282,7 +278,7 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
               name: _nameController.text.trim(),
               species: _selectedSpecies,
               breed: _breedController.text.trim(),
-              age: age,
+              dateOfBirth: _dateOfBirth,
               weight: weight,
               gender: _selectedGender,
               bio: _bioController.text.trim(),
@@ -428,23 +424,42 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
               Row(
                 children: [
                   Expanded(
-                    child: TextFormField(
-                      key: const Key('pet_age_field'),
-                      controller: _ageController,
-                      decoration: const InputDecoration(
-                        labelText: 'Age (years)',
-                      ),
-                      keyboardType:
-                          const TextInputType.numberWithOptions(decimal: true),
-                      validator: (value) {
-                        if (value != null && value.isNotEmpty) {
-                          final num = double.tryParse(value);
-                          if (num == null || num < 0) {
-                            return 'Invalid age';
+                    child: Semantics(
+                      label: 'Date of birth',
+                      child: InkWell(
+                        key: const Key('pet_dob_field'),
+                        onTap: () async {
+                          final picked = await showDatePicker(
+                            context: context,
+                            initialDate: _dateOfBirth ?? DateTime.now(),
+                            firstDate: DateTime(1980),
+                            lastDate: DateTime.now(),
+                            helpText: 'Select date of birth',
+                          );
+                          if (picked != null) {
+                            setState(() => _dateOfBirth = picked);
                           }
-                        }
-                        return null;
-                      },
+                        },
+                        child: InputDecorator(
+                          decoration: InputDecoration(
+                            labelText: 'Date of Birth',
+                            suffixIcon: _dateOfBirth != null
+                                ? IconButton(
+                                    icon: const Icon(Icons.clear, size: 18),
+                                    tooltip: 'Clear date of birth',
+                                    onPressed: () =>
+                                        setState(() => _dateOfBirth = null),
+                                  )
+                                : const Icon(Icons.calendar_today, size: 18),
+                          ),
+                          child: Text(
+                            _dateOfBirth != null
+                                ? DateFormat('dd/MM/yyyy').format(_dateOfBirth!)
+                                : '',
+                            style: Theme.of(context).textTheme.bodyLarge,
+                          ),
+                        ),
+                      ),
                     ),
                   ),
                   const SizedBox(width: 16),
