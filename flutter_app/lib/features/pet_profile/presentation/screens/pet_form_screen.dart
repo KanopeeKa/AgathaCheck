@@ -7,6 +7,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 
 import '../../../../core/utils/constants.dart';
+import '../../../vet/domain/entities/vet.dart';
 import '../../../vet/presentation/providers/vet_providers.dart';
 import '../../../weight_tracking/domain/entities/weight_entry.dart';
 import '../../../weight_tracking/presentation/providers/weight_providers.dart';
@@ -731,6 +732,8 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
     );
   }
 
+  static const _createNewVetSentinel = '__create_new_vet__';
+
   Widget _buildVetDropdown() {
     final vetsAsync = ref.watch(vetListProvider);
 
@@ -769,10 +772,138 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
                   value: vet.id,
                   child: Text(vet.name),
                 )),
+            DropdownMenuItem<String?>(
+              value: _createNewVetSentinel,
+              child: Row(
+                children: [
+                  Icon(Icons.add_circle_outline,
+                      size: 18,
+                      color: Theme.of(context).colorScheme.primary),
+                  const SizedBox(width: 8),
+                  Text('Create new vet',
+                      style: TextStyle(
+                          color: Theme.of(context).colorScheme.primary,
+                          fontWeight: FontWeight.w600)),
+                ],
+              ),
+            ),
           ],
-          onChanged: (value) => setState(() => _selectedVetId = value),
+          onChanged: (value) {
+            if (value == _createNewVetSentinel) {
+              _showCreateVetSheet();
+            } else {
+              setState(() => _selectedVetId = value);
+            }
+          },
         );
       },
+    );
+  }
+
+  void _showCreateVetSheet() {
+    final nameController = TextEditingController();
+    final phoneController = TextEditingController();
+    final emailController = TextEditingController();
+    final addressController = TextEditingController();
+    final formKey = GlobalKey<FormState>();
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      builder: (ctx) => Padding(
+        padding: EdgeInsets.only(
+          left: 24,
+          right: 24,
+          top: 24,
+          bottom: MediaQuery.of(ctx).viewInsets.bottom + 24,
+        ),
+        child: Form(
+          key: formKey,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Text('New Veterinarian',
+                  style: Theme.of(ctx)
+                      .textTheme
+                      .titleMedium
+                      ?.copyWith(fontWeight: FontWeight.bold)),
+              const SizedBox(height: 16),
+              TextFormField(
+                key: const Key('new_vet_name_field'),
+                controller: nameController,
+                decoration: const InputDecoration(
+                  labelText: 'Name',
+                  hintText: 'e.g., Dr. Smith Veterinary Clinic',
+                  prefixIcon: Icon(Icons.person),
+                ),
+                validator: (val) =>
+                    val == null || val.trim().isEmpty ? 'Name is required' : null,
+              ),
+              const SizedBox(height: 12),
+              TextFormField(
+                key: const Key('new_vet_phone_field'),
+                controller: phoneController,
+                decoration: const InputDecoration(
+                  labelText: 'Phone (optional)',
+                  prefixIcon: Icon(Icons.phone),
+                ),
+                keyboardType: TextInputType.phone,
+              ),
+              const SizedBox(height: 12),
+              TextFormField(
+                key: const Key('new_vet_email_field'),
+                controller: emailController,
+                decoration: const InputDecoration(
+                  labelText: 'Email (optional)',
+                  prefixIcon: Icon(Icons.email),
+                ),
+                keyboardType: TextInputType.emailAddress,
+              ),
+              const SizedBox(height: 12),
+              TextFormField(
+                key: const Key('new_vet_address_field'),
+                controller: addressController,
+                decoration: const InputDecoration(
+                  labelText: 'Address (optional)',
+                  prefixIcon: Icon(Icons.location_on),
+                ),
+              ),
+              const SizedBox(height: 16),
+              FilledButton(
+                key: const Key('save_new_vet_button'),
+                onPressed: () async {
+                  if (!formKey.currentState!.validate()) return;
+                  final vet = Vet(
+                    id: '',
+                    name: nameController.text.trim(),
+                    phone: phoneController.text.trim(),
+                    email: emailController.text.trim(),
+                    address: addressController.text.trim(),
+                  );
+                  try {
+                    await ref.read(vetListProvider.notifier).createVet(vet);
+                    if (ctx.mounted) Navigator.pop(ctx);
+                    final updatedVets = await ref.read(vetListProvider.future);
+                    if (updatedVets.isNotEmpty) {
+                      setState(() {
+                        _selectedVetId = updatedVets.last.id;
+                      });
+                    }
+                  } catch (e) {
+                    if (ctx.mounted) {
+                      ScaffoldMessenger.of(ctx).showSnackBar(
+                        SnackBar(content: Text('Failed to create vet: $e')),
+                      );
+                    }
+                  }
+                },
+                child: const Text('Create'),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 
