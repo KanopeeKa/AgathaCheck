@@ -1,9 +1,11 @@
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/utils/constants.dart';
 import '../providers/auth_providers.dart';
+import '../../../../core/widgets/web_image.dart';
 
 class LandingScreen extends ConsumerStatefulWidget {
   const LandingScreen({super.key});
@@ -119,17 +121,48 @@ class _LandingScreenState extends ConsumerState<LandingScreen>
     );
   }
 
+  Widget _buildLogo(ThemeData theme, {required double size}) {
+    final fallback = Container(
+      height: size,
+      width: size,
+      decoration: BoxDecoration(
+        color: theme.colorScheme.primaryContainer.withValues(alpha: 0.3),
+        shape: BoxShape.circle,
+      ),
+      child: Center(
+        child: Icon(Icons.pets, size: size * 0.55, color: theme.colorScheme.primary),
+      ),
+    );
+
+    return Semantics(
+      label: 'Agatha Check logo',
+      child: kIsWeb
+          ? WebAssetImage(
+              assetPath: 'assets/logo.jpg',
+              height: size,
+              width: size,
+              fit: BoxFit.cover,
+              fallback: fallback,
+              clipOval: true,
+            )
+          : ClipOval(
+              child: Image.asset(
+                'assets/logo.jpg',
+                height: size,
+                width: size,
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) => fallback,
+              ),
+            ),
+    );
+  }
+
   Widget _buildBrandingSection(ThemeData theme) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       mainAxisSize: MainAxisSize.min,
       children: [
-        Image.asset(
-          'assets/logo.png',
-          height: 120,
-          width: 120,
-          semanticLabel: 'Agatha Check logo',
-        ),
+        _buildLogo(theme, size: 120),
         const SizedBox(height: 20),
         Text(
           'Agatha Check',
@@ -185,13 +218,7 @@ class _LandingScreenState extends ConsumerState<LandingScreen>
           children: [
             ClipRRect(
               borderRadius: BorderRadius.circular(12),
-              child: Image.asset(
-                'assets/logo.png',
-                height: 64,
-                width: 64,
-                fit: BoxFit.cover,
-                semanticLabel: 'Agatha Check logo',
-              ),
+              child: _buildLogo(theme, size: 64),
             ),
             const SizedBox(height: 8),
             Text(
