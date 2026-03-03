@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
+import '../../../../l10n/app_localizations.dart';
 import '../../domain/entities/app_notification.dart';
 import '../providers/notification_providers.dart';
 import '../../../pet_profile/presentation/providers/pet_providers.dart';
@@ -28,33 +29,34 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
   Widget build(BuildContext context) {
     final notificationsAsync = ref.watch(notificationsProvider);
     final theme = Theme.of(context);
+    final l = AppLocalizations.of(context)!;
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Notifications'),
+        title: Text(l.notifications),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
-          tooltip: 'Back to home',
+          tooltip: l.goBack,
           onPressed: () => context.go('/'),
         ),
         actions: [
           IconButton(
             icon: const Icon(Icons.settings_outlined),
-            tooltip: 'Notification Settings',
+            tooltip: l.notificationSettingsTooltip,
             onPressed: () => context.push('/notifications/settings'),
           ),
           TextButton.icon(
             key: const Key('mark_all_read_button'),
             icon: const Icon(Icons.done_all, size: 18),
-            label: const Text('Mark all read'),
+            label: Text(l.markAllRead),
             onPressed: () async {
               await ref
                   .read(notificationsProvider.notifier)
                   .markAllAsRead();
               if (context.mounted) {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                      content: Text('All notifications marked as read')),
+                  SnackBar(
+                      content: Text(l.markAllRead)),
                 );
               }
             },
@@ -75,7 +77,7 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
               ElevatedButton(
                 onPressed: () =>
                     ref.read(notificationsProvider.notifier).refresh(),
-                child: const Text('Retry'),
+                child: Text(l.retry),
               ),
             ],
           ),
@@ -95,7 +97,7 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
                   Icon(Icons.notifications_none,
                       size: 80, color: theme.colorScheme.outline),
                   const SizedBox(height: 16),
-                  Text('No notifications',
+                  Text(l.noNotifications,
                       style: theme.textTheme.headlineSmall),
                   const SizedBox(height: 8),
                   Text(
@@ -110,7 +112,7 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
             );
           }
 
-          final grouped = _groupByDate(notifications);
+          final grouped = _groupByDate(context, notifications);
 
           return RefreshIndicator(
             onRefresh: () =>
@@ -160,7 +162,8 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
     );
   }
 
-  List<_NotificationGroup> _groupByDate(List<AppNotification> notifications) {
+  List<_NotificationGroup> _groupByDate(BuildContext context, List<AppNotification> notifications) {
+    final l = AppLocalizations.of(context)!;
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
     final yesterday = today.subtract(const Duration(days: 1));
@@ -171,7 +174,7 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
       final date = DateTime(n.createdAt.year, n.createdAt.month, n.createdAt.day);
       String label;
       if (date == today) {
-        label = 'Today';
+        label = l.today;
       } else if (date == yesterday) {
         label = 'Yesterday';
       } else {

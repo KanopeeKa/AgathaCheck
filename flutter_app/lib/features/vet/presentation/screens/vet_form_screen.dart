@@ -2,23 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../l10n/app_localizations.dart';
 import '../../../pet_profile/domain/entities/pet.dart';
 import '../../../pet_profile/presentation/providers/pet_providers.dart';
 import '../../domain/entities/vet.dart';
 import '../providers/vet_providers.dart';
 
-/// Screen for creating or editing a veterinarian record.
-///
-/// When [vetId] is provided, the screen operates in edit mode and
-/// loads existing data. Otherwise, it operates in creation mode.
 class VetFormScreen extends ConsumerStatefulWidget {
-  /// Creates a [VetFormScreen].
-  ///
-  /// If [vetId] is provided, the form is pre-populated with the
-  /// existing veterinarian's data for editing.
   const VetFormScreen({super.key, this.vetId});
 
-  /// The ID of the veterinarian to edit, or `null` to create a new one.
   final String? vetId;
 
   @override
@@ -85,12 +77,13 @@ class _VetFormScreenState extends ConsumerState<VetFormScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
-        title: Text(_isEdit ? 'Edit Vet' : 'Add Vet'),
+        title: Text(_isEdit ? l.editVet : l.addVet),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
-          tooltip: 'Back to veterinarians',
+          tooltip: l.backToVets,
           onPressed: () => context.go('/vets'),
         ),
       ),
@@ -106,21 +99,21 @@ class _VetFormScreenState extends ConsumerState<VetFormScreen> {
                     TextFormField(
                       key: const Key('vet_name_field'),
                       controller: _nameController,
-                      decoration: const InputDecoration(
-                        labelText: 'Name *',
-                        prefixIcon: Icon(Icons.person),
+                      decoration: InputDecoration(
+                        labelText: l.vetName,
+                        prefixIcon: const Icon(Icons.person),
                       ),
                       validator: (val) => val == null || val.trim().isEmpty
-                          ? 'Name is required'
+                          ? l.vetNameRequired
                           : null,
                     ),
                     const SizedBox(height: 16),
                     TextFormField(
                       key: const Key('vet_phone_field'),
                       controller: _phoneController,
-                      decoration: const InputDecoration(
-                        labelText: 'Phone',
-                        prefixIcon: Icon(Icons.phone),
+                      decoration: InputDecoration(
+                        labelText: l.phone,
+                        prefixIcon: const Icon(Icons.phone),
                       ),
                       keyboardType: TextInputType.phone,
                     ),
@@ -128,9 +121,9 @@ class _VetFormScreenState extends ConsumerState<VetFormScreen> {
                     TextFormField(
                       key: const Key('vet_email_field'),
                       controller: _emailController,
-                      decoration: const InputDecoration(
-                        labelText: 'Email',
-                        prefixIcon: Icon(Icons.email),
+                      decoration: InputDecoration(
+                        labelText: l.vetEmail,
+                        prefixIcon: const Icon(Icons.email),
                       ),
                       keyboardType: TextInputType.emailAddress,
                     ),
@@ -138,9 +131,9 @@ class _VetFormScreenState extends ConsumerState<VetFormScreen> {
                     TextFormField(
                       key: const Key('vet_website_field'),
                       controller: _websiteController,
-                      decoration: const InputDecoration(
-                        labelText: 'Website',
-                        prefixIcon: Icon(Icons.language),
+                      decoration: InputDecoration(
+                        labelText: l.website,
+                        prefixIcon: const Icon(Icons.language),
                       ),
                       keyboardType: TextInputType.url,
                     ),
@@ -148,9 +141,9 @@ class _VetFormScreenState extends ConsumerState<VetFormScreen> {
                     TextFormField(
                       key: const Key('vet_address_field'),
                       controller: _addressController,
-                      decoration: const InputDecoration(
-                        labelText: 'Address',
-                        prefixIcon: Icon(Icons.location_on),
+                      decoration: InputDecoration(
+                        labelText: l.address,
+                        prefixIcon: const Icon(Icons.location_on),
                       ),
                       maxLines: 2,
                     ),
@@ -158,9 +151,9 @@ class _VetFormScreenState extends ConsumerState<VetFormScreen> {
                     TextFormField(
                       key: const Key('vet_notes_field'),
                       controller: _notesController,
-                      decoration: const InputDecoration(
-                        labelText: 'Notes',
-                        prefixIcon: Icon(Icons.notes),
+                      decoration: InputDecoration(
+                        labelText: l.vetNotes,
+                        prefixIcon: const Icon(Icons.notes),
                         alignLabelWithHint: true,
                       ),
                       maxLines: 3,
@@ -174,7 +167,7 @@ class _VetFormScreenState extends ConsumerState<VetFormScreen> {
                       key: const Key('save_vet_button'),
                       onPressed: _isLoading ? null : _submit,
                       icon: Icon(_isEdit ? Icons.save : Icons.add),
-                      label: Text(_isEdit ? 'Save Changes' : 'Add Vet'),
+                      label: Text(_isEdit ? l.save : l.addVet),
                     ),
                   ],
                 ),
@@ -224,10 +217,6 @@ class _VetFormScreenState extends ConsumerState<VetFormScreen> {
   }
 }
 
-/// Widget section that displays pets linked to a specific veterinarian.
-///
-/// Shows linked pets with an option to unlink them, and available
-/// (unlinked) pets with an option to link them to this veterinarian.
 class _LinkedPetsSection extends ConsumerWidget {
   const _LinkedPetsSection({required this.vetId});
 
@@ -237,6 +226,7 @@ class _LinkedPetsSection extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final petsAsync = ref.watch(petListProvider);
     final theme = Theme.of(context);
+    final l = AppLocalizations.of(context)!;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -245,7 +235,7 @@ class _LinkedPetsSection extends ConsumerWidget {
           children: [
             Icon(Icons.pets, color: theme.colorScheme.primary, size: 20),
             const SizedBox(width: 8),
-            Text('Linked Pets',
+            Text(l.linkedPets,
                 style: theme.textTheme.titleMedium
                     ?.copyWith(fontWeight: FontWeight.bold)),
           ],
@@ -258,7 +248,7 @@ class _LinkedPetsSection extends ConsumerWidget {
             if (pets.isEmpty) {
               return Padding(
                 padding: const EdgeInsets.symmetric(vertical: 8),
-                child: Text('No pets yet. Add pets first to link them.',
+                child: Text(l.noPetsAddFirst,
                     style: theme.textTheme.bodyMedium?.copyWith(
                         color: theme.colorScheme.onSurfaceVariant)),
               );
@@ -281,7 +271,7 @@ class _LinkedPetsSection extends ConsumerWidget {
                           subtitle: Text(pet.species),
                           trailing: TextButton.icon(
                             icon: const Icon(Icons.link_off, size: 18),
-                            label: const Text('Unlink'),
+                            label: Text(l.unlink),
                             onPressed: () => _unlinkPet(ref, pet),
                           ),
                         ),
@@ -289,7 +279,7 @@ class _LinkedPetsSection extends ConsumerWidget {
                 ],
                 if (unlinked.isNotEmpty) ...[
                   const SizedBox(height: 8),
-                  Text('Available pets:',
+                  Text(l.availablePets,
                       style: theme.textTheme.bodySmall?.copyWith(
                           color: theme.colorScheme.onSurfaceVariant)),
                   const SizedBox(height: 4),
@@ -304,7 +294,7 @@ class _LinkedPetsSection extends ConsumerWidget {
                           subtitle: Text(pet.species),
                           trailing: TextButton.icon(
                             icon: const Icon(Icons.link, size: 18),
-                            label: const Text('Link'),
+                            label: Text(l.link),
                             onPressed: () => _linkPet(ref, pet),
                           ),
                         ),

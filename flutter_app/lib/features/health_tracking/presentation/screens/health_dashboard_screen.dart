@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
+import '../../../../l10n/app_localizations.dart';
 import '../../../pet_profile/domain/entities/pet.dart';
 import '../../../pet_profile/presentation/providers/pet_providers.dart';
 import '../../../pet_profile/data/services/pdf_saver.dart' as pdf_saver;
@@ -48,18 +49,19 @@ class _HealthDashboardScreenState extends ConsumerState<HealthDashboardScreen>
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Events'),
+        title: Text(l.events),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
-          tooltip: 'Back to home',
+          tooltip: l.goBack,
           onPressed: () => context.go('/'),
         ),
         actions: [
           PopupMenuButton<_GroupMode>(
             icon: const Icon(Icons.sort),
-            tooltip: 'Group by',
+            tooltip: l.groupBy,
             onSelected: (mode) => setState(() => _groupMode = mode),
             itemBuilder: (_) => [
               PopupMenuItem(
@@ -69,7 +71,7 @@ class _HealthDashboardScreenState extends ConsumerState<HealthDashboardScreen>
                       color: _groupMode == _GroupMode.dueDate
                           ? Theme.of(context).colorScheme.primary
                           : null),
-                  title: const Text('By Due Date'),
+                  title: Text(l.byDueDate),
                   contentPadding: EdgeInsets.zero,
                 ),
               ),
@@ -80,7 +82,7 @@ class _HealthDashboardScreenState extends ConsumerState<HealthDashboardScreen>
                       color: _groupMode == _GroupMode.pet
                           ? Theme.of(context).colorScheme.primary
                           : null),
-                  title: const Text('By Pet'),
+                  title: Text(l.byPet),
                   contentPadding: EdgeInsets.zero,
                 ),
               ),
@@ -91,7 +93,7 @@ class _HealthDashboardScreenState extends ConsumerState<HealthDashboardScreen>
                       color: _groupMode == _GroupMode.petType
                           ? Theme.of(context).colorScheme.primary
                           : null),
-                  title: const Text('By Species'),
+                  title: Text(l.bySpecies),
                   contentPadding: EdgeInsets.zero,
                 ),
               ),
@@ -99,23 +101,23 @@ class _HealthDashboardScreenState extends ConsumerState<HealthDashboardScreen>
           ),
           IconButton(
             icon: const Icon(Icons.picture_as_pdf),
-            tooltip: 'Export PDF',
+            tooltip: l.exportPdf,
             onPressed: _exportPdf,
           ),
           IconButton(
             icon: const Icon(Icons.download),
-            tooltip: 'Export CSV',
+            tooltip: l.exportCsv,
             onPressed: _exportCsv,
           ),
         ],
         bottom: TabBar(
           controller: _tabController,
-          tabs: const [
-            Tab(key: Key('health_tab_all'), text: 'All'),
-            Tab(key: Key('health_tab_medications'), text: 'Medications'),
-            Tab(key: Key('health_tab_preventives'), text: 'Preventives'),
-            Tab(key: Key('health_tab_vet_visits'), text: 'Vet Visits'),
-            Tab(key: Key('health_tab_other'), text: 'Other'),
+          tabs: [
+            Tab(key: const Key('health_tab_all'), text: l.all),
+            Tab(key: const Key('health_tab_medications'), text: l.medications),
+            Tab(key: const Key('health_tab_preventives'), text: l.preventives),
+            Tab(key: const Key('health_tab_vet_visits'), text: l.vetVisits),
+            Tab(key: const Key('health_tab_other'), text: l.other),
           ],
           isScrollable: false,
         ),
@@ -128,7 +130,7 @@ class _HealthDashboardScreenState extends ConsumerState<HealthDashboardScreen>
       ),
       floatingActionButton: FloatingActionButton.extended(
         key: const Key('add_health_entry_button'),
-        tooltip: 'Add health entry',
+        tooltip: l.addHealthEntry,
         onPressed: () {
           final tabIndex = _tabController.index;
           final type = tabIndex < _tabs.length ? _tabs[tabIndex] : null;
@@ -139,12 +141,13 @@ class _HealthDashboardScreenState extends ConsumerState<HealthDashboardScreen>
           }
         },
         icon: const Icon(Icons.add),
-        label: const Text('Add Entry'),
+        label: Text(l.addEntry),
       ),
     );
   }
 
   Future<void> _exportCsv() async {
+    final l = AppLocalizations.of(context)!;
     try {
       final csv =
           await ref.read(healthRepositoryProvider).exportCsv();
@@ -153,14 +156,14 @@ class _HealthDashboardScreenState extends ConsumerState<HealthDashboardScreen>
       showDialog(
         context: context,
         builder: (ctx) => AlertDialog(
-          title: const Text('CSV Export'),
+          title: Text(l.csvExport),
           content: SingleChildScrollView(
             child: SelectableText(csv, style: const TextStyle(fontSize: 12)),
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(ctx).pop(),
-              child: const Text('Close'),
+              child: Text(l.close),
             ),
           ],
         ),
@@ -168,12 +171,13 @@ class _HealthDashboardScreenState extends ConsumerState<HealthDashboardScreen>
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Export failed: $e')),
+        SnackBar(content: Text(l.exportFailed(e.toString()))),
       );
     }
   }
 
   Future<void> _exportPdf() async {
+    final l = AppLocalizations.of(context)!;
     try {
       final tabIndex = _tabController.index;
       final typeFilter = tabIndex < _tabs.length ? _tabs[tabIndex] : null;
@@ -186,11 +190,11 @@ class _HealthDashboardScreenState extends ConsumerState<HealthDashboardScreen>
 
       final groups = _buildPdfGroups(entries, petMap, _groupMode);
 
-      final filterLabel = typeFilter == null ? 'All Events' : typeFilter.label;
+      final filterLabel = typeFilter == null ? l.all : typeFilter.label;
       final groupLabel = switch (_groupMode) {
-        _GroupMode.dueDate => 'By Due Date',
-        _GroupMode.pet => 'By Pet',
-        _GroupMode.petType => 'By Species',
+        _GroupMode.dueDate => l.byDueDate,
+        _GroupMode.pet => l.byPet,
+        _GroupMode.petType => l.bySpecies,
       };
 
       final bytes = await EventsPdfService().generate(
@@ -198,6 +202,7 @@ class _HealthDashboardScreenState extends ConsumerState<HealthDashboardScreen>
         petMap: petMap,
         filterLabel: filterLabel,
         groupLabel: groupLabel,
+        l: l,
       );
 
       final dateStr = DateFormat('yyyyMMdd').format(DateTime.now());
@@ -205,7 +210,7 @@ class _HealthDashboardScreenState extends ConsumerState<HealthDashboardScreen>
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('PDF export failed: $e')),
+        SnackBar(content: Text(l.pdfExportFailed(e.toString()))),
       );
     }
   }
@@ -224,41 +229,42 @@ class _HealthDashboardScreenState extends ConsumerState<HealthDashboardScreen>
 
   List<MapEntry<String?, List<HealthEntry>>> _pdfGroupByDueDate(
       List<HealthEntry> entries) {
+    final l = AppLocalizations.of(context)!;
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
     final tomorrow = today.add(const Duration(days: 1));
     final endOfWeek = today.add(const Duration(days: 7));
 
     final buckets = <String, List<HealthEntry>>{
-      'Overdue': [],
-      'Today': [],
-      'Tomorrow': [],
-      'This Week': [],
-      'Later': [],
-      'Completed': [],
+      l.overdue: [],
+      l.today: [],
+      l.tomorrow: [],
+      l.thisWeek: [],
+      l.later: [],
+      l.completed: [],
     };
 
     for (final e in entries) {
       if (e.isCompleted) {
-        buckets['Completed']!.add(e);
+        buckets[l.completed]!.add(e);
       } else {
         final due = DateTime(e.nextDueDate.year, e.nextDueDate.month, e.nextDueDate.day);
         if (due.isBefore(today)) {
-          buckets['Overdue']!.add(e);
+          buckets[l.overdue]!.add(e);
         } else if (due.isAtSameMomentAs(today)) {
-          buckets['Today']!.add(e);
+          buckets[l.today]!.add(e);
         } else if (due.isAtSameMomentAs(tomorrow)) {
-          buckets['Tomorrow']!.add(e);
+          buckets[l.tomorrow]!.add(e);
         } else if (due.isBefore(endOfWeek)) {
-          buckets['This Week']!.add(e);
+          buckets[l.thisWeek]!.add(e);
         } else {
-          buckets['Later']!.add(e);
+          buckets[l.later]!.add(e);
         }
       }
     }
 
     final result = <MapEntry<String?, List<HealthEntry>>>[];
-    for (final key in ['Overdue', 'Today', 'Tomorrow', 'This Week', 'Later', 'Completed']) {
+    for (final key in [l.overdue, l.today, l.tomorrow, l.thisWeek, l.later, l.completed]) {
       if (buckets[key]!.isNotEmpty) {
         result.add(MapEntry(key, buckets[key]!));
       }
@@ -304,6 +310,7 @@ class _EntryList extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l = AppLocalizations.of(context)!;
     final entriesAsync = ref.watch(filteredHealthEntriesProvider(type));
     final petsAsync = ref.watch(petListProvider);
 
@@ -326,7 +333,7 @@ class _EntryList extends ConsumerWidget {
             FilledButton(
               onPressed: () =>
                   ref.read(healthEntriesNotifierProvider.notifier).refresh(),
-              child: const Text('Retry'),
+              child: Text(l.retry),
             ),
           ],
         ),
@@ -344,13 +351,13 @@ class _EntryList extends ConsumerWidget {
                 const SizedBox(height: 16),
                 Text(
                   type == null
-                      ? 'No entries yet'
-                      : 'No ${type!.label.toLowerCase()} entries yet',
+                      ? l.noEntriesYet
+                      : l.noTypeEntriesYet(type!.label.toLowerCase()),
                   style: Theme.of(context).textTheme.titleMedium,
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  'Tap + to add one',
+                  l.tapPlusToAdd,
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                       color: Theme.of(context).colorScheme.outline),
                 ),
@@ -359,7 +366,7 @@ class _EntryList extends ConsumerWidget {
           );
         }
 
-        final groups = _buildGroups(entries, petMap);
+        final groups = _buildGroups(context, entries, petMap);
 
         return RefreshIndicator(
           onRefresh: () =>
@@ -419,10 +426,10 @@ class _EntryList extends ConsumerWidget {
   }
 
   List<_GroupItem> _buildGroups(
-      List<HealthEntry> entries, Map<String, Pet> petMap) {
+      BuildContext context, List<HealthEntry> entries, Map<String, Pet> petMap) {
     switch (groupMode) {
       case _GroupMode.dueDate:
-        return _groupByDueDate(entries);
+        return _groupByDueDate(context, entries);
       case _GroupMode.pet:
         return _groupByPet(entries, petMap);
       case _GroupMode.petType:
@@ -430,7 +437,8 @@ class _EntryList extends ConsumerWidget {
     }
   }
 
-  List<_GroupItem> _groupByDueDate(List<HealthEntry> entries) {
+  List<_GroupItem> _groupByDueDate(BuildContext context, List<HealthEntry> entries) {
+    final l = AppLocalizations.of(context)!;
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
     final tomorrow = today.add(const Duration(days: 1));
@@ -469,12 +477,12 @@ class _EntryList extends ConsumerWidget {
       items.addAll(list.map((e) => _GroupEntry(e)));
     }
 
-    addGroup('Overdue', overdue);
-    addGroup('Today', todayList);
-    addGroup('Tomorrow', tomorrowList);
-    addGroup('This Week', thisWeek);
-    addGroup('Later', later);
-    addGroup('Completed', completed);
+    addGroup(l.overdue, overdue);
+    addGroup(l.today, todayList);
+    addGroup(l.tomorrow, tomorrowList);
+    addGroup(l.thisWeek, thisWeek);
+    addGroup(l.later, later);
+    addGroup(l.completed, completed);
 
     return items;
   }
@@ -519,8 +527,9 @@ class _EntryList extends ConsumerWidget {
   Future<void> _markTaken(BuildContext context, WidgetRef ref, HealthEntry entry) async {
     await ref.read(healthEntriesNotifierProvider.notifier).markTaken(entry.id);
     if (context.mounted) {
+      final l = AppLocalizations.of(context)!;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('${entry.name} marked as done')),
+        SnackBar(content: Text(l.markedAsDone(entry.name))),
       );
     }
   }
@@ -528,8 +537,9 @@ class _EntryList extends ConsumerWidget {
   Future<void> _snooze(BuildContext context, WidgetRef ref, HealthEntry entry, int days) async {
     await ref.read(healthEntriesNotifierProvider.notifier).snooze(entry.id, days);
     if (context.mounted) {
+      final l = AppLocalizations.of(context)!;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('${entry.name} snoozed for $days ${days == 1 ? 'day' : 'days'}')),
+        SnackBar(content: Text(l.snoozedForDays(entry.name, days, days == 1 ? l.day : l.days))),
       );
     }
   }

@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 
 import '../../../../core/utils/constants.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../domain/entities/pet.dart';
 
 /// A Material 3 card widget that displays a pet's summary information.
@@ -25,10 +26,12 @@ class PetCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
+    final l = AppLocalizations.of(context)!;
+    final speciesDisplay = _localizedSpecies(l, pet.species);
 
     return MergeSemantics(
       child: Semantics(
-        label: 'Pet: ${pet.name}, ${pet.species}',
+        label: 'Pet: ${pet.name}, $speciesDisplay',
         child: Card(
           key: Key('pet_card_${pet.name}'),
           clipBehavior: Clip.antiAlias,
@@ -53,8 +56,8 @@ class PetCard extends StatelessWidget {
                         const SizedBox(height: 4),
                         Text(
                           pet.breed.isNotEmpty
-                              ? '${pet.species} - ${pet.breed}'
-                              : pet.species,
+                              ? '$speciesDisplay - ${pet.breed}'
+                              : speciesDisplay,
                           style: theme.textTheme.bodyMedium?.copyWith(
                             color: colorScheme.onSurfaceVariant,
                           ),
@@ -169,5 +172,19 @@ class PetCard extends StatelessWidget {
       child: AppConstants.speciesIconWidget(pet.species, size: 32, color: petColor),
     );
   }
+}
 
+String _localizedSpecies(AppLocalizations l, String species) {
+  switch (species) {
+    case 'Dog': return l.speciesDog;
+    case 'Cat': return l.speciesCat;
+    case 'Bird': return l.speciesBird;
+    case 'Fish': return l.speciesFish;
+    case 'Rabbit': return l.speciesRabbit;
+    case 'Hamster': return l.speciesHamster;
+    case 'Ferret': return l.speciesFerret;
+    case 'Horse / Poney': return l.speciesHorsePoney;
+    case 'Other': return l.speciesOther;
+    default: return species;
+  }
 }

@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../data/services/revenuecat_service.dart';
 import '../providers/subscription_providers.dart';
 
@@ -56,9 +57,10 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
       if (mounted) {
         setState(() => _purchasing = false);
         if (status.hasUnlimited) {
+          final l = AppLocalizations.of(context)!;
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Welcome to Agatha Check Unlimited!'),
+            SnackBar(
+              content: Text(l.welcomeUnlimited),
               backgroundColor: Colors.green,
             ),
           );
@@ -79,8 +81,9 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
     try {
       await ref.read(subscriptionStatusProvider.notifier).restorePurchases();
       if (mounted) {
+        final l = AppLocalizations.of(context)!;
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Purchases restored successfully')),
+          SnackBar(content: Text(l.purchasesRestored)),
         );
       }
     } catch (e) {
@@ -98,10 +101,11 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final subscriptionStatus = ref.watch(subscriptionStatusProvider);
+    final l = AppLocalizations.of(context)!;
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Subscription'),
+        title: Text(l.subscriptionTitle),
         centerTitle: true,
       ),
       body: _loading
@@ -190,7 +194,7 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
                           child: OutlinedButton(
                             key: const Key('restore_purchases_button'),
                             onPressed: _restorePurchases,
-                            child: const Text('Restore Purchases'),
+                            child: Text(l.restorePurchases),
                           ),
                         ),
                       ],
@@ -201,10 +205,9 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
                             child: FilledButton.icon(
                               key: const Key('manage_subscription_button'),
                               onPressed: () {
-                                // TODO: open management URL in browser
                               },
                               icon: const Icon(Icons.settings),
-                              label: const Text('Manage Subscription'),
+                              label: Text(l.manageSubscription),
                             ),
                           ),
                           const SizedBox(height: 12),
@@ -214,7 +217,7 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
                           child: OutlinedButton(
                             key: const Key('restore_purchases_button'),
                             onPressed: _restorePurchases,
-                            child: const Text('Restore Purchases'),
+                            child: Text(l.restorePurchases),
                           ),
                         ),
                       ],
@@ -227,6 +230,7 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
   }
 
   List<Widget> _buildOfferingCards(ThemeData theme) {
+    final l = AppLocalizations.of(context)!;
     final widgets = <Widget>[];
 
     for (final offering in _offerings) {
@@ -275,7 +279,7 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
               key: const Key('subscribe_button'),
               onPressed: _loading ? null : _loadOfferings,
               icon: const Icon(Icons.refresh),
-              label: const Text('Load Plans'),
+              label: Text(l.loadPlans),
             ),
           ),
         ),
@@ -356,6 +360,7 @@ class _OfferingCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
     return Card(
       elevation: savingsTag != null ? 2 : 0,
       shape: RoundedRectangleBorder(
@@ -431,7 +436,7 @@ class _OfferingCard extends StatelessWidget {
                           height: 20,
                           width: 20,
                           child: CircularProgressIndicator(strokeWidth: 2))
-                      : const Text('Subscribe'),
+                      : Text(l.subscribe),
                 ),
               ),
             ],

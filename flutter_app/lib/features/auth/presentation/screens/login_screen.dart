@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/utils/constants.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../providers/auth_providers.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
@@ -43,6 +44,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   Widget build(BuildContext context) {
     final auth = ref.watch(authProvider);
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
       body: SafeArea(
@@ -63,11 +65,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         semanticLabel: 'Agatha Check logo'),
                   ),
                   const SizedBox(height: 16),
-                  Text(AppConstants.appTitle,
+                  Text(l10n.appTitle,
                       style: theme.textTheme.headlineMedium?.copyWith(
                           fontWeight: FontWeight.bold)),
                   const SizedBox(height: 8),
-                  Text('Sign in to your account',
+                  Text(l10n.signInToAccount,
                       style: theme.textTheme.bodyLarge?.copyWith(
                           color: theme.colorScheme.onSurfaceVariant)),
                   const SizedBox(height: 32),
@@ -78,17 +80,17 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         TextFormField(
                           key: const Key('login_email_field'),
                           controller: _emailController,
-                          decoration: const InputDecoration(
-                            labelText: 'Email',
-                            prefixIcon: Icon(Icons.email_outlined),
+                          decoration: InputDecoration(
+                            labelText: l10n.email,
+                            prefixIcon: const Icon(Icons.email_outlined),
                           ),
                           keyboardType: TextInputType.emailAddress,
                           autofillHints: const [AutofillHints.email],
                           validator: (v) {
                             if (v == null || v.trim().isEmpty) {
-                              return 'Email is required';
+                              return l10n.emailRequired;
                             }
-                            if (!v.contains('@')) return 'Enter a valid email';
+                            if (!v.contains('@')) return l10n.enterValidEmail;
                             return null;
                           },
                         ),
@@ -97,12 +99,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                           key: const Key('login_password_field'),
                           controller: _passwordController,
                           decoration: InputDecoration(
-                            labelText: 'Password',
+                            labelText: l10n.password,
                             prefixIcon: const Icon(Icons.lock_outlined),
                             suffixIcon: IconButton(
                               tooltip: _obscurePassword
-                                  ? 'Show password'
-                                  : 'Hide password',
+                                  ? l10n.showPassword
+                                  : l10n.hidePassword,
                               icon: Icon(_obscurePassword
                                   ? Icons.visibility_off
                                   : Icons.visibility),
@@ -114,7 +116,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                           autofillHints: const [AutofillHints.password],
                           validator: (v) {
                             if (v == null || v.isEmpty) {
-                              return 'Password is required';
+                              return l10n.passwordRequired;
                             }
                             return null;
                           },
@@ -159,17 +161,17 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                     width: 20,
                                     child: CircularProgressIndicator(
                                         strokeWidth: 2))
-                                : const Text('Sign In'),
+                                : Text(l10n.signIn),
                           ),
                         ),
                         const SizedBox(height: 16),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            const Text("Don't have an account?"),
+                            Text(l10n.dontHaveAccount),
                             TextButton(
                               onPressed: () => context.go('/signup'),
-                              child: const Text('Sign Up'),
+                              child: Text(l10n.signUp),
                             ),
                           ],
                         ),

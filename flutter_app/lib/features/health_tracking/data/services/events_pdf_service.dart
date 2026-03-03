@@ -4,6 +4,7 @@ import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:intl/intl.dart';
 
+import '../../../../l10n/app_localizations.dart';
 import '../../../pet_profile/domain/entities/pet.dart';
 import '../../domain/entities/health_entry.dart';
 
@@ -21,9 +22,10 @@ class EventsPdfService {
     required Map<String, Pet> petMap,
     required String filterLabel,
     required String groupLabel,
+    required AppLocalizations l,
   }) async {
     final pdf = pw.Document(
-      title: 'Events - $filterLabel',
+      title: '${l.events} - $filterLabel',
       author: 'Agatha Check',
     );
 
@@ -34,8 +36,8 @@ class EventsPdfService {
       pw.MultiPage(
         pageFormat: PdfPageFormat.a4,
         margin: const pw.EdgeInsets.all(28),
-        header: (context) => _buildHeader(filterLabel, groupLabel, now, dateFormat),
-        footer: (context) => _buildFooter(context, now, dateFormat),
+        header: (context) => _buildHeader(filterLabel, groupLabel, now, dateFormat, l),
+        footer: (context) => _buildFooter(context, now, dateFormat, l),
         build: (context) {
           final widgets = <pw.Widget>[];
 
@@ -44,7 +46,7 @@ class EventsPdfService {
               widgets.add(_buildGroupHeader(group.key!));
             }
             for (final entry in group.value) {
-              widgets.add(_buildEntryRow(entry, petMap[entry.petId], dateFormat));
+              widgets.add(_buildEntryRow(entry, petMap[entry.petId], dateFormat, l));
             }
           }
 
@@ -53,7 +55,7 @@ class EventsPdfService {
               pw.Center(
                 child: pw.Padding(
                   padding: const pw.EdgeInsets.all(40),
-                  child: pw.Text('No events to display.',
+                  child: pw.Text(l.pdfNoEventsToDisplay,
                       style: const pw.TextStyle(fontSize: 12, color: _textMuted)),
                 ),
               ),
@@ -69,7 +71,7 @@ class EventsPdfService {
   }
 
   pw.Widget _buildHeader(
-      String filterLabel, String groupLabel, DateTime now, DateFormat dateFormat) {
+      String filterLabel, String groupLabel, DateTime now, DateFormat dateFormat, AppLocalizations l) {
     return pw.Container(
       margin: const pw.EdgeInsets.only(bottom: 14),
       padding: const pw.EdgeInsets.all(12),
@@ -84,7 +86,7 @@ class EventsPdfService {
               crossAxisAlignment: pw.CrossAxisAlignment.start,
               children: [
                 pw.Text(
-                  'Events Checklist',
+                  l.pdfEventsChecklist,
                   style: pw.TextStyle(
                     fontSize: 16,
                     fontWeight: pw.FontWeight.bold,
@@ -93,7 +95,7 @@ class EventsPdfService {
                 ),
                 pw.SizedBox(height: 3),
                 pw.Text(
-                  '$filterLabel  •  Grouped $groupLabel',
+                  l.pdfGroupedBy(filterLabel, groupLabel),
                   style: pw.TextStyle(
                     fontSize: 9,
                     color: PdfColor.fromInt(0xFFE8DEF8),
@@ -106,7 +108,7 @@ class EventsPdfService {
             crossAxisAlignment: pw.CrossAxisAlignment.end,
             children: [
               pw.Text(
-                'AGATHA CHECK',
+                l.pdfAgathaCheck,
                 style: pw.TextStyle(
                   fontSize: 9,
                   fontWeight: pw.FontWeight.bold,
@@ -130,7 +132,7 @@ class EventsPdfService {
   }
 
   pw.Widget _buildFooter(
-      pw.Context context, DateTime generatedAt, DateFormat dateFormat) {
+      pw.Context context, DateTime generatedAt, DateFormat dateFormat, AppLocalizations l) {
     return pw.Container(
       margin: const pw.EdgeInsets.only(top: 8),
       padding: const pw.EdgeInsets.only(top: 6),
@@ -142,11 +144,11 @@ class EventsPdfService {
         mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
         children: [
           pw.Text(
-            'Generated ${dateFormat.format(generatedAt)} by Agatha Check',
+            l.pdfGeneratedBy(dateFormat.format(generatedAt)),
             style: const pw.TextStyle(fontSize: 8, color: _textMuted),
           ),
           pw.Text(
-            'Page ${context.pageNumber} of ${context.pagesCount}',
+            l.pdfPageOf(context.pageNumber, context.pagesCount),
             style: const pw.TextStyle(fontSize: 8, color: _textMuted),
           ),
         ],
@@ -186,11 +188,11 @@ class EventsPdfService {
     );
   }
 
-  pw.Widget _buildEntryRow(HealthEntry entry, Pet? pet, DateFormat dateFormat) {
+  pw.Widget _buildEntryRow(HealthEntry entry, Pet? pet, DateFormat dateFormat, AppLocalizations l) {
     final dueText = entry.isCompleted
-        ? 'Done'
+        ? l.pdfDone
         : dateFormat.format(entry.nextDueDate);
-    final freqText = _frequencyLabel(entry.frequency, entry.frequencyInterval);
+    final freqText = _frequencyLabel(entry.frequency, entry.frequencyInterval, l);
 
     return pw.Container(
       margin: const pw.EdgeInsets.only(bottom: 3),
@@ -237,7 +239,7 @@ class EventsPdfService {
                         borderRadius: pw.BorderRadius.circular(3),
                       ),
                       child: pw.Text(
-                        entry.type.label,
+                        _localizedType(entry.type, l),
                         style: pw.TextStyle(
                           fontSize: 7,
                           fontWeight: pw.FontWeight.bold,
@@ -251,17 +253,17 @@ class EventsPdfService {
                 pw.Row(
                   children: [
                     if (pet != null) ...[
-                      _miniDetail('Pet', pet.name),
+                      _miniDetail(l.pdfPetLabel, pet.name),
                       pw.SizedBox(width: 12),
                     ],
-                    _miniDetail('Due', dueText),
+                    _miniDetail(l.pdfDueLabel, dueText),
                     pw.SizedBox(width: 12),
-                    _miniDetail('Freq', freqText),
+                    _miniDetail(l.pdfFreqLabel, freqText),
                     if (entry.notes.isNotEmpty) ...[
                       pw.SizedBox(width: 12),
                       pw.Expanded(
                         child: pw.Text(
-                          'Notes: ${entry.notes}',
+                          '${l.pdfNotesLabel}: ${entry.notes}',
                           style: const pw.TextStyle(
                               fontSize: 7, color: _textMuted),
                           maxLines: 1,
@@ -274,7 +276,7 @@ class EventsPdfService {
                     entry.healthIssueName!.isNotEmpty) ...[
                   pw.SizedBox(height: 2),
                   pw.Text(
-                    'Issue: ${entry.healthIssueName}',
+                    '${l.pdfIssueLabel}: ${entry.healthIssueName}',
                     style: pw.TextStyle(
                       fontSize: 7,
                       fontWeight: pw.FontWeight.bold,
@@ -311,11 +313,39 @@ class EventsPdfService {
     );
   }
 
-  String _frequencyLabel(HealthFrequency freq, int interval) {
-    if (freq == HealthFrequency.once) return 'Once';
-    if (freq == HealthFrequency.custom) return 'Custom';
-    final period = freq.label;
-    if (interval == 1) return 'Every $period';
-    return 'Every $interval ${period}s';
+  String _localizedType(HealthEntryType type, AppLocalizations l) {
+    switch (type) {
+      case HealthEntryType.medication:
+        return l.medication;
+      case HealthEntryType.preventive:
+        return l.preventive;
+      case HealthEntryType.vetVisit:
+        return l.vetVisit;
+      case HealthEntryType.procedure:
+        return l.procedure;
+    }
+  }
+
+  String _frequencyLabel(HealthFrequency freq, int interval, AppLocalizations l) {
+    if (freq == HealthFrequency.once) return l.pdfOnce;
+    if (freq == HealthFrequency.custom) return l.pdfCustom;
+    final period = _localizedPeriod(freq, l);
+    if (interval == 1) return l.pdfEvery(period);
+    return l.pdfEveryN(interval, '${period}s');
+  }
+
+  String _localizedPeriod(HealthFrequency freq, AppLocalizations l) {
+    switch (freq) {
+      case HealthFrequency.daily:
+        return l.daily;
+      case HealthFrequency.weekly:
+        return l.weekly;
+      case HealthFrequency.monthly:
+        return l.monthly;
+      case HealthFrequency.yearly:
+        return l.yearly;
+      default:
+        return freq.label;
+    }
   }
 }

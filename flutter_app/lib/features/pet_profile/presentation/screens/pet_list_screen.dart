@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
 import '../../../../core/utils/constants.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../../auth/presentation/providers/auth_providers.dart';
 import '../../../health_tracking/domain/entities/health_entry.dart';
 import '../../../health_tracking/presentation/providers/health_providers.dart';
@@ -40,6 +41,7 @@ class _PetListScreenState extends ConsumerState<PetListScreen> {
     final auth = ref.watch(authProvider);
     final unreadCount = ref.watch(unreadNotificationCountProvider);
     final theme = Theme.of(context);
+    final l = AppLocalizations.of(context)!;
 
     return Scaffold(
       appBar: AppBar(
@@ -65,7 +67,7 @@ class _PetListScreenState extends ConsumerState<PetListScreen> {
             children: [
               IconButton(
                 icon: const Icon(Icons.notifications_outlined),
-                tooltip: 'Notifications',
+                tooltip: l.notifications,
                 onPressed: () => context.go('/notifications'),
               ),
               if (unreadCount > 0)
@@ -97,16 +99,16 @@ class _PetListScreenState extends ConsumerState<PetListScreen> {
           ),
           IconButton(
             icon: const Icon(Icons.local_hospital),
-            tooltip: 'Veterinarians',
+            tooltip: l.veterinarians,
             onPressed: () => context.go('/vets'),
           ),
           IconButton(
             icon: const Icon(Icons.list_alt),
-            tooltip: 'Events',
+            tooltip: l.events,
             onPressed: () => context.go('/health'),
           ),
           PopupMenuButton<String>(
-            tooltip: 'User menu',
+            tooltip: l.userMenu,
             icon: CircleAvatar(
               radius: 16,
               backgroundColor: theme.colorScheme.primaryContainer,
@@ -129,46 +131,49 @@ class _PetListScreenState extends ConsumerState<PetListScreen> {
                 await ref.read(authProvider.notifier).logout();
               }
             },
-            itemBuilder: (context) => [
-              PopupMenuItem<String>(
-                enabled: false,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      auth.user?.name.isNotEmpty == true
-                          ? auth.user!.name
-                          : 'User',
-                      style: theme.textTheme.titleSmall,
-                    ),
-                    Text(
-                      auth.user?.email ?? '',
-                      style: theme.textTheme.bodySmall?.copyWith(
-                          color: theme.colorScheme.onSurfaceVariant),
-                    ),
-                  ],
+            itemBuilder: (context) {
+              final l = AppLocalizations.of(context)!;
+              return [
+                PopupMenuItem<String>(
+                  enabled: false,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        auth.user?.name.isNotEmpty == true
+                            ? auth.user!.name
+                            : 'User',
+                        style: theme.textTheme.titleSmall,
+                      ),
+                      Text(
+                        auth.user?.email ?? '',
+                        style: theme.textTheme.bodySmall?.copyWith(
+                            color: theme.colorScheme.onSurfaceVariant),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-              const PopupMenuDivider(),
-              const PopupMenuItem<String>(
-                value: 'details',
-                child: ListTile(
-                  leading: Icon(Icons.person_outlined),
-                  title: Text('My Details'),
-                  dense: true,
-                  contentPadding: EdgeInsets.zero,
+                const PopupMenuDivider(),
+                PopupMenuItem<String>(
+                  value: 'details',
+                  child: ListTile(
+                    leading: const Icon(Icons.person_outlined),
+                    title: Text(l.myDetails),
+                    dense: true,
+                    contentPadding: EdgeInsets.zero,
+                  ),
                 ),
-              ),
-              const PopupMenuItem<String>(
-                value: 'logout',
-                child: ListTile(
-                  leading: Icon(Icons.logout),
-                  title: Text('Log Out'),
-                  dense: true,
-                  contentPadding: EdgeInsets.zero,
+                PopupMenuItem<String>(
+                  value: 'logout',
+                  child: ListTile(
+                    leading: const Icon(Icons.logout),
+                    title: Text(l.logOut),
+                    dense: true,
+                    contentPadding: EdgeInsets.zero,
+                  ),
                 ),
-              ),
-            ],
+              ];
+            },
           ),
         ],
       ),
@@ -180,11 +185,11 @@ class _PetListScreenState extends ConsumerState<PetListScreen> {
             children: [
               Icon(Icons.error_outline, size: 48, color: theme.colorScheme.error),
               const SizedBox(height: 16),
-              Text('Failed to load pets: $error'),
+              Text(l.failedToLoadPets(error.toString())),
               const SizedBox(height: 8),
               ElevatedButton(
                 onPressed: () => ref.invalidate(petListProvider),
-                child: const Text('Retry'),
+                child: Text(l.retry),
               ),
             ],
           ),
@@ -204,12 +209,12 @@ class _PetListScreenState extends ConsumerState<PetListScreen> {
                   ),
                   const SizedBox(height: 16),
                   Text(
-                    'No pets yet!',
+                    l.noPetsYet,
                     style: theme.textTheme.headlineSmall,
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'Tap the + button to add your first pet.',
+                    l.addFirstPet,
                     style: theme.textTheme.bodyMedium?.copyWith(
                       color: theme.colorScheme.onSurfaceVariant,
                     ),
@@ -303,9 +308,9 @@ class _PetListScreenState extends ConsumerState<PetListScreen> {
       floatingActionButton: FloatingActionButton.extended(
         key: const Key('add_pet_button'),
         onPressed: () => context.push('/add'),
-        tooltip: 'Add a new pet',
+        tooltip: l.addNewPet,
         icon: const Icon(Icons.add),
-        label: const Text('Add Pet'),
+        label: Text(l.addPet),
       ),
     );
   }

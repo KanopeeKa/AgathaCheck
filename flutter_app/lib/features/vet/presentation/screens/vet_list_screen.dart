@@ -2,29 +2,25 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../l10n/app_localizations.dart';
 import '../../../pet_profile/presentation/providers/pet_providers.dart';
 import '../providers/vet_providers.dart';
 
-/// Screen that displays the list of veterinarians.
-///
-/// Shows a scrollable list of vet cards with options to edit or delete
-/// each entry. Includes a floating action button to add new veterinarians
-/// and pull-to-refresh functionality.
 class VetListScreen extends ConsumerWidget {
-  /// Creates a [VetListScreen].
   const VetListScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final vetListAsync = ref.watch(vetListProvider);
     final theme = Theme.of(context);
+    final l = AppLocalizations.of(context)!;
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Veterinarians'),
+        title: Text(l.veterinarians),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
-          tooltip: 'Back to home',
+          tooltip: l.goBack,
           onPressed: () => context.go('/'),
         ),
       ),
@@ -43,7 +39,7 @@ class VetListScreen extends ConsumerWidget {
               FilledButton(
                 onPressed: () =>
                     ref.read(vetListProvider.notifier).refresh(),
-                child: const Text('Retry'),
+                child: Text(l.retry),
               ),
             ],
           ),
@@ -57,7 +53,7 @@ class VetListScreen extends ConsumerWidget {
                   Icon(Icons.local_hospital_outlined,
                       size: 80, color: theme.colorScheme.outline),
                   const SizedBox(height: 16),
-                  Text('No veterinarians yet',
+                  Text(l.noVetsYet,
                       style: theme.textTheme.headlineSmall),
                   const SizedBox(height: 8),
                   Text(
@@ -101,28 +97,28 @@ class VetListScreen extends ConsumerWidget {
                             style: theme.textTheme.titleMedium),
                         subtitle: _buildSubtitle(vet, linkedPets),
                         trailing: PopupMenuButton<String>(
-                          tooltip: 'Vet options',
+                          tooltip: l.vetOptions,
                           onSelected: (value) {
                             if (value == 'edit') {
                               context.go('/vets/edit/${vet.id}');
                             } else if (value == 'delete') {
-                              _confirmDelete(context, ref, vet);
+                              _confirmDelete(context, ref, vet, l);
                             }
                           },
                           itemBuilder: (context) => [
-                            const PopupMenuItem(
+                            PopupMenuItem(
                               value: 'edit',
                               child: ListTile(
-                                leading: Icon(Icons.edit),
-                                title: Text('Edit'),
+                                leading: const Icon(Icons.edit),
+                                title: Text(l.edit),
                                 contentPadding: EdgeInsets.zero,
                               ),
                             ),
-                            const PopupMenuItem(
+                            PopupMenuItem(
                               value: 'delete',
                               child: ListTile(
-                                leading: Icon(Icons.delete),
-                                title: Text('Delete'),
+                                leading: const Icon(Icons.delete),
+                                title: Text(l.delete),
                                 contentPadding: EdgeInsets.zero,
                               ),
                             ),
@@ -141,16 +137,13 @@ class VetListScreen extends ConsumerWidget {
       floatingActionButton: FloatingActionButton.extended(
         key: const Key('add_vet_button'),
         onPressed: () => context.go('/vets/add'),
-        tooltip: 'Add a new veterinarian',
+        tooltip: l.addNewVet,
         icon: const Icon(Icons.add),
-        label: const Text('Add Vet'),
+        label: Text(l.addVet),
       ),
     );
   }
 
-  /// Builds a subtitle widget showing the vet's contact info and linked pets.
-  ///
-  /// Returns `null` if there is no information to display.
   Widget? _buildSubtitle(vet, List linkedPets) {
     final parts = <String>[];
     if (vet.phone.isNotEmpty) parts.add(vet.phone);
@@ -163,21 +156,20 @@ class VetListScreen extends ConsumerWidget {
     return Text(parts.join(' \u2022 '));
   }
 
-  /// Shows a confirmation dialog before deleting a veterinarian.
-  void _confirmDelete(BuildContext context, WidgetRef ref, vet) async {
+  void _confirmDelete(BuildContext context, WidgetRef ref, vet, AppLocalizations l) async {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Delete Vet'),
-        content: Text('Are you sure you want to delete ${vet.name}?'),
+        title: Text(l.deleteVet),
+        content: Text(l.deleteVetConfirm(vet.name)),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(false),
-            child: const Text('Cancel'),
+            child: Text(l.cancel),
           ),
           FilledButton(
             onPressed: () => Navigator.of(ctx).pop(true),
-            child: const Text('Delete'),
+            child: Text(l.delete),
           ),
         ],
       ),

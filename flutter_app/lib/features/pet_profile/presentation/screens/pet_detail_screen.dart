@@ -9,6 +9,7 @@ import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:fl_chart/fl_chart.dart';
 import '../../../../core/utils/constants.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../data/services/pdf_saver.dart' as pdf_saver;
 import '../../../auth/presentation/providers/auth_providers.dart';
 import '../../../notifications/presentation/providers/notification_providers.dart';
@@ -42,21 +43,22 @@ class _PetDetailScreenState extends ConsumerState<PetDetailScreen> {
   @override
   Widget build(BuildContext context) {
     final petListAsync = ref.watch(petListProvider);
+    final l = AppLocalizations.of(context)!;
 
     return petListAsync.when(
       loading: () => const Scaffold(
         body: Center(child: CircularProgressIndicator()),
       ),
       error: (error, _) => Scaffold(
-        appBar: AppBar(title: const Text('Pet Details')),
-        body: Center(child: Text('Error: $error')),
+        appBar: AppBar(title: Text(l.petDetails)),
+        body: Center(child: Text(l.errorWithMessage(error.toString()))),
       ),
       data: (pets) {
         final pet = pets.where((p) => p.id == widget.petId).firstOrNull;
         if (pet == null) {
           return Scaffold(
-            appBar: AppBar(title: const Text('Pet Details')),
-            body: const Center(child: Text('Pet not found')),
+            appBar: AppBar(title: Text(l.petDetails)),
+            body: Center(child: Text(l.petNotFound)),
           );
         }
 
@@ -72,7 +74,7 @@ class _PetDetailScreenState extends ConsumerState<PetDetailScreen> {
                 title: Text(pet.name),
                 leading: IconButton(
                   icon: const Icon(Icons.arrow_back),
-                  tooltip: 'Go back',
+                  tooltip: l.goBack,
                   onPressed: () => context.go('/'),
                 ),
                 actions: [
@@ -80,7 +82,7 @@ class _PetDetailScreenState extends ConsumerState<PetDetailScreen> {
                     children: [
                       IconButton(
                         icon: const Icon(Icons.notifications_outlined),
-                        tooltip: 'Notifications',
+                        tooltip: l.notifications,
                         onPressed: () => context.go('/notifications'),
                       ),
                       if (unreadCount > 0)
@@ -112,16 +114,16 @@ class _PetDetailScreenState extends ConsumerState<PetDetailScreen> {
                   ),
                   IconButton(
                     icon: const Icon(Icons.local_hospital),
-                    tooltip: 'Veterinarians',
+                    tooltip: l.veterinarians,
                     onPressed: () => context.go('/vets'),
                   ),
                   IconButton(
                     icon: const Icon(Icons.list_alt),
-                    tooltip: 'Events',
+                    tooltip: l.events,
                     onPressed: () => context.go('/health'),
                   ),
                   PopupMenuButton<String>(
-                    tooltip: 'User menu',
+                    tooltip: l.userMenu,
                     icon: CircleAvatar(
                       radius: 16,
                       backgroundColor: theme.colorScheme.primaryContainer,
@@ -144,46 +146,49 @@ class _PetDetailScreenState extends ConsumerState<PetDetailScreen> {
                         await ref.read(authProvider.notifier).logout();
                       }
                     },
-                    itemBuilder: (context) => [
-                      PopupMenuItem<String>(
-                        enabled: false,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              auth.user?.name.isNotEmpty == true
-                                  ? auth.user!.name
-                                  : 'User',
-                              style: theme.textTheme.titleSmall,
-                            ),
-                            Text(
-                              auth.user?.email ?? '',
-                              style: theme.textTheme.bodySmall?.copyWith(
-                                  color: theme.colorScheme.onSurfaceVariant),
-                            ),
-                          ],
+                    itemBuilder: (context) {
+                      final l = AppLocalizations.of(context)!;
+                      return [
+                        PopupMenuItem<String>(
+                          enabled: false,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                auth.user?.name.isNotEmpty == true
+                                    ? auth.user!.name
+                                    : 'User',
+                                style: theme.textTheme.titleSmall,
+                              ),
+                              Text(
+                                auth.user?.email ?? '',
+                                style: theme.textTheme.bodySmall?.copyWith(
+                                    color: theme.colorScheme.onSurfaceVariant),
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
-                      const PopupMenuDivider(),
-                      const PopupMenuItem<String>(
-                        value: 'details',
-                        child: ListTile(
-                          leading: Icon(Icons.person_outlined),
-                          title: Text('My Details'),
-                          dense: true,
-                          contentPadding: EdgeInsets.zero,
+                        const PopupMenuDivider(),
+                        PopupMenuItem<String>(
+                          value: 'details',
+                          child: ListTile(
+                            leading: const Icon(Icons.person_outlined),
+                            title: Text(l.myDetails),
+                            dense: true,
+                            contentPadding: EdgeInsets.zero,
+                          ),
                         ),
-                      ),
-                      const PopupMenuItem<String>(
-                        value: 'logout',
-                        child: ListTile(
-                          leading: Icon(Icons.logout),
-                          title: Text('Log Out'),
-                          dense: true,
-                          contentPadding: EdgeInsets.zero,
+                        PopupMenuItem<String>(
+                          value: 'logout',
+                          child: ListTile(
+                            leading: const Icon(Icons.logout),
+                            title: Text(l.logOut),
+                            dense: true,
+                            contentPadding: EdgeInsets.zero,
+                          ),
                         ),
-                      ),
-                    ],
+                      ];
+                    },
                   ),
                 ],
               ),
@@ -275,7 +280,7 @@ class _PetProfileCard extends ConsumerWidget {
                             key: const Key('edit_pet_button'),
                             icon: Icon(Icons.edit,
                                 size: 20, color: colorScheme.primary),
-                            tooltip: 'Edit Pet',
+                            tooltip: AppLocalizations.of(context)!.editPet,
                             onPressed: () => context.go('/edit/${pet.id}'),
                             visualDensity: VisualDensity.compact,
                             padding: EdgeInsets.zero,
@@ -330,7 +335,7 @@ class _PetProfileCard extends ConsumerWidget {
                             Icon(Icons.check_circle, size: 18,
                                 color: Colors.green),
                             const SizedBox(width: 8),
-                            Text('Neutered / Spayed: ${DateFormat.yMMMd().format(pet.neuteredDate!)}',
+                            Text(AppLocalizations.of(context)!.neuteredSpayed(DateFormat.yMMMd().format(pet.neuteredDate!)),
                                 style: theme.textTheme.bodyMedium?.copyWith(
                                     color: colorScheme.onSurfaceVariant)),
                           ],
@@ -343,7 +348,7 @@ class _PetProfileCard extends ConsumerWidget {
                             Icon(Icons.memory, size: 18,
                                 color: colorScheme.primary),
                             const SizedBox(width: 8),
-                            Text('ID: ${pet.chipId}',
+                            Text(AppLocalizations.of(context)!.idLabel(pet.chipId),
                                 style: theme.textTheme.bodyMedium?.copyWith(
                                     color: colorScheme.onSurfaceVariant)),
                           ],
@@ -361,7 +366,7 @@ class _PetProfileCard extends ConsumerWidget {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text('Insurance Details',
+                                  Text(AppLocalizations.of(context)!.insuranceDetails,
                                       style: theme.textTheme.labelMedium
                                           ?.copyWith(
                                               color: colorScheme.primary,
@@ -391,9 +396,10 @@ class _PetProfileCard extends ConsumerWidget {
 
   Widget _buildVetRow(BuildContext context, WidgetRef ref, dynamic assignedVet,
       List vets, ThemeData theme, ColorScheme colorScheme) {
+    final l = AppLocalizations.of(context)!;
     if (vets.isEmpty) {
       return Semantics(
-        label: 'Add a veterinarian. No vets yet.',
+        label: l.addVetFirst,
         button: true,
         child: GestureDetector(
         onTap: () => GoRouter.of(context).go('/vets/add'),
@@ -402,7 +408,7 @@ class _PetProfileCard extends ConsumerWidget {
             Icon(Icons.local_hospital, size: 16,
                 color: colorScheme.onSurfaceVariant),
             const SizedBox(width: 6),
-            Text('No vet assigned',
+            Text(l.noVetAssigned,
                 style: theme.textTheme.bodyMedium?.copyWith(
                     color: colorScheme.onSurfaceVariant)),
             const SizedBox(width: 4),
@@ -425,13 +431,13 @@ class _PetProfileCard extends ConsumerWidget {
         const SizedBox(width: 6),
         Expanded(
           child: PopupMenuButton<String?>(
-            tooltip: 'Select veterinarian',
+            tooltip: l.selectVeterinarian,
             padding: EdgeInsets.zero,
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  assignedVet != null ? assignedVet.name : 'No vet assigned',
+                  assignedVet != null ? assignedVet.name : l.noVetAssigned,
                   style: theme.textTheme.bodyMedium?.copyWith(
                     color: assignedVet != null
                         ? colorScheme.primary
@@ -454,9 +460,9 @@ class _PetProfileCard extends ConsumerWidget {
             },
             itemBuilder: (context) => [
               if (assignedVet != null)
-                const PopupMenuItem<String?>(
+                PopupMenuItem<String?>(
                   value: null,
-                  child: Text('Remove vet'),
+                  child: Text(l.removeVet),
                 ),
               ...vets.map((vet) => PopupMenuItem<String?>(
                     value: vet.id,
@@ -483,6 +489,7 @@ class _WeightTrackingSection extends ConsumerWidget {
     final unitLabel = weightUnitLabel(unit);
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
+    final l = AppLocalizations.of(context)!;
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -490,7 +497,7 @@ class _WeightTrackingSection extends ConsumerWidget {
         clipBehavior: Clip.antiAlias,
         child: ExpansionTile(
           leading: Icon(Icons.monitor_weight, color: colorScheme.primary),
-          title: Text('Weight Tracking',
+          title: Text(l.weightTracking,
               style: theme.textTheme.titleMedium
                   ?.copyWith(fontWeight: FontWeight.w600)),
           children: [
@@ -513,12 +520,12 @@ class _WeightTrackingSection extends ConsumerWidget {
                   ),
                   const Spacer(),
                   Tooltip(
-                    message: 'Add weight entry',
+                    message: l.addWeightEntry,
                     child: FilledButton.tonalIcon(
                       onPressed: () =>
                           _showAddWeightSheet(context, ref, unit, unitLabel),
                       icon: const Icon(Icons.add, size: 18),
-                      label: const Text('Add Entry'),
+                      label: Text(l.addEntry),
                     ),
                   ),
                 ],
@@ -532,7 +539,7 @@ class _WeightTrackingSection extends ConsumerWidget {
               ),
               error: (error, _) => Padding(
                 padding: const EdgeInsets.all(16),
-                child: Text('Error loading weight data: $error',
+                child: Text(l.errorLoadingWeightData(error.toString()),
                     style: TextStyle(color: colorScheme.error)),
               ),
               data: (entries) {
@@ -544,11 +551,11 @@ class _WeightTrackingSection extends ConsumerWidget {
                         Icon(Icons.scale_outlined, size: 48,
                             color: colorScheme.outline),
                         const SizedBox(height: 8),
-                        Text('No weight data yet',
+                        Text(l.noWeightDataYet,
                             style: theme.textTheme.bodyLarge?.copyWith(
                                 color: colorScheme.onSurfaceVariant)),
                         const SizedBox(height: 4),
-                        Text('Tap "Add Entry" to start tracking',
+                        Text(l.tapAddEntryToStart,
                             style: theme.textTheme.bodySmall?.copyWith(
                                 color: colorScheme.outline)),
                       ],
@@ -622,7 +629,7 @@ class _WeightTrackingSection extends ConsumerWidget {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                Text('Add Weight Entry',
+                Text(AppLocalizations.of(ctx)!.addWeightEntry,
                     style: theme.textTheme.titleLarge
                         ?.copyWith(fontWeight: FontWeight.bold)),
                 const SizedBox(height: 20),
@@ -642,10 +649,10 @@ class _WeightTrackingSection extends ConsumerWidget {
                     }
                   },
                   child: InputDecorator(
-                    decoration: const InputDecoration(
-                      labelText: 'Date',
-                      prefixIcon: Icon(Icons.calendar_today),
-                      border: OutlineInputBorder(),
+                    decoration: InputDecoration(
+                      labelText: AppLocalizations.of(ctx)!.date,
+                      prefixIcon: const Icon(Icons.calendar_today),
+                      border: const OutlineInputBorder(),
                     ),
                     child: Text(DateFormat.yMMMd().format(selectedDate)),
                   ),
@@ -657,7 +664,7 @@ class _WeightTrackingSection extends ConsumerWidget {
                   keyboardType:
                       const TextInputType.numberWithOptions(decimal: true),
                   decoration: InputDecoration(
-                    labelText: 'Weight ($unitLabel)',
+                    labelText: AppLocalizations.of(ctx)!.weightWithUnit(unitLabel),
                     prefixIcon: const Icon(Icons.monitor_weight),
                     border: const OutlineInputBorder(),
                   ),
@@ -665,10 +672,10 @@ class _WeightTrackingSection extends ConsumerWidget {
                 const SizedBox(height: 16),
                 TextField(
                   controller: notesController,
-                  decoration: const InputDecoration(
-                    labelText: 'Notes (optional)',
-                    prefixIcon: Icon(Icons.notes),
-                    border: OutlineInputBorder(),
+                  decoration: InputDecoration(
+                    labelText: AppLocalizations.of(ctx)!.notesOptional,
+                    prefixIcon: const Icon(Icons.notes),
+                    border: const OutlineInputBorder(),
                   ),
                   maxLines: 2,
                 ),
@@ -703,7 +710,7 @@ class _WeightTrackingSection extends ConsumerWidget {
 
                     if (ctx.mounted) Navigator.pop(ctx);
                   },
-                  child: const Text('Save'),
+                  child: Text(AppLocalizations.of(ctx)!.save),
                 ),
               ],
             ),
@@ -748,7 +755,7 @@ class _WeightEntryTile extends StatelessWidget {
         ),
         trailing: IconButton(
           icon: Icon(Icons.delete_outline, color: colorScheme.error, size: 20),
-          tooltip: 'Delete weight entry',
+          tooltip: AppLocalizations.of(context)!.deleteWeightEntry,
           onPressed: onDelete,
         ),
       ),
@@ -788,7 +795,7 @@ class _WeightChart extends StatelessWidget {
     });
 
     return Semantics(
-      label: 'Weight chart showing ${entries.length} entries',
+      label: AppLocalizations.of(context)!.weightChartLabel(entries.length),
       child: LineChart(
       LineChartData(
         minY: effectiveYMin,
@@ -1052,7 +1059,7 @@ class _HealthEventsSectionState extends ConsumerState<_HealthEventsSection> {
         clipBehavior: Clip.antiAlias,
         child: ExpansionTile(
           leading: Icon(Icons.list_alt, color: colorScheme.primary),
-          title: Text('Events',
+          title: Text(AppLocalizations.of(context)!.healthEvents,
               style: theme.textTheme.titleMedium
                   ?.copyWith(fontWeight: FontWeight.w600)),
           children: [
@@ -1062,7 +1069,7 @@ class _HealthEventsSectionState extends ConsumerState<_HealthEventsSection> {
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   Tooltip(
-                    message: 'Add health entry',
+                    message: AppLocalizations.of(context)!.addEntry,
                     child: FilledButton.tonalIcon(
                       onPressed: () {
                         final uri = _selectedFilter != null
@@ -1071,7 +1078,7 @@ class _HealthEventsSectionState extends ConsumerState<_HealthEventsSection> {
                         context.go(uri);
                       },
                       icon: const Icon(Icons.add, size: 18),
-                      label: const Text('Add Entry'),
+                      label: Text(AppLocalizations.of(context)!.addEntry),
                     ),
                   ),
                 ],
@@ -1085,14 +1092,14 @@ class _HealthEventsSectionState extends ConsumerState<_HealthEventsSection> {
                 child: Row(
                   children: [
                     _FilterChipWidget(
-                      label: 'All',
+                      label: AppLocalizations.of(context)!.all,
                       selected: _selectedFilter == null,
                       onSelected: () =>
                           setState(() => _selectedFilter = null),
                     ),
                     const SizedBox(width: 8),
                     _FilterChipWidget(
-                      label: 'Medications',
+                      label: AppLocalizations.of(context)!.medications,
                       selected:
                           _selectedFilter == HealthEntryType.medication,
                       onSelected: () => setState(
@@ -1100,7 +1107,7 @@ class _HealthEventsSectionState extends ConsumerState<_HealthEventsSection> {
                     ),
                     const SizedBox(width: 8),
                     _FilterChipWidget(
-                      label: 'Preventives',
+                      label: AppLocalizations.of(context)!.preventives,
                       selected:
                           _selectedFilter == HealthEntryType.preventive,
                       onSelected: () => setState(
@@ -1108,14 +1115,14 @@ class _HealthEventsSectionState extends ConsumerState<_HealthEventsSection> {
                     ),
                     const SizedBox(width: 8),
                     _FilterChipWidget(
-                      label: 'Vet Visits',
+                      label: AppLocalizations.of(context)!.vetVisits,
                       selected: _selectedFilter == HealthEntryType.vetVisit,
                       onSelected: () => setState(
                           () => _selectedFilter = HealthEntryType.vetVisit),
                     ),
                     const SizedBox(width: 8),
                     _FilterChipWidget(
-                      label: 'Other',
+                      label: AppLocalizations.of(context)!.other,
                       selected:
                           _selectedFilter == HealthEntryType.procedure,
                       onSelected: () => setState(
@@ -1143,7 +1150,7 @@ class _HealthEventsSectionState extends ConsumerState<_HealthEventsSection> {
                     FilledButton(
                       onPressed: () => ref
                           .invalidate(petHealthEntriesProvider(widget.petId)),
-                      child: const Text('Retry'),
+                      child: Text(AppLocalizations.of(context)!.retry),
                     ),
                   ],
                 ),
@@ -1171,7 +1178,7 @@ class _HealthEventsSectionState extends ConsumerState<_HealthEventsSection> {
                               color: colorScheme.onSurfaceVariant),
                         ),
                         const SizedBox(height: 4),
-                        Text('Tap "Add Entry" to start tracking',
+                        Text(AppLocalizations.of(context)!.tapAddEntryToStart,
                             style: theme.textTheme.bodySmall?.copyWith(
                                 color: colorScheme.outline)),
                       ],
@@ -1283,7 +1290,7 @@ class _SharingSection extends ConsumerWidget {
         clipBehavior: Clip.antiAlias,
         child: ExpansionTile(
           leading: Icon(Icons.people, color: colorScheme.primary),
-          title: Text('Sharing',
+          title: Text(AppLocalizations.of(context)!.sharing,
               style: theme.textTheme.titleMedium
                   ?.copyWith(fontWeight: FontWeight.w600)),
           children: [
@@ -1299,14 +1306,14 @@ class _SharingSection extends ConsumerWidget {
                     Icon(Icons.error_outline, size: 48,
                         color: colorScheme.error),
                     const SizedBox(height: 8),
-                    Text('Could not load sharing info',
+                    Text(AppLocalizations.of(context)!.couldNotLoadSharingInfo,
                         style: theme.textTheme.bodyMedium),
                     const SizedBox(height: 8),
                     FilledButton.tonal(
                       onPressed: () => ref
                           .read(petAccessNotifierProvider(petId).notifier)
                           .refresh(),
-                      child: const Text('Retry'),
+                      child: Text(AppLocalizations.of(context)!.retry),
                     ),
                   ],
                 ),
@@ -1331,7 +1338,7 @@ class _SharingSection extends ConsumerWidget {
                                   if (token == null) {
                                     if (context.mounted) {
                                       ScaffoldMessenger.of(context).showSnackBar(
-                                        const SnackBar(content: Text('Session expired. Please log in again.')),
+                                        SnackBar(content: Text(AppLocalizations.of(context)!.sessionExpired)),
                                       );
                                     }
                                     return;
@@ -1347,11 +1354,11 @@ class _SharingSection extends ConsumerWidget {
                                   showDialog(
                                     context: context,
                                     builder: (ctx) => AlertDialog(
-                                      title: const Text('Share Link'),
+                                      title: Text(AppLocalizations.of(ctx)!.shareLinkTitle),
                                       content: Column(
                                         mainAxisSize: MainAxisSize.min,
                                         children: [
-                                          Text('Share this link so others can view ${pet.name}\'s profile:'),
+                                          Text(AppLocalizations.of(ctx)!.shareLinkDescription(pet.name)),
                                           const SizedBox(height: 16),
                                           Container(
                                             padding: const EdgeInsets.all(12),
@@ -1367,18 +1374,18 @@ class _SharingSection extends ConsumerWidget {
                                       actions: [
                                         TextButton(
                                           onPressed: () => Navigator.pop(ctx),
-                                          child: const Text('Close'),
+                                          child: Text(AppLocalizations.of(ctx)!.close),
                                         ),
                                         FilledButton.icon(
                                           onPressed: () {
                                             Clipboard.setData(ClipboardData(text: shareUrl));
                                             ScaffoldMessenger.of(context).showSnackBar(
-                                              const SnackBar(content: Text('Link copied to clipboard')),
+                                              SnackBar(content: Text(AppLocalizations.of(context)!.linkCopied)),
                                             );
                                             Navigator.pop(ctx);
                                           },
                                           icon: const Icon(Icons.copy),
-                                          label: const Text('Copy'),
+                                          label: Text(AppLocalizations.of(ctx)!.copy),
                                         ),
                                       ],
                                     ),
@@ -1392,7 +1399,7 @@ class _SharingSection extends ConsumerWidget {
                                 }
                               },
                               icon: const Icon(Icons.share, size: 18),
-                              label: const Text('Share Pet'),
+                              label: Text(AppLocalizations.of(context)!.sharePet),
                             ),
                           ],
                         ),
@@ -1405,7 +1412,7 @@ class _SharingSection extends ConsumerWidget {
                             Icon(Icons.people_outline, size: 48,
                                 color: colorScheme.outline),
                             const SizedBox(height: 8),
-                            Text('No one else has access yet',
+                            Text(AppLocalizations.of(context)!.noOneHasAccess,
                                 style: theme.textTheme.bodyLarge?.copyWith(
                                     color: colorScheme.onSurfaceVariant)),
                           ],
@@ -1452,8 +1459,8 @@ class _SharingSection extends ConsumerWidget {
                               ? Colors.deepPurple
                               : Colors.grey;
                           final roleBadgeLabel = access.role == PetAccessRole.guardian
-                              ? 'Guardian'
-                              : 'Shared';
+                              ? AppLocalizations.of(context)!.guardian
+                              : AppLocalizations.of(context)!.viewOnly;
 
                           return MergeSemantics(
                             child: ListTile(
@@ -1489,13 +1496,13 @@ class _SharingSection extends ConsumerWidget {
                               ],
                             ),
                             subtitle: isProfessional
-                                ? Text('Professional Multi Pet',
+                                ? Text(AppLocalizations.of(context)!.professionalMultiPet,
                                     style: theme.textTheme.bodySmall?.copyWith(
                                         color: Colors.teal))
                                 : null,
                             trailing: isGuardian && !isCurrentUser
                                 ? PopupMenuButton<String>(
-                                    tooltip: 'Manage user access',
+                                    tooltip: AppLocalizations.of(context)!.manageAccess,
                                     itemBuilder: (ctx) => [
                                       PopupMenuItem(
                                         value: 'toggle_role',
@@ -1503,9 +1510,9 @@ class _SharingSection extends ConsumerWidget {
                                             ? 'Demote to Shared'
                                             : 'Promote to Guardian'),
                                       ),
-                                      const PopupMenuItem(
+                                      PopupMenuItem(
                                         value: 'remove',
-                                        child: Text('Remove Access'),
+                                        child: Text(AppLocalizations.of(context)!.removeAccess),
                                       ),
                                     ],
                                     onSelected: (action) async {
@@ -1608,19 +1615,19 @@ class _NeuterReminderCard extends ConsumerWidget {
                       final updated = pet.copyWith(neuterDismissed: true);
                       await ref.read(petListProvider.notifier).updatePet(updated);
                     },
-                    child: const Text('I don\'t want to neuter'),
+                    child: Text(AppLocalizations.of(context)!.dontWantToNeuter),
                   ),
                   const SizedBox(width: 8),
                   FilledButton.tonal(
                     key: const Key('neuter_snooze_button'),
                     onPressed: () {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Reminder snoozed. We\'ll remind you again later.'),
+                        SnackBar(
+                          content: Text(AppLocalizations.of(context)!.reminderSnooze),
                         ),
                       );
                     },
-                    child: const Text('Snooze'),
+                    child: Text(AppLocalizations.of(context)!.snooze),
                   ),
                 ],
               ),
@@ -1683,19 +1690,19 @@ class _ChipReminderCard extends ConsumerWidget {
                       final updated = pet.copyWith(chipDismissed: true);
                       await ref.read(petListProvider.notifier).updatePet(updated);
                     },
-                    child: const Text('I don\'t want to chip / identify my pet'),
+                    child: Text(AppLocalizations.of(context)!.dontWantToChip),
                   ),
                   const SizedBox(width: 8),
                   FilledButton.tonal(
                     key: const Key('chip_snooze_button'),
                     onPressed: () {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Reminder snoozed. We\'ll remind you again later.'),
+                        SnackBar(
+                          content: Text(AppLocalizations.of(context)!.reminderSnooze),
                         ),
                       );
                     },
-                    child: const Text('Snooze'),
+                    child: Text(AppLocalizations.of(context)!.snooze),
                   ),
                 ],
               ),
@@ -1723,7 +1730,7 @@ class _DownloadReportSection extends ConsumerWidget {
         key: const Key('download_report_button'),
         onPressed: () => _showReportSheet(context, ref),
         icon: const Icon(Icons.description),
-        label: const Text('Download Pet Report'),
+        label: Text(AppLocalizations.of(context)!.downloadPetReport),
         style: FilledButton.styleFrom(
           minimumSize: const Size(double.infinity, 52),
           backgroundColor: colorScheme.primary,
@@ -1805,19 +1812,19 @@ class _ReportSelectionSheetState extends ConsumerState<_ReportSelectionSheet> {
             ),
           ),
           const SizedBox(height: 16),
-          Text('Pet Report',
+          Text(AppLocalizations.of(context)!.petReport,
               style: theme.textTheme.titleLarge
                   ?.copyWith(fontWeight: FontWeight.bold)),
           const SizedBox(height: 4),
-          Text('Choose which sections to include',
+          Text(AppLocalizations.of(context)!.chooseSections,
               style: theme.textTheme.bodyMedium
                   ?.copyWith(color: colorScheme.onSurfaceVariant)),
           const SizedBox(height: 20),
           CheckboxListTile(
             value: _includeProfile,
             onChanged: null,
-            title: const Text('Pet Profile'),
-            subtitle: const Text('Basic info, vet details'),
+            title: Text(AppLocalizations.of(context)!.petProfile),
+            subtitle: Text(AppLocalizations.of(context)!.basicInfoVet),
             secondary: Icon(Icons.pets, color: colorScheme.primary),
             dense: true,
             contentPadding: EdgeInsets.zero,
@@ -1825,8 +1832,8 @@ class _ReportSelectionSheetState extends ConsumerState<_ReportSelectionSheet> {
           CheckboxListTile(
             value: _includeWeight,
             onChanged: (v) => setState(() => _includeWeight = v ?? false),
-            title: const Text('Weight Tracking'),
-            subtitle: const Text('Chart and data table'),
+            title: Text(AppLocalizations.of(context)!.weightTracking),
+            subtitle: Text(AppLocalizations.of(context)!.chartAndDataTable),
             secondary: Icon(Icons.monitor_weight, color: colorScheme.primary),
             dense: true,
             contentPadding: EdgeInsets.zero,
@@ -1834,8 +1841,8 @@ class _ReportSelectionSheetState extends ConsumerState<_ReportSelectionSheet> {
           CheckboxListTile(
             value: _includeHealth,
             onChanged: (v) => setState(() => _includeHealth = v ?? false),
-            title: const Text('Events'),
-            subtitle: const Text('Medications, preventives, vet visits'),
+            title: Text(AppLocalizations.of(context)!.healthEvents),
+            subtitle: Text(AppLocalizations.of(context)!.medicationsPreventivesVetVisits),
             secondary: Icon(Icons.list_alt, color: colorScheme.primary),
             dense: true,
             contentPadding: EdgeInsets.zero,
@@ -1847,7 +1854,7 @@ class _ReportSelectionSheetState extends ConsumerState<_ReportSelectionSheet> {
                 value: _includeFullLog,
                 onChanged: (v) =>
                     setState(() => _includeFullLog = v ?? false),
-                title: const Text('Include full log for each event'),
+                title: Text(AppLocalizations.of(context)!.includeFullLog),
                 dense: true,
                 contentPadding: EdgeInsets.zero,
                 controlAffinity: ListTileControlAffinity.leading,
@@ -1857,8 +1864,8 @@ class _ReportSelectionSheetState extends ConsumerState<_ReportSelectionSheet> {
             value: _includeHealthIssues,
             onChanged: (v) =>
                 setState(() => _includeHealthIssues = v ?? false),
-            title: const Text('Health Issues'),
-            subtitle: const Text('Ongoing conditions and linked events'),
+            title: Text(AppLocalizations.of(context)!.healthIssues),
+            subtitle: Text(AppLocalizations.of(context)!.ongoingConditions),
             secondary:
                 Icon(Icons.health_and_safety, color: colorScheme.primary),
             dense: true,
@@ -1867,8 +1874,8 @@ class _ReportSelectionSheetState extends ConsumerState<_ReportSelectionSheet> {
           CheckboxListTile(
             value: _includeSharing,
             onChanged: (v) => setState(() => _includeSharing = v ?? false),
-            title: const Text('Sharing'),
-            subtitle: const Text('People with access to this pet'),
+            title: Text(AppLocalizations.of(context)!.sharingSection),
+            subtitle: Text(AppLocalizations.of(context)!.accessListAndRoles),
             secondary: Icon(Icons.people, color: colorScheme.primary),
             dense: true,
             contentPadding: EdgeInsets.zero,
@@ -1915,7 +1922,7 @@ class _ReportSelectionSheetState extends ConsumerState<_ReportSelectionSheet> {
                         strokeWidth: 2, color: Colors.white),
                   )
                 : const Icon(Icons.picture_as_pdf),
-            label: Text(_isGenerating ? 'Generating...' : 'Generate PDF'),
+            label: Text(_isGenerating ? AppLocalizations.of(context)!.generating : AppLocalizations.of(context)!.downloadReport),
             style: FilledButton.styleFrom(
               minimumSize: const Size(double.infinity, 48),
             ),
@@ -1988,6 +1995,7 @@ class _ReportSelectionSheetState extends ConsumerState<_ReportSelectionSheet> {
       } catch (_) {}
 
       final service = PetReportService();
+      final l = AppLocalizations.of(context)!;
       final pdfBytes = await service.generateReport(
         pet: pet,
         sections: ReportSections(
@@ -2000,6 +2008,7 @@ class _ReportSelectionSheetState extends ConsumerState<_ReportSelectionSheet> {
           healthTo: _healthTo,
           includeFullLog: _includeFullLog,
         ),
+        l: l,
         vet: assignedVet,
         weightEntries: weightEntries,
         healthEntries: healthEntries,
@@ -2020,7 +2029,7 @@ class _ReportSelectionSheetState extends ConsumerState<_ReportSelectionSheet> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to generate report: $e')),
+          SnackBar(content: Text(AppLocalizations.of(context)!.reportFailed(e.toString()))),
         );
       }
     } finally {
@@ -2095,7 +2104,7 @@ class _HealthIssuesSectionState extends ConsumerState<_HealthIssuesSection> {
         clipBehavior: Clip.antiAlias,
         child: ExpansionTile(
           leading: Icon(Icons.health_and_safety, color: colorScheme.primary),
-          title: Text('Health Issues',
+          title: Text(AppLocalizations.of(context)!.healthIssues,
               style: theme.textTheme.titleMedium
                   ?.copyWith(fontWeight: FontWeight.w600)),
           children: [
@@ -2105,12 +2114,12 @@ class _HealthIssuesSectionState extends ConsumerState<_HealthIssuesSection> {
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   Tooltip(
-                    message: 'Add health issue',
+                    message: AppLocalizations.of(context)!.addIssue,
                     child: FilledButton.tonalIcon(
                       key: const Key('add_health_issue_button'),
                       onPressed: () => _showCreateIssueSheet(context),
                       icon: const Icon(Icons.add, size: 18),
-                      label: const Text('Add Issue'),
+                      label: Text(AppLocalizations.of(context)!.addIssue),
                     ),
                   ),
                 ],
@@ -2302,7 +2311,7 @@ class _HealthIssuesSectionState extends ConsumerState<_HealthIssuesSection> {
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    Text('Edit Health Issue',
+                    Text(AppLocalizations.of(ctx)!.editIssue,
                         style: theme.textTheme.titleMedium
                             ?.copyWith(fontWeight: FontWeight.bold)),
                     const SizedBox(height: 16),
@@ -2434,7 +2443,7 @@ class _HealthIssuesSectionState extends ConsumerState<_HealthIssuesSection> {
                         }
                         if (ctx.mounted) Navigator.pop(ctx);
                       },
-                      child: const Text('Save'),
+                      child: Text(AppLocalizations.of(ctx)!.save),
                     ),
                   ],
                 ),
@@ -2451,19 +2460,18 @@ class _HealthIssuesSectionState extends ConsumerState<_HealthIssuesSection> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Delete Health Issue'),
-        content: Text(
-            'Are you sure you want to delete "${issue.title}"? Linked events will be unlinked but not deleted.'),
+        title: Text(AppLocalizations.of(ctx)!.deleteIssue),
+        content: Text(AppLocalizations.of(ctx)!.deleteIssueConfirm),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
-            child: const Text('Cancel'),
+            child: Text(AppLocalizations.of(ctx)!.cancel),
           ),
           FilledButton(
             onPressed: () => Navigator.pop(ctx, true),
             style: FilledButton.styleFrom(
                 backgroundColor: Theme.of(ctx).colorScheme.error),
-            child: const Text('Delete'),
+            child: Text(AppLocalizations.of(ctx)!.delete),
           ),
         ],
       ),
@@ -2513,7 +2521,7 @@ class _HealthIssueCardState extends ConsumerState<_HealthIssueCard> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
-            child: const Text('Cancel'),
+            child: Text(AppLocalizations.of(ctx)!.cancel),
           ),
           FilledButton(
             onPressed: () => Navigator.pop(ctx, true),
@@ -2609,14 +2617,14 @@ class _HealthIssueCardState extends ConsumerState<_HealthIssueCard> {
                       const SizedBox(width: 4),
                       IconButton(
                         icon: const Icon(Icons.edit_outlined, size: 18),
-                        tooltip: 'Edit health issue',
+                        tooltip: AppLocalizations.of(context)!.editIssue,
                         onPressed: widget.onEdit,
                         visualDensity: VisualDensity.compact,
                       ),
                       IconButton(
                         icon: Icon(Icons.delete_outline,
                             size: 18, color: colorScheme.error),
-                        tooltip: 'Delete health issue',
+                        tooltip: AppLocalizations.of(context)!.deleteIssue,
                         onPressed: widget.onDelete,
                         visualDensity: VisualDensity.compact,
                       ),

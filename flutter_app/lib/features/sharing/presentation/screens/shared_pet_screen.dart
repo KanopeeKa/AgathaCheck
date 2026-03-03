@@ -6,22 +6,15 @@ import 'package:go_router/go_router.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/foundation.dart' show kIsWeb;
 
+import '../../../../l10n/app_localizations.dart';
 import '../../../auth/presentation/providers/auth_providers.dart';
 import '../providers/sharing_providers.dart';
 
-/// Screen that displays a shared pet's profile in read-only mode.
-///
-/// Fetches pet data, health entries, and vet information from the
-/// server using the provided [shareCode]. This screen is accessible
-/// via a shareable URL and does not require authentication.
 class SharedPetScreen extends ConsumerStatefulWidget {
-  /// Creates a [SharedPetScreen] for the given [shareCode].
   const SharedPetScreen({super.key, required this.shareCode});
 
-  /// The unique share code used to fetch the shared pet data.
   final String shareCode;
 
-  /// Creates the mutable state for this widget.
   @override
   ConsumerState<SharedPetScreen> createState() => _SharedPetScreenState();
 }
@@ -77,6 +70,7 @@ class _SharedPetScreenState extends ConsumerState<SharedPetScreen> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
+    final l = AppLocalizations.of(context)!;
 
     if (_loading) {
       return const Scaffold(
@@ -142,7 +136,7 @@ class _SharedPetScreenState extends ConsumerState<SharedPetScreen> {
               child: Chip(
                 avatar: Icon(Icons.visibility, size: 16,
                     color: colorScheme.onSecondaryContainer),
-                label: Text('View Only',
+                label: Text(l.viewOnly,
                     style: TextStyle(
                         fontSize: 12,
                         color: colorScheme.onSecondaryContainer)),
@@ -231,7 +225,7 @@ class _SharedPetScreenState extends ConsumerState<SharedPetScreen> {
               children: [
                 Icon(Icons.person, color: colorScheme.primary),
                 const SizedBox(width: 8),
-                Text('Shared by', style: theme.textTheme.titleLarge),
+                Text(l.sharedBy, style: theme.textTheme.titleLarge),
               ],
             ),
             const SizedBox(height: 8),
@@ -244,7 +238,7 @@ class _SharedPetScreenState extends ConsumerState<SharedPetScreen> {
               children: [
                 Icon(Icons.local_hospital, color: colorScheme.primary),
                 const SizedBox(width: 8),
-                Text('Veterinarian', style: theme.textTheme.titleLarge),
+                Text(l.veterinarians, style: theme.textTheme.titleLarge),
               ],
             ),
             const SizedBox(height: 8),
@@ -256,7 +250,7 @@ class _SharedPetScreenState extends ConsumerState<SharedPetScreen> {
             children: [
               Icon(Icons.list_alt, color: colorScheme.primary),
               const SizedBox(width: 8),
-              Text('Events', style: theme.textTheme.titleLarge),
+              Text(l.events, style: theme.textTheme.titleLarge),
             ],
           ),
           const SizedBox(height: 8),
@@ -270,7 +264,7 @@ class _SharedPetScreenState extends ConsumerState<SharedPetScreen> {
                       Icon(Icons.medical_services_outlined,
                           size: 48, color: colorScheme.outline),
                       const SizedBox(height: 12),
-                      Text('No health entries yet',
+                      Text(l.noEntriesYet,
                           style: theme.textTheme.bodyLarge),
                     ],
                   ),
@@ -286,6 +280,7 @@ class _SharedPetScreenState extends ConsumerState<SharedPetScreen> {
 
   Widget _buildAcceptSection(ThemeData theme, ColorScheme colorScheme) {
     final authState = ref.watch(authProvider);
+    final l = AppLocalizations.of(context)!;
 
     if (authState.isLoggedIn) {
       return Card(
@@ -333,7 +328,7 @@ class _SharedPetScreenState extends ConsumerState<SharedPetScreen> {
                         child: CircularProgressIndicator(
                             strokeWidth: 2, color: Colors.white))
                     : const Icon(Icons.add),
-                label: Text(_accepting ? 'Adding...' : 'Accept & Add to My Pets'),
+                label: Text(_accepting ? 'Adding...' : l.acceptAndAdd),
               ),
             ],
           ),
@@ -584,14 +579,15 @@ class _SharedPetScreenState extends ConsumerState<SharedPetScreen> {
         dueDate.month == DateTime.now().month &&
         dueDate.day == DateTime.now().day;
 
+    final l = AppLocalizations.of(context)!;
     Color statusColor;
     String statusLabel;
     if (isOverdue && !isDueToday) {
       statusColor = colorScheme.error;
-      statusLabel = 'Overdue';
+      statusLabel = l.overdue;
     } else if (isDueToday) {
       statusColor = Colors.orange;
-      statusLabel = 'Due Today';
+      statusLabel = l.today;
     } else {
       statusColor = colorScheme.primary;
       statusLabel = 'Upcoming';

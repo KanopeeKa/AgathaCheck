@@ -6,6 +6,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 
+import '../../../../core/providers/locale_provider.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../providers/auth_providers.dart';
 
 class MyDetailsScreen extends ConsumerStatefulWidget {
@@ -115,16 +117,18 @@ class _MyDetailsScreenState extends ConsumerState<MyDetailsScreen> {
     final auth = ref.watch(authProvider);
     final user = auth.user;
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
+    final currentLocale = ref.watch(localeProvider)?.languageCode ?? 'en';
 
     if (user == null) {
       return Scaffold(
-        appBar: AppBar(title: const Text('My Details')),
-        body: const Center(child: Text('Not logged in')),
+        appBar: AppBar(title: Text(l10n.myDetails)),
+        body: Center(child: Text(l10n.notLoggedIn)),
       );
     }
 
     return Scaffold(
-      appBar: AppBar(title: const Text('My Details')),
+      appBar: AppBar(title: Text(l10n.myDetails)),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Center(
@@ -135,7 +139,7 @@ class _MyDetailsScreenState extends ConsumerState<MyDetailsScreen> {
               children: [
                 MergeSemantics(
                   child: Semantics(
-                    label: '${user.displayName}, ${user.email}, ${user.category == 'professional_multi_pet' ? 'Professional Multi Pet' : 'Pet Guardian'}',
+                    label: '${user.displayName}, ${user.email}, ${user.category == 'professional_multi_pet' ? l10n.professionalMultiPet : l10n.petGuardian}',
                     child: Card(
                       child: Padding(
                         padding: const EdgeInsets.all(20),
@@ -182,8 +186,8 @@ class _MyDetailsScreenState extends ConsumerState<MyDetailsScreen> {
                                   const SizedBox(height: 12),
                                   Semantics(
                                     label: user.category == 'professional_multi_pet'
-                                        ? 'Category: Professional Multi Pet'
-                                        : 'Category: Pet Guardian',
+                                        ? l10n.categoryLabel(l10n.professionalMultiPet)
+                                        : l10n.categoryLabel(l10n.petGuardian),
                                     child: _CategoryBadge(category: user.category),
                                   ),
                                   if (user.bio.isNotEmpty) ...[
@@ -210,7 +214,7 @@ class _MyDetailsScreenState extends ConsumerState<MyDetailsScreen> {
                                         const SizedBox(width: 6),
                                         Flexible(
                                           child: Text(
-                                            'These details are visible to people you share pets with',
+                                            l10n.detailsVisibleToShared,
                                             style: theme.textTheme.bodySmall?.copyWith(
                                               color: theme.colorScheme.onSecondaryContainer,
                                             ),
@@ -226,7 +230,7 @@ class _MyDetailsScreenState extends ConsumerState<MyDetailsScreen> {
                               top: 0,
                               right: 0,
                               child: IconButton(
-                                tooltip: 'Edit profile',
+                                tooltip: l10n.editProfile,
                                 icon: const Icon(Icons.edit),
                                 onPressed: _openEditorSheet,
                               ),
@@ -245,10 +249,37 @@ class _MyDetailsScreenState extends ConsumerState<MyDetailsScreen> {
                       Icons.workspace_premium,
                       color: theme.colorScheme.primary,
                     ),
-                    title: const Text('Subscription'),
-                    subtitle: const Text('Manage your plan'),
+                    title: Text(l10n.subscription),
+                    subtitle: Text(l10n.managePlan),
                     trailing: const Icon(Icons.chevron_right),
                     onTap: () => context.push('/subscription'),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Card(
+                  child: ListTile(
+                    leading: const Icon(Icons.language),
+                    title: Text(l10n.language),
+                    trailing: DropdownButton<String>(
+                      value: currentLocale,
+                      underline: const SizedBox.shrink(),
+                      items: const [
+                        DropdownMenuItem(
+                          value: 'en',
+                          child: Text('English'),
+                        ),
+                        DropdownMenuItem(
+                          value: 'fr',
+                          child: Text('Français'),
+                        ),
+                      ],
+                      onChanged: (value) {
+                        if (value != null) {
+                          ref.read(localeProvider.notifier).setLocale(Locale(value));
+                          ref.read(authProvider.notifier).updateProfile(locale: value);
+                        }
+                      },
+                    ),
                   ),
                 ),
                 const SizedBox(height: 16),
@@ -261,18 +292,18 @@ class _MyDetailsScreenState extends ConsumerState<MyDetailsScreen> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text('Change Password',
+                            Text(l10n.changePassword,
                                 style: theme.textTheme.titleLarge),
                             const SizedBox(height: 16),
                             TextFormField(
                               controller: _currentPasswordController,
                               decoration: InputDecoration(
-                                labelText: 'Current Password',
+                                labelText: l10n.currentPassword,
                                 prefixIcon: const Icon(Icons.lock_outlined),
                                 suffixIcon: IconButton(
                                   tooltip: _obscureCurrent
-                                      ? 'Show current password'
-                                      : 'Hide current password',
+                                      ? l10n.showCurrentPassword
+                                      : l10n.hideCurrentPassword,
                                   icon: Icon(_obscureCurrent
                                       ? Icons.visibility_off
                                       : Icons.visibility),
@@ -283,7 +314,7 @@ class _MyDetailsScreenState extends ConsumerState<MyDetailsScreen> {
                               obscureText: _obscureCurrent,
                               validator: (v) {
                                 if (v == null || v.isEmpty) {
-                                  return 'Current password is required';
+                                  return l10n.currentPasswordRequired;
                                 }
                                 return null;
                               },
@@ -292,12 +323,12 @@ class _MyDetailsScreenState extends ConsumerState<MyDetailsScreen> {
                             TextFormField(
                               controller: _newPasswordController,
                               decoration: InputDecoration(
-                                labelText: 'New Password',
+                                labelText: l10n.newPassword,
                                 prefixIcon: const Icon(Icons.lock_reset),
                                 suffixIcon: IconButton(
                                   tooltip: _obscureNew
-                                      ? 'Show new password'
-                                      : 'Hide new password',
+                                      ? l10n.showNewPassword
+                                      : l10n.hideNewPassword,
                                   icon: Icon(_obscureNew
                                       ? Icons.visibility_off
                                       : Icons.visibility),
@@ -308,10 +339,10 @@ class _MyDetailsScreenState extends ConsumerState<MyDetailsScreen> {
                               obscureText: _obscureNew,
                               validator: (v) {
                                 if (v == null || v.isEmpty) {
-                                  return 'New password is required';
+                                  return l10n.newPasswordRequired;
                                 }
                                 if (v.length < 6) {
-                                  return 'At least 6 characters';
+                                  return l10n.atLeast6Characters;
                                 }
                                 return null;
                               },
@@ -319,14 +350,14 @@ class _MyDetailsScreenState extends ConsumerState<MyDetailsScreen> {
                             const SizedBox(height: 16),
                             TextFormField(
                               controller: _confirmPasswordController,
-                              decoration: const InputDecoration(
-                                labelText: 'Confirm New Password',
-                                prefixIcon: Icon(Icons.lock_reset),
+                              decoration: InputDecoration(
+                                labelText: l10n.confirmNewPassword,
+                                prefixIcon: const Icon(Icons.lock_reset),
                               ),
                               obscureText: true,
                               validator: (v) {
                                 if (v != _newPasswordController.text) {
-                                  return 'Passwords do not match';
+                                  return l10n.passwordsDoNotMatch;
                                 }
                                 return null;
                               },
@@ -376,7 +407,7 @@ class _MyDetailsScreenState extends ConsumerState<MyDetailsScreen> {
                                         width: 20,
                                         child: CircularProgressIndicator(
                                             strokeWidth: 2))
-                                    : const Text('Change Password'),
+                                    : Text(l10n.changePassword),
                               ),
                             ),
                           ],
@@ -400,6 +431,7 @@ class _CategoryBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final isPro = category == 'professional_multi_pet';
     return Chip(
       avatar: Icon(
@@ -408,7 +440,7 @@ class _CategoryBadge extends StatelessWidget {
         color: isPro ? Colors.teal : Colors.deepPurple,
       ),
       label: Text(
-        isPro ? 'Professional Multi Pet' : 'Pet Guardian',
+        isPro ? l10n.professionalMultiPet : l10n.petGuardian,
         style: TextStyle(
           color: isPro ? Colors.teal : Colors.deepPurple,
           fontWeight: FontWeight.w500,
@@ -489,8 +521,9 @@ class _ProfileEditorSheetState extends State<_ProfileEditorSheet> {
       });
     } catch (e) {
       if (mounted) {
+        final l10n = AppLocalizations.of(context)!;
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to pick photo: $e')),
+          SnackBar(content: Text(l10n.failedToPickPhoto(e.toString()))),
         );
       }
     }
@@ -508,17 +541,19 @@ class _ProfileEditorSheetState extends State<_ProfileEditorSheet> {
         photoFilename: _selectedPhotoFilename,
       );
       if (mounted) {
+        final l10n = AppLocalizations.of(context)!;
         Navigator.of(context).pop();
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Profile updated')),
+          SnackBar(content: Text(l10n.profileUpdated)),
         );
       }
     } catch (e) {
       if (mounted) {
+        final l10n = AppLocalizations.of(context)!;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
               content: Text(
-                  'Failed to save: ${e.toString().replaceFirst("Exception: ", "")}')),
+                  l10n.failedToSave(e.toString().replaceFirst("Exception: ", "")))),
         );
       }
     } finally {
@@ -529,6 +564,7 @@ class _ProfileEditorSheetState extends State<_ProfileEditorSheet> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
     final photoUrl = widget.user.photoUrl ?? '';
     final initials = widget.user.initials ?? '';
 
@@ -558,7 +594,7 @@ class _ProfileEditorSheetState extends State<_ProfileEditorSheet> {
               ),
             ),
             Text(
-              'Edit Profile',
+              l10n.editProfile,
               style: theme.textTheme.titleLarge
                   ?.copyWith(fontWeight: FontWeight.bold),
               textAlign: TextAlign.center,
@@ -615,35 +651,35 @@ class _ProfileEditorSheetState extends State<_ProfileEditorSheet> {
             const SizedBox(height: 24),
             TextField(
               controller: _firstNameController,
-              decoration: const InputDecoration(
-                labelText: 'First Name',
-                prefixIcon: Icon(Icons.person_outlined),
+              decoration: InputDecoration(
+                labelText: l10n.firstName,
+                prefixIcon: const Icon(Icons.person_outlined),
               ),
               textCapitalization: TextCapitalization.words,
             ),
             const SizedBox(height: 16),
             TextField(
               controller: _lastNameController,
-              decoration: const InputDecoration(
-                labelText: 'Last Name',
-                prefixIcon: Icon(Icons.person_outlined),
+              decoration: InputDecoration(
+                labelText: l10n.lastName,
+                prefixIcon: const Icon(Icons.person_outlined),
               ),
               textCapitalization: TextCapitalization.words,
             ),
             const SizedBox(height: 16),
-            Text('Category', style: theme.textTheme.titleSmall),
+            Text(l10n.category, style: theme.textTheme.titleSmall),
             const SizedBox(height: 8),
             SegmentedButton<String>(
-              segments: const [
+              segments: [
                 ButtonSegment(
                   value: 'pet_guardian',
-                  label: Text('Pet Guardian'),
-                  icon: Icon(Icons.pets),
+                  label: Text(l10n.petGuardian),
+                  icon: const Icon(Icons.pets),
                 ),
                 ButtonSegment(
                   value: 'professional_multi_pet',
-                  label: Text('Professional'),
-                  icon: Icon(Icons.business_center),
+                  label: Text(l10n.professionalMultiPet),
+                  icon: const Icon(Icons.business_center),
                 ),
               ],
               selected: {_category},
@@ -654,9 +690,9 @@ class _ProfileEditorSheetState extends State<_ProfileEditorSheet> {
             const SizedBox(height: 16),
             TextField(
               controller: _bioController,
-              decoration: const InputDecoration(
-                labelText: 'Bio',
-                prefixIcon: Icon(Icons.edit_note),
+              decoration: InputDecoration(
+                labelText: l10n.bio,
+                prefixIcon: const Icon(Icons.edit_note),
                 hintText: 'Tell others about yourself...',
               ),
               maxLines: 3,
@@ -673,7 +709,7 @@ class _ProfileEditorSheetState extends State<_ProfileEditorSheet> {
                       width: 20,
                       child: CircularProgressIndicator(strokeWidth: 2),
                     )
-                  : const Text('Save'),
+                  : Text(l10n.save),
             ),
             const SizedBox(height: 8),
           ],

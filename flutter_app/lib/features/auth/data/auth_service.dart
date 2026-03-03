@@ -165,6 +165,7 @@ class AuthService {
     String? lastName,
     String? category,
     String? bio,
+    String? locale,
   }) async {
     final body = <String, dynamic>{};
     if (name != null) body['name'] = name;
@@ -172,6 +173,7 @@ class AuthService {
     if (lastName != null) body['last_name'] = lastName;
     if (category != null) body['category'] = category;
     if (bio != null) body['bio'] = bio;
+    if (locale != null) body['locale'] = locale;
 
     final response = await _client.put(
       Uri.parse('$baseUrl/api/auth/me'),

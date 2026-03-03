@@ -27,6 +27,72 @@ late String _jwtSecret;
 const _accessTokenExpiry = Duration(minutes: 30);
 const _refreshTokenExpiry = Duration(days: 30);
 
+String _t(String locale, String key, [Map<String, String>? params]) {
+  final lang = _translations[locale] ?? _translations['en']!;
+  var text = lang[key] ?? _translations['en']![key] ?? key;
+  if (params != null) {
+    params.forEach((k, v) {
+      text = text.replaceAll('{$k}', v);
+    });
+  }
+  return text;
+}
+
+const _translations = {
+  'en': {
+    'completed_title': '{pet}{name} completed',
+    'completed_message': '{name} has been completed',
+    'overdue_title': '{pet}Overdue: {name}',
+    'overdue_message': '{name} was due on {date} and has not been marked as done',
+    'reminder_title': '{pet}Due soon: {name}',
+    'reminder_message': '{name} is due on {date}',
+    'memorial_title': 'In loving memory of {name}',
+    'memorial_message': 'We are deeply sorry to let you know that {name} has crossed the rainbow bridge. Their profile will be kept as an archive in their guardian\'s account.',
+    'event_created': '{pet}New event: {name}',
+    'event_created_msg': 'A new health event "{name}" has been added',
+    'event_updated': '{pet}Event updated: {name}',
+    'event_updated_msg': 'The health event "{name}" has been updated',
+    'event_deleted': '{pet}Event removed: {name}',
+    'event_deleted_msg': 'The health event "{name}" has been removed',
+    'issue_created': '{pet}New issue: {name}',
+    'issue_created_msg': 'A new health issue "{name}" has been added',
+    'issue_updated': '{pet}Issue updated: {name}',
+    'issue_updated_msg': 'The health issue "{name}" has been updated',
+    'issue_deleted': '{pet}Issue removed: {name}',
+    'issue_deleted_msg': 'The health issue "{name}" has been removed',
+    'share_granted': 'Access granted to {pet}',
+    'share_granted_msg': 'You have been given access to {pet}',
+    'share_revoked': 'Access revoked for {pet}',
+    'share_revoked_msg': 'Your access to {pet} has been revoked',
+  },
+  'fr': {
+    'completed_title': '{pet}{name} terminé',
+    'completed_message': '{name} a été terminé',
+    'overdue_title': '{pet}En retard : {name}',
+    'overdue_message': '{name} était prévu le {date} et n\'a pas été marqué comme fait',
+    'reminder_title': '{pet}Bientôt dû : {name}',
+    'reminder_message': '{name} est prévu le {date}',
+    'memorial_title': 'En mémoire de {name}',
+    'memorial_message': 'Nous sommes profondément désolés de vous informer que {name} a traversé le pont de l\'arc-en-ciel. Son profil sera conservé comme archive dans le compte de son gardien.',
+    'event_created': '{pet}Nouvel événement : {name}',
+    'event_created_msg': 'Un nouvel événement santé « {name} » a été ajouté',
+    'event_updated': '{pet}Événement mis à jour : {name}',
+    'event_updated_msg': 'L\'événement santé « {name} » a été mis à jour',
+    'event_deleted': '{pet}Événement supprimé : {name}',
+    'event_deleted_msg': 'L\'événement santé « {name} » a été supprimé',
+    'issue_created': '{pet}Nouveau problème : {name}',
+    'issue_created_msg': 'Un nouveau problème de santé « {name} » a été ajouté',
+    'issue_updated': '{pet}Problème mis à jour : {name}',
+    'issue_updated_msg': 'Le problème de santé « {name} » a été mis à jour',
+    'issue_deleted': '{pet}Problème supprimé : {name}',
+    'issue_deleted_msg': 'Le problème de santé « {name} » a été supprimé',
+    'share_granted': 'Accès accordé à {pet}',
+    'share_granted_msg': 'Vous avez reçu l\'accès à {pet}',
+    'share_revoked': 'Accès révoqué pour {pet}',
+    'share_revoked_msg': 'Votre accès à {pet} a été révoqué',
+  },
+};
+
 Future<void> main() async {
   final portStr = Platform.environment['PORT'] ?? '5000';
   final port = int.parse(portStr);
@@ -110,6 +176,12 @@ Future<void> main() async {
   await _db.execute(Sql('''
     DO \$\$ BEGIN
       ALTER TABLE users ADD COLUMN photo_url TEXT DEFAULT '';
+    EXCEPTION WHEN OTHERS THEN NULL;
+    END \$\$;
+  '''));
+  await _db.execute(Sql('''
+    DO \$\$ BEGIN
+      ALTER TABLE users ADD COLUMN locale VARCHAR(10) DEFAULT 'en';
     EXCEPTION WHEN OTHERS THEN NULL;
     END \$\$;
   '''));
@@ -594,9 +666,19 @@ Map<String, dynamic> _userToJson(ResultRow row) {
     'category': (cols['category'] ?? 'pet_guardian').toString(),
     'bio': (cols['bio'] ?? '').toString(),
     'photo_url': (cols['photo_url'] ?? '').toString(),
+    'locale': (cols['locale'] ?? 'en').toString(),
     'created_at': cols['created_at'].toString(),
     'updated_at': cols['updated_at'].toString(),
   };
+}
+
+Future<String> _getUserLocale(int userId) async {
+  final r = await _db.execute(
+    Sql.named('SELECT locale FROM users WHERE id = @id'),
+    parameters: {'id': userId},
+  );
+  if (r.isEmpty) return 'en';
+  return (r.first.toColumnMap()['locale'] ?? 'en').toString();
 }
 
 // ── Pet CRUD handlers ────────────────────────────────────────
@@ -1009,7 +1091,7 @@ Future<void> _authMe(HttpRequest request) async {
 
   final userId = payload['sub'].toString();
   final result = await _db.execute(
-    Sql.named('SELECT id, email, name, first_name, last_name, category, bio, photo_url, created_at, updated_at FROM users WHERE id = @id'),
+    Sql.named('SELECT id, email, name, first_name, last_name, category, bio, photo_url, locale, created_at, updated_at FROM users WHERE id = @id'),
     parameters: {'id': int.parse(userId)},
   );
 
@@ -1036,6 +1118,7 @@ Future<void> _authUpdateMe(HttpRequest request) async {
   final lastName = (body['last_name'] as String? ?? '').trim();
   final category = body['category'] as String? ?? 'pet_guardian';
   final bio = body['bio'] as String? ?? '';
+  final locale = body['locale'] as String? ?? 'en';
   final name = '$firstName $lastName'.trim();
 
   final result = await _db.execute(
@@ -1046,9 +1129,10 @@ Future<void> _authUpdateMe(HttpRequest request) async {
         last_name = @lastName,
         category = @category,
         bio = @bio,
+        locale = @locale,
         updated_at = NOW()
       WHERE id = @id
-      RETURNING id, email, name, first_name, last_name, category, bio, photo_url, created_at, updated_at
+      RETURNING id, email, name, first_name, last_name, category, bio, photo_url, locale, created_at, updated_at
     '''),
     parameters: {
       'id': userId,
@@ -1057,6 +1141,7 @@ Future<void> _authUpdateMe(HttpRequest request) async {
       'lastName': lastName,
       'category': category,
       'bio': bio,
+      'locale': locale,
     },
   );
 
@@ -1434,6 +1519,7 @@ Future<void> _createHealthEntry(HttpRequest request) async {
       if (notifyCompleted) {
         final petName = body['pet_name'] as String? ?? '';
         final petPrefix = petName.isNotEmpty ? '$petName - ' : '';
+        final locale = await _getUserLocale(userId);
         await _db.execute(
           Sql.named('''
             INSERT INTO notifications (user_id, pet_id, health_entry_id, title, message, type)
@@ -1443,8 +1529,8 @@ Future<void> _createHealthEntry(HttpRequest request) async {
             'userId': userId,
             'petId': petId,
             'entryId': createdRow['id'].toString(),
-            'title': '${petPrefix}Completed: $name',
-            'message': '$name has been completed',
+            'title': _t(locale, 'completed_title', {'pet': petPrefix, 'name': name}),
+            'message': _t(locale, 'completed_message', {'name': name}),
           },
         );
       }
@@ -1453,7 +1539,7 @@ Future<void> _createHealthEntry(HttpRequest request) async {
 
   _jsonResponse(request, 201, createdRow);
 
-  await _createGeneralNotification(request, petId, 'Event created: $name', '$name ($type) has been added');
+  await _createGeneralNotification(request, petId, 'event_created', 'event_created_msg', name, type);
 }
 
 Future<void> _updateHealthEntry(HttpRequest request) async {
@@ -1531,7 +1617,7 @@ Future<void> _updateHealthEntry(HttpRequest request) async {
 
   final updatedName = updatedRow['name']?.toString() ?? '';
   final updatedPetId = updatedRow['pet_id']?.toString() ?? '';
-  await _createGeneralNotification(request, updatedPetId, 'Event updated: $updatedName', '$updatedName has been updated');
+  await _createGeneralNotification(request, updatedPetId, 'event_updated', 'event_updated_msg', updatedName);
 }
 
 Future<void> _deleteHealthEntry(HttpRequest request) async {
@@ -1557,7 +1643,7 @@ Future<void> _deleteHealthEntry(HttpRequest request) async {
   _jsonResponse(request, 200, {'deleted': true});
 
   if (entryName.isNotEmpty) {
-    await _createGeneralNotification(request, entryPetId, 'Event deleted: $entryName', '$entryName has been removed');
+    await _createGeneralNotification(request, entryPetId, 'event_deleted', 'event_deleted_msg', entryName);
   }
 }
 
@@ -1646,6 +1732,7 @@ Future<void> _markTaken(HttpRequest request) async {
         final petId = row['pet_id'].toString();
         final petName = body?['pet_name'] as String? ?? '';
         final petPrefix = petName.isNotEmpty ? '$petName - ' : '';
+        final locale = await _getUserLocale(userId);
         await _db.execute(
           Sql.named('''
             INSERT INTO notifications (user_id, pet_id, health_entry_id, title, message, type)
@@ -1655,8 +1742,8 @@ Future<void> _markTaken(HttpRequest request) async {
             'userId': userId,
             'petId': petId,
             'entryId': id,
-            'title': '${petPrefix}Completed: $entryName',
-            'message': '$entryName has been completed',
+            'title': _t(locale, 'completed_title', {'pet': petPrefix, 'name': entryName}),
+            'message': _t(locale, 'completed_message', {'name': entryName}),
           },
         );
       }
@@ -2297,7 +2384,7 @@ Future<void> _createShare(HttpRequest request) async {
 
   _jsonResponse(request, 200, {'share_code': code});
 
-  await _createGeneralNotification(request, petId, 'Share link created', 'A share link has been generated');
+  await _createGeneralNotification(request, petId, 'share_granted', 'share_granted_msg');
 }
 
 Future<void> _getShare(HttpRequest request) async {
@@ -2529,6 +2616,7 @@ Future<void> _markPetPassedAway(HttpRequest request) async {
     int notifiedCount = 0;
     for (final row in accessRows) {
       final sharedUserId = row.toColumnMap()['user_id'] as int;
+      final sharedLocale = await _getUserLocale(sharedUserId);
       await _db.execute(
         Sql.named('''
           INSERT INTO notifications (user_id, pet_id, title, message, type)
@@ -2537,8 +2625,8 @@ Future<void> _markPetPassedAway(HttpRequest request) async {
         parameters: {
           'userId': sharedUserId,
           'petId': petId,
-          'title': 'In loving memory of $petName',
-          'message': 'We are deeply sorry to let you know that $petName has crossed the rainbow bridge. Their profile will be kept as an archive in their guardian\'s account.',
+          'title': _t(sharedLocale, 'memorial_title', {'name': petName}),
+          'message': _t(sharedLocale, 'memorial_message', {'name': petName}),
         },
       );
       notifiedCount++;
@@ -3039,12 +3127,13 @@ Future<void> _checkDueNotifications(HttpRequest request) async {
     final petName = petNames[petId] ?? '';
     final petPrefix = petName.isNotEmpty ? '$petName - ' : '';
     final isOverdue = DateTime.tryParse(nextDue)?.isBefore(DateTime.now()) ?? false;
+    final locale = await _getUserLocale(userId);
     final title = isOverdue
-        ? '${petPrefix}Overdue: $entryName'
-        : '${petPrefix}Upcoming: $entryName';
+        ? _t(locale, 'overdue_title', {'pet': petPrefix, 'name': entryName})
+        : _t(locale, 'reminder_title', {'pet': petPrefix, 'name': entryName});
     final message = isOverdue
-        ? '$entryName ($entryType) was due on $nextDue'
-        : '$entryName ($entryType) is due on $nextDue';
+        ? _t(locale, 'overdue_message', {'name': entryName, 'date': nextDue})
+        : _t(locale, 'reminder_message', {'name': entryName, 'date': nextDue});
 
     await _db.execute(
       Sql.named('''
@@ -3073,11 +3162,27 @@ Future<void> _checkDueNotifications(HttpRequest request) async {
   });
 }
 
-Future<void> _createGeneralNotification(HttpRequest request, String petId, String title, String message) async {
+Future<void> _createGeneralNotification(HttpRequest request, String petId, String titleKey, String messageKey, [String itemName = '', String itemType = '']) async {
   try {
     final payload = await _authenticateRequest(request);
     if (payload == null) return;
     final userId = int.parse(payload['sub'].toString());
+    final locale = await _getUserLocale(userId);
+
+    String petPrefix = '';
+    if (petId.isNotEmpty) {
+      final petResult = await _db.execute(
+        Sql.named('SELECT name FROM pets WHERE id::text = @id'),
+        parameters: {'id': petId},
+      );
+      if (petResult.isNotEmpty) {
+        petPrefix = '${petResult.first.toColumnMap()['name']} - ';
+      }
+    }
+
+    final params = {'pet': petPrefix, 'name': itemName, 'type': itemType};
+    final title = _t(locale, titleKey, params);
+    final message = _t(locale, messageKey, params);
 
     await _db.execute(
       Sql.named('''
@@ -3180,7 +3285,7 @@ Future<void> _createHealthIssue(HttpRequest request) async {
   issue['event_ids'] = <String>[];
   _jsonResponse(request, 201, issue);
 
-  await _createGeneralNotification(request, petId, 'Health issue created: $title', '$title has been added');
+  await _createGeneralNotification(request, petId, 'issue_created', 'issue_created_msg', title);
 }
 
 Future<void> _updateHealthIssue(HttpRequest request) async {
@@ -3239,7 +3344,7 @@ Future<void> _updateHealthIssue(HttpRequest request) async {
 
   final updatedTitle = issue['title']?.toString() ?? '';
   final updatedPetId = issue['pet_id']?.toString() ?? '';
-  await _createGeneralNotification(request, updatedPetId, 'Health issue updated: $updatedTitle', '$updatedTitle has been updated');
+  await _createGeneralNotification(request, updatedPetId, 'issue_updated', 'issue_updated_msg', updatedTitle);
 }
 
 Future<void> _deleteHealthIssue(HttpRequest request) async {
@@ -3274,7 +3379,7 @@ Future<void> _deleteHealthIssue(HttpRequest request) async {
   _jsonResponse(request, 200, {'deleted': true});
 
   if (issueTitle.isNotEmpty) {
-    await _createGeneralNotification(request, issuePetId, 'Health issue deleted: $issueTitle', '$issueTitle has been removed');
+    await _createGeneralNotification(request, issuePetId, 'issue_deleted', 'issue_deleted_msg', issueTitle);
   }
 }
 

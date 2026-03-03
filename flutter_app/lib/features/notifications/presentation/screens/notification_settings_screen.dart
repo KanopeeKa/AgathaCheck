@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../l10n/app_localizations.dart';
 import '../../domain/entities/notification_preferences.dart';
 import '../providers/notification_providers.dart';
 import '../../../pet_profile/presentation/providers/pet_providers.dart';
@@ -29,6 +30,7 @@ class _NotificationSettingsScreenState
   Widget build(BuildContext context) {
     final prefsAsync = ref.watch(notificationPreferencesProvider);
     final theme = Theme.of(context);
+    final l = AppLocalizations.of(context)!;
 
     prefsAsync.whenData((prefs) {
       if (!_initialized) {
@@ -44,7 +46,7 @@ class _NotificationSettingsScreenState
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Notification Settings'),
+        title: Text(l.notificationSettings),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           tooltip: 'Back to notifications',
@@ -57,9 +59,9 @@ class _NotificationSettingsScreenState
         data: (_) => ListView(
           children: [
             const SizedBox(height: 8),
-            _SectionHeader(title: 'In-App Notifications', theme: theme),
+            _SectionHeader(title: l.inAppNotifications, theme: theme),
             SwitchListTile(
-              title: const Text('Overdue Alerts'),
+              title: Text(l.overdueAlerts),
               subtitle:
                   const Text('Get notified when health entries are overdue'),
               value: _notifyOverdue,
@@ -68,7 +70,7 @@ class _NotificationSettingsScreenState
                   color: theme.colorScheme.error),
             ),
             SwitchListTile(
-              title: const Text('Due Soon Alerts'),
+              title: Text(l.dueSoonAlerts),
               subtitle:
                   const Text('Get notified when health entries are coming up'),
               value: _notifyDueSoon,
@@ -77,7 +79,7 @@ class _NotificationSettingsScreenState
                   Icon(Icons.schedule, color: Colors.orange),
             ),
             SwitchListTile(
-              title: const Text('Completed Alerts'),
+              title: Text(l.completedAlerts),
               subtitle:
                   const Text('Get notified when health entries are completed'),
               value: _notifyCompleted,
@@ -86,9 +88,9 @@ class _NotificationSettingsScreenState
                   Icon(Icons.check_circle, color: Colors.green),
             ),
             const Divider(),
-            _SectionHeader(title: 'Email Reminders', theme: theme),
+            _SectionHeader(title: l.emailReminders, theme: theme),
             SwitchListTile(
-              title: const Text('Email Reminders'),
+              title: Text(l.emailReminders),
               subtitle: const Text(
                   'Receive email reminders for upcoming health entries'),
               value: _emailReminders,
@@ -98,8 +100,8 @@ class _NotificationSettingsScreenState
             ),
             if (_emailReminders) ...[
               ListTile(
-                title: const Text('Remind Before'),
-                subtitle: Text('$_reminderDays day${_reminderDays == 1 ? '' : 's'} before due date'),
+                title: Text(l.reminderDaysBefore),
+                subtitle: Text('$_reminderDays ${l.day}${_reminderDays == 1 ? '' : 's'} before due date'),
                 leading:
                     Icon(Icons.timer_outlined, color: theme.colorScheme.primary),
                 trailing: SizedBox(
@@ -131,7 +133,7 @@ class _NotificationSettingsScreenState
               ),
             ],
             const Divider(),
-            _SectionHeader(title: 'Muted Pets', theme: theme),
+            _SectionHeader(title: l.mutedPets, theme: theme),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
               child: Text(
@@ -164,7 +166,7 @@ class _NotificationSettingsScreenState
                         child: CircularProgressIndicator(
                             strokeWidth: 2, color: Colors.white))
                     : const Icon(Icons.save),
-                label: Text(_saving ? 'Saving...' : 'Save Settings'),
+                label: Text(_saving ? 'Saving...' : l.saveSettings),
               ),
             ),
             const SizedBox(height: 32),
@@ -244,8 +246,9 @@ class _NotificationSettingsScreenState
             mutedPetIds: _mutedPetIds,
           ));
       if (mounted) {
+        final l = AppLocalizations.of(context)!;
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Settings saved')),
+          SnackBar(content: Text(l.settingsSaved)),
         );
       }
     } catch (e) {

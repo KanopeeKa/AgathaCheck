@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/utils/constants.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../providers/auth_providers.dart';
 import '../../../../core/widgets/web_image.dart';
 
@@ -83,6 +84,7 @@ class _LandingScreenState extends ConsumerState<LandingScreen>
     final theme = Theme.of(context);
     final screenWidth = MediaQuery.of(context).size.width;
     final isWide = screenWidth > 800;
+    final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
       body: SafeArea(
@@ -95,22 +97,22 @@ class _LandingScreenState extends ConsumerState<LandingScreen>
                   ? Row(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        Expanded(child: _buildBrandingSection(theme)),
+                        Expanded(child: _buildBrandingSection(theme, l10n)),
                         const SizedBox(width: 48),
                         SizedBox(
                           width: 400,
-                          child: _buildAuthCard(theme, auth),
+                          child: _buildAuthCard(theme, auth, l10n),
                         ),
                       ],
                     )
                   : Column(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        _buildBrandingSection(theme),
+                        _buildBrandingSection(theme, l10n),
                         const SizedBox(height: 32),
                         ConstrainedBox(
                           constraints: const BoxConstraints(maxWidth: 400),
-                          child: _buildAuthCard(theme, auth),
+                          child: _buildAuthCard(theme, auth, l10n),
                         ),
                       ],
                     ),
@@ -157,7 +159,7 @@ class _LandingScreenState extends ConsumerState<LandingScreen>
     );
   }
 
-  Widget _buildBrandingSection(ThemeData theme) {
+  Widget _buildBrandingSection(ThemeData theme, AppLocalizations l10n) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       mainAxisSize: MainAxisSize.min,
@@ -165,7 +167,7 @@ class _LandingScreenState extends ConsumerState<LandingScreen>
         _buildLogo(theme, size: 120),
         const SizedBox(height: 20),
         Text(
-          'Agatha Check',
+          l10n.appTitle,
           style: theme.textTheme.headlineLarge?.copyWith(
             fontWeight: FontWeight.bold,
             color: theme.colorScheme.primary,
@@ -176,7 +178,7 @@ class _LandingScreenState extends ConsumerState<LandingScreen>
         Semantics(
           label: 'App tagline',
           child: Text(
-            "Agatha Check keeps your pet's health organized, so you don't have to.",
+            l10n.appTagline,
             style: theme.textTheme.titleMedium?.copyWith(
               fontWeight: FontWeight.w600,
               color: theme.colorScheme.onSurface,
@@ -187,7 +189,7 @@ class _LandingScreenState extends ConsumerState<LandingScreen>
         ),
         const SizedBox(height: 12),
         Text(
-          'Track vet visits, medications, weight, and daily care in one simple dashboard designed for busy pet parents.',
+          l10n.appDescription,
           style: theme.textTheme.bodyLarge?.copyWith(
             color: theme.colorScheme.onSurfaceVariant,
             height: 1.5,
@@ -196,7 +198,7 @@ class _LandingScreenState extends ConsumerState<LandingScreen>
         ),
         const SizedBox(height: 20),
         Text(
-          'Log in to pick up where you left off, or create a free account to start keeping your pet\'s health history safe and accessible anytime.',
+          l10n.appCta,
           style: theme.textTheme.bodyMedium?.copyWith(
             color: theme.colorScheme.onSurfaceVariant,
             height: 1.5,
@@ -207,7 +209,7 @@ class _LandingScreenState extends ConsumerState<LandingScreen>
     );
   }
 
-  Widget _buildAuthCard(ThemeData theme, AuthState auth) {
+  Widget _buildAuthCard(ThemeData theme, AuthState auth, AppLocalizations l10n) {
     return Card(
       elevation: 2,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
@@ -222,7 +224,7 @@ class _LandingScreenState extends ConsumerState<LandingScreen>
             ),
             const SizedBox(height: 8),
             Text(
-              'Agatha Check',
+              l10n.appTitle,
               style: theme.textTheme.titleLarge?.copyWith(
                 fontWeight: FontWeight.bold,
                 color: theme.colorScheme.primary,
@@ -231,9 +233,9 @@ class _LandingScreenState extends ConsumerState<LandingScreen>
             const SizedBox(height: 16),
             TabBar(
               controller: _tabController,
-              tabs: const [
-                Tab(text: 'Sign In'),
-                Tab(text: 'Create Account'),
+              tabs: [
+                Tab(text: l10n.signIn),
+                Tab(text: l10n.createAccount),
               ],
               onTap: (_) {
                 ref.read(authProvider.notifier).clearError();
@@ -244,9 +246,9 @@ class _LandingScreenState extends ConsumerState<LandingScreen>
               animation: _tabController,
               builder: (context, _) {
                 if (_tabController.index == 0) {
-                  return _buildLoginForm(theme, auth);
+                  return _buildLoginForm(theme, auth, l10n);
                 } else {
-                  return _buildSignupForm(theme, auth);
+                  return _buildSignupForm(theme, auth, l10n);
                 }
               },
             ),
@@ -256,7 +258,7 @@ class _LandingScreenState extends ConsumerState<LandingScreen>
     );
   }
 
-  Widget _buildLoginForm(ThemeData theme, AuthState auth) {
+  Widget _buildLoginForm(ThemeData theme, AuthState auth, AppLocalizations l10n) {
     return Form(
       key: _loginFormKey,
       child: Column(
@@ -264,15 +266,15 @@ class _LandingScreenState extends ConsumerState<LandingScreen>
           TextFormField(
             key: const Key('login_email_field'),
             controller: _loginEmailController,
-            decoration: const InputDecoration(
-              labelText: 'Email',
-              prefixIcon: Icon(Icons.email_outlined),
+            decoration: InputDecoration(
+              labelText: l10n.email,
+              prefixIcon: const Icon(Icons.email_outlined),
             ),
             keyboardType: TextInputType.emailAddress,
             autofillHints: const [AutofillHints.email],
             validator: (v) {
-              if (v == null || v.trim().isEmpty) return 'Email is required';
-              if (!v.contains('@')) return 'Enter a valid email';
+              if (v == null || v.trim().isEmpty) return l10n.emailRequired;
+              if (!v.contains('@')) return l10n.enterValidEmail;
               return null;
             },
           ),
@@ -281,10 +283,10 @@ class _LandingScreenState extends ConsumerState<LandingScreen>
             key: const Key('login_password_field'),
             controller: _loginPasswordController,
             decoration: InputDecoration(
-              labelText: 'Password',
+              labelText: l10n.password,
               prefixIcon: const Icon(Icons.lock_outlined),
               suffixIcon: IconButton(
-                tooltip: _loginObscure ? 'Show password' : 'Hide password',
+                tooltip: _loginObscure ? l10n.showPassword : l10n.hidePassword,
                 icon: Icon(
                     _loginObscure ? Icons.visibility_off : Icons.visibility),
                 onPressed: () =>
@@ -294,7 +296,7 @@ class _LandingScreenState extends ConsumerState<LandingScreen>
             obscureText: _loginObscure,
             autofillHints: const [AutofillHints.password],
             validator: (v) {
-              if (v == null || v.isEmpty) return 'Password is required';
+              if (v == null || v.isEmpty) return l10n.passwordRequired;
               return null;
             },
             onFieldSubmitted: (_) => _submitLogin(),
@@ -305,7 +307,7 @@ class _LandingScreenState extends ConsumerState<LandingScreen>
               key: const Key('forgot_password_link'),
               onPressed: () => context.go('/forgot-password'),
               child: Text(
-                'Forgot Password?',
+                l10n.forgotPassword,
                 style: theme.textTheme.bodySmall?.copyWith(
                   color: theme.colorScheme.primary,
                 ),
@@ -324,7 +326,7 @@ class _LandingScreenState extends ConsumerState<LandingScreen>
                       height: 20,
                       width: 20,
                       child: CircularProgressIndicator(strokeWidth: 2))
-                  : const Text('Sign In'),
+                  : Text(l10n.signIn),
             ),
           ),
         ],
@@ -332,7 +334,7 @@ class _LandingScreenState extends ConsumerState<LandingScreen>
     );
   }
 
-  Widget _buildSignupForm(ThemeData theme, AuthState auth) {
+  Widget _buildSignupForm(ThemeData theme, AuthState auth, AppLocalizations l10n) {
     return Form(
       key: _signupFormKey,
       child: Column(
@@ -340,9 +342,9 @@ class _LandingScreenState extends ConsumerState<LandingScreen>
           TextFormField(
             key: const Key('signup_name_field'),
             controller: _signupNameController,
-            decoration: const InputDecoration(
-              labelText: 'Name',
-              prefixIcon: Icon(Icons.person_outlined),
+            decoration: InputDecoration(
+              labelText: l10n.name,
+              prefixIcon: const Icon(Icons.person_outlined),
             ),
             textCapitalization: TextCapitalization.words,
             autofillHints: const [AutofillHints.name],
@@ -351,15 +353,15 @@ class _LandingScreenState extends ConsumerState<LandingScreen>
           TextFormField(
             key: const Key('signup_email_field'),
             controller: _signupEmailController,
-            decoration: const InputDecoration(
-              labelText: 'Email',
-              prefixIcon: Icon(Icons.email_outlined),
+            decoration: InputDecoration(
+              labelText: l10n.email,
+              prefixIcon: const Icon(Icons.email_outlined),
             ),
             keyboardType: TextInputType.emailAddress,
             autofillHints: const [AutofillHints.email],
             validator: (v) {
-              if (v == null || v.trim().isEmpty) return 'Email is required';
-              if (!v.contains('@')) return 'Enter a valid email';
+              if (v == null || v.trim().isEmpty) return l10n.emailRequired;
+              if (!v.contains('@')) return l10n.enterValidEmail;
               return null;
             },
           ),
@@ -368,10 +370,10 @@ class _LandingScreenState extends ConsumerState<LandingScreen>
             key: const Key('signup_password_field'),
             controller: _signupPasswordController,
             decoration: InputDecoration(
-              labelText: 'Password',
+              labelText: l10n.password,
               prefixIcon: const Icon(Icons.lock_outlined),
               suffixIcon: IconButton(
-                tooltip: _signupObscure ? 'Show password' : 'Hide password',
+                tooltip: _signupObscure ? l10n.showPassword : l10n.hidePassword,
                 icon: Icon(
                     _signupObscure ? Icons.visibility_off : Icons.visibility),
                 onPressed: () =>
@@ -381,8 +383,8 @@ class _LandingScreenState extends ConsumerState<LandingScreen>
             obscureText: _signupObscure,
             autofillHints: const [AutofillHints.newPassword],
             validator: (v) {
-              if (v == null || v.isEmpty) return 'Password is required';
-              if (v.length < 6) return 'At least 6 characters';
+              if (v == null || v.isEmpty) return l10n.passwordRequired;
+              if (v.length < 6) return l10n.atLeast6Characters;
               return null;
             },
           ),
@@ -390,14 +392,14 @@ class _LandingScreenState extends ConsumerState<LandingScreen>
           TextFormField(
             key: const Key('signup_confirm_password_field'),
             controller: _signupConfirmController,
-            decoration: const InputDecoration(
-              labelText: 'Confirm Password',
-              prefixIcon: Icon(Icons.lock_outlined),
+            decoration: InputDecoration(
+              labelText: l10n.confirmPassword,
+              prefixIcon: const Icon(Icons.lock_outlined),
             ),
             obscureText: true,
             validator: (v) {
               if (v != _signupPasswordController.text) {
-                return 'Passwords do not match';
+                return l10n.passwordsDoNotMatch;
               }
               return null;
             },
@@ -415,7 +417,7 @@ class _LandingScreenState extends ConsumerState<LandingScreen>
                       height: 20,
                       width: 20,
                       child: CircularProgressIndicator(strokeWidth: 2))
-                  : const Text('Create Account'),
+                  : Text(l10n.createAccount),
             ),
           ),
         ],

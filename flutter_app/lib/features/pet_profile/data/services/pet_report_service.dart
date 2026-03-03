@@ -5,6 +5,7 @@ import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:intl/intl.dart';
 
+import '../../../../l10n/app_localizations.dart';
 import '../../domain/entities/pet.dart';
 import '../../../health_tracking/domain/entities/health_entry.dart';
 import '../../../health_tracking/domain/entities/health_issue.dart';
@@ -45,6 +46,7 @@ class PetReportService {
   Future<Uint8List> generateReport({
     required Pet pet,
     required ReportSections sections,
+    required AppLocalizations l,
     Vet? vet,
     List<WeightEntry> weightEntries = const [],
     List<HealthEntry> healthEntries = const [],
@@ -55,7 +57,7 @@ class PetReportService {
     Uint8List? logoBytes,
   }) async {
     final pdf = pw.Document(
-      title: '${pet.name} - Pet Report',
+      title: '${pet.name} - ${l.pdfReportTitle}',
       author: 'Agatha Check',
     );
 
@@ -74,19 +76,19 @@ class PetReportService {
         pageFormat: PdfPageFormat.a4,
         margin: const pw.EdgeInsets.all(32),
         header: (context) => context.pageNumber == 1
-            ? _buildHeader(pet, dateFormat, logoImage)
+            ? _buildHeader(pet, dateFormat, logoImage, l)
             : pw.SizedBox.shrink(),
-        footer: (context) => _buildFooter(context, now, dateFormat),
+        footer: (context) => _buildFooter(context, now, dateFormat, l),
         build: (context) {
           final widgets = <pw.Widget>[];
 
           if (sections.petProfile) {
-            widgets.addAll(_buildProfileSection(pet, vet, weightEntries, weightUnit));
+            widgets.addAll(_buildProfileSection(pet, vet, weightEntries, weightUnit, l));
           }
 
           if (sections.weightTracking) {
             widgets.addAll(
-                _buildWeightSection(weightEntries, dateFormat, weightUnit));
+                _buildWeightSection(weightEntries, dateFormat, weightUnit, l));
           }
 
           if (sections.healthEvents) {
@@ -97,16 +99,17 @@ class PetReportService {
               sections.healthTo,
               sections.includeFullLog,
               healthHistories,
+              l,
             ));
           }
 
           if (sections.healthIssues) {
             widgets.addAll(
-                _buildHealthIssuesSection(healthIssues, healthEntries, dateFormat));
+                _buildHealthIssuesSection(healthIssues, healthEntries, dateFormat, l));
           }
 
           if (sections.sharing) {
-            widgets.addAll(_buildSharingSection(accessList));
+            widgets.addAll(_buildSharingSection(accessList, l));
           }
 
           return widgets;
@@ -118,7 +121,7 @@ class PetReportService {
   }
 
   pw.Widget _buildHeader(
-      Pet pet, DateFormat dateFormat, pw.ImageProvider? logoImage) {
+      Pet pet, DateFormat dateFormat, pw.ImageProvider? logoImage, AppLocalizations l) {
     return pw.Container(
       margin: const pw.EdgeInsets.only(bottom: 14),
       padding: const pw.EdgeInsets.all(12),
@@ -182,7 +185,7 @@ class PetReportService {
                 crossAxisAlignment: pw.CrossAxisAlignment.end,
                 children: [
                   pw.Text(
-                    'AGATHA CHECK',
+                    l.pdfAgathaCheck,
                     style: pw.TextStyle(
                       fontSize: 9,
                       fontWeight: pw.FontWeight.bold,
@@ -192,7 +195,7 @@ class PetReportService {
                   ),
                   pw.SizedBox(height: 1),
                   pw.Text(
-                    'Pet Health Report',
+                    l.pdfReportTitle,
                     style: pw.TextStyle(
                       fontSize: 8,
                       color: PdfColor.fromInt(0xFFD0BCFF),
@@ -208,7 +211,7 @@ class PetReportService {
   }
 
   pw.Widget _buildFooter(
-      pw.Context context, DateTime generatedAt, DateFormat dateFormat) {
+      pw.Context context, DateTime generatedAt, DateFormat dateFormat, AppLocalizations l) {
     return pw.Container(
       margin: const pw.EdgeInsets.only(top: 8),
       padding: const pw.EdgeInsets.only(top: 6),
@@ -219,11 +222,11 @@ class PetReportService {
         mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
         children: [
           pw.Text(
-            'Generated ${dateFormat.format(generatedAt)} by Agatha Check',
+            l.pdfGeneratedBy(dateFormat.format(generatedAt)),
             style: const pw.TextStyle(fontSize: 8, color: _textMuted),
           ),
           pw.Text(
-            'Page ${context.pageNumber} of ${context.pagesCount}',
+            l.pdfPageOf(context.pageNumber, context.pagesCount),
             style: const pw.TextStyle(fontSize: 8, color: _textMuted),
           ),
         ],
@@ -232,13 +235,13 @@ class PetReportService {
   }
 
   List<pw.Widget> _buildProfileSection(
-      Pet pet, Vet? vet, List<WeightEntry> weightEntries, String weightUnit) {
+      Pet pet, Vet? vet, List<WeightEntry> weightEntries, String weightUnit, AppLocalizations l) {
     final latestWeight = weightEntries.isNotEmpty
         ? weightEntries.last.weight
         : pet.weight;
 
     return [
-      _sectionTitle('Pet Profile'),
+      _sectionTitle(l.pdfPetProfileSection),
       pw.Container(
         padding: const pw.EdgeInsets.all(10),
         decoration: pw.BoxDecoration(
@@ -247,27 +250,27 @@ class PetReportService {
         ),
         child: pw.Column(
           children: [
-            _detailRow('Name', pet.name),
-            _detailRow('Species', pet.species),
-            if (pet.breed.isNotEmpty) _detailRow('Breed', pet.breed),
+            _detailRow(l.pdfName, pet.name),
+            _detailRow(l.pdfSpecies, pet.species),
+            if (pet.breed.isNotEmpty) _detailRow(l.pdfBreed, pet.breed),
             if (pet.gender != null && pet.gender!.isNotEmpty)
-              _detailRow('Gender', pet.gender!),
+              _detailRow(l.pdfGender, pet.gender!),
             if (pet.ageDisplay != null)
-              _detailRow('Age', pet.ageDisplay!),
+              _detailRow(l.pdfAge, pet.ageDisplay!),
             if (pet.dateOfBirth != null)
-              _detailRow('Date of Birth', '${pet.dateOfBirth!.day}/${pet.dateOfBirth!.month}/${pet.dateOfBirth!.year}'),
+              _detailRow(l.pdfDateOfBirth, '${pet.dateOfBirth!.day}/${pet.dateOfBirth!.month}/${pet.dateOfBirth!.year}'),
             if (latestWeight != null)
-              _detailRow('Current Weight', _formatWeight(latestWeight, weightUnit),
+              _detailRow(l.pdfCurrentWeight, _formatWeight(latestWeight, weightUnit),
                   highlight: true),
-            if (pet.bio.isNotEmpty) _detailRow('Bio', pet.bio),
+            if (pet.bio.isNotEmpty) _detailRow(l.pdfBio, pet.bio),
             if (pet.neuteredDate != null)
-              _detailRow('Neutered / Spayed', DateFormat.yMMMd().format(pet.neuteredDate!)),
+              _detailRow(l.pdfNeuteredSpayed, DateFormat.yMMMd().format(pet.neuteredDate!)),
             if (pet.chipId.isNotEmpty)
-              _detailRow('ID / Microchip', pet.chipId),
+              _detailRow(l.pdfIdMicrochip, pet.chipId),
             if (pet.insurance.isNotEmpty)
-              _detailRow('Insurance Details', pet.insurance),
+              _detailRow(l.pdfInsurance, pet.insurance),
             if (vet != null)
-              _detailRow('Vet', [
+              _detailRow(l.pdfVet, [
                 vet.name,
                 if (vet.phone.isNotEmpty) vet.phone,
                 if (vet.email.isNotEmpty) vet.email,
@@ -281,11 +284,11 @@ class PetReportService {
   }
 
   List<pw.Widget> _buildWeightSection(
-      List<WeightEntry> entries, DateFormat dateFormat, String weightUnit) {
+      List<WeightEntry> entries, DateFormat dateFormat, String weightUnit, AppLocalizations l) {
     if (entries.isEmpty) {
       return [
-        _sectionTitle('Weight Tracking'),
-        _emptyMessage('No weight data recorded yet.'),
+        _sectionTitle(l.pdfWeightTrackingSection),
+        _emptyMessage(l.pdfNoWeightData),
         pw.SizedBox(height: 20),
       ];
     }
@@ -296,7 +299,7 @@ class PetReportService {
     final chartHeight = 100.0;
 
     return [
-      _sectionTitle('Weight Tracking'),
+      _sectionTitle(l.pdfWeightTrackingSection),
       if (sorted.length >= 2)
         pw.Container(
           height: chartHeight + 30,
@@ -341,7 +344,7 @@ class PetReportService {
           1: pw.Alignment.center,
           2: pw.Alignment.centerLeft,
         },
-        headers: ['Date', 'Weight', 'Notes'],
+        headers: [l.pdfDate, l.pdfWeight, l.pdfNotes],
         data: sorted.reversed.take(3).map((e) {
           return [
             dateFormat.format(e.date),
@@ -389,11 +392,12 @@ class PetReportService {
     DateTime? to,
     bool includeFullLog,
     Map<String, List<Map<String, dynamic>>> histories,
+    AppLocalizations l,
   ) {
     if (allEntries.isEmpty) {
       return [
-        _sectionTitle('Health Events'),
-        _emptyMessage('No health events recorded yet.'),
+        _sectionTitle(l.pdfHealthEventsSection),
+        _emptyMessage(l.pdfNoHealthEvents),
         pw.SizedBox(height: 20),
       ];
     }
@@ -416,11 +420,11 @@ class PetReportService {
       ..sort((a, b) => a.startDate.compareTo(b.startDate));
 
     final widgets = <pw.Widget>[
-      _sectionTitle('Health Events'),
+      _sectionTitle(l.pdfHealthEventsSection),
     ];
 
     if (currentRecurring.isNotEmpty) {
-      widgets.add(_subSectionTitle('Current & Recurring Events'));
+      widgets.add(_subSectionTitle(l.pdfCurrentRecurring));
       widgets.add(
         pw.TableHelper.fromTextArray(
           border: pw.TableBorder.all(color: _borderColor, width: 0.5),
@@ -430,14 +434,14 @@ class PetReportService {
           cellStyle: const pw.TextStyle(fontSize: 8, color: _textDark),
           cellPadding:
               const pw.EdgeInsets.symmetric(horizontal: 6, vertical: 3),
-          headers: ['Name', 'Type', 'Frequency', 'Next Due', 'Dosage'],
+          headers: [l.pdfName, l.pdfType, l.pdfFrequency, l.pdfNextDue, l.pdfDosage],
           data: currentRecurring.map((e) {
             return [
               e.name,
               e.type.name,
               e.frequency.name,
               e.nextDueDate.year >= 9999
-                  ? 'Completed'
+                  ? l.pdfCompleted
                   : dateFormat.format(e.nextDueDate),
               e.dosage,
             ];
@@ -448,14 +452,14 @@ class PetReportService {
     }
 
     widgets.add(_subSectionTitle(
-        'Events from ${dateFormat.format(filterFrom)} to ${dateFormat.format(filterTo)}'));
+        l.pdfEventsFromTo(dateFormat.format(filterFrom), dateFormat.format(filterTo))));
 
     if (periodEntries.isEmpty) {
-      widgets.add(_emptyMessage('No events in this period.'));
+      widgets.add(_emptyMessage(l.pdfNoEventsInPeriod));
     } else {
       for (final entry in periodEntries) {
         widgets.add(_buildHealthEntryBlock(
-            entry, dateFormat, includeFullLog, histories));
+            entry, dateFormat, includeFullLog, histories, l));
       }
     }
 
@@ -468,6 +472,7 @@ class PetReportService {
     DateFormat dateFormat,
     bool includeFullLog,
     Map<String, List<Map<String, dynamic>>> histories,
+    AppLocalizations l,
   ) {
     final history = histories[entry.id] ?? [];
 
@@ -509,24 +514,24 @@ class PetReportService {
           pw.SizedBox(height: 4),
           pw.Row(
             children: [
-              _miniDetail('Start', dateFormat.format(entry.startDate)),
+              _miniDetail(l.pdfStart, dateFormat.format(entry.startDate)),
               pw.SizedBox(width: 16),
               _miniDetail(
-                  'Due',
+                  l.pdfDue,
                   entry.nextDueDate.year >= 9999
-                      ? 'Completed'
+                      ? l.pdfCompleted
                       : dateFormat.format(entry.nextDueDate)),
               if (entry.dosage.isNotEmpty) ...[
                 pw.SizedBox(width: 16),
-                _miniDetail('Dosage', entry.dosage),
+                _miniDetail(l.pdfDosage, entry.dosage),
               ],
               pw.SizedBox(width: 16),
-              _miniDetail('Frequency', entry.frequency.name),
+              _miniDetail(l.pdfFrequency, entry.frequency.name),
             ],
           ),
           if (entry.notes.isNotEmpty) ...[
             pw.SizedBox(height: 4),
-            pw.Text('Notes: ${entry.notes}',
+            pw.Text('${l.pdfNotes}: ${entry.notes}',
                 style:
                     const pw.TextStyle(fontSize: 8, color: _textMuted)),
           ],
@@ -541,7 +546,7 @@ class PetReportService {
               child: pw.Column(
                 crossAxisAlignment: pw.CrossAxisAlignment.start,
                 children: [
-                  pw.Text('Administration Log',
+                  pw.Text(l.pdfAdminLog,
                       style: pw.TextStyle(
                           fontSize: 8,
                           fontWeight: pw.FontWeight.bold,
@@ -577,17 +582,18 @@ class PetReportService {
     List<HealthIssue> issues,
     List<HealthEntry> allEntries,
     DateFormat dateFormat,
+    AppLocalizations l,
   ) {
     if (issues.isEmpty) {
       return [
-        _sectionTitle('Health Issues'),
-        _emptyMessage('No health issues recorded yet.'),
+        _sectionTitle(l.pdfHealthIssuesSection),
+        _emptyMessage(l.pdfNoHealthIssues),
         pw.SizedBox(height: 20),
       ];
     }
 
     final widgets = <pw.Widget>[
-      _sectionTitle('Health Issues'),
+      _sectionTitle(l.pdfHealthIssuesSection),
     ];
 
     for (final issue in issues) {
@@ -624,7 +630,9 @@ class PetReportService {
                       borderRadius: pw.BorderRadius.circular(3),
                     ),
                     child: pw.Text(
-                        '${issue.eventIds.length} event${issue.eventIds.length == 1 ? '' : 's'}',
+                        issue.eventIds.length == 1
+                            ? l.pdfNEvent(issue.eventIds.length)
+                            : l.pdfNEvents(issue.eventIds.length),
                         style: pw.TextStyle(
                             fontSize: 7,
                             fontWeight: pw.FontWeight.bold,
@@ -641,7 +649,7 @@ class PetReportService {
                 pw.SizedBox(height: 3),
                 pw.Text(
                   _formatIssueDateRange(
-                      issue.startDate, issue.endDate, dateFormat),
+                      issue.startDate, issue.endDate, dateFormat, l),
                   style: pw.TextStyle(
                       fontSize: 8,
                       fontWeight: pw.FontWeight.bold,
@@ -659,7 +667,7 @@ class PetReportService {
                   child: pw.Column(
                     crossAxisAlignment: pw.CrossAxisAlignment.start,
                     children: [
-                      pw.Text('Linked Events',
+                      pw.Text(l.pdfLinkedEvents,
                           style: pw.TextStyle(
                               fontSize: 8,
                               fontWeight: pw.FontWeight.bold,
@@ -688,25 +696,25 @@ class PetReportService {
   }
 
   String _formatIssueDateRange(
-      DateTime? start, DateTime? end, DateFormat fmt) {
+      DateTime? start, DateTime? end, DateFormat fmt, AppLocalizations l) {
     if (start != null && end != null) {
       return '${fmt.format(start)} – ${fmt.format(end)}';
     }
-    if (start != null) return 'From ${fmt.format(start)}';
-    return 'Until ${fmt.format(end!)}';
+    if (start != null) return l.pdfFrom(fmt.format(start));
+    return l.pdfUntil(fmt.format(end!));
   }
 
-  List<pw.Widget> _buildSharingSection(List<PetAccess> accessList) {
+  List<pw.Widget> _buildSharingSection(List<PetAccess> accessList, AppLocalizations l) {
     if (accessList.isEmpty) {
       return [
-        _sectionTitle('Sharing'),
-        _emptyMessage('This pet is not shared with anyone.'),
+        _sectionTitle(l.pdfSharingSection),
+        _emptyMessage(l.pdfNotShared),
         pw.SizedBox(height: 20),
       ];
     }
 
     return [
-      _sectionTitle('Sharing'),
+      _sectionTitle(l.pdfSharingSection),
       pw.TableHelper.fromTextArray(
         border: pw.TableBorder.all(color: _borderColor, width: 0.5),
         headerStyle: pw.TextStyle(
@@ -720,10 +728,10 @@ class PetReportService {
           1: pw.Alignment.center,
           2: pw.Alignment.centerLeft,
         },
-        headers: ['Name', 'Role', 'Since'],
+        headers: [l.pdfName, l.pdfRole, l.pdfSince],
         data: accessList.map((a) {
-          final name = a.user?.displayName ?? 'User #${a.userId}';
-          final role = a.role == PetAccessRole.guardian ? 'Guardian' : 'Shared';
+          final name = a.user?.displayName ?? l.pdfUserNumber(a.userId.toString());
+          final role = a.role == PetAccessRole.guardian ? l.pdfGuardian : l.pdfShared;
           final since = DateFormat('MMM d, yyyy').format(a.createdAt);
           return [name, role, since];
         }).toList(),

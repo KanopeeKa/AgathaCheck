@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
+import '../../../../l10n/app_localizations.dart';
 import '../../../pet_profile/domain/entities/pet.dart';
 import '../../domain/entities/health_entry.dart';
 
@@ -28,6 +29,7 @@ class HealthEntryCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
+    final l = AppLocalizations.of(context)!;
 
     final statusColor = entry.isCompleted
         ? Colors.green
@@ -40,9 +42,9 @@ class HealthEntryCard extends StatelessWidget {
                     : colorScheme.primary;
 
     final statusText = entry.isCompleted
-        ? 'done'
+        ? l.done.toLowerCase()
         : entry.isOverdue
-            ? 'overdue'
+            ? l.overdue.toLowerCase()
             : entry.isDueToday
                 ? 'due today'
                 : 'upcoming';
@@ -122,7 +124,7 @@ class HealthEntryCard extends StatelessWidget {
                               ),
                               const SizedBox(width: 3),
                               Text(
-                                _formatDueDate(entry),
+                                _formatDueDate(context, entry),
                                 style: theme.textTheme.bodySmall?.copyWith(
                                     color: statusColor, fontWeight: FontWeight.w600, fontSize: 11),
                               ),
@@ -165,12 +167,13 @@ class HealthEntryCard extends StatelessWidget {
     }
   }
 
-  String _formatDueDate(HealthEntry entry) {
+  String _formatDueDate(BuildContext context, HealthEntry entry) {
+    final l = AppLocalizations.of(context)!;
     if (entry.isCompleted) {
-      return 'Done';
+      return l.done;
     }
     if (entry.isOverdue) {
-      return 'Overdue';
+      return l.overdue;
     }
     if (entry.isDueToday) {
       final hour = entry.nextDueDate.hour;
@@ -184,7 +187,7 @@ class HealthEntryCard extends StatelessWidget {
     if (diff.inDays == 1) {
       return 'Due tomorrow';
     }
-    return 'Due in ${diff.inDays} days';
+    return 'Due in ${diff.inDays} ${l.days}';
   }
 }
 
@@ -197,6 +200,7 @@ class _MarkDoneButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l = AppLocalizations.of(context)!;
     return SizedBox(
       width: petStripWidth * 2,
       child: Material(
@@ -212,7 +216,7 @@ class _MarkDoneButton extends StatelessWidget {
                     size: 22, color: Colors.green.shade700),
                 const SizedBox(height: 4),
                 Text(
-                  'Mark Done',
+                  l.markAsDone,
                   style: theme.textTheme.labelSmall?.copyWith(
                     color: Colors.green.shade700,
                     fontWeight: FontWeight.bold,
@@ -236,6 +240,7 @@ class _SnoozeButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l = AppLocalizations.of(context)!;
     return SizedBox(
       width: 48,
       child: Material(
@@ -250,7 +255,7 @@ class _SnoozeButton extends StatelessWidget {
                 Icon(Icons.snooze, size: 18, color: Colors.orange.shade700),
                 const SizedBox(height: 2),
                 Text(
-                  'Snooze',
+                  l.snooze,
                   style: theme.textTheme.labelSmall?.copyWith(
                     color: Colors.orange.shade700,
                     fontWeight: FontWeight.bold,
@@ -266,6 +271,7 @@ class _SnoozeButton extends StatelessWidget {
   }
 
   void _showSnoozePicker(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
     int selectedDays = 1;
     showDialog(
       context: context,
@@ -277,7 +283,7 @@ class _SnoozeButton extends StatelessWidget {
                 children: [
                   Icon(Icons.snooze, color: Colors.orange.shade700, size: 22),
                   const SizedBox(width: 8),
-                  const Text('Snooze Event'),
+                  Text('${l.snooze} Event'),
                 ],
               ),
               content: SizedBox(
@@ -304,7 +310,7 @@ class _SnoozeButton extends StatelessWidget {
                             final isSelected = day == selectedDays;
                             return Center(
                               child: Text(
-                                day == 1 ? '1 day' : '$day days',
+                                day == 1 ? '1 ${l.day}' : '$day ${l.days}',
                                 style: TextStyle(
                                   fontSize: isSelected ? 20 : 15,
                                   fontWeight: isSelected
@@ -326,7 +332,7 @@ class _SnoozeButton extends StatelessWidget {
               actions: [
                 TextButton(
                   onPressed: () => Navigator.of(ctx).pop(),
-                  child: const Text('Cancel'),
+                  child: Text(l.cancel),
                 ),
                 FilledButton(
                   style: FilledButton.styleFrom(
@@ -336,7 +342,7 @@ class _SnoozeButton extends StatelessWidget {
                     Navigator.of(ctx).pop();
                     onSnooze?.call(selectedDays);
                   },
-                  child: Text('Snooze $selectedDays ${selectedDays == 1 ? 'day' : 'days'}'),
+                  child: Text('${l.snooze} $selectedDays ${selectedDays == 1 ? l.day : l.days}'),
                 ),
               ],
             );
@@ -426,6 +432,7 @@ class _DoneChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
     final doneDate = entry.updatedAt ?? entry.startDate;
     final dateStr = DateFormat('d MMM').format(doneDate);
     return Container(
@@ -441,7 +448,7 @@ class _DoneChip extends StatelessWidget {
           Icon(Icons.check_circle, size: 12, color: Colors.green.shade700),
           const SizedBox(width: 3),
           Text(
-            'Done $dateStr',
+            '${l.done} $dateStr',
             style: TextStyle(
               fontSize: 10,
               fontWeight: FontWeight.w600,
@@ -460,12 +467,13 @@ class _FrequencyBadge extends StatelessWidget {
   final HealthFrequency frequency;
   final int interval;
 
-  String get _displayLabel {
-    if (frequency == HealthFrequency.once) return 'Does not repeat';
-    if (frequency == HealthFrequency.custom) return 'Custom';
+  String _displayLabel(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
+    if (frequency == HealthFrequency.once) return l.doesNotRepeat;
+    if (frequency == HealthFrequency.custom) return l.custom;
     final period = frequency.label;
-    if (interval == 1) return 'Every $period';
-    return 'Every $interval ${period}s';
+    if (interval == 1) return l.everyPeriod(period);
+    return l.everyNPeriods(interval, '${period}s');
   }
 
   @override
@@ -478,7 +486,7 @@ class _FrequencyBadge extends StatelessWidget {
         borderRadius: BorderRadius.circular(8),
       ),
       child: Text(
-        _displayLabel,
+        _displayLabel(context),
         style: theme.textTheme.labelSmall?.copyWith(
           fontSize: 10,
           color: theme.colorScheme.onSecondaryContainer,

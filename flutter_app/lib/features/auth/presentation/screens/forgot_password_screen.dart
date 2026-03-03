@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/utils/constants.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../data/auth_service.dart';
 import '../providers/auth_providers.dart';
 
@@ -48,11 +49,12 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
     try {
       final authService = ref.read(authServiceProvider);
       await authService.forgotPassword(email: _emailController.text.trim());
+      if (!mounted) return;
+      final l10n = AppLocalizations.of(context)!;
       setState(() {
         _codeSent = true;
         _isLoading = false;
-        _successMessage =
-            'If an account with that email exists, a reset code has been sent. Check your email.';
+        _successMessage = l10n.resetCodeSentMessage;
       });
     } catch (e) {
       setState(() {
@@ -77,6 +79,7 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
         newPassword: _passwordController.text,
       );
       if (!mounted) return;
+      final l10n = AppLocalizations.of(context)!;
       setState(() => _isLoading = false);
 
       showDialog(
@@ -84,7 +87,7 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
         barrierDismissible: false,
         builder: (ctx) => AlertDialog(
           icon: Icon(Icons.check_circle, color: Colors.green[600], size: 48),
-          title: const Text('Password Reset'),
+          title: Text(l10n.passwordResetTitle),
           content: Text(message),
           actions: [
             FilledButton(
@@ -92,7 +95,7 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
                 Navigator.of(ctx).pop();
                 context.go('/landing');
               },
-              child: const Text('Sign In'),
+              child: Text(l10n.signIn),
             ),
           ],
         ),
@@ -108,15 +111,16 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
-          tooltip: 'Back to sign in',
+          tooltip: l10n.backToSignIn,
           onPressed: () => context.go('/landing'),
         ),
-        title: const Text('Reset Password'),
+        title: Text(l10n.resetPassword),
       ),
       body: SafeArea(
         child: Center(
@@ -139,15 +143,15 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
                   ),
                   const SizedBox(height: 16),
                   Text(
-                    _codeSent ? 'Enter Reset Code' : 'Forgot Password',
+                    _codeSent ? l10n.enterResetCode : l10n.forgotPasswordTitle,
                     style: theme.textTheme.headlineSmall
                         ?.copyWith(fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 8),
                   Text(
                     _codeSent
-                        ? 'Enter the 6-digit code and your new password.'
-                        : 'Enter your email address and we\'ll send you a code to reset your password.',
+                        ? l10n.enterResetCodeInstructions
+                        : l10n.forgotPasswordInstructions,
                     style: theme.textTheme.bodyMedium?.copyWith(
                       color: theme.colorScheme.onSurfaceVariant,
                     ),
@@ -206,8 +210,8 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
                     ),
                     const SizedBox(height: 16),
                   ],
-                  if (!_codeSent) _buildEmailStep(theme),
-                  if (_codeSent) _buildResetStep(theme),
+                  if (!_codeSent) _buildEmailStep(theme, l10n),
+                  if (_codeSent) _buildResetStep(theme, l10n),
                 ],
               ),
             ),
@@ -217,7 +221,7 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
     );
   }
 
-  Widget _buildEmailStep(ThemeData theme) {
+  Widget _buildEmailStep(ThemeData theme, AppLocalizations l10n) {
     return Form(
       key: _emailFormKey,
       child: Column(
@@ -225,15 +229,15 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
           TextFormField(
             key: const Key('forgot_email_field'),
             controller: _emailController,
-            decoration: const InputDecoration(
-              labelText: 'Email',
-              prefixIcon: Icon(Icons.email_outlined),
+            decoration: InputDecoration(
+              labelText: l10n.email,
+              prefixIcon: const Icon(Icons.email_outlined),
             ),
             keyboardType: TextInputType.emailAddress,
             autofillHints: const [AutofillHints.email],
             validator: (v) {
-              if (v == null || v.trim().isEmpty) return 'Email is required';
-              if (!v.contains('@')) return 'Enter a valid email';
+              if (v == null || v.trim().isEmpty) return l10n.emailRequired;
+              if (!v.contains('@')) return l10n.enterValidEmail;
               return null;
             },
             onFieldSubmitted: (_) => _requestCode(),
@@ -249,7 +253,7 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
                       height: 20,
                       width: 20,
                       child: CircularProgressIndicator(strokeWidth: 2))
-                  : const Text('Send Reset Code'),
+                  : Text(l10n.sendResetCode),
             ),
           ),
         ],
@@ -257,7 +261,7 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
     );
   }
 
-  Widget _buildResetStep(ThemeData theme) {
+  Widget _buildResetStep(ThemeData theme, AppLocalizations l10n) {
     return Form(
       key: _resetFormKey,
       child: Column(
@@ -265,16 +269,16 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
           TextFormField(
             key: const Key('reset_code_field'),
             controller: _codeController,
-            decoration: const InputDecoration(
-              labelText: 'Reset Code',
-              prefixIcon: Icon(Icons.lock_clock),
-              hintText: '6-digit code',
+            decoration: InputDecoration(
+              labelText: l10n.resetCode,
+              prefixIcon: const Icon(Icons.lock_clock),
+              hintText: l10n.sixDigitCode,
             ),
             keyboardType: TextInputType.number,
             maxLength: 6,
             validator: (v) {
-              if (v == null || v.trim().isEmpty) return 'Code is required';
-              if (v.trim().length != 6) return 'Enter the 6-digit code';
+              if (v == null || v.trim().isEmpty) return l10n.codeRequired;
+              if (v.trim().length != 6) return l10n.enterSixDigitCode;
               return null;
             },
           ),
@@ -283,11 +287,11 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
             key: const Key('reset_password_field'),
             controller: _passwordController,
             decoration: InputDecoration(
-              labelText: 'New Password',
+              labelText: l10n.newPassword,
               prefixIcon: const Icon(Icons.lock_outlined),
               suffixIcon: IconButton(
                 tooltip:
-                    _obscurePassword ? 'Show password' : 'Hide password',
+                    _obscurePassword ? l10n.showPassword : l10n.hidePassword,
                 icon: Icon(_obscurePassword
                     ? Icons.visibility_off
                     : Icons.visibility),
@@ -297,8 +301,8 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
             ),
             obscureText: _obscurePassword,
             validator: (v) {
-              if (v == null || v.isEmpty) return 'Password is required';
-              if (v.length < 6) return 'At least 6 characters';
+              if (v == null || v.isEmpty) return l10n.passwordRequired;
+              if (v.length < 6) return l10n.atLeast6Characters;
               return null;
             },
           ),
@@ -307,11 +311,11 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
             key: const Key('reset_confirm_field'),
             controller: _confirmController,
             decoration: InputDecoration(
-              labelText: 'Confirm Password',
+              labelText: l10n.confirmPassword,
               prefixIcon: const Icon(Icons.lock_outlined),
               suffixIcon: IconButton(
                 tooltip:
-                    _obscureConfirm ? 'Show password' : 'Hide password',
+                    _obscureConfirm ? l10n.showPassword : l10n.hidePassword,
                 icon: Icon(_obscureConfirm
                     ? Icons.visibility_off
                     : Icons.visibility),
@@ -322,7 +326,7 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
             obscureText: _obscureConfirm,
             validator: (v) {
               if (v != _passwordController.text) {
-                return 'Passwords do not match';
+                return l10n.passwordsDoNotMatch;
               }
               return null;
             },
@@ -339,7 +343,7 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
                       height: 20,
                       width: 20,
                       child: CircularProgressIndicator(strokeWidth: 2))
-                  : const Text('Reset Password'),
+                  : Text(l10n.resetPassword),
             ),
           ),
           const SizedBox(height: 12),
@@ -354,7 +358,7 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
                 _confirmController.clear();
               });
             },
-            child: const Text('Use a different email'),
+            child: Text(l10n.useDifferentEmail),
           ),
         ],
       ),

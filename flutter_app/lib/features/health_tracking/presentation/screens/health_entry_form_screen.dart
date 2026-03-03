@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 
+import '../../../../l10n/app_localizations.dart';
 import '../../../pet_profile/domain/entities/pet.dart';
 import '../../../pet_profile/presentation/providers/pet_providers.dart';
 import '../../data/datasources/health_remote_datasource.dart';
@@ -214,13 +215,13 @@ class _HealthEntryFormScreenState
             DropdownButtonFormField<String?>(
               key: const Key('health_issue_dropdown'),
               value: _selectedHealthIssueId,
-              decoration: const InputDecoration(
-                labelText: 'Related to a Health Issue',
+              decoration: InputDecoration(
+                labelText: AppLocalizations.of(context)!.healthIssueOptional,
               ),
               items: [
-                const DropdownMenuItem<String?>(
+                DropdownMenuItem<String?>(
                   value: null,
-                  child: Text('None'),
+                  child: Text(AppLocalizations.of(context)!.none),
                 ),
                 ...issues.map((issue) => DropdownMenuItem<String?>(
                       value: issue.id,
@@ -254,16 +255,17 @@ class _HealthEntryFormScreenState
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
     final petListAsync = ref.watch(petListProvider);
     final theme = Theme.of(context);
     final primaryPetId = _selectedPetIds.isNotEmpty ? _selectedPetIds.first : '';
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(_isEdit ? 'Edit Entry' : 'New Health Entry'),
+        title: Text(_isEdit ? l.editEntry : l.addHealthEntry2),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
-          tooltip: 'Back',
+          tooltip: l.goBack,
           onPressed: () {
             if (widget.petId != null && widget.petId!.isNotEmpty) {
               context.go('/pet/${widget.petId}');
@@ -314,8 +316,8 @@ class _HealthEntryFormScreenState
                     const SizedBox(height: 16),
                     DropdownButtonFormField<HealthEntryType>(
                       value: _type,
-                      decoration: const InputDecoration(
-                        labelText: 'Type',
+                      decoration: InputDecoration(
+                        labelText: l.entryType,
                       ),
                       items: HealthEntryType.values.map((t) {
                         return DropdownMenuItem(
@@ -329,29 +331,29 @@ class _HealthEntryFormScreenState
                     TextFormField(
                       key: const Key('health_name_field'),
                       controller: _nameController,
-                      decoration: const InputDecoration(
-                        labelText: 'Name',
+                      decoration: InputDecoration(
+                        labelText: l.entryName,
                         hintText: 'e.g., Heartgard, Annual Checkup',
                       ),
                       validator: (val) =>
                           val == null || val.trim().isEmpty
-                              ? 'Name is required'
+                              ? l.entryNameRequired
                               : null,
                     ),
                     const SizedBox(height: 16),
                     TextFormField(
                       key: const Key('health_dosage_field'),
                       controller: _dosageController,
-                      decoration: const InputDecoration(
-                        labelText: 'Dosage / Amount',
+                      decoration: InputDecoration(
+                        labelText: l.dosage,
                         hintText: 'e.g., 1 tablet, 0.5ml',
                       ),
                     ),
                     const SizedBox(height: 16),
                     DropdownButtonFormField<HealthFrequency>(
                       value: _frequency,
-                      decoration: const InputDecoration(
-                        labelText: 'Frequency',
+                      decoration: InputDecoration(
+                        labelText: l.frequency,
                       ),
                       items: HealthFrequency.values
                           .where((f) => f != HealthFrequency.custom)
@@ -371,8 +373,8 @@ class _HealthEntryFormScreenState
                           Expanded(
                             child: DropdownButtonFormField<int>(
                               value: _frequencyInterval.clamp(1, 12),
-                              decoration: const InputDecoration(
-                                labelText: 'Every',
+                              decoration: InputDecoration(
+                                labelText: l.every,
                               ),
                               items: List.generate(12, (i) => i + 1)
                                   .map((n) => DropdownMenuItem(
@@ -443,7 +445,7 @@ class _HealthEntryFormScreenState
                     ],
                     const SizedBox(height: 16),
                     _DatePickerField(
-                      label: 'Start Date',
+                      label: l.startDate,
                       date: _startDate,
                       onChanged: (d) => setState(() => _startDate = d),
                     ),
@@ -455,8 +457,8 @@ class _HealthEntryFormScreenState
                     TextFormField(
                       key: const Key('health_notes_field'),
                       controller: _notesController,
-                      decoration: const InputDecoration(
-                        labelText: 'Notes',
+                      decoration: InputDecoration(
+                        labelText: l.notes,
                         hintText: 'Additional information...',
                       ),
                       maxLines: 3,
@@ -480,17 +482,17 @@ class _HealthEntryFormScreenState
                       onPressed: _submit,
                       icon: Icon(_isEdit ? Icons.save : Icons.add),
                       label: Text(_isEdit
-                          ? 'Save Changes'
+                          ? l.save
                           : _selectedPetIds.length > 1
                               ? 'Add Entry for ${_selectedPetIds.length} Pets'
-                              : 'Add Entry'),
+                              : l.addEntry),
                     ),
                     if (_isEdit) ...[
                       const SizedBox(height: 12),
                       OutlinedButton.icon(
                         onPressed: _viewHistory,
                         icon: const Icon(Icons.history),
-                        label: const Text('View History'),
+                        label: const Text('Administration History'),
                       ),
                       const SizedBox(height: 12),
                       OutlinedButton.icon(
@@ -501,7 +503,7 @@ class _HealthEntryFormScreenState
                           foregroundColor: Theme.of(context).colorScheme.error,
                           side: BorderSide(color: Theme.of(context).colorScheme.error.withOpacity(0.5)),
                         ),
-                        label: const Text('Delete Entry'),
+                        label: Text(l.deleteEntry),
                       ),
                     ],
                   ],
@@ -618,13 +620,14 @@ class _HealthEntryFormScreenState
 
       if (mounted) {
         final count = _selectedPetIds.length;
+        final l = AppLocalizations.of(context)!;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(_isEdit
-                ? 'Entry updated'
+                ? l.entryUpdated
                 : count > 1
                     ? '$count entries created'
-                    : 'Entry created'),
+                    : l.entryCreated),
           ),
         );
         if (widget.petId != null && widget.petId!.isNotEmpty) {
@@ -700,19 +703,19 @@ class _HealthEntryFormScreenState
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Delete Entry'),
+        title: Text(AppLocalizations.of(context)!.deleteEntry),
         content: Text('Delete "${_nameController.text}"? This cannot be undone.'),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(false),
-            child: const Text('Cancel'),
+            child: Text(AppLocalizations.of(context)!.cancel),
           ),
           FilledButton(
             onPressed: () => Navigator.of(ctx).pop(true),
             style: FilledButton.styleFrom(
               backgroundColor: Theme.of(context).colorScheme.error,
             ),
-            child: const Text('Delete'),
+            child: Text(AppLocalizations.of(context)!.delete),
           ),
         ],
       ),
@@ -722,7 +725,7 @@ class _HealthEntryFormScreenState
       await ref.read(healthEntriesNotifierProvider.notifier).delete(widget.entryId!);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Entry deleted')),
+          SnackBar(content: Text(AppLocalizations.of(context)!.entryDeleted)),
         );
         if (widget.petId != null && widget.petId!.isNotEmpty) {
           context.go('/pet/${widget.petId}');
@@ -931,9 +934,11 @@ class _PhotosSection extends StatelessWidget {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
+    final l = AppLocalizations.of(context)!;
+
     Widget addPhotoButton() {
       return PopupMenuButton<String>(
-        tooltip: 'Add Photo',
+        tooltip: l.addPhoto,
         onSelected: (value) {
           if (value == 'camera') {
             onPickCamera();
@@ -968,7 +973,7 @@ class _PhotosSection extends StatelessWidget {
             children: [
               Icon(Icons.add_a_photo, size: 18, color: colorScheme.primary),
               const SizedBox(width: 8),
-              Text('Add photo',
+              Text(l.addPhoto,
                   style: theme.textTheme.labelLarge
                       ?.copyWith(color: colorScheme.primary)),
             ],
@@ -984,7 +989,7 @@ class _PhotosSection extends StatelessWidget {
           children: [
             Icon(Icons.photo_library, size: 20, color: colorScheme.primary),
             const SizedBox(width: 8),
-            Text('Photos',
+            Text(l.photos,
                 style: theme.textTheme.titleSmall
                     ?.copyWith(fontWeight: FontWeight.w600)),
           ],
@@ -1028,8 +1033,8 @@ class _PhotosSection extends StatelessWidget {
               const SizedBox(height: 8),
               Text(
                 _totalCount > 0
-                    ? '$_totalCount/4 photos${pendingPhotos.isNotEmpty ? ' (${pendingPhotos.length} will upload on save)' : ''}'
-                    : 'You can add up to 4 pictures, max 2 MB per photo',
+                    ? '$_totalCount/4 ${l.photos}${pendingPhotos.isNotEmpty ? ' (${pendingPhotos.length} will upload on save)' : ''}'
+                    : l.upTo4Photos,
                 style: theme.textTheme.bodySmall
                     ?.copyWith(color: colorScheme.outline),
                 textAlign: TextAlign.center,
@@ -1065,7 +1070,7 @@ class _PhotosSection extends StatelessWidget {
             top: 4,
             right: 4,
             child: Semantics(
-              label: 'Delete photo',
+              label: AppLocalizations.of(context)!.removePhoto,
               button: true,
               child: GestureDetector(
                 onTap: () => onDelete(photo),
@@ -1129,7 +1134,7 @@ class _PhotosSection extends StatelessWidget {
               top: 4,
               right: 4,
               child: Semantics(
-                label: 'Remove pending photo',
+                label: AppLocalizations.of(context)!.removePhoto,
                 button: true,
                 child: GestureDetector(
                   onTap: () => onRemovePending(pendingIndex),
@@ -1169,7 +1174,7 @@ class _PhotosSection extends StatelessWidget {
               right: 8,
               child: IconButton(
                 icon: const Icon(Icons.close, color: Colors.white, size: 28),
-                tooltip: 'Close',
+                tooltip: AppLocalizations.of(context)!.close,
                 onPressed: () => Navigator.pop(ctx),
               ),
             ),

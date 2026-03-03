@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/utils/constants.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../providers/auth_providers.dart';
 
 class SignupScreen extends ConsumerStatefulWidget {
@@ -48,6 +49,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
   Widget build(BuildContext context) {
     final auth = ref.watch(authProvider);
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
       body: SafeArea(
@@ -68,11 +70,11 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                         semanticLabel: 'Agatha Check logo'),
                   ),
                   const SizedBox(height: 16),
-                  Text(AppConstants.appTitle,
+                  Text(l10n.appTitle,
                       style: theme.textTheme.headlineMedium?.copyWith(
                           fontWeight: FontWeight.bold)),
                   const SizedBox(height: 8),
-                  Text('Create your account',
+                  Text(l10n.createYourAccount,
                       style: theme.textTheme.bodyLarge?.copyWith(
                           color: theme.colorScheme.onSurfaceVariant)),
                   const SizedBox(height: 32),
@@ -83,9 +85,9 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                         TextFormField(
                           key: const Key('signup_name_field'),
                           controller: _nameController,
-                          decoration: const InputDecoration(
-                            labelText: 'Name',
-                            prefixIcon: Icon(Icons.person_outlined),
+                          decoration: InputDecoration(
+                            labelText: l10n.name,
+                            prefixIcon: const Icon(Icons.person_outlined),
                           ),
                           textCapitalization: TextCapitalization.words,
                           autofillHints: const [AutofillHints.name],
@@ -94,17 +96,17 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                         TextFormField(
                           key: const Key('signup_email_field'),
                           controller: _emailController,
-                          decoration: const InputDecoration(
-                            labelText: 'Email',
-                            prefixIcon: Icon(Icons.email_outlined),
+                          decoration: InputDecoration(
+                            labelText: l10n.email,
+                            prefixIcon: const Icon(Icons.email_outlined),
                           ),
                           keyboardType: TextInputType.emailAddress,
                           autofillHints: const [AutofillHints.email],
                           validator: (v) {
                             if (v == null || v.trim().isEmpty) {
-                              return 'Email is required';
+                              return l10n.emailRequired;
                             }
-                            if (!v.contains('@')) return 'Enter a valid email';
+                            if (!v.contains('@')) return l10n.enterValidEmail;
                             return null;
                           },
                         ),
@@ -113,12 +115,12 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                           key: const Key('signup_password_field'),
                           controller: _passwordController,
                           decoration: InputDecoration(
-                            labelText: 'Password',
+                            labelText: l10n.password,
                             prefixIcon: const Icon(Icons.lock_outlined),
                             suffixIcon: IconButton(
                               tooltip: _obscurePassword
-                                  ? 'Show password'
-                                  : 'Hide password',
+                                  ? l10n.showPassword
+                                  : l10n.hidePassword,
                               icon: Icon(_obscurePassword
                                   ? Icons.visibility_off
                                   : Icons.visibility),
@@ -130,10 +132,10 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                           autofillHints: const [AutofillHints.newPassword],
                           validator: (v) {
                             if (v == null || v.isEmpty) {
-                              return 'Password is required';
+                              return l10n.passwordRequired;
                             }
                             if (v.length < 6) {
-                              return 'At least 6 characters';
+                              return l10n.atLeast6Characters;
                             }
                             return null;
                           },
@@ -142,14 +144,14 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                         TextFormField(
                           key: const Key('signup_confirm_password_field'),
                           controller: _confirmController,
-                          decoration: const InputDecoration(
-                            labelText: 'Confirm Password',
-                            prefixIcon: Icon(Icons.lock_outlined),
+                          decoration: InputDecoration(
+                            labelText: l10n.confirmPassword,
+                            prefixIcon: const Icon(Icons.lock_outlined),
                           ),
                           obscureText: true,
                           validator: (v) {
                             if (v != _passwordController.text) {
-                              return 'Passwords do not match';
+                              return l10n.passwordsDoNotMatch;
                             }
                             return null;
                           },
@@ -194,17 +196,17 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                                     width: 20,
                                     child: CircularProgressIndicator(
                                         strokeWidth: 2))
-                                : const Text('Create Account'),
+                                : Text(l10n.createAccount),
                           ),
                         ),
                         const SizedBox(height: 16),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            const Text('Already have an account?'),
+                            Text(l10n.alreadyHaveAccount),
                             TextButton(
                               onPressed: () => context.go('/login'),
-                              child: const Text('Sign In'),
+                              child: Text(l10n.signIn),
                             ),
                           ],
                         ),
