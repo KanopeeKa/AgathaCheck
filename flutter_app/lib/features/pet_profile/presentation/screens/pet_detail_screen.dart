@@ -1327,9 +1327,18 @@ class _SharingSection extends ConsumerWidget {
                                 final petJson = PetModel.fromEntity(pet).toJson();
                                 petJson.remove('photoPath');
                                 try {
+                                  final token = await ref.read(authProvider.notifier).getValidAccessToken();
+                                  if (token == null) {
+                                    if (context.mounted) {
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        const SnackBar(content: Text('Session expired. Please log in again.')),
+                                      );
+                                    }
+                                    return;
+                                  }
                                   final ds = ref.read(sharingDataSourceProvider);
                                   final code = await ds.createShare(
-                                      petId, petJson, authState.accessToken!);
+                                      petId, petJson, token);
                                   if (!context.mounted) return;
                                   final uri = Uri.base;
                                   final shareUrl = '${uri.scheme}://${uri.host}'

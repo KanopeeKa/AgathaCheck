@@ -10,8 +10,7 @@ final sharingDataSourceProvider = Provider<SharingRemoteDataSource>((ref) {
 
 final petAccessProvider =
     FutureProvider.family<List<PetAccess>, String>((ref, petId) async {
-  final authState = ref.watch(authProvider);
-  final token = authState.accessToken;
+  final token = await ref.read(authProvider.notifier).getValidAccessToken();
   if (token == null) return [];
   final ds = ref.watch(sharingDataSourceProvider);
   return ds.getAccess(petId, token);
@@ -31,11 +30,14 @@ class PetAccessNotifier extends StateNotifier<AsyncValue<List<PetAccess>>> {
     _load();
   }
 
+  Future<String?> _getToken() async {
+    return _ref.read(authProvider.notifier).getValidAccessToken();
+  }
+
   Future<void> _load() async {
     state = const AsyncValue.loading();
     try {
-      final authState = _ref.read(authProvider);
-      final token = authState.accessToken;
+      final token = await _getToken();
       if (token == null) {
         state = const AsyncValue.data([]);
         return;
@@ -53,8 +55,7 @@ class PetAccessNotifier extends StateNotifier<AsyncValue<List<PetAccess>>> {
   }
 
   Future<void> updateRole(int userId, PetAccessRole role) async {
-    final authState = _ref.read(authProvider);
-    final token = authState.accessToken;
+    final token = await _getToken();
     if (token == null) return;
     final ds = _ref.read(sharingDataSourceProvider);
     final roleStr = role == PetAccessRole.guardian ? 'guardian' : 'shared';
@@ -63,8 +64,7 @@ class PetAccessNotifier extends StateNotifier<AsyncValue<List<PetAccess>>> {
   }
 
   Future<void> removeAccess(int userId) async {
-    final authState = _ref.read(authProvider);
-    final token = authState.accessToken;
+    final token = await _getToken();
     if (token == null) return;
     final ds = _ref.read(sharingDataSourceProvider);
     await ds.removeAccess(petId, userId, token);

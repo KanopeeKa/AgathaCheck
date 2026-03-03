@@ -193,6 +193,30 @@ class AuthNotifier extends StateNotifier<AuthState> {
     return msg;
   }
 
+  Future<String?> getValidAccessToken() async {
+    if (state.accessToken == null || state.refreshToken == null) return null;
+    try {
+      await _authService.getMe(state.accessToken!);
+      return state.accessToken;
+    } catch (_) {
+      try {
+        final newAccess = await _authService.refreshToken(state.refreshToken!);
+        await _prefs.setString(_accessTokenKey, newAccess);
+        final user = await _authService.getMe(newAccess);
+        state = AuthState(
+          user: user,
+          accessToken: newAccess,
+          refreshToken: state.refreshToken,
+        );
+        return newAccess;
+      } catch (_) {
+        await _clearTokens();
+        state = const AuthState();
+        return null;
+      }
+    }
+  }
+
   void clearError() {
     state = state.copyWith(clearError: true);
   }
