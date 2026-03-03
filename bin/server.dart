@@ -3217,10 +3217,13 @@ Future<void> _checkDueNotifications(HttpRequest request) async {
   final dueEntries = await _pool.execute(
     Sql.named('''
       SELECT he.* FROM health_entries he
+      JOIN pets p ON p.id::text = he.pet_id
       WHERE he.next_due_date <= NOW() + make_interval(days => @reminderDays)
       AND he.next_due_date IS NOT NULL
+      AND (p.user_id = @userId
+           OR p.id::text IN (SELECT pet_id FROM pet_access WHERE user_id = @userId))
     '''),
-    parameters: {'reminderDays': reminderDays},
+    parameters: {'reminderDays': reminderDays, 'userId': userId},
   );
 
   int created = 0;
