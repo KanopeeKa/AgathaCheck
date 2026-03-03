@@ -264,6 +264,32 @@ Future<void> main() async {
 
   print('health_issues tables ready');
 
+  await _db.execute(Sql('''
+    CREATE TABLE IF NOT EXISTS pets (
+      id VARCHAR(255) PRIMARY KEY,
+      user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      name VARCHAR(255) NOT NULL,
+      species VARCHAR(100) NOT NULL,
+      breed VARCHAR(255) DEFAULT '',
+      age DOUBLE PRECISION,
+      weight DOUBLE PRECISION,
+      gender VARCHAR(50),
+      bio TEXT DEFAULT '',
+      insurance TEXT DEFAULT '',
+      neutered_date DATE,
+      neuter_dismissed BOOLEAN DEFAULT FALSE,
+      chip_id VARCHAR(255) DEFAULT '',
+      chip_dismissed BOOLEAN DEFAULT FALSE,
+      photo_path TEXT,
+      vet_id VARCHAR(255),
+      color_value INTEGER,
+      passed_away BOOLEAN DEFAULT FALSE,
+      created_at TIMESTAMPTZ DEFAULT NOW(),
+      updated_at TIMESTAMPTZ DEFAULT NOW()
+    )
+  '''));
+  print('pets table ready');
+
   final uploadsDir = Directory('uploads');
   if (!uploadsDir.existsSync()) {
     uploadsDir.createSync(recursive: true);
@@ -370,6 +396,17 @@ Future<Map<String, dynamic>?> _authenticateRequest(HttpRequest request) async {
   return _verifyAccessToken(token);
 }
 
+int? _getUserIdFromRequest(HttpRequest request) {
+  final authHeader = request.headers.value('authorization');
+  if (authHeader == null || !authHeader.startsWith('Bearer ')) return null;
+  final token = authHeader.substring(7);
+  final payload = _verifyAccessToken(token);
+  if (payload == null) return null;
+  final sub = payload['sub'];
+  if (sub == null) return null;
+  return int.tryParse(sub.toString());
+}
+
 // ── Password helpers ─────────────────────────────────────────
 
 String _hashPassword(String password) {
@@ -407,6 +444,16 @@ Future<void> _handleApi(HttpRequest request) async {
     await _authForgotPassword(request);
   } else if (path == '/api/auth/reset-password' && method == 'POST') {
     await _authResetPassword(request);
+  }
+  // Pets CRUD
+  else if (path == '/api/pets' && method == 'GET') {
+    await _getPets(request);
+  } else if (path == '/api/pets' && method == 'POST') {
+    await _createPet(request);
+  } else if (RegExp(r'^/api/pets/[^/]+$').hasMatch(path) && method == 'PUT') {
+    await _updatePet(request);
+  } else if (RegExp(r'^/api/pets/[^/]+$').hasMatch(path) && method == 'DELETE') {
+    await _deletePetRecord(request);
   }
   // Health entries
   else if (path == '/api/health-entries' && method == 'GET') {
@@ -546,6 +593,237 @@ Map<String, dynamic> _userToJson(ResultRow row) {
     'created_at': cols['created_at'].toString(),
     'updated_at': cols['updated_at'].toString(),
   };
+}
+
+// ── Pet CRUD handlers ────────────────────────────────────────
+
+Map<String, dynamic> _petRowToJson(ResultRow row) {
+  final cols = row.toColumnMap();
+  return {
+    'id': cols['id'].toString(),
+    'user_id': cols['user_id'].toString(),
+    'name': (cols['name'] ?? '').toString(),
+    'species': (cols['species'] ?? '').toString(),
+    'breed': (cols['breed'] ?? '').toString(),
+    'age': cols['age'],
+    'weight': cols['weight'],
+    'gender': cols['gender']?.toString(),
+    'bio': (cols['bio'] ?? '').toString(),
+    'insurance': (cols['insurance'] ?? '').toString(),
+    'neuteredDate': cols['neutered_date']?.toString(),
+    'neuterDismissed': cols['neuter_dismissed'] == true,
+    'chipId': (cols['chip_id'] ?? '').toString(),
+    'chipDismissed': cols['chip_dismissed'] == true,
+    'photoPath': cols['photo_path']?.toString(),
+    'vetId': cols['vet_id']?.toString(),
+    'colorValue': cols['color_value'],
+    'passedAway': cols['passed_away'] == true,
+    'created_at': cols['created_at']?.toString(),
+    'updated_at': cols['updated_at']?.toString(),
+  };
+}
+
+Future<void> _getPets(HttpRequest request) async {
+  final userId = _getUserIdFromRequest(request);
+  if (userId == null) {
+    _jsonResponse(request, 401, {'error': 'Authentication required'});
+    return;
+  }
+
+  final result = await _db.execute(
+    Sql.named('SELECT * FROM pets WHERE user_id = @userId ORDER BY created_at'),
+    parameters: {'userId': userId},
+  );
+  final pets = result.map(_petRowToJson).toList();
+  _jsonResponse(request, 200, pets);
+}
+
+Future<void> _createPet(HttpRequest request) async {
+  final userId = _getUserIdFromRequest(request);
+  if (userId == null) {
+    _jsonResponse(request, 401, {'error': 'Authentication required'});
+    return;
+  }
+
+  final body = await _readJson(request);
+  if (body == null) return;
+
+  final id = body['id'] as String? ?? '';
+  final name = body['name'] as String? ?? '';
+  final species = body['species'] as String? ?? '';
+
+  if (id.isEmpty || name.isEmpty || species.isEmpty) {
+    _jsonResponse(request, 400, {'error': 'id, name, and species are required'});
+    return;
+  }
+
+  final existing = await _db.execute(
+    Sql.named('SELECT id FROM pets WHERE id = @id'),
+    parameters: {'id': id},
+  );
+  if (existing.isNotEmpty) {
+    await _db.execute(
+      Sql.named('''
+        UPDATE pets SET user_id = @userId, name = @name, species = @species,
+          breed = @breed, age = ${body['age'] != null ? '@age' : 'NULL'},
+          weight = ${body['weight'] != null ? '@weight' : 'NULL'},
+          gender = ${body['gender'] != null ? '@gender' : 'NULL'},
+          bio = @bio, insurance = @insurance,
+          neutered_date = ${body['neuteredDate'] != null ? '@neuteredDate::date' : 'NULL'},
+          neuter_dismissed = @neuterDismissed,
+          chip_id = @chipId, chip_dismissed = @chipDismissed,
+          photo_path = ${body['photoPath'] != null ? '@photoPath' : 'NULL'},
+          vet_id = ${body['vetId'] != null ? '@vetId' : 'NULL'},
+          color_value = ${body['colorValue'] != null ? '@colorValue' : 'NULL'},
+          passed_away = @passedAway,
+          updated_at = NOW()
+        WHERE id = @id
+        RETURNING *
+      '''),
+      parameters: {
+        'id': id,
+        'userId': userId,
+        'name': name,
+        'species': species,
+        'breed': (body['breed'] ?? '').toString(),
+        if (body['age'] != null) 'age': (body['age'] as num).toDouble(),
+        if (body['weight'] != null) 'weight': (body['weight'] as num).toDouble(),
+        if (body['gender'] != null) 'gender': body['gender'].toString(),
+        'bio': (body['bio'] ?? '').toString(),
+        'insurance': (body['insurance'] ?? '').toString(),
+        if (body['neuteredDate'] != null) 'neuteredDate': body['neuteredDate'].toString(),
+        'neuterDismissed': body['neuterDismissed'] == true,
+        'chipId': (body['chipId'] ?? '').toString(),
+        'chipDismissed': body['chipDismissed'] == true,
+        if (body['photoPath'] != null) 'photoPath': body['photoPath'].toString(),
+        if (body['vetId'] != null) 'vetId': body['vetId'].toString(),
+        if (body['colorValue'] != null) 'colorValue': body['colorValue'] as int,
+        'passedAway': body['passedAway'] == true,
+      },
+    );
+    final updated = await _db.execute(
+      Sql.named('SELECT * FROM pets WHERE id = @id'),
+      parameters: {'id': id},
+    );
+    _jsonResponse(request, 200, _petRowToJson(updated.first));
+    return;
+  }
+
+  await _db.execute(
+    Sql.named('''
+      INSERT INTO pets (id, user_id, name, species, breed, age, weight, gender, bio, insurance, neutered_date, neuter_dismissed, chip_id, chip_dismissed, photo_path, vet_id, color_value, passed_away)
+      VALUES (@id, @userId, @name, @species, @breed, ${body['age'] != null ? '@age' : 'NULL'}, ${body['weight'] != null ? '@weight' : 'NULL'}, ${body['gender'] != null ? '@gender' : 'NULL'}, @bio, @insurance, ${body['neuteredDate'] != null ? '@neuteredDate::date' : 'NULL'}, @neuterDismissed, @chipId, @chipDismissed, ${body['photoPath'] != null ? '@photoPath' : 'NULL'}, ${body['vetId'] != null ? '@vetId' : 'NULL'}, ${body['colorValue'] != null ? '@colorValue' : 'NULL'}, @passedAway)
+    '''),
+    parameters: {
+      'id': id,
+      'userId': userId,
+      'name': name,
+      'species': species,
+      'breed': (body['breed'] ?? '').toString(),
+      if (body['age'] != null) 'age': (body['age'] as num).toDouble(),
+      if (body['weight'] != null) 'weight': (body['weight'] as num).toDouble(),
+      if (body['gender'] != null) 'gender': body['gender'].toString(),
+      'bio': (body['bio'] ?? '').toString(),
+      'insurance': (body['insurance'] ?? '').toString(),
+      if (body['neuteredDate'] != null) 'neuteredDate': body['neuteredDate'].toString(),
+      'neuterDismissed': body['neuterDismissed'] == true,
+      'chipId': (body['chipId'] ?? '').toString(),
+      'chipDismissed': body['chipDismissed'] == true,
+      if (body['photoPath'] != null) 'photoPath': body['photoPath'].toString(),
+      if (body['vetId'] != null) 'vetId': body['vetId'].toString(),
+      if (body['colorValue'] != null) 'colorValue': body['colorValue'] as int,
+      'passedAway': body['passedAway'] == true,
+    },
+  );
+
+  final created = await _db.execute(
+    Sql.named('SELECT * FROM pets WHERE id = @id'),
+    parameters: {'id': id},
+  );
+  _jsonResponse(request, 201, _petRowToJson(created.first));
+}
+
+Future<void> _updatePet(HttpRequest request) async {
+  final userId = _getUserIdFromRequest(request);
+  if (userId == null) {
+    _jsonResponse(request, 401, {'error': 'Authentication required'});
+    return;
+  }
+
+  final petId = request.uri.pathSegments.last;
+  final body = await _readJson(request);
+  if (body == null) return;
+
+  final existing = await _db.execute(
+    Sql.named('SELECT * FROM pets WHERE id = @id AND user_id = @userId'),
+    parameters: {'id': petId, 'userId': userId},
+  );
+  if (existing.isEmpty) {
+    _jsonResponse(request, 404, {'error': 'Pet not found'});
+    return;
+  }
+
+  await _db.execute(
+    Sql.named('''
+      UPDATE pets SET
+        name = @name, species = @species, breed = @breed,
+        age = ${body['age'] != null ? '@age' : 'NULL'},
+        weight = ${body['weight'] != null ? '@weight' : 'NULL'},
+        gender = ${body['gender'] != null ? '@gender' : 'NULL'},
+        bio = @bio, insurance = @insurance,
+        neutered_date = ${body['neuteredDate'] != null ? '@neuteredDate::date' : 'NULL'},
+        neuter_dismissed = @neuterDismissed,
+        chip_id = @chipId, chip_dismissed = @chipDismissed,
+        photo_path = ${body['photoPath'] != null ? '@photoPath' : 'NULL'},
+        vet_id = ${body['vetId'] != null ? '@vetId' : 'NULL'},
+        color_value = ${body['colorValue'] != null ? '@colorValue' : 'NULL'},
+        passed_away = @passedAway,
+        updated_at = NOW()
+      WHERE id = @id AND user_id = @userId
+      RETURNING *
+    '''),
+    parameters: {
+      'id': petId,
+      'userId': userId,
+      'name': (body['name'] ?? '').toString(),
+      'species': (body['species'] ?? '').toString(),
+      'breed': (body['breed'] ?? '').toString(),
+      if (body['age'] != null) 'age': (body['age'] as num).toDouble(),
+      if (body['weight'] != null) 'weight': (body['weight'] as num).toDouble(),
+      if (body['gender'] != null) 'gender': body['gender'].toString(),
+      'bio': (body['bio'] ?? '').toString(),
+      'insurance': (body['insurance'] ?? '').toString(),
+      if (body['neuteredDate'] != null) 'neuteredDate': body['neuteredDate'].toString(),
+      'neuterDismissed': body['neuterDismissed'] == true,
+      'chipId': (body['chipId'] ?? '').toString(),
+      'chipDismissed': body['chipDismissed'] == true,
+      if (body['photoPath'] != null) 'photoPath': body['photoPath'].toString(),
+      if (body['vetId'] != null) 'vetId': body['vetId'].toString(),
+      if (body['colorValue'] != null) 'colorValue': body['colorValue'] as int,
+      'passedAway': body['passedAway'] == true,
+    },
+  );
+
+  final updated = await _db.execute(
+    Sql.named('SELECT * FROM pets WHERE id = @id'),
+    parameters: {'id': petId},
+  );
+  _jsonResponse(request, 200, _petRowToJson(updated.first));
+}
+
+Future<void> _deletePetRecord(HttpRequest request) async {
+  final userId = _getUserIdFromRequest(request);
+  if (userId == null) {
+    _jsonResponse(request, 401, {'error': 'Authentication required'});
+    return;
+  }
+
+  final petId = request.uri.pathSegments.last;
+  await _db.execute(
+    Sql.named('DELETE FROM pets WHERE id = @id AND user_id = @userId'),
+    parameters: {'id': petId, 'userId': userId},
+  );
+  _jsonResponse(request, 200, {'message': 'Pet deleted'});
 }
 
 // ── Auth handlers ────────────────────────────────────────────
