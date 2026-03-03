@@ -22,7 +22,7 @@ import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart';
 import 'package:dbcrypt/dbcrypt.dart';
 import 'package:postgres/postgres.dart';
 
-late Connection _db;
+late Pool _pool;
 late String _jwtSecret;
 const _accessTokenExpiry = Duration(minutes: 30);
 const _refreshTokenExpiry = Duration(days: 30);
@@ -133,20 +133,28 @@ Future<void> main() async {
     password: Platform.environment['PGPASSWORD'] ?? '',
   );
 
+  SslMode sslMode;
   try {
-    _db = await Connection.open(
+    final testConn = await Connection.open(
       endpoint,
       settings: ConnectionSettings(sslMode: SslMode.disable),
     );
+    await testConn.close();
+    sslMode = SslMode.disable;
   } catch (_) {
-    _db = await Connection.open(
-      endpoint,
-      settings: ConnectionSettings(sslMode: SslMode.require),
-    );
+    sslMode = SslMode.require;
   }
-  print('Connected to PostgreSQL');
 
-  await _db.execute(Sql('''
+  _pool = Pool.withEndpoints(
+    [endpoint],
+    settings: PoolSettings(
+      maxConnectionCount: 5,
+      sslMode: sslMode,
+    ),
+  );
+  print('Connected to PostgreSQL (pool)');
+
+  await _pool.execute(Sql('''
     CREATE TABLE IF NOT EXISTS shared_pets (
       id SERIAL PRIMARY KEY,
       share_code VARCHAR(12) UNIQUE NOT NULL,
@@ -158,7 +166,7 @@ Future<void> main() async {
   '''));
   print('shared_pets table ready');
 
-  await _db.execute(Sql('''
+  await _pool.execute(Sql('''
     CREATE TABLE IF NOT EXISTS users (
       id SERIAL PRIMARY KEY,
       email VARCHAR(255) UNIQUE NOT NULL,
@@ -169,37 +177,37 @@ Future<void> main() async {
     )
   '''));
 
-  await _db.execute(Sql('''
+  await _pool.execute(Sql('''
     DO \$\$ BEGIN
       ALTER TABLE users ADD COLUMN first_name VARCHAR(100) DEFAULT '';
     EXCEPTION WHEN OTHERS THEN NULL;
     END \$\$;
   '''));
-  await _db.execute(Sql('''
+  await _pool.execute(Sql('''
     DO \$\$ BEGIN
       ALTER TABLE users ADD COLUMN last_name VARCHAR(100) DEFAULT '';
     EXCEPTION WHEN OTHERS THEN NULL;
     END \$\$;
   '''));
-  await _db.execute(Sql('''
+  await _pool.execute(Sql('''
     DO \$\$ BEGIN
       ALTER TABLE users ADD COLUMN category VARCHAR(50) DEFAULT 'pet_guardian';
     EXCEPTION WHEN OTHERS THEN NULL;
     END \$\$;
   '''));
-  await _db.execute(Sql('''
+  await _pool.execute(Sql('''
     DO \$\$ BEGIN
       ALTER TABLE users ADD COLUMN bio TEXT DEFAULT '';
     EXCEPTION WHEN OTHERS THEN NULL;
     END \$\$;
   '''));
-  await _db.execute(Sql('''
+  await _pool.execute(Sql('''
     DO \$\$ BEGIN
       ALTER TABLE users ADD COLUMN photo_url TEXT DEFAULT '';
     EXCEPTION WHEN OTHERS THEN NULL;
     END \$\$;
   '''));
-  await _db.execute(Sql('''
+  await _pool.execute(Sql('''
     DO \$\$ BEGIN
       ALTER TABLE users ADD COLUMN locale VARCHAR(10) DEFAULT 'en';
     EXCEPTION WHEN OTHERS THEN NULL;
@@ -207,7 +215,7 @@ Future<void> main() async {
   '''));
   print('users table ready');
 
-  await _db.execute(Sql('''
+  await _pool.execute(Sql('''
     DO \$\$ BEGIN
       ALTER TABLE shared_pets ADD COLUMN user_id INTEGER DEFAULT NULL;
     EXCEPTION WHEN OTHERS THEN NULL;
@@ -215,7 +223,7 @@ Future<void> main() async {
   '''));
   print('shared_pets user_id column ready');
 
-  await _db.execute(Sql('''
+  await _pool.execute(Sql('''
     CREATE TABLE IF NOT EXISTS refresh_tokens (
       id SERIAL PRIMARY KEY,
       user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
@@ -226,7 +234,7 @@ Future<void> main() async {
   '''));
   print('refresh_tokens table ready');
 
-  await _db.execute(Sql('''
+  await _pool.execute(Sql('''
     CREATE TABLE IF NOT EXISTS password_reset_tokens (
       id SERIAL PRIMARY KEY,
       user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
@@ -238,7 +246,7 @@ Future<void> main() async {
   '''));
   print('password_reset_tokens table ready');
 
-  await _db.execute(Sql('''
+  await _pool.execute(Sql('''
     CREATE TABLE IF NOT EXISTS notifications (
       id SERIAL PRIMARY KEY,
       user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
@@ -253,7 +261,7 @@ Future<void> main() async {
   '''));
   print('notifications table ready');
 
-  await _db.execute(Sql('''
+  await _pool.execute(Sql('''
     CREATE TABLE IF NOT EXISTS notification_preferences (
       user_id INTEGER PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
       email_reminders_enabled BOOLEAN NOT NULL DEFAULT FALSE,
@@ -263,15 +271,15 @@ Future<void> main() async {
       updated_at TIMESTAMPTZ DEFAULT NOW()
     )
   '''));
-  await _db.execute(Sql('''
+  await _pool.execute(Sql('''
     ALTER TABLE notification_preferences ADD COLUMN IF NOT EXISTS notify_completed BOOLEAN NOT NULL DEFAULT TRUE
   '''));
-  await _db.execute(Sql('''
+  await _pool.execute(Sql('''
     ALTER TABLE notification_preferences ADD COLUMN IF NOT EXISTS muted_pet_ids TEXT NOT NULL DEFAULT ''
   '''));
   print('notification_preferences table ready');
 
-  await _db.execute(Sql('''
+  await _pool.execute(Sql('''
     CREATE TABLE IF NOT EXISTS weight_entries (
       id SERIAL PRIMARY KEY,
       pet_id VARCHAR(255) NOT NULL,
@@ -283,7 +291,7 @@ Future<void> main() async {
   '''));
   print('weight_entries table ready');
 
-  await _db.execute(Sql('''
+  await _pool.execute(Sql('''
     CREATE TABLE IF NOT EXISTS pet_access (
       id SERIAL PRIMARY KEY,
       pet_id VARCHAR(255) NOT NULL,
@@ -297,11 +305,11 @@ Future<void> main() async {
   '''));
   print('pet_access table ready');
 
-  await _db.execute(Sql('''
+  await _pool.execute(Sql('''
     ALTER TABLE health_entries ADD COLUMN IF NOT EXISTS repeat_end_date DATE
   '''));
 
-  await _db.execute(Sql('''
+  await _pool.execute(Sql('''
     DO \$\$ BEGIN
       ALTER TABLE health_entries ADD COLUMN IF NOT EXISTS frequency_interval INT DEFAULT 1;
       ALTER TABLE health_entries DROP CONSTRAINT IF EXISTS health_entries_frequency_check;
@@ -316,7 +324,7 @@ Future<void> main() async {
   '''));
   print('health_entries schema updated');
 
-  await _db.execute(Sql('''
+  await _pool.execute(Sql('''
     CREATE TABLE IF NOT EXISTS health_event_photos (
       id SERIAL PRIMARY KEY,
       event_id VARCHAR(255) NOT NULL,
@@ -327,7 +335,7 @@ Future<void> main() async {
   '''));
   print('health_event_photos table ready');
 
-  await _db.execute(Sql('''
+  await _pool.execute(Sql('''
     CREATE TABLE IF NOT EXISTS health_issues (
       id SERIAL PRIMARY KEY,
       pet_id VARCHAR(255) NOT NULL,
@@ -340,7 +348,7 @@ Future<void> main() async {
     )
   '''));
 
-  await _db.execute(Sql('''
+  await _pool.execute(Sql('''
     CREATE TABLE IF NOT EXISTS health_issue_events (
       health_issue_id INT NOT NULL REFERENCES health_issues(id) ON DELETE CASCADE,
       health_entry_id UUID NOT NULL,
@@ -348,16 +356,16 @@ Future<void> main() async {
     )
   '''));
 
-  await _db.execute(Sql('''
+  await _pool.execute(Sql('''
     ALTER TABLE health_entries ADD COLUMN IF NOT EXISTS health_issue_id INT REFERENCES health_issues(id) ON DELETE SET NULL
   '''));
 
-  await _db.execute(Sql('ALTER TABLE health_issues ADD COLUMN IF NOT EXISTS start_date DATE'));
-  await _db.execute(Sql('ALTER TABLE health_issues ADD COLUMN IF NOT EXISTS end_date DATE'));
+  await _pool.execute(Sql('ALTER TABLE health_issues ADD COLUMN IF NOT EXISTS start_date DATE'));
+  await _pool.execute(Sql('ALTER TABLE health_issues ADD COLUMN IF NOT EXISTS end_date DATE'));
 
   print('health_issues tables ready');
 
-  await _db.execute(Sql('''
+  await _pool.execute(Sql('''
     CREATE TABLE IF NOT EXISTS pets (
       id VARCHAR(255) PRIMARY KEY,
       user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
@@ -382,11 +390,11 @@ Future<void> main() async {
       updated_at TIMESTAMPTZ DEFAULT NOW()
     )
   '''));
-  await _db.execute(Sql('ALTER TABLE pets ADD COLUMN IF NOT EXISTS date_of_birth DATE'));
-  await _db.execute(Sql('ALTER TABLE pets ALTER COLUMN color_value TYPE BIGINT'));
+  await _pool.execute(Sql('ALTER TABLE pets ADD COLUMN IF NOT EXISTS date_of_birth DATE'));
+  await _pool.execute(Sql('ALTER TABLE pets ALTER COLUMN color_value TYPE BIGINT'));
   print('pets table ready');
 
-  await _db.execute(Sql('''
+  await _pool.execute(Sql('''
     CREATE TABLE IF NOT EXISTS organizations (
       id SERIAL PRIMARY KEY,
       name VARCHAR(255) NOT NULL,
@@ -404,7 +412,7 @@ Future<void> main() async {
   '''));
   print('organizations table ready');
 
-  await _db.execute(Sql('''
+  await _pool.execute(Sql('''
     CREATE TABLE IF NOT EXISTS organization_users (
       id SERIAL PRIMARY KEY,
       organization_id INTEGER NOT NULL REFERENCES organizations(id) ON DELETE CASCADE,
@@ -419,7 +427,7 @@ Future<void> main() async {
   '''));
   print('organization_users table ready');
 
-  await _db.execute(Sql('''
+  await _pool.execute(Sql('''
     CREATE TABLE IF NOT EXISTS archived_pets (
       id SERIAL PRIMARY KEY,
       organization_id INTEGER REFERENCES organizations(id) ON DELETE SET NULL,
@@ -438,7 +446,7 @@ Future<void> main() async {
   '''));
   print('archived_pets table ready');
 
-  await _db.execute(Sql('''
+  await _pool.execute(Sql('''
     DO \$\$ BEGIN
       ALTER TABLE pets ADD COLUMN organization_id INTEGER REFERENCES organizations(id) ON DELETE SET NULL;
     EXCEPTION WHEN OTHERS THEN NULL;
@@ -795,7 +803,7 @@ Map<String, dynamic> _userToJson(ResultRow row) {
 }
 
 Future<String> _getUserLocale(int userId) async {
-  final r = await _db.execute(
+  final r = await _pool.execute(
     Sql.named('SELECT locale FROM users WHERE id = @id'),
     parameters: {'id': userId},
   );
@@ -841,7 +849,7 @@ Future<void> _getPets(HttpRequest request) async {
     return;
   }
 
-  final result = await _db.execute(
+  final result = await _pool.execute(
     Sql.named('SELECT * FROM pets WHERE user_id = @userId AND organization_id IS NULL ORDER BY created_at'),
     parameters: {'userId': userId},
   );
@@ -868,12 +876,12 @@ Future<void> _createPet(HttpRequest request) async {
     return;
   }
 
-  final existing = await _db.execute(
+  final existing = await _pool.execute(
     Sql.named('SELECT id FROM pets WHERE id = @id'),
     parameters: {'id': id},
   );
   if (existing.isNotEmpty) {
-    await _db.execute(
+    await _pool.execute(
       Sql.named('''
         UPDATE pets SET user_id = @userId, name = @name, species = @species,
           breed = @breed,
@@ -913,7 +921,7 @@ Future<void> _createPet(HttpRequest request) async {
         'passedAway': body['passedAway'] == true,
       },
     );
-    final updated = await _db.execute(
+    final updated = await _pool.execute(
       Sql.named('SELECT * FROM pets WHERE id = @id'),
       parameters: {'id': id},
     );
@@ -921,7 +929,7 @@ Future<void> _createPet(HttpRequest request) async {
     return;
   }
 
-  await _db.execute(
+  await _pool.execute(
     Sql.named('''
       INSERT INTO pets (id, user_id, name, species, breed, date_of_birth, weight, gender, bio, insurance, neutered_date, neuter_dismissed, chip_id, chip_dismissed, photo_path, vet_id, color_value, passed_away)
       VALUES (@id, @userId, @name, @species, @breed, ${body['dateOfBirth'] != null ? '@dateOfBirth::date' : 'NULL'}, ${body['weight'] != null ? '@weight' : 'NULL'}, ${body['gender'] != null ? '@gender' : 'NULL'}, @bio, @insurance, ${body['neuteredDate'] != null ? '@neuteredDate::date' : 'NULL'}, @neuterDismissed, @chipId, @chipDismissed, ${body['photoPath'] != null ? '@photoPath' : 'NULL'}, ${body['vetId'] != null ? '@vetId' : 'NULL'}, ${body['colorValue'] != null ? '@colorValue' : 'NULL'}, @passedAway)
@@ -948,7 +956,7 @@ Future<void> _createPet(HttpRequest request) async {
     },
   );
 
-  final created = await _db.execute(
+  final created = await _pool.execute(
     Sql.named('SELECT * FROM pets WHERE id = @id'),
     parameters: {'id': id},
   );
@@ -966,7 +974,7 @@ Future<void> _updatePet(HttpRequest request) async {
   final body = await _readJson(request);
   if (body == null) return;
 
-  final existing = await _db.execute(
+  final existing = await _pool.execute(
     Sql.named('SELECT * FROM pets WHERE id = @id AND user_id = @userId'),
     parameters: {'id': petId, 'userId': userId},
   );
@@ -975,7 +983,7 @@ Future<void> _updatePet(HttpRequest request) async {
     return;
   }
 
-  await _db.execute(
+  await _pool.execute(
     Sql.named('''
       UPDATE pets SET
         name = @name, species = @species, breed = @breed,
@@ -1016,7 +1024,7 @@ Future<void> _updatePet(HttpRequest request) async {
     },
   );
 
-  final updated = await _db.execute(
+  final updated = await _pool.execute(
     Sql.named('SELECT * FROM pets WHERE id = @id'),
     parameters: {'id': petId},
   );
@@ -1031,7 +1039,7 @@ Future<void> _deletePetRecord(HttpRequest request) async {
   }
 
   final petId = request.uri.pathSegments.last;
-  await _db.execute(
+  await _pool.execute(
     Sql.named('DELETE FROM pets WHERE id = @id AND user_id = @userId'),
     parameters: {'id': petId, 'userId': userId},
   );
@@ -1058,7 +1066,7 @@ Future<void> _authSignup(HttpRequest request) async {
     return;
   }
 
-  final existing = await _db.execute(
+  final existing = await _pool.execute(
     Sql.named('SELECT id FROM users WHERE email = @email'),
     parameters: {'email': email},
   );
@@ -1068,7 +1076,7 @@ Future<void> _authSignup(HttpRequest request) async {
   }
 
   final hash = _hashPassword(password);
-  final result = await _db.execute(
+  final result = await _pool.execute(
     Sql.named('''
       INSERT INTO users (email, password_hash, name)
       VALUES (@email, @hash, @name)
@@ -1082,7 +1090,7 @@ Future<void> _authSignup(HttpRequest request) async {
   final accessToken = _createAccessToken(userId, email);
   final refreshToken = _createRefreshTokenValue();
 
-  await _db.execute(
+  await _pool.execute(
     Sql.named('''
       INSERT INTO refresh_tokens (user_id, token, expires_at)
       VALUES (@userId, @token, @expiresAt)
@@ -1113,7 +1121,7 @@ Future<void> _authLogin(HttpRequest request) async {
     return;
   }
 
-  final result = await _db.execute(
+  final result = await _pool.execute(
     Sql.named('SELECT id, email, password_hash, name, first_name, last_name, category, bio, photo_url, created_at, updated_at FROM users WHERE email = @email'),
     parameters: {'email': email},
   );
@@ -1135,7 +1143,7 @@ Future<void> _authLogin(HttpRequest request) async {
   final accessToken = _createAccessToken(userId, email);
   final refreshToken = _createRefreshTokenValue();
 
-  await _db.execute(
+  await _pool.execute(
     Sql.named('''
       INSERT INTO refresh_tokens (user_id, token, expires_at)
       VALUES (@userId, @token, @expiresAt)
@@ -1165,7 +1173,7 @@ Future<void> _authRefresh(HttpRequest request) async {
     return;
   }
 
-  final result = await _db.execute(
+  final result = await _pool.execute(
     Sql.named('''
       SELECT rt.*, u.email, u.name FROM refresh_tokens rt
       JOIN users u ON u.id = rt.user_id
@@ -1196,7 +1204,7 @@ Future<void> _authLogout(HttpRequest request) async {
 
   final refreshToken = (body['refresh_token'] ?? body['refreshToken']) as String? ?? '';
   if (refreshToken.isNotEmpty) {
-    await _db.execute(
+    await _pool.execute(
       Sql.named('DELETE FROM refresh_tokens WHERE token = @token'),
       parameters: {'token': refreshToken},
     );
@@ -1213,7 +1221,7 @@ Future<void> _authMe(HttpRequest request) async {
   }
 
   final userId = payload['sub'].toString();
-  final result = await _db.execute(
+  final result = await _pool.execute(
     Sql.named('SELECT id, email, name, first_name, last_name, category, bio, photo_url, locale, created_at, updated_at FROM users WHERE id = @id'),
     parameters: {'id': int.parse(userId)},
   );
@@ -1244,7 +1252,7 @@ Future<void> _authUpdateMe(HttpRequest request) async {
   final locale = body['locale'] as String? ?? 'en';
   final name = '$firstName $lastName'.trim();
 
-  final result = await _db.execute(
+  final result = await _pool.execute(
     Sql.named('''
       UPDATE users SET
         name = @name,
@@ -1334,7 +1342,7 @@ Future<void> _uploadUserPhoto(HttpRequest request) async {
   final filePath = 'uploads/avatars/$uniqueName';
   File(filePath).writeAsBytesSync(fileBytes);
 
-  final result = await _db.execute(
+  final result = await _pool.execute(
     Sql.named('''
       UPDATE users SET photo_url = @photoUrl, updated_at = NOW()
       WHERE id = @id
@@ -1375,7 +1383,7 @@ Future<void> _authChangePassword(HttpRequest request) async {
   }
 
   final userId = int.parse(payload['sub'].toString());
-  final userResult = await _db.execute(
+  final userResult = await _pool.execute(
     Sql.named('SELECT password_hash FROM users WHERE id = @id'),
     parameters: {'id': userId},
   );
@@ -1392,12 +1400,12 @@ Future<void> _authChangePassword(HttpRequest request) async {
   }
 
   final newHash = _hashPassword(newPassword);
-  await _db.execute(
+  await _pool.execute(
     Sql.named('UPDATE users SET password_hash = @hash, updated_at = NOW() WHERE id = @id'),
     parameters: {'id': userId, 'hash': newHash},
   );
 
-  await _db.execute(
+  await _pool.execute(
     Sql.named('DELETE FROM refresh_tokens WHERE user_id = @userId'),
     parameters: {'userId': userId},
   );
@@ -1415,7 +1423,7 @@ Future<void> _authForgotPassword(HttpRequest request) async {
     return;
   }
 
-  final recentCount = await _db.execute(
+  final recentCount = await _pool.execute(
     Sql.named('''
       SELECT COUNT(*) as cnt FROM password_reset_tokens
       WHERE created_at > NOW() - INTERVAL '1 hour'
@@ -1429,7 +1437,7 @@ Future<void> _authForgotPassword(HttpRequest request) async {
     return;
   }
 
-  final userResult = await _db.execute(
+  final userResult = await _pool.execute(
     Sql.named('SELECT id FROM users WHERE email = @email'),
     parameters: {'email': email},
   );
@@ -1441,7 +1449,7 @@ Future<void> _authForgotPassword(HttpRequest request) async {
 
   final userId = userResult.first.toColumnMap()['id'];
 
-  await _db.execute(
+  await _pool.execute(
     Sql.named('UPDATE password_reset_tokens SET used = TRUE WHERE user_id = @userId AND used = FALSE'),
     parameters: {'userId': userId},
   );
@@ -1449,7 +1457,7 @@ Future<void> _authForgotPassword(HttpRequest request) async {
   final rng = Random.secure();
   final code = List.generate(6, (_) => rng.nextInt(10)).join();
 
-  await _db.execute(
+  await _pool.execute(
     Sql.named('''
       INSERT INTO password_reset_tokens (user_id, code, expires_at)
       VALUES (@userId, @code, NOW() + INTERVAL '15 minutes')
@@ -1480,7 +1488,7 @@ Future<void> _authResetPassword(HttpRequest request) async {
     return;
   }
 
-  final userResult = await _db.execute(
+  final userResult = await _pool.execute(
     Sql.named('SELECT id FROM users WHERE email = @email'),
     parameters: {'email': email},
   );
@@ -1492,7 +1500,7 @@ Future<void> _authResetPassword(HttpRequest request) async {
 
   final userId = userResult.first.toColumnMap()['id'];
 
-  final tokenResult = await _db.execute(
+  final tokenResult = await _pool.execute(
     Sql.named('''
       SELECT id FROM password_reset_tokens
       WHERE user_id = @userId AND code = @code AND used = FALSE AND expires_at > NOW()
@@ -1509,17 +1517,17 @@ Future<void> _authResetPassword(HttpRequest request) async {
   final tokenId = tokenResult.first.toColumnMap()['id'];
 
   final newHash = _hashPassword(newPassword);
-  await _db.execute(
+  await _pool.execute(
     Sql.named('UPDATE users SET password_hash = @hash, updated_at = NOW() WHERE id = @id'),
     parameters: {'id': userId, 'hash': newHash},
   );
 
-  await _db.execute(
+  await _pool.execute(
     Sql.named('UPDATE password_reset_tokens SET used = TRUE WHERE id = @id'),
     parameters: {'id': tokenId},
   );
 
-  await _db.execute(
+  await _pool.execute(
     Sql.named('DELETE FROM refresh_tokens WHERE user_id = @userId'),
     parameters: {'userId': userId},
   );
@@ -1547,7 +1555,7 @@ Future<void> _getHealthEntries(HttpRequest request) async {
 
   query += ' ORDER BY he.next_due_date ASC';
 
-  final result = await _db.execute(Sql.named(query),
+  final result = await _pool.execute(Sql.named(query),
       parameters: params.isEmpty ? null : params);
   final entries = result.map(_rowToMap).toList();
   _jsonResponse(request, 200, entries);
@@ -1555,7 +1563,7 @@ Future<void> _getHealthEntries(HttpRequest request) async {
 
 Future<void> _getHealthEntry(HttpRequest request) async {
   final id = request.uri.pathSegments.last;
-  final result = await _db.execute(
+  final result = await _pool.execute(
     Sql.named('SELECT he.*, hi.title AS health_issue_title FROM health_entries he LEFT JOIN health_issues hi ON he.health_issue_id = hi.id WHERE he.id = @id'),
     parameters: {'id': id},
   );
@@ -1591,7 +1599,7 @@ Future<void> _createHealthEntry(HttpRequest request) async {
     return;
   }
 
-  final result = await _db.execute(
+  final result = await _pool.execute(
     Sql.named('''
       INSERT INTO health_entries (pet_id, name, type, dosage, frequency, frequency_days, frequency_interval, repeat_end_date, start_date, next_due_date, notes, health_issue_id)
       VALUES (@petId, @name, @type, @dosage, @frequency, @frequencyDays, @frequencyInterval, ${repeatEndDate != null ? '@repeatEndDate::date' : 'NULL'}, @startDate::date, @nextDueDate::timestamptz, @notes, ${healthIssueId != null ? '@healthIssueId' : 'NULL'})
@@ -1616,7 +1624,7 @@ Future<void> _createHealthEntry(HttpRequest request) async {
   if (healthIssueId != null) {
     final createdId = result.first.toColumnMap()['id'].toString();
     if (createdId.isNotEmpty) {
-      await _db.execute(
+      await _pool.execute(
         Sql.named('''
           INSERT INTO health_issue_events (health_issue_id, health_entry_id)
           VALUES (@healthIssueId, @entryId::uuid)
@@ -1634,7 +1642,7 @@ Future<void> _createHealthEntry(HttpRequest request) async {
     final payload = await _authenticateRequest(request);
     if (payload != null) {
       final userId = int.parse(payload['sub'].toString());
-      final prefResult = await _db.execute(
+      final prefResult = await _pool.execute(
         Sql.named('SELECT notify_completed FROM notification_preferences WHERE user_id = @userId'),
         parameters: {'userId': userId},
       );
@@ -1643,7 +1651,7 @@ Future<void> _createHealthEntry(HttpRequest request) async {
         final petName = body['pet_name'] as String? ?? '';
         final petPrefix = petName.isNotEmpty ? '$petName - ' : '';
         final locale = await _getUserLocale(userId);
-        await _db.execute(
+        await _pool.execute(
           Sql.named('''
             INSERT INTO notifications (user_id, pet_id, health_entry_id, title, message, type)
             VALUES (@userId, @petId, @entryId, @title, @message, 'completed')
@@ -1670,7 +1678,7 @@ Future<void> _updateHealthEntry(HttpRequest request) async {
   final body = await _readJson(request);
   if (body == null) return;
 
-  final existing = await _db.execute(
+  final existing = await _pool.execute(
     Sql.named('SELECT * FROM health_entries WHERE id = @id'),
     parameters: {'id': id},
   );
@@ -1691,7 +1699,7 @@ Future<void> _updateHealthEntry(HttpRequest request) async {
       : (row['health_issue_id'] != null ? int.tryParse(row['health_issue_id'].toString()) : null);
   final oldHealthIssueId = row['health_issue_id'] != null ? int.tryParse(row['health_issue_id'].toString()) : null;
 
-  final result = await _db.execute(
+  final result = await _pool.execute(
     Sql.named('''
       UPDATE health_entries SET
         name = @name, type = @type, dosage = @dosage,
@@ -1722,13 +1730,13 @@ Future<void> _updateHealthEntry(HttpRequest request) async {
 
   if (hasHealthIssueId) {
     if (oldHealthIssueId != null && oldHealthIssueId != newHealthIssueId) {
-      await _db.execute(
+      await _pool.execute(
         Sql.named('DELETE FROM health_issue_events WHERE health_issue_id = @oldId AND health_entry_id = @entryId::uuid'),
         parameters: {'oldId': oldHealthIssueId, 'entryId': id},
       );
     }
     if (newHealthIssueId != null && newHealthIssueId != oldHealthIssueId) {
-      await _db.execute(
+      await _pool.execute(
         Sql.named('INSERT INTO health_issue_events (health_issue_id, health_entry_id) VALUES (@newId, @entryId::uuid) ON CONFLICT DO NOTHING'),
         parameters: {'newId': newHealthIssueId, 'entryId': id},
       );
@@ -1746,14 +1754,14 @@ Future<void> _updateHealthEntry(HttpRequest request) async {
 Future<void> _deleteHealthEntry(HttpRequest request) async {
   final id = request.uri.pathSegments.last;
 
-  final existing = await _db.execute(
+  final existing = await _pool.execute(
     Sql.named('SELECT name, pet_id FROM health_entries WHERE id = @id'),
     parameters: {'id': id},
   );
   final entryName = existing.isNotEmpty ? existing.first.toColumnMap()['name']?.toString() ?? '' : '';
   final entryPetId = existing.isNotEmpty ? existing.first.toColumnMap()['pet_id']?.toString() ?? '' : '';
 
-  final result = await _db.execute(
+  final result = await _pool.execute(
     Sql.named('DELETE FROM health_entries WHERE id = @id RETURNING id'),
     parameters: {'id': id},
   );
@@ -1775,7 +1783,7 @@ Future<void> _markTaken(HttpRequest request) async {
   final id = segments[segments.length - 2];
   final body = await _readJson(request);
 
-  final existing = await _db.execute(
+  final existing = await _pool.execute(
     Sql.named('SELECT * FROM health_entries WHERE id = @id'),
     parameters: {'id': id},
   );
@@ -1788,7 +1796,7 @@ Future<void> _markTaken(HttpRequest request) async {
   final row = _rowToMap(existing.first);
   final historyNotes = body?['notes'] as String? ?? '';
 
-  await _db.execute(
+  await _pool.execute(
     Sql.named('''
       INSERT INTO health_history (entry_id, notes)
       VALUES (@entryId, @notes)
@@ -1833,7 +1841,7 @@ Future<void> _markTaken(HttpRequest request) async {
     nextDue = currentDue;
   }
 
-  final updated = await _db.execute(
+  final updated = await _pool.execute(
     Sql.named('''
       UPDATE health_entries SET next_due_date = @nextDue, updated_at = NOW()
       WHERE id = @id RETURNING *
@@ -1845,7 +1853,7 @@ Future<void> _markTaken(HttpRequest request) async {
     final payload = await _authenticateRequest(request);
     if (payload != null) {
       final userId = int.parse(payload['sub'].toString());
-      final prefResult = await _db.execute(
+      final prefResult = await _pool.execute(
         Sql.named('SELECT notify_completed FROM notification_preferences WHERE user_id = @userId'),
         parameters: {'userId': userId},
       );
@@ -1856,7 +1864,7 @@ Future<void> _markTaken(HttpRequest request) async {
         final petName = body?['pet_name'] as String? ?? '';
         final petPrefix = petName.isNotEmpty ? '$petName - ' : '';
         final locale = await _getUserLocale(userId);
-        await _db.execute(
+        await _pool.execute(
           Sql.named('''
             INSERT INTO notifications (user_id, pet_id, health_entry_id, title, message, type)
             VALUES (@userId, @petId, @entryId, @title, @message, 'completed')
@@ -1880,7 +1888,7 @@ Future<void> _getHistory(HttpRequest request) async {
   final segments = request.uri.pathSegments;
   final id = segments[segments.length - 2];
 
-  final result = await _db.execute(
+  final result = await _pool.execute(
     Sql.named('''
       SELECT * FROM health_history WHERE entry_id = @entryId
       ORDER BY taken_at DESC
@@ -1918,7 +1926,7 @@ Future<void> _exportCsv(HttpRequest request) async {
   }
   query += ' ORDER BY he.name';
 
-  final result = await _db.execute(Sql.named(query),
+  final result = await _pool.execute(Sql.named(query),
       parameters: params.isEmpty ? null : params);
 
   final buffer = StringBuffer();
@@ -1951,7 +1959,7 @@ Future<void> _exportCsv(HttpRequest request) async {
 // ── Vets ─────────────────────────────────────────────────────
 
 Future<void> _getVets(HttpRequest request) async {
-  final result = await _db.execute(
+  final result = await _pool.execute(
     Sql.named('SELECT * FROM vets ORDER BY name ASC'),
   );
   final vets = result.map(_vetRowToMap).toList();
@@ -1960,7 +1968,7 @@ Future<void> _getVets(HttpRequest request) async {
 
 Future<void> _getVet(HttpRequest request) async {
   final id = request.uri.pathSegments.last;
-  final result = await _db.execute(
+  final result = await _pool.execute(
     Sql.named('SELECT * FROM vets WHERE id = @id'),
     parameters: {'id': int.tryParse(id) ?? 0},
   );
@@ -1983,7 +1991,7 @@ Future<void> _createVet(HttpRequest request) async {
     return;
   }
 
-  final result = await _db.execute(
+  final result = await _pool.execute(
     Sql.named('''
       INSERT INTO vets (name, phone, email, website, address, notes)
       VALUES (@name, @phone, @email, @website, @address, @notes)
@@ -2007,7 +2015,7 @@ Future<void> _updateVet(HttpRequest request) async {
   final body = await _readJson(request);
   if (body == null) return;
 
-  final existing = await _db.execute(
+  final existing = await _pool.execute(
     Sql.named('SELECT * FROM vets WHERE id = @id'),
     parameters: {'id': int.tryParse(id) ?? 0},
   );
@@ -2019,7 +2027,7 @@ Future<void> _updateVet(HttpRequest request) async {
 
   final row = _vetRowToMap(existing.first);
 
-  final result = await _db.execute(
+  final result = await _pool.execute(
     Sql.named('''
       UPDATE vets SET
         name = @name, phone = @phone, email = @email,
@@ -2044,7 +2052,7 @@ Future<void> _updateVet(HttpRequest request) async {
 
 Future<void> _deleteVet(HttpRequest request) async {
   final id = request.uri.pathSegments.last;
-  final result = await _db.execute(
+  final result = await _pool.execute(
     Sql.named('DELETE FROM vets WHERE id = @id RETURNING id'),
     parameters: {'id': int.tryParse(id) ?? 0},
   );
@@ -2072,7 +2080,7 @@ Future<void> _getWeightEntries(HttpRequest request) async {
 
   query += ' ORDER BY date ASC';
 
-  final result = await _db.execute(Sql.named(query),
+  final result = await _pool.execute(Sql.named(query),
       parameters: params.isEmpty ? null : params);
   final entries = result.map(_weightRowToMap).toList();
   _jsonResponse(request, 200, entries);
@@ -2098,7 +2106,7 @@ Future<void> _createWeightEntry(HttpRequest request) async {
     return;
   }
 
-  final result = await _db.execute(
+  final result = await _pool.execute(
     Sql.named('''
       INSERT INTO weight_entries (pet_id, date, weight, notes)
       VALUES (@petId, @date::date, @weight, @notes)
@@ -2120,7 +2128,7 @@ Future<void> _updateWeightEntry(HttpRequest request) async {
   final body = await _readJson(request);
   if (body == null) return;
 
-  final existing = await _db.execute(
+  final existing = await _pool.execute(
     Sql.named('SELECT * FROM weight_entries WHERE id = @id'),
     parameters: {'id': int.tryParse(id) ?? 0},
   );
@@ -2137,7 +2145,7 @@ Future<void> _updateWeightEntry(HttpRequest request) async {
       ? ((weight is num) ? weight.toDouble() : double.tryParse(weight.toString()))
       : double.tryParse(row['weight'].toString());
 
-  final result = await _db.execute(
+  final result = await _pool.execute(
     Sql.named('''
       UPDATE weight_entries SET
         date = @date::date, weight = @weight, notes = @notes
@@ -2157,7 +2165,7 @@ Future<void> _updateWeightEntry(HttpRequest request) async {
 
 Future<void> _deleteWeightEntry(HttpRequest request) async {
   final id = request.uri.pathSegments.last;
-  final result = await _db.execute(
+  final result = await _pool.execute(
     Sql.named('DELETE FROM weight_entries WHERE id = @id RETURNING id'),
     parameters: {'id': int.tryParse(id) ?? 0},
   );
@@ -2178,7 +2186,7 @@ Future<void> _getLatestWeight(HttpRequest request) async {
     return;
   }
 
-  final result = await _db.execute(
+  final result = await _pool.execute(
     Sql.named('SELECT * FROM weight_entries WHERE pet_id = @petId ORDER BY date DESC LIMIT 1'),
     parameters: {'petId': petId},
   );
@@ -2196,7 +2204,7 @@ Future<void> _getLatestWeight(HttpRequest request) async {
 Future<void> _getEventPhotos(HttpRequest request) async {
   final segments = request.uri.pathSegments;
   final eventId = segments[segments.length - 2];
-  final result = await _db.execute(
+  final result = await _pool.execute(
     Sql.named('SELECT * FROM health_event_photos WHERE event_id = @eventId ORDER BY created_at ASC'),
     parameters: {'eventId': eventId},
   );
@@ -2226,7 +2234,7 @@ Future<void> _uploadEventPhoto(HttpRequest request) async {
     return;
   }
 
-  final countResult = await _db.execute(
+  final countResult = await _pool.execute(
     Sql.named('SELECT COUNT(*) FROM health_event_photos WHERE event_id = @eventId'),
     parameters: {'eventId': eventId},
   );
@@ -2277,7 +2285,7 @@ Future<void> _uploadEventPhoto(HttpRequest request) async {
   final filePath = 'uploads/health/$eventId/$uniqueName';
   File(filePath).writeAsBytesSync(fileBytes);
 
-  final result = await _db.execute(
+  final result = await _pool.execute(
     Sql.named('''
       INSERT INTO health_event_photos (event_id, photo_path, caption)
       VALUES (@eventId, @photoPath, @caption)
@@ -2308,7 +2316,7 @@ Future<void> _deleteEventPhoto(HttpRequest request) async {
     return;
   }
 
-  final result = await _db.execute(
+  final result = await _pool.execute(
     Sql.named('SELECT photo_path FROM health_event_photos WHERE id = @id'),
     parameters: {'id': photoId},
   );
@@ -2324,7 +2332,7 @@ Future<void> _deleteEventPhoto(HttpRequest request) async {
     file.deleteSync();
   }
 
-  await _db.execute(
+  await _pool.execute(
     Sql.named('DELETE FROM health_event_photos WHERE id = @id'),
     parameters: {'id': photoId},
   );
@@ -2447,7 +2455,7 @@ Future<void> _createShare(HttpRequest request) async {
     return;
   }
 
-  await _db.execute(
+  await _pool.execute(
     Sql.named('''
       INSERT INTO pet_access (pet_id, user_id, role)
       VALUES (@petId, @userId, 'guardian')
@@ -2456,7 +2464,7 @@ Future<void> _createShare(HttpRequest request) async {
     parameters: {'petId': petId, 'userId': authUserId},
   );
 
-  final existingAccess = await _db.execute(
+  final existingAccess = await _pool.execute(
     Sql.named('SELECT share_code FROM pet_access WHERE pet_id = @petId AND user_id = @userId AND share_code IS NOT NULL'),
     parameters: {'petId': petId, 'userId': authUserId},
   );
@@ -2466,19 +2474,19 @@ Future<void> _createShare(HttpRequest request) async {
     code = existingAccess.first.toColumnMap()['share_code'].toString();
   } else {
     code = _generateShareCode();
-    await _db.execute(
+    await _pool.execute(
       Sql.named('UPDATE pet_access SET share_code = @code WHERE pet_id = @petId AND user_id = @userId'),
       parameters: {'code': code, 'petId': petId, 'userId': authUserId},
     );
   }
 
-  final existingShared = await _db.execute(
+  final existingShared = await _pool.execute(
     Sql.named('SELECT id FROM shared_pets WHERE pet_id = @petId'),
     parameters: {'petId': petId},
   );
 
   if (existingShared.isNotEmpty) {
-    await _db.execute(
+    await _pool.execute(
       Sql.named('''
         UPDATE shared_pets SET pet_data = @petData::jsonb, updated_at = NOW(), user_id = @userId, share_code = @code
         WHERE pet_id = @petId
@@ -2491,7 +2499,7 @@ Future<void> _createShare(HttpRequest request) async {
       },
     );
   } else {
-    await _db.execute(
+    await _pool.execute(
       Sql.named('''
         INSERT INTO shared_pets (share_code, pet_data, pet_id, user_id)
         VALUES (@code, @petData::jsonb, @petId, @userId)
@@ -2513,13 +2521,13 @@ Future<void> _createShare(HttpRequest request) async {
 Future<void> _getShare(HttpRequest request) async {
   final code = request.uri.pathSegments.last;
 
-  final result = await _db.execute(
+  final result = await _pool.execute(
     Sql.named('SELECT * FROM shared_pets WHERE share_code = @code'),
     parameters: {'code': code},
   );
 
   Map<String, dynamic>? guardianInfo;
-  final accessResult = await _db.execute(
+  final accessResult = await _pool.execute(
     Sql.named('''
       SELECT pa.*, u.name AS user_name, u.first_name, u.last_name, u.category, u.bio, u.photo_url
       FROM pet_access pa
@@ -2566,7 +2574,7 @@ Future<void> _getShare(HttpRequest request) async {
   final petId = cols['pet_id'].toString();
   final shareUserId = cols['user_id'];
 
-  final healthResult = await _db.execute(
+  final healthResult = await _pool.execute(
     Sql.named(
         'SELECT * FROM health_entries WHERE pet_id = @petId ORDER BY next_due_date ASC'),
     parameters: {'petId': petId},
@@ -2576,7 +2584,7 @@ Future<void> _getShare(HttpRequest request) async {
   final vetId = (petData is Map) ? petData['vetId'] : null;
   Map<String, dynamic>? vet;
   if (vetId != null && vetId.toString().isNotEmpty) {
-    final vetResult = await _db.execute(
+    final vetResult = await _pool.execute(
       Sql.named('SELECT * FROM vets WHERE id = @id'),
       parameters: {'id': int.tryParse(vetId.toString()) ?? 0},
     );
@@ -2587,7 +2595,7 @@ Future<void> _getShare(HttpRequest request) async {
 
   Map<String, dynamic>? owner = guardianInfo;
   if (owner == null && shareUserId != null) {
-    final ownerResult = await _db.execute(
+    final ownerResult = await _pool.execute(
       Sql.named('SELECT id, email, name, first_name, last_name, category, bio, photo_url, created_at, updated_at FROM users WHERE id = @id'),
       parameters: {'id': shareUserId},
     );
@@ -2634,7 +2642,7 @@ Future<void> _acceptShare(HttpRequest request) async {
   final segments = request.uri.pathSegments;
   final code = segments[segments.length - 2];
 
-  final accessResult = await _db.execute(
+  final accessResult = await _pool.execute(
     Sql.named('SELECT pet_id, user_id FROM pet_access WHERE share_code = @code'),
     parameters: {'code': code},
   );
@@ -2653,7 +2661,7 @@ Future<void> _acceptShare(HttpRequest request) async {
     return;
   }
 
-  await _db.execute(
+  await _pool.execute(
     Sql.named('''
       INSERT INTO pet_access (pet_id, user_id, role, invited_by)
       VALUES (@petId, @userId, 'shared', @invitedBy)
@@ -2673,7 +2681,7 @@ Future<Map<String, dynamic>> _petAccessRowToJson(ResultRow row) async {
   final cols = row.toColumnMap();
   final userId = cols['user_id'] as int;
 
-  final userResult = await _db.execute(
+  final userResult = await _pool.execute(
     Sql.named('SELECT id, name, first_name, last_name, category, bio, photo_url FROM users WHERE id = @id'),
     parameters: {'id': userId},
   );
@@ -2731,7 +2739,7 @@ Future<void> _markPetPassedAway(HttpRequest request) async {
   final petName = (body?['pet_name'] as String?) ?? 'Your pet';
 
   try {
-    final accessRows = await _db.execute(
+    final accessRows = await _pool.execute(
       Sql.named('SELECT user_id FROM pet_access WHERE pet_id = @petId AND user_id != @userId'),
       parameters: {'petId': petId, 'userId': userId},
     );
@@ -2740,7 +2748,7 @@ Future<void> _markPetPassedAway(HttpRequest request) async {
     for (final row in accessRows) {
       final sharedUserId = row.toColumnMap()['user_id'] as int;
       final sharedLocale = await _getUserLocale(sharedUserId);
-      await _db.execute(
+      await _pool.execute(
         Sql.named('''
           INSERT INTO notifications (user_id, pet_id, title, message, type)
           VALUES (@userId, @petId, @title, @message, 'memorial')
@@ -2755,7 +2763,7 @@ Future<void> _markPetPassedAway(HttpRequest request) async {
       notifiedCount++;
     }
 
-    await _db.execute(
+    await _pool.execute(
       Sql.named('DELETE FROM notifications WHERE pet_id = @petId AND type IN (\'reminder\', \'overdue\') AND is_read = FALSE'),
       parameters: {'petId': petId},
     );
@@ -2772,22 +2780,22 @@ Future<void> _deletePetData(HttpRequest request) async {
   final petId = segments[2];
 
   try {
-    await _db.execute(
+    await _pool.execute(
       Sql.named('DELETE FROM health_issue_events WHERE health_issue_id IN (SELECT id FROM health_issues WHERE pet_id = @petId)'),
       parameters: {'petId': petId},
     );
 
-    await _db.execute(
+    await _pool.execute(
       Sql.named('UPDATE health_entries SET health_issue_id = NULL WHERE pet_id = @petId'),
       parameters: {'petId': petId},
     );
 
-    await _db.execute(
+    await _pool.execute(
       Sql.named('DELETE FROM health_issues WHERE pet_id = @petId'),
       parameters: {'petId': petId},
     );
 
-    final photoRows = await _db.execute(
+    final photoRows = await _pool.execute(
       Sql.named('SELECT p.id, p.photo_path FROM health_event_photos p INNER JOIN health_entries e ON p.event_id = e.id::text WHERE e.pet_id = @petId'),
       parameters: {'petId': petId},
     );
@@ -2802,32 +2810,32 @@ Future<void> _deletePetData(HttpRequest request) async {
       }
     }
 
-    await _db.execute(
+    await _pool.execute(
       Sql.named('DELETE FROM health_event_photos WHERE event_id IN (SELECT id::text FROM health_entries WHERE pet_id = @petId)'),
       parameters: {'petId': petId},
     );
 
-    await _db.execute(
+    await _pool.execute(
       Sql.named('DELETE FROM health_entries WHERE pet_id = @petId'),
       parameters: {'petId': petId},
     );
 
-    await _db.execute(
+    await _pool.execute(
       Sql.named('DELETE FROM weight_entries WHERE pet_id = @petId'),
       parameters: {'petId': petId},
     );
 
-    await _db.execute(
+    await _pool.execute(
       Sql.named('DELETE FROM notifications WHERE pet_id = @petId'),
       parameters: {'petId': petId},
     );
 
-    await _db.execute(
+    await _pool.execute(
       Sql.named('DELETE FROM pet_access WHERE pet_id = @petId'),
       parameters: {'petId': petId},
     );
 
-    await _db.execute(
+    await _pool.execute(
       Sql.named('DELETE FROM shared_pets WHERE pet_id = @petId'),
       parameters: {'petId': petId},
     );
@@ -2850,7 +2858,7 @@ Future<void> _getPetAccess(HttpRequest request) async {
   final segments = request.uri.pathSegments;
   final petId = segments[segments.length - 2];
 
-  final callerAccess = await _db.execute(
+  final callerAccess = await _pool.execute(
     Sql.named('SELECT role, invited_by FROM pet_access WHERE pet_id = @petId AND user_id = @userId'),
     parameters: {'petId': petId, 'userId': userId},
   );
@@ -2866,7 +2874,7 @@ Future<void> _getPetAccess(HttpRequest request) async {
   List<Map<String, dynamic>> accessList;
 
   if (callerRole == 'guardian') {
-    final result = await _db.execute(
+    final result = await _pool.execute(
       Sql.named('SELECT * FROM pet_access WHERE pet_id = @petId ORDER BY created_at ASC'),
       parameters: {'petId': petId},
     );
@@ -2877,7 +2885,7 @@ Future<void> _getPetAccess(HttpRequest request) async {
   } else {
     final invitedBy = callerCols['invited_by'];
     if (invitedBy != null) {
-      final result = await _db.execute(
+      final result = await _pool.execute(
         Sql.named('SELECT * FROM pet_access WHERE pet_id = @petId AND user_id = @invitedBy'),
         parameters: {'petId': petId, 'invitedBy': invitedBy},
       );
@@ -2909,7 +2917,7 @@ Future<void> _updatePetAccessRole(HttpRequest request) async {
     return;
   }
 
-  final callerAccess = await _db.execute(
+  final callerAccess = await _pool.execute(
     Sql.named('SELECT role FROM pet_access WHERE pet_id = @petId AND user_id = @userId'),
     parameters: {'petId': petId, 'userId': callerId},
   );
@@ -2929,7 +2937,7 @@ Future<void> _updatePetAccessRole(HttpRequest request) async {
   }
 
   if (newRole == 'shared' && targetUserId == callerId) {
-    final guardianCount = await _db.execute(
+    final guardianCount = await _pool.execute(
       Sql.named('SELECT COUNT(*) as cnt FROM pet_access WHERE pet_id = @petId AND role = \'guardian\''),
       parameters: {'petId': petId},
     );
@@ -2940,7 +2948,7 @@ Future<void> _updatePetAccessRole(HttpRequest request) async {
     }
   }
 
-  final result = await _db.execute(
+  final result = await _pool.execute(
     Sql.named('UPDATE pet_access SET role = @role WHERE pet_id = @petId AND user_id = @targetUserId RETURNING *'),
     parameters: {'role': newRole, 'petId': petId, 'targetUserId': targetUserId},
   );
@@ -2969,7 +2977,7 @@ Future<void> _deletePetAccess(HttpRequest request) async {
     return;
   }
 
-  final callerAccess = await _db.execute(
+  final callerAccess = await _pool.execute(
     Sql.named('SELECT role FROM pet_access WHERE pet_id = @petId AND user_id = @userId'),
     parameters: {'petId': petId, 'userId': callerId},
   );
@@ -2980,7 +2988,7 @@ Future<void> _deletePetAccess(HttpRequest request) async {
   }
 
   if (targetUserId == callerId) {
-    final guardianCount = await _db.execute(
+    final guardianCount = await _pool.execute(
       Sql.named('SELECT COUNT(*) as cnt FROM pet_access WHERE pet_id = @petId AND role = \'guardian\''),
       parameters: {'petId': petId},
     );
@@ -2991,7 +2999,7 @@ Future<void> _deletePetAccess(HttpRequest request) async {
     }
   }
 
-  final result = await _db.execute(
+  final result = await _pool.execute(
     Sql.named('DELETE FROM pet_access WHERE pet_id = @petId AND user_id = @targetUserId RETURNING id'),
     parameters: {'petId': petId, 'targetUserId': targetUserId},
   );
@@ -3014,7 +3022,7 @@ Future<void> _getNotifications(HttpRequest request) async {
   }
 
   final userId = int.parse(payload['sub'].toString());
-  final result = await _db.execute(
+  final result = await _pool.execute(
     Sql.named('SELECT * FROM notifications WHERE user_id = @userId ORDER BY created_at DESC'),
     parameters: {'userId': userId},
   );
@@ -3031,7 +3039,7 @@ Future<void> _getUnreadCount(HttpRequest request) async {
   }
 
   final userId = int.parse(payload['sub'].toString());
-  final result = await _db.execute(
+  final result = await _pool.execute(
     Sql.named('SELECT COUNT(*) as count FROM notifications WHERE user_id = @userId AND is_read = FALSE'),
     parameters: {'userId': userId},
   );
@@ -3055,7 +3063,7 @@ Future<void> _markNotificationRead(HttpRequest request) async {
     return;
   }
 
-  final result = await _db.execute(
+  final result = await _pool.execute(
     Sql.named('UPDATE notifications SET is_read = TRUE WHERE id = @id AND user_id = @userId RETURNING *'),
     parameters: {'id': notifId, 'userId': userId},
   );
@@ -3076,7 +3084,7 @@ Future<void> _markAllNotificationsRead(HttpRequest request) async {
   }
 
   final userId = int.parse(payload['sub'].toString());
-  await _db.execute(
+  await _pool.execute(
     Sql.named('UPDATE notifications SET is_read = TRUE WHERE user_id = @userId AND is_read = FALSE'),
     parameters: {'userId': userId},
   );
@@ -3092,17 +3100,17 @@ Future<void> _getNotificationPreferences(HttpRequest request) async {
   }
 
   final userId = int.parse(payload['sub'].toString());
-  var result = await _db.execute(
+  var result = await _pool.execute(
     Sql.named('SELECT * FROM notification_preferences WHERE user_id = @userId'),
     parameters: {'userId': userId},
   );
 
   if (result.isEmpty) {
-    await _db.execute(
+    await _pool.execute(
       Sql.named('INSERT INTO notification_preferences (user_id) VALUES (@userId)'),
       parameters: {'userId': userId},
     );
-    result = await _db.execute(
+    result = await _pool.execute(
       Sql.named('SELECT * FROM notification_preferences WHERE user_id = @userId'),
       parameters: {'userId': userId},
     );
@@ -3138,7 +3146,7 @@ Future<void> _updateNotificationPreferences(HttpRequest request) async {
       ? (body['muted_pet_ids'] as List<dynamic>?)?.map((e) => e.toString()).join(',') ?? ''
       : null;
 
-  await _db.execute(
+  await _pool.execute(
     Sql.named('''
       INSERT INTO notification_preferences (user_id, email_reminders_enabled, reminder_days_before, notify_completed, muted_pet_ids, updated_at)
       VALUES (@userId, @emailEnabled, @reminderDays, @notifyCompleted, @mutedPetIds, NOW())
@@ -3158,7 +3166,7 @@ Future<void> _updateNotificationPreferences(HttpRequest request) async {
     },
   );
 
-  final result = await _db.execute(
+  final result = await _pool.execute(
     Sql.named('SELECT * FROM notification_preferences WHERE user_id = @userId'),
     parameters: {'userId': userId},
   );
@@ -3193,7 +3201,7 @@ Future<void> _checkDueNotifications(HttpRequest request) async {
     }
   } catch (_) {}
 
-  var prefResult = await _db.execute(
+  var prefResult = await _pool.execute(
     Sql.named('SELECT * FROM notification_preferences WHERE user_id = @userId'),
     parameters: {'userId': userId},
   );
@@ -3206,7 +3214,7 @@ Future<void> _checkDueNotifications(HttpRequest request) async {
     emailEnabled = prefRow['email_reminders_enabled'] as bool;
   }
 
-  final dueEntries = await _db.execute(
+  final dueEntries = await _pool.execute(
     Sql.named('''
       SELECT he.* FROM health_entries he
       WHERE he.next_due_date <= NOW() + make_interval(days => @reminderDays)
@@ -3219,7 +3227,7 @@ Future<void> _checkDueNotifications(HttpRequest request) async {
   String? userEmail;
 
   if (emailEnabled) {
-    final userResult = await _db.execute(
+    final userResult = await _pool.execute(
       Sql.named('SELECT email FROM users WHERE id = @userId'),
       parameters: {'userId': userId},
     );
@@ -3236,7 +3244,7 @@ Future<void> _checkDueNotifications(HttpRequest request) async {
     final entryType = cols['type'].toString();
     final nextDue = cols['next_due_date'].toString();
 
-    final existing = await _db.execute(
+    final existing = await _pool.execute(
       Sql.named('''
         SELECT id FROM notifications
         WHERE user_id = @userId AND health_entry_id = @entryId
@@ -3258,7 +3266,7 @@ Future<void> _checkDueNotifications(HttpRequest request) async {
         ? _t(locale, 'overdue_message', {'name': entryName, 'date': nextDue})
         : _t(locale, 'reminder_message', {'name': entryName, 'date': nextDue});
 
-    await _db.execute(
+    await _pool.execute(
       Sql.named('''
         INSERT INTO notifications (user_id, pet_id, health_entry_id, title, message, type)
         VALUES (@userId, @petId, @entryId, @title, @message, @type)
@@ -3294,7 +3302,7 @@ Future<void> _createGeneralNotification(HttpRequest request, String petId, Strin
 
     String petPrefix = '';
     if (petId.isNotEmpty) {
-      final petResult = await _db.execute(
+      final petResult = await _pool.execute(
         Sql.named('SELECT name FROM pets WHERE id::text = @id'),
         parameters: {'id': petId},
       );
@@ -3307,7 +3315,7 @@ Future<void> _createGeneralNotification(HttpRequest request, String petId, Strin
     final title = _t(locale, titleKey, params);
     final message = _t(locale, messageKey, params);
 
-    await _db.execute(
+    await _pool.execute(
       Sql.named('''
         INSERT INTO notifications (user_id, pet_id, title, message, type)
         VALUES (@userId, ${petId.isNotEmpty ? '@petId' : 'NULL'}, @title, @message, 'general')
@@ -3354,7 +3362,7 @@ Future<void> _getHealthIssues(HttpRequest request) async {
     return;
   }
 
-  final result = await _db.execute(
+  final result = await _pool.execute(
     Sql.named('SELECT * FROM health_issues WHERE pet_id = @petId ORDER BY created_at DESC'),
     parameters: {'petId': petId},
   );
@@ -3363,7 +3371,7 @@ Future<void> _getHealthIssues(HttpRequest request) async {
   for (final row in result) {
     final issue = _healthIssueToMap(row);
     final issueId = int.tryParse(issue['id'].toString()) ?? 0;
-    final eventsResult = await _db.execute(
+    final eventsResult = await _pool.execute(
       Sql.named('SELECT health_entry_id FROM health_issue_events WHERE health_issue_id = @issueId'),
       parameters: {'issueId': issueId},
     );
@@ -3389,7 +3397,7 @@ Future<void> _createHealthIssue(HttpRequest request) async {
     return;
   }
 
-  final result = await _db.execute(
+  final result = await _pool.execute(
     Sql.named('''
       INSERT INTO health_issues (pet_id, title, description, start_date, end_date)
       VALUES (@petId, @title, @description, ${startDate != null ? '@startDate::date' : 'NULL'}, ${endDate != null ? '@endDate::date' : 'NULL'})
@@ -3421,7 +3429,7 @@ Future<void> _updateHealthIssue(HttpRequest request) async {
   final body = await _readJson(request);
   if (body == null) return;
 
-  final existing = await _db.execute(
+  final existing = await _pool.execute(
     Sql.named('SELECT * FROM health_issues WHERE id = @id'),
     parameters: {'id': id},
   );
@@ -3438,7 +3446,7 @@ Future<void> _updateHealthIssue(HttpRequest request) async {
   final newStartDate = hasStartDate ? body['start_date'] as String? : (row['start_date'] as String?);
   final newEndDate = hasEndDate ? body['end_date'] as String? : (row['end_date'] as String?);
 
-  final result = await _db.execute(
+  final result = await _pool.execute(
     Sql.named('''
       UPDATE health_issues SET
         title = @title, description = @description,
@@ -3458,7 +3466,7 @@ Future<void> _updateHealthIssue(HttpRequest request) async {
   );
 
   final issue = _healthIssueToMap(result.first);
-  final eventsResult = await _db.execute(
+  final eventsResult = await _pool.execute(
     Sql.named('SELECT health_entry_id FROM health_issue_events WHERE health_issue_id = @issueId'),
     parameters: {'issueId': id},
   );
@@ -3477,14 +3485,14 @@ Future<void> _deleteHealthIssue(HttpRequest request) async {
     return;
   }
 
-  final existingIssue = await _db.execute(
+  final existingIssue = await _pool.execute(
     Sql.named('SELECT title, pet_id FROM health_issues WHERE id = @id'),
     parameters: {'id': id},
   );
   final issueTitle = existingIssue.isNotEmpty ? existingIssue.first.toColumnMap()['title']?.toString() ?? '' : '';
   final issuePetId = existingIssue.isNotEmpty ? existingIssue.first.toColumnMap()['pet_id']?.toString() ?? '' : '';
 
-  final result = await _db.execute(
+  final result = await _pool.execute(
     Sql.named('DELETE FROM health_issues WHERE id = @id RETURNING id'),
     parameters: {'id': id},
   );
@@ -3494,7 +3502,7 @@ Future<void> _deleteHealthIssue(HttpRequest request) async {
     return;
   }
 
-  await _db.execute(
+  await _pool.execute(
     Sql.named('UPDATE health_entries SET health_issue_id = NULL WHERE health_issue_id = @id'),
     parameters: {'id': id},
   );
@@ -3523,7 +3531,7 @@ Future<void> _linkHealthIssueEvent(HttpRequest request) async {
     return;
   }
 
-  final issueExists = await _db.execute(
+  final issueExists = await _pool.execute(
     Sql.named('SELECT id FROM health_issues WHERE id = @id'),
     parameters: {'id': issueId},
   );
@@ -3532,12 +3540,12 @@ Future<void> _linkHealthIssueEvent(HttpRequest request) async {
     return;
   }
 
-  await _db.execute(
+  await _pool.execute(
     Sql.named('INSERT INTO health_issue_events (health_issue_id, health_entry_id) VALUES (@issueId, @entryId::uuid) ON CONFLICT DO NOTHING'),
     parameters: {'issueId': issueId, 'entryId': entryId},
   );
 
-  await _db.execute(
+  await _pool.execute(
     Sql.named('UPDATE health_entries SET health_issue_id = @issueId WHERE id = @entryId::uuid'),
     parameters: {'issueId': issueId, 'entryId': entryId},
   );
@@ -3554,12 +3562,12 @@ Future<void> _unlinkHealthIssueEvent(HttpRequest request) async {
     return;
   }
 
-  await _db.execute(
+  await _pool.execute(
     Sql.named('DELETE FROM health_issue_events WHERE health_issue_id = @issueId AND health_entry_id = @entryId::uuid'),
     parameters: {'issueId': issueId, 'entryId': entryId},
   );
 
-  await _db.execute(
+  await _pool.execute(
     Sql.named('UPDATE health_entries SET health_issue_id = NULL WHERE id = @entryId::uuid AND health_issue_id = @issueId'),
     parameters: {'entryId': entryId, 'issueId': issueId},
   );
@@ -3762,7 +3770,7 @@ Future<Map<String, dynamic>?> _requireOrgMember(HttpRequest request, int orgId) 
     _jsonResponse(request, 401, {'error': 'Authentication required'});
     return null;
   }
-  final r = await _db.execute(
+  final r = await _pool.execute(
     Sql.named('SELECT role FROM organization_users WHERE organization_id = @orgId AND user_id = @userId'),
     parameters: {'orgId': orgId, 'userId': userId},
   );
@@ -3791,7 +3799,7 @@ Future<void> _getOrganizations(HttpRequest request) async {
     _jsonResponse(request, 401, {'error': 'Authentication required'});
     return;
   }
-  final result = await _db.execute(
+  final result = await _pool.execute(
     Sql.named('''
       SELECT o.*, ou.role as member_role,
         (SELECT COUNT(*) FROM organization_users ou2 WHERE ou2.organization_id = o.id) as member_count,
@@ -3832,7 +3840,7 @@ Future<void> _createOrganization(HttpRequest request) async {
   final website = body['website'] as String? ?? '';
   final bio = body['bio'] as String? ?? '';
 
-  final result = await _db.execute(
+  final result = await _pool.execute(
     Sql.named('''
       INSERT INTO organizations (name, type, email, phone, address, website, bio, created_by)
       VALUES (@name, @type, @email, @phone, @address, @website, @bio, @createdBy)
@@ -3846,7 +3854,7 @@ Future<void> _createOrganization(HttpRequest request) async {
   final org = _orgRowToJson(result.first);
   final orgId = int.parse(org['id']);
 
-  await _db.execute(
+  await _pool.execute(
     Sql.named('''
       INSERT INTO organization_users (organization_id, user_id, role)
       VALUES (@orgId, @userId, 'super_user')
@@ -3865,7 +3873,7 @@ Future<void> _getOrganization(HttpRequest request) async {
   final member = await _requireOrgMember(request, orgId);
   if (member == null) return;
 
-  final result = await _db.execute(
+  final result = await _pool.execute(
     Sql.named('''
       SELECT o.*,
         (SELECT COUNT(*) FROM organization_users ou WHERE ou.organization_id = o.id) as member_count,
@@ -3901,7 +3909,7 @@ Future<void> _updateOrganization(HttpRequest request) async {
   final website = body['website'] as String?;
   final bio = body['bio'] as String?;
 
-  final result = await _db.execute(
+  final result = await _pool.execute(
     Sql.named('''
       UPDATE organizations SET
         name = COALESCE(@name, name),
@@ -3933,7 +3941,7 @@ Future<void> _deleteOrganization(HttpRequest request) async {
   final userId = await _requireOrgSuperUser(request, orgId);
   if (userId == null) return;
 
-  final orgR = await _db.execute(
+  final orgR = await _pool.execute(
     Sql.named('SELECT created_by FROM organizations WHERE id = @id'),
     parameters: {'id': orgId},
   );
@@ -3946,7 +3954,7 @@ Future<void> _deleteOrganization(HttpRequest request) async {
     return;
   }
 
-  final petCount = await _db.execute(
+  final petCount = await _pool.execute(
     Sql.named('SELECT COUNT(*) as cnt FROM pets WHERE organization_id = @id'),
     parameters: {'id': orgId},
   );
@@ -3956,7 +3964,7 @@ Future<void> _deleteOrganization(HttpRequest request) async {
     return;
   }
 
-  await _db.execute(Sql.named('DELETE FROM organizations WHERE id = @id'), parameters: {'id': orgId});
+  await _pool.execute(Sql.named('DELETE FROM organizations WHERE id = @id'), parameters: {'id': orgId});
   _jsonResponse(request, 200, {'success': true});
 }
 
@@ -3997,7 +4005,7 @@ Future<void> _uploadOrgPhoto(HttpRequest request) async {
       final file = File('uploads/$fileName');
       await file.writeAsBytes(photoBytes);
       final photoUrl = '/uploads/$fileName';
-      await _db.execute(
+      await _pool.execute(
         Sql.named('UPDATE organizations SET photo_url = @url, updated_at = NOW() WHERE id = @id'),
         parameters: {'url': photoUrl, 'id': orgId},
       );
@@ -4016,7 +4024,7 @@ Future<void> _getOrgMembers(HttpRequest request) async {
   final member = await _requireOrgMember(request, orgId);
   if (member == null) return;
 
-  final result = await _db.execute(
+  final result = await _pool.execute(
     Sql.named('''
       SELECT ou.id, ou.organization_id, ou.user_id, ou.role, ou.created_at,
         u.email, u.name, u.first_name, u.last_name, u.photo_url as user_photo_url
@@ -4055,7 +4063,7 @@ Future<void> _createOrgInvite(HttpRequest request) async {
   final code = List.generate(12, (_) => 'abcdefghijklmnopqrstuvwxyz0123456789'[rng.nextInt(36)]).join();
   final expiresAt = DateTime.now().add(Duration(days: 7));
 
-  await _db.execute(
+  await _pool.execute(
     Sql.named('''
       INSERT INTO organization_users (organization_id, user_id, role, invited_by, invite_code, invite_expires_at)
       VALUES (@orgId, @userId, 'invite_placeholder', @invitedBy, @code, @expires)
@@ -4076,7 +4084,7 @@ Future<void> _joinOrganization(HttpRequest request) async {
     return;
   }
 
-  final inviteR = await _db.execute(
+  final inviteR = await _pool.execute(
     Sql.named('SELECT * FROM organization_users WHERE invite_code = @code'),
     parameters: {'code': code},
   );
@@ -4090,13 +4098,13 @@ Future<void> _joinOrganization(HttpRequest request) async {
   if (expiresAt != null) {
     final exp = DateTime.parse(expiresAt.toString());
     if (DateTime.now().isAfter(exp)) {
-      await _db.execute(Sql.named('DELETE FROM organization_users WHERE invite_code = @code'), parameters: {'code': code});
+      await _pool.execute(Sql.named('DELETE FROM organization_users WHERE invite_code = @code'), parameters: {'code': code});
       _jsonResponse(request, 400, {'error': 'Invite code has expired'});
       return;
     }
   }
 
-  final existingR = await _db.execute(
+  final existingR = await _pool.execute(
     Sql.named('SELECT id FROM organization_users WHERE organization_id = @orgId AND user_id = @userId'),
     parameters: {'orgId': orgId, 'userId': userId},
   );
@@ -4107,7 +4115,7 @@ Future<void> _joinOrganization(HttpRequest request) async {
 
   final invitedBy = inviteCols['invited_by'] ?? inviteCols['user_id'];
 
-  await _db.execute(
+  await _pool.execute(
     Sql.named('''
       INSERT INTO organization_users (organization_id, user_id, role, invited_by)
       VALUES (@orgId, @userId, 'member', @invitedBy)
@@ -4115,22 +4123,22 @@ Future<void> _joinOrganization(HttpRequest request) async {
     parameters: {'orgId': orgId, 'userId': userId, 'invitedBy': invitedBy},
   );
 
-  await _db.execute(Sql.named('DELETE FROM organization_users WHERE invite_code = @code'), parameters: {'code': code});
+  await _pool.execute(Sql.named('DELETE FROM organization_users WHERE invite_code = @code'), parameters: {'code': code});
 
-  final orgR = await _db.execute(Sql.named('SELECT name FROM organizations WHERE id = @id'), parameters: {'id': orgId});
+  final orgR = await _pool.execute(Sql.named('SELECT name FROM organizations WHERE id = @id'), parameters: {'id': orgId});
   final orgName = orgR.isNotEmpty ? orgR.first.toColumnMap()['name'].toString() : 'Organization';
 
-  final userR = await _db.execute(Sql.named('SELECT name FROM users WHERE id = @id'), parameters: {'id': userId});
+  final userR = await _pool.execute(Sql.named('SELECT name FROM users WHERE id = @id'), parameters: {'id': userId});
   final userName = userR.isNotEmpty ? userR.first.toColumnMap()['name'].toString() : 'User';
 
-  final superUsers = await _db.execute(
+  final superUsers = await _pool.execute(
     Sql.named("SELECT user_id FROM organization_users WHERE organization_id = @orgId AND role = 'super_user'"),
     parameters: {'orgId': orgId},
   );
   for (final su in superUsers) {
     final suId = su.toColumnMap()['user_id'] as int;
     final locale = await _getUserLocale(suId);
-    await _db.execute(
+    await _pool.execute(
       Sql.named('''
         INSERT INTO notifications (user_id, pet_id, type, title, message)
         VALUES (@userId, '', 'general', @title, @message)
@@ -4161,13 +4169,13 @@ Future<void> _updateOrgMemberRole(HttpRequest request) async {
   }
 
   if (newRole == 'member') {
-    final suCount = await _db.execute(
+    final suCount = await _pool.execute(
       Sql.named("SELECT COUNT(*) as cnt FROM organization_users WHERE organization_id = @orgId AND role = 'super_user'"),
       parameters: {'orgId': orgId},
     );
     final cnt = suCount.first.toColumnMap()['cnt'] as int;
     if (cnt <= 1) {
-      final currentRole = await _db.execute(
+      final currentRole = await _pool.execute(
         Sql.named('SELECT role FROM organization_users WHERE organization_id = @orgId AND user_id = @targetId'),
         parameters: {'orgId': orgId, 'targetId': targetUserId},
       );
@@ -4178,7 +4186,7 @@ Future<void> _updateOrgMemberRole(HttpRequest request) async {
     }
   }
 
-  await _db.execute(
+  await _pool.execute(
     Sql.named('UPDATE organization_users SET role = @role WHERE organization_id = @orgId AND user_id = @targetId'),
     parameters: {'role': newRole, 'orgId': orgId, 'targetId': targetUserId},
   );
@@ -4197,7 +4205,7 @@ Future<void> _removeOrgMember(HttpRequest request) async {
     return;
   }
 
-  final targetR = await _db.execute(
+  final targetR = await _pool.execute(
     Sql.named('SELECT role FROM organization_users WHERE organization_id = @orgId AND user_id = @targetId'),
     parameters: {'orgId': orgId, 'targetId': targetUserId},
   );
@@ -4206,18 +4214,18 @@ Future<void> _removeOrgMember(HttpRequest request) async {
     return;
   }
 
-  await _db.execute(
+  await _pool.execute(
     Sql.named('DELETE FROM organization_users WHERE organization_id = @orgId AND user_id = @targetId'),
     parameters: {'orgId': orgId, 'targetId': targetUserId},
   );
 
-  final orgR = await _db.execute(Sql.named('SELECT name FROM organizations WHERE id = @id'), parameters: {'id': orgId});
+  final orgR = await _pool.execute(Sql.named('SELECT name FROM organizations WHERE id = @id'), parameters: {'id': orgId});
   final orgName = orgR.isNotEmpty ? orgR.first.toColumnMap()['name'].toString() : 'Organization';
   final locale = await _getUserLocale(targetUserId);
-  final userR = await _db.execute(Sql.named('SELECT name FROM users WHERE id = @id'), parameters: {'id': targetUserId});
+  final userR = await _pool.execute(Sql.named('SELECT name FROM users WHERE id = @id'), parameters: {'id': targetUserId});
   final memberName = userR.isNotEmpty ? userR.first.toColumnMap()['name'].toString() : 'User';
 
-  await _db.execute(
+  await _pool.execute(
     Sql.named('''
       INSERT INTO notifications (user_id, pet_id, type, title, message)
       VALUES (@userId, '', 'general', @title, @message)
@@ -4241,7 +4249,7 @@ Future<void> _leaveOrganization(HttpRequest request) async {
     return;
   }
 
-  final memberR = await _db.execute(
+  final memberR = await _pool.execute(
     Sql.named('SELECT role FROM organization_users WHERE organization_id = @orgId AND user_id = @userId'),
     parameters: {'orgId': orgId, 'userId': userId},
   );
@@ -4251,7 +4259,7 @@ Future<void> _leaveOrganization(HttpRequest request) async {
   }
 
   if (memberR.first.toColumnMap()['role'].toString() == 'super_user') {
-    final suCount = await _db.execute(
+    final suCount = await _pool.execute(
       Sql.named("SELECT COUNT(*) as cnt FROM organization_users WHERE organization_id = @orgId AND role = 'super_user'"),
       parameters: {'orgId': orgId},
     );
@@ -4261,24 +4269,24 @@ Future<void> _leaveOrganization(HttpRequest request) async {
     }
   }
 
-  await _db.execute(
+  await _pool.execute(
     Sql.named('DELETE FROM organization_users WHERE organization_id = @orgId AND user_id = @userId'),
     parameters: {'orgId': orgId, 'userId': userId},
   );
 
-  final orgR = await _db.execute(Sql.named('SELECT name FROM organizations WHERE id = @id'), parameters: {'id': orgId});
+  final orgR = await _pool.execute(Sql.named('SELECT name FROM organizations WHERE id = @id'), parameters: {'id': orgId});
   final orgName = orgR.isNotEmpty ? orgR.first.toColumnMap()['name'].toString() : 'Organization';
-  final userR = await _db.execute(Sql.named('SELECT name FROM users WHERE id = @id'), parameters: {'id': userId});
+  final userR = await _pool.execute(Sql.named('SELECT name FROM users WHERE id = @id'), parameters: {'id': userId});
   final memberName = userR.isNotEmpty ? userR.first.toColumnMap()['name'].toString() : 'User';
 
-  final superUsers = await _db.execute(
+  final superUsers = await _pool.execute(
     Sql.named("SELECT user_id FROM organization_users WHERE organization_id = @orgId AND role = 'super_user'"),
     parameters: {'orgId': orgId},
   );
   for (final su in superUsers) {
     final suId = su.toColumnMap()['user_id'] as int;
     final locale = await _getUserLocale(suId);
-    await _db.execute(
+    await _pool.execute(
       Sql.named('''
         INSERT INTO notifications (user_id, pet_id, type, title, message)
         VALUES (@userId, '', 'general', @title, @message)
@@ -4301,7 +4309,7 @@ Future<void> _getOrgPets(HttpRequest request) async {
   final member = await _requireOrgMember(request, orgId);
   if (member == null) return;
 
-  final result = await _db.execute(
+  final result = await _pool.execute(
     Sql.named('SELECT * FROM pets WHERE organization_id = @orgId ORDER BY created_at'),
     parameters: {'orgId': orgId},
   );
@@ -4319,7 +4327,7 @@ Future<void> _createOrgPet(HttpRequest request) async {
   final name = body['name'] as String? ?? '';
   final species = body['species'] as String? ?? '';
 
-  final result = await _db.execute(
+  final result = await _pool.execute(
     Sql.named('''
       INSERT INTO pets (id, user_id, organization_id, name, species, breed, weight, gender, bio, insurance, chip_id, color_value, date_of_birth, neutered_date)
       VALUES (@id, @userId, @orgId, @name, @species, @breed, @weight, @gender, @bio, @insurance, @chipId, @colorValue, @dob, @neuteredDate)
@@ -4361,7 +4369,7 @@ Future<void> _transferOrgPet(HttpRequest request) async {
     return;
   }
 
-  final recipientR = await _db.execute(
+  final recipientR = await _pool.execute(
     Sql.named('SELECT id, name FROM users WHERE LOWER(email) = @email'),
     parameters: {'email': recipientEmail},
   );
@@ -4372,7 +4380,7 @@ Future<void> _transferOrgPet(HttpRequest request) async {
   final recipientId = recipientR.first.toColumnMap()['id'] as int;
   final recipientName = recipientR.first.toColumnMap()['name'].toString();
 
-  final petR = await _db.execute(
+  final petR = await _pool.execute(
     Sql.named('SELECT * FROM pets WHERE id = @id AND organization_id = @orgId'),
     parameters: {'id': petId, 'orgId': orgId},
   );
@@ -4383,7 +4391,7 @@ Future<void> _transferOrgPet(HttpRequest request) async {
   final pet = _petRowToJson(petR.first);
   final petName = pet['name'] ?? '';
 
-  await _db.execute(
+  await _pool.execute(
     Sql.named('''
       INSERT INTO archived_pets (organization_id, pet_id, pet_name, species, transfer_type, transferred_to_user_id, notes)
       VALUES (@orgId, @petId, @petName, @species, @transferType, @recipientId, @notes)
@@ -4395,16 +4403,16 @@ Future<void> _transferOrgPet(HttpRequest request) async {
     },
   );
 
-  await _db.execute(
+  await _pool.execute(
     Sql.named('UPDATE pets SET organization_id = NULL, user_id = @recipientId, updated_at = NOW() WHERE id = @petId'),
     parameters: {'recipientId': recipientId, 'petId': petId},
   );
 
-  await _db.execute(
+  await _pool.execute(
     Sql.named('DELETE FROM pet_access WHERE pet_id = @petId'),
     parameters: {'petId': petId},
   );
-  await _db.execute(
+  await _pool.execute(
     Sql.named('''
       INSERT INTO pet_access (pet_id, user_id, role)
       VALUES (@petId, @recipientId, 'guardian')
@@ -4413,11 +4421,11 @@ Future<void> _transferOrgPet(HttpRequest request) async {
     parameters: {'petId': petId, 'recipientId': recipientId},
   );
 
-  final orgR = await _db.execute(Sql.named('SELECT name FROM organizations WHERE id = @id'), parameters: {'id': orgId});
+  final orgR = await _pool.execute(Sql.named('SELECT name FROM organizations WHERE id = @id'), parameters: {'id': orgId});
   final orgName = orgR.isNotEmpty ? orgR.first.toColumnMap()['name'].toString() : 'Organization';
 
   final recipientLocale = await _getUserLocale(recipientId);
-  await _db.execute(
+  await _pool.execute(
     Sql.named('''
       INSERT INTO notifications (user_id, pet_id, type, title, message)
       VALUES (@userId, @petId, 'general', @title, @message)
@@ -4429,14 +4437,14 @@ Future<void> _transferOrgPet(HttpRequest request) async {
     },
   );
 
-  final orgMembers = await _db.execute(
+  final orgMembers = await _pool.execute(
     Sql.named('SELECT user_id FROM organization_users WHERE organization_id = @orgId'),
     parameters: {'orgId': orgId},
   );
   for (final m in orgMembers) {
     final mId = m.toColumnMap()['user_id'] as int;
     final locale = await _getUserLocale(mId);
-    await _db.execute(
+    await _pool.execute(
       Sql.named('''
         INSERT INTO notifications (user_id, pet_id, type, title, message)
         VALUES (@userId, @petId, 'general', @title, @message)
@@ -4463,7 +4471,7 @@ Future<void> _transferPetToOrg(HttpRequest request) async {
     return;
   }
 
-  final accessR = await _db.execute(
+  final accessR = await _pool.execute(
     Sql.named("SELECT role FROM pet_access WHERE pet_id = @petId AND user_id = @userId AND role = 'guardian'"),
     parameters: {'petId': petId, 'userId': userId},
   );
@@ -4482,7 +4490,7 @@ Future<void> _transferPetToOrg(HttpRequest request) async {
     return;
   }
 
-  final memberCheck = await _db.execute(
+  final memberCheck = await _pool.execute(
     Sql.named('SELECT role FROM organization_users WHERE organization_id = @orgId AND user_id = @userId'),
     parameters: {'orgId': orgId, 'userId': userId},
   );
@@ -4491,7 +4499,7 @@ Future<void> _transferPetToOrg(HttpRequest request) async {
     return;
   }
 
-  final petR = await _db.execute(
+  final petR = await _pool.execute(
     Sql.named('SELECT * FROM pets WHERE id = @id AND user_id = @userId AND organization_id IS NULL'),
     parameters: {'id': petId, 'userId': userId},
   );
@@ -4502,7 +4510,7 @@ Future<void> _transferPetToOrg(HttpRequest request) async {
   final pet = _petRowToJson(petR.first);
   final petName = pet['name'] ?? '';
 
-  await _db.execute(
+  await _pool.execute(
     Sql.named('''
       INSERT INTO archived_pets (user_id, pet_id, pet_name, species, transfer_type, transferred_to_org_id, notes)
       VALUES (@userId, @petId, @petName, @species, @transferType, @orgId, @notes)
@@ -4514,21 +4522,21 @@ Future<void> _transferPetToOrg(HttpRequest request) async {
     },
   );
 
-  await _db.execute(
+  await _pool.execute(
     Sql.named('UPDATE pets SET organization_id = @orgId, updated_at = NOW() WHERE id = @petId'),
     parameters: {'orgId': orgId, 'petId': petId},
   );
 
-  await _db.execute(
+  await _pool.execute(
     Sql.named('DELETE FROM pet_access WHERE pet_id = @petId'),
     parameters: {'petId': petId},
   );
 
-  final orgR = await _db.execute(Sql.named('SELECT name FROM organizations WHERE id = @id'), parameters: {'id': orgId});
+  final orgR = await _pool.execute(Sql.named('SELECT name FROM organizations WHERE id = @id'), parameters: {'id': orgId});
   final orgName = orgR.isNotEmpty ? orgR.first.toColumnMap()['name'].toString() : 'Organization';
 
   final locale = await _getUserLocale(userId);
-  await _db.execute(
+  await _pool.execute(
     Sql.named('''
       INSERT INTO notifications (user_id, pet_id, type, title, message)
       VALUES (@userId, @petId, 'general', @title, @message)
@@ -4550,7 +4558,7 @@ Future<void> _getOrgArchivedPets(HttpRequest request) async {
   final member = await _requireOrgMember(request, orgId);
   if (member == null) return;
 
-  final result = await _db.execute(
+  final result = await _pool.execute(
     Sql.named('SELECT * FROM archived_pets WHERE organization_id = @orgId ORDER BY archived_at DESC'),
     parameters: {'orgId': orgId},
   );
@@ -4563,7 +4571,7 @@ Future<void> _getUserArchivedPets(HttpRequest request) async {
     _jsonResponse(request, 401, {'error': 'Authentication required'});
     return;
   }
-  final result = await _db.execute(
+  final result = await _pool.execute(
     Sql.named('SELECT * FROM archived_pets WHERE user_id = @userId ORDER BY archived_at DESC'),
     parameters: {'userId': userId},
   );
