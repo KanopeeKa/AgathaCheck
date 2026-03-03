@@ -8,12 +8,9 @@ import '../../domain/entities/health_entry.dart';
 import '../providers/health_providers.dart';
 import '../widgets/health_entry_card.dart';
 
-/// Dashboard screen displaying health entries organized by type tabs.
-///
-/// Shows tabs for All, Medications, Preventives, Vet Visits, and Other
-/// with a floating action button to add new entries.
+enum _GroupMode { dueDate, pet, petType }
+
 class HealthDashboardScreen extends ConsumerStatefulWidget {
-  /// Creates the [HealthDashboardScreen].
   const HealthDashboardScreen({super.key});
 
   @override
@@ -24,6 +21,7 @@ class HealthDashboardScreen extends ConsumerStatefulWidget {
 class _HealthDashboardScreenState extends ConsumerState<HealthDashboardScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
+  _GroupMode _groupMode = _GroupMode.dueDate;
 
   static const _tabs = [
     null,
@@ -56,6 +54,46 @@ class _HealthDashboardScreenState extends ConsumerState<HealthDashboardScreen>
           onPressed: () => context.go('/'),
         ),
         actions: [
+          PopupMenuButton<_GroupMode>(
+            icon: const Icon(Icons.sort),
+            tooltip: 'Group by',
+            onSelected: (mode) => setState(() => _groupMode = mode),
+            itemBuilder: (_) => [
+              PopupMenuItem(
+                value: _GroupMode.dueDate,
+                child: ListTile(
+                  leading: Icon(Icons.schedule,
+                      color: _groupMode == _GroupMode.dueDate
+                          ? Theme.of(context).colorScheme.primary
+                          : null),
+                  title: const Text('By Due Date'),
+                  contentPadding: EdgeInsets.zero,
+                ),
+              ),
+              PopupMenuItem(
+                value: _GroupMode.pet,
+                child: ListTile(
+                  leading: Icon(Icons.pets,
+                      color: _groupMode == _GroupMode.pet
+                          ? Theme.of(context).colorScheme.primary
+                          : null),
+                  title: const Text('By Pet'),
+                  contentPadding: EdgeInsets.zero,
+                ),
+              ),
+              PopupMenuItem(
+                value: _GroupMode.petType,
+                child: ListTile(
+                  leading: Icon(Icons.category,
+                      color: _groupMode == _GroupMode.petType
+                          ? Theme.of(context).colorScheme.primary
+                          : null),
+                  title: const Text('By Species'),
+                  contentPadding: EdgeInsets.zero,
+                ),
+              ),
+            ],
+          ),
           IconButton(
             icon: const Icon(Icons.download),
             tooltip: 'Export CSV',
@@ -76,7 +114,9 @@ class _HealthDashboardScreenState extends ConsumerState<HealthDashboardScreen>
       ),
       body: TabBarView(
         controller: _tabController,
-        children: _tabs.map((type) => _EntryList(type: type)).toList(),
+        children: _tabs
+            .map((type) => _EntryList(type: type, groupMode: _groupMode))
+            .toList(),
       ),
       floatingActionButton: FloatingActionButton.extended(
         key: const Key('add_health_entry_button'),
@@ -127,9 +167,10 @@ class _HealthDashboardScreenState extends ConsumerState<HealthDashboardScreen>
 }
 
 class _EntryList extends ConsumerWidget {
-  const _EntryList({this.type});
+  const _EntryList({this.type, required this.groupMode});
 
   final HealthEntryType? type;
+  final _GroupMode groupMode;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -188,24 +229,29 @@ class _EntryList extends ConsumerWidget {
           );
         }
 
+        final groups = _buildGroups(entries, petMap);
+
         return RefreshIndicator(
           onRefresh: () =>
               ref.read(healthEntriesNotifierProvider.notifier).refresh(),
           child: ListView.builder(
             padding: const EdgeInsets.all(12),
-            itemCount: entries.length,
+            itemCount: groups.length,
             itemBuilder: (context, index) {
-              final entry = entries[index];
-              final pet = petMap[entry.petId];
+              final group = groups[index];
+              if (group is _GroupHeader) {
+                return _buildHeader(context, group.title);
+              }
+              final item = group as _GroupEntry;
               return Padding(
                 padding: const EdgeInsets.only(bottom: 6),
                 child: HealthEntryCard(
-                  entry: entry,
-                  pet: pet,
-                  healthIssueName: entry.healthIssueName,
-                  onTap: () => context.go('/health/edit/${entry.id}'),
-                  onMarkTaken: () => _markTaken(context, ref, entry),
-                  onSnooze: (days) => _snooze(context, ref, entry, days),
+                  entry: item.entry,
+                  pet: petMap[item.entry.petId],
+                  healthIssueName: item.entry.healthIssueName,
+                  onTap: () => context.go('/health/edit/${item.entry.id}'),
+                  onMarkTaken: () => _markTaken(context, ref, item.entry),
+                  onSnooze: (days) => _snooze(context, ref, item.entry, days),
                 ),
               );
             },
@@ -213,6 +259,131 @@ class _EntryList extends ConsumerWidget {
         );
       },
     );
+  }
+
+  Widget _buildHeader(BuildContext context, String title) {
+    final theme = Theme.of(context);
+    return Padding(
+      padding: const EdgeInsets.only(top: 12, bottom: 6),
+      child: Row(
+        children: [
+          Container(
+            width: 4,
+            height: 20,
+            decoration: BoxDecoration(
+              color: theme.colorScheme.primary,
+              borderRadius: BorderRadius.circular(2),
+            ),
+          ),
+          const SizedBox(width: 8),
+          Text(
+            title,
+            style: theme.textTheme.titleSmall?.copyWith(
+              fontWeight: FontWeight.bold,
+              color: theme.colorScheme.primary,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  List<_GroupItem> _buildGroups(
+      List<HealthEntry> entries, Map<String, Pet> petMap) {
+    switch (groupMode) {
+      case _GroupMode.dueDate:
+        return _groupByDueDate(entries);
+      case _GroupMode.pet:
+        return _groupByPet(entries, petMap);
+      case _GroupMode.petType:
+        return _groupByPetType(entries, petMap);
+    }
+  }
+
+  List<_GroupItem> _groupByDueDate(List<HealthEntry> entries) {
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final tomorrow = today.add(const Duration(days: 1));
+    final endOfWeek = today.add(const Duration(days: 7));
+
+    final overdue = <HealthEntry>[];
+    final todayList = <HealthEntry>[];
+    final tomorrowList = <HealthEntry>[];
+    final thisWeek = <HealthEntry>[];
+    final later = <HealthEntry>[];
+    final completed = <HealthEntry>[];
+
+    for (final e in entries) {
+      if (e.isCompleted) {
+        completed.add(e);
+      } else {
+        final due = DateTime(e.nextDueDate.year, e.nextDueDate.month, e.nextDueDate.day);
+        if (due.isBefore(today)) {
+          overdue.add(e);
+        } else if (due.isAtSameMomentAs(today)) {
+          todayList.add(e);
+        } else if (due.isAtSameMomentAs(tomorrow)) {
+          tomorrowList.add(e);
+        } else if (due.isBefore(endOfWeek)) {
+          thisWeek.add(e);
+        } else {
+          later.add(e);
+        }
+      }
+    }
+
+    final items = <_GroupItem>[];
+    void addGroup(String title, List<HealthEntry> list) {
+      if (list.isEmpty) return;
+      items.add(_GroupHeader(title));
+      items.addAll(list.map((e) => _GroupEntry(e)));
+    }
+
+    addGroup('Overdue', overdue);
+    addGroup('Today', todayList);
+    addGroup('Tomorrow', tomorrowList);
+    addGroup('This Week', thisWeek);
+    addGroup('Later', later);
+    addGroup('Completed', completed);
+
+    return items;
+  }
+
+  List<_GroupItem> _groupByPet(
+      List<HealthEntry> entries, Map<String, Pet> petMap) {
+    final grouped = <String, List<HealthEntry>>{};
+    for (final e in entries) {
+      final petName = petMap[e.petId]?.name ?? 'Unknown Pet';
+      grouped.putIfAbsent(petName, () => []).add(e);
+    }
+
+    final sortedKeys = grouped.keys.toList()..sort();
+    final items = <_GroupItem>[];
+    for (final name in sortedKeys) {
+      items.add(_GroupHeader(name));
+      final sorted = grouped[name]!..sort((a, b) => a.nextDueDate.compareTo(b.nextDueDate));
+      items.addAll(sorted.map((e) => _GroupEntry(e)));
+    }
+    return items;
+  }
+
+  List<_GroupItem> _groupByPetType(
+      List<HealthEntry> entries, Map<String, Pet> petMap) {
+    final grouped = <String, List<HealthEntry>>{};
+    for (final e in entries) {
+      final species = petMap[e.petId]?.species ?? 'Other';
+      grouped.putIfAbsent(species, () => []).add(e);
+    }
+
+    final sortedKeys = grouped.keys.toList()..sort();
+    final items = <_GroupItem>[];
+    for (final species in sortedKeys) {
+      final pluralSpecies = species.endsWith('s') ? species : '${species}s';
+      items.add(_GroupHeader(pluralSpecies));
+      final sorted = grouped[species]!..sort((a, b) => a.nextDueDate.compareTo(b.nextDueDate));
+      items.addAll(sorted.map((e) => _GroupEntry(e)));
+    }
+    return items;
   }
 
   Future<void> _markTaken(BuildContext context, WidgetRef ref, HealthEntry entry) async {
@@ -232,4 +403,16 @@ class _EntryList extends ConsumerWidget {
       );
     }
   }
+}
+
+sealed class _GroupItem {}
+
+class _GroupHeader extends _GroupItem {
+  final String title;
+  _GroupHeader(this.title);
+}
+
+class _GroupEntry extends _GroupItem {
+  final HealthEntry entry;
+  _GroupEntry(this.entry);
 }
