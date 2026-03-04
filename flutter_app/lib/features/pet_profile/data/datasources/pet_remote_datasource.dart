@@ -15,6 +15,7 @@ class PetRemoteException implements Exception {
 
 abstract class PetRemoteDataSource {
   Future<List<PetModel>> getAllPets(String token);
+  Future<List<PetModel>> getAllPetsIncludingOrg(String token);
   Future<PetModel> createPet(PetModel pet, String token);
   Future<PetModel> updatePet(PetModel pet, String token);
   Future<void> deletePet(String id, String token);
@@ -36,6 +37,24 @@ class PetRemoteDataSourceImpl implements PetRemoteDataSource {
   Future<List<PetModel>> getAllPets(String token) async {
     final response = await _client.get(
       Uri.parse('$baseUrl/api/pets'),
+      headers: _headers(token),
+    );
+    if (response.statusCode == 401) {
+      throw PetRemoteException('Unauthorized', statusCode: 401);
+    }
+    if (response.statusCode >= 400) {
+      throw PetRemoteException('Server error', statusCode: response.statusCode);
+    }
+    final list = json.decode(response.body) as List<dynamic>;
+    return list
+        .map((e) => PetModel.fromJson(e as Map<String, dynamic>))
+        .toList();
+  }
+
+  @override
+  Future<List<PetModel>> getAllPetsIncludingOrg(String token) async {
+    final response = await _client.get(
+      Uri.parse('$baseUrl/api/pets/all'),
       headers: _headers(token),
     );
     if (response.statusCode == 401) {

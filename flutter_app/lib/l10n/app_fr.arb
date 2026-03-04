@@ -81,6 +81,8 @@
   "french": "Français",
 
   "myPets": "Mes animaux",
+  "allPets": "Tous les animaux",
+  "filterByOrganization": "Filtrer par organisation",
   "notifications": "Notifications",
   "veterinarians": "Vétérinaires",
   "events": "Événements",

@@ -23,7 +23,7 @@ The application employs a clean architecture, separating concerns into data, dom
 - **Veterinarian Management**: CRUD operations for veterinarian contacts, linkable to pets.
 - **Notification System**: In-app notification center for due entries and general events, with server-side processing and per-pet mute options.
 - **Sharing Feature**: Multi-user pet access with guardian/shared roles via share links, managed through a `pet_access` table.
-- **Organization Support**: Comprehensive management for Professional and Charity organizations, including user roles, pet transfers, and archiving.
+- **Organization Support**: Comprehensive management for Professional and Charity organizations, including user roles, pet transfers, and archiving. Pet list groups pets by organization with filter chips (All Pets / My Pets / per-org). Health dashboard includes matching org filter. Server endpoint `GET /api/pets/all` returns personal + org pets with `organization_id` and `organization_name`.
 - **Pet Report Generation**: Generates customizable PDF reports for individual pets, including profile, weight, health events, and issues.
 - **Subscription (RevenueCat)**: Manages in-app subscriptions and entitlements across platforms.
 - **Localization (EN/FR)**: Full English/French localization via Flutter's `intl` system, with locale persistence and server-side syncing.

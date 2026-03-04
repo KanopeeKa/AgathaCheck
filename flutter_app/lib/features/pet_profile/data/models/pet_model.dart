@@ -21,6 +21,8 @@ class PetModel {
     this.vetId,
     this.colorValue,
     this.passedAway = false,
+    this.organizationId,
+    this.organizationName,
   });
 
   factory PetModel.fromJson(Map<String, dynamic> json) {
@@ -48,6 +50,8 @@ class PetModel {
       vetId: json['vetId'] as String?,
       colorValue: json['colorValue'] as int?,
       passedAway: json['passedAway'] == true,
+      organizationId: json['organization_id'] != null ? int.tryParse(json['organization_id'].toString()) : null,
+      organizationName: json['organization_name'] as String?,
     );
   }
 
@@ -70,6 +74,8 @@ class PetModel {
       vetId: pet.vetId,
       colorValue: pet.colorValue,
       passedAway: pet.passedAway,
+      organizationId: pet.organizationId,
+      organizationName: pet.organizationName,
     );
   }
 
@@ -96,6 +102,8 @@ class PetModel {
   final String? vetId;
   final int? colorValue;
   final bool passedAway;
+  final int? organizationId;
+  final String? organizationName;
 
   Map<String, dynamic> toJson() {
     return {
@@ -116,6 +124,8 @@ class PetModel {
       'vetId': vetId,
       'colorValue': colorValue,
       'passedAway': passedAway,
+      'organization_id': organizationId,
+      'organization_name': organizationName,
     };
   }
 
@@ -140,6 +150,8 @@ class PetModel {
       vetId: vetId,
       colorValue: colorValue,
       passedAway: passedAway,
+      organizationId: organizationId,
+      organizationName: organizationName,
     );
   }
 }

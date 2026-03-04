@@ -204,3 +204,11 @@ final petByIdProvider = FutureProvider.family<Pet?, String>((ref, id) async {
   final pets = await ref.watch(petListProvider.future);
   return pets.where((p) => p.id == id).firstOrNull;
 });
+
+final allPetsIncludingOrgProvider = FutureProvider<List<Pet>>((ref) async {
+  final token = ref.watch(_accessTokenProvider);
+  if (token == null || token.isEmpty) return [];
+  final remote = ref.watch(petRemoteDataSourceProvider);
+  final models = await remote.getAllPetsIncludingOrg(token);
+  return models.map((m) => m.toEntity()).toList();
+});

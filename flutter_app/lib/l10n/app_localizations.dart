@@ -548,6 +548,18 @@ abstract class AppLocalizations {
   /// **'My Pets'**
   String get myPets;
 
+  /// No description provided for @allPets.
+  ///
+  /// In en, this message translates to:
+  /// **'All Pets'**
+  String get allPets;
+
+  /// No description provided for @filterByOrganization.
+  ///
+  /// In en, this message translates to:
+  /// **'Filter by organization'**
+  String get filterByOrganization;
+
   /// No description provided for @notifications.
   ///
   /// In en, this message translates to:

@@ -247,6 +247,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get myPets => 'My Pets';
 
   @override
+  String get allPets => 'All Pets';
+
+  @override
+  String get filterByOrganization => 'Filter by organization';
+
+  @override
   String get notifications => 'Notifications';
 
   @override

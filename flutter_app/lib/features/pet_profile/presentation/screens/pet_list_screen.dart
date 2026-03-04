@@ -27,6 +27,8 @@ class PetListScreen extends ConsumerStatefulWidget {
 }
 
 class _PetListScreenState extends ConsumerState<PetListScreen> {
+  String? _orgFilter;
+
   @override
   void initState() {
     super.initState();
@@ -37,7 +39,7 @@ class _PetListScreenState extends ConsumerState<PetListScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final petListAsync = ref.watch(petListProvider);
+    final petListAsync = ref.watch(allPetsIncludingOrgProvider);
     final auth = ref.watch(authProvider);
     final unreadCount = ref.watch(unreadNotificationCountProvider);
     final theme = Theme.of(context);
@@ -199,14 +201,14 @@ class _PetListScreenState extends ConsumerState<PetListScreen> {
               Text(l.failedToLoadPets(error.toString())),
               const SizedBox(height: 8),
               ElevatedButton(
-                onPressed: () => ref.invalidate(petListProvider),
+                onPressed: () => ref.invalidate(allPetsIncludingOrgProvider),
                 child: Text(l.retry),
               ),
             ],
           ),
         ),
-        data: (pets) {
-          if (pets.isEmpty) {
+        data: (allPets) {
+          if (allPets.isEmpty) {
             return Center(
               child: Column(
                 mainAxisSize: MainAxisSize.min,
@@ -235,21 +237,82 @@ class _PetListScreenState extends ConsumerState<PetListScreen> {
             );
           }
 
-          final activePets = pets.where((p) => !p.passedAway).toList();
-          final passedAwayPets = pets.where((p) => p.passedAway).toList();
+          final orgNames = allPets
+              .where((p) => p.organizationName != null)
+              .map((p) => p.organizationName!)
+              .toSet()
+              .toList()
+            ..sort();
+
+          final filteredPets = _orgFilter == null
+              ? allPets
+              : _orgFilter == '_personal'
+                  ? allPets.where((p) => p.organizationId == null).toList()
+                  : allPets.where((p) => p.organizationName == _orgFilter).toList();
+
+          final personalActive = filteredPets.where((p) => p.organizationId == null && !p.passedAway).toList();
+          final personalPassed = filteredPets.where((p) => p.organizationId == null && p.passedAway).toList();
+
+          final orgGroups = <String, List<Pet>>{};
+          final orgPassedGroups = <String, List<Pet>>{};
+          for (final pet in filteredPets) {
+            if (pet.organizationName != null) {
+              if (pet.passedAway) {
+                orgPassedGroups.putIfAbsent(pet.organizationName!, () => []).add(pet);
+              } else {
+                orgGroups.putIfAbsent(pet.organizationName!, () => []).add(pet);
+              }
+            }
+          }
+
+          final allPassedAway = [...personalPassed];
+          for (final pets in orgPassedGroups.values) {
+            allPassedAway.addAll(pets);
+          }
 
           return ListView(
             padding: const EdgeInsets.all(16),
             children: [
-              _DueEventsSection(pets: pets),
-              ...activePets.map((pet) => Padding(
-                padding: const EdgeInsets.only(bottom: 8),
-                child: PetCard(
-                  pet: pet,
-                  onTap: () => context.go('/pet/${pet.id}'),
+              if (orgNames.isNotEmpty)
+                _OrgFilterChips(
+                  orgNames: orgNames,
+                  selected: _orgFilter,
+                  onSelected: (v) => setState(() => _orgFilter = v),
+                  l: l,
                 ),
-              )),
-              if (passedAwayPets.isNotEmpty)
+              _DueEventsSection(pets: allPets),
+              if (_orgFilter == null || _orgFilter == '_personal') ...[
+                if (personalActive.isNotEmpty || (_orgFilter == null && orgGroups.isNotEmpty))
+                  _SectionHeader(
+                    icon: Icons.person,
+                    title: l.myPets,
+                    count: personalActive.length,
+                  ),
+                ...personalActive.map((pet) => Padding(
+                  padding: const EdgeInsets.only(bottom: 8),
+                  child: PetCard(
+                    pet: pet,
+                    onTap: () => context.go('/pet/${pet.id}'),
+                  ),
+                )),
+                if (personalActive.isEmpty && _orgFilter == '_personal')
+                  _EmptySection(message: l.noPetsYet),
+              ],
+              for (final orgName in orgGroups.keys.toList()..sort()) ...[
+                _SectionHeader(
+                  icon: Icons.business,
+                  title: orgName,
+                  count: (orgGroups[orgName]?.length ?? 0),
+                ),
+                ...orgGroups[orgName]!.map((pet) => Padding(
+                  padding: const EdgeInsets.only(bottom: 8),
+                  child: PetCard(
+                    pet: pet,
+                    onTap: () => context.go('/pet/${pet.id}'),
+                  ),
+                )),
+              ],
+              if (allPassedAway.isNotEmpty)
                 Padding(
                   padding: const EdgeInsets.only(top: 8),
                   child: Card(
@@ -282,7 +345,7 @@ class _PetListScreenState extends ConsumerState<PetListScreen> {
                               borderRadius: BorderRadius.circular(10),
                             ),
                             child: Text(
-                              '${passedAwayPets.length}',
+                              '${allPassedAway.length}',
                               style: theme.textTheme.labelSmall?.copyWith(
                                 color: theme.colorScheme.onSurfaceVariant,
                               ),
@@ -299,7 +362,7 @@ class _PetListScreenState extends ConsumerState<PetListScreen> {
                         Padding(
                           padding: const EdgeInsets.fromLTRB(12, 0, 12, 12),
                           child: Column(
-                            children: passedAwayPets.map((pet) => Padding(
+                            children: allPassedAway.map((pet) => Padding(
                               padding: const EdgeInsets.only(bottom: 8),
                               child: PetCard(
                                 pet: pet,
@@ -563,5 +626,123 @@ class _DueEventsSection extends ConsumerWidget {
       case HealthEntryType.procedure:
         return Icons.more_horiz;
     }
+  }
+}
+
+class _OrgFilterChips extends StatelessWidget {
+  const _OrgFilterChips({
+    required this.orgNames,
+    required this.selected,
+    required this.onSelected,
+    required this.l,
+  });
+
+  final List<String> orgNames;
+  final String? selected;
+  final ValueChanged<String?> onSelected;
+  final AppLocalizations l;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12),
+      child: SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: Row(
+          children: [
+            FilterChip(
+              label: Text(l.allPets),
+              selected: selected == null,
+              onSelected: (_) => onSelected(null),
+            ),
+            const SizedBox(width: 8),
+            FilterChip(
+              label: Text(l.myPets),
+              selected: selected == '_personal',
+              onSelected: (_) => onSelected('_personal'),
+            ),
+            ...orgNames.map((name) => Padding(
+              padding: const EdgeInsets.only(left: 8),
+              child: FilterChip(
+                avatar: const Icon(Icons.business, size: 16),
+                label: Text(name),
+                selected: selected == name,
+                onSelected: (_) => onSelected(name),
+              ),
+            )),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _SectionHeader extends StatelessWidget {
+  const _SectionHeader({
+    required this.icon,
+    required this.title,
+    required this.count,
+  });
+
+  final IconData icon;
+  final String title;
+  final int count;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Padding(
+      padding: const EdgeInsets.only(top: 12, bottom: 8),
+      child: Row(
+        children: [
+          Icon(icon, size: 18, color: theme.colorScheme.primary),
+          const SizedBox(width: 8),
+          Text(
+            title,
+            style: theme.textTheme.titleSmall?.copyWith(
+              fontWeight: FontWeight.bold,
+              color: theme.colorScheme.primary,
+            ),
+          ),
+          const SizedBox(width: 8),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+            decoration: BoxDecoration(
+              color: theme.colorScheme.primaryContainer,
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Text(
+              '$count',
+              style: theme.textTheme.labelSmall?.copyWith(
+                color: theme.colorScheme.onPrimaryContainer,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _EmptySection extends StatelessWidget {
+  const _EmptySection({required this.message});
+
+  final String message;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 16),
+      child: Center(
+        child: Text(
+          message,
+          style: theme.textTheme.bodyMedium?.copyWith(
+            color: theme.colorScheme.onSurfaceVariant,
+          ),
+        ),
+      ),
+    );
   }
 }

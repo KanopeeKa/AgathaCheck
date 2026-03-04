@@ -23,6 +23,8 @@ class Pet {
     this.vetId,
     this.colorValue,
     this.passedAway = false,
+    this.organizationId,
+    this.organizationName,
   });
 
   final String id;
@@ -42,6 +44,8 @@ class Pet {
   final String? vetId;
   final int? colorValue;
   final bool passedAway;
+  final int? organizationId;
+  final String? organizationName;
 
   double? get age {
     if (dateOfBirth == null) return null;
@@ -100,6 +104,8 @@ class Pet {
     String? vetId,
     int? colorValue,
     bool? passedAway,
+    int? organizationId,
+    String? organizationName,
     bool clearVetId = false,
     bool clearGender = false,
     bool clearNeuteredDate = false,
@@ -123,6 +129,8 @@ class Pet {
       vetId: clearVetId ? null : (vetId ?? this.vetId),
       colorValue: colorValue ?? this.colorValue,
       passedAway: passedAway ?? this.passedAway,
+      organizationId: organizationId ?? this.organizationId,
+      organizationName: organizationName ?? this.organizationName,
     );
   }
 

@@ -26,6 +26,7 @@ class _HealthDashboardScreenState extends ConsumerState<HealthDashboardScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
   _GroupMode _groupMode = _GroupMode.dueDate;
+  String? _orgFilter;
 
   static const _tabs = [
     null,
@@ -122,11 +123,58 @@ class _HealthDashboardScreenState extends ConsumerState<HealthDashboardScreen>
           isScrollable: false,
         ),
       ),
-      body: TabBarView(
-        controller: _tabController,
-        children: _tabs
-            .map((type) => _EntryList(type: type, groupMode: _groupMode))
-            .toList(),
+      body: Column(
+        children: [
+          Consumer(builder: (context, ref, _) {
+            final allPetsAsync = ref.watch(allPetsIncludingOrgProvider);
+            final pets = allPetsAsync.valueOrNull ?? [];
+            final orgNames = pets
+                .where((p) => p.organizationName != null)
+                .map((p) => p.organizationName!)
+                .toSet()
+                .toList()
+              ..sort();
+            if (orgNames.isEmpty) return const SizedBox.shrink();
+            return Padding(
+              padding: const EdgeInsets.fromLTRB(12, 8, 12, 0),
+              child: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  children: [
+                    FilterChip(
+                      label: Text(l.allPets),
+                      selected: _orgFilter == null,
+                      onSelected: (_) => setState(() => _orgFilter = null),
+                    ),
+                    const SizedBox(width: 8),
+                    FilterChip(
+                      label: Text(l.myPets),
+                      selected: _orgFilter == '_personal',
+                      onSelected: (_) => setState(() => _orgFilter = '_personal'),
+                    ),
+                    ...orgNames.map((name) => Padding(
+                      padding: const EdgeInsets.only(left: 8),
+                      child: FilterChip(
+                        avatar: const Icon(Icons.business, size: 16),
+                        label: Text(name),
+                        selected: _orgFilter == name,
+                        onSelected: (_) => setState(() => _orgFilter = name),
+                      ),
+                    )),
+                  ],
+                ),
+              ),
+            );
+          }),
+          Expanded(
+            child: TabBarView(
+              controller: _tabController,
+              children: _tabs
+                  .map((type) => _EntryList(type: type, groupMode: _groupMode, orgFilter: _orgFilter))
+                  .toList(),
+            ),
+          ),
+        ],
       ),
       floatingActionButton: FloatingActionButton.extended(
         key: const Key('add_health_entry_button'),
@@ -183,10 +231,17 @@ class _HealthDashboardScreenState extends ConsumerState<HealthDashboardScreen>
       final typeFilter = tabIndex < _tabs.length ? _tabs[tabIndex] : null;
 
       final entriesAsync = ref.read(filteredHealthEntriesProvider(typeFilter));
-      final petsAsync = ref.read(petListProvider);
-      final entries = entriesAsync.valueOrNull ?? [];
+      final petsAsync = ref.read(allPetsIncludingOrgProvider);
+      var entries = entriesAsync.valueOrNull ?? [];
       final pets = petsAsync.valueOrNull ?? <Pet>[];
       final petMap = {for (final p in pets) p.id: p};
+
+      if (_orgFilter != null) {
+        final filteredPetIds = _orgFilter == '_personal'
+            ? pets.where((p) => p.organizationId == null).map((p) => p.id).toSet()
+            : pets.where((p) => p.organizationName == _orgFilter).map((p) => p.id).toSet();
+        entries = entries.where((e) => filteredPetIds.contains(e.petId)).toList();
+      }
 
       final groups = _buildPdfGroups(entries, petMap, _groupMode);
 
@@ -303,19 +358,26 @@ class _HealthDashboardScreenState extends ConsumerState<HealthDashboardScreen>
 }
 
 class _EntryList extends ConsumerWidget {
-  const _EntryList({this.type, required this.groupMode});
+  const _EntryList({this.type, required this.groupMode, this.orgFilter});
 
   final HealthEntryType? type;
   final _GroupMode groupMode;
+  final String? orgFilter;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l = AppLocalizations.of(context)!;
     final entriesAsync = ref.watch(filteredHealthEntriesProvider(type));
-    final petsAsync = ref.watch(petListProvider);
+    final petsAsync = ref.watch(allPetsIncludingOrgProvider);
 
-    final pets = petsAsync.valueOrNull ?? <Pet>[];
-    final petMap = {for (final p in pets) p.id: p};
+    final allPets = petsAsync.valueOrNull ?? <Pet>[];
+    final petMap = {for (final p in allPets) p.id: p};
+
+    final filteredPetIds = orgFilter == null
+        ? null
+        : orgFilter == '_personal'
+            ? allPets.where((p) => p.organizationId == null).map((p) => p.id).toSet()
+            : allPets.where((p) => p.organizationName == orgFilter).map((p) => p.id).toSet();
 
     return entriesAsync.when(
       loading: () => const Center(child: CircularProgressIndicator()),
@@ -338,7 +400,10 @@ class _EntryList extends ConsumerWidget {
           ],
         ),
       ),
-      data: (entries) {
+      data: (allEntries) {
+        final entries = filteredPetIds == null
+            ? allEntries
+            : allEntries.where((e) => filteredPetIds.contains(e.petId)).toList();
         if (entries.isEmpty) {
           return Center(
             child: Column(

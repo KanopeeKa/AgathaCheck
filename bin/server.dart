@@ -604,7 +604,9 @@ Future<void> _handleApi(HttpRequest request) async {
     await _authResetPassword(request);
   }
   // Pets CRUD
-  else if (path == '/api/pets' && method == 'GET') {
+  else if (path == '/api/pets/all' && method == 'GET') {
+    await _getAllPetsIncludingOrg(request);
+  } else if (path == '/api/pets' && method == 'GET') {
     await _getPets(request);
   } else if (path == '/api/pets' && method == 'POST') {
     await _createPet(request);
@@ -853,6 +855,43 @@ Future<void> _getPets(HttpRequest request) async {
   );
   final pets = result.map(_petRowToJson).toList();
   _jsonResponse(request, 200, pets);
+}
+
+Future<void> _getAllPetsIncludingOrg(HttpRequest request) async {
+  final userId = _getUserIdFromRequest(request);
+  if (userId == null) {
+    _jsonResponse(request, 401, {'error': 'Authentication required'});
+    return;
+  }
+
+  final personalResult = await _pool.execute(
+    Sql.named('SELECT p.*, NULL::text AS organization_name FROM pets p WHERE p.user_id = @userId AND p.organization_id IS NULL ORDER BY p.created_at'),
+    parameters: {'userId': userId},
+  );
+
+  final orgResult = await _pool.execute(
+    Sql.named('''
+      SELECT p.*, o.name AS organization_name
+      FROM pets p
+      INNER JOIN organizations o ON p.organization_id = o.id
+      INNER JOIN organization_users ou ON ou.organization_id = o.id AND ou.user_id = @userId
+      ORDER BY o.name, p.created_at
+    '''),
+    parameters: {'userId': userId},
+  );
+
+  final allPets = <Map<String, dynamic>>[];
+  for (final row in personalResult) {
+    final pet = _petRowToJson(row);
+    pet['organization_name'] = null;
+    allPets.add(pet);
+  }
+  for (final row in orgResult) {
+    final pet = _petRowToJson(row);
+    pet['organization_name'] = row.toColumnMap()['organization_name']?.toString();
+    allPets.add(pet);
+  }
+  _jsonResponse(request, 200, allPets);
 }
 
 Future<void> _createPet(HttpRequest request) async {
