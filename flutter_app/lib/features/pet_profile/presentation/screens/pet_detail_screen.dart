@@ -18,6 +18,7 @@ import '../../../health_tracking/domain/entities/health_issue.dart';
 import '../../../health_tracking/presentation/providers/health_issue_providers.dart';
 import '../../../health_tracking/presentation/providers/health_providers.dart';
 import '../../../health_tracking/presentation/widgets/health_entry_card.dart';
+import '../../../../core/theme/app_theme.dart';
 import '../../../organization/domain/entities/family_event.dart';
 import '../../../organization/domain/entities/organization_member.dart';
 import '../../../organization/presentation/providers/organization_providers.dart';
@@ -67,12 +68,15 @@ class _PetDetailScreenState extends ConsumerState<PetDetailScreen> {
         final auth = ref.watch(authProvider);
         final theme = Theme.of(context);
         final unreadCount = ref.watch(unreadNotificationCountProvider);
+        final isOrgPet = pet.organizationId != null;
 
         return Scaffold(
+          backgroundColor: isOrgPet ? AppTheme.orgBlue : null,
           body: CustomScrollView(
             slivers: [
               SliverAppBar(
                 pinned: true,
+                backgroundColor: isOrgPet ? AppTheme.orgBlue : null,
                 title: Text(pet.name),
                 leading: IconButton(
                   icon: const Icon(Icons.arrow_back),

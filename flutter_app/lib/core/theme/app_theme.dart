@@ -6,8 +6,10 @@ import 'package:flutter/material.dart';
 /// and configures component themes for cards, inputs, buttons,
 /// tabs, and more.
 class AppTheme {
-  /// Private constructor to prevent instantiation.
   AppTheme._();
+
+  static const Color orgBlue = Color(0xFFE8F0FE);
+  static const Color orgBlueDarker = Color(0xFFD3E3FD);
 
   /// The light [ThemeData] for the application.
   ///

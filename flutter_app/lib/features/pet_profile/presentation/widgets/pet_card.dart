@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 
+import '../../../../core/theme/app_theme.dart';
 import '../../../../core/utils/constants.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../domain/entities/pet.dart';
@@ -35,6 +36,7 @@ class PetCard extends StatelessWidget {
         child: Card(
           key: Key('pet_card_${pet.name}'),
           clipBehavior: Clip.antiAlias,
+          color: pet.organizationId != null ? AppTheme.orgBlue : null,
           child: InkWell(
             onTap: onTap,
             child: Padding(

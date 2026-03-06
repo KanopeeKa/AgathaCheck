@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../core/theme/app_theme.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../pet_profile/presentation/widgets/pet_card.dart';
 import '../../domain/entities/organization.dart';
@@ -65,13 +66,15 @@ class _OrganizationDetailScreenState
         }
 
         return Scaffold(
+          backgroundColor: AppTheme.orgBlue,
           appBar: AppBar(
+            backgroundColor: AppTheme.orgBlue,
             title: Text(org.name),
             leading: IconButton(
               key: const Key('org_detail_back'),
               icon: const Icon(Icons.arrow_back),
               tooltip: MaterialLocalizations.of(context).backButtonTooltip,
-              onPressed: () => context.go('/my-details'),
+              onPressed: () => context.go('/organizations'),
             ),
             actions: [
               if (isSuperUser)

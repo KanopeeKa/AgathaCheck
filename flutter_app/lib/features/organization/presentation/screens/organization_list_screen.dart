@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../core/theme/app_theme.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../auth/presentation/providers/auth_providers.dart';
 import '../../data/datasources/organization_remote_datasource.dart';
@@ -20,7 +21,9 @@ class OrganizationListScreen extends ConsumerWidget {
     final l = AppLocalizations.of(context)!;
 
     return Scaffold(
+      backgroundColor: AppTheme.orgBlue,
       appBar: AppBar(
+        backgroundColor: AppTheme.orgBlue,
         title: Text(l.myOrganizations),
         leading: IconButton(
           key: const Key('org_back_button'),
