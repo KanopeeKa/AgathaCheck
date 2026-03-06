@@ -1,4 +1,4 @@
-# Agatha (PetProfileApp)
+# Agatha Track (PetProfileApp)
 
 ## Overview
 Agatha is a modular Flutter application for comprehensive pet management, enabling users to manage pet profiles, track health, log weight, and maintain veterinarian contacts. It provides a centralized platform for pet owners with robust authentication, in-app notifications, and detailed pet reports. The project aims to deliver a scalable, production-ready solution with future potential for native mobile and sharing capabilities.

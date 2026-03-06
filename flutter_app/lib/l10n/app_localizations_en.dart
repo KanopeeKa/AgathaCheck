@@ -9,14 +9,14 @@ class AppLocalizationsEn extends AppLocalizations {
   AppLocalizationsEn([String locale = 'en']) : super(locale);
 
   @override
-  String get appTitle => 'Agatha Check';
+  String get appTitle => 'Agatha Track';
 
   @override
-  String get agathaCheckLogo => 'Agatha Check logo';
+  String get agathaCheckLogo => 'Agatha Track logo';
 
   @override
   String get appTagline =>
-      'Agatha Check keeps your pet\'s health organized, so you don\'t have to.';
+      'Agatha Track keeps your pet\'s health organized, so you don\'t have to.';
 
   @override
   String get appDescription =>
@@ -947,7 +947,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get subscriptionTitle => 'Subscription';
 
   @override
-  String get welcomeUnlimited => 'Welcome to Agatha Check Unlimited!';
+  String get welcomeUnlimited => 'Welcome to Agatha Track Unlimited!';
 
   @override
   String purchaseFailed(String error) {
@@ -1109,7 +1109,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String pdfGeneratedBy(String date) {
-    return 'Generated $date by Agatha Check';
+    return 'Generated $date by Agatha Track';
   }
 
   @override

@@ -1,9 +1,9 @@
 {
   "@@locale": "en",
 
-  "appTitle": "Agatha Check",
-  "agathaCheckLogo": "Agatha Check logo",
-  "appTagline": "Agatha Check keeps your pet's health organized, so you don't have to.",
+  "appTitle": "Agatha Track",
+  "agathaCheckLogo": "Agatha Track logo",
+  "appTagline": "Agatha Track keeps your pet's health organized, so you don't have to.",
   "appDescription": "Track vet visits, medications, weight, and daily care in one simple dashboard designed for busy pet parents.",
   "appCta": "Log in to pick up where you left off, or create a free account to start keeping your pet's health history safe and accessible anytime.",
 
@@ -339,7 +339,7 @@
   "availablePets": "Available pets:",
 
   "subscriptionTitle": "Subscription",
-  "welcomeUnlimited": "Welcome to Agatha Check Unlimited!",
+  "welcomeUnlimited": "Welcome to Agatha Track Unlimited!",
   "purchaseFailed": "Purchase failed: {error}",
   "@purchaseFailed": { "placeholders": { "error": { "type": "String" } } },
   "purchasesRestored": "Purchases restored successfully",
@@ -397,7 +397,7 @@
   "pdfGroupedBy": "{filter}  •  Grouped {group}",
   "@pdfGroupedBy": { "placeholders": { "filter": { "type": "String" }, "group": { "type": "String" } } },
   "pdfNoEventsToDisplay": "No events to display.",
-  "pdfGeneratedBy": "Generated {date} by Agatha Check",
+  "pdfGeneratedBy": "Generated {date} by Agatha Track",
   "@pdfGeneratedBy": { "placeholders": { "date": { "type": "String" } } },
   "pdfPageOf": "Page {current} of {total}",
   "@pdfPageOf": { "placeholders": { "current": { "type": "int" }, "total": { "type": "int" } } },

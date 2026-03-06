@@ -137,7 +137,7 @@ class _LandingScreenState extends ConsumerState<LandingScreen>
     );
 
     return Semantics(
-      label: 'Agatha Check logo',
+      label: 'Agatha Track logo',
       child: kIsWeb
           ? WebAssetImage(
               assetPath: 'assets/logo.jpg',

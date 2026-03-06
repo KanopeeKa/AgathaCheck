@@ -26,7 +26,7 @@ class EventsPdfService {
   }) async {
     final pdf = pw.Document(
       title: '${l.events} - $filterLabel',
-      author: 'Agatha Check',
+      author: 'Agatha Track',
     );
 
     final dateFormat = DateFormat('MMM d, yyyy');

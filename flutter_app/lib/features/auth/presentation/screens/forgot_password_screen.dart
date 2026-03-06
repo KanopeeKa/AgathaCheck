@@ -138,7 +138,7 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
                       height: 64,
                       width: 64,
                       fit: BoxFit.cover,
-                      semanticLabel: 'Agatha Check logo',
+                      semanticLabel: 'Agatha Track logo',
                     ),
                   ),
                   const SizedBox(height: 16),

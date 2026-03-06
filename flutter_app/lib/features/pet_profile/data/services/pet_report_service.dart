@@ -58,7 +58,7 @@ class PetReportService {
   }) async {
     final pdf = pw.Document(
       title: '${pet.name} - ${l.pdfReportTitle}',
-      author: 'Agatha Check',
+      author: 'Agatha Track',
     );
 
     final dateFormat = DateFormat('MMM d, yyyy');

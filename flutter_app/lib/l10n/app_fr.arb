@@ -1,9 +1,9 @@
 {
   "@@locale": "fr",
 
-  "appTitle": "Agatha Check",
-  "agathaCheckLogo": "Logo Agatha Check",
-  "appTagline": "Agatha Check organise la santé de votre animal, pour que vous n'ayez pas à le faire.",
+  "appTitle": "Agatha Track",
+  "agathaCheckLogo": "Logo Agatha Track",
+  "appTagline": "Agatha Track organise la santé de votre animal, pour que vous n'ayez pas à le faire.",
   "appDescription": "Suivez les visites vétérinaires, les médicaments, le poids et les soins quotidiens dans un tableau de bord simple conçu pour les propriétaires d'animaux occupés.",
   "appCta": "Connectez-vous pour reprendre là où vous vous êtes arrêté, ou créez un compte gratuit pour commencer à garder l'historique de santé de votre animal en sécurité et accessible à tout moment.",
 
@@ -308,7 +308,7 @@
   "availablePets": "Animaux disponibles :",
 
   "subscriptionTitle": "Abonnement",
-  "welcomeUnlimited": "Bienvenue dans Agatha Check Illimité !",
+  "welcomeUnlimited": "Bienvenue dans Agatha Track Illimité !",
   "purchaseFailed": "Échec de l'achat : {error}",
   "purchasesRestored": "Achats restaurés avec succès",
   "couldNotRestore": "Impossible de restaurer les achats : {error}",
@@ -360,7 +360,7 @@
   "pdfAllEvents": "Tous les événements",
   "pdfGroupedBy": "{filter}  •  Groupé {group}",
   "pdfNoEventsToDisplay": "Aucun événement à afficher.",
-  "pdfGeneratedBy": "Généré le {date} par Agatha Check",
+  "pdfGeneratedBy": "Généré le {date} par Agatha Track",
   "pdfPageOf": "Page {current} sur {total}",
   "pdfPetLabel": "Animal",
   "pdfDueLabel": "Échéance",

@@ -133,7 +133,7 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
                       const SizedBox(height: 16),
                       Text(
                         subscriptionStatus.hasUnlimited
-                            ? 'Agatha Check Unlimited'
+                            ? 'Agatha Track Unlimited'
                             : 'Free Plan',
                         style: theme.textTheme.headlineSmall?.copyWith(
                           fontWeight: FontWeight.bold,
@@ -299,7 +299,7 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Agatha Check Unlimited',
+              'Agatha Track Unlimited',
               style: theme.textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.bold,
                 color: theme.colorScheme.primary,

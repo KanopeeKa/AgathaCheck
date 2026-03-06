@@ -67,7 +67,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                         height: 80,
                         width: 80,
                         fit: BoxFit.cover,
-                        semanticLabel: 'Agatha Check logo'),
+                        semanticLabel: 'Agatha Track logo'),
                   ),
                   const SizedBox(height: 16),
                   Text(l10n.appTitle,

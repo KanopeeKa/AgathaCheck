@@ -101,19 +101,19 @@ abstract class AppLocalizations {
   /// No description provided for @appTitle.
   ///
   /// In en, this message translates to:
-  /// **'Agatha Check'**
+  /// **'Agatha Track'**
   String get appTitle;
 
   /// No description provided for @agathaCheckLogo.
   ///
   /// In en, this message translates to:
-  /// **'Agatha Check logo'**
+  /// **'Agatha Track logo'**
   String get agathaCheckLogo;
 
   /// No description provided for @appTagline.
   ///
   /// In en, this message translates to:
-  /// **'Agatha Check keeps your pet\'s health organized, so you don\'t have to.'**
+  /// **'Agatha Track keeps your pet\'s health organized, so you don\'t have to.'**
   String get appTagline;
 
   /// No description provided for @appDescription.
@@ -1835,7 +1835,7 @@ abstract class AppLocalizations {
   /// No description provided for @welcomeUnlimited.
   ///
   /// In en, this message translates to:
-  /// **'Welcome to Agatha Check Unlimited!'**
+  /// **'Welcome to Agatha Track Unlimited!'**
   String get welcomeUnlimited;
 
   /// No description provided for @purchaseFailed.
@@ -2111,7 +2111,7 @@ abstract class AppLocalizations {
   /// No description provided for @pdfGeneratedBy.
   ///
   /// In en, this message translates to:
-  /// **'Generated {date} by Agatha Check'**
+  /// **'Generated {date} by Agatha Track'**
   String pdfGeneratedBy(String date);
 
   /// No description provided for @pdfPageOf.
