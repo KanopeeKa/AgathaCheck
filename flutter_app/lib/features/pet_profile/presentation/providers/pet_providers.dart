@@ -104,6 +104,7 @@ class PetListNotifier extends AsyncNotifier<List<Pet>> {
     bool chipDismissed = false,
     String? photoPath,
     String? vetId,
+    int? organizationId,
   }) async {
     final existing = state.valueOrNull ?? [];
     final usedColors = existing
@@ -134,6 +135,7 @@ class PetListNotifier extends AsyncNotifier<List<Pet>> {
       photoPath: photoPath,
       vetId: vetId,
       colorValue: color,
+      organizationId: organizationId,
     );
     await ref.read(addPetUseCaseProvider).call(pet);
     ref.invalidateSelf();

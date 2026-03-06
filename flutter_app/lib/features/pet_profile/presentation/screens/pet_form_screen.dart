@@ -8,6 +8,7 @@ import 'package:intl/intl.dart';
 
 import '../../../../core/utils/constants.dart';
 import '../../../../l10n/app_localizations.dart';
+import '../../../organization/presentation/providers/organization_providers.dart';
 import '../../../vet/domain/entities/vet.dart';
 import '../../../vet/presentation/providers/vet_providers.dart';
 import '../../../weight_tracking/domain/entities/weight_entry.dart';
@@ -31,9 +32,10 @@ String _localizedSpecies(AppLocalizations l, String species) {
 }
 
 class PetFormScreen extends ConsumerStatefulWidget {
-  const PetFormScreen({super.key, this.petId});
+  const PetFormScreen({super.key, this.petId, this.initialOrgId});
 
   final String? petId;
+  final int? initialOrgId;
 
   @override
   ConsumerState<PetFormScreen> createState() => _PetFormScreenState();
@@ -62,6 +64,8 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
   bool _isLoading = false;
   bool _isInitialized = false;
   bool _showWeightInput = false;
+  int? _selectedOrgId;
+  bool _orgInitialized = false;
   final _newWeightController = TextEditingController();
 
   bool get _isEditing => widget.petId != null;
@@ -96,6 +100,7 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
     _neuterDismissed = pet.neuterDismissed;
     _chipDismissed = pet.chipDismissed;
     _passedAway = pet.passedAway;
+    _selectedOrgId = pet.organizationId;
   }
 
   Future<void> _pickImage() async {
@@ -316,6 +321,7 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
               chipDismissed: _chipDismissed,
               photoPath: _photoBase64,
               vetId: _selectedVetId,
+              organizationId: _selectedOrgId,
             );
         if (initialWeight != null) {
           try {
@@ -398,6 +404,8 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
             children: [
               _buildPhotoSection(theme),
               const SizedBox(height: 24),
+              if (!_isEditing) _buildOwnershipSelector(theme, l),
+              if (!_isEditing) const SizedBox(height: 16),
               TextFormField(
                 key: const Key('pet_name_field'),
                 controller: _nameController,
@@ -995,6 +1003,78 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildOwnershipSelector(ThemeData theme, AppLocalizations l) {
+    final orgsAsync = ref.watch(organizationListProvider);
+    if (!_orgInitialized) {
+      _orgInitialized = true;
+      _selectedOrgId = widget.initialOrgId;
+    }
+    return orgsAsync.when(
+      loading: () => const SizedBox.shrink(),
+      error: (_, __) => const SizedBox.shrink(),
+      data: (orgs) {
+        if (orgs.isEmpty) return const SizedBox.shrink();
+        return Card(
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(l.petOwnership,
+                    style: theme.textTheme.titleSmall?.copyWith(
+                        fontWeight: FontWeight.bold)),
+                const SizedBox(height: 12),
+                SegmentedButton<bool>(
+                  segments: [
+                    ButtonSegment(
+                      value: false,
+                      label: Text(l.myPet),
+                      icon: const Icon(Icons.person, size: 18),
+                    ),
+                    ButtonSegment(
+                      value: true,
+                      label: Text(l.orgPet),
+                      icon: const Icon(Icons.business, size: 18),
+                    ),
+                  ],
+                  selected: {_selectedOrgId != null},
+                  onSelectionChanged: (v) {
+                    setState(() {
+                      if (v.first) {
+                        _selectedOrgId = widget.initialOrgId ?? orgs.first.id;
+                      } else {
+                        _selectedOrgId = null;
+                      }
+                    });
+                  },
+                ),
+                if (_selectedOrgId != null) ...[
+                  const SizedBox(height: 12),
+                  DropdownButtonFormField<int>(
+                    key: const Key('pet_org_selector'),
+                    value: orgs.any((o) => o.id == _selectedOrgId) ? _selectedOrgId : orgs.first.id,
+                    decoration: InputDecoration(
+                      labelText: l.organizations,
+                      prefixIcon: const Icon(Icons.business),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    items: orgs.map((o) => DropdownMenuItem(
+                      value: o.id,
+                      child: Text(o.name),
+                    )).toList(),
+                    onChanged: (v) => setState(() => _selectedOrgId = v),
+                  ),
+                ],
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 

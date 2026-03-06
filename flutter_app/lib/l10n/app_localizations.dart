@@ -2995,6 +2995,84 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{count} pets assigned'**
   String assignedPets(int count);
+
+  /// No description provided for @familyEvents.
+  ///
+  /// In en, this message translates to:
+  /// **'Family Events'**
+  String get familyEvents;
+
+  /// No description provided for @noFamilyEvents.
+  ///
+  /// In en, this message translates to:
+  /// **'No family events yet'**
+  String get noFamilyEvents;
+
+  /// No description provided for @addFamilyEvent.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Family Event'**
+  String get addFamilyEvent;
+
+  /// No description provided for @deleteFamilyEventConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to delete this family event?'**
+  String get deleteFamilyEventConfirm;
+
+  /// No description provided for @assignedToMember.
+  ///
+  /// In en, this message translates to:
+  /// **'Assigned to'**
+  String get assignedToMember;
+
+  /// No description provided for @unassigned.
+  ///
+  /// In en, this message translates to:
+  /// **'Unassigned'**
+  String get unassigned;
+
+  /// No description provided for @fromDateLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'From date'**
+  String get fromDateLabel;
+
+  /// No description provided for @toDateLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'To date'**
+  String get toDateLabel;
+
+  /// No description provided for @optional.
+  ///
+  /// In en, this message translates to:
+  /// **'optional'**
+  String get optional;
+
+  /// No description provided for @notSet.
+  ///
+  /// In en, this message translates to:
+  /// **'Not set'**
+  String get notSet;
+
+  /// No description provided for @petOwnership.
+  ///
+  /// In en, this message translates to:
+  /// **'Pet Ownership'**
+  String get petOwnership;
+
+  /// No description provided for @myPet.
+  ///
+  /// In en, this message translates to:
+  /// **'My Pet'**
+  String get myPet;
+
+  /// No description provided for @orgPet.
+  ///
+  /// In en, this message translates to:
+  /// **'Organisation Pet'**
+  String get orgPet;
 }
 
 class _AppLocalizationsDelegate

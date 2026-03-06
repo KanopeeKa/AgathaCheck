@@ -460,6 +460,22 @@ Future<void> main() async {
   '''));
   print('pets organization_id column ready');
 
+  await _pool.execute(Sql('''
+    CREATE TABLE IF NOT EXISTS family_events (
+      id SERIAL PRIMARY KEY,
+      pet_id VARCHAR(255) NOT NULL REFERENCES pets(id) ON DELETE CASCADE,
+      organization_id INTEGER NOT NULL REFERENCES organizations(id) ON DELETE CASCADE,
+      assigned_to_user_id INTEGER REFERENCES users(id) ON DELETE SET NULL,
+      from_date DATE NOT NULL,
+      to_date DATE,
+      notes TEXT DEFAULT '',
+      created_by INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      created_at TIMESTAMPTZ DEFAULT NOW(),
+      updated_at TIMESTAMPTZ DEFAULT NOW()
+    )
+  '''));
+  print('family_events table ready');
+
   final uploadsDir = Directory('uploads');
   if (!uploadsDir.existsSync()) {
     uploadsDir.createSync(recursive: true);
@@ -793,6 +809,16 @@ Future<void> _handleApi(HttpRequest request) async {
   else if (RegExp(r'^/api/pets/[^/]+/transfer-to-org$').hasMatch(path) && method == 'POST') {
     await _transferPetToOrg(request);
   }
+  // Family events
+  else if (RegExp(r'^/api/pets/[^/]+/family-events$').hasMatch(path) && method == 'GET') {
+    await _getFamilyEvents(request);
+  } else if (RegExp(r'^/api/pets/[^/]+/family-events$').hasMatch(path) && method == 'POST') {
+    await _createFamilyEvent(request);
+  } else if (RegExp(r'^/api/pets/[^/]+/family-events/\d+$').hasMatch(path) && method == 'PUT') {
+    await _updateFamilyEvent(request);
+  } else if (RegExp(r'^/api/pets/[^/]+/family-events/\d+$').hasMatch(path) && method == 'DELETE') {
+    await _deleteFamilyEvent(request);
+  }
   // User's personal archived pets
   else if (path == '/api/archived-pets' && method == 'GET') {
     await _getUserArchivedPets(request);
@@ -984,10 +1010,11 @@ Future<void> _createPet(HttpRequest request) async {
     return;
   }
 
+  final orgId = body['organization_id'] != null ? int.tryParse(body['organization_id'].toString()) : null;
   await _pool.execute(
     Sql.named('''
-      INSERT INTO pets (id, user_id, name, species, breed, date_of_birth, weight, gender, bio, insurance, neutered_date, neuter_dismissed, chip_id, chip_dismissed, photo_path, vet_id, color_value, passed_away)
-      VALUES (@id, @userId, @name, @species, @breed, ${body['dateOfBirth'] != null ? '@dateOfBirth::date' : 'NULL'}, ${body['weight'] != null ? '@weight' : 'NULL'}, ${body['gender'] != null ? '@gender' : 'NULL'}, @bio, @insurance, ${body['neuteredDate'] != null ? '@neuteredDate::date' : 'NULL'}, @neuterDismissed, @chipId, @chipDismissed, ${body['photoPath'] != null ? '@photoPath' : 'NULL'}, ${body['vetId'] != null ? '@vetId' : 'NULL'}, ${body['colorValue'] != null ? '@colorValue' : 'NULL'}, @passedAway)
+      INSERT INTO pets (id, user_id, name, species, breed, date_of_birth, weight, gender, bio, insurance, neutered_date, neuter_dismissed, chip_id, chip_dismissed, photo_path, vet_id, color_value, passed_away, organization_id)
+      VALUES (@id, @userId, @name, @species, @breed, ${body['dateOfBirth'] != null ? '@dateOfBirth::date' : 'NULL'}, ${body['weight'] != null ? '@weight' : 'NULL'}, ${body['gender'] != null ? '@gender' : 'NULL'}, @bio, @insurance, ${body['neuteredDate'] != null ? '@neuteredDate::date' : 'NULL'}, @neuterDismissed, @chipId, @chipDismissed, ${body['photoPath'] != null ? '@photoPath' : 'NULL'}, ${body['vetId'] != null ? '@vetId' : 'NULL'}, ${body['colorValue'] != null ? '@colorValue' : 'NULL'}, @passedAway, ${orgId != null ? '@orgId' : 'NULL'})
     '''),
     parameters: {
       'id': id,
@@ -1008,6 +1035,7 @@ Future<void> _createPet(HttpRequest request) async {
       if (body['vetId'] != null) 'vetId': body['vetId'].toString(),
       if (body['colorValue'] != null) 'colorValue': body['colorValue'] as int,
       'passedAway': body['passedAway'] == true,
+      if (orgId != null) 'orgId': orgId,
     },
   );
 
@@ -4929,6 +4957,210 @@ Future<void> _serveStatic(HttpRequest request, Directory webDir) async {
     }
   }
   await request.response.close();
+}
+
+// ── Family Events CRUD ───────────────────────────────────────
+
+Future<void> _getFamilyEvents(HttpRequest request) async {
+  final userId = _getUserIdFromRequest(request);
+  if (userId == null) {
+    _jsonResponse(request, 401, {'error': 'Authentication required'});
+    return;
+  }
+  final petId = request.uri.path.split('/')[3];
+  final pet = await _pool.execute(
+    Sql.named('SELECT organization_id FROM pets WHERE id = @petId'),
+    parameters: {'petId': petId},
+  );
+  if (pet.isEmpty || pet.first.toColumnMap()['organization_id'] == null) {
+    _jsonResponse(request, 400, {'error': 'Pet is not in an organization'});
+    return;
+  }
+  final orgId = pet.first.toColumnMap()['organization_id'] as int;
+  final memberCheck = await _pool.execute(
+    Sql.named('SELECT id FROM organization_users WHERE organization_id = @orgId AND user_id = @userId AND role IN (\'super_user\', \'member\')'),
+    parameters: {'orgId': orgId, 'userId': userId},
+  );
+  if (memberCheck.isEmpty) {
+    _jsonResponse(request, 403, {'error': 'Not a member of this organization'});
+    return;
+  }
+  final rows = await _pool.execute(
+    Sql.named('''
+      SELECT fe.*, u.first_name, u.last_name, u.email AS assigned_email
+      FROM family_events fe
+      LEFT JOIN users u ON fe.assigned_to_user_id = u.id
+      WHERE fe.pet_id = @petId
+      ORDER BY fe.from_date DESC
+    '''),
+    parameters: {'petId': petId},
+  );
+  final events = rows.map((r) {
+    final c = r.toColumnMap();
+    final firstName = (c['first_name'] ?? '').toString();
+    final lastName = (c['last_name'] ?? '').toString();
+    final assignedName = '$firstName $lastName'.trim();
+    return {
+      'id': c['id'],
+      'pet_id': c['pet_id'].toString(),
+      'organization_id': c['organization_id'],
+      'assigned_to_user_id': c['assigned_to_user_id'],
+      'assigned_name': assignedName,
+      'assigned_email': (c['assigned_email'] ?? '').toString(),
+      'from_date': c['from_date']?.toString(),
+      'to_date': c['to_date']?.toString(),
+      'notes': (c['notes'] ?? '').toString(),
+      'created_by': c['created_by'],
+      'created_at': c['created_at']?.toString(),
+    };
+  }).toList();
+  _jsonResponse(request, 200, events);
+}
+
+Future<void> _createFamilyEvent(HttpRequest request) async {
+  final userId = _getUserIdFromRequest(request);
+  if (userId == null) {
+    _jsonResponse(request, 401, {'error': 'Authentication required'});
+    return;
+  }
+  final petId = request.uri.path.split('/')[3];
+  final pet = await _pool.execute(
+    Sql.named('SELECT organization_id FROM pets WHERE id = @petId'),
+    parameters: {'petId': petId},
+  );
+  if (pet.isEmpty || pet.first.toColumnMap()['organization_id'] == null) {
+    _jsonResponse(request, 400, {'error': 'Pet is not in an organization'});
+    return;
+  }
+  final orgId = pet.first.toColumnMap()['organization_id'] as int;
+  final memberCheck = await _pool.execute(
+    Sql.named('SELECT id FROM organization_users WHERE organization_id = @orgId AND user_id = @userId AND role IN (\'super_user\', \'member\')'),
+    parameters: {'orgId': orgId, 'userId': userId},
+  );
+  if (memberCheck.isEmpty) {
+    _jsonResponse(request, 403, {'error': 'Not a member of this organization'});
+    return;
+  }
+  final body = json.decode(await utf8.decodeStream(request)) as Map<String, dynamic>;
+  final assignedTo = body['assigned_to_user_id'] != null ? int.tryParse(body['assigned_to_user_id'].toString()) : null;
+  final fromDate = body['from_date'] as String?;
+  final toDate = body['to_date'] as String?;
+  final notes = (body['notes'] ?? '').toString();
+  if (fromDate == null) {
+    _jsonResponse(request, 400, {'error': 'from_date is required'});
+    return;
+  }
+  final result = await _pool.execute(
+    Sql.named('''
+      INSERT INTO family_events (pet_id, organization_id, assigned_to_user_id, from_date, to_date, notes, created_by)
+      VALUES (@petId, @orgId, ${assignedTo != null ? '@assignedTo' : 'NULL'}, @fromDate::date, ${toDate != null ? '@toDate::date' : 'NULL'}, @notes, @userId)
+      RETURNING *
+    '''),
+    parameters: {
+      'petId': petId, 'orgId': orgId,
+      if (assignedTo != null) 'assignedTo': assignedTo,
+      'fromDate': fromDate,
+      if (toDate != null) 'toDate': toDate,
+      'notes': notes, 'userId': userId,
+    },
+  );
+  final c = result.first.toColumnMap();
+  _jsonResponse(request, 201, {
+    'id': c['id'],
+    'pet_id': c['pet_id'].toString(),
+    'organization_id': c['organization_id'],
+    'assigned_to_user_id': c['assigned_to_user_id'],
+    'from_date': c['from_date']?.toString(),
+    'to_date': c['to_date']?.toString(),
+    'notes': (c['notes'] ?? '').toString(),
+    'created_by': c['created_by'],
+    'created_at': c['created_at']?.toString(),
+  });
+}
+
+Future<void> _updateFamilyEvent(HttpRequest request) async {
+  final userId = _getUserIdFromRequest(request);
+  if (userId == null) {
+    _jsonResponse(request, 401, {'error': 'Authentication required'});
+    return;
+  }
+  final parts = request.uri.path.split('/');
+  final petId = parts[3];
+  final eventId = int.parse(parts[5]);
+  final pet = await _pool.execute(
+    Sql.named('SELECT organization_id FROM pets WHERE id = @petId'),
+    parameters: {'petId': petId},
+  );
+  if (pet.isEmpty || pet.first.toColumnMap()['organization_id'] == null) {
+    _jsonResponse(request, 400, {'error': 'Pet is not in an organization'});
+    return;
+  }
+  final orgId = pet.first.toColumnMap()['organization_id'] as int;
+  final memberCheck = await _pool.execute(
+    Sql.named('SELECT id FROM organization_users WHERE organization_id = @orgId AND user_id = @userId AND role IN (\'super_user\', \'member\')'),
+    parameters: {'orgId': orgId, 'userId': userId},
+  );
+  if (memberCheck.isEmpty) {
+    _jsonResponse(request, 403, {'error': 'Not a member'});
+    return;
+  }
+  final body = json.decode(await utf8.decodeStream(request)) as Map<String, dynamic>;
+  final assignedTo = body['assigned_to_user_id'] != null ? int.tryParse(body['assigned_to_user_id'].toString()) : null;
+  final fromDate = body['from_date'] as String?;
+  final toDate = body['to_date'] as String?;
+  final notes = (body['notes'] ?? '').toString();
+  await _pool.execute(
+    Sql.named('''
+      UPDATE family_events SET
+        assigned_to_user_id = ${assignedTo != null ? '@assignedTo' : 'NULL'},
+        from_date = ${fromDate != null ? '@fromDate::date' : 'from_date'},
+        to_date = ${toDate != null ? '@toDate::date' : 'NULL'},
+        notes = @notes,
+        updated_at = NOW()
+      WHERE id = @eventId AND pet_id = @petId
+    '''),
+    parameters: {
+      'eventId': eventId, 'petId': petId,
+      if (assignedTo != null) 'assignedTo': assignedTo,
+      if (fromDate != null) 'fromDate': fromDate,
+      if (toDate != null) 'toDate': toDate,
+      'notes': notes,
+    },
+  );
+  _jsonResponse(request, 200, {'success': true});
+}
+
+Future<void> _deleteFamilyEvent(HttpRequest request) async {
+  final userId = _getUserIdFromRequest(request);
+  if (userId == null) {
+    _jsonResponse(request, 401, {'error': 'Authentication required'});
+    return;
+  }
+  final parts = request.uri.path.split('/');
+  final petId = parts[3];
+  final eventId = int.parse(parts[5]);
+  final pet = await _pool.execute(
+    Sql.named('SELECT organization_id FROM pets WHERE id = @petId'),
+    parameters: {'petId': petId},
+  );
+  if (pet.isEmpty || pet.first.toColumnMap()['organization_id'] == null) {
+    _jsonResponse(request, 400, {'error': 'Pet is not in an organization'});
+    return;
+  }
+  final orgId = pet.first.toColumnMap()['organization_id'] as int;
+  final memberCheck = await _pool.execute(
+    Sql.named('SELECT id FROM organization_users WHERE organization_id = @orgId AND user_id = @userId AND role IN (\'super_user\', \'member\')'),
+    parameters: {'orgId': orgId, 'userId': userId},
+  );
+  if (memberCheck.isEmpty) {
+    _jsonResponse(request, 403, {'error': 'Not a member'});
+    return;
+  }
+  await _pool.execute(
+    Sql.named('DELETE FROM family_events WHERE id = @eventId AND pet_id = @petId'),
+    parameters: {'eventId': eventId, 'petId': petId},
+  );
+  _jsonResponse(request, 200, {'success': true});
 }
 
 String _mimeType(String ext) {

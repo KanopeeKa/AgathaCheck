@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../auth/presentation/providers/auth_providers.dart';
 import '../../data/datasources/organization_remote_datasource.dart';
 import '../../domain/entities/archived_pet.dart';
+import '../../domain/entities/family_event.dart';
 import '../../domain/entities/organization.dart';
 import '../../domain/entities/organization_member.dart';
 import '../../../pet_profile/domain/entities/pet.dart';
@@ -255,3 +256,46 @@ class PendingOrgInvitesNotifier extends AsyncNotifier<List<PendingOrgInvite>> {
 final pendingOrgInvitesProvider =
     AsyncNotifierProvider<PendingOrgInvitesNotifier, List<PendingOrgInvite>>(
         PendingOrgInvitesNotifier.new);
+
+class FamilyEventsNotifier extends FamilyAsyncNotifier<List<FamilyEvent>, String> {
+  @override
+  Future<List<FamilyEvent>> build(String petId) async {
+    final token = ref.watch(_orgTokenProvider);
+    if (token == null) return [];
+    final ds = ref.read(orgRemoteDataSourceProvider);
+    try {
+      final data = await ds.getFamilyEvents(token, petId);
+      return data.map((e) => FamilyEvent.fromJson(e)).toList();
+    } catch (_) {
+      return [];
+    }
+  }
+
+  Future<void> createEvent({
+    required int? assignedToUserId,
+    required DateTime fromDate,
+    DateTime? toDate,
+    String notes = '',
+  }) async {
+    final token = ref.read(_orgTokenProvider)!;
+    final ds = ref.read(orgRemoteDataSourceProvider);
+    await ds.createFamilyEvent(token, arg, {
+      if (assignedToUserId != null) 'assigned_to_user_id': assignedToUserId,
+      'from_date': fromDate.toIso8601String().split('T')[0],
+      if (toDate != null) 'to_date': toDate.toIso8601String().split('T')[0],
+      'notes': notes,
+    });
+    ref.invalidateSelf();
+  }
+
+  Future<void> deleteEvent(int eventId) async {
+    final token = ref.read(_orgTokenProvider)!;
+    final ds = ref.read(orgRemoteDataSourceProvider);
+    await ds.deleteFamilyEvent(token, arg, eventId);
+    ref.invalidateSelf();
+  }
+}
+
+final familyEventsProvider =
+    AsyncNotifierProvider.family<FamilyEventsNotifier, List<FamilyEvent>, String>(
+        FamilyEventsNotifier.new);

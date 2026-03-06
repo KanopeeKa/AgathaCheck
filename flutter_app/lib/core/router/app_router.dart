@@ -104,7 +104,11 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/add',
         name: 'addPet',
-        builder: (context, state) => const PetFormScreen(),
+        builder: (context, state) {
+          final orgIdStr = state.uri.queryParameters['orgId'];
+          final orgId = orgIdStr != null ? int.tryParse(orgIdStr) : null;
+          return PetFormScreen(initialOrgId: orgId);
+        },
       ),
       GoRoute(
         path: '/edit/:id',

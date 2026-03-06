@@ -516,5 +516,18 @@
   "@invitedBy": { "placeholders": { "name": { "type": "String" } } },
   "people": "Personnes",
   "assignedPets": "{count} animaux assignés",
-  "@assignedPets": { "placeholders": { "count": { "type": "int" } } }
+  "@assignedPets": { "placeholders": { "count": { "type": "int" } } },
+  "familyEvents": "Événements familiaux",
+  "noFamilyEvents": "Aucun événement familial",
+  "addFamilyEvent": "Ajouter un événement familial",
+  "deleteFamilyEventConfirm": "Êtes-vous sûr de vouloir supprimer cet événement familial ?",
+  "assignedToMember": "Assigné à",
+  "unassigned": "Non assigné",
+  "fromDateLabel": "Date de début",
+  "toDateLabel": "Date de fin",
+  "optional": "optionnel",
+  "notSet": "Non défini",
+  "petOwnership": "Propriété de l'animal",
+  "myPet": "Mon animal",
+  "orgPet": "Animal de l'organisation"
 }

@@ -18,6 +18,8 @@ import '../../../health_tracking/domain/entities/health_issue.dart';
 import '../../../health_tracking/presentation/providers/health_issue_providers.dart';
 import '../../../health_tracking/presentation/providers/health_providers.dart';
 import '../../../health_tracking/presentation/widgets/health_entry_card.dart';
+import '../../../organization/domain/entities/family_event.dart';
+import '../../../organization/domain/entities/organization_member.dart';
 import '../../../organization/presentation/providers/organization_providers.dart';
 import '../../../sharing/domain/entities/pet_access.dart';
 import '../../../sharing/presentation/providers/sharing_providers.dart';
@@ -214,6 +216,10 @@ class _PetDetailScreenState extends ConsumerState<PetDetailScreen> {
               SliverToBoxAdapter(
                 child: _HealthIssuesSection(petId: widget.petId, pet: pet),
               ),
+              if (pet.organizationId != null)
+                SliverToBoxAdapter(
+                  child: _FamilyEventsSection(petId: widget.petId, pet: pet),
+                ),
               SliverToBoxAdapter(
                 child: _SharingSection(petId: widget.petId, pet: pet),
               ),
@@ -2910,6 +2916,325 @@ class _OptionalDateField extends StatelessWidget {
             ),
           ),
         ),
+      ),
+    );
+  }
+}
+
+class _FamilyEventsSection extends ConsumerWidget {
+  const _FamilyEventsSection({required this.petId, required this.pet});
+
+  final String petId;
+  final Pet pet;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final eventsAsync = ref.watch(familyEventsProvider(petId));
+    final membersAsync = pet.organizationId != null
+        ? ref.watch(orgMembersProvider(pet.organizationId!))
+        : const AsyncValue<List<OrganizationMember>>.data([]);
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final l = AppLocalizations.of(context)!;
+    final dateFormat = DateFormat.yMMMd();
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+      child: Card(
+        elevation: 0,
+        clipBehavior: Clip.antiAlias,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+          side: BorderSide(color: colorScheme.outlineVariant),
+        ),
+        child: ExpansionTile(
+          key: const Key('family_events_section'),
+          leading: Icon(Icons.family_restroom, size: 20, color: colorScheme.primary),
+          title: Text(l.familyEvents,
+              style: theme.textTheme.titleSmall?.copyWith(
+                  fontWeight: FontWeight.bold)),
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+              child: Column(
+                children: [
+                  eventsAsync.when(
+                    loading: () => const Padding(
+                      padding: EdgeInsets.all(16),
+                      child: Center(child: CircularProgressIndicator()),
+                    ),
+                    error: (e, _) => Text('$e',
+                        style: TextStyle(color: colorScheme.error)),
+                    data: (events) {
+                      if (events.isEmpty) {
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          child: Text(l.noFamilyEvents,
+                              style: theme.textTheme.bodyMedium?.copyWith(
+                                  color: colorScheme.onSurfaceVariant)),
+                        );
+                      }
+                      return Column(
+                        children: events.map((event) => Dismissible(
+                          key: Key('family_event_${event.id}'),
+                          direction: DismissDirection.endToStart,
+                          background: Container(
+                            alignment: Alignment.centerRight,
+                            padding: const EdgeInsets.only(right: 16),
+                            color: colorScheme.error,
+                            child: const Icon(Icons.delete, color: Colors.white),
+                          ),
+                          confirmDismiss: (_) async {
+                            return await showDialog<bool>(
+                              context: context,
+                              builder: (ctx) => AlertDialog(
+                                title: Text(l.delete),
+                                content: Text(l.deleteFamilyEventConfirm),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () => Navigator.pop(ctx, false),
+                                    child: Text(l.cancel),
+                                  ),
+                                  FilledButton(
+                                    style: FilledButton.styleFrom(
+                                        backgroundColor: colorScheme.error),
+                                    onPressed: () => Navigator.pop(ctx, true),
+                                    child: Text(l.delete),
+                                  ),
+                                ],
+                              ),
+                            );
+                          },
+                          onDismissed: (_) {
+                            ref.read(familyEventsProvider(petId).notifier)
+                                .deleteEvent(event.id);
+                          },
+                          child: Card(
+                            color: colorScheme.surfaceContainerHighest.withAlpha(80),
+                            margin: const EdgeInsets.only(bottom: 8),
+                            child: Padding(
+                              padding: const EdgeInsets.all(12),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  if (event.assignedDisplay.isNotEmpty)
+                                    Row(
+                                      children: [
+                                        Icon(Icons.person, size: 16,
+                                            color: colorScheme.primary),
+                                        const SizedBox(width: 6),
+                                        Expanded(
+                                          child: Text(event.assignedDisplay,
+                                              style: theme.textTheme.bodyMedium?.copyWith(
+                                                  fontWeight: FontWeight.w600)),
+                                        ),
+                                      ],
+                                    ),
+                                  const SizedBox(height: 4),
+                                  Row(
+                                    children: [
+                                      Icon(Icons.calendar_today, size: 14,
+                                          color: colorScheme.onSurfaceVariant),
+                                      const SizedBox(width: 6),
+                                      Text(
+                                        dateFormat.format(event.fromDate),
+                                        style: theme.textTheme.bodySmall,
+                                      ),
+                                      if (event.toDate != null) ...[
+                                        Text(' — ',
+                                            style: theme.textTheme.bodySmall),
+                                        Text(
+                                          dateFormat.format(event.toDate!),
+                                          style: theme.textTheme.bodySmall,
+                                        ),
+                                      ],
+                                    ],
+                                  ),
+                                  if (event.notes.isNotEmpty) ...[
+                                    const SizedBox(height: 6),
+                                    Text(event.notes,
+                                        style: theme.textTheme.bodySmall?.copyWith(
+                                            color: colorScheme.onSurfaceVariant)),
+                                  ],
+                                ],
+                              ),
+                            ),
+                          ),
+                        )).toList(),
+                      );
+                    },
+                  ),
+                  const SizedBox(height: 8),
+                  OutlinedButton.icon(
+                    key: const Key('add_family_event_button'),
+                    onPressed: () => _showAddFamilyEventDialog(
+                        context, ref, membersAsync, l),
+                    icon: const Icon(Icons.add, size: 18),
+                    label: Text(l.addFamilyEvent),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showAddFamilyEventDialog(BuildContext context, WidgetRef ref,
+      AsyncValue<List<OrganizationMember>> membersAsync, AppLocalizations l) {
+    final notesController = TextEditingController();
+    int? selectedMemberId;
+    DateTime fromDate = DateTime.now();
+    DateTime? toDate;
+    final dateFormat = DateFormat.yMMMd();
+
+    showDialog(
+      context: context,
+      builder: (ctx) => StatefulBuilder(
+        builder: (ctx, setState) {
+          final members = membersAsync.valueOrNull ?? <OrganizationMember>[];
+
+          return AlertDialog(
+            title: Text(l.addFamilyEvent),
+            content: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(l.assignedToMember,
+                      style: Theme.of(ctx).textTheme.bodySmall),
+                  const SizedBox(height: 8),
+                  DropdownButtonFormField<int?>(
+                    value: selectedMemberId,
+                    decoration: InputDecoration(
+                      prefixIcon: const Icon(Icons.person),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    items: [
+                      DropdownMenuItem<int?>(
+                        value: null,
+                        child: Text(l.unassigned),
+                      ),
+                      ...members.map((m) {
+                        return DropdownMenuItem<int?>(
+                          value: m.userId,
+                          child: Text(m.displayName.isNotEmpty
+                              ? m.displayName
+                              : m.email),
+                        );
+                      }),
+                    ],
+                    onChanged: (v) => setState(() => selectedMemberId = v),
+                  ),
+                  const SizedBox(height: 16),
+                  Text(l.fromDateLabel,
+                      style: Theme.of(ctx).textTheme.bodySmall),
+                  const SizedBox(height: 8),
+                  InkWell(
+                    onTap: () async {
+                      final picked = await showDatePicker(
+                        context: ctx,
+                        initialDate: fromDate,
+                        firstDate: DateTime(2020),
+                        lastDate: DateTime(2030),
+                      );
+                      if (picked != null) {
+                        setState(() => fromDate = picked);
+                      }
+                    },
+                    child: InputDecorator(
+                      decoration: InputDecoration(
+                        prefixIcon: const Icon(Icons.calendar_today),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      child: Text(dateFormat.format(fromDate)),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  Text('${l.toDateLabel} (${l.optional})',
+                      style: Theme.of(ctx).textTheme.bodySmall),
+                  const SizedBox(height: 8),
+                  InkWell(
+                    onTap: () async {
+                      final picked = await showDatePicker(
+                        context: ctx,
+                        initialDate: toDate ?? fromDate,
+                        firstDate: fromDate,
+                        lastDate: DateTime(2030),
+                      );
+                      if (picked != null) {
+                        setState(() => toDate = picked);
+                      }
+                    },
+                    child: InputDecorator(
+                      decoration: InputDecoration(
+                        prefixIcon: const Icon(Icons.calendar_today),
+                        suffixIcon: toDate != null
+                            ? IconButton(
+                                icon: const Icon(Icons.clear, size: 18),
+                                onPressed: () =>
+                                    setState(() => toDate = null),
+                              )
+                            : null,
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      child: Text(toDate != null
+                          ? dateFormat.format(toDate!)
+                          : l.notSet),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  TextField(
+                    controller: notesController,
+                    decoration: InputDecoration(
+                      labelText: l.notes,
+                      prefixIcon: const Icon(Icons.notes),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    maxLines: 3,
+                  ),
+                ],
+              ),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(ctx),
+                child: Text(MaterialLocalizations.of(ctx).cancelButtonLabel),
+              ),
+              FilledButton(
+                onPressed: () async {
+                  Navigator.pop(ctx);
+                  try {
+                    await ref
+                        .read(familyEventsProvider(petId).notifier)
+                        .createEvent(
+                          assignedToUserId: selectedMemberId,
+                          fromDate: fromDate,
+                          toDate: toDate,
+                          notes: notesController.text.trim(),
+                        );
+                  } catch (e) {
+                    if (context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text('$e')),
+                      );
+                    }
+                  }
+                },
+                child: Text(l.save),
+              ),
+            ],
+          );
+        },
       ),
     );
   }

@@ -339,4 +339,53 @@ class OrganizationRemoteDataSource {
         .map((e) => ArchivedPetModel.fromJson(e as Map<String, dynamic>))
         .toList();
   }
+
+  Future<List<Map<String, dynamic>>> getFamilyEvents(String token, String petId) async {
+    final response = await _client.get(
+      Uri.parse('$baseUrl/api/pets/$petId/family-events'),
+      headers: _headers(token),
+    );
+    if (response.statusCode >= 400) {
+      final data = json.decode(response.body);
+      throw Exception(data['error'] ?? 'Failed to get family events');
+    }
+    final list = json.decode(response.body) as List;
+    return list.cast<Map<String, dynamic>>();
+  }
+
+  Future<Map<String, dynamic>> createFamilyEvent(String token, String petId, Map<String, dynamic> body) async {
+    final response = await _client.post(
+      Uri.parse('$baseUrl/api/pets/$petId/family-events'),
+      headers: _headers(token),
+      body: json.encode(body),
+    );
+    if (response.statusCode >= 400) {
+      final data = json.decode(response.body);
+      throw Exception(data['error'] ?? 'Failed to create family event');
+    }
+    return json.decode(response.body) as Map<String, dynamic>;
+  }
+
+  Future<void> updateFamilyEvent(String token, String petId, int eventId, Map<String, dynamic> body) async {
+    final response = await _client.put(
+      Uri.parse('$baseUrl/api/pets/$petId/family-events/$eventId'),
+      headers: _headers(token),
+      body: json.encode(body),
+    );
+    if (response.statusCode >= 400) {
+      final data = json.decode(response.body);
+      throw Exception(data['error'] ?? 'Failed to update family event');
+    }
+  }
+
+  Future<void> deleteFamilyEvent(String token, String petId, int eventId) async {
+    final response = await _client.delete(
+      Uri.parse('$baseUrl/api/pets/$petId/family-events/$eventId'),
+      headers: _headers(token),
+    );
+    if (response.statusCode >= 400) {
+      final data = json.decode(response.body);
+      throw Exception(data['error'] ?? 'Failed to delete family event');
+    }
+  }
 }

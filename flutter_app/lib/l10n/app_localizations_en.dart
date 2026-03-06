@@ -1592,4 +1592,44 @@ class AppLocalizationsEn extends AppLocalizations {
   String assignedPets(int count) {
     return '$count pets assigned';
   }
+
+  @override
+  String get familyEvents => 'Family Events';
+
+  @override
+  String get noFamilyEvents => 'No family events yet';
+
+  @override
+  String get addFamilyEvent => 'Add Family Event';
+
+  @override
+  String get deleteFamilyEventConfirm =>
+      'Are you sure you want to delete this family event?';
+
+  @override
+  String get assignedToMember => 'Assigned to';
+
+  @override
+  String get unassigned => 'Unassigned';
+
+  @override
+  String get fromDateLabel => 'From date';
+
+  @override
+  String get toDateLabel => 'To date';
+
+  @override
+  String get optional => 'optional';
+
+  @override
+  String get notSet => 'Not set';
+
+  @override
+  String get petOwnership => 'Pet Ownership';
+
+  @override
+  String get myPet => 'My Pet';
+
+  @override
+  String get orgPet => 'Organisation Pet';
 }
