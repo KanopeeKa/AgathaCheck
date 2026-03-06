@@ -3836,8 +3836,9 @@ Map<String, dynamic> _rowToMap(ResultRow row) {
 void _jsonResponse(
     HttpRequest request, int status, dynamic body) {
   request.response.statusCode = status;
-  request.response.headers.set('Content-Type', 'application/json');
-  request.response.write(json.encode(body));
+  request.response.headers.set('Content-Type', 'application/json; charset=utf-8');
+  final encoded = json.encode(body);
+  request.response.add(utf8.encode(encoded));
   request.response.close();
 }
 
