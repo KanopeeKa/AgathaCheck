@@ -144,10 +144,11 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
                                 .read(notificationsProvider.notifier)
                                 .markAsRead(n.id);
                           }
-                          if (n.petId != null &&
-                              n.petId!.isNotEmpty &&
-                              context.mounted) {
+                          if (!context.mounted) return;
+                          if (n.petId != null && n.petId!.isNotEmpty) {
                             context.go('/pet/${n.petId}');
+                          } else if (n.organizationId != null && n.organizationId!.isNotEmpty) {
+                            context.go('/organizations/${n.organizationId}');
                           }
                         },
                       ),
@@ -212,6 +213,11 @@ class _NotificationTile extends ConsumerWidget {
 
     IconData icon;
     Color iconColor;
+
+    final hasOrg = notification.organizationId != null && notification.organizationId!.isNotEmpty;
+    final hasPet = notification.petId != null && notification.petId!.isNotEmpty;
+    final isOrgOnly = hasOrg && !hasPet;
+
     switch (notification.type) {
       case NotificationType.overdue:
         icon = Icons.warning_amber_rounded;
@@ -230,8 +236,8 @@ class _NotificationTile extends ConsumerWidget {
         iconColor = Colors.green;
         break;
       case NotificationType.general:
-        icon = Icons.notifications;
-        iconColor = theme.colorScheme.primary;
+        icon = isOrgOnly ? Icons.business : Icons.notifications;
+        iconColor = isOrgOnly ? Colors.indigo : theme.colorScheme.primary;
         break;
     }
 

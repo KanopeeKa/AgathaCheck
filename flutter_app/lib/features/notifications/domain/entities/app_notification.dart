@@ -28,6 +28,7 @@ class AppNotification {
     this.petId,
     this.petName,
     this.healthEntryId,
+    this.organizationId,
     required this.title,
     required this.message,
     required this.type,
@@ -40,6 +41,7 @@ class AppNotification {
   final String? petId;
   final String? petName;
   final String? healthEntryId;
+  final String? organizationId;
   final String title;
   final String message;
   final NotificationType type;
@@ -52,6 +54,7 @@ class AppNotification {
     String? petId,
     String? petName,
     String? healthEntryId,
+    String? organizationId,
     String? title,
     String? message,
     NotificationType? type,
@@ -64,6 +67,7 @@ class AppNotification {
       petId: petId ?? this.petId,
       petName: petName ?? this.petName,
       healthEntryId: healthEntryId ?? this.healthEntryId,
+      organizationId: organizationId ?? this.organizationId,
       title: title ?? this.title,
       message: message ?? this.message,
       type: type ?? this.type,

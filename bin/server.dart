@@ -255,6 +255,7 @@ Future<void> main() async {
       user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
       pet_id VARCHAR(255),
       health_entry_id VARCHAR(255),
+      organization_id INTEGER REFERENCES organizations(id),
       title VARCHAR(500) NOT NULL,
       message TEXT NOT NULL DEFAULT '',
       type VARCHAR(50) NOT NULL DEFAULT 'reminder',
@@ -262,6 +263,7 @@ Future<void> main() async {
       created_at TIMESTAMPTZ DEFAULT NOW()
     )
   '''));
+  await _pool.execute(Sql('ALTER TABLE notifications ADD COLUMN IF NOT EXISTS organization_id INTEGER REFERENCES organizations(id)'));
   print('notifications table ready');
 
   await _pool.execute(Sql('''
@@ -3931,6 +3933,7 @@ Map<String, dynamic> _notificationRowToMap(ResultRow row) {
     'user_id': cols['user_id'].toString(),
     'pet_id': cols['pet_id']?.toString() ?? '',
     'health_entry_id': cols['health_entry_id']?.toString() ?? '',
+    'organization_id': cols['organization_id']?.toString(),
     'title': cols['title'].toString(),
     'message': cols['message'].toString(),
     'type': cols['type'].toString(),
@@ -4458,11 +4461,12 @@ Future<void> _createOrgInvite(HttpRequest request) async {
     final locale = await _getUserLocale(targetUserId);
     await _pool.execute(
       Sql.named('''
-        INSERT INTO notifications (user_id, pet_id, type, title, message)
-        VALUES (@userId, '', 'general', @title, @message)
+        INSERT INTO notifications (user_id, pet_id, organization_id, type, title, message)
+        VALUES (@userId, '', @orgId, 'general', @title, @message)
       '''),
       parameters: {
         'userId': targetUserId,
+        'orgId': orgId,
         'title': _t(locale, 'org_invite_received', {'org': orgName}),
         'message': _t(locale, 'org_invite_received_msg', {'org': orgName, 'role': roleLabel}),
       },
@@ -4566,11 +4570,12 @@ Future<void> _acceptOrgInvite(HttpRequest request) async {
     final locale = await _getUserLocale(inviterId);
     await _pool.execute(
       Sql.named('''
-        INSERT INTO notifications (user_id, pet_id, type, title, message)
-        VALUES (@userId, '', 'general', @title, @message)
+        INSERT INTO notifications (user_id, pet_id, organization_id, type, title, message)
+        VALUES (@userId, '', @orgId, 'general', @title, @message)
       '''),
       parameters: {
         'userId': inviterId,
+        'orgId': orgId,
         'title': _t(locale, 'org_invite_accepted', {'member': displayName}),
         'message': _t(locale, 'org_invite_accepted_msg', {'member': displayName, 'org': orgName}),
       },
@@ -4617,11 +4622,12 @@ Future<void> _declineOrgInvite(HttpRequest request) async {
     final locale = await _getUserLocale(inviterId);
     await _pool.execute(
       Sql.named('''
-        INSERT INTO notifications (user_id, pet_id, type, title, message)
-        VALUES (@userId, '', 'general', @title, @message)
+        INSERT INTO notifications (user_id, pet_id, organization_id, type, title, message)
+        VALUES (@userId, '', @orgId, 'general', @title, @message)
       '''),
       parameters: {
         'userId': inviterId,
+        'orgId': orgId,
         'title': _t(locale, 'org_invite_declined', {'member': displayName}),
         'message': _t(locale, 'org_invite_declined_msg', {'member': displayName, 'org': orgName}),
       },
@@ -4696,11 +4702,12 @@ Future<void> _joinOrganization(HttpRequest request) async {
     final locale = await _getUserLocale(suId);
     await _pool.execute(
       Sql.named('''
-        INSERT INTO notifications (user_id, pet_id, type, title, message)
-        VALUES (@userId, '', 'general', @title, @message)
+        INSERT INTO notifications (user_id, pet_id, organization_id, type, title, message)
+        VALUES (@userId, '', @orgId, 'general', @title, @message)
       '''),
       parameters: {
         'userId': suId,
+        'orgId': orgId,
         'title': _t(locale, 'org_member_joined', {'org': orgName}),
         'message': _t(locale, 'org_member_joined_msg', {'member': userName, 'org': orgName}),
       },
@@ -4783,11 +4790,12 @@ Future<void> _removeOrgMember(HttpRequest request) async {
 
   await _pool.execute(
     Sql.named('''
-      INSERT INTO notifications (user_id, pet_id, type, title, message)
-      VALUES (@userId, '', 'general', @title, @message)
+      INSERT INTO notifications (user_id, pet_id, organization_id, type, title, message)
+      VALUES (@userId, '', @orgId, 'general', @title, @message)
     '''),
     parameters: {
       'userId': targetUserId,
+      'orgId': orgId,
       'title': _t(locale, 'org_member_left', {'org': orgName}),
       'message': _t(locale, 'org_member_left_msg', {'member': memberName, 'org': orgName}),
     },
@@ -4844,11 +4852,12 @@ Future<void> _leaveOrganization(HttpRequest request) async {
     final locale = await _getUserLocale(suId);
     await _pool.execute(
       Sql.named('''
-        INSERT INTO notifications (user_id, pet_id, type, title, message)
-        VALUES (@userId, '', 'general', @title, @message)
+        INSERT INTO notifications (user_id, pet_id, organization_id, type, title, message)
+        VALUES (@userId, '', @orgId, 'general', @title, @message)
       '''),
       parameters: {
         'userId': suId,
+        'orgId': orgId,
         'title': _t(locale, 'org_member_left', {'org': orgName}),
         'message': _t(locale, 'org_member_left_msg', {'member': memberName, 'org': orgName}),
       },
@@ -4983,11 +4992,11 @@ Future<void> _transferOrgPet(HttpRequest request) async {
   final recipientLocale = await _getUserLocale(recipientId);
   await _pool.execute(
     Sql.named('''
-      INSERT INTO notifications (user_id, pet_id, type, title, message)
-      VALUES (@userId, @petId, 'general', @title, @message)
+      INSERT INTO notifications (user_id, pet_id, organization_id, type, title, message)
+      VALUES (@userId, @petId, @orgId, 'general', @title, @message)
     '''),
     parameters: {
-      'userId': recipientId, 'petId': petId,
+      'userId': recipientId, 'petId': petId, 'orgId': orgId,
       'title': _t(recipientLocale, 'org_pet_received', {'pet': petName}),
       'message': _t(recipientLocale, 'org_pet_received_msg', {'pet': petName, 'org': orgName}),
     },
@@ -5002,11 +5011,11 @@ Future<void> _transferOrgPet(HttpRequest request) async {
     final locale = await _getUserLocale(mId);
     await _pool.execute(
       Sql.named('''
-        INSERT INTO notifications (user_id, pet_id, type, title, message)
-        VALUES (@userId, @petId, 'general', @title, @message)
+        INSERT INTO notifications (user_id, pet_id, organization_id, type, title, message)
+        VALUES (@userId, @petId, @orgId, 'general', @title, @message)
       '''),
       parameters: {
-        'userId': mId, 'petId': petId,
+        'userId': mId, 'petId': petId, 'orgId': orgId,
         'title': _t(locale, 'org_pet_transferred_out', {'pet': petName}),
         'message': _t(locale, 'org_pet_transferred_out_msg', {'pet': petName, 'recipient': recipientName}),
       },
@@ -5094,11 +5103,11 @@ Future<void> _transferPetToOrg(HttpRequest request) async {
   final locale = await _getUserLocale(userId);
   await _pool.execute(
     Sql.named('''
-      INSERT INTO notifications (user_id, pet_id, type, title, message)
-      VALUES (@userId, @petId, 'general', @title, @message)
+      INSERT INTO notifications (user_id, pet_id, organization_id, type, title, message)
+      VALUES (@userId, @petId, @orgId, 'general', @title, @message)
     '''),
     parameters: {
-      'userId': userId, 'petId': petId,
+      'userId': userId, 'petId': petId, 'orgId': orgId,
       'title': _t(locale, 'org_pet_donated', {'pet': petName, 'org': orgName}),
       'message': _t(locale, 'org_pet_donated_msg', {'pet': petName, 'org': orgName}),
     },
@@ -5311,12 +5320,13 @@ Future<void> _createFamilyEvent(HttpRequest request) async {
         final memberId = member.toColumnMap()['user_id'] as int;
         await _pool.execute(
           Sql.named('''
-            INSERT INTO notifications (user_id, pet_id, title, message, type)
-            VALUES (@userId, @petId, @title, @message, 'reminder')
+            INSERT INTO notifications (user_id, pet_id, organization_id, title, message, type)
+            VALUES (@userId, @petId, @orgId, @title, @message, 'reminder')
           '''),
           parameters: {
             'userId': memberId,
             'petId': petId,
+            'orgId': orgId,
             'title': title,
             'message': message,
           },
