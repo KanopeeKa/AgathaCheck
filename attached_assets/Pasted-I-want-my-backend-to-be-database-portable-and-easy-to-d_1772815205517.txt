@@ -1,0 +1,44 @@
+I want my backend to be database‑portable and easy to deploy on different servers/environments.
+The app code is developed on Replit, but will be hosted on a separate server (e.g. a managed Postgres/MySQL instance on a cloud provider).
+
+Please:
+
+Review the current backend stack (language, framework, ORM if any) and:
+
+Identify what database I’m using now (or propose PostgreSQL as the default if nothing is set).
+
+Check how connections are currently configured.
+
+Refactor or configure the project so that:
+
+The database is treated as a backing service: all connection details come from environment variables (e.g. DATABASE_URL), no hostnames or credentials hard‑coded in code.
+
+I can point the same codebase to different databases (dev/staging/prod) just by changing env vars, with no code changes.
+
+Introduce a proper migration system for the schema (use a tool that fits the current stack, e.g. Prisma/TypeORM/Sequelize/Knex/Ecto/dbmate/etc.):
+
+Create an initial migration that reflects the current schema (users, pets, organisations, etc.).
+
+Set up up and down migrations so the schema can be recreated on a new server from scratch.
+
+Add convenient npm/dart/whatever scripts like migrate:up and migrate:down to run migrations against the database specified by DATABASE_URL.
+
+Add deployment docs/scripts:
+
+A short DEPLOYMENT_DB.md in the repo explaining how to:
+
+Provision a new database server.
+
+Set the DATABASE_URL (or equivalent) for that server.
+
+Run migrations to create/update the schema.
+
+Optionally create a docker-compose.yml or similar example that runs the app + a database locally, reading configuration only from environment variables.
+
+Make sure all of this works with my current Replit ⇄ GitHub workflow:
+
+On Replit I should be able to run migrations against a local/dev database.
+
+On a remote host (or CI/CD pipeline) I should be able to run the same migration commands pointing at the production database, without code changes.
+
+Before changing too much, summarise the proposed approach, confirm it makes sense for a commercial EU‑facing app, and suggest improvements if there is a more robust or simpler migration tool for my current stack.
