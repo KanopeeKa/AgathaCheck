@@ -259,7 +259,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get veterinarians => 'Veterinarians';
 
   @override
-  String get events => 'Events';
+  String get events => 'To Do';
 
   @override
   String get userMenu => 'User menu';

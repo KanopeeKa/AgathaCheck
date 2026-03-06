@@ -575,7 +575,7 @@ abstract class AppLocalizations {
   /// No description provided for @events.
   ///
   /// In en, this message translates to:
-  /// **'Events'**
+  /// **'To Do'**
   String get events;
 
   /// No description provided for @userMenu.
