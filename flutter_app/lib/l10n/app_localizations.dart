@@ -3056,6 +3056,36 @@ abstract class AppLocalizations {
   /// **'optional'**
   String get optional;
 
+  /// No description provided for @assignTo.
+  ///
+  /// In en, this message translates to:
+  /// **'Assign to'**
+  String get assignTo;
+
+  /// No description provided for @assignToHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Optionally assign a member to this pet'**
+  String get assignToHint;
+
+  /// No description provided for @assignedMember.
+  ///
+  /// In en, this message translates to:
+  /// **'Assigned member'**
+  String get assignedMember;
+
+  /// No description provided for @notAssigned.
+  ///
+  /// In en, this message translates to:
+  /// **'Not assigned'**
+  String get notAssigned;
+
+  /// No description provided for @autoAssignedToYou.
+  ///
+  /// In en, this message translates to:
+  /// **'You will be automatically assigned to this pet'**
+  String get autoAssignedToYou;
+
   /// No description provided for @notSet.
   ///
   /// In en, this message translates to:

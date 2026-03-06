@@ -1631,6 +1631,22 @@ class AppLocalizationsFr extends AppLocalizations {
   String get optional => 'optionnel';
 
   @override
+  String get assignTo => 'Attribuer à';
+
+  @override
+  String get assignToHint => 'Attribuer un membre à cet animal (optionnel)';
+
+  @override
+  String get assignedMember => 'Membre attribué';
+
+  @override
+  String get notAssigned => 'Non attribué';
+
+  @override
+  String get autoAssignedToYou =>
+      'Vous serez automatiquement attribué à cet animal';
+
+  @override
   String get notSet => 'Non défini';
 
   @override

@@ -8,6 +8,8 @@ import 'package:intl/intl.dart';
 
 import '../../../../core/utils/constants.dart';
 import '../../../../l10n/app_localizations.dart';
+import '../../../auth/presentation/providers/auth_providers.dart';
+import '../../../organization/domain/entities/organization_member.dart';
 import '../../../organization/presentation/providers/organization_providers.dart';
 import '../../../vet/domain/entities/vet.dart';
 import '../../../vet/presentation/providers/vet_providers.dart';
@@ -67,6 +69,10 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
   int? _selectedOrgId;
   bool _orgInitialized = false;
   final _newWeightController = TextEditingController();
+  int? _assignedToUserId;
+  DateTime? _assignmentFromDate;
+  DateTime? _assignmentToDate;
+  final _assignmentNotesController = TextEditingController();
 
   bool get _isEditing => widget.petId != null;
 
@@ -79,6 +85,7 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
     _bioController.dispose();
     _insuranceController.dispose();
     _chipIdController.dispose();
+    _assignmentNotesController.dispose();
     super.dispose();
   }
 
@@ -306,6 +313,18 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
         final initialWeight = _showWeightInput && _newWeightController.text.isNotEmpty
             ? double.tryParse(_newWeightController.text)
             : null;
+
+        int? effectiveAssignedUserId = _assignedToUserId;
+        DateTime? effectiveFromDate = _assignmentFromDate;
+        if (_selectedOrgId != null) {
+          final isSuperUser = ref.read(isOrgSuperUserProvider(_selectedOrgId!));
+          if (!isSuperUser) {
+            final authState = ref.read(authProvider);
+            effectiveAssignedUserId = int.tryParse(authState.user?.id ?? '');
+            effectiveFromDate ??= DateTime.now();
+          }
+        }
+
         final newPetId = await ref.read(petListProvider.notifier).addPet(
               name: _nameController.text.trim(),
               species: _selectedSpecies,
@@ -333,6 +352,16 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
               weight: initialWeight,
               notes: 'Initial weight',
             ));
+          } catch (_) {}
+        }
+        if (_selectedOrgId != null && effectiveAssignedUserId != null && effectiveFromDate != null) {
+          try {
+            await ref.read(familyEventsProvider(newPetId).notifier).createEvent(
+              assignedToUserId: effectiveAssignedUserId,
+              fromDate: effectiveFromDate,
+              toDate: _assignmentToDate,
+              notes: _assignmentNotesController.text.trim(),
+            );
           } catch (_) {}
         }
         if (mounted) context.go('/pet/$newPetId');
@@ -1017,6 +1046,15 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
       error: (_, __) => const SizedBox.shrink(),
       data: (orgs) {
         if (orgs.isEmpty) return const SizedBox.shrink();
+
+        final effectiveOrgId = _selectedOrgId != null && orgs.any((o) => o.id == _selectedOrgId)
+            ? _selectedOrgId!
+            : (_selectedOrgId != null ? orgs.first.id : null);
+
+        final isSuperUser = effectiveOrgId != null
+            ? ref.watch(isOrgSuperUserProvider(effectiveOrgId))
+            : false;
+
         return Card(
           child: Padding(
             padding: const EdgeInsets.all(16),
@@ -1047,6 +1085,10 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
                         _selectedOrgId = widget.initialOrgId ?? orgs.first.id;
                       } else {
                         _selectedOrgId = null;
+                        _assignedToUserId = null;
+                        _assignmentFromDate = null;
+                        _assignmentToDate = null;
+                        _assignmentNotesController.clear();
                       }
                     });
                   },
@@ -1055,7 +1097,7 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
                   const SizedBox(height: 12),
                   DropdownButtonFormField<int>(
                     key: const Key('pet_org_selector'),
-                    value: orgs.any((o) => o.id == _selectedOrgId) ? _selectedOrgId : orgs.first.id,
+                    value: effectiveOrgId,
                     decoration: InputDecoration(
                       labelText: l.organizations,
                       prefixIcon: const Icon(Icons.business),
@@ -1067,14 +1109,165 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
                       value: o.id,
                       child: Text(o.name),
                     )).toList(),
-                    onChanged: (v) => setState(() => _selectedOrgId = v),
+                    onChanged: (v) => setState(() {
+                      _selectedOrgId = v;
+                      _assignedToUserId = null;
+                    }),
                   ),
+                  if (isSuperUser && effectiveOrgId != null)
+                    _buildAssignmentSection(theme, l, effectiveOrgId),
+                  if (!isSuperUser)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 8),
+                      child: Text(
+                        l.autoAssignedToYou,
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: theme.colorScheme.onSurfaceVariant,
+                          fontStyle: FontStyle.italic,
+                        ),
+                      ),
+                    ),
                 ],
               ],
             ),
           ),
         );
       },
+    );
+  }
+
+  Widget _buildAssignmentSection(ThemeData theme, AppLocalizations l, int orgId) {
+    final membersAsync = ref.watch(orgMembersProvider(orgId));
+    final dateFormat = DateFormat('dd/MM/yyyy');
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const SizedBox(height: 16),
+        Text(l.assignTo,
+            style: theme.textTheme.titleSmall?.copyWith(
+                fontWeight: FontWeight.w600)),
+        Text(l.assignToHint,
+            style: theme.textTheme.bodySmall?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant)),
+        const SizedBox(height: 8),
+        membersAsync.when(
+          loading: () => const LinearProgressIndicator(),
+          error: (_, __) => const SizedBox.shrink(),
+          data: (members) {
+            final activeMembers = members.where((m) => !m.role.isPending).toList();
+            return DropdownButtonFormField<int?>(
+              key: const Key('pet_assign_member'),
+              value: _assignedToUserId,
+              decoration: InputDecoration(
+                labelText: l.assignedMember,
+                prefixIcon: const Icon(Icons.person_outline),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                suffixIcon: _assignedToUserId != null
+                    ? IconButton(
+                        icon: const Icon(Icons.clear, size: 18),
+                        onPressed: () => setState(() => _assignedToUserId = null),
+                      )
+                    : null,
+              ),
+              items: [
+                DropdownMenuItem<int?>(
+                  value: null,
+                  child: Text(l.notAssigned,
+                      style: TextStyle(color: theme.colorScheme.onSurfaceVariant)),
+                ),
+                ...activeMembers.map((m) => DropdownMenuItem<int?>(
+                  value: m.userId,
+                  child: Text(m.displayName),
+                )),
+              ],
+              onChanged: (v) => setState(() => _assignedToUserId = v),
+            );
+          },
+        ),
+        const SizedBox(height: 12),
+        Row(
+          children: [
+            Expanded(
+              child: InkWell(
+                onTap: () async {
+                  final picked = await showDatePicker(
+                    context: context,
+                    initialDate: _assignmentFromDate ?? DateTime.now(),
+                    firstDate: DateTime(2020),
+                    lastDate: DateTime(2030),
+                  );
+                  if (picked != null) {
+                    setState(() => _assignmentFromDate = picked);
+                  }
+                },
+                child: InputDecorator(
+                  decoration: InputDecoration(
+                    labelText: l.fromDateLabel,
+                    suffixIcon: _assignmentFromDate != null
+                        ? IconButton(
+                            icon: const Icon(Icons.clear, size: 18),
+                            onPressed: () => setState(() => _assignmentFromDate = null),
+                          )
+                        : const Icon(Icons.calendar_today, size: 18),
+                  ),
+                  child: Text(
+                    _assignmentFromDate != null
+                        ? dateFormat.format(_assignmentFromDate!)
+                        : '',
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: InkWell(
+                onTap: () async {
+                  final picked = await showDatePicker(
+                    context: context,
+                    initialDate: _assignmentToDate ?? _assignmentFromDate ?? DateTime.now(),
+                    firstDate: _assignmentFromDate ?? DateTime(2020),
+                    lastDate: DateTime(2030),
+                  );
+                  if (picked != null) {
+                    setState(() => _assignmentToDate = picked);
+                  }
+                },
+                child: InputDecorator(
+                  decoration: InputDecoration(
+                    labelText: '${l.toDateLabel} (${l.optional})',
+                    suffixIcon: _assignmentToDate != null
+                        ? IconButton(
+                            icon: const Icon(Icons.clear, size: 18),
+                            onPressed: () => setState(() => _assignmentToDate = null),
+                          )
+                        : const Icon(Icons.calendar_today, size: 18),
+                  ),
+                  child: Text(
+                    _assignmentToDate != null
+                        ? dateFormat.format(_assignmentToDate!)
+                        : '',
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 12),
+        TextFormField(
+          controller: _assignmentNotesController,
+          decoration: InputDecoration(
+            labelText: '${l.notes} (${l.optional})',
+            prefixIcon: const Icon(Icons.note_outlined),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+          ),
+          maxLines: 2,
+        ),
+      ],
     );
   }
 
