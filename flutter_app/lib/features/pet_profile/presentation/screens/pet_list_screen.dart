@@ -9,7 +9,6 @@ import '../../../auth/presentation/providers/auth_providers.dart';
 import '../../../health_tracking/domain/entities/health_entry.dart';
 import '../../../health_tracking/presentation/providers/health_providers.dart';
 import '../../../notifications/presentation/providers/notification_providers.dart';
-import '../../../organization/presentation/providers/organization_providers.dart';
 import '../../domain/entities/pet.dart';
 import '../providers/pet_providers.dart';
 import '../widgets/pet_card.dart';
@@ -110,18 +109,11 @@ class _PetListScreenState extends ConsumerState<PetListScreen> {
             tooltip: l.events,
             onPressed: () => context.go('/health'),
           ),
-          Consumer(builder: (context, ref, _) {
-            final orgsAsync = ref.watch(organizationListProvider);
-            final hasOrgs = orgsAsync.whenOrNull(
-                    data: (orgs) => orgs.isNotEmpty) ??
-                false;
-            if (!hasOrgs) return const SizedBox.shrink();
-            return IconButton(
-              icon: const Icon(Icons.business),
-              tooltip: l.organizations,
-              onPressed: () => context.go('/my-details'),
-            );
-          }),
+          IconButton(
+            icon: const Icon(Icons.business),
+            tooltip: l.organizations,
+            onPressed: () => context.go('/organizations'),
+          ),
           PopupMenuButton<String>(
             tooltip: l.userMenu,
             icon: CircleAvatar(
