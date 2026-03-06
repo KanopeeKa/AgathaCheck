@@ -129,8 +129,6 @@ class _PetListScreenState extends ConsumerState<PetListScreen> {
             onSelected: (value) async {
               if (value == 'details') {
                 context.push('/my-details');
-              } else if (value == 'organizations') {
-                context.push('/organizations');
               } else if (value == 'logout') {
                 await ref.read(authProvider.notifier).logout();
               }
@@ -163,15 +161,6 @@ class _PetListScreenState extends ConsumerState<PetListScreen> {
                   child: ListTile(
                     leading: const Icon(Icons.person_outlined),
                     title: Text(l.myDetails),
-                    dense: true,
-                    contentPadding: EdgeInsets.zero,
-                  ),
-                ),
-                PopupMenuItem<String>(
-                  value: 'organizations',
-                  child: ListTile(
-                    leading: const Icon(Icons.business_outlined),
-                    title: Text(l.myOrganizations),
                     dense: true,
                     contentPadding: EdgeInsets.zero,
                   ),

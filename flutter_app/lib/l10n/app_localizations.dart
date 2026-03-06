@@ -2576,6 +2576,42 @@ abstract class AppLocalizations {
   /// **'Create your first organization to get started'**
   String get orgCreateFirst;
 
+  /// No description provided for @createOrJoinOrganization.
+  ///
+  /// In en, this message translates to:
+  /// **'Create or Join an organization'**
+  String get createOrJoinOrganization;
+
+  /// No description provided for @joinOrganization.
+  ///
+  /// In en, this message translates to:
+  /// **'Join Organization'**
+  String get joinOrganization;
+
+  /// No description provided for @enterInviteCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter the invite code you received'**
+  String get enterInviteCode;
+
+  /// No description provided for @inviteCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Invite code'**
+  String get inviteCode;
+
+  /// No description provided for @joinSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Successfully joined the organization'**
+  String get joinSuccess;
+
+  /// No description provided for @join.
+  ///
+  /// In en, this message translates to:
+  /// **'Join'**
+  String get join;
+
   /// No description provided for @orgSuperUser.
   ///
   /// In en, this message translates to:

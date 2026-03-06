@@ -1367,6 +1367,25 @@ class AppLocalizationsFr extends AppLocalizations {
       'Créez votre première organisation pour commencer';
 
   @override
+  String get createOrJoinOrganization => 'Créer ou rejoindre une organisation';
+
+  @override
+  String get joinOrganization => 'Rejoindre une organisation';
+
+  @override
+  String get enterInviteCode =>
+      'Entrez le code d\'invitation que vous avez reçu';
+
+  @override
+  String get inviteCode => 'Code d\'invitation';
+
+  @override
+  String get joinSuccess => 'Organisation rejointe avec succès';
+
+  @override
+  String get join => 'Rejoindre';
+
+  @override
   String get orgSuperUser => 'Super utilisateur';
 
   @override

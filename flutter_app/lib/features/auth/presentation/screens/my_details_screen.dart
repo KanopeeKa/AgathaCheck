@@ -8,6 +8,8 @@ import 'package:image_picker/image_picker.dart';
 
 import '../../../../core/providers/locale_provider.dart';
 import '../../../../l10n/app_localizations.dart';
+import '../../../organization/presentation/providers/organization_providers.dart';
+import '../../../organization/data/datasources/organization_remote_datasource.dart';
 import '../providers/auth_providers.dart';
 
 class MyDetailsScreen extends ConsumerStatefulWidget {
@@ -255,6 +257,8 @@ class _MyDetailsScreenState extends ConsumerState<MyDetailsScreen> {
                     onTap: () => context.push('/subscription'),
                   ),
                 ),
+                const SizedBox(height: 16),
+                _OrganizationsSection(),
                 const SizedBox(height: 16),
                 Card(
                   child: ListTile(
@@ -714,6 +718,220 @@ class _ProfileEditorSheetState extends State<_ProfileEditorSheet> {
             const SizedBox(height: 8),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class _OrganizationsSection extends ConsumerWidget {
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
+    final orgsAsync = ref.watch(organizationListProvider);
+
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Icon(Icons.business, size: 22, color: theme.colorScheme.primary),
+                const SizedBox(width: 8),
+                Text(
+                  l10n.myOrganizations,
+                  style: theme.textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            orgsAsync.when(
+              loading: () => const Center(
+                child: Padding(
+                  padding: EdgeInsets.all(16),
+                  child: CircularProgressIndicator(),
+                ),
+              ),
+              error: (e, _) => Text(e.toString()),
+              data: (orgs) {
+                if (orgs.isEmpty) {
+                  return _EmptyOrgState();
+                }
+                return Column(
+                  children: [
+                    ...orgs.map((org) => ListTile(
+                      contentPadding: EdgeInsets.zero,
+                      leading: CircleAvatar(
+                        backgroundColor: theme.colorScheme.primaryContainer,
+                        child: Icon(
+                          org.type == 'charity' ? Icons.favorite : Icons.business,
+                          color: theme.colorScheme.onPrimaryContainer,
+                          size: 20,
+                        ),
+                      ),
+                      title: Text(org.name),
+                      subtitle: Text(
+                        org.type == 'charity'
+                            ? l10n.orgTypeCharity
+                            : l10n.orgTypeProfessional,
+                        style: theme.textTheme.bodySmall,
+                      ),
+                      trailing: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          if (org.isSuperUser)
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                              decoration: BoxDecoration(
+                                color: theme.colorScheme.tertiaryContainer,
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: Text(
+                                l10n.orgSuperUser,
+                                style: theme.textTheme.labelSmall?.copyWith(
+                                  color: theme.colorScheme.onTertiaryContainer,
+                                ),
+                              ),
+                            ),
+                          const SizedBox(width: 4),
+                          const Icon(Icons.chevron_right),
+                        ],
+                      ),
+                      onTap: () => context.push('/organizations/${org.id}'),
+                    )),
+                    const Divider(),
+                    _CreateOrJoinRow(),
+                  ],
+                );
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _EmptyOrgState extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
+
+    return Column(
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 8),
+          child: Row(
+            children: [
+              Icon(Icons.info_outline, size: 18, color: theme.colorScheme.onSurfaceVariant),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  l10n.createOrJoinOrganization,
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: theme.colorScheme.onSurfaceVariant,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 8),
+        _CreateOrJoinRow(),
+      ],
+    );
+  }
+}
+
+class _CreateOrJoinRow extends ConsumerWidget {
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
+
+    return Row(
+      children: [
+        Expanded(
+          child: OutlinedButton.icon(
+            icon: const Icon(Icons.add, size: 18),
+            label: Text(l10n.create),
+            onPressed: () => context.push('/organizations/new'),
+          ),
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: OutlinedButton.icon(
+            icon: const Icon(Icons.group_add, size: 18),
+            label: Text(l10n.join),
+            onPressed: () => _showJoinDialog(context, ref),
+          ),
+        ),
+      ],
+    );
+  }
+
+  void _showJoinDialog(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
+    final codeController = TextEditingController();
+
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(l10n.joinOrganization),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(l10n.enterInviteCode),
+            const SizedBox(height: 16),
+            TextField(
+              controller: codeController,
+              decoration: InputDecoration(
+                labelText: l10n.inviteCode,
+                prefixIcon: const Icon(Icons.vpn_key_outlined),
+                border: const OutlineInputBorder(),
+              ),
+              autofocus: true,
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(),
+            child: Text(l10n.cancel),
+          ),
+          FilledButton(
+            onPressed: () async {
+              final code = codeController.text.trim();
+              if (code.isEmpty) return;
+
+              try {
+                final token = ref.read(authProvider).accessToken;
+                if (token == null) return;
+                final ds = ref.read(orgRemoteDataSourceProvider);
+                await ds.joinOrganization(code, token);
+                ref.invalidate(organizationListProvider);
+                if (ctx.mounted) {
+                  Navigator.of(ctx).pop();
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text(l10n.joinSuccess)),
+                  );
+                }
+              } catch (e) {
+                if (ctx.mounted) {
+                  Navigator.of(ctx).pop();
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text(e.toString().replaceFirst('Exception: ', ''))),
+                  );
+                }
+              }
+            },
+            child: Text(l10n.join),
+          ),
+        ],
       ),
     );
   }
