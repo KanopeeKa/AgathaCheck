@@ -708,6 +708,7 @@ class _OrganizationsSection extends ConsumerWidget {
     final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context)!;
     final orgsAsync = ref.watch(organizationListProvider);
+    final pendingAsync = ref.watch(pendingOrgInvitesProvider);
 
     return Card(
       child: Padding(
@@ -728,6 +729,113 @@ class _OrganizationsSection extends ConsumerWidget {
               ],
             ),
             const SizedBox(height: 12),
+            pendingAsync.when(
+              loading: () => const SizedBox.shrink(),
+              error: (_, __) => const SizedBox.shrink(),
+              data: (invites) {
+                if (invites.isEmpty) return const SizedBox.shrink();
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(l10n.pendingInvites,
+                        style: theme.textTheme.labelLarge?.copyWith(
+                          color: theme.colorScheme.primary,
+                          fontWeight: FontWeight.w600,
+                        )),
+                    const SizedBox(height: 8),
+                    ...invites.map((invite) => Card(
+                      color: theme.colorScheme.primaryContainer.withAlpha(40),
+                      margin: const EdgeInsets.only(bottom: 8),
+                      child: Padding(
+                        padding: const EdgeInsets.all(12),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              l10n.inviteToJoinOrg(invite.organizationName),
+                              style: theme.textTheme.bodyMedium?.copyWith(
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              l10n.inviteAsRole(invite.desiredRole == 'super_user'
+                                  ? l10n.orgSuperUser
+                                  : l10n.orgMember),
+                              style: theme.textTheme.bodySmall?.copyWith(
+                                color: theme.colorScheme.onSurfaceVariant,
+                              ),
+                            ),
+                            if (invite.inviterName.isNotEmpty || invite.inviterEmail.isNotEmpty) ...[
+                              const SizedBox(height: 2),
+                              Text(
+                                l10n.invitedBy(invite.inviterName.isNotEmpty
+                                    ? invite.inviterName
+                                    : invite.inviterEmail),
+                                style: theme.textTheme.bodySmall?.copyWith(
+                                  color: theme.colorScheme.onSurfaceVariant,
+                                ),
+                              ),
+                            ],
+                            const SizedBox(height: 8),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                OutlinedButton(
+                                  onPressed: () async {
+                                    try {
+                                      await ref
+                                          .read(pendingOrgInvitesProvider.notifier)
+                                          .declineInvite(invite.id);
+                                      if (context.mounted) {
+                                        ScaffoldMessenger.of(context).showSnackBar(
+                                          SnackBar(content: Text(l10n.inviteDeclined)),
+                                        );
+                                      }
+                                    } catch (e) {
+                                      if (context.mounted) {
+                                        ScaffoldMessenger.of(context).showSnackBar(
+                                          SnackBar(content: Text('$e')),
+                                        );
+                                      }
+                                    }
+                                  },
+                                  child: Text(l10n.declineInvite),
+                                ),
+                                const SizedBox(width: 8),
+                                FilledButton(
+                                  onPressed: () async {
+                                    try {
+                                      final orgId = await ref
+                                          .read(pendingOrgInvitesProvider.notifier)
+                                          .acceptInvite(invite.id);
+                                      if (context.mounted) {
+                                        ScaffoldMessenger.of(context).showSnackBar(
+                                          SnackBar(content: Text(l10n.inviteAccepted)),
+                                        );
+                                        context.push('/organizations/$orgId');
+                                      }
+                                    } catch (e) {
+                                      if (context.mounted) {
+                                        ScaffoldMessenger.of(context).showSnackBar(
+                                          SnackBar(content: Text('$e')),
+                                        );
+                                      }
+                                    }
+                                  },
+                                  child: Text(l10n.acceptInvite),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    )),
+                    const Divider(),
+                  ],
+                );
+              },
+            ),
             orgsAsync.when(
               loading: () => const Center(
                 child: Padding(

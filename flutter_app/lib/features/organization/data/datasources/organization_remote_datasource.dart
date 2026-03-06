@@ -134,6 +134,7 @@ class OrganizationRemoteDataSource {
     final response = await _client.post(
       Uri.parse('$baseUrl/api/organizations/$orgId/invite'),
       headers: _headers(token),
+      body: json.encode({}),
     );
     if (response.statusCode >= 400) {
       final data = json.decode(response.body);
@@ -141,6 +142,54 @@ class OrganizationRemoteDataSource {
     }
     final data = json.decode(response.body) as Map<String, dynamic>;
     return data['invite_code']?.toString() ?? '';
+  }
+
+  Future<Map<String, dynamic>> inviteByEmail(int orgId, String email, String role, String token) async {
+    final response = await _client.post(
+      Uri.parse('$baseUrl/api/organizations/$orgId/invite'),
+      headers: _headers(token),
+      body: json.encode({'email': email, 'role': role}),
+    );
+    final data = json.decode(response.body) as Map<String, dynamic>;
+    if (response.statusCode >= 400) {
+      throw Exception(data['error'] ?? 'Failed to invite user');
+    }
+    return data;
+  }
+
+  Future<List<Map<String, dynamic>>> getPendingInvites(String token) async {
+    final response = await _client.get(
+      Uri.parse('$baseUrl/api/organizations/invites/pending'),
+      headers: _authOnly(token),
+    );
+    if (response.statusCode >= 400) {
+      return [];
+    }
+    final list = json.decode(response.body) as List;
+    return list.cast<Map<String, dynamic>>();
+  }
+
+  Future<Map<String, dynamic>> acceptInvite(int inviteId, String token) async {
+    final response = await _client.post(
+      Uri.parse('$baseUrl/api/organizations/invites/$inviteId/accept'),
+      headers: _headers(token),
+    );
+    final data = json.decode(response.body) as Map<String, dynamic>;
+    if (response.statusCode >= 400) {
+      throw Exception(data['error'] ?? 'Failed to accept invite');
+    }
+    return data;
+  }
+
+  Future<void> declineInvite(int inviteId, String token) async {
+    final response = await _client.post(
+      Uri.parse('$baseUrl/api/organizations/invites/$inviteId/decline'),
+      headers: _headers(token),
+    );
+    if (response.statusCode >= 400) {
+      final data = json.decode(response.body);
+      throw Exception(data['error'] ?? 'Failed to decline invite');
+    }
   }
 
   Future<void> joinOrganization(String code, String token) async {

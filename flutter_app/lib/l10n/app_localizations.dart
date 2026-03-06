@@ -2887,6 +2887,114 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{name} marked as not completed'**
   String undoCompleteDone(String name);
+
+  /// No description provided for @addUser.
+  ///
+  /// In en, this message translates to:
+  /// **'Add a User'**
+  String get addUser;
+
+  /// No description provided for @inviteByEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'Invite by Email'**
+  String get inviteByEmail;
+
+  /// No description provided for @sendInvite.
+  ///
+  /// In en, this message translates to:
+  /// **'Send Invite'**
+  String get sendInvite;
+
+  /// No description provided for @selectRole.
+  ///
+  /// In en, this message translates to:
+  /// **'Select Role'**
+  String get selectRole;
+
+  /// No description provided for @inviteSent.
+  ///
+  /// In en, this message translates to:
+  /// **'Invitation sent successfully'**
+  String get inviteSent;
+
+  /// No description provided for @pendingInvites.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending Invitations'**
+  String get pendingInvites;
+
+  /// No description provided for @inviteToJoinOrg.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'ve been invited to join {orgName}'**
+  String inviteToJoinOrg(String orgName);
+
+  /// No description provided for @inviteAsRole.
+  ///
+  /// In en, this message translates to:
+  /// **'as {role}'**
+  String inviteAsRole(String role);
+
+  /// No description provided for @acceptInvite.
+  ///
+  /// In en, this message translates to:
+  /// **'Accept'**
+  String get acceptInvite;
+
+  /// No description provided for @declineInvite.
+  ///
+  /// In en, this message translates to:
+  /// **'Decline'**
+  String get declineInvite;
+
+  /// No description provided for @userNotFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No user found with this email'**
+  String get userNotFound;
+
+  /// No description provided for @inviteAccepted.
+  ///
+  /// In en, this message translates to:
+  /// **'Invitation accepted'**
+  String get inviteAccepted;
+
+  /// No description provided for @inviteDeclined.
+  ///
+  /// In en, this message translates to:
+  /// **'Invitation declined'**
+  String get inviteDeclined;
+
+  /// No description provided for @alreadyMember.
+  ///
+  /// In en, this message translates to:
+  /// **'This user is already a member'**
+  String get alreadyMember;
+
+  /// No description provided for @enterEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter the user\'s email address'**
+  String get enterEmail;
+
+  /// No description provided for @invitedBy.
+  ///
+  /// In en, this message translates to:
+  /// **'Invited by {name}'**
+  String invitedBy(String name);
+
+  /// No description provided for @people.
+  ///
+  /// In en, this message translates to:
+  /// **'People'**
+  String get people;
+
+  /// No description provided for @assignedPets.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} pets assigned'**
+  String assignedPets(int count);
 }
 
 class _AppLocalizationsDelegate

@@ -142,7 +142,7 @@ class OrganizationDetailScreen extends ConsumerWidget {
               const SizedBox(height: 16),
               _buildContactCard(org, theme, colorScheme),
               const SizedBox(height: 16),
-              _buildMembersSection(context, ref, membersAsync, theme, colorScheme, l),
+              _buildMembersSection(context, ref, membersAsync, isSuperUser, theme, colorScheme, l),
               const SizedBox(height: 16),
               _buildPetsSection(context, org, theme, colorScheme, l),
               const SizedBox(height: 16),
@@ -277,26 +277,16 @@ class OrganizationDetailScreen extends ConsumerWidget {
   }
 
   Widget _buildMembersSection(BuildContext context, WidgetRef ref,
-      AsyncValue membersAsync, ThemeData theme, ColorScheme colorScheme, AppLocalizations l) {
+      AsyncValue membersAsync, bool isSuperUser, ThemeData theme, ColorScheme colorScheme, AppLocalizations l) {
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(l.orgMembers,
-                    style: theme.textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.bold)),
-                TextButton(
-                  key: const Key('org_view_all_members'),
-                  onPressed: () => context.push('/organizations/$orgId/members'),
-                  child: const Text('>'),
-                ),
-              ],
-            ),
+            Text(l.people,
+                style: theme.textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.bold)),
             const SizedBox(height: 8),
             membersAsync.when(
               loading: () => const Center(
@@ -308,10 +298,9 @@ class OrganizationDetailScreen extends ConsumerWidget {
               error: (e, _) => Text('$e',
                   style: TextStyle(color: colorScheme.error)),
               data: (members) {
-                final displayMembers = members.take(3).toList();
                 return Column(
                   children: [
-                    ...displayMembers.map((member) => ListTile(
+                    ...members.map((member) => ListTile(
                       leading: CircleAvatar(
                         backgroundColor: colorScheme.secondaryContainer,
                         child: Text(
@@ -346,16 +335,15 @@ class OrganizationDetailScreen extends ConsumerWidget {
                       ),
                       dense: true,
                     )),
-                    if (members.length > 3)
-                      Padding(
-                        padding: const EdgeInsets.only(top: 4),
-                        child: Text(
-                          '+ ${members.length - 3}',
-                          style: theme.textTheme.bodySmall?.copyWith(
-                            color: colorScheme.onSurfaceVariant,
-                          ),
-                        ),
+                    if (isSuperUser) ...[
+                      const Divider(),
+                      OutlinedButton.icon(
+                        key: const Key('org_add_user_button'),
+                        onPressed: () => _showInviteByEmailDialog(context, ref, l),
+                        icon: const Icon(Icons.person_add, size: 18),
+                        label: Text(l.addUser),
                       ),
+                    ],
                   ],
                 );
               },
@@ -421,6 +409,95 @@ class OrganizationDetailScreen extends ConsumerWidget {
         _showDeleteDialog(context, ref, org);
         break;
     }
+  }
+
+  void _showInviteByEmailDialog(BuildContext context, WidgetRef ref, AppLocalizations l) {
+    final emailController = TextEditingController();
+    String selectedRole = 'member';
+
+    showDialog(
+      context: context,
+      builder: (ctx) => StatefulBuilder(
+        builder: (ctx, setState) => AlertDialog(
+          title: Text(l.addUser),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(l.enterEmail, style: Theme.of(ctx).textTheme.bodySmall),
+              const SizedBox(height: 12),
+              TextField(
+                controller: emailController,
+                keyboardType: TextInputType.emailAddress,
+                decoration: InputDecoration(
+                  labelText: 'Email',
+                  prefixIcon: const Icon(Icons.email),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+              Text(l.selectRole, style: Theme.of(ctx).textTheme.bodySmall),
+              const SizedBox(height: 8),
+              SegmentedButton<String>(
+                segments: [
+                  ButtonSegment(
+                    value: 'member',
+                    label: Text(l.orgMember),
+                    icon: const Icon(Icons.person),
+                  ),
+                  ButtonSegment(
+                    value: 'super_user',
+                    label: Text(l.orgSuperUser),
+                    icon: const Icon(Icons.admin_panel_settings),
+                  ),
+                ],
+                selected: {selectedRole},
+                onSelectionChanged: (v) => setState(() => selectedRole = v.first),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(ctx),
+              child: Text(MaterialLocalizations.of(ctx).cancelButtonLabel),
+            ),
+            FilledButton(
+              onPressed: () async {
+                final email = emailController.text.trim();
+                if (email.isEmpty) return;
+                Navigator.pop(ctx);
+                try {
+                  await ref
+                      .read(orgMembersProvider(orgId).notifier)
+                      .inviteByEmail(email, selectedRole);
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text(l.inviteSent)),
+                    );
+                  }
+                } catch (e) {
+                  if (context.mounted) {
+                    final errorMsg = e.toString();
+                    String displayMsg = errorMsg;
+                    if (errorMsg.contains('user_not_found')) {
+                      displayMsg = l.userNotFound;
+                    } else if (errorMsg.contains('already_member')) {
+                      displayMsg = l.alreadyMember;
+                    }
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text(displayMsg)),
+                    );
+                  }
+                }
+              },
+              child: Text(l.sendInvite),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   void _showInviteDialog(BuildContext context, WidgetRef ref) async {

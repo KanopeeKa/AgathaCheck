@@ -70,6 +70,13 @@ class OrgMembersNotifier extends FamilyAsyncNotifier<List<OrganizationMember>, i
     return ds.inviteMember(arg, token);
   }
 
+  Future<void> inviteByEmail(String email, String role) async {
+    final token = ref.read(_orgTokenProvider)!;
+    final ds = ref.read(orgRemoteDataSourceProvider);
+    await ds.inviteByEmail(arg, email, role, token);
+    ref.invalidateSelf();
+  }
+
   Future<void> updateMemberRole(int userId, String role) async {
     final token = ref.read(_orgTokenProvider)!;
     final ds = ref.read(orgRemoteDataSourceProvider);
@@ -182,3 +189,69 @@ final isOrgSuperUserProvider = Provider.family<bool, int>((ref, orgId) {
     return org?.isSuperUser ?? false;
   }) ?? false;
 });
+
+class PendingOrgInvite {
+  final int id;
+  final int organizationId;
+  final String organizationName;
+  final String organizationType;
+  final String desiredRole;
+  final String inviterName;
+  final String inviterEmail;
+  final String createdAt;
+
+  const PendingOrgInvite({
+    required this.id,
+    required this.organizationId,
+    required this.organizationName,
+    required this.organizationType,
+    required this.desiredRole,
+    required this.inviterName,
+    required this.inviterEmail,
+    required this.createdAt,
+  });
+
+  factory PendingOrgInvite.fromJson(Map<String, dynamic> json) {
+    return PendingOrgInvite(
+      id: json['id'] is int ? json['id'] as int : int.tryParse(json['id']?.toString() ?? '0') ?? 0,
+      organizationId: json['organization_id'] is int ? json['organization_id'] as int : int.tryParse(json['organization_id']?.toString() ?? '0') ?? 0,
+      organizationName: json['organization_name']?.toString() ?? '',
+      organizationType: json['organization_type']?.toString() ?? '',
+      desiredRole: json['desired_role']?.toString() ?? 'member',
+      inviterName: json['inviter_name']?.toString() ?? '',
+      inviterEmail: json['inviter_email']?.toString() ?? '',
+      createdAt: json['created_at']?.toString() ?? '',
+    );
+  }
+}
+
+class PendingOrgInvitesNotifier extends AsyncNotifier<List<PendingOrgInvite>> {
+  @override
+  Future<List<PendingOrgInvite>> build() async {
+    final token = ref.watch(_orgTokenProvider);
+    if (token == null) return [];
+    final ds = ref.read(orgRemoteDataSourceProvider);
+    final raw = await ds.getPendingInvites(token);
+    return raw.map((e) => PendingOrgInvite.fromJson(e)).toList();
+  }
+
+  Future<int> acceptInvite(int inviteId) async {
+    final token = ref.read(_orgTokenProvider)!;
+    final ds = ref.read(orgRemoteDataSourceProvider);
+    final result = await ds.acceptInvite(inviteId, token);
+    ref.invalidateSelf();
+    ref.invalidate(organizationListProvider);
+    return int.tryParse(result['organization_id']?.toString() ?? '0') ?? 0;
+  }
+
+  Future<void> declineInvite(int inviteId) async {
+    final token = ref.read(_orgTokenProvider)!;
+    final ds = ref.read(orgRemoteDataSourceProvider);
+    await ds.declineInvite(inviteId, token);
+    ref.invalidateSelf();
+  }
+}
+
+final pendingOrgInvitesProvider =
+    AsyncNotifierProvider<PendingOrgInvitesNotifier, List<PendingOrgInvite>>(
+        PendingOrgInvitesNotifier.new);

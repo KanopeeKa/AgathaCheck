@@ -17,27 +17,6 @@ Future<void> main() async {
 
   await RevenueCatService().initialize();
 
-  FlutterError.onError = (details) {
-    FlutterError.presentError(details);
-    debugPrint('FLUTTER_ERROR: ${details.exception}');
-    debugPrint('FLUTTER_STACK: ${details.stack}');
-  };
-
-  ErrorWidget.builder = (FlutterErrorDetails details) {
-    return Material(
-      child: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Text(
-            'Error: ${details.exception}',
-            style: const TextStyle(color: Colors.red, fontSize: 14),
-            textAlign: TextAlign.center,
-          ),
-        ),
-      ),
-    );
-  };
-
   runApp(
     ProviderScope(
       overrides: [

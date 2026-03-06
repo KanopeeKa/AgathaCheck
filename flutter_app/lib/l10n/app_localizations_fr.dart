@@ -1536,4 +1536,66 @@ class AppLocalizationsFr extends AppLocalizations {
   String undoCompleteDone(String name) {
     return '$name marqué comme non terminé';
   }
+
+  @override
+  String get addUser => 'Ajouter un utilisateur';
+
+  @override
+  String get inviteByEmail => 'Inviter par e-mail';
+
+  @override
+  String get sendInvite => 'Envoyer l\'invitation';
+
+  @override
+  String get selectRole => 'Sélectionner le rôle';
+
+  @override
+  String get inviteSent => 'Invitation envoyée avec succès';
+
+  @override
+  String get pendingInvites => 'Invitations en attente';
+
+  @override
+  String inviteToJoinOrg(String orgName) {
+    return 'Vous avez été invité(e) à rejoindre $orgName';
+  }
+
+  @override
+  String inviteAsRole(String role) {
+    return 'en tant que $role';
+  }
+
+  @override
+  String get acceptInvite => 'Accepter';
+
+  @override
+  String get declineInvite => 'Refuser';
+
+  @override
+  String get userNotFound => 'Aucun utilisateur trouvé avec cet e-mail';
+
+  @override
+  String get inviteAccepted => 'Invitation acceptée';
+
+  @override
+  String get inviteDeclined => 'Invitation refusée';
+
+  @override
+  String get alreadyMember => 'Cet utilisateur est déjà membre';
+
+  @override
+  String get enterEmail => 'Entrez l\'adresse e-mail de l\'utilisateur';
+
+  @override
+  String invitedBy(String name) {
+    return 'Invité(e) par $name';
+  }
+
+  @override
+  String get people => 'Personnes';
+
+  @override
+  String assignedPets(int count) {
+    return '$count animaux assignés';
+  }
 }

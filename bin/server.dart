@@ -74,6 +74,12 @@ const _translations = {
     'org_member_left_msg': '{member} has left {org}',
     'org_pet_donated': '{pet} transferred to {org}',
     'org_pet_donated_msg': '{pet} has been transferred to organization {org}',
+    'org_invite_received': 'Invitation to join {org}',
+    'org_invite_received_msg': 'You have been invited to join {org} as {role}',
+    'org_invite_accepted': '{member} accepted your invitation',
+    'org_invite_accepted_msg': '{member} has accepted the invitation to join {org}',
+    'org_invite_declined': '{member} declined your invitation',
+    'org_invite_declined_msg': '{member} has declined the invitation to join {org}',
   },
   'fr': {
     'completed_title': '{pet}{name} terminé',
@@ -110,6 +116,12 @@ const _translations = {
     'org_member_left_msg': '{member} a quitté {org}',
     'org_pet_donated': '{pet} transféré à {org}',
     'org_pet_donated_msg': '{pet} a été transféré à l\'organisation {org}',
+    'org_invite_received': 'Invitation à rejoindre {org}',
+    'org_invite_received_msg': 'Vous avez été invité(e) à rejoindre {org} en tant que {role}',
+    'org_invite_accepted': '{member} a accepté votre invitation',
+    'org_invite_accepted_msg': '{member} a accepté l\'invitation à rejoindre {org}',
+    'org_invite_declined': '{member} a refusé votre invitation',
+    'org_invite_declined_msg': '{member} a refusé l\'invitation à rejoindre {org}',
   },
 };
 
@@ -754,6 +766,12 @@ Future<void> _handleApi(HttpRequest request) async {
     await _removeOrgMember(request);
   } else if (RegExp(r'^/api/organizations/\d+/members$').hasMatch(path) && method == 'GET') {
     await _getOrgMembers(request);
+  } else if (path == '/api/organizations/invites/pending' && method == 'GET') {
+    await _getPendingOrgInvites(request);
+  } else if (RegExp(r'^/api/organizations/invites/\d+/accept$').hasMatch(path) && method == 'POST') {
+    await _acceptOrgInvite(request);
+  } else if (RegExp(r'^/api/organizations/invites/\d+/decline$').hasMatch(path) && method == 'POST') {
+    await _declineOrgInvite(request);
   } else if (RegExp(r'^/api/organizations/\d+/invite$').hasMatch(path) && method == 'POST') {
     await _createOrgInvite(request);
   } else if (RegExp(r'^/api/organizations/\d+/pets/[^/]+/transfer$').hasMatch(path) && method == 'POST') {
@@ -4109,7 +4127,7 @@ Future<void> _getOrgMembers(HttpRequest request) async {
         u.email, u.name, u.first_name, u.last_name, u.photo_url as user_photo_url
       FROM organization_users ou
       JOIN users u ON u.id = ou.user_id
-      WHERE ou.organization_id = @orgId
+      WHERE ou.organization_id = @orgId AND ou.role IN ('super_user', 'member')
       ORDER BY ou.created_at
     '''),
     parameters: {'orgId': orgId},
@@ -4138,6 +4156,68 @@ Future<void> _createOrgInvite(HttpRequest request) async {
   final userId = await _requireOrgSuperUser(request, orgId);
   if (userId == null) return;
 
+  final body = json.decode(await utf8.decodeStream(request)) as Map<String, dynamic>;
+  final email = (body['email'] as String?)?.trim().toLowerCase();
+  final desiredRole = body['role']?.toString() ?? 'member';
+
+  if (email != null && email.isNotEmpty) {
+    final targetR = await _pool.execute(
+      Sql.named('SELECT id, name, first_name, last_name FROM users WHERE LOWER(email) = @email'),
+      parameters: {'email': email},
+    );
+    if (targetR.isEmpty) {
+      _jsonResponse(request, 404, {'error': 'user_not_found'});
+      return;
+    }
+    final targetUser = targetR.first.toColumnMap();
+    final targetUserId = targetUser['id'] as int;
+
+    final existingR = await _pool.execute(
+      Sql.named('SELECT id, role FROM organization_users WHERE organization_id = @orgId AND user_id = @userId'),
+      parameters: {'orgId': orgId, 'userId': targetUserId},
+    );
+    if (existingR.isNotEmpty) {
+      final existingRole = existingR.first.toColumnMap()['role'].toString();
+      if (existingRole != 'invite_placeholder') {
+        _jsonResponse(request, 400, {'error': 'already_member'});
+        return;
+      }
+      await _pool.execute(
+        Sql.named('DELETE FROM organization_users WHERE organization_id = @orgId AND user_id = @userId'),
+        parameters: {'orgId': orgId, 'userId': targetUserId},
+      );
+    }
+
+    final pendingRole = desiredRole == 'super_user' ? 'pending_super_user' : 'pending_member';
+    await _pool.execute(
+      Sql.named('''
+        INSERT INTO organization_users (organization_id, user_id, role, invited_by)
+        VALUES (@orgId, @targetUserId, @role, @invitedBy)
+      '''),
+      parameters: {'orgId': orgId, 'targetUserId': targetUserId, 'role': pendingRole, 'invitedBy': userId},
+    );
+
+    final orgR = await _pool.execute(Sql.named('SELECT name FROM organizations WHERE id = @id'), parameters: {'id': orgId});
+    final orgName = orgR.isNotEmpty ? orgR.first.toColumnMap()['name'].toString() : 'Organization';
+    final roleLabel = desiredRole == 'super_user' ? 'Super User' : 'Member';
+
+    final locale = await _getUserLocale(targetUserId);
+    await _pool.execute(
+      Sql.named('''
+        INSERT INTO notifications (user_id, pet_id, type, title, message)
+        VALUES (@userId, '', 'general', @title, @message)
+      '''),
+      parameters: {
+        'userId': targetUserId,
+        'title': _t(locale, 'org_invite_received', {'org': orgName}),
+        'message': _t(locale, 'org_invite_received_msg', {'org': orgName, 'role': roleLabel}),
+      },
+    );
+
+    _jsonResponse(request, 201, {'success': true, 'type': 'email_invite'});
+    return;
+  }
+
   final rng = Random.secure();
   final code = List.generate(12, (_) => 'abcdefghijklmnopqrstuvwxyz0123456789'[rng.nextInt(36)]).join();
   final expiresAt = DateTime.now().add(Duration(days: 7));
@@ -4152,6 +4232,149 @@ Future<void> _createOrgInvite(HttpRequest request) async {
   );
 
   _jsonResponse(request, 201, {'invite_code': code, 'expires_at': expiresAt.toIso8601String()});
+}
+
+Future<void> _getPendingOrgInvites(HttpRequest request) async {
+  final userId = _getUserIdFromRequest(request);
+  if (userId == null) {
+    _jsonResponse(request, 401, {'error': 'Authentication required'});
+    return;
+  }
+
+  final r = await _pool.execute(
+    Sql.named('''
+      SELECT ou.id, ou.organization_id, ou.role, ou.invited_by, ou.created_at,
+             o.name AS organization_name, o.type AS organization_type,
+             u.first_name AS inviter_first_name, u.last_name AS inviter_last_name, u.email AS inviter_email
+      FROM organization_users ou
+      JOIN organizations o ON o.id = ou.organization_id
+      LEFT JOIN users u ON u.id = ou.invited_by
+      WHERE ou.user_id = @userId AND ou.role IN ('pending_member', 'pending_super_user')
+    '''),
+    parameters: {'userId': userId},
+  );
+
+  final invites = r.map((row) {
+    final cols = row.toColumnMap();
+    final role = cols['role'].toString();
+    return {
+      'id': cols['id'].toString(),
+      'organization_id': cols['organization_id'].toString(),
+      'organization_name': cols['organization_name'].toString(),
+      'organization_type': cols['organization_type'].toString(),
+      'desired_role': role == 'pending_super_user' ? 'super_user' : 'member',
+      'invited_by': cols['invited_by']?.toString() ?? '',
+      'inviter_name': '${cols['inviter_first_name'] ?? ''} ${cols['inviter_last_name'] ?? ''}'.trim(),
+      'inviter_email': cols['inviter_email']?.toString() ?? '',
+      'created_at': cols['created_at']?.toString() ?? '',
+    };
+  }).toList();
+
+  _jsonResponse(request, 200, invites);
+}
+
+Future<void> _acceptOrgInvite(HttpRequest request) async {
+  final path = request.uri.path;
+  final inviteId = int.parse(path.split('/')[4]);
+  final userId = _getUserIdFromRequest(request);
+  if (userId == null) {
+    _jsonResponse(request, 401, {'error': 'Authentication required'});
+    return;
+  }
+
+  final r = await _pool.execute(
+    Sql.named('SELECT * FROM organization_users WHERE id = @id AND user_id = @userId AND role IN (\'pending_member\', \'pending_super_user\')'),
+    parameters: {'id': inviteId, 'userId': userId},
+  );
+  if (r.isEmpty) {
+    _jsonResponse(request, 404, {'error': 'Invite not found'});
+    return;
+  }
+  final cols = r.first.toColumnMap();
+  final orgId = cols['organization_id'] as int;
+  final pendingRole = cols['role'].toString();
+  final invitedBy = cols['invited_by'];
+  final finalRole = pendingRole == 'pending_super_user' ? 'super_user' : 'member';
+
+  await _pool.execute(
+    Sql.named('UPDATE organization_users SET role = @role WHERE id = @id'),
+    parameters: {'role': finalRole, 'id': inviteId},
+  );
+
+  final orgR = await _pool.execute(Sql.named('SELECT name FROM organizations WHERE id = @id'), parameters: {'id': orgId});
+  final orgName = orgR.isNotEmpty ? orgR.first.toColumnMap()['name'].toString() : 'Organization';
+  final userR = await _pool.execute(Sql.named('SELECT first_name, last_name, name FROM users WHERE id = @id'), parameters: {'id': userId});
+  final userName = userR.isNotEmpty ? '${userR.first.toColumnMap()['first_name'] ?? ''} ${userR.first.toColumnMap()['last_name'] ?? ''}'.trim() : 'User';
+  final displayName = userName.isNotEmpty ? userName : (userR.isNotEmpty ? userR.first.toColumnMap()['name'].toString() : 'User');
+
+  if (invitedBy != null) {
+    final inviterId = invitedBy as int;
+    final locale = await _getUserLocale(inviterId);
+    await _pool.execute(
+      Sql.named('''
+        INSERT INTO notifications (user_id, pet_id, type, title, message)
+        VALUES (@userId, '', 'general', @title, @message)
+      '''),
+      parameters: {
+        'userId': inviterId,
+        'title': _t(locale, 'org_invite_accepted', {'member': displayName}),
+        'message': _t(locale, 'org_invite_accepted_msg', {'member': displayName, 'org': orgName}),
+      },
+    );
+  }
+
+  _jsonResponse(request, 200, {'success': true, 'organization_id': orgId.toString()});
+}
+
+Future<void> _declineOrgInvite(HttpRequest request) async {
+  final path = request.uri.path;
+  final inviteId = int.parse(path.split('/')[4]);
+  final userId = _getUserIdFromRequest(request);
+  if (userId == null) {
+    _jsonResponse(request, 401, {'error': 'Authentication required'});
+    return;
+  }
+
+  final r = await _pool.execute(
+    Sql.named('SELECT * FROM organization_users WHERE id = @id AND user_id = @userId AND role IN (\'pending_member\', \'pending_super_user\')'),
+    parameters: {'id': inviteId, 'userId': userId},
+  );
+  if (r.isEmpty) {
+    _jsonResponse(request, 404, {'error': 'Invite not found'});
+    return;
+  }
+  final cols = r.first.toColumnMap();
+  final orgId = cols['organization_id'] as int;
+  final invitedBy = cols['invited_by'];
+
+  await _pool.execute(
+    Sql.named('DELETE FROM organization_users WHERE id = @id'),
+    parameters: {'id': inviteId},
+  );
+
+  final orgR = await _pool.execute(Sql.named('SELECT name FROM organizations WHERE id = @id'), parameters: {'id': orgId});
+  final orgName = orgR.isNotEmpty ? orgR.first.toColumnMap()['name'].toString() : 'Organization';
+  final userR = await _pool.execute(Sql.named('SELECT first_name, last_name, name FROM users WHERE id = @id'), parameters: {'id': userId});
+  final userName = userR.isNotEmpty ? '${userR.first.toColumnMap()['first_name'] ?? ''} ${userR.first.toColumnMap()['last_name'] ?? ''}'.trim() : 'User';
+  final displayName = userName.isNotEmpty ? userName : (userR.isNotEmpty ? userR.first.toColumnMap()['name'].toString() : 'User');
+
+  if (invitedBy != null) {
+    final inviterId = invitedBy as int;
+    final locale = await _getUserLocale(inviterId);
+    await _pool.execute(
+      Sql.named('''
+        INSERT INTO notifications (user_id, pet_id, type, title, message)
+        VALUES (@userId, '', 'general', @title, @message)
+      '''),
+      parameters: {
+        'userId': inviterId,
+        'title': _t(locale, 'org_invite_declined', {'member': displayName}),
+        'message': _t(locale, 'org_invite_declined_msg', {'member': displayName, 'org': orgName}),
+      },
+    );
+  }
+
+  _jsonResponse(request, 200, {'success': true});
 }
 
 Future<void> _joinOrganization(HttpRequest request) async {
