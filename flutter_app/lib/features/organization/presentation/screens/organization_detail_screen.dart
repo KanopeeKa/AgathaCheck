@@ -175,6 +175,7 @@ class _OrganizationDetailScreenState
       child: Semantics(
         label: '${org.name}, ${_localizedTypeLabel(l, org.type)}',
         child: Card(
+          color: AppTheme.orgBlueDarker,
           child: Padding(
             padding: const EdgeInsets.all(20),
             child: Column(
@@ -273,6 +274,7 @@ class _OrganizationDetailScreenState
     if (!hasContact) return const SizedBox.shrink();
 
     return Card(
+      color: AppTheme.orgBlueDarker,
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -295,6 +297,7 @@ class _OrganizationDetailScreenState
   Widget _buildMembersSection(BuildContext context, WidgetRef ref,
       AsyncValue membersAsync, bool isSuperUser, ThemeData theme, ColorScheme colorScheme, AppLocalizations l) {
     return Card(
+      color: AppTheme.orgBlueDarker,
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -374,6 +377,7 @@ class _OrganizationDetailScreenState
       AsyncValue petsAsync, bool isSuperUser,
       ThemeData theme, ColorScheme colorScheme, AppLocalizations l) {
     return Card(
+      color: AppTheme.orgBlueDarker,
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -484,6 +488,7 @@ class _OrganizationDetailScreenState
     return Semantics(
       label: l.orgArchived,
       child: Card(
+        color: AppTheme.orgBlueDarker,
         child: ListTile(
           key: const Key('org_view_archived'),
           leading: Icon(Icons.archive, color: colorScheme.onSurfaceVariant),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../../core/theme/app_theme.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../domain/entities/organization.dart';
 
@@ -34,6 +35,7 @@ class OrgCard extends StatelessWidget {
             '${l.memberCount(organization.memberCount)}, ${l.petCount(organization.petCount)}',
         child: Card(
           key: Key('org_card_${organization.id}'),
+          color: AppTheme.orgBlueDarker,
           clipBehavior: Clip.antiAlias,
           child: InkWell(
             onTap: onTap,
