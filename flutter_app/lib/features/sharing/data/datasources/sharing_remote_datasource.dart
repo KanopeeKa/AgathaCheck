@@ -138,6 +138,38 @@ class SharingRemoteDataSource {
     }
   }
 
+  Future<void> hideSharedPet(String petId, String token, {required bool hidden}) async {
+    final response = await _client.put(
+      Uri.parse('$baseUrl/api/share/$petId/hide'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+      body: json.encode({'hidden': hidden}),
+    );
+    if (response.statusCode >= 400) {
+      final data = json.decode(response.body);
+      throw Exception(data['error'] ?? 'Failed to update pet visibility');
+    }
+  }
+
+  Future<List<Map<String, dynamic>>> getHiddenSharedPets(String token) async {
+    final response = await _client.get(
+      Uri.parse('$baseUrl/api/share/hidden'),
+      headers: {
+        'Authorization': 'Bearer $token',
+      },
+    );
+    if (response.statusCode >= 400) {
+      return [];
+    }
+    final decoded = json.decode(response.body);
+    if (decoded is List) {
+      return decoded.cast<Map<String, dynamic>>();
+    }
+    return [];
+  }
+
   Future<void> declinePendingShare(String petId, String token) async {
     final response = await _client.post(
       Uri.parse('$baseUrl/api/share/pending/$petId/decline'),

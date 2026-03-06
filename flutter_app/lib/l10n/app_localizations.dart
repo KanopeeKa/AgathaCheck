@@ -3175,6 +3175,48 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Pending'**
   String get pendingInvite;
+
+  /// No description provided for @hideSharedPet.
+  ///
+  /// In en, this message translates to:
+  /// **'Hide Pet'**
+  String get hideSharedPet;
+
+  /// No description provided for @hide.
+  ///
+  /// In en, this message translates to:
+  /// **'Hide'**
+  String get hide;
+
+  /// No description provided for @unhide.
+  ///
+  /// In en, this message translates to:
+  /// **'Unhide'**
+  String get unhide;
+
+  /// No description provided for @hideSharedPetConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Hide {petName}? You won\'t see it in your list, events, or notifications. You can unhide it later from the organisation page.'**
+  String hideSharedPetConfirm(String petName);
+
+  /// No description provided for @petHidden.
+  ///
+  /// In en, this message translates to:
+  /// **'{petName} has been hidden'**
+  String petHidden(String petName);
+
+  /// No description provided for @petUnhidden.
+  ///
+  /// In en, this message translates to:
+  /// **'{petName} is now visible again'**
+  String petUnhidden(String petName);
+
+  /// No description provided for @hiddenSharedPets.
+  ///
+  /// In en, this message translates to:
+  /// **'Hidden Shared Pets'**
+  String get hiddenSharedPets;
 }
 
 class _AppLocalizationsDelegate

@@ -549,5 +549,16 @@
   "sharedPets": "Animaux partagés",
 
   "invited": "Invité(e)",
-  "pendingInvite": "En attente"
+  "pendingInvite": "En attente",
+
+  "hideSharedPet": "Masquer l'animal",
+  "hide": "Masquer",
+  "unhide": "Afficher",
+  "hideSharedPetConfirm": "Masquer {petName} ? Vous ne le verrez plus dans votre liste, vos événements ou vos notifications. Vous pourrez le réafficher depuis la page de l'organisation.",
+  "@hideSharedPetConfirm": { "placeholders": { "petName": { "type": "String" } } },
+  "petHidden": "{petName} a été masqué",
+  "@petHidden": { "placeholders": { "petName": { "type": "String" } } },
+  "petUnhidden": "{petName} est de nouveau visible",
+  "@petUnhidden": { "placeholders": { "petName": { "type": "String" } } },
+  "hiddenSharedPets": "Animaux partagés masqués"
 }

@@ -600,5 +600,16 @@
   "sharedPets": "Shared Pets",
 
   "invited": "Invited",
-  "pendingInvite": "Pending"
+  "pendingInvite": "Pending",
+
+  "hideSharedPet": "Hide Pet",
+  "hide": "Hide",
+  "unhide": "Unhide",
+  "hideSharedPetConfirm": "Hide {petName}? You won't see it in your list, events, or notifications. You can unhide it later from the organisation page.",
+  "@hideSharedPetConfirm": { "placeholders": { "petName": { "type": "String" } } },
+  "petHidden": "{petName} has been hidden",
+  "@petHidden": { "placeholders": { "petName": { "type": "String" } } },
+  "petUnhidden": "{petName} is now visible again",
+  "@petUnhidden": { "placeholders": { "petName": { "type": "String" } } },
+  "hiddenSharedPets": "Hidden Shared Pets"
 }

@@ -310,6 +310,7 @@ Future<void> main() async {
     )
   '''));
   await _pool.execute(Sql('ALTER TABLE pet_access ADD COLUMN IF NOT EXISTS target_organization_id INTEGER REFERENCES organizations(id)'));
+  await _pool.execute(Sql('ALTER TABLE pet_access ADD COLUMN IF NOT EXISTS hidden BOOLEAN NOT NULL DEFAULT FALSE'));
   print('pet_access table ready');
 
   await _pool.execute(Sql('''
@@ -738,6 +739,10 @@ Future<void> _handleApi(HttpRequest request) async {
     await _acceptPendingShare(request);
   } else if (RegExp(r'^/api/share/pending/[^/]+/decline$').hasMatch(path) && method == 'POST') {
     await _declinePendingShare(request);
+  } else if (path == '/api/share/hidden' && method == 'GET') {
+    await _getHiddenSharedPets(request);
+  } else if (RegExp(r'^/api/share/[^/]+/hide$').hasMatch(path) && method == 'PUT') {
+    await _toggleHideSharedPet(request);
   } else if (RegExp(r'^/api/share/[^/]+/accept$').hasMatch(path) && method == 'POST') {
     await _acceptShare(request);
   } else if (RegExp(r'^/api/share/[^/]+$').hasMatch(path) && method == 'GET') {
@@ -936,11 +941,11 @@ Future<void> _getAllPetsIncludingOrg(HttpRequest request) async {
 
   final sharedResult = await _pool.execute(
     Sql.named('''
-      SELECT p.*, pa.target_organization_id, torg.name AS target_org_name
+      SELECT p.*, pa.target_organization_id, torg.name AS target_org_name, pa.hidden AS pa_hidden
       FROM pets p
       INNER JOIN pet_access pa ON pa.pet_id = p.id AND pa.user_id = @userId AND pa.role = 'shared'
       LEFT JOIN organizations torg ON torg.id = pa.target_organization_id
-      WHERE p.user_id != @userId
+      WHERE p.user_id != @userId AND pa.hidden = FALSE
       ORDER BY p.created_at
     '''),
     parameters: {'userId': userId},
@@ -3052,6 +3057,68 @@ Future<void> _declinePendingShare(HttpRequest request) async {
   _jsonResponse(request, 200, {'message': 'Share declined'});
 }
 
+Future<void> _toggleHideSharedPet(HttpRequest request) async {
+  final payload = await _authenticateRequest(request);
+  if (payload == null) {
+    _jsonResponse(request, 401, {'error': 'Not authenticated'});
+    return;
+  }
+  final userId = int.parse(payload['sub'].toString());
+
+  final segments = request.uri.pathSegments;
+  final petId = segments[segments.length - 2];
+
+  final body = await _readJson(request);
+  final hidden = body != null && body['hidden'] == true;
+
+  final result = await _pool.execute(
+    Sql.named('UPDATE pet_access SET hidden = @hidden WHERE pet_id = @petId AND user_id = @userId AND role = \'shared\''),
+    parameters: {'petId': petId, 'userId': userId, 'hidden': hidden},
+  );
+
+  if (result.affectedRows == 0) {
+    _jsonResponse(request, 404, {'error': 'Shared pet not found'});
+    return;
+  }
+
+  _jsonResponse(request, 200, {'pet_id': petId, 'hidden': hidden});
+}
+
+Future<void> _getHiddenSharedPets(HttpRequest request) async {
+  final payload = await _authenticateRequest(request);
+  if (payload == null) {
+    _jsonResponse(request, 401, {'error': 'Not authenticated'});
+    return;
+  }
+  final userId = int.parse(payload['sub'].toString());
+
+  final result = await _pool.execute(
+    Sql.named('''
+      SELECT p.id, p.name, p.species, p.photo_path, pa.target_organization_id, torg.name AS target_org_name
+      FROM pets p
+      INNER JOIN pet_access pa ON pa.pet_id = p.id AND pa.user_id = @userId AND pa.role = 'shared' AND pa.hidden = TRUE
+      LEFT JOIN organizations torg ON torg.id = pa.target_organization_id
+      WHERE p.user_id != @userId
+      ORDER BY p.name
+    '''),
+    parameters: {'userId': userId},
+  );
+
+  final pets = result.map((row) {
+    final cols = row.toColumnMap();
+    return {
+      'id': cols['id']?.toString() ?? '',
+      'name': cols['name']?.toString() ?? '',
+      'species': cols['species']?.toString() ?? '',
+      'photo_path': cols['photo_path']?.toString() ?? '',
+      'organization_id': cols['target_organization_id']?.toString(),
+      'organization_name': cols['target_org_name']?.toString(),
+    };
+  }).toList();
+
+  _jsonResponse(request, 200, pets);
+}
+
 Future<Map<String, dynamic>> _petAccessRowToJson(ResultRow row) async {
   final cols = row.toColumnMap();
   final userId = cols['user_id'] as int;
@@ -3594,7 +3661,7 @@ Future<void> _checkDueNotifications(HttpRequest request) async {
       WHERE he.next_due_date <= NOW() + make_interval(days => he.remind_days_before)
       AND he.next_due_date IS NOT NULL
       AND (p.user_id = @userId
-           OR p.id::text IN (SELECT pet_id FROM pet_access WHERE user_id = @userId))
+           OR p.id::text IN (SELECT pet_id FROM pet_access WHERE user_id = @userId AND (hidden = FALSE OR hidden IS NULL)))
     '''),
     parameters: {'userId': userId},
   );

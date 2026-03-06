@@ -1686,4 +1686,31 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get pendingInvite => 'Pending';
+
+  @override
+  String get hideSharedPet => 'Hide Pet';
+
+  @override
+  String get hide => 'Hide';
+
+  @override
+  String get unhide => 'Unhide';
+
+  @override
+  String hideSharedPetConfirm(String petName) {
+    return 'Hide $petName? You won\'t see it in your list, events, or notifications. You can unhide it later from the organisation page.';
+  }
+
+  @override
+  String petHidden(String petName) {
+    return '$petName has been hidden';
+  }
+
+  @override
+  String petUnhidden(String petName) {
+    return '$petName is now visible again';
+  }
+
+  @override
+  String get hiddenSharedPets => 'Hidden Shared Pets';
 }

@@ -1693,4 +1693,31 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get pendingInvite => 'En attente';
+
+  @override
+  String get hideSharedPet => 'Masquer l\'animal';
+
+  @override
+  String get hide => 'Masquer';
+
+  @override
+  String get unhide => 'Afficher';
+
+  @override
+  String hideSharedPetConfirm(String petName) {
+    return 'Masquer $petName ? Vous ne le verrez plus dans votre liste, vos événements ou vos notifications. Vous pourrez le réafficher depuis la page de l\'organisation.';
+  }
+
+  @override
+  String petHidden(String petName) {
+    return '$petName a été masqué';
+  }
+
+  @override
+  String petUnhidden(String petName) {
+    return '$petName est de nouveau visible';
+  }
+
+  @override
+  String get hiddenSharedPets => 'Animaux partagés masqués';
 }

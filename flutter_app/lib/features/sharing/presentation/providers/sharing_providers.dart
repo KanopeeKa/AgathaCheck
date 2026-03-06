@@ -82,6 +82,68 @@ final pendingSharesProvider =
     AsyncNotifierProvider<PendingSharesNotifier, List<PendingShare>>(
         PendingSharesNotifier.new);
 
+class HiddenSharedPet {
+  final String id;
+  final String name;
+  final String species;
+  final String photoUrl;
+  final int? organizationId;
+  final String? organizationName;
+
+  const HiddenSharedPet({
+    required this.id,
+    required this.name,
+    required this.species,
+    required this.photoUrl,
+    this.organizationId,
+    this.organizationName,
+  });
+
+  factory HiddenSharedPet.fromJson(Map<String, dynamic> json) {
+    return HiddenSharedPet(
+      id: json['id']?.toString() ?? '',
+      name: json['name']?.toString() ?? '',
+      species: json['species']?.toString() ?? '',
+      photoUrl: (json['photo_url'] ?? json['photo_path'] ?? '').toString(),
+      organizationId: int.tryParse(json['organization_id']?.toString() ?? ''),
+      organizationName: json['organization_name']?.toString(),
+    );
+  }
+}
+
+class HiddenSharedPetsNotifier extends AsyncNotifier<List<HiddenSharedPet>> {
+  @override
+  Future<List<HiddenSharedPet>> build() async {
+    final token = await ref.read(authProvider.notifier).getValidAccessToken();
+    if (token == null) return [];
+    final ds = ref.read(sharingDataSourceProvider);
+    final rawList = await ds.getHiddenSharedPets(token);
+    return rawList.map((m) => HiddenSharedPet.fromJson(m)).toList();
+  }
+
+  Future<void> hideSharedPet(String petId) async {
+    final token = await ref.read(authProvider.notifier).getValidAccessToken();
+    if (token == null) return;
+    final ds = ref.read(sharingDataSourceProvider);
+    await ds.hideSharedPet(petId, token, hidden: true);
+    ref.invalidateSelf();
+    ref.invalidate(allPetsIncludingOrgProvider);
+  }
+
+  Future<void> unhideSharedPet(String petId) async {
+    final token = await ref.read(authProvider.notifier).getValidAccessToken();
+    if (token == null) return;
+    final ds = ref.read(sharingDataSourceProvider);
+    await ds.hideSharedPet(petId, token, hidden: false);
+    ref.invalidateSelf();
+    ref.invalidate(allPetsIncludingOrgProvider);
+  }
+}
+
+final hiddenSharedPetsProvider =
+    AsyncNotifierProvider<HiddenSharedPetsNotifier, List<HiddenSharedPet>>(
+        HiddenSharedPetsNotifier.new);
+
 final petAccessProvider =
     FutureProvider.family<List<PetAccess>, String>((ref, petId) async {
   final token = await ref.read(authProvider.notifier).getValidAccessToken();

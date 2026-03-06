@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../pet_profile/presentation/widgets/pet_card.dart';
+import '../../../sharing/presentation/providers/sharing_providers.dart';
 import '../../domain/entities/organization.dart';
 import '../../domain/entities/organization_member.dart';
 import '../providers/organization_providers.dart';
@@ -22,6 +23,7 @@ class OrganizationDetailScreen extends ConsumerStatefulWidget {
 class _OrganizationDetailScreenState
     extends ConsumerState<OrganizationDetailScreen> {
   bool _petsExpanded = true;
+  bool _hiddenExpanded = false;
 
   int get orgId => widget.orgId;
 
@@ -171,6 +173,8 @@ class _OrganizationDetailScreenState
               _buildPetsSection(context, ref, petsAsync, isSuperUser, theme, colorScheme, l),
               const SizedBox(height: 16),
               _buildArchivedSection(context, theme, colorScheme, l),
+              const SizedBox(height: 16),
+              _buildHiddenSharedPetsSection(context, ref, theme, colorScheme, l),
             ],
           ),
         );
@@ -522,6 +526,89 @@ class _OrganizationDetailScreenState
           title: Text(l.orgArchived),
           trailing: const Icon(Icons.chevron_right),
           onTap: () => context.push('/organizations/$orgId/archived'),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildHiddenSharedPetsSection(BuildContext context, WidgetRef ref,
+      ThemeData theme, ColorScheme colorScheme, AppLocalizations l) {
+    final hiddenAsync = ref.watch(hiddenSharedPetsProvider);
+    final hiddenPets = hiddenAsync.valueOrNull ?? [];
+    final orgHidden = hiddenPets.where((p) => p.organizationId == orgId).toList();
+    if (orgHidden.isEmpty) return const SizedBox.shrink();
+
+    return Card(
+      color: AppTheme.orgBlueDarker,
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            InkWell(
+              key: const Key('org_hidden_header'),
+              borderRadius: BorderRadius.circular(8),
+              onTap: () => setState(() => _hiddenExpanded = !_hiddenExpanded),
+              child: Row(
+                children: [
+                  Icon(Icons.visibility_off, size: 20, color: colorScheme.onSurfaceVariant),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(l.hiddenSharedPets,
+                        style: theme.textTheme.titleMedium?.copyWith(
+                            fontWeight: FontWeight.bold)),
+                  ),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                    decoration: BoxDecoration(
+                      color: colorScheme.surfaceContainerHighest,
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Text('${orgHidden.length}',
+                        style: theme.textTheme.labelSmall?.copyWith(
+                            color: colorScheme.onSurfaceVariant)),
+                  ),
+                  const SizedBox(width: 4),
+                  AnimatedRotation(
+                    turns: _hiddenExpanded ? 0.5 : 0.0,
+                    duration: const Duration(milliseconds: 200),
+                    child: Icon(Icons.expand_more,
+                        color: colorScheme.onSurfaceVariant),
+                  ),
+                ],
+              ),
+            ),
+            if (_hiddenExpanded) ...[
+              const SizedBox(height: 12),
+              ...orgHidden.map((pet) => Padding(
+                padding: const EdgeInsets.only(bottom: 8),
+                child: ListTile(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    side: BorderSide(color: colorScheme.outlineVariant),
+                  ),
+                  leading: CircleAvatar(
+                    backgroundColor: colorScheme.surfaceContainerHighest,
+                    child: Icon(Icons.pets, color: colorScheme.onSurfaceVariant),
+                  ),
+                  title: Text(pet.name),
+                  subtitle: Text(pet.species),
+                  trailing: TextButton.icon(
+                    icon: const Icon(Icons.visibility, size: 18),
+                    label: Text(l.unhide),
+                    onPressed: () async {
+                      await ref.read(hiddenSharedPetsProvider.notifier).unhideSharedPet(pet.id);
+                      if (context.mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text(l.petUnhidden(pet.name))),
+                        );
+                      }
+                    },
+                  ),
+                ),
+              )),
+            ],
+          ],
         ),
       ),
     );
