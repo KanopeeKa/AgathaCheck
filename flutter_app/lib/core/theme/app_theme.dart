@@ -11,6 +11,19 @@ class AppTheme {
   static const Color orgBlue = Color(0xFFE8F0FE);
   static const Color orgBlueDarker = Color(0xFFD3E3FD);
 
+  static const Color orgIconBg = Color(0xFFBBDEFB);
+  static const Color orgIconFg = Color(0xFF1565C0);
+  static const Color orgCharityBg = Color(0xFFB2DFDB);
+  static const Color orgCharityFg = Color(0xFF00695C);
+  static const Color orgBadgeBg = Color(0xFFE3F2FD);
+  static const Color orgBadgeFg = Color(0xFF1565C0);
+  static const Color orgCharityBadgeBg = Color(0xFFE0F2F1);
+  static const Color orgCharityBadgeFg = Color(0xFF00695C);
+  static const Color orgSuperUserBg = Color(0xFFFFF8E1);
+  static const Color orgSuperUserFg = Color(0xFFE65100);
+  static const Color orgChipBg = Color(0xFFE3F2FD);
+  static const Color orgChipFg = Color(0xFF1565C0);
+
   /// The light [ThemeData] for the application.
   ///
   /// Built from a [ColorScheme] seeded with purple, this theme

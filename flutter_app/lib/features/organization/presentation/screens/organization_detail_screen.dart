@@ -186,16 +186,16 @@ class _OrganizationDetailScreenState
                     CircleAvatar(
                       radius: 32,
                       backgroundColor: org.type == OrganizationType.professional
-                          ? colorScheme.primaryContainer
-                          : colorScheme.tertiaryContainer,
+                          ? AppTheme.orgIconBg
+                          : AppTheme.orgCharityBg,
                       child: Icon(
                         org.type == OrganizationType.professional
                             ? Icons.business
                             : Icons.volunteer_activism,
                         size: 32,
                         color: org.type == OrganizationType.professional
-                            ? colorScheme.onPrimaryContainer
-                            : colorScheme.onTertiaryContainer,
+                            ? AppTheme.orgIconFg
+                            : AppTheme.orgCharityFg,
                       ),
                     ),
                     const SizedBox(width: 16),
@@ -215,8 +215,8 @@ class _OrganizationDetailScreenState
                                 horizontal: 10, vertical: 4),
                             decoration: BoxDecoration(
                               color: org.type == OrganizationType.professional
-                                  ? colorScheme.primaryContainer
-                                  : colorScheme.tertiaryContainer,
+                                  ? AppTheme.orgBadgeBg
+                                  : AppTheme.orgCharityBadgeBg,
                               borderRadius: BorderRadius.circular(12),
                             ),
                             child: Text(
@@ -225,8 +225,8 @@ class _OrganizationDetailScreenState
                                 fontSize: 12,
                                 fontWeight: FontWeight.w600,
                                 color: org.type == OrganizationType.professional
-                                    ? colorScheme.onPrimaryContainer
-                                    : colorScheme.onTertiaryContainer,
+                                    ? AppTheme.orgBadgeFg
+                                    : AppTheme.orgCharityBadgeFg,
                               ),
                             ),
                           ),
@@ -321,11 +321,11 @@ class _OrganizationDetailScreenState
                   children: [
                     ...members.map((member) => ListTile(
                       leading: CircleAvatar(
-                        backgroundColor: colorScheme.secondaryContainer,
+                        backgroundColor: AppTheme.orgIconBg,
                         child: Text(
                           member.initials,
-                          style: TextStyle(
-                            color: colorScheme.onSecondaryContainer,
+                          style: const TextStyle(
+                            color: AppTheme.orgIconFg,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
@@ -337,8 +337,8 @@ class _OrganizationDetailScreenState
                             horizontal: 8, vertical: 2),
                         decoration: BoxDecoration(
                           color: member.role == OrgMemberRole.superUser
-                              ? Colors.amber.withAlpha(30)
-                              : colorScheme.surfaceContainerHighest,
+                              ? AppTheme.orgSuperUserBg
+                              : AppTheme.orgChipBg,
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: Text(
@@ -347,8 +347,8 @@ class _OrganizationDetailScreenState
                             fontSize: 11,
                             fontWeight: FontWeight.w600,
                             color: member.role == OrgMemberRole.superUser
-                                ? Colors.amber[800]
-                                : colorScheme.onSurfaceVariant,
+                                ? AppTheme.orgSuperUserFg
+                                : AppTheme.orgChipFg,
                           ),
                         ),
                       ),
@@ -754,18 +754,18 @@ class _StatChip extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
       decoration: BoxDecoration(
-        color: colorScheme.secondaryContainer,
+        color: AppTheme.orgChipBg,
         borderRadius: BorderRadius.circular(16),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, size: 16, color: colorScheme.onSecondaryContainer),
+          Icon(icon, size: 16, color: AppTheme.orgChipFg),
           const SizedBox(width: 4),
           Text(label,
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 13,
-                color: colorScheme.onSecondaryContainer,
+                color: AppTheme.orgChipFg,
                 fontWeight: FontWeight.w500,
               )),
         ],

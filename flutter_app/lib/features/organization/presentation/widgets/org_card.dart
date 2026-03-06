@@ -17,8 +17,8 @@ class OrgCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
     final l = AppLocalizations.of(context)!;
+    final isPro = organization.type == OrganizationType.professional;
 
     String typeLabel(OrganizationType type) {
       switch (type) {
@@ -45,16 +45,10 @@ class OrgCard extends StatelessWidget {
                 children: [
                   CircleAvatar(
                     radius: 28,
-                    backgroundColor: organization.type == OrganizationType.professional
-                        ? colorScheme.primaryContainer
-                        : colorScheme.tertiaryContainer,
+                    backgroundColor: isPro ? AppTheme.orgIconBg : AppTheme.orgCharityBg,
                     child: Icon(
-                      organization.type == OrganizationType.professional
-                          ? Icons.business
-                          : Icons.volunteer_activism,
-                      color: organization.type == OrganizationType.professional
-                          ? colorScheme.onPrimaryContainer
-                          : colorScheme.onTertiaryContainer,
+                      isPro ? Icons.business : Icons.volunteer_activism,
+                      color: isPro ? AppTheme.orgIconFg : AppTheme.orgCharityFg,
                     ),
                   ),
                   const SizedBox(width: 16),
@@ -78,20 +72,20 @@ class OrgCard extends StatelessWidget {
                                 padding: const EdgeInsets.symmetric(
                                     horizontal: 6, vertical: 2),
                                 decoration: BoxDecoration(
-                                  color: Colors.amber.withAlpha(30),
+                                  color: AppTheme.orgSuperUserBg,
                                   borderRadius: BorderRadius.circular(8),
                                 ),
                                 child: Row(
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
                                     Icon(Icons.star, size: 12,
-                                        color: Colors.amber[800]),
+                                        color: AppTheme.orgSuperUserFg),
                                     const SizedBox(width: 2),
                                     Text(
                                       l.orgSuperUser,
-                                      style: TextStyle(
+                                      style: const TextStyle(
                                         fontSize: 11,
-                                        color: Colors.amber[800],
+                                        color: AppTheme.orgSuperUserFg,
                                         fontWeight: FontWeight.w600,
                                       ),
                                     ),
@@ -104,22 +98,22 @@ class OrgCard extends StatelessWidget {
                         Row(
                           children: [
                             Icon(Icons.people_outline, size: 16,
-                                color: colorScheme.onSurfaceVariant),
+                                color: theme.colorScheme.onSurfaceVariant),
                             const SizedBox(width: 4),
                             Text(
                               l.memberCount(organization.memberCount),
                               style: theme.textTheme.bodySmall?.copyWith(
-                                color: colorScheme.onSurfaceVariant,
+                                color: theme.colorScheme.onSurfaceVariant,
                               ),
                             ),
                             const SizedBox(width: 12),
                             Icon(Icons.pets, size: 16,
-                                color: colorScheme.onSurfaceVariant),
+                                color: theme.colorScheme.onSurfaceVariant),
                             const SizedBox(width: 4),
                             Text(
                               l.petCount(organization.petCount),
                               style: theme.textTheme.bodySmall?.copyWith(
-                                color: colorScheme.onSurfaceVariant,
+                                color: theme.colorScheme.onSurfaceVariant,
                               ),
                             ),
                           ],
@@ -130,7 +124,7 @@ class OrgCard extends StatelessWidget {
                   ExcludeSemantics(
                     child: Icon(
                       Icons.chevron_right,
-                      color: colorScheme.onSurfaceVariant,
+                      color: theme.colorScheme.onSurfaceVariant,
                     ),
                   ),
                 ],
@@ -150,24 +144,19 @@ class _TypeBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
     final isPro = type == OrganizationType.professional;
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
       decoration: BoxDecoration(
-        color: isPro
-            ? colorScheme.primaryContainer
-            : colorScheme.tertiaryContainer,
+        color: isPro ? AppTheme.orgBadgeBg : AppTheme.orgCharityBadgeBg,
         borderRadius: BorderRadius.circular(8),
       ),
       child: Text(
         label,
         style: TextStyle(
           fontSize: 11,
-          color: isPro
-              ? colorScheme.onPrimaryContainer
-              : colorScheme.onTertiaryContainer,
+          color: isPro ? AppTheme.orgBadgeFg : AppTheme.orgCharityBadgeFg,
           fontWeight: FontWeight.w600,
         ),
       ),
