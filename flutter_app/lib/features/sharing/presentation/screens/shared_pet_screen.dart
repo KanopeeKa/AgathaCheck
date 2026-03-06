@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/foundation.dart' show kIsWeb;
 
+import '../../../../core/widgets/app_logo_title.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../auth/presentation/providers/auth_providers.dart';
 import '../providers/sharing_providers.dart';
@@ -80,7 +81,7 @@ class _SharedPetScreenState extends ConsumerState<SharedPetScreen> {
 
     if (_error != null || _petData == null) {
       return Scaffold(
-        appBar: AppBar(title: const Text('Shared Pet')),
+        appBar: AppBar(title: const AppLogoTitle(title: 'Shared Pet')),
         body: Center(
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -123,7 +124,7 @@ class _SharedPetScreenState extends ConsumerState<SharedPetScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(name),
+        title: AppLogoTitle(title: name),
         leading: IconButton(
           icon: const Icon(Icons.home),
           tooltip: 'Go to My Pets',

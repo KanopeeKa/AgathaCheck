@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
+import '../../../../core/widgets/app_logo_title.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../pet_profile/domain/entities/pet.dart';
 import '../../../pet_profile/presentation/providers/pet_providers.dart';
@@ -54,7 +55,7 @@ class _HealthDashboardScreenState extends ConsumerState<HealthDashboardScreen>
     final l = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
-        title: Text(l.events),
+        title: AppLogoTitle(title: l.events),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           tooltip: l.goBack,

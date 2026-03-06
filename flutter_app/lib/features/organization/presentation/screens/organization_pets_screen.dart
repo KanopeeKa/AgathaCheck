@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../core/widgets/app_logo_title.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../pet_profile/presentation/widgets/pet_card.dart';
 import '../providers/organization_providers.dart';
@@ -21,7 +22,7 @@ class OrganizationPetsScreen extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(l.orgPets),
+        title: AppLogoTitle(title: l.orgPets),
         leading: IconButton(
           key: const Key('org_pets_back'),
           icon: const Icon(Icons.arrow_back),

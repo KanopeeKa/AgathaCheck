@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../core/widgets/app_logo_title.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../domain/entities/organization_member.dart';
 import '../providers/organization_providers.dart';
@@ -22,7 +23,7 @@ class OrganizationMembersScreen extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(l.orgMembers),
+        title: AppLogoTitle(title: l.orgMembers),
         leading: IconButton(
           key: const Key('org_members_back'),
           icon: const Icon(Icons.arrow_back),

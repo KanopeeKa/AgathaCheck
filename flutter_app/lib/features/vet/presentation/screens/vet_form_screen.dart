@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../core/widgets/app_logo_title.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../pet_profile/domain/entities/pet.dart';
 import '../../../pet_profile/presentation/providers/pet_providers.dart';
@@ -80,7 +81,7 @@ class _VetFormScreenState extends ConsumerState<VetFormScreen> {
     final l = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
-        title: Text(_isEdit ? l.editVet : l.addVet),
+        title: AppLogoTitle(title: _isEdit ? l.editVet : l.addVet),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           tooltip: l.backToVets,

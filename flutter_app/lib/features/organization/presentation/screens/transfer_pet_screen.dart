@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../core/widgets/app_logo_title.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../providers/organization_providers.dart';
 
@@ -85,7 +86,7 @@ class _TransferPetScreenState extends ConsumerState<TransferPetScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(l.transferPet),
+        title: AppLogoTitle(title: l.transferPet),
         leading: IconButton(
           key: const Key('org_transfer_back'),
           icon: const Icon(Icons.arrow_back),

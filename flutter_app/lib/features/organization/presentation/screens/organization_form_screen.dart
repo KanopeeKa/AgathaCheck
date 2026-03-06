@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../core/widgets/app_logo_title.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../domain/entities/organization.dart';
 import '../providers/organization_providers.dart';
@@ -130,7 +131,7 @@ class _OrganizationFormScreenState
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(_isEditing ? l.editOrganization : l.createOrganization),
+        title: AppLogoTitle(title: _isEditing ? l.editOrganization : l.createOrganization),
         leading: IconButton(
           key: const Key('org_form_back'),
           icon: const Icon(Icons.arrow_back),

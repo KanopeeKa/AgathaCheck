@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
+import '../../../../core/widgets/app_logo_title.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../data/services/revenuecat_service.dart';
 import '../providers/subscription_providers.dart';
@@ -105,7 +106,7 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(l.subscriptionTitle),
+        title: AppLogoTitle(title: l.subscriptionTitle),
         centerTitle: true,
       ),
       body: _loading

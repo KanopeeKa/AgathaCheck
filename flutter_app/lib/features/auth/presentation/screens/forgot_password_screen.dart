@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/utils/constants.dart';
+import '../../../../core/widgets/app_logo_title.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../data/auth_service.dart';
 import '../providers/auth_providers.dart';
@@ -120,7 +121,7 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
           tooltip: l10n.backToSignIn,
           onPressed: () => context.go('/landing'),
         ),
-        title: Text(l10n.resetPassword),
+        title: AppLogoTitle(title: l10n.resetPassword),
       ),
       body: SafeArea(
         child: Center(

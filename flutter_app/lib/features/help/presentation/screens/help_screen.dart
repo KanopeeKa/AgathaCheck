@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../core/widgets/app_logo_title.dart';
 import '../../../../l10n/app_localizations.dart';
 
 /// A comprehensive Help & FAQ screen providing user-friendly documentation
@@ -31,7 +32,7 @@ class HelpScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(l.helpTitle),
+        title: AppLogoTitle(title: l.helpTitle),
       ),
       body: ListView(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),

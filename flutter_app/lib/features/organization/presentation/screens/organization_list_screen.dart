@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/theme/app_theme.dart';
+import '../../../../core/widgets/app_logo_title.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../auth/presentation/providers/auth_providers.dart';
 import '../../data/datasources/organization_remote_datasource.dart';
@@ -24,7 +25,7 @@ class OrganizationListScreen extends ConsumerWidget {
       backgroundColor: AppTheme.orgBlue,
       appBar: AppBar(
         backgroundColor: AppTheme.orgBlue,
-        title: Text(l.myOrganizations),
+        title: AppLogoTitle(title: l.myOrganizations),
         leading: IconButton(
           key: const Key('org_back_button'),
           icon: const Icon(Icons.arrow_back),

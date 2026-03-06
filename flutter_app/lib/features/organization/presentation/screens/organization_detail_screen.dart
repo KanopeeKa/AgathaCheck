@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/theme/app_theme.dart';
+import '../../../../core/widgets/app_logo_title.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../pet_profile/presentation/widgets/pet_card.dart';
 import '../../../sharing/presentation/providers/sharing_providers.dart';
@@ -63,14 +64,14 @@ class _OrganizationDetailScreenState
         body: Center(child: CircularProgressIndicator()),
       ),
       error: (e, _) => Scaffold(
-        appBar: AppBar(title: Text(l.organizations)),
+        appBar: AppBar(title: AppLogoTitle(title: l.organizations)),
         body: Center(child: Text('$e')),
       ),
       data: (orgs) {
         final org = orgs.where((o) => o.id == orgId).firstOrNull;
         if (org == null) {
           return Scaffold(
-            appBar: AppBar(title: Text(l.organizations)),
+            appBar: AppBar(title: AppLogoTitle(title: l.organizations)),
             body: const Center(child: Text('Not found')),
           );
         }
@@ -79,7 +80,7 @@ class _OrganizationDetailScreenState
           backgroundColor: AppTheme.orgBlue,
           appBar: AppBar(
             backgroundColor: AppTheme.orgBlue,
-            title: Text(org.name),
+            title: AppLogoTitle(title: org.name),
             leading: IconButton(
               key: const Key('org_detail_back'),
               icon: const Icon(Icons.arrow_back),

@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
+import '../../../../core/widgets/app_logo_title.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../domain/entities/app_notification.dart';
 import '../providers/notification_providers.dart';
@@ -33,7 +34,7 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(l.notifications),
+        title: AppLogoTitle(title: l.notifications),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           tooltip: l.goBack,

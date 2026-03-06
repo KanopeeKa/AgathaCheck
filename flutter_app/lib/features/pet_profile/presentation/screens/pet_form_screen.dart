@@ -7,6 +7,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 
 import '../../../../core/utils/constants.dart';
+import '../../../../core/widgets/app_logo_title.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../auth/presentation/providers/auth_providers.dart';
 import '../../../organization/domain/entities/organization_member.dart';
@@ -389,11 +390,11 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
       final petAsync = ref.watch(petByIdProvider(widget.petId!));
       return petAsync.when(
         loading: () => Scaffold(
-          appBar: AppBar(title: Text(l.editPetTitle)),
+          appBar: AppBar(title: AppLogoTitle(title: l.editPetTitle)),
           body: const Center(child: CircularProgressIndicator()),
         ),
         error: (e, _) => Scaffold(
-          appBar: AppBar(title: Text(l.editPetTitle)),
+          appBar: AppBar(title: AppLogoTitle(title: l.editPetTitle)),
           body: Center(child: Text('Error: $e')),
         ),
         data: (pet) {
@@ -417,7 +418,7 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
     final l = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
-        title: Text(_isEditing ? l.editPetTitle : l.addPetTitle),
+        title: AppLogoTitle(title: _isEditing ? l.editPetTitle : l.addPetTitle),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           tooltip: l.goBack,

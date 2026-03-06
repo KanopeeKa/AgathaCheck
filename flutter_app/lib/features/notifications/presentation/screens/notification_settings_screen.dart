@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../core/widgets/app_logo_title.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../domain/entities/notification_preferences.dart';
 import '../providers/notification_providers.dart';
@@ -46,7 +47,7 @@ class _NotificationSettingsScreenState
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(l.notificationSettings),
+        title: AppLogoTitle(title: l.notificationSettings),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           tooltip: 'Back to notifications',

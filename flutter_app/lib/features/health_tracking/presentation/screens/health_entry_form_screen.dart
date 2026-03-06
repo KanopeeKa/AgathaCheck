@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 
+import '../../../../core/widgets/app_logo_title.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../pet_profile/domain/entities/pet.dart';
 import '../../../pet_profile/presentation/providers/pet_providers.dart';
@@ -264,7 +265,7 @@ class _HealthEntryFormScreenState
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(_isEdit ? l.editEntry : l.addHealthEntry2),
+        title: AppLogoTitle(title: _isEdit ? l.editEntry : l.addHealthEntry2),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           tooltip: l.goBack,

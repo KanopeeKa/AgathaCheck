@@ -7,6 +7,7 @@ import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../../../../core/providers/locale_provider.dart';
+import '../../../../core/widgets/app_logo_title.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../providers/auth_providers.dart';
 
@@ -122,13 +123,13 @@ class _MyDetailsScreenState extends ConsumerState<MyDetailsScreen> {
 
     if (user == null) {
       return Scaffold(
-        appBar: AppBar(title: Text(l10n.myDetails)),
+        appBar: AppBar(title: AppLogoTitle(title: l10n.myDetails)),
         body: Center(child: Text(l10n.notLoggedIn)),
       );
     }
 
     return Scaffold(
-      appBar: AppBar(title: Text(l10n.myDetails)),
+      appBar: AppBar(title: AppLogoTitle(title: l10n.myDetails)),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Center(

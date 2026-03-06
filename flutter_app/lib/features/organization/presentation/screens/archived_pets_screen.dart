@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
+import '../../../../core/widgets/app_logo_title.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../domain/entities/archived_pet.dart';
 import '../providers/organization_providers.dart';
@@ -28,7 +29,7 @@ class ArchivedPetsScreen extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(l.archivedPets),
+        title: AppLogoTitle(title: l.archivedPets),
         leading: IconButton(
           key: const Key('org_archived_back'),
           icon: const Icon(Icons.arrow_back),

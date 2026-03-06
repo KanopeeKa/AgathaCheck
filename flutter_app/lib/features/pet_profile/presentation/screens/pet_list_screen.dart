@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
 import '../../../../core/utils/constants.dart';
+import '../../../../core/widgets/app_logo_title.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../auth/presentation/providers/auth_providers.dart';
 import '../../../health_tracking/domain/entities/health_entry.dart';
@@ -49,23 +50,7 @@ class _PetListScreenState extends ConsumerState<PetListScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            ClipRRect(
-              borderRadius: BorderRadius.circular(6),
-              child: Image.asset(
-                'assets/logo.png',
-                height: 32,
-                width: 32,
-                fit: BoxFit.cover,
-                semanticLabel: 'App logo',
-              ),
-            ),
-            const SizedBox(width: 8),
-            const Text(AppConstants.appTitle),
-          ],
-        ),
+        title: const AppLogoTitle(title: AppConstants.appTitle),
         actions: [
           Stack(
             children: [

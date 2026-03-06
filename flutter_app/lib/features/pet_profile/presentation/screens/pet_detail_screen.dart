@@ -9,6 +9,7 @@ import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:fl_chart/fl_chart.dart';
 import '../../../../core/utils/constants.dart';
+import '../../../../core/widgets/app_logo_title.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../data/services/pdf_saver.dart' as pdf_saver;
 import '../../../auth/presentation/providers/auth_providers.dart';
@@ -53,14 +54,14 @@ class _PetDetailScreenState extends ConsumerState<PetDetailScreen> {
         body: Center(child: CircularProgressIndicator()),
       ),
       error: (error, _) => Scaffold(
-        appBar: AppBar(title: Text(l.petDetails)),
+        appBar: AppBar(title: AppLogoTitle(title: l.petDetails)),
         body: Center(child: Text(l.errorWithMessage(error.toString()))),
       ),
       data: (pets) {
         final pet = pets.where((p) => p.id == widget.petId).firstOrNull;
         if (pet == null) {
           return Scaffold(
-            appBar: AppBar(title: Text(l.petDetails)),
+            appBar: AppBar(title: AppLogoTitle(title: l.petDetails)),
             body: Center(child: Text(l.petNotFound)),
           );
         }
@@ -77,7 +78,7 @@ class _PetDetailScreenState extends ConsumerState<PetDetailScreen> {
               SliverAppBar(
                 pinned: true,
                 backgroundColor: isOrgPet ? AppTheme.orgBlue : null,
-                title: Text(pet.name),
+                title: AppLogoTitle(title: pet.name),
                 leading: IconButton(
                   icon: const Icon(Icons.arrow_back),
                   tooltip: l.goBack,
