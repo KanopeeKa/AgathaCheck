@@ -672,7 +672,7 @@ class _OrganizationDetailScreenState
                     .leaveOrganization();
                 ref.invalidate(organizationListProvider);
                 if (context.mounted) {
-                  context.go('/my-details');
+                  context.go('/organizations');
                 }
               } catch (e) {
                 if (context.mounted) {
@@ -715,7 +715,7 @@ class _OrganizationDetailScreenState
                     .read(organizationListProvider.notifier)
                     .deleteOrganization(orgId);
                 if (context.mounted) {
-                  context.go('/my-details');
+                  context.go('/organizations');
                 }
               } catch (e) {
                 if (context.mounted) {
