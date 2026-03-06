@@ -6,8 +6,10 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'core/providers/locale_provider.dart';
 import 'core/router/app_router.dart';
+import 'core/services/consent_service.dart';
 import 'core/theme/app_theme.dart';
 import 'core/utils/constants.dart';
+import 'core/widgets/consent_banner.dart';
 import 'features/pet_profile/presentation/providers/pet_providers.dart';
 import 'features/subscription/data/services/revenuecat_service.dart';
 
@@ -47,6 +49,32 @@ class PetProfileApp extends ConsumerWidget {
         GlobalMaterialLocalizations.delegate,
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
+      ],
+      builder: (context, child) {
+        return _ConsentOverlay(child: child ?? const SizedBox.shrink());
+      },
+    );
+  }
+}
+
+class _ConsentOverlay extends ConsumerWidget {
+  const _ConsentOverlay({required this.child});
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final consent = ref.watch(consentServiceProvider);
+
+    return Stack(
+      children: [
+        child,
+        if (!consent.hasResponded)
+          Positioned(
+            left: 0,
+            right: 0,
+            bottom: 0,
+            child: const ConsentBanner(),
+          ),
       ],
     );
   }

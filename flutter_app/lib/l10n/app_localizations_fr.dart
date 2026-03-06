@@ -16,11 +16,11 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get appTagline =>
-      'Agatha Track organise la santé de votre animal, pour que vous n\'ayez pas à le faire.';
+      'Agatha Track organise la santé de vos animaux — que vous soyez un particulier, un refuge ou une organisation professionnelle.';
 
   @override
   String get appDescription =>
-      'Suivez les visites vétérinaires, les médicaments, le poids et les soins quotidiens dans un tableau de bord simple conçu pour les propriétaires d\'animaux occupés.';
+      'Suivez les visites vétérinaires, les médicaments, le poids et les soins quotidiens dans un tableau de bord simple. Créez des organisations pour collaborer avec votre équipe, partager des animaux et coordonner les soins sur tout votre réseau.';
 
   @override
   String get appCta =>
@@ -2145,4 +2145,289 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get faqLanguageA2 =>
       'Oui. Agatha Track inclut des fonctionnalités d\'accessibilité : étiquettes sémantiques pour les lecteurs d\'écran, infobulles sur tous les éléments interactifs, étiquetage approprié des champs de formulaire et support de la navigation au clavier.';
+
+  @override
+  String get consentBannerTitle => 'Votre vie privée compte';
+
+  @override
+  String get consentBannerMessage =>
+      'Nous utilisons des cookies et services essentiels pour faire fonctionner Agatha Track. Nous aimerions également définir des cookies optionnels pour l\'analyse et le marketing afin d\'améliorer votre expérience. Vous pouvez gérer vos préférences à tout moment.';
+
+  @override
+  String get consentAcceptAll => 'Tout accepter';
+
+  @override
+  String get consentManagePreferences => 'Gérer les préférences';
+
+  @override
+  String get consentSettings => 'Préférences de confidentialité';
+
+  @override
+  String get consentPreferencesDescription =>
+      'Choisissez les types de traitement de données auxquels vous consentez. Les services essentiels sont toujours actifs car ils sont nécessaires au fonctionnement de l\'application.';
+
+  @override
+  String get consentEssential => 'Essentiel';
+
+  @override
+  String get consentEssentialDescription =>
+      'Requis pour l\'authentification, le stockage des données et les fonctionnalités principales de l\'application. Ne peut pas être désactivé.';
+
+  @override
+  String get consentAnalytics => 'Analyse';
+
+  @override
+  String get consentAnalyticsDescription =>
+      'Nous aide à comprendre comment vous utilisez l\'application afin de l\'améliorer. Aucune donnée personnelle n\'est partagée avec des tiers.';
+
+  @override
+  String get consentMarketing => 'Marketing';
+
+  @override
+  String get consentMarketingDescription =>
+      'Nous permet de vous envoyer des mises à jour et offres pertinentes concernant les fonctionnalités et services d\'Agatha Track.';
+
+  @override
+  String get consentSavePreferences => 'Enregistrer les préférences';
+
+  @override
+  String get consentPreferencesSaved =>
+      'Préférences de confidentialité enregistrées';
+
+  @override
+  String consentLastUpdated(String timestamp) {
+    return 'Dernière mise à jour : $timestamp';
+  }
+
+  @override
+  String get aboutUs => 'À propos';
+
+  @override
+  String get aboutIntro =>
+      'Agatha Track aide les gardiens d\'animaux et les organisations à organiser la santé de leurs animaux. Suivez les visites vétérinaires, les médicaments, le poids et les soins quotidiens — que vous gériez un seul animal ou coordonniez toute une équipe.';
+
+  @override
+  String get privacyPolicy => 'Politique de confidentialité';
+
+  @override
+  String get termsOfService => 'Conditions d\'utilisation';
+
+  @override
+  String get appVersion => 'Version 1.0.0';
+
+  @override
+  String get version => 'Version';
+
+  @override
+  String get ppDataController => 'Responsable du traitement';
+
+  @override
+  String get ppDataControllerDesc =>
+      'Le responsable du traitement est chargé du traitement de vos données personnelles conformément au Règlement (UE) 2016/679 (Règlement général sur la protection des données, « RGPD »). Contactez-nous pour les coordonnées du responsable du traitement.';
+
+  @override
+  String get ppScope => 'Champ d\'application';
+
+  @override
+  String get ppScopeDesc =>
+      'Cette Politique de confidentialité s\'applique à l\'application Agatha Track, une plateforme de gestion d\'animaux disponible en tant qu\'application web, et décrit comment nous collectons, utilisons, stockons et protégeons vos données personnelles.';
+
+  @override
+  String get ppDataCollected => 'Données collectées';
+
+  @override
+  String get ppDataCollectedDesc =>
+      'Nous collectons les catégories de données suivantes :\n\n• Données de compte : adresse e-mail, mot de passe (haché), prénom, nom, nom d\'affichage, catégorie, bio, photo de profil, préférence de langue.\n• Données animaux : nom, espèce, race, date de naissance, sexe, numéro de puce/identification, assurance, photo, statut décédé.\n• Données de suivi santé : entrées de santé (médicaments, préventifs, visites véto), photos/pièces jointes, problèmes de santé, historique d\'administration.\n• Données de suivi du poids : entrées de poids (valeur, date, unité).\n• Données vétérinaires : nom, clinique, téléphone, e-mail, adresse.\n• Données d\'organisation : nom, type, description, adhésion, rôles, événements familiaux.\n• Données de partage : enregistrements d\'accès, liens de partage, invitations en attente.\n• Données de notification : notifications in-app, préférences de notification.\n• Données techniques : jetons d\'authentification JWT, préférences locales.';
+
+  @override
+  String get ppLegalBasis => 'Base juridique du traitement';
+
+  @override
+  String get ppLegalBasisDesc =>
+      'Nous traitons vos données personnelles sur les bases juridiques suivantes selon l\'article 6 du RGPD :\n\n• Consentement (Art. 6(1)(a)) : Pour les données facultatives telles que photos de profil, photos d\'animaux et bio.\n• Nécessité contractuelle (Art. 6(1)(b)) : Pour les données nécessaires à la fourniture du service.\n• Intérêt légitime (Art. 6(1)(f)) : Pour les mesures de sécurité et l\'amélioration du service.\n• Obligation légale (Art. 6(1)(c)) : Lorsque la loi applicable l\'exige.';
+
+  @override
+  String get ppHowWeUse => 'Comment nous utilisons vos données';
+
+  @override
+  String get ppHowWeUseDesc =>
+      'Nous utilisons vos données personnelles pour :\n\n• Fournir le Service : gérer votre compte, profils d\'animaux, dossiers de santé et toutes les fonctionnalités associées.\n• Générer des rapports : créer des rapports PDF pour les animaux.\n• Envoyer des notifications : délivrer des rappels et alertes in-app.\n• Gérer les abonnements : traiter les droits d\'abonnement via RevenueCat.\n• Assurer la sécurité : authentifier les utilisateurs, prévenir la fraude et maintenir l\'intégrité du service.';
+
+  @override
+  String get ppDataSharing => 'Partage de données et sous-traitants';
+
+  @override
+  String get ppDataSharingDesc =>
+      'Nous utilisons RevenueCat pour la gestion des abonnements (identifiant utilisateur, statut d\'abonnement). Nous ne vendons, ne louons ni n\'échangeons vos données personnelles avec des tiers. Nous pouvons divulguer vos données si la loi l\'exige.';
+
+  @override
+  String get ppInternationalTransfers => 'Transferts internationaux de données';
+
+  @override
+  String get ppInternationalTransfersDesc =>
+      'Lorsque des données sont transférées en dehors de l\'Espace économique européen (EEE), nous veillons à ce que des garanties adéquates soient en place, y compris les clauses contractuelles types de l\'UE (CCT) et les décisions d\'adéquation de la Commission européenne.';
+
+  @override
+  String get ppDataRetention => 'Conservation des données';
+
+  @override
+  String get ppDataRetentionDesc =>
+      'Les données de compte sont conservées pendant la durée de votre compte plus 30 jours après la suppression. Les profils d\'animaux, entrées de santé, entrées de poids et contacts vétérinaires sont conservés jusqu\'à suppression individuelle ou suppression du compte. Les notifications sont automatiquement purgées après 90 jours. Lorsque vous supprimez votre compte, toutes les données associées sont définitivement supprimées sous 30 jours.';
+
+  @override
+  String get ppYourRights => 'Vos droits (RGPD Art. 15–22)';
+
+  @override
+  String get ppYourRightsDesc =>
+      'En vertu du RGPD, vous avez le droit de :\n\n• Accéder à vos données personnelles (Art. 15)\n• Rectifier les données inexactes (Art. 16)\n• Effacer vos données — « Droit à l\'oubli » (Art. 17)\n• Limiter le traitement (Art. 18)\n• Portabilité des données dans un format lisible par machine (Art. 20)\n• S\'opposer au traitement (Art. 21)\n• Retirer votre consentement à tout moment (Art. 7(3))\n• Déposer une plainte auprès de votre autorité de protection des données (Art. 77)\n\nVous pouvez exercer ces droits via l\'écran Mon profil de l\'application ou en nous contactant directement. Nous répondrons sous 30 jours.';
+
+  @override
+  String get ppCookies => 'Cookies et stockage local';
+
+  @override
+  String get ppCookiesDesc =>
+      'L\'application utilise le stockage local (SharedPreferences) pour stocker les jetons d\'authentification, les préférences de langue, l\'état du consentement et les données de cache. Nous n\'utilisons pas de cookies de suivi tiers.';
+
+  @override
+  String get ppChildrensData => 'Données des enfants';
+
+  @override
+  String get ppChildrensDataDesc =>
+      'L\'application ne s\'adresse pas aux enfants de moins de 16 ans. Nous ne collectons pas sciemment de données personnelles d\'enfants de moins de 16 ans (RGPD Art. 8).';
+
+  @override
+  String get ppSecurity => 'Sécurité des données';
+
+  @override
+  String get ppSecurityDesc =>
+      'Nous mettons en œuvre des mesures techniques et organisationnelles appropriées pour protéger vos données, notamment le chiffrement en transit (TLS/HTTPS), le hachage des mots de passe (bcrypt), l\'authentification JWT, le contrôle d\'accès basé sur les rôles et les requêtes paramétrées en base de données.';
+
+  @override
+  String get ppChanges => 'Modifications de cette politique';
+
+  @override
+  String get ppChangesDesc =>
+      'Nous pouvons mettre à jour cette Politique de confidentialité de temps à autre. Nous vous informerons des changements importants par notification in-app ou en mettant à jour la date de dernière modification.';
+
+  @override
+  String get ppContact => 'Nous contacter';
+
+  @override
+  String get ppContactDesc =>
+      'Pour toute question, demande ou préoccupation concernant cette Politique de confidentialité ou nos pratiques de traitement des données, veuillez nous contacter via l\'application ou par e-mail.';
+
+  @override
+  String get tosAcceptance => 'Introduction et acceptation';
+
+  @override
+  String get tosAcceptanceDesc =>
+      'Ces Conditions d\'utilisation régissent votre accès et votre utilisation de l\'application Agatha Track. En créant un compte ou en utilisant l\'application, vous acceptez d\'être lié par ces Conditions. Si vous n\'êtes pas d\'accord, vous ne devez pas utiliser l\'application.';
+
+  @override
+  String get tosEligibility => 'Éligibilité';
+
+  @override
+  String get tosEligibilityDesc =>
+      'Vous devez avoir au moins 16 ans pour utiliser l\'application, conformément à l\'article 8 du RGPD. En créant un compte, vous déclarez remplir la condition d\'âge et avoir la capacité juridique d\'accepter ces Conditions.';
+
+  @override
+  String get tosAccountSecurity => 'Inscription et sécurité du compte';
+
+  @override
+  String get tosAccountSecurityDesc =>
+      'Pour utiliser l\'application, vous devez vous inscrire avec une adresse e-mail valide et un mot de passe. Vous êtes responsable de la confidentialité de vos identifiants de connexion et de toutes les activités effectuées sous votre compte.';
+
+  @override
+  String get tosServiceDescription => 'Description du service';
+
+  @override
+  String get tosServiceDescriptionDesc =>
+      'L\'application fournit la gestion de profils d\'animaux, le suivi de santé, le suivi du poids, les contacts vétérinaires, la gestion d\'organisations, le partage d\'animaux, les événements familiaux, les rapports d\'animaux, les notifications et la gestion d\'abonnements.';
+
+  @override
+  String get tosUserContent => 'Contenu utilisateur et responsabilités';
+
+  @override
+  String get tosUserContentDesc =>
+      'Vous conservez la propriété de tout contenu que vous téléchargez. En téléchargeant du contenu, vous nous accordez une licence limitée pour le stocker, le traiter et l\'afficher uniquement pour fournir le Service. Vous acceptez de ne pas télécharger de contenu illégal, nuisible ou contrefait. L\'application ne remplace pas les conseils vétérinaires professionnels.';
+
+  @override
+  String get tosProhibitedUses => 'Utilisations interdites';
+
+  @override
+  String get tosProhibitedUsesDesc =>
+      'Vous acceptez de ne pas utiliser l\'application à des fins illégales, de ne pas tenter d\'obtenir un accès non autorisé, d\'interférer avec l\'infrastructure, d\'utiliser des outils automatisés sans consentement, de désassembler toute partie de l\'application, ou de partager, vendre ou transférer votre compte sans notre consentement.';
+
+  @override
+  String get tosSubscriptions => 'Abonnements et paiements';
+
+  @override
+  String get tosSubscriptionsDesc =>
+      'Certaines fonctionnalités nécessitent un abonnement payant géré via RevenueCat. Les abonnements se renouvellent automatiquement sauf annulation avant la fin de la période de facturation en cours. Les remboursements sont régis par les politiques du magasin d\'applications concerné.';
+
+  @override
+  String get tosIntellectualProperty => 'Propriété intellectuelle';
+
+  @override
+  String get tosIntellectualPropertyDesc =>
+      'L\'application, y compris son design, son code, ses graphiques, logos et sa documentation, est protégée par le droit d\'auteur, les marques et autres lois sur la propriété intellectuelle. Nous vous accordons une licence limitée, non exclusive, non transférable et révocable pour utiliser l\'application conformément à ces Conditions.';
+
+  @override
+  String get tosLiability => 'Limitation de responsabilité';
+
+  @override
+  String get tosLiabilityDesc =>
+      'L\'application est fournie « en l\'état » sans garantie. Nous ne serons pas responsables des dommages indirects, accessoires, spéciaux ou consécutifs. Notre responsabilité totale ne dépassera pas le montant que vous avez payé au cours des douze mois précédant la réclamation. Pour les consommateurs de l\'UE, rien ne limite notre responsabilité en cas de décès, de blessure, de fraude ou de non-conformité en vertu de la Directive (UE) 2019/770.';
+
+  @override
+  String get tosTermination => 'Résiliation';
+
+  @override
+  String get tosTerminationDesc =>
+      'Vous pouvez résilier votre compte à tout moment via la fonction Supprimer le compte. Nous pouvons suspendre ou résilier votre accès si vous violez ces Conditions ou si la loi l\'exige. Avant la résiliation, vous pouvez exporter vos données via la fonction Exporter mes données (RGPD Art. 20).';
+
+  @override
+  String get tosGoverningLaw => 'Droit applicable et résolution des litiges';
+
+  @override
+  String get tosGoverningLawDesc =>
+      'Ces Conditions sont régies par le droit de l\'Union européenne et le droit national applicable. Pour les consommateurs de l\'UE, vous bénéficiez des lois impératives de protection des consommateurs de votre pays de résidence. Vous pouvez utiliser la plateforme de règlement en ligne des litiges (RLL) de la Commission européenne pour résoudre les litiges en ligne.';
+
+  @override
+  String get tosContact => 'Coordonnées';
+
+  @override
+  String get tosContactDesc =>
+      'Pour toute question concernant ces Conditions, veuillez nous contacter via l\'application ou par e-mail.';
+
+  @override
+  String get exportMyData => 'Exporter mes données';
+
+  @override
+  String get exportMyDataSubtitle =>
+      'Télécharger toutes vos données au format JSON';
+
+  @override
+  String get dataExported => 'Vos données ont été exportées';
+
+  @override
+  String get consentPreferences => 'Préférences de confidentialité';
+
+  @override
+  String get consentReset =>
+      'Préférences de consentement réinitialisées. La bannière de consentement apparaîtra au prochain lancement.';
+
+  @override
+  String get deleteAccount => 'Supprimer le compte';
+
+  @override
+  String get deleteAccountSubtitle =>
+      'Supprimer définitivement votre compte et toutes vos données';
+
+  @override
+  String get deleteAccountWarning =>
+      'Cette action est irréversible. Tous vos animaux, entrées de santé, relevés de poids, notifications et adhésions aux organisations seront définitivement supprimés. Entrez votre mot de passe pour confirmer.';
+
+  @override
+  String get error => 'Erreur';
 }

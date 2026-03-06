@@ -1,3 +1,5 @@
+import 'dart:convert';
+import 'dart:js_interop';
 import 'dart:typed_data';
 
 import 'package:flutter/foundation.dart' show kIsWeb;
@@ -5,10 +7,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:web/web.dart' as web;
 
 import '../../../../core/providers/locale_provider.dart';
 import '../../../../core/widgets/app_logo_title.dart';
 import '../../../../l10n/app_localizations.dart';
+import '../../data/auth_service.dart';
 import '../providers/auth_providers.dart';
 
 class MyDetailsScreen extends ConsumerStatefulWidget {
@@ -430,10 +435,147 @@ class _MyDetailsScreenState extends ConsumerState<MyDetailsScreen> {
                     ),
                   ),
                 ),
+                const SizedBox(height: 16),
+                Card(
+                  child: Column(
+                    children: [
+                      ListTile(
+                        leading: Icon(Icons.info_outline, color: theme.colorScheme.primary),
+                        title: Text(l10n.aboutUs),
+                        trailing: const Icon(Icons.chevron_right),
+                        onTap: () => context.push('/about'),
+                      ),
+                      const Divider(height: 1),
+                      ListTile(
+                        leading: Icon(Icons.download, color: theme.colorScheme.primary),
+                        title: Text(l10n.exportMyData),
+                        subtitle: Text(l10n.exportMyDataSubtitle),
+                        trailing: const Icon(Icons.chevron_right),
+                        onTap: () => _exportData(context),
+                      ),
+                      const Divider(height: 1),
+                      ListTile(
+                        leading: Icon(Icons.cookie_outlined, color: theme.colorScheme.primary),
+                        title: Text(l10n.consentSettings),
+                        subtitle: Text(l10n.consentManagePreferences),
+                        trailing: const Icon(Icons.chevron_right),
+                        onTap: () => context.push('/consent-settings'),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Card(
+                  color: theme.colorScheme.errorContainer.withAlpha(80),
+                  child: ListTile(
+                    leading: Icon(Icons.delete_forever, color: theme.colorScheme.error),
+                    title: Text(l10n.deleteAccount, style: TextStyle(color: theme.colorScheme.error)),
+                    subtitle: Text(l10n.deleteAccountSubtitle),
+                    trailing: Icon(Icons.chevron_right, color: theme.colorScheme.error),
+                    onTap: () => _showDeleteAccountDialog(context),
+                  ),
+                ),
+                const SizedBox(height: 32),
               ],
             ),
           ),
         ),
+      ),
+    );
+  }
+
+  Future<void> _exportData(BuildContext context) async {
+    final l10n = AppLocalizations.of(context)!;
+    final token = ref.read(authProvider).accessToken;
+    if (token == null) return;
+
+    try {
+      final authService = AuthService();
+      final data = await authService.exportData(token);
+      final jsonStr = const JsonEncoder.withIndent('  ').convert(data);
+      final bytes = utf8.encode(jsonStr);
+
+      if (kIsWeb) {
+        final blob = web.Blob(
+          [Uint8List.fromList(bytes).toJS].toJS,
+          web.BlobPropertyBag(type: 'application/json'),
+        );
+        final url = web.URL.createObjectURL(blob);
+        final anchor = web.document.createElement('a') as web.HTMLAnchorElement;
+        anchor.href = url;
+        anchor.download = 'agatha_track_export.json';
+        anchor.click();
+        web.URL.revokeObjectURL(url);
+      }
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(l10n.dataExported)),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('${l10n.error}: $e')),
+        );
+      }
+    }
+  }
+
+  void _showDeleteAccountDialog(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final passwordController = TextEditingController();
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(l10n.deleteAccount),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(l10n.deleteAccountWarning),
+            const SizedBox(height: 16),
+            TextField(
+              controller: passwordController,
+              obscureText: true,
+              decoration: InputDecoration(
+                labelText: l10n.currentPassword,
+                prefixIcon: const Icon(Icons.lock),
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: Text(l10n.cancel),
+          ),
+          FilledButton(
+            style: FilledButton.styleFrom(
+              backgroundColor: Theme.of(context).colorScheme.error,
+            ),
+            onPressed: () async {
+              final password = passwordController.text.trim();
+              if (password.isEmpty) return;
+              Navigator.pop(ctx);
+              try {
+                final token = ref.read(authProvider).accessToken;
+                if (token == null) return;
+                final authService = AuthService();
+                await authService.deleteAccount(token, password: password);
+                if (mounted) {
+                  ref.read(authProvider.notifier).logout();
+                  context.go('/landing');
+                }
+              } catch (e) {
+                if (mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('$e')),
+                  );
+                }
+              }
+            },
+            child: Text(l10n.deleteAccount),
+          ),
+        ],
       ),
     );
   }

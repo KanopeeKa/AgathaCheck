@@ -22,10 +22,14 @@ import '../../features/organization/presentation/screens/organization_members_sc
 import '../../features/organization/presentation/screens/organization_pets_screen.dart';
 import '../../features/organization/presentation/screens/transfer_pet_screen.dart';
 import '../../features/sharing/presentation/screens/shared_pet_screen.dart';
+import '../../features/about/presentation/screens/about_screen.dart';
+import '../../features/about/presentation/screens/privacy_policy_screen.dart';
+import '../../features/about/presentation/screens/terms_screen.dart';
 import '../../features/help/presentation/screens/help_screen.dart';
 import '../../features/subscription/presentation/screens/paywall_screen.dart';
 import '../../features/vet/presentation/screens/vet_form_screen.dart';
 import '../../features/vet/presentation/screens/vet_list_screen.dart';
+import '../widgets/consent_banner.dart';
 
 class AuthChangeNotifier extends ChangeNotifier {
   AuthState _authState;
@@ -106,6 +110,21 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: '/help',
         name: 'help',
         builder: (context, state) => const HelpScreen(),
+      ),
+      GoRoute(
+        path: '/about',
+        name: 'about',
+        builder: (context, state) => const AboutScreen(),
+      ),
+      GoRoute(
+        path: '/privacy-policy',
+        name: 'privacyPolicy',
+        builder: (context, state) => const PrivacyPolicyScreen(),
+      ),
+      GoRoute(
+        path: '/terms-of-service',
+        name: 'termsOfService',
+        builder: (context, state) => const TermsScreen(),
       ),
       GoRoute(
         path: '/add',
@@ -288,6 +307,11 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: '/archived-pets',
         name: 'userArchivedPets',
         builder: (context, state) => const ArchivedPetsScreen(),
+      ),
+      GoRoute(
+        path: '/consent-settings',
+        name: 'consentSettings',
+        builder: (context, state) => const ConsentSettingsScreen(),
       ),
     ],
     errorBuilder: (context, state) => Scaffold(

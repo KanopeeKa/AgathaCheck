@@ -113,13 +113,13 @@ abstract class AppLocalizations {
   /// No description provided for @appTagline.
   ///
   /// In en, this message translates to:
-  /// **'Agatha Track keeps your pet\'s health organized, so you don\'t have to.'**
+  /// **'Agatha Track keeps your pet\'s health organized — whether you\'re a pet parent, a shelter, or a professional organisation.'**
   String get appTagline;
 
   /// No description provided for @appDescription.
   ///
   /// In en, this message translates to:
-  /// **'Track vet visits, medications, weight, and daily care in one simple dashboard designed for busy pet parents.'**
+  /// **'Track vet visits, medications, weight, and daily care in one simple dashboard. Create organisations to collaborate with your team, share pets, and coordinate care across your entire network.'**
   String get appDescription;
 
   /// No description provided for @appCta.
@@ -3943,6 +3943,498 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Yes. Agatha Track includes accessibility features throughout: semantic labels for screen readers, tooltips on all interactive elements, proper form field labelling, and keyboard navigation support.'**
   String get faqLanguageA2;
+
+  /// No description provided for @consentBannerTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Your Privacy Matters'**
+  String get consentBannerTitle;
+
+  /// No description provided for @consentBannerMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'We use essential cookies and services to make Agatha Track work. We\'d also like to set optional cookies for analytics and marketing to improve your experience. You can manage your preferences at any time.'**
+  String get consentBannerMessage;
+
+  /// No description provided for @consentAcceptAll.
+  ///
+  /// In en, this message translates to:
+  /// **'Accept All'**
+  String get consentAcceptAll;
+
+  /// No description provided for @consentManagePreferences.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage Preferences'**
+  String get consentManagePreferences;
+
+  /// No description provided for @consentSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Privacy Preferences'**
+  String get consentSettings;
+
+  /// No description provided for @consentPreferencesDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose which types of data processing you consent to. Essential services are always active as they are required for the app to function.'**
+  String get consentPreferencesDescription;
+
+  /// No description provided for @consentEssential.
+  ///
+  /// In en, this message translates to:
+  /// **'Essential'**
+  String get consentEssential;
+
+  /// No description provided for @consentEssentialDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Required for authentication, data storage, and core app functionality. Cannot be disabled.'**
+  String get consentEssentialDescription;
+
+  /// No description provided for @consentAnalytics.
+  ///
+  /// In en, this message translates to:
+  /// **'Analytics'**
+  String get consentAnalytics;
+
+  /// No description provided for @consentAnalyticsDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Helps us understand how you use the app so we can improve it. No personal data is shared with third parties.'**
+  String get consentAnalyticsDescription;
+
+  /// No description provided for @consentMarketing.
+  ///
+  /// In en, this message translates to:
+  /// **'Marketing'**
+  String get consentMarketing;
+
+  /// No description provided for @consentMarketingDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Allows us to send you relevant updates and offers about Agatha Track features and services.'**
+  String get consentMarketingDescription;
+
+  /// No description provided for @consentSavePreferences.
+  ///
+  /// In en, this message translates to:
+  /// **'Save Preferences'**
+  String get consentSavePreferences;
+
+  /// No description provided for @consentPreferencesSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Privacy preferences saved'**
+  String get consentPreferencesSaved;
+
+  /// No description provided for @consentLastUpdated.
+  ///
+  /// In en, this message translates to:
+  /// **'Last updated: {timestamp}'**
+  String consentLastUpdated(String timestamp);
+
+  /// No description provided for @aboutUs.
+  ///
+  /// In en, this message translates to:
+  /// **'About Us'**
+  String get aboutUs;
+
+  /// No description provided for @aboutIntro.
+  ///
+  /// In en, this message translates to:
+  /// **'Agatha Track helps pet guardians and organisations keep their animals\' health organised. Track vet visits, medications, weight, and daily care — whether you manage one pet or coordinate across a whole team.'**
+  String get aboutIntro;
+
+  /// No description provided for @privacyPolicy.
+  ///
+  /// In en, this message translates to:
+  /// **'Privacy Policy'**
+  String get privacyPolicy;
+
+  /// No description provided for @termsOfService.
+  ///
+  /// In en, this message translates to:
+  /// **'Terms of Service'**
+  String get termsOfService;
+
+  /// No description provided for @appVersion.
+  ///
+  /// In en, this message translates to:
+  /// **'Version 1.0.0'**
+  String get appVersion;
+
+  /// No description provided for @version.
+  ///
+  /// In en, this message translates to:
+  /// **'Version'**
+  String get version;
+
+  /// No description provided for @ppDataController.
+  ///
+  /// In en, this message translates to:
+  /// **'Data Controller'**
+  String get ppDataController;
+
+  /// No description provided for @ppDataControllerDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'The data controller is responsible for processing your personal data in accordance with Regulation (EU) 2016/679 (General Data Protection Regulation, \"GDPR\"). Contact us for data controller details.'**
+  String get ppDataControllerDesc;
+
+  /// No description provided for @ppScope.
+  ///
+  /// In en, this message translates to:
+  /// **'Scope'**
+  String get ppScope;
+
+  /// No description provided for @ppScopeDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'This Privacy Policy applies to the Agatha Track application, a pet management platform available as a web application, and describes how we collect, use, store, and protect your personal data.'**
+  String get ppScopeDesc;
+
+  /// No description provided for @ppDataCollected.
+  ///
+  /// In en, this message translates to:
+  /// **'Data We Collect'**
+  String get ppDataCollected;
+
+  /// No description provided for @ppDataCollectedDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'We collect the following categories of data:\n\n• Account Data: email address, password (hashed), first name, last name, display name, category, bio, profile photo, locale preference.\n• Pet Data: pet name, species, breed, date of birth, sex, chip/microchip ID, insurance information, pet photo, passed-away status.\n• Health Tracking Data: health entries (medications, preventives, vet visits), photos/attachments, health issues, administration history.\n• Weight Tracking Data: weight entries (value, date, unit).\n• Veterinarian Contact Data: vet name, clinic, phone, email, address.\n• Organisation Data: organisation name, type, description, membership, roles, family events.\n• Sharing Data: pet access records, share links, pending invitations.\n• Notification Data: in-app notifications, notification preferences.\n• Technical Data: JWT authentication tokens, local preferences.'**
+  String get ppDataCollectedDesc;
+
+  /// No description provided for @ppLegalBasis.
+  ///
+  /// In en, this message translates to:
+  /// **'Legal Basis for Processing'**
+  String get ppLegalBasis;
+
+  /// No description provided for @ppLegalBasisDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'We process your personal data on the following legal bases under GDPR Article 6:\n\n• Consent (Art. 6(1)(a)): For optional data such as profile photos, pet photos, and bio text.\n• Contractual Necessity (Art. 6(1)(b)): For data required to provide the core service.\n• Legitimate Interest (Art. 6(1)(f)): For security measures and service improvement.\n• Legal Obligation (Art. 6(1)(c)): Where required by applicable law.'**
+  String get ppLegalBasisDesc;
+
+  /// No description provided for @ppHowWeUse.
+  ///
+  /// In en, this message translates to:
+  /// **'How We Use Your Data'**
+  String get ppHowWeUse;
+
+  /// No description provided for @ppHowWeUseDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'We use your personal data to:\n\n• Provide the Service: manage your account, pet profiles, health records, and all related features.\n• Generate Reports: create PDF pet reports.\n• Send Notifications: deliver in-app reminders and alerts.\n• Manage Subscriptions: process subscription entitlements via RevenueCat.\n• Ensure Security: authenticate users, prevent fraud, and maintain service integrity.'**
+  String get ppHowWeUseDesc;
+
+  /// No description provided for @ppDataSharing.
+  ///
+  /// In en, this message translates to:
+  /// **'Data Sharing and Sub-Processors'**
+  String get ppDataSharing;
+
+  /// No description provided for @ppDataSharingDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'We use RevenueCat for subscription management (User ID, subscription status). We do not sell, rent, or trade your personal data to third parties. We may disclose your data if required by law.'**
+  String get ppDataSharingDesc;
+
+  /// No description provided for @ppInternationalTransfers.
+  ///
+  /// In en, this message translates to:
+  /// **'International Data Transfers'**
+  String get ppInternationalTransfers;
+
+  /// No description provided for @ppInternationalTransfersDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Where data is transferred outside the European Economic Area (EEA), we ensure adequate safeguards are in place, including EU Standard Contractual Clauses (SCCs) and adequacy decisions by the European Commission.'**
+  String get ppInternationalTransfersDesc;
+
+  /// No description provided for @ppDataRetention.
+  ///
+  /// In en, this message translates to:
+  /// **'Data Retention'**
+  String get ppDataRetention;
+
+  /// No description provided for @ppDataRetentionDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Account data is retained for the duration of your account plus 30 days after deletion. Pet profiles, health entries, weight entries, and vet contacts are kept until individually deleted or account deletion. Notifications are auto-purged after 90 days. When you delete your account, all associated data is permanently removed within 30 days.'**
+  String get ppDataRetentionDesc;
+
+  /// No description provided for @ppYourRights.
+  ///
+  /// In en, this message translates to:
+  /// **'Your Rights (GDPR Art. 15–22)'**
+  String get ppYourRights;
+
+  /// No description provided for @ppYourRightsDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Under the GDPR, you have the right to:\n\n• Access your personal data (Art. 15)\n• Rectify inaccurate data (Art. 16)\n• Erase your data — \"Right to Be Forgotten\" (Art. 17)\n• Restrict processing (Art. 18)\n• Data portability in machine-readable format (Art. 20)\n• Object to processing (Art. 21)\n• Withdraw consent at any time (Art. 7(3))\n• Lodge a complaint with your local Data Protection Authority (Art. 77)\n\nYou can exercise these rights through the App\'s My Details screen or by contacting us directly. We will respond within 30 days.'**
+  String get ppYourRightsDesc;
+
+  /// No description provided for @ppCookies.
+  ///
+  /// In en, this message translates to:
+  /// **'Cookies and Local Storage'**
+  String get ppCookies;
+
+  /// No description provided for @ppCookiesDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'The App uses local storage (SharedPreferences) to store authentication tokens, locale preferences, consent state, and local cache data. We do not use third-party tracking cookies.'**
+  String get ppCookiesDesc;
+
+  /// No description provided for @ppChildrensData.
+  ///
+  /// In en, this message translates to:
+  /// **'Children\'s Data'**
+  String get ppChildrensData;
+
+  /// No description provided for @ppChildrensDataDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'The App is not directed at children under the age of 16. We do not knowingly collect personal data from children under 16 (GDPR Art. 8).'**
+  String get ppChildrensDataDesc;
+
+  /// No description provided for @ppSecurity.
+  ///
+  /// In en, this message translates to:
+  /// **'Data Security'**
+  String get ppSecurity;
+
+  /// No description provided for @ppSecurityDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'We implement appropriate technical and organisational measures to protect your data, including encryption in transit (TLS/HTTPS), password hashing (bcrypt), JWT-based authentication, role-based access control, and parameterised database queries.'**
+  String get ppSecurityDesc;
+
+  /// No description provided for @ppChanges.
+  ///
+  /// In en, this message translates to:
+  /// **'Changes to This Policy'**
+  String get ppChanges;
+
+  /// No description provided for @ppChangesDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'We may update this Privacy Policy from time to time. We will notify you of material changes via in-app notification or by updating the last updated date.'**
+  String get ppChangesDesc;
+
+  /// No description provided for @ppContact.
+  ///
+  /// In en, this message translates to:
+  /// **'Contact Us'**
+  String get ppContact;
+
+  /// No description provided for @ppContactDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'For any questions, requests, or concerns about this Privacy Policy or our data processing practices, please contact us through the App or via email.'**
+  String get ppContactDesc;
+
+  /// No description provided for @tosAcceptance.
+  ///
+  /// In en, this message translates to:
+  /// **'Introduction and Acceptance'**
+  String get tosAcceptance;
+
+  /// No description provided for @tosAcceptanceDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'These Terms of Service govern your access to and use of the Agatha Track application. By creating an account or using the App, you agree to be bound by these Terms. If you do not agree, you must not use the App.'**
+  String get tosAcceptanceDesc;
+
+  /// No description provided for @tosEligibility.
+  ///
+  /// In en, this message translates to:
+  /// **'Eligibility'**
+  String get tosEligibility;
+
+  /// No description provided for @tosEligibilityDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'You must be at least 16 years of age to use the App, in accordance with GDPR Article 8. By creating an account, you represent that you meet the age requirement and have the legal capacity to enter into these Terms.'**
+  String get tosEligibilityDesc;
+
+  /// No description provided for @tosAccountSecurity.
+  ///
+  /// In en, this message translates to:
+  /// **'Account Registration and Security'**
+  String get tosAccountSecurity;
+
+  /// No description provided for @tosAccountSecurityDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'To use the App, you must register with a valid email address and password. You are responsible for maintaining the confidentiality of your login credentials and all activities that occur under your account.'**
+  String get tosAccountSecurityDesc;
+
+  /// No description provided for @tosServiceDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Description of Service'**
+  String get tosServiceDescription;
+
+  /// No description provided for @tosServiceDescriptionDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'The App provides pet profile management, health tracking, weight tracking, veterinarian contacts, organisation management, pet sharing, family events, pet reports, notifications, and subscription management.'**
+  String get tosServiceDescriptionDesc;
+
+  /// No description provided for @tosUserContent.
+  ///
+  /// In en, this message translates to:
+  /// **'User Content and Responsibilities'**
+  String get tosUserContent;
+
+  /// No description provided for @tosUserContentDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'You retain ownership of all content you upload. By uploading content, you grant us a limited licence to store, process, and display it solely for providing the Service. You agree not to upload unlawful, harmful, or infringing content. The App is not a substitute for professional veterinary advice.'**
+  String get tosUserContentDesc;
+
+  /// No description provided for @tosProhibitedUses.
+  ///
+  /// In en, this message translates to:
+  /// **'Prohibited Uses'**
+  String get tosProhibitedUses;
+
+  /// No description provided for @tosProhibitedUsesDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'You agree not to use the App for any illegal purpose, attempt to gain unauthorised access, interfere with the App\'s infrastructure, use automated tools without consent, reverse engineer any part of the App, or share, sell, or transfer your account without our consent.'**
+  String get tosProhibitedUsesDesc;
+
+  /// No description provided for @tosSubscriptions.
+  ///
+  /// In en, this message translates to:
+  /// **'Subscriptions and Payments'**
+  String get tosSubscriptions;
+
+  /// No description provided for @tosSubscriptionsDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Certain features require a paid subscription managed through RevenueCat. Subscriptions auto-renew unless cancelled before the end of the current billing period. Refunds are governed by the applicable app store\'s policies.'**
+  String get tosSubscriptionsDesc;
+
+  /// No description provided for @tosIntellectualProperty.
+  ///
+  /// In en, this message translates to:
+  /// **'Intellectual Property'**
+  String get tosIntellectualProperty;
+
+  /// No description provided for @tosIntellectualPropertyDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'The App, including its design, code, graphics, logos, and documentation, is protected by copyright, trademark, and other intellectual property laws. We grant you a limited, non-exclusive, non-transferable, revocable licence to use the App in accordance with these Terms.'**
+  String get tosIntellectualPropertyDesc;
+
+  /// No description provided for @tosLiability.
+  ///
+  /// In en, this message translates to:
+  /// **'Limitation of Liability'**
+  String get tosLiability;
+
+  /// No description provided for @tosLiabilityDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'The App is provided \"as is\" without warranties. We shall not be liable for indirect, incidental, special, or consequential damages. Our total aggregate liability shall not exceed the amount paid by you in the twelve months preceding the claim. For EU consumers, nothing limits our liability for death, personal injury, fraud, or non-conformity under Directive (EU) 2019/770.'**
+  String get tosLiabilityDesc;
+
+  /// No description provided for @tosTermination.
+  ///
+  /// In en, this message translates to:
+  /// **'Termination'**
+  String get tosTermination;
+
+  /// No description provided for @tosTerminationDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'You may terminate your account at any time using the Delete Account feature. We may suspend or terminate your access if you breach these Terms or if required by law. Before terminating, you may export your data using the Export My Data feature (GDPR Art. 20).'**
+  String get tosTerminationDesc;
+
+  /// No description provided for @tosGoverningLaw.
+  ///
+  /// In en, this message translates to:
+  /// **'Governing Law and Dispute Resolution'**
+  String get tosGoverningLaw;
+
+  /// No description provided for @tosGoverningLawDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'These Terms are governed by applicable European Union and national law. For EU consumers, you benefit from mandatory consumer protection laws of your country of residence. You may use the European Commission\'s Online Dispute Resolution (ODR) platform to resolve disputes online.'**
+  String get tosGoverningLawDesc;
+
+  /// No description provided for @tosContact.
+  ///
+  /// In en, this message translates to:
+  /// **'Contact Information'**
+  String get tosContact;
+
+  /// No description provided for @tosContactDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'For questions about these Terms, please contact us through the App or via email.'**
+  String get tosContactDesc;
+
+  /// No description provided for @exportMyData.
+  ///
+  /// In en, this message translates to:
+  /// **'Export My Data'**
+  String get exportMyData;
+
+  /// No description provided for @exportMyDataSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Download all your data as a JSON file'**
+  String get exportMyDataSubtitle;
+
+  /// No description provided for @dataExported.
+  ///
+  /// In en, this message translates to:
+  /// **'Your data has been exported'**
+  String get dataExported;
+
+  /// No description provided for @consentPreferences.
+  ///
+  /// In en, this message translates to:
+  /// **'Privacy Preferences'**
+  String get consentPreferences;
+
+  /// No description provided for @consentReset.
+  ///
+  /// In en, this message translates to:
+  /// **'Consent preferences reset. The consent banner will appear on next launch.'**
+  String get consentReset;
+
+  /// No description provided for @deleteAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Account'**
+  String get deleteAccount;
+
+  /// No description provided for @deleteAccountSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Permanently delete your account and all data'**
+  String get deleteAccountSubtitle;
+
+  /// No description provided for @deleteAccountWarning.
+  ///
+  /// In en, this message translates to:
+  /// **'This action is irreversible. All your pets, health entries, weight records, notifications, and organisation memberships will be permanently deleted. Enter your password to confirm.'**
+  String get deleteAccountWarning;
+
+  /// No description provided for @error.
+  ///
+  /// In en, this message translates to:
+  /// **'Error'**
+  String get error;
 }
 
 class _AppLocalizationsDelegate

@@ -268,4 +268,31 @@ class AuthService {
     }
     return data['message'] as String;
   }
+
+  Future<String> deleteAccount(String accessToken, {required String password}) async {
+    final response = await _client.delete(
+      Uri.parse('$baseUrl/api/auth/me'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $accessToken',
+      },
+      body: json.encode({'password': password}),
+    );
+    final data = json.decode(response.body) as Map<String, dynamic>;
+    if (response.statusCode >= 400) {
+      throw Exception(data['error'] ?? 'Account deletion failed');
+    }
+    return data['message'] as String;
+  }
+
+  Future<Map<String, dynamic>> exportData(String accessToken) async {
+    final response = await _client.get(
+      Uri.parse('$baseUrl/api/auth/me/export'),
+      headers: {'Authorization': 'Bearer $accessToken'},
+    );
+    if (response.statusCode >= 400) {
+      throw Exception('Data export failed');
+    }
+    return json.decode(response.body) as Map<String, dynamic>;
+  }
 }

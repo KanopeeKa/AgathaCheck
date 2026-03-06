@@ -11,7 +11,7 @@
 //   POST /api/auth/change-password — Change password
 //
 // Environment variables:
-//   DATABASE_URL, PGHOST, PGPORT, PGDATABASE, PGUSER, PGPASSWORD
+//   DATABASE_URL  — PostgreSQL connection string (single source of truth)
 //   SESSION_SECRET — Used as JWT signing key
 
 import 'dart:convert';
@@ -125,6 +125,42 @@ const _translations = {
   },
 };
 
+(Endpoint, SslMode) _parseDbUrl(String url) {
+  final uri = Uri.parse(url);
+  final host = uri.host.isNotEmpty
+      ? uri.host
+      : (Platform.environment['PGHOST'] ?? 'localhost');
+  final port = uri.port != 0
+      ? uri.port
+      : int.parse(Platform.environment['PGPORT'] ?? '5432');
+  final database = uri.pathSegments.isNotEmpty
+      ? uri.pathSegments.first
+      : (Platform.environment['PGDATABASE'] ?? 'postgres');
+  final username = uri.userInfo.contains(':')
+      ? uri.userInfo.split(':').first
+      : (uri.userInfo.isNotEmpty
+          ? uri.userInfo
+          : (Platform.environment['PGUSER'] ?? 'postgres'));
+  final password = uri.userInfo.contains(':')
+      ? uri.userInfo.split(':').last
+      : (Platform.environment['PGPASSWORD'] ?? '');
+
+  final needsSsl =
+      url.contains('neon.tech') || url.contains('sslmode=require');
+  final sslMode = needsSsl ? SslMode.require : SslMode.disable;
+
+  return (
+    Endpoint(
+      host: host,
+      port: port,
+      database: database,
+      username: username,
+      password: password,
+    ),
+    sslMode,
+  );
+}
+
 Future<void> main() async {
   final portStr = Platform.environment['PORT'] ?? '5000';
   final port = int.parse(portStr);
@@ -137,16 +173,7 @@ Future<void> main() async {
 
   _jwtSecret = Platform.environment['SESSION_SECRET'] ?? 'dev-secret-change-me';
 
-  final endpoint = Endpoint(
-    host: Platform.environment['PGHOST'] ?? 'localhost',
-    port: int.parse(Platform.environment['PGPORT'] ?? '5432'),
-    database: Platform.environment['PGDATABASE'] ?? 'postgres',
-    username: Platform.environment['PGUSER'] ?? 'postgres',
-    password: Platform.environment['PGPASSWORD'] ?? '',
-  );
-
-  final needsSsl = dbUrl.contains('neon.tech') || dbUrl.contains('sslmode=require');
-  final sslMode = needsSsl ? SslMode.require : SslMode.disable;
+  final (endpoint, sslMode) = _parseDbUrl(dbUrl);
 
   _pool = Pool.withEndpoints(
     [endpoint],
@@ -155,7 +182,7 @@ Future<void> main() async {
       sslMode: sslMode,
     ),
   );
-  print('Connected to PostgreSQL (pool, ssl=$needsSsl)');
+  print('Connected to PostgreSQL (pool, ssl=${sslMode == SslMode.require})');
 
   await _pool.execute(Sql('''
     CREATE TABLE IF NOT EXISTS shared_pets (
@@ -481,6 +508,22 @@ Future<void> main() async {
   '''));
   print('family_events table ready');
 
+  await _pool.execute(Sql('''
+    DO \$\$ BEGIN
+      ALTER TABLE vets ADD COLUMN user_id INTEGER REFERENCES users(id) ON DELETE CASCADE;
+    EXCEPTION WHEN OTHERS THEN NULL;
+    END \$\$;
+  '''));
+  print('vets user_id column ready');
+
+  await _pool.execute(Sql('''
+    DO \$\$ BEGIN
+      ALTER TABLE pets ALTER COLUMN vet_id TYPE INTEGER USING vet_id::integer;
+    EXCEPTION WHEN OTHERS THEN NULL;
+    END \$\$;
+  '''));
+  print('pets vet_id type normalised');
+
   final uploadsDir = Directory('uploads');
   if (!uploadsDir.existsSync()) {
     uploadsDir.createSync(recursive: true);
@@ -635,6 +678,10 @@ Future<void> _handleApi(HttpRequest request) async {
     await _authForgotPassword(request);
   } else if (path == '/api/auth/reset-password' && method == 'POST') {
     await _authResetPassword(request);
+  } else if (path == '/api/auth/me' && method == 'DELETE') {
+    await _deleteAccount(request);
+  } else if (path == '/api/auth/me/export' && method == 'GET') {
+    await _exportUserData(request);
   }
   // Pets CRUD
   else if (path == '/api/pets/all' && method == 'GET') {
@@ -1534,6 +1581,166 @@ Future<void> _authChangePassword(HttpRequest request) async {
   _jsonResponse(request, 200, {'message': 'Password changed successfully. Please log in again.'});
 }
 
+Future<void> _deleteAccount(HttpRequest request) async {
+  final payload = await _authenticateRequest(request);
+  if (payload == null) {
+    _jsonResponse(request, 401, {'error': 'Not authenticated'});
+    return;
+  }
+
+  final body = await _readJson(request);
+  if (body == null) return;
+
+  final password = body['password'] as String? ?? '';
+  if (password.isEmpty) {
+    _jsonResponse(request, 400, {'error': 'Password is required to confirm account deletion'});
+    return;
+  }
+
+  final userId = int.parse(payload['sub'].toString());
+  final userResult = await _pool.execute(
+    Sql.named('SELECT password_hash FROM users WHERE id = @id'),
+    parameters: {'id': userId},
+  );
+  if (userResult.isEmpty) {
+    _jsonResponse(request, 404, {'error': 'User not found'});
+    return;
+  }
+
+  final hash = userResult.first.toColumnMap()['password_hash'].toString();
+  if (!_checkPassword(password, hash)) {
+    _jsonResponse(request, 401, {'error': 'Incorrect password'});
+    return;
+  }
+
+  final petResult = await _pool.execute(
+    Sql.named('SELECT id FROM pets WHERE user_id = @userId'),
+    parameters: {'userId': userId},
+  );
+  for (final row in petResult) {
+    final petId = row.toColumnMap()['id'].toString();
+    await _pool.execute(Sql.named('DELETE FROM health_issue_events WHERE health_issue_id IN (SELECT id FROM health_issues WHERE pet_id = @petId)'), parameters: {'petId': petId});
+    await _pool.execute(Sql.named('DELETE FROM health_issues WHERE pet_id = @petId'), parameters: {'petId': petId});
+    await _pool.execute(Sql.named('DELETE FROM health_event_photos WHERE event_id IN (SELECT id::text FROM health_entries WHERE pet_id = @petId)'), parameters: {'petId': petId});
+    await _pool.execute(Sql.named('DELETE FROM health_history WHERE entry_id IN (SELECT id FROM health_entries WHERE pet_id = @petId)'), parameters: {'petId': petId});
+    await _pool.execute(Sql.named('DELETE FROM health_entries WHERE pet_id = @petId'), parameters: {'petId': petId});
+    await _pool.execute(Sql.named('DELETE FROM weight_entries WHERE pet_id = @petId'), parameters: {'petId': petId});
+    await _pool.execute(Sql.named('DELETE FROM family_events WHERE pet_id = @petId'), parameters: {'petId': petId});
+    await _pool.execute(Sql.named('DELETE FROM pet_access WHERE pet_id = @petId'), parameters: {'petId': petId});
+    await _pool.execute(Sql.named('DELETE FROM shared_pets WHERE pet_id = @petId'), parameters: {'petId': petId});
+    await _pool.execute(Sql.named('DELETE FROM notifications WHERE pet_id = @petId'), parameters: {'petId': petId});
+  }
+  await _pool.execute(Sql.named('DELETE FROM pets WHERE user_id = @userId'), parameters: {'userId': userId});
+  await _pool.execute(Sql.named('DELETE FROM vets WHERE user_id = @userId'), parameters: {'userId': userId});
+  await _pool.execute(Sql.named('DELETE FROM notifications WHERE user_id = @userId'), parameters: {'userId': userId});
+  await _pool.execute(Sql.named('DELETE FROM notification_preferences WHERE user_id = @userId'), parameters: {'userId': userId});
+  await _pool.execute(Sql.named('DELETE FROM organization_users WHERE user_id = @userId'), parameters: {'userId': userId});
+  await _pool.execute(Sql.named('DELETE FROM refresh_tokens WHERE user_id = @userId'), parameters: {'userId': userId});
+  await _pool.execute(Sql.named('DELETE FROM password_reset_tokens WHERE user_id = @userId'), parameters: {'userId': userId});
+  await _pool.execute(Sql.named('DELETE FROM users WHERE id = @userId'), parameters: {'userId': userId});
+
+  _jsonResponse(request, 200, {'message': 'Account deleted successfully'});
+}
+
+Future<void> _exportUserData(HttpRequest request) async {
+  final payload = await _authenticateRequest(request);
+  if (payload == null) {
+    _jsonResponse(request, 401, {'error': 'Not authenticated'});
+    return;
+  }
+
+  final userId = int.parse(payload['sub'].toString());
+
+  final userResult = await _pool.execute(
+    Sql.named('SELECT id, email, name, first_name, last_name, category, bio, photo_url, locale, created_at, updated_at FROM users WHERE id = @id'),
+    parameters: {'id': userId},
+  );
+  if (userResult.isEmpty) {
+    _jsonResponse(request, 404, {'error': 'User not found'});
+    return;
+  }
+  final userCols = userResult.first.toColumnMap();
+  final userData = {
+    'id': userCols['id'],
+    'email': userCols['email']?.toString(),
+    'name': userCols['name']?.toString(),
+    'first_name': userCols['first_name']?.toString(),
+    'last_name': userCols['last_name']?.toString(),
+    'category': userCols['category']?.toString(),
+    'bio': userCols['bio']?.toString(),
+    'locale': userCols['locale']?.toString(),
+    'created_at': userCols['created_at']?.toString(),
+  };
+
+  final petResult = await _pool.execute(
+    Sql.named('SELECT * FROM pets WHERE user_id = @userId'),
+    parameters: {'userId': userId},
+  );
+  final pets = petResult.map(_petRowToJson).toList();
+
+  for (var i = 0; i < pets.length; i++) {
+    final petId = pets[i]['id'];
+    final healthResult = await _pool.execute(
+      Sql.named('SELECT * FROM health_entries WHERE pet_id = @petId'),
+      parameters: {'petId': petId},
+    );
+    pets[i]['health_entries'] = healthResult.map(_rowToMap).toList();
+
+    final weightResult = await _pool.execute(
+      Sql.named('SELECT * FROM weight_entries WHERE pet_id = @petId ORDER BY date'),
+      parameters: {'petId': petId},
+    );
+    pets[i]['weight_entries'] = weightResult.map((r) {
+      final c = r.toColumnMap();
+      return {'id': c['id'], 'date': c['date']?.toString(), 'weight': c['weight'], 'notes': c['notes']?.toString()};
+    }).toList();
+
+    final issueResult = await _pool.execute(
+      Sql.named('SELECT * FROM health_issues WHERE pet_id = @petId'),
+      parameters: {'petId': petId},
+    );
+    pets[i]['health_issues'] = issueResult.map((r) {
+      final c = r.toColumnMap();
+      return {'id': c['id'], 'title': c['title']?.toString(), 'description': c['description']?.toString(), 'start_date': c['start_date']?.toString(), 'end_date': c['end_date']?.toString()};
+    }).toList();
+  }
+
+  final vetResult = await _pool.execute(
+    Sql.named('SELECT * FROM vets WHERE user_id = @userId'),
+    parameters: {'userId': userId},
+  );
+  final vets = vetResult.map(_vetRowToMap).toList();
+
+  final notifResult = await _pool.execute(
+    Sql.named('SELECT * FROM notifications WHERE user_id = @userId ORDER BY created_at DESC LIMIT 200'),
+    parameters: {'userId': userId},
+  );
+  final notifications = notifResult.map((r) {
+    final c = r.toColumnMap();
+    return {'id': c['id'], 'title': c['title']?.toString(), 'message': c['message']?.toString(), 'type': c['type']?.toString(), 'is_read': c['is_read'], 'created_at': c['created_at']?.toString()};
+  }).toList();
+
+  final orgResult = await _pool.execute(
+    Sql.named('SELECT o.*, ou.role FROM organizations o INNER JOIN organization_users ou ON ou.organization_id = o.id WHERE ou.user_id = @userId'),
+    parameters: {'userId': userId},
+  );
+  final orgs = orgResult.map((r) {
+    final c = r.toColumnMap();
+    return {'id': c['id'], 'name': c['name']?.toString(), 'type': c['type']?.toString(), 'role': c['role']?.toString()};
+  }).toList();
+
+  final export = {
+    'exported_at': DateTime.now().toUtc().toIso8601String(),
+    'user': userData,
+    'pets': pets,
+    'vets': vets,
+    'notifications': notifications,
+    'organizations': orgs,
+  };
+
+  _jsonResponse(request, 200, export);
+}
+
 Future<void> _authForgotPassword(HttpRequest request) async {
   final body = await _readJson(request);
   if (body == null) return;
@@ -2180,18 +2387,29 @@ Future<void> _exportCsv(HttpRequest request) async {
 // ── Vets ─────────────────────────────────────────────────────
 
 Future<void> _getVets(HttpRequest request) async {
+  final userId = _getUserIdFromRequest(request);
+  if (userId == null) {
+    _jsonResponse(request, 401, {'error': 'Authentication required'});
+    return;
+  }
   final result = await _pool.execute(
-    Sql.named('SELECT * FROM vets ORDER BY name ASC'),
+    Sql.named('SELECT * FROM vets WHERE user_id = @userId OR user_id IS NULL ORDER BY name ASC'),
+    parameters: {'userId': userId},
   );
   final vets = result.map(_vetRowToMap).toList();
   _jsonResponse(request, 200, vets);
 }
 
 Future<void> _getVet(HttpRequest request) async {
+  final userId = _getUserIdFromRequest(request);
+  if (userId == null) {
+    _jsonResponse(request, 401, {'error': 'Authentication required'});
+    return;
+  }
   final id = request.uri.pathSegments.last;
   final result = await _pool.execute(
-    Sql.named('SELECT * FROM vets WHERE id = @id'),
-    parameters: {'id': int.tryParse(id) ?? 0},
+    Sql.named('SELECT * FROM vets WHERE id = @id AND (user_id = @userId OR user_id IS NULL)'),
+    parameters: {'id': int.tryParse(id) ?? 0, 'userId': userId},
   );
 
   if (result.isEmpty) {
@@ -2203,6 +2421,11 @@ Future<void> _getVet(HttpRequest request) async {
 }
 
 Future<void> _createVet(HttpRequest request) async {
+  final userId = _getUserIdFromRequest(request);
+  if (userId == null) {
+    _jsonResponse(request, 401, {'error': 'Authentication required'});
+    return;
+  }
   final body = await _readJson(request);
   if (body == null) return;
 
@@ -2214,11 +2437,12 @@ Future<void> _createVet(HttpRequest request) async {
 
   final result = await _pool.execute(
     Sql.named('''
-      INSERT INTO vets (name, phone, email, website, address, notes)
-      VALUES (@name, @phone, @email, @website, @address, @notes)
+      INSERT INTO vets (user_id, name, phone, email, website, address, notes)
+      VALUES (@userId, @name, @phone, @email, @website, @address, @notes)
       RETURNING *
     '''),
     parameters: {
+      'userId': userId,
       'name': name,
       'phone': body['phone'] as String? ?? '',
       'email': body['email'] as String? ?? '',
@@ -2232,13 +2456,18 @@ Future<void> _createVet(HttpRequest request) async {
 }
 
 Future<void> _updateVet(HttpRequest request) async {
+  final userId = _getUserIdFromRequest(request);
+  if (userId == null) {
+    _jsonResponse(request, 401, {'error': 'Authentication required'});
+    return;
+  }
   final id = request.uri.pathSegments.last;
   final body = await _readJson(request);
   if (body == null) return;
 
   final existing = await _pool.execute(
-    Sql.named('SELECT * FROM vets WHERE id = @id'),
-    parameters: {'id': int.tryParse(id) ?? 0},
+    Sql.named('SELECT * FROM vets WHERE id = @id AND (user_id = @userId OR user_id IS NULL)'),
+    parameters: {'id': int.tryParse(id) ?? 0, 'userId': userId},
   );
 
   if (existing.isEmpty) {
@@ -2254,11 +2483,12 @@ Future<void> _updateVet(HttpRequest request) async {
         name = @name, phone = @phone, email = @email,
         website = @website, address = @address, notes = @notes,
         updated_at = NOW()
-      WHERE id = @id
+      WHERE id = @id AND (user_id = @userId OR user_id IS NULL)
       RETURNING *
     '''),
     parameters: {
       'id': int.tryParse(id) ?? 0,
+      'userId': userId,
       'name': body['name'] ?? row['name'],
       'phone': body['phone'] ?? row['phone'],
       'email': body['email'] ?? row['email'],
@@ -2272,10 +2502,15 @@ Future<void> _updateVet(HttpRequest request) async {
 }
 
 Future<void> _deleteVet(HttpRequest request) async {
+  final userId = _getUserIdFromRequest(request);
+  if (userId == null) {
+    _jsonResponse(request, 401, {'error': 'Authentication required'});
+    return;
+  }
   final id = request.uri.pathSegments.last;
   final result = await _pool.execute(
-    Sql.named('DELETE FROM vets WHERE id = @id RETURNING id'),
-    parameters: {'id': int.tryParse(id) ?? 0},
+    Sql.named('DELETE FROM vets WHERE id = @id AND (user_id = @userId OR user_id IS NULL) RETURNING id'),
+    parameters: {'id': int.tryParse(id) ?? 0, 'userId': userId},
   );
 
   if (result.isEmpty) {
