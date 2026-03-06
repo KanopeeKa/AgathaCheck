@@ -57,7 +57,7 @@ class OrganizationDetailScreen extends ConsumerWidget {
               key: const Key('org_detail_back'),
               icon: const Icon(Icons.arrow_back),
               tooltip: MaterialLocalizations.of(context).backButtonTooltip,
-              onPressed: () => context.go('/organizations'),
+              onPressed: () => context.go('/my-details'),
             ),
             actions: [
               if (isSuperUser)
@@ -486,7 +486,7 @@ class OrganizationDetailScreen extends ConsumerWidget {
                     .leaveOrganization();
                 ref.invalidate(organizationListProvider);
                 if (context.mounted) {
-                  context.go('/organizations');
+                  context.go('/my-details');
                 }
               } catch (e) {
                 if (context.mounted) {
@@ -529,7 +529,7 @@ class OrganizationDetailScreen extends ConsumerWidget {
                     .read(organizationListProvider.notifier)
                     .deleteOrganization(orgId);
                 if (context.mounted) {
-                  context.go('/organizations');
+                  context.go('/my-details');
                 }
               } catch (e) {
                 if (context.mounted) {
