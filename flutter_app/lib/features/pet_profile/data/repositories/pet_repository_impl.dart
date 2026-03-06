@@ -17,7 +17,7 @@ class PetRepositoryImpl implements PetRepository {
   Future<List<Pet>> getAllPets() async {
     if (remoteDataSource != null && token != null && token!.isNotEmpty) {
       try {
-        final remotePets = await remoteDataSource!.getAllPets(token!);
+        final remotePets = await remoteDataSource!.getAllPetsIncludingOrg(token!);
         final localPets = await _localDataSource.getAllPets();
         final remoteIds = remotePets.map((p) => p.id).toSet();
         final merged = <PetModel>[];
@@ -42,6 +42,8 @@ class PetRepositoryImpl implements PetRepository {
               vetId: rp.vetId,
               colorValue: rp.colorValue,
               passedAway: rp.passedAway,
+              organizationId: rp.organizationId,
+              organizationName: rp.organizationName,
             ));
           } else {
             merged.add(rp);
