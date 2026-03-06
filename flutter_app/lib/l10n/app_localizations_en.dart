@@ -1658,4 +1658,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get sharedPets => 'Shared Pets';
+
+  @override
+  String get invited => 'Invited';
+
+  @override
+  String get pendingInvite => 'Pending';
 }

@@ -57,7 +57,9 @@ class OrganizationMember {
 
 enum OrgMemberRole {
   superUser,
-  member;
+  member,
+  pendingMember,
+  pendingSuperUser;
 
   String get label {
     switch (this) {
@@ -65,6 +67,14 @@ enum OrgMemberRole {
         return 'Super User';
       case OrgMemberRole.member:
         return 'Member';
+      case OrgMemberRole.pendingMember:
+        return 'Pending Member';
+      case OrgMemberRole.pendingSuperUser:
+        return 'Pending Super User';
     }
   }
+
+  bool get isPending =>
+      this == OrgMemberRole.pendingMember ||
+      this == OrgMemberRole.pendingSuperUser;
 }

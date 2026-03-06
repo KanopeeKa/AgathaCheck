@@ -590,5 +590,8 @@
   "declineShare": "Decline",
   "shareAccepted": "Share accepted",
   "shareDeclined": "Share declined",
-  "sharedPets": "Shared Pets"
+  "sharedPets": "Shared Pets",
+
+  "invited": "Invited",
+  "pendingInvite": "Pending"
 }

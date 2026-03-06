@@ -48,7 +48,10 @@ class OrganizationMemberModel extends OrganizationMember {
       'id': id,
       'organization_id': organizationId,
       'user_id': userId,
-      'role': role == OrgMemberRole.superUser ? 'super_user' : 'member',
+      'role': role == OrgMemberRole.superUser ? 'super_user'
+            : role == OrgMemberRole.pendingMember ? 'pending_member'
+            : role == OrgMemberRole.pendingSuperUser ? 'pending_super_user'
+            : 'member',
       if (invitedBy != null) 'invited_by': invitedBy,
       if (inviteCode != null) 'invite_code': inviteCode,
       if (inviteExpiresAt != null) 'invite_expires_at': inviteExpiresAt!.toIso8601String(),
@@ -65,6 +68,10 @@ class OrganizationMemberModel extends OrganizationMember {
     switch (value) {
       case 'super_user':
         return OrgMemberRole.superUser;
+      case 'pending_member':
+        return OrgMemberRole.pendingMember;
+      case 'pending_super_user':
+        return OrgMemberRole.pendingSuperUser;
       case 'member':
       default:
         return OrgMemberRole.member;

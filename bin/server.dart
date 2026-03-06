@@ -4381,7 +4381,7 @@ Future<void> _getOrgMembers(HttpRequest request) async {
         u.email, u.name, u.first_name, u.last_name, u.photo_url as user_photo_url
       FROM organization_users ou
       JOIN users u ON u.id = ou.user_id
-      WHERE ou.organization_id = @orgId AND ou.role IN ('super_user', 'member')
+      WHERE ou.organization_id = @orgId AND ou.role IN ('super_user', 'member', 'pending_member', 'pending_super_user')
       ORDER BY ou.created_at
     '''),
     parameters: {'orgId': orgId},

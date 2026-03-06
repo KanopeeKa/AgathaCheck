@@ -118,108 +118,129 @@ class _MemberCard extends ConsumerWidget {
     final colorScheme = theme.colorScheme;
     final l = AppLocalizations.of(context)!;
     final isMemberSuperUser = member.role == OrgMemberRole.superUser;
-    final roleLabel = isMemberSuperUser ? l.orgSuperUser : l.orgMember;
+    final isPending = member.role.isPending;
+    final roleLabel = isPending
+        ? l.invited
+        : isMemberSuperUser
+            ? l.orgSuperUser
+            : l.orgMember;
 
     return MergeSemantics(
       child: Semantics(
         label: '${member.displayName}, $roleLabel',
-        child: Card(
-          key: Key('org_member_card_${member.userId}'),
-          margin: const EdgeInsets.only(bottom: 8),
-          child: ListTile(
-            leading: CircleAvatar(
-              backgroundColor: isMemberSuperUser
-                  ? Colors.amber.withAlpha(40)
-                  : colorScheme.secondaryContainer,
-              child: Text(
-                member.initials,
-                style: TextStyle(
-                  color: isMemberSuperUser
-                      ? Colors.amber[800]
-                      : colorScheme.onSecondaryContainer,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-            title: Text(
-              member.displayName,
-              style: theme.textTheme.titleSmall?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            subtitle: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                if (member.email.isNotEmpty)
-                  Text(member.email,
-                      style: theme.textTheme.bodySmall?.copyWith(
-                        color: colorScheme.onSurfaceVariant,
-                      )),
-                const SizedBox(height: 4),
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 8, vertical: 2),
-                  decoration: BoxDecoration(
-                    color: isMemberSuperUser
-                        ? Colors.amber.withAlpha(30)
-                        : colorScheme.surfaceContainerHighest,
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      if (isMemberSuperUser)
-                        Icon(Icons.star, size: 12,
-                            color: Colors.amber[800]),
-                      if (isMemberSuperUser)
-                        const SizedBox(width: 4),
-                      Text(
-                        roleLabel,
+        child: Opacity(
+          opacity: isPending ? 0.7 : 1.0,
+          child: Card(
+            key: Key('org_member_card_${member.userId}'),
+            margin: const EdgeInsets.only(bottom: 8),
+            child: ListTile(
+              leading: CircleAvatar(
+                backgroundColor: isPending
+                    ? Colors.grey.shade300
+                    : isMemberSuperUser
+                        ? Colors.amber.withAlpha(40)
+                        : colorScheme.secondaryContainer,
+                child: isPending
+                    ? Icon(Icons.hourglass_empty, size: 18, color: Colors.grey.shade600)
+                    : Text(
+                        member.initials,
                         style: TextStyle(
-                          fontSize: 11,
-                          fontWeight: FontWeight.w600,
                           color: isMemberSuperUser
                               ? Colors.amber[800]
-                              : colorScheme.onSurfaceVariant,
+                              : colorScheme.onSecondaryContainer,
+                          fontWeight: FontWeight.bold,
                         ),
                       ),
-                    ],
-                  ),
+              ),
+              title: Text(
+                member.displayName,
+                style: theme.textTheme.titleSmall?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  fontStyle: isPending ? FontStyle.italic : null,
+                  color: isPending ? colorScheme.onSurfaceVariant : null,
                 ),
-              ],
+              ),
+              subtitle: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  if (member.email.isNotEmpty)
+                    Text(member.email,
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: colorScheme.onSurfaceVariant,
+                        )),
+                  const SizedBox(height: 4),
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 8, vertical: 2),
+                    decoration: BoxDecoration(
+                      color: isPending
+                          ? Colors.orange.withAlpha(30)
+                          : isMemberSuperUser
+                              ? Colors.amber.withAlpha(30)
+                              : colorScheme.surfaceContainerHighest,
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        if (isPending)
+                          Icon(Icons.schedule, size: 12,
+                              color: Colors.orange[800]),
+                        if (isMemberSuperUser && !isPending)
+                          Icon(Icons.star, size: 12,
+                              color: Colors.amber[800]),
+                        if (isMemberSuperUser || isPending)
+                          const SizedBox(width: 4),
+                        Text(
+                          roleLabel,
+                          style: TextStyle(
+                            fontSize: 11,
+                            fontWeight: FontWeight.w600,
+                            color: isPending
+                                ? Colors.orange[800]
+                                : isMemberSuperUser
+                                    ? Colors.amber[800]
+                                    : colorScheme.onSurfaceVariant,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              trailing: isSuperUser && !isPending
+                  ? PopupMenuButton<String>(
+                      key: Key('org_member_menu_${member.userId}'),
+                      tooltip: l.orgChangeRole,
+                      onSelected: (action) =>
+                          _handleAction(context, ref, action),
+                      itemBuilder: (context) => [
+                        PopupMenuItem(
+                          value: 'toggle_role',
+                          child: ListTile(
+                            leading: const Icon(Icons.swap_horiz),
+                            title: Text(isMemberSuperUser
+                                ? l.orgDemoteToMember
+                                : l.orgPromoteToSuperUser),
+                            dense: true,
+                            contentPadding: EdgeInsets.zero,
+                          ),
+                        ),
+                        PopupMenuItem(
+                          value: 'remove',
+                          child: ListTile(
+                            leading: const Icon(Icons.person_remove,
+                                color: Colors.red),
+                            title: Text(l.orgRemoveMember,
+                                style: const TextStyle(color: Colors.red)),
+                            dense: true,
+                            contentPadding: EdgeInsets.zero,
+                          ),
+                        ),
+                      ],
+                    )
+                  : null,
             ),
-            trailing: isSuperUser
-                ? PopupMenuButton<String>(
-                    key: Key('org_member_menu_${member.userId}'),
-                    tooltip: l.orgChangeRole,
-                    onSelected: (action) =>
-                        _handleAction(context, ref, action),
-                    itemBuilder: (context) => [
-                      PopupMenuItem(
-                        value: 'toggle_role',
-                        child: ListTile(
-                          leading: const Icon(Icons.swap_horiz),
-                          title: Text(isMemberSuperUser
-                              ? l.orgDemoteToMember
-                              : l.orgPromoteToSuperUser),
-                          dense: true,
-                          contentPadding: EdgeInsets.zero,
-                        ),
-                      ),
-                      PopupMenuItem(
-                        value: 'remove',
-                        child: ListTile(
-                          leading: const Icon(Icons.person_remove,
-                              color: Colors.red),
-                          title: Text(l.orgRemoveMember,
-                              style: const TextStyle(color: Colors.red)),
-                          dense: true,
-                          contentPadding: EdgeInsets.zero,
-                        ),
-                      ),
-                    ],
-                  )
-                : null,
           ),
         ),
       ),

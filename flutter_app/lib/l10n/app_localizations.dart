@@ -3121,6 +3121,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Shared Pets'**
   String get sharedPets;
+
+  /// No description provided for @invited.
+  ///
+  /// In en, this message translates to:
+  /// **'Invited'**
+  String get invited;
+
+  /// No description provided for @pendingInvite.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending'**
+  String get pendingInvite;
 }
 
 class _AppLocalizationsDelegate

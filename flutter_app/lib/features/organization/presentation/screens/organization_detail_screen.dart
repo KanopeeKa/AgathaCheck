@@ -34,8 +34,16 @@ class _OrganizationDetailScreenState
     }
   }
 
-  String _localizedRoleLabel(AppLocalizations l, String role) {
-    return role == 'super_user' ? l.orgSuperUser : l.orgMember;
+  String _localizedRoleLabel(AppLocalizations l, OrgMemberRole role) {
+    switch (role) {
+      case OrgMemberRole.superUser:
+        return l.orgSuperUser;
+      case OrgMemberRole.pendingMember:
+      case OrgMemberRole.pendingSuperUser:
+        return l.invited;
+      case OrgMemberRole.member:
+        return l.orgMember;
+    }
   }
 
   @override
@@ -319,41 +327,60 @@ class _OrganizationDetailScreenState
               data: (members) {
                 return Column(
                   children: [
-                    ...members.map((member) => ListTile(
-                      leading: CircleAvatar(
-                        backgroundColor: AppTheme.orgIconBg,
-                        child: Text(
-                          member.initials,
-                          style: const TextStyle(
-                            color: AppTheme.orgIconFg,
-                            fontWeight: FontWeight.bold,
+                    ...members.map((member) {
+                      final isPending = member.role.isPending;
+                      return Opacity(
+                        opacity: isPending ? 0.7 : 1.0,
+                        child: ListTile(
+                          leading: CircleAvatar(
+                            backgroundColor: isPending
+                                ? Colors.grey.shade300
+                                : AppTheme.orgIconBg,
+                            child: isPending
+                                ? Icon(Icons.hourglass_empty, size: 18, color: Colors.grey.shade600)
+                                : Text(
+                                    member.initials,
+                                    style: const TextStyle(
+                                      color: AppTheme.orgIconFg,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
                           ),
-                        ),
-                      ),
-                      title: Text(member.displayName),
-                      subtitle: Text(member.email),
-                      trailing: Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 8, vertical: 2),
-                        decoration: BoxDecoration(
-                          color: member.role == OrgMemberRole.superUser
-                              ? AppTheme.orgSuperUserBg
-                              : AppTheme.orgChipBg,
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: Text(
-                          _localizedRoleLabel(l, member.role == OrgMemberRole.superUser ? 'super_user' : 'member'),
-                          style: TextStyle(
-                            fontSize: 11,
-                            fontWeight: FontWeight.w600,
-                            color: member.role == OrgMemberRole.superUser
-                                ? AppTheme.orgSuperUserFg
-                                : AppTheme.orgChipFg,
+                          title: Text(
+                            member.displayName,
+                            style: isPending
+                                ? TextStyle(fontStyle: FontStyle.italic, color: theme.colorScheme.onSurfaceVariant)
+                                : null,
                           ),
+                          subtitle: Text(member.email),
+                          trailing: Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 8, vertical: 2),
+                            decoration: BoxDecoration(
+                              color: isPending
+                                  ? Colors.orange.withAlpha(30)
+                                  : member.role == OrgMemberRole.superUser
+                                      ? AppTheme.orgSuperUserBg
+                                      : AppTheme.orgChipBg,
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Text(
+                              _localizedRoleLabel(l, member.role),
+                              style: TextStyle(
+                                fontSize: 11,
+                                fontWeight: FontWeight.w600,
+                                color: isPending
+                                    ? Colors.orange.shade800
+                                    : member.role == OrgMemberRole.superUser
+                                        ? AppTheme.orgSuperUserFg
+                                        : AppTheme.orgChipFg,
+                              ),
+                            ),
+                          ),
+                          dense: true,
                         ),
-                      ),
-                      dense: true,
-                    )),
+                      );
+                    }),
                     if (isSuperUser) ...[
                       const Divider(),
                       OutlinedButton.icon(

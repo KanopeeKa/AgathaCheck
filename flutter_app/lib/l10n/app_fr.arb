@@ -539,5 +539,8 @@
   "declineShare": "Refuser",
   "shareAccepted": "Partage accepté",
   "shareDeclined": "Partage refusé",
-  "sharedPets": "Animaux partagés"
+  "sharedPets": "Animaux partagés",
+
+  "invited": "Invité(e)",
+  "pendingInvite": "En attente"
 }
