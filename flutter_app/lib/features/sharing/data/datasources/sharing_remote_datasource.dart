@@ -121,13 +121,16 @@ class SharingRemoteDataSource {
     return [];
   }
 
-  Future<void> acceptPendingShare(String petId, String token) async {
+  Future<void> acceptPendingShare(String petId, String token, {int? organizationId}) async {
     final response = await _client.post(
       Uri.parse('$baseUrl/api/share/pending/$petId/accept'),
       headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer $token',
       },
+      body: json.encode({
+        if (organizationId != null) 'organization_id': organizationId,
+      }),
     );
     if (response.statusCode >= 400) {
       final data = json.decode(response.body);

@@ -1670,6 +1670,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get shareAccepted => 'Share accepted';
 
   @override
+  String get acceptShareTo => 'Accept pet to…';
+
+  @override
+  String get acceptShareToHint => 'Choose where this shared pet should appear.';
+
+  @override
   String get shareDeclined => 'Share declined';
 
   @override

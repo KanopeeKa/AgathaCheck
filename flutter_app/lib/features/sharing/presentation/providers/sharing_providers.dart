@@ -60,11 +60,11 @@ class PendingSharesNotifier extends AsyncNotifier<List<PendingShare>> {
     return rawList.map((m) => PendingShare.fromJson(m)).toList();
   }
 
-  Future<void> acceptShare(String petId) async {
+  Future<void> acceptShare(String petId, {int? organizationId}) async {
     final token = await ref.read(authProvider.notifier).getValidAccessToken();
     if (token == null) return;
     final ds = ref.read(sharingDataSourceProvider);
-    await ds.acceptPendingShare(petId, token);
+    await ds.acceptPendingShare(petId, token, organizationId: organizationId);
     ref.invalidateSelf();
     ref.invalidate(allPetsIncludingOrgProvider);
   }

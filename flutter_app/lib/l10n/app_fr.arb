@@ -543,6 +543,8 @@
   "acceptShare": "Accepter",
   "declineShare": "Refuser",
   "shareAccepted": "Partage accepté",
+  "acceptShareTo": "Accepter l'animal dans…",
+  "acceptShareToHint": "Choisissez où cet animal partagé doit apparaître.",
   "shareDeclined": "Partage refusé",
   "sharedPets": "Animaux partagés",
 

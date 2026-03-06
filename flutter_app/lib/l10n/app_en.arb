@@ -594,6 +594,8 @@
   "acceptShare": "Accept",
   "declineShare": "Decline",
   "shareAccepted": "Share accepted",
+  "acceptShareTo": "Accept pet to…",
+  "acceptShareToHint": "Choose where this shared pet should appear.",
   "shareDeclined": "Share declined",
   "sharedPets": "Shared Pets",
 

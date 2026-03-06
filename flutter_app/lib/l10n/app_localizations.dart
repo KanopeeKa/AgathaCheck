@@ -3140,6 +3140,18 @@ abstract class AppLocalizations {
   /// **'Share accepted'**
   String get shareAccepted;
 
+  /// No description provided for @acceptShareTo.
+  ///
+  /// In en, this message translates to:
+  /// **'Accept pet to…'**
+  String get acceptShareTo;
+
+  /// No description provided for @acceptShareToHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose where this shared pet should appear.'**
+  String get acceptShareToHint;
+
   /// No description provided for @shareDeclined.
   ///
   /// In en, this message translates to:

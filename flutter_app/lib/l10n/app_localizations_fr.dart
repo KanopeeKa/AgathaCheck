@@ -1676,6 +1676,13 @@ class AppLocalizationsFr extends AppLocalizations {
   String get shareAccepted => 'Partage accepté';
 
   @override
+  String get acceptShareTo => 'Accepter l\'animal dans…';
+
+  @override
+  String get acceptShareToHint =>
+      'Choisissez où cet animal partagé doit apparaître.';
+
+  @override
   String get shareDeclined => 'Partage refusé';
 
   @override

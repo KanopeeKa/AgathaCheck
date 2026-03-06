@@ -304,10 +304,12 @@ Future<void> main() async {
       role VARCHAR(20) NOT NULL DEFAULT 'shared',
       invited_by INTEGER REFERENCES users(id),
       share_code VARCHAR(12) UNIQUE,
+      target_organization_id INTEGER REFERENCES organizations(id),
       created_at TIMESTAMPTZ DEFAULT NOW(),
       UNIQUE(pet_id, user_id)
     )
   '''));
+  await _pool.execute(Sql('ALTER TABLE pet_access ADD COLUMN IF NOT EXISTS target_organization_id INTEGER REFERENCES organizations(id)'));
   print('pet_access table ready');
 
   await _pool.execute(Sql('''
@@ -934,9 +936,10 @@ Future<void> _getAllPetsIncludingOrg(HttpRequest request) async {
 
   final sharedResult = await _pool.execute(
     Sql.named('''
-      SELECT p.*, NULL::text AS organization_name
+      SELECT p.*, pa.target_organization_id, torg.name AS target_org_name
       FROM pets p
       INNER JOIN pet_access pa ON pa.pet_id = p.id AND pa.user_id = @userId AND pa.role = 'shared'
+      LEFT JOIN organizations torg ON torg.id = pa.target_organization_id
       WHERE p.user_id != @userId
       ORDER BY p.created_at
     '''),
@@ -957,7 +960,11 @@ Future<void> _getAllPetsIncludingOrg(HttpRequest request) async {
   }
   for (final row in sharedResult) {
     final pet = _petRowToJson(row);
-    pet['organization_name'] = null;
+    final cols = row.toColumnMap();
+    final targetOrgName = cols['target_org_name']?.toString();
+    final targetOrgId = cols['target_organization_id']?.toString();
+    pet['organization_name'] = targetOrgName;
+    pet['organization_id'] = targetOrgId;
     pet['is_shared'] = true;
     if (seenIds.add(pet['id'].toString())) allPets.add(pet);
   }
@@ -3000,9 +3007,27 @@ Future<void> _acceptPendingShare(HttpRequest request) async {
     return;
   }
 
+  int? targetOrgId;
+  try {
+    final body = await _readJson(request);
+    if (body != null && body['organization_id'] != null) {
+      targetOrgId = int.tryParse(body['organization_id'].toString());
+      if (targetOrgId != null) {
+        final memberCheck = await _pool.execute(
+          Sql.named('SELECT id FROM organization_users WHERE organization_id = @orgId AND user_id = @userId AND role IN (\'super_user\', \'member\')'),
+          parameters: {'orgId': targetOrgId, 'userId': userId},
+        );
+        if (memberCheck.isEmpty) {
+          _jsonResponse(request, 403, {'error': 'You are not a member of this organization'});
+          return;
+        }
+      }
+    }
+  } catch (_) {}
+
   await _pool.execute(
-    Sql.named('UPDATE pet_access SET role = \'shared\' WHERE pet_id = @petId AND user_id = @userId'),
-    parameters: {'petId': petId, 'userId': userId},
+    Sql.named('UPDATE pet_access SET role = \'shared\', target_organization_id = @targetOrgId WHERE pet_id = @petId AND user_id = @userId'),
+    parameters: {'petId': petId, 'userId': userId, 'targetOrgId': targetOrgId},
   );
 
   _jsonResponse(request, 200, {'pet_id': petId, 'message': 'Share accepted'});

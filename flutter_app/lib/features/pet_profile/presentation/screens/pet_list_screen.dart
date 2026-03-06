@@ -9,6 +9,7 @@ import '../../../auth/presentation/providers/auth_providers.dart';
 import '../../../health_tracking/domain/entities/health_entry.dart';
 import '../../../health_tracking/presentation/providers/health_providers.dart';
 import '../../../notifications/presentation/providers/notification_providers.dart';
+import '../../../organization/presentation/providers/organization_providers.dart';
 import '../../../sharing/presentation/providers/sharing_providers.dart';
 import '../../domain/entities/pet.dart';
 import '../providers/pet_providers.dart';
@@ -896,22 +897,7 @@ class _PendingShareCard extends ConsumerWidget {
                   ),
                   const SizedBox(width: 8),
                   FilledButton(
-                    onPressed: () async {
-                      try {
-                        await ref.read(pendingSharesProvider.notifier).acceptShare(share.petId);
-                        if (context.mounted) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text(l.shareAccepted)),
-                          );
-                        }
-                      } catch (e) {
-                        if (context.mounted) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text(e.toString())),
-                          );
-                        }
-                      }
-                    },
+                    onPressed: () => _showAcceptShareDialog(context, ref, share, l),
                     child: Text(l.acceptShare),
                   ),
                 ],
@@ -921,5 +907,89 @@ class _PendingShareCard extends ConsumerWidget {
         ),
       ),
     );
+  }
+
+  void _showAcceptShareDialog(BuildContext context, WidgetRef ref, PendingShare share, AppLocalizations l) {
+    final orgsAsync = ref.read(organizationListProvider);
+    final orgs = orgsAsync.valueOrNull ?? [];
+
+    if (orgs.isEmpty) {
+      _doAcceptShare(context, ref, share.petId, null, l);
+      return;
+    }
+
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (ctx) {
+        final theme = Theme.of(ctx);
+        return SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  l.acceptShareTo,
+                  style: theme.textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                Text(
+                  l.acceptShareToHint,
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: theme.colorScheme.onSurfaceVariant,
+                  ),
+                ),
+                const SizedBox(height: 16),
+                ListTile(
+                  leading: const CircleAvatar(child: Icon(Icons.person)),
+                  title: Text(l.myPets),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  onTap: () {
+                    Navigator.pop(ctx);
+                    _doAcceptShare(context, ref, share.petId, null, l);
+                  },
+                ),
+                const Divider(),
+                ...orgs.map((org) => ListTile(
+                  leading: const CircleAvatar(child: Icon(Icons.business)),
+                  title: Text(org.name),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  onTap: () {
+                    Navigator.pop(ctx);
+                    _doAcceptShare(context, ref, share.petId, org.id, l);
+                  },
+                )),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Future<void> _doAcceptShare(BuildContext context, WidgetRef ref, String petId, int? orgId, AppLocalizations l) async {
+    try {
+      await ref.read(pendingSharesProvider.notifier).acceptShare(petId, organizationId: orgId);
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(l.shareAccepted)),
+        );
+      }
+    } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(e.toString())),
+        );
+      }
+    }
   }
 }
