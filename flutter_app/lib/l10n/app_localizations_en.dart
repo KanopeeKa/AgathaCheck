@@ -1603,6 +1603,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get addFamilyEvent => 'Add Family Event';
 
   @override
+  String get editFamilyEvent => 'Edit Family Event';
+
+  @override
   String get deleteFamilyEventConfirm =>
       'Are you sure you want to delete this family event?';
 

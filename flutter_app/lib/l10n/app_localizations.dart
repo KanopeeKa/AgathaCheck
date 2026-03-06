@@ -3014,6 +3014,12 @@ abstract class AppLocalizations {
   /// **'Add Family Event'**
   String get addFamilyEvent;
 
+  /// No description provided for @editFamilyEvent.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Family Event'**
+  String get editFamilyEvent;
+
   /// No description provided for @deleteFamilyEventConfirm.
   ///
   /// In en, this message translates to:

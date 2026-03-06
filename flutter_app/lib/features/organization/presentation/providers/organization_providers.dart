@@ -288,6 +288,23 @@ class FamilyEventsNotifier extends FamilyAsyncNotifier<List<FamilyEvent>, String
     ref.invalidateSelf();
   }
 
+  Future<void> updateEvent(int eventId, {
+    required int? assignedToUserId,
+    required DateTime fromDate,
+    DateTime? toDate,
+    String notes = '',
+  }) async {
+    final token = ref.read(_orgTokenProvider)!;
+    final ds = ref.read(orgRemoteDataSourceProvider);
+    await ds.updateFamilyEvent(token, arg, eventId, {
+      'assigned_to_user_id': assignedToUserId,
+      'from_date': fromDate.toIso8601String().split('T')[0],
+      if (toDate != null) 'to_date': toDate.toIso8601String().split('T')[0],
+      'notes': notes,
+    });
+    ref.invalidateSelf();
+  }
+
   Future<void> deleteEvent(int eventId) async {
     final token = ref.read(_orgTokenProvider)!;
     final ds = ref.read(orgRemoteDataSourceProvider);

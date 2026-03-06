@@ -520,6 +520,7 @@
   "familyEvents": "Événements familiaux",
   "noFamilyEvents": "Aucun événement familial",
   "addFamilyEvent": "Ajouter un événement familial",
+  "editFamilyEvent": "Modifier l'événement familial",
   "deleteFamilyEventConfirm": "Êtes-vous sûr de vouloir supprimer cet événement familial ?",
   "assignedToMember": "Assigné à",
   "unassigned": "Non assigné",

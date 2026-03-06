@@ -3031,51 +3031,64 @@ class _FamilyEventsSection extends ConsumerWidget {
                           child: Card(
                             color: colorScheme.surfaceContainerHighest.withAlpha(80),
                             margin: const EdgeInsets.only(bottom: 8),
-                            child: Padding(
-                              padding: const EdgeInsets.all(12),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  if (event.assignedDisplay.isNotEmpty)
+                            child: InkWell(
+                              borderRadius: BorderRadius.circular(12),
+                              onTap: () => _showEditFamilyEventDialog(
+                                  context, ref, event, membersAsync, l),
+                              child: Padding(
+                                padding: const EdgeInsets.all(12),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    if (event.assignedDisplay.isNotEmpty)
+                                      Row(
+                                        children: [
+                                          Icon(Icons.person, size: 16,
+                                              color: colorScheme.primary),
+                                          const SizedBox(width: 6),
+                                          Expanded(
+                                            child: Text(event.assignedDisplay,
+                                                style: theme.textTheme.bodyMedium?.copyWith(
+                                                    fontWeight: FontWeight.w600)),
+                                          ),
+                                          Icon(Icons.edit, size: 14,
+                                              color: colorScheme.onSurfaceVariant),
+                                        ],
+                                      ),
+                                    if (event.assignedDisplay.isEmpty)
+                                      Align(
+                                        alignment: Alignment.centerRight,
+                                        child: Icon(Icons.edit, size: 14,
+                                            color: colorScheme.onSurfaceVariant),
+                                      ),
+                                    const SizedBox(height: 4),
                                     Row(
                                       children: [
-                                        Icon(Icons.person, size: 16,
-                                            color: colorScheme.primary),
+                                        Icon(Icons.calendar_today, size: 14,
+                                            color: colorScheme.onSurfaceVariant),
                                         const SizedBox(width: 6),
-                                        Expanded(
-                                          child: Text(event.assignedDisplay,
-                                              style: theme.textTheme.bodyMedium?.copyWith(
-                                                  fontWeight: FontWeight.w600)),
-                                        ),
-                                      ],
-                                    ),
-                                  const SizedBox(height: 4),
-                                  Row(
-                                    children: [
-                                      Icon(Icons.calendar_today, size: 14,
-                                          color: colorScheme.onSurfaceVariant),
-                                      const SizedBox(width: 6),
-                                      Text(
-                                        dateFormat.format(event.fromDate),
-                                        style: theme.textTheme.bodySmall,
-                                      ),
-                                      if (event.toDate != null) ...[
-                                        Text(' — ',
-                                            style: theme.textTheme.bodySmall),
                                         Text(
-                                          dateFormat.format(event.toDate!),
+                                          dateFormat.format(event.fromDate),
                                           style: theme.textTheme.bodySmall,
                                         ),
+                                        if (event.toDate != null) ...[
+                                          Text(' — ',
+                                              style: theme.textTheme.bodySmall),
+                                          Text(
+                                            dateFormat.format(event.toDate!),
+                                            style: theme.textTheme.bodySmall,
+                                          ),
+                                        ],
                                       ],
+                                    ),
+                                    if (event.notes.isNotEmpty) ...[
+                                      const SizedBox(height: 6),
+                                      Text(event.notes,
+                                          style: theme.textTheme.bodySmall?.copyWith(
+                                              color: colorScheme.onSurfaceVariant)),
                                     ],
-                                  ),
-                                  if (event.notes.isNotEmpty) ...[
-                                    const SizedBox(height: 6),
-                                    Text(event.notes,
-                                        style: theme.textTheme.bodySmall?.copyWith(
-                                            color: colorScheme.onSurfaceVariant)),
                                   ],
-                                ],
+                                ),
                               ),
                             ),
                           ),
@@ -3096,6 +3109,168 @@ class _FamilyEventsSection extends ConsumerWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  void _showEditFamilyEventDialog(BuildContext context, WidgetRef ref,
+      FamilyEvent event,
+      AsyncValue<List<OrganizationMember>> membersAsync, AppLocalizations l) {
+    final notesController = TextEditingController(text: event.notes);
+    int? selectedMemberId = event.assignedToUserId;
+    DateTime fromDate = event.fromDate;
+    DateTime? toDate = event.toDate;
+    final dateFormat = DateFormat.yMMMd();
+
+    showDialog(
+      context: context,
+      builder: (ctx) => StatefulBuilder(
+        builder: (ctx, setState) {
+          final members = membersAsync.valueOrNull ?? <OrganizationMember>[];
+
+          return AlertDialog(
+            title: Text(l.editFamilyEvent),
+            content: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(l.assignedToMember,
+                      style: Theme.of(ctx).textTheme.bodySmall),
+                  const SizedBox(height: 8),
+                  DropdownButtonFormField<int?>(
+                    value: members.any((m) => m.userId == selectedMemberId)
+                        ? selectedMemberId
+                        : null,
+                    decoration: InputDecoration(
+                      prefixIcon: const Icon(Icons.person),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    items: [
+                      DropdownMenuItem<int?>(
+                        value: null,
+                        child: Text(l.unassigned),
+                      ),
+                      ...members.map((m) {
+                        return DropdownMenuItem<int?>(
+                          value: m.userId,
+                          child: Text(m.displayName.isNotEmpty
+                              ? m.displayName
+                              : m.email),
+                        );
+                      }),
+                    ],
+                    onChanged: (v) => setState(() => selectedMemberId = v),
+                  ),
+                  const SizedBox(height: 16),
+                  Text(l.fromDateLabel,
+                      style: Theme.of(ctx).textTheme.bodySmall),
+                  const SizedBox(height: 8),
+                  InkWell(
+                    onTap: () async {
+                      final picked = await showDatePicker(
+                        context: ctx,
+                        initialDate: fromDate,
+                        firstDate: DateTime(2020),
+                        lastDate: DateTime(2030),
+                      );
+                      if (picked != null) {
+                        setState(() => fromDate = picked);
+                      }
+                    },
+                    child: InputDecorator(
+                      decoration: InputDecoration(
+                        prefixIcon: const Icon(Icons.calendar_today),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      child: Text(dateFormat.format(fromDate)),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  Text('${l.toDateLabel} (${l.optional})',
+                      style: Theme.of(ctx).textTheme.bodySmall),
+                  const SizedBox(height: 8),
+                  InkWell(
+                    onTap: () async {
+                      final picked = await showDatePicker(
+                        context: ctx,
+                        initialDate: toDate ?? fromDate,
+                        firstDate: fromDate,
+                        lastDate: DateTime(2030),
+                      );
+                      if (picked != null) {
+                        setState(() => toDate = picked);
+                      }
+                    },
+                    child: InputDecorator(
+                      decoration: InputDecoration(
+                        prefixIcon: const Icon(Icons.calendar_today),
+                        suffixIcon: toDate != null
+                            ? IconButton(
+                                icon: const Icon(Icons.clear, size: 18),
+                                onPressed: () =>
+                                    setState(() => toDate = null),
+                              )
+                            : null,
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      child: Text(toDate != null
+                          ? dateFormat.format(toDate!)
+                          : l.notSet),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  TextField(
+                    controller: notesController,
+                    decoration: InputDecoration(
+                      labelText: l.notes,
+                      prefixIcon: const Icon(Icons.notes),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    maxLines: 3,
+                  ),
+                ],
+              ),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(ctx),
+                child: Text(MaterialLocalizations.of(ctx).cancelButtonLabel),
+              ),
+              FilledButton(
+                onPressed: () async {
+                  Navigator.pop(ctx);
+                  try {
+                    await ref
+                        .read(familyEventsProvider(petId).notifier)
+                        .updateEvent(
+                          event.id,
+                          assignedToUserId: selectedMemberId,
+                          fromDate: fromDate,
+                          toDate: toDate,
+                          notes: notesController.text.trim(),
+                        );
+                  } catch (e) {
+                    if (context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text('$e')),
+                      );
+                    }
+                  }
+                },
+                child: Text(l.save),
+              ),
+            ],
+          );
+        },
       ),
     );
   }

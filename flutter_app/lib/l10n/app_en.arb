@@ -571,6 +571,7 @@
   "familyEvents": "Family Events",
   "noFamilyEvents": "No family events yet",
   "addFamilyEvent": "Add Family Event",
+  "editFamilyEvent": "Edit Family Event",
   "deleteFamilyEventConfirm": "Are you sure you want to delete this family event?",
   "assignedToMember": "Assigned to",
   "unassigned": "Unassigned",
