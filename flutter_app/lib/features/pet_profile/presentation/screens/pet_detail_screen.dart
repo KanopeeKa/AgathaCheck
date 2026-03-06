@@ -70,7 +70,7 @@ class _PetDetailScreenState extends ConsumerState<PetDetailScreen> {
         final unreadCount = ref.watch(unreadNotificationCountProvider);
         final isOrgPet = pet.organizationId != null;
 
-        return Scaffold(
+        Widget body = Scaffold(
           backgroundColor: isOrgPet ? AppTheme.orgBlue : null,
           body: CustomScrollView(
             slivers: [
@@ -236,6 +236,19 @@ class _PetDetailScreenState extends ConsumerState<PetDetailScreen> {
             ],
           ),
         );
+
+        if (isOrgPet) {
+          body = Theme(
+            data: theme.copyWith(
+              cardTheme: theme.cardTheme.copyWith(
+                color: AppTheme.orgBlueDarker,
+              ),
+            ),
+            child: body,
+          );
+        }
+
+        return body;
       },
     );
   }
