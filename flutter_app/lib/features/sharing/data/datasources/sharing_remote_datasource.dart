@@ -103,4 +103,49 @@ class SharingRemoteDataSource {
       throw Exception(data['error'] ?? 'Failed to remove access');
     }
   }
+
+  Future<List<Map<String, dynamic>>> getPendingShares(String token) async {
+    final response = await _client.get(
+      Uri.parse('$baseUrl/api/share/pending'),
+      headers: {
+        'Authorization': 'Bearer $token',
+      },
+    );
+    if (response.statusCode >= 400) {
+      return [];
+    }
+    final decoded = json.decode(response.body);
+    if (decoded is List) {
+      return decoded.cast<Map<String, dynamic>>();
+    }
+    return [];
+  }
+
+  Future<void> acceptPendingShare(String petId, String token) async {
+    final response = await _client.post(
+      Uri.parse('$baseUrl/api/share/pending/$petId/accept'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+    );
+    if (response.statusCode >= 400) {
+      final data = json.decode(response.body);
+      throw Exception(data['error'] ?? 'Failed to accept share');
+    }
+  }
+
+  Future<void> declinePendingShare(String petId, String token) async {
+    final response = await _client.post(
+      Uri.parse('$baseUrl/api/share/pending/$petId/decline'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+    );
+    if (response.statusCode >= 400) {
+      final data = json.decode(response.body);
+      throw Exception(data['error'] ?? 'Failed to decline share');
+    }
+  }
 }

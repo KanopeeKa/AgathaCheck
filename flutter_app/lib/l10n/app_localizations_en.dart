@@ -1635,4 +1635,27 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get orgPet => 'Organisation Pet';
+
+  @override
+  String get pendingShares => 'Pending Shares';
+
+  @override
+  String petSharedWithYou(String guardianName, String petName) {
+    return '$guardianName wants to share $petName with you';
+  }
+
+  @override
+  String get acceptShare => 'Accept';
+
+  @override
+  String get declineShare => 'Decline';
+
+  @override
+  String get shareAccepted => 'Share accepted';
+
+  @override
+  String get shareDeclined => 'Share declined';
+
+  @override
+  String get sharedPets => 'Shared Pets';
 }

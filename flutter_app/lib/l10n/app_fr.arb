@@ -530,5 +530,14 @@
   "notSet": "Non défini",
   "petOwnership": "Propriété de l'animal",
   "myPet": "Mon animal",
-  "orgPet": "Animal de l'organisation"
+  "orgPet": "Animal de l'organisation",
+
+  "pendingShares": "Partages en attente",
+  "petSharedWithYou": "{guardianName} souhaite partager {petName} avec vous",
+  "@petSharedWithYou": { "placeholders": { "guardianName": { "type": "String" }, "petName": { "type": "String" } } },
+  "acceptShare": "Accepter",
+  "declineShare": "Refuser",
+  "shareAccepted": "Partage accepté",
+  "shareDeclined": "Partage refusé",
+  "sharedPets": "Animaux partagés"
 }

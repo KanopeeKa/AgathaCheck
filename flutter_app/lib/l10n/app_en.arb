@@ -581,5 +581,14 @@
   "notSet": "Not set",
   "petOwnership": "Pet Ownership",
   "myPet": "My Pet",
-  "orgPet": "Organisation Pet"
+  "orgPet": "Organisation Pet",
+
+  "pendingShares": "Pending Shares",
+  "petSharedWithYou": "{guardianName} wants to share {petName} with you",
+  "@petSharedWithYou": { "placeholders": { "guardianName": { "type": "String" }, "petName": { "type": "String" } } },
+  "acceptShare": "Accept",
+  "declineShare": "Decline",
+  "shareAccepted": "Share accepted",
+  "shareDeclined": "Share declined",
+  "sharedPets": "Shared Pets"
 }

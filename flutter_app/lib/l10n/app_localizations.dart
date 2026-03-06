@@ -3079,6 +3079,48 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Organisation Pet'**
   String get orgPet;
+
+  /// No description provided for @pendingShares.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending Shares'**
+  String get pendingShares;
+
+  /// No description provided for @petSharedWithYou.
+  ///
+  /// In en, this message translates to:
+  /// **'{guardianName} wants to share {petName} with you'**
+  String petSharedWithYou(String guardianName, String petName);
+
+  /// No description provided for @acceptShare.
+  ///
+  /// In en, this message translates to:
+  /// **'Accept'**
+  String get acceptShare;
+
+  /// No description provided for @declineShare.
+  ///
+  /// In en, this message translates to:
+  /// **'Decline'**
+  String get declineShare;
+
+  /// No description provided for @shareAccepted.
+  ///
+  /// In en, this message translates to:
+  /// **'Share accepted'**
+  String get shareAccepted;
+
+  /// No description provided for @shareDeclined.
+  ///
+  /// In en, this message translates to:
+  /// **'Share declined'**
+  String get shareDeclined;
+
+  /// No description provided for @sharedPets.
+  ///
+  /// In en, this message translates to:
+  /// **'Shared Pets'**
+  String get sharedPets;
 }
 
 class _AppLocalizationsDelegate

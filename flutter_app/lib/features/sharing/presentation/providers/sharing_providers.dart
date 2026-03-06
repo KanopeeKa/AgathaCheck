@@ -1,12 +1,86 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../auth/presentation/providers/auth_providers.dart';
+import '../../../pet_profile/presentation/providers/pet_providers.dart';
 import '../../data/datasources/sharing_remote_datasource.dart';
 import '../../domain/entities/pet_access.dart';
 
 final sharingDataSourceProvider = Provider<SharingRemoteDataSource>((ref) {
   return SharingRemoteDataSource();
 });
+
+class PendingShare {
+  final int id;
+  final String petId;
+  final String petName;
+  final String petSpecies;
+  final String petBreed;
+  final String? petPhotoPath;
+  final int? petColorValue;
+  final String guardianName;
+  final int? invitedBy;
+  final DateTime? createdAt;
+
+  const PendingShare({
+    required this.id,
+    required this.petId,
+    required this.petName,
+    required this.petSpecies,
+    required this.petBreed,
+    this.petPhotoPath,
+    this.petColorValue,
+    required this.guardianName,
+    this.invitedBy,
+    this.createdAt,
+  });
+
+  factory PendingShare.fromJson(Map<String, dynamic> json) {
+    return PendingShare(
+      id: json['id'] is int ? json['id'] as int : int.tryParse(json['id']?.toString() ?? '0') ?? 0,
+      petId: json['pet_id']?.toString() ?? '',
+      petName: (json['pet_name'] ?? '').toString(),
+      petSpecies: (json['pet_species'] ?? '').toString(),
+      petBreed: (json['pet_breed'] ?? '').toString(),
+      petPhotoPath: json['pet_photo_path']?.toString(),
+      petColorValue: json['pet_color_value'] is int ? json['pet_color_value'] as int : int.tryParse(json['pet_color_value']?.toString() ?? ''),
+      guardianName: (json['guardian_name'] ?? '').toString(),
+      invitedBy: json['invited_by'] is int ? json['invited_by'] as int : int.tryParse(json['invited_by']?.toString() ?? ''),
+      createdAt: DateTime.tryParse(json['created_at']?.toString() ?? ''),
+    );
+  }
+}
+
+class PendingSharesNotifier extends AsyncNotifier<List<PendingShare>> {
+  @override
+  Future<List<PendingShare>> build() async {
+    final token = await ref.read(authProvider.notifier).getValidAccessToken();
+    if (token == null) return [];
+    final ds = ref.read(sharingDataSourceProvider);
+    final rawList = await ds.getPendingShares(token);
+    return rawList.map((m) => PendingShare.fromJson(m)).toList();
+  }
+
+  Future<void> acceptShare(String petId) async {
+    final token = await ref.read(authProvider.notifier).getValidAccessToken();
+    if (token == null) return;
+    final ds = ref.read(sharingDataSourceProvider);
+    await ds.acceptPendingShare(petId, token);
+    ref.invalidateSelf();
+    ref.invalidate(allPetsIncludingOrgProvider);
+  }
+
+  Future<void> declineShare(String petId) async {
+    final token = await ref.read(authProvider.notifier).getValidAccessToken();
+    if (token == null) return;
+    final ds = ref.read(sharingDataSourceProvider);
+    await ds.declinePendingShare(petId, token);
+    ref.invalidateSelf();
+  }
+}
+
+final pendingSharesProvider =
+    AsyncNotifierProvider<PendingSharesNotifier, List<PendingShare>>(
+        PendingSharesNotifier.new);
 
 final petAccessProvider =
     FutureProvider.family<List<PetAccess>, String>((ref, petId) async {

@@ -728,6 +728,12 @@ Future<void> _handleApi(HttpRequest request) async {
   // Sharing
   else if (path == '/api/share' && method == 'POST') {
     await _createShare(request);
+  } else if (path == '/api/share/pending' && method == 'GET') {
+    await _getPendingShares(request);
+  } else if (RegExp(r'^/api/share/pending/[^/]+/accept$').hasMatch(path) && method == 'POST') {
+    await _acceptPendingShare(request);
+  } else if (RegExp(r'^/api/share/pending/[^/]+/decline$').hasMatch(path) && method == 'POST') {
+    await _declinePendingShare(request);
   } else if (RegExp(r'^/api/share/[^/]+/accept$').hasMatch(path) && method == 'POST') {
     await _acceptShare(request);
   } else if (RegExp(r'^/api/share/[^/]+$').hasMatch(path) && method == 'GET') {
@@ -924,16 +930,34 @@ Future<void> _getAllPetsIncludingOrg(HttpRequest request) async {
     parameters: {'userId': userId},
   );
 
+  final sharedResult = await _pool.execute(
+    Sql.named('''
+      SELECT p.*, NULL::text AS organization_name
+      FROM pets p
+      INNER JOIN pet_access pa ON pa.pet_id = p.id AND pa.user_id = @userId AND pa.role = 'shared'
+      WHERE p.user_id != @userId
+      ORDER BY p.created_at
+    '''),
+    parameters: {'userId': userId},
+  );
+
+  final seenIds = <String>{};
   final allPets = <Map<String, dynamic>>[];
   for (final row in personalResult) {
     final pet = _petRowToJson(row);
     pet['organization_name'] = null;
-    allPets.add(pet);
+    if (seenIds.add(pet['id'].toString())) allPets.add(pet);
   }
   for (final row in orgResult) {
     final pet = _petRowToJson(row);
     pet['organization_name'] = row.toColumnMap()['organization_name']?.toString();
-    allPets.add(pet);
+    if (seenIds.add(pet['id'].toString())) allPets.add(pet);
+  }
+  for (final row in sharedResult) {
+    final pet = _petRowToJson(row);
+    pet['organization_name'] = null;
+    pet['is_shared'] = true;
+    if (seenIds.add(pet['id'].toString())) allPets.add(pet);
   }
   _jsonResponse(request, 200, allPets);
 }
@@ -2844,11 +2868,23 @@ Future<void> _acceptShare(HttpRequest request) async {
     return;
   }
 
+  final existingCheck = await _pool.execute(
+    Sql.named('SELECT role FROM pet_access WHERE pet_id = @petId AND user_id = @userId'),
+    parameters: {'petId': petId, 'userId': userId},
+  );
+  if (existingCheck.isNotEmpty) {
+    final existingRole = existingCheck.first.toColumnMap()['role']?.toString() ?? '';
+    if (existingRole == 'shared' || existingRole == 'guardian') {
+      _jsonResponse(request, 200, {'pet_id': petId, 'message': 'Already have access'});
+      return;
+    }
+  }
+
   await _pool.execute(
     Sql.named('''
       INSERT INTO pet_access (pet_id, user_id, role, invited_by)
-      VALUES (@petId, @userId, 'shared', @invitedBy)
-      ON CONFLICT (pet_id, user_id) DO NOTHING
+      VALUES (@petId, @userId, 'pending_shared', @invitedBy)
+      ON CONFLICT (pet_id, user_id) DO UPDATE SET role = 'pending_shared', invited_by = @invitedBy
     '''),
     parameters: {
       'petId': petId,
@@ -2857,7 +2893,136 @@ Future<void> _acceptShare(HttpRequest request) async {
     },
   );
 
-  _jsonResponse(request, 200, {'pet_id': petId, 'message': 'Access granted'});
+  final petNameResult = await _pool.execute(
+    Sql.named('SELECT name FROM pets WHERE id = @petId'),
+    parameters: {'petId': petId},
+  );
+  final petName = petNameResult.isNotEmpty ? petNameResult.first.toColumnMap()['name']?.toString() ?? 'a pet' : 'a pet';
+
+  final guardianNameResult = await _pool.execute(
+    Sql.named('SELECT first_name, last_name, name FROM users WHERE id = @id'),
+    parameters: {'id': guardianUserId},
+  );
+  String guardianName = 'Someone';
+  if (guardianNameResult.isNotEmpty) {
+    final gCols = guardianNameResult.first.toColumnMap();
+    final gFirst = (gCols['first_name'] ?? '').toString();
+    final gLast = (gCols['last_name'] ?? '').toString();
+    guardianName = '$gFirst $gLast'.trim();
+    if (guardianName.isEmpty) guardianName = (gCols['name'] ?? 'Someone').toString();
+  }
+
+  await _pool.execute(
+    Sql.named('''
+      INSERT INTO notifications (user_id, pet_id, title, message, type, created_at)
+      VALUES (@userId, @petId, @title, @message, 'share', NOW())
+    '''),
+    parameters: {
+      'userId': userId,
+      'petId': petId,
+      'title': 'Pet shared with you',
+      'message': '$guardianName has shared $petName with you',
+    },
+  );
+
+  _jsonResponse(request, 200, {'pet_id': petId, 'message': 'Pending share created'});
+}
+
+Future<void> _getPendingShares(HttpRequest request) async {
+  final payload = await _authenticateRequest(request);
+  if (payload == null) {
+    _jsonResponse(request, 401, {'error': 'Not authenticated'});
+    return;
+  }
+  final userId = int.parse(payload['sub'].toString());
+
+  final result = await _pool.execute(
+    Sql.named('''
+      SELECT pa.id, pa.pet_id, pa.invited_by, pa.created_at,
+             p.name AS pet_name, p.species AS pet_species, p.breed AS pet_breed,
+             p.photo_path AS pet_photo_path, p.color_value AS pet_color_value,
+             u.first_name AS guardian_first_name, u.last_name AS guardian_last_name, u.name AS guardian_name
+      FROM pet_access pa
+      JOIN pets p ON p.id = pa.pet_id
+      LEFT JOIN users u ON u.id = pa.invited_by
+      WHERE pa.user_id = @userId AND pa.role = 'pending_shared'
+      ORDER BY pa.created_at DESC
+    '''),
+    parameters: {'userId': userId},
+  );
+
+  final pending = <Map<String, dynamic>>[];
+  for (final row in result) {
+    final cols = row.toColumnMap();
+    var gFirst = (cols['guardian_first_name'] ?? '').toString();
+    var gLast = (cols['guardian_last_name'] ?? '').toString();
+    var guardianDisplayName = '$gFirst $gLast'.trim();
+    if (guardianDisplayName.isEmpty) {
+      guardianDisplayName = (cols['guardian_name'] ?? '').toString().trim();
+    }
+    pending.add({
+      'id': cols['id'],
+      'pet_id': cols['pet_id']?.toString() ?? '',
+      'pet_name': (cols['pet_name'] ?? '').toString(),
+      'pet_species': (cols['pet_species'] ?? '').toString(),
+      'pet_breed': (cols['pet_breed'] ?? '').toString(),
+      'pet_photo_path': cols['pet_photo_path']?.toString(),
+      'pet_color_value': cols['pet_color_value'],
+      'guardian_name': guardianDisplayName,
+      'invited_by': cols['invited_by'],
+      'created_at': cols['created_at']?.toString(),
+    });
+  }
+
+  _jsonResponse(request, 200, pending);
+}
+
+Future<void> _acceptPendingShare(HttpRequest request) async {
+  final payload = await _authenticateRequest(request);
+  if (payload == null) {
+    _jsonResponse(request, 401, {'error': 'Not authenticated'});
+    return;
+  }
+  final userId = int.parse(payload['sub'].toString());
+
+  final segments = request.uri.pathSegments;
+  final petId = segments[segments.length - 2];
+
+  final result = await _pool.execute(
+    Sql.named('SELECT id FROM pet_access WHERE pet_id = @petId AND user_id = @userId AND role = \'pending_shared\''),
+    parameters: {'petId': petId, 'userId': userId},
+  );
+
+  if (result.isEmpty) {
+    _jsonResponse(request, 404, {'error': 'Pending share not found'});
+    return;
+  }
+
+  await _pool.execute(
+    Sql.named('UPDATE pet_access SET role = \'shared\' WHERE pet_id = @petId AND user_id = @userId'),
+    parameters: {'petId': petId, 'userId': userId},
+  );
+
+  _jsonResponse(request, 200, {'pet_id': petId, 'message': 'Share accepted'});
+}
+
+Future<void> _declinePendingShare(HttpRequest request) async {
+  final payload = await _authenticateRequest(request);
+  if (payload == null) {
+    _jsonResponse(request, 401, {'error': 'Not authenticated'});
+    return;
+  }
+  final userId = int.parse(payload['sub'].toString());
+
+  final segments = request.uri.pathSegments;
+  final petId = segments[segments.length - 2];
+
+  await _pool.execute(
+    Sql.named('DELETE FROM pet_access WHERE pet_id = @petId AND user_id = @userId AND role = \'pending_shared\''),
+    parameters: {'petId': petId, 'userId': userId},
+  );
+
+  _jsonResponse(request, 200, {'message': 'Share declined'});
 }
 
 Future<Map<String, dynamic>> _petAccessRowToJson(ResultRow row) async {
