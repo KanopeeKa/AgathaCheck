@@ -22,6 +22,7 @@ import '../../features/organization/presentation/screens/organization_members_sc
 import '../../features/organization/presentation/screens/organization_pets_screen.dart';
 import '../../features/organization/presentation/screens/transfer_pet_screen.dart';
 import '../../features/sharing/presentation/screens/shared_pet_screen.dart';
+import '../../features/help/presentation/screens/help_screen.dart';
 import '../../features/subscription/presentation/screens/paywall_screen.dart';
 import '../../features/vet/presentation/screens/vet_form_screen.dart';
 import '../../features/vet/presentation/screens/vet_list_screen.dart';
@@ -100,6 +101,11 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: '/my-details',
         name: 'myDetails',
         builder: (context, state) => const MyDetailsScreen(),
+      ),
+      GoRoute(
+        path: '/help',
+        name: 'help',
+        builder: (context, state) => const HelpScreen(),
       ),
       GoRoute(
         path: '/add',

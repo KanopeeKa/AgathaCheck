@@ -3217,6 +3217,648 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Hidden Shared Pets'**
   String get hiddenSharedPets;
+
+  /// No description provided for @help.
+  ///
+  /// In en, this message translates to:
+  /// **'Help'**
+  String get help;
+
+  /// No description provided for @helpTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Help & FAQ'**
+  String get helpTitle;
+
+  /// No description provided for @helpSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Find answers to common questions about every feature in Agatha Track.'**
+  String get helpSubtitle;
+
+  /// No description provided for @faqAccountTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Account & Authentication'**
+  String get faqAccountTitle;
+
+  /// No description provided for @faqAccountQ1.
+  ///
+  /// In en, this message translates to:
+  /// **'How do I create an account?'**
+  String get faqAccountQ1;
+
+  /// No description provided for @faqAccountA1.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap \"Sign Up\" on the landing page. Enter your email address, choose a password, and provide your first and last name. You will be logged in automatically after signing up.'**
+  String get faqAccountA1;
+
+  /// No description provided for @faqAccountQ2.
+  ///
+  /// In en, this message translates to:
+  /// **'How do I log in?'**
+  String get faqAccountQ2;
+
+  /// No description provided for @faqAccountA2.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap \"Log In\" on the landing page and enter your email and password. Your session stays active until you log out.'**
+  String get faqAccountA2;
+
+  /// No description provided for @faqAccountQ3.
+  ///
+  /// In en, this message translates to:
+  /// **'I forgot my password — how do I reset it?'**
+  String get faqAccountQ3;
+
+  /// No description provided for @faqAccountA3.
+  ///
+  /// In en, this message translates to:
+  /// **'On the login screen, tap \"Forgot password?\". Enter the email address associated with your account and follow the instructions to set a new password.'**
+  String get faqAccountA3;
+
+  /// No description provided for @faqAccountQ4.
+  ///
+  /// In en, this message translates to:
+  /// **'How do I update my profile?'**
+  String get faqAccountQ4;
+
+  /// No description provided for @faqAccountA4.
+  ///
+  /// In en, this message translates to:
+  /// **'Go to the user menu (your avatar in the top-right corner), then tap \"My Details\". From there you can edit your name, bio, profile photo, and change your password.'**
+  String get faqAccountA4;
+
+  /// No description provided for @faqAccountQ5.
+  ///
+  /// In en, this message translates to:
+  /// **'How do I log out?'**
+  String get faqAccountQ5;
+
+  /// No description provided for @faqAccountA5.
+  ///
+  /// In en, this message translates to:
+  /// **'Open the user menu (avatar icon in the top-right corner) and tap \"Logout\". You will be returned to the landing page.'**
+  String get faqAccountA5;
+
+  /// No description provided for @faqPetProfileTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Pet Profiles'**
+  String get faqPetProfileTitle;
+
+  /// No description provided for @faqPetProfileQ1.
+  ///
+  /// In en, this message translates to:
+  /// **'How do I add a new pet?'**
+  String get faqPetProfileQ1;
+
+  /// No description provided for @faqPetProfileA1.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap the \"+\" button on the main pet list screen. Fill in your pet\'s name, species, breed, date of birth, and optional details like microchip number and photo. Each pet is assigned a unique colour for easy identification.'**
+  String get faqPetProfileA1;
+
+  /// No description provided for @faqPetProfileQ2.
+  ///
+  /// In en, this message translates to:
+  /// **'How do I edit or delete a pet?'**
+  String get faqPetProfileQ2;
+
+  /// No description provided for @faqPetProfileA2.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap on the pet\'s card to open its detail page. Use the edit icon in the top-right to update information. To delete a pet, use the delete option — note that deleting a pet permanently removes all associated health entries, weight records, and other data.'**
+  String get faqPetProfileA2;
+
+  /// No description provided for @faqPetProfileQ3.
+  ///
+  /// In en, this message translates to:
+  /// **'What does the identification reminder mean?'**
+  String get faqPetProfileQ3;
+
+  /// No description provided for @faqPetProfileA3.
+  ///
+  /// In en, this message translates to:
+  /// **'If your pet does not have an ID (microchip or tag number) recorded, a species-specific reminder will appear on the pet\'s card. You can dismiss this reminder or add the ID in the pet\'s edit form.'**
+  String get faqPetProfileA3;
+
+  /// No description provided for @faqPetProfileQ4.
+  ///
+  /// In en, this message translates to:
+  /// **'How do I mark a pet as passed away?'**
+  String get faqPetProfileQ4;
+
+  /// No description provided for @faqPetProfileA4.
+  ///
+  /// In en, this message translates to:
+  /// **'Open the pet\'s edit form and enable the \"Passed away\" option. This changes the pet\'s colour to white, adds a memorial overlay to the photo, and sends a notification. The pet remains in your list as a memorial.'**
+  String get faqPetProfileA4;
+
+  /// No description provided for @faqPetProfileQ5.
+  ///
+  /// In en, this message translates to:
+  /// **'What is the pet colour system?'**
+  String get faqPetProfileQ5;
+
+  /// No description provided for @faqPetProfileA5.
+  ///
+  /// In en, this message translates to:
+  /// **'Each pet is assigned a unique colour from a palette of 15 colours when created. This colour appears on cards, charts, and throughout the app to help you quickly identify each pet at a glance.'**
+  String get faqPetProfileA5;
+
+  /// No description provided for @faqPetProfileQ6.
+  ///
+  /// In en, this message translates to:
+  /// **'How is my pet\'s age calculated?'**
+  String get faqPetProfileQ6;
+
+  /// No description provided for @faqPetProfileA6.
+  ///
+  /// In en, this message translates to:
+  /// **'Age is automatically calculated from the date of birth you enter. It updates dynamically and is displayed on the pet\'s detail page and profile cards.'**
+  String get faqPetProfileA6;
+
+  /// No description provided for @faqHealthTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Health Tracking'**
+  String get faqHealthTitle;
+
+  /// No description provided for @faqHealthQ1.
+  ///
+  /// In en, this message translates to:
+  /// **'What types of health entries can I track?'**
+  String get faqHealthQ1;
+
+  /// No description provided for @faqHealthA1.
+  ///
+  /// In en, this message translates to:
+  /// **'You can track medications, preventive treatments (vaccinations, deworming, flea/tick treatments), vet visits, and medical procedures. Each type has its own icon and colour in the dashboard.'**
+  String get faqHealthA1;
+
+  /// No description provided for @faqHealthQ2.
+  ///
+  /// In en, this message translates to:
+  /// **'How do I add a health entry?'**
+  String get faqHealthQ2;
+
+  /// No description provided for @faqHealthA2.
+  ///
+  /// In en, this message translates to:
+  /// **'You can add entries from two places: the pet\'s detail page (specific to that pet) or the global Health Dashboard (accessible from the medical icon in the top bar). Fill in the type, name, date, and optional details like frequency, notes, and photo attachments.'**
+  String get faqHealthA2;
+
+  /// No description provided for @faqHealthQ3.
+  ///
+  /// In en, this message translates to:
+  /// **'What is the Health Dashboard?'**
+  String get faqHealthQ3;
+
+  /// No description provided for @faqHealthA3.
+  ///
+  /// In en, this message translates to:
+  /// **'The Health Dashboard is a global view of all health events across all your pets. It is organised into tabs by type (medications, preventives, vet visits, etc.) and shows upcoming, due, and overdue entries. You can filter by organisation to focus on specific groups of pets.'**
+  String get faqHealthA3;
+
+  /// No description provided for @faqHealthQ4.
+  ///
+  /// In en, this message translates to:
+  /// **'How do recurring health entries work?'**
+  String get faqHealthQ4;
+
+  /// No description provided for @faqHealthA4.
+  ///
+  /// In en, this message translates to:
+  /// **'When creating a health entry, you can set a frequency (e.g., daily, weekly, monthly, yearly, or a custom number of days). The app will automatically schedule the next occurrence and notify you when it is due.'**
+  String get faqHealthA4;
+
+  /// No description provided for @faqHealthQ5.
+  ///
+  /// In en, this message translates to:
+  /// **'What are Health Issues?'**
+  String get faqHealthQ5;
+
+  /// No description provided for @faqHealthA5.
+  ///
+  /// In en, this message translates to:
+  /// **'Health Issues let you track ongoing medical conditions (e.g., allergies, chronic illness). Each issue can have a start date, optional end date, and can be linked to related health entries for a complete medical history.'**
+  String get faqHealthA5;
+
+  /// No description provided for @faqHealthQ6.
+  ///
+  /// In en, this message translates to:
+  /// **'Can I attach photos to health entries?'**
+  String get faqHealthQ6;
+
+  /// No description provided for @faqHealthA6.
+  ///
+  /// In en, this message translates to:
+  /// **'Yes. When creating or editing a health entry, you can attach a photo — for example, a picture of a prescription, lab results, or a wound. The photo is stored with the entry and visible on the detail view.'**
+  String get faqHealthA6;
+
+  /// No description provided for @faqWeightTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Weight Tracking'**
+  String get faqWeightTitle;
+
+  /// No description provided for @faqWeightQ1.
+  ///
+  /// In en, this message translates to:
+  /// **'How do I record my pet\'s weight?'**
+  String get faqWeightQ1;
+
+  /// No description provided for @faqWeightA1.
+  ///
+  /// In en, this message translates to:
+  /// **'Open the pet\'s detail page and scroll to the Weight section. Tap the add button to enter a new weight reading. You can choose between kilograms (kg) and pounds (lb).'**
+  String get faqWeightA1;
+
+  /// No description provided for @faqWeightQ2.
+  ///
+  /// In en, this message translates to:
+  /// **'How is weight data displayed?'**
+  String get faqWeightQ2;
+
+  /// No description provided for @faqWeightA2.
+  ///
+  /// In en, this message translates to:
+  /// **'Weight history is shown as an interactive line chart on the pet\'s detail page. You can see trends over time and tap individual data points for details. The chart uses your pet\'s unique colour.'**
+  String get faqWeightA2;
+
+  /// No description provided for @faqWeightQ3.
+  ///
+  /// In en, this message translates to:
+  /// **'Can I switch between kg and lb?'**
+  String get faqWeightQ3;
+
+  /// No description provided for @faqWeightA3.
+  ///
+  /// In en, this message translates to:
+  /// **'Yes. Use the unit toggle on the weight section to switch between kilograms and pounds. The conversion is applied to all displayed values.'**
+  String get faqWeightA3;
+
+  /// No description provided for @faqVetTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Veterinarian Management'**
+  String get faqVetTitle;
+
+  /// No description provided for @faqVetQ1.
+  ///
+  /// In en, this message translates to:
+  /// **'How do I add a veterinarian?'**
+  String get faqVetQ1;
+
+  /// No description provided for @faqVetA1.
+  ///
+  /// In en, this message translates to:
+  /// **'Go to the Veterinarians section (accessible from the stethoscope icon in the top bar). Tap the \"+\" button and fill in the clinic name, vet name, phone number, email, address, and website.'**
+  String get faqVetA1;
+
+  /// No description provided for @faqVetQ2.
+  ///
+  /// In en, this message translates to:
+  /// **'How do I link a vet to my pet?'**
+  String get faqVetQ2;
+
+  /// No description provided for @faqVetA2.
+  ///
+  /// In en, this message translates to:
+  /// **'When editing a pet\'s profile, you can select a veterinarian from your saved list. This links the vet to the pet so their contact information is readily available on the pet\'s detail page.'**
+  String get faqVetA2;
+
+  /// No description provided for @faqVetQ3.
+  ///
+  /// In en, this message translates to:
+  /// **'Can I edit or delete a vet?'**
+  String get faqVetQ3;
+
+  /// No description provided for @faqVetA3.
+  ///
+  /// In en, this message translates to:
+  /// **'Yes. From the Veterinarians list, tap on a vet to view their details, then use the edit or delete options. Deleting a vet removes the link from any associated pets but does not delete the pets themselves.'**
+  String get faqVetA3;
+
+  /// No description provided for @faqSharingTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Pet Sharing'**
+  String get faqSharingTitle;
+
+  /// No description provided for @faqSharingQ1.
+  ///
+  /// In en, this message translates to:
+  /// **'How do I share a pet with someone?'**
+  String get faqSharingQ1;
+
+  /// No description provided for @faqSharingA1.
+  ///
+  /// In en, this message translates to:
+  /// **'Open the pet\'s detail page and use the share option to generate a share link. Send this link to the person you want to share with. When they accept, they will see the pet in their list.'**
+  String get faqSharingA1;
+
+  /// No description provided for @faqSharingQ2.
+  ///
+  /// In en, this message translates to:
+  /// **'What happens when someone accepts a share?'**
+  String get faqSharingQ2;
+
+  /// No description provided for @faqSharingA2.
+  ///
+  /// In en, this message translates to:
+  /// **'The recipient receives a notification with the pending share. They can choose to place the shared pet into their personal list or into an organisation they belong to. The pet appears with a \"shared\" badge.'**
+  String get faqSharingA2;
+
+  /// No description provided for @faqSharingQ3.
+  ///
+  /// In en, this message translates to:
+  /// **'Can I hide a shared pet?'**
+  String get faqSharingQ3;
+
+  /// No description provided for @faqSharingA3.
+  ///
+  /// In en, this message translates to:
+  /// **'Yes. Swipe left on a shared pet\'s card to hide it. Hidden pets will not appear in your pet list, health dashboard, or generate notifications. You can unhide them from the organisation\'s detail page under \"Hidden Shared Pets\".'**
+  String get faqSharingA3;
+
+  /// No description provided for @faqSharingQ4.
+  ///
+  /// In en, this message translates to:
+  /// **'What is the difference between sharing and transferring?'**
+  String get faqSharingQ4;
+
+  /// No description provided for @faqSharingA4.
+  ///
+  /// In en, this message translates to:
+  /// **'Sharing gives someone view access to a pet — the original owner retains full control. Transferring (available for organisation pets) moves ownership of the pet to another user or organisation entirely.'**
+  String get faqSharingA4;
+
+  /// No description provided for @faqOrgTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Organisations'**
+  String get faqOrgTitle;
+
+  /// No description provided for @faqOrgQ1.
+  ///
+  /// In en, this message translates to:
+  /// **'What are organisations for?'**
+  String get faqOrgQ1;
+
+  /// No description provided for @faqOrgA1.
+  ///
+  /// In en, this message translates to:
+  /// **'Organisations let multiple people collaborate on pet care. They are ideal for vet clinics, shelters, charities, and foster networks. You can create Professional or Charity organisations.'**
+  String get faqOrgA1;
+
+  /// No description provided for @faqOrgQ2.
+  ///
+  /// In en, this message translates to:
+  /// **'How do I create an organisation?'**
+  String get faqOrgQ2;
+
+  /// No description provided for @faqOrgA2.
+  ///
+  /// In en, this message translates to:
+  /// **'Go to the Organisations page (accessible from the business icon in the top bar or from My Details). Tap \"Create\" and choose Professional or Charity, then fill in the name and details. You become the super user automatically.'**
+  String get faqOrgA2;
+
+  /// No description provided for @faqOrgQ3.
+  ///
+  /// In en, this message translates to:
+  /// **'How do I invite people to my organisation?'**
+  String get faqOrgQ3;
+
+  /// No description provided for @faqOrgA3.
+  ///
+  /// In en, this message translates to:
+  /// **'From the organisation\'s detail page, tap \"Add User\". Enter the person\'s email address and choose their role — either \"Member\" or \"Super User\". They will receive a pending invite they can accept or decline.'**
+  String get faqOrgA3;
+
+  /// No description provided for @faqOrgQ4.
+  ///
+  /// In en, this message translates to:
+  /// **'What is the difference between a Member and a Super User?'**
+  String get faqOrgQ4;
+
+  /// No description provided for @faqOrgA4.
+  ///
+  /// In en, this message translates to:
+  /// **'Members can view and manage pets within the organisation. Super Users have additional permissions: they can invite or remove members, edit organisation details, transfer pets, and manage archives.'**
+  String get faqOrgA4;
+
+  /// No description provided for @faqOrgQ5.
+  ///
+  /// In en, this message translates to:
+  /// **'How do I archive or restore a pet in an organisation?'**
+  String get faqOrgQ5;
+
+  /// No description provided for @faqOrgA5.
+  ///
+  /// In en, this message translates to:
+  /// **'Super Users can archive a pet from the organisation\'s pet list (e.g., after an adoption). Archived pets are hidden from the active list but preserved for record-keeping. They can be restored at any time from the Archived Pets section.'**
+  String get faqOrgA5;
+
+  /// No description provided for @faqFamilyEventsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Family Events'**
+  String get faqFamilyEventsTitle;
+
+  /// No description provided for @faqFamilyEventsQ1.
+  ///
+  /// In en, this message translates to:
+  /// **'What are Family Events?'**
+  String get faqFamilyEventsQ1;
+
+  /// No description provided for @faqFamilyEventsA1.
+  ///
+  /// In en, this message translates to:
+  /// **'Family Events are care assignments for organisation pets. They record who is responsible for a pet during a specific period — such as a foster stay or temporary care. Each event has an assigned member, date range, and optional notes.'**
+  String get faqFamilyEventsA1;
+
+  /// No description provided for @faqFamilyEventsQ2.
+  ///
+  /// In en, this message translates to:
+  /// **'How do I create a Family Event?'**
+  String get faqFamilyEventsQ2;
+
+  /// No description provided for @faqFamilyEventsA2.
+  ///
+  /// In en, this message translates to:
+  /// **'Open an organisation pet\'s detail page and scroll to the Family Events section. Tap the add button, choose the assigned member, set the from and optional to dates, and add any notes. All organisation members will be notified.'**
+  String get faqFamilyEventsA2;
+
+  /// No description provided for @faqFamilyEventsQ3.
+  ///
+  /// In en, this message translates to:
+  /// **'Do Family Events appear in the Health Dashboard?'**
+  String get faqFamilyEventsQ3;
+
+  /// No description provided for @faqFamilyEventsA3.
+  ///
+  /// In en, this message translates to:
+  /// **'Yes. Family Events have their own dedicated tab in the Health Dashboard. They also trigger reminder notifications when an event\'s end date is approaching, so all organisation members stay informed.'**
+  String get faqFamilyEventsA3;
+
+  /// No description provided for @faqNotificationsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Notifications'**
+  String get faqNotificationsTitle;
+
+  /// No description provided for @faqNotificationsQ1.
+  ///
+  /// In en, this message translates to:
+  /// **'What notifications will I receive?'**
+  String get faqNotificationsQ1;
+
+  /// No description provided for @faqNotificationsA1.
+  ///
+  /// In en, this message translates to:
+  /// **'You will receive in-app notifications for: due or overdue health entries, upcoming medication reminders, organisation invites, share requests, pet memorials, and family event reminders.'**
+  String get faqNotificationsA1;
+
+  /// No description provided for @faqNotificationsQ2.
+  ///
+  /// In en, this message translates to:
+  /// **'How do I manage notification preferences?'**
+  String get faqNotificationsQ2;
+
+  /// No description provided for @faqNotificationsA2.
+  ///
+  /// In en, this message translates to:
+  /// **'Go to the Notifications screen (bell icon in the top bar) and tap the settings icon. From there you can customise which types of notifications you receive.'**
+  String get faqNotificationsA2;
+
+  /// No description provided for @faqNotificationsQ3.
+  ///
+  /// In en, this message translates to:
+  /// **'Can I mute notifications for a specific pet?'**
+  String get faqNotificationsQ3;
+
+  /// No description provided for @faqNotificationsA3.
+  ///
+  /// In en, this message translates to:
+  /// **'Yes. Each pet has a mute option in its notification settings. Muted pets will not generate any health-related notifications until unmuted.'**
+  String get faqNotificationsA3;
+
+  /// No description provided for @faqNotificationsQ4.
+  ///
+  /// In en, this message translates to:
+  /// **'Can I snooze a notification?'**
+  String get faqNotificationsQ4;
+
+  /// No description provided for @faqNotificationsA4.
+  ///
+  /// In en, this message translates to:
+  /// **'Yes. You can snooze individual notifications to be reminded again after a chosen number of days. The snoozed reminder will reappear counting from today, not from the original due date.'**
+  String get faqNotificationsA4;
+
+  /// No description provided for @faqReportsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Reports'**
+  String get faqReportsTitle;
+
+  /// No description provided for @faqReportsQ1.
+  ///
+  /// In en, this message translates to:
+  /// **'How do I generate a pet report?'**
+  String get faqReportsQ1;
+
+  /// No description provided for @faqReportsA1.
+  ///
+  /// In en, this message translates to:
+  /// **'Open a pet\'s detail page and tap the report/PDF icon. You can customise what to include — profile information, weight history, health events, and health issues. The report is generated as a downloadable PDF.'**
+  String get faqReportsA1;
+
+  /// No description provided for @faqReportsQ2.
+  ///
+  /// In en, this message translates to:
+  /// **'What information is included in a report?'**
+  String get faqReportsQ2;
+
+  /// No description provided for @faqReportsA2.
+  ///
+  /// In en, this message translates to:
+  /// **'Reports can include: pet profile details (name, breed, age, ID), a weight chart and history table, a list of all health entries by type, and any recorded health issues. You choose which sections to include before generating.'**
+  String get faqReportsA2;
+
+  /// No description provided for @faqSubscriptionTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Subscription'**
+  String get faqSubscriptionTitle;
+
+  /// No description provided for @faqSubscriptionQ1.
+  ///
+  /// In en, this message translates to:
+  /// **'Is Agatha Track free to use?'**
+  String get faqSubscriptionQ1;
+
+  /// No description provided for @faqSubscriptionA1.
+  ///
+  /// In en, this message translates to:
+  /// **'Agatha Track offers a free tier with core features. An optional premium subscription unlocks additional capabilities and removes limits. Visit the Subscription page from My Details to learn more.'**
+  String get faqSubscriptionA1;
+
+  /// No description provided for @faqSubscriptionQ2.
+  ///
+  /// In en, this message translates to:
+  /// **'How do I subscribe?'**
+  String get faqSubscriptionQ2;
+
+  /// No description provided for @faqSubscriptionA2.
+  ///
+  /// In en, this message translates to:
+  /// **'Go to My Details and tap \"Subscription\". Choose a plan and complete the purchase through your platform\'s payment system. Your subscription is managed securely through RevenueCat.'**
+  String get faqSubscriptionA2;
+
+  /// No description provided for @faqSubscriptionQ3.
+  ///
+  /// In en, this message translates to:
+  /// **'How do I cancel my subscription?'**
+  String get faqSubscriptionQ3;
+
+  /// No description provided for @faqSubscriptionA3.
+  ///
+  /// In en, this message translates to:
+  /// **'Subscriptions can be managed or cancelled through your device\'s app store settings (App Store or Google Play). Changes take effect at the end of the current billing period.'**
+  String get faqSubscriptionA3;
+
+  /// No description provided for @faqLanguageTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Language & Accessibility'**
+  String get faqLanguageTitle;
+
+  /// No description provided for @faqLanguageQ1.
+  ///
+  /// In en, this message translates to:
+  /// **'How do I change the app language?'**
+  String get faqLanguageQ1;
+
+  /// No description provided for @faqLanguageA1.
+  ///
+  /// In en, this message translates to:
+  /// **'Go to My Details and use the language dropdown to switch between English and French. The change takes effect immediately across the entire app and is saved to your profile.'**
+  String get faqLanguageA1;
+
+  /// No description provided for @faqLanguageQ2.
+  ///
+  /// In en, this message translates to:
+  /// **'Is the app accessible?'**
+  String get faqLanguageQ2;
+
+  /// No description provided for @faqLanguageA2.
+  ///
+  /// In en, this message translates to:
+  /// **'Yes. Agatha Track includes accessibility features throughout: semantic labels for screen readers, tooltips on all interactive elements, proper form field labelling, and keyboard navigation support.'**
+  String get faqLanguageA2;
 }
 
 class _AppLocalizationsDelegate

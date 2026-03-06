@@ -1720,4 +1720,384 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get hiddenSharedPets => 'Animaux partagés masqués';
+
+  @override
+  String get help => 'Aide';
+
+  @override
+  String get helpTitle => 'Aide & FAQ';
+
+  @override
+  String get helpSubtitle =>
+      'Trouvez les réponses à vos questions sur toutes les fonctionnalités d\'Agatha Track.';
+
+  @override
+  String get faqAccountTitle => 'Compte & Authentification';
+
+  @override
+  String get faqAccountQ1 => 'Comment créer un compte ?';
+
+  @override
+  String get faqAccountA1 =>
+      'Appuyez sur « S\'inscrire » sur la page d\'accueil. Saisissez votre adresse e-mail, choisissez un mot de passe et indiquez votre prénom et nom. Vous serez connecté automatiquement après l\'inscription.';
+
+  @override
+  String get faqAccountQ2 => 'Comment me connecter ?';
+
+  @override
+  String get faqAccountA2 =>
+      'Appuyez sur « Se connecter » sur la page d\'accueil et entrez votre e-mail et mot de passe. Votre session reste active jusqu\'à la déconnexion.';
+
+  @override
+  String get faqAccountQ3 =>
+      'J\'ai oublié mon mot de passe — comment le réinitialiser ?';
+
+  @override
+  String get faqAccountA3 =>
+      'Sur l\'écran de connexion, appuyez sur « Mot de passe oublié ? ». Entrez l\'adresse e-mail associée à votre compte et suivez les instructions pour définir un nouveau mot de passe.';
+
+  @override
+  String get faqAccountQ4 => 'Comment modifier mon profil ?';
+
+  @override
+  String get faqAccountA4 =>
+      'Allez dans le menu utilisateur (votre avatar en haut à droite), puis appuyez sur « Mes informations ». Vous pouvez modifier votre nom, bio, photo de profil et changer votre mot de passe.';
+
+  @override
+  String get faqAccountQ5 => 'Comment me déconnecter ?';
+
+  @override
+  String get faqAccountA5 =>
+      'Ouvrez le menu utilisateur (icône avatar en haut à droite) et appuyez sur « Déconnexion ». Vous serez redirigé vers la page d\'accueil.';
+
+  @override
+  String get faqPetProfileTitle => 'Profils des animaux';
+
+  @override
+  String get faqPetProfileQ1 => 'Comment ajouter un nouvel animal ?';
+
+  @override
+  String get faqPetProfileA1 =>
+      'Appuyez sur le bouton « + » sur l\'écran de la liste des animaux. Renseignez le nom, l\'espèce, la race, la date de naissance et les détails optionnels comme le numéro de puce et la photo. Chaque animal reçoit une couleur unique pour l\'identifier facilement.';
+
+  @override
+  String get faqPetProfileQ2 => 'Comment modifier ou supprimer un animal ?';
+
+  @override
+  String get faqPetProfileA2 =>
+      'Appuyez sur la carte de l\'animal pour ouvrir sa page de détail. Utilisez l\'icône de modification en haut à droite pour mettre à jour les informations. Pour supprimer un animal, utilisez l\'option de suppression — notez que cela supprime définitivement toutes les entrées de santé, les relevés de poids et les autres données associées.';
+
+  @override
+  String get faqPetProfileQ3 => 'Que signifie le rappel d\'identification ?';
+
+  @override
+  String get faqPetProfileA3 =>
+      'Si votre animal n\'a pas de numéro d\'identification (puce ou tatouage) enregistré, un rappel spécifique à l\'espèce apparaîtra sur la carte de l\'animal. Vous pouvez ignorer ce rappel ou ajouter l\'identifiant dans le formulaire de modification.';
+
+  @override
+  String get faqPetProfileQ4 => 'Comment marquer un animal comme décédé ?';
+
+  @override
+  String get faqPetProfileA4 =>
+      'Ouvrez le formulaire de modification de l\'animal et activez l\'option « Décédé ». Cela change la couleur de l\'animal en blanc, ajoute une icône de mémorial sur la photo et envoie une notification. L\'animal reste dans votre liste en tant que mémorial.';
+
+  @override
+  String get faqPetProfileQ5 => 'Quel est le système de couleurs des animaux ?';
+
+  @override
+  String get faqPetProfileA5 =>
+      'Chaque animal se voit attribuer une couleur unique parmi une palette de 15 couleurs lors de sa création. Cette couleur apparaît sur les cartes, les graphiques et dans toute l\'application pour identifier rapidement chaque animal.';
+
+  @override
+  String get faqPetProfileQ6 => 'Comment l\'âge de mon animal est-il calculé ?';
+
+  @override
+  String get faqPetProfileA6 =>
+      'L\'âge est calculé automatiquement à partir de la date de naissance saisie. Il se met à jour dynamiquement et s\'affiche sur la page de détail et les cartes de profil.';
+
+  @override
+  String get faqHealthTitle => 'Suivi de santé';
+
+  @override
+  String get faqHealthQ1 => 'Quels types d\'entrées de santé puis-je suivre ?';
+
+  @override
+  String get faqHealthA1 =>
+      'Vous pouvez suivre les médicaments, les traitements préventifs (vaccins, vermifuges, antiparasitaires), les visites vétérinaires et les procédures médicales. Chaque type a sa propre icône et couleur dans le tableau de bord.';
+
+  @override
+  String get faqHealthQ2 => 'Comment ajouter une entrée de santé ?';
+
+  @override
+  String get faqHealthA2 =>
+      'Vous pouvez ajouter des entrées depuis deux endroits : la page de détail de l\'animal (spécifique à cet animal) ou le Tableau de bord santé global (accessible depuis l\'icône médicale dans la barre du haut). Renseignez le type, le nom, la date et les détails optionnels.';
+
+  @override
+  String get faqHealthQ3 => 'Qu\'est-ce que le Tableau de bord santé ?';
+
+  @override
+  String get faqHealthA3 =>
+      'Le Tableau de bord santé est une vue globale de tous les événements de santé de tous vos animaux. Il est organisé en onglets par type et affiche les entrées à venir, dues et en retard. Vous pouvez filtrer par organisation.';
+
+  @override
+  String get faqHealthQ4 =>
+      'Comment fonctionnent les entrées de santé récurrentes ?';
+
+  @override
+  String get faqHealthA4 =>
+      'Lors de la création d\'une entrée de santé, vous pouvez définir une fréquence (quotidienne, hebdomadaire, mensuelle, annuelle ou un nombre de jours personnalisé). L\'application planifiera automatiquement la prochaine occurrence et vous notifiera.';
+
+  @override
+  String get faqHealthQ5 => 'Que sont les Problèmes de santé ?';
+
+  @override
+  String get faqHealthA5 =>
+      'Les Problèmes de santé permettent de suivre les affections médicales en cours (allergies, maladies chroniques). Chaque problème peut avoir une date de début, une date de fin optionnelle et être lié à des entrées de santé pour un historique médical complet.';
+
+  @override
+  String get faqHealthQ6 => 'Puis-je joindre des photos aux entrées de santé ?';
+
+  @override
+  String get faqHealthA6 =>
+      'Oui. Lors de la création ou de la modification d\'une entrée de santé, vous pouvez joindre une photo — par exemple une ordonnance, des résultats d\'analyse ou une photo de blessure. La photo est stockée avec l\'entrée.';
+
+  @override
+  String get faqWeightTitle => 'Suivi du poids';
+
+  @override
+  String get faqWeightQ1 => 'Comment enregistrer le poids de mon animal ?';
+
+  @override
+  String get faqWeightA1 =>
+      'Ouvrez la page de détail de l\'animal et faites défiler jusqu\'à la section Poids. Appuyez sur le bouton d\'ajout pour saisir un nouveau relevé de poids. Vous pouvez choisir entre kilogrammes (kg) et livres (lb).';
+
+  @override
+  String get faqWeightQ2 =>
+      'Comment les données de poids sont-elles affichées ?';
+
+  @override
+  String get faqWeightA2 =>
+      'L\'historique de poids est affiché sous forme de graphique linéaire interactif sur la page de détail de l\'animal. Vous pouvez voir les tendances et appuyer sur les points pour les détails. Le graphique utilise la couleur unique de votre animal.';
+
+  @override
+  String get faqWeightQ3 => 'Puis-je basculer entre kg et lb ?';
+
+  @override
+  String get faqWeightA3 =>
+      'Oui. Utilisez le bouton de changement d\'unité dans la section poids pour basculer entre kilogrammes et livres. La conversion est appliquée à toutes les valeurs affichées.';
+
+  @override
+  String get faqVetTitle => 'Gestion des vétérinaires';
+
+  @override
+  String get faqVetQ1 => 'Comment ajouter un vétérinaire ?';
+
+  @override
+  String get faqVetA1 =>
+      'Allez dans la section Vétérinaires (accessible depuis l\'icône stéthoscope dans la barre du haut). Appuyez sur le bouton « + » et renseignez le nom de la clinique, le nom du vétérinaire, le téléphone, l\'e-mail, l\'adresse et le site web.';
+
+  @override
+  String get faqVetQ2 => 'Comment associer un vétérinaire à mon animal ?';
+
+  @override
+  String get faqVetA2 =>
+      'Lors de la modification du profil d\'un animal, vous pouvez sélectionner un vétérinaire dans votre liste enregistrée. Cela lie le vétérinaire à l\'animal pour un accès rapide à ses coordonnées depuis la page de détail.';
+
+  @override
+  String get faqVetQ3 => 'Puis-je modifier ou supprimer un vétérinaire ?';
+
+  @override
+  String get faqVetA3 =>
+      'Oui. Depuis la liste des vétérinaires, appuyez sur un vétérinaire pour voir ses détails, puis utilisez les options de modification ou de suppression. La suppression d\'un vétérinaire retire le lien avec les animaux associés mais ne supprime pas les animaux.';
+
+  @override
+  String get faqSharingTitle => 'Partage d\'animaux';
+
+  @override
+  String get faqSharingQ1 => 'Comment partager un animal avec quelqu\'un ?';
+
+  @override
+  String get faqSharingA1 =>
+      'Ouvrez la page de détail de l\'animal et utilisez l\'option de partage pour générer un lien. Envoyez ce lien à la personne souhaitée. Lorsqu\'elle l\'accepte, elle verra l\'animal dans sa liste.';
+
+  @override
+  String get faqSharingQ2 =>
+      'Que se passe-t-il quand quelqu\'un accepte un partage ?';
+
+  @override
+  String get faqSharingA2 =>
+      'Le destinataire reçoit une notification avec le partage en attente. Il peut choisir de placer l\'animal partagé dans sa liste personnelle ou dans une organisation à laquelle il appartient. L\'animal apparaît avec un badge « partagé ».';
+
+  @override
+  String get faqSharingQ3 => 'Puis-je masquer un animal partagé ?';
+
+  @override
+  String get faqSharingA3 =>
+      'Oui. Faites glisser vers la gauche sur la carte d\'un animal partagé pour le masquer. Les animaux masqués n\'apparaîtront pas dans votre liste, votre tableau de bord santé, et ne généreront pas de notifications. Vous pouvez les réafficher depuis la page de détail de l\'organisation.';
+
+  @override
+  String get faqSharingQ4 =>
+      'Quelle est la différence entre partager et transférer ?';
+
+  @override
+  String get faqSharingA4 =>
+      'Le partage donne un accès en lecture à un animal — le propriétaire d\'origine garde le contrôle total. Le transfert (disponible pour les animaux d\'organisation) transfère la propriété de l\'animal à un autre utilisateur ou organisation.';
+
+  @override
+  String get faqOrgTitle => 'Organisations';
+
+  @override
+  String get faqOrgQ1 => 'À quoi servent les organisations ?';
+
+  @override
+  String get faqOrgA1 =>
+      'Les organisations permettent à plusieurs personnes de collaborer sur les soins des animaux. Elles sont idéales pour les cliniques vétérinaires, les refuges, les associations et les réseaux de familles d\'accueil. Vous pouvez créer des organisations Professionnelles ou Caritatives.';
+
+  @override
+  String get faqOrgQ2 => 'Comment créer une organisation ?';
+
+  @override
+  String get faqOrgA2 =>
+      'Allez sur la page Organisations (accessible depuis l\'icône entreprise dans la barre du haut ou depuis Mes informations). Appuyez sur « Créer » et choisissez Professionnelle ou Caritative, puis renseignez le nom et les détails. Vous devenez automatiquement super utilisateur.';
+
+  @override
+  String get faqOrgQ3 =>
+      'Comment inviter des personnes dans mon organisation ?';
+
+  @override
+  String get faqOrgA3 =>
+      'Depuis la page de détail de l\'organisation, appuyez sur « Ajouter un utilisateur ». Entrez l\'adresse e-mail de la personne et choisissez son rôle — « Membre » ou « Super utilisateur ». Elle recevra une invitation en attente qu\'elle peut accepter ou refuser.';
+
+  @override
+  String get faqOrgQ4 =>
+      'Quelle est la différence entre Membre et Super utilisateur ?';
+
+  @override
+  String get faqOrgA4 =>
+      'Les membres peuvent voir et gérer les animaux de l\'organisation. Les super utilisateurs ont des permissions supplémentaires : inviter ou retirer des membres, modifier les détails de l\'organisation, transférer des animaux et gérer les archives.';
+
+  @override
+  String get faqOrgQ5 =>
+      'Comment archiver ou restaurer un animal dans une organisation ?';
+
+  @override
+  String get faqOrgA5 =>
+      'Les super utilisateurs peuvent archiver un animal depuis la liste des animaux de l\'organisation (par exemple après une adoption). Les animaux archivés sont masqués de la liste active mais conservés. Ils peuvent être restaurés à tout moment depuis la section Animaux archivés.';
+
+  @override
+  String get faqFamilyEventsTitle => 'Événements familiaux';
+
+  @override
+  String get faqFamilyEventsQ1 => 'Que sont les événements familiaux ?';
+
+  @override
+  String get faqFamilyEventsA1 =>
+      'Les événements familiaux sont des affectations de soins pour les animaux d\'organisation. Ils enregistrent qui est responsable d\'un animal pendant une période donnée — comme un séjour en famille d\'accueil. Chaque événement a un membre assigné, une plage de dates et des notes optionnelles.';
+
+  @override
+  String get faqFamilyEventsQ2 => 'Comment créer un événement familial ?';
+
+  @override
+  String get faqFamilyEventsA2 =>
+      'Ouvrez la page de détail d\'un animal d\'organisation et faites défiler jusqu\'à la section Événements familiaux. Appuyez sur le bouton d\'ajout, choisissez le membre assigné, définissez les dates et ajoutez des notes. Tous les membres de l\'organisation seront notifiés.';
+
+  @override
+  String get faqFamilyEventsQ3 =>
+      'Les événements familiaux apparaissent-ils dans le tableau de bord santé ?';
+
+  @override
+  String get faqFamilyEventsA3 =>
+      'Oui. Les événements familiaux ont leur propre onglet dédié dans le tableau de bord santé. Ils déclenchent également des rappels lorsque la date de fin approche.';
+
+  @override
+  String get faqNotificationsTitle => 'Notifications';
+
+  @override
+  String get faqNotificationsQ1 => 'Quelles notifications vais-je recevoir ?';
+
+  @override
+  String get faqNotificationsA1 =>
+      'Vous recevrez des notifications dans l\'application pour : les entrées de santé dues ou en retard, les rappels de médicaments, les invitations d\'organisation, les demandes de partage, les mémoriaux et les rappels d\'événements familiaux.';
+
+  @override
+  String get faqNotificationsQ2 =>
+      'Comment gérer mes préférences de notification ?';
+
+  @override
+  String get faqNotificationsA2 =>
+      'Allez sur l\'écran Notifications (icône cloche dans la barre du haut) et appuyez sur l\'icône paramètres. Vous pouvez personnaliser les types de notifications que vous souhaitez recevoir.';
+
+  @override
+  String get faqNotificationsQ3 =>
+      'Puis-je désactiver les notifications pour un animal spécifique ?';
+
+  @override
+  String get faqNotificationsA3 =>
+      'Oui. Chaque animal a une option de mise en sourdine dans ses paramètres de notification. Les animaux mis en sourdine ne généreront aucune notification de santé tant qu\'ils ne seront pas réactivés.';
+
+  @override
+  String get faqNotificationsQ4 => 'Puis-je reporter une notification ?';
+
+  @override
+  String get faqNotificationsA4 =>
+      'Oui. Vous pouvez reporter des notifications individuelles pour être rappelé après un nombre de jours choisi. Le rappel reporté réapparaîtra en comptant à partir d\'aujourd\'hui, pas de la date d\'échéance d\'origine.';
+
+  @override
+  String get faqReportsTitle => 'Rapports';
+
+  @override
+  String get faqReportsQ1 => 'Comment générer un rapport pour un animal ?';
+
+  @override
+  String get faqReportsA1 =>
+      'Ouvrez la page de détail d\'un animal et appuyez sur l\'icône rapport/PDF. Vous pouvez personnaliser le contenu — informations de profil, historique de poids, événements de santé et problèmes de santé. Le rapport est généré en PDF téléchargeable.';
+
+  @override
+  String get faqReportsQ2 =>
+      'Quelles informations sont incluses dans un rapport ?';
+
+  @override
+  String get faqReportsA2 =>
+      'Les rapports peuvent inclure : les détails du profil (nom, race, âge, ID), un graphique de poids et tableau d\'historique, une liste de toutes les entrées de santé par type et les problèmes de santé enregistrés. Vous choisissez les sections à inclure.';
+
+  @override
+  String get faqSubscriptionTitle => 'Abonnement';
+
+  @override
+  String get faqSubscriptionQ1 => 'Agatha Track est-il gratuit ?';
+
+  @override
+  String get faqSubscriptionA1 =>
+      'Agatha Track propose un niveau gratuit avec les fonctionnalités essentielles. Un abonnement premium optionnel débloque des fonctionnalités supplémentaires. Visitez la page Abonnement depuis Mes informations pour en savoir plus.';
+
+  @override
+  String get faqSubscriptionQ2 => 'Comment m\'abonner ?';
+
+  @override
+  String get faqSubscriptionA2 =>
+      'Allez dans Mes informations et appuyez sur « Abonnement ». Choisissez un forfait et finalisez l\'achat via le système de paiement de votre plateforme. Votre abonnement est géré de manière sécurisée via RevenueCat.';
+
+  @override
+  String get faqSubscriptionQ3 => 'Comment annuler mon abonnement ?';
+
+  @override
+  String get faqSubscriptionA3 =>
+      'Les abonnements peuvent être gérés ou annulés via les paramètres du magasin d\'applications de votre appareil (App Store ou Google Play). Les modifications prennent effet à la fin de la période de facturation en cours.';
+
+  @override
+  String get faqLanguageTitle => 'Langue & Accessibilité';
+
+  @override
+  String get faqLanguageQ1 => 'Comment changer la langue de l\'application ?';
+
+  @override
+  String get faqLanguageA1 =>
+      'Allez dans Mes informations et utilisez le menu déroulant de langue pour basculer entre l\'anglais et le français. Le changement prend effet immédiatement dans toute l\'application et est enregistré dans votre profil.';
+
+  @override
+  String get faqLanguageQ2 => 'L\'application est-elle accessible ?';
+
+  @override
+  String get faqLanguageA2 =>
+      'Oui. Agatha Track inclut des fonctionnalités d\'accessibilité : étiquettes sémantiques pour les lecteurs d\'écran, infobulles sur tous les éléments interactifs, étiquetage approprié des champs de formulaire et support de la navigation au clavier.';
 }

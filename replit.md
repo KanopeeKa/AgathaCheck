@@ -29,7 +29,9 @@ The application employs a clean architecture, separating concerns into data, dom
 - **Subscription (RevenueCat)**: Manages in-app subscriptions and entitlements across platforms.
 - **Localization (EN/FR)**: Full English/French localization via Flutter's `intl` system, with locale persistence and server-side syncing.
 - **Deployment**: Flutter web frontend is statically served by an AOT compiled Dart API server.
+- **Help & FAQ**: In-app help page (`/help`) accessible from the user menu, with 12 collapsible FAQ sections covering every feature. Fully localised in EN/FR. Route: `/help`, screen: `HelpScreen`.
 - **Accessibility**: Implemented across all screens with tooltips, keys, semantics, and proper form field labeling.
+- **BDD Tests**: Gherkin `.feature` files under `flutter_app/test/bdd/features/` covering all features: authentication, pet profiles, health tracking, weight tracking, vet management, sharing, notifications, subscriptions, help/FAQ, plus organisation management, pet management, timeline, and adoption.
 
 ## External Dependencies
 - **Flutter**: Frontend framework

@@ -1713,4 +1713,377 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get hiddenSharedPets => 'Hidden Shared Pets';
+
+  @override
+  String get help => 'Help';
+
+  @override
+  String get helpTitle => 'Help & FAQ';
+
+  @override
+  String get helpSubtitle =>
+      'Find answers to common questions about every feature in Agatha Track.';
+
+  @override
+  String get faqAccountTitle => 'Account & Authentication';
+
+  @override
+  String get faqAccountQ1 => 'How do I create an account?';
+
+  @override
+  String get faqAccountA1 =>
+      'Tap \"Sign Up\" on the landing page. Enter your email address, choose a password, and provide your first and last name. You will be logged in automatically after signing up.';
+
+  @override
+  String get faqAccountQ2 => 'How do I log in?';
+
+  @override
+  String get faqAccountA2 =>
+      'Tap \"Log In\" on the landing page and enter your email and password. Your session stays active until you log out.';
+
+  @override
+  String get faqAccountQ3 => 'I forgot my password — how do I reset it?';
+
+  @override
+  String get faqAccountA3 =>
+      'On the login screen, tap \"Forgot password?\". Enter the email address associated with your account and follow the instructions to set a new password.';
+
+  @override
+  String get faqAccountQ4 => 'How do I update my profile?';
+
+  @override
+  String get faqAccountA4 =>
+      'Go to the user menu (your avatar in the top-right corner), then tap \"My Details\". From there you can edit your name, bio, profile photo, and change your password.';
+
+  @override
+  String get faqAccountQ5 => 'How do I log out?';
+
+  @override
+  String get faqAccountA5 =>
+      'Open the user menu (avatar icon in the top-right corner) and tap \"Logout\". You will be returned to the landing page.';
+
+  @override
+  String get faqPetProfileTitle => 'Pet Profiles';
+
+  @override
+  String get faqPetProfileQ1 => 'How do I add a new pet?';
+
+  @override
+  String get faqPetProfileA1 =>
+      'Tap the \"+\" button on the main pet list screen. Fill in your pet\'s name, species, breed, date of birth, and optional details like microchip number and photo. Each pet is assigned a unique colour for easy identification.';
+
+  @override
+  String get faqPetProfileQ2 => 'How do I edit or delete a pet?';
+
+  @override
+  String get faqPetProfileA2 =>
+      'Tap on the pet\'s card to open its detail page. Use the edit icon in the top-right to update information. To delete a pet, use the delete option — note that deleting a pet permanently removes all associated health entries, weight records, and other data.';
+
+  @override
+  String get faqPetProfileQ3 => 'What does the identification reminder mean?';
+
+  @override
+  String get faqPetProfileA3 =>
+      'If your pet does not have an ID (microchip or tag number) recorded, a species-specific reminder will appear on the pet\'s card. You can dismiss this reminder or add the ID in the pet\'s edit form.';
+
+  @override
+  String get faqPetProfileQ4 => 'How do I mark a pet as passed away?';
+
+  @override
+  String get faqPetProfileA4 =>
+      'Open the pet\'s edit form and enable the \"Passed away\" option. This changes the pet\'s colour to white, adds a memorial overlay to the photo, and sends a notification. The pet remains in your list as a memorial.';
+
+  @override
+  String get faqPetProfileQ5 => 'What is the pet colour system?';
+
+  @override
+  String get faqPetProfileA5 =>
+      'Each pet is assigned a unique colour from a palette of 15 colours when created. This colour appears on cards, charts, and throughout the app to help you quickly identify each pet at a glance.';
+
+  @override
+  String get faqPetProfileQ6 => 'How is my pet\'s age calculated?';
+
+  @override
+  String get faqPetProfileA6 =>
+      'Age is automatically calculated from the date of birth you enter. It updates dynamically and is displayed on the pet\'s detail page and profile cards.';
+
+  @override
+  String get faqHealthTitle => 'Health Tracking';
+
+  @override
+  String get faqHealthQ1 => 'What types of health entries can I track?';
+
+  @override
+  String get faqHealthA1 =>
+      'You can track medications, preventive treatments (vaccinations, deworming, flea/tick treatments), vet visits, and medical procedures. Each type has its own icon and colour in the dashboard.';
+
+  @override
+  String get faqHealthQ2 => 'How do I add a health entry?';
+
+  @override
+  String get faqHealthA2 =>
+      'You can add entries from two places: the pet\'s detail page (specific to that pet) or the global Health Dashboard (accessible from the medical icon in the top bar). Fill in the type, name, date, and optional details like frequency, notes, and photo attachments.';
+
+  @override
+  String get faqHealthQ3 => 'What is the Health Dashboard?';
+
+  @override
+  String get faqHealthA3 =>
+      'The Health Dashboard is a global view of all health events across all your pets. It is organised into tabs by type (medications, preventives, vet visits, etc.) and shows upcoming, due, and overdue entries. You can filter by organisation to focus on specific groups of pets.';
+
+  @override
+  String get faqHealthQ4 => 'How do recurring health entries work?';
+
+  @override
+  String get faqHealthA4 =>
+      'When creating a health entry, you can set a frequency (e.g., daily, weekly, monthly, yearly, or a custom number of days). The app will automatically schedule the next occurrence and notify you when it is due.';
+
+  @override
+  String get faqHealthQ5 => 'What are Health Issues?';
+
+  @override
+  String get faqHealthA5 =>
+      'Health Issues let you track ongoing medical conditions (e.g., allergies, chronic illness). Each issue can have a start date, optional end date, and can be linked to related health entries for a complete medical history.';
+
+  @override
+  String get faqHealthQ6 => 'Can I attach photos to health entries?';
+
+  @override
+  String get faqHealthA6 =>
+      'Yes. When creating or editing a health entry, you can attach a photo — for example, a picture of a prescription, lab results, or a wound. The photo is stored with the entry and visible on the detail view.';
+
+  @override
+  String get faqWeightTitle => 'Weight Tracking';
+
+  @override
+  String get faqWeightQ1 => 'How do I record my pet\'s weight?';
+
+  @override
+  String get faqWeightA1 =>
+      'Open the pet\'s detail page and scroll to the Weight section. Tap the add button to enter a new weight reading. You can choose between kilograms (kg) and pounds (lb).';
+
+  @override
+  String get faqWeightQ2 => 'How is weight data displayed?';
+
+  @override
+  String get faqWeightA2 =>
+      'Weight history is shown as an interactive line chart on the pet\'s detail page. You can see trends over time and tap individual data points for details. The chart uses your pet\'s unique colour.';
+
+  @override
+  String get faqWeightQ3 => 'Can I switch between kg and lb?';
+
+  @override
+  String get faqWeightA3 =>
+      'Yes. Use the unit toggle on the weight section to switch between kilograms and pounds. The conversion is applied to all displayed values.';
+
+  @override
+  String get faqVetTitle => 'Veterinarian Management';
+
+  @override
+  String get faqVetQ1 => 'How do I add a veterinarian?';
+
+  @override
+  String get faqVetA1 =>
+      'Go to the Veterinarians section (accessible from the stethoscope icon in the top bar). Tap the \"+\" button and fill in the clinic name, vet name, phone number, email, address, and website.';
+
+  @override
+  String get faqVetQ2 => 'How do I link a vet to my pet?';
+
+  @override
+  String get faqVetA2 =>
+      'When editing a pet\'s profile, you can select a veterinarian from your saved list. This links the vet to the pet so their contact information is readily available on the pet\'s detail page.';
+
+  @override
+  String get faqVetQ3 => 'Can I edit or delete a vet?';
+
+  @override
+  String get faqVetA3 =>
+      'Yes. From the Veterinarians list, tap on a vet to view their details, then use the edit or delete options. Deleting a vet removes the link from any associated pets but does not delete the pets themselves.';
+
+  @override
+  String get faqSharingTitle => 'Pet Sharing';
+
+  @override
+  String get faqSharingQ1 => 'How do I share a pet with someone?';
+
+  @override
+  String get faqSharingA1 =>
+      'Open the pet\'s detail page and use the share option to generate a share link. Send this link to the person you want to share with. When they accept, they will see the pet in their list.';
+
+  @override
+  String get faqSharingQ2 => 'What happens when someone accepts a share?';
+
+  @override
+  String get faqSharingA2 =>
+      'The recipient receives a notification with the pending share. They can choose to place the shared pet into their personal list or into an organisation they belong to. The pet appears with a \"shared\" badge.';
+
+  @override
+  String get faqSharingQ3 => 'Can I hide a shared pet?';
+
+  @override
+  String get faqSharingA3 =>
+      'Yes. Swipe left on a shared pet\'s card to hide it. Hidden pets will not appear in your pet list, health dashboard, or generate notifications. You can unhide them from the organisation\'s detail page under \"Hidden Shared Pets\".';
+
+  @override
+  String get faqSharingQ4 =>
+      'What is the difference between sharing and transferring?';
+
+  @override
+  String get faqSharingA4 =>
+      'Sharing gives someone view access to a pet — the original owner retains full control. Transferring (available for organisation pets) moves ownership of the pet to another user or organisation entirely.';
+
+  @override
+  String get faqOrgTitle => 'Organisations';
+
+  @override
+  String get faqOrgQ1 => 'What are organisations for?';
+
+  @override
+  String get faqOrgA1 =>
+      'Organisations let multiple people collaborate on pet care. They are ideal for vet clinics, shelters, charities, and foster networks. You can create Professional or Charity organisations.';
+
+  @override
+  String get faqOrgQ2 => 'How do I create an organisation?';
+
+  @override
+  String get faqOrgA2 =>
+      'Go to the Organisations page (accessible from the business icon in the top bar or from My Details). Tap \"Create\" and choose Professional or Charity, then fill in the name and details. You become the super user automatically.';
+
+  @override
+  String get faqOrgQ3 => 'How do I invite people to my organisation?';
+
+  @override
+  String get faqOrgA3 =>
+      'From the organisation\'s detail page, tap \"Add User\". Enter the person\'s email address and choose their role — either \"Member\" or \"Super User\". They will receive a pending invite they can accept or decline.';
+
+  @override
+  String get faqOrgQ4 =>
+      'What is the difference between a Member and a Super User?';
+
+  @override
+  String get faqOrgA4 =>
+      'Members can view and manage pets within the organisation. Super Users have additional permissions: they can invite or remove members, edit organisation details, transfer pets, and manage archives.';
+
+  @override
+  String get faqOrgQ5 =>
+      'How do I archive or restore a pet in an organisation?';
+
+  @override
+  String get faqOrgA5 =>
+      'Super Users can archive a pet from the organisation\'s pet list (e.g., after an adoption). Archived pets are hidden from the active list but preserved for record-keeping. They can be restored at any time from the Archived Pets section.';
+
+  @override
+  String get faqFamilyEventsTitle => 'Family Events';
+
+  @override
+  String get faqFamilyEventsQ1 => 'What are Family Events?';
+
+  @override
+  String get faqFamilyEventsA1 =>
+      'Family Events are care assignments for organisation pets. They record who is responsible for a pet during a specific period — such as a foster stay or temporary care. Each event has an assigned member, date range, and optional notes.';
+
+  @override
+  String get faqFamilyEventsQ2 => 'How do I create a Family Event?';
+
+  @override
+  String get faqFamilyEventsA2 =>
+      'Open an organisation pet\'s detail page and scroll to the Family Events section. Tap the add button, choose the assigned member, set the from and optional to dates, and add any notes. All organisation members will be notified.';
+
+  @override
+  String get faqFamilyEventsQ3 =>
+      'Do Family Events appear in the Health Dashboard?';
+
+  @override
+  String get faqFamilyEventsA3 =>
+      'Yes. Family Events have their own dedicated tab in the Health Dashboard. They also trigger reminder notifications when an event\'s end date is approaching, so all organisation members stay informed.';
+
+  @override
+  String get faqNotificationsTitle => 'Notifications';
+
+  @override
+  String get faqNotificationsQ1 => 'What notifications will I receive?';
+
+  @override
+  String get faqNotificationsA1 =>
+      'You will receive in-app notifications for: due or overdue health entries, upcoming medication reminders, organisation invites, share requests, pet memorials, and family event reminders.';
+
+  @override
+  String get faqNotificationsQ2 => 'How do I manage notification preferences?';
+
+  @override
+  String get faqNotificationsA2 =>
+      'Go to the Notifications screen (bell icon in the top bar) and tap the settings icon. From there you can customise which types of notifications you receive.';
+
+  @override
+  String get faqNotificationsQ3 =>
+      'Can I mute notifications for a specific pet?';
+
+  @override
+  String get faqNotificationsA3 =>
+      'Yes. Each pet has a mute option in its notification settings. Muted pets will not generate any health-related notifications until unmuted.';
+
+  @override
+  String get faqNotificationsQ4 => 'Can I snooze a notification?';
+
+  @override
+  String get faqNotificationsA4 =>
+      'Yes. You can snooze individual notifications to be reminded again after a chosen number of days. The snoozed reminder will reappear counting from today, not from the original due date.';
+
+  @override
+  String get faqReportsTitle => 'Reports';
+
+  @override
+  String get faqReportsQ1 => 'How do I generate a pet report?';
+
+  @override
+  String get faqReportsA1 =>
+      'Open a pet\'s detail page and tap the report/PDF icon. You can customise what to include — profile information, weight history, health events, and health issues. The report is generated as a downloadable PDF.';
+
+  @override
+  String get faqReportsQ2 => 'What information is included in a report?';
+
+  @override
+  String get faqReportsA2 =>
+      'Reports can include: pet profile details (name, breed, age, ID), a weight chart and history table, a list of all health entries by type, and any recorded health issues. You choose which sections to include before generating.';
+
+  @override
+  String get faqSubscriptionTitle => 'Subscription';
+
+  @override
+  String get faqSubscriptionQ1 => 'Is Agatha Track free to use?';
+
+  @override
+  String get faqSubscriptionA1 =>
+      'Agatha Track offers a free tier with core features. An optional premium subscription unlocks additional capabilities and removes limits. Visit the Subscription page from My Details to learn more.';
+
+  @override
+  String get faqSubscriptionQ2 => 'How do I subscribe?';
+
+  @override
+  String get faqSubscriptionA2 =>
+      'Go to My Details and tap \"Subscription\". Choose a plan and complete the purchase through your platform\'s payment system. Your subscription is managed securely through RevenueCat.';
+
+  @override
+  String get faqSubscriptionQ3 => 'How do I cancel my subscription?';
+
+  @override
+  String get faqSubscriptionA3 =>
+      'Subscriptions can be managed or cancelled through your device\'s app store settings (App Store or Google Play). Changes take effect at the end of the current billing period.';
+
+  @override
+  String get faqLanguageTitle => 'Language & Accessibility';
+
+  @override
+  String get faqLanguageQ1 => 'How do I change the app language?';
+
+  @override
+  String get faqLanguageA1 =>
+      'Go to My Details and use the language dropdown to switch between English and French. The change takes effect immediately across the entire app and is saved to your profile.';
+
+  @override
+  String get faqLanguageQ2 => 'Is the app accessible?';
+
+  @override
+  String get faqLanguageA2 =>
+      'Yes. Agatha Track includes accessibility features throughout: semantic labels for screen readers, tooltips on all interactive elements, proper form field labelling, and keyboard navigation support.';
 }
