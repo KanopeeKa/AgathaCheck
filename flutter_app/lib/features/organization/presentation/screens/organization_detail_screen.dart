@@ -3,14 +3,26 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../l10n/app_localizations.dart';
+import '../../../pet_profile/presentation/widgets/pet_card.dart';
 import '../../domain/entities/organization.dart';
 import '../../domain/entities/organization_member.dart';
 import '../providers/organization_providers.dart';
 
-class OrganizationDetailScreen extends ConsumerWidget {
+class OrganizationDetailScreen extends ConsumerStatefulWidget {
   const OrganizationDetailScreen({super.key, required this.orgId});
 
   final int orgId;
+
+  @override
+  ConsumerState<OrganizationDetailScreen> createState() =>
+      _OrganizationDetailScreenState();
+}
+
+class _OrganizationDetailScreenState
+    extends ConsumerState<OrganizationDetailScreen> {
+  bool _petsExpanded = true;
+
+  int get orgId => widget.orgId;
 
   String _localizedTypeLabel(AppLocalizations l, OrganizationType type) {
     switch (type) {
@@ -26,9 +38,10 @@ class OrganizationDetailScreen extends ConsumerWidget {
   }
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final orgsAsync = ref.watch(organizationListProvider);
     final membersAsync = ref.watch(orgMembersProvider(orgId));
+    final petsAsync = ref.watch(orgPetsProvider(orgId));
     final isSuperUser = ref.watch(isOrgSuperUserProvider(orgId));
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
@@ -144,7 +157,7 @@ class OrganizationDetailScreen extends ConsumerWidget {
               const SizedBox(height: 16),
               _buildMembersSection(context, ref, membersAsync, isSuperUser, theme, colorScheme, l),
               const SizedBox(height: 16),
-              _buildPetsSection(context, org, theme, colorScheme, l),
+              _buildPetsSection(context, ref, petsAsync, isSuperUser, theme, colorScheme, l),
               const SizedBox(height: 16),
               _buildArchivedSection(context, theme, colorScheme, l),
             ],
@@ -354,18 +367,110 @@ class OrganizationDetailScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildPetsSection(BuildContext context, Organization org,
+  Widget _buildPetsSection(BuildContext context, WidgetRef ref,
+      AsyncValue petsAsync, bool isSuperUser,
       ThemeData theme, ColorScheme colorScheme, AppLocalizations l) {
-    return Semantics(
-      label: l.petCount(org.petCount),
-      child: Card(
-        child: ListTile(
-          key: const Key('org_view_pets'),
-          leading: Icon(Icons.pets, color: colorScheme.primary),
-          title: Text(l.orgPets),
-          subtitle: Text(l.petCount(org.petCount)),
-          trailing: const Icon(Icons.chevron_right),
-          onTap: () => context.push('/organizations/$orgId/pets'),
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            InkWell(
+              key: const Key('org_pets_header'),
+              borderRadius: BorderRadius.circular(8),
+              onTap: () => setState(() => _petsExpanded = !_petsExpanded),
+              child: Row(
+                children: [
+                  Icon(Icons.pets, size: 20, color: colorScheme.primary),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(l.orgPets,
+                        style: theme.textTheme.titleMedium?.copyWith(
+                            fontWeight: FontWeight.bold)),
+                  ),
+                  AnimatedRotation(
+                    turns: _petsExpanded ? 0.5 : 0.0,
+                    duration: const Duration(milliseconds: 200),
+                    child: Icon(Icons.expand_more,
+                        color: colorScheme.onSurfaceVariant),
+                  ),
+                ],
+              ),
+            ),
+            if (_petsExpanded)
+              Padding(
+                padding: const EdgeInsets.only(top: 12),
+                child: petsAsync.when(
+                  loading: () => const Center(
+                    child: Padding(
+                      padding: EdgeInsets.all(16),
+                      child: CircularProgressIndicator(),
+                    ),
+                  ),
+                  error: (e, _) => Column(
+                    children: [
+                      Text('$e', style: TextStyle(color: colorScheme.error)),
+                      const SizedBox(height: 8),
+                      TextButton(
+                        onPressed: () => ref.invalidate(orgPetsProvider(orgId)),
+                        child: Text(l.retry),
+                      ),
+                    ],
+                  ),
+                  data: (pets) {
+                    if (pets.isEmpty) {
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        child: Center(
+                          child: Column(
+                            children: [
+                              Icon(Icons.pets, size: 40,
+                                  color: colorScheme.outline),
+                              const SizedBox(height: 8),
+                              Text(l.orgNoPets,
+                                  style: theme.textTheme.bodyMedium?.copyWith(
+                                      color: colorScheme.onSurfaceVariant)),
+                              if (isSuperUser) ...[
+                                const SizedBox(height: 12),
+                                FilledButton.icon(
+                                  key: const Key('org_add_pet_empty'),
+                                  onPressed: () =>
+                                      context.push('/add?orgId=$orgId'),
+                                  icon: const Icon(Icons.add, size: 18),
+                                  label: Text(l.orgAddPet),
+                                ),
+                              ],
+                            ],
+                          ),
+                        ),
+                      );
+                    }
+                    return Column(
+                      children: [
+                        ...pets.map((pet) => Padding(
+                          padding: const EdgeInsets.only(bottom: 8),
+                          child: PetCard(
+                            pet: pet,
+                            onTap: () => context.push('/pet/${pet.id}'),
+                          ),
+                        )),
+                        if (isSuperUser) ...[
+                          const Divider(),
+                          OutlinedButton.icon(
+                            key: const Key('org_add_pet_button'),
+                            onPressed: () =>
+                                context.push('/add?orgId=$orgId'),
+                            icon: const Icon(Icons.add, size: 18),
+                            label: Text(l.orgAddPet),
+                          ),
+                        ],
+                      ],
+                    );
+                  },
+                ),
+              ),
+          ],
         ),
       ),
     );
