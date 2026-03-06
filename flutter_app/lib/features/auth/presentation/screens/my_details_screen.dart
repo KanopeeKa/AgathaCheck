@@ -671,27 +671,6 @@ class _ProfileEditorSheetState extends State<_ProfileEditorSheet> {
               textCapitalization: TextCapitalization.words,
             ),
             const SizedBox(height: 16),
-            Text(l10n.category, style: theme.textTheme.titleSmall),
-            const SizedBox(height: 8),
-            SegmentedButton<String>(
-              segments: [
-                ButtonSegment(
-                  value: 'pet_guardian',
-                  label: Text(l10n.petGuardian),
-                  icon: const Icon(Icons.pets),
-                ),
-                ButtonSegment(
-                  value: 'professional_multi_pet',
-                  label: Text(l10n.professionalMultiPet),
-                  icon: const Icon(Icons.business_center),
-                ),
-              ],
-              selected: {_category},
-              onSelectionChanged: (val) {
-                setState(() => _category = val.first);
-              },
-            ),
-            const SizedBox(height: 16),
             TextField(
               controller: _bioController,
               decoration: InputDecoration(
