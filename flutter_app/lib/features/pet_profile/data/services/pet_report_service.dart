@@ -438,8 +438,8 @@ class PetReportService {
           data: currentRecurring.map((e) {
             return [
               e.name,
-              e.type.name,
-              e.frequency.name,
+              e.type.label,
+              e.frequency.label,
               e.nextDueDate.year >= 9999
                   ? l.pdfCompleted
                   : dateFormat.format(e.nextDueDate),
@@ -503,7 +503,7 @@ class PetReportService {
                   color: _brandPurpleLight,
                   borderRadius: pw.BorderRadius.circular(3),
                 ),
-                child: pw.Text(entry.type.name.toUpperCase(),
+                child: pw.Text(entry.type.label.toUpperCase(),
                     style: pw.TextStyle(
                         fontSize: 7,
                         fontWeight: pw.FontWeight.bold,
@@ -526,7 +526,7 @@ class PetReportService {
                 _miniDetail(l.pdfDosage, entry.dosage),
               ],
               pw.SizedBox(width: 16),
-              _miniDetail(l.pdfFrequency, entry.frequency.name),
+              _miniDetail(l.pdfFrequency, entry.frequency.label),
             ],
           ),
           if (entry.notes.isNotEmpty) ...[
@@ -676,7 +676,7 @@ class PetReportService {
                       ...linked.map((e) => pw.Padding(
                             padding: const pw.EdgeInsets.only(bottom: 2),
                             child: pw.Text(
-                              '- ${e.name} (${e.type.name})',
+                              '- ${e.name} (${e.type.label})',
                               style: const pw.TextStyle(
                                   fontSize: 8, color: _textDark),
                             ),

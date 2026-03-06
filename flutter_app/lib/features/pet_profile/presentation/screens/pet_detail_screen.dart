@@ -2518,8 +2518,7 @@ class _HealthIssuesSectionState extends ConsumerState<_HealthIssuesSection> {
                                 title: Text(entry.name,
                                     style: theme.textTheme.bodyMedium),
                                 subtitle: Text(
-                                    entry.type.name[0].toUpperCase() +
-                                        entry.type.name.substring(1),
+                                    entry.type.label,
                                     style: theme.textTheme.bodySmall
                                         ?.copyWith(color: theme.colorScheme.outline)),
                               );

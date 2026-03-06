@@ -3,7 +3,22 @@ enum NotificationType {
   overdue,
   reminder,
   completed,
-  general,
+  general;
+
+  String get label {
+    switch (this) {
+      case NotificationType.dueSoon:
+        return 'Due Soon';
+      case NotificationType.overdue:
+        return 'Overdue';
+      case NotificationType.reminder:
+        return 'Reminder';
+      case NotificationType.completed:
+        return 'Completed';
+      case NotificationType.general:
+        return 'General';
+    }
+  }
 }
 
 class AppNotification {

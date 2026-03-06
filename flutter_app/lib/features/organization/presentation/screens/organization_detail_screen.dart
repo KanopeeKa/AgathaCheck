@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../l10n/app_localizations.dart';
 import '../../domain/entities/organization.dart';
+import '../../domain/entities/organization_member.dart';
 import '../providers/organization_providers.dart';
 
 class OrganizationDetailScreen extends ConsumerWidget {
@@ -327,17 +328,17 @@ class OrganizationDetailScreen extends ConsumerWidget {
                         padding: const EdgeInsets.symmetric(
                             horizontal: 8, vertical: 2),
                         decoration: BoxDecoration(
-                          color: member.role.name == 'superUser'
+                          color: member.role == OrgMemberRole.superUser
                               ? Colors.amber.withAlpha(30)
                               : colorScheme.surfaceContainerHighest,
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: Text(
-                          _localizedRoleLabel(l, member.role.name == 'superUser' ? 'super_user' : 'member'),
+                          _localizedRoleLabel(l, member.role == OrgMemberRole.superUser ? 'super_user' : 'member'),
                           style: TextStyle(
                             fontSize: 11,
                             fontWeight: FontWeight.w600,
-                            color: member.role.name == 'superUser'
+                            color: member.role == OrgMemberRole.superUser
                                 ? Colors.amber[800]
                                 : colorScheme.onSurfaceVariant,
                           ),

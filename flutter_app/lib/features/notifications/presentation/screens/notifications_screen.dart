@@ -246,7 +246,7 @@ class _NotificationTile extends ConsumerWidget {
 
     return MergeSemantics(
       child: Semantics(
-        label: '${notification.type.name} notification: ${notification.title}, ${_formatTime(notification.createdAt)}${isUnread ? ', unread' : ''}${notification.petName != null ? ', pet: ${notification.petName}' : ''}',
+        label: '${notification.type.label} notification: ${notification.title}, ${_formatTime(notification.createdAt)}${isUnread ? ', unread' : ''}${notification.petName != null ? ', pet: ${notification.petName}' : ''}',
         child: InkWell(
           onTap: onTap,
           child: Container(
