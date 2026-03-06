@@ -330,7 +330,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get weightTracking => 'Weight Tracking';
 
   @override
-  String get addEntry => 'Add Entry';
+  String get addEntry => 'Add Health Event';
 
   @override
   String errorLoadingWeightData(String error) {

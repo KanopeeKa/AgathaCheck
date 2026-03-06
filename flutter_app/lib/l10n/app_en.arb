@@ -115,7 +115,7 @@
   "passedAway": "Passed Away",
 
   "weightTracking": "Weight Tracking",
-  "addEntry": "Add Entry",
+  "addEntry": "Add Health Event",
   "errorLoadingWeightData": "Error loading weight data: {error}",
   "@errorLoadingWeightData": { "placeholders": { "error": { "type": "String" } } },
   "noWeightDataYet": "No weight data yet",

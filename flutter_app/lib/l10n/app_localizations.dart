@@ -701,7 +701,7 @@ abstract class AppLocalizations {
   /// No description provided for @addEntry.
   ///
   /// In en, this message translates to:
-  /// **'Add Entry'**
+  /// **'Add Health Event'**
   String get addEntry;
 
   /// No description provided for @errorLoadingWeightData.

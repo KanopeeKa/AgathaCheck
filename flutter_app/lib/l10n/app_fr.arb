@@ -108,7 +108,7 @@
   "passedAway": "Décédé(e)",
 
   "weightTracking": "Suivi du poids",
-  "addEntry": "Ajouter une entrée",
+  "addEntry": "Ajouter un événement santé",
   "errorLoadingWeightData": "Erreur de chargement des données de poids : {error}",
   "noWeightDataYet": "Aucune donnée de poids",
   "tapAddEntryToStart": "Appuyez sur \"Ajouter une entrée\" pour commencer",
