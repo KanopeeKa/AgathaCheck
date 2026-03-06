@@ -9,15 +9,25 @@ import '../../../../l10n/app_localizations.dart';
 import '../../domain/entities/pet.dart';
 import '../../../health_tracking/domain/entities/health_entry.dart';
 import '../../../health_tracking/domain/entities/health_issue.dart';
+import '../../../notifications/domain/entities/app_notification.dart';
+import '../../../organization/domain/entities/family_event.dart';
 import '../../../sharing/domain/entities/pet_access.dart';
 import '../../../weight_tracking/domain/entities/weight_entry.dart';
 import '../../../vet/domain/entities/vet.dart';
 
+/// Controls which sections are included in the generated PDF report.
+///
+/// [petProfile] is always included by default. All other sections are
+/// opt-in. When [healthEvents] is enabled, [healthFrom] / [healthTo]
+/// control the date range, and [includeFullLog] adds the detailed
+/// administration history for each entry.
 class ReportSections {
   final bool petProfile;
   final bool weightTracking;
   final bool healthEvents;
   final bool healthIssues;
+  final bool familyEvents;
+  final bool notifications;
   final bool sharing;
   final DateTime? healthFrom;
   final DateTime? healthTo;
@@ -28,6 +38,8 @@ class ReportSections {
     this.weightTracking = false,
     this.healthEvents = false,
     this.healthIssues = false,
+    this.familyEvents = false,
+    this.notifications = false,
     this.sharing = false,
     this.healthFrom,
     this.healthTo,
@@ -43,6 +55,11 @@ class PetReportService {
   static const _borderColor = PdfColor.fromInt(0xFFCAC4D0);
   static const _white = PdfColors.white;
 
+  /// Generates a comprehensive PDF report for a single pet.
+  ///
+  /// The [sections] parameter controls which parts of the report are included.
+  /// Data for each section is passed via the corresponding parameter lists.
+  /// Returns the raw PDF bytes ready for saving or sharing.
   Future<Uint8List> generateReport({
     required Pet pet,
     required ReportSections sections,
@@ -51,6 +68,8 @@ class PetReportService {
     List<WeightEntry> weightEntries = const [],
     List<HealthEntry> healthEntries = const [],
     List<HealthIssue> healthIssues = const [],
+    List<FamilyEvent> familyEvents = const [],
+    List<AppNotification> petNotifications = const [],
     List<PetAccess> accessList = const [],
     Map<String, List<Map<String, dynamic>>> healthHistories = const {},
     String weightUnit = 'kg',
@@ -106,6 +125,16 @@ class PetReportService {
           if (sections.healthIssues) {
             widgets.addAll(
                 _buildHealthIssuesSection(healthIssues, healthEntries, dateFormat, l));
+          }
+
+          if (sections.familyEvents) {
+            widgets.addAll(
+                _buildFamilyEventsSection(familyEvents, dateFormat, l));
+          }
+
+          if (sections.notifications) {
+            widgets.addAll(
+                _buildNotificationsSection(petNotifications, dateFormat, l));
           }
 
           if (sections.sharing) {
@@ -702,6 +731,108 @@ class PetReportService {
     }
     if (start != null) return l.pdfFrom(fmt.format(start));
     return l.pdfUntil(fmt.format(end!));
+  }
+
+  /// Builds the Family Events section showing care assignments and foster
+  /// stays for organisation pets. Renders as a table with assigned member,
+  /// date range, and notes.
+  List<pw.Widget> _buildFamilyEventsSection(
+      List<FamilyEvent> events, DateFormat dateFormat, AppLocalizations l) {
+    if (events.isEmpty) {
+      return [
+        _sectionTitle(l.pdfFamilyEventsSection),
+        _emptyMessage(l.pdfNoFamilyEvents),
+        pw.SizedBox(height: 20),
+      ];
+    }
+
+    final sorted = List<FamilyEvent>.from(events)
+      ..sort((a, b) => b.fromDate.compareTo(a.fromDate));
+
+    return [
+      _sectionTitle(l.pdfFamilyEventsSection),
+      pw.TableHelper.fromTextArray(
+        border: pw.TableBorder.all(color: _borderColor, width: 0.5),
+        headerStyle: pw.TextStyle(
+            fontSize: 8, fontWeight: pw.FontWeight.bold, color: _white),
+        headerDecoration: const pw.BoxDecoration(color: _brandPurple),
+        cellStyle: const pw.TextStyle(fontSize: 8, color: _textDark),
+        cellPadding:
+            const pw.EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+        cellAlignments: {
+          0: pw.Alignment.centerLeft,
+          1: pw.Alignment.center,
+          2: pw.Alignment.center,
+          3: pw.Alignment.centerLeft,
+        },
+        headers: [
+          l.pdfAssignedTo,
+          l.pdfFromDate,
+          l.pdfToDate,
+          l.pdfNotes,
+        ],
+        data: sorted.map((e) {
+          return [
+            e.assignedDisplay,
+            dateFormat.format(e.fromDate),
+            e.toDate != null ? dateFormat.format(e.toDate!) : l.pdfOngoing,
+            e.notes,
+          ];
+        }).toList(),
+      ),
+      pw.SizedBox(height: 14),
+    ];
+  }
+
+  /// Builds the Notifications section showing recent alerts and reminders
+  /// specific to this pet. Includes notification type, title, message, and
+  /// date.
+  List<pw.Widget> _buildNotificationsSection(
+      List<AppNotification> notifications, DateFormat dateFormat, AppLocalizations l) {
+    if (notifications.isEmpty) {
+      return [
+        _sectionTitle(l.pdfNotificationsSection),
+        _emptyMessage(l.pdfNoNotifications),
+        pw.SizedBox(height: 20),
+      ];
+    }
+
+    final sorted = List<AppNotification>.from(notifications)
+      ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
+
+    return [
+      _sectionTitle(l.pdfNotificationsSection),
+      pw.TableHelper.fromTextArray(
+        border: pw.TableBorder.all(color: _borderColor, width: 0.5),
+        headerStyle: pw.TextStyle(
+            fontSize: 8, fontWeight: pw.FontWeight.bold, color: _white),
+        headerDecoration: const pw.BoxDecoration(color: _brandPurple),
+        cellStyle: const pw.TextStyle(fontSize: 8, color: _textDark),
+        cellPadding:
+            const pw.EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+        cellAlignments: {
+          0: pw.Alignment.center,
+          1: pw.Alignment.centerLeft,
+          2: pw.Alignment.centerLeft,
+          3: pw.Alignment.center,
+        },
+        headers: [
+          l.pdfNotificationType,
+          l.pdfName,
+          l.pdfNotificationMessage,
+          l.pdfDate,
+        ],
+        data: sorted.map((n) {
+          return [
+            n.type.label,
+            n.title,
+            n.message,
+            dateFormat.format(n.createdAt),
+          ];
+        }).toList(),
+      ),
+      pw.SizedBox(height: 14),
+    ];
   }
 
   List<pw.Widget> _buildSharingSection(List<PetAccess> accessList, AppLocalizations l) {

@@ -1146,7 +1146,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get pdfReportTitle => 'Rapport Santé Animal';
 
   @override
-  String get pdfAgathaCheck => 'AGATHA CHECK';
+  String get pdfAgathaCheck => 'AGATHA TRACK';
 
   @override
   String get pdfPetProfileSection => 'Profil de l\'animal';
@@ -1307,6 +1307,51 @@ class AppLocalizationsFr extends AppLocalizations {
   String pdfEveryN(int n, String periods) {
     return 'Tous les $n $periods';
   }
+
+  @override
+  String get pdfFamilyEventsSection => 'Événements familiaux';
+
+  @override
+  String get pdfNoFamilyEvents =>
+      'Aucun événement familial enregistré pour cet animal.';
+
+  @override
+  String get pdfAssignedTo => 'Assigné à';
+
+  @override
+  String get pdfFromDate => 'Du';
+
+  @override
+  String get pdfToDate => 'Au';
+
+  @override
+  String get pdfOngoing => 'En cours';
+
+  @override
+  String get pdfNotificationsSection => 'Notifications';
+
+  @override
+  String get pdfNoNotifications =>
+      'Aucune notification récente pour cet animal.';
+
+  @override
+  String get pdfNotificationType => 'Type';
+
+  @override
+  String get pdfNotificationMessage => 'Message';
+
+  @override
+  String get familyEventsSection => 'Événements familiaux';
+
+  @override
+  String get familyEventsDesc =>
+      'Affectations de soins et séjours en famille d\'accueil';
+
+  @override
+  String get notificationsSection => 'Notifications';
+
+  @override
+  String get notificationsDesc => 'Alertes et rappels récents';
 
   @override
   String get myOrganizations => 'Mes organisations';
@@ -2050,7 +2095,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get faqReportsA1 =>
-      'Ouvrez la page de détail d\'un animal et appuyez sur l\'icône rapport/PDF. Vous pouvez personnaliser le contenu — informations de profil, historique de poids, événements de santé et problèmes de santé. Le rapport est généré en PDF téléchargeable.';
+      'Ouvrez la page de détail d\'un animal et appuyez sur l\'icône rapport/PDF. Vous pouvez personnaliser le contenu — informations de profil, historique de poids, événements de santé, problèmes de santé, événements familiaux, notifications et détails de partage. Le rapport est généré en PDF téléchargeable.';
 
   @override
   String get faqReportsQ2 =>
@@ -2058,7 +2103,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get faqReportsA2 =>
-      'Les rapports peuvent inclure : les détails du profil (nom, race, âge, ID), un graphique de poids et tableau d\'historique, une liste de toutes les entrées de santé par type et les problèmes de santé enregistrés. Vous choisissez les sections à inclure.';
+      'Les rapports peuvent inclure : les détails du profil (nom, race, âge, ID), un graphique de poids et tableau d\'historique, une liste de toutes les entrées de santé par type, les problèmes de santé enregistrés, les affectations et séjours en famille d\'accueil (pour les animaux d\'organisation), les notifications et alertes récentes, et les détails de partage. Vous choisissez les sections à inclure.';
 
   @override
   String get faqSubscriptionTitle => 'Abonnement';

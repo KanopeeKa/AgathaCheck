@@ -371,7 +371,7 @@
   "pdfDone": "Fait",
 
   "pdfReportTitle": "Rapport Santé Animal",
-  "pdfAgathaCheck": "AGATHA CHECK",
+  "pdfAgathaCheck": "AGATHA TRACK",
   "pdfPetProfileSection": "Profil de l'animal",
   "pdfWeightTrackingSection": "Suivi du poids",
   "pdfHealthEventsSection": "Événements santé",
@@ -421,6 +421,23 @@
   "pdfCustom": "Personnalisé",
   "pdfEvery": "Tous les {period}",
   "pdfEveryN": "Tous les {n} {periods}",
+
+  "pdfFamilyEventsSection": "Événements familiaux",
+  "pdfNoFamilyEvents": "Aucun événement familial enregistré pour cet animal.",
+  "pdfAssignedTo": "Assigné à",
+  "pdfFromDate": "Du",
+  "pdfToDate": "Au",
+  "pdfOngoing": "En cours",
+
+  "pdfNotificationsSection": "Notifications",
+  "pdfNoNotifications": "Aucune notification récente pour cet animal.",
+  "pdfNotificationType": "Type",
+  "pdfNotificationMessage": "Message",
+
+  "familyEventsSection": "Événements familiaux",
+  "familyEventsDesc": "Affectations de soins et séjours en famille d'accueil",
+  "notificationsSection": "Notifications",
+  "notificationsDesc": "Alertes et rappels récents",
 
   "myOrganizations": "Mes organisations",
   "organizations": "Organisations",
@@ -664,9 +681,9 @@
 
   "faqReportsTitle": "Rapports",
   "faqReportsQ1": "Comment générer un rapport pour un animal ?",
-  "faqReportsA1": "Ouvrez la page de détail d'un animal et appuyez sur l'icône rapport/PDF. Vous pouvez personnaliser le contenu — informations de profil, historique de poids, événements de santé et problèmes de santé. Le rapport est généré en PDF téléchargeable.",
+  "faqReportsA1": "Ouvrez la page de détail d'un animal et appuyez sur l'icône rapport/PDF. Vous pouvez personnaliser le contenu — informations de profil, historique de poids, événements de santé, problèmes de santé, événements familiaux, notifications et détails de partage. Le rapport est généré en PDF téléchargeable.",
   "faqReportsQ2": "Quelles informations sont incluses dans un rapport ?",
-  "faqReportsA2": "Les rapports peuvent inclure : les détails du profil (nom, race, âge, ID), un graphique de poids et tableau d'historique, une liste de toutes les entrées de santé par type et les problèmes de santé enregistrés. Vous choisissez les sections à inclure.",
+  "faqReportsA2": "Les rapports peuvent inclure : les détails du profil (nom, race, âge, ID), un graphique de poids et tableau d'historique, une liste de toutes les entrées de santé par type, les problèmes de santé enregistrés, les affectations et séjours en famille d'accueil (pour les animaux d'organisation), les notifications et alertes récentes, et les détails de partage. Vous choisissez les sections à inclure.",
 
   "faqSubscriptionTitle": "Abonnement",
   "faqSubscriptionQ1": "Agatha Track est-il gratuit ?",

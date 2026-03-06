@@ -410,7 +410,7 @@
   "pdfDone": "Done",
 
   "pdfReportTitle": "Pet Health Report",
-  "pdfAgathaCheck": "AGATHA CHECK",
+  "pdfAgathaCheck": "AGATHA TRACK",
   "pdfPetProfileSection": "Pet Profile",
   "pdfWeightTrackingSection": "Weight Tracking",
   "pdfHealthEventsSection": "Health Events",
@@ -468,6 +468,23 @@
   "@pdfEvery": { "placeholders": { "period": { "type": "String" } } },
   "pdfEveryN": "Every {n} {periods}",
   "@pdfEveryN": { "placeholders": { "n": { "type": "int" }, "periods": { "type": "String" } } },
+
+  "pdfFamilyEventsSection": "Family Events",
+  "pdfNoFamilyEvents": "No family events recorded for this pet.",
+  "pdfAssignedTo": "Assigned To",
+  "pdfFromDate": "From",
+  "pdfToDate": "To",
+  "pdfOngoing": "Ongoing",
+
+  "pdfNotificationsSection": "Notifications",
+  "pdfNoNotifications": "No recent notifications for this pet.",
+  "pdfNotificationType": "Type",
+  "pdfNotificationMessage": "Message",
+
+  "familyEventsSection": "Family Events",
+  "familyEventsDesc": "Care assignments and foster stays",
+  "notificationsSection": "Notifications",
+  "notificationsDesc": "Recent alerts and reminders",
 
   "myOrganizations": "My Organizations",
   "organizations": "Organizations",
@@ -715,9 +732,9 @@
 
   "faqReportsTitle": "Reports",
   "faqReportsQ1": "How do I generate a pet report?",
-  "faqReportsA1": "Open a pet's detail page and tap the report/PDF icon. You can customise what to include — profile information, weight history, health events, and health issues. The report is generated as a downloadable PDF.",
+  "faqReportsA1": "Open a pet's detail page and tap the report/PDF icon. You can customise what to include — profile information, weight history, health events, health issues, family events, notifications, and sharing details. The report is generated as a downloadable PDF.",
   "faqReportsQ2": "What information is included in a report?",
-  "faqReportsA2": "Reports can include: pet profile details (name, breed, age, ID), a weight chart and history table, a list of all health entries by type, and any recorded health issues. You choose which sections to include before generating.",
+  "faqReportsA2": "Reports can include: pet profile details (name, breed, age, ID), a weight chart and history table, a list of all health entries by type, recorded health issues, family event assignments and foster stays (for organisation pets), recent notifications and alerts, and sharing access details. You choose which sections to include before generating.",
 
   "faqSubscriptionTitle": "Subscription",
   "faqSubscriptionQ1": "Is Agatha Track free to use?",

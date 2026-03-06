@@ -2171,7 +2171,7 @@ abstract class AppLocalizations {
   /// No description provided for @pdfAgathaCheck.
   ///
   /// In en, this message translates to:
-  /// **'AGATHA CHECK'**
+  /// **'AGATHA TRACK'**
   String get pdfAgathaCheck;
 
   /// No description provided for @pdfPetProfileSection.
@@ -2461,6 +2461,90 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Every {n} {periods}'**
   String pdfEveryN(int n, String periods);
+
+  /// No description provided for @pdfFamilyEventsSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Family Events'**
+  String get pdfFamilyEventsSection;
+
+  /// No description provided for @pdfNoFamilyEvents.
+  ///
+  /// In en, this message translates to:
+  /// **'No family events recorded for this pet.'**
+  String get pdfNoFamilyEvents;
+
+  /// No description provided for @pdfAssignedTo.
+  ///
+  /// In en, this message translates to:
+  /// **'Assigned To'**
+  String get pdfAssignedTo;
+
+  /// No description provided for @pdfFromDate.
+  ///
+  /// In en, this message translates to:
+  /// **'From'**
+  String get pdfFromDate;
+
+  /// No description provided for @pdfToDate.
+  ///
+  /// In en, this message translates to:
+  /// **'To'**
+  String get pdfToDate;
+
+  /// No description provided for @pdfOngoing.
+  ///
+  /// In en, this message translates to:
+  /// **'Ongoing'**
+  String get pdfOngoing;
+
+  /// No description provided for @pdfNotificationsSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Notifications'**
+  String get pdfNotificationsSection;
+
+  /// No description provided for @pdfNoNotifications.
+  ///
+  /// In en, this message translates to:
+  /// **'No recent notifications for this pet.'**
+  String get pdfNoNotifications;
+
+  /// No description provided for @pdfNotificationType.
+  ///
+  /// In en, this message translates to:
+  /// **'Type'**
+  String get pdfNotificationType;
+
+  /// No description provided for @pdfNotificationMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Message'**
+  String get pdfNotificationMessage;
+
+  /// No description provided for @familyEventsSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Family Events'**
+  String get familyEventsSection;
+
+  /// No description provided for @familyEventsDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Care assignments and foster stays'**
+  String get familyEventsDesc;
+
+  /// No description provided for @notificationsSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Notifications'**
+  String get notificationsSection;
+
+  /// No description provided for @notificationsDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Recent alerts and reminders'**
+  String get notificationsDesc;
 
   /// No description provided for @myOrganizations.
   ///
@@ -3773,7 +3857,7 @@ abstract class AppLocalizations {
   /// No description provided for @faqReportsA1.
   ///
   /// In en, this message translates to:
-  /// **'Open a pet\'s detail page and tap the report/PDF icon. You can customise what to include — profile information, weight history, health events, and health issues. The report is generated as a downloadable PDF.'**
+  /// **'Open a pet\'s detail page and tap the report/PDF icon. You can customise what to include — profile information, weight history, health events, health issues, family events, notifications, and sharing details. The report is generated as a downloadable PDF.'**
   String get faqReportsA1;
 
   /// No description provided for @faqReportsQ2.
@@ -3785,7 +3869,7 @@ abstract class AppLocalizations {
   /// No description provided for @faqReportsA2.
   ///
   /// In en, this message translates to:
-  /// **'Reports can include: pet profile details (name, breed, age, ID), a weight chart and history table, a list of all health entries by type, and any recorded health issues. You choose which sections to include before generating.'**
+  /// **'Reports can include: pet profile details (name, breed, age, ID), a weight chart and history table, a list of all health entries by type, recorded health issues, family event assignments and foster stays (for organisation pets), recent notifications and alerts, and sharing access details. You choose which sections to include before generating.'**
   String get faqReportsA2;
 
   /// No description provided for @faqSubscriptionTitle.

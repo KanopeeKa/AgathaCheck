@@ -13,6 +13,7 @@ import '../../../../core/widgets/app_logo_title.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../data/services/pdf_saver.dart' as pdf_saver;
 import '../../../auth/presentation/providers/auth_providers.dart';
+import '../../../notifications/domain/entities/app_notification.dart';
 import '../../../notifications/presentation/providers/notification_providers.dart';
 import '../../../health_tracking/domain/entities/health_entry.dart';
 import '../../../health_tracking/domain/entities/health_issue.dart';
@@ -1907,6 +1908,8 @@ class _ReportSelectionSheetState extends ConsumerState<_ReportSelectionSheet> {
   bool _includeWeight = true;
   bool _includeHealth = true;
   bool _includeHealthIssues = true;
+  bool _includeFamilyEvents = false;
+  bool _includeNotifications = false;
   bool _includeSharing = false;
   bool _includeFullLog = false;
   bool _isGenerating = false;
@@ -2005,6 +2008,27 @@ class _ReportSelectionSheetState extends ConsumerState<_ReportSelectionSheet> {
             subtitle: Text(AppLocalizations.of(context)!.ongoingConditions),
             secondary:
                 Icon(Icons.health_and_safety, color: colorScheme.primary),
+            dense: true,
+            contentPadding: EdgeInsets.zero,
+          ),
+          if (widget.pet.organizationId != null)
+            CheckboxListTile(
+              value: _includeFamilyEvents,
+              onChanged: (v) =>
+                  setState(() => _includeFamilyEvents = v ?? false),
+              title: Text(AppLocalizations.of(context)!.familyEventsSection),
+              subtitle: Text(AppLocalizations.of(context)!.familyEventsDesc),
+              secondary: Icon(Icons.family_restroom, color: colorScheme.primary),
+              dense: true,
+              contentPadding: EdgeInsets.zero,
+            ),
+          CheckboxListTile(
+            value: _includeNotifications,
+            onChanged: (v) =>
+                setState(() => _includeNotifications = v ?? false),
+            title: Text(AppLocalizations.of(context)!.notificationsSection),
+            subtitle: Text(AppLocalizations.of(context)!.notificationsDesc),
+            secondary: Icon(Icons.notifications_outlined, color: colorScheme.primary),
             dense: true,
             contentPadding: EdgeInsets.zero,
           ),
@@ -2109,6 +2133,25 @@ class _ReportSelectionSheetState extends ConsumerState<_ReportSelectionSheet> {
         } catch (_) {}
       }
 
+      List<FamilyEvent> familyEvents = [];
+      if (_includeFamilyEvents && pet.organizationId != null) {
+        try {
+          familyEvents =
+              await ref.read(familyEventsProvider(pet.id).future);
+        } catch (_) {}
+      }
+
+      List<AppNotification> petNotifications = [];
+      if (_includeNotifications) {
+        try {
+          final allNotifs =
+              await ref.read(notificationsProvider.future);
+          petNotifications = allNotifs
+              .where((n) => n.petId == pet.id)
+              .toList();
+        } catch (_) {}
+      }
+
       List<PetAccess> accessList = [];
       if (_includeSharing) {
         try {
@@ -2140,6 +2183,8 @@ class _ReportSelectionSheetState extends ConsumerState<_ReportSelectionSheet> {
           weightTracking: _includeWeight,
           healthEvents: _includeHealth,
           healthIssues: _includeHealthIssues,
+          familyEvents: _includeFamilyEvents,
+          notifications: _includeNotifications,
           sharing: _includeSharing,
           healthFrom: _healthFrom,
           healthTo: _healthTo,
@@ -2150,6 +2195,8 @@ class _ReportSelectionSheetState extends ConsumerState<_ReportSelectionSheet> {
         weightEntries: weightEntries,
         healthEntries: healthEntries,
         healthIssues: healthIssues,
+        familyEvents: familyEvents,
+        petNotifications: petNotifications,
         accessList: accessList,
         healthHistories: histories,
         weightUnit: unitLabel,

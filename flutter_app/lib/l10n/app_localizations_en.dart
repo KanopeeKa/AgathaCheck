@@ -1142,7 +1142,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get pdfReportTitle => 'Pet Health Report';
 
   @override
-  String get pdfAgathaCheck => 'AGATHA CHECK';
+  String get pdfAgathaCheck => 'AGATHA TRACK';
 
   @override
   String get pdfPetProfileSection => 'Pet Profile';
@@ -1303,6 +1303,48 @@ class AppLocalizationsEn extends AppLocalizations {
   String pdfEveryN(int n, String periods) {
     return 'Every $n $periods';
   }
+
+  @override
+  String get pdfFamilyEventsSection => 'Family Events';
+
+  @override
+  String get pdfNoFamilyEvents => 'No family events recorded for this pet.';
+
+  @override
+  String get pdfAssignedTo => 'Assigned To';
+
+  @override
+  String get pdfFromDate => 'From';
+
+  @override
+  String get pdfToDate => 'To';
+
+  @override
+  String get pdfOngoing => 'Ongoing';
+
+  @override
+  String get pdfNotificationsSection => 'Notifications';
+
+  @override
+  String get pdfNoNotifications => 'No recent notifications for this pet.';
+
+  @override
+  String get pdfNotificationType => 'Type';
+
+  @override
+  String get pdfNotificationMessage => 'Message';
+
+  @override
+  String get familyEventsSection => 'Family Events';
+
+  @override
+  String get familyEventsDesc => 'Care assignments and foster stays';
+
+  @override
+  String get notificationsSection => 'Notifications';
+
+  @override
+  String get notificationsDesc => 'Recent alerts and reminders';
 
   @override
   String get myOrganizations => 'My Organizations';
@@ -2037,14 +2079,14 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get faqReportsA1 =>
-      'Open a pet\'s detail page and tap the report/PDF icon. You can customise what to include — profile information, weight history, health events, and health issues. The report is generated as a downloadable PDF.';
+      'Open a pet\'s detail page and tap the report/PDF icon. You can customise what to include — profile information, weight history, health events, health issues, family events, notifications, and sharing details. The report is generated as a downloadable PDF.';
 
   @override
   String get faqReportsQ2 => 'What information is included in a report?';
 
   @override
   String get faqReportsA2 =>
-      'Reports can include: pet profile details (name, breed, age, ID), a weight chart and history table, a list of all health entries by type, and any recorded health issues. You choose which sections to include before generating.';
+      'Reports can include: pet profile details (name, breed, age, ID), a weight chart and history table, a list of all health entries by type, recorded health issues, family event assignments and foster stays (for organisation pets), recent notifications and alerts, and sharing access details. You choose which sections to include before generating.';
 
   @override
   String get faqSubscriptionTitle => 'Subscription';
