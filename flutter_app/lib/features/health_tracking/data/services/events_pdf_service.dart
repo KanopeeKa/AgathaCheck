@@ -323,6 +323,8 @@ class EventsPdfService {
         return l.vetVisit;
       case HealthEntryType.procedure:
         return l.procedure;
+      case HealthEntryType.familyEvent:
+        return l.familyEvents;
     }
   }
 

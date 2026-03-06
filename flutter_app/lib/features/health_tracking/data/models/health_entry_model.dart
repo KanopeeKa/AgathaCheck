@@ -87,7 +87,7 @@ class HealthEntryModel extends HealthEntry {
       'id': id,
       'pet_id': petId,
       'name': name,
-      'type': type == HealthEntryType.vetVisit ? 'vet_visit' : type.name,
+      'type': type == HealthEntryType.vetVisit ? 'vet_visit' : type == HealthEntryType.familyEvent ? 'family_event' : type.name,
       'dosage': dosage,
       'frequency': frequency.name,
       'frequency_days': frequencyDays,
@@ -113,6 +113,9 @@ class HealthEntryModel extends HealthEntry {
         return HealthEntryType.vetVisit;
       case 'procedure':
         return HealthEntryType.procedure;
+      case 'family_event':
+      case 'familyEvent':
+        return HealthEntryType.familyEvent;
       default:
         return HealthEntryType.medication;
     }

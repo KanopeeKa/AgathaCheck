@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../auth/presentation/providers/auth_providers.dart';
 import '../../data/datasources/health_remote_datasource.dart';
 import '../../data/repositories/health_repository_impl.dart';
 import '../../domain/entities/health_entry.dart';
@@ -13,9 +14,6 @@ import '../../domain/usecases/get_health_entries.dart';
 import '../../domain/usecases/mark_entry_taken.dart';
 import '../../domain/usecases/update_health_entry.dart';
 
-/// Provides the base URL for the API server.
-///
-/// In web mode, uses the current window origin. Otherwise defaults to localhost.
 final apiBaseUrlProvider = Provider<String>((ref) {
   if (kIsWeb) {
     return '';
@@ -23,15 +21,20 @@ final apiBaseUrlProvider = Provider<String>((ref) {
   return 'http://localhost:5000';
 });
 
-/// Provides the remote data source for health entries.
 final healthRemoteDataSourceProvider = Provider<HealthRemoteDataSource>((ref) {
   final baseUrl = ref.watch(apiBaseUrlProvider);
-  return HealthRemoteDataSourceImpl(baseUrl: baseUrl);
+  final token = ref.watch(authProvider).accessToken;
+  final ds = HealthRemoteDataSourceImpl(baseUrl: baseUrl);
+  ds.authToken = token;
+  return ds;
 });
 
 final healthDataSourceProvider = Provider<HealthRemoteDataSourceImpl>((ref) {
   final baseUrl = ref.watch(apiBaseUrlProvider);
-  return HealthRemoteDataSourceImpl(baseUrl: baseUrl);
+  final token = ref.watch(authProvider).accessToken;
+  final ds = HealthRemoteDataSourceImpl(baseUrl: baseUrl);
+  ds.authToken = token;
+  return ds;
 });
 
 /// Provides the health repository implementation.

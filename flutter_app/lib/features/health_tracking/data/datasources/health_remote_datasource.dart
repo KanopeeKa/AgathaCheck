@@ -59,6 +59,8 @@ class HealthRemoteDataSourceImpl implements HealthRemoteDataSource {
   final String baseUrl;
   final http.Client _client;
 
+  String? authToken;
+
   @override
   Future<List<HealthEntryModel>> getEntries(
       {String? petId, String? type}) async {
@@ -68,7 +70,11 @@ class HealthRemoteDataSourceImpl implements HealthRemoteDataSource {
 
     final uri = Uri.parse('$baseUrl/api/health-entries')
         .replace(queryParameters: params.isNotEmpty ? params : null);
-    final response = await _client.get(uri);
+    final headers = <String, String>{};
+    if (authToken != null) {
+      headers['Authorization'] = 'Bearer $authToken';
+    }
+    final response = await _client.get(uri, headers: headers.isNotEmpty ? headers : null);
     _checkResponse(response);
 
     final list = json.decode(response.body) as List<dynamic>;

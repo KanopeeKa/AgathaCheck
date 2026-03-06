@@ -2874,6 +2874,8 @@ class _HealthIssueCardState extends ConsumerState<_HealthIssueCard> {
         return Icons.local_hospital;
       case HealthEntryType.procedure:
         return Icons.more_horiz;
+      case HealthEntryType.familyEvent:
+        return Icons.family_restroom;
     }
   }
 }

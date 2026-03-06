@@ -167,7 +167,10 @@ enum HealthEntryType {
   vetVisit,
 
   /// Any other health event.
-  procedure;
+  procedure,
+
+  /// A family event from an organization pet.
+  familyEvent;
 
   /// Human-readable label for this type.
   String get label {
@@ -180,6 +183,8 @@ enum HealthEntryType {
         return 'Vet Visit';
       case HealthEntryType.procedure:
         return 'Other';
+      case HealthEntryType.familyEvent:
+        return 'Family Event';
     }
   }
 }

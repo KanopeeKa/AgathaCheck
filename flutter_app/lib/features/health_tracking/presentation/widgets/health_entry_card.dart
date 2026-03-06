@@ -139,10 +139,11 @@ class HealthEntryCard extends StatelessWidget {
                     ),
                   ),
                 ),
-                if (showActions) ...[
-                  _SnoozeButton(
-                    onSnooze: onSnooze,
-                  ),
+                if (showActions && onMarkTaken != null) ...[
+                  if (onSnooze != null)
+                    _SnoozeButton(
+                      onSnooze: onSnooze,
+                    ),
                   _MarkDoneButton(
                     onPressed: onMarkTaken,
                     petStripWidth: 52,
@@ -172,6 +173,8 @@ class HealthEntryCard extends StatelessWidget {
         return Icons.local_hospital;
       case HealthEntryType.procedure:
         return Icons.more_horiz;
+      case HealthEntryType.familyEvent:
+        return Icons.family_restroom;
     }
   }
 

@@ -34,12 +34,13 @@ class _HealthDashboardScreenState extends ConsumerState<HealthDashboardScreen>
     HealthEntryType.preventive,
     HealthEntryType.vetVisit,
     HealthEntryType.procedure,
+    HealthEntryType.familyEvent,
   ];
 
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 5, vsync: this);
+    _tabController = TabController(length: 6, vsync: this);
   }
 
   @override
@@ -119,8 +120,9 @@ class _HealthDashboardScreenState extends ConsumerState<HealthDashboardScreen>
             Tab(key: const Key('health_tab_preventives'), text: l.preventives),
             Tab(key: const Key('health_tab_vet_visits'), text: l.vetVisits),
             Tab(key: const Key('health_tab_other'), text: l.other),
+            Tab(key: const Key('health_tab_family'), text: l.familyEvents),
           ],
-          isScrollable: false,
+          isScrollable: true,
         ),
       ),
       body: Column(
@@ -445,16 +447,19 @@ class _EntryList extends ConsumerWidget {
                 return _buildHeader(context, group.title);
               }
               final item = group as _GroupEntry;
+              final isFamilyEvent = item.entry.type == HealthEntryType.familyEvent;
               return Padding(
                 padding: const EdgeInsets.only(bottom: 6),
                 child: HealthEntryCard(
                   entry: item.entry,
                   pet: petMap[item.entry.petId],
                   healthIssueName: item.entry.healthIssueName,
-                  onTap: () => context.go('/health/edit/${item.entry.id}'),
-                  onMarkTaken: () => _markTaken(context, ref, item.entry),
-                  onSnooze: (days) => _snooze(context, ref, item.entry, days),
-                  onUndoComplete: () => _undoComplete(context, ref, item.entry),
+                  onTap: isFamilyEvent
+                      ? () => context.go('/pet/${item.entry.petId}')
+                      : () => context.go('/health/edit/${item.entry.id}'),
+                  onMarkTaken: isFamilyEvent ? null : () => _markTaken(context, ref, item.entry),
+                  onSnooze: isFamilyEvent ? null : (days) => _snooze(context, ref, item.entry, days),
+                  onUndoComplete: isFamilyEvent ? null : () => _undoComplete(context, ref, item.entry),
                 ),
               );
             },

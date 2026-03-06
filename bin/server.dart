@@ -1631,7 +1631,7 @@ Future<void> _getHealthEntries(HttpRequest request) async {
     query += ' AND he.pet_id = @petId';
     params['petId'] = petId;
   }
-  if (type != null && type.isNotEmpty) {
+  if (type != null && type.isNotEmpty && type != 'family_event') {
     query += ' AND he.type = @type';
     params['type'] = type;
   }
@@ -1641,6 +1641,66 @@ Future<void> _getHealthEntries(HttpRequest request) async {
   final result = await _pool.execute(Sql.named(query),
       parameters: params.isEmpty ? null : params);
   final entries = result.map(_rowToMap).toList();
+
+  if (type != null && type != 'family_event') {
+    _jsonResponse(request, 200, entries);
+    return;
+  }
+
+  try {
+    final userId = _getUserIdFromRequest(request);
+    if (userId != null) {
+      var feQuery = '''
+        SELECT fe.*, u.first_name, u.last_name, u.email AS assigned_email, p.name AS pet_name
+        FROM family_events fe
+        LEFT JOIN users u ON fe.assigned_to_user_id = u.id
+        JOIN pets p ON fe.pet_id = p.id
+        WHERE fe.organization_id IN (
+          SELECT organization_id FROM organization_users WHERE user_id = @userId AND role IN ('super_user', 'member')
+        )
+      ''';
+      final feParams = <String, dynamic>{'userId': userId};
+      if (petId != null && petId.isNotEmpty) {
+        feQuery += ' AND fe.pet_id = @petId';
+        feParams['petId'] = petId;
+      }
+      feQuery += ' ORDER BY fe.from_date ASC';
+      final feRows = await _pool.execute(Sql.named(feQuery), parameters: feParams);
+      for (final r in feRows) {
+        final c = r.toColumnMap();
+        final firstName = (c['first_name'] ?? '').toString();
+        final lastName = (c['last_name'] ?? '').toString();
+        final assignedName = '$firstName $lastName'.trim();
+        final petName = (c['pet_name'] ?? '').toString();
+        final fromDate = c['from_date']?.toString() ?? '';
+        final toDate = c['to_date']?.toString();
+        final notes = (c['notes'] ?? '').toString();
+        final eventName = assignedName.isNotEmpty
+            ? '$petName - $assignedName'
+            : '$petName - Family Event';
+        entries.add({
+          'id': 'fe_${c['id']}',
+          'pet_id': c['pet_id'].toString(),
+          'name': eventName,
+          'type': 'family_event',
+          'dosage': notes,
+          'frequency': 'once',
+          'frequency_days': null,
+          'frequency_interval': 1,
+          'repeat_end_date': null,
+          'start_date': fromDate,
+          'next_due_date': toDate ?? fromDate,
+          'notes': notes,
+          'health_issue_id': null,
+          'health_issue_title': null,
+          'remind_days_before': 1,
+          'created_at': c['created_at']?.toString() ?? '',
+          'updated_at': c['created_at']?.toString() ?? '',
+        });
+      }
+    }
+  } catch (_) {}
+
   _jsonResponse(request, 200, entries);
 }
 
@@ -5065,6 +5125,40 @@ Future<void> _createFamilyEvent(HttpRequest request) async {
     },
   );
   final c = result.first.toColumnMap();
+
+  if (toDate != null) {
+    try {
+      final petNameResult = await _pool.execute(
+        Sql.named('SELECT name FROM pets WHERE id::text = @petId'),
+        parameters: {'petId': petId},
+      );
+      final petName = petNameResult.isNotEmpty ? petNameResult.first.toColumnMap()['name']?.toString() ?? '' : '';
+      final locale = await _getUserLocale(userId);
+      final title = _t(locale, 'reminder_title', {'pet': petName.isNotEmpty ? '$petName - ' : '', 'name': 'Family Event'});
+      final message = _t(locale, 'reminder_message', {'name': 'Family Event', 'date': toDate});
+
+      final orgMembers = await _pool.execute(
+        Sql.named('SELECT user_id FROM organization_users WHERE organization_id = @orgId AND role IN (\'super_user\', \'member\')'),
+        parameters: {'orgId': orgId},
+      );
+      for (final member in orgMembers) {
+        final memberId = member.toColumnMap()['user_id'] as int;
+        await _pool.execute(
+          Sql.named('''
+            INSERT INTO notifications (user_id, pet_id, title, message, type)
+            VALUES (@userId, @petId, @title, @message, 'reminder')
+          '''),
+          parameters: {
+            'userId': memberId,
+            'petId': petId,
+            'title': title,
+            'message': message,
+          },
+        );
+      }
+    } catch (_) {}
+  }
+
   _jsonResponse(request, 201, {
     'id': c['id'],
     'pet_id': c['pet_id'].toString(),
