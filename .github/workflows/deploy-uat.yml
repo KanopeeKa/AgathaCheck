@@ -34,5 +34,6 @@ jobs:
           server: ${{ secrets.UAT_FTP_SERVER }}
           username: ${{ secrets.UAT_FTP_USERNAME }}
           password: ${{ secrets.UAT_FTP_PASSWORD }}
-          server-dir: public_html/UAT/
-          local-dir: flutter_app/build/web/
+          server-dir: UAT.agathatrack.com
+          local-dir: flutter_app/build/web
+          dangerous-clean-slate: true
