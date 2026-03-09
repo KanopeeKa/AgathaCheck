@@ -15,11 +15,16 @@ jobs:
         with:
           channel: stable  # Or 'beta' if needed
 
+      - name: Debug pubspec
+        working-directory: flutter_app
+        run: cat pubspec.yaml
+
       - name: Install dependencies & Build
+        working-directory: flutter_app
         run: |
           flutter clean
           flutter pub get
-          flutter build web --release --no-wasm-dry-run -v
+          flutter build web --release --no-wasm-dry-run
 
       
       - name: Deploy to UAT cPanel
