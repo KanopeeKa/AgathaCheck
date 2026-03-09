@@ -1,0 +1,26 @@
+name: Deploy UAT (uat.agathatrack.com)
+
+on:
+  push:
+    branches: [ 'release/uat-*' ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Flutter & Build
+        working-directory: flutter_app
+        run: |
+          flutter pub get
+          flutter build web --release
+      
+      - name: Deploy to UAT cPanel
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.UAT_FTP_SERVER }}
+          username: ${{ secrets.UAT_FTP_USERNAME }}
+          password: ${{ secrets.UAT_FTP_PASSWORD }}
+          server-dir: /public_html/UAT/
+          local-dir: ./flutter_app/build/web/
