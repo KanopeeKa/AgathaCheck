@@ -102,9 +102,9 @@ void main() {
 
   group('HealthFrequency', () {
     test('label returns human-readable text', () {
-      expect(HealthFrequency.daily.label, 'Daily');
-      expect(HealthFrequency.weekly.label, 'Weekly');
-      expect(HealthFrequency.monthly.label, 'Monthly');
+      expect(HealthFrequency.daily.label, 'Day');
+      expect(HealthFrequency.weekly.label, 'Week');
+      expect(HealthFrequency.monthly.label, 'Month');
       expect(HealthFrequency.custom.label, 'Custom');
     });
   });

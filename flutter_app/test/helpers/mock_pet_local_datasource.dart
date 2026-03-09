@@ -10,6 +10,19 @@ class MockPetLocalDataSource extends Mock implements PetLocalDataSource {
   );
 
   @override
+  Future<List<PetModel>> getAllPets() => super.noSuchMethod(
+        Invocation.method(#getAllPets, []),
+        returnValue: Future.value(<PetModel>[]),
+      ) as Future<List<PetModel>>;
+
+  @override
+  Future<PetModel?> getPetById(String? id) => super.noSuchMethod(
+        Invocation.method(#getPetById, [id]),
+        returnValue: Future.value(null),
+        returnValueForMissingStub: Future.value(null),
+      ) as Future<PetModel?>;
+
+  @override
   Future<PetModel> addPet(PetModel? pet) => super.noSuchMethod(
         Invocation.method(#addPet, [pet]),
         returnValue: Future.value(_fallbackModel),
@@ -20,4 +33,10 @@ class MockPetLocalDataSource extends Mock implements PetLocalDataSource {
         Invocation.method(#updatePet, [pet]),
         returnValue: Future.value(_fallbackModel),
       ) as Future<PetModel>;
+
+  @override
+  Future<void> deletePet(String? id) => super.noSuchMethod(
+        Invocation.method(#deletePet, [id]),
+        returnValue: Future.value(),
+      ) as Future<void>;
 }
