@@ -51,10 +51,10 @@ void main() {
 
   test('passes type filter to repository', () async {
     when(mockRepository.getEntries(
-            petId: null, type: HealthEntryType.vaccine))
+            petId: null, type: HealthEntryType.preventive))
         .thenAnswer((_) async => []);
 
-    final result = await useCase(type: HealthEntryType.vaccine);
+    final result = await useCase(type: HealthEntryType.preventive);
     expect(result, isEmpty);
   });
 }

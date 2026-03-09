@@ -50,7 +50,7 @@ void main() {
       expect(model.petId, '');
       expect(model.dosage, '');
       expect(model.notes, '');
-      expect(model.type, HealthEntryType.vaccine);
+      expect(model.type, HealthEntryType.preventive);
       expect(model.frequency, HealthFrequency.weekly);
     });
 
@@ -83,7 +83,7 @@ void main() {
         id: 'e-1',
         petId: 'p-1',
         name: 'Rabies',
-        type: HealthEntryType.vaccine,
+        type: HealthEntryType.preventive,
         dosage: '1ml',
         frequency: HealthFrequency.custom,
         frequencyDays: 365,

@@ -21,8 +21,8 @@ abstract class OrganizationRepository {
 
   Future<List<Map<String, dynamic>>> getOrganizationPets(int orgId, String token);
   Future<Map<String, dynamic>> createOrganizationPet(int orgId, Map<String, dynamic> petJson, String token);
-  Future<void> transferPetToUser(int orgId, String petId, int userId, String? notes, String token);
-  Future<void> transferPetToOrg(String petId, int orgId, String? notes, String token);
+  Future<void> transferPetToUser(int orgId, String petId, {required String recipientEmail, String notes, required String token});
+  Future<void> transferPetToOrg(String petId, int orgId, {String notes, required String token});
 
   Future<List<ArchivedPet>> getOrganizationArchivedPets(int orgId, String token);
   Future<List<ArchivedPet>> getUserArchivedPets(String token);

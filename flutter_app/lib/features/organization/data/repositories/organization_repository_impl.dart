@@ -91,14 +91,25 @@ class OrganizationRepositoryImpl implements OrganizationRepository {
 
   @override
   Future<void> transferPetToUser(
-      int orgId, String petId, int userId, String? notes, String token) async {
-    await _dataSource.transferPetToUser(orgId, petId, userId, notes, token);
+      int orgId, String petId, {required String recipientEmail, String notes = '', required String token}) async {
+    await _dataSource.transferPetToUser(
+      orgId,
+      petId,
+      recipientEmail: recipientEmail,
+      notes: notes,
+      token: token,
+    );
   }
 
   @override
   Future<void> transferPetToOrg(
-      String petId, int orgId, String? notes, String token) async {
-    await _dataSource.transferPetToOrg(petId, orgId, notes, token);
+      String petId, int orgId, {String notes = '', required String token}) async {
+    await _dataSource.transferPetToOrg(
+      petId,
+      orgId,
+      notes: notes,
+      token: token,
+    );
   }
 
   @override

@@ -181,7 +181,7 @@ class _SharedPetScreenState extends ConsumerState<SharedPetScreen> {
                                 _buildChip(Icons.pets, breed, colorScheme),
                               if (ageDisplay != null)
                                 _buildChip(Icons.cake,
-                                    ageDisplay!, colorScheme),
+                                    ageDisplay, colorScheme),
                               if (weight != null)
                                 _buildChip(Icons.monitor_weight,
                                     '${weight.toStringAsFixed(1)} kg', colorScheme),

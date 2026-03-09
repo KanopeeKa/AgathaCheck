@@ -1,6 +1,7 @@
-import 'dart:html' as html;
+import 'dart:js_interop';
 import 'dart:ui_web' as ui_web;
 import 'package:flutter/material.dart';
+import 'package:web/web.dart' as web;
 
 int _viewCounter = 0;
 
@@ -44,27 +45,27 @@ class _WebAssetImageState extends State<WebAssetImage> {
     ui_web.platformViewRegistry.registerViewFactory(
       _viewType,
       (int viewId) {
-        final container = html.DivElement()
-          ..style.width = '100%'
-          ..style.height = '100%'
-          ..style.display = 'flex'
-          ..style.alignItems = 'center'
-          ..style.justifyContent = 'center';
+        final container = web.document.createElement('div') as web.HTMLDivElement;
+        container.style.width = '100%';
+        container.style.height = '100%';
+        container.style.display = 'flex';
+        container.style.alignItems = 'center';
+        container.style.justifyContent = 'center';
 
-        final imgElement = html.ImageElement()
-          ..src = 'assets/${widget.assetPath}'
-          ..style.width = '100%'
-          ..style.height = '100%'
-          ..style.objectFit = fitValue
-          ..style.display = 'block';
+        final imgElement = web.document.createElement('img') as web.HTMLImageElement;
+        imgElement.src = 'assets/${widget.assetPath}';
+        imgElement.style.width = '100%';
+        imgElement.style.height = '100%';
+        imgElement.style.setProperty('object-fit', fitValue);
+        imgElement.style.display = 'block';
 
         if (widget.clipOval) {
           imgElement.style.borderRadius = '50%';
         }
 
-        imgElement.onError.listen((_) {
+        imgElement.addEventListener('error', ((web.Event event) {
           imgElement.style.display = 'none';
-        });
+        }).toJS);
 
         container.append(imgElement);
         return container;

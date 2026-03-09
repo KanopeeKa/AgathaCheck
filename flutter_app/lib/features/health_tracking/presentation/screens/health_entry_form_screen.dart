@@ -261,8 +261,6 @@ class _HealthEntryFormScreenState
     final l = AppLocalizations.of(context)!;
     final petListAsync = ref.watch(petListProvider);
     final theme = Theme.of(context);
-    final primaryPetId = _selectedPetIds.isNotEmpty ? _selectedPetIds.first : '';
-
     return Scaffold(
       appBar: AppBar(
         title: AppLogoTitle(title: _isEdit ? l.editEntry : l.addHealthEntry2),
@@ -549,7 +547,7 @@ class _HealthEntryFormScreenState
                         icon: Icon(Icons.delete_outline, color: Theme.of(context).colorScheme.error),
                         style: OutlinedButton.styleFrom(
                           foregroundColor: Theme.of(context).colorScheme.error,
-                          side: BorderSide(color: Theme.of(context).colorScheme.error.withOpacity(0.5)),
+                          side: BorderSide(color: Theme.of(context).colorScheme.error.withValues(alpha: 0.5)),
                         ),
                         label: Text(l.deleteEntry),
                       ),

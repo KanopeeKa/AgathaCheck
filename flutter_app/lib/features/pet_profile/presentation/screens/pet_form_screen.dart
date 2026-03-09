@@ -10,7 +10,6 @@ import '../../../../core/utils/constants.dart';
 import '../../../../core/widgets/app_logo_title.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../auth/presentation/providers/auth_providers.dart';
-import '../../../organization/domain/entities/organization_member.dart';
 import '../../../organization/presentation/providers/organization_providers.dart';
 import '../../../vet/domain/entities/vet.dart';
 import '../../../vet/presentation/providers/vet_providers.dart';
@@ -152,7 +151,6 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
   }
 
   Future<void> _confirmDeletePet() async {
-    final l = AppLocalizations.of(context)!;
     final petName = _nameController.text.trim();
     final confirmed = await showDialog<bool>(
       context: context,
@@ -184,7 +182,6 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
   }
 
   Future<void> _confirmPassedAway() async {
-    final l = AppLocalizations.of(context)!;
     final petName = _nameController.text.trim();
     final confirmed = await showDialog<bool>(
       context: context,
@@ -1115,7 +1112,7 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
                       _assignedToUserId = null;
                     }),
                   ),
-                  if (isSuperUser && effectiveOrgId != null)
+                  if (isSuperUser)
                     _buildAssignmentSection(theme, l, effectiveOrgId),
                   if (!isSuperUser)
                     Padding(
