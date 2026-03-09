@@ -1,0 +1,26 @@
+name: Deploy Production (prod.agathatrack.com)
+
+on:
+  release:
+    types: [ published ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Flutter & Build
+        working-directory: flutter_app
+        run: |
+          flutter pub get
+          flutter build web --release
+      
+      - name: Deploy to Prod cPanel
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.PROD_FTP_SERVER }}
+          username: ${{ secrets.PROD_FTP_USERNAME }}
+          password: ${{ secrets.PROD_FTP_PASSWORD }}
+          server-dir: /public_html/Prod/
+          local-dir: ./flutter_app/build/web/
