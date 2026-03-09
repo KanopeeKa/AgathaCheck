@@ -1,0 +1,158 @@
+Run flutter test --coverage
+
+❌ /home/runner/work/AgathaCheck/AgathaCheck/flutter_app/test/features/pet_profile/domain/usecases/delete_pet_test.dart: should delete pet via repository (failed)
+❌ /home/runner/work/AgathaCheck/AgathaCheck/flutter_app/test/features/pet_profile/presentation/widgets/pet_card_test.dart: PetCard displays pet name and breed (failed)
+❌ /home/runner/work/AgathaCheck/AgathaCheck/flutter_app/test/features/pet_profile/presentation/widgets/pet_card_test.dart: PetCard displays age when dateOfBirth available (failed)
+❌ /home/runner/work/AgathaCheck/AgathaCheck/flutter_app/test/features/pet_profile/presentation/widgets/pet_card_test.dart: PetCard does not display age when no dateOfBirth (failed)
+❌ /home/runner/work/AgathaCheck/AgathaCheck/flutter_app/test/features/pet_profile/presentation/widgets/pet_card_test.dart: PetCard displays species only when no breed (failed)
+❌ /home/runner/work/AgathaCheck/AgathaCheck/flutter_app/test/features/pet_profile/presentation/widgets/pet_card_test.dart: PetCard shows placeholder icon when no photo (failed)
+❌ /home/runner/work/AgathaCheck/AgathaCheck/flutter_app/test/features/pet_profile/presentation/widgets/pet_card_test.dart: PetCard calls onTap when tapped (failed)
+❌ /home/runner/work/AgathaCheck/AgathaCheck/flutter_app/test/features/pet_profile/domain/usecases/update_pet_test.dart: should update pet via repository (failed)
+❌ /home/runner/work/AgathaCheck/AgathaCheck/flutter_app/test/features/pet_profile/domain/usecases/get_all_pets_test.dart: should return all pets from repository (failed)
+❌ /home/runner/work/AgathaCheck/AgathaCheck/flutter_app/test/features/pet_profile/domain/usecases/get_all_pets_test.dart: should return empty list when no pets exist (failed)
+❌ /home/runner/work/AgathaCheck/AgathaCheck/flutter_app/test/features/pet_profile/domain/usecases/add_pet_test.dart: should add pet via repository (failed)
+❌ /home/runner/work/AgathaCheck/AgathaCheck/flutter_app/test/features/pet_profile/domain/usecases/add_pet_test.dart: should propagate repository exceptions (failed)
+✅ /home/runner/work/AgathaCheck/AgathaCheck/flutter_app/test/features/pet_profile/domain/entities/pet_test.dart: Pet should create with required fields
+✅ /home/runner/work/AgathaCheck/AgathaCheck/flutter_app/test/features/pet_profile/domain/entities/pet_test.dart: Pet copyWith should create a new instance with updated fields
+✅ /home/runner/work/AgathaCheck/AgathaCheck/flutter_app/test/features/pet_profile/domain/entities/pet_test.dart: Pet age should be computed from dateOfBirth
+✅ /home/runner/work/AgathaCheck/AgathaCheck/flutter_app/test/features/pet_profile/domain/entities/pet_test.dart: Pet ageDisplay should return human-readable age
+✅ /home/runner/work/AgathaCheck/AgathaCheck/flutter_app/test/features/pet_profile/domain/entities/pet_test.dart: Pet ageDisplay should show months for young pets
+✅ /home/runner/work/AgathaCheck/AgathaCheck/flutter_app/test/features/pet_profile/domain/entities/pet_test.dart: Pet equality is based on id
+✅ /home/runner/work/AgathaCheck/AgathaCheck/flutter_app/test/features/pet_profile/domain/entities/pet_test.dart: Pet hashCode is based on id
+✅ /home/runner/work/AgathaCheck/AgathaCheck/flutter_app/test/features/pet_profile/data/models/pet_model_test.dart: PetModel should create from JSON with camelCase dateOfBirth
+✅ /home/runner/work/AgathaCheck/AgathaCheck/flutter_app/test/features/pet_profile/data/models/pet_model_test.dart: PetModel should create from JSON with snake_case date_of_birth
+✅ /home/runner/work/AgathaCheck/AgathaCheck/flutter_app/test/features/pet_profile/data/models/pet_model_test.dart: PetModel should convert to JSON
+✅ /home/runner/work/AgathaCheck/AgathaCheck/flutter_app/test/features/pet_profile/data/models/pet_model_test.dart: PetModel should convert to entity
+✅ /home/runner/work/AgathaCheck/AgathaCheck/flutter_app/test/features/pet_profile/data/models/pet_model_test.dart: PetModel should create from entity
+✅ /home/runner/work/AgathaCheck/AgathaCheck/flutter_app/test/features/pet_profile/data/models/pet_model_test.dart: PetModel should round-trip JSON string
+✅ /home/runner/work/AgathaCheck/AgathaCheck/flutter_app/test/features/pet_profile/data/models/pet_model_test.dart: PetModel should handle null optional fields in JSON
+❌ /home/runner/work/AgathaCheck/AgathaCheck/flutter_app/test/features/pet_profile/data/repositories/pet_repository_impl_test.dart: getAllPets should return list of pets from data source (failed)
+❌ /home/runner/work/AgathaCheck/AgathaCheck/flutter_app/test/features/pet_profile/data/repositories/pet_repository_impl_test.dart: getAllPets should return empty list when no pets stored (failed)
+❌ /home/runner/work/AgathaCheck/AgathaCheck/flutter_app/test/features/pet_profile/data/repositories/pet_repository_impl_test.dart: getPetById should return pet when found (failed)
+❌ /home/runner/work/AgathaCheck/AgathaCheck/flutter_app/test/features/pet_profile/data/repositories/pet_repository_impl_test.dart: getPetById should return null when not found (failed)
+❌ /home/runner/work/AgathaCheck/AgathaCheck/flutter_app/test/features/pet_profile/data/repositories/pet_repository_impl_test.dart: addPet should add pet and return entity (failed)
+❌ /home/runner/work/AgathaCheck/AgathaCheck/flutter_app/test/features/pet_profile/data/repositories/pet_repository_impl_test.dart: updatePet should update pet and return entity (failed)
+❌ /home/runner/work/AgathaCheck/AgathaCheck/flutter_app/test/features/pet_profile/data/repositories/pet_repository_impl_test.dart: deletePet should delete pet from data source (failed)
+❌ /home/runner/work/AgathaCheck/AgathaCheck/flutter_app/test/features/vet/domain/usecases/create_vet_test.dart: should create vet via repository (failed)
+❌ /home/runner/work/AgathaCheck/AgathaCheck/flutter_app/test/features/vet/domain/usecases/create_vet_test.dart: should propagate repository exceptions (failed)
+❌ /home/runner/work/AgathaCheck/AgathaCheck/flutter_app/test/features/vet/domain/usecases/delete_vet_test.dart: should delete vet via repository (failed)
+❌ /home/runner/work/AgathaCheck/AgathaCheck/flutter_app/test/features/vet/domain/usecases/delete_vet_test.dart: should propagate repository exceptions (failed)
+❌ /home/runner/work/AgathaCheck/AgathaCheck/flutter_app/test/features/vet/domain/usecases/update_vet_test.dart: should update vet via repository (failed)
+❌ /home/runner/work/AgathaCheck/AgathaCheck/flutter_app/test/features/vet/domain/usecases/update_vet_test.dart: should propagate repository exceptions (failed)
+❌ /home/runner/work/AgathaCheck/AgathaCheck/flutter_app/test/features/vet/domain/usecases/get_all_vets_test.dart: should get all vets from repository (failed)
+❌ /home/runner/work/AgathaCheck/AgathaCheck/flutter_app/test/features/vet/domain/usecases/get_all_vets_test.dart: should return empty list when no vets exist (failed)
+❌ /home/runner/work/AgathaCheck/AgathaCheck/flutter_app/test/features/vet/domain/usecases/get_all_vets_test.dart: should propagate repository exceptions (failed)
+✅ /home/runner/work/AgathaCheck/AgathaCheck/flutter_app/test/features/vet/domain/entities/vet_test.dart: Vet entity should create Vet with all fields
+✅ /home/runner/work/AgathaCheck/AgathaCheck/flutter_app/test/features/vet/domain/entities/vet_test.dart: Vet entity should use default values for optional fields
+✅ /home/runner/work/AgathaCheck/AgathaCheck/flutter_app/test/features/vet/domain/entities/vet_test.dart: Vet entity should create Vet with DateTime fields
+✅ /home/runner/work/AgathaCheck/AgathaCheck/flutter_app/test/features/vet/domain/entities/vet_test.dart: copyWith should return a copy with updated name
+✅ /home/runner/work/AgathaCheck/AgathaCheck/flutter_app/test/features/vet/domain/entities/vet_test.dart: copyWith should return a copy with updated id
+✅ /home/runner/work/AgathaCheck/AgathaCheck/flutter_app/test/features/vet/domain/entities/vet_test.dart: copyWith should return a copy with all fields updated
+✅ /home/runner/work/AgathaCheck/AgathaCheck/flutter_app/test/features/vet/domain/entities/vet_test.dart: copyWith should retain original values when no arguments passed
+✅ /home/runner/work/AgathaCheck/AgathaCheck/flutter_app/test/features/vet/domain/entities/vet_test.dart: equality should be equal when ids match
+✅ /home/runner/work/AgathaCheck/AgathaCheck/flutter_app/test/features/vet/domain/entities/vet_test.dart: equality should not be equal when ids differ
+✅ /home/runner/work/AgathaCheck/AgathaCheck/flutter_app/test/features/vet/domain/entities/vet_test.dart: equality should be equal to itself
+✅ /home/runner/work/AgathaCheck/AgathaCheck/flutter_app/test/features/vet/domain/entities/vet_test.dart: equality should not be equal to non-Vet object
+✅ /home/runner/work/AgathaCheck/AgathaCheck/flutter_app/test/features/vet/domain/entities/vet_test.dart: hashCode should have same hashCode for same id
+✅ /home/runner/work/AgathaCheck/AgathaCheck/flutter_app/test/features/vet/domain/entities/vet_test.dart: hashCode should have different hashCode for different ids
+✅ /home/runner/work/AgathaCheck/AgathaCheck/flutter_app/test/features/vet/data/datasources/vet_remote_datasource_test.dart: getAllVets returns list of VetModel on 200
+✅ /home/runner/work/AgathaCheck/AgathaCheck/flutter_app/test/features/vet/data/datasources/vet_remote_datasource_test.dart: getAllVets returns empty list on 200 with empty array
+✅ /home/runner/work/AgathaCheck/AgathaCheck/flutter_app/test/features/vet/data/datasources/vet_remote_datasource_test.dart: getAllVets throws on 400 error with JSON body
+✅ /home/runner/work/AgathaCheck/AgathaCheck/flutter_app/test/features/vet/data/datasources/vet_remote_datasource_test.dart: getAllVets throws on 500 error with non-JSON body
+✅ /home/runner/work/AgathaCheck/AgathaCheck/flutter_app/test/features/vet/data/datasources/vet_remote_datasource_test.dart: getVet returns VetModel on 200
+✅ /home/runner/work/AgathaCheck/AgathaCheck/flutter_app/test/features/vet/data/datasources/vet_remote_datasource_test.dart: getVet returns null on 404
+✅ /home/runner/work/AgathaCheck/AgathaCheck/flutter_app/test/features/vet/data/datasources/vet_remote_datasource_test.dart: getVet throws on 400 error
+✅ /home/runner/work/AgathaCheck/AgathaCheck/flutter_app/test/features/vet/data/datasources/vet_remote_datasource_test.dart: createVet sends POST and returns created VetModel
+✅ /home/runner/work/AgathaCheck/AgathaCheck/flutter_app/test/features/vet/data/datasources/vet_remote_datasource_test.dart: createVet throws on 400 error
+✅ /home/runner/work/AgathaCheck/AgathaCheck/flutter_app/test/features/vet/data/datasources/vet_remote_datasource_test.dart: updateVet sends PUT and returns updated VetModel
+✅ /home/runner/work/AgathaCheck/AgathaCheck/flutter_app/test/features/vet/data/datasources/vet_remote_datasource_test.dart: updateVet throws on 400 error
+✅ /home/runner/work/AgathaCheck/AgathaCheck/flutter_app/test/features/vet/data/datasources/vet_remote_datasource_test.dart: deleteVet sends DELETE request
+✅ /home/runner/work/AgathaCheck/AgathaCheck/flutter_app/test/features/vet/data/datasources/vet_remote_datasource_test.dart: deleteVet throws on 400 error
+✅ /home/runner/work/AgathaCheck/AgathaCheck/flutter_app/test/features/vet/data/datasources/vet_remote_datasource_test.dart: _checkResponse throws with Unknown error when JSON has no error field
+✅ /home/runner/work/AgathaCheck/AgathaCheck/flutter_app/test/features/vet/data/models/vet_model_test.dart: VetModel.fromJson should create VetModel from valid JSON
+✅ /home/runner/work/AgathaCheck/AgathaCheck/flutter_app/test/features/vet/data/models/vet_model_test.dart: VetModel.fromJson should handle int id
+✅ /home/runner/work/AgathaCheck/AgathaCheck/flutter_app/test/features/vet/data/models/vet_model_test.dart: VetModel.fromJson should handle missing fields with defaults
+✅ /home/runner/work/AgathaCheck/AgathaCheck/flutter_app/test/features/vet/data/models/vet_model_test.dart: VetModel.fromJson should handle null values
+✅ /home/runner/work/AgathaCheck/AgathaCheck/flutter_app/test/features/vet/data/models/vet_model_test.dart: VetModel.fromJson should handle invalid date strings
+✅ /home/runner/work/AgathaCheck/AgathaCheck/flutter_app/test/features/vet/data/models/vet_model_test.dart: VetModel.toJson should convert to JSON map
+✅ /home/runner/work/AgathaCheck/AgathaCheck/flutter_app/test/features/vet/data/models/vet_model_test.dart: VetModel.toJson should not include created_at and updated_at in JSON
+✅ /home/runner/work/AgathaCheck/AgathaCheck/flutter_app/test/features/vet/data/models/vet_model_test.dart: VetModel.fromEntity should create VetModel from Vet entity
+✅ /home/runner/work/AgathaCheck/AgathaCheck/flutter_app/test/features/vet/data/models/vet_model_test.dart: VetModel.fromEntity should create VetModel from minimal Vet entity
+✅ /home/runner/work/AgathaCheck/AgathaCheck/flutter_app/test/features/vet/data/models/vet_model_test.dart: VetModel is a Vet should be an instance of Vet
+❌ /home/runner/work/AgathaCheck/AgathaCheck/flutter_app/test/features/vet/data/repositories/vet_repository_impl_test.dart: getAllVets returns list of vets from data source (failed)
+❌ /home/runner/work/AgathaCheck/AgathaCheck/flutter_app/test/features/vet/data/repositories/vet_repository_impl_test.dart: getAllVets returns empty list when data source returns empty (failed)
+❌ /home/runner/work/AgathaCheck/AgathaCheck/flutter_app/test/features/vet/data/repositories/vet_repository_impl_test.dart: getVet returns vet from data source (failed)
+❌ /home/runner/work/AgathaCheck/AgathaCheck/flutter_app/test/features/vet/data/repositories/vet_repository_impl_test.dart: getVet returns null when data source returns null (failed)
+❌ /home/runner/work/AgathaCheck/AgathaCheck/flutter_app/test/features/vet/data/repositories/vet_repository_impl_test.dart: createVet delegates to data source with VetModel (failed)
+❌ /home/runner/work/AgathaCheck/AgathaCheck/flutter_app/test/features/vet/data/repositories/vet_repository_impl_test.dart: updateVet delegates to data source with VetModel (failed)
+❌ /home/runner/work/AgathaCheck/AgathaCheck/flutter_app/test/features/vet/data/repositories/vet_repository_impl_test.dart: deleteVet delegates to data source (failed)
+❌ /home/runner/work/AgathaCheck/AgathaCheck/flutter_app/test/features/health_tracking/domain/usecases/update_health_entry_test.dart: delegates to repository.updateEntry (failed)
+❌ /home/runner/work/AgathaCheck/AgathaCheck/flutter_app/test/features/health_tracking/domain/usecases/update_health_entry_test.dart: returns the updated entry from repository (failed)
+❌ /home/runner/work/AgathaCheck/AgathaCheck/flutter_app/test/features/health_tracking/domain/usecases/update_health_entry_test.dart: propagates repository exceptions (failed)
+❌ /home/runner/work/AgathaCheck/AgathaCheck/flutter_app/test/features/health_tracking/presentation/widgets/health_entry_card_test.dart: HealthEntryCard displays entry name (failed)
+❌ /home/runner/work/AgathaCheck/AgathaCheck/flutter_app/test/features/health_tracking/presentation/widgets/health_entry_card_test.dart: HealthEntryCard displays dosage (failed)
+✅ /home/runner/work/AgathaCheck/AgathaCheck/flutter_app/test/features/health_tracking/presentation/widgets/health_entry_card_test.dart: HealthEntryCard calls onMarkTaken when button pressed
+✅ /home/runner/work/AgathaCheck/AgathaCheck/flutter_app/test/features/health_tracking/presentation/widgets/health_entry_card_test.dart: HealthEntryCard shows overdue status for past entries
+❌ /home/runner/work/AgathaCheck/AgathaCheck/flutter_app/test/features/health_tracking/domain/usecases/get_entry_history_test.dart: delegates to repository.getHistory (failed)
+❌ /home/runner/work/AgathaCheck/AgathaCheck/flutter_app/test/features/health_tracking/domain/usecases/get_entry_history_test.dart: returns empty list when no history exists (failed)
+❌ /home/runner/work/AgathaCheck/AgathaCheck/flutter_app/test/features/health_tracking/domain/usecases/get_entry_history_test.dart: propagates repository exceptions (failed)
+❌ /home/runner/work/AgathaCheck/AgathaCheck/flutter_app/test/features/health_tracking/domain/usecases/delete_health_entry_test.dart: delegates to repository.deleteEntry (failed)
+❌ /home/runner/work/AgathaCheck/AgathaCheck/flutter_app/test/features/health_tracking/domain/usecases/delete_health_entry_test.dart: propagates repository exceptions (failed)
+❌ /home/runner/work/AgathaCheck/AgathaCheck/flutter_app/test/features/health_tracking/domain/usecases/get_health_entries_test.dart: returns entries from repository (failed)
+❌ /home/runner/work/AgathaCheck/AgathaCheck/flutter_app/test/features/health_tracking/domain/usecases/get_health_entries_test.dart: passes petId filter to repository (failed)
+❌ /home/runner/work/AgathaCheck/AgathaCheck/flutter_app/test/features/health_tracking/domain/usecases/get_health_entries_test.dart: passes type filter to repository (failed)
+❌ /home/runner/work/AgathaCheck/AgathaCheck/flutter_app/test/features/health_tracking/domain/usecases/mark_entry_taken_test.dart: marks entry as taken and returns updated entry (failed)
+❌ /home/runner/work/AgathaCheck/AgathaCheck/flutter_app/test/features/health_tracking/domain/usecases/mark_entry_taken_test.dart: passes notes to repository (failed)
+❌ /home/runner/work/AgathaCheck/AgathaCheck/flutter_app/test/features/health_tracking/domain/usecases/create_health_entry_test.dart: delegates to repository.createEntry (failed)
+❌ /home/runner/work/AgathaCheck/AgathaCheck/flutter_app/test/features/health_tracking/domain/usecases/create_health_entry_test.dart: returns the created entry from repository (failed)
+❌ /home/runner/work/AgathaCheck/AgathaCheck/flutter_app/test/features/health_tracking/domain/usecases/create_health_entry_test.dart: propagates repository exceptions (failed)
+✅ /home/runner/work/AgathaCheck/AgathaCheck/flutter_app/test/features/health_tracking/domain/entities/health_history_entry_test.dart: HealthHistoryEntry constructs with required fields
+✅ /home/runner/work/AgathaCheck/AgathaCheck/flutter_app/test/features/health_tracking/domain/entities/health_history_entry_test.dart: HealthHistoryEntry constructs with all fields
+✅ /home/runner/work/AgathaCheck/AgathaCheck/flutter_app/test/features/health_tracking/domain/entities/health_history_entry_test.dart: HealthHistoryEntry equality is based on id
+✅ /home/runner/work/AgathaCheck/AgathaCheck/flutter_app/test/features/health_tracking/domain/entities/health_history_entry_test.dart: HealthHistoryEntry inequality when ids differ
+✅ /home/runner/work/AgathaCheck/AgathaCheck/flutter_app/test/features/health_tracking/domain/entities/health_history_entry_test.dart: HealthHistoryEntry hashCode is based on id
+✅ /home/runner/work/AgathaCheck/AgathaCheck/flutter_app/test/features/health_tracking/domain/entities/health_history_entry_test.dart: HealthHistoryEntry hashCode differs for different ids
+✅ /home/runner/work/AgathaCheck/AgathaCheck/flutter_app/test/features/health_tracking/domain/entities/health_history_entry_test.dart: HealthHistoryEntry is not equal to non-HealthHistoryEntry
+✅ /home/runner/work/AgathaCheck/AgathaCheck/flutter_app/test/features/health_tracking/domain/entities/health_history_entry_test.dart: HealthHistoryEntry identical entries are equal
+✅ /home/runner/work/AgathaCheck/AgathaCheck/flutter_app/test/features/health_tracking/domain/entities/health_entry_test.dart: HealthEntry creates instance with required fields
+✅ /home/runner/work/AgathaCheck/AgathaCheck/flutter_app/test/features/health_tracking/domain/entities/health_entry_test.dart: HealthEntry isOverdue returns true when past due
+✅ /home/runner/work/AgathaCheck/AgathaCheck/flutter_app/test/features/health_tracking/domain/entities/health_entry_test.dart: HealthEntry isOverdue returns false when not past due
+✅ /home/runner/work/AgathaCheck/AgathaCheck/flutter_app/test/features/health_tracking/domain/entities/health_entry_test.dart: HealthEntry isDueToday returns true when due today
+✅ /home/runner/work/AgathaCheck/AgathaCheck/flutter_app/test/features/health_tracking/domain/entities/health_entry_test.dart: HealthEntry isDueToday returns false when due another day
+✅ /home/runner/work/AgathaCheck/AgathaCheck/flutter_app/test/features/health_tracking/domain/entities/health_entry_test.dart: HealthEntry isDueSoon returns true when due within 24 hours
+✅ /home/runner/work/AgathaCheck/AgathaCheck/flutter_app/test/features/health_tracking/domain/entities/health_entry_test.dart: HealthEntry isDueSoon returns false when overdue
+✅ /home/runner/work/AgathaCheck/AgathaCheck/flutter_app/test/features/health_tracking/domain/entities/health_entry_test.dart: HealthEntry copyWith creates modified copy
+✅ /home/runner/work/AgathaCheck/AgathaCheck/flutter_app/test/features/health_tracking/domain/entities/health_entry_test.dart: HealthEntry equality based on id
+✅ /home/runner/work/AgathaCheck/AgathaCheck/flutter_app/test/features/health_tracking/domain/entities/health_entry_test.dart: HealthEntry inequality for different ids
+✅ /home/runner/work/AgathaCheck/AgathaCheck/flutter_app/test/features/health_tracking/domain/entities/health_entry_test.dart: HealthEntryType label returns human-readable text
+❌ /home/runner/work/AgathaCheck/AgathaCheck/flutter_app/test/features/health_tracking/domain/entities/health_entry_test.dart: HealthFrequency label returns human-readable text (failed)
+✅ /home/runner/work/AgathaCheck/AgathaCheck/flutter_app/test/features/health_tracking/data/models/health_entry_model_test.dart: HealthEntryModel fromJson parses all fields correctly
+✅ /home/runner/work/AgathaCheck/AgathaCheck/flutter_app/test/features/health_tracking/data/models/health_entry_model_test.dart: HealthEntryModel fromJson handles missing optional fields
+✅ /home/runner/work/AgathaCheck/AgathaCheck/flutter_app/test/features/health_tracking/data/models/health_entry_model_test.dart: HealthEntryModel fromJson defaults unknown type to medication
+✅ /home/runner/work/AgathaCheck/AgathaCheck/flutter_app/test/features/health_tracking/data/models/health_entry_model_test.dart: HealthEntryModel fromJson defaults unknown frequency to once
+✅ /home/runner/work/AgathaCheck/AgathaCheck/flutter_app/test/features/health_tracking/data/models/health_entry_model_test.dart: HealthEntryModel toJson produces correct map
+✅ /home/runner/work/AgathaCheck/AgathaCheck/flutter_app/test/features/health_tracking/data/models/health_entry_model_test.dart: HealthEntryModel fromEntity preserves all data
+✅ /home/runner/work/AgathaCheck/AgathaCheck/flutter_app/test/features/health_tracking/data/models/health_entry_model_test.dart: HealthEntryModel toJson round-trips through fromJson
+❌ /home/runner/work/AgathaCheck/AgathaCheck/flutter_app/test/features/health_tracking/data/models/health_entry_model_test.dart: HealthEntryModel fromJson parses all entry types (failed)
+✅ /home/runner/work/AgathaCheck/AgathaCheck/flutter_app/test/features/health_tracking/data/models/health_entry_model_test.dart: HealthEntryModel fromJson parses all frequencies
+✅ /home/runner/work/AgathaCheck/AgathaCheck/flutter_app/test/features/health_tracking/data/models/health_history_model_test.dart: HealthHistoryModel fromJson creates model with all fields
+✅ /home/runner/work/AgathaCheck/AgathaCheck/flutter_app/test/features/health_tracking/data/models/health_history_model_test.dart: HealthHistoryModel fromJson handles missing id
+✅ /home/runner/work/AgathaCheck/AgathaCheck/flutter_app/test/features/health_tracking/data/models/health_history_model_test.dart: HealthHistoryModel fromJson handles missing entry_id
+✅ /home/runner/work/AgathaCheck/AgathaCheck/flutter_app/test/features/health_tracking/data/models/health_history_model_test.dart: HealthHistoryModel fromJson handles missing notes
+✅ /home/runner/work/AgathaCheck/AgathaCheck/flutter_app/test/features/health_tracking/data/models/health_history_model_test.dart: HealthHistoryModel fromJson handles invalid taken_at
+✅ /home/runner/work/AgathaCheck/AgathaCheck/flutter_app/test/features/health_tracking/data/models/health_history_model_test.dart: HealthHistoryModel fromJson handles null values
+✅ /home/runner/work/AgathaCheck/AgathaCheck/flutter_app/test/features/health_tracking/data/models/health_history_model_test.dart: HealthHistoryModel fromJson handles empty map
+✅ /home/runner/work/AgathaCheck/AgathaCheck/flutter_app/test/features/health_tracking/data/models/health_history_model_test.dart: HealthHistoryModel is a HealthHistoryEntry
+❌ /home/runner/work/AgathaCheck/AgathaCheck/flutter_app/test/features/health_tracking/data/repositories/health_repository_impl_test.dart: getEntries returns entries from data source (failed)
+❌ /home/runner/work/AgathaCheck/AgathaCheck/flutter_app/test/features/health_tracking/data/repositories/health_repository_impl_test.dart: getEntries passes filter parameters to data source (failed)
+❌ /home/runner/work/AgathaCheck/AgathaCheck/flutter_app/test/features/health_tracking/data/repositories/health_repository_impl_test.dart: getEntry returns entry from data source (failed)
+❌ /home/runner/work/AgathaCheck/AgathaCheck/flutter_app/test/features/health_tracking/data/repositories/health_repository_impl_test.dart: getEntry returns null when not found (failed)
+❌ /home/runner/work/AgathaCheck/AgathaCheck/flutter_app/test/features/health_tracking/data/repositories/health_repository_impl_test.dart: createEntry delegates to data source (failed)
+❌ /home/runner/work/AgathaCheck/AgathaCheck/flutter_app/test/features/health_tracking/data/repositories/health_repository_impl_test.dart: updateEntry delegates to data source (failed)
+❌ /home/runner/work/AgathaCheck/AgathaCheck/flutter_app/test/features/health_tracking/data/repositories/health_repository_impl_test.dart: deleteEntry delegates to data source (failed)
+❌ /home/runner/work/AgathaCheck/AgathaCheck/flutter_app/test/features/health_tracking/data/repositories/health_repository_impl_test.dart: markTaken delegates to data source with notes (failed)
+❌ /home/runner/work/AgathaCheck/AgathaCheck/flutter_app/test/features/health_tracking/data/repositories/health_repository_impl_test.dart: getHistory returns history from data source (failed)
+❌ /home/runner/work/AgathaCheck/AgathaCheck/flutter_app/test/features/health_tracking/data/repositories/health_repository_impl_test.dart: exportCsv returns CSV string from data source (failed)
+
+Error: 88 tests passed, 65 failed.
+Error: Process completed with exit code 1.

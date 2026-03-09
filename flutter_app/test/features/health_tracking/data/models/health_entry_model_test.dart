@@ -109,9 +109,16 @@ void main() {
     });
 
     test('fromJson parses all entry types', () {
-      for (final t in ['medication', 'preventive', 'vaccine']) {
-        final model = HealthEntryModel.fromJson({...testJson, 'type': t});
-        expect(model.type.name, t);
+      final expected = {
+        'medication': HealthEntryType.medication,
+        'preventive': HealthEntryType.preventive,
+        'vaccine': HealthEntryType.preventive,
+        'vet_visit': HealthEntryType.vetVisit,
+        'procedure': HealthEntryType.procedure,
+      };
+      for (final entry in expected.entries) {
+        final model = HealthEntryModel.fromJson({...testJson, 'type': entry.key});
+        expect(model.type, entry.value);
       }
     });
 

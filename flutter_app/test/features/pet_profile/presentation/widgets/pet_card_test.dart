@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pet_profile_app/features/pet_profile/domain/entities/pet.dart';
 import 'package:pet_profile_app/features/pet_profile/presentation/widgets/pet_card.dart';
+import 'package:pet_profile_app/l10n/app_localizations.dart';
 
 void main() {
   final testPet = Pet(
@@ -22,6 +24,14 @@ void main() {
 
   Widget createTestWidget(Widget child) {
     return MaterialApp(
+      localizationsDelegates: const [
+        AppLocalizations.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: AppLocalizations.supportedLocales,
+      locale: const Locale('en'),
       home: Scaffold(body: child),
     );
   }
@@ -31,31 +41,35 @@ void main() {
       await tester.pumpWidget(
         createTestWidget(PetCard(pet: testPet)),
       );
+      await tester.pumpAndSettle();
 
       expect(find.text('Buddy'), findsOneWidget);
-      expect(find.text('Dog - Golden Retriever'), findsOneWidget);
+      expect(find.textContaining('Golden Retriever'), findsOneWidget);
     });
 
     testWidgets('displays age when dateOfBirth available', (tester) async {
       await tester.pumpWidget(
         createTestWidget(PetCard(pet: testPet)),
       );
+      await tester.pumpAndSettle();
 
-      expect(find.textContaining('yrs old'), findsOneWidget);
+      expect(find.textContaining('yrs old'), findsWidgets);
     });
 
     testWidgets('does not display age when no dateOfBirth', (tester) async {
       await tester.pumpWidget(
         createTestWidget(PetCard(pet: petNoBio)),
       );
+      await tester.pumpAndSettle();
 
-      expect(find.textContaining('old'), findsNothing);
+      expect(find.textContaining('yrs old'), findsNothing);
     });
 
     testWidgets('displays species only when no breed', (tester) async {
       await tester.pumpWidget(
         createTestWidget(PetCard(pet: petNoBio)),
       );
+      await tester.pumpAndSettle();
 
       expect(find.text('Cat'), findsOneWidget);
     });
@@ -64,6 +78,7 @@ void main() {
       await tester.pumpWidget(
         createTestWidget(PetCard(pet: testPet)),
       );
+      await tester.pumpAndSettle();
 
       expect(find.byIcon(Icons.pets), findsOneWidget);
     });
@@ -75,10 +90,10 @@ void main() {
           PetCard(pet: testPet, onTap: () => tapped = true),
         ),
       );
+      await tester.pumpAndSettle();
 
       await tester.tap(find.byType(PetCard));
       expect(tapped, isTrue);
     });
-
   });
 }

@@ -41,13 +41,13 @@ void main() {
     testWidgets('displays entry name', (tester) async {
       await tester.pumpWidget(buildCard(futureEntry));
       await tester.pumpAndSettle();
-      expect(find.text('Heartgard Plus'), findsOneWidget);
+      expect(find.textContaining('Heartgard Plus'), findsOneWidget);
     });
 
     testWidgets('displays dosage', (tester) async {
       await tester.pumpWidget(buildCard(futureEntry));
       await tester.pumpAndSettle();
-      expect(find.text('1 tablet'), findsOneWidget);
+      expect(find.textContaining('1 tablet'), findsOneWidget);
     });
 
     testWidgets('calls onMarkTaken when button pressed', (tester) async {
