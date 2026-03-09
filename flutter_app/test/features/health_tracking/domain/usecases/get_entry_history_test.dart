@@ -4,7 +4,7 @@ import 'package:mockito/mockito.dart';
 import 'package:pet_profile_app/features/health_tracking/domain/entities/health_history_entry.dart';
 import 'package:pet_profile_app/features/health_tracking/domain/usecases/get_entry_history.dart';
 
-import 'get_health_entries_test.mocks.dart';
+import '../../../../helpers/mock_health_repository.dart';
 
 void main() {
   late MockHealthRepository mockRepository;

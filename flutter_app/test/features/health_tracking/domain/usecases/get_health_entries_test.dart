@@ -1,13 +1,10 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 
 import 'package:pet_profile_app/features/health_tracking/domain/entities/health_entry.dart';
-import 'package:pet_profile_app/features/health_tracking/domain/repositories/health_repository.dart';
 import 'package:pet_profile_app/features/health_tracking/domain/usecases/get_health_entries.dart';
 
-@GenerateMocks([HealthRepository])
-import 'get_health_entries_test.mocks.dart';
+import '../../../../helpers/mock_health_repository.dart';
 
 void main() {
   late MockHealthRepository mockRepository;
@@ -40,18 +37,15 @@ void main() {
   });
 
   test('passes petId filter to repository', () async {
-    when(mockRepository.getEntries(
-            petId: 'pet-1', type: null))
+    when(mockRepository.getEntries(petId: 'pet-1', type: null))
         .thenAnswer((_) async => testEntries);
 
     await useCase(petId: 'pet-1');
-    verify(mockRepository.getEntries(petId: 'pet-1', type: null))
-        .called(1);
+    verify(mockRepository.getEntries(petId: 'pet-1', type: null)).called(1);
   });
 
   test('passes type filter to repository', () async {
-    when(mockRepository.getEntries(
-            petId: null, type: HealthEntryType.preventive))
+    when(mockRepository.getEntries(petId: null, type: HealthEntryType.preventive))
         .thenAnswer((_) async => []);
 
     final result = await useCase(type: HealthEntryType.preventive);

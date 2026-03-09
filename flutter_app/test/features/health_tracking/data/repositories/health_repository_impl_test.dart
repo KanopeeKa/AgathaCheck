@@ -1,15 +1,12 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 
-import 'package:pet_profile_app/features/health_tracking/data/datasources/health_remote_datasource.dart';
 import 'package:pet_profile_app/features/health_tracking/data/models/health_entry_model.dart';
 import 'package:pet_profile_app/features/health_tracking/data/models/health_history_model.dart';
 import 'package:pet_profile_app/features/health_tracking/data/repositories/health_repository_impl.dart';
 import 'package:pet_profile_app/features/health_tracking/domain/entities/health_entry.dart';
 
-@GenerateMocks([HealthRemoteDataSource])
-import 'health_repository_impl_test.mocks.dart';
+import '../../../../helpers/mock_health_remote_datasource.dart';
 
 void main() {
   late MockHealthRemoteDataSource mockDataSource;
