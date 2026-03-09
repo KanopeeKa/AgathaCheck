@@ -17,8 +17,9 @@ jobs:
 
       - name: Install dependencies & Build
         run: |
+          flutter clean
           flutter pub get
-          flutter build web --release
+          flutter build web --release --no-wasm-dry-run -v
 
       
       - name: Deploy to UAT cPanel
