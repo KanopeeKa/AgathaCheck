@@ -1,14 +1,11 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 
-import 'package:pet_profile_app/features/vet/data/datasources/vet_remote_datasource.dart';
 import 'package:pet_profile_app/features/vet/data/models/vet_model.dart';
 import 'package:pet_profile_app/features/vet/data/repositories/vet_repository_impl.dart';
 import 'package:pet_profile_app/features/vet/domain/entities/vet.dart';
 
-@GenerateMocks([VetRemoteDataSource])
-import 'vet_repository_impl_test.mocks.dart';
+import '../../../../helpers/mock_vet_remote_datasource.dart';
 
 void main() {
   late MockVetRemoteDataSource mockDataSource;

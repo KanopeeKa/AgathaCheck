@@ -1,13 +1,10 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 
 import 'package:pet_profile_app/features/health_tracking/domain/entities/health_entry.dart';
-import 'package:pet_profile_app/features/health_tracking/domain/repositories/health_repository.dart';
 import 'package:pet_profile_app/features/health_tracking/domain/usecases/mark_entry_taken.dart';
 
-@GenerateMocks([HealthRepository])
-import 'mark_entry_taken_test.mocks.dart';
+import '../../../../helpers/mock_health_repository.dart';
 
 void main() {
   late MockHealthRepository mockRepository;

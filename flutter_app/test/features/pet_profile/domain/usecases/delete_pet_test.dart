@@ -1,11 +1,8 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
-import 'package:pet_profile_app/features/pet_profile/domain/repositories/pet_repository.dart';
 import 'package:pet_profile_app/features/pet_profile/domain/usecases/delete_pet.dart';
 
-@GenerateNiceMocks([MockSpec<PetRepository>()])
-import 'delete_pet_test.mocks.dart';
+import '../../../../helpers/mock_pet_repository.dart';
 
 void main() {
   late MockPetRepository mockRepository;

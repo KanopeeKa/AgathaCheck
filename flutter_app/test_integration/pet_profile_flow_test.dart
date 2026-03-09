@@ -12,6 +12,7 @@ void main() {
     late SharedPreferences prefs;
 
     setUp(() async {
+      // ignore: invalid_use_of_visible_for_testing_member
       SharedPreferences.setMockInitialValues({});
       prefs = await SharedPreferences.getInstance();
     });
@@ -21,10 +22,15 @@ void main() {
         overrides: [
           sharedPreferencesProvider.overrideWithValue(prefs),
         ],
-        child: MaterialApp.router(
-          title: AppConstants.appTitle,
-          theme: AppTheme.lightTheme,
-          routerConfig: AppRouter.router,
+        child: Consumer(
+          builder: (context, ref, _) {
+            final router = ref.watch(routerProvider);
+            return MaterialApp.router(
+              title: AppConstants.appTitle,
+              theme: AppTheme.lightTheme,
+              routerConfig: router,
+            );
+          },
         ),
       );
     }

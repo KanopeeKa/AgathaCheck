@@ -1,12 +1,9 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:pet_profile_app/features/vet/domain/entities/vet.dart';
-import 'package:pet_profile_app/features/vet/domain/repositories/vet_repository.dart';
 import 'package:pet_profile_app/features/vet/domain/usecases/get_all_vets.dart';
 
-@GenerateNiceMocks([MockSpec<VetRepository>()])
-import 'get_all_vets_test.mocks.dart';
+import '../../../../helpers/mock_vet_repository.dart';
 
 void main() {
   late MockVetRepository mockRepository;
