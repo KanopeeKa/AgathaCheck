@@ -10,11 +10,16 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       
-      - name: Setup Flutter & Build
-        working-directory: flutter_app
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable  # Or 'beta' if needed
+
+      - name: Install dependencies & Build
         run: |
           flutter pub get
           flutter build web --release
+
       
       - name: Deploy to UAT cPanel
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
