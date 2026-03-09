@@ -96,7 +96,7 @@ void main() {
     test('label returns human-readable text', () {
       expect(HealthEntryType.medication.label, 'Medication');
       expect(HealthEntryType.preventive.label, 'Preventive');
-      expect(HealthEntryType.vaccine.label, 'Vaccine');
+      expect(HealthEntryType.vetVisit.label, 'Vet Visit');
     });
   });
 

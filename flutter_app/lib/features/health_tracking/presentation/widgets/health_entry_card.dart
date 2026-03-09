@@ -421,7 +421,7 @@ class _PetStrip extends StatelessWidget {
     return Container(
       width: 52,
       decoration: BoxDecoration(
-        color: petColor.withOpacity(0.18),
+        color: petColor.withValues(alpha: 0.18),
       ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -469,7 +469,7 @@ class _PetStrip extends StatelessWidget {
       height: 30,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        color: petColor.withOpacity(0.25),
+        color: petColor.withValues(alpha: 0.25),
         border: Border.all(color: petColor, width: 2),
       ),
       child: Icon(Icons.pets, size: 14, color: petColor),

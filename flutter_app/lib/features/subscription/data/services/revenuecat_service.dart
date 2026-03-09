@@ -84,6 +84,7 @@ class RevenueCatService {
     if (!_initialized) return SubscriptionStatus.free;
 
     try {
+      // ignore: deprecated_member_use
       final result = await Purchases.purchasePackage(package);
       return _mapCustomerInfo(result.customerInfo);
     } catch (e) {

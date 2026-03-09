@@ -42,7 +42,7 @@ class SubscriptionNotifier extends StateNotifier<SubscriptionStatus> {
 
     final authState = _ref.read(authProvider);
     if (authState.isLoggedIn && authState.user?.id != null) {
-      await service.login(authState.user!.id!);
+      await service.login(authState.user!.id);
     }
 
     await refresh();

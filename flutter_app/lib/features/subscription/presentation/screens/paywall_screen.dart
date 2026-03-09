@@ -1,10 +1,8 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
 import '../../../../core/widgets/app_logo_title.dart';
 import '../../../../l10n/app_localizations.dart';
-import '../../data/services/revenuecat_service.dart';
 import '../providers/subscription_providers.dart';
 
 class PaywallScreen extends ConsumerStatefulWidget {
@@ -293,7 +291,7 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
   Widget _buildFeatureCard(ThemeData theme) {
     return Card(
       elevation: 0,
-      color: theme.colorScheme.primaryContainer.withOpacity(0.3),
+      color: theme.colorScheme.primaryContainer.withValues(alpha: 0.3),
       child: Padding(
         padding: const EdgeInsets.all(20),
         child: Column(

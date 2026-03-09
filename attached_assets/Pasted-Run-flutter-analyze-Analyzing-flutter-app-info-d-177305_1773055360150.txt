@@ -1,0 +1,119 @@
+Run flutter analyze .
+Analyzing flutter_app...                                        
+
+   info • 'dart:html' is deprecated and shouldn't be used. Use package:web and dart:js_interop instead • lib/core/widgets/web_image_web.dart:1:1 • deprecated_member_use
+warning • Unused import: '../../../../core/utils/constants.dart' • lib/features/auth/presentation/screens/forgot_password_screen.dart:5:8 • unused_import
+warning • Unused import: '../../data/auth_service.dart' • lib/features/auth/presentation/screens/forgot_password_screen.dart:8:8 • unused_import
+warning • Unused import: '../../../../core/utils/constants.dart' • lib/features/auth/presentation/screens/landing_screen.dart:6:8 • unused_import
+warning • Unused import: '../../../../core/utils/constants.dart' • lib/features/auth/presentation/screens/login_screen.dart:5:8 • unused_import
+warning • Unused import: 'package:shared_preferences/shared_preferences.dart' • lib/features/auth/presentation/screens/my_details_screen.dart:10:8 • unused_import
+   info • Unnecessary use of double quotes • lib/features/auth/presentation/screens/my_details_screen.dart:712:63 • prefer_single_quotes
+   info • Unnecessary use of double quotes • lib/features/auth/presentation/screens/my_details_screen.dart:712:78 • prefer_single_quotes
+warning • Unused import: '../../../../core/utils/constants.dart' • lib/features/auth/presentation/screens/signup_screen.dart:5:8 • unused_import
+   info • 'value' is deprecated and shouldn't be used. Use initialValue instead. This will set the initial value for the form field. This feature was deprecated after v3.33.0-1.0.pre • lib/features/health_tracking/presentation/screens/health_entry_form_screen.dart:220:15 • deprecated_member_use
+warning • The value of the local variable 'primaryPetId' isn't used • lib/features/health_tracking/presentation/screens/health_entry_form_screen.dart:264:11 • unused_local_variable
+   info • 'value' is deprecated and shouldn't be used. Use initialValue instead. This will set the initial value for the form field. This feature was deprecated after v3.33.0-1.0.pre • lib/features/health_tracking/presentation/screens/health_entry_form_screen.dart:321:23 • deprecated_member_use
+   info • 'value' is deprecated and shouldn't be used. Use initialValue instead. This will set the initial value for the form field. This feature was deprecated after v3.33.0-1.0.pre • lib/features/health_tracking/presentation/screens/health_entry_form_screen.dart:357:23 • deprecated_member_use
+   info • 'value' is deprecated and shouldn't be used. Use initialValue instead. This will set the initial value for the form field. This feature was deprecated after v3.33.0-1.0.pre • lib/features/health_tracking/presentation/screens/health_entry_form_screen.dart:378:31 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/features/health_tracking/presentation/screens/health_entry_form_screen.dart:552:87 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/features/health_tracking/presentation/widgets/health_entry_card.dart:424:25 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/features/health_tracking/presentation/widgets/health_entry_card.dart:472:25 • deprecated_member_use
+  error • The named parameter 'recipientEmail' is required, but there's no corresponding argument • lib/features/organization/data/repositories/organization_repository_impl.dart:95:23 • missing_required_argument
+  error • The named parameter 'token' is required, but there's no corresponding argument • lib/features/organization/data/repositories/organization_repository_impl.dart:95:23 • missing_required_argument
+  error • Too many positional arguments: 2 expected, but 5 found • lib/features/organization/data/repositories/organization_repository_impl.dart:95:55 • extra_positional_arguments_could_be_named
+  error • The named parameter 'token' is required, but there's no corresponding argument • lib/features/organization/data/repositories/organization_repository_impl.dart:101:23 • missing_required_argument
+  error • Too many positional arguments: 2 expected, but 4 found • lib/features/organization/data/repositories/organization_repository_impl.dart:101:54 • extra_positional_arguments_could_be_named
+   info • 'value' is deprecated and shouldn't be used. Use initialValue instead. This will set the initial value for the form field. This feature was deprecated after v3.33.0-1.0.pre • lib/features/organization/presentation/screens/organization_form_screen.dart:170:21 • deprecated_member_use
+warning • Unused import: '../../data/datasources/organization_remote_datasource.dart' • lib/features/organization/presentation/screens/organization_list_screen.dart:9:8 • unused_import
+warning • Unused import: 'package:http/http.dart' • lib/features/pet_profile/presentation/screens/pet_detail_screen.dart:8:8 • unused_import
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/features/pet_profile/presentation/screens/pet_detail_screen.dart:989:25 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/features/pet_profile/presentation/screens/pet_detail_screen.dart:993:86 • deprecated_member_use
+   info • 'value' is deprecated and shouldn't be used. Use initialValue instead. This will set the initial value for the form field. This feature was deprecated after v3.33.0-1.0.pre • lib/features/pet_profile/presentation/screens/pet_detail_screen.dart:1339:19 • deprecated_member_use
+   info • 'value' is deprecated and shouldn't be used. Use initialValue instead. This will set the initial value for the form field. This feature was deprecated after v3.33.0-1.0.pre • lib/features/pet_profile/presentation/screens/pet_detail_screen.dart:3190:21 • deprecated_member_use
+   info • 'value' is deprecated and shouldn't be used. Use initialValue instead. This will set the initial value for the form field. This feature was deprecated after v3.33.0-1.0.pre • lib/features/pet_profile/presentation/screens/pet_detail_screen.dart:3351:21 • deprecated_member_use
+warning • Unused import: '../../../organization/domain/entities/organization_member.dart' • lib/features/pet_profile/presentation/screens/pet_form_screen.dart:13:8 • unused_import
+warning • The value of the local variable 'l' isn't used • lib/features/pet_profile/presentation/screens/pet_form_screen.dart:155:11 • unused_local_variable
+warning • The value of the local variable 'l' isn't used • lib/features/pet_profile/presentation/screens/pet_form_screen.dart:187:11 • unused_local_variable
+   info • 'value' is deprecated and shouldn't be used. Use initialValue instead. This will set the initial value for the form field. This feature was deprecated after v3.33.0-1.0.pre • lib/features/pet_profile/presentation/screens/pet_form_screen.dart:457:17 • deprecated_member_use
+   info • 'value' is deprecated and shouldn't be used. Use initialValue instead. This will set the initial value for the form field. This feature was deprecated after v3.33.0-1.0.pre • lib/features/pet_profile/presentation/screens/pet_form_screen.dart:485:17 • deprecated_member_use
+   info • 'groupValue' is deprecated and shouldn't be used. Use a RadioGroup ancestor to manage group value instead. This feature was deprecated after v3.32.0-0.0.pre • lib/features/pet_profile/presentation/screens/pet_form_screen.dart:802:17 • deprecated_member_use
+   info • 'onChanged' is deprecated and shouldn't be used. Use RadioGroup to handle value change instead. This feature was deprecated after v3.32.0-0.0.pre • lib/features/pet_profile/presentation/screens/pet_form_screen.dart:805:17 • deprecated_member_use
+   info • 'groupValue' is deprecated and shouldn't be used. Use a RadioGroup ancestor to manage group value instead. This feature was deprecated after v3.32.0-0.0.pre • lib/features/pet_profile/presentation/screens/pet_form_screen.dart:819:17 • deprecated_member_use
+   info • 'onChanged' is deprecated and shouldn't be used. Use RadioGroup to handle value change instead. This feature was deprecated after v3.32.0-0.0.pre • lib/features/pet_profile/presentation/screens/pet_form_screen.dart:822:17 • deprecated_member_use
+   info • 'value' is deprecated and shouldn't be used. Use initialValue instead. This will set the initial value for the form field. This feature was deprecated after v3.33.0-1.0.pre • lib/features/pet_profile/presentation/screens/pet_form_screen.dart:884:11 • deprecated_member_use
+   info • 'value' is deprecated and shouldn't be used. Use initialValue instead. This will set the initial value for the form field. This feature was deprecated after v3.33.0-1.0.pre • lib/features/pet_profile/presentation/screens/pet_form_screen.dart:1101:21 • deprecated_member_use
+warning • The operand can't be 'null', so the condition is always 'true' • lib/features/pet_profile/presentation/screens/pet_form_screen.dart:1118:53 • unnecessary_null_comparison
+   info • 'value' is deprecated and shouldn't be used. Use initialValue instead. This will set the initial value for the form field. This feature was deprecated after v3.33.0-1.0.pre • lib/features/pet_profile/presentation/screens/pet_form_screen.dart:1162:15 • deprecated_member_use
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/features/pet_profile/presentation/widgets/pet_card.dart:170:25 • deprecated_member_use
+warning • The '!' will have no effect because the receiver can't be null • lib/features/sharing/presentation/screens/shared_pet_screen.dart:184:47 • unnecessary_non_null_assertion
+   info • 'purchasePackage' is deprecated and shouldn't be used. Use purchase(PurchaseParams) • lib/features/subscription/data/services/revenuecat_service.dart:87:38 • deprecated_member_use
+warning • The '!' will have no effect because the receiver can't be null • lib/features/subscription/presentation/providers/subscription_providers.dart:45:45 • unnecessary_non_null_assertion
+   info • The import of 'package:flutter/foundation.dart' is unnecessary because all of the used elements are also provided by the import of 'package:flutter/material.dart' • lib/features/subscription/presentation/screens/paywall_screen.dart:1:8 • unnecessary_import
+warning • Unused import: '../../data/services/revenuecat_service.dart' • lib/features/subscription/presentation/screens/paywall_screen.dart:7:8 • unused_import
+   info • 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss • lib/features/subscription/presentation/screens/paywall_screen.dart:296:49 • deprecated_member_use
+  error • There's no constant named 'vaccine' in 'HealthEntryType' • test/features/health_tracking/data/models/health_entry_model_test.dart:53:42 • undefined_enum_constant
+  error • There's no constant named 'vaccine' in 'HealthEntryType' • test/features/health_tracking/data/models/health_entry_model_test.dart:86:31 • undefined_enum_constant
+  error • Target of URI doesn't exist: 'health_repository_impl_test.mocks.dart' • test/features/health_tracking/data/repositories/health_repository_impl_test.dart:12:8 • uri_does_not_exist
+  error • Undefined class 'MockHealthRemoteDataSource' • test/features/health_tracking/data/repositories/health_repository_impl_test.dart:15:8 • undefined_class
+  error • The function 'MockHealthRemoteDataSource' isn't defined • test/features/health_tracking/data/repositories/health_repository_impl_test.dart:19:22 • undefined_function
+warning • This function has a nullable return type of 'FutureOr<Object?>', but ends without returning a value • test/features/health_tracking/data/repositories/health_repository_impl_test.dart:97:33 • body_might_complete_normally_nullable
+  error • There's no constant named 'vaccine' in 'HealthEntryType' • test/features/health_tracking/domain/entities/health_entry_test.dart:99:30 • undefined_enum_constant
+  error • Target of URI doesn't exist: 'get_health_entries_test.mocks.dart' • test/features/health_tracking/domain/usecases/create_health_entry_test.dart:7:8 • uri_does_not_exist
+  error • Undefined class 'MockHealthRepository' • test/features/health_tracking/domain/usecases/create_health_entry_test.dart:10:8 • undefined_class
+  error • The function 'MockHealthRepository' isn't defined • test/features/health_tracking/domain/usecases/create_health_entry_test.dart:14:22 • undefined_function
+  error • Target of URI doesn't exist: 'get_health_entries_test.mocks.dart' • test/features/health_tracking/domain/usecases/delete_health_entry_test.dart:6:8 • uri_does_not_exist
+  error • Undefined class 'MockHealthRepository' • test/features/health_tracking/domain/usecases/delete_health_entry_test.dart:9:8 • undefined_class
+  error • The function 'MockHealthRepository' isn't defined • test/features/health_tracking/domain/usecases/delete_health_entry_test.dart:13:22 • undefined_function
+warning • This function has a nullable return type of 'FutureOr<Object?>', but ends without returning a value • test/features/health_tracking/domain/usecases/delete_health_entry_test.dart:19:31 • body_might_complete_normally_nullable
+  error • Target of URI doesn't exist: 'get_health_entries_test.mocks.dart' • test/features/health_tracking/domain/usecases/get_entry_history_test.dart:7:8 • uri_does_not_exist
+  error • Undefined class 'MockHealthRepository' • test/features/health_tracking/domain/usecases/get_entry_history_test.dart:10:8 • undefined_class
+  error • The function 'MockHealthRepository' isn't defined • test/features/health_tracking/domain/usecases/get_entry_history_test.dart:14:22 • undefined_function
+  error • Target of URI doesn't exist: 'get_health_entries_test.mocks.dart' • test/features/health_tracking/domain/usecases/get_health_entries_test.dart:10:8 • uri_does_not_exist
+  error • Undefined class 'MockHealthRepository' • test/features/health_tracking/domain/usecases/get_health_entries_test.dart:13:8 • undefined_class
+  error • The function 'MockHealthRepository' isn't defined • test/features/health_tracking/domain/usecases/get_health_entries_test.dart:17:22 • undefined_function
+  error • There's no constant named 'vaccine' in 'HealthEntryType' • test/features/health_tracking/domain/usecases/get_health_entries_test.dart:54:48 • undefined_enum_constant
+  error • There's no constant named 'vaccine' in 'HealthEntryType' • test/features/health_tracking/domain/usecases/get_health_entries_test.dart:57:56 • undefined_enum_constant
+  error • Target of URI doesn't exist: 'mark_entry_taken_test.mocks.dart' • test/features/health_tracking/domain/usecases/mark_entry_taken_test.dart:10:8 • uri_does_not_exist
+  error • Undefined class 'MockHealthRepository' • test/features/health_tracking/domain/usecases/mark_entry_taken_test.dart:13:8 • undefined_class
+  error • The function 'MockHealthRepository' isn't defined • test/features/health_tracking/domain/usecases/mark_entry_taken_test.dart:17:22 • undefined_function
+  error • Target of URI doesn't exist: 'get_health_entries_test.mocks.dart' • test/features/health_tracking/domain/usecases/update_health_entry_test.dart:7:8 • uri_does_not_exist
+  error • Undefined class 'MockHealthRepository' • test/features/health_tracking/domain/usecases/update_health_entry_test.dart:10:8 • undefined_class
+  error • The function 'MockHealthRepository' isn't defined • test/features/health_tracking/domain/usecases/update_health_entry_test.dart:14:22 • undefined_function
+  error • The named parameter 'onDelete' isn't defined • test/features/health_tracking/presentation/widgets/health_entry_card_test.dart:15:13 • undefined_named_parameter
+  error • Target of URI doesn't exist: 'pet_repository_impl_test.mocks.dart' • test/features/pet_profile/data/repositories/pet_repository_impl_test.dart:10:8 • uri_does_not_exist
+  error • Undefined class 'MockPetLocalDataSource' • test/features/pet_profile/data/repositories/pet_repository_impl_test.dart:13:8 • undefined_class
+  error • The function 'MockPetLocalDataSource' isn't defined • test/features/pet_profile/data/repositories/pet_repository_impl_test.dart:17:22 • undefined_function
+  error • Target of URI doesn't exist: 'add_pet_test.mocks.dart' • test/features/pet_profile/domain/usecases/add_pet_test.dart:9:8 • uri_does_not_exist
+  error • Undefined class 'MockPetRepository' • test/features/pet_profile/domain/usecases/add_pet_test.dart:12:8 • undefined_class
+  error • The function 'MockPetRepository' isn't defined • test/features/pet_profile/domain/usecases/add_pet_test.dart:16:22 • undefined_function
+  error • Target of URI doesn't exist: 'delete_pet_test.mocks.dart' • test/features/pet_profile/domain/usecases/delete_pet_test.dart:8:8 • uri_does_not_exist
+  error • Undefined class 'MockPetRepository' • test/features/pet_profile/domain/usecases/delete_pet_test.dart:11:8 • undefined_class
+  error • The function 'MockPetRepository' isn't defined • test/features/pet_profile/domain/usecases/delete_pet_test.dart:15:22 • undefined_function
+  error • Target of URI doesn't exist: 'get_all_pets_test.mocks.dart' • test/features/pet_profile/domain/usecases/get_all_pets_test.dart:9:8 • uri_does_not_exist
+  error • Undefined class 'MockPetRepository' • test/features/pet_profile/domain/usecases/get_all_pets_test.dart:12:8 • undefined_class
+  error • The function 'MockPetRepository' isn't defined • test/features/pet_profile/domain/usecases/get_all_pets_test.dart:16:22 • undefined_function
+  error • Target of URI doesn't exist: 'update_pet_test.mocks.dart' • test/features/pet_profile/domain/usecases/update_pet_test.dart:9:8 • uri_does_not_exist
+  error • Undefined class 'MockPetRepository' • test/features/pet_profile/domain/usecases/update_pet_test.dart:12:8 • undefined_class
+  error • The function 'MockPetRepository' isn't defined • test/features/pet_profile/domain/usecases/update_pet_test.dart:16:22 • undefined_function
+  error • Target of URI doesn't exist: 'vet_repository_impl_test.mocks.dart' • test/features/vet/data/repositories/vet_repository_impl_test.dart:11:8 • uri_does_not_exist
+  error • Undefined class 'MockVetRemoteDataSource' • test/features/vet/data/repositories/vet_repository_impl_test.dart:14:8 • undefined_class
+  error • The function 'MockVetRemoteDataSource' isn't defined • test/features/vet/data/repositories/vet_repository_impl_test.dart:18:22 • undefined_function
+warning • This function has a nullable return type of 'FutureOr<Object?>', but ends without returning a value • test/features/vet/data/repositories/vet_repository_impl_test.dart:114:33 • body_might_complete_normally_nullable
+  error • Target of URI doesn't exist: 'create_vet_test.mocks.dart' • test/features/vet/domain/usecases/create_vet_test.dart:9:8 • uri_does_not_exist
+  error • Undefined class 'MockVetRepository' • test/features/vet/domain/usecases/create_vet_test.dart:12:8 • undefined_class
+  error • The function 'MockVetRepository' isn't defined • test/features/vet/domain/usecases/create_vet_test.dart:16:22 • undefined_function
+  error • Target of URI doesn't exist: 'delete_vet_test.mocks.dart' • test/features/vet/domain/usecases/delete_vet_test.dart:8:8 • uri_does_not_exist
+  error • Undefined class 'MockVetRepository' • test/features/vet/domain/usecases/delete_vet_test.dart:11:8 • undefined_class
+  error • The function 'MockVetRepository' isn't defined • test/features/vet/domain/usecases/delete_vet_test.dart:15:22 • undefined_function
+warning • This function has a nullable return type of 'FutureOr<Object?>', but ends without returning a value • test/features/vet/domain/usecases/delete_vet_test.dart:22:65 • body_might_complete_normally_nullable
+  error • Target of URI doesn't exist: 'get_all_vets_test.mocks.dart' • test/features/vet/domain/usecases/get_all_vets_test.dart:9:8 • uri_does_not_exist
+  error • Undefined class 'MockVetRepository' • test/features/vet/domain/usecases/get_all_vets_test.dart:12:8 • undefined_class
+  error • The function 'MockVetRepository' isn't defined • test/features/vet/domain/usecases/get_all_vets_test.dart:16:22 • undefined_function
+  error • Target of URI doesn't exist: 'update_vet_test.mocks.dart' • test/features/vet/domain/usecases/update_vet_test.dart:9:8 • uri_does_not_exist
+  error • Undefined class 'MockVetRepository' • test/features/vet/domain/usecases/update_vet_test.dart:12:8 • undefined_class
+  error • The function 'MockVetRepository' isn't defined • test/features/vet/domain/usecases/update_vet_test.dart:16:22 • undefined_function
+warning • The member 'setMockInitialValues' can only be used within 'package:shared_preferences/src/shared_preferences_legacy.dart' or a test • test_integration/pet_profile_flow_test.dart:15:25 • invalid_use_of_visible_for_testing_member
+  error • Undefined name 'AppRouter' • test_integration/pet_profile_flow_test.dart:27:25 • undefined_identifier
+
+113 issues found. (ran in 21.9s)
+Error: Process completed with exit code 1.

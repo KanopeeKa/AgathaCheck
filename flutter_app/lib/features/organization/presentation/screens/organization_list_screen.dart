@@ -6,7 +6,6 @@ import '../../../../core/theme/app_theme.dart';
 import '../../../../core/widgets/app_logo_title.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../auth/presentation/providers/auth_providers.dart';
-import '../../data/datasources/organization_remote_datasource.dart';
 import '../providers/organization_providers.dart';
 import '../widgets/org_card.dart';
 

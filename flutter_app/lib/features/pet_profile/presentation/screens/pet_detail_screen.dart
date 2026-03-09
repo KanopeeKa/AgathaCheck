@@ -5,7 +5,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:fl_chart/fl_chart.dart';
 import '../../../../core/utils/constants.dart';
@@ -986,11 +985,11 @@ class _PetPhoto extends StatelessWidget {
   Widget _buildPlaceholder(Color petColor) {
     return Container(
       decoration: BoxDecoration(
-        color: petColor.withOpacity(0.12),
+        color: petColor.withValues(alpha: 0.12),
         border: Border(left: BorderSide(color: petColor, width: 5)),
       ),
       child: Center(
-        child: AppConstants.speciesIconWidget(pet.species, size: 56, color: petColor.withOpacity(0.6)),
+        child: AppConstants.speciesIconWidget(pet.species, size: 56, color: petColor.withValues(alpha: 0.6)),
       ),
     );
   }

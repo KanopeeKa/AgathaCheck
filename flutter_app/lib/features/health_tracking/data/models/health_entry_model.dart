@@ -107,9 +107,10 @@ class HealthEntryModel extends HealthEntry {
         return HealthEntryType.medication;
       case 'preventive':
         return HealthEntryType.preventive;
+      case 'vaccine':
+        return HealthEntryType.preventive;
       case 'vet_visit':
       case 'vetVisit':
-      case 'vaccine':
         return HealthEntryType.vetVisit;
       case 'procedure':
         return HealthEntryType.procedure;

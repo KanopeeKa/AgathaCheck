@@ -167,7 +167,7 @@ class PetCard extends StatelessWidget {
       width: 68,
       height: 68,
       decoration: BoxDecoration(
-        color: petColor.withOpacity(0.15),
+        color: petColor.withValues(alpha: 0.15),
         shape: BoxShape.circle,
         border: Border.all(color: petColor, width: 3),
       ),
