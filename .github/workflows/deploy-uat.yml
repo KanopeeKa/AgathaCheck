@@ -34,5 +34,5 @@ jobs:
           server: ${{ secrets.UAT_FTP_SERVER }}
           username: ${{ secrets.UAT_FTP_USERNAME }}
           password: ${{ secrets.UAT_FTP_PASSWORD }}
-          server-dir: /public_html/UAT/
+          server-dir: public_html/UAT/
           local-dir: flutter_app/build/web/
