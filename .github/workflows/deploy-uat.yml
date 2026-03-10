@@ -36,14 +36,14 @@ jobs:
        #   dangerous-clean-slate: true
 
       # ===== DEPLOY BACKEND (Node.js) =====
-      # - name: Deploy Backend to uat.agathatrack.com/backend/
-      #   uses: SamKirkland/FTP-Deploy-Action@v4.3.5
-      #   with:
-      #     server: ${{ secrets.UAT_FTP_SERVER }}
-      #     username: ${{ secrets.UAT_FTP_USERNAME }}
-      #     password: ${{ secrets.UAT_FTP_PASSWORD }}
-      #     server-dir: ./backend/
-      #     local-dir: server/
+      - name: Deploy Backend to uat.agathatrack.com/backend/
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.UAT_FTP_SERVER }}
+          username: ${{ secrets.UAT_FTP_USERNAME }}
+          password: ${{ secrets.UAT_FTP_PASSWORD }}
+          server-dir: ./backend/
+          local-dir: server/
       #     dangerous-clean-slate: true
 
       # ===== INSTALL DEPENDENCIES & RESTART NODE.JS APP =====
