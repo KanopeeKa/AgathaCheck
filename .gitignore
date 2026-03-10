@@ -40,3 +40,11 @@ deploy/public/canvaskit/
 deploy/public/main.dart.js
 deploy/public/main.dart.js.map
 deploy/public/*.symbols
+
+# Node.js / Backend
+server/.env
+server/.env.local
+server/node_modules/
+server/package-lock.json
+server/yarn.lock
+node_modules/

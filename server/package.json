@@ -1,0 +1,23 @@
+{
+  "name": "agatha_server",
+  "version": "1.0.0",
+  "description": "Backend for AgathaTrack UAT",
+  "main": "bin/server.js",
+  "type": "module",
+  "scripts": {
+    "start": "node bin/server.js",
+    "dev": "node --watch bin/server.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "express-cors": "^1.4.0",
+    "pg": "^8.10.0",
+    "uuid": "^9.0.0",
+    "body-parser": "^1.20.2",
+    "dotenv": "^16.0.3"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  }
+}
