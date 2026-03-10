@@ -1,6 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../core/providers/api_base_url_provider.dart';
+import 'package:pet_profile_app/core/providers/api_base_url_provider.dart';
 import '../../data/datasources/vet_remote_datasource.dart';
 import '../../data/repositories/vet_repository_impl.dart';
 import '../../domain/entities/vet.dart';
