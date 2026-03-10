@@ -27,6 +27,15 @@ late String _jwtSecret;
 const _accessTokenExpiry = Duration(minutes: 30);
 const _refreshTokenExpiry = Duration(days: 30);
 
+String _generateUuid() {
+  final rng = Random.secure();
+  final bytes = List<int>.generate(16, (_) => rng.nextInt(256));
+  bytes[6] = (bytes[6] & 0x0f) | 0x40;
+  bytes[8] = (bytes[8] & 0x3f) | 0x80;
+  String hex(List<int> b) => b.map((e) => e.toRadixString(16).padLeft(2, '0')).join();
+  return '${hex(bytes.sublist(0, 4))}-${hex(bytes.sublist(4, 6))}-${hex(bytes.sublist(6, 8))}-${hex(bytes.sublist(8, 10))}-${hex(bytes.sublist(10, 16))}';
+}
+
 String _t(String locale, String key, [Map<String, String>? params]) {
   final lang = _translations[locale] ?? _translations['en']!;
   var text = lang[key] ?? _translations['en']![key] ?? key;
@@ -1988,13 +1997,15 @@ Future<void> _createHealthEntry(HttpRequest request) async {
     return;
   }
 
+  final entryUuid = _generateUuid();
   final result = await _pool.execute(
     Sql.named('''
-      INSERT INTO health_entries (pet_id, name, type, dosage, frequency, frequency_days, frequency_interval, repeat_end_date, start_date, next_due_date, notes, health_issue_id, remind_days_before)
-      VALUES (@petId, @name, @type, @dosage, @frequency, @frequencyDays, @frequencyInterval, ${repeatEndDate != null ? '@repeatEndDate::date' : 'NULL'}, @startDate::date, @nextDueDate::timestamptz, @notes, ${healthIssueId != null ? '@healthIssueId' : 'NULL'}, @remindDaysBefore)
+      INSERT INTO health_entries (id, pet_id, name, type, dosage, frequency, frequency_days, frequency_interval, repeat_end_date, start_date, next_due_date, notes, health_issue_id, remind_days_before)
+      VALUES (@id, @petId, @name, @type, @dosage, @frequency, @frequencyDays, @frequencyInterval, ${repeatEndDate != null ? '@repeatEndDate::date' : 'NULL'}, @startDate::date, @nextDueDate::timestamptz, @notes, ${healthIssueId != null ? '@healthIssueId' : 'NULL'}, @remindDaysBefore)
       RETURNING *
     '''),
     parameters: {
+      'id': entryUuid,
       'petId': petId,
       'name': name,
       'type': type,
@@ -2188,12 +2199,13 @@ Future<void> _markTaken(HttpRequest request) async {
   final row = _rowToMap(existing.first);
   final historyNotes = body?['notes'] as String? ?? '';
 
+  final historyUuid = _generateUuid();
   await _pool.execute(
     Sql.named('''
-      INSERT INTO health_history (entry_id, notes)
-      VALUES (@entryId, @notes)
+      INSERT INTO health_history (id, entry_id, notes)
+      VALUES (@id, @entryId, @notes)
     '''),
-    parameters: {'entryId': id, 'notes': historyNotes},
+    parameters: {'id': historyUuid, 'entryId': id, 'notes': historyNotes},
   );
 
   final frequency = row['frequency'] as String;
