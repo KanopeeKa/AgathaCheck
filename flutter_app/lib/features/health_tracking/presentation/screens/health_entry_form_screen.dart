@@ -13,6 +13,7 @@ import '../../data/datasources/health_remote_datasource.dart';
 import '../../domain/entities/health_entry.dart';
 import '../providers/health_issue_providers.dart';
 import '../providers/health_providers.dart';
+import 'package:pet_profile_app/core/providers/api_base_url_provider.dart';
 
 class HealthEntryFormScreen extends ConsumerStatefulWidget {
   const HealthEntryFormScreen({super.key, this.entryId, this.petId, this.initialType});
