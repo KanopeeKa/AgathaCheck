@@ -4,6 +4,7 @@ import 'package:http/http.dart' as http;
 import 'package:uuid/uuid.dart';
 
 import '../../../../core/providers/shared_preferences_provider.dart';
+import '../../../../core/providers/api_base_url_provider.dart';
 import '../../../auth/presentation/providers/auth_providers.dart';
 import '../../../health_tracking/presentation/providers/health_providers.dart';
 import '../../data/datasources/pet_local_datasource.dart';

@@ -5,6 +5,7 @@ import '../../data/repositories/health_issue_repository_impl.dart';
 import '../../domain/entities/health_issue.dart';
 import '../../domain/repositories/health_issue_repository.dart';
 import 'health_providers.dart';
+import '../../../core/providers/api_base_url_provider.dart';
 
 final healthIssueDataSourceProvider =
     Provider<HealthIssueRemoteDataSource>((ref) {
