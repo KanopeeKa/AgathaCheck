@@ -3,10 +3,14 @@ import 'dart:typed_data';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../../../core/providers/api_base_url_provider.dart';
 import '../../../../core/providers/shared_preferences_provider.dart';
 import '../../data/auth_service.dart';
 
-final authServiceProvider = Provider<AuthService>((ref) => AuthService());
+final authServiceProvider = Provider<AuthService>((ref) {
+  final baseUrl = ref.watch(apiBaseUrlProvider);
+  return AuthService(baseUrl: baseUrl);
+});
 
 class AuthState {
   final AuthUser? user;

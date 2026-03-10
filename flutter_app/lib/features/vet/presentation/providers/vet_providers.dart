@@ -1,6 +1,6 @@
-import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/providers/api_base_url_provider.dart';
 import '../../data/datasources/vet_remote_datasource.dart';
 import '../../data/repositories/vet_repository_impl.dart';
 import '../../domain/entities/vet.dart';
@@ -10,23 +10,12 @@ import '../../domain/usecases/delete_vet.dart';
 import '../../domain/usecases/get_all_vets.dart';
 import '../../domain/usecases/update_vet.dart';
 
-/// Provider for the base URL of the veterinarian API.
-///
-/// Returns an empty string when running on web (relative URLs),
-/// or `http://localhost:5000` for non-web platforms.
-final vetApiBaseUrlProvider = Provider<String>((ref) {
-  if (kIsWeb) {
-    return '';
-  }
-  return 'http://localhost:5000';
-});
-
 /// Provider for the [VetRemoteDataSource] instance.
 ///
 /// Creates a [VetRemoteDataSourceImpl] configured with the
-/// base URL from [vetApiBaseUrlProvider].
+/// base URL from [apiBaseUrlProvider].
 final vetRemoteDataSourceProvider = Provider<VetRemoteDataSource>((ref) {
-  final baseUrl = ref.watch(vetApiBaseUrlProvider);
+  final baseUrl = ref.watch(apiBaseUrlProvider);
   return VetRemoteDataSourceImpl(baseUrl: baseUrl);
 });
 
