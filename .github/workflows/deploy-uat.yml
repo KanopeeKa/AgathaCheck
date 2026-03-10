@@ -7,33 +7,53 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    environment: UAT  # Add this
+    environment: UAT
     steps:
       - uses: actions/checkout@v4
       
+      # ===== BUILD FRONTEND =====
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
-          channel: stable  # Or 'beta' if needed
+          channel: stable
 
-      - name: Debug pubspec
-        working-directory: flutter_app
-        run: cat pubspec.yaml
-
-      - name: Install dependencies & Build
+      - name: Build Flutter Web
         working-directory: flutter_app
         run: |
           flutter clean
           flutter pub get
           flutter build web --release --no-wasm-dry-run
 
-      
-      - name: Deploy to UAT cPanel
+      # ===== DEPLOY FRONTEND (Flutter Web) =====
+      - name: Deploy Frontend to uat.agathatrack.com
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
           server: ${{ secrets.UAT_FTP_SERVER }}
           username: ${{ secrets.UAT_FTP_USERNAME }}
           password: ${{ secrets.UAT_FTP_PASSWORD }}
-          server-dir: ./     # trailing /
-          local-dir: flutter_app/build/web/    # trailing /
+          server-dir: ./uat.agathatrack.com/
+          local-dir: flutter_app/build/web/
           dangerous-clean-slate: true
+
+      # ===== DEPLOY BACKEND (Node.js) =====
+      - name: Deploy Backend to uat.agathatrack.com/backend/
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.UAT_FTP_SERVER }}
+          username: ${{ secrets.UAT_FTP_USERNAME }}
+          password: ${{ secrets.UAT_FTP_PASSWORD }}
+          server-dir: ./uat.agathatrack.com/backend/
+          local-dir: server/
+          dangerous-clean-slate: true
+
+      # ===== INSTALL DEPENDENCIES & RESTART NODE.JS APP =====
+      - name: Install Dependencies & Restart Node.js App
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.UAT_SSH_HOST }}
+          username: ${{ secrets.UAT_SSH_USER }}
+          password: ${{ secrets.UAT_SSH_PASSWORD }}
+          script: |
+            cd ~/public_html/uat.agathatrack.com/backend
+            npm install
+            touch restart.txt
