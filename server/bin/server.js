@@ -1,5 +1,5 @@
 import express from 'express';
-import cors from 'express-cors';
+import cors from 'cors';
 import bodyParser from 'body-parser';
 import { Pool } from 'pg';
 import { v4 as uuidv4 } from 'uuid';
