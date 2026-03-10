@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../auth/presentation/providers/auth_providers.dart';
 import '../../../health_tracking/presentation/providers/health_providers.dart';
 import '../../../pet_profile/presentation/providers/pet_providers.dart';
+import '../../../core/providers/api_base_url_provider.dart';
 import '../../data/datasources/notification_remote_datasource.dart';
 import '../../data/repositories/notification_repository_impl.dart';
 import '../../domain/entities/app_notification.dart';
