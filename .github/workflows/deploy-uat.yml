@@ -33,29 +33,29 @@ jobs:
           password: ${{ secrets.UAT_FTP_PASSWORD }}
           server-dir: ./public_html
           local-dir: flutter_app/build/web/
-          dangerous-clean-slate: true
+       #   dangerous-clean-slate: true
 
       # ===== DEPLOY BACKEND (Node.js) =====
-      - name: Deploy Backend to uat.agathatrack.com/backend/
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
-        with:
-          server: ${{ secrets.UAT_FTP_SERVER }}
-          username: ${{ secrets.UAT_FTP_USERNAME }}
-          password: ${{ secrets.UAT_FTP_PASSWORD }}
-          server-dir: ./backend/
-          local-dir: server/
-          dangerous-clean-slate: true
+      # - name: Deploy Backend to uat.agathatrack.com/backend/
+      #   uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+      #   with:
+      #     server: ${{ secrets.UAT_FTP_SERVER }}
+      #     username: ${{ secrets.UAT_FTP_USERNAME }}
+      #     password: ${{ secrets.UAT_FTP_PASSWORD }}
+      #     server-dir: ./backend/
+      #     local-dir: server/
+      #     dangerous-clean-slate: true
 
       # ===== INSTALL DEPENDENCIES & RESTART NODE.JS APP =====
-      - name: Install Dependencies & Restart Node.js App
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.UAT_SSH_HOST }}
-          username: ${{ secrets.UAT_SSH_USER }}
-          key: ${{ secrets.UAT_SSH_PRIVATE_KEY }}
-          port: ${{ secrets.UAT_SSH_PORT || 22 }}
-          timeout: 30s
-          script: |
-            cd ~/public_html/uat.agathatrack.com/backend
-            npm install
-            touch restart.txt
+      # - name: Install Dependencies & Restart Node.js App
+      #   uses: appleboy/ssh-action@master
+      #   with:
+      #     host: ${{ secrets.UAT_SSH_HOST }}
+      #     username: ${{ secrets.UAT_SSH_USER }}
+      #     key: ${{ secrets.UAT_SSH_PRIVATE_KEY }}
+      #     port: ${{ secrets.UAT_SSH_PORT || 22 }}
+      #     timeout: 30s
+      #     script: |
+      #       cd ~/public_html/uat.agathatrack.com/backend
+      #       npm install
+      #       touch restart.txt
