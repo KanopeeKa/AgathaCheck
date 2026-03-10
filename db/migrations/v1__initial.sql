@@ -160,7 +160,7 @@ CREATE TABLE IF NOT EXISTS health_issues (
 CREATE INDEX IF NOT EXISTS idx_health_issues_pet_id ON health_issues(pet_id);
 
 CREATE TABLE IF NOT EXISTS health_entries (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  id UUID PRIMARY KEY,
   pet_id TEXT NOT NULL,
   name TEXT NOT NULL,
   type TEXT NOT NULL CHECK (type = ANY (ARRAY['medication','preventive','vet_visit','procedure'])),
@@ -181,7 +181,7 @@ CREATE TABLE IF NOT EXISTS health_entries (
 CREATE INDEX IF NOT EXISTS idx_health_entries_pet_id ON health_entries(pet_id);
 
 CREATE TABLE IF NOT EXISTS health_history (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  id UUID PRIMARY KEY,
   entry_id UUID NOT NULL REFERENCES health_entries(id) ON DELETE CASCADE,
   taken_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   notes TEXT NOT NULL DEFAULT ''
