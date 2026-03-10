@@ -24,12 +24,17 @@ const pool = new Pool({
 });
 
 // Health check
-app.get('/health', (req, res) => {
+app.get('/backend/health', (req, res) => {
   res.status(200).json({ status: 'OK' });
 });
 
+// FIXED: Prefix ALL routes with /backend
+app.get('/backend/', (req, res) => {
+  res.json({ message: 'Backend alive!' });
+});
+
 // GET /api/pets - List all pets
-app.get('/api/pets', async (req, res) => {
+app.get('/backend/api/pets', async (req, res) => {
   try {
     const result = await pool.query('SELECT * FROM pets');
     res.json(result.rows);
@@ -40,7 +45,7 @@ app.get('/api/pets', async (req, res) => {
 });
 
 // GET /api/pets/:id - Get pet by ID
-app.get('/api/pets/:id', async (req, res) => {
+app.get('/backend/api/pets/:id', async (req, res) => {
   try {
     const { id } = req.params;
     const result = await pool.query('SELECT * FROM pets WHERE id = $1', [id]);
@@ -57,7 +62,7 @@ app.get('/api/pets/:id', async (req, res) => {
 });
 
 // POST /api/pets - Create a new pet
-app.post('/api/pets', async (req, res) => {
+app.post('/backend/api/pets', async (req, res) => {
   try {
     const id = uuidv4();
     const { user_id, name, species, breed = '', age, date_of_birth, weight, gender } = req.body;
@@ -75,7 +80,7 @@ app.post('/api/pets', async (req, res) => {
 });
 
 // PUT /api/pets/:id - Update a pet
-app.put('/api/pets/:id', async (req, res) => {
+app.put('/backend/api/pets/:id', async (req, res) => {
   try {
     const { id } = req.params;
     const { name, species, breed = '', age, date_of_birth, weight, gender } = req.body;
@@ -97,7 +102,7 @@ app.put('/api/pets/:id', async (req, res) => {
 });
 
 // DELETE /api/pets/:id - Delete a pet
-app.delete('/api/pets/:id', async (req, res) => {
+app.delete('/backend/api/pets/:id', async (req, res) => {
   try {
     const { id } = req.params;
     const result = await pool.query('DELETE FROM pets WHERE id = $1 RETURNING *', [id]);
@@ -112,6 +117,36 @@ app.delete('/api/pets/:id', async (req, res) => {
     res.status(500).json({ error: `Error deleting pet: ${err.message}` });
   }
 });
+
+// ADD after pets routes:
+
+// POST /backend/api/auth/login
+app.post('/backend/api/auth/login', async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    // Add your auth logic (check users table, JWT)
+    res.json({ token: 'fake-jwt-token', user: { id: '1', email } });
+  } catch (err) {
+    res.status(500).json({ error: 'Login failed' });
+  }
+});
+
+// POST /backend/api/auth/signup
+app.post('/backend/api/auth/signup', async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    const id = uuidv4();
+    // Hash password, INSERT users table
+    await pool.query(
+      "INSERT INTO users (id, email, password_hash) VALUES ($1, $2, $3)",
+      [id, email, 'hashed:' + password]  // Use bcrypt!
+    );
+    res.status(201).json({ message: 'User created', userId: id });
+  } catch (err) {
+    res.status(500).json({ error: 'Signup failed' });
+  }
+});
+
 
 // Start server
 app.listen(port, () => {

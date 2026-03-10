@@ -1,7 +1,7 @@
-import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../auth/presentation/providers/auth_providers.dart';
+import '../../../core/providers/api_base_url_provider.dart';
 import '../../data/datasources/health_remote_datasource.dart';
 import '../../data/repositories/health_repository_impl.dart';
 import '../../domain/entities/health_entry.dart';
@@ -13,13 +13,6 @@ import '../../domain/usecases/get_entry_history.dart';
 import '../../domain/usecases/get_health_entries.dart';
 import '../../domain/usecases/mark_entry_taken.dart';
 import '../../domain/usecases/update_health_entry.dart';
-
-final apiBaseUrlProvider = Provider<String>((ref) {
-  if (kIsWeb) {
-    return '';
-  }
-  return 'http://localhost:5000';
-});
 
 final healthRemoteDataSourceProvider = Provider<HealthRemoteDataSource>((ref) {
   final baseUrl = ref.watch(apiBaseUrlProvider);
