@@ -1,4 +1,5 @@
 import express from 'express';
+import bcrypt from 'bcrypt';
 import cors from 'cors';
 import bodyParser from 'body-parser';
 import { Pool } from 'pg';
@@ -134,16 +135,19 @@ app.post('/backend/api/auth/login', async (req, res) => {
 // POST /backend/api/auth/signup
 app.post('/backend/api/auth/signup', async (req, res) => {
   try {
-    const { email, password } = req.body;
+    const { email, password, name = '', first_name = '', last_name = '', category = 'pet_guardian', bio = '', photo_url = '', locale = 'en' } = req.body;
     const id = uuidv4();
     // Hash password, INSERT users table
+    const saltRounds = 10;
+    const password_hash = await bcrypt.hash(password, saltRounds);
     const result = await pool.query(
-      "INSERT INTO users (id, email, password_hash) VALUES ($1, $2, $3) RETURNING id",
-      [id, email, 'hashed:' + password]  // Use bcrypt!
+      `INSERT INTO users (id, email, password_hash, name, first_name, last_name, category, bio, photo_url, locale) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING id`,
+      [id, email, password_hash, name, first_name, last_name, category, bio, photo_url, locale]
     );
     res.status(201).json({ message: 'User created', userId: result.rows[0].id });
   } catch (err) {
-    res.status(500).json({ error: 'Signup failed' });
+    console.error('Signup error:', err);
+    res.status(500).json({ error: 'Signup failed', details: err.message });
   }
 });
 
