@@ -137,11 +137,11 @@ app.post('/backend/api/auth/signup', async (req, res) => {
     const { email, password } = req.body;
     const id = uuidv4();
     // Hash password, INSERT users table
-    await pool.query(
-      "INSERT INTO users (id, email, password_hash) VALUES ($1, $2, $3)",
+    const result = await pool.query(
+      "INSERT INTO users (id, email, password_hash) VALUES ($1, $2, $3) RETURNING id",
       [id, email, 'hashed:' + password]  // Use bcrypt!
     );
-    res.status(201).json({ message: 'User created', userId: id });
+    res.status(201).json({ message: 'User created', userId: result.rows[0].id });
   } catch (err) {
     res.status(500).json({ error: 'Signup failed' });
   }

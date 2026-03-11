@@ -1,0 +1,27 @@
+-- Drop all existing tables for a clean migration
+-- WARNING: This will delete all data!
+
+BEGIN;
+
+DROP TABLE IF EXISTS _migrations CASCADE;
+DROP TABLE IF EXISTS archived_pets CASCADE;
+DROP TABLE IF EXISTS family_events CASCADE;
+DROP TABLE IF EXISTS health_entries CASCADE;
+DROP TABLE IF EXISTS health_event_photos CASCADE;
+DROP TABLE IF EXISTS health_history CASCADE;
+DROP TABLE IF EXISTS health_issue_events CASCADE;
+DROP TABLE IF EXISTS health_issues CASCADE;
+DROP TABLE IF EXISTS notification_preferences CASCADE;
+DROP TABLE IF EXISTS notifications CASCADE;
+DROP TABLE IF EXISTS organization_users CASCADE;
+DROP TABLE IF EXISTS organizations CASCADE;
+DROP TABLE IF EXISTS password_reset_tokens CASCADE;
+DROP TABLE IF EXISTS pet_access CASCADE;
+DROP TABLE IF EXISTS pets CASCADE;
+DROP TABLE IF EXISTS refresh_tokens CASCADE;
+DROP TABLE IF EXISTS shared_pets CASCADE;
+DROP TABLE IF EXISTS vets CASCADE;
+DROP TABLE IF EXISTS weight_entries CASCADE;
+DROP TABLE IF EXISTS users CASCADE;
+
+COMMIT;
