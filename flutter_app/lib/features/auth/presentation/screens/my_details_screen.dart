@@ -193,7 +193,7 @@ class _MyDetailsScreenState extends ConsumerState<MyDetailsScreen> {
                                     label: user.category == 'professional_multi_pet'
                                         ? l10n.categoryLabel(l10n.professionalMultiPet)
                                         : l10n.categoryLabel(l10n.petGuardian),
-                                    child: _CategoryBadge(category: user.category),
+                                    child: _CategoryBadge(category: user.category ?? ''),
                                   ),
                                   if (user.bio != null && user.bio!.isNotEmpty) ...[
                                     const SizedBox(height: 12),

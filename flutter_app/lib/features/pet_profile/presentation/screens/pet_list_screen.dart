@@ -107,9 +107,9 @@ class _PetListScreenState extends ConsumerState<PetListScreen> {
               radius: 16,
               backgroundColor: theme.colorScheme.primaryContainer,
               child: Text(
-                ((auth.user?.name.isNotEmpty ?? false)
-                        ? auth.user!.name[0]
-                        : auth.user?.email[0] ?? 'U')
+                ((auth.user?.firstName?.isNotEmpty == true)
+                  ? auth.user!.firstName![0]
+                  : (auth.user?.lastName?.isNotEmpty == true ? auth.user!.lastName![0] : auth.user?.email[0] ?? 'U'))
                     .toUpperCase(),
                 style: TextStyle(
                   fontSize: 14,
@@ -136,9 +136,9 @@ class _PetListScreenState extends ConsumerState<PetListScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        auth.user?.name.isNotEmpty == true
-                            ? auth.user!.name
-                            : 'User',
+                        auth.user?.firstName?.isNotEmpty == true
+                          ? auth.user!.firstName
+                          : (auth.user?.lastName?.isNotEmpty == true ? auth.user!.lastName : 'User'),
                         style: theme.textTheme.titleSmall,
                       ),
                       Text(
