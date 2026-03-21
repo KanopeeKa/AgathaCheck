@@ -137,8 +137,8 @@ class _PetListScreenState extends ConsumerState<PetListScreen> {
                     children: [
                       Text(
                         auth.user?.firstName?.isNotEmpty == true
-                          ? auth.user!.firstName
-                          : (auth.user?.lastName?.isNotEmpty == true ? auth.user!.lastName : 'User'),
+                          ? auth.user!.firstName!
+                          : (auth.user?.lastName?.isNotEmpty == true ? auth.user!.lastName! : 'User'),
                         style: theme.textTheme.titleSmall,
                       ),
                       Text(
