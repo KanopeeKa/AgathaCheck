@@ -158,20 +158,20 @@ class _MyDetailsScreenState extends ConsumerState<MyDetailsScreen> {
                                     radius: 48,
                                     backgroundColor:
                                         theme.colorScheme.primaryContainer,
-                                    backgroundImage: user.photoUrl.isNotEmpty
+                                      backgroundImage: (user.photoUrl != null && user.photoUrl!.isNotEmpty)
                                         ? NetworkImage(
-                                            _resolvePhotoUrl(user.photoUrl))
+                                          _resolvePhotoUrl(user.photoUrl!))
                                         : null,
-                                    child: user.photoUrl.isNotEmpty
+                                      child: (user.photoUrl != null && user.photoUrl!.isNotEmpty)
                                         ? null
                                         : Text(
-                                            user.initials,
-                                            style: theme.textTheme.headlineMedium
-                                                ?.copyWith(
-                                              color: theme
-                                                  .colorScheme.onPrimaryContainer,
-                                            ),
+                                          user.initials ?? '',
+                                          style: theme.textTheme.headlineMedium
+                                            ?.copyWith(
+                                          color: theme
+                                            .colorScheme.onPrimaryContainer,
                                           ),
+                                        ),
                                   ),
                                   const SizedBox(height: 12),
                                   Text(
@@ -195,10 +195,10 @@ class _MyDetailsScreenState extends ConsumerState<MyDetailsScreen> {
                                         : l10n.categoryLabel(l10n.petGuardian),
                                     child: _CategoryBadge(category: user.category),
                                   ),
-                                  if (user.bio.isNotEmpty) ...[
+                                  if (user.bio != null && user.bio!.isNotEmpty) ...[
                                     const SizedBox(height: 12),
                                     Text(
-                                      user.bio,
+                                      user.bio!,
                                       style: theme.textTheme.bodyMedium,
                                       textAlign: TextAlign.center,
                                     ),

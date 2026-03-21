@@ -7,7 +7,8 @@ Feature: Authentication
 
   Scenario: Signing up with valid credentials
     Given the user is on the signup screen
-    When the user enters name "Alice Smith"
+    When the user enters first name "Alice"
+    And the user enters last name "Smith"
     And the user enters email "alice@example.com"
     And the user enters password "secret123"
     And the user confirms password "secret123"
@@ -120,8 +121,9 @@ Feature: Authentication
     Given the user is logged in
     When the user navigates to "My Details"
     And the user updates their first name to "Bob"
+    And the user updates their last name to "Jones"
     And the user saves changes
-    Then the user's name should be updated to "Bob"
+    Then the user's name should be updated to "Bob Jones"
 
   # ── Navigation ───────────────────────────────────────────────
 
