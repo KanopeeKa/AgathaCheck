@@ -93,12 +93,13 @@ class AuthNotifier extends StateNotifier<AuthState> {
   Future<void> signup({
     required String email,
     required String password,
-    String name = '',
+    String firstName = '',
+    String lastName = '',
   }) async {
     state = state.copyWith(isLoading: true, clearError: true);
     try {
       final result = await _authService.signup(
-          email: email, password: password, name: name);
+          email: email, password: password, firstName: firstName, lastName: lastName);
       await _saveTokens(result.accessToken, result.refreshToken);
       state = AuthState(
         user: result.user,
@@ -142,7 +143,6 @@ class AuthNotifier extends StateNotifier<AuthState> {
   }
 
   Future<void> updateProfile({
-    String? name,
     String? firstName,
     String? lastName,
     String? category,
@@ -154,7 +154,6 @@ class AuthNotifier extends StateNotifier<AuthState> {
     try {
       final user = await _authService.updateMe(
         state.accessToken!,
-        name: name,
         firstName: firstName,
         lastName: lastName,
         category: category,

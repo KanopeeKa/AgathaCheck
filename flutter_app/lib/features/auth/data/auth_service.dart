@@ -7,53 +7,49 @@ import 'package:http/http.dart' as http;
 class AuthUser {
   final String id;
   final String email;
-  final String name;
-  final String firstName;
-  final String lastName;
-  final String category;
-  final String bio;
-  final String photoUrl;
-  final String createdAt;
-  final String updatedAt;
+  final String? firstName;
+  final String? lastName;
+  final String? category;
+  final String? bio;
+  final String? photoUrl;
+  final String? createdAt;
+  final String? updatedAt;
 
   AuthUser({
     required this.id,
     required this.email,
-    required this.name,
-    required this.firstName,
-    required this.lastName,
-    required this.category,
-    required this.bio,
-    required this.photoUrl,
-    required this.createdAt,
-    required this.updatedAt,
+    this.firstName,
+    this.lastName,
+    this.category,
+    this.bio,
+    this.photoUrl,
+    this.createdAt,
+    this.updatedAt,
   });
 
   factory AuthUser.fromJson(Map<String, dynamic> json) {
     return AuthUser(
       id: json['id']?.toString() ?? '',
       email: json['email']?.toString() ?? '',
-      name: json['name']?.toString() ?? '',
-      firstName: json['first_name']?.toString() ?? '',
-      lastName: json['last_name']?.toString() ?? '',
-      category: json['category']?.toString() ?? 'pet_guardian',
-      bio: json['bio']?.toString() ?? '',
-      photoUrl: json['photo_url']?.toString() ?? '',
-      createdAt: json['created_at']?.toString() ?? '',
-      updatedAt: json['updated_at']?.toString() ?? '',
+      firstName: json['first_name']?.toString(),
+      lastName: json['last_name']?.toString(),
+      category: json['category']?.toString(),
+      bio: json['bio']?.toString(),
+      photoUrl: json['photo_url']?.toString(),
+      createdAt: json['created_at']?.toString(),
+      updatedAt: json['updated_at']?.toString(),
     );
   }
 
   String get displayName {
-    final full = '$firstName $lastName'.trim();
+    final full = '${firstName ?? ''} ${lastName ?? ''}'.trim();
     if (full.isNotEmpty) return full;
-    if (name.isNotEmpty) return name;
     return email;
   }
 
   String get initials {
-    if (firstName.isNotEmpty && lastName.isNotEmpty) {
-      return '${firstName[0]}${lastName[0]}'.toUpperCase();
+    if ((firstName?.isNotEmpty ?? false) && (lastName?.isNotEmpty ?? false)) {
+      return '${firstName![0]}${lastName![0]}'.toUpperCase();
     }
     final dn = displayName;
     if (dn.length >= 2) return dn.substring(0, 2).toUpperCase();
@@ -85,12 +81,13 @@ class AuthService {
   Future<AuthResult> signup({
     required String email,
     required String password,
-    String name = '',
+    String firstName = '',
+    String lastName = '',
   }) async {
     final response = await _client.post(
       Uri.parse('$baseUrl/api/auth/signup'),
       headers: {'Content-Type': 'application/json'},
-      body: json.encode({'email': email, 'password': password, 'name': name}),
+      body: json.encode({'email': email, 'password': password, 'first_name': firstName, 'last_name': lastName}),
     );
     if (response.statusCode >= 400) {
       final body = json.decode(response.body);
@@ -160,7 +157,6 @@ class AuthService {
 
   Future<AuthUser> updateMe(
     String accessToken, {
-    String? name,
     String? firstName,
     String? lastName,
     String? category,
@@ -168,7 +164,6 @@ class AuthService {
     String? locale,
   }) async {
     final body = <String, dynamic>{};
-    if (name != null) body['name'] = name;
     if (firstName != null) body['first_name'] = firstName;
     if (lastName != null) body['last_name'] = lastName;
     if (category != null) body['category'] = category;

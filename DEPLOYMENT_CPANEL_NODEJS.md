@@ -58,7 +58,7 @@ PGHOST=localhost
 PGPORT=5432
 PGDATABASE=bixo5840_agathatrack_uat
 PORT=3000
-NODE_ENV=production
+NODE_ENV=development
 ```
 
 ### 4. **Verify Application Startup File**

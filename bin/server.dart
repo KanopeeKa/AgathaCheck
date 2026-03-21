@@ -1231,7 +1231,8 @@ Future<void> _authSignup(HttpRequest request) async {
 
   final email = (body['email'] as String? ?? '').trim().toLowerCase();
   final password = body['password'] as String? ?? '';
-  final name = (body['name'] as String? ?? '').trim();
+  final firstName = (body['first_name'] as String? ?? '').trim();
+  final lastName = (body['last_name'] as String? ?? '').trim();
 
   if (email.isEmpty || password.isEmpty) {
     _jsonResponse(request, 400, {'error': 'email and password are required'});
@@ -1255,11 +1256,11 @@ Future<void> _authSignup(HttpRequest request) async {
   final hash = _hashPassword(password);
   final result = await _pool.execute(
     Sql.named('''
-      INSERT INTO users (email, password_hash, name)
-      VALUES (@email, @hash, @name)
-      RETURNING id, email, name, first_name, last_name, category, bio, photo_url, created_at, updated_at
+      INSERT INTO users (email, password_hash, first_name, last_name)
+      VALUES (@email, @hash, @firstName, @lastName)
+      RETURNING id, email, first_name, last_name, category, bio, photo_url, created_at, updated_at
     '''),
-    parameters: {'email': email, 'hash': hash, 'name': name},
+    parameters: {'email': email, 'hash': hash, 'firstName': firstName, 'lastName': lastName},
   );
 
   final userJson = _userToJson(result.first);

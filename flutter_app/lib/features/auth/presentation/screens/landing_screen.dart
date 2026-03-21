@@ -24,7 +24,8 @@ class _LandingScreenState extends ConsumerState<LandingScreen>
   bool _loginObscure = true;
 
   final _signupFormKey = GlobalKey<FormState>();
-  final _signupNameController = TextEditingController();
+  final _signupFirstNameController = TextEditingController();
+  final _signupLastNameController = TextEditingController();
   final _signupEmailController = TextEditingController();
   final _signupPasswordController = TextEditingController();
   final _signupConfirmController = TextEditingController();
@@ -41,7 +42,8 @@ class _LandingScreenState extends ConsumerState<LandingScreen>
     _tabController.dispose();
     _loginEmailController.dispose();
     _loginPasswordController.dispose();
-    _signupNameController.dispose();
+    _signupFirstNameController.dispose();
+    _signupLastNameController.dispose();
     _signupEmailController.dispose();
     _signupPasswordController.dispose();
     _signupConfirmController.dispose();
@@ -69,7 +71,8 @@ class _LandingScreenState extends ConsumerState<LandingScreen>
     await ref.read(authProvider.notifier).signup(
           email: _signupEmailController.text.trim(),
           password: _signupPasswordController.text,
-          name: _signupNameController.text.trim(),
+          firstName: _signupFirstNameController.text.trim(),
+          lastName: _signupLastNameController.text.trim(),
         );
 
     if (mounted && ref.read(authProvider).isLoggedIn) {
@@ -339,14 +342,25 @@ class _LandingScreenState extends ConsumerState<LandingScreen>
       child: Column(
         children: [
           TextFormField(
-            key: const Key('signup_name_field'),
-            controller: _signupNameController,
+            key: const Key('signup_first_name_field'),
+            controller: _signupFirstNameController,
             decoration: InputDecoration(
-              labelText: l10n.name,
+              labelText: l10n.firstName,
               prefixIcon: const Icon(Icons.person_outlined),
             ),
             textCapitalization: TextCapitalization.words,
-            autofillHints: const [AutofillHints.name],
+            autofillHints: const [AutofillHints.givenName],
+          ),
+          const SizedBox(height: 16),
+          TextFormField(
+            key: const Key('signup_last_name_field'),
+            controller: _signupLastNameController,
+            decoration: InputDecoration(
+              labelText: l10n.lastName,
+              prefixIcon: const Icon(Icons.person_outlined),
+            ),
+            textCapitalization: TextCapitalization.words,
+            autofillHints: const [AutofillHints.familyName],
           ),
           const SizedBox(height: 16),
           TextFormField(
