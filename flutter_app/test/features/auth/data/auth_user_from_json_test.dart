@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:AgathaCheck/flutter_app/lib/features/auth/data/auth_service.dart';
+import '../../../../lib/features/auth/data/auth_service.dart';
 
 void main() {
   group('AuthUser.fromJson', () {
