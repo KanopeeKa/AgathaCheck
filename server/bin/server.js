@@ -175,8 +175,5 @@ app.post('/backend/api/auth/signup', async (req, res) => {
 });
 
 
-// Start server
-app.listen(port, () => {
-  console.log(`Server running at http://localhost:${port}`);
-  console.log(`Database: ${process.env.PGDATABASE || 'agatha_db'} on ${process.env.PGHOST || 'localhost'}:${process.env.PGPORT || 5432}`);
-});
+
+export default app;
