@@ -60,7 +60,7 @@ jobs:
         working-directory: server
         run: |
           if [ -d "test" ]; then
-            npx jest test/*.js || npx mocha test/*.js || echo "No backend test runner found."
+            npx jest test/*.js || npx mocha test/*.js
           else
             echo "No backend tests found."
           fi
