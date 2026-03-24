@@ -107,8 +107,22 @@ class AuthNotifier extends StateNotifier<AuthState> {
         refreshToken: result.refreshToken,
       );
     } catch (e) {
+      String msg = e.toString().replaceFirst('Exception: ', '');
+      // Debug print for error
+      // ignore: avoid_print
+      print('[Signup Error] Raw: ' + e.toString());
+      // User-friendly error mapping
+      if (msg.contains('Email already exists')) {
+        msg = 'An account with this email already exists.';
+      } else if (msg.contains('Email and password are required')) {
+        msg = 'Please enter both email and password.';
+      } else if (msg.contains('Signup failed')) {
+        msg = 'Signup failed. Please try again.';
+      }
       state = state.copyWith(
-          isLoading: false, error: e.toString().replaceFirst('Exception: ', ''));
+        isLoading: false,
+        error: msg,
+      );
     }
   }
 
