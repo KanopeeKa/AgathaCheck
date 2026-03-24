@@ -136,15 +136,38 @@ app.post('/backend/api/auth/login', async (req, res) => {
 app.post('/backend/api/auth/signup', async (req, res) => {
   try {
     const { email, password, first_name = '', last_name = '', category = 'pet_guardian', bio = '', photo_url = '', locale = 'en' } = req.body;
+    if (!email || !password) {
+      return res.status(400).json({ error: 'Email and password are required.' });
+    }
     const id = uuidv4();
     // Hash password, INSERT users table
     const saltRounds = 10;
     const password_hash = await bcrypt.hash(password, saltRounds);
-    const result = await pool.query(
-      `INSERT INTO users (id, email, password_hash, first_name, last_name, category, bio, photo_url, locale) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING id`,
-      [id, email, password_hash, first_name, last_name, category, bio, photo_url, locale]
-    );
-    res.status(201).json({ message: 'User created', userId: result.rows[0].id });
+    let result;
+    try {
+      result = await pool.query(
+        `INSERT INTO users (id, email, password_hash, first_name, last_name, category, bio, photo_url, locale) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING id`,
+        [id, email, password_hash, first_name, last_name, category, bio, photo_url, locale]
+      );
+    } catch (err) {
+      // Handle duplicate email error (Postgres unique_violation)
+      if (err.code === '23505') {
+        return res.status(400).json({ error: 'Email already exists.' });
+      }
+      throw err;
+    }
+    // Compose user object for response
+    const user = {
+      id: result.rows[0].id,
+      email,
+      first_name,
+      last_name,
+      category,
+      bio,
+      photo_url,
+      locale
+    };
+    res.status(201).json({ user });
   } catch (err) {
     console.error('Signup error:', err);
     res.status(500).json({ error: 'Signup failed', details: err.message });
