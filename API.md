@@ -37,7 +37,9 @@ POST /backend/api/auth/signup
     "bio": "About me",
     "photo_url": "http://...",
     "locale": "en"
-  }
+  },
+  "access_token": "<jwt-access-token>",
+  "refresh_token": "<jwt-refresh-token>"
 }
 ```
 
@@ -53,5 +55,13 @@ POST /backend/api/auth/signup
   - Body: `{ "error": "Signup failed", "details": "..." }`
 
 ---
+
+## Test Coverage
+
+Automated tests for the signup endpoint ensure:
+- Successful user creation returns a user object and valid JWT tokens
+- Duplicate email returns a 400 error
+- Missing email or password returns a 400 error
+See `server/test/auth_signup.integration.test.js` for details.
 
 *This file documents the authentication signup endpoint. Add more endpoints as needed for your API.*

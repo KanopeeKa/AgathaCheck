@@ -6,6 +6,7 @@ import bodyParser from 'body-parser';
 import { Pool } from 'pg';
 import { v4 as uuidv4 } from 'uuid';
 import dotenv from 'dotenv';
+import jwt from 'jsonwebtoken';
 
 dotenv.config();
 
@@ -155,7 +156,16 @@ export function createApp(customPool) {
         photo_url,
         locale
       };
-      res.status(201).json({ user });
+      // Generate JWT tokens
+      const jwtSecret = process.env.JWT_SECRET || 'default_secret';
+      const payload = { id: user.id, email: user.email };
+      const accessToken = jwt.sign(payload, jwtSecret, { expiresIn: '30m' });
+      const refreshToken = jwt.sign(payload, jwtSecret, { expiresIn: '30d' });
+      res.status(201).json({
+        user,
+        access_token: accessToken,
+        refresh_token: refreshToken
+      });
     } catch (err) {
       console.error('Signup error:', err);
       res.status(500).json({ error: 'Signup failed', details: err.message });
