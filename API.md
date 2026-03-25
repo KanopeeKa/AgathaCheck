@@ -59,18 +59,26 @@ On successful signup, the backend generates and returns both an `access_token` a
 
 ---
 
-## Test Coverage
+## Pet Endpoints: UUID Validation
 
+### Single Pet Endpoints
 
-### Automated Test Coverage
+Endpoints like `/api/pets/{id}` require `{id}` to be a valid UUID (e.g., `123e4567-e89b-12d3-a456-426614174000`).
 
-The signup endpoint is covered by automated tests that verify:
-- Successful user creation returns a user object and valid JWT tokens (access and refresh)
-- Duplicate email returns a 400 error with an appropriate message
-- Missing email or password returns a 400 error with an appropriate message
+- If `{id}` is not a valid UUID, the API returns:
+  - **Status:** 400 Bad Request
+  - **Body:** `{ "error": "Invalid pet ID" }`
 
-Test implementation can be found in:
-- `server/test/auth_signup.integration.test.js` (integration tests)
-- `server/test/auth_signup.test.js` (unit tests)
+This prevents errors when clients accidentally use reserved words (like `all`) or invalid IDs.
 
-*This file documents the authentication signup endpoint. Add more endpoints as needed for your API.*
+### All Pets Endpoint
+
+- To fetch all pets, use `/api/pets/all` (or `/api/pets` for personal pets).
+- Do **not** use `/api/pets/all` as a single-pet endpoint.
+
+### Test Coverage
+
+- Unit tests in `test/server/uuid_validation_test.dart` ensure UUID validation logic is enforced.
+- CI will fail if invalid UUIDs are accepted for single-pet endpoints.
+
+---

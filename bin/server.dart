@@ -700,9 +700,19 @@ Future<void> _handleApi(HttpRequest request) async {
   } else if (path == '/api/pets' && method == 'POST') {
     await _createPet(request);
   } else if (RegExp(r'^/api/pets/[^/]+$').hasMatch(path) && method == 'PUT') {
-    await _updatePet(request);
+      final petId = path.split('/').last;
+      if (!_isValidUuid(petId)) {
+        _jsonResponse(request, 400, {'error': 'Invalid pet ID'});
+        return;
+      }
+      await _updatePet(request);
   } else if (RegExp(r'^/api/pets/[^/]+$').hasMatch(path) && method == 'DELETE') {
-    await _deletePetRecord(request);
+      final petId = path.split('/').last;
+      if (!_isValidUuid(petId)) {
+        _jsonResponse(request, 400, {'error': 'Invalid pet ID'});
+        return;
+      }
+      await _deletePetRecord(request);
   }
   // Health entries
   else if (path == '/api/health-entries' && method == 'GET') {
@@ -896,6 +906,11 @@ Future<void> _handleApi(HttpRequest request) async {
   } else {
     _jsonResponse(request, 404, {'error': 'Not found'});
   }
+}
+
+bool _isValidUuid(String input) {
+  final uuidRegExp = RegExp(r'^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12} ?$');
+  return uuidRegExp.hasMatch(input);
 }
 
 // ── User JSON helper ─────────────────────────────────────────
