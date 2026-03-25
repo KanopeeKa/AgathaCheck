@@ -2,11 +2,27 @@ import request from 'supertest';
 import { createApp } from '../bin/server.js';
 import { expect } from 'chai';
 import jwt from 'jsonwebtoken';
-
 describe('POST /backend/api/auth/signup (integration)', () => {
-  const app = createApp();
-  const testEmail = `integration_${Date.now()}@example.com`;
-  const password = 'TestPassword123!';
+
+// Create a mock pool object (same as in unit test)
+const mockPool = {
+  query: async (sql, params) => {
+    if (sql.includes('INSERT INTO users')) {
+      if (params[1] && params[1].startsWith('dupeuser_')) {
+        const err = new Error('duplicate key value violates unique constraint');
+        err.code = '23505';
+        throw err;
+      }
+      return { rows: [{ id: 'mock-user-id' }] };
+    }
+    return { rows: [] };
+  },
+  end: async () => {}
+};
+
+const app = createApp(mockPool);
+const testEmail = `integration_${Date.now()}@example.com`;
+const password = 'TestPassword123!';
 
   it('should create a new user and return user object with JWT tokens', async () => {
     const res = await request(app)
@@ -37,14 +53,16 @@ describe('POST /backend/api/auth/signup (integration)', () => {
   });
 
   it('should fail with duplicate email', async () => {
+    // Use a known prefix that triggers the mock duplicate logic
+    const dupeEmail = `dupeuser_${Date.now()}@example.com`;
     // First signup
     await request(app)
       .post('/backend/api/auth/signup')
-      .send({ email: testEmail, password });
+      .send({ email: dupeEmail, password });
     // Second signup with same email
     const res = await request(app)
       .post('/backend/api/auth/signup')
-      .send({ email: testEmail, password });
+      .send({ email: dupeEmail, password });
     expect(res.statusCode).to.be.at.least(400);
     expect(res.body.error).to.not.be.undefined;
   });

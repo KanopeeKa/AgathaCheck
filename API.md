@@ -9,6 +9,9 @@
 POST /backend/api/auth/signup
 ```
 
+**JWT Token Generation:**
+On successful signup, the backend generates and returns both an `access_token` and a `refresh_token` as JWTs (JSON Web Tokens). These tokens are signed using the backend's secret key and include the user's ID and email in their payload. The `access_token` is intended for authenticating API requests, while the `refresh_token` can be used to obtain new access tokens when the original expires.
+
 **Request Body:**
 ```json
 {
@@ -58,10 +61,16 @@ POST /backend/api/auth/signup
 
 ## Test Coverage
 
-Automated tests for the signup endpoint ensure:
-- Successful user creation returns a user object and valid JWT tokens
-- Duplicate email returns a 400 error
-- Missing email or password returns a 400 error
-See `server/test/auth_signup.integration.test.js` for details.
+
+### Automated Test Coverage
+
+The signup endpoint is covered by automated tests that verify:
+- Successful user creation returns a user object and valid JWT tokens (access and refresh)
+- Duplicate email returns a 400 error with an appropriate message
+- Missing email or password returns a 400 error with an appropriate message
+
+Test implementation can be found in:
+- `server/test/auth_signup.integration.test.js` (integration tests)
+- `server/test/auth_signup.test.js` (unit tests)
 
 *This file documents the authentication signup endpoint. Add more endpoints as needed for your API.*
