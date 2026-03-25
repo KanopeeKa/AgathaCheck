@@ -114,10 +114,40 @@ export function createApp(customPool) {
   app.post('/backend/api/auth/login', async (req, res) => {
     try {
       const { email, password } = req.body;
-      // Add your auth logic (check users table, JWT)
-      res.json({ token: 'fake-jwt-token', user: { id: '1', email } });
+      if (!email || !password) {
+        return res.status(400).json({ error: 'Email and password are required.' });
+      }
+      const userResult = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
+      if (userResult.rows.length === 0) {
+        return res.status(401).json({ error: 'Invalid email or password.' });
+      }
+      const userRow = userResult.rows[0];
+      const valid = await bcrypt.compare(password, userRow.password_hash);
+      if (!valid) {
+        return res.status(401).json({ error: 'Invalid email or password.' });
+      }
+      const user = {
+        id: userRow.id,
+        email: userRow.email,
+        first_name: userRow.first_name,
+        last_name: userRow.last_name,
+        category: userRow.category,
+        bio: userRow.bio,
+        photo_url: userRow.photo_url,
+        locale: userRow.locale
+      };
+      const jwtSecret = process.env.JWT_SECRET || 'default_secret';
+      const payload = { id: user.id, email: user.email };
+      const accessToken = jwt.sign(payload, jwtSecret, { expiresIn: '30m' });
+      const refreshToken = jwt.sign(payload, jwtSecret, { expiresIn: '30d' });
+      res.status(200).json({
+        user,
+        access_token: accessToken,
+        refresh_token: refreshToken
+      });
     } catch (err) {
-      res.status(500).json({ error: 'Login failed' });
+      console.error('Login error:', err);
+      res.status(500).json({ error: 'Login failed', details: err.message });
     }
   });
 

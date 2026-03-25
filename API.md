@@ -82,3 +82,53 @@ This prevents errors when clients accidentally use reserved words (like `all`) o
 - CI will fail if invalid UUIDs are accepted for single-pet endpoints.
 
 ---
+
+### Login
+
+**Endpoint:**
+```
+POST /backend/api/auth/login
+```
+
+**Request Body:**
+```json
+{
+  "email": "user@example.com",
+  "password": "yourPassword"
+}
+```
+
+**Success Response:**
+- **Status:** 200 OK
+- **Body:**
+```json
+{
+  "user": {
+    "id": "uuid-string",
+    "email": "user@example.com",
+    "first_name": "First",
+    "last_name": "Last",
+    "category": "pet_guardian",
+    "bio": "About me",
+    "photo_url": "http://...",
+    "locale": "en"
+  },
+  "access_token": "<jwt-access-token>",
+  "refresh_token": "<jwt-refresh-token>"
+}
+```
+
+**Error Responses:**
+- **Missing email or password:**
+  - Status: 400
+  - Body: `{ "error": "Email and password are required." }`
+- **Invalid credentials:**
+  - Status: 401
+  - Body: `{ "error": "Invalid email or password." }`
+- **Other server/database errors:**
+  - Status: 500
+  - Body: `{ "error": "Login failed", "details": "..." }`
+
+### Test Coverage
+
+- Unit tests in `server/test/auth_login.test.js` ensure login returns the correct structure and errors for invalid input.
