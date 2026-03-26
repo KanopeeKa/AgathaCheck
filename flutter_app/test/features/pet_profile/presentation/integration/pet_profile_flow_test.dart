@@ -8,7 +8,29 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pet_profile_app/core/theme/app_theme.dart';
 import 'package:pet_profile_app/core/utils/constants.dart';
-import 'package:pet_profile_app/features/pet_profile/presentation/providers/pet_providers.dart';
+
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+// --- TEST NOTIFIER FOR ADD PET ---
+class PetListTestNotifier extends StateNotifier<AsyncValue<List<dynamic>>> {
+  PetListTestNotifier() : super(const AsyncValue.data([]));
+  final provider = StateNotifierProvider<PetListTestNotifier, AsyncValue<List<dynamic>>>((ref) => PetListTestNotifier());
+  ProviderOverride get override => provider.overrideWithValue(this);
+  void addPet(String name) {
+    state = AsyncValue.data([_TestPet(name)]);
+  }
+}
+class _TestPet {
+  final String name;
+  _TestPet(this.name);
+  String get id => name.toLowerCase();
+  String get species => 'Dog';
+  String get breed => '';
+  String get bio => '';
+  int get colorValue => 0xFF7E57C2;
+  bool get passedAway => false;
+  String? get photoPath => null;
+}
 
 void main() {
   group('Pet Profile Integration Flow', () {
