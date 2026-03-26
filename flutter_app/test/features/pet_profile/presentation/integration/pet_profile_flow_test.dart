@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:pet_profile_app/features/pet_profile/presentation/providers/pet_providers.dart';
+import 'package:pet_profile_app/core/providers/shared_preferences_provider.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:pet_profile_app/core/router/app_router.dart';
@@ -14,8 +16,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 // --- TEST NOTIFIER FOR ADD PET ---
 class PetListTestNotifier extends StateNotifier<AsyncValue<List<dynamic>>> {
   PetListTestNotifier() : super(const AsyncValue.data([]));
-  final provider = StateNotifierProvider<PetListTestNotifier, AsyncValue<List<dynamic>>>((ref) => PetListTestNotifier());
-  ProviderOverride get override => provider.overrideWithValue(this);
   void addPet(String name) {
     state = AsyncValue.data([_TestPet(name)]);
   }
@@ -48,7 +48,7 @@ void main() {
       debugPrint('\n--- WIDGET TREE END ---');
     }
 
-    Widget createApp({List overrides = const []}) {
+    Widget createApp({List<Override> overrides = const []}) {
       return ProviderScope(
         overrides: [
           sharedPreferencesProvider.overrideWithValue(prefs),
@@ -76,7 +76,7 @@ void main() {
 
     testWidgets('shows empty state initially', (tester) async {
       // Override petListProvider to always return empty list for this test
-      final emptyPetListOverride = petListProvider.overrideWith((ref) => const AsyncValue.data([]));
+      final emptyPetListOverride = petListProvider.overrideWithProvider(StateNotifierProvider<PetListTestNotifier, AsyncValue<List<dynamic>>>((ref) => PetListTestNotifier()));
       await tester.pumpWidget(createApp(overrides: [emptyPetListOverride]));
       await tester.pumpAndSettle();
 
@@ -92,7 +92,7 @@ void main() {
     });
 
     testWidgets('navigates to add pet form', (tester) async {
-      final emptyPetListOverride = petListProvider.overrideWith((ref) => const AsyncValue.data([]));
+      final emptyPetListOverride = petListProvider.overrideWithProvider(StateNotifierProvider<PetListTestNotifier, AsyncValue<List<dynamic>>>((ref) => PetListTestNotifier()));
       await tester.pumpWidget(createApp(overrides: [emptyPetListOverride]));
       await tester.pumpAndSettle();
 
@@ -112,7 +112,7 @@ void main() {
     });
 
     testWidgets('validates required name field', (tester) async {
-      final emptyPetListOverride = petListProvider.overrideWith((ref) => const AsyncValue.data([]));
+      final emptyPetListOverride = petListProvider.overrideWithProvider(StateNotifierProvider<PetListTestNotifier, AsyncValue<List<dynamic>>>((ref) => PetListTestNotifier()));
       await tester.pumpWidget(createApp(overrides: [emptyPetListOverride]));
       await tester.pumpAndSettle();
 
@@ -139,8 +139,9 @@ void main() {
     testWidgets('adds a pet and shows it in list', (tester) async {
       // Use a test notifier to simulate adding a pet
       final testNotifier = PetListTestNotifier();
-      final petListOverride = petListProvider.overrideWith((ref) => ref.watch(testNotifier.provider));
-      await tester.pumpWidget(createApp(overrides: [petListOverride, testNotifier.override]));
+      final testProvider = StateNotifierProvider<PetListTestNotifier, AsyncValue<List<dynamic>>>((ref) => testNotifier);
+      final petListOverride = petListProvider.overrideWithProvider(testProvider);
+      await tester.pumpWidget(createApp(overrides: [petListOverride]));
       await tester.pumpAndSettle();
 
       await debugPrintTree(tester);
