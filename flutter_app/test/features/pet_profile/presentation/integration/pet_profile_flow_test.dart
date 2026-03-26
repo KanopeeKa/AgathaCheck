@@ -194,7 +194,7 @@ void main() {
       await tester.pumpAndSettle();
 
       // Simulate the notifier updating the list
-      testNotifier.addPet('Buddy');
+      await testNotifier.addPet(name: 'Buddy', species: 'Dog');
       await tester.pumpAndSettle();
 
       expect(find.text('Buddy'), findsOneWidget, reason: 'Should show Buddy in the list');
