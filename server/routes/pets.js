@@ -56,10 +56,26 @@ export default function petsRoutes(pool) {
     }
   });
 
-  // GET /api/pets/:id - Get pet by ID
+  // GET /api/pets/:id - Get pet by ID (with UUID validation)
   router.get('/:id', async (req, res) => {
+    const { id } = req.params;
+    // Special case: /api/pets/all should not be treated as a pet ID
+    if (id === 'all') {
+      // Optionally, redirect or return all pets
+      try {
+        const result = await pool.query('SELECT * FROM pets');
+        return res.json(result.rows);
+      } catch (err) {
+        console.error('Error fetching pets:', err);
+        return res.status(500).json({ error: `Error fetching pets: ${err.message}` });
+      }
+    }
+    // UUID v4 validation
+    const uuidV4Regex = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+    if (!uuidV4Regex.test(id)) {
+      return res.status(400).json({ error: 'Invalid pet ID' });
+    }
     try {
-      const { id } = req.params;
       const result = await pool.query('SELECT * FROM pets WHERE id = $1', [id]);
       if (result.rows.length === 0) {
         return res.status(404).json({ error: 'Pet not found' });

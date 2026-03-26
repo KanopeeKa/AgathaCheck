@@ -181,6 +181,19 @@ POST /backend/api/auth/login
 - **Response:** `{ "passed_away": true, "pet_id": "{id}" }`
 
 
+
+### Notifications Endpoints
+
+- **GET** `/backend/api/notifications` — Returns a list of notifications (currently an empty array or mock data).
+  - **Response:** `[]`
+
+- **GET** `/backend/api/notifications/preferences` — Returns the user's notification preferences.
+  - **Response:** `{ "email": true, "sms": false, "push": true }`
+
+- **POST** `/backend/api/notifications/check-due` — Checks for due notifications (mock implementation).
+  - **Response:** `{ "checked": true, "due": [] }`
+
 ### Test Coverage
 
 - See `server/test/pets_extended_endpoints.test.js` for endpoint tests with mocked DB logic.
+- See `server/test/notifications.test.js` for notifications endpoint tests.

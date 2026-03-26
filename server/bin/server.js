@@ -7,6 +7,7 @@ import { Pool } from 'pg';
 import dotenv from 'dotenv';
 import petsRoutes from '../routes/pets.js';
 import authRoutes from '../routes/auth.js';
+import notificationsRoutes from '../routes/notifications.js';
 
 dotenv.config();
 
@@ -27,9 +28,10 @@ export function createApp(customPool, comparePassword) {
   app.use(cors());
   app.use(bodyParser.json());
 
-  // Mount pets and auth routes
+  // Mount pets, auth, and notifications routes
   app.use('/backend/api/pets', petsRoutes(pool));
   app.use('/backend/api/auth', authRoutes(pool, comparePassword));
+  app.use('/backend/api/notifications', notificationsRoutes());
 
   // Health check
   app.get('/backend/health', (req, res) => {
