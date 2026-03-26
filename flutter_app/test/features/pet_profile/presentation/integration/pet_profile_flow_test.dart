@@ -22,18 +22,46 @@ class TestPetListNotifier extends PetListNotifier {
     return [];
   }
 
-  void addPet(String name) {
+  @override
+  Future<String> addPet({
+    required String name,
+    required String species,
+    String breed = '',
+    DateTime? dateOfBirth,
+    double? weight,
+    String? gender,
+    String bio = '',
+    String insurance = '',
+    DateTime? neuteredDate,
+    bool neuterDismissed = false,
+    String chipId = '',
+    bool chipDismissed = false,
+    String? photoPath,
+    String? vetId,
+    int? organizationId,
+  }) async {
     final pet = Pet(
       id: name.toLowerCase(),
       name: name,
-      species: 'Dog',
-      breed: '',
-      bio: '',
+      species: species,
+      breed: breed,
+      dateOfBirth: dateOfBirth,
+      weight: weight,
+      gender: gender,
+      bio: bio,
+      insurance: insurance,
+      neuteredDate: neuteredDate,
+      neuterDismissed: neuterDismissed,
+      chipId: chipId,
+      chipDismissed: chipDismissed,
+      photoPath: photoPath,
+      vetId: vetId,
       colorValue: 0xFF7E57C2,
+      organizationId: organizationId,
       passedAway: false,
-      photoPath: null,
     );
     state = AsyncValue.data([pet]);
+    return pet.id;
   }
 }
 
@@ -81,7 +109,7 @@ void main() {
 
     testWidgets('shows empty state initially', (tester) async {
       final testNotifier = TestPetListNotifier();
-      final emptyPetListOverride = petListProvider.overrideWith((ref) => testNotifier);
+      final emptyPetListOverride = petListProvider.overrideWith(() => testNotifier);
       await tester.pumpWidget(createApp(overrides: [emptyPetListOverride]));
       await tester.pumpAndSettle();
 
@@ -96,7 +124,7 @@ void main() {
 
     testWidgets('navigates to add pet form', (tester) async {
       final testNotifier = TestPetListNotifier();
-      final emptyPetListOverride = petListProvider.overrideWith((ref) => testNotifier);
+      final emptyPetListOverride = petListProvider.overrideWith(() => testNotifier);
       await tester.pumpWidget(createApp(overrides: [emptyPetListOverride]));
       await tester.pumpAndSettle();
 
@@ -117,7 +145,7 @@ void main() {
 
     testWidgets('validates required name field', (tester) async {
       final testNotifier = TestPetListNotifier();
-      final emptyPetListOverride = petListProvider.overrideWith((ref) => testNotifier);
+      final emptyPetListOverride = petListProvider.overrideWith(() => testNotifier);
       await tester.pumpWidget(createApp(overrides: [emptyPetListOverride]));
       await tester.pumpAndSettle();
 
@@ -143,7 +171,7 @@ void main() {
 
     testWidgets('adds a pet and shows it in list', (tester) async {
       final testNotifier = TestPetListNotifier();
-      final petListOverride = petListProvider.overrideWith((ref) => testNotifier);
+      final petListOverride = petListProvider.overrideWith(() => testNotifier);
       await tester.pumpWidget(createApp(overrides: [petListOverride]));
       await tester.pumpAndSettle();
 
