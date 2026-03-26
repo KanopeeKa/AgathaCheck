@@ -11,7 +11,9 @@ import jwt from 'jsonwebtoken';
 dotenv.config();
 
 // Factory function to create app with injected pool
-export function createApp(customPool) {
+
+// Allow injection of custom comparePassword for testing
+export function createApp(customPool, comparePassword) {
   const app = express();
   const pool = customPool || new Pool({
     user: process.env.PGUSER || 'user',
@@ -20,6 +22,8 @@ export function createApp(customPool) {
     port: process.env.PGPORT || 5432,
     database: process.env.PGDATABASE || 'agatha_db',
   });
+  // Use injected comparePassword or default to bcrypt.compare
+  const _comparePassword = comparePassword || bcrypt.compare;
 
   app.use(cors());
   app.use(bodyParser.json());
@@ -122,7 +126,7 @@ export function createApp(customPool) {
         return res.status(401).json({ error: 'Invalid email or password.' });
       }
       const userRow = userResult.rows[0];
-      const valid = await bcrypt.compare(password, userRow.password_hash);
+      const valid = await _comparePassword(password, userRow.password_hash);
       if (!valid) {
         return res.status(401).json({ error: 'Invalid email or password.' });
       }
