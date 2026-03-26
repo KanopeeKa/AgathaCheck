@@ -1,3 +1,19 @@
+import 'package:pet_profile_app/features/auth/domain/entities/auth_state.dart';
+import 'package:pet_profile_app/features/auth/domain/entities/user.dart';
+// Mock user and logged-in auth state for tests
+final mockUser = User(
+  id: 'test-user-id',
+  email: 'test@example.com',
+  // Add other required fields if needed
+);
+
+final loggedInAuthState = AuthState(
+  user: mockUser,
+  accessToken: 'dummy-token',
+  isLoggedIn: true,
+);
+
+final authOverride = authProvider.overrideWithValue(loggedInAuthState);
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pet_profile_app/features/pet_profile/presentation/providers/pet_providers.dart';
@@ -85,6 +101,7 @@ void main() {
       return ProviderScope(
         overrides: [
           sharedPreferencesProvider.overrideWithValue(prefs),
+          authOverride,
           ...overrides,
         ],
         child: Consumer(
