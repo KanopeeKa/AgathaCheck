@@ -1,5 +1,4 @@
-// Override for getAllPetsUseCaseProvider to return empty list in tests
-final petsOverride = getAllPetsUseCaseProvider.overrideWith((ref) => () async => <Pet>[]);
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pet_profile_app/features/pet_profile/presentation/providers/pet_providers.dart';
@@ -14,6 +13,9 @@ import 'package:pet_profile_app/core/theme/app_theme.dart';
 import 'package:pet_profile_app/core/utils/constants.dart';
 import 'package:pet_profile_app/features/auth/presentation/providers/auth_providers.dart';
 import 'package:pet_profile_app/features/auth/data/auth_service.dart';
+
+// Override for getAllPetsUseCaseProvider to return empty list in tests
+final petsOverride = getAllPetsUseCaseProvider.overrideWith((ref) => () async => <Pet>[]);
 
 // Mock user and logged-in auth state for tests
 final mockUser = AuthUser(
