@@ -29,20 +29,38 @@ final loggedInAuthState = AuthState(
   error: null,
 );
 
+// Robust fake SharedPreferences
+class FakePrefs implements SharedPreferences {
+  final Map<String, Object?> _store = {};
+  @override
+  String? getString(String key) => _store[key] as String?;
+  @override
+  Future<bool> setString(String key, String value) async {
+    _store[key] = value;
+    return true;
+  }
+  @override
+  Future<bool> remove(String key) async {
+    _store.remove(key);
+    return true;
+  }
+  // Add other required methods as no-op or return null/empty as needed
+  @override noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
+}
+
+// Robust fake AuthService
+class FakeAuthService implements AuthService {
+  @override
+  Future<AuthUser> getMe(String accessToken) async => mockUser;
+  @override
+  Future<String> refreshToken(String refreshToken) async => 'dummy-token';
+  @override noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
+}
+
 class FakeAuthNotifier extends AuthNotifier {
   FakeAuthNotifier() : super(FakeAuthService(), FakePrefs()) {
     state = loggedInAuthState;
   }
-}
-
-// Minimal fake AuthService and SharedPreferences for the notifier
-class FakeAuthService implements AuthService {
-  @override
-  noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
-}
-class FakePrefs implements SharedPreferences {
-  @override
-  noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }
 
 final authOverride = authProvider.overrideWith((ref) => FakeAuthNotifier());
