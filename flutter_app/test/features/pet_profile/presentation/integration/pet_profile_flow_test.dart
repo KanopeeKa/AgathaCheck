@@ -15,7 +15,18 @@ import 'package:pet_profile_app/features/auth/presentation/providers/auth_provid
 import 'package:pet_profile_app/features/auth/data/auth_service.dart';
 
 // Override for getAllPetsUseCaseProvider to return empty list in tests
-final petsOverride = getAllPetsUseCaseProvider.overrideWith((ref) => () async => <Pet>[]);
+class _FakePetRepository implements PetRepository {
+  @override
+  Future<List<Pet>> getAllPets() async => <Pet>[];
+  @override
+  noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
+}
+class FakeGetAllPets extends GetAllPets {
+  FakeGetAllPets() : super(_FakePetRepository());
+  @override
+  Future<List<Pet>> call() async => <Pet>[];
+}
+final petsOverride = getAllPetsUseCaseProvider.overrideWith((ref) => FakeGetAllPets());
 
 // Mock user and logged-in auth state for tests
 final mockUser = AuthUser(
