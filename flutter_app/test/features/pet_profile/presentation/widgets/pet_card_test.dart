@@ -38,15 +38,27 @@ void main() {
       );
       // These should throw (null passed to non-nullable)
       expect(
-        () => Function.apply(Pet, [null, 'Buddy', 'Dog']),
+        () => Pet(
+          id: null as String,
+          name: 'Buddy',
+          species: 'Dog',
+        ),
         throwsA(isA<Error>()),
       );
       expect(
-        () => Function.apply(Pet, ['id', null, 'Dog']),
+        () => Pet(
+          id: 'id',
+          name: null as String,
+          species: 'Dog',
+        ),
         throwsA(isA<Error>()),
       );
       expect(
-        () => Function.apply(Pet, ['id', 'Buddy', null]),
+        () => Pet(
+          id: 'id',
+          name: 'Buddy',
+          species: null as String,
+        ),
         throwsA(isA<Error>()),
       );
     });
