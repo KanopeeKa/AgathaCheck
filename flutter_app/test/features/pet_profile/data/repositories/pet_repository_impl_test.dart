@@ -1,10 +1,13 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
+import 'package:pet_profile_app/features/pet_profile/data/datasources/pet_local_datasource.dart';
 import 'package:pet_profile_app/features/pet_profile/data/models/pet_model.dart';
 import 'package:pet_profile_app/features/pet_profile/data/repositories/pet_repository_impl.dart';
 import 'package:pet_profile_app/features/pet_profile/domain/entities/pet.dart';
 
-import '../../../../helpers/mock_pet_local_datasource.dart';
+@GenerateNiceMocks([MockSpec<PetLocalDataSource>()])
+import 'pet_repository_impl_test.mocks.dart';
 
 void main() {
   late MockPetLocalDataSource mockDataSource;
@@ -79,8 +82,7 @@ void main() {
 
   group('addPet', () {
     test('should add pet and return entity', () async {
-      when(mockDataSource.addPet(any))
-          .thenAnswer((_) async => testModel);
+      when(mockDataSource.addPet(any)).thenAnswer((_) async => testModel);
 
       final result = await repository.addPet(testPet);
 
@@ -91,8 +93,7 @@ void main() {
 
   group('updatePet', () {
     test('should update pet and return entity', () async {
-      when(mockDataSource.updatePet(any))
-          .thenAnswer((_) async => testModel);
+      when(mockDataSource.updatePet(any)).thenAnswer((_) async => testModel);
 
       final result = await repository.updatePet(testPet);
 
