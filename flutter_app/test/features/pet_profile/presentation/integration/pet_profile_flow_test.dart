@@ -29,7 +29,23 @@ final loggedInAuthState = AuthState(
   error: null,
 );
 
-final authOverride = authProvider.overrideWith((ref) => loggedInAuthState);
+class FakeAuthNotifier extends AuthNotifier {
+  FakeAuthNotifier() : super(FakeAuthService(), FakePrefs()) {
+    state = loggedInAuthState;
+  }
+}
+
+// Minimal fake AuthService and SharedPreferences for the notifier
+class FakeAuthService implements AuthService {
+  @override
+  noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
+}
+class FakePrefs implements SharedPreferences {
+  @override
+  noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
+}
+
+final authOverride = authProvider.overrideWith((ref) => FakeAuthNotifier());
 
 // --- TEST NOTIFIER FOR ADD PET ---
 class TestPetListNotifier extends PetListNotifier {
