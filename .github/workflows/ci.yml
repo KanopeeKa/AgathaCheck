@@ -55,11 +55,9 @@ jobs:
         with:
           name: web-build
           path: flutter_app/build/web/
-
-
-            - name: Install build_runner and mockito for codegen
-              working-directory: flutter_app
-              run: flutter pub get && flutter pub run build_runner build --delete-conflicting-outputs
+      - name: Install build_runner and mockito for codegen
+        working-directory: flutter_app
+        run: flutter pub get && flutter pub run build_runner build --delete-conflicting-outputs
       # Node.js backend tests
       - name: Set up Node.js
         uses: actions/setup-node@v4
