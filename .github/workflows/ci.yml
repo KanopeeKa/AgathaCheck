@@ -18,9 +18,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # Set up Dart SDK for root-level Dart tests
-      - name: Set up Dart
-        uses: dart-lang/setup-dart@v1
 
       # Set up Flutter instead of plain Dart
       - name: Set up Flutter
@@ -50,15 +47,13 @@ jobs:
           name: web-build
           path: flutter_app/build/web/
 
-      # Dart tests in /test folder
-      - name: Install Dart dependencies (for /test)
-        run: dart pub get
-      - name: Run Dart tests in /test
+      # Run all Dart/Flutter tests in /test with Flutter
+      - name: Run Flutter tests in /test
         run: |
           if [ -d "test" ]; then
-            dart test test
+            flutter test test
           else
-            echo "No Dart tests found in /test."
+            echo "No tests found in /test."
           fi
       # Node.js backend tests
       - name: Set up Node.js
