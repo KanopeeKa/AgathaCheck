@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/utils/constants.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../providers/pet_providers.dart';
 import '../widgets/pet_card.dart';
 
@@ -18,10 +19,11 @@ class PetListScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final petListAsync = ref.watch(petListProvider);
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text(AppConstants.appTitle),
+        title: Text(AppConstants.appTitle),
       ),
       body: petListAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
@@ -31,11 +33,11 @@ class PetListScreen extends ConsumerWidget {
             children: [
               Icon(Icons.error_outline, size: 48, color: theme.colorScheme.error),
               const SizedBox(height: 16),
-              Text('Failed to load pets: $error'),
+              Text(l10n.failedToLoadPets(error.toString())),
               const SizedBox(height: 8),
               ElevatedButton(
                 onPressed: () => ref.invalidate(petListProvider),
-                child: const Text('Retry'),
+                child: Text(l10n.retry),
               ),
             ],
           ),
@@ -53,12 +55,12 @@ class PetListScreen extends ConsumerWidget {
                   ),
                   const SizedBox(height: 16),
                   Text(
-                    'No pets yet!',
+                    l10n.noPetsYet,
                     style: theme.textTheme.headlineSmall,
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'Tap the + button to add your first pet.',
+                    l10n.addFirstPet,
                     style: theme.textTheme.bodyMedium?.copyWith(
                       color: theme.colorScheme.onSurfaceVariant,
                     ),
@@ -111,7 +113,7 @@ class PetListScreen extends ConsumerWidget {
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => context.push('/add'),
         icon: const Icon(Icons.add),
-        label: const Text('Add Pet'),
+        label: Text(l10n.addPet),
       ),
     );
   }

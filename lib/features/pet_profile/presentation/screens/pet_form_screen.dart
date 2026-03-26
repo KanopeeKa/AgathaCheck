@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
+import '../../../../l10n/app_localizations.dart';
 
 import '../../../../core/utils/constants.dart';
 import '../../domain/entities/pet.dart';
@@ -168,9 +169,10 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
   }
 
   Widget _buildForm(ThemeData theme) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
-        title: Text(_isEditing ? 'Edit Pet' : 'Add Pet'),
+        title: Text(_isEditing ? l10n.editPet : l10n.addPet),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () => context.go('/'),
@@ -187,13 +189,13 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
               const SizedBox(height: 24),
               TextFormField(
                 controller: _nameController,
-                decoration: const InputDecoration(
-                  labelText: 'Name *',
-                  prefixIcon: Icon(Icons.pets),
+                decoration: InputDecoration(
+                  labelText: l10n.petName,
+                  prefixIcon: const Icon(Icons.pets),
                 ),
                 validator: (value) {
                   if (value == null || value.trim().isEmpty) {
-                    return 'Please enter the pet\'s name';
+                    return l10n.petNameRequired;
                   }
                   return null;
                 },
@@ -201,9 +203,9 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
               const SizedBox(height: 16),
               DropdownButtonFormField<String>(
                 value: _selectedSpecies,
-                decoration: const InputDecoration(
-                  labelText: 'Species *',
-                  prefixIcon: Icon(Icons.category),
+                decoration: InputDecoration(
+                  labelText: l10n.species,
+                  prefixIcon: const Icon(Icons.category),
                 ),
                 items: AppConstants.species
                     .map((s) => DropdownMenuItem(value: s, child: Text(s)))
@@ -217,9 +219,9 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
               const SizedBox(height: 16),
               TextFormField(
                 controller: _breedController,
-                decoration: const InputDecoration(
-                  labelText: 'Breed',
-                  prefixIcon: Icon(Icons.label_outline),
+                decoration: InputDecoration(
+                  labelText: l10n.breed,
+                  prefixIcon: const Icon(Icons.label_outline),
                 ),
               ),
               const SizedBox(height: 16),
@@ -289,7 +291,7 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
                         child: CircularProgressIndicator(strokeWidth: 2),
                       )
                     : const Icon(Icons.save),
-                label: Text(_isEditing ? 'Update Pet' : 'Save Pet'),
+                label: Text(_isEditing ? l10n.editPet : l10n.savePet),
               ),
             ],
           ),
