@@ -1,12 +1,12 @@
 
+
 import express from 'express';
-import bcrypt from 'bcrypt';
 import cors from 'cors';
 import bodyParser from 'body-parser';
 import { Pool } from 'pg';
-import { v4 as uuidv4 } from 'uuid';
 import dotenv from 'dotenv';
-import jwt from 'jsonwebtoken';
+import petsRoutes from '../routes/pets.js';
+import authRoutes from '../routes/auth.js';
 
 dotenv.config();
 
@@ -14,6 +14,7 @@ dotenv.config();
 
 // Allow injection of custom comparePassword for testing
 export function createApp(customPool, comparePassword) {
+
   const app = express();
   const pool = customPool || new Pool({
     user: process.env.PGUSER || 'user',
@@ -22,188 +23,22 @@ export function createApp(customPool, comparePassword) {
     port: process.env.PGPORT || 5432,
     database: process.env.PGDATABASE || 'agatha_db',
   });
-  // Use injected comparePassword or default to bcrypt.compare
-  const _comparePassword = comparePassword || bcrypt.compare;
 
   app.use(cors());
   app.use(bodyParser.json());
+
+  // Mount pets and auth routes
+  app.use('/backend/api/pets', petsRoutes(pool));
+  app.use('/backend/api/auth', authRoutes(pool, comparePassword));
 
   // Health check
   app.get('/backend/health', (req, res) => {
     res.status(200).json({ status: 'OK' });
   });
 
-  // FIXED: Prefix ALL routes with /backend
+  // Backend alive route
   app.get('/backend/', (req, res) => {
     res.json({ message: 'Backend alive!' });
-  });
-
-  // GET /api/pets - List all pets
-  app.get('/backend/api/pets', async (req, res) => {
-    try {
-      const result = await pool.query('SELECT * FROM pets');
-      res.json(result.rows);
-    } catch (err) {
-      console.error('Error fetching pets:', err);
-      res.status(500).json({ error: `Error fetching pets: ${err.message}` });
-    }
-  });
-
-  // GET /api/pets/:id - Get pet by ID
-  app.get('/backend/api/pets/:id', async (req, res) => {
-    try {
-      const { id } = req.params;
-      const result = await pool.query('SELECT * FROM pets WHERE id = $1', [id]);
-      if (result.rows.length === 0) {
-        return res.status(404).json({ error: 'Pet not found' });
-      }
-      res.json(result.rows[0]);
-    } catch (err) {
-      console.error('Error fetching pet:', err);
-      res.status(500).json({ error: `Error fetching pet: ${err.message}` });
-    }
-  });
-
-  // POST /api/pets - Create a new pet
-  app.post('/backend/api/pets', async (req, res) => {
-    try {
-      const id = uuidv4();
-      const { user_id, name, species, breed = '', age, date_of_birth, weight, gender } = req.body;
-      const result = await pool.query(
-        'INSERT INTO pets (id, user_id, name, species, breed, age, date_of_birth, weight, gender) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING *',
-        [id, user_id, name, species, breed, age, date_of_birth, weight, gender]
-      );
-      res.status(201).json(result.rows[0]);
-    } catch (err) {
-      console.error('Error creating pet:', err);
-      res.status(500).json({ error: `Error creating pet: ${err.message}` });
-    }
-  });
-
-  // PUT /api/pets/:id - Update a pet
-  app.put('/backend/api/pets/:id', async (req, res) => {
-    try {
-      const { id } = req.params;
-      const { name, species, breed = '', age, date_of_birth, weight, gender } = req.body;
-      const result = await pool.query(
-        'UPDATE pets SET name = $1, species = $2, breed = $3, age = $4, date_of_birth = $5, weight = $6, gender = $7, updated_at = NOW() WHERE id = $8 RETURNING *',
-        [name, species, breed, age, date_of_birth, weight, gender, id]
-      );
-      if (result.rows.length === 0) {
-        return res.status(404).json({ error: 'Pet not found' });
-      }
-      res.json(result.rows[0]);
-    } catch (err) {
-      console.error('Error updating pet:', err);
-      res.status(500).json({ error: `Error updating pet: ${err.message}` });
-    }
-  });
-
-  // DELETE /api/pets/:id - Delete a pet
-  app.delete('/backend/api/pets/:id', async (req, res) => {
-    try {
-      const { id } = req.params;
-      const result = await pool.query('DELETE FROM pets WHERE id = $1 RETURNING *', [id]);
-      if (result.rows.length === 0) {
-        return res.status(404).json({ error: 'Pet not found' });
-      }
-      res.json({ message: 'Pet deleted successfully', pet: result.rows[0] });
-    } catch (err) {
-      console.error('Error deleting pet:', err);
-      res.status(500).json({ error: `Error deleting pet: ${err.message}` });
-    }
-  });
-
-  // POST /backend/api/auth/login
-  app.post('/backend/api/auth/login', async (req, res) => {
-    try {
-      const { email, password } = req.body;
-      if (!email || !password) {
-        return res.status(400).json({ error: 'Email and password are required.' });
-      }
-      const userResult = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
-      if (userResult.rows.length === 0) {
-        return res.status(401).json({ error: 'Invalid email or password.' });
-      }
-      const userRow = userResult.rows[0];
-      const valid = await _comparePassword(password, userRow.password_hash);
-      if (!valid) {
-        return res.status(401).json({ error: 'Invalid email or password.' });
-      }
-      const user = {
-        id: userRow.id,
-        email: userRow.email,
-        first_name: userRow.first_name,
-        last_name: userRow.last_name,
-        category: userRow.category,
-        bio: userRow.bio,
-        photo_url: userRow.photo_url,
-        locale: userRow.locale
-      };
-      const jwtSecret = process.env.JWT_SECRET || 'default_secret';
-      const payload = { id: user.id, email: user.email };
-      const accessToken = jwt.sign(payload, jwtSecret, { expiresIn: '30m' });
-      const refreshToken = jwt.sign(payload, jwtSecret, { expiresIn: '30d' });
-      res.status(200).json({
-        user,
-        access_token: accessToken,
-        refresh_token: refreshToken
-      });
-    } catch (err) {
-      console.error('Login error:', err);
-      res.status(500).json({ error: 'Login failed', details: err.message });
-    }
-  });
-
-  // POST /backend/api/auth/signup
-  app.post('/backend/api/auth/signup', async (req, res) => {
-    try {
-      const { email, password, first_name = '', last_name = '', category = 'pet_guardian', bio = '', photo_url = '', locale = 'en' } = req.body;
-      if (!email || !password) {
-        return res.status(400).json({ error: 'Email and password are required.' });
-      }
-      const id = uuidv4();
-      // Hash password, INSERT users table
-      const saltRounds = 10;
-      const password_hash = await bcrypt.hash(password, saltRounds);
-      let result;
-      try {
-        result = await pool.query(
-          `INSERT INTO users (id, email, password_hash, first_name, last_name, category, bio, photo_url, locale) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING id`,
-          [id, email, password_hash, first_name, last_name, category, bio, photo_url, locale]
-        );
-      } catch (err) {
-        // Handle duplicate email error (Postgres unique_violation)
-        if (err.code === '23505') {
-          return res.status(400).json({ error: 'Email already exists.' });
-        }
-        throw err;
-      }
-      // Compose user object for response
-      const user = {
-        id: result.rows[0].id,
-        email,
-        first_name,
-        last_name,
-        category,
-        bio,
-        photo_url,
-        locale
-      };
-      // Generate JWT tokens
-      const jwtSecret = process.env.JWT_SECRET || 'default_secret';
-      const payload = { id: user.id, email: user.email };
-      const accessToken = jwt.sign(payload, jwtSecret, { expiresIn: '30m' });
-      const refreshToken = jwt.sign(payload, jwtSecret, { expiresIn: '30d' });
-      res.status(201).json({
-        user,
-        access_token: accessToken,
-        refresh_token: refreshToken
-      });
-    } catch (err) {
-      console.error('Signup error:', err);
-      res.status(500).json({ error: 'Signup failed', details: err.message });
-    }
   });
 
   return app;

@@ -1,6 +1,16 @@
+
 # API Documentation
 
-## Authentication
+
+## Project Structure (Backend)
+
+The backend API is now modularized for maintainability:
+
+- All `/api/pets` endpoints are implemented in `server/routes/pets.js`.
+- All `/api/auth` endpoints are implemented in `server/routes/auth.js`.
+- The main app setup and health/basic routes are in `server/bin/server.js`.
+
+All endpoints are mounted under `/backend/api/`.
 
 ### Signup
 
@@ -76,9 +86,10 @@ This prevents errors when clients accidentally use reserved words (like `all`) o
 - To fetch all pets, use `/api/pets/all` (or `/api/pets` for personal pets).
 - Do **not** use `/api/pets/all` as a single-pet endpoint.
 
+
 ### Test Coverage
 
-- Unit tests in `test/server/uuid_validation_test.dart` ensure UUID validation logic is enforced.
+- Unit tests in `server/test/pets_list.test.js` and related files ensure UUID validation logic is enforced.
 - CI will fail if invalid UUIDs are accepted for single-pet endpoints.
 
 ---
@@ -129,6 +140,47 @@ POST /backend/api/auth/login
   - Status: 500
   - Body: `{ "error": "Login failed", "details": "..." }`
 
+
 ### Test Coverage
 
 - Unit tests in `server/test/auth_login.test.js` ensure login returns the correct structure and errors for invalid input.
+
+---
+
+## Extended Pet Endpoints
+
+### Transfer Pet to Organization
+
+- **POST** `/api/pets/{id}/transfer-to-org`
+- Transfers a pet to an organization. Requires JSON body with `organization_id`, `transfer_type`, and `notes`.
+- **Response:** `{ "status": "transferred", "pet_id": "{id}" }`
+
+### Family Events
+
+- **GET** `/api/pets/{id}/family-events` — List all family events for a pet.
+- **POST** `/api/pets/{id}/family-events` — Create a new family event for a pet.
+- **PUT** `/api/pets/{id}/family-events/{eventId}` — Update a family event.
+- **DELETE** `/api/pets/{id}/family-events/{eventId}` — Delete a family event.
+- **Response:** Standard JSON with event info or `{ "deleted": true }`/`{ "updated": true }`.
+
+### Pet Access
+
+- **GET** `/api/pets/{id}/access` — List all users with access to a pet.
+- **PUT** `/api/pets/{id}/access/{userId}/role` — Update a user's role for a pet.
+- **DELETE** `/api/pets/{id}/access/{userId}` — Remove a user's access to a pet.
+- **Response:** Standard JSON with access info or `{ "deleted": true }`/`{ "updated": true }`.
+
+### Delete Pet Data
+
+- **DELETE** `/api/pets/{id}/data` — Delete all data for a pet.
+- **Response:** `{ "deleted": true, "pet_id": "{id}" }`
+
+### Mark Pet as Passed Away
+
+- **POST** `/api/pets/{id}/passed-away` — Mark a pet as passed away.
+- **Response:** `{ "passed_away": true, "pet_id": "{id}" }`
+
+
+### Test Coverage
+
+- See `server/test/pets_extended_endpoints.test.js` for endpoint tests with mocked DB logic.
