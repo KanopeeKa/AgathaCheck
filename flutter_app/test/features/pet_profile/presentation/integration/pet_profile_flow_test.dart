@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pet_profile_app/features/pet_profile/presentation/providers/pet_providers.dart';
+import 'package:pet_profile_app/features/pet_profile/domain/entities/pet.dart';
 import 'package:pet_profile_app/core/providers/shared_preferences_provider.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -14,22 +15,26 @@ import 'package:pet_profile_app/core/utils/constants.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 // --- TEST NOTIFIER FOR ADD PET ---
-class PetListTestNotifier extends StateNotifier<AsyncValue<List<dynamic>>> {
-  PetListTestNotifier() : super(const AsyncValue.data([]));
-  void addPet(String name) {
-    state = AsyncValue.data([_TestPet(name)]);
+class TestPetListNotifier extends PetListNotifier {
+  TestPetListNotifier();
+  @override
+  Future<List<Pet>> build() async {
+    return [];
   }
-}
-class _TestPet {
-  final String name;
-  _TestPet(this.name);
-  String get id => name.toLowerCase();
-  String get species => 'Dog';
-  String get breed => '';
-  String get bio => '';
-  int get colorValue => 0xFF7E57C2;
-  bool get passedAway => false;
-  String? get photoPath => null;
+
+  void addPet(String name) {
+    final pet = Pet(
+      id: name.toLowerCase(),
+      name: name,
+      species: 'Dog',
+      breed: '',
+      bio: '',
+      colorValue: 0xFF7E57C2,
+      passedAway: false,
+      photoPath: null,
+    );
+    state = AsyncValue.data([pet]);
+  }
 }
 
 void main() {
@@ -75,24 +80,23 @@ void main() {
     }
 
     testWidgets('shows empty state initially', (tester) async {
-      // Override petListProvider to always return empty list for this test
-      final emptyPetListOverride = petListProvider.overrideWithProvider(StateNotifierProvider<PetListTestNotifier, AsyncValue<List<dynamic>>>((ref) => PetListTestNotifier()));
+      final testNotifier = TestPetListNotifier();
+      final emptyPetListOverride = petListProvider.overrideWith((ref) => testNotifier);
       await tester.pumpWidget(createApp(overrides: [emptyPetListOverride]));
       await tester.pumpAndSettle();
 
-      // Print widget tree for debugging
       await debugPrintTree(tester);
 
       final scaffoldContext = tester.element(find.byType(Scaffold));
       final l10n = AppLocalizations.of(scaffoldContext)!;
 
-      // Check for empty state text
       expect(find.text(l10n.noPetsYet), findsOneWidget, reason: 'Should show empty state text');
       expect(find.text(l10n.addPet), findsOneWidget, reason: 'Should show Add Pet button');
     });
 
     testWidgets('navigates to add pet form', (tester) async {
-      final emptyPetListOverride = petListProvider.overrideWithProvider(StateNotifierProvider<PetListTestNotifier, AsyncValue<List<dynamic>>>((ref) => PetListTestNotifier()));
+      final testNotifier = TestPetListNotifier();
+      final emptyPetListOverride = petListProvider.overrideWith((ref) => testNotifier);
       await tester.pumpWidget(createApp(overrides: [emptyPetListOverride]));
       await tester.pumpAndSettle();
 
@@ -112,7 +116,8 @@ void main() {
     });
 
     testWidgets('validates required name field', (tester) async {
-      final emptyPetListOverride = petListProvider.overrideWithProvider(StateNotifierProvider<PetListTestNotifier, AsyncValue<List<dynamic>>>((ref) => PetListTestNotifier()));
+      final testNotifier = TestPetListNotifier();
+      final emptyPetListOverride = petListProvider.overrideWith((ref) => testNotifier);
       await tester.pumpWidget(createApp(overrides: [emptyPetListOverride]));
       await tester.pumpAndSettle();
 
@@ -137,10 +142,8 @@ void main() {
     });
 
     testWidgets('adds a pet and shows it in list', (tester) async {
-      // Use a test notifier to simulate adding a pet
-      final testNotifier = PetListTestNotifier();
-      final testProvider = StateNotifierProvider<PetListTestNotifier, AsyncValue<List<dynamic>>>((ref) => testNotifier);
-      final petListOverride = petListProvider.overrideWithProvider(testProvider);
+      final testNotifier = TestPetListNotifier();
+      final petListOverride = petListProvider.overrideWith((ref) => testNotifier);
       await tester.pumpWidget(createApp(overrides: [petListOverride]));
       await tester.pumpAndSettle();
 
