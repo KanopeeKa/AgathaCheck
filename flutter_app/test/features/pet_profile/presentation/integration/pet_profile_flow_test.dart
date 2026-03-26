@@ -10,23 +10,26 @@ import 'package:pet_profile_app/l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:pet_profile_app/core/theme/app_theme.dart';
 import 'package:pet_profile_app/core/utils/constants.dart';
-import 'package:pet_profile_app/features/auth/domain/entities/auth_state.dart';
-import 'package:pet_profile_app/features/auth/domain/entities/user.dart';
+import 'package:pet_profile_app/features/auth/presentation/providers/auth_providers.dart';
+import 'package:pet_profile_app/features/auth/data/auth_service.dart';
 
 // Mock user and logged-in auth state for tests
-final mockUser = User(
+final mockUser = AuthUser(
   id: 'test-user-id',
   email: 'test@example.com',
-  // Add other required fields if needed
+  firstName: 'Test',
+  lastName: 'User',
 );
 
 final loggedInAuthState = AuthState(
   user: mockUser,
   accessToken: 'dummy-token',
-  isLoggedIn: true,
+  refreshToken: 'dummy-refresh',
+  isLoading: false,
+  error: null,
 );
 
-final authOverride = authProvider.overrideWithValue(loggedInAuthState);
+final authOverride = authProvider.overrideWith((ref) => loggedInAuthState);
 
 // --- TEST NOTIFIER FOR ADD PET ---
 class TestPetListNotifier extends PetListNotifier {
