@@ -1,3 +1,5 @@
+import organizationsRoutes from '../routes/organizations.js';
+import vetsRoutes from '../routes/vets.js';
 
 
 import express from 'express';
@@ -18,7 +20,6 @@ dotenv.config();
 
 // Allow injection of custom comparePassword for testing
 export function createApp(customPool, comparePassword) {
-
   const app = express();
   const pool = customPool || new Pool({
     user: process.env.PGUSER || 'user',
@@ -27,6 +28,10 @@ export function createApp(customPool, comparePassword) {
     port: process.env.PGPORT || 5432,
     database: process.env.PGDATABASE || 'agatha_db',
   });
+
+  // Mount organizations and vets routes
+  app.use('/api/organizations', organizationsRoutes());
+  app.use('/backend/api/vets', vetsRoutes());
 
   app.use(cors());
   app.use(bodyParser.json());
