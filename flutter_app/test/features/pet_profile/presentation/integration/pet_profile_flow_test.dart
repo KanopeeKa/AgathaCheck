@@ -48,8 +48,8 @@ void main() {
       await tester.pumpWidget(createApp());
       await tester.pumpAndSettle();
 
-      final context = tester.element(find.byType(MaterialApp));
-      final l10n = AppLocalizations.of(context)!;
+      final scaffoldContext = tester.element(find.byType(Scaffold));
+      final l10n = AppLocalizations.of(scaffoldContext)!;
 
       expect(find.text(l10n.noPetsYet), findsOneWidget);
       expect(find.text(l10n.addPet), findsOneWidget);
@@ -59,8 +59,8 @@ void main() {
       await tester.pumpWidget(createApp());
       await tester.pumpAndSettle();
 
-      final context = tester.element(find.byType(MaterialApp));
-      final l10n = AppLocalizations.of(context)!;
+      final scaffoldContext = tester.element(find.byType(Scaffold));
+      final l10n = AppLocalizations.of(scaffoldContext)!;
 
       await tester.tap(find.text(l10n.addPet));
       await tester.pumpAndSettle();
@@ -74,8 +74,8 @@ void main() {
       await tester.pumpWidget(createApp());
       await tester.pumpAndSettle();
 
-      final context = tester.element(find.byType(MaterialApp));
-      final l10n = AppLocalizations.of(context)!;
+      final scaffoldContext = tester.element(find.byType(Scaffold));
+      final l10n = AppLocalizations.of(scaffoldContext)!;
 
       await tester.tap(find.text(l10n.addPet));
       await tester.pumpAndSettle();
@@ -94,8 +94,8 @@ void main() {
       await tester.pumpWidget(createApp());
       await tester.pumpAndSettle();
 
-      final context = tester.element(find.byType(MaterialApp));
-      final l10n = AppLocalizations.of(context)!;
+      final scaffoldContext = tester.element(find.byType(Scaffold));
+      final l10n = AppLocalizations.of(scaffoldContext)!;
 
       await tester.tap(find.text(l10n.addPet));
       await tester.pumpAndSettle();
