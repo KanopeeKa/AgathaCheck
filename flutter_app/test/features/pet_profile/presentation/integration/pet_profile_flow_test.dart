@@ -1,3 +1,18 @@
+// Fake PetRepository for tests
+final fakePetRepositoryOverride = petRepositoryProvider.overrideWithValue(_FakePetRepository());
+
+class _FakePetRepository implements PetRepository {
+  @override
+  Future<List<Pet>> getAllPets() async => <Pet>[];
+  @override
+  Future<Pet?> getPetById(String id) async => null;
+  @override
+  Future<Pet> addPet(Pet pet) async => pet;
+  @override
+  Future<Pet> updatePet(Pet pet) async => pet;
+  @override
+  Future<void> deletePet(String id) async {}
+}
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -155,6 +170,7 @@ void main() {
           sharedPreferencesProvider.overrideWithValue(prefs),
           authOverride,
           petsOverride,
+          fakePetRepositoryOverride,
           ...overrides,
         ],
         child: Consumer(
