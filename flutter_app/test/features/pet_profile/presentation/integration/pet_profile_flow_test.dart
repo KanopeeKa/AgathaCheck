@@ -48,35 +48,45 @@ void main() {
       await tester.pumpWidget(createApp());
       await tester.pumpAndSettle();
 
-      expect(find.text('No pets yet!'), findsOneWidget);
-      expect(find.text('Add Pet'), findsOneWidget);
+      final context = tester.element(find.byType(MaterialApp));
+      final l10n = AppLocalizations.of(context)!;
+
+      expect(find.text(l10n.noPetsYet), findsOneWidget);
+      expect(find.text(l10n.addPet), findsOneWidget);
     });
 
     testWidgets('navigates to add pet form', (tester) async {
       await tester.pumpWidget(createApp());
       await tester.pumpAndSettle();
 
-      await tester.tap(find.text('Add Pet'));
+      final context = tester.element(find.byType(MaterialApp));
+      final l10n = AppLocalizations.of(context)!;
+
+      await tester.tap(find.text(l10n.addPet));
       await tester.pumpAndSettle();
 
-      expect(find.text('Name *'), findsOneWidget);
-      expect(find.text('Species *'), findsOneWidget);
-      expect(find.text('Save Pet'), findsOneWidget);
+      expect(find.text(l10n.petName), findsOneWidget);
+      expect(find.text(l10n.species), findsOneWidget);
+      expect(find.text(l10n.savePet), findsOneWidget);
     });
 
     testWidgets('validates required name field', (tester) async {
       await tester.pumpWidget(createApp());
       await tester.pumpAndSettle();
 
-      await tester.tap(find.text('Add Pet'));
+      final context = tester.element(find.byType(MaterialApp));
+      final l10n = AppLocalizations.of(context)!;
+
+      await tester.tap(find.text(l10n.addPet));
       await tester.pumpAndSettle();
 
-      final saveButton = find.text('Save Pet');
+      final saveButton = find.text(l10n.savePet);
       await tester.ensureVisible(saveButton);
       await tester.pumpAndSettle();
       await tester.tap(saveButton, warnIfMissed: false);
       await tester.pumpAndSettle();
 
+      // The validator string is hardcoded in pet_form_screen.dart, so we check for it directly
       expect(find.text("Please enter the pet's name"), findsOneWidget);
     });
 
@@ -84,12 +94,15 @@ void main() {
       await tester.pumpWidget(createApp());
       await tester.pumpAndSettle();
 
-      await tester.tap(find.text('Add Pet'));
+      final context = tester.element(find.byType(MaterialApp));
+      final l10n = AppLocalizations.of(context)!;
+
+      await tester.tap(find.text(l10n.addPet));
       await tester.pumpAndSettle();
 
       await tester.enterText(find.byType(TextFormField).first, 'Buddy');
 
-      final saveButton = find.text('Save Pet');
+      final saveButton = find.text(l10n.savePet);
       await tester.ensureVisible(saveButton);
       await tester.pumpAndSettle();
       await tester.tap(saveButton, warnIfMissed: false);
