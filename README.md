@@ -76,7 +76,7 @@ flutter run -d web-server --web-port=5000 --web-hostname=0.0.0.0
 flutter test
 
 # Run integration tests
-flutter test test_integration/
+flutter test test/features/pet_profile/presentation/integration/
 
 # Analyze code
 flutter analyze

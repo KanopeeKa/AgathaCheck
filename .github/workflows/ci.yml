@@ -33,9 +33,18 @@ jobs:
         working-directory: flutter_app
         run: flutter analyze . || true # Continues even if warnings
 
+
       - name: Test Flutter app with coverage
         working-directory: flutter_app
         run: flutter test --coverage
+
+      - name: Run Flutter unit/widget tests
+        working-directory: flutter_app
+        run: flutter test test/
+
+      - name: Run Flutter integration tests
+        working-directory: flutter_app
+        run: flutter test test/features/pet_profile/presentation/integration/
 
       - name: Build web release
         working-directory: flutter_app
@@ -47,14 +56,10 @@ jobs:
           name: web-build
           path: flutter_app/build/web/
 
-      # Run all Dart/Flutter tests in /test with Flutter
-      - name: Run Flutter tests in /test
-        run: |
-          if [ -d "test" ]; then
-            flutter test test
-          else
-            echo "No tests found in /test."
-          fi
+
+            - name: Install build_runner and mockito for codegen
+              working-directory: flutter_app
+              run: flutter pub get && flutter pub run build_runner build --delete-conflicting-outputs
       # Node.js backend tests
       - name: Set up Node.js
         uses: actions/setup-node@v4
