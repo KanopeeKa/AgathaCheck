@@ -1,3 +1,5 @@
+// Override for getAllPetsUseCaseProvider to return empty list in tests
+final petsOverride = getAllPetsUseCaseProvider.overrideWith((ref) => () async => <Pet>[]);
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pet_profile_app/features/pet_profile/presentation/providers/pet_providers.dart';
@@ -137,6 +139,7 @@ void main() {
         overrides: [
           sharedPreferencesProvider.overrideWithValue(prefs),
           authOverride,
+          petsOverride,
           ...overrides,
         ],
         child: Consumer(
