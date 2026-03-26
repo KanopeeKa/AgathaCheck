@@ -23,25 +23,52 @@ PostgreSQLConnection _getConnection() {
 Router apiHandler() {
   final app = Router();
 
-  // GET /api/pets - List all pets
+  // GET /api/pets - List all pets (personal only)
   app.get('/pets', _getPets);
-  
-  // GET /api/pets/{id}
-  app.get('/pets/<id>', _getPetById);
-  
+
+  // GET /api/pets/all - List all pets (personal + shared + org)
+  app.get('/pets/all', _getAllPets);
+
+  // GET /api/pets/{id} (only valid UUIDs)
+  app.get('/pets/<id|[0-9a-fA-F\-]{36}>', _getPetById);
+
   // POST /api/pets - Create pet
   app.post('/pets', _createPet);
-  
+
   // PUT /api/pets/<id> - Update pet
-  app.put('/pets/<id>', _updatePet);
-  
+  app.put('/pets/<id|[0-9a-fA-F\-]{36}>', _updatePet);
+
   // DELETE /api/pets/<id>
-  app.delete('/pets/<id>', _deletePet);
+  app.delete('/pets/<id|[0-9a-fA-F\-]{36}>', _deletePet);
 
   // Health check
   app.get('/health', (req) => Response.ok('OK'));
 
   return app;
+}
+// Handler for /api/pets/all
+Future<Response> _getAllPets(Request request) async {
+  final conn = _getConnection();
+  try {
+    await conn.open();
+    // TODO: Adjust query to include shared/org pets as needed
+    final results = await conn.query('SELECT * FROM pets');
+    final pets = results.map((row) => {
+      'id': row[0],
+      'user_id': row[1],
+      'name': row[2],
+      'species': row[3],
+      'breed': row[4],
+      'age': row[5],
+      'date_of_birth': row[6]?.toIso8601String(),
+      'weight': row[7],
+      'gender': row[8],
+    }).toList();
+    await conn.close();
+    return Response.ok(jsonEncode(pets), headers: {'Content-Type': 'application/json'});
+  } catch (e) {
+    return Response.internalServerError(body: 'Error fetching all pets: $e');
+  }
 }
 
 Future<Response> _getPets(Request request) async {
