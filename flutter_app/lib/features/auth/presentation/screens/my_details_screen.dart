@@ -1,6 +1,5 @@
 import 'dart:convert';
 // ignore: avoid_web_libraries_in_flutter
-import 'dart:js_interop' if (dart.library.js_interop) 'dart:js_interop.dart';
 import 'dart:typed_data';
 
 import 'package:flutter/foundation.dart' show kIsWeb;
@@ -8,8 +7,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
-// ignore: uri_does_not_exist
-import 'package:web/web.dart' as web if (dart.library.js_interop) 'package:web/web.dart';
+
+import 'export_data_stub.dart'
+  if (dart.library.html) 'export_data_web.dart';
 
 import '../../../../core/providers/locale_provider.dart';
 import '../../../../core/widgets/app_logo_title.dart';
@@ -497,16 +497,7 @@ class _MyDetailsScreenState extends ConsumerState<MyDetailsScreen> {
       final bytes = utf8.encode(jsonStr);
 
       if (kIsWeb) {
-        final blob = web.Blob(
-          [Uint8List.fromList(bytes).toJS].toJS,
-          web.BlobPropertyBag(type: 'application/json'),
-        );
-        final url = web.URL.createObjectURL(blob);
-        final anchor = web.document.createElement('a') as web.HTMLAnchorElement;
-        anchor.href = url;
-        anchor.download = 'agatha_track_export.json';
-        anchor.click();
-        web.URL.revokeObjectURL(url);
+        await exportUserDataWebOnly(bytes);
       }
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
