@@ -1,3 +1,43 @@
+### Health Entries Endpoints
+
+- **GET** `/backend/api/health-entries`
+  - **Response:** `[]`
+- **POST** `/backend/api/health-entries`
+  - **Request Body:** `{ "pet_id": "pet-1", "type": "checkup", "date": "2026-03-26" }`
+  - **Response:** `{ "created": true, "entry": { ... } }`
+
+### Health Issues Endpoints
+
+- **GET** `/backend/api/health-issues`
+  - **Response:** `[]`
+- **POST** `/backend/api/health-issues`
+  - **Request Body:** `{ "pet_id": "pet-1", "description": "Fever", "date": "2026-03-26" }`
+  - **Response:** `{ "created": true, "issue": { ... } }`
+
+### Test Coverage
+
+- See `server/test/healthEntries.test.js` for health-entries endpoint tests.
+- See `server/test/healthIssues.test.js` for health-issues endpoint tests.
+### Weight Entries Endpoints
+
+- **POST** `/backend/api/weight-entries`
+  - **Request Body:** `{ "pet_id": "pet-1", "weight": 4.5, "date": "2026-03-26" }`
+  - **Response:** `{ "created": true, "entry": { ... } }`
+
+- **GET** `/backend/api/weight-entries/latest`
+  - **Response:** `{ "pet_id": "mock-pet", "weight": 5.2, "date": "2026-03-26" }`
+
+### Auth Refresh Endpoint
+
+- **POST** `/backend/api/auth/refresh`
+  - **Request Body:** `{ "refresh_token": "<jwt-refresh-token>" }`
+  - **Response:** `{ "access_token": "<jwt-access-token>" }`
+  - **Error:** 400 if missing token, 401 if invalid/expired
+
+### Test Coverage
+
+- See `server/test/weightEntries.test.js` for weight-entries endpoint tests.
+- See `server/test/auth_refresh.test.js` for auth refresh endpoint tests.
 
 # API Documentation
 

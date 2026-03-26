@@ -46,6 +46,16 @@ jobs:
           name: web-build
           path: flutter_app/build/web/
 
+      # Dart tests in /test folder
+      - name: Install Dart dependencies (for /test)
+        run: dart pub get
+      - name: Run Dart tests in /test
+        run: |
+          if [ -d "test" ]; then
+            dart test test
+          else
+            echo "No Dart tests found in /test."
+          fi
       # Node.js backend tests
       - name: Set up Node.js
         uses: actions/setup-node@v4

@@ -92,6 +92,9 @@ export default function petsRoutes(pool) {
     try {
       const id = uuidv4();
       const { user_id, name, species, breed = '', age, date_of_birth, weight, gender } = req.body;
+      if (!user_id) {
+        return res.status(400).json({ error: 'user_id is required' });
+      }
       const result = await pool.query(
         'INSERT INTO pets (id, user_id, name, species, breed, age, date_of_birth, weight, gender) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING *',
         [id, user_id, name, species, breed, age, date_of_birth, weight, gender]

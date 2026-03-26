@@ -8,6 +8,9 @@ import dotenv from 'dotenv';
 import petsRoutes from '../routes/pets.js';
 import authRoutes from '../routes/auth.js';
 import notificationsRoutes from '../routes/notifications.js';
+import weightEntriesRoutes from '../routes/weightEntries.js';
+import healthEntriesRoutes from '../routes/healthEntries.js';
+import healthIssuesRoutes from '../routes/healthIssues.js';
 
 dotenv.config();
 
@@ -32,6 +35,9 @@ export function createApp(customPool, comparePassword) {
   app.use('/backend/api/pets', petsRoutes(pool));
   app.use('/backend/api/auth', authRoutes(pool, comparePassword));
   app.use('/backend/api/notifications', notificationsRoutes());
+  app.use('/backend/api/weight-entries', weightEntriesRoutes());
+  app.use('/backend/api/health-entries', healthEntriesRoutes());
+  app.use('/backend/api/health-issues', healthIssuesRoutes());
 
   // Health check
   app.get('/backend/health', (req, res) => {

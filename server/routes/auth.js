@@ -131,5 +131,22 @@ export default function authRoutes(pool, comparePassword) {
     }
   });
 
+  // POST /backend/api/auth/refresh - Refresh JWT tokens
+  router.post('/refresh', (req, res) => {
+    const { refresh_token } = req.body;
+    const jwtSecret = process.env.JWT_SECRET || 'default_secret';
+    if (!refresh_token) {
+      return res.status(400).json({ error: 'refresh_token is required' });
+    }
+    try {
+      const payload = jwt.verify(refresh_token, jwtSecret);
+      // Issue new access token
+      const accessToken = jwt.sign({ id: payload.id, email: payload.email }, jwtSecret, { expiresIn: '30m' });
+      res.status(200).json({ access_token: accessToken });
+    } catch (err) {
+      return res.status(401).json({ error: 'Invalid or expired refresh token', details: err.message });
+    }
+  });
+
   return router;
 }
