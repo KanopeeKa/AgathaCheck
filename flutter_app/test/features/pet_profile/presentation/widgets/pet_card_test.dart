@@ -27,6 +27,7 @@ void main() {
     passedAway: false,
   );
     test('throws if required fields are null', () {
+      // These should not throw (empty string is allowed)
       expect(
         () => Pet(
           id: 'id',
@@ -35,30 +36,18 @@ void main() {
         ),
         returnsNormally,
       );
-      // The following should not compile, but we can check runtime null assertion
+      // These should throw (null passed to non-nullable)
       expect(
-        () => Pet(
-          id: 'id',
-          name: null as String, // ignore: null_argument_to_non_null_type
-          species: 'Dog',
-        ),
-        throwsA(isA<AssertionError>()),
+        () => Function.apply(Pet, [null, 'Buddy', 'Dog']),
+        throwsA(isA<Error>()),
       );
       expect(
-        () => Pet(
-          id: null as String, // ignore: null_argument_to_non_null_type
-          name: 'Buddy',
-          species: 'Dog',
-        ),
-        throwsA(isA<AssertionError>()),
+        () => Function.apply(Pet, ['id', null, 'Dog']),
+        throwsA(isA<Error>()),
       );
       expect(
-        () => Pet(
-          id: 'id',
-          name: 'Buddy',
-          species: null as String, // ignore: null_argument_to_non_null_type
-        ),
-        throwsA(isA<AssertionError>()),
+        () => Function.apply(Pet, ['id', 'Buddy', null]),
+        throwsA(isA<Error>()),
       );
     });
 

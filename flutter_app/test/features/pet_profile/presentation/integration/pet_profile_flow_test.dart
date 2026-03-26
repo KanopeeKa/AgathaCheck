@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:pet_profile_app/core/router/app_router.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pet_profile_app/core/theme/app_theme.dart';
 import 'package:pet_profile_app/core/utils/constants.dart';
 import 'package:pet_profile_app/features/pet_profile/presentation/providers/pet_providers.dart';
@@ -21,10 +22,15 @@ void main() {
         overrides: [
           sharedPreferencesProvider.overrideWithValue(prefs),
         ],
-        child: MaterialApp.router(
-          title: AppConstants.appTitle,
-          theme: AppTheme.lightTheme,
-          routerConfig: AppRouter.router,
+        child: Consumer(
+          builder: (context, ref, _) {
+            final router = ref.watch(routerProvider);
+            return MaterialApp.router(
+              title: AppConstants.appTitle,
+              theme: AppTheme.lightTheme,
+              routerConfig: router,
+            );
+          },
         ),
       );
     }
