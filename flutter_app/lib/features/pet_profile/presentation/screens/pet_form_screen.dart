@@ -17,6 +17,9 @@ import '../../../weight_tracking/domain/entities/weight_entry.dart';
 import '../../../weight_tracking/presentation/providers/weight_providers.dart';
 import '../../domain/entities/pet.dart';
 import '../providers/pet_providers.dart';
+import 'widgets/pet_photo_section.dart';
+import 'widgets/pet_species_section.dart';
+import 'widgets/pet_breed_section.dart';
 
 String _localizedSpecies(AppLocalizations l, String species) {
   switch (species) {
@@ -429,7 +432,10 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              _buildPhotoSection(theme),
+              PetPhotoSection(
+                photoBase64: _photoBase64,
+                onPickImage: _pickImage,
+              ),
               const SizedBox(height: 24),
               if (!_isEditing) _buildOwnershipSelector(theme, l),
               if (!_isEditing) const SizedBox(height: 16),
@@ -449,115 +455,33 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
                 },
               ),
               const SizedBox(height: 16),
-              DropdownButtonFormField<String>(
-                key: const Key('pet_species_field'),
-                value: _selectedSpecies,
-                decoration: InputDecoration(
-                  labelText: l.species,
-                  helperText: 'Select the type of animal',
-                  suffixIcon: _infoTooltip('Choose the species that best matches your pet'),
-                ),
-                items: AppConstants.species
-                    .map((s) => DropdownMenuItem(value: s, child: Text(_localizedSpecies(l, s))))
-                    .toList(),
-                onChanged: (value) {
-                  if (value != null) {
-                    setState(() => _selectedSpecies = value);
-                  }
-                },
+              PetSpeciesSection(
+                selectedSpecies: _selectedSpecies,
+                onChanged: (value) => setState(() => _selectedSpecies = value),
               ),
               const SizedBox(height: 16),
-              TextFormField(
-                key: const Key('pet_breed_field'),
-                controller: _breedController,
-                decoration: InputDecoration(
-                  labelText: l.breed,
-                  helperText: 'Breed or variety, if known',
-                  suffixIcon: _infoTooltip('e.g. Labrador, Siamese, Budgerigar'),
-                ),
+              PetBreedSection(controller: _breedController),
+              const SizedBox(height: 16),
+              PetGenderSection(
+                selectedGender: _selectedGender,
+                onChanged: (value) => setState(() => _selectedGender = value),
               ),
               const SizedBox(height: 16),
-              DropdownButtonFormField<String?>(
-                key: const Key('pet_gender_field'),
-                value: _selectedGender,
-                decoration: InputDecoration(
-                  labelText: l.gender,
-                  helperText: 'Useful for health and behaviour tracking',
-                  suffixIcon: _selectedGender != null
-                      ? IconButton(
-                          icon: const Icon(Icons.clear),
-                          tooltip: 'Clear gender',
-                          onPressed: () =>
-                              setState(() => _selectedGender = null),
-                        )
-                      : _infoTooltip('Helps vets and caregivers with gender-specific care'),
-                ),
-                items: [
-                  const DropdownMenuItem<String?>(
-                    value: null,
-                    child: Text('Not specified'),
+              PetDobSection(
+                dateOfBirth: _dateOfBirth,
+                onChanged: (date) => setState(() => _dateOfBirth = date),
+              ),
+              const SizedBox(height: 16),
+              if (_isEditing)
+                TextFormField(
+                  key: const Key('pet_weight_field'),
+                  controller: _weightController,
+                  decoration: InputDecoration(
+                    labelText: l.weightWithUnit('kg'),
                   ),
-                  DropdownMenuItem(value: 'Male', child: Text(l.male)),
-                  DropdownMenuItem(value: 'Female', child: Text(l.female)),
-                ],
-                onChanged: (value) =>
-                    setState(() => _selectedGender = value),
-              ),
-              const SizedBox(height: 16),
-              Row(
-                children: [
-                  Expanded(
-                    child: Semantics(
-                      label: l.dateOfBirth,
-                      child: InkWell(
-                        key: const Key('pet_dob_field'),
-                        onTap: () async {
-                          final picked = await showDatePicker(
-                            context: context,
-                            initialDate: _dateOfBirth ?? DateTime.now(),
-                            firstDate: DateTime(1980),
-                            lastDate: DateTime.now(),
-                            helpText: 'Select date of birth',
-                          );
-                          if (picked != null) {
-                            setState(() => _dateOfBirth = picked);
-                          }
-                        },
-                        child: InputDecorator(
-                          decoration: InputDecoration(
-                            labelText: l.dateOfBirth,
-                            helperText: 'Used to calculate your pet\'s age',
-                            suffixIcon: _dateOfBirth != null
-                                ? IconButton(
-                                    icon: const Icon(Icons.clear, size: 18),
-                                    tooltip: 'Clear date of birth',
-                                    onPressed: () =>
-                                        setState(() => _dateOfBirth = null),
-                                  )
-                                : const Icon(Icons.calendar_today, size: 18),
-                          ),
-                          child: Text(
-                            _dateOfBirth != null
-                                ? DateFormat('dd/MM/yyyy').format(_dateOfBirth!)
-                                : '',
-                            style: Theme.of(context).textTheme.bodyLarge,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 16),
-                  if (_isEditing)
-                    Expanded(
-                      child: TextFormField(
-                        key: const Key('pet_weight_field'),
-                        controller: _weightController,
-                        decoration: InputDecoration(
-                          labelText: l.weightWithUnit('kg'),
-                        ),
-                        keyboardType:
-                            const TextInputType.numberWithOptions(decimal: true),
-                        validator: (value) {
+                  keyboardType:
+                      const TextInputType.numberWithOptions(decimal: true),
+                  validator: (value) {
                           if (value != null && value.isNotEmpty) {
                             final num = double.tryParse(value);
                             if (num == null || num < 0) {

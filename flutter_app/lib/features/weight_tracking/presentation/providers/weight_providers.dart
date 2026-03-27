@@ -1,7 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../../../health_tracking/presentation/providers/health_providers.dart';
 import '../../data/datasources/weight_remote_datasource.dart';
 import 'package:pet_profile_app/core/providers/api_base_url_provider.dart';
 import '../../data/repositories/weight_repository_impl.dart';

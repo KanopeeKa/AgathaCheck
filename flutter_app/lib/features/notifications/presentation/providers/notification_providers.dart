@@ -1,7 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../auth/presentation/providers/auth_providers.dart';
-import '../../../health_tracking/presentation/providers/health_providers.dart';
 import '../../../pet_profile/presentation/providers/pet_providers.dart';
 import 'package:pet_profile_app/core/providers/api_base_url_provider.dart';
 import '../../data/datasources/notification_remote_datasource.dart';
