@@ -15,6 +15,25 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
+  flutter-analyze:
+    name: Flutter Clean & Analyze
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+      - name: Clean build artifacts
+        working-directory: flutter_app
+        run: flutter clean
+      - name: Fetch dependencies
+        working-directory: flutter_app
+        run: flutter pub get
+      - name: Run analyzer
+        working-directory: flutter_app
+        run: flutter analyze
+
     steps:
       - uses: actions/checkout@v4
 
