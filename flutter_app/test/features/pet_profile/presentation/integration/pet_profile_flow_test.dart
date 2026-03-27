@@ -7,8 +7,8 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:pet_profile_app/l10n/app_localizations.dart';
-import '../../../helpers/fakes.dart';
-import '../../../helpers/test_helpers.dart';
+import 'helpers/fakes.dart';
+import 'helpers/test_helpers.dart';
 
 
 final fakePetRepositoryOverride = petRepositoryProvider.overrideWithValue(FakePetRepository());
