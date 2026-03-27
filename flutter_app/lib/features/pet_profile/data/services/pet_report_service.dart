@@ -14,6 +14,13 @@ import '../../../organization/domain/entities/family_event.dart';
 import '../../../sharing/domain/entities/pet_access.dart';
 import '../../../weight_tracking/domain/entities/weight_entry.dart';
 import '../../../vet/domain/entities/vet.dart';
+import 'pet_report_profile_section.dart';
+import 'pet_report_weight_section.dart';
+import 'pet_report_health_section.dart';
+import 'pet_report_health_issues_section.dart';
+import 'pet_report_family_events_section.dart';
+import 'pet_report_notifications_section.dart';
+import 'pet_report_sharing_section.dart';
 
 /// Controls which sections are included in the generated PDF report.
 ///
@@ -102,16 +109,17 @@ class PetReportService {
           final widgets = <pw.Widget>[];
 
           if (sections.petProfile) {
-            widgets.addAll(_buildProfileSection(pet, vet, weightEntries, weightUnit, l));
+            widgets.addAll(PetProfileSectionBuilder.build(
+              pet, vet, weightEntries, weightUnit, l));
           }
 
           if (sections.weightTracking) {
-            widgets.addAll(
-                _buildWeightSection(weightEntries, dateFormat, weightUnit, l));
+            widgets.addAll(PetWeightSectionBuilder.build(
+              weightEntries, dateFormat, weightUnit, l));
           }
 
           if (sections.healthEvents) {
-            widgets.addAll(_buildHealthSection(
+            widgets.addAll(PetHealthSectionBuilder.build(
               healthEntries,
               dateFormat,
               sections.healthFrom,
@@ -124,21 +132,21 @@ class PetReportService {
 
           if (sections.healthIssues) {
             widgets.addAll(
-                _buildHealthIssuesSection(healthIssues, healthEntries, dateFormat, l));
+                PetHealthIssuesSectionBuilder.build(healthIssues, healthEntries, dateFormat, l));
           }
 
           if (sections.familyEvents) {
             widgets.addAll(
-                _buildFamilyEventsSection(familyEvents, dateFormat, l));
+                PetFamilyEventsSectionBuilder.build(familyEvents, dateFormat, l));
           }
 
           if (sections.notifications) {
             widgets.addAll(
-                _buildNotificationsSection(petNotifications, dateFormat, l));
+                PetNotificationsSectionBuilder.build(petNotifications, dateFormat, l));
           }
 
           if (sections.sharing) {
-            widgets.addAll(_buildSharingSection(accessList, l));
+            widgets.addAll(PetSharingSectionBuilder.build(accessList, l));
           }
 
           return widgets;
@@ -263,238 +271,6 @@ class PetReportService {
     );
   }
 
-  List<pw.Widget> _buildProfileSection(
-      Pet pet, Vet? vet, List<WeightEntry> weightEntries, String weightUnit, AppLocalizations l) {
-    final latestWeight = weightEntries.isNotEmpty
-        ? weightEntries.last.weight
-        : pet.weight;
-
-    return [
-      _sectionTitle(l.pdfPetProfileSection),
-      pw.Container(
-        padding: const pw.EdgeInsets.all(10),
-        decoration: pw.BoxDecoration(
-          border: pw.Border.all(color: _borderColor, width: 0.5),
-          borderRadius: pw.BorderRadius.circular(6),
-        ),
-        child: pw.Column(
-          children: [
-            _detailRow(l.pdfName, pet.name),
-            _detailRow(l.pdfSpecies, pet.species),
-            if (pet.breed.isNotEmpty) _detailRow(l.pdfBreed, pet.breed),
-            if (pet.gender != null && pet.gender!.isNotEmpty)
-              _detailRow(l.pdfGender, pet.gender!),
-            if (pet.ageDisplay != null)
-              _detailRow(l.pdfAge, pet.ageDisplay!),
-            if (pet.dateOfBirth != null)
-              _detailRow(l.pdfDateOfBirth, '${pet.dateOfBirth!.day}/${pet.dateOfBirth!.month}/${pet.dateOfBirth!.year}'),
-            if (latestWeight != null)
-              _detailRow(l.pdfCurrentWeight, _formatWeight(latestWeight, weightUnit),
-                  highlight: true),
-            if (pet.bio.isNotEmpty) _detailRow(l.pdfBio, pet.bio),
-            if (pet.neuteredDate != null)
-              _detailRow(l.pdfNeuteredSpayed, DateFormat.yMMMd().format(pet.neuteredDate!)),
-            if (pet.chipId.isNotEmpty)
-              _detailRow(l.pdfIdMicrochip, pet.chipId),
-            if (pet.insurance.isNotEmpty)
-              _detailRow(l.pdfInsurance, pet.insurance),
-            if (vet != null)
-              _detailRow(l.pdfVet, [
-                vet.name,
-                if (vet.phone.isNotEmpty) vet.phone,
-                if (vet.email.isNotEmpty) vet.email,
-                if (vet.address.isNotEmpty) vet.address,
-              ].join(' - ')),
-          ],
-        ),
-      ),
-      pw.SizedBox(height: 14),
-    ];
-  }
-
-  List<pw.Widget> _buildWeightSection(
-      List<WeightEntry> entries, DateFormat dateFormat, String weightUnit, AppLocalizations l) {
-    if (entries.isEmpty) {
-      return [
-        _sectionTitle(l.pdfWeightTrackingSection),
-        _emptyMessage(l.pdfNoWeightData),
-        pw.SizedBox(height: 20),
-      ];
-    }
-
-    final sorted = List<WeightEntry>.from(entries)
-      ..sort((a, b) => a.date.compareTo(b.date));
-
-    final chartHeight = 100.0;
-
-    return [
-      _sectionTitle(l.pdfWeightTrackingSection),
-      if (sorted.length >= 2)
-        pw.Container(
-          height: chartHeight + 30,
-          padding: const pw.EdgeInsets.all(8),
-          decoration: pw.BoxDecoration(
-            border: pw.Border.all(color: _borderColor, width: 0.5),
-            borderRadius: pw.BorderRadius.circular(6),
-          ),
-          child: pw.Chart(
-            grid: pw.CartesianGrid(
-              xAxis: pw.FixedAxis(
-                _chartDateLabels(sorted),
-                textStyle: const pw.TextStyle(fontSize: 7, color: _textMuted),
-              ),
-              yAxis: pw.FixedAxis(
-                _chartWeightLabels(sorted, weightUnit),
-                textStyle: const pw.TextStyle(fontSize: 7, color: _textMuted),
-              ),
-            ),
-            datasets: [
-              pw.LineDataSet(
-                data: _chartDataPoints(sorted),
-                color: _brandPurple,
-                lineWidth: 2,
-                drawPoints: true,
-                pointSize: 4,
-                pointColor: _brandPurple,
-              ),
-            ],
-          ),
-        ),
-      pw.SizedBox(height: 8),
-      pw.TableHelper.fromTextArray(
-        border: pw.TableBorder.all(color: _borderColor, width: 0.5),
-        headerStyle: pw.TextStyle(
-            fontSize: 8, fontWeight: pw.FontWeight.bold, color: _white),
-        headerDecoration: const pw.BoxDecoration(color: _brandPurple),
-        cellStyle: const pw.TextStyle(fontSize: 8, color: _textDark),
-        cellPadding: const pw.EdgeInsets.symmetric(horizontal: 6, vertical: 3),
-        cellAlignments: {
-          0: pw.Alignment.centerLeft,
-          1: pw.Alignment.center,
-          2: pw.Alignment.centerLeft,
-        },
-        headers: [l.pdfDate, l.pdfWeight, l.pdfNotes],
-        data: sorted.reversed.take(3).map((e) {
-          return [
-            dateFormat.format(e.date),
-            _formatWeight(e.weight, weightUnit),
-            e.notes,
-          ];
-        }).toList(),
-      ),
-      pw.SizedBox(height: 14),
-    ];
-  }
-
-  List<double> _chartDateLabels(List<WeightEntry> sorted) {
-    if (sorted.length <= 1) return [0];
-    final first = sorted.first.date.millisecondsSinceEpoch.toDouble();
-    final last = sorted.last.date.millisecondsSinceEpoch.toDouble();
-    final step = (last - first) / 4;
-    return List.generate(5, (i) => first + step * i);
-  }
-
-  List<double> _chartWeightLabels(List<WeightEntry> sorted, String weightUnit) {
-    final weights = sorted.map((e) => e.weight).toList();
-    final minW = weights.reduce((a, b) => a < b ? a : b);
-    final maxW = weights.reduce((a, b) => a > b ? a : b);
-    final range = maxW == minW ? 1.0 : maxW - minW;
-    final paddedMin = minW - range * 0.1;
-    final paddedMax = maxW + range * 0.1;
-    final step = (paddedMax - paddedMin) / 4;
-    return List.generate(5, (i) => paddedMin + step * i);
-  }
-
-  List<pw.PointChartValue> _chartDataPoints(List<WeightEntry> sorted) {
-    return sorted
-        .map((e) => pw.PointChartValue(
-              e.date.millisecondsSinceEpoch.toDouble(),
-              e.weight,
-            ))
-        .toList();
-  }
-
-  List<pw.Widget> _buildHealthSection(
-    List<HealthEntry> allEntries,
-    DateFormat dateFormat,
-    DateTime? from,
-    DateTime? to,
-    bool includeFullLog,
-    Map<String, List<Map<String, dynamic>>> histories,
-    AppLocalizations l,
-  ) {
-    if (allEntries.isEmpty) {
-      return [
-        _sectionTitle(l.pdfHealthEventsSection),
-        _emptyMessage(l.pdfNoHealthEvents),
-        pw.SizedBox(height: 20),
-      ];
-    }
-
-    final now = DateTime.now();
-    final filterFrom = from ?? now.subtract(const Duration(days: 180));
-    final filterTo = to ?? now;
-
-    final currentRecurring = allEntries.where((e) {
-      if (e.frequency == HealthFrequency.once) {
-        return e.nextDueDate.year < 9999;
-      }
-      return true;
-    }).toList();
-
-    final periodEntries = allEntries.where((e) {
-      final d = e.startDate;
-      return !d.isBefore(filterFrom) && !d.isAfter(filterTo);
-    }).toList()
-      ..sort((a, b) => a.startDate.compareTo(b.startDate));
-
-    final widgets = <pw.Widget>[
-      _sectionTitle(l.pdfHealthEventsSection),
-    ];
-
-    if (currentRecurring.isNotEmpty) {
-      widgets.add(_subSectionTitle(l.pdfCurrentRecurring));
-      widgets.add(
-        pw.TableHelper.fromTextArray(
-          border: pw.TableBorder.all(color: _borderColor, width: 0.5),
-          headerStyle: pw.TextStyle(
-              fontSize: 8, fontWeight: pw.FontWeight.bold, color: _white),
-          headerDecoration: const pw.BoxDecoration(color: _brandPurple),
-          cellStyle: const pw.TextStyle(fontSize: 8, color: _textDark),
-          cellPadding:
-              const pw.EdgeInsets.symmetric(horizontal: 6, vertical: 3),
-          headers: [l.pdfName, l.pdfType, l.pdfFrequency, l.pdfNextDue, l.pdfDosage],
-          data: currentRecurring.map((e) {
-            return [
-              e.name,
-              e.type.label,
-              e.frequency.label,
-              e.nextDueDate.year >= 9999
-                  ? l.pdfCompleted
-                  : dateFormat.format(e.nextDueDate),
-              e.dosage,
-            ];
-          }).toList(),
-        ),
-      );
-      widgets.add(pw.SizedBox(height: 10));
-    }
-
-    widgets.add(_subSectionTitle(
-        l.pdfEventsFromTo(dateFormat.format(filterFrom), dateFormat.format(filterTo))));
-
-    if (periodEntries.isEmpty) {
-      widgets.add(_emptyMessage(l.pdfNoEventsInPeriod));
-    } else {
-      for (final entry in periodEntries) {
-        widgets.add(_buildHealthEntryBlock(
-            entry, dateFormat, includeFullLog, histories, l));
-      }
-    }
-
-    widgets.add(pw.SizedBox(height: 14));
-    return widgets;
-  }
 
   pw.Widget _buildHealthEntryBlock(
     HealthEntry entry,
@@ -607,269 +383,6 @@ class PetReportService {
     );
   }
 
-  List<pw.Widget> _buildHealthIssuesSection(
-    List<HealthIssue> issues,
-    List<HealthEntry> allEntries,
-    DateFormat dateFormat,
-    AppLocalizations l,
-  ) {
-    if (issues.isEmpty) {
-      return [
-        _sectionTitle(l.pdfHealthIssuesSection),
-        _emptyMessage(l.pdfNoHealthIssues),
-        pw.SizedBox(height: 20),
-      ];
-    }
-
-    final widgets = <pw.Widget>[
-      _sectionTitle(l.pdfHealthIssuesSection),
-    ];
-
-    for (final issue in issues) {
-      final linked = allEntries
-          .where((e) => issue.eventIds.contains(e.id))
-          .toList();
-
-      widgets.add(
-        pw.Container(
-          margin: const pw.EdgeInsets.only(bottom: 6),
-          padding: const pw.EdgeInsets.all(8),
-          decoration: pw.BoxDecoration(
-            border: pw.Border.all(color: _borderColor, width: 0.5),
-            borderRadius: pw.BorderRadius.circular(4),
-          ),
-          child: pw.Column(
-            crossAxisAlignment: pw.CrossAxisAlignment.start,
-            children: [
-              pw.Row(
-                mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
-                children: [
-                  pw.Expanded(
-                    child: pw.Text(issue.title,
-                        style: pw.TextStyle(
-                            fontSize: 11,
-                            fontWeight: pw.FontWeight.bold,
-                            color: _textDark)),
-                  ),
-                  pw.Container(
-                    padding: const pw.EdgeInsets.symmetric(
-                        horizontal: 6, vertical: 2),
-                    decoration: pw.BoxDecoration(
-                      color: _brandPurpleLight,
-                      borderRadius: pw.BorderRadius.circular(3),
-                    ),
-                    child: pw.Text(
-                        issue.eventIds.length == 1
-                            ? l.pdfNEvent(issue.eventIds.length)
-                            : l.pdfNEvents(issue.eventIds.length),
-                        style: pw.TextStyle(
-                            fontSize: 7,
-                            fontWeight: pw.FontWeight.bold,
-                            color: _brandPurple)),
-                  ),
-                ],
-              ),
-              if (issue.description.isNotEmpty) ...[
-                pw.SizedBox(height: 3),
-                pw.Text(issue.description,
-                    style: const pw.TextStyle(fontSize: 9, color: _textMuted)),
-              ],
-              if (issue.startDate != null || issue.endDate != null) ...[
-                pw.SizedBox(height: 3),
-                pw.Text(
-                  _formatIssueDateRange(
-                      issue.startDate, issue.endDate, dateFormat, l),
-                  style: pw.TextStyle(
-                      fontSize: 8,
-                      fontWeight: pw.FontWeight.bold,
-                      color: _textMuted),
-                ),
-              ],
-              if (linked.isNotEmpty) ...[
-                pw.SizedBox(height: 6),
-                pw.Container(
-                  padding: const pw.EdgeInsets.all(6),
-                  decoration: pw.BoxDecoration(
-                    color: PdfColor.fromInt(0xFFF5F5F5),
-                    borderRadius: pw.BorderRadius.circular(3),
-                  ),
-                  child: pw.Column(
-                    crossAxisAlignment: pw.CrossAxisAlignment.start,
-                    children: [
-                      pw.Text(l.pdfLinkedEvents,
-                          style: pw.TextStyle(
-                              fontSize: 8,
-                              fontWeight: pw.FontWeight.bold,
-                              color: _brandPurple)),
-                      pw.SizedBox(height: 3),
-                      ...linked.map((e) => pw.Padding(
-                            padding: const pw.EdgeInsets.only(bottom: 2),
-                            child: pw.Text(
-                              '- ${e.name} (${e.type.label})',
-                              style: const pw.TextStyle(
-                                  fontSize: 8, color: _textDark),
-                            ),
-                          )),
-                    ],
-                  ),
-                ),
-              ],
-            ],
-          ),
-        ),
-      );
-    }
-
-    widgets.add(pw.SizedBox(height: 14));
-    return widgets;
-  }
-
-  String _formatIssueDateRange(
-      DateTime? start, DateTime? end, DateFormat fmt, AppLocalizations l) {
-    if (start != null && end != null) {
-      return '${fmt.format(start)} – ${fmt.format(end)}';
-    }
-    if (start != null) return l.pdfFrom(fmt.format(start));
-    return l.pdfUntil(fmt.format(end!));
-  }
-
-  /// Builds the Family Events section showing care assignments and foster
-  /// stays for organisation pets. Renders as a table with assigned member,
-  /// date range, and notes.
-  List<pw.Widget> _buildFamilyEventsSection(
-      List<FamilyEvent> events, DateFormat dateFormat, AppLocalizations l) {
-    if (events.isEmpty) {
-      return [
-        _sectionTitle(l.pdfFamilyEventsSection),
-        _emptyMessage(l.pdfNoFamilyEvents),
-        pw.SizedBox(height: 20),
-      ];
-    }
-
-    final sorted = List<FamilyEvent>.from(events)
-      ..sort((a, b) => b.fromDate.compareTo(a.fromDate));
-
-    return [
-      _sectionTitle(l.pdfFamilyEventsSection),
-      pw.TableHelper.fromTextArray(
-        border: pw.TableBorder.all(color: _borderColor, width: 0.5),
-        headerStyle: pw.TextStyle(
-            fontSize: 8, fontWeight: pw.FontWeight.bold, color: _white),
-        headerDecoration: const pw.BoxDecoration(color: _brandPurple),
-        cellStyle: const pw.TextStyle(fontSize: 8, color: _textDark),
-        cellPadding:
-            const pw.EdgeInsets.symmetric(horizontal: 6, vertical: 3),
-        cellAlignments: {
-          0: pw.Alignment.centerLeft,
-          1: pw.Alignment.center,
-          2: pw.Alignment.center,
-          3: pw.Alignment.centerLeft,
-        },
-        headers: [
-          l.pdfAssignedTo,
-          l.pdfFromDate,
-          l.pdfToDate,
-          l.pdfNotes,
-        ],
-        data: sorted.map((e) {
-          return [
-            e.assignedDisplay,
-            dateFormat.format(e.fromDate),
-            e.toDate != null ? dateFormat.format(e.toDate!) : l.pdfOngoing,
-            e.notes,
-          ];
-        }).toList(),
-      ),
-      pw.SizedBox(height: 14),
-    ];
-  }
-
-  /// Builds the Notifications section showing recent alerts and reminders
-  /// specific to this pet. Includes notification type, title, message, and
-  /// date.
-  List<pw.Widget> _buildNotificationsSection(
-      List<AppNotification> notifications, DateFormat dateFormat, AppLocalizations l) {
-    if (notifications.isEmpty) {
-      return [
-        _sectionTitle(l.pdfNotificationsSection),
-        _emptyMessage(l.pdfNoNotifications),
-        pw.SizedBox(height: 20),
-      ];
-    }
-
-    final sorted = List<AppNotification>.from(notifications)
-      ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
-
-    return [
-      _sectionTitle(l.pdfNotificationsSection),
-      pw.TableHelper.fromTextArray(
-        border: pw.TableBorder.all(color: _borderColor, width: 0.5),
-        headerStyle: pw.TextStyle(
-            fontSize: 8, fontWeight: pw.FontWeight.bold, color: _white),
-        headerDecoration: const pw.BoxDecoration(color: _brandPurple),
-        cellStyle: const pw.TextStyle(fontSize: 8, color: _textDark),
-        cellPadding:
-            const pw.EdgeInsets.symmetric(horizontal: 6, vertical: 3),
-        cellAlignments: {
-          0: pw.Alignment.center,
-          1: pw.Alignment.centerLeft,
-          2: pw.Alignment.centerLeft,
-          3: pw.Alignment.center,
-        },
-        headers: [
-          l.pdfNotificationType,
-          l.pdfName,
-          l.pdfNotificationMessage,
-          l.pdfDate,
-        ],
-        data: sorted.map((n) {
-          return [
-            n.type.label,
-            n.title,
-            n.message,
-            dateFormat.format(n.createdAt),
-          ];
-        }).toList(),
-      ),
-      pw.SizedBox(height: 14),
-    ];
-  }
-
-  List<pw.Widget> _buildSharingSection(List<PetAccess> accessList, AppLocalizations l) {
-    if (accessList.isEmpty) {
-      return [
-        _sectionTitle(l.pdfSharingSection),
-        _emptyMessage(l.pdfNotShared),
-        pw.SizedBox(height: 20),
-      ];
-    }
-
-    return [
-      _sectionTitle(l.pdfSharingSection),
-      pw.TableHelper.fromTextArray(
-        border: pw.TableBorder.all(color: _borderColor, width: 0.5),
-        headerStyle: pw.TextStyle(
-            fontSize: 8, fontWeight: pw.FontWeight.bold, color: _white),
-        headerDecoration: const pw.BoxDecoration(color: _brandPurple),
-        cellStyle: const pw.TextStyle(fontSize: 8, color: _textDark),
-        cellPadding:
-            const pw.EdgeInsets.symmetric(horizontal: 6, vertical: 3),
-        cellAlignments: {
-          0: pw.Alignment.centerLeft,
-          1: pw.Alignment.center,
-          2: pw.Alignment.centerLeft,
-        },
-        headers: [l.pdfName, l.pdfRole, l.pdfSince],
-        data: accessList.map((a) {
-          final name = a.user?.displayName ?? l.pdfUserNumber(a.userId.toString());
-          final role = a.role == PetAccessRole.guardian ? l.pdfGuardian : l.pdfShared;
-          final since = DateFormat('MMM d, yyyy').format(a.createdAt);
-          return [name, role, since];
-        }).toList(),
-      ),
-      pw.SizedBox(height: 14),
-    ];
-  }
 
   pw.Widget _sectionTitle(String title) {
     return pw.Container(

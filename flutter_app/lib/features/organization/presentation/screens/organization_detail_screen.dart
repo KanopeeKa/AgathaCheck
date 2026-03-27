@@ -165,17 +165,72 @@ class _OrganizationDetailScreenState
           body: ListView(
             padding: const EdgeInsets.all(16),
             children: [
-              _buildInfoCard(org, theme, colorScheme, l),
+              OrganizationInfoCard(
+                org: org,
+                theme: theme,
+                colorScheme: colorScheme,
+                l: l,
+                localizedTypeLabel: _localizedTypeLabel,
+              ),
               const SizedBox(height: 16),
-              _buildContactCard(org, theme, colorScheme),
+              OrganizationContactCard(
+                org: org,
+                theme: theme,
+                colorScheme: colorScheme,
+              ),
               const SizedBox(height: 16),
-              _buildMembersSection(context, ref, membersAsync, isSuperUser, theme, colorScheme, l),
+              OrganizationMembersSection(
+                membersAsync: membersAsync,
+                isSuperUser: isSuperUser,
+                theme: theme,
+                colorScheme: colorScheme,
+                l: l,
+                localizedRoleLabel: _localizedRoleLabel,
+                onAddUser: isSuperUser ? () => _showInviteByEmailDialog(context, ref, l) : null,
+              ),
               const SizedBox(height: 16),
-              _buildPetsSection(context, ref, petsAsync, isSuperUser, theme, colorScheme, l),
+              OrganizationPetsSection(
+                petsAsync: petsAsync,
+                isSuperUser: isSuperUser,
+                theme: theme,
+                colorScheme: colorScheme,
+                l: l,
+                orgId: orgId,
+                petsExpanded: _petsExpanded,
+                onToggleExpand: () => setState(() => _petsExpanded = !_petsExpanded),
+                onAddPet: isSuperUser ? () => context.push('/add?orgId=$orgId') : null,
+              ),
               const SizedBox(height: 16),
-              _buildArchivedSection(context, theme, colorScheme, l),
+              OrganizationArchivedSection(
+                theme: theme,
+                colorScheme: colorScheme,
+                l: l,
+                onTap: () => context.push('/organizations/$orgId/archived'),
+              ),
               const SizedBox(height: 16),
-              _buildHiddenSharedPetsSection(context, ref, theme, colorScheme, l),
+              Builder(
+                builder: (context) {
+                  final hiddenAsync = ref.watch(hiddenSharedPetsProvider);
+                  final hiddenPets = hiddenAsync.valueOrNull ?? [];
+                  final orgHidden = hiddenPets.where((p) => p.organizationId == orgId).toList();
+                  return OrganizationHiddenSharedPetsSection(
+                    orgHidden: orgHidden,
+                    theme: theme,
+                    colorScheme: colorScheme,
+                    l: l,
+                    hiddenExpanded: _hiddenExpanded,
+                    onToggleExpand: () => setState(() => _hiddenExpanded = !_hiddenExpanded),
+                    onUnhide: (pet) async {
+                      await ref.read(hiddenSharedPetsProvider.notifier).unhideSharedPet(pet.id);
+                      if (context.mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text(l.petUnhidden(pet.name))),
+                        );
+                      }
+                    },
+                  );
+                },
+              ),
             ],
           ),
         );

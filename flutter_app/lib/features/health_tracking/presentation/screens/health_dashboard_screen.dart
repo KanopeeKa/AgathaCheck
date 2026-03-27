@@ -12,6 +12,7 @@ import '../../data/services/events_pdf_service.dart';
 import '../../domain/entities/health_entry.dart';
 import '../providers/health_providers.dart';
 import '../widgets/health_entry_card.dart';
+import '../widgets/health_dashboard_actions.dart';
 
 enum _GroupMode { dueDate, pet, petType }
 
@@ -62,55 +63,17 @@ class _HealthDashboardScreenState extends ConsumerState<HealthDashboardScreen>
           onPressed: () => context.go('/'),
         ),
         actions: [
-          PopupMenuButton<_GroupMode>(
-            icon: const Icon(Icons.sort),
-            tooltip: l.groupBy,
-            onSelected: (mode) => setState(() => _groupMode = mode),
-            itemBuilder: (_) => [
-              PopupMenuItem(
-                value: _GroupMode.dueDate,
-                child: ListTile(
-                  leading: Icon(Icons.schedule,
-                      color: _groupMode == _GroupMode.dueDate
-                          ? Theme.of(context).colorScheme.primary
-                          : null),
-                  title: Text(l.byDueDate),
-                  contentPadding: EdgeInsets.zero,
-                ),
-              ),
-              PopupMenuItem(
-                value: _GroupMode.pet,
-                child: ListTile(
-                  leading: Icon(Icons.pets,
-                      color: _groupMode == _GroupMode.pet
-                          ? Theme.of(context).colorScheme.primary
-                          : null),
-                  title: Text(l.byPet),
-                  contentPadding: EdgeInsets.zero,
-                ),
-              ),
-              PopupMenuItem(
-                value: _GroupMode.petType,
-                child: ListTile(
-                  leading: Icon(Icons.category,
-                      color: _groupMode == _GroupMode.petType
-                          ? Theme.of(context).colorScheme.primary
-                          : null),
-                  title: Text(l.bySpecies),
-                  contentPadding: EdgeInsets.zero,
-                ),
-              ),
-            ],
-          ),
-          IconButton(
-            icon: const Icon(Icons.picture_as_pdf),
-            tooltip: l.exportPdf,
-            onPressed: _exportPdf,
-          ),
-          IconButton(
-            icon: const Icon(Icons.download),
-            tooltip: l.exportCsv,
-            onPressed: _exportCsv,
+          HealthDashboardActions(
+            onExportPdf: _exportPdf,
+            onExportCsv: _exportCsv,
+            onGroupModeChanged: (mode) => setState(() => _groupMode = mode),
+            groupMode: _groupMode,
+            lGroupBy: l.groupBy,
+            lByDueDate: l.byDueDate,
+            lByPet: l.byPet,
+            lBySpecies: l.bySpecies,
+            lExportPdf: l.exportPdf,
+            lExportCsv: l.exportCsv,
           ),
         ],
         bottom: TabBar(

@@ -1,10 +1,10 @@
-import 'dart:convert';
+
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:intl/intl.dart';
+
+import '../controllers/pet_form_controller.dart';
 
 import '../../../../core/utils/constants.dart';
 import '../../../../core/widgets/app_logo_title.dart';
@@ -20,6 +20,8 @@ import '../providers/pet_providers.dart';
 import 'widgets/pet_photo_section.dart';
 import 'widgets/pet_species_section.dart';
 import 'widgets/pet_breed_section.dart';
+import 'widgets/pet_assignment_section.dart';
+import 'widgets/pet_ownership_selector.dart';
 
 String _localizedSpecies(AppLocalizations l, String species) {
   switch (species) {
@@ -46,18 +48,8 @@ class PetFormScreen extends ConsumerStatefulWidget {
   ConsumerState<PetFormScreen> createState() => _PetFormScreenState();
 }
 
-class _PetFormScreenState extends ConsumerState<PetFormScreen> {
   final _formKey = GlobalKey<FormState>();
-  final _nameController = TextEditingController();
-  final _breedController = TextEditingController();
-  final _weightController = TextEditingController();
-  final _bioController = TextEditingController();
-  final _insuranceController = TextEditingController();
-  final _chipIdController = TextEditingController();
-
-  String _selectedSpecies = AppConstants.species.first;
-  String? _selectedGender;
-  String? _photoBase64;
+  late final PetFormController _controller;
   String? _selectedVetId;
   int? _existingColorValue;
   DateTime? _dateOfBirth;
@@ -68,16 +60,15 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
   bool _passedAway = false;
   bool _isLoading = false;
   bool _isInitialized = false;
-  bool _showWeightInput = false;
-  int? _selectedOrgId;
-  bool _orgInitialized = false;
-  final _newWeightController = TextEditingController();
-  int? _assignedToUserId;
-  DateTime? _assignmentFromDate;
-  DateTime? _assignmentToDate;
-  final _assignmentNotesController = TextEditingController();
+
 
   bool get _isEditing => widget.petId != null;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = PetFormController(ref);
+  }
 
   @override
   void dispose() {
@@ -113,28 +104,10 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
     _selectedOrgId = pet.organizationId;
   }
 
+
   Future<void> _pickImage() async {
-    try {
-      final picker = ImagePicker();
-      final image = await picker.pickImage(
-        source: ImageSource.gallery,
-        maxWidth: 512,
-        maxHeight: 512,
-        imageQuality: 75,
-      );
-      if (image != null) {
-        final bytes = await image.readAsBytes();
-        setState(() {
-          _photoBase64 = base64Encode(bytes);
-        });
-      }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Could not pick image: $e')),
-        );
-      }
-    }
+    await _controller.pickImage();
+    setState(() {}); // To update the UI with the new image
   }
 
   Future<void> _pickNeuteredDate() async {
@@ -153,232 +126,20 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
     }
   }
 
+
   Future<void> _confirmDeletePet() async {
-    final petName = _nameController.text.trim();
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (ctx) {
-        final ll = AppLocalizations.of(ctx)!;
-        return AlertDialog(
-          title: Text(ll.deletePet),
-          content: Text(ll.deletePetConfirm(petName)),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(ctx).pop(false),
-              child: Text(ll.cancel),
-            ),
-            FilledButton(
-              style: FilledButton.styleFrom(
-                backgroundColor: Theme.of(ctx).colorScheme.error,
-              ),
-              onPressed: () => Navigator.of(ctx).pop(true),
-              child: Text(ll.delete),
-            ),
-          ],
-        );
-      },
-    );
-    if (confirmed == true && mounted) {
-      await ref.read(petListProvider.notifier).deletePet(widget.petId!);
-      if (mounted) context.go('/');
-    }
+    // Delegate to controller (implement dialog logic in controller if needed)
+    await _controller.deletePet(context, widget.petId);
   }
+
 
   Future<void> _confirmPassedAway() async {
-    final petName = _nameController.text.trim();
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (ctx) {
-        final ll = AppLocalizations.of(ctx)!;
-        return AlertDialog(
-          title: Row(
-            children: [
-              Icon(Icons.favorite, color: Colors.grey[400], size: 22),
-              const SizedBox(width: 8),
-              Text(ll.passedAway),
-            ],
-          ),
-          content: Text(ll.passedAwayConfirmMessage(petName)),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(ctx).pop(false),
-              child: Text(ll.cancel),
-            ),
-            FilledButton(
-              style: FilledButton.styleFrom(
-                backgroundColor: Colors.grey[600],
-              ),
-              onPressed: () => Navigator.of(ctx).pop(true),
-              child: Text(ll.confirm),
-            ),
-          ],
-        );
-      },
-    );
-    if (confirmed != true || !mounted) return;
-
-    final hasSharedUsers = await ref
-        .read(petListProvider.notifier)
-        .markPassedAway(widget.petId!);
-
-    if (!mounted) return;
-
-    await showDialog<void>(
-      context: context,
-      barrierDismissible: false,
-      builder: (ctx) {
-        final theme = Theme.of(ctx);
-        final ll = AppLocalizations.of(ctx)!;
-        return AlertDialog(
-          title: Row(
-            children: [
-              Icon(Icons.favorite, color: Colors.grey[400], size: 22),
-              const SizedBox(width: 8),
-              Expanded(
-                child: Text(
-                  'In loving memory of $petName',
-                  style: theme.textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ),
-            ],
-          ),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                ll.passedAwayCondolence(petName),
-                style: theme.textTheme.bodyMedium,
-              ),
-              if (hasSharedUsers) ...[
-                const SizedBox(height: 16),
-                Text(
-                  'A notification has been sent to everyone who shared $petName\'s profile to let them know of their passing.',
-                  style: theme.textTheme.bodyMedium,
-                ),
-              ],
-              const SizedBox(height: 16),
-              Text(
-                'We will remove any further health reminders and notifications. $petName\'s profile will be kept in your archive so you can always look back on their memories.',
-                style: theme.textTheme.bodyMedium,
-              ),
-            ],
-          ),
-          actions: [
-            FilledButton(
-              onPressed: () => Navigator.of(ctx).pop(),
-              child: const Text('Thank you'),
-            ),
-          ],
-        );
-      },
-    );
-
-    if (mounted) context.go('/');
+    await _controller.markPassedAway(context, widget.petId);
   }
 
+
   Future<void> _savePet() async {
-    if (!_formKey.currentState!.validate()) return;
-
-    setState(() => _isLoading = true);
-
-    try {
-      final weight = _weightController.text.isNotEmpty
-          ? double.tryParse(_weightController.text)
-          : null;
-
-      if (_isEditing) {
-        final pet = Pet(
-          id: widget.petId!,
-          name: _nameController.text.trim(),
-          species: _selectedSpecies,
-          breed: _breedController.text.trim(),
-          dateOfBirth: _dateOfBirth,
-          weight: weight,
-          gender: _selectedGender,
-          bio: _bioController.text.trim(),
-          insurance: _insuranceController.text.trim(),
-          neuteredDate: _neuteredDate,
-          neuterDismissed: _neuterDismissed,
-          chipId: _chipIdController.text.trim(),
-          chipDismissed: _chipDismissed,
-          photoPath: _photoBase64,
-          vetId: _selectedVetId,
-          colorValue: _existingColorValue,
-          passedAway: _passedAway,
-        );
-        await ref.read(petListProvider.notifier).updatePet(pet);
-      } else {
-        final initialWeight = _showWeightInput && _newWeightController.text.isNotEmpty
-            ? double.tryParse(_newWeightController.text)
-            : null;
-
-        int? effectiveAssignedUserId = _assignedToUserId;
-        DateTime? effectiveFromDate = _assignmentFromDate;
-        if (_selectedOrgId != null) {
-          final isSuperUser = ref.read(isOrgSuperUserProvider(_selectedOrgId!));
-          if (!isSuperUser) {
-            final authState = ref.read(authProvider);
-            effectiveAssignedUserId = int.tryParse(authState.user?.id ?? '');
-            effectiveFromDate ??= DateTime.now();
-          }
-        }
-
-        final newPetId = await ref.read(petListProvider.notifier).addPet(
-              name: _nameController.text.trim(),
-              species: _selectedSpecies,
-              breed: _breedController.text.trim(),
-              dateOfBirth: _dateOfBirth,
-              weight: initialWeight,
-              gender: _selectedGender,
-              bio: _bioController.text.trim(),
-              insurance: _insuranceController.text.trim(),
-              neuteredDate: _neuteredDate,
-              neuterDismissed: _neuterDismissed,
-              chipId: _chipIdController.text.trim(),
-              chipDismissed: _chipDismissed,
-              photoPath: _photoBase64,
-              vetId: _selectedVetId,
-              organizationId: _selectedOrgId,
-            );
-        if (initialWeight != null) {
-          try {
-            final repo = ref.read(weightRepositoryProvider);
-            await repo.createEntry(WeightEntry(
-              id: 0,
-              petId: newPetId,
-              date: DateTime.now(),
-              weight: initialWeight,
-              notes: 'Initial weight',
-            ));
-          } catch (_) {}
-        }
-        if (_selectedOrgId != null && effectiveAssignedUserId != null && effectiveFromDate != null) {
-          try {
-            await ref.read(familyEventsProvider(newPetId).notifier).createEvent(
-              assignedToUserId: effectiveAssignedUserId,
-              fromDate: effectiveFromDate,
-              toDate: _assignmentToDate,
-              notes: _assignmentNotesController.text.trim(),
-            );
-          } catch (_) {}
-        }
-        if (mounted) context.go('/pet/$newPetId');
-        return;
-      }
-
-      if (mounted) context.go('/');
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error saving pet: $e')),
-        );
-      }
-    } finally {
-      if (mounted) setState(() => _isLoading = false);
-    }
+    await _controller.savePet(context, widget.petId, _formKey);
   }
 
   @override
@@ -437,16 +198,17 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
                 onPickImage: _pickImage,
               ),
               const SizedBox(height: 24),
-              if (!_isEditing) _buildOwnershipSelector(theme, l),
+              if (!_isEditing) PetOwnershipSelector(controller: _controller, initialOrgId: widget.initialOrgId),
               if (!_isEditing) const SizedBox(height: 16),
               TextFormField(
                 key: const Key('pet_name_field'),
-                controller: _nameController,
+                initialValue: _controller.state.name,
                 decoration: InputDecoration(
                   labelText: l.petName,
                   helperText: 'Your pet\'s name or nickname',
                   suffixIcon: _infoTooltip('The name your pet responds to'),
                 ),
+                onChanged: (value) => _controller.state = _controller.state.copyWith(name: value),
                 validator: (value) {
                   if (value == null || value.trim().isEmpty) {
                     return l.petNameRequired;
@@ -456,42 +218,49 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
               ),
               const SizedBox(height: 16),
               PetSpeciesSection(
-                selectedSpecies: _selectedSpecies,
-                onChanged: (value) => setState(() => _selectedSpecies = value),
+                selectedSpecies: _controller.state.selectedSpecies,
+                onChanged: (value) => _controller.state = _controller.state.copyWith(selectedSpecies: value),
               ),
               const SizedBox(height: 16),
-              PetBreedSection(controller: _breedController),
+              TextFormField(
+                key: const Key('pet_breed_field'),
+                initialValue: _controller.state.breed,
+                decoration: InputDecoration(
+                  labelText: l.petBreed,
+                  helperText: l.petBreedHint,
+                ),
+                onChanged: (value) => _controller.state = _controller.state.copyWith(breed: value),
+              ),
               const SizedBox(height: 16),
               PetGenderSection(
-                selectedGender: _selectedGender,
-                onChanged: (value) => setState(() => _selectedGender = value),
+                selectedGender: _controller.state.selectedGender,
+                onChanged: (value) => _controller.state = _controller.state.copyWith(selectedGender: value),
               ),
               const SizedBox(height: 16),
               PetDobSection(
-                dateOfBirth: _dateOfBirth,
-                onChanged: (date) => setState(() => _dateOfBirth = date),
+                dateOfBirth: _controller.state.dateOfBirth,
+                onChanged: (date) => _controller.state = _controller.state.copyWith(dateOfBirth: date),
               ),
               const SizedBox(height: 16),
               if (_isEditing)
                 TextFormField(
                   key: const Key('pet_weight_field'),
-                  controller: _weightController,
+                  initialValue: _controller.state.weight,
                   decoration: InputDecoration(
                     labelText: l.weightWithUnit('kg'),
                   ),
-                  keyboardType:
-                      const TextInputType.numberWithOptions(decimal: true),
+                  keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                  onChanged: (value) => _controller.state = _controller.state.copyWith(weight: value),
                   validator: (value) {
-                          if (value != null && value.isNotEmpty) {
-                            final num = double.tryParse(value);
-                            if (num == null || num < 0) {
-                              return 'Invalid weight';
-                            }
-                          }
-                          return null;
-                        },
-                      ),
-                    )
+                    if (value != null && value.isNotEmpty) {
+                      final num = double.tryParse(value);
+                      if (num == null || num < 0) {
+                        return 'Invalid weight';
+                      }
+                    }
+                    return null;
+                  },
+                ),
                   else
                     Expanded(
                       child: _showWeightInput
@@ -546,7 +315,7 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
                 const SizedBox(height: 16),
               TextFormField(
                 key: const Key('pet_bio_field'),
-                controller: _bioController,
+                initialValue: _controller.state.bio,
                 decoration: InputDecoration(
                   labelText: l.petBio,
                   alignLabelWithHint: true,
@@ -555,13 +324,14 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
                 ),
                 maxLines: 4,
                 maxLength: 500,
+                onChanged: (value) => _controller.state = _controller.state.copyWith(bio: value),
               ),
               const SizedBox(height: 16),
               _buildVetDropdown(),
               const SizedBox(height: 16),
               TextFormField(
                 key: const Key('pet_insurance_field'),
-                controller: _insuranceController,
+                initialValue: _controller.state.insurance,
                 decoration: InputDecoration(
                   labelText: l.insuranceDetails,
                   alignLabelWithHint: true,
@@ -579,11 +349,12 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
                 ),
                 maxLines: 4,
                 maxLength: 500,
+                onChanged: (value) => _controller.state = _controller.state.copyWith(insurance: value),
               ),
               const SizedBox(height: 16),
               TextFormField(
                 key: const Key('pet_chip_id_field'),
-                controller: _chipIdController,
+                initialValue: _controller.state.chipId,
                 decoration: InputDecoration(
                   labelText: l.idMicrochip,
                   helperText: 'Identification number for your pet',
@@ -599,6 +370,7 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
                     'The number is usually found on adoption papers, vet records, or the registration database.',
                   ),
                 ),
+                onChanged: (value) => _controller.state = _controller.state.copyWith(chipId: value),
               ),
               const SizedBox(height: 24),
               FilledButton.icon(
@@ -957,256 +729,6 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
     );
   }
 
-  Widget _buildOwnershipSelector(ThemeData theme, AppLocalizations l) {
-    final orgsAsync = ref.watch(organizationListProvider);
-    if (!_orgInitialized) {
-      _orgInitialized = true;
-      _selectedOrgId = widget.initialOrgId;
-    }
-    return orgsAsync.when(
-      loading: () => const SizedBox.shrink(),
-      error: (_, __) => const SizedBox.shrink(),
-      data: (orgs) {
-        if (orgs.isEmpty) return const SizedBox.shrink();
-
-        final effectiveOrgId = _selectedOrgId != null && orgs.any((o) => o.id == _selectedOrgId)
-            ? _selectedOrgId!
-            : (_selectedOrgId != null ? orgs.first.id : null);
-
-        final isSuperUser = effectiveOrgId != null
-            ? ref.watch(isOrgSuperUserProvider(effectiveOrgId))
-            : false;
-
-        return Card(
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(l.petOwnership,
-                    style: theme.textTheme.titleSmall?.copyWith(
-                        fontWeight: FontWeight.bold)),
-                const SizedBox(height: 12),
-                SegmentedButton<bool>(
-                  segments: [
-                    ButtonSegment(
-                      value: false,
-                      label: Text(l.myPet),
-                      icon: const Icon(Icons.person, size: 18),
-                    ),
-                    ButtonSegment(
-                      value: true,
-                      label: Text(l.orgPet),
-                      icon: const Icon(Icons.business, size: 18),
-                    ),
-                  ],
-                  selected: {_selectedOrgId != null},
-                  onSelectionChanged: (v) {
-                    setState(() {
-                      if (v.first) {
-                        _selectedOrgId = widget.initialOrgId ?? orgs.first.id;
-                      } else {
-                        _selectedOrgId = null;
-                        _assignedToUserId = null;
-                        _assignmentFromDate = null;
-                        _assignmentToDate = null;
-                        _assignmentNotesController.clear();
-                      }
-                    });
-                  },
-                ),
-                if (_selectedOrgId != null) ...[
-                  const SizedBox(height: 12),
-                  DropdownButtonFormField<int>(
-                    key: const Key('pet_org_selector'),
-                    value: effectiveOrgId,
-                    decoration: InputDecoration(
-                      labelText: l.organizations,
-                      prefixIcon: const Icon(Icons.business),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
-                    items: orgs.map((o) => DropdownMenuItem(
-                      value: o.id,
-                      child: Text(o.name),
-                    )).toList(),
-                    onChanged: (v) => setState(() {
-                      _selectedOrgId = v;
-                      _assignedToUserId = null;
-                    }),
-                  ),
-                  if (isSuperUser)
-                    _buildAssignmentSection(theme, l, effectiveOrgId),
-                  if (!isSuperUser)
-                    Padding(
-                      padding: const EdgeInsets.only(top: 8),
-                      child: Text(
-                        l.autoAssignedToYou,
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          color: theme.colorScheme.onSurfaceVariant,
-                          fontStyle: FontStyle.italic,
-                        ),
-                      ),
-                    ),
-                ],
-              ],
-            ),
-          ),
-        );
-      },
-    );
-  }
-
-  Widget _buildAssignmentSection(ThemeData theme, AppLocalizations l, int orgId) {
-    final membersAsync = ref.watch(orgMembersProvider(orgId));
-    final dateFormat = DateFormat('dd/MM/yyyy');
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const SizedBox(height: 16),
-        Text(l.assignTo,
-            style: theme.textTheme.titleSmall?.copyWith(
-                fontWeight: FontWeight.w600)),
-        Text(l.assignToHint,
-            style: theme.textTheme.bodySmall?.copyWith(
-                color: theme.colorScheme.onSurfaceVariant)),
-        const SizedBox(height: 8),
-        membersAsync.when(
-          loading: () => const LinearProgressIndicator(),
-          error: (_, __) => const SizedBox.shrink(),
-          data: (members) {
-            final activeMembers = members.where((m) => !m.role.isPending).toList();
-            return DropdownButtonFormField<int?>(
-              key: const Key('pet_assign_member'),
-              value: _assignedToUserId,
-              decoration: InputDecoration(
-                labelText: l.assignedMember,
-                prefixIcon: const Icon(Icons.person_outline),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                suffixIcon: _assignedToUserId != null
-                    ? IconButton(
-                        icon: const Icon(Icons.clear, size: 18),
-                        onPressed: () => setState(() => _assignedToUserId = null),
-                      )
-                    : null,
-              ),
-              items: [
-                DropdownMenuItem<int?>(
-                  value: null,
-                  child: Text(l.notAssigned,
-                      style: TextStyle(color: theme.colorScheme.onSurfaceVariant)),
-                ),
-                ...activeMembers.map((m) => DropdownMenuItem<int?>(
-                  value: m.userId,
-                  child: Text(m.displayName),
-                )),
-              ],
-              onChanged: (v) => setState(() => _assignedToUserId = v),
-            );
-          },
-        ),
-        const SizedBox(height: 12),
-        Row(
-          children: [
-            Expanded(
-              child: InkWell(
-                onTap: () async {
-                  final picked = await showDatePicker(
-                    context: context,
-                    initialDate: _assignmentFromDate ?? DateTime.now(),
-                    firstDate: DateTime(2020),
-                    lastDate: DateTime(2030),
-                  );
-                  if (picked != null) {
-                    setState(() => _assignmentFromDate = picked);
-                  }
-                },
-                child: InputDecorator(
-                  decoration: InputDecoration(
-                    labelText: l.fromDateLabel,
-                    suffixIcon: _assignmentFromDate != null
-                        ? IconButton(
-                            icon: const Icon(Icons.clear, size: 18),
-                            onPressed: () => setState(() => _assignmentFromDate = null),
-                          )
-                        : const Icon(Icons.calendar_today, size: 18),
-                  ),
-                  child: Text(
-                    _assignmentFromDate != null
-                        ? dateFormat.format(_assignmentFromDate!)
-                        : '',
-                  ),
-                ),
-              ),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: InkWell(
-                onTap: () async {
-                  final picked = await showDatePicker(
-                    context: context,
-                    initialDate: _assignmentToDate ?? _assignmentFromDate ?? DateTime.now(),
-                    firstDate: _assignmentFromDate ?? DateTime(2020),
-                    lastDate: DateTime(2030),
-                  );
-                  if (picked != null) {
-                    setState(() => _assignmentToDate = picked);
-                  }
-                },
-                child: InputDecorator(
-                  decoration: InputDecoration(
-                    labelText: '${l.toDateLabel} (${l.optional})',
-                    suffixIcon: _assignmentToDate != null
-                        ? IconButton(
-                            icon: const Icon(Icons.clear, size: 18),
-                            onPressed: () => setState(() => _assignmentToDate = null),
-                          )
-                        : const Icon(Icons.calendar_today, size: 18),
-                  ),
-                  child: Text(
-                    _assignmentToDate != null
-                        ? dateFormat.format(_assignmentToDate!)
-                        : '',
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 12),
-        TextFormField(
-          controller: _assignmentNotesController,
-          decoration: InputDecoration(
-            labelText: '${l.notes} (${l.optional})',
-            prefixIcon: const Icon(Icons.note_outlined),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
-          ),
-          maxLines: 2,
-        ),
-      ],
-    );
-  }
-
-  Widget _buildPhotoSection(ThemeData theme) {
-    return Center(
-      child: Semantics(
-        label: _photoBase64 != null && _photoBase64!.isNotEmpty
-            ? 'Pet photo. Tap to change photo'
-            : 'No pet photo. Tap to add photo',
-        button: true,
-        child: GestureDetector(
-          onTap: _pickImage,
-          child: Tooltip(
-            message: 'Pick pet photo',
-            child: Column(
-              children: [
-                Container(
                   width: 120,
                   height: 120,
                   decoration: BoxDecoration(

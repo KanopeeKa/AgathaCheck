@@ -10,6 +10,11 @@ import '../../../../core/widgets/app_logo_title.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../auth/presentation/providers/auth_providers.dart';
 import '../providers/sharing_providers.dart';
+import '../widgets/shared_pet_profile_card.dart';
+import '../widgets/shared_pet_accept_section.dart';
+import '../widgets/shared_pet_owner_card.dart';
+import '../widgets/shared_pet_vet_card.dart';
+import '../widgets/shared_pet_health_entry_card.dart';
 
 class SharedPetScreen extends ConsumerStatefulWidget {
   const SharedPetScreen({super.key, required this.shareCode});
@@ -151,74 +156,51 @@ class _SharedPetScreenState extends ConsumerState<SharedPetScreen> {
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
-          MergeSemantics(
-            child: Card(
-              clipBehavior: Clip.antiAlias,
-              child: IntrinsicHeight(
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    SizedBox(
-                      width: 140,
-                      child: _buildPhoto(photoPath, colorScheme),
-                    ),
-                    Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.all(16),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(name,
-                              style: theme.textTheme.headlineSmall
-                                  ?.copyWith(fontWeight: FontWeight.bold)),
-                          const SizedBox(height: 10),
-                          Wrap(
-                            spacing: 8,
-                            runSpacing: 8,
-                            children: [
-                              _buildChip(Icons.category, species, colorScheme),
-                              if (breed.isNotEmpty)
-                                _buildChip(Icons.pets, breed, colorScheme),
-                              if (ageDisplay != null)
-                                _buildChip(Icons.cake,
-                                    ageDisplay, colorScheme),
-                              if (weight != null)
-                                _buildChip(Icons.monitor_weight,
-                                    '${weight.toStringAsFixed(1)} kg', colorScheme),
-                            ],
-                          ),
-                          if (_vetData != null) ...[
-                            const SizedBox(height: 10),
-                            Row(
-                              children: [
-                                Icon(Icons.local_hospital, size: 16,
-                                    color: colorScheme.primary),
-                                const SizedBox(width: 6),
-                                Text(_vetData!['name'] ?? '',
-                                    style: theme.textTheme.bodyMedium?.copyWith(
-                                        color: colorScheme.primary,
-                                        fontWeight: FontWeight.w500)),
-                              ],
-                            ),
-                          ],
-                          if (bio.isNotEmpty) ...[
-                            const SizedBox(height: 12),
-                            Text(bio,
-                                style: theme.textTheme.bodyMedium?.copyWith(
-                                    color: colorScheme.onSurfaceVariant)),
-                          ],
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
+          SharedPetProfileCard(
+            name: name,
+            species: species,
+            breed: breed,
+            ageDisplay: ageDisplay,
+            weight: weight,
+            vetName: _vetData != null ? _vetData!['name'] as String? : null,
+            bio: bio,
+            photoPath: photoPath,
+            colorScheme: colorScheme,
+            theme: theme,
+            buildPhoto: _buildPhoto,
+            buildChip: _buildChip,
           ),
           ),
 
           const SizedBox(height: 16),
-          _buildAcceptSection(theme, colorScheme),
+          SharedPetAcceptSection(
+            isLoggedIn: ref.watch(authProvider).isLoggedIn,
+            accepting: _accepting,
+            onAccept: () async {
+              setState(() => _accepting = true);
+              try {
+                final ds = ref.read(sharingDataSourceProvider);
+                final petId = await ds.acceptShare(
+                    widget.shareCode, ref.read(authProvider).accessToken!);
+                if (!mounted) return;
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Pet added to your account!')),
+                );
+                context.go('/pet/$petId');
+              } catch (e) {
+                if (!mounted) return;
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text('Error: \\${e.toString().replaceFirst("Exception: ", "")}')),
+                );
+              } finally {
+                if (mounted) setState(() => _accepting = false);
+              }
+            },
+            theme: theme,
+            colorScheme: colorScheme,
+            promptText: 'Want to add this pet to your account?',
+            buttonText: _accepting ? 'Adding...' : l.acceptAndAdd,
+          ),
 
           if (_ownerData != null) ...[
             const SizedBox(height: 24),
@@ -230,7 +212,11 @@ class _SharedPetScreenState extends ConsumerState<SharedPetScreen> {
               ],
             ),
             const SizedBox(height: 8),
-            _buildOwnerCard(theme, colorScheme),
+            SharedPetOwnerCard(
+              ownerData: _ownerData!,
+              theme: theme,
+              colorScheme: colorScheme,
+            ),
           ],
 
           if (_vetData != null) ...[
@@ -243,7 +229,11 @@ class _SharedPetScreenState extends ConsumerState<SharedPetScreen> {
               ],
             ),
             const SizedBox(height: 8),
-            _buildVetCard(theme, colorScheme),
+            SharedPetVetCard(
+              vetData: _vetData!,
+              theme: theme,
+              colorScheme: colorScheme,
+            ),
           ],
 
           const SizedBox(height: 24),
@@ -273,7 +263,11 @@ class _SharedPetScreenState extends ConsumerState<SharedPetScreen> {
               ),
             )
           else
-            ..._healthEntries.map((e) => _buildHealthEntryCard(e, theme, colorScheme)),
+            ..._healthEntries.map((e) => SharedPetHealthEntryCard(
+                  entry: e,
+                  theme: theme,
+                  colorScheme: colorScheme,
+                )),
         ],
       ),
     );

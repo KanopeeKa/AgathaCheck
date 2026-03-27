@@ -1,6 +1,83 @@
 # PetProfileApp
 
+
 A modular Flutter application for managing pet profiles, built with clean architecture principles and feature-driven design.
+
+## Modular Structure (2024 Refactor)
+
+This codebase is now fully modularized for maintainability, testability, and scalability. Key principles:
+
+- **UI is split into small, reusable widgets** (see `lib/features/.../widgets/`)
+- **Business logic is extracted into controllers/services** (see `lib/features/.../controllers/` and `lib/features/.../services/`)
+- **Screens are thin, composed of widgets and controllers** (see `lib/features/.../screens/`)
+- **Tests are provided for all major widgets, screens, and controllers** (see `test/features/.../widgets/`, `test/features/.../screens/`, etc.)
+
+### Example Structure
+
+```
+lib/
+    features/
+        my_details/
+            controllers/
+                my_details_controller.dart
+            screens/
+                my_details_screen.dart
+            widgets/
+                profile_header_card.dart
+                change_password_form.dart
+                account_actions_section.dart
+        shared_pet/
+            controllers/
+                shared_pet_controller.dart
+            screens/
+                shared_pet_screen.dart
+            widgets/
+                shared_pet_profile_card.dart
+                shared_pet_accept_section.dart
+                shared_pet_owner_card.dart
+                shared_pet_vet_card.dart
+                shared_pet_health_entry_card.dart
+        health_dashboard/
+            controllers/
+                health_dashboard_controller.dart
+            screens/
+                health_dashboard_screen.dart
+            widgets/
+                health_dashboard_actions.dart
+    core/
+        ...
+```
+
+### Testing Structure
+
+```
+test/
+    features/
+        my_details/
+            widgets/
+                profile_header_card_test.dart
+                change_password_form_test.dart
+                account_actions_section_test.dart
+            screens/
+                my_details_screen_test.dart
+        shared_pet/
+            widgets/
+                shared_pet_profile_card_test.dart
+                shared_pet_accept_section_test.dart
+                shared_pet_owner_card_test.dart
+                shared_pet_vet_card_test.dart
+                shared_pet_health_entry_card_test.dart
+            screens/
+                shared_pet_screen_test.dart
+        health_dashboard/
+            widgets/
+                health_dashboard_actions_test.dart
+            screens/
+                health_dashboard_screen_test.dart
+```
+
+All new and refactored code is covered by widget and screen tests. Run `flutter test` to validate.
+
 
 ## Architecture
 
@@ -85,54 +162,18 @@ flutter analyze
 dart doc
 ```
 
-## Project Structure
+
+## Legacy Structure
+
+The previous structure (see below) has been replaced by the modular approach above. For legacy code, see the `pet_profile` feature as an example of the old organization.
 
 ```
 lib/
-├── main.dart                          # App entry point
-├── core/
-│   ├── theme/app_theme.dart           # Material 3 theme
-│   ├── router/app_router.dart         # GoRouter config
-│   └── utils/constants.dart           # App constants
-└── features/
-    └── pet_profile/
-        ├── pet_profile.dart           # Public API barrel file
-        ├── data/
-        │   ├── models/pet_model.dart
-        │   ├── datasources/pet_local_datasource.dart
-        │   └── repositories/pet_repository_impl.dart
-        ├── domain/
-        │   ├── entities/pet.dart
-        │   ├── repositories/pet_repository.dart
-        │   └── usecases/
-        │       ├── add_pet.dart
-        │       ├── delete_pet.dart
-        │       ├── get_all_pets.dart
-        │       └── update_pet.dart
-        └── presentation/
-            ├── providers/pet_providers.dart
-            ├── screens/
-            │   ├── pet_form_screen.dart
-            │   └── pet_list_screen.dart
-            └── widgets/pet_card.dart
-
-test/
-├── features/pet_profile/
-│   ├── data/
-│   │   ├── models/pet_model_test.dart
-│   │   └── repositories/pet_repository_impl_test.dart
-│   ├── domain/
-│   │   ├── entities/pet_test.dart
-│   │   └── usecases/
-│   │       ├── add_pet_test.dart
-│   │       ├── delete_pet_test.dart
-│   │       ├── get_all_pets_test.dart
-│   │       └── update_pet_test.dart
-│   └── presentation/
-│       └── widgets/pet_card_test.dart
-
-test_integration/
-└── pet_profile_flow_test.dart
+    features/
+        pet_profile/
+            data/
+            domain/
+            presentation/
 ```
 
 ## Features

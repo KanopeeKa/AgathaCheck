@@ -9,10 +9,11 @@ jobs:
     runs-on: ubuntu-latest
     environment: UAT
     steps:
+
       - uses: actions/checkout@v4
-      
+
       # ===== BUILD FRONTEND =====
-      - name: Setup Flutter
+      - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
           channel: stable
@@ -22,7 +23,7 @@ jobs:
         run: |
           flutter clean
           flutter pub get
-          flutter build web --release --no-wasm-dry-run
+          flutter build web --release
 
       # ===== DEPLOY FRONTEND (Flutter Web) =====
       - name: Deploy Frontend to uat.agathatrack.com
@@ -33,7 +34,6 @@ jobs:
           password: ${{ secrets.UAT_FTP_PASSWORD }}
           server-dir: ./
           local-dir: flutter_app/build/web/
-       #   dangerous-clean-slate: true
 
       # ===== DEPLOY BACKEND (Node.js) =====
       - name: Deploy Backend to uat.agathatrack.com/backend/
@@ -44,7 +44,6 @@ jobs:
           password: ${{ secrets.UAT_FTP_PASSWORD }}
           server-dir: ./backend/
           local-dir: server/
-      #     dangerous-clean-slate: true
 
       # ===== INSTALL DEPENDENCIES & RESTART NODE.JS APP =====
       # - name: Install Dependencies & Restart Node.js App

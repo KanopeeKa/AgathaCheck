@@ -15,6 +15,11 @@ import '../../../sharing/presentation/providers/sharing_providers.dart';
 import '../../domain/entities/pet.dart';
 import '../providers/pet_providers.dart';
 import '../widgets/pet_card.dart';
+import '../controllers/pet_list_controller.dart';
+import '../widgets/org_filter_chips.dart';
+import '../widgets/personal_pets_section.dart';
+import '../widgets/organization_pets_section.dart';
+import '../widgets/passed_away_pets_section.dart';
 
 /// Screen that displays the list of all pets owned by the user.
 ///
@@ -29,12 +34,13 @@ class PetListScreen extends ConsumerStatefulWidget {
   ConsumerState<PetListScreen> createState() => _PetListScreenState();
 }
 
-class _PetListScreenState extends ConsumerState<PetListScreen> {
-  String? _orgFilter;
+
+  late final PetListController _controller;
 
   @override
   void initState() {
     super.initState();
+    _controller = PetListController();
     Future.microtask(() {
       ref.read(notificationsProvider.notifier).checkDueEntries();
     });
@@ -229,239 +235,53 @@ class _PetListScreenState extends ConsumerState<PetListScreen> {
             );
           }
 
-          final orgNames = allPets
-              .where((p) => p.organizationName != null)
-              .map((p) => p.organizationName!)
-              .toSet()
-              .toList()
-            ..sort();
-
-          final filteredPets = _orgFilter == null
-              ? allPets
-              : _orgFilter == '_personal'
-                  ? allPets.where((p) => p.organizationId == null).toList()
-                  : allPets.where((p) => p.organizationName == _orgFilter).toList();
-
-          final personalActive = filteredPets.where((p) => p.organizationId == null && !p.passedAway).toList();
-          final personalPassed = filteredPets.where((p) => p.organizationId == null && p.passedAway).toList();
-
-          final orgGroups = <String, List<Pet>>{};
-          final orgPassedGroups = <String, List<Pet>>{};
-          for (final pet in filteredPets) {
-            if (pet.organizationName != null) {
-              if (pet.passedAway) {
-                orgPassedGroups.putIfAbsent(pet.organizationName!, () => []).add(pet);
-              } else {
-                orgGroups.putIfAbsent(pet.organizationName!, () => []).add(pet);
-              }
-            }
-          }
-
-          final allPassedAway = [...personalPassed];
-          for (final pets in orgPassedGroups.values) {
-            allPassedAway.addAll(pets);
-          }
+          final orgNames = _controller.getOrgNames(allPets);
+          final filteredPets = _controller.filterPets(allPets);
+          final personalActive = _controller.getPersonalActive(filteredPets);
+          final personalPassed = _controller.getPersonalPassed(filteredPets);
+          final orgGroups = _controller.getOrgGroups(filteredPets);
+          final orgPassedGroups = _controller.getOrgPassedGroups(filteredPets);
+          final allPassedAway = _controller.getAllPassedAway(personalPassed, orgPassedGroups);
 
           return ListView(
             padding: const EdgeInsets.all(16),
             children: [
               if (orgNames.isNotEmpty)
-                _OrgFilterChips(
+                OrgFilterChips(
                   orgNames: orgNames,
-                  selected: _orgFilter,
-                  onSelected: (v) => setState(() => _orgFilter = v),
+                  selected: _controller.orgFilter,
+                  onSelected: (v) => setState(() => _controller.orgFilter = v),
                   l: l,
                 ),
               _PendingSharesSection(),
               _DueEventsSection(pets: allPets),
-              if (_orgFilter == null || _orgFilter == '_personal') ...[
-                if (personalActive.isNotEmpty || (_orgFilter == null && orgGroups.isNotEmpty))
+              if (_controller.orgFilter == null || _controller.orgFilter == '_personal') ...[
+                if (personalActive.isNotEmpty || (_controller.orgFilter == null && orgGroups.isNotEmpty))
                   _SectionHeader(
                     icon: Icons.person,
                     title: l.myPets,
                     count: personalActive.length,
                   ),
-                ...personalActive.map((pet) => Padding(
-                  padding: const EdgeInsets.only(bottom: 8),
-                  child: pet.isShared
-                      ? Dismissible(
-                          key: Key('hide_${pet.id}'),
-                          direction: DismissDirection.endToStart,
-                          background: Container(
-                            alignment: Alignment.centerRight,
-                            padding: const EdgeInsets.only(right: 20),
-                            decoration: BoxDecoration(
-                              color: theme.colorScheme.surfaceContainerHighest,
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Text(l.hideSharedPet, style: TextStyle(color: theme.colorScheme.onSurfaceVariant)),
-                                const SizedBox(width: 8),
-                                Icon(Icons.visibility_off, color: theme.colorScheme.onSurfaceVariant),
-                              ],
-                            ),
-                          ),
-                          confirmDismiss: (_) async {
-                            final confirmed = await showDialog<bool>(
-                              context: context,
-                              builder: (ctx) => AlertDialog(
-                                title: Text(l.hideSharedPet),
-                                content: Text(l.hideSharedPetConfirm(pet.name)),
-                                actions: [
-                                  TextButton(onPressed: () => Navigator.pop(ctx, false), child: Text(l.cancel)),
-                                  FilledButton(onPressed: () => Navigator.pop(ctx, true), child: Text(l.hide)),
-                                ],
-                              ),
-                            );
-                            if (confirmed == true) {
-                              await ref.read(hiddenSharedPetsProvider.notifier).hideSharedPet(pet.id);
-                              if (context.mounted) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(content: Text(l.petHidden(pet.name))),
-                                );
-                              }
-                            }
-                            return false;
-                          },
-                          child: PetCard(
-                            pet: pet,
-                            onTap: () => context.go('/pet/${pet.id}'),
-                          ),
-                        )
-                      : PetCard(
-                          pet: pet,
-                          onTap: () => context.go('/pet/${pet.id}'),
-                        ),
-                )),
-                if (personalActive.isEmpty && _orgFilter == '_personal')
-                  _EmptySection(message: l.noPetsYet),
-              ],
-              for (final orgName in orgGroups.keys.toList()..sort()) ...[
-                _SectionHeader(
-                  icon: Icons.business,
-                  title: orgName,
-                  count: (orgGroups[orgName]?.length ?? 0),
+                PersonalPetsSection(
+                  personalActive: personalActive,
+                  orgFilter: _controller.orgFilter,
+                  l: l,
+                  theme: theme,
+                  ref: ref,
+                  context: context,
                 ),
-                ...orgGroups[orgName]!.map((pet) => Padding(
-                  padding: const EdgeInsets.only(bottom: 8),
-                  child: pet.isShared
-                      ? Dismissible(
-                          key: Key('hide_${pet.id}'),
-                          direction: DismissDirection.endToStart,
-                          background: Container(
-                            alignment: Alignment.centerRight,
-                            padding: const EdgeInsets.only(right: 20),
-                            decoration: BoxDecoration(
-                              color: theme.colorScheme.surfaceContainerHighest,
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Text(l.hideSharedPet, style: TextStyle(color: theme.colorScheme.onSurfaceVariant)),
-                                const SizedBox(width: 8),
-                                Icon(Icons.visibility_off, color: theme.colorScheme.onSurfaceVariant),
-                              ],
-                            ),
-                          ),
-                          confirmDismiss: (_) async {
-                            final confirmed = await showDialog<bool>(
-                              context: context,
-                              builder: (ctx) => AlertDialog(
-                                title: Text(l.hideSharedPet),
-                                content: Text(l.hideSharedPetConfirm(pet.name)),
-                                actions: [
-                                  TextButton(onPressed: () => Navigator.pop(ctx, false), child: Text(l.cancel)),
-                                  FilledButton(onPressed: () => Navigator.pop(ctx, true), child: Text(l.hide)),
-                                ],
-                              ),
-                            );
-                            if (confirmed == true) {
-                              await ref.read(hiddenSharedPetsProvider.notifier).hideSharedPet(pet.id);
-                              if (context.mounted) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(content: Text(l.petHidden(pet.name))),
-                                );
-                              }
-                            }
-                            return false;
-                          },
-                          child: PetCard(
-                            pet: pet,
-                            onTap: () => context.go('/pet/${pet.id}'),
-                          ),
-                        )
-                      : PetCard(
-                          pet: pet,
-                          onTap: () => context.go('/pet/${pet.id}'),
-                        ),
-                )),
               ],
-              if (allPassedAway.isNotEmpty)
-                Padding(
-                  padding: const EdgeInsets.only(top: 8),
-                  child: Card(
-                    elevation: 0,
-                    clipBehavior: Clip.antiAlias,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      side: BorderSide(color: theme.colorScheme.outlineVariant),
-                    ),
-                    child: ExpansionTile(
-                      key: const Key('passed_away_section'),
-                      leading: Icon(
-                        Icons.favorite,
-                        color: theme.colorScheme.onSurfaceVariant,
-                        size: 20,
-                      ),
-                      title: Text(
-                        'Rainbow Bridge',
-                        style: theme.textTheme.titleSmall?.copyWith(
-                          color: theme.colorScheme.onSurfaceVariant,
-                        ),
-                      ),
-                      trailing: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                            decoration: BoxDecoration(
-                              color: theme.colorScheme.surfaceContainerHighest,
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            child: Text(
-                              '${allPassedAway.length}',
-                              style: theme.textTheme.labelSmall?.copyWith(
-                                color: theme.colorScheme.onSurfaceVariant,
-                              ),
-                            ),
-                          ),
-                          const SizedBox(width: 4),
-                          Icon(
-                            Icons.expand_more,
-                            color: theme.colorScheme.onSurfaceVariant,
-                          ),
-                        ],
-                      ),
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.fromLTRB(12, 0, 12, 12),
-                          child: Column(
-                            children: allPassedAway.map((pet) => Padding(
-                              padding: const EdgeInsets.only(bottom: 8),
-                              child: PetCard(
-                                pet: pet,
-                                onTap: () => context.go('/pet/${pet.id}'),
-                              ),
-                            )).toList(),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
+              OrganizationPetsSection(
+                orgGroups: orgGroups,
+                l: l,
+                theme: theme,
+                ref: ref,
+                context: context,
+              ),
+              PassedAwayPetsSection(
+                allPassedAway: allPassedAway,
+                theme: theme,
+              ),
             ],
           );
         },

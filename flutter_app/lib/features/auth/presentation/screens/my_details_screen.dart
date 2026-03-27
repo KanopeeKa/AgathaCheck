@@ -16,6 +16,9 @@ import '../../../../core/widgets/app_logo_title.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../data/auth_service.dart';
 import '../providers/auth_providers.dart';
+import '../widgets/profile_header_card.dart';
+import '../widgets/change_password_form.dart';
+import '../widgets/account_actions_section.dart';
 
 class MyDetailsScreen extends ConsumerStatefulWidget {
   const MyDetailsScreen({super.key});
@@ -144,109 +147,12 @@ class _MyDetailsScreenState extends ConsumerState<MyDetailsScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                MergeSemantics(
-                  child: Semantics(
-                    label: '${user.displayName}, ${user.email}, ${user.category == 'professional_multi_pet' ? l10n.professionalMultiPet : l10n.petGuardian}',
-                    child: Card(
-                      child: Padding(
-                        padding: const EdgeInsets.all(20),
-                        child: Stack(
-                          children: [
-                            SizedBox(
-                              width: double.infinity,
-                              child: Column(
-                                children: [
-                                  CircleAvatar(
-                                    radius: 48,
-                                    backgroundColor:
-                                        theme.colorScheme.primaryContainer,
-                                      backgroundImage: (user.photoUrl != null && user.photoUrl!.isNotEmpty)
-                                        ? NetworkImage(
-                                          _resolvePhotoUrl(user.photoUrl!))
-                                        : null,
-                                      child: (user.photoUrl != null && user.photoUrl!.isNotEmpty)
-                                        ? null
-                                        : Text(
-                                          user.initials ?? '',
-                                          style: theme.textTheme.headlineMedium
-                                            ?.copyWith(
-                                          color: theme
-                                            .colorScheme.onPrimaryContainer,
-                                          ),
-                                        ),
-                                  ),
-                                  const SizedBox(height: 12),
-                                  Text(
-                                    user.displayName,
-                                    style: theme.textTheme.titleLarge
-                                        ?.copyWith(fontWeight: FontWeight.bold),
-                                    textAlign: TextAlign.center,
-                                  ),
-                                  const SizedBox(height: 4),
-                                  Text(
-                                    user.email,
-                                    style: theme.textTheme.bodySmall?.copyWith(
-                                      color: theme.colorScheme.onSurfaceVariant,
-                                    ),
-                                    textAlign: TextAlign.center,
-                                  ),
-                                  const SizedBox(height: 12),
-                                  Semantics(
-                                    label: user.category == 'professional_multi_pet'
-                                        ? l10n.categoryLabel(l10n.professionalMultiPet)
-                                        : l10n.categoryLabel(l10n.petGuardian),
-                                    child: _CategoryBadge(category: user.category ?? ''),
-                                  ),
-                                  if (user.bio != null && user.bio!.isNotEmpty) ...[
-                                    const SizedBox(height: 12),
-                                    Text(
-                                      user.bio!,
-                                      style: theme.textTheme.bodyMedium,
-                                      textAlign: TextAlign.center,
-                                    ),
-                                  ],
-                                  const SizedBox(height: 16),
-                                  Container(
-                                    padding: const EdgeInsets.all(10),
-                                    decoration: BoxDecoration(
-                                      color: theme.colorScheme.secondaryContainer.withAlpha(120),
-                                      borderRadius: BorderRadius.circular(10),
-                                    ),
-                                    child: Row(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        Icon(Icons.info_outline,
-                                            size: 16,
-                                            color: theme.colorScheme.onSecondaryContainer),
-                                        const SizedBox(width: 6),
-                                        Flexible(
-                                          child: Text(
-                                            l10n.detailsVisibleToShared,
-                                            style: theme.textTheme.bodySmall?.copyWith(
-                                              color: theme.colorScheme.onSecondaryContainer,
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            Positioned(
-                              top: 0,
-                              right: 0,
-                              child: IconButton(
-                                tooltip: l10n.editProfile,
-                                icon: const Icon(Icons.edit),
-                                onPressed: _openEditorSheet,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
+                ProfileHeaderCard(
+                  user: user,
+                  theme: theme,
+                  l10n: l10n,
+                  onEdit: _openEditorSheet,
+                  resolvePhotoUrl: _resolvePhotoUrl,
                 ),
                 const SizedBox(height: 16),
                 Card(
@@ -303,178 +209,46 @@ class _MyDetailsScreenState extends ConsumerState<MyDetailsScreen> {
                   ),
                 ),
                 const SizedBox(height: 16),
-                MergeSemantics(
-                  child: Card(
-                    child: Padding(
-                      padding: const EdgeInsets.all(20),
-                      child: Form(
-                        key: _passwordFormKey,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(l10n.changePassword,
-                                style: theme.textTheme.titleLarge),
-                            const SizedBox(height: 16),
-                            TextFormField(
-                              controller: _currentPasswordController,
-                              decoration: InputDecoration(
-                                labelText: l10n.currentPassword,
-                                prefixIcon: const Icon(Icons.lock_outlined),
-                                suffixIcon: IconButton(
-                                  tooltip: _obscureCurrent
-                                      ? l10n.showCurrentPassword
-                                      : l10n.hideCurrentPassword,
-                                  icon: Icon(_obscureCurrent
-                                      ? Icons.visibility_off
-                                      : Icons.visibility),
-                                  onPressed: () => setState(
-                                      () => _obscureCurrent = !_obscureCurrent),
-                                ),
-                              ),
-                              obscureText: _obscureCurrent,
-                              validator: (v) {
-                                if (v == null || v.isEmpty) {
-                                  return l10n.currentPasswordRequired;
-                                }
-                                return null;
-                              },
-                            ),
-                            const SizedBox(height: 16),
-                            TextFormField(
-                              controller: _newPasswordController,
-                              decoration: InputDecoration(
-                                labelText: l10n.newPassword,
-                                prefixIcon: const Icon(Icons.lock_reset),
-                                suffixIcon: IconButton(
-                                  tooltip: _obscureNew
-                                      ? l10n.showNewPassword
-                                      : l10n.hideNewPassword,
-                                  icon: Icon(_obscureNew
-                                      ? Icons.visibility_off
-                                      : Icons.visibility),
-                                  onPressed: () => setState(
-                                      () => _obscureNew = !_obscureNew),
-                                ),
-                              ),
-                              obscureText: _obscureNew,
-                              validator: (v) {
-                                if (v == null || v.isEmpty) {
-                                  return l10n.newPasswordRequired;
-                                }
-                                if (v.length < 6) {
-                                  return l10n.atLeast6Characters;
-                                }
-                                return null;
-                              },
-                            ),
-                            const SizedBox(height: 16),
-                            TextFormField(
-                              controller: _confirmPasswordController,
-                              decoration: InputDecoration(
-                                labelText: l10n.confirmNewPassword,
-                                prefixIcon: const Icon(Icons.lock_reset),
-                              ),
-                              obscureText: true,
-                              validator: (v) {
-                                if (v != _newPasswordController.text) {
-                                  return l10n.passwordsDoNotMatch;
-                                }
-                                return null;
-                              },
-                            ),
-                            if (_passwordMessage != null) ...[
-                              const SizedBox(height: 16),
-                              Container(
-                                padding: const EdgeInsets.all(12),
-                                decoration: BoxDecoration(
-                                  color: _passwordSuccess
-                                      ? Colors.green.shade50
-                                      : theme.colorScheme.errorContainer,
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                                child: Row(
-                                  children: [
-                                    Icon(
-                                      _passwordSuccess
-                                          ? Icons.check_circle
-                                          : Icons.error_outline,
-                                      color: _passwordSuccess
-                                          ? Colors.green
-                                          : theme.colorScheme.error,
-                                      size: 20,
-                                    ),
-                                    const SizedBox(width: 8),
-                                    Expanded(
-                                        child: Text(_passwordMessage!,
-                                            style: TextStyle(
-                                                color: _passwordSuccess
-                                                    ? Colors.green.shade800
-                                                    : theme.colorScheme.error))),
-                                  ],
-                                ),
-                              ),
-                            ],
-                            const SizedBox(height: 20),
-                            SizedBox(
-                              width: double.infinity,
-                              child: OutlinedButton(
-                                key: const Key('change_password_button'),
-                                onPressed:
-                                    _changingPassword ? null : _changePassword,
-                                child: _changingPassword
-                                    ? const SizedBox(
-                                        height: 20,
-                                        width: 20,
-                                        child: CircularProgressIndicator(
-                                            strokeWidth: 2))
-                                    : Text(l10n.changePassword),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
+                ChangePasswordForm(
+                  formKey: _passwordFormKey,
+                  currentPasswordController: _currentPasswordController,
+                  newPasswordController: _newPasswordController,
+                  confirmPasswordController: _confirmPasswordController,
+                  obscureCurrent: _obscureCurrent,
+                  obscureNew: _obscureNew,
+                  changingPassword: _changingPassword,
+                  passwordMessage: _passwordMessage,
+                  passwordSuccess: _passwordSuccess,
+                  onChangePassword: _changePassword,
+                  onToggleObscureCurrent: () => setState(() => _obscureCurrent = !_obscureCurrent),
+                  onToggleObscureNew: () => setState(() => _obscureNew = !_obscureNew),
+                  l10nChangePassword: l10n.changePassword,
+                  l10nCurrentPassword: l10n.currentPassword,
+                  l10nShowCurrentPassword: l10n.showCurrentPassword,
+                  l10nHideCurrentPassword: l10n.hideCurrentPassword,
+                  l10nCurrentPasswordRequired: l10n.currentPasswordRequired,
+                  l10nNewPassword: l10n.newPassword,
+                  l10nShowNewPassword: l10n.showNewPassword,
+                  l10nHideNewPassword: l10n.hideNewPassword,
+                  l10nNewPasswordRequired: l10n.newPasswordRequired,
+                  l10nAtLeast6Characters: l10n.atLeast6Characters,
+                  l10nConfirmNewPassword: l10n.confirmNewPassword,
+                  l10nPasswordsDoNotMatch: l10n.passwordsDoNotMatch,
                 ),
                 const SizedBox(height: 16),
-                Card(
-                  child: Column(
-                    children: [
-                      ListTile(
-                        leading: Icon(Icons.info_outline, color: theme.colorScheme.primary),
-                        title: Text(l10n.aboutUs),
-                        trailing: const Icon(Icons.chevron_right),
-                        onTap: () => context.push('/about'),
-                      ),
-                      const Divider(height: 1),
-                      ListTile(
-                        leading: Icon(Icons.download, color: theme.colorScheme.primary),
-                        title: Text(l10n.exportMyData),
-                        subtitle: Text(l10n.exportMyDataSubtitle),
-                        trailing: const Icon(Icons.chevron_right),
-                        onTap: () => _exportData(context),
-                      ),
-                      const Divider(height: 1),
-                      ListTile(
-                        leading: Icon(Icons.cookie_outlined, color: theme.colorScheme.primary),
-                        title: Text(l10n.consentSettings),
-                        subtitle: Text(l10n.consentManagePreferences),
-                        trailing: const Icon(Icons.chevron_right),
-                        onTap: () => context.push('/consent-settings'),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 16),
-                Card(
-                  color: theme.colorScheme.errorContainer.withAlpha(80),
-                  child: ListTile(
-                    leading: Icon(Icons.delete_forever, color: theme.colorScheme.error),
-                    title: Text(l10n.deleteAccount, style: TextStyle(color: theme.colorScheme.error)),
-                    subtitle: Text(l10n.deleteAccountSubtitle),
-                    trailing: Icon(Icons.chevron_right, color: theme.colorScheme.error),
-                    onTap: () => _showDeleteAccountDialog(context),
-                  ),
+                AccountActionsSection(
+                  theme: theme,
+                  l10nAboutUs: l10n.aboutUs,
+                  l10nExportMyData: l10n.exportMyData,
+                  l10nExportMyDataSubtitle: l10n.exportMyDataSubtitle,
+                  l10nConsentSettings: l10n.consentSettings,
+                  l10nConsentManagePreferences: l10n.consentManagePreferences,
+                  l10nDeleteAccount: l10n.deleteAccount,
+                  l10nDeleteAccountSubtitle: l10n.deleteAccountSubtitle,
+                  onAbout: () => context.push('/about'),
+                  onExport: () => _exportData(context),
+                  onConsent: () => context.push('/consent-settings'),
+                  onDelete: () => _showDeleteAccountDialog(context),
                 ),
                 const SizedBox(height: 32),
               ],
