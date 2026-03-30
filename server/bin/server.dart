@@ -8,6 +8,11 @@ import '../lib/routes.dart';
 import '../lib/auth_routes.dart' as auth;
 import '../lib/sharing_routes.dart' as sharing;
 import '../lib/vet_routes.dart' as vets;
+import '../lib/health_routes.dart' as health;
+import '../lib/health_issue_routes.dart' as healthIssues;
+import '../lib/notification_routes.dart' as notifications;
+import '../lib/organization_routes.dart' as orgs;
+import '../lib/weight_routes.dart' as weight;
 
 void main() async {
   await initPool();
@@ -16,6 +21,11 @@ void main() async {
   final authRouter = auth.authRoutes(pool);
   final shareRouter = sharing.sharingRoutes(pool);
   final vetRouter = vets.vetRoutes(pool);
+  final healthRouter = health.healthRoutes(pool);
+  final healthIssueRouter = healthIssues.healthIssueRoutes(pool);
+  final notificationRouter = notifications.notificationRoutes(pool);
+  final orgRouter = orgs.organizationRoutes(pool);
+  final weightRouter = weight.weightRoutes(pool);
 
   final topRouter = Router();
   topRouter.mount('/api/auth/', authRouter.call);
@@ -24,6 +34,16 @@ void main() async {
   topRouter.mount('/backend/api/share/', shareRouter.call);
   topRouter.mount('/api/vets/', vetRouter.call);
   topRouter.mount('/backend/api/vets/', vetRouter.call);
+  topRouter.mount('/api/health-entries/', healthRouter.call);
+  topRouter.mount('/backend/api/health-entries/', healthRouter.call);
+  topRouter.mount('/api/health-issues/', healthIssueRouter.call);
+  topRouter.mount('/backend/api/health-issues/', healthIssueRouter.call);
+  topRouter.mount('/api/notifications/', notificationRouter.call);
+  topRouter.mount('/backend/api/notifications/', notificationRouter.call);
+  topRouter.mount('/api/organizations/', orgRouter.call);
+  topRouter.mount('/backend/api/organizations/', orgRouter.call);
+  topRouter.mount('/api/weight-entries/', weightRouter.call);
+  topRouter.mount('/backend/api/weight-entries/', weightRouter.call);
   topRouter.mount('/api/', petRouter.call);
   topRouter.mount('/backend/api/', petRouter.call);
 
@@ -52,9 +72,32 @@ void main() async {
     };
   }
 
+  Middleware normalizeTrailingSlash() {
+    final mountedPrefixes = {
+      'api/health-entries', 'api/health-issues', 'api/notifications',
+      'api/organizations', 'api/weight-entries', 'api/auth', 'api/share',
+      'api/vets', 'backend/api/health-entries', 'backend/api/health-issues',
+      'backend/api/notifications', 'backend/api/organizations',
+      'backend/api/weight-entries', 'backend/api/auth', 'backend/api/share',
+      'backend/api/vets',
+    };
+    return (Handler innerHandler) {
+      return (Request request) {
+        final path = request.url.path;
+        if (mountedPrefixes.contains(path)) {
+          final newUri = request.requestedUri.replace(path: '${request.requestedUri.path}/');
+          final newRequest = Request(request.method, newUri, headers: request.headers, body: request.read(), context: request.context);
+          return innerHandler(newRequest);
+        }
+        return innerHandler(request);
+      };
+    };
+  }
+
   final handler = const Pipeline()
       .addMiddleware(corsHeaders())
       .addMiddleware(allowIframe())
+      .addMiddleware(normalizeTrailingSlash())
       .addHandler((Request request) async {
     final path = request.url.path;
     if (path.startsWith('api/') || path.startsWith('backend/')) {

@@ -14,8 +14,15 @@ Agatha is a modular Flutter application for comprehensive pet management, enabli
 - `server/` — Dual backend: Dart shelf (primary/dev) and Node.js Express (alternative)
   - `server/bin/server.dart` — Dart entry point (shelf server on PORT env var, serves Flutter web + API)
   - `server/bin/server.js` — Node.js entry point (Express server with same API surface)
-  - `server/lib/routes.dart` — Dart pet route handlers + DB pool init
+  - `server/lib/routes.dart` — Dart pet + vet route handlers + DB pool init
   - `server/lib/auth_routes.dart` — Dart auth route handlers (JWT, bcrypt, password reset, GDPR)
+  - `server/lib/health_routes.dart` — Dart health entries CRUD (with history, photos, mark-taken)
+  - `server/lib/health_issue_routes.dart` — Dart health issues CRUD
+  - `server/lib/notification_routes.dart` — Dart notification routes (list, unread count, mark read, preferences)
+  - `server/lib/organization_routes.dart` — Dart organization routes (CRUD, members, invites, org pets)
+  - `server/lib/weight_routes.dart` — Dart weight entries CRUD
+  - `server/lib/sharing_routes.dart` — Dart sharing routes
+  - `server/lib/vet_routes.dart` — Dart standalone vet routes
   - `server/routes/*.js` — Node.js/Express route files (full implementation matching Dart server)
   - `server/pubspec.yaml` — Server Dart dependencies (shelf, postgres, uuid, dart_jsonwebtoken, dbcrypt)
   - `server/package.json` — Server Node.js dependencies (express, pg, bcrypt, jsonwebtoken)
