@@ -79,6 +79,20 @@ Router apiHandler() {
 
 const _jsonHeaders = {'Content-Type': 'application/json'};
 
+const _petColorPalette = [
+  0xFF7E57C2, 0xFF26A69A, 0xFFEF5350, 0xFF42A5F5, 0xFFFF7043,
+  0xFF66BB6A, 0xFFAB47BC, 0xFFFFCA28, 0xFF26C6DA, 0xFFEC407A,
+  0xFF8D6E63, 0xFF5C6BC0, 0xFF9CCC65, 0xFFFF8A65, 0xFF78909C,
+];
+
+int? _resolveColorValue(dynamic raw) {
+  if (raw == null) return null;
+  final v = raw is int ? raw : int.tryParse(raw.toString());
+  if (v == null) return null;
+  if (v < _petColorPalette.length) return _petColorPalette[v];
+  return v;
+}
+
 Map<String, dynamic> _petRowToMap(ResultRow row) {
   final c = row.toColumnMap();
   return {
@@ -100,12 +114,38 @@ Map<String, dynamic> _petRowToMap(ResultRow row) {
     'chipDismissed': c['chip_dismissed'] ?? false,
     'photoPath': c['photo_path'],
     'vetId': c['vet_id']?.toString(),
-    'colorValue': c['color_index'],
+    'colorValue': _resolveColorValue(c['color_index']),
     'passedAway': c['passed_away'] ?? false,
     'organization_id': c['organization_id'],
     'created_at': c['created_at']?.toString(),
     'updated_at': c['updated_at']?.toString(),
   };
+}
+
+Future<void> _autoAssignColors(List<Map<String, dynamic>> pets) async {
+  final usedColors = <int>{};
+  for (final p in pets) {
+    if (p['colorValue'] != null) usedColors.add(p['colorValue'] as int);
+  }
+  for (final p in pets) {
+    if (p['colorValue'] == null) {
+      int color = _petColorPalette[0];
+      for (final c in _petColorPalette) {
+        if (!usedColors.contains(c)) {
+          color = c;
+          break;
+        }
+      }
+      usedColors.add(color);
+      p['colorValue'] = color;
+      try {
+        await _pool.execute(
+          Sql.named('UPDATE pets SET color_index = @color WHERE id = @id'),
+          parameters: {'color': color, 'id': p['id']},
+        );
+      } catch (_) {}
+    }
+  }
 }
 
 Future<Response> _getAllPets(Request request) async {
@@ -119,6 +159,7 @@ Future<Response> _getAllPets(Request request) async {
       parameters: {'userId': userId},
     );
     final pets = results.map(_petRowToMap).toList();
+    await _autoAssignColors(pets);
     return Response.ok(jsonEncode(pets), headers: _jsonHeaders);
   } catch (e) {
     return Response.internalServerError(body: jsonEncode({'error': 'Error fetching all pets: $e'}), headers: _jsonHeaders);
@@ -136,6 +177,7 @@ Future<Response> _getPets(Request request) async {
       parameters: {'userId': userId},
     );
     final pets = results.map(_petRowToMap).toList();
+    await _autoAssignColors(pets);
     return Response.ok(jsonEncode(pets), headers: _jsonHeaders);
   } catch (e) {
     return Response.internalServerError(body: jsonEncode({'error': 'Error fetching pets: $e'}), headers: _jsonHeaders);
