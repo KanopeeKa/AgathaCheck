@@ -139,12 +139,14 @@ class PetListNotifier extends AsyncNotifier<List<Pet>> {
     );
     await ref.read(addPetUseCaseProvider).call(pet);
     ref.invalidateSelf();
+    ref.invalidate(allPetsIncludingOrgProvider);
     return pet.id;
   }
 
   Future<void> updatePet(Pet pet) async {
     await ref.read(updatePetUseCaseProvider).call(pet);
     ref.invalidateSelf();
+    ref.invalidate(allPetsIncludingOrgProvider);
   }
 
   Future<void> deletePet(String id) async {
@@ -162,6 +164,7 @@ class PetListNotifier extends AsyncNotifier<List<Pet>> {
     } catch (_) {}
     await ref.read(deletePetUseCaseProvider).call(id);
     ref.invalidateSelf();
+    ref.invalidate(allPetsIncludingOrgProvider);
   }
 
   Future<bool> markPassedAway(String petId) async {
@@ -195,6 +198,7 @@ class PetListNotifier extends AsyncNotifier<List<Pet>> {
     } catch (_) {}
 
     ref.invalidateSelf();
+    ref.invalidate(allPetsIncludingOrgProvider);
     return hasSharedUsers;
   }
 }
