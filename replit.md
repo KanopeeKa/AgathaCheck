@@ -10,8 +10,19 @@ Agatha is a modular Flutter application for comprehensive pet management, enabli
 - Production-ready CI setup
 - EU GDPR compliance
 
+## Project Structure
+- `server/` — Dart backend using shelf + shelf_router + postgres v3 API
+  - `server/bin/server.dart` — Entry point (shelf server on PORT env var)
+  - `server/lib/routes.dart` — All API route handlers + DB pool init
+  - `server/routes/*.js` — Node.js/Express route files (alternative implementation)
+  - `server/pubspec.yaml` — Server Dart dependencies (shelf, postgres, uuid)
+  - `server/package.json` — Server Node.js dependencies (express, pg, bcrypt, jsonwebtoken)
+- `flutter_app/` — Flutter frontend
+- `db/migrations/` — SQL migration files
+- `regulatory/` — GDPR documentation
+
 ## System Architecture
-The application employs a clean architecture, separating concerns into data, domain, and presentation layers within feature modules. The UI adheres to Material 3 design principles with a deep purple/violet theme and uses GoRouter for navigation. Database connection is configured via `DATABASE_URL` environment variable parsed in `_parseDbUrl()`, with schema managed through migration files.
+The application employs a clean architecture, separating concerns into data, domain, and presentation layers within feature modules. The UI adheres to Material 3 design principles with a deep purple/violet theme and uses GoRouter for navigation. Database connection is configured via `DATABASE_URL` environment variable parsed in `initPool()` in `server/lib/routes.dart`, with schema managed through migration files. The Dart server uses postgres v3 API (`Pool`, `Sql.named()`, `ResultRow`).
 
 **Key Technical Implementations & Features:**
 - **Pet Profile Management**: CRUD operations for pet profiles, linking vets and health entries. Pets are assigned a unique color from a 15-color palette for visual identification across the UI. Age is dynamically calculated from the date of birth. Server-side storage is via a `pets` PostgreSQL table, with `SharedPreferences` acting as a local cache. Pet deletion cascades to all associated server-side data.
@@ -40,8 +51,9 @@ The application employs a clean architecture, separating concerns into data, dom
 - **BDD Tests**: Gherkin `.feature` files under `flutter_app/test/bdd/features/` covering all features: authentication, pet profiles, health tracking, weight tracking, vet management, sharing, notifications, subscriptions, help/FAQ, plus organisation management, pet management, timeline, and adoption.
 
 ## Database
-- **Connection**: `DATABASE_URL` environment variable (PostgreSQL connection string). Parsed via `_parseDbUrl()` in `bin/server.dart`. Falls back to individual `PG*` vars if URL host is empty.
+- **Connection**: `DATABASE_URL` environment variable (PostgreSQL connection string). Parsed via `initPool()` in `server/lib/routes.dart`. Falls back to individual `PG*` vars if URL host is empty.
 - **Migration runner**: `dart run bin/migrate.dart [up|down]` — applies SQL files from `db/migrations/`
+- **Workflow**: `cd /home/runner/workspace/server && PORT=5000 dart run bin/server.dart`
 - **Schema**: 19 tables — users, pets, vets (with user_id), health_entries, health_history, health_issues, health_issue_events, health_event_photos, weight_entries, notifications, notification_preferences, pet_access, shared_pets, organizations, organization_users, archived_pets, family_events, refresh_tokens, password_reset_tokens, _migrations
 - **Key fixes applied**: `vets.user_id` added for data isolation; `pets.vet_id` normalised from VARCHAR to INTEGER; performance indexes added
 

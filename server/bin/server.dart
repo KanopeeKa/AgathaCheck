@@ -6,15 +6,14 @@ import 'package:shelf_cors_headers/shelf_cors_headers.dart';
 import '../lib/routes.dart';
 
 void main() async {
-  // Create the router
+  await initPool();
+
   final router = apiHandler();
 
-  // Add CORS middleware
   final handler = const Pipeline()
       .addMiddleware(corsHeaders())
-      .addHandler(router);
+      .addHandler(router.call);
 
-  // Start the server
   final port = int.parse(Platform.environment['PORT'] ?? '8080');
   final server = await shelf_io.serve(handler, InternetAddress.anyIPv4, port);
 
