@@ -5,11 +5,17 @@ import 'package:shelf_router/shelf_router.dart';
 import 'package:shelf_cors_headers/shelf_cors_headers.dart';
 import 'package:shelf_static/shelf_static.dart';
 import '../lib/routes.dart';
+import '../lib/auth_routes.dart' as auth;
 
 void main() async {
   await initPool();
 
-  final router = apiHandler();
+  final petRouter = apiHandler();
+  final authRouter = auth.authRoutes(pool);
+
+  final topRouter = Router();
+  topRouter.mount('/api/auth/', authRouter.call);
+  topRouter.mount('/backend/api/auth/', authRouter.call);
 
   final webDir = Platform.environment['FLUTTER_WEB_DIR'] ??
       '${Directory.current.parent.path}/flutter_app/build/web';
@@ -41,8 +47,19 @@ void main() async {
       .addMiddleware(allowIframe())
       .addHandler((Request request) async {
     final path = request.url.path;
+    if (path.startsWith('api/auth/') || path.startsWith('backend/api/auth/')) {
+      return topRouter.call(request);
+    }
     if (path.startsWith('api/') || path.startsWith('backend/')) {
-      return router.call(request);
+      return petRouter.call(request);
+    }
+    if (path.startsWith('uploads/')) {
+      final file = File(path);
+      if (file.existsSync()) {
+        return Response.ok(file.readAsBytesSync(),
+            headers: {'Content-Type': 'image/jpeg'});
+      }
+      return Response.notFound('File not found');
     }
     return fallbackHandler(request);
   });

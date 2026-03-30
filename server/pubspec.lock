@@ -9,6 +9,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "88.0.0"
+  adaptive_number:
+    dependency: transitive
+    description:
+      name: adaptive_number
+      sha256: "3a567544e9b5c9c803006f51140ad544aedc79604fd4f3f2c1380003f97c1d77"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.0"
   analyzer:
     dependency: transitive
     description:
@@ -113,6 +121,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.0.4"
+  clock:
+    dependency: transitive
+    description:
+      name: clock
+      sha256: fddb70d9b5277016c77a80201021d40a2247104d9f4aa7bab7157b7e3f05b84b
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.1.2"
   code_builder:
     dependency: transitive
     description:
@@ -145,6 +161,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.0.7"
+  dart_jsonwebtoken:
+    dependency: "direct main"
+    description:
+      name: dart_jsonwebtoken
+      sha256: "00a0812d2aeaeb0d30bcbc4dd3cee57971dbc0ab2216adf4f0247f37793f15ef"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.17.0"
   dart_style:
     dependency: transitive
     description:
@@ -153,6 +177,22 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.1.2"
+  dbcrypt:
+    dependency: "direct main"
+    description:
+      name: dbcrypt
+      sha256: b32a786486509ddc31b1fa97932a2fc9a3838bbed5d82e43bd636604c96b031e
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.0.0"
+  ed25519_edwards:
+    dependency: transitive
+    description:
+      name: ed25519_edwards
+      sha256: "6ce0112d131327ec6d42beede1e5dfd526069b18ad45dcf654f15074ad9276cd"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.3.1"
   file:
     dependency: transitive
     description:
@@ -217,6 +257,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.0.5"
+  js:
+    dependency: transitive
+    description:
+      name: js
+      sha256: "53385261521cc4a0c4658fd0ad07a7d14591cf8fc33abbceae306ddb974888dc"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.7.2"
   json_annotation:
     dependency: transitive
     description:
@@ -250,13 +298,13 @@ packages:
     source: hosted
     version: "1.18.2"
   mime:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: mime
-      sha256: "41a20518f0cb1256669420fdba0cd90d21561e560ac240f26ef8322e45bb7ed6"
+      sha256: "801fd0b26f14a4a58ccb09d5892c3fbdeff209594300a542492cf13fba9d247a"
       url: "https://pub.dev"
     source: hosted
-    version: "2.0.0"
+    version: "1.0.6"
   package_config:
     dependency: transitive
     description:
@@ -273,6 +321,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.9.1"
+  pointycastle:
+    dependency: transitive
+    description:
+      name: pointycastle
+      sha256: "4be0097fcf3fd3e8449e53730c631200ebc7b88016acecab2b0da2f0149222fe"
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.9.1"
   pool:
     dependency: transitive
     description:

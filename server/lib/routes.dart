@@ -8,6 +8,7 @@ import 'package:uuid/uuid.dart';
 final _uuid = Uuid();
 
 late Pool _pool;
+Pool get pool => _pool;
 
 Future<void> initPool() async {
   final databaseUrl = Platform.environment['DATABASE_URL'] ??
