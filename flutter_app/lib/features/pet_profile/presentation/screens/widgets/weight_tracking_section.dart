@@ -236,7 +236,7 @@ class WeightTrackingSection extends ConsumerWidget {
                     final weightInKg = convertToKg(inputWeight, unit);
 
                     final entry = WeightEntry(
-                      id: 0,
+                      id: '',
                       petId: petId,
                       date: selectedDate,
                       weight: weightInKg,

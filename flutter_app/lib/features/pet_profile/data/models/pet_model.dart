@@ -52,7 +52,7 @@ class PetModel {
       colorValue: json['colorValue'] as int?,
       passedAway: json['passedAway'] == true,
       isShared: json['is_shared'] == true,
-      organizationId: json['organization_id'] != null ? int.tryParse(json['organization_id'].toString()) : null,
+      organizationId: json['organization_id']?.toString(),
       organizationName: json['organization_name'] as String?,
     );
   }
@@ -106,7 +106,7 @@ class PetModel {
   final int? colorValue;
   final bool passedAway;
   final bool isShared;
-  final int? organizationId;
+  final String? organizationId;
   final String? organizationName;
 
   Map<String, dynamic> toJson() {

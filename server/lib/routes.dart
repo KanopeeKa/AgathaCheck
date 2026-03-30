@@ -370,6 +370,9 @@ Map<String, dynamic> _vetRowToMap(ResultRow row) {
     'clinic': c['clinic'],
     'phone': c['phone'],
     'email': c['email'],
+    'website': c['website'] ?? '',
+    'address': c['address'] ?? '',
+    'notes': c['notes'] ?? '',
     'created_at': c['created_at']?.toString(),
     'updated_at': c['updated_at']?.toString(),
   };
@@ -418,7 +421,7 @@ Future<Response> _createVet(Request request) async {
     final id = _uuid.v4();
     final results = await _pool.execute(
       Sql.named(
-          'INSERT INTO vets (id, user_id, name, clinic, phone, email) VALUES (@id, @userId, @name, @clinic, @phone, @email) RETURNING *'),
+          'INSERT INTO vets (id, user_id, name, clinic, phone, email, website, address, notes) VALUES (@id, @userId, @name, @clinic, @phone, @email, @website, @address, @notes) RETURNING *'),
       parameters: {
         'id': id,
         'userId': userId,
@@ -426,6 +429,9 @@ Future<Response> _createVet(Request request) async {
         'clinic': body['clinic'],
         'phone': body['phone'],
         'email': body['email'],
+        'website': body['website'] ?? '',
+        'address': body['address'] ?? '',
+        'notes': body['notes'] ?? '',
       },
     );
     return Response(201, body: jsonEncode(_vetRowToMap(results.first)), headers: _jsonHeaders);
@@ -443,12 +449,15 @@ Future<Response> _updateVet(Request request, String id) async {
     final body = jsonDecode(await request.readAsString());
     final results = await _pool.execute(
       Sql.named(
-          'UPDATE vets SET name = @name, clinic = @clinic, phone = @phone, email = @email, updated_at = NOW() WHERE id = @id AND user_id = @userId RETURNING *'),
+          'UPDATE vets SET name = @name, clinic = @clinic, phone = @phone, email = @email, website = @website, address = @address, notes = @notes, updated_at = NOW() WHERE id = @id AND user_id = @userId RETURNING *'),
       parameters: {
         'name': body['name'],
         'clinic': body['clinic'],
         'phone': body['phone'],
         'email': body['email'],
+        'website': body['website'] ?? '',
+        'address': body['address'] ?? '',
+        'notes': body['notes'] ?? '',
         'id': id,
         'userId': userId,
       },

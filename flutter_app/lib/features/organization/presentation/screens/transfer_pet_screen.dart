@@ -13,7 +13,7 @@ class TransferPetScreen extends ConsumerStatefulWidget {
     required this.petId,
   });
 
-  final int orgId;
+  final String orgId;
   final String petId;
 
   @override

@@ -40,7 +40,7 @@ class OrganizationRemoteDataSource {
         .toList();
   }
 
-  Future<OrganizationModel> getOrganization(int id, String token) async {
+  Future<OrganizationModel> getOrganization(String id, String token) async {
     final response = await _client.get(
       Uri.parse('$baseUrl/api/organizations/$id'),
       headers: _headers(token),
@@ -69,7 +69,7 @@ class OrganizationRemoteDataSource {
   }
 
   Future<OrganizationModel> updateOrganization(
-      int id, Map<String, dynamic> orgJson, String token) async {
+      String id, Map<String, dynamic> orgJson, String token) async {
     final response = await _client.put(
       Uri.parse('$baseUrl/api/organizations/$id'),
       headers: _headers(token),
@@ -83,7 +83,7 @@ class OrganizationRemoteDataSource {
         json.decode(response.body) as Map<String, dynamic>);
   }
 
-  Future<void> deleteOrganization(int id, String token) async {
+  Future<void> deleteOrganization(String id, String token) async {
     final response = await _client.delete(
       Uri.parse('$baseUrl/api/organizations/$id'),
       headers: _headers(token),
@@ -95,7 +95,7 @@ class OrganizationRemoteDataSource {
   }
 
   Future<OrganizationModel> uploadPhoto(
-      int id, Uint8List bytes, String filename, String token) async {
+      String id, Uint8List bytes, String filename, String token) async {
     final uri = Uri.parse('$baseUrl/api/organizations/$id/photo');
     final request = http.MultipartRequest('POST', uri)
       ..headers['Authorization'] = 'Bearer $token'
@@ -115,7 +115,7 @@ class OrganizationRemoteDataSource {
   }
 
   Future<List<OrganizationMemberModel>> getMembers(
-      int orgId, String token) async {
+      String orgId, String token) async {
     final response = await _client.get(
       Uri.parse('$baseUrl/api/organizations/$orgId/members'),
       headers: _headers(token),
@@ -130,7 +130,7 @@ class OrganizationRemoteDataSource {
         .toList();
   }
 
-  Future<String> inviteMember(int orgId, String token) async {
+  Future<String> inviteMember(String orgId, String token) async {
     final response = await _client.post(
       Uri.parse('$baseUrl/api/organizations/$orgId/invite'),
       headers: _headers(token),
@@ -144,7 +144,7 @@ class OrganizationRemoteDataSource {
     return data['invite_code']?.toString() ?? '';
   }
 
-  Future<Map<String, dynamic>> inviteByEmail(int orgId, String email, String role, String token) async {
+  Future<Map<String, dynamic>> inviteByEmail(String orgId, String email, String role, String token) async {
     final response = await _client.post(
       Uri.parse('$baseUrl/api/organizations/$orgId/invite'),
       headers: _headers(token),
@@ -169,7 +169,7 @@ class OrganizationRemoteDataSource {
     return list.cast<Map<String, dynamic>>();
   }
 
-  Future<Map<String, dynamic>> acceptInvite(int inviteId, String token) async {
+  Future<Map<String, dynamic>> acceptInvite(String inviteId, String token) async {
     final response = await _client.post(
       Uri.parse('$baseUrl/api/organizations/invites/$inviteId/accept'),
       headers: _headers(token),
@@ -181,7 +181,7 @@ class OrganizationRemoteDataSource {
     return data;
   }
 
-  Future<void> declineInvite(int inviteId, String token) async {
+  Future<void> declineInvite(String inviteId, String token) async {
     final response = await _client.post(
       Uri.parse('$baseUrl/api/organizations/invites/$inviteId/decline'),
       headers: _headers(token),
@@ -204,7 +204,7 @@ class OrganizationRemoteDataSource {
   }
 
   Future<void> updateMemberRole(
-      int orgId, int userId, String role, String token) async {
+      String orgId, String userId, String role, String token) async {
     final response = await _client.put(
       Uri.parse('$baseUrl/api/organizations/$orgId/members/$userId/role'),
       headers: _headers(token),
@@ -216,7 +216,7 @@ class OrganizationRemoteDataSource {
     }
   }
 
-  Future<void> removeMember(int orgId, int userId, String token) async {
+  Future<void> removeMember(String orgId, String userId, String token) async {
     final response = await _client.delete(
       Uri.parse('$baseUrl/api/organizations/$orgId/members/$userId'),
       headers: _headers(token),
@@ -227,7 +227,7 @@ class OrganizationRemoteDataSource {
     }
   }
 
-  Future<void> leaveOrganization(int orgId, String token) async {
+  Future<void> leaveOrganization(String orgId, String token) async {
     final response = await _client.delete(
       Uri.parse('$baseUrl/api/organizations/$orgId/members/me'),
       headers: _authOnly(token),
@@ -239,7 +239,7 @@ class OrganizationRemoteDataSource {
   }
 
   Future<List<Map<String, dynamic>>> getOrganizationPets(
-      int orgId, String token) async {
+      String orgId, String token) async {
     final response = await _client.get(
       Uri.parse('$baseUrl/api/organizations/$orgId/pets'),
       headers: _headers(token),
@@ -253,7 +253,7 @@ class OrganizationRemoteDataSource {
   }
 
   Future<Map<String, dynamic>> createOrganizationPet(
-      int orgId, Map<String, dynamic> petJson, String token) async {
+      String orgId, Map<String, dynamic> petJson, String token) async {
     final response = await _client.post(
       Uri.parse('$baseUrl/api/organizations/$orgId/pets'),
       headers: _headers(token),
@@ -267,7 +267,7 @@ class OrganizationRemoteDataSource {
   }
 
   Future<void> transferPetToUser(
-      int orgId, String petId, {
+      String orgId, String petId, {
       required String recipientEmail,
       String transferType = 'adoption',
       String notes = '',
@@ -289,7 +289,7 @@ class OrganizationRemoteDataSource {
   }
 
   Future<void> transferPetToOrg(
-      String petId, int orgId, {
+      String petId, String orgId, {
       String transferType = 'transfer',
       String notes = '',
       required String token,
@@ -310,7 +310,7 @@ class OrganizationRemoteDataSource {
   }
 
   Future<List<ArchivedPetModel>> getOrganizationArchivedPets(
-      int orgId, String token) async {
+      String orgId, String token) async {
     final response = await _client.get(
       Uri.parse('$baseUrl/api/organizations/$orgId/archived'),
       headers: _headers(token),
@@ -366,7 +366,7 @@ class OrganizationRemoteDataSource {
     return json.decode(response.body) as Map<String, dynamic>;
   }
 
-  Future<void> updateFamilyEvent(String token, String petId, int eventId, Map<String, dynamic> body) async {
+  Future<void> updateFamilyEvent(String token, String petId, String eventId, Map<String, dynamic> body) async {
     final response = await _client.put(
       Uri.parse('$baseUrl/api/pets/$petId/family-events/$eventId'),
       headers: _headers(token),
@@ -378,7 +378,7 @@ class OrganizationRemoteDataSource {
     }
   }
 
-  Future<void> deleteFamilyEvent(String token, String petId, int eventId) async {
+  Future<void> deleteFamilyEvent(String token, String petId, String eventId) async {
     final response = await _client.delete(
       Uri.parse('$baseUrl/api/pets/$petId/family-events/$eventId'),
       headers: _headers(token),

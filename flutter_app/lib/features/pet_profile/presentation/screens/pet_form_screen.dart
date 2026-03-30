@@ -37,7 +37,7 @@ class PetFormScreen extends ConsumerStatefulWidget {
   const PetFormScreen({super.key, this.petId, this.initialOrgId});
 
   final String? petId;
-  final int? initialOrgId;
+  final String? initialOrgId;
 
   @override
   ConsumerState<PetFormScreen> createState() => _PetFormScreenState();
@@ -59,7 +59,7 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
   String _selectedSpecies = '';
   String? _selectedGender;
   String? _photoBase64;
-  int? _selectedOrgId;
+  String? _selectedOrgId;
   String? _selectedVetId;
   int? _existingColorValue;
   DateTime? _dateOfBirth;

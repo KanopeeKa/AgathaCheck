@@ -104,7 +104,7 @@ class PetListNotifier extends AsyncNotifier<List<Pet>> {
     bool chipDismissed = false,
     String? photoPath,
     String? vetId,
-    int? organizationId,
+    String? organizationId,
   }) async {
     final existing = state.valueOrNull ?? [];
     final usedColors = existing

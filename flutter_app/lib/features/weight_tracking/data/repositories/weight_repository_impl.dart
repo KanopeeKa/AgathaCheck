@@ -24,7 +24,7 @@ class WeightRepositoryImpl implements WeightRepository {
   }
 
   @override
-  Future<void> deleteEntry(int id, String token) {
+  Future<void> deleteEntry(String id, String token) {
     return _dataSource.deleteEntry(id, token);
   }
 

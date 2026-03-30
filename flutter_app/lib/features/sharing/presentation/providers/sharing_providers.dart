@@ -60,7 +60,7 @@ class PendingSharesNotifier extends AsyncNotifier<List<PendingShare>> {
     return rawList.map((m) => PendingShare.fromJson(m)).toList();
   }
 
-  Future<void> acceptShare(String petId, {int? organizationId}) async {
+  Future<void> acceptShare(String petId, {String? organizationId}) async {
     final token = await ref.read(authProvider.notifier).getValidAccessToken();
     if (token == null) return;
     final ds = ref.read(sharingDataSourceProvider);
@@ -87,7 +87,7 @@ class HiddenSharedPet {
   final String name;
   final String species;
   final String photoUrl;
-  final int? organizationId;
+  final String? organizationId;
   final String? organizationName;
 
   const HiddenSharedPet({
@@ -105,7 +105,7 @@ class HiddenSharedPet {
       name: json['name']?.toString() ?? '',
       species: json['species']?.toString() ?? '',
       photoUrl: (json['photo_url'] ?? json['photo_path'] ?? '').toString(),
-      organizationId: int.tryParse(json['organization_id']?.toString() ?? ''),
+      organizationId: json['organization_id']?.toString(),
       organizationName: json['organization_name']?.toString(),
     );
   }

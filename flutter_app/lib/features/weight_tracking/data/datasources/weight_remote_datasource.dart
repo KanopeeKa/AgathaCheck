@@ -8,7 +8,7 @@ abstract class WeightRemoteDataSource {
   Future<List<WeightEntryModel>> getEntries(String petId, String token);
   Future<WeightEntryModel> createEntry(WeightEntryModel entry, String token);
   Future<WeightEntryModel> updateEntry(WeightEntryModel entry, String token);
-  Future<void> deleteEntry(int id, String token);
+  Future<void> deleteEntry(String id, String token);
   Future<WeightEntryModel?> getLatestWeight(String petId, String token);
 }
 
@@ -66,7 +66,7 @@ class WeightRemoteDataSourceImpl implements WeightRemoteDataSource {
   }
 
   @override
-  Future<void> deleteEntry(int id, String token) async {
+  Future<void> deleteEntry(String id, String token) async {
     final response = await _client.delete(
       Uri.parse('$baseUrl/api/weight-entries/$id'),
       headers: _headers(token),

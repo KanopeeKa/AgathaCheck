@@ -100,7 +100,7 @@ class WeightEntriesNotifier extends FamilyAsyncNotifier<List<WeightEntry>, Strin
     state = AsyncValue.data(await repo.getEntries(arg, token));
   }
 
-  Future<void> deleteEntry(int id) async {
+  Future<void> deleteEntry(String id) async {
     final repo = ref.read(weightRepositoryProvider);
     final token = _token;
     if (token == null) return;

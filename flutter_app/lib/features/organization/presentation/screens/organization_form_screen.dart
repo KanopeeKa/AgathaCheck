@@ -10,7 +10,7 @@ import '../providers/organization_providers.dart';
 class OrganizationFormScreen extends ConsumerStatefulWidget {
   const OrganizationFormScreen({super.key, this.orgId});
 
-  final int? orgId;
+  final String? orgId;
 
   @override
   ConsumerState<OrganizationFormScreen> createState() =>

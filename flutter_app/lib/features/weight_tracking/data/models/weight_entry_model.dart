@@ -12,7 +12,7 @@ class WeightEntryModel extends WeightEntry {
 
   factory WeightEntryModel.fromJson(Map<String, dynamic> json) {
     return WeightEntryModel(
-      id: json['id'] is int ? json['id'] : int.parse(json['id'].toString()),
+      id: json['id']?.toString() ?? '',
       petId: json['pet_id']?.toString() ?? '',
       date: DateTime.parse(json['date'].toString()),
       weight: (json['weight'] is num)

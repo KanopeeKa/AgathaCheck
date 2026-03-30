@@ -70,7 +70,7 @@ class PetFormState {
   final bool neuterDismissed;
   final bool chipDismissed;
   final bool passedAway;
-  final int? selectedOrgId;
+  final String? selectedOrgId;
 
   PetFormState({
     this.name = '',
@@ -111,7 +111,7 @@ class PetFormState {
     bool? neuterDismissed,
     bool? chipDismissed,
     bool? passedAway,
-    int? selectedOrgId,
+    String? selectedOrgId,
   }) {
     return PetFormState(
       name: name ?? this.name,

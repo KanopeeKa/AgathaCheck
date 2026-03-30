@@ -14,7 +14,7 @@ class ArchivedPetsScreen extends ConsumerWidget {
     this.orgId,
   });
 
-  final int? orgId;
+  final String? orgId;
 
   bool get _isOrgArchive => orgId != null;
 

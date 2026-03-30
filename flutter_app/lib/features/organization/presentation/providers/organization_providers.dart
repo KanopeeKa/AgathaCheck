@@ -33,14 +33,14 @@ class OrganizationListNotifier extends AsyncNotifier<List<Organization>> {
     return org;
   }
 
-  Future<void> updateOrganization(int orgId, Map<String, dynamic> data) async {
+  Future<void> updateOrganization(String orgId, Map<String, dynamic> data) async {
     final token = ref.read(_orgTokenProvider)!;
     final ds = ref.read(orgRemoteDataSourceProvider);
     await ds.updateOrganization(orgId, data, token);
     ref.invalidateSelf();
   }
 
-  Future<void> deleteOrganization(int orgId) async {
+  Future<void> deleteOrganization(String orgId) async {
     final token = ref.read(_orgTokenProvider)!;
     final ds = ref.read(orgRemoteDataSourceProvider);
     await ds.deleteOrganization(orgId, token);
@@ -56,9 +56,9 @@ final organizationListProvider =
     AsyncNotifierProvider<OrganizationListNotifier, List<Organization>>(
         OrganizationListNotifier.new);
 
-class OrgMembersNotifier extends FamilyAsyncNotifier<List<OrganizationMember>, int> {
+class OrgMembersNotifier extends FamilyAsyncNotifier<List<OrganizationMember>, String> {
   @override
-  Future<List<OrganizationMember>> build(int orgId) async {
+  Future<List<OrganizationMember>> build(String orgId) async {
     final token = ref.watch(_orgTokenProvider);
     if (token == null) return [];
     final ds = ref.read(orgRemoteDataSourceProvider);
@@ -78,14 +78,14 @@ class OrgMembersNotifier extends FamilyAsyncNotifier<List<OrganizationMember>, i
     ref.invalidateSelf();
   }
 
-  Future<void> updateMemberRole(int userId, String role) async {
+  Future<void> updateMemberRole(String userId, String role) async {
     final token = ref.read(_orgTokenProvider)!;
     final ds = ref.read(orgRemoteDataSourceProvider);
     await ds.updateMemberRole(arg, userId, role, token);
     ref.invalidateSelf();
   }
 
-  Future<void> removeMember(int userId) async {
+  Future<void> removeMember(String userId) async {
     final token = ref.read(_orgTokenProvider)!;
     final ds = ref.read(orgRemoteDataSourceProvider);
     await ds.removeMember(arg, userId, token);
@@ -100,12 +100,12 @@ class OrgMembersNotifier extends FamilyAsyncNotifier<List<OrganizationMember>, i
 }
 
 final orgMembersProvider =
-    AsyncNotifierProvider.family<OrgMembersNotifier, List<OrganizationMember>, int>(
+    AsyncNotifierProvider.family<OrgMembersNotifier, List<OrganizationMember>, String>(
         OrgMembersNotifier.new);
 
-class OrgPetsNotifier extends FamilyAsyncNotifier<List<Pet>, int> {
+class OrgPetsNotifier extends FamilyAsyncNotifier<List<Pet>, String> {
   @override
-  Future<List<Pet>> build(int orgId) async {
+  Future<List<Pet>> build(String orgId) async {
     final token = ref.watch(_orgTokenProvider);
     if (token == null) return [];
     final ds = ref.read(orgRemoteDataSourceProvider);
@@ -152,12 +152,12 @@ class OrgPetsNotifier extends FamilyAsyncNotifier<List<Pet>, int> {
 }
 
 final orgPetsProvider =
-    AsyncNotifierProvider.family<OrgPetsNotifier, List<Pet>, int>(
+    AsyncNotifierProvider.family<OrgPetsNotifier, List<Pet>, String>(
         OrgPetsNotifier.new);
 
-class OrgArchivedPetsNotifier extends FamilyAsyncNotifier<List<ArchivedPet>, int> {
+class OrgArchivedPetsNotifier extends FamilyAsyncNotifier<List<ArchivedPet>, String> {
   @override
-  Future<List<ArchivedPet>> build(int orgId) async {
+  Future<List<ArchivedPet>> build(String orgId) async {
     final token = ref.watch(_orgTokenProvider);
     if (token == null) return [];
     final ds = ref.read(orgRemoteDataSourceProvider);
@@ -166,7 +166,7 @@ class OrgArchivedPetsNotifier extends FamilyAsyncNotifier<List<ArchivedPet>, int
 }
 
 final orgArchivedPetsProvider =
-    AsyncNotifierProvider.family<OrgArchivedPetsNotifier, List<ArchivedPet>, int>(
+    AsyncNotifierProvider.family<OrgArchivedPetsNotifier, List<ArchivedPet>, String>(
         OrgArchivedPetsNotifier.new);
 
 class UserArchivedPetsNotifier extends AsyncNotifier<List<ArchivedPet>> {
@@ -183,7 +183,7 @@ final userArchivedPetsProvider =
     AsyncNotifierProvider<UserArchivedPetsNotifier, List<ArchivedPet>>(
         UserArchivedPetsNotifier.new);
 
-final isOrgSuperUserProvider = Provider.family<bool, int>((ref, orgId) {
+final isOrgSuperUserProvider = Provider.family<bool, String>((ref, orgId) {
   final orgsAsync = ref.watch(organizationListProvider);
   return orgsAsync.whenOrNull(data: (orgs) {
     final org = orgs.where((o) => o.id == orgId).firstOrNull;
@@ -192,8 +192,8 @@ final isOrgSuperUserProvider = Provider.family<bool, int>((ref, orgId) {
 });
 
 class PendingOrgInvite {
-  final int id;
-  final int organizationId;
+  final String id;
+  final String organizationId;
   final String organizationName;
   final String organizationType;
   final String desiredRole;
@@ -214,8 +214,8 @@ class PendingOrgInvite {
 
   factory PendingOrgInvite.fromJson(Map<String, dynamic> json) {
     return PendingOrgInvite(
-      id: json['id'] is int ? json['id'] as int : int.tryParse(json['id']?.toString() ?? '0') ?? 0,
-      organizationId: json['organization_id'] is int ? json['organization_id'] as int : int.tryParse(json['organization_id']?.toString() ?? '0') ?? 0,
+      id: json['id']?.toString() ?? '',
+      organizationId: json['organization_id']?.toString() ?? '',
       organizationName: json['organization_name']?.toString() ?? '',
       organizationType: json['organization_type']?.toString() ?? '',
       desiredRole: json['desired_role']?.toString() ?? 'member',
@@ -236,16 +236,16 @@ class PendingOrgInvitesNotifier extends AsyncNotifier<List<PendingOrgInvite>> {
     return raw.map((e) => PendingOrgInvite.fromJson(e)).toList();
   }
 
-  Future<int> acceptInvite(int inviteId) async {
+  Future<String> acceptInvite(String inviteId) async {
     final token = ref.read(_orgTokenProvider)!;
     final ds = ref.read(orgRemoteDataSourceProvider);
     final result = await ds.acceptInvite(inviteId, token);
     ref.invalidateSelf();
     ref.invalidate(organizationListProvider);
-    return int.tryParse(result['organization_id']?.toString() ?? '0') ?? 0;
+    return result['organization_id']?.toString() ?? '';
   }
 
-  Future<void> declineInvite(int inviteId) async {
+  Future<void> declineInvite(String inviteId) async {
     final token = ref.read(_orgTokenProvider)!;
     final ds = ref.read(orgRemoteDataSourceProvider);
     await ds.declineInvite(inviteId, token);
@@ -272,7 +272,7 @@ class FamilyEventsNotifier extends FamilyAsyncNotifier<List<FamilyEvent>, String
   }
 
   Future<void> createEvent({
-    required int? assignedToUserId,
+    required String? assignedToUserId,
     required DateTime fromDate,
     DateTime? toDate,
     String notes = '',
@@ -288,8 +288,8 @@ class FamilyEventsNotifier extends FamilyAsyncNotifier<List<FamilyEvent>, String
     ref.invalidateSelf();
   }
 
-  Future<void> updateEvent(int eventId, {
-    required int? assignedToUserId,
+  Future<void> updateEvent(String eventId, {
+    required String? assignedToUserId,
     required DateTime fromDate,
     DateTime? toDate,
     String notes = '',
@@ -305,7 +305,7 @@ class FamilyEventsNotifier extends FamilyAsyncNotifier<List<FamilyEvent>, String
     ref.invalidateSelf();
   }
 
-  Future<void> deleteEvent(int eventId) async {
+  Future<void> deleteEvent(String eventId) async {
     final token = ref.read(_orgTokenProvider)!;
     final ds = ref.read(orgRemoteDataSourceProvider);
     await ds.deleteFamilyEvent(token, arg, eventId);

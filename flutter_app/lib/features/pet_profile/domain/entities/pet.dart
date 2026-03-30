@@ -46,7 +46,7 @@ class Pet {
   final int? colorValue;
   final bool passedAway;
   final bool isShared;
-  final int? organizationId;
+  final String? organizationId;
   final String? organizationName;
 
   double? get age {
@@ -107,7 +107,7 @@ class Pet {
     int? colorValue,
     bool? passedAway,
     bool? isShared,
-    int? organizationId,
+    String? organizationId,
     String? organizationName,
     bool clearVetId = false,
     bool clearGender = false,

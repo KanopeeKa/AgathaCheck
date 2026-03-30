@@ -8,7 +8,7 @@ class WeightEntry {
     this.createdAt,
   });
 
-  final int id;
+  final String id;
   final String petId;
   final DateTime date;
   final double weight;
@@ -16,7 +16,7 @@ class WeightEntry {
   final DateTime? createdAt;
 
   WeightEntry copyWith({
-    int? id,
+    String? id,
     String? petId,
     DateTime? date,
     double? weight,

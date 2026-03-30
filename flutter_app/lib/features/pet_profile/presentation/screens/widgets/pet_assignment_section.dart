@@ -8,7 +8,7 @@ import '../../controllers/pet_form_controller.dart';
 
 class PetAssignmentSection extends ConsumerWidget {
   final PetFormController controller;
-  final int orgId;
+  final String orgId;
   const PetAssignmentSection({required this.controller, required this.orgId, super.key});
 
   @override

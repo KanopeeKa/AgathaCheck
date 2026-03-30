@@ -6,7 +6,7 @@ import '../../controllers/pet_form_controller.dart';
 
 class PetOwnershipSelector extends ConsumerWidget {
   final PetFormController controller;
-  final int? initialOrgId;
+  final String? initialOrgId;
   const PetOwnershipSelector({required this.controller, this.initialOrgId, super.key});
 
   @override

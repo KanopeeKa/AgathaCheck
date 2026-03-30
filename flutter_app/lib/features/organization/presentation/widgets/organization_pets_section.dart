@@ -10,7 +10,7 @@ class OrganizationPetsSection extends StatelessWidget {
   final ThemeData theme;
   final ColorScheme colorScheme;
   final AppLocalizations l;
-  final int orgId;
+  final String orgId;
   final bool petsExpanded;
   final void Function()? onToggleExpand;
   final void Function()? onAddPet;

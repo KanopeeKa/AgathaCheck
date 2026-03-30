@@ -17,7 +17,7 @@ class Organization {
     this.updatedAt,
   });
 
-  final int id;
+  final String id;
   final String name;
   final OrganizationType type;
   final String email;
@@ -26,7 +26,7 @@ class Organization {
   final String website;
   final String bio;
   final String photoUrl;
-  final int? createdBy;
+  final String? createdBy;
   final String role;
   final int memberCount;
   final int petCount;
@@ -36,7 +36,7 @@ class Organization {
   bool get isSuperUser => role == 'super_user';
 
   Organization copyWith({
-    int? id,
+    String? id,
     String? name,
     OrganizationType? type,
     String? email,
@@ -45,7 +45,7 @@ class Organization {
     String? website,
     String? bio,
     String? photoUrl,
-    int? createdBy,
+    String? createdBy,
     String? role,
     int? memberCount,
     int? petCount,

@@ -20,7 +20,7 @@ import '../widgets/organization_pets_section.dart';
 class OrganizationDetailScreen extends ConsumerStatefulWidget {
   const OrganizationDetailScreen({super.key, required this.orgId});
 
-  final int orgId;
+  final String orgId;
 
   @override
   ConsumerState<OrganizationDetailScreen> createState() =>
@@ -32,7 +32,7 @@ class _OrganizationDetailScreenState
   bool _petsExpanded = true;
   bool _hiddenExpanded = false;
 
-  int get orgId => widget.orgId;
+  String get orgId => widget.orgId;
 
   String _localizedTypeLabel(AppLocalizations l, OrganizationType type) {
     switch (type) {

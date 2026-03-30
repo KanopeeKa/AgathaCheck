@@ -886,7 +886,7 @@ class _PendingShareCard extends ConsumerWidget {
     );
   }
 
-  Future<void> _doAcceptShare(BuildContext context, WidgetRef ref, String petId, int? orgId, AppLocalizations l) async {
+  Future<void> _doAcceptShare(BuildContext context, WidgetRef ref, String petId, String? orgId, AppLocalizations l) async {
     try {
       await ref.read(pendingSharesProvider.notifier).acceptShare(petId, organizationId: orgId);
       if (context.mounted) {

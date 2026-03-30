@@ -10,7 +10,7 @@ import '../providers/organization_providers.dart';
 class OrganizationPetsScreen extends ConsumerWidget {
   const OrganizationPetsScreen({super.key, required this.orgId});
 
-  final int orgId;
+  final String orgId;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

@@ -88,7 +88,7 @@ class TestPetListNotifier extends PetListNotifier {
     bool chipDismissed = false,
     String? photoPath,
     String? vetId,
-    int? organizationId,
+    String? organizationId,
   }) async {
     final pet = Pet(
       id: name.toLowerCase(),

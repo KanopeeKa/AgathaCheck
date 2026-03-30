@@ -15,11 +15,11 @@ class OrganizationMember {
     this.updatedAt,
   });
 
-  final int id;
-  final int organizationId;
-  final int userId;
+  final String id;
+  final String organizationId;
+  final String userId;
   final OrgMemberRole role;
-  final int? invitedBy;
+  final String? invitedBy;
   final String? inviteCode;
   final DateTime? inviteExpiresAt;
   final String firstName;

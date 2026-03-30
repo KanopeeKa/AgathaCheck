@@ -11,7 +11,7 @@ import '../providers/organization_providers.dart';
 class OrganizationMembersScreen extends ConsumerWidget {
   const OrganizationMembersScreen({super.key, required this.orgId});
 
-  final int orgId;
+  final String orgId;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -110,7 +110,7 @@ class _MemberCard extends ConsumerWidget {
   });
 
   final OrganizationMember member;
-  final int orgId;
+  final String orgId;
   final bool isSuperUser;
 
   @override

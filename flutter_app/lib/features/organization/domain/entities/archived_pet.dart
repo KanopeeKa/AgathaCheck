@@ -15,16 +15,16 @@ class ArchivedPet {
     this.createdAt,
   });
 
-  final int id;
-  final int? organizationId;
-  final int? userId;
+  final String id;
+  final String? organizationId;
+  final String? userId;
   final String petId;
   final String petName;
   final String species;
   final String pdfData;
   final String transferType;
-  final int? transferredToUserId;
-  final int? transferredToOrgId;
+  final String? transferredToUserId;
+  final String? transferredToOrgId;
   final String notes;
   final DateTime? archivedAt;
   final DateTime? createdAt;

@@ -21,7 +21,7 @@ class OrganizationModel extends Organization {
 
   factory OrganizationModel.fromJson(Map<String, dynamic> json) {
     return OrganizationModel(
-      id: json['id'] is int ? json['id'] as int : int.tryParse(json['id']?.toString() ?? '0') ?? 0,
+      id: json['id']?.toString() ?? '',
       name: json['name']?.toString() ?? '',
       type: _parseType(json['type']?.toString() ?? 'professional'),
       email: json['email']?.toString() ?? '',
@@ -30,12 +30,10 @@ class OrganizationModel extends Organization {
       website: json['website']?.toString() ?? '',
       bio: json['bio']?.toString() ?? '',
       photoUrl: json['photo_url']?.toString() ?? '',
-      createdBy: json['created_by'] != null
-          ? (json['created_by'] is int ? json['created_by'] as int : int.tryParse(json['created_by'].toString()))
-          : null,
+      createdBy: json['created_by']?.toString(),
       role: json['role']?.toString() ?? 'member',
-      memberCount: json['member_count'] is int ? json['member_count'] as int : int.tryParse(json['member_count']?.toString() ?? '0') ?? 0,
-      petCount: json['pet_count'] is int ? json['pet_count'] as int : int.tryParse(json['pet_count']?.toString() ?? '0') ?? 0,
+      memberCount: (json['member_count'] is int) ? json['member_count'] as int : int.tryParse(json['member_count']?.toString() ?? '0') ?? 0,
+      petCount: (json['pet_count'] is int) ? json['pet_count'] as int : int.tryParse(json['pet_count']?.toString() ?? '0') ?? 0,
       createdAt: json['created_at'] != null ? DateTime.tryParse(json['created_at'].toString()) : null,
       updatedAt: json['updated_at'] != null ? DateTime.tryParse(json['updated_at'].toString()) : null,
     );

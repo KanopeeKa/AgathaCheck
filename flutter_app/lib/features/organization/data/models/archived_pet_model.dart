@@ -19,28 +19,16 @@ class ArchivedPetModel extends ArchivedPet {
 
   factory ArchivedPetModel.fromJson(Map<String, dynamic> json) {
     return ArchivedPetModel(
-      id: json['id'] is int ? json['id'] as int : int.tryParse(json['id']?.toString() ?? '0') ?? 0,
-      organizationId: json['organization_id'] != null
-          ? (json['organization_id'] is int ? json['organization_id'] as int : int.tryParse(json['organization_id'].toString()))
-          : null,
-      userId: json['user_id'] != null
-          ? (json['user_id'] is int ? json['user_id'] as int : int.tryParse(json['user_id'].toString()))
-          : null,
+      id: json['id']?.toString() ?? '',
+      organizationId: json['organization_id']?.toString(),
+      userId: json['user_id']?.toString(),
       petId: json['pet_id']?.toString() ?? '',
       petName: json['pet_name']?.toString() ?? '',
       species: json['species']?.toString() ?? '',
       pdfData: json['pdf_data']?.toString() ?? '',
       transferType: json['transfer_type']?.toString() ?? '',
-      transferredToUserId: json['transferred_to_user_id'] != null
-          ? (json['transferred_to_user_id'] is int
-              ? json['transferred_to_user_id'] as int
-              : int.tryParse(json['transferred_to_user_id'].toString()))
-          : null,
-      transferredToOrgId: json['transferred_to_org_id'] != null
-          ? (json['transferred_to_org_id'] is int
-              ? json['transferred_to_org_id'] as int
-              : int.tryParse(json['transferred_to_org_id'].toString()))
-          : null,
+      transferredToUserId: json['transferred_to_user_id']?.toString(),
+      transferredToOrgId: json['transferred_to_org_id']?.toString(),
       notes: json['notes']?.toString() ?? '',
       archivedAt: json['archived_at'] != null ? DateTime.tryParse(json['archived_at'].toString()) : null,
       createdAt: json['created_at'] != null ? DateTime.tryParse(json['created_at'].toString()) : null,

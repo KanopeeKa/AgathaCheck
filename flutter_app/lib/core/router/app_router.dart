@@ -131,8 +131,7 @@ final routerProvider = Provider<GoRouter>((ref) {
         name: 'addPet',
         builder: (context, state) {
           final orgIdStr = state.uri.queryParameters['orgId'];
-          final orgId = orgIdStr != null ? int.tryParse(orgIdStr) : null;
-          return PetFormScreen(initialOrgId: orgId);
+          return PetFormScreen(initialOrgId: orgIdStr);
         },
       ),
       GoRoute(
@@ -258,7 +257,7 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: '/organizations/:id',
         name: 'organizationDetail',
         builder: (context, state) {
-          final id = int.parse(state.pathParameters['id']!);
+          final id = state.pathParameters['id']!;
           return OrganizationDetailScreen(orgId: id);
         },
       ),
@@ -266,7 +265,7 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: '/organizations/:id/edit',
         name: 'editOrganization',
         builder: (context, state) {
-          final id = int.parse(state.pathParameters['id']!);
+          final id = state.pathParameters['id']!;
           return OrganizationFormScreen(orgId: id);
         },
       ),
@@ -274,7 +273,7 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: '/organizations/:id/members',
         name: 'organizationMembers',
         builder: (context, state) {
-          final id = int.parse(state.pathParameters['id']!);
+          final id = state.pathParameters['id']!;
           return OrganizationMembersScreen(orgId: id);
         },
       ),
@@ -282,7 +281,7 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: '/organizations/:id/pets',
         name: 'organizationPets',
         builder: (context, state) {
-          final id = int.parse(state.pathParameters['id']!);
+          final id = state.pathParameters['id']!;
           return OrganizationPetsScreen(orgId: id);
         },
       ),
@@ -290,7 +289,7 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: '/organizations/:id/transfer/:petId',
         name: 'transferPet',
         builder: (context, state) {
-          final orgId = int.parse(state.pathParameters['id']!);
+          final orgId = state.pathParameters['id']!;
           final petId = state.pathParameters['petId']!;
           return TransferPetScreen(orgId: orgId, petId: petId);
         },
@@ -299,7 +298,7 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: '/organizations/:id/archived',
         name: 'organizationArchived',
         builder: (context, state) {
-          final id = int.parse(state.pathParameters['id']!);
+          final id = state.pathParameters['id']!;
           return ArchivedPetsScreen(orgId: id);
         },
       ),

@@ -10,7 +10,7 @@ class WeightTrackingController {
     await ref.read(weightEntriesNotifierProvider(petId).notifier).addEntry(entry);
   }
 
-  Future<void> deleteWeightEntry(String petId, int entryId) async {
+  Future<void> deleteWeightEntry(String petId, String entryId) async {
     await ref.read(weightEntriesNotifierProvider(petId).notifier).deleteEntry(entryId);
   }
 

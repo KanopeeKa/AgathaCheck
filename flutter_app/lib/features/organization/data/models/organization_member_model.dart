@@ -19,17 +19,11 @@ class OrganizationMemberModel extends OrganizationMember {
 
   factory OrganizationMemberModel.fromJson(Map<String, dynamic> json) {
     return OrganizationMemberModel(
-      id: json['id'] is int ? json['id'] as int : int.tryParse(json['id']?.toString() ?? '0') ?? 0,
-      organizationId: json['organization_id'] is int
-          ? json['organization_id'] as int
-          : int.tryParse(json['organization_id']?.toString() ?? '0') ?? 0,
-      userId: json['user_id'] is int
-          ? json['user_id'] as int
-          : int.tryParse(json['user_id']?.toString() ?? '0') ?? 0,
+      id: json['id']?.toString() ?? '',
+      organizationId: json['organization_id']?.toString() ?? '',
+      userId: json['user_id']?.toString() ?? '',
       role: _parseRole(json['role']?.toString() ?? 'member'),
-      invitedBy: json['invited_by'] != null
-          ? (json['invited_by'] is int ? json['invited_by'] as int : int.tryParse(json['invited_by'].toString()))
-          : null,
+      invitedBy: json['invited_by']?.toString(),
       inviteCode: json['invite_code']?.toString(),
       inviteExpiresAt: json['invite_expires_at'] != null
           ? DateTime.tryParse(json['invite_expires_at'].toString())

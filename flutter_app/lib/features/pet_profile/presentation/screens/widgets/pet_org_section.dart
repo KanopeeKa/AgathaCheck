@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import '../../../../../l10n/app_localizations.dart';
 
 class PetOrgSection extends StatelessWidget {
-  final int? selectedOrgId;
+  final String? selectedOrgId;
   final List<Map<String, dynamic>> orgs;
-  final ValueChanged<int?> onChanged;
+  final ValueChanged<String?> onChanged;
 
   const PetOrgSection({
     super.key,
@@ -16,7 +16,7 @@ class PetOrgSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context)!;
-    return DropdownButtonFormField<int?>(
+    return DropdownButtonFormField<String?>(
       key: const Key('pet_org_selector'),
       value: selectedOrgId,
       decoration: InputDecoration(
@@ -28,7 +28,7 @@ class PetOrgSection extends StatelessWidget {
       ),
       items: orgs
           .map((o) => DropdownMenuItem(
-                value: o['id'] as int?,
+                value: o['id']?.toString(),
                 child: Text(o['name'] as String? ?? ''),
               ))
           .toList(),
