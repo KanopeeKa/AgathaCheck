@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../sharing/presentation/providers/sharing_providers.dart';
 import '../../domain/entities/pet.dart';
 import '../widgets/pet_card.dart';
 
@@ -81,6 +82,21 @@ class PersonalPetsSection extends StatelessWidget {
                 onTap: () => this.context.go('/pet/{pet.id}'),
               ),
       )).toList(),
+    );
+  }
+}
+
+class _EmptySection extends StatelessWidget {
+  const _EmptySection({required this.message});
+  final String message;
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(32),
+        child: Text(message, style: Theme.of(context).textTheme.bodyLarge),
+      ),
     );
   }
 }

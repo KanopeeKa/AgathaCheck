@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../../../l10n/app_localizations.dart';
 import '../../../domain/entities/pet.dart';
 import '../../controllers/download_report_controller.dart';
 

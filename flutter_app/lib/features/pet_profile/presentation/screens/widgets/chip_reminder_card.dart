@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../domain/entities/pet.dart';
-import '../providers/pet_providers.dart';
-import '../../../../l10n/app_localizations.dart';
-import '../../../data/services/constants.dart';
+import '../../controllers/chip_reminder_controller.dart';
+import '../../../../../l10n/app_localizations.dart';
+import '../../../../../core/utils/constants.dart';
 
 class ChipReminderCard extends ConsumerWidget {
   const ChipReminderCard({required this.pet, super.key});

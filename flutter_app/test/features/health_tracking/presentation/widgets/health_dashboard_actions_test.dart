@@ -1,19 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:agathacheck/features/health_tracking/presentation/widgets/health_dashboard_actions.dart';
+import 'package:pet_profile_app/features/health_tracking/presentation/widgets/health_dashboard_actions.dart';
 
 void main() {
   testWidgets('HealthDashboardActions renders and triggers callbacks', (WidgetTester tester) async {
     bool pdfTapped = false;
     bool csvTapped = false;
-    _GroupMode? selectedMode;
+    GroupMode? selectedMode;
     await tester.pumpWidget(MaterialApp(
       home: Scaffold(
         body: HealthDashboardActions(
           onExportPdf: () => pdfTapped = true,
           onExportCsv: () => csvTapped = true,
           onGroupModeChanged: (mode) => selectedMode = mode,
-          groupMode: _GroupMode.dueDate,
+          groupMode: GroupMode.dueDate,
           lGroupBy: 'Group By',
           lByDueDate: 'Due Date',
           lByPet: 'Pet',
@@ -33,4 +33,3 @@ void main() {
   });
 }
 
-enum _GroupMode { dueDate, pet, petType }

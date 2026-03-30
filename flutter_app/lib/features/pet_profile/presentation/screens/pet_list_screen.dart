@@ -34,7 +34,7 @@ class PetListScreen extends ConsumerStatefulWidget {
   ConsumerState<PetListScreen> createState() => _PetListScreenState();
 }
 
-
+class _PetListScreenState extends ConsumerState<PetListScreen> {
   late final PetListController _controller;
 
   @override

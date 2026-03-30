@@ -12,9 +12,7 @@ import '../../data/services/events_pdf_service.dart';
 import '../../domain/entities/health_entry.dart';
 import '../providers/health_providers.dart';
 import '../widgets/health_entry_card.dart';
-import '../widgets/health_dashboard_actions.dart';
-
-enum _GroupMode { dueDate, pet, petType }
+import '../widgets/health_dashboard_actions.dart' show HealthDashboardActions, GroupMode;
 
 class HealthDashboardScreen extends ConsumerStatefulWidget {
   const HealthDashboardScreen({super.key});
@@ -27,7 +25,7 @@ class HealthDashboardScreen extends ConsumerStatefulWidget {
 class _HealthDashboardScreenState extends ConsumerState<HealthDashboardScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
-  _GroupMode _groupMode = _GroupMode.dueDate;
+  GroupMode _groupMode = GroupMode.dueDate;
   String? _orgFilter;
 
   static const _tabs = [
@@ -213,9 +211,9 @@ class _HealthDashboardScreenState extends ConsumerState<HealthDashboardScreen>
 
       final filterLabel = typeFilter == null ? l.all : typeFilter.label;
       final groupLabel = switch (_groupMode) {
-        _GroupMode.dueDate => l.byDueDate,
-        _GroupMode.pet => l.byPet,
-        _GroupMode.petType => l.bySpecies,
+        GroupMode.dueDate => l.byDueDate,
+        GroupMode.pet => l.byPet,
+        GroupMode.petType => l.bySpecies,
       };
 
       final bytes = await EventsPdfService().generate(
@@ -237,13 +235,13 @@ class _HealthDashboardScreenState extends ConsumerState<HealthDashboardScreen>
   }
 
   List<MapEntry<String?, List<HealthEntry>>> _buildPdfGroups(
-      List<HealthEntry> entries, Map<String, Pet> petMap, _GroupMode mode) {
+      List<HealthEntry> entries, Map<String, Pet> petMap, GroupMode mode) {
     switch (mode) {
-      case _GroupMode.dueDate:
+      case GroupMode.dueDate:
         return _pdfGroupByDueDate(entries);
-      case _GroupMode.pet:
+      case GroupMode.pet:
         return _pdfGroupByPet(entries, petMap);
-      case _GroupMode.petType:
+      case GroupMode.petType:
         return _pdfGroupByPetType(entries, petMap);
     }
   }
@@ -327,7 +325,7 @@ class _EntryList extends ConsumerWidget {
   const _EntryList({this.type, required this.groupMode, this.orgFilter});
 
   final HealthEntryType? type;
-  final _GroupMode groupMode;
+  final GroupMode groupMode;
   final String? orgFilter;
 
   @override
@@ -463,11 +461,11 @@ class _EntryList extends ConsumerWidget {
   List<_GroupItem> _buildGroups(
       BuildContext context, List<HealthEntry> entries, Map<String, Pet> petMap) {
     switch (groupMode) {
-      case _GroupMode.dueDate:
+      case GroupMode.dueDate:
         return _groupByDueDate(context, entries);
-      case _GroupMode.pet:
+      case GroupMode.pet:
         return _groupByPet(entries, petMap);
-      case _GroupMode.petType:
+      case GroupMode.petType:
         return _groupByPetType(entries, petMap);
     }
   }

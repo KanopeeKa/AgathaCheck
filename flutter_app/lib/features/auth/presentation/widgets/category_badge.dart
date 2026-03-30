@@ -9,14 +9,15 @@ class CategoryBadge extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final isPro = category == 'professional_multi_pet';
+    final theme = Theme.of(context);
     return Chip(
       label: Text(
         isPro ? l10n.professionalMultiPet : l10n.petGuardian,
         style: TextStyle(
-          color: isPro ? l10n.proChipTextColor : l10n.guardianChipTextColor,
+          color: isPro ? Colors.deepPurple.shade900 : theme.colorScheme.onSecondaryContainer,
         ),
       ),
-      backgroundColor: isPro ? l10n.proChipBgColor : l10n.guardianChipBgColor,
+      backgroundColor: isPro ? Colors.deepPurple.shade50 : theme.colorScheme.secondaryContainer,
     );
   }
 }

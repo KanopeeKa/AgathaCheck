@@ -14,7 +14,6 @@ import '../../domain/entities/health_entry.dart';
 import '../providers/health_issue_providers.dart';
 import '../providers/health_providers.dart';
 import 'package:pet_profile_app/core/providers/api_base_url_provider.dart';
-import '../controllers/health_entry_form_controller.dart';
 
 class HealthEntryFormScreen extends ConsumerStatefulWidget {
   const HealthEntryFormScreen({super.key, this.entryId, this.petId, this.initialType});
@@ -31,14 +30,25 @@ class HealthEntryFormScreen extends ConsumerStatefulWidget {
 
 class _HealthEntryFormScreenState extends ConsumerState<HealthEntryFormScreen> {
   final _formKey = GlobalKey<FormState>();
-  late final HealthEntryFormController _controller;
 
-  @override
-  void initState() {
-    super.initState();
-    _controller = HealthEntryFormController(ref);
-    // TODO: Initialize controller state from widget.initialType, petId, entryId, etc.
-  }
+  final _nameController = TextEditingController();
+  final _dosageController = TextEditingController();
+  final _notesController = TextEditingController();
+
+  HealthEntryType _type = HealthEntryType.medication;
+  HealthFrequency _frequency = HealthFrequency.once;
+  int _frequencyInterval = 1;
+  DateTime _startDate = DateTime.now();
+  DateTime? _nextDueDate;
+  DateTime? _repeatEndDate;
+  bool _isEdit = false;
+  bool _isLoading = false;
+  bool _isUploadingPhoto = false;
+  List<EventPhoto> _photos = [];
+  List<XFile> _pendingPhotos = [];
+  int _remindDaysBefore = 1;
+  String? _selectedHealthIssueId;
+  Set<String> _selectedPetIds = {};
 
   @override
   void initState() {
@@ -255,7 +265,7 @@ class _HealthEntryFormScreenState extends ConsumerState<HealthEntryFormScreen> {
     final theme = Theme.of(context);
     return Scaffold(
       appBar: AppBar(
-        title: AppLogoTitle(title: _controller.state.isEdit ? l.editEntry : l.addHealthEntry2),
+        title: AppLogoTitle(title: _isEdit ? l.editEntry : l.addHealthEntry2),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           tooltip: l.goBack,
@@ -268,7 +278,7 @@ class _HealthEntryFormScreenState extends ConsumerState<HealthEntryFormScreen> {
           },
         ),
       ),
-      body: _controller.state.isLoading
+      body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : SingleChildScrollView(
               padding: const EdgeInsets.all(16),
@@ -294,21 +304,20 @@ class _HealthEntryFormScreenState extends ConsumerState<HealthEntryFormScreen> {
                             ),
                           );
                         }
-                        // TODO: Modularize PetSelector and use controller state
                         return _PetSelector(
                           pets: pets,
-                          selectedPetIds: _controller.state.selectedPetIds,
-                          isEdit: _controller.state.isEdit,
+                          selectedPetIds: _selectedPetIds,
+                          isEdit: _isEdit,
                           onChanged: (ids) => setState(() {
-                            _controller.state = _controller.state.copyWith(selectedPetIds: ids);
-                            _controller.state = _controller.state.copyWith(selectedHealthIssueId: null);
+                            _selectedPetIds = ids;
+                            _selectedHealthIssueId = null;
                           }),
                         );
                       },
                     ),
                     const SizedBox(height: 16),
                     DropdownButtonFormField<HealthEntryType>(
-                      value: _controller.state.type,
+                      value: _type,
                       decoration: InputDecoration(
                         labelText: l.entryType,
                       ),
@@ -317,18 +326,17 @@ class _HealthEntryFormScreenState extends ConsumerState<HealthEntryFormScreen> {
                             value: t, child: Text(t.label));
                       }).toList(),
                       onChanged: (val) {
-                        if (val != null) setState(() => _controller.state = _controller.state.copyWith(type: val));
+                        if (val != null) setState(() => _type = val);
                       },
                     ),
                     const SizedBox(height: 16),
                     TextFormField(
                       key: const Key('health_name_field'),
-                      initialValue: _controller.state.name,
+                      controller: _nameController,
                       decoration: InputDecoration(
                         labelText: l.entryName,
                         hintText: 'e.g., Heartgard, Annual Checkup',
                       ),
-                      onChanged: (val) => _controller.state = _controller.state.copyWith(name: val),
                       validator: (val) =>
                           val == null || val.trim().isEmpty
                               ? l.entryNameRequired
@@ -337,16 +345,15 @@ class _HealthEntryFormScreenState extends ConsumerState<HealthEntryFormScreen> {
                     const SizedBox(height: 16),
                     TextFormField(
                       key: const Key('health_dosage_field'),
-                      initialValue: _controller.state.dosage,
+                      controller: _dosageController,
                       decoration: InputDecoration(
                         labelText: l.dosage,
                         hintText: 'e.g., 1 tablet, 0.5ml',
                       ),
-                      onChanged: (val) => _controller.state = _controller.state.copyWith(dosage: val),
                     ),
                     const SizedBox(height: 16),
                     DropdownButtonFormField<HealthFrequency>(
-                      value: _controller.state.frequency,
+                      value: _frequency,
                       decoration: InputDecoration(
                         labelText: l.frequency,
                       ),
@@ -357,17 +364,17 @@ class _HealthEntryFormScreenState extends ConsumerState<HealthEntryFormScreen> {
                             value: f, child: Text(f.label));
                       }).toList(),
                       onChanged: (val) {
-                        if (val != null) setState(() => _controller.state = _controller.state.copyWith(frequency: val));
+                        if (val != null) setState(() => _frequency = val);
                       },
                     ),
-                    if (_controller.state.frequency != HealthFrequency.once) ...[
+                    if (_frequency != HealthFrequency.once) ...[
                       const SizedBox(height: 16),
                       Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Expanded(
                             child: DropdownButtonFormField<int>(
-                              value: _controller.state.frequencyInterval.clamp(1, 12),
+                              value: _frequencyInterval.clamp(1, 12),
                               decoration: InputDecoration(
                                 labelText: l.every,
                               ),
@@ -377,7 +384,7 @@ class _HealthEntryFormScreenState extends ConsumerState<HealthEntryFormScreen> {
                                   .toList(),
                               onChanged: (val) {
                                 if (val != null) {
-                                  setState(() => _controller.state = _controller.state.copyWith(frequencyInterval: val));
+                                  setState(() => _frequencyInterval = val);
                                 }
                               },
                             ),
@@ -390,9 +397,9 @@ class _HealthEntryFormScreenState extends ConsumerState<HealthEntryFormScreen> {
                                 labelText: 'Period',
                               ),
                               child: Text(
-                                _controller.state.frequencyInterval == 1
-                                    ? _controller.state.frequency.label
-                                    : '${_controller.state.frequency.label}s',
+                                _frequencyInterval == 1
+                                    ? _frequency.label
+                                    : '${_frequency.label}s',
                                 style: Theme.of(context).textTheme.bodyLarge,
                               ),
                             ),
@@ -400,7 +407,7 @@ class _HealthEntryFormScreenState extends ConsumerState<HealthEntryFormScreen> {
                         ],
                       ),
                     ],
-                    if (_controller.state.frequency != HealthFrequency.once) ...[
+                    if (_frequency != HealthFrequency.once) ...[
                       const SizedBox(height: 16),
                       InputDecorator(
                         decoration: const InputDecoration(
@@ -410,26 +417,26 @@ class _HealthEntryFormScreenState extends ConsumerState<HealthEntryFormScreen> {
                           children: [
                             ChoiceChip(
                               label: const Text('Never'),
-                              selected: _controller.state.repeatEndDate == null,
+                              selected: _repeatEndDate == null,
                               onSelected: (_) =>
-                                  setState(() => _controller.state = _controller.state.copyWith(repeatEndDate: null)),
+                                  setState(() => _repeatEndDate = null),
                             ),
                             const SizedBox(width: 8),
                             ChoiceChip(
-                              label: Text(_controller.state.repeatEndDate != null
-                                  ? _formatDate(_controller.state.repeatEndDate!)
+                              label: Text(_repeatEndDate != null
+                                  ? _formatDate(_repeatEndDate!)
                                   : 'Pick a date'),
-                              selected: _controller.state.repeatEndDate != null,
+                              selected: _repeatEndDate != null,
                               onSelected: (_) async {
                                 final picked = await showDatePicker(
                                   context: context,
-                                  initialDate: _controller.state.repeatEndDate ??
+                                  initialDate: _repeatEndDate ??
                                       DateTime.now().add(const Duration(days: 30)),
                                   firstDate: DateTime.now(),
                                   lastDate: DateTime(2100),
                                 );
                                 if (picked != null) {
-                                  setState(() => _controller.state = _controller.state.copyWith(repeatEndDate: picked));
+                                  setState(() => _repeatEndDate = picked);
                                 }
                               },
                             ),
@@ -440,11 +447,11 @@ class _HealthEntryFormScreenState extends ConsumerState<HealthEntryFormScreen> {
                     const SizedBox(height: 16),
                     _DatePickerField(
                       label: l.startDate,
-                      date: _controller.state.startDate,
+                      date: _startDate,
                       onChanged: (d) => setState(() {
-                        _controller.state = _controller.state.copyWith(startDate: d);
-                        if (_controller.state.isEdit) {
-                          _controller.state = _controller.state.copyWith(nextDueDate: d);
+                        _startDate = d;
+                        if (_isEdit) {
+                          _nextDueDate = d;
                         }
                       }),
                     ),
@@ -463,7 +470,7 @@ class _HealthEntryFormScreenState extends ConsumerState<HealthEntryFormScreen> {
                                   width: 60,
                                   child: TextFormField(
                                     key: const Key('remind_days_field'),
-                                    initialValue: _controller.state.remindDaysBefore.toString(),
+                                    initialValue: _remindDaysBefore.toString(),
                                     keyboardType: TextInputType.number,
                                     decoration: const InputDecoration(
                                       border: InputBorder.none,
@@ -473,7 +480,7 @@ class _HealthEntryFormScreenState extends ConsumerState<HealthEntryFormScreen> {
                                     onChanged: (v) {
                                       final val = int.tryParse(v);
                                       if (val != null && val >= 0) {
-                                        setState(() => _controller.state = _controller.state.copyWith(remindDaysBefore: val));
+                                        setState(() => _remindDaysBefore = val);
                                       }
                                     },
                                   ),
@@ -489,53 +496,52 @@ class _HealthEntryFormScreenState extends ConsumerState<HealthEntryFormScreen> {
                       ],
                     ),
                     const SizedBox(height: 16),
-                    if (_controller.state.selectedPetIds.length == 1)
+                    if (_selectedPetIds.length == 1)
                       _buildHealthIssueDropdown(),
-                    if (_controller.state.selectedPetIds.length == 1)
+                    if (_selectedPetIds.length == 1)
                       const SizedBox(height: 16),
                     TextFormField(
                       key: const Key('health_notes_field'),
-                      initialValue: _controller.state.notes,
+                      controller: _notesController,
                       decoration: InputDecoration(
                         labelText: l.notes,
                         hintText: 'Additional information...',
                       ),
                       maxLines: 3,
-                      onChanged: (val) => _controller.state = _controller.state.copyWith(notes: val),
                     ),
                     const SizedBox(height: 24),
                     _PhotosSection(
-                      photos: _controller.state.photos,
-                      pendingPhotos: _controller.state.pendingPhotos,
-                      isUploading: _controller.state.isUploadingPhoto,
+                      photos: _photos,
+                      pendingPhotos: _pendingPhotos,
+                      isUploading: _isUploadingPhoto,
                       baseUrl: ref.watch(apiBaseUrlProvider),
-                      onPickCamera: () => _controller.pickPhoto(ImageSource.camera),
-                      onPickGallery: () => _controller.pickPhoto(ImageSource.gallery),
-                      onDelete: (photo) => _controller.deletePhoto(photo, context),
-                      onRemovePending: (idx) => _controller.removePendingPhoto(idx),
+                      onPickCamera: () => _pickPhoto(ImageSource.camera),
+                      onPickGallery: () => _pickPhoto(ImageSource.gallery),
+                      onDelete: _deletePhoto,
+                      onRemovePending: _removePendingPhoto,
                     ),
                     const SizedBox(height: 24),
                     FilledButton.icon(
                       key: const Key('save_health_entry_button'),
-                      onPressed: () => _controller.saveEntry(context, _formKey),
-                      icon: Icon(_controller.state.isEdit ? Icons.save : Icons.add),
-                      label: Text(_controller.state.isEdit
+                      onPressed: _submit,
+                      icon: Icon(_isEdit ? Icons.save : Icons.add),
+                      label: Text(_isEdit
                           ? l.save
-                          : _controller.state.selectedPetIds.length > 1
-                              ? 'Add Entry for ${_controller.state.selectedPetIds.length} Pets'
+                          : _selectedPetIds.length > 1
+                              ? 'Add Entry for ${_selectedPetIds.length} Pets'
                               : l.addEntry),
                     ),
-                    if (_controller.state.isEdit) ...[
+                    if (_isEdit) ...[
                       const SizedBox(height: 12),
                       OutlinedButton.icon(
-                        onPressed: () => _controller.viewHistory(context),
+                        onPressed: _viewHistory,
                         icon: const Icon(Icons.history),
                         label: const Text('Administration History'),
                       ),
                       const SizedBox(height: 12),
                       OutlinedButton.icon(
                         key: const Key('delete_health_entry_button'),
-                        onPressed: () => _controller.confirmDelete(context),
+                        onPressed: _confirmDelete,
                         icon: Icon(Icons.delete_outline, color: Theme.of(context).colorScheme.error),
                         style: OutlinedButton.styleFrom(
                           foregroundColor: Theme.of(context).colorScheme.error,

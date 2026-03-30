@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../domain/entities/weight_entry.dart';
+import '../../../../weight_tracking/domain/entities/weight_entry.dart';
+import '../../../../weight_tracking/presentation/providers/weight_providers.dart';
 import '../../controllers/weight_tracking_controller.dart';
-import '../../../../l10n/app_localizations.dart';
+import '../../../../../l10n/app_localizations.dart';
 import 'package:intl/intl.dart';
 
 class WeightTrackingSection extends ConsumerWidget {

@@ -1,24 +1,17 @@
 import 'dart:convert';
-import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:intl/intl.dart';
-import '../../../domain/entities/pet.dart';
 import '../../domain/entities/pet.dart';
-import '../providers/pet_providers.dart';
-import '../../../vet/domain/entities/vet.dart';
-import '../../../vet/presentation/providers/vet_providers.dart';
-import '../../../weight_tracking/domain/entities/weight_entry.dart';
-import '../../../weight_tracking/presentation/providers/weight_providers.dart';
-import '../../../auth/presentation/providers/auth_providers.dart';
-import '../../../organization/presentation/providers/organization_providers.dart';
 
-class PetFormController extends StateNotifier<PetFormState> {
-  final Ref ref;
-  PetFormController(this.ref) : super(PetFormState());
+class PetFormController {
+  PetFormState _state;
+
+  PetFormController() : _state = PetFormState();
+
+  PetFormState get state => _state;
+  set state(PetFormState newState) => _state = newState;
 
   void populateForm(Pet pet) {
-    state = state.copyWith(
+    _state = _state.copyWith(
       name: pet.name,
       breed: pet.breed,
       weight: pet.weight?.toString() ?? '',
@@ -51,27 +44,12 @@ class PetFormController extends StateNotifier<PetFormState> {
       );
       if (image != null) {
         final bytes = await image.readAsBytes();
-        state = state.copyWith(photoBase64: base64Encode(bytes));
+        _state = _state.copyWith(photoBase64: base64Encode(bytes));
       }
     } catch (e) {
       // Handle error in UI
     }
   }
-
-  Future<void> pickNeuteredDate(BuildContext context) async {
-    final now = DateTime.now();
-    final picked = await showDatePicker(
-      context: context,
-      initialDate: state.neuteredDate ?? now,
-      firstDate: DateTime(1990),
-      lastDate: now,
-    );
-    if (picked != null) {
-      state = state.copyWith(neuteredDate: picked, neuterDismissed: false);
-    }
-  }
-
-  // Add more methods for savePet, confirmDeletePet, confirmPassedAway, etc.
 }
 
 class PetFormState {

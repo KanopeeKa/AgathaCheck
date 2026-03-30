@@ -1,3 +1,4 @@
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pet_profile_app/features/pet_profile/domain/entities/pet.dart';
 import 'package:pet_profile_app/features/pet_profile/domain/repositories/pet_repository.dart';
 import 'package:pet_profile_app/features/pet_profile/domain/usecases/get_all_pets.dart';
@@ -5,9 +6,14 @@ import 'package:pet_profile_app/features/pet_profile/presentation/providers/pet_
 import 'package:pet_profile_app/features/auth/data/auth_service.dart';
 import 'package:pet_profile_app/features/auth/presentation/providers/auth_providers.dart';
 import 'package:pet_profile_app/core/providers/shared_preferences_provider.dart';
+import 'package:pet_profile_app/features/health_tracking/domain/entities/health_entry.dart';
+import 'package:pet_profile_app/features/health_tracking/presentation/providers/health_providers.dart';
+import 'package:pet_profile_app/features/notifications/domain/entities/app_notification.dart';
+import 'package:pet_profile_app/features/notifications/domain/entities/notification_preferences.dart';
+import 'package:pet_profile_app/features/notifications/presentation/providers/notification_providers.dart';
+import 'package:pet_profile_app/features/sharing/presentation/providers/sharing_providers.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-// --- Fakes for PetRepository and GetAllPets ---
 class FakePetRepository implements PetRepository {
   @override
   Future<List<Pet>> getAllPets() async => <Pet>[];
@@ -27,7 +33,6 @@ class FakeGetAllPets extends GetAllPets {
   Future<List<Pet>> call() async => <Pet>[];
 }
 
-// --- Fake SharedPreferences ---
 class FakePrefs implements SharedPreferences {
   final Map<String, Object?> _store = {};
   @override
@@ -46,7 +51,6 @@ class FakePrefs implements SharedPreferences {
   noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }
 
-// --- Fake AuthService and AuthNotifier ---
 class FakeAuthService implements AuthService {
   @override
   Future<AuthUser> getMe(String accessToken) async => mockUser;
@@ -62,7 +66,6 @@ class FakeAuthNotifier extends AuthNotifier {
   }
 }
 
-// --- Test Notifier for PetList ---
 class TestPetListNotifier extends PetListNotifier {
   TestPetListNotifier();
   @override
@@ -112,7 +115,29 @@ class TestPetListNotifier extends PetListNotifier {
   }
 }
 
-// --- Mock user and auth state ---
+class FakeHealthEntriesNotifier extends HealthEntriesNotifier {
+  @override
+  Future<List<HealthEntry>> build() async => [];
+}
+
+class FakeNotificationsNotifier extends NotificationsNotifier {
+  @override
+  Future<List<AppNotification>> build() async => [];
+
+  @override
+  Future<void> checkDueEntries() async {}
+}
+
+class FakeNotificationPreferencesNotifier extends NotificationPreferencesNotifier {
+  @override
+  Future<NotificationPreferences> build() async => const NotificationPreferences();
+}
+
+class FakePendingSharesNotifier extends PendingSharesNotifier {
+  @override
+  Future<List<PendingShare>> build() async => [];
+}
+
 final mockUser = AuthUser(
   id: 'test-user-id',
   email: 'test@example.com',

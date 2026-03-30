@@ -1,9 +1,7 @@
 import 'dart:typed_data';
-// ignore: avoid_web_libraries_in_flutter
-import 'dart:js_interop' if (dart.library.js_interop) 'dart:js_interop.dart';
-import 'package:web/web.dart' as web if (dart.library.js_interop) 'package:web/web.dart';
+import 'dart:js_interop';
+import 'package:web/web.dart' as web;
 
-/// Web-only implementation for exporting user data as a file download.
 Future<void> exportUserDataWebOnly(List<int> bytes) async {
   final blob = web.Blob(
     [Uint8List.fromList(bytes).toJS].toJS,

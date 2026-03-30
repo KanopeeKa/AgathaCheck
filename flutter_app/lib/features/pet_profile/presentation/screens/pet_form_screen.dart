@@ -1,26 +1,21 @@
-
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
 
 import '../controllers/pet_form_controller.dart';
 
 import '../../../../core/utils/constants.dart';
 import '../../../../core/widgets/app_logo_title.dart';
 import '../../../../l10n/app_localizations.dart';
-import '../../../auth/presentation/providers/auth_providers.dart';
-import '../../../organization/presentation/providers/organization_providers.dart';
 import '../../../vet/domain/entities/vet.dart';
 import '../../../vet/presentation/providers/vet_providers.dart';
-import '../../../weight_tracking/domain/entities/weight_entry.dart';
-import '../../../weight_tracking/presentation/providers/weight_providers.dart';
 import '../../domain/entities/pet.dart';
 import '../providers/pet_providers.dart';
 import 'widgets/pet_photo_section.dart';
 import 'widgets/pet_species_section.dart';
-import 'widgets/pet_breed_section.dart';
-import 'widgets/pet_assignment_section.dart';
+import 'widgets/pet_gender_section.dart';
+import 'widgets/pet_dob_section.dart';
 import 'widgets/pet_ownership_selector.dart';
 
 String _localizedSpecies(AppLocalizations l, String species) {
@@ -48,8 +43,23 @@ class PetFormScreen extends ConsumerStatefulWidget {
   ConsumerState<PetFormScreen> createState() => _PetFormScreenState();
 }
 
+class _PetFormScreenState extends ConsumerState<PetFormScreen> {
   final _formKey = GlobalKey<FormState>();
   late final PetFormController _controller;
+
+  final _nameController = TextEditingController();
+  final _breedController = TextEditingController();
+  final _weightController = TextEditingController();
+  final _newWeightController = TextEditingController();
+  final _bioController = TextEditingController();
+  final _insuranceController = TextEditingController();
+  final _chipIdController = TextEditingController();
+  final _assignmentNotesController = TextEditingController();
+
+  String _selectedSpecies = '';
+  String? _selectedGender;
+  String? _photoBase64;
+  int? _selectedOrgId;
   String? _selectedVetId;
   int? _existingColorValue;
   DateTime? _dateOfBirth;
@@ -60,14 +70,14 @@ class PetFormScreen extends ConsumerStatefulWidget {
   bool _passedAway = false;
   bool _isLoading = false;
   bool _isInitialized = false;
-
+  bool _showWeightInput = false;
 
   bool get _isEditing => widget.petId != null;
 
   @override
   void initState() {
     super.initState();
-    _controller = PetFormController(ref);
+    _controller = PetFormController();
   }
 
   @override
@@ -102,12 +112,15 @@ class PetFormScreen extends ConsumerStatefulWidget {
     _chipDismissed = pet.chipDismissed;
     _passedAway = pet.passedAway;
     _selectedOrgId = pet.organizationId;
-  }
 
+    _controller.populateForm(pet);
+  }
 
   Future<void> _pickImage() async {
     await _controller.pickImage();
-    setState(() {}); // To update the UI with the new image
+    setState(() {
+      _photoBase64 = _controller.state.photoBase64;
+    });
   }
 
   Future<void> _pickNeuteredDate() async {
@@ -126,20 +139,139 @@ class PetFormScreen extends ConsumerStatefulWidget {
     }
   }
 
-
   Future<void> _confirmDeletePet() async {
-    // Delegate to controller (implement dialog logic in controller if needed)
-    await _controller.deletePet(context, widget.petId);
+    final l = AppLocalizations.of(context)!;
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(l.deletePet),
+        content: Text(l.deletePetConfirm('')),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx, false), child: Text(l.cancel)),
+          TextButton(onPressed: () => Navigator.pop(ctx, true), child: Text(l.delete)),
+        ],
+      ),
+    );
+    if (confirmed == true && widget.petId != null) {
+      setState(() => _isLoading = true);
+      try {
+        await ref.read(petListProvider.notifier).deletePet(widget.petId!);
+        if (mounted) context.go('/');
+      } catch (e) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Failed to delete pet: $e')),
+          );
+        }
+      } finally {
+        if (mounted) setState(() => _isLoading = false);
+      }
+    }
   }
-
 
   Future<void> _confirmPassedAway() async {
-    await _controller.markPassedAway(context, widget.petId);
+    final l = AppLocalizations.of(context)!;
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(l.passedAway),
+        content: const Text('Are you sure you want to mark this pet as passed away?'),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx, false), child: Text(l.cancel)),
+          TextButton(onPressed: () => Navigator.pop(ctx, true), child: Text(l.ok)),
+        ],
+      ),
+    );
+    if (confirmed == true && widget.petId != null) {
+      setState(() => _isLoading = true);
+      try {
+        await ref.read(petListProvider.notifier).markPassedAway(widget.petId!);
+        if (mounted) context.go('/');
+      } catch (e) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Failed to update pet: $e')),
+          );
+        }
+      } finally {
+        if (mounted) setState(() => _isLoading = false);
+      }
+    }
   }
 
-
   Future<void> _savePet() async {
-    await _controller.savePet(context, widget.petId, _formKey);
+    if (!_formKey.currentState!.validate()) return;
+
+    setState(() => _isLoading = true);
+    try {
+      final name = _controller.state.name.isNotEmpty ? _controller.state.name : _nameController.text.trim();
+      final species = _controller.state.selectedSpecies.isNotEmpty ? _controller.state.selectedSpecies : _selectedSpecies;
+      final breed = _controller.state.breed.isNotEmpty ? _controller.state.breed : _breedController.text.trim();
+      final bio = _controller.state.bio.isNotEmpty ? _controller.state.bio : _bioController.text.trim();
+      final insurance = _controller.state.insurance.isNotEmpty ? _controller.state.insurance : _insuranceController.text.trim();
+      final chipId = _controller.state.chipId.isNotEmpty ? _controller.state.chipId : _chipIdController.text.trim();
+      final weightStr = _isEditing
+          ? (_controller.state.weight.isNotEmpty ? _controller.state.weight : _weightController.text.trim())
+          : _newWeightController.text.trim();
+      final weight = weightStr.isNotEmpty ? double.tryParse(weightStr) : null;
+
+      if (_isEditing) {
+        final pets = ref.read(petListProvider).valueOrNull ?? [];
+        final existing = pets.where((p) => p.id == widget.petId).firstOrNull;
+        if (existing != null) {
+          final updated = existing.copyWith(
+            name: name,
+            species: species,
+            breed: breed,
+            dateOfBirth: _dateOfBirth,
+            weight: weight,
+            gender: _selectedGender,
+            bio: bio,
+            insurance: insurance,
+            neuteredDate: _neuteredDate,
+            neuterDismissed: _neuterDismissed,
+            chipId: chipId,
+            chipDismissed: _chipDismissed,
+            photoPath: _photoBase64,
+            vetId: _selectedVetId,
+            passedAway: _passedAway,
+            organizationId: _selectedOrgId,
+            clearVetId: _selectedVetId == null,
+            clearGender: _selectedGender == null,
+            clearNeuteredDate: _neuteredDate == null,
+            clearDateOfBirth: _dateOfBirth == null,
+          );
+          await ref.read(petListProvider.notifier).updatePet(updated);
+        }
+      } else {
+        await ref.read(petListProvider.notifier).addPet(
+          name: name,
+          species: species,
+          breed: breed,
+          dateOfBirth: _dateOfBirth,
+          weight: weight,
+          gender: _selectedGender,
+          bio: bio,
+          insurance: insurance,
+          neuteredDate: _neuteredDate,
+          neuterDismissed: _neuterDismissed,
+          chipId: chipId,
+          chipDismissed: _chipDismissed,
+          photoPath: _photoBase64,
+          vetId: _selectedVetId,
+          organizationId: _selectedOrgId,
+        );
+      }
+      if (mounted) context.go('/');
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to save pet: $e')),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
+    }
   }
 
   @override
@@ -219,27 +351,36 @@ class PetFormScreen extends ConsumerStatefulWidget {
               const SizedBox(height: 16),
               PetSpeciesSection(
                 selectedSpecies: _controller.state.selectedSpecies,
-                onChanged: (value) => _controller.state = _controller.state.copyWith(selectedSpecies: value),
+                onChanged: (value) {
+                  _controller.state = _controller.state.copyWith(selectedSpecies: value);
+                  setState(() => _selectedSpecies = value ?? '');
+                },
               ),
               const SizedBox(height: 16),
               TextFormField(
                 key: const Key('pet_breed_field'),
                 initialValue: _controller.state.breed,
                 decoration: InputDecoration(
-                  labelText: l.petBreed,
-                  helperText: l.petBreedHint,
+                  labelText: l.breed,
+                  helperText: 'Breed or variety, if known',
                 ),
                 onChanged: (value) => _controller.state = _controller.state.copyWith(breed: value),
               ),
               const SizedBox(height: 16),
               PetGenderSection(
                 selectedGender: _controller.state.selectedGender,
-                onChanged: (value) => _controller.state = _controller.state.copyWith(selectedGender: value),
+                onChanged: (value) {
+                  _controller.state = _controller.state.copyWith(selectedGender: value);
+                  setState(() => _selectedGender = value);
+                },
               ),
               const SizedBox(height: 16),
               PetDobSection(
-                dateOfBirth: _controller.state.dateOfBirth,
-                onChanged: (date) => _controller.state = _controller.state.copyWith(dateOfBirth: date),
+                dateOfBirth: _controller.state.dateOfBirth ?? _dateOfBirth,
+                onChanged: (date) {
+                  _controller.state = _controller.state.copyWith(dateOfBirth: date);
+                  setState(() => _dateOfBirth = date);
+                },
               ),
               const SizedBox(height: 16),
               if (_isEditing)
@@ -261,53 +402,48 @@ class PetFormScreen extends ConsumerStatefulWidget {
                     return null;
                   },
                 ),
-                  else
-                    Expanded(
-                      child: _showWeightInput
-                          ? TextFormField(
-                              key: const Key('pet_initial_weight_field'),
-                              controller: _newWeightController,
-                              decoration: InputDecoration(
-                                labelText: l.weightWithUnit('kg'),
-                                suffixIcon: IconButton(
-                                  icon: const Icon(Icons.close, size: 18),
-                                  tooltip: 'Remove weight entry',
-                                  onPressed: () {
-                                    setState(() {
-                                      _showWeightInput = false;
-                                      _newWeightController.clear();
-                                    });
-                                  },
-                                ),
-                              ),
-                              keyboardType:
-                                  const TextInputType.numberWithOptions(decimal: true),
-                              autofocus: true,
-                              validator: (value) {
-                                if (value != null && value.isNotEmpty) {
-                                  final num = double.tryParse(value);
-                                  if (num == null || num <= 0) {
-                                    return 'Invalid weight';
-                                  }
-                                }
-                                return null;
-                              },
-                            )
-                          : Tooltip(
-                              message: 'Add initial weight entry',
-                              child: OutlinedButton.icon(
-                                key: const Key('add_weight_entry_button'),
-                                onPressed: () => setState(() => _showWeightInput = true),
-                                icon: const Icon(Icons.monitor_weight_outlined, size: 18),
-                                label: Text(l.addWeightEntry),
-                                style: OutlinedButton.styleFrom(
-                                  minimumSize: const Size(0, 48),
-                                ),
-                              ),
-                            ),
-                    ),
-                ],
-              ),
+              if (!_isEditing)
+                _showWeightInput
+                    ? TextFormField(
+                        key: const Key('pet_initial_weight_field'),
+                        controller: _newWeightController,
+                        decoration: InputDecoration(
+                          labelText: l.weightWithUnit('kg'),
+                          suffixIcon: IconButton(
+                            icon: const Icon(Icons.close, size: 18),
+                            tooltip: 'Remove weight entry',
+                            onPressed: () {
+                              setState(() {
+                                _showWeightInput = false;
+                                _newWeightController.clear();
+                              });
+                            },
+                          ),
+                        ),
+                        keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                        autofocus: true,
+                        validator: (value) {
+                          if (value != null && value.isNotEmpty) {
+                            final num = double.tryParse(value);
+                            if (num == null || num <= 0) {
+                              return 'Invalid weight';
+                            }
+                          }
+                          return null;
+                        },
+                      )
+                    : Tooltip(
+                        message: 'Add initial weight entry',
+                        child: OutlinedButton.icon(
+                          key: const Key('add_weight_entry_button'),
+                          onPressed: () => setState(() => _showWeightInput = true),
+                          icon: const Icon(Icons.monitor_weight_outlined, size: 18),
+                          label: Text(l.addWeightEntry),
+                          style: OutlinedButton.styleFrom(
+                            minimumSize: const Size(0, 48),
+                          ),
+                        ),
+                      ),
               const SizedBox(height: 16),
               if (!AppConstants.speciesWithoutNeutering.contains(_selectedSpecies))
                 _buildNeuteredDateField(theme),
@@ -723,59 +859,6 @@ class PetFormScreen extends ConsumerStatefulWidget {
                 child: const Text('Create'),
               ),
             ],
-          ),
-        ),
-      ),
-    );
-  }
-
-                  width: 120,
-                  height: 120,
-                  decoration: BoxDecoration(
-                    color: theme.colorScheme.surfaceContainerHighest,
-                    borderRadius: BorderRadius.circular(16),
-                    border: Border.all(
-                      color: theme.colorScheme.outline.withValues(alpha: 0.3),
-                    ),
-                  ),
-                  child: _photoBase64 != null && _photoBase64!.isNotEmpty
-                      ? ClipRRect(
-                          borderRadius: BorderRadius.circular(16),
-                          child: Image.memory(
-                            base64Decode(_photoBase64!),
-                            fit: BoxFit.cover,
-                            width: 120,
-                            height: 120,
-                            semanticLabel: 'Pet photo',
-                          ),
-                        )
-                      : Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            AppConstants.speciesIconWidget(
-                              _selectedSpecies,
-                              size: 40,
-                              color: theme.colorScheme.primary.withAlpha(180),
-                            ),
-                            const SizedBox(height: 4),
-                            Icon(
-                              Icons.add_a_photo,
-                              size: 18,
-                              color: theme.colorScheme.onSurfaceVariant,
-                              semanticLabel: 'Add photo',
-                            ),
-                          ],
-                        ),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  'Tap to add photo',
-                  style: theme.textTheme.bodySmall?.copyWith(
-                    color: theme.colorScheme.onSurfaceVariant,
-                  ),
-                ),
-              ],
-            ),
           ),
         ),
       ),

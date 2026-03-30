@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../domain/entities/pet.dart';
-import '../../../sharing/domain/entities/pet_access.dart';
+import '../../../../sharing/domain/entities/pet_access.dart';
 import '../../controllers/sharing_controller.dart';
-import '../../../organization/presentation/providers/organization_providers.dart';
-import '../../../../l10n/app_localizations.dart';
+import '../../../../organization/presentation/providers/organization_providers.dart';
+import '../../../../../l10n/app_localizations.dart';
 
 class SharingSection extends ConsumerWidget {
   const SharingSection({required this.petId, required this.pet, super.key});

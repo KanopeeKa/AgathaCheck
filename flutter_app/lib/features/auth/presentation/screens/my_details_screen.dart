@@ -257,7 +257,7 @@ class _MyDetailsScreenState extends ConsumerState<MyDetailsScreen> {
         ),
       ),
     );
-                  : '';
+  }
 
   Future<void> _exportData(BuildContext context) async {
     final l10n = AppLocalizations.of(context)!;

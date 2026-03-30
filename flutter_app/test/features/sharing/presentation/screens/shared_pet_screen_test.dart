@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:agathacheck/features/sharing/presentation/screens/shared_pet_screen.dart';
+import 'package:pet_profile_app/features/sharing/presentation/screens/shared_pet_screen.dart';
 
 void main() {
   testWidgets('SharedPetScreen renders loading indicator', (WidgetTester tester) async {

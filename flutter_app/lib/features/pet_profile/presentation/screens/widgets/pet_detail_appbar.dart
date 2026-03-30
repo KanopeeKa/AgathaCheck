@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import '../../../../../../core/widgets/app_logo_title.dart';
-import '../../../../../../core/theme/app_theme.dart';
-import '../../../../../../l10n/app_localizations.dart';
+import '../../../../../core/widgets/app_logo_title.dart';
+import '../../../../../core/theme/app_theme.dart';
+import '../../../../../l10n/app_localizations.dart';
 
 class PetDetailAppBar extends StatelessWidget {
   final String petName;
@@ -126,7 +126,7 @@ class PetDetailAppBar extends StatelessWidget {
               ),
               PopupMenuItem<String>(
                 value: 'logout',
-                child: Text(l.logout),
+                child: Text(l.logOut),
               ),
             ];
           },

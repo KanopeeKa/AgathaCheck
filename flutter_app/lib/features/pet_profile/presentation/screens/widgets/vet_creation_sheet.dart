@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../../l10n/app_localizations.dart';
-import '../../../vet/domain/entities/vet.dart';
-import '../../../vet/presentation/providers/vet_providers.dart';
-import '../controllers/pet_form_controller.dart';
+import '../../../../../l10n/app_localizations.dart';
+import '../../../../vet/domain/entities/vet.dart';
+import '../../../../vet/presentation/providers/vet_providers.dart';
+import '../../controllers/pet_form_controller.dart';
 
 class VetCreationSheet extends ConsumerWidget {
   final PetFormController controller;

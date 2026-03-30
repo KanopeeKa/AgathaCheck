@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../domain/entities/pet.dart';
-import '../providers/pet_providers.dart';
-import '../../../../l10n/app_localizations.dart';
+import '../../controllers/neuter_reminder_controller.dart';
+import '../../../../../l10n/app_localizations.dart';
 
 class NeuterReminderCard extends ConsumerWidget {
   const NeuterReminderCard({required this.pet, super.key});

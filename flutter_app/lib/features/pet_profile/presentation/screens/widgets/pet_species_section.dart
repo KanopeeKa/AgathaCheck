@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import '../../../../../../l10n/app_localizations.dart';
-import '../../../../../../core/utils/constants.dart';
+import '../../../../../l10n/app_localizations.dart';
+import '../../../../../core/utils/constants.dart';
 
 class PetSpeciesSection extends StatelessWidget {
   final String selectedSpecies;
@@ -32,7 +32,7 @@ class PetSpeciesSection extends StatelessWidget {
     final l = AppLocalizations.of(context)!;
     return DropdownButtonFormField<String>(
       key: const Key('pet_species_field'),
-      value: selectedSpecies,
+      value: selectedSpecies.isEmpty ? null : selectedSpecies,
       decoration: InputDecoration(
         labelText: l.species,
         helperText: 'Select the type of animal',

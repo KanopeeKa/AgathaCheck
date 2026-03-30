@@ -170,7 +170,6 @@ class _SharedPetScreenState extends ConsumerState<SharedPetScreen> {
             buildPhoto: _buildPhoto,
             buildChip: _buildChip,
           ),
-          ),
 
           const SizedBox(height: 16),
           SharedPetAcceptSection(

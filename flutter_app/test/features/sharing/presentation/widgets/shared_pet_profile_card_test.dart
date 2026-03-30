@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:agathacheck/features/sharing/presentation/widgets/shared_pet_profile_card.dart';
+import 'package:pet_profile_app/features/sharing/presentation/widgets/shared_pet_profile_card.dart';
 
 void main() {
   testWidgets('SharedPetProfileCard displays pet info', (WidgetTester tester) async {

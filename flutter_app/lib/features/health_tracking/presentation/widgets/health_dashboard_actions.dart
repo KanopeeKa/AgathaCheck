@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 class HealthDashboardActions extends StatelessWidget {
   final void Function() onExportPdf;
   final void Function() onExportCsv;
-  final void Function(_GroupMode) onGroupModeChanged;
-  final _GroupMode groupMode;
+  final void Function(GroupMode) onGroupModeChanged;
+  final GroupMode groupMode;
   final String lGroupBy;
   final String lByDueDate;
   final String lByPet;
@@ -31,16 +31,16 @@ class HealthDashboardActions extends StatelessWidget {
     final colorScheme = Theme.of(context).colorScheme;
     return Row(
       children: [
-        PopupMenuButton<_GroupMode>(
+        PopupMenuButton<GroupMode>(
           icon: const Icon(Icons.sort),
           tooltip: lGroupBy,
           onSelected: onGroupModeChanged,
           itemBuilder: (_) => [
             PopupMenuItem(
-              value: _GroupMode.dueDate,
+              value: GroupMode.dueDate,
               child: ListTile(
                 leading: Icon(Icons.schedule,
-                    color: groupMode == _GroupMode.dueDate
+                    color: groupMode == GroupMode.dueDate
                         ? colorScheme.primary
                         : null),
                 title: Text(lByDueDate),
@@ -48,10 +48,10 @@ class HealthDashboardActions extends StatelessWidget {
               ),
             ),
             PopupMenuItem(
-              value: _GroupMode.pet,
+              value: GroupMode.pet,
               child: ListTile(
                 leading: Icon(Icons.pets,
-                    color: groupMode == _GroupMode.pet
+                    color: groupMode == GroupMode.pet
                         ? colorScheme.primary
                         : null),
                 title: Text(lByPet),
@@ -59,10 +59,10 @@ class HealthDashboardActions extends StatelessWidget {
               ),
             ),
             PopupMenuItem(
-              value: _GroupMode.petType,
+              value: GroupMode.petType,
               child: ListTile(
                 leading: Icon(Icons.category,
-                    color: groupMode == _GroupMode.petType
+                    color: groupMode == GroupMode.petType
                         ? colorScheme.primary
                         : null),
                 title: Text(lBySpecies),
@@ -86,4 +86,4 @@ class HealthDashboardActions extends StatelessWidget {
   }
 }
 
-enum _GroupMode { dueDate, pet, petType }
+enum GroupMode { dueDate, pet, petType }

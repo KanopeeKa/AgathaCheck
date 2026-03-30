@@ -10,6 +10,12 @@ import '../../../sharing/presentation/providers/sharing_providers.dart';
 import '../../domain/entities/organization.dart';
 import '../../domain/entities/organization_member.dart';
 import '../providers/organization_providers.dart';
+import '../widgets/organization_archived_section.dart';
+import '../widgets/organization_contact_card.dart';
+import '../widgets/organization_hidden_shared_pets_section.dart';
+import '../widgets/organization_info_card.dart';
+import '../widgets/organization_members_section.dart';
+import '../widgets/organization_pets_section.dart';
 
 class OrganizationDetailScreen extends ConsumerStatefulWidget {
   const OrganizationDetailScreen({super.key, required this.orgId});

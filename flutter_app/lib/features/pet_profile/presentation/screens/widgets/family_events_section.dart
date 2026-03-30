@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../domain/entities/pet.dart';
-import '../../../organization/domain/entities/family_event.dart';
-import '../../../organization/domain/entities/organization_member.dart';
+import '../../../../organization/domain/entities/family_event.dart';
+import '../../../../organization/domain/entities/organization_member.dart';
 import '../../controllers/family_events_controller.dart';
-import '../../../../l10n/app_localizations.dart';
+import '../../../../../l10n/app_localizations.dart';
 import 'package:intl/intl.dart';
 
 class FamilyEventsSection extends ConsumerWidget {
