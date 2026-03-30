@@ -4,6 +4,7 @@ import 'package:shelf/shelf.dart';
 import 'package:shelf_router/shelf_router.dart';
 import 'package:postgres/postgres.dart';
 import 'package:uuid/uuid.dart';
+import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart';
 
 final _uuid = Uuid();
 
@@ -66,6 +67,12 @@ Router apiHandler() {
   app.delete('/pets/<id|[0-9a-fA-F\\-]{36}>/data', _deletePetData);
   app.post('/pets/<id|[0-9a-fA-F\\-]{36}>/passed-away', _markPetPassedAway);
   app.get('/health', (req) => Response.ok('OK'));
+
+  app.get('/vets', _getVets);
+  app.get('/vets/<id|[0-9a-fA-F\\-]{36}>', _getVetById);
+  app.post('/vets', _createVet);
+  app.put('/vets/<id|[0-9a-fA-F\\-]{36}>', _updateVet);
+  app.delete('/vets/<id|[0-9a-fA-F\\-]{36}>', _deleteVet);
 
   return app;
 }
@@ -228,4 +235,136 @@ Future<Response> _deletePetData(Request request, String id) async {
 
 Future<Response> _markPetPassedAway(Request request, String id) async {
   return Response.ok(jsonEncode({'passed_away': true, 'pet_id': id}), headers: _jsonHeaders);
+}
+
+final _jwtSecret = Platform.environment['JWT_SECRET'] ??
+    Platform.environment['SESSION_SECRET'] ??
+    'default_secret';
+
+String? _extractUserId(Request request) {
+  final auth =
+      request.headers['authorization'] ?? request.headers['Authorization'];
+  if (auth == null || !auth.startsWith('Bearer ')) return null;
+  try {
+    final jwt = JWT.verify(auth.substring(7), SecretKey(_jwtSecret));
+    return (jwt.payload as Map)['id']?.toString();
+  } catch (_) {
+    return null;
+  }
+}
+
+Map<String, dynamic> _vetRowToMap(ResultRow row) {
+  final c = row.toColumnMap();
+  return {
+    'id': c['id']?.toString(),
+    'user_id': c['user_id']?.toString(),
+    'name': c['name'],
+    'clinic': c['clinic'],
+    'phone': c['phone'],
+    'email': c['email'],
+    'created_at': c['created_at']?.toString(),
+    'updated_at': c['updated_at']?.toString(),
+  };
+}
+
+Future<Response> _getVets(Request request) async {
+  final userId = _extractUserId(request);
+  if (userId == null) {
+    return Response(401, body: jsonEncode({'error': 'Unauthorized'}), headers: _jsonHeaders);
+  }
+  try {
+    final results = await _pool.execute(
+      Sql.named('SELECT * FROM vets WHERE user_id = @userId ORDER BY name'),
+      parameters: {'userId': userId},
+    );
+    return Response.ok(jsonEncode(results.map(_vetRowToMap).toList()), headers: _jsonHeaders);
+  } catch (e) {
+    return Response.internalServerError(body: jsonEncode({'error': e.toString()}));
+  }
+}
+
+Future<Response> _getVetById(Request request, String id) async {
+  final userId = _extractUserId(request);
+  if (userId == null) {
+    return Response(401, body: jsonEncode({'error': 'Unauthorized'}), headers: _jsonHeaders);
+  }
+  try {
+    final results = await _pool.execute(
+      Sql.named('SELECT * FROM vets WHERE id = @id AND user_id = @userId'),
+      parameters: {'id': id, 'userId': userId},
+    );
+    if (results.isEmpty) return Response.notFound(jsonEncode({'error': 'Vet not found'}));
+    return Response.ok(jsonEncode(_vetRowToMap(results.first)), headers: _jsonHeaders);
+  } catch (e) {
+    return Response.internalServerError(body: jsonEncode({'error': e.toString()}));
+  }
+}
+
+Future<Response> _createVet(Request request) async {
+  final userId = _extractUserId(request);
+  if (userId == null) {
+    return Response(401, body: jsonEncode({'error': 'Unauthorized'}), headers: _jsonHeaders);
+  }
+  try {
+    final body = jsonDecode(await request.readAsString());
+    final id = _uuid.v4();
+    final results = await _pool.execute(
+      Sql.named(
+          'INSERT INTO vets (id, user_id, name, clinic, phone, email) VALUES (@id, @userId, @name, @clinic, @phone, @email) RETURNING *'),
+      parameters: {
+        'id': id,
+        'userId': userId,
+        'name': body['name'] ?? '',
+        'clinic': body['clinic'],
+        'phone': body['phone'],
+        'email': body['email'],
+      },
+    );
+    return Response(201, body: jsonEncode(_vetRowToMap(results.first)), headers: _jsonHeaders);
+  } catch (e) {
+    return Response.internalServerError(body: jsonEncode({'error': e.toString()}));
+  }
+}
+
+Future<Response> _updateVet(Request request, String id) async {
+  final userId = _extractUserId(request);
+  if (userId == null) {
+    return Response(401, body: jsonEncode({'error': 'Unauthorized'}), headers: _jsonHeaders);
+  }
+  try {
+    final body = jsonDecode(await request.readAsString());
+    final results = await _pool.execute(
+      Sql.named(
+          'UPDATE vets SET name = @name, clinic = @clinic, phone = @phone, email = @email, updated_at = NOW() WHERE id = @id AND user_id = @userId RETURNING *'),
+      parameters: {
+        'name': body['name'],
+        'clinic': body['clinic'],
+        'phone': body['phone'],
+        'email': body['email'],
+        'id': id,
+        'userId': userId,
+      },
+    );
+    if (results.isEmpty) return Response.notFound(jsonEncode({'error': 'Vet not found'}));
+    return Response.ok(jsonEncode(_vetRowToMap(results.first)), headers: _jsonHeaders);
+  } catch (e) {
+    return Response.internalServerError(body: jsonEncode({'error': e.toString()}));
+  }
+}
+
+Future<Response> _deleteVet(Request request, String id) async {
+  final userId = _extractUserId(request);
+  if (userId == null) {
+    return Response(401, body: jsonEncode({'error': 'Unauthorized'}), headers: _jsonHeaders);
+  }
+  try {
+    final results = await _pool.execute(
+      Sql.named('DELETE FROM vets WHERE id = @id AND user_id = @userId RETURNING *'),
+      parameters: {'id': id, 'userId': userId},
+    );
+    if (results.isEmpty) return Response.notFound(jsonEncode({'error': 'Vet not found'}));
+    return Response.ok(jsonEncode({'message': 'Vet deleted'}), headers: _jsonHeaders);
+  } catch (e) {
+    return Response.internalServerError(body: jsonEncode({'error': e.toString()}));
+  }
 }

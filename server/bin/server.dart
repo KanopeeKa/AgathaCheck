@@ -7,6 +7,7 @@ import 'package:shelf_static/shelf_static.dart';
 import '../lib/routes.dart';
 import '../lib/auth_routes.dart' as auth;
 import '../lib/sharing_routes.dart' as sharing;
+import '../lib/vet_routes.dart' as vets;
 
 void main() async {
   await initPool();
@@ -14,12 +15,15 @@ void main() async {
   final petRouter = apiHandler();
   final authRouter = auth.authRoutes(pool);
   final shareRouter = sharing.sharingRoutes(pool);
+  final vetRouter = vets.vetRoutes(pool);
 
   final topRouter = Router();
   topRouter.mount('/api/auth/', authRouter.call);
   topRouter.mount('/backend/api/auth/', authRouter.call);
   topRouter.mount('/api/share/', shareRouter.call);
   topRouter.mount('/backend/api/share/', shareRouter.call);
+  topRouter.mount('/api/vets/', vetRouter.call);
+  topRouter.mount('/backend/api/vets/', vetRouter.call);
   topRouter.mount('/api/', petRouter.call);
   topRouter.mount('/backend/api/', petRouter.call);
 
