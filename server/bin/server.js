@@ -1,6 +1,8 @@
 import express from 'express';
 import cors from 'cors';
 import bodyParser from 'body-parser';
+import path from 'path';
+import { fileURLToPath } from 'url';
 import { Pool } from 'pg';
 import dotenv from 'dotenv';
 import petsRoutes from '../routes/pets.js';
@@ -15,15 +17,31 @@ import sharingRoutes from '../routes/sharing.js';
 
 dotenv.config();
 
-export function createApp(customPool, comparePassword) {
-  const app = express();
-  const pool = customPool || new Pool({
+function getServerDir() {
+  try {
+    return path.dirname(fileURLToPath(import.meta.url));
+  } catch (e) {
+    return __dirname || path.resolve('.');
+  }
+}
+
+function createPool() {
+  const databaseUrl = process.env.DATABASE_URL;
+  if (databaseUrl) {
+    return new Pool({ connectionString: databaseUrl });
+  }
+  return new Pool({
     user: process.env.PGUSER || 'user',
     password: process.env.PGPASSWORD || 'password',
     host: process.env.PGHOST || 'localhost',
     port: process.env.PGPORT || 5432,
     database: process.env.PGDATABASE || 'agatha_db',
   });
+}
+
+export function createApp(customPool, comparePassword) {
+  const app = express();
+  const pool = customPool || createPool();
 
   app.use(cors());
   app.use(bodyParser.json());
@@ -64,6 +82,16 @@ export function createApp(customPool, comparePassword) {
 
   app.get('/backend/', (req, res) => {
     res.json({ message: 'Backend alive!' });
+  });
+
+  const flutterWebDir = path.resolve(getServerDir(), '../../flutter_app/build/web');
+  app.use(express.static(flutterWebDir));
+  app.get('*', (req, res) => {
+    res.sendFile(path.join(flutterWebDir, 'index.html'), (err) => {
+      if (err) {
+        res.status(404).json({ error: 'Not found' });
+      }
+    });
   });
 
   return app;

@@ -14,6 +14,22 @@ function extractUserId(req) {
   }
 }
 
+function notificationToMap(row) {
+  return {
+    id: row.id,
+    user_id: row.user_id,
+    pet_id: row.pet_id || null,
+    pet_name: row.pet_name || null,
+    health_entry_id: row.health_entry_id || null,
+    organization_id: row.organization_id || null,
+    title: row.title || '',
+    message: row.message || '',
+    type: row.type || 'general',
+    is_read: row.is_read ?? row.read ?? false,
+    created_at: row.created_at ? row.created_at.toISOString?.() || String(row.created_at) : null,
+  };
+}
+
 export default function notificationsRoutes(pool) {
   const router = express.Router();
 
@@ -22,7 +38,7 @@ export default function notificationsRoutes(pool) {
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     try {
       const result = await pool.query('SELECT * FROM notifications WHERE user_id = $1 ORDER BY created_at DESC', [userId]);
-      res.json(result.rows);
+      res.json(result.rows.map(notificationToMap));
     } catch (err) {
       res.status(500).json({ error: err.message });
     }
@@ -32,8 +48,25 @@ export default function notificationsRoutes(pool) {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     try {
-      const result = await pool.query('SELECT COUNT(*) as count FROM notifications WHERE user_id = $1 AND read = false', [userId]);
-      res.json({ count: parseInt(result.rows[0].count, 10) });
+      const result = await pool.query(
+        'SELECT COUNT(*) as count FROM notifications WHERE user_id = $1 AND (is_read = false OR (is_read IS NULL AND read = false))',
+        [userId]
+      );
+      res.json({ unread_count: parseInt(result.rows[0].count, 10) });
+    } catch (err) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  router.put('/:id/read', async (req, res) => {
+    const userId = extractUserId(req);
+    if (!userId) return res.status(401).json({ error: 'Unauthorized' });
+    try {
+      await pool.query(
+        'UPDATE notifications SET is_read = true, read = true WHERE id = $1 AND user_id = $2',
+        [req.params.id, userId]
+      );
+      res.json({ success: true });
     } catch (err) {
       res.status(500).json({ error: err.message });
     }
@@ -43,8 +76,22 @@ export default function notificationsRoutes(pool) {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     try {
-      await pool.query('UPDATE notifications SET read = true WHERE id = $1 AND user_id = $2', [req.params.id, userId]);
-      res.json({ message: 'Marked as read' });
+      await pool.query(
+        'UPDATE notifications SET is_read = true, read = true WHERE id = $1 AND user_id = $2',
+        [req.params.id, userId]
+      );
+      res.json({ success: true });
+    } catch (err) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  router.put('/read-all', async (req, res) => {
+    const userId = extractUserId(req);
+    if (!userId) return res.status(401).json({ error: 'Unauthorized' });
+    try {
+      await pool.query('UPDATE notifications SET is_read = true, read = true WHERE user_id = $1', [userId]);
+      res.json({ success: true });
     } catch (err) {
       res.status(500).json({ error: err.message });
     }
@@ -54,8 +101,8 @@ export default function notificationsRoutes(pool) {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     try {
-      await pool.query('UPDATE notifications SET read = true WHERE user_id = $1', [userId]);
-      res.json({ message: 'All marked as read' });
+      await pool.query('UPDATE notifications SET is_read = true, read = true WHERE user_id = $1', [userId]);
+      res.json({ success: true });
     } catch (err) {
       res.status(500).json({ error: err.message });
     }
@@ -66,7 +113,11 @@ export default function notificationsRoutes(pool) {
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     try {
       const result = await pool.query('SELECT * FROM notification_preferences WHERE user_id = $1', [userId]);
-      res.json(result.rows);
+      const prefs = {};
+      for (const row of result.rows) {
+        prefs[row.preference] = row.value;
+      }
+      res.json(prefs);
     } catch (err) {
       res.status(500).json({ error: err.message });
     }
@@ -76,18 +127,26 @@ export default function notificationsRoutes(pool) {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     try {
-      const prefs = req.body;
-      for (const [preference, value] of Object.entries(prefs)) {
-        const existing = await pool.query('SELECT id FROM notification_preferences WHERE user_id = $1 AND preference = $2', [userId, preference]);
+      const data = req.body;
+      for (const [preference, value] of Object.entries(data)) {
+        const existing = await pool.query(
+          'SELECT id FROM notification_preferences WHERE user_id = $1 AND preference = $2',
+          [userId, preference]
+        );
         if (existing.rows.length > 0) {
-          await pool.query('UPDATE notification_preferences SET value = $1 WHERE user_id = $2 AND preference = $3', [String(value), userId, preference]);
+          await pool.query(
+            'UPDATE notification_preferences SET value = $1 WHERE user_id = $2 AND preference = $3',
+            [String(value), userId, preference]
+          );
         } else {
           const id = uuidv4();
-          await pool.query('INSERT INTO notification_preferences (id, user_id, preference, value) VALUES ($1, $2, $3, $4)', [id, userId, preference, String(value)]);
+          await pool.query(
+            'INSERT INTO notification_preferences (id, user_id, preference, value) VALUES ($1, $2, $3, $4)',
+            [id, userId, preference, String(value)]
+          );
         }
       }
-      const result = await pool.query('SELECT * FROM notification_preferences WHERE user_id = $1', [userId]);
-      res.json(result.rows);
+      res.json(data);
     } catch (err) {
       res.status(500).json({ error: err.message });
     }
@@ -96,7 +155,7 @@ export default function notificationsRoutes(pool) {
   router.post('/check-due', async (req, res) => {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
-    res.json({ checked: true, due: [] });
+    res.json({ checked: true });
   });
 
   return router;

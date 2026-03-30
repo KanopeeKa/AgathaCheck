@@ -14,6 +14,19 @@ function extractUserId(req) {
   }
 }
 
+function weightEntryToMap(row) {
+  return {
+    id: row.id,
+    pet_id: row.pet_id,
+    pet_name: row.pet_name || null,
+    weight: row.weight,
+    unit: row.unit || 'kg',
+    date: row.date ? row.date.toISOString?.() || String(row.date) : null,
+    notes: row.notes || '',
+    created_at: row.created_at ? row.created_at.toISOString?.() || String(row.created_at) : null,
+  };
+}
+
 export default function weightEntriesRoutes(pool) {
   const router = express.Router();
 
@@ -21,14 +34,20 @@ export default function weightEntriesRoutes(pool) {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     try {
-      const petId = req.query.pet_id;
+      const petId = req.query.pet_id || req.query.petId;
       let result;
       if (petId) {
-        result = await pool.query('SELECT * FROM weight_entries WHERE pet_id = $1 AND user_id = $2 ORDER BY measured_at DESC', [petId, userId]);
+        result = await pool.query(
+          'SELECT we.*, p.name as pet_name FROM weight_entries we JOIN pets p ON we.pet_id = p.id WHERE p.user_id = $1 AND we.pet_id = $2 ORDER BY we.date DESC',
+          [userId, petId]
+        );
       } else {
-        result = await pool.query('SELECT * FROM weight_entries WHERE user_id = $1 ORDER BY measured_at DESC', [userId]);
+        result = await pool.query(
+          'SELECT we.*, p.name as pet_name FROM weight_entries we JOIN pets p ON we.pet_id = p.id WHERE p.user_id = $1 ORDER BY we.date DESC',
+          [userId]
+        );
       }
-      res.json(result.rows);
+      res.json(result.rows.map(weightEntryToMap));
     } catch (err) {
       res.status(500).json({ error: err.message });
     }
@@ -38,13 +57,16 @@ export default function weightEntriesRoutes(pool) {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     try {
-      const petId = req.query.pet_id;
+      const petId = req.query.pet_id || req.query.petId;
+      if (!petId) {
+        return res.status(400).json({ error: 'pet_id is required' });
+      }
       const result = await pool.query(
-        'SELECT * FROM weight_entries WHERE pet_id = $1 AND user_id = $2 ORDER BY measured_at DESC LIMIT 1',
-        [petId, userId]
+        'SELECT we.*, p.name as pet_name FROM weight_entries we JOIN pets p ON we.pet_id = p.id WHERE p.user_id = $1 AND we.pet_id = $2 ORDER BY we.date DESC LIMIT 1',
+        [userId, petId]
       );
       if (result.rows.length === 0) return res.status(404).json({ error: 'No weight entries found' });
-      res.json(result.rows[0]);
+      res.json(weightEntryToMap(result.rows[0]));
     } catch (err) {
       res.status(500).json({ error: err.message });
     }
@@ -54,13 +76,16 @@ export default function weightEntriesRoutes(pool) {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     try {
-      const { pet_id, weight, unit = 'kg', measured_at } = req.body;
-      const id = uuidv4();
+      const data = req.body;
+      const id = data.id || uuidv4();
+      const petId = data.pet_id || data.petId;
+      const dateVal = data.date || data.measured_at || new Date().toISOString();
+      const weightVal = typeof data.weight === 'number' ? data.weight : parseFloat(data.weight || '0');
       const result = await pool.query(
-        'INSERT INTO weight_entries (id, pet_id, user_id, weight, unit, measured_at) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
-        [id, pet_id, userId, weight, unit, measured_at || new Date().toISOString()]
+        'INSERT INTO weight_entries (id, pet_id, weight, unit, date, notes) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
+        [id, petId, weightVal, data.unit || 'kg', dateVal, data.notes || '']
       );
-      res.status(201).json(result.rows[0]);
+      res.status(201).json(weightEntryToMap(result.rows[0]));
     } catch (err) {
       res.status(500).json({ error: err.message });
     }
@@ -70,13 +95,15 @@ export default function weightEntriesRoutes(pool) {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     try {
-      const { weight, unit, measured_at } = req.body;
+      const data = req.body;
+      const dateVal = data.date || data.measured_at || new Date().toISOString();
+      const weightVal = typeof data.weight === 'number' ? data.weight : parseFloat(data.weight || '0');
       const result = await pool.query(
-        'UPDATE weight_entries SET weight = $1, unit = $2, measured_at = $3 WHERE id = $4 AND user_id = $5 RETURNING *',
-        [weight, unit, measured_at, req.params.id, userId]
+        'UPDATE weight_entries SET weight = $1, unit = $2, date = $3, notes = $4 WHERE id = $5 AND user_id = $6 RETURNING *',
+        [weightVal, data.unit || 'kg', dateVal, data.notes || '', req.params.id, userId]
       );
-      if (result.rows.length === 0) return res.status(404).json({ error: 'Weight entry not found' });
-      res.json(result.rows[0]);
+      if (result.rows.length === 0) return res.status(404).json({ error: 'Not found' });
+      res.json(weightEntryToMap(result.rows[0]));
     } catch (err) {
       res.status(500).json({ error: err.message });
     }
@@ -86,9 +113,8 @@ export default function weightEntriesRoutes(pool) {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     try {
-      const result = await pool.query('DELETE FROM weight_entries WHERE id = $1 AND user_id = $2 RETURNING *', [req.params.id, userId]);
-      if (result.rows.length === 0) return res.status(404).json({ error: 'Weight entry not found' });
-      res.json({ message: 'Weight entry deleted' });
+      await pool.query('DELETE FROM weight_entries WHERE id = $1 AND user_id = $2', [req.params.id, userId]);
+      res.json({ deleted: true });
     } catch (err) {
       res.status(500).json({ error: err.message });
     }

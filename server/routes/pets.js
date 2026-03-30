@@ -14,6 +14,20 @@ function extractUserId(req) {
   }
 }
 
+const PET_COLOR_PALETTE = [
+  0xFF7E57C2, 0xFF9575CD, 0xFF5C6BC0, 0xFF7986CB, 0xFF4DB6AC,
+  0xFF81C784, 0xFF4FC3F7, 0xFFBA68C8, 0xFFF06292, 0xFFE57373,
+  0xFFFFB74D, 0xFFA1887F, 0xFF90A4AE, 0xFF64B5F6, 0xFFAED581,
+];
+
+function resolveColorValue(raw) {
+  if (raw == null) return null;
+  const v = typeof raw === 'number' ? raw : parseInt(raw, 10);
+  if (isNaN(v)) return null;
+  if (v < PET_COLOR_PALETTE.length) return PET_COLOR_PALETTE[v];
+  return v;
+}
+
 function petRowToMap(row) {
   return {
     id: row.id,
@@ -34,12 +48,35 @@ function petRowToMap(row) {
     chipDismissed: row.chip_dismissed || false,
     photoPath: row.photo_path,
     vetId: row.vet_id ? String(row.vet_id) : null,
-    colorValue: row.color_index,
+    colorValue: resolveColorValue(row.color_index),
     passedAway: row.passed_away || false,
     organization_id: row.organization_id,
     created_at: row.created_at,
     updated_at: row.updated_at,
   };
+}
+
+async function autoAssignColors(pool, pets) {
+  const usedColors = new Set();
+  for (const p of pets) {
+    if (p.colorValue != null) usedColors.add(p.colorValue);
+  }
+  for (const p of pets) {
+    if (p.colorValue == null) {
+      let color = PET_COLOR_PALETTE[0];
+      for (const c of PET_COLOR_PALETTE) {
+        if (!usedColors.has(c)) {
+          color = c;
+          break;
+        }
+      }
+      usedColors.add(color);
+      p.colorValue = color;
+      try {
+        await pool.query('UPDATE pets SET color_index = $1 WHERE id = $2', [color, p.id]);
+      } catch (_) {}
+    }
+  }
 }
 
 export default function petsRoutes(pool) {
@@ -93,7 +130,9 @@ export default function petsRoutes(pool) {
         'SELECT * FROM pets WHERE user_id = $1 ORDER BY created_at',
         [userId]
       );
-      res.json(result.rows.map(petRowToMap));
+      const pets = result.rows.map(petRowToMap);
+      await autoAssignColors(pool, pets);
+      res.json(pets);
     } catch (err) {
       res.status(500).json({ error: `Error fetching pets: ${err.message}` });
     }
@@ -107,7 +146,9 @@ export default function petsRoutes(pool) {
         'SELECT * FROM pets WHERE user_id = $1 ORDER BY created_at',
         [userId]
       );
-      res.json(result.rows.map(petRowToMap));
+      const pets = result.rows.map(petRowToMap);
+      await autoAssignColors(pool, pets);
+      res.json(pets);
     } catch (err) {
       res.status(500).json({ error: `Error fetching pets: ${err.message}` });
     }
@@ -150,7 +191,14 @@ export default function petsRoutes(pool) {
         `INSERT INTO pets (id, user_id, name, species, breed, age, date_of_birth, weight, gender,
           bio, insurance, neutered_date, neuter_dismissed, chip_id, chip_dismissed,
           photo_path, vet_id, color_index, passed_away, organization_id)
-         VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20) RETURNING *`,
+         VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20)
+         ON CONFLICT (id) DO UPDATE SET name = EXCLUDED.name, species = EXCLUDED.species, breed = EXCLUDED.breed,
+          age = EXCLUDED.age, date_of_birth = EXCLUDED.date_of_birth, weight = EXCLUDED.weight, gender = EXCLUDED.gender,
+          bio = EXCLUDED.bio, insurance = EXCLUDED.insurance, neutered_date = EXCLUDED.neutered_date,
+          neuter_dismissed = EXCLUDED.neuter_dismissed, chip_id = EXCLUDED.chip_id, chip_dismissed = EXCLUDED.chip_dismissed,
+          photo_path = EXCLUDED.photo_path, vet_id = EXCLUDED.vet_id, color_index = EXCLUDED.color_index,
+          passed_away = EXCLUDED.passed_away, organization_id = EXCLUDED.organization_id, updated_at = NOW()
+         WHERE pets.user_id = $2 RETURNING *`,
         [id, userId, name, species, breed, age, dateOfBirth, weight, gender,
          bio, insurance, neuteredDate, neuterDismissed, chipId, chipDismissed,
          photoPath || null, vetId || null, colorValue != null ? colorValue : null,
@@ -201,11 +249,8 @@ export default function petsRoutes(pool) {
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     try {
       const { id } = req.params;
-      const result = await pool.query('DELETE FROM pets WHERE id = $1 AND user_id = $2 RETURNING *', [id, userId]);
-      if (result.rows.length === 0) {
-        return res.status(404).json({ error: 'Pet not found' });
-      }
-      res.json({ message: 'Pet deleted successfully', pet: petRowToMap(result.rows[0]) });
+      await pool.query('DELETE FROM pets WHERE id = $1 AND user_id = $2', [id, userId]);
+      res.json({ deleted: true });
     } catch (err) {
       res.status(500).json({ error: `Error deleting pet: ${err.message}` });
     }
