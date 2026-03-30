@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -221,7 +222,8 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
   }
 
   Widget _buildEmailStep(ThemeData theme, AppLocalizations l10n) {
-    return Form(
+    return AutofillGroup(
+      child: Form(
       key: _emailFormKey,
       child: Column(
         children: [
@@ -233,7 +235,7 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
               prefixIcon: const Icon(Icons.email_outlined),
             ),
             keyboardType: TextInputType.emailAddress,
-            autofillHints: const [AutofillHints.email],
+            autofillHints: const [AutofillHints.username, AutofillHints.email],
             validator: (v) {
               if (v == null || v.trim().isEmpty) return l10n.emailRequired;
               if (!v.contains('@')) return l10n.enterValidEmail;
@@ -257,11 +259,13 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
           ),
         ],
       ),
+    ),
     );
   }
 
   Widget _buildResetStep(ThemeData theme, AppLocalizations l10n) {
-    return Form(
+    return AutofillGroup(
+      child: Form(
       key: _resetFormKey,
       child: Column(
         children: [
@@ -274,6 +278,7 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
               hintText: l10n.sixDigitCode,
             ),
             keyboardType: TextInputType.number,
+            autofillHints: const [AutofillHints.oneTimeCode],
             maxLength: 6,
             validator: (v) {
               if (v == null || v.trim().isEmpty) return l10n.codeRequired;
@@ -299,6 +304,7 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
               ),
             ),
             obscureText: _obscurePassword,
+            autofillHints: const [AutofillHints.newPassword],
             validator: (v) {
               if (v == null || v.isEmpty) return l10n.passwordRequired;
               if (v.length < 6) return l10n.atLeast6Characters;
@@ -323,6 +329,7 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
               ),
             ),
             obscureText: _obscureConfirm,
+            autofillHints: const [AutofillHints.newPassword],
             validator: (v) {
               if (v != _passwordController.text) {
                 return l10n.passwordsDoNotMatch;
@@ -361,6 +368,7 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
           ),
         ],
       ),
+    ),
     );
   }
 }

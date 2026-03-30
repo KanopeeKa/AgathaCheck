@@ -92,7 +92,8 @@ class _VetFormScreenState extends ConsumerState<VetFormScreen> {
           ? const Center(child: CircularProgressIndicator())
           : SingleChildScrollView(
               padding: const EdgeInsets.all(16),
-              child: Form(
+              child: AutofillGroup(
+                child: Form(
                 key: _formKey,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -104,6 +105,7 @@ class _VetFormScreenState extends ConsumerState<VetFormScreen> {
                         labelText: l.vetName,
                         prefixIcon: const Icon(Icons.person),
                       ),
+                      autofillHints: const [AutofillHints.name],
                       validator: (val) => val == null || val.trim().isEmpty
                           ? l.vetNameRequired
                           : null,
@@ -117,6 +119,7 @@ class _VetFormScreenState extends ConsumerState<VetFormScreen> {
                         prefixIcon: const Icon(Icons.phone),
                       ),
                       keyboardType: TextInputType.phone,
+                      autofillHints: const [AutofillHints.telephoneNumber],
                     ),
                     const SizedBox(height: 16),
                     TextFormField(
@@ -127,6 +130,7 @@ class _VetFormScreenState extends ConsumerState<VetFormScreen> {
                         prefixIcon: const Icon(Icons.email),
                       ),
                       keyboardType: TextInputType.emailAddress,
+                      autofillHints: const [AutofillHints.email],
                     ),
                     const SizedBox(height: 16),
                     TextFormField(
@@ -137,6 +141,7 @@ class _VetFormScreenState extends ConsumerState<VetFormScreen> {
                         prefixIcon: const Icon(Icons.language),
                       ),
                       keyboardType: TextInputType.url,
+                      autofillHints: const [AutofillHints.url],
                     ),
                     const SizedBox(height: 16),
                     TextFormField(
@@ -146,6 +151,7 @@ class _VetFormScreenState extends ConsumerState<VetFormScreen> {
                         labelText: l.address,
                         prefixIcon: const Icon(Icons.location_on),
                       ),
+                      autofillHints: const [AutofillHints.fullStreetAddress],
                       maxLines: 2,
                     ),
                     const SizedBox(height: 16),
@@ -172,6 +178,7 @@ class _VetFormScreenState extends ConsumerState<VetFormScreen> {
                     ),
                   ],
                 ),
+              ),
               ),
             ),
     );

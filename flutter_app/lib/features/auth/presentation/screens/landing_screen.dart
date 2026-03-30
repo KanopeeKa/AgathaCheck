@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -60,6 +61,7 @@ class _LandingScreenState extends ConsumerState<LandingScreen>
         );
 
     if (mounted && ref.read(authProvider).isLoggedIn) {
+      TextInput.finishAutofillContext();
       context.go('/');
     }
   }
@@ -76,6 +78,7 @@ class _LandingScreenState extends ConsumerState<LandingScreen>
         );
 
     if (mounted && ref.read(authProvider).isLoggedIn) {
+      TextInput.finishAutofillContext();
       context.go('/');
     }
   }
@@ -261,7 +264,8 @@ class _LandingScreenState extends ConsumerState<LandingScreen>
   }
 
   Widget _buildLoginForm(ThemeData theme, AuthState auth, AppLocalizations l10n) {
-    return Form(
+    return AutofillGroup(
+      child: Form(
       key: _loginFormKey,
       child: Column(
         children: [
@@ -273,7 +277,7 @@ class _LandingScreenState extends ConsumerState<LandingScreen>
               prefixIcon: const Icon(Icons.email_outlined),
             ),
             keyboardType: TextInputType.emailAddress,
-            autofillHints: const [AutofillHints.email],
+            autofillHints: const [AutofillHints.username, AutofillHints.email],
             validator: (v) {
               if (v == null || v.trim().isEmpty) return l10n.emailRequired;
               if (!v.contains('@')) return l10n.enterValidEmail;
@@ -333,11 +337,13 @@ class _LandingScreenState extends ConsumerState<LandingScreen>
           ),
         ],
       ),
+    ),
     );
   }
 
   Widget _buildSignupForm(ThemeData theme, AuthState auth, AppLocalizations l10n) {
-    return Form(
+    return AutofillGroup(
+      child: Form(
       key: _signupFormKey,
       child: Column(
         children: [
@@ -410,6 +416,7 @@ class _LandingScreenState extends ConsumerState<LandingScreen>
               prefixIcon: const Icon(Icons.lock_outlined),
             ),
             obscureText: true,
+            autofillHints: const [AutofillHints.newPassword],
             validator: (v) {
               if (v != _signupPasswordController.text) {
                 return l10n.passwordsDoNotMatch;
@@ -435,6 +442,7 @@ class _LandingScreenState extends ConsumerState<LandingScreen>
           ),
         ],
       ),
+    ),
     );
   }
 

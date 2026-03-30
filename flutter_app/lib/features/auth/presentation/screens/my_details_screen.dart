@@ -299,13 +299,16 @@ class _MyDetailsScreenState extends ConsumerState<MyDetailsScreen> {
           children: [
             Text(l10n.deleteAccountWarning),
             const SizedBox(height: 16),
-            TextField(
+            AutofillGroup(
+              child: TextField(
               controller: passwordController,
               obscureText: true,
+              autofillHints: const [AutofillHints.password],
               decoration: InputDecoration(
                 labelText: l10n.currentPassword,
                 prefixIcon: const Icon(Icons.lock),
               ),
+            ),
             ),
           ],
         ),
@@ -571,6 +574,10 @@ class _ProfileEditorSheetState extends State<_ProfileEditorSheet> {
               ),
             ),
             const SizedBox(height: 24),
+            AutofillGroup(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
             TextField(
               controller: _firstNameController,
               decoration: InputDecoration(
@@ -578,6 +585,7 @@ class _ProfileEditorSheetState extends State<_ProfileEditorSheet> {
                 prefixIcon: const Icon(Icons.person_outlined),
               ),
               textCapitalization: TextCapitalization.words,
+              autofillHints: const [AutofillHints.givenName],
             ),
             const SizedBox(height: 16),
             TextField(
@@ -587,6 +595,7 @@ class _ProfileEditorSheetState extends State<_ProfileEditorSheet> {
                 prefixIcon: const Icon(Icons.person_outlined),
               ),
               textCapitalization: TextCapitalization.words,
+              autofillHints: const [AutofillHints.familyName],
             ),
             const SizedBox(height: 16),
             TextField(
@@ -599,6 +608,9 @@ class _ProfileEditorSheetState extends State<_ProfileEditorSheet> {
               maxLines: 3,
               maxLength: 200,
               textCapitalization: TextCapitalization.sentences,
+            ),
+                ],
+              ),
             ),
             const SizedBox(height: 24),
             FilledButton(

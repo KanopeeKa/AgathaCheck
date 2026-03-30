@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -43,6 +44,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
         );
 
     if (mounted && ref.read(authProvider).isLoggedIn) {
+      TextInput.finishAutofillContext();
       context.go('/');
     }
   }
@@ -80,7 +82,8 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                       style: theme.textTheme.bodyLarge?.copyWith(
                           color: theme.colorScheme.onSurfaceVariant)),
                   const SizedBox(height: 32),
-                  Form(
+                  AutofillGroup(
+                    child: Form(
                     key: _formKey,
                     child: Column(
                       children: [
@@ -162,6 +165,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                             prefixIcon: const Icon(Icons.lock_outlined),
                           ),
                           obscureText: true,
+                          autofillHints: const [AutofillHints.newPassword],
                           validator: (v) {
                             if (v != _passwordController.text) {
                               return l10n.passwordsDoNotMatch;
@@ -225,6 +229,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                         ),
                       ],
                     ),
+                  ),
                   ),
                 ],
               ),

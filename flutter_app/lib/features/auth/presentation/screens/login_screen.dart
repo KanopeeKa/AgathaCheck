@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -35,6 +36,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         );
 
     if (mounted && ref.read(authProvider).isLoggedIn) {
+      TextInput.finishAutofillContext();
       context.go('/');
     }
   }
@@ -72,7 +74,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       style: theme.textTheme.bodyLarge?.copyWith(
                           color: theme.colorScheme.onSurfaceVariant)),
                   const SizedBox(height: 32),
-                  Form(
+                  AutofillGroup(
+                    child: Form(
                     key: _formKey,
                     child: Column(
                       children: [
@@ -84,7 +87,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                             prefixIcon: const Icon(Icons.email_outlined),
                           ),
                           keyboardType: TextInputType.emailAddress,
-                          autofillHints: const [AutofillHints.email],
+                          autofillHints: const [AutofillHints.username, AutofillHints.email],
                           validator: (v) {
                             if (v == null || v.trim().isEmpty) {
                               return l10n.emailRequired;
@@ -176,6 +179,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         ),
                       ],
                     ),
+                  ),
                   ),
                 ],
               ),

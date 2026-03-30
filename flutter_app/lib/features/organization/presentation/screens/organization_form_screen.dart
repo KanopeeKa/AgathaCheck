@@ -144,7 +144,8 @@ class _OrganizationFormScreenState
         child: Center(
           child: ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 600),
-            child: Form(
+            child: AutofillGroup(
+              child: Form(
               key: _formKey,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -156,6 +157,7 @@ class _OrganizationFormScreenState
                       labelText: '${l.organizationName} *',
                       prefixIcon: const Icon(Icons.business),
                     ),
+                    autofillHints: const [AutofillHints.organizationName],
                     validator: (v) {
                       if (v == null || v.trim().isEmpty) {
                         return l.orgNameRequired;
@@ -193,6 +195,7 @@ class _OrganizationFormScreenState
                       prefixIcon: const Icon(Icons.email),
                     ),
                     keyboardType: TextInputType.emailAddress,
+                    autofillHints: const [AutofillHints.email],
                     textInputAction: TextInputAction.next,
                   ),
                   const SizedBox(height: 16),
@@ -204,6 +207,7 @@ class _OrganizationFormScreenState
                       prefixIcon: const Icon(Icons.phone),
                     ),
                     keyboardType: TextInputType.phone,
+                    autofillHints: const [AutofillHints.telephoneNumber],
                     textInputAction: TextInputAction.next,
                   ),
                   const SizedBox(height: 16),
@@ -214,6 +218,7 @@ class _OrganizationFormScreenState
                       labelText: l.orgAddress,
                       prefixIcon: const Icon(Icons.location_on),
                     ),
+                    autofillHints: const [AutofillHints.fullStreetAddress],
                     textInputAction: TextInputAction.next,
                   ),
                   const SizedBox(height: 16),
@@ -225,6 +230,7 @@ class _OrganizationFormScreenState
                       prefixIcon: const Icon(Icons.language),
                     ),
                     keyboardType: TextInputType.url,
+                    autofillHints: const [AutofillHints.url],
                     textInputAction: TextInputAction.next,
                   ),
                   const SizedBox(height: 16),
@@ -254,6 +260,7 @@ class _OrganizationFormScreenState
                   ),
                 ],
               ),
+            ),
             ),
           ),
         ),

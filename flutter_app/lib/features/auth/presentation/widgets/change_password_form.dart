@@ -60,7 +60,8 @@ class ChangePasswordForm extends StatelessWidget {
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(20),
-        child: Form(
+        child: AutofillGroup(
+          child: Form(
           key: formKey,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -79,6 +80,7 @@ class ChangePasswordForm extends StatelessWidget {
                   ),
                 ),
                 obscureText: obscureCurrent,
+                autofillHints: const [AutofillHints.password],
                 validator: (v) {
                   if (v == null || v.isEmpty) {
                     return l10nCurrentPasswordRequired;
@@ -99,6 +101,7 @@ class ChangePasswordForm extends StatelessWidget {
                   ),
                 ),
                 obscureText: obscureNew,
+                autofillHints: const [AutofillHints.newPassword],
                 validator: (v) {
                   if (v == null || v.isEmpty) {
                     return l10nNewPasswordRequired;
@@ -117,6 +120,7 @@ class ChangePasswordForm extends StatelessWidget {
                   prefixIcon: const Icon(Icons.lock_reset),
                 ),
                 obscureText: true,
+                autofillHints: const [AutofillHints.newPassword],
                 validator: (v) {
                   if (v != newPasswordController.text) {
                     return l10nPasswordsDoNotMatch;
@@ -169,6 +173,7 @@ class ChangePasswordForm extends StatelessWidget {
               ),
             ],
           ),
+        ),
         ),
       ),
     );
