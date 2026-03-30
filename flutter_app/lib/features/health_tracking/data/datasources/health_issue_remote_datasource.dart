@@ -5,12 +5,12 @@ import 'package:http/http.dart' as http;
 import '../models/health_issue_model.dart';
 
 abstract class HealthIssueRemoteDataSource {
-  Future<List<HealthIssueModel>> getIssues(String petId);
-  Future<HealthIssueModel> createIssue(HealthIssueModel model);
-  Future<HealthIssueModel> updateIssue(HealthIssueModel model);
-  Future<void> deleteIssue(String id);
-  Future<void> linkEvent(String issueId, String entryId);
-  Future<void> unlinkEvent(String issueId, String entryId);
+  Future<List<HealthIssueModel>> getIssues(String petId, String token);
+  Future<HealthIssueModel> createIssue(HealthIssueModel model, String token);
+  Future<HealthIssueModel> updateIssue(HealthIssueModel model, String token);
+  Future<void> deleteIssue(String id, String token);
+  Future<void> linkEvent(String issueId, String entryId, String token);
+  Future<void> unlinkEvent(String issueId, String entryId, String token);
 }
 
 class HealthIssueRemoteDataSourceImpl implements HealthIssueRemoteDataSource {
@@ -22,11 +22,16 @@ class HealthIssueRemoteDataSourceImpl implements HealthIssueRemoteDataSource {
   final String baseUrl;
   final http.Client _client;
 
+  Map<String, String> _headers(String token) => {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      };
+
   @override
-  Future<List<HealthIssueModel>> getIssues(String petId) async {
+  Future<List<HealthIssueModel>> getIssues(String petId, String token) async {
     final uri = Uri.parse('$baseUrl/api/health-issues')
         .replace(queryParameters: {'pet_id': petId});
-    final response = await _client.get(uri);
+    final response = await _client.get(uri, headers: _headers(token));
     _checkResponse(response);
     final list = json.decode(response.body) as List<dynamic>;
     return list
@@ -35,10 +40,10 @@ class HealthIssueRemoteDataSourceImpl implements HealthIssueRemoteDataSource {
   }
 
   @override
-  Future<HealthIssueModel> createIssue(HealthIssueModel model) async {
+  Future<HealthIssueModel> createIssue(HealthIssueModel model, String token) async {
     final response = await _client.post(
       Uri.parse('$baseUrl/api/health-issues'),
-      headers: {'Content-Type': 'application/json'},
+      headers: _headers(token),
       body: json.encode(model.toJson()),
     );
     _checkResponse(response);
@@ -47,10 +52,10 @@ class HealthIssueRemoteDataSourceImpl implements HealthIssueRemoteDataSource {
   }
 
   @override
-  Future<HealthIssueModel> updateIssue(HealthIssueModel model) async {
+  Future<HealthIssueModel> updateIssue(HealthIssueModel model, String token) async {
     final response = await _client.put(
       Uri.parse('$baseUrl/api/health-issues/${model.id}'),
-      headers: {'Content-Type': 'application/json'},
+      headers: _headers(token),
       body: json.encode(model.toJson()),
     );
     _checkResponse(response);
@@ -59,26 +64,27 @@ class HealthIssueRemoteDataSourceImpl implements HealthIssueRemoteDataSource {
   }
 
   @override
-  Future<void> deleteIssue(String id) async {
+  Future<void> deleteIssue(String id, String token) async {
     final response =
-        await _client.delete(Uri.parse('$baseUrl/api/health-issues/$id'));
+        await _client.delete(Uri.parse('$baseUrl/api/health-issues/$id'), headers: _headers(token));
     _checkResponse(response);
   }
 
   @override
-  Future<void> linkEvent(String issueId, String entryId) async {
+  Future<void> linkEvent(String issueId, String entryId, String token) async {
     final response = await _client.post(
       Uri.parse('$baseUrl/api/health-issues/$issueId/events'),
-      headers: {'Content-Type': 'application/json'},
+      headers: _headers(token),
       body: json.encode({'health_entry_id': entryId}),
     );
     _checkResponse(response);
   }
 
   @override
-  Future<void> unlinkEvent(String issueId, String entryId) async {
+  Future<void> unlinkEvent(String issueId, String entryId, String token) async {
     final response = await _client.delete(
-        Uri.parse('$baseUrl/api/health-issues/$issueId/events/$entryId'));
+        Uri.parse('$baseUrl/api/health-issues/$issueId/events/$entryId'),
+        headers: _headers(token));
     _checkResponse(response);
   }
 

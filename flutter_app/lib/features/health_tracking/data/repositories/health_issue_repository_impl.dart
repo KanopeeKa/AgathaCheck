@@ -9,32 +9,32 @@ class HealthIssueRepositoryImpl implements HealthIssueRepository {
   final HealthIssueRemoteDataSource dataSource;
 
   @override
-  Future<List<HealthIssue>> getIssues(String petId) {
-    return dataSource.getIssues(petId);
+  Future<List<HealthIssue>> getIssues(String petId, String token) {
+    return dataSource.getIssues(petId, token);
   }
 
   @override
-  Future<HealthIssue> createIssue(HealthIssue issue) {
-    return dataSource.createIssue(HealthIssueModel.fromEntity(issue));
+  Future<HealthIssue> createIssue(HealthIssue issue, String token) {
+    return dataSource.createIssue(HealthIssueModel.fromEntity(issue), token);
   }
 
   @override
-  Future<HealthIssue> updateIssue(HealthIssue issue) {
-    return dataSource.updateIssue(HealthIssueModel.fromEntity(issue));
+  Future<HealthIssue> updateIssue(HealthIssue issue, String token) {
+    return dataSource.updateIssue(HealthIssueModel.fromEntity(issue), token);
   }
 
   @override
-  Future<void> deleteIssue(String id) {
-    return dataSource.deleteIssue(id);
+  Future<void> deleteIssue(String id, String token) {
+    return dataSource.deleteIssue(id, token);
   }
 
   @override
-  Future<void> linkEvent(String issueId, String entryId) {
-    return dataSource.linkEvent(issueId, entryId);
+  Future<void> linkEvent(String issueId, String entryId, String token) {
+    return dataSource.linkEvent(issueId, entryId, token);
   }
 
   @override
-  Future<void> unlinkEvent(String issueId, String entryId) {
-    return dataSource.unlinkEvent(issueId, entryId);
+  Future<void> unlinkEvent(String issueId, String entryId, String token) {
+    return dataSource.unlinkEvent(issueId, entryId, token);
   }
 }

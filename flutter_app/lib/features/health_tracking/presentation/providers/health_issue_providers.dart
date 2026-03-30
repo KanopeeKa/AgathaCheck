@@ -5,6 +5,7 @@ import '../../data/repositories/health_issue_repository_impl.dart';
 import '../../domain/entities/health_issue.dart';
 import '../../domain/repositories/health_issue_repository.dart';
 import 'package:pet_profile_app/core/providers/api_base_url_provider.dart';
+import 'package:pet_profile_app/features/auth/presentation/providers/auth_providers.dart';
 
 final healthIssueDataSourceProvider =
     Provider<HealthIssueRemoteDataSource>((ref) {
@@ -19,13 +20,19 @@ final healthIssueRepositoryProvider = Provider<HealthIssueRepository>((ref) {
 
 final petHealthIssuesProvider =
     FutureProvider.family<List<HealthIssue>, String>((ref, petId) {
-  return ref.read(healthIssueRepositoryProvider).getIssues(petId);
+  final token = ref.watch(authProvider).accessToken;
+  if (token == null) return Future.value([]);
+  return ref.read(healthIssueRepositoryProvider).getIssues(petId, token);
 });
 
 class HealthIssueNotifier extends AutoDisposeFamilyAsyncNotifier<List<HealthIssue>, String> {
+  String? get _token => ref.read(authProvider).accessToken;
+
   @override
   Future<List<HealthIssue>> build(String arg) async {
-    return ref.read(healthIssueRepositoryProvider).getIssues(arg);
+    final token = _token;
+    if (token == null) return [];
+    return ref.read(healthIssueRepositoryProvider).getIssues(arg, token);
   }
 
   Future<void> refresh() async {
@@ -34,27 +41,37 @@ class HealthIssueNotifier extends AutoDisposeFamilyAsyncNotifier<List<HealthIssu
   }
 
   Future<void> create(HealthIssue issue) async {
-    await ref.read(healthIssueRepositoryProvider).createIssue(issue);
+    final token = _token;
+    if (token == null) return;
+    await ref.read(healthIssueRepositoryProvider).createIssue(issue, token);
     await refresh();
   }
 
   Future<void> updateIssue(HealthIssue issue) async {
-    await ref.read(healthIssueRepositoryProvider).updateIssue(issue);
+    final token = _token;
+    if (token == null) return;
+    await ref.read(healthIssueRepositoryProvider).updateIssue(issue, token);
     await refresh();
   }
 
   Future<void> deleteIssue(String id) async {
-    await ref.read(healthIssueRepositoryProvider).deleteIssue(id);
+    final token = _token;
+    if (token == null) return;
+    await ref.read(healthIssueRepositoryProvider).deleteIssue(id, token);
     await refresh();
   }
 
   Future<void> linkEvent(String issueId, String entryId) async {
-    await ref.read(healthIssueRepositoryProvider).linkEvent(issueId, entryId);
+    final token = _token;
+    if (token == null) return;
+    await ref.read(healthIssueRepositoryProvider).linkEvent(issueId, entryId, token);
     await refresh();
   }
 
   Future<void> unlinkEvent(String issueId, String entryId) async {
-    await ref.read(healthIssueRepositoryProvider).unlinkEvent(issueId, entryId);
+    final token = _token;
+    if (token == null) return;
+    await ref.read(healthIssueRepositoryProvider).unlinkEvent(issueId, entryId, token);
     await refresh();
   }
 }
