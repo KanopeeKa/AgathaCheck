@@ -22,8 +22,23 @@ void main() async {
     fallbackHandler = (Request request) => Response.notFound('Web build not found');
   }
 
+  Middleware allowIframe() {
+    return (Handler innerHandler) {
+      return (Request request) async {
+        final response = await innerHandler(request);
+        return response.change(headers: {
+          'X-Frame-Options': 'ALLOWALL',
+          ...response.headersAll.containsKey('content-security-policy')
+              ? {}
+              : {'Content-Security-Policy': 'frame-ancestors *'},
+        });
+      };
+    };
+  }
+
   final handler = const Pipeline()
       .addMiddleware(corsHeaders())
+      .addMiddleware(allowIframe())
       .addHandler((Request request) async {
     final path = request.url.path;
     if (path.startsWith('api/') || path.startsWith('backend/')) {
