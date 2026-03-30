@@ -57,7 +57,9 @@ The application employs a clean architecture, separating concerns into data, dom
 - **Migration runner**: `dart run bin/migrate.dart [up|down]` — applies SQL files from `db/migrations/`
 - **Workflow**: `cd /home/runner/workspace/server && PORT=5000 dart run bin/server.dart`
 - **Schema**: 19 tables — users, pets, vets (with user_id), health_entries, health_history, health_issues, health_issue_events, health_event_photos, weight_entries, notifications, notification_preferences, pet_access, shared_pets, organizations, organization_users, archived_pets, family_events, refresh_tokens, password_reset_tokens, _migrations
-- **Key fixes applied**: `vets.user_id` added for data isolation; `pets.vet_id` normalised from VARCHAR to INTEGER; performance indexes added
+- **Key fixes applied**: `vets.user_id` added for data isolation; `pets.vet_id` is UUID referencing `vets.id`; full pet columns (bio, insurance, neutered_date, neuter_dismissed, chip_id, chip_dismissed, photo_path, vet_id, color_index, passed_away, organization_id); `pet_access.hidden` column; performance indexes added
+- **API field mapping**: Frontend sends/expects camelCase (`vetId`, `photoPath`, `colorValue`, `passedAway`, `dateOfBirth`). Both Dart and Node.js servers accept camelCase input and return camelCase in responses. DB uses snake_case columns.
+- **Dart server routes**: `server/lib/routes.dart` has pets + vets (with JWT auth + user scoping), `server/lib/auth_routes.dart` has auth, `server/lib/sharing_routes.dart` has sharing, `server/lib/vet_routes.dart` has standalone vet routes
 
 ## External Dependencies
 - **Flutter**: Frontend framework

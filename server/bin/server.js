@@ -40,6 +40,9 @@ export function createApp(customPool, comparePassword) {
   app.use('/api/archived-pets', (req, res) => {
     res.json([]);
   });
+  app.use('/backend/api/archived-pets', (req, res) => {
+    res.json([]);
+  });
 
   app.use('/backend/api/auth', authRoutes(pool, comparePassword));
   app.use('/backend/api/pets', petsRoutes(pool));

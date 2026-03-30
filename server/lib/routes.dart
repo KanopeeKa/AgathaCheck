@@ -80,25 +80,31 @@ Router apiHandler() {
 const _jsonHeaders = {'Content-Type': 'application/json'};
 
 Map<String, dynamic> _petRowToMap(ResultRow row) {
-  final columns = row.toColumnMap();
+  final c = row.toColumnMap();
   return {
-    'id': columns['id']?.toString(),
-    'user_id': columns['user_id']?.toString(),
-    'name': columns['name'],
-    'species': columns['species'],
-    'breed': columns['breed'],
-    'age': columns['age'],
-    'date_of_birth': columns['date_of_birth']?.toString(),
-    'weight': columns['weight'],
-    'gender': columns['gender'],
-    'photo_path': columns['photo_path'],
-    'color_index': columns['color_index'],
-    'identification': columns['identification'],
-    'vet_id': columns['vet_id'],
-    'passed_away': columns['passed_away'],
-    'organization_id': columns['organization_id'],
-    'created_at': columns['created_at']?.toString(),
-    'updated_at': columns['updated_at']?.toString(),
+    'id': c['id']?.toString(),
+    'user_id': c['user_id']?.toString(),
+    'name': c['name'],
+    'species': c['species'],
+    'breed': c['breed'] ?? '',
+    'age': c['age'],
+    'dateOfBirth': c['date_of_birth']?.toString(),
+    'date_of_birth': c['date_of_birth']?.toString(),
+    'weight': c['weight'],
+    'gender': c['gender'],
+    'bio': c['bio'] ?? '',
+    'insurance': c['insurance'] ?? '',
+    'neuteredDate': c['neutered_date']?.toString(),
+    'neuterDismissed': c['neuter_dismissed'] ?? false,
+    'chipId': c['chip_id'] ?? '',
+    'chipDismissed': c['chip_dismissed'] ?? false,
+    'photoPath': c['photo_path'],
+    'vetId': c['vet_id']?.toString(),
+    'colorValue': c['color_index'],
+    'passedAway': c['passed_away'] ?? false,
+    'organization_id': c['organization_id'],
+    'created_at': c['created_at']?.toString(),
+    'updated_at': c['updated_at']?.toString(),
   };
 }
 
@@ -141,22 +147,36 @@ Future<Response> _createPet(Request request) async {
   try {
     final body = await request.readAsString();
     final data = jsonDecode(body) as Map<String, dynamic>;
-    final id = _uuid.v4();
-    await _pool.execute(
-      Sql.named('INSERT INTO pets (id, user_id, name, species, breed, age, date_of_birth, weight, gender) VALUES (@id, @user_id, @name, @species, @breed, @age, @date_of_birth, @weight, @gender)'),
+    final id = data['id'] ?? _uuid.v4();
+    final userId = _extractUserId(request) ?? data['user_id'];
+    final dobStr = data['dateOfBirth'] ?? data['date_of_birth'];
+    final neuteredStr = data['neuteredDate'];
+    final results = await _pool.execute(
+      Sql.named('INSERT INTO pets (id, user_id, name, species, breed, age, date_of_birth, weight, gender, bio, insurance, neutered_date, neuter_dismissed, chip_id, chip_dismissed, photo_path, vet_id, color_index, passed_away, organization_id) VALUES (@id, @user_id, @name, @species, @breed, @age, @dob, @weight, @gender, @bio, @insurance, @neutered_date, @neuter_dismissed, @chip_id, @chip_dismissed, @photo_path, @vet_id, @color_index, @passed_away, @organization_id) RETURNING *'),
       parameters: {
         'id': id,
-        'user_id': data['user_id'],
+        'user_id': userId,
         'name': data['name'],
         'species': data['species'],
         'breed': data['breed'] ?? '',
         'age': data['age'],
-        'date_of_birth': data['date_of_birth'] != null ? DateTime.parse(data['date_of_birth'].toString()) : null,
+        'dob': dobStr != null ? DateTime.parse(dobStr.toString()) : null,
         'weight': data['weight'],
         'gender': data['gender'],
+        'bio': data['bio'] ?? '',
+        'insurance': data['insurance'] ?? '',
+        'neutered_date': neuteredStr != null ? DateTime.parse(neuteredStr.toString()) : null,
+        'neuter_dismissed': data['neuterDismissed'] ?? false,
+        'chip_id': data['chipId'] ?? '',
+        'chip_dismissed': data['chipDismissed'] ?? false,
+        'photo_path': data['photoPath'],
+        'vet_id': data['vetId'],
+        'color_index': data['colorValue'],
+        'passed_away': data['passedAway'] ?? false,
+        'organization_id': data['organization_id'],
       },
     );
-    return Response.ok(jsonEncode({'id': id}), headers: _jsonHeaders);
+    return Response(201, body: jsonEncode(_petRowToMap(results.first)), headers: _jsonHeaders);
   } catch (e) {
     return Response.internalServerError(body: jsonEncode({'error': 'Error creating pet: $e'}), headers: _jsonHeaders);
   }
@@ -166,20 +186,36 @@ Future<Response> _updatePet(Request request, String id) async {
   try {
     final body = await request.readAsString();
     final data = jsonDecode(body) as Map<String, dynamic>;
-    await _pool.execute(
-      Sql.named('UPDATE pets SET name = @name, species = @species, breed = @breed, age = @age, date_of_birth = @date_of_birth, weight = @weight, gender = @gender, updated_at = NOW() WHERE id = @id'),
+    final dobStr = data['dateOfBirth'] ?? data['date_of_birth'];
+    final neuteredStr = data['neuteredDate'];
+    final results = await _pool.execute(
+      Sql.named('UPDATE pets SET name = @name, species = @species, breed = @breed, age = @age, date_of_birth = @dob, weight = @weight, gender = @gender, bio = @bio, insurance = @insurance, neutered_date = @neutered_date, neuter_dismissed = @neuter_dismissed, chip_id = @chip_id, chip_dismissed = @chip_dismissed, photo_path = @photo_path, vet_id = @vet_id, color_index = @color_index, passed_away = @passed_away, organization_id = @organization_id, updated_at = NOW() WHERE id = @id RETURNING *'),
       parameters: {
         'id': id,
         'name': data['name'],
         'species': data['species'],
         'breed': data['breed'] ?? '',
         'age': data['age'],
-        'date_of_birth': data['date_of_birth'] != null ? DateTime.parse(data['date_of_birth'].toString()) : null,
+        'dob': dobStr != null ? DateTime.parse(dobStr.toString()) : null,
         'weight': data['weight'],
         'gender': data['gender'],
+        'bio': data['bio'] ?? '',
+        'insurance': data['insurance'] ?? '',
+        'neutered_date': neuteredStr != null ? DateTime.parse(neuteredStr.toString()) : null,
+        'neuter_dismissed': data['neuterDismissed'] ?? false,
+        'chip_id': data['chipId'] ?? '',
+        'chip_dismissed': data['chipDismissed'] ?? false,
+        'photo_path': data['photoPath'],
+        'vet_id': data['vetId'],
+        'color_index': data['colorValue'],
+        'passed_away': data['passedAway'] ?? false,
+        'organization_id': data['organization_id'],
       },
     );
-    return Response.ok(jsonEncode({'updated': true}), headers: _jsonHeaders);
+    if (results.isEmpty) {
+      return Response.notFound(jsonEncode({'error': 'Pet not found'}), headers: _jsonHeaders);
+    }
+    return Response.ok(jsonEncode(_petRowToMap(results.first)), headers: _jsonHeaders);
   } catch (e) {
     return Response.internalServerError(body: jsonEncode({'error': 'Error updating pet: $e'}), headers: _jsonHeaders);
   }
