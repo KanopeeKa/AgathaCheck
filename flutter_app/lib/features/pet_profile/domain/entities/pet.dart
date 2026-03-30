@@ -67,21 +67,21 @@ class Pet {
   }
 
   static const List<int> palette = [
-    0xFF7E57C2, // deep purple
-    0xFF26A69A, // teal
-    0xFFEF5350, // red
-    0xFF42A5F5, // blue
-    0xFFFF7043, // deep orange
-    0xFF66BB6A, // green
-    0xFFAB47BC, // purple
-    0xFFFFCA28, // amber
-    0xFF26C6DA, // cyan
-    0xFFEC407A, // pink
-    0xFF8D6E63, // brown
+    0xFF7E57C2, // violet (primary accent)
+    0xFF9575CD, // soft purple
     0xFF5C6BC0, // indigo
-    0xFF9CCC65, // light green
-    0xFFFF8A65, // light deep orange
-    0xFF78909C, // blue grey
+    0xFF7986CB, // periwinkle
+    0xFF4DB6AC, // muted teal
+    0xFF81C784, // sage green
+    0xFF4FC3F7, // sky blue
+    0xFFBA68C8, // orchid
+    0xFFF06292, // dusty rose
+    0xFFE57373, // soft coral
+    0xFFFFB74D, // warm apricot
+    0xFFA1887F, // taupe
+    0xFF90A4AE, // slate
+    0xFF64B5F6, // powder blue
+    0xFFAED581, // soft lime
   ];
 
   static int pickColor(int index) {
