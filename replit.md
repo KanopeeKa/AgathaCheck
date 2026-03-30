@@ -61,10 +61,11 @@ The application employs a clean architecture, separating concerns into data, dom
 
 ## Database
 - **Connection**: `DATABASE_URL` environment variable (PostgreSQL connection string). Parsed via `initPool()` in `server/lib/routes.dart`. Falls back to individual `PG*` vars if URL host is empty.
-- **Migration runner**: `dart run bin/migrate.dart [up|down]` — applies SQL files from `db/migrations/`
+- **Migration runner**: `cd server && dart run bin/migrate.dart [up|down|status]` — applies numbered SQL files from `db/migrations/`, tracks applied migrations in `_migrations` table, supports rollback via `*_down.sql` files. Legacy/superseded schema files archived in `db/migrations/archive/`.
+- **Migration files**: Numbered `001_*.sql` through `006_*.sql` plus `v3__initial_uuid_schema.sql` (base schema). All use `IF NOT EXISTS`/`IF EXISTS` for idempotency. New migrations should follow the `NNN_description.sql` naming convention.
 - **Workflow**: `cd /home/runner/workspace/server && PORT=5000 dart run bin/server.dart`
 - **Schema**: 19 tables — users, pets, vets (with user_id), health_entries, health_history, health_issues, health_issue_events, health_event_photos, weight_entries, notifications, notification_preferences, pet_access, shared_pets, organizations, organization_users, archived_pets, family_events, refresh_tokens, password_reset_tokens, _migrations
-- **Key fixes applied**: `vets.user_id` added for data isolation; `pets.vet_id` is UUID referencing `vets.id`; full pet columns (bio, insurance, neutered_date, neuter_dismissed, chip_id, chip_dismissed, photo_path, vet_id, color_index, passed_away, organization_id); `pet_access.hidden` column; performance indexes added
+- **Key fixes applied**: `vets.user_id` added for data isolation; `pets.vet_id` is UUID referencing `vets.id`; full pet columns (bio, insurance, neutered_date, neuter_dismissed, chip_id, chip_dismissed, photo_path, vet_id, color_index, passed_away, organization_id); `pet_access.hidden` column; performance indexes added; `weight_entries.date`, `weight_entries.notes`, `weight_entries.created_at` added via migration 006
 - **API field mapping**: Frontend sends/expects camelCase (`vetId`, `photoPath`, `colorValue`, `passedAway`, `dateOfBirth`). Both Dart and Node.js servers accept camelCase input and return camelCase in responses. DB uses snake_case columns.
 - **Dart server routes**: `server/lib/routes.dart` has pets + vets (with JWT auth + user scoping), `server/lib/auth_routes.dart` has auth, `server/lib/sharing_routes.dart` has sharing, `server/lib/vet_routes.dart` has standalone vet routes
 
