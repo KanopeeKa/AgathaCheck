@@ -1,4 +1,4 @@
-modules = ["dart-3.10", "postgresql-16"]
+modules = ["dart-3.10", "postgresql-16", "nodejs-20"]
 [agent]
 expertMode = true
 
@@ -29,6 +29,10 @@ outputType = "webview"
 task = "shell.exec"
 args = "cd /home/runner/workspace/server && PORT=5000 dart run bin/server.dart"
 waitForPort = 5000
+
+[[ports]]
+localPort = 3000
+externalPort = 3000
 
 [[ports]]
 localPort = 5000

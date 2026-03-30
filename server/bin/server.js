@@ -29,14 +29,11 @@ export function createApp(customPool, comparePassword) {
     database: process.env.PGDATABASE || 'agatha_db',
   });
 
-  // Mount organizations and vets routes
-  app.use('/api/organizations', organizationsRoutes());
-  app.use('/backend/api/vets', vetsRoutes());
-
   app.use(cors());
   app.use(bodyParser.json());
 
-  // Mount pets, auth, and notifications routes
+  app.use('/api/organizations', organizationsRoutes());
+  app.use('/backend/api/vets', vetsRoutes());
   app.use('/backend/api/pets', petsRoutes(pool));
   app.use('/backend/api/auth', authRoutes(pool, comparePassword));
   app.use('/backend/api/notifications', notificationsRoutes());
