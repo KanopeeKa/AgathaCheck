@@ -3,9 +3,9 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:http/http.dart' as http;
 import 'package:flutter/foundation.dart' show kIsWeb;
 
+import '../../../../core/providers/http_client_provider.dart';
 import '../../../../core/widgets/app_logo_title.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../auth/presentation/providers/auth_providers.dart';
@@ -44,7 +44,8 @@ class _SharedPetScreenState extends ConsumerState<SharedPetScreen> {
 
   Future<void> _loadSharedPet() async {
     try {
-      final response = await http.get(
+      final client = ref.read(httpClientProvider);
+      final response = await client.get(
         Uri.parse('$_baseUrl/api/share/${widget.shareCode}'),
       );
       if (response.statusCode == 200) {
