@@ -106,7 +106,7 @@ CREATE TABLE IF NOT EXISTS pets (
   chip_dismissed BOOLEAN DEFAULT FALSE,
   photo_path TEXT,
   vet_id INTEGER,
-  color_value BIGINT,
+  color_index BIGINT,
   passed_away BOOLEAN DEFAULT FALSE,
   organization_id INTEGER REFERENCES organizations(id) ON DELETE SET NULL,
   created_at TIMESTAMPTZ DEFAULT NOW(),
