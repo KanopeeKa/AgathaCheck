@@ -83,42 +83,62 @@ export default function petsRoutes(pool) {
   const router = express.Router();
 
   router.post('/:id/transfer-to-org', (req, res) => {
+    const userId = extractUserId(req);
+    if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     res.status(200).json({ status: 'transferred', pet_id: req.params.id });
   });
 
   router.get('/:id/family-events', (req, res) => {
+    const userId = extractUserId(req);
+    if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     res.status(200).json([]);
   });
 
   router.post('/:id/family-events', (req, res) => {
+    const userId = extractUserId(req);
+    if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     res.status(201).json({ event_id: 1 });
   });
 
   router.put('/:id/family-events/:eventId', (req, res) => {
+    const userId = extractUserId(req);
+    if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     res.status(200).json({ updated: true, event_id: req.params.eventId });
   });
 
   router.delete('/:id/family-events/:eventId', (req, res) => {
+    const userId = extractUserId(req);
+    if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     res.status(200).json({ deleted: true, event_id: req.params.eventId });
   });
 
   router.get('/:id/access', (req, res) => {
+    const userId = extractUserId(req);
+    if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     res.status(200).json([]);
   });
 
   router.put('/:id/access/:userId/role', (req, res) => {
+    const userId = extractUserId(req);
+    if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     res.status(200).json({ updated: true, user_id: req.params.userId });
   });
 
   router.delete('/:id/access/:userId', (req, res) => {
+    const userId = extractUserId(req);
+    if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     res.status(200).json({ deleted: true, user_id: req.params.userId });
   });
 
   router.delete('/:id/data', (req, res) => {
+    const userId = extractUserId(req);
+    if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     res.status(200).json({ deleted: true, pet_id: req.params.id });
   });
 
   router.post('/:id/passed-away', (req, res) => {
+    const userId = extractUserId(req);
+    if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     res.status(200).json({ passed_away: true, pet_id: req.params.id });
   });
 

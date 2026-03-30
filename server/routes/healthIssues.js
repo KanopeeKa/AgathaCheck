@@ -138,6 +138,8 @@ export default function healthIssuesRoutes(pool) {
   });
 
   router.get('/:issueId/events', async (req, res) => {
+    const userId = extractUserId(req);
+    if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     try {
       const result = await pool.query(
         'SELECT * FROM health_issue_events WHERE health_issue_id = $1 ORDER BY created_at DESC',
@@ -150,6 +152,8 @@ export default function healthIssuesRoutes(pool) {
   });
 
   router.delete('/:issueId/events/:entryId', async (req, res) => {
+    const userId = extractUserId(req);
+    if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     try {
       await pool.query(
         'DELETE FROM health_issue_events WHERE id = $1 AND health_issue_id = $2',

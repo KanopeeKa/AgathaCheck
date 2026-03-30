@@ -224,6 +224,8 @@ export default function healthEntriesRoutes(pool) {
   });
 
   router.get('/:id/history', async (req, res) => {
+    const userId = extractUserId(req);
+    if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     try {
       const result = await pool.query(
         'SELECT * FROM health_history WHERE health_entry_id = $1 ORDER BY changed_at DESC',
@@ -242,6 +244,8 @@ export default function healthEntriesRoutes(pool) {
   });
 
   router.get('/:id/photos', async (req, res) => {
+    const userId = extractUserId(req);
+    if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     try {
       const result = await pool.query(
         'SELECT * FROM health_event_photos WHERE health_entry_id = $1 ORDER BY created_at',
@@ -259,6 +263,8 @@ export default function healthEntriesRoutes(pool) {
   });
 
   router.post('/:id/photos', async (req, res) => {
+    const userId = extractUserId(req);
+    if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     try {
       const id = uuidv4();
       const url = req.body.url || `/uploads/health_photos/${id}.jpg`;
@@ -273,6 +279,8 @@ export default function healthEntriesRoutes(pool) {
   });
 
   router.delete('/:entryId/photos/:photoId', async (req, res) => {
+    const userId = extractUserId(req);
+    if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     try {
       await pool.query(
         'DELETE FROM health_event_photos WHERE id = $1 AND health_entry_id = $2',

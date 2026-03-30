@@ -6,53 +6,299 @@ const JWT_SECRET = process.env.JWT_SECRET || process.env.SESSION_SECRET || 'defa
 const userId = 'test-user-id';
 const token = jwt.sign({ id: userId, email: 'test@example.com' }, JWT_SECRET, { expiresIn: '1h' });
 
+function makeWeightRow(overrides = {}) {
+  return {
+    id: 'we-1',
+    pet_id: 'pet-1',
+    pet_name: 'Fluffy',
+    weight: 4.5,
+    unit: 'kg',
+    date: new Date('2026-03-26'),
+    notes: 'Morning weigh',
+    created_at: new Date('2026-03-26'),
+    ...overrides,
+  };
+}
+
 describe('Weight Entries API', () => {
   let app;
+  let lastQuery;
 
   beforeAll(() => {
     const mockPool = {
       query: async (sql, params) => {
+        lastQuery = { sql, params };
+
         if (sql.includes('SELECT we.*') && sql.includes('LIMIT 1')) {
-          return { rows: [{ id: 'we-1', pet_id: 'pet-1', pet_name: 'Fluffy', weight: 4.5, unit: 'kg', date: new Date('2026-03-26'), notes: '', created_at: new Date() }] };
+          if (params && params[1] === 'empty-pet') return { rows: [] };
+          return { rows: [makeWeightRow()] };
         }
+
         if (sql.includes('SELECT we.*') && sql.includes('FROM weight_entries')) {
-          return { rows: [{ id: 'we-1', pet_id: 'pet-1', pet_name: 'Fluffy', weight: 4.5, unit: 'kg', date: new Date('2026-03-26'), notes: '', created_at: new Date() }] };
+          return { rows: [makeWeightRow(), makeWeightRow({ id: 'we-2', weight: 5.0 })] };
         }
+
         if (sql.includes('INSERT INTO weight_entries')) {
-          return { rows: [{ id: 'new-we', pet_id: params[1], weight: params[2], unit: params[3], date: params[4], notes: params[5] || '', created_at: new Date() }] };
+          return {
+            rows: [makeWeightRow({
+              id: params[0],
+              pet_id: params[1],
+              weight: params[2],
+              unit: params[3],
+              date: params[4],
+              notes: params[5] || '',
+              pet_name: null,
+            })],
+          };
         }
+
+        if (sql.includes('UPDATE weight_entries')) {
+          if (params[4] === 'nonexistent') return { rows: [] };
+          return {
+            rows: [makeWeightRow({
+              id: params[4],
+              weight: params[0],
+              unit: params[1],
+              date: params[2],
+              notes: params[3] || '',
+            })],
+          };
+        }
+
+        if (sql.includes('DELETE FROM weight_entries')) {
+          return { rows: [] };
+        }
+
         return { rows: [] };
       },
-      end: async () => {}
+      end: async () => {},
     };
     app = createApp(mockPool);
   });
 
-  it('POST /backend/api/weight-entries creates entry with all fields', async () => {
-    const entry = { pet_id: 'pet-1', weight: 4.5, unit: 'kg', date: '2026-03-26', notes: 'Morning' };
-    const res = await request(app)
-      .post('/backend/api/weight-entries')
-      .set('Authorization', `Bearer ${token}`)
-      .send(entry);
-    expect(res.statusCode).toBe(201);
-    expect(res.body).toHaveProperty('weight', 4.5);
-    expect(res.body).toHaveProperty('unit', 'kg');
-    expect(res.body).toHaveProperty('notes');
+  describe('Auth guard', () => {
+    it('GET /api/weight-entries returns 401 without token', async () => {
+      const res = await request(app).get('/api/weight-entries');
+      expect(res.statusCode).toBe(401);
+      expect(res.body).toHaveProperty('error', 'Unauthorized');
+    });
+
+    it('GET /api/weight-entries/latest returns 401 without token', async () => {
+      const res = await request(app).get('/api/weight-entries/latest?pet_id=pet-1');
+      expect(res.statusCode).toBe(401);
+    });
+
+    it('POST /api/weight-entries returns 401 without token', async () => {
+      const res = await request(app).post('/api/weight-entries').send({ pet_id: 'p', weight: 1 });
+      expect(res.statusCode).toBe(401);
+    });
+
+    it('PUT /api/weight-entries/:id returns 401 without token', async () => {
+      const res = await request(app).put('/api/weight-entries/we-1').send({ weight: 1 });
+      expect(res.statusCode).toBe(401);
+    });
+
+    it('DELETE /api/weight-entries/:id returns 401 without token', async () => {
+      const res = await request(app).delete('/api/weight-entries/we-1');
+      expect(res.statusCode).toBe(401);
+    });
+
+    it('returns 401 with invalid token', async () => {
+      const res = await request(app)
+        .get('/api/weight-entries')
+        .set('Authorization', 'Bearer bad.token');
+      expect(res.statusCode).toBe(401);
+    });
   });
 
-  it('GET /backend/api/weight-entries/latest returns entry with pet_name', async () => {
-    const res = await request(app)
-      .get('/backend/api/weight-entries/latest?pet_id=pet-1')
-      .set('Authorization', `Bearer ${token}`);
-    expect(res.statusCode).toBe(200);
-    expect(res.body).toHaveProperty('pet_id');
-    expect(res.body).toHaveProperty('weight');
-    expect(res.body).toHaveProperty('date');
-    expect(res.body).toHaveProperty('pet_name');
+  describe('GET /api/weight-entries (list)', () => {
+    it('returns array of weight entries', async () => {
+      const res = await request(app)
+        .get('/api/weight-entries')
+        .set('Authorization', `Bearer ${token}`);
+      expect(res.statusCode).toBe(200);
+      expect(Array.isArray(res.body)).toBe(true);
+      expect(res.body.length).toBe(2);
+    });
+
+    it('returns entries with all mapped fields', async () => {
+      const res = await request(app)
+        .get('/api/weight-entries')
+        .set('Authorization', `Bearer ${token}`);
+      const entry = res.body[0];
+      expect(entry).toHaveProperty('id');
+      expect(entry).toHaveProperty('pet_id');
+      expect(entry).toHaveProperty('pet_name');
+      expect(entry).toHaveProperty('weight');
+      expect(entry).toHaveProperty('unit');
+      expect(entry).toHaveProperty('date');
+      expect(entry).toHaveProperty('notes');
+      expect(entry).toHaveProperty('created_at');
+    });
+
+    it('filters by pet_id query param', async () => {
+      const res = await request(app)
+        .get('/api/weight-entries?pet_id=pet-1')
+        .set('Authorization', `Bearer ${token}`);
+      expect(res.statusCode).toBe(200);
+      expect(lastQuery.params).toContain('pet-1');
+    });
+
+    it('filters by petId query param alias', async () => {
+      const res = await request(app)
+        .get('/api/weight-entries?petId=pet-1')
+        .set('Authorization', `Bearer ${token}`);
+      expect(res.statusCode).toBe(200);
+      expect(lastQuery.params).toContain('pet-1');
+    });
+
+    it('scopes query by user_id', async () => {
+      await request(app)
+        .get('/api/weight-entries')
+        .set('Authorization', `Bearer ${token}`);
+      expect(lastQuery.params).toContain(userId);
+    });
   });
 
-  it('GET /backend/api/weight-entries without auth returns 401', async () => {
-    const res = await request(app).get('/backend/api/weight-entries');
-    expect(res.statusCode).toBe(401);
+  describe('GET /api/weight-entries/latest', () => {
+    it('returns latest weight entry', async () => {
+      const res = await request(app)
+        .get('/api/weight-entries/latest?pet_id=pet-1')
+        .set('Authorization', `Bearer ${token}`);
+      expect(res.statusCode).toBe(200);
+      expect(res.body).toHaveProperty('pet_id');
+      expect(res.body).toHaveProperty('weight');
+      expect(res.body).toHaveProperty('date');
+      expect(res.body).toHaveProperty('pet_name');
+    });
+
+    it('returns 400 without pet_id', async () => {
+      const res = await request(app)
+        .get('/api/weight-entries/latest')
+        .set('Authorization', `Bearer ${token}`);
+      expect(res.statusCode).toBe(400);
+      expect(res.body).toHaveProperty('error', 'pet_id is required');
+    });
+
+    it('returns 404 when no entries found', async () => {
+      const res = await request(app)
+        .get('/api/weight-entries/latest?pet_id=empty-pet')
+        .set('Authorization', `Bearer ${token}`);
+      expect(res.statusCode).toBe(404);
+      expect(res.body).toHaveProperty('error', 'No weight entries found');
+    });
+  });
+
+  describe('POST /api/weight-entries (create)', () => {
+    it('creates a weight entry with all fields', async () => {
+      const entry = { pet_id: 'pet-1', weight: 5.2, unit: 'lbs', date: '2026-04-01', notes: 'After meal' };
+      const res = await request(app)
+        .post('/api/weight-entries')
+        .set('Authorization', `Bearer ${token}`)
+        .send(entry);
+      expect(res.statusCode).toBe(201);
+      expect(res.body).toHaveProperty('weight');
+      expect(res.body).toHaveProperty('unit');
+      expect(res.body).toHaveProperty('notes');
+    });
+
+    it('defaults unit to kg when not provided', async () => {
+      const entry = { pet_id: 'pet-1', weight: 3.0 };
+      const res = await request(app)
+        .post('/api/weight-entries')
+        .set('Authorization', `Bearer ${token}`)
+        .send(entry);
+      expect(res.statusCode).toBe(201);
+      expect(lastQuery.params[3]).toBe('kg');
+    });
+
+    it('accepts petId alias for pet_id', async () => {
+      const entry = { petId: 'pet-2', weight: 3.5 };
+      const res = await request(app)
+        .post('/api/weight-entries')
+        .set('Authorization', `Bearer ${token}`)
+        .send(entry);
+      expect(res.statusCode).toBe(201);
+      expect(lastQuery.params[1]).toBe('pet-2');
+    });
+
+    it('parses weight from string', async () => {
+      const entry = { pet_id: 'pet-1', weight: '6.7' };
+      const res = await request(app)
+        .post('/api/weight-entries')
+        .set('Authorization', `Bearer ${token}`)
+        .send(entry);
+      expect(res.statusCode).toBe(201);
+      expect(lastQuery.params[2]).toBe(6.7);
+    });
+  });
+
+  describe('PUT /api/weight-entries/:id (update)', () => {
+    it('updates a weight entry', async () => {
+      const entry = { weight: 5.5, unit: 'lbs', date: '2026-04-02', notes: 'Updated' };
+      const res = await request(app)
+        .put('/api/weight-entries/we-1')
+        .set('Authorization', `Bearer ${token}`)
+        .send(entry);
+      expect(res.statusCode).toBe(200);
+      expect(res.body).toHaveProperty('weight');
+    });
+
+    it('returns 404 for nonexistent entry', async () => {
+      const res = await request(app)
+        .put('/api/weight-entries/nonexistent')
+        .set('Authorization', `Bearer ${token}`)
+        .send({ weight: 1 });
+      expect(res.statusCode).toBe(404);
+      expect(res.body).toHaveProperty('error', 'Not found');
+    });
+
+    it('scopes update by user_id', async () => {
+      await request(app)
+        .put('/api/weight-entries/we-1')
+        .set('Authorization', `Bearer ${token}`)
+        .send({ weight: 5 });
+      expect(lastQuery.params).toContain(userId);
+    });
+  });
+
+  describe('DELETE /api/weight-entries/:id', () => {
+    it('deletes a weight entry and returns success', async () => {
+      const res = await request(app)
+        .delete('/api/weight-entries/we-1')
+        .set('Authorization', `Bearer ${token}`);
+      expect(res.statusCode).toBe(200);
+      expect(res.body).toHaveProperty('deleted', true);
+    });
+
+    it('scopes delete by user_id', async () => {
+      await request(app)
+        .delete('/api/weight-entries/we-1')
+        .set('Authorization', `Bearer ${token}`);
+      expect(lastQuery.params).toContain(userId);
+    });
+  });
+
+  describe('Response shape - weightEntryToMap', () => {
+    it('includes pet_name in response', async () => {
+      const res = await request(app)
+        .get('/api/weight-entries')
+        .set('Authorization', `Bearer ${token}`);
+      expect(res.body[0]).toHaveProperty('pet_name', 'Fluffy');
+    });
+
+    it('defaults unit to kg', async () => {
+      const res = await request(app)
+        .get('/api/weight-entries')
+        .set('Authorization', `Bearer ${token}`);
+      expect(res.body[0]).toHaveProperty('unit', 'kg');
+    });
+
+    it('date is serialized as string', async () => {
+      const res = await request(app)
+        .get('/api/weight-entries')
+        .set('Authorization', `Bearer ${token}`);
+      expect(typeof res.body[0].date).toBe('string');
+    });
   });
 });

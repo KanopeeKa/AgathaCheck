@@ -29,22 +29,26 @@ export default function sharingRoutes(pool) {
     }
   });
 
-  router.get('/:code', async (req, res) => {
-    res.json({ code: req.params.code, pet: null });
-  });
-
-  router.post('/:code/accept', async (req, res) => {
-    const userId = extractUserId(req);
-    if (!userId) return res.status(401).json({ error: 'Unauthorized' });
-    res.json({ message: 'Share accepted' });
-  });
-
   router.get('/pending', async (req, res) => {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     try {
       const result = await pool.query(
         "SELECT pa.*, p.name as pet_name FROM pet_access pa JOIN pets p ON p.id = pa.pet_id WHERE pa.user_id = $1 AND pa.role = 'pending_shared'",
+        [userId]
+      );
+      res.json(result.rows);
+    } catch (err) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  router.get('/hidden', async (req, res) => {
+    const userId = extractUserId(req);
+    if (!userId) return res.status(401).json({ error: 'Unauthorized' });
+    try {
+      const result = await pool.query(
+        'SELECT pa.*, p.name as pet_name FROM pet_access pa JOIN pets p ON p.id = pa.pet_id WHERE pa.user_id = $1 AND pa.hidden = true',
         [userId]
       );
       res.json(result.rows);
@@ -97,18 +101,14 @@ export default function sharingRoutes(pool) {
     }
   });
 
-  router.get('/hidden', async (req, res) => {
+  router.get('/:code', async (req, res) => {
+    res.json({ code: req.params.code, pet: null });
+  });
+
+  router.post('/:code/accept', async (req, res) => {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
-    try {
-      const result = await pool.query(
-        'SELECT pa.*, p.name as pet_name FROM pet_access pa JOIN pets p ON p.id = pa.pet_id WHERE pa.user_id = $1 AND pa.hidden = true',
-        [userId]
-      );
-      res.json(result.rows);
-    } catch (err) {
-      res.status(500).json({ error: err.message });
-    }
+    res.json({ message: 'Share accepted' });
   });
 
   return router;
