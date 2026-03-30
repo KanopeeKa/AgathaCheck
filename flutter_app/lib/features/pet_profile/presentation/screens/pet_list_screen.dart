@@ -268,7 +268,7 @@ class _PetListScreenState extends ConsumerState<PetListScreen> {
                   l: l,
                   theme: theme,
                   ref: ref,
-                  context: context,
+                  parentContext: context,
                 ),
               ],
               OrganizationPetsSection(

@@ -109,8 +109,15 @@ Map<String, dynamic> _petRowToMap(ResultRow row) {
 }
 
 Future<Response> _getAllPets(Request request) async {
+  final userId = _extractUserId(request);
+  if (userId == null) {
+    return Response(401, body: jsonEncode({'error': 'Unauthorized'}), headers: _jsonHeaders);
+  }
   try {
-    final results = await _pool.execute(Sql('SELECT * FROM pets ORDER BY created_at'));
+    final results = await _pool.execute(
+      Sql.named('SELECT * FROM pets WHERE user_id = @userId ORDER BY created_at'),
+      parameters: {'userId': userId},
+    );
     final pets = results.map(_petRowToMap).toList();
     return Response.ok(jsonEncode(pets), headers: _jsonHeaders);
   } catch (e) {
@@ -119,8 +126,15 @@ Future<Response> _getAllPets(Request request) async {
 }
 
 Future<Response> _getPets(Request request) async {
+  final userId = _extractUserId(request);
+  if (userId == null) {
+    return Response(401, body: jsonEncode({'error': 'Unauthorized'}), headers: _jsonHeaders);
+  }
   try {
-    final results = await _pool.execute(Sql('SELECT * FROM pets ORDER BY created_at'));
+    final results = await _pool.execute(
+      Sql.named('SELECT * FROM pets WHERE user_id = @userId ORDER BY created_at'),
+      parameters: {'userId': userId},
+    );
     final pets = results.map(_petRowToMap).toList();
     return Response.ok(jsonEncode(pets), headers: _jsonHeaders);
   } catch (e) {
@@ -129,10 +143,14 @@ Future<Response> _getPets(Request request) async {
 }
 
 Future<Response> _getPetById(Request request, String id) async {
+  final userId = _extractUserId(request);
+  if (userId == null) {
+    return Response(401, body: jsonEncode({'error': 'Unauthorized'}), headers: _jsonHeaders);
+  }
   try {
     final results = await _pool.execute(
-      Sql.named('SELECT * FROM pets WHERE id = @id'),
-      parameters: {'id': id},
+      Sql.named('SELECT * FROM pets WHERE id = @id AND user_id = @userId'),
+      parameters: {'id': id, 'userId': userId},
     );
     if (results.isEmpty) {
       return Response.notFound(jsonEncode({'error': 'Pet not found'}), headers: _jsonHeaders);
@@ -144,15 +162,18 @@ Future<Response> _getPetById(Request request, String id) async {
 }
 
 Future<Response> _createPet(Request request) async {
+  final userId = _extractUserId(request);
+  if (userId == null) {
+    return Response(401, body: jsonEncode({'error': 'Unauthorized'}), headers: _jsonHeaders);
+  }
   try {
     final body = await request.readAsString();
     final data = jsonDecode(body) as Map<String, dynamic>;
     final id = data['id'] ?? _uuid.v4();
-    final userId = _extractUserId(request) ?? data['user_id'];
     final dobStr = data['dateOfBirth'] ?? data['date_of_birth'];
     final neuteredStr = data['neuteredDate'];
     final results = await _pool.execute(
-      Sql.named('INSERT INTO pets (id, user_id, name, species, breed, age, date_of_birth, weight, gender, bio, insurance, neutered_date, neuter_dismissed, chip_id, chip_dismissed, photo_path, vet_id, color_index, passed_away, organization_id) VALUES (@id, @user_id, @name, @species, @breed, @age, @dob, @weight, @gender, @bio, @insurance, @neutered_date, @neuter_dismissed, @chip_id, @chip_dismissed, @photo_path, @vet_id, @color_index, @passed_away, @organization_id) RETURNING *'),
+      Sql.named('INSERT INTO pets (id, user_id, name, species, breed, age, date_of_birth, weight, gender, bio, insurance, neutered_date, neuter_dismissed, chip_id, chip_dismissed, photo_path, vet_id, color_index, passed_away, organization_id) VALUES (@id, @user_id, @name, @species, @breed, @age, @dob, @weight, @gender, @bio, @insurance, @neutered_date, @neuter_dismissed, @chip_id, @chip_dismissed, @photo_path, @vet_id, @color_index, @passed_away, @organization_id) ON CONFLICT (id) DO UPDATE SET name = EXCLUDED.name, species = EXCLUDED.species, breed = EXCLUDED.breed, age = EXCLUDED.age, date_of_birth = EXCLUDED.date_of_birth, weight = EXCLUDED.weight, gender = EXCLUDED.gender, bio = EXCLUDED.bio, insurance = EXCLUDED.insurance, neutered_date = EXCLUDED.neutered_date, neuter_dismissed = EXCLUDED.neuter_dismissed, chip_id = EXCLUDED.chip_id, chip_dismissed = EXCLUDED.chip_dismissed, photo_path = EXCLUDED.photo_path, vet_id = EXCLUDED.vet_id, color_index = EXCLUDED.color_index, passed_away = EXCLUDED.passed_away, organization_id = EXCLUDED.organization_id, updated_at = NOW() WHERE pets.user_id = @user_id RETURNING *'),
       parameters: {
         'id': id,
         'user_id': userId,
@@ -183,15 +204,20 @@ Future<Response> _createPet(Request request) async {
 }
 
 Future<Response> _updatePet(Request request, String id) async {
+  final userId = _extractUserId(request);
+  if (userId == null) {
+    return Response(401, body: jsonEncode({'error': 'Unauthorized'}), headers: _jsonHeaders);
+  }
   try {
     final body = await request.readAsString();
     final data = jsonDecode(body) as Map<String, dynamic>;
     final dobStr = data['dateOfBirth'] ?? data['date_of_birth'];
     final neuteredStr = data['neuteredDate'];
     final results = await _pool.execute(
-      Sql.named('UPDATE pets SET name = @name, species = @species, breed = @breed, age = @age, date_of_birth = @dob, weight = @weight, gender = @gender, bio = @bio, insurance = @insurance, neutered_date = @neutered_date, neuter_dismissed = @neuter_dismissed, chip_id = @chip_id, chip_dismissed = @chip_dismissed, photo_path = @photo_path, vet_id = @vet_id, color_index = @color_index, passed_away = @passed_away, organization_id = @organization_id, updated_at = NOW() WHERE id = @id RETURNING *'),
+      Sql.named('UPDATE pets SET name = @name, species = @species, breed = @breed, age = @age, date_of_birth = @dob, weight = @weight, gender = @gender, bio = @bio, insurance = @insurance, neutered_date = @neutered_date, neuter_dismissed = @neuter_dismissed, chip_id = @chip_id, chip_dismissed = @chip_dismissed, photo_path = @photo_path, vet_id = @vet_id, color_index = @color_index, passed_away = @passed_away, organization_id = @organization_id, updated_at = NOW() WHERE id = @id AND user_id = @userId RETURNING *'),
       parameters: {
         'id': id,
+        'userId': userId,
         'name': data['name'],
         'species': data['species'],
         'breed': data['breed'] ?? '',
@@ -222,10 +248,14 @@ Future<Response> _updatePet(Request request, String id) async {
 }
 
 Future<Response> _deletePet(Request request, String id) async {
+  final userId = _extractUserId(request);
+  if (userId == null) {
+    return Response(401, body: jsonEncode({'error': 'Unauthorized'}), headers: _jsonHeaders);
+  }
   try {
     await _pool.execute(
-      Sql.named('DELETE FROM pets WHERE id = @id'),
-      parameters: {'id': id},
+      Sql.named('DELETE FROM pets WHERE id = @id AND user_id = @userId'),
+      parameters: {'id': id, 'userId': userId},
     );
     return Response.ok(jsonEncode({'deleted': true}), headers: _jsonHeaders);
   } catch (e) {

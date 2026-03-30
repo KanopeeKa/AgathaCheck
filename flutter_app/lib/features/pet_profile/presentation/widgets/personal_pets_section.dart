@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../sharing/presentation/providers/sharing_providers.dart';
 import '../../domain/entities/pet.dart';
 import '../widgets/pet_card.dart';
@@ -7,9 +9,9 @@ class PersonalPetsSection extends StatelessWidget {
   final List<Pet> personalActive;
   final String? orgFilter;
   final dynamic l;
-  final dynamic theme;
-  final dynamic ref;
-  final dynamic context;
+  final ThemeData theme;
+  final WidgetRef ref;
+  final BuildContext parentContext;
 
   const PersonalPetsSection({
     super.key,
@@ -18,7 +20,7 @@ class PersonalPetsSection extends StatelessWidget {
     required this.l,
     required this.theme,
     required this.ref,
-    required this.context,
+    required this.parentContext,
   });
 
   @override
@@ -32,7 +34,7 @@ class PersonalPetsSection extends StatelessWidget {
         padding: const EdgeInsets.only(bottom: 8),
         child: pet.isShared
             ? Dismissible(
-                key: Key('hide_{pet.id}'),
+                key: Key('hide_${pet.id}'),
                 direction: DismissDirection.endToStart,
                 background: Container(
                   alignment: Alignment.centerRight,
@@ -52,7 +54,7 @@ class PersonalPetsSection extends StatelessWidget {
                 ),
                 confirmDismiss: (_) async {
                   final confirmed = await showDialog<bool>(
-                    context: this.context,
+                    context: parentContext,
                     builder: (ctx) => AlertDialog(
                       title: Text(l.hideSharedPet),
                       content: Text(l.hideSharedPetConfirm(pet.name)),
@@ -64,8 +66,8 @@ class PersonalPetsSection extends StatelessWidget {
                   );
                   if (confirmed == true) {
                     await ref.read(hiddenSharedPetsProvider.notifier).hideSharedPet(pet.id);
-                    if (this.context.mounted) {
-                      ScaffoldMessenger.of(this.context).showSnackBar(
+                    if (parentContext.mounted) {
+                      ScaffoldMessenger.of(parentContext).showSnackBar(
                         SnackBar(content: Text(l.petHidden(pet.name))),
                       );
                     }
@@ -74,12 +76,12 @@ class PersonalPetsSection extends StatelessWidget {
                 },
                 child: PetCard(
                   pet: pet,
-                  onTap: () => this.context.go('/pet/{pet.id}'),
+                  onTap: () => context.go('/pet/${pet.id}'),
                 ),
               )
             : PetCard(
                 pet: pet,
-                onTap: () => this.context.go('/pet/{pet.id}'),
+                onTap: () => context.go('/pet/${pet.id}'),
               ),
       )).toList(),
     );
