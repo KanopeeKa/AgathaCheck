@@ -1,9 +1,9 @@
 import '../entities/weight_entry.dart';
 
 abstract class WeightRepository {
-  Future<List<WeightEntry>> getEntries(String petId);
-  Future<WeightEntry> createEntry(WeightEntry entry);
-  Future<WeightEntry> updateEntry(WeightEntry entry);
-  Future<void> deleteEntry(int id);
-  Future<WeightEntry?> getLatestWeight(String petId);
+  Future<List<WeightEntry>> getEntries(String petId, String token);
+  Future<WeightEntry> createEntry(WeightEntry entry, String token);
+  Future<WeightEntry> updateEntry(WeightEntry entry, String token);
+  Future<void> deleteEntry(int id, String token);
+  Future<WeightEntry?> getLatestWeight(String petId, String token);
 }

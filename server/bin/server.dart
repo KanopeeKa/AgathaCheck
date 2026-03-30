@@ -111,7 +111,17 @@ void main() async {
       }
       return Response.notFound('File not found');
     }
-    return fallbackHandler(request);
+    if (path == 'flutter_service_worker.js') {
+      return Response.ok(
+        'self.addEventListener("install", e => self.skipWaiting()); self.addEventListener("activate", e => { self.clients.claim(); self.registration.unregister(); });',
+        headers: {'Content-Type': 'text/javascript', 'Cache-Control': 'no-cache, no-store, must-revalidate'},
+      );
+    }
+    final resp = await fallbackHandler(request);
+    if (path == 'index.html' || path.isEmpty) {
+      return resp.change(headers: {'Cache-Control': 'no-cache, no-store, must-revalidate'});
+    }
+    return resp;
   });
 
   final port = int.parse(Platform.environment['PORT'] ?? '8080');

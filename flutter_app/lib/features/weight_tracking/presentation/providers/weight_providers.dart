@@ -3,6 +3,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../data/datasources/weight_remote_datasource.dart';
 import 'package:pet_profile_app/core/providers/api_base_url_provider.dart';
+import 'package:pet_profile_app/features/auth/presentation/providers/auth_providers.dart';
 import '../../data/repositories/weight_repository_impl.dart';
 import '../../domain/entities/weight_entry.dart';
 import '../../domain/repositories/weight_repository.dart';
@@ -63,40 +64,57 @@ final weightRepositoryProvider = Provider<WeightRepository>((ref) {
 final weightEntriesProvider =
     FutureProvider.family<List<WeightEntry>, String>((ref, petId) async {
   final repo = ref.watch(weightRepositoryProvider);
-  return repo.getEntries(petId);
+  final auth = ref.watch(authProvider);
+  final token = auth.accessToken;
+  if (token == null) return [];
+  return repo.getEntries(petId, token);
 });
 
 final latestWeightProvider =
     FutureProvider.family<WeightEntry?, String>((ref, petId) async {
   final repo = ref.watch(weightRepositoryProvider);
-  return repo.getLatestWeight(petId);
+  final auth = ref.watch(authProvider);
+  final token = auth.accessToken;
+  if (token == null) return null;
+  return repo.getLatestWeight(petId, token);
 });
 
 class WeightEntriesNotifier extends FamilyAsyncNotifier<List<WeightEntry>, String> {
   @override
   Future<List<WeightEntry>> build(String arg) async {
     final repo = ref.read(weightRepositoryProvider);
-    return repo.getEntries(arg);
+    final auth = ref.read(authProvider);
+    final token = auth.accessToken;
+    if (token == null) return [];
+    return repo.getEntries(arg, token);
   }
+
+  String? get _token => ref.read(authProvider).accessToken;
 
   Future<void> addEntry(WeightEntry entry) async {
     final repo = ref.read(weightRepositoryProvider);
-    await repo.createEntry(entry);
+    final token = _token;
+    if (token == null) return;
+    await repo.createEntry(entry, token);
     ref.invalidate(latestWeightProvider(arg));
-    state = AsyncValue.data(await repo.getEntries(arg));
+    state = AsyncValue.data(await repo.getEntries(arg, token));
   }
 
   Future<void> deleteEntry(int id) async {
     final repo = ref.read(weightRepositoryProvider);
-    await repo.deleteEntry(id);
+    final token = _token;
+    if (token == null) return;
+    await repo.deleteEntry(id, token);
     ref.invalidate(latestWeightProvider(arg));
-    state = AsyncValue.data(await repo.getEntries(arg));
+    state = AsyncValue.data(await repo.getEntries(arg, token));
   }
 
   Future<void> refresh() async {
     final repo = ref.read(weightRepositoryProvider);
+    final token = _token;
+    if (token == null) return;
     ref.invalidate(latestWeightProvider(arg));
-    state = AsyncValue.data(await repo.getEntries(arg));
+    state = AsyncValue.data(await repo.getEntries(arg, token));
   }
 }
 

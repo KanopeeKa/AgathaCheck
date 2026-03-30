@@ -5,11 +5,11 @@ import 'package:http/http.dart' as http;
 import '../models/weight_entry_model.dart';
 
 abstract class WeightRemoteDataSource {
-  Future<List<WeightEntryModel>> getEntries(String petId);
-  Future<WeightEntryModel> createEntry(WeightEntryModel entry);
-  Future<WeightEntryModel> updateEntry(WeightEntryModel entry);
-  Future<void> deleteEntry(int id);
-  Future<WeightEntryModel?> getLatestWeight(String petId);
+  Future<List<WeightEntryModel>> getEntries(String petId, String token);
+  Future<WeightEntryModel> createEntry(WeightEntryModel entry, String token);
+  Future<WeightEntryModel> updateEntry(WeightEntryModel entry, String token);
+  Future<void> deleteEntry(int id, String token);
+  Future<WeightEntryModel?> getLatestWeight(String petId, String token);
 }
 
 class WeightRemoteDataSourceImpl implements WeightRemoteDataSource {
@@ -21,10 +21,16 @@ class WeightRemoteDataSourceImpl implements WeightRemoteDataSource {
   final String baseUrl;
   final http.Client _client;
 
+  Map<String, String> _headers(String token) => {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      };
+
   @override
-  Future<List<WeightEntryModel>> getEntries(String petId) async {
+  Future<List<WeightEntryModel>> getEntries(String petId, String token) async {
     final response = await _client.get(
       Uri.parse('$baseUrl/api/weight-entries?pet_id=$petId'),
+      headers: _headers(token),
     );
     if (response.statusCode != 200) {
       throw Exception('Failed to load weight entries');
@@ -34,10 +40,10 @@ class WeightRemoteDataSourceImpl implements WeightRemoteDataSource {
   }
 
   @override
-  Future<WeightEntryModel> createEntry(WeightEntryModel entry) async {
+  Future<WeightEntryModel> createEntry(WeightEntryModel entry, String token) async {
     final response = await _client.post(
       Uri.parse('$baseUrl/api/weight-entries'),
-      headers: {'Content-Type': 'application/json'},
+      headers: _headers(token),
       body: jsonEncode(entry.toJson()),
     );
     if (response.statusCode != 201) {
@@ -47,10 +53,10 @@ class WeightRemoteDataSourceImpl implements WeightRemoteDataSource {
   }
 
   @override
-  Future<WeightEntryModel> updateEntry(WeightEntryModel entry) async {
+  Future<WeightEntryModel> updateEntry(WeightEntryModel entry, String token) async {
     final response = await _client.put(
       Uri.parse('$baseUrl/api/weight-entries/${entry.id}'),
-      headers: {'Content-Type': 'application/json'},
+      headers: _headers(token),
       body: jsonEncode(entry.toJson()),
     );
     if (response.statusCode != 200) {
@@ -60,9 +66,10 @@ class WeightRemoteDataSourceImpl implements WeightRemoteDataSource {
   }
 
   @override
-  Future<void> deleteEntry(int id) async {
+  Future<void> deleteEntry(int id, String token) async {
     final response = await _client.delete(
       Uri.parse('$baseUrl/api/weight-entries/$id'),
+      headers: _headers(token),
     );
     if (response.statusCode != 200) {
       throw Exception('Failed to delete weight entry');
@@ -70,9 +77,10 @@ class WeightRemoteDataSourceImpl implements WeightRemoteDataSource {
   }
 
   @override
-  Future<WeightEntryModel?> getLatestWeight(String petId) async {
+  Future<WeightEntryModel?> getLatestWeight(String petId, String token) async {
     final response = await _client.get(
       Uri.parse('$baseUrl/api/weight-entries/latest?pet_id=$petId'),
+      headers: _headers(token),
     );
     if (response.statusCode == 404) {
       return null;

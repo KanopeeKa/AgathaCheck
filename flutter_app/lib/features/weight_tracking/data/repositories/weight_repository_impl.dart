@@ -9,27 +9,27 @@ class WeightRepositoryImpl implements WeightRepository {
   final WeightRemoteDataSource _dataSource;
 
   @override
-  Future<List<WeightEntry>> getEntries(String petId) {
-    return _dataSource.getEntries(petId);
+  Future<List<WeightEntry>> getEntries(String petId, String token) {
+    return _dataSource.getEntries(petId, token);
   }
 
   @override
-  Future<WeightEntry> createEntry(WeightEntry entry) {
-    return _dataSource.createEntry(WeightEntryModel.fromEntity(entry));
+  Future<WeightEntry> createEntry(WeightEntry entry, String token) {
+    return _dataSource.createEntry(WeightEntryModel.fromEntity(entry), token);
   }
 
   @override
-  Future<WeightEntry> updateEntry(WeightEntry entry) {
-    return _dataSource.updateEntry(WeightEntryModel.fromEntity(entry));
+  Future<WeightEntry> updateEntry(WeightEntry entry, String token) {
+    return _dataSource.updateEntry(WeightEntryModel.fromEntity(entry), token);
   }
 
   @override
-  Future<void> deleteEntry(int id) {
-    return _dataSource.deleteEntry(id);
+  Future<void> deleteEntry(int id, String token) {
+    return _dataSource.deleteEntry(id, token);
   }
 
   @override
-  Future<WeightEntry?> getLatestWeight(String petId) {
-    return _dataSource.getLatestWeight(petId);
+  Future<WeightEntry?> getLatestWeight(String petId, String token) {
+    return _dataSource.getLatestWeight(petId, token);
   }
 }

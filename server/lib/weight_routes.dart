@@ -63,6 +63,39 @@ Router weightRoutes(Pool pool) {
     }
   });
 
+  router.get('/latest', (Request request) async {
+    final userId = _extractUserId(request);
+    if (userId == null) {
+      return Response(401, body: jsonEncode({'error': 'Unauthorized'}), headers: _jsonHeaders);
+    }
+    try {
+      final petId = request.url.queryParameters['pet_id'] ?? request.url.queryParameters['petId'];
+      if (petId == null) {
+        return Response(400, body: jsonEncode({'error': 'pet_id is required'}), headers: _jsonHeaders);
+      }
+      final results = await pool.execute(
+        Sql.named('SELECT we.*, p.name as pet_name FROM weight_entries we JOIN pets p ON we.pet_id = p.id WHERE p.user_id = @userId AND we.pet_id = @petId ORDER BY we.date DESC LIMIT 1'),
+        parameters: {'userId': userId, 'petId': petId},
+      );
+      if (results.isEmpty) {
+        return Response.notFound(jsonEncode({'error': 'No weight entries found'}), headers: _jsonHeaders);
+      }
+      final c = results.first.toColumnMap();
+      return Response.ok(jsonEncode({
+        'id': c['id']?.toString(),
+        'pet_id': c['pet_id']?.toString(),
+        'pet_name': c['pet_name'],
+        'weight': c['weight'],
+        'unit': c['unit'] ?? 'kg',
+        'date': c['date']?.toString(),
+        'notes': c['notes'] ?? '',
+        'created_at': c['created_at']?.toString(),
+      }), headers: _jsonHeaders);
+    } catch (e) {
+      return Response.internalServerError(body: jsonEncode({'error': 'Error: $e'}), headers: _jsonHeaders);
+    }
+  });
+
   router.post('/', (Request request) async {
     final userId = _extractUserId(request);
     if (userId == null) {
