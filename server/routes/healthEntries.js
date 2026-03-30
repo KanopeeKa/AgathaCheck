@@ -1,16 +1,177 @@
 import express from 'express';
+import { v4 as uuidv4 } from 'uuid';
+import jwt from 'jsonwebtoken';
 
-export default function healthEntriesRoutes() {
+const JWT_SECRET = process.env.JWT_SECRET || process.env.SESSION_SECRET || 'default_secret';
+
+function extractUserId(req) {
+  const auth = req.headers['authorization'] || req.headers['Authorization'];
+  if (!auth || !auth.startsWith('Bearer ')) return null;
+  try {
+    return jwt.verify(auth.substring(7), JWT_SECRET).id;
+  } catch (_) {
+    return null;
+  }
+}
+
+export default function healthEntriesRoutes(pool) {
   const router = express.Router();
 
-  // GET /backend/api/health-entries
-  router.get('/', (req, res) => {
-    res.status(200).json([]); // Return empty array or mock data
+  router.get('/', async (req, res) => {
+    const userId = extractUserId(req);
+    if (!userId) return res.status(401).json({ error: 'Unauthorized' });
+    try {
+      const petId = req.query.pet_id;
+      let result;
+      if (petId) {
+        result = await pool.query('SELECT * FROM health_entries WHERE pet_id = $1 AND user_id = $2 ORDER BY created_at DESC', [petId, userId]);
+      } else {
+        result = await pool.query('SELECT * FROM health_entries WHERE user_id = $1 ORDER BY created_at DESC', [userId]);
+      }
+      res.json(result.rows);
+    } catch (err) {
+      res.status(500).json({ error: err.message });
+    }
   });
 
-  // POST /backend/api/health-entries
-  router.post('/', (req, res) => {
-    res.status(201).json({ created: true, entry: req.body });
+  router.get('/export', async (req, res) => {
+    const userId = extractUserId(req);
+    if (!userId) return res.status(401).json({ error: 'Unauthorized' });
+    try {
+      const petId = req.query.pet_id;
+      const result = await pool.query('SELECT * FROM health_entries WHERE pet_id = $1 AND user_id = $2 ORDER BY created_at DESC', [petId, userId]);
+      res.json(result.rows);
+    } catch (err) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  router.get('/:id', async (req, res) => {
+    const userId = extractUserId(req);
+    if (!userId) return res.status(401).json({ error: 'Unauthorized' });
+    try {
+      const result = await pool.query('SELECT * FROM health_entries WHERE id = $1 AND user_id = $2', [req.params.id, userId]);
+      if (result.rows.length === 0) return res.status(404).json({ error: 'Health entry not found' });
+      res.json(result.rows[0]);
+    } catch (err) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  router.post('/', async (req, res) => {
+    const userId = extractUserId(req);
+    if (!userId) return res.status(401).json({ error: 'Unauthorized' });
+    try {
+      const { pet_id, type, notes = '' } = req.body;
+      const id = uuidv4();
+      const result = await pool.query(
+        'INSERT INTO health_entries (id, pet_id, user_id, type, notes) VALUES ($1, $2, $3, $4, $5) RETURNING *',
+        [id, pet_id, userId, type, notes]
+      );
+      res.status(201).json(result.rows[0]);
+    } catch (err) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  router.put('/:id', async (req, res) => {
+    const userId = extractUserId(req);
+    if (!userId) return res.status(401).json({ error: 'Unauthorized' });
+    try {
+      const { type, notes } = req.body;
+      const result = await pool.query(
+        'UPDATE health_entries SET type = $1, notes = $2, updated_at = NOW() WHERE id = $3 AND user_id = $4 RETURNING *',
+        [type, notes, req.params.id, userId]
+      );
+      if (result.rows.length === 0) return res.status(404).json({ error: 'Health entry not found' });
+      res.json(result.rows[0]);
+    } catch (err) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  router.delete('/:id', async (req, res) => {
+    const userId = extractUserId(req);
+    if (!userId) return res.status(401).json({ error: 'Unauthorized' });
+    try {
+      const result = await pool.query('DELETE FROM health_entries WHERE id = $1 AND user_id = $2 RETURNING *', [req.params.id, userId]);
+      if (result.rows.length === 0) return res.status(404).json({ error: 'Health entry not found' });
+      res.json({ message: 'Health entry deleted' });
+    } catch (err) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  router.post('/:id/mark-taken', async (req, res) => {
+    const userId = extractUserId(req);
+    if (!userId) return res.status(401).json({ error: 'Unauthorized' });
+    try {
+      const entryId = req.params.id;
+      const histId = uuidv4();
+      await pool.query(
+        'INSERT INTO health_history (id, health_entry_id, status, changed_at) VALUES ($1, $2, $3, NOW())',
+        [histId, entryId, 'taken']
+      );
+      res.json({ message: 'Marked as taken' });
+    } catch (err) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  router.post('/:id/undo-complete', async (req, res) => {
+    const userId = extractUserId(req);
+    if (!userId) return res.status(401).json({ error: 'Unauthorized' });
+    try {
+      const entryId = req.params.id;
+      await pool.query(
+        "DELETE FROM health_history WHERE health_entry_id = $1 AND status = 'taken' AND id = (SELECT id FROM health_history WHERE health_entry_id = $1 ORDER BY changed_at DESC LIMIT 1)",
+        [entryId]
+      );
+      res.json({ message: 'Undo complete' });
+    } catch (err) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  router.get('/:id/history', async (req, res) => {
+    try {
+      const result = await pool.query('SELECT * FROM health_history WHERE health_entry_id = $1 ORDER BY changed_at DESC', [req.params.id]);
+      res.json(result.rows);
+    } catch (err) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  router.get('/:id/photos', async (req, res) => {
+    try {
+      const result = await pool.query('SELECT * FROM health_event_photos WHERE health_entry_id = $1 ORDER BY created_at', [req.params.id]);
+      res.json(result.rows);
+    } catch (err) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  router.post('/:id/photos', async (req, res) => {
+    try {
+      const id = uuidv4();
+      const url = req.body.url || `/uploads/health_photos/${id}.jpg`;
+      const result = await pool.query(
+        'INSERT INTO health_event_photos (id, health_entry_id, url) VALUES ($1, $2, $3) RETURNING *',
+        [id, req.params.id, url]
+      );
+      res.status(201).json(result.rows[0]);
+    } catch (err) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  router.delete('/:entryId/photos/:photoId', async (req, res) => {
+    try {
+      await pool.query('DELETE FROM health_event_photos WHERE id = $1 AND health_entry_id = $2', [req.params.photoId, req.params.entryId]);
+      res.json({ message: 'Photo deleted' });
+    } catch (err) {
+      res.status(500).json({ error: err.message });
+    }
   });
 
   return router;

@@ -1,0 +1,130 @@
+import 'dart:convert';
+import 'package:shelf/shelf.dart';
+import 'package:shelf_router/shelf_router.dart';
+import 'package:postgres/postgres.dart';
+import 'package:uuid/uuid.dart';
+import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart';
+import 'dart:io';
+
+final _uuid = Uuid();
+final _jwtSecret = Platform.environment['JWT_SECRET'] ??
+    Platform.environment['SESSION_SECRET'] ??
+    'default_secret';
+
+String? _extractUserId(Request request) {
+  final auth = request.headers['authorization'] ?? request.headers['Authorization'];
+  if (auth == null || !auth.startsWith('Bearer ')) return null;
+  try {
+    final jwt = JWT.verify(auth.substring(7), SecretKey(_jwtSecret));
+    return (jwt.payload as Map)['id']?.toString();
+  } catch (_) {
+    return null;
+  }
+}
+
+Router sharingRoutes(Pool pool) {
+  final router = Router();
+
+  router.post('/', (Request request) async {
+    final userId = _extractUserId(request);
+    if (userId == null) return Response(401, body: jsonEncode({'error': 'Unauthorized'}));
+    try {
+      final body = jsonDecode(await request.readAsString());
+      final petId = body['pet_id'];
+      final code = _uuid.v4().substring(0, 8);
+      return Response(201,
+          body: jsonEncode({'code': code, 'pet_id': petId}),
+          headers: {'Content-Type': 'application/json'});
+    } catch (e) {
+      return Response.internalServerError(body: jsonEncode({'error': e.toString()}));
+    }
+  });
+
+  router.get('/pending', (Request request) async {
+    final userId = _extractUserId(request);
+    if (userId == null) return Response(401, body: jsonEncode({'error': 'Unauthorized'}));
+    try {
+      final results = await pool.execute(
+        Sql.named("SELECT pa.*, p.name as pet_name FROM pet_access pa JOIN pets p ON p.id = pa.pet_id WHERE pa.user_id = @userId AND pa.role = 'pending_shared'"),
+        parameters: {'userId': userId},
+      );
+      final list = results.map((r) => r.toColumnMap()).toList();
+      return Response.ok(jsonEncode(list), headers: {'Content-Type': 'application/json'});
+    } catch (e) {
+      return Response.internalServerError(body: jsonEncode({'error': e.toString()}));
+    }
+  });
+
+  router.post('/pending/<petId>/accept', (Request request, String petId) async {
+    final userId = _extractUserId(request);
+    if (userId == null) return Response(401, body: jsonEncode({'error': 'Unauthorized'}));
+    try {
+      await pool.execute(
+        Sql.named("UPDATE pet_access SET role = 'shared' WHERE pet_id = @petId AND user_id = @userId AND role = 'pending_shared'"),
+        parameters: {'petId': petId, 'userId': userId},
+      );
+      return Response.ok(jsonEncode({'message': 'Share accepted'}), headers: {'Content-Type': 'application/json'});
+    } catch (e) {
+      return Response.internalServerError(body: jsonEncode({'error': e.toString()}));
+    }
+  });
+
+  router.post('/pending/<petId>/decline', (Request request, String petId) async {
+    final userId = _extractUserId(request);
+    if (userId == null) return Response(401, body: jsonEncode({'error': 'Unauthorized'}));
+    try {
+      await pool.execute(
+        Sql.named("DELETE FROM pet_access WHERE pet_id = @petId AND user_id = @userId AND role = 'pending_shared'"),
+        parameters: {'petId': petId, 'userId': userId},
+      );
+      return Response.ok(jsonEncode({'message': 'Share declined'}), headers: {'Content-Type': 'application/json'});
+    } catch (e) {
+      return Response.internalServerError(body: jsonEncode({'error': e.toString()}));
+    }
+  });
+
+  router.put('/<petId>/hide', (Request request, String petId) async {
+    final userId = _extractUserId(request);
+    if (userId == null) return Response(401, body: jsonEncode({'error': 'Unauthorized'}));
+    try {
+      final body = jsonDecode(await request.readAsString());
+      final hidden = body['hidden'] == true;
+      await pool.execute(
+        Sql.named('UPDATE pet_access SET hidden = @hidden WHERE pet_id = @petId AND user_id = @userId'),
+        parameters: {'hidden': hidden, 'petId': petId, 'userId': userId},
+      );
+      return Response.ok(
+          jsonEncode({'message': hidden ? 'Pet hidden' : 'Pet unhidden'}),
+          headers: {'Content-Type': 'application/json'});
+    } catch (e) {
+      return Response.internalServerError(body: jsonEncode({'error': e.toString()}));
+    }
+  });
+
+  router.get('/hidden', (Request request) async {
+    final userId = _extractUserId(request);
+    if (userId == null) return Response(401, body: jsonEncode({'error': 'Unauthorized'}));
+    try {
+      final results = await pool.execute(
+        Sql.named('SELECT pa.*, p.name as pet_name FROM pet_access pa JOIN pets p ON p.id = pa.pet_id WHERE pa.user_id = @userId AND pa.hidden = true'),
+        parameters: {'userId': userId},
+      );
+      final list = results.map((r) => r.toColumnMap()).toList();
+      return Response.ok(jsonEncode(list), headers: {'Content-Type': 'application/json'});
+    } catch (e) {
+      return Response.internalServerError(body: jsonEncode({'error': e.toString()}));
+    }
+  });
+
+  router.get('/<code>', (Request request, String code) async {
+    return Response.ok(jsonEncode({'code': code, 'pet': null}), headers: {'Content-Type': 'application/json'});
+  });
+
+  router.post('/<code>/accept', (Request request, String code) async {
+    final userId = _extractUserId(request);
+    if (userId == null) return Response(401, body: jsonEncode({'error': 'Unauthorized'}));
+    return Response.ok(jsonEncode({'message': 'Share accepted'}), headers: {'Content-Type': 'application/json'});
+  });
+
+  return router;
+}

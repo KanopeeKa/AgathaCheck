@@ -6,16 +6,22 @@ import 'package:shelf_cors_headers/shelf_cors_headers.dart';
 import 'package:shelf_static/shelf_static.dart';
 import '../lib/routes.dart';
 import '../lib/auth_routes.dart' as auth;
+import '../lib/sharing_routes.dart' as sharing;
 
 void main() async {
   await initPool();
 
   final petRouter = apiHandler();
   final authRouter = auth.authRoutes(pool);
+  final shareRouter = sharing.sharingRoutes(pool);
 
   final topRouter = Router();
   topRouter.mount('/api/auth/', authRouter.call);
   topRouter.mount('/backend/api/auth/', authRouter.call);
+  topRouter.mount('/api/share/', shareRouter.call);
+  topRouter.mount('/backend/api/share/', shareRouter.call);
+  topRouter.mount('/api/', petRouter.call);
+  topRouter.mount('/backend/api/', petRouter.call);
 
   final webDir = Platform.environment['FLUTTER_WEB_DIR'] ??
       '${Directory.current.parent.path}/flutter_app/build/web';
@@ -47,11 +53,8 @@ void main() async {
       .addMiddleware(allowIframe())
       .addHandler((Request request) async {
     final path = request.url.path;
-    if (path.startsWith('api/auth/') || path.startsWith('backend/api/auth/')) {
-      return topRouter.call(request);
-    }
     if (path.startsWith('api/') || path.startsWith('backend/')) {
-      return petRouter.call(request);
+      return topRouter.call(request);
     }
     if (path.startsWith('uploads/')) {
       final file = File(path);
