@@ -1,7 +1,7 @@
 # Agatha Track (PetProfileApp)
 
 ## Overview
-Agatha is a modular Flutter application for comprehensive pet management, enabling users to manage pet profiles, track health, log weight, and maintain veterinarian contacts. It provides a centralized platform for pet owners and organisations with robust authentication, in-app notifications, detailed pet reports, GDPR-compliant data rights, and consent management. The project aims to deliver a scalable, production-ready solution with future potential for native mobile and sharing capabilities.
+Agatha Track is a modular Flutter application designed for comprehensive pet management. It enables users to manage pet profiles, track health, log weight, and maintain veterinarian contacts. The platform offers robust authentication, in-app notifications, detailed pet reports, and adheres to GDPR data rights and consent management. The project aims to provide a scalable, production-ready solution for pet owners and organizations, with future potential for native mobile and advanced sharing capabilities.
 
 ## User Preferences
 - Clean architecture with feature-driven structure
@@ -10,77 +10,54 @@ Agatha is a modular Flutter application for comprehensive pet management, enabli
 - Production-ready CI setup
 - EU GDPR compliance
 
-## Project Structure
-- `server/` — Dual backend: Dart shelf (primary/dev) and Node.js Express (alternative)
-  - `server/bin/server.dart` — Dart entry point (shelf server on PORT env var, serves Flutter web + API)
-  - `server/bin/server.js` — Node.js entry point (Express server with same API surface)
-  - `server/lib/routes.dart` — Dart pet + vet route handlers + DB pool init
-  - `server/lib/auth_routes.dart` — Dart auth route handlers (JWT, bcrypt, password reset, GDPR)
-  - `server/lib/health_routes.dart` — Dart health entries CRUD (with history, photos, mark-taken)
-  - `server/lib/health_issue_routes.dart` — Dart health issues CRUD
-  - `server/lib/notification_routes.dart` — Dart notification routes (list, unread count, mark read, preferences)
-  - `server/lib/organization_routes.dart` — Dart organization routes (CRUD, members, invites, org pets)
-  - `server/lib/weight_routes.dart` — Dart weight entries CRUD
-  - `server/lib/sharing_routes.dart` — Dart sharing routes
-  - `server/lib/vet_routes.dart` — Dart standalone vet routes
-  - `server/routes/*.js` — Node.js/Express route files (full implementation matching Dart server)
-  - `server/pubspec.yaml` — Server Dart dependencies (shelf, postgres, uuid, dart_jsonwebtoken, dbcrypt)
-  - `server/package.json` — Server Node.js dependencies (express, pg, bcrypt, jsonwebtoken)
-- `flutter_app/` — Flutter frontend
-- `db/migrations/` — SQL migration files
-- `regulatory/` — GDPR documentation
-
 ## System Architecture
-The application employs a clean architecture, separating concerns into data, domain, and presentation layers within feature modules. The UI adheres to Material 3 design principles with a deep purple/violet theme and uses GoRouter for navigation. Database connection is configured via `DATABASE_URL` environment variable parsed in `initPool()` in `server/lib/routes.dart`, with schema managed through migration files. The Dart server uses postgres v3 API (`Pool`, `Sql.named()`, `ResultRow`).
+The application is built with a clean architecture, separating concerns into data, domain, and presentation layers within feature modules. The UI follows Material 3 design principles with a deep purple/violet theme and utilizes GoRouter for navigation.
 
 **Key Technical Implementations & Features:**
-- **Pet Profile Management**: CRUD operations for pet profiles, linking vets and health entries. Pets are assigned a unique color from a 15-color palette for visual identification across the UI. Age is dynamically calculated from the date of birth. Server-side storage is via a `pets` PostgreSQL table, with `SharedPreferences` acting as a local cache. Pet deletion cascades to all associated server-side data.
-- **Identification Reminder**: Displays species-specific reminders for pets without an ID, configurable for dismissal.
-- **Passed Away Memorial**: Allows users to mark pets as passed away, triggering notifications, updating the pet's status, changing its color to white, and applying a rainbow wings overlay to its photo.
-- **Authentication & User Profile**: JWT-based email/password authentication (signup, login, refresh, logout, profile management, password reset). User profiles include first/last name, category, bio, and photo.
-- **Health Tracking**: Manages health entries (medications, preventives, vet visits) with scheduling, photo attachments, and a tabbed dashboard. Supports various frequencies for entries.
-- **Health Issues**: Tracks ongoing health conditions linked to pets, with optional start/end dates and associations with health entries.
-- **Weight Tracking**: Records per-pet weight history with line charts and unit selection.
-- **Veterinarian Management**: CRUD operations for veterinarian contacts, linkable to pets. Vets are scoped to users via `user_id` column for data isolation. `pets.vet_id` is INTEGER matching `vets.id`.
-- **Notification System**: In-app notification center for due entries and general events, with server-side processing and per-pet mute options.
-- **Sharing Feature**: Multi-user pet access with guardian/shared roles via share links, managed through a `pet_access` table. Share link acceptance creates a `pending_shared` entry with a notification to the recipient. Pending shares appear at the top of the pet list with Accept/Decline buttons. When accepting, users choose personal list or an organization. Accepted shared pets appear in `GET /api/pets/all` with `is_shared: true`. Hidden shared pets: `pet_access.hidden` column controls visibility; hidden pets excluded from pet list, health dashboard, and notifications. Endpoints: `GET /api/share/pending`, `POST /api/share/pending/:petId/accept` (body: optional `organization_id`), `POST /api/share/pending/:petId/decline`, `PUT /api/share/:petId/hide` (body: `{hidden: bool}`), `GET /api/share/hidden`. Swipe-to-hide on shared pet cards in pet list; unhide via collapsed section in org detail screen.
-- **Organization Support**: Comprehensive management for Professional and Charity organizations, including user roles, pet transfers, and archiving. Pet list groups pets by organization with filter chips (All Pets / My Pets / per-org). Health dashboard includes matching org filter. Server endpoint `GET /api/pets/all` returns personal + org pets with `organization_id` and `organization_name`. Email-based invite flow with role selection (member/super_user): `POST /api/organizations/:id/invite` sends invite, `GET /api/organizations/invites/pending` lists pending invites, `POST /api/organizations/invites/:id/accept` and `POST /api/organizations/invites/:id/decline` handle responses. Pending invites stored as `pending_member`/`pending_super_user` roles in `organization_users`. Org detail screen shows all members inline with an "Add User" button opening an email+role invite dialog. Dedicated `/organizations` page (OrganizationListScreen) with full org list, pending invites, and create/join buttons. My Details links to the organisations page via a simple tile. App bar business icon always visible, navigates to `/organizations`.
-- **Family Events**: Org pets support family events (assigned member, date range, notes) via `family_events` table. CRUD via `GET/POST /api/pets/:id/family-events` and `PUT/DELETE /api/pets/:id/family-events/:id`. UI in pet detail screen shows collapsible Family Events section for org pets with add dialog and swipe-to-delete. Family events are also included in the To Do / health dashboard as `family_event` type entries (with a dedicated "Family Events" tab). When a family event with a "To date" is created, reminder notifications are sent to all org members. The health entries API passes the auth token so the server can include family events for the user's orgs.
-- **Pet Report Generation**: Generates customizable PDF reports for individual pets with 7 optional sections: pet profile, weight tracking (chart + table), health events (with optional administration log), health issues, family events (care assignments and foster stays, for org pets), recent notifications/alerts, and sharing access details.
-- **Subscription (RevenueCat)**: Manages in-app subscriptions and entitlements across platforms.
-- **Localization (EN/FR)**: Full English/French localization via Flutter's `intl` system, with locale persistence and server-side syncing.
-- **Deployment**: Flutter web frontend is statically served by an AOT compiled Dart API server. Database is configured via `DATABASE_URL` env var. See `DEPLOYMENT_DB.md` for provisioning and migration instructions.
-- **Database Migrations**: SQL migration files in `db/migrations/` with a Dart runner at `bin/migrate.dart`. Supports `up` and `down` migrations. Migration tracking via `_migrations` table.
-- **Help & FAQ**: In-app help page (`/help`) accessible from the user menu, with 12 collapsible FAQ sections covering every feature. Fully localised in EN/FR. Route: `/help`, screen: `HelpScreen`.
-- **About Us Screen**: `/about` screen with app logo, intro text, and links to Privacy Policy (`/privacy-policy`) and Terms of Service (`/terms-of-service`). Accessible from My Details.
-- **GDPR Data Rights**: Delete account (`DELETE /api/auth/me` with password confirmation, cascades all data), export data (`GET /api/auth/me/export` returns full JSON), edit profile, withdraw consent. All accessible from My Details screen.
-- **Consent Banner**: Custom CMP-style banner on first launch with Accept All / Manage Preferences. Stores consent state in SharedPreferences (essential/analytics/marketing). Re-accessible from My Details → Privacy Preferences or `/consent-settings` route.
-- **Regulatory Documentation**: Internal GDPR docs at `regulatory/` — `DATA_MAP.md` (personal data + SDK inventory), `INTERNAL_GDPR.md` (DPO, hosting, retention, processing activities), `PRIVACY_POLICY.md`, `TERMS_OF_SERVICE.md`.
-- **Accessibility**: Implemented across all screens with tooltips, keys, semantics, and proper form field labeling.
-- **BDD Tests**: Gherkin `.feature` files under `flutter_app/test/bdd/features/` covering all features: authentication, pet profiles, health tracking, weight tracking, vet management, sharing, notifications, subscriptions, help/FAQ, plus organisation management, pet management, timeline, and adoption.
 
-## Database
-- **Connection**: `DATABASE_URL` environment variable (PostgreSQL connection string). Parsed via `initPool()` in `server/lib/routes.dart`. Falls back to individual `PG*` vars if URL host is empty.
-- **Migration runner**: `cd server && dart run bin/migrate.dart [up|down|status]` — applies numbered SQL files from `db/migrations/`, tracks applied migrations in `_migrations` table, supports rollback via `*_down.sql` files. Legacy/superseded schema files archived in `db/migrations/archive/`.
-- **Migration files**: Numbered `001_*.sql` through `006_*.sql` plus `v3__initial_uuid_schema.sql` (base schema). All use `IF NOT EXISTS`/`IF EXISTS` for idempotency. New migrations should follow the `NNN_description.sql` naming convention.
-- **Workflow**: `cd /home/runner/workspace/server && PORT=5000 dart run bin/server.dart`
-- **Schema**: 19 tables — users, pets, vets (with user_id), health_entries, health_history, health_issues, health_issue_events, health_event_photos, weight_entries, notifications, notification_preferences, pet_access, shared_pets, organizations, organization_users, archived_pets, family_events, refresh_tokens, password_reset_tokens, _migrations
-- **Key fixes applied**: `vets.user_id` added for data isolation; `pets.vet_id` is UUID referencing `vets.id`; full pet columns (bio, insurance, neutered_date, neuter_dismissed, chip_id, chip_dismissed, photo_path, vet_id, color_index, passed_away, organization_id); `pet_access.hidden` column; performance indexes added; `weight_entries.date`, `weight_entries.notes`, `weight_entries.created_at` added via migration 006
-- **API field mapping**: Frontend sends/expects camelCase (`vetId`, `photoPath`, `colorValue`, `passedAway`, `dateOfBirth`). Both Dart and Node.js servers accept camelCase input and return camelCase in responses. DB uses snake_case columns.
-- **Dart server routes**: `server/lib/routes.dart` has pets + vets (with JWT auth + user scoping), `server/lib/auth_routes.dart` has auth, `server/lib/sharing_routes.dart` has sharing, `server/lib/vet_routes.dart` has standalone vet routes
+-   **Pet Profile Management**: CRUD operations for pet profiles, including dynamic age calculation, unique color assignment, and cascading deletion.
+-   **Authentication & User Profile**: JWT-based authentication with comprehensive user profile management, including password reset and profile editing.
+-   **Health Tracking**: Manages medications, preventives, and vet visits with scheduling, photo attachments, and a tabbed dashboard.
+-   **Health Issues**: Tracks ongoing health conditions linked to pets, associating them with health entries.
+-   **Weight Tracking**: Records and visualizes per-pet weight history with line charts.
+-   **Veterinarian Management**: CRUD for veterinarian contacts, scoped per user.
+-   **Notification System**: In-app notifications for due entries and general events, with per-pet mute options.
+-   **Sharing Feature**: Multi-user pet access with guardian/shared roles via share links, managed through a `pet_access` table with pending share acceptance and visibility controls.
+-   **Organization Support**: Comprehensive management for Professional and Charity organizations, including user roles, pet transfers, archiving, and an email-based invite flow. Org pets support family events with assigned members, date ranges, and reminder notifications.
+-   **Pet Report Generation**: Customizable PDF reports for individual pets, including sections for profile, weight, health events, issues, family events, notifications, and sharing details.
+-   **Localization**: Full English/French localization with locale persistence.
+-   **Deployment**: Flutter web frontend served by an AOT compiled Dart API server.
+-   **Database Migrations**: SQL migration files managed with a Dart runner for `up` and `down` operations.
+-   **GDPR Data Rights**: Functionality for account deletion, data export (JSON), profile editing, and consent withdrawal.
+-   **Consent Management**: Custom CMP-style banner for initial consent, with preferences stored locally and re-accessible.
+-   **Accessibility**: Implemented across all screens with tooltips, keys, semantics, and proper form field labeling.
+-   **API Auth Hardening**: All authenticated Node.js routes enforce JWT validation and user ID extraction to prevent unauthorized access and cross-user IDOR. In the sharing router, `/pending` and `/hidden` are declared before `/:code` so they are not swallowed by the parameterised route.
+
+## Testing
+-   **Backend (Node.js)**: Jest is the canonical runner. Run `cd server && npx jest --env=node --forceExit` for ~338 tests across 9 suites. The `--forceExit` flag avoids hangs caused by lingering pg client handles. Tests use the `createApp(mockPool)` factory and sign JWTs with `JWT_SECRET || SESSION_SECRET || 'default_secret'`. `babel-plugin-transform-import-meta` handles ESM `import.meta`. Mocha is legacy-only (`npm run test:mocha`).
+-   **Backend (Dart)**: `cd server && dart test` runs parity tests for the shelf server.
+-   **Frontend (Flutter)**: `cd flutter_app && flutter test` runs unit/widget/model tests. Model tests live under `flutter_app/test/features/*/data/models/` and verify camelCase field mapping, defaults, and null handling.
+-   **BDD**: Gherkin features under `flutter_app/test/bdd/features/`.
+-   **Pitfall**: Dart enum `.name` is minified in release builds — always use direct enum comparison or a `.label` getter, never `.name`.
+
+## CI / CD
+-   **`.github/workflows/ci.yml`**: triggered on push/PR to `main`. Two parallel jobs — `flutter` (cache → `pub get` → optional `build_runner` → analyze → test with coverage → optional integration tests → `flutter build web --release --no-tree-shake-icons` → upload `web-build` artifact) and `backend` (npm cache → `npm ci` → `npx jest --env=node --forceExit`).
+-   **`.github/workflows/deploy-uat.yml`**: triggered on push to `release/uat-*`. Two jobs (`test` → `deploy`). Deploy job uses `environment: UAT`, FTP-publishes the Flutter web build to `./` and the Node.js backend to `./backend/` on `uat.agathatrack.com` (excluding `node_modules`, tests, and dev configs; the frontend deploy excludes `**/backend/**` so it isn't wiped), then SSHes in to run `npm install --omit=dev` and `touch tmp/restart.txt`.
+-   **`.github/workflows/deploy-prod.yml`**: triggered on GitHub release publish. Mirrors UAT structure with `PROD_*` secrets and `environment: PROD`. Frontend deploys to `/public_html/Prod/`, backend to `/public_html/Prod/backend/`.
+-   **Required secrets**: `UAT_FTP_SERVER|USERNAME|PASSWORD`, `UAT_SSH_HOST|USER|PRIVATE_KEY` (optional `UAT_SSH_PORT`), and the equivalent `PROD_*` set.
 
 ## External Dependencies
-- **Flutter**: Frontend framework
-- **flutter_riverpod**: State management
-- **go_router**: Navigation
-- **shared_preferences**: Local storage
-- **PostgreSQL**: Primary database
-- **dart_jsonwebtoken**: JWT handling
-- **dbcrypt**: Password hashing
-- **intl**: Date formatting
-- **fl_chart**: Interactive charts
-- **http**: API communication
-- **image_picker**: Photo selection
-- **pdf**, **printing**: PDF generation
-- **purchases_flutter**, **purchases_ui_flutter**: RevenueCat SDK
-- **web**: Dart web interop (for file downloads)
+-   **Flutter**: Frontend framework
+-   **flutter_riverpod**: State management
+-   **go_router**: Navigation
+-   **shared_preferences**: Local storage
+-   **PostgreSQL**: Primary database
+-   **dart_jsonwebtoken**: JWT handling
+-   **dbcrypt**: Password hashing
+-   **intl**: Date formatting
+-   **fl_chart**: Interactive charts
+-   **http**: API communication
+-   **image_picker**: Photo selection
+-   **pdf**, **printing**: PDF generation
+-   **purchases_flutter**, **purchases_ui_flutter**: RevenueCat SDK
+-   **web**: Dart web interop (for file downloads)
