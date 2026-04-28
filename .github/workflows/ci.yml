@@ -1,80 +1,67 @@
-# This workflow uses actions that are not certified by GitHub.
-# They are provided by a third-party and are governed by
-# separate terms of service, privacy policy, and support
-# documentation.
-
 name: CI
+
 on:
   push:
     branches: [ "main" ]
   pull_request:
-
     branches: [ "main" ]
 
 jobs:
-  build:
+  flutter:
+    name: Flutter (analyze, test, build web)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
-      # Clean and analyze Flutter code
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
           channel: stable
-      - name: Clean build artifacts
-        working-directory: flutter_app
-        run: flutter clean
-      - name: Fetch dependencies
-        working-directory: flutter_app
-        run: flutter pub get
-      - name: Run analyzer
-        working-directory: flutter_app
-        run: flutter analyze
 
-      # Cache Flutter dependencies for faster builds
+      # Cache must be restored BEFORE `flutter pub get` to be effective.
       - name: Cache Flutter dependencies
         uses: actions/cache@v4
         with:
           path: |
             ~/.pub-cache
             flutter_app/.dart_tool
-          key: flutter-${{ runner.os }}-${{ hashFiles('**/pubspec.yaml') }}
+          key: flutter-${{ runner.os }}-${{ hashFiles('flutter_app/pubspec.lock') }}
           restore-keys: |
             flutter-${{ runner.os }}-
 
-      - name: Install Flutter app dependencies
+      - name: Fetch Flutter dependencies
         working-directory: flutter_app
         run: flutter pub get
 
-      - name: Generate mocks and code
+      - name: Generate code (build_runner)
         working-directory: flutter_app
-        run: flutter pub run build_runner build --delete-conflicting-outputs
+        run: |
+          if grep -q "build_runner" pubspec.yaml; then
+            flutter pub run build_runner build --delete-conflicting-outputs
+          else
+            echo "build_runner not configured; skipping codegen."
+          fi
 
-      - name: Lint Flutter app (warnings OK)
+      - name: Analyze
         working-directory: flutter_app
-        run: flutter analyze . || true
+        run: flutter analyze
 
-      - name: Test Flutter app with coverage
+      - name: Run unit & widget tests with coverage
         working-directory: flutter_app
         run: flutter test --coverage
 
-      - name: Run Flutter unit/widget tests
-        working-directory: flutter_app
-        run: flutter test test/
-
-      - name: Run Flutter integration tests
+      - name: Run integration tests (if present)
         working-directory: flutter_app
         run: |
-          if [ -d "test/features/pet_profile/presentation/integration/" ]; then
+          if [ -d "test/features/pet_profile/presentation/integration" ]; then
             flutter test test/features/pet_profile/presentation/integration/
           else
-            echo "No integration tests found."
+            echo "No integration tests directory found; skipping."
           fi
 
       - name: Build web release
         working-directory: flutter_app
-        run: flutter build web --release
+        run: flutter build web --release --no-tree-shake-icons
 
       - name: Upload web artifact
         uses: actions/upload-artifact@v4
@@ -82,26 +69,23 @@ jobs:
           name: web-build
           path: flutter_app/build/web/
 
-      # Node.js backend tests
+  backend:
+    name: Backend (Node.js Jest tests)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 20
+          cache: npm
+          cache-dependency-path: server/package-lock.json
 
       - name: Install backend dependencies
         working-directory: server
-        run: npm install
+        run: npm ci || npm install
 
       - name: Run backend tests
         working-directory: server
-        run: |
-          if [ -d "test" ]; then
-            if ls test/*.js 1> /dev/null 2>&1; then
-              npx jest test/*.js || npx mocha test/*.js
-            else
-              echo "No backend JS tests found."
-            fi
-          else
-            echo "No backend tests directory found."
-          fi
-
+        run: npx jest --env=node --forceExit

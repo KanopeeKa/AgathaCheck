@@ -5,7 +5,8 @@ on:
     types: [ published ]
 
 jobs:
-  deploy:
+  test:
+    name: Run tests before deploy
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -15,13 +16,76 @@ jobs:
         with:
           channel: stable
 
-      - name: Install dependencies & build web
+      - name: Cache Flutter dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.pub-cache
+            flutter_app/.dart_tool
+          key: flutter-${{ runner.os }}-${{ hashFiles('flutter_app/pubspec.lock') }}
+          restore-keys: |
+            flutter-${{ runner.os }}-
+
+      - name: Fetch Flutter dependencies
+        working-directory: flutter_app
+        run: flutter pub get
+
+      - name: Analyze
+        working-directory: flutter_app
+        run: flutter analyze
+
+      - name: Run Flutter tests
+        working-directory: flutter_app
+        run: flutter test
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: server/package-lock.json
+
+      - name: Install backend dependencies
+        working-directory: server
+        run: npm ci || npm install
+
+      - name: Run backend tests
+        working-directory: server
+        run: npx jest --env=node --forceExit
+
+  deploy:
+    name: Build and deploy to Production
+    needs: test
+    runs-on: ubuntu-latest
+    environment: PROD
+    steps:
+      - uses: actions/checkout@v4
+
+      # ===== BUILD FRONTEND =====
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+
+      - name: Cache Flutter dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.pub-cache
+            flutter_app/.dart_tool
+          key: flutter-${{ runner.os }}-${{ hashFiles('flutter_app/pubspec.lock') }}
+          restore-keys: |
+            flutter-${{ runner.os }}-
+
+      - name: Build Flutter Web
         working-directory: flutter_app
         run: |
+          flutter clean
           flutter pub get
-          flutter build web --release
+          flutter build web --release --no-tree-shake-icons
 
-      - name: Deploy to Prod cPanel
+      # ===== DEPLOY FRONTEND (Flutter Web) =====
+      - name: Deploy frontend to prod.agathatrack.com
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
           server: ${{ secrets.PROD_FTP_SERVER }}
@@ -29,3 +93,38 @@ jobs:
           password: ${{ secrets.PROD_FTP_PASSWORD }}
           server-dir: /public_html/Prod/
           local-dir: ./flutter_app/build/web/
+          # Don't wipe the backend folder when refreshing the frontend.
+          exclude: |
+            **/backend/**
+
+      # ===== DEPLOY BACKEND (Node.js) =====
+      - name: Deploy backend to prod.agathatrack.com/backend/
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.PROD_FTP_SERVER }}
+          username: ${{ secrets.PROD_FTP_USERNAME }}
+          password: ${{ secrets.PROD_FTP_PASSWORD }}
+          server-dir: /public_html/Prod/backend/
+          local-dir: server/
+          exclude: |
+            **/node_modules/**
+            **/test/**
+            **/.dart_tool/**
+            **/coverage/**
+            **/*.test.js
+            **/babel.config.cjs
+
+      # ===== INSTALL DEPENDENCIES & RESTART NODE.JS APP =====
+      - name: Install dependencies & restart Node.js app
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.PROD_SSH_HOST }}
+          username: ${{ secrets.PROD_SSH_USER }}
+          key: ${{ secrets.PROD_SSH_PRIVATE_KEY }}
+          port: ${{ secrets.PROD_SSH_PORT || 22 }}
+          timeout: 60s
+          script: |
+            cd ~/public_html/Prod/backend
+            npm install --omit=dev
+            mkdir -p tmp
+            touch tmp/restart.txt

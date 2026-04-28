@@ -5,11 +5,60 @@ on:
     branches: [ 'release/uat-*' ]
 
 jobs:
+  test:
+    name: Run tests before deploy
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+
+      - name: Cache Flutter dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.pub-cache
+            flutter_app/.dart_tool
+          key: flutter-${{ runner.os }}-${{ hashFiles('flutter_app/pubspec.lock') }}
+          restore-keys: |
+            flutter-${{ runner.os }}-
+
+      - name: Fetch Flutter dependencies
+        working-directory: flutter_app
+        run: flutter pub get
+
+      - name: Analyze
+        working-directory: flutter_app
+        run: flutter analyze
+
+      - name: Run Flutter tests
+        working-directory: flutter_app
+        run: flutter test
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: server/package-lock.json
+
+      - name: Install backend dependencies
+        working-directory: server
+        run: npm ci || npm install
+
+      - name: Run backend tests
+        working-directory: server
+        run: npx jest --env=node --forceExit
+
   deploy:
+    name: Build and deploy to UAT
+    needs: test
     runs-on: ubuntu-latest
     environment: UAT
     steps:
-
       - uses: actions/checkout@v4
 
       # ===== BUILD FRONTEND =====
@@ -18,15 +67,25 @@ jobs:
         with:
           channel: stable
 
+      - name: Cache Flutter dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.pub-cache
+            flutter_app/.dart_tool
+          key: flutter-${{ runner.os }}-${{ hashFiles('flutter_app/pubspec.lock') }}
+          restore-keys: |
+            flutter-${{ runner.os }}-
+
       - name: Build Flutter Web
         working-directory: flutter_app
         run: |
           flutter clean
           flutter pub get
-          flutter build web --release
+          flutter build web --release --no-tree-shake-icons
 
       # ===== DEPLOY FRONTEND (Flutter Web) =====
-      - name: Deploy Frontend to uat.agathatrack.com
+      - name: Deploy frontend to uat.agathatrack.com
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
           server: ${{ secrets.UAT_FTP_SERVER }}
@@ -34,9 +93,14 @@ jobs:
           password: ${{ secrets.UAT_FTP_PASSWORD }}
           server-dir: ./
           local-dir: flutter_app/build/web/
+          # Don't wipe the backend folder when refreshing the frontend.
+          exclude: |
+            **/backend/**
 
       # ===== DEPLOY BACKEND (Node.js) =====
-      - name: Deploy Backend to uat.agathatrack.com/backend/
+      # Excludes node_modules, tests, and dev configs. The remote `npm install`
+      # / restart step below reinstalls dependencies on the server.
+      - name: Deploy backend to uat.agathatrack.com/backend/
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
           server: ${{ secrets.UAT_FTP_SERVER }}
@@ -44,17 +108,27 @@ jobs:
           password: ${{ secrets.UAT_FTP_PASSWORD }}
           server-dir: ./backend/
           local-dir: server/
+          exclude: |
+            **/node_modules/**
+            **/test/**
+            **/.dart_tool/**
+            **/coverage/**
+            **/*.test.js
+            **/babel.config.cjs
 
       # ===== INSTALL DEPENDENCIES & RESTART NODE.JS APP =====
-      # - name: Install Dependencies & Restart Node.js App
-      #   uses: appleboy/ssh-action@master
-      #   with:
-      #     host: ${{ secrets.UAT_SSH_HOST }}
-      #     username: ${{ secrets.UAT_SSH_USER }}
-      #     key: ${{ secrets.UAT_SSH_PRIVATE_KEY }}
-      #     port: ${{ secrets.UAT_SSH_PORT || 22 }}
-      #     timeout: 30s
-      #     script: |
-      #       cd ~/public_html/uat.agathatrack.com/backend
-      #       npm install
-      #       touch restart.txt
+      # Required so the freshly-deployed backend has its node_modules and the
+      # Passenger / cPanel Node.js app picks up the new code.
+      - name: Install dependencies & restart Node.js app
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.UAT_SSH_HOST }}
+          username: ${{ secrets.UAT_SSH_USER }}
+          key: ${{ secrets.UAT_SSH_PRIVATE_KEY }}
+          port: ${{ secrets.UAT_SSH_PORT || 22 }}
+          timeout: 60s
+          script: |
+            cd ~/public_html/uat.agathatrack.com/backend
+            npm install --omit=dev
+            mkdir -p tmp
+            touch tmp/restart.txt
