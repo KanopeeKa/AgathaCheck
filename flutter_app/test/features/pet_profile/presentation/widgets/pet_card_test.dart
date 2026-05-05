@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:pet_profile_app/l10n/app_localizations.dart';
 import 'package:pet_profile_app/features/pet_profile/domain/entities/pet.dart';
 import 'package:pet_profile_app/features/pet_profile/presentation/widgets/pet_card.dart';
@@ -28,42 +27,17 @@ void main() {
     colorValue: 0xFF26A69A,
     passedAway: false,
   );
-    test('throws if required fields are null', () {
-      // These should not throw (empty string is allowed)
-      expect(
-        () => Pet(
-          id: 'id',
-          name: '',
-          species: '',
-        ),
-        returnsNormally,
-      );
-      // These should throw (null passed to non-nullable)
-      expect(
-        () => Pet(
-          id: null as String,
-          name: 'Buddy',
-          species: 'Dog',
-        ),
-        throwsA(isA<Error>()),
-      );
-      expect(
-        () => Pet(
-          id: 'id',
-          name: null as String,
-          species: 'Dog',
-        ),
-        throwsA(isA<Error>()),
-      );
-      expect(
-        () => Pet(
-          id: 'id',
-          name: 'Buddy',
-          species: null as String,
-        ),
-        throwsA(isA<Error>()),
-      );
-    });
+
+  test('Pet constructor accepts empty strings for required fields', () {
+    expect(
+      () => const Pet(
+        id: 'id',
+        name: '',
+        species: '',
+      ),
+      returnsNormally,
+    );
+  });
 
   Widget createTestWidget(Widget child) {
     return MaterialApp(

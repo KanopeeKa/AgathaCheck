@@ -1,7 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../data/auth_service.dart';
 import '../providers/auth_providers.dart';
-import 'package:flutter/material.dart';
 import 'dart:typed_data';
 
 class MyDetailsController extends StateNotifier<MyDetailsState> {

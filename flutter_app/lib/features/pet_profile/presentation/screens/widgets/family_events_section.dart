@@ -1,11 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../domain/entities/pet.dart';
-import '../../../../organization/domain/entities/family_event.dart';
-import '../../../../organization/domain/entities/organization_member.dart';
-import '../../controllers/family_events_controller.dart';
 import '../../../../../l10n/app_localizations.dart';
-import 'package:intl/intl.dart';
 
 class FamilyEventsSection extends ConsumerWidget {
   const FamilyEventsSection({required this.petId, required this.pet, super.key});
@@ -15,11 +11,9 @@ class FamilyEventsSection extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final controller = FamilyEventsController(ref);
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
     final l = AppLocalizations.of(context)!;
-    final dateFormat = DateFormat.yMMMd();
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
@@ -36,9 +30,9 @@ class FamilyEventsSection extends ConsumerWidget {
           title: Text(l.familyEvents,
               style: theme.textTheme.titleSmall?.copyWith(
                   fontWeight: FontWeight.bold)),
-          children: [
+          children: const [
             Padding(
-              padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+              padding: EdgeInsets.fromLTRB(16, 0, 16, 16),
               child: Column(
                 children: [
                   // ...rest of the family events UI, now call controller for logic...

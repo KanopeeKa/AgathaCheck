@@ -4,7 +4,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pet_profile_app/features/pet_profile/presentation/providers/pet_providers.dart';
 import 'package:pet_profile_app/features/pet_profile/domain/entities/pet.dart';
 import 'package:pet_profile_app/features/auth/presentation/providers/auth_providers.dart';
-import 'package:pet_profile_app/core/providers/shared_preferences_provider.dart';
 import 'package:pet_profile_app/features/health_tracking/presentation/providers/health_providers.dart';
 import 'package:pet_profile_app/features/notifications/presentation/providers/notification_providers.dart';
 import 'package:pet_profile_app/features/sharing/presentation/providers/sharing_providers.dart';

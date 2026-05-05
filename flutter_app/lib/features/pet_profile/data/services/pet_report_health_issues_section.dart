@@ -9,7 +9,6 @@ class PetHealthIssuesSectionBuilder {
   static const _borderColor = PdfColor.fromInt(0xFFCAC4D0);
   static const _brandPurple = PdfColor.fromInt(0xFF6750A4);
   static const _brandPurpleLight = PdfColor.fromInt(0xFFEADDFF);
-  static const _white = PdfColors.white;
   static const _textDark = PdfColor.fromInt(0xFF1C1B1F);
   static const _textMuted = PdfColor.fromInt(0xFF49454F);
 

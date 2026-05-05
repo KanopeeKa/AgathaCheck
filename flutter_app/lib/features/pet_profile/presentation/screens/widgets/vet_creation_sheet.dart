@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../../../l10n/app_localizations.dart';
-import '../../../../vet/domain/entities/vet.dart';
-import '../../../../vet/presentation/providers/vet_providers.dart';
 import '../../controllers/pet_form_controller.dart';
 
 class VetCreationSheet extends ConsumerWidget {
@@ -11,11 +8,6 @@ class VetCreationSheet extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final l = AppLocalizations.of(context)!;
-    final nameController = TextEditingController();
-    final phoneController = TextEditingController();
-    final emailController = TextEditingController();
-    final addressController = TextEditingController();
     final formKey = GlobalKey<FormState>();
     return Padding(
       padding: EdgeInsets.only(

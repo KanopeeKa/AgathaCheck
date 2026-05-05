@@ -1,4 +1,4 @@
-modules = ["dart-3.10", "nodejs-20", "postgresql-16"]
+modules = ["dart-3.10", "nodejs-20", "postgresql-16", "python-3.11"]
 [agent]
 expertMode = true
 

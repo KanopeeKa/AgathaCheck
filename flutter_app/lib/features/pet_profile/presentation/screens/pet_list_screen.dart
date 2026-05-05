@@ -538,54 +538,6 @@ class _DueEventsSection extends ConsumerWidget {
   }
 }
 
-class _OrgFilterChips extends StatelessWidget {
-  const _OrgFilterChips({
-    required this.orgNames,
-    required this.selected,
-    required this.onSelected,
-    required this.l,
-  });
-
-  final List<String> orgNames;
-  final String? selected;
-  final ValueChanged<String?> onSelected;
-  final AppLocalizations l;
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 12),
-      child: SingleChildScrollView(
-        scrollDirection: Axis.horizontal,
-        child: Row(
-          children: [
-            FilterChip(
-              label: Text(l.allPets),
-              selected: selected == null,
-              onSelected: (_) => onSelected(null),
-            ),
-            const SizedBox(width: 8),
-            FilterChip(
-              label: Text(l.myPets),
-              selected: selected == '_personal',
-              onSelected: (_) => onSelected('_personal'),
-            ),
-            ...orgNames.map((name) => Padding(
-              padding: const EdgeInsets.only(left: 8),
-              child: FilterChip(
-                avatar: const Icon(Icons.business, size: 16),
-                label: Text(name),
-                selected: selected == name,
-                onSelected: (_) => onSelected(name),
-              ),
-            )),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
 class _SectionHeader extends StatelessWidget {
   const _SectionHeader({
     required this.icon,
@@ -629,28 +581,6 @@ class _SectionHeader extends StatelessWidget {
             ),
           ),
         ],
-      ),
-    );
-  }
-}
-
-class _EmptySection extends StatelessWidget {
-  const _EmptySection({required this.message});
-
-  final String message;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 16),
-      child: Center(
-        child: Text(
-          message,
-          style: theme.textTheme.bodyMedium?.copyWith(
-            color: theme.colorScheme.onSurfaceVariant,
-          ),
-        ),
       ),
     );
   }

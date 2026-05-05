@@ -8,7 +8,6 @@ import '../../../weight_tracking/domain/entities/weight_entry.dart';
 
 class PetProfileSectionBuilder {
   static const _borderColor = PdfColor.fromInt(0xFFCAC4D0);
-  static const _white = PdfColors.white;
   static const _textDark = PdfColor.fromInt(0xFF1C1B1F);
   static const _textMuted = PdfColor.fromInt(0xFF49454F);
 

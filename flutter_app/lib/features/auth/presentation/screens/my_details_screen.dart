@@ -350,35 +350,6 @@ class _MyDetailsScreenState extends ConsumerState<MyDetailsScreen> {
   }
 }
 
-class _CategoryBadge extends StatelessWidget {
-  const _CategoryBadge({required this.category});
-  final String category;
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
-    final isPro = category == 'professional_multi_pet';
-    return Chip(
-      avatar: Icon(
-        isPro ? Icons.business_center : Icons.pets,
-        size: 18,
-        color: isPro ? Colors.teal : Colors.deepPurple,
-      ),
-      label: Text(
-        isPro ? l10n.professionalMultiPet : l10n.petGuardian,
-        style: TextStyle(
-          color: isPro ? Colors.teal : Colors.deepPurple,
-          fontWeight: FontWeight.w500,
-        ),
-      ),
-      backgroundColor: isPro
-          ? Colors.teal.withAlpha(25)
-          : Colors.deepPurple.withAlpha(25),
-      side: BorderSide.none,
-    );
-  }
-}
-
 class _ProfileEditorSheet extends StatefulWidget {
   const _ProfileEditorSheet({
     required this.user,

@@ -18,20 +18,6 @@ import 'widgets/pet_gender_section.dart';
 import 'widgets/pet_dob_section.dart';
 import 'widgets/pet_ownership_selector.dart';
 
-String _localizedSpecies(AppLocalizations l, String species) {
-  switch (species) {
-    case 'Dog': return l.speciesDog;
-    case 'Cat': return l.speciesCat;
-    case 'Bird': return l.speciesBird;
-    case 'Fish': return l.speciesFish;
-    case 'Rabbit': return l.speciesRabbit;
-    case 'Hamster': return l.speciesHamster;
-    case 'Ferret': return l.speciesFerret;
-    case 'Horse / Poney': return l.speciesHorsePoney;
-    case 'Other': return l.speciesOther;
-    default: return species;
-  }
-}
 
 class PetFormScreen extends ConsumerStatefulWidget {
   const PetFormScreen({super.key, this.petId, this.initialOrgId});
@@ -61,7 +47,6 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
   String? _photoBase64;
   String? _selectedOrgId;
   String? _selectedVetId;
-  int? _existingColorValue;
   DateTime? _dateOfBirth;
   DateTime? _neuteredDate;
   bool? _isNeutered;
@@ -104,7 +89,6 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
     _selectedGender = pet.gender;
     _photoBase64 = pet.photoPath;
     _selectedVetId = pet.vetId;
-    _existingColorValue = pet.colorValue;
     _dateOfBirth = pet.dateOfBirth;
     _neuteredDate = pet.neuteredDate;
     _isNeutered = pet.neuteredDate != null ? true : null;
@@ -353,7 +337,7 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
                 selectedSpecies: _controller.state.selectedSpecies,
                 onChanged: (value) {
                   _controller.state = _controller.state.copyWith(selectedSpecies: value);
-                  setState(() => _selectedSpecies = value ?? '');
+                  setState(() => _selectedSpecies = value);
                 },
               ),
               const SizedBox(height: 16),

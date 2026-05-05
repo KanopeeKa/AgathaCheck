@@ -6,13 +6,12 @@ void main() {
   testWidgets('HealthDashboardActions renders and triggers callbacks', (WidgetTester tester) async {
     bool pdfTapped = false;
     bool csvTapped = false;
-    GroupMode? selectedMode;
     await tester.pumpWidget(MaterialApp(
       home: Scaffold(
         body: HealthDashboardActions(
           onExportPdf: () => pdfTapped = true,
           onExportCsv: () => csvTapped = true,
-          onGroupModeChanged: (mode) => selectedMode = mode,
+          onGroupModeChanged: (_) {},
           groupMode: GroupMode.dueDate,
           lGroupBy: 'Group By',
           lByDueDate: 'Due Date',
@@ -32,4 +31,3 @@ void main() {
     expect(csvTapped, isTrue);
   });
 }
-

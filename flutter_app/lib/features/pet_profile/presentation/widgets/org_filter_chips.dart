@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../../domain/entities/pet.dart';
 
 class OrgFilterChips extends StatelessWidget {
   final List<String> orgNames;
