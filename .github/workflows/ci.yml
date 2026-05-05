@@ -103,7 +103,10 @@ jobs:
 
       - name: Install backend dependencies
         working-directory: server
-        run: npm ci || npm install
+        # Strict reproducible install: fails fast if package-lock.json is
+        # out of sync with package.json (rather than silently regenerating).
+        # Requires server/package-lock.json to be tracked in git.
+        run: npm ci
 
       - name: Run backend tests
         working-directory: server
