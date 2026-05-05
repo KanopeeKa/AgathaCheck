@@ -34,19 +34,25 @@ This will install:
 - `express-cors` - CORS support
 
 ### 2. **Verify Database Migration**
-Ensure the PostgreSQL database has the required schema:
+The schema is now managed by the Dart migration runner (`server/bin/migrate.dart`) and the canonical schema file `db/migrations/v3__initial_uuid_schema.sql` (19 application tables + a `_migrations` tracker, all UUID-keyed).
 
-```sql
--- The pets table should exist with these columns:
--- id (VARCHAR), user_id (INTEGER), name (VARCHAR), species (VARCHAR),
--- breed (VARCHAR), age (DOUBLE), date_of_birth (DATE), weight (DOUBLE),
--- gender (VARCHAR), created_at (TIMESTAMPTZ), updated_at (TIMESTAMPTZ)
-```
+For a brand-new empty database, run the fresh-install command from a machine that has Dart and access to the cPanel Postgres:
 
-Run the migration if not applied:
 ```bash
-psql -U bixo5840_pg_uat -h localhost -d bixo5840_agathatrack_uat < ../../../db/migrations/v1__initial.sql
+cd server
+DATABASE_URL="postgresql://bixo5840_pg_uat:btTdQ@g0tTf%23C%24jr7r%40@localhost:5432/bixo5840_agathatrack_uat" \
+MIGRATE_CONFIRM=DROP_ALL \
+dart run bin/migrate.dart fresh
 ```
+
+For an existing database that just needs pending incremental migrations applied:
+
+```bash
+cd server
+DATABASE_URL="postgresql://..." dart run bin/migrate.dart up
+```
+
+If Dart is not available on the cPanel host, run the migration from your dev machine while pointing `DATABASE_URL` at the remote database (or apply `db/migrations/v3__initial_uuid_schema.sql` directly via `psql` against an empty DB).
 
 ### 3. **Create `.env` File**
 cPanel should read environment variables, but create `.env` in your application root as backup:
@@ -58,8 +64,12 @@ PGHOST=localhost
 PGPORT=5432
 PGDATABASE=bixo5840_agathatrack_uat
 PORT=3000
-NODE_ENV=development
+NODE_ENV=production
+SESSION_SECRET=change-me-to-a-long-random-string
+JWT_SECRET=change-me-to-a-long-random-string
 ```
+
+> The Node.js backend resolves the JWT signing key as `JWT_SECRET || SESSION_SECRET || 'default_secret'`. Setting at least one of `JWT_SECRET` or `SESSION_SECRET` to a strong random value is mandatory for production.
 
 ### 4. **Verify Application Startup File**
 Your application startup file is named `server`, which cPanel will run as:
@@ -134,13 +144,11 @@ Once deployed, your API will be accessible at:
 - **Update Pet**: `PUT http://uat.agathatrack.com:3000/api/pets/{id}` (with JSON body)
 - **Delete Pet**: `DELETE http://uat.agathatrack.com:3000/api/pets/{id}`
 
-## What Changed from Dart to Node.js?
+## Dart vs Node.js Backends
 
-The original Dart/Shelf server was converted to Node.js/Express because:
-1. cPanel Node.js hosting doesn't support Dart runtime
-2. Node.js is more widely available on shared hosting
-3. All endpoints and functionality remain identical
-4. Database schema and queries are compatible
-5. Environment variables configuration matches exactly
+The repository ships **two interchangeable backends** that share the same Postgres schema and expose the same routes:
 
-Both implementations maintain 100% feature parity.
+- **Dart / Shelf** (`server/bin/server.dart`) — used by the Replit workflow and the AOT-compiled production binary
+- **Node.js / Express** (`server/bin/server.js`) — used here on cPanel because cPanel Node.js hosting doesn't support a Dart runtime
+
+Both are kept in sync (parity is enforced by the test suites — ~338 Jest tests for Node.js, plus Dart `shelf` tests). Either can serve any database created by `migrate.dart`.

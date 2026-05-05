@@ -52,35 +52,60 @@ export PORT=5000  # Server port, defaults to 5000
 
 ## 3. Run Migrations
 
-### Apply the schema (up)
+The migration runner lives at `server/bin/migrate.dart` and exposes four commands.
+
+### Fresh install (recommended for new self-hosted servers)
 
 ```bash
+cd server
+MIGRATE_CONFIRM=DROP_ALL dart run bin/migrate.dart fresh
+```
+
+This will:
+- DROP the `public` schema (every table is wiped)
+- Recreate everything from `db/migrations/v3__initial_uuid_schema.sql` — the **single canonical schema** that already inlines every column added by migrations 001–007
+- Mark every incremental `NNN_*.sql` migration as already applied so `up` does not try to re-run them
+
+The `MIGRATE_CONFIRM=DROP_ALL` env var is required as a safety guard. Without it, `fresh` refuses to run and exits with code 2.
+
+### Apply pending migrations (up) — for existing databases
+
+```bash
+cd server
 dart run bin/migrate.dart up
 ```
 
 This will:
 - Create the `_migrations` tracking table if it does not exist
-- Apply any pending migration files from `db/migrations/`
-- Skip migrations that have already been applied
+- Apply any pending `NNN_*.sql` migration files from `db/migrations/`
+- Skip migrations already recorded in `_migrations`
 
-### Tear down the schema (down) — DESTRUCTIVE
+### Roll back the last migration (down)
 
 ```bash
+cd server
 dart run bin/migrate.dart down
 ```
 
-This drops all tables. Use only for dev/test environments.
+Looks up the most recently applied migration in `_migrations` and runs the corresponding `*_down.sql` file. Rolls back exactly one migration per invocation; not a full wipe.
+
+### Show status
+
+```bash
+cd server
+dart run bin/migrate.dart status
+```
+
+Lists every migration file with `[applied]` or `[PENDING]`.
 
 ### Migration files
 
-Migration files live in `db/migrations/` and follow this naming convention:
+Migration files live in `db/migrations/`:
 
-```
-001_initial_schema.sql       — Up migration
-001_initial_schema_down.sql  — Down migration
-```
+- `v3__initial_uuid_schema.sql` — canonical full schema (used by `fresh`)
+- `NNN_short_name.sql` / `NNN_short_name_down.sql` — incremental migration pairs (used by `up`/`down`)
 
-To add a new migration, create the next numbered pair (e.g. `002_add_feature.sql` / `002_add_feature_down.sql`).
+To add a new migration, create the next numbered pair (e.g. `008_add_feature.sql` / `008_add_feature_down.sql`) **and** also add the same change inline to `v3__initial_uuid_schema.sql` so future fresh installs include it.
 
 ## 4. Start the Server
 
@@ -90,9 +115,10 @@ dart run bin/server.dart
 
 The server will:
 - Parse `DATABASE_URL` to connect to PostgreSQL
-- Run inline schema checks (safe `CREATE TABLE IF NOT EXISTS` / `ALTER TABLE ADD COLUMN IF NOT EXISTS`) to ensure the database is up to date
 - Serve the Flutter web app from `deploy/public/`
 - Listen on the port specified by `PORT` (default 5000)
+
+Note: the server does **not** apply schema changes on startup. Always run `migrate.dart` before starting `server.dart` against a new database.
 
 ## 5. Environments
 
@@ -102,7 +128,9 @@ Replit automatically provides `DATABASE_URL` pointing to the built-in PostgreSQL
 
 ### Staging / Production
 
-Set `DATABASE_URL` and `SESSION_SECRET` in your deployment platform's environment configuration. Run `dart run bin/migrate.dart up` before starting the server.
+Set `DATABASE_URL` and `SESSION_SECRET` in your deployment platform's environment configuration. For an existing database, run `dart run bin/migrate.dart up` before starting the server. For a brand-new empty database on a self-hosted server, use `MIGRATE_CONFIRM=DROP_ALL dart run bin/migrate.dart fresh` instead.
+
+> Replit-managed production deployments use the **Publish** flow (which provisions and migrates the production DB through the Replit UI) — do **not** run `fresh` against a Replit-managed prod DB.
 
 ### CI/CD Pipeline
 

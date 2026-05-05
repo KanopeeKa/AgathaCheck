@@ -195,13 +195,14 @@ POST /backend/api/auth/login
 - Transfers a pet to an organization. Requires JSON body with `organization_id`, `transfer_type`, and `notes`.
 - **Response:** `{ "status": "transferred", "pet_id": "{id}" }`
 
-### Family Events
+### Family Events (per-pet) — STUB
 
-- **GET** `/api/pets/{id}/family-events` — List all family events for a pet.
-- **POST** `/api/pets/{id}/family-events` — Create a new family event for a pet.
-- **PUT** `/api/pets/{id}/family-events/{eventId}` — Update a family event.
-- **DELETE** `/api/pets/{id}/family-events/{eventId}` — Delete a family event.
-- **Response:** Standard JSON with event info or `{ "deleted": true }`/`{ "updated": true }`.
+> **Status:** the per-pet family-events routes below exist in both the Node.js and Dart servers but are currently stubs that return empty arrays / no-op responses. Real family events live on **organization pets** (see the organization routes) and are implemented there. The `family_events` table exists in the canonical schema but is not written to by these endpoints.
+
+- **GET** `/api/pets/{id}/family-events` — Returns `[]`.
+- **POST** `/api/pets/{id}/family-events` — No-op stub.
+- **PUT** `/api/pets/{id}/family-events/{eventId}` — No-op stub.
+- **DELETE** `/api/pets/{id}/family-events/{eventId}` — No-op stub.
 
 ### Pet Access
 
@@ -224,14 +225,15 @@ POST /backend/api/auth/login
 
 ### Notifications Endpoints
 
-- **GET** `/backend/api/notifications` — Returns a list of notifications (currently an empty array or mock data).
-  - **Response:** `[]`
+The notification system is fully implemented and persists to the `notifications` table (which keeps both `is_read` and a legacy `read` column for backward compatibility — UPDATEs touch both).
 
+- **GET** `/backend/api/notifications` — Returns the authenticated user's notifications.
 - **GET** `/backend/api/notifications/preferences` — Returns the user's notification preferences.
-  - **Response:** `{ "email": true, "sms": false, "push": true }`
+- **POST** `/backend/api/notifications/check-due` — Scans health entries for due/overdue items and creates notifications for the authenticated user.
+- **PATCH** `/backend/api/notifications/{id}/read` — Marks a single notification as read.
+- **POST** `/backend/api/notifications/mark-all-read` — Marks every unread notification for the user as read.
 
-- **POST** `/backend/api/notifications/check-due` — Checks for due notifications (mock implementation).
-  - **Response:** `{ "checked": true, "due": [] }`
+In-app notifications also support per-pet mute via the pet routes.
 
 ### Test Coverage
 
