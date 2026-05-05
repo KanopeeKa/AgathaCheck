@@ -30,9 +30,12 @@ jobs:
           path: |
             ~/.pub-cache
             flutter_app/.dart_tool
-          key: flutter-${{ runner.os }}-${{ hashFiles('flutter_app/pubspec.lock') }}
+          # Cache key includes Flutter version so that switching versions
+          # (e.g. via the flutter-version pin) busts stale build artifacts
+          # in flutter_app/.dart_tool that were compiled by a different SDK.
+          key: flutter-${{ runner.os }}-3.32.0-${{ hashFiles('flutter_app/pubspec.lock') }}
           restore-keys: |
-            flutter-${{ runner.os }}-
+            flutter-${{ runner.os }}-3.32.0-
 
       - name: Fetch Flutter dependencies
         working-directory: flutter_app
