@@ -155,6 +155,10 @@ jobs:
           timeout: 60s
           script: |
             cd ~/public_html/Prod/backend
-            npm install --omit=dev
+            # `npm ci` (not `npm install`) for reproducibility: installs the
+            # exact tree from package-lock.json and fails fast on drift, so
+            # the runtime gets the same versions CI tested against.
+            # --omit=dev skips devDependencies (jest, babel, etc.).
+            npm ci --omit=dev
             mkdir -p tmp
             touch tmp/restart.txt
