@@ -41,8 +41,8 @@ externalPort = 80
 [deployment]
 deploymentTarget = "autoscale"
 publicDir = "deploy/public"
-build = ["dart", "compile", "exe", "bin/server.dart", "-o", "bin/server"]
-run = ["./bin/server"]
+build = ["bash", "-c", "cd flutter_app && flutter pub get && flutter build web --release --no-tree-shake-icons && cd ../server && dart pub get && dart compile exe bin/server.dart -o bin/server"]
+run = ["bash", "-c", "cd server && exec ./bin/server"]
 
 [userenv]
 
