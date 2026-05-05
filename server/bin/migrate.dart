@@ -140,6 +140,55 @@ Future<void> _runDown(Pool pool) async {
   print('  done');
 }
 
+Future<void> _runFresh(Pool pool) async {
+  if (Platform.environment['MIGRATE_CONFIRM'] != 'DROP_ALL') {
+    print('REFUSED: `fresh` drops every table in the current database.');
+    print('Re-run with the explicit confirmation env var:');
+    print('  MIGRATE_CONFIRM=DROP_ALL dart run bin/migrate.dart fresh');
+    exitCode = 2;
+    return;
+  }
+
+  final script = Platform.script.toFilePath();
+  final serverDir = File(script).parent.parent.path;
+  final projectRoot = Directory(serverDir).parent.path;
+  final v3File =
+      File('$projectRoot/db/migrations/v3__initial_uuid_schema.sql');
+  if (!v3File.existsSync()) {
+    print('FAIL: canonical schema not found at ${v3File.path}');
+    exitCode = 1;
+    return;
+  }
+
+  print('  drop  public schema (cascade) ...');
+  await pool.execute(Sql('DROP SCHEMA IF EXISTS public CASCADE'));
+  await pool.execute(Sql('CREATE SCHEMA public'));
+  print('  done  schema dropped');
+
+  print('  apply v3__initial_uuid_schema.sql (canonical) ...');
+  await pool.execute(Sql(v3File.readAsStringSync()));
+  print('  done  schema created');
+
+  // Mark every NNN_*.sql migration as already applied — the canonical v3
+  // schema inlines them, so up() must not try to re-run them.
+  await _ensureMigrationsTable(pool);
+  final incremental = _migrationFiles().where((f) {
+    final name = f.uri.pathSegments.last;
+    return !name.startsWith('v3');
+  });
+  for (final f in incremental) {
+    final name = f.uri.pathSegments.last;
+    await pool.execute(
+      Sql.named('INSERT INTO _migrations (id, name) VALUES (@id, @name)'),
+      parameters: {'id': _uuid.v4(), 'name': name},
+    );
+    print('  mark  $name as applied');
+  }
+
+  print('\nFresh install complete.');
+  print('Database now matches the canonical v3 schema.');
+}
+
 Future<void> _showStatus(Pool pool) async {
   await _ensureMigrationsTable(pool);
   final applied = await _appliedMigrations(pool);
@@ -173,8 +222,17 @@ Future<void> main(List<String> args) async {
       case 'status':
         await _showStatus(pool);
         break;
+      case 'fresh':
+        await _runFresh(pool);
+        break;
       default:
-        print('Usage: dart run bin/migrate.dart [up|down|status]');
+        print('Usage: dart run bin/migrate.dart [up|down|status|fresh]');
+        print('');
+        print('  up      apply pending NNN_*.sql migrations');
+        print('  down    roll back the most recently applied migration');
+        print('  status  show which migrations are applied/pending');
+        print('  fresh   DROP every table and recreate from the canonical');
+        print('          v3 schema. Requires MIGRATE_CONFIRM=DROP_ALL.');
     }
   } finally {
     await pool.close();
