@@ -10,6 +10,15 @@ jobs:
   flutter:
     name: Flutter (analyze, test, build web)
     runs-on: ubuntu-latest
+    env:
+      # Single source of truth for the Flutter SDK version used by this job.
+      # Pinned to match local dev version. Flutter 3.41 has a regression where
+      # flutter_tester segfaults during test cleanup on Linux, causing CI
+      # failures even when assertions pass. Unpin once the upstream fix lands
+      # (track: github.com/flutter/flutter). Bumping this single value also
+      # busts the dependency cache (key includes ${FLUTTER_VERSION}), so
+      # stale .dart_tool artifacts from a different SDK won't be restored.
+      FLUTTER_VERSION: '3.32.0'
     steps:
       - uses: actions/checkout@v4
 
@@ -17,11 +26,7 @@ jobs:
         uses: subosito/flutter-action@v2
         with:
           channel: stable
-          # Pinned to match local dev version. Flutter 3.41 has a regression
-          # where flutter_tester segfaults during test cleanup on Linux,
-          # causing CI failures even when assertions pass. Unpin once the
-          # upstream fix lands (track: github.com/flutter/flutter).
-          flutter-version: '3.32.0'
+          flutter-version: ${{ env.FLUTTER_VERSION }}
 
       # Cache must be restored BEFORE `flutter pub get` to be effective.
       - name: Cache Flutter dependencies
@@ -30,12 +35,9 @@ jobs:
           path: |
             ~/.pub-cache
             flutter_app/.dart_tool
-          # Cache key includes Flutter version so that switching versions
-          # (e.g. via the flutter-version pin) busts stale build artifacts
-          # in flutter_app/.dart_tool that were compiled by a different SDK.
-          key: flutter-${{ runner.os }}-3.32.0-${{ hashFiles('flutter_app/pubspec.lock') }}
+          key: flutter-${{ runner.os }}-${{ env.FLUTTER_VERSION }}-${{ hashFiles('flutter_app/pubspec.lock') }}
           restore-keys: |
-            flutter-${{ runner.os }}-3.32.0-
+            flutter-${{ runner.os }}-${{ env.FLUTTER_VERSION }}-
 
       - name: Fetch Flutter dependencies
         working-directory: flutter_app
@@ -54,14 +56,20 @@ jobs:
         working-directory: flutter_app
         run: flutter analyze --no-fatal-warnings --no-fatal-infos
 
-      - name: Run unit & widget tests with coverage
+      - name: Run unit & widget tests
         working-directory: flutter_app
-        run: flutter test --coverage --concurrency=1 --exclude-tags=integration
+        # NOTE: --coverage intentionally omitted. Coverage collection makes
+        # flutter_tester dump VM coverage data via the VM service on shutdown;
+        # on Linux CI this races with process teardown and segfaults AFTER
+        # tests pass (the ✅ shows, then "Shell subprocess crashed with
+        # segmentation fault" during finalization). Re-enable coverage in a
+        # dedicated job/runner once that race is resolved upstream.
+        run: flutter test --concurrency=1 --exclude-tags=integration
 
       - name: Run integration tests (if present)
         working-directory: flutter_app
-        # Assertions pass but flutter_tester segfaults during cleanup on Flutter 3.41+ (Linux).
-        # Allowed to fail so the segfault doesn't break the build; failures still visible in logs.
+        # Allowed to fail so a segfault during cleanup doesn't break the build;
+        # any real assertion failures remain visible in the logs.
         continue-on-error: true
         run: |
           if [ -d "test/features/pet_profile/presentation/integration" ]; then
