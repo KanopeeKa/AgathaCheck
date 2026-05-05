@@ -40,6 +40,18 @@ jobs:
         working-directory: flutter_app
         run: flutter pub get
 
+      - name: Generate code (build_runner)
+        working-directory: flutter_app
+        # Generates *.mocks.dart (mockito) and any other build_runner outputs.
+        # Required before analyze/test because generated files are gitignored.
+        # Mirrors the equivalent step in main CI.
+        run: |
+          if grep -q "build_runner" pubspec.yaml; then
+            flutter pub run build_runner build --delete-conflicting-outputs
+          else
+            echo "build_runner not configured; skipping codegen."
+          fi
+
       - name: Analyze
         working-directory: flutter_app
         # Mirror main CI: tolerate warnings/infos, fail only on errors.
