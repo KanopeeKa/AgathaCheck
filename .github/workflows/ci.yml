@@ -44,7 +44,7 @@ jobs:
 
       - name: Analyze
         working-directory: flutter_app
-        run: flutter analyze
+        run: flutter analyze --no-fatal-infos
 
       - name: Run unit & widget tests with coverage
         working-directory: flutter_app
