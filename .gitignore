@@ -45,6 +45,8 @@ deploy/public/*.symbols
 server/.env
 server/.env.local
 server/node_modules/
-server/package-lock.json
+# server/package-lock.json is intentionally TRACKED — committing it pins
+# exact transitive dependency versions across local/CI/UAT/prod and lets
+# `npm ci` produce reproducible installs. Do not gitignore it.
 server/yarn.lock
 node_modules/
