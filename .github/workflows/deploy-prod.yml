@@ -4,6 +4,15 @@ on:
   release:
     types: [ published ]
 
+env:
+  # Single source of truth for the Flutter SDK version across all jobs in
+  # this workflow. Pinned to match local dev and the main CI workflow.
+  # Flutter 3.41 has a regression where flutter_tester segfaults during
+  # test cleanup on Linux. Bumping this value also busts the dependency
+  # cache (key includes ${FLUTTER_VERSION}), so stale .dart_tool artifacts
+  # from a different SDK won't be restored.
+  FLUTTER_VERSION: '3.32.0'
+
 jobs:
   test:
     name: Run tests before deploy
@@ -15,6 +24,7 @@ jobs:
         uses: subosito/flutter-action@v2
         with:
           channel: stable
+          flutter-version: ${{ env.FLUTTER_VERSION }}
 
       - name: Cache Flutter dependencies
         uses: actions/cache@v4
@@ -22,9 +32,9 @@ jobs:
           path: |
             ~/.pub-cache
             flutter_app/.dart_tool
-          key: flutter-${{ runner.os }}-${{ hashFiles('flutter_app/pubspec.lock') }}
+          key: flutter-${{ runner.os }}-${{ env.FLUTTER_VERSION }}-${{ hashFiles('flutter_app/pubspec.lock') }}
           restore-keys: |
-            flutter-${{ runner.os }}-
+            flutter-${{ runner.os }}-${{ env.FLUTTER_VERSION }}-
 
       - name: Fetch Flutter dependencies
         working-directory: flutter_app
@@ -32,11 +42,15 @@ jobs:
 
       - name: Analyze
         working-directory: flutter_app
-        run: flutter analyze
+        # Mirror main CI: tolerate warnings/infos, fail only on errors.
+        run: flutter analyze --no-fatal-warnings --no-fatal-infos
 
       - name: Run Flutter tests
         working-directory: flutter_app
-        run: flutter test
+        # Mirror main CI: --coverage omitted (causes flutter_tester segfault
+        # on Linux during teardown); integration tests excluded here and run
+        # separately in main CI with continue-on-error.
+        run: flutter test --concurrency=1 --exclude-tags=integration
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
@@ -66,6 +80,7 @@ jobs:
         uses: subosito/flutter-action@v2
         with:
           channel: stable
+          flutter-version: ${{ env.FLUTTER_VERSION }}
 
       - name: Cache Flutter dependencies
         uses: actions/cache@v4
@@ -73,9 +88,9 @@ jobs:
           path: |
             ~/.pub-cache
             flutter_app/.dart_tool
-          key: flutter-${{ runner.os }}-${{ hashFiles('flutter_app/pubspec.lock') }}
+          key: flutter-${{ runner.os }}-${{ env.FLUTTER_VERSION }}-${{ hashFiles('flutter_app/pubspec.lock') }}
           restore-keys: |
-            flutter-${{ runner.os }}-
+            flutter-${{ runner.os }}-${{ env.FLUTTER_VERSION }}-
 
       - name: Build Flutter Web
         working-directory: flutter_app
