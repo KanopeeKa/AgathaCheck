@@ -17,6 +17,11 @@ jobs:
         uses: subosito/flutter-action@v2
         with:
           channel: stable
+          # Pinned to match local dev version. Flutter 3.41 has a regression
+          # where flutter_tester segfaults during test cleanup on Linux,
+          # causing CI failures even when assertions pass. Unpin once the
+          # upstream fix lands (track: github.com/flutter/flutter).
+          flutter-version: '3.32.0'
 
       # Cache must be restored BEFORE `flutter pub get` to be effective.
       - name: Cache Flutter dependencies
