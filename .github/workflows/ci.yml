@@ -48,7 +48,7 @@ jobs:
 
       - name: Run unit & widget tests with coverage
         working-directory: flutter_app
-        run: flutter test --coverage
+        run: flutter test --coverage --concurrency=1
 
       - name: Run integration tests (if present)
         working-directory: flutter_app
