@@ -28,6 +28,7 @@ The application is built with a clean architecture, separating concerns into dat
 -   **Localization**: Full English/French localization with locale persistence.
 -   **Deployment**: Flutter web frontend served by an AOT compiled Dart API server.
 -   **Database Migrations**: SQL migration files managed with a Dart runner for `up` and `down` operations.
+-   **Database Schema (canonical)**: 19 application tables + `_migrations` tracker. `db/migrations/v3__initial_uuid_schema.sql` is the **single source of truth for fresh installs** — it inlines every column added by migrations 001–007. Existing DBs replay only the incremental `NNN_*.sql` files they have not yet applied (tracked in `_migrations`). Notable shape decisions: `archived_pets` is a transfer record (`organization_id`, `pet_id`, `pet_name`, `pdf_data`, `transfer_type`, `transferred_to_*`, `notes`, `archived_at`, `created_at`) — not a pet copy. `family_events` and `shared_pets` exist in the schema but are currently unused by any route (Node.js + Dart routes for family events are stubs). `notifications` keeps both `is_read` and legacy `read` columns (UPDATEs touch both).
 -   **GDPR Data Rights**: Functionality for account deletion, data export (JSON), profile editing, and consent withdrawal.
 -   **Consent Management**: Custom CMP-style banner for initial consent, with preferences stored locally and re-accessible.
 -   **Accessibility**: Implemented across all screens with tooltips, keys, semantics, and proper form field labeling.
