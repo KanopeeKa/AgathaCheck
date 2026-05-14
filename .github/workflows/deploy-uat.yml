@@ -127,8 +127,19 @@ jobs:
           exclude: |
             **/backend/**
 
+      # ===== STAGE MIGRATIONS INTO BACKEND PAYLOAD =====
+      # The migration SQL files live at repo-root db/migrations/, but the FTP
+      # backend deploy only ships the server/ folder. Copy the migrations into
+      # server/db/migrations/ so they ride along and the remote node migration
+      # runner (server/scripts/migrate.js) can find them.
+      - name: Stage db migrations under server/
+        run: |
+          mkdir -p server/db
+          cp -R db/migrations server/db/migrations
+          ls server/db/migrations
+
       # ===== DEPLOY BACKEND (Node.js) =====
-      # Excludes node_modules, tests, and dev configs. The remote `npm install`
+      # Excludes node_modules, tests, and dev configs. The remote `npm ci`
       # / restart step below reinstalls dependencies on the server.
       - name: Deploy backend to uat.agathatrack.com/backend/
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
@@ -158,11 +169,17 @@ jobs:
           port: ${{ secrets.UAT_SSH_PORT || 22 }}
           timeout: 60s
           script: |
+            set -e
             cd ~/public_html/uat.agathatrack.com/backend
             # `npm ci` (not `npm install`) for reproducibility: installs the
             # exact tree from package-lock.json and fails fast on drift, so
             # the runtime gets the same versions CI tested against.
             # --omit=dev skips devDependencies (jest, babel, etc.).
             npm ci --omit=dev
+            # Apply any pending DB migrations BEFORE restarting the app, so
+            # the new code never runs against an old schema. Idempotent: a
+            # no-op when the schema is already up to date. Requires the
+            # DATABASE_URL env var to be configured on the cPanel Node app.
+            node scripts/migrate.js up
             mkdir -p tmp
             touch tmp/restart.txt
