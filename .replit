@@ -27,7 +27,7 @@ outputType = "webview"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "cd /home/runner/workspace/server && PORT=5000 dart run bin/server.dart"
+args = "cd /home/runner/workspace/server && dart pub get && PORT=5000 dart run bin/server.dart"
 waitForPort = 5000
 
 [[ports]]
