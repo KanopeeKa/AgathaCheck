@@ -25,3 +25,12 @@ became permanent phantom records that reappeared on every refresh.
   remotely — keep that branch, drop everything else.
 - Accepted tradeoff: a pet created during a brief offline window is not retried/kept.
   Product decision = server authoritative; predictable beats resurrecting.
+
+**If "phantom pets" reappear after the fix, suspect a STALE DEPLOYED BUILD, not a
+code regression.** The no-re-push fix lives in the Flutter client bundle, so an old
+UAT/prod artifact still resurrects. Symptom chain: deployed build's pet read 401s →
+falls back to local cache (shows pets not in DB) → old build re-pushes them via the
+create upsert (`POST /api/pets` is `ON CONFLICT (id) DO UPDATE` in both Node and Dart).
+`PUT /api/pets/:id` is a plain UPDATE (can't resurrect). Resolution = rebuild+redeploy,
+then a ONE-TIME manual delete of the already-resurrected DB rows (a fresh read only
+prunes the local cache, never deletes server rows).
