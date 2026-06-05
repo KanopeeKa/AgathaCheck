@@ -119,6 +119,7 @@
   "weightWithUnit": "Poids ({unit})",
   "notesOptional": "Notes (facultatif)",
   "pleaseEnterValidWeight": "Veuillez entrer un poids valide",
+  "weightFormatHint": "Entrez un nombre supérieur à 0, par ex. 12,5",
   "deleteWeightEntry": "Supprimer l'entrée de poids",
   "weightChartLabel": "Graphique de poids avec {count} entrées",
 

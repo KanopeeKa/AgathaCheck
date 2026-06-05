@@ -82,8 +82,8 @@ export default function weightEntriesRoutes(pool) {
       const dateVal = data.date || data.measured_at || new Date().toISOString();
       const weightVal = typeof data.weight === 'number' ? data.weight : parseFloat(data.weight || '0');
       const result = await pool.query(
-        'INSERT INTO weight_entries (id, pet_id, weight, unit, date, notes) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
-        [id, petId, weightVal, data.unit || 'kg', dateVal, data.notes || '']
+        'INSERT INTO weight_entries (id, pet_id, user_id, weight, unit, date, notes) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *',
+        [id, petId, userId, weightVal, data.unit || 'kg', dateVal, data.notes || '']
       );
       res.status(201).json(weightEntryToMap(result.rows[0]));
     } catch (err) {

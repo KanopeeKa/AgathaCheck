@@ -764,6 +764,12 @@ abstract class AppLocalizations {
   /// **'Please enter a valid weight'**
   String get pleaseEnterValidWeight;
 
+  /// No description provided for @weightFormatHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a number greater than 0, e.g. 12.5'**
+  String get weightFormatHint;
+
   /// No description provided for @deleteWeightEntry.
   ///
   /// In en, this message translates to:

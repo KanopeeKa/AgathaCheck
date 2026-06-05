@@ -151,6 +151,7 @@ class WeightTrackingSection extends ConsumerWidget {
     final weightController = TextEditingController();
     final notesController = TextEditingController();
     var selectedDate = DateTime.now();
+    String? weightError;
 
     showModalBottomSheet(
       context: context,
@@ -207,7 +208,14 @@ class WeightTrackingSection extends ConsumerWidget {
                     labelText: AppLocalizations.of(ctx)!.weightWithUnit(unitLabel),
                     prefixIcon: const Icon(Icons.monitor_weight),
                     border: const OutlineInputBorder(),
+                    helperText: AppLocalizations.of(ctx)!.weightFormatHint,
+                    errorText: weightError,
                   ),
+                  onChanged: (_) {
+                    if (weightError != null) {
+                      setSheetState(() => weightError = null);
+                    }
+                  },
                 ),
                 const SizedBox(height: 16),
                 TextField(
@@ -223,13 +231,10 @@ class WeightTrackingSection extends ConsumerWidget {
                 FilledButton(
                   onPressed: () async {
                     final weightText = weightController.text.trim();
-                    if (weightText.isEmpty) return;
                     final inputWeight = double.tryParse(weightText);
                     if (inputWeight == null || inputWeight <= 0) {
-                      ScaffoldMessenger.of(ctx).showSnackBar(
-                        const SnackBar(
-                            content: Text('Please enter a valid weight')),
-                      );
+                      setSheetState(() =>
+                          weightError = AppLocalizations.of(ctx)!.weightFormatHint);
                       return;
                     }
 

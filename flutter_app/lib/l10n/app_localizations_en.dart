@@ -367,6 +367,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get pleaseEnterValidWeight => 'Please enter a valid weight';
 
   @override
+  String get weightFormatHint => 'Enter a number greater than 0, e.g. 12.5';
+
+  @override
   String get deleteWeightEntry => 'Delete weight entry';
 
   @override

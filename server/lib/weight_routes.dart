@@ -106,10 +106,11 @@ Router weightRoutes(Pool pool) {
       final id = data['id'] ?? _uuid.v4();
       final dateStr = data['date'];
       final results = await pool.execute(
-        Sql.named('INSERT INTO weight_entries (id, pet_id, weight, unit, date, notes) VALUES (@id, @pet_id, @weight, @unit, @date, @notes) RETURNING *'),
+        Sql.named('INSERT INTO weight_entries (id, pet_id, user_id, weight, unit, date, notes) VALUES (@id, @pet_id, @user_id, @weight, @unit, @date, @notes) RETURNING *'),
         parameters: {
           'id': id,
           'pet_id': data['pet_id'] ?? data['petId'],
+          'user_id': userId,
           'weight': data['weight'] is num ? data['weight'] : double.tryParse(data['weight']?.toString() ?? '0'),
           'unit': data['unit'] ?? 'kg',
           'date': dateStr != null ? DateTime.parse(dateStr.toString()) : DateTime.now(),

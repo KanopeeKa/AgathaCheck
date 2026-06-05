@@ -1,3 +1,4 @@
 - [Auth token refresh + retry](auth-token-refresh.md) — authed API calls must use authHttpClientProvider (refresh+retry on 401); AuthService stays unwrapped; AppLocalizations.of(ctx) is nullable.
 - [Local-first cache & remote sync](local-first-sync.md) — server is source of truth; never re-push local-only rows on read (resurrects deleted data); create rolls back + rethrows on remote failure.
 - [Flutter web password-manager autofill](flutter-web-password-managers.md) — CanvasKit paints fields on canvas so extensions (Proton Pass) can't autofill; fix is a native HTML form in index.html bridged to Dart.
+- [Tool-output token scrambling](tool-output-token-scrambling.md) — grep/bash can mangle source tokens in file content (e.g. weight→ln); read tool shows truth, edits use real tokens.

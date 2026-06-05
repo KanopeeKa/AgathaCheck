@@ -43,10 +43,11 @@ describe('Weight Entries API', () => {
             rows: [makeWeightRow({
               id: params[0],
               pet_id: params[1],
-              weight: params[2],
-              unit: params[3],
-              date: params[4],
-              notes: params[5] || '',
+              user_id: params[2],
+              weight: params[3],
+              unit: params[4],
+              date: params[5],
+              notes: params[6] || '',
               pet_name: null,
             })],
           };
@@ -209,7 +210,7 @@ describe('Weight Entries API', () => {
         .set('Authorization', `Bearer ${token}`)
         .send(entry);
       expect(res.statusCode).toBe(201);
-      expect(lastQuery.params[3]).toBe('kg');
+      expect(lastQuery.params[4]).toBe('kg');
     });
 
     it('accepts petId alias for pet_id', async () => {
@@ -229,7 +230,7 @@ describe('Weight Entries API', () => {
         .set('Authorization', `Bearer ${token}`)
         .send(entry);
       expect(res.statusCode).toBe(201);
-      expect(lastQuery.params[2]).toBe(6.7);
+      expect(lastQuery.params[3]).toBe(6.7);
     });
   });
 
