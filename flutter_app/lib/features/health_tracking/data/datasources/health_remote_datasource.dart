@@ -61,6 +61,18 @@ class HealthRemoteDataSourceImpl implements HealthRemoteDataSource {
 
   String? authToken;
 
+  /// Builds request headers, attaching the bearer token when available.
+  /// Pass [jsonBody] for requests that send a JSON body.
+  Map<String, String> _authHeaders({bool jsonBody = false}) {
+    final headers = <String, String>{};
+    if (jsonBody) headers['Content-Type'] = 'application/json';
+    final token = authToken;
+    if (token != null && token.isNotEmpty) {
+      headers['Authorization'] = 'Bearer $token';
+    }
+    return headers;
+  }
+
   @override
   Future<List<HealthEntryModel>> getEntries(
       {String? petId, String? type}) async {
@@ -70,11 +82,7 @@ class HealthRemoteDataSourceImpl implements HealthRemoteDataSource {
 
     final uri = Uri.parse('$baseUrl/api/health-entries')
         .replace(queryParameters: params.isNotEmpty ? params : null);
-    final headers = <String, String>{};
-    if (authToken != null) {
-      headers['Authorization'] = 'Bearer $authToken';
-    }
-    final response = await _client.get(uri, headers: headers.isNotEmpty ? headers : null);
+    final response = await _client.get(uri, headers: _authHeaders());
     _checkResponse(response);
 
     final list = json.decode(response.body) as List<dynamic>;
@@ -85,8 +93,9 @@ class HealthRemoteDataSourceImpl implements HealthRemoteDataSource {
 
   @override
   Future<HealthEntryModel?> getEntry(String id) async {
-    final response =
-        await _client.get(Uri.parse('$baseUrl/api/health-entries/$id'));
+    final response = await _client.get(
+        Uri.parse('$baseUrl/api/health-entries/$id'),
+        headers: _authHeaders());
     if (response.statusCode == 404) return null;
     _checkResponse(response);
     return HealthEntryModel.fromJson(
@@ -97,7 +106,7 @@ class HealthRemoteDataSourceImpl implements HealthRemoteDataSource {
   Future<HealthEntryModel> createEntry(HealthEntryModel entry) async {
     final response = await _client.post(
       Uri.parse('$baseUrl/api/health-entries'),
-      headers: {'Content-Type': 'application/json'},
+      headers: _authHeaders(jsonBody: true),
       body: json.encode(entry.toJson()),
     );
     _checkResponse(response);
@@ -109,7 +118,7 @@ class HealthRemoteDataSourceImpl implements HealthRemoteDataSource {
   Future<HealthEntryModel> updateEntry(HealthEntryModel entry) async {
     final response = await _client.put(
       Uri.parse('$baseUrl/api/health-entries/${entry.id}'),
-      headers: {'Content-Type': 'application/json'},
+      headers: _authHeaders(jsonBody: true),
       body: json.encode(entry.toJson()),
     );
     _checkResponse(response);
@@ -119,8 +128,9 @@ class HealthRemoteDataSourceImpl implements HealthRemoteDataSource {
 
   @override
   Future<void> deleteEntry(String id) async {
-    final response =
-        await _client.delete(Uri.parse('$baseUrl/api/health-entries/$id'));
+    final response = await _client.delete(
+        Uri.parse('$baseUrl/api/health-entries/$id'),
+        headers: _authHeaders());
     _checkResponse(response);
   }
 
@@ -129,7 +139,7 @@ class HealthRemoteDataSourceImpl implements HealthRemoteDataSource {
       {String notes = ''}) async {
     final response = await _client.post(
       Uri.parse('$baseUrl/api/health-entries/$id/mark-taken'),
-      headers: {'Content-Type': 'application/json'},
+      headers: _authHeaders(jsonBody: true),
       body: json.encode({'notes': notes}),
     );
     _checkResponse(response);
@@ -141,7 +151,7 @@ class HealthRemoteDataSourceImpl implements HealthRemoteDataSource {
   Future<HealthEntryModel> undoComplete(String id) async {
     final response = await _client.post(
       Uri.parse('$baseUrl/api/health-entries/$id/undo-complete'),
-      headers: {'Content-Type': 'application/json'},
+      headers: _authHeaders(jsonBody: true),
       body: json.encode({}),
     );
     _checkResponse(response);
@@ -151,8 +161,9 @@ class HealthRemoteDataSourceImpl implements HealthRemoteDataSource {
 
   @override
   Future<List<HealthHistoryModel>> getHistory(String entryId) async {
-    final response = await _client
-        .get(Uri.parse('$baseUrl/api/health-entries/$entryId/history'));
+    final response = await _client.get(
+        Uri.parse('$baseUrl/api/health-entries/$entryId/history'),
+        headers: _authHeaders());
     _checkResponse(response);
     final list = json.decode(response.body) as List<dynamic>;
     return list
@@ -167,15 +178,16 @@ class HealthRemoteDataSourceImpl implements HealthRemoteDataSource {
 
     final uri = Uri.parse('$baseUrl/api/health-entries/export')
         .replace(queryParameters: params.isNotEmpty ? params : null);
-    final response = await _client.get(uri);
+    final response = await _client.get(uri, headers: _authHeaders());
     _checkResponse(response);
     return response.body;
   }
 
   @override
   Future<List<EventPhoto>> getPhotos(String entryId) async {
-    final response = await _client
-        .get(Uri.parse('$baseUrl/api/health-entries/$entryId/photos'));
+    final response = await _client.get(
+        Uri.parse('$baseUrl/api/health-entries/$entryId/photos'),
+        headers: _authHeaders());
     _checkResponse(response);
     final list = json.decode(response.body) as List<dynamic>;
     return list
@@ -188,6 +200,7 @@ class HealthRemoteDataSourceImpl implements HealthRemoteDataSource {
       String filename, {String caption = ''}) async {
     final request = http.MultipartRequest(
         'POST', Uri.parse('$baseUrl/api/health-entries/$entryId/photos'));
+    request.headers.addAll(_authHeaders());
     request.files
         .add(http.MultipartFile.fromBytes('photo', bytes, filename: filename));
     if (caption.isNotEmpty) {
@@ -203,7 +216,8 @@ class HealthRemoteDataSourceImpl implements HealthRemoteDataSource {
   @override
   Future<void> deletePhoto(String entryId, int photoId) async {
     final response = await _client.delete(
-        Uri.parse('$baseUrl/api/health-entries/$entryId/photos/$photoId'));
+        Uri.parse('$baseUrl/api/health-entries/$entryId/photos/$photoId'),
+        headers: _authHeaders());
     _checkResponse(response);
   }
 

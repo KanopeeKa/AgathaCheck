@@ -27,4 +27,10 @@ code read the wrong prefs key and was unauthenticated, and a multipart upload ca
 **Keep the refresher itself unwrapped:** the auth/login/refresh service uses a plain
 client, or a refresh 401 would recurse.
 
+**Datasources must auth EVERY method, not just reads:** the health datasource set the
+Bearer header only on `getEntries` (GET) and omitted it on `createEntry`/`update`/`delete`/
+`markTaken`/uploads. Deployed builds then POSTed with no `Authorization` → 401 (server was
+fine: routes already insert `user_id` from JWT). Fix = a `_authHeaders({jsonBody})` helper
+applied to all methods. When auditing, check writes + multipart, not just the list call.
+
 **Quirk:** `AppLocalizations.of(context)` is NULLABLE in this project — use `!`.
