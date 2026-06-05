@@ -19,7 +19,6 @@ class PetRepositoryImpl implements PetRepository {
       try {
         final remotePets = await remoteDataSource!.getAllPetsIncludingOrg(token!);
         final localPets = await _localDataSource.getAllPets();
-        final remoteIds = remotePets.map((p) => p.id).toSet();
         final merged = <PetModel>[];
         for (final rp in remotePets) {
           final localMatch = localPets.where((lp) => lp.id == rp.id).firstOrNull;
@@ -50,16 +49,10 @@ class PetRepositoryImpl implements PetRepository {
             merged.add(rp);
           }
         }
-        for (final lp in localPets) {
-          if (!remoteIds.contains(lp.id)) {
-            try {
-              await remoteDataSource!.createPet(lp, token!);
-            } catch (e) {
-              debugPrint('PetRepository: Failed to push local pet ${lp.id} to server: $e');
-            }
-            merged.add(lp);
-          }
-        }
+        // The server is the source of truth. Local-only pets (not present
+        // remotely) are intentionally NOT re-pushed: doing so resurrected pets
+        // that were deleted server-side or whose creation had failed. Dropping
+        // them here lets _saveAllLocal prune the stale local cache entries.
         await _saveAllLocal(merged);
         return merged.map((m) => m.toEntity()).toList();
       } on PetRemoteException catch (e) {
@@ -86,7 +79,12 @@ class PetRepositoryImpl implements PetRepository {
       try {
         await remoteDataSource!.createPet(model, token!);
       } catch (e) {
+        // Server rejected the create. Roll back the optimistic local write so
+        // the pet does not linger in the cache (and later resurrect on refresh)
+        // and surface the failure to the caller instead of silently swallowing.
+        await _localDataSource.deletePet(model.id);
         debugPrint('PetRepository: Failed to save pet to server: $e');
+        rethrow;
       }
     }
     return saved.toEntity();
