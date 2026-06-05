@@ -22,12 +22,36 @@
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import dotenv from 'dotenv';
 import pg from 'pg';
 import { v4 as uuidv4 } from 'uuid';
 
 const { Pool } = pg;
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+
+// Load the same .env the app uses. When the deploy runs this over SSH, the
+// process does NOT inherit cPanel's Node-app environment, so we read the .env
+// in the backend root (one level up from scripts/) exactly like bin/server.js.
+dotenv.config({ path: path.resolve(__dirname, '../.env') });
+dotenv.config();
+
+// Mirror bin/server.js createPool(): prefer DATABASE_URL, else fall back to
+// the discrete PG* vars. This keeps the migration runner connecting the same
+// way the running app does, in every environment.
+function createPool() {
+  const databaseUrl = process.env.DATABASE_URL;
+  if (databaseUrl) {
+    return new Pool({ connectionString: databaseUrl });
+  }
+  return new Pool({
+    user: process.env.PGUSER || 'user',
+    password: process.env.PGPASSWORD || 'password',
+    host: process.env.PGHOST || 'localhost',
+    port: process.env.PGPORT || 5432,
+    database: process.env.PGDATABASE || 'agatha_db',
+  });
+}
 
 function resolveMigrationsDir() {
   const candidates = [
@@ -138,12 +162,7 @@ async function main() {
   console.log('Agatha Track — Migration Runner (Node)');
   console.log(`Command: ${command}\n`);
 
-  if (!process.env.DATABASE_URL) {
-    console.error('FAIL: DATABASE_URL environment variable is required.');
-    process.exit(1);
-  }
-
-  const pool = new Pool({ connectionString: process.env.DATABASE_URL });
+  const pool = createPool();
   try {
     switch (command) {
       case 'up':
