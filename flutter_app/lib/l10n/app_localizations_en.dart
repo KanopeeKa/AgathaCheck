@@ -39,6 +39,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get signInToAccount => 'Sign in to your account';
 
   @override
+  String get signInWithPasswordManager => 'Sign in with password manager';
+
+  @override
   String get createYourAccount => 'Create your account';
 
   @override

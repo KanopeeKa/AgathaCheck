@@ -11,6 +11,7 @@
   "signUp": "S'inscrire",
   "createAccount": "Créer un compte",
   "signInToAccount": "Connectez-vous à votre compte",
+  "signInWithPasswordManager": "Se connecter avec un gestionnaire de mots de passe",
   "createYourAccount": "Créez votre compte",
   "dontHaveAccount": "Pas encore de compte ?",
   "alreadyHaveAccount": "Déjà un compte ?",

@@ -39,6 +39,10 @@ class AppLocalizationsFr extends AppLocalizations {
   String get signInToAccount => 'Connectez-vous à votre compte';
 
   @override
+  String get signInWithPasswordManager =>
+      'Se connecter avec un gestionnaire de mots de passe';
+
+  @override
   String get createYourAccount => 'Créez votre compte';
 
   @override

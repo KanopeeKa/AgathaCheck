@@ -11,6 +11,7 @@
   "signUp": "Sign Up",
   "createAccount": "Create Account",
   "signInToAccount": "Sign in to your account",
+  "signInWithPasswordManager": "Sign in with password manager",
   "createYourAccount": "Create your account",
   "dontHaveAccount": "Don't have an account?",
   "alreadyHaveAccount": "Already have an account?",

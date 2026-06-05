@@ -152,6 +152,12 @@ abstract class AppLocalizations {
   /// **'Sign in to your account'**
   String get signInToAccount;
 
+  /// No description provided for @signInWithPasswordManager.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in with password manager'**
+  String get signInWithPasswordManager;
+
   /// No description provided for @createYourAccount.
   ///
   /// In en, this message translates to:

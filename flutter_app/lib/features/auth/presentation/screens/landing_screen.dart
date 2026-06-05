@@ -7,6 +7,7 @@ import 'package:go_router/go_router.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../providers/auth_providers.dart';
 import '../../../../core/widgets/web_image.dart';
+import '../../../../core/web/native_login.dart';
 
 class LandingScreen extends ConsumerStatefulWidget {
   const LandingScreen({super.key});
@@ -32,6 +33,9 @@ class _LandingScreenState extends ConsumerState<LandingScreen>
   final _signupConfirmController = TextEditingController();
   bool _signupObscure = true;
 
+  final NativeLogin _nativeLogin = createNativeLogin();
+  bool _nativeAutoShown = false;
+
   @override
   void initState() {
     super.initState();
@@ -39,7 +43,21 @@ class _LandingScreenState extends ConsumerState<LandingScreen>
   }
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // On web, surface the native HTML login overlay automatically so that
+    // password-manager browser extensions can detect and autofill the fields.
+    if (kIsWeb && !_nativeAutoShown && _nativeLogin.isAvailable) {
+      _nativeAutoShown = true;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) _showNativeLogin();
+      });
+    }
+  }
+
+  @override
   void dispose() {
+    _nativeLogin.hide();
     _tabController.dispose();
     _loginEmailController.dispose();
     _loginPasswordController.dispose();
@@ -63,6 +81,49 @@ class _LandingScreenState extends ConsumerState<LandingScreen>
     if (mounted && ref.read(authProvider).isLoggedIn) {
       TextInput.finishAutofillContext();
       context.go('/');
+    }
+  }
+
+  void _showNativeLogin() {
+    final l10n = AppLocalizations.of(context)!;
+    ref.read(authProvider.notifier).clearError();
+    _nativeLogin.show(
+      email: _loginEmailController.text.trim(),
+      title: l10n.signIn,
+      subtitle: l10n.signInToAccount,
+      emailLabel: l10n.email,
+      passwordLabel: l10n.password,
+      signInLabel: l10n.signIn,
+      forgotLabel: l10n.forgotPassword,
+      dismissLabel: l10n.cancel,
+      onSubmit: _handleNativeLogin,
+      onForgot: () {
+        _nativeLogin.hide();
+        if (mounted) context.go('/forgot-password');
+      },
+      onDismiss: _nativeLogin.hide,
+    );
+  }
+
+  Future<void> _handleNativeLogin(String email, String password) async {
+    _loginEmailController.text = email;
+    _loginPasswordController.text = password;
+    ref.read(authProvider.notifier).clearError();
+
+    await ref.read(authProvider.notifier).login(
+          email: email.trim(),
+          password: password,
+        );
+
+    if (!mounted) return;
+    final auth = ref.read(authProvider);
+    if (auth.isLoggedIn) {
+      TextInput.finishAutofillContext();
+      _nativeLogin.hide();
+      context.go('/');
+    } else {
+      _nativeLogin.setBusy(false);
+      _nativeLogin.setError(auth.error ?? AppLocalizations.of(context)!.error);
     }
   }
 
@@ -335,6 +396,16 @@ class _LandingScreenState extends ConsumerState<LandingScreen>
                   : Text(l10n.signIn),
             ),
           ),
+          if (kIsWeb && _nativeLogin.isAvailable)
+            Padding(
+              padding: const EdgeInsets.only(top: 8),
+              child: TextButton.icon(
+                key: const Key('native_login_button'),
+                onPressed: auth.isLoading ? null : _showNativeLogin,
+                icon: const Icon(Icons.password_outlined, size: 18),
+                label: Text(l10n.signInWithPasswordManager),
+              ),
+            ),
         ],
       ),
     ),
