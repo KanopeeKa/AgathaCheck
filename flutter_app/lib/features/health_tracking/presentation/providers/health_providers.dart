@@ -17,7 +17,10 @@ import '../../domain/usecases/update_health_entry.dart';
 final healthRemoteDataSourceProvider = Provider<HealthRemoteDataSource>((ref) {
   final baseUrl = ref.watch(apiBaseUrlProvider);
   final token = ref.watch(authProvider).accessToken;
-  final ds = HealthRemoteDataSourceImpl(baseUrl: baseUrl);
+  final ds = HealthRemoteDataSourceImpl(
+    baseUrl: baseUrl,
+    client: ref.watch(authHttpClientProvider),
+  );
   ds.authToken = token;
   return ds;
 });
@@ -25,7 +28,10 @@ final healthRemoteDataSourceProvider = Provider<HealthRemoteDataSource>((ref) {
 final healthDataSourceProvider = Provider<HealthRemoteDataSourceImpl>((ref) {
   final baseUrl = ref.watch(apiBaseUrlProvider);
   final token = ref.watch(authProvider).accessToken;
-  final ds = HealthRemoteDataSourceImpl(baseUrl: baseUrl);
+  final ds = HealthRemoteDataSourceImpl(
+    baseUrl: baseUrl,
+    client: ref.watch(authHttpClientProvider),
+  );
   ds.authToken = token;
   return ds;
 });

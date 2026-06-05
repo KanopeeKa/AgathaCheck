@@ -53,7 +53,10 @@ class WeightUnitNotifier extends StateNotifier<WeightUnit> {
 final weightRemoteDataSourceProvider =
     Provider<WeightRemoteDataSource>((ref) {
   final baseUrl = ref.watch(apiBaseUrlProvider);
-  return WeightRemoteDataSourceImpl(baseUrl: baseUrl);
+  return WeightRemoteDataSourceImpl(
+    baseUrl: baseUrl,
+    client: ref.watch(authHttpClientProvider),
+  );
 });
 
 final weightRepositoryProvider = Provider<WeightRepository>((ref) {

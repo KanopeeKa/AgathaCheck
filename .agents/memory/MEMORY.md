@@ -1,0 +1,1 @@
+- [Auth token refresh + retry](auth-token-refresh.md) — authed API calls must use authHttpClientProvider (refresh+retry on 401); AuthService stays unwrapped; AppLocalizations.of(ctx) is nullable.

@@ -193,7 +193,7 @@ class HealthRemoteDataSourceImpl implements HealthRemoteDataSource {
     if (caption.isNotEmpty) {
       request.fields['caption'] = caption;
     }
-    final streamedResponse = await request.send();
+    final streamedResponse = await _client.send(request);
     final response = await http.Response.fromStream(streamedResponse);
     _checkResponse(response);
     return EventPhoto.fromJson(

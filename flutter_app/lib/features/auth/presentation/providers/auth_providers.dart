@@ -1,8 +1,10 @@
 import 'dart:typed_data';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../../../core/network/auth_http_client.dart';
 import '../../../../core/providers/api_base_url_provider.dart';
 import '../../../../core/providers/shared_preferences_provider.dart';
 import '../../data/auth_service.dart';
@@ -19,12 +21,17 @@ class AuthState {
   final bool isLoading;
   final String? error;
 
+  /// Set when a token refresh failed and the user was logged out mid-session.
+  /// The UI uses this to show a "please sign in again" message.
+  final bool sessionExpired;
+
   const AuthState({
     this.user,
     this.accessToken,
     this.refreshToken,
     this.isLoading = false,
     this.error,
+    this.sessionExpired = false,
   });
 
   bool get isLoggedIn => user != null && accessToken != null;
@@ -35,6 +42,7 @@ class AuthState {
     String? refreshToken,
     bool? isLoading,
     String? error,
+    bool? sessionExpired,
     bool clearUser = false,
     bool clearError = false,
   }) {
@@ -44,6 +52,7 @@ class AuthState {
       refreshToken: clearUser ? null : (refreshToken ?? this.refreshToken),
       isLoading: isLoading ?? this.isLoading,
       error: clearError ? null : (error ?? this.error),
+      sessionExpired: sessionExpired ?? this.sessionExpired,
     );
   }
 }
@@ -240,6 +249,43 @@ class AuthNotifier extends StateNotifier<AuthState> {
     state = state.copyWith(clearError: true);
   }
 
+  void clearSessionExpired() {
+    if (state.sessionExpired) {
+      state = state.copyWith(sessionExpired: false);
+    }
+  }
+
+  Future<String?>? _refreshFuture;
+
+  /// Forces a single access-token refresh using the stored refresh token,
+  /// returning the new token or `null` if the session can no longer be
+  /// refreshed. Concurrent callers share one in-flight refresh so a burst of
+  /// 401s only triggers one network round-trip. On failure the session is
+  /// cleared and [AuthState.sessionExpired] is set so the UI can react.
+  Future<String?> forceRefreshAccessToken() {
+    return _refreshFuture ??=
+        _runForcedRefresh().whenComplete(() => _refreshFuture = null);
+  }
+
+  Future<String?> _runForcedRefresh() async {
+    final refreshToken = state.refreshToken;
+    if (refreshToken == null) {
+      await _clearTokens();
+      state = const AuthState(sessionExpired: true);
+      return null;
+    }
+    try {
+      final newAccess = await _authService.refreshToken(refreshToken);
+      await _prefs.setString(_accessTokenKey, newAccess);
+      state = state.copyWith(accessToken: newAccess);
+      return newAccess;
+    } catch (_) {
+      await _clearTokens();
+      state = const AuthState(sessionExpired: true);
+      return null;
+    }
+  }
+
   Future<void> _saveTokens(String access, String refresh) async {
     await _prefs.setString(_accessTokenKey, access);
     await _prefs.setString(_refreshTokenKey, refresh);
@@ -255,4 +301,19 @@ final authProvider = StateNotifierProvider<AuthNotifier, AuthState>((ref) {
   final authService = ref.watch(authServiceProvider);
   final prefs = ref.watch(sharedPreferencesProvider);
   return AuthNotifier(authService, prefs);
+});
+
+/// A shared [http.Client] that auto-injects the current access token and, on a
+/// 401, refreshes the token once and replays the request. Inject this into all
+/// authenticated remote data sources so sessions survive access-token expiry
+/// without the user being silently logged out.
+final authHttpClientProvider = Provider<http.Client>((ref) {
+  final client = AuthHttpClient(
+    inner: http.Client(),
+    getAccessToken: () => ref.read(authProvider).accessToken,
+    refreshAccessToken: () =>
+        ref.read(authProvider.notifier).forceRefreshAccessToken(),
+  );
+  ref.onDispose(client.close);
+  return client;
 });

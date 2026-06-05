@@ -1,6 +1,4 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:http/http.dart' as http;
 import 'package:uuid/uuid.dart';
 
 import '../../../../core/providers/shared_preferences_provider.dart';
@@ -26,7 +24,10 @@ final petLocalDataSourceProvider = Provider<PetLocalDataSource>((ref) {
 
 final petRemoteDataSourceProvider = Provider<PetRemoteDataSource>((ref) {
   final baseUrl = ref.watch(apiBaseUrlProvider);
-  return PetRemoteDataSourceImpl(baseUrl: baseUrl);
+  return PetRemoteDataSourceImpl(
+    baseUrl: baseUrl,
+    client: ref.watch(authHttpClientProvider),
+  );
 });
 
 final _accessTokenProvider = Provider<String?>((ref) {
@@ -150,16 +151,12 @@ class PetListNotifier extends AsyncNotifier<List<Pet>> {
   }
 
   Future<void> deletePet(String id) async {
-    final baseUrl = kIsWeb ? '' : 'http://localhost:5000';
-    final prefs = ref.read(sharedPreferencesProvider);
-    final token = prefs.getString('access_token') ?? '';
+    final baseUrl = ref.read(apiBaseUrlProvider);
+    final client = ref.read(authHttpClientProvider);
     try {
-      await http.delete(
+      await client.delete(
         Uri.parse('$baseUrl/api/pets/$id/data'),
-        headers: {
-          'Content-Type': 'application/json',
-          if (token.isNotEmpty) 'Authorization': 'Bearer $token',
-        },
+        headers: {'Content-Type': 'application/json'},
       );
     } catch (_) {}
     await ref.read(deletePetUseCaseProvider).call(id);
@@ -178,17 +175,13 @@ class PetListNotifier extends AsyncNotifier<List<Pet>> {
     );
     await ref.read(updatePetUseCaseProvider).call(updated);
 
-    final baseUrl = kIsWeb ? '' : 'http://localhost:5000';
+    final baseUrl = ref.read(apiBaseUrlProvider);
+    final client = ref.read(authHttpClientProvider);
     bool hasSharedUsers = false;
     try {
-      final prefs = ref.read(sharedPreferencesProvider);
-      final token = prefs.getString('access_token') ?? '';
-      final response = await http.post(
+      final response = await client.post(
         Uri.parse('$baseUrl/api/pets/$petId/passed-away'),
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer $token',
-        },
+        headers: {'Content-Type': 'application/json'},
         body: '{"pet_name": "${pet.name}"}',
       );
       if (response.statusCode == 200) {

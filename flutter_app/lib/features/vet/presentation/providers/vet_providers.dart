@@ -19,7 +19,11 @@ final _accessTokenProvider = Provider<String?>((ref) {
 final vetRemoteDataSourceProvider = Provider<VetRemoteDataSource>((ref) {
   final baseUrl = ref.watch(apiBaseUrlProvider);
   final token = ref.watch(_accessTokenProvider);
-  return VetRemoteDataSourceImpl(baseUrl: baseUrl, token: token);
+  return VetRemoteDataSourceImpl(
+    baseUrl: baseUrl,
+    token: token,
+    client: ref.watch(authHttpClientProvider),
+  );
 });
 
 final vetRepositoryProvider = Provider<VetRepository>((ref) {

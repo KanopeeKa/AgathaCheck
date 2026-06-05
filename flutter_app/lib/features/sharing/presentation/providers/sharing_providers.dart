@@ -6,7 +6,9 @@ import '../../data/datasources/sharing_remote_datasource.dart';
 import '../../domain/entities/pet_access.dart';
 
 final sharingDataSourceProvider = Provider<SharingRemoteDataSource>((ref) {
-  return SharingRemoteDataSource();
+  return SharingRemoteDataSource(
+    client: ref.watch(authHttpClientProvider),
+  );
 });
 
 class PendingShare {

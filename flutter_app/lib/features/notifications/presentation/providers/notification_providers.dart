@@ -12,7 +12,10 @@ import '../../domain/repositories/notification_repository.dart';
 final notificationDataSourceProvider =
     Provider<NotificationRemoteDataSource>((ref) {
   final baseUrl = ref.watch(apiBaseUrlProvider);
-  return NotificationRemoteDataSourceImpl(baseUrl: baseUrl);
+  return NotificationRemoteDataSourceImpl(
+    baseUrl: baseUrl,
+    client: ref.watch(authHttpClientProvider),
+  );
 });
 
 final notificationsProvider = AsyncNotifierProvider<NotificationsNotifier,

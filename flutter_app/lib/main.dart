@@ -10,8 +10,14 @@ import 'core/services/consent_service.dart';
 import 'core/theme/app_theme.dart';
 import 'core/utils/constants.dart';
 import 'core/widgets/consent_banner.dart';
+import 'features/auth/presentation/providers/auth_providers.dart';
 import 'features/pet_profile/presentation/providers/pet_providers.dart';
 import 'features/subscription/data/services/revenuecat_service.dart';
+
+/// Global messenger so session-expiry notices can be shown from anywhere,
+/// independent of the currently routed screen.
+final GlobalKey<ScaffoldMessengerState> rootScaffoldMessengerKey =
+    GlobalKey<ScaffoldMessengerState>();
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -37,7 +43,21 @@ class PetProfileApp extends ConsumerWidget {
     final router = ref.watch(routerProvider);
     final locale = ref.watch(localeProvider);
 
+    ref.listen<AuthState>(authProvider, (AuthState? prev, AuthState? next) {
+      if ((next?.sessionExpired ?? false) && !(prev?.sessionExpired ?? false)) {
+        final messengerContext = rootScaffoldMessengerKey.currentContext;
+        final message = messengerContext != null
+            ? AppLocalizations.of(messengerContext)!.sessionExpired
+            : 'Session expired. Please log in again.';
+        rootScaffoldMessengerKey.currentState
+          ?..clearSnackBars()
+          ..showSnackBar(SnackBar(content: Text(message)));
+        ref.read(authProvider.notifier).clearSessionExpired();
+      }
+    });
+
     return MaterialApp.router(
+      scaffoldMessengerKey: rootScaffoldMessengerKey,
       title: AppConstants.appTitle,
       theme: AppTheme.lightTheme,
       routerConfig: router,

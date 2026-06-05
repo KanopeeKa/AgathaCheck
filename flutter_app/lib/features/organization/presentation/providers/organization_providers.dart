@@ -9,7 +9,9 @@ import '../../domain/entities/organization_member.dart';
 import '../../../pet_profile/domain/entities/pet.dart';
 
 final orgRemoteDataSourceProvider = Provider<OrganizationRemoteDataSource>((ref) {
-  return OrganizationRemoteDataSource();
+  return OrganizationRemoteDataSource(
+    client: ref.watch(authHttpClientProvider),
+  );
 });
 
 final _orgTokenProvider = Provider<String?>((ref) {

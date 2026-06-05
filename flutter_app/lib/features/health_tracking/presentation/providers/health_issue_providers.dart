@@ -10,7 +10,10 @@ import 'package:pet_profile_app/features/auth/presentation/providers/auth_provid
 final healthIssueDataSourceProvider =
     Provider<HealthIssueRemoteDataSource>((ref) {
   final baseUrl = ref.watch(apiBaseUrlProvider);
-  return HealthIssueRemoteDataSourceImpl(baseUrl: baseUrl);
+  return HealthIssueRemoteDataSourceImpl(
+    baseUrl: baseUrl,
+    client: ref.watch(authHttpClientProvider),
+  );
 });
 
 final healthIssueRepositoryProvider = Provider<HealthIssueRepository>((ref) {
