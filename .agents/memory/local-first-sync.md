@@ -34,3 +34,13 @@ create upsert (`POST /api/pets` is `ON CONFLICT (id) DO UPDATE` in both Node and
 `PUT /api/pets/:id` is a plain UPDATE (can't resurrect). Resolution = rebuild+redeploy,
 then a ONE-TIME manual delete of the already-resurrected DB rows (a fresh read only
 prunes the local cache, never deletes server rows).
+
+**Flutter web service worker hides fresh deploys — a normal refresh keeps the OLD
+bundle.** `main.dart.js` is NOT content-hashed (filename is constant) and the registered
+`flutter_service_worker.js` caches it, so users run stale JS (e.g. a POST still missing
+its `Authorization` header) until a HARD reload / SW unregister. Don't trust a plain
+refresh when verifying a frontend fix on cPanel/o2switch. To confirm what's actually
+live: compare deployed asset `Last-Modified` and `md5sum main.dart.js` against the local
+`flutter_app/build/web/main.dart.js` (identical md5 = same build = fix is deployed; the
+remaining 401 is purely browser cache). The UAT deploy workflow itself builds fresh and
+FTPs `build/web/` correctly — it is not the culprit.
