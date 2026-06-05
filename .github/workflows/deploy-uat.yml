@@ -127,20 +127,37 @@ jobs:
           exclude: |
             **/backend/**
 
-      # ===== STAGE MIGRATIONS INTO BACKEND PAYLOAD =====
-      # The migration SQL files live at repo-root db/migrations/, but the FTP
-      # backend deploy only ships the server/ folder. Copy the migrations into
-      # server/db/migrations/ so they ride along and the remote node migration
-      # runner (server/scripts/migrate.js) can find them.
-      - name: Stage db migrations under server/
+      # ===== STAGE MIGRATIONS + RESTART TRIGGER INTO BACKEND PAYLOAD =====
+      # UAT is intentionally FTP-only (no SSH — SSH is reserved for the final
+      # agathatrack.com prod site). With no remote shell, this deploy cannot
+      # run `npm ci`, migrations, or `touch tmp/restart.txt` on the server, so
+      # we compensate purely over FTP:
+      #   1. Copy db/migrations/ into server/db/migrations/ so the SQL files
+      #      ship to the box for reference. NOTE: nothing on UAT runs them
+      #      automatically — apply them manually (see "MANUAL STEPS" below).
+      #   2. Write server/tmp/restart.txt with a fresh timestamp. Passenger
+      #      (cPanel Node.js app) restarts whenever this file's mtime changes,
+      #      so uploading it each deploy makes the app pick up the new code.
+      #
+      # MANUAL STEPS ON UAT (only needed occasionally, not every deploy):
+      #   - Dependency changes: the backend FTP excludes node_modules, so when
+      #     server/package.json changes, click "Run NPM Install" in cPanel →
+      #     Setup Node.js App for the UAT app.
+      #   - Schema changes: apply the new db/migrations/*.sql files in order
+      #     against the UAT Postgres (psql / pgAdmin). All migrations are
+      #     idempotent (IF NOT EXISTS), so re-running is safe.
+      - name: Stage migrations + restart trigger under server/
         run: |
-          mkdir -p server/db
+          mkdir -p server/db server/tmp
           cp -R db/migrations server/db/migrations
+          date -u +"restart %Y-%m-%dT%H:%M:%SZ" > server/tmp/restart.txt
           ls server/db/migrations
+          cat server/tmp/restart.txt
 
-      # ===== DEPLOY BACKEND (Node.js) =====
-      # Excludes node_modules, tests, and dev configs. The remote `npm ci`
-      # / restart step below reinstalls dependencies on the server.
+      # ===== DEPLOY BACKEND (Node.js) — FTP ONLY =====
+      # Excludes node_modules (install via cPanel when deps change), tests, and
+      # dev configs. The tmp/restart.txt staged above rides along and triggers
+      # a Passenger restart on upload — no SSH required.
       - name: Deploy backend to uat.agathatrack.com/backend/
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
@@ -156,34 +173,3 @@ jobs:
             **/coverage/**
             **/*.test.js
             **/babel.config.cjs
-
-      # ===== INSTALL DEPENDENCIES & RESTART NODE.JS APP =====
-      # Required so the freshly-deployed backend has its node_modules and the
-      # Passenger / cPanel Node.js app picks up the new code.
-      - name: Install dependencies & restart Node.js app
-        uses: appleboy/ssh-action@v1.0.3
-        with:
-          host: ${{ secrets.UAT_SSH_HOST }}
-          username: ${{ secrets.UAT_SSH_USER }}
-          key: ${{ secrets.UAT_SSH_PRIVATE_KEY }}
-          # Only needed if UAT_SSH_PRIVATE_KEY is an encrypted (passphrase-
-          # protected) key. Leave the UAT_SSH_PASSPHRASE secret unset if you
-          # use a passphraseless key — an empty value is ignored.
-          passphrase: ${{ secrets.UAT_SSH_PASSPHRASE }}
-          port: ${{ secrets.UAT_SSH_PORT || 22 }}
-          timeout: 60s
-          script: |
-            set -e
-            cd ~/public_html/uat.agathatrack.com/backend
-            # `npm ci` (not `npm install`) for reproducibility: installs the
-            # exact tree from package-lock.json and fails fast on drift, so
-            # the runtime gets the same versions CI tested against.
-            # --omit=dev skips devDependencies (jest, babel, etc.).
-            npm ci --omit=dev
-            # Apply any pending DB migrations BEFORE restarting the app, so
-            # the new code never runs against an old schema. Idempotent: a
-            # no-op when the schema is already up to date. Requires the
-            # DATABASE_URL env var to be configured on the cPanel Node app.
-            node scripts/migrate.js up
-            mkdir -p tmp
-            touch tmp/restart.txt
