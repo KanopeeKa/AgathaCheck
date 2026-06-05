@@ -162,6 +162,10 @@ jobs:
           host: ${{ secrets.PROD_SSH_HOST }}
           username: ${{ secrets.PROD_SSH_USER }}
           key: ${{ secrets.PROD_SSH_PRIVATE_KEY }}
+          # Only needed if PROD_SSH_PRIVATE_KEY is an encrypted (passphrase-
+          # protected) key. Leave the PROD_SSH_PASSPHRASE secret unset if you
+          # use a passphraseless key — an empty value is ignored.
+          passphrase: ${{ secrets.PROD_SSH_PASSPHRASE }}
           port: ${{ secrets.PROD_SSH_PORT || 22 }}
           timeout: 60s
           script: |

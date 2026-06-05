@@ -166,6 +166,10 @@ jobs:
           host: ${{ secrets.UAT_SSH_HOST }}
           username: ${{ secrets.UAT_SSH_USER }}
           key: ${{ secrets.UAT_SSH_PRIVATE_KEY }}
+          # Only needed if UAT_SSH_PRIVATE_KEY is an encrypted (passphrase-
+          # protected) key. Leave the UAT_SSH_PASSPHRASE secret unset if you
+          # use a passphraseless key — an empty value is ignored.
+          passphrase: ${{ secrets.UAT_SSH_PASSPHRASE }}
           port: ${{ secrets.UAT_SSH_PORT || 22 }}
           timeout: 60s
           script: |
