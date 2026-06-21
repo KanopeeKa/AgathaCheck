@@ -246,6 +246,7 @@ describe('Pets API', () => {
     it('creates a new pet with all fields', async () => {
       const returnedRow = makePetRow();
       const app = createApp(createMockPool(async (sql) => {
+        if (sql.includes('organization_users')) return { rows: [{ '?column?': 1 }] };
         if (sql.includes('INSERT INTO pets')) return { rows: [returnedRow] };
         return { rows: [] };
       }));
@@ -395,6 +396,147 @@ describe('Pets API', () => {
         .set('Authorization', `Bearer ${token}`);
       expect(res.statusCode).toBe(500);
       expect(res.body.error).toContain('Error deleting pet');
+    });
+  });
+
+  describe('Ownership / cross-user access', () => {
+    it('GET /api/pets/:id scopes the query to the authenticated user', async () => {
+      let capturedParams;
+      const app = createApp(createMockPool(async (sql, params) => {
+        if (sql.includes('SELECT * FROM pets WHERE id')) {
+          capturedParams = params;
+          return { rows: [makePetRow()] };
+        }
+        return { rows: [] };
+      }));
+      await request(app)
+        .get(`/api/pets/${petId}`)
+        .set('Authorization', `Bearer ${token}`);
+      expect(capturedParams[0]).toBe(petId);
+      expect(capturedParams[1]).toBe(userId);
+    });
+
+    it('GET /api/pets/:id returns 404 when the pet belongs to another user', async () => {
+      const app = createApp(createMockPool(async () => ({ rows: [] })));
+      const res = await request(app)
+        .get(`/api/pets/${petId}`)
+        .set('Authorization', `Bearer ${token}`);
+      expect(res.statusCode).toBe(404);
+      expect(res.body).toHaveProperty('error', 'Pet not found');
+    });
+
+    it('PUT /api/pets/:id scopes the update to the authenticated user', async () => {
+      let capturedParams;
+      const app = createApp(createMockPool(async (sql, params) => {
+        if (sql.includes('UPDATE pets SET')) {
+          capturedParams = params;
+          return { rows: [makePetRow()] };
+        }
+        return { rows: [] };
+      }));
+      await request(app)
+        .put(`/api/pets/${petId}`)
+        .set('Authorization', `Bearer ${token}`)
+        .send({ name: 'X', species: 'dog' });
+      expect(capturedParams).toContain(petId);
+      expect(capturedParams).toContain(userId);
+    });
+
+    it('PUT /api/pets/:id returns 404 when the pet belongs to another user', async () => {
+      const app = createApp(createMockPool(async () => ({ rows: [] })));
+      const res = await request(app)
+        .put(`/api/pets/${petId}`)
+        .set('Authorization', `Bearer ${token}`)
+        .send({ name: 'X', species: 'dog' });
+      expect(res.statusCode).toBe(404);
+      expect(res.body).toHaveProperty('error', 'Pet not found');
+    });
+
+    it('DELETE /api/pets/:id scopes the delete to the authenticated user', async () => {
+      let capturedParams;
+      const app = createApp(createMockPool(async (sql, params) => {
+        if (sql.includes('DELETE FROM pets')) {
+          capturedParams = params;
+          return { rows: [] };
+        }
+        return { rows: [] };
+      }));
+      await request(app)
+        .delete(`/api/pets/${petId}`)
+        .set('Authorization', `Bearer ${token}`);
+      expect(capturedParams[0]).toBe(petId);
+      expect(capturedParams[1]).toBe(userId);
+    });
+  });
+
+  describe('Organization membership enforcement', () => {
+    it('POST /api/pets returns 403 when user is not a member of organization_id', async () => {
+      const app = createApp(createMockPool(async (sql) => {
+        if (sql.includes('organization_users')) return { rows: [] };
+        if (sql.includes('INSERT INTO pets')) return { rows: [makePetRow()] };
+        return { rows: [] };
+      }));
+      const res = await request(app)
+        .post('/api/pets')
+        .set('Authorization', `Bearer ${token}`)
+        .send({ name: 'Fluffy', species: 'cat', organization_id: 'org-uuid-1' });
+      expect(res.statusCode).toBe(403);
+      expect(res.body).toHaveProperty('error', 'Not a member of this organization');
+    });
+
+    it('POST /api/pets succeeds when user is a member of organization_id', async () => {
+      const app = createApp(createMockPool(async (sql) => {
+        if (sql.includes('organization_users')) return { rows: [{ '?column?': 1 }] };
+        if (sql.includes('INSERT INTO pets')) return { rows: [makePetRow()] };
+        return { rows: [] };
+      }));
+      const res = await request(app)
+        .post('/api/pets')
+        .set('Authorization', `Bearer ${token}`)
+        .send({ name: 'Fluffy', species: 'cat', organization_id: 'org-uuid-1' });
+      expect(res.statusCode).toBe(201);
+    });
+
+    it('POST /api/pets skips the membership check when no organization_id is given', async () => {
+      let checkedMembership = false;
+      const app = createApp(createMockPool(async (sql) => {
+        if (sql.includes('organization_users')) { checkedMembership = true; return { rows: [] }; }
+        if (sql.includes('INSERT INTO pets')) return { rows: [makePetRow({ organization_id: null })] };
+        return { rows: [] };
+      }));
+      const res = await request(app)
+        .post('/api/pets')
+        .set('Authorization', `Bearer ${token}`)
+        .send({ name: 'Fluffy', species: 'cat' });
+      expect(res.statusCode).toBe(201);
+      expect(checkedMembership).toBe(false);
+    });
+
+    it('PUT /api/pets/:id returns 403 when user is not a member of organization_id', async () => {
+      const app = createApp(createMockPool(async (sql) => {
+        if (sql.includes('organization_users')) return { rows: [] };
+        if (sql.includes('UPDATE pets SET')) return { rows: [makePetRow()] };
+        return { rows: [] };
+      }));
+      const res = await request(app)
+        .put(`/api/pets/${petId}`)
+        .set('Authorization', `Bearer ${token}`)
+        .send({ name: 'X', species: 'dog', organization_id: 'org-uuid-1' });
+      expect(res.statusCode).toBe(403);
+      expect(res.body).toHaveProperty('error', 'Not a member of this organization');
+    });
+
+    it('PUT /api/pets/:id succeeds when user is a member of organization_id', async () => {
+      const app = createApp(createMockPool(async (sql) => {
+        if (sql.includes('organization_users')) return { rows: [{ '?column?': 1 }] };
+        if (sql.includes('UPDATE pets SET')) return { rows: [makePetRow()] };
+        return { rows: [] };
+      }));
+      const res = await request(app)
+        .put(`/api/pets/${petId}`)
+        .set('Authorization', `Bearer ${token}`)
+        .send({ name: 'X', species: 'dog', organization_id: 'org-uuid-1' });
+      expect(res.statusCode).toBe(200);
     });
   });
 

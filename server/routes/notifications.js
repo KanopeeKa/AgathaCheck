@@ -2,7 +2,8 @@ import express from 'express';
 import { v4 as uuidv4 } from 'uuid';
 import jwt from 'jsonwebtoken';
 
-const JWT_SECRET = process.env.JWT_SECRET || process.env.SESSION_SECRET || 'default_secret';
+import { JWT_SECRET } from '../config/jwtSecret.js';
+import { publicError } from '../config/security.js';
 
 function extractUserId(req) {
   const auth = req.headers['authorization'] || req.headers['Authorization'];
@@ -40,7 +41,7 @@ export default function notificationsRoutes(pool) {
       const result = await pool.query('SELECT * FROM notifications WHERE user_id = $1 ORDER BY created_at DESC', [userId]);
       res.json(result.rows.map(notificationToMap));
     } catch (err) {
-      res.status(500).json({ error: err.message });
+      res.status(500).json({ error: publicError(err) });
     }
   });
 
@@ -54,7 +55,7 @@ export default function notificationsRoutes(pool) {
       );
       res.json({ unread_count: parseInt(result.rows[0].count, 10) });
     } catch (err) {
-      res.status(500).json({ error: err.message });
+      res.status(500).json({ error: publicError(err) });
     }
   });
 
@@ -68,7 +69,7 @@ export default function notificationsRoutes(pool) {
       );
       res.json({ success: true });
     } catch (err) {
-      res.status(500).json({ error: err.message });
+      res.status(500).json({ error: publicError(err) });
     }
   });
 
@@ -82,7 +83,7 @@ export default function notificationsRoutes(pool) {
       );
       res.json({ success: true });
     } catch (err) {
-      res.status(500).json({ error: err.message });
+      res.status(500).json({ error: publicError(err) });
     }
   });
 
@@ -93,7 +94,7 @@ export default function notificationsRoutes(pool) {
       await pool.query('UPDATE notifications SET is_read = true, read = true WHERE user_id = $1', [userId]);
       res.json({ success: true });
     } catch (err) {
-      res.status(500).json({ error: err.message });
+      res.status(500).json({ error: publicError(err) });
     }
   });
 
@@ -104,7 +105,7 @@ export default function notificationsRoutes(pool) {
       await pool.query('UPDATE notifications SET is_read = true, read = true WHERE user_id = $1', [userId]);
       res.json({ success: true });
     } catch (err) {
-      res.status(500).json({ error: err.message });
+      res.status(500).json({ error: publicError(err) });
     }
   });
 
@@ -119,7 +120,7 @@ export default function notificationsRoutes(pool) {
       }
       res.json(prefs);
     } catch (err) {
-      res.status(500).json({ error: err.message });
+      res.status(500).json({ error: publicError(err) });
     }
   });
 
@@ -148,7 +149,7 @@ export default function notificationsRoutes(pool) {
       }
       res.json(data);
     } catch (err) {
-      res.status(500).json({ error: err.message });
+      res.status(500).json({ error: publicError(err) });
     }
   });
 

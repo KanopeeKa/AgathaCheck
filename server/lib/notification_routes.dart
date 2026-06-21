@@ -3,11 +3,9 @@ import 'package:shelf/shelf.dart';
 import 'package:shelf_router/shelf_router.dart';
 import 'package:postgres/postgres.dart';
 import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart';
-import 'dart:io';
+import 'jwt_secret.dart';
+import 'http_security.dart';
 
-final _jwtSecret = Platform.environment['JWT_SECRET'] ??
-    Platform.environment['SESSION_SECRET'] ??
-    'default_secret';
 const _jsonHeaders = {'Content-Type': 'application/json'};
 
 String? _extractUserId(Request request) {
@@ -15,7 +13,7 @@ String? _extractUserId(Request request) {
       request.headers['authorization'] ?? request.headers['Authorization'];
   if (auth == null || !auth.startsWith('Bearer ')) return null;
   try {
-    final jwt = JWT.verify(auth.substring(7), SecretKey(_jwtSecret));
+    final jwt = JWT.verify(auth.substring(7), SecretKey(jwtSecret));
     return (jwt.payload as Map)['id']?.toString();
   } catch (_) {
     return null;
@@ -38,7 +36,7 @@ Router notificationRoutes(Pool pool) {
       final notifications = results.map((row) => _notificationToMap(row)).toList();
       return Response.ok(jsonEncode(notifications), headers: _jsonHeaders);
     } catch (e) {
-      return Response.internalServerError(body: jsonEncode({'error': 'Error: $e'}), headers: _jsonHeaders);
+      return Response.internalServerError(body: jsonEncode({'error': publicError(e)}), headers: _jsonHeaders);
     }
   });
 
@@ -55,7 +53,7 @@ Router notificationRoutes(Pool pool) {
       final count = results.first.toColumnMap()['count'] ?? 0;
       return Response.ok(jsonEncode({'unread_count': count}), headers: _jsonHeaders);
     } catch (e) {
-      return Response.internalServerError(body: jsonEncode({'error': 'Error: $e'}), headers: _jsonHeaders);
+      return Response.internalServerError(body: jsonEncode({'error': publicError(e)}), headers: _jsonHeaders);
     }
   });
 
@@ -71,7 +69,7 @@ Router notificationRoutes(Pool pool) {
       );
       return Response.ok(jsonEncode({'success': true}), headers: _jsonHeaders);
     } catch (e) {
-      return Response.internalServerError(body: jsonEncode({'error': 'Error: $e'}), headers: _jsonHeaders);
+      return Response.internalServerError(body: jsonEncode({'error': publicError(e)}), headers: _jsonHeaders);
     }
   });
 
@@ -92,7 +90,7 @@ Router notificationRoutes(Pool pool) {
       }
       return Response.ok(jsonEncode(prefs), headers: _jsonHeaders);
     } catch (e) {
-      return Response.internalServerError(body: jsonEncode({'error': 'Error: $e'}), headers: _jsonHeaders);
+      return Response.internalServerError(body: jsonEncode({'error': publicError(e)}), headers: _jsonHeaders);
     }
   });
 
@@ -111,7 +109,7 @@ Router notificationRoutes(Pool pool) {
       }
       return Response.ok(jsonEncode(data), headers: _jsonHeaders);
     } catch (e) {
-      return Response.internalServerError(body: jsonEncode({'error': 'Error: $e'}), headers: _jsonHeaders);
+      return Response.internalServerError(body: jsonEncode({'error': publicError(e)}), headers: _jsonHeaders);
     }
   });
 
@@ -123,7 +121,7 @@ Router notificationRoutes(Pool pool) {
     try {
       return Response.ok(jsonEncode({'checked': true}), headers: _jsonHeaders);
     } catch (e) {
-      return Response.internalServerError(body: jsonEncode({'error': 'Error: $e'}), headers: _jsonHeaders);
+      return Response.internalServerError(body: jsonEncode({'error': publicError(e)}), headers: _jsonHeaders);
     }
   });
 
@@ -139,7 +137,7 @@ Router notificationRoutes(Pool pool) {
       );
       return Response.ok(jsonEncode({'success': true}), headers: _jsonHeaders);
     } catch (e) {
-      return Response.internalServerError(body: jsonEncode({'error': 'Error: $e'}), headers: _jsonHeaders);
+      return Response.internalServerError(body: jsonEncode({'error': publicError(e)}), headers: _jsonHeaders);
     }
   });
 

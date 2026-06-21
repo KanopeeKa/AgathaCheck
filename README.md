@@ -11,7 +11,7 @@ This codebase is now fully modularized for maintainability, testability, and sca
 - **UI is split into small, reusable widgets** (see `lib/features/.../widgets/`)
 - **Business logic is extracted into controllers/services** (see `lib/features/.../controllers/` and `lib/features/.../services/`)
 - **Screens are thin, composed of widgets and controllers** (see `lib/features/.../screens/`)
-- **Tests are provided for all major widgets, screens, and controllers** (see `test/features/.../widgets/`, `test/features/.../screens/`, etc.)
+- **Tests cover domain logic, data models, providers/controllers, and key widgets**, with integration flows for critical paths (see `test/features/.../`). Coverage varies by feature and is strongest at the data/domain and provider layers.
 
 ### Example Structure
 
@@ -77,7 +77,7 @@ test/
                 health_dashboard_screen_test.dart
 ```
 
-All new and refactored code is covered by widget and screen tests. Run `flutter test` to validate.
+Tests span domain, data, provider/controller, and widget layers, with integration flows for critical paths; coverage depth varies by feature. Run `flutter test` to validate.
 
 
 ## Architecture

@@ -4,12 +4,10 @@ import 'package:shelf_router/shelf_router.dart';
 import 'package:postgres/postgres.dart';
 import 'package:uuid/uuid.dart';
 import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart';
-import 'dart:io';
+import 'jwt_secret.dart';
+import 'http_security.dart';
 
 final _uuid = Uuid();
-final _jwtSecret = Platform.environment['JWT_SECRET'] ??
-    Platform.environment['SESSION_SECRET'] ??
-    'default_secret';
 
 const _json = {'Content-Type': 'application/json'};
 
@@ -18,7 +16,7 @@ String? _extractUserId(Request request) {
       request.headers['authorization'] ?? request.headers['Authorization'];
   if (auth == null || !auth.startsWith('Bearer ')) return null;
   try {
-    final jwt = JWT.verify(auth.substring(7), SecretKey(_jwtSecret));
+    final jwt = JWT.verify(auth.substring(7), SecretKey(jwtSecret));
     return (jwt.payload as Map)['id']?.toString();
   } catch (_) {
     return null;
@@ -63,7 +61,7 @@ Router vetRoutes(Pool pool) {
       return Response.ok(jsonEncode(list), headers: _json);
     } catch (e) {
       return Response.internalServerError(
-          body: jsonEncode({'error': e.toString()}));
+          body: jsonEncode({'error': publicError(e)}));
     }
   });
 
@@ -85,7 +83,7 @@ Router vetRoutes(Pool pool) {
       return Response.ok(jsonEncode(_vetRowToMap(results.first)), headers: _json);
     } catch (e) {
       return Response.internalServerError(
-          body: jsonEncode({'error': e.toString()}));
+          body: jsonEncode({'error': publicError(e)}));
     }
   });
 
@@ -116,7 +114,7 @@ Router vetRoutes(Pool pool) {
       return Response(201, body: jsonEncode(_vetRowToMap(results.first)), headers: _json);
     } catch (e) {
       return Response.internalServerError(
-          body: jsonEncode({'error': e.toString()}));
+          body: jsonEncode({'error': publicError(e)}));
     }
   });
 
@@ -149,7 +147,7 @@ Router vetRoutes(Pool pool) {
       return Response.ok(jsonEncode(_vetRowToMap(results.first)), headers: _json);
     } catch (e) {
       return Response.internalServerError(
-          body: jsonEncode({'error': e.toString()}));
+          body: jsonEncode({'error': publicError(e)}));
     }
   });
 
@@ -172,7 +170,7 @@ Router vetRoutes(Pool pool) {
           jsonEncode({'message': 'Vet deleted'}), headers: _json);
     } catch (e) {
       return Response.internalServerError(
-          body: jsonEncode({'error': e.toString()}));
+          body: jsonEncode({'error': publicError(e)}));
     }
   });
 

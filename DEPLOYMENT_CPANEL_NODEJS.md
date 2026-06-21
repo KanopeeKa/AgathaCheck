@@ -8,11 +8,11 @@
 - Application URL: `uat.agathatrack.com:backend`
 - Application startup file: `server`
 - Environment variables configured:
-  - `PGDATABASE`: bixo5840_agathatrack_uat
+  - `PGDATABASE`: your_db_name
   - `PGHOST`: localhost
-  - `PGPASSWORD`: btTdQ@g0tTf#C$jr7r@
+  - `PGPASSWORD`: your_db_password
   - `PGPORT`: 5432
-  - `PGUSER`: bixo5840_pg_uat
+  - `PGUSER`: your_db_user
   - `PORT`: 3000
 
 ## Additional Requirements
@@ -40,7 +40,7 @@ For a brand-new empty database, run the fresh-install command from a machine tha
 
 ```bash
 cd server
-DATABASE_URL="postgresql://bixo5840_pg_uat:btTdQ@g0tTf%23C%24jr7r%40@localhost:5432/bixo5840_agathatrack_uat" \
+DATABASE_URL="postgresql://your_db_user:your_db_password@localhost:5432/your_db_name" \
 MIGRATE_CONFIRM=DROP_ALL \
 dart run bin/migrate.dart fresh
 ```
@@ -58,18 +58,17 @@ If Dart is not available on the cPanel host, run the migration from your dev mac
 cPanel should read environment variables, but create `.env` in your application root as backup:
 
 ```
-PGUSER=bixo5840_pg_uat
-PGPASSWORD=btTdQ@g0tTf#C$jr7r@
+PGUSER=your_db_user
+PGPASSWORD=your_db_password
 PGHOST=localhost
 PGPORT=5432
-PGDATABASE=bixo5840_agathatrack_uat
+PGDATABASE=your_db_name
 PORT=3000
 NODE_ENV=production
-SESSION_SECRET=change-me-to-a-long-random-string
 JWT_SECRET=change-me-to-a-long-random-string
 ```
 
-> The Node.js backend resolves the JWT signing key as `JWT_SECRET || SESSION_SECRET || 'default_secret'`. Setting at least one of `JWT_SECRET` or `SESSION_SECRET` to a strong random value is mandatory for production.
+> The Node.js backend resolves the JWT signing key as `JWT_SECRET || SESSION_SECRET`. When `NODE_ENV=production`, the server **refuses to start** if neither is set (no insecure built-in default) — so `JWT_SECRET` must be configured here in the cPanel Node.js app environment. Generate a strong value with `openssl rand -hex 32`. Outside production a dev/test fallback is used so local runs and CI work without extra setup.
 
 ### 4. **Verify Application Startup File**
 Your application startup file is named `server`, which cPanel will run as:
@@ -121,7 +120,7 @@ Expected response: `{"status":"OK"}`
 2. Verify `.env` file exists and has correct credentials
 3. Verify PostgreSQL connection:
    ```bash
-   psql -U bixo5840_pg_uat -h localhost -d bixo5840_agathatrack_uat -c "SELECT 1;"
+   psql -U your_db_user -h localhost -d your_db_name -c "SELECT 1;"
    ```
 
 ### Port conflicts?
@@ -131,7 +130,7 @@ Expected response: `{"status":"OK"}`
 ### Database connection fails?
 - Verify PostgreSQL is running
 - Check credentials in `.env`
-- Test manually: `psql -U bixo5840_pg_uat -h localhost -d bixo5840_agathatrack_uat`
+- Test manually: `psql -U your_db_user -h localhost -d your_db_name`
 
 ## API Endpoints
 

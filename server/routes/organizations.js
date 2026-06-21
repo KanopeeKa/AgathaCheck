@@ -2,7 +2,8 @@ import express from 'express';
 import { v4 as uuidv4 } from 'uuid';
 import jwt from 'jsonwebtoken';
 
-const JWT_SECRET = process.env.JWT_SECRET || process.env.SESSION_SECRET || 'default_secret';
+import { JWT_SECRET } from '../config/jwtSecret.js';
+import { publicError } from '../config/security.js';
 
 function extractUserId(req) {
   const auth = req.headers['authorization'] || req.headers['Authorization'];
@@ -56,7 +57,7 @@ export default function organizationsRoutes(pool) {
         org_type: r.org_type,
       })));
     } catch (err) {
-      res.status(500).json({ error: err.message });
+      res.status(500).json({ error: publicError(err) });
     }
   });
 
@@ -76,7 +77,7 @@ export default function organizationsRoutes(pool) {
         role: r.role,
       });
     } catch (err) {
-      res.status(500).json({ error: err.message });
+      res.status(500).json({ error: publicError(err) });
     }
   });
 
@@ -90,7 +91,7 @@ export default function organizationsRoutes(pool) {
       );
       res.json({ success: true });
     } catch (err) {
-      res.status(500).json({ error: err.message });
+      res.status(500).json({ error: publicError(err) });
     }
   });
 
@@ -115,7 +116,7 @@ export default function organizationsRoutes(pool) {
       );
       res.json(result.rows.map(orgRowToMap));
     } catch (err) {
-      res.status(500).json({ error: err.message });
+      res.status(500).json({ error: publicError(err) });
     }
   });
 
@@ -135,7 +136,7 @@ export default function organizationsRoutes(pool) {
       if (result.rows.length === 0) return res.status(404).json({ error: 'Organization not found' });
       res.json(orgRowToMap(result.rows[0]));
     } catch (err) {
-      res.status(500).json({ error: err.message });
+      res.status(500).json({ error: publicError(err) });
     }
   });
 
@@ -162,7 +163,7 @@ export default function organizationsRoutes(pool) {
       );
       res.status(201).json(orgRowToMap(result.rows[0]));
     } catch (err) {
-      res.status(500).json({ error: err.message });
+      res.status(500).json({ error: publicError(err) });
     }
   });
 
@@ -187,7 +188,7 @@ export default function organizationsRoutes(pool) {
       if (result.rows.length === 0) return res.status(404).json({ error: 'Organization not found' });
       res.json(orgRowToMap(result.rows[0]));
     } catch (err) {
-      res.status(500).json({ error: err.message });
+      res.status(500).json({ error: publicError(err) });
     }
   });
 
@@ -199,7 +200,7 @@ export default function organizationsRoutes(pool) {
       if (result.rows.length === 0) return res.status(404).json({ error: 'Organization not found' });
       res.json({ deleted: true });
     } catch (err) {
-      res.status(500).json({ error: err.message });
+      res.status(500).json({ error: publicError(err) });
     }
   });
 
@@ -230,7 +231,7 @@ export default function organizationsRoutes(pool) {
         created_at: r.created_at,
       })));
     } catch (err) {
-      res.status(500).json({ error: err.message });
+      res.status(500).json({ error: publicError(err) });
     }
   });
 
@@ -255,7 +256,7 @@ export default function organizationsRoutes(pool) {
       );
       res.json({ success: true, user_id: invitedUserId });
     } catch (err) {
-      res.status(500).json({ error: err.message });
+      res.status(500).json({ error: publicError(err) });
     }
   });
 
@@ -269,7 +270,7 @@ export default function organizationsRoutes(pool) {
       if (result.rows.length === 0) return res.status(404).json({ error: 'Member not found' });
       res.json(result.rows[0]);
     } catch (err) {
-      res.status(500).json({ error: err.message });
+      res.status(500).json({ error: publicError(err) });
     }
   });
 
@@ -280,7 +281,7 @@ export default function organizationsRoutes(pool) {
       await pool.query('DELETE FROM organization_users WHERE organization_id = $1 AND user_id = $2', [req.params.orgId, userId]);
       res.json({ message: 'Left organization' });
     } catch (err) {
-      res.status(500).json({ error: err.message });
+      res.status(500).json({ error: publicError(err) });
     }
   });
 
@@ -289,7 +290,7 @@ export default function organizationsRoutes(pool) {
       await pool.query('DELETE FROM organization_users WHERE organization_id = $1 AND user_id = $2', [req.params.orgId, req.params.userId]);
       res.json({ message: 'Member removed' });
     } catch (err) {
-      res.status(500).json({ error: err.message });
+      res.status(500).json({ error: publicError(err) });
     }
   });
 

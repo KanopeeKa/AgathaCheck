@@ -3,7 +3,8 @@ import bcrypt from 'bcrypt';
 import { v4 as uuidv4 } from 'uuid';
 import jwt from 'jsonwebtoken';
 
-const JWT_SECRET = process.env.JWT_SECRET || process.env.SESSION_SECRET || 'default_secret';
+import { JWT_SECRET } from '../config/jwtSecret.js';
+import { errorDetails } from '../config/security.js';
 
 function signAccessToken(id, email) {
   return jwt.sign({ id, email }, JWT_SECRET, { expiresIn: '30m' });
@@ -69,7 +70,7 @@ export default function authRoutes(pool, comparePassword) {
       res.status(201).json({ user, access_token: accessToken, refresh_token: refreshToken });
     } catch (err) {
       console.error('Signup error:', err);
-      res.status(500).json({ error: 'Signup failed', details: err.message });
+      res.status(500).json({ error: 'Signup failed', ...errorDetails(err) });
     }
   });
 
@@ -94,7 +95,7 @@ export default function authRoutes(pool, comparePassword) {
       res.status(200).json({ user, access_token: accessToken, refresh_token: refreshToken });
     } catch (err) {
       console.error('Login error:', err);
-      res.status(500).json({ error: 'Login failed', details: err.message });
+      res.status(500).json({ error: 'Login failed', ...errorDetails(err) });
     }
   });
 
@@ -108,7 +109,7 @@ export default function authRoutes(pool, comparePassword) {
       const accessToken = signAccessToken(payload.id, payload.email);
       res.status(200).json({ access_token: accessToken });
     } catch (err) {
-      return res.status(401).json({ error: 'Invalid or expired refresh token', details: err.message });
+      return res.status(401).json({ error: 'Invalid or expired refresh token', ...errorDetails(err) });
     }
   });
 
@@ -130,7 +131,7 @@ export default function authRoutes(pool, comparePassword) {
       const user = userRowToMap(userResult.rows[0]);
       res.status(200).json(user);
     } catch (err) {
-      return res.status(401).json({ error: 'Invalid or expired token', details: err.message });
+      return res.status(401).json({ error: 'Invalid or expired token', ...errorDetails(err) });
     }
   });
 
@@ -168,7 +169,7 @@ export default function authRoutes(pool, comparePassword) {
       }
       res.status(200).json(userRowToMap(result.rows[0]));
     } catch (err) {
-      return res.status(500).json({ error: 'Update failed', details: err.message });
+      return res.status(500).json({ error: 'Update failed', ...errorDetails(err) });
     }
   });
 
@@ -189,7 +190,7 @@ export default function authRoutes(pool, comparePassword) {
       }
       res.status(200).json(userRowToMap(result.rows[0]));
     } catch (err) {
-      return res.status(500).json({ error: 'Photo upload failed', details: err.message });
+      return res.status(500).json({ error: 'Photo upload failed', ...errorDetails(err) });
     }
   });
 
@@ -216,7 +217,7 @@ export default function authRoutes(pool, comparePassword) {
       await pool.query('UPDATE users SET password_hash = $1, updated_at = NOW() WHERE id = $2', [newHash, payload.id]);
       res.status(200).json({ message: 'Password changed successfully' });
     } catch (err) {
-      return res.status(500).json({ error: 'Password change failed', details: err.message });
+      return res.status(500).json({ error: 'Password change failed', ...errorDetails(err) });
     }
   });
 
@@ -240,7 +241,7 @@ export default function authRoutes(pool, comparePassword) {
       console.log(`Password reset code for ${email}: ${code}`);
       res.status(200).json({ message: 'If that email exists, a reset code has been sent.', code });
     } catch (err) {
-      return res.status(500).json({ error: 'Request failed', details: err.message });
+      return res.status(500).json({ error: 'Request failed', ...errorDetails(err) });
     }
   });
 
@@ -266,7 +267,7 @@ export default function authRoutes(pool, comparePassword) {
       await pool.query('UPDATE password_reset_tokens SET used = true WHERE id = $1', [tokenId]);
       res.status(200).json({ message: 'Password has been reset successfully' });
     } catch (err) {
-      return res.status(500).json({ error: 'Reset failed', details: err.message });
+      return res.status(500).json({ error: 'Reset failed', ...errorDetails(err) });
     }
   });
 
@@ -292,7 +293,7 @@ export default function authRoutes(pool, comparePassword) {
       await pool.query('DELETE FROM users WHERE id = $1', [payload.id]);
       res.status(200).json({ message: 'Account deleted successfully' });
     } catch (err) {
-      return res.status(500).json({ error: 'Account deletion failed', details: err.message });
+      return res.status(500).json({ error: 'Account deletion failed', ...errorDetails(err) });
     }
   });
 
@@ -317,7 +318,7 @@ export default function authRoutes(pool, comparePassword) {
         exported_at: new Date().toISOString(),
       });
     } catch (err) {
-      return res.status(500).json({ error: 'Data export failed', details: err.message });
+      return res.status(500).json({ error: 'Data export failed', ...errorDetails(err) });
     }
   });
 

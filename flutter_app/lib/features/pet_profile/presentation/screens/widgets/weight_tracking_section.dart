@@ -5,6 +5,7 @@ import '../../../../weight_tracking/presentation/providers/weight_providers.dart
 import '../../controllers/weight_tracking_controller.dart';
 import '../../../../../l10n/app_localizations.dart';
 import 'package:intl/intl.dart';
+import 'weight_chart.dart';
 
 class WeightTrackingSection extends ConsumerWidget {
   const WeightTrackingSection({required this.petId, super.key});
@@ -94,11 +95,10 @@ class WeightTrackingSection extends ConsumerWidget {
                   children: [
                     if (entries.length >= 2)
                       Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        padding: const EdgeInsets.fromLTRB(16, 8, 24, 8),
                         child: SizedBox(
                           height: 200,
-                          // TODO: Extract and use WeightChart widget
-                          // child: _WeightChart(entries: entries, unit: unit),
+                          child: WeightChart(entries: entries, unit: unit),
                         ),
                       ),
                     if (entries.length >= 2) const SizedBox(height: 12),

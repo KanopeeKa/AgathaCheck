@@ -2,7 +2,8 @@ import express from 'express';
 import { v4 as uuidv4 } from 'uuid';
 import jwt from 'jsonwebtoken';
 
-const JWT_SECRET = process.env.JWT_SECRET || process.env.SESSION_SECRET || 'default_secret';
+import { JWT_SECRET } from '../config/jwtSecret.js';
+import { publicError } from '../config/security.js';
 
 function extractUserId(req) {
   const auth = req.headers['authorization'] || req.headers['Authorization'];
@@ -41,7 +42,7 @@ export default function vetsRoutes(pool) {
       const result = await pool.query('SELECT * FROM vets WHERE user_id = $1 ORDER BY name', [userId]);
       res.json(result.rows.map(vetRowToMap));
     } catch (err) {
-      res.status(500).json({ error: err.message });
+      res.status(500).json({ error: publicError(err) });
     }
   });
 
@@ -53,7 +54,7 @@ export default function vetsRoutes(pool) {
       if (result.rows.length === 0) return res.status(404).json({ error: 'Vet not found' });
       res.json(vetRowToMap(result.rows[0]));
     } catch (err) {
-      res.status(500).json({ error: err.message });
+      res.status(500).json({ error: publicError(err) });
     }
   });
 
@@ -69,7 +70,7 @@ export default function vetsRoutes(pool) {
       );
       res.status(201).json(vetRowToMap(result.rows[0]));
     } catch (err) {
-      res.status(500).json({ error: err.message });
+      res.status(500).json({ error: publicError(err) });
     }
   });
 
@@ -85,7 +86,7 @@ export default function vetsRoutes(pool) {
       if (result.rows.length === 0) return res.status(404).json({ error: 'Vet not found' });
       res.json(vetRowToMap(result.rows[0]));
     } catch (err) {
-      res.status(500).json({ error: err.message });
+      res.status(500).json({ error: publicError(err) });
     }
   });
 
@@ -97,7 +98,7 @@ export default function vetsRoutes(pool) {
       if (result.rows.length === 0) return res.status(404).json({ error: 'Vet not found' });
       res.json({ message: 'Vet deleted' });
     } catch (err) {
-      res.status(500).json({ error: err.message });
+      res.status(500).json({ error: publicError(err) });
     }
   });
 

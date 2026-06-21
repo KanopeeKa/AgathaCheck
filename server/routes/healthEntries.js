@@ -2,7 +2,8 @@ import express from 'express';
 import { v4 as uuidv4 } from 'uuid';
 import jwt from 'jsonwebtoken';
 
-const JWT_SECRET = process.env.JWT_SECRET || process.env.SESSION_SECRET || 'default_secret';
+import { JWT_SECRET } from '../config/jwtSecret.js';
+import { publicError } from '../config/security.js';
 
 function extractUserId(req) {
   const auth = req.headers['authorization'] || req.headers['Authorization'];
@@ -110,7 +111,7 @@ export default function healthEntriesRoutes(pool) {
       }
       res.json(result.rows.map(healthEntryToMap));
     } catch (err) {
-      res.status(500).json({ error: err.message });
+      res.status(500).json({ error: publicError(err) });
     }
   });
 
@@ -129,7 +130,7 @@ export default function healthEntriesRoutes(pool) {
       res.setHeader('Content-Type', 'text/csv');
       res.send(csv);
     } catch (err) {
-      res.status(500).json({ error: err.message });
+      res.status(500).json({ error: publicError(err) });
     }
   });
 
@@ -144,7 +145,7 @@ export default function healthEntriesRoutes(pool) {
       if (result.rows.length === 0) return res.status(404).json({ error: 'Entry not found' });
       res.json(healthEntryToMap(result.rows[0]));
     } catch (err) {
-      res.status(500).json({ error: err.message });
+      res.status(500).json({ error: publicError(err) });
     }
   });
 
@@ -180,7 +181,7 @@ export default function healthEntriesRoutes(pool) {
       entry.pet_name = null;
       res.status(201).json(healthEntryToMap(entry));
     } catch (err) {
-      res.status(500).json({ error: `Error creating entry: ${err.message}` });
+      res.status(500).json({ error: publicError(err, 'Error creating entry', `Error creating entry: ${err.message}`) });
     }
   });
 
@@ -217,7 +218,7 @@ export default function healthEntriesRoutes(pool) {
       entry.pet_name = null;
       res.json(healthEntryToMap(entry));
     } catch (err) {
-      res.status(500).json({ error: `Error updating entry: ${err.message}` });
+      res.status(500).json({ error: publicError(err, 'Error updating entry', `Error updating entry: ${err.message}`) });
     }
   });
 
@@ -228,7 +229,7 @@ export default function healthEntriesRoutes(pool) {
       await pool.query('DELETE FROM health_entries WHERE id = $1 AND user_id = $2', [req.params.id, userId]);
       res.json({ deleted: true });
     } catch (err) {
-      res.status(500).json({ error: err.message });
+      res.status(500).json({ error: publicError(err) });
     }
   });
 
@@ -257,7 +258,7 @@ export default function healthEntriesRoutes(pool) {
       entry.pet_name = null;
       res.json(healthEntryToMap(entry));
     } catch (err) {
-      res.status(500).json({ error: err.message });
+      res.status(500).json({ error: publicError(err) });
     }
   });
 
@@ -275,7 +276,7 @@ export default function healthEntriesRoutes(pool) {
       entry.pet_name = null;
       res.json(healthEntryToMap(entry));
     } catch (err) {
-      res.status(500).json({ error: err.message });
+      res.status(500).json({ error: publicError(err) });
     }
   });
 
@@ -295,7 +296,7 @@ export default function healthEntriesRoutes(pool) {
         changed_at: r.changed_at,
       })));
     } catch (err) {
-      res.status(500).json({ error: err.message });
+      res.status(500).json({ error: publicError(err) });
     }
   });
 
@@ -314,7 +315,7 @@ export default function healthEntriesRoutes(pool) {
         created_at: r.created_at,
       })));
     } catch (err) {
-      res.status(500).json({ error: err.message });
+      res.status(500).json({ error: publicError(err) });
     }
   });
 
@@ -330,7 +331,7 @@ export default function healthEntriesRoutes(pool) {
       );
       res.status(201).json(result.rows[0]);
     } catch (err) {
-      res.status(500).json({ error: err.message });
+      res.status(500).json({ error: publicError(err) });
     }
   });
 
@@ -344,7 +345,7 @@ export default function healthEntriesRoutes(pool) {
       );
       res.json({ deleted: true });
     } catch (err) {
-      res.status(500).json({ error: err.message });
+      res.status(500).json({ error: publicError(err) });
     }
   });
 

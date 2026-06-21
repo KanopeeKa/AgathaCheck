@@ -4,12 +4,10 @@ import 'package:shelf_router/shelf_router.dart';
 import 'package:postgres/postgres.dart';
 import 'package:uuid/uuid.dart';
 import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart';
-import 'dart:io';
+import 'jwt_secret.dart';
+import 'http_security.dart';
 
 final _uuid = Uuid();
-final _jwtSecret = Platform.environment['JWT_SECRET'] ??
-    Platform.environment['SESSION_SECRET'] ??
-    'default_secret';
 const _jsonHeaders = {'Content-Type': 'application/json'};
 
 String? _extractUserId(Request request) {
@@ -17,7 +15,7 @@ String? _extractUserId(Request request) {
       request.headers['authorization'] ?? request.headers['Authorization'];
   if (auth == null || !auth.startsWith('Bearer ')) return null;
   try {
-    final jwt = JWT.verify(auth.substring(7), SecretKey(_jwtSecret));
+    final jwt = JWT.verify(auth.substring(7), SecretKey(jwtSecret));
     return (jwt.payload as Map)['id']?.toString();
   } catch (_) {
     return null;
@@ -47,7 +45,7 @@ Router organizationRoutes(Pool pool) {
       final orgs = results.map((row) => _orgToMap(row)).toList();
       return Response.ok(jsonEncode(orgs), headers: _jsonHeaders);
     } catch (e) {
-      return Response.internalServerError(body: jsonEncode({'error': 'Error fetching organizations: $e'}), headers: _jsonHeaders);
+      return Response.internalServerError(body: jsonEncode({'error': publicError(e, 'Error fetching organizations')}), headers: _jsonHeaders);
     }
   });
 
@@ -79,7 +77,7 @@ Router organizationRoutes(Pool pool) {
       }).toList();
       return Response.ok(jsonEncode(invites), headers: _jsonHeaders);
     } catch (e) {
-      return Response.internalServerError(body: jsonEncode({'error': 'Error: $e'}), headers: _jsonHeaders);
+      return Response.internalServerError(body: jsonEncode({'error': publicError(e)}), headers: _jsonHeaders);
     }
   });
 
@@ -103,7 +101,7 @@ Router organizationRoutes(Pool pool) {
         'role': c['role'],
       }), headers: _jsonHeaders);
     } catch (e) {
-      return Response.internalServerError(body: jsonEncode({'error': 'Error: $e'}), headers: _jsonHeaders);
+      return Response.internalServerError(body: jsonEncode({'error': publicError(e)}), headers: _jsonHeaders);
     }
   });
 
@@ -119,7 +117,7 @@ Router organizationRoutes(Pool pool) {
       );
       return Response.ok(jsonEncode({'success': true}), headers: _jsonHeaders);
     } catch (e) {
-      return Response.internalServerError(body: jsonEncode({'error': 'Error: $e'}), headers: _jsonHeaders);
+      return Response.internalServerError(body: jsonEncode({'error': publicError(e)}), headers: _jsonHeaders);
     }
   });
 
@@ -145,7 +143,7 @@ Router organizationRoutes(Pool pool) {
       }
       return Response.ok(jsonEncode(_orgToMap(results.first)), headers: _jsonHeaders);
     } catch (e) {
-      return Response.internalServerError(body: jsonEncode({'error': 'Error: $e'}), headers: _jsonHeaders);
+      return Response.internalServerError(body: jsonEncode({'error': publicError(e)}), headers: _jsonHeaders);
     }
   });
 
@@ -185,7 +183,7 @@ Router organizationRoutes(Pool pool) {
       );
       return Response(201, body: jsonEncode(_orgToMap(results.first)), headers: _jsonHeaders);
     } catch (e) {
-      return Response.internalServerError(body: jsonEncode({'error': 'Error creating org: $e'}), headers: _jsonHeaders);
+      return Response.internalServerError(body: jsonEncode({'error': publicError(e, 'Error creating org')}), headers: _jsonHeaders);
     }
   });
 
@@ -226,7 +224,7 @@ Router organizationRoutes(Pool pool) {
       }
       return Response.ok(jsonEncode(_orgToMap(results.first)), headers: _jsonHeaders);
     } catch (e) {
-      return Response.internalServerError(body: jsonEncode({'error': 'Error: $e'}), headers: _jsonHeaders);
+      return Response.internalServerError(body: jsonEncode({'error': publicError(e)}), headers: _jsonHeaders);
     }
   });
 
@@ -242,7 +240,7 @@ Router organizationRoutes(Pool pool) {
       );
       return Response.ok(jsonEncode({'deleted': true}), headers: _jsonHeaders);
     } catch (e) {
-      return Response.internalServerError(body: jsonEncode({'error': 'Error: $e'}), headers: _jsonHeaders);
+      return Response.internalServerError(body: jsonEncode({'error': publicError(e)}), headers: _jsonHeaders);
     }
   });
 
@@ -277,7 +275,7 @@ Router organizationRoutes(Pool pool) {
       }).toList();
       return Response.ok(jsonEncode(members), headers: _jsonHeaders);
     } catch (e) {
-      return Response.internalServerError(body: jsonEncode({'error': 'Error: $e'}), headers: _jsonHeaders);
+      return Response.internalServerError(body: jsonEncode({'error': publicError(e)}), headers: _jsonHeaders);
     }
   });
 
@@ -308,7 +306,7 @@ Router organizationRoutes(Pool pool) {
       );
       return Response.ok(jsonEncode({'success': true, 'user_id': inviteeId}), headers: _jsonHeaders);
     } catch (e) {
-      return Response.internalServerError(body: jsonEncode({'error': 'Error: $e'}), headers: _jsonHeaders);
+      return Response.internalServerError(body: jsonEncode({'error': publicError(e)}), headers: _jsonHeaders);
     }
   });
 
@@ -334,7 +332,7 @@ Router organizationRoutes(Pool pool) {
       }).toList();
       return Response.ok(jsonEncode(pets), headers: _jsonHeaders);
     } catch (e) {
-      return Response.internalServerError(body: jsonEncode({'error': 'Error: $e'}), headers: _jsonHeaders);
+      return Response.internalServerError(body: jsonEncode({'error': publicError(e)}), headers: _jsonHeaders);
     }
   });
 
@@ -354,7 +352,7 @@ Router organizationRoutes(Pool pool) {
       }).toList();
       return Response.ok(jsonEncode(archived), headers: _jsonHeaders);
     } catch (e) {
-      return Response.internalServerError(body: jsonEncode({'error': 'Error: $e'}), headers: _jsonHeaders);
+      return Response.internalServerError(body: jsonEncode({'error': publicError(e)}), headers: _jsonHeaders);
     }
   });
 

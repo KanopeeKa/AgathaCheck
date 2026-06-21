@@ -2,7 +2,8 @@ import express from 'express';
 import { v4 as uuidv4 } from 'uuid';
 import jwt from 'jsonwebtoken';
 
-const JWT_SECRET = process.env.JWT_SECRET || process.env.SESSION_SECRET || 'default_secret';
+import { JWT_SECRET } from '../config/jwtSecret.js';
+import { publicError } from '../config/security.js';
 
 function extractUserId(req) {
   const auth = req.headers['authorization'] || req.headers['Authorization'];
@@ -25,7 +26,7 @@ export default function sharingRoutes(pool) {
       const code = uuidv4().substring(0, 8);
       res.status(201).json({ code, pet_id });
     } catch (err) {
-      res.status(500).json({ error: err.message });
+      res.status(500).json({ error: publicError(err) });
     }
   });
 
@@ -39,7 +40,7 @@ export default function sharingRoutes(pool) {
       );
       res.json(result.rows);
     } catch (err) {
-      res.status(500).json({ error: err.message });
+      res.status(500).json({ error: publicError(err) });
     }
   });
 
@@ -53,7 +54,7 @@ export default function sharingRoutes(pool) {
       );
       res.json(result.rows);
     } catch (err) {
-      res.status(500).json({ error: err.message });
+      res.status(500).json({ error: publicError(err) });
     }
   });
 
@@ -68,7 +69,7 @@ export default function sharingRoutes(pool) {
       );
       res.json({ message: 'Share accepted' });
     } catch (err) {
-      res.status(500).json({ error: err.message });
+      res.status(500).json({ error: publicError(err) });
     }
   });
 
@@ -82,7 +83,7 @@ export default function sharingRoutes(pool) {
       );
       res.json({ message: 'Share declined' });
     } catch (err) {
-      res.status(500).json({ error: err.message });
+      res.status(500).json({ error: publicError(err) });
     }
   });
 
@@ -97,7 +98,7 @@ export default function sharingRoutes(pool) {
       );
       res.json({ message: hidden ? 'Pet hidden' : 'Pet unhidden' });
     } catch (err) {
-      res.status(500).json({ error: err.message });
+      res.status(500).json({ error: publicError(err) });
     }
   });
 

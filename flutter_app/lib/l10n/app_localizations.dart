@@ -1016,6 +1016,12 @@ abstract class AppLocalizations {
   /// **'Other'**
   String get procedure;
 
+  /// No description provided for @familyEvent.
+  ///
+  /// In en, this message translates to:
+  /// **'Family Event'**
+  String get familyEvent;
+
   /// No description provided for @dosage.
   ///
   /// In en, this message translates to:
@@ -1063,6 +1069,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Custom'**
   String get custom;
+
+  /// No description provided for @periodDays.
+  ///
+  /// In en, this message translates to:
+  /// **'Days'**
+  String get periodDays;
+
+  /// No description provided for @periodWeeks.
+  ///
+  /// In en, this message translates to:
+  /// **'Weeks'**
+  String get periodWeeks;
+
+  /// No description provided for @periodMonths.
+  ///
+  /// In en, this message translates to:
+  /// **'Months'**
+  String get periodMonths;
+
+  /// No description provided for @periodYears.
+  ///
+  /// In en, this message translates to:
+  /// **'Years'**
+  String get periodYears;
 
   /// No description provided for @every.
   ///
@@ -4447,6 +4477,264 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Error'**
   String get error;
+
+  /// No description provided for @maxPhotosReached.
+  ///
+  /// In en, this message translates to:
+  /// **'Maximum 4 photos per event'**
+  String get maxPhotosReached;
+
+  /// No description provided for @failedToLoadPhotos.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load photos: {error}'**
+  String failedToLoadPhotos(String error);
+
+  /// No description provided for @failedToAddPhoto.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to add photo: {error}'**
+  String failedToAddPhoto(String error);
+
+  /// No description provided for @failedToUploadPhotoNamed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to upload photo \"{name}\": {error}'**
+  String failedToUploadPhotoNamed(String name, String error);
+
+  /// No description provided for @deletePhotoTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Photo'**
+  String get deletePhotoTitle;
+
+  /// No description provided for @deletePhotoConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove this photo? This cannot be undone.'**
+  String get deletePhotoConfirm;
+
+  /// No description provided for @failedToDeletePhoto.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to delete photo: {error}'**
+  String failedToDeletePhoto(String error);
+
+  /// No description provided for @failedToLoadEntry.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load entry: {error}'**
+  String failedToLoadEntry(String error);
+
+  /// No description provided for @createHealthIssuesHint.
+  ///
+  /// In en, this message translates to:
+  /// **'You can create health issues from the pet\'s profile page'**
+  String get createHealthIssuesHint;
+
+  /// No description provided for @noPetsFoundAddFirst.
+  ///
+  /// In en, this message translates to:
+  /// **'No pets found. Please add a pet first.'**
+  String get noPetsFoundAddFirst;
+
+  /// No description provided for @entryNameHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g., Heartgard, Annual Checkup'**
+  String get entryNameHint;
+
+  /// No description provided for @dosageHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g., 1 tablet, 0.5ml'**
+  String get dosageHint;
+
+  /// No description provided for @period.
+  ///
+  /// In en, this message translates to:
+  /// **'Period'**
+  String get period;
+
+  /// No description provided for @repeatEndsBy.
+  ///
+  /// In en, this message translates to:
+  /// **'Repeat ends by'**
+  String get repeatEndsBy;
+
+  /// No description provided for @never.
+  ///
+  /// In en, this message translates to:
+  /// **'Never'**
+  String get never;
+
+  /// No description provided for @pickADate.
+  ///
+  /// In en, this message translates to:
+  /// **'Pick a date'**
+  String get pickADate;
+
+  /// No description provided for @notesHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Additional information...'**
+  String get notesHint;
+
+  /// No description provided for @addEntryForPets.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Entry for {count} Pets'**
+  String addEntryForPets(int count);
+
+  /// No description provided for @administrationHistory.
+  ///
+  /// In en, this message translates to:
+  /// **'Administration History'**
+  String get administrationHistory;
+
+  /// No description provided for @selectAtLeastOnePet.
+  ///
+  /// In en, this message translates to:
+  /// **'Please select at least one pet'**
+  String get selectAtLeastOnePet;
+
+  /// No description provided for @markAsCompletedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Mark as Completed?'**
+  String get markAsCompletedTitle;
+
+  /// No description provided for @markCompletedPast.
+  ///
+  /// In en, this message translates to:
+  /// **'This event is in the past. Would you like to mark it as completed?'**
+  String get markCompletedPast;
+
+  /// No description provided for @markCompletedToday.
+  ///
+  /// In en, this message translates to:
+  /// **'This event is today. Would you like to mark it as completed?'**
+  String get markCompletedToday;
+
+  /// No description provided for @keepActive.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep Active'**
+  String get keepActive;
+
+  /// No description provided for @markCompletedAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Mark Completed'**
+  String get markCompletedAction;
+
+  /// No description provided for @entriesCreated.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} entries created'**
+  String entriesCreated(int count);
+
+  /// No description provided for @noHistoryYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No history yet.'**
+  String get noHistoryYet;
+
+  /// No description provided for @deleteEntryNamedConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete \"{name}\"? This cannot be undone.'**
+  String deleteEntryNamedConfirm(String name);
+
+  /// No description provided for @failedToDelete.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to delete: {error}'**
+  String failedToDelete(String error);
+
+  /// No description provided for @failedToLoadHistory.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load history: {error}'**
+  String failedToLoadHistory(String error);
+
+  /// No description provided for @petLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Pet'**
+  String get petLabel;
+
+  /// No description provided for @unknownPet.
+  ///
+  /// In en, this message translates to:
+  /// **'Unknown pet'**
+  String get unknownPet;
+
+  /// No description provided for @selectPets.
+  ///
+  /// In en, this message translates to:
+  /// **'Select Pets'**
+  String get selectPets;
+
+  /// No description provided for @atLeastOnePetMustBeSelected.
+  ///
+  /// In en, this message translates to:
+  /// **'At least one pet must be selected'**
+  String get atLeastOnePetMustBeSelected;
+
+  /// No description provided for @selectMultiplePetsHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Select multiple pets to create an entry for each'**
+  String get selectMultiplePetsHint;
+
+  /// No description provided for @selectAll.
+  ///
+  /// In en, this message translates to:
+  /// **'Select All'**
+  String get selectAll;
+
+  /// No description provided for @clearSelection.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear'**
+  String get clearSelection;
+
+  /// No description provided for @tapToChangeDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap to change date'**
+  String get tapToChangeDate;
+
+  /// No description provided for @cameraOption.
+  ///
+  /// In en, this message translates to:
+  /// **'Camera'**
+  String get cameraOption;
+
+  /// No description provided for @galleryFilesOption.
+  ///
+  /// In en, this message translates to:
+  /// **'Gallery / Files'**
+  String get galleryFilesOption;
+
+  /// No description provided for @photoCountLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'{count}/4 Photos'**
+  String photoCountLabel(int count);
+
+  /// No description provided for @pendingUploadSuffix.
+  ///
+  /// In en, this message translates to:
+  /// **' ({count} will upload on save)'**
+  String pendingUploadSuffix(int count);
+
+  /// No description provided for @pendingLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending'**
+  String get pendingLabel;
 }
 
 class _AppLocalizationsDelegate

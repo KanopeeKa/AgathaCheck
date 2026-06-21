@@ -74,13 +74,19 @@ class _HealthEntryFormScreenState extends ConsumerState<HealthEntryFormScreen> {
       final ds = ref.read(healthDataSourceProvider);
       final photos = await ds.getPhotos(widget.entryId!);
       if (mounted) setState(() => _photos = photos);
-    } catch (_) {}
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(AppLocalizations.of(context)!.failedToLoadPhotos('$e'))),
+        );
+      }
+    }
   }
 
   Future<void> _pickPhoto(ImageSource source) async {
     if (_totalPhotoCount >= 4) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Maximum 4 photos per event')),
+        SnackBar(content: Text(AppLocalizations.of(context)!.maxPhotosReached)),
       );
       return;
     }
@@ -105,7 +111,7 @@ class _HealthEntryFormScreenState extends ConsumerState<HealthEntryFormScreen> {
       if (mounted) {
         setState(() => _isUploadingPhoto = false);
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to add photo: $e')),
+          SnackBar(content: Text(AppLocalizations.of(context)!.failedToAddPhoto('$e'))),
         );
       }
     }
@@ -126,7 +132,7 @@ class _HealthEntryFormScreenState extends ConsumerState<HealthEntryFormScreen> {
       } catch (e) {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Failed to upload photo "${file.name}": $e')),
+            SnackBar(content: Text(AppLocalizations.of(context)!.failedToUploadPhotoNamed(file.name, '$e'))),
           );
         }
       }
@@ -137,17 +143,17 @@ class _HealthEntryFormScreenState extends ConsumerState<HealthEntryFormScreen> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Delete Photo'),
-        content: const Text('Remove this photo? This cannot be undone.'),
+        title: Text(AppLocalizations.of(context)!.deletePhotoTitle),
+        content: Text(AppLocalizations.of(context)!.deletePhotoConfirm),
         actions: [
           TextButton(
               onPressed: () => Navigator.pop(ctx, false),
-              child: const Text('Cancel')),
+              child: Text(AppLocalizations.of(context)!.cancel)),
           FilledButton(
             onPressed: () => Navigator.pop(ctx, true),
             style:
                 FilledButton.styleFrom(backgroundColor: Theme.of(context).colorScheme.error),
-            child: const Text('Delete'),
+            child: Text(AppLocalizations.of(context)!.delete),
           ),
         ],
       ),
@@ -160,7 +166,7 @@ class _HealthEntryFormScreenState extends ConsumerState<HealthEntryFormScreen> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to delete photo: $e')),
+          SnackBar(content: Text(AppLocalizations.of(context)!.failedToDeletePhoto('$e'))),
         );
       }
     }
@@ -196,7 +202,7 @@ class _HealthEntryFormScreenState extends ConsumerState<HealthEntryFormScreen> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to load entry: $e')),
+          SnackBar(content: Text(AppLocalizations.of(context)!.failedToLoadEntry('$e'))),
         );
       }
     } finally {
@@ -239,7 +245,7 @@ class _HealthEntryFormScreenState extends ConsumerState<HealthEntryFormScreen> {
               Padding(
                 padding: const EdgeInsets.only(top: 6, left: 12),
                 child: Text(
-                  'You can create health issues from the pet\'s profile page',
+                  AppLocalizations.of(context)!.createHealthIssuesHint,
                   style: theme.textTheme.bodySmall
                       ?.copyWith(color: theme.colorScheme.outline),
                 ),
@@ -256,6 +262,55 @@ class _HealthEntryFormScreenState extends ConsumerState<HealthEntryFormScreen> {
     _dosageController.dispose();
     _notesController.dispose();
     super.dispose();
+  }
+
+  String _typeLabel(AppLocalizations l, HealthEntryType t) {
+    switch (t) {
+      case HealthEntryType.medication:
+        return l.medication;
+      case HealthEntryType.preventive:
+        return l.preventive;
+      case HealthEntryType.vetVisit:
+        return l.vetVisit;
+      case HealthEntryType.procedure:
+        return l.procedure;
+      case HealthEntryType.familyEvent:
+        return l.familyEvent;
+    }
+  }
+
+  String _freqLabel(AppLocalizations l, HealthFrequency f) {
+    switch (f) {
+      case HealthFrequency.once:
+        return l.doesNotRepeat;
+      case HealthFrequency.daily:
+        return l.daily;
+      case HealthFrequency.weekly:
+        return l.weekly;
+      case HealthFrequency.monthly:
+        return l.monthly;
+      case HealthFrequency.yearly:
+        return l.yearly;
+      case HealthFrequency.custom:
+        return l.custom;
+    }
+  }
+
+  String _periodLabel(AppLocalizations l, HealthFrequency f, int interval) {
+    final plural = interval != 1;
+    switch (f) {
+      case HealthFrequency.daily:
+        return plural ? l.periodDays : l.daily;
+      case HealthFrequency.weekly:
+        return plural ? l.periodWeeks : l.weekly;
+      case HealthFrequency.monthly:
+        return plural ? l.periodMonths : l.monthly;
+      case HealthFrequency.yearly:
+        return plural ? l.periodYears : l.yearly;
+      case HealthFrequency.once:
+      case HealthFrequency.custom:
+        return _freqLabel(l, f);
+    }
   }
 
   @override
@@ -289,7 +344,7 @@ class _HealthEntryFormScreenState extends ConsumerState<HealthEntryFormScreen> {
                   children: [
                     petListAsync.when(
                       loading: () => const LinearProgressIndicator(),
-                      error: (e, _) => Text('Failed to load pets: $e'),
+                      error: (e, _) => Text(l.failedToLoadPets('$e')),
                       data: (pets) {
                         if (pets.isEmpty) {
                           return Container(
@@ -299,7 +354,7 @@ class _HealthEntryFormScreenState extends ConsumerState<HealthEntryFormScreen> {
                               borderRadius: BorderRadius.circular(8),
                             ),
                             child: Text(
-                              'No pets found. Please add a pet first.',
+                              l.noPetsFoundAddFirst,
                               style: TextStyle(color: theme.colorScheme.error),
                             ),
                           );
@@ -323,7 +378,7 @@ class _HealthEntryFormScreenState extends ConsumerState<HealthEntryFormScreen> {
                       ),
                       items: HealthEntryType.values.map((t) {
                         return DropdownMenuItem(
-                            value: t, child: Text(t.label));
+                            value: t, child: Text(_typeLabel(l, t)));
                       }).toList(),
                       onChanged: (val) {
                         if (val != null) setState(() => _type = val);
@@ -335,7 +390,7 @@ class _HealthEntryFormScreenState extends ConsumerState<HealthEntryFormScreen> {
                       controller: _nameController,
                       decoration: InputDecoration(
                         labelText: l.entryName,
-                        hintText: 'e.g., Heartgard, Annual Checkup',
+                        hintText: l.entryNameHint,
                       ),
                       validator: (val) =>
                           val == null || val.trim().isEmpty
@@ -348,7 +403,7 @@ class _HealthEntryFormScreenState extends ConsumerState<HealthEntryFormScreen> {
                       controller: _dosageController,
                       decoration: InputDecoration(
                         labelText: l.dosage,
-                        hintText: 'e.g., 1 tablet, 0.5ml',
+                        hintText: l.dosageHint,
                       ),
                     ),
                     const SizedBox(height: 16),
@@ -361,7 +416,7 @@ class _HealthEntryFormScreenState extends ConsumerState<HealthEntryFormScreen> {
                           .where((f) => f != HealthFrequency.custom)
                           .map((f) {
                         return DropdownMenuItem(
-                            value: f, child: Text(f.label));
+                            value: f, child: Text(_freqLabel(l, f)));
                       }).toList(),
                       onChanged: (val) {
                         if (val != null) setState(() => _frequency = val);
@@ -393,13 +448,11 @@ class _HealthEntryFormScreenState extends ConsumerState<HealthEntryFormScreen> {
                           Expanded(
                             flex: 2,
                             child: InputDecorator(
-                              decoration: const InputDecoration(
-                                labelText: 'Period',
+                              decoration: InputDecoration(
+                                labelText: l.period,
                               ),
                               child: Text(
-                                _frequencyInterval == 1
-                                    ? _frequency.label
-                                    : '${_frequency.label}s',
+                                _periodLabel(l, _frequency, _frequencyInterval),
                                 style: Theme.of(context).textTheme.bodyLarge,
                               ),
                             ),
@@ -410,13 +463,13 @@ class _HealthEntryFormScreenState extends ConsumerState<HealthEntryFormScreen> {
                     if (_frequency != HealthFrequency.once) ...[
                       const SizedBox(height: 16),
                       InputDecorator(
-                        decoration: const InputDecoration(
-                          labelText: 'Repeat ends by',
+                        decoration: InputDecoration(
+                          labelText: l.repeatEndsBy,
                         ),
                         child: Row(
                           children: [
                             ChoiceChip(
-                              label: const Text('Never'),
+                              label: Text(l.never),
                               selected: _repeatEndDate == null,
                               onSelected: (_) =>
                                   setState(() => _repeatEndDate = null),
@@ -425,7 +478,7 @@ class _HealthEntryFormScreenState extends ConsumerState<HealthEntryFormScreen> {
                             ChoiceChip(
                               label: Text(_repeatEndDate != null
                                   ? _formatDate(_repeatEndDate!)
-                                  : 'Pick a date'),
+                                  : l.pickADate),
                               selected: _repeatEndDate != null,
                               onSelected: (_) async {
                                 final picked = await showDatePicker(
@@ -505,7 +558,7 @@ class _HealthEntryFormScreenState extends ConsumerState<HealthEntryFormScreen> {
                       controller: _notesController,
                       decoration: InputDecoration(
                         labelText: l.notes,
-                        hintText: 'Additional information...',
+                        hintText: l.notesHint,
                       ),
                       maxLines: 3,
                     ),
@@ -528,7 +581,7 @@ class _HealthEntryFormScreenState extends ConsumerState<HealthEntryFormScreen> {
                       label: Text(_isEdit
                           ? l.save
                           : _selectedPetIds.length > 1
-                              ? 'Add Entry for ${_selectedPetIds.length} Pets'
+                              ? l.addEntryForPets(_selectedPetIds.length)
                               : l.addEntry),
                     ),
                     if (_isEdit) ...[
@@ -536,7 +589,7 @@ class _HealthEntryFormScreenState extends ConsumerState<HealthEntryFormScreen> {
                       OutlinedButton.icon(
                         onPressed: _viewHistory,
                         icon: const Icon(Icons.history),
-                        label: const Text('Administration History'),
+                        label: Text(l.administrationHistory),
                       ),
                       const SizedBox(height: 12),
                       OutlinedButton.icon(
@@ -562,7 +615,7 @@ class _HealthEntryFormScreenState extends ConsumerState<HealthEntryFormScreen> {
 
     if (_selectedPetIds.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please select at least one pet')),
+        SnackBar(content: Text(AppLocalizations.of(context)!.selectAtLeastOnePet)),
       );
       return;
     }
@@ -578,20 +631,20 @@ class _HealthEntryFormScreenState extends ConsumerState<HealthEntryFormScreen> {
       final result = await showDialog<bool>(
         context: context,
         builder: (ctx) => AlertDialog(
-          title: const Text('Mark as Completed?'),
+          title: Text(AppLocalizations.of(context)!.markAsCompletedTitle),
           content: Text(
             startDateOnly.isBefore(todayOnly)
-                ? 'This event is in the past. Would you like to mark it as completed?'
-                : 'This event is today. Would you like to mark it as completed?',
+                ? AppLocalizations.of(context)!.markCompletedPast
+                : AppLocalizations.of(context)!.markCompletedToday,
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(ctx, false),
-              child: const Text('Keep Active'),
+              child: Text(AppLocalizations.of(context)!.keepActive),
             ),
             FilledButton(
               onPressed: () => Navigator.pop(ctx, true),
-              child: const Text('Mark Completed'),
+              child: Text(AppLocalizations.of(context)!.markCompletedAction),
             ),
           ],
         ),
@@ -672,7 +725,7 @@ class _HealthEntryFormScreenState extends ConsumerState<HealthEntryFormScreen> {
             content: Text(_isEdit
                 ? l.entryUpdated
                 : count > 1
-                    ? '$count entries created'
+                    ? l.entriesCreated(count)
                     : l.entryCreated),
           ),
         );
@@ -685,7 +738,7 @@ class _HealthEntryFormScreenState extends ConsumerState<HealthEntryFormScreen> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: $e')),
+          SnackBar(content: Text(AppLocalizations.of(context)!.errorWithMessage('$e'))),
         );
       }
     } finally {
@@ -706,11 +759,11 @@ class _HealthEntryFormScreenState extends ConsumerState<HealthEntryFormScreen> {
       showDialog(
         context: context,
         builder: (ctx) => AlertDialog(
-          title: const Text('Administration History'),
+          title: Text(AppLocalizations.of(context)!.administrationHistory),
           content: SizedBox(
             width: double.maxFinite,
             child: history.isEmpty
-                ? const Text('No history yet.')
+                ? Text(AppLocalizations.of(context)!.noHistoryYet)
                 : ListView.builder(
                     shrinkWrap: true,
                     itemCount: history.length,
@@ -730,7 +783,7 @@ class _HealthEntryFormScreenState extends ConsumerState<HealthEntryFormScreen> {
           actions: [
             TextButton(
               onPressed: () => Navigator.of(ctx).pop(),
-              child: const Text('Close'),
+              child: Text(AppLocalizations.of(context)!.close),
             ),
           ],
         ),
@@ -738,7 +791,7 @@ class _HealthEntryFormScreenState extends ConsumerState<HealthEntryFormScreen> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to load history: $e')),
+          SnackBar(content: Text(AppLocalizations.of(context)!.failedToLoadHistory('$e'))),
         );
       }
     }
@@ -750,7 +803,7 @@ class _HealthEntryFormScreenState extends ConsumerState<HealthEntryFormScreen> {
       context: context,
       builder: (ctx) => AlertDialog(
         title: Text(AppLocalizations.of(context)!.deleteEntry),
-        content: Text('Delete "${_nameController.text}"? This cannot be undone.'),
+        content: Text(AppLocalizations.of(context)!.deleteEntryNamedConfirm(_nameController.text)),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(false),
@@ -782,7 +835,7 @@ class _HealthEntryFormScreenState extends ConsumerState<HealthEntryFormScreen> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to delete: $e')),
+          SnackBar(content: Text(AppLocalizations.of(context)!.failedToDelete('$e'))),
         );
       }
     }
@@ -814,14 +867,15 @@ class _PetSelector extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l = AppLocalizations.of(context)!;
 
     if (isEdit) {
       final pet = pets.where((p) => selectedPetIds.contains(p.id)).firstOrNull;
       return InputDecorator(
-        decoration: const InputDecoration(
-          labelText: 'Pet',
+        decoration: InputDecoration(
+          labelText: l.petLabel,
         ),
-        child: Text(pet?.name ?? 'Unknown pet'),
+        child: Text(pet?.name ?? l.unknownPet),
       );
     }
 
@@ -829,7 +883,7 @@ class _PetSelector extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Select Pets',
+          l.selectPets,
           style: theme.textTheme.titleSmall?.copyWith(
             color: theme.colorScheme.onSurfaceVariant,
           ),
@@ -838,7 +892,7 @@ class _PetSelector extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.only(top: 4),
             child: Text(
-              'At least one pet must be selected',
+              l.atLeastOnePetMustBeSelected,
               style: theme.textTheme.bodySmall?.copyWith(
                 color: theme.colorScheme.error,
               ),
@@ -848,7 +902,7 @@ class _PetSelector extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.only(top: 4, bottom: 4),
             child: Text(
-              'Select multiple pets to create an entry for each',
+              l.selectMultiplePetsHint,
               style: theme.textTheme.bodySmall?.copyWith(
                 color: theme.colorScheme.onSurfaceVariant,
               ),
@@ -894,12 +948,12 @@ class _PetSelector extends StatelessWidget {
               TextButton.icon(
                 onPressed: () => onChanged(pets.map((p) => p.id).toSet()),
                 icon: const Icon(Icons.select_all, size: 18),
-                label: const Text('Select All'),
+                label: Text(l.selectAll),
               ),
               TextButton.icon(
                 onPressed: () => onChanged({}),
                 icon: const Icon(Icons.deselect, size: 18),
-                label: const Text('Clear'),
+                label: Text(l.clearSelection),
               ),
             ],
           ),
@@ -922,10 +976,11 @@ class _DatePickerField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
     return Semantics(
       label: '$label: ${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}',
       button: true,
-      hint: 'Tap to change date',
+      hint: l.tapToChangeDate,
       child: InkWell(
         onTap: () async {
           final picked = await showDatePicker(
@@ -993,18 +1048,18 @@ class _PhotosSection extends StatelessWidget {
           }
         },
         itemBuilder: (_) => [
-          const PopupMenuItem(
+          PopupMenuItem(
               value: 'camera',
               child: ListTile(
-                leading: Icon(Icons.camera_alt),
-                title: Text('Camera'),
+                leading: const Icon(Icons.camera_alt),
+                title: Text(l.cameraOption),
                 contentPadding: EdgeInsets.zero,
               )),
-          const PopupMenuItem(
+          PopupMenuItem(
               value: 'gallery',
               child: ListTile(
-                leading: Icon(Icons.photo_library),
-                title: Text('Gallery / Files'),
+                leading: const Icon(Icons.photo_library),
+                title: Text(l.galleryFilesOption),
                 contentPadding: EdgeInsets.zero,
               )),
         ],
@@ -1079,7 +1134,7 @@ class _PhotosSection extends StatelessWidget {
               const SizedBox(height: 8),
               Text(
                 _totalCount > 0
-                    ? '$_totalCount/4 ${l.photos}${pendingPhotos.isNotEmpty ? ' (${pendingPhotos.length} will upload on save)' : ''}'
+                    ? '${l.photoCountLabel(_totalCount)}${pendingPhotos.isNotEmpty ? l.pendingUploadSuffix(pendingPhotos.length) : ''}'
                     : l.upTo4Photos,
                 style: theme.textTheme.bodySmall
                     ?.copyWith(color: colorScheme.outline),
@@ -1168,7 +1223,7 @@ class _PhotosSection extends StatelessWidget {
                     bottomRight: Radius.circular(8),
                   ),
                 ),
-                child: Text('Pending',
+                child: Text(AppLocalizations.of(context)!.pendingLabel,
                     textAlign: TextAlign.center,
                     style: TextStyle(
                         fontSize: 11,
