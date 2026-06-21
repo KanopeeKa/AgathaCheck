@@ -29,6 +29,12 @@ describe('Weight Entries API', () => {
       query: async (sql, params) => {
         lastQuery = { sql, params };
 
+        // Pet ownership check (create). 'pet-notmine' => another user's pet.
+        if (sql.includes('SELECT 1 FROM pets WHERE id')) {
+          if (params && params[0] === 'pet-notmine') return { rows: [] };
+          return { rows: [{ exists: 1 }] };
+        }
+
         if (sql.includes('SELECT we.*') && sql.includes('LIMIT 1')) {
           if (params && params[1] === 'empty-pet') return { rows: [] };
           return { rows: [makeWeightRow()] };
@@ -242,6 +248,14 @@ describe('Weight Entries API', () => {
         .send(entry);
       expect(res.statusCode).toBe(201);
       expect(lastQuery.params[3]).toBe(6.7);
+    });
+
+    it('returns 403 when the pet belongs to another user', async () => {
+      const res = await request(app)
+        .post('/api/weight-entries')
+        .set('Authorization', `Bearer ${token}`)
+        .send({ pet_id: 'pet-notmine', weight: 4.2 });
+      expect(res.statusCode).toBe(403);
     });
   });
 

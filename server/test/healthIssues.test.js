@@ -33,6 +33,17 @@ describe('Health Issues API', () => {
       query: async (sql, params) => {
         lastQuery = { sql, params };
 
+        // Pet ownership check (create). 'pet-notmine' => another user's pet.
+        if (sql.includes('SELECT 1 FROM pets WHERE id')) {
+          if (params && params[0] === 'pet-notmine') return { rows: [] };
+          return { rows: [{ exists: 1 }] };
+        }
+        // Issue ownership check (nested events). 'hi-notmine' => another user's issue.
+        if (sql.includes('SELECT 1 FROM health_issues WHERE id')) {
+          if (params && params[0] === 'hi-notmine') return { rows: [] };
+          return { rows: [{ exists: 1 }] };
+        }
+
         if (sql.includes('SELECT hi.*') && sql.includes('FROM health_issues')) {
           return { rows: [makeIssueRow(), makeIssueRow({ id: 'hi-2', name: 'Ear Infection' })] };
         }
@@ -295,6 +306,14 @@ describe('Health Issues API', () => {
       expect(lastQuery.params[6]).toBe('2025-01-01');
       expect(lastQuery.params[7]).toBe('2025-02-01');
     });
+
+    it('returns 403 when the pet belongs to another user', async () => {
+      const res = await request(app)
+        .post('/api/health-issues')
+        .set('Authorization', `Bearer ${token}`)
+        .send({ pet_id: 'pet-notmine', name: 'Sneaky' });
+      expect(res.statusCode).toBe(403);
+    });
   });
 
   describe('PUT /api/health-issues/:id (update)', () => {
@@ -365,6 +384,13 @@ describe('Health Issues API', () => {
       expect(res.body[0]).toHaveProperty('id');
       expect(res.body[0]).toHaveProperty('health_issue_id');
     });
+
+    it('returns 404 when the issue belongs to another user (IDOR)', async () => {
+      const res = await request(app)
+        .get('/api/health-issues/hi-notmine/events')
+        .set('Authorization', `Bearer ${token}`);
+      expect(res.statusCode).toBe(404);
+    });
   });
 
   describe('DELETE /api/health-issues/:issueId/events/:entryId', () => {
@@ -387,6 +413,13 @@ describe('Health Issues API', () => {
         .set('Authorization', `Bearer ${token}`);
       expect(lastQuery.params[0]).toBe('evt-1');
       expect(lastQuery.params[1]).toBe('hi-1');
+    });
+
+    it('returns 404 when the issue belongs to another user (IDOR)', async () => {
+      const res = await request(app)
+        .delete('/api/health-issues/hi-notmine/events/evt-1')
+        .set('Authorization', `Bearer ${token}`);
+      expect(res.statusCode).toBe(404);
     });
   });
 });

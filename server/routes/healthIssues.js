@@ -15,6 +15,21 @@ function extractUserId(req) {
   }
 }
 
+// True when `petId` exists and belongs to `userId` (stops attaching issues to
+// another user's pet).
+async function userOwnsPet(pool, petId, userId) {
+  if (!petId) return false;
+  const r = await pool.query('SELECT 1 FROM pets WHERE id = $1 AND user_id = $2', [petId, userId]);
+  return r.rows.length > 0;
+}
+
+// True when the issue exists and belongs to `userId`. Used to scope the nested
+// events routes, which otherwise key only on health_issue_id (IDOR).
+async function userOwnsIssue(pool, issueId, userId) {
+  const r = await pool.query('SELECT 1 FROM health_issues WHERE id = $1 AND user_id = $2', [issueId, userId]);
+  return r.rows.length > 0;
+}
+
 function issueRowToMap(row) {
   return {
     id: row.id,
@@ -82,6 +97,9 @@ export default function healthIssuesRoutes(pool) {
       const data = req.body;
       const id = data.id || uuidv4();
       const petId = data.pet_id || data.petId;
+      if (!(await userOwnsPet(pool, petId, userId))) {
+        return res.status(403).json({ error: 'Forbidden' });
+      }
       const startDate = data.start_date || data.startDate || null;
       const endDate = data.end_date || data.endDate || null;
       const nameVal = data.title || data.name || '';
@@ -142,6 +160,9 @@ export default function healthIssuesRoutes(pool) {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     try {
+      if (!(await userOwnsIssue(pool, req.params.issueId, userId))) {
+        return res.status(404).json({ error: 'Not found' });
+      }
       const result = await pool.query(
         'SELECT * FROM health_issue_events WHERE health_issue_id = $1 ORDER BY created_at DESC',
         [req.params.issueId]
@@ -156,6 +177,9 @@ export default function healthIssuesRoutes(pool) {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     try {
+      if (!(await userOwnsIssue(pool, req.params.issueId, userId))) {
+        return res.status(404).json({ error: 'Not found' });
+      }
       await pool.query(
         'DELETE FROM health_issue_events WHERE id = $1 AND health_issue_id = $2',
         [req.params.entryId, req.params.issueId]

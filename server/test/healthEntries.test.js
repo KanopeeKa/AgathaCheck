@@ -42,6 +42,19 @@ describe('Health Entries API', () => {
         lastQuery = { sql, params };
         if (queryLog) queryLog.push({ sql, params });
 
+        // Pet ownership check used by create. 'pet-notmine' simulates a pet
+        // owned by another user.
+        if (sql.includes('SELECT 1 FROM pets WHERE id')) {
+          if (params && params[0] === 'pet-notmine') return { rows: [] };
+          return { rows: [{ exists: 1 }] };
+        }
+        // Health-entry ownership check used by the nested history/photos routes.
+        // 'he-notmine' simulates an entry owned by another user.
+        if (sql.includes('SELECT 1 FROM health_entries WHERE id')) {
+          if (params && params[0] === 'he-notmine') return { rows: [] };
+          return { rows: [{ exists: 1 }] };
+        }
+
         if (sql.includes('SELECT he.*') && sql.includes('WHERE he.id')) {
           if (params && params[0] === 'nonexistent') return { rows: [] };
           if (params && params[0] === 'he-zero') {
@@ -339,6 +352,22 @@ describe('Health Entries API', () => {
       expect(insertParams[10]).toBe('2025-02-01');
       expect(insertParams[12]).toBe('hi-1');
     });
+
+    it('returns 403 when the pet belongs to another user', async () => {
+      const res = await request(app)
+        .post('/api/health-entries')
+        .set('Authorization', `Bearer ${token}`)
+        .send({ pet_id: 'pet-notmine', name: 'Sneaky' });
+      expect(res.statusCode).toBe(403);
+    });
+
+    it('returns 403 when no pet_id is provided', async () => {
+      const res = await request(app)
+        .post('/api/health-entries')
+        .set('Authorization', `Bearer ${token}`)
+        .send({ name: 'Orphan' });
+      expect(res.statusCode).toBe(403);
+    });
   });
 
   describe('PUT /api/health-entries/:id (update)', () => {
@@ -494,6 +523,13 @@ describe('Health Entries API', () => {
       expect(res.body[0]).toHaveProperty('notes');
       expect(res.body[0]).toHaveProperty('changed_at');
     });
+
+    it('returns 404 when the entry belongs to another user (IDOR)', async () => {
+      const res = await request(app)
+        .get('/api/health-entries/he-notmine/history')
+        .set('Authorization', `Bearer ${token}`);
+      expect(res.statusCode).toBe(404);
+    });
   });
 
   describe('GET /api/health-entries/:id/photos', () => {
@@ -512,6 +548,13 @@ describe('Health Entries API', () => {
       expect(res.body[0]).toHaveProperty('health_entry_id');
       expect(res.body[0]).toHaveProperty('url');
       expect(res.body[0]).toHaveProperty('created_at');
+    });
+
+    it('returns 404 when the entry belongs to another user (IDOR)', async () => {
+      const res = await request(app)
+        .get('/api/health-entries/he-notmine/photos')
+        .set('Authorization', `Bearer ${token}`);
+      expect(res.statusCode).toBe(404);
     });
   });
 
@@ -533,6 +576,14 @@ describe('Health Entries API', () => {
       expect(res.body).toHaveProperty('health_entry_id');
       expect(res.body).toHaveProperty('url');
     });
+
+    it('returns 404 when the entry belongs to another user (IDOR)', async () => {
+      const res = await request(app)
+        .post('/api/health-entries/he-notmine/photos')
+        .set('Authorization', `Bearer ${token}`)
+        .send({ url: '/uploads/test.jpg' });
+      expect(res.statusCode).toBe(404);
+    });
   });
 
   describe('DELETE /api/health-entries/:entryId/photos/:photoId', () => {
@@ -548,6 +599,13 @@ describe('Health Entries API', () => {
         .set('Authorization', `Bearer ${token}`);
       expect(res.statusCode).toBe(200);
       expect(res.body).toHaveProperty('deleted', true);
+    });
+
+    it('returns 404 when the entry belongs to another user (IDOR)', async () => {
+      const res = await request(app)
+        .delete('/api/health-entries/he-notmine/photos/photo-1')
+        .set('Authorization', `Bearer ${token}`);
+      expect(res.statusCode).toBe(404);
     });
   });
 });

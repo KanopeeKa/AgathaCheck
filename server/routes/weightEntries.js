@@ -15,6 +15,15 @@ function extractUserId(req) {
   }
 }
 
+// True when `petId` exists and belongs to `userId`. Without this, a caller can
+// insert a weight entry against another user's pet; because reads join on
+// pets.user_id, the victim would then see the injected entry in their history.
+async function userOwnsPet(pool, petId, userId) {
+  if (!petId) return false;
+  const r = await pool.query('SELECT 1 FROM pets WHERE id = $1 AND user_id = $2', [petId, userId]);
+  return r.rows.length > 0;
+}
+
 function weightEntryToMap(row) {
   return {
     id: row.id,
@@ -80,6 +89,9 @@ export default function weightEntriesRoutes(pool) {
       const data = req.body;
       const id = data.id || uuidv4();
       const petId = data.pet_id || data.petId;
+      if (!(await userOwnsPet(pool, petId, userId))) {
+        return res.status(403).json({ error: 'Forbidden' });
+      }
       const dateVal = data.date || data.measured_at || new Date().toISOString();
       const weightVal = typeof data.weight === 'number' ? data.weight : parseFloat(data.weight || '0');
       const result = await pool.query(
