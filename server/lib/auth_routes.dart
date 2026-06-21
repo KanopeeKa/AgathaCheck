@@ -8,28 +8,25 @@ import 'package:uuid/uuid.dart';
 import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart';
 import 'package:dbcrypt/dbcrypt.dart';
 
+import 'jwt_secret.dart';
+
 final _uuid = Uuid();
 final _dbcrypt = DBCrypt();
 const _jsonHeaders = {'Content-Type': 'application/json'};
 
-String get _jwtSecret =>
-    Platform.environment['JWT_SECRET'] ??
-    Platform.environment['SESSION_SECRET'] ??
-    'default_secret';
-
 String _signAccessToken(String userId, String email) {
   final jwt = JWT({'id': userId, 'email': email});
-  return jwt.sign(SecretKey(_jwtSecret), expiresIn: Duration(minutes: 30));
+  return jwt.sign(SecretKey(jwtSecret), expiresIn: Duration(minutes: 30));
 }
 
 String _signRefreshToken(String userId, String email) {
   final jwt = JWT({'id': userId, 'email': email});
-  return jwt.sign(SecretKey(_jwtSecret), expiresIn: Duration(days: 30));
+  return jwt.sign(SecretKey(jwtSecret), expiresIn: Duration(days: 30));
 }
 
 Map<String, dynamic>? _verifyToken(String token) {
   try {
-    final jwt = JWT.verify(token, SecretKey(_jwtSecret));
+    final jwt = JWT.verify(token, SecretKey(jwtSecret));
     return jwt.payload as Map<String, dynamic>;
   } catch (_) {
     return null;

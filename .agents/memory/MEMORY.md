@@ -3,3 +3,4 @@
 - [Flutter web password-manager autofill](flutter-web-password-managers.md) — CanvasKit paints fields on canvas so extensions (Proton Pass) can't autofill; fix is a native HTML form in index.html bridged to Dart.
 - [Tool-output token scrambling](tool-output-token-scrambling.md) — grep/bash can mangle source tokens in file content (e.g. weight→ln); read tool shows truth, edits use real tokens.
 - [Health entry completion semantics](health-entry-completion.md) — UI derives overdue/completed from next_due_date only (no status field); mark-taken must advance/sentinel next_due_date in BOTH backends.
+- [JWT secret dev/test fallback](jwt-secret-dev-fallback.md) — keep the prod-gated 'default_secret' fallback; CI/Jest sign tokens with it and workflows set no secret.

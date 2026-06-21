@@ -6,6 +6,8 @@ import 'package:postgres/postgres.dart';
 import 'package:uuid/uuid.dart';
 import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart';
 
+import 'jwt_secret.dart';
+
 final _uuid = Uuid();
 
 late Pool _pool;
@@ -345,16 +347,12 @@ Future<Response> _markPetPassedAway(Request request, String id) async {
   return Response.ok(jsonEncode({'passed_away': true, 'pet_id': id}), headers: _jsonHeaders);
 }
 
-final _jwtSecret = Platform.environment['JWT_SECRET'] ??
-    Platform.environment['SESSION_SECRET'] ??
-    'default_secret';
-
 String? _extractUserId(Request request) {
   final auth =
       request.headers['authorization'] ?? request.headers['Authorization'];
   if (auth == null || !auth.startsWith('Bearer ')) return null;
   try {
-    final jwt = JWT.verify(auth.substring(7), SecretKey(_jwtSecret));
+    final jwt = JWT.verify(auth.substring(7), SecretKey(jwtSecret));
     return (jwt.payload as Map)['id']?.toString();
   } catch (_) {
     return null;

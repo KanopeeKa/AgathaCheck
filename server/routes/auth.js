@@ -3,7 +3,7 @@ import bcrypt from 'bcrypt';
 import { v4 as uuidv4 } from 'uuid';
 import jwt from 'jsonwebtoken';
 
-const JWT_SECRET = process.env.JWT_SECRET || process.env.SESSION_SECRET || 'default_secret';
+import { JWT_SECRET } from '../config/jwtSecret.js';
 
 function signAccessToken(id, email) {
   return jwt.sign({ id, email }, JWT_SECRET, { expiresIn: '30m' });

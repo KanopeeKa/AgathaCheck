@@ -2,7 +2,7 @@ import express from 'express';
 import { v4 as uuidv4 } from 'uuid';
 import jwt from 'jsonwebtoken';
 
-const JWT_SECRET = process.env.JWT_SECRET || process.env.SESSION_SECRET || 'default_secret';
+import { JWT_SECRET } from '../config/jwtSecret.js';
 
 function extractUserId(req) {
   const auth = req.headers['authorization'] || req.headers['Authorization'];
