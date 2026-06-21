@@ -10,6 +10,8 @@ import 'package:dbcrypt/dbcrypt.dart';
 
 import 'jwt_secret.dart';
 import 'http_security.dart';
+import 'validation.dart';
+import 'rate_limit.dart';
 
 final _uuid = Uuid();
 final _dbcrypt = DBCrypt();
@@ -61,6 +63,8 @@ Router authRoutes(Pool pool) {
   final auth = Router();
 
   auth.post('/signup', (Request request) async {
+    final limited = checkAuthRateLimit(request);
+    if (limited != null) return limited;
     try {
       final body = json.decode(await request.readAsString()) as Map<String, dynamic>;
       final email = (body['email'] as String?)?.trim();
@@ -76,6 +80,18 @@ Router authRoutes(Pool pool) {
         return Response(400,
             headers: _jsonHeaders,
             body: json.encode({'error': 'Email and password are required.'}));
+      }
+      if (!isValidEmail(email)) {
+        return Response(400,
+            headers: _jsonHeaders,
+            body: json.encode({'error': 'Invalid email format.'}));
+      }
+      if (!isStrongPassword(password)) {
+        return Response(400,
+            headers: _jsonHeaders,
+            body: json.encode({
+              'error': 'Password must be at least $minPasswordLength characters.'
+            }));
       }
 
       final id = _uuid.v4();
@@ -136,6 +152,8 @@ Router authRoutes(Pool pool) {
   });
 
   auth.post('/login', (Request request) async {
+    final limited = checkAuthRateLimit(request);
+    if (limited != null) return limited;
     try {
       final body = json.decode(await request.readAsString()) as Map<String, dynamic>;
       final email = (body['email'] as String?)?.trim();
@@ -200,6 +218,18 @@ Router authRoutes(Pool pool) {
 
       final payload = _verifyToken(refreshToken);
       if (payload == null) {
+        return Response(401,
+            headers: _jsonHeaders,
+            body: json.encode({'error': 'Invalid or expired refresh token'}));
+      }
+
+      // Bind the refresh to a live account: a token for a since-deleted user
+      // must not keep minting access tokens until it expires.
+      final userResult = await pool.execute(
+        Sql.named('SELECT id FROM users WHERE id = @id'),
+        parameters: {'id': payload['id']},
+      );
+      if (userResult.isEmpty) {
         return Response(401,
             headers: _jsonHeaders,
             body: json.encode({'error': 'Invalid or expired refresh token'}));
@@ -428,6 +458,13 @@ Router authRoutes(Pool pool) {
             headers: _jsonHeaders,
             body: json.encode({'error': 'Current and new passwords are required'}));
       }
+      if (!isStrongPassword(newPassword)) {
+        return Response(400,
+            headers: _jsonHeaders,
+            body: json.encode({
+              'error': 'Password must be at least $minPasswordLength characters.'
+            }));
+      }
 
       final result = await pool.execute(
         Sql.named('SELECT password_hash FROM users WHERE id = @id'),
@@ -463,6 +500,8 @@ Router authRoutes(Pool pool) {
   });
 
   auth.post('/forgot-password', (Request request) async {
+    final limited = checkAuthRateLimit(request);
+    if (limited != null) return limited;
     try {
       final body = json.decode(await request.readAsString()) as Map<String, dynamic>;
       final email = (body['email'] as String?)?.trim();
@@ -516,6 +555,8 @@ Router authRoutes(Pool pool) {
   });
 
   auth.post('/reset-password', (Request request) async {
+    final limited = checkAuthRateLimit(request);
+    if (limited != null) return limited;
     try {
       final body = json.decode(await request.readAsString()) as Map<String, dynamic>;
       final email = (body['email'] as String?)?.trim();
@@ -526,6 +567,13 @@ Router authRoutes(Pool pool) {
         return Response(400,
             headers: _jsonHeaders,
             body: json.encode({'error': 'Email, code, and new_password are required'}));
+      }
+      if (!isStrongPassword(newPassword)) {
+        return Response(400,
+            headers: _jsonHeaders,
+            body: json.encode({
+              'error': 'Password must be at least $minPasswordLength characters.'
+            }));
       }
 
       final result = await pool.execute(
