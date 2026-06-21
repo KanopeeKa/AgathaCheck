@@ -5,6 +5,7 @@ import 'package:postgres/postgres.dart';
 import 'package:uuid/uuid.dart';
 import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart';
 import 'jwt_secret.dart';
+import 'http_security.dart';
 
 final _uuid = Uuid();
 const _jsonHeaders = {'Content-Type': 'application/json'};
@@ -56,7 +57,7 @@ Router weightRoutes(Pool pool) {
       }).toList();
       return Response.ok(jsonEncode(entries), headers: _jsonHeaders);
     } catch (e) {
-      return Response.internalServerError(body: jsonEncode({'error': 'Error: $e'}), headers: _jsonHeaders);
+      return Response.internalServerError(body: jsonEncode({'error': publicError(e)}), headers: _jsonHeaders);
     }
   });
 
@@ -89,7 +90,7 @@ Router weightRoutes(Pool pool) {
         'created_at': c['created_at']?.toString(),
       }), headers: _jsonHeaders);
     } catch (e) {
-      return Response.internalServerError(body: jsonEncode({'error': 'Error: $e'}), headers: _jsonHeaders);
+      return Response.internalServerError(body: jsonEncode({'error': publicError(e)}), headers: _jsonHeaders);
     }
   });
 
@@ -125,7 +126,7 @@ Router weightRoutes(Pool pool) {
         'created_at': c['created_at']?.toString(),
       }), headers: _jsonHeaders);
     } catch (e) {
-      return Response.internalServerError(body: jsonEncode({'error': 'Error: $e'}), headers: _jsonHeaders);
+      return Response.internalServerError(body: jsonEncode({'error': publicError(e)}), headers: _jsonHeaders);
     }
   });
 
@@ -161,7 +162,7 @@ Router weightRoutes(Pool pool) {
         'created_at': c['created_at']?.toString(),
       }), headers: _jsonHeaders);
     } catch (e) {
-      return Response.internalServerError(body: jsonEncode({'error': 'Error: $e'}), headers: _jsonHeaders);
+      return Response.internalServerError(body: jsonEncode({'error': publicError(e)}), headers: _jsonHeaders);
     }
   });
 
@@ -177,7 +178,7 @@ Router weightRoutes(Pool pool) {
       );
       return Response.ok(jsonEncode({'deleted': true}), headers: _jsonHeaders);
     } catch (e) {
-      return Response.internalServerError(body: jsonEncode({'error': 'Error: $e'}), headers: _jsonHeaders);
+      return Response.internalServerError(body: jsonEncode({'error': publicError(e)}), headers: _jsonHeaders);
     }
   });
 

@@ -7,6 +7,7 @@ import 'package:uuid/uuid.dart';
 import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart';
 
 import 'jwt_secret.dart';
+import 'http_security.dart';
 
 final _uuid = Uuid();
 
@@ -164,7 +165,7 @@ Future<Response> _getAllPets(Request request) async {
     await _autoAssignColors(pets);
     return Response.ok(jsonEncode(pets), headers: _jsonHeaders);
   } catch (e) {
-    return Response.internalServerError(body: jsonEncode({'error': 'Error fetching all pets: $e'}), headers: _jsonHeaders);
+    return Response.internalServerError(body: jsonEncode({'error': publicError(e, 'Error fetching all pets')}), headers: _jsonHeaders);
   }
 }
 
@@ -182,7 +183,7 @@ Future<Response> _getPets(Request request) async {
     await _autoAssignColors(pets);
     return Response.ok(jsonEncode(pets), headers: _jsonHeaders);
   } catch (e) {
-    return Response.internalServerError(body: jsonEncode({'error': 'Error fetching pets: $e'}), headers: _jsonHeaders);
+    return Response.internalServerError(body: jsonEncode({'error': publicError(e, 'Error fetching pets')}), headers: _jsonHeaders);
   }
 }
 
@@ -201,7 +202,7 @@ Future<Response> _getPetById(Request request, String id) async {
     }
     return Response.ok(jsonEncode(_petRowToMap(results.first)), headers: _jsonHeaders);
   } catch (e) {
-    return Response.internalServerError(body: jsonEncode({'error': 'Error fetching pet: $e'}), headers: _jsonHeaders);
+    return Response.internalServerError(body: jsonEncode({'error': publicError(e, 'Error fetching pet')}), headers: _jsonHeaders);
   }
 }
 
@@ -243,7 +244,7 @@ Future<Response> _createPet(Request request) async {
     );
     return Response(201, body: jsonEncode(_petRowToMap(results.first)), headers: _jsonHeaders);
   } catch (e) {
-    return Response.internalServerError(body: jsonEncode({'error': 'Error creating pet: $e'}), headers: _jsonHeaders);
+    return Response.internalServerError(body: jsonEncode({'error': publicError(e, 'Error creating pet')}), headers: _jsonHeaders);
   }
 }
 
@@ -287,7 +288,7 @@ Future<Response> _updatePet(Request request, String id) async {
     }
     return Response.ok(jsonEncode(_petRowToMap(results.first)), headers: _jsonHeaders);
   } catch (e) {
-    return Response.internalServerError(body: jsonEncode({'error': 'Error updating pet: $e'}), headers: _jsonHeaders);
+    return Response.internalServerError(body: jsonEncode({'error': publicError(e, 'Error updating pet')}), headers: _jsonHeaders);
   }
 }
 
@@ -303,7 +304,7 @@ Future<Response> _deletePet(Request request, String id) async {
     );
     return Response.ok(jsonEncode({'deleted': true}), headers: _jsonHeaders);
   } catch (e) {
-    return Response.internalServerError(body: jsonEncode({'error': 'Error deleting pet: $e'}), headers: _jsonHeaders);
+    return Response.internalServerError(body: jsonEncode({'error': publicError(e, 'Error deleting pet')}), headers: _jsonHeaders);
   }
 }
 
@@ -388,7 +389,7 @@ Future<Response> _getVets(Request request) async {
     );
     return Response.ok(jsonEncode(results.map(_vetRowToMap).toList()), headers: _jsonHeaders);
   } catch (e) {
-    return Response.internalServerError(body: jsonEncode({'error': e.toString()}));
+    return Response.internalServerError(body: jsonEncode({'error': publicError(e)}));
   }
 }
 
@@ -405,7 +406,7 @@ Future<Response> _getVetById(Request request, String id) async {
     if (results.isEmpty) return Response.notFound(jsonEncode({'error': 'Vet not found'}));
     return Response.ok(jsonEncode(_vetRowToMap(results.first)), headers: _jsonHeaders);
   } catch (e) {
-    return Response.internalServerError(body: jsonEncode({'error': e.toString()}));
+    return Response.internalServerError(body: jsonEncode({'error': publicError(e)}));
   }
 }
 
@@ -434,7 +435,7 @@ Future<Response> _createVet(Request request) async {
     );
     return Response(201, body: jsonEncode(_vetRowToMap(results.first)), headers: _jsonHeaders);
   } catch (e) {
-    return Response.internalServerError(body: jsonEncode({'error': e.toString()}));
+    return Response.internalServerError(body: jsonEncode({'error': publicError(e)}));
   }
 }
 
@@ -463,7 +464,7 @@ Future<Response> _updateVet(Request request, String id) async {
     if (results.isEmpty) return Response.notFound(jsonEncode({'error': 'Vet not found'}));
     return Response.ok(jsonEncode(_vetRowToMap(results.first)), headers: _jsonHeaders);
   } catch (e) {
-    return Response.internalServerError(body: jsonEncode({'error': e.toString()}));
+    return Response.internalServerError(body: jsonEncode({'error': publicError(e)}));
   }
 }
 
@@ -480,6 +481,6 @@ Future<Response> _deleteVet(Request request, String id) async {
     if (results.isEmpty) return Response.notFound(jsonEncode({'error': 'Vet not found'}));
     return Response.ok(jsonEncode({'message': 'Vet deleted'}), headers: _jsonHeaders);
   } catch (e) {
-    return Response.internalServerError(body: jsonEncode({'error': e.toString()}));
+    return Response.internalServerError(body: jsonEncode({'error': publicError(e)}));
   }
 }

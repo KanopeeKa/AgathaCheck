@@ -3,6 +3,7 @@ import { v4 as uuidv4 } from 'uuid';
 import jwt from 'jsonwebtoken';
 
 import { JWT_SECRET } from '../config/jwtSecret.js';
+import { publicError } from '../config/security.js';
 
 function extractUserId(req) {
   const auth = req.headers['authorization'] || req.headers['Authorization'];
@@ -154,7 +155,7 @@ export default function petsRoutes(pool) {
       await autoAssignColors(pool, pets);
       res.json(pets);
     } catch (err) {
-      res.status(500).json({ error: `Error fetching pets: ${err.message}` });
+      res.status(500).json({ error: publicError(err, 'Error fetching pets', `Error fetching pets: ${err.message}`) });
     }
   });
 
@@ -170,7 +171,7 @@ export default function petsRoutes(pool) {
       await autoAssignColors(pool, pets);
       res.json(pets);
     } catch (err) {
-      res.status(500).json({ error: `Error fetching pets: ${err.message}` });
+      res.status(500).json({ error: publicError(err, 'Error fetching pets', `Error fetching pets: ${err.message}`) });
     }
   });
 
@@ -189,7 +190,7 @@ export default function petsRoutes(pool) {
       }
       res.json(petRowToMap(result.rows[0]));
     } catch (err) {
-      res.status(500).json({ error: `Error fetching pet: ${err.message}` });
+      res.status(500).json({ error: publicError(err, 'Error fetching pet', `Error fetching pet: ${err.message}`) });
     }
   });
 
@@ -226,7 +227,7 @@ export default function petsRoutes(pool) {
       );
       res.status(201).json(petRowToMap(result.rows[0]));
     } catch (err) {
-      res.status(500).json({ error: `Error creating pet: ${err.message}` });
+      res.status(500).json({ error: publicError(err, 'Error creating pet', `Error creating pet: ${err.message}`) });
     }
   });
 
@@ -260,7 +261,7 @@ export default function petsRoutes(pool) {
       }
       res.json(petRowToMap(result.rows[0]));
     } catch (err) {
-      res.status(500).json({ error: `Error updating pet: ${err.message}` });
+      res.status(500).json({ error: publicError(err, 'Error updating pet', `Error updating pet: ${err.message}`) });
     }
   });
 
@@ -272,7 +273,7 @@ export default function petsRoutes(pool) {
       await pool.query('DELETE FROM pets WHERE id = $1 AND user_id = $2', [id, userId]);
       res.json({ deleted: true });
     } catch (err) {
-      res.status(500).json({ error: `Error deleting pet: ${err.message}` });
+      res.status(500).json({ error: publicError(err, 'Error deleting pet', `Error deleting pet: ${err.message}`) });
     }
   });
 

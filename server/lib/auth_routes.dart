@@ -9,6 +9,7 @@ import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart';
 import 'package:dbcrypt/dbcrypt.dart';
 
 import 'jwt_secret.dart';
+import 'http_security.dart';
 
 final _uuid = Uuid();
 final _dbcrypt = DBCrypt();
@@ -130,7 +131,7 @@ Router authRoutes(Pool pool) {
       print('Signup error: $e');
       return Response.internalServerError(
           headers: _jsonHeaders,
-          body: json.encode({'error': 'Signup failed', 'details': '$e'}));
+          body: json.encode({'error': 'Signup failed', ...errorDetails(e)}));
     }
   });
 
@@ -182,7 +183,7 @@ Router authRoutes(Pool pool) {
       print('Login error: $e');
       return Response.internalServerError(
           headers: _jsonHeaders,
-          body: json.encode({'error': 'Login failed', 'details': '$e'}));
+          body: json.encode({'error': 'Login failed', ...errorDetails(e)}));
     }
   });
 
@@ -325,7 +326,7 @@ Router authRoutes(Pool pool) {
     } catch (e) {
       return Response.internalServerError(
           headers: _jsonHeaders,
-          body: json.encode({'error': 'Update failed', 'details': '$e'}));
+          body: json.encode({'error': 'Update failed', ...errorDetails(e)}));
     }
   });
 
@@ -398,7 +399,7 @@ Router authRoutes(Pool pool) {
       print('Photo upload error: $e');
       return Response.internalServerError(
           headers: _jsonHeaders,
-          body: json.encode({'error': 'Photo upload failed', 'details': '$e'}));
+          body: json.encode({'error': 'Photo upload failed', ...errorDetails(e)}));
     }
   });
 

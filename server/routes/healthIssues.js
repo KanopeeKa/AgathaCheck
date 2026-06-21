@@ -3,6 +3,7 @@ import { v4 as uuidv4 } from 'uuid';
 import jwt from 'jsonwebtoken';
 
 import { JWT_SECRET } from '../config/jwtSecret.js';
+import { publicError } from '../config/security.js';
 
 function extractUserId(req) {
   const auth = req.headers['authorization'] || req.headers['Authorization'];
@@ -55,7 +56,7 @@ export default function healthIssuesRoutes(pool) {
       }
       res.json(result.rows.map(issueRowToMap));
     } catch (err) {
-      res.status(500).json({ error: err.message });
+      res.status(500).json({ error: publicError(err) });
     }
   });
 
@@ -70,7 +71,7 @@ export default function healthIssuesRoutes(pool) {
       if (result.rows.length === 0) return res.status(404).json({ error: 'Not found' });
       res.json(issueRowToMap(result.rows[0]));
     } catch (err) {
-      res.status(500).json({ error: err.message });
+      res.status(500).json({ error: publicError(err) });
     }
   });
 
@@ -96,7 +97,7 @@ export default function healthIssuesRoutes(pool) {
       );
       res.status(201).json(issueRowToMap(result.rows[0]));
     } catch (err) {
-      res.status(500).json({ error: err.message });
+      res.status(500).json({ error: publicError(err) });
     }
   });
 
@@ -122,7 +123,7 @@ export default function healthIssuesRoutes(pool) {
       if (result.rows.length === 0) return res.status(404).json({ error: 'Not found' });
       res.json(issueRowToMap(result.rows[0]));
     } catch (err) {
-      res.status(500).json({ error: err.message });
+      res.status(500).json({ error: publicError(err) });
     }
   });
 
@@ -133,7 +134,7 @@ export default function healthIssuesRoutes(pool) {
       await pool.query('DELETE FROM health_issues WHERE id = $1 AND user_id = $2', [req.params.id, userId]);
       res.json({ deleted: true });
     } catch (err) {
-      res.status(500).json({ error: err.message });
+      res.status(500).json({ error: publicError(err) });
     }
   });
 
@@ -147,7 +148,7 @@ export default function healthIssuesRoutes(pool) {
       );
       res.json(result.rows);
     } catch (err) {
-      res.status(500).json({ error: err.message });
+      res.status(500).json({ error: publicError(err) });
     }
   });
 
@@ -161,7 +162,7 @@ export default function healthIssuesRoutes(pool) {
       );
       res.json({ message: 'Event deleted' });
     } catch (err) {
-      res.status(500).json({ error: err.message });
+      res.status(500).json({ error: publicError(err) });
     }
   });
 

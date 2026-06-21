@@ -14,6 +14,7 @@ import healthIssuesRoutes from '../routes/healthIssues.js';
 import organizationsRoutes from '../routes/organizations.js';
 import vetsRoutes from '../routes/vets.js';
 import sharingRoutes from '../routes/sharing.js';
+import { corsOptions } from '../config/security.js';
 
 dotenv.config();
 
@@ -43,7 +44,7 @@ export function createApp(customPool, comparePassword) {
   const app = express();
   const pool = customPool || createPool();
 
-  app.use(cors());
+  app.use(cors(corsOptions()));
   app.use(bodyParser.json());
 
   app.use('/api/auth', authRoutes(pool, comparePassword));

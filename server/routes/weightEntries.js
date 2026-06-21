@@ -3,6 +3,7 @@ import { v4 as uuidv4 } from 'uuid';
 import jwt from 'jsonwebtoken';
 
 import { JWT_SECRET } from '../config/jwtSecret.js';
+import { publicError } from '../config/security.js';
 
 function extractUserId(req) {
   const auth = req.headers['authorization'] || req.headers['Authorization'];
@@ -49,7 +50,7 @@ export default function weightEntriesRoutes(pool) {
       }
       res.json(result.rows.map(weightEntryToMap));
     } catch (err) {
-      res.status(500).json({ error: err.message });
+      res.status(500).json({ error: publicError(err) });
     }
   });
 
@@ -68,7 +69,7 @@ export default function weightEntriesRoutes(pool) {
       if (result.rows.length === 0) return res.status(404).json({ error: 'No weight entries found' });
       res.json(weightEntryToMap(result.rows[0]));
     } catch (err) {
-      res.status(500).json({ error: err.message });
+      res.status(500).json({ error: publicError(err) });
     }
   });
 
@@ -87,7 +88,7 @@ export default function weightEntriesRoutes(pool) {
       );
       res.status(201).json(weightEntryToMap(result.rows[0]));
     } catch (err) {
-      res.status(500).json({ error: err.message });
+      res.status(500).json({ error: publicError(err) });
     }
   });
 
@@ -105,7 +106,7 @@ export default function weightEntriesRoutes(pool) {
       if (result.rows.length === 0) return res.status(404).json({ error: 'Not found' });
       res.json(weightEntryToMap(result.rows[0]));
     } catch (err) {
-      res.status(500).json({ error: err.message });
+      res.status(500).json({ error: publicError(err) });
     }
   });
 
@@ -116,7 +117,7 @@ export default function weightEntriesRoutes(pool) {
       await pool.query('DELETE FROM weight_entries WHERE id = $1 AND user_id = $2', [req.params.id, userId]);
       res.json({ deleted: true });
     } catch (err) {
-      res.status(500).json({ error: err.message });
+      res.status(500).json({ error: publicError(err) });
     }
   });
 

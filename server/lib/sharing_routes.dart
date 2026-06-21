@@ -5,6 +5,7 @@ import 'package:postgres/postgres.dart';
 import 'package:uuid/uuid.dart';
 import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart';
 import 'jwt_secret.dart';
+import 'http_security.dart';
 
 final _uuid = Uuid();
 
@@ -33,7 +34,7 @@ Router sharingRoutes(Pool pool) {
           body: jsonEncode({'code': code, 'pet_id': petId}),
           headers: {'Content-Type': 'application/json'});
     } catch (e) {
-      return Response.internalServerError(body: jsonEncode({'error': e.toString()}));
+      return Response.internalServerError(body: jsonEncode({'error': publicError(e)}));
     }
   });
 
@@ -48,7 +49,7 @@ Router sharingRoutes(Pool pool) {
       final list = results.map((r) => r.toColumnMap()).toList();
       return Response.ok(jsonEncode(list), headers: {'Content-Type': 'application/json'});
     } catch (e) {
-      return Response.internalServerError(body: jsonEncode({'error': e.toString()}));
+      return Response.internalServerError(body: jsonEncode({'error': publicError(e)}));
     }
   });
 
@@ -62,7 +63,7 @@ Router sharingRoutes(Pool pool) {
       );
       return Response.ok(jsonEncode({'message': 'Share accepted'}), headers: {'Content-Type': 'application/json'});
     } catch (e) {
-      return Response.internalServerError(body: jsonEncode({'error': e.toString()}));
+      return Response.internalServerError(body: jsonEncode({'error': publicError(e)}));
     }
   });
 
@@ -76,7 +77,7 @@ Router sharingRoutes(Pool pool) {
       );
       return Response.ok(jsonEncode({'message': 'Share declined'}), headers: {'Content-Type': 'application/json'});
     } catch (e) {
-      return Response.internalServerError(body: jsonEncode({'error': e.toString()}));
+      return Response.internalServerError(body: jsonEncode({'error': publicError(e)}));
     }
   });
 
@@ -94,7 +95,7 @@ Router sharingRoutes(Pool pool) {
           jsonEncode({'message': hidden ? 'Pet hidden' : 'Pet unhidden'}),
           headers: {'Content-Type': 'application/json'});
     } catch (e) {
-      return Response.internalServerError(body: jsonEncode({'error': e.toString()}));
+      return Response.internalServerError(body: jsonEncode({'error': publicError(e)}));
     }
   });
 
@@ -109,7 +110,7 @@ Router sharingRoutes(Pool pool) {
       final list = results.map((r) => r.toColumnMap()).toList();
       return Response.ok(jsonEncode(list), headers: {'Content-Type': 'application/json'});
     } catch (e) {
-      return Response.internalServerError(body: jsonEncode({'error': e.toString()}));
+      return Response.internalServerError(body: jsonEncode({'error': publicError(e)}));
     }
   });
 

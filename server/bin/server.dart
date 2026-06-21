@@ -2,7 +2,7 @@ import 'dart:io';
 import 'package:shelf/shelf.dart';
 import 'package:shelf/shelf_io.dart' as shelf_io;
 import 'package:shelf_router/shelf_router.dart';
-import 'package:shelf_cors_headers/shelf_cors_headers.dart';
+import '../lib/http_security.dart';
 import 'package:shelf_static/shelf_static.dart';
 import '../lib/routes.dart';
 import '../lib/auth_routes.dart' as auth;
@@ -95,7 +95,7 @@ void main() async {
   }
 
   final handler = const Pipeline()
-      .addMiddleware(corsHeaders())
+      .addMiddleware(corsMiddleware())
       .addMiddleware(allowIframe())
       .addMiddleware(normalizeTrailingSlash())
       .addHandler((Request request) async {

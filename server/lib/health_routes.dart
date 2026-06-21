@@ -6,6 +6,7 @@ import 'package:uuid/uuid.dart';
 import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart';
 
 import 'jwt_secret.dart';
+import 'http_security.dart';
 
 final _uuid = Uuid();
 const _jsonHeaders = {'Content-Type': 'application/json'};
@@ -89,7 +90,7 @@ Router healthRoutes(Pool pool) {
       final entries = results.map((row) => _healthEntryToMap(row)).toList();
       return Response.ok(jsonEncode(entries), headers: _jsonHeaders);
     } catch (e) {
-      return Response.internalServerError(body: jsonEncode({'error': 'Error fetching entries: $e'}), headers: _jsonHeaders);
+      return Response.internalServerError(body: jsonEncode({'error': publicError(e, 'Error fetching entries')}), headers: _jsonHeaders);
     }
   });
 
@@ -110,7 +111,7 @@ Router healthRoutes(Pool pool) {
       }
       return Response.ok(csv.toString(), headers: {'Content-Type': 'text/csv'});
     } catch (e) {
-      return Response.internalServerError(body: jsonEncode({'error': 'Export failed: $e'}), headers: _jsonHeaders);
+      return Response.internalServerError(body: jsonEncode({'error': publicError(e, 'Export failed')}), headers: _jsonHeaders);
     }
   });
 
@@ -129,7 +130,7 @@ Router healthRoutes(Pool pool) {
       }
       return Response.ok(jsonEncode(_healthEntryToMap(results.first)), headers: _jsonHeaders);
     } catch (e) {
-      return Response.internalServerError(body: jsonEncode({'error': 'Error: $e'}), headers: _jsonHeaders);
+      return Response.internalServerError(body: jsonEncode({'error': publicError(e)}), headers: _jsonHeaders);
     }
   });
 
@@ -165,7 +166,7 @@ Router healthRoutes(Pool pool) {
       );
       return Response(201, body: jsonEncode(_healthEntryToMap(results.first)), headers: _jsonHeaders);
     } catch (e) {
-      return Response.internalServerError(body: jsonEncode({'error': 'Error creating entry: $e'}), headers: _jsonHeaders);
+      return Response.internalServerError(body: jsonEncode({'error': publicError(e, 'Error creating entry')}), headers: _jsonHeaders);
     }
   });
 
@@ -202,7 +203,7 @@ Router healthRoutes(Pool pool) {
       }
       return Response.ok(jsonEncode(_healthEntryToMap(results.first)), headers: _jsonHeaders);
     } catch (e) {
-      return Response.internalServerError(body: jsonEncode({'error': 'Error updating entry: $e'}), headers: _jsonHeaders);
+      return Response.internalServerError(body: jsonEncode({'error': publicError(e, 'Error updating entry')}), headers: _jsonHeaders);
     }
   });
 
@@ -218,7 +219,7 @@ Router healthRoutes(Pool pool) {
       );
       return Response.ok(jsonEncode({'deleted': true}), headers: _jsonHeaders);
     } catch (e) {
-      return Response.internalServerError(body: jsonEncode({'error': 'Error: $e'}), headers: _jsonHeaders);
+      return Response.internalServerError(body: jsonEncode({'error': publicError(e)}), headers: _jsonHeaders);
     }
   });
 
@@ -249,7 +250,7 @@ Router healthRoutes(Pool pool) {
       );
       return Response.ok(jsonEncode(_healthEntryToMap(results.first)), headers: _jsonHeaders);
     } catch (e) {
-      return Response.internalServerError(body: jsonEncode({'error': 'Error: $e'}), headers: _jsonHeaders);
+      return Response.internalServerError(body: jsonEncode({'error': publicError(e)}), headers: _jsonHeaders);
     }
   });
 
@@ -268,7 +269,7 @@ Router healthRoutes(Pool pool) {
       }
       return Response.ok(jsonEncode(_healthEntryToMap(results.first)), headers: _jsonHeaders);
     } catch (e) {
-      return Response.internalServerError(body: jsonEncode({'error': 'Error: $e'}), headers: _jsonHeaders);
+      return Response.internalServerError(body: jsonEncode({'error': publicError(e)}), headers: _jsonHeaders);
     }
   });
 
@@ -294,7 +295,7 @@ Router healthRoutes(Pool pool) {
       }).toList();
       return Response.ok(jsonEncode(history), headers: _jsonHeaders);
     } catch (e) {
-      return Response.internalServerError(body: jsonEncode({'error': 'Error: $e'}), headers: _jsonHeaders);
+      return Response.internalServerError(body: jsonEncode({'error': publicError(e)}), headers: _jsonHeaders);
     }
   });
 
@@ -319,7 +320,7 @@ Router healthRoutes(Pool pool) {
       }).toList();
       return Response.ok(jsonEncode(photos), headers: _jsonHeaders);
     } catch (e) {
-      return Response.internalServerError(body: jsonEncode({'error': 'Error: $e'}), headers: _jsonHeaders);
+      return Response.internalServerError(body: jsonEncode({'error': publicError(e)}), headers: _jsonHeaders);
     }
   });
 
@@ -335,7 +336,7 @@ Router healthRoutes(Pool pool) {
       );
       return Response.ok(jsonEncode({'deleted': true}), headers: _jsonHeaders);
     } catch (e) {
-      return Response.internalServerError(body: jsonEncode({'error': 'Error: $e'}), headers: _jsonHeaders);
+      return Response.internalServerError(body: jsonEncode({'error': publicError(e)}), headers: _jsonHeaders);
     }
   });
 

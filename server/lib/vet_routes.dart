@@ -5,6 +5,7 @@ import 'package:postgres/postgres.dart';
 import 'package:uuid/uuid.dart';
 import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart';
 import 'jwt_secret.dart';
+import 'http_security.dart';
 
 final _uuid = Uuid();
 
@@ -60,7 +61,7 @@ Router vetRoutes(Pool pool) {
       return Response.ok(jsonEncode(list), headers: _json);
     } catch (e) {
       return Response.internalServerError(
-          body: jsonEncode({'error': e.toString()}));
+          body: jsonEncode({'error': publicError(e)}));
     }
   });
 
@@ -82,7 +83,7 @@ Router vetRoutes(Pool pool) {
       return Response.ok(jsonEncode(_vetRowToMap(results.first)), headers: _json);
     } catch (e) {
       return Response.internalServerError(
-          body: jsonEncode({'error': e.toString()}));
+          body: jsonEncode({'error': publicError(e)}));
     }
   });
 
@@ -113,7 +114,7 @@ Router vetRoutes(Pool pool) {
       return Response(201, body: jsonEncode(_vetRowToMap(results.first)), headers: _json);
     } catch (e) {
       return Response.internalServerError(
-          body: jsonEncode({'error': e.toString()}));
+          body: jsonEncode({'error': publicError(e)}));
     }
   });
 
@@ -146,7 +147,7 @@ Router vetRoutes(Pool pool) {
       return Response.ok(jsonEncode(_vetRowToMap(results.first)), headers: _json);
     } catch (e) {
       return Response.internalServerError(
-          body: jsonEncode({'error': e.toString()}));
+          body: jsonEncode({'error': publicError(e)}));
     }
   });
 
@@ -169,7 +170,7 @@ Router vetRoutes(Pool pool) {
           jsonEncode({'message': 'Vet deleted'}), headers: _json);
     } catch (e) {
       return Response.internalServerError(
-          body: jsonEncode({'error': e.toString()}));
+          body: jsonEncode({'error': publicError(e)}));
     }
   });
 
