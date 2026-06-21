@@ -602,7 +602,27 @@ describe('Auth Routes', () => {
         .send({ email: userEmail });
       expect(res.statusCode).toBe(200);
       expect(res.body).toHaveProperty('message');
+      // Outside production the code is exposed for local/test convenience.
       expect(res.body).toHaveProperty('code');
+    });
+
+    it('does not return the reset code in production', async () => {
+      const prev = process.env.NODE_ENV;
+      process.env.NODE_ENV = 'production';
+      try {
+        const pool = buildMockPool({
+          selectUserByEmail: async () => ({ rows: [{ id: userId }] }),
+        });
+        const prodApp = createApp(pool, mockComparePassword);
+        const res = await request(prodApp)
+          .post('/api/auth/forgot-password')
+          .send({ email: userEmail });
+        expect(res.statusCode).toBe(200);
+        expect(res.body).toHaveProperty('message');
+        expect(res.body).not.toHaveProperty('code');
+      } finally {
+        process.env.NODE_ENV = prev;
+      }
     });
 
     it('should return success message for non-existent email (no info leak)', async () => {

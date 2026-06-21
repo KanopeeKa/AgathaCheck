@@ -8,6 +8,10 @@ import 'package:shelf_cors_headers/shelf_cors_headers.dart';
 
 bool _isProduction() => Platform.environment['NODE_ENV'] == 'production';
 
+/// Public view of the production flag for route modules that need to redact
+/// sensitive values (e.g. the password-reset code) outside the error helpers.
+bool isProduction() => _isProduction();
+
 /// Returns a client-safe error string. In production the raw error message is
 /// suppressed (it can leak DB/internal details) and [prodMessage] is returned;
 /// outside production the detailed message is returned so developers keep full
