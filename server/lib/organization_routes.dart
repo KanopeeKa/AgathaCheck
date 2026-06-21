@@ -22,6 +22,28 @@ String? _extractUserId(Request request) {
   }
 }
 
+// Roles that may be assigned to a member; `pending_*` invite variants are
+// derived from these. Anything else is rejected.
+const _assignableRoles = ['member', 'super_user'];
+
+// Returns the caller's role in the org, or null if they are not a member.
+Future<String?> _getMemberRole(Pool pool, String orgId, String userId) async {
+  final results = await pool.execute(
+    Sql.named(
+        'SELECT role FROM organization_users WHERE organization_id = @orgId AND user_id = @userId'),
+    parameters: {'orgId': orgId, 'userId': userId},
+  );
+  if (results.isEmpty) return null;
+  return results.first.toColumnMap()['role']?.toString();
+}
+
+bool _isActiveMember(String? role) =>
+    role != null && !role.startsWith('pending_');
+bool _isAdmin(String? role) => role == 'super_user';
+
+Response _forbidden() =>
+    Response(403, body: jsonEncode({'error': 'Forbidden'}), headers: _jsonHeaders);
+
 Router organizationRoutes(Pool pool) {
   final router = Router();
 
@@ -193,6 +215,7 @@ Router organizationRoutes(Pool pool) {
       return Response(401, body: jsonEncode({'error': 'Unauthorized'}), headers: _jsonHeaders);
     }
     try {
+      if (!_isAdmin(await _getMemberRole(pool, id, userId))) return _forbidden();
       final data = jsonDecode(await request.readAsString()) as Map<String, dynamic>;
       await pool.execute(
         Sql.named('UPDATE organizations SET name = @name, type = @type, email = @email, phone = @phone, address = @address, website = @website, bio = @bio, photo_url = @photo_url, updated_at = NOW() WHERE id = @id'),
@@ -234,6 +257,7 @@ Router organizationRoutes(Pool pool) {
       return Response(401, body: jsonEncode({'error': 'Unauthorized'}), headers: _jsonHeaders);
     }
     try {
+      if (!_isAdmin(await _getMemberRole(pool, id, userId))) return _forbidden();
       await pool.execute(
         Sql.named('DELETE FROM organizations WHERE id = @id'),
         parameters: {'id': id},
@@ -250,6 +274,7 @@ Router organizationRoutes(Pool pool) {
       return Response(401, body: jsonEncode({'error': 'Unauthorized'}), headers: _jsonHeaders);
     }
     try {
+      if (!_isActiveMember(await _getMemberRole(pool, id, userId))) return _forbidden();
       final results = await pool.execute(
         Sql.named('''
           SELECT ou.id, ou.role, ou.created_at, u.id as user_id, u.email, u.first_name, u.last_name, u.photo_url
@@ -285,11 +310,15 @@ Router organizationRoutes(Pool pool) {
       return Response(401, body: jsonEncode({'error': 'Unauthorized'}), headers: _jsonHeaders);
     }
     try {
+      if (!_isAdmin(await _getMemberRole(pool, id, userId))) return _forbidden();
       final data = jsonDecode(await request.readAsString()) as Map<String, dynamic>;
       final email = data['email'] as String?;
       final role = data['role'] ?? 'member';
       if (email == null || email.isEmpty) {
         return Response(400, body: jsonEncode({'error': 'Email is required'}), headers: _jsonHeaders);
+      }
+      if (!_assignableRoles.contains(role)) {
+        return Response(400, body: jsonEncode({'error': 'Invalid role'}), headers: _jsonHeaders);
       }
       final userResult = await pool.execute(
         Sql.named('SELECT id FROM users WHERE email = @email'),
@@ -316,6 +345,7 @@ Router organizationRoutes(Pool pool) {
       return Response(401, body: jsonEncode({'error': 'Unauthorized'}), headers: _jsonHeaders);
     }
     try {
+      if (!_isActiveMember(await _getMemberRole(pool, id, userId))) return _forbidden();
       final results = await pool.execute(
         Sql.named('SELECT * FROM pets WHERE organization_id = @orgId ORDER BY created_at'),
         parameters: {'orgId': id},
@@ -342,6 +372,7 @@ Router organizationRoutes(Pool pool) {
       return Response(401, body: jsonEncode({'error': 'Unauthorized'}), headers: _jsonHeaders);
     }
     try {
+      if (!_isActiveMember(await _getMemberRole(pool, id, userId))) return _forbidden();
       final results = await pool.execute(
         Sql.named('SELECT * FROM archived_pets WHERE organization_id = @orgId ORDER BY created_at DESC'),
         parameters: {'orgId': id},
