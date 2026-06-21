@@ -14,6 +14,41 @@ function extractUserId(req) {
   }
 }
 
+function nextOccurrence(row) {
+  const freq = row.frequency || 'once';
+  if (freq === 'once') return new Date('9999-12-31T00:00:00.000Z');
+  const interval = Math.max(1, row.frequency_interval ?? 1);
+  const customDays = Math.max(1, row.frequency_days || interval);
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const next = row.next_due_date ? new Date(row.next_due_date) : new Date();
+  const advance = (d) => {
+    switch (freq) {
+      case 'daily':
+        d.setDate(d.getDate() + interval);
+        break;
+      case 'weekly':
+        d.setDate(d.getDate() + 7 * interval);
+        break;
+      case 'monthly':
+        d.setMonth(d.getMonth() + interval);
+        break;
+      case 'yearly':
+        d.setFullYear(d.getFullYear() + interval);
+        break;
+      case 'custom':
+        d.setDate(d.getDate() + customDays);
+        break;
+      default:
+        d.setDate(d.getDate() + interval);
+    }
+  };
+  do {
+    advance(next);
+  } while (next <= today);
+  return next;
+}
+
 function healthEntryToMap(row) {
   return {
     id: row.id,
@@ -187,9 +222,15 @@ export default function healthEntriesRoutes(pool) {
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     try {
       const entryId = req.params.id;
-      const result = await pool.query(
-        "UPDATE health_entries SET status = 'completed', completed_at = NOW(), updated_at = NOW() WHERE id = $1 AND user_id = $2 RETURNING *",
+      const existing = await pool.query(
+        'SELECT he.* FROM health_entries he WHERE he.id = $1 AND he.user_id = $2',
         [entryId, userId]
+      );
+      if (existing.rows.length === 0) return res.status(404).json({ error: 'Entry not found' });
+      const newDueDate = nextOccurrence(existing.rows[0]);
+      const result = await pool.query(
+        "UPDATE health_entries SET status = 'completed', completed_at = NOW(), next_due_date = $1, updated_at = NOW() WHERE id = $2 AND user_id = $3 RETURNING *",
+        [newDueDate, entryId, userId]
       );
       if (result.rows.length === 0) return res.status(404).json({ error: 'Entry not found' });
       const histId = uuidv4();
@@ -211,7 +252,7 @@ export default function healthEntriesRoutes(pool) {
     try {
       const entryId = req.params.id;
       const result = await pool.query(
-        "UPDATE health_entries SET status = 'active', completed_at = NULL, updated_at = NOW() WHERE id = $1 AND user_id = $2 RETURNING *",
+        "UPDATE health_entries SET status = 'active', completed_at = NULL, next_due_date = CASE WHEN frequency = 'once' THEN start_date ELSE next_due_date END, updated_at = NOW() WHERE id = $1 AND user_id = $2 RETURNING *",
         [entryId, userId]
       );
       if (result.rows.length === 0) return res.status(404).json({ error: 'Entry not found' });

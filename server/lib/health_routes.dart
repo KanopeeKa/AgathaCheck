@@ -24,6 +24,45 @@ String? _extractUserId(Request request) {
   }
 }
 
+DateTime _nextOccurrence(Map<String, dynamic> c) {
+  final freq = (c['frequency'] ?? 'once').toString();
+  if (freq == 'once') return DateTime.utc(9999, 12, 31);
+  var interval = (c['frequency_interval'] as int?) ?? 1;
+  if (interval < 1) interval = 1;
+  var customDays = (c['frequency_days'] as int?) ?? interval;
+  if (customDays < 1) customDays = interval;
+  final now = DateTime.now();
+  final today = DateTime(now.year, now.month, now.day);
+  var next = c['next_due_date'] is DateTime
+      ? c['next_due_date'] as DateTime
+      : (c['next_due_date'] != null
+          ? DateTime.parse(c['next_due_date'].toString())
+          : now);
+  DateTime advance(DateTime d) {
+    switch (freq) {
+      case 'daily':
+        return d.add(Duration(days: interval));
+      case 'weekly':
+        return d.add(Duration(days: 7 * interval));
+      case 'monthly':
+        return DateTime(d.year, d.month + interval, d.day, d.hour, d.minute,
+            d.second);
+      case 'yearly':
+        return DateTime(d.year + interval, d.month, d.day, d.hour, d.minute,
+            d.second);
+      case 'custom':
+        return d.add(Duration(days: customDays));
+      default:
+        return d.add(Duration(days: interval));
+    }
+  }
+
+  do {
+    next = advance(next);
+  } while (!next.isAfter(today));
+  return next;
+}
+
 Router healthRoutes(Pool pool) {
   final router = Router();
 
@@ -179,9 +218,17 @@ Router healthRoutes(Pool pool) {
       return Response(401, body: jsonEncode({'error': 'Unauthorized'}), headers: _jsonHeaders);
     }
     try {
-      final results = await pool.execute(
-        Sql.named('UPDATE health_entries SET status = \'completed\', completed_at = NOW(), updated_at = NOW() WHERE id = @id AND user_id = @userId RETURNING *'),
+      final existing = await pool.execute(
+        Sql.named('SELECT he.* FROM health_entries he WHERE he.id = @id AND he.user_id = @userId'),
         parameters: {'id': id, 'userId': userId},
+      );
+      if (existing.isEmpty) {
+        return Response.notFound(jsonEncode({'error': 'Entry not found'}), headers: _jsonHeaders);
+      }
+      final newDueDate = _nextOccurrence(existing.first.toColumnMap());
+      final results = await pool.execute(
+        Sql.named('UPDATE health_entries SET status = \'completed\', completed_at = NOW(), next_due_date = @next_due, updated_at = NOW() WHERE id = @id AND user_id = @userId RETURNING *'),
+        parameters: {'id': id, 'userId': userId, 'next_due': newDueDate},
       );
       if (results.isEmpty) {
         return Response.notFound(jsonEncode({'error': 'Entry not found'}), headers: _jsonHeaders);
@@ -203,7 +250,7 @@ Router healthRoutes(Pool pool) {
     }
     try {
       final results = await pool.execute(
-        Sql.named('UPDATE health_entries SET status = \'active\', completed_at = NULL, updated_at = NOW() WHERE id = @id AND user_id = @userId RETURNING *'),
+        Sql.named('UPDATE health_entries SET status = \'active\', completed_at = NULL, next_due_date = CASE WHEN frequency = \'once\' THEN start_date ELSE next_due_date END, updated_at = NOW() WHERE id = @id AND user_id = @userId RETURNING *'),
         parameters: {'id': id, 'userId': userId},
       );
       if (results.isEmpty) {

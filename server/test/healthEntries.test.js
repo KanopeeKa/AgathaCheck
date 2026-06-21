@@ -44,6 +44,9 @@ describe('Health Entries API', () => {
 
         if (sql.includes('SELECT he.*') && sql.includes('WHERE he.id')) {
           if (params && params[0] === 'nonexistent') return { rows: [] };
+          if (params && params[0] === 'he-zero') {
+            return { rows: [makeHealthRow({ id: params[0], frequency: 'daily', frequency_interval: 0 })] };
+          }
           return { rows: [makeHealthRow({ id: params[0] })] };
         }
 
@@ -395,6 +398,30 @@ describe('Health Entries API', () => {
       const historyInsert = queryLog.find(q => q.sql.includes('INSERT INTO health_history'));
       expect(historyInsert).toBeDefined();
       expect(historyInsert.params[1]).toBe('he-1');
+    });
+
+    it('advances next_due_date to a future date for recurring entries', async () => {
+      await request(app)
+        .post('/api/health-entries/he-1/mark-taken')
+        .set('Authorization', `Bearer ${token}`);
+
+      const update = queryLog.find(q =>
+        q.sql.includes("UPDATE health_entries SET status = 'completed'"));
+      expect(update).toBeDefined();
+      const newDue = new Date(update.params[0]);
+      expect(newDue.getTime()).toBeGreaterThan(Date.now());
+      expect(newDue.getFullYear()).toBeLessThan(9999);
+    });
+
+    it('does not hang and still advances when interval is zero', async () => {
+      const res = await request(app)
+        .post('/api/health-entries/he-zero/mark-taken')
+        .set('Authorization', `Bearer ${token}`);
+      expect(res.statusCode).toBe(200);
+      const update = queryLog.find(q =>
+        q.sql.includes("UPDATE health_entries SET status = 'completed'"));
+      const newDue = new Date(update.params[0]);
+      expect(newDue.getTime()).toBeGreaterThan(Date.now());
     });
 
     it('returns 404 for nonexistent entry', async () => {

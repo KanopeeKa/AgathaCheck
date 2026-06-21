@@ -2,3 +2,4 @@
 - [Local-first cache & remote sync](local-first-sync.md) — server is source of truth; never re-push local-only rows on read (resurrects deleted data); create rolls back + rethrows on remote failure.
 - [Flutter web password-manager autofill](flutter-web-password-managers.md) — CanvasKit paints fields on canvas so extensions (Proton Pass) can't autofill; fix is a native HTML form in index.html bridged to Dart.
 - [Tool-output token scrambling](tool-output-token-scrambling.md) — grep/bash can mangle source tokens in file content (e.g. weight→ln); read tool shows truth, edits use real tokens.
+- [Health entry completion semantics](health-entry-completion.md) — UI derives overdue/completed from next_due_date only (no status field); mark-taken must advance/sentinel next_due_date in BOTH backends.
