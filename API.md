@@ -1,3 +1,83 @@
+# Agatha Track API — Endpoint Reference
+
+> This top section is the authoritative, current endpoint list (generated from
+> `server/routes/*.js`). The older notes further down predate several routes and
+> may be incomplete or out of date; prefer this section.
+
+**Mounting & prefixes.** Every router is mounted under **both** `/api/...` and
+`/backend/api/...` on the same origin. The deployed Flutter web app calls
+`/backend/api/...`; native/dev builds use `http://localhost:5000/api/...`.
+
+**Auth.** Unless noted as *public*, endpoints require `Authorization: Bearer <JWT>`
+(access token from signup/login). Organization routes additionally enforce
+*membership* and, for mutations, the `super_user` role. Health/weight/issue
+records are scoped to the authenticated user; nested resources verify ownership
+of the parent record.
+
+### Auth (`/api/auth`)
+| Method | Path | Notes |
+|---|---|---|
+| POST | `/signup` | public; returns `{ user, access_token, refresh_token }` |
+| POST | `/login` | public |
+| POST | `/refresh` | public; body `{ refresh_token }` |
+| POST | `/logout` | no server-side revocation (stateless JWT) |
+| GET | `/me` | current user |
+| PUT | `/me` | update profile (whitelisted fields) |
+| POST | `/me/photo` | sets a photo URL |
+| POST | `/change-password` | body `{ currentPassword, newPassword }` |
+| POST | `/forgot-password` | public; the reset `code` is returned/logged **only outside production** |
+| POST | `/reset-password` | public; body `{ email, code, new_password }` |
+| DELETE | `/me` | body `{ password }`; deletes account |
+| GET | `/me/export` | GDPR JSON export |
+
+### Pets (`/api/pets`)
+`GET /`, `GET /all`, `GET /:id` (UUID-validated), `POST /`, `PUT /:id`, `DELETE /:id`.
+
+### Vets (`/api/vets`)
+`GET /`, `POST /`, `PUT /:id`, `DELETE /:id` — all scoped to the user.
+
+### Organizations (`/api/organizations`)
+| Method | Path | Authorization |
+|---|---|---|
+| GET | `/` | member orgs only (joined query) |
+| POST | `/` | any authenticated user (creator becomes `super_user`) |
+| GET | `/:id` | membership (joined query) |
+| PUT | `/:id` | `super_user` |
+| DELETE | `/:id` | `super_user` |
+| POST | `/:id/photo` | `super_user` |
+| GET | `/:orgId/members` | member |
+| POST | `/:id/invite` | `super_user`; role ∈ {`member`,`super_user`} |
+| PUT | `/:orgId/members/:userId/role` | `super_user`; role validated |
+| DELETE | `/:orgId/members/:userId` | `super_user` |
+| DELETE | `/:orgId/members/me` | self (leave org) |
+| GET | `/:orgId/pets`, `/:orgId/archived` | member |
+| GET | `/invites/pending`, POST `/invites/:id/accept|decline` | invitee |
+
+### Health entries (`/api/health-entries`)
+`GET /` (optional `?pet_id=`), `GET /export` (CSV), `GET /:id`, `POST /` (verifies
+pet ownership), `PUT /:id`, `DELETE /:id`, `POST /:id/mark-taken`,
+`POST /:id/undo-complete`, `GET /:id/history`, `GET|POST /:id/photos`,
+`DELETE /:entryId/photos/:photoId`. Nested history/photos verify entry ownership.
+
+### Health issues (`/api/health-issues`)
+`GET /` (optional `?pet_id=`), `GET /:id`, `POST /` (verifies pet ownership),
+`PUT /:id`, `DELETE /:id`, `GET /:issueId/events`,
+`DELETE /:issueId/events/:entryId` (events verify issue ownership).
+
+### Weight entries (`/api/weight-entries`)
+`GET /` (optional `?pet_id=`), `GET /latest?pet_id=`, `POST /` (verifies pet
+ownership), `PUT /:id`, `DELETE /:id`.
+
+### Notifications (`/api/notifications`)
+`GET /`, `GET /unread-count`, `PUT|POST /:id/read`, `PUT|POST /read-all`,
+`GET|PUT /preferences`, `POST /check-due`.
+
+### Sharing (`/api/share`)
+`POST /` (create share code), `GET /:code` (**public** read of a shared pet),
+`POST /:code/accept`, `GET /pending`, `GET /hidden`.
+
+---
+
 ### Health Entries Endpoints
 
 - **GET** `/backend/api/health-entries`

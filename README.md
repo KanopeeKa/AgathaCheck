@@ -141,35 +141,57 @@ Tests span domain, data, provider/controller, and widget layers, with integratio
 
 ## Getting Started
 
+> **Repository layout.** The canonical Flutter app lives in **`flutter_app/`** and
+> the backend in **`server/`**. Run all Flutter commands from `flutter_app/` and
+> all backend commands from `server/`. The minimal `lib/` + `pubspec.yaml` at the
+> repository root is **legacy** (an older pet-profile-only tree) and is not the
+> app you run — do not run `flutter pub get` at the repo root.
+
 ### Prerequisites
 
-- Flutter SDK 3.8+
-- Dart 3.8+
+- Flutter SDK 3.8+ / Dart 3.8+ (CI pins Flutter 3.32.0)
+- Node.js 20+ (backend)
+- PostgreSQL 14+
 
-### Setup
+### Frontend (Flutter web)
 
 ```bash
+cd flutter_app
+
 # Install dependencies
 flutter pub get
 
-# Generate mock files for tests
-flutter pub run build_runner build --delete-conflicting-outputs
+# Generate mock files for tests (required before analyze/test)
+dart run build_runner build --delete-conflicting-outputs
 
-# Run the app (web)
-flutter run -d web-server --web-port=5000 --web-hostname=0.0.0.0
-
-# Run all tests
-flutter test
-
-# Run integration tests
-flutter test test/features/pet_profile/presentation/integration/
-
-# Analyze code
+# Analyze, test, build
 flutter analyze
+flutter test
+flutter build web --release --no-tree-shake-icons
 
-# Generate documentation
-dart doc
+# Run the app against the backend (see below). On web the app calls the API at
+# `/backend` on the same origin, so for an end-to-end run serve the built web
+# bundle from the backend rather than the Flutter dev server.
 ```
+
+### Backend (Node.js API + PostgreSQL)
+
+```bash
+cd server
+npm ci
+
+# Configure the database connection (see server/.env.example):
+#   PGUSER / PGPASSWORD / PGHOST / PGPORT / PGDATABASE  (or a single DATABASE_URL)
+#   JWT_SECRET  — required in production; a dev fallback is used otherwise
+# Apply the schema, then start the API (serves the Flutter web build + API on
+# the same origin at http://localhost:3000):
+node scripts/migrate.js up      # or: dart run bin/migrate.dart up
+node bin/start.js               # note: `npm start` only exports the app; use bin/start.js
+```
+
+The backend ships as two interchangeable implementations sharing one Postgres
+schema — Node.js/Express (canonical, Jest-tested) and Dart/Shelf. Run **one** of
+them. Backend tests: `npx jest --env=node --forceExit`.
 
 
 ## Legacy Structure
@@ -200,7 +222,7 @@ lib/
 - GDPR data rights: account deletion, JSON export, consent management
 - Material 3 design with deep purple / violet theme
 - Clean architecture with clear layer separation
-- Comprehensive test coverage (Flutter widget/model tests, ~338 Jest tests, Dart parity tests)
+- Comprehensive test coverage (Flutter widget/model tests, 380+ backend Jest tests, Dart parity backend)
 
 ## Backend & Database
 
