@@ -507,6 +507,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get procedure => 'Other';
 
   @override
+  String get familyEvent => 'Family Event';
+
+  @override
   String get dosage => 'Dosage';
 
   @override
@@ -529,6 +532,18 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get custom => 'Custom';
+
+  @override
+  String get periodDays => 'Days';
+
+  @override
+  String get periodWeeks => 'Weeks';
+
+  @override
+  String get periodMonths => 'Months';
+
+  @override
+  String get periodYears => 'Years';
 
   @override
   String get every => 'Every';
@@ -2417,4 +2432,161 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get error => 'Error';
+
+  @override
+  String get maxPhotosReached => 'Maximum 4 photos per event';
+
+  @override
+  String failedToLoadPhotos(String error) {
+    return 'Failed to load photos: $error';
+  }
+
+  @override
+  String failedToAddPhoto(String error) {
+    return 'Failed to add photo: $error';
+  }
+
+  @override
+  String failedToUploadPhotoNamed(String name, String error) {
+    return 'Failed to upload photo \"$name\": $error';
+  }
+
+  @override
+  String get deletePhotoTitle => 'Delete Photo';
+
+  @override
+  String get deletePhotoConfirm => 'Remove this photo? This cannot be undone.';
+
+  @override
+  String failedToDeletePhoto(String error) {
+    return 'Failed to delete photo: $error';
+  }
+
+  @override
+  String failedToLoadEntry(String error) {
+    return 'Failed to load entry: $error';
+  }
+
+  @override
+  String get createHealthIssuesHint =>
+      'You can create health issues from the pet\'s profile page';
+
+  @override
+  String get noPetsFoundAddFirst => 'No pets found. Please add a pet first.';
+
+  @override
+  String get entryNameHint => 'e.g., Heartgard, Annual Checkup';
+
+  @override
+  String get dosageHint => 'e.g., 1 tablet, 0.5ml';
+
+  @override
+  String get period => 'Period';
+
+  @override
+  String get repeatEndsBy => 'Repeat ends by';
+
+  @override
+  String get never => 'Never';
+
+  @override
+  String get pickADate => 'Pick a date';
+
+  @override
+  String get notesHint => 'Additional information...';
+
+  @override
+  String addEntryForPets(int count) {
+    return 'Add Entry for $count Pets';
+  }
+
+  @override
+  String get administrationHistory => 'Administration History';
+
+  @override
+  String get selectAtLeastOnePet => 'Please select at least one pet';
+
+  @override
+  String get markAsCompletedTitle => 'Mark as Completed?';
+
+  @override
+  String get markCompletedPast =>
+      'This event is in the past. Would you like to mark it as completed?';
+
+  @override
+  String get markCompletedToday =>
+      'This event is today. Would you like to mark it as completed?';
+
+  @override
+  String get keepActive => 'Keep Active';
+
+  @override
+  String get markCompletedAction => 'Mark Completed';
+
+  @override
+  String entriesCreated(int count) {
+    return '$count entries created';
+  }
+
+  @override
+  String get noHistoryYet => 'No history yet.';
+
+  @override
+  String deleteEntryNamedConfirm(String name) {
+    return 'Delete \"$name\"? This cannot be undone.';
+  }
+
+  @override
+  String failedToDelete(String error) {
+    return 'Failed to delete: $error';
+  }
+
+  @override
+  String failedToLoadHistory(String error) {
+    return 'Failed to load history: $error';
+  }
+
+  @override
+  String get petLabel => 'Pet';
+
+  @override
+  String get unknownPet => 'Unknown pet';
+
+  @override
+  String get selectPets => 'Select Pets';
+
+  @override
+  String get atLeastOnePetMustBeSelected => 'At least one pet must be selected';
+
+  @override
+  String get selectMultiplePetsHint =>
+      'Select multiple pets to create an entry for each';
+
+  @override
+  String get selectAll => 'Select All';
+
+  @override
+  String get clearSelection => 'Clear';
+
+  @override
+  String get tapToChangeDate => 'Tap to change date';
+
+  @override
+  String get cameraOption => 'Camera';
+
+  @override
+  String get galleryFilesOption => 'Gallery / Files';
+
+  @override
+  String photoCountLabel(int count) {
+    return '$count/4 Photos';
+  }
+
+  @override
+  String pendingUploadSuffix(int count) {
+    return ' ($count will upload on save)';
+  }
+
+  @override
+  String get pendingLabel => 'Pending';
 }

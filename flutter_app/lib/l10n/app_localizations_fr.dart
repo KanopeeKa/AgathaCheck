@@ -509,6 +509,9 @@ class AppLocalizationsFr extends AppLocalizations {
   String get procedure => 'Autre';
 
   @override
+  String get familyEvent => 'Événement familial';
+
+  @override
   String get dosage => 'Dosage';
 
   @override
@@ -531,6 +534,18 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get custom => 'Personnalisé';
+
+  @override
+  String get periodDays => 'jours';
+
+  @override
+  String get periodWeeks => 'semaines';
+
+  @override
+  String get periodMonths => 'mois';
+
+  @override
+  String get periodYears => 'ans';
 
   @override
   String get every => 'Tous les';
@@ -2437,4 +2452,164 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get error => 'Erreur';
+
+  @override
+  String get maxPhotosReached => 'Maximum 4 photos par événement';
+
+  @override
+  String failedToLoadPhotos(String error) {
+    return 'Échec du chargement des photos : $error';
+  }
+
+  @override
+  String failedToAddPhoto(String error) {
+    return 'Échec de l\'ajout de la photo : $error';
+  }
+
+  @override
+  String failedToUploadPhotoNamed(String name, String error) {
+    return 'Échec du téléversement de la photo « $name » : $error';
+  }
+
+  @override
+  String get deletePhotoTitle => 'Supprimer la photo';
+
+  @override
+  String get deletePhotoConfirm =>
+      'Supprimer cette photo ? Cette action est irréversible.';
+
+  @override
+  String failedToDeletePhoto(String error) {
+    return 'Échec de la suppression de la photo : $error';
+  }
+
+  @override
+  String failedToLoadEntry(String error) {
+    return 'Échec du chargement de l\'entrée : $error';
+  }
+
+  @override
+  String get createHealthIssuesHint =>
+      'Vous pouvez créer des problèmes de santé depuis la page de profil de l\'animal';
+
+  @override
+  String get noPetsFoundAddFirst =>
+      'Aucun animal trouvé. Veuillez d\'abord ajouter un animal.';
+
+  @override
+  String get entryNameHint => 'ex. : Heartgard, Bilan annuel';
+
+  @override
+  String get dosageHint => 'ex. : 1 comprimé, 0,5 ml';
+
+  @override
+  String get period => 'Période';
+
+  @override
+  String get repeatEndsBy => 'Répétition jusqu\'au';
+
+  @override
+  String get never => 'Jamais';
+
+  @override
+  String get pickADate => 'Choisir une date';
+
+  @override
+  String get notesHint => 'Informations complémentaires...';
+
+  @override
+  String addEntryForPets(int count) {
+    return 'Ajouter une entrée pour $count animaux';
+  }
+
+  @override
+  String get administrationHistory => 'Historique d\'administration';
+
+  @override
+  String get selectAtLeastOnePet => 'Veuillez sélectionner au moins un animal';
+
+  @override
+  String get markAsCompletedTitle => 'Marquer comme terminé ?';
+
+  @override
+  String get markCompletedPast =>
+      'Cet événement est passé. Souhaitez-vous le marquer comme terminé ?';
+
+  @override
+  String get markCompletedToday =>
+      'Cet événement est aujourd\'hui. Souhaitez-vous le marquer comme terminé ?';
+
+  @override
+  String get keepActive => 'Garder actif';
+
+  @override
+  String get markCompletedAction => 'Marquer comme terminé';
+
+  @override
+  String entriesCreated(int count) {
+    return '$count entrées créées';
+  }
+
+  @override
+  String get noHistoryYet => 'Aucun historique pour le moment.';
+
+  @override
+  String deleteEntryNamedConfirm(String name) {
+    return 'Supprimer « $name » ? Cette action est irréversible.';
+  }
+
+  @override
+  String failedToDelete(String error) {
+    return 'Échec de la suppression : $error';
+  }
+
+  @override
+  String failedToLoadHistory(String error) {
+    return 'Échec du chargement de l\'historique : $error';
+  }
+
+  @override
+  String get petLabel => 'Animal';
+
+  @override
+  String get unknownPet => 'Animal inconnu';
+
+  @override
+  String get selectPets => 'Sélectionner les animaux';
+
+  @override
+  String get atLeastOnePetMustBeSelected =>
+      'Au moins un animal doit être sélectionné';
+
+  @override
+  String get selectMultiplePetsHint =>
+      'Sélectionnez plusieurs animaux pour créer une entrée pour chacun';
+
+  @override
+  String get selectAll => 'Tout sélectionner';
+
+  @override
+  String get clearSelection => 'Effacer';
+
+  @override
+  String get tapToChangeDate => 'Touchez pour changer la date';
+
+  @override
+  String get cameraOption => 'Appareil photo';
+
+  @override
+  String get galleryFilesOption => 'Galerie / Fichiers';
+
+  @override
+  String photoCountLabel(int count) {
+    return '$count/4 photos';
+  }
+
+  @override
+  String pendingUploadSuffix(int count) {
+    return ' ($count seront téléversées à l\'enregistrement)';
+  }
+
+  @override
+  String get pendingLabel => 'En attente';
 }

@@ -17,7 +17,7 @@ The application is built with a clean architecture, separating concerns into dat
 
 -   **Pet Profile Management**: CRUD operations for pet profiles, including dynamic age calculation, unique color assignment, and cascading deletion.
 -   **Authentication & User Profile**: JWT-based authentication with comprehensive user profile management, including password reset and profile editing.
--   **Health Tracking**: Manages medications, preventives, and vet visits with scheduling, photo attachments, and a tabbed dashboard.
+-   **Health Tracking**: Manages medications, preventives, and vet visits with scheduling, photo attachments, and a tabbed dashboard. The entry form (`health_entry_form_screen.dart`) is fully localized (EN/FR) — every label, hint, dialog, and snackbar resolves through `AppLocalizations`. **Photos**: max 4 per event; picked images are downscaled to 1200×1200 at 80% JPEG quality before upload; in add-mode they queue as "pending" and upload only on save, while in edit-mode they upload immediately. Every photo/entry operation (load, add, upload, delete, history) surfaces failures via a snackbar rather than failing silently.
 -   **Health Issues**: Tracks ongoing health conditions linked to pets, associating them with health entries.
 -   **Weight Tracking**: Records and visualizes per-pet weight history with line charts.
 -   **Veterinarian Management**: CRUD for veterinarian contacts, scoped per user.
