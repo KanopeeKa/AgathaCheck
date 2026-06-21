@@ -98,7 +98,10 @@ class PetRepositoryImpl implements PetRepository {
       try {
         await remoteDataSource!.updatePet(model, token!);
       } catch (e) {
+        // Surface the failure (matching addPet) so the UI does not report
+        // success while the server copy still diverges from the local one.
         debugPrint('PetRepository: Failed to update pet on server: $e');
+        rethrow;
       }
     }
     return saved.toEntity();
@@ -111,7 +114,10 @@ class PetRepositoryImpl implements PetRepository {
       try {
         await remoteDataSource!.deletePet(id, token!);
       } catch (e) {
+        // Surface the failure so the UI does not report success while the pet
+        // still exists on the server.
         debugPrint('PetRepository: Failed to delete pet from server: $e');
+        rethrow;
       }
     }
   }

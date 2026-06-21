@@ -3,8 +3,8 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:flutter/foundation.dart' show kIsWeb;
 
+import '../../../../core/providers/api_base_url_provider.dart';
 import '../../../../core/providers/http_client_provider.dart';
 import '../../../../core/widgets/app_logo_title.dart';
 import '../../../../l10n/app_localizations.dart';
@@ -34,7 +34,9 @@ class _SharedPetScreenState extends ConsumerState<SharedPetScreen> {
   String? _error;
   bool _accepting = false;
 
-  String get _baseUrl => kIsWeb ? '' : 'http://localhost:5000';
+  // Use the shared base URL ('/backend' on web) for consistency with the rest
+  // of the app rather than a hardcoded prefix.
+  String get _baseUrl => ref.read(apiBaseUrlProvider);
 
   @override
   void initState() {

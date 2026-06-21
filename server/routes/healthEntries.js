@@ -15,6 +15,22 @@ function extractUserId(req) {
   }
 }
 
+// True when `petId` exists and belongs to `userId`. Used to stop a caller from
+// attaching health records to another user's pet.
+async function userOwnsPet(pool, petId, userId) {
+  if (!petId) return false;
+  const r = await pool.query('SELECT 1 FROM pets WHERE id = $1 AND user_id = $2', [petId, userId]);
+  return r.rows.length > 0;
+}
+
+// True when the health entry exists and belongs to `userId`. Used to scope the
+// nested history/photos routes, which key only on health_entry_id and would
+// otherwise expose another user's records (IDOR).
+async function userOwnsEntry(pool, entryId, userId) {
+  const r = await pool.query('SELECT 1 FROM health_entries WHERE id = $1 AND user_id = $2', [entryId, userId]);
+  return r.rows.length > 0;
+}
+
 /**
  * Computes the next due date for a health entry after it is marked taken.
  *
@@ -156,6 +172,9 @@ export default function healthEntriesRoutes(pool) {
       const data = req.body;
       const id = data.id || uuidv4();
       const petId = data.pet_id || data.petId;
+      if (!(await userOwnsPet(pool, petId, userId))) {
+        return res.status(403).json({ error: 'Forbidden' });
+      }
       const startDate = data.start_date || data.startDate || null;
       const nextDueDate = data.next_due_date || data.nextDueDate || null;
       const healthIssueId = data.health_issue_id || data.healthIssueId || null;
@@ -284,6 +303,9 @@ export default function healthEntriesRoutes(pool) {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     try {
+      if (!(await userOwnsEntry(pool, req.params.id, userId))) {
+        return res.status(404).json({ error: 'Entry not found' });
+      }
       const result = await pool.query(
         'SELECT * FROM health_history WHERE health_entry_id = $1 ORDER BY changed_at DESC',
         [req.params.id]
@@ -304,6 +326,9 @@ export default function healthEntriesRoutes(pool) {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     try {
+      if (!(await userOwnsEntry(pool, req.params.id, userId))) {
+        return res.status(404).json({ error: 'Entry not found' });
+      }
       const result = await pool.query(
         'SELECT * FROM health_event_photos WHERE health_entry_id = $1 ORDER BY created_at',
         [req.params.id]
@@ -323,6 +348,9 @@ export default function healthEntriesRoutes(pool) {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     try {
+      if (!(await userOwnsEntry(pool, req.params.id, userId))) {
+        return res.status(404).json({ error: 'Entry not found' });
+      }
       const id = uuidv4();
       const url = req.body.url || `/uploads/health_photos/${id}.jpg`;
       const result = await pool.query(
@@ -339,6 +367,9 @@ export default function healthEntriesRoutes(pool) {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     try {
+      if (!(await userOwnsEntry(pool, req.params.entryId, userId))) {
+        return res.status(404).json({ error: 'Entry not found' });
+      }
       await pool.query(
         'DELETE FROM health_event_photos WHERE id = $1 AND health_entry_id = $2',
         [req.params.photoId, req.params.entryId]

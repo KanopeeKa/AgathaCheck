@@ -22,6 +22,17 @@ String? _extractUserId(Request request) {
   }
 }
 
+// True when `petId` exists and belongs to `userId` (stops attaching issues to
+// another user's pet).
+Future<bool> _userOwnsPet(Pool pool, String? petId, String userId) async {
+  if (petId == null) return false;
+  final r = await pool.execute(
+    Sql.named('SELECT 1 FROM pets WHERE id = @petId AND user_id = @userId'),
+    parameters: {'petId': petId, 'userId': userId},
+  );
+  return r.isNotEmpty;
+}
+
 Map<String, dynamic> _issueRowToMap(Map<String, dynamic> c) {
   return {
     'id': c['id']?.toString(),
@@ -99,6 +110,10 @@ Router healthIssueRoutes(Pool pool) {
     try {
       final data = jsonDecode(await request.readAsString()) as Map<String, dynamic>;
       final id = data['id'] ?? _uuid.v4();
+      final petId = data['pet_id'] ?? data['petId'];
+      if (!await _userOwnsPet(pool, petId?.toString(), userId)) {
+        return Response(403, body: jsonEncode({'error': 'Forbidden'}), headers: _jsonHeaders);
+      }
       final startStr = data['start_date'] ?? data['startDate'];
       final endStr = data['end_date'] ?? data['endDate'];
       final nameVal = data['title'] ?? data['name'] ?? '';
@@ -107,7 +122,7 @@ Router healthIssueRoutes(Pool pool) {
         Sql.named('INSERT INTO health_issues (id, pet_id, user_id, name, issue_type, notes, start_date, end_date, status) VALUES (@id, @pet_id, @user_id, @name, @issue_type, @notes, @start_date, @end_date, @status) RETURNING *'),
         parameters: {
           'id': id,
-          'pet_id': data['pet_id'] ?? data['petId'],
+          'pet_id': petId,
           'user_id': userId,
           'name': nameVal,
           'issue_type': data['issue_type'] ?? data['issueType'] ?? 'other',

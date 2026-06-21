@@ -34,6 +34,51 @@ function orgRowToMap(row) {
   };
 }
 
+// Roles that may be assigned to a member. `pending_*` variants are derived from
+// these for invites; anything else is rejected so callers cannot smuggle in
+// arbitrary privilege strings (e.g. `pending_super_user`).
+const ASSIGNABLE_ROLES = ['member', 'super_user'];
+
+// Returns the caller's role in the org, or null if they are not a member.
+async function getMemberRole(pool, orgId, userId) {
+  const result = await pool.query(
+    'SELECT role FROM organization_users WHERE organization_id = $1 AND user_id = $2',
+    [orgId, userId],
+  );
+  return result.rows.length ? result.rows[0].role : null;
+}
+
+// A confirmed member (excludes users with an outstanding pending invite).
+function isActiveMember(role) {
+  return !!role && !role.startsWith('pending_');
+}
+
+// Org administrators (the only role allowed to mutate org/membership state).
+function isAdmin(role) {
+  return role === 'super_user';
+}
+
+// Guards a route so only confirmed members proceed. Returns true if the caller
+// is allowed; otherwise writes a 403 and returns false.
+async function requireMember(pool, res, orgId, userId) {
+  const role = await getMemberRole(pool, orgId, userId);
+  if (!isActiveMember(role)) {
+    res.status(403).json({ error: 'Forbidden' });
+    return false;
+  }
+  return true;
+}
+
+// Guards a route so only org admins (super_user) proceed.
+async function requireAdmin(pool, res, orgId, userId) {
+  const role = await getMemberRole(pool, orgId, userId);
+  if (!isAdmin(role)) {
+    res.status(403).json({ error: 'Forbidden' });
+    return false;
+  }
+  return true;
+}
+
 export default function organizationsRoutes(pool) {
   const router = express.Router();
 
@@ -171,6 +216,7 @@ export default function organizationsRoutes(pool) {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     try {
+      if (!(await requireAdmin(pool, res, req.params.id, userId))) return;
       const { name, type, email, phone, address, website, bio, photo_url } = req.body;
       await pool.query(
         'UPDATE organizations SET name = $1, type = $2, email = $3, phone = $4, address = $5, website = $6, bio = $7, photo_url = $8, updated_at = NOW() WHERE id = $9',
@@ -196,6 +242,7 @@ export default function organizationsRoutes(pool) {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     try {
+      if (!(await requireAdmin(pool, res, req.params.id, userId))) return;
       const result = await pool.query('DELETE FROM organizations WHERE id = $1 RETURNING *', [req.params.id]);
       if (result.rows.length === 0) return res.status(404).json({ error: 'Organization not found' });
       res.json({ deleted: true });
@@ -205,13 +252,21 @@ export default function organizationsRoutes(pool) {
   });
 
   router.post('/:id/photo', async (req, res) => {
-    res.json({ message: 'Photo uploaded', photo_url: `/uploads/org_photos/${req.params.id}.jpg` });
+    const userId = extractUserId(req);
+    if (!userId) return res.status(401).json({ error: 'Unauthorized' });
+    try {
+      if (!(await requireAdmin(pool, res, req.params.id, userId))) return;
+      res.json({ message: 'Photo uploaded', photo_url: `/uploads/org_photos/${req.params.id}.jpg` });
+    } catch (err) {
+      res.status(500).json({ error: publicError(err) });
+    }
   });
 
   router.get('/:orgId/members', async (req, res) => {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     try {
+      if (!(await requireMember(pool, res, req.params.orgId, userId))) return;
       const result = await pool.query(
         `SELECT ou.id, ou.role, ou.created_at, u.id as user_id, u.email, u.first_name, u.last_name, u.photo_url
          FROM organization_users ou
@@ -239,9 +294,13 @@ export default function organizationsRoutes(pool) {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     try {
+      if (!(await requireAdmin(pool, res, req.params.id, userId))) return;
       const { email, role = 'member' } = req.body;
       if (!email) {
         return res.status(400).json({ error: 'Email is required' });
+      }
+      if (!ASSIGNABLE_ROLES.includes(role)) {
+        return res.status(400).json({ error: 'Invalid role' });
       }
       const userResult = await pool.query('SELECT id FROM users WHERE email = $1', [email]);
       if (userResult.rows.length === 0) {
@@ -261,8 +320,14 @@ export default function organizationsRoutes(pool) {
   });
 
   router.put('/:orgId/members/:userId/role', async (req, res) => {
+    const userId = extractUserId(req);
+    if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     try {
+      if (!(await requireAdmin(pool, res, req.params.orgId, userId))) return;
       const { role } = req.body;
+      if (!ASSIGNABLE_ROLES.includes(role)) {
+        return res.status(400).json({ error: 'Invalid role' });
+      }
       const result = await pool.query(
         'UPDATE organization_users SET role = $1 WHERE organization_id = $2 AND user_id = $3 RETURNING *',
         [role, req.params.orgId, req.params.userId]
@@ -286,7 +351,10 @@ export default function organizationsRoutes(pool) {
   });
 
   router.delete('/:orgId/members/:userId', async (req, res) => {
+    const userId = extractUserId(req);
+    if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     try {
+      if (!(await requireAdmin(pool, res, req.params.orgId, userId))) return;
       await pool.query('DELETE FROM organization_users WHERE organization_id = $1 AND user_id = $2', [req.params.orgId, req.params.userId]);
       res.json({ message: 'Member removed' });
     } catch (err) {
@@ -298,6 +366,7 @@ export default function organizationsRoutes(pool) {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     try {
+      if (!(await requireMember(pool, res, req.params.orgId, userId))) return;
       const result = await pool.query('SELECT * FROM pets WHERE organization_id = $1 ORDER BY created_at', [req.params.orgId]);
       res.json(result.rows.map(r => ({
         id: r.id,
@@ -307,26 +376,41 @@ export default function organizationsRoutes(pool) {
         organization_id: r.organization_id,
       })));
     } catch (err) {
-      res.json([]);
+      res.status(500).json({ error: publicError(err) });
     }
   });
 
   router.post('/:orgId/pets', async (req, res) => {
-    res.status(201).json({ message: 'Pet added to org' });
+    const userId = extractUserId(req);
+    if (!userId) return res.status(401).json({ error: 'Unauthorized' });
+    try {
+      if (!(await requireAdmin(pool, res, req.params.orgId, userId))) return;
+      res.status(201).json({ message: 'Pet added to org' });
+    } catch (err) {
+      res.status(500).json({ error: publicError(err) });
+    }
   });
 
   router.post('/:orgId/pets/:petId/transfer', async (req, res) => {
-    res.json({ message: 'Pet transferred' });
+    const userId = extractUserId(req);
+    if (!userId) return res.status(401).json({ error: 'Unauthorized' });
+    try {
+      if (!(await requireAdmin(pool, res, req.params.orgId, userId))) return;
+      res.json({ message: 'Pet transferred' });
+    } catch (err) {
+      res.status(500).json({ error: publicError(err) });
+    }
   });
 
   router.get('/:orgId/archived', async (req, res) => {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     try {
+      if (!(await requireMember(pool, res, req.params.orgId, userId))) return;
       const result = await pool.query('SELECT * FROM archived_pets WHERE organization_id = $1 ORDER BY created_at DESC', [req.params.orgId]);
       res.json(result.rows);
     } catch (err) {
-      res.json([]);
+      res.status(500).json({ error: publicError(err) });
     }
   });
 

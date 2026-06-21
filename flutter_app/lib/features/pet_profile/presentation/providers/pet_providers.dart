@@ -1,3 +1,6 @@
+import 'dart:convert';
+
+import 'package:flutter/foundation.dart' show debugPrint;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:uuid/uuid.dart';
 
@@ -158,7 +161,12 @@ class PetListNotifier extends AsyncNotifier<List<Pet>> {
         Uri.parse('$baseUrl/api/pets/$id/data'),
         headers: {'Content-Type': 'application/json'},
       );
-    } catch (_) {}
+    } catch (e) {
+      // Best-effort cascade cleanup of related data; log instead of swallowing
+      // silently so a failure is at least observable. The pet itself is still
+      // deleted below (which surfaces its own errors).
+      debugPrint('PetListNotifier: cascade delete of pet data failed: $e');
+    }
     await ref.read(deletePetUseCaseProvider).call(id);
     ref.invalidateSelf();
     ref.invalidate(allPetsIncludingOrgProvider);
@@ -182,7 +190,9 @@ class PetListNotifier extends AsyncNotifier<List<Pet>> {
       final response = await client.post(
         Uri.parse('$baseUrl/api/pets/$petId/passed-away'),
         headers: {'Content-Type': 'application/json'},
-        body: '{"pet_name": "${pet.name}"}',
+        // Use json.encode so names containing quotes/backslashes can't break
+        // the request body (previously hand-built with string interpolation).
+        body: json.encode({'pet_name': pet.name}),
       );
       if (response.statusCode == 200) {
         final body = response.body;

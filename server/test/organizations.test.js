@@ -121,8 +121,21 @@ function buildMockPool(overrides = {}) {
     return { rows: [] };
   };
 
+  // The authorization guards (requireMember/requireAdmin) issue a membership
+  // lookup. Layer it on top of any custom query override so guard behavior can
+  // be controlled per-test via `memberRole` without each override re-declaring
+  // it: 'super_user' (admin, default), 'member' (non-admin), or null (non-member).
+  const memberRole = overrides.memberRole === undefined ? 'super_user' : overrides.memberRole;
+  const inner = overrides.query || defaultHandler;
+  const query = async (sql, params) => {
+    if (sql.includes('SELECT role FROM organization_users WHERE organization_id')) {
+      return { rows: memberRole ? [{ role: memberRole }] : [] };
+    }
+    return inner(sql, params);
+  };
+
   return {
-    query: overrides.query || defaultHandler,
+    query,
     end: async () => {},
   };
 }
@@ -150,6 +163,12 @@ describe('Organizations API', () => {
       ['DELETE', `/api/organizations/${orgId}/members/me`],
       ['GET', `/api/organizations/${orgId}/pets`],
       ['GET', `/api/organizations/${orgId}/archived`],
+      // Previously unauthenticated admin routes — now require a token.
+      ['POST', `/api/organizations/${orgId}/photo`],
+      ['PUT', `/api/organizations/${orgId}/members/${memberId}/role`],
+      ['DELETE', `/api/organizations/${orgId}/members/${memberId}`],
+      ['POST', `/api/organizations/${orgId}/pets`],
+      ['POST', `/api/organizations/${orgId}/pets/pet-1/transfer`],
     ];
 
     endpoints.forEach(([method, url]) => {
@@ -375,12 +394,22 @@ describe('Organizations API', () => {
   });
 
   describe('POST /:id/photo', () => {
-    it('returns photo upload response', async () => {
+    it('returns photo upload response for an admin', async () => {
       const res = await request(app)
         .post(`/api/organizations/${orgId}/photo`)
+        .set('Authorization', `Bearer ${token}`)
         .send({});
       expect(res.statusCode).toBe(200);
       expect(res.body).toHaveProperty('photo_url');
+    });
+
+    it('returns 403 for a non-admin member', async () => {
+      const a = createApp(buildMockPool({ memberRole: 'member' }));
+      const res = await request(a)
+        .post(`/api/organizations/${orgId}/photo`)
+        .set('Authorization', `Bearer ${token}`)
+        .send({});
+      expect(res.statusCode).toBe(403);
     });
   });
 
@@ -445,9 +474,26 @@ describe('Organizations API', () => {
       const res = await request(app)
         .put(`/api/organizations/${orgId}/members/${memberId}/role`)
         .set('Authorization', `Bearer ${token}`)
-        .send({ role: 'admin' });
+        .send({ role: 'super_user' });
       expect(res.statusCode).toBe(200);
       expect(res.body).toHaveProperty('role');
+    });
+
+    it('rejects an invalid role with 400', async () => {
+      const res = await request(app)
+        .put(`/api/organizations/${orgId}/members/${memberId}/role`)
+        .set('Authorization', `Bearer ${token}`)
+        .send({ role: 'pending_super_user' });
+      expect(res.statusCode).toBe(400);
+    });
+
+    it('returns 403 for a non-admin member', async () => {
+      const a = createApp(buildMockPool({ memberRole: 'member' }));
+      const res = await request(a)
+        .put(`/api/organizations/${orgId}/members/${memberId}/role`)
+        .set('Authorization', `Bearer ${token}`)
+        .send({ role: 'super_user' });
+      expect(res.statusCode).toBe(403);
     });
 
     it('returns 404 when member not found', async () => {
@@ -461,7 +507,7 @@ describe('Organizations API', () => {
       const res = await request(a)
         .put(`/api/organizations/${orgId}/members/nonexistent/role`)
         .set('Authorization', `Bearer ${token}`)
-        .send({ role: 'admin' });
+        .send({ role: 'super_user' });
       expect(res.statusCode).toBe(404);
     });
   });
@@ -519,6 +565,74 @@ describe('Organizations API', () => {
         .set('Authorization', `Bearer ${token}`);
       expect(res.statusCode).toBe(200);
       expect(Array.isArray(res.body)).toBe(true);
+    });
+  });
+
+  describe('Authorization guards (membership / role)', () => {
+    it('GET /:orgId/members returns 403 for a non-member', async () => {
+      const a = createApp(buildMockPool({ memberRole: null }));
+      const res = await request(a)
+        .get(`/api/organizations/${orgId}/members`)
+        .set('Authorization', `Bearer ${token}`);
+      expect(res.statusCode).toBe(403);
+    });
+
+    it('GET /:orgId/pets returns 403 for a non-member', async () => {
+      const a = createApp(buildMockPool({ memberRole: null }));
+      const res = await request(a)
+        .get(`/api/organizations/${orgId}/pets`)
+        .set('Authorization', `Bearer ${token}`);
+      expect(res.statusCode).toBe(403);
+    });
+
+    it('GET /:orgId/archived returns 403 for a non-member', async () => {
+      const a = createApp(buildMockPool({ memberRole: null }));
+      const res = await request(a)
+        .get(`/api/organizations/${orgId}/archived`)
+        .set('Authorization', `Bearer ${token}`);
+      expect(res.statusCode).toBe(403);
+    });
+
+    it('PUT /:id returns 403 for a non-admin member', async () => {
+      const a = createApp(buildMockPool({ memberRole: 'member' }));
+      const res = await request(a)
+        .put(`/api/organizations/${orgId}`)
+        .set('Authorization', `Bearer ${token}`)
+        .send({ name: 'Hijack' });
+      expect(res.statusCode).toBe(403);
+    });
+
+    it('DELETE /:id returns 403 for a non-member', async () => {
+      const a = createApp(buildMockPool({ memberRole: null }));
+      const res = await request(a)
+        .delete(`/api/organizations/${orgId}`)
+        .set('Authorization', `Bearer ${token}`);
+      expect(res.statusCode).toBe(403);
+    });
+
+    it('POST /:id/invite returns 403 for a non-admin member', async () => {
+      const a = createApp(buildMockPool({ memberRole: 'member' }));
+      const res = await request(a)
+        .post(`/api/organizations/${orgId}/invite`)
+        .set('Authorization', `Bearer ${token}`)
+        .send({ email: 'x@y.com', role: 'member' });
+      expect(res.statusCode).toBe(403);
+    });
+
+    it('POST /:id/invite rejects an invalid role with 400', async () => {
+      const res = await request(app)
+        .post(`/api/organizations/${orgId}/invite`)
+        .set('Authorization', `Bearer ${token}`)
+        .send({ email: 'x@y.com', role: 'pending_super_user' });
+      expect(res.statusCode).toBe(400);
+    });
+
+    it('DELETE /:orgId/members/:userId returns 403 for a non-admin member', async () => {
+      const a = createApp(buildMockPool({ memberRole: 'member' }));
+      const res = await request(a)
+        .delete(`/api/organizations/${orgId}/members/${memberId}`)
+        .set('Authorization', `Bearer ${token}`);
+      expect(res.statusCode).toBe(403);
     });
   });
 

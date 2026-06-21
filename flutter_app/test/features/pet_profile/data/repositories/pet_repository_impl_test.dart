@@ -13,10 +13,17 @@ import 'pet_repository_impl_test.mocks.dart';
 
 /// Hand-written fake so we can assert exactly what hits the server.
 class FakeRemoteDataSource implements PetRemoteDataSource {
-  FakeRemoteDataSource({this.remotePets = const [], this.failCreate = false});
+  FakeRemoteDataSource({
+    this.remotePets = const [],
+    this.failCreate = false,
+    this.failUpdate = false,
+    this.failDelete = false,
+  });
 
   List<PetModel> remotePets;
   bool failCreate;
+  bool failUpdate;
+  bool failDelete;
   final List<String> createdIds = [];
 
   @override
@@ -36,10 +43,19 @@ class FakeRemoteDataSource implements PetRemoteDataSource {
   }
 
   @override
-  Future<PetModel> updatePet(PetModel pet, String token) async => pet;
+  Future<PetModel> updatePet(PetModel pet, String token) async {
+    if (failUpdate) {
+      throw PetRemoteException('boom', statusCode: 500);
+    }
+    return pet;
+  }
 
   @override
-  Future<void> deletePet(String id, String token) async {}
+  Future<void> deletePet(String id, String token) async {
+    if (failDelete) {
+      throw PetRemoteException('boom', statusCode: 500);
+    }
+  }
 }
 
 void main() {
@@ -195,6 +211,26 @@ void main() {
       await expectLater(repo.addPet(testPet), throwsA(isA<PetRemoteException>()));
       expect(await local.getAllPets(), isEmpty,
           reason: 'failed create must not linger in local cache');
+    });
+
+    test('updatePet rethrows when the server rejects the update', () async {
+      await local.addPet(testModel);
+      final remote = FakeRemoteDataSource(failUpdate: true);
+      final repo = PetRepositoryImpl(local,
+          remoteDataSource: remote, token: 'tok');
+
+      await expectLater(
+          repo.updatePet(testPet), throwsA(isA<PetRemoteException>()));
+    });
+
+    test('deletePet rethrows when the server rejects the delete', () async {
+      await local.addPet(testModel);
+      final remote = FakeRemoteDataSource(failDelete: true);
+      final repo = PetRepositoryImpl(local,
+          remoteDataSource: remote, token: 'tok');
+
+      await expectLater(
+          repo.deletePet('test-id'), throwsA(isA<PetRemoteException>()));
     });
 
     test('addPet persists locally when the server accepts it', () async {

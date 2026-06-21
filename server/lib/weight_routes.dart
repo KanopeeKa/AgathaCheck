@@ -22,6 +22,18 @@ String? _extractUserId(Request request) {
   }
 }
 
+// True when `petId` exists and belongs to `userId`. Stops a caller from
+// attaching weight entries to another user's pet (which the victim would then
+// see, since reads join on pets.user_id).
+Future<bool> _userOwnsPet(Pool pool, String? petId, String userId) async {
+  if (petId == null) return false;
+  final r = await pool.execute(
+    Sql.named('SELECT 1 FROM pets WHERE id = @petId AND user_id = @userId'),
+    parameters: {'petId': petId, 'userId': userId},
+  );
+  return r.isNotEmpty;
+}
+
 Router weightRoutes(Pool pool) {
   final router = Router();
 
@@ -102,12 +114,16 @@ Router weightRoutes(Pool pool) {
     try {
       final data = jsonDecode(await request.readAsString()) as Map<String, dynamic>;
       final id = data['id'] ?? _uuid.v4();
+      final petId = data['pet_id'] ?? data['petId'];
+      if (!await _userOwnsPet(pool, petId?.toString(), userId)) {
+        return Response(403, body: jsonEncode({'error': 'Forbidden'}), headers: _jsonHeaders);
+      }
       final dateStr = data['date'];
       final results = await pool.execute(
         Sql.named('INSERT INTO weight_entries (id, pet_id, user_id, weight, unit, date, notes) VALUES (@id, @pet_id, @user_id, @weight, @unit, @date, @notes) RETURNING *'),
         parameters: {
           'id': id,
-          'pet_id': data['pet_id'] ?? data['petId'],
+          'pet_id': petId,
           'user_id': userId,
           'weight': data['weight'] is num ? data['weight'] : double.tryParse(data['weight']?.toString() ?? '0'),
           'unit': data['unit'] ?? 'kg',
@@ -139,9 +155,10 @@ Router weightRoutes(Pool pool) {
       final data = jsonDecode(await request.readAsString()) as Map<String, dynamic>;
       final dateStr = data['date'];
       final results = await pool.execute(
-        Sql.named('UPDATE weight_entries SET weight = @weight, unit = @unit, date = @date, notes = @notes WHERE id = @id RETURNING *'),
+        Sql.named('UPDATE weight_entries SET weight = @weight, unit = @unit, date = @date, notes = @notes WHERE id = @id AND user_id = @user_id RETURNING *'),
         parameters: {
           'id': id,
+          'user_id': userId,
           'weight': data['weight'] is num ? data['weight'] : double.tryParse(data['weight']?.toString() ?? '0'),
           'unit': data['unit'] ?? 'kg',
           'date': dateStr != null ? DateTime.parse(dateStr.toString()) : DateTime.now(),
@@ -173,8 +190,8 @@ Router weightRoutes(Pool pool) {
     }
     try {
       await pool.execute(
-        Sql.named('DELETE FROM weight_entries WHERE id = @id'),
-        parameters: {'id': id},
+        Sql.named('DELETE FROM weight_entries WHERE id = @id AND user_id = @user_id'),
+        parameters: {'id': id, 'user_id': userId},
       );
       return Response.ok(jsonEncode({'deleted': true}), headers: _jsonHeaders);
     } catch (e) {

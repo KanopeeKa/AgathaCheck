@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../core/providers/api_base_url_provider.dart';
 import '../../../auth/presentation/providers/auth_providers.dart';
 import '../../../pet_profile/presentation/providers/pet_providers.dart';
 import '../../data/datasources/sharing_remote_datasource.dart';
@@ -7,6 +8,9 @@ import '../../domain/entities/pet_access.dart';
 
 final sharingDataSourceProvider = Provider<SharingRemoteDataSource>((ref) {
   return SharingRemoteDataSource(
+    // Route through the shared base URL ('/backend' on web) instead of the
+    // datasource's own default, so all features hit one consistent prefix.
+    baseUrl: ref.watch(apiBaseUrlProvider),
     client: ref.watch(authHttpClientProvider),
   );
 });

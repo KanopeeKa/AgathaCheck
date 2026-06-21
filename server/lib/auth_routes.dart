@@ -485,7 +485,8 @@ Router authRoutes(Pool pool) {
       }
 
       final userId = result.first.toColumnMap()['id'].toString();
-      final code = (100000 + Random().nextInt(900000)).toString();
+      // Cryptographically-secure 6-digit code (Random.secure(), not Random()).
+      final code = (100000 + Random.secure().nextInt(900000)).toString();
       final id = _uuid.v4();
 
       await pool.execute(
@@ -494,11 +495,19 @@ Router authRoutes(Pool pool) {
         parameters: {'id': id, 'uid': userId, 'code': code},
       );
 
-      print('Password reset code for $email: $code');
+      // SECURITY: never return or log the reset code in production (it would be
+      // an account-takeover oracle). In production it must be emailed/texted out
+      // of band (not yet wired up). Outside production we expose it for local
+      // dev/testing convenience only.
+      final responseBody = <String, Object?>{
+        'message': 'If that email exists, a reset code has been sent.'
+      };
+      if (!isProduction()) {
+        print('Password reset code for $email: $code');
+        responseBody['code'] = code;
+      }
 
-      return Response.ok(
-          json.encode({'message': 'If that email exists, a reset code has been sent.', 'code': code}),
-          headers: _jsonHeaders);
+      return Response.ok(json.encode(responseBody), headers: _jsonHeaders);
     } catch (e) {
       return Response.internalServerError(
           headers: _jsonHeaders,

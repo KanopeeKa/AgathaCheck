@@ -2,9 +2,12 @@ import express from 'express';
 import bcrypt from 'bcrypt';
 import { v4 as uuidv4 } from 'uuid';
 import jwt from 'jsonwebtoken';
+import { randomInt } from 'crypto';
 
 import { JWT_SECRET } from '../config/jwtSecret.js';
 import { errorDetails } from '../config/security.js';
+
+const isProduction = () => process.env.NODE_ENV === 'production';
 
 function signAccessToken(id, email) {
   return jwt.sign({ id, email }, JWT_SECRET, { expiresIn: '30m' });
@@ -232,14 +235,25 @@ export default function authRoutes(pool, comparePassword) {
         return res.status(200).json({ message: 'If that email exists, a reset code has been sent.' });
       }
       const userId = userResult.rows[0].id;
-      const code = String(100000 + Math.floor(Math.random() * 900000));
+      // Cryptographically-secure 6-digit code (crypto.randomInt, not Math.random).
+      const code = String(randomInt(100000, 1000000));
       const id = uuidv4();
       await pool.query(
         "INSERT INTO password_reset_tokens (id, user_id, code, expires_at) VALUES ($1, $2, $3, NOW() + INTERVAL '15 minutes')",
         [id, userId, code]
       );
-      console.log(`Password reset code for ${email}: ${code}`);
-      res.status(200).json({ message: 'If that email exists, a reset code has been sent.', code });
+      // SECURITY: never return or log the reset code in production — doing so
+      // turns "forgot password" into an account-takeover oracle for anyone who
+      // knows an email address. In production the code must be delivered out of
+      // band (email/SMS — not yet wired up here). Outside production we expose
+      // it (response + log) purely so local dev and the test suite can drive
+      // the reset flow without an email provider.
+      const body = { message: 'If that email exists, a reset code has been sent.' };
+      if (!isProduction()) {
+        console.log(`Password reset code for ${email}: ${code}`);
+        body.code = code;
+      }
+      res.status(200).json(body);
     } catch (err) {
       return res.status(500).json({ error: 'Request failed', ...errorDetails(err) });
     }

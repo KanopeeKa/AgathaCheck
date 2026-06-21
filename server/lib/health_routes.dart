@@ -23,6 +23,27 @@ String? _extractUserId(Request request) {
   }
 }
 
+// True when `petId` exists and belongs to `userId` (stops attaching health
+// entries to another user's pet).
+Future<bool> _userOwnsPet(Pool pool, String? petId, String userId) async {
+  if (petId == null) return false;
+  final r = await pool.execute(
+    Sql.named('SELECT 1 FROM pets WHERE id = @petId AND user_id = @userId'),
+    parameters: {'petId': petId, 'userId': userId},
+  );
+  return r.isNotEmpty;
+}
+
+// True when the health entry exists and belongs to `userId`. Scopes the nested
+// history/photos routes, which otherwise key only on health_entry_id (IDOR).
+Future<bool> _userOwnsEntry(Pool pool, String entryId, String userId) async {
+  final r = await pool.execute(
+    Sql.named('SELECT 1 FROM health_entries WHERE id = @id AND user_id = @userId'),
+    parameters: {'id': entryId, 'userId': userId},
+  );
+  return r.isNotEmpty;
+}
+
 /// Computes the next due date for a health entry after it is marked taken.
 ///
 /// For a `once` entry this returns the 9999-12-31 sentinel date, which the
@@ -142,13 +163,17 @@ Router healthRoutes(Pool pool) {
     try {
       final data = jsonDecode(await request.readAsString()) as Map<String, dynamic>;
       final id = data['id'] ?? _uuid.v4();
+      final petId = data['pet_id'] ?? data['petId'];
+      if (!await _userOwnsPet(pool, petId?.toString(), userId)) {
+        return Response(403, body: jsonEncode({'error': 'Forbidden'}), headers: _jsonHeaders);
+      }
       final startDateStr = data['start_date'] ?? data['startDate'];
       final nextDueStr = data['next_due_date'] ?? data['nextDueDate'];
       final results = await pool.execute(
         Sql.named('INSERT INTO health_entries (id, pet_id, user_id, name, type, dosage, frequency, frequency_days, frequency_interval, start_date, next_due_date, notes, health_issue_id, remind_days_before, status) VALUES (@id, @pet_id, @user_id, @name, @type, @dosage, @frequency, @frequency_days, @frequency_interval, @start_date, @next_due_date, @notes, @health_issue_id, @remind_days_before, @status) RETURNING *'),
         parameters: {
           'id': id,
-          'pet_id': data['pet_id'] ?? data['petId'],
+          'pet_id': petId,
           'user_id': userId,
           'name': data['name'] ?? '',
           'type': data['type'] ?? 'vet_visit',
@@ -279,6 +304,9 @@ Router healthRoutes(Pool pool) {
       return Response(401, body: jsonEncode({'error': 'Unauthorized'}), headers: _jsonHeaders);
     }
     try {
+      if (!await _userOwnsEntry(pool, id, userId)) {
+        return Response.notFound(jsonEncode({'error': 'Entry not found'}), headers: _jsonHeaders);
+      }
       final results = await pool.execute(
         Sql.named('SELECT * FROM health_history WHERE health_entry_id = @id ORDER BY changed_at DESC'),
         parameters: {'id': id},
@@ -305,6 +333,9 @@ Router healthRoutes(Pool pool) {
       return Response(401, body: jsonEncode({'error': 'Unauthorized'}), headers: _jsonHeaders);
     }
     try {
+      if (!await _userOwnsEntry(pool, id, userId)) {
+        return Response.notFound(jsonEncode({'error': 'Entry not found'}), headers: _jsonHeaders);
+      }
       final results = await pool.execute(
         Sql.named('SELECT * FROM health_event_photos WHERE health_entry_id = @id ORDER BY created_at DESC'),
         parameters: {'id': id},
@@ -330,6 +361,9 @@ Router healthRoutes(Pool pool) {
       return Response(401, body: jsonEncode({'error': 'Unauthorized'}), headers: _jsonHeaders);
     }
     try {
+      if (!await _userOwnsEntry(pool, entryId, userId)) {
+        return Response.notFound(jsonEncode({'error': 'Entry not found'}), headers: _jsonHeaders);
+      }
       await pool.execute(
         Sql.named('DELETE FROM health_event_photos WHERE id = @id AND health_entry_id = @entryId'),
         parameters: {'id': photoId, 'entryId': entryId},
