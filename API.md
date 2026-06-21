@@ -189,10 +189,12 @@ POST /backend/api/auth/login
 
 ## Extended Pet Endpoints
 
-### Transfer Pet to Organization
+### Transfer Pet to Organization — STUB
+
+> **Status:** auth-gated (returns `401` without a valid token) but currently a no-op stub — it returns the static response below without writing to the database. Real org pet transfers are handled by the organization routes.
 
 - **POST** `/api/pets/{id}/transfer-to-org`
-- Transfers a pet to an organization. Requires JSON body with `organization_id`, `transfer_type`, and `notes`.
+- Intended to transfer a pet to an organization with a JSON body of `organization_id`, `transfer_type`, and `notes`.
 - **Response:** `{ "status": "transferred", "pet_id": "{id}" }`
 
 ### Family Events (per-pet) — STUB
@@ -204,22 +206,25 @@ POST /backend/api/auth/login
 - **PUT** `/api/pets/{id}/family-events/{eventId}` — No-op stub.
 - **DELETE** `/api/pets/{id}/family-events/{eventId}` — No-op stub.
 
-### Pet Access
+### Pet Access — STUB
 
-- **GET** `/api/pets/{id}/access` — List all users with access to a pet.
-- **PUT** `/api/pets/{id}/access/{userId}/role` — Update a user's role for a pet.
-- **DELETE** `/api/pets/{id}/access/{userId}` — Remove a user's access to a pet.
-- **Response:** Standard JSON with access info or `{ "deleted": true }`/`{ "updated": true }`.
+> **Status:** auth-gated (returns `401` without a valid token) but currently stubs — they return the static responses below without reading or writing the `pet_access` table. Real shared-access management lives in the sharing routes.
 
-### Delete Pet Data
+- **GET** `/api/pets/{id}/access` — Returns `[]`.
+- **PUT** `/api/pets/{id}/access/{userId}/role` — No-op stub returning `{ "updated": true, "user_id": "{userId}" }`.
+- **DELETE** `/api/pets/{id}/access/{userId}` — No-op stub returning `{ "deleted": true, "user_id": "{userId}" }`.
 
-- **DELETE** `/api/pets/{id}/data` — Delete all data for a pet.
-- **Response:** `{ "deleted": true, "pet_id": "{id}" }`
+### Delete Pet Data — STUB
 
-### Mark Pet as Passed Away
+> **Status:** auth-gated but currently a no-op stub — it returns the static response below without deleting anything. Use `DELETE /api/pets/{id}` to actually remove a pet.
 
-- **POST** `/api/pets/{id}/passed-away` — Mark a pet as passed away.
-- **Response:** `{ "passed_away": true, "pet_id": "{id}" }`
+- **DELETE** `/api/pets/{id}/data` — Returns `{ "deleted": true, "pet_id": "{id}" }`.
+
+### Mark Pet as Passed Away — STUB
+
+> **Status:** auth-gated but currently a no-op stub — it returns the static response below without updating the pet's `passed_away` column. Use `PUT /api/pets/{id}` with `passedAway: true` to persist this.
+
+- **POST** `/api/pets/{id}/passed-away` — Returns `{ "passed_away": true, "pet_id": "{id}" }`.
 
 
 
@@ -237,5 +242,5 @@ In-app notifications also support per-pet mute via the pet routes.
 
 ### Test Coverage
 
-- See `server/test/pets_extended_endpoints.test.js` for endpoint tests with mocked DB logic.
+- See `server/test/pets.test.js` for pet endpoint tests (CRUD, auth guards, cross-user ownership, org-membership checks, and the extended stub endpoints) with mocked DB logic.
 - See `server/test/notifications.test.js` for notifications endpoint tests.

@@ -206,6 +206,14 @@ Future<Response> _getPetById(Request request, String id) async {
   }
 }
 
+Future<bool> _userInOrg(Object orgId, Object userId) async {
+  final result = await _pool.execute(
+    Sql.named('SELECT 1 FROM organization_users WHERE organization_id = @orgId AND user_id = @userId LIMIT 1'),
+    parameters: {'orgId': orgId, 'userId': userId},
+  );
+  return result.isNotEmpty;
+}
+
 Future<Response> _createPet(Request request) async {
   final userId = _extractUserId(request);
   if (userId == null) {
@@ -215,6 +223,10 @@ Future<Response> _createPet(Request request) async {
     final body = await request.readAsString();
     final data = jsonDecode(body) as Map<String, dynamic>;
     final id = data['id'] ?? _uuid.v4();
+    final orgId = data['organization_id'];
+    if (orgId != null && orgId.toString().isNotEmpty && !(await _userInOrg(orgId, userId))) {
+      return Response(403, body: jsonEncode({'error': 'Not a member of this organization'}), headers: _jsonHeaders);
+    }
     final dobStr = data['dateOfBirth'] ?? data['date_of_birth'];
     final neuteredStr = data['neuteredDate'];
     final results = await _pool.execute(
@@ -256,6 +268,10 @@ Future<Response> _updatePet(Request request, String id) async {
   try {
     final body = await request.readAsString();
     final data = jsonDecode(body) as Map<String, dynamic>;
+    final orgId = data['organization_id'];
+    if (orgId != null && orgId.toString().isNotEmpty && !(await _userInOrg(orgId, userId))) {
+      return Response(403, body: jsonEncode({'error': 'Not a member of this organization'}), headers: _jsonHeaders);
+    }
     final dobStr = data['dateOfBirth'] ?? data['date_of_birth'];
     final neuteredStr = data['neuteredDate'];
     final results = await _pool.execute(

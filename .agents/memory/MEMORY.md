@@ -5,3 +5,4 @@
 - [Health entry completion semantics](health-entry-completion.md) — UI derives overdue/completed from next_due_date only (no status field); mark-taken must advance/sentinel next_due_date in BOTH backends.
 - [JWT secret dev/test fallback](jwt-secret-dev-fallback.md) — keep the prod-gated 'default_secret' fallback; CI/Jest sign tokens with it and workflows set no secret.
 - [Error-leak redaction patterns](error-leak-redaction-patterns.md) — grep err.message + e.toString() + $e + details on BOTH backends; one pattern misses sites.
+- [Body-supplied organization_id validation](body-supplied-org-id-validation.md) — pet create/update must verify caller is in organization_users before persisting org_id; both backends; 403 on non-member.

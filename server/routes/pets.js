@@ -83,6 +83,14 @@ async function autoAssignColors(pool, pets) {
 export default function petsRoutes(pool) {
   const router = express.Router();
 
+  async function userInOrg(orgId, userId) {
+    const result = await pool.query(
+      'SELECT 1 FROM organization_users WHERE organization_id = $1 AND user_id = $2 LIMIT 1',
+      [orgId, userId]
+    );
+    return result.rows.length > 0;
+  }
+
   router.post('/:id/transfer-to-org', (req, res) => {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
@@ -208,6 +216,9 @@ export default function petsRoutes(pool) {
       } = req.body;
       const dateOfBirth = req.body.dateOfBirth || req.body.date_of_birth || null;
       const neuteredDate = req.body.neuteredDate || null;
+      if (organization_id && !(await userInOrg(organization_id, userId))) {
+        return res.status(403).json({ error: 'Not a member of this organization' });
+      }
       const result = await pool.query(
         `INSERT INTO pets (id, user_id, name, species, breed, age, date_of_birth, weight, gender,
           bio, insurance, neutered_date, neuter_dismissed, chip_id, chip_dismissed,
@@ -245,6 +256,9 @@ export default function petsRoutes(pool) {
       } = req.body;
       const dateOfBirth = req.body.dateOfBirth || req.body.date_of_birth || null;
       const neuteredDate = req.body.neuteredDate || null;
+      if (organization_id && !(await userInOrg(organization_id, userId))) {
+        return res.status(403).json({ error: 'Not a member of this organization' });
+      }
       const result = await pool.query(
         `UPDATE pets SET name=$1, species=$2, breed=$3, age=$4, date_of_birth=$5, weight=$6, gender=$7,
           bio=$8, insurance=$9, neutered_date=$10, neuter_dismissed=$11, chip_id=$12, chip_dismissed=$13,
