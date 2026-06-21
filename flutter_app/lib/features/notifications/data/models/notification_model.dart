@@ -42,10 +42,28 @@ class NotificationModel extends AppNotification {
       'organization_id': organizationId,
       'title': title,
       'message': message,
-      'type': type.name,
+      'type': typeToApi(type),
       'is_read': isRead,
       'created_at': createdAt.toIso8601String(),
     };
+  }
+
+  /// Serializes [NotificationType] to its canonical API string. MUST NOT use
+  /// `enum.name`: it is minified in release builds and `dueSoon` would not even
+  /// match the snake_case `_parseType` the server emits. Exhaustive by design.
+  static String typeToApi(NotificationType type) {
+    switch (type) {
+      case NotificationType.dueSoon:
+        return 'due_soon';
+      case NotificationType.overdue:
+        return 'overdue';
+      case NotificationType.reminder:
+        return 'reminder';
+      case NotificationType.completed:
+        return 'completed';
+      case NotificationType.general:
+        return 'general';
+    }
   }
 
   static NotificationType _parseType(String type) {

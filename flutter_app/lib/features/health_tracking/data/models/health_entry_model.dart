@@ -87,9 +87,9 @@ class HealthEntryModel extends HealthEntry {
       'id': id,
       'pet_id': petId,
       'name': name,
-      'type': type == HealthEntryType.vetVisit ? 'vet_visit' : type == HealthEntryType.familyEvent ? 'family_event' : type.name,
+      'type': typeToApi(type),
       'dosage': dosage,
-      'frequency': frequency.name,
+      'frequency': frequencyToApi(frequency),
       'frequency_days': frequencyDays,
       'frequency_interval': frequencyInterval,
       'repeat_end_date': repeatEndDate?.toIso8601String().split('T').first,
@@ -99,6 +99,46 @@ class HealthEntryModel extends HealthEntry {
       if (healthIssueId != null) 'health_issue_id': healthIssueId,
       'remind_days_before': remindDaysBefore,
     };
+  }
+
+  /// Serializes [HealthEntryType] to its canonical API string.
+  ///
+  /// MUST NOT use `enum.name`: Dart minifies enum names in release builds, so
+  /// `.name` would send values like `a`/`b` and corrupt the stored type. The
+  /// explicit switch is also exhaustive, so adding an enum value is a compile
+  /// error here until it is mapped.
+  static String typeToApi(HealthEntryType type) {
+    switch (type) {
+      case HealthEntryType.medication:
+        return 'medication';
+      case HealthEntryType.preventive:
+        return 'preventive';
+      case HealthEntryType.vetVisit:
+        return 'vet_visit';
+      case HealthEntryType.procedure:
+        return 'procedure';
+      case HealthEntryType.familyEvent:
+        return 'family_event';
+    }
+  }
+
+  /// Serializes [HealthFrequency] to its canonical API string (see
+  /// [typeToApi] for why `enum.name` must not be used).
+  static String frequencyToApi(HealthFrequency frequency) {
+    switch (frequency) {
+      case HealthFrequency.once:
+        return 'once';
+      case HealthFrequency.daily:
+        return 'daily';
+      case HealthFrequency.weekly:
+        return 'weekly';
+      case HealthFrequency.monthly:
+        return 'monthly';
+      case HealthFrequency.yearly:
+        return 'yearly';
+      case HealthFrequency.custom:
+        return 'custom';
+    }
   }
 
   static HealthEntryType _parseType(String value) {

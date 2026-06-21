@@ -112,9 +112,27 @@ void main() {
       expect(json['organization_id'], 'org-1');
       expect(json['title'], 'Medication Due');
       expect(json['message'], 'Heartgard is due tomorrow');
-      expect(json['type'], 'dueSoon');
+      // Canonical snake_case, not enum.name ('dueSoon'), which the server's
+      // parser would not recognize and which is minified in release builds.
+      expect(json['type'], 'due_soon');
       expect(json['is_read'], isFalse);
       expect(json['created_at'], isNotNull);
+    });
+
+    test('toJson serializes every type to its canonical API string', () {
+      final expected = {
+        NotificationType.dueSoon: 'due_soon',
+        NotificationType.overdue: 'overdue',
+        NotificationType.reminder: 'reminder',
+        NotificationType.completed: 'completed',
+        NotificationType.general: 'general',
+      };
+      for (final entry in expected.entries) {
+        expect(NotificationModel.typeToApi(entry.key), entry.value);
+        final restored =
+            NotificationModel.fromJson({...fullJson, 'type': entry.value});
+        expect(restored.type, entry.key);
+      }
     });
 
     test('toJson includes null optional fields', () {

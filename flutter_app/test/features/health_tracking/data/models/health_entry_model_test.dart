@@ -164,6 +164,58 @@ void main() {
       expect(output['type'], 'family_event');
     });
 
+    test('toJson serializes every type to its canonical API string', () {
+      // Regression guard against using enum.name (minified in release builds).
+      final expected = {
+        HealthEntryType.medication: 'medication',
+        HealthEntryType.preventive: 'preventive',
+        HealthEntryType.vetVisit: 'vet_visit',
+        HealthEntryType.procedure: 'procedure',
+        HealthEntryType.familyEvent: 'family_event',
+      };
+      for (final entry in expected.entries) {
+        expect(HealthEntryModel.typeToApi(entry.key), entry.value);
+        // Each canonical string must also round-trip back to the same enum.
+        final restored = HealthEntryModel.fromJson({...fullJson, 'type': entry.value});
+        expect(restored.type, entry.key);
+      }
+    });
+
+    test('toJson serializes every frequency to its canonical API string', () {
+      final expected = {
+        HealthFrequency.once: 'once',
+        HealthFrequency.daily: 'daily',
+        HealthFrequency.weekly: 'weekly',
+        HealthFrequency.monthly: 'monthly',
+        HealthFrequency.yearly: 'yearly',
+        HealthFrequency.custom: 'custom',
+      };
+      for (final entry in expected.entries) {
+        expect(HealthEntryModel.frequencyToApi(entry.key), entry.value);
+        final restored =
+            HealthEntryModel.fromJson({...fullJson, 'frequency': entry.value});
+        expect(restored.frequency, entry.key);
+      }
+    });
+
+    test('preventive and procedure types survive a toJson/fromJson round-trip', () {
+      // These previously used enum.name in toJson and would corrupt to
+      // medication after a round-trip in a release build.
+      for (final type in [HealthEntryType.preventive, HealthEntryType.procedure]) {
+        final model = HealthEntryModel(
+          id: 'r-1',
+          petId: 'pet-1',
+          name: 'Test',
+          type: type,
+          frequency: HealthFrequency.monthly,
+          startDate: DateTime(2025, 1, 1),
+          nextDueDate: DateTime(2025, 2, 1),
+        );
+        final restored = HealthEntryModel.fromJson(model.toJson());
+        expect(restored.type, type);
+      }
+    });
+
     test('fromEntity preserves all data', () {
       final entity = HealthEntry(
         id: 'e-1',

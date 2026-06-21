@@ -46,7 +46,11 @@ class WeightUnitNotifier extends StateNotifier<WeightUnit> {
   Future<void> setUnit(WeightUnit unit) async {
     state = unit;
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setString('pet_${_petId}_weightUnit', unit.name);
+    // Persist the canonical 'lb'/'kg' value, not enum.name: enum names are
+    // minified in release builds, so `.name` would never round-trip with the
+    // `== 'lb'` check in _load() and the unit would always reset to kg.
+    await prefs.setString(
+        'pet_${_petId}_weightUnit', unit == WeightUnit.lb ? 'lb' : 'kg');
   }
 }
 

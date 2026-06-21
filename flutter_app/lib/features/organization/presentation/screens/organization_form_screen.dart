@@ -75,7 +75,10 @@ class _OrganizationFormScreenState
     final l = AppLocalizations.of(context)!;
     final data = {
       'name': _nameController.text.trim(),
-      'type': _selectedType.name,
+      // Canonical API value, not enum.name (minified in release builds).
+      'type': _selectedType == OrganizationType.charity
+          ? 'charity'
+          : 'professional',
       'email': _emailController.text.trim(),
       'phone': _phoneController.text.trim(),
       'address': _addressController.text.trim(),

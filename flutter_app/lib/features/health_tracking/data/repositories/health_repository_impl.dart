@@ -15,7 +15,10 @@ class HealthRepositoryImpl implements HealthRepository {
   @override
   Future<List<HealthEntry>> getEntries(
       {String? petId, HealthEntryType? type}) {
-    return dataSource.getEntries(petId: petId, type: type?.name);
+    // Use the canonical API string, not enum.name (minified in release builds).
+    return dataSource.getEntries(
+        petId: petId,
+        type: type == null ? null : HealthEntryModel.typeToApi(type));
   }
 
   @override
