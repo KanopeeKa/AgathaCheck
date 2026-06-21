@@ -47,6 +47,9 @@ describe('Health Entries API', () => {
           if (params && params[0] === 'he-zero') {
             return { rows: [makeHealthRow({ id: params[0], frequency: 'daily', frequency_interval: 0 })] };
           }
+          if (params && params[0] === 'he-once') {
+            return { rows: [makeHealthRow({ id: params[0], frequency: 'once' })] };
+          }
           return { rows: [makeHealthRow({ id: params[0] })] };
         }
 
@@ -424,6 +427,18 @@ describe('Health Entries API', () => {
       expect(newDue.getTime()).toBeGreaterThan(Date.now());
     });
 
+    it('sets next_due_date to the 9999 sentinel for once entries', async () => {
+      await request(app)
+        .post('/api/health-entries/he-once/mark-taken')
+        .set('Authorization', `Bearer ${token}`);
+
+      const update = queryLog.find(q =>
+        q.sql.includes("UPDATE health_entries SET status = 'completed'"));
+      expect(update).toBeDefined();
+      const newDue = new Date(update.params[0]);
+      expect(newDue.getFullYear()).toBe(9999);
+    });
+
     it('returns 404 for nonexistent entry', async () => {
       const res = await request(app)
         .post('/api/health-entries/nonexistent/mark-taken')
@@ -440,6 +455,17 @@ describe('Health Entries API', () => {
       expect(res.statusCode).toBe(200);
       expect(res.body).toHaveProperty('status', 'active');
       expect(res.body.completed_at).toBeNull();
+    });
+
+    it('restores next_due_date to start_date for once entries', async () => {
+      await request(app)
+        .post('/api/health-entries/he-1/undo-complete')
+        .set('Authorization', `Bearer ${token}`);
+
+      const update = queryLog.find(q =>
+        q.sql.includes("UPDATE health_entries SET status = 'active'"));
+      expect(update).toBeDefined();
+      expect(update.sql).toContain("CASE WHEN frequency = 'once' THEN start_date");
     });
 
     it('returns 404 for nonexistent entry', async () => {

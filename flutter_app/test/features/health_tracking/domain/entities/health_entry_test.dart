@@ -69,6 +69,54 @@ void main() {
       expect(entry.isDueSoon, isFalse);
     });
 
+    test('isCompleted true for once entry at the 9999 sentinel date', () {
+      final entry = createEntry(
+        frequency: HealthFrequency.once,
+        nextDueDate: DateTime(9999, 12, 31),
+      );
+      expect(entry.isCompleted, isTrue);
+    });
+
+    test('isCompleted false for once entry with a real due date', () {
+      final entry = createEntry(
+        frequency: HealthFrequency.once,
+        nextDueDate: now.subtract(const Duration(days: 1)),
+      );
+      expect(entry.isCompleted, isFalse);
+    });
+
+    test('isCompleted false for recurring entry even at sentinel date', () {
+      final entry = createEntry(
+        frequency: HealthFrequency.monthly,
+        nextDueDate: DateTime(9999, 12, 31),
+      );
+      expect(entry.isCompleted, isFalse);
+    });
+
+    test('completed once entry is not overdue despite past start date', () {
+      final entry = createEntry(
+        frequency: HealthFrequency.once,
+        nextDueDate: DateTime(9999, 12, 31),
+      );
+      expect(entry.isOverdue, isFalse);
+    });
+
+    test('overdue recurring entry clears overdue once due date advances forward',
+        () {
+      final overdue = createEntry(
+        frequency: HealthFrequency.weekly,
+        nextDueDate: now.subtract(const Duration(days: 10)),
+      );
+      expect(overdue.isOverdue, isTrue);
+
+      // Marking complete advances next_due_date into the future (server-side),
+      // which is what clears the overdue state in the UI.
+      final advanced =
+          overdue.copyWith(nextDueDate: now.add(const Duration(days: 4)));
+      expect(advanced.isOverdue, isFalse);
+      expect(advanced.isCompleted, isFalse);
+    });
+
     test('copyWith creates modified copy', () {
       final entry = createEntry();
       final copy = entry.copyWith(name: 'NexGard', dosage: '2 tablets');

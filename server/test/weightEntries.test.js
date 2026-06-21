@@ -213,6 +213,17 @@ describe('Weight Entries API', () => {
       expect(lastQuery.params[4]).toBe('kg');
     });
 
+    it('scopes create by authenticated user_id', async () => {
+      const entry = { pet_id: 'pet-1', weight: 4.2 };
+      const res = await request(app)
+        .post('/api/weight-entries')
+        .set('Authorization', `Bearer ${token}`)
+        .send(entry);
+      expect(res.statusCode).toBe(201);
+      expect(lastQuery.sql).toContain('INSERT INTO weight_entries');
+      expect(lastQuery.params[2]).toBe(userId);
+    });
+
     it('accepts petId alias for pet_id', async () => {
       const entry = { petId: 'pet-2', weight: 3.5 };
       const res = await request(app)

@@ -24,6 +24,18 @@ String? _extractUserId(Request request) {
   }
 }
 
+/// Computes the next due date for a health entry after it is marked taken.
+///
+/// For a `once` entry this returns the 9999-12-31 sentinel date, which the
+/// Flutter UI interprets as "completed" (there is no separate status column the
+/// UI reads). For a recurring entry it advances `next_due_date` by
+/// frequency * interval, looping until the result is strictly after today so
+/// that an entry which is several periods overdue still lands in the future and
+/// clears its overdue state. `frequency_interval` and `frequency_days` are
+/// coerced to at least 1 to guard against an infinite loop.
+///
+/// This mirrors `nextOccurrence` in the Node backend
+/// (`server/routes/healthEntries.js`); keep the two in lockstep.
 DateTime _nextOccurrence(Map<String, dynamic> c) {
   final freq = (c['frequency'] ?? 'once').toString();
   if (freq == 'once') return DateTime.utc(9999, 12, 31);
