@@ -1,6 +1,5 @@
 import 'dart:convert';
 
-import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 
 import '../models/pet_model.dart';
@@ -104,7 +103,10 @@ class PetRemoteDataSourceImpl implements PetRemoteDataSource {
       headers: _headers(token),
     );
     if (response.statusCode >= 400) {
-      debugPrint('PetRemoteDataSource: deletePet failed with ${response.statusCode}');
+      // Surface the failure to the caller instead of silently swallowing it —
+      // otherwise the UI would remove the pet locally while it still exists
+      // on the server.
+      throw PetRemoteException('Failed to delete pet', statusCode: response.statusCode);
     }
   }
 }

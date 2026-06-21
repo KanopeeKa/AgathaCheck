@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
@@ -151,6 +153,25 @@ void main() {
       expect(requests.single.method, 'POST');
       expect(requests.single.url.path, '/api/pets/pet-1/passed-away');
       expect(hasSharedUsers, true);
+    });
+
+    test('sends a JSON-escaped pet name (no body corruption/injection)', () async {
+      final repo = RecordingPetRepository(
+          initial: [samplePet().copyWith(name: 'Re"x\\')]);
+      final requests = <http.Request>[];
+      final client = MockClient((request) async {
+        requests.add(request as http.Request);
+        return http.Response('{"notified_count":0}', 200);
+      });
+      final container = makeContainer(repo: repo, client: client);
+      addTearDown(container.dispose);
+
+      await container.read(petListProvider.future);
+      await container.read(petListProvider.notifier).markPassedAway('pet-1');
+
+      // The body must be valid JSON that decodes back to the exact name.
+      final decoded = jsonDecode(requests.single.body) as Map<String, dynamic>;
+      expect(decoded['pet_name'], 'Re"x\\');
     });
 
     test('returns false and persists nothing when the pet is unknown', () async {
