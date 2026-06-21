@@ -160,7 +160,7 @@ void main() {
           initial: [samplePet().copyWith(name: 'Re"x\\')]);
       final requests = <http.Request>[];
       final client = MockClient((request) async {
-        requests.add(request as http.Request);
+        requests.add(request);
         return http.Response('{"notified_count":0}', 200);
       });
       final container = makeContainer(repo: repo, client: client);
