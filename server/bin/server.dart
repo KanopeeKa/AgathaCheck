@@ -129,4 +129,20 @@ void main() async {
 
   print('Server listening on port ${server.port}');
   print('Serving Flutter web from: $webDir');
+
+  // Graceful shutdown: stop the server and close the DB pool so in-flight
+  // queries can finish and the host can restart cleanly.
+  Future<void> shutdown(ProcessSignal signal) async {
+    print('Received $signal, shutting down gracefully...');
+    await server.close(force: false);
+    try {
+      await pool.close();
+    } catch (e) {
+      print('Error closing DB pool: $e');
+    }
+    exit(0);
+  }
+
+  ProcessSignal.sigterm.watch().listen(shutdown);
+  ProcessSignal.sigint.watch().listen(shutdown);
 }
