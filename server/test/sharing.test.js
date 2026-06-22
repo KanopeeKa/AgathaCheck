@@ -85,37 +85,30 @@ describe('Sharing API', () => {
     });
   });
 
-  describe('POST / (generate share code)', () => {
-    it('generates a share code for a pet', async () => {
+  describe('POST / (share-by-code: not implemented)', () => {
+    it('returns 501 instead of faking a share code', async () => {
       const res = await request(app)
         .post('/api/share')
         .set('Authorization', `Bearer ${token}`)
         .send({ pet_id: petId });
-      expect(res.statusCode).toBe(201);
-      expect(res.body).toHaveProperty('code');
-      expect(typeof res.body.code).toBe('string');
-      expect(res.body.code.length).toBe(8);
-      expect(res.body).toHaveProperty('pet_id', petId);
+      expect(res.statusCode).toBe(501);
+      expect(res.body).toHaveProperty('error', 'Not implemented');
     });
   });
 
-  describe('GET /:code (code info)', () => {
-    it('returns code info', async () => {
-      const res = await request(app)
-        .get(`/api/share/${shareCode}`);
-      expect(res.statusCode).toBe(200);
-      expect(res.body).toHaveProperty('code', shareCode);
-      expect(res.body).toHaveProperty('pet');
+  describe('GET /:code (share-by-code: not implemented)', () => {
+    it('returns 501', async () => {
+      const res = await request(app).get(`/api/share/${shareCode}`);
+      expect(res.statusCode).toBe(501);
     });
   });
 
-  describe('POST /:code/accept', () => {
-    it('accepts a share by code', async () => {
+  describe('POST /:code/accept (share-by-code: not implemented)', () => {
+    it('returns 501', async () => {
       const res = await request(app)
         .post(`/api/share/${shareCode}/accept`)
         .set('Authorization', `Bearer ${token}`);
-      expect(res.statusCode).toBe(200);
-      expect(res.body).toHaveProperty('message', 'Share accepted');
+      expect(res.statusCode).toBe(501);
     });
   });
 
@@ -204,19 +197,6 @@ describe('Sharing API', () => {
   });
 
   describe('Error handling', () => {
-    it('POST / still succeeds even with DB error (no DB call)', async () => {
-      const pool = buildMockPool({
-        query: async () => { throw new Error('DB error'); },
-      });
-      const a = createApp(pool);
-      const res = await request(a)
-        .post('/api/share')
-        .set('Authorization', `Bearer ${token}`)
-        .send({ pet_id: petId });
-      expect(res.statusCode).toBe(201);
-      expect(res.body).toHaveProperty('code');
-    });
-
     it('returns 500 when database throws on POST /pending/:petId/accept', async () => {
       const pool = buildMockPool({
         query: async () => { throw new Error('DB error'); },
@@ -254,13 +234,13 @@ describe('Sharing API', () => {
   });
 
   describe('Backend prefix', () => {
-    it('POST /backend/api/share generates share code', async () => {
+    it('POST /backend/api/share is reachable under the /backend prefix', async () => {
       const res = await request(app)
         .post('/backend/api/share')
         .set('Authorization', `Bearer ${token}`)
         .send({ pet_id: petId });
-      expect(res.statusCode).toBe(201);
-      expect(res.body).toHaveProperty('code');
+      // Same not-implemented response as the /api prefix.
+      expect(res.statusCode).toBe(501);
     });
   });
 });

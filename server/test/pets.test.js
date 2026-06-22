@@ -652,17 +652,15 @@ describe('Pets API', () => {
       });
     });
 
-    it('POST /:id/transfer-to-org returns 200 with status', async () => {
+    it('POST /:id/transfer-to-org returns 501 (not implemented)', async () => {
       const res = await request(app)
         .post(`/api/pets/${petId}/transfer-to-org`)
         .set('Authorization', `Bearer ${token}`)
         .send({ organization_id: 'org-1' });
-      expect(res.statusCode).toBe(200);
-      expect(res.body).toHaveProperty('status', 'transferred');
-      expect(res.body).toHaveProperty('pet_id', petId);
+      expect(res.statusCode).toBe(501);
     });
 
-    it('GET /:id/family-events returns array', async () => {
+    it('GET /:id/family-events returns an (empty) array', async () => {
       const res = await request(app)
         .get(`/api/pets/${petId}/family-events`)
         .set('Authorization', `Bearer ${token}`);
@@ -670,35 +668,30 @@ describe('Pets API', () => {
       expect(Array.isArray(res.body)).toBe(true);
     });
 
-    it('POST /:id/family-events returns 201', async () => {
+    it('POST /:id/family-events returns 501 (not implemented)', async () => {
       const res = await request(app)
         .post(`/api/pets/${petId}/family-events`)
         .set('Authorization', `Bearer ${token}`)
         .send({ type: 'adoption', date: '2023-01-01' });
-      expect(res.statusCode).toBe(201);
-      expect(res.body).toHaveProperty('event_id');
+      expect(res.statusCode).toBe(501);
     });
 
-    it('PUT /:id/family-events/:eventId returns updated', async () => {
+    it('PUT /:id/family-events/:eventId returns 501 (not implemented)', async () => {
       const res = await request(app)
         .put(`/api/pets/${petId}/family-events/1`)
         .set('Authorization', `Bearer ${token}`)
         .send({ type: 'birthday' });
-      expect(res.statusCode).toBe(200);
-      expect(res.body).toHaveProperty('updated', true);
-      expect(res.body).toHaveProperty('event_id', '1');
+      expect(res.statusCode).toBe(501);
     });
 
-    it('DELETE /:id/family-events/:eventId returns deleted', async () => {
+    it('DELETE /:id/family-events/:eventId returns 501 (not implemented)', async () => {
       const res = await request(app)
         .delete(`/api/pets/${petId}/family-events/1`)
         .set('Authorization', `Bearer ${token}`);
-      expect(res.statusCode).toBe(200);
-      expect(res.body).toHaveProperty('deleted', true);
-      expect(res.body).toHaveProperty('event_id', '1');
+      expect(res.statusCode).toBe(501);
     });
 
-    it('GET /:id/access returns array', async () => {
+    it('GET /:id/access returns an (empty) array', async () => {
       const res = await request(app)
         .get(`/api/pets/${petId}/access`)
         .set('Authorization', `Bearer ${token}`);
@@ -706,23 +699,19 @@ describe('Pets API', () => {
       expect(Array.isArray(res.body)).toBe(true);
     });
 
-    it('PUT /:id/access/:userId/role returns updated', async () => {
+    it('PUT /:id/access/:userId/role returns 501 (not implemented)', async () => {
       const res = await request(app)
         .put(`/api/pets/${petId}/access/user-42/role`)
         .set('Authorization', `Bearer ${token}`)
         .send({ role: 'editor' });
-      expect(res.statusCode).toBe(200);
-      expect(res.body).toHaveProperty('updated', true);
-      expect(res.body).toHaveProperty('user_id', 'user-42');
+      expect(res.statusCode).toBe(501);
     });
 
-    it('DELETE /:id/access/:userId returns deleted', async () => {
+    it('DELETE /:id/access/:userId returns 501 (not implemented)', async () => {
       const res = await request(app)
         .delete(`/api/pets/${petId}/access/user-42`)
         .set('Authorization', `Bearer ${token}`);
-      expect(res.statusCode).toBe(200);
-      expect(res.body).toHaveProperty('deleted', true);
-      expect(res.body).toHaveProperty('user_id', 'user-42');
+      expect(res.statusCode).toBe(501);
     });
 
     it('DELETE /:id/data returns deleted', async () => {

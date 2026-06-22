@@ -143,7 +143,9 @@ export default function organizationsRoutes(pool) {
   router.post('/join/:code', async (req, res) => {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
-    res.json({ message: 'Joined organization' });
+    // NOT IMPLEMENTED: join-by-code has no backing logic. The working path to
+    // gain membership is the email invite flow (POST /:id/invite + accept).
+    return res.status(501).json({ error: 'Not implemented' });
   });
 
   router.get('/', async (req, res) => {
@@ -383,23 +385,16 @@ export default function organizationsRoutes(pool) {
   router.post('/:orgId/pets', async (req, res) => {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
-    try {
-      if (!(await requireAdmin(pool, res, req.params.orgId, userId))) return;
-      res.status(201).json({ message: 'Pet added to org' });
-    } catch (err) {
-      res.status(500).json({ error: publicError(err) });
-    }
+    // NOT IMPLEMENTED: adding a pet directly to an org is not backed by any DB
+    // write. Pets are created via POST /api/pets with an organization_id.
+    return res.status(501).json({ error: 'Not implemented' });
   });
 
   router.post('/:orgId/pets/:petId/transfer', async (req, res) => {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
-    try {
-      if (!(await requireAdmin(pool, res, req.params.orgId, userId))) return;
-      res.json({ message: 'Pet transferred' });
-    } catch (err) {
-      res.status(500).json({ error: publicError(err) });
-    }
+    // NOT IMPLEMENTED: org pet transfer has no backing logic.
+    return res.status(501).json({ error: 'Not implemented' });
   });
 
   router.get('/:orgId/archived', async (req, res) => {
