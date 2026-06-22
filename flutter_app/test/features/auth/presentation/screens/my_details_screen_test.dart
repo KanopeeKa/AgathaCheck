@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:pet_profile_app/features/auth/presentation/screens/my_details_screen.dart';
+import 'package:pet_profile_app/features/auth/data/token_store.dart';
 import 'package:pet_profile_app/features/auth/presentation/providers/auth_providers.dart';
 import 'package:pet_profile_app/core/providers/shared_preferences_provider.dart';
 import 'package:pet_profile_app/l10n/app_localizations.dart';
@@ -20,7 +21,7 @@ void main() {
         overrides: [
           sharedPreferencesProvider.overrideWithValue(prefs),
           authProvider.overrideWith((ref) {
-            final notifier = AuthNotifier(FakeAuthService(), prefs);
+            final notifier = AuthNotifier(FakeAuthService(), PrefsTokenStore(prefs));
             notifier.state = const AuthState();
             return notifier;
           }),

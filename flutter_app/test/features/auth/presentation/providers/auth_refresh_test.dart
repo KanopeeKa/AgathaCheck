@@ -6,6 +6,7 @@ import 'package:http/testing.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:pet_profile_app/features/auth/data/auth_service.dart';
+import 'package:pet_profile_app/features/auth/data/token_store.dart';
 import 'package:pet_profile_app/features/auth/presentation/providers/auth_providers.dart';
 
 Future<void> _waitForRefreshToken(AuthNotifier notifier) async {
@@ -37,7 +38,8 @@ void main() {
       }
       return http.Response('not found', 404);
     });
-    final notifier = AuthNotifier(AuthService(baseUrl: '', client: mock), prefs);
+    final notifier =
+        AuthNotifier(AuthService(baseUrl: '', client: mock), PrefsTokenStore(prefs));
     await _waitForRefreshToken(notifier);
     expect(notifier.state.refreshToken, 'refresh-1');
 
@@ -70,7 +72,8 @@ void main() {
       }
       return http.Response('not found', 404);
     });
-    final notifier = AuthNotifier(AuthService(baseUrl: '', client: mock), prefs);
+    final notifier =
+        AuthNotifier(AuthService(baseUrl: '', client: mock), PrefsTokenStore(prefs));
     await _waitForRefreshToken(notifier);
 
     final token = await notifier.forceRefreshAccessToken();
