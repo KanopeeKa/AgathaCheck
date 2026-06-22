@@ -43,6 +43,8 @@ function createPool() {
 export function createApp(customPool, comparePassword) {
   const app = express();
   const pool = customPool || createPool();
+  // Expose the pool so the startup wrapper can close it on graceful shutdown.
+  app.locals.pool = pool;
 
   app.use(cors(corsOptions()));
   app.use(bodyParser.json());

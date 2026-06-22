@@ -23,6 +23,16 @@ String? _extractUserId(Request request) {
   }
 }
 
+// Renders a single CSV cell safely (mirrors csvCell in routes/healthEntries.js):
+// neutralizes spreadsheet formula injection and applies RFC-4180 quoting.
+String _csvCell(Object? value) {
+  if (value == null) return '';
+  var s = value.toString();
+  if (RegExp(r'^[=+\-@\t\r]').hasMatch(s)) s = "'$s";
+  if (RegExp(r'[",\n\r]').hasMatch(s)) s = '"${s.replaceAll('"', '""')}"';
+  return s;
+}
+
 // True when `petId` exists and belongs to `userId` (stops attaching health
 // entries to another user's pet).
 Future<bool> _userOwnsPet(Pool pool, String? petId, String userId) async {
@@ -128,7 +138,10 @@ Router healthRoutes(Pool pool) {
       final csv = StringBuffer('id,pet_name,name,type,dosage,frequency,start_date,next_due_date,notes\n');
       for (final row in results) {
         final c = row.toColumnMap();
-        csv.writeln('${c['id']},${c['pet_name']},${c['name']},${c['type']},${c['dosage']},${c['frequency']},${c['start_date']},${c['next_due_date']},${c['notes']}');
+        csv.writeln([
+          c['id'], c['pet_name'], c['name'], c['type'], c['dosage'],
+          c['frequency'], c['start_date'], c['next_due_date'], c['notes'],
+        ].map(_csvCell).join(','));
       }
       return Response.ok(csv.toString(), headers: {'Content-Type': 'text/csv'});
     } catch (e) {

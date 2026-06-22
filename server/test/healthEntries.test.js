@@ -276,6 +276,27 @@ describe('Health Entries API', () => {
       const lines = res.text.split('\n');
       expect(lines[0]).toBe('id,pet_name,name,type,dosage,frequency,start_date,next_due_date,notes');
     });
+
+    it('escapes commas/quotes and neutralizes formula injection', async () => {
+      const pool = {
+        query: async () => ({
+          rows: [makeHealthRow({
+            name: 'Med, "special"',
+            notes: '=cmd|/c calc',
+          })],
+        }),
+        end: async () => {},
+      };
+      const a = createApp(pool);
+      const res = await request(a)
+        .get('/api/health-entries/export')
+        .set('Authorization', `Bearer ${token}`);
+      // Comma/quote field is wrapped in quotes with doubled inner quotes.
+      expect(res.text).toContain('"Med, ""special"""');
+      // Formula-trigger cell is prefixed with a single quote so spreadsheets
+      // don't execute it.
+      expect(res.text).toContain("'=cmd|/c calc");
+    });
   });
 
   describe('GET /api/health-entries/:id', () => {

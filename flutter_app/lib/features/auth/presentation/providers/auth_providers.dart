@@ -2,12 +2,12 @@ import 'dart:typed_data';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
-import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../../core/network/auth_http_client.dart';
 import '../../../../core/providers/api_base_url_provider.dart';
 import '../../../../core/providers/shared_preferences_provider.dart';
 import '../../data/auth_service.dart';
+import '../../data/token_store.dart';
 
 final authServiceProvider = Provider<AuthService>((ref) {
   final baseUrl = ref.watch(apiBaseUrlProvider);
@@ -59,18 +59,15 @@ class AuthState {
 
 class AuthNotifier extends StateNotifier<AuthState> {
   final AuthService _authService;
-  final SharedPreferences _prefs;
+  final TokenStore _tokenStore;
 
-  AuthNotifier(this._authService, this._prefs) : super(const AuthState()) {
+  AuthNotifier(this._authService, this._tokenStore) : super(const AuthState()) {
     _loadSavedSession();
   }
 
-  static const _accessTokenKey = 'auth_access_token';
-  static const _refreshTokenKey = 'auth_refresh_token';
-
   Future<void> _loadSavedSession() async {
-    final accessToken = _prefs.getString(_accessTokenKey);
-    final refreshToken = _prefs.getString(_refreshTokenKey);
+    final accessToken = await _tokenStore.readAccessToken();
+    final refreshToken = await _tokenStore.readRefreshToken();
 
     if (accessToken != null && refreshToken != null) {
       state = state.copyWith(isLoading: true, clearError: true);
@@ -85,7 +82,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
         try {
           final newAccess = await _authService.refreshToken(refreshToken);
           final user = await _authService.getMe(newAccess);
-          await _prefs.setString(_accessTokenKey, newAccess);
+          await _tokenStore.writeAccessToken(newAccess);
           state = AuthState(
             user: user,
             accessToken: newAccess,
@@ -229,7 +226,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
     } catch (_) {
       try {
         final newAccess = await _authService.refreshToken(state.refreshToken!);
-        await _prefs.setString(_accessTokenKey, newAccess);
+        await _tokenStore.writeAccessToken(newAccess);
         final user = await _authService.getMe(newAccess);
         state = AuthState(
           user: user,
@@ -276,7 +273,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
     }
     try {
       final newAccess = await _authService.refreshToken(refreshToken);
-      await _prefs.setString(_accessTokenKey, newAccess);
+      await _tokenStore.writeAccessToken(newAccess);
       state = state.copyWith(accessToken: newAccess);
       return newAccess;
     } catch (_) {
@@ -287,20 +284,19 @@ class AuthNotifier extends StateNotifier<AuthState> {
   }
 
   Future<void> _saveTokens(String access, String refresh) async {
-    await _prefs.setString(_accessTokenKey, access);
-    await _prefs.setString(_refreshTokenKey, refresh);
+    await _tokenStore.writeTokens(access, refresh);
   }
 
   Future<void> _clearTokens() async {
-    await _prefs.remove(_accessTokenKey);
-    await _prefs.remove(_refreshTokenKey);
+    await _tokenStore.clear();
   }
 }
 
 final authProvider = StateNotifierProvider<AuthNotifier, AuthState>((ref) {
   final authService = ref.watch(authServiceProvider);
   final prefs = ref.watch(sharedPreferencesProvider);
-  return AuthNotifier(authService, prefs);
+  // Secure storage on mobile; SharedPreferences on web/desktop/tests.
+  return AuthNotifier(authService, createTokenStore(prefs));
 });
 
 /// A shared [http.Client] that auto-injects the current access token and, on a

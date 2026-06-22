@@ -4,8 +4,22 @@ import 'package:purchases_flutter/purchases_flutter.dart';
 import '../../domain/entities/subscription_status.dart';
 
 class RevenueCatConfig {
-  static const String publicApiKey = 'test_mChvbdszQBlZxZxjoINftJrAbTx';
-  static const String entitlementId = 'Agatah Check Unlimited';
+  // Provide at build time with:
+  //   flutter build web --dart-define=REVENUECAT_PUBLIC_API_KEY=<key>
+  // Falls back to the existing public test key so local/dev builds keep working
+  // without extra flags. Do not commit a real production key in source.
+  static const String publicApiKey = String.fromEnvironment(
+    'REVENUECAT_PUBLIC_API_KEY',
+    defaultValue: 'test_mChvbdszQBlZxZxjoINftJrAbTx',
+  );
+
+  // NOTE: this must match the entitlement identifier configured in the
+  // RevenueCat dashboard exactly — including the historical "Agatah" spelling.
+  // Override per environment with --dart-define=REVENUECAT_ENTITLEMENT_ID=...
+  static const String entitlementId = String.fromEnvironment(
+    'REVENUECAT_ENTITLEMENT_ID',
+    defaultValue: 'Agatah Check Unlimited',
+  );
 }
 
 class RevenueCatService {

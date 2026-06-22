@@ -1,5 +1,4 @@
 import express from 'express';
-import { v4 as uuidv4 } from 'uuid';
 import jwt from 'jsonwebtoken';
 
 import { JWT_SECRET } from '../config/jwtSecret.js';
@@ -21,13 +20,12 @@ export default function sharingRoutes(pool) {
   router.post('/', async (req, res) => {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
-    try {
-      const { pet_id } = req.body;
-      const code = uuidv4().substring(0, 8);
-      res.status(201).json({ code, pet_id });
-    } catch (err) {
-      res.status(500).json({ error: publicError(err) });
-    }
+    // NOT IMPLEMENTED: share-by-code has no persistence (there is no table that
+    // maps a generated code to a pet), so a code returned here could never be
+    // resolved. Return 501 instead of faking success — the working sharing flow
+    // is the pending/hidden pet_access path below. The DB-backed access list,
+    // role updates, and removals still live as stubs in routes/pets.js.
+    return res.status(501).json({ error: 'Not implemented' });
   });
 
   router.get('/pending', async (req, res) => {
@@ -103,13 +101,15 @@ export default function sharingRoutes(pool) {
   });
 
   router.get('/:code', async (req, res) => {
-    res.json({ code: req.params.code, pet: null });
+    // NOT IMPLEMENTED: see POST / above — no share-code persistence to look up.
+    return res.status(501).json({ error: 'Not implemented' });
   });
 
   router.post('/:code/accept', async (req, res) => {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
-    res.json({ message: 'Share accepted' });
+    // NOT IMPLEMENTED: share-by-code acceptance (see POST / above).
+    return res.status(501).json({ error: 'Not implemented' });
   });
 
   return router;

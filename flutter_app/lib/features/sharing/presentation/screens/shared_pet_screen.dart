@@ -181,8 +181,8 @@ class _SharedPetScreenState extends ConsumerState<SharedPetScreen> {
             onAccept: () async {
               setState(() => _accepting = true);
               try {
-                final ds = ref.read(sharingDataSourceProvider);
-                final petId = await ds.acceptShare(
+                final repo = ref.read(sharingRepositoryProvider);
+                final petId = await repo.acceptShare(
                     widget.shareCode, ref.read(authProvider).accessToken!);
                 if (!mounted) return;
                 ScaffoldMessenger.of(context).showSnackBar(

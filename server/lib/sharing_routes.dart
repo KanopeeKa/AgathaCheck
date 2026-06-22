@@ -2,12 +2,9 @@ import 'dart:convert';
 import 'package:shelf/shelf.dart';
 import 'package:shelf_router/shelf_router.dart';
 import 'package:postgres/postgres.dart';
-import 'package:uuid/uuid.dart';
 import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart';
 import 'jwt_secret.dart';
 import 'http_security.dart';
-
-final _uuid = Uuid();
 
 String? _extractUserId(Request request) {
   final auth = request.headers['authorization'] ?? request.headers['Authorization'];
@@ -26,16 +23,11 @@ Router sharingRoutes(Pool pool) {
   router.post('/', (Request request) async {
     final userId = _extractUserId(request);
     if (userId == null) return Response(401, body: jsonEncode({'error': 'Unauthorized'}));
-    try {
-      final body = jsonDecode(await request.readAsString());
-      final petId = body['pet_id'];
-      final code = _uuid.v4().substring(0, 8);
-      return Response(201,
-          body: jsonEncode({'code': code, 'pet_id': petId}),
-          headers: {'Content-Type': 'application/json'});
-    } catch (e) {
-      return Response.internalServerError(body: jsonEncode({'error': publicError(e)}));
-    }
+    // NOT IMPLEMENTED (mirrors routes/sharing.js): share-by-code has no
+    // persistence, so return 501 instead of a code that can never be resolved.
+    return Response(501,
+        body: jsonEncode({'error': 'Not implemented'}),
+        headers: {'Content-Type': 'application/json'});
   });
 
   router.get('/pending', (Request request) async {
@@ -115,13 +107,19 @@ Router sharingRoutes(Pool pool) {
   });
 
   router.get('/<code>', (Request request, String code) async {
-    return Response.ok(jsonEncode({'code': code, 'pet': null}), headers: {'Content-Type': 'application/json'});
+    // NOT IMPLEMENTED: share-by-code lookup (no code persistence).
+    return Response(501,
+        body: jsonEncode({'error': 'Not implemented'}),
+        headers: {'Content-Type': 'application/json'});
   });
 
   router.post('/<code>/accept', (Request request, String code) async {
     final userId = _extractUserId(request);
     if (userId == null) return Response(401, body: jsonEncode({'error': 'Unauthorized'}));
-    return Response.ok(jsonEncode({'message': 'Share accepted'}), headers: {'Content-Type': 'application/json'});
+    // NOT IMPLEMENTED: share-by-code acceptance.
+    return Response(501,
+        body: jsonEncode({'error': 'Not implemented'}),
+        headers: {'Content-Type': 'application/json'});
   });
 
   return router;

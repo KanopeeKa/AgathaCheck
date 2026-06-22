@@ -91,12 +91,16 @@ export default function petsRoutes(pool) {
     return result.rows.length > 0;
   }
 
+  // NOT IMPLEMENTED: pet transfer to an org has no backing logic.
   router.post('/:id/transfer-to-org', (req, res) => {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
-    res.status(200).json({ status: 'transferred', pet_id: req.params.id });
+    return res.status(501).json({ error: 'Not implemented' });
   });
 
+  // NOT IMPLEMENTED: family events are not persisted. The read returns an empty
+  // list (honest "none yet"); the mutations return 501 rather than faking
+  // success so callers don't believe an event was saved.
   router.get('/:id/family-events', (req, res) => {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
@@ -106,21 +110,23 @@ export default function petsRoutes(pool) {
   router.post('/:id/family-events', (req, res) => {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
-    res.status(201).json({ event_id: 1 });
+    return res.status(501).json({ error: 'Not implemented' });
   });
 
   router.put('/:id/family-events/:eventId', (req, res) => {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
-    res.status(200).json({ updated: true, event_id: req.params.eventId });
+    return res.status(501).json({ error: 'Not implemented' });
   });
 
   router.delete('/:id/family-events/:eventId', (req, res) => {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
-    res.status(200).json({ deleted: true, event_id: req.params.eventId });
+    return res.status(501).json({ error: 'Not implemented' });
   });
 
+  // NOT IMPLEMENTED: there is no working flow that populates pet_access, so the
+  // access list is honestly empty; role/removal mutations return 501.
   router.get('/:id/access', (req, res) => {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
@@ -130,21 +136,27 @@ export default function petsRoutes(pool) {
   router.put('/:id/access/:userId/role', (req, res) => {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
-    res.status(200).json({ updated: true, user_id: req.params.userId });
+    return res.status(501).json({ error: 'Not implemented' });
   });
 
   router.delete('/:id/access/:userId', (req, res) => {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
-    res.status(200).json({ deleted: true, user_id: req.params.userId });
+    return res.status(501).json({ error: 'Not implemented' });
   });
 
+  // STUB: best-effort cascade cleanup of a pet's related data. Returns success
+  // without deleting; the client calls it best-effort before DELETE /:id (which
+  // relies on the schema's ON DELETE CASCADE for the actual cleanup).
   router.delete('/:id/data', (req, res) => {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     res.status(200).json({ deleted: true, pet_id: req.params.id });
   });
 
+  // STUB: the pet's passedAway flag is persisted via PUT /api/pets/:id; this
+  // endpoint only exists to notify shared users (sharing is not implemented), so
+  // it acknowledges without side effects.
   router.post('/:id/passed-away', (req, res) => {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });

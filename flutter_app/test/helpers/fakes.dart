@@ -4,6 +4,7 @@ import 'package:pet_profile_app/features/pet_profile/domain/repositories/pet_rep
 import 'package:pet_profile_app/features/pet_profile/domain/usecases/get_all_pets.dart';
 import 'package:pet_profile_app/features/pet_profile/presentation/providers/pet_providers.dart';
 import 'package:pet_profile_app/features/auth/data/auth_service.dart';
+import 'package:pet_profile_app/features/auth/data/token_store.dart';
 import 'package:pet_profile_app/features/auth/presentation/providers/auth_providers.dart';
 import 'package:pet_profile_app/features/health_tracking/domain/entities/health_entry.dart';
 import 'package:pet_profile_app/features/health_tracking/presentation/providers/health_providers.dart';
@@ -60,7 +61,7 @@ class FakeAuthService implements AuthService {
 }
 
 class FakeAuthNotifier extends AuthNotifier {
-  FakeAuthNotifier() : super(FakeAuthService(), FakePrefs()) {
+  FakeAuthNotifier() : super(FakeAuthService(), PrefsTokenStore(FakePrefs())) {
     state = loggedInAuthState;
   }
 }

@@ -105,6 +105,17 @@ function healthEntryToMap(row) {
   };
 }
 
+// Renders a single CSV cell safely: neutralizes spreadsheet formula injection
+// (cells beginning with = + - @ tab/CR are prefixed with a single quote) and
+// applies RFC-4180 quoting when the value contains a comma, quote, or newline.
+function csvCell(value) {
+  if (value === null || value === undefined) return '';
+  let s = String(value);
+  if (/^[=+\-@\t\r]/.test(s)) s = `'${s}`;
+  if (/[",\n\r]/.test(s)) s = `"${s.replace(/"/g, '""')}"`;
+  return s;
+}
+
 export default function healthEntriesRoutes(pool) {
   const router = express.Router();
 
@@ -141,7 +152,10 @@ export default function healthEntriesRoutes(pool) {
       );
       let csv = 'id,pet_name,name,type,dosage,frequency,start_date,next_due_date,notes\n';
       for (const row of result.rows) {
-        csv += `${row.id},${row.pet_name},${row.name},${row.type},${row.dosage},${row.frequency},${row.start_date},${row.next_due_date},${row.notes}\n`;
+        csv += [
+          row.id, row.pet_name, row.name, row.type, row.dosage,
+          row.frequency, row.start_date, row.next_due_date, row.notes,
+        ].map(csvCell).join(',') + '\n';
       }
       res.setHeader('Content-Type', 'text/csv');
       res.send(csv);

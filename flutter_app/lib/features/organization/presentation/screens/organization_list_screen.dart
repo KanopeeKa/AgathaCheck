@@ -274,8 +274,8 @@ class OrganizationListScreen extends ConsumerWidget {
               try {
                 final token = ref.read(authProvider).accessToken;
                 if (token == null) return;
-                final ds = ref.read(orgRemoteDataSourceProvider);
-                await ds.joinOrganization(code, token);
+                final repo = ref.read(organizationRepositoryProvider);
+                await repo.joinOrganization(code, token);
                 ref.invalidate(organizationListProvider);
                 if (ctx.mounted) {
                   Navigator.of(ctx).pop();

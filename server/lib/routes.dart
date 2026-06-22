@@ -324,8 +324,14 @@ Future<Response> _deletePet(Request request, String id) async {
   }
 }
 
+// NOT IMPLEMENTED (mirrors routes/pets.js): these have no backing logic, so
+// they return 501 rather than faking success. The GET stubs honestly return an
+// empty list.
+Response _notImplemented() => Response(501,
+    body: jsonEncode({'error': 'Not implemented'}), headers: _jsonHeaders);
+
 Future<Response> _transferPetToOrg(Request request, String id) async {
-  return Response.ok(jsonEncode({'status': 'transferred', 'pet_id': id}), headers: _jsonHeaders);
+  return _notImplemented();
 }
 
 Future<Response> _getFamilyEvents(Request request, String id) async {
@@ -333,15 +339,15 @@ Future<Response> _getFamilyEvents(Request request, String id) async {
 }
 
 Future<Response> _createFamilyEvent(Request request, String id) async {
-  return Response.ok(jsonEncode({'event_id': 1}), headers: _jsonHeaders);
+  return _notImplemented();
 }
 
 Future<Response> _updateFamilyEvent(Request request, String id, String eventId) async {
-  return Response.ok(jsonEncode({'updated': true, 'event_id': eventId}), headers: _jsonHeaders);
+  return _notImplemented();
 }
 
 Future<Response> _deleteFamilyEvent(Request request, String id, String eventId) async {
-  return Response.ok(jsonEncode({'deleted': true, 'event_id': eventId}), headers: _jsonHeaders);
+  return _notImplemented();
 }
 
 Future<Response> _getPetAccess(Request request, String id) async {
@@ -349,11 +355,11 @@ Future<Response> _getPetAccess(Request request, String id) async {
 }
 
 Future<Response> _updatePetAccessRole(Request request, String id, String userId) async {
-  return Response.ok(jsonEncode({'updated': true, 'user_id': userId}), headers: _jsonHeaders);
+  return _notImplemented();
 }
 
 Future<Response> _deletePetAccess(Request request, String id, String userId) async {
-  return Response.ok(jsonEncode({'deleted': true, 'user_id': userId}), headers: _jsonHeaders);
+  return _notImplemented();
 }
 
 Future<Response> _deletePetData(Request request, String id) async {

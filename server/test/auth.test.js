@@ -46,6 +46,7 @@ function buildMockPool(overrides = {}) {
     insertUser: async (sql, params) => ({ rows: [{ id: userId }] }),
     selectUserByEmail: async (sql, params) => ({ rows: [userRow] }),
     selectUserById: async (sql, params) => ({ rows: [userRow] }),
+    selectUserExists: async (sql, params) => ({ rows: [{ id: userId }] }),
     selectPasswordHash: async (sql, params) => ({ rows: [{ password_hash: userPasswordHash }] }),
     updateUser: async (sql, params) => ({ rows: [{ ...userRow, ...overrides.updatedFields }] }),
     deleteUser: async (sql, params) => ({ rows: [] }),
@@ -63,6 +64,7 @@ function buildMockPool(overrides = {}) {
     query: async (sql, params) => {
       if (sql.includes('INSERT INTO users')) return handlers.insertUser(sql, params);
       if (sql.includes('SELECT * FROM users WHERE email')) return handlers.selectUserByEmail(sql, params);
+      if (sql.includes('SELECT id FROM users WHERE id')) return handlers.selectUserExists(sql, params);
       if (sql.includes('SELECT * FROM users WHERE id')) return handlers.selectUserById(sql, params);
       if (sql.includes('SELECT password_hash FROM users WHERE id')) return handlers.selectPasswordHash(sql, params);
       if (sql.includes('UPDATE users SET password_hash')) return handlers.updatePasswordHash(sql, params);
@@ -872,6 +874,87 @@ describe('Auth Routes', () => {
       expect(res.body).toHaveProperty('bio');
       expect(res.body).toHaveProperty('photo_url');
       expect(res.body).toHaveProperty('locale');
+    });
+  });
+
+  describe('Auth hardening', () => {
+    function restoreEnv(key, prev) {
+      if (prev === undefined) {
+        delete process.env[key];
+      } else {
+        process.env[key] = prev;
+      }
+    }
+
+    it('rate-limits repeated login attempts with 429', async () => {
+      const prevTest = process.env.AUTH_RATE_LIMIT_TEST;
+      const prevMax = process.env.AUTH_RATE_LIMIT_MAX;
+      process.env.AUTH_RATE_LIMIT_TEST = '1';
+      process.env.AUTH_RATE_LIMIT_MAX = '2';
+      try {
+        // The limiter reads env at construction, so build the app afterwards.
+        const limitedApp = createApp(buildMockPool(), mockComparePassword);
+        const send = () => request(limitedApp)
+          .post('/api/auth/login')
+          .send({ email: 'x@example.com', password: 'wrongpass' });
+        expect((await send()).statusCode).toBe(401);
+        expect((await send()).statusCode).toBe(401);
+        const third = await send();
+        expect(third.statusCode).toBe(429);
+      } finally {
+        restoreEnv('AUTH_RATE_LIMIT_TEST', prevTest);
+        restoreEnv('AUTH_RATE_LIMIT_MAX', prevMax);
+      }
+    });
+
+    it('refresh returns 401 when the user no longer exists', async () => {
+      const pool = buildMockPool({ selectUserExists: async () => ({ rows: [] }) });
+      const a = createApp(pool, mockComparePassword);
+      const res = await request(a)
+        .post('/api/auth/refresh')
+        .send({ refresh_token: makeRefreshToken() });
+      expect(res.statusCode).toBe(401);
+    });
+
+    it('refresh succeeds when the user still exists', async () => {
+      const res = await request(app)
+        .post('/api/auth/refresh')
+        .send({ refresh_token: makeRefreshToken() });
+      expect(res.statusCode).toBe(200);
+      expect(res.body).toHaveProperty('access_token');
+    });
+
+    it('signup rejects an invalid email format', async () => {
+      const res = await request(app)
+        .post('/api/auth/signup')
+        .send({ email: 'not-an-email', password: 'Password123' });
+      expect(res.statusCode).toBe(400);
+      expect(res.body.error).toMatch(/email/i);
+    });
+
+    it('signup rejects a too-short password', async () => {
+      const res = await request(app)
+        .post('/api/auth/signup')
+        .send({ email: 'shortpw@example.com', password: 'abc' });
+      expect(res.statusCode).toBe(400);
+      expect(res.body.error).toMatch(/password/i);
+    });
+
+    it('change-password rejects a too-short new password', async () => {
+      const res = await request(app)
+        .post('/api/auth/change-password')
+        .set('Authorization', `Bearer ${makeToken()}`)
+        .send({ currentPassword: 'testpassword', newPassword: 'abc' });
+      expect(res.statusCode).toBe(400);
+      expect(res.body.error).toMatch(/password/i);
+    });
+
+    it('reset-password rejects a too-short new password', async () => {
+      const res = await request(app)
+        .post('/api/auth/reset-password')
+        .send({ email: userEmail, code: '123456', new_password: 'abc' });
+      expect(res.statusCode).toBe(400);
+      expect(res.body.error).toMatch(/password/i);
     });
   });
 });

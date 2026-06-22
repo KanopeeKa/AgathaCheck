@@ -106,8 +106,8 @@ class _SharingContent extends ConsumerWidget {
     final token = await ref.read(authProvider.notifier).getValidAccessToken();
     if (token == null) return;
     try {
-      final ds = ref.read(sharingDataSourceProvider);
-      final code = await ds.createShare(petId, {}, token);
+      final repo = ref.read(sharingRepositoryProvider);
+      final code = await repo.createShare(petId, {}, token);
       final baseUrl = Uri.base.origin;
       final link = '$baseUrl/#/shared/$code';
       if (context.mounted) {

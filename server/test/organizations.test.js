@@ -300,13 +300,12 @@ describe('Organizations API', () => {
     });
   });
 
-  describe('POST /join/:code', () => {
-    it('joins an organization by code', async () => {
+  describe('POST /join/:code (not implemented)', () => {
+    it('returns 501 instead of faking a join', async () => {
       const res = await request(app)
         .post('/api/organizations/join/abc123')
         .set('Authorization', `Bearer ${token}`);
-      expect(res.statusCode).toBe(200);
-      expect(res.body).toHaveProperty('message');
+      expect(res.statusCode).toBe(501);
     });
   });
 
@@ -548,13 +547,13 @@ describe('Organizations API', () => {
     });
   });
 
-  describe('POST /:orgId/pets', () => {
-    it('adds pet to organization', async () => {
+  describe('POST /:orgId/pets (not implemented)', () => {
+    it('returns 501 instead of faking pet creation', async () => {
       const res = await request(app)
         .post(`/api/organizations/${orgId}/pets`)
         .set('Authorization', `Bearer ${token}`)
         .send({});
-      expect(res.statusCode).toBe(201);
+      expect(res.statusCode).toBe(501);
     });
   });
 

@@ -3,10 +3,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/providers/api_base_url_provider.dart';
 import '../../../auth/presentation/providers/auth_providers.dart';
 import '../../data/datasources/organization_remote_datasource.dart';
+import '../../data/models/organization_model.dart';
+import '../../data/repositories/organization_repository_impl.dart';
 import '../../domain/entities/archived_pet.dart';
 import '../../domain/entities/family_event.dart';
 import '../../domain/entities/organization.dart';
 import '../../domain/entities/organization_member.dart';
+import '../../domain/repositories/organization_repository.dart';
 import '../../../pet_profile/domain/entities/pet.dart';
 
 final orgRemoteDataSourceProvider = Provider<OrganizationRemoteDataSource>((ref) {
@@ -18,6 +21,13 @@ final orgRemoteDataSourceProvider = Provider<OrganizationRemoteDataSource>((ref)
   );
 });
 
+/// The seam the presentation layer depends on. Notifiers/screens go through this
+/// repository rather than touching the remote datasource directly (clean
+/// architecture); override it in tests with a fake repository.
+final organizationRepositoryProvider = Provider<OrganizationRepository>((ref) {
+  return OrganizationRepositoryImpl(ref.watch(orgRemoteDataSourceProvider));
+});
+
 final _orgTokenProvider = Provider<String?>((ref) {
   return ref.watch(authProvider).accessToken;
 });
@@ -27,29 +37,31 @@ class OrganizationListNotifier extends AsyncNotifier<List<Organization>> {
   Future<List<Organization>> build() async {
     final token = ref.watch(_orgTokenProvider);
     if (token == null) return [];
-    final ds = ref.read(orgRemoteDataSourceProvider);
-    return ds.getOrganizations(token);
+    final repo = ref.read(organizationRepositoryProvider);
+    return repo.getOrganizations(token);
   }
 
   Future<Organization> createOrganization(Map<String, dynamic> data) async {
     final token = ref.read(_orgTokenProvider)!;
-    final ds = ref.read(orgRemoteDataSourceProvider);
-    final org = await ds.createOrganization(data, token);
+    final repo = ref.read(organizationRepositoryProvider);
+    // The form passes a raw map; convert to the domain entity for the repository.
+    final org = await repo.createOrganization(OrganizationModel.fromJson(data), token);
     ref.invalidateSelf();
     return org;
   }
 
   Future<void> updateOrganization(String orgId, Map<String, dynamic> data) async {
     final token = ref.read(_orgTokenProvider)!;
-    final ds = ref.read(orgRemoteDataSourceProvider);
-    await ds.updateOrganization(orgId, data, token);
+    final repo = ref.read(organizationRepositoryProvider);
+    await repo.updateOrganization(
+        OrganizationModel.fromJson({...data, 'id': orgId}), token);
     ref.invalidateSelf();
   }
 
   Future<void> deleteOrganization(String orgId) async {
     final token = ref.read(_orgTokenProvider)!;
-    final ds = ref.read(orgRemoteDataSourceProvider);
-    await ds.deleteOrganization(orgId, token);
+    final repo = ref.read(organizationRepositoryProvider);
+    await repo.deleteOrganization(orgId, token);
     ref.invalidateSelf();
   }
 
@@ -67,41 +79,43 @@ class OrgMembersNotifier extends FamilyAsyncNotifier<List<OrganizationMember>, S
   Future<List<OrganizationMember>> build(String orgId) async {
     final token = ref.watch(_orgTokenProvider);
     if (token == null) return [];
-    final ds = ref.read(orgRemoteDataSourceProvider);
-    return ds.getMembers(orgId, token);
+    final repo = ref.read(organizationRepositoryProvider);
+    return repo.getMembers(orgId, token);
   }
 
   Future<String> createInvite() async {
     final token = ref.read(_orgTokenProvider)!;
-    final ds = ref.read(orgRemoteDataSourceProvider);
-    return ds.inviteMember(arg, token);
+    final repo = ref.read(organizationRepositoryProvider);
+    return repo.inviteMember(arg, token);
   }
 
   Future<void> inviteByEmail(String email, String role) async {
     final token = ref.read(_orgTokenProvider)!;
-    final ds = ref.read(orgRemoteDataSourceProvider);
-    await ds.inviteByEmail(arg, email, role, token);
+    final repo = ref.read(organizationRepositoryProvider);
+    await repo.inviteByEmail(arg, email, role, token);
     ref.invalidateSelf();
   }
 
   Future<void> updateMemberRole(String userId, String role) async {
     final token = ref.read(_orgTokenProvider)!;
-    final ds = ref.read(orgRemoteDataSourceProvider);
-    await ds.updateMemberRole(arg, userId, role, token);
+    final repo = ref.read(organizationRepositoryProvider);
+    final roleEnum =
+        role == 'super_user' ? OrgMemberRole.superUser : OrgMemberRole.member;
+    await repo.updateMemberRole(arg, userId, roleEnum, token);
     ref.invalidateSelf();
   }
 
   Future<void> removeMember(String userId) async {
     final token = ref.read(_orgTokenProvider)!;
-    final ds = ref.read(orgRemoteDataSourceProvider);
-    await ds.removeMember(arg, userId, token);
+    final repo = ref.read(organizationRepositoryProvider);
+    await repo.removeMember(arg, userId, token);
     ref.invalidateSelf();
   }
 
   Future<void> leaveOrganization() async {
     final token = ref.read(_orgTokenProvider)!;
-    final ds = ref.read(orgRemoteDataSourceProvider);
-    await ds.leaveOrganization(arg, token);
+    final repo = ref.read(organizationRepositoryProvider);
+    await repo.leaveOrganization(arg, token);
   }
 }
 
@@ -114,8 +128,8 @@ class OrgPetsNotifier extends FamilyAsyncNotifier<List<Pet>, String> {
   Future<List<Pet>> build(String orgId) async {
     final token = ref.watch(_orgTokenProvider);
     if (token == null) return [];
-    final ds = ref.read(orgRemoteDataSourceProvider);
-    final models = await ds.getOrganizationPets(orgId, token);
+    final repo = ref.read(organizationRepositoryProvider);
+    final models = await repo.getOrganizationPets(orgId, token);
     return models.map((m) => Pet(
       id: m['id']?.toString() ?? '',
       name: m['name']?.toString() ?? '',
@@ -138,8 +152,8 @@ class OrgPetsNotifier extends FamilyAsyncNotifier<List<Pet>, String> {
 
   Future<void> createPet(Map<String, dynamic> petData) async {
     final token = ref.read(_orgTokenProvider)!;
-    final ds = ref.read(orgRemoteDataSourceProvider);
-    await ds.createOrganizationPet(arg, petData, token);
+    final repo = ref.read(organizationRepositoryProvider);
+    await repo.createOrganizationPet(arg, petData, token);
     ref.invalidateSelf();
   }
 
@@ -149,8 +163,8 @@ class OrgPetsNotifier extends FamilyAsyncNotifier<List<Pet>, String> {
     String notes = '',
   }) async {
     final token = ref.read(_orgTokenProvider)!;
-    final ds = ref.read(orgRemoteDataSourceProvider);
-    await ds.transferPetToUser(arg, petId,
+    final repo = ref.read(organizationRepositoryProvider);
+    await repo.transferPetToUser(arg, petId,
         recipientEmail: recipientEmail, transferType: transferType,
         notes: notes, token: token);
     ref.invalidateSelf();
@@ -166,8 +180,8 @@ class OrgArchivedPetsNotifier extends FamilyAsyncNotifier<List<ArchivedPet>, Str
   Future<List<ArchivedPet>> build(String orgId) async {
     final token = ref.watch(_orgTokenProvider);
     if (token == null) return [];
-    final ds = ref.read(orgRemoteDataSourceProvider);
-    return ds.getOrganizationArchivedPets(orgId, token);
+    final repo = ref.read(organizationRepositoryProvider);
+    return repo.getOrganizationArchivedPets(orgId, token);
   }
 }
 
@@ -180,8 +194,8 @@ class UserArchivedPetsNotifier extends AsyncNotifier<List<ArchivedPet>> {
   Future<List<ArchivedPet>> build() async {
     final token = ref.watch(_orgTokenProvider);
     if (token == null) return [];
-    final ds = ref.read(orgRemoteDataSourceProvider);
-    return ds.getUserArchivedPets(token);
+    final repo = ref.read(organizationRepositoryProvider);
+    return repo.getUserArchivedPets(token);
   }
 }
 
@@ -237,15 +251,15 @@ class PendingOrgInvitesNotifier extends AsyncNotifier<List<PendingOrgInvite>> {
   Future<List<PendingOrgInvite>> build() async {
     final token = ref.watch(_orgTokenProvider);
     if (token == null) return [];
-    final ds = ref.read(orgRemoteDataSourceProvider);
-    final raw = await ds.getPendingInvites(token);
+    final repo = ref.read(organizationRepositoryProvider);
+    final raw = await repo.getPendingInvites(token);
     return raw.map((e) => PendingOrgInvite.fromJson(e)).toList();
   }
 
   Future<String> acceptInvite(String inviteId) async {
     final token = ref.read(_orgTokenProvider)!;
-    final ds = ref.read(orgRemoteDataSourceProvider);
-    final result = await ds.acceptInvite(inviteId, token);
+    final repo = ref.read(organizationRepositoryProvider);
+    final result = await repo.acceptInvite(inviteId, token);
     ref.invalidateSelf();
     ref.invalidate(organizationListProvider);
     return result['organization_id']?.toString() ?? '';
@@ -253,8 +267,8 @@ class PendingOrgInvitesNotifier extends AsyncNotifier<List<PendingOrgInvite>> {
 
   Future<void> declineInvite(String inviteId) async {
     final token = ref.read(_orgTokenProvider)!;
-    final ds = ref.read(orgRemoteDataSourceProvider);
-    await ds.declineInvite(inviteId, token);
+    final repo = ref.read(organizationRepositoryProvider);
+    await repo.declineInvite(inviteId, token);
     ref.invalidateSelf();
   }
 }
@@ -268,9 +282,9 @@ class FamilyEventsNotifier extends FamilyAsyncNotifier<List<FamilyEvent>, String
   Future<List<FamilyEvent>> build(String petId) async {
     final token = ref.watch(_orgTokenProvider);
     if (token == null) return [];
-    final ds = ref.read(orgRemoteDataSourceProvider);
+    final repo = ref.read(organizationRepositoryProvider);
     try {
-      final data = await ds.getFamilyEvents(token, petId);
+      final data = await repo.getFamilyEvents(token, petId);
       return data.map((e) => FamilyEvent.fromJson(e)).toList();
     } catch (_) {
       return [];
@@ -284,8 +298,8 @@ class FamilyEventsNotifier extends FamilyAsyncNotifier<List<FamilyEvent>, String
     String notes = '',
   }) async {
     final token = ref.read(_orgTokenProvider)!;
-    final ds = ref.read(orgRemoteDataSourceProvider);
-    await ds.createFamilyEvent(token, arg, {
+    final repo = ref.read(organizationRepositoryProvider);
+    await repo.createFamilyEvent(token, arg, {
       if (assignedToUserId != null) 'assigned_to_user_id': assignedToUserId,
       'from_date': fromDate.toIso8601String().split('T')[0],
       if (toDate != null) 'to_date': toDate.toIso8601String().split('T')[0],
@@ -301,8 +315,8 @@ class FamilyEventsNotifier extends FamilyAsyncNotifier<List<FamilyEvent>, String
     String notes = '',
   }) async {
     final token = ref.read(_orgTokenProvider)!;
-    final ds = ref.read(orgRemoteDataSourceProvider);
-    await ds.updateFamilyEvent(token, arg, eventId, {
+    final repo = ref.read(organizationRepositoryProvider);
+    await repo.updateFamilyEvent(token, arg, eventId, {
       'assigned_to_user_id': assignedToUserId,
       'from_date': fromDate.toIso8601String().split('T')[0],
       if (toDate != null) 'to_date': toDate.toIso8601String().split('T')[0],
@@ -313,8 +327,8 @@ class FamilyEventsNotifier extends FamilyAsyncNotifier<List<FamilyEvent>, String
 
   Future<void> deleteEvent(String eventId) async {
     final token = ref.read(_orgTokenProvider)!;
-    final ds = ref.read(orgRemoteDataSourceProvider);
-    await ds.deleteFamilyEvent(token, arg, eventId);
+    final repo = ref.read(organizationRepositoryProvider);
+    await repo.deleteFamilyEvent(token, arg, eventId);
     ref.invalidateSelf();
   }
 }

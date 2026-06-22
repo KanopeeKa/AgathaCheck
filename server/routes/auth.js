@@ -6,6 +6,8 @@ import { randomInt } from 'crypto';
 
 import { JWT_SECRET } from '../config/jwtSecret.js';
 import { errorDetails } from '../config/security.js';
+import { createAuthLimiter } from '../config/rateLimit.js';
+import { isValidEmail, isStrongPassword, MIN_PASSWORD_LENGTH } from '../config/validation.js';
 
 const isProduction = () => process.env.NODE_ENV === 'production';
 
@@ -45,12 +47,20 @@ function userRowToMap(row) {
 export default function authRoutes(pool, comparePassword) {
   const router = express.Router();
   const _comparePassword = comparePassword || bcrypt.compare;
+  // Shared limiter across the sensitive auth endpoints (see config/rateLimit.js).
+  const authLimiter = createAuthLimiter();
 
-  router.post('/signup', async (req, res) => {
+  router.post('/signup', authLimiter, async (req, res) => {
     try {
       const { email, password, first_name = '', last_name = '', category = 'pet_guardian', bio = '', photo_url = '', locale = 'en' } = req.body;
       if (!email || !password) {
         return res.status(400).json({ error: 'Email and password are required.' });
+      }
+      if (!isValidEmail(email)) {
+        return res.status(400).json({ error: 'Invalid email format.' });
+      }
+      if (!isStrongPassword(password)) {
+        return res.status(400).json({ error: `Password must be at least ${MIN_PASSWORD_LENGTH} characters.` });
       }
       const id = uuidv4();
       const saltRounds = 10;
@@ -77,7 +87,7 @@ export default function authRoutes(pool, comparePassword) {
     }
   });
 
-  router.post('/login', async (req, res) => {
+  router.post('/login', authLimiter, async (req, res) => {
     try {
       const { email, password } = req.body;
       if (!email || !password) {
@@ -102,13 +112,19 @@ export default function authRoutes(pool, comparePassword) {
     }
   });
 
-  router.post('/refresh', (req, res) => {
+  router.post('/refresh', async (req, res) => {
     const { refresh_token } = req.body;
     if (!refresh_token) {
       return res.status(400).json({ error: 'refresh_token is required' });
     }
     try {
       const payload = verifyToken(refresh_token);
+      // Bind the refresh to a live account: a token for a since-deleted user
+      // must not keep minting access tokens until it expires.
+      const userResult = await pool.query('SELECT id FROM users WHERE id = $1', [payload.id]);
+      if (userResult.rows.length === 0) {
+        return res.status(401).json({ error: 'Invalid or expired refresh token' });
+      }
       const accessToken = signAccessToken(payload.id, payload.email);
       res.status(200).json({ access_token: accessToken });
     } catch (err) {
@@ -208,6 +224,9 @@ export default function authRoutes(pool, comparePassword) {
       if (!currentPassword || !newPassword) {
         return res.status(400).json({ error: 'Current and new passwords are required' });
       }
+      if (!isStrongPassword(newPassword)) {
+        return res.status(400).json({ error: `Password must be at least ${MIN_PASSWORD_LENGTH} characters.` });
+      }
       const userResult = await pool.query('SELECT password_hash FROM users WHERE id = $1', [payload.id]);
       if (userResult.rows.length === 0) {
         return res.status(404).json({ error: 'User not found' });
@@ -224,7 +243,7 @@ export default function authRoutes(pool, comparePassword) {
     }
   });
 
-  router.post('/forgot-password', async (req, res) => {
+  router.post('/forgot-password', authLimiter, async (req, res) => {
     try {
       const { email } = req.body;
       if (!email) {
@@ -259,11 +278,14 @@ export default function authRoutes(pool, comparePassword) {
     }
   });
 
-  router.post('/reset-password', async (req, res) => {
+  router.post('/reset-password', authLimiter, async (req, res) => {
     try {
       const { email, code, new_password } = req.body;
       if (!email || !code || !new_password) {
         return res.status(400).json({ error: 'Email, code, and new_password are required' });
+      }
+      if (!isStrongPassword(new_password)) {
+        return res.status(400).json({ error: `Password must be at least ${MIN_PASSWORD_LENGTH} characters.` });
       }
       const result = await pool.query(
         `SELECT prt.id, prt.user_id FROM password_reset_tokens prt

@@ -1,3 +1,94 @@
+# Agatha Track API — Endpoint Reference
+
+> This top section is the authoritative, current endpoint list (generated from
+> `server/routes/*.js`). The older notes further down predate several routes and
+> may be incomplete or out of date; prefer this section.
+
+**Mounting & prefixes.** Every router is mounted under **both** `/api/...` and
+`/backend/api/...` on the same origin. The deployed Flutter web app calls
+`/backend/api/...`; native/dev builds use `http://localhost:5000/api/...`.
+
+**Auth.** Unless noted as *public*, endpoints require `Authorization: Bearer <JWT>`
+(access token from signup/login). Organization routes additionally enforce
+*membership* and, for mutations, the `super_user` role. Health/weight/issue
+records are scoped to the authenticated user; nested resources verify ownership
+of the parent record.
+
+### Auth (`/api/auth`)
+| Method | Path | Notes |
+|---|---|---|
+| POST | `/signup` | public; returns `{ user, access_token, refresh_token }` |
+| POST | `/login` | public |
+| POST | `/refresh` | public; body `{ refresh_token }` |
+| POST | `/logout` | no server-side revocation (stateless JWT) |
+| GET | `/me` | current user |
+| PUT | `/me` | update profile (whitelisted fields) |
+| POST | `/me/photo` | sets a photo URL |
+| POST | `/change-password` | body `{ currentPassword, newPassword }` |
+| POST | `/forgot-password` | public; the reset `code` is returned/logged **only outside production** |
+| POST | `/reset-password` | public; body `{ email, code, new_password }` |
+| DELETE | `/me` | body `{ password }`; deletes account |
+| GET | `/me/export` | GDPR JSON export |
+
+### Pets (`/api/pets`)
+`GET /`, `GET /all`, `GET /:id` (UUID-validated), `POST /`, `PUT /:id`, `DELETE /:id`.
+
+### Vets (`/api/vets`)
+`GET /`, `POST /`, `PUT /:id`, `DELETE /:id` — all scoped to the user.
+
+### Organizations (`/api/organizations`)
+| Method | Path | Authorization |
+|---|---|---|
+| GET | `/` | member orgs only (joined query) |
+| POST | `/` | any authenticated user (creator becomes `super_user`) |
+| GET | `/:id` | membership (joined query) |
+| PUT | `/:id` | `super_user` |
+| DELETE | `/:id` | `super_user` |
+| POST | `/:id/photo` | `super_user` |
+| GET | `/:orgId/members` | member |
+| POST | `/:id/invite` | `super_user`; role ∈ {`member`,`super_user`} |
+| PUT | `/:orgId/members/:userId/role` | `super_user`; role validated |
+| DELETE | `/:orgId/members/:userId` | `super_user` |
+| DELETE | `/:orgId/members/me` | self (leave org) |
+| GET | `/:orgId/pets`, `/:orgId/archived` | member |
+| GET | `/invites/pending`, POST `/invites/:id/accept|decline` | invitee |
+
+### Health entries (`/api/health-entries`)
+`GET /` (optional `?pet_id=`), `GET /export` (CSV), `GET /:id`, `POST /` (verifies
+pet ownership), `PUT /:id`, `DELETE /:id`, `POST /:id/mark-taken`,
+`POST /:id/undo-complete`, `GET /:id/history`, `GET|POST /:id/photos`,
+`DELETE /:entryId/photos/:photoId`. Nested history/photos verify entry ownership.
+
+### Health issues (`/api/health-issues`)
+`GET /` (optional `?pet_id=`), `GET /:id`, `POST /` (verifies pet ownership),
+`PUT /:id`, `DELETE /:id`, `GET /:issueId/events`,
+`DELETE /:issueId/events/:entryId` (events verify issue ownership).
+
+### Weight entries (`/api/weight-entries`)
+`GET /` (optional `?pet_id=`), `GET /latest?pet_id=`, `POST /` (verifies pet
+ownership), `PUT /:id`, `DELETE /:id`.
+
+### Notifications (`/api/notifications`)
+`GET /`, `GET /unread-count`, `PUT|POST /:id/read`, `PUT|POST /read-all`,
+`GET|PUT /preferences`, `POST /check-due`.
+
+### Sharing (`/api/share`)
+The pending/hidden flow is DB-backed: `GET /pending`, `GET /hidden`,
+`POST /pending/:petId/accept`, `POST /pending/:petId/decline`, `PUT /:petId/hide`.
+
+### Not implemented (return `501 Not Implemented`)
+These endpoints are placeholders without backing persistence. They now return
+`501` (with `{ "error": "Not implemented" }`) instead of faking a `2xx`, so
+clients don't believe the action succeeded:
+
+- **Share-by-code:** `POST /api/share`, `GET /api/share/:code`, `POST /api/share/:code/accept`.
+- **Organizations:** `POST /api/organizations/join/:code`, `POST /api/organizations/:orgId/pets`, `POST /api/organizations/:orgId/pets/:petId/transfer`.
+- **Pets:** `POST /api/pets/:id/transfer-to-org`, `POST|PUT|DELETE /api/pets/:id/family-events[...]`, `PUT /api/pets/:id/access/:userId/role`, `DELETE /api/pets/:id/access/:userId`.
+
+Read-only placeholders still return an honest empty list: `GET /api/pets/:id/family-events`, `GET /api/pets/:id/access`. Lifecycle stubs `DELETE /api/pets/:id/data` and `POST /api/pets/:id/passed-away` acknowledge without side effects (the real state changes happen via `DELETE`/`PUT /api/pets/:id`).
+
+---
+
 ### Health Entries Endpoints
 
 - **GET** `/backend/api/health-entries`
