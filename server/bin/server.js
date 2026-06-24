@@ -66,6 +66,7 @@ export function createApp(customPool, comparePassword) {
   });
 
   app.use('/backend/api/auth', authRoutes(pool, comparePassword));
+  app.use('/server/api/auth', authRoutes(pool, comparePassword));
   app.use('/backend/api/pets', petsRoutes(pool));
   app.use('/backend/api/vets', vetsRoutes(pool));
   app.use('/backend/api/organizations', organizationsRoutes(pool));
