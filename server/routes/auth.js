@@ -8,6 +8,7 @@ import { JWT_SECRET } from '../config/jwtSecret.js';
 import { errorDetails } from '../config/security.js';
 import { createAuthLimiter } from '../config/rateLimit.js';
 import { isValidEmail, isStrongPassword, MIN_PASSWORD_LENGTH } from '../config/validation.js';
+import { sendPasswordResetEmail } from '../services/mailService.js';
 
 const isProduction = () => process.env.NODE_ENV === 'production';
 
@@ -261,10 +262,17 @@ export default function authRoutes(pool, comparePassword) {
         "INSERT INTO password_reset_tokens (id, user_id, code, expires_at) VALUES ($1, $2, $3, NOW() + INTERVAL '15 minutes')",
         [id, userId, code]
       );
+      try {
+        await sendPasswordResetEmail(email, code);
+      } catch {
+        await pool.query('DELETE FROM password_reset_tokens WHERE id = $1', [id]);
+        console.error('Password reset email failed; reset token removed.');
+        return res.status(500).json({ error: 'Request failed' });
+      }
       // SECURITY: never return or log the reset code in production — doing so
       // turns "forgot password" into an account-takeover oracle for anyone who
       // knows an email address. In production the code must be delivered out of
-      // band (email/SMS — not yet wired up here). Outside production we expose
+      // band. Outside production we expose
       // it (response + log) purely so local dev and the test suite can drive
       // the reset flow without an email provider.
       const body = { message: 'If that email exists, a reset code has been sent.' };
