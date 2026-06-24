@@ -7,7 +7,7 @@ import nodemailer from 'nodemailer';
  */
 export const mailFrom = process.env.UAT_MAIL_FROM;
 
-export const mailTransporter = nodemailer.createTransport({
+const smtpOptions = {
   host: process.env.UAT_SMTP_HOST,
   port: Number(process.env.UAT_SMTP_PORT || 465),
   secure: String(process.env.UAT_SMTP_SECURE).toLowerCase() === 'true',
@@ -15,4 +15,8 @@ export const mailTransporter = nodemailer.createTransport({
     user: process.env.UAT_mail_user,
     pass: process.env.UAT_mail_pass,
   },
-});
+};
+
+export const mailTransporter = nodemailer.createTransport(
+  process.env.NODE_ENV === 'test' ? { jsonTransport: true } : smtpOptions
+);
