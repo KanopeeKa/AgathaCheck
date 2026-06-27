@@ -37,6 +37,11 @@ Feature: Weight Tracking
     When the user views the profile of "Bella"
     Then "25.0 kg" should be displayed on the pet detail screen
 
+  Scenario: PDF pet report shows latest weight as current weight
+    Given "Bella" has weight entries of 24.0 kg on "2025-04-01" and 25.0 kg on "2025-06-01"
+    When the user downloads a pet report including the profile section
+    Then the report should show "25.0 kg" as the current weight
+
   # ── Editing Weight ───────────────────────────────────────────
 
   Scenario: Editing a weight entry

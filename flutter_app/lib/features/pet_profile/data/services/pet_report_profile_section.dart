@@ -18,9 +18,7 @@ class PetProfileSectionBuilder {
     String weightUnit,
     AppLocalizations l,
   ) {
-    final latestWeight = weightEntries.isNotEmpty
-        ? weightEntries.last.weight
-        : pet.weight;
+    final latestWeight = currentWeightFromEntries(weightEntries, pet.weight);
 
     return [
       _sectionTitle(l.pdfPetProfileSection),
@@ -111,6 +109,18 @@ class PetProfileSectionBuilder {
         ],
       ),
     );
+  }
+
+  /// Resolves the current weight from tracked entries (most recent by date),
+  /// falling back to the pet profile weight when no entries exist.
+  static double? currentWeightFromEntries(
+    List<WeightEntry> entries,
+    double? fallback,
+  ) {
+    if (entries.isEmpty) return fallback;
+    return entries
+        .reduce((a, b) => a.date.isAfter(b.date) ? a : b)
+        .weight;
   }
 
   static String _formatWeight(double kg, String unit) {
