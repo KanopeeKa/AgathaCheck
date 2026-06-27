@@ -147,7 +147,7 @@ void main() {
         expect(request.headers['Authorization'], 'Bearer $token');
         return http.Response('', 200);
       });
-      await makeDatasource(client).deletePhoto('he-1', 1);
+      await makeDatasource(client).deletePhoto('he-1', '1');
     });
 
     test('omits Authorization header when no token is set', () async {

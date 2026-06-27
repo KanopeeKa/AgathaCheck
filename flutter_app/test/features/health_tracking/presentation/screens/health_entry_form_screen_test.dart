@@ -44,13 +44,18 @@ void main() {
     await tester.pump();
 
     expect(find.byType(HealthEntryFormScreen), findsOneWidget);
+    expect(find.text('Add a health event'), findsOneWidget);
     // Localized strings from the _PetSelector helper widget.
     expect(find.text('Select Pets'), findsOneWidget);
     expect(find.text('At least one pet must be selected'), findsOneWidget);
     expect(find.text('Select All'), findsOneWidget);
     expect(find.text('Clear'), findsOneWidget);
-    // No raw photo-count concatenation regressions: the empty-state hint shows.
-    expect(find.text('up to 4 pictures, max 2 MB'), findsOneWidget);
+    // The upload hint matches the accepted picker formats.
+    expect(find.text('Documents'), findsOneWidget);
+    expect(find.text('up to 4 documents (jpg, png, pdf), max 2 MB'),
+        findsOneWidget);
+    expect(healthDocumentAllowedExtensions, ['jpg', 'jpeg', 'png', 'pdf']);
+    expect(healthDocumentMaxBytes, 2 * 1024 * 1024);
     // Type/frequency dropdowns are localized (not enum.label English).
     expect(find.text('Medication'), findsOneWidget);
     expect(find.text('Does not repeat'), findsOneWidget);
@@ -73,6 +78,8 @@ void main() {
     await tester.pump();
     await tester.pump();
 
+    expect(find.text('Ajouter un événement de santé'), findsOneWidget);
+    expect(find.text('Documents'), findsOneWidget);
     expect(find.text('Sélectionner les animaux'), findsOneWidget);
     expect(find.text('Tout sélectionner'), findsOneWidget);
     // Dropdowns localized in French too (was English enum.label before).

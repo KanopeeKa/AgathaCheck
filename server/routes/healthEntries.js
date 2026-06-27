@@ -1,9 +1,59 @@
 import express from 'express';
+import fs from 'fs';
+import path from 'path';
+import multer from 'multer';
 import { v4 as uuidv4 } from 'uuid';
 import jwt from 'jsonwebtoken';
 
 import { JWT_SECRET } from '../config/jwtSecret.js';
 import { publicError } from '../config/security.js';
+
+const MAX_HEALTH_DOCUMENT_BYTES = 2 * 1024 * 1024;
+const HEALTH_DOCUMENT_EXTENSIONS = new Set(['.jpg', '.jpeg', '.png', '.pdf']);
+const HEALTH_DOCUMENT_MIME_TYPES = new Set([
+  'image/jpeg',
+  'image/png',
+  'application/pdf',
+]);
+
+const upload = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: MAX_HEALTH_DOCUMENT_BYTES },
+  fileFilter: (_req, file, cb) => {
+    const ext = path.extname(file.originalname).toLowerCase();
+    if (
+      HEALTH_DOCUMENT_EXTENSIONS.has(ext) &&
+      HEALTH_DOCUMENT_MIME_TYPES.has(file.mimetype)
+    ) {
+      cb(null, true);
+      return;
+    }
+    cb(new Error('Only JPG, PNG, and PDF documents are allowed'));
+  },
+});
+
+function healthUploadDir() {
+  return process.env.HEALTH_UPLOAD_DIR || path.resolve(process.cwd(), 'uploads', 'health_documents');
+}
+
+function saveHealthDocument(file, id) {
+  const ext = path.extname(file.originalname).toLowerCase();
+  const dir = healthUploadDir();
+  fs.mkdirSync(dir, { recursive: true });
+  const filename = `${id}${ext}`;
+  fs.writeFileSync(path.join(dir, filename), file.buffer);
+  return `/uploads/health_documents/${filename}`;
+}
+
+function handleDocumentUpload(req, res, next) {
+  upload.single('photo')(req, res, (err) => {
+    if (!err) return next();
+    if (err instanceof multer.MulterError && err.code === 'LIMIT_FILE_SIZE') {
+      return res.status(400).json({ error: 'Document must be 2 MB or smaller' });
+    }
+    return res.status(400).json({ error: err.message });
+  });
+}
 
 function extractUserId(req) {
   const auth = req.headers['authorization'] || req.headers['Authorization'];
@@ -358,7 +408,7 @@ export default function healthEntriesRoutes(pool) {
     }
   });
 
-  router.post('/:id/photos', async (req, res) => {
+  router.post('/:id/photos', handleDocumentUpload, async (req, res) => {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     try {
@@ -366,7 +416,9 @@ export default function healthEntriesRoutes(pool) {
         return res.status(404).json({ error: 'Entry not found' });
       }
       const id = uuidv4();
-      const url = req.body.url || `/uploads/health_photos/${id}.jpg`;
+      const url = req.file
+        ? saveHealthDocument(req.file, id)
+        : req.body?.url || `/uploads/health_photos/${id}.jpg`;
       const result = await pool.query(
         'INSERT INTO health_event_photos (id, health_entry_id, url) VALUES ($1, $2, $3) RETURNING *',
         [id, req.params.id, url]

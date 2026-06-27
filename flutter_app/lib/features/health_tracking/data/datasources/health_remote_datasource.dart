@@ -7,7 +7,7 @@ import '../models/health_entry_model.dart';
 import '../models/health_history_model.dart';
 
 class EventPhoto {
-  final int id;
+  final String id;
   final String eventId;
   final String photoPath;
   final String caption;
@@ -23,9 +23,9 @@ class EventPhoto {
 
   factory EventPhoto.fromJson(Map<String, dynamic> json) {
     return EventPhoto(
-      id: json['id'] as int,
-      eventId: json['event_id'] as String? ?? '',
-      photoPath: json['photo_path'] as String? ?? '',
+      id: (json['id'] ?? '').toString(),
+      eventId: (json['event_id'] ?? json['health_entry_id'] ?? '').toString(),
+      photoPath: (json['photo_path'] ?? json['url'] ?? '').toString(),
       caption: json['caption'] as String? ?? '',
       createdAt: json['created_at'] as String? ?? '',
     );
@@ -44,7 +44,7 @@ abstract class HealthRemoteDataSource {
   Future<String> exportCsv({String? petId});
   Future<List<EventPhoto>> getPhotos(String entryId);
   Future<EventPhoto> uploadPhoto(String entryId, Uint8List bytes, String filename, {String caption});
-  Future<void> deletePhoto(String entryId, int photoId);
+  Future<void> deletePhoto(String entryId, String photoId);
 }
 
 /// Implementation of [HealthRemoteDataSource] using HTTP.
@@ -214,7 +214,7 @@ class HealthRemoteDataSourceImpl implements HealthRemoteDataSource {
   }
 
   @override
-  Future<void> deletePhoto(String entryId, int photoId) async {
+  Future<void> deletePhoto(String entryId, String photoId) async {
     final response = await _client.delete(
         Uri.parse('$baseUrl/api/health-entries/$entryId/photos/$photoId'),
         headers: _authHeaders());

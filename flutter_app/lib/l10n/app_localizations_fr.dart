@@ -582,7 +582,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get none => 'Aucun';
 
   @override
-  String get addHealthEntry2 => 'Ajouter une entrée';
+  String get addHealthEntry2 => 'Ajouter un événement de santé';
 
   @override
   String get editEntry => 'Modifier l\'entrée';
@@ -607,16 +607,16 @@ class AppLocalizationsFr extends AppLocalizations {
   String get entryDeleted => 'Entrée supprimée';
 
   @override
-  String get photos => 'Photos';
+  String get photos => 'Documents';
 
   @override
-  String get addPhoto => 'Ajouter une photo';
+  String get addPhoto => 'Ajouter un document';
 
   @override
-  String get upTo4Photos => 'jusqu\'à 4 photos, max 2 Mo';
+  String get upTo4Photos => 'jusqu\'à 4 documents (jpg, png, pdf), max 2 Mo';
 
   @override
-  String get removePhoto => 'Supprimer la photo';
+  String get removePhoto => 'Supprimer le document';
 
   @override
   String get failedToPickImage => 'Échec de la sélection d\'image';
@@ -2454,33 +2454,33 @@ class AppLocalizationsFr extends AppLocalizations {
   String get error => 'Erreur';
 
   @override
-  String get maxPhotosReached => 'Maximum 4 photos par événement';
+  String get maxPhotosReached => 'Maximum 4 documents par événement';
 
   @override
   String failedToLoadPhotos(String error) {
-    return 'Échec du chargement des photos : $error';
+    return 'Échec du chargement des documents : $error';
   }
 
   @override
   String failedToAddPhoto(String error) {
-    return 'Échec de l\'ajout de la photo : $error';
+    return 'Échec de l\'ajout du document : $error';
   }
 
   @override
   String failedToUploadPhotoNamed(String name, String error) {
-    return 'Échec du téléversement de la photo « $name » : $error';
+    return 'Échec du téléversement du document « $name » : $error';
   }
 
   @override
-  String get deletePhotoTitle => 'Supprimer la photo';
+  String get deletePhotoTitle => 'Supprimer le document';
 
   @override
   String get deletePhotoConfirm =>
-      'Supprimer cette photo ? Cette action est irréversible.';
+      'Supprimer ce document ? Cette action est irréversible.';
 
   @override
   String failedToDeletePhoto(String error) {
-    return 'Échec de la suppression de la photo : $error';
+    return 'Échec de la suppression du document : $error';
   }
 
   @override
@@ -2602,14 +2602,21 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String photoCountLabel(int count) {
-    return '$count/4 photos';
+    return '$count/4 documents';
   }
 
   @override
   String pendingUploadSuffix(int count) {
-    return ' ($count seront téléversées à l\'enregistrement)';
+    return ' ($count seront téléversés à l\'enregistrement)';
   }
 
   @override
   String get pendingLabel => 'En attente';
+
+  @override
+  String get unsupportedDocumentFormat =>
+      'Seuls les documents JPG, PNG et PDF sont pris en charge';
+
+  @override
+  String get documentTooLarge => 'Le document doit faire 2 Mo ou moins';
 }

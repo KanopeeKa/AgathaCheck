@@ -1,5 +1,8 @@
 import request from 'supertest';
 import jwt from 'jsonwebtoken';
+import fs from 'fs';
+import os from 'os';
+import path from 'path';
 import { createApp } from '../bin/server.js';
 
 const JWT_SECRET = process.env.JWT_SECRET || process.env.SESSION_SECRET || 'default_secret';
@@ -35,8 +38,11 @@ describe('Health Entries API', () => {
   let app;
   let lastQuery;
   let queryLog;
+  let uploadDir;
 
   beforeAll(() => {
+    uploadDir = fs.mkdtempSync(path.join(os.tmpdir(), 'health-documents-'));
+    process.env.HEALTH_UPLOAD_DIR = uploadDir;
     const mockPool = {
       query: async (sql, params) => {
         lastQuery = { sql, params };
@@ -167,6 +173,11 @@ describe('Health Entries API', () => {
       end: async () => {},
     };
     app = createApp(mockPool);
+  });
+
+  afterAll(() => {
+    delete process.env.HEALTH_UPLOAD_DIR;
+    fs.rmSync(uploadDir, { recursive: true, force: true });
   });
 
   beforeEach(() => {
@@ -596,6 +607,45 @@ describe('Health Entries API', () => {
       expect(res.body).toHaveProperty('id');
       expect(res.body).toHaveProperty('health_entry_id');
       expect(res.body).toHaveProperty('url');
+    });
+
+    it.each([
+      ['JPG', 'document.jpg', 'image/jpeg'],
+      ['PNG', 'document.png', 'image/png'],
+      ['PDF', 'document.pdf', 'application/pdf'],
+    ])('accepts %s document uploads up to 2 MB', async (_label, filename, contentType) => {
+      const res = await request(app)
+        .post('/api/health-entries/he-1/photos')
+        .set('Authorization', `Bearer ${token}`)
+        .attach('photo', Buffer.from('document'), { filename, contentType });
+      expect(res.statusCode).toBe(201);
+      expect(lastQuery.params[2]).toMatch(
+        new RegExp(`/uploads/health_documents/.+\\.${filename.split('.').pop()}$`)
+      );
+    });
+
+    it('rejects unsupported document formats', async () => {
+      const res = await request(app)
+        .post('/api/health-entries/he-1/photos')
+        .set('Authorization', `Bearer ${token}`)
+        .attach('photo', Buffer.from('document'), {
+          filename: 'document.txt',
+          contentType: 'text/plain',
+        });
+      expect(res.statusCode).toBe(400);
+      expect(res.body.error).toBe('Only JPG, PNG, and PDF documents are allowed');
+    });
+
+    it('rejects documents larger than 2 MB', async () => {
+      const res = await request(app)
+        .post('/api/health-entries/he-1/photos')
+        .set('Authorization', `Bearer ${token}`)
+        .attach('photo', Buffer.alloc(2 * 1024 * 1024 + 1), {
+          filename: 'document.pdf',
+          contentType: 'application/pdf',
+        });
+      expect(res.statusCode).toBe(400);
+      expect(res.body.error).toBe('Document must be 2 MB or smaller');
     });
 
     it('returns 404 when the entry belongs to another user (IDOR)', async () => {

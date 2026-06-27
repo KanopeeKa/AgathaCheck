@@ -580,7 +580,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get none => 'None';
 
   @override
-  String get addHealthEntry2 => 'Add Entry';
+  String get addHealthEntry2 => 'Add a health event';
 
   @override
   String get editEntry => 'Edit Entry';
@@ -605,16 +605,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get entryDeleted => 'Entry deleted';
 
   @override
-  String get photos => 'Photos';
+  String get photos => 'Documents';
 
   @override
-  String get addPhoto => 'Add photo';
+  String get addPhoto => 'Add document';
 
   @override
-  String get upTo4Photos => 'up to 4 pictures, max 2 MB';
+  String get upTo4Photos => 'up to 4 documents (jpg, png, pdf), max 2 MB';
 
   @override
-  String get removePhoto => 'Remove photo';
+  String get removePhoto => 'Remove document';
 
   @override
   String get failedToPickImage => 'Failed to pick image';
@@ -2434,32 +2434,33 @@ class AppLocalizationsEn extends AppLocalizations {
   String get error => 'Error';
 
   @override
-  String get maxPhotosReached => 'Maximum 4 photos per event';
+  String get maxPhotosReached => 'Maximum 4 documents per event';
 
   @override
   String failedToLoadPhotos(String error) {
-    return 'Failed to load photos: $error';
+    return 'Failed to load documents: $error';
   }
 
   @override
   String failedToAddPhoto(String error) {
-    return 'Failed to add photo: $error';
+    return 'Failed to add document: $error';
   }
 
   @override
   String failedToUploadPhotoNamed(String name, String error) {
-    return 'Failed to upload photo \"$name\": $error';
+    return 'Failed to upload document \"$name\": $error';
   }
 
   @override
-  String get deletePhotoTitle => 'Delete Photo';
+  String get deletePhotoTitle => 'Delete Document';
 
   @override
-  String get deletePhotoConfirm => 'Remove this photo? This cannot be undone.';
+  String get deletePhotoConfirm =>
+      'Remove this document? This cannot be undone.';
 
   @override
   String failedToDeletePhoto(String error) {
-    return 'Failed to delete photo: $error';
+    return 'Failed to delete document: $error';
   }
 
   @override
@@ -2579,7 +2580,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String photoCountLabel(int count) {
-    return '$count/4 Photos';
+    return '$count/4 Documents';
   }
 
   @override
@@ -2589,4 +2590,11 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get pendingLabel => 'Pending';
+
+  @override
+  String get unsupportedDocumentFormat =>
+      'Only JPG, PNG, and PDF documents are supported';
+
+  @override
+  String get documentTooLarge => 'Document must be 2 MB or smaller';
 }

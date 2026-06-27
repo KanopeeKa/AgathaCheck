@@ -48,6 +48,8 @@ export function createApp(customPool, comparePassword) {
 
   app.use(cors(corsOptions()));
   app.use(bodyParser.json());
+  app.use('/uploads', express.static(path.resolve(process.cwd(), 'uploads')));
+  app.use('/backend/uploads', express.static(path.resolve(process.cwd(), 'uploads')));
 
   app.use('/api/auth', authRoutes(pool, comparePassword));
   app.use('/api/pets', petsRoutes(pool));

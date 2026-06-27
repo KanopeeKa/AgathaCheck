@@ -92,11 +92,11 @@ class MockHealthRemoteDataSource extends Mock
         Invocation.method(#uploadPhoto, [entryId, bytes, filename],
             {#caption: caption}),
         returnValue: Future.value(
-            EventPhoto(id: 0, eventId: '', photoPath: '')),
+            EventPhoto(id: '0', eventId: '', photoPath: '')),
       ) as Future<EventPhoto>;
 
   @override
-  Future<void> deletePhoto(String? entryId, int? photoId) =>
+  Future<void> deletePhoto(String? entryId, String? photoId) =>
       super.noSuchMethod(
         Invocation.method(#deletePhoto, [entryId, photoId]),
         returnValue: Future.value(),
