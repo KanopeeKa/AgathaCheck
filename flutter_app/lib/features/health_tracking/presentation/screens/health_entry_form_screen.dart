@@ -156,7 +156,7 @@ class _HealthEntryFormScreenState extends ConsumerState<HealthEntryFormScreen> {
     }
 
     try {
-      final result = await FilePicker.platform.pickFiles(
+      final result = await FilePicker.pickFiles(
         type: FileType.custom,
         allowedExtensions: healthDocumentAllowedExtensions,
         withData: true,
