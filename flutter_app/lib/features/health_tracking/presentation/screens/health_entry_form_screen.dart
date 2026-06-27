@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -14,6 +15,9 @@ import '../../domain/entities/health_entry.dart';
 import '../providers/health_issue_providers.dart';
 import '../providers/health_providers.dart';
 import 'package:pet_profile_app/core/providers/api_base_url_provider.dart';
+
+const healthDocumentMaxBytes = 2 * 1024 * 1024;
+const healthDocumentAllowedExtensions = ['jpg', 'jpeg', 'png', 'pdf'];
 
 class HealthEntryFormScreen extends ConsumerStatefulWidget {
   const HealthEntryFormScreen({super.key, this.entryId, this.petId, this.initialType});
@@ -83,6 +87,41 @@ class _HealthEntryFormScreenState extends ConsumerState<HealthEntryFormScreen> {
     }
   }
 
+  String? _documentValidationError(String filename, int byteLength) {
+    final l = AppLocalizations.of(context)!;
+    final extension = filename.split('.').last.toLowerCase();
+    if (!healthDocumentAllowedExtensions.contains(extension)) {
+      return l.unsupportedDocumentFormat;
+    }
+    if (byteLength > healthDocumentMaxBytes) {
+      return l.documentTooLarge;
+    }
+    return null;
+  }
+
+  Future<void> _addPickedDocument(XFile picked, {int? byteLength}) async {
+    final length = byteLength ?? await picked.length();
+    if (!mounted) return;
+    final validationError = _documentValidationError(picked.name, length);
+    if (validationError != null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(validationError)),
+      );
+      return;
+    }
+
+    if (_isEdit) {
+      setState(() => _isUploadingPhoto = true);
+      final bytes = await picked.readAsBytes();
+      final ds = ref.read(healthDataSourceProvider);
+      await ds.uploadPhoto(widget.entryId!, bytes, picked.name);
+      await _loadPhotos();
+      if (mounted) setState(() => _isUploadingPhoto = false);
+    } else {
+      setState(() => _pendingPhotos.add(picked));
+    }
+  }
+
   Future<void> _pickPhoto(ImageSource source) async {
     if (_totalPhotoCount >= 4) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -97,16 +136,42 @@ class _HealthEntryFormScreenState extends ConsumerState<HealthEntryFormScreen> {
           source: source, maxWidth: 1200, maxHeight: 1200, imageQuality: 80);
       if (picked == null) return;
 
-      if (_isEdit) {
-        setState(() => _isUploadingPhoto = true);
-        final bytes = await picked.readAsBytes();
-        final ds = ref.read(healthDataSourceProvider);
-        await ds.uploadPhoto(widget.entryId!, bytes, picked.name);
-        await _loadPhotos();
-        if (mounted) setState(() => _isUploadingPhoto = false);
-      } else {
-        setState(() => _pendingPhotos.add(picked));
+      await _addPickedDocument(picked);
+    } catch (e) {
+      if (mounted) {
+        setState(() => _isUploadingPhoto = false);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(AppLocalizations.of(context)!.failedToAddPhoto('$e'))),
+        );
       }
+    }
+  }
+
+  Future<void> _pickDocument() async {
+    if (_totalPhotoCount >= 4) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(AppLocalizations.of(context)!.maxPhotosReached)),
+      );
+      return;
+    }
+
+    try {
+      final result = await FilePicker.pickFiles(
+        type: FileType.custom,
+        allowedExtensions: healthDocumentAllowedExtensions,
+        withData: true,
+      );
+      final file = result?.files.single;
+      if (file == null) return;
+      if (!mounted) return;
+      if (file.path == null && file.bytes == null) {
+        throw Exception(AppLocalizations.of(context)!.failedToPickImage);
+      }
+
+      final picked = file.path != null
+          ? XFile(file.path!, name: file.name)
+          : XFile.fromData(file.bytes!, name: file.name);
+      await _addPickedDocument(picked, byteLength: file.size);
     } catch (e) {
       if (mounted) {
         setState(() => _isUploadingPhoto = false);
@@ -570,7 +635,7 @@ class _HealthEntryFormScreenState extends ConsumerState<HealthEntryFormScreen> {
                       isUploading: _isUploadingPhoto,
                       baseUrl: ref.watch(apiBaseUrlProvider),
                       onPickCamera: () => _pickPhoto(ImageSource.camera),
-                      onPickGallery: () => _pickPhoto(ImageSource.gallery),
+                      onPickGallery: _pickDocument,
                       onDelete: _deletePhoto,
                       onRemovePending: _removePendingPhoto,
                     ),
@@ -1031,6 +1096,42 @@ class _PhotosSection extends StatelessWidget {
 
   int get _totalCount => photos.length + pendingPhotos.length;
 
+  bool _isPdfDocument(String filename) =>
+      filename.toLowerCase().split('?').first.endsWith('.pdf');
+
+  String _displayName(String path) => path.split('/').last;
+
+  String _documentUrl(String path) {
+    final normalizedBase =
+        baseUrl.endsWith('/') ? baseUrl.substring(0, baseUrl.length - 1) : baseUrl;
+    final normalizedPath = path.startsWith('/') ? path.substring(1) : path;
+    return '$normalizedBase/$normalizedPath';
+  }
+
+  Widget _documentPlaceholder(
+      BuildContext context, String filename, ColorScheme colorScheme) {
+    final isPdf = _isPdfDocument(filename);
+    return Container(
+      color: colorScheme.surfaceContainerHighest,
+      padding: const EdgeInsets.all(8),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(isPdf ? Icons.picture_as_pdf : Icons.description,
+              color: colorScheme.primary, size: 36),
+          const SizedBox(height: 6),
+          Text(
+            _displayName(filename),
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+            textAlign: TextAlign.center,
+            style: Theme.of(context).textTheme.bodySmall,
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -1089,7 +1190,7 @@ class _PhotosSection extends StatelessWidget {
       children: [
         Row(
           children: [
-            Icon(Icons.photo_library, size: 20, color: colorScheme.primary),
+            Icon(Icons.description, size: 20, color: colorScheme.primary),
             const SizedBox(width: 8),
             Text(l.photos,
                 style: theme.textTheme.titleSmall
@@ -1150,23 +1251,26 @@ class _PhotosSection extends StatelessWidget {
 
   Widget _buildSavedPhoto(
       BuildContext context, EventPhoto photo, ColorScheme colorScheme) {
-    final imageUrl = '$baseUrl/${photo.photoPath}';
+    final imageUrl = _documentUrl(photo.photoPath);
+    final isPdf = _isPdfDocument(photo.photoPath);
     return GestureDetector(
-      onTap: () => _showFullScreen(context, imageUrl),
+      onTap: isPdf ? null : () => _showFullScreen(context, imageUrl),
       child: Stack(
         fit: StackFit.expand,
         children: [
           ClipRRect(
             borderRadius: BorderRadius.circular(8),
-            child: Image.network(
-              imageUrl,
-              fit: BoxFit.cover,
-              errorBuilder: (_, __, ___) => Container(
-                color: colorScheme.surfaceContainerHighest,
-                child:
-                    Icon(Icons.broken_image, color: colorScheme.outline),
-              ),
-            ),
+            child: isPdf
+                ? _documentPlaceholder(context, photo.photoPath, colorScheme)
+                : Image.network(
+                    imageUrl,
+                    fit: BoxFit.cover,
+                    errorBuilder: (_, __, ___) => Container(
+                      color: colorScheme.surfaceContainerHighest,
+                      child:
+                          Icon(Icons.broken_image, color: colorScheme.outline),
+                    ),
+                  ),
           ),
           Positioned(
             top: 4,
@@ -1198,12 +1302,15 @@ class _PhotosSection extends StatelessWidget {
     return FutureBuilder<Uint8List>(
       future: file.readAsBytes(),
       builder: (context, snapshot) {
+        final isPdf = _isPdfDocument(file.name);
         return Stack(
           fit: StackFit.expand,
           children: [
             ClipRRect(
               borderRadius: BorderRadius.circular(8),
-              child: snapshot.hasData
+              child: isPdf
+                  ? _documentPlaceholder(context, file.name, colorScheme)
+                  : snapshot.hasData
                   ? Image.memory(snapshot.data!, fit: BoxFit.cover)
                   : Container(
                       color: colorScheme.surfaceContainerHighest,

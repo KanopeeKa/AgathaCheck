@@ -58,6 +58,8 @@ of the parent record.
 pet ownership), `PUT /:id`, `DELETE /:id`, `POST /:id/mark-taken`,
 `POST /:id/undo-complete`, `GET /:id/history`, `GET|POST /:id/photos`,
 `DELETE /:entryId/photos/:photoId`. Nested history/photos verify entry ownership.
+`POST /:id/photos` accepts one multipart `photo` document: JPG/JPEG, PNG, or PDF,
+up to 2 MB.
 
 ### Health issues (`/api/health-issues`)
 `GET /` (optional `?pet_id=`), `GET /:id`, `POST /` (verifies pet ownership),

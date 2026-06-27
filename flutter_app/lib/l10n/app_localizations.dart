@@ -1157,7 +1157,7 @@ abstract class AppLocalizations {
   /// No description provided for @addHealthEntry2.
   ///
   /// In en, this message translates to:
-  /// **'Add Entry'**
+  /// **'Add a health event'**
   String get addHealthEntry2;
 
   /// No description provided for @editEntry.
@@ -1205,25 +1205,25 @@ abstract class AppLocalizations {
   /// No description provided for @photos.
   ///
   /// In en, this message translates to:
-  /// **'Photos'**
+  /// **'Documents'**
   String get photos;
 
   /// No description provided for @addPhoto.
   ///
   /// In en, this message translates to:
-  /// **'Add photo'**
+  /// **'Add document'**
   String get addPhoto;
 
   /// No description provided for @upTo4Photos.
   ///
   /// In en, this message translates to:
-  /// **'up to 4 pictures, max 2 MB'**
+  /// **'up to 4 documents (jpg, png, pdf), max 2 MB'**
   String get upTo4Photos;
 
   /// No description provided for @removePhoto.
   ///
   /// In en, this message translates to:
-  /// **'Remove photo'**
+  /// **'Remove document'**
   String get removePhoto;
 
   /// No description provided for @failedToPickImage.
@@ -4481,43 +4481,43 @@ abstract class AppLocalizations {
   /// No description provided for @maxPhotosReached.
   ///
   /// In en, this message translates to:
-  /// **'Maximum 4 photos per event'**
+  /// **'Maximum 4 documents per event'**
   String get maxPhotosReached;
 
   /// No description provided for @failedToLoadPhotos.
   ///
   /// In en, this message translates to:
-  /// **'Failed to load photos: {error}'**
+  /// **'Failed to load documents: {error}'**
   String failedToLoadPhotos(String error);
 
   /// No description provided for @failedToAddPhoto.
   ///
   /// In en, this message translates to:
-  /// **'Failed to add photo: {error}'**
+  /// **'Failed to add document: {error}'**
   String failedToAddPhoto(String error);
 
   /// No description provided for @failedToUploadPhotoNamed.
   ///
   /// In en, this message translates to:
-  /// **'Failed to upload photo \"{name}\": {error}'**
+  /// **'Failed to upload document \"{name}\": {error}'**
   String failedToUploadPhotoNamed(String name, String error);
 
   /// No description provided for @deletePhotoTitle.
   ///
   /// In en, this message translates to:
-  /// **'Delete Photo'**
+  /// **'Delete Document'**
   String get deletePhotoTitle;
 
   /// No description provided for @deletePhotoConfirm.
   ///
   /// In en, this message translates to:
-  /// **'Remove this photo? This cannot be undone.'**
+  /// **'Remove this document? This cannot be undone.'**
   String get deletePhotoConfirm;
 
   /// No description provided for @failedToDeletePhoto.
   ///
   /// In en, this message translates to:
-  /// **'Failed to delete photo: {error}'**
+  /// **'Failed to delete document: {error}'**
   String failedToDeletePhoto(String error);
 
   /// No description provided for @failedToLoadEntry.
@@ -4721,7 +4721,7 @@ abstract class AppLocalizations {
   /// No description provided for @photoCountLabel.
   ///
   /// In en, this message translates to:
-  /// **'{count}/4 Photos'**
+  /// **'{count}/4 Documents'**
   String photoCountLabel(int count);
 
   /// No description provided for @pendingUploadSuffix.
@@ -4735,6 +4735,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Pending'**
   String get pendingLabel;
+
+  /// No description provided for @unsupportedDocumentFormat.
+  ///
+  /// In en, this message translates to:
+  /// **'Only JPG, PNG, and PDF documents are supported'**
+  String get unsupportedDocumentFormat;
+
+  /// No description provided for @documentTooLarge.
+  ///
+  /// In en, this message translates to:
+  /// **'Document must be 2 MB or smaller'**
+  String get documentTooLarge;
 }
 
 class _AppLocalizationsDelegate
