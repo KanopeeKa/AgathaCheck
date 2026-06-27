@@ -589,6 +589,7 @@ class _HealthEntryFormScreenState extends ConsumerState<HealthEntryFormScreen> {
                                   child: TextFormField(
                                     key: const Key('remind_days_field'),
                                     initialValue: _remindDaysBefore.toString(),
+                                    textAlign: TextAlign.center,
                                     keyboardType: TextInputType.number,
                                     decoration: const InputDecoration(
                                       border: InputBorder.none,

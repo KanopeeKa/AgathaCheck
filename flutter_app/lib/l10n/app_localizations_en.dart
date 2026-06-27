@@ -347,7 +347,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get tapAddEntryToStart => 'Tap \"Add Entry\" to start tracking';
 
   @override
-  String get addWeightEntry => 'Add Weight Entry';
+  String get addWeightEntry => 'Add weight entry';
 
   @override
   String get selectDate => 'Select date for weight entry';

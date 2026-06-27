@@ -7,11 +7,13 @@ class HealthEventsController {
   final WidgetRef ref;
   HealthEventsController(this.ref);
 
-  void onAddEntry(BuildContext context, String petId, HealthEntryType? selectedFilter) {
-    if (selectedFilter != null) {
-      context.go('/health/add?petId=$petId&type=${selectedFilter.name}');
-    } else {
-      context.go('/health/add?petId=$petId');
-    }
+  void onAddEntry(
+    BuildContext context,
+    String petId,
+    HealthEntryType? selectedFilter,
+  ) {
+    final query = selectedFilter != null ? '?type=${selectedFilter.name}' : '';
+    final path = '/pet/$petId/health/add$query';
+    context.go(path);
   }
 }
