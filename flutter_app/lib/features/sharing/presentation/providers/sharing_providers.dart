@@ -23,7 +23,7 @@ final sharingRepositoryProvider = Provider<SharingRepository>((ref) {
 });
 
 class PendingShare {
-  final int id;
+  final String id;
   final String petId;
   final String petName;
   final String petSpecies;
@@ -31,7 +31,7 @@ class PendingShare {
   final String? petPhotoPath;
   final int? petColorValue;
   final String guardianName;
-  final int? invitedBy;
+  final String? invitedBy;
   final DateTime? createdAt;
 
   const PendingShare({
@@ -49,15 +49,17 @@ class PendingShare {
 
   factory PendingShare.fromJson(Map<String, dynamic> json) {
     return PendingShare(
-      id: json['id'] is int ? json['id'] as int : int.tryParse(json['id']?.toString() ?? '0') ?? 0,
+      id: json['id']?.toString() ?? '',
       petId: json['pet_id']?.toString() ?? '',
       petName: (json['pet_name'] ?? '').toString(),
       petSpecies: (json['pet_species'] ?? '').toString(),
       petBreed: (json['pet_breed'] ?? '').toString(),
       petPhotoPath: json['pet_photo_path']?.toString(),
-      petColorValue: json['pet_color_value'] is int ? json['pet_color_value'] as int : int.tryParse(json['pet_color_value']?.toString() ?? ''),
+      petColorValue: json['pet_color_value'] is int
+          ? json['pet_color_value'] as int
+          : int.tryParse(json['pet_color_value']?.toString() ?? ''),
       guardianName: (json['guardian_name'] ?? '').toString(),
-      invitedBy: json['invited_by'] is int ? json['invited_by'] as int : int.tryParse(json['invited_by']?.toString() ?? ''),
+      invitedBy: json['invited_by']?.toString(),
       createdAt: DateTime.tryParse(json['created_at']?.toString() ?? ''),
     );
   }
@@ -203,7 +205,7 @@ class PetAccessNotifier extends StateNotifier<AsyncValue<List<PetAccess>>> {
     await _load();
   }
 
-  Future<void> updateRole(int userId, PetAccessRole role) async {
+  Future<void> updateRole(String userId, PetAccessRole role) async {
     final token = await _getToken();
     if (token == null) return;
     final repo = _ref.read(sharingRepositoryProvider);
@@ -212,7 +214,7 @@ class PetAccessNotifier extends StateNotifier<AsyncValue<List<PetAccess>>> {
     await refresh();
   }
 
-  Future<void> removeAccess(int userId) async {
+  Future<void> removeAccess(String userId) async {
     final token = await _getToken();
     if (token == null) return;
     final repo = _ref.read(sharingRepositoryProvider);

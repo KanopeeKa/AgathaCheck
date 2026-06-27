@@ -76,7 +76,7 @@ class SharingRemoteDataSource {
   }
 
   Future<void> updateRole(
-      String petId, int userId, String role, String token) async {
+      String petId, String userId, String role, String token) async {
     final response = await _client.put(
       Uri.parse('$baseUrl/api/pets/$petId/access/$userId/role'),
       headers: {
@@ -91,7 +91,7 @@ class SharingRemoteDataSource {
     }
   }
 
-  Future<void> removeAccess(String petId, int userId, String token) async {
+  Future<void> removeAccess(String petId, String userId, String token) async {
     final response = await _client.delete(
       Uri.parse('$baseUrl/api/pets/$petId/access/$userId'),
       headers: {

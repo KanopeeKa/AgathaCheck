@@ -8,8 +8,8 @@ abstract class SharingRepository {
   Future<String> acceptShare(String code, String token);
 
   Future<List<PetAccess>> getAccess(String petId, String token);
-  Future<void> updateRole(String petId, int userId, String role, String token);
-  Future<void> removeAccess(String petId, int userId, String token);
+  Future<void> updateRole(String petId, String userId, String role, String token);
+  Future<void> removeAccess(String petId, String userId, String token);
 
   Future<List<Map<String, dynamic>>> getPendingShares(String token);
   Future<void> acceptPendingShare(String petId, String token,

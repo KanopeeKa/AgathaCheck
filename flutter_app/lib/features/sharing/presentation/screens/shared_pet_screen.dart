@@ -182,13 +182,15 @@ class _SharedPetScreenState extends ConsumerState<SharedPetScreen> {
               setState(() => _accepting = true);
               try {
                 final repo = ref.read(sharingRepositoryProvider);
-                final petId = await repo.acceptShare(
-                    widget.shareCode, ref.read(authProvider).accessToken!);
+                final token = await ref.read(authProvider.notifier).getValidAccessToken();
+                if (token == null) return;
+                await repo.acceptShare(widget.shareCode, token);
+                ref.invalidate(pendingSharesProvider);
                 if (!mounted) return;
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Pet added to your account!')),
+                  SnackBar(content: Text(l.pendingShares)),
                 );
-                context.go('/pet/$petId');
+                context.go('/');
               } catch (e) {
                 if (!mounted) return;
                 ScaffoldMessenger.of(context).showSnackBar(

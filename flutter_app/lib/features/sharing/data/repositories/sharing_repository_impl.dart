@@ -27,12 +27,12 @@ class SharingRepositoryImpl implements SharingRepository {
 
   @override
   Future<void> updateRole(
-      String petId, int userId, String role, String token) {
+      String petId, String userId, String role, String token) {
     return _dataSource.updateRole(petId, userId, role, token);
   }
 
   @override
-  Future<void> removeAccess(String petId, int userId, String token) {
+  Future<void> removeAccess(String petId, String userId, String token) {
     return _dataSource.removeAccess(petId, userId, token);
   }
 
