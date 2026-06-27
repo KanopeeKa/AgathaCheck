@@ -36,26 +36,27 @@ class HealthEntryCard extends StatelessWidget {
     final statusColor = entry.isCompleted
         ? Colors.green
         : entry.isOverdue
-            ? colorScheme.error
-            : entry.isDueToday
-                ? Colors.orange
-                : entry.isDueSoon
-                    ? Colors.amber.shade700
-                    : colorScheme.primary;
+        ? colorScheme.error
+        : entry.isDueToday
+        ? Colors.orange
+        : entry.isDueSoon
+        ? Colors.amber.shade700
+        : colorScheme.primary;
 
     final statusText = entry.isCompleted
         ? l.done.toLowerCase()
         : entry.isOverdue
-            ? l.overdue.toLowerCase()
-            : entry.isDueToday
-                ? 'due today'
-                : 'upcoming';
+        ? l.overdue.toLowerCase()
+        : entry.isDueToday
+        ? 'due today'
+        : 'upcoming';
 
     final showActions = !entry.isCompleted;
 
     return MergeSemantics(
       child: Semantics(
-        label: '${entry.name}, ${entry.type.label}, $statusText${pet != null ? ', for ${pet!.name}' : ''}',
+        label:
+            '${entry.name}, ${entry.type.label}, $statusText${pet != null ? ', for ${pet!.name}' : ''}',
         child: Card(
           elevation: 0.5,
           clipBehavior: Clip.antiAlias,
@@ -69,7 +70,10 @@ class HealthEntryCard extends StatelessWidget {
                   child: InkWell(
                     onTap: onTap,
                     child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 8,
+                      ),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         mainAxisSize: MainAxisSize.min,
@@ -77,19 +81,24 @@ class HealthEntryCard extends StatelessWidget {
                           Row(
                             children: [
                               ExcludeSemantics(
-                                child: Icon(_typeIcon(entry.type),
-                                    color: colorScheme.primary, size: 18),
+                                child: Icon(
+                                  _typeIcon(entry.type),
+                                  color: colorScheme.primary,
+                                  size: 18,
+                                ),
                               ),
                               const SizedBox(width: 8),
                               Expanded(
                                 child: Text(
-                                    entry.dosage.isNotEmpty
-                                        ? '${entry.name} · ${entry.dosage}'
-                                        : entry.name,
-                                    style: theme.textTheme.titleSmall
-                                        ?.copyWith(fontWeight: FontWeight.bold),
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis),
+                                  entry.dosage.isNotEmpty
+                                      ? '${entry.name} · ${entry.dosage}'
+                                      : entry.name,
+                                  style: theme.textTheme.titleSmall?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
                               ),
                               if (entry.isCompleted) _DoneChip(entry: entry),
                             ],
@@ -100,17 +109,22 @@ class HealthEntryCard extends StatelessWidget {
                               child: Row(
                                 children: [
                                   ExcludeSemantics(
-                                    child: Icon(Icons.health_and_safety,
-                                        size: 12, color: colorScheme.tertiary),
+                                    child: Icon(
+                                      Icons.health_and_safety,
+                                      size: 12,
+                                      color: colorScheme.tertiary,
+                                    ),
                                   ),
                                   const SizedBox(width: 4),
                                   Flexible(
                                     child: Text(
                                       healthIssueName!,
-                                      style: theme.textTheme.bodySmall?.copyWith(
-                                          color: colorScheme.tertiary,
-                                          fontSize: 11,
-                                          fontWeight: FontWeight.w500),
+                                      style: theme.textTheme.bodySmall
+                                          ?.copyWith(
+                                            color: colorScheme.tertiary,
+                                            fontSize: 11,
+                                            fontWeight: FontWeight.w500,
+                                          ),
                                       maxLines: 1,
                                       overflow: TextOverflow.ellipsis,
                                     ),
@@ -122,16 +136,26 @@ class HealthEntryCard extends StatelessWidget {
                           Row(
                             children: [
                               ExcludeSemantics(
-                                child: Icon(Icons.schedule, size: 13, color: statusColor),
+                                child: Icon(
+                                  Icons.schedule,
+                                  size: 13,
+                                  color: statusColor,
+                                ),
                               ),
                               const SizedBox(width: 3),
                               Text(
                                 _formatDueDate(context, entry),
                                 style: theme.textTheme.bodySmall?.copyWith(
-                                    color: statusColor, fontWeight: FontWeight.w600, fontSize: 11),
+                                  color: statusColor,
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 11,
+                                ),
                               ),
                               const Spacer(),
-                              _FrequencyBadge(frequency: entry.frequency, interval: entry.frequencyInterval),
+                              _FrequencyBadge(
+                                frequency: entry.frequency,
+                                interval: entry.frequencyInterval,
+                              ),
                             ],
                           ),
                         ],
@@ -140,14 +164,8 @@ class HealthEntryCard extends StatelessWidget {
                   ),
                 ),
                 if (showActions && onMarkTaken != null) ...[
-                  if (onSnooze != null)
-                    _SnoozeButton(
-                      onSnooze: onSnooze,
-                    ),
-                  _MarkDoneButton(
-                    onPressed: onMarkTaken,
-                    petStripWidth: 52,
-                  ),
+                  if (onSnooze != null) _SnoozeButton(onSnooze: onSnooze),
+                  _MarkDoneButton(onPressed: onMarkTaken, petStripWidth: 52),
                 ],
                 if (entry.isCompleted) ...[
                   _UndoCompleteButton(
@@ -191,14 +209,7 @@ class HealthEntryCard extends StatelessWidget {
       final minute = entry.nextDueDate.minute;
       return 'Due today at ${hour.toString().padLeft(2, '0')}:${minute.toString().padLeft(2, '0')}';
     }
-    final diff = entry.nextDueDate.difference(DateTime.now());
-    if (diff.inDays == 0) {
-      return 'Due in ${diff.inHours}h';
-    }
-    if (diff.inDays == 1) {
-      return 'Due tomorrow';
-    }
-    return 'Due in ${diff.inDays} ${l.days}';
+    return DateFormat('dd/MM/yy').format(entry.nextDueDate);
   }
 }
 
@@ -223,8 +234,11 @@ class _MarkDoneButton extends StatelessWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(Icons.check_circle_outline,
-                    size: 22, color: Colors.green.shade700),
+                Icon(
+                  Icons.check_circle_outline,
+                  size: 22,
+                  color: Colors.green.shade700,
+                ),
                 const SizedBox(height: 4),
                 Text(
                   l.markAsDone,
@@ -394,7 +408,9 @@ class _SnoozeButton extends StatelessWidget {
                     Navigator.of(ctx).pop();
                     onSnooze?.call(selectedDays);
                   },
-                  child: Text('${l.snooze} $selectedDays ${selectedDays == 1 ? l.day : l.days}'),
+                  child: Text(
+                    '${l.snooze} $selectedDays ${selectedDays == 1 ? l.day : l.days}',
+                  ),
                 ),
               ],
             );
@@ -420,9 +436,7 @@ class _PetStrip extends StatelessWidget {
 
     return Container(
       width: 52,
-      decoration: BoxDecoration(
-        color: petColor.withValues(alpha: 0.18),
-      ),
+      decoration: BoxDecoration(color: petColor.withValues(alpha: 0.18)),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -459,7 +473,12 @@ class _PetStrip extends StatelessWidget {
             border: Border.all(color: petColor, width: 2),
           ),
           child: ClipOval(
-            child: Image.memory(bytes, width: 26, height: 26, fit: BoxFit.cover),
+            child: Image.memory(
+              bytes,
+              width: 26,
+              height: 26,
+              fit: BoxFit.cover,
+            ),
           ),
         );
       } catch (_) {}
