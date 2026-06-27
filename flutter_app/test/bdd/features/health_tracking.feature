@@ -59,6 +59,7 @@ Feature: Health Tracking
     When the user navigates to the health dashboard
     And the user selects group by "Due Date"
     Then entries should be grouped into "Overdue", "Today", "This Week", and "Later" sections
+    And future entries should show their next due date in "dd/mm/yy" format
 
   Scenario: Grouping entries by pet
     Given "Bella" and "Max" each have health entries
