@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:intl/intl.dart';
 
 import 'package:pet_profile_app/features/health_tracking/domain/entities/health_entry.dart';
 import 'package:pet_profile_app/features/health_tracking/presentation/widgets/health_entry_card.dart';
@@ -19,10 +20,7 @@ void main() {
         supportedLocales: AppLocalizations.supportedLocales,
         locale: const Locale('en'),
         home: Scaffold(
-          body: HealthEntryCard(
-            entry: entry,
-            onMarkTaken: onMarkTaken,
-          ),
+          body: HealthEntryCard(entry: entry, onMarkTaken: onMarkTaken),
         ),
       );
     }
@@ -50,10 +48,40 @@ void main() {
       expect(find.textContaining('1 tablet'), findsOneWidget);
     });
 
+    testWidgets('displays future due date instead of remaining days', (
+      tester,
+    ) async {
+      await tester.pumpWidget(buildCard(futureEntry));
+      await tester.pumpAndSettle();
+
+      expect(
+        find.text(DateFormat('dd/MM/yy').format(futureEntry.nextDueDate)),
+        findsOneWidget,
+      );
+      expect(find.textContaining('Due in'), findsNothing);
+    });
+
+    testWidgets('displays tomorrow as a due date', (tester) async {
+      final now = DateTime.now();
+      final tomorrowEntry = futureEntry.copyWith(
+        nextDueDate: DateTime(now.year, now.month, now.day + 1, 9),
+      );
+
+      await tester.pumpWidget(buildCard(tomorrowEntry));
+      await tester.pumpAndSettle();
+
+      expect(
+        find.text(DateFormat('dd/MM/yy').format(tomorrowEntry.nextDueDate)),
+        findsOneWidget,
+      );
+      expect(find.text('Due tomorrow'), findsNothing);
+    });
+
     testWidgets('calls onMarkTaken when button pressed', (tester) async {
       var called = false;
       await tester.pumpWidget(
-          buildCard(futureEntry, onMarkTaken: () => called = true));
+        buildCard(futureEntry, onMarkTaken: () => called = true),
+      );
       await tester.pumpAndSettle();
       final markDoneButton = find.byType(ElevatedButton);
       if (markDoneButton.evaluate().isNotEmpty) {
@@ -64,10 +92,11 @@ void main() {
 
     testWidgets('shows overdue status for past entries', (tester) async {
       final overdueEntry = futureEntry.copyWith(
-          nextDueDate: DateTime.now().subtract(const Duration(days: 1)));
+        nextDueDate: DateTime.now().subtract(const Duration(days: 1)),
+      );
       await tester.pumpWidget(buildCard(overdueEntry));
       await tester.pumpAndSettle();
-      expect(find.byType(HealthEntryCard), findsOneWidget);
+      expect(find.text('Overdue'), findsOneWidget);
     });
   });
 }

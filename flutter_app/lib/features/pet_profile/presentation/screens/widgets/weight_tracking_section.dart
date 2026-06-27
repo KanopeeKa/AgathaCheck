@@ -53,7 +53,7 @@ class WeightTrackingSection extends ConsumerWidget {
                     child: FilledButton.tonalIcon(
                       onPressed: () => _showAddWeightSheet(context, ref, unit, unitLabel, controller),
                       icon: const Icon(Icons.add, size: 18),
-                      label: Text(l.addEntry),
+                      label: Text(l.addWeightEntry),
                     ),
                   ),
                 ],

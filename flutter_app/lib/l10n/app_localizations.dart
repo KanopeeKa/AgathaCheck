@@ -731,7 +731,7 @@ abstract class AppLocalizations {
   /// No description provided for @addWeightEntry.
   ///
   /// In en, this message translates to:
-  /// **'Add Weight Entry'**
+  /// **'Add weight entry'**
   String get addWeightEntry;
 
   /// No description provided for @selectDate.

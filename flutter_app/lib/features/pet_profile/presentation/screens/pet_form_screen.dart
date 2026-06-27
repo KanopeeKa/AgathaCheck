@@ -18,7 +18,6 @@ import 'widgets/pet_gender_section.dart';
 import 'widgets/pet_dob_section.dart';
 import 'widgets/pet_ownership_selector.dart';
 
-
 class PetFormScreen extends ConsumerStatefulWidget {
   const PetFormScreen({super.key, this.petId, this.initialOrgId});
 
@@ -131,8 +130,14 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
         title: Text(l.deletePet),
         content: Text(l.deletePetConfirm('')),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx, false), child: Text(l.cancel)),
-          TextButton(onPressed: () => Navigator.pop(ctx, true), child: Text(l.delete)),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: Text(l.cancel),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: Text(l.delete),
+          ),
         ],
       ),
     );
@@ -143,9 +148,9 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
         if (mounted) context.go('/');
       } catch (e) {
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Failed to delete pet: $e')),
-          );
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text('Failed to delete pet: $e')));
         }
       } finally {
         if (mounted) setState(() => _isLoading = false);
@@ -159,10 +164,18 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
       context: context,
       builder: (ctx) => AlertDialog(
         title: Text(l.passedAway),
-        content: const Text('Are you sure you want to mark this pet as passed away?'),
+        content: const Text(
+          'Are you sure you want to mark this pet as passed away?',
+        ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx, false), child: Text(l.cancel)),
-          TextButton(onPressed: () => Navigator.pop(ctx, true), child: Text(l.ok)),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: Text(l.cancel),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: Text(l.ok),
+          ),
         ],
       ),
     );
@@ -173,9 +186,9 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
         if (mounted) context.go('/');
       } catch (e) {
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Failed to update pet: $e')),
-          );
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text('Failed to update pet: $e')));
         }
       } finally {
         if (mounted) setState(() => _isLoading = false);
@@ -188,14 +201,28 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
 
     setState(() => _isLoading = true);
     try {
-      final name = _controller.state.name.isNotEmpty ? _controller.state.name : _nameController.text.trim();
-      final species = _controller.state.selectedSpecies.isNotEmpty ? _controller.state.selectedSpecies : _selectedSpecies;
-      final breed = _controller.state.breed.isNotEmpty ? _controller.state.breed : _breedController.text.trim();
-      final bio = _controller.state.bio.isNotEmpty ? _controller.state.bio : _bioController.text.trim();
-      final insurance = _controller.state.insurance.isNotEmpty ? _controller.state.insurance : _insuranceController.text.trim();
-      final chipId = _controller.state.chipId.isNotEmpty ? _controller.state.chipId : _chipIdController.text.trim();
+      final name = _controller.state.name.isNotEmpty
+          ? _controller.state.name
+          : _nameController.text.trim();
+      final species = _controller.state.selectedSpecies.isNotEmpty
+          ? _controller.state.selectedSpecies
+          : _selectedSpecies;
+      final breed = _controller.state.breed.isNotEmpty
+          ? _controller.state.breed
+          : _breedController.text.trim();
+      final bio = _controller.state.bio.isNotEmpty
+          ? _controller.state.bio
+          : _bioController.text.trim();
+      final insurance = _controller.state.insurance.isNotEmpty
+          ? _controller.state.insurance
+          : _insuranceController.text.trim();
+      final chipId = _controller.state.chipId.isNotEmpty
+          ? _controller.state.chipId
+          : _chipIdController.text.trim();
       final weightStr = _isEditing
-          ? (_controller.state.weight.isNotEmpty ? _controller.state.weight : _weightController.text.trim())
+          ? (_controller.state.weight.isNotEmpty
+                ? _controller.state.weight
+                : _weightController.text.trim())
           : _newWeightController.text.trim();
       final weight = weightStr.isNotEmpty ? double.tryParse(weightStr) : null;
 
@@ -228,30 +255,32 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
           await ref.read(petListProvider.notifier).updatePet(updated);
         }
       } else {
-        await ref.read(petListProvider.notifier).addPet(
-          name: name,
-          species: species,
-          breed: breed,
-          dateOfBirth: _dateOfBirth,
-          weight: weight,
-          gender: _selectedGender,
-          bio: bio,
-          insurance: insurance,
-          neuteredDate: _neuteredDate,
-          neuterDismissed: _neuterDismissed,
-          chipId: chipId,
-          chipDismissed: _chipDismissed,
-          photoPath: _photoBase64,
-          vetId: _selectedVetId,
-          organizationId: _selectedOrgId,
-        );
+        await ref
+            .read(petListProvider.notifier)
+            .addPet(
+              name: name,
+              species: species,
+              breed: breed,
+              dateOfBirth: _dateOfBirth,
+              weight: weight,
+              gender: _selectedGender,
+              bio: bio,
+              insurance: insurance,
+              neuteredDate: _neuteredDate,
+              neuterDismissed: _neuterDismissed,
+              chipId: chipId,
+              chipDismissed: _chipDismissed,
+              photoPath: _photoBase64,
+              vetId: _selectedVetId,
+              organizationId: _selectedOrgId,
+            );
       }
       if (mounted) context.go('/');
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to save pet: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Failed to save pet: $e')));
       }
     } finally {
       if (mounted) setState(() => _isLoading = false);
@@ -314,17 +343,22 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
                 onPickImage: _pickImage,
               ),
               const SizedBox(height: 24),
-              if (!_isEditing) PetOwnershipSelector(controller: _controller, initialOrgId: widget.initialOrgId),
+              if (!_isEditing)
+                PetOwnershipSelector(
+                  controller: _controller,
+                  initialOrgId: widget.initialOrgId,
+                ),
               if (!_isEditing) const SizedBox(height: 16),
               TextFormField(
                 key: const Key('pet_name_field'),
-                initialValue: _controller.state.name,
+                controller: _nameController,
                 decoration: InputDecoration(
                   labelText: l.petName,
                   helperText: 'Your pet\'s name or nickname',
                   suffixIcon: _infoTooltip('The name your pet responds to'),
                 ),
-                onChanged: (value) => _controller.state = _controller.state.copyWith(name: value),
+                onChanged: (value) =>
+                    _controller.state = _controller.state.copyWith(name: value),
                 validator: (value) {
                   if (value == null || value.trim().isEmpty) {
                     return l.petNameRequired;
@@ -336,25 +370,30 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
               PetSpeciesSection(
                 selectedSpecies: _controller.state.selectedSpecies,
                 onChanged: (value) {
-                  _controller.state = _controller.state.copyWith(selectedSpecies: value);
+                  _controller.state = _controller.state.copyWith(
+                    selectedSpecies: value,
+                  );
                   setState(() => _selectedSpecies = value);
                 },
               ),
               const SizedBox(height: 16),
               TextFormField(
                 key: const Key('pet_breed_field'),
-                initialValue: _controller.state.breed,
+                controller: _breedController,
                 decoration: InputDecoration(
                   labelText: l.breed,
                   helperText: 'Breed or variety, if known',
                 ),
-                onChanged: (value) => _controller.state = _controller.state.copyWith(breed: value),
+                onChanged: (value) => _controller.state = _controller.state
+                    .copyWith(breed: value),
               ),
               const SizedBox(height: 16),
               PetGenderSection(
                 selectedGender: _controller.state.selectedGender,
                 onChanged: (value) {
-                  _controller.state = _controller.state.copyWith(selectedGender: value);
+                  _controller.state = _controller.state.copyWith(
+                    selectedGender: value,
+                  );
                   setState(() => _selectedGender = value);
                 },
               ),
@@ -362,7 +401,9 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
               PetDobSection(
                 dateOfBirth: _controller.state.dateOfBirth ?? _dateOfBirth,
                 onChanged: (date) {
-                  _controller.state = _controller.state.copyWith(dateOfBirth: date);
+                  _controller.state = _controller.state.copyWith(
+                    dateOfBirth: date,
+                  );
                   setState(() => _dateOfBirth = date);
                 },
               ),
@@ -370,12 +411,15 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
               if (_isEditing)
                 TextFormField(
                   key: const Key('pet_weight_field'),
-                  initialValue: _controller.state.weight,
+                  controller: _weightController,
                   decoration: InputDecoration(
                     labelText: l.weightWithUnit('kg'),
                   ),
-                  keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                  onChanged: (value) => _controller.state = _controller.state.copyWith(weight: value),
+                  keyboardType: const TextInputType.numberWithOptions(
+                    decimal: true,
+                  ),
+                  onChanged: (value) => _controller.state = _controller.state
+                      .copyWith(weight: value),
                   validator: (value) {
                     if (value != null && value.isNotEmpty) {
                       final num = double.tryParse(value);
@@ -404,7 +448,9 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
                             },
                           ),
                         ),
-                        keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                        keyboardType: const TextInputType.numberWithOptions(
+                          decimal: true,
+                        ),
                         autofocus: true,
                         validator: (value) {
                           if (value != null && value.isNotEmpty) {
@@ -420,8 +466,12 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
                         message: 'Add initial weight entry',
                         child: OutlinedButton.icon(
                           key: const Key('add_weight_entry_button'),
-                          onPressed: () => setState(() => _showWeightInput = true),
-                          icon: const Icon(Icons.monitor_weight_outlined, size: 18),
+                          onPressed: () =>
+                              setState(() => _showWeightInput = true),
+                          icon: const Icon(
+                            Icons.monitor_weight_outlined,
+                            size: 18,
+                          ),
                           label: Text(l.addWeightEntry),
                           style: OutlinedButton.styleFrom(
                             minimumSize: const Size(0, 48),
@@ -429,29 +479,36 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
                         ),
                       ),
               const SizedBox(height: 16),
-              if (!AppConstants.speciesWithoutNeutering.contains(_selectedSpecies))
+              if (!AppConstants.speciesWithoutNeutering.contains(
+                _selectedSpecies,
+              ))
                 _buildNeuteredDateField(theme),
-              if (!AppConstants.speciesWithoutNeutering.contains(_selectedSpecies))
+              if (!AppConstants.speciesWithoutNeutering.contains(
+                _selectedSpecies,
+              ))
                 const SizedBox(height: 16),
               TextFormField(
                 key: const Key('pet_bio_field'),
-                initialValue: _controller.state.bio,
+                controller: _bioController,
                 decoration: InputDecoration(
                   labelText: l.petBio,
                   alignLabelWithHint: true,
                   helperText: 'Personality traits, likes, quirks',
-                  suffixIcon: _infoTooltip('Anything a caregiver should know about your pet\'s temperament or habits'),
+                  suffixIcon: _infoTooltip(
+                    'Anything a caregiver should know about your pet\'s temperament or habits',
+                  ),
                 ),
                 maxLines: 4,
                 maxLength: 500,
-                onChanged: (value) => _controller.state = _controller.state.copyWith(bio: value),
+                onChanged: (value) =>
+                    _controller.state = _controller.state.copyWith(bio: value),
               ),
               const SizedBox(height: 16),
               _buildVetDropdown(),
               const SizedBox(height: 16),
               TextFormField(
                 key: const Key('pet_insurance_field'),
-                initialValue: _controller.state.insurance,
+                controller: _insuranceController,
                 decoration: InputDecoration(
                   labelText: l.insuranceDetails,
                   alignLabelWithHint: true,
@@ -469,12 +526,13 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
                 ),
                 maxLines: 4,
                 maxLength: 500,
-                onChanged: (value) => _controller.state = _controller.state.copyWith(insurance: value),
+                onChanged: (value) => _controller.state = _controller.state
+                    .copyWith(insurance: value),
               ),
               const SizedBox(height: 16),
               TextFormField(
                 key: const Key('pet_chip_id_field'),
-                initialValue: _controller.state.chipId,
+                controller: _chipIdController,
                 decoration: InputDecoration(
                   labelText: l.idMicrochip,
                   helperText: 'Identification number for your pet',
@@ -490,7 +548,8 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
                     'The number is usually found on adoption papers, vet records, or the registration database.',
                   ),
                 ),
-                onChanged: (value) => _controller.state = _controller.state.copyWith(chipId: value),
+                onChanged: (value) => _controller.state = _controller.state
+                    .copyWith(chipId: value),
               ),
               const SizedBox(height: 24),
               FilledButton.icon(
@@ -512,13 +571,18 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
                 OutlinedButton.icon(
                   key: const Key('delete_pet_button'),
                   onPressed: _isLoading ? null : _confirmDeletePet,
-                  icon: Icon(Icons.delete_outline, color: theme.colorScheme.error),
+                  icon: Icon(
+                    Icons.delete_outline,
+                    color: theme.colorScheme.error,
+                  ),
                   label: Text(
                     l.deletePet,
                     style: TextStyle(color: theme.colorScheme.error),
                   ),
                   style: OutlinedButton.styleFrom(
-                    side: BorderSide(color: theme.colorScheme.error.withAlpha(120)),
+                    side: BorderSide(
+                      color: theme.colorScheme.error.withAlpha(120),
+                    ),
                   ),
                 ),
                 if (!_passedAway) ...[
@@ -542,7 +606,9 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
                     ),
                     label: Text(l.passedAway),
                     style: OutlinedButton.styleFrom(
-                      side: BorderSide(color: theme.colorScheme.outline.withAlpha(80)),
+                      side: BorderSide(
+                        color: theme.colorScheme.outline.withAlpha(80),
+                      ),
                     ),
                   ),
                 ],
@@ -558,8 +624,11 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
   Widget _infoTooltip(String message) {
     final l = AppLocalizations.of(context)!;
     return IconButton(
-      icon: Icon(Icons.info_outline,
-          size: 18, color: Theme.of(context).colorScheme.outline),
+      icon: Icon(
+        Icons.info_outline,
+        size: 18,
+        color: Theme.of(context).colorScheme.outline,
+      ),
       tooltip: message,
       onPressed: () {
         showDialog(
@@ -681,20 +750,18 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
 
     return vetsAsync.when(
       loading: () => InputDecorator(
-        decoration: InputDecoration(
-          labelText: l.veterinarians,
-        ),
+        decoration: InputDecoration(labelText: l.veterinarians),
         child: const Text('Loading vets...'),
       ),
       error: (_, __) => InputDecorator(
-        decoration: InputDecoration(
-          labelText: l.veterinarians,
-        ),
+        decoration: InputDecoration(labelText: l.veterinarians),
         child: const Text('Could not load vets'),
       ),
       data: (vets) {
         return DropdownButtonFormField<String?>(
-          value: vets.any((v) => v.id == _selectedVetId) ? _selectedVetId : null,
+          value: vets.any((v) => v.id == _selectedVetId)
+              ? _selectedVetId
+              : null,
           decoration: InputDecoration(
             labelText: l.veterinarians,
             suffixIcon: _selectedVetId != null
@@ -710,22 +777,29 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
               value: null,
               child: Text(l.noVetAssigned),
             ),
-            ...vets.map((vet) => DropdownMenuItem<String?>(
-                  value: vet.id,
-                  child: Text(vet.name),
-                )),
+            ...vets.map(
+              (vet) => DropdownMenuItem<String?>(
+                value: vet.id,
+                child: Text(vet.name),
+              ),
+            ),
             DropdownMenuItem<String?>(
               value: _createNewVetSentinel,
               child: Row(
                 children: [
-                  Icon(Icons.add_circle_outline,
-                      size: 18,
-                      color: Theme.of(context).colorScheme.primary),
+                  Icon(
+                    Icons.add_circle_outline,
+                    size: 18,
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
                   const SizedBox(width: 8),
-                  Text('Create new vet',
-                      style: TextStyle(
-                          color: Theme.of(context).colorScheme.primary,
-                          fontWeight: FontWeight.w600)),
+                  Text(
+                    'Create new vet',
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.primary,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -765,11 +839,12 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Text('New Veterinarian',
-                  style: Theme.of(ctx)
-                      .textTheme
-                      .titleMedium
-                      ?.copyWith(fontWeight: FontWeight.bold)),
+              Text(
+                'New Veterinarian',
+                style: Theme.of(
+                  ctx,
+                ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+              ),
               const SizedBox(height: 16),
               TextFormField(
                 key: const Key('new_vet_name_field'),
@@ -779,8 +854,9 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
                   hintText: 'e.g., Dr. Smith Veterinary Clinic',
                   prefixIcon: Icon(Icons.person),
                 ),
-                validator: (val) =>
-                    val == null || val.trim().isEmpty ? 'Name is required' : null,
+                validator: (val) => val == null || val.trim().isEmpty
+                    ? 'Name is required'
+                    : null,
               ),
               const SizedBox(height: 12),
               TextFormField(
