@@ -4,6 +4,7 @@ import jwt from 'jsonwebtoken';
 
 import { JWT_SECRET } from '../config/jwtSecret.js';
 import { publicError } from '../config/security.js';
+import { createNotification, userDisplayName } from '../lib/notificationHelper.js';
 
 function extractUserId(req) {
   const auth = req.headers['authorization'] || req.headers['Authorization'];
@@ -52,9 +53,31 @@ function petRowToMap(row) {
     colorValue: resolveColorValue(row.color_index),
     passedAway: row.passed_away || false,
     organization_id: row.organization_id,
+    is_shared: row.is_shared === true,
     created_at: row.created_at,
     updated_at: row.updated_at,
   };
+}
+
+async function userCanAccessPet(pool, petId, userId) {
+  const owned = await pool.query(
+    'SELECT 1 FROM pets WHERE id = $1 AND user_id = $2 LIMIT 1',
+    [petId, userId]
+  );
+  if (owned.rows.length > 0) return true;
+  const shared = await pool.query(
+    "SELECT 1 FROM pet_access WHERE pet_id = $1 AND user_id = $2 AND role = 'shared' AND COALESCE(hidden, false) = false LIMIT 1",
+    [petId, userId]
+  );
+  return shared.rows.length > 0;
+}
+
+async function userOwnsPet(pool, petId, userId) {
+  const result = await pool.query(
+    'SELECT 1 FROM pets WHERE id = $1 AND user_id = $2 LIMIT 1',
+    [petId, userId]
+  );
+  return result.rows.length > 0;
 }
 
 async function autoAssignColors(pool, pets) {
@@ -125,12 +148,42 @@ export default function petsRoutes(pool) {
     return res.status(501).json({ error: 'Not implemented' });
   });
 
-  // NOT IMPLEMENTED: there is no working flow that populates pet_access, so the
-  // access list is honestly empty; role/removal mutations return 501.
-  router.get('/:id/access', (req, res) => {
+  router.get('/:id/access', async (req, res) => {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
-    res.status(200).json([]);
+    const { id } = req.params;
+    try {
+      if (!(await userOwnsPet(pool, id, userId))) {
+        return res.status(403).json({ error: 'Forbidden' });
+      }
+      const result = await pool.query(
+        `SELECT pa.*,
+                u.first_name, u.last_name, u.category, u.bio, u.photo_url
+         FROM pet_access pa
+         JOIN users u ON u.id = pa.user_id
+         WHERE pa.pet_id = $1 AND pa.role IN ('shared', 'guardian')
+         ORDER BY pa.created_at`,
+        [id]
+      );
+      const access = result.rows.map((row) => ({
+        id: row.id,
+        pet_id: row.pet_id,
+        user_id: row.user_id,
+        role: row.role,
+        invited_by: row.invited_by || null,
+        created_at: row.created_at,
+        user: {
+          first_name: row.first_name || '',
+          last_name: row.last_name || '',
+          category: row.category || 'pet_guardian',
+          bio: row.bio || '',
+          photo_url: row.photo_url || '',
+        },
+      }));
+      res.json(access);
+    } catch (err) {
+      res.status(500).json({ error: publicError(err) });
+    }
   });
 
   router.put('/:id/access/:userId/role', (req, res) => {
@@ -139,10 +192,44 @@ export default function petsRoutes(pool) {
     return res.status(501).json({ error: 'Not implemented' });
   });
 
-  router.delete('/:id/access/:userId', (req, res) => {
-    const userId = extractUserId(req);
-    if (!userId) return res.status(401).json({ error: 'Unauthorized' });
-    return res.status(501).json({ error: 'Not implemented' });
+  router.delete('/:id/access/:userId', async (req, res) => {
+    const ownerId = extractUserId(req);
+    if (!ownerId) return res.status(401).json({ error: 'Unauthorized' });
+    const { id, userId: targetUserId } = req.params;
+    try {
+      if (!(await userOwnsPet(pool, id, ownerId))) {
+        return res.status(403).json({ error: 'Forbidden' });
+      }
+      const petResult = await pool.query('SELECT name FROM pets WHERE id = $1', [id]);
+      const petName = petResult.rows[0]?.name || 'the pet';
+
+      const ownerResult = await pool.query(
+        'SELECT first_name, last_name, email FROM users WHERE id = $1',
+        [ownerId]
+      );
+      const ownerName = userDisplayName(ownerResult.rows[0] || {});
+
+      const deleteResult = await pool.query(
+        "DELETE FROM pet_access WHERE pet_id = $1 AND user_id = $2 AND role IN ('shared', 'guardian', 'pending_shared') RETURNING id",
+        [id, targetUserId]
+      );
+      if (deleteResult.rows.length === 0) {
+        return res.status(404).json({ error: 'Access not found' });
+      }
+
+      await createNotification(pool, {
+        userId: targetUserId,
+        petId: id,
+        petName,
+        title: 'Sharing ended',
+        message: `${ownerName} stopped sharing ${petName} with you.`,
+        type: 'general',
+      });
+
+      res.json({ message: 'Access removed' });
+    } catch (err) {
+      res.status(500).json({ error: publicError(err) });
+    }
   });
 
   // STUB: best-effort cascade cleanup of a pet's related data. Returns success
@@ -168,7 +255,15 @@ export default function petsRoutes(pool) {
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     try {
       const result = await pool.query(
-        'SELECT * FROM pets WHERE user_id = $1 ORDER BY created_at',
+        `SELECT p.*, false AS is_shared
+         FROM pets p
+         WHERE p.user_id = $1
+         UNION ALL
+         SELECT p.*, true AS is_shared
+         FROM pets p
+         JOIN pet_access pa ON pa.pet_id = p.id
+         WHERE pa.user_id = $1 AND pa.role = 'shared' AND COALESCE(pa.hidden, false) = false
+         ORDER BY created_at`,
         [userId]
       );
       const pets = result.rows.map(petRowToMap);
@@ -204,7 +299,16 @@ export default function petsRoutes(pool) {
       return res.status(400).json({ error: 'Invalid pet ID' });
     }
     try {
-      const result = await pool.query('SELECT * FROM pets WHERE id = $1 AND user_id = $2', [id, userId]);
+      if (!(await userCanAccessPet(pool, id, userId))) {
+        return res.status(404).json({ error: 'Pet not found' });
+      }
+      const result = await pool.query(
+        `SELECT p.*,
+                CASE WHEN p.user_id = $2 THEN false ELSE true END AS is_shared
+         FROM pets p
+         WHERE p.id = $1`,
+        [id, userId]
+      );
       if (result.rows.length === 0) {
         return res.status(404).json({ error: 'Pet not found' });
       }

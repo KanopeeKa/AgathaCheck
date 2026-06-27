@@ -4,12 +4,97 @@ import { createApp } from '../bin/server.js';
 
 const JWT_SECRET = process.env.JWT_SECRET || process.env.SESSION_SECRET || 'default_secret';
 const userId = 'test-user-id';
+const otherUserId = 'other-user-id';
 const token = jwt.sign({ id: userId, email: 'test@example.com' }, JWT_SECRET, { expiresIn: '1h' });
+const otherToken = jwt.sign({ id: otherUserId, email: 'other@example.com' }, JWT_SECRET, { expiresIn: '1h' });
 const petId = 'pet-1';
 const shareCode = 'abc12345';
 
 function buildMockPool(overrides = {}) {
+  const queries = [];
   const defaultHandler = async (sql, params) => {
+    if (sql.includes('INSERT INTO pet_share_links')) {
+      return { rows: [] };
+    }
+    if (sql.includes('FROM pet_share_links sl') && sql.includes('WHERE sl.code')) {
+      return {
+        rows: [{
+          id: 'link-1',
+          pet_id: petId,
+          code: shareCode,
+          created_by: userId,
+          owner_id: userId,
+        }],
+      };
+    }
+    if (sql.includes('SELECT id FROM pets WHERE id = $1 AND user_id = $2') && !sql.includes('NOT')) {
+      return { rows: [{ id: petId }] };
+    }
+    if (sql.includes('SELECT name, user_id FROM pets WHERE id = $1')) {
+      return { rows: [{ name: 'Buddy', user_id: userId }] };
+    }
+    if (sql.includes('SELECT * FROM pets WHERE id = $1') && params?.[0] === petId) {
+      return {
+        rows: [{
+          id: petId,
+          user_id: userId,
+          name: 'Buddy',
+          species: 'dog',
+          breed: 'Lab',
+          bio: '',
+          insurance: '',
+          neuter_dismissed: false,
+          chip_id: '',
+          chip_dismissed: false,
+          photo_path: null,
+          vet_id: null,
+          color_index: 0,
+          passed_away: false,
+          organization_id: null,
+          created_at: new Date(),
+          updated_at: new Date(),
+        }],
+      };
+    }
+    if (sql.includes('SELECT first_name, last_name, email FROM users WHERE id = $1')) {
+      return { rows: [{ first_name: 'Alice', last_name: 'Owner', email: 'alice@example.com' }] };
+    }
+    if (sql.includes('SELECT role FROM pet_access WHERE pet_id = $1 AND user_id = $2')) {
+      return { rows: [] };
+    }
+    if (sql.includes('INSERT INTO pet_access')) {
+      return { rows: [] };
+    }
+    if (sql.includes('INSERT INTO notifications')) {
+      return { rows: [] };
+    }
+    if (sql.includes("SELECT pa.*, p.name as pet_name, p.species as pet_species") && sql.includes("pending_shared")) {
+      return {
+        rows: [{
+          id: 'pa-1',
+          pet_id: petId,
+          user_id: userId,
+          role: 'pending_shared',
+          hidden: false,
+          pet_name: 'Buddy',
+          pet_species: 'dog',
+          pet_breed: 'Lab',
+          guardian_name: 'Alice Owner',
+        }],
+      };
+    }
+    if (sql.includes('SELECT pa.*, p.name as pet_name, p.user_id as owner_id') && sql.includes("pending_shared")) {
+      return {
+        rows: [{
+          id: 'pa-1',
+          pet_id: petId,
+          user_id: userId,
+          role: 'pending_shared',
+          pet_name: 'Buddy',
+          owner_id: userId,
+        }],
+      };
+    }
     if (sql.includes("SELECT pa.*, p.name as pet_name FROM pet_access pa JOIN pets p") && sql.includes("pending_shared")) {
       return {
         rows: [{
@@ -19,6 +104,9 @@ function buildMockPool(overrides = {}) {
           role: 'pending_shared',
           hidden: false,
           pet_name: 'Buddy',
+          pet_species: 'dog',
+          pet_breed: 'Lab',
+          guardian_name: 'Alice Owner',
         }],
       };
     }
@@ -43,11 +131,23 @@ function buildMockPool(overrides = {}) {
     if (sql.includes('UPDATE pet_access SET hidden')) {
       return { rows: [] };
     }
+    if (sql.includes('SELECT * FROM health_entries WHERE pet_id')) {
+      return { rows: [] };
+    }
+    if (sql.includes('SELECT id, first_name, last_name, email, photo_url, bio, category FROM users')) {
+      return { rows: [{ id: userId, first_name: 'Alice', last_name: 'Owner', email: 'alice@example.com' }] };
+    }
     return { rows: [] };
   };
 
+  const query = overrides.query || (async (sql, params) => {
+    queries.push({ sql, params });
+    return defaultHandler(sql, params);
+  });
+
   return {
-    query: overrides.query || defaultHandler,
+    query,
+    queries,
     end: async () => {},
   };
 }
@@ -85,30 +185,64 @@ describe('Sharing API', () => {
     });
   });
 
-  describe('POST / (share-by-code: not implemented)', () => {
-    it('returns 501 instead of faking a share code', async () => {
+  describe('POST / (create share link)', () => {
+    it('returns a share code for the pet owner', async () => {
       const res = await request(app)
         .post('/api/share')
         .set('Authorization', `Bearer ${token}`)
         .send({ pet_id: petId });
-      expect(res.statusCode).toBe(501);
-      expect(res.body).toHaveProperty('error', 'Not implemented');
+      expect(res.statusCode).toBe(201);
+      expect(res.body).toHaveProperty('share_code');
+      expect(typeof res.body.share_code).toBe('string');
+      expect(res.body.share_code.length).toBeGreaterThan(0);
+    });
+
+    it('returns 404 when pet is not owned by the user', async () => {
+      const pool = buildMockPool({
+        query: async (sql) => {
+          if (sql.includes('SELECT id FROM pets WHERE id = $1 AND user_id = $2')) {
+            return { rows: [] };
+          }
+          return { rows: [] };
+        },
+      });
+      const a = createApp(pool);
+      const res = await request(a)
+        .post('/api/share')
+        .set('Authorization', `Bearer ${token}`)
+        .send({ pet_id: petId });
+      expect(res.statusCode).toBe(404);
     });
   });
 
-  describe('GET /:code (share-by-code: not implemented)', () => {
-    it('returns 501', async () => {
+  describe('GET /:code (resolve share link)', () => {
+    it('returns pet preview data without auth', async () => {
       const res = await request(app).get(`/api/share/${shareCode}`);
-      expect(res.statusCode).toBe(501);
+      expect(res.statusCode).toBe(200);
+      expect(res.body).toHaveProperty('pet');
+      expect(res.body.pet).toHaveProperty('name', 'Buddy');
+      expect(res.body).toHaveProperty('owner');
+      expect(res.body).toHaveProperty('health_entries');
+    });
+
+    it('returns 404 for unknown code', async () => {
+      const pool = buildMockPool({
+        query: async () => ({ rows: [] }),
+      });
+      const a = createApp(pool);
+      const res = await request(a).get('/api/share/unknown');
+      expect(res.statusCode).toBe(404);
     });
   });
 
-  describe('POST /:code/accept (share-by-code: not implemented)', () => {
-    it('returns 501', async () => {
+  describe('POST /:code/accept (claim invitation)', () => {
+    it('creates a pending share and returns pet_id', async () => {
       const res = await request(app)
         .post(`/api/share/${shareCode}/accept`)
-        .set('Authorization', `Bearer ${token}`);
-      expect(res.statusCode).toBe(501);
+        .set('Authorization', `Bearer ${otherToken}`);
+      expect(res.statusCode).toBe(200);
+      expect(res.body).toHaveProperty('pet_id', petId);
+      expect(res.body).toHaveProperty('status', 'pending');
     });
   });
 
@@ -239,8 +373,8 @@ describe('Sharing API', () => {
         .post('/backend/api/share')
         .set('Authorization', `Bearer ${token}`)
         .send({ pet_id: petId });
-      // Same not-implemented response as the /api prefix.
-      expect(res.statusCode).toBe(501);
+      expect(res.statusCode).toBe(201);
+      expect(res.body).toHaveProperty('share_code');
     });
   });
 });

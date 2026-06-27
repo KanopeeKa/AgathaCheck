@@ -33,11 +33,11 @@ class PetAccessUser {
 }
 
 class PetAccess {
-  final int id;
+  final String id;
   final String petId;
-  final int userId;
+  final String userId;
   final PetAccessRole role;
-  final int? invitedBy;
+  final String? invitedBy;
   final String? shareCode;
   final DateTime createdAt;
   final PetAccessUser? user;

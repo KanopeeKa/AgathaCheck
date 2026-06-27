@@ -75,19 +75,32 @@ ownership), `PUT /:id`, `DELETE /:id`.
 `GET|PUT /preferences`, `POST /check-due`.
 
 ### Sharing (`/api/share`)
-The pending/hidden flow is DB-backed: `GET /pending`, `GET /hidden`,
-`POST /pending/:petId/accept`, `POST /pending/:petId/decline`, `PUT /:petId/hide`.
+| Method | Path | Notes |
+|---|---|---|
+| POST | `/` | Owner creates a share link; body `{ pet_id }`; returns `{ share_code }` |
+| GET | `/:code` | Public preview of shared pet (pet, owner, vet, health entries) |
+| POST | `/:code/accept` | Auth required; creates `pending_shared` access + notification |
+| GET | `/pending` | Pending invitations for the current user |
+| POST | `/pending/:petId/accept` | Accept invitation; notifies pet owner |
+| POST | `/pending/:petId/decline` | Decline invitation |
+| GET | `/hidden` | Hidden shared pets |
+| PUT | `/:petId/hide` | Hide or unhide a shared pet (`{ hidden: true\|false }`) |
+
+Pet access management on `/api/pets/:id/access` (owner only):
+- `GET /:id/access` — list users the pet is shared with
+- `DELETE /:id/access/:userId` — remove access and notify the user
+
+Shared pets appear in `GET /api/pets/all` with `is_shared: true`.
 
 ### Not implemented (return `501 Not Implemented`)
 These endpoints are placeholders without backing persistence. They now return
 `501` (with `{ "error": "Not implemented" }`) instead of faking a `2xx`, so
 clients don't believe the action succeeded:
 
-- **Share-by-code:** `POST /api/share`, `GET /api/share/:code`, `POST /api/share/:code/accept`.
 - **Organizations:** `POST /api/organizations/join/:code`, `POST /api/organizations/:orgId/pets`, `POST /api/organizations/:orgId/pets/:petId/transfer`.
-- **Pets:** `POST /api/pets/:id/transfer-to-org`, `POST|PUT|DELETE /api/pets/:id/family-events[...]`, `PUT /api/pets/:id/access/:userId/role`, `DELETE /api/pets/:id/access/:userId`.
+- **Pets:** `POST /api/pets/:id/transfer-to-org`, `POST|PUT|DELETE /api/pets/:id/family-events[...]`, `PUT /api/pets/:id/access/:userId/role`.
 
-Read-only placeholders still return an honest empty list: `GET /api/pets/:id/family-events`, `GET /api/pets/:id/access`. Lifecycle stubs `DELETE /api/pets/:id/data` and `POST /api/pets/:id/passed-away` acknowledge without side effects (the real state changes happen via `DELETE`/`PUT /api/pets/:id`).
+Read-only placeholders still return an honest empty list: `GET /api/pets/:id/family-events`. Lifecycle stubs `DELETE /api/pets/:id/data` and `POST /api/pets/:id/passed-away` acknowledge without side effects (the real state changes happen via `DELETE`/`PUT /api/pets/:id`).
 
 ---
 

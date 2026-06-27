@@ -38,9 +38,9 @@ class RecordingSharingRepository implements SharingRepository {
   Future<List<PetAccess>> getAccess(String petId, String token) async => [];
   @override
   Future<void> updateRole(
-      String petId, int userId, String role, String token) async {}
+      String petId, String userId, String role, String token) async {}
   @override
-  Future<void> removeAccess(String petId, int userId, String token) async {}
+  Future<void> removeAccess(String petId, String userId, String token) async {}
   @override
   Future<void> hideSharedPet(String petId, String token,
       {required bool hidden}) async {}

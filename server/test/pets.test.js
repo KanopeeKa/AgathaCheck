@@ -45,7 +45,36 @@ function makePetRow(overrides = {}) {
 
 function createMockPool(queryHandler) {
   return {
-    query: queryHandler || (async () => ({ rows: [] })),
+    query: queryHandler || (async (sql, params) => {
+      if (sql.includes('SELECT 1 FROM pets WHERE id = $1 AND user_id = $2')) {
+        return { rows: [{ '?column?': 1 }] };
+      }
+      if (sql.includes('SELECT 1 FROM pet_access WHERE pet_id')) {
+        return { rows: [] };
+      }
+      if (sql.includes('CASE WHEN p.user_id')) {
+        return { rows: [makePetRow()] };
+      }
+      if (sql.includes('false AS is_shared') || sql.includes('UNION ALL')) {
+        return { rows: [makePetRow({ is_shared: false })] };
+      }
+      if (sql.includes('FROM pet_access pa') && sql.includes("role IN ('shared', 'guardian')")) {
+        return { rows: [] };
+      }
+      if (sql.includes('DELETE FROM pet_access WHERE pet_id')) {
+        return { rows: [{ id: 'pa-1' }] };
+      }
+      if (sql.includes('INSERT INTO notifications')) {
+        return { rows: [] };
+      }
+      if (sql.includes('SELECT name FROM pets WHERE id = $1')) {
+        return { rows: [{ name: 'Fluffy' }] };
+      }
+      if (sql.includes('SELECT first_name, last_name, email FROM users')) {
+        return { rows: [{ first_name: 'Test', last_name: 'User', email: 'test@example.com' }] };
+      }
+      return { rows: [] };
+    }),
     end: async () => {},
   };
 }
@@ -187,7 +216,7 @@ describe('Pets API', () => {
     it('returns list of all pets for user', async () => {
       const rows = [makePetRow(), makePetRow({ id: petId2, name: 'Rex', species: 'dog', color_index: 1 })];
       const app = createApp(createMockPool(async (sql) => {
-        if (sql.includes('SELECT * FROM pets')) return { rows };
+        if (sql.includes('false AS is_shared') || sql.includes('UNION ALL')) return { rows };
         return { rows: [] };
       }));
       const res = await request(app)
@@ -204,7 +233,10 @@ describe('Pets API', () => {
     it('returns a single pet by id', async () => {
       const row = makePetRow();
       const app = createApp(createMockPool(async (sql) => {
-        if (sql.includes('SELECT * FROM pets WHERE id')) return { rows: [row] };
+        if (sql.includes('SELECT 1 FROM pets WHERE id = $1 AND user_id = $2')) {
+          return { rows: [{ '?column?': 1 }] };
+        }
+        if (sql.includes('CASE WHEN p.user_id')) return { rows: [row] };
         return { rows: [] };
       }));
       const res = await request(app)
@@ -403,8 +435,11 @@ describe('Pets API', () => {
     it('GET /api/pets/:id scopes the query to the authenticated user', async () => {
       let capturedParams;
       const app = createApp(createMockPool(async (sql, params) => {
-        if (sql.includes('SELECT * FROM pets WHERE id')) {
+        if (sql.includes('SELECT 1 FROM pets WHERE id = $1 AND user_id = $2')) {
           capturedParams = params;
+          return { rows: [{ '?column?': 1 }] };
+        }
+        if (sql.includes('CASE WHEN p.user_id')) {
           return { rows: [makePetRow()] };
         }
         return { rows: [] };
@@ -574,7 +609,10 @@ describe('Pets API', () => {
     it('maps all camelCase fields correctly', async () => {
       const row = makePetRow();
       const app = createApp(createMockPool(async (sql) => {
-        if (sql.includes('SELECT * FROM pets WHERE id')) return { rows: [row] };
+        if (sql.includes('SELECT 1 FROM pets WHERE id = $1 AND user_id = $2')) {
+          return { rows: [{ '?column?': 1 }] };
+        }
+        if (sql.includes('CASE WHEN p.user_id')) return { rows: [row] };
         return { rows: [] };
       }));
       const res = await request(app)
@@ -607,7 +645,10 @@ describe('Pets API', () => {
         breed: null,
       });
       const app = createApp(createMockPool(async (sql) => {
-        if (sql.includes('SELECT * FROM pets WHERE id')) return { rows: [row] };
+        if (sql.includes('SELECT 1 FROM pets WHERE id = $1 AND user_id = $2')) {
+          return { rows: [{ '?column?': 1 }] };
+        }
+        if (sql.includes('CASE WHEN p.user_id')) return { rows: [row] };
         return { rows: [] };
       }));
       const res = await request(app)
@@ -691,7 +732,7 @@ describe('Pets API', () => {
       expect(res.statusCode).toBe(501);
     });
 
-    it('GET /:id/access returns an (empty) array', async () => {
+    it('GET /:id/access returns access list for owner', async () => {
       const res = await request(app)
         .get(`/api/pets/${petId}/access`)
         .set('Authorization', `Bearer ${token}`);
@@ -707,11 +748,12 @@ describe('Pets API', () => {
       expect(res.statusCode).toBe(501);
     });
 
-    it('DELETE /:id/access/:userId returns 501 (not implemented)', async () => {
+    it('DELETE /:id/access/:userId removes access and notifies user', async () => {
       const res = await request(app)
         .delete(`/api/pets/${petId}/access/user-42`)
         .set('Authorization', `Bearer ${token}`);
-      expect(res.statusCode).toBe(501);
+      expect(res.statusCode).toBe(200);
+      expect(res.body).toHaveProperty('message', 'Access removed');
     });
 
     it('DELETE /:id/data returns deleted', async () => {

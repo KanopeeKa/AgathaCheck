@@ -36,7 +36,7 @@ class _PetDetailScreenState extends ConsumerState<PetDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final petListAsync = ref.watch(petListProvider);
+    final petListAsync = ref.watch(allPetsIncludingOrgProvider);
     final l = AppLocalizations.of(context)!;
 
     return petListAsync.when(
@@ -215,9 +215,10 @@ class _PetDetailScreenState extends ConsumerState<PetDetailScreen> {
                 SliverToBoxAdapter(
                   child: FamilyEventsSection(petId: widget.petId, pet: pet),
                 ),
-              SliverToBoxAdapter(
-                child: SharingSection(petId: widget.petId, pet: pet),
-              ),
+              if (!pet.isShared)
+                SliverToBoxAdapter(
+                  child: SharingSection(petId: widget.petId, pet: pet),
+                ),
               SliverToBoxAdapter(
                 child: DownloadReportSection(pet: pet),
               ),
