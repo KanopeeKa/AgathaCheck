@@ -121,7 +121,7 @@
   "@errorLoadingWeightData": { "placeholders": { "error": { "type": "String" } } },
   "noWeightDataYet": "No weight data yet",
   "tapAddEntryToStart": "Tap \"Add Entry\" to start tracking",
-  "addWeightEntry": "Add Weight Entry",
+  "addWeightEntry": "Add weight entry",
   "selectDate": "Select date for weight entry",
   "date": "Date",
   "weightWithUnit": "Weight ({unit})",
