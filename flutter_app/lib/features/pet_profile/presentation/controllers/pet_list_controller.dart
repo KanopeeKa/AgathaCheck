@@ -13,35 +13,30 @@ class PetListController {
     return names.toList()..sort();
   }
 
+  bool _isPersonalPet(Pet p) =>
+      p.isShared ||
+      p.organizationId == null ||
+      (p.organizationName == null || p.organizationName!.isEmpty);
+
   List<Pet> filterPets(List<Pet> allPets) {
     if (orgFilter == null) return allPets;
     if (orgFilter == '_personal') {
-      return allPets
-          .where((p) =>
-              p.organizationId == null ||
-              (p.organizationName == null || p.organizationName!.isEmpty))
-          .toList();
+      return allPets.where(_isPersonalPet).toList();
     }
     return allPets
-        .where((p) => p.organizationName == orgFilter)
+        .where((p) => !p.isShared && p.organizationName == orgFilter)
         .toList();
   }
 
   List<Pet> getPersonalActive(List<Pet> filteredPets) {
     return filteredPets
-        .where((p) =>
-            !p.passedAway &&
-            (p.organizationId == null ||
-                (p.organizationName == null || p.organizationName!.isEmpty)))
+        .where((p) => !p.passedAway && _isPersonalPet(p))
         .toList();
   }
 
   List<Pet> getPersonalPassed(List<Pet> filteredPets) {
     return filteredPets
-        .where((p) =>
-            p.passedAway &&
-            (p.organizationId == null ||
-                (p.organizationName == null || p.organizationName!.isEmpty)))
+        .where((p) => p.passedAway && _isPersonalPet(p))
         .toList();
   }
 

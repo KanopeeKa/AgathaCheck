@@ -4,6 +4,8 @@ import 'package:pet_profile_app/features/auth/presentation/providers/auth_provid
 import 'package:pet_profile_app/features/sharing/domain/entities/pet_access.dart';
 import 'package:pet_profile_app/features/sharing/domain/repositories/sharing_repository.dart';
 import 'package:pet_profile_app/features/sharing/presentation/providers/sharing_providers.dart';
+import 'package:pet_profile_app/features/pet_profile/domain/entities/pet.dart';
+import 'package:pet_profile_app/features/pet_profile/presentation/providers/pet_providers.dart';
 
 import '../../helpers/fakes.dart';
 
@@ -53,6 +55,7 @@ ProviderContainer makeContainer(RecordingSharingRepository repo) {
   return ProviderContainer(overrides: [
     authProvider.overrideWith((ref) => FakeAuthNotifier()),
     sharingRepositoryProvider.overrideWithValue(repo),
+    allPetsIncludingOrgProvider.overrideWith((ref) async => <Pet>[]),
   ]);
 }
 
@@ -67,7 +70,7 @@ void main() {
     expect(shares.single.petName, 'Rex');
   });
 
-  test('acceptShare delegates to the repository', () async {
+  test('acceptShare delegates to the repository and refreshes pets', () async {
     final repo = RecordingSharingRepository();
     final container = makeContainer(repo);
     addTearDown(container.dispose);

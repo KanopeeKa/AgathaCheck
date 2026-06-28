@@ -81,7 +81,10 @@ class PendingSharesNotifier extends AsyncNotifier<List<PendingShare>> {
     final repo = ref.read(sharingRepositoryProvider);
     await repo.acceptPendingShare(petId, token, organizationId: organizationId);
     ref.invalidateSelf();
+    // Invalidate then await so the accepted shared pet appears as soon as the
+    // pending card disappears (not on a later manual refresh).
     ref.invalidate(allPetsIncludingOrgProvider);
+    await ref.read(allPetsIncludingOrgProvider.future);
   }
 
   Future<void> declineShare(String petId) async {

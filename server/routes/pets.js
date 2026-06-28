@@ -31,6 +31,7 @@ function resolveColorValue(raw) {
 }
 
 function petRowToMap(row) {
+  const isShared = row.is_shared === true || row.is_shared === 't';
   return {
     id: row.id,
     user_id: row.user_id,
@@ -52,8 +53,10 @@ function petRowToMap(row) {
     vetId: row.vet_id ? String(row.vet_id) : null,
     colorValue: resolveColorValue(row.color_index),
     passedAway: row.passed_away || false,
-    organization_id: row.organization_id,
-    is_shared: row.is_shared === true,
+    // Shared pets follow the owner's org in the DB, but the viewer should see
+    // them under "My Pets", not the owner's organisation section.
+    organization_id: isShared ? null : row.organization_id,
+    is_shared: isShared,
     created_at: row.created_at,
     updated_at: row.updated_at,
   };

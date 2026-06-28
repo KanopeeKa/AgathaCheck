@@ -227,6 +227,32 @@ describe('Pets API', () => {
       expect(res.body[0].name).toBe('Fluffy');
       expect(res.body[1].name).toBe('Rex');
     });
+
+    it('maps shared pets with is_shared and clears organization_id', async () => {
+      const sharedRow = makePetRow({
+        id: petId2,
+        name: 'Buddy',
+        user_id: 'other-owner',
+        organization_id: 'org-uuid-1',
+        is_shared: true,
+      });
+      const app = createApp(createMockPool(async (sql) => {
+        if (sql.includes('false AS is_shared') || sql.includes('UNION ALL')) {
+          return { rows: [sharedRow] };
+        }
+        return { rows: [] };
+      }));
+      const res = await request(app)
+        .get('/api/pets/all')
+        .set('Authorization', `Bearer ${token}`);
+      expect(res.statusCode).toBe(200);
+      expect(res.body).toHaveLength(1);
+      expect(res.body[0]).toMatchObject({
+        name: 'Buddy',
+        is_shared: true,
+        organization_id: null,
+      });
+    });
   });
 
   describe('GET /api/pets/:id', () => {
