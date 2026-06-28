@@ -34,25 +34,11 @@ class _LandingScreenState extends ConsumerState<LandingScreen>
   bool _signupObscure = true;
 
   final NativeLogin _nativeLogin = createNativeLogin();
-  bool _nativeAutoShown = false;
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
-  }
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    // On web, surface the native HTML login overlay automatically so that
-    // password-manager browser extensions can detect and autofill the fields.
-    if (kIsWeb && !_nativeAutoShown && _nativeLogin.isAvailable) {
-      _nativeAutoShown = true;
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (mounted) _showNativeLogin();
-      });
-    }
   }
 
   @override
