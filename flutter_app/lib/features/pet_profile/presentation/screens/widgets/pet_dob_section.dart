@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../../../../../l10n/app_localizations.dart';
+import '../../../../../core/utils/calendar_date.dart';
 
 class PetDobSection extends StatelessWidget {
   final DateTime? dateOfBirth;
@@ -28,7 +29,7 @@ class PetDobSection extends StatelessWidget {
             helpText: 'Select date of birth',
           );
           if (picked != null) {
-            onChanged(picked);
+            onChanged(calendarDateOnly(picked));
           }
         },
         child: InputDecorator(

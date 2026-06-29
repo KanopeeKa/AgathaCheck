@@ -238,6 +238,22 @@ describe('Pets API', () => {
       expect(pet).toHaveProperty('colorValue');
     });
 
+    it('returns calendar dates as date-only strings', async () => {
+      const row = makePetRow();
+      const app = createApp(createMockPool(async (sql) => {
+        if (sql.includes('SELECT * FROM pets')) return { rows: [row] };
+        return { rows: [] };
+      }));
+      const res = await request(app)
+        .get('/api/pets')
+        .set('Authorization', `Bearer ${token}`);
+      const pet = res.body[0];
+      expect(pet.dateOfBirth).toBe('2021-01-15');
+      expect(pet.date_of_birth).toBe('2021-01-15');
+      expect(pet.neuteredDate).toBe('2022-06-01');
+      expect(pet.dateOfBirth).not.toMatch(/T/);
+    });
+
     it('resolves colorValue from color_index using palette', async () => {
       const row = makePetRow({ color_index: 2 });
       const app = createApp(createMockPool(async (sql) => {

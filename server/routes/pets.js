@@ -4,6 +4,7 @@ import jwt from 'jsonwebtoken';
 
 import { JWT_SECRET } from '../config/jwtSecret.js';
 import { publicError } from '../config/security.js';
+import { dateToIsoDate } from '../lib/calendarDate.js';
 import { createNotification, userDisplayName } from '../lib/notificationHelper.js';
 import {
   userCanAccessPet,
@@ -45,13 +46,13 @@ function petRowToMap(row) {
     species: row.species,
     breed: row.breed || '',
     age: row.age,
-    dateOfBirth: row.date_of_birth ? row.date_of_birth.toISOString?.() || String(row.date_of_birth) : null,
-    date_of_birth: row.date_of_birth ? row.date_of_birth.toISOString?.() || String(row.date_of_birth) : null,
+    dateOfBirth: row.date_of_birth ? dateToIsoDate(row.date_of_birth) : null,
+    date_of_birth: row.date_of_birth ? dateToIsoDate(row.date_of_birth) : null,
     weight: row.weight,
     gender: row.gender,
     bio: row.bio || '',
     insurance: row.insurance || '',
-    neuteredDate: row.neutered_date ? row.neutered_date.toISOString?.() || String(row.neutered_date) : null,
+    neuteredDate: row.neutered_date ? dateToIsoDate(row.neutered_date) : null,
     neuterDismissed: row.neuter_dismissed || false,
     chipId: row.chip_id || '',
     chipDismissed: row.chip_dismissed || false,
@@ -120,8 +121,8 @@ export default function petsRoutes(pool) {
       assigned_to_user_id: row.assigned_to_user_id || null,
       assigned_name: row.assigned_name?.trim() || '',
       assigned_email: row.assigned_email || '',
-      from_date: row.from_date ? String(row.from_date).split('T')[0] : null,
-      to_date: row.to_date ? String(row.to_date).split('T')[0] : null,
+      from_date: row.from_date ? dateToIsoDate(row.from_date) : null,
+      to_date: row.to_date ? dateToIsoDate(row.to_date) : null,
       notes: row.notes || '',
       created_by: row.created_by || null,
       created_at: row.created_at,

@@ -6,6 +6,7 @@ import jwt from 'jsonwebtoken';
 import { JWT_SECRET } from '../config/jwtSecret.js';
 import { publicError } from '../config/security.js';
 import { createNotification, userDisplayName } from '../lib/notificationHelper.js';
+import { dateToIsoDate } from '../lib/calendarDate.js';
 
 function extractUserId(req) {
   const auth = req.headers['authorization'] || req.headers['Authorization'];
@@ -43,13 +44,13 @@ function petRowToMap(row) {
     species: row.species,
     breed: row.breed || '',
     age: row.age,
-    dateOfBirth: row.date_of_birth ? row.date_of_birth.toISOString?.() || String(row.date_of_birth) : null,
-    date_of_birth: row.date_of_birth ? row.date_of_birth.toISOString?.() || String(row.date_of_birth) : null,
+    dateOfBirth: row.date_of_birth ? dateToIsoDate(row.date_of_birth) : null,
+    date_of_birth: row.date_of_birth ? dateToIsoDate(row.date_of_birth) : null,
     weight: row.weight,
     gender: row.gender,
     bio: row.bio || '',
     insurance: row.insurance || '',
-    neuteredDate: row.neutered_date ? row.neutered_date.toISOString?.() || String(row.neutered_date) : null,
+    neuteredDate: row.neutered_date ? dateToIsoDate(row.neutered_date) : null,
     neuterDismissed: row.neuter_dismissed || false,
     chipId: row.chip_id || '',
     chipDismissed: row.chip_dismissed || false,
@@ -84,8 +85,8 @@ function healthEntryToMap(row) {
     type: row.type,
     dosage: row.dosage || '',
     frequency: row.frequency || 'once',
-    start_date: row.start_date ? row.start_date.toISOString?.() || String(row.start_date) : null,
-    next_due_date: row.next_due_date ? row.next_due_date.toISOString?.() || String(row.next_due_date) : null,
+    start_date: row.start_date ? dateToIsoDate(row.start_date) : null,
+    next_due_date: row.next_due_date ? dateToIsoDate(row.next_due_date) : null,
     notes: row.notes || '',
     status: row.status || 'active',
   };

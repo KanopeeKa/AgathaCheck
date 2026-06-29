@@ -3,6 +3,7 @@ import 'dart:typed_data';
 
 import 'package:http/http.dart' as http;
 
+import '../../../../core/utils/calendar_date.dart';
 import '../models/health_entry_model.dart';
 import '../models/health_history_model.dart';
 
@@ -139,8 +140,7 @@ class HealthRemoteDataSourceImpl implements HealthRemoteDataSource {
       {String notes = '', DateTime? completedOn}) async {
     final body = <String, dynamic>{'notes': notes};
     if (completedOn != null) {
-      body['completed_on'] =
-          completedOn.toIso8601String().split('T').first;
+      body['completed_on'] = toCalendarDateString(completedOn);
     }
     final response = await _client.post(
       Uri.parse('$baseUrl/api/health-entries/$id/mark-taken'),

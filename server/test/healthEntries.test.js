@@ -293,6 +293,17 @@ describe('Health Entries API', () => {
       expect(entry).toHaveProperty('updated_at');
     });
 
+    it('returns start_date and next_due_date as date-only strings', async () => {
+      const res = await request(app)
+        .get('/api/health-entries')
+        .set('Authorization', `Bearer ${token}`);
+      const entry = res.body[0];
+      expect(entry.start_date).toBe('2025-01-01');
+      expect(entry.next_due_date).toBe('2026-01-01');
+      expect(entry.start_date).not.toMatch(/T/);
+      expect(entry.next_due_date).not.toMatch(/T/);
+    });
+
     it('filters by pet_id query param', async () => {
       const res = await request(app)
         .get('/api/health-entries?pet_id=pet-1')
