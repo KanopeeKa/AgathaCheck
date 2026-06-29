@@ -320,11 +320,12 @@ describe('Weight Entries API', () => {
       expect(res.body[0]).toHaveProperty('unit', 'kg');
     });
 
-    it('date is serialized as string', async () => {
+    it('date is serialized as date-only string', async () => {
       const res = await request(app)
         .get('/api/weight-entries')
         .set('Authorization', `Bearer ${token}`);
-      expect(typeof res.body[0].date).toBe('string');
+      expect(res.body[0].date).toBe('2026-03-26');
+      expect(res.body[0].date).not.toMatch(/T/);
     });
   });
 });

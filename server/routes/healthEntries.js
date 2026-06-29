@@ -8,6 +8,7 @@ import jwt from 'jsonwebtoken';
 import { JWT_SECRET } from '../config/jwtSecret.js';
 import { publicError } from '../config/security.js';
 import { nextOccurrence, toDateOnly, assertAtLeastOneDate } from '../lib/recurrenceHelper.js';
+import { dateToIsoDate } from '../lib/calendarDate.js';
 
 const MAX_HEALTH_DOCUMENT_BYTES = 2 * 1024 * 1024;
 const HEALTH_DOCUMENT_EXTENSIONS = new Set(['.jpg', '.jpeg', '.png', '.pdf']);
@@ -86,13 +87,6 @@ function parseOptionalDate(value) {
   if (value == null || value === '') return null;
   const d = new Date(value);
   return Number.isNaN(d.getTime()) ? null : d;
-}
-
-function dateToIsoDate(value) {
-  if (!value) return null;
-  const d = value instanceof Date ? value : new Date(value);
-  if (Number.isNaN(d.getTime())) return null;
-  return d.toISOString().split('T')[0];
 }
 
 function healthEntryToMap(row) {

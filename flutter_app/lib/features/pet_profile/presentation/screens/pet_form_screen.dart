@@ -6,6 +6,7 @@ import 'package:intl/intl.dart';
 import '../controllers/pet_form_controller.dart';
 
 import '../../../../core/utils/constants.dart';
+import '../../../../core/utils/calendar_date.dart';
 import '../../../../core/widgets/app_logo_title.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../vet/domain/entities/vet.dart';
@@ -116,7 +117,7 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
     );
     if (picked != null) {
       setState(() {
-        _neuteredDate = picked;
+        _neuteredDate = calendarDateOnly(picked);
         _neuterDismissed = false;
       });
     }

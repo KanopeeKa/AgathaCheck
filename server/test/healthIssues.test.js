@@ -176,6 +176,16 @@ describe('Health Issues API', () => {
       expect(issue).toHaveProperty('updated_at');
     });
 
+    it('returns start_date and end_date as date-only strings', async () => {
+      const res = await request(app)
+        .get('/api/health-issues')
+        .set('Authorization', `Bearer ${token}`);
+      const issue = res.body[0];
+      expect(issue.start_date).toBe('2025-03-01');
+      expect(issue.end_date).toBe('2025-06-01');
+      expect(issue.start_date).not.toMatch(/T/);
+    });
+
     it('title is alias for name', async () => {
       const res = await request(app)
         .get('/api/health-issues')

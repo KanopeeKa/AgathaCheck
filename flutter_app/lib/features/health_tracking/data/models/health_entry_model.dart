@@ -1,5 +1,6 @@
 import '../../domain/entities/health_entry.dart';
 import '../../domain/entities/recurrence_anchor.dart';
+import '../../../../core/utils/calendar_date.dart';
 
 /// Data model for [HealthEntry] with JSON serialization.
 class HealthEntryModel extends HealthEntry {
@@ -26,24 +27,8 @@ class HealthEntryModel extends HealthEntry {
   });
 
   factory HealthEntryModel.fromJson(Map<String, dynamic> json) {
-    /// Calendar dates from the API (YYYY-MM-DD or ISO with time) as local midnight.
-    DateTime? parseDate(String? raw) {
-      if (raw == null || raw.isEmpty) return null;
-      final datePart = raw.split('T').first;
-      final parts = datePart.split('-');
-      if (parts.length == 3) {
-        final y = int.tryParse(parts[0]);
-        final m = int.tryParse(parts[1]);
-        final d = int.tryParse(parts[2]);
-        if (y != null && m != null && d != null) {
-          return DateTime(y, m, d);
-        }
-      }
-      return DateTime.tryParse(raw);
-    }
-
-    final nextDue = parseDate(json['next_due_date'] as String?);
-    final completedOn = parseDate(json['completed_on'] as String?);
+    final nextDue = parseCalendarDate(json['next_due_date']);
+    final completedOn = parseCalendarDate(json['completed_on']);
 
     return HealthEntryModel(
       id: json['id'] as String? ?? '',
@@ -54,8 +39,8 @@ class HealthEntryModel extends HealthEntry {
       frequency: _parseFrequency(json['frequency'] as String? ?? 'once'),
       frequencyDays: json['frequency_days'] as int?,
       frequencyInterval: json['frequency_interval'] as int? ?? 1,
-      repeatEndDate: parseDate(json['repeat_end_date'] as String?),
-      startDate: parseDate(json['start_date'] as String?) ?? DateTime.now(),
+      repeatEndDate: parseCalendarDate(json['repeat_end_date']),
+      startDate: parseCalendarDate(json['start_date']) ?? DateTime.now(),
       nextDueDate: nextDue,
       completedOn: completedOn,
       recurrenceAnchor: RecurrenceAnchorApi.fromApi(
@@ -99,9 +84,6 @@ class HealthEntryModel extends HealthEntry {
   }
 
   Map<String, dynamic> toJson() {
-    String? isoDate(DateTime? d) =>
-        d == null ? null : d.toIso8601String().split('T').first;
-
     return {
       'id': id,
       'pet_id': petId,
@@ -111,10 +93,10 @@ class HealthEntryModel extends HealthEntry {
       'frequency': frequencyToApi(frequency),
       'frequency_days': frequencyDays,
       'frequency_interval': frequencyInterval,
-      'repeat_end_date': isoDate(repeatEndDate),
-      'start_date': isoDate(startDate),
-      if (nextDueDate != null) 'next_due_date': isoDate(nextDueDate),
-      if (completedOn != null) 'completed_on': isoDate(completedOn),
+      'repeat_end_date': toCalendarDateString(repeatEndDate),
+      'start_date': toCalendarDateString(startDate),
+      if (nextDueDate != null) 'next_due_date': toCalendarDateString(nextDueDate),
+      if (completedOn != null) 'completed_on': toCalendarDateString(completedOn),
       'recurrence_anchor': recurrenceAnchor.apiValue,
       'notes': notes,
       if (healthIssueId != null) 'health_issue_id': healthIssueId,

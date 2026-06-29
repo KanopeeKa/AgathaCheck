@@ -1,3 +1,5 @@
+import '../../../../core/utils/calendar_date.dart';
+
 class FamilyEvent {
   const FamilyEvent({
     required this.id,
@@ -36,11 +38,6 @@ class FamilyEvent {
   bool get isCompleted => toDate != null;
 
   factory FamilyEvent.fromJson(Map<String, dynamic> json) {
-    DateTime? parseDate(String? raw) {
-      if (raw == null || raw.isEmpty) return null;
-      return DateTime.tryParse(raw.contains('T') ? raw : '${raw}T00:00:00');
-    }
-
     return FamilyEvent(
       id: json['id']?.toString() ?? '',
       petId: json['pet_id']?.toString() ?? '',
@@ -48,8 +45,8 @@ class FamilyEvent {
       assignedToUserId: json['assigned_to_user_id']?.toString(),
       assignedName: (json['assigned_name'] ?? '').toString(),
       assignedEmail: (json['assigned_email'] ?? '').toString(),
-      fromDate: parseDate(json['from_date']?.toString()) ?? DateTime.now(),
-      toDate: parseDate(json['to_date']?.toString()),
+      fromDate: parseCalendarDate(json['from_date']) ?? DateTime.now(),
+      toDate: parseCalendarDate(json['to_date']),
       notes: (json['notes'] ?? '').toString(),
       createdBy: json['created_by']?.toString(),
       createdAt: json['created_at'] != null

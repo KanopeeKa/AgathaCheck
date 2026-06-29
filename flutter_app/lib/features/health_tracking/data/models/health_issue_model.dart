@@ -1,4 +1,5 @@
 import '../../domain/entities/health_issue.dart';
+import '../../../../core/utils/calendar_date.dart';
 
 class HealthIssueModel extends HealthIssue {
   const HealthIssueModel({
@@ -23,12 +24,8 @@ class HealthIssueModel extends HealthIssue {
               ?.map((e) => e.toString())
               .toList() ??
           const [],
-      startDate: json['start_date'] != null
-          ? DateTime.tryParse(json['start_date'] as String)
-          : null,
-      endDate: json['end_date'] != null
-          ? DateTime.tryParse(json['end_date'] as String)
-          : null,
+      startDate: parseCalendarDate(json['start_date']),
+      endDate: parseCalendarDate(json['end_date']),
       createdAt: json['created_at'] != null
           ? DateTime.tryParse(json['created_at'] as String)
           : null,
@@ -59,8 +56,8 @@ class HealthIssueModel extends HealthIssue {
       'title': title,
       'description': description,
       'event_ids': eventIds,
-      'start_date': startDate?.toIso8601String(),
-      'end_date': endDate?.toIso8601String(),
+      'start_date': toCalendarDateString(startDate),
+      'end_date': toCalendarDateString(endDate),
     };
   }
 

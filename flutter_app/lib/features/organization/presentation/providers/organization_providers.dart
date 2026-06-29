@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/providers/api_base_url_provider.dart';
+import '../../../../core/utils/calendar_date.dart';
 import '../../../auth/presentation/providers/auth_providers.dart';
 import '../../data/datasources/organization_remote_datasource.dart';
 import '../../data/models/organization_model.dart';
@@ -135,9 +136,7 @@ class OrgPetsNotifier extends FamilyAsyncNotifier<List<Pet>, String> {
       name: m['name']?.toString() ?? '',
       species: m['species']?.toString() ?? '',
       breed: m['breed']?.toString() ?? '',
-      dateOfBirth: m['date_of_birth'] != null || m['dateOfBirth'] != null
-          ? DateTime.tryParse((m['date_of_birth'] ?? m['dateOfBirth']).toString())
-          : null,
+      dateOfBirth: parseCalendarDate(m['date_of_birth'] ?? m['dateOfBirth']),
       weight: (m['weight'] as num?)?.toDouble(),
       gender: m['gender']?.toString() ?? '',
       bio: m['bio']?.toString() ?? '',
@@ -301,8 +300,8 @@ class FamilyEventsNotifier extends FamilyAsyncNotifier<List<FamilyEvent>, String
     final repo = ref.read(organizationRepositoryProvider);
     await repo.createFamilyEvent(token, arg, {
       if (assignedToUserId != null) 'assigned_to_user_id': assignedToUserId,
-      'from_date': fromDate.toIso8601String().split('T')[0],
-      if (toDate != null) 'to_date': toDate.toIso8601String().split('T')[0],
+      'from_date': toCalendarDateString(fromDate),
+      if (toDate != null) 'to_date': toCalendarDateString(toDate),
       'notes': notes,
     });
     ref.invalidateSelf();
@@ -318,8 +317,8 @@ class FamilyEventsNotifier extends FamilyAsyncNotifier<List<FamilyEvent>, String
     final repo = ref.read(organizationRepositoryProvider);
     await repo.updateFamilyEvent(token, arg, eventId, {
       'assigned_to_user_id': assignedToUserId,
-      'from_date': fromDate.toIso8601String().split('T')[0],
-      if (toDate != null) 'to_date': toDate.toIso8601String().split('T')[0],
+      'from_date': toCalendarDateString(fromDate),
+      if (toDate != null) 'to_date': toCalendarDateString(toDate),
       'notes': notes,
     });
     ref.invalidateSelf();
