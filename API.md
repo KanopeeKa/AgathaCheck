@@ -77,20 +77,25 @@ ownership), `PUT /:id`, `DELETE /:id`.
 ### Sharing (`/api/share`)
 | Method | Path | Notes |
 |---|---|---|
-| POST | `/` | Owner creates a share link; body `{ pet_id }`; returns `{ share_code }` |
-| GET | `/:code` | Public preview of shared pet (pet, owner, vet, health entries) |
-| POST | `/:code/accept` | Auth required; creates `pending_shared` access + notification |
-| GET | `/pending` | Pending invitations for the current user |
-| POST | `/pending/:petId/accept` | Accept invitation; notifies pet owner |
-| POST | `/pending/:petId/decline` | Decline invitation |
+| POST | `/` | Owner creates a share link; body `{ pet_id }`; returns `{ share_code, link_id }` |
+| GET | `/:code` | Public preview of shared pet; includes `link_status` (`pending`, `active`, `revoked`) |
+| POST | `/:code/accept` | Auth required; single-use — creates `shared` access immediately, marks link `active` |
+| DELETE | `/links/:linkId` | Owner deletes/revokes a share link |
+| GET | `/pending` | Deprecated — always returns `[]` (one-step flow) |
+| POST | `/pending/:petId/accept` | Deprecated — returns `410` |
+| POST | `/pending/:petId/decline` | Deprecated — returns `410` |
 | GET | `/hidden` | Hidden shared pets |
 | PUT | `/:petId/hide` | Hide or unhide a shared pet (`{ hidden: true\|false }`) |
 
-Pet access management on `/api/pets/:id/access` (owner only):
+Pet access management on `/api/pets/:id/...` (owner unless noted):
+- `GET /:id/share-links` — list share links with status and claimed user (owner only)
 - `GET /:id/access` — list users the pet is shared with
-- `DELETE /:id/access/:userId` — remove access and notify the user
+- `DELETE /:id/access/:userId` — remove access and notify the user (owner only)
+- `DELETE /:id/follow` — shared user stops following (self-remove access)
 
 Shared pets appear in `GET /api/pets/all` with `is_shared: true`.
+
+Share links are **single-use**: once accepted, the same link cannot be used by another user (`410`).
 
 ### Not implemented (return `501 Not Implemented`)
 These endpoints are placeholders without backing persistence. They now return

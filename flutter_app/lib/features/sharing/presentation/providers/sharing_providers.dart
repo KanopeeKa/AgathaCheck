@@ -6,6 +6,7 @@ import '../../../pet_profile/presentation/providers/pet_providers.dart';
 import '../../data/datasources/sharing_remote_datasource.dart';
 import '../../data/repositories/sharing_repository_impl.dart';
 import '../../domain/entities/pet_access.dart';
+import '../../domain/entities/share_link.dart';
 import '../../domain/repositories/sharing_repository.dart';
 
 final sharingDataSourceProvider = Provider<SharingRemoteDataSource>((ref) {
@@ -223,5 +224,70 @@ class PetAccessNotifier extends StateNotifier<AsyncValue<List<PetAccess>>> {
     final repo = _ref.read(sharingRepositoryProvider);
     await repo.removeAccess(petId, userId, token);
     await refresh();
+    _ref.invalidate(petShareLinksNotifierProvider(petId));
   }
+}
+
+final petShareLinksNotifierProvider = StateNotifierProvider.family<
+    PetShareLinksNotifier, AsyncValue<List<ShareLink>>, String>((ref, petId) {
+  return PetShareLinksNotifier(ref, petId);
+});
+
+class PetShareLinksNotifier extends StateNotifier<AsyncValue<List<ShareLink>>> {
+  final Ref _ref;
+  final String petId;
+
+  PetShareLinksNotifier(this._ref, this.petId)
+      : super(const AsyncValue.loading()) {
+    _load();
+  }
+
+  Future<String?> _getToken() async {
+    return _ref.read(authProvider.notifier).getValidAccessToken();
+  }
+
+  Future<void> _load() async {
+    state = const AsyncValue.loading();
+    try {
+      final token = await _getToken();
+      if (token == null) {
+        state = const AsyncValue.data([]);
+        return;
+      }
+      final repo = _ref.read(sharingRepositoryProvider);
+      final list = await repo.getShareLinks(petId, token);
+      state = AsyncValue.data(list);
+    } catch (e, st) {
+      state = AsyncValue.error(e, st);
+    }
+  }
+
+  Future<void> refresh() async {
+    await _load();
+  }
+
+  Future<void> deleteLink(String linkId) async {
+    final token = await _getToken();
+    if (token == null) return;
+    final repo = _ref.read(sharingRepositoryProvider);
+    await repo.deleteShareLink(linkId, token);
+    await refresh();
+  }
+
+  Future<String> createLink() async {
+    final token = await _getToken();
+    if (token == null) throw Exception('Not authenticated');
+    final repo = _ref.read(sharingRepositoryProvider);
+    final code = await repo.createShare(petId, {}, token);
+    await refresh();
+    return code;
+  }
+}
+
+Future<void> stopFollowingPet(WidgetRef ref, String petId) async {
+  final token = await ref.read(authProvider.notifier).getValidAccessToken();
+  if (token == null) return;
+  final repo = ref.read(sharingRepositoryProvider);
+  await repo.stopFollowing(petId, token);
+  ref.invalidate(allPetsIncludingOrgProvider);
 }

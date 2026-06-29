@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pet_profile_app/features/auth/presentation/providers/auth_providers.dart';
 import 'package:pet_profile_app/features/sharing/domain/entities/pet_access.dart';
+import 'package:pet_profile_app/features/sharing/domain/entities/share_link.dart';
 import 'package:pet_profile_app/features/sharing/domain/repositories/sharing_repository.dart';
 import 'package:pet_profile_app/features/sharing/presentation/providers/sharing_providers.dart';
 import 'package:pet_profile_app/features/pet_profile/domain/entities/pet.dart';
@@ -14,9 +15,7 @@ class RecordingSharingRepository implements SharingRepository {
   final List<String> declined = [];
 
   @override
-  Future<List<Map<String, dynamic>>> getPendingShares(String token) async => [
-        {'id': 1, 'pet_id': 'pet-1', 'pet_name': 'Rex', 'guardian_name': 'Ann'},
-      ];
+  Future<List<Map<String, dynamic>>> getPendingShares(String token) async => [];
 
   @override
   Future<void> acceptPendingShare(String petId, String token,
@@ -44,6 +43,12 @@ class RecordingSharingRepository implements SharingRepository {
   @override
   Future<void> removeAccess(String petId, String userId, String token) async {}
   @override
+  Future<List<ShareLink>> getShareLinks(String petId, String token) async => [];
+  @override
+  Future<void> deleteShareLink(String linkId, String token) async {}
+  @override
+  Future<void> stopFollowing(String petId, String token) async {}
+  @override
   Future<void> hideSharedPet(String petId, String token,
       {required bool hidden}) async {}
   @override
@@ -60,14 +65,13 @@ ProviderContainer makeContainer(RecordingSharingRepository repo) {
 }
 
 void main() {
-  test('pendingSharesProvider reads through the repository', () async {
+  test('pendingSharesProvider returns empty list (deprecated flow)', () async {
     final repo = RecordingSharingRepository();
     final container = makeContainer(repo);
     addTearDown(container.dispose);
 
     final shares = await container.read(pendingSharesProvider.future);
-    expect(shares, hasLength(1));
-    expect(shares.single.petName, 'Rex');
+    expect(shares, isEmpty);
   });
 
   test('acceptShare delegates to the repository and refreshes pets', () async {

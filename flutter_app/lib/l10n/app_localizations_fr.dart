@@ -704,6 +704,37 @@ class AppLocalizationsFr extends AppLocalizations {
   String get sharedBy => 'Partagé par';
 
   @override
+  String get shareLinkPending => 'Nouveau lien en attente';
+
+  @override
+  String sharingWithActive(String userName) {
+    return 'Partage avec $userName actif';
+  }
+
+  @override
+  String get copyLinkAgain => 'Copier le lien';
+
+  @override
+  String get deleteLink => 'Supprimer le lien';
+
+  @override
+  String get deleteShareLinkConfirm =>
+      'Supprimer ce lien de partage ? Toute personne disposant du lien ne pourra plus l\'utiliser.';
+
+  @override
+  String get stopFollowing => 'Arrêter de suivre';
+
+  @override
+  String stopFollowingConfirm(String petName) {
+    return 'Arrêter de suivre $petName ? L\'animal sera retiré de votre liste.';
+  }
+
+  @override
+  String sharedPetFollowerDescription(String petName) {
+    return 'Vous suivez $petName via un lien de partage. Vous pouvez arrêter de suivre à tout moment.';
+  }
+
+  @override
   String get healthIssues => 'Problèmes de santé';
 
   @override
@@ -1985,7 +2016,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get faqSharingA1 =>
-      'Ouvrez la page de détail de l\'animal et utilisez l\'option de partage pour générer un lien. Envoyez ce lien à la personne souhaitée. Lorsqu\'elle l\'accepte, elle verra l\'animal dans sa liste.';
+      'Ouvrez la page de détail de l\'animal, développez la section Partage et appuyez sur Lien de partage. Envoyez le lien à une personne. Chaque lien fonctionne pour un seul destinataire — lorsqu\'il l\'accepte, l\'animal apparaît immédiatement dans sa liste.';
 
   @override
   String get faqSharingQ2 =>
@@ -1993,7 +2024,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get faqSharingA2 =>
-      'Le destinataire reçoit une notification avec le partage en attente. Il peut choisir de placer l\'animal partagé dans sa liste personnelle ou dans une organisation à laquelle il appartient. L\'animal apparaît avec un badge « partagé ».';
+      'L\'animal est ajouté à sa liste tout de suite avec un badge « partagé ». Le propriétaire est notifié et peut voir qui suit l\'animal dans la section Partage.';
 
   @override
   String get faqSharingQ3 => 'Puis-je masquer un animal partagé ?';
