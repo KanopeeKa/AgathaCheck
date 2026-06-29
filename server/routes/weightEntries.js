@@ -4,6 +4,11 @@ import jwt from 'jsonwebtoken';
 
 import { JWT_SECRET } from '../config/jwtSecret.js';
 import { publicError } from '../config/security.js';
+import {
+  accessiblePetSql,
+  userCanManagePet,
+  userCanManageWeightEntry,
+} from '../lib/petAccess.js';
 
 function extractUserId(req) {
   const auth = req.headers['authorization'] || req.headers['Authorization'];
@@ -13,15 +18,6 @@ function extractUserId(req) {
   } catch (_) {
     return null;
   }
-}
-
-// True when `petId` exists and belongs to `userId`. Without this, a caller can
-// insert a weight entry against another user's pet; because reads join on
-// pets.user_id, the victim would then see the injected entry in their history.
-async function userOwnsPet(pool, petId, userId) {
-  if (!petId) return false;
-  const r = await pool.query('SELECT 1 FROM pets WHERE id = $1 AND user_id = $2', [petId, userId]);
-  return r.rows.length > 0;
 }
 
 function weightEntryToMap(row) {
@@ -47,13 +43,22 @@ export default function weightEntriesRoutes(pool) {
       const petId = req.query.pet_id || req.query.petId;
       let result;
       if (petId) {
+        if (!(await userCanManagePet(pool, petId, userId))) {
+          return res.status(403).json({ error: 'Forbidden' });
+        }
         result = await pool.query(
-          'SELECT we.*, p.name as pet_name FROM weight_entries we JOIN pets p ON we.pet_id = p.id WHERE p.user_id = $1 AND we.pet_id = $2 ORDER BY we.date DESC',
-          [userId, petId]
+          `SELECT we.*, p.name as pet_name FROM weight_entries we
+           JOIN pets p ON we.pet_id = p.id
+           WHERE we.pet_id = $1 AND ${accessiblePetSql('p', '$2')}
+           ORDER BY we.date DESC`,
+          [petId, userId]
         );
       } else {
         result = await pool.query(
-          'SELECT we.*, p.name as pet_name FROM weight_entries we JOIN pets p ON we.pet_id = p.id WHERE p.user_id = $1 ORDER BY we.date DESC',
+          `SELECT we.*, p.name as pet_name FROM weight_entries we
+           JOIN pets p ON we.pet_id = p.id
+           WHERE ${accessiblePetSql('p', '$1')}
+           ORDER BY we.date DESC`,
           [userId]
         );
       }
@@ -71,9 +76,15 @@ export default function weightEntriesRoutes(pool) {
       if (!petId) {
         return res.status(400).json({ error: 'pet_id is required' });
       }
+      if (!(await userCanManagePet(pool, petId, userId))) {
+        return res.status(403).json({ error: 'Forbidden' });
+      }
       const result = await pool.query(
-        'SELECT we.*, p.name as pet_name FROM weight_entries we JOIN pets p ON we.pet_id = p.id WHERE p.user_id = $1 AND we.pet_id = $2 ORDER BY we.date DESC LIMIT 1',
-        [userId, petId]
+        `SELECT we.*, p.name as pet_name FROM weight_entries we
+         JOIN pets p ON we.pet_id = p.id
+         WHERE we.pet_id = $1 AND ${accessiblePetSql('p', '$2')}
+         ORDER BY we.date DESC LIMIT 1`,
+        [petId, userId]
       );
       if (result.rows.length === 0) return res.status(404).json({ error: 'No weight entries found' });
       res.json(weightEntryToMap(result.rows[0]));
@@ -89,7 +100,7 @@ export default function weightEntriesRoutes(pool) {
       const data = req.body;
       const id = data.id || uuidv4();
       const petId = data.pet_id || data.petId;
-      if (!(await userOwnsPet(pool, petId, userId))) {
+      if (!(await userCanManagePet(pool, petId, userId))) {
         return res.status(403).json({ error: 'Forbidden' });
       }
       const dateVal = data.date || data.measured_at || new Date().toISOString();
@@ -108,12 +119,15 @@ export default function weightEntriesRoutes(pool) {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     try {
+      if (!(await userCanManageWeightEntry(pool, req.params.id, userId))) {
+        return res.status(404).json({ error: 'Not found' });
+      }
       const data = req.body;
       const dateVal = data.date || data.measured_at || new Date().toISOString();
       const weightVal = typeof data.weight === 'number' ? data.weight : parseFloat(data.weight || '0');
       const result = await pool.query(
-        'UPDATE weight_entries SET weight = $1, unit = $2, date = $3, notes = $4 WHERE id = $5 AND user_id = $6 RETURNING *',
-        [weightVal, data.unit || 'kg', dateVal, data.notes || '', req.params.id, userId]
+        'UPDATE weight_entries SET weight = $1, unit = $2, date = $3, notes = $4 WHERE id = $5 RETURNING *',
+        [weightVal, data.unit || 'kg', dateVal, data.notes || '', req.params.id]
       );
       if (result.rows.length === 0) return res.status(404).json({ error: 'Not found' });
       res.json(weightEntryToMap(result.rows[0]));
@@ -126,7 +140,10 @@ export default function weightEntriesRoutes(pool) {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     try {
-      await pool.query('DELETE FROM weight_entries WHERE id = $1 AND user_id = $2', [req.params.id, userId]);
+      if (!(await userCanManageWeightEntry(pool, req.params.id, userId))) {
+        return res.status(404).json({ error: 'Not found' });
+      }
+      await pool.query('DELETE FROM weight_entries WHERE id = $1', [req.params.id]);
       res.json({ deleted: true });
     } catch (err) {
       res.status(500).json({ error: publicError(err) });

@@ -1,6 +1,7 @@
 import request from 'supertest';
 import jwt from 'jsonwebtoken';
 import { createApp } from '../bin/server.js';
+import { handlePetAccessQuery, handleManageEntryQuery } from './helpers/petAccessMocks.js';
 
 const JWT_SECRET = process.env.JWT_SECRET || process.env.SESSION_SECRET || 'default_secret';
 const userId = 'test-user-id';
@@ -33,15 +34,21 @@ describe('Health Issues API', () => {
       query: async (sql, params) => {
         lastQuery = { sql, params };
 
+        const access = handlePetAccessQuery(sql, params, { userId, ownedPetIds: ['pet-1', 'pet-2'] });
+        if (access) return access;
+
+        const manageIssue = handleManageEntryQuery(sql, params, { tableName: 'health_issues hi' });
+        if (manageIssue) return manageIssue;
+
         // Pet ownership check (create). 'pet-notmine' => another user's pet.
-        if (sql.includes('SELECT 1 FROM pets WHERE id')) {
+        if (sql.includes('SELECT 1 FROM pets WHERE id') && !sql.includes('LIMIT 1')) {
           if (params && params[0] === 'pet-notmine') return { rows: [] };
           return { rows: [{ exists: 1 }] };
         }
-        // Issue ownership check (nested events). 'hi-notmine' => another user's issue.
-        if (sql.includes('SELECT 1 FROM health_issues WHERE id')) {
-          if (params && params[0] === 'hi-notmine') return { rows: [] };
-          return { rows: [{ exists: 1 }] };
+
+        if (sql.includes('SELECT hi.*') && sql.includes('WHERE hi.id')) {
+          if (params && params[0] === 'nonexistent') return { rows: [] };
+          return { rows: [makeIssueRow({ id: params[0] })] };
         }
 
         if (sql.includes('SELECT hi.*') && sql.includes('FROM health_issues')) {
@@ -343,12 +350,13 @@ describe('Health Issues API', () => {
       expect(res.body).toHaveProperty('error', 'Not found');
     });
 
-    it('scopes update by user_id', async () => {
+    it('checks pet access before update', async () => {
       await request(app)
         .put('/api/health-issues/hi-1')
         .set('Authorization', `Bearer ${token}`)
         .send({ name: 'Test' });
-      expect(lastQuery.params).toContain(userId);
+      expect(lastQuery.sql).toContain('UPDATE health_issues SET');
+      expect(lastQuery.params[6]).toBe('hi-1');
     });
   });
 
@@ -361,11 +369,12 @@ describe('Health Issues API', () => {
       expect(res.body).toHaveProperty('deleted', true);
     });
 
-    it('scopes delete by user_id', async () => {
+    it('scopes delete by issue id', async () => {
       await request(app)
         .delete('/api/health-issues/hi-1')
         .set('Authorization', `Bearer ${token}`);
-      expect(lastQuery.params).toContain(userId);
+      expect(lastQuery.sql).toContain('DELETE FROM health_issues WHERE id = $1');
+      expect(lastQuery.params[0]).toBe('hi-1');
     });
   });
 
