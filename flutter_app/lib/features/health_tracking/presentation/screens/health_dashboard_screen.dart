@@ -82,7 +82,7 @@ class _HealthDashboardScreenState extends ConsumerState<HealthDashboardScreen>
             Tab(key: const Key('health_tab_preventives'), text: l.preventives),
             Tab(key: const Key('health_tab_vet_visits'), text: l.vetVisits),
             Tab(key: const Key('health_tab_other'), text: l.other),
-            Tab(key: const Key('health_tab_family'), text: l.familyEvents),
+            Tab(key: const Key('health_tab_family'), text: l.careEvents),
           ],
           isScrollable: true,
         ),

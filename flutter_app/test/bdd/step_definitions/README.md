@@ -9,6 +9,7 @@ steps to executable code.
 - `membership_steps.dart` — Steps for inviting, accepting, declining, and leaving
 - `pet_management_steps.dart` — Steps for creating, viewing, and filtering pets
 - `sharing_steps.dart` — Steps for sharing, hiding, and unhiding pets
-- `family_event_steps.dart` — Steps for family event CRUD and timeline
+- `family_event_steps.dart` — Steps for organisation **FamilyEvent** foster/placement CRUD and timeline (not pet-profile Other events)
+- `other_event_steps.dart` — Steps for pet profile Other events (care + misc. `HealthEntry` types)
 - `health_steps.dart` — Steps for health entries and dashboard verification
 - `common_steps.dart` — Shared steps (user registration, authentication, assertions)

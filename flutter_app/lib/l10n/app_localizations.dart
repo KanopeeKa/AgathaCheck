@@ -785,8 +785,32 @@ abstract class AppLocalizations {
   /// No description provided for @healthEvents.
   ///
   /// In en, this message translates to:
-  /// **'Events'**
+  /// **'Health Events'**
   String get healthEvents;
+
+  /// No description provided for @otherEvents.
+  ///
+  /// In en, this message translates to:
+  /// **'Other events'**
+  String get otherEvents;
+
+  /// No description provided for @addOtherEvent.
+  ///
+  /// In en, this message translates to:
+  /// **'Add event'**
+  String get addOtherEvent;
+
+  /// No description provided for @careEvent.
+  ///
+  /// In en, this message translates to:
+  /// **'Care event'**
+  String get careEvent;
+
+  /// No description provided for @careEvents.
+  ///
+  /// In en, this message translates to:
+  /// **'Care events'**
+  String get careEvents;
 
   /// No description provided for @addHealthEntry.
   ///

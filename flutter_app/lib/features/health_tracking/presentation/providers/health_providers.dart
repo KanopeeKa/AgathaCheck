@@ -152,12 +152,28 @@ final petHealthEntriesProvider =
 
 /// Health entries for a specific pet, derived reactively from the global list
 /// ([healthEntriesNotifierProvider]) so it reflects creates/edits/deletes and
-/// mark-taken without a separate fetch. Used by the per-pet Events section.
+/// mark-taken without a separate fetch.
 final petHealthEntriesByIdProvider =
     Provider.family<AsyncValue<List<HealthEntry>>, String>((ref, petId) {
   final entriesAsync = ref.watch(healthEntriesNotifierProvider);
   return entriesAsync.whenData(
       (entries) => entries.where((e) => e.petId == petId).toList());
+});
+
+/// Medication, preventive, and vet visit entries for the pet profile Health Events section.
+final petHealthEventsByIdProvider =
+    Provider.family<AsyncValue<List<HealthEntry>>, String>((ref, petId) {
+  return ref.watch(petHealthEntriesByIdProvider(petId)).whenData(
+        (entries) => entries.where((e) => e.type.isHealthEvent).toList(),
+      );
+});
+
+/// Care event and other entries for the pet profile Other events section.
+final petOtherEventsByIdProvider =
+    Provider.family<AsyncValue<List<HealthEntry>>, String>((ref, petId) {
+  return ref.watch(petHealthEntriesByIdProvider(petId)).whenData(
+        (entries) => entries.where((e) => e.type.isOtherEvent).toList(),
+      );
 });
 
 /// Provides history for a specific entry.

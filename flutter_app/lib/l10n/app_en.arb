@@ -133,7 +133,11 @@
   "weightChartLabel": "Weight chart showing {count} entries",
   "@weightChartLabel": { "placeholders": { "count": { "type": "int" } } },
 
-  "healthEvents": "Events",
+  "healthEvents": "Health Events",
+  "otherEvents": "Other events",
+  "addOtherEvent": "Add event",
+  "careEvent": "Care event",
+  "careEvents": "Care events",
   "addHealthEntry": "Add health entry",
   "noEntriesYet": "No entries yet",
   "noTypeEntriesYet": "No {type} entries yet",
