@@ -4,7 +4,7 @@ import '../../../../weight_tracking/domain/entities/weight_entry.dart';
 import '../../../../weight_tracking/presentation/providers/weight_providers.dart';
 import '../../controllers/weight_tracking_controller.dart';
 import '../../../../../l10n/app_localizations.dart';
-import '../../../../core/utils/calendar_date.dart';
+import '../../../../../core/utils/calendar_date.dart';
 import 'package:intl/intl.dart';
 import 'weight_chart.dart';
 

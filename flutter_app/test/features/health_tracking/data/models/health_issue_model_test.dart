@@ -1,6 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pet_profile_app/features/health_tracking/data/models/health_issue_model.dart';
-import 'package:pet_profile_app/features/health_tracking/domain/entities/health_issue.dart';
 
 void main() {
   group('HealthIssueModel', () {
