@@ -69,6 +69,20 @@ void main() {
       expect(entry.isDueSoon, isFalse);
     });
 
+    test('isCompleted true when completedOn is set for once entry', () {
+      final entry = HealthEntry(
+        id: 'test-id',
+        petId: 'pet-1',
+        name: 'Heartgard',
+        type: HealthEntryType.medication,
+        frequency: HealthFrequency.once,
+        startDate: DateTime(2025, 1, 1),
+        nextDueDate: null,
+        completedOn: DateTime(2025, 1, 15),
+      );
+      expect(entry.isCompleted, isTrue);
+    });
+
     test('isCompleted true for once entry at the 9999 sentinel date', () {
       final entry = createEntry(
         frequency: HealthFrequency.once,

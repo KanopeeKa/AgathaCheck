@@ -1,24 +1,35 @@
-/// Represents a single history record of when a health entry was taken/administered.
+/// Represents a single history record of when a health entry occurrence was completed.
 class HealthHistoryEntry {
   /// Creates a new [HealthHistoryEntry] instance.
   const HealthHistoryEntry({
     required this.id,
     required this.entryId,
-    required this.takenAt,
+    required this.markedAt,
+    this.dueDate,
+    this.completedOn,
+    this.markedByUserId,
+    this.markedByName,
     this.notes = '',
   });
 
-  /// Unique identifier for this history record.
   final String id;
-
-  /// The health entry this record belongs to.
   final String entryId;
 
-  /// When the entry was taken/administered.
-  final DateTime takenAt;
+  /// When the user recorded completion (c).
+  final DateTime markedAt;
 
-  /// Additional notes for this administration.
+  /// When the occurrence was due (a).
+  final DateTime? dueDate;
+
+  /// When it actually happened (b).
+  final DateTime? completedOn;
+
+  final String? markedByUserId;
+  final String? markedByName;
   final String notes;
+
+  /// Legacy alias for [markedAt].
+  DateTime get takenAt => markedAt;
 
   @override
   bool operator ==(Object other) =>

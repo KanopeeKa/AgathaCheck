@@ -1,11 +1,8 @@
 import '../../domain/entities/health_entry.dart';
+import '../../domain/entities/recurrence_anchor.dart';
 
 /// Data model for [HealthEntry] with JSON serialization.
-///
-/// Extends the domain entity with serialization capabilities
-/// for API communication.
 class HealthEntryModel extends HealthEntry {
-  /// Creates a [HealthEntryModel] instance.
   const HealthEntryModel({
     required super.id,
     required super.petId,
@@ -13,7 +10,9 @@ class HealthEntryModel extends HealthEntry {
     required super.type,
     required super.frequency,
     required super.startDate,
-    required super.nextDueDate,
+    super.nextDueDate,
+    super.completedOn,
+    super.recurrenceAnchor,
     super.dosage,
     super.frequencyDays,
     super.frequencyInterval,
@@ -26,8 +25,15 @@ class HealthEntryModel extends HealthEntry {
     super.updatedAt,
   });
 
-  /// Creates a [HealthEntryModel] from a JSON map.
   factory HealthEntryModel.fromJson(Map<String, dynamic> json) {
+    DateTime? parseDate(String? raw) {
+      if (raw == null || raw.isEmpty) return null;
+      return DateTime.tryParse(raw.contains('T') ? raw : '${raw}T00:00:00');
+    }
+
+    final nextDue = parseDate(json['next_due_date'] as String?);
+    final completedOn = parseDate(json['completed_on'] as String?);
+
     return HealthEntryModel(
       id: json['id'] as String? ?? '',
       petId: json['pet_id'] as String? ?? '',
@@ -37,14 +43,13 @@ class HealthEntryModel extends HealthEntry {
       frequency: _parseFrequency(json['frequency'] as String? ?? 'once'),
       frequencyDays: json['frequency_days'] as int?,
       frequencyInterval: json['frequency_interval'] as int? ?? 1,
-      repeatEndDate: json['repeat_end_date'] != null
-          ? DateTime.tryParse(json['repeat_end_date'] as String)
-          : null,
-      startDate: DateTime.tryParse(json['start_date'] as String? ?? '') ??
-          DateTime.now(),
-      nextDueDate:
-          DateTime.tryParse(json['next_due_date'] as String? ?? '') ??
-              DateTime.now(),
+      repeatEndDate: parseDate(json['repeat_end_date'] as String?),
+      startDate: parseDate(json['start_date'] as String?) ?? DateTime.now(),
+      nextDueDate: nextDue,
+      completedOn: completedOn,
+      recurrenceAnchor: RecurrenceAnchorApi.fromApi(
+        json['recurrence_anchor'] as String?,
+      ),
       notes: json['notes'] as String? ?? '',
       healthIssueId: json['health_issue_id'] as String?,
       healthIssueName: json['health_issue_title'] as String?,
@@ -58,7 +63,6 @@ class HealthEntryModel extends HealthEntry {
     );
   }
 
-  /// Creates a [HealthEntryModel] from a domain [HealthEntry].
   factory HealthEntryModel.fromEntity(HealthEntry entry) {
     return HealthEntryModel(
       id: entry.id,
@@ -72,6 +76,8 @@ class HealthEntryModel extends HealthEntry {
       repeatEndDate: entry.repeatEndDate,
       startDate: entry.startDate,
       nextDueDate: entry.nextDueDate,
+      completedOn: entry.completedOn,
+      recurrenceAnchor: entry.recurrenceAnchor,
       notes: entry.notes,
       healthIssueId: entry.healthIssueId,
       healthIssueName: entry.healthIssueName,
@@ -81,8 +87,10 @@ class HealthEntryModel extends HealthEntry {
     );
   }
 
-  /// Converts this model to a JSON map for API communication.
   Map<String, dynamic> toJson() {
+    String? isoDate(DateTime? d) =>
+        d == null ? null : d.toIso8601String().split('T').first;
+
     return {
       'id': id,
       'pet_id': petId,
@@ -92,21 +100,18 @@ class HealthEntryModel extends HealthEntry {
       'frequency': frequencyToApi(frequency),
       'frequency_days': frequencyDays,
       'frequency_interval': frequencyInterval,
-      'repeat_end_date': repeatEndDate?.toIso8601String().split('T').first,
-      'start_date': startDate.toIso8601String().split('T').first,
-      'next_due_date': nextDueDate.toIso8601String(),
+      'repeat_end_date': isoDate(repeatEndDate),
+      'start_date': isoDate(startDate),
+      if (nextDueDate != null)
+        'next_due_date': nextDueDate!.toIso8601String(),
+      if (completedOn != null) 'completed_on': isoDate(completedOn),
+      'recurrence_anchor': recurrenceAnchor.apiValue,
       'notes': notes,
       if (healthIssueId != null) 'health_issue_id': healthIssueId,
       'remind_days_before': remindDaysBefore,
     };
   }
 
-  /// Serializes [HealthEntryType] to its canonical API string.
-  ///
-  /// MUST NOT use `enum.name`: Dart minifies enum names in release builds, so
-  /// `.name` would send values like `a`/`b` and corrupt the stored type. The
-  /// explicit switch is also exhaustive, so adding an enum value is a compile
-  /// error here until it is mapped.
   static String typeToApi(HealthEntryType type) {
     switch (type) {
       case HealthEntryType.medication:
@@ -122,8 +127,6 @@ class HealthEntryModel extends HealthEntry {
     }
   }
 
-  /// Serializes [HealthFrequency] to its canonical API string (see
-  /// [typeToApi] for why `enum.name` must not be used).
   static String frequencyToApi(HealthFrequency frequency) {
     switch (frequency) {
       case HealthFrequency.once:

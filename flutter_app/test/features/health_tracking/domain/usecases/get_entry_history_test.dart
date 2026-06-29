@@ -19,13 +19,13 @@ void main() {
     HealthHistoryEntry(
       id: 'h1',
       entryId: 'entry-1',
-      takenAt: DateTime(2025, 1, 15),
+      markedAt: DateTime(2025, 1, 15),
       notes: 'Administered successfully',
     ),
     HealthHistoryEntry(
       id: 'h2',
       entryId: 'entry-1',
-      takenAt: DateTime(2025, 2, 15),
+      markedAt: DateTime(2025, 2, 15),
     ),
   ];
 

@@ -67,14 +67,25 @@ class PetEventEntryList extends StatelessWidget {
             l.completed,
             style: theme.textTheme.bodySmall?.copyWith(color: colorScheme.primary),
           );
-        } else if (entry.isOverdue) {
+        } else if (entry.isOverdue && entry.nextDueDate != null) {
           statusLine = Text(
-            '${l.overdue} · ${dateFormat.format(entry.nextDueDate)}',
+            '${l.overdue} · ${dateFormat.format(entry.nextDueDate!)}',
             style: theme.textTheme.bodySmall?.copyWith(color: colorScheme.error),
+          );
+        } else if (entry.completedOn != null) {
+          statusLine = Text(
+            '${l.completedOn}: ${dateFormat.format(entry.completedOn!)}',
+            style: theme.textTheme.bodySmall?.copyWith(color: colorScheme.primary),
+          );
+        } else if (entry.nextDueDate != null) {
+          statusLine = Text(
+            dateFormat.format(entry.nextDueDate!),
+            style: theme.textTheme.bodySmall
+                ?.copyWith(color: colorScheme.onSurfaceVariant),
           );
         } else {
           statusLine = Text(
-            dateFormat.format(entry.nextDueDate),
+            l.notSet,
             style: theme.textTheme.bodySmall
                 ?.copyWith(color: colorScheme.onSurfaceVariant),
           );

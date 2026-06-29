@@ -11,7 +11,9 @@ import '../../data/datasources/health_remote_datasource.dart';
 import '../../domain/entities/health_entry.dart';
 import '../../domain/repositories/health_repository.dart';
 import '../providers/health_providers.dart';
-import '../widgets/entry_date_picker_field.dart';
+import '../widgets/entry_due_completed_row.dart';
+import '../widgets/recurrence_anchor_toggle.dart';
+import '../../domain/entities/recurrence_anchor.dart';
 import '../widgets/entry_document_section.dart';
 import '../widgets/entry_frequency_fields.dart';
 import '../widgets/entry_remind_before_field.dart';
@@ -45,7 +47,10 @@ class _OtherEventFormScreenState extends ConsumerState<OtherEventFormScreen> {
   HealthFrequency _frequency = HealthFrequency.once;
   int _frequencyInterval = 1;
   DateTime _startDate = DateTime.now();
+  DateTime? _dueDate;
+  DateTime? _completedOn;
   DateTime? _nextDueDate;
+  RecurrenceAnchor _recurrenceAnchor = RecurrenceAnchor.fromCompletion;
   DateTime? _repeatEndDate;
   bool _isEdit = false;
   bool _isLoading = false;
@@ -96,7 +101,10 @@ class _OtherEventFormScreenState extends ConsumerState<OtherEventFormScreen> {
               ? (entry.frequencyDays ?? 1)
               : entry.frequencyInterval;
           _startDate = entry.startDate;
+          _dueDate = entry.nextDueDate;
+          _completedOn = entry.completedOn;
           _nextDueDate = entry.nextDueDate;
+          _recurrenceAnchor = entry.recurrenceAnchor;
           _repeatEndDate = entry.repeatEndDate;
           _remindDaysBefore = entry.remindDaysBefore;
         });
@@ -242,24 +250,33 @@ class _OtherEventFormScreenState extends ConsumerState<OtherEventFormScreen> {
   }
 
   Future<void> _submit() async {
+    if (_dueDate == null && _completedOn == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(AppLocalizations.of(context)!.dueOrCompletedRequired)),
+      );
+      return;
+    }
     if (!_formKey.currentState!.validate()) return;
 
     bool markCompleted = false;
     final today = DateTime.now();
-    final startDateOnly =
-        DateTime(_startDate.year, _startDate.month, _startDate.day);
+    final dueOnly = _dueDate != null
+        ? DateTime(_dueDate!.year, _dueDate!.month, _dueDate!.day)
+        : null;
     final todayOnly = DateTime(today.year, today.month, today.day);
 
     if (!_isEdit &&
         _frequency == HealthFrequency.once &&
-        !startDateOnly.isAfter(todayOnly)) {
+        _completedOn == null &&
+        dueOnly != null &&
+        !dueOnly.isAfter(todayOnly)) {
       final l = AppLocalizations.of(context)!;
       final result = await showDialog<bool>(
         context: context,
         builder: (ctx) => AlertDialog(
           title: Text(l.markAsCompletedTitle),
           content: Text(
-            startDateOnly.isBefore(todayOnly)
+            dueOnly.isBefore(todayOnly)
                 ? l.markCompletedPast
                 : l.markCompletedToday,
           ),
@@ -277,6 +294,9 @@ class _OtherEventFormScreenState extends ConsumerState<OtherEventFormScreen> {
       );
       if (result == null) return;
       markCompleted = result;
+      if (markCompleted) {
+        setState(() => _completedOn = dueOnly ?? todayOnly);
+      }
     }
 
     setState(() => _isLoading = true);
@@ -284,7 +304,12 @@ class _OtherEventFormScreenState extends ConsumerState<OtherEventFormScreen> {
       final notifier = ref.read(healthEntriesNotifierProvider.notifier);
       final effectiveRepeatEndDate =
           _frequency == HealthFrequency.once ? null : _repeatEndDate;
-      final completedDueDate = DateTime(9999, 12, 31);
+      final effectiveStart = _dueDate ?? _completedOn ?? _startDate;
+      final effectiveDue =
+          _frequency == HealthFrequency.once && _completedOn != null
+              ? null
+              : _dueDate;
+      final effectiveCompleted = _completedOn;
 
       if (_isEdit) {
         final entry = HealthEntry(
@@ -296,8 +321,10 @@ class _OtherEventFormScreenState extends ConsumerState<OtherEventFormScreen> {
           frequencyInterval:
               _frequency == HealthFrequency.once ? 1 : _frequencyInterval,
           repeatEndDate: effectiveRepeatEndDate,
-          startDate: _startDate,
-          nextDueDate: _nextDueDate ?? _startDate,
+          startDate: effectiveStart,
+          nextDueDate: effectiveDue,
+          completedOn: effectiveCompleted,
+          recurrenceAnchor: _recurrenceAnchor,
           notes: _notesController.text.trim(),
           remindDaysBefore: _remindDaysBefore,
         );
@@ -313,8 +340,10 @@ class _OtherEventFormScreenState extends ConsumerState<OtherEventFormScreen> {
           frequencyInterval:
               _frequency == HealthFrequency.once ? 1 : _frequencyInterval,
           repeatEndDate: effectiveRepeatEndDate,
-          startDate: _startDate,
-          nextDueDate: markCompleted ? completedDueDate : _startDate,
+          startDate: effectiveStart,
+          nextDueDate: markCompleted ? null : (_dueDate ?? effectiveStart),
+          completedOn: markCompleted ? (_completedOn ?? effectiveStart) : _completedOn,
+          recurrenceAnchor: _recurrenceAnchor,
           notes: _notesController.text.trim(),
           remindDaysBefore: _remindDaysBefore,
         );
@@ -452,14 +481,24 @@ class _OtherEventFormScreenState extends ConsumerState<OtherEventFormScreen> {
                       onRepeatEndChanged: (d) =>
                           setState(() => _repeatEndDate = d),
                     ),
+                    if (_frequency != HealthFrequency.once) ...[
+                      const SizedBox(height: 16),
+                      RecurrenceAnchorToggle(
+                        value: _recurrenceAnchor,
+                        onChanged: (v) => setState(() => _recurrenceAnchor = v),
+                      ),
+                    ],
                     const SizedBox(height: 16),
-                    EntryDatePickerField(
-                      label: l.startDate,
-                      date: _startDate,
-                      onChanged: (d) => setState(() {
-                        _startDate = d;
-                        if (_isEdit) _nextDueDate = d;
+                    EntryDueCompletedRow(
+                      dueDate: _dueDate,
+                      completedOn: _completedOn,
+                      onDueDateChanged: (d) => setState(() {
+                        _dueDate = d;
+                        _nextDueDate = d;
+                        if (d != null) _startDate = d;
                       }),
+                      onCompletedOnChanged: (d) =>
+                          setState(() => _completedOn = d),
                     ),
                     const SizedBox(height: 16),
                     EntryRemindBeforeField(

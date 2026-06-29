@@ -315,7 +315,11 @@ class _DueEventsSection extends ConsumerWidget {
         final dueEntries = entries
             .where((e) => !e.isCompleted && (e.isOverdue || e.isDueToday))
             .toList()
-          ..sort((a, b) => a.nextDueDate.compareTo(b.nextDueDate));
+          ..sort((a, b) {
+            final ad = a.nextDueDate ?? DateTime(2100);
+            final bd = b.nextDueDate ?? DateTime(2100);
+            return ad.compareTo(bd);
+          });
 
         final petMap = {for (final p in pets) p.id: p};
 
@@ -491,7 +495,7 @@ class _DueEventsSection extends ConsumerWidget {
                                           child: Text(
                                             isOverdue
                                                 ? dateFormat
-                                                    .format(entry.nextDueDate)
+                                                    .format(entry.nextDueDate!)
                                                 : 'Today',
                                             style: theme.textTheme.labelSmall
                                                 ?.copyWith(

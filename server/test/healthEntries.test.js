@@ -23,6 +23,9 @@ function makeHealthRow(overrides = {}) {
     frequency_interval: 1,
     start_date: new Date('2025-01-01'),
     next_due_date: new Date('2026-01-01'),
+    completed_on: null,
+    recurrence_anchor: 'from_completion',
+    repeat_end_date: null,
     notes: 'Bring records',
     health_issue_id: null,
     remind_days_before: 7,
@@ -32,6 +35,11 @@ function makeHealthRow(overrides = {}) {
     updated_at: new Date('2025-01-02'),
     ...overrides,
   };
+}
+
+function entryIdFromUpdate(params) {
+  if (!params) return 'he-1';
+  return params[params.length - 2] ?? params[0];
 }
 
 describe('Health Entries API', () => {
@@ -76,6 +84,11 @@ describe('Health Entries API', () => {
           return { rows: [makeHealthRow(), makeHealthRow({ id: 'he-2', name: 'Vaccination' })] };
         }
 
+        if (sql.includes('SELECT * FROM health_entries WHERE id')) {
+          if (params && params[0] === 'nonexistent') return { rows: [] };
+          return { rows: [makeHealthRow({ id: params[0] })] };
+        }
+
         if (sql.includes('INSERT INTO health_entries')) {
           return {
             rows: [makeHealthRow({
@@ -90,30 +103,44 @@ describe('Health Entries API', () => {
               frequency_interval: params[8],
               start_date: params[9],
               next_due_date: params[10],
-              notes: params[11],
-              health_issue_id: params[12],
-              remind_days_before: params[13],
-              status: params[14],
+              completed_on: params[11],
+              recurrence_anchor: params[12],
+              repeat_end_date: params[13],
+              notes: params[14],
+              health_issue_id: params[15],
+              remind_days_before: params[16],
+              status: params[17],
               completed_at: null,
             })],
           };
         }
 
-        if (sql.includes("UPDATE health_entries SET status = 'completed'")) {
-          if (params && params[0] === 'nonexistent') return { rows: [] };
-          return { rows: [makeHealthRow({ id: params[0], status: 'completed', completed_at: new Date() })] };
+        if (sql.includes("UPDATE health_entries SET status = 'completed', completed_on")) {
+          if (params && params[3] === 'nonexistent') return { rows: [] };
+          return { rows: [makeHealthRow({ id: params[3], status: 'completed', completed_at: params[1], completed_on: params[0], next_due_date: null })] };
         }
 
-        if (sql.includes("UPDATE health_entries SET status = 'active'")) {
-          if (params && params[0] === 'nonexistent') return { rows: [] };
-          return { rows: [makeHealthRow({ id: params[0], status: 'active', completed_at: null })] };
+        if (sql.includes("UPDATE health_entries SET status = 'active', completed_on = NULL, completed_at = $1")) {
+          if (params && params[2] === 'nonexistent') return { rows: [] };
+          return { rows: [makeHealthRow({ id: params[2], status: 'active', completed_on: null, completed_at: params[0], next_due_date: params[1] })] };
+        }
+
+        if (sql.includes('UPDATE health_entries SET status = \'active\', completed_on = NULL, completed_at = NULL')) {
+          if (params && params[1] === 'nonexistent') return { rows: [] };
+          return { rows: [makeHealthRow({ id: params[1], status: 'active', completed_at: null, completed_on: null })] };
+        }
+
+        if (sql.includes("UPDATE health_entries SET status = 'completed'") ||
+            sql.includes('UPDATE health_entries SET status = \'completed\'')) {
+          if (params && (params[2] === 'nonexistent' || params[3] === 'nonexistent')) return { rows: [] };
+          return { rows: [makeHealthRow({ id: entryIdFromUpdate(params), status: 'active', completed_at: params[0], next_due_date: params[1] })] };
         }
 
         if (sql.includes('UPDATE health_entries SET name')) {
-          if (params && params[12] === 'nonexistent') return { rows: [] };
+          if (params && (params[15] === 'nonexistent' || params[16] === 'nonexistent')) return { rows: [] };
           return {
             rows: [makeHealthRow({
-              id: params[12],
+              id: params[15],
               name: params[0],
               type: params[1],
               dosage: params[2],
@@ -130,14 +157,18 @@ describe('Health Entries API', () => {
           return { rows: [] };
         }
 
-        if (sql.includes('SELECT * FROM health_history')) {
+        if (sql.includes('SELECT hh.*') || sql.includes('SELECT * FROM health_history')) {
           return {
             rows: [{
               id: 'hh-1',
               health_entry_id: params[0],
               status: 'completed',
-              notes: 'Marked as taken',
+              notes: '',
+              due_date: new Date('2025-06-01'),
+              completed_on: new Date('2025-06-01'),
               changed_at: new Date('2025-06-01'),
+              marked_by_user_id: userId,
+              marked_by_name: 'Test User',
             }],
           };
         }
@@ -285,7 +316,7 @@ describe('Health Entries API', () => {
         .get('/api/health-entries/export')
         .set('Authorization', `Bearer ${token}`);
       const lines = res.text.split('\n');
-      expect(lines[0]).toBe('id,pet_name,name,type,dosage,frequency,start_date,next_due_date,notes');
+      expect(lines[0]).toBe('id,pet_name,name,type,dosage,frequency,start_date,next_due_date,completed_on,recurrence_anchor,notes');
     });
 
     it('escapes commas/quotes and neutralizes formula injection', async () => {
@@ -360,7 +391,7 @@ describe('Health Entries API', () => {
     });
 
     it('defaults type to vet_visit and frequency to once', async () => {
-      const entry = { pet_id: 'pet-1', name: 'Simple' };
+      const entry = { pet_id: 'pet-1', name: 'Simple', next_due_date: '2025-01-01' };
       const res = await request(app)
         .post('/api/health-entries')
         .set('Authorization', `Bearer ${token}`)
@@ -382,7 +413,7 @@ describe('Health Entries API', () => {
       expect(insertParams[1]).toBe('pet-2');
       expect(insertParams[9]).toBe('2025-01-01');
       expect(insertParams[10]).toBe('2025-02-01');
-      expect(insertParams[12]).toBe('hi-1');
+      expect(insertParams[15]).toBe('hi-1');
     });
 
     it('returns 403 when the pet belongs to another user', async () => {
@@ -404,7 +435,7 @@ describe('Health Entries API', () => {
 
   describe('PUT /api/health-entries/:id (update)', () => {
     it('updates a health entry', async () => {
-      const entry = { name: 'Updated', type: 'medication', dosage: '2ml', frequency: 'daily' };
+      const entry = { name: 'Updated', type: 'medication', dosage: '2ml', frequency: 'daily', next_due_date: '2026-01-01' };
       const res = await request(app)
         .put('/api/health-entries/he-1')
         .set('Authorization', `Bearer ${token}`)
@@ -417,7 +448,7 @@ describe('Health Entries API', () => {
       const res = await request(app)
         .put('/api/health-entries/nonexistent')
         .set('Authorization', `Bearer ${token}`)
-        .send({ name: 'Nope' });
+        .send({ name: 'Nope', next_due_date: '2026-01-01' });
       expect(res.statusCode).toBe(404);
       expect(res.body).toHaveProperty('error', 'Entry not found');
     });
@@ -426,9 +457,9 @@ describe('Health Entries API', () => {
       await request(app)
         .put('/api/health-entries/he-1')
         .set('Authorization', `Bearer ${token}`)
-        .send({ name: 'Test' });
+        .send({ name: 'Test', next_due_date: '2026-01-01' });
       const updateQuery = queryLog.find(q => q.sql.includes('UPDATE health_entries SET name'));
-      expect(updateQuery.params).toContain(userId);
+      expect(updateQuery.params[16]).toBe(userId);
     });
   });
 
@@ -455,7 +486,6 @@ describe('Health Entries API', () => {
         .post('/api/health-entries/he-1/mark-taken')
         .set('Authorization', `Bearer ${token}`);
       expect(res.statusCode).toBe(200);
-      expect(res.body).toHaveProperty('status', 'completed');
       expect(res.body).toHaveProperty('completed_at');
       expect(res.body.completed_at).not.toBeNull();
 
@@ -470,9 +500,9 @@ describe('Health Entries API', () => {
         .set('Authorization', `Bearer ${token}`);
 
       const update = queryLog.find(q =>
-        q.sql.includes("UPDATE health_entries SET status = 'completed'"));
+        q.sql.includes("UPDATE health_entries SET status = 'active', completed_on = NULL"));
       expect(update).toBeDefined();
-      const newDue = new Date(update.params[0]);
+      const newDue = new Date(update.params[1]);
       expect(newDue.getTime()).toBeGreaterThan(Date.now());
       expect(newDue.getFullYear()).toBeLessThan(9999);
     });
@@ -483,21 +513,20 @@ describe('Health Entries API', () => {
         .set('Authorization', `Bearer ${token}`);
       expect(res.statusCode).toBe(200);
       const update = queryLog.find(q =>
-        q.sql.includes("UPDATE health_entries SET status = 'completed'"));
-      const newDue = new Date(update.params[0]);
+        q.sql.includes("UPDATE health_entries SET status = 'active', completed_on = NULL"));
+      const newDue = new Date(update.params[1]);
       expect(newDue.getTime()).toBeGreaterThan(Date.now());
     });
 
-    it('sets next_due_date to the 9999 sentinel for once entries', async () => {
+    it('sets next_due_date to null for once entries', async () => {
       await request(app)
         .post('/api/health-entries/he-once/mark-taken')
         .set('Authorization', `Bearer ${token}`);
 
       const update = queryLog.find(q =>
-        q.sql.includes("UPDATE health_entries SET status = 'completed'"));
+        q.sql.includes("UPDATE health_entries SET status = 'completed', completed_on"));
       expect(update).toBeDefined();
-      const newDue = new Date(update.params[0]);
-      expect(newDue.getFullYear()).toBe(9999);
+      expect(update.sql).toContain('next_due_date = NULL');
     });
 
     it('returns 404 for nonexistent entry', async () => {
@@ -524,9 +553,9 @@ describe('Health Entries API', () => {
         .set('Authorization', `Bearer ${token}`);
 
       const update = queryLog.find(q =>
-        q.sql.includes("UPDATE health_entries SET status = 'active'"));
+        q.sql.includes("UPDATE health_entries SET status = 'active', completed_on = NULL, completed_at ="));
       expect(update).toBeDefined();
-      expect(update.sql).toContain("CASE WHEN frequency = 'once' THEN start_date");
+      expect(update.sql).toContain('next_due_date = CASE WHEN frequency');
     });
 
     it('returns 404 for nonexistent entry', async () => {

@@ -113,7 +113,7 @@ void main() {
       final historyModel = HealthHistoryModel(
         id: 'h-1',
         entryId: 'test-1',
-        takenAt: DateTime(2025, 1, 15),
+        markedAt: DateTime(2025, 1, 15),
         notes: 'Administered',
       );
       when(mockDataSource.getHistory('test-1'))

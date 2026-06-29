@@ -8,7 +8,7 @@ void main() {
       final entry = HealthHistoryEntry(
         id: 'h1',
         entryId: 'entry-1',
-        takenAt: DateTime(2025, 1, 15),
+        markedAt: DateTime(2025, 1, 15),
       );
 
       expect(entry.id, 'h1');
@@ -21,7 +21,7 @@ void main() {
       final entry = HealthHistoryEntry(
         id: 'h1',
         entryId: 'entry-1',
-        takenAt: DateTime(2025, 1, 15),
+        markedAt: DateTime(2025, 1, 15),
         notes: 'Given with food',
       );
 
@@ -32,13 +32,13 @@ void main() {
       final entry1 = HealthHistoryEntry(
         id: 'h1',
         entryId: 'entry-1',
-        takenAt: DateTime(2025, 1, 15),
+        markedAt: DateTime(2025, 1, 15),
       );
 
       final entry2 = HealthHistoryEntry(
         id: 'h1',
         entryId: 'entry-2',
-        takenAt: DateTime(2025, 2, 15),
+        markedAt: DateTime(2025, 2, 15),
         notes: 'Different notes',
       );
 
@@ -49,13 +49,13 @@ void main() {
       final entry1 = HealthHistoryEntry(
         id: 'h1',
         entryId: 'entry-1',
-        takenAt: DateTime(2025, 1, 15),
+        markedAt: DateTime(2025, 1, 15),
       );
 
       final entry2 = HealthHistoryEntry(
         id: 'h2',
         entryId: 'entry-1',
-        takenAt: DateTime(2025, 1, 15),
+        markedAt: DateTime(2025, 1, 15),
       );
 
       expect(entry1, isNot(equals(entry2)));
@@ -65,13 +65,13 @@ void main() {
       final entry1 = HealthHistoryEntry(
         id: 'h1',
         entryId: 'entry-1',
-        takenAt: DateTime(2025, 1, 15),
+        markedAt: DateTime(2025, 1, 15),
       );
 
       final entry2 = HealthHistoryEntry(
         id: 'h1',
         entryId: 'entry-2',
-        takenAt: DateTime(2025, 2, 15),
+        markedAt: DateTime(2025, 2, 15),
       );
 
       expect(entry1.hashCode, equals(entry2.hashCode));
@@ -81,13 +81,13 @@ void main() {
       final entry1 = HealthHistoryEntry(
         id: 'h1',
         entryId: 'entry-1',
-        takenAt: DateTime(2025, 1, 15),
+        markedAt: DateTime(2025, 1, 15),
       );
 
       final entry2 = HealthHistoryEntry(
         id: 'h2',
         entryId: 'entry-1',
-        takenAt: DateTime(2025, 1, 15),
+        markedAt: DateTime(2025, 1, 15),
       );
 
       expect(entry1.hashCode, isNot(equals(entry2.hashCode)));
@@ -97,7 +97,7 @@ void main() {
       final entry = HealthHistoryEntry(
         id: 'h1',
         entryId: 'entry-1',
-        takenAt: DateTime(2025, 1, 15),
+        markedAt: DateTime(2025, 1, 15),
       );
 
       expect(entry, isNot(equals('not an entry')));
@@ -107,7 +107,7 @@ void main() {
       final entry = HealthHistoryEntry(
         id: 'h1',
         entryId: 'entry-1',
-        takenAt: DateTime(2025, 1, 15),
+        markedAt: DateTime(2025, 1, 15),
       );
 
       expect(entry, equals(entry));

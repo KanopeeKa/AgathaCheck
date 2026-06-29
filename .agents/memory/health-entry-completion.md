@@ -1,28 +1,25 @@
 ---
 name: Health entry completion / overdue semantics
-description: How the Flutter UI decides "overdue" vs "completed" and what mark-taken/undo must do server-side
+description: Three-date model — due, completed on, marked at — and recurrence anchor modes
 ---
 
-The Flutter `HealthEntry` entity has NO `status`/`completedAt` field — the UI derives
-state **entirely from `nextDueDate`**:
-- `isCompleted` = `frequency == once && nextDueDate.year >= 9999` (a 9999 sentinel date).
-- `isOverdue` = `!isCompleted && nextDueDate` before today.
-- Recurring entries have **no "completed" state** in the UI at all; the card only shows
-  Done/Undo for `once` entries (driven by `isCompleted`).
+The Flutter `HealthEntry` entity tracks:
+- `nextDueDate` (a) — when the current/upcoming occurrence is due; null when completion-only one-time entries
+- `completedOn` (b) — when a one-time entry was completed
+- History rows store `due_date`, `completed_on`, `marked_at` (c), and `marked_by_user_id`
 
-**Rule:** anything that "completes" a health entry must change `next_due_date`, not just
-the DB `status` column — the UI ignores `status`.
-- `mark-taken`: for `once` → set `next_due_date` to the 9999 sentinel; for recurring →
-  advance `next_due_date` to the next occurrence (advance by frequency*interval, looping
-  until strictly after today so multi-period-overdue entries still land in the future).
-- `undo-complete`: must also restore `next_due_date` for `once` entries (back to
-  `start_date`) or the UI stays "completed" forever.
+**Completion state (one-time):** `completedOn != null` (legacy `nextDueDate.year >= 9999` still read for backward compat).
 
-**Why:** the original bug — marking an OVERDUE recurring entry complete left it overdue —
-was because both backends only did `SET status='completed', completed_at=NOW()` and never
-touched `next_due_date`.
+**Recurring:** series stays open; each `mark-taken` writes a history row and advances `nextDueDate`.
 
-**How to apply:** keep the Node (`server/routes/healthEntries.js`) and Dart
-(`server/lib/health_routes.dart`) `mark-taken`/`undo-complete` handlers in lockstep —
-both run a fetch-then-update with the same recurrence helper. Guard the advance loop
-against `frequency_interval`/`frequency_days` ≤ 0 (coerce to ≥1) or it spins forever.
+**Recurrence anchor** (`recurrence_anchor` on `health_entries`):
+- `from_completion` (default for **new** entries) — next due = completed on + interval
+- `from_due_date` (backfilled on **existing** recurring entries at migration) — next due = original due + interval
+
+**Rule:** `mark-taken` accepts optional `completed_on` in the body (defaults to today). `marked_at` and user are set server-side.
+
+**Undo:** reverts the latest history row and restores `next_due_date` / clears `completed_on` on the entry.
+
+Keep Node (`server/routes/healthEntries.js`) and Dart (`server/lib/health_routes.dart`) handlers in lockstep via `server/lib/recurrenceHelper.js`.
+
+**Org family events:** `from_date` = due, `to_date` = completed on; `family_event_history` stores the three-date audit trail.

@@ -580,6 +580,54 @@ class AppLocalizationsEn extends AppLocalizations {
   String get startDate => 'Start Date';
 
   @override
+  String get dueDate => 'Due date';
+
+  @override
+  String get completedOn => 'Completed on';
+
+  @override
+  String get dueOrCompletedRequired =>
+      'Enter a due date, a completed date, or both';
+
+  @override
+  String get recurrenceAnchorTitle => 'Next occurrence';
+
+  @override
+  String get recurrenceFromCompletion => 'From completion';
+
+  @override
+  String get recurrenceFromDueDate => 'Fixed schedule';
+
+  @override
+  String get recurrenceAnchorInfoTitle => 'How does scheduling work?';
+
+  @override
+  String get recurrenceAnchorInfoBody =>
+      'Example: every 7 days. You complete it 1 day late.\n• From completion: next due 7 days after you mark it done.\n• Fixed schedule: next due 6 days from today (7 days after the original due date).';
+
+  @override
+  String get markCompleteSheetTitle => 'Mark as completed';
+
+  @override
+  String get markCompleteSheetSubtitle => 'When did this actually happen?';
+
+  @override
+  String eventHistoryLine(
+    String due,
+    String completed,
+    String recorded,
+    String user,
+  ) {
+    return 'Due $due, completed $completed, recorded $recorded by $user';
+  }
+
+  @override
+  String get unknownUser => 'Unknown user';
+
+  @override
+  String get clear => 'Clear';
+
+  @override
   String get nextDueDate => 'Next Due Date';
 
   @override

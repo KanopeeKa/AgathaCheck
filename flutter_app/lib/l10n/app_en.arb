@@ -204,6 +204,27 @@
   "repeatEndDate": "Repeat End Date",
   "noEndDate": "No end date",
   "startDate": "Start Date",
+  "dueDate": "Due date",
+  "completedOn": "Completed on",
+  "dueOrCompletedRequired": "Enter a due date, a completed date, or both",
+  "recurrenceAnchorTitle": "Next occurrence",
+  "recurrenceFromCompletion": "From completion",
+  "recurrenceFromDueDate": "Fixed schedule",
+  "recurrenceAnchorInfoTitle": "How does scheduling work?",
+  "recurrenceAnchorInfoBody": "Example: every 7 days. You complete it 1 day late.\n• From completion: next due 7 days after you mark it done.\n• Fixed schedule: next due 6 days from today (7 days after the original due date).",
+  "markCompleteSheetTitle": "Mark as completed",
+  "markCompleteSheetSubtitle": "When did this actually happen?",
+  "eventHistoryLine": "Due {due}, completed {completed}, recorded {recorded} by {user}",
+  "@eventHistoryLine": {
+    "placeholders": {
+      "due": { "type": "String" },
+      "completed": { "type": "String" },
+      "recorded": { "type": "String" },
+      "user": { "type": "String" }
+    }
+  },
+  "unknownUser": "Unknown user",
+  "clear": "Clear",
   "nextDueDate": "Next Due Date",
   "notes": "Notes",
   "healthIssueOptional": "Health Issue (optional)",

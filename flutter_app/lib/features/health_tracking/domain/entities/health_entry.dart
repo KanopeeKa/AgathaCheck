@@ -1,3 +1,5 @@
+import 'recurrence_anchor.dart';
+
 /// Represents a health tracking entry in the domain layer.
 ///
 /// A health entry tracks medications, preventives, vet visits, care events,
@@ -28,7 +30,9 @@ class HealthEntry {
     required this.type,
     required this.frequency,
     required this.startDate,
-    required this.nextDueDate,
+    this.nextDueDate,
+    this.completedOn,
+    this.recurrenceAnchor = RecurrenceAnchor.fromCompletion,
     this.dosage = '',
     this.frequencyDays,
     this.frequencyInterval = 1,
@@ -71,8 +75,14 @@ class HealthEntry {
   /// When this health entry started.
   final DateTime startDate;
 
-  /// When the next dose or action is due.
-  final DateTime nextDueDate;
+  /// When the next dose or action is due (a). Null when completion-only.
+  final DateTime? nextDueDate;
+
+  /// When a one-time entry was completed (b).
+  final DateTime? completedOn;
+
+  /// How recurring next due dates are calculated after completion.
+  final RecurrenceAnchor recurrenceAnchor;
 
   /// Additional notes.
   final String notes;
@@ -92,31 +102,43 @@ class HealthEntry {
   /// When this entry was last updated.
   final DateTime? updatedAt;
 
-  /// Whether a one-time entry has been completed (marked taken).
-  bool get isCompleted =>
-      frequency == HealthFrequency.once && nextDueDate.year >= 9999;
+  /// Whether a one-time entry has been completed.
+  bool get isCompleted {
+    if (frequency != HealthFrequency.once) return false;
+    if (completedOn != null) return true;
+    if (nextDueDate != null && nextDueDate!.year >= 9999) return true;
+    return false;
+  }
 
   /// Whether this entry is overdue (before today, not including today).
   bool get isOverdue {
     if (isCompleted) return false;
+    if (nextDueDate == null) return false;
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
-    final dueDay = DateTime(nextDueDate.year, nextDueDate.month, nextDueDate.day);
+    final dueDay = DateTime(
+      nextDueDate!.year,
+      nextDueDate!.month,
+      nextDueDate!.day,
+    );
     return dueDay.isBefore(today);
   }
 
   /// Whether this entry is due today.
   bool get isDueToday {
+    if (nextDueDate == null) return false;
     final now = DateTime.now();
-    return nextDueDate.year == now.year &&
-        nextDueDate.month == now.month &&
-        nextDueDate.day == now.day;
+    return nextDueDate!.year == now.year &&
+        nextDueDate!.month == now.month &&
+        nextDueDate!.day == now.day;
   }
 
   /// Whether this entry is due within the next 24 hours.
-  bool get isDueSoon =>
-      !isOverdue &&
-      nextDueDate.isBefore(DateTime.now().add(const Duration(hours: 24)));
+  bool get isDueSoon {
+    if (nextDueDate == null) return false;
+    return !isOverdue &&
+        nextDueDate!.isBefore(DateTime.now().add(const Duration(hours: 24)));
+  }
 
   /// Creates a copy of this entry with the given fields replaced.
   HealthEntry copyWith({
@@ -132,6 +154,10 @@ class HealthEntry {
     bool clearRepeatEndDate = false,
     DateTime? startDate,
     DateTime? nextDueDate,
+    bool clearNextDueDate = false,
+    DateTime? completedOn,
+    bool clearCompletedOn = false,
+    RecurrenceAnchor? recurrenceAnchor,
     String? notes,
     String? healthIssueId,
     String? healthIssueName,
@@ -151,7 +177,10 @@ class HealthEntry {
       frequencyInterval: frequencyInterval ?? this.frequencyInterval,
       repeatEndDate: clearRepeatEndDate ? null : (repeatEndDate ?? this.repeatEndDate),
       startDate: startDate ?? this.startDate,
-      nextDueDate: nextDueDate ?? this.nextDueDate,
+      nextDueDate: clearNextDueDate ? null : (nextDueDate ?? this.nextDueDate),
+      completedOn:
+          clearCompletedOn ? null : (completedOn ?? this.completedOn),
+      recurrenceAnchor: recurrenceAnchor ?? this.recurrenceAnchor,
       notes: notes ?? this.notes,
       healthIssueId: clearHealthIssueId ? null : (healthIssueId ?? this.healthIssueId),
       healthIssueName: clearHealthIssueId ? null : (healthIssueName ?? this.healthIssueName),

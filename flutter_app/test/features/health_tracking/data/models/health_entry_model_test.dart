@@ -39,9 +39,9 @@ void main() {
       expect(model.startDate.year, 2025);
       expect(model.startDate.month, 1);
       expect(model.startDate.day, 1);
-      expect(model.nextDueDate.year, 2025);
-      expect(model.nextDueDate.month, 2);
-      expect(model.nextDueDate.day, 1);
+      expect(model.nextDueDate!.year, 2025);
+      expect(model.nextDueDate!.month, 2);
+      expect(model.nextDueDate!.day, 1);
       expect(model.notes, 'Give with food');
       expect(model.healthIssueId, 'issue-42');
       expect(model.healthIssueName, 'Heart condition');

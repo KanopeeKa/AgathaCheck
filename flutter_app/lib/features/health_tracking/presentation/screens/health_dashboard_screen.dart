@@ -12,6 +12,7 @@ import '../../data/services/events_pdf_service.dart';
 import '../../domain/entities/health_entry.dart';
 import '../providers/health_providers.dart';
 import '../widgets/health_entry_card.dart';
+import '../widgets/mark_complete_sheet.dart';
 import '../widgets/health_dashboard_actions.dart' show HealthDashboardActions, GroupMode;
 
 class HealthDashboardScreen extends ConsumerStatefulWidget {
@@ -266,8 +267,8 @@ class _HealthDashboardScreenState extends ConsumerState<HealthDashboardScreen>
     for (final e in entries) {
       if (e.isCompleted) {
         buckets[l.completed]!.add(e);
-      } else {
-        final due = DateTime(e.nextDueDate.year, e.nextDueDate.month, e.nextDueDate.day);
+      } else if (e.nextDueDate != null) {
+        final due = DateTime(e.nextDueDate!.year, e.nextDueDate!.month, e.nextDueDate!.day);
         if (due.isBefore(today)) {
           buckets[l.overdue]!.add(e);
         } else if (due.isAtSameMomentAs(today)) {
@@ -300,7 +301,12 @@ class _HealthDashboardScreenState extends ConsumerState<HealthDashboardScreen>
     }
     final sortedKeys = grouped.keys.toList()..sort();
     return sortedKeys.map((name) {
-      final sorted = grouped[name]!..sort((a, b) => a.nextDueDate.compareTo(b.nextDueDate));
+      final sorted = grouped[name]!
+        ..sort((a, b) {
+          final ad = a.nextDueDate ?? DateTime(2100);
+          final bd = b.nextDueDate ?? DateTime(2100);
+          return ad.compareTo(bd);
+        });
       return MapEntry<String?, List<HealthEntry>>(name, sorted);
     }).toList();
   }
@@ -315,7 +321,12 @@ class _HealthDashboardScreenState extends ConsumerState<HealthDashboardScreen>
     final sortedKeys = grouped.keys.toList()..sort();
     return sortedKeys.map((species) {
       final label = species.endsWith('s') ? species : '${species}s';
-      final sorted = grouped[species]!..sort((a, b) => a.nextDueDate.compareTo(b.nextDueDate));
+      final sorted = grouped[species]!
+        ..sort((a, b) {
+          final ad = a.nextDueDate ?? DateTime(2100);
+          final bd = b.nextDueDate ?? DateTime(2100);
+          return ad.compareTo(bd);
+        });
       return MapEntry<String?, List<HealthEntry>>(label, sorted);
     }).toList();
   }
@@ -409,19 +420,20 @@ class _EntryList extends ConsumerWidget {
                 return _buildHeader(context, group.title);
               }
               final item = group as _GroupEntry;
-              final isFamilyEvent = item.entry.type == HealthEntryType.familyEvent;
+              final isCareEvent = item.entry.type == HealthEntryType.familyEvent;
+              final editRoute = isCareEvent
+                  ? '/pet/${item.entry.petId}/other/edit/${item.entry.id}'
+                  : '/health/edit/${item.entry.id}';
               return Padding(
                 padding: const EdgeInsets.only(bottom: 6),
                 child: HealthEntryCard(
                   entry: item.entry,
                   pet: petMap[item.entry.petId],
                   healthIssueName: item.entry.healthIssueName,
-                  onTap: isFamilyEvent
-                      ? () => context.go('/pet/${item.entry.petId}')
-                      : () => context.go('/health/edit/${item.entry.id}'),
-                  onMarkTaken: isFamilyEvent ? null : () => _markTaken(context, ref, item.entry),
-                  onSnooze: isFamilyEvent ? null : (days) => _snooze(context, ref, item.entry, days),
-                  onUndoComplete: isFamilyEvent ? null : () => _undoComplete(context, ref, item.entry),
+                  onTap: () => context.go(editRoute),
+                  onMarkTaken: () => _markTaken(context, ref, item.entry),
+                  onSnooze: (days) => _snooze(context, ref, item.entry, days),
+                  onUndoComplete: () => _undoComplete(context, ref, item.entry),
                 ),
               );
             },
@@ -487,8 +499,8 @@ class _EntryList extends ConsumerWidget {
     for (final e in entries) {
       if (e.isCompleted) {
         completed.add(e);
-      } else {
-        final due = DateTime(e.nextDueDate.year, e.nextDueDate.month, e.nextDueDate.day);
+      } else if (e.nextDueDate != null) {
+        final due = DateTime(e.nextDueDate!.year, e.nextDueDate!.month, e.nextDueDate!.day);
         if (due.isBefore(today)) {
           overdue.add(e);
         } else if (due.isAtSameMomentAs(today)) {
@@ -532,7 +544,12 @@ class _EntryList extends ConsumerWidget {
     final items = <_GroupItem>[];
     for (final name in sortedKeys) {
       items.add(_GroupHeader(name));
-      final sorted = grouped[name]!..sort((a, b) => a.nextDueDate.compareTo(b.nextDueDate));
+      final sorted = grouped[name]!
+        ..sort((a, b) {
+          final ad = a.nextDueDate ?? DateTime(2100);
+          final bd = b.nextDueDate ?? DateTime(2100);
+          return ad.compareTo(bd);
+        });
       items.addAll(sorted.map((e) => _GroupEntry(e)));
     }
     return items;
@@ -551,14 +568,24 @@ class _EntryList extends ConsumerWidget {
     for (final species in sortedKeys) {
       final pluralSpecies = species.endsWith('s') ? species : '${species}s';
       items.add(_GroupHeader(pluralSpecies));
-      final sorted = grouped[species]!..sort((a, b) => a.nextDueDate.compareTo(b.nextDueDate));
+      final sorted = grouped[species]!
+        ..sort((a, b) {
+          final ad = a.nextDueDate ?? DateTime(2100);
+          final bd = b.nextDueDate ?? DateTime(2100);
+          return ad.compareTo(bd);
+        });
       items.addAll(sorted.map((e) => _GroupEntry(e)));
     }
     return items;
   }
 
   Future<void> _markTaken(BuildContext context, WidgetRef ref, HealthEntry entry) async {
-    await ref.read(healthEntriesNotifierProvider.notifier).markTaken(entry.id);
+    final completedOn = await showMarkCompleteSheet(context);
+    if (completedOn == null || !context.mounted) return;
+    await ref.read(healthEntriesNotifierProvider.notifier).markTaken(
+          entry.id,
+          completedOn: completedOn,
+        );
     if (context.mounted) {
       final l = AppLocalizations.of(context)!;
       ScaffoldMessenger.of(context).showSnackBar(

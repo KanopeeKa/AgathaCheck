@@ -582,6 +582,56 @@ class AppLocalizationsFr extends AppLocalizations {
   String get startDate => 'Date de début';
 
   @override
+  String get dueDate => 'Date d\'échéance';
+
+  @override
+  String get completedOn => 'Terminé le';
+
+  @override
+  String get dueOrCompletedRequired =>
+      'Indiquez une date d\'échéance, une date de fin, ou les deux';
+
+  @override
+  String get recurrenceAnchorTitle => 'Prochaine occurrence';
+
+  @override
+  String get recurrenceFromCompletion => 'Depuis la complétion';
+
+  @override
+  String get recurrenceFromDueDate => 'Calendrier fixe';
+
+  @override
+  String get recurrenceAnchorInfoTitle =>
+      'Comment fonctionne la planification ?';
+
+  @override
+  String get recurrenceAnchorInfoBody =>
+      'Exemple : tous les 7 jours. Vous terminez avec 1 jour de retard.\n• Depuis la complétion : prochaine échéance 7 jours après la validation.\n• Calendrier fixe : prochaine échéance dans 6 jours (7 jours après la date d\'échéance initiale).';
+
+  @override
+  String get markCompleteSheetTitle => 'Marquer comme terminé';
+
+  @override
+  String get markCompleteSheetSubtitle =>
+      'Quand cela a-t-il réellement eu lieu ?';
+
+  @override
+  String eventHistoryLine(
+    String due,
+    String completed,
+    String recorded,
+    String user,
+  ) {
+    return 'Échéance $due, terminé $completed, enregistré $recorded par $user';
+  }
+
+  @override
+  String get unknownUser => 'Utilisateur inconnu';
+
+  @override
+  String get clear => 'Effacer';
+
+  @override
   String get nextDueDate => 'Prochaine échéance';
 
   @override

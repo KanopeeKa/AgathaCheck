@@ -4,6 +4,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../../../../core/widgets/app_logo_title.dart';
@@ -15,6 +16,10 @@ import '../../domain/entities/health_entry.dart';
 import '../providers/health_issue_providers.dart';
 import '../providers/health_providers.dart';
 import '../widgets/health_entry_type_labels.dart';
+import '../widgets/entry_due_completed_row.dart';
+import '../widgets/recurrence_anchor_toggle.dart';
+import '../widgets/event_history_formatter.dart';
+import '../../domain/entities/recurrence_anchor.dart';
 import 'package:pet_profile_app/core/providers/api_base_url_provider.dart';
 
 const healthDocumentMaxBytes = 2 * 1024 * 1024;
@@ -52,7 +57,10 @@ class _HealthEntryFormScreenState extends ConsumerState<HealthEntryFormScreen> {
   HealthFrequency _frequency = HealthFrequency.once;
   int _frequencyInterval = 1;
   DateTime _startDate = DateTime.now();
+  DateTime? _dueDate;
+  DateTime? _completedOn;
   DateTime? _nextDueDate;
+  RecurrenceAnchor _recurrenceAnchor = RecurrenceAnchor.fromCompletion;
   DateTime? _repeatEndDate;
   bool _isEdit = false;
   bool _isLoading = false;
@@ -267,7 +275,10 @@ class _HealthEntryFormScreenState extends ConsumerState<HealthEntryFormScreen> {
               ? (entry.frequencyDays ?? 1)
               : entry.frequencyInterval;
           _startDate = entry.startDate;
+          _dueDate = entry.nextDueDate;
+          _completedOn = entry.completedOn;
           _nextDueDate = entry.nextDueDate;
+          _recurrenceAnchor = entry.recurrenceAnchor;
           _selectedPetIds.clear();
           _selectedPetIds.add(entry.petId);
           _repeatEndDate = entry.repeatEndDate;
@@ -568,16 +579,24 @@ class _HealthEntryFormScreenState extends ConsumerState<HealthEntryFormScreen> {
                         ),
                       ),
                     ],
+                    if (_frequency != HealthFrequency.once) ...[
+                      const SizedBox(height: 16),
+                      RecurrenceAnchorToggle(
+                        value: _recurrenceAnchor,
+                        onChanged: (v) => setState(() => _recurrenceAnchor = v),
+                      ),
+                    ],
                     const SizedBox(height: 16),
-                    _DatePickerField(
-                      label: l.startDate,
-                      date: _startDate,
-                      onChanged: (d) => setState(() {
-                        _startDate = d;
-                        if (_isEdit) {
-                          _nextDueDate = d;
-                        }
+                    EntryDueCompletedRow(
+                      dueDate: _dueDate,
+                      completedOn: _completedOn,
+                      onDueDateChanged: (d) => setState(() {
+                        _dueDate = d;
+                        _nextDueDate = d;
+                        if (d != null) _startDate = d;
                       }),
+                      onCompletedOnChanged: (d) =>
+                          setState(() => _completedOn = d),
                     ),
                     const SizedBox(height: 16),
                     Row(
@@ -683,6 +702,12 @@ class _HealthEntryFormScreenState extends ConsumerState<HealthEntryFormScreen> {
   }
 
   Future<void> _submit() async {
+    if (_dueDate == null && _completedOn == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(AppLocalizations.of(context)!.dueOrCompletedRequired)),
+      );
+      return;
+    }
     if (!_formKey.currentState!.validate()) return;
 
     if (_selectedPetIds.isEmpty) {
@@ -694,18 +719,22 @@ class _HealthEntryFormScreenState extends ConsumerState<HealthEntryFormScreen> {
 
     bool markCompleted = false;
     final today = DateTime.now();
-    final startDateOnly = DateTime(_startDate.year, _startDate.month, _startDate.day);
+    final dueOnly = _dueDate != null
+        ? DateTime(_dueDate!.year, _dueDate!.month, _dueDate!.day)
+        : null;
     final todayOnly = DateTime(today.year, today.month, today.day);
 
     if (!_isEdit &&
         _frequency == HealthFrequency.once &&
-        !startDateOnly.isAfter(todayOnly)) {
+        _completedOn == null &&
+        dueOnly != null &&
+        !dueOnly.isAfter(todayOnly)) {
       final result = await showDialog<bool>(
         context: context,
         builder: (ctx) => AlertDialog(
           title: Text(AppLocalizations.of(context)!.markAsCompletedTitle),
           content: Text(
-            startDateOnly.isBefore(todayOnly)
+            dueOnly.isBefore(todayOnly)
                 ? AppLocalizations.of(context)!.markCompletedPast
                 : AppLocalizations.of(context)!.markCompletedToday,
           ),
@@ -723,6 +752,9 @@ class _HealthEntryFormScreenState extends ConsumerState<HealthEntryFormScreen> {
       );
       if (result == null) return;
       markCompleted = result;
+      if (markCompleted) {
+        setState(() => _completedOn = dueOnly ?? todayOnly);
+      }
     }
 
     setState(() => _isLoading = true);
@@ -732,7 +764,12 @@ class _HealthEntryFormScreenState extends ConsumerState<HealthEntryFormScreen> {
       final effectiveRepeatEndDate =
           _frequency == HealthFrequency.once ? null : _repeatEndDate;
 
-      final completedDueDate = DateTime(9999, 12, 31);
+      final effectiveStart = _dueDate ?? _completedOn ?? _startDate;
+      final effectiveDue =
+          _frequency == HealthFrequency.once && _completedOn != null
+              ? null
+              : _dueDate;
+      final effectiveCompleted = _completedOn;
 
       if (_isEdit) {
         final entry = HealthEntry(
@@ -744,8 +781,10 @@ class _HealthEntryFormScreenState extends ConsumerState<HealthEntryFormScreen> {
           frequency: _frequency,
           frequencyInterval: _frequency == HealthFrequency.once ? 1 : _frequencyInterval,
           repeatEndDate: effectiveRepeatEndDate,
-          startDate: _startDate,
-          nextDueDate: _nextDueDate ?? _startDate,
+          startDate: effectiveStart,
+          nextDueDate: effectiveDue,
+          completedOn: effectiveCompleted,
+          recurrenceAnchor: _recurrenceAnchor,
           notes: _notesController.text.trim(),
           healthIssueId: _selectedHealthIssueId,
           remindDaysBefore: _remindDaysBefore,
@@ -767,8 +806,10 @@ class _HealthEntryFormScreenState extends ConsumerState<HealthEntryFormScreen> {
             frequency: _frequency,
             frequencyInterval: _frequency == HealthFrequency.once ? 1 : _frequencyInterval,
             repeatEndDate: effectiveRepeatEndDate,
-            startDate: _startDate,
-            nextDueDate: markCompleted ? completedDueDate : _startDate,
+            startDate: effectiveStart,
+            nextDueDate: markCompleted ? null : (_dueDate ?? effectiveStart),
+            completedOn: markCompleted ? (_completedOn ?? effectiveStart) : _completedOn,
+            recurrenceAnchor: _recurrenceAnchor,
             notes: _notesController.text.trim(),
             healthIssueId: _selectedHealthIssueId,
             remindDaysBefore: _remindDaysBefore,
@@ -830,12 +871,16 @@ class _HealthEntryFormScreenState extends ConsumerState<HealthEntryFormScreen> {
 
       showDialog(
         context: context,
-        builder: (ctx) => AlertDialog(
-          title: Text(AppLocalizations.of(context)!.administrationHistory),
+        builder: (ctx) {
+          final l = AppLocalizations.of(context)!;
+          final dateFormat = DateFormat.yMMMd();
+          final dateTimeFormat = DateFormat.yMMMd().add_jm();
+          return AlertDialog(
+          title: Text(l.administrationHistory),
           content: SizedBox(
             width: double.maxFinite,
             child: history.isEmpty
-                ? Text(AppLocalizations.of(context)!.noHistoryYet)
+                ? Text(l.noHistoryYet)
                 : ListView.builder(
                     shrinkWrap: true,
                     itemCount: history.length,
@@ -844,7 +889,9 @@ class _HealthEntryFormScreenState extends ConsumerState<HealthEntryFormScreen> {
                       return ListTile(
                         leading: const Icon(Icons.check_circle,
                             color: Colors.green),
-                        title: Text(_formatDateTime(h.takenAt)),
+                        title: Text(formatEventHistoryLine(
+                          h, l, dateFormat, dateTimeFormat,
+                        )),
                         subtitle: h.notes.isNotEmpty
                             ? Text(h.notes)
                             : null,
@@ -855,10 +902,11 @@ class _HealthEntryFormScreenState extends ConsumerState<HealthEntryFormScreen> {
           actions: [
             TextButton(
               onPressed: () => Navigator.of(ctx).pop(),
-              child: Text(AppLocalizations.of(context)!.close),
+              child: Text(l.close),
             ),
           ],
-        ),
+        );
+        },
       );
     } catch (e) {
       if (mounted) {

@@ -35,7 +35,7 @@ class PetHealthSectionBuilder {
 
     final currentRecurring = allEntries.where((e) {
       if (e.frequency == HealthFrequency.once) {
-        return e.nextDueDate.year < 9999;
+        return !e.isCompleted;
       }
       return true;
     }).toList();
@@ -67,9 +67,9 @@ class PetHealthSectionBuilder {
               e.name,
               e.type.label,
               e.frequency.label,
-              e.nextDueDate.year >= 9999
+              e.isCompleted || e.nextDueDate == null
                   ? l.pdfCompleted
-                  : dateFormat.format(e.nextDueDate),
+                  : dateFormat.format(e.nextDueDate!),
               e.dosage,
             ];
           }).toList(),
@@ -191,9 +191,15 @@ class PetHealthSectionBuilder {
               pw.SizedBox(width: 16),
               _miniDetail(
                   l.pdfDue,
-                  entry.nextDueDate.year >= 9999
+                  entry.isCompleted
                       ? l.pdfCompleted
-                      : dateFormat.format(entry.nextDueDate)),
+                      : entry.nextDueDate != null
+                          ? dateFormat.format(entry.nextDueDate!)
+                          : l.notSet),
+              if (entry.completedOn != null) ...[
+                pw.SizedBox(width: 16),
+                _miniDetail(l.completedOn, dateFormat.format(entry.completedOn!)),
+              ],
               if (entry.dosage.isNotEmpty) ...[
                 pw.SizedBox(width: 16),
                 _miniDetail(l.pdfDosage, entry.dosage),
@@ -226,17 +232,39 @@ class PetHealthSectionBuilder {
                           color: _brandPurple)),
                   pw.SizedBox(height: 3),
                   ...history.map((h) {
-                    final takenAt = h['taken_at'] as String? ?? '';
+                    final due = h['due_date'] as String?;
+                    final completed = h['completed_on'] as String?;
+                    final markedRaw = h['marked_at'] ?? h['changed_at'] ?? h['taken_at'];
+                    final markedBy = h['marked_by_name'] as String? ?? '';
+                    String fmt(String? raw) {
+                      if (raw == null || raw.isEmpty) return l.notSet;
+                      try {
+                        return dateFormat.format(DateTime.parse(
+                            raw.contains('T') ? raw : '${raw}T00:00:00'));
+                      } catch (_) {
+                        return raw;
+                      }
+                    }
+                    String markedFmt = l.notSet;
+                    if (markedRaw != null) {
+                      try {
+                        markedFmt = DateFormat.yMMMd().add_jm()
+                            .format(DateTime.parse(markedRaw.toString()));
+                      } catch (_) {
+                        markedFmt = markedRaw.toString();
+                      }
+                    }
+                    final line = l.eventHistoryLine(
+                      fmt(due),
+                      fmt(completed),
+                      markedFmt,
+                      markedBy.isNotEmpty ? markedBy : l.unknownUser,
+                    );
                     final notes = h['notes'] as String? ?? '';
-                    DateTime? dt;
-                    try {
-                      dt = DateTime.parse(takenAt);
-                    } catch (_) {}
                     return pw.Padding(
                       padding: const pw.EdgeInsets.only(bottom: 2),
                       child: pw.Text(
-                        '- ${dt != null ? dateFormat.format(dt) : takenAt}'
-                        '${notes.isNotEmpty ? ' - $notes' : ''}',
+                        '- $line${notes.isNotEmpty ? ' — $notes' : ''}',
                         style: const pw.TextStyle(
                             fontSize: 8, color: _textDark),
                       ),

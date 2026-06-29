@@ -55,7 +55,7 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(
-        find.text(DateFormat('dd/MM/yy').format(futureEntry.nextDueDate)),
+        find.text(DateFormat('dd/MM/yy').format(futureEntry.nextDueDate!)),
         findsOneWidget,
       );
       expect(find.textContaining('Due in'), findsNothing);
@@ -71,7 +71,7 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(
-        find.text(DateFormat('dd/MM/yy').format(tomorrowEntry.nextDueDate)),
+        find.text(DateFormat('dd/MM/yy').format(tomorrowEntry.nextDueDate!)),
         findsOneWidget,
       );
       expect(find.text('Due tomorrow'), findsNothing);

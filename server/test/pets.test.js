@@ -70,6 +70,63 @@ function createMockPool(queryHandler) {
       if (sql.includes('SELECT name FROM pets WHERE id = $1')) {
         return { rows: [{ name: 'Fluffy' }] };
       }
+      if (sql.includes('SELECT organization_id, user_id FROM pets')) {
+        return { rows: [{ organization_id: 'org-uuid-1', user_id: userId }] };
+      }
+      if (sql.includes('SELECT organization_id FROM pets')) {
+        return { rows: [{ organization_id: 'org-uuid-1' }] };
+      }
+      if (sql.includes('SELECT 1 FROM organization_users')) {
+        return { rows: [{ '?column?': 1 }] };
+      }
+      if (sql.includes('FROM family_events fe')) {
+        return { rows: [] };
+      }
+      if (sql.includes('INSERT INTO family_events')) {
+        return {
+          rows: [{
+            id: 'fe-1',
+            pet_id: petId,
+            organization_id: 'org-uuid-1',
+            user_id: userId,
+            from_date: '2023-01-01',
+            to_date: null,
+            notes: '',
+            event_type: 'placement',
+            assigned_to_user_id: null,
+            created_by: userId,
+          }],
+        };
+      }
+      if (sql.includes('UPDATE family_events')) {
+        return {
+          rows: [{
+            id: 'fe-1',
+            pet_id: petId,
+            organization_id: 'org-uuid-1',
+            from_date: '2023-01-01',
+            to_date: '2023-06-01',
+            notes: '',
+          }],
+        };
+      }
+      if (sql.includes('DELETE FROM family_events')) {
+        return { rows: [{ id: 'fe-1' }] };
+      }
+      if (sql.includes('INSERT INTO family_event_history')) {
+        return { rows: [] };
+      }
+      if (sql.includes('SELECT * FROM family_events WHERE id')) {
+        return {
+          rows: [{
+            id: 'fe-1',
+            pet_id: petId,
+            from_date: '2023-01-01',
+            to_date: null,
+            notes: '',
+          }],
+        };
+      }
       if (sql.includes('SELECT first_name, last_name, email FROM users')) {
         return { rows: [{ first_name: 'Test', last_name: 'User', email: 'test@example.com' }] };
       }
@@ -735,27 +792,30 @@ describe('Pets API', () => {
       expect(Array.isArray(res.body)).toBe(true);
     });
 
-    it('POST /:id/family-events returns 501 (not implemented)', async () => {
+    it('POST /:id/family-events creates an event when dates are provided', async () => {
       const res = await request(app)
         .post(`/api/pets/${petId}/family-events`)
         .set('Authorization', `Bearer ${token}`)
-        .send({ type: 'adoption', date: '2023-01-01' });
-      expect(res.statusCode).toBe(501);
+        .send({ from_date: '2023-01-01', notes: 'Foster' });
+      expect(res.statusCode).toBe(201);
+      expect(res.body).toHaveProperty('id');
     });
 
-    it('PUT /:id/family-events/:eventId returns 501 (not implemented)', async () => {
+    it('PUT /:id/family-events/:eventId updates an event', async () => {
       const res = await request(app)
-        .put(`/api/pets/${petId}/family-events/1`)
+        .put(`/api/pets/${petId}/family-events/fe-1`)
         .set('Authorization', `Bearer ${token}`)
-        .send({ type: 'birthday' });
-      expect(res.statusCode).toBe(501);
+        .send({ from_date: '2023-01-01', to_date: '2023-06-01' });
+      expect(res.statusCode).toBe(200);
+      expect(res.body).toHaveProperty('to_date');
     });
 
-    it('DELETE /:id/family-events/:eventId returns 501 (not implemented)', async () => {
+    it('DELETE /:id/family-events/:eventId deletes an event', async () => {
       const res = await request(app)
-        .delete(`/api/pets/${petId}/family-events/1`)
+        .delete(`/api/pets/${petId}/family-events/fe-1`)
         .set('Authorization', `Bearer ${token}`);
-      expect(res.statusCode).toBe(501);
+      expect(res.statusCode).toBe(200);
+      expect(res.body).toHaveProperty('deleted', true);
     });
 
     it('GET /:id/access returns access list for owner', async () => {
