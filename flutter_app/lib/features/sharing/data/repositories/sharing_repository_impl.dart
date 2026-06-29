@@ -1,4 +1,5 @@
 import '../../domain/entities/pet_access.dart';
+import '../../domain/entities/share_link.dart';
 import '../../domain/repositories/sharing_repository.dart';
 import '../datasources/sharing_remote_datasource.dart';
 
@@ -34,6 +35,22 @@ class SharingRepositoryImpl implements SharingRepository {
   @override
   Future<void> removeAccess(String petId, String userId, String token) {
     return _dataSource.removeAccess(petId, userId, token);
+  }
+
+  @override
+  Future<List<ShareLink>> getShareLinks(String petId, String token) async {
+    final rows = await _dataSource.getShareLinks(petId, token);
+    return rows.map(ShareLink.fromJson).toList();
+  }
+
+  @override
+  Future<void> deleteShareLink(String linkId, String token) {
+    return _dataSource.deleteShareLink(linkId, token);
+  }
+
+  @override
+  Future<void> stopFollowing(String petId, String token) {
+    return _dataSource.stopFollowing(petId, token);
   }
 
   @override

@@ -104,6 +104,53 @@ class SharingRemoteDataSource {
     }
   }
 
+  Future<List<Map<String, dynamic>>> getShareLinks(String petId, String token) async {
+    final response = await _client.get(
+      Uri.parse('$baseUrl/api/pets/$petId/share-links'),
+      headers: {
+        'Authorization': 'Bearer $token',
+      },
+    );
+    if (response.statusCode == 403) {
+      return [];
+    }
+    if (response.statusCode >= 400) {
+      final data = json.decode(response.body);
+      throw Exception(data['error'] ?? 'Failed to get share links');
+    }
+    final decoded = json.decode(response.body);
+    if (decoded is List) {
+      return decoded.cast<Map<String, dynamic>>();
+    }
+    return [];
+  }
+
+  Future<void> deleteShareLink(String linkId, String token) async {
+    final response = await _client.delete(
+      Uri.parse('$baseUrl/api/share/links/$linkId'),
+      headers: {
+        'Authorization': 'Bearer $token',
+      },
+    );
+    if (response.statusCode >= 400) {
+      final data = json.decode(response.body);
+      throw Exception(data['error'] ?? 'Failed to delete share link');
+    }
+  }
+
+  Future<void> stopFollowing(String petId, String token) async {
+    final response = await _client.delete(
+      Uri.parse('$baseUrl/api/pets/$petId/follow'),
+      headers: {
+        'Authorization': 'Bearer $token',
+      },
+    );
+    if (response.statusCode >= 400) {
+      final data = json.decode(response.body);
+      throw Exception(data['error'] ?? 'Failed to stop following');
+    }
+  }
+
   Future<List<Map<String, dynamic>>> getPendingShares(String token) async {
     final response = await _client.get(
       Uri.parse('$baseUrl/api/share/pending'),

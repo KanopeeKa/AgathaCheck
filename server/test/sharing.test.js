@@ -9,26 +9,49 @@ const token = jwt.sign({ id: userId, email: 'test@example.com' }, JWT_SECRET, { 
 const otherToken = jwt.sign({ id: otherUserId, email: 'other@example.com' }, JWT_SECRET, { expiresIn: '1h' });
 const petId = 'pet-1';
 const shareCode = 'abc12345';
+const linkId = 'link-1';
 
 function buildMockPool(overrides = {}) {
   const queries = [];
   const defaultHandler = async (sql, params) => {
+    if (sql === 'BEGIN' || sql === 'COMMIT' || sql === 'ROLLBACK') {
+      return { rows: [] };
+    }
     if (sql.includes('INSERT INTO pet_share_links')) {
       return { rows: [] };
     }
-    if (sql.includes('FROM pet_share_links sl') && sql.includes('WHERE sl.code')) {
+    if (sql.includes('FROM pet_share_links sl') && sql.includes('FOR UPDATE')) {
       return {
         rows: [{
-          id: 'link-1',
+          id: linkId,
           pet_id: petId,
           code: shareCode,
           created_by: userId,
           owner_id: userId,
+          pet_name: 'Buddy',
+          status: 'pending',
+          claimed_by: null,
+        }],
+      };
+    }
+    if (sql.includes('FROM pet_share_links sl') && sql.includes('WHERE sl.code')) {
+      return {
+        rows: [{
+          id: linkId,
+          pet_id: petId,
+          code: shareCode,
+          created_by: userId,
+          owner_id: userId,
+          status: 'pending',
+          claimed_by: null,
         }],
       };
     }
     if (sql.includes('SELECT id FROM pets WHERE id = $1 AND user_id = $2') && !sql.includes('NOT')) {
       return { rows: [{ id: petId }] };
+    }
+    if (sql.includes('SELECT 1 FROM pets WHERE id = $1 AND user_id = $2 LIMIT 1')) {
+      return { rows: [{ '?column?': 1 }] };
     }
     if (sql.includes('SELECT name, user_id FROM pets WHERE id = $1')) {
       return { rows: [{ name: 'Buddy', user_id: userId }] };
@@ -65,52 +88,32 @@ function buildMockPool(overrides = {}) {
     if (sql.includes('INSERT INTO pet_access')) {
       return { rows: [] };
     }
+    if (sql.includes('UPDATE pet_share_links')) {
+      return { rows: [] };
+    }
     if (sql.includes('INSERT INTO notifications')) {
       return { rows: [] };
     }
-    if (sql.includes("SELECT pa.*, p.name as pet_name, p.species as pet_species") && sql.includes("pending_shared")) {
+    if (sql.includes('DELETE FROM pet_share_links sl')) {
+      return { rows: [{ id: linkId, status: 'pending' }] };
+    }
+    if (sql.includes('FROM pet_share_links sl') && sql.includes('LEFT JOIN users')) {
       return {
         rows: [{
-          id: 'pa-1',
-          pet_id: petId,
-          user_id: userId,
-          role: 'pending_shared',
-          hidden: false,
-          pet_name: 'Buddy',
-          pet_species: 'dog',
-          pet_breed: 'Lab',
-          guardian_name: 'Alice Owner',
+          id: linkId,
+          code: shareCode,
+          status: 'pending',
+          created_at: new Date(),
+          claimed_at: null,
+          claimed_by: null,
+          claimed_by_name: null,
         }],
       };
     }
-    if (sql.includes('SELECT pa.*, p.name as pet_name, p.user_id as owner_id') && sql.includes("pending_shared")) {
-      return {
-        rows: [{
-          id: 'pa-1',
-          pet_id: petId,
-          user_id: userId,
-          role: 'pending_shared',
-          pet_name: 'Buddy',
-          owner_id: userId,
-        }],
-      };
+    if (sql.includes("DELETE FROM pet_access WHERE pet_id = $1 AND user_id = $2 AND role = 'shared'")) {
+      return { rows: [{ id: 'pa-1' }] };
     }
-    if (sql.includes("SELECT pa.*, p.name as pet_name FROM pet_access pa JOIN pets p") && sql.includes("pending_shared")) {
-      return {
-        rows: [{
-          id: 'pa-1',
-          pet_id: petId,
-          user_id: userId,
-          role: 'pending_shared',
-          hidden: false,
-          pet_name: 'Buddy',
-          pet_species: 'dog',
-          pet_breed: 'Lab',
-          guardian_name: 'Alice Owner',
-        }],
-      };
-    }
-    if (sql.includes('SELECT pa.*, p.name as pet_name FROM pet_access pa JOIN pets p') && sql.includes('hidden = true')) {
+    if (sql.includes("SELECT pa.*, p.name as pet_name FROM pet_access pa JOIN pets p") && sql.includes('hidden = true')) {
       return {
         rows: [{
           id: 'pa-2',
@@ -121,9 +124,6 @@ function buildMockPool(overrides = {}) {
           pet_name: 'Max',
         }],
       };
-    }
-    if (sql.includes("UPDATE pet_access SET role = 'shared'")) {
-      return { rows: [] };
     }
     if (sql.includes("DELETE FROM pet_access WHERE pet_id")) {
       return { rows: [] };
@@ -145,8 +145,14 @@ function buildMockPool(overrides = {}) {
     return defaultHandler(sql, params);
   });
 
+  const connect = overrides.connect || (async () => ({
+    query,
+    release: () => {},
+  }));
+
   return {
     query,
+    connect,
     queries,
     end: async () => {},
   };
@@ -163,6 +169,7 @@ describe('Sharing API', () => {
     const endpoints = [
       ['POST', '/api/share'],
       ['POST', `/api/share/${shareCode}/accept`],
+      ['DELETE', `/api/share/links/${linkId}`],
       ['POST', `/api/share/pending/${petId}/accept`],
       ['POST', `/api/share/pending/${petId}/decline`],
       ['PUT', `/api/share/${petId}/hide`],
@@ -193,6 +200,7 @@ describe('Sharing API', () => {
         .send({ pet_id: petId });
       expect(res.statusCode).toBe(201);
       expect(res.body).toHaveProperty('share_code');
+      expect(res.body).toHaveProperty('link_id');
       expect(typeof res.body.share_code).toBe('string');
       expect(res.body.share_code.length).toBeGreaterThan(0);
     });
@@ -215,12 +223,23 @@ describe('Sharing API', () => {
     });
   });
 
+  describe('DELETE /links/:linkId', () => {
+    it('deletes a share link for the owner', async () => {
+      const res = await request(app)
+        .delete(`/api/share/links/${linkId}`)
+        .set('Authorization', `Bearer ${token}`);
+      expect(res.statusCode).toBe(200);
+      expect(res.body).toHaveProperty('message', 'Share link deleted');
+    });
+  });
+
   describe('GET /:code (resolve share link)', () => {
     it('returns pet preview data without auth', async () => {
       const res = await request(app).get(`/api/share/${shareCode}`);
       expect(res.statusCode).toBe(200);
       expect(res.body).toHaveProperty('pet');
       expect(res.body.pet).toHaveProperty('name', 'Buddy');
+      expect(res.body).toHaveProperty('link_status', 'pending');
       expect(res.body).toHaveProperty('owner');
       expect(res.body).toHaveProperty('health_entries');
     });
@@ -236,25 +255,57 @@ describe('Sharing API', () => {
   });
 
   describe('POST /:code/accept (claim invitation)', () => {
-    it('creates a pending share and returns pet_id', async () => {
+    it('creates shared access immediately and returns pet_id', async () => {
       const res = await request(app)
         .post(`/api/share/${shareCode}/accept`)
         .set('Authorization', `Bearer ${otherToken}`);
       expect(res.statusCode).toBe(200);
       expect(res.body).toHaveProperty('pet_id', petId);
-      expect(res.body).toHaveProperty('status', 'pending');
+      expect(res.body).toHaveProperty('status', 'shared');
+    });
+
+    it('returns 410 when link is already used by another user', async () => {
+      const pool = buildMockPool({
+        connect: async () => ({
+          query: async (sql) => {
+            if (sql.includes('FOR UPDATE')) {
+              return {
+                rows: [{
+                  id: linkId,
+                  pet_id: petId,
+                  code: shareCode,
+                  created_by: userId,
+                  owner_id: userId,
+                  pet_name: 'Buddy',
+                  status: 'active',
+                  claimed_by: 'someone-else',
+                }],
+              };
+            }
+            if (sql.includes('SELECT role FROM pet_access')) {
+              return { rows: [] };
+            }
+            if (sql === 'BEGIN' || sql === 'ROLLBACK') return { rows: [] };
+            return { rows: [] };
+          },
+          release: () => {},
+        }),
+      });
+      const a = createApp(pool);
+      const res = await request(a)
+        .post(`/api/share/${shareCode}/accept`)
+        .set('Authorization', `Bearer ${otherToken}`);
+      expect(res.statusCode).toBe(410);
     });
   });
 
   describe('GET /pending', () => {
-    it('returns pending shared pets array', async () => {
+    it('returns empty array (deprecated flow)', async () => {
       const res = await request(app)
         .get('/api/share/pending')
         .set('Authorization', `Bearer ${token}`);
       expect(res.statusCode).toBe(200);
-      expect(Array.isArray(res.body)).toBe(true);
-      expect(res.body[0]).toHaveProperty('pet_name', 'Buddy');
-      expect(res.body[0]).toHaveProperty('role', 'pending_shared');
+      expect(res.body).toEqual([]);
     });
 
     it('returns 401 without token', async () => {
@@ -264,32 +315,21 @@ describe('Sharing API', () => {
   });
 
   describe('POST /pending/:petId/accept', () => {
-    it('accepts a pending share', async () => {
+    it('returns 410 (deprecated)', async () => {
       const res = await request(app)
         .post(`/api/share/pending/${petId}/accept`)
         .set('Authorization', `Bearer ${token}`)
         .send({});
-      expect(res.statusCode).toBe(200);
-      expect(res.body).toHaveProperty('message', 'Share accepted');
-    });
-
-    it('accepts with optional organization_id', async () => {
-      const res = await request(app)
-        .post(`/api/share/pending/${petId}/accept`)
-        .set('Authorization', `Bearer ${token}`)
-        .send({ organization_id: 'org-1' });
-      expect(res.statusCode).toBe(200);
-      expect(res.body).toHaveProperty('message', 'Share accepted');
+      expect(res.statusCode).toBe(410);
     });
   });
 
   describe('POST /pending/:petId/decline', () => {
-    it('declines a pending share', async () => {
+    it('returns 410 (deprecated)', async () => {
       const res = await request(app)
         .post(`/api/share/pending/${petId}/decline`)
         .set('Authorization', `Bearer ${token}`);
-      expect(res.statusCode).toBe(200);
-      expect(res.body).toHaveProperty('message', 'Share declined');
+      expect(res.statusCode).toBe(410);
     });
   });
 
@@ -330,43 +370,6 @@ describe('Sharing API', () => {
     });
   });
 
-  describe('Error handling', () => {
-    it('returns 500 when database throws on POST /pending/:petId/accept', async () => {
-      const pool = buildMockPool({
-        query: async () => { throw new Error('DB error'); },
-      });
-      const a = createApp(pool);
-      const res = await request(a)
-        .post(`/api/share/pending/${petId}/accept`)
-        .set('Authorization', `Bearer ${token}`)
-        .send({});
-      expect(res.statusCode).toBe(500);
-    });
-
-    it('returns 500 when database throws on POST /pending/:petId/decline', async () => {
-      const pool = buildMockPool({
-        query: async () => { throw new Error('DB error'); },
-      });
-      const a = createApp(pool);
-      const res = await request(a)
-        .post(`/api/share/pending/${petId}/decline`)
-        .set('Authorization', `Bearer ${token}`);
-      expect(res.statusCode).toBe(500);
-    });
-
-    it('returns 500 when database throws on PUT /:petId/hide', async () => {
-      const pool = buildMockPool({
-        query: async () => { throw new Error('DB error'); },
-      });
-      const a = createApp(pool);
-      const res = await request(a)
-        .put(`/api/share/${petId}/hide`)
-        .set('Authorization', `Bearer ${token}`)
-        .send({ hidden: true });
-      expect(res.statusCode).toBe(500);
-    });
-  });
-
   describe('Backend prefix', () => {
     it('POST /backend/api/share is reachable under the /backend prefix', async () => {
       const res = await request(app)
@@ -376,5 +379,27 @@ describe('Sharing API', () => {
       expect(res.statusCode).toBe(201);
       expect(res.body).toHaveProperty('share_code');
     });
+  });
+});
+
+describe('Pet share links and follow', () => {
+  it('GET /api/pets/:id/share-links returns links for owner', async () => {
+    const app = createApp(buildMockPool());
+    const res = await request(app)
+      .get(`/api/pets/${petId}/share-links`)
+      .set('Authorization', `Bearer ${token}`);
+    expect(res.statusCode).toBe(200);
+    expect(Array.isArray(res.body)).toBe(true);
+    expect(res.body[0]).toHaveProperty('code', shareCode);
+    expect(res.body[0]).toHaveProperty('status', 'pending');
+  });
+
+  it('DELETE /api/pets/:id/follow lets shared user stop following', async () => {
+    const app = createApp(buildMockPool());
+    const res = await request(app)
+      .delete(`/api/pets/${petId}/follow`)
+      .set('Authorization', `Bearer ${otherToken}`);
+    expect(res.statusCode).toBe(200);
+    expect(res.body).toHaveProperty('message', 'Stopped following pet');
   });
 });

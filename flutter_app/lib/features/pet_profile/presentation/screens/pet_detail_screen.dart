@@ -215,10 +215,9 @@ class _PetDetailScreenState extends ConsumerState<PetDetailScreen> {
                 SliverToBoxAdapter(
                   child: FamilyEventsSection(petId: widget.petId, pet: pet),
                 ),
-              if (!pet.isShared)
-                SliverToBoxAdapter(
-                  child: SharingSection(petId: widget.petId, pet: pet),
-                ),
+              SliverToBoxAdapter(
+                child: SharingSection(petId: widget.petId, pet: pet),
+              ),
               SliverToBoxAdapter(
                 child: DownloadReportSection(pet: pet),
               ),

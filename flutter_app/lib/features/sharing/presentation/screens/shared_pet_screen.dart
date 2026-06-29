@@ -10,6 +10,7 @@ import '../../../../core/widgets/app_logo_title.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../auth/presentation/providers/auth_providers.dart';
 import '../providers/sharing_providers.dart';
+import '../../../pet_profile/presentation/providers/pet_providers.dart';
 import '../widgets/shared_pet_profile_card.dart';
 import '../widgets/shared_pet_accept_section.dart';
 import '../widgets/shared_pet_owner_card.dart';
@@ -185,10 +186,11 @@ class _SharedPetScreenState extends ConsumerState<SharedPetScreen> {
                 final token = await ref.read(authProvider.notifier).getValidAccessToken();
                 if (token == null) return;
                 await repo.acceptShare(widget.shareCode, token);
-                ref.invalidate(pendingSharesProvider);
+                ref.invalidate(allPetsIncludingOrgProvider);
+                await ref.read(allPetsIncludingOrgProvider.future);
                 if (!mounted) return;
                 ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text(l.pendingShares)),
+                  SnackBar(content: Text(l.shareAccepted)),
                 );
                 context.go('/');
               } catch (e) {

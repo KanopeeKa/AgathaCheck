@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+
 import '../../../domain/entities/pet.dart';
 import '../../../../sharing/domain/entities/pet_access.dart';
+import '../../../../sharing/domain/entities/share_link.dart';
 import '../../../../sharing/presentation/providers/sharing_providers.dart';
-import '../../../../auth/presentation/providers/auth_providers.dart';
 import '../../../../../l10n/app_localizations.dart';
 
 class SharingSection extends ConsumerWidget {
@@ -17,7 +19,29 @@ class SharingSection extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
+
+    if (pet.isShared) {
+      return Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        child: Card(
+          clipBehavior: Clip.antiAlias,
+          child: ExpansionTile(
+            leading: Icon(Icons.people, color: theme.colorScheme.primary),
+            title: Text(l.sharingSection,
+                style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600)),
+            children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                child: _FollowerSharingContent(petId: petId, pet: pet),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
     final accessAsync = ref.watch(petAccessNotifierProvider(petId));
+    final linksAsync = ref.watch(petShareLinksNotifierProvider(petId));
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -40,10 +64,22 @@ class SharingSection extends ConsumerWidget {
                   child: Text(l.couldNotLoadSharingInfo,
                       style: TextStyle(color: theme.colorScheme.error)),
                 ),
-                data: (accessList) => _SharingContent(
-                  petId: petId,
-                  pet: pet,
-                  accessList: accessList,
+                data: (accessList) => linksAsync.when(
+                  loading: () => const Padding(
+                    padding: EdgeInsets.all(16),
+                    child: Center(child: CircularProgressIndicator()),
+                  ),
+                  error: (e, _) => Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Text(l.couldNotLoadSharingInfo,
+                        style: TextStyle(color: theme.colorScheme.error)),
+                  ),
+                  data: (links) => _OwnerSharingContent(
+                    petId: petId,
+                    pet: pet,
+                    accessList: accessList,
+                    shareLinks: links,
+                  ),
                 ),
               ),
             ),
@@ -54,16 +90,11 @@ class SharingSection extends ConsumerWidget {
   }
 }
 
-class _SharingContent extends ConsumerWidget {
-  const _SharingContent({
-    required this.petId,
-    required this.pet,
-    required this.accessList,
-  });
+class _FollowerSharingContent extends ConsumerWidget {
+  const _FollowerSharingContent({required this.petId, required this.pet});
 
   final String petId;
   final Pet pet;
-  final List<PetAccess> accessList;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -73,7 +104,82 @@ class _SharingContent extends ConsumerWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        if (accessList.isEmpty)
+        Text(
+          l.sharedPetFollowerDescription(pet.name),
+          style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+        ),
+        const SizedBox(height: 12),
+        SizedBox(
+          width: double.infinity,
+          child: OutlinedButton.icon(
+            onPressed: () => _confirmStopFollowing(context, ref, l),
+            icon: const Icon(Icons.person_remove),
+            label: Text(l.stopFollowing),
+          ),
+        ),
+        const SizedBox(height: 8),
+      ],
+    );
+  }
+
+  void _confirmStopFollowing(BuildContext context, WidgetRef ref, AppLocalizations l) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(l.stopFollowing),
+        content: Text(l.stopFollowingConfirm(pet.name)),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: Text(MaterialLocalizations.of(ctx).cancelButtonLabel),
+          ),
+          FilledButton(
+            style: FilledButton.styleFrom(
+              backgroundColor: Theme.of(ctx).colorScheme.error,
+            ),
+            onPressed: () async {
+              Navigator.pop(ctx);
+              try {
+                await stopFollowingPet(ref, petId);
+                if (context.mounted) context.go('/');
+              } catch (e) {
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Error: $e')),
+                  );
+                }
+              }
+            },
+            child: Text(l.stopFollowing),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _OwnerSharingContent extends ConsumerWidget {
+  const _OwnerSharingContent({
+    required this.petId,
+    required this.pet,
+    required this.accessList,
+    required this.shareLinks,
+  });
+
+  final String petId;
+  final Pet pet;
+  final List<PetAccess> accessList;
+  final List<ShareLink> shareLinks;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l = AppLocalizations.of(context)!;
+    final theme = Theme.of(context);
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        if (shareLinks.isEmpty && accessList.isEmpty)
           Padding(
             padding: const EdgeInsets.only(bottom: 12),
             child: Text(
@@ -81,13 +187,15 @@ class _SharingContent extends ConsumerWidget {
               style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.onSurfaceVariant),
             ),
           ),
-        if (accessList.isNotEmpty) ...[
-          ...accessList.map((access) => _AccessTile(
-                petId: petId,
-                access: access,
-              )),
+        if (shareLinks.isNotEmpty) ...[
+          ...shareLinks.map((link) => _ShareLinkTile(petId: petId, pet: pet, link: link)),
           const SizedBox(height: 8),
         ],
+        ...accessList
+            .where((access) => !shareLinks.any((link) =>
+                link.isActive && link.claimedBy == access.userId))
+            .map((access) => _AccessTile(petId: petId, access: access)),
+        if (accessList.isNotEmpty) const SizedBox(height: 8),
         SizedBox(
           width: double.infinity,
           child: OutlinedButton.icon(
@@ -103,52 +211,10 @@ class _SharingContent extends ConsumerWidget {
 
   Future<void> _generateShareLink(BuildContext context, WidgetRef ref) async {
     final l = AppLocalizations.of(context)!;
-    final token = await ref.read(authProvider.notifier).getValidAccessToken();
-    if (token == null) return;
     try {
-      final repo = ref.read(sharingRepositoryProvider);
-      final code = await repo.createShare(petId, {}, token);
-      final baseUrl = Uri.base.origin;
-      final link = '$baseUrl/#/shared/$code';
+      final code = await ref.read(petShareLinksNotifierProvider(petId).notifier).createLink();
       if (context.mounted) {
-        showDialog(
-          context: context,
-          builder: (ctx) => AlertDialog(
-            title: Text(l.shareLinkTitle),
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(l.shareLinkDescription(pet.name)),
-                const SizedBox(height: 12),
-                Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: Theme.of(ctx).colorScheme.surfaceContainerHighest,
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: SelectableText(link, style: const TextStyle(fontSize: 13)),
-                ),
-              ],
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(ctx),
-                child: Text(MaterialLocalizations.of(ctx).closeButtonLabel),
-              ),
-              FilledButton.icon(
-                onPressed: () {
-                  Clipboard.setData(ClipboardData(text: link));
-                  ScaffoldMessenger.of(ctx).showSnackBar(
-                    SnackBar(content: Text(l.linkCopied)),
-                  );
-                  Navigator.pop(ctx);
-                },
-                icon: const Icon(Icons.copy, size: 18),
-                label: const Text('Copy'),
-              ),
-            ],
-          ),
-        );
+        _showLinkDialog(context, l, code);
       }
     } catch (e) {
       if (context.mounted) {
@@ -157,6 +223,150 @@ class _SharingContent extends ConsumerWidget {
         );
       }
     }
+  }
+
+  void _showLinkDialog(BuildContext context, AppLocalizations l, String code) {
+    final baseUrl = Uri.base.origin;
+    final link = '$baseUrl/#/shared/$code';
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(l.shareLinkTitle),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(l.shareLinkDescription(pet.name)),
+            const SizedBox(height: 12),
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Theme.of(ctx).colorScheme.surfaceContainerHighest,
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: SelectableText(link, style: const TextStyle(fontSize: 13)),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: Text(MaterialLocalizations.of(ctx).closeButtonLabel),
+          ),
+          FilledButton.icon(
+            onPressed: () {
+              Clipboard.setData(ClipboardData(text: link));
+              ScaffoldMessenger.of(ctx).showSnackBar(
+                SnackBar(content: Text(l.linkCopied)),
+              );
+              Navigator.pop(ctx);
+            },
+            icon: const Icon(Icons.copy, size: 18),
+            label: Text(l.copyLinkAgain),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _ShareLinkTile extends ConsumerWidget {
+  const _ShareLinkTile({
+    required this.petId,
+    required this.pet,
+    required this.link,
+  });
+
+  final String petId;
+  final Pet pet;
+  final ShareLink link;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l = AppLocalizations.of(context)!;
+    final theme = Theme.of(context);
+    final baseUrl = Uri.base.origin;
+    final url = '$baseUrl/#/shared/${link.code}';
+
+    final statusLabel = link.isActive && (link.claimedByName?.isNotEmpty ?? false)
+        ? l.sharingWithActive(link.claimedByName!)
+        : l.shareLinkPending;
+
+    return Card(
+      margin: const EdgeInsets.only(bottom: 8),
+      color: theme.colorScheme.surfaceContainerHighest.withAlpha(80),
+      child: Padding(
+        padding: const EdgeInsets.all(12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Icon(
+                  link.isActive ? Icons.check_circle_outline : Icons.schedule,
+                  size: 20,
+                  color: link.isActive
+                      ? theme.colorScheme.primary
+                      : theme.colorScheme.onSurfaceVariant,
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(statusLabel, style: theme.textTheme.titleSmall),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            Row(
+              children: [
+                Expanded(
+                  child: OutlinedButton.icon(
+                    onPressed: () {
+                      Clipboard.setData(ClipboardData(text: url));
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text(l.linkCopied)),
+                      );
+                    },
+                    icon: const Icon(Icons.copy, size: 18),
+                    label: Text(l.copyLinkAgain),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                IconButton(
+                  tooltip: l.deleteLink,
+                  onPressed: () => _confirmDelete(context, ref, l),
+                  icon: Icon(Icons.delete_outline, color: theme.colorScheme.error),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _confirmDelete(BuildContext context, WidgetRef ref, AppLocalizations l) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(l.deleteLink),
+        content: Text(l.deleteShareLinkConfirm),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: Text(MaterialLocalizations.of(ctx).cancelButtonLabel),
+          ),
+          FilledButton(
+            style: FilledButton.styleFrom(
+              backgroundColor: Theme.of(ctx).colorScheme.error,
+            ),
+            onPressed: () async {
+              Navigator.pop(ctx);
+              await ref.read(petShareLinksNotifierProvider(petId).notifier).deleteLink(link.id);
+            },
+            child: Text(l.deleteLink),
+          ),
+        ],
+      ),
+    );
   }
 }
 

@@ -1370,6 +1370,54 @@ abstract class AppLocalizations {
   /// **'Shared by'**
   String get sharedBy;
 
+  /// No description provided for @shareLinkPending.
+  ///
+  /// In en, this message translates to:
+  /// **'New link pending'**
+  String get shareLinkPending;
+
+  /// No description provided for @sharingWithActive.
+  ///
+  /// In en, this message translates to:
+  /// **'Sharing with {userName} active'**
+  String sharingWithActive(String userName);
+
+  /// No description provided for @copyLinkAgain.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy link'**
+  String get copyLinkAgain;
+
+  /// No description provided for @deleteLink.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete link'**
+  String get deleteLink;
+
+  /// No description provided for @deleteShareLinkConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete this share link? Anyone with the link will no longer be able to use it.'**
+  String get deleteShareLinkConfirm;
+
+  /// No description provided for @stopFollowing.
+  ///
+  /// In en, this message translates to:
+  /// **'Stop following'**
+  String get stopFollowing;
+
+  /// No description provided for @stopFollowingConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Stop following {petName}? The pet will be removed from your list.'**
+  String stopFollowingConfirm(String petName);
+
+  /// No description provided for @sharedPetFollowerDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'You are following {petName} via a share link. You can stop following at any time.'**
+  String sharedPetFollowerDescription(String petName);
+
   /// No description provided for @healthIssues.
   ///
   /// In en, this message translates to:
@@ -3683,7 +3731,7 @@ abstract class AppLocalizations {
   /// No description provided for @faqSharingA1.
   ///
   /// In en, this message translates to:
-  /// **'Open the pet\'s detail page and use the share option to generate a share link. Send this link to the person you want to share with. When they accept, they will see the pet in their list.'**
+  /// **'Open the pet\'s detail page, expand the Sharing section, and tap Share Link. Send the link to one person. Each link works for a single recipient — when they accept, the pet appears in their list immediately.'**
   String get faqSharingA1;
 
   /// No description provided for @faqSharingQ2.
@@ -3695,7 +3743,7 @@ abstract class AppLocalizations {
   /// No description provided for @faqSharingA2.
   ///
   /// In en, this message translates to:
-  /// **'The recipient receives a notification with the pending share. They can choose to place the shared pet into their personal list or into an organisation they belong to. The pet appears with a \"shared\" badge.'**
+  /// **'The pet is added to their list right away with a \"shared\" badge. The owner is notified and can see who is following in the Sharing section.'**
   String get faqSharingA2;
 
   /// No description provided for @faqSharingQ3.
