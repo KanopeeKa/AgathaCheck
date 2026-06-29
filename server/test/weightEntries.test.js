@@ -1,6 +1,7 @@
 import request from 'supertest';
 import jwt from 'jsonwebtoken';
 import { createApp } from '../bin/server.js';
+import { handlePetAccessQuery, handleManageEntryQuery } from './helpers/petAccessMocks.js';
 
 const JWT_SECRET = process.env.JWT_SECRET || process.env.SESSION_SECRET || 'default_secret';
 const userId = 'test-user-id';
@@ -29,14 +30,24 @@ describe('Weight Entries API', () => {
       query: async (sql, params) => {
         lastQuery = { sql, params };
 
+        const access = handlePetAccessQuery(sql, params, {
+          userId,
+          ownedPetIds: ['pet-1', 'pet-2', 'empty-pet'],
+          deniedPetIds: ['pet-notmine'],
+        });
+        if (access) return access;
+
+        const manageWeight = handleManageEntryQuery(sql, params, { tableName: 'weight_entries we' });
+        if (manageWeight) return manageWeight;
+
         // Pet ownership check (create). 'pet-notmine' => another user's pet.
-        if (sql.includes('SELECT 1 FROM pets WHERE id')) {
+        if (sql.includes('SELECT 1 FROM pets WHERE id') && !sql.includes('LIMIT 1')) {
           if (params && params[0] === 'pet-notmine') return { rows: [] };
           return { rows: [{ exists: 1 }] };
         }
 
         if (sql.includes('SELECT we.*') && sql.includes('LIMIT 1')) {
-          if (params && params[1] === 'empty-pet') return { rows: [] };
+          if (params && params[0] === 'empty-pet') return { rows: [] };
           return { rows: [makeWeightRow()] };
         }
 
@@ -279,12 +290,13 @@ describe('Weight Entries API', () => {
       expect(res.body).toHaveProperty('error', 'Not found');
     });
 
-    it('scopes update by user_id', async () => {
+    it('scopes update by entry id', async () => {
       await request(app)
         .put('/api/weight-entries/we-1')
         .set('Authorization', `Bearer ${token}`)
         .send({ weight: 5 });
-      expect(lastQuery.params).toContain(userId);
+      expect(lastQuery.sql).toContain('UPDATE weight_entries');
+      expect(lastQuery.params[4]).toBe('we-1');
     });
   });
 
@@ -297,11 +309,12 @@ describe('Weight Entries API', () => {
       expect(res.body).toHaveProperty('deleted', true);
     });
 
-    it('scopes delete by user_id', async () => {
+    it('scopes delete by entry id', async () => {
       await request(app)
         .delete('/api/weight-entries/we-1')
         .set('Authorization', `Bearer ${token}`);
-      expect(lastQuery.params).toContain(userId);
+      expect(lastQuery.sql).toContain('DELETE FROM weight_entries WHERE id = $1');
+      expect(lastQuery.params[0]).toBe('we-1');
     });
   });
 

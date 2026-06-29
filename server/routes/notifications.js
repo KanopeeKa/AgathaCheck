@@ -4,6 +4,7 @@ import jwt from 'jsonwebtoken';
 
 import { JWT_SECRET } from '../config/jwtSecret.js';
 import { publicError } from '../config/security.js';
+import { checkDueNotifications } from '../lib/checkDueNotifications.js';
 
 function extractUserId(req) {
   const auth = req.headers['authorization'] || req.headers['Authorization'];
@@ -156,7 +157,13 @@ export default function notificationsRoutes(pool) {
   router.post('/check-due', async (req, res) => {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
-    res.json({ checked: true });
+    try {
+      const petNames = req.body?.pet_names || req.body?.petNames || {};
+      const result = await checkDueNotifications(pool, userId, petNames);
+      res.json(result);
+    } catch (err) {
+      res.status(500).json({ error: publicError(err) });
+    }
   });
 
   return router;

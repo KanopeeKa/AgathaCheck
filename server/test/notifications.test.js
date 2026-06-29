@@ -322,6 +322,7 @@ describe('Notifications API', () => {
         .send({});
       expect(res.statusCode).toBe(200);
       expect(res.body).toHaveProperty('checked', true);
+      expect(res.body).toHaveProperty('created');
     });
   });
 

@@ -6,6 +6,12 @@ import { JWT_SECRET } from '../config/jwtSecret.js';
 import { publicError } from '../config/security.js';
 import { dateToIsoDate } from '../lib/calendarDate.js';
 import { createNotification, userDisplayName } from '../lib/notificationHelper.js';
+import {
+  userCanAccessPet,
+  userCanManagePet,
+  userOwnsPet,
+  COLLABORATOR_ROLES,
+} from '../lib/petAccess.js';
 
 function extractUserId(req) {
   const auth = req.headers['authorization'] || req.headers['Authorization'];
@@ -61,27 +67,6 @@ function petRowToMap(row) {
     created_at: row.created_at,
     updated_at: row.updated_at,
   };
-}
-
-async function userCanAccessPet(pool, petId, userId) {
-  const owned = await pool.query(
-    'SELECT 1 FROM pets WHERE id = $1 AND user_id = $2 LIMIT 1',
-    [petId, userId]
-  );
-  if (owned.rows.length > 0) return true;
-  const shared = await pool.query(
-    "SELECT 1 FROM pet_access WHERE pet_id = $1 AND user_id = $2 AND role = 'shared' AND COALESCE(hidden, false) = false LIMIT 1",
-    [petId, userId]
-  );
-  return shared.rows.length > 0;
-}
-
-async function userOwnsPet(pool, petId, userId) {
-  const result = await pool.query(
-    'SELECT 1 FROM pets WHERE id = $1 AND user_id = $2 LIMIT 1',
-    [petId, userId]
-  );
-  return result.rows.length > 0;
 }
 
 async function autoAssignColors(pool, pets) {
@@ -147,15 +132,7 @@ export default function petsRoutes(pool) {
   }
 
   async function userCanManagePetFamilyEvents(pool, petId, userId) {
-    if (!(await userCanAccessPet(pool, petId, userId))) return false;
-    const pet = await pool.query(
-      'SELECT organization_id, user_id FROM pets WHERE id = $1',
-      [petId]
-    );
-    if (pet.rows.length === 0) return false;
-    const orgId = pet.rows[0].organization_id;
-    if (!orgId) return pet.rows[0].user_id === userId;
-    return userInOrg(orgId, userId);
+    return userCanManagePet(pool, petId, userId);
   }
 
   router.get('/:id/family-events', async (req, res) => {
@@ -580,9 +557,9 @@ export default function petsRoutes(pool) {
          SELECT p.*, true AS is_shared
          FROM pets p
          JOIN pet_access pa ON pa.pet_id = p.id
-         WHERE pa.user_id = $1 AND pa.role = 'shared' AND COALESCE(pa.hidden, false) = false
+         WHERE pa.user_id = $1 AND pa.role = ANY($2::text[]) AND COALESCE(pa.hidden, false) = false
          ORDER BY created_at`,
-        [userId]
+        [userId, COLLABORATOR_ROLES]
       );
       const pets = result.rows.map(petRowToMap);
       await autoAssignColors(pool, pets);
@@ -681,6 +658,9 @@ export default function petsRoutes(pool) {
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     try {
       const { id } = req.params;
+      if (!(await userCanManagePet(pool, id, userId))) {
+        return res.status(404).json({ error: 'Pet not found' });
+      }
       const {
         name, species, breed = '', age, weight, gender,
         bio = '', insurance = '',
@@ -690,7 +670,14 @@ export default function petsRoutes(pool) {
       } = req.body;
       const dateOfBirth = req.body.dateOfBirth || req.body.date_of_birth || null;
       const neuteredDate = req.body.neuteredDate || null;
-      if (organization_id && !(await userInOrg(organization_id, userId))) {
+      const existingPet = await pool.query(
+        'SELECT organization_id FROM pets WHERE id = $1',
+        [id]
+      );
+      const previousOrgId = existingPet.rows[0]?.organization_id || null;
+      const nextOrgId = organization_id || null;
+      if (nextOrgId && String(nextOrgId) !== String(previousOrgId || '')
+          && !(await userInOrg(nextOrgId, userId))) {
         return res.status(403).json({ error: 'Not a member of this organization' });
       }
       const result = await pool.query(
@@ -698,11 +685,11 @@ export default function petsRoutes(pool) {
           bio=$8, insurance=$9, neutered_date=$10, neuter_dismissed=$11, chip_id=$12, chip_dismissed=$13,
           photo_path=$14, vet_id=$15, color_index=$16, passed_away=$17, organization_id=$18,
           updated_at=NOW()
-         WHERE id=$19 AND user_id=$20 RETURNING *`,
+         WHERE id=$19 RETURNING *`,
         [name, species, breed, age, dateOfBirth, weight, gender,
          bio, insurance, neuteredDate, neuterDismissed, chipId, chipDismissed,
          photoPath || null, vetId || null, colorValue != null ? colorValue : null,
-         passedAway, organization_id || null, id, userId]
+         passedAway, organization_id || null, id]
       );
       if (result.rows.length === 0) {
         return res.status(404).json({ error: 'Pet not found' });
@@ -718,6 +705,9 @@ export default function petsRoutes(pool) {
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     try {
       const { id } = req.params;
+      if (!(await userOwnsPet(pool, id, userId))) {
+        return res.status(404).json({ error: 'Pet not found' });
+      }
       await pool.query('DELETE FROM pets WHERE id = $1 AND user_id = $2', [id, userId]);
       res.json({ deleted: true });
     } catch (err) {

@@ -5,6 +5,11 @@ import jwt from 'jsonwebtoken';
 import { JWT_SECRET } from '../config/jwtSecret.js';
 import { publicError } from '../config/security.js';
 import { dateToIsoDate } from '../lib/calendarDate.js';
+import {
+  accessiblePetSql,
+  userCanManagePet,
+  userCanManageHealthIssue,
+} from '../lib/petAccess.js';
 
 function extractUserId(req) {
   const auth = req.headers['authorization'] || req.headers['Authorization'];
@@ -14,21 +19,6 @@ function extractUserId(req) {
   } catch (_) {
     return null;
   }
-}
-
-// True when `petId` exists and belongs to `userId` (stops attaching issues to
-// another user's pet).
-async function userOwnsPet(pool, petId, userId) {
-  if (!petId) return false;
-  const r = await pool.query('SELECT 1 FROM pets WHERE id = $1 AND user_id = $2', [petId, userId]);
-  return r.rows.length > 0;
-}
-
-// True when the issue exists and belongs to `userId`. Used to scope the nested
-// events routes, which otherwise key only on health_issue_id (IDOR).
-async function userOwnsIssue(pool, issueId, userId) {
-  const r = await pool.query('SELECT 1 FROM health_issues WHERE id = $1 AND user_id = $2', [issueId, userId]);
-  return r.rows.length > 0;
 }
 
 function issueRowToMap(row) {
@@ -60,13 +50,22 @@ export default function healthIssuesRoutes(pool) {
       const petId = req.query.pet_id || req.query.petId;
       let result;
       if (petId) {
+        if (!(await userCanManagePet(pool, petId, userId))) {
+          return res.status(403).json({ error: 'Forbidden' });
+        }
         result = await pool.query(
-          'SELECT hi.*, p.name as pet_name FROM health_issues hi JOIN pets p ON hi.pet_id = p.id WHERE hi.user_id = $1 AND hi.pet_id = $2 ORDER BY hi.created_at DESC',
-          [userId, petId]
+          `SELECT hi.*, p.name as pet_name FROM health_issues hi
+           JOIN pets p ON hi.pet_id = p.id
+           WHERE hi.pet_id = $1 AND ${accessiblePetSql('p', '$2')}
+           ORDER BY hi.created_at DESC`,
+          [petId, userId]
         );
       } else {
         result = await pool.query(
-          'SELECT hi.*, p.name as pet_name FROM health_issues hi JOIN pets p ON hi.pet_id = p.id WHERE hi.user_id = $1 ORDER BY hi.created_at DESC',
+          `SELECT hi.*, p.name as pet_name FROM health_issues hi
+           JOIN pets p ON hi.pet_id = p.id
+           WHERE ${accessiblePetSql('p', '$1')}
+           ORDER BY hi.created_at DESC`,
           [userId]
         );
       }
@@ -81,7 +80,9 @@ export default function healthIssuesRoutes(pool) {
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     try {
       const result = await pool.query(
-        'SELECT * FROM health_issues WHERE id = $1 AND user_id = $2',
+        `SELECT hi.*, p.name as pet_name FROM health_issues hi
+         JOIN pets p ON hi.pet_id = p.id
+         WHERE hi.id = $1 AND ${accessiblePetSql('p', '$2')}`,
         [req.params.id, userId]
       );
       if (result.rows.length === 0) return res.status(404).json({ error: 'Not found' });
@@ -98,7 +99,7 @@ export default function healthIssuesRoutes(pool) {
       const data = req.body;
       const id = data.id || uuidv4();
       const petId = data.pet_id || data.petId;
-      if (!(await userOwnsPet(pool, petId, userId))) {
+      if (!(await userCanManagePet(pool, petId, userId))) {
         return res.status(403).json({ error: 'Forbidden' });
       }
       const startDate = data.start_date || data.startDate || null;
@@ -124,19 +125,22 @@ export default function healthIssuesRoutes(pool) {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     try {
+      if (!(await userCanManageHealthIssue(pool, req.params.id, userId))) {
+        return res.status(404).json({ error: 'Not found' });
+      }
       const data = req.body;
       const startDate = data.start_date || data.startDate || null;
       const endDate = data.end_date || data.endDate || null;
       const nameVal = data.title || data.name || '';
       const notesVal = data.description || data.notes || '';
       const result = await pool.query(
-        'UPDATE health_issues SET name = $1, issue_type = $2, notes = $3, start_date = $4, end_date = $5, status = $6, updated_at = NOW() WHERE id = $7 AND user_id = $8 RETURNING *',
+        'UPDATE health_issues SET name = $1, issue_type = $2, notes = $3, start_date = $4, end_date = $5, status = $6, updated_at = NOW() WHERE id = $7 RETURNING *',
         [
           nameVal,
           data.issue_type || data.issueType || 'other',
           notesVal, startDate, endDate,
           data.status || 'active',
-          req.params.id, userId,
+          req.params.id,
         ]
       );
       if (result.rows.length === 0) return res.status(404).json({ error: 'Not found' });
@@ -150,7 +154,10 @@ export default function healthIssuesRoutes(pool) {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     try {
-      await pool.query('DELETE FROM health_issues WHERE id = $1 AND user_id = $2', [req.params.id, userId]);
+      if (!(await userCanManageHealthIssue(pool, req.params.id, userId))) {
+        return res.status(404).json({ error: 'Not found' });
+      }
+      await pool.query('DELETE FROM health_issues WHERE id = $1', [req.params.id]);
       res.json({ deleted: true });
     } catch (err) {
       res.status(500).json({ error: publicError(err) });
@@ -161,7 +168,7 @@ export default function healthIssuesRoutes(pool) {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     try {
-      if (!(await userOwnsIssue(pool, req.params.issueId, userId))) {
+      if (!(await userCanManageHealthIssue(pool, req.params.issueId, userId))) {
         return res.status(404).json({ error: 'Not found' });
       }
       const result = await pool.query(
@@ -178,7 +185,7 @@ export default function healthIssuesRoutes(pool) {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     try {
-      if (!(await userOwnsIssue(pool, req.params.issueId, userId))) {
+      if (!(await userCanManageHealthIssue(pool, req.params.issueId, userId))) {
         return res.status(404).json({ error: 'Not found' });
       }
       await pool.query(

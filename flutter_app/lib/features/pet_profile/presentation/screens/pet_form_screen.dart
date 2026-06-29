@@ -53,6 +53,7 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
   bool _neuterDismissed = false;
   bool _chipDismissed = false;
   bool _passedAway = false;
+  bool _isShared = false;
   bool _isLoading = false;
   bool _isInitialized = false;
   bool _showWeightInput = false;
@@ -95,6 +96,7 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
     _neuterDismissed = pet.neuterDismissed;
     _chipDismissed = pet.chipDismissed;
     _passedAway = pet.passedAway;
+    _isShared = pet.isShared;
     _selectedOrgId = pet.organizationId;
 
     _controller.populateForm(pet);
@@ -565,7 +567,7 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
                     : const Icon(Icons.save),
                 label: Text(_isEditing ? 'Update Pet' : l.savePet),
               ),
-              if (_isEditing) ...[
+              if (_isEditing && !_isShared) ...[
                 const SizedBox(height: 32),
                 const Divider(),
                 const SizedBox(height: 16),

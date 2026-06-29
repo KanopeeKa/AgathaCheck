@@ -4,6 +4,7 @@ import fs from 'fs';
 import os from 'os';
 import path from 'path';
 import { createApp } from '../bin/server.js';
+import { handlePetAccessQuery, handleManageEntryQuery } from './helpers/petAccessMocks.js';
 
 const JWT_SECRET = process.env.JWT_SECRET || process.env.SESSION_SECRET || 'default_secret';
 const userId = 'test-user-id';
@@ -56,16 +57,15 @@ describe('Health Entries API', () => {
         lastQuery = { sql, params };
         if (queryLog) queryLog.push({ sql, params });
 
-        // Pet ownership check used by create. 'pet-notmine' simulates a pet
-        // owned by another user.
-        if (sql.includes('SELECT 1 FROM pets WHERE id')) {
+        const access = handlePetAccessQuery(sql, params, { userId, ownedPetIds: ['pet-1', 'pet-2'] });
+        if (access) return access;
+
+        const manageEntry = handleManageEntryQuery(sql, params, { tableName: 'health_entries he' });
+        if (manageEntry) return manageEntry;
+
+        // Pet ownership check used by create (non-LIMIT legacy pattern).
+        if (sql.includes('SELECT 1 FROM pets WHERE id') && !sql.includes('LIMIT 1')) {
           if (params && params[0] === 'pet-notmine') return { rows: [] };
-          return { rows: [{ exists: 1 }] };
-        }
-        // Health-entry ownership check used by the nested history/photos routes.
-        // 'he-notmine' simulates an entry owned by another user.
-        if (sql.includes('SELECT 1 FROM health_entries WHERE id')) {
-          if (params && params[0] === 'he-notmine') return { rows: [] };
           return { rows: [{ exists: 1 }] };
         }
 
@@ -116,8 +116,8 @@ describe('Health Entries API', () => {
         }
 
         if (sql.includes("UPDATE health_entries SET status = 'completed', completed_on")) {
-          if (params && params[3] === 'nonexistent') return { rows: [] };
-          return { rows: [makeHealthRow({ id: params[3], status: 'completed', completed_at: params[1], completed_on: params[0], next_due_date: null })] };
+          if (params && params[2] === 'nonexistent') return { rows: [] };
+          return { rows: [makeHealthRow({ id: params[2], status: 'completed', completed_at: params[1], completed_on: params[0], next_due_date: null })] };
         }
 
         if (sql.includes("UPDATE health_entries SET status = 'active', completed_on = NULL, completed_at = $1")) {
@@ -137,7 +137,7 @@ describe('Health Entries API', () => {
         }
 
         if (sql.includes('UPDATE health_entries SET name')) {
-          if (params && (params[15] === 'nonexistent' || params[16] === 'nonexistent')) return { rows: [] };
+          if (params && params[15] === 'nonexistent') return { rows: [] };
           return {
             rows: [makeHealthRow({
               id: params[15],
@@ -464,13 +464,15 @@ describe('Health Entries API', () => {
       expect(res.body).toHaveProperty('error', 'Entry not found');
     });
 
-    it('scopes update by user_id', async () => {
+    it('checks pet access before update', async () => {
       await request(app)
         .put('/api/health-entries/he-1')
         .set('Authorization', `Bearer ${token}`)
         .send({ name: 'Test', next_due_date: '2026-01-01' });
+      const accessQuery = queryLog.find(q => q.sql.includes('SELECT 1 FROM health_entries he') && q.sql.includes('JOIN pets p'));
       const updateQuery = queryLog.find(q => q.sql.includes('UPDATE health_entries SET name'));
-      expect(updateQuery.params[16]).toBe(userId);
+      expect(accessQuery).toBeDefined();
+      expect(updateQuery.params[15]).toBe('he-1');
     });
   });
 
@@ -483,11 +485,12 @@ describe('Health Entries API', () => {
       expect(res.body).toHaveProperty('deleted', true);
     });
 
-    it('scopes delete by user_id', async () => {
+    it('scopes delete by entry id', async () => {
       await request(app)
         .delete('/api/health-entries/he-1')
         .set('Authorization', `Bearer ${token}`);
-      expect(lastQuery.params).toContain(userId);
+      expect(lastQuery.sql).toContain('DELETE FROM health_entries WHERE id = $1');
+      expect(lastQuery.params[0]).toBe('he-1');
     });
   });
 
