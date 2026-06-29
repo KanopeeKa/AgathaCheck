@@ -107,8 +107,8 @@ function healthEntryToMap(row) {
     frequency: row.frequency || 'once',
     frequency_days: row.frequency_days || null,
     frequency_interval: row.frequency_interval ?? 1,
-    start_date: row.start_date ? row.start_date.toISOString?.() || String(row.start_date) : null,
-    next_due_date: row.next_due_date ? row.next_due_date.toISOString?.() || String(row.next_due_date) : null,
+    start_date: row.start_date ? dateToIsoDate(row.start_date) : null,
+    next_due_date: row.next_due_date ? dateToIsoDate(row.next_due_date) : null,
     completed_on: row.completed_on
       ? dateToIsoDate(row.completed_on)
       : null,

@@ -16,7 +16,17 @@ class HealthHistoryModel extends HealthHistoryEntry {
   factory HealthHistoryModel.fromJson(Map<String, dynamic> json) {
     DateTime? parseDate(String? raw) {
       if (raw == null || raw.isEmpty) return null;
-      return DateTime.tryParse(raw.contains('T') ? raw : '${raw}T00:00:00');
+      final datePart = raw.split('T').first;
+      final parts = datePart.split('-');
+      if (parts.length == 3) {
+        final y = int.tryParse(parts[0]);
+        final m = int.tryParse(parts[1]);
+        final d = int.tryParse(parts[2]);
+        if (y != null && m != null && d != null) {
+          return DateTime(y, m, d);
+        }
+      }
+      return DateTime.tryParse(raw);
     }
 
     final markedRaw = json['marked_at'] ?? json['changed_at'] ?? json['taken_at'];

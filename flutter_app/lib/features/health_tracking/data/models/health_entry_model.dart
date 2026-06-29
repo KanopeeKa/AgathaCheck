@@ -26,9 +26,20 @@ class HealthEntryModel extends HealthEntry {
   });
 
   factory HealthEntryModel.fromJson(Map<String, dynamic> json) {
+    /// Calendar dates from the API (YYYY-MM-DD or ISO with time) as local midnight.
     DateTime? parseDate(String? raw) {
       if (raw == null || raw.isEmpty) return null;
-      return DateTime.tryParse(raw.contains('T') ? raw : '${raw}T00:00:00');
+      final datePart = raw.split('T').first;
+      final parts = datePart.split('-');
+      if (parts.length == 3) {
+        final y = int.tryParse(parts[0]);
+        final m = int.tryParse(parts[1]);
+        final d = int.tryParse(parts[2]);
+        if (y != null && m != null && d != null) {
+          return DateTime(y, m, d);
+        }
+      }
+      return DateTime.tryParse(raw);
     }
 
     final nextDue = parseDate(json['next_due_date'] as String?);
@@ -102,8 +113,7 @@ class HealthEntryModel extends HealthEntry {
       'frequency_interval': frequencyInterval,
       'repeat_end_date': isoDate(repeatEndDate),
       'start_date': isoDate(startDate),
-      if (nextDueDate != null)
-        'next_due_date': nextDueDate!.toIso8601String(),
+      if (nextDueDate != null) 'next_due_date': isoDate(nextDueDate),
       if (completedOn != null) 'completed_on': isoDate(completedOn),
       'recurrence_anchor': recurrenceAnchor.apiValue,
       'notes': notes,
