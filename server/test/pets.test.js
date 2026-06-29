@@ -1,6 +1,7 @@
 import request from 'supertest';
 import jwt from 'jsonwebtoken';
 import { createApp } from '../bin/server.js';
+import { handlePetAccessQuery } from './helpers/petAccessMocks.js';
 
 const JWT_SECRET = process.env.JWT_SECRET || process.env.SESSION_SECRET || 'default_secret';
 const userId = 'test-user-id';
@@ -46,6 +47,9 @@ function makePetRow(overrides = {}) {
 function createMockPool(queryHandler) {
   return {
     query: queryHandler || (async (sql, params) => {
+      const access = handlePetAccessQuery(sql, params, { userId, ownedPetIds: [petId, petId2] });
+      if (access) return access;
+
       if (sql.includes('SELECT 1 FROM pets WHERE id = $1 AND user_id = $2')) {
         return { rows: [{ '?column?': 1 }] };
       }
@@ -446,7 +450,12 @@ describe('Pets API', () => {
   describe('PUT /api/pets/:id (update)', () => {
     it('updates a pet and returns mapped result', async () => {
       const updatedRow = makePetRow({ name: 'Fluffy Updated' });
-      const app = createApp(createMockPool(async (sql) => {
+      const app = createApp(createMockPool(async (sql, params) => {
+        const access = handlePetAccessQuery(sql, params, { userId, ownedPetIds: [petId] });
+        if (access) return access;
+        if (sql.includes('SELECT organization_id FROM pets WHERE id = $1')) {
+          return { rows: [{ organization_id: 'org-uuid-1' }] };
+        }
         if (sql.includes('UPDATE pets SET')) return { rows: [updatedRow] };
         return { rows: [] };
       }));
@@ -496,7 +505,12 @@ describe('Pets API', () => {
 
   describe('DELETE /api/pets/:id', () => {
     it('deletes a pet and returns deleted: true', async () => {
-      const app = createApp(createMockPool(async () => ({ rows: [] })));
+      const app = createApp(createMockPool(async (sql, params) => {
+        const access = handlePetAccessQuery(sql, params, { userId, ownedPetIds: [petId] });
+        if (access) return access;
+        if (sql.includes('DELETE FROM pets')) return { rows: [] };
+        return { rows: [] };
+      }));
       const res = await request(app)
         .delete(`/api/pets/${petId}`)
         .set('Authorization', `Bearer ${token}`);
@@ -543,9 +557,14 @@ describe('Pets API', () => {
       expect(res.body).toHaveProperty('error', 'Pet not found');
     });
 
-    it('PUT /api/pets/:id scopes the update to the authenticated user', async () => {
+    it('PUT /api/pets/:id scopes the update to the pet id', async () => {
       let capturedParams;
       const app = createApp(createMockPool(async (sql, params) => {
+        const access = handlePetAccessQuery(sql, params, { userId, ownedPetIds: [petId] });
+        if (access) return access;
+        if (sql.includes('SELECT organization_id FROM pets WHERE id = $1')) {
+          return { rows: [{ organization_id: null }] };
+        }
         if (sql.includes('UPDATE pets SET')) {
           capturedParams = params;
           return { rows: [makePetRow()] };
@@ -557,7 +576,6 @@ describe('Pets API', () => {
         .set('Authorization', `Bearer ${token}`)
         .send({ name: 'X', species: 'dog' });
       expect(capturedParams).toContain(petId);
-      expect(capturedParams).toContain(userId);
     });
 
     it('PUT /api/pets/:id returns 404 when the pet belongs to another user', async () => {
@@ -573,6 +591,8 @@ describe('Pets API', () => {
     it('DELETE /api/pets/:id scopes the delete to the authenticated user', async () => {
       let capturedParams;
       const app = createApp(createMockPool(async (sql, params) => {
+        const access = handlePetAccessQuery(sql, params, { userId, ownedPetIds: [petId] });
+        if (access) return access;
         if (sql.includes('DELETE FROM pets')) {
           capturedParams = params;
           return { rows: [] };
@@ -631,7 +651,12 @@ describe('Pets API', () => {
     });
 
     it('PUT /api/pets/:id returns 403 when user is not a member of organization_id', async () => {
-      const app = createApp(createMockPool(async (sql) => {
+      const app = createApp(createMockPool(async (sql, params) => {
+        const access = handlePetAccessQuery(sql, params, { userId, ownedPetIds: [petId] });
+        if (access) return access;
+        if (sql.includes('SELECT organization_id FROM pets WHERE id = $1')) {
+          return { rows: [{ organization_id: null }] };
+        }
         if (sql.includes('organization_users')) return { rows: [] };
         if (sql.includes('UPDATE pets SET')) return { rows: [makePetRow()] };
         return { rows: [] };
@@ -645,7 +670,12 @@ describe('Pets API', () => {
     });
 
     it('PUT /api/pets/:id succeeds when user is a member of organization_id', async () => {
-      const app = createApp(createMockPool(async (sql) => {
+      const app = createApp(createMockPool(async (sql, params) => {
+        const access = handlePetAccessQuery(sql, params, { userId, ownedPetIds: [petId] });
+        if (access) return access;
+        if (sql.includes('SELECT organization_id FROM pets WHERE id = $1')) {
+          return { rows: [{ organization_id: null }] };
+        }
         if (sql.includes('organization_users')) return { rows: [{ '?column?': 1 }] };
         if (sql.includes('UPDATE pets SET')) return { rows: [makePetRow()] };
         return { rows: [] };

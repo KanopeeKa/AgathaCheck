@@ -8,6 +8,11 @@ import jwt from 'jsonwebtoken';
 import { JWT_SECRET } from '../config/jwtSecret.js';
 import { publicError } from '../config/security.js';
 import { nextOccurrence, toDateOnly, assertAtLeastOneDate } from '../lib/recurrenceHelper.js';
+import {
+  accessiblePetSql,
+  userCanManagePet,
+  userCanManageHealthEntry,
+} from '../lib/petAccess.js';
 
 const MAX_HEALTH_DOCUMENT_BYTES = 2 * 1024 * 1024;
 const HEALTH_DOCUMENT_EXTENSIONS = new Set(['.jpg', '.jpeg', '.png', '.pdf']);
@@ -64,22 +69,6 @@ function extractUserId(req) {
   } catch (_) {
     return null;
   }
-}
-
-// True when `petId` exists and belongs to `userId`. Used to stop a caller from
-// attaching health records to another user's pet.
-async function userOwnsPet(pool, petId, userId) {
-  if (!petId) return false;
-  const r = await pool.query('SELECT 1 FROM pets WHERE id = $1 AND user_id = $2', [petId, userId]);
-  return r.rows.length > 0;
-}
-
-// True when the health entry exists and belongs to `userId`. Used to scope the
-// nested history/photos routes, which key only on health_entry_id and would
-// otherwise expose another user's records (IDOR).
-async function userOwnsEntry(pool, entryId, userId) {
-  const r = await pool.query('SELECT 1 FROM health_entries WHERE id = $1 AND user_id = $2', [entryId, userId]);
-  return r.rows.length > 0;
 }
 
 function parseOptionalDate(value) {
@@ -162,13 +151,22 @@ export default function healthEntriesRoutes(pool) {
       const petId = req.query.pet_id || req.query.petId;
       let result;
       if (petId) {
+        if (!(await userCanManagePet(pool, petId, userId))) {
+          return res.status(403).json({ error: 'Forbidden' });
+        }
         result = await pool.query(
-          'SELECT he.*, p.name as pet_name FROM health_entries he JOIN pets p ON he.pet_id = p.id WHERE he.pet_id = $1 AND he.user_id = $2 ORDER BY he.next_due_date ASC NULLS LAST, he.created_at DESC',
+          `SELECT he.*, p.name as pet_name FROM health_entries he
+           JOIN pets p ON he.pet_id = p.id
+           WHERE he.pet_id = $1 AND ${accessiblePetSql('p', '$2')}
+           ORDER BY he.next_due_date ASC NULLS LAST, he.created_at DESC`,
           [petId, userId]
         );
       } else {
         result = await pool.query(
-          'SELECT he.*, p.name as pet_name FROM health_entries he JOIN pets p ON he.pet_id = p.id WHERE he.user_id = $1 ORDER BY he.next_due_date ASC NULLS LAST, he.created_at DESC',
+          `SELECT he.*, p.name as pet_name FROM health_entries he
+           JOIN pets p ON he.pet_id = p.id
+           WHERE ${accessiblePetSql('p', '$1')}
+           ORDER BY he.next_due_date ASC NULLS LAST, he.created_at DESC`,
           [userId]
         );
       }
@@ -183,7 +181,10 @@ export default function healthEntriesRoutes(pool) {
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     try {
       const result = await pool.query(
-        'SELECT he.*, p.name as pet_name FROM health_entries he JOIN pets p ON he.pet_id = p.id WHERE he.user_id = $1 ORDER BY he.created_at DESC',
+        `SELECT he.*, p.name as pet_name FROM health_entries he
+         JOIN pets p ON he.pet_id = p.id
+         WHERE ${accessiblePetSql('p', '$1')}
+         ORDER BY he.created_at DESC`,
         [userId]
       );
       let csv = 'id,pet_name,name,type,dosage,frequency,start_date,next_due_date,completed_on,recurrence_anchor,notes\n';
@@ -206,7 +207,9 @@ export default function healthEntriesRoutes(pool) {
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     try {
       const result = await pool.query(
-        'SELECT he.*, p.name as pet_name FROM health_entries he JOIN pets p ON he.pet_id = p.id WHERE he.id = $1 AND he.user_id = $2',
+        `SELECT he.*, p.name as pet_name FROM health_entries he
+         JOIN pets p ON he.pet_id = p.id
+         WHERE he.id = $1 AND ${accessiblePetSql('p', '$2')}`,
         [req.params.id, userId]
       );
       if (result.rows.length === 0) return res.status(404).json({ error: 'Entry not found' });
@@ -223,7 +226,7 @@ export default function healthEntriesRoutes(pool) {
       const data = req.body;
       const id = data.id || uuidv4();
       const petId = data.pet_id || data.petId;
-      if (!(await userOwnsPet(pool, petId, userId))) {
+      if (!(await userCanManagePet(pool, petId, userId))) {
         return res.status(403).json({ error: 'Forbidden' });
       }
       const startDate = data.start_date || data.startDate || null;
@@ -268,6 +271,9 @@ export default function healthEntriesRoutes(pool) {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     try {
+      if (!(await userCanManageHealthEntry(pool, req.params.id, userId))) {
+        return res.status(404).json({ error: 'Entry not found' });
+      }
       const data = req.body;
       const startDate = data.start_date || data.startDate || null;
       const nextDueDate = data.next_due_date || data.nextDueDate || null;
@@ -285,7 +291,7 @@ export default function healthEntriesRoutes(pool) {
           frequency_interval = $6, start_date = $7, next_due_date = $8, completed_on = $9,
           recurrence_anchor = $10, repeat_end_date = $11, notes = $12,
           health_issue_id = $13, remind_days_before = $14, status = $15, updated_at = NOW()
-         WHERE id = $16 AND user_id = $17 RETURNING *`,
+         WHERE id = $16 RETURNING *`,
         [
           data.name || '',
           data.type || 'vet_visit',
@@ -299,7 +305,7 @@ export default function healthEntriesRoutes(pool) {
           healthIssueId,
           data.remind_days_before || data.remindDaysBefore || 1,
           completedOn ? 'completed' : (data.status || 'active'),
-          req.params.id, userId,
+          req.params.id,
         ]
       );
       if (result.rows.length === 0) return res.status(404).json({ error: 'Entry not found' });
@@ -315,7 +321,10 @@ export default function healthEntriesRoutes(pool) {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     try {
-      await pool.query('DELETE FROM health_entries WHERE id = $1 AND user_id = $2', [req.params.id, userId]);
+      if (!(await userCanManageHealthEntry(pool, req.params.id, userId))) {
+        return res.status(404).json({ error: 'Entry not found' });
+      }
+      await pool.query('DELETE FROM health_entries WHERE id = $1', [req.params.id]);
       res.json({ deleted: true });
     } catch (err) {
       res.status(500).json({ error: publicError(err) });
@@ -328,9 +337,12 @@ export default function healthEntriesRoutes(pool) {
     try {
       const entryId = req.params.id;
       const body = req.body || {};
+      if (!(await userCanManageHealthEntry(pool, entryId, userId))) {
+        return res.status(404).json({ error: 'Entry not found' });
+      }
       const existing = await pool.query(
-        'SELECT he.* FROM health_entries he WHERE he.id = $1 AND he.user_id = $2',
-        [entryId, userId]
+        'SELECT he.* FROM health_entries he WHERE he.id = $1',
+        [entryId]
       );
       if (existing.rows.length === 0) return res.status(404).json({ error: 'Entry not found' });
       const row = existing.rows[0];
@@ -349,8 +361,8 @@ export default function healthEntriesRoutes(pool) {
         const result = await pool.query(
           `UPDATE health_entries SET status = 'completed', completed_on = $1, completed_at = $2,
             next_due_date = NULL, updated_at = NOW()
-           WHERE id = $3 AND user_id = $4 RETURNING *`,
-          [dateToIsoDate(completedOn), markedAt, entryId, userId]
+           WHERE id = $3 RETURNING *`,
+          [dateToIsoDate(completedOn), markedAt, entryId]
         );
         await pool.query(
           `INSERT INTO health_history (id, health_entry_id, status, notes, due_date, completed_on, marked_by_user_id, changed_at)
@@ -365,8 +377,8 @@ export default function healthEntriesRoutes(pool) {
       const result = await pool.query(
         `UPDATE health_entries SET status = 'active', completed_on = NULL, completed_at = $1,
           next_due_date = $2, updated_at = NOW()
-         WHERE id = $3 AND user_id = $4 RETURNING *`,
-        [markedAt, newDueDate, entryId, userId]
+         WHERE id = $3 RETURNING *`,
+        [markedAt, newDueDate, entryId]
       );
       await pool.query(
         `INSERT INTO health_history (id, health_entry_id, status, notes, due_date, completed_on, marked_by_user_id, changed_at)
@@ -386,6 +398,9 @@ export default function healthEntriesRoutes(pool) {
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     try {
       const entryId = req.params.id;
+      if (!(await userCanManageHealthEntry(pool, entryId, userId))) {
+        return res.status(404).json({ error: 'Entry not found' });
+      }
       const hist = await pool.query(
         `SELECT * FROM health_history WHERE health_entry_id = $1 AND status = 'completed'
          ORDER BY changed_at DESC LIMIT 1`,
@@ -398,8 +413,8 @@ export default function healthEntriesRoutes(pool) {
         );
       }
       const existing = await pool.query(
-        'SELECT * FROM health_entries WHERE id = $1 AND user_id = $2',
-        [entryId, userId]
+        'SELECT * FROM health_entries WHERE id = $1',
+        [entryId]
       );
       if (existing.rows.length === 0) return res.status(404).json({ error: 'Entry not found' });
       const row = existing.rows[0];
@@ -409,8 +424,8 @@ export default function healthEntriesRoutes(pool) {
         `UPDATE health_entries SET status = 'active', completed_on = NULL, completed_at = NULL,
           next_due_date = CASE WHEN frequency = 'once' THEN $1 ELSE COALESCE($1, next_due_date) END,
           updated_at = NOW()
-         WHERE id = $2 AND user_id = $3 RETURNING *`,
-        [restoreDue, entryId, userId]
+         WHERE id = $2 RETURNING *`,
+        [restoreDue, entryId]
       );
       const entry = result.rows[0];
       entry.pet_name = null;
@@ -424,7 +439,7 @@ export default function healthEntriesRoutes(pool) {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     try {
-      if (!(await userOwnsEntry(pool, req.params.id, userId))) {
+      if (!(await userCanManageHealthEntry(pool, req.params.id, userId))) {
         return res.status(404).json({ error: 'Entry not found' });
       }
       const result = await pool.query(
@@ -446,7 +461,7 @@ export default function healthEntriesRoutes(pool) {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     try {
-      if (!(await userOwnsEntry(pool, req.params.id, userId))) {
+      if (!(await userCanManageHealthEntry(pool, req.params.id, userId))) {
         return res.status(404).json({ error: 'Entry not found' });
       }
       const result = await pool.query(
@@ -468,7 +483,7 @@ export default function healthEntriesRoutes(pool) {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     try {
-      if (!(await userOwnsEntry(pool, req.params.id, userId))) {
+      if (!(await userCanManageHealthEntry(pool, req.params.id, userId))) {
         return res.status(404).json({ error: 'Entry not found' });
       }
       const id = uuidv4();
@@ -489,7 +504,7 @@ export default function healthEntriesRoutes(pool) {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     try {
-      if (!(await userOwnsEntry(pool, req.params.entryId, userId))) {
+      if (!(await userCanManageHealthEntry(pool, req.params.entryId, userId))) {
         return res.status(404).json({ error: 'Entry not found' });
       }
       await pool.query(
