@@ -40,9 +40,9 @@ class MockHealthRepository extends Mock implements HealthRepository {
       ) as Future<void>;
 
   @override
-  Future<HealthEntry> markTaken(String? id, {String? notes}) =>
+  Future<HealthEntry> markTaken(String? id, {String? notes, DateTime? completedOn}) =>
       super.noSuchMethod(
-        Invocation.method(#markTaken, [id], {#notes: notes}),
+        Invocation.method(#markTaken, [id], {#notes: notes, #completedOn: completedOn}),
         returnValue: Future.value(_fallbackEntry),
       ) as Future<HealthEntry>;
 

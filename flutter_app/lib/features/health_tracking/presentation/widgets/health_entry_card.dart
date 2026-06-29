@@ -204,12 +204,13 @@ class HealthEntryCard extends StatelessWidget {
     if (entry.isOverdue) {
       return l.overdue;
     }
-    if (entry.isDueToday) {
-      final hour = entry.nextDueDate.hour;
-      final minute = entry.nextDueDate.minute;
+    if (entry.isDueToday && entry.nextDueDate != null) {
+      final hour = entry.nextDueDate!.hour;
+      final minute = entry.nextDueDate!.minute;
       return 'Due today at ${hour.toString().padLeft(2, '0')}:${minute.toString().padLeft(2, '0')}';
     }
-    return DateFormat('dd/MM/yy').format(entry.nextDueDate);
+    if (entry.nextDueDate == null) return l.notSet;
+    return DateFormat('dd/MM/yy').format(entry.nextDueDate!);
   }
 }
 
@@ -504,7 +505,7 @@ class _DoneChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context)!;
-    final doneDate = entry.updatedAt ?? entry.startDate;
+    final doneDate = entry.completedOn ?? entry.updatedAt ?? entry.startDate;
     final dateStr = DateFormat('d MMM').format(doneDate);
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),

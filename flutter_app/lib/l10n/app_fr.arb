@@ -186,6 +186,27 @@
   "repeatEndDate": "Date de fin de répétition",
   "noEndDate": "Pas de date de fin",
   "startDate": "Date de début",
+  "dueDate": "Date d'échéance",
+  "completedOn": "Terminé le",
+  "dueOrCompletedRequired": "Indiquez une date d'échéance, une date de fin, ou les deux",
+  "recurrenceAnchorTitle": "Prochaine occurrence",
+  "recurrenceFromCompletion": "Depuis la complétion",
+  "recurrenceFromDueDate": "Calendrier fixe",
+  "recurrenceAnchorInfoTitle": "Comment fonctionne la planification ?",
+  "recurrenceAnchorInfoBody": "Exemple : tous les 7 jours. Vous terminez avec 1 jour de retard.\n• Depuis la complétion : prochaine échéance 7 jours après la validation.\n• Calendrier fixe : prochaine échéance dans 6 jours (7 jours après la date d'échéance initiale).",
+  "markCompleteSheetTitle": "Marquer comme terminé",
+  "markCompleteSheetSubtitle": "Quand cela a-t-il réellement eu lieu ?",
+  "eventHistoryLine": "Échéance {due}, terminé {completed}, enregistré {recorded} par {user}",
+  "@eventHistoryLine": {
+    "placeholders": {
+      "due": { "type": "String" },
+      "completed": { "type": "String" },
+      "recorded": { "type": "String" },
+      "user": { "type": "String" }
+    }
+  },
+  "unknownUser": "Utilisateur inconnu",
+  "clear": "Effacer",
   "nextDueDate": "Prochaine échéance",
   "notes": "Notes",
   "healthIssueOptional": "Problème de santé (facultatif)",

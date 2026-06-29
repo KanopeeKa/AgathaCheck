@@ -45,8 +45,8 @@ class PetFamilyEventsSectionBuilder {
         },
         headers: [
           l.pdfAssignedTo,
-          l.pdfFromDate,
-          l.pdfToDate,
+          l.dueDate,
+          l.completedOn,
           l.pdfNotes,
         ],
         data: sorted.map((e) {

@@ -109,8 +109,8 @@ class HealthEntriesNotifier extends AsyncNotifier<List<HealthEntry>> {
   }
 
   /// Marks a health entry as taken and refreshes the list.
-  Future<void> markTaken(String id, {String notes = ''}) async {
-    await ref.read(markEntryTakenProvider).call(id, notes: notes);
+  Future<void> markTaken(String id, {String notes = '', DateTime? completedOn}) async {
+    await ref.read(markEntryTakenProvider).call(id, notes: notes, completedOn: completedOn);
     await refresh();
   }
 
@@ -123,7 +123,7 @@ class HealthEntriesNotifier extends AsyncNotifier<List<HealthEntry>> {
   Future<void> snooze(String id, int days) async {
     final entries = state.valueOrNull ?? [];
     final entry = entries.where((e) => e.id == id).firstOrNull;
-    if (entry == null) return;
+    if (entry == null || entry.nextDueDate == null) return;
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
     final newDueDate = today.add(Duration(days: days));

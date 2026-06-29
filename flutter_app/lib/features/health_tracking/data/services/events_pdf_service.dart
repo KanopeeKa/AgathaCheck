@@ -191,7 +191,12 @@ class EventsPdfService {
   pw.Widget _buildEntryRow(HealthEntry entry, Pet? pet, DateFormat dateFormat, AppLocalizations l) {
     final dueText = entry.isCompleted
         ? l.pdfDone
-        : dateFormat.format(entry.nextDueDate);
+        : entry.nextDueDate != null
+            ? dateFormat.format(entry.nextDueDate!)
+            : l.notSet;
+    final completedText = entry.completedOn != null
+        ? dateFormat.format(entry.completedOn!)
+        : null;
     final freqText = _frequencyLabel(entry.frequency, entry.frequencyInterval, l);
 
     return pw.Container(
@@ -257,6 +262,10 @@ class EventsPdfService {
                       pw.SizedBox(width: 12),
                     ],
                     _miniDetail(l.pdfDueLabel, dueText),
+                    if (completedText != null) ...[
+                      pw.SizedBox(width: 12),
+                      _miniDetail(l.completedOn, completedText),
+                    ],
                     pw.SizedBox(width: 12),
                     _miniDetail(l.pdfFreqLabel, freqText),
                     if (entry.notes.isNotEmpty) ...[

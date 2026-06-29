@@ -7,6 +7,7 @@ import jwt from 'jsonwebtoken';
 
 import { JWT_SECRET } from '../config/jwtSecret.js';
 import { publicError } from '../config/security.js';
+import { nextOccurrence, toDateOnly, assertAtLeastOneDate } from '../lib/recurrenceHelper.js';
 
 const MAX_HEALTH_DOCUMENT_BYTES = 2 * 1024 * 1024;
 const HEALTH_DOCUMENT_EXTENSIONS = new Set(['.jpg', '.jpeg', '.png', '.pdf']);
@@ -81,54 +82,17 @@ async function userOwnsEntry(pool, entryId, userId) {
   return r.rows.length > 0;
 }
 
-/**
- * Computes the next due date for a health entry after it is marked taken.
- *
- * For a `once` entry this returns the 9999-12-31 sentinel date, which the
- * Flutter UI interprets as "completed" (there is no separate status column the
- * UI reads). For a recurring entry it advances `next_due_date` by
- * frequency * interval, looping until the result is strictly after today so
- * that an entry which is several periods overdue still lands in the future and
- * clears its overdue state. `frequency_interval` and `frequency_days` are
- * coerced to at least 1 to guard against an infinite loop.
- *
- * @param {object} row - the health_entries row (frequency, frequency_interval,
- *   frequency_days, next_due_date).
- * @returns {Date} the next due date.
- */
-function nextOccurrence(row) {
-  const freq = row.frequency || 'once';
-  if (freq === 'once') return new Date('9999-12-31T00:00:00.000Z');
-  const interval = Math.max(1, row.frequency_interval ?? 1);
-  const customDays = Math.max(1, row.frequency_days || interval);
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  const next = row.next_due_date ? new Date(row.next_due_date) : new Date();
-  const advance = (d) => {
-    switch (freq) {
-      case 'daily':
-        d.setDate(d.getDate() + interval);
-        break;
-      case 'weekly':
-        d.setDate(d.getDate() + 7 * interval);
-        break;
-      case 'monthly':
-        d.setMonth(d.getMonth() + interval);
-        break;
-      case 'yearly':
-        d.setFullYear(d.getFullYear() + interval);
-        break;
-      case 'custom':
-        d.setDate(d.getDate() + customDays);
-        break;
-      default:
-        d.setDate(d.getDate() + interval);
-    }
-  };
-  do {
-    advance(next);
-  } while (next <= today);
-  return next;
+function parseOptionalDate(value) {
+  if (value == null || value === '') return null;
+  const d = new Date(value);
+  return Number.isNaN(d.getTime()) ? null : d;
+}
+
+function dateToIsoDate(value) {
+  if (!value) return null;
+  const d = value instanceof Date ? value : new Date(value);
+  if (Number.isNaN(d.getTime())) return null;
+  return d.toISOString().split('T')[0];
 }
 
 function healthEntryToMap(row) {
@@ -145,6 +109,11 @@ function healthEntryToMap(row) {
     frequency_interval: row.frequency_interval ?? 1,
     start_date: row.start_date ? row.start_date.toISOString?.() || String(row.start_date) : null,
     next_due_date: row.next_due_date ? row.next_due_date.toISOString?.() || String(row.next_due_date) : null,
+    completed_on: row.completed_on
+      ? dateToIsoDate(row.completed_on)
+      : null,
+    recurrence_anchor: row.recurrence_anchor || 'from_completion',
+    repeat_end_date: row.repeat_end_date ? dateToIsoDate(row.repeat_end_date) : null,
     notes: row.notes || '',
     health_issue_id: row.health_issue_id || null,
     remind_days_before: row.remind_days_before ?? 1,
@@ -152,6 +121,23 @@ function healthEntryToMap(row) {
     completed_at: row.completed_at ? row.completed_at.toISOString?.() || String(row.completed_at) : null,
     created_at: row.created_at ? row.created_at.toISOString?.() || String(row.created_at) : null,
     updated_at: row.updated_at ? row.updated_at.toISOString?.() || String(row.updated_at) : null,
+  };
+}
+
+function historyToMap(row) {
+  return {
+    id: row.id,
+    health_entry_id: row.health_entry_id,
+    entry_id: row.health_entry_id,
+    status: row.status,
+    notes: row.notes || '',
+    due_date: row.due_date ? dateToIsoDate(row.due_date) : null,
+    completed_on: row.completed_on ? dateToIsoDate(row.completed_on) : null,
+    changed_at: row.changed_at,
+    marked_at: row.changed_at,
+    taken_at: row.changed_at,
+    marked_by_user_id: row.marked_by_user_id || null,
+    marked_by_name: row.marked_by_name?.trim() || null,
   };
 }
 
@@ -200,11 +186,12 @@ export default function healthEntriesRoutes(pool) {
         'SELECT he.*, p.name as pet_name FROM health_entries he JOIN pets p ON he.pet_id = p.id WHERE he.user_id = $1 ORDER BY he.created_at DESC',
         [userId]
       );
-      let csv = 'id,pet_name,name,type,dosage,frequency,start_date,next_due_date,notes\n';
+      let csv = 'id,pet_name,name,type,dosage,frequency,start_date,next_due_date,completed_on,recurrence_anchor,notes\n';
       for (const row of result.rows) {
         csv += [
           row.id, row.pet_name, row.name, row.type, row.dosage,
-          row.frequency, row.start_date, row.next_due_date, row.notes,
+          row.frequency, row.start_date, row.next_due_date, row.completed_on,
+          row.recurrence_anchor, row.notes,
         ].map(csvCell).join(',') + '\n';
       }
       res.setHeader('Content-Type', 'text/csv');
@@ -241,10 +228,18 @@ export default function healthEntriesRoutes(pool) {
       }
       const startDate = data.start_date || data.startDate || null;
       const nextDueDate = data.next_due_date || data.nextDueDate || null;
+      const completedOn = data.completed_on || data.completedOn || null;
+      const repeatEndDate = data.repeat_end_date || data.repeatEndDate || null;
+      const recurrenceAnchor = data.recurrence_anchor || data.recurrenceAnchor || 'from_completion';
       const healthIssueId = data.health_issue_id || data.healthIssueId || null;
+      try {
+        assertAtLeastOneDate(nextDueDate, completedOn);
+      } catch (e) {
+        return res.status(400).json({ error: e.message });
+      }
       const result = await pool.query(
-        `INSERT INTO health_entries (id, pet_id, user_id, name, type, dosage, frequency, frequency_days, frequency_interval, start_date, next_due_date, notes, health_issue_id, remind_days_before, status)
-         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15) RETURNING *`,
+        `INSERT INTO health_entries (id, pet_id, user_id, name, type, dosage, frequency, frequency_days, frequency_interval, start_date, next_due_date, completed_on, recurrence_anchor, repeat_end_date, notes, health_issue_id, remind_days_before, status)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18) RETURNING *`,
         [
           id, petId, userId,
           data.name || '',
@@ -253,11 +248,12 @@ export default function healthEntriesRoutes(pool) {
           data.frequency || 'once',
           data.frequency_days || data.frequencyDays || null,
           data.frequency_interval || data.frequencyInterval || 1,
-          startDate, nextDueDate,
+          startDate, nextDueDate, completedOn,
+          recurrenceAnchor, repeatEndDate,
           data.notes || '',
           healthIssueId,
           data.remind_days_before || data.remindDaysBefore || 1,
-          data.status || 'active',
+          completedOn ? 'completed' : (data.status || 'active'),
         ]
       );
       const entry = result.rows[0];
@@ -275,12 +271,21 @@ export default function healthEntriesRoutes(pool) {
       const data = req.body;
       const startDate = data.start_date || data.startDate || null;
       const nextDueDate = data.next_due_date || data.nextDueDate || null;
+      const completedOn = data.completed_on || data.completedOn || null;
+      const repeatEndDate = data.repeat_end_date || data.repeatEndDate || null;
+      const recurrenceAnchor = data.recurrence_anchor || data.recurrenceAnchor || 'from_completion';
       const healthIssueId = data.health_issue_id || data.healthIssueId || null;
+      try {
+        assertAtLeastOneDate(nextDueDate, completedOn);
+      } catch (e) {
+        return res.status(400).json({ error: e.message });
+      }
       const result = await pool.query(
         `UPDATE health_entries SET name = $1, type = $2, dosage = $3, frequency = $4, frequency_days = $5,
-          frequency_interval = $6, start_date = $7, next_due_date = $8, notes = $9,
-          health_issue_id = $10, remind_days_before = $11, status = $12, updated_at = NOW()
-         WHERE id = $13 AND user_id = $14 RETURNING *`,
+          frequency_interval = $6, start_date = $7, next_due_date = $8, completed_on = $9,
+          recurrence_anchor = $10, repeat_end_date = $11, notes = $12,
+          health_issue_id = $13, remind_days_before = $14, status = $15, updated_at = NOW()
+         WHERE id = $16 AND user_id = $17 RETURNING *`,
         [
           data.name || '',
           data.type || 'vet_visit',
@@ -288,11 +293,12 @@ export default function healthEntriesRoutes(pool) {
           data.frequency || 'once',
           data.frequency_days || data.frequencyDays || null,
           data.frequency_interval || data.frequencyInterval || 1,
-          startDate, nextDueDate,
+          startDate, nextDueDate, completedOn,
+          recurrenceAnchor, repeatEndDate,
           data.notes || '',
           healthIssueId,
           data.remind_days_before || data.remindDaysBefore || 1,
-          data.status || 'active',
+          completedOn ? 'completed' : (data.status || 'active'),
           req.params.id, userId,
         ]
       );
@@ -321,21 +327,51 @@ export default function healthEntriesRoutes(pool) {
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     try {
       const entryId = req.params.id;
+      const body = req.body || {};
       const existing = await pool.query(
         'SELECT he.* FROM health_entries he WHERE he.id = $1 AND he.user_id = $2',
         [entryId, userId]
       );
       if (existing.rows.length === 0) return res.status(404).json({ error: 'Entry not found' });
-      const newDueDate = nextOccurrence(existing.rows[0]);
-      const result = await pool.query(
-        "UPDATE health_entries SET status = 'completed', completed_at = NOW(), next_due_date = $1, updated_at = NOW() WHERE id = $2 AND user_id = $3 RETURNING *",
-        [newDueDate, entryId, userId]
-      );
-      if (result.rows.length === 0) return res.status(404).json({ error: 'Entry not found' });
+      const row = existing.rows[0];
+      const dueDate = row.next_due_date ? toDateOnly(row.next_due_date) : null;
+      const completedOn = parseOptionalDate(body.completed_on || body.completedOn) || toDateOnly(new Date());
+      const anchor = row.recurrence_anchor || 'from_completion';
+      if (anchor === 'from_due_date' && !dueDate && (row.frequency || 'once') !== 'once') {
+        return res.status(400).json({ error: 'Due date is required for fixed-schedule recurring entries' });
+      }
+      const newDueDate = nextOccurrence(row, completedOn);
+      const notes = body.notes || '';
       const histId = uuidv4();
+      const markedAt = new Date();
+
+      if ((row.frequency || 'once') === 'once') {
+        const result = await pool.query(
+          `UPDATE health_entries SET status = 'completed', completed_on = $1, completed_at = $2,
+            next_due_date = NULL, updated_at = NOW()
+           WHERE id = $3 AND user_id = $4 RETURNING *`,
+          [dateToIsoDate(completedOn), markedAt, entryId, userId]
+        );
+        await pool.query(
+          `INSERT INTO health_history (id, health_entry_id, status, notes, due_date, completed_on, marked_by_user_id, changed_at)
+           VALUES ($1, $2, 'completed', $3, $4, $5, $6, $7)`,
+          [histId, entryId, notes, dueDate ? dateToIsoDate(dueDate) : null, dateToIsoDate(completedOn), userId, markedAt]
+        );
+        const entry = result.rows[0];
+        entry.pet_name = null;
+        return res.json(healthEntryToMap(entry));
+      }
+
+      const result = await pool.query(
+        `UPDATE health_entries SET status = 'active', completed_on = NULL, completed_at = $1,
+          next_due_date = $2, updated_at = NOW()
+         WHERE id = $3 AND user_id = $4 RETURNING *`,
+        [markedAt, newDueDate, entryId, userId]
+      );
       await pool.query(
-        "INSERT INTO health_history (id, health_entry_id, status, notes) VALUES ($1, $2, 'completed', 'Marked as taken')",
-        [histId, entryId]
+        `INSERT INTO health_history (id, health_entry_id, status, notes, due_date, completed_on, marked_by_user_id, changed_at)
+         VALUES ($1, $2, 'completed', $3, $4, $5, $6, $7)`,
+        [histId, entryId, notes, dueDate ? dateToIsoDate(dueDate) : null, dateToIsoDate(completedOn), userId, markedAt]
       );
       const entry = result.rows[0];
       entry.pet_name = null;
@@ -350,11 +386,32 @@ export default function healthEntriesRoutes(pool) {
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     try {
       const entryId = req.params.id;
-      const result = await pool.query(
-        "UPDATE health_entries SET status = 'active', completed_at = NULL, next_due_date = CASE WHEN frequency = 'once' THEN start_date ELSE next_due_date END, updated_at = NOW() WHERE id = $1 AND user_id = $2 RETURNING *",
+      const hist = await pool.query(
+        `SELECT * FROM health_history WHERE health_entry_id = $1 AND status = 'completed'
+         ORDER BY changed_at DESC LIMIT 1`,
+        [entryId]
+      );
+      if (hist.rows.length > 0) {
+        await pool.query(
+          "UPDATE health_history SET status = 'undone' WHERE id = $1",
+          [hist.rows[0].id]
+        );
+      }
+      const existing = await pool.query(
+        'SELECT * FROM health_entries WHERE id = $1 AND user_id = $2',
         [entryId, userId]
       );
-      if (result.rows.length === 0) return res.status(404).json({ error: 'Entry not found' });
+      if (existing.rows.length === 0) return res.status(404).json({ error: 'Entry not found' });
+      const row = existing.rows[0];
+      const last = hist.rows[0];
+      const restoreDue = last?.due_date || row.start_date;
+      const result = await pool.query(
+        `UPDATE health_entries SET status = 'active', completed_on = NULL, completed_at = NULL,
+          next_due_date = CASE WHEN frequency = 'once' THEN $1 ELSE COALESCE($1, next_due_date) END,
+          updated_at = NOW()
+         WHERE id = $2 AND user_id = $3 RETURNING *`,
+        [restoreDue, entryId, userId]
+      );
       const entry = result.rows[0];
       entry.pet_name = null;
       res.json(healthEntryToMap(entry));
@@ -371,16 +428,15 @@ export default function healthEntriesRoutes(pool) {
         return res.status(404).json({ error: 'Entry not found' });
       }
       const result = await pool.query(
-        'SELECT * FROM health_history WHERE health_entry_id = $1 ORDER BY changed_at DESC',
+        `SELECT hh.*,
+          TRIM(COALESCE(u.first_name, '') || ' ' || COALESCE(u.last_name, '')) AS marked_by_name
+         FROM health_history hh
+         LEFT JOIN users u ON u.id = hh.marked_by_user_id
+         WHERE hh.health_entry_id = $1 AND hh.status = 'completed'
+         ORDER BY hh.changed_at DESC`,
         [req.params.id]
       );
-      res.json(result.rows.map(r => ({
-        id: r.id,
-        health_entry_id: r.health_entry_id,
-        status: r.status,
-        notes: r.notes || '',
-        changed_at: r.changed_at,
-      })));
+      res.json(result.rows.map(historyToMap));
     } catch (err) {
       res.status(500).json({ error: publicError(err) });
     }

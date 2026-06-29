@@ -42,8 +42,8 @@ class HealthRepositoryImpl implements HealthRepository {
   }
 
   @override
-  Future<HealthEntry> markTaken(String id, {String notes = ''}) {
-    return dataSource.markTaken(id, notes: notes);
+  Future<HealthEntry> markTaken(String id, {String notes = '', DateTime? completedOn}) {
+    return dataSource.markTaken(id, notes: notes, completedOn: completedOn);
   }
 
   @override

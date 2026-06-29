@@ -1154,6 +1154,89 @@ abstract class AppLocalizations {
   /// **'Start Date'**
   String get startDate;
 
+  /// No description provided for @dueDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Due date'**
+  String get dueDate;
+
+  /// No description provided for @completedOn.
+  ///
+  /// In en, this message translates to:
+  /// **'Completed on'**
+  String get completedOn;
+
+  /// No description provided for @dueOrCompletedRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a due date, a completed date, or both'**
+  String get dueOrCompletedRequired;
+
+  /// No description provided for @recurrenceAnchorTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Next occurrence'**
+  String get recurrenceAnchorTitle;
+
+  /// No description provided for @recurrenceFromCompletion.
+  ///
+  /// In en, this message translates to:
+  /// **'From completion'**
+  String get recurrenceFromCompletion;
+
+  /// No description provided for @recurrenceFromDueDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Fixed schedule'**
+  String get recurrenceFromDueDate;
+
+  /// No description provided for @recurrenceAnchorInfoTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'How does scheduling work?'**
+  String get recurrenceAnchorInfoTitle;
+
+  /// No description provided for @recurrenceAnchorInfoBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Example: every 7 days. You complete it 1 day late.\n• From completion: next due 7 days after you mark it done.\n• Fixed schedule: next due 6 days from today (7 days after the original due date).'**
+  String get recurrenceAnchorInfoBody;
+
+  /// No description provided for @markCompleteSheetTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Mark as completed'**
+  String get markCompleteSheetTitle;
+
+  /// No description provided for @markCompleteSheetSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'When did this actually happen?'**
+  String get markCompleteSheetSubtitle;
+
+  /// No description provided for @eventHistoryLine.
+  ///
+  /// In en, this message translates to:
+  /// **'Due {due}, completed {completed}, recorded {recorded} by {user}'**
+  String eventHistoryLine(
+    String due,
+    String completed,
+    String recorded,
+    String user,
+  );
+
+  /// No description provided for @unknownUser.
+  ///
+  /// In en, this message translates to:
+  /// **'Unknown user'**
+  String get unknownUser;
+
+  /// No description provided for @clear.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear'**
+  String get clear;
+
   /// No description provided for @nextDueDate.
   ///
   /// In en, this message translates to:
