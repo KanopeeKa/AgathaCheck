@@ -495,7 +495,7 @@ class _DueEventsSection extends ConsumerWidget {
                                           child: Text(
                                             isOverdue
                                                 ? dateFormat
-                                                    .format(entry.nextDueDate)
+                                                    .format(entry.nextDueDate!)
                                                 : 'Today',
                                             style: theme.textTheme.labelSmall
                                                 ?.copyWith(
