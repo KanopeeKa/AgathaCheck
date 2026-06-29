@@ -149,7 +149,7 @@ void main() {
 
       expect(find.text('Pet profile for p1'), findsOneWidget);
 
-      await tester.tap(find.text('Events'));
+      await tester.tap(find.text('Health Events'));
       await tester.pumpAndSettle();
       await tester.tap(find.byKey(const Key('add_health_event_button')));
       await tester.pumpAndSettle();

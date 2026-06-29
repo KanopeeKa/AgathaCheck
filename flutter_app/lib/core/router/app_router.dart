@@ -9,6 +9,7 @@ import '../../features/auth/presentation/screens/my_details_screen.dart';
 import '../../features/health_tracking/domain/entities/health_entry.dart';
 import '../../features/health_tracking/presentation/screens/health_dashboard_screen.dart';
 import '../../features/health_tracking/presentation/screens/health_entry_form_screen.dart';
+import '../../features/health_tracking/presentation/screens/other_event_form_screen.dart';
 import '../../features/notifications/presentation/screens/notification_settings_screen.dart';
 import '../../features/notifications/presentation/screens/notifications_screen.dart';
 import '../../features/pet_profile/presentation/screens/pet_detail_screen.dart';
@@ -159,7 +160,11 @@ final routerProvider = Provider<GoRouter>((ref) {
           final initialType = typeParam != null
               ? HealthEntryType.values.where((t) => t.name == typeParam).firstOrNull
               : null;
-          return HealthEntryFormScreen(petId: petId, initialType: initialType);
+          return HealthEntryFormScreen(
+            petId: petId,
+            initialType: initialType,
+            allowedTypes: kHealthEventTypes.toList(),
+          );
         },
       ),
       GoRoute(
@@ -168,7 +173,32 @@ final routerProvider = Provider<GoRouter>((ref) {
         builder: (context, state) {
           final petId = state.pathParameters['petId']!;
           final entryId = state.pathParameters['id']!;
-          return HealthEntryFormScreen(entryId: entryId, petId: petId);
+          return HealthEntryFormScreen(
+            entryId: entryId,
+            petId: petId,
+            allowedTypes: kHealthEventTypes.toList(),
+          );
+        },
+      ),
+      GoRoute(
+        path: '/pet/:petId/other/add',
+        name: 'addPetOtherEvent',
+        builder: (context, state) {
+          final petId = state.pathParameters['petId']!;
+          final typeParam = state.uri.queryParameters['type'];
+          final initialType = typeParam != null
+              ? HealthEntryType.values.where((t) => t.name == typeParam).firstOrNull
+              : null;
+          return OtherEventFormScreen(petId: petId, initialType: initialType);
+        },
+      ),
+      GoRoute(
+        path: '/pet/:petId/other/edit/:id',
+        name: 'editPetOtherEvent',
+        builder: (context, state) {
+          final petId = state.pathParameters['petId']!;
+          final entryId = state.pathParameters['id']!;
+          return OtherEventFormScreen(entryId: entryId, petId: petId);
         },
       ),
       GoRoute(

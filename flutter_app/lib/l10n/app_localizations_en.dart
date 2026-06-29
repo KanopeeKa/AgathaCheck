@@ -378,7 +378,19 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get healthEvents => 'Events';
+  String get healthEvents => 'Health Events';
+
+  @override
+  String get otherEvents => 'Other events';
+
+  @override
+  String get addOtherEvent => 'Add event';
+
+  @override
+  String get careEvent => 'Care event';
+
+  @override
+  String get careEvents => 'Care events';
 
   @override
   String get addHealthEntry => 'Add health entry';

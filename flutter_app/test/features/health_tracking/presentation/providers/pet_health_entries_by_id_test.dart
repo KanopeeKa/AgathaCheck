@@ -10,11 +10,11 @@ class _FakeHealthEntriesNotifier extends HealthEntriesNotifier {
   Future<List<HealthEntry>> build() async => _entries;
 }
 
-HealthEntry _entry(String id, String petId) => HealthEntry(
+HealthEntry _entry(String id, String petId, [HealthEntryType type = HealthEntryType.medication]) => HealthEntry(
       id: id,
       petId: petId,
       name: 'Entry $id',
-      type: HealthEntryType.medication,
+      type: type,
       frequency: HealthFrequency.monthly,
       startDate: DateTime(2025, 1, 1),
       nextDueDate: DateTime(2025, 2, 1),
@@ -45,5 +45,40 @@ void main() {
 
     final none = container.read(petHealthEntriesByIdProvider('pet-3')).value!;
     expect(none, isEmpty);
+  });
+
+  test('petHealthEventsByIdProvider returns only health event types', () async {
+    final entries = [
+      _entry('a', 'pet-1', HealthEntryType.medication),
+      _entry('b', 'pet-1', HealthEntryType.familyEvent),
+      _entry('c', 'pet-1', HealthEntryType.vetVisit),
+      _entry('d', 'pet-1', HealthEntryType.procedure),
+    ];
+    final container = ProviderContainer(overrides: [
+      healthEntriesNotifierProvider
+          .overrideWith(() => _FakeHealthEntriesNotifier(entries)),
+    ]);
+    addTearDown(container.dispose);
+    await container.read(healthEntriesNotifierProvider.future);
+
+    final health = container.read(petHealthEventsByIdProvider('pet-1')).value!;
+    expect(health.map((e) => e.id), ['a', 'c']);
+  });
+
+  test('petOtherEventsByIdProvider returns care and other event types', () async {
+    final entries = [
+      _entry('a', 'pet-1', HealthEntryType.medication),
+      _entry('b', 'pet-1', HealthEntryType.familyEvent),
+      _entry('c', 'pet-1', HealthEntryType.procedure),
+    ];
+    final container = ProviderContainer(overrides: [
+      healthEntriesNotifierProvider
+          .overrideWith(() => _FakeHealthEntriesNotifier(entries)),
+    ]);
+    addTearDown(container.dispose);
+    await container.read(healthEntriesNotifierProvider.future);
+
+    final other = container.read(petOtherEventsByIdProvider('pet-1')).value!;
+    expect(other.map((e) => e.id), ['b', 'c']);
   });
 }

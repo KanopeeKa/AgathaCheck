@@ -14,17 +14,26 @@ import '../../data/datasources/health_remote_datasource.dart';
 import '../../domain/entities/health_entry.dart';
 import '../providers/health_issue_providers.dart';
 import '../providers/health_providers.dart';
+import '../widgets/health_entry_type_labels.dart';
 import 'package:pet_profile_app/core/providers/api_base_url_provider.dart';
 
 const healthDocumentMaxBytes = 2 * 1024 * 1024;
 const healthDocumentAllowedExtensions = ['jpg', 'jpeg', 'png', 'pdf'];
 
 class HealthEntryFormScreen extends ConsumerStatefulWidget {
-  const HealthEntryFormScreen({super.key, this.entryId, this.petId, this.initialType});
+  const HealthEntryFormScreen({
+    super.key,
+    this.entryId,
+    this.petId,
+    this.initialType,
+    this.allowedTypes,
+  });
 
   final String? entryId;
   final String? petId;
   final HealthEntryType? initialType;
+  /// When set, restricts the type dropdown (e.g. pet profile health events).
+  final List<HealthEntryType>? allowedTypes;
 
   @override
   ConsumerState<HealthEntryFormScreen> createState() =>
@@ -59,6 +68,8 @@ class _HealthEntryFormScreenState extends ConsumerState<HealthEntryFormScreen> {
     super.initState();
     if (widget.initialType != null) {
       _type = widget.initialType!;
+    } else if (widget.allowedTypes != null && widget.allowedTypes!.isNotEmpty) {
+      _type = widget.allowedTypes!.first;
     }
     if (widget.petId != null && widget.petId!.isNotEmpty) {
       _selectedPetIds.add(widget.petId!);
@@ -329,20 +340,15 @@ class _HealthEntryFormScreenState extends ConsumerState<HealthEntryFormScreen> {
     super.dispose();
   }
 
-  String _typeLabel(AppLocalizations l, HealthEntryType t) {
-    switch (t) {
-      case HealthEntryType.medication:
-        return l.medication;
-      case HealthEntryType.preventive:
-        return l.preventive;
-      case HealthEntryType.vetVisit:
-        return l.vetVisit;
-      case HealthEntryType.procedure:
-        return l.procedure;
-      case HealthEntryType.familyEvent:
-        return l.familyEvent;
+  List<HealthEntryType> get _selectableTypes {
+    if (widget.allowedTypes != null && widget.allowedTypes!.isNotEmpty) {
+      return widget.allowedTypes!;
     }
+    return HealthEntryType.values;
   }
+
+  String _typeLabel(AppLocalizations l, HealthEntryType t) =>
+      healthEntryTypeLabel(l, t);
 
   String _freqLabel(AppLocalizations l, HealthFrequency f) {
     switch (f) {
@@ -441,7 +447,7 @@ class _HealthEntryFormScreenState extends ConsumerState<HealthEntryFormScreen> {
                       decoration: InputDecoration(
                         labelText: l.entryType,
                       ),
-                      items: HealthEntryType.values.map((t) {
+                      items: _selectableTypes.map((t) {
                         return DropdownMenuItem(
                             value: t, child: Text(_typeLabel(l, t)));
                       }).toList(),

@@ -123,7 +123,11 @@
   "deleteWeightEntry": "Supprimer l'entrée de poids",
   "weightChartLabel": "Graphique de poids avec {count} entrées",
 
-  "healthEvents": "Événements",
+  "healthEvents": "Événements de santé",
+  "otherEvents": "Autres événements",
+  "addOtherEvent": "Ajouter un événement",
+  "careEvent": "Événement de soins",
+  "careEvents": "Événements de soins",
   "addHealthEntry": "Ajouter un événement santé",
   "noEntriesYet": "Aucun événement",
   "noTypeEntriesYet": "Aucun événement de type {type}",

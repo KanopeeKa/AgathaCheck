@@ -16,7 +16,7 @@ import '../../domain/entities/pet.dart';
 import '../providers/pet_providers.dart';
 import 'widgets/chip_reminder_card.dart';
 import 'widgets/download_report_section.dart';
-import 'widgets/family_events_section.dart';
+import 'widgets/other_events_section.dart';
 import 'widgets/health_events_section.dart';
 import 'widgets/health_issues_section.dart';
 import 'widgets/neuter_reminder_card.dart';
@@ -211,10 +211,9 @@ class _PetDetailScreenState extends ConsumerState<PetDetailScreen> {
               SliverToBoxAdapter(
                 child: HealthEventsSection(petId: widget.petId, pet: pet),
               ),
-              if (pet.organizationId != null)
-                SliverToBoxAdapter(
-                  child: FamilyEventsSection(petId: widget.petId, pet: pet),
-                ),
+              SliverToBoxAdapter(
+                child: OtherEventsSection(petId: widget.petId, pet: pet),
+              ),
               SliverToBoxAdapter(
                 child: SharingSection(petId: widget.petId, pet: pet),
               ),

@@ -380,7 +380,19 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
-  String get healthEvents => 'Événements';
+  String get healthEvents => 'Événements de santé';
+
+  @override
+  String get otherEvents => 'Autres événements';
+
+  @override
+  String get addOtherEvent => 'Ajouter un événement';
+
+  @override
+  String get careEvent => 'Événement de soins';
+
+  @override
+  String get careEvents => 'Événements de soins';
 
   @override
   String get addHealthEntry => 'Ajouter un événement santé';

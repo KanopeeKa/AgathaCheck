@@ -1,7 +1,24 @@
 /// Represents a health tracking entry in the domain layer.
 ///
-/// A health entry tracks medications, preventives, vet visits,
-/// or other health events for a pet with scheduling and dosage information.
+/// A health entry tracks medications, preventives, vet visits, care events,
+/// or other events for a pet with scheduling and dosage information.
+///
+/// **Pet profile sections:** [kHealthEventTypes] (Health Events) and
+/// [kOtherEventTypes] (Other events: care + misc.). This is separate from
+/// organisation [FamilyEvent] foster/placement records under `organization/`.
+const kHealthEventTypes = {
+  HealthEntryType.medication,
+  HealthEntryType.preventive,
+  HealthEntryType.vetVisit,
+};
+
+/// Care event ([HealthEntryType.familyEvent]) and misc. other
+/// ([HealthEntryType.procedure]) entries shown in the pet profile "Other events"
+/// section. Not to be confused with organisation [FamilyEvent] assignments.
+const kOtherEventTypes = {
+  HealthEntryType.familyEvent,
+  HealthEntryType.procedure,
+};
 class HealthEntry {
   /// Creates a new [HealthEntry] instance.
   const HealthEntry({
@@ -166,13 +183,14 @@ enum HealthEntryType {
   /// A vet visit (checkup, dental, surgery, etc.).
   vetVisit,
 
-  /// Any other health event.
+  /// Any other non-health event (misc.).
   procedure,
 
-  /// A family event from an organization pet.
+  /// A care event (e.g. grooming, boarding). API type `family_event`.
+  /// UI label "Care event" — not the organisation [FamilyEvent] entity.
   familyEvent;
 
-  /// Human-readable label for this type.
+  /// Human-readable fallback label (prefer [AppLocalizations] in UI).
   String get label {
     switch (this) {
       case HealthEntryType.medication:
@@ -184,9 +202,15 @@ enum HealthEntryType {
       case HealthEntryType.procedure:
         return 'Other';
       case HealthEntryType.familyEvent:
-        return 'Family Event';
+        return 'Care event';
     }
   }
+}
+
+extension HealthEntryTypeGroups on HealthEntryType {
+  bool get isHealthEvent => kHealthEventTypes.contains(this);
+
+  bool get isOtherEvent => kOtherEventTypes.contains(this);
 }
 
 /// How frequently a health entry is due.
