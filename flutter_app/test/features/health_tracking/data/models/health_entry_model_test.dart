@@ -269,5 +269,46 @@ void main() {
       expect(restored.healthIssueId, original.healthIssueId);
       expect(restored.remindDaysBefore, original.remindDaysBefore);
     });
+
+    test('fromJson preserves calendar day from date-only API responses', () {
+      final model = HealthEntryModel.fromJson({
+        ...fullJson,
+        'start_date': '2026-06-30',
+        'next_due_date': '2026-06-30',
+      });
+      expect(model.startDate.year, 2026);
+      expect(model.startDate.month, 6);
+      expect(model.startDate.day, 30);
+      expect(model.nextDueDate!.year, 2026);
+      expect(model.nextDueDate!.month, 6);
+      expect(model.nextDueDate!.day, 30);
+    });
+
+    test('fromJson uses date portion of legacy UTC timestamp responses', () {
+      // Older API responses used toISOString(); the calendar date is the Y-M-D prefix.
+      final model = HealthEntryModel.fromJson({
+        ...fullJson,
+        'start_date': '2026-06-30T00:00:00.000Z',
+        'next_due_date': '2026-06-30T00:00:00.000Z',
+      });
+      expect(model.startDate.day, 30);
+      expect(model.nextDueDate!.day, 30);
+    });
+
+    test('toJson serializes next_due_date as date-only', () {
+      final model = HealthEntryModel(
+        id: 'e-1',
+        petId: 'pet-1',
+        name: 'Test',
+        type: HealthEntryType.medication,
+        frequency: HealthFrequency.once,
+        startDate: DateTime(2026, 6, 30),
+        nextDueDate: DateTime(2026, 6, 30),
+      );
+      final json = model.toJson();
+      expect(json['start_date'], '2026-06-30');
+      expect(json['next_due_date'], '2026-06-30');
+      expect(json['next_due_date'], isNot(contains('T')));
+    });
   });
 }

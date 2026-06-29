@@ -124,6 +124,14 @@ void main() {
       expect(restored.notes, original.notes);
     });
 
+    test('fromJson uses date portion of legacy UTC timestamp', () {
+      final model = WeightEntryModel.fromJson({
+        ...fullJson,
+        'date': '2025-06-15T00:00:00.000Z',
+      });
+      expect(model.date.day, 15);
+    });
+
     test('is a WeightEntry', () {
       final model = WeightEntryModel.fromJson(fullJson);
       expect(model, isA<WeightEntry>());

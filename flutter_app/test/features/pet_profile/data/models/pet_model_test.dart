@@ -131,6 +131,17 @@ void main() {
       expect(model.passedAway, isTrue);
     });
 
+    test('parses legacy UTC timestamp for date of birth', () {
+      final json = {
+        'id': 'p1',
+        'name': 'Buddy',
+        'species': 'Dog',
+        'dateOfBirth': '2022-01-15T00:00:00.000Z',
+      };
+      final model = PetModel.fromJson(json);
+      expect(model.dateOfBirth!.day, 15);
+    });
+
     test('organization_id as int is coerced to string', () {
       final json = {
         'id': 'p1',
@@ -144,6 +155,13 @@ void main() {
   });
 
   group('PetModel.toJson', () {
+    test('serializes calendar dates as date-only', () {
+      final json = fullModel.toJson();
+      expect(json['dateOfBirth'], '2022-01-15');
+      expect(json['neuteredDate'], '2023-03-10');
+      expect(json['dateOfBirth'], isNot(contains('T')));
+    });
+
     test('produces correct output with all fields', () {
       final json = fullModel.toJson();
 

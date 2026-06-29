@@ -8,6 +8,7 @@ import jwt from 'jsonwebtoken';
 import { JWT_SECRET } from '../config/jwtSecret.js';
 import { publicError } from '../config/security.js';
 import { nextOccurrence, toDateOnly, assertAtLeastOneDate } from '../lib/recurrenceHelper.js';
+import { dateToIsoDate } from '../lib/calendarDate.js';
 import {
   accessiblePetSql,
   userCanManagePet,
@@ -77,13 +78,6 @@ function parseOptionalDate(value) {
   return Number.isNaN(d.getTime()) ? null : d;
 }
 
-function dateToIsoDate(value) {
-  if (!value) return null;
-  const d = value instanceof Date ? value : new Date(value);
-  if (Number.isNaN(d.getTime())) return null;
-  return d.toISOString().split('T')[0];
-}
-
 function healthEntryToMap(row) {
   return {
     id: row.id,
@@ -96,8 +90,8 @@ function healthEntryToMap(row) {
     frequency: row.frequency || 'once',
     frequency_days: row.frequency_days || null,
     frequency_interval: row.frequency_interval ?? 1,
-    start_date: row.start_date ? row.start_date.toISOString?.() || String(row.start_date) : null,
-    next_due_date: row.next_due_date ? row.next_due_date.toISOString?.() || String(row.next_due_date) : null,
+    start_date: row.start_date ? dateToIsoDate(row.start_date) : null,
+    next_due_date: row.next_due_date ? dateToIsoDate(row.next_due_date) : null,
     completed_on: row.completed_on
       ? dateToIsoDate(row.completed_on)
       : null,

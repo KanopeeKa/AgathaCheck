@@ -4,6 +4,7 @@ import jwt from 'jsonwebtoken';
 
 import { JWT_SECRET } from '../config/jwtSecret.js';
 import { publicError } from '../config/security.js';
+import { dateToIsoDate } from '../lib/calendarDate.js';
 import {
   accessiblePetSql,
   userCanManagePet,
@@ -31,8 +32,8 @@ function issueRowToMap(row) {
     name: row.name || '',
     issue_type: row.issue_type,
     notes: row.notes || '',
-    start_date: row.start_date ? row.start_date.toISOString?.() || String(row.start_date) : null,
-    end_date: row.end_date ? row.end_date.toISOString?.() || String(row.end_date) : null,
+    start_date: row.start_date ? dateToIsoDate(row.start_date) : null,
+    end_date: row.end_date ? dateToIsoDate(row.end_date) : null,
     status: row.status || 'active',
     created_at: row.created_at ? row.created_at.toISOString?.() || String(row.created_at) : null,
     updated_at: row.updated_at ? row.updated_at.toISOString?.() || String(row.updated_at) : null,

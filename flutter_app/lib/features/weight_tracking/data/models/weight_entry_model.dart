@@ -1,4 +1,5 @@
 import '../../domain/entities/weight_entry.dart';
+import '../../../../core/utils/calendar_date.dart';
 
 class WeightEntryModel extends WeightEntry {
   const WeightEntryModel({
@@ -14,7 +15,7 @@ class WeightEntryModel extends WeightEntry {
     return WeightEntryModel(
       id: json['id']?.toString() ?? '',
       petId: json['pet_id']?.toString() ?? '',
-      date: DateTime.parse(json['date'].toString()),
+      date: parseCalendarDate(json['date']) ?? DateTime.now(),
       weight: (json['weight'] is num)
           ? (json['weight'] as num).toDouble()
           : double.parse(json['weight'].toString()),
@@ -29,7 +30,7 @@ class WeightEntryModel extends WeightEntry {
     return {
       'id': id,
       'pet_id': petId,
-      'date': date.toIso8601String().split('T').first,
+      'date': toCalendarDateString(date),
       'weight': weight,
       'notes': notes,
     };

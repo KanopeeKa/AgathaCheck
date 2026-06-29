@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import '../../domain/entities/pet.dart';
+import '../../../../core/utils/calendar_date.dart';
 
 class PetModel {
   const PetModel({
@@ -32,18 +33,12 @@ class PetModel {
       name: json['name'] as String,
       species: json['species'] as String,
       breed: (json['breed'] as String?) ?? '',
-      dateOfBirth: json['dateOfBirth'] != null
-          ? DateTime.tryParse(json['dateOfBirth'] as String)
-          : (json['date_of_birth'] != null
-              ? DateTime.tryParse(json['date_of_birth'] as String)
-              : null),
+      dateOfBirth: parseCalendarDate(json['dateOfBirth'] ?? json['date_of_birth']),
       weight: (json['weight'] as num?)?.toDouble(),
       gender: json['gender'] as String?,
       bio: (json['bio'] as String?) ?? '',
       insurance: (json['insurance'] as String?) ?? '',
-      neuteredDate: json['neuteredDate'] != null
-          ? DateTime.tryParse(json['neuteredDate'] as String)
-          : null,
+      neuteredDate: parseCalendarDate(json['neuteredDate']),
       neuterDismissed: json['neuterDismissed'] == true,
       chipId: (json['chipId'] as String?) ?? '',
       chipDismissed: json['chipDismissed'] == true,
@@ -115,12 +110,12 @@ class PetModel {
       'name': name,
       'species': species,
       'breed': breed,
-      'dateOfBirth': dateOfBirth?.toIso8601String(),
+      'dateOfBirth': toCalendarDateString(dateOfBirth),
       'weight': weight,
       'gender': gender,
       'bio': bio,
       'insurance': insurance,
-      'neuteredDate': neuteredDate?.toIso8601String(),
+      'neuteredDate': toCalendarDateString(neuteredDate),
       'neuterDismissed': neuterDismissed,
       'chipId': chipId,
       'chipDismissed': chipDismissed,
