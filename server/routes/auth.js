@@ -264,9 +264,9 @@ export default function authRoutes(pool, comparePassword) {
       );
       try {
         await sendPasswordResetEmail(email, code);
-      } catch {
+      } catch (mailErr) {
         await pool.query('DELETE FROM password_reset_tokens WHERE id = $1', [id]);
-        console.error('Password reset email failed; reset token removed.');
+        console.error('Password reset email failed; reset token removed.', mailErr);
         return res.status(500).json({ error: 'Request failed' });
       }
       // SECURITY: never return or log the reset code in production — doing so

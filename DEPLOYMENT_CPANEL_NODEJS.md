@@ -70,6 +70,29 @@ JWT_SECRET=change-me-to-a-long-random-string
 
 > The Node.js backend resolves the JWT signing key as `JWT_SECRET || SESSION_SECRET`. When `NODE_ENV=production`, the server **refuses to start** if neither is set (no insecure built-in default) — so `JWT_SECRET` must be configured here in the cPanel Node.js app environment. Generate a strong value with `openssl rand -hex 32`. Outside production a dev/test fallback is used so local runs and CI work without extra setup.
 
+### 3b. **Password reset email (SMTP)**
+
+When `NODE_ENV=production`, forgot-password **must** send the 6-digit reset code by email. If SMTP is misconfigured, `POST /backend/api/auth/forgot-password` returns **500** with `{"error":"Request failed"}` for known email addresses (the reset token is rolled back).
+
+Create a sender mailbox in cPanel (**Email Accounts**), then add these variables to the Node.js app environment (or `.env`):
+
+```
+UAT_SMTP_HOST=your-server.o2switch.net
+UAT_SMTP_PORT=465
+UAT_SMTP_SECURE=true
+UAT_MAIL_USER=noreply@uat.agathatrack.com
+UAT_MAIL_PASS=your-email-account-password
+UAT_MAIL_FROM=Agatha Track <noreply@uat.agathatrack.com>
+```
+
+**o2switch notes:**
+- Use the server hostname from your “Bienvenue chez o2switch” email (`*.o2switch.net`), not always `mail.yourdomain.com`, to avoid SSL certificate errors.
+- Port **465** requires `UAT_SMTP_SECURE=true`. If `UAT_SMTP_SECURE` is omitted, the app defaults to secure when the port is 465.
+- `UAT_MAIL_USER` must be the **full email address**; the password is the mailbox password (not your cPanel login).
+- Legacy names `UAT_mail_user` / `UAT_mail_pass` still work if already set.
+
+After changing these values, **Restart** the Node.js app. Check cPanel error logs for `Password reset email failed` — the underlying SMTP error is logged there.
+
 ### 4. **Verify Application Startup File**
 Your application startup file is named `server`, which cPanel will run as:
 ```bash
