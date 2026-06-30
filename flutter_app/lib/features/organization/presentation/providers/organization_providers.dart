@@ -146,6 +146,8 @@ class OrgPetsNotifier extends FamilyAsyncNotifier<List<Pet>, String> {
       passedAway: m['passedAway'] == true || m['passed_away'] == true,
       photoPath: m['photoPath']?.toString() ?? m['photo_path']?.toString(),
       vetId: m['vetId']?.toString() ?? m['vet_id']?.toString(),
+      organizationId: m['organization_id']?.toString(),
+      organizationName: m['organization_name']?.toString(),
     )).toList();
   }
 
@@ -235,6 +237,7 @@ class PendingOrgInvite {
     return PendingOrgInvite(
       id: json['id']?.toString() ?? '',
       organizationId: json['organization_id']?.toString() ?? '',
+      organizationName: json['organization_name'] as String?,
       organizationName: json['organization_name']?.toString() ?? '',
       organizationType: json['organization_type']?.toString() ?? '',
       desiredRole: json['desired_role']?.toString() ?? 'member',

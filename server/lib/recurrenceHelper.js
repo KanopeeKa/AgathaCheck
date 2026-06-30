@@ -2,26 +2,50 @@
  * Recurrence helpers for health entries — shared by healthEntries routes.
  */
 
+import { dateToIsoDate } from './calendarDate.js';
+
+/**
+ * @param {Date|string|null} d
+ * @returns {{ y: number, m: number, d: number }}
+ */
+function calendarParts(d) {
+  const iso = dateToIsoDate(d);
+  if (!iso) {
+    const now = new Date();
+    return { y: now.getFullYear(), m: now.getMonth() + 1, d: now.getDate() };
+  }
+  const [y, m, day] = iso.split('-').map(Number);
+  return { y, m, d: day };
+}
+
+/**
+ * @param {{ y: number, m: number, d: number }} parts
+ * @returns {string}
+ */
+function partsToIso({ y, m, d }) {
+  return `${y}-${String(m).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+}
+
 /**
  * @param {Date|string|null} d
  * @returns {Date}
  */
 export function toDateOnly(d) {
-  if (!d) return new Date();
-  const dt = d instanceof Date ? d : new Date(d);
-  return new Date(dt.getFullYear(), dt.getMonth(), dt.getDate());
+  const { y, m, d: day } = calendarParts(d);
+  return new Date(y, m - 1, day);
 }
 
 /**
- * @param {Date} base date-only
+ * @param {Date|string} base calendar date
  * @param {object} row frequency fields
- * @returns {Date}
+ * @returns {string} next due date as YYYY-MM-DD
  */
 export function advanceByFrequency(base, row) {
+  const { y, m, d } = calendarParts(base);
+  const next = new Date(y, m - 1, d);
   const freq = row.frequency || 'once';
   const interval = Math.max(1, row.frequency_interval ?? 1);
   const customDays = Math.max(1, row.frequency_days || interval);
-  const next = new Date(base);
   switch (freq) {
     case 'daily':
       next.setDate(next.getDate() + interval);
@@ -41,7 +65,11 @@ export function advanceByFrequency(base, row) {
     default:
       next.setDate(next.getDate() + interval);
   }
-  return next;
+  return partsToIso({
+    y: next.getFullYear(),
+    m: next.getMonth() + 1,
+    d: next.getDate(),
+  });
 }
 
 /**
@@ -49,18 +77,18 @@ export function advanceByFrequency(base, row) {
  *
  * @param {object} row health_entries row
  * @param {Date|string} completedOn when the occurrence actually happened (b)
- * @returns {Date|null} next due, or null for one-time entries
+ * @returns {string|null} next due as YYYY-MM-DD, or null for one-time entries
  */
 export function nextOccurrence(row, completedOn) {
   const freq = row.frequency || 'once';
   if (freq === 'once') return null;
 
   const anchor = row.recurrence_anchor || 'from_completion';
-  const completed = toDateOnly(completedOn);
+  const completedIso = dateToIsoDate(completedOn);
   const base =
     anchor === 'from_due_date'
-      ? toDateOnly(row.next_due_date || completed)
-      : completed;
+      ? dateToIsoDate(row.next_due_date || completedIso)
+      : completedIso;
   return advanceByFrequency(base, row);
 }
 
@@ -69,7 +97,7 @@ export function nextOccurrence(row, completedOn) {
  * @param {Date|string|null} completedOn
  */
 export function assertAtLeastOneDate(nextDue, completedOn) {
-  if (!nextDue && !completedOn) {
+  if (!dateToIsoDate(nextDue) && !dateToIsoDate(completedOn)) {
     throw new Error('Due date or completed on date is required');
   }
 }

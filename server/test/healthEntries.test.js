@@ -411,6 +411,25 @@ describe('Health Entries API', () => {
       const insertParams = queryLog.find(q => q.sql.includes('INSERT INTO health_entries')).params;
       expect(insertParams[4]).toBe('vet_visit');
       expect(insertParams[6]).toBe('once');
+      expect(insertParams[10]).toBe('2025-01-01');
+    });
+
+    it('normalizes legacy ISO timestamp inputs to date-only for storage', async () => {
+      const entry = {
+        pet_id: 'pet-1',
+        name: 'Legacy',
+        next_due_date: '2026-06-30T09:00:00.000Z',
+        start_date: '2026-06-30T00:00:00.000Z',
+      };
+      const res = await request(app)
+        .post('/api/health-entries')
+        .set('Authorization', `Bearer ${token}`)
+        .send(entry);
+      expect(res.statusCode).toBe(201);
+      const insertParams = queryLog.find(q => q.sql.includes('INSERT INTO health_entries')).params;
+      expect(insertParams[9]).toBe('2026-06-30');
+      expect(insertParams[10]).toBe('2026-06-30');
+      expect(res.body.next_due_date).toBe('2026-06-30');
     });
 
     it('accepts camelCase field aliases', async () => {
@@ -516,9 +535,8 @@ describe('Health Entries API', () => {
       const update = queryLog.find(q =>
         q.sql.includes("UPDATE health_entries SET status = 'active', completed_on = NULL"));
       expect(update).toBeDefined();
-      const newDue = new Date(update.params[1]);
-      expect(newDue.getTime()).toBeGreaterThan(Date.now());
-      expect(newDue.getFullYear()).toBeLessThan(9999);
+      expect(update.params[1]).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+      expect(update.params[1]).not.toMatch(/T/);
     });
 
     it('does not hang and still advances when interval is zero', async () => {
@@ -528,8 +546,7 @@ describe('Health Entries API', () => {
       expect(res.statusCode).toBe(200);
       const update = queryLog.find(q =>
         q.sql.includes("UPDATE health_entries SET status = 'active', completed_on = NULL"));
-      const newDue = new Date(update.params[1]);
-      expect(newDue.getTime()).toBeGreaterThan(Date.now());
+      expect(update.params[1]).toMatch(/^\d{4}-\d{2}-\d{2}$/);
     });
 
     it('sets next_due_date to null for once entries', async () => {
