@@ -32,7 +32,9 @@ class PetCard extends StatelessWidget {
 
     return MergeSemantics(
       child: Semantics(
-        label: 'Pet: ${pet.name}, $speciesDisplay',
+        label: pet.organizationName != null && pet.organizationName!.isNotEmpty
+            ? 'Pet: ${pet.name}, ${pet.organizationName}, $speciesDisplay'
+            : 'Pet: ${pet.name}, $speciesDisplay',
         child: Card(
           key: Key('pet_card_${pet.name}'),
           clipBehavior: Clip.antiAlias,
@@ -55,6 +57,31 @@ class PetCard extends StatelessWidget {
                             fontWeight: FontWeight.bold,
                           ),
                         ),
+                        if (pet.organizationName != null &&
+                            pet.organizationName!.isNotEmpty) ...[
+                          const SizedBox(height: 2),
+                          Row(
+                            children: [
+                              Icon(
+                                Icons.business,
+                                size: 14,
+                                color: colorScheme.primary,
+                              ),
+                              const SizedBox(width: 4),
+                              Expanded(
+                                child: Text(
+                                  pet.organizationName!,
+                                  style: theme.textTheme.bodySmall?.copyWith(
+                                    color: colorScheme.primary,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
                         const SizedBox(height: 4),
                         Text(
                           pet.breed.isNotEmpty

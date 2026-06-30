@@ -75,6 +75,24 @@ void main() {
       expect(find.byIcon(Icons.pets), findsOneWidget);
     });
 
+    testWidgets('displays organization name for org pets', (tester) async {
+      const orgPet = Pet(
+        id: 'org-pet-id',
+        name: 'Max',
+        species: 'Dog',
+        breed: 'Labrador',
+        organizationId: 'org-1',
+        organizationName: 'Happy Paws Shelter',
+      );
+
+      await tester.pumpWidget(
+        createTestWidget(PetCard(pet: orgPet)),
+      );
+
+      expect(find.text('Happy Paws Shelter'), findsOneWidget);
+      expect(find.byIcon(Icons.business), findsOneWidget);
+    });
+
     testWidgets('calls onTap when tapped', (tester) async {
       var tapped = false;
       await tester.pumpWidget(
