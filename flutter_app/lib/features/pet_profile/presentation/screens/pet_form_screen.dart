@@ -9,6 +9,7 @@ import '../../../../core/utils/constants.dart';
 import '../../../../core/utils/calendar_date.dart';
 import '../../../../core/widgets/app_logo_title.dart';
 import '../../../../l10n/app_localizations.dart';
+import '../../../organization/presentation/providers/organization_providers.dart';
 import '../../../vet/domain/entities/vet.dart';
 import '../../../vet/presentation/providers/vet_providers.dart';
 import '../../domain/entities/pet.dart';
@@ -64,6 +65,25 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
   void initState() {
     super.initState();
     _controller = PetFormController();
+    if (!_isEditing && widget.initialOrgId != null) {
+      _selectedOrgId = widget.initialOrgId;
+    }
+  }
+
+  void _onOwnershipChanged(String? orgId) {
+    setState(() => _selectedOrgId = orgId);
+  }
+
+  void _navigateAfterForm() {
+    if (widget.initialOrgId != null) {
+      context.go('/organizations/${widget.initialOrgId}');
+      return;
+    }
+    if (_selectedOrgId != null) {
+      context.go('/organizations/$_selectedOrgId');
+      return;
+    }
+    context.go('/');
   }
 
   @override
@@ -277,8 +297,12 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
               vetId: _selectedVetId,
               organizationId: _selectedOrgId,
             );
+        final orgId = _selectedOrgId;
+        if (orgId != null) {
+          ref.invalidate(orgPetsProvider(orgId));
+        }
       }
-      if (mounted) context.go('/');
+      if (mounted) _navigateAfterForm();
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(
@@ -331,7 +355,7 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           tooltip: l.goBack,
-          onPressed: () => context.go('/'),
+          onPressed: _navigateAfterForm,
         ),
       ),
       body: SingleChildScrollView(
@@ -350,6 +374,8 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
                 PetOwnershipSelector(
                   controller: _controller,
                   initialOrgId: widget.initialOrgId,
+                  selectedOrgId: _selectedOrgId,
+                  onOrgIdChanged: _onOwnershipChanged,
                 ),
               if (!_isEditing) const SizedBox(height: 16),
               TextFormField(
