@@ -1,13 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:pet_profile_app/features/auth/presentation/providers/auth_providers.dart';
 import 'package:pet_profile_app/core/providers/api_base_url_provider.dart';
+import 'package:pet_profile_app/features/organization/domain/entities/organization.dart';
+import 'package:pet_profile_app/features/organization/presentation/providers/organization_providers.dart';
 import 'package:pet_profile_app/features/pet_profile/domain/entities/pet.dart';
+import 'package:pet_profile_app/features/pet_profile/domain/repositories/pet_repository.dart';
 import 'package:pet_profile_app/features/pet_profile/presentation/providers/pet_providers.dart';
 import 'package:pet_profile_app/features/pet_profile/presentation/screens/pet_form_screen.dart';
 import 'package:pet_profile_app/features/vet/domain/entities/vet.dart';
 import 'package:pet_profile_app/features/vet/presentation/providers/vet_providers.dart';
 import 'package:pet_profile_app/l10n/app_localizations.dart';
+
+import '../../../../helpers/fakes.dart';
+import '../providers/pet_list_notifier_test.dart';
 
 class _ExistingPetNotifier extends PetListNotifier {
   _ExistingPetNotifier(this.pet);
@@ -29,6 +36,40 @@ class _VetsNotifier extends VetListNotifier {
       address: '1 Vet Road',
     ),
   ];
+}
+
+class _OrgsNotifier extends OrganizationListNotifier {
+  @override
+  Future<List<Organization>> build() async => const [
+    Organization(
+      id: 'org-1',
+      name: 'Happy Paws Clinic',
+      type: OrganizationType.professional,
+      role: 'super_user',
+    ),
+  ];
+}
+
+Widget _wrapAddForm({
+  RecordingPetRepository? repo,
+  String? initialOrgId,
+}) {
+  final repository = repo ?? RecordingPetRepository();
+  return ProviderScope(
+    overrides: [
+      authProvider.overrideWith((ref) => FakeAuthNotifier()),
+      petRepositoryProvider.overrideWithValue(repository),
+      organizationListProvider.overrideWith(_OrgsNotifier.new),
+      vetListProvider.overrideWith(_VetsNotifier.new),
+      apiBaseUrlProvider.overrideWithValue('http://test.local'),
+      allPetsIncludingOrgProvider.overrideWith((ref) async => <Pet>[]),
+    ],
+    child: MaterialApp(
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      supportedLocales: AppLocalizations.supportedLocales,
+      home: PetFormScreen(initialOrgId: initialOrgId),
+    ),
+  );
 }
 
 Widget _wrap(Pet pet) {
@@ -92,5 +133,29 @@ void main() {
     expect(find.text('15/03/2020'), findsOneWidget);
     expect(find.text('Jun 20, 2021'), findsOneWidget);
     expect(find.text('Dr Smith'), findsOneWidget);
+  });
+
+  testWidgets('creates an organisation pet when initialOrgId is provided',
+      (tester) async {
+    final repo = RecordingPetRepository();
+
+    await tester.pumpWidget(_wrapAddForm(repo: repo, initialOrgId: 'org-1'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Happy Paws Clinic'), findsOneWidget);
+
+    await tester.enterText(find.byKey(const Key('pet_name_field')), 'Bella');
+    await tester.tap(find.byKey(const Key('pet_species_field')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Dog').last);
+    await tester.pumpAndSettle();
+
+    await tester.ensureVisible(find.byKey(const Key('save_pet_button')));
+    await tester.tap(find.byKey(const Key('save_pet_button')));
+    await tester.pumpAndSettle();
+
+    expect(repo.added, hasLength(1));
+    expect(repo.added.single.name, 'Bella');
+    expect(repo.added.single.organizationId, 'org-1');
   });
 }
