@@ -614,6 +614,18 @@ abstract class AppLocalizations {
   /// **'No pets yet'**
   String get noPetsYet;
 
+  /// No description provided for @noPetsMatchFilter.
+  ///
+  /// In en, this message translates to:
+  /// **'No pets match this filter.'**
+  String get noPetsMatchFilter;
+
+  /// No description provided for @showAllPets.
+  ///
+  /// In en, this message translates to:
+  /// **'Show all pets'**
+  String get showAllPets;
+
   /// No description provided for @addFirstPet.
   ///
   /// In en, this message translates to:

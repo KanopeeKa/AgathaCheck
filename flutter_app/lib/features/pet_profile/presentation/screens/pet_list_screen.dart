@@ -49,7 +49,7 @@ class _PetListScreenState extends ConsumerState<PetListScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final petListAsync = ref.watch(allPetsIncludingOrgProvider);
+    final petListAsync = ref.watch(petListProvider);
     final auth = ref.watch(authProvider);
     final unreadCount = ref.watch(unreadNotificationCountProvider);
     final theme = Theme.of(context);
@@ -196,7 +196,7 @@ class _PetListScreenState extends ConsumerState<PetListScreen> {
               Text(l.failedToLoadPets(error.toString())),
               const SizedBox(height: 8),
               ElevatedButton(
-                onPressed: () => ref.invalidate(allPetsIncludingOrgProvider),
+                onPressed: () => ref.invalidate(petListProvider),
                 child: Text(l.retry),
               ),
             ],
@@ -233,7 +233,36 @@ class _PetListScreenState extends ConsumerState<PetListScreen> {
           }
 
           final orgNames = _controller.getOrgNames(allPets);
+          _controller.syncOrgFilter(orgNames);
           final filteredPets = _controller.filterPets(allPets);
+
+          if (filteredPets.isEmpty) {
+            return Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(
+                    Icons.filter_list_off,
+                    size: 48,
+                    color: theme.colorScheme.outline,
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    l.noPetsMatchFilter,
+                    style: theme.textTheme.bodyLarge,
+                    textAlign: TextAlign.center,
+                  ),
+                  if (_controller.orgFilter != null) ...[
+                    const SizedBox(height: 16),
+                    ElevatedButton(
+                      onPressed: () => setState(() => _controller.orgFilter = null),
+                      child: Text(l.showAllPets),
+                    ),
+                  ],
+                ],
+              ),
+            );
+          }
           final personalActive = _controller.getPersonalActive(filteredPets);
           final personalPassed = _controller.getPersonalPassed(filteredPets);
           final orgGroups = _controller.getOrgGroups(filteredPets);

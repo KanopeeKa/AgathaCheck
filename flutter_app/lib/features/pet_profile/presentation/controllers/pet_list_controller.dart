@@ -3,6 +3,15 @@ import '../../domain/entities/pet.dart';
 class PetListController {
   String? orgFilter;
 
+  /// Clears [orgFilter] when it targets an organisation that is no longer present.
+  void syncOrgFilter(List<String> orgNames) {
+    if (orgFilter != null &&
+        orgFilter != '_personal' &&
+        !orgNames.contains(orgFilter)) {
+      orgFilter = null;
+    }
+  }
+
   List<String> getOrgNames(List<Pet> allPets) {
     final names = <String>{};
     for (final pet in allPets) {
