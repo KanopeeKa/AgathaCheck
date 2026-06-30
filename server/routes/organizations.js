@@ -369,13 +369,21 @@ export default function organizationsRoutes(pool) {
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     try {
       if (!(await requireMember(pool, res, req.params.orgId, userId))) return;
-      const result = await pool.query('SELECT * FROM pets WHERE organization_id = $1 ORDER BY created_at', [req.params.orgId]);
+      const result = await pool.query(
+        `SELECT p.*, o.name AS organization_name
+         FROM pets p
+         LEFT JOIN organizations o ON o.id = p.organization_id
+         WHERE p.organization_id = $1
+         ORDER BY p.created_at`,
+        [req.params.orgId]
+      );
       res.json(result.rows.map(r => ({
         id: r.id,
         name: r.name,
         species: r.species,
         breed: r.breed,
         organization_id: r.organization_id,
+        organization_name: r.organization_name || null,
       })));
     } catch (err) {
       res.status(500).json({ error: publicError(err) });

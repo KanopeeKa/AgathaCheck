@@ -18,6 +18,15 @@ export function accessiblePetSql(alias, userIdParam) {
         AND pa.role IN (${COLLABORATOR_ROLES_SQL})
         AND COALESCE(pa.hidden, false) = false
     )
+    OR (
+      ${alias}.organization_id IS NOT NULL
+      AND EXISTS (
+        SELECT 1 FROM organization_users ou
+        WHERE ou.organization_id = ${alias}.organization_id
+          AND ou.user_id = ${userIdParam}
+          AND ou.role NOT LIKE 'pending_%'
+      )
+    )
   )`;
 }
 
@@ -41,7 +50,15 @@ export async function userCanAccessPet(pool, petId, userId) {
      LIMIT 1`,
     [petId, userId]
   );
-  return shared.rows.length > 0;
+  if (shared.rows.length > 0) return true;
+  const orgMember = await pool.query(
+    `SELECT 1 FROM pets p
+     JOIN organization_users ou ON ou.organization_id = p.organization_id
+     WHERE p.id = $1 AND ou.user_id = $2 AND ou.role NOT LIKE 'pending_%'
+     LIMIT 1`,
+    [petId, userId]
+  );
+  return orgMember.rows.length > 0;
 }
 
 /** Owner or active collaborator — full edit access except sharing management. */

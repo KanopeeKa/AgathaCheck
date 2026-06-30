@@ -104,7 +104,7 @@ function buildMockPool(overrides = {}) {
     if (sql.includes('DELETE FROM organization_users WHERE organization_id') && sql.includes('AND user_id = $2')) {
       return { rows: [] };
     }
-    if (sql.includes('SELECT * FROM pets WHERE organization_id')) {
+    if (sql.includes('FROM pets p') && sql.includes('organization_name')) {
       return {
         rows: [{
           id: 'pet-1',
@@ -112,6 +112,7 @@ function buildMockPool(overrides = {}) {
           species: 'dog',
           breed: 'Labrador',
           organization_id: orgId,
+          organization_name: 'Happy Paws',
         }],
       };
     }
@@ -544,6 +545,7 @@ describe('Organizations API', () => {
       expect(pet).toHaveProperty('species');
       expect(pet).toHaveProperty('breed');
       expect(pet).toHaveProperty('organization_id');
+      expect(pet).toHaveProperty('organization_name', 'Happy Paws');
     });
   });
 

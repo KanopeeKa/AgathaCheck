@@ -4,7 +4,7 @@ import jwt from 'jsonwebtoken';
 
 import { JWT_SECRET } from '../config/jwtSecret.js';
 import { publicError } from '../config/security.js';
-import { dateToIsoDate } from '../lib/calendarDate.js';
+import { dateToIsoDate, normalizeCalendarDateInput } from '../lib/calendarDate.js';
 import { createNotification, userDisplayName } from '../lib/notificationHelper.js';
 import {
   userCanAccessPet,
@@ -63,6 +63,7 @@ function petRowToMap(row) {
     // Shared pets follow the owner's org in the DB, but the viewer should see
     // them under "My Pets", not the owner's organisation section.
     organization_id: isShared ? null : row.organization_id,
+    organization_name: isShared ? null : (row.organization_name || null),
     is_shared: isShared,
     created_at: row.created_at,
     updated_at: row.updated_at,
@@ -171,8 +172,8 @@ export default function petsRoutes(pool) {
       const orgId = pet.rows[0]?.organization_id;
       if (!orgId) return res.status(400).json({ error: 'Pet is not in an organization' });
       const data = req.body || {};
-      const fromDate = data.from_date || data.fromDate || null;
-      const toDate = data.to_date || data.toDate || null;
+      const fromDate = normalizeCalendarDateInput(data.from_date || data.fromDate);
+      const toDate = normalizeCalendarDateInput(data.to_date || data.toDate);
       if (!fromDate && !toDate) {
         return res.status(400).json({ error: 'Due date or completed on date is required' });
       }
@@ -227,16 +228,20 @@ export default function petsRoutes(pool) {
         return res.status(403).json({ error: 'Forbidden' });
       }
       const data = req.body || {};
-      const fromDate = data.from_date || data.fromDate;
-      const toDate = data.to_date || data.toDate;
+      const fromDate = data.from_date !== undefined || data.fromDate !== undefined
+        ? normalizeCalendarDateInput(data.from_date || data.fromDate)
+        : undefined;
+      const toDate = data.to_date !== undefined || data.toDate !== undefined
+        ? normalizeCalendarDateInput(data.to_date || data.toDate)
+        : undefined;
       const existing = await pool.query(
         'SELECT * FROM family_events WHERE id = $1 AND pet_id = $2',
         [eventId, petId]
       );
       if (existing.rows.length === 0) return res.status(404).json({ error: 'Event not found' });
       const prev = existing.rows[0];
-      const newFrom = fromDate !== undefined ? fromDate : prev.from_date;
-      const newTo = toDate !== undefined ? toDate : prev.to_date;
+      const newFrom = fromDate !== undefined ? fromDate : dateToIsoDate(prev.from_date);
+      const newTo = toDate !== undefined ? toDate : dateToIsoDate(prev.to_date);
       if (!newFrom && !newTo) {
         return res.status(400).json({ error: 'Due date or completed on date is required' });
       }
@@ -289,7 +294,9 @@ export default function petsRoutes(pool) {
         return res.status(403).json({ error: 'Forbidden' });
       }
       const data = req.body || {};
-      const completedOn = data.completed_on || data.completedOn || data.to_date || data.toDate;
+      const completedOn = normalizeCalendarDateInput(
+        data.completed_on || data.completedOn || data.to_date || data.toDate,
+      );
       if (!completedOn) {
         return res.status(400).json({ error: 'Completed on date is required' });
       }
@@ -309,7 +316,7 @@ export default function petsRoutes(pool) {
       await pool.query(
         `INSERT INTO family_event_history (id, family_event_id, due_date, completed_on, marked_by_user_id, marked_at, notes)
          VALUES ($1, $2, $3, $4, $5, $6, $7)`,
-        [histId, eventId, prev.from_date, completedOn, userId, markedAt, data.notes || '']
+        [histId, eventId, dateToIsoDate(prev.from_date), completedOn, userId, markedAt, data.notes || '']
       );
       const row = result.rows[0];
       row.assigned_name = '';
@@ -340,8 +347,8 @@ export default function petsRoutes(pool) {
       res.json(result.rows.map((r) => ({
         id: r.id,
         family_event_id: r.family_event_id,
-        due_date: r.due_date ? String(r.due_date).split('T')[0] : null,
-        completed_on: r.completed_on ? String(r.completed_on).split('T')[0] : null,
+        due_date: r.due_date ? dateToIsoDate(r.due_date) : null,
+        completed_on: r.completed_on ? dateToIsoDate(r.completed_on) : null,
         marked_at: r.marked_at,
         marked_by_user_id: r.marked_by_user_id,
         marked_by_name: r.marked_by_name?.trim() || null,
@@ -550,14 +557,30 @@ export default function petsRoutes(pool) {
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     try {
       const result = await pool.query(
-        `SELECT p.*, false AS is_shared
+        `SELECT p.*, false AS is_shared, o.name AS organization_name
          FROM pets p
+         LEFT JOIN organizations o ON o.id = p.organization_id
          WHERE p.user_id = $1
          UNION ALL
-         SELECT p.*, true AS is_shared
+         SELECT p.*, true AS is_shared, o.name AS organization_name
          FROM pets p
          JOIN pet_access pa ON pa.pet_id = p.id
+         LEFT JOIN organizations o ON o.id = p.organization_id
          WHERE pa.user_id = $1 AND pa.role = ANY($2::text[]) AND COALESCE(pa.hidden, false) = false
+         UNION ALL
+         SELECT p.*, false AS is_shared, o.name AS organization_name
+         FROM pets p
+         JOIN organization_users ou ON ou.organization_id = p.organization_id
+         LEFT JOIN organizations o ON o.id = p.organization_id
+         WHERE ou.user_id = $1
+           AND p.organization_id IS NOT NULL
+           AND p.user_id <> $1
+           AND ou.role NOT LIKE 'pending_%'
+           AND NOT EXISTS (
+             SELECT 1 FROM pet_access pa
+             WHERE pa.pet_id = p.id AND pa.user_id = $1
+               AND pa.role = ANY($2::text[]) AND COALESCE(pa.hidden, false) = false
+           )
          ORDER BY created_at`,
         [userId, COLLABORATOR_ROLES]
       );

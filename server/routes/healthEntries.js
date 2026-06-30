@@ -7,8 +7,8 @@ import jwt from 'jsonwebtoken';
 
 import { JWT_SECRET } from '../config/jwtSecret.js';
 import { publicError } from '../config/security.js';
-import { nextOccurrence, toDateOnly, assertAtLeastOneDate } from '../lib/recurrenceHelper.js';
-import { dateToIsoDate } from '../lib/calendarDate.js';
+import { nextOccurrence, assertAtLeastOneDate } from '../lib/recurrenceHelper.js';
+import { dateToIsoDate, normalizeCalendarDateInput, todayCalendarIso } from '../lib/calendarDate.js';
 import {
   accessiblePetSql,
   userCanManagePet,
@@ -70,12 +70,6 @@ function extractUserId(req) {
   } catch (_) {
     return null;
   }
-}
-
-function parseOptionalDate(value) {
-  if (value == null || value === '') return null;
-  const d = new Date(value);
-  return Number.isNaN(d.getTime()) ? null : d;
 }
 
 function healthEntryToMap(row) {
@@ -223,10 +217,10 @@ export default function healthEntriesRoutes(pool) {
       if (!(await userCanManagePet(pool, petId, userId))) {
         return res.status(403).json({ error: 'Forbidden' });
       }
-      const startDate = data.start_date || data.startDate || null;
-      const nextDueDate = data.next_due_date || data.nextDueDate || null;
-      const completedOn = data.completed_on || data.completedOn || null;
-      const repeatEndDate = data.repeat_end_date || data.repeatEndDate || null;
+      const startDate = normalizeCalendarDateInput(data.start_date || data.startDate);
+      const nextDueDate = normalizeCalendarDateInput(data.next_due_date || data.nextDueDate);
+      const completedOn = normalizeCalendarDateInput(data.completed_on || data.completedOn);
+      const repeatEndDate = normalizeCalendarDateInput(data.repeat_end_date || data.repeatEndDate);
       const recurrenceAnchor = data.recurrence_anchor || data.recurrenceAnchor || 'from_completion';
       const healthIssueId = data.health_issue_id || data.healthIssueId || null;
       try {
@@ -269,10 +263,10 @@ export default function healthEntriesRoutes(pool) {
         return res.status(404).json({ error: 'Entry not found' });
       }
       const data = req.body;
-      const startDate = data.start_date || data.startDate || null;
-      const nextDueDate = data.next_due_date || data.nextDueDate || null;
-      const completedOn = data.completed_on || data.completedOn || null;
-      const repeatEndDate = data.repeat_end_date || data.repeatEndDate || null;
+      const startDate = normalizeCalendarDateInput(data.start_date || data.startDate);
+      const nextDueDate = normalizeCalendarDateInput(data.next_due_date || data.nextDueDate);
+      const completedOn = normalizeCalendarDateInput(data.completed_on || data.completedOn);
+      const repeatEndDate = normalizeCalendarDateInput(data.repeat_end_date || data.repeatEndDate);
       const recurrenceAnchor = data.recurrence_anchor || data.recurrenceAnchor || 'from_completion';
       const healthIssueId = data.health_issue_id || data.healthIssueId || null;
       try {
@@ -340,13 +334,14 @@ export default function healthEntriesRoutes(pool) {
       );
       if (existing.rows.length === 0) return res.status(404).json({ error: 'Entry not found' });
       const row = existing.rows[0];
-      const dueDate = row.next_due_date ? toDateOnly(row.next_due_date) : null;
-      const completedOn = parseOptionalDate(body.completed_on || body.completedOn) || toDateOnly(new Date());
+      const dueDateIso = dateToIsoDate(row.next_due_date);
+      const completedOnIso = normalizeCalendarDateInput(body.completed_on || body.completedOn)
+        || todayCalendarIso();
       const anchor = row.recurrence_anchor || 'from_completion';
-      if (anchor === 'from_due_date' && !dueDate && (row.frequency || 'once') !== 'once') {
+      if (anchor === 'from_due_date' && !dueDateIso && (row.frequency || 'once') !== 'once') {
         return res.status(400).json({ error: 'Due date is required for fixed-schedule recurring entries' });
       }
-      const newDueDate = nextOccurrence(row, completedOn);
+      const newDueDate = nextOccurrence(row, completedOnIso);
       const notes = body.notes || '';
       const histId = uuidv4();
       const markedAt = new Date();
@@ -356,12 +351,12 @@ export default function healthEntriesRoutes(pool) {
           `UPDATE health_entries SET status = 'completed', completed_on = $1, completed_at = $2,
             next_due_date = NULL, updated_at = NOW()
            WHERE id = $3 RETURNING *`,
-          [dateToIsoDate(completedOn), markedAt, entryId]
+          [completedOnIso, markedAt, entryId]
         );
         await pool.query(
           `INSERT INTO health_history (id, health_entry_id, status, notes, due_date, completed_on, marked_by_user_id, changed_at)
            VALUES ($1, $2, 'completed', $3, $4, $5, $6, $7)`,
-          [histId, entryId, notes, dueDate ? dateToIsoDate(dueDate) : null, dateToIsoDate(completedOn), userId, markedAt]
+          [histId, entryId, notes, dueDateIso, completedOnIso, userId, markedAt]
         );
         const entry = result.rows[0];
         entry.pet_name = null;
@@ -377,7 +372,7 @@ export default function healthEntriesRoutes(pool) {
       await pool.query(
         `INSERT INTO health_history (id, health_entry_id, status, notes, due_date, completed_on, marked_by_user_id, changed_at)
          VALUES ($1, $2, 'completed', $3, $4, $5, $6, $7)`,
-        [histId, entryId, notes, dueDate ? dateToIsoDate(dueDate) : null, dateToIsoDate(completedOn), userId, markedAt]
+        [histId, entryId, notes, dueDateIso, completedOnIso, userId, markedAt]
       );
       const entry = result.rows[0];
       entry.pet_name = null;
@@ -413,7 +408,7 @@ export default function healthEntriesRoutes(pool) {
       if (existing.rows.length === 0) return res.status(404).json({ error: 'Entry not found' });
       const row = existing.rows[0];
       const last = hist.rows[0];
-      const restoreDue = last?.due_date || row.start_date;
+      const restoreDue = dateToIsoDate(last?.due_date || row.start_date);
       const result = await pool.query(
         `UPDATE health_entries SET status = 'active', completed_on = NULL, completed_at = NULL,
           next_due_date = CASE WHEN frequency = 'once' THEN $1 ELSE COALESCE($1, next_due_date) END,

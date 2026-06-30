@@ -146,6 +146,8 @@ class OrgPetsNotifier extends FamilyAsyncNotifier<List<Pet>, String> {
       passedAway: m['passedAway'] == true || m['passed_away'] == true,
       photoPath: m['photoPath']?.toString() ?? m['photo_path']?.toString(),
       vetId: m['vetId']?.toString() ?? m['vet_id']?.toString(),
+      organizationId: m['organization_id']?.toString(),
+      organizationName: m['organization_name']?.toString(),
     )).toList();
   }
 
