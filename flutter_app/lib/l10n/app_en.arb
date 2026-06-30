@@ -96,6 +96,8 @@
   "failedToLoadPets": "Failed to load pets: {error}",
   "@failedToLoadPets": { "placeholders": { "error": { "type": "String" } } },
   "noPetsYet": "No pets yet",
+  "noPetsMatchFilter": "No pets match this filter.",
+  "showAllPets": "Show all pets",
   "addFirstPet": "Tap + to add your first pet",
 
   "petDetails": "Pet Details",

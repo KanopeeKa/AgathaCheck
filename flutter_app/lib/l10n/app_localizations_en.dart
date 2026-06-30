@@ -282,6 +282,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get noPetsYet => 'No pets yet';
 
   @override
+  String get noPetsMatchFilter => 'No pets match this filter.';
+
+  @override
+  String get showAllPets => 'Show all pets';
+
+  @override
   String get addFirstPet => 'Tap + to add your first pet';
 
   @override

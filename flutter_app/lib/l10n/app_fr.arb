@@ -92,6 +92,8 @@
   "addNewPet": "Ajouter un nouvel animal",
   "failedToLoadPets": "Échec du chargement des animaux : {error}",
   "noPetsYet": "Aucun animal",
+  "noPetsMatchFilter": "Aucun animal ne correspond à ce filtre.",
+  "showAllPets": "Afficher tous les animaux",
   "addFirstPet": "Appuyez sur + pour ajouter votre premier animal",
 
   "petDetails": "Détails de l'animal",

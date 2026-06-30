@@ -63,4 +63,28 @@ void main() {
 
     expect(filtered, hasLength(1));
   });
+
+  test('syncOrgFilter clears stale organisation filter', () {
+    final controller = PetListController()..orgFilter = 'Old Org';
+
+    controller.syncOrgFilter(['Current Org']);
+
+    expect(controller.orgFilter, isNull);
+  });
+
+  test('syncOrgFilter keeps valid organisation filter', () {
+    final controller = PetListController()..orgFilter = 'Current Org';
+
+    controller.syncOrgFilter(['Current Org', 'Other Org']);
+
+    expect(controller.orgFilter, 'Current Org');
+  });
+
+  test('syncOrgFilter keeps personal filter', () {
+    final controller = PetListController()..orgFilter = '_personal';
+
+    controller.syncOrgFilter([]);
+
+    expect(controller.orgFilter, '_personal');
+  });
 }
