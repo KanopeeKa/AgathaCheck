@@ -237,7 +237,6 @@ class PendingOrgInvite {
     return PendingOrgInvite(
       id: json['id']?.toString() ?? '',
       organizationId: json['organization_id']?.toString() ?? '',
-      organizationName: json['organization_name'] as String?,
       organizationName: json['organization_name']?.toString() ?? '',
       organizationType: json['organization_type']?.toString() ?? '',
       desiredRole: json['desired_role']?.toString() ?? 'member',
