@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import '../../../../../core/widgets/app_logo_title.dart';
 import '../../../../../core/theme/app_theme.dart';
 import '../../../../../l10n/app_localizations.dart';
+import '../../../../health_tracking/presentation/widgets/events_nav_icon_button.dart';
 
 class PetDetailAppBar extends StatelessWidget {
   final String petName;
@@ -74,11 +75,7 @@ class PetDetailAppBar extends StatelessWidget {
           tooltip: l.veterinarians,
           onPressed: () => context.go('/vets'),
         ),
-        IconButton(
-          icon: const Icon(Icons.list_alt),
-          tooltip: l.events,
-          onPressed: () => context.go('/health'),
-        ),
+        const EventsNavIconButton(),
         PopupMenuButton<String>(
           tooltip: l.userMenu,
           icon: CircleAvatar(

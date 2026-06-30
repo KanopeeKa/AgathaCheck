@@ -176,6 +176,19 @@ final petOtherEventsByIdProvider =
       );
 });
 
+/// Whether a health entry is due today or overdue (and not completed).
+bool isEntryDueOrOverdue(HealthEntry entry) =>
+    !entry.isCompleted && (entry.isOverdue || entry.isDueToday);
+
+/// True when at least one health entry is due today or overdue.
+final hasDueOrOverdueEventsProvider = Provider<bool>((ref) {
+  final entriesAsync = ref.watch(healthEntriesNotifierProvider);
+  return entriesAsync.maybeWhen(
+    data: (entries) => entries.any(isEntryDueOrOverdue),
+    orElse: () => false,
+  );
+});
+
 /// Provides history for a specific entry.
 final entryHistoryProvider =
     FutureProvider.family<List<HealthHistoryEntry>, String>((ref, entryId) {

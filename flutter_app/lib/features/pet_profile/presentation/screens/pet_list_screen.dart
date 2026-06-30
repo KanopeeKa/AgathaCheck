@@ -9,6 +9,7 @@ import '../../../../l10n/app_localizations.dart';
 import '../../../auth/presentation/providers/auth_providers.dart';
 import '../../../health_tracking/domain/entities/health_entry.dart';
 import '../../../health_tracking/presentation/providers/health_providers.dart';
+import '../../../health_tracking/presentation/widgets/events_nav_icon_button.dart';
 import '../../../notifications/presentation/providers/notification_providers.dart';
 import '../../../organization/presentation/providers/organization_providers.dart';
 import '../../../sharing/presentation/providers/sharing_providers.dart';
@@ -97,11 +98,7 @@ class _PetListScreenState extends ConsumerState<PetListScreen> {
             tooltip: l.veterinarians,
             onPressed: () => context.go('/vets'),
           ),
-          IconButton(
-            icon: const Icon(Icons.list_alt),
-            tooltip: l.events,
-            onPressed: () => context.go('/health'),
-          ),
+          const EventsNavIconButton(),
           IconButton(
             icon: const Icon(Icons.business),
             tooltip: l.organizations,

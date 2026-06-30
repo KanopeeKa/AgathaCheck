@@ -8,6 +8,7 @@ import '../../../../core/utils/constants.dart';
 import '../../../../core/widgets/app_logo_title.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../auth/presentation/providers/auth_providers.dart';
+import '../../../health_tracking/presentation/widgets/events_nav_icon_button.dart';
 import '../../../notifications/presentation/providers/notification_providers.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../vet/presentation/providers/vet_providers.dart';
@@ -114,11 +115,7 @@ class _PetDetailScreenState extends ConsumerState<PetDetailScreen> {
                     tooltip: l.veterinarians,
                     onPressed: () => context.go('/vets'),
                   ),
-                  IconButton(
-                    icon: const Icon(Icons.list_alt),
-                    tooltip: l.events,
-                    onPressed: () => context.go('/health'),
-                  ),
+                  const EventsNavIconButton(),
                   PopupMenuButton<String>(
                     tooltip: l.userMenu,
                     icon: CircleAvatar(
