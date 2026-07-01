@@ -230,6 +230,18 @@ describe('Weight Entries API', () => {
       expect(lastQuery.params[4]).toBe('kg');
     });
 
+    it('normalizes ISO timestamps to date-only on create', async () => {
+      await request(app)
+        .post('/api/weight-entries')
+        .set('Authorization', `Bearer ${token}`)
+        .send({
+          pet_id: 'pet-1',
+          weight: 4.0,
+          date: '2026-04-01T00:00:00.000Z',
+        });
+      expect(lastQuery.params[5]).toBe('2026-04-01');
+    });
+
     it('scopes create by authenticated user_id', async () => {
       const entry = { pet_id: 'pet-1', weight: 4.2 };
       const res = await request(app)

@@ -24,5 +24,17 @@ void main() {
       });
       expect(event.fromDate.day, 30);
     });
+
+    test('parses space-separated legacy date strings', () {
+      final event = FamilyEvent.fromJson({
+        'id': 'fe-1',
+        'pet_id': 'pet-1',
+        'organization_id': 'org-1',
+        'from_date': '2026-06-30 00:00:00.000Z',
+        'to_date': '2026-07-05 00:00:00.000Z',
+      });
+      expect(event.fromDate.day, 30);
+      expect(event.toDate!.day, 5);
+    });
   });
 }

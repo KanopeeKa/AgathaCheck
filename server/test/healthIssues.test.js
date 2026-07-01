@@ -293,6 +293,20 @@ describe('Health Issues API', () => {
       expect(lastQuery.params[5]).toBe('Some description');
     });
 
+    it('normalizes ISO timestamps to date-only on create', async () => {
+      await request(app)
+        .post('/api/health-issues')
+        .set('Authorization', `Bearer ${token}`)
+        .send({
+          pet_id: 'pet-1',
+          name: 'Seasonal',
+          start_date: '2025-06-01T00:00:00.000Z',
+          end_date: '2025-07-01T00:00:00.000Z',
+        });
+      expect(lastQuery.params[6]).toBe('2025-06-01');
+      expect(lastQuery.params[7]).toBe('2025-07-01');
+    });
+
     it('defaults issue_type to other', async () => {
       const issue = { pet_id: 'pet-1', name: 'Unknown' };
       const res = await request(app)

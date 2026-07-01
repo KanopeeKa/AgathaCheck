@@ -648,8 +648,8 @@ export default function petsRoutes(pool) {
         photoPath, vetId, colorValue, passedAway = false,
         organization_id
       } = req.body;
-      const dateOfBirth = req.body.dateOfBirth || req.body.date_of_birth || null;
-      const neuteredDate = req.body.neuteredDate || null;
+      const dateOfBirth = normalizeCalendarDateInput(req.body.dateOfBirth || req.body.date_of_birth);
+      const neuteredDate = normalizeCalendarDateInput(req.body.neuteredDate);
       if (organization_id && !(await userInOrg(organization_id, userId))) {
         return res.status(403).json({ error: 'Not a member of this organization' });
       }
@@ -691,8 +691,8 @@ export default function petsRoutes(pool) {
         photoPath, vetId, colorValue, passedAway = false,
         organization_id
       } = req.body;
-      const dateOfBirth = req.body.dateOfBirth || req.body.date_of_birth || null;
-      const neuteredDate = req.body.neuteredDate || null;
+      const dateOfBirth = normalizeCalendarDateInput(req.body.dateOfBirth || req.body.date_of_birth);
+      const neuteredDate = normalizeCalendarDateInput(req.body.neuteredDate);
       const existingPet = await pool.query(
         'SELECT organization_id FROM pets WHERE id = $1',
         [id]

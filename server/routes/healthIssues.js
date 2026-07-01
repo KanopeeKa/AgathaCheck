@@ -4,7 +4,7 @@ import jwt from 'jsonwebtoken';
 
 import { JWT_SECRET } from '../config/jwtSecret.js';
 import { publicError } from '../config/security.js';
-import { dateToIsoDate } from '../lib/calendarDate.js';
+import { dateToIsoDate, normalizeCalendarDateInput } from '../lib/calendarDate.js';
 import {
   accessiblePetSql,
   userCanManagePet,
@@ -102,8 +102,8 @@ export default function healthIssuesRoutes(pool) {
       if (!(await userCanManagePet(pool, petId, userId))) {
         return res.status(403).json({ error: 'Forbidden' });
       }
-      const startDate = data.start_date || data.startDate || null;
-      const endDate = data.end_date || data.endDate || null;
+      const startDate = normalizeCalendarDateInput(data.start_date || data.startDate);
+      const endDate = normalizeCalendarDateInput(data.end_date || data.endDate);
       const nameVal = data.title || data.name || '';
       const notesVal = data.description || data.notes || '';
       const result = await pool.query(
@@ -129,8 +129,8 @@ export default function healthIssuesRoutes(pool) {
         return res.status(404).json({ error: 'Not found' });
       }
       const data = req.body;
-      const startDate = data.start_date || data.startDate || null;
-      const endDate = data.end_date || data.endDate || null;
+      const startDate = normalizeCalendarDateInput(data.start_date || data.startDate);
+      const endDate = normalizeCalendarDateInput(data.end_date || data.endDate);
       const nameVal = data.title || data.name || '';
       const notesVal = data.description || data.notes || '';
       const result = await pool.query(

@@ -60,5 +60,7 @@ running database.
 
 ### Calendar dates (due dates, DOB, weight day, etc.)
 User-facing dates are **calendar days**, not UTC timestamps. Serialize them as `YYYY-MM-DD` on the
-API wire. See `docs/calendar-dates.md` and the shared helpers in
-`flutter_app/lib/core/utils/calendar_date.dart` and `server/lib/calendarDate.js`.
+API wire. All calendar fields must use PostgreSQL `DATE` columns (not `TIMESTAMPTZ`). See the full
+personal + org field inventory in `docs/calendar-dates.md` and the shared helpers in
+`flutter_app/lib/core/utils/calendar_date.dart`, `server/lib/calendarDate.js`, and
+`server/lib/calendar_date.dart`.

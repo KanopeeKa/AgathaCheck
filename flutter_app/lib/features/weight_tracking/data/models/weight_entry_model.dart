@@ -15,7 +15,7 @@ class WeightEntryModel extends WeightEntry {
     return WeightEntryModel(
       id: json['id']?.toString() ?? '',
       petId: json['pet_id']?.toString() ?? '',
-      date: parseCalendarDate(json['date']) ?? DateTime.now(),
+      date: parseCalendarDate(json['date']) ?? calendarDateOnly(DateTime.now()),
       weight: (json['weight'] is num)
           ? (json['weight'] as num).toDouble()
           : double.parse(json['weight'].toString()),

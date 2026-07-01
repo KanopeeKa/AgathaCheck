@@ -29,7 +29,7 @@ String? toCalendarDateString(DateTime? date) {
   return '$y-$m-$d';
 }
 
-/// Normalizes request/DB values to `YYYY-MM-DD` for JSON responses and writes.
+/// Normalizes DB/request values to `YYYY-MM-DD` for JSON responses and writes.
 String? dateToIsoDate(Object? value) {
   if (value == null) return null;
   if (value is DateTime) return toCalendarDateString(value);
@@ -37,6 +37,9 @@ String? dateToIsoDate(Object? value) {
   if (parsed != null) return toCalendarDateString(parsed);
   return null;
 }
+
+/// Normalizes request-body calendar dates to `YYYY-MM-DD` for DB writes.
+String? normalizeCalendarDateInput(Object? value) => dateToIsoDate(value);
 
 /// Today's calendar date as `YYYY-MM-DD` in the server local timezone.
 String todayCalendarIso() {

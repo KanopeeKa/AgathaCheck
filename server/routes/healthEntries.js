@@ -179,7 +179,10 @@ export default function healthEntriesRoutes(pool) {
       for (const row of result.rows) {
         csv += [
           row.id, row.pet_name, row.name, row.type, row.dosage,
-          row.frequency, row.start_date, row.next_due_date, row.completed_on,
+          row.frequency,
+          dateToIsoDate(row.start_date),
+          dateToIsoDate(row.next_due_date),
+          dateToIsoDate(row.completed_on),
           row.recurrence_anchor, row.notes,
         ].map(csvCell).join(',') + '\n';
       }

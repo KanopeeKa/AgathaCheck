@@ -350,6 +350,27 @@ describe('Health Entries API', () => {
       // don't execute it.
       expect(res.text).toContain("'=cmd|/c calc");
     });
+
+    it('serializes calendar date columns as YYYY-MM-DD', async () => {
+      const pool = {
+        query: async () => ({
+          rows: [makeHealthRow({
+            start_date: new Date('2025-01-01T00:00:00.000Z'),
+            next_due_date: new Date('2026-02-01T00:00:00.000Z'),
+            completed_on: null,
+          })],
+        }),
+        end: async () => {},
+      };
+      const a = createApp(pool);
+      const res = await request(a)
+        .get('/api/health-entries/export')
+        .set('Authorization', `Bearer ${token}`);
+      const dataLine = res.text.split('\n')[1];
+      expect(dataLine).toContain('2025-01-01');
+      expect(dataLine).toContain('2026-02-01');
+      expect(dataLine).not.toMatch(/T\d{2}:/);
+    });
   });
 
   describe('GET /api/health-entries/:id', () => {
