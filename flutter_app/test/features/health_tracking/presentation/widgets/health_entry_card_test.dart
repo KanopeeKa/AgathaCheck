@@ -9,7 +9,7 @@ import 'package:pet_profile_app/l10n/app_localizations.dart';
 
 void main() {
   group('HealthEntryCard', () {
-    final dateFormat = DateFormat('dd MMM');
+    final dateFormat = DateFormat('dd MMM yy');
 
     Widget buildCard(HealthEntry entry, {VoidCallback? onMarkTaken}) {
       return MaterialApp(

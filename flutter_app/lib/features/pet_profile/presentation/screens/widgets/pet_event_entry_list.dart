@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:pet_profile_app/features/health_tracking/domain/entities/health_entry.dart';
+import 'package:pet_profile_app/features/health_tracking/presentation/widgets/health_entry_status.dart';
 import 'package:pet_profile_app/features/health_tracking/presentation/widgets/health_entry_type_labels.dart';
 import 'package:pet_profile_app/l10n/app_localizations.dart';
 
@@ -36,7 +36,6 @@ class PetEventEntryList extends StatelessWidget {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
     final l = AppLocalizations.of(context)!;
-    final dateFormat = DateFormat.yMMMd();
 
     if (entries.isEmpty) {
       return Padding(
@@ -60,46 +59,24 @@ class PetEventEntryList extends StatelessWidget {
         final detail = entry.dosage.trim().isEmpty
             ? healthEntryTypeLabel(l, entry.type)
             : '${healthEntryTypeLabel(l, entry.type)} · ${entry.dosage}';
-
-        final Widget statusLine;
-        if (entry.isCompleted) {
-          statusLine = Text(
-            l.completed,
-            style: theme.textTheme.bodySmall?.copyWith(color: colorScheme.primary),
-          );
-        } else if (entry.isOverdue && entry.nextDueDate != null) {
-          statusLine = Text(
-            '${l.overdue} · ${dateFormat.format(entry.nextDueDate!)}',
-            style: theme.textTheme.bodySmall?.copyWith(color: colorScheme.error),
-          );
-        } else if (entry.completedOn != null) {
-          statusLine = Text(
-            '${l.completedOn}: ${dateFormat.format(entry.completedOn!)}',
-            style: theme.textTheme.bodySmall?.copyWith(color: colorScheme.primary),
-          );
-        } else if (entry.nextDueDate != null) {
-          statusLine = Text(
-            dateFormat.format(entry.nextDueDate!),
-            style: theme.textTheme.bodySmall
-                ?.copyWith(color: colorScheme.onSurfaceVariant),
-          );
-        } else {
-          statusLine = Text(
-            l.notSet,
-            style: theme.textTheme.bodySmall
-                ?.copyWith(color: colorScheme.onSurfaceVariant),
-          );
-        }
+        final statusColor = healthEntryStatusColor(entry, colorScheme);
+        final statusLine = formatHealthEntryStatusLine(entry, l);
 
         return ListTile(
           leading: Icon(
             iconForType(entry.type),
-            color: entry.isOverdue ? colorScheme.error : colorScheme.primary,
+            color: statusColor,
           ),
           title: Text(entry.name),
           subtitle: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: [Text(detail), statusLine],
+            children: [
+              Text(detail),
+              Text(
+                statusLine,
+                style: theme.textTheme.bodySmall?.copyWith(color: statusColor),
+              ),
+            ],
           ),
           trailing: const Icon(Icons.chevron_right),
           onTap: () => onEntryTap(entry),

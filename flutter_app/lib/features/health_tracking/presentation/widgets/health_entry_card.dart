@@ -1,11 +1,11 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 
 import '../../../../l10n/app_localizations.dart';
 import '../../../pet_profile/domain/entities/pet.dart';
 import '../../domain/entities/health_entry.dart';
+import 'health_entry_status.dart';
 
 class HealthEntryCard extends StatelessWidget {
   const HealthEntryCard({
@@ -32,17 +32,9 @@ class HealthEntryCard extends StatelessWidget {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
-    final statusColor = entry.isCompleted
-        ? Colors.green
-        : entry.isOverdue
-        ? colorScheme.error
-        : entry.isDueToday
-        ? Colors.orange
-        : entry.isDueSoon
-        ? Colors.amber.shade700
-        : colorScheme.primary;
+    final statusColor = healthEntryStatusColor(entry, colorScheme);
 
-    final statusLine = _formatStatusLine(context, entry);
+    final statusLine = formatHealthEntryStatusLine(entry, AppLocalizations.of(context)!);
     final statusText = statusLine.toLowerCase();
 
     final showActions = !entry.isCompleted;
@@ -187,20 +179,6 @@ class HealthEntryCard extends StatelessWidget {
       case HealthEntryType.familyEvent:
         return Icons.family_restroom;
     }
-  }
-
-  /// Status line on the card: date-only for due/overdue/future entries (color
-  /// conveys state) and [AppLocalizations.doneOn] for completed once entries.
-  String _formatStatusLine(BuildContext context, HealthEntry entry) {
-    final l = AppLocalizations.of(context)!;
-    final dateFormat = DateFormat('dd MMM');
-
-    if (entry.isCompleted) {
-      final doneDate = entry.completedOn ?? entry.updatedAt ?? entry.startDate;
-      return l.doneOn(dateFormat.format(doneDate));
-    }
-    if (entry.nextDueDate == null) return l.notSet;
-    return dateFormat.format(entry.nextDueDate!);
   }
 }
 
