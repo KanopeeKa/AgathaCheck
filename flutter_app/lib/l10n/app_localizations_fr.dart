@@ -283,6 +283,12 @@ class AppLocalizationsFr extends AppLocalizations {
   String get noPetsYet => 'Aucun animal';
 
   @override
+  String get noPetsMatchFilter => 'Aucun animal ne correspond à ce filtre.';
+
+  @override
+  String get showAllPets => 'Afficher tous les animaux';
+
+  @override
   String get addFirstPet => 'Appuyez sur + pour ajouter votre premier animal';
 
   @override
