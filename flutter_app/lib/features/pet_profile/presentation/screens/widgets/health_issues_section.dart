@@ -5,7 +5,7 @@ import 'package:uuid/uuid.dart';
 import '../../../domain/entities/pet.dart';
 import '../../../../health_tracking/domain/entities/health_issue.dart';
 import '../../../../health_tracking/presentation/providers/health_issue_providers.dart';
-import '../../../../core/utils/calendar_date.dart';
+import '../../../../../core/utils/calendar_date.dart';
 import '../../../../../l10n/app_localizations.dart';
 
 class HealthIssuesSection extends ConsumerStatefulWidget {
