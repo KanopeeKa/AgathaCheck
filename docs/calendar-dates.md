@@ -15,6 +15,11 @@ health-issue start/end). Others represent an **instant in time** (`created_at`,
 PostgreSQL `DATE` read through node-pg becomes midnight UTC; serializing that
 as `…T00:00:00.000Z` makes clients west of UTC display the **previous day**.
 
+**Do not** store calendar dates in `TIMESTAMPTZ` columns. A `YYYY-MM-DD` insert
+is interpreted in the session timezone; reading the instant back with UTC date
+components shifts the day for users east of UTC. `health_entries.next_due_date`
+is a `DATE` column (migration `011_next_due_date_to_date.sql`).
+
 ## Shared helpers
 
 - **Flutter:** `flutter_app/lib/core/utils/calendar_date.dart`

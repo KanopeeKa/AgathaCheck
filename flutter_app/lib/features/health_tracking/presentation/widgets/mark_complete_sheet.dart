@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../../l10n/app_localizations.dart';
+import '../../../../core/utils/calendar_date.dart';
 
 /// Bottom sheet to capture when an event was actually completed.
 Future<DateTime?> showMarkCompleteSheet(
@@ -46,7 +47,7 @@ Future<DateTime?> showMarkCompleteSheet(
                   lastDate: DateTime(2100),
                 );
                 if (picked != null) {
-                  selected = picked;
+                  selected = calendarDateOnly(picked);
                   (ctx as Element).markNeedsBuild();
                 }
               },

@@ -7,6 +7,7 @@ import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart';
 
 import 'jwt_secret.dart';
 import 'http_security.dart';
+import 'calendar_date.dart';
 
 final _uuid = Uuid();
 const _jsonHeaders = {'Content-Type': 'application/json'};
@@ -54,32 +55,26 @@ Future<bool> _userOwnsEntry(Pool pool, String entryId, String userId) async {
   return r.isNotEmpty;
 }
 
-/// Computes the next due date for a health entry after it is marked taken.
+/// Computes the next due date after marking an occurrence complete.
 ///
-/// For a `once` entry this returns the 9999-12-31 sentinel date, which the
-/// Flutter UI interprets as "completed" (there is no separate status column the
-/// UI reads). For a recurring entry it advances `next_due_date` by
-/// frequency * interval, looping until the result is strictly after today so
-/// that an entry which is several periods overdue still lands in the future and
-/// clears its overdue state. `frequency_interval` and `frequency_days` are
-/// coerced to at least 1 to guard against an infinite loop.
-///
-/// This mirrors `nextOccurrence` in the Node backend
-/// (`server/routes/healthEntries.js`); keep the two in lockstep.
-DateTime _nextOccurrence(Map<String, dynamic> c) {
+/// Returns the next due date as `YYYY-MM-DD`, or null for one-time entries.
+/// Mirrors `nextOccurrence` in the Node backend (`server/lib/recurrenceHelper.js`).
+String? _nextOccurrence(Map<String, dynamic> c, String completedOnIso) {
   final freq = (c['frequency'] ?? 'once').toString();
-  if (freq == 'once') return DateTime.utc(9999, 12, 31);
+  if (freq == 'once') return null;
+
   var interval = (c['frequency_interval'] as int?) ?? 1;
   if (interval < 1) interval = 1;
   var customDays = (c['frequency_days'] as int?) ?? interval;
   if (customDays < 1) customDays = interval;
-  final now = DateTime.now();
-  final today = DateTime(now.year, now.month, now.day);
-  var next = c['next_due_date'] is DateTime
-      ? c['next_due_date'] as DateTime
-      : (c['next_due_date'] != null
-          ? DateTime.parse(c['next_due_date'].toString())
-          : now);
+
+  final anchor = (c['recurrence_anchor'] ?? 'from_completion').toString();
+  final baseIso = anchor == 'from_due_date'
+      ? (dateToIsoDate(c['next_due_date']) ?? completedOnIso)
+      : completedOnIso;
+  final base = parseCalendarDate(baseIso);
+  if (base == null) return completedOnIso;
+
   DateTime advance(DateTime d) {
     switch (freq) {
       case 'daily':
@@ -87,11 +82,9 @@ DateTime _nextOccurrence(Map<String, dynamic> c) {
       case 'weekly':
         return d.add(Duration(days: 7 * interval));
       case 'monthly':
-        return DateTime(d.year, d.month + interval, d.day, d.hour, d.minute,
-            d.second);
+        return DateTime(d.year, d.month + interval, d.day);
       case 'yearly':
-        return DateTime(d.year + interval, d.month, d.day, d.hour, d.minute,
-            d.second);
+        return DateTime(d.year + interval, d.month, d.day);
       case 'custom':
         return d.add(Duration(days: customDays));
       default:
@@ -99,10 +92,13 @@ DateTime _nextOccurrence(Map<String, dynamic> c) {
     }
   }
 
-  do {
+  final today = parseCalendarDate(todayCalendarIso())!;
+  var next = advance(base);
+  while (!DateTime(next.year, next.month, next.day).isAfter(
+      DateTime(today.year, today.month, today.day))) {
     next = advance(next);
-  } while (!next.isAfter(today));
-  return next;
+  }
+  return toCalendarDateString(next);
 }
 
 Router healthRoutes(Pool pool) {
@@ -180,8 +176,8 @@ Router healthRoutes(Pool pool) {
       if (!await _userOwnsPet(pool, petId?.toString(), userId)) {
         return Response(403, body: jsonEncode({'error': 'Forbidden'}), headers: _jsonHeaders);
       }
-      final startDateStr = data['start_date'] ?? data['startDate'];
-      final nextDueStr = data['next_due_date'] ?? data['nextDueDate'];
+      final startDateStr = dateToIsoDate(data['start_date'] ?? data['startDate']);
+      final nextDueStr = dateToIsoDate(data['next_due_date'] ?? data['nextDueDate']);
       final results = await pool.execute(
         Sql.named('INSERT INTO health_entries (id, pet_id, user_id, name, type, dosage, frequency, frequency_days, frequency_interval, start_date, next_due_date, notes, health_issue_id, remind_days_before, status) VALUES (@id, @pet_id, @user_id, @name, @type, @dosage, @frequency, @frequency_days, @frequency_interval, @start_date, @next_due_date, @notes, @health_issue_id, @remind_days_before, @status) RETURNING *'),
         parameters: {
@@ -194,8 +190,8 @@ Router healthRoutes(Pool pool) {
           'frequency': data['frequency'] ?? 'once',
           'frequency_days': data['frequency_days'] ?? data['frequencyDays'],
           'frequency_interval': data['frequency_interval'] ?? data['frequencyInterval'] ?? 1,
-          'start_date': startDateStr != null ? DateTime.parse(startDateStr.toString()) : null,
-          'next_due_date': nextDueStr != null ? DateTime.parse(nextDueStr.toString()) : null,
+          'start_date': startDateStr,
+          'next_due_date': nextDueStr,
           'notes': data['notes'] ?? '',
           'health_issue_id': data['health_issue_id'] ?? data['healthIssueId'],
           'remind_days_before': data['remind_days_before'] ?? data['remindDaysBefore'] ?? 1,
@@ -215,8 +211,8 @@ Router healthRoutes(Pool pool) {
     }
     try {
       final data = jsonDecode(await request.readAsString()) as Map<String, dynamic>;
-      final startDateStr = data['start_date'] ?? data['startDate'];
-      final nextDueStr = data['next_due_date'] ?? data['nextDueDate'];
+      final startDateStr = dateToIsoDate(data['start_date'] ?? data['startDate']);
+      final nextDueStr = dateToIsoDate(data['next_due_date'] ?? data['nextDueDate']);
       final results = await pool.execute(
         Sql.named('UPDATE health_entries SET name = @name, type = @type, dosage = @dosage, frequency = @frequency, frequency_days = @frequency_days, frequency_interval = @frequency_interval, start_date = @start_date, next_due_date = @next_due_date, notes = @notes, health_issue_id = @health_issue_id, remind_days_before = @remind_days_before, status = @status, updated_at = NOW() WHERE id = @id AND user_id = @userId RETURNING *'),
         parameters: {
@@ -228,8 +224,8 @@ Router healthRoutes(Pool pool) {
           'frequency': data['frequency'] ?? 'once',
           'frequency_days': data['frequency_days'] ?? data['frequencyDays'],
           'frequency_interval': data['frequency_interval'] ?? data['frequencyInterval'] ?? 1,
-          'start_date': startDateStr != null ? DateTime.parse(startDateStr.toString()) : null,
-          'next_due_date': nextDueStr != null ? DateTime.parse(nextDueStr.toString()) : null,
+          'start_date': startDateStr,
+          'next_due_date': nextDueStr,
           'notes': data['notes'] ?? '',
           'health_issue_id': data['health_issue_id'] ?? data['healthIssueId'],
           'remind_days_before': data['remind_days_before'] ?? data['remindDaysBefore'] ?? 1,
@@ -274,7 +270,12 @@ Router healthRoutes(Pool pool) {
       if (existing.isEmpty) {
         return Response.notFound(jsonEncode({'error': 'Entry not found'}), headers: _jsonHeaders);
       }
-      final newDueDate = _nextOccurrence(existing.first.toColumnMap());
+      final body = jsonDecode(await request.readAsString()) as Map<String, dynamic>;
+      final row = existing.first.toColumnMap();
+      final completedOnIso = dateToIsoDate(body['completed_on'] ?? body['completedOn'])
+          ?? todayCalendarIso();
+      final freq = (row['frequency'] ?? 'once').toString();
+      final newDueDate = freq == 'once' ? null : _nextOccurrence(row, completedOnIso);
       final results = await pool.execute(
         Sql.named('UPDATE health_entries SET status = \'completed\', completed_at = NOW(), next_due_date = @next_due, updated_at = NOW() WHERE id = @id AND user_id = @userId RETURNING *'),
         parameters: {'id': id, 'userId': userId, 'next_due': newDueDate},
@@ -403,8 +404,10 @@ Map<String, dynamic> _healthEntryToMap(ResultRow row) {
     'frequency': c['frequency'] ?? 'once',
     'frequency_days': c['frequency_days'],
     'frequency_interval': c['frequency_interval'] ?? 1,
-    'start_date': c['start_date']?.toString(),
-    'next_due_date': c['next_due_date']?.toString(),
+    'start_date': dateToIsoDate(c['start_date']),
+    'next_due_date': dateToIsoDate(c['next_due_date']),
+    'completed_on': dateToIsoDate(c['completed_on']),
+    'repeat_end_date': dateToIsoDate(c['repeat_end_date']),
     'notes': c['notes'] ?? '',
     'health_issue_id': c['health_issue_id']?.toString(),
     'remind_days_before': c['remind_days_before'] ?? 1,

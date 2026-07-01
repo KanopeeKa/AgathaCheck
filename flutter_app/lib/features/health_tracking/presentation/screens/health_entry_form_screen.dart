@@ -8,6 +8,7 @@ import 'package:intl/intl.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../../../../core/widgets/app_logo_title.dart';
+import '../../../../core/utils/calendar_date.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../pet_profile/domain/entities/pet.dart';
 import '../../../pet_profile/presentation/providers/pet_providers.dart';
@@ -571,7 +572,7 @@ class _HealthEntryFormScreenState extends ConsumerState<HealthEntryFormScreen> {
                                   lastDate: DateTime(2100),
                                 );
                                 if (picked != null) {
-                                  setState(() => _repeatEndDate = picked);
+                                  setState(() => _repeatEndDate = calendarDateOnly(picked));
                                 }
                               },
                             ),

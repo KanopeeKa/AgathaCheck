@@ -6,6 +6,7 @@ import 'package:uuid/uuid.dart';
 import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart';
 import 'jwt_secret.dart';
 import 'http_security.dart';
+import 'calendar_date.dart';
 
 final _uuid = Uuid();
 const _jsonHeaders = {'Content-Type': 'application/json'};
@@ -62,7 +63,7 @@ Router weightRoutes(Pool pool) {
           'pet_name': c['pet_name'],
           'weight': c['weight'],
           'unit': c['unit'] ?? 'kg',
-          'date': c['date']?.toString(),
+          'date': dateToIsoDate(c['date']),
           'notes': c['notes'] ?? '',
           'created_at': c['created_at']?.toString(),
         };
@@ -97,7 +98,7 @@ Router weightRoutes(Pool pool) {
         'pet_name': c['pet_name'],
         'weight': c['weight'],
         'unit': c['unit'] ?? 'kg',
-        'date': c['date']?.toString(),
+        'date': dateToIsoDate(c['date']),
         'notes': c['notes'] ?? '',
         'created_at': c['created_at']?.toString(),
       }), headers: _jsonHeaders);
@@ -127,7 +128,7 @@ Router weightRoutes(Pool pool) {
           'user_id': userId,
           'weight': data['weight'] is num ? data['weight'] : double.tryParse(data['weight']?.toString() ?? '0'),
           'unit': data['unit'] ?? 'kg',
-          'date': dateStr != null ? DateTime.parse(dateStr.toString()) : DateTime.now(),
+          'date': dateToIsoDate(dateStr) ?? todayCalendarIso(),
           'notes': data['notes'] ?? '',
         },
       );
@@ -137,7 +138,7 @@ Router weightRoutes(Pool pool) {
         'pet_id': c['pet_id']?.toString(),
         'weight': c['weight'],
         'unit': c['unit'] ?? 'kg',
-        'date': c['date']?.toString(),
+        'date': dateToIsoDate(c['date']),
         'notes': c['notes'] ?? '',
         'created_at': c['created_at']?.toString(),
       }), headers: _jsonHeaders);
@@ -161,7 +162,7 @@ Router weightRoutes(Pool pool) {
           'user_id': userId,
           'weight': data['weight'] is num ? data['weight'] : double.tryParse(data['weight']?.toString() ?? '0'),
           'unit': data['unit'] ?? 'kg',
-          'date': dateStr != null ? DateTime.parse(dateStr.toString()) : DateTime.now(),
+          'date': dateToIsoDate(dateStr) ?? todayCalendarIso(),
           'notes': data['notes'] ?? '',
         },
       );
@@ -174,7 +175,7 @@ Router weightRoutes(Pool pool) {
         'pet_id': c['pet_id']?.toString(),
         'weight': c['weight'],
         'unit': c['unit'] ?? 'kg',
-        'date': c['date']?.toString(),
+        'date': dateToIsoDate(c['date']),
         'notes': c['notes'] ?? '',
         'created_at': c['created_at']?.toString(),
       }), headers: _jsonHeaders);

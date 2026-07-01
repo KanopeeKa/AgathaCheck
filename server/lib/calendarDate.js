@@ -4,6 +4,9 @@
  * Fields backed by PostgreSQL `DATE` (or treated as calendar dates in the UI)
  * must be sent as `YYYY-MM-DD`, not UTC ISO timestamps. Using `toISOString()`
  * on a DATE read through node-pg shifts the day for clients west of UTC.
+ *
+ * Never store calendar dates in TIMESTAMPTZ columns — session timezone
+ * conversion makes UTC extraction return the wrong day east of UTC.
  */
 
 /**
@@ -13,7 +16,8 @@
 export function dateToIsoDate(value) {
   if (value == null || value === '') return null;
   const s = String(value).trim();
-  const datePart = s.split('T')[0];
+  // Accept YYYY-MM-DD and legacy "YYYY-MM-DD HH:MM:SS…" / ISO timestamps.
+  const datePart = s.split(/[T ]/)[0];
   if (/^\d{4}-\d{2}-\d{2}$/.test(datePart)) return datePart;
   const d = value instanceof Date ? value : new Date(value);
   if (Number.isNaN(d.getTime())) return null;

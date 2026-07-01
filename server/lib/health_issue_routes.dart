@@ -6,6 +6,7 @@ import 'package:uuid/uuid.dart';
 import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart';
 import 'jwt_secret.dart';
 import 'http_security.dart';
+import 'calendar_date.dart';
 
 final _uuid = Uuid();
 const _jsonHeaders = {'Content-Type': 'application/json'};
@@ -44,8 +45,8 @@ Map<String, dynamic> _issueRowToMap(Map<String, dynamic> c) {
     'name': c['name'] ?? '',
     'issue_type': c['issue_type'],
     'notes': c['notes'] ?? '',
-    'start_date': c['start_date']?.toString(),
-    'end_date': c['end_date']?.toString(),
+    'start_date': dateToIsoDate(c['start_date']),
+    'end_date': dateToIsoDate(c['end_date']),
     'status': c['status'] ?? 'active',
     'created_at': c['created_at']?.toString(),
     'updated_at': c['updated_at']?.toString(),
@@ -127,8 +128,8 @@ Router healthIssueRoutes(Pool pool) {
           'name': nameVal,
           'issue_type': data['issue_type'] ?? data['issueType'] ?? 'other',
           'notes': notesVal,
-          'start_date': startStr != null ? DateTime.parse(startStr.toString()) : null,
-          'end_date': endStr != null ? DateTime.parse(endStr.toString()) : null,
+          'start_date': dateToIsoDate(startStr),
+          'end_date': dateToIsoDate(endStr),
           'status': data['status'] ?? 'active',
         },
       );
@@ -158,8 +159,8 @@ Router healthIssueRoutes(Pool pool) {
           'name': nameVal,
           'issue_type': data['issue_type'] ?? data['issueType'] ?? 'other',
           'notes': notesVal,
-          'start_date': startStr != null ? DateTime.parse(startStr.toString()) : null,
-          'end_date': endStr != null ? DateTime.parse(endStr.toString()) : null,
+          'start_date': dateToIsoDate(startStr),
+          'end_date': dateToIsoDate(endStr),
           'status': data['status'] ?? 'active',
         },
       );

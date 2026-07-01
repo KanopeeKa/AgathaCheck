@@ -8,6 +8,7 @@ import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart';
 
 import 'jwt_secret.dart';
 import 'http_security.dart';
+import 'calendar_date.dart';
 
 final _uuid = Uuid();
 
@@ -105,13 +106,13 @@ Map<String, dynamic> _petRowToMap(ResultRow row) {
     'species': c['species'],
     'breed': c['breed'] ?? '',
     'age': c['age'],
-    'dateOfBirth': c['date_of_birth']?.toString(),
-    'date_of_birth': c['date_of_birth']?.toString(),
+    'dateOfBirth': dateToIsoDate(c['date_of_birth']),
+    'date_of_birth': dateToIsoDate(c['date_of_birth']),
     'weight': c['weight'],
     'gender': c['gender'],
     'bio': c['bio'] ?? '',
     'insurance': c['insurance'] ?? '',
-    'neuteredDate': c['neutered_date']?.toString(),
+    'neuteredDate': dateToIsoDate(c['neutered_date']),
     'neuterDismissed': c['neuter_dismissed'] ?? false,
     'chipId': c['chip_id'] ?? '',
     'chipDismissed': c['chip_dismissed'] ?? false,
@@ -238,12 +239,12 @@ Future<Response> _createPet(Request request) async {
         'species': data['species'],
         'breed': data['breed'] ?? '',
         'age': data['age'],
-        'dob': dobStr != null ? DateTime.parse(dobStr.toString()) : null,
+        'dob': dateToIsoDate(dobStr),
         'weight': data['weight'],
         'gender': data['gender'],
         'bio': data['bio'] ?? '',
         'insurance': data['insurance'] ?? '',
-        'neutered_date': neuteredStr != null ? DateTime.parse(neuteredStr.toString()) : null,
+        'neutered_date': dateToIsoDate(neuteredStr),
         'neuter_dismissed': data['neuterDismissed'] ?? false,
         'chip_id': data['chipId'] ?? '',
         'chip_dismissed': data['chipDismissed'] ?? false,
@@ -283,12 +284,12 @@ Future<Response> _updatePet(Request request, String id) async {
         'species': data['species'],
         'breed': data['breed'] ?? '',
         'age': data['age'],
-        'dob': dobStr != null ? DateTime.parse(dobStr.toString()) : null,
+        'dob': dateToIsoDate(dobStr),
         'weight': data['weight'],
         'gender': data['gender'],
         'bio': data['bio'] ?? '',
         'insurance': data['insurance'] ?? '',
-        'neutered_date': neuteredStr != null ? DateTime.parse(neuteredStr.toString()) : null,
+        'neutered_date': dateToIsoDate(neuteredStr),
         'neuter_dismissed': data['neuterDismissed'] ?? false,
         'chip_id': data['chipId'] ?? '',
         'chip_dismissed': data['chipDismissed'] ?? false,

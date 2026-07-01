@@ -148,7 +148,7 @@ CREATE TABLE health_entries (
   frequency_days INTEGER,
   frequency_interval INTEGER DEFAULT 1,
   start_date DATE,
-  next_due_date TIMESTAMPTZ,
+  next_due_date DATE,
   notes TEXT DEFAULT '',
   health_issue_id UUID,
   remind_days_before INTEGER DEFAULT 1,

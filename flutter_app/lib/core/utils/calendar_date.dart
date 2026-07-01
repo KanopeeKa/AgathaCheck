@@ -8,7 +8,7 @@ DateTime? parseCalendarDate(Object? raw) {
   final s = raw.toString().trim();
   if (s.isEmpty) return null;
 
-  final datePart = s.split('T').first;
+  final datePart = s.split(RegExp(r'[T ]')).first;
   final parts = datePart.split('-');
   if (parts.length == 3) {
     final y = int.tryParse(parts[0]);
@@ -18,7 +18,7 @@ DateTime? parseCalendarDate(Object? raw) {
       return DateTime(y, m, d);
     }
   }
-  return DateTime.tryParse(s);
+  return null;
 }
 
 /// Serializes [date] to `YYYY-MM-DD` using local calendar components.

@@ -4,7 +4,7 @@ import jwt from 'jsonwebtoken';
 
 import { JWT_SECRET } from '../config/jwtSecret.js';
 import { publicError } from '../config/security.js';
-import { dateToIsoDate } from '../lib/calendarDate.js';
+import { dateToIsoDate, normalizeCalendarDateInput, todayCalendarIso } from '../lib/calendarDate.js';
 import {
   accessiblePetSql,
   userCanManagePet,
@@ -104,7 +104,8 @@ export default function weightEntriesRoutes(pool) {
       if (!(await userCanManagePet(pool, petId, userId))) {
         return res.status(403).json({ error: 'Forbidden' });
       }
-      const dateVal = data.date || data.measured_at || dateToIsoDate(new Date());
+      const dateVal = normalizeCalendarDateInput(data.date || data.measured_at)
+        || todayCalendarIso();
       const weightVal = typeof data.weight === 'number' ? data.weight : parseFloat(data.weight || '0');
       const result = await pool.query(
         'INSERT INTO weight_entries (id, pet_id, user_id, weight, unit, date, notes) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *',
@@ -124,7 +125,8 @@ export default function weightEntriesRoutes(pool) {
         return res.status(404).json({ error: 'Not found' });
       }
       const data = req.body;
-      const dateVal = data.date || data.measured_at || dateToIsoDate(new Date());
+      const dateVal = normalizeCalendarDateInput(data.date || data.measured_at)
+        || todayCalendarIso();
       const weightVal = typeof data.weight === 'number' ? data.weight : parseFloat(data.weight || '0');
       const result = await pool.query(
         'UPDATE weight_entries SET weight = $1, unit = $2, date = $3, notes = $4 WHERE id = $5 RETURNING *',

@@ -14,6 +14,10 @@ describe('dateToIsoDate', () => {
     expect(dateToIsoDate('2026-06-30T09:00:00.000Z')).toBe('2026-06-30');
   });
 
+  it('extracts the date portion from space-separated timestamps', () => {
+    expect(dateToIsoDate('2026-06-30 00:00:00.000Z')).toBe('2026-06-30');
+  });
+
   it('returns null for null/empty/invalid', () => {
     expect(dateToIsoDate(null)).toBeNull();
     expect(dateToIsoDate('')).toBeNull();
