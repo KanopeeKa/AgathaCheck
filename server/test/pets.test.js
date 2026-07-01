@@ -452,6 +452,29 @@ describe('Pets API', () => {
       expect(capturedParams[6]).toBe('2021-01-15');
     });
 
+    it('normalizes ISO timestamps to date-only on create', async () => {
+      const returnedRow = makePetRow();
+      let capturedParams;
+      const app = createApp(createMockPool(async (sql, params) => {
+        if (sql.includes('INSERT INTO pets')) {
+          capturedParams = params;
+          return { rows: [returnedRow] };
+        }
+        return { rows: [] };
+      }));
+      await request(app)
+        .post('/api/pets')
+        .set('Authorization', `Bearer ${token}`)
+        .send({
+          name: 'Fluffy',
+          species: 'cat',
+          dateOfBirth: '2021-01-15T00:00:00.000Z',
+          neuteredDate: '2022-06-01T00:00:00.000Z',
+        });
+      expect(capturedParams[6]).toBe('2021-01-15');
+      expect(capturedParams[11]).toBe('2022-06-01');
+    });
+
     it('handles 500 on database error', async () => {
       const app = createApp(createMockPool(async () => { throw new Error('insert fail'); }));
       const res = await request(app)
