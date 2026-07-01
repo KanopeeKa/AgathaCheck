@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../pet_profile/presentation/widgets/pet_card.dart';
@@ -112,7 +113,7 @@ class OrganizationPetsSection extends StatelessWidget {
                           padding: const EdgeInsets.only(bottom: 8),
                           child: PetCard(
                             pet: pet,
-                            onTap: () => Navigator.of(context).pushNamed('/pet/${pet.id}'),
+                            onTap: () => context.push('/pet/${pet.id}'),
                           ),
                         )),
                         if (isSuperUser && onAddPet != null) ...[
