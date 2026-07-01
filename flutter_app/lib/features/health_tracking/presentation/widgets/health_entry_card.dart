@@ -31,7 +31,6 @@ class HealthEntryCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
-    final l = AppLocalizations.of(context)!;
 
     final statusColor = entry.isCompleted
         ? Colors.green
@@ -43,13 +42,8 @@ class HealthEntryCard extends StatelessWidget {
         ? Colors.amber.shade700
         : colorScheme.primary;
 
-    final statusText = entry.isCompleted
-        ? l.done.toLowerCase()
-        : entry.isOverdue
-        ? l.overdue.toLowerCase()
-        : entry.isDueToday
-        ? 'due today'
-        : 'upcoming';
+    final statusLine = _formatStatusLine(context, entry);
+    final statusText = statusLine.toLowerCase();
 
     final showActions = !entry.isCompleted;
 
@@ -100,7 +94,6 @@ class HealthEntryCard extends StatelessWidget {
                                   overflow: TextOverflow.ellipsis,
                                 ),
                               ),
-                              if (entry.isCompleted) _DoneChip(entry: entry),
                             ],
                           ),
                           if (healthIssueName != null)
@@ -144,7 +137,7 @@ class HealthEntryCard extends StatelessWidget {
                               ),
                               const SizedBox(width: 3),
                               Text(
-                                _formatDueDate(context, entry),
+                                statusLine,
                                 style: theme.textTheme.bodySmall?.copyWith(
                                   color: statusColor,
                                   fontWeight: FontWeight.w600,
@@ -196,21 +189,18 @@ class HealthEntryCard extends StatelessWidget {
     }
   }
 
-  String _formatDueDate(BuildContext context, HealthEntry entry) {
+  /// Status line on the card: date-only for due/overdue/future entries (color
+  /// conveys state) and [AppLocalizations.doneOn] for completed once entries.
+  String _formatStatusLine(BuildContext context, HealthEntry entry) {
     final l = AppLocalizations.of(context)!;
+    final dateFormat = DateFormat('dd MMM');
+
     if (entry.isCompleted) {
-      return l.done;
-    }
-    if (entry.isOverdue) {
-      return l.overdue;
-    }
-    if (entry.isDueToday && entry.nextDueDate != null) {
-      final hour = entry.nextDueDate!.hour;
-      final minute = entry.nextDueDate!.minute;
-      return 'Due today at ${hour.toString().padLeft(2, '0')}:${minute.toString().padLeft(2, '0')}';
+      final doneDate = entry.completedOn ?? entry.updatedAt ?? entry.startDate;
+      return l.doneOn(dateFormat.format(doneDate));
     }
     if (entry.nextDueDate == null) return l.notSet;
-    return DateFormat('dd/MM/yy').format(entry.nextDueDate!);
+    return dateFormat.format(entry.nextDueDate!);
   }
 }
 
@@ -493,42 +483,6 @@ class _PetStrip extends StatelessWidget {
         border: Border.all(color: petColor, width: 2),
       ),
       child: Icon(Icons.pets, size: 14, color: petColor),
-    );
-  }
-}
-
-class _DoneChip extends StatelessWidget {
-  const _DoneChip({required this.entry});
-
-  final HealthEntry entry;
-
-  @override
-  Widget build(BuildContext context) {
-    final l = AppLocalizations.of(context)!;
-    final doneDate = entry.completedOn ?? entry.updatedAt ?? entry.startDate;
-    final dateStr = DateFormat('d MMM').format(doneDate);
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-      decoration: BoxDecoration(
-        color: Colors.green.shade50,
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: Colors.green.shade200, width: 0.5),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(Icons.check_circle, size: 12, color: Colors.green.shade700),
-          const SizedBox(width: 3),
-          Text(
-            '${l.done} $dateStr',
-            style: TextStyle(
-              fontSize: 10,
-              fontWeight: FontWeight.w600,
-              color: Colors.green.shade700,
-            ),
-          ),
-        ],
-      ),
     );
   }
 }

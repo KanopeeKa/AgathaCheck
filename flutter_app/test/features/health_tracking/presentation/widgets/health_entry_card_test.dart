@@ -9,6 +9,8 @@ import 'package:pet_profile_app/l10n/app_localizations.dart';
 
 void main() {
   group('HealthEntryCard', () {
+    final dateFormat = DateFormat('dd MMM');
+
     Widget buildCard(HealthEntry entry, {VoidCallback? onMarkTaken}) {
       return MaterialApp(
         localizationsDelegates: const [
@@ -55,10 +57,11 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(
-        find.text(DateFormat('dd/MM/yy').format(futureEntry.nextDueDate!)),
+        find.text(dateFormat.format(futureEntry.nextDueDate!)),
         findsOneWidget,
       );
       expect(find.textContaining('Due in'), findsNothing);
+      expect(find.textContaining('Due '), findsNothing);
     });
 
     testWidgets('displays tomorrow as a due date', (tester) async {
@@ -71,7 +74,7 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(
-        find.text(DateFormat('dd/MM/yy').format(tomorrowEntry.nextDueDate!)),
+        find.text(dateFormat.format(tomorrowEntry.nextDueDate!)),
         findsOneWidget,
       );
       expect(find.text('Due tomorrow'), findsNothing);
@@ -90,13 +93,59 @@ void main() {
       }
     });
 
-    testWidgets('shows overdue status for past entries', (tester) async {
+    testWidgets('shows overdue due date without overdue label', (tester) async {
       final overdueEntry = futureEntry.copyWith(
         nextDueDate: DateTime.now().subtract(const Duration(days: 1)),
       );
       await tester.pumpWidget(buildCard(overdueEntry));
       await tester.pumpAndSettle();
-      expect(find.text('Overdue'), findsOneWidget);
+
+      expect(
+        find.text(dateFormat.format(overdueEntry.nextDueDate!)),
+        findsOneWidget,
+      );
+      expect(find.text('Overdue'), findsNothing);
+    });
+
+    testWidgets('shows due today as date only', (tester) async {
+      final now = DateTime.now();
+      final dueTodayEntry = futureEntry.copyWith(
+        nextDueDate: DateTime(now.year, now.month, now.day, 14, 30),
+      );
+
+      await tester.pumpWidget(buildCard(dueTodayEntry));
+      await tester.pumpAndSettle();
+
+      expect(
+        find.text(dateFormat.format(dueTodayEntry.nextDueDate!)),
+        findsOneWidget,
+      );
+      expect(find.textContaining('Due today'), findsNothing);
+    });
+
+    testWidgets('shows done date once on status line for completed entries', (
+      tester,
+    ) async {
+      final completedOn = DateTime(2025, 6, 3);
+      final completedEntry = HealthEntry(
+        id: '2',
+        petId: 'pet-1',
+        name: 'Rabies vaccine',
+        type: HealthEntryType.preventive,
+        dosage: '',
+        frequency: HealthFrequency.once,
+        startDate: DateTime(2025, 1, 1),
+        completedOn: completedOn,
+        nextDueDate: DateTime(9999, 12, 31),
+      );
+      final l = lookupAppLocalizations(const Locale('en'));
+      final expected = l.doneOn(dateFormat.format(completedOn));
+
+      await tester.pumpWidget(buildCard(completedEntry));
+      await tester.pumpAndSettle();
+
+      expect(find.text(expected), findsOneWidget);
+      expect(find.text('Done'), findsNothing);
     });
   });
 }
