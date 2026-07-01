@@ -72,7 +72,7 @@ function buildMockPool(overrides = {}) {
       if (sql.includes('DELETE FROM users')) return handlers.deleteUser(sql, params);
       if (sql.includes('SELECT * FROM pets')) return handlers.selectPets(sql, params);
       if (sql.includes('SELECT * FROM vets')) return handlers.selectVets(sql, params);
-      if (sql.includes('SELECT id FROM users WHERE email')) return handlers.selectUserByEmail(sql, params);
+      if (sql.includes('FROM users WHERE email') && sql.includes('SELECT id')) return handlers.selectUserByEmail(sql, params);
       if (sql.includes('INSERT INTO password_reset_tokens')) return handlers.insertResetToken(sql, params);
       if (sql.includes('SELECT prt.id')) return handlers.selectResetToken(sql, params);
       if (sql.includes('UPDATE password_reset_tokens')) return handlers.updateResetTokenUsed(sql, params);
@@ -594,7 +594,7 @@ describe('Auth Routes', () => {
     it('should return success message for existing email', async () => {
       const pool = buildMockPool({
         selectUserByEmail: async (sql, params) => {
-          if (sql.includes('SELECT id FROM users')) return { rows: [{ id: userId }] };
+          if (sql.includes('SELECT id')) return { rows: [{ id: userId, locale: 'en' }] };
           return { rows: [userRow] };
         },
       });
@@ -613,7 +613,7 @@ describe('Auth Routes', () => {
       process.env.NODE_ENV = 'production';
       try {
         const pool = buildMockPool({
-          selectUserByEmail: async () => ({ rows: [{ id: userId }] }),
+          selectUserByEmail: async () => ({ rows: [{ id: userId, locale: 'en' }] }),
         });
         const prodApp = createApp(pool, mockComparePassword);
         const res = await request(prodApp)
