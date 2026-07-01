@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 
+import '../../../../l10n/app_localizations.dart';
+
 class OrgFilterChips extends StatelessWidget {
   final List<String> orgNames;
   final String? selected;
   final void Function(String?) onSelected;
-  final dynamic l;
+  final AppLocalizations l;
 
   const OrgFilterChips({
     super.key,
@@ -21,12 +23,12 @@ class OrgFilterChips extends StatelessWidget {
       child: Row(
         children: [
           ChoiceChip(
-            label: Text(l.all),
+            label: Text(l.allPets),
             selected: selected == null,
             onSelected: (_) => onSelected(null),
           ),
           ChoiceChip(
-            label: Text(l.personal),
+            label: Text(l.myPets),
             selected: selected == '_personal',
             onSelected: (_) => onSelected('_personal'),
           ),
