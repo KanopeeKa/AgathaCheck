@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/providers/api_base_url_provider.dart';
+import '../../../../core/utils/calendar_date.dart';
 import '../../../../core/providers/http_client_provider.dart';
 import '../../../../core/widgets/app_logo_title.dart';
 import '../../../../l10n/app_localizations.dart';
@@ -116,7 +117,7 @@ class _SharedPetScreenState extends ConsumerState<SharedPetScreen> {
     final species = pet['species'] as String? ?? '';
     final breed = pet['breed'] as String? ?? '';
     final dobStr = (pet['dateOfBirth'] ?? pet['date_of_birth']) as String?;
-    final dateOfBirth = dobStr != null ? DateTime.tryParse(dobStr) : null;
+    final dateOfBirth = parseCalendarDate(dobStr);
     String? ageDisplay;
     if (dateOfBirth != null) {
       final diff = DateTime.now().difference(dateOfBirth).inDays / 365.25;

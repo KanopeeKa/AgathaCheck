@@ -1,11 +1,14 @@
 import { v4 as uuidv4 } from 'uuid';
 
 import { accessiblePetSql, petNotificationRecipientIds } from './petAccess.js';
+import { dateToIsoDate, todayCalendarIso } from './calendarDate.js';
 
-function startOfDay(d) {
-  const x = new Date(d);
-  x.setHours(0, 0, 0, 0);
-  return x;
+function daysBetweenCalendarDates(isoFrom, isoTo) {
+  const [fy, fm, fd] = isoFrom.split('-').map(Number);
+  const [ty, tm, td] = isoTo.split('-').map(Number);
+  const fromMs = Date.UTC(fy, fm - 1, fd);
+  const toMs = Date.UTC(ty, tm - 1, td);
+  return Math.round((toMs - fromMs) / (24 * 60 * 60 * 1000));
 }
 
 function parsePrefs(rows) {
@@ -81,11 +84,12 @@ export async function checkDueNotifications(pool, userId, petNamesFromClient = {
     [userId]
   );
 
-  const today = startOfDay(new Date());
+  const todayIso = todayCalendarIso();
   let created = 0;
 
   for (const entry of entries.rows) {
-    const dueDate = startOfDay(entry.next_due_date);
+    const dueIso = dateToIsoDate(entry.next_due_date);
+    if (!dueIso) continue;
     const petName = petNamesFromClient[entry.pet_id] || entry.pet_name || 'Pet';
     const recipients = await petNotificationRecipientIds(pool, entry.pet_id);
 
@@ -94,11 +98,11 @@ export async function checkDueNotifications(pool, userId, petNamesFromClient = {
       if (prefs.mutedPetIds.includes(String(entry.pet_id))) continue;
 
       const remindBefore = entry.remind_days_before ?? prefs.reminderDaysBefore ?? 1;
-      const daysUntilDue = Math.round((dueDate - today) / (24 * 60 * 60 * 1000));
+      const daysUntilDue = daysBetweenCalendarDates(todayIso, dueIso);
 
       if (daysUntilDue < 0 && prefs.notifyOverdue) {
         const title = `${petName}: overdue`;
-        const message = `"${entry.name}" was due on ${dueDate.toISOString().split('T')[0]}.`;
+        const message = `"${entry.name}" was due on ${dueIso}.`;
         if (await insertDueNotification(pool, {
           userId: recipientId,
           petId: entry.pet_id,
@@ -110,7 +114,7 @@ export async function checkDueNotifications(pool, userId, petNamesFromClient = {
         })) created += 1;
       } else if (daysUntilDue >= 0 && daysUntilDue <= remindBefore && prefs.notifyDueSoon) {
         const title = `${petName}: due soon`;
-        const message = `"${entry.name}" is due on ${dueDate.toISOString().split('T')[0]}.`;
+        const message = `"${entry.name}" is due on ${dueIso}.`;
         if (await insertDueNotification(pool, {
           userId: recipientId,
           petId: entry.pet_id,

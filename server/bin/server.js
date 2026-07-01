@@ -28,16 +28,20 @@ function getServerDir() {
 
 function createPool() {
   const databaseUrl = process.env.DATABASE_URL;
-  if (databaseUrl) {
-    return new Pool({ connectionString: databaseUrl });
-  }
-  return new Pool({
-    user: process.env.PGUSER || 'user',
-    password: process.env.PGPASSWORD || 'password',
-    host: process.env.PGHOST || 'localhost',
-    port: process.env.PGPORT || 5432,
-    database: process.env.PGDATABASE || 'agatha_db',
+  const pool = databaseUrl
+    ? new Pool({ connectionString: databaseUrl })
+    : new Pool({
+        user: process.env.PGUSER || 'user',
+        password: process.env.PGPASSWORD || 'password',
+        host: process.env.PGHOST || 'localhost',
+        port: process.env.PGPORT || 5432,
+        database: process.env.PGDATABASE || 'agatha_db',
+      });
+  // Calendar DATE/TIMESTAMPTZ round-trips must not depend on the host TZ.
+  pool.on('connect', (client) => {
+    client.query("SET TIME ZONE 'UTC'").catch(() => {});
   });
+  return pool;
 }
 
 export function createApp(customPool, comparePassword) {

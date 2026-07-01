@@ -16,9 +16,15 @@ void main() {
       expect(d!.day, 30);
     });
 
-    test('returns null for empty input', () {
+    test('parses space-separated legacy timestamp prefix', () {
+      final d = parseCalendarDate('2026-06-30 00:00:00.000Z');
+      expect(d!.day, 30);
+    });
+
+    test('returns null for empty or invalid input', () {
       expect(parseCalendarDate(null), isNull);
       expect(parseCalendarDate(''), isNull);
+      expect(parseCalendarDate('not-a-date'), isNull);
     });
   });
 

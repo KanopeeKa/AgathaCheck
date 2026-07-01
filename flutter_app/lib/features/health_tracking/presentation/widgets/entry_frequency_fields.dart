@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../../l10n/app_localizations.dart';
+import '../../../../core/utils/calendar_date.dart';
 import '../../domain/entities/health_entry.dart';
 import 'entry_form_labels.dart';
 
@@ -99,7 +100,7 @@ class EntryFrequencyFields extends StatelessWidget {
                       firstDate: DateTime.now(),
                       lastDate: DateTime(2100),
                     );
-                    if (picked != null) onRepeatEndChanged(picked);
+                    if (picked != null) onRepeatEndChanged(calendarDateOnly(picked));
                   },
                 ),
               ],
