@@ -8,6 +8,7 @@ import { JWT_SECRET } from '../config/jwtSecret.js';
 import { errorDetails } from '../config/security.js';
 import { createAuthLimiter } from '../config/rateLimit.js';
 import { isValidEmail, isStrongPassword, MIN_PASSWORD_LENGTH } from '../config/validation.js';
+import { resolveEmailLocale } from '../lib/email/locale.js';
 import { sendPasswordResetEmail } from '../services/mailService.js';
 
 const isProduction = () => process.env.NODE_ENV === 'production';
@@ -250,11 +251,15 @@ export default function authRoutes(pool, comparePassword) {
       if (!email) {
         return res.status(400).json({ error: 'Email is required' });
       }
-      const userResult = await pool.query('SELECT id FROM users WHERE email = $1', [email]);
+      const userResult = await pool.query('SELECT id, locale FROM users WHERE email = $1', [email]);
       if (userResult.rows.length === 0) {
         return res.status(200).json({ message: 'If that email exists, a reset code has been sent.' });
       }
       const userId = userResult.rows[0].id;
+      const locale = resolveEmailLocale(
+        userResult.rows[0].locale,
+        req.headers['accept-language']
+      );
       // Cryptographically-secure 6-digit code (crypto.randomInt, not Math.random).
       const code = String(randomInt(100000, 1000000));
       const id = uuidv4();
@@ -263,7 +268,7 @@ export default function authRoutes(pool, comparePassword) {
         [id, userId, code]
       );
       try {
-        await sendPasswordResetEmail(email, code);
+        await sendPasswordResetEmail(email, code, locale);
       } catch (mailErr) {
         await pool.query('DELETE FROM password_reset_tokens WHERE id = $1', [id]);
         console.error('Password reset email failed; reset token removed.', mailErr);

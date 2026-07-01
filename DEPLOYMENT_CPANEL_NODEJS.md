@@ -83,7 +83,10 @@ UAT_SMTP_SECURE=true
 UAT_MAIL_USER=noreply@uat.agathatrack.com
 UAT_MAIL_PASS=your-email-account-password
 UAT_MAIL_FROM=Agatha Track <noreply@uat.agathatrack.com>
+APP_PUBLIC_URL=https://uat.agathatrack.com
 ```
+
+- `APP_PUBLIC_URL` is the public site URL (no trailing slash) used in branded email links and footers.
 
 **o2switch notes:**
 - Use the server hostname from your “Bienvenue chez o2switch” email (`*.o2switch.net`), not always `mail.yourdomain.com`, to avoid SSL certificate errors.
