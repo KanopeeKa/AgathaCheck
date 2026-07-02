@@ -3145,6 +3145,30 @@ abstract class AppLocalizations {
   /// **'Pet transferred successfully'**
   String get transferSuccess;
 
+  /// No description provided for @transferOwnership.
+  ///
+  /// In en, this message translates to:
+  /// **'Transfer ownership'**
+  String get transferOwnership;
+
+  /// No description provided for @transferNameConfirmationHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Type the pet\'s name to confirm'**
+  String get transferNameConfirmationHint;
+
+  /// No description provided for @transferNameMismatch.
+  ///
+  /// In en, this message translates to:
+  /// **'Pet name does not match'**
+  String get transferNameMismatch;
+
+  /// No description provided for @transferOwnershipDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Transfer full ownership to another user. You will keep shared access unless they remove you.'**
+  String get transferOwnershipDescription;
+
   /// No description provided for @archivedPets.
   ///
   /// In en, this message translates to:
@@ -3928,7 +3952,7 @@ abstract class AppLocalizations {
   /// No description provided for @faqSharingA4.
   ///
   /// In en, this message translates to:
-  /// **'Sharing gives someone view access to a pet — the original owner retains full control. Transferring (available for organisation pets) moves ownership of the pet to another user or organisation entirely.'**
+  /// **'Sharing gives someone view access to a pet — the original owner retains full control. Transferring ownership (personal pets) moves the pet to another user; you keep shared access unless they remove you. Organisation pet transfers are managed separately.'**
   String get faqSharingA4;
 
   /// No description provided for @faqOrgTitle.

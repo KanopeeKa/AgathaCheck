@@ -80,4 +80,19 @@ class SharingRepositoryImpl implements SharingRepository {
   Future<List<Map<String, dynamic>>> getHiddenSharedPets(String token) {
     return _dataSource.getHiddenSharedPets(token);
   }
+
+  @override
+  Future<void> transferOwnership(
+    String petId, {
+    required String recipientEmail,
+    required String confirmationName,
+    required String token,
+  }) {
+    return _dataSource.transferOwnership(
+      petId,
+      recipientEmail: recipientEmail,
+      confirmationName: confirmationName,
+      token: token,
+    );
+  }
 }

@@ -204,6 +204,18 @@ class _OwnerSharingContent extends ConsumerWidget {
             label: Text(l.shareLinkTitle),
           ),
         ),
+        if (pet.organizationId == null) ...[
+          const SizedBox(height: 8),
+          SizedBox(
+            width: double.infinity,
+            child: OutlinedButton.icon(
+              key: const Key('transfer_ownership_button'),
+              onPressed: () => _showTransferDialog(context, ref, l),
+              icon: const Icon(Icons.swap_horiz),
+              label: Text(l.transferOwnership),
+            ),
+          ),
+        ],
         const SizedBox(height: 8),
       ],
     );
@@ -266,6 +278,114 @@ class _OwnerSharingContent extends ConsumerWidget {
         ],
       ),
     );
+  }
+
+  Future<void> _showTransferDialog(
+    BuildContext context,
+    WidgetRef ref,
+    AppLocalizations l,
+  ) async {
+    final emailController = TextEditingController();
+    final nameController = TextEditingController();
+    final formKey = GlobalKey<FormState>();
+
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(l.transferOwnership),
+        content: Form(
+          key: formKey,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                l.transferOwnershipDescription,
+                style: Theme.of(ctx).textTheme.bodySmall,
+              ),
+              const SizedBox(height: 12),
+              TextFormField(
+                key: const Key('transfer_recipient_email'),
+                controller: emailController,
+                keyboardType: TextInputType.emailAddress,
+                decoration: InputDecoration(
+                  labelText: l.recipientEmail,
+                  border: const OutlineInputBorder(),
+                ),
+                validator: (value) {
+                  final email = value?.trim() ?? '';
+                  if (email.isEmpty) return l.orgInviteEmailRequired;
+                  if (!email.contains('@')) return l.orgInviteEmailInvalid;
+                  return null;
+                },
+              ),
+              const SizedBox(height: 12),
+              TextFormField(
+                key: const Key('transfer_confirmation_name'),
+                controller: nameController,
+                decoration: InputDecoration(
+                  labelText: l.transferNameConfirmationHint,
+                  border: const OutlineInputBorder(),
+                ),
+                validator: (value) {
+                  if ((value?.trim() ?? '').isEmpty) {
+                    return l.transferNameConfirmationHint;
+                  }
+                  if (value!.trim().toLowerCase() != pet.name.trim().toLowerCase()) {
+                    return l.transferNameMismatch;
+                  }
+                  return null;
+                },
+              ),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: Text(MaterialLocalizations.of(ctx).cancelButtonLabel),
+          ),
+          FilledButton(
+            key: const Key('transfer_ownership_confirm'),
+            onPressed: () {
+              if (formKey.currentState!.validate()) {
+                Navigator.pop(ctx, true);
+              }
+            },
+            child: Text(l.confirmTransfer),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed != true) {
+      emailController.dispose();
+      nameController.dispose();
+      return;
+    }
+
+    try {
+      await ref.read(petAccessNotifierProvider(petId).notifier).transferOwnership(
+            recipientEmail: emailController.text.trim(),
+            confirmationName: nameController.text.trim(),
+          );
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(l.transferSuccess)),
+        );
+        context.go('/');
+      }
+    } catch (e) {
+      if (context.mounted) {
+        final msg = e.toString().replaceFirst('Exception: ', '');
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(msg)),
+        );
+      }
+    } finally {
+      emailController.dispose();
+      nameController.dispose();
+    }
   }
 }
 

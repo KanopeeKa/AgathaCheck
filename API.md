@@ -90,6 +90,7 @@ Pet access management on `/api/pets/:id/...` (owner unless noted):
 - `GET /:id/access` — list users the pet is shared with
 - `DELETE /:id/access/:userId` — remove access and notify the user (owner only)
 - `DELETE /:id/follow` — shared user stops following (self-remove access)
+- `POST /:id/transfer` — transfer ownership to another user (owner only); body `{ recipient_email, confirmation_name }` (pet name must match, case-insensitive); former owner receives `shared` access automatically; writes `archived_pets` audit row (`transfer_type: user_to_user`)
 
 Shared pets appear in `GET /api/pets/all` with `is_shared: true`.
 

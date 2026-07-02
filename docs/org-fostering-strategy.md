@@ -110,11 +110,12 @@ flowchart TB
 
 **Locked:** Multiple super admins; super admin can promote others. Existing members → `super_admin`.
 
-### Increment 2 — User share → transfer ownership
+### Increment 2 — User share → transfer ownership ✓
 
 - `POST /pets/:id/transfer` with pet-name confirmation.
 - Former owner → `pet_access.shared` automatically.
-- `archived_pets` audit row.
+- `archived_pets` audit row (`user_to_user`).
+- Flutter: transfer dialog on personal pet sharing section.
 
 ### Increment 3 — Foster membership + directory
 

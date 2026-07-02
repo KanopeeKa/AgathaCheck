@@ -230,4 +230,27 @@ class SharingRemoteDataSource {
       throw Exception(data['error'] ?? 'Failed to decline share');
     }
   }
+
+  Future<void> transferOwnership(
+    String petId, {
+    required String recipientEmail,
+    required String confirmationName,
+    required String token,
+  }) async {
+    final response = await _client.post(
+      Uri.parse('$baseUrl/api/pets/$petId/transfer'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+      body: json.encode({
+        'recipient_email': recipientEmail,
+        'confirmation_name': confirmationName,
+      }),
+    );
+    if (response.statusCode >= 400) {
+      final data = json.decode(response.body);
+      throw Exception(data['error'] ?? 'Failed to transfer pet');
+    }
+  }
 }

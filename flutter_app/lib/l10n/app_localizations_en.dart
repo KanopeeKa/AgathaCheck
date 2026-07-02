@@ -1667,6 +1667,19 @@ class AppLocalizationsEn extends AppLocalizations {
   String get transferSuccess => 'Pet transferred successfully';
 
   @override
+  String get transferOwnership => 'Transfer ownership';
+
+  @override
+  String get transferNameConfirmationHint => 'Type the pet\'s name to confirm';
+
+  @override
+  String get transferNameMismatch => 'Pet name does not match';
+
+  @override
+  String get transferOwnershipDescription =>
+      'Transfer full ownership to another user. You will keep shared access unless they remove you.';
+
+  @override
   String get archivedPets => 'Archived Pets';
 
   @override
@@ -2112,7 +2125,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get faqSharingA4 =>
-      'Sharing gives someone view access to a pet — the original owner retains full control. Transferring (available for organisation pets) moves ownership of the pet to another user or organisation entirely.';
+      'Sharing gives someone view access to a pet — the original owner retains full control. Transferring ownership (personal pets) moves the pet to another user; you keep shared access unless they remove you. Organisation pet transfers are managed separately.';
 
   @override
   String get faqOrgTitle => 'Organisations';

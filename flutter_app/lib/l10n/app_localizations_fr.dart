@@ -1679,6 +1679,20 @@ class AppLocalizationsFr extends AppLocalizations {
   String get transferSuccess => 'Animal transféré avec succès';
 
   @override
+  String get transferOwnership => 'Transférer la propriété';
+
+  @override
+  String get transferNameConfirmationHint =>
+      'Tapez le nom de l\'animal pour confirmer';
+
+  @override
+  String get transferNameMismatch => 'Le nom de l\'animal ne correspond pas';
+
+  @override
+  String get transferOwnershipDescription =>
+      'Transférez la pleine propriété à un autre utilisateur. Vous conserverez un accès partagé sauf s\'il vous retire.';
+
+  @override
   String get archivedPets => 'Animaux archivés';
 
   @override

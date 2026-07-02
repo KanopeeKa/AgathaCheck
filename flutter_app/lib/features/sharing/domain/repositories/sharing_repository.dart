@@ -22,5 +22,11 @@ abstract class SharingRepository {
   Future<void> declinePendingShare(String petId, String token);
 
   Future<void> hideSharedPet(String petId, String token, {required bool hidden});
+  Future<void> transferOwnership(
+    String petId, {
+    required String recipientEmail,
+    required String confirmationName,
+    required String token,
+  });
   Future<List<Map<String, dynamic>>> getHiddenSharedPets(String token);
 }
