@@ -279,9 +279,7 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/organizations/join/:code',
         name: 'joinOrganization',
-        builder: (context, state) {
-          return const OrganizationListScreen();
-        },
+        redirect: (context, state) => '/organizations',
       ),
       GoRoute(
         path: '/organizations/:id',

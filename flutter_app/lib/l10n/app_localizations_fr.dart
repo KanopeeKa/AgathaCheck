@@ -1533,7 +1533,17 @@ class AppLocalizationsFr extends AppLocalizations {
       'Créez votre première organisation pour commencer';
 
   @override
-  String get createOrJoinOrganization => 'Créer ou rejoindre une organisation';
+  String get createOrJoinOrganization => 'Créer une organisation';
+
+  @override
+  String get orgMembershipByEmailInvite =>
+      'Pour rejoindre une organisation, demandez à un administrateur de vous inviter par e-mail.';
+
+  @override
+  String get orgInviteEmailRequired => 'L\'e-mail est requis';
+
+  @override
+  String get orgInviteEmailInvalid => 'Entrez une adresse e-mail valide';
 
   @override
   String get joinOrganization => 'Rejoindre une organisation';

@@ -46,7 +46,7 @@ of the parent record.
 | DELETE | `/:id` | `super_user` |
 | POST | `/:id/photo` | `super_user` |
 | GET | `/:orgId/members` | member |
-| POST | `/:id/invite` | `super_user`; role ∈ {`member`,`super_user`} |
+| POST | `/:id/invite` | `super_user`; body `{ email, role }` required; role ∈ {`member`,`super_user`}; invitee must already have an account |
 | PUT | `/:orgId/members/:userId/role` | `super_user`; role validated |
 | DELETE | `/:orgId/members/:userId` | `super_user` |
 | DELETE | `/:orgId/members/me` | self (leave org) |
@@ -97,15 +97,39 @@ Shared pets appear in `GET /api/pets/all` with `is_shared: true`.
 
 Share links are **single-use**: once accepted, the same link cannot be used by another user (`410`).
 
+### Pet family events (`/api/pets/:id/family-events`) — Node backend
+
+Org placement/foster periods (legacy shape; see `docs/org-fostering-strategy.md` for
+the planned `foster_placements` model):
+
+| Method | Path | Notes |
+|---|---|---|
+| GET | `/family-events` | List events for pet (org pet required for writes) |
+| POST | `/family-events` | Create; body includes `from_date`, optional `to_date`, `assigned_to_user_id` |
+| PUT | `/family-events/:eventId` | Update |
+| DELETE | `/family-events/:eventId` | Delete |
+| POST | `/family-events/:eventId/mark-complete` | Set completed date |
+| GET | `/family-events/:eventId/history` | History rows |
+
+Calendar dates on the wire: `YYYY-MM-DD` (`docs/calendar-dates.md`).
+
 ### Not implemented (return `501 Not Implemented`)
-These endpoints are placeholders without backing persistence. They now return
-`501` (with `{ "error": "Not implemented" }`) instead of faking a `2xx`, so
-clients don't believe the action succeeded:
 
-- **Organizations:** `POST /api/organizations/join/:code`, `POST /api/organizations/:orgId/pets`, `POST /api/organizations/:orgId/pets/:petId/transfer`.
-- **Pets:** `POST /api/pets/:id/transfer-to-org`, `POST|PUT|DELETE /api/pets/:id/family-events[...]`, `PUT /api/pets/:id/access/:userId/role`.
+These endpoints are placeholders. They return `501` with
+`{ "error": "Not implemented" }`. **Do not call from primary UI flows.**
 
-Read-only placeholders still return an honest empty list: `GET /api/pets/:id/family-events`. Lifecycle stubs `DELETE /api/pets/:id/data` and `POST /api/pets/:id/passed-away` acknowledge without side effects (the real state changes happen via `DELETE`/`PUT /api/pets/:id`).
+| Endpoint | Notes | Planned |
+|---|---|---|
+| `POST /api/organizations/join/:code` | Join-by-code retired; use email invite + accept | — |
+| `POST /api/organizations/:orgId/pets` | Dedicated org pet create | Inc 7 |
+| `POST /api/organizations/:orgId/pets/:petId/transfer` | Org transfer/archive | Inc 6/7 |
+| `POST /api/pets/:id/transfer-to-org` | User → org transfer | Inc 7 |
+| `PUT /api/pets/:id/access/:userId/role` | Promote shared → guardian | Inc 5 |
+
+Lifecycle stubs (acknowledge without full side effects):
+`DELETE /api/pets/:id/data`, `POST /api/pets/:id/passed-away` (use `DELETE`/`PUT /api/pets/:id` for real changes).
+
+**Roadmap:** `docs/org-fostering-strategy.md`
 
 ---
 

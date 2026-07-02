@@ -84,12 +84,6 @@ class OrgMembersNotifier extends FamilyAsyncNotifier<List<OrganizationMember>, S
     return repo.getMembers(orgId, token);
   }
 
-  Future<String> createInvite() async {
-    final token = ref.read(_orgTokenProvider)!;
-    final repo = ref.read(organizationRepositoryProvider);
-    return repo.inviteMember(arg, token);
-  }
-
   Future<void> inviteByEmail(String email, String role) async {
     final token = ref.read(_orgTokenProvider)!;
     final repo = ref.read(organizationRepositoryProvider);

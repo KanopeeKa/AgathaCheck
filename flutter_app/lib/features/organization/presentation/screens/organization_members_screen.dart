@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -7,6 +6,7 @@ import '../../../../core/widgets/app_logo_title.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../domain/entities/organization_member.dart';
 import '../providers/organization_providers.dart';
+import '../widgets/organization_invite_by_email_dialog.dart';
 
 class OrganizationMembersScreen extends ConsumerWidget {
   const OrganizationMembersScreen({super.key, required this.orgId});
@@ -36,7 +36,11 @@ class OrganizationMembersScreen extends ConsumerWidget {
               key: const Key('org_generate_invite'),
               icon: const Icon(Icons.person_add),
               tooltip: l.orgInviteMember,
-              onPressed: () => _generateInvite(context, ref),
+              onPressed: () => showOrganizationInviteByEmailDialog(
+                context: context,
+                ref: ref,
+                orgId: orgId,
+              ),
             ),
         ],
       ),
@@ -78,27 +82,6 @@ class OrganizationMembersScreen extends ConsumerWidget {
         },
       ),
     );
-  }
-
-  Future<void> _generateInvite(BuildContext context, WidgetRef ref) async {
-    final l = AppLocalizations.of(context)!;
-    try {
-      final inviteCode = await ref
-          .read(orgMembersProvider(orgId).notifier)
-          .createInvite();
-      if (context.mounted) {
-        await Clipboard.setData(ClipboardData(text: inviteCode));
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l.orgInviteLinkCopied)),
-        );
-      }
-    } catch (e) {
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('$e')),
-        );
-      }
-    }
   }
 }
 
