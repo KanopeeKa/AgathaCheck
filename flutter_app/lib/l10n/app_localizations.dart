@@ -2926,14 +2926,38 @@ abstract class AppLocalizations {
   /// No description provided for @orgSuperUser.
   ///
   /// In en, this message translates to:
-  /// **'Super User'**
+  /// **'Super admin'**
   String get orgSuperUser;
+
+  /// No description provided for @orgSuperAdmin.
+  ///
+  /// In en, this message translates to:
+  /// **'Super admin'**
+  String get orgSuperAdmin;
 
   /// No description provided for @orgMember.
   ///
   /// In en, this message translates to:
-  /// **'Member'**
+  /// **'Admin'**
   String get orgMember;
+
+  /// No description provided for @orgAdmin.
+  ///
+  /// In en, this message translates to:
+  /// **'Admin'**
+  String get orgAdmin;
+
+  /// No description provided for @orgFoster.
+  ///
+  /// In en, this message translates to:
+  /// **'Foster'**
+  String get orgFoster;
+
+  /// No description provided for @orgSelectNewRole.
+  ///
+  /// In en, this message translates to:
+  /// **'Select new role'**
+  String get orgSelectNewRole;
 
   /// No description provided for @orgInviteMember.
   ///

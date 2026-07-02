@@ -1562,10 +1562,22 @@ class AppLocalizationsFr extends AppLocalizations {
   String get join => 'Rejoindre';
 
   @override
-  String get orgSuperUser => 'Super utilisateur';
+  String get orgSuperUser => 'Super administrateur';
 
   @override
-  String get orgMember => 'Membre';
+  String get orgSuperAdmin => 'Super administrateur';
+
+  @override
+  String get orgMember => 'Administrateur';
+
+  @override
+  String get orgAdmin => 'Administrateur';
+
+  @override
+  String get orgFoster => 'Famille d\'accueil';
+
+  @override
+  String get orgSelectNewRole => 'Choisir le nouveau rôle';
 
   @override
   String get orgInviteMember => 'Inviter un membre';

@@ -15,7 +15,7 @@ class OrganizationPetsScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final petsAsync = ref.watch(orgPetsProvider(orgId));
-    final isSuperUser = ref.watch(isOrgSuperUserProvider(orgId));
+    final isOrgAdmin = ref.watch(isOrgAdminProvider(orgId));
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
     final l = AppLocalizations.of(context)!;
@@ -84,7 +84,7 @@ class OrganizationPetsScreen extends ConsumerWidget {
                       pet: pet,
                       onTap: () => context.push('/pet/${pet.id}'),
                     ),
-                    if (isSuperUser)
+                    if (isOrgAdmin)
                       Padding(
                         padding: const EdgeInsets.only(left: 16, bottom: 8),
                         child: Align(
@@ -108,7 +108,7 @@ class OrganizationPetsScreen extends ConsumerWidget {
           );
         },
       ),
-      floatingActionButton: isSuperUser
+      floatingActionButton: isOrgAdmin
           ? FloatingActionButton.extended(
               key: const Key('org_add_pet_fab'),
               onPressed: () => context.push('/add?orgId=$orgId'),

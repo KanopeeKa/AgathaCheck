@@ -10,7 +10,7 @@ class Organization {
     this.bio = '',
     this.photoUrl = '',
     this.createdBy,
-    this.role = 'member',
+    this.role = 'admin',
     this.memberCount = 0,
     this.petCount = 0,
     this.createdAt,
@@ -33,7 +33,13 @@ class Organization {
   final DateTime? createdAt;
   final DateTime? updatedAt;
 
-  bool get isSuperUser => role == 'super_user';
+  bool get isSuperUser =>
+      role == 'super_admin' || role == 'super_user';
+
+  bool get isOrgAdmin =>
+      isSuperUser || role == 'admin';
+
+  bool get isFoster => role == 'foster';
 
   Organization copyWith({
     String? id,

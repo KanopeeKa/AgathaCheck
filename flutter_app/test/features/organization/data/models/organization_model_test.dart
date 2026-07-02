@@ -15,7 +15,7 @@ void main() {
       'bio': 'We rescue animals',
       'photo_url': '/photos/org.jpg',
       'created_by': 'user-1',
-      'role': 'super_user',
+      'role': 'super_admin',
       'member_count': 5,
       'pet_count': 12,
       'created_at': '2025-01-01T00:00:00.000Z',
@@ -35,7 +35,7 @@ void main() {
       expect(model.bio, 'We rescue animals');
       expect(model.photoUrl, '/photos/org.jpg');
       expect(model.createdBy, 'user-1');
-      expect(model.role, 'super_user');
+      expect(model.role, 'super_admin');
       expect(model.memberCount, 5);
       expect(model.petCount, 12);
       expect(model.createdAt, isNotNull);
@@ -198,7 +198,7 @@ void main() {
       expect(model.updatedAt, org.updatedAt);
     });
 
-    test('isSuperUser returns true for super_user role', () {
+    test('isSuperUser returns true for super_admin role', () {
       final model = OrganizationModel.fromJson(fullJson);
       expect(model.isSuperUser, isTrue);
     });

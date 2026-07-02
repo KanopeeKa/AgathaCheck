@@ -8,6 +8,7 @@ import '../../../../l10n/app_localizations.dart';
 import '../../../sharing/presentation/providers/sharing_providers.dart';
 import '../../domain/entities/organization.dart';
 import '../../domain/entities/organization_member.dart';
+import '../../../pet_profile/domain/entities/pet.dart';
 import '../providers/organization_providers.dart';
 import '../widgets/organization_archived_section.dart';
 import '../widgets/organization_contact_card.dart';
@@ -16,6 +17,7 @@ import '../widgets/organization_info_card.dart';
 import '../widgets/organization_invite_by_email_dialog.dart';
 import '../widgets/organization_members_section.dart';
 import '../widgets/organization_pets_section.dart';
+import '../widgets/organization_role_labels.dart';
 
 class OrganizationDetailScreen extends ConsumerStatefulWidget {
   const OrganizationDetailScreen({super.key, required this.orgId});
@@ -44,23 +46,20 @@ class _OrganizationDetailScreenState
   }
 
   String _localizedRoleLabel(AppLocalizations l, OrgMemberRole role) {
-    switch (role) {
-      case OrgMemberRole.superUser:
-        return l.orgSuperUser;
-      case OrgMemberRole.pendingMember:
-      case OrgMemberRole.pendingSuperUser:
-        return l.invited;
-      case OrgMemberRole.member:
-        return l.orgMember;
-    }
+    return localizedOrgMemberRole(l, role);
   }
 
   @override
   Widget build(BuildContext context) {
     final orgsAsync = ref.watch(organizationListProvider);
-    final membersAsync = ref.watch(orgMembersProvider(orgId));
-    final petsAsync = ref.watch(orgPetsProvider(orgId));
     final isSuperUser = ref.watch(isOrgSuperUserProvider(orgId));
+    final isOrgAdmin = ref.watch(isOrgAdminProvider(orgId));
+    final membersAsync = isOrgAdmin
+        ? ref.watch(orgMembersProvider(orgId))
+        : const AsyncValue<List<OrganizationMember>>.data([]);
+    final petsAsync = isOrgAdmin
+        ? ref.watch(orgPetsProvider(orgId))
+        : const AsyncValue<List<Pet>>.data([]);
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
     final l = AppLocalizations.of(context)!;
@@ -106,43 +105,45 @@ class _OrganizationDetailScreenState
                 tooltip: MaterialLocalizations.of(context).showMenuTooltip,
                 onSelected: (value) => _handleMenuAction(context, ref, value, org),
                 itemBuilder: (context) => [
-                  PopupMenuItem(
-                    value: 'invite',
-                    child: ListTile(
-                      leading: const Icon(Icons.person_add),
-                      title: Text(l.orgInviteMember),
-                      dense: true,
-                      contentPadding: EdgeInsets.zero,
+                  if (isOrgAdmin) ...[
+                    PopupMenuItem(
+                      value: 'invite',
+                      child: ListTile(
+                        leading: const Icon(Icons.person_add),
+                        title: Text(l.orgInviteMember),
+                        dense: true,
+                        contentPadding: EdgeInsets.zero,
+                      ),
                     ),
-                  ),
-                  PopupMenuItem(
-                    value: 'members',
-                    child: ListTile(
-                      leading: const Icon(Icons.people),
-                      title: Text(l.orgMembers),
-                      dense: true,
-                      contentPadding: EdgeInsets.zero,
+                    PopupMenuItem(
+                      value: 'members',
+                      child: ListTile(
+                        leading: const Icon(Icons.people),
+                        title: Text(l.orgMembers),
+                        dense: true,
+                        contentPadding: EdgeInsets.zero,
+                      ),
                     ),
-                  ),
-                  PopupMenuItem(
-                    value: 'pets',
-                    child: ListTile(
-                      leading: const Icon(Icons.pets),
-                      title: Text(l.orgPets),
-                      dense: true,
-                      contentPadding: EdgeInsets.zero,
+                    PopupMenuItem(
+                      value: 'pets',
+                      child: ListTile(
+                        leading: const Icon(Icons.pets),
+                        title: Text(l.orgPets),
+                        dense: true,
+                        contentPadding: EdgeInsets.zero,
+                      ),
                     ),
-                  ),
-                  PopupMenuItem(
-                    value: 'archived',
-                    child: ListTile(
-                      leading: const Icon(Icons.archive),
-                      title: Text(l.orgArchived),
-                      dense: true,
-                      contentPadding: EdgeInsets.zero,
+                    PopupMenuItem(
+                      value: 'archived',
+                      child: ListTile(
+                        leading: const Icon(Icons.archive),
+                        title: Text(l.orgArchived),
+                        dense: true,
+                        contentPadding: EdgeInsets.zero,
+                      ),
                     ),
-                  ),
-                  const PopupMenuDivider(),
+                    const PopupMenuDivider(),
+                  ],
                   PopupMenuItem(
                     value: 'leave',
                     child: ListTile(
@@ -184,65 +185,71 @@ class _OrganizationDetailScreenState
                 theme: theme,
                 colorScheme: colorScheme,
               ),
-              const SizedBox(height: 16),
-              OrganizationMembersSection(
-                membersAsync: membersAsync,
-                isSuperUser: isSuperUser,
-                theme: theme,
-                colorScheme: colorScheme,
-                l: l,
-                localizedRoleLabel: _localizedRoleLabel,
-                onAddUser: isSuperUser
-                    ? () => showOrganizationInviteByEmailDialog(
-                          context: context,
-                          ref: ref,
-                          orgId: orgId,
-                        )
-                    : null,
-              ),
-              const SizedBox(height: 16),
-              OrganizationPetsSection(
-                petsAsync: petsAsync,
-                isSuperUser: isSuperUser,
-                theme: theme,
-                colorScheme: colorScheme,
-                l: l,
-                orgId: orgId,
-                petsExpanded: _petsExpanded,
-                onToggleExpand: () => setState(() => _petsExpanded = !_petsExpanded),
-                onAddPet: isSuperUser ? () => context.push('/add?orgId=$orgId') : null,
-              ),
-              const SizedBox(height: 16),
-              OrganizationArchivedSection(
-                theme: theme,
-                colorScheme: colorScheme,
-                l: l,
-                onTap: () => context.push('/organizations/$orgId/archived'),
-              ),
-              const SizedBox(height: 16),
-              Builder(
-                builder: (context) {
-                  final hiddenAsync = ref.watch(hiddenSharedPetsProvider);
-                  final hiddenPets = hiddenAsync.valueOrNull ?? [];
-                  final orgHidden = hiddenPets.where((p) => p.organizationId == orgId).toList();
-                  return OrganizationHiddenSharedPetsSection(
-                    orgHidden: orgHidden,
-                    theme: theme,
-                    colorScheme: colorScheme,
-                    l: l,
-                    hiddenExpanded: _hiddenExpanded,
-                    onToggleExpand: () => setState(() => _hiddenExpanded = !_hiddenExpanded),
-                    onUnhide: (pet) async {
-                      await ref.read(hiddenSharedPetsProvider.notifier).unhideSharedPet(pet.id);
-                      if (context.mounted) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text(l.petUnhidden(pet.name))),
-                        );
-                      }
-                    },
-                  );
-                },
-              ),
+              if (isOrgAdmin) ...[
+                const SizedBox(height: 16),
+                OrganizationMembersSection(
+                  membersAsync: membersAsync,
+                  isSuperUser: isOrgAdmin,
+                  theme: theme,
+                  colorScheme: colorScheme,
+                  l: l,
+                  localizedRoleLabel: _localizedRoleLabel,
+                  onAddUser: () => showOrganizationInviteByEmailDialog(
+                    context: context,
+                    ref: ref,
+                    orgId: orgId,
+                  ),
+                ),
+                const SizedBox(height: 16),
+                OrganizationPetsSection(
+                  petsAsync: petsAsync,
+                  isSuperUser: isOrgAdmin,
+                  theme: theme,
+                  colorScheme: colorScheme,
+                  l: l,
+                  orgId: orgId,
+                  petsExpanded: _petsExpanded,
+                  onToggleExpand: () => setState(() => _petsExpanded = !_petsExpanded),
+                  onAddPet: () => context.push('/add?orgId=$orgId'),
+                ),
+                const SizedBox(height: 16),
+                OrganizationArchivedSection(
+                  theme: theme,
+                  colorScheme: colorScheme,
+                  l: l,
+                  onTap: () => context.push('/organizations/$orgId/archived'),
+                ),
+              ],
+              if (isOrgAdmin) ...[
+                const SizedBox(height: 16),
+                Builder(
+                  builder: (context) {
+                    final hiddenAsync = ref.watch(hiddenSharedPetsProvider);
+                    final hiddenPets = hiddenAsync.valueOrNull ?? [];
+                    final orgHidden =
+                        hiddenPets.where((p) => p.organizationId == orgId).toList();
+                    return OrganizationHiddenSharedPetsSection(
+                      orgHidden: orgHidden,
+                      theme: theme,
+                      colorScheme: colorScheme,
+                      l: l,
+                      hiddenExpanded: _hiddenExpanded,
+                      onToggleExpand: () =>
+                          setState(() => _hiddenExpanded = !_hiddenExpanded),
+                      onUnhide: (pet) async {
+                        await ref
+                            .read(hiddenSharedPetsProvider.notifier)
+                            .unhideSharedPet(pet.id);
+                        if (context.mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text(l.petUnhidden(pet.name))),
+                          );
+                        }
+                      },
+                    );
+                  },
+                ),
+              ],
             ],
           ),
         );

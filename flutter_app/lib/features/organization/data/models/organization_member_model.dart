@@ -22,7 +22,7 @@ class OrganizationMemberModel extends OrganizationMember {
       id: json['id']?.toString() ?? '',
       organizationId: json['organization_id']?.toString() ?? '',
       userId: json['user_id']?.toString() ?? '',
-      role: _parseRole(json['role']?.toString() ?? 'member'),
+      role: OrgMemberRole.fromWire(json['role']?.toString() ?? 'admin'),
       invitedBy: json['invited_by']?.toString(),
       inviteCode: json['invite_code']?.toString(),
       inviteExpiresAt: json['invite_expires_at'] != null
@@ -42,10 +42,7 @@ class OrganizationMemberModel extends OrganizationMember {
       'id': id,
       'organization_id': organizationId,
       'user_id': userId,
-      'role': role == OrgMemberRole.superUser ? 'super_user'
-            : role == OrgMemberRole.pendingMember ? 'pending_member'
-            : role == OrgMemberRole.pendingSuperUser ? 'pending_super_user'
-            : 'member',
+      'role': role.toWire(),
       if (invitedBy != null) 'invited_by': invitedBy,
       if (inviteCode != null) 'invite_code': inviteCode,
       if (inviteExpiresAt != null) 'invite_expires_at': inviteExpiresAt!.toIso8601String(),
@@ -56,19 +53,5 @@ class OrganizationMemberModel extends OrganizationMember {
       if (createdAt != null) 'created_at': createdAt!.toIso8601String(),
       if (updatedAt != null) 'updated_at': updatedAt!.toIso8601String(),
     };
-  }
-
-  static OrgMemberRole _parseRole(String value) {
-    switch (value) {
-      case 'super_user':
-        return OrgMemberRole.superUser;
-      case 'pending_member':
-        return OrgMemberRole.pendingMember;
-      case 'pending_super_user':
-        return OrgMemberRole.pendingSuperUser;
-      case 'member':
-      default:
-        return OrgMemberRole.member;
-    }
   }
 }

@@ -20,7 +20,7 @@ function makeOrgRow(overrides = {}) {
     website: 'https://test.org',
     bio: 'A test organization',
     photo_url: '/photos/org.jpg',
-    role: 'super_user',
+    role: 'super_admin',
     member_count: '2',
     pet_count: '1',
     created_at: new Date('2024-01-01'),
@@ -40,8 +40,8 @@ function buildMockPool(overrides = {}) {
     if (sql.includes('INSERT INTO organization_users') && !sql.includes('ON CONFLICT')) {
       return { rows: [] };
     }
-    if (sql.includes("SELECT o.*, 'super_user' as role")) {
-      return { rows: [makeOrgRow({ role: 'super_user', member_count: '1', pet_count: '0' })] };
+    if (sql.includes("SELECT o.*, 'super_admin' as role")) {
+      return { rows: [makeOrgRow({ role: 'super_admin', member_count: '1', pet_count: '0' })] };
     }
     if (sql.includes('SELECT o.*') && sql.includes('WHERE o.id')) {
       return { rows: [makeOrgRow()] };
@@ -57,7 +57,7 @@ function buildMockPool(overrides = {}) {
         rows: [{
           id: inviteId,
           organization_id: orgId,
-          role: 'pending_member',
+          role: 'pending_admin',
           org_name: 'Test Org',
           org_type: 'professional',
         }],
@@ -68,7 +68,7 @@ function buildMockPool(overrides = {}) {
         rows: [{
           id: inviteId,
           organization_id: orgId,
-          role: 'member',
+          role: 'admin',
           user_id: userId,
         }],
       };
@@ -85,7 +85,7 @@ function buildMockPool(overrides = {}) {
           first_name: 'Test',
           last_name: 'User',
           photo_url: '/photos/user.jpg',
-          role: 'super_user',
+          role: 'super_admin',
           created_at: new Date('2024-01-01'),
         }],
       };
@@ -98,7 +98,7 @@ function buildMockPool(overrides = {}) {
     }
     if (sql.includes('UPDATE organization_users SET role = $1')) {
       return {
-        rows: [{ id: 'ou-1', organization_id: orgId, user_id: memberId, role: 'member' }],
+        rows: [{ id: 'ou-1', organization_id: orgId, user_id: memberId, role: 'admin' }],
       };
     }
     if (sql.includes('DELETE FROM organization_users WHERE organization_id') && sql.includes('AND user_id = $2')) {
@@ -125,8 +125,8 @@ function buildMockPool(overrides = {}) {
   // The authorization guards (requireMember/requireAdmin) issue a membership
   // lookup. Layer it on top of any custom query override so guard behavior can
   // be controlled per-test via `memberRole` without each override re-declaring
-  // it: 'super_user' (admin, default), 'member' (non-admin), or null (non-member).
-  const memberRole = overrides.memberRole === undefined ? 'super_user' : overrides.memberRole;
+  // it: 'super_admin' (default), 'admin', 'foster', or null (non-member).
+  const memberRole = overrides.memberRole === undefined ? 'super_admin' : overrides.memberRole;
   const inner = overrides.query || defaultHandler;
   const query = async (sql, params) => {
     if (sql.includes('SELECT role FROM organization_users WHERE organization_id')) {
@@ -198,14 +198,14 @@ describe('Organizations API', () => {
       expect(org).toHaveProperty('website', 'https://test.org');
       expect(org).toHaveProperty('bio', 'A test organization');
       expect(org).toHaveProperty('photo_url', '/photos/org.jpg');
-      expect(org).toHaveProperty('role', 'super_user');
+      expect(org).toHaveProperty('role', 'super_admin');
       expect(org).toHaveProperty('member_count', 2);
       expect(typeof org.member_count).toBe('number');
     });
   });
 
   describe('POST / (create)', () => {
-    it('creates organization with owner role super_user', async () => {
+    it('creates organization with owner role super_admin', async () => {
       const res = await request(app)
         .post('/api/organizations')
         .set('Authorization', `Bearer ${token}`)
@@ -213,7 +213,7 @@ describe('Organizations API', () => {
       expect(res.statusCode).toBe(201);
       expect(res.body).toHaveProperty('name');
       expect(res.body).toHaveProperty('type');
-      expect(res.body).toHaveProperty('role', 'super_user');
+      expect(res.body).toHaveProperty('role', 'super_admin');
       expect(res.body).toHaveProperty('member_count');
     });
 
@@ -228,8 +228,8 @@ describe('Organizations API', () => {
           if (sql.includes('INSERT INTO organization_users')) {
             return { rows: [] };
           }
-          if (sql.includes("SELECT o.*") && sql.includes("'super_user' as role")) {
-            return { rows: [makeOrgRow({ type: 'professional', role: 'super_user', member_count: '1', pet_count: '0' })] };
+          if (sql.includes("SELECT o.*") && sql.includes("'super_admin' as role")) {
+            return { rows: [makeOrgRow({ type: 'professional', role: 'super_admin', member_count: '1', pet_count: '0' })] };
           }
           if (sql.includes('SELECT o.*')) {
             return { rows: [makeOrgRow()] };
@@ -404,7 +404,7 @@ describe('Organizations API', () => {
     });
 
     it('returns 403 for a non-admin member', async () => {
-      const a = createApp(buildMockPool({ memberRole: 'member' }));
+      const a = createApp(buildMockPool({ memberRole: 'foster' }));
       const res = await request(a)
         .post(`/api/organizations/${orgId}/photo`)
         .set('Authorization', `Bearer ${token}`)
@@ -437,7 +437,7 @@ describe('Organizations API', () => {
       const res = await request(app)
         .post(`/api/organizations/${orgId}/invite`)
         .set('Authorization', `Bearer ${token}`)
-        .send({ email: 'invite@example.com', role: 'member' });
+        .send({ email: 'invite@example.com', role: 'admin' });
       expect(res.statusCode).toBe(200);
       expect(res.body).toHaveProperty('success', true);
       expect(res.body).toHaveProperty('user_id');
@@ -474,7 +474,7 @@ describe('Organizations API', () => {
       const res = await request(app)
         .put(`/api/organizations/${orgId}/members/${memberId}/role`)
         .set('Authorization', `Bearer ${token}`)
-        .send({ role: 'super_user' });
+        .send({ role: 'super_admin' });
       expect(res.statusCode).toBe(200);
       expect(res.body).toHaveProperty('role');
     });
@@ -483,16 +483,16 @@ describe('Organizations API', () => {
       const res = await request(app)
         .put(`/api/organizations/${orgId}/members/${memberId}/role`)
         .set('Authorization', `Bearer ${token}`)
-        .send({ role: 'pending_super_user' });
+        .send({ role: 'pending_super_admin' });
       expect(res.statusCode).toBe(400);
     });
 
     it('returns 403 for a non-admin member', async () => {
-      const a = createApp(buildMockPool({ memberRole: 'member' }));
+      const a = createApp(buildMockPool({ memberRole: 'foster' }));
       const res = await request(a)
         .put(`/api/organizations/${orgId}/members/${memberId}/role`)
         .set('Authorization', `Bearer ${token}`)
-        .send({ role: 'super_user' });
+        .send({ role: 'super_admin' });
       expect(res.statusCode).toBe(403);
     });
 
@@ -507,7 +507,7 @@ describe('Organizations API', () => {
       const res = await request(a)
         .put(`/api/organizations/${orgId}/members/nonexistent/role`)
         .set('Authorization', `Bearer ${token}`)
-        .send({ role: 'super_user' });
+        .send({ role: 'super_admin' });
       expect(res.statusCode).toBe(404);
     });
   });
@@ -595,7 +595,7 @@ describe('Organizations API', () => {
     });
 
     it('PUT /:id returns 403 for a non-admin member', async () => {
-      const a = createApp(buildMockPool({ memberRole: 'member' }));
+      const a = createApp(buildMockPool({ memberRole: 'foster' }));
       const res = await request(a)
         .put(`/api/organizations/${orgId}`)
         .set('Authorization', `Bearer ${token}`)
@@ -612,11 +612,11 @@ describe('Organizations API', () => {
     });
 
     it('POST /:id/invite returns 403 for a non-admin member', async () => {
-      const a = createApp(buildMockPool({ memberRole: 'member' }));
+      const a = createApp(buildMockPool({ memberRole: 'foster' }));
       const res = await request(a)
         .post(`/api/organizations/${orgId}/invite`)
         .set('Authorization', `Bearer ${token}`)
-        .send({ email: 'x@y.com', role: 'member' });
+        .send({ email: 'x@y.com', role: 'admin' });
       expect(res.statusCode).toBe(403);
     });
 
@@ -624,15 +624,84 @@ describe('Organizations API', () => {
       const res = await request(app)
         .post(`/api/organizations/${orgId}/invite`)
         .set('Authorization', `Bearer ${token}`)
-        .send({ email: 'x@y.com', role: 'pending_super_user' });
+        .send({ email: 'x@y.com', role: 'pending_super_admin' });
       expect(res.statusCode).toBe(400);
     });
 
-    it('DELETE /:orgId/members/:userId returns 403 for a non-admin member', async () => {
-      const a = createApp(buildMockPool({ memberRole: 'member' }));
+    it('PUT /:id returns 403 for org admin (super admin only)', async () => {
+      const a = createApp(buildMockPool({ memberRole: 'admin' }));
       const res = await request(a)
-        .delete(`/api/organizations/${orgId}/members/${memberId}`)
+        .put(`/api/organizations/${orgId}`)
+        .set('Authorization', `Bearer ${token}`)
+        .send({ name: 'Hijack' });
+      expect(res.statusCode).toBe(403);
+    });
+
+    it('DELETE /:id returns 403 for org admin (super admin only)', async () => {
+      const a = createApp(buildMockPool({ memberRole: 'admin' }));
+      const res = await request(a)
+        .delete(`/api/organizations/${orgId}`)
         .set('Authorization', `Bearer ${token}`);
+      expect(res.statusCode).toBe(403);
+    });
+
+    it('GET /:orgId/members returns 403 for foster', async () => {
+      const a = createApp(buildMockPool({ memberRole: 'foster' }));
+      const res = await request(a)
+        .get(`/api/organizations/${orgId}/members`)
+        .set('Authorization', `Bearer ${token}`);
+      expect(res.statusCode).toBe(403);
+    });
+
+    it('GET /:orgId/pets returns 403 for foster', async () => {
+      const a = createApp(buildMockPool({ memberRole: 'foster' }));
+      const res = await request(a)
+        .get(`/api/organizations/${orgId}/pets`)
+        .set('Authorization', `Bearer ${token}`);
+      expect(res.statusCode).toBe(403);
+    });
+
+    it('GET /:orgId/archived returns 403 for foster', async () => {
+      const a = createApp(buildMockPool({ memberRole: 'foster' }));
+      const res = await request(a)
+        .get(`/api/organizations/${orgId}/archived`)
+        .set('Authorization', `Bearer ${token}`);
+      expect(res.statusCode).toBe(403);
+    });
+
+    it('GET /:id returns org for foster (contact access)', async () => {
+      const a = createApp(buildMockPool({ memberRole: 'foster' }));
+      const res = await request(a)
+        .get(`/api/organizations/${orgId}`)
+        .set('Authorization', `Bearer ${token}`);
+      expect(res.statusCode).toBe(200);
+      expect(res.body).toHaveProperty('email');
+    });
+
+    it('POST /:id/invite succeeds for org admin', async () => {
+      const a = createApp(buildMockPool({ memberRole: 'admin' }));
+      const res = await request(a)
+        .post(`/api/organizations/${orgId}/invite`)
+        .set('Authorization', `Bearer ${token}`)
+        .send({ email: 'x@y.com', role: 'foster' });
+      expect(res.statusCode).toBe(200);
+    });
+
+    it('POST /:id/invite returns 403 when admin invites super_admin', async () => {
+      const a = createApp(buildMockPool({ memberRole: 'admin' }));
+      const res = await request(a)
+        .post(`/api/organizations/${orgId}/invite`)
+        .set('Authorization', `Bearer ${token}`)
+        .send({ email: 'x@y.com', role: 'super_admin' });
+      expect(res.statusCode).toBe(403);
+    });
+
+    it('PUT /:orgId/members/:userId/role returns 403 when admin assigns super_admin', async () => {
+      const a = createApp(buildMockPool({ memberRole: 'admin' }));
+      const res = await request(a)
+        .put(`/api/organizations/${orgId}/members/${memberId}/role`)
+        .set('Authorization', `Bearer ${token}`)
+        .send({ role: 'super_admin' });
       expect(res.statusCode).toBe(403);
     });
   });

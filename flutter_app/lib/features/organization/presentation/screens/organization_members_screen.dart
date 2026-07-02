@@ -2,11 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../core/theme/app_theme.dart';
 import '../../../../core/widgets/app_logo_title.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../domain/entities/organization_member.dart';
 import '../providers/organization_providers.dart';
 import '../widgets/organization_invite_by_email_dialog.dart';
+import '../widgets/organization_role_labels.dart';
 
 class OrganizationMembersScreen extends ConsumerWidget {
   const OrganizationMembersScreen({super.key, required this.orgId});
@@ -16,7 +18,8 @@ class OrganizationMembersScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final membersAsync = ref.watch(orgMembersProvider(orgId));
-    final isSuperUser = ref.watch(isOrgSuperUserProvider(orgId));
+    final isSuperAdmin = ref.watch(isOrgSuperUserProvider(orgId));
+    final isOrgAdmin = ref.watch(isOrgAdminProvider(orgId));
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
     final l = AppLocalizations.of(context)!;
@@ -31,7 +34,7 @@ class OrganizationMembersScreen extends ConsumerWidget {
           onPressed: () => context.pop(),
         ),
         actions: [
-          if (isSuperUser)
+          if (isOrgAdmin)
             IconButton(
               key: const Key('org_generate_invite'),
               icon: const Icon(Icons.person_add),
@@ -75,7 +78,8 @@ class OrganizationMembersScreen extends ConsumerWidget {
               return _MemberCard(
                 member: member,
                 orgId: orgId,
-                isSuperUser: isSuperUser,
+                isOrgAdmin: isOrgAdmin,
+                isSuperAdmin: isSuperAdmin,
               );
             },
           );
@@ -89,25 +93,22 @@ class _MemberCard extends ConsumerWidget {
   const _MemberCard({
     required this.member,
     required this.orgId,
-    required this.isSuperUser,
+    required this.isOrgAdmin,
+    required this.isSuperAdmin,
   });
 
   final OrganizationMember member;
   final String orgId;
-  final bool isSuperUser;
+  final bool isOrgAdmin;
+  final bool isSuperAdmin;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
     final l = AppLocalizations.of(context)!;
-    final isMemberSuperUser = member.role == OrgMemberRole.superUser;
     final isPending = member.role.isPending;
-    final roleLabel = isPending
-        ? l.invited
-        : isMemberSuperUser
-            ? l.orgSuperUser
-            : l.orgMember;
+    final roleLabel = localizedOrgMemberRole(l, member.role);
 
     return MergeSemantics(
       child: Semantics(
@@ -121,15 +122,16 @@ class _MemberCard extends ConsumerWidget {
               leading: CircleAvatar(
                 backgroundColor: isPending
                     ? Colors.grey.shade300
-                    : isMemberSuperUser
+                    : member.role.isSuperAdmin
                         ? Colors.amber.withAlpha(40)
                         : colorScheme.secondaryContainer,
                 child: isPending
-                    ? Icon(Icons.hourglass_empty, size: 18, color: Colors.grey.shade600)
+                    ? Icon(Icons.hourglass_empty,
+                        size: 18, color: Colors.grey.shade600)
                     : Text(
                         member.initials,
                         style: TextStyle(
-                          color: isMemberSuperUser
+                          color: member.role.isSuperAdmin
                               ? Colors.amber[800]
                               : colorScheme.onSecondaryContainer,
                           fontWeight: FontWeight.bold,
@@ -148,19 +150,21 @@ class _MemberCard extends ConsumerWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   if (member.email.isNotEmpty)
-                    Text(member.email,
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          color: colorScheme.onSurfaceVariant,
-                        )),
+                    Text(
+                      member.email,
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: colorScheme.onSurfaceVariant,
+                      ),
+                    ),
                   const SizedBox(height: 4),
                   Container(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 8, vertical: 2),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                     decoration: BoxDecoration(
                       color: isPending
                           ? Colors.orange.withAlpha(30)
-                          : isMemberSuperUser
-                              ? Colors.amber.withAlpha(30)
+                          : member.role.isSuperAdmin
+                              ? AppTheme.orgSuperUserBg
                               : colorScheme.surfaceContainerHighest,
                       borderRadius: BorderRadius.circular(8),
                     ),
@@ -168,12 +172,11 @@ class _MemberCard extends ConsumerWidget {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         if (isPending)
-                          Icon(Icons.schedule, size: 12,
-                              color: Colors.orange[800]),
-                        if (isMemberSuperUser && !isPending)
-                          Icon(Icons.star, size: 12,
-                              color: Colors.amber[800]),
-                        if (isMemberSuperUser || isPending)
+                          Icon(Icons.schedule,
+                              size: 12, color: Colors.orange[800]),
+                        if (member.role.isSuperAdmin && !isPending)
+                          Icon(Icons.star, size: 12, color: Colors.amber[800]),
+                        if (member.role.isSuperAdmin || isPending)
                           const SizedBox(width: 4),
                         Text(
                           roleLabel,
@@ -182,8 +185,8 @@ class _MemberCard extends ConsumerWidget {
                             fontWeight: FontWeight.w600,
                             color: isPending
                                 ? Colors.orange[800]
-                                : isMemberSuperUser
-                                    ? Colors.amber[800]
+                                : member.role.isSuperAdmin
+                                    ? AppTheme.orgSuperUserFg
                                     : colorScheme.onSurfaceVariant,
                           ),
                         ),
@@ -192,7 +195,7 @@ class _MemberCard extends ConsumerWidget {
                   ),
                 ],
               ),
-              trailing: isSuperUser && !isPending
+              trailing: isOrgAdmin && !isPending
                   ? PopupMenuButton<String>(
                       key: Key('org_member_menu_${member.userId}'),
                       tooltip: l.orgChangeRole,
@@ -200,12 +203,10 @@ class _MemberCard extends ConsumerWidget {
                           _handleAction(context, ref, action),
                       itemBuilder: (context) => [
                         PopupMenuItem(
-                          value: 'toggle_role',
+                          value: 'change_role',
                           child: ListTile(
                             leading: const Icon(Icons.swap_horiz),
-                            title: Text(isMemberSuperUser
-                                ? l.orgDemoteToMember
-                                : l.orgPromoteToSuperUser),
+                            title: Text(l.orgChangeRole),
                             dense: true,
                             contentPadding: EdgeInsets.zero,
                           ),
@@ -213,8 +214,8 @@ class _MemberCard extends ConsumerWidget {
                         PopupMenuItem(
                           value: 'remove',
                           child: ListTile(
-                            leading: const Icon(Icons.person_remove,
-                                color: Colors.red),
+                            leading:
+                                const Icon(Icons.person_remove, color: Colors.red),
                             title: Text(l.orgRemoveMember,
                                 style: const TextStyle(color: Colors.red)),
                             dense: true,
@@ -231,29 +232,71 @@ class _MemberCard extends ConsumerWidget {
     );
   }
 
-  void _handleAction(BuildContext context, WidgetRef ref,
-      String action) async {
+  void _handleAction(BuildContext context, WidgetRef ref, String action) async {
     switch (action) {
-      case 'toggle_role':
-        final newRole = member.role == OrgMemberRole.superUser
-            ? 'member'
-            : 'super_user';
-        try {
-          await ref
-              .read(orgMembersProvider(orgId).notifier)
-              .updateMemberRole(member.userId, newRole);
-        } catch (e) {
-          if (context.mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('$e')),
-            );
-          }
-        }
+      case 'change_role':
+        await _showChangeRoleDialog(context, ref);
         break;
       case 'remove':
         _showRemoveDialog(context, ref);
         break;
     }
+  }
+
+  Future<void> _showChangeRoleDialog(BuildContext context, WidgetRef ref) async {
+    final l = AppLocalizations.of(context)!;
+    final options = invitableRoleWires(isSuperAdmin: isSuperAdmin);
+    String selectedRole = member.role.toWire();
+    if (!options.contains(selectedRole)) {
+      selectedRole = options.first;
+    }
+
+    await showDialog<void>(
+      context: context,
+      builder: (ctx) => StatefulBuilder(
+        builder: (ctx, setState) => AlertDialog(
+          title: Text(l.orgSelectNewRole),
+          content: DropdownButtonFormField<String>(
+            value: selectedRole,
+            decoration: InputDecoration(
+              border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+            ),
+            items: options
+                .map((wire) => DropdownMenuItem(
+                      value: wire,
+                      child: Text(invitableRoleLabel(l, wire)),
+                    ))
+                .toList(),
+            onChanged: (value) {
+              if (value != null) setState(() => selectedRole = value);
+            },
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(ctx),
+              child: Text(l.cancel),
+            ),
+            FilledButton(
+              onPressed: () async {
+                Navigator.pop(ctx);
+                try {
+                  await ref
+                      .read(orgMembersProvider(orgId).notifier)
+                      .updateMemberRole(member.userId, selectedRole);
+                } catch (e) {
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('$e')),
+                    );
+                  }
+                }
+              },
+              child: Text(l.save),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   void _showRemoveDialog(BuildContext context, WidgetRef ref) {
