@@ -180,6 +180,16 @@ class PetFosterPlacementNotifier
   }
 }
 
+final petFosterHistoryProvider = FutureProvider.family<List<FosterPlacement>, (String, String)>(
+  (ref, arg) async {
+    final (orgId, petId) = arg;
+    final token = ref.watch(authProvider).accessToken;
+    if (token == null) return [];
+    final repo = ref.read(organizationRepositoryProvider);
+    return repo.getPetFosterHistory(orgId, petId, token);
+  },
+);
+
 final petFosterPlacementProvider = AsyncNotifierProvider.family<
     PetFosterPlacementNotifier,
     PetFosterPlacementState,

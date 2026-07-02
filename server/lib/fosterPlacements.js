@@ -155,6 +155,32 @@ export async function cancelAdoptionPlacement(db, placement, endDate = null) {
   return updateResult.rows[0];
 }
 
+/** End any open placement for a pet (foster period or adoption step). */
+export async function closeActivePlacementForPet(pool, petId, endDate = null) {
+  const active = await getActivePlacementForPet(pool, petId);
+  if (!active) return null;
+
+  if (active.status === PLACEMENT_STATUS_WAITING_ADOPTION
+    || active.status === PLACEMENT_STATUS_PENDING_CONDITIONS) {
+    return cancelAdoptionPlacement(pool, active, endDate);
+  }
+
+  if (active.status === PLACEMENT_STATUS_IN_PROGRESS) {
+    await revokeFosterPetAccess(pool, petId, active.foster_user_id);
+  }
+
+  const updateResult = await pool.query(
+    `UPDATE foster_placements
+     SET status = $1,
+         end_date = COALESCE($2, CURRENT_DATE),
+         updated_at = NOW()
+     WHERE id = $3
+     RETURNING *`,
+    [PLACEMENT_STATUS_NOT_IN_FOSTER, endDate, active.id],
+  );
+  return updateResult.rows[0];
+}
+
 export async function loadPlacementDetail(pool, placementId) {
   const result = await pool.query(
     `SELECT fp.*,

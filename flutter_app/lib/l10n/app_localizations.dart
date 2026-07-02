@@ -2419,6 +2419,42 @@ abstract class AppLocalizations {
   /// **'Sharing'**
   String get pdfSharingSection;
 
+  /// No description provided for @pdfFosterHistorySection.
+  ///
+  /// In en, this message translates to:
+  /// **'Foster History'**
+  String get pdfFosterHistorySection;
+
+  /// No description provided for @pdfNoFosterHistory.
+  ///
+  /// In en, this message translates to:
+  /// **'No foster placements recorded yet.'**
+  String get pdfNoFosterHistory;
+
+  /// No description provided for @pdfFosterParent.
+  ///
+  /// In en, this message translates to:
+  /// **'Foster parent'**
+  String get pdfFosterParent;
+
+  /// No description provided for @pdfPlacementStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'Status'**
+  String get pdfPlacementStatus;
+
+  /// No description provided for @pdfPlacementAdopted.
+  ///
+  /// In en, this message translates to:
+  /// **'Adopted'**
+  String get pdfPlacementAdopted;
+
+  /// No description provided for @fosterHistory.
+  ///
+  /// In en, this message translates to:
+  /// **'Foster history'**
+  String get fosterHistory;
+
   /// No description provided for @pdfNoWeightData.
   ///
   /// In en, this message translates to:

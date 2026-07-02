@@ -144,12 +144,12 @@ flowchart TB
 - Return/cancel → `not_in_foster` at any adoption step.
 - Direct adopt shortcut (skip foster period).
 
-### Increment 7 — Polish
+### Increment 7 — Polish ✓
 
-- Foster directory with live pet assignments.
-- PDF foster history.
-- Retire remaining org/pet 501 stubs used in UI.
-- Migrate legacy `family_events` placement rows if needed.
+- Foster directory with live pet assignments (`active_pets` on foster-parents API).
+- PDF foster history section on org pet reports.
+- Retire org/pet 501 stubs used in UI (`POST /organizations/:orgId/pets`, org pet transfer, `POST /pets/:id/transfer-to-org`).
+- Migration `016_migrate_family_events_placements.sql` for legacy `family_events` rows.
 
 ---
 
@@ -160,9 +160,6 @@ See `API.md` § Not implemented. Flutter must not call these from primary workfl
 | Endpoint | Planned increment |
 |----------|-------------------|
 | `POST /organizations/join/:code` | Removed from UI (Inc 0); may never implement |
-| `POST /organizations/:orgId/pets` | Inc 7 or via `POST /pets` + `organization_id` |
-| `POST /organizations/:orgId/pets/:petId/transfer` | Inc 6/7 |
-| `POST /pets/:id/transfer-to-org` | Inc 7 |
 | `PUT /pets/:id/access/:userId/role` | Inc 5 or superseded by foster role |
 
 ---

@@ -101,4 +101,9 @@ abstract class OrganizationRepository {
     String notes = '',
     required String token,
   });
+  Future<List<FosterPlacement>> getPetFosterHistory(
+    String orgId,
+    String petId,
+    String token,
+  );
 }

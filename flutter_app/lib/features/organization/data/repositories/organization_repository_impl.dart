@@ -323,4 +323,14 @@ class OrganizationRepositoryImpl implements OrganizationRepository {
     );
     return FosterPlacement.fromJson(row);
   }
+
+  @override
+  Future<List<FosterPlacement>> getPetFosterHistory(
+    String orgId,
+    String petId,
+    String token,
+  ) async {
+    final rows = await _dataSource.getPetFosterHistory(orgId, petId, token);
+    return rows.map(FosterPlacement.fromJson).toList();
+  }
 }

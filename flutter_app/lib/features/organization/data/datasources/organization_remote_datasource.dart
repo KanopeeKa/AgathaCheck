@@ -577,4 +577,21 @@ class OrganizationRemoteDataSource {
     }
     return data;
   }
+
+  Future<List<Map<String, dynamic>>> getPetFosterHistory(
+    String orgId,
+    String petId,
+    String token,
+  ) async {
+    final response = await _client.get(
+      Uri.parse('$baseUrl/api/organizations/$orgId/pets/$petId/foster-history'),
+      headers: _headers(token),
+    );
+    if (response.statusCode >= 400) {
+      final data = json.decode(response.body);
+      throw Exception(data['error'] ?? 'Failed to load foster history');
+    }
+    final list = json.decode(response.body) as List;
+    return list.cast<Map<String, dynamic>>();
+  }
 }

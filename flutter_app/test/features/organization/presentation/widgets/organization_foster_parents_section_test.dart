@@ -22,6 +22,13 @@ void main() {
         email: 'jane@example.com',
         role: OrgMemberRole.foster,
         activePetCount: 2,
+        activePets: const [
+          FosterParentAssignedPet(
+            petId: 'pet-a',
+            petName: 'Max',
+            status: 'in_progress',
+          ),
+        ],
       ),
       FosterParent(
         id: 'fp-1',
@@ -63,6 +70,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Jane Foster'), findsOneWidget);
+    expect(find.text('Max'), findsOneWidget);
     expect(find.text('Off-app Parent'), findsOneWidget);
     expect(find.byKey(const Key('org_add_foster_parent_button')), findsOneWidget);
   });

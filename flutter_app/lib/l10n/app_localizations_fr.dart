@@ -1290,6 +1290,24 @@ class AppLocalizationsFr extends AppLocalizations {
   String get pdfSharingSection => 'Partage';
 
   @override
+  String get pdfFosterHistorySection => 'Historique d\'accueil';
+
+  @override
+  String get pdfNoFosterHistory => 'Aucun placement d\'accueil enregistré.';
+
+  @override
+  String get pdfFosterParent => 'Famille d\'accueil';
+
+  @override
+  String get pdfPlacementStatus => 'Statut';
+
+  @override
+  String get pdfPlacementAdopted => 'Adopté';
+
+  @override
+  String get fosterHistory => 'Historique d\'accueil';
+
+  @override
   String get pdfNoWeightData => 'Aucune donnée de poids enregistrée.';
 
   @override

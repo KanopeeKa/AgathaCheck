@@ -237,6 +237,10 @@ class RecordingOrganizationRepository implements OrganizationRepository {
         fosterUserId: fosterUserId,
         status: 'waiting_adoption_confirmation',
       );
+  @override
+  Future<List<FosterPlacement>> getPetFosterHistory(
+      String orgId, String petId, String token) async =>
+      [];
 }
 
 ProviderContainer makeContainer(RecordingOrganizationRepository repo) {

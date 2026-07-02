@@ -1283,6 +1283,24 @@ class AppLocalizationsEn extends AppLocalizations {
   String get pdfSharingSection => 'Sharing';
 
   @override
+  String get pdfFosterHistorySection => 'Foster History';
+
+  @override
+  String get pdfNoFosterHistory => 'No foster placements recorded yet.';
+
+  @override
+  String get pdfFosterParent => 'Foster parent';
+
+  @override
+  String get pdfPlacementStatus => 'Status';
+
+  @override
+  String get pdfPlacementAdopted => 'Adopted';
+
+  @override
+  String get fosterHistory => 'Foster history';
+
+  @override
   String get pdfNoWeightData => 'No weight data recorded yet.';
 
   @override
