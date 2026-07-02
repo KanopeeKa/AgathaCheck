@@ -11,6 +11,8 @@ import '../../../auth/presentation/providers/auth_providers.dart';
 import '../../../health_tracking/presentation/widgets/events_nav_icon_button.dart';
 import '../../../notifications/presentation/providers/notification_providers.dart';
 import '../../../../core/theme/app_theme.dart';
+import '../../../organization/presentation/providers/organization_providers.dart';
+import '../../../organization/presentation/widgets/pet_foster_placement_section.dart';
 import '../../../vet/presentation/providers/vet_providers.dart';
 import '../../../weight_tracking/presentation/providers/weight_providers.dart';
 import '../../domain/entities/pet.dart';
@@ -61,6 +63,9 @@ class _PetDetailScreenState extends ConsumerState<PetDetailScreen> {
         final theme = Theme.of(context);
         final unreadCount = ref.watch(unreadNotificationCountProvider);
         final isOrgPet = pet.organizationId != null;
+        final isOrgAdmin = pet.organizationId != null
+            ? ref.watch(isOrgAdminProvider(pet.organizationId!))
+            : false;
 
         Widget body = Scaffold(
           backgroundColor: isOrgPet ? AppTheme.orgBlue : null,
@@ -211,6 +216,14 @@ class _PetDetailScreenState extends ConsumerState<PetDetailScreen> {
               SliverToBoxAdapter(
                 child: OtherEventsSection(petId: widget.petId, pet: pet),
               ),
+              if (isOrgPet && isOrgAdmin)
+                SliverToBoxAdapter(
+                  child: PetFosterPlacementSection(
+                    orgId: pet.organizationId!,
+                    petId: widget.petId,
+                    petName: pet.name,
+                  ),
+                ),
               SliverToBoxAdapter(
                 child: SharingSection(petId: widget.petId, pet: pet),
               ),

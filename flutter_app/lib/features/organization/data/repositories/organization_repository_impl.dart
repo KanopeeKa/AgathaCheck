@@ -1,7 +1,9 @@
 import 'dart:typed_data';
 
+import '../../../../core/utils/calendar_date.dart';
 import '../../domain/entities/archived_pet.dart';
 import '../../domain/entities/foster_parent.dart';
+import '../../domain/entities/foster_placement.dart';
 import '../../domain/entities/organization.dart';
 import '../../domain/entities/organization_member.dart';
 import '../../domain/repositories/organization_repository.dart';
@@ -211,5 +213,48 @@ class OrganizationRepositoryImpl implements OrganizationRepository {
   Future<void> deleteExternalFosterParent(
       String orgId, String fosterParentId, String token) async {
     await _dataSource.deleteExternalFosterParent(orgId, fosterParentId, token);
+  }
+
+  @override
+  Future<PetFosterPlacementState> getPetPlacement(
+      String orgId, String petId, String token) async {
+    final row = await _dataSource.getPetPlacement(orgId, petId, token);
+    return PetFosterPlacementState.fromJson(row);
+  }
+
+  @override
+  Future<FosterPlacement> startFosterPlacement(
+    String orgId,
+    String petId, {
+    required String fosterUserId,
+    DateTime? startDate,
+    String notes = '',
+    required String token,
+  }) async {
+    final row = await _dataSource.startFosterPlacement(
+      orgId,
+      petId,
+      fosterUserId: fosterUserId,
+      startDate: startDate != null ? toCalendarDateString(startDate) : null,
+      notes: notes,
+      token: token,
+    );
+    return FosterPlacement.fromJson(row);
+  }
+
+  @override
+  Future<FosterPlacement> endFosterPlacement(
+    String orgId,
+    String placementId, {
+    DateTime? endDate,
+    required String token,
+  }) async {
+    final row = await _dataSource.endFosterPlacement(
+      orgId,
+      placementId,
+      endDate: endDate != null ? toCalendarDateString(endDate) : null,
+      token: token,
+    );
+    return FosterPlacement.fromJson(row);
   }
 }

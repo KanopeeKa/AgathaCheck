@@ -440,4 +440,61 @@ class OrganizationRemoteDataSource {
       throw Exception(data['error'] ?? 'Failed to delete foster parent');
     }
   }
+
+  Future<Map<String, dynamic>> getPetPlacement(
+      String orgId, String petId, String token) async {
+    final response = await _client.get(
+      Uri.parse('$baseUrl/api/organizations/$orgId/pets/$petId/placement'),
+      headers: _headers(token),
+    );
+    final data = json.decode(response.body) as Map<String, dynamic>;
+    if (response.statusCode >= 400) {
+      throw Exception(data['error'] ?? 'Failed to get foster placement');
+    }
+    return data;
+  }
+
+  Future<Map<String, dynamic>> startFosterPlacement(
+    String orgId,
+    String petId, {
+    required String fosterUserId,
+    String? startDate,
+    String notes = '',
+    required String token,
+  }) async {
+    final response = await _client.post(
+      Uri.parse('$baseUrl/api/organizations/$orgId/pets/$petId/placements'),
+      headers: _headers(token),
+      body: json.encode({
+        'foster_user_id': fosterUserId,
+        if (startDate != null) 'start_date': startDate,
+        'notes': notes,
+      }),
+    );
+    final data = json.decode(response.body) as Map<String, dynamic>;
+    if (response.statusCode >= 400) {
+      throw Exception(data['error'] ?? 'Failed to start foster placement');
+    }
+    return data;
+  }
+
+  Future<Map<String, dynamic>> endFosterPlacement(
+    String orgId,
+    String placementId, {
+    String? endDate,
+    required String token,
+  }) async {
+    final response = await _client.post(
+      Uri.parse('$baseUrl/api/organizations/$orgId/placements/$placementId/end'),
+      headers: _headers(token),
+      body: json.encode({
+        if (endDate != null) 'end_date': endDate,
+      }),
+    );
+    final data = json.decode(response.body) as Map<String, dynamic>;
+    if (response.statusCode >= 400) {
+      throw Exception(data['error'] ?? 'Failed to end foster placement');
+    }
+    return data;
+  }
 }

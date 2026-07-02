@@ -4,6 +4,16 @@ import jwt from 'jsonwebtoken';
 
 import { JWT_SECRET } from '../config/jwtSecret.js';
 import { publicError } from '../config/security.js';
+import { normalizeCalendarDateInput } from '../lib/calendarDate.js';
+import { createNotification, userDisplayName } from '../lib/notificationHelper.js';
+import {
+  getActivePlacementForPet,
+  placementToMap,
+  PLACEMENT_STATUS_IN_PROGRESS,
+  PLACEMENT_STATUS_NOT_IN_FOSTER,
+  PLACEMENT_STATUS_PENDING,
+  revokeFosterPetAccess,
+} from '../lib/fosterPlacements.js';
 import {
   ASSIGNABLE_ROLES,
   ORG_ROLE_ADMIN,
@@ -12,6 +22,7 @@ import {
   canAssignRole,
   fosterParentMemberRolesSql,
   isActiveMember,
+  isFosterParentMember,
   isOrgAdmin,
   isSuperAdmin,
   normaliseRole,
@@ -457,12 +468,11 @@ export default function organizationsRoutes(pool) {
                 NULL::varchar AS phone,
                 ''::text AS notes,
                 (
-                  SELECT COUNT(DISTINCT fe.pet_id)::int
-                  FROM family_events fe
-                  WHERE fe.organization_id = ou.organization_id
-                    AND fe.assigned_to_user_id = u.id
-                    AND fe.event_type = 'placement'
-                    AND (fe.to_date IS NULL OR fe.to_date >= CURRENT_DATE)
+                  SELECT COUNT(DISTINCT fpl.pet_id)::int
+                  FROM foster_placements fpl
+                  WHERE fpl.organization_id = ou.organization_id
+                    AND fpl.foster_user_id = u.id
+                    AND fpl.status = 'in_progress'
                 ) AS active_pet_count
          FROM organization_users ou
          JOIN users u ON u.id = ou.user_id
@@ -596,6 +606,226 @@ export default function organizationsRoutes(pool) {
         return res.status(404).json({ error: 'Foster parent not found' });
       }
       res.json({ deleted: true, id: fosterParentId });
+    } catch (err) {
+      res.status(500).json({ error: publicError(err) });
+    }
+  });
+
+  router.get('/:orgId/placements', async (req, res) => {
+    const userId = extractUserId(req);
+    if (!userId) return res.status(401).json({ error: 'Unauthorized' });
+    const orgId = req.params.orgId;
+    try {
+      if (!(await requireOrgAdmin(pool, res, orgId, userId))) return;
+      const result = await pool.query(
+        `SELECT fp.*,
+                p.name AS pet_name,
+                p.species AS pet_species,
+                o.name AS organization_name,
+                TRIM(COALESCE(u.first_name, '') || ' ' || COALESCE(u.last_name, '')) AS foster_name,
+                u.email AS foster_email
+         FROM foster_placements fp
+         JOIN pets p ON p.id = fp.pet_id
+         JOIN organizations o ON o.id = fp.organization_id
+         JOIN users u ON u.id = fp.foster_user_id
+         WHERE fp.organization_id = $1
+         ORDER BY fp.created_at DESC`,
+        [orgId],
+      );
+      res.json(result.rows.map((row) => placementToMap(row)));
+    } catch (err) {
+      res.status(500).json({ error: publicError(err) });
+    }
+  });
+
+  router.get('/:orgId/pets/:petId/placement', async (req, res) => {
+    const userId = extractUserId(req);
+    if (!userId) return res.status(401).json({ error: 'Unauthorized' });
+    const { orgId, petId } = req.params;
+    try {
+      if (!(await requireOrgAdmin(pool, res, orgId, userId))) return;
+      const petResult = await pool.query(
+        'SELECT id FROM pets WHERE id = $1 AND organization_id = $2',
+        [petId, orgId],
+      );
+      if (petResult.rows.length === 0) {
+        return res.status(404).json({ error: 'Pet not found' });
+      }
+      const active = await getActivePlacementForPet(pool, petId);
+      if (!active) {
+        return res.json({ status: PLACEMENT_STATUS_NOT_IN_FOSTER, placement: null });
+      }
+      const detail = await pool.query(
+        `SELECT fp.*,
+                p.name AS pet_name,
+                p.species AS pet_species,
+                o.name AS organization_name,
+                TRIM(COALESCE(u.first_name, '') || ' ' || COALESCE(u.last_name, '')) AS foster_name,
+                u.email AS foster_email
+         FROM foster_placements fp
+         JOIN pets p ON p.id = fp.pet_id
+         JOIN organizations o ON o.id = fp.organization_id
+         JOIN users u ON u.id = fp.foster_user_id
+         WHERE fp.id = $1`,
+        [active.id],
+      );
+      res.json({
+        status: active.status,
+        placement: placementToMap(detail.rows[0]),
+      });
+    } catch (err) {
+      res.status(500).json({ error: publicError(err) });
+    }
+  });
+
+  router.post('/:orgId/pets/:petId/placements', async (req, res) => {
+    const userId = extractUserId(req);
+    if (!userId) return res.status(401).json({ error: 'Unauthorized' });
+    const { orgId, petId } = req.params;
+    const data = req.body || {};
+    const fosterUserId = data.foster_user_id || data.fosterUserId;
+    const startDate = normalizeCalendarDateInput(data.start_date || data.startDate);
+    const notes = (data.notes || '').trim();
+
+    if (!fosterUserId) {
+      return res.status(400).json({ error: 'Foster parent user is required' });
+    }
+
+    try {
+      if (!(await requireOrgAdmin(pool, res, orgId, userId))) return;
+
+      const petResult = await pool.query(
+        'SELECT id, name FROM pets WHERE id = $1 AND organization_id = $2',
+        [petId, orgId],
+      );
+      if (petResult.rows.length === 0) {
+        return res.status(404).json({ error: 'Pet not found' });
+      }
+      const pet = petResult.rows[0];
+
+      const fosterMember = await pool.query(
+        'SELECT role FROM organization_users WHERE organization_id = $1 AND user_id = $2',
+        [orgId, fosterUserId],
+      );
+      if (
+        fosterMember.rows.length === 0
+        || !isFosterParentMember(fosterMember.rows[0].role)
+      ) {
+        return res.status(400).json({ error: 'Selected user is not a foster parent for this organization' });
+      }
+
+      const existing = await getActivePlacementForPet(pool, petId);
+      if (existing) {
+        return res.status(409).json({ error: 'Pet already has an active foster placement' });
+      }
+
+      const id = uuidv4();
+      const insertResult = await pool.query(
+        `INSERT INTO foster_placements (
+           id, organization_id, pet_id, foster_user_id, status, start_date, notes, created_by
+         ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+         RETURNING *`,
+        [
+          id,
+          orgId,
+          petId,
+          fosterUserId,
+          PLACEMENT_STATUS_PENDING,
+          startDate,
+          notes,
+          userId,
+        ],
+      );
+      const placement = insertResult.rows[0];
+
+      const adminResult = await pool.query(
+        'SELECT first_name, last_name, email FROM users WHERE id = $1',
+        [userId],
+      );
+      const adminName = userDisplayName(adminResult.rows[0] || {});
+
+      await createNotification(pool, {
+        userId: fosterUserId,
+        petId,
+        petName: pet.name,
+        title: 'Foster placement request',
+        message: `${adminName} invited you to foster ${pet.name}.`,
+        type: 'general',
+      });
+
+      const detail = await pool.query(
+        `SELECT fp.*,
+                p.name AS pet_name,
+                p.species AS pet_species,
+                o.name AS organization_name,
+                TRIM(COALESCE(u.first_name, '') || ' ' || COALESCE(u.last_name, '')) AS foster_name,
+                u.email AS foster_email
+         FROM foster_placements fp
+         JOIN pets p ON p.id = fp.pet_id
+         JOIN organizations o ON o.id = fp.organization_id
+         JOIN users u ON u.id = fp.foster_user_id
+         WHERE fp.id = $1`,
+        [placement.id],
+      );
+
+      res.status(201).json(placementToMap(detail.rows[0]));
+    } catch (err) {
+      res.status(500).json({ error: publicError(err) });
+    }
+  });
+
+  router.post('/:orgId/placements/:id/end', async (req, res) => {
+    const userId = extractUserId(req);
+    if (!userId) return res.status(401).json({ error: 'Unauthorized' });
+    const { orgId, id: placementId } = req.params;
+    const data = req.body || {};
+    const endDate = normalizeCalendarDateInput(data.end_date || data.endDate);
+
+    try {
+      if (!(await requireOrgAdmin(pool, res, orgId, userId))) return;
+
+      const placementResult = await pool.query(
+        'SELECT * FROM foster_placements WHERE id = $1 AND organization_id = $2',
+        [placementId, orgId],
+      );
+      if (placementResult.rows.length === 0) {
+        return res.status(404).json({ error: 'Placement not found' });
+      }
+      const placement = placementResult.rows[0];
+      if (![PLACEMENT_STATUS_PENDING, PLACEMENT_STATUS_IN_PROGRESS].includes(placement.status)) {
+        return res.status(400).json({ error: 'Placement is not active' });
+      }
+
+      const petResult = await pool.query(
+        'SELECT name FROM pets WHERE id = $1',
+        [placement.pet_id],
+      );
+      const petName = petResult.rows[0]?.name || 'Pet';
+
+      const updateResult = await pool.query(
+        `UPDATE foster_placements
+         SET status = $1,
+             end_date = COALESCE($2, CURRENT_DATE),
+             updated_at = NOW()
+         WHERE id = $3
+         RETURNING *`,
+        [PLACEMENT_STATUS_NOT_IN_FOSTER, endDate, placementId],
+      );
+
+      if (placement.status === PLACEMENT_STATUS_IN_PROGRESS) {
+        await revokeFosterPetAccess(pool, placement.pet_id, placement.foster_user_id);
+      }
+
+      await createNotification(pool, {
+        userId: placement.foster_user_id,
+        petId: placement.pet_id,
+        petName,
+        title: 'Foster period ended',
+        message: `The foster period for ${petName} has ended.`,
+        type: 'general',
+      });
+
+      res.json(placementToMap(updateResult.rows[0], { pet_name: petName }));
     } catch (err) {
       res.status(500).json({ error: publicError(err) });
     }

@@ -1834,6 +1834,74 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
+  String get fosterPlacement => 'Placement en famille d\'accueil';
+
+  @override
+  String get fosterPlacementNotInFoster =>
+      'Cet animal n\'est pas actuellement en famille d\'accueil.';
+
+  @override
+  String get startFosterPlacement => 'Démarrer un placement';
+
+  @override
+  String startFosterPlacementDescription(String petName) {
+    return 'Invitez une famille d\'accueil à s\'occuper de $petName. Elle doit accepter avant le début du placement.';
+  }
+
+  @override
+  String get fosterPlacementStarted => 'Demande de placement envoyée';
+
+  @override
+  String get endFosterPlacement => 'Terminer le placement';
+
+  @override
+  String endFosterPlacementConfirm(String petName) {
+    return 'Terminer le placement pour $petName ? L\'animal retourne sous la responsabilité de l\'organisation.';
+  }
+
+  @override
+  String get fosterPlacementEnded => 'Placement terminé';
+
+  @override
+  String get fosterPlacementPending => 'En attente d\'acceptation';
+
+  @override
+  String get fosterPlacementInProgress => 'En famille d\'accueil';
+
+  @override
+  String fosterPlacementStatus(String status) {
+    return 'Statut : $status';
+  }
+
+  @override
+  String fosterPlacementAssignedTo(String name) {
+    return 'Famille d\'accueil : $name';
+  }
+
+  @override
+  String fosterPlacementStartDate(String date) {
+    return 'Date de début : $date';
+  }
+
+  @override
+  String get noFosterParentsWithAccounts =>
+      'Ajoutez d\'abord une famille d\'accueil avec un compte (invitation par e-mail).';
+
+  @override
+  String get pendingFosterPlacements => 'Placements en attente';
+
+  @override
+  String fosterPlacementInviteFrom(String orgName) {
+    return 'De $orgName';
+  }
+
+  @override
+  String get fosterPlacementAccepted => 'Placement accepté';
+
+  @override
+  String get fosterPlacementDeclined => 'Placement refusé';
+
+  @override
   String assignedPets(int count) {
     return '$count animaux assignés';
   }

@@ -135,6 +135,9 @@ function buildMockPool(overrides = {}) {
         }],
       };
     }
+    if (sql.includes('FROM foster_placements fpl')) {
+      return { rows: [{ '?column?': 2 }] };
+    }
     if (sql.includes("'external' AS kind") && sql.includes('org_foster_parents')) {
       return {
         rows: [{

@@ -11,7 +11,9 @@ import {
   userCanManagePet,
   userOwnsPet,
   COLLABORATOR_ROLES,
+  FOSTER_PET_ACCESS_ROLE,
 } from '../lib/petAccess.js';
+import { orgPetViewerRolesSql } from '../lib/orgRoles.js';
 
 function extractUserId(req) {
   const auth = req.headers['authorization'] || req.headers['Authorization'];
@@ -714,19 +716,30 @@ export default function petsRoutes(pool) {
          UNION ALL
          SELECT p.*, false AS is_shared, o.name AS organization_name
          FROM pets p
+         JOIN pet_access pa ON pa.pet_id = p.id
+         LEFT JOIN organizations o ON o.id = p.organization_id
+         WHERE pa.user_id = $1 AND pa.role = $3 AND COALESCE(pa.hidden, false) = false
+         UNION ALL
+         SELECT p.*, false AS is_shared, o.name AS organization_name
+         FROM pets p
          JOIN organization_users ou ON ou.organization_id = p.organization_id
          LEFT JOIN organizations o ON o.id = p.organization_id
          WHERE ou.user_id = $1
            AND p.organization_id IS NOT NULL
            AND p.user_id <> $1
-           AND ou.role NOT LIKE 'pending_%'
+           AND ou.role IN (${orgPetViewerRolesSql()})
            AND NOT EXISTS (
              SELECT 1 FROM pet_access pa
              WHERE pa.pet_id = p.id AND pa.user_id = $1
                AND pa.role = ANY($2::text[]) AND COALESCE(pa.hidden, false) = false
            )
+           AND NOT EXISTS (
+             SELECT 1 FROM pet_access pa
+             WHERE pa.pet_id = p.id AND pa.user_id = $1
+               AND pa.role = $3 AND COALESCE(pa.hidden, false) = false
+           )
          ORDER BY created_at`,
-        [userId, COLLABORATOR_ROLES]
+        [userId, COLLABORATOR_ROLES, FOSTER_PET_ACCESS_ROLE]
       );
       const pets = result.rows.map(petRowToMap);
       await autoAssignColors(pool, pets);

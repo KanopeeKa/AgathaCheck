@@ -1821,6 +1821,74 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get fosterPlacement => 'Foster placement';
+
+  @override
+  String get fosterPlacementNotInFoster =>
+      'This pet is not currently in foster care.';
+
+  @override
+  String get startFosterPlacement => 'Start foster placement';
+
+  @override
+  String startFosterPlacementDescription(String petName) {
+    return 'Invite a foster parent to care for $petName. They must accept before the placement begins.';
+  }
+
+  @override
+  String get fosterPlacementStarted => 'Foster placement request sent';
+
+  @override
+  String get endFosterPlacement => 'End foster period';
+
+  @override
+  String endFosterPlacementConfirm(String petName) {
+    return 'End the foster period for $petName? The pet returns to organisation custody.';
+  }
+
+  @override
+  String get fosterPlacementEnded => 'Foster period ended';
+
+  @override
+  String get fosterPlacementPending => 'Pending acceptance';
+
+  @override
+  String get fosterPlacementInProgress => 'In foster care';
+
+  @override
+  String fosterPlacementStatus(String status) {
+    return 'Status: $status';
+  }
+
+  @override
+  String fosterPlacementAssignedTo(String name) {
+    return 'Foster parent: $name';
+  }
+
+  @override
+  String fosterPlacementStartDate(String date) {
+    return 'Start date: $date';
+  }
+
+  @override
+  String get noFosterParentsWithAccounts =>
+      'Add a foster parent with an app account first (invite by email).';
+
+  @override
+  String get pendingFosterPlacements => 'Pending foster placements';
+
+  @override
+  String fosterPlacementInviteFrom(String orgName) {
+    return 'From $orgName';
+  }
+
+  @override
+  String get fosterPlacementAccepted => 'Foster placement accepted';
+
+  @override
+  String get fosterPlacementDeclined => 'Foster placement declined';
+
+  @override
   String assignedPets(int count) {
     return '$count pets assigned';
   }

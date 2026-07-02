@@ -5,6 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:pet_profile_app/features/auth/presentation/providers/auth_providers.dart';
 import 'package:pet_profile_app/features/organization/domain/entities/archived_pet.dart';
 import 'package:pet_profile_app/features/organization/domain/entities/foster_parent.dart';
+import 'package:pet_profile_app/features/organization/domain/entities/foster_placement.dart';
 import 'package:pet_profile_app/features/organization/domain/entities/organization.dart';
 import 'package:pet_profile_app/features/organization/domain/entities/organization_member.dart';
 import 'package:pet_profile_app/features/organization/domain/repositories/organization_repository.dart';
@@ -145,6 +146,40 @@ class RecordingOrganizationRepository implements OrganizationRepository {
   @override
   Future<void> deleteExternalFosterParent(
       String orgId, String fosterParentId, String token) async {}
+  @override
+  Future<PetFosterPlacementState> getPetPlacement(
+          String orgId, String petId, String token) async =>
+      const PetFosterPlacementState(status: 'not_in_foster');
+  @override
+  Future<FosterPlacement> startFosterPlacement(
+    String orgId,
+    String petId, {
+    required String fosterUserId,
+    DateTime? startDate,
+    String notes = '',
+    required String token,
+  }) async =>
+      FosterPlacement(
+        id: 'fp-1',
+        organizationId: orgId,
+        petId: petId,
+        fosterUserId: fosterUserId,
+        status: 'pending',
+      );
+  @override
+  Future<FosterPlacement> endFosterPlacement(
+    String orgId,
+    String placementId, {
+    DateTime? endDate,
+    required String token,
+  }) async =>
+      FosterPlacement(
+        id: placementId,
+        organizationId: orgId,
+        petId: 'pet-1',
+        fosterUserId: 'user-1',
+        status: 'not_in_foster',
+      );
 }
 
 ProviderContainer makeContainer(RecordingOrganizationRepository repo) {

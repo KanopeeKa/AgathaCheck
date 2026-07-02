@@ -52,7 +52,18 @@ checks (`super_admin`, `admin`, `foster`). See `docs/org-fostering-strategy.md`.
 | POST | `/:orgId/foster-parents` | `super_admin` or `admin`; body `{ display_name, email?, phone?, notes? }` — external contact without app account |
 | PUT | `/:orgId/foster-parents/:id` | update external foster parent (same body fields) |
 | DELETE | `/:orgId/foster-parents/:id` | remove external foster parent |
+| GET | `/:orgId/placements` | `super_admin` or `admin`; all placements for org |
+| GET | `/:orgId/pets/:petId/placement` | current active placement for pet (or `not_in_foster`) |
+| POST | `/:orgId/pets/:petId/placements` | start foster (`pending`); body `{ foster_user_id, start_date?, notes? }` |
+| POST | `/:orgId/placements/:id/end` | end foster period → `not_in_foster`; revokes foster `pet_access` |
 | GET | `/:orgId/pets`, `/:orgId/archived` | `super_admin` or `admin` (not foster) |
+
+### Foster placements (`/api/foster-placements`)
+| Method | Path | Authorization |
+|---|---|---|
+| GET | `/pending` | authenticated foster parent; pending placement invites |
+| POST | `/:id/accept` | assigned foster parent; `pending` → `in_progress`, grants `pet_access` foster role |
+| POST | `/:id/decline` | assigned foster parent; → `not_in_foster` |
 | GET | `/invites/pending`, POST `/invites/:id/accept|decline` | invitee |
 
 ### Health entries (`/api/health-entries`)

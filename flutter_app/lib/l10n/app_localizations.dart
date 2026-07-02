@@ -3415,6 +3415,114 @@ abstract class AppLocalizations {
   /// **'Remove {name} from the foster parent directory?'**
   String deleteFosterParentConfirm(String name);
 
+  /// No description provided for @fosterPlacement.
+  ///
+  /// In en, this message translates to:
+  /// **'Foster placement'**
+  String get fosterPlacement;
+
+  /// No description provided for @fosterPlacementNotInFoster.
+  ///
+  /// In en, this message translates to:
+  /// **'This pet is not currently in foster care.'**
+  String get fosterPlacementNotInFoster;
+
+  /// No description provided for @startFosterPlacement.
+  ///
+  /// In en, this message translates to:
+  /// **'Start foster placement'**
+  String get startFosterPlacement;
+
+  /// No description provided for @startFosterPlacementDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Invite a foster parent to care for {petName}. They must accept before the placement begins.'**
+  String startFosterPlacementDescription(String petName);
+
+  /// No description provided for @fosterPlacementStarted.
+  ///
+  /// In en, this message translates to:
+  /// **'Foster placement request sent'**
+  String get fosterPlacementStarted;
+
+  /// No description provided for @endFosterPlacement.
+  ///
+  /// In en, this message translates to:
+  /// **'End foster period'**
+  String get endFosterPlacement;
+
+  /// No description provided for @endFosterPlacementConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'End the foster period for {petName}? The pet returns to organisation custody.'**
+  String endFosterPlacementConfirm(String petName);
+
+  /// No description provided for @fosterPlacementEnded.
+  ///
+  /// In en, this message translates to:
+  /// **'Foster period ended'**
+  String get fosterPlacementEnded;
+
+  /// No description provided for @fosterPlacementPending.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending acceptance'**
+  String get fosterPlacementPending;
+
+  /// No description provided for @fosterPlacementInProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'In foster care'**
+  String get fosterPlacementInProgress;
+
+  /// No description provided for @fosterPlacementStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'Status: {status}'**
+  String fosterPlacementStatus(String status);
+
+  /// No description provided for @fosterPlacementAssignedTo.
+  ///
+  /// In en, this message translates to:
+  /// **'Foster parent: {name}'**
+  String fosterPlacementAssignedTo(String name);
+
+  /// No description provided for @fosterPlacementStartDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Start date: {date}'**
+  String fosterPlacementStartDate(String date);
+
+  /// No description provided for @noFosterParentsWithAccounts.
+  ///
+  /// In en, this message translates to:
+  /// **'Add a foster parent with an app account first (invite by email).'**
+  String get noFosterParentsWithAccounts;
+
+  /// No description provided for @pendingFosterPlacements.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending foster placements'**
+  String get pendingFosterPlacements;
+
+  /// No description provided for @fosterPlacementInviteFrom.
+  ///
+  /// In en, this message translates to:
+  /// **'From {orgName}'**
+  String fosterPlacementInviteFrom(String orgName);
+
+  /// No description provided for @fosterPlacementAccepted.
+  ///
+  /// In en, this message translates to:
+  /// **'Foster placement accepted'**
+  String get fosterPlacementAccepted;
+
+  /// No description provided for @fosterPlacementDeclined.
+  ///
+  /// In en, this message translates to:
+  /// **'Foster placement declined'**
+  String get fosterPlacementDeclined;
+
   /// No description provided for @assignedPets.
   ///
   /// In en, this message translates to:

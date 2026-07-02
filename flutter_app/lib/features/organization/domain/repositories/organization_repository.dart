@@ -2,6 +2,7 @@ import 'dart:typed_data';
 
 import '../entities/archived_pet.dart';
 import '../entities/foster_parent.dart';
+import '../entities/foster_placement.dart';
 import '../entities/organization.dart';
 import '../entities/organization_member.dart';
 
@@ -58,4 +59,21 @@ abstract class OrganizationRepository {
   });
   Future<void> deleteExternalFosterParent(
       String orgId, String fosterParentId, String token);
+
+  Future<PetFosterPlacementState> getPetPlacement(
+      String orgId, String petId, String token);
+  Future<FosterPlacement> startFosterPlacement(
+    String orgId,
+    String petId, {
+    required String fosterUserId,
+    DateTime? startDate,
+    String notes,
+    required String token,
+  });
+  Future<FosterPlacement> endFosterPlacement(
+    String orgId,
+    String placementId, {
+    DateTime? endDate,
+    required String token,
+  });
 }

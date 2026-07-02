@@ -124,12 +124,12 @@ flowchart TB
 - `GET/POST/PUT/DELETE /organizations/:orgId/foster-parents` API.
 - Admin **Foster parents** section: super admins, admins, fosters + external contacts with pet counts.
 
-### Increment 4 — Placement core (`not_in_foster` → `pending` → `in_progress`)
+### Increment 4 — Placement core (`not_in_foster` → `pending` → `in_progress`) ✓
 
-- `foster_placements` table (or extended `family_events` with `status`).
-- Start foster UI; foster accept/decline; foster `pet_access`.
-- Foster pet list shows org name.
-- End foster period → `not_in_foster`.
+- `foster_placements` table and lifecycle API.
+- Admin start foster; foster accept/decline; `pet_access.role = foster` on accept.
+- Foster pet list shows org name; end foster period → `not_in_foster`.
+- Flutter: placement section on org pet detail; pending placement cards on home.
 
 ### Increment 5 — Foster sharing
 
