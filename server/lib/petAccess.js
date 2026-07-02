@@ -1,8 +1,10 @@
 /**
  * Pet access control for owners and collaborators (shared/guardian followers).
  *
- * TODO(org): Review guardian role semantics when organisation sharing is redesigned.
+ * Organisation-wide pet visibility is limited to super_admin and admin roles;
+ * fosters see only pets they are actively fostering (future: foster_placements).
  */
+import { orgPetViewerRolesSql } from './orgRoles.js';
 export const COLLABORATOR_ROLES = ['shared', 'guardian'];
 
 const COLLABORATOR_ROLES_SQL = COLLABORATOR_ROLES.map((r) => `'${r}'`).join(', ');
@@ -24,7 +26,7 @@ export function accessiblePetSql(alias, userIdParam) {
         SELECT 1 FROM organization_users ou
         WHERE ou.organization_id = ${alias}.organization_id
           AND ou.user_id = ${userIdParam}
-          AND ou.role NOT LIKE 'pending_%'
+          AND ou.role IN (${orgPetViewerRolesSql()})
       )
     )
   )`;
@@ -54,7 +56,8 @@ export async function userCanAccessPet(pool, petId, userId) {
   const orgMember = await pool.query(
     `SELECT 1 FROM pets p
      JOIN organization_users ou ON ou.organization_id = p.organization_id
-     WHERE p.id = $1 AND ou.user_id = $2 AND ou.role NOT LIKE 'pending_%'
+     WHERE p.id = $1 AND ou.user_id = $2
+       AND ou.role IN (${orgPetViewerRolesSql()})
      LIMIT 1`,
     [petId, userId]
   );

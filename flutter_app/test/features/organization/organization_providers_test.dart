@@ -150,11 +150,11 @@ void main() {
     await container.read(orgMembersProvider('org-1').future);
     await container
         .read(orgMembersProvider('org-1').notifier)
-        .updateMemberRole('user-9', 'super_user');
+        .updateMemberRole('user-9', 'super_admin');
 
     expect(repo.roleChanges, hasLength(1));
     expect(repo.roleChanges.single.$1, 'org-1');
     expect(repo.roleChanges.single.$2, 'user-9');
-    expect(repo.roleChanges.single.$3, OrgMemberRole.superUser);
+    expect(repo.roleChanges.single.$3, OrgMemberRole.superAdmin);
   });
 }

@@ -1550,10 +1550,22 @@ class AppLocalizationsEn extends AppLocalizations {
   String get join => 'Join';
 
   @override
-  String get orgSuperUser => 'Super User';
+  String get orgSuperUser => 'Super admin';
 
   @override
-  String get orgMember => 'Member';
+  String get orgSuperAdmin => 'Super admin';
+
+  @override
+  String get orgMember => 'Admin';
+
+  @override
+  String get orgAdmin => 'Admin';
+
+  @override
+  String get orgFoster => 'Foster';
+
+  @override
+  String get orgSelectNewRole => 'Select new role';
 
   @override
   String get orgInviteMember => 'Invite Member';

@@ -7,6 +7,7 @@ import '../../../../core/widgets/app_logo_title.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../providers/organization_providers.dart';
 import '../widgets/org_card.dart';
+import '../widgets/organization_role_labels.dart';
 
 class OrganizationListScreen extends ConsumerWidget {
   const OrganizationListScreen({super.key});
@@ -69,9 +70,8 @@ class OrganizationListScreen extends ConsumerWidget {
                             ),
                             const SizedBox(height: 4),
                             Text(
-                              l.inviteAsRole(invite.desiredRole == 'super_user'
-                                  ? l.orgSuperUser
-                                  : l.orgMember),
+                              l.inviteAsRole(
+                                  localizedOrgRoleWire(l, invite.desiredRole)),
                               style: theme.textTheme.bodySmall?.copyWith(
                                 color: colorScheme.onSurfaceVariant,
                               ),

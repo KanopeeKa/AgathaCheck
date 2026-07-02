@@ -45,7 +45,8 @@ class OrgCard extends StatelessWidget {
                 children: [
                   CircleAvatar(
                     radius: 28,
-                    backgroundColor: isPro ? AppTheme.orgIconBg : AppTheme.orgCharityBg,
+                    backgroundColor:
+                        isPro ? AppTheme.orgIconBg : AppTheme.orgCharityBg,
                     child: Icon(
                       isPro ? Icons.business : Icons.volunteer_activism,
                       color: isPro ? AppTheme.orgIconFg : AppTheme.orgCharityFg,
@@ -65,39 +66,37 @@ class OrgCard extends StatelessWidget {
                         const SizedBox(height: 4),
                         Row(
                           children: [
-                            _TypeBadge(type: organization.type, label: typeLabel(organization.type)),
+                            _TypeBadge(
+                                type: organization.type,
+                                label: typeLabel(organization.type)),
                             const SizedBox(width: 8),
                             if (organization.isSuperUser)
-                              Container(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 6, vertical: 2),
-                                decoration: BoxDecoration(
-                                  color: AppTheme.orgSuperUserBg,
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                                child: Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Icon(Icons.star, size: 12,
-                                        color: AppTheme.orgSuperUserFg),
-                                    const SizedBox(width: 2),
-                                    Text(
-                                      l.orgSuperUser,
-                                      style: const TextStyle(
-                                        fontSize: 11,
-                                        color: AppTheme.orgSuperUserFg,
-                                        fontWeight: FontWeight.w600,
-                                      ),
-                                    ),
-                                  ],
-                                ),
+                              _RoleBadge(
+                                label: l.orgSuperAdmin,
+                                bg: AppTheme.orgSuperUserBg,
+                                fg: AppTheme.orgSuperUserFg,
+                                icon: Icons.star,
+                              )
+                            else if (organization.isOrgAdmin)
+                              _RoleBadge(
+                                label: l.orgAdmin,
+                                bg: AppTheme.orgBadgeBg,
+                                fg: AppTheme.orgBadgeFg,
+                              )
+                            else if (organization.isFoster)
+                              _RoleBadge(
+                                label: l.orgFoster,
+                                bg: AppTheme.orgCharityBadgeBg,
+                                fg: AppTheme.orgCharityBadgeFg,
+                                icon: Icons.home_work_outlined,
                               ),
                           ],
                         ),
                         const SizedBox(height: 6),
                         Row(
                           children: [
-                            Icon(Icons.people_outline, size: 16,
+                            Icon(Icons.people_outline,
+                                size: 16,
                                 color: theme.colorScheme.onSurfaceVariant),
                             const SizedBox(width: 4),
                             Text(
@@ -107,7 +106,8 @@ class OrgCard extends StatelessWidget {
                               ),
                             ),
                             const SizedBox(width: 12),
-                            Icon(Icons.pets, size: 16,
+                            Icon(Icons.pets,
+                                size: 16,
                                 color: theme.colorScheme.onSurfaceVariant),
                             const SizedBox(width: 4),
                             Text(
@@ -132,6 +132,48 @@ class OrgCard extends StatelessWidget {
             ),
           ),
         ),
+      ),
+    );
+  }
+}
+
+class _RoleBadge extends StatelessWidget {
+  const _RoleBadge({
+    required this.label,
+    required this.bg,
+    required this.fg,
+    this.icon,
+  });
+
+  final String label;
+  final Color bg;
+  final Color fg;
+  final IconData? icon;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+      decoration: BoxDecoration(
+        color: bg,
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (icon != null) ...[
+            Icon(icon, size: 12, color: fg),
+            const SizedBox(width: 2),
+          ],
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 11,
+              color: fg,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ],
       ),
     );
   }

@@ -25,12 +25,14 @@ later become push + deep links without changing core semantics.
 | **Foster access** | `pet_access.role = foster` — day-to-day care during an active placement. |
 | **Placement** | A foster period for one pet with a status lifecycle (see below). |
 
-### Current roles (until increment 1)
+### Current roles (increment 1)
 
-| DB value | UI label |
-|----------|----------|
-| `super_user` | Super admin |
-| `member` | Member (becomes **admin** in increment 1) |
+| DB value | UI label | Notes |
+|----------|----------|-------|
+| `super_admin` | Super admin | Edit/delete org; assign any role |
+| `admin` | Admin | Manage members, pets; cannot edit/delete org or assign super_admin |
+| `foster` | Foster | Org contact only; no org pet inventory (until placements, Inc 4) |
+| `pending_*` | Invited | Awaiting accept |
 
 ---
 
@@ -95,20 +97,18 @@ flowchart TB
 
 ## Increments
 
-### Increment 0 — Foundation (this document + invite tidy) ✓ in progress
+### Increment 0 — Foundation ✓ merged
 
 - Email-only org invites in Flutter (no invite-code / join-by-code UI).
 - Document 501 stubs in `API.md`.
-- No schema changes.
 
-### Increment 1 — Three org roles
+### Increment 1 — Three org roles ✓ in progress
 
-- Migration: `super_user` → `super_admin`, `member` → **`super_admin`** (all existing members promoted to avoid losing control in test data).
-- Add `admin`, `foster` (+ pending variants).
-- Permission guards + Jest matrix tests.
-- Flutter role labels and invite picker.
+- Migration `012_org_roles.sql`: `super_user`/`member` → `super_admin`; new `admin`, `foster`.
+- Permission guards on Node API; foster cannot list org pets/members/archived.
+- Flutter role labels and invite picker (`super_admin` / `admin` / `foster`).
 
-**Locked:** Multiple super admins; super admin can promote to super admin.
+**Locked:** Multiple super admins; super admin can promote others. Existing members → `super_admin`.
 
 ### Increment 2 — User share → transfer ownership
 

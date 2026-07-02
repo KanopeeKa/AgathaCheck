@@ -94,9 +94,7 @@ class OrgMembersNotifier extends FamilyAsyncNotifier<List<OrganizationMember>, S
   Future<void> updateMemberRole(String userId, String role) async {
     final token = ref.read(_orgTokenProvider)!;
     final repo = ref.read(organizationRepositoryProvider);
-    final roleEnum =
-        role == 'super_user' ? OrgMemberRole.superUser : OrgMemberRole.member;
-    await repo.updateMemberRole(arg, userId, roleEnum, token);
+    await repo.updateMemberRole(arg, userId, OrgMemberRole.fromWire(role), token);
     ref.invalidateSelf();
   }
 
@@ -203,6 +201,22 @@ final isOrgSuperUserProvider = Provider.family<bool, String>((ref, orgId) {
   return orgsAsync.whenOrNull(data: (orgs) {
     final org = orgs.where((o) => o.id == orgId).firstOrNull;
     return org?.isSuperUser ?? false;
+  }) ?? false;
+});
+
+final isOrgAdminProvider = Provider.family<bool, String>((ref, orgId) {
+  final orgsAsync = ref.watch(organizationListProvider);
+  return orgsAsync.whenOrNull(data: (orgs) {
+    final org = orgs.where((o) => o.id == orgId).firstOrNull;
+    return org?.isOrgAdmin ?? false;
+  }) ?? false;
+});
+
+final isOrgFosterProvider = Provider.family<bool, String>((ref, orgId) {
+  final orgsAsync = ref.watch(organizationListProvider);
+  return orgsAsync.whenOrNull(data: (orgs) {
+    final org = orgs.where((o) => o.id == orgId).firstOrNull;
+    return org?.isFoster ?? false;
   }) ?? false;
 });
 

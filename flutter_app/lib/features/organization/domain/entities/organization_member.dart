@@ -56,25 +56,60 @@ class OrganizationMember {
 }
 
 enum OrgMemberRole {
-  superUser,
-  member,
-  pendingMember,
-  pendingSuperUser;
+  superAdmin,
+  admin,
+  foster,
+  pendingSuperAdmin,
+  pendingAdmin,
+  pendingFoster;
 
-  String get label {
+  bool get isPending =>
+      this == OrgMemberRole.pendingSuperAdmin ||
+      this == OrgMemberRole.pendingAdmin ||
+      this == OrgMemberRole.pendingFoster;
+
+  bool get isSuperAdmin => this == OrgMemberRole.superAdmin;
+
+  bool get isOrgAdmin =>
+      this == OrgMemberRole.superAdmin || this == OrgMemberRole.admin;
+
+  bool get isFoster => this == OrgMemberRole.foster;
+
+  /// API wire value for confirmed roles (not pending).
+  String toWire() {
     switch (this) {
-      case OrgMemberRole.superUser:
-        return 'Super User';
-      case OrgMemberRole.member:
-        return 'Member';
-      case OrgMemberRole.pendingMember:
-        return 'Pending Member';
-      case OrgMemberRole.pendingSuperUser:
-        return 'Pending Super User';
+      case OrgMemberRole.superAdmin:
+      case OrgMemberRole.pendingSuperAdmin:
+        return 'super_admin';
+      case OrgMemberRole.admin:
+      case OrgMemberRole.pendingAdmin:
+        return 'admin';
+      case OrgMemberRole.foster:
+      case OrgMemberRole.pendingFoster:
+        return 'foster';
     }
   }
 
-  bool get isPending =>
-      this == OrgMemberRole.pendingMember ||
-      this == OrgMemberRole.pendingSuperUser;
+  static OrgMemberRole fromWire(String value) {
+    switch (value) {
+      case 'super_admin':
+      case 'super_user':
+        return OrgMemberRole.superAdmin;
+      case 'admin':
+      case 'member':
+        return OrgMemberRole.admin;
+      case 'foster':
+        return OrgMemberRole.foster;
+      case 'pending_super_admin':
+      case 'pending_super_user':
+        return OrgMemberRole.pendingSuperAdmin;
+      case 'pending_admin':
+      case 'pending_member':
+        return OrgMemberRole.pendingAdmin;
+      case 'pending_foster':
+        return OrgMemberRole.pendingFoster;
+      default:
+        return OrgMemberRole.admin;
+    }
+  }
 }

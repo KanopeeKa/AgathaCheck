@@ -81,7 +81,7 @@ class OrganizationMembersSection extends StatelessWidget {
                             decoration: BoxDecoration(
                               color: isPending
                                   ? Colors.orange.withAlpha(30)
-                                  : member.role == OrgMemberRole.superUser
+                                  : member.role.isSuperAdmin
                                       ? AppTheme.orgSuperUserBg
                                       : AppTheme.orgChipBg,
                               borderRadius: BorderRadius.circular(8),
@@ -93,7 +93,7 @@ class OrganizationMembersSection extends StatelessWidget {
                                 fontWeight: FontWeight.w600,
                                 color: isPending
                                     ? Colors.orange.shade800
-                                    : member.role == OrgMemberRole.superUser
+                                    : member.role.isSuperAdmin
                                         ? AppTheme.orgSuperUserFg
                                         : AppTheme.orgChipFg,
                               ),

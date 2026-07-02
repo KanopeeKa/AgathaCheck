@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../l10n/app_localizations.dart';
 import '../providers/organization_providers.dart';
+import 'organization_role_labels.dart';
 
 /// Email-only org invite. Matches `POST /api/organizations/:id/invite`.
 Future<void> showOrganizationInviteByEmailDialog({
@@ -11,8 +12,10 @@ Future<void> showOrganizationInviteByEmailDialog({
   required String orgId,
 }) async {
   final l = AppLocalizations.of(context)!;
+  final isSuperAdmin = ref.read(isOrgSuperUserProvider(orgId));
+  final roleOptions = invitableRoleWires(isSuperAdmin: isSuperAdmin);
   final emailController = TextEditingController();
-  String selectedRole = 'member';
+  String selectedRole = roleOptions.first;
   final formKey = GlobalKey<FormState>();
 
   await showDialog<void>(
@@ -50,21 +53,22 @@ Future<void> showOrganizationInviteByEmailDialog({
               const SizedBox(height: 16),
               Text(l.selectRole, style: Theme.of(ctx).textTheme.bodySmall),
               const SizedBox(height: 8),
-              SegmentedButton<String>(
-                segments: [
-                  ButtonSegment(
-                    value: 'member',
-                    label: Text(l.orgMember),
-                    icon: const Icon(Icons.person),
+              DropdownButtonFormField<String>(
+                value: selectedRole,
+                decoration: InputDecoration(
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
                   ),
-                  ButtonSegment(
-                    value: 'super_user',
-                    label: Text(l.orgSuperUser),
-                    icon: const Icon(Icons.admin_panel_settings),
-                  ),
-                ],
-                selected: {selectedRole},
-                onSelectionChanged: (v) => setState(() => selectedRole = v.first),
+                ),
+                items: roleOptions
+                    .map((wire) => DropdownMenuItem(
+                          value: wire,
+                          child: Text(invitableRoleLabel(l, wire)),
+                        ))
+                    .toList(),
+                onChanged: (value) {
+                  if (value != null) setState(() => selectedRole = value);
+                },
               ),
             ],
           ),

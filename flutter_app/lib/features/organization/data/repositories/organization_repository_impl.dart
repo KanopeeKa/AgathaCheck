@@ -74,8 +74,7 @@ class OrganizationRepositoryImpl implements OrganizationRepository {
   @override
   Future<void> updateMemberRole(
       String orgId, String userId, OrgMemberRole role, String token) async {
-    final roleStr = role == OrgMemberRole.superUser ? 'super_user' : 'member';
-    await _dataSource.updateMemberRole(orgId, userId, roleStr, token);
+    await _dataSource.updateMemberRole(orgId, userId, role.toWire(), token);
   }
 
   @override

@@ -9,10 +9,8 @@
 `/backend/api/...`; native/dev builds use `http://localhost:5000/api/...`.
 
 **Auth.** Unless noted as *public*, endpoints require `Authorization: Bearer <JWT>`
-(access token from signup/login). Organization routes additionally enforce
-*membership* and, for mutations, the `super_user` role. Health/weight/issue
-records are scoped to the authenticated user; nested resources verify ownership
-of the parent record.
+(access token from signup/login). Organization routes enforce membership and role
+checks (`super_admin`, `admin`, `foster`). See `docs/org-fostering-strategy.md`.
 
 ### Auth (`/api/auth`)
 | Method | Path | Notes |
@@ -40,17 +38,17 @@ of the parent record.
 | Method | Path | Authorization |
 |---|---|---|
 | GET | `/` | member orgs only (joined query) |
-| POST | `/` | any authenticated user (creator becomes `super_user`) |
-| GET | `/:id` | membership (joined query) |
-| PUT | `/:id` | `super_user` |
-| DELETE | `/:id` | `super_user` |
-| POST | `/:id/photo` | `super_user` |
-| GET | `/:orgId/members` | member |
-| POST | `/:id/invite` | `super_user`; body `{ email, role }` required; role ∈ {`member`,`super_user`}; invitee must already have an account |
-| PUT | `/:orgId/members/:userId/role` | `super_user`; role validated |
-| DELETE | `/:orgId/members/:userId` | `super_user` |
+| POST | `/` | any authenticated user (creator becomes `super_admin`) |
+| GET | `/:id` | any active member (incl. foster — org contact) |
+| PUT | `/:id` | `super_admin` only |
+| DELETE | `/:id` | `super_admin` only |
+| POST | `/:id/photo` | `super_admin` or `admin` |
+| GET | `/:orgId/members` | `super_admin` or `admin` |
+| POST | `/:id/invite` | `super_admin` or `admin`; body `{ email, role }`; role ∈ {`super_admin`,`admin`,`foster`}; admin cannot assign `super_admin` |
+| PUT | `/:orgId/members/:userId/role` | `super_admin` or `admin`; same assignability rules as invite |
+| DELETE | `/:orgId/members/:userId` | `super_admin` or `admin` |
 | DELETE | `/:orgId/members/me` | self (leave org) |
-| GET | `/:orgId/pets`, `/:orgId/archived` | member |
+| GET | `/:orgId/pets`, `/:orgId/archived` | `super_admin` or `admin` (not foster) |
 | GET | `/invites/pending`, POST `/invites/:id/accept|decline` | invitee |
 
 ### Health entries (`/api/health-entries`)

@@ -4,6 +4,17 @@ import jwt from 'jsonwebtoken';
 
 import { JWT_SECRET } from '../config/jwtSecret.js';
 import { publicError } from '../config/security.js';
+import {
+  ASSIGNABLE_ROLES,
+  ORG_ROLE_ADMIN,
+  ORG_ROLE_SUPER_ADMIN,
+  assignableRolesFor,
+  canAssignRole,
+  isActiveMember,
+  isOrgAdmin,
+  isSuperAdmin,
+  normaliseRole,
+} from '../lib/orgRoles.js';
 
 function extractUserId(req) {
   const auth = req.headers['authorization'] || req.headers['Authorization'];
@@ -34,49 +45,39 @@ function orgRowToMap(row) {
   };
 }
 
-// Roles that may be assigned to a member. `pending_*` variants are derived from
-// these for invites; anything else is rejected so callers cannot smuggle in
-// arbitrary privilege strings (e.g. `pending_super_user`).
-const ASSIGNABLE_ROLES = ['member', 'super_user'];
-
-// Returns the caller's role in the org, or null if they are not a member.
 async function getMemberRole(pool, orgId, userId) {
   const result = await pool.query(
     'SELECT role FROM organization_users WHERE organization_id = $1 AND user_id = $2',
     [orgId, userId],
   );
-  return result.rows.length ? result.rows[0].role : null;
+  return result.rows.length ? normaliseRole(result.rows[0].role) : null;
 }
 
-// A confirmed member (excludes users with an outstanding pending invite).
-function isActiveMember(role) {
-  return !!role && !role.startsWith('pending_');
-}
-
-// Org administrators (the only role allowed to mutate org/membership state).
-function isAdmin(role) {
-  return role === 'super_user';
-}
-
-// Guards a route so only confirmed members proceed. Returns true if the caller
-// is allowed; otherwise writes a 403 and returns false.
 async function requireMember(pool, res, orgId, userId) {
   const role = await getMemberRole(pool, orgId, userId);
   if (!isActiveMember(role)) {
     res.status(403).json({ error: 'Forbidden' });
-    return false;
+    return null;
   }
-  return true;
+  return role;
 }
 
-// Guards a route so only org admins (super_user) proceed.
-async function requireAdmin(pool, res, orgId, userId) {
+async function requireOrgAdmin(pool, res, orgId, userId) {
   const role = await getMemberRole(pool, orgId, userId);
-  if (!isAdmin(role)) {
+  if (!isOrgAdmin(role)) {
     res.status(403).json({ error: 'Forbidden' });
-    return false;
+    return null;
   }
-  return true;
+  return role;
+}
+
+async function requireSuperAdmin(pool, res, orgId, userId) {
+  const role = await getMemberRole(pool, orgId, userId);
+  if (!isSuperAdmin(role)) {
+    res.status(403).json({ error: 'Forbidden' });
+    return null;
+  }
+  return role;
 }
 
 export default function organizationsRoutes(pool) {
@@ -90,14 +91,14 @@ export default function organizationsRoutes(pool) {
         `SELECT ou.id, ou.organization_id, ou.role, o.name as org_name, o.type as org_type
          FROM organization_users ou
          JOIN organizations o ON o.id = ou.organization_id
-         WHERE ou.user_id = $1 AND (ou.role = 'pending_member' OR ou.role = 'pending_super_user')
+         WHERE ou.user_id = $1 AND ou.role LIKE 'pending_%'
          ORDER BY ou.created_at DESC`,
         [userId]
       );
       res.json(result.rows.map(r => ({
         id: r.id,
         organization_id: r.organization_id,
-        role: r.role,
+        role: normaliseRole(r.role),
         org_name: r.org_name,
         org_type: r.org_type,
       })));
@@ -119,7 +120,7 @@ export default function organizationsRoutes(pool) {
       res.json({
         id: r.id,
         organization_id: r.organization_id,
-        role: r.role,
+        role: normaliseRole(r.role),
       });
     } catch (err) {
       res.status(500).json({ error: publicError(err) });
@@ -143,8 +144,6 @@ export default function organizationsRoutes(pool) {
   router.post('/join/:code', async (req, res) => {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
-    // NOT IMPLEMENTED: join-by-code has no backing logic. The working path to
-    // gain membership is the email invite flow (POST /:id/invite + accept).
     return res.status(501).json({ error: 'Not implemented' });
   });
 
@@ -161,7 +160,7 @@ export default function organizationsRoutes(pool) {
          ORDER BY o.name`,
         [userId]
       );
-      res.json(result.rows.map(orgRowToMap));
+      res.json(result.rows.map((row) => orgRowToMap({ ...row, role: normaliseRole(row.role) })));
     } catch (err) {
       res.status(500).json({ error: publicError(err) });
     }
@@ -181,7 +180,7 @@ export default function organizationsRoutes(pool) {
         [userId, req.params.id]
       );
       if (result.rows.length === 0) return res.status(404).json({ error: 'Organization not found' });
-      res.json(orgRowToMap(result.rows[0]));
+      res.json(orgRowToMap({ ...result.rows[0], role: normaliseRole(result.rows[0].role) }));
     } catch (err) {
       res.status(500).json({ error: publicError(err) });
     }
@@ -199,11 +198,11 @@ export default function organizationsRoutes(pool) {
       );
       const ouId = uuidv4();
       await pool.query(
-        "INSERT INTO organization_users (id, organization_id, user_id, role) VALUES ($1, $2, $3, 'super_user')",
+        `INSERT INTO organization_users (id, organization_id, user_id, role) VALUES ($1, $2, $3, '${ORG_ROLE_SUPER_ADMIN}')`,
         [ouId, orgId, userId]
       );
       const result = await pool.query(
-        `SELECT o.*, 'super_user' as role,
+        `SELECT o.*, '${ORG_ROLE_SUPER_ADMIN}' as role,
           1 as member_count, 0 as pet_count
          FROM organizations o WHERE o.id = $1`,
         [orgId]
@@ -218,7 +217,7 @@ export default function organizationsRoutes(pool) {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     try {
-      if (!(await requireAdmin(pool, res, req.params.id, userId))) return;
+      if (!(await requireSuperAdmin(pool, res, req.params.id, userId))) return;
       const { name, type, email, phone, address, website, bio, photo_url } = req.body;
       await pool.query(
         'UPDATE organizations SET name = $1, type = $2, email = $3, phone = $4, address = $5, website = $6, bio = $7, photo_url = $8, updated_at = NOW() WHERE id = $9',
@@ -234,7 +233,7 @@ export default function organizationsRoutes(pool) {
         [userId, req.params.id]
       );
       if (result.rows.length === 0) return res.status(404).json({ error: 'Organization not found' });
-      res.json(orgRowToMap(result.rows[0]));
+      res.json(orgRowToMap({ ...result.rows[0], role: normaliseRole(result.rows[0].role) }));
     } catch (err) {
       res.status(500).json({ error: publicError(err) });
     }
@@ -244,7 +243,7 @@ export default function organizationsRoutes(pool) {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     try {
-      if (!(await requireAdmin(pool, res, req.params.id, userId))) return;
+      if (!(await requireSuperAdmin(pool, res, req.params.id, userId))) return;
       const result = await pool.query('DELETE FROM organizations WHERE id = $1 RETURNING *', [req.params.id]);
       if (result.rows.length === 0) return res.status(404).json({ error: 'Organization not found' });
       res.json({ deleted: true });
@@ -257,7 +256,7 @@ export default function organizationsRoutes(pool) {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     try {
-      if (!(await requireAdmin(pool, res, req.params.id, userId))) return;
+      if (!(await requireOrgAdmin(pool, res, req.params.id, userId))) return;
       res.json({ message: 'Photo uploaded', photo_url: `/uploads/org_photos/${req.params.id}.jpg` });
     } catch (err) {
       res.status(500).json({ error: publicError(err) });
@@ -268,7 +267,7 @@ export default function organizationsRoutes(pool) {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     try {
-      if (!(await requireMember(pool, res, req.params.orgId, userId))) return;
+      if (!(await requireOrgAdmin(pool, res, req.params.orgId, userId))) return;
       const result = await pool.query(
         `SELECT ou.id, ou.role, ou.created_at, u.id as user_id, u.email, u.first_name, u.last_name, u.photo_url
          FROM organization_users ou
@@ -284,7 +283,7 @@ export default function organizationsRoutes(pool) {
         first_name: r.first_name,
         last_name: r.last_name,
         photo_url: r.photo_url,
-        role: r.role,
+        role: normaliseRole(r.role),
         created_at: r.created_at,
       })));
     } catch (err) {
@@ -296,13 +295,17 @@ export default function organizationsRoutes(pool) {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     try {
-      if (!(await requireAdmin(pool, res, req.params.id, userId))) return;
-      const { email, role = 'member' } = req.body;
+      const actorRole = await requireOrgAdmin(pool, res, req.params.id, userId);
+      if (!actorRole) return;
+      const { email, role = ORG_ROLE_ADMIN } = req.body;
       if (!email) {
         return res.status(400).json({ error: 'Email is required' });
       }
       if (!ASSIGNABLE_ROLES.includes(role)) {
         return res.status(400).json({ error: 'Invalid role' });
+      }
+      if (!canAssignRole(actorRole, role)) {
+        return res.status(403).json({ error: 'Forbidden' });
       }
       const userResult = await pool.query('SELECT id FROM users WHERE email = $1', [email]);
       if (userResult.rows.length === 0) {
@@ -325,17 +328,22 @@ export default function organizationsRoutes(pool) {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     try {
-      if (!(await requireAdmin(pool, res, req.params.orgId, userId))) return;
+      const actorRole = await requireOrgAdmin(pool, res, req.params.orgId, userId);
+      if (!actorRole) return;
       const { role } = req.body;
       if (!ASSIGNABLE_ROLES.includes(role)) {
         return res.status(400).json({ error: 'Invalid role' });
+      }
+      if (!canAssignRole(actorRole, role)) {
+        return res.status(403).json({ error: 'Forbidden' });
       }
       const result = await pool.query(
         'UPDATE organization_users SET role = $1 WHERE organization_id = $2 AND user_id = $3 RETURNING *',
         [role, req.params.orgId, req.params.userId]
       );
       if (result.rows.length === 0) return res.status(404).json({ error: 'Member not found' });
-      res.json(result.rows[0]);
+      const row = result.rows[0];
+      res.json({ ...row, role: normaliseRole(row.role) });
     } catch (err) {
       res.status(500).json({ error: publicError(err) });
     }
@@ -356,7 +364,7 @@ export default function organizationsRoutes(pool) {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     try {
-      if (!(await requireAdmin(pool, res, req.params.orgId, userId))) return;
+      if (!(await requireOrgAdmin(pool, res, req.params.orgId, userId))) return;
       await pool.query('DELETE FROM organization_users WHERE organization_id = $1 AND user_id = $2', [req.params.orgId, req.params.userId]);
       res.json({ message: 'Member removed' });
     } catch (err) {
@@ -368,7 +376,7 @@ export default function organizationsRoutes(pool) {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     try {
-      if (!(await requireMember(pool, res, req.params.orgId, userId))) return;
+      if (!(await requireOrgAdmin(pool, res, req.params.orgId, userId))) return;
       const result = await pool.query(
         `SELECT p.*, o.name AS organization_name
          FROM pets p
@@ -393,15 +401,12 @@ export default function organizationsRoutes(pool) {
   router.post('/:orgId/pets', async (req, res) => {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
-    // NOT IMPLEMENTED: adding a pet directly to an org is not backed by any DB
-    // write. Pets are created via POST /api/pets with an organization_id.
     return res.status(501).json({ error: 'Not implemented' });
   });
 
   router.post('/:orgId/pets/:petId/transfer', async (req, res) => {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
-    // NOT IMPLEMENTED: org pet transfer has no backing logic.
     return res.status(501).json({ error: 'Not implemented' });
   });
 
@@ -409,7 +414,7 @@ export default function organizationsRoutes(pool) {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     try {
-      if (!(await requireMember(pool, res, req.params.orgId, userId))) return;
+      if (!(await requireOrgAdmin(pool, res, req.params.orgId, userId))) return;
       const result = await pool.query('SELECT * FROM archived_pets WHERE organization_id = $1 ORDER BY created_at DESC', [req.params.orgId]);
       res.json(result.rows);
     } catch (err) {
@@ -419,3 +424,6 @@ export default function organizationsRoutes(pool) {
 
   return router;
 }
+
+// Exported for tests.
+export { getMemberRole, requireOrgAdmin, requireSuperAdmin };
