@@ -48,6 +48,10 @@ checks (`super_admin`, `admin`, `foster`). See `docs/org-fostering-strategy.md`.
 | PUT | `/:orgId/members/:userId/role` | `super_admin` or `admin`; same assignability rules as invite |
 | DELETE | `/:orgId/members/:userId` | `super_admin` or `admin` |
 | DELETE | `/:orgId/members/me` | self (leave org) |
+| GET | `/:orgId/foster-parents` | `super_admin` or `admin`; member + external foster parents with active pet counts |
+| POST | `/:orgId/foster-parents` | `super_admin` or `admin`; body `{ display_name, email?, phone?, notes? }` — external contact without app account |
+| PUT | `/:orgId/foster-parents/:id` | update external foster parent (same body fields) |
+| DELETE | `/:orgId/foster-parents/:id` | remove external foster parent |
 | GET | `/:orgId/pets`, `/:orgId/archived` | `super_admin` or `admin` (not foster) |
 | GET | `/invites/pending`, POST `/invites/:id/accept|decline` | invitee |
 

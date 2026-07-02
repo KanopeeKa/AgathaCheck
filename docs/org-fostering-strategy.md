@@ -117,10 +117,12 @@ flowchart TB
 - `archived_pets` audit row (`user_to_user`).
 - Flutter: transfer dialog on personal pet sharing section.
 
-### Increment 3 — Foster membership + directory
+### Increment 3 — Foster membership + directory ✓
 
-- Foster invite role; foster sees org contact only.
-- Admin **Foster parents** section (admins + fosters, pet counts).
+- Foster invite role and org-contact-only view (Inc 1).
+- `org_foster_parents` table for external contacts without app accounts.
+- `GET/POST/PUT/DELETE /organizations/:orgId/foster-parents` API.
+- Admin **Foster parents** section: super admins, admins, fosters + external contacts with pet counts.
 
 ### Increment 4 — Placement core (`not_in_foster` → `pending` → `in_progress`)
 

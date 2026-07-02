@@ -1797,6 +1797,43 @@ class AppLocalizationsFr extends AppLocalizations {
   String get people => 'Personnes';
 
   @override
+  String get fosterParents => 'Familles d\'accueil';
+
+  @override
+  String get fosterParentsDescription =>
+      'Membres et contacts pouvant accueillir des animaux de l\'organisation. Le nombre d\'animaux reflète les placements actifs.';
+
+  @override
+  String get noFosterParents => 'Aucune famille d\'accueil pour le moment';
+
+  @override
+  String get addFosterParent => 'Ajouter une famille d\'accueil';
+
+  @override
+  String get addFosterParentDescription =>
+      'Ajoutez une personne sans compte dans l\'application. Vous pourrez lui assigner des animaux plus tard.';
+
+  @override
+  String get fosterParentDisplayName => 'Nom affiché';
+
+  @override
+  String get fosterParentNoAccount => 'Sans compte';
+
+  @override
+  String get fosterParentCreated => 'Famille d\'accueil ajoutée';
+
+  @override
+  String get fosterParentDeleted => 'Famille d\'accueil retirée';
+
+  @override
+  String get deleteFosterParent => 'Retirer la famille d\'accueil';
+
+  @override
+  String deleteFosterParentConfirm(String name) {
+    return 'Retirer $name du répertoire des familles d\'accueil ?';
+  }
+
+  @override
   String assignedPets(int count) {
     return '$count animaux assignés';
   }

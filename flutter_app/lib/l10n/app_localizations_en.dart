@@ -1784,6 +1784,43 @@ class AppLocalizationsEn extends AppLocalizations {
   String get people => 'People';
 
   @override
+  String get fosterParents => 'Foster parents';
+
+  @override
+  String get fosterParentsDescription =>
+      'Members and contacts who can foster organisation pets. Pet counts reflect active placements.';
+
+  @override
+  String get noFosterParents => 'No foster parents yet';
+
+  @override
+  String get addFosterParent => 'Add foster parent';
+
+  @override
+  String get addFosterParentDescription =>
+      'Add someone who fosters without an app account. You can assign pets to them in a later step.';
+
+  @override
+  String get fosterParentDisplayName => 'Display name';
+
+  @override
+  String get fosterParentNoAccount => 'No account';
+
+  @override
+  String get fosterParentCreated => 'Foster parent added';
+
+  @override
+  String get fosterParentDeleted => 'Foster parent removed';
+
+  @override
+  String get deleteFosterParent => 'Remove foster parent';
+
+  @override
+  String deleteFosterParentConfirm(String name) {
+    return 'Remove $name from the foster parent directory?';
+  }
+
+  @override
   String assignedPets(int count) {
     return '$count pets assigned';
   }

@@ -13,6 +13,7 @@ import '../providers/organization_providers.dart';
 import '../widgets/organization_archived_section.dart';
 import '../widgets/organization_contact_card.dart';
 import '../widgets/organization_hidden_shared_pets_section.dart';
+import '../widgets/organization_foster_parents_section.dart';
 import '../widgets/organization_info_card.dart';
 import '../widgets/organization_invite_by_email_dialog.dart';
 import '../widgets/organization_members_section.dart';
@@ -199,6 +200,14 @@ class _OrganizationDetailScreenState
                     ref: ref,
                     orgId: orgId,
                   ),
+                ),
+                const SizedBox(height: 16),
+                OrganizationFosterParentsSection(
+                  orgId: orgId,
+                  theme: theme,
+                  colorScheme: colorScheme,
+                  l: l,
+                  localizedRoleLabel: _localizedRoleLabel,
                 ),
                 const SizedBox(height: 16),
                 OrganizationPetsSection(

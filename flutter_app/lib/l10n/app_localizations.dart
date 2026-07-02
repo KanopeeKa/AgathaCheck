@@ -3349,6 +3349,72 @@ abstract class AppLocalizations {
   /// **'People'**
   String get people;
 
+  /// No description provided for @fosterParents.
+  ///
+  /// In en, this message translates to:
+  /// **'Foster parents'**
+  String get fosterParents;
+
+  /// No description provided for @fosterParentsDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Members and contacts who can foster organisation pets. Pet counts reflect active placements.'**
+  String get fosterParentsDescription;
+
+  /// No description provided for @noFosterParents.
+  ///
+  /// In en, this message translates to:
+  /// **'No foster parents yet'**
+  String get noFosterParents;
+
+  /// No description provided for @addFosterParent.
+  ///
+  /// In en, this message translates to:
+  /// **'Add foster parent'**
+  String get addFosterParent;
+
+  /// No description provided for @addFosterParentDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Add someone who fosters without an app account. You can assign pets to them in a later step.'**
+  String get addFosterParentDescription;
+
+  /// No description provided for @fosterParentDisplayName.
+  ///
+  /// In en, this message translates to:
+  /// **'Display name'**
+  String get fosterParentDisplayName;
+
+  /// No description provided for @fosterParentNoAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'No account'**
+  String get fosterParentNoAccount;
+
+  /// No description provided for @fosterParentCreated.
+  ///
+  /// In en, this message translates to:
+  /// **'Foster parent added'**
+  String get fosterParentCreated;
+
+  /// No description provided for @fosterParentDeleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Foster parent removed'**
+  String get fosterParentDeleted;
+
+  /// No description provided for @deleteFosterParent.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove foster parent'**
+  String get deleteFosterParent;
+
+  /// No description provided for @deleteFosterParentConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove {name} from the foster parent directory?'**
+  String deleteFosterParentConfirm(String name);
+
   /// No description provided for @assignedPets.
   ///
   /// In en, this message translates to:

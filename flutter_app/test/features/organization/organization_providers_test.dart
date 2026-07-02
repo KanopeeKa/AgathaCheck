@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pet_profile_app/features/auth/presentation/providers/auth_providers.dart';
 import 'package:pet_profile_app/features/organization/domain/entities/archived_pet.dart';
+import 'package:pet_profile_app/features/organization/domain/entities/foster_parent.dart';
 import 'package:pet_profile_app/features/organization/domain/entities/organization.dart';
 import 'package:pet_profile_app/features/organization/domain/entities/organization_member.dart';
 import 'package:pet_profile_app/features/organization/domain/repositories/organization_repository.dart';
@@ -108,6 +109,42 @@ class RecordingOrganizationRepository implements OrganizationRepository {
   @override
   Future<void> deleteFamilyEvent(
       String token, String petId, String eventId) async {}
+  @override
+  Future<List<FosterParent>> getFosterParents(String orgId, String token) async =>
+      [];
+  @override
+  Future<FosterParent> createExternalFosterParent(
+    String orgId, {
+    required String displayName,
+    String? email,
+    String? phone,
+    String notes = '',
+    required String token,
+  }) async =>
+      FosterParent(
+        id: 'fp-1',
+        kind: FosterParentKind.external,
+        displayName: displayName,
+        email: email,
+      );
+  @override
+  Future<FosterParent> updateExternalFosterParent(
+    String orgId,
+    String fosterParentId, {
+    required String displayName,
+    String? email,
+    String? phone,
+    String notes = '',
+    required String token,
+  }) async =>
+      FosterParent(
+        id: fosterParentId,
+        kind: FosterParentKind.external,
+        displayName: displayName,
+      );
+  @override
+  Future<void> deleteExternalFosterParent(
+      String orgId, String fosterParentId, String token) async {}
 }
 
 ProviderContainer makeContainer(RecordingOrganizationRepository repo) {

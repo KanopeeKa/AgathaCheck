@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import '../../domain/entities/archived_pet.dart';
+import '../../domain/entities/foster_parent.dart';
 import '../../domain/entities/organization.dart';
 import '../../domain/entities/organization_member.dart';
 import '../../domain/repositories/organization_repository.dart';
@@ -156,5 +157,59 @@ class OrganizationRepositoryImpl implements OrganizationRepository {
   Future<void> deleteFamilyEvent(
       String token, String petId, String eventId) async {
     await _dataSource.deleteFamilyEvent(token, petId, eventId);
+  }
+
+  @override
+  Future<List<FosterParent>> getFosterParents(String orgId, String token) async {
+    final rows = await _dataSource.getFosterParents(orgId, token);
+    return rows.map(FosterParent.fromJson).toList();
+  }
+
+  @override
+  Future<FosterParent> createExternalFosterParent(
+    String orgId, {
+    required String displayName,
+    String? email,
+    String? phone,
+    String notes = '',
+    required String token,
+  }) async {
+    final row = await _dataSource.createExternalFosterParent(
+      orgId,
+      displayName: displayName,
+      email: email,
+      phone: phone,
+      notes: notes,
+      token: token,
+    );
+    return FosterParent.fromJson(row);
+  }
+
+  @override
+  Future<FosterParent> updateExternalFosterParent(
+    String orgId,
+    String fosterParentId, {
+    required String displayName,
+    String? email,
+    String? phone,
+    String notes = '',
+    required String token,
+  }) async {
+    final row = await _dataSource.updateExternalFosterParent(
+      orgId,
+      fosterParentId,
+      displayName: displayName,
+      email: email,
+      phone: phone,
+      notes: notes,
+      token: token,
+    );
+    return FosterParent.fromJson(row);
+  }
+
+  @override
+  Future<void> deleteExternalFosterParent(
+      String orgId, String fosterParentId, String token) async {
+    await _dataSource.deleteExternalFosterParent(orgId, fosterParentId, token);
   }
 }

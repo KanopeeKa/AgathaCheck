@@ -10,6 +10,7 @@ import {
   ORG_ROLE_SUPER_ADMIN,
   assignableRolesFor,
   canAssignRole,
+  fosterParentMemberRolesSql,
   isActiveMember,
   isOrgAdmin,
   isSuperAdmin,
@@ -417,6 +418,184 @@ export default function organizationsRoutes(pool) {
       if (!(await requireOrgAdmin(pool, res, req.params.orgId, userId))) return;
       const result = await pool.query('SELECT * FROM archived_pets WHERE organization_id = $1 ORDER BY created_at DESC', [req.params.orgId]);
       res.json(result.rows);
+    } catch (err) {
+      res.status(500).json({ error: publicError(err) });
+    }
+  });
+
+  function fosterParentToMap(row) {
+    const displayName = (row.display_name || '').trim();
+    return {
+      id: row.id,
+      kind: row.kind,
+      user_id: row.user_id || null,
+      display_name: displayName || row.email || '',
+      email: row.email || null,
+      phone: row.phone || null,
+      notes: row.notes || '',
+      role: row.role ? normaliseRole(row.role) : null,
+      photo_url: row.photo_url || null,
+      active_pet_count: parseInt(row.active_pet_count, 10) || 0,
+    };
+  }
+
+  router.get('/:orgId/foster-parents', async (req, res) => {
+    const userId = extractUserId(req);
+    if (!userId) return res.status(401).json({ error: 'Unauthorized' });
+    const orgId = req.params.orgId;
+    try {
+      if (!(await requireOrgAdmin(pool, res, orgId, userId))) return;
+
+      const memberResult = await pool.query(
+        `SELECT ou.id,
+                'member' AS kind,
+                u.id AS user_id,
+                TRIM(COALESCE(u.first_name, '') || ' ' || COALESCE(u.last_name, '')) AS display_name,
+                u.email,
+                u.photo_url,
+                ou.role,
+                NULL::varchar AS phone,
+                ''::text AS notes,
+                (
+                  SELECT COUNT(DISTINCT fe.pet_id)::int
+                  FROM family_events fe
+                  WHERE fe.organization_id = ou.organization_id
+                    AND fe.assigned_to_user_id = u.id
+                    AND fe.event_type = 'placement'
+                    AND (fe.to_date IS NULL OR fe.to_date >= CURRENT_DATE)
+                ) AS active_pet_count
+         FROM organization_users ou
+         JOIN users u ON u.id = ou.user_id
+         WHERE ou.organization_id = $1
+           AND ou.role IN (${fosterParentMemberRolesSql()})
+         ORDER BY display_name, u.email`,
+        [orgId],
+      );
+
+      const externalResult = await pool.query(
+        `SELECT fp.id,
+                'external' AS kind,
+                fp.user_id,
+                fp.display_name,
+                fp.email,
+                NULL AS photo_url,
+                NULL AS role,
+                fp.phone,
+                fp.notes,
+                0 AS active_pet_count
+         FROM org_foster_parents fp
+         WHERE fp.organization_id = $1
+         ORDER BY fp.display_name`,
+        [orgId],
+      );
+
+      const combined = [
+        ...memberResult.rows.map(fosterParentToMap),
+        ...externalResult.rows.map(fosterParentToMap),
+      ].sort((a, b) => a.display_name.localeCompare(b.display_name, undefined, { sensitivity: 'base' }));
+
+      res.json(combined);
+    } catch (err) {
+      res.status(500).json({ error: publicError(err) });
+    }
+  });
+
+  router.post('/:orgId/foster-parents', async (req, res) => {
+    const userId = extractUserId(req);
+    if (!userId) return res.status(401).json({ error: 'Unauthorized' });
+    const orgId = req.params.orgId;
+    const data = req.body || {};
+    const displayName = (data.display_name || data.displayName || '').trim();
+    const email = (data.email || '').trim() || null;
+    const phone = (data.phone || '').trim() || null;
+    const notes = (data.notes || '').trim();
+
+    if (!displayName) {
+      return res.status(400).json({ error: 'Display name is required' });
+    }
+
+    try {
+      if (!(await requireOrgAdmin(pool, res, orgId, userId))) return;
+
+      const id = uuidv4();
+      const result = await pool.query(
+        `INSERT INTO org_foster_parents (
+           id, organization_id, display_name, email, phone, notes
+         ) VALUES ($1, $2, $3, $4, $5, $6)
+         RETURNING *`,
+        [id, orgId, displayName, email, phone, notes],
+      );
+      const row = result.rows[0];
+      res.status(201).json(fosterParentToMap({
+        ...row,
+        kind: 'external',
+        photo_url: null,
+        role: null,
+        active_pet_count: 0,
+      }));
+    } catch (err) {
+      res.status(500).json({ error: publicError(err) });
+    }
+  });
+
+  router.put('/:orgId/foster-parents/:id', async (req, res) => {
+    const userId = extractUserId(req);
+    if (!userId) return res.status(401).json({ error: 'Unauthorized' });
+    const orgId = req.params.orgId;
+    const fosterParentId = req.params.id;
+    const data = req.body || {};
+    const displayName = (data.display_name || data.displayName || '').trim();
+    const email = (data.email || '').trim() || null;
+    const phone = (data.phone || '').trim() || null;
+    const notes = (data.notes || '').trim();
+
+    if (!displayName) {
+      return res.status(400).json({ error: 'Display name is required' });
+    }
+
+    try {
+      if (!(await requireOrgAdmin(pool, res, orgId, userId))) return;
+
+      const result = await pool.query(
+        `UPDATE org_foster_parents
+         SET display_name = $1, email = $2, phone = $3, notes = $4, updated_at = NOW()
+         WHERE id = $5 AND organization_id = $6
+         RETURNING *`,
+        [displayName, email, phone, notes, fosterParentId, orgId],
+      );
+      if (result.rows.length === 0) {
+        return res.status(404).json({ error: 'Foster parent not found' });
+      }
+      const row = result.rows[0];
+      res.json(fosterParentToMap({
+        ...row,
+        kind: 'external',
+        photo_url: null,
+        role: null,
+        active_pet_count: 0,
+      }));
+    } catch (err) {
+      res.status(500).json({ error: publicError(err) });
+    }
+  });
+
+  router.delete('/:orgId/foster-parents/:id', async (req, res) => {
+    const userId = extractUserId(req);
+    if (!userId) return res.status(401).json({ error: 'Unauthorized' });
+    const orgId = req.params.orgId;
+    const fosterParentId = req.params.id;
+
+    try {
+      if (!(await requireOrgAdmin(pool, res, orgId, userId))) return;
+
+      const result = await pool.query(
+        'DELETE FROM org_foster_parents WHERE id = $1 AND organization_id = $2 RETURNING id',
+        [fosterParentId, orgId],
+      );
+      if (result.rows.length === 0) {
+        return res.status(404).json({ error: 'Foster parent not found' });
+      }
+      res.json({ deleted: true, id: fosterParentId });
     } catch (err) {
       res.status(500).json({ error: publicError(err) });
     }
