@@ -116,6 +116,7 @@ void main() {
       expect(model.colorValue, isNull);
       expect(model.passedAway, isFalse);
       expect(model.isShared, isFalse);
+      expect(model.isFoster, isFalse);
       expect(model.organizationId, isNull);
       expect(model.organizationName, isNull);
     });
@@ -140,6 +141,18 @@ void main() {
       };
       final model = PetModel.fromJson(json);
       expect(model.dateOfBirth!.day, 15);
+    });
+
+    test('parses is_foster for fostered org pets', () {
+      final json = {
+        'id': 'p1',
+        'name': 'Max',
+        'species': 'Dog',
+        'is_foster': true,
+      };
+      final model = PetModel.fromJson(json);
+      expect(model.isFoster, isTrue);
+      expect(model.isShared, isFalse);
     });
 
     test('organization_id as int is coerced to string', () {

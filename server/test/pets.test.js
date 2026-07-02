@@ -56,7 +56,7 @@ function createMockPool(queryHandler) {
       if (sql.includes('SELECT 1 FROM pet_access WHERE pet_id')) {
         return { rows: [] };
       }
-      if (sql.includes('CASE WHEN p.user_id')) {
+      if (sql.includes('EXISTS') && sql.includes('AS is_foster') && sql.includes('WHERE p.id = $1')) {
         return { rows: [makePetRow()] };
       }
       if (sql.includes('false AS is_shared') || sql.includes('UNION ALL')) {
@@ -339,7 +339,7 @@ describe('Pets API', () => {
         if (sql.includes('SELECT 1 FROM pets WHERE id = $1 AND user_id = $2')) {
           return { rows: [{ '?column?': 1 }] };
         }
-        if (sql.includes('CASE WHEN p.user_id')) return { rows: [row] };
+        if (sql.includes('EXISTS') && sql.includes('AS is_foster') && sql.includes('WHERE p.id = $1')) return { rows: [row] };
         return { rows: [] };
       }));
       const res = await request(app)
@@ -575,7 +575,7 @@ describe('Pets API', () => {
           capturedParams = params;
           return { rows: [{ '?column?': 1 }] };
         }
-        if (sql.includes('CASE WHEN p.user_id')) {
+        if (sql.includes('EXISTS') && sql.includes('AS is_foster') && sql.includes('WHERE p.id = $1')) {
           return { rows: [makePetRow()] };
         }
         return { rows: [] };
@@ -764,7 +764,7 @@ describe('Pets API', () => {
         if (sql.includes('SELECT 1 FROM pets WHERE id = $1 AND user_id = $2')) {
           return { rows: [{ '?column?': 1 }] };
         }
-        if (sql.includes('CASE WHEN p.user_id')) return { rows: [row] };
+        if (sql.includes('EXISTS') && sql.includes('AS is_foster') && sql.includes('WHERE p.id = $1')) return { rows: [row] };
         return { rows: [] };
       }));
       const res = await request(app)
@@ -800,7 +800,7 @@ describe('Pets API', () => {
         if (sql.includes('SELECT 1 FROM pets WHERE id = $1 AND user_id = $2')) {
           return { rows: [{ '?column?': 1 }] };
         }
-        if (sql.includes('CASE WHEN p.user_id')) return { rows: [row] };
+        if (sql.includes('EXISTS') && sql.includes('AS is_foster') && sql.includes('WHERE p.id = $1')) return { rows: [row] };
         return { rows: [] };
       }));
       const res = await request(app)

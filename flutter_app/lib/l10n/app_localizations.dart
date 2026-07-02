@@ -1537,6 +1537,12 @@ abstract class AppLocalizations {
   /// **'You are following {petName} via a share link. You can stop following at any time.'**
   String sharedPetFollowerDescription(String petName);
 
+  /// No description provided for @fosterSharingDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'While fostering {petName}, you can share a view-only link with others. You cannot transfer ownership.'**
+  String fosterSharingDescription(String petName);
+
   /// No description provided for @healthIssues.
   ///
   /// In en, this message translates to:

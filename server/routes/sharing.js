@@ -7,6 +7,7 @@ import { JWT_SECRET } from '../config/jwtSecret.js';
 import { publicError } from '../config/security.js';
 import { createNotification, userDisplayName } from '../lib/notificationHelper.js';
 import { dateToIsoDate } from '../lib/calendarDate.js';
+import { userCanSharePet, userOwnsPet } from '../lib/petAccess.js';
 
 function extractUserId(req) {
   const auth = req.headers['authorization'] || req.headers['Authorization'];
@@ -112,11 +113,7 @@ export default function sharingRoutes(pool) {
     const petId = req.body?.pet_id || req.body?.petId;
     if (!petId) return res.status(400).json({ error: 'pet_id is required' });
     try {
-      const petResult = await pool.query(
-        'SELECT id FROM pets WHERE id = $1 AND user_id = $2',
-        [petId, userId]
-      );
-      if (petResult.rows.length === 0) {
+      if (!(await userCanSharePet(pool, petId, userId))) {
         return res.status(404).json({ error: 'Pet not found' });
       }
       let code;
@@ -152,8 +149,23 @@ export default function sharingRoutes(pool) {
       const result = await pool.query(
         `DELETE FROM pet_share_links sl
          USING pets p
-         WHERE sl.id = $1 AND sl.pet_id = p.id AND p.user_id = $2
+         WHERE sl.id = $1 AND sl.pet_id = p.id
            AND sl.status IN ('pending', 'active', 'revoked')
+           AND (
+             p.user_id = $2
+             OR (
+               sl.created_by = $2
+               AND EXISTS (
+                 SELECT 1 FROM pet_access pa
+                 INNER JOIN foster_placements fp
+                   ON fp.pet_id = pa.pet_id AND fp.foster_user_id = pa.user_id
+                 WHERE pa.pet_id = p.id AND pa.user_id = $2
+                   AND pa.role = 'foster'
+                   AND fp.status = 'in_progress'
+                   AND COALESCE(pa.hidden, false) = false
+               )
+             )
+           )
          RETURNING sl.id, sl.status`,
         [req.params.linkId, userId]
       );

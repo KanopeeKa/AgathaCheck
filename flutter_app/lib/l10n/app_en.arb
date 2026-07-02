@@ -286,6 +286,8 @@
   "@stopFollowingConfirm": { "placeholders": { "petName": { "type": "String" } } },
   "sharedPetFollowerDescription": "You are following {petName} via a share link. You can stop following at any time.",
   "@sharedPetFollowerDescription": { "placeholders": { "petName": { "type": "String" } } },
+  "fosterSharingDescription": "While fostering {petName}, you can share a view-only link with others. You cannot transfer ownership.",
+  "@fosterSharingDescription": { "placeholders": { "petName": { "type": "String" } } },
 
   "healthIssues": "Health Issues",
   "addIssue": "Add Issue",

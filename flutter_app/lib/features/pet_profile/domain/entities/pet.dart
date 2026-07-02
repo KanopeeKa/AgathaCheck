@@ -24,6 +24,7 @@ class Pet {
     this.colorValue,
     this.passedAway = false,
     this.isShared = false,
+    this.isFoster = false,
     this.organizationId,
     this.organizationName,
   });
@@ -46,6 +47,7 @@ class Pet {
   final int? colorValue;
   final bool passedAway;
   final bool isShared;
+  final bool isFoster;
   final String? organizationId;
   final String? organizationName;
 
@@ -107,6 +109,7 @@ class Pet {
     int? colorValue,
     bool? passedAway,
     bool? isShared,
+    bool? isFoster,
     String? organizationId,
     String? organizationName,
     bool clearVetId = false,
@@ -133,6 +136,7 @@ class Pet {
       colorValue: colorValue ?? this.colorValue,
       passedAway: passedAway ?? this.passedAway,
       isShared: isShared ?? this.isShared,
+      isFoster: isFoster ?? this.isFoster,
       organizationId: organizationId ?? this.organizationId,
       organizationName: organizationName ?? this.organizationName,
     );

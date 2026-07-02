@@ -262,6 +262,8 @@
   "@stopFollowingConfirm": { "placeholders": { "petName": { "type": "String" } } },
   "sharedPetFollowerDescription": "Vous suivez {petName} via un lien de partage. Vous pouvez arrêter de suivre à tout moment.",
   "@sharedPetFollowerDescription": { "placeholders": { "petName": { "type": "String" } } },
+  "fosterSharingDescription": "Pendant que vous accueillez {petName}, vous pouvez partager un lien en lecture seule. Vous ne pouvez pas transférer la propriété.",
+  "@fosterSharingDescription": { "placeholders": { "petName": { "type": "String" } } },
 
   "healthIssues": "Problèmes de santé",
   "addIssue": "Ajouter un problème",

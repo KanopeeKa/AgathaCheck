@@ -87,6 +87,24 @@ export async function userCanManagePet(pool, petId, userId) {
   return userCanAccessPet(pool, petId, userId);
 }
 
+/** Owner or active foster parent during an in-progress placement — may create share links. */
+export async function userCanSharePet(pool, petId, userId) {
+  if (!petId || !userId) return false;
+  if (await userOwnsPet(pool, petId, userId)) return true;
+  const foster = await pool.query(
+    `SELECT 1 FROM pet_access pa
+     INNER JOIN foster_placements fp
+       ON fp.pet_id = pa.pet_id AND fp.foster_user_id = pa.user_id
+     WHERE pa.pet_id = $1 AND pa.user_id = $2
+       AND pa.role = $3
+       AND fp.status = 'in_progress'
+       AND COALESCE(pa.hidden, false) = false
+     LIMIT 1`,
+    [petId, userId, FOSTER_PET_ACCESS_ROLE]
+  );
+  return foster.rows.length > 0;
+}
+
 export async function userCanManageWeightEntry(pool, entryId, userId) {
   const result = await pool.query(
     `SELECT 1 FROM weight_entries we

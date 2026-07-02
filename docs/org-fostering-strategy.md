@@ -91,7 +91,7 @@ flowchart TB
 | Start / manage placements | ✓ | ✓ | ✗ |
 | Day-to-day pet care (fostered pet) | ✓ | ✓ | ✓ |
 | Transfer ownership | ✓ | ✓ | ✗ |
-| Share pet (as foster) | — | — | ✓ (Inc 5) |
+| Share pet (as foster) | — | — | ✓ |
 
 ---
 
@@ -131,9 +131,11 @@ flowchart TB
 - Foster pet list shows org name; end foster period → `not_in_foster`.
 - Flutter: placement section on org pet detail; pending placement cards on home.
 
-### Increment 5 — Foster sharing
+### Increment 5 — Foster sharing ✓
 
 - Foster can create share links; still cannot transfer.
+- `userCanSharePet` (owner or active in-progress foster placement).
+- `is_foster` on pet API responses; foster sharing UI on pet detail.
 
 ### Increment 6 — Adoption completion
 

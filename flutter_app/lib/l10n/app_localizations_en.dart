@@ -798,6 +798,11 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String fosterSharingDescription(String petName) {
+    return 'While fostering $petName, you can share a view-only link with others. You cannot transfer ownership.';
+  }
+
+  @override
   String get healthIssues => 'Health Issues';
 
   @override

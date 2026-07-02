@@ -90,10 +90,10 @@ ownership), `PUT /:id`, `DELETE /:id`.
 ### Sharing (`/api/share`)
 | Method | Path | Notes |
 |---|---|---|
-| POST | `/` | Owner creates a share link; body `{ pet_id }`; returns `{ share_code, link_id }` |
+| POST | `/` | Owner or active foster parent creates a share link; body `{ pet_id }`; returns `{ share_code, link_id }` |
 | GET | `/:code` | Public preview of shared pet; includes `link_status` (`pending`, `active`, `revoked`) |
 | POST | `/:code/accept` | Auth required; single-use — creates `shared` access immediately, marks link `active` |
-| DELETE | `/links/:linkId` | Owner deletes/revokes a share link |
+| DELETE | `/links/:linkId` | Owner deletes any share link; foster may delete only links they created |
 | GET | `/pending` | Deprecated — always returns `[]` (one-step flow) |
 | POST | `/pending/:petId/accept` | Deprecated — returns `410` |
 | POST | `/pending/:petId/decline` | Deprecated — returns `410` |
@@ -101,13 +101,13 @@ ownership), `PUT /:id`, `DELETE /:id`.
 | PUT | `/:petId/hide` | Hide or unhide a shared pet (`{ hidden: true\|false }`) |
 
 Pet access management on `/api/pets/:id/...` (owner unless noted):
-- `GET /:id/share-links` — list share links with status and claimed user (owner only)
-- `GET /:id/access` — list users the pet is shared with
+- `GET /:id/share-links` — list share links with status and claimed user (owner: all links; foster: own links only)
+- `GET /:id/access` — list users the pet is shared with (owner only)
 - `DELETE /:id/access/:userId` — remove access and notify the user (owner only)
 - `DELETE /:id/follow` — shared user stops following (self-remove access)
 - `POST /:id/transfer` — transfer ownership to another user (owner only); body `{ recipient_email, confirmation_name }` (pet name must match, case-insensitive); former owner receives `shared` access automatically; writes `archived_pets` audit row (`transfer_type: user_to_user`)
 
-Shared pets appear in `GET /api/pets/all` with `is_shared: true`.
+Shared pets appear in `GET /api/pets/all` with `is_shared: true`. Fostered pets use `is_foster: true` (and `is_shared: false`).
 
 Share links are **single-use**: once accepted, the same link cannot be used by another user (`410`).
 

@@ -803,6 +803,11 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
+  String fosterSharingDescription(String petName) {
+    return 'Pendant que vous accueillez $petName, vous pouvez partager un lien en lecture seule. Vous ne pouvez pas transférer la propriété.';
+  }
+
+  @override
   String get healthIssues => 'Problèmes de santé';
 
   @override
