@@ -137,12 +137,12 @@ flowchart TB
 - `userCanSharePet` (owner or active in-progress foster placement).
 - `is_foster` on pet API responses; foster sharing UI on pet detail.
 
-### Increment 6 — Adoption completion
+### Increment 6 — Adoption completion ✓
 
 - `in_progress` → `waiting_adoption_confirmation` → conditions (optional) → `adopted`.
-- Foster confirm; ownership transfer on confirm.
+- Foster confirm; ownership transfer on confirm (`archived_pets` with `transfer_type: adoption`).
 - Return/cancel → `not_in_foster` at any adoption step.
-- Direct adopt shortcut (refine in this increment).
+- Direct adopt shortcut (skip foster period).
 
 ### Increment 7 — Polish
 

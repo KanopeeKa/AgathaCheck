@@ -1894,6 +1894,69 @@ class AppLocalizationsEn extends AppLocalizations {
   String get fosterPlacementDeclined => 'Foster placement declined';
 
   @override
+  String get startAdoption => 'Start adoption';
+
+  @override
+  String startAdoptionDescription(String petName) {
+    return 'Begin the adoption process for $petName. You can add optional pre-adoption conditions (e.g. neutering) before the foster parent confirms.';
+  }
+
+  @override
+  String get adoptionConditions => 'Pre-adoption conditions';
+
+  @override
+  String get adoptionConditionsHint =>
+      'Optional — e.g. must be neutered before adoption';
+
+  @override
+  String get adoptionStarted => 'Adoption process started';
+
+  @override
+  String get markAdoptionConditionsMet => 'Mark conditions met';
+
+  @override
+  String get adoptionConditionsMet => 'Pre-adoption conditions marked complete';
+
+  @override
+  String get waitingAdoptionConfirmation => 'Awaiting foster confirmation';
+
+  @override
+  String get pendingAdoptionConditions => 'Pending pre-adoption conditions';
+
+  @override
+  String get cancelAdoption => 'Cancel adoption';
+
+  @override
+  String cancelAdoptionConfirm(String petName) {
+    return 'Cancel the adoption process for $petName? The pet returns to organisation custody.';
+  }
+
+  @override
+  String get adoptionCancelled => 'Adoption cancelled';
+
+  @override
+  String get directAdopt => 'Direct adopt';
+
+  @override
+  String directAdoptDescription(String petName) {
+    return 'Skip the foster period and invite $petName\'s new owner to confirm adoption directly.';
+  }
+
+  @override
+  String get pendingAdoptionConfirmations => 'Pending adoptions';
+
+  @override
+  String get confirmAdoption => 'Confirm adoption';
+
+  @override
+  String confirmAdoptionDescription(String petName) {
+    return 'Confirm that you are adopting $petName. Ownership will transfer to you.';
+  }
+
+  @override
+  String get adoptionConfirmed => 'Adoption complete — you are now the owner';
+
+  @override
   String assignedPets(int count) {
     return '$count pets assigned';
   }

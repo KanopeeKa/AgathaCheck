@@ -55,6 +55,10 @@ checks (`super_admin`, `admin`, `foster`). See `docs/org-fostering-strategy.md`.
 | GET | `/:orgId/placements` | `super_admin` or `admin`; all placements for org |
 | GET | `/:orgId/pets/:petId/placement` | current active placement for pet (or `not_in_foster`) |
 | POST | `/:orgId/pets/:petId/placements` | start foster (`pending`); body `{ foster_user_id, start_date?, notes? }` |
+| POST | `/:orgId/pets/:petId/placements/direct-adopt` | skip foster period → `waiting_adoption_confirmation` (or `pending_adoption_conditions` if conditions set); body `{ foster_user_id, adoption_conditions?, notes? }` |
+| POST | `/:orgId/placements/:id/start-adoption` | from `in_progress` → `waiting_adoption_confirmation` or `pending_adoption_conditions`; body `{ adoption_conditions? }` |
+| POST | `/:orgId/placements/:id/complete-conditions` | `pending_adoption_conditions` → `waiting_adoption_confirmation` |
+| POST | `/:orgId/placements/:id/cancel-adoption` | adoption step → `not_in_foster`; revokes foster `pet_access` |
 | POST | `/:orgId/placements/:id/end` | end foster period → `not_in_foster`; revokes foster `pet_access` |
 | GET | `/:orgId/pets`, `/:orgId/archived` | `super_admin` or `admin` (not foster) |
 
@@ -62,8 +66,10 @@ checks (`super_admin`, `admin`, `foster`). See `docs/org-fostering-strategy.md`.
 | Method | Path | Authorization |
 |---|---|---|
 | GET | `/pending` | authenticated foster parent; pending placement invites |
+| GET | `/pending-adoptions` | foster parent; placements awaiting adoption confirmation |
 | POST | `/:id/accept` | assigned foster parent; `pending` → `in_progress`, grants `pet_access` foster role |
 | POST | `/:id/decline` | assigned foster parent; → `not_in_foster` |
+| POST | `/:id/confirm-adoption` | assigned foster parent; `waiting_adoption_confirmation` → `adopted`; transfers ownership, writes `archived_pets` (`transfer_type: adoption`) |
 | GET | `/invites/pending`, POST `/invites/:id/accept|decline` | invitee |
 
 ### Health entries (`/api/health-entries`)

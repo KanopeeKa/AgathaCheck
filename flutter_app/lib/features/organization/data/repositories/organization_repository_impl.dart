@@ -257,4 +257,70 @@ class OrganizationRepositoryImpl implements OrganizationRepository {
     );
     return FosterPlacement.fromJson(row);
   }
+
+  @override
+  Future<FosterPlacement> startAdoption(
+    String orgId,
+    String placementId, {
+    String adoptionConditions = '',
+    required String token,
+  }) async {
+    final row = await _dataSource.startAdoption(
+      orgId,
+      placementId,
+      adoptionConditions: adoptionConditions,
+      token: token,
+    );
+    return FosterPlacement.fromJson(row);
+  }
+
+  @override
+  Future<FosterPlacement> completeAdoptionConditions(
+    String orgId,
+    String placementId, {
+    required String token,
+  }) async {
+    final row = await _dataSource.completeAdoptionConditions(
+      orgId,
+      placementId,
+      token: token,
+    );
+    return FosterPlacement.fromJson(row);
+  }
+
+  @override
+  Future<FosterPlacement> cancelAdoption(
+    String orgId,
+    String placementId, {
+    DateTime? endDate,
+    required String token,
+  }) async {
+    final row = await _dataSource.cancelAdoption(
+      orgId,
+      placementId,
+      endDate: endDate != null ? toCalendarDateString(endDate) : null,
+      token: token,
+    );
+    return FosterPlacement.fromJson(row);
+  }
+
+  @override
+  Future<FosterPlacement> directAdopt(
+    String orgId,
+    String petId, {
+    required String fosterUserId,
+    String adoptionConditions = '',
+    String notes = '',
+    required String token,
+  }) async {
+    final row = await _dataSource.directAdopt(
+      orgId,
+      petId,
+      fosterUserId: fosterUserId,
+      adoptionConditions: adoptionConditions,
+      notes: notes,
+      token: token,
+    );
+    return FosterPlacement.fromJson(row);
+  }
 }

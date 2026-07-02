@@ -76,4 +76,29 @@ abstract class OrganizationRepository {
     DateTime? endDate,
     required String token,
   });
+  Future<FosterPlacement> startAdoption(
+    String orgId,
+    String placementId, {
+    String adoptionConditions = '',
+    required String token,
+  });
+  Future<FosterPlacement> completeAdoptionConditions(
+    String orgId,
+    String placementId, {
+    required String token,
+  });
+  Future<FosterPlacement> cancelAdoption(
+    String orgId,
+    String placementId, {
+    DateTime? endDate,
+    required String token,
+  });
+  Future<FosterPlacement> directAdopt(
+    String orgId,
+    String petId, {
+    required String fosterUserId,
+    String adoptionConditions = '',
+    String notes = '',
+    required String token,
+  });
 }

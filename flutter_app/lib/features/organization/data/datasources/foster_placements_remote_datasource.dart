@@ -52,4 +52,29 @@ class FosterPlacementsRemoteDataSource {
     }
     return data;
   }
+
+  Future<List<Map<String, dynamic>>> getPendingAdoptions(String token) async {
+    final response = await _client.get(
+      Uri.parse('$baseUrl/api/foster-placements/pending-adoptions'),
+      headers: _headers(token),
+    );
+    if (response.statusCode >= 400) {
+      final data = json.decode(response.body);
+      throw Exception(data['error'] ?? 'Failed to load pending adoptions');
+    }
+    final list = json.decode(response.body) as List;
+    return list.cast<Map<String, dynamic>>();
+  }
+
+  Future<Map<String, dynamic>> confirmAdoption(String placementId, String token) async {
+    final response = await _client.post(
+      Uri.parse('$baseUrl/api/foster-placements/$placementId/confirm-adoption'),
+      headers: _headers(token),
+    );
+    final data = json.decode(response.body) as Map<String, dynamic>;
+    if (response.statusCode >= 400) {
+      throw Exception(data['error'] ?? 'Failed to confirm adoption');
+    }
+    return data;
+  }
 }

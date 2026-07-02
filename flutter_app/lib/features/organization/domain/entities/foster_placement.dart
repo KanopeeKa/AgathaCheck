@@ -15,6 +15,7 @@ class FosterPlacement {
     this.startDate,
     this.endDate,
     this.notes = '',
+    this.adoptionConditions = '',
     this.createdBy,
     this.createdAt,
     this.respondedAt,
@@ -33,14 +34,23 @@ class FosterPlacement {
   final DateTime? startDate;
   final DateTime? endDate;
   final String notes;
+  final String adoptionConditions;
   final String? createdBy;
   final DateTime? createdAt;
   final DateTime? respondedAt;
 
   bool get isPending => status == 'pending';
   bool get isInProgress => status == 'in_progress';
+  bool get isWaitingAdoption => status == 'waiting_adoption_confirmation';
+  bool get isPendingConditions => status == 'pending_adoption_conditions';
+  bool get isAdopted => status == 'adopted';
   bool get isNotInFoster => status == 'not_in_foster';
-  bool get isActive => isPending || isInProgress;
+  bool get isActive =>
+      isPending ||
+      isInProgress ||
+      isWaitingAdoption ||
+      isPendingConditions;
+  bool get isAdoptionInProgress => isWaitingAdoption || isPendingConditions;
 
   factory FosterPlacement.fromJson(Map<String, dynamic> json) {
     return FosterPlacement(
@@ -57,6 +67,7 @@ class FosterPlacement {
       startDate: parseCalendarDate(json['start_date']),
       endDate: parseCalendarDate(json['end_date']),
       notes: json['notes']?.toString() ?? '',
+      adoptionConditions: json['adoption_conditions']?.toString() ?? '',
       createdBy: json['created_by']?.toString(),
       createdAt: json['created_at'] != null
           ? DateTime.tryParse(json['created_at'].toString())
@@ -78,7 +89,10 @@ class PetFosterPlacementState {
   final FosterPlacement? placement;
 
   bool get isNotInFoster =>
-      status == 'not_in_foster' || placement == null || !placement!.isActive;
+      status == 'not_in_foster' ||
+      placement == null ||
+      placement!.isNotInFoster ||
+      placement!.isAdopted;
 
   factory PetFosterPlacementState.fromJson(Map<String, dynamic> json) {
     final placementJson = json['placement'];
