@@ -51,11 +51,6 @@ class OrganizationRepositoryImpl implements OrganizationRepository {
   }
 
   @override
-  Future<String> inviteMember(String orgId, String token) async {
-    return await _dataSource.inviteMember(orgId, token);
-  }
-
-  @override
   Future<Map<String, dynamic>> inviteByEmail(
       String orgId, String email, String role, String token) async {
     return await _dataSource.inviteByEmail(orgId, email, role, token);
@@ -74,11 +69,6 @@ class OrganizationRepositoryImpl implements OrganizationRepository {
   @override
   Future<void> declineInvite(String inviteId, String token) async {
     await _dataSource.declineInvite(inviteId, token);
-  }
-
-  @override
-  Future<void> joinOrganization(String code, String token) async {
-    await _dataSource.joinOrganization(code, token);
   }
 
   @override

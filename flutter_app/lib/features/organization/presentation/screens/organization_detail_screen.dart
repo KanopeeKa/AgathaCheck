@@ -13,6 +13,7 @@ import '../widgets/organization_archived_section.dart';
 import '../widgets/organization_contact_card.dart';
 import '../widgets/organization_hidden_shared_pets_section.dart';
 import '../widgets/organization_info_card.dart';
+import '../widgets/organization_invite_by_email_dialog.dart';
 import '../widgets/organization_members_section.dart';
 import '../widgets/organization_pets_section.dart';
 
@@ -191,7 +192,13 @@ class _OrganizationDetailScreenState
                 colorScheme: colorScheme,
                 l: l,
                 localizedRoleLabel: _localizedRoleLabel,
-                onAddUser: isSuperUser ? () => _showInviteByEmailDialog(context, ref, l) : null,
+                onAddUser: isSuperUser
+                    ? () => showOrganizationInviteByEmailDialog(
+                          context: context,
+                          ref: ref,
+                          orgId: orgId,
+                        )
+                    : null,
               ),
               const SizedBox(height: 16),
               OrganizationPetsSection(
@@ -247,7 +254,11 @@ class _OrganizationDetailScreenState
       String action, Organization org) async {
     switch (action) {
       case 'invite':
-        _showInviteDialog(context, ref);
+        showOrganizationInviteByEmailDialog(
+          context: context,
+          ref: ref,
+          orgId: orgId,
+        );
         break;
       case 'members':
         context.push('/organizations/$orgId/members');
@@ -264,133 +275,6 @@ class _OrganizationDetailScreenState
       case 'delete':
         _showDeleteDialog(context, ref, org);
         break;
-    }
-  }
-
-  void _showInviteByEmailDialog(BuildContext context, WidgetRef ref, AppLocalizations l) {
-    final emailController = TextEditingController();
-    String selectedRole = 'member';
-
-    showDialog(
-      context: context,
-      builder: (ctx) => StatefulBuilder(
-        builder: (ctx, setState) => AlertDialog(
-          title: Text(l.addUser),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(l.enterEmail, style: Theme.of(ctx).textTheme.bodySmall),
-              const SizedBox(height: 12),
-              TextField(
-                controller: emailController,
-                keyboardType: TextInputType.emailAddress,
-                decoration: InputDecoration(
-                  labelText: 'Email',
-                  prefixIcon: const Icon(Icons.email),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 16),
-              Text(l.selectRole, style: Theme.of(ctx).textTheme.bodySmall),
-              const SizedBox(height: 8),
-              SegmentedButton<String>(
-                segments: [
-                  ButtonSegment(
-                    value: 'member',
-                    label: Text(l.orgMember),
-                    icon: const Icon(Icons.person),
-                  ),
-                  ButtonSegment(
-                    value: 'super_user',
-                    label: Text(l.orgSuperUser),
-                    icon: const Icon(Icons.admin_panel_settings),
-                  ),
-                ],
-                selected: {selectedRole},
-                onSelectionChanged: (v) => setState(() => selectedRole = v.first),
-              ),
-            ],
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(ctx),
-              child: Text(MaterialLocalizations.of(ctx).cancelButtonLabel),
-            ),
-            FilledButton(
-              onPressed: () async {
-                final email = emailController.text.trim();
-                if (email.isEmpty) return;
-                Navigator.pop(ctx);
-                try {
-                  await ref
-                      .read(orgMembersProvider(orgId).notifier)
-                      .inviteByEmail(email, selectedRole);
-                  if (context.mounted) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text(l.inviteSent)),
-                    );
-                  }
-                } catch (e) {
-                  if (context.mounted) {
-                    final errorMsg = e.toString();
-                    String displayMsg = errorMsg;
-                    if (errorMsg.contains('user_not_found')) {
-                      displayMsg = l.userNotFound;
-                    } else if (errorMsg.contains('already_member')) {
-                      displayMsg = l.alreadyMember;
-                    }
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text(displayMsg)),
-                    );
-                  }
-                }
-              },
-              child: Text(l.sendInvite),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  void _showInviteDialog(BuildContext context, WidgetRef ref) async {
-    final l = AppLocalizations.of(context)!;
-    try {
-      final inviteCode = await ref
-          .read(orgMembersProvider(orgId).notifier)
-          .createInvite();
-      if (context.mounted) {
-        showDialog(
-          context: context,
-          builder: (ctx) => AlertDialog(
-            title: Text(l.orgInviteMember),
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                SelectableText(inviteCode),
-                const SizedBox(height: 8),
-                Text(l.orgInviteExpiry, style: Theme.of(ctx).textTheme.bodySmall),
-              ],
-            ),
-            actions: [
-              TextButton(
-                key: const Key('org_invite_close'),
-                onPressed: () => Navigator.pop(ctx),
-                child: Text(l.close),
-              ),
-            ],
-          ),
-        );
-      }
-    } catch (e) {
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('$e')),
-        );
-      }
     }
   }
 

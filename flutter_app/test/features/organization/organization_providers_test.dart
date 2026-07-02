@@ -57,13 +57,9 @@ class RecordingOrganizationRepository implements OrganizationRepository {
   @override
   Future<List<OrganizationMember>> getMembers(String orgId, String token) async => [];
   @override
-  Future<String> inviteMember(String orgId, String token) async => 'code';
-  @override
   Future<Map<String, dynamic>> inviteByEmail(
           String orgId, String email, String role, String token) async =>
       {'success': true};
-  @override
-  Future<void> joinOrganization(String code, String token) async {}
   @override
   Future<void> removeMember(String orgId, String userId, String token) async {}
   @override

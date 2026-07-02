@@ -5,7 +5,6 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../core/widgets/app_logo_title.dart';
 import '../../../../l10n/app_localizations.dart';
-import '../../../auth/presentation/providers/auth_providers.dart';
 import '../providers/organization_providers.dart';
 import '../widgets/org_card.dart';
 
@@ -213,88 +212,23 @@ class OrganizationListScreen extends ConsumerWidget {
               },
             ),
             const SizedBox(height: 16),
-            Row(
-              children: [
-                Expanded(
-                  child: OutlinedButton.icon(
-                    icon: const Icon(Icons.add, size: 18),
-                    label: Text(l.create),
-                    onPressed: () => context.push('/organizations/new'),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: OutlinedButton.icon(
-                    icon: const Icon(Icons.group_add, size: 18),
-                    label: Text(l.join),
-                    onPressed: () => _showJoinDialog(context, ref, l),
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  void _showJoinDialog(BuildContext context, WidgetRef ref, AppLocalizations l) {
-    final codeController = TextEditingController();
-
-    showDialog(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: Text(l.joinOrganization),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(l.enterInviteCode),
-            const SizedBox(height: 16),
-            TextField(
-              controller: codeController,
-              decoration: InputDecoration(
-                labelText: l.inviteCode,
-                prefixIcon: const Icon(Icons.vpn_key_outlined),
-                border: const OutlineInputBorder(),
+            Text(
+              l.orgMembershipByEmailInvite,
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: colorScheme.onSurfaceVariant,
               ),
-              autofocus: true,
+            ),
+            const SizedBox(height: 12),
+            SizedBox(
+              width: double.infinity,
+              child: OutlinedButton.icon(
+                icon: const Icon(Icons.add, size: 18),
+                label: Text(l.create),
+                onPressed: () => context.push('/organizations/new'),
+              ),
             ),
           ],
         ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(ctx).pop(),
-            child: Text(l.cancel),
-          ),
-          FilledButton(
-            onPressed: () async {
-              final code = codeController.text.trim();
-              if (code.isEmpty) return;
-
-              try {
-                final token = ref.read(authProvider).accessToken;
-                if (token == null) return;
-                final repo = ref.read(organizationRepositoryProvider);
-                await repo.joinOrganization(code, token);
-                ref.invalidate(organizationListProvider);
-                if (ctx.mounted) {
-                  Navigator.of(ctx).pop();
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text(l.joinSuccess)),
-                  );
-                }
-              } catch (e) {
-                if (ctx.mounted) {
-                  Navigator.of(ctx).pop();
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text(e.toString().replaceFirst('Exception: ', ''))),
-                  );
-                }
-              }
-            },
-            child: Text(l.join),
-          ),
-        ],
       ),
     );
   }

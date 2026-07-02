@@ -13,9 +13,7 @@ abstract class OrganizationRepository {
   Future<Organization> uploadPhoto(String id, Uint8List bytes, String filename, String token);
 
   Future<List<OrganizationMember>> getMembers(String orgId, String token);
-  Future<String> inviteMember(String orgId, String token);
   Future<Map<String, dynamic>> inviteByEmail(String orgId, String email, String role, String token);
-  Future<void> joinOrganization(String code, String token);
   Future<void> updateMemberRole(String orgId, String userId, OrgMemberRole role, String token);
   Future<void> removeMember(String orgId, String userId, String token);
   Future<void> leaveOrganization(String orgId, String token);

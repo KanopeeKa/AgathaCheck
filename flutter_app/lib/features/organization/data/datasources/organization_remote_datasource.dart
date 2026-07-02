@@ -130,20 +130,6 @@ class OrganizationRemoteDataSource {
         .toList();
   }
 
-  Future<String> inviteMember(String orgId, String token) async {
-    final response = await _client.post(
-      Uri.parse('$baseUrl/api/organizations/$orgId/invite'),
-      headers: _headers(token),
-      body: json.encode({}),
-    );
-    if (response.statusCode >= 400) {
-      final data = json.decode(response.body);
-      throw Exception(data['error'] ?? 'Failed to create invite');
-    }
-    final data = json.decode(response.body) as Map<String, dynamic>;
-    return data['invite_code']?.toString() ?? '';
-  }
-
   Future<Map<String, dynamic>> inviteByEmail(String orgId, String email, String role, String token) async {
     final response = await _client.post(
       Uri.parse('$baseUrl/api/organizations/$orgId/invite'),
@@ -189,17 +175,6 @@ class OrganizationRemoteDataSource {
     if (response.statusCode >= 400) {
       final data = json.decode(response.body);
       throw Exception(data['error'] ?? 'Failed to decline invite');
-    }
-  }
-
-  Future<void> joinOrganization(String code, String token) async {
-    final response = await _client.post(
-      Uri.parse('$baseUrl/api/organizations/join/$code'),
-      headers: _headers(token),
-    );
-    if (response.statusCode >= 400) {
-      final data = json.decode(response.body);
-      throw Exception(data['error'] ?? 'Failed to join organization');
     }
   }
 

@@ -2872,8 +2872,26 @@ abstract class AppLocalizations {
   /// No description provided for @createOrJoinOrganization.
   ///
   /// In en, this message translates to:
-  /// **'Create or Join an organization'**
+  /// **'Create an organization'**
   String get createOrJoinOrganization;
+
+  /// No description provided for @orgMembershipByEmailInvite.
+  ///
+  /// In en, this message translates to:
+  /// **'To join an organization, ask an admin to invite you by email.'**
+  String get orgMembershipByEmailInvite;
+
+  /// No description provided for @orgInviteEmailRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Email is required'**
+  String get orgInviteEmailRequired;
+
+  /// No description provided for @orgInviteEmailInvalid.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a valid email address'**
+  String get orgInviteEmailInvalid;
 
   /// No description provided for @joinOrganization.
   ///
