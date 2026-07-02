@@ -42,6 +42,7 @@ class PetRepositoryImpl implements PetRepository {
               colorValue: rp.colorValue,
               passedAway: rp.passedAway,
               isShared: rp.isShared,
+              isFoster: rp.isFoster,
               organizationId: rp.organizationId,
               organizationName: rp.organizationName,
             ));

@@ -91,7 +91,7 @@ flowchart TB
 | Start / manage placements | ✓ | ✓ | ✗ |
 | Day-to-day pet care (fostered pet) | ✓ | ✓ | ✓ |
 | Transfer ownership | ✓ | ✓ | ✗ |
-| Share pet (as foster) | — | — | ✓ (Inc 5) |
+| Share pet (as foster) | — | — | ✓ |
 
 ---
 
@@ -110,27 +110,32 @@ flowchart TB
 
 **Locked:** Multiple super admins; super admin can promote others. Existing members → `super_admin`.
 
-### Increment 2 — User share → transfer ownership
+### Increment 2 — User share → transfer ownership ✓
 
 - `POST /pets/:id/transfer` with pet-name confirmation.
 - Former owner → `pet_access.shared` automatically.
-- `archived_pets` audit row.
+- `archived_pets` audit row (`user_to_user`).
+- Flutter: transfer dialog on personal pet sharing section.
 
-### Increment 3 — Foster membership + directory
+### Increment 3 — Foster membership + directory ✓
 
-- Foster invite role; foster sees org contact only.
-- Admin **Foster parents** section (admins + fosters, pet counts).
+- Foster invite role and org-contact-only view (Inc 1).
+- `org_foster_parents` table for external contacts without app accounts.
+- `GET/POST/PUT/DELETE /organizations/:orgId/foster-parents` API.
+- Admin **Foster parents** section: super admins, admins, fosters + external contacts with pet counts.
 
-### Increment 4 — Placement core (`not_in_foster` → `pending` → `in_progress`)
+### Increment 4 — Placement core (`not_in_foster` → `pending` → `in_progress`) ✓
 
-- `foster_placements` table (or extended `family_events` with `status`).
-- Start foster UI; foster accept/decline; foster `pet_access`.
-- Foster pet list shows org name.
-- End foster period → `not_in_foster`.
+- `foster_placements` table and lifecycle API.
+- Admin start foster; foster accept/decline; `pet_access.role = foster` on accept.
+- Foster pet list shows org name; end foster period → `not_in_foster`.
+- Flutter: placement section on org pet detail; pending placement cards on home.
 
-### Increment 5 — Foster sharing
+### Increment 5 — Foster sharing ✓
 
 - Foster can create share links; still cannot transfer.
+- `userCanSharePet` (owner or active in-progress foster placement).
+- `is_foster` on pet API responses; foster sharing UI on pet detail.
 
 ### Increment 6 — Adoption completion
 

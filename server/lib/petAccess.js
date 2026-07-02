@@ -2,10 +2,12 @@
  * Pet access control for owners and collaborators (shared/guardian followers).
  *
  * Organisation-wide pet visibility is limited to super_admin and admin roles;
- * fosters see only pets they are actively fostering (future: foster_placements).
+ * fosters see only pets they are actively fostering via foster_placements.
  */
 import { orgPetViewerRolesSql } from './orgRoles.js';
+
 export const COLLABORATOR_ROLES = ['shared', 'guardian'];
+export const FOSTER_PET_ACCESS_ROLE = 'foster';
 
 const COLLABORATOR_ROLES_SQL = COLLABORATOR_ROLES.map((r) => `'${r}'`).join(', ');
 
@@ -18,6 +20,13 @@ export function accessiblePetSql(alias, userIdParam) {
       WHERE pa.pet_id = ${alias}.id
         AND pa.user_id = ${userIdParam}
         AND pa.role IN (${COLLABORATOR_ROLES_SQL})
+        AND COALESCE(pa.hidden, false) = false
+    )
+    OR EXISTS (
+      SELECT 1 FROM pet_access pa
+      WHERE pa.pet_id = ${alias}.id
+        AND pa.user_id = ${userIdParam}
+        AND pa.role = '${FOSTER_PET_ACCESS_ROLE}'
         AND COALESCE(pa.hidden, false) = false
     )
     OR (
@@ -53,6 +62,15 @@ export async function userCanAccessPet(pool, petId, userId) {
     [petId, userId]
   );
   if (shared.rows.length > 0) return true;
+  const foster = await pool.query(
+    `SELECT 1 FROM pet_access
+     WHERE pet_id = $1 AND user_id = $2
+       AND role = $3
+       AND COALESCE(hidden, false) = false
+     LIMIT 1`,
+    [petId, userId, FOSTER_PET_ACCESS_ROLE]
+  );
+  if (foster.rows.length > 0) return true;
   const orgMember = await pool.query(
     `SELECT 1 FROM pets p
      JOIN organization_users ou ON ou.organization_id = p.organization_id
@@ -67,6 +85,24 @@ export async function userCanAccessPet(pool, petId, userId) {
 /** Owner or active collaborator — full edit access except sharing management. */
 export async function userCanManagePet(pool, petId, userId) {
   return userCanAccessPet(pool, petId, userId);
+}
+
+/** Owner or active foster parent during an in-progress placement — may create share links. */
+export async function userCanSharePet(pool, petId, userId) {
+  if (!petId || !userId) return false;
+  if (await userOwnsPet(pool, petId, userId)) return true;
+  const foster = await pool.query(
+    `SELECT 1 FROM pet_access pa
+     INNER JOIN foster_placements fp
+       ON fp.pet_id = pa.pet_id AND fp.foster_user_id = pa.user_id
+     WHERE pa.pet_id = $1 AND pa.user_id = $2
+       AND pa.role = $3
+       AND fp.status = 'in_progress'
+       AND COALESCE(pa.hidden, false) = false
+     LIMIT 1`,
+    [petId, userId, FOSTER_PET_ACCESS_ROLE]
+  );
+  return foster.rows.length > 0;
 }
 
 export async function userCanManageWeightEntry(pool, entryId, userId) {
@@ -109,7 +145,7 @@ export async function petNotificationRecipientIds(pool, petId) {
      UNION
      SELECT pa.user_id FROM pet_access pa
      WHERE pa.pet_id = $1
-       AND pa.role IN (${COLLABORATOR_ROLES_SQL})
+       AND pa.role IN (${COLLABORATOR_ROLES_SQL}, '${FOSTER_PET_ACCESS_ROLE}')
        AND COALESCE(pa.hidden, false) = false`,
     [petId]
   );

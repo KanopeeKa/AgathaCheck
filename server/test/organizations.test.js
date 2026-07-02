@@ -119,6 +119,68 @@ function buildMockPool(overrides = {}) {
     if (sql.includes('SELECT * FROM archived_pets WHERE organization_id')) {
       return { rows: [] };
     }
+    if (sql.includes("'member' AS kind") && sql.includes('organization_users ou')) {
+      return {
+        rows: [{
+          id: 'ou-foster-1',
+          kind: 'member',
+          user_id: 'foster-user-1',
+          display_name: 'Jane Foster',
+          email: 'jane@example.com',
+          photo_url: '/photos/jane.jpg',
+          role: 'foster',
+          phone: null,
+          notes: '',
+          active_pet_count: 2,
+        }],
+      };
+    }
+    if (sql.includes('FROM foster_placements fpl')) {
+      return { rows: [{ '?column?': 2 }] };
+    }
+    if (sql.includes("'external' AS kind") && sql.includes('org_foster_parents')) {
+      return {
+        rows: [{
+          id: 'fp-external-1',
+          kind: 'external',
+          user_id: null,
+          display_name: 'Off-app Parent',
+          email: 'offapp@example.com',
+          photo_url: null,
+          role: null,
+          phone: '555-0000',
+          notes: 'No account',
+          active_pet_count: 0,
+        }],
+      };
+    }
+    if (sql.includes('INSERT INTO org_foster_parents')) {
+      return {
+        rows: [{
+          id: 'fp-new-1',
+          organization_id: orgId,
+          display_name: 'New Parent',
+          email: 'new@example.com',
+          phone: null,
+          notes: '',
+        }],
+      };
+    }
+    if (sql.includes('UPDATE org_foster_parents')) {
+      return {
+        rows: [{
+          id: 'fp-external-1',
+          organization_id: orgId,
+          display_name: 'Updated Parent',
+          email: 'updated@example.com',
+          phone: '555-1111',
+          notes: 'Updated',
+        }],
+      };
+    }
+    if (sql.includes('DELETE FROM org_foster_parents')) {
+      return { rows: [{ id: 'fp-external-1' }] };
+    }
     return { rows: [] };
   };
 
@@ -170,6 +232,10 @@ describe('Organizations API', () => {
       ['DELETE', `/api/organizations/${orgId}/members/${memberId}`],
       ['POST', `/api/organizations/${orgId}/pets`],
       ['POST', `/api/organizations/${orgId}/pets/pet-1/transfer`],
+      ['GET', `/api/organizations/${orgId}/foster-parents`],
+      ['POST', `/api/organizations/${orgId}/foster-parents`],
+      ['PUT', `/api/organizations/${orgId}/foster-parents/fp-1`],
+      ['DELETE', `/api/organizations/${orgId}/foster-parents/fp-1`],
     ];
 
     endpoints.forEach(([method, url]) => {
@@ -703,6 +769,82 @@ describe('Organizations API', () => {
         .set('Authorization', `Bearer ${token}`)
         .send({ role: 'super_admin' });
       expect(res.statusCode).toBe(403);
+    });
+  });
+
+  describe('Foster parents directory', () => {
+    it('GET /:orgId/foster-parents returns members and external foster parents', async () => {
+      const res = await request(app)
+        .get(`/api/organizations/${orgId}/foster-parents`)
+        .set('Authorization', `Bearer ${token}`);
+      expect(res.statusCode).toBe(200);
+      expect(Array.isArray(res.body)).toBe(true);
+      expect(res.body.length).toBe(2);
+      const member = res.body.find((r) => r.kind === 'member');
+      const external = res.body.find((r) => r.kind === 'external');
+      expect(member).toMatchObject({
+        user_id: 'foster-user-1',
+        display_name: 'Jane Foster',
+        role: 'foster',
+        active_pet_count: 2,
+      });
+      expect(external).toMatchObject({
+        display_name: 'Off-app Parent',
+        email: 'offapp@example.com',
+        active_pet_count: 0,
+      });
+    });
+
+    it('GET /:orgId/foster-parents returns 403 for foster', async () => {
+      const a = createApp(buildMockPool({ memberRole: 'foster' }));
+      const res = await request(a)
+        .get(`/api/organizations/${orgId}/foster-parents`)
+        .set('Authorization', `Bearer ${token}`);
+      expect(res.statusCode).toBe(403);
+    });
+
+    it('POST /:orgId/foster-parents creates an external foster parent', async () => {
+      const res = await request(app)
+        .post(`/api/organizations/${orgId}/foster-parents`)
+        .set('Authorization', `Bearer ${token}`)
+        .send({ display_name: 'New Parent', email: 'new@example.com' });
+      expect(res.statusCode).toBe(201);
+      expect(res.body).toMatchObject({
+        kind: 'external',
+        display_name: 'New Parent',
+        email: 'new@example.com',
+        active_pet_count: 0,
+      });
+    });
+
+    it('POST /:orgId/foster-parents returns 400 without display name', async () => {
+      const res = await request(app)
+        .post(`/api/organizations/${orgId}/foster-parents`)
+        .set('Authorization', `Bearer ${token}`)
+        .send({ email: 'x@y.com' });
+      expect(res.statusCode).toBe(400);
+    });
+
+    it('PUT /:orgId/foster-parents/:id updates an external foster parent', async () => {
+      const res = await request(app)
+        .put(`/api/organizations/${orgId}/foster-parents/fp-external-1`)
+        .set('Authorization', `Bearer ${token}`)
+        .send({
+          display_name: 'Updated Parent',
+          email: 'updated@example.com',
+          phone: '555-1111',
+          notes: 'Updated',
+        });
+      expect(res.statusCode).toBe(200);
+      expect(res.body.display_name).toBe('Updated Parent');
+    });
+
+    it('DELETE /:orgId/foster-parents/:id removes an external foster parent', async () => {
+      const res = await request(app)
+        .delete(`/api/organizations/${orgId}/foster-parents/fp-external-1`)
+        .set('Authorization', `Bearer ${token}`);
+      expect(res.statusCode).toBe(200);
+      expect(res.body).toMatchObject({ deleted: true });
     });
   });
 

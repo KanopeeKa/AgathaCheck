@@ -8,6 +8,7 @@ import '../../data/models/organization_model.dart';
 import '../../data/repositories/organization_repository_impl.dart';
 import '../../domain/entities/archived_pet.dart';
 import '../../domain/entities/family_event.dart';
+import '../../domain/entities/foster_parent.dart';
 import '../../domain/entities/organization.dart';
 import '../../domain/entities/organization_member.dart';
 import '../../domain/repositories/organization_repository.dart';
@@ -115,6 +116,47 @@ class OrgMembersNotifier extends FamilyAsyncNotifier<List<OrganizationMember>, S
 final orgMembersProvider =
     AsyncNotifierProvider.family<OrgMembersNotifier, List<OrganizationMember>, String>(
         OrgMembersNotifier.new);
+
+class OrgFosterParentsNotifier
+    extends FamilyAsyncNotifier<List<FosterParent>, String> {
+  @override
+  Future<List<FosterParent>> build(String orgId) async {
+    final token = ref.watch(_orgTokenProvider);
+    if (token == null) return [];
+    final repo = ref.read(organizationRepositoryProvider);
+    return repo.getFosterParents(orgId, token);
+  }
+
+  Future<void> createExternal({
+    required String displayName,
+    String? email,
+    String? phone,
+    String notes = '',
+  }) async {
+    final token = ref.read(_orgTokenProvider)!;
+    final repo = ref.read(organizationRepositoryProvider);
+    await repo.createExternalFosterParent(
+      arg,
+      displayName: displayName,
+      email: email,
+      phone: phone,
+      notes: notes,
+      token: token,
+    );
+    ref.invalidateSelf();
+  }
+
+  Future<void> deleteExternal(String fosterParentId) async {
+    final token = ref.read(_orgTokenProvider)!;
+    final repo = ref.read(organizationRepositoryProvider);
+    await repo.deleteExternalFosterParent(arg, fosterParentId, token);
+    ref.invalidateSelf();
+  }
+}
+
+final orgFosterParentsProvider =
+    AsyncNotifierProvider.family<OrgFosterParentsNotifier, List<FosterParent>, String>(
+        OrgFosterParentsNotifier.new);
 
 class OrgPetsNotifier extends FamilyAsyncNotifier<List<Pet>, String> {
   @override

@@ -9,9 +9,12 @@ import { createNotification, userDisplayName } from '../lib/notificationHelper.j
 import {
   userCanAccessPet,
   userCanManagePet,
+  userCanSharePet,
   userOwnsPet,
   COLLABORATOR_ROLES,
+  FOSTER_PET_ACCESS_ROLE,
 } from '../lib/petAccess.js';
+import { orgPetViewerRolesSql } from '../lib/orgRoles.js';
 
 function extractUserId(req) {
   const auth = req.headers['authorization'] || req.headers['Authorization'];
@@ -39,6 +42,7 @@ function resolveColorValue(raw) {
 
 function petRowToMap(row) {
   const isShared = row.is_shared === true || row.is_shared === 't';
+  const isFoster = row.is_foster === true || row.is_foster === 't';
   return {
     id: row.id,
     user_id: row.user_id,
@@ -65,6 +69,7 @@ function petRowToMap(row) {
     organization_id: isShared ? null : row.organization_id,
     organization_name: isShared ? null : (row.organization_name || null),
     is_shared: isShared,
+    is_foster: isFoster,
     created_at: row.created_at,
     updated_at: row.updated_at,
   };
@@ -109,6 +114,150 @@ export default function petsRoutes(pool) {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     return res.status(501).json({ error: 'Not implemented' });
+  });
+
+  async function withOptionalTransaction(pool, fn) {
+    if (typeof pool.connect === 'function') {
+      const client = await pool.connect();
+      try {
+        await client.query('BEGIN');
+        const result = await fn(client);
+        await client.query('COMMIT');
+        return result;
+      } catch (err) {
+        try {
+          await client.query('ROLLBACK');
+        } catch (_) {
+          /* ignore */
+        }
+        throw err;
+      } finally {
+        client.release();
+      }
+    }
+    return fn(pool);
+  }
+
+  router.post('/:id/transfer', async (req, res) => {
+    const ownerId = extractUserId(req);
+    if (!ownerId) return res.status(401).json({ error: 'Unauthorized' });
+    const petId = req.params.id;
+    const data = req.body || {};
+    const recipientEmail = (data.recipient_email || data.recipientEmail || '').trim();
+    const confirmationName = (data.confirmation_name || data.confirmationName || '').trim();
+
+    if (!recipientEmail) {
+      return res.status(400).json({ error: 'Recipient email is required' });
+    }
+    if (!confirmationName) {
+      return res.status(400).json({ error: 'Confirmation name is required' });
+    }
+
+    try {
+      if (!(await userOwnsPet(pool, petId, ownerId))) {
+        return res.status(403).json({ error: 'Forbidden' });
+      }
+
+      const petResult = await pool.query(
+        'SELECT id, name, species, organization_id, user_id FROM pets WHERE id = $1',
+        [petId],
+      );
+      if (petResult.rows.length === 0) {
+        return res.status(404).json({ error: 'Pet not found' });
+      }
+      const pet = petResult.rows[0];
+      if (pet.name.trim().toLowerCase() !== confirmationName.toLowerCase()) {
+        return res.status(400).json({ error: 'Pet name confirmation does not match' });
+      }
+
+      const recipientResult = await pool.query(
+        'SELECT id, email, first_name, last_name FROM users WHERE email = $1',
+        [recipientEmail],
+      );
+      if (recipientResult.rows.length === 0) {
+        return res.status(404).json({ error: 'User not found' });
+      }
+      const recipient = recipientResult.rows[0];
+      if (recipient.id === ownerId) {
+        return res.status(400).json({ error: 'Cannot transfer a pet to yourself' });
+      }
+
+      const ownerResult = await pool.query(
+        'SELECT first_name, last_name, email FROM users WHERE id = $1',
+        [ownerId],
+      );
+      const ownerName = userDisplayName(ownerResult.rows[0] || {});
+      const recipientName = userDisplayName(recipient);
+
+      const updatedPet = await withOptionalTransaction(pool, async (db) => {
+        const updateResult = await db.query(
+          'UPDATE pets SET user_id = $1, updated_at = NOW() WHERE id = $2 RETURNING *',
+          [recipient.id, petId],
+        );
+
+        await db.query(
+          'DELETE FROM pet_access WHERE pet_id = $1 AND user_id = $2',
+          [petId, recipient.id],
+        );
+
+        const formerAccessId = uuidv4();
+        await db.query(
+          `INSERT INTO pet_access (id, pet_id, user_id, role, invited_by, hidden)
+           VALUES ($1, $2, $3, 'shared', $4, false)
+           ON CONFLICT (pet_id, user_id)
+           DO UPDATE SET role = 'shared', hidden = false, invited_by = $4, updated_at = NOW()`,
+          [formerAccessId, petId, ownerId, recipient.id],
+        );
+
+        const archiveId = uuidv4();
+        await db.query(
+          `INSERT INTO archived_pets (
+             id, organization_id, user_id, pet_id, pet_name, species,
+             transfer_type, transferred_to_user_id, notes
+           ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`,
+          [
+            archiveId,
+            pet.organization_id || null,
+            ownerId,
+            petId,
+            pet.name,
+            pet.species || '',
+            'user_to_user',
+            recipient.id,
+            '',
+          ],
+        );
+
+        return updateResult.rows[0];
+      });
+
+      await createNotification(pool, {
+        userId: recipient.id,
+        petId,
+        petName: pet.name,
+        title: 'Pet ownership transferred',
+        message: `${ownerName} transferred ownership of ${pet.name} to you.`,
+        type: 'general',
+      });
+
+      await createNotification(pool, {
+        userId: ownerId,
+        petId,
+        petName: pet.name,
+        title: 'Pet transferred',
+        message: `You transferred ${pet.name} to ${recipientName}. You can still view the pet as a shared follower.`,
+        type: 'general',
+      });
+
+      res.json({
+        transferred: true,
+        pet_id: petId,
+        new_owner_id: recipient.id,
+        pet: petRowToMap(updatedPet),
+      });
+    } catch (err) {
+      res.status(500).json({ error: publicError(err) });
+    }
   });
 
   // Family events (org foster/placement) — due = from_date, completed = to_date.
@@ -383,8 +532,15 @@ export default function petsRoutes(pool) {
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     const { id } = req.params;
     try {
-      if (!(await userOwnsPet(pool, id, userId))) {
+      if (!(await userCanSharePet(pool, id, userId))) {
         return res.status(403).json({ error: 'Forbidden' });
+      }
+      const isOwner = await userOwnsPet(pool, id, userId);
+      const linkParams = [id];
+      let createdByFilter = '';
+      if (!isOwner) {
+        createdByFilter = ' AND sl.created_by = $2';
+        linkParams.push(userId);
       }
       const result = await pool.query(
         `SELECT sl.id, sl.code, sl.status, sl.created_at, sl.claimed_at,
@@ -392,9 +548,9 @@ export default function petsRoutes(pool) {
                 TRIM(COALESCE(u.first_name, '') || ' ' || COALESCE(u.last_name, '')) as claimed_by_name
          FROM pet_share_links sl
          LEFT JOIN users u ON u.id = sl.claimed_by
-         WHERE sl.pet_id = $1
+         WHERE sl.pet_id = $1${createdByFilter}
          ORDER BY sl.created_at DESC`,
-        [id]
+        linkParams
       );
       res.json(result.rows.map((row) => ({
         id: row.id,
@@ -557,32 +713,43 @@ export default function petsRoutes(pool) {
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     try {
       const result = await pool.query(
-        `SELECT p.*, false AS is_shared, o.name AS organization_name
+        `SELECT p.*, false AS is_shared, false AS is_foster, o.name AS organization_name
          FROM pets p
          LEFT JOIN organizations o ON o.id = p.organization_id
          WHERE p.user_id = $1
          UNION ALL
-         SELECT p.*, true AS is_shared, o.name AS organization_name
+         SELECT p.*, true AS is_shared, false AS is_foster, o.name AS organization_name
          FROM pets p
          JOIN pet_access pa ON pa.pet_id = p.id
          LEFT JOIN organizations o ON o.id = p.organization_id
          WHERE pa.user_id = $1 AND pa.role = ANY($2::text[]) AND COALESCE(pa.hidden, false) = false
          UNION ALL
-         SELECT p.*, false AS is_shared, o.name AS organization_name
+         SELECT p.*, false AS is_shared, true AS is_foster, o.name AS organization_name
+         FROM pets p
+         JOIN pet_access pa ON pa.pet_id = p.id
+         LEFT JOIN organizations o ON o.id = p.organization_id
+         WHERE pa.user_id = $1 AND pa.role = $3 AND COALESCE(pa.hidden, false) = false
+         UNION ALL
+         SELECT p.*, false AS is_shared, false AS is_foster, o.name AS organization_name
          FROM pets p
          JOIN organization_users ou ON ou.organization_id = p.organization_id
          LEFT JOIN organizations o ON o.id = p.organization_id
          WHERE ou.user_id = $1
            AND p.organization_id IS NOT NULL
            AND p.user_id <> $1
-           AND ou.role NOT LIKE 'pending_%'
+           AND ou.role IN (${orgPetViewerRolesSql()})
            AND NOT EXISTS (
              SELECT 1 FROM pet_access pa
              WHERE pa.pet_id = p.id AND pa.user_id = $1
                AND pa.role = ANY($2::text[]) AND COALESCE(pa.hidden, false) = false
            )
+           AND NOT EXISTS (
+             SELECT 1 FROM pet_access pa
+             WHERE pa.pet_id = p.id AND pa.user_id = $1
+               AND pa.role = $3 AND COALESCE(pa.hidden, false) = false
+           )
          ORDER BY created_at`,
-        [userId, COLLABORATOR_ROLES]
+        [userId, COLLABORATOR_ROLES, FOSTER_PET_ACCESS_ROLE]
       );
       const pets = result.rows.map(petRowToMap);
       await autoAssignColors(pool, pets);
@@ -621,11 +788,23 @@ export default function petsRoutes(pool) {
         return res.status(404).json({ error: 'Pet not found' });
       }
       const result = await pool.query(
-        `SELECT p.*,
-                CASE WHEN p.user_id = $2 THEN false ELSE true END AS is_shared
+        `SELECT p.*, o.name AS organization_name,
+                EXISTS (
+                  SELECT 1 FROM pet_access pa
+                  WHERE pa.pet_id = p.id AND pa.user_id = $2
+                    AND pa.role IN ('shared', 'guardian')
+                    AND COALESCE(pa.hidden, false) = false
+                ) AS is_shared,
+                EXISTS (
+                  SELECT 1 FROM pet_access pa
+                  WHERE pa.pet_id = p.id AND pa.user_id = $2
+                    AND pa.role = $3
+                    AND COALESCE(pa.hidden, false) = false
+                ) AS is_foster
          FROM pets p
+         LEFT JOIN organizations o ON o.id = p.organization_id
          WHERE p.id = $1`,
-        [id, userId]
+        [id, userId, FOSTER_PET_ACCESS_ROLE]
       );
       if (result.rows.length === 0) {
         return res.status(404).json({ error: 'Pet not found' });

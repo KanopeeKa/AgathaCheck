@@ -23,6 +23,7 @@ class PetModel {
     this.colorValue,
     this.passedAway = false,
     this.isShared = false,
+    this.isFoster = false,
     this.organizationId,
     this.organizationName,
   });
@@ -47,6 +48,7 @@ class PetModel {
       colorValue: json['colorValue'] as int?,
       passedAway: json['passedAway'] == true,
       isShared: json['is_shared'] == true,
+      isFoster: json['is_foster'] == true,
       organizationId: json['organization_id']?.toString(),
       organizationName: json['organization_name'] as String?,
     );
@@ -72,6 +74,7 @@ class PetModel {
       colorValue: pet.colorValue,
       passedAway: pet.passedAway,
       isShared: pet.isShared,
+      isFoster: pet.isFoster,
       organizationId: pet.organizationId,
       organizationName: pet.organizationName,
     );
@@ -101,6 +104,7 @@ class PetModel {
   final int? colorValue;
   final bool passedAway;
   final bool isShared;
+  final bool isFoster;
   final String? organizationId;
   final String? organizationName;
 
@@ -150,6 +154,7 @@ class PetModel {
       colorValue: colorValue,
       passedAway: passedAway,
       isShared: isShared,
+      isFoster: isFoster,
       organizationId: organizationId,
       organizationName: organizationName,
     );

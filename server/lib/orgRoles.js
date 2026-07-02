@@ -44,6 +44,24 @@ export function isFoster(role) {
   return role === ORG_ROLE_FOSTER;
 }
 
+/** Org members who may appear in the foster parent directory (Inc 3+). */
+export const FOSTER_PARENT_MEMBER_ROLES = [
+  ORG_ROLE_SUPER_ADMIN,
+  ORG_ROLE_ADMIN,
+  ORG_ROLE_FOSTER,
+];
+
+const FOSTER_PARENT_MEMBER_ROLES_SQL = FOSTER_PARENT_MEMBER_ROLES.map((r) => `'${r}'`).join(', ');
+
+export function fosterParentMemberRolesSql() {
+  return FOSTER_PARENT_MEMBER_ROLES_SQL;
+}
+
+export function isFosterParentMember(role) {
+  const normalised = normaliseRole(role);
+  return FOSTER_PARENT_MEMBER_ROLES.includes(normalised);
+}
+
 /** Roles the actor may assign when inviting or changing membership. */
 export function assignableRolesFor(actorRole) {
   if (isSuperAdmin(actorRole)) return [...ASSIGNABLE_ROLES];

@@ -803,6 +803,11 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
+  String fosterSharingDescription(String petName) {
+    return 'Pendant que vous accueillez $petName, vous pouvez partager un lien en lecture seule. Vous ne pouvez pas transférer la propriété.';
+  }
+
+  @override
   String get healthIssues => 'Problèmes de santé';
 
   @override
@@ -1679,6 +1684,20 @@ class AppLocalizationsFr extends AppLocalizations {
   String get transferSuccess => 'Animal transféré avec succès';
 
   @override
+  String get transferOwnership => 'Transférer la propriété';
+
+  @override
+  String get transferNameConfirmationHint =>
+      'Tapez le nom de l\'animal pour confirmer';
+
+  @override
+  String get transferNameMismatch => 'Le nom de l\'animal ne correspond pas';
+
+  @override
+  String get transferOwnershipDescription =>
+      'Transférez la pleine propriété à un autre utilisateur. Vous conserverez un accès partagé sauf s\'il vous retire.';
+
+  @override
   String get archivedPets => 'Animaux archivés';
 
   @override
@@ -1781,6 +1800,111 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get people => 'Personnes';
+
+  @override
+  String get fosterParents => 'Familles d\'accueil';
+
+  @override
+  String get fosterParentsDescription =>
+      'Membres et contacts pouvant accueillir des animaux de l\'organisation. Le nombre d\'animaux reflète les placements actifs.';
+
+  @override
+  String get noFosterParents => 'Aucune famille d\'accueil pour le moment';
+
+  @override
+  String get addFosterParent => 'Ajouter une famille d\'accueil';
+
+  @override
+  String get addFosterParentDescription =>
+      'Ajoutez une personne sans compte dans l\'application. Vous pourrez lui assigner des animaux plus tard.';
+
+  @override
+  String get fosterParentDisplayName => 'Nom affiché';
+
+  @override
+  String get fosterParentNoAccount => 'Sans compte';
+
+  @override
+  String get fosterParentCreated => 'Famille d\'accueil ajoutée';
+
+  @override
+  String get fosterParentDeleted => 'Famille d\'accueil retirée';
+
+  @override
+  String get deleteFosterParent => 'Retirer la famille d\'accueil';
+
+  @override
+  String deleteFosterParentConfirm(String name) {
+    return 'Retirer $name du répertoire des familles d\'accueil ?';
+  }
+
+  @override
+  String get fosterPlacement => 'Placement en famille d\'accueil';
+
+  @override
+  String get fosterPlacementNotInFoster =>
+      'Cet animal n\'est pas actuellement en famille d\'accueil.';
+
+  @override
+  String get startFosterPlacement => 'Démarrer un placement';
+
+  @override
+  String startFosterPlacementDescription(String petName) {
+    return 'Invitez une famille d\'accueil à s\'occuper de $petName. Elle doit accepter avant le début du placement.';
+  }
+
+  @override
+  String get fosterPlacementStarted => 'Demande de placement envoyée';
+
+  @override
+  String get endFosterPlacement => 'Terminer le placement';
+
+  @override
+  String endFosterPlacementConfirm(String petName) {
+    return 'Terminer le placement pour $petName ? L\'animal retourne sous la responsabilité de l\'organisation.';
+  }
+
+  @override
+  String get fosterPlacementEnded => 'Placement terminé';
+
+  @override
+  String get fosterPlacementPending => 'En attente d\'acceptation';
+
+  @override
+  String get fosterPlacementInProgress => 'En famille d\'accueil';
+
+  @override
+  String fosterPlacementStatus(String status) {
+    return 'Statut : $status';
+  }
+
+  @override
+  String fosterPlacementAssignedTo(String name) {
+    return 'Famille d\'accueil : $name';
+  }
+
+  @override
+  String fosterPlacementStartDate(String date) {
+    return 'Date de début : $date';
+  }
+
+  @override
+  String get noFosterParentsWithAccounts =>
+      'Ajoutez d\'abord une famille d\'accueil avec un compte (invitation par e-mail).';
+
+  @override
+  String get pendingFosterPlacements => 'Placements en attente';
+
+  @override
+  String fosterPlacementInviteFrom(String orgName) {
+    return 'De $orgName';
+  }
+
+  @override
+  String get fosterPlacementAccepted => 'Placement accepté';
+
+  @override
+  String get fosterPlacementDeclined => 'Placement refusé';
 
   @override
   String assignedPets(int count) {

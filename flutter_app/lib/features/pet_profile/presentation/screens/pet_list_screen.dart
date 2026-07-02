@@ -11,6 +11,8 @@ import '../../../health_tracking/domain/entities/health_entry.dart';
 import '../../../health_tracking/presentation/providers/health_providers.dart';
 import '../../../health_tracking/presentation/widgets/events_nav_icon_button.dart';
 import '../../../notifications/presentation/providers/notification_providers.dart';
+import '../../../organization/domain/entities/foster_placement.dart';
+import '../../../organization/presentation/providers/foster_placements_providers.dart';
 import '../../../organization/presentation/providers/organization_providers.dart';
 import '../../../sharing/presentation/providers/sharing_providers.dart';
 import '../../domain/entities/pet.dart';
@@ -280,6 +282,7 @@ class _PetListScreenState extends ConsumerState<PetListScreen> {
                   l: l,
                 ),
               _PendingSharesSection(),
+              _PendingFosterPlacementsSection(),
               _DueEventsSection(pets: allPets),
               if (_controller.orgFilter == null || _controller.orgFilter == '_personal') ...[
                 if (personalActive.isNotEmpty || (_controller.orgFilter == null && orgGroups.isNotEmpty))
@@ -861,5 +864,154 @@ class _PendingShareCard extends ConsumerWidget {
         );
       }
     }
+  }
+}
+
+class _PendingFosterPlacementsSection extends ConsumerWidget {
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final pendingAsync = ref.watch(pendingFosterPlacementsProvider);
+    final theme = Theme.of(context);
+    final l = AppLocalizations.of(context)!;
+
+    return pendingAsync.when(
+      loading: () => const SizedBox.shrink(),
+      error: (_, __) => const SizedBox.shrink(),
+      data: (placements) {
+        if (placements.isEmpty) return const SizedBox.shrink();
+
+        return Padding(
+          padding: const EdgeInsets.only(bottom: 16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Icon(Icons.home_work_outlined,
+                      size: 20, color: theme.colorScheme.primary),
+                  const SizedBox(width: 8),
+                  Text(
+                    l.pendingFosterPlacements,
+                    style: theme.textTheme.titleSmall?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: theme.colorScheme.primary,
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Container(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                    decoration: BoxDecoration(
+                      color: theme.colorScheme.primaryContainer,
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Text(
+                      '${placements.length}',
+                      style: theme.textTheme.labelSmall?.copyWith(
+                        color: theme.colorScheme.onPrimaryContainer,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 8),
+              ...placements.map(
+                (placement) => _PendingFosterPlacementCard(placement: placement),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+}
+
+class _PendingFosterPlacementCard extends ConsumerWidget {
+  const _PendingFosterPlacementCard({required this.placement});
+
+  final FosterPlacement placement;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final theme = Theme.of(context);
+    final l = AppLocalizations.of(context)!;
+    final orgLabel = placement.organizationName.isNotEmpty
+        ? placement.organizationName
+        : l.organizations;
+
+    return Card(
+      margin: const EdgeInsets.only(bottom: 8),
+      child: Padding(
+        padding: const EdgeInsets.all(12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              placement.petName,
+              style: theme.textTheme.titleSmall?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              l.fosterPlacementInviteFrom(orgLabel),
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
+            ),
+            const SizedBox(height: 12),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                TextButton(
+                  onPressed: () async {
+                    try {
+                      await ref
+                          .read(pendingFosterPlacementsProvider.notifier)
+                          .decline(placement.id);
+                      if (context.mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text(l.fosterPlacementDeclined)),
+                        );
+                      }
+                    } catch (e) {
+                      if (context.mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text('$e')),
+                        );
+                      }
+                    }
+                  },
+                  child: Text(l.declineInvite),
+                ),
+                const SizedBox(width: 8),
+                FilledButton(
+                  onPressed: () async {
+                    try {
+                      await ref
+                          .read(pendingFosterPlacementsProvider.notifier)
+                          .accept(placement.id);
+                      if (context.mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text(l.fosterPlacementAccepted)),
+                        );
+                      }
+                    } catch (e) {
+                      if (context.mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text('$e')),
+                        );
+                      }
+                    }
+                  },
+                  child: Text(l.acceptInvite),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }

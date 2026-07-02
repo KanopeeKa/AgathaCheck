@@ -382,6 +382,73 @@ describe('Sharing API', () => {
   });
 });
 
+describe('Foster share links', () => {
+  const fosterUserId = 'foster-user-id';
+  const fosterToken = jwt.sign({ id: fosterUserId, email: 'foster@example.com' }, JWT_SECRET, { expiresIn: '1h' });
+
+  function buildFosterPool(overrides = {}) {
+    const base = buildMockPool();
+    const innerQuery = overrides.query || base.query;
+    return {
+      ...base,
+      query: async (sql, params) => {
+        if (sql.includes('SELECT 1 FROM pets WHERE id = $1 AND user_id = $2 LIMIT 1')) {
+          return { rows: [] };
+        }
+        if (sql.includes('foster_placements fp')) {
+          return { rows: [{ '?column?': 1 }] };
+        }
+        if (sql.includes('DELETE FROM pet_share_links sl') && sql.includes('sl.created_by = $2')) {
+          return { rows: [{ id: linkId, status: 'pending' }] };
+        }
+        if (sql.includes('FROM pet_share_links sl') && sql.includes('LEFT JOIN users') && sql.includes('created_by = $2')) {
+          return {
+            rows: [{
+              id: linkId,
+              code: shareCode,
+              status: 'pending',
+              created_at: new Date(),
+              claimed_at: null,
+              claimed_by: null,
+              claimed_by_name: null,
+            }],
+          };
+        }
+        return innerQuery(sql, params);
+      },
+    };
+  }
+
+  it('POST / lets active foster create a share link', async () => {
+    const app = createApp(buildFosterPool());
+    const res = await request(app)
+      .post('/api/share')
+      .set('Authorization', `Bearer ${fosterToken}`)
+      .send({ pet_id: petId });
+    expect(res.statusCode).toBe(201);
+    expect(res.body).toHaveProperty('share_code');
+  });
+
+  it('DELETE /links/:linkId lets foster delete their own link', async () => {
+    const app = createApp(buildFosterPool());
+    const res = await request(app)
+      .delete(`/api/share/links/${linkId}`)
+      .set('Authorization', `Bearer ${fosterToken}`);
+    expect(res.statusCode).toBe(200);
+    expect(res.body).toHaveProperty('message', 'Share link deleted');
+  });
+
+  it('GET /api/pets/:id/share-links returns foster-created links only', async () => {
+    const app = createApp(buildFosterPool());
+    const res = await request(app)
+      .get(`/api/pets/${petId}/share-links`)
+      .set('Authorization', `Bearer ${fosterToken}`);
+    expect(res.statusCode).toBe(200);
+    expect(Array.isArray(res.body)).toBe(true);
+    expect(res.body[0]).toHaveProperty('code', shareCode);
+  });
+});
+
 describe('Pet share links and follow', () => {
   it('GET /api/pets/:id/share-links returns links for owner', async () => {
     const app = createApp(buildMockPool());

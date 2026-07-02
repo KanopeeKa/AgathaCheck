@@ -14,6 +14,7 @@ import healthIssuesRoutes from '../routes/healthIssues.js';
 import organizationsRoutes from '../routes/organizations.js';
 import vetsRoutes from '../routes/vets.js';
 import sharingRoutes from '../routes/sharing.js';
+import fosterPlacementsRoutes from '../routes/fosterPlacements.js';
 import { corsOptions } from '../config/security.js';
 
 dotenv.config();
@@ -64,6 +65,7 @@ export function createApp(customPool, comparePassword) {
   app.use('/api/health-entries', healthEntriesRoutes(pool));
   app.use('/api/health-issues', healthIssuesRoutes(pool));
   app.use('/api/share', sharingRoutes(pool));
+  app.use('/api/foster-placements', fosterPlacementsRoutes(pool));
   app.use('/api/archived-pets', (req, res) => {
     res.json([]);
   });
@@ -81,6 +83,7 @@ export function createApp(customPool, comparePassword) {
   app.use('/backend/api/health-entries', healthEntriesRoutes(pool));
   app.use('/backend/api/health-issues', healthIssuesRoutes(pool));
   app.use('/backend/api/share', sharingRoutes(pool));
+  app.use('/backend/api/foster-placements', fosterPlacementsRoutes(pool));
 
   app.get('/health', (req, res) => {
     res.status(200).json({ status: 'OK' });

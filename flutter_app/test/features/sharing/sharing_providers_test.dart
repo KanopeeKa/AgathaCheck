@@ -54,6 +54,13 @@ class RecordingSharingRepository implements SharingRepository {
   @override
   Future<List<Map<String, dynamic>>> getHiddenSharedPets(String token) async =>
       [];
+  @override
+  Future<void> transferOwnership(
+    String petId, {
+    required String recipientEmail,
+    required String confirmationName,
+    required String token,
+  }) async {}
 }
 
 ProviderContainer makeContainer(RecordingSharingRepository repo) {

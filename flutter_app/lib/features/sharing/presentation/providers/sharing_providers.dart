@@ -226,6 +226,22 @@ class PetAccessNotifier extends StateNotifier<AsyncValue<List<PetAccess>>> {
     await refresh();
     _ref.invalidate(petShareLinksNotifierProvider(petId));
   }
+
+  Future<void> transferOwnership({
+    required String recipientEmail,
+    required String confirmationName,
+  }) async {
+    final token = await _getToken();
+    if (token == null) throw Exception('Not authenticated');
+    final repo = _ref.read(sharingRepositoryProvider);
+    await repo.transferOwnership(
+      petId,
+      recipientEmail: recipientEmail,
+      confirmationName: confirmationName,
+      token: token,
+    );
+    _ref.invalidate(allPetsIncludingOrgProvider);
+  }
 }
 
 final petShareLinksNotifierProvider = StateNotifierProvider.family<

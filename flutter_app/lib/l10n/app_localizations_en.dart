@@ -798,6 +798,11 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String fosterSharingDescription(String petName) {
+    return 'While fostering $petName, you can share a view-only link with others. You cannot transfer ownership.';
+  }
+
+  @override
   String get healthIssues => 'Health Issues';
 
   @override
@@ -1667,6 +1672,19 @@ class AppLocalizationsEn extends AppLocalizations {
   String get transferSuccess => 'Pet transferred successfully';
 
   @override
+  String get transferOwnership => 'Transfer ownership';
+
+  @override
+  String get transferNameConfirmationHint => 'Type the pet\'s name to confirm';
+
+  @override
+  String get transferNameMismatch => 'Pet name does not match';
+
+  @override
+  String get transferOwnershipDescription =>
+      'Transfer full ownership to another user. You will keep shared access unless they remove you.';
+
+  @override
   String get archivedPets => 'Archived Pets';
 
   @override
@@ -1769,6 +1787,111 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get people => 'People';
+
+  @override
+  String get fosterParents => 'Foster parents';
+
+  @override
+  String get fosterParentsDescription =>
+      'Members and contacts who can foster organisation pets. Pet counts reflect active placements.';
+
+  @override
+  String get noFosterParents => 'No foster parents yet';
+
+  @override
+  String get addFosterParent => 'Add foster parent';
+
+  @override
+  String get addFosterParentDescription =>
+      'Add someone who fosters without an app account. You can assign pets to them in a later step.';
+
+  @override
+  String get fosterParentDisplayName => 'Display name';
+
+  @override
+  String get fosterParentNoAccount => 'No account';
+
+  @override
+  String get fosterParentCreated => 'Foster parent added';
+
+  @override
+  String get fosterParentDeleted => 'Foster parent removed';
+
+  @override
+  String get deleteFosterParent => 'Remove foster parent';
+
+  @override
+  String deleteFosterParentConfirm(String name) {
+    return 'Remove $name from the foster parent directory?';
+  }
+
+  @override
+  String get fosterPlacement => 'Foster placement';
+
+  @override
+  String get fosterPlacementNotInFoster =>
+      'This pet is not currently in foster care.';
+
+  @override
+  String get startFosterPlacement => 'Start foster placement';
+
+  @override
+  String startFosterPlacementDescription(String petName) {
+    return 'Invite a foster parent to care for $petName. They must accept before the placement begins.';
+  }
+
+  @override
+  String get fosterPlacementStarted => 'Foster placement request sent';
+
+  @override
+  String get endFosterPlacement => 'End foster period';
+
+  @override
+  String endFosterPlacementConfirm(String petName) {
+    return 'End the foster period for $petName? The pet returns to organisation custody.';
+  }
+
+  @override
+  String get fosterPlacementEnded => 'Foster period ended';
+
+  @override
+  String get fosterPlacementPending => 'Pending acceptance';
+
+  @override
+  String get fosterPlacementInProgress => 'In foster care';
+
+  @override
+  String fosterPlacementStatus(String status) {
+    return 'Status: $status';
+  }
+
+  @override
+  String fosterPlacementAssignedTo(String name) {
+    return 'Foster parent: $name';
+  }
+
+  @override
+  String fosterPlacementStartDate(String date) {
+    return 'Start date: $date';
+  }
+
+  @override
+  String get noFosterParentsWithAccounts =>
+      'Add a foster parent with an app account first (invite by email).';
+
+  @override
+  String get pendingFosterPlacements => 'Pending foster placements';
+
+  @override
+  String fosterPlacementInviteFrom(String orgName) {
+    return 'From $orgName';
+  }
+
+  @override
+  String get fosterPlacementAccepted => 'Foster placement accepted';
+
+  @override
+  String get fosterPlacementDeclined => 'Foster placement declined';
 
   @override
   String assignedPets(int count) {
@@ -2112,7 +2235,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get faqSharingA4 =>
-      'Sharing gives someone view access to a pet — the original owner retains full control. Transferring (available for organisation pets) moves ownership of the pet to another user or organisation entirely.';
+      'Sharing gives someone view access to a pet — the original owner retains full control. Transferring ownership (personal pets) moves the pet to another user; you keep shared access unless they remove you. Organisation pet transfers are managed separately.';
 
   @override
   String get faqOrgTitle => 'Organisations';

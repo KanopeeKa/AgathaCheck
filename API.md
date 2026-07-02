@@ -48,7 +48,22 @@ checks (`super_admin`, `admin`, `foster`). See `docs/org-fostering-strategy.md`.
 | PUT | `/:orgId/members/:userId/role` | `super_admin` or `admin`; same assignability rules as invite |
 | DELETE | `/:orgId/members/:userId` | `super_admin` or `admin` |
 | DELETE | `/:orgId/members/me` | self (leave org) |
+| GET | `/:orgId/foster-parents` | `super_admin` or `admin`; member + external foster parents with active pet counts |
+| POST | `/:orgId/foster-parents` | `super_admin` or `admin`; body `{ display_name, email?, phone?, notes? }` — external contact without app account |
+| PUT | `/:orgId/foster-parents/:id` | update external foster parent (same body fields) |
+| DELETE | `/:orgId/foster-parents/:id` | remove external foster parent |
+| GET | `/:orgId/placements` | `super_admin` or `admin`; all placements for org |
+| GET | `/:orgId/pets/:petId/placement` | current active placement for pet (or `not_in_foster`) |
+| POST | `/:orgId/pets/:petId/placements` | start foster (`pending`); body `{ foster_user_id, start_date?, notes? }` |
+| POST | `/:orgId/placements/:id/end` | end foster period → `not_in_foster`; revokes foster `pet_access` |
 | GET | `/:orgId/pets`, `/:orgId/archived` | `super_admin` or `admin` (not foster) |
+
+### Foster placements (`/api/foster-placements`)
+| Method | Path | Authorization |
+|---|---|---|
+| GET | `/pending` | authenticated foster parent; pending placement invites |
+| POST | `/:id/accept` | assigned foster parent; `pending` → `in_progress`, grants `pet_access` foster role |
+| POST | `/:id/decline` | assigned foster parent; → `not_in_foster` |
 | GET | `/invites/pending`, POST `/invites/:id/accept|decline` | invitee |
 
 ### Health entries (`/api/health-entries`)
@@ -75,10 +90,10 @@ ownership), `PUT /:id`, `DELETE /:id`.
 ### Sharing (`/api/share`)
 | Method | Path | Notes |
 |---|---|---|
-| POST | `/` | Owner creates a share link; body `{ pet_id }`; returns `{ share_code, link_id }` |
+| POST | `/` | Owner or active foster parent creates a share link; body `{ pet_id }`; returns `{ share_code, link_id }` |
 | GET | `/:code` | Public preview of shared pet; includes `link_status` (`pending`, `active`, `revoked`) |
 | POST | `/:code/accept` | Auth required; single-use — creates `shared` access immediately, marks link `active` |
-| DELETE | `/links/:linkId` | Owner deletes/revokes a share link |
+| DELETE | `/links/:linkId` | Owner deletes any share link; foster may delete only links they created |
 | GET | `/pending` | Deprecated — always returns `[]` (one-step flow) |
 | POST | `/pending/:petId/accept` | Deprecated — returns `410` |
 | POST | `/pending/:petId/decline` | Deprecated — returns `410` |
@@ -86,12 +101,13 @@ ownership), `PUT /:id`, `DELETE /:id`.
 | PUT | `/:petId/hide` | Hide or unhide a shared pet (`{ hidden: true\|false }`) |
 
 Pet access management on `/api/pets/:id/...` (owner unless noted):
-- `GET /:id/share-links` — list share links with status and claimed user (owner only)
-- `GET /:id/access` — list users the pet is shared with
+- `GET /:id/share-links` — list share links with status and claimed user (owner: all links; foster: own links only)
+- `GET /:id/access` — list users the pet is shared with (owner only)
 - `DELETE /:id/access/:userId` — remove access and notify the user (owner only)
 - `DELETE /:id/follow` — shared user stops following (self-remove access)
+- `POST /:id/transfer` — transfer ownership to another user (owner only); body `{ recipient_email, confirmation_name }` (pet name must match, case-insensitive); former owner receives `shared` access automatically; writes `archived_pets` audit row (`transfer_type: user_to_user`)
 
-Shared pets appear in `GET /api/pets/all` with `is_shared: true`.
+Shared pets appear in `GET /api/pets/all` with `is_shared: true`. Fostered pets use `is_foster: true` (and `is_shared: false`).
 
 Share links are **single-use**: once accepted, the same link cannot be used by another user (`410`).
 

@@ -7,6 +7,7 @@ import {
   canAssignRole,
   isActiveMember,
   isFoster,
+  isFosterParentMember,
   isOrgAdmin,
   isSuperAdmin,
   normaliseRole,
@@ -67,6 +68,18 @@ describe('orgRoles', () => {
     it('identifies foster role', () => {
       expect(isFoster(ORG_ROLE_FOSTER)).toBe(true);
       expect(isSuperAdmin(ORG_ROLE_FOSTER)).toBe(false);
+    });
+  });
+
+  describe('isFosterParentMember', () => {
+    it('includes super_admin, admin, and foster', () => {
+      expect(isFosterParentMember(ORG_ROLE_SUPER_ADMIN)).toBe(true);
+      expect(isFosterParentMember(ORG_ROLE_ADMIN)).toBe(true);
+      expect(isFosterParentMember(ORG_ROLE_FOSTER)).toBe(true);
+    });
+
+    it('excludes pending roles', () => {
+      expect(isFosterParentMember('pending_foster')).toBe(false);
     });
   });
 });

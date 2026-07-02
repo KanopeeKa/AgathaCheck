@@ -1537,6 +1537,12 @@ abstract class AppLocalizations {
   /// **'You are following {petName} via a share link. You can stop following at any time.'**
   String sharedPetFollowerDescription(String petName);
 
+  /// No description provided for @fosterSharingDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'While fostering {petName}, you can share a view-only link with others. You cannot transfer ownership.'**
+  String fosterSharingDescription(String petName);
+
   /// No description provided for @healthIssues.
   ///
   /// In en, this message translates to:
@@ -3145,6 +3151,30 @@ abstract class AppLocalizations {
   /// **'Pet transferred successfully'**
   String get transferSuccess;
 
+  /// No description provided for @transferOwnership.
+  ///
+  /// In en, this message translates to:
+  /// **'Transfer ownership'**
+  String get transferOwnership;
+
+  /// No description provided for @transferNameConfirmationHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Type the pet\'s name to confirm'**
+  String get transferNameConfirmationHint;
+
+  /// No description provided for @transferNameMismatch.
+  ///
+  /// In en, this message translates to:
+  /// **'Pet name does not match'**
+  String get transferNameMismatch;
+
+  /// No description provided for @transferOwnershipDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Transfer full ownership to another user. You will keep shared access unless they remove you.'**
+  String get transferOwnershipDescription;
+
   /// No description provided for @archivedPets.
   ///
   /// In en, this message translates to:
@@ -3324,6 +3354,180 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'People'**
   String get people;
+
+  /// No description provided for @fosterParents.
+  ///
+  /// In en, this message translates to:
+  /// **'Foster parents'**
+  String get fosterParents;
+
+  /// No description provided for @fosterParentsDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Members and contacts who can foster organisation pets. Pet counts reflect active placements.'**
+  String get fosterParentsDescription;
+
+  /// No description provided for @noFosterParents.
+  ///
+  /// In en, this message translates to:
+  /// **'No foster parents yet'**
+  String get noFosterParents;
+
+  /// No description provided for @addFosterParent.
+  ///
+  /// In en, this message translates to:
+  /// **'Add foster parent'**
+  String get addFosterParent;
+
+  /// No description provided for @addFosterParentDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Add someone who fosters without an app account. You can assign pets to them in a later step.'**
+  String get addFosterParentDescription;
+
+  /// No description provided for @fosterParentDisplayName.
+  ///
+  /// In en, this message translates to:
+  /// **'Display name'**
+  String get fosterParentDisplayName;
+
+  /// No description provided for @fosterParentNoAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'No account'**
+  String get fosterParentNoAccount;
+
+  /// No description provided for @fosterParentCreated.
+  ///
+  /// In en, this message translates to:
+  /// **'Foster parent added'**
+  String get fosterParentCreated;
+
+  /// No description provided for @fosterParentDeleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Foster parent removed'**
+  String get fosterParentDeleted;
+
+  /// No description provided for @deleteFosterParent.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove foster parent'**
+  String get deleteFosterParent;
+
+  /// No description provided for @deleteFosterParentConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove {name} from the foster parent directory?'**
+  String deleteFosterParentConfirm(String name);
+
+  /// No description provided for @fosterPlacement.
+  ///
+  /// In en, this message translates to:
+  /// **'Foster placement'**
+  String get fosterPlacement;
+
+  /// No description provided for @fosterPlacementNotInFoster.
+  ///
+  /// In en, this message translates to:
+  /// **'This pet is not currently in foster care.'**
+  String get fosterPlacementNotInFoster;
+
+  /// No description provided for @startFosterPlacement.
+  ///
+  /// In en, this message translates to:
+  /// **'Start foster placement'**
+  String get startFosterPlacement;
+
+  /// No description provided for @startFosterPlacementDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Invite a foster parent to care for {petName}. They must accept before the placement begins.'**
+  String startFosterPlacementDescription(String petName);
+
+  /// No description provided for @fosterPlacementStarted.
+  ///
+  /// In en, this message translates to:
+  /// **'Foster placement request sent'**
+  String get fosterPlacementStarted;
+
+  /// No description provided for @endFosterPlacement.
+  ///
+  /// In en, this message translates to:
+  /// **'End foster period'**
+  String get endFosterPlacement;
+
+  /// No description provided for @endFosterPlacementConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'End the foster period for {petName}? The pet returns to organisation custody.'**
+  String endFosterPlacementConfirm(String petName);
+
+  /// No description provided for @fosterPlacementEnded.
+  ///
+  /// In en, this message translates to:
+  /// **'Foster period ended'**
+  String get fosterPlacementEnded;
+
+  /// No description provided for @fosterPlacementPending.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending acceptance'**
+  String get fosterPlacementPending;
+
+  /// No description provided for @fosterPlacementInProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'In foster care'**
+  String get fosterPlacementInProgress;
+
+  /// No description provided for @fosterPlacementStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'Status: {status}'**
+  String fosterPlacementStatus(String status);
+
+  /// No description provided for @fosterPlacementAssignedTo.
+  ///
+  /// In en, this message translates to:
+  /// **'Foster parent: {name}'**
+  String fosterPlacementAssignedTo(String name);
+
+  /// No description provided for @fosterPlacementStartDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Start date: {date}'**
+  String fosterPlacementStartDate(String date);
+
+  /// No description provided for @noFosterParentsWithAccounts.
+  ///
+  /// In en, this message translates to:
+  /// **'Add a foster parent with an app account first (invite by email).'**
+  String get noFosterParentsWithAccounts;
+
+  /// No description provided for @pendingFosterPlacements.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending foster placements'**
+  String get pendingFosterPlacements;
+
+  /// No description provided for @fosterPlacementInviteFrom.
+  ///
+  /// In en, this message translates to:
+  /// **'From {orgName}'**
+  String fosterPlacementInviteFrom(String orgName);
+
+  /// No description provided for @fosterPlacementAccepted.
+  ///
+  /// In en, this message translates to:
+  /// **'Foster placement accepted'**
+  String get fosterPlacementAccepted;
+
+  /// No description provided for @fosterPlacementDeclined.
+  ///
+  /// In en, this message translates to:
+  /// **'Foster placement declined'**
+  String get fosterPlacementDeclined;
 
   /// No description provided for @assignedPets.
   ///
@@ -3928,7 +4132,7 @@ abstract class AppLocalizations {
   /// No description provided for @faqSharingA4.
   ///
   /// In en, this message translates to:
-  /// **'Sharing gives someone view access to a pet — the original owner retains full control. Transferring (available for organisation pets) moves ownership of the pet to another user or organisation entirely.'**
+  /// **'Sharing gives someone view access to a pet — the original owner retains full control. Transferring ownership (personal pets) moves the pet to another user; you keep shared access unless they remove you. Organisation pet transfers are managed separately.'**
   String get faqSharingA4;
 
   /// No description provided for @faqOrgTitle.
