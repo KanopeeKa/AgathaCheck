@@ -21,6 +21,7 @@ import '../widgets/pet_card.dart';
 import '../controllers/pet_list_controller.dart';
 import '../widgets/org_filter_chips.dart';
 import '../widgets/personal_pets_section.dart';
+import '../widgets/fostered_pets_section.dart';
 import '../widgets/organization_pets_section.dart';
 import '../widgets/passed_away_pets_section.dart';
 
@@ -235,6 +236,7 @@ class _PetListScreenState extends ConsumerState<PetListScreen> {
           }
 
           final orgNames = _controller.getOrgNames(allPets);
+          final hasFosteredPets = _controller.hasFosteredPets(allPets);
           _controller.syncOrgFilter(orgNames);
           final filteredPets = _controller.filterPets(allPets);
 
@@ -267,16 +269,23 @@ class _PetListScreenState extends ConsumerState<PetListScreen> {
           }
           final personalActive = _controller.getPersonalActive(filteredPets);
           final personalPassed = _controller.getPersonalPassed(filteredPets);
+          final fosteredActive = _controller.getFosteredActive(filteredPets);
+          final fosteredPassed = _controller.getFosteredPassed(filteredPets);
           final orgGroups = _controller.getOrgGroups(filteredPets);
           final orgPassedGroups = _controller.getOrgPassedGroups(filteredPets);
-          final allPassedAway = _controller.getAllPassedAway(personalPassed, orgPassedGroups);
+          final allPassedAway = _controller.getAllPassedAway(
+            personalPassed,
+            fosteredPassed,
+            orgPassedGroups,
+          );
 
           return ListView(
             padding: const EdgeInsets.all(16),
             children: [
-              if (orgNames.isNotEmpty)
+              if (orgNames.isNotEmpty || hasFosteredPets)
                 OrgFilterChips(
                   orgNames: orgNames,
+                  showFosteredChip: hasFosteredPets,
                   selected: _controller.orgFilter,
                   onSelected: (v) => setState(() => _controller.orgFilter = v),
                   l: l,
@@ -286,7 +295,9 @@ class _PetListScreenState extends ConsumerState<PetListScreen> {
               _PendingAdoptionPlacementsSection(),
               _DueEventsSection(pets: allPets),
               if (_controller.orgFilter == null || _controller.orgFilter == '_personal') ...[
-                if (personalActive.isNotEmpty || (_controller.orgFilter == null && orgGroups.isNotEmpty))
+                if (personalActive.isNotEmpty ||
+                    (_controller.orgFilter == null &&
+                        (fosteredActive.isNotEmpty || orgGroups.isNotEmpty)))
                   _SectionHeader(
                     icon: Icons.person,
                     title: l.myPets,
@@ -301,13 +312,32 @@ class _PetListScreenState extends ConsumerState<PetListScreen> {
                   parentContext: context,
                 ),
               ],
-              OrganizationPetsSection(
-                orgGroups: orgGroups,
-                l: l,
-                theme: theme,
-                ref: ref,
-                parentContext: context,
-              ),
+              if (_controller.orgFilter == null ||
+                  _controller.orgFilter == '_fostered') ...[
+                if (fosteredActive.isNotEmpty ||
+                    _controller.orgFilter == '_fostered')
+                  _SectionHeader(
+                    icon: Icons.home_work_outlined,
+                    title: l.myFosteredPets,
+                    count: fosteredActive.length,
+                  ),
+                FosteredPetsSection(
+                  fosteredActive: fosteredActive,
+                  orgFilter: _controller.orgFilter,
+                  l: l,
+                  theme: theme,
+                ),
+              ],
+              if (_controller.orgFilter == null ||
+                  (_controller.orgFilter != '_personal' &&
+                      _controller.orgFilter != '_fostered'))
+                OrganizationPetsSection(
+                  orgGroups: orgGroups,
+                  l: l,
+                  theme: theme,
+                  ref: ref,
+                  parentContext: context,
+                ),
               PassedAwayPetsSection(
                 allPassedAway: allPassedAway,
                 theme: theme,

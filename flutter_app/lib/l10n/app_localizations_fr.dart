@@ -251,6 +251,13 @@ class AppLocalizationsFr extends AppLocalizations {
   String get myPets => 'Mes animaux';
 
   @override
+  String get myFosteredPets => 'Mes animaux en famille d\'accueil';
+
+  @override
+  String get noFosteredPets =>
+      'Vous n\'accueillez aucun animal pour le moment.';
+
+  @override
   String get allPets => 'Tous les animaux';
 
   @override

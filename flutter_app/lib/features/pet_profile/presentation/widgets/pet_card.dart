@@ -82,6 +82,26 @@ class PetCard extends StatelessWidget {
                             ],
                           ),
                         ],
+                        if (pet.isFoster) ...[
+                          const SizedBox(height: 2),
+                          Row(
+                            children: [
+                              Icon(
+                                Icons.home_work_outlined,
+                                size: 14,
+                                color: colorScheme.tertiary,
+                              ),
+                              const SizedBox(width: 4),
+                              Text(
+                                l.fosterPlacementInProgress,
+                                style: theme.textTheme.bodySmall?.copyWith(
+                                  color: colorScheme.tertiary,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
                         const SizedBox(height: 4),
                         Text(
                           pet.breed.isNotEmpty

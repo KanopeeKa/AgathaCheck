@@ -554,6 +554,18 @@ abstract class AppLocalizations {
   /// **'My Pets'**
   String get myPets;
 
+  /// No description provided for @myFosteredPets.
+  ///
+  /// In en, this message translates to:
+  /// **'My Fostered Pets'**
+  String get myFosteredPets;
+
+  /// No description provided for @noFosteredPets.
+  ///
+  /// In en, this message translates to:
+  /// **'You are not fostering any pets yet.'**
+  String get noFosteredPets;
+
   /// No description provided for @allPets.
   ///
   /// In en, this message translates to:
