@@ -610,6 +610,7 @@
   "@deleteFosterParentConfirm": { "placeholders": { "name": { "type": "String" } } },
   "fosterPlacement": "Placement en famille d'accueil",
   "fosterPlacementNotInFoster": "Cet animal n'est pas actuellement en famille d'accueil.",
+  "fosterPlacementNotInFosterShort": "Pas en famille d'accueil",
   "startFosterPlacement": "Démarrer un placement",
   "startFosterPlacementDescription": "Invitez une famille d'accueil à s'occuper de {petName}. Elle doit accepter avant le début du placement.",
   "@startFosterPlacementDescription": { "placeholders": { "petName": { "type": "String" } } },

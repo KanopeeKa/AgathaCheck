@@ -1864,6 +1864,9 @@ class AppLocalizationsFr extends AppLocalizations {
       'Cet animal n\'est pas actuellement en famille d\'accueil.';
 
   @override
+  String get fosterPlacementNotInFosterShort => 'Pas en famille d\'accueil';
+
+  @override
   String get startFosterPlacement => 'Démarrer un placement';
 
   @override

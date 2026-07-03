@@ -16,6 +16,22 @@ import {
   FOSTER_PET_ACCESS_ROLE,
 } from '../lib/petAccess.js';
 import { orgPetViewerRolesSql } from '../lib/orgRoles.js';
+import { OPEN_PLACEMENT_STATUSES } from '../lib/fosterPlacements.js';
+
+const FOSTER_PLACEMENT_SELECT_SQL = `
+  (SELECT fp.status
+   FROM foster_placements fp
+   WHERE fp.pet_id = p.id
+     AND fp.status = ANY($4::text[])
+   ORDER BY fp.created_at DESC
+   LIMIT 1) AS foster_placement_status,
+  (SELECT NULLIF(TRIM(COALESCE(u.first_name, '') || ' ' || COALESCE(u.last_name, '')), '')
+   FROM foster_placements fp
+   LEFT JOIN users u ON u.id = fp.foster_user_id
+   WHERE fp.pet_id = p.id
+     AND fp.status = ANY($4::text[])
+   ORDER BY fp.created_at DESC
+   LIMIT 1) AS foster_name`;
 
 function extractUserId(req) {
   const auth = req.headers['authorization'] || req.headers['Authorization'];
@@ -71,6 +87,8 @@ function petRowToMap(row) {
     organization_name: isShared ? null : (row.organization_name || null),
     is_shared: isShared,
     is_foster: isFoster,
+    foster_placement_status: row.foster_placement_status || null,
+    foster_name: row.foster_name || null,
     created_at: row.created_at,
     updated_at: row.updated_at,
   };
@@ -737,24 +755,28 @@ export default function petsRoutes(pool) {
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     try {
       const result = await pool.query(
-        `SELECT p.*, false AS is_shared, false AS is_foster, o.name AS organization_name
+        `SELECT p.*, false AS is_shared, false AS is_foster, o.name AS organization_name,
+                ${FOSTER_PLACEMENT_SELECT_SQL}
          FROM pets p
          LEFT JOIN organizations o ON o.id = p.organization_id
          WHERE p.user_id = $1
          UNION ALL
-         SELECT p.*, true AS is_shared, false AS is_foster, o.name AS organization_name
+         SELECT p.*, true AS is_shared, false AS is_foster, o.name AS organization_name,
+                ${FOSTER_PLACEMENT_SELECT_SQL}
          FROM pets p
          JOIN pet_access pa ON pa.pet_id = p.id
          LEFT JOIN organizations o ON o.id = p.organization_id
          WHERE pa.user_id = $1 AND pa.role = ANY($2::text[]) AND COALESCE(pa.hidden, false) = false
          UNION ALL
-         SELECT p.*, false AS is_shared, true AS is_foster, o.name AS organization_name
+         SELECT p.*, false AS is_shared, true AS is_foster, o.name AS organization_name,
+                ${FOSTER_PLACEMENT_SELECT_SQL}
          FROM pets p
          JOIN pet_access pa ON pa.pet_id = p.id
          LEFT JOIN organizations o ON o.id = p.organization_id
          WHERE pa.user_id = $1 AND pa.role = $3 AND COALESCE(pa.hidden, false) = false
          UNION ALL
-         SELECT p.*, false AS is_shared, false AS is_foster, o.name AS organization_name
+         SELECT p.*, false AS is_shared, false AS is_foster, o.name AS organization_name,
+                ${FOSTER_PLACEMENT_SELECT_SQL}
          FROM pets p
          JOIN organization_users ou ON ou.organization_id = p.organization_id
          LEFT JOIN organizations o ON o.id = p.organization_id
@@ -773,7 +795,7 @@ export default function petsRoutes(pool) {
                AND pa.role = $3 AND COALESCE(pa.hidden, false) = false
            )
          ORDER BY created_at`,
-        [userId, COLLABORATOR_ROLES, FOSTER_PET_ACCESS_ROLE]
+        [userId, COLLABORATOR_ROLES, FOSTER_PET_ACCESS_ROLE, OPEN_PLACEMENT_STATUSES]
       );
       const pets = result.rows.map(petRowToMap);
       await autoAssignColors(pool, pets);

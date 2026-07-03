@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../../core/theme/app_theme.dart';
 import 'package:intl/intl.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../domain/entities/foster_parent.dart';
 import '../../domain/entities/foster_placement.dart';
 import '../providers/foster_placements_providers.dart';
 import '../providers/organization_providers.dart';
+import '../utils/foster_placement_display.dart';
 
 class PetFosterPlacementSection extends ConsumerWidget {
   const PetFosterPlacementSection({
@@ -25,145 +25,117 @@ class PetFosterPlacementSection extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
     final placementAsync = ref.watch(petFosterPlacementProvider((orgId, petId)));
 
-    return Card(
-      color: AppTheme.orgBlueDarker,
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: Card(
+        clipBehavior: Clip.antiAlias,
+        child: placementAsync.when(
+          loading: () => ExpansionTile(
+            leading: Icon(Icons.home_work_outlined, color: colorScheme.primary),
+            title: Text(
               l.fosterPlacement,
-              style: theme.textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
+              style: theme.textTheme.titleMedium
+                  ?.copyWith(fontWeight: FontWeight.w600),
             ),
-            const SizedBox(height: 8),
-            placementAsync.when(
-              loading: () => const Padding(
-                padding: EdgeInsets.all(8),
-                child: CircularProgressIndicator(),
+            children: const [
+              Padding(
+                padding: EdgeInsets.all(16),
+                child: Center(child: CircularProgressIndicator()),
               ),
-              error: (e, _) => Text('$e',
-                  style: TextStyle(color: theme.colorScheme.error)),
-              data: (state) {
-                final placement = state.placement;
-                if (state.isNotInFoster) {
-                  return Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        l.fosterPlacementNotInFoster,
-                        style: theme.textTheme.bodyMedium?.copyWith(
-                          color: theme.colorScheme.onSurfaceVariant,
-                        ),
-                      ),
-                      const SizedBox(height: 12),
-                      OutlinedButton.icon(
-                        key: const Key('start_foster_placement_button'),
-                        onPressed: () => _showStartDialog(context, ref, l),
-                        icon: const Icon(Icons.home_work_outlined, size: 18),
-                        label: Text(l.startFosterPlacement),
-                      ),
-                      const SizedBox(height: 8),
-                      OutlinedButton.icon(
-                        key: const Key('direct_adopt_button'),
-                        onPressed: () => _showDirectAdoptDialog(context, ref, l),
-                        icon: const Icon(Icons.favorite_border, size: 18),
-                        label: Text(l.directAdopt),
-                      ),
-                    ],
-                  );
-                }
-
-                final fosterLabel = placement!.fosterName.isNotEmpty
+            ],
+          ),
+          error: (e, _) => ExpansionTile(
+            leading: Icon(Icons.home_work_outlined, color: colorScheme.primary),
+            title: Text(
+              l.fosterPlacement,
+              style: theme.textTheme.titleMedium
+                  ?.copyWith(fontWeight: FontWeight.w600),
+            ),
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(16),
+                child: Text(
+                  '$e',
+                  style: TextStyle(color: colorScheme.error),
+                ),
+              ),
+            ],
+          ),
+          data: (state) {
+            final placement = state.placement;
+            final fosterLabel = placement != null &&
+                    (placement.fosterName.isNotEmpty ||
+                        placement.fosterEmail.isNotEmpty)
+                ? (placement.fosterName.isNotEmpty
                     ? placement.fosterName
-                    : placement.fosterEmail;
-                return Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(l.fosterPlacementStatus(_statusLabel(l, placement))),
-                    const SizedBox(height: 4),
-                    Text(l.fosterPlacementAssignedTo(fosterLabel)),
-                    if (placement.startDate != null) ...[
-                      const SizedBox(height: 4),
-                      Text(l.fosterPlacementStartDate(
-                        DateFormat.yMMMd().format(placement.startDate!),
-                      )),
-                    ],
-                    if (placement.adoptionConditions.isNotEmpty) ...[
-                      const SizedBox(height: 8),
-                      Text(
-                        l.adoptionConditions,
-                        style: theme.textTheme.titleSmall,
-                      ),
-                      const SizedBox(height: 4),
-                      Text(placement.adoptionConditions),
-                    ],
-                    if (placement.isInProgress) ...[
-                      const SizedBox(height: 12),
-                      OutlinedButton.icon(
-                        key: const Key('start_adoption_button'),
-                        onPressed: () => _showStartAdoptionDialog(context, ref, l, placement),
-                        icon: const Icon(Icons.favorite_border, size: 18),
-                        label: Text(l.startAdoption),
-                      ),
-                      const SizedBox(height: 8),
-                      OutlinedButton.icon(
-                        key: const Key('end_foster_placement_button'),
-                        onPressed: () => _confirmEnd(context, ref, l, placement),
-                        icon: const Icon(Icons.event_busy, size: 18),
-                        label: Text(l.endFosterPlacement),
-                      ),
-                    ],
-                    if (placement.isPendingConditions) ...[
-                      const SizedBox(height: 12),
-                      OutlinedButton.icon(
-                        key: const Key('complete_adoption_conditions_button'),
-                        onPressed: () => _completeConditions(context, ref, l, placement),
-                        icon: const Icon(Icons.check_circle_outline, size: 18),
-                        label: Text(l.markAdoptionConditionsMet),
-                      ),
-                      const SizedBox(height: 8),
-                      OutlinedButton.icon(
-                        onPressed: () => _confirmCancelAdoption(context, ref, l, placement),
-                        icon: const Icon(Icons.cancel_outlined, size: 18),
-                        label: Text(l.cancelAdoption),
-                      ),
-                    ],
-                    if (placement.isWaitingAdoption) ...[
-                      const SizedBox(height: 12),
-                      Text(
-                        l.waitingAdoptionConfirmation,
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          color: theme.colorScheme.onSurfaceVariant,
+                    : placement.fosterEmail)
+                : null;
+
+            return ExpansionTile(
+              leading:
+                  Icon(Icons.home_work_outlined, color: colorScheme.primary),
+              title: Text(
+                l.fosterPlacement,
+                style: theme.textTheme.titleMedium
+                    ?.copyWith(fontWeight: FontWeight.w600),
+              ),
+              subtitle: Text(
+                fosterPlacementSummary(
+                  l,
+                  status: state.isNotInFoster ? null : placement?.status,
+                  fosterName: fosterLabel,
+                ),
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: colorScheme.onSurfaceVariant,
+                ),
+              ),
+              children: [
+                Padding(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  child: state.isNotInFoster
+                      ? _NotInFosterContent(
+                          l: l,
+                          theme: theme,
+                          onStart: () => _showStartDialog(context, ref, l),
+                          onDirectAdopt: () =>
+                              _showDirectAdoptDialog(context, ref, l),
+                        )
+                      : _ActivePlacementContent(
+                          l: l,
+                          theme: theme,
+                          placement: placement!,
+                          onStartAdoption: () => _showStartAdoptionDialog(
+                            context,
+                            ref,
+                            l,
+                            placement,
+                          ),
+                          onEnd: () =>
+                              _confirmEnd(context, ref, l, placement),
+                          onCompleteConditions: () => _completeConditions(
+                            context,
+                            ref,
+                            l,
+                            placement,
+                          ),
+                          onCancelAdoption: () => _confirmCancelAdoption(
+                            context,
+                            ref,
+                            l,
+                            placement,
+                          ),
                         ),
-                      ),
-                      const SizedBox(height: 8),
-                      OutlinedButton.icon(
-                        onPressed: () => _confirmCancelAdoption(context, ref, l, placement),
-                        icon: const Icon(Icons.cancel_outlined, size: 18),
-                        label: Text(l.cancelAdoption),
-                      ),
-                    ],
-                  ],
-                );
-              },
-            ),
-          ],
+                ),
+              ],
+            );
+          },
         ),
       ),
     );
-  }
-
-  String _statusLabel(AppLocalizations l, FosterPlacement placement) {
-    if (placement.isPending) return l.fosterPlacementPending;
-    if (placement.isInProgress) return l.fosterPlacementInProgress;
-    if (placement.isPendingConditions) return l.pendingAdoptionConditions;
-    if (placement.isWaitingAdoption) return l.waitingAdoptionConfirmation;
-    return l.fosterPlacementNotInFoster;
   }
 
   Future<void> _showStartDialog(
@@ -536,5 +508,135 @@ class PetFosterPlacementSection extends ConsumerWidget {
         );
       }
     }
+  }
+}
+
+class _NotInFosterContent extends StatelessWidget {
+  const _NotInFosterContent({
+    required this.l,
+    required this.theme,
+    required this.onStart,
+    required this.onDirectAdopt,
+  });
+
+  final AppLocalizations l;
+  final ThemeData theme;
+  final VoidCallback onStart;
+  final VoidCallback onDirectAdopt;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          l.fosterPlacementNotInFoster,
+          style: theme.textTheme.bodyMedium?.copyWith(
+            color: theme.colorScheme.onSurfaceVariant,
+          ),
+        ),
+        const SizedBox(height: 12),
+        OutlinedButton.icon(
+          key: const Key('start_foster_placement_button'),
+          onPressed: onStart,
+          icon: const Icon(Icons.home_work_outlined, size: 18),
+          label: Text(l.startFosterPlacement),
+        ),
+        const SizedBox(height: 8),
+        OutlinedButton.icon(
+          key: const Key('direct_adopt_button'),
+          onPressed: onDirectAdopt,
+          icon: const Icon(Icons.favorite_border, size: 18),
+          label: Text(l.directAdopt),
+        ),
+      ],
+    );
+  }
+}
+
+class _ActivePlacementContent extends StatelessWidget {
+  const _ActivePlacementContent({
+    required this.l,
+    required this.theme,
+    required this.placement,
+    required this.onStartAdoption,
+    required this.onEnd,
+    required this.onCompleteConditions,
+    required this.onCancelAdoption,
+  });
+
+  final AppLocalizations l;
+  final ThemeData theme;
+  final FosterPlacement placement;
+  final VoidCallback onStartAdoption;
+  final VoidCallback onEnd;
+  final VoidCallback onCompleteConditions;
+  final VoidCallback onCancelAdoption;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        if (placement.startDate != null) ...[
+          Text(l.fosterPlacementStartDate(
+            DateFormat.yMMMd().format(placement.startDate!),
+          )),
+          const SizedBox(height: 8),
+        ],
+        if (placement.adoptionConditions.isNotEmpty) ...[
+          Text(
+            l.adoptionConditions,
+            style: theme.textTheme.titleSmall,
+          ),
+          const SizedBox(height: 4),
+          Text(placement.adoptionConditions),
+          const SizedBox(height: 8),
+        ],
+        if (placement.isInProgress) ...[
+          OutlinedButton.icon(
+            key: const Key('start_adoption_button'),
+            onPressed: onStartAdoption,
+            icon: const Icon(Icons.favorite_border, size: 18),
+            label: Text(l.startAdoption),
+          ),
+          const SizedBox(height: 8),
+          OutlinedButton.icon(
+            key: const Key('end_foster_placement_button'),
+            onPressed: onEnd,
+            icon: const Icon(Icons.event_busy, size: 18),
+            label: Text(l.endFosterPlacement),
+          ),
+        ],
+        if (placement.isPendingConditions) ...[
+          OutlinedButton.icon(
+            key: const Key('complete_adoption_conditions_button'),
+            onPressed: onCompleteConditions,
+            icon: const Icon(Icons.check_circle_outline, size: 18),
+            label: Text(l.markAdoptionConditionsMet),
+          ),
+          const SizedBox(height: 8),
+          OutlinedButton.icon(
+            onPressed: onCancelAdoption,
+            icon: const Icon(Icons.cancel_outlined, size: 18),
+            label: Text(l.cancelAdoption),
+          ),
+        ],
+        if (placement.isWaitingAdoption) ...[
+          Text(
+            l.waitingAdoptionConfirmation,
+            style: theme.textTheme.bodySmall?.copyWith(
+              color: theme.colorScheme.onSurfaceVariant,
+            ),
+          ),
+          const SizedBox(height: 8),
+          OutlinedButton.icon(
+            onPressed: onCancelAdoption,
+            icon: const Icon(Icons.cancel_outlined, size: 18),
+            label: Text(l.cancelAdoption),
+          ),
+        ],
+      ],
+    );
   }
 }

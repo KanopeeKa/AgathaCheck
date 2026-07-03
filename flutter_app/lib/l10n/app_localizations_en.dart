@@ -1851,6 +1851,9 @@ class AppLocalizationsEn extends AppLocalizations {
       'This pet is not currently in foster care.';
 
   @override
+  String get fosterPlacementNotInFosterShort => 'Not in foster';
+
+  @override
   String get startFosterPlacement => 'Start foster placement';
 
   @override
