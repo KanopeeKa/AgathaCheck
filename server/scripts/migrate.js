@@ -25,6 +25,7 @@ import { fileURLToPath } from 'url';
 import dotenv from 'dotenv';
 import pg from 'pg';
 import { v4 as uuidv4 } from 'uuid';
+import { migrateFamilyEventsPlacements } from './migrations/016_migrate_family_events_placements.js';
 
 const { Pool } = pg;
 const __filename = fileURLToPath(import.meta.url);
@@ -96,6 +97,20 @@ async function appliedMigrations(pool) {
   return new Set(rows.map((r) => r.name));
 }
 
+/** Migrations whose data changes need app-generated UUIDs (no gen_random_uuid()). */
+const CODE_MIGRATIONS = {
+  '016_migrate_family_events_placements.sql': migrateFamilyEventsPlacements,
+};
+
+async function applyMigration(client, name, sql) {
+  const codeRunner = CODE_MIGRATIONS[name];
+  if (codeRunner) {
+    await codeRunner(client);
+    return;
+  }
+  await client.query(sql);
+}
+
 async function runUp(pool) {
   await ensureMigrationsTable(pool);
   const applied = await appliedMigrations(pool);
@@ -117,7 +132,7 @@ async function runUp(pool) {
     const client = await pool.connect();
     try {
       await client.query('BEGIN');
-      await client.query(sql);
+      await applyMigration(client, name, sql);
       await client.query(
         'INSERT INTO _migrations (id, name) VALUES ($1, $2)',
         [uuidv4(), name]

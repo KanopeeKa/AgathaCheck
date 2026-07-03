@@ -149,7 +149,7 @@ flowchart TB
 - Foster directory with live pet assignments (`active_pets` on foster-parents API).
 - PDF foster history section on org pet reports.
 - Retire org/pet 501 stubs used in UI (`POST /organizations/:orgId/pets`, org pet transfer, `POST /pets/:id/transfer-to-org`).
-- Migration `016_migrate_family_events_placements.sql` for legacy `family_events` rows.
+- Migration `016_migrate_family_events_placements.sql` for legacy `family_events` rows (data inserted by Node/Dart migration runner with app-generated UUIDs).
 
 ---
 
