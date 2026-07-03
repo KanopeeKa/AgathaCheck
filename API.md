@@ -48,13 +48,20 @@ checks (`super_admin`, `admin`, `foster`). See `docs/org-fostering-strategy.md`.
 | PUT | `/:orgId/members/:userId/role` | `super_admin` or `admin`; same assignability rules as invite |
 | DELETE | `/:orgId/members/:userId` | `super_admin` or `admin` |
 | DELETE | `/:orgId/members/me` | self (leave org) |
-| GET | `/:orgId/foster-parents` | `super_admin` or `admin`; member + external foster parents with active pet counts |
+| GET | `/:orgId/foster-parents` | `super_admin` or `admin`; member + external foster parents with active pet counts and `active_pets` |
 | POST | `/:orgId/foster-parents` | `super_admin` or `admin`; body `{ display_name, email?, phone?, notes? }` — external contact without app account |
 | PUT | `/:orgId/foster-parents/:id` | update external foster parent (same body fields) |
 | DELETE | `/:orgId/foster-parents/:id` | remove external foster parent |
+| POST | `/:orgId/pets` | `super_admin` or `admin`; create org pet; body `{ name, species, ... }` |
+| POST | `/:orgId/pets/:petId/transfer` | `super_admin` or `admin`; transfer org pet to user by email; body `{ recipient_email, transfer_type?, notes? }` |
+| GET | `/:orgId/pets/:petId/foster-history` | `super_admin` or `admin`; all foster placements for pet (PDF/admin) |
 | GET | `/:orgId/placements` | `super_admin` or `admin`; all placements for org |
 | GET | `/:orgId/pets/:petId/placement` | current active placement for pet (or `not_in_foster`) |
 | POST | `/:orgId/pets/:petId/placements` | start foster (`pending`); body `{ foster_user_id, start_date?, notes? }` |
+| POST | `/:orgId/pets/:petId/placements/direct-adopt` | skip foster period → `waiting_adoption_confirmation` (or `pending_adoption_conditions` if conditions set); body `{ foster_user_id, adoption_conditions?, notes? }` |
+| POST | `/:orgId/placements/:id/start-adoption` | from `in_progress` → `waiting_adoption_confirmation` or `pending_adoption_conditions`; body `{ adoption_conditions? }` |
+| POST | `/:orgId/placements/:id/complete-conditions` | `pending_adoption_conditions` → `waiting_adoption_confirmation` |
+| POST | `/:orgId/placements/:id/cancel-adoption` | adoption step → `not_in_foster`; revokes foster `pet_access` |
 | POST | `/:orgId/placements/:id/end` | end foster period → `not_in_foster`; revokes foster `pet_access` |
 | GET | `/:orgId/pets`, `/:orgId/archived` | `super_admin` or `admin` (not foster) |
 
@@ -62,8 +69,10 @@ checks (`super_admin`, `admin`, `foster`). See `docs/org-fostering-strategy.md`.
 | Method | Path | Authorization |
 |---|---|---|
 | GET | `/pending` | authenticated foster parent; pending placement invites |
+| GET | `/pending-adoptions` | foster parent; placements awaiting adoption confirmation |
 | POST | `/:id/accept` | assigned foster parent; `pending` → `in_progress`, grants `pet_access` foster role |
 | POST | `/:id/decline` | assigned foster parent; → `not_in_foster` |
+| POST | `/:id/confirm-adoption` | assigned foster parent; `waiting_adoption_confirmation` → `adopted`; transfers ownership, writes `archived_pets` (`transfer_type: adoption`) |
 | GET | `/invites/pending`, POST `/invites/:id/accept|decline` | invitee |
 
 ### Health entries (`/api/health-entries`)
@@ -135,9 +144,6 @@ These endpoints are placeholders. They return `501` with
 | Endpoint | Notes | Planned |
 |---|---|---|
 | `POST /api/organizations/join/:code` | Join-by-code retired; use email invite + accept | — |
-| `POST /api/organizations/:orgId/pets` | Dedicated org pet create | Inc 7 |
-| `POST /api/organizations/:orgId/pets/:petId/transfer` | Org transfer/archive | Inc 6/7 |
-| `POST /api/pets/:id/transfer-to-org` | User → org transfer | Inc 7 |
 | `PUT /api/pets/:id/access/:userId/role` | Promote shared → guardian | Inc 5 |
 
 Lifecycle stubs (acknowledge without full side effects):
@@ -338,13 +344,13 @@ POST /backend/api/auth/login
 
 ## Extended Pet Endpoints
 
-### Transfer Pet to Organization — STUB
-
-> **Status:** auth-gated (returns `401` without a valid token) but currently a no-op stub — it returns the static response below without writing to the database. Real org pet transfers are handled by the organization routes.
+### Transfer Pet to Organization
 
 - **POST** `/api/pets/{id}/transfer-to-org`
-- Intended to transfer a pet to an organization with a JSON body of `organization_id`, `transfer_type`, and `notes`.
-- **Response:** `{ "status": "transferred", "pet_id": "{id}" }`
+- Transfers a personal pet to an organization where the caller is `super_admin` or `admin`.
+- **Request body:** `{ "organization_id", "transfer_type"?, "notes"? }`
+- **Response:** `{ "transferred": true, "pet_id", "organization_id", "transfer_type" }`
+- **Errors:** 400 if pet already belongs to an org; 403 if caller is not an org admin; 404 if pet not found.
 
 ### Family Events (per-pet) — STUB
 

@@ -1290,6 +1290,24 @@ class AppLocalizationsFr extends AppLocalizations {
   String get pdfSharingSection => 'Partage';
 
   @override
+  String get pdfFosterHistorySection => 'Historique d\'accueil';
+
+  @override
+  String get pdfNoFosterHistory => 'Aucun placement d\'accueil enregistré.';
+
+  @override
+  String get pdfFosterParent => 'Famille d\'accueil';
+
+  @override
+  String get pdfPlacementStatus => 'Statut';
+
+  @override
+  String get pdfPlacementAdopted => 'Adopté';
+
+  @override
+  String get fosterHistory => 'Historique d\'accueil';
+
+  @override
   String get pdfNoWeightData => 'Aucune donnée de poids enregistrée.';
 
   @override
@@ -1905,6 +1923,72 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get fosterPlacementDeclined => 'Placement refusé';
+
+  @override
+  String get startAdoption => 'Commencer l\'adoption';
+
+  @override
+  String startAdoptionDescription(String petName) {
+    return 'Lancer le processus d\'adoption pour $petName. Vous pouvez ajouter des conditions préalables (ex. stérilisation) avant la confirmation du parent d\'accueil.';
+  }
+
+  @override
+  String get adoptionConditions => 'Conditions préalables';
+
+  @override
+  String get adoptionConditionsHint =>
+      'Facultatif — ex. doit être stérilisé avant l\'adoption';
+
+  @override
+  String get adoptionStarted => 'Processus d\'adoption lancé';
+
+  @override
+  String get markAdoptionConditionsMet =>
+      'Marquer les conditions comme remplies';
+
+  @override
+  String get adoptionConditionsMet =>
+      'Conditions préalables marquées comme remplies';
+
+  @override
+  String get waitingAdoptionConfirmation => 'En attente de confirmation';
+
+  @override
+  String get pendingAdoptionConditions => 'Conditions préalables en attente';
+
+  @override
+  String get cancelAdoption => 'Annuler l\'adoption';
+
+  @override
+  String cancelAdoptionConfirm(String petName) {
+    return 'Annuler l\'adoption de $petName ? L\'animal retourne sous la garde de l\'organisation.';
+  }
+
+  @override
+  String get adoptionCancelled => 'Adoption annulée';
+
+  @override
+  String get directAdopt => 'Adoption directe';
+
+  @override
+  String directAdoptDescription(String petName) {
+    return 'Passer la période d\'accueil et inviter le nouveau propriétaire de $petName à confirmer l\'adoption directement.';
+  }
+
+  @override
+  String get pendingAdoptionConfirmations => 'Adoptions en attente';
+
+  @override
+  String get confirmAdoption => 'Confirmer l\'adoption';
+
+  @override
+  String confirmAdoptionDescription(String petName) {
+    return 'Confirmez que vous adoptez $petName. La propriété vous sera transférée.';
+  }
+
+  @override
+  String get adoptionConfirmed =>
+      'Adoption finalisée — vous êtes maintenant le propriétaire';
 
   @override
   String assignedPets(int count) {

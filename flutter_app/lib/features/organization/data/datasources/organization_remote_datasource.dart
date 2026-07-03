@@ -497,4 +497,101 @@ class OrganizationRemoteDataSource {
     }
     return data;
   }
+
+  Future<Map<String, dynamic>> startAdoption(
+    String orgId,
+    String placementId, {
+    String adoptionConditions = '',
+    required String token,
+  }) async {
+    final response = await _client.post(
+      Uri.parse('$baseUrl/api/organizations/$orgId/placements/$placementId/start-adoption'),
+      headers: _headers(token),
+      body: json.encode({
+        if (adoptionConditions.isNotEmpty) 'adoption_conditions': adoptionConditions,
+      }),
+    );
+    final data = json.decode(response.body) as Map<String, dynamic>;
+    if (response.statusCode >= 400) {
+      throw Exception(data['error'] ?? 'Failed to start adoption');
+    }
+    return data;
+  }
+
+  Future<Map<String, dynamic>> completeAdoptionConditions(
+    String orgId,
+    String placementId, {
+    required String token,
+  }) async {
+    final response = await _client.post(
+      Uri.parse('$baseUrl/api/organizations/$orgId/placements/$placementId/complete-conditions'),
+      headers: _headers(token),
+    );
+    final data = json.decode(response.body) as Map<String, dynamic>;
+    if (response.statusCode >= 400) {
+      throw Exception(data['error'] ?? 'Failed to complete adoption conditions');
+    }
+    return data;
+  }
+
+  Future<Map<String, dynamic>> cancelAdoption(
+    String orgId,
+    String placementId, {
+    String? endDate,
+    required String token,
+  }) async {
+    final response = await _client.post(
+      Uri.parse('$baseUrl/api/organizations/$orgId/placements/$placementId/cancel-adoption'),
+      headers: _headers(token),
+      body: json.encode({
+        if (endDate != null) 'end_date': endDate,
+      }),
+    );
+    final data = json.decode(response.body) as Map<String, dynamic>;
+    if (response.statusCode >= 400) {
+      throw Exception(data['error'] ?? 'Failed to cancel adoption');
+    }
+    return data;
+  }
+
+  Future<Map<String, dynamic>> directAdopt(
+    String orgId,
+    String petId, {
+    required String fosterUserId,
+    String adoptionConditions = '',
+    String notes = '',
+    required String token,
+  }) async {
+    final response = await _client.post(
+      Uri.parse('$baseUrl/api/organizations/$orgId/pets/$petId/placements/direct-adopt'),
+      headers: _headers(token),
+      body: json.encode({
+        'foster_user_id': fosterUserId,
+        if (adoptionConditions.isNotEmpty) 'adoption_conditions': adoptionConditions,
+        if (notes.isNotEmpty) 'notes': notes,
+      }),
+    );
+    final data = json.decode(response.body) as Map<String, dynamic>;
+    if (response.statusCode >= 400) {
+      throw Exception(data['error'] ?? 'Failed to start direct adoption');
+    }
+    return data;
+  }
+
+  Future<List<Map<String, dynamic>>> getPetFosterHistory(
+    String orgId,
+    String petId,
+    String token,
+  ) async {
+    final response = await _client.get(
+      Uri.parse('$baseUrl/api/organizations/$orgId/pets/$petId/foster-history'),
+      headers: _headers(token),
+    );
+    if (response.statusCode >= 400) {
+      final data = json.decode(response.body);
+      throw Exception(data['error'] ?? 'Failed to load foster history');
+    }
+    final list = json.decode(response.body) as List;
+    return list.cast<Map<String, dynamic>>();
+  }
 }

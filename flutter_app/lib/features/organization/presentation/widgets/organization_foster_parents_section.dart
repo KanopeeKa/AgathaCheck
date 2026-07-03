@@ -173,7 +173,22 @@ class _FosterParentTile extends StatelessWidget {
         ),
       ),
       title: Text(parent.displayName),
-      subtitle: Text(subtitleParts.join(' · ')),
+      subtitle: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(subtitleParts.join(' · ')),
+          if (parent.activePets.isNotEmpty) ...[
+            const SizedBox(height: 4),
+            Text(
+              parent.activePets.map((p) => p.petName).join(', '),
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: colorScheme.primary,
+              ),
+            ),
+          ],
+        ],
+      ),
+      isThreeLine: parent.activePets.isNotEmpty,
       trailing: Row(
         mainAxisSize: MainAxisSize.min,
         children: [

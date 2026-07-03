@@ -180,6 +180,67 @@ class RecordingOrganizationRepository implements OrganizationRepository {
         fosterUserId: 'user-1',
         status: 'not_in_foster',
       );
+  @override
+  Future<FosterPlacement> startAdoption(
+    String orgId,
+    String placementId, {
+    String adoptionConditions = '',
+    required String token,
+  }) async =>
+      FosterPlacement(
+        id: placementId,
+        organizationId: orgId,
+        petId: 'pet-1',
+        fosterUserId: 'user-1',
+        status: 'waiting_adoption_confirmation',
+      );
+  @override
+  Future<FosterPlacement> completeAdoptionConditions(
+    String orgId,
+    String placementId, {
+    required String token,
+  }) async =>
+      FosterPlacement(
+        id: placementId,
+        organizationId: orgId,
+        petId: 'pet-1',
+        fosterUserId: 'user-1',
+        status: 'waiting_adoption_confirmation',
+      );
+  @override
+  Future<FosterPlacement> cancelAdoption(
+    String orgId,
+    String placementId, {
+    DateTime? endDate,
+    required String token,
+  }) async =>
+      FosterPlacement(
+        id: placementId,
+        organizationId: orgId,
+        petId: 'pet-1',
+        fosterUserId: 'user-1',
+        status: 'not_in_foster',
+      );
+  @override
+  Future<FosterPlacement> directAdopt(
+    String orgId,
+    String petId, {
+    required String fosterUserId,
+    String adoptionConditions = '',
+    String notes = '',
+    required String token,
+  }) async =>
+      FosterPlacement(
+        id: 'fp-direct',
+        organizationId: orgId,
+        petId: petId,
+        fosterUserId: fosterUserId,
+        status: 'waiting_adoption_confirmation',
+      );
+  @override
+  Future<List<FosterPlacement>> getPetFosterHistory(
+      String orgId, String petId, String token) async =>
+      [];
 }
 
 ProviderContainer makeContainer(RecordingOrganizationRepository repo) {

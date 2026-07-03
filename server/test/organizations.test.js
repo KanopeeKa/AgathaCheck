@@ -132,11 +132,21 @@ function buildMockPool(overrides = {}) {
           phone: null,
           notes: '',
           active_pet_count: 2,
+          active_pets: [{ pet_id: 'pet-a', pet_name: 'Max', status: 'in_progress' }],
         }],
       };
     }
-    if (sql.includes('FROM foster_placements fpl')) {
-      return { rows: [{ '?column?': 2 }] };
+    if (sql.includes('INSERT INTO pets (id, user_id')) {
+      return {
+        rows: [{
+          id: params[0],
+          name: params[2],
+          species: params[3],
+          breed: params[4] || '',
+          organization_id: orgId,
+          date_of_birth: null,
+        }],
+      };
     }
     if (sql.includes("'external' AS kind") && sql.includes('org_foster_parents')) {
       return {
@@ -232,6 +242,7 @@ describe('Organizations API', () => {
       ['DELETE', `/api/organizations/${orgId}/members/${memberId}`],
       ['POST', `/api/organizations/${orgId}/pets`],
       ['POST', `/api/organizations/${orgId}/pets/pet-1/transfer`],
+      ['GET', `/api/organizations/${orgId}/pets/pet-1/foster-history`],
       ['GET', `/api/organizations/${orgId}/foster-parents`],
       ['POST', `/api/organizations/${orgId}/foster-parents`],
       ['PUT', `/api/organizations/${orgId}/foster-parents/fp-1`],
@@ -615,13 +626,26 @@ describe('Organizations API', () => {
     });
   });
 
-  describe('POST /:orgId/pets (not implemented)', () => {
-    it('returns 501 instead of faking pet creation', async () => {
+  describe('POST /:orgId/pets', () => {
+    it('creates an org pet when name and species are provided', async () => {
+      const res = await request(app)
+        .post(`/api/organizations/${orgId}/pets`)
+        .set('Authorization', `Bearer ${token}`)
+        .send({ name: 'New Pet', species: 'cat' });
+      expect(res.statusCode).toBe(201);
+      expect(res.body).toMatchObject({
+        name: 'New Pet',
+        species: 'cat',
+        organization_id: orgId,
+      });
+    });
+
+    it('returns 400 without name and species', async () => {
       const res = await request(app)
         .post(`/api/organizations/${orgId}/pets`)
         .set('Authorization', `Bearer ${token}`)
         .send({});
-      expect(res.statusCode).toBe(501);
+      expect(res.statusCode).toBe(400);
     });
   });
 
@@ -788,6 +812,9 @@ describe('Organizations API', () => {
         role: 'foster',
         active_pet_count: 2,
       });
+      expect(member.active_pets).toEqual([
+        { pet_id: 'pet-a', pet_name: 'Max', status: 'in_progress' },
+      ]);
       expect(external).toMatchObject({
         display_name: 'Off-app Parent',
         email: 'offapp@example.com',
@@ -845,6 +872,103 @@ describe('Organizations API', () => {
         .set('Authorization', `Bearer ${token}`);
       expect(res.statusCode).toBe(200);
       expect(res.body).toMatchObject({ deleted: true });
+    });
+  });
+
+  describe('GET /:orgId/pets/:petId/foster-history', () => {
+    it('returns placement history for an org pet', async () => {
+      const pool = buildMockPool({
+        query: async (sql) => {
+          if (sql.includes('SELECT id FROM pets WHERE id = $1 AND organization_id = $2')) {
+            return { rows: [{ id: 'pet-1' }] };
+          }
+          if (sql.includes('FROM foster_placements fp') && sql.includes('fp.pet_id = $2')) {
+            return {
+              rows: [{
+                id: 'placement-1',
+                organization_id: orgId,
+                pet_id: 'pet-1',
+                foster_user_id: 'foster-1',
+                org_foster_parent_id: null,
+                status: 'adopted',
+                start_date: '2024-01-01',
+                end_date: '2024-06-01',
+                notes: 'Good home',
+                adoption_conditions: '',
+                created_at: new Date('2024-01-01'),
+                updated_at: new Date('2024-06-01'),
+                pet_name: 'Buddy',
+                pet_species: 'dog',
+                organization_name: 'Test Org',
+                foster_name: 'Jane Foster',
+                foster_email: 'jane@example.com',
+              }],
+            };
+          }
+          return { rows: [] };
+        },
+      });
+      const res = await request(createApp(pool))
+        .get(`/api/organizations/${orgId}/pets/pet-1/foster-history`)
+        .set('Authorization', `Bearer ${token}`);
+      expect(res.statusCode).toBe(200);
+      expect(res.body).toHaveLength(1);
+      expect(res.body[0]).toMatchObject({
+        pet_id: 'pet-1',
+        status: 'adopted',
+        foster_name: 'Jane Foster',
+      });
+    });
+  });
+
+  describe('POST /:orgId/pets/:petId/transfer', () => {
+    it('transfers org pet to recipient by email', async () => {
+      let newOwnerId = null;
+      const innerQuery = async (sql, params) => {
+        if (sql.includes('SELECT id FROM users WHERE email')) {
+          return { rows: [{ id: 'recipient-1' }] };
+        }
+        if (sql.includes('SELECT id, name, species, user_id, organization_id FROM pets WHERE id = $1 AND organization_id = $2')) {
+          return { rows: [{ id: 'pet-1', name: 'Buddy', species: 'dog', user_id: userId, organization_id: orgId }] };
+        }
+        if (sql.includes('SELECT id, first_name, last_name, email FROM users WHERE id = $1')) {
+          return { rows: [{ id: params[0], first_name: 'New', last_name: 'Owner', email: 'new@example.com' }] };
+        }
+        if (sql.includes('SELECT fp.*') && sql.includes('WHERE fp.pet_id = $1')) {
+          return { rows: [] };
+        }
+        if (sql.includes('UPDATE pets') && sql.includes('user_id = $1')) {
+          newOwnerId = params[0];
+          return { rows: [] };
+        }
+        if (sql.includes('DELETE FROM pet_access')) return { rows: [] };
+        if (sql.includes('INSERT INTO archived_pets')) return { rows: [] };
+        if (sql.includes('INSERT INTO notifications')) return { rows: [] };
+        if (sql === 'BEGIN' || sql === 'COMMIT' || sql === 'ROLLBACK') return { rows: [] };
+        return { rows: [] };
+      };
+      const pool = buildMockPool({
+        query: innerQuery,
+        connect: async () => ({
+          query: innerQuery,
+          release: () => {},
+        }),
+      });
+      const res = await request(createApp(pool))
+        .post(`/api/organizations/${orgId}/pets/pet-1/transfer`)
+        .set('Authorization', `Bearer ${token}`)
+        .send({ recipient_email: 'new@example.com' });
+      expect(res.statusCode).toBe(200);
+      expect(res.body).toHaveProperty('transferred', true);
+      expect(newOwnerId).toBe('recipient-1');
+    });
+
+    it('returns 400 without recipient email', async () => {
+      const res = await request(app)
+        .post(`/api/organizations/${orgId}/pets/pet-1/transfer`)
+        .set('Authorization', `Bearer ${token}`)
+        .send({});
+      expect(res.statusCode).toBe(400);
     });
   });
 

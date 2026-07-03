@@ -49,6 +49,32 @@ final pendingFosterPlacementsProvider =
     AsyncNotifierProvider<PendingFosterPlacementsNotifier, List<FosterPlacement>>(
         PendingFosterPlacementsNotifier.new);
 
+class PendingAdoptionPlacementsNotifier
+    extends AsyncNotifier<List<FosterPlacement>> {
+  @override
+  Future<List<FosterPlacement>> build() async {
+    final token = await ref.read(authProvider.notifier).getValidAccessToken();
+    if (token == null) return [];
+    final dataSource = ref.read(fosterPlacementsDataSourceProvider);
+    final rows = await dataSource.getPendingAdoptions(token);
+    return rows.map(FosterPlacement.fromJson).toList();
+  }
+
+  Future<void> confirm(String placementId) async {
+    final token = await ref.read(authProvider.notifier).getValidAccessToken();
+    if (token == null) return;
+    final dataSource = ref.read(fosterPlacementsDataSourceProvider);
+    await dataSource.confirmAdoption(placementId, token);
+    ref.invalidateSelf();
+    ref.invalidate(allPetsIncludingOrgProvider);
+    await ref.read(allPetsIncludingOrgProvider.future);
+  }
+}
+
+final pendingAdoptionPlacementsProvider =
+    AsyncNotifierProvider<PendingAdoptionPlacementsNotifier, List<FosterPlacement>>(
+        PendingAdoptionPlacementsNotifier.new);
+
 class PetFosterPlacementNotifier
     extends FamilyAsyncNotifier<PetFosterPlacementState, (String, String)> {
   @override
@@ -96,7 +122,73 @@ class PetFosterPlacementNotifier
     ref.invalidateSelf();
     ref.invalidate(allPetsIncludingOrgProvider);
   }
+
+  Future<void> startAdoption(
+    String placementId, {
+    String adoptionConditions = '',
+  }) async {
+    final (orgId, _) = arg;
+    final token = ref.read(authProvider).accessToken;
+    if (token == null) return;
+    final repo = ref.read(organizationRepositoryProvider);
+    await repo.startAdoption(
+      orgId,
+      placementId,
+      adoptionConditions: adoptionConditions,
+      token: token,
+    );
+    ref.invalidateSelf();
+  }
+
+  Future<void> completeAdoptionConditions(String placementId) async {
+    final (orgId, _) = arg;
+    final token = ref.read(authProvider).accessToken;
+    if (token == null) return;
+    final repo = ref.read(organizationRepositoryProvider);
+    await repo.completeAdoptionConditions(orgId, placementId, token: token);
+    ref.invalidateSelf();
+  }
+
+  Future<void> cancelAdoption(String placementId) async {
+    final (orgId, _) = arg;
+    final token = ref.read(authProvider).accessToken;
+    if (token == null) return;
+    final repo = ref.read(organizationRepositoryProvider);
+    await repo.cancelAdoption(orgId, placementId, token: token);
+    ref.invalidateSelf();
+    ref.invalidate(allPetsIncludingOrgProvider);
+  }
+
+  Future<void> directAdopt({
+    required String fosterUserId,
+    String adoptionConditions = '',
+    String notes = '',
+  }) async {
+    final (orgId, petId) = arg;
+    final token = ref.read(authProvider).accessToken;
+    if (token == null) return;
+    final repo = ref.read(organizationRepositoryProvider);
+    await repo.directAdopt(
+      orgId,
+      petId,
+      fosterUserId: fosterUserId,
+      adoptionConditions: adoptionConditions,
+      notes: notes,
+      token: token,
+    );
+    ref.invalidateSelf();
+  }
 }
+
+final petFosterHistoryProvider = FutureProvider.family<List<FosterPlacement>, (String, String)>(
+  (ref, arg) async {
+    final (orgId, petId) = arg;
+    final token = ref.watch(authProvider).accessToken;
+    if (token == null) return [];
+    final repo = ref.read(organizationRepositoryProvider);
+    return repo.getPetFosterHistory(orgId, petId, token);
+  },
+);
 
 final petFosterPlacementProvider = AsyncNotifierProvider.family<
     PetFosterPlacementNotifier,

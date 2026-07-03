@@ -2,9 +2,12 @@ import request from 'supertest';
 import jwt from 'jsonwebtoken';
 import { createApp } from '../bin/server.js';
 import {
+  PLACEMENT_STATUS_ADOPTED,
   PLACEMENT_STATUS_IN_PROGRESS,
   PLACEMENT_STATUS_NOT_IN_FOSTER,
   PLACEMENT_STATUS_PENDING,
+  PLACEMENT_STATUS_PENDING_CONDITIONS,
+  PLACEMENT_STATUS_WAITING_ADOPTION,
 } from '../lib/fosterPlacements.js';
 
 const JWT_SECRET = process.env.JWT_SECRET || process.env.SESSION_SECRET || 'default_secret';
@@ -27,6 +30,7 @@ function makePlacementRow(status) {
     start_date: null,
     end_date: null,
     notes: '',
+    adoption_conditions: '',
     created_by: adminId,
     created_at: new Date('2024-01-01'),
     updated_at: new Date('2024-01-01'),
@@ -42,19 +46,29 @@ function makePlacementRow(status) {
 function buildMockPool() {
   let placementStatus = null;
   let fosterAccessGranted = false;
+  let adoptedOwnerId = null;
 
-  const query = async (sql, params) => {
+  const handleQuery = async (sql, params) => {
+    if (sql === 'BEGIN' || sql === 'COMMIT' || sql === 'ROLLBACK') {
+      return { rows: [] };
+    }
     if (sql.includes('SELECT role FROM organization_users WHERE organization_id')) {
       const uid = params[1];
       if (uid === adminId) return { rows: [{ role: 'admin' }] };
       if (uid === fosterId) return { rows: [{ role: 'foster' }] };
       return { rows: [] };
     }
-    if (sql.includes('FROM foster_placements fp') && sql.includes('fp.foster_user_id = $1')) {
-      if (placementStatus !== PLACEMENT_STATUS_PENDING) return { rows: [] };
-      return { rows: [makePlacementRow(PLACEMENT_STATUS_PENDING)] };
+    if (sql.includes('FROM foster_placements fp') && sql.includes('fp.foster_user_id = $1') && sql.includes('fp.status = $2')) {
+      if (params[1] === placementStatus) {
+        return { rows: [makePlacementRow(placementStatus)] };
+      }
+      return { rows: [] };
     }
     if (sql.includes('SELECT * FROM foster_placements WHERE id = $1 AND organization_id')) {
+      if (!placementStatus) return { rows: [] };
+      return { rows: [makePlacementRow(placementStatus)] };
+    }
+    if (sql.includes('SELECT * FROM foster_placements WHERE id = $1 FOR UPDATE')) {
       if (!placementStatus) return { rows: [] };
       return { rows: [makePlacementRow(placementStatus)] };
     }
@@ -63,13 +77,16 @@ function buildMockPool() {
       return { rows: [makePlacementRow(placementStatus)] };
     }
     if (sql.includes('SELECT fp.*') && sql.includes('WHERE fp.pet_id = $1')) {
-      if (!placementStatus || placementStatus === PLACEMENT_STATUS_NOT_IN_FOSTER) {
+      if (!placementStatus || placementStatus === PLACEMENT_STATUS_NOT_IN_FOSTER || placementStatus === PLACEMENT_STATUS_ADOPTED) {
         return { rows: [] };
       }
       return { rows: [makePlacementRow(placementStatus)] };
     }
     if (sql.includes('SELECT id, name FROM pets WHERE id = $1 AND organization_id')) {
       return { rows: [{ id: petId, name: 'Buddy' }] };
+    }
+    if (sql.includes('SELECT id, name, species, user_id, organization_id FROM pets WHERE id = $1')) {
+      return { rows: [{ id: petId, name: 'Buddy', species: 'dog', user_id: adminId, organization_id: orgId }] };
     }
     if (sql.includes('SELECT id FROM pets WHERE id = $1 AND organization_id = $2')) {
       return { rows: [{ id: petId }] };
@@ -78,13 +95,26 @@ function buildMockPool() {
       return { rows: [{ name: 'Buddy' }] };
     }
     if (sql.includes('INSERT INTO foster_placements')) {
-      placementStatus = PLACEMENT_STATUS_PENDING;
-      return { rows: [makePlacementRow(PLACEMENT_STATUS_PENDING)] };
+      placementStatus = params[4] || PLACEMENT_STATUS_PENDING;
+      return { rows: [makePlacementRow(placementStatus)] };
     }
     if (sql.includes('UPDATE foster_placements') && params[0] === PLACEMENT_STATUS_IN_PROGRESS) {
       placementStatus = PLACEMENT_STATUS_IN_PROGRESS;
       fosterAccessGranted = true;
       return { rows: [makePlacementRow(PLACEMENT_STATUS_IN_PROGRESS)] };
+    }
+    if (sql.includes('UPDATE foster_placements') && params[0] === PLACEMENT_STATUS_WAITING_ADOPTION) {
+      placementStatus = PLACEMENT_STATUS_WAITING_ADOPTION;
+      return { rows: [makePlacementRow(PLACEMENT_STATUS_WAITING_ADOPTION)] };
+    }
+    if (sql.includes('UPDATE foster_placements') && params[0] === PLACEMENT_STATUS_PENDING_CONDITIONS) {
+      placementStatus = PLACEMENT_STATUS_PENDING_CONDITIONS;
+      return { rows: [makePlacementRow(PLACEMENT_STATUS_PENDING_CONDITIONS)] };
+    }
+    if (sql.includes('UPDATE foster_placements') && params[0] === PLACEMENT_STATUS_ADOPTED) {
+      placementStatus = PLACEMENT_STATUS_ADOPTED;
+      adoptedOwnerId = fosterId;
+      return { rows: [makePlacementRow(PLACEMENT_STATUS_ADOPTED)] };
     }
     if (sql.includes('UPDATE foster_placements') && params[0] === PLACEMENT_STATUS_NOT_IN_FOSTER) {
       const ended = makePlacementRow(PLACEMENT_STATUS_NOT_IN_FOSTER);
@@ -92,11 +122,18 @@ function buildMockPool() {
       fosterAccessGranted = false;
       return { rows: [ended] };
     }
+    if (sql.includes('UPDATE pets') && sql.includes('organization_id = NULL')) {
+      adoptedOwnerId = params[0];
+      return { rows: [] };
+    }
+    if (sql.includes('INSERT INTO archived_pets')) {
+      return { rows: [] };
+    }
     if (sql.includes('INSERT INTO pet_access') && sql.includes("'foster'")) {
       fosterAccessGranted = true;
       return { rows: [] };
     }
-    if (sql.includes('DELETE FROM pet_access') && sql.includes('role = $3')) {
+    if (sql.includes('DELETE FROM pet_access')) {
       fosterAccessGranted = false;
       return { rows: [] };
     }
@@ -119,10 +156,20 @@ function buildMockPool() {
     return { rows: [] };
   };
 
+  const query = handleQuery;
+  const connect = async () => ({
+    query: handleQuery,
+    release: () => {},
+  });
+
   return {
     query,
+    connect,
     get fosterAccessGranted() { return fosterAccessGranted; },
+    get adoptedOwnerId() { return adoptedOwnerId; },
     setPlacementPending() { placementStatus = PLACEMENT_STATUS_PENDING; },
+    setPlacementInProgress() { placementStatus = PLACEMENT_STATUS_IN_PROGRESS; },
+    setPlacementWaitingAdoption() { placementStatus = PLACEMENT_STATUS_WAITING_ADOPTION; },
   };
 }
 
@@ -233,6 +280,82 @@ describe('Foster placements API', () => {
         .get(`/api/organizations/${orgId}/placements`)
         .set('Authorization', `Bearer ${fosterToken}`);
       expect(res.statusCode).toBe(403);
+    });
+  });
+
+  describe('Adoption flow', () => {
+    it('admin starts adoption from in-progress placement', async () => {
+      const pool = buildMockPool();
+      pool.setPlacementInProgress();
+      const app = createApp(pool);
+      const res = await request(app)
+        .post(`/api/organizations/${orgId}/placements/${placementId}/start-adoption`)
+        .set('Authorization', `Bearer ${adminToken}`)
+        .send({});
+      expect(res.statusCode).toBe(200);
+      expect(res.body.status).toBe(PLACEMENT_STATUS_WAITING_ADOPTION);
+    });
+
+    it('admin can start adoption with pre-adoption conditions', async () => {
+      const pool = buildMockPool();
+      pool.setPlacementInProgress();
+      const app = createApp(pool);
+      const res = await request(app)
+        .post(`/api/organizations/${orgId}/placements/${placementId}/start-adoption`)
+        .set('Authorization', `Bearer ${adminToken}`)
+        .send({ adoption_conditions: 'Must be neutered first' });
+      expect(res.statusCode).toBe(200);
+      expect(res.body.status).toBe(PLACEMENT_STATUS_PENDING_CONDITIONS);
+    });
+
+    it('foster lists pending adoption confirmations', async () => {
+      const pool = buildMockPool();
+      pool.setPlacementWaitingAdoption();
+      const app = createApp(pool);
+      const res = await request(app)
+        .get('/api/foster-placements/pending-adoptions')
+        .set('Authorization', `Bearer ${fosterToken}`);
+      expect(res.statusCode).toBe(200);
+      expect(res.body).toHaveLength(1);
+      expect(res.body[0].status).toBe(PLACEMENT_STATUS_WAITING_ADOPTION);
+    });
+
+    it('foster confirms adoption and becomes owner', async () => {
+      const pool = buildMockPool();
+      pool.setPlacementWaitingAdoption();
+      const app = createApp(pool);
+      const res = await request(app)
+        .post(`/api/foster-placements/${placementId}/confirm-adoption`)
+        .set('Authorization', `Bearer ${fosterToken}`);
+      expect(res.statusCode).toBe(200);
+      expect(res.body).toMatchObject({
+        status: PLACEMENT_STATUS_ADOPTED,
+        adopted: true,
+        new_owner_id: fosterId,
+      });
+      expect(pool.adoptedOwnerId).toBe(fosterId);
+    });
+
+    it('admin can cancel adoption and return pet to org custody', async () => {
+      const pool = buildMockPool();
+      pool.setPlacementWaitingAdoption();
+      const app = createApp(pool);
+      const res = await request(app)
+        .post(`/api/organizations/${orgId}/placements/${placementId}/cancel-adoption`)
+        .set('Authorization', `Bearer ${adminToken}`)
+        .send({});
+      expect(res.statusCode).toBe(200);
+      expect(res.body.status).toBe(PLACEMENT_STATUS_NOT_IN_FOSTER);
+    });
+
+    it('admin can start direct adopt without a foster period', async () => {
+      const app = createApp(buildMockPool());
+      const res = await request(app)
+        .post(`/api/organizations/${orgId}/pets/${petId}/placements/direct-adopt`)
+        .set('Authorization', `Bearer ${adminToken}`)
+        .send({ foster_user_id: fosterId });
+      expect(res.statusCode).toBe(201);
+      expect(res.body.status).toBe(PLACEMENT_STATUS_WAITING_ADOPTION);
     });
   });
 });

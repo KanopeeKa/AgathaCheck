@@ -6,6 +6,8 @@ import '../../../health_tracking/presentation/providers/health_issue_providers.d
 import '../../../health_tracking/presentation/providers/health_providers.dart';
 import '../../../notifications/presentation/providers/notification_providers.dart';
 import '../../../organization/domain/entities/family_event.dart';
+import '../../../organization/domain/entities/foster_placement.dart';
+import '../../../organization/presentation/providers/foster_placements_providers.dart';
 import '../../../organization/presentation/providers/organization_providers.dart';
 import '../../../sharing/presentation/providers/sharing_providers.dart';
 import '../../../vet/presentation/providers/vet_providers.dart';
@@ -24,7 +26,11 @@ class DownloadReportController {
     var sections = const ReportSections();
     final result = await showDialog<ReportSections>(
       context: context,
-      builder: (ctx) => _ReportSectionsDialog(sections: sections, l: l),
+      builder: (ctx) => _ReportSectionsDialog(
+        sections: sections,
+        l: l,
+        showFosterHistory: pet.organizationId != null,
+      ),
     );
 
     if (result == null || !context.mounted) return;
@@ -50,10 +56,18 @@ class DownloadReportController {
       final unit = ref.read(weightUnitProvider(pet.id));
 
       List<FamilyEvent> familyEventsList = [];
+      List<FosterPlacement> fosterPlacements = const [];
       if (pet.organizationId != null) {
         try {
           familyEventsList = await ref.read(familyEventsProvider(pet.id).future);
         } catch (_) {}
+        if (result.fosterHistory) {
+          try {
+            fosterPlacements = await ref.read(
+              petFosterHistoryProvider((pet.organizationId!, pet.id)).future,
+            );
+          } catch (_) {}
+        }
       }
 
       final Map<String, List<Map<String, dynamic>>> healthHistories = {};
@@ -87,6 +101,7 @@ class DownloadReportController {
         healthEntries: healthEntries,
         healthIssues: healthIssues,
         familyEvents: familyEventsList,
+        fosterPlacements: fosterPlacements,
         petNotifications: petNotifications,
         accessList: accessList,
         healthHistories: healthHistories,
@@ -118,10 +133,15 @@ class DownloadReportController {
 }
 
 class _ReportSectionsDialog extends StatefulWidget {
-  const _ReportSectionsDialog({required this.sections, required this.l});
+  const _ReportSectionsDialog({
+    required this.sections,
+    required this.l,
+    this.showFosterHistory = false,
+  });
 
   final ReportSections sections;
   final AppLocalizations l;
+  final bool showFosterHistory;
 
   @override
   State<_ReportSectionsDialog> createState() => _ReportSectionsDialogState();
@@ -133,6 +153,7 @@ class _ReportSectionsDialogState extends State<_ReportSectionsDialog> {
   late bool healthEvents;
   late bool healthIssues;
   late bool familyEvents;
+  late bool fosterHistory;
   late bool notifications;
   late bool sharing;
   late bool includeFullLog;
@@ -145,6 +166,7 @@ class _ReportSectionsDialogState extends State<_ReportSectionsDialog> {
     healthEvents = widget.sections.healthEvents;
     healthIssues = widget.sections.healthIssues;
     familyEvents = widget.sections.familyEvents;
+    fosterHistory = widget.sections.fosterHistory;
     notifications = widget.sections.notifications;
     sharing = widget.sections.sharing;
     includeFullLog = widget.sections.includeFullLog;
@@ -193,6 +215,12 @@ class _ReportSectionsDialogState extends State<_ReportSectionsDialog> {
               value: familyEvents,
               onChanged: (v) => setState(() => familyEvents = v ?? false),
             ),
+            if (widget.showFosterHistory)
+              CheckboxListTile(
+                title: Text(l.fosterHistory),
+                value: fosterHistory,
+                onChanged: (v) => setState(() => fosterHistory = v ?? false),
+              ),
             CheckboxListTile(
               title: Text(l.notifications),
               value: notifications,
@@ -219,6 +247,7 @@ class _ReportSectionsDialogState extends State<_ReportSectionsDialog> {
               healthEvents: healthEvents,
               healthIssues: healthIssues,
               familyEvents: familyEvents,
+              fosterHistory: fosterHistory,
               notifications: notifications,
               sharing: sharing,
               includeFullLog: includeFullLog,

@@ -846,12 +846,39 @@ describe('Pets API', () => {
       });
     });
 
-    it('POST /:id/transfer-to-org returns 501 (not implemented)', async () => {
-      const res = await request(app)
+    it('POST /:id/transfer-to-org transfers pet to organization', async () => {
+      let updatedOrgId = null;
+      const pool = createMockPool(async (sql, params) => {
+        if (sql.includes('SELECT id, name, species, user_id, organization_id FROM pets WHERE id = $1 AND user_id = $2')) {
+          return { rows: [{ id: petId, name: 'Fluffy', species: 'dog', user_id: userId, organization_id: null }] };
+        }
+        if (sql.includes('SELECT 1 FROM organization_users') && sql.includes('super_admin')) {
+          return { rows: [{ '?column?': 1 }] };
+        }
+        if (sql.includes('UPDATE pets') && sql.includes('organization_id = $1')) {
+          updatedOrgId = params[0];
+          return { rows: [] };
+        }
+        if (sql.includes('INSERT INTO archived_pets')) {
+          return { rows: [] };
+        }
+        return { rows: [] };
+      });
+      const res = await request(createApp(pool))
         .post(`/api/pets/${petId}/transfer-to-org`)
         .set('Authorization', `Bearer ${token}`)
         .send({ organization_id: 'org-1' });
-      expect(res.statusCode).toBe(501);
+      expect(res.statusCode).toBe(200);
+      expect(res.body).toHaveProperty('transferred', true);
+      expect(updatedOrgId).toBe('org-1');
+    });
+
+    it('POST /:id/transfer-to-org returns 400 without organization_id', async () => {
+      const res = await request(app)
+        .post(`/api/pets/${petId}/transfer-to-org`)
+        .set('Authorization', `Bearer ${token}`)
+        .send({});
+      expect(res.statusCode).toBe(400);
     });
 
     it('GET /:id/family-events returns an (empty) array', async () => {

@@ -6,6 +6,7 @@ import { JWT_SECRET } from '../config/jwtSecret.js';
 import { publicError } from '../config/security.js';
 import { dateToIsoDate, normalizeCalendarDateInput } from '../lib/calendarDate.js';
 import { createNotification, userDisplayName } from '../lib/notificationHelper.js';
+import { transferPetToOrganization } from '../lib/orgPetTransfer.js';
 import {
   userCanAccessPet,
   userCanManagePet,
@@ -109,11 +110,34 @@ export default function petsRoutes(pool) {
     return result.rows.length > 0;
   }
 
-  // NOT IMPLEMENTED: pet transfer to an org has no backing logic.
-  router.post('/:id/transfer-to-org', (req, res) => {
+  router.post('/:id/transfer-to-org', async (req, res) => {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
-    return res.status(501).json({ error: 'Not implemented' });
+    const petId = req.params.id;
+    const data = req.body || {};
+    const orgId = data.organization_id || data.organizationId;
+    const transferType = (data.transfer_type || data.transferType || 'transfer').trim();
+    const notes = (data.notes || '').trim();
+
+    if (!orgId) {
+      return res.status(400).json({ error: 'organization_id is required' });
+    }
+
+    try {
+      const result = await transferPetToOrganization(pool, {
+        petId,
+        ownerId: userId,
+        orgId,
+        transferType,
+        notes,
+      });
+      res.json(result);
+    } catch (err) {
+      if (err.statusCode === 404) return res.status(404).json({ error: err.message });
+      if (err.statusCode === 400) return res.status(400).json({ error: err.message });
+      if (err.statusCode === 403) return res.status(403).json({ error: err.message });
+      res.status(500).json({ error: publicError(err) });
+    }
   });
 
   async function withOptionalTransaction(pool, fn) {

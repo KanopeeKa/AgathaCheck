@@ -10,6 +10,7 @@ import '../../domain/entities/pet.dart';
 import '../../../health_tracking/domain/entities/health_entry.dart';
 import '../../../health_tracking/domain/entities/health_issue.dart';
 import '../../../notifications/domain/entities/app_notification.dart';
+import '../../../organization/domain/entities/foster_placement.dart';
 import '../../../organization/domain/entities/family_event.dart';
 import '../../../sharing/domain/entities/pet_access.dart';
 import '../../../weight_tracking/domain/entities/weight_entry.dart';
@@ -19,6 +20,7 @@ import 'pet_report_weight_section.dart';
 import 'pet_report_health_section.dart';
 import 'pet_report_health_issues_section.dart';
 import 'pet_report_family_events_section.dart';
+import 'pet_report_foster_history_section.dart';
 import 'pet_report_notifications_section.dart';
 import 'pet_report_sharing_section.dart';
 
@@ -34,6 +36,7 @@ class ReportSections {
   final bool healthEvents;
   final bool healthIssues;
   final bool familyEvents;
+  final bool fosterHistory;
   final bool notifications;
   final bool sharing;
   final DateTime? healthFrom;
@@ -46,6 +49,7 @@ class ReportSections {
     this.healthEvents = false,
     this.healthIssues = false,
     this.familyEvents = false,
+    this.fosterHistory = false,
     this.notifications = false,
     this.sharing = false,
     this.healthFrom,
@@ -75,6 +79,7 @@ class PetReportService {
     List<HealthEntry> healthEntries = const [],
     List<HealthIssue> healthIssues = const [],
     List<FamilyEvent> familyEvents = const [],
+    List<FosterPlacement> fosterPlacements = const [],
     List<AppNotification> petNotifications = const [],
     List<PetAccess> accessList = const [],
     Map<String, List<Map<String, dynamic>>> healthHistories = const {},
@@ -137,6 +142,14 @@ class PetReportService {
           if (sections.familyEvents) {
             widgets.addAll(
                 PetFamilyEventsSectionBuilder.build(familyEvents, dateFormat, l));
+          }
+
+          if (sections.fosterHistory) {
+            widgets.addAll(PetFosterHistorySectionBuilder.build(
+              fosterPlacements,
+              dateFormat,
+              l,
+            ));
           }
 
           if (sections.notifications) {

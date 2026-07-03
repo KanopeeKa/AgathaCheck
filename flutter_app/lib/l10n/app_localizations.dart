@@ -2419,6 +2419,42 @@ abstract class AppLocalizations {
   /// **'Sharing'**
   String get pdfSharingSection;
 
+  /// No description provided for @pdfFosterHistorySection.
+  ///
+  /// In en, this message translates to:
+  /// **'Foster History'**
+  String get pdfFosterHistorySection;
+
+  /// No description provided for @pdfNoFosterHistory.
+  ///
+  /// In en, this message translates to:
+  /// **'No foster placements recorded yet.'**
+  String get pdfNoFosterHistory;
+
+  /// No description provided for @pdfFosterParent.
+  ///
+  /// In en, this message translates to:
+  /// **'Foster parent'**
+  String get pdfFosterParent;
+
+  /// No description provided for @pdfPlacementStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'Status'**
+  String get pdfPlacementStatus;
+
+  /// No description provided for @pdfPlacementAdopted.
+  ///
+  /// In en, this message translates to:
+  /// **'Adopted'**
+  String get pdfPlacementAdopted;
+
+  /// No description provided for @fosterHistory.
+  ///
+  /// In en, this message translates to:
+  /// **'Foster history'**
+  String get fosterHistory;
+
   /// No description provided for @pdfNoWeightData.
   ///
   /// In en, this message translates to:
@@ -3528,6 +3564,114 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Foster placement declined'**
   String get fosterPlacementDeclined;
+
+  /// No description provided for @startAdoption.
+  ///
+  /// In en, this message translates to:
+  /// **'Start adoption'**
+  String get startAdoption;
+
+  /// No description provided for @startAdoptionDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Begin the adoption process for {petName}. You can add optional pre-adoption conditions (e.g. neutering) before the foster parent confirms.'**
+  String startAdoptionDescription(String petName);
+
+  /// No description provided for @adoptionConditions.
+  ///
+  /// In en, this message translates to:
+  /// **'Pre-adoption conditions'**
+  String get adoptionConditions;
+
+  /// No description provided for @adoptionConditionsHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Optional — e.g. must be neutered before adoption'**
+  String get adoptionConditionsHint;
+
+  /// No description provided for @adoptionStarted.
+  ///
+  /// In en, this message translates to:
+  /// **'Adoption process started'**
+  String get adoptionStarted;
+
+  /// No description provided for @markAdoptionConditionsMet.
+  ///
+  /// In en, this message translates to:
+  /// **'Mark conditions met'**
+  String get markAdoptionConditionsMet;
+
+  /// No description provided for @adoptionConditionsMet.
+  ///
+  /// In en, this message translates to:
+  /// **'Pre-adoption conditions marked complete'**
+  String get adoptionConditionsMet;
+
+  /// No description provided for @waitingAdoptionConfirmation.
+  ///
+  /// In en, this message translates to:
+  /// **'Awaiting foster confirmation'**
+  String get waitingAdoptionConfirmation;
+
+  /// No description provided for @pendingAdoptionConditions.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending pre-adoption conditions'**
+  String get pendingAdoptionConditions;
+
+  /// No description provided for @cancelAdoption.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel adoption'**
+  String get cancelAdoption;
+
+  /// No description provided for @cancelAdoptionConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel the adoption process for {petName}? The pet returns to organisation custody.'**
+  String cancelAdoptionConfirm(String petName);
+
+  /// No description provided for @adoptionCancelled.
+  ///
+  /// In en, this message translates to:
+  /// **'Adoption cancelled'**
+  String get adoptionCancelled;
+
+  /// No description provided for @directAdopt.
+  ///
+  /// In en, this message translates to:
+  /// **'Direct adopt'**
+  String get directAdopt;
+
+  /// No description provided for @directAdoptDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Skip the foster period and invite {petName}\'s new owner to confirm adoption directly.'**
+  String directAdoptDescription(String petName);
+
+  /// No description provided for @pendingAdoptionConfirmations.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending adoptions'**
+  String get pendingAdoptionConfirmations;
+
+  /// No description provided for @confirmAdoption.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm adoption'**
+  String get confirmAdoption;
+
+  /// No description provided for @confirmAdoptionDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm that you are adopting {petName}. Ownership will transfer to you.'**
+  String confirmAdoptionDescription(String petName);
+
+  /// No description provided for @adoptionConfirmed.
+  ///
+  /// In en, this message translates to:
+  /// **'Adoption complete — you are now the owner'**
+  String get adoptionConfirmed;
 
   /// No description provided for @assignedPets.
   ///

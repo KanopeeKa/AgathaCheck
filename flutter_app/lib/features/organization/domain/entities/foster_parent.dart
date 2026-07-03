@@ -1,5 +1,25 @@
 import 'organization_member.dart';
 
+class FosterParentAssignedPet {
+  const FosterParentAssignedPet({
+    required this.petId,
+    required this.petName,
+    required this.status,
+  });
+
+  final String petId;
+  final String petName;
+  final String status;
+
+  factory FosterParentAssignedPet.fromJson(Map<String, dynamic> json) {
+    return FosterParentAssignedPet(
+      petId: json['pet_id']?.toString() ?? '',
+      petName: json['pet_name']?.toString() ?? '',
+      status: json['status']?.toString() ?? '',
+    );
+  }
+}
+
 /// A foster parent in the org directory — either an app member (admin/foster)
 /// or an external contact without an account.
 class FosterParent {
@@ -14,6 +34,7 @@ class FosterParent {
     this.role,
     this.photoUrl,
     this.activePetCount = 0,
+    this.activePets = const [],
   });
 
   final String id;
@@ -26,6 +47,7 @@ class FosterParent {
   final OrgMemberRole? role;
   final String? photoUrl;
   final int activePetCount;
+  final List<FosterParentAssignedPet> activePets;
 
   bool get isMember => kind == FosterParentKind.member;
   bool get isExternal => kind == FosterParentKind.external;
@@ -54,6 +76,12 @@ class FosterParent {
       activePetCount: json['active_pet_count'] is int
           ? json['active_pet_count'] as int
           : int.tryParse(json['active_pet_count']?.toString() ?? '') ?? 0,
+      activePets: (json['active_pets'] as List<dynamic>? ?? const [])
+          .whereType<Map>()
+          .map((e) => FosterParentAssignedPet.fromJson(
+                Map<String, dynamic>.from(e),
+              ))
+          .toList(),
     );
   }
 }
