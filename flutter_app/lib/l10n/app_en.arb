@@ -663,6 +663,7 @@
   "@deleteFosterParentConfirm": { "placeholders": { "name": { "type": "String" } } },
   "fosterPlacement": "Foster placement",
   "fosterPlacementNotInFoster": "This pet is not currently in foster care.",
+  "fosterPlacementNotInFosterShort": "Not in foster",
   "startFosterPlacement": "Start foster placement",
   "startFosterPlacementDescription": "Invite a foster parent to care for {petName}. They must accept before the placement begins.",
   "@startFosterPlacementDescription": { "placeholders": { "petName": { "type": "String" } } },

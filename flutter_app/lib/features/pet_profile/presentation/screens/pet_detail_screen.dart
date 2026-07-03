@@ -204,6 +204,14 @@ class _PetDetailScreenState extends ConsumerState<PetDetailScreen> {
                 SliverToBoxAdapter(
                   child: ChipReminderCard(pet: pet),
                 ),
+              if (isOrgPet && isOrgAdmin)
+                SliverToBoxAdapter(
+                  child: PetFosterPlacementSection(
+                    orgId: pet.organizationId!,
+                    petId: widget.petId,
+                    petName: pet.name,
+                  ),
+                ),
               SliverToBoxAdapter(
                 child: WeightTrackingSection(petId: widget.petId),
               ),
@@ -216,14 +224,6 @@ class _PetDetailScreenState extends ConsumerState<PetDetailScreen> {
               SliverToBoxAdapter(
                 child: OtherEventsSection(petId: widget.petId, pet: pet),
               ),
-              if (isOrgPet && isOrgAdmin)
-                SliverToBoxAdapter(
-                  child: PetFosterPlacementSection(
-                    orgId: pet.organizationId!,
-                    petId: widget.petId,
-                    petName: pet.name,
-                  ),
-                ),
               SliverToBoxAdapter(
                 child: SharingSection(petId: widget.petId, pet: pet),
               ),

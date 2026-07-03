@@ -3481,6 +3481,12 @@ abstract class AppLocalizations {
   /// **'This pet is not currently in foster care.'**
   String get fosterPlacementNotInFoster;
 
+  /// No description provided for @fosterPlacementNotInFosterShort.
+  ///
+  /// In en, this message translates to:
+  /// **'Not in foster'**
+  String get fosterPlacementNotInFosterShort;
+
   /// No description provided for @startFosterPlacement.
   ///
   /// In en, this message translates to:

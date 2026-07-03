@@ -93,6 +93,35 @@ void main() {
       expect(find.byIcon(Icons.business), findsOneWidget);
     });
 
+    testWidgets('displays foster placement status for org pets', (tester) async {
+      const orgPet = Pet(
+        id: 'org-pet-id',
+        name: 'Max',
+        species: 'Dog',
+        breed: 'Labrador',
+        organizationId: 'org-1',
+        organizationName: 'Happy Paws Shelter',
+        fosterPlacementStatus: 'in_progress',
+        fosterName: 'Jane Foster',
+      );
+
+      await tester.pumpWidget(
+        createTestWidget(PetCard(pet: orgPet)),
+      );
+
+      expect(find.textContaining('In foster care'), findsOneWidget);
+      expect(find.textContaining('Jane Foster'), findsOneWidget);
+      expect(find.byIcon(Icons.home_work_outlined), findsOneWidget);
+    });
+
+    testWidgets('does not display foster placement for personal pets', (tester) async {
+      await tester.pumpWidget(
+        createTestWidget(PetCard(pet: testPet)),
+      );
+
+      expect(find.byIcon(Icons.home_work_outlined), findsNothing);
+    });
+
     testWidgets('calls onTap when tapped', (tester) async {
       var tapped = false;
       await tester.pumpWidget(

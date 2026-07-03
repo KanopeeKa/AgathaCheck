@@ -26,6 +26,8 @@ class PetModel {
     this.isFoster = false,
     this.organizationId,
     this.organizationName,
+    this.fosterPlacementStatus,
+    this.fosterName,
   });
 
   factory PetModel.fromJson(Map<String, dynamic> json) {
@@ -51,6 +53,8 @@ class PetModel {
       isFoster: json['is_foster'] == true,
       organizationId: json['organization_id']?.toString(),
       organizationName: json['organization_name'] as String?,
+      fosterPlacementStatus: json['foster_placement_status'] as String?,
+      fosterName: json['foster_name'] as String?,
     );
   }
 
@@ -77,6 +81,8 @@ class PetModel {
       isFoster: pet.isFoster,
       organizationId: pet.organizationId,
       organizationName: pet.organizationName,
+      fosterPlacementStatus: pet.fosterPlacementStatus,
+      fosterName: pet.fosterName,
     );
   }
 
@@ -107,6 +113,8 @@ class PetModel {
   final bool isFoster;
   final String? organizationId;
   final String? organizationName;
+  final String? fosterPlacementStatus;
+  final String? fosterName;
 
   Map<String, dynamic> toJson() {
     return {
@@ -157,6 +165,8 @@ class PetModel {
       isFoster: isFoster,
       organizationId: organizationId,
       organizationName: organizationName,
+      fosterPlacementStatus: fosterPlacementStatus,
+      fosterName: fosterName,
     );
   }
 }

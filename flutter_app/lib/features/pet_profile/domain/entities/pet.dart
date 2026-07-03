@@ -27,6 +27,8 @@ class Pet {
     this.isFoster = false,
     this.organizationId,
     this.organizationName,
+    this.fosterPlacementStatus,
+    this.fosterName,
   });
 
   final String id;
@@ -50,6 +52,8 @@ class Pet {
   final bool isFoster;
   final String? organizationId;
   final String? organizationName;
+  final String? fosterPlacementStatus;
+  final String? fosterName;
 
   double? get age {
     if (dateOfBirth == null) return null;
@@ -112,6 +116,8 @@ class Pet {
     bool? isFoster,
     String? organizationId,
     String? organizationName,
+    String? fosterPlacementStatus,
+    String? fosterName,
     bool clearVetId = false,
     bool clearGender = false,
     bool clearNeuteredDate = false,
@@ -139,6 +145,9 @@ class Pet {
       isFoster: isFoster ?? this.isFoster,
       organizationId: organizationId ?? this.organizationId,
       organizationName: organizationName ?? this.organizationName,
+      fosterPlacementStatus:
+          fosterPlacementStatus ?? this.fosterPlacementStatus,
+      fosterName: fosterName ?? this.fosterName,
     );
   }
 

@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../core/utils/constants.dart';
 import '../../../../l10n/app_localizations.dart';
+import '../../../organization/presentation/utils/foster_placement_display.dart';
 import '../../domain/entities/pet.dart';
 
 /// A Material 3 card widget that displays a pet's summary information.
@@ -29,6 +30,7 @@ class PetCard extends StatelessWidget {
     final colorScheme = theme.colorScheme;
     final l = AppLocalizations.of(context)!;
     final speciesDisplay = _localizedSpecies(l, pet.species);
+    final fosterLine = petFosterPlacementCardLine(l, pet);
 
     return MergeSemantics(
       child: Semantics(
@@ -121,6 +123,30 @@ class PetCard extends StatelessWidget {
                             style: theme.textTheme.bodySmall?.copyWith(
                               color: colorScheme.onSurfaceVariant,
                             ),
+                          ),
+                        ],
+                        if (fosterLine != null) ...[
+                          const SizedBox(height: 2),
+                          Row(
+                            children: [
+                              Icon(
+                                Icons.home_work_outlined,
+                                size: 14,
+                                color: colorScheme.primary,
+                              ),
+                              const SizedBox(width: 4),
+                              Expanded(
+                                child: Text(
+                                  fosterLine,
+                                  style: theme.textTheme.bodySmall?.copyWith(
+                                    color: colorScheme.primary,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                            ],
                           ),
                         ],
                       ],
