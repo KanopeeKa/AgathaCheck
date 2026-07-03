@@ -2,6 +2,8 @@ import 'dart:io';
 import 'package:postgres/postgres.dart';
 import 'package:uuid/uuid.dart';
 
+import 'migrations/016_migrate_family_events_placements.dart';
+
 final _uuid = Uuid();
 
 Future<Pool> _createPool() async {
@@ -76,6 +78,16 @@ List<FileSystemEntity> _migrationFiles() {
   return files;
 }
 
+Future<void> _applyMigration(Pool pool, String name, String sql) async {
+  switch (name) {
+    case '016_migrate_family_events_placements.sql':
+      await migrateFamilyEventsPlacements(pool);
+      return;
+    default:
+      await pool.execute(Sql(sql));
+  }
+}
+
 Future<void> _runUp(Pool pool) async {
   await _ensureMigrationsTable(pool);
   final applied = await _appliedMigrations(pool);
@@ -91,7 +103,7 @@ Future<void> _runUp(Pool pool) async {
     final sql = File(f.path).readAsStringSync();
     print('  apply $name ...');
     try {
-      await pool.execute(Sql(sql));
+      await _applyMigration(pool, name, sql);
       await pool.execute(
         Sql.named(
             'INSERT INTO _migrations (id, name) VALUES (@id, @name)'),
