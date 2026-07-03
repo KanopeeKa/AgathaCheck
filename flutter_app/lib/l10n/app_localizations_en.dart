@@ -250,6 +250,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get myPets => 'My Pets';
 
   @override
+  String get myFosteredPets => 'My Fostered Pets';
+
+  @override
+  String get noFosteredPets => 'You are not fostering any pets yet.';
+
+  @override
   String get allPets => 'All Pets';
 
   @override

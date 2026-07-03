@@ -85,6 +85,8 @@
   "french": "Français",
 
   "myPets": "My Pets",
+  "myFosteredPets": "My Fostered Pets",
+  "noFosteredPets": "You are not fostering any pets yet.",
   "allPets": "All Pets",
   "filterByOrganization": "Filter by organization",
   "notifications": "Notifications",
