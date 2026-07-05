@@ -1,0 +1,27 @@
+/**
+ * @bdd authentication.feature
+ * Scenario: Logging in with valid credentials
+ */
+import { test, expect, loginAs } from '../fixtures/auth.fixture';
+
+test.describe('Authentication', () => {
+  test('user can log in with valid credentials and reach the pet list', async ({
+    page,
+    testUser,
+    landingPage,
+    petListPage,
+  }) => {
+    await landingPage.goto();
+    await landingPage.login(testUser.email, testUser.password);
+    await petListPage.expectLoaded();
+    await expect(page.getByRole('button', { name: 'To Do' })).toBeVisible();
+  });
+
+  test('login fails with incorrect password', async ({ page, testUser, landingPage }) => {
+    await landingPage.goto();
+    await landingPage.login(testUser.email, 'WrongPassword99');
+    await page.waitForTimeout(1500);
+    await expect(page.getByRole('button', { name: 'Sign In', exact: true })).toBeVisible();
+    await expect(page.getByRole('button', { name: 'To Do' })).not.toBeVisible();
+  });
+});

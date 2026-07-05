@@ -1,0 +1,107 @@
+# Agatha Track E2E / BDD Tests
+
+Browser-level end-to-end tests for Agatha Track using [Playwright](https://playwright.dev). These tests drive the **real Flutter web UI** served by the Node backend on a single origin (`http://localhost:3000`), matching production deployment.
+
+## Relationship to BDD feature files
+
+Gherkin specifications live in:
+
+```
+flutter_app/test/bdd/features/
+```
+
+Playwright specs in `playwright/tests/` are annotated with `@bdd <feature>` comments and implement priority user journeys from those files. Over time we can wire [@cucumber/cucumber](https://github.com/cucumber/cucumber-js) to execute the `.feature` files directly; the page objects in `playwright/pages/` are the reusable layer for either approach.
+
+### Current coverage
+
+| Playwright spec | BDD feature | Journey |
+|-----------------|-------------|---------|
+| `auth.login.spec.ts` | `authentication.feature` | Log in with valid credentials; reject bad password |
+| `health.tracking.spec.ts` | `health_tracking.feature` | View due entry; mark one-time entry complete (API + UI); verify created entry on dashboard |
+
+## Flutter web notes
+
+- Enable the semantics tree on load via `flt-semantics-placeholder` (handled in `playwright/support/flutter.ts`).
+- Use `input[aria-label="…"]` for form fields; `fill()` alone is unreliable — the helper falls back to `pressSequentially`.
+- Auth rate limiting is disabled when the server runs with `E2E=1` (set in `run-local.sh` and CI).
+
+## Project layout
+
+```
+e2e/
+  playwright/
+    fixtures/       # Playwright fixtures (auth, seeded users)
+    pages/          # Page objects (LandingPage, HealthDashboardPage, …)
+    support/        # API seeding, Flutter wait helpers
+    tests/          # Executable specs
+  scripts/
+    run-local.sh    # One-shot local runner
+  playwright.config.ts
+  package.json
+```
+
+## Prerequisites
+
+- PostgreSQL 16 (`agatha_db` with default dev credentials)
+- Flutter 3.32+ at `/opt/flutter/bin`
+- Node 22+
+- Flutter web build at `flutter_app/build/web`
+
+## Quick start
+
+```bash
+# From repo root
+chmod +x e2e/scripts/run-local.sh
+./e2e/scripts/run-local.sh
+```
+
+Or step by step:
+
+```bash
+sudo pg_ctlcluster 16 main start
+
+cd flutter_app && flutter build web --release --no-tree-shake-icons
+
+cd server
+PGUSER=user PGPASSWORD=password PGHOST=localhost PGPORT=5432 PGDATABASE=agatha_db node bin/start.js
+
+cd e2e
+npm ci
+npx playwright install chromium --with-deps
+npm test
+```
+
+## Useful commands
+
+```bash
+cd e2e
+npm run test:ui      # interactive UI mode
+npm run test:headed  # watch the browser
+npm run report       # open HTML report after a run
+```
+
+## CI
+
+The `e2e` workflow (`.github/workflows/e2e.yml`) runs on pull requests:
+
+1. Start PostgreSQL service container
+2. Build Flutter web
+3. Start Node server
+4. Run Playwright (Chromium)
+
+## Writing new journeys
+
+1. Add or extend a scenario in `flutter_app/test/bdd/features/`.
+2. Add page object methods under `playwright/pages/` if needed.
+3. Seed data via `playwright/support/api.ts` when setup is faster than UI.
+4. Add a spec in `playwright/tests/` with a `@bdd` comment linking to the feature file.
+
+## Selector strategy
+
+Flutter web exposes an accessibility tree. Prefer, in order:
+
+1. `getByRole('button', { name: '…' })`
+2. `getByLabel('…')` for form fields
+3. `getByText('…')` for visible copy from `app_en.arb`
+
+Add `Semantics(identifier: …)` in Flutter only when the tree is insufficient.
