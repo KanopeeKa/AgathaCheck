@@ -2574,6 +2574,27 @@ class AppLocalizationsFr extends AppLocalizations {
   String get termsOfService => 'Conditions d\'utilisation';
 
   @override
+  String get legalInformation => 'Informations légales';
+
+  @override
+  String get legalDocumentsIntro =>
+      'Consultez nos documents juridiques pour en savoir plus sur le fonctionnement d\'Agatha Track, le traitement des données personnelles et vos droits.';
+
+  @override
+  String get legalNotice => 'Mentions légales';
+
+  @override
+  String get dataProcessingAddendum =>
+      'Avenant de traitement des données (DPA)';
+
+  @override
+  String get viewAllLegalDocuments => 'Voir tous les documents juridiques';
+
+  @override
+  String get legalDocumentLoadError =>
+      'Impossible de charger ce document juridique. Veuillez réessayer plus tard.';
+
+  @override
   String get appVersion => 'Version 1.0.0';
 
   @override

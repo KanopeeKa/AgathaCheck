@@ -26,6 +26,8 @@ dependencies:
   purchases_ui_flutter: ^9.12.3
   flutter_secure_storage: ^10.3.1
   file_picker: ^11.0.2
+  flutter_markdown: ^0.7.7+1
+  url_launcher: ^6.3.2
 
 dev_dependencies:
   flutter_test:
@@ -42,3 +44,5 @@ flutter:
     - assets/logo.png
     - assets/logo.jpg
     - assets/rainbow_wings.png
+    - assets/legal/en/
+    - assets/legal/fr/

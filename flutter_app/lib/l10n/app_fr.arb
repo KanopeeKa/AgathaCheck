@@ -845,6 +845,12 @@
   "aboutIntro": "Agatha Track aide les gardiens d'animaux et les organisations à organiser la santé de leurs animaux. Suivez les visites vétérinaires, les médicaments, le poids et les soins quotidiens — que vous gériez un seul animal ou coordonniez toute une équipe.",
   "privacyPolicy": "Politique de confidentialité",
   "termsOfService": "Conditions d'utilisation",
+  "legalInformation": "Informations légales",
+  "legalDocumentsIntro": "Consultez nos documents juridiques pour en savoir plus sur le fonctionnement d'Agatha Track, le traitement des données personnelles et vos droits.",
+  "legalNotice": "Mentions légales",
+  "dataProcessingAddendum": "Avenant de traitement des données (DPA)",
+  "viewAllLegalDocuments": "Voir tous les documents juridiques",
+  "legalDocumentLoadError": "Impossible de charger ce document juridique. Veuillez réessayer plus tard.",
   "appVersion": "Version 1.0.0",
   "version": "Version",
 

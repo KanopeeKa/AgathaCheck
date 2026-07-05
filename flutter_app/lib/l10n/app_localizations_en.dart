@@ -2542,10 +2542,30 @@ class AppLocalizationsEn extends AppLocalizations {
       'Agatha Track helps pet guardians and organisations keep their animals\' health organised. Track vet visits, medications, weight, and daily care — whether you manage one pet or coordinate across a whole team.';
 
   @override
-  String get privacyPolicy => 'Privacy Policy';
+  String get privacyPolicy => 'Privacy Notice';
 
   @override
-  String get termsOfService => 'Terms of Service';
+  String get termsOfService => 'Terms of Use';
+
+  @override
+  String get legalInformation => 'Legal Information';
+
+  @override
+  String get legalDocumentsIntro =>
+      'Review our legal documents for information about how Agatha Track operates, how we handle personal data, and your rights.';
+
+  @override
+  String get legalNotice => 'Legal Notice';
+
+  @override
+  String get dataProcessingAddendum => 'Data Processing Addendum';
+
+  @override
+  String get viewAllLegalDocuments => 'View all legal documents';
+
+  @override
+  String get legalDocumentLoadError =>
+      'Unable to load this legal document. Please try again later.';
 
   @override
   String get appVersion => 'Version 1.0.0';

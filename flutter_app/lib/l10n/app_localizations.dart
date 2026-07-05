@@ -4666,14 +4666,50 @@ abstract class AppLocalizations {
   /// No description provided for @privacyPolicy.
   ///
   /// In en, this message translates to:
-  /// **'Privacy Policy'**
+  /// **'Privacy Notice'**
   String get privacyPolicy;
 
   /// No description provided for @termsOfService.
   ///
   /// In en, this message translates to:
-  /// **'Terms of Service'**
+  /// **'Terms of Use'**
   String get termsOfService;
+
+  /// No description provided for @legalInformation.
+  ///
+  /// In en, this message translates to:
+  /// **'Legal Information'**
+  String get legalInformation;
+
+  /// No description provided for @legalDocumentsIntro.
+  ///
+  /// In en, this message translates to:
+  /// **'Review our legal documents for information about how Agatha Track operates, how we handle personal data, and your rights.'**
+  String get legalDocumentsIntro;
+
+  /// No description provided for @legalNotice.
+  ///
+  /// In en, this message translates to:
+  /// **'Legal Notice'**
+  String get legalNotice;
+
+  /// No description provided for @dataProcessingAddendum.
+  ///
+  /// In en, this message translates to:
+  /// **'Data Processing Addendum'**
+  String get dataProcessingAddendum;
+
+  /// No description provided for @viewAllLegalDocuments.
+  ///
+  /// In en, this message translates to:
+  /// **'View all legal documents'**
+  String get viewAllLegalDocuments;
+
+  /// No description provided for @legalDocumentLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'Unable to load this legal document. Please try again later.'**
+  String get legalDocumentLoadError;
 
   /// No description provided for @appVersion.
   ///
