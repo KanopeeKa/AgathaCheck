@@ -16,6 +16,7 @@ import vetsRoutes from '../routes/vets.js';
 import sharingRoutes from '../routes/sharing.js';
 import fosterPlacementsRoutes from '../routes/fosterPlacements.js';
 import { corsOptions } from '../config/security.js';
+import { requestContextMiddleware } from '../middleware/requestContext.js';
 
 function getServerDir() {
   try {
@@ -49,6 +50,8 @@ export function createApp(customPool, comparePassword) {
   // Expose the pool so the startup wrapper can close it on graceful shutdown.
   app.locals.pool = pool;
 
+  app.set('trust proxy', 1);
+  app.use(requestContextMiddleware);
   app.use(cors(corsOptions()));
   app.use(bodyParser.json());
   app.use('/uploads', express.static(path.resolve(process.cwd(), 'uploads')));

@@ -57,6 +57,7 @@ function buildMockPool(overrides = {}) {
     deleteResetToken: async (sql, params) => ({ rows: [] }),
     updateResetTokenUsed: async (sql, params) => ({ rows: [] }),
     updatePasswordHash: async (sql, params) => ({ rows: [] }),
+    insertAuditEvent: async (sql, params) => ({ rows: [{ id: 'audit-event-1' }] }),
     fallback: async (sql, params) => ({ rows: [] }),
   };
   const handlers = { ...defaults, ...overrides };
@@ -78,6 +79,7 @@ function buildMockPool(overrides = {}) {
       if (sql.includes('DELETE FROM password_reset_tokens')) return handlers.deleteResetToken(sql, params);
       if (sql.includes('SELECT prt.id')) return handlers.selectResetToken(sql, params);
       if (sql.includes('UPDATE password_reset_tokens')) return handlers.updateResetTokenUsed(sql, params);
+      if (sql.includes('INSERT INTO audit_events')) return handlers.insertAuditEvent(sql, params);
       return handlers.fallback(sql, params);
     },
     end: async () => {},
