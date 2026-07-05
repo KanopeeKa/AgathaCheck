@@ -2,7 +2,7 @@
 -- Retention tiers (hot → warm → cold) are enforced by server/scripts/audit-retention.js.
 
 CREATE TABLE IF NOT EXISTS audit_events (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  id UUID PRIMARY KEY,
   occurred_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   actor_user_id UUID NULL REFERENCES users(id) ON DELETE SET NULL,
   actor_pseudonym TEXT NULL,
