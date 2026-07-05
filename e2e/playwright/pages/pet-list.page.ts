@@ -24,14 +24,30 @@ export class PetListPage {
     await this.page.getByRole('button', { name: 'Add Health Event' }).waitFor({ timeout: 30_000 });
   }
 
+  async expectEmptyState(): Promise<void> {
+    await this.page.getByText('No pets yet').waitFor();
+    await this.page.getByRole('button', { name: 'Add Pet' }).waitFor();
+  }
+
+  async openAddPet(): Promise<void> {
+    await dismissConsentBannerIfPresent(this.page);
+    await this.page.getByRole('button', { name: 'Add Pet' }).click();
+    await this.page.getByRole('button', { name: 'Save Pet' }).waitFor({ timeout: 30_000 });
+  }
+
   async expectPetVisible(name: string): Promise<void> {
-    const petCard = this.page.locator('flt-semantics').filter({ hasText: name });
-    const count = await petCard.count();
-    for (let i = 0; i < count; i++) {
-      if (await petCard.nth(i).isVisible()) {
-        return;
-      }
-    }
-    throw new Error(`Pet not visible on home screen: ${name}`);
+    await this.page
+      .getByRole('button', { name: new RegExp(`Pet:\\s*${name}`, 'i') })
+      .first()
+      .waitFor({ timeout: 30_000 });
+  }
+
+  async openPet(name: string): Promise<void> {
+    await this.expectPetVisible(name);
+    await this.page
+      .getByRole('button', { name: new RegExp(`Pet:\\s*${name}`, 'i') })
+      .first()
+      .click();
+    await this.page.waitForTimeout(1000);
   }
 }

@@ -17,6 +17,8 @@ Playwright specs in `playwright/tests/` are annotated with `@bdd <feature>` comm
 | Playwright spec | BDD feature | Journey |
 |-----------------|-------------|---------|
 | `auth.login.spec.ts` | `authentication.feature` | Log in with valid credentials; reject bad password |
+| `auth.signup.spec.ts` | `authentication.feature` | Sign up success; password mismatch; email/password validation; duplicate email |
+| `pet.profiles.spec.ts` | `pet_profiles.feature` | Empty list; create pet; view detail; edit name |
 | `health.tracking.spec.ts` | `health_tracking.feature` | View due entry; mark one-time entry complete (API + UI); verify created entry on dashboard |
 
 ## Flutter web notes

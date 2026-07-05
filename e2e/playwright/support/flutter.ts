@@ -2,7 +2,12 @@ import type { Page } from '@playwright/test';
 
 /** Wait until the Flutter web canvas is mounted. */
 export async function waitForFlutter(page: Page): Promise<void> {
-  await page.goto('/landing');
+  await waitForFlutterRoute(page, '/landing');
+}
+
+/** Navigate to a Flutter route and enable the accessibility tree. */
+export async function waitForFlutterRoute(page: Page, path: string): Promise<void> {
+  await page.goto(path);
   await page.waitForSelector('flutter-view, flt-glass-pane', { state: 'attached', timeout: 60_000 });
   await enableFlutterAccessibility(page);
   await dismissConsentBannerIfPresent(page);
@@ -24,6 +29,12 @@ export async function enableFlutterAccessibility(page: Page): Promise<void> {
     }
   });
   await page.waitForTimeout(500);
+}
+
+/** Re-enable semantics when Flutter collapses the tree after overlays (dropdowns, dialogs). */
+export async function refreshFlutterAccessibility(page: Page): Promise<void> {
+  await enableFlutterAccessibility(page);
+  await page.waitForTimeout(300);
 }
 
 /** Dismiss the GDPR consent banner when shown (first visit). */
@@ -53,8 +64,18 @@ async function typeIntoField(
   await field.fill(value);
   if ((await field.inputValue()) !== value) {
     await field.fill('');
-    await field.pressSequentially(value, { delay: 20 });
+    await field.pressSequentially(value, { delay: 30 });
   }
+}
+
+export async function fillTextbox(
+  page: Page,
+  name: string | RegExp,
+  value: string,
+): Promise<void> {
+  const field = page.getByRole('textbox', { name, exact: typeof name === 'string' });
+  await field.waitFor({ state: 'visible' });
+  await typeIntoField(field, value);
 }
 
 export async function fillLabelledField(
@@ -76,7 +97,7 @@ export async function fillLabelledField(
       const field = locator.nth(i);
       if (await field.isVisible()) {
         await typeIntoField(field, value);
-        return;
+        if ((await field.inputValue()) === value) return;
       }
     }
   }
@@ -87,9 +108,42 @@ export async function fillLabelledField(
     const field = byRole.nth(i);
     if (await field.isVisible()) {
       await typeIntoField(field, value);
-      return;
+      if ((await field.inputValue()) === value) return;
     }
   }
 
   throw new Error(`Could not find visible field for label: ${label}`);
+}
+
+/** Open a Flutter dropdown and choose an option by visible label. */
+export async function selectDropdownOption(
+  page: Page,
+  fieldLabel: string,
+  optionLabel: string,
+): Promise<void> {
+  const labelVariants = [fieldLabel, fieldLabel.replace(/ \*$/, '')];
+
+  for (const label of labelVariants) {
+    const combobox = page.getByRole('combobox', { name: label, exact: false });
+    if ((await combobox.count()) > 0) {
+      await combobox.first().click();
+      await page.getByRole('option', { name: optionLabel, exact: true }).click();
+      await refreshFlutterAccessibility(page);
+      return;
+    }
+
+    const button = page.getByRole('button', { name: label, exact: false });
+    if ((await button.count()) > 0) {
+      await button.first().click();
+      await page
+        .getByRole('menuitem', { name: optionLabel, exact: true })
+        .or(page.getByRole('option', { name: optionLabel, exact: true }))
+        .first()
+        .click();
+      await refreshFlutterAccessibility(page);
+      return;
+    }
+  }
+
+  throw new Error(`Could not find dropdown for label: ${fieldLabel}`);
 }

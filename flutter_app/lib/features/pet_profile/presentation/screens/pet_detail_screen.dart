@@ -192,9 +192,7 @@ class _PetDetailScreenState extends ConsumerState<PetDetailScreen> {
                 ],
               ),
               SliverToBoxAdapter(
-                child: MergeSemantics(
-                  child: _PetProfileCard(pet: pet),
-                ),
+                child: _PetProfileCard(pet: pet),
               ),
               if (pet.neuteredDate == null && !pet.neuterDismissed && !AppConstants.speciesWithoutNeutering.contains(pet.species))
                 SliverToBoxAdapter(
