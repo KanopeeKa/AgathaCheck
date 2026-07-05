@@ -934,6 +934,197 @@ describe('Organizations API', () => {
       expect(res.statusCode).toBe(200);
       expect(res.body).toMatchObject({ deleted: true });
     });
+
+    it('POST /:orgId/foster-parents returns 400 without email', async () => {
+      const res = await request(app)
+        .post(`/api/organizations/${orgId}/foster-parents`)
+        .set('Authorization', `Bearer ${token}`)
+        .send({
+          display_name: 'New Parent',
+          lawful_basis_confirmed: true,
+        });
+      expect(res.statusCode).toBe(400);
+      expect(res.body.error).toMatch(/email/i);
+    });
+
+    it('PUT /:orgId/foster-parents/:id returns 404 when not found', async () => {
+      const pool = buildMockPool({
+        query: async (sql, params) => {
+          if (sql.includes('SELECT role FROM organization_users WHERE organization_id')) {
+            return { rows: [{ role: 'super_admin' }] };
+          }
+          if (sql.includes('UPDATE org_foster_parents')) {
+            return { rows: [] };
+          }
+          return { rows: [] };
+        },
+      });
+      const localApp = createApp(pool);
+      const res = await request(localApp)
+        .put(`/api/organizations/${orgId}/foster-parents/missing-id`)
+        .set('Authorization', `Bearer ${token}`)
+        .send({ display_name: 'Updated Parent' });
+      expect(res.statusCode).toBe(404);
+    });
+
+    it('DELETE /:orgId/foster-parents/:id returns 404 when not found', async () => {
+      const pool = buildMockPool({
+        query: async (sql) => {
+          if (sql.includes('SELECT role FROM organization_users WHERE organization_id')) {
+            return { rows: [{ role: 'super_admin' }] };
+          }
+          if (sql.includes('DELETE FROM org_foster_parents')) {
+            return { rows: [] };
+          }
+          return { rows: [] };
+        },
+      });
+      const localApp = createApp(pool);
+      const res = await request(localApp)
+        .delete(`/api/organizations/${orgId}/foster-parents/missing-id`)
+        .set('Authorization', `Bearer ${token}`);
+      expect(res.statusCode).toBe(404);
+    });
+
+    it('PUT /:orgId/foster-parents/:id returns 400 without display name', async () => {
+      const res = await request(app)
+        .put(`/api/organizations/${orgId}/foster-parents/fp-external-1`)
+        .set('Authorization', `Bearer ${token}`)
+        .send({ email: 'x@y.com' });
+      expect(res.statusCode).toBe(400);
+    });
+  });
+
+  describe('People directory', () => {
+    it('GET /:orgId/people returns 403 for foster role', async () => {
+      const fosterApp = createApp(buildMockPool({ memberRole: 'foster' }));
+      const res = await request(fosterApp)
+        .get(`/api/organizations/${orgId}/people`)
+        .set('Authorization', `Bearer ${token}`);
+      expect(res.statusCode).toBe(403);
+    });
+
+    it('GET /:orgId/people/:kind/:personId returns external foster detail', async () => {
+      const pool = buildMockPool({
+        query: async (sql) => {
+          if (sql.includes('SELECT role FROM organization_users WHERE organization_id')) {
+            return { rows: [{ role: 'super_admin' }] };
+          }
+          if (sql.includes('FROM org_foster_parents fp') && sql.includes('fp.id = $2')) {
+            return {
+              rows: [{
+                kind: 'external',
+                record_id: 'fp-external-1',
+                user_id: null,
+                display_name: 'Off-app Parent',
+                email: 'offapp@example.com',
+                photo_url: null,
+                role: null,
+                is_pending: false,
+                foster_phone: '555-0000',
+                foster_address: '1 Main St',
+                admin_notes: 'Notes',
+                active_foster_count: 0,
+              }],
+            };
+          }
+          if (sql.includes('FROM foster_placements fp') && sql.includes('org_foster_parent_id = $2')) {
+            return { rows: [] };
+          }
+          if (sql.includes('SELECT DISTINCT ON (pet_id)')) {
+            return { rows: [] };
+          }
+          return { rows: [] };
+        },
+      });
+      const localApp = createApp(pool);
+      const res = await request(localApp)
+        .get(`/api/organizations/${orgId}/people/external/fp-external-1`)
+        .set('Authorization', `Bearer ${token}`);
+      expect(res.statusCode).toBe(200);
+      expect(res.body).toMatchObject({
+        kind: 'external',
+        record_id: 'fp-external-1',
+        display_name: 'Off-app Parent',
+        foster_phone: '555-0000',
+        foster_address: '1 Main St',
+        admin_notes: 'Notes',
+      });
+    });
+
+    it('PUT /:orgId/people/external/:id/contact updates external foster contact', async () => {
+      const pool = buildMockPool({
+        query: async (sql) => {
+          if (sql.includes('SELECT role FROM organization_users WHERE organization_id')) {
+            return { rows: [{ role: 'super_admin' }] };
+          }
+          if (sql.includes('UPDATE org_foster_parents')) {
+            return { rows: [{ id: 'fp-external-1' }] };
+          }
+          if (sql.includes('FROM org_foster_parents fp') && sql.includes('fp.id = $2')) {
+            return {
+              rows: [{
+                kind: 'external',
+                record_id: 'fp-external-1',
+                user_id: null,
+                display_name: 'Updated Parent',
+                email: 'updated@example.com',
+                photo_url: null,
+                role: null,
+                is_pending: false,
+                foster_phone: '555-1111',
+                foster_address: '2 Oak Ave',
+                admin_notes: 'Updated notes',
+                active_foster_count: 0,
+              }],
+            };
+          }
+          if (sql.includes('FROM foster_placements fp') && sql.includes('org_foster_parent_id = $2')) {
+            return { rows: [] };
+          }
+          if (sql.includes('SELECT DISTINCT ON (pet_id)')) {
+            return { rows: [] };
+          }
+          return { rows: [] };
+        },
+      });
+      const localApp = createApp(pool);
+      const res = await request(localApp)
+        .put(`/api/organizations/${orgId}/people/external/fp-external-1/contact`)
+        .set('Authorization', `Bearer ${token}`)
+        .send({
+          display_name: 'Updated Parent',
+          email: 'updated@example.com',
+          foster_phone: '555-1111',
+          foster_address: '2 Oak Ave',
+          admin_notes: 'Updated notes',
+        });
+      expect(res.statusCode).toBe(200);
+      expect(res.body).toMatchObject({
+        display_name: 'Updated Parent',
+        email: 'updated@example.com',
+        foster_phone: '555-1111',
+        foster_address: '2 Oak Ave',
+        admin_notes: 'Updated notes',
+      });
+    });
+
+    it('PUT /:orgId/people/external/:id/contact returns 400 without display name', async () => {
+      const pool = buildMockPool({
+        query: async (sql) => {
+          if (sql.includes('SELECT role FROM organization_users WHERE organization_id')) {
+            return { rows: [{ role: 'super_admin' }] };
+          }
+          return { rows: [] };
+        },
+      });
+      const localApp = createApp(pool);
+      const res = await request(localApp)
+        .put(`/api/organizations/${orgId}/people/external/fp-external-1/contact`)
+        .set('Authorization', `Bearer ${token}`)
+        .send({ display_name: '   ' });
+      expect(res.statusCode).toBe(400);
+    });
   });
 
   describe('GET /:orgId/pets/:petId/foster-history', () => {
