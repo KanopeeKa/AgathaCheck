@@ -39,6 +39,10 @@ void main() {
     test('returns null for null input', () {
       expect(toCalendarDateString(null), isNull);
     });
+
+    test('serializes UTC midnight selected day via local wall-clock', () {
+      expect(toCalendarDateString(DateTime.utc(2026, 7, 8)), '2026-07-08');
+    });
   });
 
   group('calendarDateOnly', () {
@@ -50,6 +54,20 @@ void main() {
       expect(normalized.day, 30);
       expect(normalized.hour, 0);
       expect(normalized.minute, 0);
+    });
+
+    test('uses local wall-clock for UTC-flagged instants', () {
+      // July 8 00:00 CEST == July 7 22:00 UTC. UTC getters yield day 7;
+      // calendar dates must use the local wall-clock day the user picked.
+      final july8CestMidnightUtc = DateTime.parse('2026-07-07T22:00:00.000Z');
+      expect(july8CestMidnightUtc.isUtc, isTrue);
+      expect(july8CestMidnightUtc.toUtc().day, 7);
+
+      final normalized = calendarDateOnly(july8CestMidnightUtc);
+      expect(
+        toCalendarDateString(normalized),
+        toCalendarDateString(DateTime.parse('2026-07-07T22:00:00.000Z').toLocal()),
+      );
     });
   });
 }

@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../../../../core/widgets/app_logo_title.dart';
+import '../../../../core/utils/calendar_date.dart';
 import '../../../../l10n/app_localizations.dart';
 import 'package:pet_profile_app/core/providers/api_base_url_provider.dart';
 import '../../data/datasources/health_remote_datasource.dart';
@@ -260,10 +261,8 @@ class _OtherEventFormScreenState extends ConsumerState<OtherEventFormScreen> {
 
     bool markCompleted = false;
     final today = DateTime.now();
-    final dueOnly = _dueDate != null
-        ? DateTime(_dueDate!.year, _dueDate!.month, _dueDate!.day)
-        : null;
-    final todayOnly = DateTime(today.year, today.month, today.day);
+    final dueOnly = _dueDate != null ? calendarDateOnly(_dueDate!) : null;
+    final todayOnly = calendarDateOnly(today);
 
     if (!_isEdit &&
         _frequency == HealthFrequency.once &&

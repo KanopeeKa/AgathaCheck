@@ -21,15 +21,26 @@ DateTime? parseCalendarDate(Object? raw) {
   return null;
 }
 
+/// Wall-clock Y-M-D for [date] in the user's local timezone.
+///
+/// [showDatePicker] returns local midnight, but on web a [DateTime] can still
+/// be UTC-flagged (e.g. July 8 00:00 CEST stored as `…T22:00:00.000Z`). For
+/// UTC values, [.year]/[.month]/[.day] read UTC components and shift the day
+/// for users east of UTC — always normalize through [DateTime.toLocal] first.
+DateTime _localCalendarParts(DateTime date) {
+  final local = date.isUtc ? date.toLocal() : date;
+  return DateTime(local.year, local.month, local.day);
+}
+
 /// Serializes [date] to `YYYY-MM-DD` using local calendar components.
 String? toCalendarDateString(DateTime? date) {
   if (date == null) return null;
-  final y = date.year.toString().padLeft(4, '0');
-  final m = date.month.toString().padLeft(2, '0');
-  final d = date.day.toString().padLeft(2, '0');
+  final local = _localCalendarParts(date);
+  final y = local.year.toString().padLeft(4, '0');
+  final m = local.month.toString().padLeft(2, '0');
+  final d = local.day.toString().padLeft(2, '0');
   return '$y-$m-$d';
 }
 
 /// Strips time from a date-picker value so only the calendar day is kept.
-DateTime calendarDateOnly(DateTime date) =>
-    DateTime(date.year, date.month, date.day);
+DateTime calendarDateOnly(DateTime date) => _localCalendarParts(date);

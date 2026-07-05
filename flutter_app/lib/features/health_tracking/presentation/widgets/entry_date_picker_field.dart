@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../../core/utils/calendar_date.dart';
 import '../../../../l10n/app_localizations.dart';
 import 'entry_form_labels.dart';
 
@@ -34,7 +35,7 @@ class EntryDatePickerField extends StatelessWidget {
             lastDate: DateTime(2100),
           );
           if (picked != null) {
-            onChanged(DateTime(picked.year, picked.month, picked.day));
+            onChanged(calendarDateOnly(picked));
           }
         },
         child: InputDecorator(
