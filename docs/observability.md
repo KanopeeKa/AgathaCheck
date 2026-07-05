@@ -78,24 +78,34 @@ Failures are logged but never block the API response.
 
 - **Region:** EU (`https://eu.i.posthog.com`) by default
 - **Legal basis:** Consent (Art. 6(1)(a) GDPR) via the in-app consent banner
-- **SDK:** `posthog_flutter` with compile-time configuration:
+- **SDK:** `posthog_flutter` **plus** PostHog JS in `web/index.html` (required for Flutter web)
 
+Flutter web assumes `posthog-js` is loaded in HTML before the app starts. CI/deploy runs
+`flutter_app/scripts/inject_posthog_web.sh` using the `POSTHOG_API_KEY` GitHub secret.
+
+**Local build:**
 ```bash
-flutter build web --release \
-  --dart-define=POSTHOG_API_KEY=phc_xxx \
+cd flutter_app
+export POSTHOG_API_KEY=phc_xxx
+bash scripts/inject_posthog_web.sh
+flutter build web --release --no-tree-shake-icons \
+  --dart-define=POSTHOG_API_KEY=$POSTHOG_API_KEY \
   --dart-define=POSTHOG_HOST=https://eu.i.posthog.com
 ```
+
+The HTML snippet uses `opt_out_capturing_by_default: true`; Dart calls `Posthog().enable()`
+only after analytics consent.
 
 - **Session replay:** Off by default. Enable with `--dart-define=POSTHOG_SESSION_REPLAY=true` (masks all text/images).
 - **Sensitive screens** excluded from screen tracking: health dashboards/forms, org person detail, account details.
 
-Server-side PostHog person deletion on account erasure (optional):
-
+**`posthogServer.js` (optional — account deletion only, not event capture):** needs server env vars on cPanel/Node, not the project API key:
 ```bash
 POSTHOG_HOST=https://eu.posthog.com
-POSTHOG_PROJECT_ID=<project-id>
-POSTHOG_PERSONAL_API_KEY=<personal-api-key-with-person-delete-scope>
+POSTHOG_PROJECT_ID=<numeric id from PostHog project settings/URL>
+POSTHOG_PERSONAL_API_KEY=<personal API key with person delete scope>
 ```
+GitHub secrets used for Flutter builds do not configure the Node server automatically.
 
 ## Support investigation workflow
 
