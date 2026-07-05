@@ -28,7 +28,7 @@ architectural decisions deferred during the domain-by-domain refactor.
 | Infrastructure | In progress | Debt doc, modularity rules, legacy cleanup |
 | Organizations (backend) | Done | Split `routes/organizations/` + `test/organizations/` |
 | Pet profile (Flutter) | Done | Extracted `widgets/pet_list/` from `pet_list_screen` |
-| Health tracking (Flutter) | In progress | Widget extraction + controller wiring |
+| Health tracking (Flutter) | Partial | Widget extraction done; controller wiring pending review |
 
 ---
 

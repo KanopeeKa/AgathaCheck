@@ -44,6 +44,9 @@ jobs:
             echo "build_runner not configured; skipping codegen."
           fi
 
+      - name: Sync legal documents into app assets
+        run: dart run scripts/sync_legal_documents.dart
+
       - name: Analyze
         working-directory: flutter_app
         run: flutter analyze --no-fatal-warnings --no-fatal-infos
