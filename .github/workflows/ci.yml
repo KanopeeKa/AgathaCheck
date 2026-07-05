@@ -81,6 +81,12 @@ jobs:
             echo "No integration tests directory found; skipping."
           fi
 
+      - name: Inject PostHog web snippet
+        working-directory: flutter_app
+        env:
+          POSTHOG_API_KEY: ${{ secrets.POSTHOG_API_KEY }}
+        run: bash scripts/inject_posthog_web.sh
+
       - name: Build web release
         working-directory: flutter_app
         env:

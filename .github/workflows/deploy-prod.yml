@@ -107,6 +107,12 @@ jobs:
           restore-keys: |
             flutter-${{ runner.os }}-${{ env.FLUTTER_VERSION }}-
 
+      - name: Inject PostHog web snippet
+        working-directory: flutter_app
+        env:
+          POSTHOG_API_KEY: ${{ secrets.POSTHOG_API_KEY }}
+        run: bash scripts/inject_posthog_web.sh
+
       - name: Build Flutter Web
         working-directory: flutter_app
         env:
