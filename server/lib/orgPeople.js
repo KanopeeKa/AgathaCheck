@@ -144,10 +144,10 @@ async function loadPersonPlacements(pool, orgId, kind, recordId, userId, externa
   let placementFilter;
   let params;
   if (kind === 'member') {
-    placementFilter = 'fpl.foster_user_id = $2';
+    placementFilter = 'fp.foster_user_id = $2';
     params = [orgId, userId];
   } else {
-    placementFilter = 'fpl.org_foster_parent_id = $2';
+    placementFilter = 'fp.org_foster_parent_id = $2';
     params = [orgId, externalId];
   }
 

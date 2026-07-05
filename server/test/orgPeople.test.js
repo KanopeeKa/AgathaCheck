@@ -1,5 +1,6 @@
 import {
   computePlacementOutcome,
+  getOrgPersonDetail,
   linkExternalFostersByEmail,
   listFosterContactsForUser,
   parsePersonRef,
@@ -229,6 +230,99 @@ describe('orgPeople helpers', () => {
 
       const contacts = await listFosterContactsForUser(pool, 'user-1');
       expect(contacts).toEqual([]);
+    });
+  });
+
+  describe('getOrgPersonDetail', () => {
+    it('loads member detail and placement queries use the fp alias', async () => {
+      const placementSqls = [];
+      const pool = {
+        query: async (sql, params) => {
+          if (sql.includes('FROM organization_users ou') && sql.includes('ou.id = $2')) {
+            return {
+              rows: [{
+                kind: 'member',
+                record_id: 'ou-1',
+                user_id: 'user-1',
+                display_name: 'Admin User',
+                email: 'admin@example.com',
+                photo_url: null,
+                role: 'admin',
+                is_pending: false,
+                foster_phone: '',
+                foster_address: '',
+                admin_notes: '',
+                active_foster_count: 0,
+              }],
+            };
+          }
+          if (sql.includes('FROM foster_placements fp')) {
+            placementSqls.push(sql);
+            return { rows: [] };
+          }
+          if (sql.includes('SELECT DISTINCT ON (pet_id)')) {
+            return { rows: [] };
+          }
+          return { rows: [] };
+        },
+      };
+
+      const detail = await getOrgPersonDetail(pool, 'org-1', 'member', 'ou-1');
+
+      expect(detail).toMatchObject({
+        kind: 'member',
+        record_id: 'ou-1',
+        display_name: 'Admin User',
+        role: 'admin',
+      });
+      expect(placementSqls).toHaveLength(1);
+      expect(placementSqls[0]).toContain('fp.foster_user_id = $2');
+      expect(placementSqls[0]).not.toContain('fpl.');
+    });
+
+    it('loads external foster detail and placement queries use the fp alias', async () => {
+      const placementSqls = [];
+      const pool = {
+        query: async (sql) => {
+          if (sql.includes('FROM org_foster_parents fp') && sql.includes('fp.id = $2')) {
+            return {
+              rows: [{
+                kind: 'external',
+                record_id: 'fp-1',
+                user_id: null,
+                display_name: 'Off-app Parent',
+                email: 'off@example.com',
+                photo_url: null,
+                role: null,
+                is_pending: false,
+                foster_phone: '',
+                foster_address: '',
+                admin_notes: '',
+                active_foster_count: 0,
+              }],
+            };
+          }
+          if (sql.includes('FROM foster_placements fp')) {
+            placementSqls.push(sql);
+            return { rows: [] };
+          }
+          if (sql.includes('SELECT DISTINCT ON (pet_id)')) {
+            return { rows: [] };
+          }
+          return { rows: [] };
+        },
+      };
+
+      const detail = await getOrgPersonDetail(pool, 'org-1', 'external', 'fp-1');
+
+      expect(detail).toMatchObject({
+        kind: 'external',
+        record_id: 'fp-1',
+        display_name: 'Off-app Parent',
+      });
+      expect(placementSqls).toHaveLength(1);
+      expect(placementSqls[0]).toContain('fp.org_foster_parent_id = $2');
+      expect(placementSqls[0]).not.toContain('fpl.');
     });
   });
 });

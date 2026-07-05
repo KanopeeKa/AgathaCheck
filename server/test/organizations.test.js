@@ -1004,6 +1004,55 @@ describe('Organizations API', () => {
       expect(res.statusCode).toBe(403);
     });
 
+    it('GET /:orgId/people/:kind/:personId returns member detail', async () => {
+      const pool = buildMockPool({
+        query: async (sql) => {
+          if (sql.includes('SELECT role FROM organization_users WHERE organization_id')) {
+            return { rows: [{ role: 'super_admin' }] };
+          }
+          if (sql.includes('FROM organization_users ou') && sql.includes('ou.id = $2')) {
+            return {
+              rows: [{
+                kind: 'member',
+                record_id: 'ou-1',
+                user_id: memberId,
+                display_name: 'Other Admin',
+                email: 'admin@example.com',
+                photo_url: '/photos/admin.jpg',
+                role: 'admin',
+                is_pending: false,
+                foster_phone: '555-2222',
+                foster_address: '9 Admin Rd',
+                admin_notes: 'Team lead',
+                active_foster_count: 0,
+              }],
+            };
+          }
+          if (sql.includes('FROM foster_placements fp') && sql.includes('fp.foster_user_id = $2')) {
+            return { rows: [] };
+          }
+          if (sql.includes('SELECT DISTINCT ON (pet_id)')) {
+            return { rows: [] };
+          }
+          return { rows: [] };
+        },
+      });
+      const localApp = createApp(pool);
+      const res = await request(localApp)
+        .get(`/api/organizations/${orgId}/people/member/ou-1`)
+        .set('Authorization', `Bearer ${token}`);
+      expect(res.statusCode).toBe(200);
+      expect(res.body).toMatchObject({
+        kind: 'member',
+        record_id: 'ou-1',
+        display_name: 'Other Admin',
+        role: 'admin',
+        foster_phone: '555-2222',
+        foster_address: '9 Admin Rd',
+        admin_notes: 'Team lead',
+      });
+    });
+
     it('GET /:orgId/people/:kind/:personId returns external foster detail', async () => {
       const pool = buildMockPool({
         query: async (sql) => {
