@@ -50,6 +50,18 @@ class OrganizationRepositoryImpl implements OrganizationRepository {
   }
 
   @override
+  Future<Organization> uploadLogo(
+      String id, Uint8List bytes, String filename, String token) async {
+    return await _dataSource.uploadLogo(id, bytes, filename, token);
+  }
+
+  @override
+  Future<Organization> setPrimaryContact(
+      String orgId, String recordId, String token) async {
+    return await _dataSource.setPrimaryContact(orgId, recordId, token);
+  }
+
+  @override
   Future<List<OrganizationMember>> getMembers(String orgId, String token) async {
     return await _dataSource.getMembers(orgId, token);
   }

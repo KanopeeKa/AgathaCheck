@@ -1,3 +1,4 @@
+import '../../domain/entities/org_primary_contact.dart';
 import '../../domain/entities/organization.dart';
 
 class OrganizationModel extends Organization {
@@ -11,10 +12,13 @@ class OrganizationModel extends Organization {
     super.website,
     super.bio,
     super.photoUrl,
+    super.logoUrl,
     super.createdBy,
     super.role,
     super.memberCount,
+    super.externalCount,
     super.petCount,
+    super.primaryContact,
     super.createdAt,
     super.updatedAt,
   });
@@ -30,10 +34,15 @@ class OrganizationModel extends Organization {
       website: json['website']?.toString() ?? '',
       bio: json['bio']?.toString() ?? '',
       photoUrl: json['photo_url']?.toString() ?? '',
+      logoUrl: json['logo_url']?.toString() ?? '',
       createdBy: json['created_by']?.toString(),
       role: json['role']?.toString() ?? 'member',
       memberCount: (json['member_count'] is int) ? json['member_count'] as int : int.tryParse(json['member_count']?.toString() ?? '0') ?? 0,
+      externalCount: (json['external_count'] is int) ? json['external_count'] as int : int.tryParse(json['external_count']?.toString() ?? '0') ?? 0,
       petCount: (json['pet_count'] is int) ? json['pet_count'] as int : int.tryParse(json['pet_count']?.toString() ?? '0') ?? 0,
+      primaryContact: json['primary_contact'] is Map
+          ? OrgPrimaryContact.fromJson(Map<String, dynamic>.from(json['primary_contact'] as Map))
+          : null,
       createdAt: json['created_at'] != null ? DateTime.tryParse(json['created_at'].toString()) : null,
       updatedAt: json['updated_at'] != null ? DateTime.tryParse(json['updated_at'].toString()) : null,
     );
@@ -50,10 +59,13 @@ class OrganizationModel extends Organization {
       website: org.website,
       bio: org.bio,
       photoUrl: org.photoUrl,
+      logoUrl: org.logoUrl,
       createdBy: org.createdBy,
       role: org.role,
       memberCount: org.memberCount,
+      externalCount: org.externalCount,
       petCount: org.petCount,
+      primaryContact: org.primaryContact,
       createdAt: org.createdAt,
       updatedAt: org.updatedAt,
     );
@@ -70,6 +82,7 @@ class OrganizationModel extends Organization {
       'website': website,
       'bio': bio,
       'photo_url': photoUrl,
+      'logo_url': logoUrl,
       if (createdBy != null) 'created_by': createdBy,
     };
   }

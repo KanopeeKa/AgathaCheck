@@ -11,7 +11,9 @@ import '../../domain/entities/organization_member.dart';
 import '../../../pet_profile/domain/entities/pet.dart';
 import '../providers/organization_providers.dart';
 import '../widgets/organization_archived_section.dart';
+import '../widgets/organization_branding_section.dart';
 import '../widgets/organization_contact_card.dart';
+import '../widgets/organization_emergency_contact_card.dart';
 import '../widgets/organization_hidden_shared_pets_section.dart';
 import '../widgets/organization_info_card.dart';
 import '../widgets/organization_invite_by_email_dialog.dart';
@@ -176,6 +178,22 @@ class _OrganizationDetailScreenState
                 l: l,
                 localizedTypeLabel: _localizedTypeLabel,
               ),
+              if (isOrgAdmin) ...[
+                const SizedBox(height: 16),
+                OrganizationBrandingSection(
+                  org: org,
+                  theme: theme,
+                  colorScheme: colorScheme,
+                  l: l,
+                ),
+              ],
+              const SizedBox(height: 16),
+              OrganizationEmergencyContactCard(
+                org: org,
+                theme: theme,
+                colorScheme: colorScheme,
+                l: l,
+              ),
               const SizedBox(height: 16),
               OrganizationContactCard(
                 org: org,
@@ -191,6 +209,7 @@ class _OrganizationDetailScreenState
                   l: l,
                   localizedRoleLabel: _localizedRoleLabel,
                   isSuperUser: isSuperUser,
+                  isOrgAdmin: isOrgAdmin,
                 ),
                 const SizedBox(height: 16),
                 OrganizationPetsSection(

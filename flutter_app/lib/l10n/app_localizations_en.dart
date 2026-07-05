@@ -1737,6 +1737,42 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String orgMemberCountSummary(int registered, int external) {
+    return '$registered registered members + $external external';
+  }
+
+  @override
+  String orgMemberCountRegisteredOnly(int registered) {
+    return '$registered registered members';
+  }
+
+  @override
+  String orgEmergencyContactTitle(String orgName) {
+    return 'Emergency contact details for $orgName';
+  }
+
+  @override
+  String get orgPrimaryContact => 'Primary contact';
+
+  @override
+  String get orgSetPrimaryContact => 'Set as primary contact';
+
+  @override
+  String get orgPrimaryContactBadge => 'Primary contact';
+
+  @override
+  String get orgUploadPicture => 'Upload picture';
+
+  @override
+  String get orgUploadLogo => 'Upload logo';
+
+  @override
+  String get orgPicture => 'Organisation picture';
+
+  @override
+  String get orgLogo => 'Organisation logo';
+
+  @override
   String petCount(int count) {
     return '$count pets';
   }

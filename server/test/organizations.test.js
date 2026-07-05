@@ -20,8 +20,11 @@ function makeOrgRow(overrides = {}) {
     website: 'https://test.org',
     bio: 'A test organization',
     photo_url: '/photos/org.jpg',
+    logo_url: '/photos/org-logo.jpg',
+    primary_contact_ref: null,
     role: 'super_admin',
     member_count: '2',
+    external_count: '1',
     pet_count: '1',
     created_at: new Date('2024-01-01'),
     updated_at: new Date('2024-06-01'),
@@ -510,9 +513,10 @@ describe('Organizations API', () => {
       const res = await request(app)
         .post(`/api/organizations/${orgId}/photo`)
         .set('Authorization', `Bearer ${token}`)
-        .send({});
+        .attach('photo', Buffer.from('fake-image'), 'org.jpg');
       expect(res.statusCode).toBe(200);
       expect(res.body).toHaveProperty('photo_url');
+      expect(res.body).toHaveProperty('id', orgId);
     });
 
     it('returns 403 for a non-admin member', async () => {

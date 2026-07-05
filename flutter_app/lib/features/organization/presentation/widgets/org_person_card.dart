@@ -25,12 +25,22 @@ class OrgPersonCard extends StatelessWidget {
     required this.orgId,
     required this.localizedRoleLabel,
     this.onTap,
+    this.canSetPrimaryContact = false,
+    this.onSetPrimaryContact,
   });
 
   final OrgPersonSummary person;
   final String orgId;
   final String Function(AppLocalizations, OrgMemberRole) localizedRoleLabel;
   final VoidCallback? onTap;
+  final bool canSetPrimaryContact;
+  final VoidCallback? onSetPrimaryContact;
+
+  bool get _isEligiblePrimaryContact {
+    if (person.isExternal || person.isPending) return false;
+    final role = person.role;
+    return role != null && role.isOrgAdmin;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -81,19 +91,68 @@ class OrgPersonCard extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(height: 6),
-                      _RoleChip(
-                        label: roleLabel,
-                        isPending: person.isPending,
-                        isSuperAdmin: person.role?.isSuperAdmin == true,
-                        isExternal: person.isExternal,
+                      Wrap(
+                        spacing: 6,
+                        runSpacing: 4,
+                        children: [
+                          _RoleChip(
+                            label: roleLabel,
+                            isPending: person.isPending,
+                            isSuperAdmin: person.role?.isSuperAdmin == true,
+                            isExternal: person.isExternal,
+                          ),
+                          if (person.isPrimaryContact)
+                            _PrimaryContactChip(label: l.orgPrimaryContactBadge),
+                        ],
                       ),
                     ],
                   ),
                 ),
+                if (canSetPrimaryContact &&
+                    _isEligiblePrimaryContact &&
+                    onSetPrimaryContact != null)
+                  IconButton(
+                    key: Key('org_set_primary_contact_${person.recordId}'),
+                    tooltip: l.orgSetPrimaryContact,
+                    icon: Icon(
+                      person.isPrimaryContact
+                          ? Icons.contact_phone
+                          : Icons.contact_phone_outlined,
+                      color: person.isPrimaryContact
+                          ? theme.colorScheme.primary
+                          : theme.colorScheme.onSurfaceVariant,
+                    ),
+                    onPressed: onSetPrimaryContact,
+                  ),
                 _FosterStatusDisk(count: person.activeFosterCount),
               ],
             ),
           ),
+        ),
+      ),
+    );
+  }
+}
+
+class _PrimaryContactChip extends StatelessWidget {
+  const _PrimaryContactChip({required this.label});
+
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+      decoration: BoxDecoration(
+        color: AppTheme.orgSuperUserBg,
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Text(
+        label,
+        style: TextStyle(
+          fontSize: 11,
+          fontWeight: FontWeight.w600,
+          color: AppTheme.orgSuperUserFg,
         ),
       ),
     );

@@ -50,6 +50,7 @@ void main() {
                 l: l,
                 localizedRoleLabel: (_, __) => 'Foster',
                 isSuperUser: true,
+                isOrgAdmin: true,
               ),
             );
           },
@@ -122,6 +123,7 @@ void main() {
                 l: l,
                 localizedRoleLabel: (_, __) => 'Foster',
                 isSuperUser: false,
+                isOrgAdmin: true,
               );
             },
           ),

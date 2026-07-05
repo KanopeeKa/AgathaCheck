@@ -622,6 +622,28 @@
   "orgDeleted": "Organization deleted",
   "memberCount": "{count} members",
   "@memberCount": { "placeholders": { "count": { "type": "int" } } },
+  "orgMemberCountSummary": "{registered} registered members + {external} external",
+  "@orgMemberCountSummary": {
+    "placeholders": {
+      "registered": { "type": "int" },
+      "external": { "type": "int" }
+    }
+  },
+  "orgMemberCountRegisteredOnly": "{registered} registered members",
+  "@orgMemberCountRegisteredOnly": {
+    "placeholders": { "registered": { "type": "int" } }
+  },
+  "orgEmergencyContactTitle": "Emergency contact details for {orgName}",
+  "@orgEmergencyContactTitle": {
+    "placeholders": { "orgName": { "type": "String" } }
+  },
+  "orgPrimaryContact": "Primary contact",
+  "orgSetPrimaryContact": "Set as primary contact",
+  "orgPrimaryContactBadge": "Primary contact",
+  "orgUploadPicture": "Upload picture",
+  "orgUploadLogo": "Upload logo",
+  "orgPicture": "Organisation picture",
+  "orgLogo": "Organisation logo",
   "petCount": "{count} pets",
   "@petCount": { "placeholders": { "count": { "type": "int" } } },
   "remindBefore": "Remind me",

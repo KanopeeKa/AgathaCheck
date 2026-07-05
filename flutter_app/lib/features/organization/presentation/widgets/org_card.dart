@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../core/providers/api_base_url_provider.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../domain/entities/organization.dart';
+import '../utils/org_member_count_label.dart';
+import 'org_image_avatar.dart';
 
-class OrgCard extends StatelessWidget {
+class OrgCard extends ConsumerWidget {
   const OrgCard({
     super.key,
     required this.organization,
@@ -14,11 +18,17 @@ class OrgCard extends StatelessWidget {
   final Organization organization;
   final VoidCallback? onTap;
 
+  String _resolveUrl(WidgetRef ref, String path) {
+    if (path.isEmpty) return '';
+    if (path.startsWith('http://') || path.startsWith('https://')) return path;
+    return '${ref.read(apiBaseUrlProvider)}$path';
+  }
+
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
     final l = AppLocalizations.of(context)!;
-    final isPro = organization.type == OrganizationType.professional;
+    final resolvedPhoto = _resolveUrl(ref, organization.photoUrl);
 
     String typeLabel(OrganizationType type) {
       switch (type) {
@@ -29,10 +39,16 @@ class OrgCard extends StatelessWidget {
       }
     }
 
+    final memberLabel = orgMemberCountLabel(
+      l,
+      organization.memberCount,
+      organization.externalCount,
+    );
+
     return MergeSemantics(
       child: Semantics(
         label: '${organization.name}, ${typeLabel(organization.type)}, '
-            '${l.memberCount(organization.memberCount)}, ${l.petCount(organization.petCount)}',
+            '$memberLabel, ${l.petCount(organization.petCount)}',
         child: Card(
           key: Key('org_card_${organization.id}'),
           color: AppTheme.orgBlueDarker,
@@ -43,14 +59,11 @@ class OrgCard extends StatelessWidget {
               padding: const EdgeInsets.all(16),
               child: Row(
                 children: [
-                  CircleAvatar(
+                  OrgImageAvatar(
+                    imageUrl: organization.photoUrl,
+                    type: organization.type,
                     radius: 28,
-                    backgroundColor:
-                        isPro ? AppTheme.orgIconBg : AppTheme.orgCharityBg,
-                    child: Icon(
-                      isPro ? Icons.business : Icons.volunteer_activism,
-                      color: isPro ? AppTheme.orgIconFg : AppTheme.orgCharityFg,
-                    ),
+                    resolvedUrl: resolvedPhoto,
                   ),
                   const SizedBox(width: 16),
                   Expanded(
@@ -99,10 +112,12 @@ class OrgCard extends StatelessWidget {
                                 size: 16,
                                 color: theme.colorScheme.onSurfaceVariant),
                             const SizedBox(width: 4),
-                            Text(
-                              l.memberCount(organization.memberCount),
-                              style: theme.textTheme.bodySmall?.copyWith(
-                                color: theme.colorScheme.onSurfaceVariant,
+                            Expanded(
+                              child: Text(
+                                memberLabel,
+                                style: theme.textTheme.bodySmall?.copyWith(
+                                  color: theme.colorScheme.onSurfaceVariant,
+                                ),
                               ),
                             ),
                             const SizedBox(width: 12),

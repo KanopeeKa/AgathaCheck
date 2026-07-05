@@ -572,6 +572,28 @@
   "orgUpdated": "Organisation mise à jour",
   "orgDeleted": "Organisation supprimée",
   "memberCount": "{count} membres",
+  "orgMemberCountSummary": "{registered} membres inscrits + {external} externes",
+  "@orgMemberCountSummary": {
+    "placeholders": {
+      "registered": { "type": "int" },
+      "external": { "type": "int" }
+    }
+  },
+  "orgMemberCountRegisteredOnly": "{registered} membres inscrits",
+  "@orgMemberCountRegisteredOnly": {
+    "placeholders": { "registered": { "type": "int" } }
+  },
+  "orgEmergencyContactTitle": "Coordonnées d'urgence pour {orgName}",
+  "@orgEmergencyContactTitle": {
+    "placeholders": { "orgName": { "type": "String" } }
+  },
+  "orgPrimaryContact": "Contact principal",
+  "orgSetPrimaryContact": "Définir comme contact principal",
+  "orgPrimaryContactBadge": "Contact principal",
+  "orgUploadPicture": "Téléverser une photo",
+  "orgUploadLogo": "Téléverser un logo",
+  "orgPicture": "Photo de l'organisation",
+  "orgLogo": "Logo de l'organisation",
   "petCount": "{count} animaux",
   "remindBefore": "Me rappeler",
   "daysBefore": "jour(s) avant",

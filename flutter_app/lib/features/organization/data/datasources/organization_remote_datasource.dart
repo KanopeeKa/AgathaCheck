@@ -96,7 +96,32 @@ class OrganizationRemoteDataSource {
 
   Future<OrganizationModel> uploadPhoto(
       String id, Uint8List bytes, String filename, String token) async {
-    final uri = Uri.parse('$baseUrl/api/organizations/$id/photo');
+    return _uploadOrgImage('$baseUrl/api/organizations/$id/photo', bytes, filename, token);
+  }
+
+  Future<OrganizationModel> uploadLogo(
+      String id, Uint8List bytes, String filename, String token) async {
+    return _uploadOrgImage('$baseUrl/api/organizations/$id/logo', bytes, filename, token);
+  }
+
+  Future<OrganizationModel> setPrimaryContact(
+      String orgId, String recordId, String token) async {
+    final response = await _client.put(
+      Uri.parse('$baseUrl/api/organizations/$orgId/primary-contact'),
+      headers: _headers(token),
+      body: json.encode({'kind': 'member', 'record_id': recordId}),
+    );
+    if (response.statusCode >= 400) {
+      final data = json.decode(response.body);
+      throw Exception(data['error'] ?? 'Failed to set primary contact');
+    }
+    return OrganizationModel.fromJson(
+        json.decode(response.body) as Map<String, dynamic>);
+  }
+
+  Future<OrganizationModel> _uploadOrgImage(
+      String url, Uint8List bytes, String filename, String token) async {
+    final uri = Uri.parse(url);
     final request = http.MultipartRequest('POST', uri)
       ..headers['Authorization'] = 'Bearer $token'
       ..files.add(http.MultipartFile.fromBytes(
@@ -108,7 +133,7 @@ class OrganizationRemoteDataSource {
     final response = await http.Response.fromStream(streamedResponse);
     if (response.statusCode >= 400) {
       final data = json.decode(response.body);
-      throw Exception(data['error'] ?? 'Photo upload failed');
+      throw Exception(data['error'] ?? 'Image upload failed');
     }
     return OrganizationModel.fromJson(
         json.decode(response.body) as Map<String, dynamic>);

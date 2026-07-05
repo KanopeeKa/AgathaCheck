@@ -19,6 +19,7 @@ class OrganizationPeopleSection extends ConsumerWidget {
     required this.l,
     required this.localizedRoleLabel,
     required this.isSuperUser,
+    required this.isOrgAdmin,
   });
 
   final String orgId;
@@ -27,6 +28,7 @@ class OrganizationPeopleSection extends ConsumerWidget {
   final AppLocalizations l;
   final String Function(AppLocalizations, OrgMemberRole) localizedRoleLabel;
   final bool isSuperUser;
+  final bool isOrgAdmin;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -82,6 +84,33 @@ class OrganizationPeopleSection extends ConsumerWidget {
                         person: person,
                         orgId: orgId,
                         localizedRoleLabel: localizedRoleLabel,
+                        canSetPrimaryContact: isOrgAdmin,
+                        onSetPrimaryContact: isOrgAdmin &&
+                                !person.isExternal &&
+                                !person.isPending &&
+                                (person.role?.isOrgAdmin ?? false)
+                            ? () async {
+                                try {
+                                  await ref
+                                      .read(organizationListProvider.notifier)
+                                      .setPrimaryContact(
+                                          orgId, person.recordId);
+                                  if (context.mounted) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content: Text(l.orgPrimaryContact),
+                                      ),
+                                    );
+                                  }
+                                } catch (e) {
+                                  if (context.mounted) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(content: Text('$e')),
+                                    );
+                                  }
+                                }
+                              }
+                            : null,
                         onTap: () => context.push(person.detailPath(orgId)),
                       ),
                     ),

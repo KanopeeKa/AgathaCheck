@@ -3271,6 +3271,66 @@ abstract class AppLocalizations {
   /// **'{count} members'**
   String memberCount(int count);
 
+  /// No description provided for @orgMemberCountSummary.
+  ///
+  /// In en, this message translates to:
+  /// **'{registered} registered members + {external} external'**
+  String orgMemberCountSummary(int registered, int external);
+
+  /// No description provided for @orgMemberCountRegisteredOnly.
+  ///
+  /// In en, this message translates to:
+  /// **'{registered} registered members'**
+  String orgMemberCountRegisteredOnly(int registered);
+
+  /// No description provided for @orgEmergencyContactTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Emergency contact details for {orgName}'**
+  String orgEmergencyContactTitle(String orgName);
+
+  /// No description provided for @orgPrimaryContact.
+  ///
+  /// In en, this message translates to:
+  /// **'Primary contact'**
+  String get orgPrimaryContact;
+
+  /// No description provided for @orgSetPrimaryContact.
+  ///
+  /// In en, this message translates to:
+  /// **'Set as primary contact'**
+  String get orgSetPrimaryContact;
+
+  /// No description provided for @orgPrimaryContactBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'Primary contact'**
+  String get orgPrimaryContactBadge;
+
+  /// No description provided for @orgUploadPicture.
+  ///
+  /// In en, this message translates to:
+  /// **'Upload picture'**
+  String get orgUploadPicture;
+
+  /// No description provided for @orgUploadLogo.
+  ///
+  /// In en, this message translates to:
+  /// **'Upload logo'**
+  String get orgUploadLogo;
+
+  /// No description provided for @orgPicture.
+  ///
+  /// In en, this message translates to:
+  /// **'Organisation picture'**
+  String get orgPicture;
+
+  /// No description provided for @orgLogo.
+  ///
+  /// In en, this message translates to:
+  /// **'Organisation logo'**
+  String get orgLogo;
+
   /// No description provided for @petCount.
   ///
   /// In en, this message translates to:
