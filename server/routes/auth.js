@@ -12,6 +12,9 @@ import { resolveEmailLocale } from '../lib/email/locale.js';
 import { isSmtpConfigured } from '../config/mail.js';
 import { sendPasswordResetEmail } from '../services/mailService.js';
 import { linkExternalFostersByEmail, listFosterContactsForUser } from '../lib/orgPeople.js';
+import { logAuditEventSafe } from '../lib/audit.js';
+import { logger } from '../lib/logger.js';
+import { deletePostHogPerson } from '../lib/posthogServer.js';
 
 const isProduction = () => process.env.NODE_ENV === 'production';
 const FORGOT_PASSWORD_MESSAGE = 'If that email exists, a reset code has been sent.';
@@ -86,9 +89,16 @@ export default function authRoutes(pool, comparePassword) {
       await linkExternalFostersByEmail(pool, user.id, email);
       const accessToken = signAccessToken(user.id, user.email);
       const refreshToken = signRefreshToken(user.id, user.email);
+      logAuditEventSafe(pool, {
+        actorUserId: user.id,
+        action: 'auth.signup',
+        resourceType: 'user',
+        resourceId: user.id,
+        req,
+      });
       res.status(201).json({ user, access_token: accessToken, refresh_token: refreshToken });
     } catch (err) {
-      console.error('Signup error:', err);
+      logger.error({ err }, 'signup error');
       res.status(500).json({ error: 'Signup failed', ...errorDetails(err) });
     }
   });
@@ -101,20 +111,43 @@ export default function authRoutes(pool, comparePassword) {
       }
       const userResult = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
       if (userResult.rows.length === 0) {
+        logAuditEventSafe(pool, {
+          action: 'auth.login_failed',
+          resourceType: 'user',
+          outcome: 'failure',
+          metadata: { reason: 'unknown_email' },
+          req,
+        });
         return res.status(401).json({ error: 'Invalid email or password.' });
       }
       const userRow = userResult.rows[0];
       const valid = await _comparePassword(password, userRow.password_hash);
       if (!valid) {
+        logAuditEventSafe(pool, {
+          actorUserId: userRow.id,
+          action: 'auth.login_failed',
+          resourceType: 'user',
+          resourceId: userRow.id,
+          outcome: 'failure',
+          metadata: { reason: 'invalid_password' },
+          req,
+        });
         return res.status(401).json({ error: 'Invalid email or password.' });
       }
       const user = userRowToMap(userRow);
       await linkExternalFostersByEmail(pool, user.id, user.email);
       const accessToken = signAccessToken(user.id, user.email);
       const refreshToken = signRefreshToken(user.id, user.email);
+      logAuditEventSafe(pool, {
+        actorUserId: user.id,
+        action: 'auth.login',
+        resourceType: 'user',
+        resourceId: user.id,
+        req,
+      });
       res.status(200).json({ user, access_token: accessToken, refresh_token: refreshToken });
     } catch (err) {
-      console.error('Login error:', err);
+      logger.error({ err }, 'login error');
       res.status(500).json({ error: 'Login failed', ...errorDetails(err) });
     }
   });
@@ -133,6 +166,13 @@ export default function authRoutes(pool, comparePassword) {
         return res.status(401).json({ error: 'Invalid or expired refresh token' });
       }
       const accessToken = signAccessToken(payload.id, payload.email);
+      logAuditEventSafe(pool, {
+        actorUserId: payload.id,
+        action: 'auth.token_refresh',
+        resourceType: 'user',
+        resourceId: payload.id,
+        req,
+      });
       res.status(200).json({ access_token: accessToken });
     } catch (err) {
       return res.status(401).json({ error: 'Invalid or expired refresh token', ...errorDetails(err) });
@@ -140,6 +180,21 @@ export default function authRoutes(pool, comparePassword) {
   });
 
   router.post('/logout', (req, res) => {
+    const token = extractToken(req);
+    if (token) {
+      try {
+        const payload = verifyToken(token);
+        logAuditEventSafe(pool, {
+          actorUserId: payload.id,
+          action: 'auth.logout',
+          resourceType: 'user',
+          resourceId: payload.id,
+          req,
+        });
+      } catch (_) {
+        // Ignore invalid tokens on logout.
+      }
+    }
     res.status(200).json({ message: 'Logged out' });
   });
 
@@ -207,6 +262,17 @@ export default function authRoutes(pool, comparePassword) {
       if (result.rows.length === 0) {
         return res.status(404).json({ error: 'User not found' });
       }
+      const changedFields = updates
+        .filter((clause) => !clause.startsWith('updated_at'))
+        .map((clause) => clause.split('=')[0].trim());
+      logAuditEventSafe(pool, {
+        actorUserId: payload.id,
+        action: 'user.profile_updated',
+        resourceType: 'user',
+        resourceId: payload.id,
+        metadata: { fields: changedFields },
+        req,
+      });
       res.status(200).json(userRowToMap(result.rows[0]));
     } catch (err) {
       return res.status(500).json({ error: 'Update failed', ...errorDetails(err) });
@@ -228,6 +294,13 @@ export default function authRoutes(pool, comparePassword) {
       if (result.rows.length === 0) {
         return res.status(404).json({ error: 'User not found' });
       }
+      logAuditEventSafe(pool, {
+        actorUserId: payload.id,
+        action: 'user.photo_updated',
+        resourceType: 'user',
+        resourceId: payload.id,
+        req,
+      });
       res.status(200).json(userRowToMap(result.rows[0]));
     } catch (err) {
       return res.status(500).json({ error: 'Photo upload failed', ...errorDetails(err) });
@@ -258,6 +331,13 @@ export default function authRoutes(pool, comparePassword) {
       }
       const newHash = await bcrypt.hash(newPassword, 10);
       await pool.query('UPDATE users SET password_hash = $1, updated_at = NOW() WHERE id = $2', [newHash, payload.id]);
+      logAuditEventSafe(pool, {
+        actorUserId: payload.id,
+        action: 'auth.password_changed',
+        resourceType: 'user',
+        resourceId: payload.id,
+        req,
+      });
       res.status(200).json({ message: 'Password changed successfully' });
     } catch (err) {
       return res.status(500).json({ error: 'Password change failed', ...errorDetails(err) });
@@ -286,6 +366,13 @@ export default function authRoutes(pool, comparePassword) {
         "INSERT INTO password_reset_tokens (id, user_id, code, expires_at) VALUES ($1, $2, $3, NOW() + INTERVAL '15 minutes')",
         [id, userId, code]
       );
+      logAuditEventSafe(pool, {
+        actorUserId: userId,
+        action: 'auth.password_reset_requested',
+        resourceType: 'user',
+        resourceId: userId,
+        req,
+      });
       if (isProduction() || isSmtpConfigured()) {
         try {
           await sendPasswordResetEmail(email, code, locale);
@@ -339,6 +426,13 @@ export default function authRoutes(pool, comparePassword) {
       const newHash = await bcrypt.hash(new_password, 10);
       await pool.query('UPDATE users SET password_hash = $1, updated_at = NOW() WHERE id = $2', [newHash, userId]);
       await pool.query('UPDATE password_reset_tokens SET used = true WHERE id = $1', [tokenId]);
+      logAuditEventSafe(pool, {
+        actorUserId: userId,
+        action: 'auth.password_reset_completed',
+        resourceType: 'user',
+        resourceId: userId,
+        req,
+      });
       res.status(200).json({ message: 'Password has been reset successfully' });
     } catch (err) {
       return res.status(500).json({ error: 'Reset failed', ...errorDetails(err) });
@@ -364,7 +458,22 @@ export default function authRoutes(pool, comparePassword) {
       if (!valid) {
         return res.status(400).json({ error: 'Password is incorrect' });
       }
+      logAuditEventSafe(pool, {
+        actorUserId: payload.id,
+        action: 'auth.account_deletion_requested',
+        resourceType: 'user',
+        resourceId: payload.id,
+        req,
+      });
+      await deletePostHogPerson(payload.id);
       await pool.query('DELETE FROM users WHERE id = $1', [payload.id]);
+      logAuditEventSafe(pool, {
+        actorType: 'system',
+        action: 'auth.account_deleted',
+        resourceType: 'user',
+        resourceId: payload.id,
+        req,
+      });
       res.status(200).json({ message: 'Account deleted successfully' });
     } catch (err) {
       return res.status(500).json({ error: 'Account deletion failed', ...errorDetails(err) });
@@ -385,6 +494,17 @@ export default function authRoutes(pool, comparePassword) {
       const user = userRowToMap(userResult.rows[0]);
       const petsResult = await pool.query('SELECT * FROM pets WHERE user_id = $1', [payload.id]);
       const vetsResult = await pool.query('SELECT * FROM vets WHERE user_id = $1', [payload.id]);
+      logAuditEventSafe(pool, {
+        actorUserId: payload.id,
+        action: 'auth.data_export',
+        resourceType: 'user',
+        resourceId: payload.id,
+        metadata: {
+          pet_count: petsResult.rows.length,
+          vet_count: vetsResult.rows.length,
+        },
+        req,
+      });
       res.status(200).json({
         user,
         pets: petsResult.rows,

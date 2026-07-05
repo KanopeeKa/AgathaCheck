@@ -33,6 +33,7 @@ import '../../features/subscription/presentation/screens/paywall_screen.dart';
 import '../../features/vet/presentation/screens/vet_form_screen.dart';
 import '../../features/vet/presentation/screens/vet_list_screen.dart';
 import '../widgets/consent_banner.dart';
+import '../providers/analytics_providers.dart';
 
 class AuthChangeNotifier extends ChangeNotifier {
   AuthState _authState;
@@ -63,10 +64,12 @@ final authChangeNotifierProvider = Provider<AuthChangeNotifier>((ref) {
 
 final routerProvider = Provider<GoRouter>((ref) {
   final authNotifier = ref.watch(authChangeNotifierProvider);
+  final analyticsObserver = ref.watch(analyticsRouteObserverProvider);
 
   return GoRouter(
     initialLocation: '/',
     refreshListenable: authNotifier,
+    observers: [analyticsObserver],
     redirect: (context, state) {
       final isLoggedIn = authNotifier.isLoggedIn;
       final path = state.uri.path;

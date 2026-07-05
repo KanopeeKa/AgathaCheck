@@ -17,6 +17,7 @@ import {
 } from '../lib/petAccess.js';
 import { orgPetViewerRolesSql } from '../lib/orgRoles.js';
 import { OPEN_PLACEMENT_STATUSES } from '../lib/fosterPlacements.js';
+import { logAuditEventSafe } from '../lib/audit.js';
 
 const FOSTER_PLACEMENT_SELECT_SQL = `
   (SELECT fp.status
@@ -895,7 +896,18 @@ export default function petsRoutes(pool) {
          photoPath || null, vetId || null, colorValue != null ? colorValue : null,
          passedAway, organization_id || null]
       );
-      res.status(201).json(petRowToMap(result.rows[0]));
+      const pet = result.rows[0];
+      logAuditEventSafe(pool, {
+        actorUserId: userId,
+        action: 'pet.created',
+        resourceType: 'pet',
+        resourceId: pet.id,
+        petId: pet.id,
+        orgId: pet.organization_id || null,
+        metadata: { species: pet.species },
+        req,
+      });
+      res.status(201).json(petRowToMap(pet));
     } catch (err) {
       res.status(500).json({ error: publicError(err, 'Error creating pet', `Error creating pet: ${err.message}`) });
     }
@@ -942,7 +954,17 @@ export default function petsRoutes(pool) {
       if (result.rows.length === 0) {
         return res.status(404).json({ error: 'Pet not found' });
       }
-      res.json(petRowToMap(result.rows[0]));
+      const pet = result.rows[0];
+      logAuditEventSafe(pool, {
+        actorUserId: userId,
+        action: 'pet.updated',
+        resourceType: 'pet',
+        resourceId: id,
+        petId: id,
+        orgId: pet.organization_id || null,
+        req,
+      });
+      res.json(petRowToMap(pet));
     } catch (err) {
       res.status(500).json({ error: publicError(err, 'Error updating pet', `Error updating pet: ${err.message}`) });
     }
@@ -956,6 +978,14 @@ export default function petsRoutes(pool) {
       if (!(await userOwnsPet(pool, id, userId))) {
         return res.status(404).json({ error: 'Pet not found' });
       }
+      logAuditEventSafe(pool, {
+        actorUserId: userId,
+        action: 'pet.deleted',
+        resourceType: 'pet',
+        resourceId: id,
+        petId: id,
+        req,
+      });
       await pool.query('DELETE FROM pets WHERE id = $1 AND user_id = $2', [id, userId]);
       res.json({ deleted: true });
     } catch (err) {

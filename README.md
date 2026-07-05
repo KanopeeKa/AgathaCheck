@@ -226,6 +226,7 @@ lib/
 - Customizable per-pet PDF reports
 - Full English / French localization with locale persistence
 - GDPR data rights: account deletion, JSON export, consent management
+- Observability: tiered audit logging, structured API logs, consent-gated PostHog analytics (see `docs/observability.md`)
 - Material 3 design with deep purple / violet theme
 - Clean architecture with clear layer separation
 - Comprehensive test coverage (Flutter widget/model tests, 380+ backend Jest tests, Dart parity backend)

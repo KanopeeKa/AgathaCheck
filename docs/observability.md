@@ -1,0 +1,129 @@
+# Observability and audit logging
+
+Agatha Track uses a layered observability model:
+
+| Layer | Purpose | Implementation |
+| --- | --- | --- |
+| **Audit trail** | Who changed what (support + compliance) | PostgreSQL `audit_events` |
+| **Security logs** | Auth and account actions | Same `audit_events` table |
+| **Application logs** | Request timing, errors (engineering) | [Pino](https://getpino.io/) JSON logs |
+| **Product analytics** | Feature usage (consent-gated) | [PostHog Cloud EU](https://eu.posthog.com/) |
+
+## Audit events (`audit_events`)
+
+Schema: `db/migrations/019_audit_events.sql`
+
+Each row captures:
+
+- **Actor** — `actor_user_id` (hot tier only), later `actor_pseudonym`
+- **Action** — e.g. `auth.login`, `pet.created`, `health_entry.marked_complete`
+- **Resource** — `resource_type`, `resource_id`, optional `pet_id` / `org_id`
+- **Context** — `request_id`, IP, user agent (hot tier only)
+- **Metadata** — JSON field names and counts only; never health/foster payloads
+
+### Retention tiers
+
+Enforced by `server/scripts/audit-retention.js` (run daily via cron):
+
+| Tier | Duration | Contents |
+| --- | --- | --- |
+| **hot** | 14 days (default) | Full actor + IP + user agent |
+| **warm** | 90 days total | Pseudonymized actor (`md5(user_id + salt)`), no IP/UA |
+| **cold** | 730 days total | Action + resource IDs only; metadata cleared |
+| **purge** | After cold window | Row deleted |
+
+Configure via environment:
+
+```bash
+AUDIT_HOT_DAYS=14
+AUDIT_WARM_DAYS=90
+AUDIT_COLD_DAYS=730
+AUDIT_PSEUDONYM_SALT=<random-secret>
+```
+
+Run retention manually:
+
+```bash
+cd server
+PGUSER=user PGPASSWORD=password PGHOST=localhost PGDATABASE=agatha_db \
+  node scripts/audit-retention.js
+```
+
+### Writing audit events (server)
+
+```javascript
+import { logAuditEventSafe } from '../lib/audit.js';
+
+logAuditEventSafe(pool, {
+  actorUserId: userId,
+  action: 'pet.updated',
+  resourceType: 'pet',
+  resourceId: petId,
+  petId,
+  metadata: { fields: ['name', 'species'] },
+  req,
+});
+```
+
+Failures are logged but never block the API response.
+
+## Structured application logs
+
+- **Library:** `pino` (`server/lib/logger.js`)
+- **Request IDs:** `X-Request-Id` header (`server/middleware/requestContext.js`)
+- **Scope:** API routes under `/api/`, `/backend/api/`, `/server/api/`
+- **Level:** `LOG_LEVEL` env (default `info` in production, `debug` otherwise)
+
+## PostHog (product analytics)
+
+- **Region:** EU (`https://eu.i.posthog.com`) by default
+- **Legal basis:** Consent (Art. 6(1)(a) GDPR) via the in-app consent banner
+- **SDK:** `posthog_flutter` with compile-time configuration:
+
+```bash
+flutter build web --release \
+  --dart-define=POSTHOG_API_KEY=phc_xxx \
+  --dart-define=POSTHOG_HOST=https://eu.i.posthog.com
+```
+
+- **Session replay:** Off by default. Enable with `--dart-define=POSTHOG_SESSION_REPLAY=true` (masks all text/images).
+- **Sensitive screens** excluded from screen tracking: health dashboards/forms, org person detail, account details.
+
+Server-side PostHog person deletion on account erasure (optional):
+
+```bash
+POSTHOG_HOST=https://eu.posthog.com
+POSTHOG_PROJECT_ID=<project-id>
+POSTHOG_PERSONAL_API_KEY=<personal-api-key-with-person-delete-scope>
+```
+
+## Support investigation workflow
+
+1. **Last 14 days:** Query `audit_events` by `actor_user_id` or `resource_id` (hot tier).
+2. **Domain tables:** Join `health_history`, `family_event_history` for business context.
+3. **Request correlation:** Match `request_id` in Pino logs.
+4. **UX issues (consented users):** PostHog person timeline + session replay.
+5. **After 14 days:** Search warm tier by `actor_pseudonym` + resource ID.
+
+Example SQL:
+
+```sql
+SELECT occurred_at, action, resource_type, resource_id, outcome, metadata
+FROM audit_events
+WHERE actor_user_id = '<user-uuid>'
+  AND occurred_at > NOW() - INTERVAL '14 days'
+ORDER BY occurred_at DESC;
+```
+
+## What we deliberately do not log
+
+- Passwords, tokens, reset codes
+- Health record contents (medication names, notes, vet details)
+- Foster contact PII
+- Full request/response bodies
+
+## Related documents
+
+- `regulatory/INTERNAL_GDPR.md` — processing register and retention
+- `regulatory/DATA_MAP.md` — field inventory including audit/analytics
+- `flutter_app/assets/legal/en/privacy-notice.md` — user-facing disclosure
