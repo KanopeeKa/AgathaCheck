@@ -1,3 +1,4 @@
+import '../config/loadEnv.js';
 import app from './server.js';
 
 const port = process.env.PORT || 3000;

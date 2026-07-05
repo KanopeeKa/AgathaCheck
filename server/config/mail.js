@@ -14,25 +14,50 @@ function env(...keys) {
   return undefined;
 }
 
-const port = Number(env('UAT_SMTP_PORT') || 465);
-const secureRaw = env('UAT_SMTP_SECURE');
-const secure =
-  secureRaw !== undefined
-    ? String(secureRaw).toLowerCase() === 'true'
-    : port === 465;
+export function isSmtpConfigured() {
+  return Boolean(env('UAT_SMTP_HOST'));
+}
 
-export const mailFrom = env('UAT_MAIL_FROM');
+function buildSmtpOptions() {
+  const port = Number(env('UAT_SMTP_PORT') || 465);
+  const secureRaw = env('UAT_SMTP_SECURE');
+  const secure =
+    secureRaw !== undefined
+      ? String(secureRaw).toLowerCase() === 'true'
+      : port === 465;
 
-const smtpOptions = {
-  host: env('UAT_SMTP_HOST'),
-  port,
-  secure,
-  auth: {
-    user: env('UAT_MAIL_USER', 'UAT_mail_user'),
-    pass: env('UAT_MAIL_PASS', 'UAT_mail_pass'),
-  },
-};
+  return {
+    host: env('UAT_SMTP_HOST'),
+    port,
+    secure,
+    auth: {
+      user: env('UAT_MAIL_USER', 'UAT_mail_user'),
+      pass: env('UAT_MAIL_PASS', 'UAT_mail_pass'),
+    },
+  };
+}
 
-export const mailTransporter = nodemailer.createTransport(
-  process.env.NODE_ENV === 'test' ? { jsonTransport: true } : smtpOptions
-);
+function shouldUseJsonTransport() {
+  if (process.env.NODE_ENV === 'test') return true;
+  // Local dev without SMTP: skip real delivery so forgot-password can expose the code.
+  if (process.env.NODE_ENV !== 'production' && !isSmtpConfigured()) return true;
+  return false;
+}
+
+let mailFromValue;
+export function getMailFrom() {
+  if (mailFromValue === undefined) {
+    mailFromValue = env('UAT_MAIL_FROM');
+  }
+  return mailFromValue;
+}
+
+let transporter;
+export function getMailTransporter() {
+  if (!transporter) {
+    transporter = nodemailer.createTransport(
+      shouldUseJsonTransport() ? { jsonTransport: true } : buildSmtpOptions()
+    );
+  }
+  return transporter;
+}

@@ -2,7 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
-import { mailFrom, mailTransporter } from '../config/mail.js';
+import { getMailFrom, getMailTransporter } from '../config/mail.js';
 import { LOGO_CID } from '../lib/email/branding.js';
 import { buildPasswordResetEmail } from '../lib/email/templates/passwordReset.js';
 
@@ -25,7 +25,7 @@ function logoAttachment() {
  */
 export async function sendTransactionalEmail({ to, subject, text, html }) {
   const message = {
-    from: mailFrom,
+    from: getMailFrom(),
     to,
     subject,
     text,
@@ -36,7 +36,7 @@ export async function sendTransactionalEmail({ to, subject, text, html }) {
     message.attachments = logoAttachment();
   }
 
-  await mailTransporter.sendMail(message);
+  await getMailTransporter().sendMail(message);
 }
 
 export async function sendPasswordResetEmail(to, code, locale = 'en') {

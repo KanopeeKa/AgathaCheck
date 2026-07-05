@@ -9,10 +9,12 @@ import { errorDetails } from '../config/security.js';
 import { createAuthLimiter } from '../config/rateLimit.js';
 import { isValidEmail, isStrongPassword, MIN_PASSWORD_LENGTH } from '../config/validation.js';
 import { resolveEmailLocale } from '../lib/email/locale.js';
+import { isSmtpConfigured } from '../config/mail.js';
 import { sendPasswordResetEmail } from '../services/mailService.js';
 import { linkExternalFostersByEmail, listFosterContactsForUser } from '../lib/orgPeople.js';
 
 const isProduction = () => process.env.NODE_ENV === 'production';
+const FORGOT_PASSWORD_MESSAGE = 'If that email exists, a reset code has been sent.';
 
 function signAccessToken(id, email) {
   return jwt.sign({ id, email }, JWT_SECRET, { expiresIn: '30m' });
@@ -270,7 +272,7 @@ export default function authRoutes(pool, comparePassword) {
       }
       const userResult = await pool.query('SELECT id, locale FROM users WHERE email = $1', [email]);
       if (userResult.rows.length === 0) {
-        return res.status(200).json({ message: 'If that email exists, a reset code has been sent.' });
+        return res.status(200).json({ message: FORGOT_PASSWORD_MESSAGE });
       }
       const userId = userResult.rows[0].id;
       const locale = resolveEmailLocale(
@@ -284,12 +286,18 @@ export default function authRoutes(pool, comparePassword) {
         "INSERT INTO password_reset_tokens (id, user_id, code, expires_at) VALUES ($1, $2, $3, NOW() + INTERVAL '15 minutes')",
         [id, userId, code]
       );
-      try {
-        await sendPasswordResetEmail(email, code, locale);
-      } catch (mailErr) {
-        await pool.query('DELETE FROM password_reset_tokens WHERE id = $1', [id]);
-        console.error('Password reset email failed; reset token removed.', mailErr);
-        return res.status(500).json({ error: 'Request failed' });
+      if (isProduction() || isSmtpConfigured()) {
+        try {
+          await sendPasswordResetEmail(email, code, locale);
+        } catch (mailErr) {
+          try {
+            await pool.query('DELETE FROM password_reset_tokens WHERE id = $1', [id]);
+          } catch (deleteErr) {
+            console.error('Failed to remove password reset token after email failure.', deleteErr);
+          }
+          console.error('Password reset email failed.', mailErr);
+          return res.status(200).json({ message: FORGOT_PASSWORD_MESSAGE });
+        }
       }
       // SECURITY: never return or log the reset code in production — doing so
       // turns "forgot password" into an account-takeover oracle for anyone who
@@ -297,7 +305,7 @@ export default function authRoutes(pool, comparePassword) {
       // band. Outside production we expose
       // it (response + log) purely so local dev and the test suite can drive
       // the reset flow without an email provider.
-      const body = { message: 'If that email exists, a reset code has been sent.' };
+      const body = { message: FORGOT_PASSWORD_MESSAGE };
       if (!isProduction()) {
         console.log(`Password reset code for ${email}: ${code}`);
         body.code = code;
