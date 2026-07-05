@@ -24,8 +24,9 @@ import '../../features/organization/presentation/screens/organization_pets_scree
 import '../../features/organization/presentation/screens/transfer_pet_screen.dart';
 import '../../features/sharing/presentation/screens/shared_pet_screen.dart';
 import '../../features/about/presentation/screens/about_screen.dart';
-import '../../features/about/presentation/screens/privacy_policy_screen.dart';
-import '../../features/about/presentation/screens/terms_screen.dart';
+import '../../features/about/presentation/screens/legal_document_screen.dart';
+import '../../features/about/presentation/screens/legal_documents_screen.dart';
+import '../../features/about/domain/legal_document_id.dart';
 import '../../features/help/presentation/screens/help_screen.dart';
 import '../../features/subscription/presentation/screens/paywall_screen.dart';
 import '../../features/vet/presentation/screens/vet_form_screen.dart';
@@ -77,6 +78,8 @@ final routerProvider = Provider<GoRouter>((ref) {
         if (path == '/landing') return null;
         if (path == '/forgot-password') return null;
         if (path.startsWith('/shared/')) return null;
+        if (LegalDocumentId.publicRoutes.contains(path)) return null;
+        if (path.startsWith('/legal/')) return null;
         return '/landing';
       }
 
@@ -118,14 +121,31 @@ final routerProvider = Provider<GoRouter>((ref) {
         builder: (context, state) => const AboutScreen(),
       ),
       GoRoute(
+        path: '/legal',
+        name: 'legal',
+        builder: (context, state) => const LegalDocumentsScreen(),
+      ),
+      GoRoute(
+        path: '/legal/:document',
+        name: 'legalDocument',
+        builder: (context, state) {
+          final segment = state.pathParameters['document']!;
+          final documentId = LegalDocumentId.fromRouteSegment(segment);
+          if (documentId == null) {
+            return const LegalDocumentsScreen();
+          }
+          return LegalDocumentScreen(documentId: documentId);
+        },
+      ),
+      GoRoute(
         path: '/privacy-policy',
         name: 'privacyPolicy',
-        builder: (context, state) => const PrivacyPolicyScreen(),
+        redirect: (context, state) => '/legal/privacy-notice',
       ),
       GoRoute(
         path: '/terms-of-service',
         name: 'termsOfService',
-        builder: (context, state) => const TermsScreen(),
+        redirect: (context, state) => '/legal/terms-of-use',
       ),
       GoRoute(
         path: '/add',

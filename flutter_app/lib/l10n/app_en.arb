@@ -894,8 +894,14 @@
 
   "aboutUs": "About Us",
   "aboutIntro": "Agatha Track helps pet guardians and organisations keep their animals' health organised. Track vet visits, medications, weight, and daily care — whether you manage one pet or coordinate across a whole team.",
-  "privacyPolicy": "Privacy Policy",
-  "termsOfService": "Terms of Service",
+  "privacyPolicy": "Privacy Notice",
+  "termsOfService": "Terms of Use",
+  "legalInformation": "Legal Information",
+  "legalDocumentsIntro": "Review our legal documents for information about how Agatha Track operates, how we handle personal data, and your rights.",
+  "legalNotice": "Legal Notice",
+  "dataProcessingAddendum": "Data Processing Addendum",
+  "viewAllLegalDocuments": "View all legal documents",
+  "legalDocumentLoadError": "Unable to load this legal document. Please try again later.",
   "appVersion": "Version 1.0.0",
   "version": "Version",
 

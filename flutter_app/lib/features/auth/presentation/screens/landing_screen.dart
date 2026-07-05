@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../l10n/app_localizations.dart';
+import '../../../about/presentation/widgets/legal_footer_links.dart';
 import '../providers/auth_providers.dart';
 import '../../../../core/widgets/web_image.dart';
 import '../../../../core/web/native_login.dart';
@@ -145,29 +146,35 @@ class _LandingScreenState extends ConsumerState<LandingScreen>
             padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
             child: ConstrainedBox(
               constraints: const BoxConstraints(maxWidth: 900),
-              child: isWide
-                  ? Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Expanded(child: _buildBrandingSection(theme, l10n)),
-                        const SizedBox(width: 48),
-                        SizedBox(
-                          width: 400,
-                          child: _buildAuthCard(theme, auth, l10n),
+              child: Column(
+                children: [
+                  isWide
+                      ? Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Expanded(child: _buildBrandingSection(theme, l10n)),
+                            const SizedBox(width: 48),
+                            SizedBox(
+                              width: 400,
+                              child: _buildAuthCard(theme, auth, l10n),
+                            ),
+                          ],
+                        )
+                      : Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            _buildBrandingSection(theme, l10n),
+                            const SizedBox(height: 32),
+                            ConstrainedBox(
+                              constraints: const BoxConstraints(maxWidth: 400),
+                              child: _buildAuthCard(theme, auth, l10n),
+                            ),
+                          ],
                         ),
-                      ],
-                    )
-                  : Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        _buildBrandingSection(theme, l10n),
-                        const SizedBox(height: 32),
-                        ConstrainedBox(
-                          constraints: const BoxConstraints(maxWidth: 400),
-                          child: _buildAuthCard(theme, auth, l10n),
-                        ),
-                      ],
-                    ),
+                  const SizedBox(height: 24),
+                  const LegalFooterLinks(),
+                ],
+              ),
             ),
           ),
         ),
