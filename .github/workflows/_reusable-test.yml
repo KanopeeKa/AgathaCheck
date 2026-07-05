@@ -1,0 +1,94 @@
+# Shared Flutter + Node test suite for CI.
+# Called by ci.yml — not used on deploy workflows (UAT/prod trust CI + env gates).
+name: Reusable tests
+
+on:
+  workflow_call:
+
+env:
+  FLUTTER_VERSION: '3.32.0'
+
+jobs:
+  flutter:
+    name: Flutter (analyze, test, build web)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+
+      - name: Cache Flutter dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.pub-cache
+            flutter_app/.dart_tool
+          key: flutter-${{ runner.os }}-${{ env.FLUTTER_VERSION }}-${{ hashFiles('flutter_app/pubspec.lock') }}
+          restore-keys: |
+            flutter-${{ runner.os }}-${{ env.FLUTTER_VERSION }}-
+
+      - name: Fetch Flutter dependencies
+        working-directory: flutter_app
+        run: flutter pub get
+
+      - name: Generate code (build_runner)
+        working-directory: flutter_app
+        run: |
+          if grep -q "build_runner" pubspec.yaml; then
+            flutter pub run build_runner build --delete-conflicting-outputs
+          else
+            echo "build_runner not configured; skipping codegen."
+          fi
+
+      - name: Analyze
+        working-directory: flutter_app
+        run: flutter analyze --no-fatal-warnings --no-fatal-infos
+
+      - name: Run unit & widget tests
+        working-directory: flutter_app
+        run: flutter test --concurrency=1 --exclude-tags=integration
+
+      - name: Run integration tests (if present)
+        working-directory: flutter_app
+        continue-on-error: true
+        run: |
+          if [ -d "test/features/pet_profile/presentation/integration" ]; then
+            flutter test test/features/pet_profile/presentation/integration/ --concurrency=1
+          else
+            echo "No integration tests directory found; skipping."
+          fi
+
+      - name: Build web release
+        working-directory: flutter_app
+        run: flutter build web --release --no-tree-shake-icons
+
+      - name: Upload web artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: web-build
+          path: flutter_app/build/web/
+
+  backend:
+    name: Backend (Node.js Jest tests)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: server/package-lock.json
+
+      - name: Install backend dependencies
+        working-directory: server
+        run: npm ci
+
+      - name: Run backend tests
+        working-directory: server
+        run: npx jest --env=node --forceExit

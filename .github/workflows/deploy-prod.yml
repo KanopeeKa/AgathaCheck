@@ -1,96 +1,28 @@
-name: Deploy Production (prod.agathatrack.com)
+name: Deploy Production (agathatrack.com)
 
 on:
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: 'Git ref validated on UAT (commit SHA, tag, or branch)'
+        required: true
   release:
-    types: [ published ]
+    types: [published]
 
 env:
-  # Single source of truth for the Flutter SDK version across all jobs in
-  # this workflow. Pinned to match local dev and the main CI workflow.
-  # Flutter 3.41 has a regression where flutter_tester segfaults during
-  # test cleanup on Linux. Bumping this value also busts the dependency
-  # cache (key includes ${FLUTTER_VERSION}), so stale .dart_tool artifacts
-  # from a different SDK won't be restored.
   FLUTTER_VERSION: '3.32.0'
+  PROD_BASE_URL: https://agathatrack.com
 
 jobs:
-  test:
-    name: Run tests before deploy
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Set up Flutter
-        uses: subosito/flutter-action@v2
-        with:
-          channel: stable
-          flutter-version: ${{ env.FLUTTER_VERSION }}
-
-      - name: Cache Flutter dependencies
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/.pub-cache
-            flutter_app/.dart_tool
-          key: flutter-${{ runner.os }}-${{ env.FLUTTER_VERSION }}-${{ hashFiles('flutter_app/pubspec.lock') }}
-          restore-keys: |
-            flutter-${{ runner.os }}-${{ env.FLUTTER_VERSION }}-
-
-      - name: Fetch Flutter dependencies
-        working-directory: flutter_app
-        run: flutter pub get
-
-      - name: Generate code (build_runner)
-        working-directory: flutter_app
-        # Generates *.mocks.dart (mockito) and any other build_runner outputs.
-        # Required before analyze/test because generated files are gitignored.
-        # Mirrors the equivalent step in main CI.
-        run: |
-          if grep -q "build_runner" pubspec.yaml; then
-            flutter pub run build_runner build --delete-conflicting-outputs
-          else
-            echo "build_runner not configured; skipping codegen."
-          fi
-
-      - name: Analyze
-        working-directory: flutter_app
-        # Mirror main CI: tolerate warnings/infos, fail only on errors.
-        run: flutter analyze --no-fatal-warnings --no-fatal-infos
-
-      - name: Run Flutter tests
-        working-directory: flutter_app
-        # Mirror main CI: --coverage omitted (causes flutter_tester segfault
-        # on Linux during teardown); integration tests excluded here and run
-        # separately in main CI with continue-on-error.
-        run: flutter test --concurrency=1 --exclude-tags=integration
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: npm
-          cache-dependency-path: server/package-lock.json
-
-      - name: Install backend dependencies
-        working-directory: server
-        # Strict reproducible install: fails fast if package-lock.json is
-        # out of sync with package.json (rather than silently regenerating).
-        # Requires server/package-lock.json to be tracked in git.
-        run: npm ci
-
-      - name: Run backend tests
-        working-directory: server
-        run: npx jest --env=node --forceExit
-
   deploy:
     name: Build and deploy to Production
-    needs: test
     runs-on: ubuntu-latest
     environment: PROD
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event_name == 'workflow_dispatch' && inputs.ref || github.ref }}
 
-      # ===== BUILD FRONTEND =====
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
@@ -114,8 +46,7 @@ jobs:
           flutter pub get
           flutter build web --release --no-tree-shake-icons
 
-      # ===== DEPLOY FRONTEND (Flutter Web) =====
-      - name: Deploy frontend to prod.agathatrack.com
+      - name: Deploy frontend to agathatrack.com
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
           server: ${{ secrets.PROD_FTP_SERVER }}
@@ -123,23 +54,16 @@ jobs:
           password: ${{ secrets.PROD_FTP_PASSWORD }}
           server-dir: /public_html/Prod/
           local-dir: ./flutter_app/build/web/
-          # Don't wipe the backend folder when refreshing the frontend.
           exclude: |
             **/backend/**
 
-      # ===== STAGE MIGRATIONS INTO BACKEND PAYLOAD =====
-      # The migration SQL files live at repo-root db/migrations/, but the FTP
-      # backend deploy only ships the server/ folder. Copy the migrations into
-      # server/db/migrations/ so they ride along and the remote node migration
-      # runner (server/scripts/migrate.js) can find them.
       - name: Stage db migrations under server/
         run: |
           mkdir -p server/db
           cp -R db/migrations server/db/migrations
           ls server/db/migrations
 
-      # ===== DEPLOY BACKEND (Node.js) =====
-      - name: Deploy backend to prod.agathatrack.com/backend/
+      - name: Deploy backend to agathatrack.com/backend/
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
           server: ${{ secrets.PROD_FTP_SERVER }}
@@ -155,31 +79,41 @@ jobs:
             **/*.test.js
             **/babel.config.cjs
 
-      # ===== INSTALL DEPENDENCIES & RESTART NODE.JS APP =====
       - name: Install dependencies & restart Node.js app
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.PROD_SSH_HOST }}
           username: ${{ secrets.PROD_SSH_USER }}
           key: ${{ secrets.PROD_SSH_PRIVATE_KEY }}
-          # Only needed if PROD_SSH_PRIVATE_KEY is an encrypted (passphrase-
-          # protected) key. Leave the PROD_SSH_PASSPHRASE secret unset if you
-          # use a passphraseless key — an empty value is ignored.
           passphrase: ${{ secrets.PROD_SSH_PASSPHRASE }}
           port: ${{ secrets.PROD_SSH_PORT || 22 }}
           timeout: 60s
           script: |
             set -e
             cd ~/public_html/Prod/backend
-            # `npm ci` (not `npm install`) for reproducibility: installs the
-            # exact tree from package-lock.json and fails fast on drift, so
-            # the runtime gets the same versions CI tested against.
-            # --omit=dev skips devDependencies (jest, babel, etc.).
             npm ci --omit=dev
-            # Apply any pending DB migrations BEFORE restarting the app, so
-            # the new code never runs against an old schema. Idempotent: a
-            # no-op when the schema is already up to date. Requires the
-            # DATABASE_URL env var to be configured on the cPanel Node app.
             node scripts/migrate.js up
             mkdir -p tmp
             touch tmp/restart.txt
+
+  smoke:
+    name: Production post-deploy smoke
+    needs: deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Wait for production to become healthy
+        run: |
+          set -e
+          for i in $(seq 1 12); do
+            if curl -sf "${PROD_BASE_URL}/backend/health" | grep -q '"status":"OK"'; then
+              echo "Backend healthy after attempt $i"
+              break
+            fi
+            echo "Waiting for Passenger restart ($i/12)..."
+            sleep 10
+          done
+          curl -sf "${PROD_BASE_URL}/backend/health"
+          curl -sf "${PROD_BASE_URL}/landing" -o /dev/null
+
+  # Future: add @smoke Playwright against PROD_BASE_URL once a dedicated smoke
+  # test account or cleanup strategy is in place (live signup pollutes prod DB).

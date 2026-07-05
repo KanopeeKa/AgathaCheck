@@ -5,7 +5,7 @@
 import { test, expect, loginAs } from '../fixtures/auth.fixture';
 
 test.describe('Authentication', () => {
-  test('user can log in with valid credentials and reach the pet list', async ({
+  test('@smoke user can log in with valid credentials and reach the pet list', async ({
     page,
     testUser,
     landingPage,
