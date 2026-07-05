@@ -1,10 +1,10 @@
+import '../config/loadEnv.js';
 import express from 'express';
 import cors from 'cors';
 import bodyParser from 'body-parser';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { Pool } from 'pg';
-import dotenv from 'dotenv';
 import petsRoutes from '../routes/pets.js';
 import authRoutes from '../routes/auth.js';
 import notificationsRoutes from '../routes/notifications.js';
@@ -16,8 +16,6 @@ import vetsRoutes from '../routes/vets.js';
 import sharingRoutes from '../routes/sharing.js';
 import fosterPlacementsRoutes from '../routes/fosterPlacements.js';
 import { corsOptions } from '../config/security.js';
-
-dotenv.config();
 
 function getServerDir() {
   try {

@@ -54,6 +54,7 @@ function buildMockPool(overrides = {}) {
     selectVets: async (sql, params) => ({ rows: [{ id: 'vet-1', name: 'Dr. Smith' }] }),
     selectResetToken: async (sql, params) => ({ rows: [] }),
     insertResetToken: async (sql, params) => ({ rows: [] }),
+    deleteResetToken: async (sql, params) => ({ rows: [] }),
     updateResetTokenUsed: async (sql, params) => ({ rows: [] }),
     updatePasswordHash: async (sql, params) => ({ rows: [] }),
     fallback: async (sql, params) => ({ rows: [] }),
@@ -74,6 +75,7 @@ function buildMockPool(overrides = {}) {
       if (sql.includes('SELECT * FROM vets')) return handlers.selectVets(sql, params);
       if (sql.includes('FROM users WHERE email') && sql.includes('SELECT id')) return handlers.selectUserByEmail(sql, params);
       if (sql.includes('INSERT INTO password_reset_tokens')) return handlers.insertResetToken(sql, params);
+      if (sql.includes('DELETE FROM password_reset_tokens')) return handlers.deleteResetToken(sql, params);
       if (sql.includes('SELECT prt.id')) return handlers.selectResetToken(sql, params);
       if (sql.includes('UPDATE password_reset_tokens')) return handlers.updateResetTokenUsed(sql, params);
       return handlers.fallback(sql, params);
@@ -637,6 +639,29 @@ describe('Auth Routes', () => {
         .send({ email: 'nobody@example.com' });
       expect(res.statusCode).toBe(200);
       expect(res.body).toHaveProperty('message');
+    });
+
+    it('exposes the reset code in development without configured SMTP', async () => {
+      const prevEnv = process.env.NODE_ENV;
+      const prevHost = process.env.UAT_SMTP_HOST;
+      process.env.NODE_ENV = 'development';
+      delete process.env.UAT_SMTP_HOST;
+      try {
+        const pool = buildMockPool({
+          selectUserByEmail: async () => ({ rows: [{ id: userId, locale: 'en' }] }),
+        });
+        const forgotApp = createApp(pool, mockComparePassword);
+        const res = await request(forgotApp)
+          .post('/api/auth/forgot-password')
+          .send({ email: userEmail });
+        expect(res.statusCode).toBe(200);
+        expect(res.body).toHaveProperty('code');
+      } finally {
+        if (prevEnv === undefined) delete process.env.NODE_ENV;
+        else process.env.NODE_ENV = prevEnv;
+        if (prevHost === undefined) delete process.env.UAT_SMTP_HOST;
+        else process.env.UAT_SMTP_HOST = prevHost;
+      }
     });
 
     it('should return 400 when email is missing', async () => {
