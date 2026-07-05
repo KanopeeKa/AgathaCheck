@@ -109,10 +109,14 @@ jobs:
 
       - name: Build Flutter Web
         working-directory: flutter_app
+        env:
+          POSTHOG_API_KEY: ${{ secrets.POSTHOG_API_KEY }}
         run: |
           flutter clean
           flutter pub get
-          flutter build web --release --no-tree-shake-icons
+          flutter build web --release --no-tree-shake-icons \
+            --dart-define=POSTHOG_API_KEY=${POSTHOG_API_KEY} \
+            --dart-define=POSTHOG_HOST=https://eu.i.posthog.com
 
       # ===== DEPLOY FRONTEND (Flutter Web) =====
       - name: Deploy frontend to uat.agathatrack.com
