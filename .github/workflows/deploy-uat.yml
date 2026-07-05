@@ -2,95 +2,21 @@ name: Deploy UAT (uat.agathatrack.com)
 
 on:
   push:
-    branches: [ 'release/uat-*' ]
+    branches: ['release/uat-*']
 
 env:
-  # Single source of truth for the Flutter SDK version across all jobs in
-  # this workflow. Pinned to match local dev and the main CI workflow.
-  # Flutter 3.41 has a regression where flutter_tester segfaults during
-  # test cleanup on Linux. Bumping this value also busts the dependency
-  # cache (key includes ${FLUTTER_VERSION}), so stale .dart_tool artifacts
-  # from a different SDK won't be restored.
   FLUTTER_VERSION: '3.32.0'
+  UAT_BASE_URL: https://uat.agathatrack.com
 
 jobs:
-  test:
-    name: Run tests before deploy
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Set up Flutter
-        uses: subosito/flutter-action@v2
-        with:
-          channel: stable
-          flutter-version: ${{ env.FLUTTER_VERSION }}
-
-      - name: Cache Flutter dependencies
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/.pub-cache
-            flutter_app/.dart_tool
-          key: flutter-${{ runner.os }}-${{ env.FLUTTER_VERSION }}-${{ hashFiles('flutter_app/pubspec.lock') }}
-          restore-keys: |
-            flutter-${{ runner.os }}-${{ env.FLUTTER_VERSION }}-
-
-      - name: Fetch Flutter dependencies
-        working-directory: flutter_app
-        run: flutter pub get
-
-      - name: Generate code (build_runner)
-        working-directory: flutter_app
-        # Generates *.mocks.dart (mockito) and any other build_runner outputs.
-        # Required before analyze/test because generated files are gitignored.
-        # Mirrors the equivalent step in main CI.
-        run: |
-          if grep -q "build_runner" pubspec.yaml; then
-            flutter pub run build_runner build --delete-conflicting-outputs
-          else
-            echo "build_runner not configured; skipping codegen."
-          fi
-
-      - name: Analyze
-        working-directory: flutter_app
-        # Mirror main CI: tolerate warnings/infos, fail only on errors.
-        run: flutter analyze --no-fatal-warnings --no-fatal-infos
-
-      - name: Run Flutter tests
-        working-directory: flutter_app
-        # Mirror main CI: --coverage omitted (causes flutter_tester segfault
-        # on Linux during teardown); integration tests excluded here and run
-        # separately in main CI with continue-on-error.
-        run: flutter test --concurrency=1 --exclude-tags=integration
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: npm
-          cache-dependency-path: server/package-lock.json
-
-      - name: Install backend dependencies
-        working-directory: server
-        # Strict reproducible install: fails fast if package-lock.json is
-        # out of sync with package.json (rather than silently regenerating).
-        # Requires server/package-lock.json to be tracked in git.
-        run: npm ci
-
-      - name: Run backend tests
-        working-directory: server
-        run: npx jest --env=node --forceExit
-
+  # Fast path: build + FTP deploy. Unit tests already ran on main CI.
   deploy:
     name: Build and deploy to UAT
-    needs: test
     runs-on: ubuntu-latest
     environment: UAT
     steps:
       - uses: actions/checkout@v4
 
-      # ===== BUILD FRONTEND =====
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
@@ -124,7 +50,6 @@ jobs:
             --dart-define=POSTHOG_API_KEY=${POSTHOG_API_KEY} \
             --dart-define=POSTHOG_HOST=https://eu.i.posthog.com
 
-      # ===== DEPLOY FRONTEND (Flutter Web) =====
       - name: Deploy frontend to uat.agathatrack.com
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
@@ -133,29 +58,9 @@ jobs:
           password: ${{ secrets.UAT_FTP_PASSWORD }}
           server-dir: ./
           local-dir: flutter_app/build/web/
-          # Don't wipe the backend folder when refreshing the frontend.
           exclude: |
             **/backend/**
 
-      # ===== STAGE MIGRATIONS + RESTART TRIGGER INTO BACKEND PAYLOAD =====
-      # UAT is intentionally FTP-only (no SSH — SSH is reserved for the final
-      # agathatrack.com prod site). With no remote shell, this deploy cannot
-      # run `npm ci`, migrations, or `touch tmp/restart.txt` on the server, so
-      # we compensate purely over FTP:
-      #   1. Copy db/migrations/ into server/db/migrations/ so the SQL files
-      #      ship to the box for reference. NOTE: nothing on UAT runs them
-      #      automatically — apply them manually (see "MANUAL STEPS" below).
-      #   2. Write server/tmp/restart.txt with a fresh timestamp. Passenger
-      #      (cPanel Node.js app) restarts whenever this file's mtime changes,
-      #      so uploading it each deploy makes the app pick up the new code.
-      #
-      # MANUAL STEPS ON UAT (only needed occasionally, not every deploy):
-      #   - Dependency changes: the backend FTP excludes node_modules, so when
-      #     server/package.json changes, click "Run NPM Install" in cPanel →
-      #     Setup Node.js App for the UAT app.
-      #   - Schema changes: apply the new db/migrations/*.sql files in order
-      #     against the UAT Postgres (psql / pgAdmin). All migrations are
-      #     idempotent (IF NOT EXISTS), so re-running is safe.
       - name: Stage migrations + restart trigger under server/
         run: |
           mkdir -p server/db server/tmp
@@ -164,10 +69,6 @@ jobs:
           ls server/db/migrations
           cat server/tmp/restart.txt
 
-      # ===== DEPLOY BACKEND (Node.js) — FTP ONLY =====
-      # Excludes node_modules (install via cPanel when deps change), tests, and
-      # dev configs. The tmp/restart.txt staged above rides along and triggers
-      # a Passenger restart on upload — no SSH required.
       - name: Deploy backend to uat.agathatrack.com/backend/
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
@@ -183,3 +84,88 @@ jobs:
             **/coverage/**
             **/*.test.js
             **/babel.config.cjs
+
+      - name: Migration reminder
+        run: |
+          echo "::notice::UAT is FTP-only — apply any new SQL in server/db/migrations/ manually on UAT Postgres before running live E2E."
+          echo "New migration files in this deploy:"
+          ls -1 db/migrations/*.sql 2>/dev/null || true
+
+  # Post-deploy HTTP smoke — validates DNS, TLS, Passenger restart, API prefix.
+  smoke:
+    name: UAT post-deploy smoke
+    needs: deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Wait for UAT to become healthy
+        run: |
+          set -e
+          for i in $(seq 1 18); do
+            if curl -sf "${UAT_BASE_URL}/backend/health" | grep -q '"status":"OK"'; then
+              echo "Backend healthy after attempt $i"
+              break
+            fi
+            echo "Waiting for Passenger restart ($i/18)..."
+            sleep 10
+          done
+          curl -sf "${UAT_BASE_URL}/backend/health"
+          curl -sf "${UAT_BASE_URL}/landing" -o /dev/null
+          curl -sf "${UAT_BASE_URL}/backend/" | grep -q 'Backend alive'
+
+  # Live UAT smoke E2E — runs in parallel with manual UAT; does not block deploy.
+  uat-e2e-smoke:
+    name: UAT live smoke E2E
+    needs: deploy
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: e2e/package-lock.json
+
+      - name: Install E2E dependencies
+        working-directory: e2e
+        run: |
+          npm ci
+          npx playwright install chromium --with-deps
+
+      - name: Run @smoke Playwright tests against live UAT
+        working-directory: e2e
+        env:
+          E2E_BASE_URL: ${{ env.UAT_BASE_URL }}
+        run: npm run test:smoke
+
+      - name: Upload Playwright report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report-uat-smoke
+          path: e2e/playwright-report/
+
+  # Full localhost E2E — prod-readiness gate; runs in parallel with deploy.
+  uat-e2e-full:
+    name: UAT full E2E (localhost)
+    uses: ./.github/workflows/_reusable-e2e-local.yml
+
+  # Aggregate status for GitHub Environment protection on PROD (required check).
+  prod-ready:
+    name: Prod ready
+    needs: [smoke, uat-e2e-smoke, uat-e2e-full]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Verify all UAT gates passed
+        run: |
+          smoke="${{ needs.smoke.result }}"
+          live="${{ needs.uat-e2e-smoke.result }}"
+          full="${{ needs.uat-e2e-full.result }}"
+          echo "smoke=$smoke live_smoke_e2e=$live full_e2e=$full"
+          if [ "$smoke" != "success" ] || [ "$live" != "success" ] || [ "$full" != "success" ]; then
+            echo "::error::Not all UAT gates passed — do not deploy to prod."
+            exit 1
+          fi
+          echo "All UAT gates passed. Safe to deploy commit ${{ github.sha }} to prod."

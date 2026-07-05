@@ -84,12 +84,34 @@ npm run report       # open HTML report after a run
 
 ## CI
 
-The `e2e` workflow (`.github/workflows/e2e.yml`) runs on pull requests:
+| Workflow | Trigger | Role |
+|----------|---------|------|
+| `ci.yml` | push/PR → `main` | Flutter analyze + unit/widget tests + web build; backend Jest |
+| `e2e.yml` | PR → `main`, manual | Full Playwright against **localhost** (advisory on PRs) |
+| `deploy-uat.yml` | push → `release/uat-*` | Fast FTP deploy → post-deploy smoke + live `@smoke` E2E + full localhost E2E → `prod-ready` gate |
+| `deploy-prod.yml` | manual `workflow_dispatch` (preferred) or release publish | FTP + SSH deploy; post-deploy HTTP smoke |
 
-1. Start PostgreSQL service container
-2. Build Flutter web
-3. Start Node server
-4. Run Playwright (Chromium)
+### UAT deploy flow
+
+1. Cut `release/uat-*` from green `main` — **no unit-test re-run** (CI already validated the code).
+2. `deploy` job FTP-publishes frontend + backend (~5 min).
+3. In parallel: `smoke` (HTTP), `uat-e2e-smoke` (Playwright `@smoke` on live UAT), `uat-e2e-full` (full suite on localhost).
+4. When all three pass, `prod-ready` goes green — configure the **PROD** GitHub Environment to require this check before `workflow_dispatch` deploys.
+5. Apply UAT DB migrations manually when `db/migrations/` changes (FTP-only hosting).
+
+### Prod deploy
+
+Use **Actions → Deploy Production → Run workflow** with the UAT-validated commit SHA. Post-deploy smoke hits `https://agathatrack.com/backend/health` and `/landing`.
+
+### `@smoke` tests
+
+Tag fast, critical journeys with `@smoke` in the test title (e.g. login). Run locally:
+
+```bash
+cd e2e && npm run test:smoke
+```
+
+Live UAT smoke E2E uses `E2E_BASE_URL=https://uat.agathatrack.com`. Set `E2E=1` on the UAT Node app if auth rate limits interfere.
 
 ## Writing new journeys
 
