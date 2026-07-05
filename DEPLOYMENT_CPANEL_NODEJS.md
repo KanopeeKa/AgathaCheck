@@ -176,4 +176,4 @@ The repository ships **two interchangeable backends** that share the same Postgr
 - **Dart / Shelf** (`server/bin/server.dart`) — used by the Replit workflow and the AOT-compiled production binary
 - **Node.js / Express** (`server/bin/server.js`) — used here on cPanel because cPanel Node.js hosting doesn't support a Dart runtime
 
-Both are kept in sync (parity is enforced by the test suites — ~338 Jest tests for Node.js, plus Dart `shelf` tests). Either can serve any database created by `migrate.dart`.
+Both are kept in sync (parity is enforced by the Jest suite against the Node routes plus `dart analyze` on the Dart shelf server; there is no separate Dart test runner). Either can serve any database created by `migrate.dart`.
