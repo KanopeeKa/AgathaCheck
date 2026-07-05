@@ -1,0 +1,102 @@
+name: E2E (Playwright)
+
+on:
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+env:
+  FLUTTER_VERSION: '3.32.0'
+
+jobs:
+  e2e:
+    name: Playwright browser E2E
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: user
+          POSTGRES_PASSWORD: password
+          POSTGRES_DB: agatha_db
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U user -d agatha_db"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: |
+            server/package-lock.json
+            e2e/package-lock.json
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+
+      - name: Install server dependencies
+        working-directory: server
+        run: npm ci
+
+      - name: Bootstrap database
+        env:
+          PGUSER: user
+          PGPASSWORD: password
+          PGHOST: localhost
+          PGPORT: 5432
+          PGDATABASE: agatha_db
+        run: |
+          chmod +x e2e/scripts/bootstrap-db.sh
+          ./e2e/scripts/bootstrap-db.sh
+
+      - name: Build Flutter web
+        working-directory: flutter_app
+        run: |
+          flutter pub get
+          flutter build web --release --no-tree-shake-icons
+
+      - name: Install E2E dependencies
+        working-directory: e2e
+        run: |
+          npm ci
+          npx playwright install chromium --with-deps
+
+      - name: Start server
+        working-directory: server
+        env:
+          PGUSER: user
+          PGPASSWORD: password
+          PGHOST: localhost
+          PGPORT: 5432
+          PGDATABASE: agatha_db
+          E2E: '1'
+        run: |
+          node bin/start.js &
+          for i in $(seq 1 30); do
+            curl -sf http://localhost:3000/landing && break
+            sleep 2
+          done
+
+      - name: Run Playwright tests
+        working-directory: e2e
+        env:
+          E2E_BASE_URL: http://localhost:3000
+        run: npm test
+
+      - name: Upload Playwright report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: e2e/playwright-report/
