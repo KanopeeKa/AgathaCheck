@@ -1,3 +1,5 @@
+import 'org_primary_contact.dart';
+
 class Organization {
   const Organization({
     required this.id,
@@ -9,10 +11,13 @@ class Organization {
     this.website = '',
     this.bio = '',
     this.photoUrl = '',
+    this.logoUrl = '',
     this.createdBy,
     this.role = 'admin',
     this.memberCount = 0,
+    this.externalCount = 0,
     this.petCount = 0,
+    this.primaryContact,
     this.createdAt,
     this.updatedAt,
   });
@@ -26,10 +31,13 @@ class Organization {
   final String website;
   final String bio;
   final String photoUrl;
+  final String logoUrl;
   final String? createdBy;
   final String role;
   final int memberCount;
+  final int externalCount;
   final int petCount;
+  final OrgPrimaryContact? primaryContact;
   final DateTime? createdAt;
   final DateTime? updatedAt;
 
@@ -51,10 +59,13 @@ class Organization {
     String? website,
     String? bio,
     String? photoUrl,
+    String? logoUrl,
     String? createdBy,
     String? role,
     int? memberCount,
+    int? externalCount,
     int? petCount,
+    OrgPrimaryContact? primaryContact,
     DateTime? createdAt,
     DateTime? updatedAt,
   }) {
@@ -68,10 +79,13 @@ class Organization {
       website: website ?? this.website,
       bio: bio ?? this.bio,
       photoUrl: photoUrl ?? this.photoUrl,
+      logoUrl: logoUrl ?? this.logoUrl,
       createdBy: createdBy ?? this.createdBy,
       role: role ?? this.role,
       memberCount: memberCount ?? this.memberCount,
+      externalCount: externalCount ?? this.externalCount,
       petCount: petCount ?? this.petCount,
+      primaryContact: primaryContact ?? this.primaryContact,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
     );

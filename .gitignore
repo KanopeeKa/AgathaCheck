@@ -50,3 +50,4 @@ server/node_modules/
 # `npm ci` produce reproducible installs. Do not gitignore it.
 server/yarn.lock
 node_modules/
+server/uploads/

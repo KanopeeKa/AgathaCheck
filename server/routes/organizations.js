@@ -1,4 +1,7 @@
 import express from 'express';
+import fs from 'fs';
+import path from 'path';
+import multer from 'multer';
 import { v4 as uuidv4 } from 'uuid';
 import jwt from 'jsonwebtoken';
 
@@ -42,6 +45,111 @@ import {
   normaliseRole,
 } from '../lib/orgRoles.js';
 
+const MAX_ORG_IMAGE_BYTES = 2 * 1024 * 1024;
+const ORG_IMAGE_EXTENSIONS = new Set(['.jpg', '.jpeg', '.png', '.webp']);
+const ORG_IMAGE_MIME_TYPES = new Set([
+  'image/jpeg',
+  'image/png',
+  'image/webp',
+]);
+
+const orgImageUpload = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: MAX_ORG_IMAGE_BYTES },
+  fileFilter: (_req, file, cb) => {
+    const ext = path.extname(file.originalname).toLowerCase();
+    if (ORG_IMAGE_EXTENSIONS.has(ext) && ORG_IMAGE_MIME_TYPES.has(file.mimetype)) {
+      cb(null, true);
+      return;
+    }
+    cb(new Error('Only JPG, PNG, and WebP images are allowed'));
+  },
+});
+
+const ORG_COUNT_SELECT = `
+  (SELECT COUNT(*) FROM organization_users
+    WHERE organization_id = o.id AND role NOT LIKE 'pending_%') as member_count,
+  (SELECT COUNT(*) FROM org_foster_parents
+    WHERE organization_id = o.id) as external_count,
+  (SELECT COUNT(*) FROM pets
+    WHERE organization_id = o.id AND COALESCE(passed_away, false) = false) as pet_count`;
+
+function orgUploadDir(subdir) {
+  return process.env.ORG_UPLOAD_DIR || path.resolve(process.cwd(), 'uploads', subdir);
+}
+
+function saveOrgImage(file, orgId, subdir) {
+  const ext = path.extname(file.originalname).toLowerCase() || '.jpg';
+  const dir = orgUploadDir(subdir);
+  fs.mkdirSync(dir, { recursive: true });
+  const filename = `${orgId}_${Date.now()}${ext}`;
+  fs.writeFileSync(path.join(dir, filename), file.buffer);
+  return `/uploads/${subdir}/${filename}`;
+}
+
+function handleOrgImageUpload(req, res, next) {
+  orgImageUpload.single('photo')(req, res, (err) => {
+    if (!err) return next();
+    if (err instanceof multer.MulterError && err.code === 'LIMIT_FILE_SIZE') {
+      return res.status(400).json({ error: 'Image must be 2 MB or smaller' });
+    }
+    return res.status(400).json({ error: err.message });
+  });
+}
+
+async function loadPrimaryContact(pool, orgId, primaryContactRef) {
+  if (!primaryContactRef) return null;
+  const idx = primaryContactRef.indexOf(':');
+  if (idx <= 0) return null;
+  const kind = primaryContactRef.slice(0, idx);
+  const recordId = primaryContactRef.slice(idx + 1);
+  if (kind !== 'member') return null;
+
+  const result = await pool.query(
+    `SELECT ou.id AS record_id,
+            u.id AS user_id,
+            TRIM(COALESCE(u.first_name, '') || ' ' || COALESCE(u.last_name, '')) AS display_name,
+            u.email,
+            u.photo_url,
+            ou.role,
+            COALESCE(ou.foster_phone, '') AS phone
+     FROM organization_users ou
+     JOIN users u ON u.id = ou.user_id
+     WHERE ou.organization_id = $1 AND ou.id = $2`,
+    [orgId, recordId],
+  );
+  if (!result.rows.length) return null;
+  const row = result.rows[0];
+  const role = normaliseRole(row.role);
+  if (!isOrgAdmin(role) || role.startsWith('pending_')) return null;
+  return {
+    id: `member:${row.record_id}`,
+    kind: 'member',
+    record_id: row.record_id,
+    user_id: row.user_id,
+    display_name: (row.display_name || '').trim() || row.email || '',
+    email: row.email || null,
+    phone: row.phone || '',
+    photo_url: row.photo_url || null,
+    role,
+  };
+}
+
+async function fetchOrgForUser(pool, userId, orgId) {
+  const result = await pool.query(
+    `SELECT o.*, ou.role,
+      ${ORG_COUNT_SELECT}
+     FROM organizations o
+     JOIN organization_users ou ON ou.organization_id = o.id AND ou.user_id = $1
+     WHERE o.id = $2`,
+    [userId, orgId],
+  );
+  if (!result.rows.length) return null;
+  const row = result.rows[0];
+  const primaryContact = await loadPrimaryContact(pool, orgId, row.primary_contact_ref);
+  return orgRowToMap({ ...row, role: normaliseRole(row.role), primary_contact: primaryContact });
+}
+
 function extractUserId(req) {
   const auth = req.headers['authorization'] || req.headers['Authorization'];
   if (!auth || !auth.startsWith('Bearer ')) return null;
@@ -63,8 +171,12 @@ function orgRowToMap(row) {
     website: row.website || null,
     bio: row.bio || '',
     photo_url: row.photo_url || '',
+    logo_url: row.logo_url || '',
+    primary_contact_ref: row.primary_contact_ref || null,
+    primary_contact: row.primary_contact || null,
     role: row.role || null,
     member_count: parseInt(row.member_count, 10) || 0,
+    external_count: parseInt(row.external_count, 10) || 0,
     pet_count: parseInt(row.pet_count, 10) || 0,
     created_at: row.created_at,
     updated_at: row.updated_at,
@@ -179,14 +291,21 @@ export default function organizationsRoutes(pool) {
     try {
       const result = await pool.query(
         `SELECT o.*, ou.role,
-          (SELECT COUNT(*) FROM organization_users WHERE organization_id = o.id) as member_count,
-          0 as pet_count
+          ${ORG_COUNT_SELECT}
          FROM organizations o
          JOIN organization_users ou ON ou.organization_id = o.id AND ou.user_id = $1
          ORDER BY o.name`,
         [userId]
       );
-      res.json(result.rows.map((row) => orgRowToMap({ ...row, role: normaliseRole(row.role) })));
+      const orgs = await Promise.all(result.rows.map(async (row) => {
+        const primaryContact = await loadPrimaryContact(pool, row.id, row.primary_contact_ref);
+        return orgRowToMap({
+          ...row,
+          role: normaliseRole(row.role),
+          primary_contact: primaryContact,
+        });
+      }));
+      res.json(orgs);
     } catch (err) {
       res.status(500).json({ error: publicError(err) });
     }
@@ -196,17 +315,9 @@ export default function organizationsRoutes(pool) {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     try {
-      const result = await pool.query(
-        `SELECT o.*, ou.role,
-          (SELECT COUNT(*) FROM organization_users WHERE organization_id = o.id) as member_count,
-          0 as pet_count
-         FROM organizations o
-         JOIN organization_users ou ON ou.organization_id = o.id AND ou.user_id = $1
-         WHERE o.id = $2`,
-        [userId, req.params.id]
-      );
-      if (result.rows.length === 0) return res.status(404).json({ error: 'Organization not found' });
-      res.json(orgRowToMap({ ...result.rows[0], role: normaliseRole(result.rows[0].role) }));
+      const org = await fetchOrgForUser(pool, userId, req.params.id);
+      if (!org) return res.status(404).json({ error: 'Organization not found' });
+      res.json(org);
     } catch (err) {
       res.status(500).json({ error: publicError(err) });
     }
@@ -216,11 +327,11 @@ export default function organizationsRoutes(pool) {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     try {
-      const { name, type, email, phone, address, website, bio, photo_url } = req.body;
+      const { name, type, email, phone, address, website, bio, photo_url, logo_url } = req.body;
       const orgId = uuidv4();
       await pool.query(
-        'INSERT INTO organizations (id, name, type, email, phone, address, website, bio, photo_url) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)',
-        [orgId, name || '', type || 'professional', email || null, phone || null, address || null, website || null, bio || '', photo_url || '']
+        'INSERT INTO organizations (id, name, type, email, phone, address, website, bio, photo_url, logo_url) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)',
+        [orgId, name || '', type || 'professional', email || null, phone || null, address || null, website || null, bio || '', photo_url || '', logo_url || '']
       );
       const ouId = uuidv4();
       await pool.query(
@@ -229,11 +340,11 @@ export default function organizationsRoutes(pool) {
       );
       const result = await pool.query(
         `SELECT o.*, '${ORG_ROLE_SUPER_ADMIN}' as role,
-          1 as member_count, 0 as pet_count
+          1 as member_count, 0 as external_count, 0 as pet_count
          FROM organizations o WHERE o.id = $1`,
         [orgId]
       );
-      res.status(201).json(orgRowToMap(result.rows[0]));
+      res.status(201).json(orgRowToMap({ ...result.rows[0], primary_contact: null }));
     } catch (err) {
       res.status(500).json({ error: publicError(err) });
     }
@@ -244,22 +355,14 @@ export default function organizationsRoutes(pool) {
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     try {
       if (!(await requireSuperAdmin(pool, res, req.params.id, userId))) return;
-      const { name, type, email, phone, address, website, bio, photo_url } = req.body;
+      const { name, type, email, phone, address, website, bio, photo_url, logo_url } = req.body;
       await pool.query(
-        'UPDATE organizations SET name = $1, type = $2, email = $3, phone = $4, address = $5, website = $6, bio = $7, photo_url = $8, updated_at = NOW() WHERE id = $9',
-        [name || '', type || 'professional', email || null, phone || null, address || null, website || null, bio || '', photo_url || '', req.params.id]
+        'UPDATE organizations SET name = $1, type = $2, email = $3, phone = $4, address = $5, website = $6, bio = $7, photo_url = $8, logo_url = $9, updated_at = NOW() WHERE id = $10',
+        [name || '', type || 'professional', email || null, phone || null, address || null, website || null, bio || '', photo_url || '', logo_url || '', req.params.id]
       );
-      const result = await pool.query(
-        `SELECT o.*, ou.role,
-          (SELECT COUNT(*) FROM organization_users WHERE organization_id = o.id) as member_count,
-          0 as pet_count
-         FROM organizations o
-         JOIN organization_users ou ON ou.organization_id = o.id AND ou.user_id = $1
-         WHERE o.id = $2`,
-        [userId, req.params.id]
-      );
-      if (result.rows.length === 0) return res.status(404).json({ error: 'Organization not found' });
-      res.json(orgRowToMap({ ...result.rows[0], role: normaliseRole(result.rows[0].role) }));
+      const org = await fetchOrgForUser(pool, userId, req.params.id);
+      if (!org) return res.status(404).json({ error: 'Organization not found' });
+      res.json(org);
     } catch (err) {
       res.status(500).json({ error: publicError(err) });
     }
@@ -278,12 +381,98 @@ export default function organizationsRoutes(pool) {
     }
   });
 
-  router.post('/:id/photo', async (req, res) => {
+  router.post('/:id/photo', handleOrgImageUpload, async (req, res) => {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     try {
       if (!(await requireOrgAdmin(pool, res, req.params.id, userId))) return;
-      res.json({ message: 'Photo uploaded', photo_url: `/uploads/org_photos/${req.params.id}.jpg` });
+      if (!req.file) return res.status(400).json({ error: 'No image uploaded' });
+      const photoUrl = saveOrgImage(req.file, req.params.id, 'org_photos');
+      await pool.query(
+        'UPDATE organizations SET photo_url = $1, updated_at = NOW() WHERE id = $2',
+        [photoUrl, req.params.id],
+      );
+      const org = await fetchOrgForUser(pool, userId, req.params.id);
+      if (!org) return res.status(404).json({ error: 'Organization not found' });
+      res.json(org);
+    } catch (err) {
+      res.status(500).json({ error: publicError(err) });
+    }
+  });
+
+  router.post('/:id/logo', handleOrgImageUpload, async (req, res) => {
+    const userId = extractUserId(req);
+    if (!userId) return res.status(401).json({ error: 'Unauthorized' });
+    try {
+      if (!(await requireOrgAdmin(pool, res, req.params.id, userId))) return;
+      if (!req.file) return res.status(400).json({ error: 'No image uploaded' });
+      const logoUrl = saveOrgImage(req.file, req.params.id, 'org_logos');
+      await pool.query(
+        'UPDATE organizations SET logo_url = $1, updated_at = NOW() WHERE id = $2',
+        [logoUrl, req.params.id],
+      );
+      const org = await fetchOrgForUser(pool, userId, req.params.id);
+      if (!org) return res.status(404).json({ error: 'Organization not found' });
+      res.json(org);
+    } catch (err) {
+      res.status(500).json({ error: publicError(err) });
+    }
+  });
+
+  router.put('/:orgId/primary-contact', async (req, res) => {
+    const userId = extractUserId(req);
+    if (!userId) return res.status(401).json({ error: 'Unauthorized' });
+    const { orgId } = req.params;
+    const { kind, record_id: recordId, recordId: recordIdCamel } = req.body || {};
+    const personKind = kind || 'member';
+    const personRecordId = recordId || recordIdCamel;
+    if (!personRecordId) {
+      return res.status(400).json({ error: 'record_id is required' });
+    }
+    if (personKind !== 'member') {
+      return res.status(400).json({ error: 'Primary contact must be a registered member' });
+    }
+    try {
+      if (!(await requireOrgAdmin(pool, res, orgId, userId))) return;
+      const memberResult = await pool.query(
+        `SELECT ou.id, ou.role
+         FROM organization_users ou
+         WHERE ou.organization_id = $1 AND ou.id = $2`,
+        [orgId, personRecordId],
+      );
+      if (!memberResult.rows.length) {
+        return res.status(404).json({ error: 'Person not found' });
+      }
+      const role = normaliseRole(memberResult.rows[0].role);
+      if (!isOrgAdmin(role) || role.startsWith('pending_')) {
+        return res.status(400).json({ error: 'Primary contact must be an admin or super admin' });
+      }
+      const contactRef = `member:${personRecordId}`;
+      await pool.query(
+        'UPDATE organizations SET primary_contact_ref = $1, updated_at = NOW() WHERE id = $2',
+        [contactRef, orgId],
+      );
+      const org = await fetchOrgForUser(pool, userId, orgId);
+      if (!org) return res.status(404).json({ error: 'Organization not found' });
+      res.json(org);
+    } catch (err) {
+      res.status(500).json({ error: publicError(err) });
+    }
+  });
+
+  router.delete('/:orgId/primary-contact', async (req, res) => {
+    const userId = extractUserId(req);
+    if (!userId) return res.status(401).json({ error: 'Unauthorized' });
+    const { orgId } = req.params;
+    try {
+      if (!(await requireOrgAdmin(pool, res, orgId, userId))) return;
+      await pool.query(
+        'UPDATE organizations SET primary_contact_ref = NULL, updated_at = NOW() WHERE id = $1',
+        [orgId],
+      );
+      const org = await fetchOrgForUser(pool, userId, orgId);
+      if (!org) return res.status(404).json({ error: 'Organization not found' });
+      res.json(org);
     } catch (err) {
       res.status(500).json({ error: publicError(err) });
     }
@@ -467,6 +656,7 @@ export default function organizationsRoutes(pool) {
         name: r.name,
         species: r.species,
         breed: r.breed,
+        photo_path: r.photo_path || null,
         organization_id: r.organization_id,
         organization_name: r.organization_name || null,
       })));

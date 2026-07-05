@@ -60,6 +60,7 @@ export function personSummaryToMap(row) {
     role: row.role ? normaliseRole(row.role) : null,
     photo_url: row.photo_url || null,
     is_pending: !!row.is_pending,
+    is_primary_contact: !!row.is_primary_contact,
     active_foster_count: parseInt(row.active_foster_count, 10) || 0,
     category_rank: row.category_rank,
   };
@@ -77,6 +78,12 @@ export function personDetailToMap(row, extras = {}) {
 }
 
 export async function listOrgPeople(pool, orgId) {
+  const orgResult = await pool.query(
+    'SELECT primary_contact_ref FROM organizations WHERE id = $1',
+    [orgId],
+  );
+  const primaryContactRef = orgResult.rows[0]?.primary_contact_ref || null;
+
   const memberResult = await pool.query(
     `SELECT 'member' AS kind,
             ou.id AS record_id,
@@ -116,6 +123,7 @@ export async function listOrgPeople(pool, orgId) {
   ].map((row) => ({
     ...row,
     category_rank: personCategoryRank(row.role, row.kind),
+    is_primary_contact: primaryContactRef === personRef(row.kind, row.record_id),
   }));
 
   combined.sort((a, b) => {
@@ -228,6 +236,12 @@ async function loadPersonPlacements(pool, orgId, kind, recordId, userId, externa
 }
 
 export async function getOrgPersonDetail(pool, orgId, kind, recordId) {
+  const orgResult = await pool.query(
+    'SELECT primary_contact_ref FROM organizations WHERE id = $1',
+    [orgId],
+  );
+  const primaryContactRef = orgResult.rows[0]?.primary_contact_ref || null;
+
   let row;
   if (kind === 'member') {
     const result = await pool.query(
@@ -250,6 +264,7 @@ export async function getOrgPersonDetail(pool, orgId, kind, recordId) {
     );
     row = result.rows[0];
     if (!row) return null;
+    row.is_primary_contact = primaryContactRef === personRef('member', recordId);
     const placements = await loadPersonPlacements(
       pool,
       orgId,

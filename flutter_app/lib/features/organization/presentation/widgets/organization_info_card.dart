@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import '../../../../core/providers/api_base_url_provider.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../domain/entities/organization.dart';
+import '../utils/org_member_count_label.dart';
+import 'org_image_avatar.dart';
 
-class OrganizationInfoCard extends StatelessWidget {
+class OrganizationInfoCard extends ConsumerWidget {
   final Organization org;
   final ThemeData theme;
   final ColorScheme colorScheme;
@@ -19,8 +24,17 @@ class OrganizationInfoCard extends StatelessWidget {
     required this.localizedTypeLabel,
   });
 
+  String _resolveUrl(WidgetRef ref, String path) {
+    if (path.isEmpty) return '';
+    if (path.startsWith('http://') || path.startsWith('https://')) return path;
+    return '${ref.read(apiBaseUrlProvider)}$path';
+  }
+
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final resolvedPhoto = _resolveUrl(ref, org.photoUrl);
+    final resolvedLogo = _resolveUrl(ref, org.logoUrl);
+
     return MergeSemantics(
       child: Semantics(
         label: '${org.name}, ${localizedTypeLabel(l, org.type)}',
@@ -31,22 +45,21 @@ class OrganizationInfoCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                if (org.logoUrl.isNotEmpty) ...[
+                  OrgLogoImage(
+                    logoUrl: org.logoUrl,
+                    resolvedUrl: resolvedLogo,
+                    height: 64,
+                  ),
+                  const SizedBox(height: 16),
+                ],
                 Row(
                   children: [
-                    CircleAvatar(
+                    OrgImageAvatar(
+                      imageUrl: org.photoUrl,
+                      type: org.type,
                       radius: 32,
-                      backgroundColor: org.type == OrganizationType.professional
-                          ? AppTheme.orgIconBg
-                          : AppTheme.orgCharityBg,
-                      child: Icon(
-                        org.type == OrganizationType.professional
-                            ? Icons.business
-                            : Icons.volunteer_activism,
-                        size: 32,
-                        color: org.type == OrganizationType.professional
-                            ? AppTheme.orgIconFg
-                            : AppTheme.orgCharityFg,
-                      ),
+                      resolvedUrl: resolvedPhoto,
                     ),
                     const SizedBox(width: 16),
                     Expanded(
@@ -87,16 +100,20 @@ class OrganizationInfoCard extends StatelessWidget {
                 ),
                 if (org.bio.isNotEmpty) ...[
                   const SizedBox(height: 16),
-                  Text(org.bio, style: theme.textTheme.bodyMedium?.copyWith(
-                    color: colorScheme.onSurfaceVariant,
-                  )),
+                  Text(
+                    org.bio,
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: colorScheme.onSurfaceVariant,
+                    ),
+                  ),
                 ],
                 const SizedBox(height: 16),
                 Row(
                   children: [
                     _StatChip(
                       icon: Icons.people,
-                      label: l.memberCount(org.memberCount),
+                      label: orgMemberCountLabel(
+                          l, org.memberCount, org.externalCount),
                       colorScheme: colorScheme,
                     ),
                     const SizedBox(width: 12),
@@ -121,15 +138,18 @@ class _StatChip extends StatelessWidget {
   final String label;
   final ColorScheme colorScheme;
 
-  const _StatChip({required this.icon, required this.label, required this.colorScheme});
+  const _StatChip(
+      {required this.icon, required this.label, required this.colorScheme});
 
   @override
   Widget build(BuildContext context) {
-    return Chip(
-      avatar: Icon(icon, size: 18, color: colorScheme.primary),
-      label: Text(label, style: TextStyle(fontWeight: FontWeight.w600)),
-      backgroundColor: colorScheme.surfaceContainerHighest,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+    return Flexible(
+      child: Chip(
+        avatar: Icon(icon, size: 18, color: colorScheme.primary),
+        label: Text(label, style: TextStyle(fontWeight: FontWeight.w600)),
+        backgroundColor: colorScheme.surfaceContainerHighest,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+      ),
     );
   }
 }
