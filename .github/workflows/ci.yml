@@ -64,6 +64,9 @@ jobs:
         # tests pass (the ✅ shows, then "Shell subprocess crashed with
         # segmentation fault" during finalization). Re-enable coverage in a
         # dedicated job/runner once that race is resolved upstream.
+        #
+        # Foster-parent unit tests live under test/features/organization/
+        # (entities, providers, widgets, screens) and are included here.
         run: flutter test --concurrency=1 --exclude-tags=integration
 
       - name: Run integration tests (if present)
@@ -110,4 +113,7 @@ jobs:
 
       - name: Run backend tests
         working-directory: server
+        # Foster-parent API/helpers: test/organizations.test.js (Foster parents,
+        # People directory), test/orgPeople.test.js, test/externalFosterNotice.test.js,
+        # test/auth.test.js (signup link), test/fosterPlacements.test.js, test/orgRoles.test.js
         run: npx jest --env=node --forceExit

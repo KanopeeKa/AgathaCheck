@@ -126,6 +126,31 @@ describe('Auth Routes', () => {
       expect(res.body.user).toHaveProperty('locale', 'fr');
     });
 
+    it('links external foster contacts by email on signup', async () => {
+      const fosterLinkCalls = [];
+      const pool = buildMockPool({
+        insertUser: async () => ({ rows: [{ id: 'new-user-id' }] }),
+        fallback: async (sql, params) => {
+          if (sql.includes('UPDATE org_foster_parents')) {
+            fosterLinkCalls.push({ sql, params });
+            return { rows: [] };
+          }
+          return { rows: [] };
+        },
+      });
+      const signupApp = createApp(pool, mockComparePassword);
+      const res = await request(signupApp)
+        .post('/api/auth/signup')
+        .send({
+          email: 'foster@example.com',
+          password: 'Password123',
+        });
+      expect(res.statusCode).toBe(201);
+      expect(fosterLinkCalls).toHaveLength(1);
+      expect(fosterLinkCalls[0].params[0]).toBe('new-user-id');
+      expect(fosterLinkCalls[0].params[1]).toBe('foster@example.com');
+    });
+
     it('should use default values for optional fields', async () => {
       const res = await request(app)
         .post('/api/auth/signup')
