@@ -1,4 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:pet_profile_app/core/utils/calendar_date.dart';
 import 'package:pet_profile_app/features/health_tracking/data/models/health_entry_model.dart';
 import 'package:pet_profile_app/features/health_tracking/domain/entities/health_entry.dart';
 
@@ -308,6 +309,25 @@ void main() {
       final json = model.toJson();
       expect(json['start_date'], '2026-06-30');
       expect(json['next_due_date'], '2026-06-30');
+      expect(json['next_due_date'], isNot(contains('T')));
+    });
+
+    test('toJson preserves picked day when nextDueDate is UTC-flagged on web', () {
+      // Regression: July 8 picked in UTC+2 can appear as UTC July 7 22:00.
+      final model = HealthEntryModel(
+        id: 'e-1',
+        petId: 'pet-1',
+        name: 'Vet visit test 08/07/2026',
+        type: HealthEntryType.vetVisit,
+        frequency: HealthFrequency.once,
+        startDate: DateTime.parse('2026-07-07T22:00:00.000Z'),
+        nextDueDate: DateTime.parse('2026-07-07T22:00:00.000Z'),
+      );
+      final json = model.toJson();
+      expect(
+        json['next_due_date'],
+        toCalendarDateString(DateTime.parse('2026-07-07T22:00:00.000Z').toLocal()),
+      );
       expect(json['next_due_date'], isNot(contains('T')));
     });
   });

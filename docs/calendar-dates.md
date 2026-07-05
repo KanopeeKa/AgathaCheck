@@ -78,6 +78,11 @@ After `showDatePicker`, always normalize:
 onChanged(calendarDateOnly(picked));
 ```
 
+`calendarDateOnly` / `toCalendarDateString` convert UTC-flagged instants through
+`toLocal()` before reading Y-M-D. On Flutter web, a picked calendar day can be
+represented as a UTC `DateTime` (e.g. July 8 00:00 CEST → `…T22:00:00.000Z`);
+reading UTC `.day` would shift the stored date back one day east of UTC.
+
 ## Tests
 
 - `flutter_app/test/core/utils/calendar_date_test.dart`

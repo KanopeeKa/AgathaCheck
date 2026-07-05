@@ -720,10 +720,8 @@ class _HealthEntryFormScreenState extends ConsumerState<HealthEntryFormScreen> {
 
     bool markCompleted = false;
     final today = DateTime.now();
-    final dueOnly = _dueDate != null
-        ? DateTime(_dueDate!.year, _dueDate!.month, _dueDate!.day)
-        : null;
-    final todayOnly = DateTime(today.year, today.month, today.day);
+    final dueOnly = _dueDate != null ? calendarDateOnly(_dueDate!) : null;
+    final todayOnly = calendarDateOnly(today);
 
     if (!_isEdit &&
         _frequency == HealthFrequency.once &&
@@ -1111,8 +1109,7 @@ class _DatePickerField extends StatelessWidget {
             lastDate: DateTime(2030),
           );
           if (picked != null) {
-            onChanged(DateTime(picked.year, picked.month, picked.day,
-                date.hour, date.minute));
+            onChanged(calendarDateOnly(picked));
           }
         },
         child: InputDecorator(

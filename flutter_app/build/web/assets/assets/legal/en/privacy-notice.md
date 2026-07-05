@@ -97,6 +97,7 @@ Agatha Track does not use the data described in this notice for automated decisi
 Personal data may be shared with:
 - service providers that host or technically support Agatha Track, including **o2switch** for hosting and email-related infrastructure support as applicable;
 - payment provider **Qonversion** for billing and subscription processing;
+- **PostHog** (EU-hosted) for optional product analytics when you consent in the app;
 - the relevant organisation and its authorised admins, where a user participates in that organisation’s workspace or where the organisation enters external foster data;
 - competent authorities, courts, regulators, or professional advisers where required by law or reasonably necessary to protect rights, safety, or the service.
 
@@ -110,6 +111,8 @@ Agatha Track currently intends to keep its primary hosting and processing within
 
 Agatha Track currently applies the following retention approach:
 - account data: kept until the account is deleted, unless longer retention is required by law;
+- security and audit logs: identifiable for 14 days, then pseudonymized; audit metadata retained up to 2 years for security and compliance;
+- optional analytics (PostHog): retained per your consent and PostHog project settings; deleted on account erasure where applicable;
 - backups: retained for up to 30 days;
 - inactive accounts: may be deleted after 3 years of inactivity;
 - external foster records: kept until deleted by the organisation, or after 5 years of inactivity following a check with the relevant organisation;
@@ -119,7 +122,9 @@ Actual deletion may occur in stages, for example with short delays for backups, 
 
 ## 8. Cookies and similar technologies
 
-Agatha Track currently expects to use only strictly necessary cookies or similar technologies required for security, authentication, or essential operation of the service at launch. If optional analytics, advertising, or similar non-essential technologies are introduced later, Agatha Track will update its cookie information and, where required, request consent before using them.
+Agatha Track uses strictly necessary cookies or similar technologies required for security, authentication, or essential operation of the service.
+
+If you opt in to analytics in the consent banner, Agatha Track may use **PostHog** (EU-hosted) to collect usage events and, if enabled, masked session replay to improve the product. You can withdraw analytics consent at any time in consent settings. Non-essential analytics are not loaded without your consent.
 
 ## 9. Rights of individuals
 
