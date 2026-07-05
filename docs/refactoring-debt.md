@@ -26,7 +26,7 @@ architectural decisions deferred during the domain-by-domain refactor.
 | Domain | Status | Notes |
 |---|---|---|
 | Infrastructure | In progress | Debt doc, modularity rules, legacy cleanup |
-| Organizations (backend) | Planned | Split `organizations.js` + Jest suites; Dart parity |
+| Organizations (backend) | Done | Split `routes/organizations/` + `test/organizations/` |
 | Health tracking (Flutter) | Planned | Wire `health_entry_form_controller`; extract widgets |
 | Pet profile (Flutter) | Planned | Extract `pet_list_screen` private widgets + tests |
 

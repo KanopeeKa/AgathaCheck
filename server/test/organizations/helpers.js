@@ -1,0 +1,250 @@
+import request from 'supertest';
+import jwt from 'jsonwebtoken';
+import { createApp } from '../../bin/server.js';
+
+const JWT_SECRET = process.env.JWT_SECRET || process.env.SESSION_SECRET || 'default_secret';
+const userId = 'test-user-id';
+const token = jwt.sign({ id: userId, email: 'test@example.com' }, JWT_SECRET, { expiresIn: '1h' });
+const orgId = 'org-1';
+const memberId = 'member-user-id';
+const inviteId = 'invite-1';
+
+export function makeOrgRow(overrides = {}) {
+  return {
+    id: orgId,
+    name: 'Test Org',
+    type: 'professional',
+    email: 'org@test.com',
+    phone: '555-1234',
+    address: '123 Main St',
+    website: 'https://test.org',
+    bio: 'A test organization',
+    photo_url: '/photos/org.jpg',
+    logo_url: '/photos/org-logo.jpg',
+    primary_contact_ref: null,
+    role: 'super_admin',
+    member_count: '2',
+    external_count: '1',
+    pet_count: '1',
+    created_at: new Date('2024-01-01'),
+    updated_at: new Date('2024-06-01'),
+    ...overrides,
+  };
+}
+
+export function buildMockPool(overrides = {}) {
+  const defaultHandler = async (sql, params) => {
+    if (sql.includes('SELECT o.*') && sql.includes('ORDER BY o.name')) {
+      return { rows: [makeOrgRow()] };
+    }
+    if (sql.includes('INSERT INTO organizations')) {
+      return { rows: [] };
+    }
+    if (sql.includes('INSERT INTO organization_users') && !sql.includes('ON CONFLICT')) {
+      return { rows: [] };
+    }
+    if (sql.includes("SELECT o.*, 'super_admin' as role")) {
+      return { rows: [makeOrgRow({ role: 'super_admin', member_count: '1', pet_count: '0' })] };
+    }
+    if (sql.includes('SELECT o.*') && sql.includes('WHERE o.id')) {
+      return { rows: [makeOrgRow()] };
+    }
+    if (sql.includes('UPDATE organizations SET')) {
+      return { rows: [] };
+    }
+    if (sql.includes('DELETE FROM organizations')) {
+      return { rows: [makeOrgRow()] };
+    }
+    if (sql.includes('SELECT ou.id, ou.organization_id')) {
+      return {
+        rows: [{
+          id: inviteId,
+          organization_id: orgId,
+          role: 'pending_admin',
+          org_name: 'Test Org',
+          org_type: 'professional',
+        }],
+      };
+    }
+    if (sql.includes("UPDATE organization_users SET role = REPLACE")) {
+      return {
+        rows: [{
+          id: inviteId,
+          organization_id: orgId,
+          role: 'admin',
+          user_id: userId,
+        }],
+      };
+    }
+    if (sql.includes("DELETE FROM organization_users WHERE id")) {
+      return { rows: [] };
+    }
+    if (sql.includes('SELECT ou.id, ou.role, ou.created_at, u.id as user_id')) {
+      return {
+        rows: [{
+          id: 'ou-1',
+          user_id: userId,
+          email: 'test@example.com',
+          first_name: 'Test',
+          last_name: 'User',
+          photo_url: '/photos/user.jpg',
+          role: 'super_admin',
+          created_at: new Date('2024-01-01'),
+        }],
+      };
+    }
+    if (sql.includes('SELECT id FROM users WHERE email')) {
+      return { rows: [{ id: memberId }] };
+    }
+    if (sql.includes('INSERT INTO organization_users') && sql.includes('ON CONFLICT')) {
+      return { rows: [] };
+    }
+    if (sql.includes('UPDATE organization_users SET role = $1')) {
+      return {
+        rows: [{ id: 'ou-1', organization_id: orgId, user_id: memberId, role: 'admin' }],
+      };
+    }
+    if (sql.includes('DELETE FROM organization_users WHERE organization_id') && sql.includes('AND user_id = $2')) {
+      return { rows: [] };
+    }
+    if (sql.includes('FROM pets p') && sql.includes('organization_name')) {
+      return {
+        rows: [{
+          id: 'pet-1',
+          name: 'Buddy',
+          species: 'dog',
+          breed: 'Labrador',
+          organization_id: orgId,
+          organization_name: 'Happy Paws',
+        }],
+      };
+    }
+    if (sql.includes('SELECT * FROM archived_pets WHERE organization_id')) {
+      return { rows: [] };
+    }
+    if (sql.includes('SELECT name FROM organizations WHERE id')) {
+      return { rows: [{ name: 'Test Org' }] };
+    }
+    if (sql.includes("'member' AS kind") && sql.includes('record_id')) {
+      return {
+        rows: [{
+          kind: 'member',
+          record_id: 'ou-1',
+          user_id: userId,
+          display_name: 'Test User',
+          email: 'test@example.com',
+          photo_url: '/photos/user.jpg',
+          role: 'super_admin',
+          is_pending: false,
+          active_foster_count: 1,
+        }],
+      };
+    }
+    if (sql.includes("'external' AS kind") && sql.includes('record_id')) {
+      return {
+        rows: [{
+          kind: 'external',
+          record_id: 'fp-external-1',
+          user_id: null,
+          display_name: 'Off-app Parent',
+          email: 'offapp@example.com',
+          photo_url: null,
+          role: null,
+          is_pending: false,
+          active_foster_count: 0,
+        }],
+      };
+    }
+    if (sql.includes("'member' AS kind") && sql.includes('organization_users ou')) {
+      return {
+        rows: [{
+          id: 'ou-foster-1',
+          kind: 'member',
+          user_id: 'foster-user-1',
+          display_name: 'Jane Foster',
+          email: 'jane@example.com',
+          photo_url: '/photos/jane.jpg',
+          role: 'foster',
+          phone: null,
+          notes: '',
+          active_pet_count: 2,
+          active_pets: [{ pet_id: 'pet-a', pet_name: 'Max', status: 'in_progress' }],
+        }],
+      };
+    }
+    if (sql.includes('INSERT INTO pets (id, user_id')) {
+      return {
+        rows: [{
+          id: params[0],
+          name: params[2],
+          species: params[3],
+          breed: params[4] || '',
+          organization_id: orgId,
+          date_of_birth: null,
+        }],
+      };
+    }
+    if (sql.includes("'external' AS kind") && sql.includes('org_foster_parents')) {
+      return {
+        rows: [{
+          id: 'fp-external-1',
+          kind: 'external',
+          user_id: null,
+          display_name: 'Off-app Parent',
+          email: 'offapp@example.com',
+          photo_url: null,
+          role: null,
+          phone: '555-0000',
+          notes: 'No account',
+          active_pet_count: 0,
+        }],
+      };
+    }
+    if (sql.includes('INSERT INTO org_foster_parents')) {
+      return {
+        rows: [{
+          id: 'fp-new-1',
+          organization_id: orgId,
+          display_name: 'New Parent',
+          email: 'new@example.com',
+          phone: null,
+          notes: '',
+        }],
+      };
+    }
+    if (sql.includes('UPDATE org_foster_parents')) {
+      return {
+        rows: [{
+          id: 'fp-external-1',
+          organization_id: orgId,
+          display_name: 'Updated Parent',
+          email: 'updated@example.com',
+          phone: '555-1111',
+          notes: 'Updated',
+        }],
+      };
+    }
+    if (sql.includes('DELETE FROM org_foster_parents')) {
+      return { rows: [{ id: 'fp-external-1' }] };
+    }
+    return { rows: [] };
+  };
+
+  // The authorization guards (requireMember/requireAdmin) issue a membership
+  // lookup. Layer it on top of any custom query override so guard behavior can
+  // be controlled per-test via `memberRole` without each override re-declaring
+  // it: 'super_admin' (default), 'admin', 'foster', or null (non-member).
+  const memberRole = overrides.memberRole === undefined ? 'super_admin' : overrides.memberRole;
+  const inner = overrides.query || defaultHandler;
+  const query = async (sql, params) => {
+    if (sql.includes('SELECT role FROM organization_users WHERE organization_id')) {
+      return { rows: memberRole ? [{ role: memberRole }] : [] };
+    }
+    return inner(sql, params);
+  };
+
+  return {
+    query,
+    end: async () => {},
+  };
+}
