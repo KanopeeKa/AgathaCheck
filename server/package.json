@@ -8,7 +8,8 @@
     "start": "node bin/server.js",
     "dev": "node --watch bin/server.js",
     "test": "jest --env=node --runInBand",
-    "test:mocha": "mocha 'test/**/*.test.js' --timeout 10000 --exit"
+    "test:mocha": "mocha 'test/**/*.test.js' --timeout 10000 --exit",
+    "audit-retention": "node scripts/audit-retention.js"
   },
   "dependencies": {
     "bcrypt": "^5.1.0",
@@ -21,6 +22,7 @@
     "multer": "^2.2.0",
     "nodemailer": "^9.0.1",
     "pg": "^8.10.0",
+    "pino": "^10.3.1",
     "sinon": "^21.0.3",
     "uuid": "^9.0.0"
   },

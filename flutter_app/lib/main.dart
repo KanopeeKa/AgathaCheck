@@ -4,6 +4,7 @@ import 'l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'core/providers/analytics_providers.dart';
 import 'core/providers/locale_provider.dart';
 import 'core/router/app_router.dart';
 import 'core/services/consent_service.dart';
@@ -40,6 +41,7 @@ class PetProfileApp extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    ref.watch(analyticsCoordinatorProvider);
     final router = ref.watch(routerProvider);
     final locale = ref.watch(localeProvider);
 

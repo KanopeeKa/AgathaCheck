@@ -60,6 +60,8 @@
 | 11 | PDF Report Generation | User-requested data export | Art. 6(1)(b) — Contractual necessity | All pet-related data compiled into PDF | App users |
 | 12 | Password Reset | Account recovery | Art. 6(1)(b) — Contractual necessity | Email, reset code | App users |
 | 13 | Local Data Caching | Offline access and performance | Art. 6(1)(f) — Legitimate interest | Pet data cache, locale preference | App users |
+| 14 | Security & audit logging | Fraud prevention, support, compliance | Art. 6(1)(f) — Legitimate interest | Actor ID (tiered), action, resource refs, request metadata | App users, org admins |
+| 15 | Product analytics (PostHog EU) | Feature usage, UX improvement | Art. 6(1)(a) — Consent | Anonymous/identified events, optional session replay | Consenting users |
 
 ---
 
@@ -87,11 +89,15 @@
 | **Family Events** | Duration of associated pet record | Pet deletion or individual event deletion | — |
 | **Subscription Data** (RevenueCat) | Per RevenueCat retention policy | Account deletion triggers RevenueCat user deletion request | See RevenueCat DPA |
 | **Local Preferences** (SharedPreferences) | Until app uninstall or manual clear | User clears app data | Device-local, not server-controlled |
+| **Audit Events** (security/data trail) | Hot 14d → warm 90d → cold 730d | Automated retention job | No health/foster payloads; pseudonymized after hot tier |
+| **Application Logs** (Pino) | 30 days (operational default) | Log rotation / host policy | Request metadata only |
+| **PostHog Analytics** | Per PostHog project retention; consent withdrawable | Consent withdrawal + account deletion API | EU Cloud; optional session replay |
 
 ### 5.2 Automated Retention Enforcement
 - **Refresh tokens**: Expired tokens should be purged via scheduled task (recommended: daily)
 - **Password reset tokens**: Expired/used tokens should be purged (recommended: daily)
 - **Notifications**: Old read notifications should be purged after 90 days (recommended: weekly task)
+- **Audit events**: Run `node scripts/audit-retention.js` daily (hot → warm → cold → purge)
 - **Account deletion**: CASCADE constraints ensure all related data is deleted with the user record
 
 ---
@@ -117,6 +123,7 @@
 | Sub-Processor | Service | Data Processed | Location | DPA Status |
 |---------------|---------|---------------|----------|------------|
 | **RevenueCat, Inc.** | Subscription & entitlement management | Anonymous app user ID, purchase transactions | US (with EU data processing options) | DPA available on request |
+| **PostHog, Inc.** | Product analytics (consent-gated) | Anonymous/identified usage events, optional session replay | EU (Frankfurt) when using PostHog Cloud EU | DPA available |
 | **Hosting Provider** | Application & database hosting | All server-side data | [TO BE COMPLETED — EU recommended] | [DPA TO BE OBTAINED] |
 | **Domain/DNS Provider** | DNS resolution, TLS certificates | IP addresses (transient) | [TO BE COMPLETED] | [DPA TO BE OBTAINED] |
 

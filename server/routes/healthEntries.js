@@ -14,6 +14,7 @@ import {
   userCanManagePet,
   userCanManageHealthEntry,
 } from '../lib/petAccess.js';
+import { logAuditEventSafe } from '../lib/audit.js';
 
 const MAX_HEALTH_DOCUMENT_BYTES = 2 * 1024 * 1024;
 const HEALTH_DOCUMENT_EXTENSIONS = new Set(['.jpg', '.jpeg', '.png', '.pdf']);
@@ -356,14 +357,23 @@ export default function healthEntriesRoutes(pool) {
            WHERE id = $3 RETURNING *`,
           [completedOnIso, markedAt, entryId]
         );
-        await pool.query(
-          `INSERT INTO health_history (id, health_entry_id, status, notes, due_date, completed_on, marked_by_user_id, changed_at)
-           VALUES ($1, $2, 'completed', $3, $4, $5, $6, $7)`,
-          [histId, entryId, notes, dueDateIso, completedOnIso, userId, markedAt]
-        );
-        const entry = result.rows[0];
-        entry.pet_name = null;
-        return res.json(healthEntryToMap(entry));
+      await pool.query(
+        `INSERT INTO health_history (id, health_entry_id, status, notes, due_date, completed_on, marked_by_user_id, changed_at)
+         VALUES ($1, $2, 'completed', $3, $4, $5, $6, $7)`,
+        [histId, entryId, notes, dueDateIso, completedOnIso, userId, markedAt]
+      );
+      logAuditEventSafe(pool, {
+        actorUserId: userId,
+        action: 'health_entry.marked_complete',
+        resourceType: 'health_entry',
+        resourceId: entryId,
+        petId: row.pet_id,
+        metadata: { entry_type: row.type, frequency: row.frequency || 'once' },
+        req,
+      });
+      const entry = result.rows[0];
+      entry.pet_name = null;
+      return res.json(healthEntryToMap(entry));
       }
 
       const result = await pool.query(
@@ -377,6 +387,15 @@ export default function healthEntriesRoutes(pool) {
          VALUES ($1, $2, 'completed', $3, $4, $5, $6, $7)`,
         [histId, entryId, notes, dueDateIso, completedOnIso, userId, markedAt]
       );
+      logAuditEventSafe(pool, {
+        actorUserId: userId,
+        action: 'health_entry.marked_complete',
+        resourceType: 'health_entry',
+        resourceId: entryId,
+        petId: row.pet_id,
+        metadata: { entry_type: row.type, frequency: row.frequency || 'once' },
+        req,
+      });
       const entry = result.rows[0];
       entry.pet_name = null;
       res.json(healthEntryToMap(entry));
@@ -419,6 +438,15 @@ export default function healthEntriesRoutes(pool) {
          WHERE id = $2 RETURNING *`,
         [restoreDue, entryId]
       );
+      logAuditEventSafe(pool, {
+        actorUserId: userId,
+        action: 'health_entry.completion_undone',
+        resourceType: 'health_entry',
+        resourceId: entryId,
+        petId: row.pet_id,
+        metadata: { entry_type: row.type },
+        req,
+      });
       const entry = result.rows[0];
       entry.pet_name = null;
       res.json(healthEntryToMap(entry));
