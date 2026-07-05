@@ -1813,6 +1813,63 @@ class AppLocalizationsEn extends AppLocalizations {
   String get people => 'People';
 
   @override
+  String get orgPeopleDescription =>
+      'Everyone in your organisation. The green disk shows how many pets each person is currently fostering.';
+
+  @override
+  String get addExternalFoster => 'Add external foster';
+
+  @override
+  String get fosterContactAddress => 'Foster contact address';
+
+  @override
+  String get editFosterContact => 'Edit foster contact';
+
+  @override
+  String get fosterContactSaved => 'Foster contact details saved';
+
+  @override
+  String get currentlyFostering => 'Currently fostering';
+
+  @override
+  String get previouslyFostered => 'Previously fostered';
+
+  @override
+  String get noPreviousFosterPlacements => 'No previous foster placements';
+
+  @override
+  String get placementOutcomeAdopted => 'Adopted';
+
+  @override
+  String get placementOutcomeNotInFoster => 'Not in foster';
+
+  @override
+  String get placementOutcomeElsewhere => 'In foster elsewhere';
+
+  @override
+  String get placementOutcomePassedAway => 'Passed away';
+
+  @override
+  String get lawfulBasisConfirm =>
+      'I confirm I have a lawful basis to store this person\'s contact details and they will be informed by email.';
+
+  @override
+  String get lawfulBasisConfirmRequired =>
+      'Please confirm you have a lawful basis to add this contact.';
+
+  @override
+  String get emailRequiredForExternalFoster =>
+      'Email is required so we can send a privacy notice';
+
+  @override
+  String get externalFosterNoticeSent =>
+      'External foster added and privacy notice sent';
+
+  @override
+  String get orgNotesOperationalOnly =>
+      'Operational notes only — avoid sensitive personal information';
+
+  @override
   String get fosterParents => 'Foster parents';
 
   @override

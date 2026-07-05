@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import '../entities/archived_pet.dart';
 import '../entities/foster_parent.dart';
 import '../entities/foster_placement.dart';
+import '../entities/org_person.dart';
 import '../entities/organization.dart';
 import '../entities/organization_member.dart';
 
@@ -40,12 +41,32 @@ abstract class OrganizationRepository {
   Future<void> deleteFamilyEvent(String token, String petId, String eventId);
 
   Future<List<FosterParent>> getFosterParents(String orgId, String token);
+  Future<List<OrgPersonSummary>> getPeople(String orgId, String token);
+  Future<OrgPersonDetail> getPersonDetail(
+    String orgId,
+    OrgPersonKind kind,
+    String recordId,
+    String token,
+  );
+  Future<OrgPersonDetail> updatePersonContact(
+    String orgId,
+    OrgPersonKind kind,
+    String recordId, {
+    String? fosterPhone,
+    String? fosterAddress,
+    String? adminNotes,
+    String? displayName,
+    String? email,
+    required String token,
+  });
   Future<FosterParent> createExternalFosterParent(
     String orgId, {
     required String displayName,
-    String? email,
+    required String email,
     String? phone,
-    String notes,
+    String fosterAddress = '',
+    String notes = '',
+    required bool lawfulBasisConfirmed,
     required String token,
   });
   Future<FosterParent> updateExternalFosterParent(

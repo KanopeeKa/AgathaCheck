@@ -13,10 +13,9 @@ import '../providers/organization_providers.dart';
 import '../widgets/organization_archived_section.dart';
 import '../widgets/organization_contact_card.dart';
 import '../widgets/organization_hidden_shared_pets_section.dart';
-import '../widgets/organization_foster_parents_section.dart';
 import '../widgets/organization_info_card.dart';
 import '../widgets/organization_invite_by_email_dialog.dart';
-import '../widgets/organization_members_section.dart';
+import '../widgets/organization_people_section.dart';
 import '../widgets/organization_pets_section.dart';
 import '../widgets/organization_role_labels.dart';
 
@@ -55,9 +54,6 @@ class _OrganizationDetailScreenState
     final orgsAsync = ref.watch(organizationListProvider);
     final isSuperUser = ref.watch(isOrgSuperUserProvider(orgId));
     final isOrgAdmin = ref.watch(isOrgAdminProvider(orgId));
-    final membersAsync = isOrgAdmin
-        ? ref.watch(orgMembersProvider(orgId))
-        : const AsyncValue<List<OrganizationMember>>.data([]);
     final petsAsync = isOrgAdmin
         ? ref.watch(orgPetsProvider(orgId))
         : const AsyncValue<List<Pet>>.data([]);
@@ -188,26 +184,13 @@ class _OrganizationDetailScreenState
               ),
               if (isOrgAdmin) ...[
                 const SizedBox(height: 16),
-                OrganizationMembersSection(
-                  membersAsync: membersAsync,
-                  isSuperUser: isOrgAdmin,
-                  theme: theme,
-                  colorScheme: colorScheme,
-                  l: l,
-                  localizedRoleLabel: _localizedRoleLabel,
-                  onAddUser: () => showOrganizationInviteByEmailDialog(
-                    context: context,
-                    ref: ref,
-                    orgId: orgId,
-                  ),
-                ),
-                const SizedBox(height: 16),
-                OrganizationFosterParentsSection(
+                OrganizationPeopleSection(
                   orgId: orgId,
                   theme: theme,
                   colorScheme: colorScheme,
                   l: l,
                   localizedRoleLabel: _localizedRoleLabel,
+                  isSuperUser: isSuperUser,
                 ),
                 const SizedBox(height: 16),
                 OrganizationPetsSection(

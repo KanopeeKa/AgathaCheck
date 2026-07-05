@@ -10,6 +10,7 @@ import { createAuthLimiter } from '../config/rateLimit.js';
 import { isValidEmail, isStrongPassword, MIN_PASSWORD_LENGTH } from '../config/validation.js';
 import { resolveEmailLocale } from '../lib/email/locale.js';
 import { sendPasswordResetEmail } from '../services/mailService.js';
+import { linkExternalFostersByEmail, listFosterContactsForUser } from '../lib/orgPeople.js';
 
 const isProduction = () => process.env.NODE_ENV === 'production';
 
@@ -80,6 +81,7 @@ export default function authRoutes(pool, comparePassword) {
         throw err;
       }
       const user = { id: result.rows[0].id, email, first_name, last_name, category, bio, photo_url, locale };
+      await linkExternalFostersByEmail(pool, user.id, email);
       const accessToken = signAccessToken(user.id, user.email);
       const refreshToken = signRefreshToken(user.id, user.email);
       res.status(201).json({ user, access_token: accessToken, refresh_token: refreshToken });
@@ -105,6 +107,7 @@ export default function authRoutes(pool, comparePassword) {
         return res.status(401).json({ error: 'Invalid email or password.' });
       }
       const user = userRowToMap(userRow);
+      await linkExternalFostersByEmail(pool, user.id, user.email);
       const accessToken = signAccessToken(user.id, user.email);
       const refreshToken = signRefreshToken(user.id, user.email);
       res.status(200).json({ user, access_token: accessToken, refresh_token: refreshToken });
@@ -151,6 +154,20 @@ export default function authRoutes(pool, comparePassword) {
       }
       const user = userRowToMap(userResult.rows[0]);
       res.status(200).json(user);
+    } catch (err) {
+      return res.status(401).json({ error: 'Invalid or expired token', ...errorDetails(err) });
+    }
+  });
+
+  router.get('/me/foster-contacts', async (req, res) => {
+    const token = extractToken(req);
+    if (!token) {
+      return res.status(401).json({ error: 'Missing or invalid Authorization header' });
+    }
+    try {
+      const payload = verifyToken(token);
+      const contacts = await listFosterContactsForUser(pool, payload.id);
+      res.status(200).json(contacts);
     } catch (err) {
       return res.status(401).json({ error: 'Invalid or expired token', ...errorDetails(err) });
     }

@@ -6,6 +6,7 @@ import 'package:pet_profile_app/features/auth/presentation/providers/auth_provid
 import 'package:pet_profile_app/features/organization/domain/entities/archived_pet.dart';
 import 'package:pet_profile_app/features/organization/domain/entities/foster_parent.dart';
 import 'package:pet_profile_app/features/organization/domain/entities/foster_placement.dart';
+import 'package:pet_profile_app/features/organization/domain/entities/org_person.dart';
 import 'package:pet_profile_app/features/organization/domain/entities/organization.dart';
 import 'package:pet_profile_app/features/organization/domain/entities/organization_member.dart';
 import 'package:pet_profile_app/features/organization/domain/repositories/organization_repository.dart';
@@ -114,12 +115,50 @@ class RecordingOrganizationRepository implements OrganizationRepository {
   Future<List<FosterParent>> getFosterParents(String orgId, String token) async =>
       [];
   @override
+  Future<List<OrgPersonSummary>> getPeople(String orgId, String token) async => [];
+  @override
+  Future<OrgPersonDetail> getPersonDetail(
+    String orgId,
+    OrgPersonKind kind,
+    String recordId,
+    String token,
+  ) async =>
+      OrgPersonDetail(
+        id: 'member:$recordId',
+        kind: kind,
+        recordId: recordId,
+        displayName: 'Test',
+      );
+  @override
+  Future<OrgPersonDetail> updatePersonContact(
+    String orgId,
+    OrgPersonKind kind,
+    String recordId, {
+    String? fosterPhone,
+    String? fosterAddress,
+    String? adminNotes,
+    String? displayName,
+    String? email,
+    required String token,
+  }) async =>
+      OrgPersonDetail(
+        id: '${kind.wire}:$recordId',
+        kind: kind,
+        recordId: recordId,
+        displayName: displayName ?? 'Test',
+        fosterPhone: fosterPhone ?? '',
+        fosterAddress: fosterAddress ?? '',
+        adminNotes: adminNotes ?? '',
+      );
+  @override
   Future<FosterParent> createExternalFosterParent(
     String orgId, {
     required String displayName,
-    String? email,
+    required String email,
     String? phone,
+    String fosterAddress = '',
     String notes = '',
+    required bool lawfulBasisConfirmed,
     required String token,
   }) async =>
       FosterParent(
