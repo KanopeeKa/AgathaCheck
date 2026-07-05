@@ -119,6 +119,39 @@ function buildMockPool(overrides = {}) {
     if (sql.includes('SELECT * FROM archived_pets WHERE organization_id')) {
       return { rows: [] };
     }
+    if (sql.includes('SELECT name FROM organizations WHERE id')) {
+      return { rows: [{ name: 'Test Org' }] };
+    }
+    if (sql.includes("'member' AS kind") && sql.includes('record_id')) {
+      return {
+        rows: [{
+          kind: 'member',
+          record_id: 'ou-1',
+          user_id: userId,
+          display_name: 'Test User',
+          email: 'test@example.com',
+          photo_url: '/photos/user.jpg',
+          role: 'super_admin',
+          is_pending: false,
+          active_foster_count: 1,
+        }],
+      };
+    }
+    if (sql.includes("'external' AS kind") && sql.includes('record_id')) {
+      return {
+        rows: [{
+          kind: 'external',
+          record_id: 'fp-external-1',
+          user_id: null,
+          display_name: 'Off-app Parent',
+          email: 'offapp@example.com',
+          photo_url: null,
+          role: null,
+          is_pending: false,
+          active_foster_count: 0,
+        }],
+      };
+    }
     if (sql.includes("'member' AS kind") && sql.includes('organization_users ou')) {
       return {
         rows: [{
@@ -244,6 +277,8 @@ describe('Organizations API', () => {
       ['POST', `/api/organizations/${orgId}/pets/pet-1/transfer`],
       ['GET', `/api/organizations/${orgId}/pets/pet-1/foster-history`],
       ['GET', `/api/organizations/${orgId}/foster-parents`],
+      ['GET', `/api/organizations/${orgId}/people`],
+      ['GET', `/api/organizations/${orgId}/people/member/ou-1`],
       ['POST', `/api/organizations/${orgId}/foster-parents`],
       ['PUT', `/api/organizations/${orgId}/foster-parents/fp-1`],
       ['DELETE', `/api/organizations/${orgId}/foster-parents/fp-1`],
@@ -834,13 +869,39 @@ describe('Organizations API', () => {
       const res = await request(app)
         .post(`/api/organizations/${orgId}/foster-parents`)
         .set('Authorization', `Bearer ${token}`)
-        .send({ display_name: 'New Parent', email: 'new@example.com' });
+        .send({
+          display_name: 'New Parent',
+          email: 'new@example.com',
+          lawful_basis_confirmed: true,
+        });
       expect(res.statusCode).toBe(201);
       expect(res.body).toMatchObject({
         kind: 'external',
         display_name: 'New Parent',
         email: 'new@example.com',
         active_pet_count: 0,
+      });
+    });
+
+    it('POST /:orgId/foster-parents returns 400 without lawful basis confirmation', async () => {
+      const res = await request(app)
+        .post(`/api/organizations/${orgId}/foster-parents`)
+        .set('Authorization', `Bearer ${token}`)
+        .send({ display_name: 'New Parent', email: 'new@example.com' });
+      expect(res.statusCode).toBe(400);
+    });
+
+    it('GET /:orgId/people returns unified people directory', async () => {
+      const res = await request(app)
+        .get(`/api/organizations/${orgId}/people`)
+        .set('Authorization', `Bearer ${token}`);
+      expect(res.statusCode).toBe(200);
+      expect(Array.isArray(res.body)).toBe(true);
+      expect(res.body.length).toBeGreaterThanOrEqual(1);
+      expect(res.body[0]).toMatchObject({
+        kind: 'member',
+        record_id: 'ou-1',
+        active_foster_count: 1,
       });
     });
 

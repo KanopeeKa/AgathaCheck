@@ -378,12 +378,63 @@ class OrganizationRemoteDataSource {
     return list.cast<Map<String, dynamic>>();
   }
 
+  Future<List<Map<String, dynamic>>> getPeople(String orgId, String token) async {
+    final response = await _client.get(
+      Uri.parse('$baseUrl/api/organizations/$orgId/people'),
+      headers: _headers(token),
+    );
+    if (response.statusCode >= 400) {
+      final data = json.decode(response.body);
+      throw Exception(data['error'] ?? 'Failed to get people');
+    }
+    final list = json.decode(response.body) as List;
+    return list.cast<Map<String, dynamic>>();
+  }
+
+  Future<Map<String, dynamic>> getPersonDetail(
+    String orgId,
+    String kind,
+    String recordId,
+    String token,
+  ) async {
+    final response = await _client.get(
+      Uri.parse('$baseUrl/api/organizations/$orgId/people/$kind/$recordId'),
+      headers: _headers(token),
+    );
+    final data = json.decode(response.body) as Map<String, dynamic>;
+    if (response.statusCode >= 400) {
+      throw Exception(data['error'] ?? 'Failed to get person');
+    }
+    return data;
+  }
+
+  Future<Map<String, dynamic>> updatePersonContact(
+    String orgId,
+    String kind,
+    String recordId,
+    Map<String, dynamic> body,
+    String token,
+  ) async {
+    final response = await _client.put(
+      Uri.parse('$baseUrl/api/organizations/$orgId/people/$kind/$recordId/contact'),
+      headers: _headers(token),
+      body: json.encode(body),
+    );
+    final data = json.decode(response.body) as Map<String, dynamic>;
+    if (response.statusCode >= 400) {
+      throw Exception(data['error'] ?? 'Failed to update contact');
+    }
+    return data;
+  }
+
   Future<Map<String, dynamic>> createExternalFosterParent(
     String orgId, {
     required String displayName,
-    String? email,
+    required String email,
     String? phone,
+    String fosterAddress = '',
     String notes = '',
+    required bool lawfulBasisConfirmed,
     required String token,
   }) async {
     final response = await _client.post(
@@ -391,9 +442,11 @@ class OrganizationRemoteDataSource {
       headers: _headers(token),
       body: json.encode({
         'display_name': displayName,
-        if (email != null && email.isNotEmpty) 'email': email,
+        'email': email,
         if (phone != null && phone.isNotEmpty) 'phone': phone,
+        'foster_address': fosterAddress,
         'notes': notes,
+        'lawful_basis_confirmed': lawfulBasisConfirmed,
       }),
     );
     final data = json.decode(response.body) as Map<String, dynamic>;

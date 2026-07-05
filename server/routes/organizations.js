@@ -20,6 +20,14 @@ import {
   revokeFosterPetAccess,
 } from '../lib/fosterPlacements.js';
 import { transferOrgPetToUser } from '../lib/orgPetTransfer.js';
+import { buildExternalFosterNoticeEmail } from '../lib/email/templates/externalFosterNotice.js';
+import { resolveEmailLocale } from '../lib/email/locale.js';
+import {
+  getOrgPersonDetail,
+  listOrgPeople,
+  updateOrgPersonContact,
+} from '../lib/orgPeople.js';
+import { sendTransactionalEmail } from '../services/mailService.js';
 import {
   ASSIGNABLE_ROLES,
   ORG_ROLE_ADMIN,
@@ -309,6 +317,57 @@ export default function organizationsRoutes(pool) {
     }
   });
 
+  router.get('/:orgId/people', async (req, res) => {
+    const userId = extractUserId(req);
+    if (!userId) return res.status(401).json({ error: 'Unauthorized' });
+    const orgId = req.params.orgId;
+    try {
+      if (!(await requireOrgAdmin(pool, res, orgId, userId))) return;
+      const people = await listOrgPeople(pool, orgId);
+      res.json(people);
+    } catch (err) {
+      res.status(500).json({ error: publicError(err) });
+    }
+  });
+
+  router.get('/:orgId/people/:kind/:personId', async (req, res) => {
+    const userId = extractUserId(req);
+    if (!userId) return res.status(401).json({ error: 'Unauthorized' });
+    const { orgId, kind, personId } = req.params;
+    if (kind !== 'member' && kind !== 'external') {
+      return res.status(400).json({ error: 'Invalid person kind' });
+    }
+    try {
+      if (!(await requireOrgAdmin(pool, res, orgId, userId))) return;
+      const detail = await getOrgPersonDetail(pool, orgId, kind, personId);
+      if (!detail) return res.status(404).json({ error: 'Person not found' });
+      res.json(detail);
+    } catch (err) {
+      res.status(500).json({ error: publicError(err) });
+    }
+  });
+
+  router.put('/:orgId/people/:kind/:personId/contact', async (req, res) => {
+    const userId = extractUserId(req);
+    if (!userId) return res.status(401).json({ error: 'Unauthorized' });
+    const { orgId, kind, personId } = req.params;
+    if (kind !== 'member' && kind !== 'external') {
+      return res.status(400).json({ error: 'Invalid person kind' });
+    }
+    try {
+      if (!(await requireOrgAdmin(pool, res, orgId, userId))) return;
+      await updateOrgPersonContact(pool, orgId, kind, personId, req.body || {});
+      const detail = await getOrgPersonDetail(pool, orgId, kind, personId);
+      if (!detail) return res.status(404).json({ error: 'Person not found' });
+      res.json(detail);
+    } catch (err) {
+      if (err.statusCode === 400) {
+        return res.status(400).json({ error: err.message });
+      }
+      res.status(500).json({ error: publicError(err) });
+    }
+  });
+
   router.post('/:id/invite', async (req, res) => {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
@@ -545,6 +604,7 @@ export default function organizationsRoutes(pool) {
       display_name: displayName || row.email || '',
       email: row.email || null,
       phone: row.phone || null,
+      foster_address: row.foster_address || '',
       notes: row.notes || '',
       role: row.role ? normaliseRole(row.role) : null,
       photo_url: row.photo_url || null,
@@ -651,24 +711,52 @@ export default function organizationsRoutes(pool) {
     const displayName = (data.display_name || data.displayName || '').trim();
     const email = (data.email || '').trim() || null;
     const phone = (data.phone || '').trim() || null;
+    const fosterAddress = (data.foster_address || data.fosterAddress || '').trim();
     const notes = (data.notes || '').trim();
+    const lawfulBasisConfirmed = data.lawful_basis_confirmed === true
+      || data.lawfulBasisConfirmed === true;
 
     if (!displayName) {
       return res.status(400).json({ error: 'Display name is required' });
+    }
+    if (!lawfulBasisConfirmed) {
+      return res.status(400).json({ error: 'Lawful basis confirmation is required' });
+    }
+    if (!email) {
+      return res.status(400).json({ error: 'Email is required for external foster contacts' });
     }
 
     try {
       if (!(await requireOrgAdmin(pool, res, orgId, userId))) return;
 
+      const orgResult = await pool.query(
+        'SELECT name FROM organizations WHERE id = $1',
+        [orgId],
+      );
+      const orgName = orgResult.rows[0]?.name || 'Your organisation';
+
       const id = uuidv4();
       const result = await pool.query(
         `INSERT INTO org_foster_parents (
-           id, organization_id, display_name, email, phone, notes
-         ) VALUES ($1, $2, $3, $4, $5, $6)
+           id, organization_id, display_name, email, phone, foster_address, notes,
+           lawful_basis_attested_at, lawful_basis_attested_by
+         ) VALUES ($1, $2, $3, $4, $5, $6, $7, NOW(), $8)
          RETURNING *`,
-        [id, orgId, displayName, email, phone, notes],
+        [id, orgId, displayName, email, phone, fosterAddress, notes, userId],
       );
       const row = result.rows[0];
+
+      try {
+        const locale = resolveEmailLocale(data.locale);
+        const { subject, text, html } = buildExternalFosterNoticeEmail({
+          locale,
+          orgName,
+        });
+        await sendTransactionalEmail({ to: email, subject, text, html });
+      } catch (mailErr) {
+        console.error('External foster notice email failed:', mailErr);
+      }
+
       res.status(201).json(fosterParentToMap({
         ...row,
         kind: 'external',
@@ -690,6 +778,7 @@ export default function organizationsRoutes(pool) {
     const displayName = (data.display_name || data.displayName || '').trim();
     const email = (data.email || '').trim() || null;
     const phone = (data.phone || '').trim() || null;
+    const fosterAddress = (data.foster_address || data.fosterAddress || '').trim();
     const notes = (data.notes || '').trim();
 
     if (!displayName) {
@@ -701,10 +790,10 @@ export default function organizationsRoutes(pool) {
 
       const result = await pool.query(
         `UPDATE org_foster_parents
-         SET display_name = $1, email = $2, phone = $3, notes = $4, updated_at = NOW()
-         WHERE id = $5 AND organization_id = $6
+         SET display_name = $1, email = $2, phone = $3, foster_address = $4, notes = $5, updated_at = NOW()
+         WHERE id = $6 AND organization_id = $7
          RETURNING *`,
-        [displayName, email, phone, notes, fosterParentId, orgId],
+        [displayName, email, phone, fosterAddress, notes, fosterParentId, orgId],
       );
       if (result.rows.length === 0) {
         return res.status(404).json({ error: 'Foster parent not found' });

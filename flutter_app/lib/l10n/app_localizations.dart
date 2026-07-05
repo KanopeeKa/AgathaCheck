@@ -3403,6 +3403,108 @@ abstract class AppLocalizations {
   /// **'People'**
   String get people;
 
+  /// No description provided for @orgPeopleDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Everyone in your organisation. The green disk shows how many pets each person is currently fostering.'**
+  String get orgPeopleDescription;
+
+  /// No description provided for @addExternalFoster.
+  ///
+  /// In en, this message translates to:
+  /// **'Add external foster'**
+  String get addExternalFoster;
+
+  /// No description provided for @fosterContactAddress.
+  ///
+  /// In en, this message translates to:
+  /// **'Foster contact address'**
+  String get fosterContactAddress;
+
+  /// No description provided for @editFosterContact.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit foster contact'**
+  String get editFosterContact;
+
+  /// No description provided for @fosterContactSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Foster contact details saved'**
+  String get fosterContactSaved;
+
+  /// No description provided for @currentlyFostering.
+  ///
+  /// In en, this message translates to:
+  /// **'Currently fostering'**
+  String get currentlyFostering;
+
+  /// No description provided for @previouslyFostered.
+  ///
+  /// In en, this message translates to:
+  /// **'Previously fostered'**
+  String get previouslyFostered;
+
+  /// No description provided for @noPreviousFosterPlacements.
+  ///
+  /// In en, this message translates to:
+  /// **'No previous foster placements'**
+  String get noPreviousFosterPlacements;
+
+  /// No description provided for @placementOutcomeAdopted.
+  ///
+  /// In en, this message translates to:
+  /// **'Adopted'**
+  String get placementOutcomeAdopted;
+
+  /// No description provided for @placementOutcomeNotInFoster.
+  ///
+  /// In en, this message translates to:
+  /// **'Not in foster'**
+  String get placementOutcomeNotInFoster;
+
+  /// No description provided for @placementOutcomeElsewhere.
+  ///
+  /// In en, this message translates to:
+  /// **'In foster elsewhere'**
+  String get placementOutcomeElsewhere;
+
+  /// No description provided for @placementOutcomePassedAway.
+  ///
+  /// In en, this message translates to:
+  /// **'Passed away'**
+  String get placementOutcomePassedAway;
+
+  /// No description provided for @lawfulBasisConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'I confirm I have a lawful basis to store this person\'s contact details and they will be informed by email.'**
+  String get lawfulBasisConfirm;
+
+  /// No description provided for @lawfulBasisConfirmRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Please confirm you have a lawful basis to add this contact.'**
+  String get lawfulBasisConfirmRequired;
+
+  /// No description provided for @emailRequiredForExternalFoster.
+  ///
+  /// In en, this message translates to:
+  /// **'Email is required so we can send a privacy notice'**
+  String get emailRequiredForExternalFoster;
+
+  /// No description provided for @externalFosterNoticeSent.
+  ///
+  /// In en, this message translates to:
+  /// **'External foster added and privacy notice sent'**
+  String get externalFosterNoticeSent;
+
+  /// No description provided for @orgNotesOperationalOnly.
+  ///
+  /// In en, this message translates to:
+  /// **'Operational notes only — avoid sensitive personal information'**
+  String get orgNotesOperationalOnly;
+
   /// No description provided for @fosterParents.
   ///
   /// In en, this message translates to:

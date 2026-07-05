@@ -20,6 +20,7 @@ import '../../features/organization/presentation/screens/organization_detail_scr
 import '../../features/organization/presentation/screens/organization_form_screen.dart';
 import '../../features/organization/presentation/screens/organization_list_screen.dart';
 import '../../features/organization/presentation/screens/organization_members_screen.dart';
+import '../../features/organization/presentation/screens/organization_person_detail_screen.dart';
 import '../../features/organization/presentation/screens/organization_pets_screen.dart';
 import '../../features/organization/presentation/screens/transfer_pet_screen.dart';
 import '../../features/sharing/presentation/screens/shared_pet_screen.dart';
@@ -323,6 +324,20 @@ final routerProvider = Provider<GoRouter>((ref) {
         builder: (context, state) {
           final id = state.pathParameters['id']!;
           return OrganizationMembersScreen(orgId: id);
+        },
+      ),
+      GoRoute(
+        path: '/organizations/:id/people/:kind/:personId',
+        name: 'organizationPersonDetail',
+        builder: (context, state) {
+          final id = state.pathParameters['id']!;
+          final kind = state.pathParameters['kind']!;
+          final personId = state.pathParameters['personId']!;
+          return OrganizationPersonDetailScreen(
+            orgId: id,
+            kind: kind,
+            recordId: personId,
+          );
         },
       ),
       GoRoute(

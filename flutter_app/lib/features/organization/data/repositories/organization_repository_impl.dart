@@ -4,6 +4,7 @@ import '../../../../core/utils/calendar_date.dart';
 import '../../domain/entities/archived_pet.dart';
 import '../../domain/entities/foster_parent.dart';
 import '../../domain/entities/foster_placement.dart';
+import '../../domain/entities/org_person.dart';
 import '../../domain/entities/organization.dart';
 import '../../domain/entities/organization_member.dart';
 import '../../domain/repositories/organization_repository.dart';
@@ -168,12 +169,65 @@ class OrganizationRepositoryImpl implements OrganizationRepository {
   }
 
   @override
+  Future<List<OrgPersonSummary>> getPeople(String orgId, String token) async {
+    final rows = await _dataSource.getPeople(orgId, token);
+    return rows.map(OrgPersonSummary.fromJson).toList();
+  }
+
+  @override
+  Future<OrgPersonDetail> getPersonDetail(
+    String orgId,
+    OrgPersonKind kind,
+    String recordId,
+    String token,
+  ) async {
+    final row = await _dataSource.getPersonDetail(
+      orgId,
+      kind.wire,
+      recordId,
+      token,
+    );
+    return OrgPersonDetail.fromJson(row);
+  }
+
+  @override
+  Future<OrgPersonDetail> updatePersonContact(
+    String orgId,
+    OrgPersonKind kind,
+    String recordId, {
+    String? fosterPhone,
+    String? fosterAddress,
+    String? adminNotes,
+    String? displayName,
+    String? email,
+    required String token,
+  }) async {
+    final body = <String, dynamic>{
+      if (fosterPhone != null) 'foster_phone': fosterPhone,
+      if (fosterAddress != null) 'foster_address': fosterAddress,
+      if (adminNotes != null) 'admin_notes': adminNotes,
+      if (displayName != null) 'display_name': displayName,
+      if (email != null) 'email': email,
+    };
+    final row = await _dataSource.updatePersonContact(
+      orgId,
+      kind.wire,
+      recordId,
+      body,
+      token,
+    );
+    return OrgPersonDetail.fromJson(row);
+  }
+
+  @override
   Future<FosterParent> createExternalFosterParent(
     String orgId, {
     required String displayName,
-    String? email,
+    required String email,
     String? phone,
+    String fosterAddress = '',
     String notes = '',
+    required bool lawfulBasisConfirmed,
     required String token,
   }) async {
     final row = await _dataSource.createExternalFosterParent(
@@ -181,7 +235,9 @@ class OrganizationRepositoryImpl implements OrganizationRepository {
       displayName: displayName,
       email: email,
       phone: phone,
+      fosterAddress: fosterAddress,
       notes: notes,
+      lawfulBasisConfirmed: lawfulBasisConfirmed,
       token: token,
     );
     return FosterParent.fromJson(row);

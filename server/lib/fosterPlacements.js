@@ -28,6 +28,13 @@ export const ADOPTION_IN_PROGRESS_STATUSES = [
   PLACEMENT_STATUS_PENDING_CONDITIONS,
 ];
 
+/** Pets physically with the foster (excludes pending acceptance invites). */
+export const FOSTER_ACTIVE_STATUSES = [
+  PLACEMENT_STATUS_IN_PROGRESS,
+  PLACEMENT_STATUS_WAITING_ADOPTION,
+  PLACEMENT_STATUS_PENDING_CONDITIONS,
+];
+
 export const FOSTER_PET_ACCESS_ROLE = 'foster';
 
 export function placementToMap(row, extras = {}) {

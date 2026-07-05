@@ -1827,6 +1827,63 @@ class AppLocalizationsFr extends AppLocalizations {
   String get people => 'Personnes';
 
   @override
+  String get orgPeopleDescription =>
+      'Toutes les personnes de votre organisation. Le disque vert indique le nombre d\'animaux actuellement en famille d\'accueil.';
+
+  @override
+  String get addExternalFoster => 'Ajouter une famille d\'accueil externe';
+
+  @override
+  String get fosterContactAddress => 'Adresse de contact d\'accueil';
+
+  @override
+  String get editFosterContact => 'Modifier le contact d\'accueil';
+
+  @override
+  String get fosterContactSaved => 'Coordonnées d\'accueil enregistrées';
+
+  @override
+  String get currentlyFostering => 'Accueil en cours';
+
+  @override
+  String get previouslyFostered => 'Accueils précédents';
+
+  @override
+  String get noPreviousFosterPlacements => 'Aucun accueil précédent';
+
+  @override
+  String get placementOutcomeAdopted => 'Adopté';
+
+  @override
+  String get placementOutcomeNotInFoster => 'Plus en accueil';
+
+  @override
+  String get placementOutcomeElsewhere => 'En accueil ailleurs';
+
+  @override
+  String get placementOutcomePassedAway => 'Décédé';
+
+  @override
+  String get lawfulBasisConfirm =>
+      'Je confirme disposer d\'une base légale pour enregistrer ces coordonnées et que la personne sera informée par e-mail.';
+
+  @override
+  String get lawfulBasisConfirmRequired =>
+      'Veuillez confirmer que vous disposez d\'une base légale.';
+
+  @override
+  String get emailRequiredForExternalFoster =>
+      'L\'e-mail est requis pour envoyer l\'avis de confidentialité';
+
+  @override
+  String get externalFosterNoticeSent =>
+      'Famille d\'accueil externe ajoutée et avis de confidentialité envoyé';
+
+  @override
+  String get orgNotesOperationalOnly =>
+      'Notes opérationnelles uniquement — évitez les données sensibles';
+
+  @override
   String get fosterParents => 'Familles d\'accueil';
 
   @override
