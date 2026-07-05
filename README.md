@@ -252,10 +252,14 @@ See `DEPLOYMENT_DB.md` for the full database deployment guide and `DEPLOYMENT_CP
 
 ## CI/CD
 
-GitHub Actions workflow at `.github/workflows/ci.yml` runs:
-1. **Lint** - Static analysis with `flutter analyze`
-2. **Test** - Unit, widget, and integration tests with coverage
-3. **Build** - Web release build with artifact upload
+| Workflow | Trigger | Purpose |
+|----------|---------|---------|
+| `ci.yml` | push/PR → `main` | Lint, unit/widget tests, backend Jest, web build |
+| `e2e.yml` | PR → `main` | Full Playwright E2E (localhost, advisory) |
+| `deploy-uat.yml` | `release/uat-*` | Fast UAT deploy + smoke + E2E gates → `prod-ready` |
+| `deploy-prod.yml` | manual dispatch / release | Prod deploy + post-deploy smoke |
+
+See `replit.md` § CI/CD and `e2e/README.md` for the full pipeline.
 
 ## License
 
