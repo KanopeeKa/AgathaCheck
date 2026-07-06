@@ -1,8 +1,8 @@
 name: E2E (Playwright)
 
+# Full localhost E2E is intentionally NOT run on every PR commit (too slow).
+# It runs on UAT CD (deploy-uat.yml → uat-e2e-full) and can be triggered manually.
 on:
-  pull_request:
-    branches: [main]
   workflow_dispatch:
 
 jobs:

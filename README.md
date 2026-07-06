@@ -256,7 +256,7 @@ See `DEPLOYMENT_DB.md` for the full database deployment guide and `DEPLOYMENT_CP
 | Workflow | Trigger | Purpose |
 |----------|---------|---------|
 | `ci.yml` | push/PR → `main` | Lint, unit/widget tests, backend Jest, web build |
-| `e2e.yml` | PR → `main` | Full Playwright E2E (localhost, advisory) |
+| `e2e.yml` | manual dispatch | Full Playwright E2E on demand (not per PR commit) |
 | `deploy-uat.yml` | `release/uat-*` | Fast UAT deploy + smoke + E2E gates → `prod-ready` |
 | `deploy-prod.yml` | manual dispatch / release | Prod deploy + post-deploy smoke |
 
