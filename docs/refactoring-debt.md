@@ -70,6 +70,8 @@ architectural decisions deferred during the domain-by-domain refactor.
 | `test_integration/` in CI | P3 | Small | Single flow test; wire or relocate under `test/features/.../integration` |
 | Rename `pet_profile_app` package | P4 | Large | Cosmetic; defer until dedicated rename sprint |
 | Dart `organization_routes.dart` foster/placements/people parity | P2 | Medium | Node has full routes; Dart has subset only |
+| Node-only production backend | P4 | Strategic | Documented in technical-debt; Dart kept for Replit/AOT until decided |
+| `dart analyze` on `server/` in CI | P3 | Trivial | Catches Dart route drift vs Node |
 
 ---
 

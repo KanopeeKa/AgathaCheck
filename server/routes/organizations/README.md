@@ -26,4 +26,4 @@ Mirrored under `server/test/organizations/`:
 
 ## Dart parity
 
-S Shelf implementation: `server/lib/organizations/` (subset of Node; foster/placements/people are Node-only today).
+Shelf implementation: `server/lib/organizations/` (subset of Node; foster/placements/people are Node-only today).
