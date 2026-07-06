@@ -64,3 +64,11 @@ API wire. All calendar fields must use PostgreSQL `DATE` columns (not `TIMESTAMP
 personal + org field inventory in `docs/calendar-dates.md` and the shared helpers in
 `flutter_app/lib/core/utils/calendar_date.dart`, `server/lib/calendarDate.js`, and
 `server/lib/calendar_date.dart`.
+
+### Modularity & refactoring (always apply)
+- Follow `docs/architecture/modularity.md`: prefer small files, domain-by-domain changes, tests leading refactors.
+- Hand-written files should stay under ~500 lines; split immediately if over ~800.
+- Node route changes that affect HTTP behaviour require matching Dart Shelf parity in the same change when feasible.
+- Park stubs and uncertain items in `docs/refactoring-debt.md` rather than deleting without review.
+- Deferrals for product/infra (PostHog, GDPR, etc.) go in `docs/technical-debt.md`.
+- Before push: `cd server && npx jest --env=node --forceExit` and `cd flutter_app && flutter analyze --no-fatal-warnings --no-fatal-infos && flutter test --concurrency=1 --exclude-tags=integration`.

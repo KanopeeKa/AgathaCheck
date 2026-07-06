@@ -1,0 +1,180 @@
+import fs from 'fs';
+import path from 'path';
+import multer from 'multer';
+import jwt from 'jsonwebtoken';
+
+import { JWT_SECRET } from '../../config/jwtSecret.js';
+import { isActiveMember, isOrgAdmin, isSuperAdmin, normaliseRole } from '../../lib/orgRoles.js';
+
+const MAX_ORG_IMAGE_BYTES = 2 * 1024 * 1024;
+const ORG_IMAGE_EXTENSIONS = new Set(['.jpg', '.jpeg', '.png', '.webp']);
+const ORG_IMAGE_MIME_TYPES = new Set([
+  'image/jpeg',
+  'image/png',
+  'image/webp',
+]);
+
+const orgImageUpload = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: MAX_ORG_IMAGE_BYTES },
+  fileFilter: (_req, file, cb) => {
+    const ext = path.extname(file.originalname).toLowerCase();
+    if (ORG_IMAGE_EXTENSIONS.has(ext) && ORG_IMAGE_MIME_TYPES.has(file.mimetype)) {
+      cb(null, true);
+      return;
+    }
+    cb(new Error('Only JPG, PNG, and WebP images are allowed'));
+  },
+});
+
+export const ORG_COUNT_SELECT = `
+  (SELECT COUNT(*) FROM organization_users
+    WHERE organization_id = o.id AND role NOT LIKE 'pending_%') as member_count,
+  (SELECT COUNT(*) FROM org_foster_parents
+    WHERE organization_id = o.id) as external_count,
+  (SELECT COUNT(*) FROM pets
+    WHERE organization_id = o.id AND COALESCE(passed_away, false) = false) as pet_count`;
+
+export function orgUploadDir(subdir) {
+  return process.env.ORG_UPLOAD_DIR || path.resolve(process.cwd(), 'uploads', subdir);
+}
+
+export function saveOrgImage(file, orgId, subdir) {
+  const ext = path.extname(file.originalname).toLowerCase() || '.jpg';
+  const dir = orgUploadDir(subdir);
+  fs.mkdirSync(dir, { recursive: true });
+  const filename = `${orgId}_${Date.now()}${ext}`;
+  fs.writeFileSync(path.join(dir, filename), file.buffer);
+  return `/uploads/${subdir}/${filename}`;
+}
+
+export function handleOrgImageUpload(req, res, next) {
+  orgImageUpload.single('photo')(req, res, (err) => {
+    if (!err) return next();
+    if (err instanceof multer.MulterError && err.code === 'LIMIT_FILE_SIZE') {
+      return res.status(400).json({ error: 'Image must be 2 MB or smaller' });
+    }
+    return res.status(400).json({ error: err.message });
+  });
+}
+
+export async function loadPrimaryContact(pool, orgId, primaryContactRef) {
+  if (!primaryContactRef) return null;
+  const idx = primaryContactRef.indexOf(':');
+  if (idx <= 0) return null;
+  const kind = primaryContactRef.slice(0, idx);
+  const recordId = primaryContactRef.slice(idx + 1);
+  if (kind !== 'member') return null;
+
+  const result = await pool.query(
+    `SELECT ou.id AS record_id,
+            u.id AS user_id,
+            TRIM(COALESCE(u.first_name, '') || ' ' || COALESCE(u.last_name, '')) AS display_name,
+            u.email,
+            u.photo_url,
+            ou.role,
+            COALESCE(ou.foster_phone, '') AS phone
+     FROM organization_users ou
+     JOIN users u ON u.id = ou.user_id
+     WHERE ou.organization_id = $1 AND ou.id = $2`,
+    [orgId, recordId],
+  );
+  if (!result.rows.length) return null;
+  const row = result.rows[0];
+  const role = normaliseRole(row.role);
+  if (!isOrgAdmin(role) || role.startsWith('pending_')) return null;
+  return {
+    id: `member:${row.record_id}`,
+    kind: 'member',
+    record_id: row.record_id,
+    user_id: row.user_id,
+    display_name: (row.display_name || '').trim() || row.email || '',
+    email: row.email || null,
+    phone: row.phone || '',
+    photo_url: row.photo_url || null,
+    role,
+  };
+}
+
+export async function fetchOrgForUser(pool, userId, orgId) {
+  const result = await pool.query(
+    `SELECT o.*, ou.role,
+      ${ORG_COUNT_SELECT}
+     FROM organizations o
+     JOIN organization_users ou ON ou.organization_id = o.id AND ou.user_id = $1
+     WHERE o.id = $2`,
+    [userId, orgId],
+  );
+  if (!result.rows.length) return null;
+  const row = result.rows[0];
+  const primaryContact = await loadPrimaryContact(pool, orgId, row.primary_contact_ref);
+  return orgRowToMap({ ...row, role: normaliseRole(row.role), primary_contact: primaryContact });
+}
+
+export function extractUserId(req) {
+  const auth = req.headers['authorization'] || req.headers['Authorization'];
+  if (!auth || !auth.startsWith('Bearer ')) return null;
+  try {
+    return jwt.verify(auth.substring(7), JWT_SECRET).id;
+  } catch (_) {
+    return null;
+  }
+}
+
+export function orgRowToMap(row) {
+  return {
+    id: row.id,
+    name: row.name,
+    type: row.type || 'professional',
+    email: row.email || null,
+    phone: row.phone || null,
+    address: row.address || null,
+    website: row.website || null,
+    bio: row.bio || '',
+    photo_url: row.photo_url || '',
+    logo_url: row.logo_url || '',
+    primary_contact_ref: row.primary_contact_ref || null,
+    primary_contact: row.primary_contact || null,
+    role: row.role || null,
+    member_count: parseInt(row.member_count, 10) || 0,
+    external_count: parseInt(row.external_count, 10) || 0,
+    pet_count: parseInt(row.pet_count, 10) || 0,
+    created_at: row.created_at,
+    updated_at: row.updated_at,
+  };
+}
+
+export async function getMemberRole(pool, orgId, userId) {
+  const result = await pool.query(
+    'SELECT role FROM organization_users WHERE organization_id = $1 AND user_id = $2',
+    [orgId, userId],
+  );
+  return result.rows.length ? normaliseRole(result.rows[0].role) : null;
+}
+
+export async function requireMember(pool, res, orgId, userId) {
+  const role = await getMemberRole(pool, orgId, userId);
+  if (!isActiveMember(role)) {
+    res.status(403).json({ error: 'Forbidden' });
+    return null;
+  }
+  return role;
+}
+
+export async function requireOrgAdmin(pool, res, orgId, userId) {
+  const role = await getMemberRole(pool, orgId, userId);
+  if (!isOrgAdmin(role)) {
+    res.status(403).json({ error: 'Forbidden' });
+    return null;
+  }
+  return role;
+}
+
+export async function requireSuperAdmin(pool, res, orgId, userId) {
+  const role = await getMemberRole(pool, orgId, userId);
+  if (!isSuperAdmin(role)) {
+    res.status(403).json({ error: 'Forbidden' });
+    return null;
+  }
+  return role;
+}

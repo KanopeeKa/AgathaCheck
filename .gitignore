@@ -23,8 +23,25 @@ migrate_working_dir/
 .flutter-plugins-dependencies
 .pub-cache/
 .pub/
-/build/*/
+/build/
 !/build/web/
+
+# Legacy root Flutter tree (canonical app is flutter_app/)
+/lib/
+
+# Replit / local session artifacts
+attached_assets/
+
+# Runtime uploads at repo root (server/uploads/ already ignored)
+/uploads/
+
+# Flutter build caches
+flutter_app/build/
+*.cache.dill*
+**/.filecache
+
+# Pre-built deploy bundle (CI produces flutter_app/build/web)
+deploy/public/
 
 app.*.symbols
 app.*.map.json
