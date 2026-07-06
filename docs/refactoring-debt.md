@@ -27,7 +27,7 @@ architectural decisions deferred during the domain-by-domain refactor.
 |---|-------|----------|----------------|
 | 1 | `health_entry_form_controller` | **Phase 2 done** (2026-07-06) | Name/dosage/notes in `StateNotifier` state; screen uses bound widgets, no `TextEditingController`s. Further slimming (frequency section extract) optional. |
 | 2 | `family_events_controller.dart` | **Keep stub; do not wire** until product rules on legacy family events | See “Family events” section below. |
-| 3 | Dart `organization_routes.dart` split | **Yes — done** | `server/lib/organizations/` mirrors Node layout (subset of routes). |
+| 3 | Dart `organization_routes.dart` split | **Done** | `server/lib/organizations/` mirrors Node; foster/placements/people parity added 2026-07-06. |
 | 4 | `sharing_section.dart` split | **Yes — done** | `widgets/sharing/` with role-specific files + tests. |
 
 ---
@@ -38,7 +38,7 @@ architectural decisions deferred during the domain-by-domain refactor.
 |---|---|---|
 | Infrastructure | Done | Debt doc, modularity rules, legacy cleanup |
 | Organizations (Node) | Done | `routes/organizations/` + `test/organizations/` |
-| Organizations (Dart) | Done | `lib/organizations/` (subset parity) |
+| Organizations (Dart) | Done | Full foster/placements/people parity with Node |
 | Organization provider tests | Done | Split by provider group under `test/.../providers/` |
 | Organization remote datasource | Done | `data/datasources/organization_remote/` |
 | Pet routes (Node) | Done | `routes/pets/` modular routers |
@@ -70,7 +70,7 @@ architectural decisions deferred during the domain-by-domain refactor.
 | Executable Cucumber BDD | P4 | Medium | Gherkin exists; Playwright is executor today |
 | `test_integration/` in CI | P3 | Small | Single flow test; wire or relocate under `test/features/.../integration` |
 | Rename `pet_profile_app` package | P4 | Large | Cosmetic; defer until dedicated rename sprint |
-| Dart `organization_routes.dart` foster/placements/people parity | P2 | Medium | Node has full routes; Dart has subset only |
+| Dart `organization_routes.dart` foster/placements/people parity | P2 | Medium | **Done** — `foster_parents_routes`, `placements_routes`, people in `members_routes` |
 | Node-only production backend | P4 | Strategic | Documented in technical-debt; Dart kept for Replit/AOT until decided |
 | `dart analyze` on `server/` in CI | P3 | Trivial | Catches Dart route drift vs Node |
 
@@ -98,6 +98,6 @@ Dart gaps already known (from `technical-debt.md`): audit logging, PostHog delet
 | 2026-07-06 | Split `server/routes/auth.js` into `routes/auth/` modules. |
 | 2026-07-06 | Split `server/routes/pets.js` into `routes/pets/` modules. |
 | 2026-07-06 | Split `organization_remote_datasource.dart` into modular remote clients. |
-| 2026-07-06 | Split `organization_providers_test.dart` by provider group. |
+| 2026-07-06 | Dart org routes: foster parents, placements, people directory parity with Node. |
 | 2026-07-06 | Sharing + Dart org splits done; decisions log for controller/family-events. |
 | 2026-07-05 | Initial tracker for modularization refactor (`cursor/refactor-modular-domains-b4c2`). |

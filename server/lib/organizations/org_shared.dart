@@ -5,9 +5,9 @@ import 'package:postgres/postgres.dart';
 import 'package:shelf/shelf.dart';
 
 import '../jwt_secret.dart';
+import '../org_roles.dart';
 
 const orgJsonHeaders = {'Content-Type': 'application/json'};
-const assignableOrgRoles = ['member', 'super_user'];
 
 String? extractOrgUserId(Request request) {
   final auth =
@@ -28,12 +28,16 @@ Future<String?> getOrgMemberRole(Pool pool, String orgId, String userId) async {
     parameters: {'orgId': orgId, 'userId': userId},
   );
   if (results.isEmpty) return null;
-  return results.first.toColumnMap()['role']?.toString();
+  return normaliseOrgRole(results.first.toColumnMap()['role']?.toString());
 }
 
-bool isActiveOrgMember(String? role) =>
-    role != null && !role.startsWith('pending_');
-bool isOrgAdmin(String? role) => role == 'super_user';
+bool isActiveOrgMember(String? role) => isActiveOrgMemberRole(role);
+bool isOrgAdmin(String? role) => isOrgAdminRole(role);
+
+Future<bool> requireOrgAdmin(Pool pool, String orgId, String userId) async {
+  final role = await getOrgMemberRole(pool, orgId, userId);
+  return isOrgAdmin(role);
+}
 
 Response orgForbidden() => Response(
       403,
