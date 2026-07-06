@@ -71,11 +71,21 @@ void main() {
       expect(c.validateDocument('scan.pdf', 1024), isNull);
     });
 
+    test('submit fails when name is empty', () async {
+      final c = controller(const HealthEntryFormParams(petId: 'pet-1'));
+      c.setDueDate(DateTime(2026, 7, 10));
+      final outcome = await c.submit();
+      expect(outcome, isA<HealthEntrySubmitValidationFailed>());
+      expect(
+        (outcome as HealthEntrySubmitValidationFailed).reason,
+        HealthEntrySubmitValidation.nameRequired,
+      );
+    });
+
     test('submit fails when due and completed dates are both missing', () async {
       final c = controller();
-      final outcome = await c.submit(
-        const HealthEntryFormTextValues(name: 'Meds', dosage: '', notes: ''),
-      );
+      c.setName('Meds');
+      final outcome = await c.submit();
       expect(outcome, isA<HealthEntrySubmitValidationFailed>());
       expect(
         (outcome as HealthEntrySubmitValidationFailed).reason,
@@ -85,10 +95,9 @@ void main() {
 
     test('submit fails when no pets are selected', () async {
       final c = controller();
+      c.setName('Meds');
       c.setDueDate(DateTime(2026, 7, 10));
-      final outcome = await c.submit(
-        const HealthEntryFormTextValues(name: 'Meds', dosage: '', notes: ''),
-      );
+      final outcome = await c.submit();
       expect(outcome, isA<HealthEntrySubmitValidationFailed>());
       expect(
         (outcome as HealthEntrySubmitValidationFailed).reason,
@@ -126,7 +135,10 @@ void main() {
       final loaded = await c.loadEntry('entry-1');
       final state = readState();
 
-      expect(loaded?.name, 'Rabies');
+      expect(loaded, isTrue);
+      expect(state.name, 'Rabies');
+      expect(state.dosage, '1 ml');
+      expect(state.notes, 'Annual');
       expect(state.isEdit, isTrue);
       expect(state.type, HealthEntryType.preventive);
       expect(state.frequency, HealthFrequency.daily);
@@ -134,6 +146,17 @@ void main() {
       expect(state.selectedPetIds, {'pet-9'});
       expect(state.remindDaysBefore, 3);
       expect(state.recurrenceAnchor, RecurrenceAnchor.fromDueDate);
+    });
+
+    test('setName setDosage setNotes update state', () {
+      final c = controller();
+      c.setName('Heartgard');
+      c.setDosage('1 chew');
+      c.setNotes('With food');
+      final state = readState();
+      expect(state.name, 'Heartgard');
+      expect(state.dosage, '1 chew');
+      expect(state.notes, 'With food');
     });
   });
 }

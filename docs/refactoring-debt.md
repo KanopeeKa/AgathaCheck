@@ -25,7 +25,7 @@ architectural decisions deferred during the domain-by-domain refactor.
 
 | # | Topic | Decision | Recommendation |
 |---|-------|----------|----------------|
-| 1 | `health_entry_form_controller` | **Phase 1 done** (2026-07-06) | State + photos + submit in `StateNotifier`; screen keeps text fields + dialogs. Phase 2: move name/dosage/notes into state, slim screen further. |
+| 1 | `health_entry_form_controller` | **Phase 2 done** (2026-07-06) | Name/dosage/notes in `StateNotifier` state; screen uses bound widgets, no `TextEditingController`s. Further slimming (frequency section extract) optional. |
 | 2 | `family_events_controller.dart` | **Keep stub; do not wire** until product rules on legacy family events | See “Family events” section below. |
 | 3 | Dart `organization_routes.dart` split | **Yes — done** | `server/lib/organizations/` mirrors Node layout (subset of routes). |
 | 4 | `sharing_section.dart` split | **Yes — done** | `widgets/sharing/` with role-specific files + tests. |
@@ -43,7 +43,7 @@ architectural decisions deferred during the domain-by-domain refactor.
 | Pet routes (Node) | Done | `routes/pets/` modular routers |
 | Pet profile — pet list | Done | `widgets/pet_list/` |
 | Pet profile — sharing | Done | `widgets/sharing/` |
-| Health tracking | Phase 1 done | Controller wired; screen ~790 lines (text fields + dialogs remain) |
+| Health tracking | Phase 2 done | Text fields in controller state; screen ~750 lines |
 
 ---
 
@@ -52,7 +52,7 @@ architectural decisions deferred during the domain-by-domain refactor.
 | Item | Priority | Notes |
 |---|---|---|
 | `family_events_controller.dart` | P4 | **Stub — not wired.** Legacy `family_events` table; placement data migrated to `foster_placements` (migration 016). Flutter still has `familyEventsProvider` + PDF section; pets API CRUD exists. **Recommendation:** delete stub; use foster placements for new UI — or revive only if product wants pre-migration family-event editing. |
-| `health_entry_form_controller.dart` | P3 | Phase 1 wired. Phase 2: text fields into state, target screen <400 lines. |
+| `health_entry_form_controller.dart` | P4 | Phase 2 done. Optional: extract frequency/recurrence widgets to slim screen further. |
 | Root `lib/` legacy Flutter tree | P1 | Slated for removal from git; confirm no external tooling still points at repo root `pubspec.yaml`. |
 | `attached_assets/` | P1 | Replit session dumps; remove from git after confirming team does not rely on them. |
 | `npm run test:mocha` | P4 | Legacy runner; remove when team confirms no local scripts use it. |
@@ -96,6 +96,6 @@ Dart gaps already known (from `technical-debt.md`): audit logging, PostHog delet
 |---|---|
 | 2026-07-06 | Split `server/routes/pets.js` into `routes/pets/` modules. |
 | 2026-07-06 | Split `organization_remote_datasource.dart` into modular remote clients. |
-| 2026-07-06 | Health entry form controller Phase 1 wired (state, photos, submit). |
+| 2026-07-06 | Health entry form controller Phase 2: name/dosage/notes in state. |
 | 2026-07-06 | Sharing + Dart org splits done; decisions log for controller/family-events. |
 | 2026-07-05 | Initial tracker for modularization refactor (`cursor/refactor-modular-domains-b4c2`). |
