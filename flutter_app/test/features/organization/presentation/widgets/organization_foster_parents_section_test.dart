@@ -9,7 +9,7 @@ import 'package:pet_profile_app/features/organization/presentation/widgets/organ
 import 'package:pet_profile_app/l10n/app_localizations.dart';
 
 import '../../../../helpers/fakes.dart';
-import '../../organization_providers_test.dart';
+import '../../helpers/organization_provider_test_helpers.dart';
 
 void main() {
   testWidgets('foster parents section shows members and add button', (tester) async {

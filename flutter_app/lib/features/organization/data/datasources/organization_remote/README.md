@@ -18,6 +18,6 @@ Modular HTTP clients for organization APIs. Mirrors `server/routes/organizations
 
 ## Tests
 
-Provider/repository coverage: `test/features/organization/organization_providers_test.dart`.
+Provider/repository coverage: `test/features/organization/presentation/providers/`.
 
 Unit tests for shared context: `test/features/organization/data/datasources/organization_remote_context_test.dart`.
