@@ -99,5 +99,6 @@ Dart gaps already known (from `technical-debt.md`): audit logging, PostHog delet
 | 2026-07-06 | Split `server/routes/pets.js` into `routes/pets/` modules. |
 | 2026-07-06 | Split `organization_remote_datasource.dart` into modular remote clients. |
 | 2026-07-06 | Dart org routes: foster parents, placements, people directory parity with Node. |
+| 2026-07-06 | Split `organization_providers_test.dart` by provider group. |
 | 2026-07-06 | Sharing + Dart org splits done; decisions log for controller/family-events. |
 | 2026-07-05 | Initial tracker for modularization refactor (`cursor/refactor-modular-domains-b4c2`). |
