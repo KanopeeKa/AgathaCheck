@@ -1,6 +1,10 @@
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pet_profile_app/features/pet_profile/domain/entities/pet.dart';
 import 'package:pet_profile_app/features/pet_profile/presentation/controllers/pet_form_controller.dart';
+import 'package:pet_profile_app/features/pet_profile/presentation/controllers/pet_form_outcomes.dart';
+
+import '../providers/pet_list_notifier_test.dart';
 
 void main() {
   group('PetFormController.populateForm', () {
@@ -79,6 +83,163 @@ void main() {
 
       expect(copy.name, 'Rex');
       expect(copy.selectedSpecies, 'dog');
+    });
+  });
+
+  group('PetFormController.submit', () {
+    late ProviderContainer container;
+    late RecordingPetRepository repository;
+    late PetFormController controller;
+    late PetFormSubmitDeps deps;
+
+    PetFormSubmitDeps makeDeps(RecordingPetRepository repo) {
+      return PetFormSubmitDeps(
+        readPets: () => repo.initial,
+        addPet: ({
+          required String name,
+          required String species,
+          String breed = '',
+          DateTime? dateOfBirth,
+          double? weight,
+          String? gender,
+          String bio = '',
+          String insurance = '',
+          DateTime? neuteredDate,
+          bool neuterDismissed = false,
+          String chipId = '',
+          bool chipDismissed = false,
+          String? photoPath,
+          String? vetId,
+          String? organizationId,
+        }) async {
+          await repo.addPet(
+            Pet(
+              id: 'new-pet',
+              name: name,
+              species: species,
+              breed: breed,
+              dateOfBirth: dateOfBirth,
+              weight: weight,
+              gender: gender,
+              bio: bio,
+              insurance: insurance,
+              neuteredDate: neuteredDate,
+              neuterDismissed: neuterDismissed,
+              chipId: chipId,
+              chipDismissed: chipDismissed,
+              photoPath: photoPath,
+              vetId: vetId,
+              organizationId: organizationId,
+            ),
+          );
+        },
+        updatePet: (pet) => repo.updatePet(pet),
+      );
+    }
+
+    setUp(() {
+      repository = RecordingPetRepository();
+      container = makeContainer(repo: repository);
+      controller = PetFormController();
+      deps = makeDeps(repository);
+    });
+
+    tearDown(() => container.dispose());
+
+    test('fails when name is empty', () async {
+      final outcome = await controller.submit(
+        deps,
+        isEditing: false,
+      );
+      expect(outcome, isA<PetFormSubmitValidationFailed>());
+      expect(
+        (outcome as PetFormSubmitValidationFailed).reason,
+        PetFormSubmitValidation.nameRequired,
+      );
+    });
+
+    test('fails when create weight is invalid', () async {
+      controller.state = controller.state.copyWith(
+        name: 'Bella',
+        selectedSpecies: 'Dog',
+        newWeight: 'abc',
+        showWeightInput: true,
+      );
+      final outcome = await controller.submit(
+        deps,
+        isEditing: false,
+      );
+      expect(outcome, isA<PetFormSubmitValidationFailed>());
+      expect(
+        (outcome as PetFormSubmitValidationFailed).reason,
+        PetFormSubmitValidation.invalidWeight,
+      );
+    });
+
+    test('creates a pet with organization id', () async {
+      controller.state = controller.state.copyWith(
+        name: 'Bella',
+        selectedSpecies: 'Dog',
+        selectedOrgId: 'org-1',
+      );
+
+      final outcome = await controller.submit(
+        deps,
+        isEditing: false,
+      );
+      expect(repository.added.single.name, 'Bella');
+      expect(repository.added.single.organizationId, 'org-1');
+    });
+
+    test('updates an existing pet', () async {
+      final existing = Pet(
+        id: 'pet-1',
+        name: 'Rex',
+        species: 'dog',
+        breed: 'Lab',
+        colorValue: 0xFF7E57C2,
+      );
+      repository = RecordingPetRepository(initial: [existing]);
+      container.dispose();
+      container = makeContainer(repo: repository);
+      controller = PetFormController();
+      deps = makeDeps(repository);
+      controller.state = controller.state.copyWith(
+        name: 'Rexy',
+        selectedSpecies: 'dog',
+        breed: 'Labrador',
+        bio: 'Updated bio',
+      );
+
+      final outcome = await controller.submit(
+        deps,
+        isEditing: true,
+        petId: 'pet-1',
+      );
+
+      expect(outcome, isA<PetFormSubmitSuccess>());
+      expect(repository.updated, hasLength(1));
+      expect(repository.updated.single.name, 'Rexy');
+      expect(repository.updated.single.breed, 'Labrador');
+      expect(repository.updated.single.bio, 'Updated bio');
+      expect(repository.updated.single.colorValue, 0xFF7E57C2);
+    });
+
+    test('fails when editing a pet that is not in the list', () async {
+      controller.state = controller.state.copyWith(
+        name: 'Ghost',
+        selectedSpecies: 'cat',
+      );
+      final outcome = await controller.submit(
+        deps,
+        isEditing: true,
+        petId: 'missing',
+      );
+      expect(outcome, isA<PetFormSubmitValidationFailed>());
+      expect(
+        (outcome as PetFormSubmitValidationFailed).reason,
+        PetFormSubmitValidation.petNotFound,
+      );
     });
   });
 }

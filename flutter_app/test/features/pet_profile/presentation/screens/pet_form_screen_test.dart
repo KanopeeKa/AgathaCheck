@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:go_router/go_router.dart';
 import 'package:pet_profile_app/features/auth/presentation/providers/auth_providers.dart';
 import 'package:pet_profile_app/core/providers/api_base_url_provider.dart';
 import 'package:pet_profile_app/features/organization/domain/entities/organization.dart';
@@ -54,6 +55,22 @@ Widget _wrapAddForm({
   String? initialOrgId,
 }) {
   final repository = repo ?? RecordingPetRepository();
+  final router = GoRouter(
+    initialLocation: '/',
+    routes: [
+      GoRoute(
+        path: '/',
+        builder: (context, state) =>
+            PetFormScreen(initialOrgId: initialOrgId),
+      ),
+      GoRoute(
+        path: '/organizations/:orgId',
+        builder: (context, state) => Scaffold(
+          body: Text('Org ${state.pathParameters['orgId']}'),
+        ),
+      ),
+    ],
+  );
   return ProviderScope(
     overrides: [
       authProvider.overrideWith((ref) => FakeAuthNotifier()),
@@ -63,10 +80,10 @@ Widget _wrapAddForm({
       apiBaseUrlProvider.overrideWithValue('http://test.local'),
       allPetsIncludingOrgProvider.overrideWith((ref) async => <Pet>[]),
     ],
-    child: MaterialApp(
+    child: MaterialApp.router(
+      routerConfig: router,
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
-      home: PetFormScreen(initialOrgId: initialOrgId),
     ),
   );
 }

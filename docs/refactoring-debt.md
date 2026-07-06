@@ -44,7 +44,7 @@ architectural decisions deferred during the domain-by-domain refactor.
 | Auth routes (Node) | Done | `routes/auth/` session, profile, password |
 | Pet profile — pet list | Done | `widgets/pet_list/` |
 | Pet profile — sharing | Done | `widgets/sharing/` |
-| Health tracking | Phase 2 done | Text fields in controller state; screen ~750 lines |
+| Pet profile — pet form submit | Done | `PetFormController.submit()` |
 
 ---
 
@@ -64,7 +64,7 @@ architectural decisions deferred during the domain-by-domain refactor.
 
 | Item | Priority | Effort | Notes |
 |---|---|---|---|
-| Split `pet_form_screen.dart` submit logic | P3 | Medium | Move into `PetFormController` / notifier |
+| Split `pet_form_screen.dart` submit logic | P3 | Medium | **Done** — `PetFormController.submit()` |
 | `organization_providers_test.dart` split | P3 | Small | One file per provider group |
 | Executable Cucumber BDD | P4 | Medium | Gherkin exists; Playwright is executor today |
 | `test_integration/` in CI | P3 | Small | Single flow test; wire or relocate under `test/features/.../integration` |
@@ -97,6 +97,6 @@ Dart gaps already known (from `technical-debt.md`): audit logging, PostHog delet
 | 2026-07-06 | Split `server/routes/auth.js` into `routes/auth/` modules. |
 | 2026-07-06 | Split `server/routes/pets.js` into `routes/pets/` modules. |
 | 2026-07-06 | Split `organization_remote_datasource.dart` into modular remote clients. |
-| 2026-07-06 | Health entry form controller Phase 2: name/dosage/notes in state. |
+| 2026-07-06 | Pet form submit logic moved to `PetFormController.submit()`. |
 | 2026-07-06 | Sharing + Dart org splits done; decisions log for controller/family-events. |
 | 2026-07-05 | Initial tracker for modularization refactor (`cursor/refactor-modular-domains-b4c2`). |

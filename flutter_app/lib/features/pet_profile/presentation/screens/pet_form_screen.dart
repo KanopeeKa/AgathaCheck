@@ -4,12 +4,12 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
 import '../controllers/pet_form_controller.dart';
+import '../controllers/pet_form_outcomes.dart';
 
 import '../../../../core/utils/constants.dart';
 import '../../../../core/utils/calendar_date.dart';
 import '../../../../core/widgets/app_logo_title.dart';
 import '../../../../l10n/app_localizations.dart';
-import '../../../organization/presentation/providers/organization_providers.dart';
 import '../../../vet/domain/entities/vet.dart';
 import '../../../vet/presentation/providers/vet_providers.dart';
 import '../../domain/entities/pet.dart';
@@ -67,11 +67,13 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
     _controller = PetFormController();
     if (!_isEditing && widget.initialOrgId != null) {
       _selectedOrgId = widget.initialOrgId;
+      _controller.setSelectedOrgId(widget.initialOrgId);
     }
   }
 
   void _onOwnershipChanged(String? orgId) {
     setState(() => _selectedOrgId = orgId);
+    _controller.setSelectedOrgId(orgId);
   }
 
   void _navigateAfterForm() {
@@ -138,10 +140,15 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
       lastDate: now,
     );
     if (picked != null) {
+      final date = calendarDateOnly(picked);
       setState(() {
-        _neuteredDate = calendarDateOnly(picked);
+        _neuteredDate = date;
         _neuterDismissed = false;
       });
+      _controller.state = _controller.state.copyWith(
+        neuteredDate: date,
+        neuterDismissed: false,
+      );
     }
   }
 
@@ -224,90 +231,30 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
 
     setState(() => _isLoading = true);
     try {
-      final name = _controller.state.name.isNotEmpty
-          ? _controller.state.name
-          : _nameController.text.trim();
-      final species = _controller.state.selectedSpecies.isNotEmpty
-          ? _controller.state.selectedSpecies
-          : _selectedSpecies;
-      final breed = _controller.state.breed.isNotEmpty
-          ? _controller.state.breed
-          : _breedController.text.trim();
-      final bio = _controller.state.bio.isNotEmpty
-          ? _controller.state.bio
-          : _bioController.text.trim();
-      final insurance = _controller.state.insurance.isNotEmpty
-          ? _controller.state.insurance
-          : _insuranceController.text.trim();
-      final chipId = _controller.state.chipId.isNotEmpty
-          ? _controller.state.chipId
-          : _chipIdController.text.trim();
-      final weightStr = _isEditing
-          ? (_controller.state.weight.isNotEmpty
-                ? _controller.state.weight
-                : _weightController.text.trim())
-          : _newWeightController.text.trim();
-      final weight = weightStr.isNotEmpty ? double.tryParse(weightStr) : null;
+      final outcome = await _controller.submit(
+        PetFormSubmitDeps.fromWidgetRef(ref),
+        isEditing: _isEditing,
+        petId: widget.petId,
+      );
+      if (!mounted) return;
 
-      if (_isEditing) {
-        final pets = ref.read(petListProvider).valueOrNull ?? [];
-        final existing = pets.where((p) => p.id == widget.petId).firstOrNull;
-        if (existing != null) {
-          final updated = existing.copyWith(
-            name: name,
-            species: species,
-            breed: breed,
-            dateOfBirth: _dateOfBirth,
-            weight: weight,
-            gender: _selectedGender,
-            bio: bio,
-            insurance: insurance,
-            neuteredDate: _neuteredDate,
-            neuterDismissed: _neuterDismissed,
-            chipId: chipId,
-            chipDismissed: _chipDismissed,
-            photoPath: _photoBase64,
-            vetId: _selectedVetId,
-            passedAway: _passedAway,
-            organizationId: _selectedOrgId,
-            clearVetId: _selectedVetId == null,
-            clearGender: _selectedGender == null,
-            clearNeuteredDate: _neuteredDate == null,
-            clearDateOfBirth: _dateOfBirth == null,
+      final l = AppLocalizations.of(context)!;
+      switch (outcome) {
+        case PetFormSubmitValidationFailed(:final reason):
+          final message = switch (reason) {
+            PetFormSubmitValidation.nameRequired => l.petNameRequired,
+            PetFormSubmitValidation.invalidWeight => 'Invalid weight',
+            PetFormSubmitValidation.petNotFound => 'Pet not found',
+          };
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(message)),
           );
-          await ref.read(petListProvider.notifier).updatePet(updated);
-        }
-      } else {
-        await ref
-            .read(petListProvider.notifier)
-            .addPet(
-              name: name,
-              species: species,
-              breed: breed,
-              dateOfBirth: _dateOfBirth,
-              weight: weight,
-              gender: _selectedGender,
-              bio: bio,
-              insurance: insurance,
-              neuteredDate: _neuteredDate,
-              neuterDismissed: _neuterDismissed,
-              chipId: chipId,
-              chipDismissed: _chipDismissed,
-              photoPath: _photoBase64,
-              vetId: _selectedVetId,
-              organizationId: _selectedOrgId,
-            );
-        final orgId = _selectedOrgId;
-        if (orgId != null) {
-          ref.invalidate(orgPetsProvider(orgId));
-        }
-      }
-      if (mounted) _navigateAfterForm();
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Failed to save pet: $e')));
+        case PetFormSubmitError(:final error):
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Failed to save pet: $error')),
+          );
+        case PetFormSubmitSuccess():
+          _navigateAfterForm();
       }
     } finally {
       if (mounted) setState(() => _isLoading = false);
@@ -474,6 +421,8 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
                                 _showWeightInput = false;
                                 _newWeightController.clear();
                               });
+                              _controller.setShowWeightInput(false);
+                              _controller.setNewWeight('');
                             },
                           ),
                         ),
@@ -481,6 +430,7 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
                           decimal: true,
                         ),
                         autofocus: true,
+                        onChanged: _controller.setNewWeight,
                         validator: (value) {
                           if (value != null && value.isNotEmpty) {
                             final num = double.tryParse(value);
@@ -495,8 +445,10 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
                         message: 'Add initial weight entry',
                         child: OutlinedButton.icon(
                           key: const Key('add_weight_entry_button'),
-                          onPressed: () =>
-                              setState(() => _showWeightInput = true),
+                          onPressed: () {
+                            setState(() => _showWeightInput = true);
+                            _controller.setShowWeightInput(true);
+                          },
                           icon: const Icon(
                             Icons.monitor_weight_outlined,
                             size: 18,
@@ -718,6 +670,10 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
                     _isNeutered = true;
                     _neuterDismissed = false;
                   });
+                  _controller.state = _controller.state.copyWith(
+                    isNeutered: true,
+                    neuterDismissed: false,
+                  );
                 },
               ),
             ),
@@ -735,6 +691,10 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
                     _isNeutered = false;
                     _neuteredDate = null;
                   });
+                  _controller.state = _controller.state.copyWith(
+                    isNeutered: false,
+                    neuteredDate: null,
+                  );
                 },
               ),
             ),
@@ -751,7 +711,11 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
                     ? IconButton(
                         icon: const Icon(Icons.clear),
                         tooltip: 'Clear date',
-                        onPressed: () => setState(() => _neuteredDate = null),
+                        onPressed: () {
+                          setState(() => _neuteredDate = null);
+                          _controller.state =
+                              _controller.state.copyWith(neuteredDate: null);
+                        },
                       )
                     : null,
               ),
@@ -797,7 +761,11 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
                 ? IconButton(
                     icon: const Icon(Icons.clear),
                     tooltip: 'Clear veterinarian',
-                    onPressed: () => setState(() => _selectedVetId = null),
+                    onPressed: () {
+                      setState(() => _selectedVetId = null);
+                      _controller.state =
+                          _controller.state.copyWith(selectedVetId: null);
+                    },
                   )
                 : null,
           ),
@@ -838,6 +806,8 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
               _showCreateVetSheet();
             } else {
               setState(() => _selectedVetId = value);
+              _controller.state =
+                  _controller.state.copyWith(selectedVetId: value);
             }
           },
         );
@@ -936,6 +906,9 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
                       setState(() {
                         _selectedVetId = updatedVets.last.id;
                       });
+                      _controller.state = _controller.state.copyWith(
+                        selectedVetId: updatedVets.last.id,
+                      );
                     }
                   } catch (e) {
                     if (ctx.mounted) {
