@@ -187,6 +187,8 @@ void main() {
         deps,
         isEditing: false,
       );
+      expect(outcome, isA<PetFormSubmitSuccess>());
+      expect(repository.added, hasLength(1));
       expect(repository.added.single.name, 'Bella');
       expect(repository.added.single.organizationId, 'org-1');
     });
