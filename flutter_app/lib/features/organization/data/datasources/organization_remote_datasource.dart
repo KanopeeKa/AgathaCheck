@@ -1,437 +1,173 @@
-import 'dart:convert';
 import 'dart:typed_data';
 
-import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:http/http.dart' as http;
 
 import '../models/archived_pet_model.dart';
 import '../models/organization_member_model.dart';
 import '../models/organization_model.dart';
+import 'organization_remote/organization_core_remote.dart';
+import 'organization_remote/organization_foster_parents_remote.dart';
+import 'organization_remote/organization_invites_remote.dart';
+import 'organization_remote/organization_members_remote.dart';
+import 'organization_remote/organization_pets_remote.dart';
+import 'organization_remote/organization_placements_remote.dart';
+import 'organization_remote/organization_remote_context.dart';
 
+/// Facade over modular organization HTTP clients. Mirrors `server/routes/organizations/`.
 class OrganizationRemoteDataSource {
-  final String baseUrl;
-  final http.Client _client;
-
   OrganizationRemoteDataSource({String? baseUrl, http.Client? client})
-      : baseUrl = baseUrl ?? (kIsWeb ? '' : 'http://localhost:5000'),
-        _client = client ?? http.Client();
-
-  Map<String, String> _headers(String token) => {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer $token',
-      };
-
-  Map<String, String> _authOnly(String token) => {
-        'Authorization': 'Bearer $token',
-      };
-
-  Future<List<OrganizationModel>> getOrganizations(String token) async {
-    final response = await _client.get(
-      Uri.parse('$baseUrl/api/organizations'),
-      headers: _headers(token),
-    );
-    if (response.statusCode >= 400) {
-      final data = json.decode(response.body);
-      throw Exception(data['error'] ?? 'Failed to get organizations');
-    }
-    final list = json.decode(response.body) as List;
-    return list
-        .map((e) => OrganizationModel.fromJson(e as Map<String, dynamic>))
-        .toList();
+      : _ctx = OrganizationRemoteContext(baseUrl: baseUrl, client: client) {
+    _core = OrganizationCoreRemote(_ctx);
+    _invites = OrganizationInvitesRemote(_ctx);
+    _members = OrganizationMembersRemote(_ctx);
+    _pets = OrganizationPetsRemote(_ctx);
+    _fosterParents = OrganizationFosterParentsRemote(_ctx);
+    _placements = OrganizationPlacementsRemote(_ctx);
   }
 
-  Future<OrganizationModel> getOrganization(String id, String token) async {
-    final response = await _client.get(
-      Uri.parse('$baseUrl/api/organizations/$id'),
-      headers: _headers(token),
-    );
-    if (response.statusCode >= 400) {
-      final data = json.decode(response.body);
-      throw Exception(data['error'] ?? 'Failed to get organization');
-    }
-    return OrganizationModel.fromJson(
-        json.decode(response.body) as Map<String, dynamic>);
-  }
+  final OrganizationRemoteContext _ctx;
+  late final OrganizationCoreRemote _core;
+  late final OrganizationInvitesRemote _invites;
+  late final OrganizationMembersRemote _members;
+  late final OrganizationPetsRemote _pets;
+  late final OrganizationFosterParentsRemote _fosterParents;
+  late final OrganizationPlacementsRemote _placements;
+
+  String get baseUrl => _ctx.baseUrl;
+
+  Future<List<OrganizationModel>> getOrganizations(String token) =>
+      _core.getOrganizations(token);
+
+  Future<OrganizationModel> getOrganization(String id, String token) =>
+      _core.getOrganization(id, token);
 
   Future<OrganizationModel> createOrganization(
-      Map<String, dynamic> orgJson, String token) async {
-    final response = await _client.post(
-      Uri.parse('$baseUrl/api/organizations'),
-      headers: _headers(token),
-      body: json.encode(orgJson),
-    );
-    if (response.statusCode >= 400) {
-      final data = json.decode(response.body);
-      throw Exception(data['error'] ?? 'Failed to create organization');
-    }
-    return OrganizationModel.fromJson(
-        json.decode(response.body) as Map<String, dynamic>);
-  }
+          Map<String, dynamic> orgJson, String token) =>
+      _core.createOrganization(orgJson, token);
 
   Future<OrganizationModel> updateOrganization(
-      String id, Map<String, dynamic> orgJson, String token) async {
-    final response = await _client.put(
-      Uri.parse('$baseUrl/api/organizations/$id'),
-      headers: _headers(token),
-      body: json.encode(orgJson),
-    );
-    if (response.statusCode >= 400) {
-      final data = json.decode(response.body);
-      throw Exception(data['error'] ?? 'Failed to update organization');
-    }
-    return OrganizationModel.fromJson(
-        json.decode(response.body) as Map<String, dynamic>);
-  }
+          String id, Map<String, dynamic> orgJson, String token) =>
+      _core.updateOrganization(id, orgJson, token);
 
-  Future<void> deleteOrganization(String id, String token) async {
-    final response = await _client.delete(
-      Uri.parse('$baseUrl/api/organizations/$id'),
-      headers: _headers(token),
-    );
-    if (response.statusCode >= 400) {
-      final data = json.decode(response.body);
-      throw Exception(data['error'] ?? 'Failed to delete organization');
-    }
-  }
+  Future<void> deleteOrganization(String id, String token) =>
+      _core.deleteOrganization(id, token);
 
   Future<OrganizationModel> uploadPhoto(
-      String id, Uint8List bytes, String filename, String token) async {
-    return _uploadOrgImage('$baseUrl/api/organizations/$id/photo', bytes, filename, token);
-  }
+          String id, Uint8List bytes, String filename, String token) =>
+      _core.uploadPhoto(id, bytes, filename, token);
 
   Future<OrganizationModel> uploadLogo(
-      String id, Uint8List bytes, String filename, String token) async {
-    return _uploadOrgImage('$baseUrl/api/organizations/$id/logo', bytes, filename, token);
-  }
+          String id, Uint8List bytes, String filename, String token) =>
+      _core.uploadLogo(id, bytes, filename, token);
 
   Future<OrganizationModel> setPrimaryContact(
-      String orgId, String recordId, String token) async {
-    final response = await _client.put(
-      Uri.parse('$baseUrl/api/organizations/$orgId/primary-contact'),
-      headers: _headers(token),
-      body: json.encode({'kind': 'member', 'record_id': recordId}),
-    );
-    if (response.statusCode >= 400) {
-      final data = json.decode(response.body);
-      throw Exception(data['error'] ?? 'Failed to set primary contact');
-    }
-    return OrganizationModel.fromJson(
-        json.decode(response.body) as Map<String, dynamic>);
-  }
-
-  Future<OrganizationModel> _uploadOrgImage(
-      String url, Uint8List bytes, String filename, String token) async {
-    final uri = Uri.parse(url);
-    final request = http.MultipartRequest('POST', uri)
-      ..headers['Authorization'] = 'Bearer $token'
-      ..files.add(http.MultipartFile.fromBytes(
-        'photo',
-        bytes,
-        filename: filename,
-      ));
-    final streamedResponse = await _client.send(request);
-    final response = await http.Response.fromStream(streamedResponse);
-    if (response.statusCode >= 400) {
-      final data = json.decode(response.body);
-      throw Exception(data['error'] ?? 'Image upload failed');
-    }
-    return OrganizationModel.fromJson(
-        json.decode(response.body) as Map<String, dynamic>);
-  }
+          String orgId, String recordId, String token) =>
+      _core.setPrimaryContact(orgId, recordId, token);
 
   Future<List<OrganizationMemberModel>> getMembers(
-      String orgId, String token) async {
-    final response = await _client.get(
-      Uri.parse('$baseUrl/api/organizations/$orgId/members'),
-      headers: _headers(token),
-    );
-    if (response.statusCode >= 400) {
-      final data = json.decode(response.body);
-      throw Exception(data['error'] ?? 'Failed to get members');
-    }
-    final list = json.decode(response.body) as List;
-    return list
-        .map((e) => OrganizationMemberModel.fromJson(e as Map<String, dynamic>))
-        .toList();
-  }
+          String orgId, String token) =>
+      _members.getMembers(orgId, token);
 
-  Future<Map<String, dynamic>> inviteByEmail(String orgId, String email, String role, String token) async {
-    final response = await _client.post(
-      Uri.parse('$baseUrl/api/organizations/$orgId/invite'),
-      headers: _headers(token),
-      body: json.encode({'email': email, 'role': role}),
-    );
-    final data = json.decode(response.body) as Map<String, dynamic>;
-    if (response.statusCode >= 400) {
-      throw Exception(data['error'] ?? 'Failed to invite user');
-    }
-    return data;
-  }
+  Future<Map<String, dynamic>> inviteByEmail(
+          String orgId, String email, String role, String token) =>
+      _members.inviteByEmail(orgId, email, role, token);
 
-  Future<List<Map<String, dynamic>>> getPendingInvites(String token) async {
-    final response = await _client.get(
-      Uri.parse('$baseUrl/api/organizations/invites/pending'),
-      headers: _authOnly(token),
-    );
-    if (response.statusCode >= 400) {
-      return [];
-    }
-    final list = json.decode(response.body) as List;
-    return list.cast<Map<String, dynamic>>();
-  }
+  Future<List<Map<String, dynamic>>> getPendingInvites(String token) =>
+      _invites.getPendingInvites(token);
 
-  Future<Map<String, dynamic>> acceptInvite(String inviteId, String token) async {
-    final response = await _client.post(
-      Uri.parse('$baseUrl/api/organizations/invites/$inviteId/accept'),
-      headers: _headers(token),
-    );
-    final data = json.decode(response.body) as Map<String, dynamic>;
-    if (response.statusCode >= 400) {
-      throw Exception(data['error'] ?? 'Failed to accept invite');
-    }
-    return data;
-  }
+  Future<Map<String, dynamic>> acceptInvite(String inviteId, String token) =>
+      _invites.acceptInvite(inviteId, token);
 
-  Future<void> declineInvite(String inviteId, String token) async {
-    final response = await _client.post(
-      Uri.parse('$baseUrl/api/organizations/invites/$inviteId/decline'),
-      headers: _headers(token),
-    );
-    if (response.statusCode >= 400) {
-      final data = json.decode(response.body);
-      throw Exception(data['error'] ?? 'Failed to decline invite');
-    }
-  }
+  Future<void> declineInvite(String inviteId, String token) =>
+      _invites.declineInvite(inviteId, token);
 
   Future<void> updateMemberRole(
-      String orgId, String userId, String role, String token) async {
-    final response = await _client.put(
-      Uri.parse('$baseUrl/api/organizations/$orgId/members/$userId/role'),
-      headers: _headers(token),
-      body: json.encode({'role': role}),
-    );
-    if (response.statusCode >= 400) {
-      final data = json.decode(response.body);
-      throw Exception(data['error'] ?? 'Failed to update role');
-    }
-  }
+          String orgId, String userId, String role, String token) =>
+      _members.updateMemberRole(orgId, userId, role, token);
 
-  Future<void> removeMember(String orgId, String userId, String token) async {
-    final response = await _client.delete(
-      Uri.parse('$baseUrl/api/organizations/$orgId/members/$userId'),
-      headers: _headers(token),
-    );
-    if (response.statusCode >= 400) {
-      final data = json.decode(response.body);
-      throw Exception(data['error'] ?? 'Failed to remove member');
-    }
-  }
+  Future<void> removeMember(String orgId, String userId, String token) =>
+      _members.removeMember(orgId, userId, token);
 
-  Future<void> leaveOrganization(String orgId, String token) async {
-    final response = await _client.delete(
-      Uri.parse('$baseUrl/api/organizations/$orgId/members/me'),
-      headers: _authOnly(token),
-    );
-    if (response.statusCode >= 400) {
-      final data = json.decode(response.body);
-      throw Exception(data['error'] ?? 'Failed to leave organization');
-    }
-  }
+  Future<void> leaveOrganization(String orgId, String token) =>
+      _members.leaveOrganization(orgId, token);
 
   Future<List<Map<String, dynamic>>> getOrganizationPets(
-      String orgId, String token) async {
-    final response = await _client.get(
-      Uri.parse('$baseUrl/api/organizations/$orgId/pets'),
-      headers: _headers(token),
-    );
-    if (response.statusCode >= 400) {
-      final data = json.decode(response.body);
-      throw Exception(data['error'] ?? 'Failed to get organization pets');
-    }
-    final list = json.decode(response.body) as List;
-    return list.cast<Map<String, dynamic>>();
-  }
+          String orgId, String token) =>
+      _pets.getOrganizationPets(orgId, token);
 
   Future<Map<String, dynamic>> createOrganizationPet(
-      String orgId, Map<String, dynamic> petJson, String token) async {
-    final response = await _client.post(
-      Uri.parse('$baseUrl/api/organizations/$orgId/pets'),
-      headers: _headers(token),
-      body: json.encode(petJson),
-    );
-    if (response.statusCode >= 400) {
-      final data = json.decode(response.body);
-      throw Exception(data['error'] ?? 'Failed to create organization pet');
-    }
-    return json.decode(response.body) as Map<String, dynamic>;
-  }
+          String orgId, Map<String, dynamic> petJson, String token) =>
+      _pets.createOrganizationPet(orgId, petJson, token);
 
   Future<void> transferPetToUser(
-      String orgId, String petId, {
-      required String recipientEmail,
-      String transferType = 'adoption',
-      String notes = '',
-      required String token,
-  }) async {
-    final response = await _client.post(
-      Uri.parse('$baseUrl/api/organizations/$orgId/pets/$petId/transfer'),
-      headers: _headers(token),
-      body: json.encode({
-        'recipient_email': recipientEmail,
-        'transfer_type': transferType,
-        'notes': notes,
-      }),
-    );
-    if (response.statusCode >= 400) {
-      final data = json.decode(response.body);
-      throw Exception(data['error'] ?? 'Failed to transfer pet');
-    }
-  }
+    String orgId,
+    String petId, {
+    required String recipientEmail,
+    String transferType = 'adoption',
+    String notes = '',
+    required String token,
+  }) =>
+      _pets.transferPetToUser(
+        orgId,
+        petId,
+        recipientEmail: recipientEmail,
+        transferType: transferType,
+        notes: notes,
+        token: token,
+      );
 
   Future<void> transferPetToOrg(
-      String petId, String orgId, {
-      String transferType = 'transfer',
-      String notes = '',
-      required String token,
-  }) async {
-    final response = await _client.post(
-      Uri.parse('$baseUrl/api/pets/$petId/transfer-to-org'),
-      headers: _headers(token),
-      body: json.encode({
-        'organization_id': orgId,
-        'transfer_type': transferType,
-        'notes': notes,
-      }),
-    );
-    if (response.statusCode >= 400) {
-      final data = json.decode(response.body);
-      throw Exception(data['error'] ?? 'Failed to transfer pet to organization');
-    }
-  }
+    String petId,
+    String orgId, {
+    String transferType = 'transfer',
+    String notes = '',
+    required String token,
+  }) =>
+      _pets.transferPetToOrg(
+        petId,
+        orgId,
+        transferType: transferType,
+        notes: notes,
+        token: token,
+      );
 
   Future<List<ArchivedPetModel>> getOrganizationArchivedPets(
-      String orgId, String token) async {
-    final response = await _client.get(
-      Uri.parse('$baseUrl/api/organizations/$orgId/archived'),
-      headers: _headers(token),
-    );
-    if (response.statusCode >= 400) {
-      final data = json.decode(response.body);
-      throw Exception(data['error'] ?? 'Failed to get archived pets');
-    }
-    final list = json.decode(response.body) as List;
-    return list
-        .map((e) => ArchivedPetModel.fromJson(e as Map<String, dynamic>))
-        .toList();
-  }
+          String orgId, String token) =>
+      _pets.getOrganizationArchivedPets(orgId, token);
 
-  Future<List<ArchivedPetModel>> getUserArchivedPets(String token) async {
-    final response = await _client.get(
-      Uri.parse('$baseUrl/api/archived-pets'),
-      headers: _headers(token),
-    );
-    if (response.statusCode >= 400) {
-      final data = json.decode(response.body);
-      throw Exception(data['error'] ?? 'Failed to get archived pets');
-    }
-    final list = json.decode(response.body) as List;
-    return list
-        .map((e) => ArchivedPetModel.fromJson(e as Map<String, dynamic>))
-        .toList();
-  }
+  Future<List<ArchivedPetModel>> getUserArchivedPets(String token) =>
+      _pets.getUserArchivedPets(token);
 
-  Future<List<Map<String, dynamic>>> getFamilyEvents(String token, String petId) async {
-    final response = await _client.get(
-      Uri.parse('$baseUrl/api/pets/$petId/family-events'),
-      headers: _headers(token),
-    );
-    if (response.statusCode >= 400) {
-      final data = json.decode(response.body);
-      throw Exception(data['error'] ?? 'Failed to get family events');
-    }
-    final list = json.decode(response.body) as List;
-    return list.cast<Map<String, dynamic>>();
-  }
+  Future<List<Map<String, dynamic>>> getFamilyEvents(
+          String token, String petId) =>
+      _pets.getFamilyEvents(token, petId);
 
-  Future<Map<String, dynamic>> createFamilyEvent(String token, String petId, Map<String, dynamic> body) async {
-    final response = await _client.post(
-      Uri.parse('$baseUrl/api/pets/$petId/family-events'),
-      headers: _headers(token),
-      body: json.encode(body),
-    );
-    if (response.statusCode >= 400) {
-      final data = json.decode(response.body);
-      throw Exception(data['error'] ?? 'Failed to create family event');
-    }
-    return json.decode(response.body) as Map<String, dynamic>;
-  }
+  Future<Map<String, dynamic>> createFamilyEvent(
+          String token, String petId, Map<String, dynamic> body) =>
+      _pets.createFamilyEvent(token, petId, body);
 
-  Future<void> updateFamilyEvent(String token, String petId, String eventId, Map<String, dynamic> body) async {
-    final response = await _client.put(
-      Uri.parse('$baseUrl/api/pets/$petId/family-events/$eventId'),
-      headers: _headers(token),
-      body: json.encode(body),
-    );
-    if (response.statusCode >= 400) {
-      final data = json.decode(response.body);
-      throw Exception(data['error'] ?? 'Failed to update family event');
-    }
-  }
+  Future<void> updateFamilyEvent(
+          String token, String petId, String eventId, Map<String, dynamic> body) =>
+      _pets.updateFamilyEvent(token, petId, eventId, body);
 
-  Future<void> deleteFamilyEvent(String token, String petId, String eventId) async {
-    final response = await _client.delete(
-      Uri.parse('$baseUrl/api/pets/$petId/family-events/$eventId'),
-      headers: _headers(token),
-    );
-    if (response.statusCode >= 400) {
-      final data = json.decode(response.body);
-      throw Exception(data['error'] ?? 'Failed to delete family event');
-    }
-  }
+  Future<void> deleteFamilyEvent(
+          String token, String petId, String eventId) =>
+      _pets.deleteFamilyEvent(token, petId, eventId);
 
   Future<List<Map<String, dynamic>>> getFosterParents(
-      String orgId, String token) async {
-    final response = await _client.get(
-      Uri.parse('$baseUrl/api/organizations/$orgId/foster-parents'),
-      headers: _headers(token),
-    );
-    if (response.statusCode >= 400) {
-      final data = json.decode(response.body);
-      throw Exception(data['error'] ?? 'Failed to get foster parents');
-    }
-    final list = json.decode(response.body) as List;
-    return list.cast<Map<String, dynamic>>();
-  }
+          String orgId, String token) =>
+      _fosterParents.getFosterParents(orgId, token);
 
-  Future<List<Map<String, dynamic>>> getPeople(String orgId, String token) async {
-    final response = await _client.get(
-      Uri.parse('$baseUrl/api/organizations/$orgId/people'),
-      headers: _headers(token),
-    );
-    if (response.statusCode >= 400) {
-      final data = json.decode(response.body);
-      throw Exception(data['error'] ?? 'Failed to get people');
-    }
-    final list = json.decode(response.body) as List;
-    return list.cast<Map<String, dynamic>>();
-  }
+  Future<List<Map<String, dynamic>>> getPeople(String orgId, String token) =>
+      _fosterParents.getPeople(orgId, token);
 
   Future<Map<String, dynamic>> getPersonDetail(
     String orgId,
     String kind,
     String recordId,
     String token,
-  ) async {
-    final response = await _client.get(
-      Uri.parse('$baseUrl/api/organizations/$orgId/people/$kind/$recordId'),
-      headers: _headers(token),
-    );
-    final data = json.decode(response.body) as Map<String, dynamic>;
-    if (response.statusCode >= 400) {
-      throw Exception(data['error'] ?? 'Failed to get person');
-    }
-    return data;
-  }
+  ) =>
+      _fosterParents.getPersonDetail(orgId, kind, recordId, token);
 
   Future<Map<String, dynamic>> updatePersonContact(
     String orgId,
@@ -439,18 +175,8 @@ class OrganizationRemoteDataSource {
     String recordId,
     Map<String, dynamic> body,
     String token,
-  ) async {
-    final response = await _client.put(
-      Uri.parse('$baseUrl/api/organizations/$orgId/people/$kind/$recordId/contact'),
-      headers: _headers(token),
-      body: json.encode(body),
-    );
-    final data = json.decode(response.body) as Map<String, dynamic>;
-    if (response.statusCode >= 400) {
-      throw Exception(data['error'] ?? 'Failed to update contact');
-    }
-    return data;
-  }
+  ) =>
+      _fosterParents.updatePersonContact(orgId, kind, recordId, body, token);
 
   Future<Map<String, dynamic>> createExternalFosterParent(
     String orgId, {
@@ -461,25 +187,17 @@ class OrganizationRemoteDataSource {
     String notes = '',
     required bool lawfulBasisConfirmed,
     required String token,
-  }) async {
-    final response = await _client.post(
-      Uri.parse('$baseUrl/api/organizations/$orgId/foster-parents'),
-      headers: _headers(token),
-      body: json.encode({
-        'display_name': displayName,
-        'email': email,
-        if (phone != null && phone.isNotEmpty) 'phone': phone,
-        'foster_address': fosterAddress,
-        'notes': notes,
-        'lawful_basis_confirmed': lawfulBasisConfirmed,
-      }),
-    );
-    final data = json.decode(response.body) as Map<String, dynamic>;
-    if (response.statusCode >= 400) {
-      throw Exception(data['error'] ?? 'Failed to create foster parent');
-    }
-    return data;
-  }
+  }) =>
+      _fosterParents.createExternalFosterParent(
+        orgId,
+        displayName: displayName,
+        email: email,
+        phone: phone,
+        fosterAddress: fosterAddress,
+        notes: notes,
+        lawfulBasisConfirmed: lawfulBasisConfirmed,
+        token: token,
+      );
 
   Future<Map<String, dynamic>> updateExternalFosterParent(
     String orgId,
@@ -489,48 +207,24 @@ class OrganizationRemoteDataSource {
     String? phone,
     String notes = '',
     required String token,
-  }) async {
-    final response = await _client.put(
-      Uri.parse('$baseUrl/api/organizations/$orgId/foster-parents/$fosterParentId'),
-      headers: _headers(token),
-      body: json.encode({
-        'display_name': displayName,
-        'email': email,
-        'phone': phone,
-        'notes': notes,
-      }),
-    );
-    final data = json.decode(response.body) as Map<String, dynamic>;
-    if (response.statusCode >= 400) {
-      throw Exception(data['error'] ?? 'Failed to update foster parent');
-    }
-    return data;
-  }
+  }) =>
+      _fosterParents.updateExternalFosterParent(
+        orgId,
+        fosterParentId,
+        displayName: displayName,
+        email: email,
+        phone: phone,
+        notes: notes,
+        token: token,
+      );
 
   Future<void> deleteExternalFosterParent(
-      String orgId, String fosterParentId, String token) async {
-    final response = await _client.delete(
-      Uri.parse('$baseUrl/api/organizations/$orgId/foster-parents/$fosterParentId'),
-      headers: _headers(token),
-    );
-    if (response.statusCode >= 400) {
-      final data = json.decode(response.body);
-      throw Exception(data['error'] ?? 'Failed to delete foster parent');
-    }
-  }
+          String orgId, String fosterParentId, String token) =>
+      _fosterParents.deleteExternalFosterParent(orgId, fosterParentId, token);
 
   Future<Map<String, dynamic>> getPetPlacement(
-      String orgId, String petId, String token) async {
-    final response = await _client.get(
-      Uri.parse('$baseUrl/api/organizations/$orgId/pets/$petId/placement'),
-      headers: _headers(token),
-    );
-    final data = json.decode(response.body) as Map<String, dynamic>;
-    if (response.statusCode >= 400) {
-      throw Exception(data['error'] ?? 'Failed to get foster placement');
-    }
-    return data;
-  }
+          String orgId, String petId, String token) =>
+      _placements.getPetPlacement(orgId, petId, token);
 
   Future<Map<String, dynamic>> startFosterPlacement(
     String orgId,
@@ -539,98 +233,65 @@ class OrganizationRemoteDataSource {
     String? startDate,
     String notes = '',
     required String token,
-  }) async {
-    final response = await _client.post(
-      Uri.parse('$baseUrl/api/organizations/$orgId/pets/$petId/placements'),
-      headers: _headers(token),
-      body: json.encode({
-        'foster_user_id': fosterUserId,
-        if (startDate != null) 'start_date': startDate,
-        'notes': notes,
-      }),
-    );
-    final data = json.decode(response.body) as Map<String, dynamic>;
-    if (response.statusCode >= 400) {
-      throw Exception(data['error'] ?? 'Failed to start foster placement');
-    }
-    return data;
-  }
+  }) =>
+      _placements.startFosterPlacement(
+        orgId,
+        petId,
+        fosterUserId: fosterUserId,
+        startDate: startDate,
+        notes: notes,
+        token: token,
+      );
 
   Future<Map<String, dynamic>> endFosterPlacement(
     String orgId,
     String placementId, {
     String? endDate,
     required String token,
-  }) async {
-    final response = await _client.post(
-      Uri.parse('$baseUrl/api/organizations/$orgId/placements/$placementId/end'),
-      headers: _headers(token),
-      body: json.encode({
-        if (endDate != null) 'end_date': endDate,
-      }),
-    );
-    final data = json.decode(response.body) as Map<String, dynamic>;
-    if (response.statusCode >= 400) {
-      throw Exception(data['error'] ?? 'Failed to end foster placement');
-    }
-    return data;
-  }
+  }) =>
+      _placements.endFosterPlacement(
+        orgId,
+        placementId,
+        endDate: endDate,
+        token: token,
+      );
 
   Future<Map<String, dynamic>> startAdoption(
     String orgId,
     String placementId, {
     String adoptionConditions = '',
     required String token,
-  }) async {
-    final response = await _client.post(
-      Uri.parse('$baseUrl/api/organizations/$orgId/placements/$placementId/start-adoption'),
-      headers: _headers(token),
-      body: json.encode({
-        if (adoptionConditions.isNotEmpty) 'adoption_conditions': adoptionConditions,
-      }),
-    );
-    final data = json.decode(response.body) as Map<String, dynamic>;
-    if (response.statusCode >= 400) {
-      throw Exception(data['error'] ?? 'Failed to start adoption');
-    }
-    return data;
-  }
+  }) =>
+      _placements.startAdoption(
+        orgId,
+        placementId,
+        adoptionConditions: adoptionConditions,
+        token: token,
+      );
 
   Future<Map<String, dynamic>> completeAdoptionConditions(
     String orgId,
     String placementId, {
     required String token,
-  }) async {
-    final response = await _client.post(
-      Uri.parse('$baseUrl/api/organizations/$orgId/placements/$placementId/complete-conditions'),
-      headers: _headers(token),
-    );
-    final data = json.decode(response.body) as Map<String, dynamic>;
-    if (response.statusCode >= 400) {
-      throw Exception(data['error'] ?? 'Failed to complete adoption conditions');
-    }
-    return data;
-  }
+  }) =>
+      _placements.completeAdoptionConditions(
+        orgId,
+        placementId,
+        token: token,
+      );
 
   Future<Map<String, dynamic>> cancelAdoption(
     String orgId,
     String placementId, {
     String? endDate,
     required String token,
-  }) async {
-    final response = await _client.post(
-      Uri.parse('$baseUrl/api/organizations/$orgId/placements/$placementId/cancel-adoption'),
-      headers: _headers(token),
-      body: json.encode({
-        if (endDate != null) 'end_date': endDate,
-      }),
-    );
-    final data = json.decode(response.body) as Map<String, dynamic>;
-    if (response.statusCode >= 400) {
-      throw Exception(data['error'] ?? 'Failed to cancel adoption');
-    }
-    return data;
-  }
+  }) =>
+      _placements.cancelAdoption(
+        orgId,
+        placementId,
+        endDate: endDate,
+        token: token,
+      );
 
   Future<Map<String, dynamic>> directAdopt(
     String orgId,
@@ -639,37 +300,20 @@ class OrganizationRemoteDataSource {
     String adoptionConditions = '',
     String notes = '',
     required String token,
-  }) async {
-    final response = await _client.post(
-      Uri.parse('$baseUrl/api/organizations/$orgId/pets/$petId/placements/direct-adopt'),
-      headers: _headers(token),
-      body: json.encode({
-        'foster_user_id': fosterUserId,
-        if (adoptionConditions.isNotEmpty) 'adoption_conditions': adoptionConditions,
-        if (notes.isNotEmpty) 'notes': notes,
-      }),
-    );
-    final data = json.decode(response.body) as Map<String, dynamic>;
-    if (response.statusCode >= 400) {
-      throw Exception(data['error'] ?? 'Failed to start direct adoption');
-    }
-    return data;
-  }
+  }) =>
+      _placements.directAdopt(
+        orgId,
+        petId,
+        fosterUserId: fosterUserId,
+        adoptionConditions: adoptionConditions,
+        notes: notes,
+        token: token,
+      );
 
   Future<List<Map<String, dynamic>>> getPetFosterHistory(
     String orgId,
     String petId,
     String token,
-  ) async {
-    final response = await _client.get(
-      Uri.parse('$baseUrl/api/organizations/$orgId/pets/$petId/foster-history'),
-      headers: _headers(token),
-    );
-    if (response.statusCode >= 400) {
-      final data = json.decode(response.body);
-      throw Exception(data['error'] ?? 'Failed to load foster history');
-    }
-    final list = json.decode(response.body) as List;
-    return list.cast<Map<String, dynamic>>();
-  }
+  ) =>
+      _placements.getPetFosterHistory(orgId, petId, token);
 }
