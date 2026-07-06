@@ -39,6 +39,7 @@ architectural decisions deferred during the domain-by-domain refactor.
 | Infrastructure | Done | Debt doc, modularity rules, legacy cleanup |
 | Organizations (Node) | Done | `routes/organizations/` + `test/organizations/` |
 | Organizations (Dart) | Done | `lib/organizations/` (subset parity) |
+| Organization provider tests | Done | Split by provider group under `test/.../providers/` |
 | Organization remote datasource | Done | `data/datasources/organization_remote/` |
 | Pet routes (Node) | Done | `routes/pets/` modular routers |
 | Auth routes (Node) | Done | `routes/auth/` session, profile, password |
@@ -65,7 +66,7 @@ architectural decisions deferred during the domain-by-domain refactor.
 | Item | Priority | Effort | Notes |
 |---|---|---|---|
 | Split `pet_form_screen.dart` submit logic | P3 | Medium | **Done** — `PetFormController.submit()` |
-| `organization_providers_test.dart` split | P3 | Small | One file per provider group |
+| `organization_providers_test.dart` split | P3 | Small | **Done** — `presentation/providers/*_test.dart` + shared helpers |
 | Executable Cucumber BDD | P4 | Medium | Gherkin exists; Playwright is executor today |
 | `test_integration/` in CI | P3 | Small | Single flow test; wire or relocate under `test/features/.../integration` |
 | Rename `pet_profile_app` package | P4 | Large | Cosmetic; defer until dedicated rename sprint |
@@ -97,6 +98,6 @@ Dart gaps already known (from `technical-debt.md`): audit logging, PostHog delet
 | 2026-07-06 | Split `server/routes/auth.js` into `routes/auth/` modules. |
 | 2026-07-06 | Split `server/routes/pets.js` into `routes/pets/` modules. |
 | 2026-07-06 | Split `organization_remote_datasource.dart` into modular remote clients. |
-| 2026-07-06 | Pet form submit logic moved to `PetFormController.submit()`. |
+| 2026-07-06 | Split `organization_providers_test.dart` by provider group. |
 | 2026-07-06 | Sharing + Dart org splits done; decisions log for controller/family-events. |
 | 2026-07-05 | Initial tracker for modularization refactor (`cursor/refactor-modular-domains-b4c2`). |
