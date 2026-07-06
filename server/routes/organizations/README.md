@@ -26,4 +26,4 @@ Mirrored under `server/test/organizations/`:
 
 ## Dart parity
 
-Shelf implementation: `server/lib/organization_routes.dart` (split deferred — see `docs/refactoring-debt.md`).
+Shelf implementation: `server/lib/organizations/` (subset of Node; foster/placements/people are Node-only today).

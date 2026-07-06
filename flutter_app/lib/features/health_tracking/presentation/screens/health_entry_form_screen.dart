@@ -1,5 +1,3 @@
-import 'dart:typed_data';
-
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -10,7 +8,6 @@ import 'package:image_picker/image_picker.dart';
 import '../../../../core/widgets/app_logo_title.dart';
 import '../../../../core/utils/calendar_date.dart';
 import '../../../../l10n/app_localizations.dart';
-import '../../../pet_profile/domain/entities/pet.dart';
 import '../../../pet_profile/presentation/providers/pet_providers.dart';
 import '../../data/datasources/health_remote_datasource.dart';
 import '../../domain/entities/health_entry.dart';
@@ -21,13 +18,12 @@ import '../widgets/entry_due_completed_row.dart';
 import '../widgets/health_entry_form/health_entry_pet_selector.dart';
 import '../widgets/health_entry_form/health_entry_photos_section.dart';
 
+import '../controllers/health_entry_form_constants.dart';
+import '../controllers/health_entry_form_controller.dart';
+import '../controllers/health_entry_form_outcomes.dart';
 import '../widgets/recurrence_anchor_toggle.dart';
 import '../widgets/event_history_formatter.dart';
-import '../../domain/entities/recurrence_anchor.dart';
 import 'package:pet_profile_app/core/providers/api_base_url_provider.dart';
-
-const healthDocumentMaxBytes = 2 * 1024 * 1024;
-const healthDocumentAllowedExtensions = ['jpg', 'jpeg', 'png', 'pdf'];
 
 class HealthEntryFormScreen extends ConsumerStatefulWidget {
   const HealthEntryFormScreen({
@@ -57,96 +53,57 @@ class _HealthEntryFormScreenState extends ConsumerState<HealthEntryFormScreen> {
   final _dosageController = TextEditingController();
   final _notesController = TextEditingController();
 
-  HealthEntryType _type = HealthEntryType.medication;
-  HealthFrequency _frequency = HealthFrequency.once;
-  int _frequencyInterval = 1;
-  DateTime _startDate = DateTime.now();
-  DateTime? _dueDate;
-  DateTime? _completedOn;
-  DateTime? _nextDueDate;
-  RecurrenceAnchor _recurrenceAnchor = RecurrenceAnchor.fromCompletion;
-  DateTime? _repeatEndDate;
-  bool _isEdit = false;
-  bool _isLoading = false;
-  bool _isUploadingPhoto = false;
-  List<EventPhoto> _photos = [];
-  List<XFile> _pendingPhotos = [];
-  int _remindDaysBefore = 1;
-  String? _selectedHealthIssueId;
-  Set<String> _selectedPetIds = {};
+  HealthEntryFormParams get _params => HealthEntryFormParams(
+        entryId: widget.entryId,
+        petId: widget.petId,
+        initialType: widget.initialType,
+        allowedTypes: widget.allowedTypes,
+      );
+
+  HealthEntryFormController get _controller =>
+      ref.read(healthEntryFormControllerProvider(_params).notifier);
 
   @override
   void initState() {
     super.initState();
-    if (widget.initialType != null) {
-      _type = widget.initialType!;
-    } else if (widget.allowedTypes != null && widget.allowedTypes!.isNotEmpty) {
-      _type = widget.allowedTypes!.first;
-    }
-    if (widget.petId != null && widget.petId!.isNotEmpty) {
-      _selectedPetIds.add(widget.petId!);
-    }
     if (widget.entryId != null) {
-      _isEdit = true;
-      _loadEntry();
-      _loadPhotos();
+      Future.microtask(() async {
+        try {
+          final loaded = await _controller.loadEntry(widget.entryId!);
+          if (loaded != null && mounted) {
+            _nameController.text = loaded.name;
+            _dosageController.text = loaded.dosage;
+            _notesController.text = loaded.notes;
+          }
+          await _controller.loadPhotos();
+        } catch (e) {
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(
+                  AppLocalizations.of(context)!.failedToLoadEntry('$e'),
+                ),
+              ),
+            );
+          }
+        }
+      });
     }
   }
 
-  int get _totalPhotoCount => _photos.length + _pendingPhotos.length;
-
-  Future<void> _loadPhotos() async {
-    if (widget.entryId == null) return;
-    try {
-      final ds = ref.read(healthDataSourceProvider);
-      final photos = await ds.getPhotos(widget.entryId!);
-      if (mounted) setState(() => _photos = photos);
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(AppLocalizations.of(context)!.failedToLoadPhotos('$e'))),
-        );
-      }
-    }
-  }
-
-  String? _documentValidationError(String filename, int byteLength) {
+  String _documentValidationMessage(HealthDocumentValidationError error) {
     final l = AppLocalizations.of(context)!;
-    final extension = filename.split('.').last.toLowerCase();
-    if (!healthDocumentAllowedExtensions.contains(extension)) {
-      return l.unsupportedDocumentFormat;
-    }
-    if (byteLength > healthDocumentMaxBytes) {
-      return l.documentTooLarge;
-    }
-    return null;
+    return switch (error) {
+      HealthDocumentValidationError.unsupportedFormat =>
+        l.unsupportedDocumentFormat,
+      HealthDocumentValidationError.tooLarge => l.documentTooLarge,
+    };
   }
 
   Future<void> _addPickedDocument(XFile picked, {int? byteLength}) async {
-    final length = byteLength ?? await picked.length();
     if (!mounted) return;
-    final validationError = _documentValidationError(picked.name, length);
-    if (validationError != null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(validationError)),
-      );
-      return;
-    }
-
-    if (_isEdit) {
-      setState(() => _isUploadingPhoto = true);
-      final bytes = await picked.readAsBytes();
-      final ds = ref.read(healthDataSourceProvider);
-      await ds.uploadPhoto(widget.entryId!, bytes, picked.name);
-      await _loadPhotos();
-      if (mounted) setState(() => _isUploadingPhoto = false);
-    } else {
-      setState(() => _pendingPhotos.add(picked));
-    }
-  }
-
-  Future<void> _pickPhoto(ImageSource source) async {
-    if (_totalPhotoCount >= 4) {
+    final form = ref.read(healthEntryFormControllerProvider(_params));
+    if (form.totalPhotoCount >= healthEntryMaxPhotos) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(AppLocalizations.of(context)!.maxPhotosReached)),
       );
@@ -154,15 +111,36 @@ class _HealthEntryFormScreenState extends ConsumerState<HealthEntryFormScreen> {
     }
 
     try {
+      final validationError =
+          await _controller.addDocument(picked, byteLength: byteLength);
+      if (!mounted) return;
+      if (validationError != null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(_documentValidationMessage(validationError))),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              AppLocalizations.of(context)!.failedToAddPhoto('$e'),
+            ),
+          ),
+        );
+      }
+    }
+  }
+
+  Future<void> _pickPhoto(ImageSource source) async {
+    try {
       final picker = ImagePicker();
       final picked = await picker.pickImage(
           source: source, maxWidth: 1200, maxHeight: 1200, imageQuality: 80);
       if (picked == null) return;
-
       await _addPickedDocument(picked);
     } catch (e) {
       if (mounted) {
-        setState(() => _isUploadingPhoto = false);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(AppLocalizations.of(context)!.failedToAddPhoto('$e'))),
         );
@@ -171,13 +149,6 @@ class _HealthEntryFormScreenState extends ConsumerState<HealthEntryFormScreen> {
   }
 
   Future<void> _pickDocument() async {
-    if (_totalPhotoCount >= 4) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(AppLocalizations.of(context)!.maxPhotosReached)),
-      );
-      return;
-    }
-
     try {
       final result = await FilePicker.pickFiles(
         type: FileType.custom,
@@ -197,32 +168,9 @@ class _HealthEntryFormScreenState extends ConsumerState<HealthEntryFormScreen> {
       await _addPickedDocument(picked, byteLength: file.size);
     } catch (e) {
       if (mounted) {
-        setState(() => _isUploadingPhoto = false);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(AppLocalizations.of(context)!.failedToAddPhoto('$e'))),
         );
-      }
-    }
-  }
-
-  void _removePendingPhoto(int index) {
-    setState(() => _pendingPhotos.removeAt(index));
-  }
-
-  Future<void> _uploadPendingPhotos(String entryId) async {
-    if (_pendingPhotos.isEmpty) return;
-    final ds = ref.read(healthDataSourceProvider);
-    final filesToUpload = List<XFile>.from(_pendingPhotos);
-    for (final file in filesToUpload) {
-      try {
-        final bytes = await file.readAsBytes();
-        await ds.uploadPhoto(entryId, bytes, file.name);
-      } catch (e) {
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(AppLocalizations.of(context)!.failedToUploadPhotoNamed(file.name, '$e'))),
-          );
-        }
       }
     }
   }
@@ -248,9 +196,7 @@ class _HealthEntryFormScreenState extends ConsumerState<HealthEntryFormScreen> {
     );
     if (confirmed != true || widget.entryId == null) return;
     try {
-      final ds = ref.read(healthDataSourceProvider);
-      await ds.deletePhoto(widget.entryId!, photo.id);
-      await _loadPhotos();
+      await _controller.deletePhoto(photo);
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -260,50 +206,9 @@ class _HealthEntryFormScreenState extends ConsumerState<HealthEntryFormScreen> {
     }
   }
 
-  Future<void> _loadEntry() async {
-    setState(() => _isLoading = true);
-    try {
-      final entry = await ref
-          .read(healthRepositoryProvider)
-          .getEntry(widget.entryId!);
-      if (entry != null && mounted) {
-        setState(() {
-          _nameController.text = entry.name;
-          _dosageController.text = entry.dosage;
-          _notesController.text = entry.notes;
-          _type = entry.type;
-          _frequency = entry.frequency == HealthFrequency.custom
-              ? HealthFrequency.daily
-              : entry.frequency;
-          _frequencyInterval = entry.frequency == HealthFrequency.custom
-              ? (entry.frequencyDays ?? 1)
-              : entry.frequencyInterval;
-          _startDate = entry.startDate;
-          _dueDate = entry.nextDueDate;
-          _completedOn = entry.completedOn;
-          _nextDueDate = entry.nextDueDate;
-          _recurrenceAnchor = entry.recurrenceAnchor;
-          _selectedPetIds.clear();
-          _selectedPetIds.add(entry.petId);
-          _repeatEndDate = entry.repeatEndDate;
-          _remindDaysBefore = entry.remindDaysBefore;
-          _selectedHealthIssueId = entry.healthIssueId;
-        });
-      }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(AppLocalizations.of(context)!.failedToLoadEntry('$e'))),
-        );
-      }
-    } finally {
-      if (mounted) setState(() => _isLoading = false);
-    }
-  }
-
-  Widget _buildHealthIssueDropdown() {
-    if (_selectedPetIds.isEmpty) return const SizedBox.shrink();
-    final petId = _selectedPetIds.first;
+  Widget _buildHealthIssueDropdown(HealthEntryFormState form) {
+    if (form.selectedPetIds.isEmpty) return const SizedBox.shrink();
+    final petId = form.selectedPetIds.first;
     final issuesAsync = ref.watch(healthIssueNotifierProvider(petId));
     final theme = Theme.of(context);
 
@@ -316,7 +221,7 @@ class _HealthEntryFormScreenState extends ConsumerState<HealthEntryFormScreen> {
           children: [
             DropdownButtonFormField<String?>(
               key: const Key('health_issue_dropdown'),
-              value: _selectedHealthIssueId,
+              value: form.selectedHealthIssueId,
               decoration: InputDecoration(
                 labelText: AppLocalizations.of(context)!.healthIssueOptional,
               ),
@@ -330,7 +235,7 @@ class _HealthEntryFormScreenState extends ConsumerState<HealthEntryFormScreen> {
                       child: Text(issue.title),
                     )),
               ],
-              onChanged: (val) => setState(() => _selectedHealthIssueId = val),
+              onChanged: (val) => _controller.setSelectedHealthIssueId(val),
             ),
             if (issues.isEmpty)
               Padding(
@@ -353,13 +258,6 @@ class _HealthEntryFormScreenState extends ConsumerState<HealthEntryFormScreen> {
     _dosageController.dispose();
     _notesController.dispose();
     super.dispose();
-  }
-
-  List<HealthEntryType> get _selectableTypes {
-    if (widget.allowedTypes != null && widget.allowedTypes!.isNotEmpty) {
-      return widget.allowedTypes!;
-    }
-    return HealthEntryType.values;
   }
 
   String _typeLabel(AppLocalizations l, HealthEntryType t) =>
@@ -402,11 +300,12 @@ class _HealthEntryFormScreenState extends ConsumerState<HealthEntryFormScreen> {
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context)!;
+    final form = ref.watch(healthEntryFormControllerProvider(_params));
     final petListAsync = ref.watch(petListProvider);
     final theme = Theme.of(context);
     return Scaffold(
       appBar: AppBar(
-        title: AppLogoTitle(title: _isEdit ? l.editEntry : l.addHealthEntry2),
+        title: AppLogoTitle(title: form.isEdit ? l.editEntry : l.addHealthEntry2),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           tooltip: l.goBack,
@@ -419,7 +318,7 @@ class _HealthEntryFormScreenState extends ConsumerState<HealthEntryFormScreen> {
           },
         ),
       ),
-      body: _isLoading
+      body: form.isLoading
           ? const Center(child: CircularProgressIndicator())
           : SingleChildScrollView(
               padding: const EdgeInsets.all(16),
@@ -447,27 +346,24 @@ class _HealthEntryFormScreenState extends ConsumerState<HealthEntryFormScreen> {
                         }
                         return HealthEntryPetSelector(
                           pets: pets,
-                          selectedPetIds: _selectedPetIds,
-                          isEdit: _isEdit,
-                          onChanged: (ids) => setState(() {
-                            _selectedPetIds = ids;
-                            _selectedHealthIssueId = null;
-                          }),
+                          selectedPetIds: form.selectedPetIds,
+                          isEdit: form.isEdit,
+                          onChanged: _controller.setSelectedPetIds,
                         );
                       },
                     ),
                     const SizedBox(height: 16),
                     DropdownButtonFormField<HealthEntryType>(
-                      value: _type,
+                      value: form.type,
                       decoration: InputDecoration(
                         labelText: l.entryType,
                       ),
-                      items: _selectableTypes.map((t) {
+                      items: form.selectableTypes.map((t) {
                         return DropdownMenuItem(
                             value: t, child: Text(_typeLabel(l, t)));
                       }).toList(),
                       onChanged: (val) {
-                        if (val != null) setState(() => _type = val);
+                        if (val != null) _controller.setType(val);
                       },
                     ),
                     const SizedBox(height: 16),
@@ -494,7 +390,7 @@ class _HealthEntryFormScreenState extends ConsumerState<HealthEntryFormScreen> {
                     ),
                     const SizedBox(height: 16),
                     DropdownButtonFormField<HealthFrequency>(
-                      value: _frequency,
+                      value: form.frequency,
                       decoration: InputDecoration(
                         labelText: l.frequency,
                       ),
@@ -505,17 +401,17 @@ class _HealthEntryFormScreenState extends ConsumerState<HealthEntryFormScreen> {
                             value: f, child: Text(_freqLabel(l, f)));
                       }).toList(),
                       onChanged: (val) {
-                        if (val != null) setState(() => _frequency = val);
+                        if (val != null) _controller.setFrequency(val);
                       },
                     ),
-                    if (_frequency != HealthFrequency.once) ...[
+                    if (form.frequency != HealthFrequency.once) ...[
                       const SizedBox(height: 16),
                       Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Expanded(
                             child: DropdownButtonFormField<int>(
-                              value: _frequencyInterval.clamp(1, 12),
+                              value: form.frequencyInterval.clamp(1, 12),
                               decoration: InputDecoration(
                                 labelText: l.every,
                               ),
@@ -525,7 +421,7 @@ class _HealthEntryFormScreenState extends ConsumerState<HealthEntryFormScreen> {
                                   .toList(),
                               onChanged: (val) {
                                 if (val != null) {
-                                  setState(() => _frequencyInterval = val);
+                                  _controller.setFrequencyInterval(val);
                                 }
                               },
                             ),
@@ -538,7 +434,7 @@ class _HealthEntryFormScreenState extends ConsumerState<HealthEntryFormScreen> {
                                 labelText: l.period,
                               ),
                               child: Text(
-                                _periodLabel(l, _frequency, _frequencyInterval),
+                                _periodLabel(l, form.frequency, form.frequencyInterval),
                                 style: Theme.of(context).textTheme.bodyLarge,
                               ),
                             ),
@@ -546,7 +442,7 @@ class _HealthEntryFormScreenState extends ConsumerState<HealthEntryFormScreen> {
                         ],
                       ),
                     ],
-                    if (_frequency != HealthFrequency.once) ...[
+                    if (form.frequency != HealthFrequency.once) ...[
                       const SizedBox(height: 16),
                       InputDecorator(
                         decoration: InputDecoration(
@@ -556,26 +452,28 @@ class _HealthEntryFormScreenState extends ConsumerState<HealthEntryFormScreen> {
                           children: [
                             ChoiceChip(
                               label: Text(l.never),
-                              selected: _repeatEndDate == null,
+                              selected: form.repeatEndDate == null,
                               onSelected: (_) =>
-                                  setState(() => _repeatEndDate = null),
+                                  _controller.setRepeatEndDate(null),
                             ),
                             const SizedBox(width: 8),
                             ChoiceChip(
-                              label: Text(_repeatEndDate != null
-                                  ? _formatDate(_repeatEndDate!)
+                              label: Text(form.repeatEndDate != null
+                                  ? _formatDate(form.repeatEndDate!)
                                   : l.pickADate),
-                              selected: _repeatEndDate != null,
+                              selected: form.repeatEndDate != null,
                               onSelected: (_) async {
                                 final picked = await showDatePicker(
                                   context: context,
-                                  initialDate: _repeatEndDate ??
+                                  initialDate: form.repeatEndDate ??
                                       DateTime.now().add(const Duration(days: 30)),
                                   firstDate: DateTime.now(),
                                   lastDate: DateTime(2100),
                                 );
                                 if (picked != null) {
-                                  setState(() => _repeatEndDate = calendarDateOnly(picked));
+                                  _controller.setRepeatEndDate(
+                                    calendarDateOnly(picked),
+                                  );
                                 }
                               },
                             ),
@@ -583,24 +481,19 @@ class _HealthEntryFormScreenState extends ConsumerState<HealthEntryFormScreen> {
                         ),
                       ),
                     ],
-                    if (_frequency != HealthFrequency.once) ...[
+                    if (form.frequency != HealthFrequency.once) ...[
                       const SizedBox(height: 16),
                       RecurrenceAnchorToggle(
-                        value: _recurrenceAnchor,
-                        onChanged: (v) => setState(() => _recurrenceAnchor = v),
+                        value: form.recurrenceAnchor,
+                        onChanged: _controller.setRecurrenceAnchor,
                       ),
                     ],
                     const SizedBox(height: 16),
                     EntryDueCompletedRow(
-                      dueDate: _dueDate,
-                      completedOn: _completedOn,
-                      onDueDateChanged: (d) => setState(() {
-                        _dueDate = d;
-                        _nextDueDate = d;
-                        if (d != null) _startDate = d;
-                      }),
-                      onCompletedOnChanged: (d) =>
-                          setState(() => _completedOn = d),
+                      dueDate: form.dueDate,
+                      completedOn: form.completedOn,
+                      onDueDateChanged: _controller.setDueDate,
+                      onCompletedOnChanged: _controller.setCompletedOn,
                     ),
                     const SizedBox(height: 16),
                     Row(
@@ -617,7 +510,7 @@ class _HealthEntryFormScreenState extends ConsumerState<HealthEntryFormScreen> {
                                   width: 60,
                                   child: TextFormField(
                                     key: const Key('remind_days_field'),
-                                    initialValue: _remindDaysBefore.toString(),
+                                    initialValue: form.remindDaysBefore.toString(),
                                     textAlign: TextAlign.center,
                                     keyboardType: TextInputType.number,
                                     decoration: const InputDecoration(
@@ -628,7 +521,7 @@ class _HealthEntryFormScreenState extends ConsumerState<HealthEntryFormScreen> {
                                     onChanged: (v) {
                                       final val = int.tryParse(v);
                                       if (val != null && val >= 0) {
-                                        setState(() => _remindDaysBefore = val);
+                                        _controller.setRemindDaysBefore(val);
                                       }
                                     },
                                   ),
@@ -644,9 +537,9 @@ class _HealthEntryFormScreenState extends ConsumerState<HealthEntryFormScreen> {
                       ],
                     ),
                     const SizedBox(height: 16),
-                    if (_selectedPetIds.length == 1)
-                      _buildHealthIssueDropdown(),
-                    if (_selectedPetIds.length == 1)
+                    if (form.selectedPetIds.length == 1)
+                      _buildHealthIssueDropdown(form),
+                    if (form.selectedPetIds.length == 1)
                       const SizedBox(height: 16),
                     TextFormField(
                       key: const Key('health_notes_field'),
@@ -659,27 +552,27 @@ class _HealthEntryFormScreenState extends ConsumerState<HealthEntryFormScreen> {
                     ),
                     const SizedBox(height: 24),
                     HealthEntryPhotosSection(
-                      photos: _photos,
-                      pendingPhotos: _pendingPhotos,
-                      isUploading: _isUploadingPhoto,
+                      photos: form.photos,
+                      pendingPhotos: form.pendingPhotos,
+                      isUploading: form.isUploadingPhoto,
                       baseUrl: ref.watch(apiBaseUrlProvider),
                       onPickCamera: () => _pickPhoto(ImageSource.camera),
                       onPickGallery: _pickDocument,
                       onDelete: _deletePhoto,
-                      onRemovePending: _removePendingPhoto,
+                      onRemovePending: _controller.removePendingPhoto,
                     ),
                     const SizedBox(height: 24),
                     FilledButton.icon(
                       key: const Key('save_health_entry_button'),
                       onPressed: _submit,
-                      icon: Icon(_isEdit ? Icons.save : Icons.add),
-                      label: Text(_isEdit
+                      icon: Icon(form.isEdit ? Icons.save : Icons.add),
+                      label: Text(form.isEdit
                           ? l.save
-                          : _selectedPetIds.length > 1
-                              ? l.addEntryForPets(_selectedPetIds.length)
+                          : form.selectedPetIds.length > 1
+                              ? l.addEntryForPets(form.selectedPetIds.length)
                               : l.addEntry),
                     ),
-                    if (_isEdit) ...[
+                    if (form.isEdit) ...[
                       const SizedBox(height: 12),
                       OutlinedButton.icon(
                         onPressed: _viewHistory,
@@ -706,138 +599,72 @@ class _HealthEntryFormScreenState extends ConsumerState<HealthEntryFormScreen> {
   }
 
   Future<void> _submit() async {
-    if (_dueDate == null && _completedOn == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(AppLocalizations.of(context)!.dueOrCompletedRequired)),
-      );
-      return;
-    }
     if (!_formKey.currentState!.validate()) return;
 
-    if (_selectedPetIds.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(AppLocalizations.of(context)!.selectAtLeastOnePet)),
-      );
-      return;
-    }
+    final text = HealthEntryFormTextValues(
+      name: _nameController.text,
+      dosage: _dosageController.text,
+      notes: _notesController.text,
+    );
 
-    bool markCompleted = false;
-    final today = DateTime.now();
-    final dueOnly = _dueDate != null ? calendarDateOnly(_dueDate!) : null;
-    final todayOnly = calendarDateOnly(today);
+    var outcome = await _controller.submit(text);
+    if (!mounted) return;
 
-    if (!_isEdit &&
-        _frequency == HealthFrequency.once &&
-        _completedOn == null &&
-        dueOnly != null &&
-        !dueOnly.isAfter(todayOnly)) {
+    if (outcome is HealthEntrySubmitNeedsMarkCompleted) {
+      final prompt = outcome.prompt;
+      final l = AppLocalizations.of(context)!;
       final result = await showDialog<bool>(
         context: context,
         builder: (ctx) => AlertDialog(
-          title: Text(AppLocalizations.of(context)!.markAsCompletedTitle),
+          title: Text(l.markAsCompletedTitle),
           content: Text(
-            dueOnly.isBefore(todayOnly)
-                ? AppLocalizations.of(context)!.markCompletedPast
-                : AppLocalizations.of(context)!.markCompletedToday,
+            prompt.isPast ? l.markCompletedPast : l.markCompletedToday,
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(ctx, false),
-              child: Text(AppLocalizations.of(context)!.keepActive),
+              child: Text(l.keepActive),
             ),
             FilledButton(
               onPressed: () => Navigator.pop(ctx, true),
-              child: Text(AppLocalizations.of(context)!.markCompletedAction),
+              child: Text(l.markCompletedAction),
             ),
           ],
         ),
       );
       if (result == null) return;
-      markCompleted = result;
-      if (markCompleted) {
-        setState(() => _completedOn = dueOnly ?? todayOnly);
-      }
+      outcome = await _controller.submit(
+        text,
+        markCompleted: result,
+        skipMarkCompletedCheck: true,
+      );
+      if (!mounted) return;
     }
 
-    setState(() => _isLoading = true);
-    try {
-      final notifier = ref.read(healthEntriesNotifierProvider.notifier);
-
-      final effectiveRepeatEndDate =
-          _frequency == HealthFrequency.once ? null : _repeatEndDate;
-
-      final effectiveStart = _dueDate ?? _completedOn ?? _startDate;
-      final effectiveDue =
-          _frequency == HealthFrequency.once && _completedOn != null
-              ? null
-              : _dueDate;
-      final effectiveCompleted = _completedOn;
-
-      if (_isEdit) {
-        final entry = HealthEntry(
-          id: widget.entryId ?? '',
-          petId: _selectedPetIds.first,
-          name: _nameController.text.trim(),
-          type: _type,
-          dosage: _dosageController.text.trim(),
-          frequency: _frequency,
-          frequencyInterval: _frequency == HealthFrequency.once ? 1 : _frequencyInterval,
-          repeatEndDate: effectiveRepeatEndDate,
-          startDate: effectiveStart,
-          nextDueDate: effectiveDue,
-          completedOn: effectiveCompleted,
-          recurrenceAnchor: _recurrenceAnchor,
-          notes: _notesController.text.trim(),
-          healthIssueId: _selectedHealthIssueId,
-          remindDaysBefore: _remindDaysBefore,
+    final l = AppLocalizations.of(context)!;
+    switch (outcome) {
+      case HealthEntrySubmitValidationFailed(:final reason):
+        final message = switch (reason) {
+          HealthEntrySubmitValidation.dueOrCompletedRequired =>
+            l.dueOrCompletedRequired,
+          HealthEntrySubmitValidation.noPetsSelected =>
+            l.selectAtLeastOnePet,
+        };
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(message)),
         );
-        await notifier.updateEntry(entry);
-        if (mounted) {
-          ref.invalidate(petHealthEntriesProvider(_selectedPetIds.first));
+      case HealthEntrySubmitError(:final error):
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(l.errorWithMessage('$error'))),
+        );
+      case HealthEntrySubmitSuccess(:final isEdit, :final petIds):
+        for (final petId in petIds) {
+          ref.invalidate(petHealthEntriesProvider(petId));
         }
-      } else {
-        final createdEntryIds = <String>[];
-        final createUseCase = ref.read(createHealthEntryProvider);
-        for (final petId in _selectedPetIds) {
-          final entry = HealthEntry(
-            id: '',
-            petId: petId,
-            name: _nameController.text.trim(),
-            type: _type,
-            dosage: _dosageController.text.trim(),
-            frequency: _frequency,
-            frequencyInterval: _frequency == HealthFrequency.once ? 1 : _frequencyInterval,
-            repeatEndDate: effectiveRepeatEndDate,
-            startDate: effectiveStart,
-            nextDueDate: markCompleted ? null : (_dueDate ?? effectiveStart),
-            completedOn: markCompleted ? (_completedOn ?? effectiveStart) : _completedOn,
-            recurrenceAnchor: _recurrenceAnchor,
-            notes: _notesController.text.trim(),
-            healthIssueId: _selectedHealthIssueId,
-            remindDaysBefore: _remindDaysBefore,
-          );
-          final created = await createUseCase.call(entry);
-          createdEntryIds.add(created.id);
-        }
-        if (_pendingPhotos.isNotEmpty) {
-          for (final entryId in createdEntryIds) {
-            await _uploadPendingPhotos(entryId);
-          }
-        }
-        await notifier.refresh();
-        if (mounted) {
-          for (final petId in _selectedPetIds) {
-            ref.invalidate(petHealthEntriesProvider(petId));
-          }
-        }
-      }
-
-      if (mounted) {
-        final count = _selectedPetIds.length;
-        final l = AppLocalizations.of(context)!;
+        final count = petIds.length;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(_isEdit
+            content: Text(isEdit
                 ? l.entryUpdated
                 : count > 1
                     ? l.entriesCreated(count)
@@ -849,15 +676,8 @@ class _HealthEntryFormScreenState extends ConsumerState<HealthEntryFormScreen> {
         } else {
           context.go('/health');
         }
-      }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(AppLocalizations.of(context)!.errorWithMessage('$e'))),
-        );
-      }
-    } finally {
-      if (mounted) setState(() => _isLoading = false);
+      case HealthEntrySubmitNeedsMarkCompleted():
+        break;
     }
   }
 
@@ -965,11 +785,6 @@ class _HealthEntryFormScreenState extends ConsumerState<HealthEntryFormScreen> {
 
   String _formatDate(DateTime dt) {
     return '${dt.year}-${dt.month.toString().padLeft(2, '0')}-${dt.day.toString().padLeft(2, '0')}';
-  }
-
-  String _formatDateTime(DateTime dt) {
-    return '${dt.year}-${dt.month.toString().padLeft(2, '0')}-${dt.day.toString().padLeft(2, '0')} '
-        '${dt.hour.toString().padLeft(2, '0')}:${dt.minute.toString().padLeft(2, '0')}';
   }
 }
 

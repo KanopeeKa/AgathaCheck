@@ -19,6 +19,7 @@ import '../widgets/entry_document_section.dart';
 import '../widgets/entry_frequency_fields.dart';
 import '../widgets/entry_remind_before_field.dart';
 import '../widgets/health_entry_type_labels.dart';
+import '../controllers/health_entry_form_constants.dart';
 import 'health_entry_form_screen.dart';
 
 /// Simplified add/edit form for pet profile Other events (care + misc.).

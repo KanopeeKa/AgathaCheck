@@ -5,7 +5,7 @@ architectural decisions deferred during the domain-by-domain refactor.
 
 **Related:** `docs/technical-debt.md` (product/infra deferrals) · `docs/architecture/modularity.md` (rules)
 
-**Last updated:** 2026-07-05
+**Last updated:** 2026-07-06
 
 ---
 
@@ -21,14 +21,27 @@ architectural decisions deferred during the domain-by-domain refactor.
 
 ---
 
+## Decisions log (2026-07-06)
+
+| # | Topic | Decision | Recommendation |
+|---|-------|----------|----------------|
+| 1 | `health_entry_form_controller` | **Phase 1 done** (2026-07-06) | State + photos + submit in `StateNotifier`; screen keeps text fields + dialogs. Phase 2: move name/dosage/notes into state, slim screen further. |
+| 2 | `family_events_controller.dart` | **Keep stub; do not wire** until product rules on legacy family events | See “Family events” section below. |
+| 3 | Dart `organization_routes.dart` split | **Yes — done** | `server/lib/organizations/` mirrors Node layout (subset of routes). |
+| 4 | `sharing_section.dart` split | **Yes — done** | `widgets/sharing/` with role-specific files + tests. |
+
+---
+
 ## In progress (this refactor branch)
 
 | Domain | Status | Notes |
 |---|---|---|
-| Infrastructure | In progress | Debt doc, modularity rules, legacy cleanup |
-| Organizations (backend) | Done | Split `routes/organizations/` + `test/organizations/` |
-| Pet profile (Flutter) | Done | Extracted `widgets/pet_list/` from `pet_list_screen` |
-| Health tracking (Flutter) | Partial | Widget extraction done; controller wiring pending review |
+| Infrastructure | Done | Debt doc, modularity rules, legacy cleanup |
+| Organizations (Node) | Done | `routes/organizations/` + `test/organizations/` |
+| Organizations (Dart) | Done | `lib/organizations/` (subset parity) |
+| Pet profile — pet list | Done | `widgets/pet_list/` |
+| Pet profile — sharing | Done | `widgets/sharing/` |
+| Health tracking | Phase 1 done | Controller wired; screen ~790 lines (text fields + dialogs remain) |
 
 ---
 
@@ -36,8 +49,8 @@ architectural decisions deferred during the domain-by-domain refactor.
 
 | Item | Priority | Notes |
 |---|---|---|
-| `family_events_controller.dart` | P4 | Stub; family-events API returns 501 / empty lists. **Keep** until product confirms removal vs implementation. |
-| `health_entry_form_controller.dart` | P2 | Was a stub; refactor wires it incrementally. Review partial migration before deleting screen state. |
+| `family_events_controller.dart` | P4 | **Stub — not wired.** Legacy `family_events` table; placement data migrated to `foster_placements` (migration 016). Flutter still has `familyEventsProvider` + PDF section; pets API CRUD exists. **Recommendation:** delete stub; use foster placements for new UI — or revive only if product wants pre-migration family-event editing. |
+| `health_entry_form_controller.dart` | P3 | Phase 1 wired. Phase 2: text fields into state, target screen <400 lines. |
 | Root `lib/` legacy Flutter tree | P1 | Slated for removal from git; confirm no external tooling still points at repo root `pubspec.yaml`. |
 | `attached_assets/` | P1 | Replit session dumps; remove from git after confirming team does not rely on them. |
 | `npm run test:mocha` | P4 | Legacy runner; remove when team confirms no local scripts use it. |
@@ -51,12 +64,12 @@ architectural decisions deferred during the domain-by-domain refactor.
 | Split `server/routes/pets.js` (~997 lines) | P2 | Medium | Sub-routers for weight hooks, passed-away, org transfer |
 | Split `server/routes/auth.js` (~520 lines) | P3 | Small | Password-reset vs session routes |
 | Split `organization_remote_datasource.dart` | P2 | Medium | Members, placements, foster parents |
-| Split `sharing_section.dart` | P2 | Medium | Role-specific content widgets |
 | Split `pet_form_screen.dart` submit logic | P3 | Medium | Move into `PetFormController` / notifier |
 | `organization_providers_test.dart` split | P3 | Small | One file per provider group |
 | Executable Cucumber BDD | P4 | Medium | Gherkin exists; Playwright is executor today |
 | `test_integration/` in CI | P3 | Small | Single flow test; wire or relocate under `test/features/.../integration` |
 | Rename `pet_profile_app` package | P4 | Large | Cosmetic; defer until dedicated rename sprint |
+| Dart `organization_routes.dart` foster/placements/people parity | P2 | Medium | Node has full routes; Dart has subset only |
 | Node-only production backend | P4 | Strategic | Documented in technical-debt; Dart kept for Replit/AOT until decided |
 | `dart analyze` on `server/` in CI | P3 | Trivial | Catches Dart route drift vs Node |
 
@@ -81,4 +94,6 @@ Dart gaps already known (from `technical-debt.md`): audit logging, PostHog delet
 
 | Date | Change |
 |---|---|
+| 2026-07-06 | Health entry form controller Phase 1 wired (state, photos, submit). |
+| 2026-07-06 | Sharing + Dart org splits done; decisions log for controller/family-events. |
 | 2026-07-05 | Initial tracker for modularization refactor (`cursor/refactor-modular-domains-b4c2`). |
