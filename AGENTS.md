@@ -34,6 +34,8 @@ already applied and persists in the snapshot.
   ```
 - For incremental migrations on an existing DB use the Node runner:
   `cd server && node scripts/migrate.js up` (or `status`). It reads `PG*`/`DATABASE_URL` env vars.
+  
+- gen_random_uuid() is not  available on the project PostgreSQL deployment - do not use and ensure unique id is generated in code. 
 
 ### Running the backend (single-origin E2E)
 - Start with `cd server && node bin/start.js` — **not** `npm start`. `bin/server.js` only *exports*
