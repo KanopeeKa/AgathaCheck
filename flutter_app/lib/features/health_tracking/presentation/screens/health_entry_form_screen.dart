@@ -17,6 +17,7 @@ import '../widgets/health_entry_type_labels.dart';
 import '../widgets/entry_due_completed_row.dart';
 import '../widgets/health_entry_form/health_entry_pet_selector.dart';
 import '../widgets/health_entry_form/health_entry_photos_section.dart';
+import '../widgets/health_entry_form/health_entry_text_fields.dart';
 
 import '../controllers/health_entry_form_constants.dart';
 import '../controllers/health_entry_form_controller.dart';
@@ -49,10 +50,6 @@ class HealthEntryFormScreen extends ConsumerStatefulWidget {
 class _HealthEntryFormScreenState extends ConsumerState<HealthEntryFormScreen> {
   final _formKey = GlobalKey<FormState>();
 
-  final _nameController = TextEditingController();
-  final _dosageController = TextEditingController();
-  final _notesController = TextEditingController();
-
   HealthEntryFormParams get _params => HealthEntryFormParams(
         entryId: widget.entryId,
         petId: widget.petId,
@@ -69,12 +66,7 @@ class _HealthEntryFormScreenState extends ConsumerState<HealthEntryFormScreen> {
     if (widget.entryId != null) {
       Future.microtask(() async {
         try {
-          final loaded = await _controller.loadEntry(widget.entryId!);
-          if (loaded != null && mounted) {
-            _nameController.text = loaded.name;
-            _dosageController.text = loaded.dosage;
-            _notesController.text = loaded.notes;
-          }
+          await _controller.loadEntry(widget.entryId!);
           await _controller.loadPhotos();
         } catch (e) {
           if (mounted) {
@@ -252,14 +244,6 @@ class _HealthEntryFormScreenState extends ConsumerState<HealthEntryFormScreen> {
     );
   }
 
-  @override
-  void dispose() {
-    _nameController.dispose();
-    _dosageController.dispose();
-    _notesController.dispose();
-    super.dispose();
-  }
-
   String _typeLabel(AppLocalizations l, HealthEntryType t) =>
       healthEntryTypeLabel(l, t);
 
@@ -367,26 +351,14 @@ class _HealthEntryFormScreenState extends ConsumerState<HealthEntryFormScreen> {
                       },
                     ),
                     const SizedBox(height: 16),
-                    TextFormField(
-                      key: const Key('health_name_field'),
-                      controller: _nameController,
-                      decoration: InputDecoration(
-                        labelText: l.entryName,
-                        hintText: l.entryNameHint,
+                    HealthEntryNameDosageFields(
+                      key: ValueKey(
+                        'name-dosage-${form.isEdit}-${widget.entryId ?? 'new'}',
                       ),
-                      validator: (val) =>
-                          val == null || val.trim().isEmpty
-                              ? l.entryNameRequired
-                              : null,
-                    ),
-                    const SizedBox(height: 16),
-                    TextFormField(
-                      key: const Key('health_dosage_field'),
-                      controller: _dosageController,
-                      decoration: InputDecoration(
-                        labelText: l.dosage,
-                        hintText: l.dosageHint,
-                      ),
+                      name: form.name,
+                      dosage: form.dosage,
+                      onNameChanged: _controller.setName,
+                      onDosageChanged: _controller.setDosage,
                     ),
                     const SizedBox(height: 16),
                     DropdownButtonFormField<HealthFrequency>(
@@ -541,14 +513,12 @@ class _HealthEntryFormScreenState extends ConsumerState<HealthEntryFormScreen> {
                       _buildHealthIssueDropdown(form),
                     if (form.selectedPetIds.length == 1)
                       const SizedBox(height: 16),
-                    TextFormField(
-                      key: const Key('health_notes_field'),
-                      controller: _notesController,
-                      decoration: InputDecoration(
-                        labelText: l.notes,
-                        hintText: l.notesHint,
+                    HealthEntryNotesField(
+                      key: ValueKey(
+                        'notes-${form.isEdit}-${widget.entryId ?? 'new'}',
                       ),
-                      maxLines: 3,
+                      notes: form.notes,
+                      onChanged: _controller.setNotes,
                     ),
                     const SizedBox(height: 24),
                     HealthEntryPhotosSection(
@@ -601,13 +571,7 @@ class _HealthEntryFormScreenState extends ConsumerState<HealthEntryFormScreen> {
   Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
 
-    final text = HealthEntryFormTextValues(
-      name: _nameController.text,
-      dosage: _dosageController.text,
-      notes: _notesController.text,
-    );
-
-    var outcome = await _controller.submit(text);
+    var outcome = await _controller.submit();
     if (!mounted) return;
 
     if (outcome is HealthEntrySubmitNeedsMarkCompleted) {
@@ -634,7 +598,6 @@ class _HealthEntryFormScreenState extends ConsumerState<HealthEntryFormScreen> {
       );
       if (result == null) return;
       outcome = await _controller.submit(
-        text,
         markCompleted: result,
         skipMarkCompletedCheck: true,
       );
@@ -645,6 +608,7 @@ class _HealthEntryFormScreenState extends ConsumerState<HealthEntryFormScreen> {
     switch (outcome) {
       case HealthEntrySubmitValidationFailed(:final reason):
         final message = switch (reason) {
+          HealthEntrySubmitValidation.nameRequired => l.entryNameRequired,
           HealthEntrySubmitValidation.dueOrCompletedRequired =>
             l.dueOrCompletedRequired,
           HealthEntrySubmitValidation.noPetsSelected =>
@@ -745,7 +709,9 @@ class _HealthEntryFormScreenState extends ConsumerState<HealthEntryFormScreen> {
       context: context,
       builder: (ctx) => AlertDialog(
         title: Text(AppLocalizations.of(context)!.deleteEntry),
-        content: Text(AppLocalizations.of(context)!.deleteEntryNamedConfirm(_nameController.text)),
+        content: Text(AppLocalizations.of(context)!.deleteEntryNamedConfirm(
+          ref.read(healthEntryFormControllerProvider(_params)).name,
+        )),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(false),

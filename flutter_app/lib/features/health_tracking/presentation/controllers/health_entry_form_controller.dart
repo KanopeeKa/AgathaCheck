@@ -44,6 +44,9 @@ class HealthEntryFormParams {
 
 class HealthEntryFormState {
   HealthEntryFormState({
+    this.name = '',
+    this.dosage = '',
+    this.notes = '',
     this.type = HealthEntryType.medication,
     this.frequency = HealthFrequency.once,
     this.frequencyInterval = 1,
@@ -63,6 +66,9 @@ class HealthEntryFormState {
     this.allowedTypes,
   }) : startDate = startDate ?? DateTime.now();
 
+  final String name;
+  final String dosage;
+  final String notes;
   final HealthEntryType type;
   final HealthFrequency frequency;
   final int frequencyInterval;
@@ -91,6 +97,9 @@ class HealthEntryFormState {
   }
 
   HealthEntryFormState copyWith({
+    String? name,
+    String? dosage,
+    String? notes,
     HealthEntryType? type,
     HealthFrequency? frequency,
     int? frequencyInterval,
@@ -114,6 +123,9 @@ class HealthEntryFormState {
     bool clearHealthIssueId = false,
   }) {
     return HealthEntryFormState(
+      name: name ?? this.name,
+      dosage: dosage ?? this.dosage,
+      notes: notes ?? this.notes,
       type: type ?? this.type,
       frequency: frequency ?? this.frequency,
       frequencyInterval: frequencyInterval ?? this.frequencyInterval,
@@ -253,13 +265,13 @@ class HealthEntryFormController extends StateNotifier<HealthEntryFormState> {
   void clearPendingPhotos() =>
       state = state.copyWith(pendingPhotos: const []);
 
-  Future<HealthEntryLoadedFormData?> loadEntry(String entryId) async {
+  Future<bool> loadEntry(String entryId) async {
     _entryId = entryId;
     state = state.copyWith(isLoading: true, isEdit: true);
     try {
       final entry =
           await ref.read(healthRepositoryProvider).getEntry(entryId);
-      if (entry == null) return null;
+      if (entry == null) return false;
 
       final frequency = entry.frequency == HealthFrequency.custom
           ? HealthFrequency.daily
@@ -269,6 +281,9 @@ class HealthEntryFormController extends StateNotifier<HealthEntryFormState> {
           : entry.frequencyInterval;
 
       state = state.copyWith(
+        name: entry.name,
+        dosage: entry.dosage,
+        notes: entry.notes,
         type: entry.type,
         frequency: frequency,
         frequencyInterval: frequencyInterval,
@@ -282,26 +297,17 @@ class HealthEntryFormController extends StateNotifier<HealthEntryFormState> {
         selectedPetIds: {entry.petId},
       );
 
-      return HealthEntryLoadedFormData(
-        name: entry.name,
-        dosage: entry.dosage,
-        notes: entry.notes,
-        type: entry.type,
-        frequency: frequency,
-        frequencyInterval: frequencyInterval,
-        startDate: entry.startDate,
-        dueDate: entry.nextDueDate,
-        completedOn: entry.completedOn,
-        recurrenceAnchor: entry.recurrenceAnchor,
-        repeatEndDate: entry.repeatEndDate,
-        remindDaysBefore: entry.remindDaysBefore,
-        healthIssueId: entry.healthIssueId,
-        petId: entry.petId,
-      );
+      return true;
     } finally {
       state = state.copyWith(isLoading: false);
     }
   }
+
+  void setName(String name) => state = state.copyWith(name: name);
+
+  void setDosage(String dosage) => state = state.copyWith(dosage: dosage);
+
+  void setNotes(String notes) => state = state.copyWith(notes: notes);
 
   void setType(HealthEntryType type) => state = state.copyWith(type: type);
 
@@ -369,11 +375,15 @@ class HealthEntryFormController extends StateNotifier<HealthEntryFormState> {
     );
   }
 
-  Future<HealthEntrySubmitOutcome> submit(
-    HealthEntryFormTextValues text, {
+  Future<HealthEntrySubmitOutcome> submit({
     bool markCompleted = false,
     bool skipMarkCompletedCheck = false,
   }) async {
+    if (state.name.trim().isEmpty) {
+      return HealthEntrySubmitValidationFailed(
+        HealthEntrySubmitValidation.nameRequired,
+      );
+    }
     if (state.dueDate == null && state.completedOn == null) {
       return HealthEntrySubmitValidationFailed(
         HealthEntrySubmitValidation.dueOrCompletedRequired,
@@ -413,9 +423,9 @@ class HealthEntryFormController extends StateNotifier<HealthEntryFormState> {
         final entry = HealthEntry(
           id: _entryId ?? '',
           petId: state.selectedPetIds.first,
-          name: text.name.trim(),
+          name: state.name.trim(),
           type: state.type,
-          dosage: text.dosage.trim(),
+          dosage: state.dosage.trim(),
           frequency: state.frequency,
           frequencyInterval: state.frequency == HealthFrequency.once
               ? 1
@@ -425,7 +435,7 @@ class HealthEntryFormController extends StateNotifier<HealthEntryFormState> {
           nextDueDate: effectiveDue,
           completedOn: effectiveCompleted,
           recurrenceAnchor: state.recurrenceAnchor,
-          notes: text.notes.trim(),
+          notes: state.notes.trim(),
           healthIssueId: state.selectedHealthIssueId,
           remindDaysBefore: state.remindDaysBefore,
         );
@@ -437,9 +447,9 @@ class HealthEntryFormController extends StateNotifier<HealthEntryFormState> {
           final entry = HealthEntry(
             id: '',
             petId: petId,
-            name: text.name.trim(),
+            name: state.name.trim(),
             type: state.type,
-            dosage: text.dosage.trim(),
+            dosage: state.dosage.trim(),
             frequency: state.frequency,
             frequencyInterval: state.frequency == HealthFrequency.once
                 ? 1
@@ -453,7 +463,7 @@ class HealthEntryFormController extends StateNotifier<HealthEntryFormState> {
                 ? (state.completedOn ?? effectiveStart)
                 : state.completedOn,
             recurrenceAnchor: state.recurrenceAnchor,
-            notes: text.notes.trim(),
+            notes: state.notes.trim(),
             healthIssueId: state.selectedHealthIssueId,
             remindDaysBefore: state.remindDaysBefore,
           );

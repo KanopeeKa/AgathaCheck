@@ -6,10 +6,10 @@ Extracted from `health_entry_form_screen.dart` to reduce screen size.
 |--------|------|
 | `HealthEntryPetSelector` | `health_entry_pet_selector.dart` |
 | `HealthEntryPhotosSection` | `health_entry_photos_section.dart` |
+| `HealthEntryNameDosageFields` / `HealthEntryNotesField` | `health_entry_text_fields.dart` |
 
 `EntryDatePickerField` (shared) lives in `../entry_date_picker_field.dart`.
 
-**Controller:** `health_entry_form_controller.dart` holds form state, photo
-queue, load, and submit logic (Phase 1). The screen keeps text controllers and
-UI dialogs/snackbars. Phase 2 (recurrence edge cases, further slimming) is in
-`docs/refactoring-debt.md`.
+**Controller:** `health_entry_form_controller.dart` holds form state (including
+name, dosage, notes), photo queue, load, and submit logic. The screen keeps UI
+dialogs/snackbars only.

@@ -1,12 +1,10 @@
-import '../../domain/entities/health_entry.dart';
-import '../../domain/entities/recurrence_anchor.dart';
-
 enum HealthDocumentValidationError {
   unsupportedFormat,
   tooLarge,
 }
 
 enum HealthEntrySubmitValidation {
+  nameRequired,
   dueOrCompletedRequired,
   noPetsSelected,
 }
@@ -53,50 +51,3 @@ class HealthEntrySubmitError extends HealthEntrySubmitOutcome {
   final Object error;
 }
 
-/// Text fields passed from the screen's [TextEditingController]s on submit.
-class HealthEntryFormTextValues {
-  const HealthEntryFormTextValues({
-    required this.name,
-    required this.dosage,
-    required this.notes,
-  });
-
-  final String name;
-  final String dosage;
-  final String notes;
-}
-
-/// Populated entry fields after a successful load for edit mode.
-class HealthEntryLoadedFormData {
-  const HealthEntryLoadedFormData({
-    required this.name,
-    required this.dosage,
-    required this.notes,
-    required this.type,
-    required this.frequency,
-    required this.frequencyInterval,
-    required this.startDate,
-    required this.dueDate,
-    required this.completedOn,
-    required this.recurrenceAnchor,
-    required this.repeatEndDate,
-    required this.remindDaysBefore,
-    required this.healthIssueId,
-    required this.petId,
-  });
-
-  final String name;
-  final String dosage;
-  final String notes;
-  final HealthEntryType type;
-  final HealthFrequency frequency;
-  final int frequencyInterval;
-  final DateTime startDate;
-  final DateTime? dueDate;
-  final DateTime? completedOn;
-  final RecurrenceAnchor recurrenceAnchor;
-  final DateTime? repeatEndDate;
-  final int remindDaysBefore;
-  final String? healthIssueId;
-  final String petId;
-}
