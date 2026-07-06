@@ -87,7 +87,7 @@ npm run report       # open HTML report after a run
 | Workflow | Trigger | Role |
 |----------|---------|------|
 | `ci.yml` | push/PR → `main` | Flutter analyze + unit/widget tests + web build; backend Jest |
-| `e2e.yml` | PR → `main`, manual | Full Playwright against **localhost** (advisory on PRs) |
+| `e2e.yml` | manual only | Full Playwright against **localhost** (on demand; not per PR commit) |
 | `deploy-uat.yml` | push → `release/uat-*` | Fast FTP deploy → post-deploy smoke + live `@smoke` E2E + full localhost E2E → `prod-ready` gate |
 | `deploy-prod.yml` | manual `workflow_dispatch` (preferred) or release publish | FTP + SSH deploy; post-deploy HTTP smoke |
 
