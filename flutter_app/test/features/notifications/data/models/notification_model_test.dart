@@ -45,10 +45,15 @@ void main() {
         'general': NotificationType.general,
       };
       for (final entry in expected.entries) {
-        final model =
-            NotificationModel.fromJson({...fullJson, 'type': entry.key});
-        expect(model.type, entry.value,
-            reason: 'type "${entry.key}" should parse to ${entry.value}');
+        final model = NotificationModel.fromJson({
+          ...fullJson,
+          'type': entry.key,
+        });
+        expect(
+          model.type,
+          entry.value,
+          reason: 'type "${entry.key}" should parse to ${entry.value}',
+        );
       }
     });
 
@@ -129,8 +134,10 @@ void main() {
       };
       for (final entry in expected.entries) {
         expect(NotificationModel.typeToApi(entry.key), entry.value);
-        final restored =
-            NotificationModel.fromJson({...fullJson, 'type': entry.value});
+        final restored = NotificationModel.fromJson({
+          ...fullJson,
+          'type': entry.value,
+        });
         expect(restored.type, entry.key);
       }
     });
@@ -197,8 +204,7 @@ void main() {
     });
 
     test('fromJson handles missing fields with defaults', () {
-      final model =
-          NotificationPreferencesModel.fromJson(<String, dynamic>{});
+      final model = NotificationPreferencesModel.fromJson(<String, dynamic>{});
 
       expect(model.emailRemindersEnabled, isFalse);
       expect(model.reminderDaysBefore, 1);
@@ -215,7 +221,10 @@ void main() {
     });
 
     test('fromJson handles int muted_pet_ids elements', () {
-      final json = {...fullJson, 'muted_pet_ids': [1, 2, 3]};
+      final json = {
+        ...fullJson,
+        'muted_pet_ids': [1, 2, 3],
+      };
       final model = NotificationPreferencesModel.fromJson(json);
       expect(model.mutedPetIds, ['1', '2', '3']);
     });

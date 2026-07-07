@@ -62,10 +62,7 @@ class OrganizationPetsScreen extends ConsumerWidget {
                     ),
                   ),
                   const SizedBox(height: 16),
-                  Text(
-                    l.orgNoPets,
-                    style: theme.textTheme.headlineSmall,
-                  ),
+                  Text(l.orgNoPets, style: theme.textTheme.headlineSmall),
                 ],
               ),
             );
@@ -92,7 +89,8 @@ class OrganizationPetsScreen extends ConsumerWidget {
                           child: TextButton.icon(
                             key: Key('org_transfer_pet_${pet.id}'),
                             onPressed: () => context.push(
-                                '/organizations/$orgId/transfer/${pet.id}'),
+                              '/organizations/$orgId/transfer/${pet.id}',
+                            ),
                             icon: const Icon(Icons.swap_horiz, size: 18),
                             label: Text(l.transferPet),
                             style: TextButton.styleFrom(

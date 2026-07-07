@@ -40,9 +40,8 @@ void main() {
         ),
         GoRoute(
           path: '/pet/:petId',
-          builder: (context, state) => Scaffold(
-            body: Text('Pet ${state.pathParameters['petId']}'),
-          ),
+          builder: (context, state) =>
+              Scaffold(body: Text('Pet ${state.pathParameters['petId']}')),
         ),
       ],
     );

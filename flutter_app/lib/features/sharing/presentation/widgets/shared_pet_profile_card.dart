@@ -12,7 +12,8 @@ class SharedPetProfileCard extends StatelessWidget {
   final ColorScheme colorScheme;
   final ThemeData theme;
   final Widget Function(String? photoPath, ColorScheme colorScheme) buildPhoto;
-  final Widget Function(IconData icon, String label, ColorScheme colorScheme) buildChip;
+  final Widget Function(IconData icon, String label, ColorScheme colorScheme)
+  buildChip;
 
   const SharedPetProfileCard({
     super.key,
@@ -39,18 +40,19 @@ class SharedPetProfileCard extends StatelessWidget {
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              SizedBox(
-                width: 140,
-                child: buildPhoto(photoPath, colorScheme),
-              ),
+              SizedBox(width: 140, child: buildPhoto(photoPath, colorScheme)),
               Expanded(
                 child: Padding(
                   padding: const EdgeInsets.all(16),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(name,
-                          style: theme.textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold)),
+                      Text(
+                        name,
+                        style: theme.textTheme.headlineSmall?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
                       const SizedBox(height: 10),
                       Wrap(
                         spacing: 8,
@@ -62,27 +64,41 @@ class SharedPetProfileCard extends StatelessWidget {
                           if (ageDisplay != null)
                             buildChip(Icons.cake, ageDisplay!, colorScheme),
                           if (weight != null)
-                            buildChip(Icons.monitor_weight, '${weight!.toStringAsFixed(1)} kg', colorScheme),
+                            buildChip(
+                              Icons.monitor_weight,
+                              '${weight!.toStringAsFixed(1)} kg',
+                              colorScheme,
+                            ),
                         ],
                       ),
                       if (vetName != null && vetName!.isNotEmpty) ...[
                         const SizedBox(height: 10),
                         Row(
                           children: [
-                            Icon(Icons.local_hospital, size: 16, color: colorScheme.primary),
+                            Icon(
+                              Icons.local_hospital,
+                              size: 16,
+                              color: colorScheme.primary,
+                            ),
                             const SizedBox(width: 6),
-                            Text(vetName!,
-                                style: theme.textTheme.bodyMedium?.copyWith(
-                                    color: colorScheme.primary,
-                                    fontWeight: FontWeight.w500)),
+                            Text(
+                              vetName!,
+                              style: theme.textTheme.bodyMedium?.copyWith(
+                                color: colorScheme.primary,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
                           ],
                         ),
                       ],
                       if (bio.isNotEmpty) ...[
                         const SizedBox(height: 12),
-                        Text(bio,
-                            style: theme.textTheme.bodyMedium?.copyWith(
-                                color: colorScheme.onSurfaceVariant)),
+                        Text(
+                          bio,
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            color: colorScheme.onSurfaceVariant,
+                          ),
+                        ),
                       ],
                     ],
                   ),

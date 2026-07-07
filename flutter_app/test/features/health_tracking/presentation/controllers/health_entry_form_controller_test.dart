@@ -39,9 +39,7 @@ void main() {
     setUp(() {
       repository = _FakeHealthRepository();
       container = ProviderContainer(
-        overrides: [
-          healthRepositoryProvider.overrideWithValue(repository),
-        ],
+        overrides: [healthRepositoryProvider.overrideWithValue(repository)],
       );
     });
 
@@ -82,16 +80,19 @@ void main() {
       );
     });
 
-    test('submit fails when due and completed dates are both missing', () async {
-      final c = controller();
-      c.setName('Meds');
-      final outcome = await c.submit();
-      expect(outcome, isA<HealthEntrySubmitValidationFailed>());
-      expect(
-        (outcome as HealthEntrySubmitValidationFailed).reason,
-        HealthEntrySubmitValidation.dueOrCompletedRequired,
-      );
-    });
+    test(
+      'submit fails when due and completed dates are both missing',
+      () async {
+        final c = controller();
+        c.setName('Meds');
+        final outcome = await c.submit();
+        expect(outcome, isA<HealthEntrySubmitValidationFailed>());
+        expect(
+          (outcome as HealthEntrySubmitValidationFailed).reason,
+          HealthEntrySubmitValidation.dueOrCompletedRequired,
+        );
+      },
+    );
 
     test('submit fails when no pets are selected', () async {
       final c = controller();
@@ -107,7 +108,9 @@ void main() {
 
     test('prompts to mark completed for past one-off due dates', () {
       final c = controller(const HealthEntryFormParams(petId: 'pet-1'));
-      c.setDueDate(calendarDateOnly(DateTime.now().subtract(const Duration(days: 1))));
+      c.setDueDate(
+        calendarDateOnly(DateTime.now().subtract(const Duration(days: 1))),
+      );
       final prompt = c.markCompletedPromptIfNeeded();
       expect(prompt, isNotNull);
       expect(prompt!.isPast, isTrue);

@@ -36,7 +36,8 @@ class EventsPdfService {
       pw.MultiPage(
         pageFormat: PdfPageFormat.a4,
         margin: const pw.EdgeInsets.all(28),
-        header: (context) => _buildHeader(filterLabel, groupLabel, now, dateFormat, l),
+        header: (context) =>
+            _buildHeader(filterLabel, groupLabel, now, dateFormat, l),
         footer: (context) => _buildFooter(context, now, dateFormat, l),
         build: (context) {
           final widgets = <pw.Widget>[];
@@ -46,7 +47,9 @@ class EventsPdfService {
               widgets.add(_buildGroupHeader(group.key!));
             }
             for (final entry in group.value) {
-              widgets.add(_buildEntryRow(entry, petMap[entry.petId], dateFormat, l));
+              widgets.add(
+                _buildEntryRow(entry, petMap[entry.petId], dateFormat, l),
+              );
             }
           }
 
@@ -55,8 +58,10 @@ class EventsPdfService {
               pw.Center(
                 child: pw.Padding(
                   padding: const pw.EdgeInsets.all(40),
-                  child: pw.Text(l.pdfNoEventsToDisplay,
-                      style: const pw.TextStyle(fontSize: 12, color: _textMuted)),
+                  child: pw.Text(
+                    l.pdfNoEventsToDisplay,
+                    style: const pw.TextStyle(fontSize: 12, color: _textMuted),
+                  ),
                 ),
               ),
             );
@@ -71,7 +76,12 @@ class EventsPdfService {
   }
 
   pw.Widget _buildHeader(
-      String filterLabel, String groupLabel, DateTime now, DateFormat dateFormat, AppLocalizations l) {
+    String filterLabel,
+    String groupLabel,
+    DateTime now,
+    DateFormat dateFormat,
+    AppLocalizations l,
+  ) {
     return pw.Container(
       margin: const pw.EdgeInsets.only(bottom: 14),
       padding: const pw.EdgeInsets.all(12),
@@ -132,13 +142,16 @@ class EventsPdfService {
   }
 
   pw.Widget _buildFooter(
-      pw.Context context, DateTime generatedAt, DateFormat dateFormat, AppLocalizations l) {
+    pw.Context context,
+    DateTime generatedAt,
+    DateFormat dateFormat,
+    AppLocalizations l,
+  ) {
     return pw.Container(
       margin: const pw.EdgeInsets.only(top: 8),
       padding: const pw.EdgeInsets.only(top: 6),
       decoration: const pw.BoxDecoration(
-        border:
-            pw.Border(top: pw.BorderSide(color: _borderColor, width: 0.5)),
+        border: pw.Border(top: pw.BorderSide(color: _borderColor, width: 0.5)),
       ),
       child: pw.Row(
         mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
@@ -188,16 +201,25 @@ class EventsPdfService {
     );
   }
 
-  pw.Widget _buildEntryRow(HealthEntry entry, Pet? pet, DateFormat dateFormat, AppLocalizations l) {
+  pw.Widget _buildEntryRow(
+    HealthEntry entry,
+    Pet? pet,
+    DateFormat dateFormat,
+    AppLocalizations l,
+  ) {
     final dueText = entry.isCompleted
         ? l.pdfDone
         : entry.nextDueDate != null
-            ? dateFormat.format(entry.nextDueDate!)
-            : l.notSet;
+        ? dateFormat.format(entry.nextDueDate!)
+        : l.notSet;
     final completedText = entry.completedOn != null
         ? dateFormat.format(entry.completedOn!)
         : null;
-    final freqText = _frequencyLabel(entry.frequency, entry.frequencyInterval, l);
+    final freqText = _frequencyLabel(
+      entry.frequency,
+      entry.frequencyInterval,
+      l,
+    );
 
     return pw.Container(
       margin: const pw.EdgeInsets.only(bottom: 3),
@@ -238,7 +260,9 @@ class EventsPdfService {
                     ),
                     pw.Container(
                       padding: const pw.EdgeInsets.symmetric(
-                          horizontal: 5, vertical: 1),
+                        horizontal: 5,
+                        vertical: 1,
+                      ),
                       decoration: pw.BoxDecoration(
                         color: _brandPurpleLight,
                         borderRadius: pw.BorderRadius.circular(3),
@@ -274,7 +298,9 @@ class EventsPdfService {
                         child: pw.Text(
                           '${l.pdfNotesLabel}: ${entry.notes}',
                           style: const pw.TextStyle(
-                              fontSize: 7, color: _textMuted),
+                            fontSize: 7,
+                            color: _textMuted,
+                          ),
                           maxLines: 1,
                         ),
                       ),
@@ -337,7 +363,11 @@ class EventsPdfService {
     }
   }
 
-  String _frequencyLabel(HealthFrequency freq, int interval, AppLocalizations l) {
+  String _frequencyLabel(
+    HealthFrequency freq,
+    int interval,
+    AppLocalizations l,
+  ) {
     if (freq == HealthFrequency.once) return l.pdfOnce;
     if (freq == HealthFrequency.custom) return l.pdfCustom;
     final period = _localizedPeriod(freq, l);

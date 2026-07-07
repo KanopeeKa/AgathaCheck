@@ -63,7 +63,8 @@ class _OtherEventFormScreenState extends ConsumerState<OtherEventFormScreen> {
   @override
   void initState() {
     super.initState();
-    if (widget.initialType != null && _allowedTypes.contains(widget.initialType)) {
+    if (widget.initialType != null &&
+        _allowedTypes.contains(widget.initialType)) {
       _type = widget.initialType!;
     }
     if (widget.entryId != null) {
@@ -83,8 +84,9 @@ class _OtherEventFormScreenState extends ConsumerState<OtherEventFormScreen> {
   Future<void> _loadEntry() async {
     setState(() => _isLoading = true);
     try {
-      final entry =
-          await ref.read(healthRepositoryProvider).getEntry(widget.entryId!);
+      final entry = await ref
+          .read(healthRepositoryProvider)
+          .getEntry(widget.entryId!);
       if (entry != null && mounted) {
         if (!_allowedTypes.contains(entry.type)) {
           throw StateError('Entry is not an other event type');
@@ -111,7 +113,9 @@ class _OtherEventFormScreenState extends ConsumerState<OtherEventFormScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(AppLocalizations.of(context)!.failedToLoadEntry('$e')),
+            content: Text(
+              AppLocalizations.of(context)!.failedToLoadEntry('$e'),
+            ),
           ),
         );
       }
@@ -156,9 +160,9 @@ class _OtherEventFormScreenState extends ConsumerState<OtherEventFormScreen> {
     if (!mounted) return;
     final validationError = _documentValidationError(picked.name, length);
     if (validationError != null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(validationError)),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(validationError)));
       return;
     }
 
@@ -250,7 +254,9 @@ class _OtherEventFormScreenState extends ConsumerState<OtherEventFormScreen> {
   Future<void> _submit() async {
     if (_dueDate == null && _completedOn == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(AppLocalizations.of(context)!.dueOrCompletedRequired)),
+        SnackBar(
+          content: Text(AppLocalizations.of(context)!.dueOrCompletedRequired),
+        ),
       );
       return;
     }
@@ -298,13 +304,14 @@ class _OtherEventFormScreenState extends ConsumerState<OtherEventFormScreen> {
     setState(() => _isLoading = true);
     try {
       final notifier = ref.read(healthEntriesNotifierProvider.notifier);
-      final effectiveRepeatEndDate =
-          _frequency == HealthFrequency.once ? null : _repeatEndDate;
+      final effectiveRepeatEndDate = _frequency == HealthFrequency.once
+          ? null
+          : _repeatEndDate;
       final effectiveStart = _dueDate ?? _completedOn ?? _startDate;
       final effectiveDue =
           _frequency == HealthFrequency.once && _completedOn != null
-              ? null
-              : _dueDate;
+          ? null
+          : _dueDate;
       final effectiveCompleted = _completedOn;
 
       if (_isEdit) {
@@ -314,8 +321,9 @@ class _OtherEventFormScreenState extends ConsumerState<OtherEventFormScreen> {
           name: _nameController.text.trim(),
           type: _type,
           frequency: _frequency,
-          frequencyInterval:
-              _frequency == HealthFrequency.once ? 1 : _frequencyInterval,
+          frequencyInterval: _frequency == HealthFrequency.once
+              ? 1
+              : _frequencyInterval,
           repeatEndDate: effectiveRepeatEndDate,
           startDate: effectiveStart,
           nextDueDate: effectiveDue,
@@ -333,12 +341,15 @@ class _OtherEventFormScreenState extends ConsumerState<OtherEventFormScreen> {
           name: _nameController.text.trim(),
           type: _type,
           frequency: _frequency,
-          frequencyInterval:
-              _frequency == HealthFrequency.once ? 1 : _frequencyInterval,
+          frequencyInterval: _frequency == HealthFrequency.once
+              ? 1
+              : _frequencyInterval,
           repeatEndDate: effectiveRepeatEndDate,
           startDate: effectiveStart,
           nextDueDate: markCompleted ? null : (_dueDate ?? effectiveStart),
-          completedOn: markCompleted ? (_completedOn ?? effectiveStart) : _completedOn,
+          completedOn: markCompleted
+              ? (_completedOn ?? effectiveStart)
+              : _completedOn,
           recurrenceAnchor: _recurrenceAnchor,
           notes: _notesController.text.trim(),
           remindDaysBefore: _remindDaysBefore,
@@ -353,9 +364,7 @@ class _OtherEventFormScreenState extends ConsumerState<OtherEventFormScreen> {
       if (mounted) {
         final l = AppLocalizations.of(context)!;
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(_isEdit ? l.entryUpdated : l.entryCreated),
-          ),
+          SnackBar(content: Text(_isEdit ? l.entryUpdated : l.entryCreated)),
         );
         context.go('/pet/${widget.petId}');
       }
@@ -401,16 +410,16 @@ class _OtherEventFormScreenState extends ConsumerState<OtherEventFormScreen> {
           .read(healthEntriesNotifierProvider.notifier)
           .delete(widget.entryId!);
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l.entryDeleted)),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(l.entryDeleted)));
         context.go('/pet/${widget.petId}');
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l.failedToDelete('$e'))),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(l.failedToDelete('$e'))));
       }
     }
   }
@@ -423,9 +432,7 @@ class _OtherEventFormScreenState extends ConsumerState<OtherEventFormScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: AppLogoTitle(
-          title: _isEdit ? l.editEntry : l.addOtherEvent,
-        ),
+        title: AppLogoTitle(title: _isEdit ? l.editEntry : l.addOtherEvent),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           tooltip: l.goBack,
@@ -534,12 +541,16 @@ class _OtherEventFormScreenState extends ConsumerState<OtherEventFormScreen> {
                       OutlinedButton.icon(
                         key: const Key('delete_other_event_button'),
                         onPressed: _confirmDelete,
-                        icon: Icon(Icons.delete_outline,
-                            color: theme.colorScheme.error),
+                        icon: Icon(
+                          Icons.delete_outline,
+                          color: theme.colorScheme.error,
+                        ),
                         style: OutlinedButton.styleFrom(
                           foregroundColor: theme.colorScheme.error,
                           side: BorderSide(
-                            color: theme.colorScheme.error.withValues(alpha: 0.5),
+                            color: theme.colorScheme.error.withValues(
+                              alpha: 0.5,
+                            ),
                           ),
                         ),
                         label: Text(l.deleteEntry),

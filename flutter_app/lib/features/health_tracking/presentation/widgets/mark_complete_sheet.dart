@@ -28,9 +28,15 @@ Future<DateTime?> showMarkCompleteSheet(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Text(l.markCompleteSheetTitle, style: Theme.of(ctx).textTheme.titleLarge),
+            Text(
+              l.markCompleteSheetTitle,
+              style: Theme.of(ctx).textTheme.titleLarge,
+            ),
             const SizedBox(height: 8),
-            Text(l.markCompleteSheetSubtitle, style: Theme.of(ctx).textTheme.bodyMedium),
+            Text(
+              l.markCompleteSheetSubtitle,
+              style: Theme.of(ctx).textTheme.bodyMedium,
+            ),
             const SizedBox(height: 16),
             ListTile(
               contentPadding: EdgeInsets.zero,

@@ -30,8 +30,9 @@ void main() {
   ];
 
   test('delegates to repository.getHistory', () async {
-    when(mockRepository.getHistory('entry-1'))
-        .thenAnswer((_) async => testHistory);
+    when(
+      mockRepository.getHistory('entry-1'),
+    ).thenAnswer((_) async => testHistory);
 
     final result = await useCase('entry-1');
     expect(result, testHistory);
@@ -41,16 +42,16 @@ void main() {
   });
 
   test('returns empty list when no history exists', () async {
-    when(mockRepository.getHistory('entry-2'))
-        .thenAnswer((_) async => []);
+    when(mockRepository.getHistory('entry-2')).thenAnswer((_) async => []);
 
     final result = await useCase('entry-2');
     expect(result, isEmpty);
   });
 
   test('propagates repository exceptions', () async {
-    when(mockRepository.getHistory('entry-1'))
-        .thenThrow(Exception('Network error'));
+    when(
+      mockRepository.getHistory('entry-1'),
+    ).thenThrow(Exception('Network error'));
 
     expect(() => useCase('entry-1'), throwsException);
   });

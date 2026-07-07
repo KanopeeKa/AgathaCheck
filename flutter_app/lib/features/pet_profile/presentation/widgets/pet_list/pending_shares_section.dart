@@ -37,7 +37,10 @@ class PendingSharesSection extends ConsumerWidget {
                   ),
                   const SizedBox(width: 8),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 2,
+                    ),
                     decoration: BoxDecoration(
                       color: theme.colorScheme.primaryContainer,
                       borderRadius: BorderRadius.circular(10),
@@ -120,7 +123,9 @@ class PendingShareCard extends ConsumerWidget {
                         const SizedBox(height: 2),
                         Text(
                           l.petSharedWithYou(
-                            share.guardianName.isNotEmpty ? share.guardianName : 'Someone',
+                            share.guardianName.isNotEmpty
+                                ? share.guardianName
+                                : 'Someone',
                             share.petName,
                           ),
                           style: theme.textTheme.bodySmall?.copyWith(
@@ -139,7 +144,9 @@ class PendingShareCard extends ConsumerWidget {
                   OutlinedButton(
                     onPressed: () async {
                       try {
-                        await ref.read(pendingSharesProvider.notifier).declineShare(share.petId);
+                        await ref
+                            .read(pendingSharesProvider.notifier)
+                            .declineShare(share.petId);
                         if (context.mounted) {
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(content: Text(l.shareDeclined)),
@@ -147,9 +154,9 @@ class PendingShareCard extends ConsumerWidget {
                         }
                       } catch (e) {
                         if (context.mounted) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text(e.toString())),
-                          );
+                          ScaffoldMessenger.of(
+                            context,
+                          ).showSnackBar(SnackBar(content: Text(e.toString())));
                         }
                       }
                     },
@@ -157,7 +164,8 @@ class PendingShareCard extends ConsumerWidget {
                   ),
                   const SizedBox(width: 8),
                   FilledButton(
-                    onPressed: () => _showAcceptShareDialog(context, ref, share, l),
+                    onPressed: () =>
+                        _showAcceptShareDialog(context, ref, share, l),
                     child: Text(l.acceptShare),
                   ),
                 ],
@@ -169,7 +177,12 @@ class PendingShareCard extends ConsumerWidget {
     );
   }
 
-  void _showAcceptShareDialog(BuildContext context, WidgetRef ref, PendingShare share, AppLocalizations l) {
+  void _showAcceptShareDialog(
+    BuildContext context,
+    WidgetRef ref,
+    PendingShare share,
+    AppLocalizations l,
+  ) {
     final orgsAsync = ref.read(organizationListProvider);
     final orgs = orgsAsync.valueOrNull ?? [];
 
@@ -217,17 +230,19 @@ class PendingShareCard extends ConsumerWidget {
                   },
                 ),
                 const Divider(),
-                ...orgs.map((org) => ListTile(
-                  leading: const CircleAvatar(child: Icon(Icons.business)),
-                  title: Text(org.name),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
+                ...orgs.map(
+                  (org) => ListTile(
+                    leading: const CircleAvatar(child: Icon(Icons.business)),
+                    title: Text(org.name),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    onTap: () {
+                      Navigator.pop(ctx);
+                      _doAcceptShare(context, ref, share.petId, org.id, l);
+                    },
                   ),
-                  onTap: () {
-                    Navigator.pop(ctx);
-                    _doAcceptShare(context, ref, share.petId, org.id, l);
-                  },
-                )),
+                ),
               ],
             ),
           ),
@@ -236,19 +251,27 @@ class PendingShareCard extends ConsumerWidget {
     );
   }
 
-  Future<void> _doAcceptShare(BuildContext context, WidgetRef ref, String petId, String? orgId, AppLocalizations l) async {
+  Future<void> _doAcceptShare(
+    BuildContext context,
+    WidgetRef ref,
+    String petId,
+    String? orgId,
+    AppLocalizations l,
+  ) async {
     try {
-      await ref.read(pendingSharesProvider.notifier).acceptShare(petId, organizationId: orgId);
+      await ref
+          .read(pendingSharesProvider.notifier)
+          .acceptShare(petId, organizationId: orgId);
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l.shareAccepted)),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(l.shareAccepted)));
       }
     } catch (e) {
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(e.toString())),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(e.toString())));
       }
     }
   }

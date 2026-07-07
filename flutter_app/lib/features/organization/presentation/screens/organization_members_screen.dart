@@ -88,7 +88,8 @@ class OrganizationMembersScreen extends ConsumerWidget {
                     orgId: orgId,
                     localizedRoleLabel: localizedOrgMemberRole,
                     canSetPrimaryContact: isOrgAdmin,
-                    onSetPrimaryContact: isOrgAdmin &&
+                    onSetPrimaryContact:
+                        isOrgAdmin &&
                             !person.isExternal &&
                             !person.isPending &&
                             (person.role?.isOrgAdmin ?? false)
@@ -104,9 +105,9 @@ class OrganizationMembersScreen extends ConsumerWidget {
                               }
                             } catch (e) {
                               if (context.mounted) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(content: Text('$e')),
-                                );
+                                ScaffoldMessenger.of(
+                                  context,
+                                ).showSnackBar(SnackBar(content: Text('$e')));
                               }
                             }
                           }

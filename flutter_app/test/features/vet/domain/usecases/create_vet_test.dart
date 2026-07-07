@@ -32,8 +32,9 @@ void main() {
   });
 
   test('should propagate repository exceptions', () async {
-    when(mockRepository.createVet(testVet))
-        .thenThrow(Exception('Network error'));
+    when(
+      mockRepository.createVet(testVet),
+    ).thenThrow(Exception('Network error'));
 
     expect(() => createVet(testVet), throwsException);
   });

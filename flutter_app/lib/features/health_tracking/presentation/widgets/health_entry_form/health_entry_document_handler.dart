@@ -28,7 +28,8 @@ class HealthEntryDocumentHandler {
   String _documentValidationMessage(HealthDocumentValidationError error) {
     final l = AppLocalizations.of(context)!;
     return switch (error) {
-      HealthDocumentValidationError.unsupportedFormat => l.unsupportedDocumentFormat,
+      HealthDocumentValidationError.unsupportedFormat =>
+        l.unsupportedDocumentFormat,
       HealthDocumentValidationError.tooLarge => l.documentTooLarge,
     };
   }
@@ -43,8 +44,10 @@ class HealthEntryDocumentHandler {
     }
 
     try {
-      final validationError =
-          await controller.addDocument(picked, byteLength: byteLength);
+      final validationError = await controller.addDocument(
+        picked,
+        byteLength: byteLength,
+      );
       if (!isMounted()) return;
       if (validationError != null) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -55,9 +58,7 @@ class HealthEntryDocumentHandler {
       if (isMounted()) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(
-              AppLocalizations.of(context)!.failedToAddPhoto('$e'),
-            ),
+            content: Text(AppLocalizations.of(context)!.failedToAddPhoto('$e')),
           ),
         );
       }
@@ -143,7 +144,9 @@ class HealthEntryDocumentHandler {
       if (isMounted()) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(AppLocalizations.of(context)!.failedToDeletePhoto('$e')),
+            content: Text(
+              AppLocalizations.of(context)!.failedToDeletePhoto('$e'),
+            ),
           ),
         );
       }

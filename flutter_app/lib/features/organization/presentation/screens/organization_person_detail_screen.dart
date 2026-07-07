@@ -103,8 +103,8 @@ class _OrganizationPersonDetailScreenState
           final roleLabel = person.isExternal
               ? l.fosterParentNoAccount
               : person.role != null
-                  ? localizedOrgMemberRole(l, person.role!)
-                  : '';
+              ? localizedOrgMemberRole(l, person.role!)
+              : '';
 
           return ListView(
             padding: const EdgeInsets.all(16),
@@ -124,10 +124,7 @@ class _OrganizationPersonDetailScreenState
                     children: [
                       _InfoRow(label: l.email, value: person.email ?? '—'),
                       const SizedBox(height: 8),
-                      _InfoRow(
-                        label: l.orgChangeRole,
-                        value: roleLabel,
-                      ),
+                      _InfoRow(label: l.orgChangeRole, value: roleLabel),
                       const SizedBox(height: 8),
                       _InfoRow(
                         label: l.phone,
@@ -144,10 +141,7 @@ class _OrganizationPersonDetailScreenState
                       ),
                       if (person.adminNotes.isNotEmpty) ...[
                         const SizedBox(height: 8),
-                        _InfoRow(
-                          label: l.notes,
-                          value: person.adminNotes,
-                        ),
+                        _InfoRow(label: l.notes, value: person.adminNotes),
                       ],
                       if (isOrgAdmin) ...[
                         const SizedBox(height: 12),
@@ -213,13 +207,15 @@ class _OrganizationPersonDetailScreenState
     );
   }
 
-  Future<void> _editContact(BuildContext context, OrgPersonDetail person) async {
+  Future<void> _editContact(
+    BuildContext context,
+    OrgPersonDetail person,
+  ) async {
     final l = AppLocalizations.of(context)!;
     final phoneController = TextEditingController(text: person.fosterPhone);
     final addressController = TextEditingController(text: person.fosterAddress);
     final notesController = TextEditingController(text: person.adminNotes);
-    final nameController =
-        TextEditingController(text: person.displayName);
+    final nameController = TextEditingController(text: person.displayName);
     final emailController = TextEditingController(text: person.email ?? '');
 
     final saved = await showDialog<bool>(
@@ -233,7 +229,9 @@ class _OrganizationPersonDetailScreenState
               if (person.isExternal) ...[
                 TextField(
                   controller: nameController,
-                  decoration: InputDecoration(labelText: l.fosterParentDisplayName),
+                  decoration: InputDecoration(
+                    labelText: l.fosterParentDisplayName,
+                  ),
                 ),
                 const SizedBox(height: 8),
                 TextField(
@@ -281,7 +279,9 @@ class _OrganizationPersonDetailScreenState
 
     if (saved != true || !mounted) return;
 
-    await ref.read(orgPersonDetailProvider(_key).notifier).updateContact(
+    await ref
+        .read(orgPersonDetailProvider(_key).notifier)
+        .updateContact(
           fosterPhone: phoneController.text.trim(),
           fosterAddress: addressController.text.trim(),
           adminNotes: notesController.text.trim(),
@@ -296,9 +296,9 @@ class _OrganizationPersonDetailScreenState
     emailController.dispose();
 
     if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l.fosterContactSaved)),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(l.fosterContactSaved)));
     }
   }
 
@@ -321,7 +321,10 @@ class _OrganizationPersonDetailScreenState
               ),
               TextButton(
                 onPressed: () => Navigator.pop(ctx, true),
-                child: Text(l.delete, style: const TextStyle(color: Colors.red)),
+                child: Text(
+                  l.delete,
+                  style: const TextStyle(color: Colors.red),
+                ),
               ),
             ],
           ),
@@ -353,7 +356,10 @@ class _OrganizationPersonDetailScreenState
               ),
               TextButton(
                 onPressed: () => Navigator.pop(ctx, true),
-                child: Text(l.delete, style: const TextStyle(color: Colors.red)),
+                child: Text(
+                  l.delete,
+                  style: const TextStyle(color: Colors.red),
+                ),
               ),
             ],
           ),
@@ -388,13 +394,17 @@ class _OrganizationPersonDetailScreenState
           content: DropdownButtonFormField<String>(
             value: selectedRole,
             decoration: InputDecoration(
-              border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
             ),
             items: options
-                .map((wire) => DropdownMenuItem(
-                      value: wire,
-                      child: Text(invitableRoleLabel(l, wire)),
-                    ))
+                .map(
+                  (wire) => DropdownMenuItem(
+                    value: wire,
+                    child: Text(invitableRoleLabel(l, wire)),
+                  ),
+                )
                 .toList(),
             onChanged: (v) {
               if (v != null) setState(() => selectedRole = v);

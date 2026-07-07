@@ -79,9 +79,7 @@ class PetOwnershipSelector extends ConsumerWidget {
                   groupValue: mode,
                   onChanged: orgs.isEmpty
                       ? null
-                      : (_) => onOrgIdChanged(
-                            selectedOrgId ?? orgs.first.id,
-                          ),
+                      : (_) => onOrgIdChanged(selectedOrgId ?? orgs.first.id),
                 ),
                 if (mode == _OwnershipMode.organization && orgs.isNotEmpty) ...[
                   const SizedBox(height: 8),

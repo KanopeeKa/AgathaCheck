@@ -24,10 +24,7 @@ class PetProfileCard extends ConsumerWidget {
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              SizedBox(
-                width: 140,
-                child: _PetPhoto(pet: pet),
-              ),
+              SizedBox(width: 140, child: _PetPhoto(pet: pet)),
               Expanded(
                 child: Padding(
                   padding: const EdgeInsets.all(16),
@@ -37,22 +34,31 @@ class PetProfileCard extends ConsumerWidget {
                       Row(
                         children: [
                           Expanded(
-                            child: Text(pet.name,
-                                style: theme.textTheme.headlineSmall),
+                            child: Text(
+                              pet.name,
+                              style: theme.textTheme.headlineSmall,
+                            ),
                           ),
                           if (assignedVet != null)
                             Padding(
                               padding: const EdgeInsets.only(left: 8),
                               child: Tooltip(
                                 message: assignedVet.name,
-                                child: const Icon(Icons.local_hospital, size: 20),
+                                child: const Icon(
+                                  Icons.local_hospital,
+                                  size: 20,
+                                ),
                               ),
                             ),
                         ],
                       ),
                       const SizedBox(height: 8),
-                      Text('Weight: ${displayWeight?.toStringAsFixed(1) ?? '-'} kg',
-                          style: theme.textTheme.bodyMedium?.copyWith(color: colorScheme.primary)),
+                      Text(
+                        'Weight: ${displayWeight?.toStringAsFixed(1) ?? '-'} kg',
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          color: colorScheme.primary,
+                        ),
+                      ),
                       // ... add more fields as needed ...
                     ],
                   ),
@@ -73,6 +79,9 @@ class _PetPhoto extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // Placeholder for pet photo logic
-    return Container(color: Colors.grey[300], child: const Icon(Icons.pets, size: 64));
+    return Container(
+      color: Colors.grey[300],
+      child: const Icon(Icons.pets, size: 64),
+    );
   }
 }

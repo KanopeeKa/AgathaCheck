@@ -45,8 +45,9 @@ class PetFormVetSection extends ConsumerWidget {
                     tooltip: 'Clear veterinarian',
                     onPressed: () {
                       onVetSelected(null);
-                      controller.state =
-                          controller.state.copyWith(selectedVetId: null);
+                      controller.state = controller.state.copyWith(
+                        selectedVetId: null,
+                      );
                     },
                   )
                 : null,
@@ -93,8 +94,9 @@ class PetFormVetSection extends ConsumerWidget {
               );
             } else {
               onVetSelected(value);
-              controller.state =
-                  controller.state.copyWith(selectedVetId: value);
+              controller.state = controller.state.copyWith(
+                selectedVetId: value,
+              );
             }
           },
         );
@@ -133,9 +135,9 @@ Future<void> showPetFormCreateVetSheet({
           children: [
             Text(
               'New Veterinarian',
-              style: Theme.of(ctx).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
+              style: Theme.of(
+                ctx,
+              ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
             TextFormField(
@@ -197,8 +199,9 @@ Future<void> showPetFormCreateVetSheet({
                   if (updatedVets.isNotEmpty) {
                     final newId = updatedVets.last.id;
                     onVetCreated(newId);
-                    controller.state =
-                        controller.state.copyWith(selectedVetId: newId);
+                    controller.state = controller.state.copyWith(
+                      selectedVetId: newId,
+                    );
                   }
                 } catch (e) {
                   if (ctx.mounted) {

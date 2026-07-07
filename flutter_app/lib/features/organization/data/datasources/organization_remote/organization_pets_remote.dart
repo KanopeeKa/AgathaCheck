@@ -9,7 +9,9 @@ class OrganizationPetsRemote {
   final OrganizationRemoteContext _ctx;
 
   Future<List<Map<String, dynamic>>> getOrganizationPets(
-      String orgId, String token) async {
+    String orgId,
+    String token,
+  ) async {
     final response = await _ctx.client.get(
       Uri.parse('${_ctx.baseUrl}/api/organizations/$orgId/pets'),
       headers: _ctx.headers(token),
@@ -22,7 +24,10 @@ class OrganizationPetsRemote {
   }
 
   Future<Map<String, dynamic>> createOrganizationPet(
-      String orgId, Map<String, dynamic> petJson, String token) async {
+    String orgId,
+    Map<String, dynamic> petJson,
+    String token,
+  ) async {
     final response = await _ctx.client.post(
       Uri.parse('${_ctx.baseUrl}/api/organizations/$orgId/pets'),
       headers: _ctx.headers(token),
@@ -43,7 +48,9 @@ class OrganizationPetsRemote {
     required String token,
   }) async {
     final response = await _ctx.client.post(
-      Uri.parse('${_ctx.baseUrl}/api/organizations/$orgId/pets/$petId/transfer'),
+      Uri.parse(
+        '${_ctx.baseUrl}/api/organizations/$orgId/pets/$petId/transfer',
+      ),
       headers: _ctx.headers(token),
       body: json.encode({
         'recipient_email': recipientEmail,
@@ -78,7 +85,9 @@ class OrganizationPetsRemote {
   }
 
   Future<List<ArchivedPetModel>> getOrganizationArchivedPets(
-      String orgId, String token) async {
+    String orgId,
+    String token,
+  ) async {
     final response = await _ctx.client.get(
       Uri.parse('${_ctx.baseUrl}/api/organizations/$orgId/archived'),
       headers: _ctx.headers(token),
@@ -107,7 +116,9 @@ class OrganizationPetsRemote {
   }
 
   Future<List<Map<String, dynamic>>> getFamilyEvents(
-      String token, String petId) async {
+    String token,
+    String petId,
+  ) async {
     final response = await _ctx.client.get(
       Uri.parse('${_ctx.baseUrl}/api/pets/$petId/family-events'),
       headers: _ctx.headers(token),
@@ -120,7 +131,10 @@ class OrganizationPetsRemote {
   }
 
   Future<Map<String, dynamic>> createFamilyEvent(
-      String token, String petId, Map<String, dynamic> body) async {
+    String token,
+    String petId,
+    Map<String, dynamic> body,
+  ) async {
     final response = await _ctx.client.post(
       Uri.parse('${_ctx.baseUrl}/api/pets/$petId/family-events'),
       headers: _ctx.headers(token),
@@ -133,7 +147,11 @@ class OrganizationPetsRemote {
   }
 
   Future<void> updateFamilyEvent(
-      String token, String petId, String eventId, Map<String, dynamic> body) async {
+    String token,
+    String petId,
+    String eventId,
+    Map<String, dynamic> body,
+  ) async {
     final response = await _ctx.client.put(
       Uri.parse('${_ctx.baseUrl}/api/pets/$petId/family-events/$eventId'),
       headers: _ctx.headers(token),
@@ -145,7 +163,10 @@ class OrganizationPetsRemote {
   }
 
   Future<void> deleteFamilyEvent(
-      String token, String petId, String eventId) async {
+    String token,
+    String petId,
+    String eventId,
+  ) async {
     final response = await _ctx.client.delete(
       Uri.parse('${_ctx.baseUrl}/api/pets/$petId/family-events/$eventId'),
       headers: _ctx.headers(token),

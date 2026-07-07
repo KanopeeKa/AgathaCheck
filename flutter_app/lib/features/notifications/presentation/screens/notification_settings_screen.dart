@@ -63,48 +63,58 @@ class _NotificationSettingsScreenState
             _SectionHeader(title: l.inAppNotifications, theme: theme),
             SwitchListTile(
               title: Text(l.overdueAlerts),
-              subtitle:
-                  const Text('Get notified when health entries are overdue'),
+              subtitle: const Text(
+                'Get notified when health entries are overdue',
+              ),
               value: _notifyOverdue,
               onChanged: (v) => setState(() => _notifyOverdue = v),
-              secondary: Icon(Icons.warning_amber_rounded,
-                  color: theme.colorScheme.error),
+              secondary: Icon(
+                Icons.warning_amber_rounded,
+                color: theme.colorScheme.error,
+              ),
             ),
             SwitchListTile(
               title: Text(l.dueSoonAlerts),
-              subtitle:
-                  const Text('Get notified when health entries are coming up'),
+              subtitle: const Text(
+                'Get notified when health entries are coming up',
+              ),
               value: _notifyDueSoon,
               onChanged: (v) => setState(() => _notifyDueSoon = v),
-              secondary:
-                  Icon(Icons.schedule, color: Colors.orange),
+              secondary: Icon(Icons.schedule, color: Colors.orange),
             ),
             SwitchListTile(
               title: Text(l.completedAlerts),
-              subtitle:
-                  const Text('Get notified when health entries are completed'),
+              subtitle: const Text(
+                'Get notified when health entries are completed',
+              ),
               value: _notifyCompleted,
               onChanged: (v) => setState(() => _notifyCompleted = v),
-              secondary:
-                  Icon(Icons.check_circle, color: Colors.green),
+              secondary: Icon(Icons.check_circle, color: Colors.green),
             ),
             const Divider(),
             _SectionHeader(title: l.emailReminders, theme: theme),
             SwitchListTile(
               title: Text(l.emailReminders),
               subtitle: const Text(
-                  'Receive email reminders for upcoming health entries'),
+                'Receive email reminders for upcoming health entries',
+              ),
               value: _emailReminders,
               onChanged: (v) => setState(() => _emailReminders = v),
-              secondary:
-                  Icon(Icons.email_outlined, color: theme.colorScheme.primary),
+              secondary: Icon(
+                Icons.email_outlined,
+                color: theme.colorScheme.primary,
+              ),
             ),
             if (_emailReminders) ...[
               ListTile(
                 title: Text(l.reminderDaysBefore),
-                subtitle: Text('$_reminderDays ${l.day}${_reminderDays == 1 ? '' : 's'} before due date'),
-                leading:
-                    Icon(Icons.timer_outlined, color: theme.colorScheme.primary),
+                subtitle: Text(
+                  '$_reminderDays ${l.day}${_reminderDays == 1 ? '' : 's'} before due date',
+                ),
+                leading: Icon(
+                  Icons.timer_outlined,
+                  color: theme.colorScheme.primary,
+                ),
                 trailing: SizedBox(
                   width: 140,
                   child: Row(
@@ -140,18 +150,22 @@ class _NotificationSettingsScreenState
               child: Text(
                 'Muted pets will not trigger any notifications.',
                 style: theme.textTheme.bodySmall?.copyWith(
-                    color: theme.colorScheme.onSurfaceVariant),
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
               ),
             ),
             _buildMutedPetsSection(theme),
             const Divider(),
             _SectionHeader(title: 'Local Notifications', theme: theme),
             ListTile(
-              leading: Icon(Icons.phone_android,
-                  color: theme.colorScheme.onSurfaceVariant),
+              leading: Icon(
+                Icons.phone_android,
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
               title: const Text('Push Notifications'),
               subtitle: const Text(
-                  'Push notifications will be available in the native mobile app'),
+                'Push notifications will be available in the native mobile app',
+              ),
               enabled: false,
             ),
             const SizedBox(height: 24),
@@ -165,7 +179,10 @@ class _NotificationSettingsScreenState
                         width: 18,
                         height: 18,
                         child: CircularProgressIndicator(
-                            strokeWidth: 2, color: Colors.white))
+                          strokeWidth: 2,
+                          color: Colors.white,
+                        ),
+                      )
                     : const Icon(Icons.save),
                 label: Text(_saving ? 'Saving...' : l.saveSettings),
               ),
@@ -184,9 +201,12 @@ class _NotificationSettingsScreenState
     if (pets.isEmpty) {
       return Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        child: Text('No pets found.',
-            style: theme.textTheme.bodyMedium?.copyWith(
-                color: theme.colorScheme.onSurfaceVariant)),
+        child: Text(
+          'No pets found.',
+          style: theme.textTheme.bodyMedium?.copyWith(
+            color: theme.colorScheme.onSurfaceVariant,
+          ),
+        ),
       );
     }
 
@@ -224,9 +244,7 @@ class _NotificationSettingsScreenState
           },
           secondary: Icon(
             isMuted ? Icons.notifications_off : Icons.notifications_active,
-            color: isMuted
-                ? theme.colorScheme.onSurfaceVariant
-                : petColor,
+            color: isMuted ? theme.colorScheme.onSurfaceVariant : petColor,
           ),
         );
       }).toList(),
@@ -238,25 +256,27 @@ class _NotificationSettingsScreenState
     try {
       await ref
           .read(notificationPreferencesProvider.notifier)
-          .updatePreferences(NotificationPreferences(
-            emailRemindersEnabled: _emailReminders,
-            reminderDaysBefore: _reminderDays,
-            notifyOverdue: _notifyOverdue,
-            notifyDueSoon: _notifyDueSoon,
-            notifyCompleted: _notifyCompleted,
-            mutedPetIds: _mutedPetIds,
-          ));
+          .updatePreferences(
+            NotificationPreferences(
+              emailRemindersEnabled: _emailReminders,
+              reminderDaysBefore: _reminderDays,
+              notifyOverdue: _notifyOverdue,
+              notifyDueSoon: _notifyDueSoon,
+              notifyCompleted: _notifyCompleted,
+              mutedPetIds: _mutedPetIds,
+            ),
+          );
       if (mounted) {
         final l = AppLocalizations.of(context)!;
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l.settingsSaved)),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(l.settingsSaved)));
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to save: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Failed to save: $e')));
       }
     } finally {
       if (mounted) setState(() => _saving = false);

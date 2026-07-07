@@ -83,8 +83,10 @@ class PetDetailAppBar extends StatelessWidget {
             backgroundColor: theme.colorScheme.primaryContainer,
             child: Text(
               ((authUser?.firstName?.isNotEmpty == true)
-                ? authUser!.firstName![0]
-                : (authUser?.lastName?.isNotEmpty == true ? authUser!.lastName![0] : authUser?.email[0] ?? 'U'))
+                      ? authUser!.firstName![0]
+                      : (authUser?.lastName?.isNotEmpty == true
+                            ? authUser!.lastName![0]
+                            : authUser?.email[0] ?? 'U'))
                   .toUpperCase(),
               style: TextStyle(
                 fontSize: 14,
@@ -104,27 +106,24 @@ class PetDetailAppBar extends StatelessWidget {
                   children: [
                     Text(
                       authUser?.firstName?.isNotEmpty == true
-                        ? authUser!.firstName!
-                        : (authUser?.lastName?.isNotEmpty == true ? authUser!.lastName! : 'User'),
+                          ? authUser!.firstName!
+                          : (authUser?.lastName?.isNotEmpty == true
+                                ? authUser!.lastName!
+                                : 'User'),
                       style: theme.textTheme.titleSmall,
                     ),
                     Text(
                       authUser?.email ?? '',
                       style: theme.textTheme.bodySmall?.copyWith(
-                          color: theme.colorScheme.onSurfaceVariant),
+                        color: theme.colorScheme.onSurfaceVariant,
+                      ),
                     ),
                   ],
                 ),
               ),
               const PopupMenuDivider(),
-              PopupMenuItem<String>(
-                value: 'details',
-                child: Text(l.myDetails),
-              ),
-              PopupMenuItem<String>(
-                value: 'logout',
-                child: Text(l.logOut),
-              ),
+              PopupMenuItem<String>(value: 'details', child: Text(l.myDetails)),
+              PopupMenuItem<String>(value: 'logout', child: Text(l.logOut)),
             ];
           },
         ),

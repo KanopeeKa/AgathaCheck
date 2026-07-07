@@ -37,7 +37,9 @@ void main() {
     prefs = await SharedPreferences.getInstance();
   });
 
-  testWidgets('SharedPetScreen renders loading indicator', (WidgetTester tester) async {
+  testWidgets('SharedPetScreen renders loading indicator', (
+    WidgetTester tester,
+  ) async {
     final completer = Completer<http.Response>();
     final mockClient = http_testing.MockClient((request) => completer.future);
 
@@ -54,19 +56,23 @@ void main() {
 
     expect(find.byType(CircularProgressIndicator), findsOneWidget);
 
-    completer.complete(http.Response(
-      json.encode({
-        'pet': {'name': 'Buddy', 'species': 'Dog'},
-        'health_entries': [],
-        'vet': null,
-        'owner': null,
-      }),
-      200,
-    ));
+    completer.complete(
+      http.Response(
+        json.encode({
+          'pet': {'name': 'Buddy', 'species': 'Dog'},
+          'health_entries': [],
+          'vet': null,
+          'owner': null,
+        }),
+        200,
+      ),
+    );
     await tester.pumpAndSettle();
   });
 
-  testWidgets('SharedPetScreen shows error on failed load', (WidgetTester tester) async {
+  testWidgets('SharedPetScreen shows error on failed load', (
+    WidgetTester tester,
+  ) async {
     final mockClient = http_testing.MockClient((request) async {
       return http.Response('Not found', 404);
     });

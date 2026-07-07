@@ -35,14 +35,18 @@ class HealthEntryPhotosSection extends StatelessWidget {
   String _displayName(String path) => path.split('/').last;
 
   String _documentUrl(String path) {
-    final normalizedBase =
-        baseUrl.endsWith('/') ? baseUrl.substring(0, baseUrl.length - 1) : baseUrl;
+    final normalizedBase = baseUrl.endsWith('/')
+        ? baseUrl.substring(0, baseUrl.length - 1)
+        : baseUrl;
     final normalizedPath = path.startsWith('/') ? path.substring(1) : path;
     return '$normalizedBase/$normalizedPath';
   }
 
   Widget _documentPlaceholder(
-      BuildContext context, String filename, ColorScheme colorScheme) {
+    BuildContext context,
+    String filename,
+    ColorScheme colorScheme,
+  ) {
     final isPdf = _isPdfDocument(filename);
     return Container(
       color: colorScheme.surfaceContainerHighest,
@@ -50,8 +54,11 @@ class HealthEntryPhotosSection extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(isPdf ? Icons.picture_as_pdf : Icons.description,
-              color: colorScheme.primary, size: 36),
+          Icon(
+            isPdf ? Icons.picture_as_pdf : Icons.description,
+            color: colorScheme.primary,
+            size: 36,
+          ),
           const SizedBox(height: 6),
           Text(
             _displayName(filename),
@@ -84,19 +91,21 @@ class HealthEntryPhotosSection extends StatelessWidget {
         },
         itemBuilder: (_) => [
           PopupMenuItem(
-              value: 'camera',
-              child: ListTile(
-                leading: const Icon(Icons.camera_alt),
-                title: Text(l.cameraOption),
-                contentPadding: EdgeInsets.zero,
-              )),
+            value: 'camera',
+            child: ListTile(
+              leading: const Icon(Icons.camera_alt),
+              title: Text(l.cameraOption),
+              contentPadding: EdgeInsets.zero,
+            ),
+          ),
           PopupMenuItem(
-              value: 'gallery',
-              child: ListTile(
-                leading: const Icon(Icons.photo_library),
-                title: Text(l.galleryFilesOption),
-                contentPadding: EdgeInsets.zero,
-              )),
+            value: 'gallery',
+            child: ListTile(
+              leading: const Icon(Icons.photo_library),
+              title: Text(l.galleryFilesOption),
+              contentPadding: EdgeInsets.zero,
+            ),
+          ),
         ],
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
@@ -109,9 +118,12 @@ class HealthEntryPhotosSection extends StatelessWidget {
             children: [
               Icon(Icons.add_a_photo, size: 18, color: colorScheme.primary),
               const SizedBox(width: 8),
-              Text(l.addPhoto,
-                  style: theme.textTheme.labelLarge
-                      ?.copyWith(color: colorScheme.primary)),
+              Text(
+                l.addPhoto,
+                style: theme.textTheme.labelLarge?.copyWith(
+                  color: colorScheme.primary,
+                ),
+              ),
             ],
           ),
         ),
@@ -125,9 +137,12 @@ class HealthEntryPhotosSection extends StatelessWidget {
           children: [
             Icon(Icons.description, size: 20, color: colorScheme.primary),
             const SizedBox(width: 8),
-            Text(l.photos,
-                style: theme.textTheme.titleSmall
-                    ?.copyWith(fontWeight: FontWeight.w600)),
+            Text(
+              l.photos,
+              style: theme.textTheme.titleSmall?.copyWith(
+                fontWeight: FontWeight.w600,
+              ),
+            ),
           ],
         ),
         const SizedBox(height: 8),
@@ -157,11 +172,19 @@ class HealthEntryPhotosSection extends StatelessWidget {
                   itemCount: _totalCount,
                   itemBuilder: (context, index) {
                     if (index < photos.length) {
-                      return _buildSavedPhoto(context, photos[index], colorScheme);
+                      return _buildSavedPhoto(
+                        context,
+                        photos[index],
+                        colorScheme,
+                      );
                     }
                     final pendingIndex = index - photos.length;
                     return _buildPendingPhoto(
-                        context, pendingPhotos[pendingIndex], pendingIndex, colorScheme);
+                      context,
+                      pendingPhotos[pendingIndex],
+                      pendingIndex,
+                      colorScheme,
+                    );
                   },
                 ),
               if (_totalCount > 0) const SizedBox(height: 12),
@@ -171,8 +194,9 @@ class HealthEntryPhotosSection extends StatelessWidget {
                 _totalCount > 0
                     ? '${l.photoCountLabel(_totalCount)}${pendingPhotos.isNotEmpty ? l.pendingUploadSuffix(pendingPhotos.length) : ''}'
                     : l.upTo4Photos,
-                style: theme.textTheme.bodySmall
-                    ?.copyWith(color: colorScheme.outline),
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: colorScheme.outline,
+                ),
                 textAlign: TextAlign.center,
               ),
             ],
@@ -183,7 +207,10 @@ class HealthEntryPhotosSection extends StatelessWidget {
   }
 
   Widget _buildSavedPhoto(
-      BuildContext context, EventPhoto photo, ColorScheme colorScheme) {
+    BuildContext context,
+    EventPhoto photo,
+    ColorScheme colorScheme,
+  ) {
     final imageUrl = _documentUrl(photo.photoPath);
     final isPdf = _isPdfDocument(photo.photoPath);
     return GestureDetector(
@@ -200,8 +227,10 @@ class HealthEntryPhotosSection extends StatelessWidget {
                     fit: BoxFit.cover,
                     errorBuilder: (_, __, ___) => Container(
                       color: colorScheme.surfaceContainerHighest,
-                      child:
-                          Icon(Icons.broken_image, color: colorScheme.outline),
+                      child: Icon(
+                        Icons.broken_image,
+                        color: colorScheme.outline,
+                      ),
                     ),
                   ),
           ),
@@ -219,8 +248,7 @@ class HealthEntryPhotosSection extends StatelessWidget {
                     color: Colors.black54,
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  child:
-                      const Icon(Icons.close, size: 16, color: Colors.white),
+                  child: const Icon(Icons.close, size: 16, color: Colors.white),
                 ),
               ),
             ),
@@ -230,8 +258,12 @@ class HealthEntryPhotosSection extends StatelessWidget {
     );
   }
 
-  Widget _buildPendingPhoto(BuildContext context, XFile file, int pendingIndex,
-      ColorScheme colorScheme) {
+  Widget _buildPendingPhoto(
+    BuildContext context,
+    XFile file,
+    int pendingIndex,
+    ColorScheme colorScheme,
+  ) {
     return FutureBuilder<Uint8List>(
       future: file.readAsBytes(),
       builder: (context, snapshot) {
@@ -255,8 +287,7 @@ class HealthEntryPhotosSection extends StatelessWidget {
               left: 0,
               right: 0,
               child: Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                 decoration: BoxDecoration(
                   color: colorScheme.primaryContainer.withValues(alpha: 0.9),
                   borderRadius: const BorderRadius.only(
@@ -264,12 +295,15 @@ class HealthEntryPhotosSection extends StatelessWidget {
                     bottomRight: Radius.circular(8),
                   ),
                 ),
-                child: Text(AppLocalizations.of(context)!.pendingLabel,
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                        fontSize: 11,
-                        color: colorScheme.onPrimaryContainer,
-                        fontWeight: FontWeight.w500)),
+                child: Text(
+                  AppLocalizations.of(context)!.pendingLabel,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 11,
+                    color: colorScheme.onPrimaryContainer,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
               ),
             ),
             Positioned(
@@ -286,8 +320,11 @@ class HealthEntryPhotosSection extends StatelessWidget {
                       color: Colors.black54,
                       borderRadius: BorderRadius.circular(12),
                     ),
-                    child:
-                        const Icon(Icons.close, size: 16, color: Colors.white),
+                    child: const Icon(
+                      Icons.close,
+                      size: 16,
+                      color: Colors.white,
+                    ),
                   ),
                 ),
               ),
@@ -326,4 +363,3 @@ class HealthEntryPhotosSection extends StatelessWidget {
     );
   }
 }
-

@@ -65,13 +65,17 @@ class PassedAwayPetsSection extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.fromLTRB(12, 0, 12, 12),
               child: Column(
-                children: allPassedAway.map((pet) => Padding(
-                  padding: const EdgeInsets.only(bottom: 8),
-                  child: PetCard(
-                    pet: pet,
-                    onTap: () => context.go('/pet/${pet.id}'),
-                  ),
-                )).toList(),
+                children: allPassedAway
+                    .map(
+                      (pet) => Padding(
+                        padding: const EdgeInsets.only(bottom: 8),
+                        child: PetCard(
+                          pet: pet,
+                          onTap: () => context.go('/pet/${pet.id}'),
+                        ),
+                      ),
+                    )
+                    .toList(),
               ),
             ),
           ],

@@ -14,7 +14,9 @@ import '../../../../helpers/fakes.dart';
 import '../../helpers/organization_provider_test_helpers.dart';
 
 void main() {
-  testWidgets('external foster detail shows contact info and placements', (tester) async {
+  testWidgets('external foster detail shows contact info and placements', (
+    tester,
+  ) async {
     const detail = OrgPersonDetail(
       id: 'external:fp-1',
       kind: OrgPersonKind.external,
@@ -83,57 +85,63 @@ void main() {
     expect(find.text('Edit foster contact'), findsOneWidget);
   });
 
-  testWidgets('deleting external foster calls orgPeopleProvider.deleteExternal', (tester) async {
-    final repo = _DeletablePersonDetailRepo();
+  testWidgets(
+    'deleting external foster calls orgPeopleProvider.deleteExternal',
+    (tester) async {
+      final repo = _DeletablePersonDetailRepo();
 
-    final router = GoRouter(
-      initialLocation: '/home/person',
-      routes: [
-        GoRoute(
-          path: '/home',
-          builder: (context, state) => const Scaffold(body: Text('Home')),
-          routes: [
-            GoRoute(
-              path: 'person',
-              builder: (context, state) => const OrganizationPersonDetailScreen(
-                orgId: 'org-1',
-                kind: 'external',
-                recordId: 'fp-1',
+      final router = GoRouter(
+        initialLocation: '/home/person',
+        routes: [
+          GoRoute(
+            path: '/home',
+            builder: (context, state) => const Scaffold(body: Text('Home')),
+            routes: [
+              GoRoute(
+                path: 'person',
+                builder: (context, state) =>
+                    const OrganizationPersonDetailScreen(
+                      orgId: 'org-1',
+                      kind: 'external',
+                      recordId: 'fp-1',
+                    ),
               ),
-            ),
-          ],
-        ),
-      ],
-    );
-
-    await tester.pumpWidget(
-      ProviderScope(
-        overrides: [
-          authProvider.overrideWith((ref) => FakeAuthNotifier()),
-          organizationRepositoryProvider.overrideWithValue(repo),
-          organizationListProvider.overrideWith(() => _AdminOrgListNotifier()),
-          isOrgAdminProvider.overrideWith((ref, orgId) => true),
+            ],
+          ),
         ],
-        child: MaterialApp.router(
-          routerConfig: router,
-          localizationsDelegates: AppLocalizations.localizationsDelegates,
-          supportedLocales: AppLocalizations.supportedLocales,
+      );
+
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            authProvider.overrideWith((ref) => FakeAuthNotifier()),
+            organizationRepositoryProvider.overrideWithValue(repo),
+            organizationListProvider.overrideWith(
+              () => _AdminOrgListNotifier(),
+            ),
+            isOrgAdminProvider.overrideWith((ref, orgId) => true),
+          ],
+          child: MaterialApp.router(
+            routerConfig: router,
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+          ),
         ),
-      ),
-    );
+      );
 
-    await tester.pumpAndSettle();
+      await tester.pumpAndSettle();
 
-    await tester.tap(find.byType(PopupMenuButton<String>));
-    await tester.pumpAndSettle();
-    await tester.tap(find.text('Remove foster parent'));
-    await tester.pumpAndSettle();
-    await tester.tap(find.text('Delete'));
-    await tester.pumpAndSettle();
+      await tester.tap(find.byType(PopupMenuButton<String>));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Remove foster parent'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Delete'));
+      await tester.pumpAndSettle();
 
-    expect(repo.deletedRecordIds, ['fp-1']);
-    expect(find.text('Home'), findsOneWidget);
-  });
+      expect(repo.deletedRecordIds, ['fp-1']);
+      expect(find.text('Home'), findsOneWidget);
+    },
+  );
 }
 
 class _PersonDetailRepo extends RecordingOrganizationRepository {
@@ -147,8 +155,7 @@ class _PersonDetailRepo extends RecordingOrganizationRepository {
     OrgPersonKind kind,
     String recordId,
     String token,
-  ) async =>
-      _detail;
+  ) async => _detail;
 }
 
 class _DeletablePersonDetailRepo extends RecordingOrganizationRepository {
@@ -160,14 +167,13 @@ class _DeletablePersonDetailRepo extends RecordingOrganizationRepository {
     OrgPersonKind kind,
     String recordId,
     String token,
-  ) async =>
-      const OrgPersonDetail(
-        id: 'external:fp-1',
-        kind: OrgPersonKind.external,
-        recordId: 'fp-1',
-        displayName: 'Off-app Parent',
-        email: 'off@example.com',
-      );
+  ) async => const OrgPersonDetail(
+    id: 'external:fp-1',
+    kind: OrgPersonKind.external,
+    recordId: 'fp-1',
+    displayName: 'Off-app Parent',
+    email: 'off@example.com',
+  );
 
   @override
   Future<void> deleteExternalFosterParent(
@@ -182,11 +188,11 @@ class _DeletablePersonDetailRepo extends RecordingOrganizationRepository {
 class _AdminOrgListNotifier extends OrganizationListNotifier {
   @override
   Future<List<Organization>> build() async => const [
-        Organization(
-          id: 'org-1',
-          name: 'Shelter',
-          type: OrganizationType.charity,
-          role: 'super_admin',
-        ),
-      ];
+    Organization(
+      id: 'org-1',
+      name: 'Shelter',
+      type: OrganizationType.charity,
+      role: 'super_admin',
+    ),
+  ];
 }

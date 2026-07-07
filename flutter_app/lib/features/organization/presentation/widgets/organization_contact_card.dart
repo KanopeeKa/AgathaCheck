@@ -16,7 +16,8 @@ class OrganizationContactCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final hasContact = org.email.isNotEmpty ||
+    final hasContact =
+        org.email.isNotEmpty ||
         org.phone.isNotEmpty ||
         org.address.isNotEmpty ||
         org.website.isNotEmpty;
@@ -31,13 +32,29 @@ class OrganizationContactCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             if (org.email.isNotEmpty)
-              _ContactRow(icon: Icons.email, text: org.email, colorScheme: colorScheme),
+              _ContactRow(
+                icon: Icons.email,
+                text: org.email,
+                colorScheme: colorScheme,
+              ),
             if (org.phone.isNotEmpty)
-              _ContactRow(icon: Icons.phone, text: org.phone, colorScheme: colorScheme),
+              _ContactRow(
+                icon: Icons.phone,
+                text: org.phone,
+                colorScheme: colorScheme,
+              ),
             if (org.address.isNotEmpty)
-              _ContactRow(icon: Icons.location_on, text: org.address, colorScheme: colorScheme),
+              _ContactRow(
+                icon: Icons.location_on,
+                text: org.address,
+                colorScheme: colorScheme,
+              ),
             if (org.website.isNotEmpty)
-              _ContactRow(icon: Icons.language, text: org.website, colorScheme: colorScheme),
+              _ContactRow(
+                icon: Icons.language,
+                text: org.website,
+                colorScheme: colorScheme,
+              ),
           ],
         ),
       ),
@@ -50,7 +67,11 @@ class _ContactRow extends StatelessWidget {
   final String text;
   final ColorScheme colorScheme;
 
-  const _ContactRow({required this.icon, required this.text, required this.colorScheme});
+  const _ContactRow({
+    required this.icon,
+    required this.text,
+    required this.colorScheme,
+  });
 
   @override
   Widget build(BuildContext context) {

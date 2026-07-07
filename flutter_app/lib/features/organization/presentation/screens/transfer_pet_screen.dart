@@ -47,23 +47,25 @@ class _TransferPetScreenState extends ConsumerState<TransferPetScreen> {
 
     final l = AppLocalizations.of(context)!;
     try {
-      await ref.read(orgPetsProvider(widget.orgId).notifier).transferPet(
+      await ref
+          .read(orgPetsProvider(widget.orgId).notifier)
+          .transferPet(
             widget.petId,
             recipientEmail: _emailController.text.trim(),
             transferType: _transferType,
             notes: _notesController.text.trim(),
           );
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l.transferSuccess)),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(l.transferSuccess)));
         context.pop();
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('$e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('$e')));
       }
     } finally {
       if (mounted) setState(() => _submitting = false);
@@ -77,10 +79,12 @@ class _TransferPetScreenState extends ConsumerState<TransferPetScreen> {
     final l = AppLocalizations.of(context)!;
     final petsAsync = ref.watch(orgPetsProvider(widget.orgId));
 
-    final petName = petsAsync.whenOrNull(
-      data: (pets) =>
-          pets.where((p) => p.id == widget.petId).firstOrNull?.name,
-    ) ?? '';
+    final petName =
+        petsAsync.whenOrNull(
+          data: (pets) =>
+              pets.where((p) => p.id == widget.petId).firstOrNull?.name,
+        ) ??
+        '';
 
     final types = _transferTypes(l);
 
@@ -112,8 +116,11 @@ class _TransferPetScreenState extends ConsumerState<TransferPetScreen> {
                           padding: const EdgeInsets.all(16),
                           child: Row(
                             children: [
-                              Icon(Icons.pets, size: 32,
-                                  color: colorScheme.primary),
+                              Icon(
+                                Icons.pets,
+                                size: 32,
+                                color: colorScheme.primary,
+                              ),
                               const SizedBox(width: 12),
                               Expanded(
                                 child: Text(
@@ -129,9 +136,12 @@ class _TransferPetScreenState extends ConsumerState<TransferPetScreen> {
                       ),
                     ),
                   const SizedBox(height: 24),
-                  Text(l.transferType,
-                      style: theme.textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.bold)),
+                  Text(
+                    l.transferType,
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
                   const SizedBox(height: 12),
                   Wrap(
                     spacing: 8,
@@ -195,7 +205,9 @@ class _TransferPetScreenState extends ConsumerState<TransferPetScreen> {
                             width: 18,
                             height: 18,
                             child: CircularProgressIndicator(
-                                strokeWidth: 2, color: Colors.white),
+                              strokeWidth: 2,
+                              color: Colors.white,
+                            ),
                           )
                         : const Icon(Icons.send),
                     label: Text(l.confirmTransfer),

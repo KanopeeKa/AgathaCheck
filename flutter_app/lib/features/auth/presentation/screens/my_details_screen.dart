@@ -8,8 +8,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 
-import 'export_data_stub.dart'
-  if (dart.library.html) 'export_data_web.dart';
+import 'export_data_stub.dart' if (dart.library.html) 'export_data_web.dart';
 
 import '../../../../core/providers/api_base_url_provider.dart';
 import '../../../../core/providers/locale_provider.dart';
@@ -69,26 +68,29 @@ class _MyDetailsScreenState extends ConsumerState<MyDetailsScreen> {
       builder: (ctx) => _ProfileEditorSheet(
         user: user,
         resolvePhotoUrl: _resolvePhotoUrl,
-        onSave: ({
-          required String firstName,
-          required String lastName,
-          required String category,
-          required String bio,
-          Uint8List? photoBytes,
-          String? photoFilename,
-        }) async {
-          if (photoBytes != null && photoFilename != null) {
-            await ref
-                .read(authProvider.notifier)
-                .uploadPhoto(photoBytes, photoFilename);
-          }
-          await ref.read(authProvider.notifier).updateProfile(
-                firstName: firstName,
-                lastName: lastName,
-                category: category,
-                bio: bio,
-              );
-        },
+        onSave:
+            ({
+              required String firstName,
+              required String lastName,
+              required String category,
+              required String bio,
+              Uint8List? photoBytes,
+              String? photoFilename,
+            }) async {
+              if (photoBytes != null && photoFilename != null) {
+                await ref
+                    .read(authProvider.notifier)
+                    .uploadPhoto(photoBytes, photoFilename);
+              }
+              await ref
+                  .read(authProvider.notifier)
+                  .updateProfile(
+                    firstName: firstName,
+                    lastName: lastName,
+                    category: category,
+                    bio: bio,
+                  );
+            },
       ),
     );
   }
@@ -101,7 +103,9 @@ class _MyDetailsScreenState extends ConsumerState<MyDetailsScreen> {
     });
 
     try {
-      final msg = await ref.read(authProvider.notifier).changePassword(
+      final msg = await ref
+          .read(authProvider.notifier)
+          .changePassword(
             currentPassword: _currentPasswordController.text,
             newPassword: _newPasswordController.text,
           );
@@ -193,19 +197,17 @@ class _MyDetailsScreenState extends ConsumerState<MyDetailsScreen> {
                       value: currentLocale,
                       underline: const SizedBox.shrink(),
                       items: const [
-                        DropdownMenuItem(
-                          value: 'en',
-                          child: Text('English'),
-                        ),
-                        DropdownMenuItem(
-                          value: 'fr',
-                          child: Text('Français'),
-                        ),
+                        DropdownMenuItem(value: 'en', child: Text('English')),
+                        DropdownMenuItem(value: 'fr', child: Text('Français')),
                       ],
                       onChanged: (value) {
                         if (value != null) {
-                          ref.read(localeProvider.notifier).setLocale(Locale(value));
-                          ref.read(authProvider.notifier).updateProfile(locale: value);
+                          ref
+                              .read(localeProvider.notifier)
+                              .setLocale(Locale(value));
+                          ref
+                              .read(authProvider.notifier)
+                              .updateProfile(locale: value);
                         }
                       },
                     ),
@@ -223,8 +225,10 @@ class _MyDetailsScreenState extends ConsumerState<MyDetailsScreen> {
                   passwordMessage: _passwordMessage,
                   passwordSuccess: _passwordSuccess,
                   onChangePassword: _changePassword,
-                  onToggleObscureCurrent: () => setState(() => _obscureCurrent = !_obscureCurrent),
-                  onToggleObscureNew: () => setState(() => _obscureNew = !_obscureNew),
+                  onToggleObscureCurrent: () =>
+                      setState(() => _obscureCurrent = !_obscureCurrent),
+                  onToggleObscureNew: () =>
+                      setState(() => _obscureNew = !_obscureNew),
                   l10nChangePassword: l10n.changePassword,
                   l10nCurrentPassword: l10n.currentPassword,
                   l10nShowCurrentPassword: l10n.showCurrentPassword,
@@ -277,15 +281,15 @@ class _MyDetailsScreenState extends ConsumerState<MyDetailsScreen> {
         await exportUserDataWebOnly(bytes);
       }
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.dataExported)),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(l10n.dataExported)));
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('${l10n.error}: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('${l10n.error}: $e')));
       }
     }
   }
@@ -304,14 +308,14 @@ class _MyDetailsScreenState extends ConsumerState<MyDetailsScreen> {
             const SizedBox(height: 16),
             AutofillGroup(
               child: TextField(
-              controller: passwordController,
-              obscureText: true,
-              autofillHints: const [AutofillHints.password],
-              decoration: InputDecoration(
-                labelText: l10n.currentPassword,
-                prefixIcon: const Icon(Icons.lock),
+                controller: passwordController,
+                obscureText: true,
+                autofillHints: const [AutofillHints.password],
+                decoration: InputDecoration(
+                  labelText: l10n.currentPassword,
+                  prefixIcon: const Icon(Icons.lock),
+                ),
               ),
-            ),
             ),
           ],
         ),
@@ -339,9 +343,9 @@ class _MyDetailsScreenState extends ConsumerState<MyDetailsScreen> {
                 }
               } catch (e) {
                 if (mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('$e')),
-                  );
+                  ScaffoldMessenger.of(
+                    context,
+                  ).showSnackBar(SnackBar(content: Text('$e')));
                 }
               }
             },
@@ -369,7 +373,8 @@ class _ProfileEditorSheet extends StatefulWidget {
     required String bio,
     Uint8List? photoBytes,
     String? photoFilename,
-  }) onSave;
+  })
+  onSave;
 
   @override
   State<_ProfileEditorSheet> createState() => _ProfileEditorSheetState();
@@ -387,10 +392,12 @@ class _ProfileEditorSheetState extends State<_ProfileEditorSheet> {
   @override
   void initState() {
     super.initState();
-    _firstNameController =
-        TextEditingController(text: widget.user.firstName ?? '');
-    _lastNameController =
-        TextEditingController(text: widget.user.lastName ?? '');
+    _firstNameController = TextEditingController(
+      text: widget.user.firstName ?? '',
+    );
+    _lastNameController = TextEditingController(
+      text: widget.user.lastName ?? '',
+    );
     _bioController = TextEditingController(text: widget.user.bio ?? '');
     _category = widget.user.category ?? 'pet_guardian';
   }
@@ -442,17 +449,19 @@ class _ProfileEditorSheetState extends State<_ProfileEditorSheet> {
       if (mounted) {
         final l10n = AppLocalizations.of(context)!;
         Navigator.of(context).pop();
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.profileUpdated)),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(l10n.profileUpdated)));
       }
     } catch (e) {
       if (mounted) {
         final l10n = AppLocalizations.of(context)!;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-              content: Text(
-                  l10n.failedToSave(e.toString().replaceFirst('Exception: ', '')))),
+            content: Text(
+              l10n.failedToSave(e.toString().replaceFirst('Exception: ', '')),
+            ),
+          ),
         );
       }
     } finally {
@@ -494,8 +503,9 @@ class _ProfileEditorSheetState extends State<_ProfileEditorSheet> {
             ),
             Text(
               l10n.editProfile,
-              style: theme.textTheme.titleLarge
-                  ?.copyWith(fontWeight: FontWeight.bold),
+              style: theme.textTheme.titleLarge?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 24),
@@ -513,18 +523,16 @@ class _ProfileEditorSheetState extends State<_ProfileEditorSheet> {
                         backgroundImage: _selectedPhotoBytes != null
                             ? MemoryImage(_selectedPhotoBytes!)
                             : (photoUrl.isNotEmpty
-                                ? NetworkImage(
-                                        widget.resolvePhotoUrl(photoUrl))
-                                    as ImageProvider
-                                : null),
-                        child: (_selectedPhotoBytes == null &&
-                                photoUrl.isEmpty)
+                                  ? NetworkImage(
+                                          widget.resolvePhotoUrl(photoUrl),
+                                        )
+                                        as ImageProvider
+                                  : null),
+                        child: (_selectedPhotoBytes == null && photoUrl.isEmpty)
                             ? Text(
                                 initials,
-                                style:
-                                    theme.textTheme.headlineMedium?.copyWith(
-                                  color:
-                                      theme.colorScheme.onPrimaryContainer,
+                                style: theme.textTheme.headlineMedium?.copyWith(
+                                  color: theme.colorScheme.onPrimaryContainer,
                                 ),
                               )
                             : null,
@@ -538,8 +546,11 @@ class _ProfileEditorSheetState extends State<_ProfileEditorSheet> {
                             color: theme.colorScheme.primary,
                             shape: BoxShape.circle,
                           ),
-                          child: Icon(Icons.camera_alt,
-                              size: 16, color: theme.colorScheme.onPrimary),
+                          child: Icon(
+                            Icons.camera_alt,
+                            size: 16,
+                            color: theme.colorScheme.onPrimary,
+                          ),
                         ),
                       ),
                     ],
@@ -552,37 +563,37 @@ class _ProfileEditorSheetState extends State<_ProfileEditorSheet> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-            TextField(
-              controller: _firstNameController,
-              decoration: InputDecoration(
-                labelText: l10n.firstName,
-                prefixIcon: const Icon(Icons.person_outlined),
-              ),
-              textCapitalization: TextCapitalization.words,
-              autofillHints: const [AutofillHints.givenName],
-            ),
-            const SizedBox(height: 16),
-            TextField(
-              controller: _lastNameController,
-              decoration: InputDecoration(
-                labelText: l10n.lastName,
-                prefixIcon: const Icon(Icons.person_outlined),
-              ),
-              textCapitalization: TextCapitalization.words,
-              autofillHints: const [AutofillHints.familyName],
-            ),
-            const SizedBox(height: 16),
-            TextField(
-              controller: _bioController,
-              decoration: InputDecoration(
-                labelText: l10n.bio,
-                prefixIcon: const Icon(Icons.edit_note),
-                hintText: 'Tell others about yourself...',
-              ),
-              maxLines: 3,
-              maxLength: 200,
-              textCapitalization: TextCapitalization.sentences,
-            ),
+                  TextField(
+                    controller: _firstNameController,
+                    decoration: InputDecoration(
+                      labelText: l10n.firstName,
+                      prefixIcon: const Icon(Icons.person_outlined),
+                    ),
+                    textCapitalization: TextCapitalization.words,
+                    autofillHints: const [AutofillHints.givenName],
+                  ),
+                  const SizedBox(height: 16),
+                  TextField(
+                    controller: _lastNameController,
+                    decoration: InputDecoration(
+                      labelText: l10n.lastName,
+                      prefixIcon: const Icon(Icons.person_outlined),
+                    ),
+                    textCapitalization: TextCapitalization.words,
+                    autofillHints: const [AutofillHints.familyName],
+                  ),
+                  const SizedBox(height: 16),
+                  TextField(
+                    controller: _bioController,
+                    decoration: InputDecoration(
+                      labelText: l10n.bio,
+                      prefixIcon: const Icon(Icons.edit_note),
+                      hintText: 'Tell others about yourself...',
+                    ),
+                    maxLines: 3,
+                    maxLength: 200,
+                    textCapitalization: TextCapitalization.sentences,
+                  ),
                 ],
               ),
             ),
@@ -605,4 +616,3 @@ class _ProfileEditorSheetState extends State<_ProfileEditorSheet> {
     );
   }
 }
-

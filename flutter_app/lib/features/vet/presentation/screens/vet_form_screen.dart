@@ -56,9 +56,9 @@ class _VetFormScreenState extends ConsumerState<VetFormScreen> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to load vet: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Failed to load vet: $e')));
       }
     } finally {
       if (mounted) setState(() => _isLoading = false);
@@ -94,91 +94,91 @@ class _VetFormScreenState extends ConsumerState<VetFormScreen> {
               padding: const EdgeInsets.all(16),
               child: AutofillGroup(
                 child: Form(
-                key: _formKey,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    TextFormField(
-                      key: const Key('vet_name_field'),
-                      controller: _nameController,
-                      decoration: InputDecoration(
-                        labelText: l.vetName,
-                        prefixIcon: const Icon(Icons.person),
+                  key: _formKey,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      TextFormField(
+                        key: const Key('vet_name_field'),
+                        controller: _nameController,
+                        decoration: InputDecoration(
+                          labelText: l.vetName,
+                          prefixIcon: const Icon(Icons.person),
+                        ),
+                        autofillHints: const [AutofillHints.name],
+                        validator: (val) => val == null || val.trim().isEmpty
+                            ? l.vetNameRequired
+                            : null,
                       ),
-                      autofillHints: const [AutofillHints.name],
-                      validator: (val) => val == null || val.trim().isEmpty
-                          ? l.vetNameRequired
-                          : null,
-                    ),
-                    const SizedBox(height: 16),
-                    TextFormField(
-                      key: const Key('vet_phone_field'),
-                      controller: _phoneController,
-                      decoration: InputDecoration(
-                        labelText: l.phone,
-                        prefixIcon: const Icon(Icons.phone),
+                      const SizedBox(height: 16),
+                      TextFormField(
+                        key: const Key('vet_phone_field'),
+                        controller: _phoneController,
+                        decoration: InputDecoration(
+                          labelText: l.phone,
+                          prefixIcon: const Icon(Icons.phone),
+                        ),
+                        keyboardType: TextInputType.phone,
+                        autofillHints: const [AutofillHints.telephoneNumber],
                       ),
-                      keyboardType: TextInputType.phone,
-                      autofillHints: const [AutofillHints.telephoneNumber],
-                    ),
-                    const SizedBox(height: 16),
-                    TextFormField(
-                      key: const Key('vet_email_field'),
-                      controller: _emailController,
-                      decoration: InputDecoration(
-                        labelText: l.vetEmail,
-                        prefixIcon: const Icon(Icons.email),
+                      const SizedBox(height: 16),
+                      TextFormField(
+                        key: const Key('vet_email_field'),
+                        controller: _emailController,
+                        decoration: InputDecoration(
+                          labelText: l.vetEmail,
+                          prefixIcon: const Icon(Icons.email),
+                        ),
+                        keyboardType: TextInputType.emailAddress,
+                        autofillHints: const [AutofillHints.email],
                       ),
-                      keyboardType: TextInputType.emailAddress,
-                      autofillHints: const [AutofillHints.email],
-                    ),
-                    const SizedBox(height: 16),
-                    TextFormField(
-                      key: const Key('vet_website_field'),
-                      controller: _websiteController,
-                      decoration: InputDecoration(
-                        labelText: l.website,
-                        prefixIcon: const Icon(Icons.language),
+                      const SizedBox(height: 16),
+                      TextFormField(
+                        key: const Key('vet_website_field'),
+                        controller: _websiteController,
+                        decoration: InputDecoration(
+                          labelText: l.website,
+                          prefixIcon: const Icon(Icons.language),
+                        ),
+                        keyboardType: TextInputType.url,
+                        autofillHints: const [AutofillHints.url],
                       ),
-                      keyboardType: TextInputType.url,
-                      autofillHints: const [AutofillHints.url],
-                    ),
-                    const SizedBox(height: 16),
-                    TextFormField(
-                      key: const Key('vet_address_field'),
-                      controller: _addressController,
-                      decoration: InputDecoration(
-                        labelText: l.address,
-                        prefixIcon: const Icon(Icons.location_on),
+                      const SizedBox(height: 16),
+                      TextFormField(
+                        key: const Key('vet_address_field'),
+                        controller: _addressController,
+                        decoration: InputDecoration(
+                          labelText: l.address,
+                          prefixIcon: const Icon(Icons.location_on),
+                        ),
+                        autofillHints: const [AutofillHints.fullStreetAddress],
+                        maxLines: 2,
                       ),
-                      autofillHints: const [AutofillHints.fullStreetAddress],
-                      maxLines: 2,
-                    ),
-                    const SizedBox(height: 16),
-                    TextFormField(
-                      key: const Key('vet_notes_field'),
-                      controller: _notesController,
-                      decoration: InputDecoration(
-                        labelText: l.vetNotes,
-                        prefixIcon: const Icon(Icons.notes),
-                        alignLabelWithHint: true,
+                      const SizedBox(height: 16),
+                      TextFormField(
+                        key: const Key('vet_notes_field'),
+                        controller: _notesController,
+                        decoration: InputDecoration(
+                          labelText: l.vetNotes,
+                          prefixIcon: const Icon(Icons.notes),
+                          alignLabelWithHint: true,
+                        ),
+                        maxLines: 3,
                       ),
-                      maxLines: 3,
-                    ),
-                    if (_isEdit) ...[
+                      if (_isEdit) ...[
+                        const SizedBox(height: 24),
+                        _LinkedPetsSection(vetId: widget.vetId!),
+                      ],
                       const SizedBox(height: 24),
-                      _LinkedPetsSection(vetId: widget.vetId!),
+                      FilledButton.icon(
+                        key: const Key('save_vet_button'),
+                        onPressed: _isLoading ? null : _submit,
+                        icon: Icon(_isEdit ? Icons.save : Icons.add),
+                        label: Text(_isEdit ? l.save : l.addVet),
+                      ),
                     ],
-                    const SizedBox(height: 24),
-                    FilledButton.icon(
-                      key: const Key('save_vet_button'),
-                      onPressed: _isLoading ? null : _submit,
-                      icon: Icon(_isEdit ? Icons.save : Icons.add),
-                      label: Text(_isEdit ? l.save : l.addVet),
-                    ),
-                  ],
+                  ),
                 ),
-              ),
               ),
             ),
     );
@@ -208,16 +208,15 @@ class _VetFormScreenState extends ConsumerState<VetFormScreen> {
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-              content: Text(_isEdit ? 'Vet updated' : 'Vet added')),
+          SnackBar(content: Text(_isEdit ? 'Vet updated' : 'Vet added')),
         );
         context.go('/vets');
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Error: $e')));
       }
     } finally {
       if (mounted) setState(() => _isLoading = false);
@@ -243,9 +242,12 @@ class _LinkedPetsSection extends ConsumerWidget {
           children: [
             Icon(Icons.pets, color: theme.colorScheme.primary, size: 20),
             const SizedBox(width: 8),
-            Text(l.linkedPets,
-                style: theme.textTheme.titleMedium
-                    ?.copyWith(fontWeight: FontWeight.bold)),
+            Text(
+              l.linkedPets,
+              style: theme.textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
+            ),
           ],
         ),
         const SizedBox(height: 8),
@@ -256,9 +258,12 @@ class _LinkedPetsSection extends ConsumerWidget {
             if (pets.isEmpty) {
               return Padding(
                 padding: const EdgeInsets.symmetric(vertical: 8),
-                child: Text(l.noPetsAddFirst,
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                        color: theme.colorScheme.onSurfaceVariant)),
+                child: Text(
+                  l.noPetsAddFirst,
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: theme.colorScheme.onSurfaceVariant,
+                  ),
+                ),
               );
             }
 
@@ -269,44 +274,55 @@ class _LinkedPetsSection extends ConsumerWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 if (linked.isNotEmpty) ...[
-                  ...linked.map((pet) => Card(
-                        margin: const EdgeInsets.only(bottom: 4),
-                        child: ListTile(
-                          dense: true,
-                          leading: Icon(Icons.pets,
-                              color: theme.colorScheme.primary),
-                          title: Text(pet.name),
-                          subtitle: Text(pet.species),
-                          trailing: TextButton.icon(
-                            icon: const Icon(Icons.link_off, size: 18),
-                            label: Text(l.unlink),
-                            onPressed: () => _unlinkPet(ref, pet),
-                          ),
+                  ...linked.map(
+                    (pet) => Card(
+                      margin: const EdgeInsets.only(bottom: 4),
+                      child: ListTile(
+                        dense: true,
+                        leading: Icon(
+                          Icons.pets,
+                          color: theme.colorScheme.primary,
                         ),
-                      )),
+                        title: Text(pet.name),
+                        subtitle: Text(pet.species),
+                        trailing: TextButton.icon(
+                          icon: const Icon(Icons.link_off, size: 18),
+                          label: Text(l.unlink),
+                          onPressed: () => _unlinkPet(ref, pet),
+                        ),
+                      ),
+                    ),
+                  ),
                 ],
                 if (unlinked.isNotEmpty) ...[
                   const SizedBox(height: 8),
-                  Text(l.availablePets,
-                      style: theme.textTheme.bodySmall?.copyWith(
-                          color: theme.colorScheme.onSurfaceVariant)),
+                  Text(
+                    l.availablePets,
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: theme.colorScheme.onSurfaceVariant,
+                    ),
+                  ),
                   const SizedBox(height: 4),
-                  ...unlinked.map((pet) => Card(
-                        margin: const EdgeInsets.only(bottom: 4),
-                        color: theme.colorScheme.surfaceContainerLow,
-                        child: ListTile(
-                          dense: true,
-                          leading: Icon(Icons.pets,
-                              color: theme.colorScheme.outline),
-                          title: Text(pet.name),
-                          subtitle: Text(pet.species),
-                          trailing: TextButton.icon(
-                            icon: const Icon(Icons.link, size: 18),
-                            label: Text(l.link),
-                            onPressed: () => _linkPet(ref, pet),
-                          ),
+                  ...unlinked.map(
+                    (pet) => Card(
+                      margin: const EdgeInsets.only(bottom: 4),
+                      color: theme.colorScheme.surfaceContainerLow,
+                      child: ListTile(
+                        dense: true,
+                        leading: Icon(
+                          Icons.pets,
+                          color: theme.colorScheme.outline,
                         ),
-                      )),
+                        title: Text(pet.name),
+                        subtitle: Text(pet.species),
+                        trailing: TextButton.icon(
+                          icon: const Icon(Icons.link, size: 18),
+                          label: Text(l.link),
+                          onPressed: () => _linkPet(ref, pet),
+                        ),
+                      ),
+                    ),
+                  ),
                 ],
               ],
             );

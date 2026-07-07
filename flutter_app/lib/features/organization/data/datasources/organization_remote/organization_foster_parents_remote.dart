@@ -8,7 +8,9 @@ class OrganizationFosterParentsRemote {
   final OrganizationRemoteContext _ctx;
 
   Future<List<Map<String, dynamic>>> getFosterParents(
-      String orgId, String token) async {
+    String orgId,
+    String token,
+  ) async {
     final response = await _ctx.client.get(
       Uri.parse('${_ctx.baseUrl}/api/organizations/$orgId/foster-parents'),
       headers: _ctx.headers(token),
@@ -21,7 +23,9 @@ class OrganizationFosterParentsRemote {
   }
 
   Future<List<Map<String, dynamic>>> getPeople(
-      String orgId, String token) async {
+    String orgId,
+    String token,
+  ) async {
     final response = await _ctx.client.get(
       Uri.parse('${_ctx.baseUrl}/api/organizations/$orgId/people'),
       headers: _ctx.headers(token),
@@ -40,7 +44,9 @@ class OrganizationFosterParentsRemote {
     String token,
   ) async {
     final response = await _ctx.client.get(
-      Uri.parse('${_ctx.baseUrl}/api/organizations/$orgId/people/$kind/$recordId'),
+      Uri.parse(
+        '${_ctx.baseUrl}/api/organizations/$orgId/people/$kind/$recordId',
+      ),
       headers: _ctx.headers(token),
     );
     final data = json.decode(response.body) as Map<String, dynamic>;
@@ -59,7 +65,8 @@ class OrganizationFosterParentsRemote {
   ) async {
     final response = await _ctx.client.put(
       Uri.parse(
-          '${_ctx.baseUrl}/api/organizations/$orgId/people/$kind/$recordId/contact'),
+        '${_ctx.baseUrl}/api/organizations/$orgId/people/$kind/$recordId/contact',
+      ),
       headers: _ctx.headers(token),
       body: json.encode(body),
     );
@@ -110,7 +117,8 @@ class OrganizationFosterParentsRemote {
   }) async {
     final response = await _ctx.client.put(
       Uri.parse(
-          '${_ctx.baseUrl}/api/organizations/$orgId/foster-parents/$fosterParentId'),
+        '${_ctx.baseUrl}/api/organizations/$orgId/foster-parents/$fosterParentId',
+      ),
       headers: _ctx.headers(token),
       body: json.encode({
         'display_name': displayName,
@@ -127,10 +135,14 @@ class OrganizationFosterParentsRemote {
   }
 
   Future<void> deleteExternalFosterParent(
-      String orgId, String fosterParentId, String token) async {
+    String orgId,
+    String fosterParentId,
+    String token,
+  ) async {
     final response = await _ctx.client.delete(
       Uri.parse(
-          '${_ctx.baseUrl}/api/organizations/$orgId/foster-parents/$fosterParentId'),
+        '${_ctx.baseUrl}/api/organizations/$orgId/foster-parents/$fosterParentId',
+      ),
       headers: _ctx.headers(token),
     );
     if (response.statusCode >= 400) {

@@ -46,14 +46,10 @@ jobs:
             echo "build_runner not configured; skipping codegen."
           fi
 
-      - name: Check Dart format (warn only — Sprint 1)
-        continue-on-error: true
+      - name: Check Dart format
         run: |
-          dart format --output=none --set-exit-if-changed \
-            flutter_app/lib flutter_app/test server/lib || {
-            echo "::warning::dart format would change files. Run 'dart format flutter_app/lib flutter_app/test server/lib' locally. Enforcement starts Sprint 2 (see docs/refactoring-log.md)."
-            exit 0
-          }
+          (cd server && dart pub get)
+          dart format --output=none --set-exit-if-changed flutter_app/lib flutter_app/test server/lib
 
       - name: Sync legal documents into app assets
         run: dart run scripts/sync_legal_documents.dart

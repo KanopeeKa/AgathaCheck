@@ -48,8 +48,10 @@ class NativeLogin {
   }) {
     final c = _controller;
     if (c == null) return;
-    c.onSubmit =
-        ((JSString e, JSString p) => onSubmit(e.toDart, p.toDart)).toJS;
+    c.onSubmit = ((JSString e, JSString p) => onSubmit(
+      e.toDart,
+      p.toDart,
+    )).toJS;
     c.onForgot = (() => onForgot()).toJS;
     c.onDismiss = (() => onDismiss()).toJS;
     c.show(

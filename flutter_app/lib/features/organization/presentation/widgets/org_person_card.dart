@@ -50,8 +50,8 @@ class OrgPersonCard extends StatelessWidget {
     final roleLabel = person.isExternal
         ? l.fosterParentNoAccount
         : person.role != null
-            ? localizedRoleLabel(l, person.role!)
-            : '';
+        ? localizedRoleLabel(l, person.role!)
+        : '';
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 8),
@@ -83,8 +83,7 @@ class OrgPersonCard extends StatelessWidget {
                         person.displayName,
                         style: theme.textTheme.titleSmall?.copyWith(
                           fontWeight: FontWeight.bold,
-                          fontStyle:
-                              person.isPending ? FontStyle.italic : null,
+                          fontStyle: person.isPending ? FontStyle.italic : null,
                           color: person.isPending
                               ? theme.colorScheme.onSurfaceVariant
                               : null,
@@ -102,7 +101,9 @@ class OrgPersonCard extends StatelessWidget {
                             isExternal: person.isExternal,
                           ),
                           if (person.isPrimaryContact)
-                            _PrimaryContactChip(label: l.orgPrimaryContactBadge),
+                            _PrimaryContactChip(
+                              label: l.orgPrimaryContactBadge,
+                            ),
                         ],
                       ),
                     ],
@@ -180,10 +181,10 @@ class _RoleChip extends StatelessWidget {
         color: isPending
             ? Colors.orange.withAlpha(30)
             : isExternal
-                ? Colors.blueGrey.withAlpha(30)
-                : isSuperAdmin
-                    ? AppTheme.orgSuperUserBg
-                    : AppTheme.orgChipBg,
+            ? Colors.blueGrey.withAlpha(30)
+            : isSuperAdmin
+            ? AppTheme.orgSuperUserBg
+            : AppTheme.orgChipBg,
         borderRadius: BorderRadius.circular(8),
       ),
       child: Text(
@@ -194,10 +195,10 @@ class _RoleChip extends StatelessWidget {
           color: isPending
               ? Colors.orange.shade800
               : isExternal
-                  ? Colors.blueGrey.shade800
-                  : isSuperAdmin
-                      ? AppTheme.orgSuperUserFg
-                      : AppTheme.orgChipFg,
+              ? Colors.blueGrey.shade800
+              : isSuperAdmin
+              ? AppTheme.orgSuperUserFg
+              : AppTheme.orgChipFg,
         ),
       ),
     );

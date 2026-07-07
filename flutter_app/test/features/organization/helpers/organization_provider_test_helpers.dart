@@ -22,21 +22,27 @@ class RecordingOrganizationRepository implements OrganizationRepository {
 
   @override
   Future<List<Organization>> getOrganizations(String token) async => [
-        const Organization(
-          id: 'org-1',
-          name: 'Clinic',
-          type: OrganizationType.charity,
-        ),
-      ];
+    const Organization(
+      id: 'org-1',
+      name: 'Clinic',
+      type: OrganizationType.charity,
+    ),
+  ];
 
   @override
-  Future<Organization> createOrganization(Organization org, String token) async {
+  Future<Organization> createOrganization(
+    Organization org,
+    String token,
+  ) async {
     created.add(org);
     return org;
   }
 
   @override
-  Future<Organization> updateOrganization(Organization org, String token) async {
+  Future<Organization> updateOrganization(
+    Organization org,
+    String token,
+  ) async {
     updated.add(org);
     return org;
   }
@@ -58,7 +64,11 @@ class RecordingOrganizationRepository implements OrganizationRepository {
 
   @override
   Future<Organization> getOrganization(String id, String token) async =>
-      const Organization(id: 'x', name: 'x', type: OrganizationType.professional);
+      const Organization(
+        id: 'x',
+        name: 'x',
+        type: OrganizationType.professional,
+      );
 
   @override
   Future<Organization> uploadPhoto(
@@ -66,8 +76,11 @@ class RecordingOrganizationRepository implements OrganizationRepository {
     Uint8List bytes,
     String filename,
     String token,
-  ) async =>
-      const Organization(id: 'x', name: 'x', type: OrganizationType.professional);
+  ) async => const Organization(
+    id: 'x',
+    name: 'x',
+    type: OrganizationType.professional,
+  );
 
   @override
   Future<Organization> uploadLogo(
@@ -75,20 +88,28 @@ class RecordingOrganizationRepository implements OrganizationRepository {
     Uint8List bytes,
     String filename,
     String token,
-  ) async =>
-      const Organization(id: 'x', name: 'x', type: OrganizationType.professional);
+  ) async => const Organization(
+    id: 'x',
+    name: 'x',
+    type: OrganizationType.professional,
+  );
 
   @override
   Future<Organization> setPrimaryContact(
     String orgId,
     String recordId,
     String token,
-  ) async =>
-      const Organization(id: 'x', name: 'x', type: OrganizationType.professional);
+  ) async => const Organization(
+    id: 'x',
+    name: 'x',
+    type: OrganizationType.professional,
+  );
 
   @override
-  Future<List<OrganizationMember>> getMembers(String orgId, String token) async =>
-      [];
+  Future<List<OrganizationMember>> getMembers(
+    String orgId,
+    String token,
+  ) async => [];
 
   @override
   Future<Map<String, dynamic>> inviteByEmail(
@@ -96,8 +117,7 @@ class RecordingOrganizationRepository implements OrganizationRepository {
     String email,
     String role,
     String token,
-  ) async =>
-      {'success': true};
+  ) async => {'success': true};
 
   @override
   Future<void> removeMember(String orgId, String userId, String token) async {}
@@ -106,11 +126,14 @@ class RecordingOrganizationRepository implements OrganizationRepository {
   Future<void> leaveOrganization(String orgId, String token) async {}
 
   @override
-  Future<List<Map<String, dynamic>>> getPendingInvites(String token) async => [];
+  Future<List<Map<String, dynamic>>> getPendingInvites(String token) async =>
+      [];
 
   @override
-  Future<Map<String, dynamic>> acceptInvite(String inviteId, String token) async =>
-      {'organization_id': 'org-1'};
+  Future<Map<String, dynamic>> acceptInvite(
+    String inviteId,
+    String token,
+  ) async => {'organization_id': 'org-1'};
 
   @override
   Future<void> declineInvite(String inviteId, String token) async {}
@@ -119,16 +142,14 @@ class RecordingOrganizationRepository implements OrganizationRepository {
   Future<List<Map<String, dynamic>>> getOrganizationPets(
     String orgId,
     String token,
-  ) async =>
-      [];
+  ) async => [];
 
   @override
   Future<Map<String, dynamic>> createOrganizationPet(
     String orgId,
     Map<String, dynamic> petJson,
     String token,
-  ) async =>
-      {};
+  ) async => {};
 
   @override
   Future<void> transferPetToUser(
@@ -152,8 +173,7 @@ class RecordingOrganizationRepository implements OrganizationRepository {
   Future<List<ArchivedPet>> getOrganizationArchivedPets(
     String orgId,
     String token,
-  ) async =>
-      [];
+  ) async => [];
 
   @override
   Future<List<ArchivedPet>> getUserArchivedPets(String token) async => [];
@@ -162,16 +182,14 @@ class RecordingOrganizationRepository implements OrganizationRepository {
   Future<List<Map<String, dynamic>>> getFamilyEvents(
     String token,
     String petId,
-  ) async =>
-      [];
+  ) async => [];
 
   @override
   Future<Map<String, dynamic>> createFamilyEvent(
     String token,
     String petId,
     Map<String, dynamic> body,
-  ) async =>
-      {};
+  ) async => {};
 
   @override
   Future<void> updateFamilyEvent(
@@ -189,11 +207,14 @@ class RecordingOrganizationRepository implements OrganizationRepository {
   ) async {}
 
   @override
-  Future<List<FosterParent>> getFosterParents(String orgId, String token) async =>
-      [];
+  Future<List<FosterParent>> getFosterParents(
+    String orgId,
+    String token,
+  ) async => [];
 
   @override
-  Future<List<OrgPersonSummary>> getPeople(String orgId, String token) async => [];
+  Future<List<OrgPersonSummary>> getPeople(String orgId, String token) async =>
+      [];
 
   @override
   Future<OrgPersonDetail> getPersonDetail(
@@ -201,13 +222,12 @@ class RecordingOrganizationRepository implements OrganizationRepository {
     OrgPersonKind kind,
     String recordId,
     String token,
-  ) async =>
-      OrgPersonDetail(
-        id: 'member:$recordId',
-        kind: kind,
-        recordId: recordId,
-        displayName: 'Test',
-      );
+  ) async => OrgPersonDetail(
+    id: 'member:$recordId',
+    kind: kind,
+    recordId: recordId,
+    displayName: 'Test',
+  );
 
   @override
   Future<OrgPersonDetail> updatePersonContact(
@@ -220,16 +240,15 @@ class RecordingOrganizationRepository implements OrganizationRepository {
     String? displayName,
     String? email,
     required String token,
-  }) async =>
-      OrgPersonDetail(
-        id: '${kind.wire}:$recordId',
-        kind: kind,
-        recordId: recordId,
-        displayName: displayName ?? 'Test',
-        fosterPhone: fosterPhone ?? '',
-        fosterAddress: fosterAddress ?? '',
-        adminNotes: adminNotes ?? '',
-      );
+  }) async => OrgPersonDetail(
+    id: '${kind.wire}:$recordId',
+    kind: kind,
+    recordId: recordId,
+    displayName: displayName ?? 'Test',
+    fosterPhone: fosterPhone ?? '',
+    fosterAddress: fosterAddress ?? '',
+    adminNotes: adminNotes ?? '',
+  );
 
   @override
   Future<FosterParent> createExternalFosterParent(
@@ -241,13 +260,12 @@ class RecordingOrganizationRepository implements OrganizationRepository {
     String notes = '',
     required bool lawfulBasisConfirmed,
     required String token,
-  }) async =>
-      FosterParent(
-        id: 'fp-1',
-        kind: FosterParentKind.external,
-        displayName: displayName,
-        email: email,
-      );
+  }) async => FosterParent(
+    id: 'fp-1',
+    kind: FosterParentKind.external,
+    displayName: displayName,
+    email: email,
+  );
 
   @override
   Future<FosterParent> updateExternalFosterParent(
@@ -258,12 +276,11 @@ class RecordingOrganizationRepository implements OrganizationRepository {
     String? phone,
     String notes = '',
     required String token,
-  }) async =>
-      FosterParent(
-        id: fosterParentId,
-        kind: FosterParentKind.external,
-        displayName: displayName,
-      );
+  }) async => FosterParent(
+    id: fosterParentId,
+    kind: FosterParentKind.external,
+    displayName: displayName,
+  );
 
   @override
   Future<void> deleteExternalFosterParent(
@@ -277,8 +294,7 @@ class RecordingOrganizationRepository implements OrganizationRepository {
     String orgId,
     String petId,
     String token,
-  ) async =>
-      const PetFosterPlacementState(status: 'not_in_foster');
+  ) async => const PetFosterPlacementState(status: 'not_in_foster');
 
   @override
   Future<FosterPlacement> startFosterPlacement(
@@ -288,14 +304,13 @@ class RecordingOrganizationRepository implements OrganizationRepository {
     DateTime? startDate,
     String notes = '',
     required String token,
-  }) async =>
-      FosterPlacement(
-        id: 'fp-1',
-        organizationId: orgId,
-        petId: petId,
-        fosterUserId: fosterUserId,
-        status: 'pending',
-      );
+  }) async => FosterPlacement(
+    id: 'fp-1',
+    organizationId: orgId,
+    petId: petId,
+    fosterUserId: fosterUserId,
+    status: 'pending',
+  );
 
   @override
   Future<FosterPlacement> endFosterPlacement(
@@ -303,14 +318,13 @@ class RecordingOrganizationRepository implements OrganizationRepository {
     String placementId, {
     DateTime? endDate,
     required String token,
-  }) async =>
-      FosterPlacement(
-        id: placementId,
-        organizationId: orgId,
-        petId: 'pet-1',
-        fosterUserId: 'user-1',
-        status: 'not_in_foster',
-      );
+  }) async => FosterPlacement(
+    id: placementId,
+    organizationId: orgId,
+    petId: 'pet-1',
+    fosterUserId: 'user-1',
+    status: 'not_in_foster',
+  );
 
   @override
   Future<FosterPlacement> startAdoption(
@@ -318,28 +332,26 @@ class RecordingOrganizationRepository implements OrganizationRepository {
     String placementId, {
     String adoptionConditions = '',
     required String token,
-  }) async =>
-      FosterPlacement(
-        id: placementId,
-        organizationId: orgId,
-        petId: 'pet-1',
-        fosterUserId: 'user-1',
-        status: 'waiting_adoption_confirmation',
-      );
+  }) async => FosterPlacement(
+    id: placementId,
+    organizationId: orgId,
+    petId: 'pet-1',
+    fosterUserId: 'user-1',
+    status: 'waiting_adoption_confirmation',
+  );
 
   @override
   Future<FosterPlacement> completeAdoptionConditions(
     String orgId,
     String placementId, {
     required String token,
-  }) async =>
-      FosterPlacement(
-        id: placementId,
-        organizationId: orgId,
-        petId: 'pet-1',
-        fosterUserId: 'user-1',
-        status: 'waiting_adoption_confirmation',
-      );
+  }) async => FosterPlacement(
+    id: placementId,
+    organizationId: orgId,
+    petId: 'pet-1',
+    fosterUserId: 'user-1',
+    status: 'waiting_adoption_confirmation',
+  );
 
   @override
   Future<FosterPlacement> cancelAdoption(
@@ -347,14 +359,13 @@ class RecordingOrganizationRepository implements OrganizationRepository {
     String placementId, {
     DateTime? endDate,
     required String token,
-  }) async =>
-      FosterPlacement(
-        id: placementId,
-        organizationId: orgId,
-        petId: 'pet-1',
-        fosterUserId: 'user-1',
-        status: 'not_in_foster',
-      );
+  }) async => FosterPlacement(
+    id: placementId,
+    organizationId: orgId,
+    petId: 'pet-1',
+    fosterUserId: 'user-1',
+    status: 'not_in_foster',
+  );
 
   @override
   Future<FosterPlacement> directAdopt(
@@ -364,26 +375,25 @@ class RecordingOrganizationRepository implements OrganizationRepository {
     String adoptionConditions = '',
     String notes = '',
     required String token,
-  }) async =>
-      FosterPlacement(
-        id: 'fp-direct',
-        organizationId: orgId,
-        petId: petId,
-        fosterUserId: fosterUserId,
-        status: 'waiting_adoption_confirmation',
-      );
+  }) async => FosterPlacement(
+    id: 'fp-direct',
+    organizationId: orgId,
+    petId: petId,
+    fosterUserId: fosterUserId,
+    status: 'waiting_adoption_confirmation',
+  );
 
   @override
   Future<List<FosterPlacement>> getPetFosterHistory(
     String orgId,
     String petId,
     String token,
-  ) async =>
-      [];
+  ) async => [];
 }
 
 /// Tracks foster/people provider delegation beyond the base recording repo.
-class FosterTrackingOrganizationRepository extends RecordingOrganizationRepository {
+class FosterTrackingOrganizationRepository
+    extends RecordingOrganizationRepository {
   final List<Map<String, dynamic>> createExternalCalls = [];
   final List<String> deletedIds = [];
   final List<Map<String, dynamic>> updateContactCalls = [];
@@ -466,8 +476,10 @@ class FosterTrackingOrganizationRepository extends RecordingOrganizationReposito
 ProviderContainer makeOrgProviderTestContainer(
   RecordingOrganizationRepository repo,
 ) {
-  return ProviderContainer(overrides: [
-    authProvider.overrideWith((ref) => FakeAuthNotifier()),
-    organizationRepositoryProvider.overrideWithValue(repo),
-  ]);
+  return ProviderContainer(
+    overrides: [
+      authProvider.overrideWith((ref) => FakeAuthNotifier()),
+      organizationRepositoryProvider.overrideWithValue(repo),
+    ],
+  );
 }

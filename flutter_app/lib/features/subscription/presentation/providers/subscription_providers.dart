@@ -9,22 +9,22 @@ final revenueCatServiceProvider = Provider<RevenueCatService>((ref) {
 
 final subscriptionStatusProvider =
     StateNotifierProvider<SubscriptionNotifier, SubscriptionStatus>((ref) {
-  final notifier = SubscriptionNotifier(ref);
+      final notifier = SubscriptionNotifier(ref);
 
-  ref.listen<AuthState>(authProvider, (prev, next) {
-    final wasLoggedIn = prev?.isLoggedIn ?? false;
-    final isLoggedIn = next.isLoggedIn;
-    final userId = next.user?.id;
+      ref.listen<AuthState>(authProvider, (prev, next) {
+        final wasLoggedIn = prev?.isLoggedIn ?? false;
+        final isLoggedIn = next.isLoggedIn;
+        final userId = next.user?.id;
 
-    if (!wasLoggedIn && isLoggedIn && userId != null) {
-      notifier.loginUser(userId);
-    } else if (wasLoggedIn && !isLoggedIn) {
-      notifier.logoutUser();
-    }
-  });
+        if (!wasLoggedIn && isLoggedIn && userId != null) {
+          notifier.loginUser(userId);
+        } else if (wasLoggedIn && !isLoggedIn) {
+          notifier.logoutUser();
+        }
+      });
 
-  return notifier;
-});
+      return notifier;
+    });
 
 class SubscriptionNotifier extends StateNotifier<SubscriptionStatus> {
   final Ref _ref;

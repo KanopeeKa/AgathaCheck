@@ -73,10 +73,7 @@ void main() {
     await tester.pumpWidget(buildList([completedEntry]));
     await tester.pumpAndSettle();
 
-    expect(
-      find.text(l.doneOn(dateFormat.format(completedOn))),
-      findsOneWidget,
-    );
+    expect(find.text(l.doneOn(dateFormat.format(completedOn))), findsOneWidget);
     expect(find.text('Completed'), findsNothing);
   });
 }

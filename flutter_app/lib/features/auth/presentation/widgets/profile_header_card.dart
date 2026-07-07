@@ -35,7 +35,8 @@ class ProfileHeaderCard extends StatelessWidget {
                   child: Column(
                     children: [
                       ProfilePhotoAvatar(
-                        photoUrl: user.photoUrl != null && user.photoUrl!.isNotEmpty
+                        photoUrl:
+                            user.photoUrl != null && user.photoUrl!.isNotEmpty
                             ? resolvePhotoUrl(user.photoUrl!)
                             : null,
                         initials: user.initials ?? '',
@@ -43,7 +44,9 @@ class ProfileHeaderCard extends StatelessWidget {
                       const SizedBox(height: 12),
                       Text(
                         user.displayName,
-                        style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+                        style: theme.textTheme.titleLarge?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
                         textAlign: TextAlign.center,
                       ),
                       const SizedBox(height: 4),
@@ -73,15 +76,19 @@ class ProfileHeaderCard extends StatelessWidget {
                       Container(
                         padding: const EdgeInsets.all(10),
                         decoration: BoxDecoration(
-                          color: theme.colorScheme.secondaryContainer.withAlpha(120),
+                          color: theme.colorScheme.secondaryContainer.withAlpha(
+                            120,
+                          ),
                           borderRadius: BorderRadius.circular(10),
                         ),
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Icon(Icons.info_outline,
-                                size: 16,
-                                color: theme.colorScheme.onSecondaryContainer),
+                            Icon(
+                              Icons.info_outline,
+                              size: 16,
+                              color: theme.colorScheme.onSecondaryContainer,
+                            ),
                             const SizedBox(width: 6),
                             Flexible(
                               child: Text(

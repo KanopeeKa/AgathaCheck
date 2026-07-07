@@ -29,10 +29,7 @@ void main() {
       nextDueDate: DateTime(9999, 12, 31),
     );
 
-    expect(
-      formatHealthEntryStatusLine(entry, l),
-      l.doneOn('01 Jan 26'),
-    );
+    expect(formatHealthEntryStatusLine(entry, l), l.doneOn('01 Jan 26'));
   });
 
   test('formatHealthEntryStatusLine shows due date without labels', () {

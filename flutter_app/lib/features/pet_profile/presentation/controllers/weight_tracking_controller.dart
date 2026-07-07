@@ -7,11 +7,15 @@ class WeightTrackingController {
   WeightTrackingController(this.ref);
 
   Future<void> addWeightEntry(String petId, WeightEntry entry) async {
-    await ref.read(weightEntriesNotifierProvider(petId).notifier).addEntry(entry);
+    await ref
+        .read(weightEntriesNotifierProvider(petId).notifier)
+        .addEntry(entry);
   }
 
   Future<void> deleteWeightEntry(String petId, String entryId) async {
-    await ref.read(weightEntriesNotifierProvider(petId).notifier).deleteEntry(entryId);
+    await ref
+        .read(weightEntriesNotifierProvider(petId).notifier)
+        .deleteEntry(entryId);
   }
 
   void setWeightUnit(String petId, dynamic unit) {

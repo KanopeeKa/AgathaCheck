@@ -64,9 +64,8 @@ class _OrganizationDetailScreenState
     final l = AppLocalizations.of(context)!;
 
     return orgsAsync.when(
-      loading: () => const Scaffold(
-        body: Center(child: CircularProgressIndicator()),
-      ),
+      loading: () =>
+          const Scaffold(body: Center(child: CircularProgressIndicator())),
       error: (e, _) => Scaffold(
         appBar: AppBar(title: AppLogoTitle(title: l.organizations)),
         body: Center(child: Text('$e')),
@@ -102,7 +101,8 @@ class _OrganizationDetailScreenState
               PopupMenuButton<String>(
                 key: const Key('org_detail_menu'),
                 tooltip: MaterialLocalizations.of(context).showMenuTooltip,
-                onSelected: (value) => _handleMenuAction(context, ref, value, org),
+                onSelected: (value) =>
+                    _handleMenuAction(context, ref, value, org),
                 itemBuilder: (context) => [
                   if (isOrgAdmin) ...[
                     PopupMenuItem(
@@ -146,9 +146,14 @@ class _OrganizationDetailScreenState
                   PopupMenuItem(
                     value: 'leave',
                     child: ListTile(
-                      leading: const Icon(Icons.exit_to_app, color: Colors.orange),
-                      title: Text(l.orgLeave,
-                          style: const TextStyle(color: Colors.orange)),
+                      leading: const Icon(
+                        Icons.exit_to_app,
+                        color: Colors.orange,
+                      ),
+                      title: Text(
+                        l.orgLeave,
+                        style: const TextStyle(color: Colors.orange),
+                      ),
                       dense: true,
                       contentPadding: EdgeInsets.zero,
                     ),
@@ -158,8 +163,10 @@ class _OrganizationDetailScreenState
                       value: 'delete',
                       child: ListTile(
                         leading: const Icon(Icons.delete, color: Colors.red),
-                        title: Text(l.deleteOrganization,
-                            style: const TextStyle(color: Colors.red)),
+                        title: Text(
+                          l.deleteOrganization,
+                          style: const TextStyle(color: Colors.red),
+                        ),
                         dense: true,
                         contentPadding: EdgeInsets.zero,
                       ),
@@ -220,7 +227,8 @@ class _OrganizationDetailScreenState
                   l: l,
                   orgId: orgId,
                   petsExpanded: _petsExpanded,
-                  onToggleExpand: () => setState(() => _petsExpanded = !_petsExpanded),
+                  onToggleExpand: () =>
+                      setState(() => _petsExpanded = !_petsExpanded),
                   onAddPet: () => context.push('/add?orgId=$orgId'),
                 ),
                 const SizedBox(height: 16),
@@ -237,8 +245,9 @@ class _OrganizationDetailScreenState
                   builder: (context) {
                     final hiddenAsync = ref.watch(hiddenSharedPetsProvider);
                     final hiddenPets = hiddenAsync.valueOrNull ?? [];
-                    final orgHidden =
-                        hiddenPets.where((p) => p.organizationId == orgId).toList();
+                    final orgHidden = hiddenPets
+                        .where((p) => p.organizationId == orgId)
+                        .toList();
                     return OrganizationHiddenSharedPetsSection(
                       orgHidden: orgHidden,
                       theme: theme,
@@ -268,8 +277,12 @@ class _OrganizationDetailScreenState
     );
   }
 
-  void _handleMenuAction(BuildContext context, WidgetRef ref,
-      String action, Organization org) async {
+  void _handleMenuAction(
+    BuildContext context,
+    WidgetRef ref,
+    String action,
+    Organization org,
+  ) async {
     switch (action) {
       case 'invite':
         showOrganizationInviteByEmailDialog(
@@ -311,9 +324,7 @@ class _OrganizationDetailScreenState
           ),
           FilledButton(
             key: const Key('org_leave_confirm'),
-            style: FilledButton.styleFrom(
-              backgroundColor: Colors.orange,
-            ),
+            style: FilledButton.styleFrom(backgroundColor: Colors.orange),
             onPressed: () async {
               Navigator.pop(ctx);
               try {
@@ -326,9 +337,9 @@ class _OrganizationDetailScreenState
                 }
               } catch (e) {
                 if (context.mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('$e')),
-                  );
+                  ScaffoldMessenger.of(
+                    context,
+                  ).showSnackBar(SnackBar(content: Text('$e')));
                 }
               }
             },
@@ -339,8 +350,11 @@ class _OrganizationDetailScreenState
     );
   }
 
-  void _showDeleteDialog(BuildContext context, WidgetRef ref,
-      Organization org) {
+  void _showDeleteDialog(
+    BuildContext context,
+    WidgetRef ref,
+    Organization org,
+  ) {
     final l = AppLocalizations.of(context)!;
     showDialog(
       context: context,
@@ -355,9 +369,7 @@ class _OrganizationDetailScreenState
           ),
           FilledButton(
             key: const Key('org_delete_confirm'),
-            style: FilledButton.styleFrom(
-              backgroundColor: Colors.red,
-            ),
+            style: FilledButton.styleFrom(backgroundColor: Colors.red),
             onPressed: () async {
               Navigator.pop(ctx);
               try {
@@ -369,9 +381,9 @@ class _OrganizationDetailScreenState
                 }
               } catch (e) {
                 if (context.mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('$e')),
-                  );
+                  ScaffoldMessenger.of(
+                    context,
+                  ).showSnackBar(SnackBar(content: Text('$e')));
                 }
               }
             },
@@ -382,4 +394,3 @@ class _OrganizationDetailScreenState
     );
   }
 }
-

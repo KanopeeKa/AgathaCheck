@@ -47,11 +47,19 @@ class DownloadReportController {
           ? vets.where((v) => v.id == pet.vetId).firstOrNull
           : null;
 
-      final weightEntries = await ref.read(weightEntriesProvider(pet.id).future);
-      final healthEntries = await ref.read(petHealthEntriesProvider(pet.id).future);
-      final healthIssues = await ref.read(healthIssueNotifierProvider(pet.id).future);
+      final weightEntries = await ref.read(
+        weightEntriesProvider(pet.id).future,
+      );
+      final healthEntries = await ref.read(
+        petHealthEntriesProvider(pet.id).future,
+      );
+      final healthIssues = await ref.read(
+        healthIssueNotifierProvider(pet.id).future,
+      );
       final notifications = ref.read(notificationsProvider).valueOrNull ?? [];
-      final petNotifications = notifications.where((n) => n.petId == pet.id).toList();
+      final petNotifications = notifications
+          .where((n) => n.petId == pet.id)
+          .toList();
       final accessList = await ref.read(petAccessProvider(pet.id).future);
       final unit = ref.read(weightUnitProvider(pet.id));
 
@@ -59,7 +67,9 @@ class DownloadReportController {
       List<FosterPlacement> fosterPlacements = const [];
       if (pet.organizationId != null) {
         try {
-          familyEventsList = await ref.read(familyEventsProvider(pet.id).future);
+          familyEventsList = await ref.read(
+            familyEventsProvider(pet.id).future,
+          );
         } catch (_) {}
         if (result.fosterHistory) {
           try {
@@ -74,12 +84,16 @@ class DownloadReportController {
       if (result.includeFullLog) {
         for (final entry in healthEntries) {
           try {
-            final history = await ref.read(entryHistoryProvider(entry.id).future);
+            final history = await ref.read(
+              entryHistoryProvider(entry.id).future,
+            );
             healthHistories[entry.id] = history
-                .map((h) => {
-                      'taken_at': h.takenAt.toIso8601String(),
-                      'notes': h.notes,
-                    })
+                .map(
+                  (h) => {
+                    'taken_at': h.takenAt.toIso8601String(),
+                    'notes': h.notes,
+                  },
+                )
                 .toList();
           } catch (_) {}
         }
@@ -113,20 +127,21 @@ class DownloadReportController {
         Navigator.of(context).pop();
       }
 
-      final filename = '${pet.name.replaceAll(RegExp(r'[^a-zA-Z0-9]'), '_')}_report.pdf';
+      final filename =
+          '${pet.name.replaceAll(RegExp(r'[^a-zA-Z0-9]'), '_')}_report.pdf';
       await pdf_saver.savePdf(pdfBytes, filename);
 
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l.reportGenerated)),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(l.reportGenerated)));
       }
     } catch (e) {
       if (context.mounted) {
         Navigator.of(context).pop();
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l.reportFailed(e.toString()))),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(l.reportFailed(e.toString()))));
       }
     }
   }
@@ -241,17 +256,19 @@ class _ReportSectionsDialogState extends State<_ReportSectionsDialog> {
         ),
         FilledButton(
           onPressed: () {
-            Navigator.of(context).pop(ReportSections(
-              petProfile: petProfile,
-              weightTracking: weightTracking,
-              healthEvents: healthEvents,
-              healthIssues: healthIssues,
-              familyEvents: familyEvents,
-              fosterHistory: fosterHistory,
-              notifications: notifications,
-              sharing: sharing,
-              includeFullLog: includeFullLog,
-            ));
+            Navigator.of(context).pop(
+              ReportSections(
+                petProfile: petProfile,
+                weightTracking: weightTracking,
+                healthEvents: healthEvents,
+                healthIssues: healthIssues,
+                familyEvents: familyEvents,
+                fosterHistory: fosterHistory,
+                notifications: notifications,
+                sharing: sharing,
+                includeFullLog: includeFullLog,
+              ),
+            );
           },
           child: Text(l.downloadPetReport),
         ),

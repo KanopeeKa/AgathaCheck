@@ -37,8 +37,8 @@ Map<String, dynamic>? _verifyToken(String token) {
 }
 
 String? _extractToken(Request request) {
-  final auth = request.headers['authorization'] ??
-      request.headers['Authorization'];
+  final auth =
+      request.headers['authorization'] ?? request.headers['Authorization'];
   if (auth == null || !auth.startsWith('Bearer ')) return null;
   return auth.substring(7);
 }
@@ -66,7 +66,8 @@ Router authRoutes(Pool pool) {
     final limited = checkAuthRateLimit(request);
     if (limited != null) return limited;
     try {
-      final body = json.decode(await request.readAsString()) as Map<String, dynamic>;
+      final body =
+          json.decode(await request.readAsString()) as Map<String, dynamic>;
       final email = (body['email'] as String?)?.trim();
       final password = body['password'] as String?;
       final firstName = (body['first_name'] as String?) ?? '';
@@ -76,7 +77,10 @@ Router authRoutes(Pool pool) {
       final photoUrl = (body['photo_url'] as String?) ?? '';
       final locale = (body['locale'] as String?) ?? 'en';
 
-      if (email == null || email.isEmpty || password == null || password.isEmpty) {
+      if (email == null ||
+          email.isEmpty ||
+          password == null ||
+          password.isEmpty) {
         return Response(400,
             headers: _jsonHeaders,
             body: json.encode({'error': 'Email and password are required.'}));
@@ -90,7 +94,8 @@ Router authRoutes(Pool pool) {
         return Response(400,
             headers: _jsonHeaders,
             body: json.encode({
-              'error': 'Password must be at least $minPasswordLength characters.'
+              'error':
+                  'Password must be at least $minPasswordLength characters.'
             }));
       }
 
@@ -114,7 +119,9 @@ Router authRoutes(Pool pool) {
           },
         );
       } on ServerException catch (e) {
-        if (e.message.contains('unique') || e.message.contains('23505') || e.message.contains('duplicate')) {
+        if (e.message.contains('unique') ||
+            e.message.contains('23505') ||
+            e.message.contains('duplicate')) {
           return Response(400,
               headers: _jsonHeaders,
               body: json.encode({'error': 'Email already exists.'}));
@@ -155,11 +162,15 @@ Router authRoutes(Pool pool) {
     final limited = checkAuthRateLimit(request);
     if (limited != null) return limited;
     try {
-      final body = json.decode(await request.readAsString()) as Map<String, dynamic>;
+      final body =
+          json.decode(await request.readAsString()) as Map<String, dynamic>;
       final email = (body['email'] as String?)?.trim();
       final password = body['password'] as String?;
 
-      if (email == null || email.isEmpty || password == null || password.isEmpty) {
+      if (email == null ||
+          email.isEmpty ||
+          password == null ||
+          password.isEmpty) {
         return Response(400,
             headers: _jsonHeaders,
             body: json.encode({'error': 'Email and password are required.'}));
@@ -207,7 +218,8 @@ Router authRoutes(Pool pool) {
 
   auth.post('/refresh', (Request request) async {
     try {
-      final body = json.decode(await request.readAsString()) as Map<String, dynamic>;
+      final body =
+          json.decode(await request.readAsString()) as Map<String, dynamic>;
       final refreshToken = body['refresh_token'] as String?;
 
       if (refreshToken == null || refreshToken.isEmpty) {
@@ -257,7 +269,8 @@ Router authRoutes(Pool pool) {
     if (token == null) {
       return Response(401,
           headers: _jsonHeaders,
-          body: json.encode({'error': 'Missing or invalid Authorization header'}));
+          body: json
+              .encode({'error': 'Missing or invalid Authorization header'}));
     }
 
     final payload = _verifyToken(token);
@@ -274,8 +287,7 @@ Router authRoutes(Pool pool) {
       );
 
       if (result.isEmpty) {
-        return Response.notFound(
-            json.encode({'error': 'User not found'}),
+        return Response.notFound(json.encode({'error': 'User not found'}),
             headers: _jsonHeaders);
       }
 
@@ -293,7 +305,8 @@ Router authRoutes(Pool pool) {
     if (token == null) {
       return Response(401,
           headers: _jsonHeaders,
-          body: json.encode({'error': 'Missing or invalid Authorization header'}));
+          body: json
+              .encode({'error': 'Missing or invalid Authorization header'}));
     }
 
     final payload = _verifyToken(token);
@@ -304,7 +317,8 @@ Router authRoutes(Pool pool) {
     }
 
     try {
-      final body = json.decode(await request.readAsString()) as Map<String, dynamic>;
+      final body =
+          json.decode(await request.readAsString()) as Map<String, dynamic>;
       final updates = <String>[];
       final params = <String, dynamic>{'id': payload['id']};
 
@@ -365,7 +379,8 @@ Router authRoutes(Pool pool) {
     if (token == null) {
       return Response(401,
           headers: _jsonHeaders,
-          body: json.encode({'error': 'Missing or invalid Authorization header'}));
+          body: json
+              .encode({'error': 'Missing or invalid Authorization header'}));
     }
 
     final payload = _verifyToken(token);
@@ -392,7 +407,8 @@ Router authRoutes(Pool pool) {
         photoDir.createSync(recursive: true);
       }
 
-      final filename = '${payload['id']}_${DateTime.now().millisecondsSinceEpoch}.jpg';
+      final filename =
+          '${payload['id']}_${DateTime.now().millisecondsSinceEpoch}.jpg';
       final filePath = '${photoDir.path}/$filename';
 
       final parts = bodyStr.split('--$boundary');
@@ -403,10 +419,10 @@ Router authRoutes(Pool pool) {
           final fileBytes = bytes.sublist(
             bodyStr.indexOf('\r\n\r\n', bodyStr.indexOf('name="photo"')) + 4,
           );
-          final endBoundary = fileBytes.length -
-              '--$boundary--\r\n'.length;
+          final endBoundary = fileBytes.length - '--$boundary--\r\n'.length;
           File(filePath).writeAsBytesSync(
-            fileBytes.sublist(0, endBoundary > 0 ? endBoundary : fileBytes.length),
+            fileBytes.sublist(
+                0, endBoundary > 0 ? endBoundary : fileBytes.length),
           );
           break;
         }
@@ -414,7 +430,8 @@ Router authRoutes(Pool pool) {
 
       final photoUrl = '/uploads/photos/$filename';
       await pool.execute(
-        Sql.named('UPDATE users SET photo_url = @photo, updated_at = NOW() WHERE id = @id'),
+        Sql.named(
+            'UPDATE users SET photo_url = @photo, updated_at = NOW() WHERE id = @id'),
         parameters: {'photo': photoUrl, 'id': payload['id']},
       );
 
@@ -429,7 +446,8 @@ Router authRoutes(Pool pool) {
       print('Photo upload error: $e');
       return Response.internalServerError(
           headers: _jsonHeaders,
-          body: json.encode({'error': 'Photo upload failed', ...errorDetails(e)}));
+          body: json
+              .encode({'error': 'Photo upload failed', ...errorDetails(e)}));
     }
   });
 
@@ -438,7 +456,8 @@ Router authRoutes(Pool pool) {
     if (token == null) {
       return Response(401,
           headers: _jsonHeaders,
-          body: json.encode({'error': 'Missing or invalid Authorization header'}));
+          body: json
+              .encode({'error': 'Missing or invalid Authorization header'}));
     }
 
     final payload = _verifyToken(token);
@@ -449,20 +468,23 @@ Router authRoutes(Pool pool) {
     }
 
     try {
-      final body = json.decode(await request.readAsString()) as Map<String, dynamic>;
+      final body =
+          json.decode(await request.readAsString()) as Map<String, dynamic>;
       final currentPassword = body['currentPassword'] as String?;
       final newPassword = body['newPassword'] as String?;
 
       if (currentPassword == null || newPassword == null) {
         return Response(400,
             headers: _jsonHeaders,
-            body: json.encode({'error': 'Current and new passwords are required'}));
+            body: json
+                .encode({'error': 'Current and new passwords are required'}));
       }
       if (!isStrongPassword(newPassword)) {
         return Response(400,
             headers: _jsonHeaders,
             body: json.encode({
-              'error': 'Password must be at least $minPasswordLength characters.'
+              'error':
+                  'Password must be at least $minPasswordLength characters.'
             }));
       }
 
@@ -472,8 +494,8 @@ Router authRoutes(Pool pool) {
       );
 
       if (result.isEmpty) {
-        return Response.notFound(
-            json.encode({'error': 'User not found'}), headers: _jsonHeaders);
+        return Response.notFound(json.encode({'error': 'User not found'}),
+            headers: _jsonHeaders);
       }
 
       final storedHash = result.first.toColumnMap()['password_hash'] as String;
@@ -485,7 +507,8 @@ Router authRoutes(Pool pool) {
 
       final newHash = _dbcrypt.hashpw(newPassword, _dbcrypt.gensalt());
       await pool.execute(
-        Sql.named('UPDATE users SET password_hash = @hash, updated_at = NOW() WHERE id = @id'),
+        Sql.named(
+            'UPDATE users SET password_hash = @hash, updated_at = NOW() WHERE id = @id'),
         parameters: {'hash': newHash, 'id': payload['id']},
       );
 
@@ -503,7 +526,8 @@ Router authRoutes(Pool pool) {
     final limited = checkAuthRateLimit(request);
     if (limited != null) return limited;
     try {
-      final body = json.decode(await request.readAsString()) as Map<String, dynamic>;
+      final body =
+          json.decode(await request.readAsString()) as Map<String, dynamic>;
       final email = (body['email'] as String?)?.trim();
 
       if (email == null || email.isEmpty) {
@@ -519,7 +543,9 @@ Router authRoutes(Pool pool) {
 
       if (result.isEmpty) {
         return Response.ok(
-            json.encode({'message': 'If that email exists, a reset code has been sent.'}),
+            json.encode({
+              'message': 'If that email exists, a reset code has been sent.'
+            }),
             headers: _jsonHeaders);
       }
 
@@ -558,7 +584,8 @@ Router authRoutes(Pool pool) {
     final limited = checkAuthRateLimit(request);
     if (limited != null) return limited;
     try {
-      final body = json.decode(await request.readAsString()) as Map<String, dynamic>;
+      final body =
+          json.decode(await request.readAsString()) as Map<String, dynamic>;
       final email = (body['email'] as String?)?.trim();
       final code = body['code'] as String?;
       final newPassword = body['new_password'] as String?;
@@ -566,13 +593,15 @@ Router authRoutes(Pool pool) {
       if (email == null || code == null || newPassword == null) {
         return Response(400,
             headers: _jsonHeaders,
-            body: json.encode({'error': 'Email, code, and new_password are required'}));
+            body: json.encode(
+                {'error': 'Email, code, and new_password are required'}));
       }
       if (!isStrongPassword(newPassword)) {
         return Response(400,
             headers: _jsonHeaders,
             body: json.encode({
-              'error': 'Password must be at least $minPasswordLength characters.'
+              'error':
+                  'Password must be at least $minPasswordLength characters.'
             }));
       }
 
@@ -599,12 +628,14 @@ Router authRoutes(Pool pool) {
       final newHash = _dbcrypt.hashpw(newPassword, _dbcrypt.gensalt());
 
       await pool.execute(
-        Sql.named('UPDATE users SET password_hash = @hash, updated_at = NOW() WHERE id = @id'),
+        Sql.named(
+            'UPDATE users SET password_hash = @hash, updated_at = NOW() WHERE id = @id'),
         parameters: {'hash': newHash, 'id': userId},
       );
 
       await pool.execute(
-        Sql.named('UPDATE password_reset_tokens SET used = true WHERE id = @id'),
+        Sql.named(
+            'UPDATE password_reset_tokens SET used = true WHERE id = @id'),
         parameters: {'id': tokenId},
       );
 
@@ -613,8 +644,7 @@ Router authRoutes(Pool pool) {
           headers: _jsonHeaders);
     } catch (e) {
       return Response.internalServerError(
-          headers: _jsonHeaders,
-          body: json.encode({'error': 'Reset failed'}));
+          headers: _jsonHeaders, body: json.encode({'error': 'Reset failed'}));
     }
   });
 
@@ -623,7 +653,8 @@ Router authRoutes(Pool pool) {
     if (token == null) {
       return Response(401,
           headers: _jsonHeaders,
-          body: json.encode({'error': 'Missing or invalid Authorization header'}));
+          body: json
+              .encode({'error': 'Missing or invalid Authorization header'}));
     }
 
     final payload = _verifyToken(token);
@@ -634,7 +665,8 @@ Router authRoutes(Pool pool) {
     }
 
     try {
-      final body = json.decode(await request.readAsString()) as Map<String, dynamic>;
+      final body =
+          json.decode(await request.readAsString()) as Map<String, dynamic>;
       final password = body['password'] as String?;
 
       if (password == null || password.isEmpty) {
@@ -649,8 +681,8 @@ Router authRoutes(Pool pool) {
       );
 
       if (result.isEmpty) {
-        return Response.notFound(
-            json.encode({'error': 'User not found'}), headers: _jsonHeaders);
+        return Response.notFound(json.encode({'error': 'User not found'}),
+            headers: _jsonHeaders);
       }
 
       final storedHash = result.first.toColumnMap()['password_hash'] as String;
@@ -680,7 +712,8 @@ Router authRoutes(Pool pool) {
     if (token == null) {
       return Response(401,
           headers: _jsonHeaders,
-          body: json.encode({'error': 'Missing or invalid Authorization header'}));
+          body: json
+              .encode({'error': 'Missing or invalid Authorization header'}));
     }
 
     final payload = _verifyToken(token);
@@ -699,8 +732,8 @@ Router authRoutes(Pool pool) {
       );
 
       if (userResult.isEmpty) {
-        return Response.notFound(
-            json.encode({'error': 'User not found'}), headers: _jsonHeaders);
+        return Response.notFound(json.encode({'error': 'User not found'}),
+            headers: _jsonHeaders);
       }
 
       final user = _userRowToMap(userResult.first);

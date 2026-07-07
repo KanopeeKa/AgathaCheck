@@ -25,7 +25,10 @@ class AnalyticsService {
     return AnalyticsService(NoopAnalyticsClient());
   }
 
-  Future<void> applyConsent({required bool hasResponded, required bool analyticsConsent}) async {
+  Future<void> applyConsent({
+    required bool hasResponded,
+    required bool analyticsConsent,
+  }) async {
     final shouldEnable = hasResponded && analyticsConsent;
     if (!_consentGranted && shouldEnable) {
       await _client.initialize(enabled: true);
@@ -42,9 +45,7 @@ class AnalyticsService {
     if (!_consentGranted) return;
     await _client.identify(
       userId: user.id,
-      properties: {
-        if (user.category != null) 'category': user.category!,
-      },
+      properties: {if (user.category != null) 'category': user.category!},
     );
   }
 
@@ -58,7 +59,10 @@ class AnalyticsService {
     await _client.screen(screenName);
   }
 
-  Future<void> capture(String eventName, [Map<String, Object>? properties]) async {
+  Future<void> capture(
+    String eventName, [
+    Map<String, Object>? properties,
+  ]) async {
     if (!_consentGranted) return;
     await _client.capture(eventName, properties);
   }

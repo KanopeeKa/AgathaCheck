@@ -12,7 +12,10 @@ class SharingRepositoryImpl implements SharingRepository {
 
   @override
   Future<String> createShare(
-      String petId, Map<String, dynamic> petJson, String token) {
+    String petId,
+    Map<String, dynamic> petJson,
+    String token,
+  ) {
     return _dataSource.createShare(petId, petJson, token);
   }
 
@@ -28,7 +31,11 @@ class SharingRepositoryImpl implements SharingRepository {
 
   @override
   Future<void> updateRole(
-      String petId, String userId, String role, String token) {
+    String petId,
+    String userId,
+    String role,
+    String token,
+  ) {
     return _dataSource.updateRole(petId, userId, role, token);
   }
 
@@ -59,10 +66,16 @@ class SharingRepositoryImpl implements SharingRepository {
   }
 
   @override
-  Future<void> acceptPendingShare(String petId, String token,
-      {String? organizationId}) {
-    return _dataSource.acceptPendingShare(petId, token,
-        organizationId: organizationId);
+  Future<void> acceptPendingShare(
+    String petId,
+    String token, {
+    String? organizationId,
+  }) {
+    return _dataSource.acceptPendingShare(
+      petId,
+      token,
+      organizationId: organizationId,
+    );
   }
 
   @override
@@ -71,8 +84,11 @@ class SharingRepositoryImpl implements SharingRepository {
   }
 
   @override
-  Future<void> hideSharedPet(String petId, String token,
-      {required bool hidden}) {
+  Future<void> hideSharedPet(
+    String petId,
+    String token, {
+    required bool hidden,
+  }) {
     return _dataSource.hideSharedPet(petId, token, hidden: hidden);
   }
 

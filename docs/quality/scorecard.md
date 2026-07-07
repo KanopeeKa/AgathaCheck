@@ -32,7 +32,7 @@ Living metrics for Agatha Track quality. Update when CI or test counts change ma
 |---|---|
 | `flutter analyze` | Yes |
 | `dart analyze lib` (server) | Yes |
-| `dart format --set-exit-if-changed` | **Warn only** (Sprint 1) |
+| `dart format --set-exit-if-changed` | Yes |
 
 ## Coverage
 

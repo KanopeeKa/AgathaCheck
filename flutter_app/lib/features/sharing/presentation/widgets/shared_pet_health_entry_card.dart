@@ -16,10 +16,14 @@ class SharedPetHealthEntryCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       child: ListTile(
-        leading: Icon(Icons.medical_services_outlined, color: colorScheme.primary),
+        leading: Icon(
+          Icons.medical_services_outlined,
+          color: colorScheme.primary,
+        ),
         title: Text(entry['title'] ?? '', style: theme.textTheme.titleMedium),
         subtitle: Text(entry['date'] ?? ''),
-        trailing: entry['notes'] != null && (entry['notes'] as String).isNotEmpty
+        trailing:
+            entry['notes'] != null && (entry['notes'] as String).isNotEmpty
             ? Icon(Icons.notes, color: colorScheme.primary)
             : null,
       ),

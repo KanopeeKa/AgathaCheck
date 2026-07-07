@@ -45,7 +45,8 @@ class NotificationRepositoryImpl implements NotificationRepository {
 
   @override
   Future<NotificationPreferences> updatePreferences(
-      NotificationPreferences preferences) async {
+    NotificationPreferences preferences,
+  ) async {
     final model = NotificationPreferencesModel(
       emailRemindersEnabled: preferences.emailRemindersEnabled,
       reminderDaysBefore: preferences.reminderDaysBefore,
@@ -66,7 +67,9 @@ class NotificationRepositoryImpl implements NotificationRepository {
   }
 
   @override
-  Future<void> checkDueEntries({Map<String, String> petNames = const {}}) async {
+  Future<void> checkDueEntries({
+    Map<String, String> petNames = const {},
+  }) async {
     await _dataSource.checkDueEntries(_tokenGetter(), petNames: petNames);
   }
 }

@@ -19,9 +19,12 @@ import 'package:pet_profile_app/l10n/app_localizations.dart';
 import '../../../../helpers/fakes.dart';
 import '../../../../helpers/test_helpers.dart';
 
-
-final fakePetRepositoryOverride = petRepositoryProvider.overrideWithValue(FakePetRepository());
-final petsOverride = getAllPetsUseCaseProvider.overrideWith((ref) => FakeGetAllPets());
+final fakePetRepositoryOverride = petRepositoryProvider.overrideWithValue(
+  FakePetRepository(),
+);
+final petsOverride = getAllPetsUseCaseProvider.overrideWith(
+  (ref) => FakeGetAllPets(),
+);
 final authOverride = authProvider.overrideWith((ref) => FakeAuthNotifier());
 
 void main() {
@@ -33,7 +36,6 @@ void main() {
       prefs = await SharedPreferences.getInstance();
     });
 
-
     List<Override> baseOverrides(SharedPreferences prefs) => [
       sharedPreferencesProvider.overrideWithValue(prefs),
       apiBaseUrlProvider.overrideWithValue('http://test.local'),
@@ -43,64 +45,108 @@ void main() {
       vetListProvider.overrideWith(FakeVetListNotifier.new),
       organizationListProvider.overrideWith(FakeOrganizationListNotifier.new),
       allPetsIncludingOrgProvider.overrideWith((ref) async => <Pet>[]),
-      healthEntriesNotifierProvider.overrideWith(() => FakeHealthEntriesNotifier()),
+      healthEntriesNotifierProvider.overrideWith(
+        () => FakeHealthEntriesNotifier(),
+      ),
       notificationsProvider.overrideWith(() => FakeNotificationsNotifier()),
-      notificationPreferencesProvider.overrideWith(() => FakeNotificationPreferencesNotifier()),
+      notificationPreferencesProvider.overrideWith(
+        () => FakeNotificationPreferencesNotifier(),
+      ),
       pendingSharesProvider.overrideWith(() => FakePendingSharesNotifier()),
     ];
 
     testWidgets('shows empty state initially', (tester) async {
       final testNotifier = TestPetListNotifier();
-      final emptyPetListOverride = petListProvider.overrideWith(() => testNotifier);
-      await tester.pumpWidget(createApp(
-        prefs: prefs,
-        overrides: [...baseOverrides(prefs), emptyPetListOverride],
-      ));
+      final emptyPetListOverride = petListProvider.overrideWith(
+        () => testNotifier,
+      );
+      await tester.pumpWidget(
+        createApp(
+          prefs: prefs,
+          overrides: [...baseOverrides(prefs), emptyPetListOverride],
+        ),
+      );
       await pumpApp(tester);
 
       final scaffoldContext = tester.element(find.byType(Scaffold));
       final l10n = AppLocalizations.of(scaffoldContext)!;
 
-      expect(find.text(l10n.noPetsYet), findsOneWidget, reason: 'Should show empty state text');
-      expect(find.text(l10n.addPet), findsOneWidget, reason: 'Should show Add Pet button');
+      expect(
+        find.text(l10n.noPetsYet),
+        findsOneWidget,
+        reason: 'Should show empty state text',
+      );
+      expect(
+        find.text(l10n.addPet),
+        findsOneWidget,
+        reason: 'Should show Add Pet button',
+      );
     });
 
     testWidgets('navigates to add pet form', (tester) async {
       final testNotifier = TestPetListNotifier();
-      final emptyPetListOverride = petListProvider.overrideWith(() => testNotifier);
-      await tester.pumpWidget(createApp(
-        prefs: prefs,
-        overrides: [...baseOverrides(prefs), emptyPetListOverride],
-      ));
+      final emptyPetListOverride = petListProvider.overrideWith(
+        () => testNotifier,
+      );
+      await tester.pumpWidget(
+        createApp(
+          prefs: prefs,
+          overrides: [...baseOverrides(prefs), emptyPetListOverride],
+        ),
+      );
       await pumpApp(tester);
 
       final scaffoldContext = tester.element(find.byType(Scaffold));
       final l10n = AppLocalizations.of(scaffoldContext)!;
 
       final addPetButton = find.text(l10n.addPet);
-      expect(addPetButton, findsOneWidget, reason: 'Should find Add Pet button');
+      expect(
+        addPetButton,
+        findsOneWidget,
+        reason: 'Should find Add Pet button',
+      );
       await tester.tap(addPetButton);
       await pumpApp(tester);
 
-      expect(find.text(l10n.petName), findsOneWidget, reason: 'Should show pet name field');
-      expect(find.text(l10n.species), findsOneWidget, reason: 'Should show species field');
-      expect(find.text(l10n.savePet), findsOneWidget, reason: 'Should show save pet button');
+      expect(
+        find.text(l10n.petName),
+        findsOneWidget,
+        reason: 'Should show pet name field',
+      );
+      expect(
+        find.text(l10n.species),
+        findsOneWidget,
+        reason: 'Should show species field',
+      );
+      expect(
+        find.text(l10n.savePet),
+        findsOneWidget,
+        reason: 'Should show save pet button',
+      );
     });
 
     testWidgets('validates required name field', (tester) async {
       final testNotifier = TestPetListNotifier();
-      final emptyPetListOverride = petListProvider.overrideWith(() => testNotifier);
-      await tester.pumpWidget(createApp(
-        prefs: prefs,
-        overrides: [...baseOverrides(prefs), emptyPetListOverride],
-      ));
+      final emptyPetListOverride = petListProvider.overrideWith(
+        () => testNotifier,
+      );
+      await tester.pumpWidget(
+        createApp(
+          prefs: prefs,
+          overrides: [...baseOverrides(prefs), emptyPetListOverride],
+        ),
+      );
       await pumpApp(tester);
 
       final scaffoldContext = tester.element(find.byType(Scaffold));
       final l10n = AppLocalizations.of(scaffoldContext)!;
 
       final addPetButton = find.text(l10n.addPet);
-      expect(addPetButton, findsOneWidget, reason: 'Should find Add Pet button');
+      expect(
+        addPetButton,
+        findsOneWidget,
+        reason: 'Should find Add Pet button',
+      );
       await tester.tap(addPetButton);
       await pumpApp(tester);
 
@@ -110,16 +156,22 @@ void main() {
       await tester.tap(saveButton, warnIfMissed: false);
       await pumpApp(tester);
 
-      expect(find.text(l10n.petNameRequired), findsOneWidget, reason: 'Should show required name validation');
+      expect(
+        find.text(l10n.petNameRequired),
+        findsOneWidget,
+        reason: 'Should show required name validation',
+      );
     });
 
     testWidgets('adds a pet and shows it in list', (tester) async {
       final testNotifier = TestPetListNotifier();
       final petListOverride = petListProvider.overrideWith(() => testNotifier);
-      await tester.pumpWidget(createApp(
-        prefs: prefs,
-        overrides: [...baseOverrides(prefs), petListOverride],
-      ));
+      await tester.pumpWidget(
+        createApp(
+          prefs: prefs,
+          overrides: [...baseOverrides(prefs), petListOverride],
+        ),
+      );
       await pumpApp(tester);
 
       final scaffoldContext = tester.element(find.byType(Scaffold));

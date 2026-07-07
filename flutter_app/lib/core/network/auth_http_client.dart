@@ -6,8 +6,10 @@ import 'package:http/http.dart' as http;
 /// refreshed (the refresh token is missing, expired, or rejected). The
 /// message is user-facing and tells them how to recover.
 class SessionExpiredException implements Exception {
-  SessionExpiredException([this.message =
-      'Your session has expired. Please reload the page and sign in again.']);
+  SessionExpiredException([
+    this.message =
+        'Your session has expired. Please reload the page and sign in again.',
+  ]);
 
   final String message;
 
@@ -27,9 +29,9 @@ class AuthHttpClient extends http.BaseClient {
     required http.Client inner,
     required String? Function() getAccessToken,
     required Future<String?> Function() refreshAccessToken,
-  })  : _inner = inner,
-        _getAccessToken = getAccessToken,
-        _refreshAccessToken = refreshAccessToken;
+  }) : _inner = inner,
+       _getAccessToken = getAccessToken,
+       _refreshAccessToken = refreshAccessToken;
 
   final http.Client _inner;
   final String? Function() _getAccessToken;
@@ -40,8 +42,9 @@ class AuthHttpClient extends http.BaseClient {
     // Buffer the body so the request can be replayed after a refresh.
     final bodyBytes = await request.finalize().toBytes();
 
-    final response =
-        await _inner.send(_rebuild(request, bodyBytes, _getAccessToken()));
+    final response = await _inner.send(
+      _rebuild(request, bodyBytes, _getAccessToken()),
+    );
     if (response.statusCode != 401) return response;
 
     // Release the failed response's socket before retrying.
@@ -57,7 +60,10 @@ class AuthHttpClient extends http.BaseClient {
   /// Rebuilds [original] as a fresh, unsent [http.Request] carrying [bodyBytes]
   /// and a Bearer [token] (overriding any Authorization the caller set).
   http.Request _rebuild(
-      http.BaseRequest original, List<int> bodyBytes, String? token) {
+    http.BaseRequest original,
+    List<int> bodyBytes,
+    String? token,
+  ) {
     final req = http.Request(original.method, original.url)
       ..followRedirects = original.followRedirects
       ..maxRedirects = original.maxRedirects

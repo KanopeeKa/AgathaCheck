@@ -26,7 +26,8 @@ String weightUnitLabel(WeightUnit unit) {
 
 final weightUnitProvider =
     StateNotifierProvider.family<WeightUnitNotifier, WeightUnit, String>(
-        (ref, petId) => WeightUnitNotifier(petId));
+      (ref, petId) => WeightUnitNotifier(petId),
+    );
 
 class WeightUnitNotifier extends StateNotifier<WeightUnit> {
   WeightUnitNotifier(this._petId) : super(WeightUnit.kg) {
@@ -50,12 +51,13 @@ class WeightUnitNotifier extends StateNotifier<WeightUnit> {
     // minified in release builds, so `.name` would never round-trip with the
     // `== 'lb'` check in _load() and the unit would always reset to kg.
     await prefs.setString(
-        'pet_${_petId}_weightUnit', unit == WeightUnit.lb ? 'lb' : 'kg');
+      'pet_${_petId}_weightUnit',
+      unit == WeightUnit.lb ? 'lb' : 'kg',
+    );
   }
 }
 
-final weightRemoteDataSourceProvider =
-    Provider<WeightRemoteDataSource>((ref) {
+final weightRemoteDataSourceProvider = Provider<WeightRemoteDataSource>((ref) {
   final baseUrl = ref.watch(apiBaseUrlProvider);
   return WeightRemoteDataSourceImpl(
     baseUrl: baseUrl,
@@ -68,8 +70,10 @@ final weightRepositoryProvider = Provider<WeightRepository>((ref) {
   return WeightRepositoryImpl(dataSource);
 });
 
-final weightEntriesProvider =
-    FutureProvider.family<List<WeightEntry>, String>((ref, petId) async {
+final weightEntriesProvider = FutureProvider.family<List<WeightEntry>, String>((
+  ref,
+  petId,
+) async {
   final repo = ref.watch(weightRepositoryProvider);
   final auth = ref.watch(authProvider);
   final token = auth.accessToken;
@@ -77,8 +81,10 @@ final weightEntriesProvider =
   return repo.getEntries(petId, token);
 });
 
-final latestWeightProvider =
-    FutureProvider.family<WeightEntry?, String>((ref, petId) async {
+final latestWeightProvider = FutureProvider.family<WeightEntry?, String>((
+  ref,
+  petId,
+) async {
   final repo = ref.watch(weightRepositoryProvider);
   final auth = ref.watch(authProvider);
   final token = auth.accessToken;
@@ -86,7 +92,8 @@ final latestWeightProvider =
   return repo.getLatestWeight(petId, token);
 });
 
-class WeightEntriesNotifier extends FamilyAsyncNotifier<List<WeightEntry>, String> {
+class WeightEntriesNotifier
+    extends FamilyAsyncNotifier<List<WeightEntry>, String> {
   @override
   Future<List<WeightEntry>> build(String arg) async {
     final repo = ref.read(weightRepositoryProvider);
@@ -125,7 +132,9 @@ class WeightEntriesNotifier extends FamilyAsyncNotifier<List<WeightEntry>, Strin
   }
 }
 
-final weightEntriesNotifierProvider = AsyncNotifierProvider.family<
-    WeightEntriesNotifier, List<WeightEntry>, String>(
-  WeightEntriesNotifier.new,
-);
+final weightEntriesNotifierProvider =
+    AsyncNotifierProvider.family<
+      WeightEntriesNotifier,
+      List<WeightEntry>,
+      String
+    >(WeightEntriesNotifier.new);

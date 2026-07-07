@@ -69,7 +69,11 @@ void main() {
 
   group('PetFormState.copyWith', () {
     test('overrides only the provided fields and preserves the rest', () {
-      final original = PetFormState(name: 'Rex', breed: 'Lab', passedAway: false);
+      final original = PetFormState(
+        name: 'Rex',
+        breed: 'Lab',
+        passedAway: false,
+      );
       final updated = original.copyWith(name: 'Rexy', passedAway: true);
 
       expect(updated.name, 'Rexy');
@@ -95,44 +99,45 @@ void main() {
     PetFormSubmitDeps makeDeps(RecordingPetRepository repo) {
       return PetFormSubmitDeps(
         readPets: () => repo.initial,
-        addPet: ({
-          required String name,
-          required String species,
-          String breed = '',
-          DateTime? dateOfBirth,
-          double? weight,
-          String? gender,
-          String bio = '',
-          String insurance = '',
-          DateTime? neuteredDate,
-          bool neuterDismissed = false,
-          String chipId = '',
-          bool chipDismissed = false,
-          String? photoPath,
-          String? vetId,
-          String? organizationId,
-        }) async {
-          await repo.addPet(
-            Pet(
-              id: 'new-pet',
-              name: name,
-              species: species,
-              breed: breed,
-              dateOfBirth: dateOfBirth,
-              weight: weight,
-              gender: gender,
-              bio: bio,
-              insurance: insurance,
-              neuteredDate: neuteredDate,
-              neuterDismissed: neuterDismissed,
-              chipId: chipId,
-              chipDismissed: chipDismissed,
-              photoPath: photoPath,
-              vetId: vetId,
-              organizationId: organizationId,
-            ),
-          );
-        },
+        addPet:
+            ({
+              required String name,
+              required String species,
+              String breed = '',
+              DateTime? dateOfBirth,
+              double? weight,
+              String? gender,
+              String bio = '',
+              String insurance = '',
+              DateTime? neuteredDate,
+              bool neuterDismissed = false,
+              String chipId = '',
+              bool chipDismissed = false,
+              String? photoPath,
+              String? vetId,
+              String? organizationId,
+            }) async {
+              await repo.addPet(
+                Pet(
+                  id: 'new-pet',
+                  name: name,
+                  species: species,
+                  breed: breed,
+                  dateOfBirth: dateOfBirth,
+                  weight: weight,
+                  gender: gender,
+                  bio: bio,
+                  insurance: insurance,
+                  neuteredDate: neuteredDate,
+                  neuterDismissed: neuterDismissed,
+                  chipId: chipId,
+                  chipDismissed: chipDismissed,
+                  photoPath: photoPath,
+                  vetId: vetId,
+                  organizationId: organizationId,
+                ),
+              );
+            },
         updatePet: (pet) => repo.updatePet(pet),
       );
     }
@@ -147,10 +152,7 @@ void main() {
     tearDown(() => container.dispose());
 
     test('fails when name is empty', () async {
-      final outcome = await controller.submit(
-        deps,
-        isEditing: false,
-      );
+      final outcome = await controller.submit(deps, isEditing: false);
       expect(outcome, isA<PetFormSubmitValidationFailed>());
       expect(
         (outcome as PetFormSubmitValidationFailed).reason,
@@ -165,10 +167,7 @@ void main() {
         newWeight: 'abc',
         showWeightInput: true,
       );
-      final outcome = await controller.submit(
-        deps,
-        isEditing: false,
-      );
+      final outcome = await controller.submit(deps, isEditing: false);
       expect(outcome, isA<PetFormSubmitValidationFailed>());
       expect(
         (outcome as PetFormSubmitValidationFailed).reason,
@@ -183,10 +182,7 @@ void main() {
         selectedOrgId: 'org-1',
       );
 
-      final outcome = await controller.submit(
-        deps,
-        isEditing: false,
-      );
+      final outcome = await controller.submit(deps, isEditing: false);
       expect(outcome, isA<PetFormSubmitSuccess>());
       expect(repository.added, hasLength(1));
       expect(repository.added.single.name, 'Bella');

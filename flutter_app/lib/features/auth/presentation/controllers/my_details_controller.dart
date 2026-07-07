@@ -16,14 +16,18 @@ class MyDetailsController extends StateNotifier<MyDetailsState> {
     String? photoFilename,
   }) async {
     if (photoBytes != null && photoFilename != null) {
-      await ref.read(authProvider.notifier).uploadPhoto(photoBytes, photoFilename);
+      await ref
+          .read(authProvider.notifier)
+          .uploadPhoto(photoBytes, photoFilename);
     }
-    await ref.read(authProvider.notifier).updateProfile(
-      firstName: firstName,
-      lastName: lastName,
-      category: category,
-      bio: bio,
-    );
+    await ref
+        .read(authProvider.notifier)
+        .updateProfile(
+          firstName: firstName,
+          lastName: lastName,
+          category: category,
+          bio: bio,
+        );
   }
 
   Future<String?> changePassword({
@@ -31,10 +35,12 @@ class MyDetailsController extends StateNotifier<MyDetailsState> {
     required String newPassword,
   }) async {
     try {
-      final msg = await ref.read(authProvider.notifier).changePassword(
-        currentPassword: currentPassword,
-        newPassword: newPassword,
-      );
+      final msg = await ref
+          .read(authProvider.notifier)
+          .changePassword(
+            currentPassword: currentPassword,
+            newPassword: newPassword,
+          );
       return msg;
     } catch (e) {
       return e.toString().replaceFirst('Exception: ', '');

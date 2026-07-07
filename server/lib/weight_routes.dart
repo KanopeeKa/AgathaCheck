@@ -41,17 +41,21 @@ Router weightRoutes(Pool pool) {
   router.get('/', (Request request) async {
     final userId = _extractUserId(request);
     if (userId == null) {
-      return Response(401, body: jsonEncode({'error': 'Unauthorized'}), headers: _jsonHeaders);
+      return Response(401,
+          body: jsonEncode({'error': 'Unauthorized'}), headers: _jsonHeaders);
     }
     try {
-      final petId = request.url.queryParameters['pet_id'] ?? request.url.queryParameters['petId'];
+      final petId = request.url.queryParameters['pet_id'] ??
+          request.url.queryParameters['petId'];
       String query;
       Map<String, dynamic> params;
       if (petId != null) {
-        query = 'SELECT we.*, p.name as pet_name FROM weight_entries we JOIN pets p ON we.pet_id = p.id WHERE p.user_id = @userId AND we.pet_id = @petId ORDER BY we.date DESC';
+        query =
+            'SELECT we.*, p.name as pet_name FROM weight_entries we JOIN pets p ON we.pet_id = p.id WHERE p.user_id = @userId AND we.pet_id = @petId ORDER BY we.date DESC';
         params = {'userId': userId, 'petId': petId};
       } else {
-        query = 'SELECT we.*, p.name as pet_name FROM weight_entries we JOIN pets p ON we.pet_id = p.id WHERE p.user_id = @userId ORDER BY we.date DESC';
+        query =
+            'SELECT we.*, p.name as pet_name FROM weight_entries we JOIN pets p ON we.pet_id = p.id WHERE p.user_id = @userId ORDER BY we.date DESC';
         params = {'userId': userId};
       }
       final results = await pool.execute(Sql.named(query), parameters: params);
@@ -70,133 +74,165 @@ Router weightRoutes(Pool pool) {
       }).toList();
       return Response.ok(jsonEncode(entries), headers: _jsonHeaders);
     } catch (e) {
-      return Response.internalServerError(body: jsonEncode({'error': publicError(e)}), headers: _jsonHeaders);
+      return Response.internalServerError(
+          body: jsonEncode({'error': publicError(e)}), headers: _jsonHeaders);
     }
   });
 
   router.get('/latest', (Request request) async {
     final userId = _extractUserId(request);
     if (userId == null) {
-      return Response(401, body: jsonEncode({'error': 'Unauthorized'}), headers: _jsonHeaders);
+      return Response(401,
+          body: jsonEncode({'error': 'Unauthorized'}), headers: _jsonHeaders);
     }
     try {
-      final petId = request.url.queryParameters['pet_id'] ?? request.url.queryParameters['petId'];
+      final petId = request.url.queryParameters['pet_id'] ??
+          request.url.queryParameters['petId'];
       if (petId == null) {
-        return Response(400, body: jsonEncode({'error': 'pet_id is required'}), headers: _jsonHeaders);
+        return Response(400,
+            body: jsonEncode({'error': 'pet_id is required'}),
+            headers: _jsonHeaders);
       }
       final results = await pool.execute(
-        Sql.named('SELECT we.*, p.name as pet_name FROM weight_entries we JOIN pets p ON we.pet_id = p.id WHERE p.user_id = @userId AND we.pet_id = @petId ORDER BY we.date DESC LIMIT 1'),
+        Sql.named(
+            'SELECT we.*, p.name as pet_name FROM weight_entries we JOIN pets p ON we.pet_id = p.id WHERE p.user_id = @userId AND we.pet_id = @petId ORDER BY we.date DESC LIMIT 1'),
         parameters: {'userId': userId, 'petId': petId},
       );
       if (results.isEmpty) {
-        return Response.notFound(jsonEncode({'error': 'No weight entries found'}), headers: _jsonHeaders);
+        return Response.notFound(
+            jsonEncode({'error': 'No weight entries found'}),
+            headers: _jsonHeaders);
       }
       final c = results.first.toColumnMap();
-      return Response.ok(jsonEncode({
-        'id': c['id']?.toString(),
-        'pet_id': c['pet_id']?.toString(),
-        'pet_name': c['pet_name'],
-        'weight': c['weight'],
-        'unit': c['unit'] ?? 'kg',
-        'date': dateToIsoDate(c['date']),
-        'notes': c['notes'] ?? '',
-        'created_at': c['created_at']?.toString(),
-      }), headers: _jsonHeaders);
+      return Response.ok(
+          jsonEncode({
+            'id': c['id']?.toString(),
+            'pet_id': c['pet_id']?.toString(),
+            'pet_name': c['pet_name'],
+            'weight': c['weight'],
+            'unit': c['unit'] ?? 'kg',
+            'date': dateToIsoDate(c['date']),
+            'notes': c['notes'] ?? '',
+            'created_at': c['created_at']?.toString(),
+          }),
+          headers: _jsonHeaders);
     } catch (e) {
-      return Response.internalServerError(body: jsonEncode({'error': publicError(e)}), headers: _jsonHeaders);
+      return Response.internalServerError(
+          body: jsonEncode({'error': publicError(e)}), headers: _jsonHeaders);
     }
   });
 
   router.post('/', (Request request) async {
     final userId = _extractUserId(request);
     if (userId == null) {
-      return Response(401, body: jsonEncode({'error': 'Unauthorized'}), headers: _jsonHeaders);
+      return Response(401,
+          body: jsonEncode({'error': 'Unauthorized'}), headers: _jsonHeaders);
     }
     try {
-      final data = jsonDecode(await request.readAsString()) as Map<String, dynamic>;
+      final data =
+          jsonDecode(await request.readAsString()) as Map<String, dynamic>;
       final id = data['id'] ?? _uuid.v4();
       final petId = data['pet_id'] ?? data['petId'];
       if (!await _userOwnsPet(pool, petId?.toString(), userId)) {
-        return Response(403, body: jsonEncode({'error': 'Forbidden'}), headers: _jsonHeaders);
+        return Response(403,
+            body: jsonEncode({'error': 'Forbidden'}), headers: _jsonHeaders);
       }
       final dateStr = data['date'];
       final results = await pool.execute(
-        Sql.named('INSERT INTO weight_entries (id, pet_id, user_id, weight, unit, date, notes) VALUES (@id, @pet_id, @user_id, @weight, @unit, @date, @notes) RETURNING *'),
+        Sql.named(
+            'INSERT INTO weight_entries (id, pet_id, user_id, weight, unit, date, notes) VALUES (@id, @pet_id, @user_id, @weight, @unit, @date, @notes) RETURNING *'),
         parameters: {
           'id': id,
           'pet_id': petId,
           'user_id': userId,
-          'weight': data['weight'] is num ? data['weight'] : double.tryParse(data['weight']?.toString() ?? '0'),
+          'weight': data['weight'] is num
+              ? data['weight']
+              : double.tryParse(data['weight']?.toString() ?? '0'),
           'unit': data['unit'] ?? 'kg',
           'date': dateToIsoDate(dateStr) ?? todayCalendarIso(),
           'notes': data['notes'] ?? '',
         },
       );
       final c = results.first.toColumnMap();
-      return Response(201, body: jsonEncode({
-        'id': c['id']?.toString(),
-        'pet_id': c['pet_id']?.toString(),
-        'weight': c['weight'],
-        'unit': c['unit'] ?? 'kg',
-        'date': dateToIsoDate(c['date']),
-        'notes': c['notes'] ?? '',
-        'created_at': c['created_at']?.toString(),
-      }), headers: _jsonHeaders);
+      return Response(201,
+          body: jsonEncode({
+            'id': c['id']?.toString(),
+            'pet_id': c['pet_id']?.toString(),
+            'weight': c['weight'],
+            'unit': c['unit'] ?? 'kg',
+            'date': dateToIsoDate(c['date']),
+            'notes': c['notes'] ?? '',
+            'created_at': c['created_at']?.toString(),
+          }),
+          headers: _jsonHeaders);
     } catch (e) {
-      return Response.internalServerError(body: jsonEncode({'error': publicError(e)}), headers: _jsonHeaders);
+      return Response.internalServerError(
+          body: jsonEncode({'error': publicError(e)}), headers: _jsonHeaders);
     }
   });
 
   router.put('/<id>', (Request request, String id) async {
     final userId = _extractUserId(request);
     if (userId == null) {
-      return Response(401, body: jsonEncode({'error': 'Unauthorized'}), headers: _jsonHeaders);
+      return Response(401,
+          body: jsonEncode({'error': 'Unauthorized'}), headers: _jsonHeaders);
     }
     try {
-      final data = jsonDecode(await request.readAsString()) as Map<String, dynamic>;
+      final data =
+          jsonDecode(await request.readAsString()) as Map<String, dynamic>;
       final dateStr = data['date'];
       final results = await pool.execute(
-        Sql.named('UPDATE weight_entries SET weight = @weight, unit = @unit, date = @date, notes = @notes WHERE id = @id AND user_id = @user_id RETURNING *'),
+        Sql.named(
+            'UPDATE weight_entries SET weight = @weight, unit = @unit, date = @date, notes = @notes WHERE id = @id AND user_id = @user_id RETURNING *'),
         parameters: {
           'id': id,
           'user_id': userId,
-          'weight': data['weight'] is num ? data['weight'] : double.tryParse(data['weight']?.toString() ?? '0'),
+          'weight': data['weight'] is num
+              ? data['weight']
+              : double.tryParse(data['weight']?.toString() ?? '0'),
           'unit': data['unit'] ?? 'kg',
           'date': dateToIsoDate(dateStr) ?? todayCalendarIso(),
           'notes': data['notes'] ?? '',
         },
       );
       if (results.isEmpty) {
-        return Response.notFound(jsonEncode({'error': 'Not found'}), headers: _jsonHeaders);
+        return Response.notFound(jsonEncode({'error': 'Not found'}),
+            headers: _jsonHeaders);
       }
       final c = results.first.toColumnMap();
-      return Response.ok(jsonEncode({
-        'id': c['id']?.toString(),
-        'pet_id': c['pet_id']?.toString(),
-        'weight': c['weight'],
-        'unit': c['unit'] ?? 'kg',
-        'date': dateToIsoDate(c['date']),
-        'notes': c['notes'] ?? '',
-        'created_at': c['created_at']?.toString(),
-      }), headers: _jsonHeaders);
+      return Response.ok(
+          jsonEncode({
+            'id': c['id']?.toString(),
+            'pet_id': c['pet_id']?.toString(),
+            'weight': c['weight'],
+            'unit': c['unit'] ?? 'kg',
+            'date': dateToIsoDate(c['date']),
+            'notes': c['notes'] ?? '',
+            'created_at': c['created_at']?.toString(),
+          }),
+          headers: _jsonHeaders);
     } catch (e) {
-      return Response.internalServerError(body: jsonEncode({'error': publicError(e)}), headers: _jsonHeaders);
+      return Response.internalServerError(
+          body: jsonEncode({'error': publicError(e)}), headers: _jsonHeaders);
     }
   });
 
   router.delete('/<id>', (Request request, String id) async {
     final userId = _extractUserId(request);
     if (userId == null) {
-      return Response(401, body: jsonEncode({'error': 'Unauthorized'}), headers: _jsonHeaders);
+      return Response(401,
+          body: jsonEncode({'error': 'Unauthorized'}), headers: _jsonHeaders);
     }
     try {
       await pool.execute(
-        Sql.named('DELETE FROM weight_entries WHERE id = @id AND user_id = @user_id'),
+        Sql.named(
+            'DELETE FROM weight_entries WHERE id = @id AND user_id = @user_id'),
         parameters: {'id': id, 'user_id': userId},
       );
       return Response.ok(jsonEncode({'deleted': true}), headers: _jsonHeaders);
     } catch (e) {
-      return Response.internalServerError(body: jsonEncode({'error': publicError(e)}), headers: _jsonHeaders);
+      return Response.internalServerError(
+          body: jsonEncode({'error': publicError(e)}), headers: _jsonHeaders);
     }
   });
 

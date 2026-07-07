@@ -14,13 +14,15 @@ void main() {
       );
     });
 
-    test('returns null fallback when there are no entries and no profile weight',
-        () {
-      expect(
-        PetProfileSectionBuilder.currentWeightFromEntries(const [], null),
-        isNull,
-      );
-    });
+    test(
+      'returns null fallback when there are no entries and no profile weight',
+      () {
+        expect(
+          PetProfileSectionBuilder.currentWeightFromEntries(const [], null),
+          isNull,
+        );
+      },
+    );
 
     test('returns the most recent entry by date regardless of list order', () {
       final entries = [

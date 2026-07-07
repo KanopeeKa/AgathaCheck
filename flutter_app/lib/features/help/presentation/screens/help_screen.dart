@@ -31,9 +31,7 @@ class HelpScreen extends StatelessWidget {
     final theme = Theme.of(context);
 
     return Scaffold(
-      appBar: AppBar(
-        title: AppLogoTitle(title: l.helpTitle),
-      ),
+      appBar: AppBar(title: AppLogoTitle(title: l.helpTitle)),
       body: ListView(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         children: [
@@ -216,8 +214,11 @@ class _FaqSection extends StatelessWidget {
                 fontWeight: FontWeight.w500,
               ),
             ),
-            childrenPadding:
-                const EdgeInsets.only(left: 16, right: 16, bottom: 12),
+            childrenPadding: const EdgeInsets.only(
+              left: 16,
+              right: 16,
+              bottom: 12,
+            ),
             expandedAlignment: Alignment.topLeft,
             children: [
               Text(

@@ -10,10 +10,7 @@ class PetSharingSectionBuilder {
   static const _textDark = PdfColor.fromInt(0xFF1C1B1F);
   static const _textMuted = PdfColor.fromInt(0xFF49454F);
 
-  static List<pw.Widget> build(
-    List<PetAccess> accessList,
-    AppLocalizations l,
-  ) {
+  static List<pw.Widget> build(List<PetAccess> accessList, AppLocalizations l) {
     if (accessList.isEmpty) {
       return [
         _sectionTitle(l.pdfSharingSection),
@@ -27,11 +24,13 @@ class PetSharingSectionBuilder {
       pw.TableHelper.fromTextArray(
         border: pw.TableBorder.all(color: _borderColor, width: 0.5),
         headerStyle: pw.TextStyle(
-            fontSize: 8, fontWeight: pw.FontWeight.bold, color: _white),
+          fontSize: 8,
+          fontWeight: pw.FontWeight.bold,
+          color: _white,
+        ),
         headerDecoration: const pw.BoxDecoration(color: _brandPurple),
         cellStyle: const pw.TextStyle(fontSize: 8, color: _textDark),
-        cellPadding:
-            const pw.EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+        cellPadding: const pw.EdgeInsets.symmetric(horizontal: 6, vertical: 3),
         cellAlignments: {
           0: pw.Alignment.centerLeft,
           1: pw.Alignment.center,
@@ -39,8 +38,11 @@ class PetSharingSectionBuilder {
         },
         headers: [l.pdfName, l.pdfRole, l.pdfSince],
         data: accessList.map((a) {
-          final name = a.user?.displayName ?? l.pdfUserNumber(a.userId.toString());
-          final role = a.role == PetAccessRole.guardian ? l.pdfGuardian : l.pdfShared;
+          final name =
+              a.user?.displayName ?? l.pdfUserNumber(a.userId.toString());
+          final role = a.role == PetAccessRole.guardian
+              ? l.pdfGuardian
+              : l.pdfShared;
           final since = a.createdAt.toLocal().toString().split(' ')[0];
           return [name, role, since];
         }).toList(),
@@ -54,8 +56,9 @@ class PetSharingSectionBuilder {
       margin: const pw.EdgeInsets.only(bottom: 6),
       padding: const pw.EdgeInsets.only(bottom: 4),
       decoration: const pw.BoxDecoration(
-        border:
-            pw.Border(bottom: pw.BorderSide(color: _brandPurple, width: 1.5)),
+        border: pw.Border(
+          bottom: pw.BorderSide(color: _brandPurple, width: 1.5),
+        ),
       ),
       child: pw.Text(
         title.toUpperCase(),
@@ -76,8 +79,10 @@ class PetSharingSectionBuilder {
         border: pw.Border.all(color: _borderColor, width: 0.5),
         borderRadius: pw.BorderRadius.circular(4),
       ),
-      child: pw.Text(msg,
-          style: const pw.TextStyle(fontSize: 9, color: _textMuted)),
+      child: pw.Text(
+        msg,
+        style: const pw.TextStyle(fontSize: 9, color: _textMuted),
+      ),
     );
   }
 }

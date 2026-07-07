@@ -35,11 +35,11 @@ class HealthEntryFormParams {
 
   @override
   int get hashCode => Object.hash(
-        entryId,
-        petId,
-        initialType,
-        allowedTypes == null ? null : Object.hashAll(allowedTypes!),
-      );
+    entryId,
+    petId,
+    initialType,
+    allowedTypes == null ? null : Object.hashAll(allowedTypes!),
+  );
 }
 
 class HealthEntryFormState {
@@ -131,8 +131,7 @@ class HealthEntryFormState {
       frequencyInterval: frequencyInterval ?? this.frequencyInterval,
       startDate: startDate ?? this.startDate,
       dueDate: clearDueDate ? null : (dueDate ?? this.dueDate),
-      completedOn:
-          clearCompletedOn ? null : (completedOn ?? this.completedOn),
+      completedOn: clearCompletedOn ? null : (completedOn ?? this.completedOn),
       recurrenceAnchor: recurrenceAnchor ?? this.recurrenceAnchor,
       repeatEndDate: clearRepeatEndDate
           ? null
@@ -154,7 +153,7 @@ class HealthEntryFormState {
 
 class HealthEntryFormController extends StateNotifier<HealthEntryFormState> {
   HealthEntryFormController(this.ref, HealthEntryFormParams params)
-      : super(_initialState(params));
+    : super(_initialState(params));
 
   final Ref ref;
   String? _entryId;
@@ -163,8 +162,7 @@ class HealthEntryFormController extends StateNotifier<HealthEntryFormState> {
     var type = HealthEntryType.medication;
     if (params.initialType != null) {
       type = params.initialType!;
-    } else if (params.allowedTypes != null &&
-        params.allowedTypes!.isNotEmpty) {
+    } else if (params.allowedTypes != null && params.allowedTypes!.isNotEmpty) {
       type = params.allowedTypes!.first;
     }
 
@@ -224,9 +222,7 @@ class HealthEntryFormController extends StateNotifier<HealthEntryFormState> {
         state = state.copyWith(isUploadingPhoto: false);
       }
     } else {
-      state = state.copyWith(
-        pendingPhotos: [...state.pendingPhotos, picked],
-      );
+      state = state.copyWith(pendingPhotos: [...state.pendingPhotos, picked]);
     }
     return null;
   }
@@ -262,15 +258,13 @@ class HealthEntryFormController extends StateNotifier<HealthEntryFormState> {
     }
   }
 
-  void clearPendingPhotos() =>
-      state = state.copyWith(pendingPhotos: const []);
+  void clearPendingPhotos() => state = state.copyWith(pendingPhotos: const []);
 
   Future<bool> loadEntry(String entryId) async {
     _entryId = entryId;
     state = state.copyWith(isLoading: true, isEdit: true);
     try {
-      final entry =
-          await ref.read(healthRepositoryProvider).getEntry(entryId);
+      final entry = await ref.read(healthRepositoryProvider).getEntry(entryId);
       if (entry == null) return false;
 
       final frequency = entry.frequency == HealthFrequency.custom
@@ -318,17 +312,15 @@ class HealthEntryFormController extends StateNotifier<HealthEntryFormState> {
       state = state.copyWith(frequencyInterval: interval);
 
   void setRepeatEndDate(DateTime? date) => state = state.copyWith(
-        repeatEndDate: date,
-        clearRepeatEndDate: date == null,
-      );
+    repeatEndDate: date,
+    clearRepeatEndDate: date == null,
+  );
 
   void setRecurrenceAnchor(RecurrenceAnchor anchor) =>
       state = state.copyWith(recurrenceAnchor: anchor);
 
-  void setDueDate(DateTime? date) => state = state.copyWith(
-        dueDate: date,
-        startDate: date ?? state.startDate,
-      );
+  void setDueDate(DateTime? date) =>
+      state = state.copyWith(dueDate: date, startDate: date ?? state.startDate);
 
   void setCompletedOn(DateTime? date) =>
       state = state.copyWith(completedOn: date);
@@ -337,14 +329,12 @@ class HealthEntryFormController extends StateNotifier<HealthEntryFormState> {
       state = state.copyWith(remindDaysBefore: days);
 
   void setSelectedHealthIssueId(String? id) => state = state.copyWith(
-        selectedHealthIssueId: id,
-        clearHealthIssueId: id == null,
-      );
+    selectedHealthIssueId: id,
+    clearHealthIssueId: id == null,
+  );
 
-  void setSelectedPetIds(Set<String> ids) => state = state.copyWith(
-        selectedPetIds: ids,
-        clearHealthIssueId: true,
-      );
+  void setSelectedPetIds(Set<String> ids) =>
+      state = state.copyWith(selectedPetIds: ids, clearHealthIssueId: true);
 
   HealthEntryMarkCompletedPrompt? markCompletedPromptIfNeeded() {
     if (state.isEdit ||
@@ -370,9 +360,7 @@ class HealthEntryFormController extends StateNotifier<HealthEntryFormState> {
     if (!markCompleted) return;
     final prompt = markCompletedPromptIfNeeded();
     if (prompt == null) return;
-    state = state.copyWith(
-      completedOn: prompt.dueOnly,
-    );
+    state = state.copyWith(completedOn: prompt.dueOnly);
   }
 
   Future<HealthEntrySubmitOutcome> submit({
@@ -409,12 +397,13 @@ class HealthEntryFormController extends StateNotifier<HealthEntryFormState> {
     state = state.copyWith(isLoading: true);
     try {
       final notifier = ref.read(healthEntriesNotifierProvider.notifier);
-      final effectiveRepeatEndDate =
-          state.frequency == HealthFrequency.once ? null : state.repeatEndDate;
+      final effectiveRepeatEndDate = state.frequency == HealthFrequency.once
+          ? null
+          : state.repeatEndDate;
       final effectiveStart =
           state.dueDate ?? state.completedOn ?? state.startDate;
-      final effectiveDue = state.frequency == HealthFrequency.once &&
-              state.completedOn != null
+      final effectiveDue =
+          state.frequency == HealthFrequency.once && state.completedOn != null
           ? null
           : state.dueDate;
       final effectiveCompleted = state.completedOn;
@@ -493,7 +482,8 @@ class HealthEntryFormController extends StateNotifier<HealthEntryFormState> {
 }
 
 final healthEntryFormControllerProvider = StateNotifierProvider.autoDispose
-    .family<HealthEntryFormController, HealthEntryFormState,
-        HealthEntryFormParams>(
-  (ref, params) => HealthEntryFormController(ref, params),
-);
+    .family<
+      HealthEntryFormController,
+      HealthEntryFormState,
+      HealthEntryFormParams
+    >((ref, params) => HealthEntryFormController(ref, params));

@@ -64,7 +64,9 @@ class ChipReminderCard extends ConsumerWidget {
                     onPressed: () {
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
-                          content: Text(AppLocalizations.of(context)!.reminderSnooze),
+                          content: Text(
+                            AppLocalizations.of(context)!.reminderSnooze,
+                          ),
                         ),
                       );
                     },

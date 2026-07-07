@@ -35,7 +35,8 @@ void registerOrgPlacementsRoutes(Router router, Pool pool) {
   router.get('/<orgId>/placements', (Request request, String orgId) async {
     final userId = extractOrgUserId(request);
     if (userId == null) {
-      return Response(401, body: jsonEncode({'error': 'Unauthorized'}), headers: orgJsonHeaders);
+      return Response(401,
+          body: jsonEncode({'error': 'Unauthorized'}), headers: orgJsonHeaders);
     }
     try {
       if (!await requireOrgAdmin(pool, orgId, userId)) return orgForbidden();
@@ -50,7 +51,8 @@ void registerOrgPlacementsRoutes(Router router, Pool pool) {
       ''', {'orgId': orgId});
       return Response.ok(jsonEncode(placements), headers: orgJsonHeaders);
     } catch (e) {
-      return Response.internalServerError(body: jsonEncode({'error': publicError(e)}), headers: orgJsonHeaders);
+      return Response.internalServerError(
+          body: jsonEncode({'error': publicError(e)}), headers: orgJsonHeaders);
     }
   });
 
@@ -61,16 +63,19 @@ void registerOrgPlacementsRoutes(Router router, Pool pool) {
   ) async {
     final userId = extractOrgUserId(request);
     if (userId == null) {
-      return Response(401, body: jsonEncode({'error': 'Unauthorized'}), headers: orgJsonHeaders);
+      return Response(401,
+          body: jsonEncode({'error': 'Unauthorized'}), headers: orgJsonHeaders);
     }
     try {
       if (!await requireOrgAdmin(pool, orgId, userId)) return orgForbidden();
       final petResult = await pool.execute(
-        Sql.named('SELECT id FROM pets WHERE id = @petId AND organization_id = @orgId'),
+        Sql.named(
+            'SELECT id FROM pets WHERE id = @petId AND organization_id = @orgId'),
         parameters: {'petId': petId, 'orgId': orgId},
       );
       if (petResult.isEmpty) {
-        return Response.notFound(jsonEncode({'error': 'Pet not found'}), headers: orgJsonHeaders);
+        return Response.notFound(jsonEncode({'error': 'Pet not found'}),
+            headers: orgJsonHeaders);
       }
       final placements = await _loadPlacementRows('''
         $placementDetailSelect
@@ -83,7 +88,8 @@ void registerOrgPlacementsRoutes(Router router, Pool pool) {
       ''', {'orgId': orgId, 'petId': petId});
       return Response.ok(jsonEncode(placements), headers: orgJsonHeaders);
     } catch (e) {
-      return Response.internalServerError(body: jsonEncode({'error': publicError(e)}), headers: orgJsonHeaders);
+      return Response.internalServerError(
+          body: jsonEncode({'error': publicError(e)}), headers: orgJsonHeaders);
     }
   });
 
@@ -94,16 +100,19 @@ void registerOrgPlacementsRoutes(Router router, Pool pool) {
   ) async {
     final userId = extractOrgUserId(request);
     if (userId == null) {
-      return Response(401, body: jsonEncode({'error': 'Unauthorized'}), headers: orgJsonHeaders);
+      return Response(401,
+          body: jsonEncode({'error': 'Unauthorized'}), headers: orgJsonHeaders);
     }
     try {
       if (!await requireOrgAdmin(pool, orgId, userId)) return orgForbidden();
       final petResult = await pool.execute(
-        Sql.named('SELECT id FROM pets WHERE id = @petId AND organization_id = @orgId'),
+        Sql.named(
+            'SELECT id FROM pets WHERE id = @petId AND organization_id = @orgId'),
         parameters: {'petId': petId, 'orgId': orgId},
       );
       if (petResult.isEmpty) {
-        return Response.notFound(jsonEncode({'error': 'Pet not found'}), headers: orgJsonHeaders);
+        return Response.notFound(jsonEncode({'error': 'Pet not found'}),
+            headers: orgJsonHeaders);
       }
       final active = await getActivePlacementForPet(pool, petId);
       if (active == null) {
@@ -121,7 +130,8 @@ void registerOrgPlacementsRoutes(Router router, Pool pool) {
         headers: orgJsonHeaders,
       );
     } catch (e) {
-      return Response.internalServerError(body: jsonEncode({'error': publicError(e)}), headers: orgJsonHeaders);
+      return Response.internalServerError(
+          body: jsonEncode({'error': publicError(e)}), headers: orgJsonHeaders);
     }
   });
 
@@ -132,41 +142,58 @@ void registerOrgPlacementsRoutes(Router router, Pool pool) {
   ) async {
     final userId = extractOrgUserId(request);
     if (userId == null) {
-      return Response(401, body: jsonEncode({'error': 'Unauthorized'}), headers: orgJsonHeaders);
+      return Response(401,
+          body: jsonEncode({'error': 'Unauthorized'}), headers: orgJsonHeaders);
     }
     try {
       if (!await requireOrgAdmin(pool, orgId, userId)) return orgForbidden();
-      final data = jsonDecode(await request.readAsString()) as Map<String, dynamic>;
+      final data =
+          jsonDecode(await request.readAsString()) as Map<String, dynamic>;
       final fosterUserId =
           (data['foster_user_id'] ?? data['fosterUserId'])?.toString();
-      final startDate = normalizeCalendarDateInput(data['start_date'] ?? data['startDate']);
+      final startDate =
+          normalizeCalendarDateInput(data['start_date'] ?? data['startDate']);
       final notes = (data['notes'] ?? '').toString().trim();
 
       if (fosterUserId == null || fosterUserId.isEmpty) {
-        return Response(400, body: jsonEncode({'error': 'Foster parent user is required'}), headers: orgJsonHeaders);
+        return Response(400,
+            body: jsonEncode({'error': 'Foster parent user is required'}),
+            headers: orgJsonHeaders);
       }
 
       final petResult = await pool.execute(
-        Sql.named('SELECT id, name FROM pets WHERE id = @petId AND organization_id = @orgId'),
+        Sql.named(
+            'SELECT id, name FROM pets WHERE id = @petId AND organization_id = @orgId'),
         parameters: {'petId': petId, 'orgId': orgId},
       );
       if (petResult.isEmpty) {
-        return Response.notFound(jsonEncode({'error': 'Pet not found'}), headers: orgJsonHeaders);
+        return Response.notFound(jsonEncode({'error': 'Pet not found'}),
+            headers: orgJsonHeaders);
       }
       final pet = petResult.first.toColumnMap();
 
       final fosterMember = await pool.execute(
-        Sql.named('SELECT role FROM organization_users WHERE organization_id = @orgId AND user_id = @fosterUserId'),
+        Sql.named(
+            'SELECT role FROM organization_users WHERE organization_id = @orgId AND user_id = @fosterUserId'),
         parameters: {'orgId': orgId, 'fosterUserId': fosterUserId},
       );
       if (fosterMember.isEmpty ||
-          !isFosterParentMemberRole(fosterMember.first.toColumnMap()['role']?.toString())) {
-        return Response(400, body: jsonEncode({'error': 'Selected user is not a foster parent for this organization'}), headers: orgJsonHeaders);
+          !isFosterParentMemberRole(
+              fosterMember.first.toColumnMap()['role']?.toString())) {
+        return Response(400,
+            body: jsonEncode({
+              'error':
+                  'Selected user is not a foster parent for this organization'
+            }),
+            headers: orgJsonHeaders);
       }
 
       final existing = await getActivePlacementForPet(pool, petId);
       if (existing != null) {
-        return Response(409, body: jsonEncode({'error': 'Pet already has an active foster placement'}), headers: orgJsonHeaders);
+        return Response(409,
+            body: jsonEncode(
+                {'error': 'Pet already has an active foster placement'}),
+            headers: orgJsonHeaders);
       }
 
       final placementId = orgUuid.v4();
@@ -189,7 +216,8 @@ void registerOrgPlacementsRoutes(Router router, Pool pool) {
       );
 
       final adminResult = await pool.execute(
-        Sql.named('SELECT first_name, last_name, email FROM users WHERE id = @userId'),
+        Sql.named(
+            'SELECT first_name, last_name, email FROM users WHERE id = @userId'),
         parameters: {'userId': userId},
       );
       final adminName = adminResult.isEmpty
@@ -212,7 +240,8 @@ void registerOrgPlacementsRoutes(Router router, Pool pool) {
         headers: orgJsonHeaders,
       );
     } catch (e) {
-      return Response.internalServerError(body: jsonEncode({'error': publicError(e)}), headers: orgJsonHeaders);
+      return Response.internalServerError(
+          body: jsonEncode({'error': publicError(e)}), headers: orgJsonHeaders);
     }
   });
 
@@ -223,30 +252,39 @@ void registerOrgPlacementsRoutes(Router router, Pool pool) {
   ) async {
     final userId = extractOrgUserId(request);
     if (userId == null) {
-      return Response(401, body: jsonEncode({'error': 'Unauthorized'}), headers: orgJsonHeaders);
+      return Response(401,
+          body: jsonEncode({'error': 'Unauthorized'}), headers: orgJsonHeaders);
     }
     try {
       if (!await requireOrgAdmin(pool, orgId, userId)) return orgForbidden();
-      final data = jsonDecode(await request.readAsString()) as Map<String, dynamic>;
-      final endDate = normalizeCalendarDateInput(data['end_date'] ?? data['endDate']);
+      final data =
+          jsonDecode(await request.readAsString()) as Map<String, dynamic>;
+      final endDate =
+          normalizeCalendarDateInput(data['end_date'] ?? data['endDate']);
 
       final placementResult = await pool.execute(
-        Sql.named('SELECT * FROM foster_placements WHERE id = @placementId AND organization_id = @orgId'),
+        Sql.named(
+            'SELECT * FROM foster_placements WHERE id = @placementId AND organization_id = @orgId'),
         parameters: {'placementId': placementId, 'orgId': orgId},
       );
       if (placementResult.isEmpty) {
-        return Response.notFound(jsonEncode({'error': 'Placement not found'}), headers: orgJsonHeaders);
+        return Response.notFound(jsonEncode({'error': 'Placement not found'}),
+            headers: orgJsonHeaders);
       }
       final placement = placementResult.first.toColumnMap();
-      if (![placementStatusPending, placementStatusInProgress].contains(placement['status'])) {
-        return Response(400, body: jsonEncode({'error': 'Placement is not active'}), headers: orgJsonHeaders);
+      if (![placementStatusPending, placementStatusInProgress]
+          .contains(placement['status'])) {
+        return Response(400,
+            body: jsonEncode({'error': 'Placement is not active'}),
+            headers: orgJsonHeaders);
       }
 
       final petResult = await pool.execute(
         Sql.named('SELECT name FROM pets WHERE id = @petId'),
         parameters: {'petId': placement['pet_id']},
       );
-      final petName = petResult.isEmpty ? 'Pet' : petResult.first.toColumnMap()['name'];
+      final petName =
+          petResult.isEmpty ? 'Pet' : petResult.first.toColumnMap()['name'];
 
       final updateResult = await pool.execute(
         Sql.named('''
@@ -282,11 +320,13 @@ void registerOrgPlacementsRoutes(Router router, Pool pool) {
       );
 
       return Response.ok(
-        jsonEncode(placementToMap(updateResult.first.toColumnMap(), extras: {'pet_name': petName})),
+        jsonEncode(placementToMap(updateResult.first.toColumnMap(),
+            extras: {'pet_name': petName})),
         headers: orgJsonHeaders,
       );
     } catch (e) {
-      return Response.internalServerError(body: jsonEncode({'error': publicError(e)}), headers: orgJsonHeaders);
+      return Response.internalServerError(
+          body: jsonEncode({'error': publicError(e)}), headers: orgJsonHeaders);
     }
   });
 
@@ -297,24 +337,33 @@ void registerOrgPlacementsRoutes(Router router, Pool pool) {
   ) async {
     final userId = extractOrgUserId(request);
     if (userId == null) {
-      return Response(401, body: jsonEncode({'error': 'Unauthorized'}), headers: orgJsonHeaders);
+      return Response(401,
+          body: jsonEncode({'error': 'Unauthorized'}), headers: orgJsonHeaders);
     }
     try {
       if (!await requireOrgAdmin(pool, orgId, userId)) return orgForbidden();
-      final data = jsonDecode(await request.readAsString()) as Map<String, dynamic>;
+      final data =
+          jsonDecode(await request.readAsString()) as Map<String, dynamic>;
       final adoptionConditions =
-          (data['adoption_conditions'] ?? data['adoptionConditions'] ?? '').toString().trim();
+          (data['adoption_conditions'] ?? data['adoptionConditions'] ?? '')
+              .toString()
+              .trim();
 
       final placementResult = await pool.execute(
-        Sql.named('SELECT * FROM foster_placements WHERE id = @placementId AND organization_id = @orgId'),
+        Sql.named(
+            'SELECT * FROM foster_placements WHERE id = @placementId AND organization_id = @orgId'),
         parameters: {'placementId': placementId, 'orgId': orgId},
       );
       if (placementResult.isEmpty) {
-        return Response.notFound(jsonEncode({'error': 'Placement not found'}), headers: orgJsonHeaders);
+        return Response.notFound(jsonEncode({'error': 'Placement not found'}),
+            headers: orgJsonHeaders);
       }
       final placement = placementResult.first.toColumnMap();
       if (placement['status'] != placementStatusInProgress) {
-        return Response(400, body: jsonEncode({'error': 'Placement must be in progress to start adoption'}), headers: orgJsonHeaders);
+        return Response(400,
+            body: jsonEncode(
+                {'error': 'Placement must be in progress to start adoption'}),
+            headers: orgJsonHeaders);
       }
 
       final nextStatus = adoptionConditions.isNotEmpty
@@ -338,7 +387,8 @@ void registerOrgPlacementsRoutes(Router router, Pool pool) {
         Sql.named('SELECT name FROM pets WHERE id = @petId'),
         parameters: {'petId': placement['pet_id']},
       );
-      final petName = petResult.isEmpty ? 'Pet' : petResult.first.toColumnMap()['name'];
+      final petName =
+          petResult.isEmpty ? 'Pet' : petResult.first.toColumnMap()['name'];
 
       await createNotification(
         pool,
@@ -352,9 +402,11 @@ void registerOrgPlacementsRoutes(Router router, Pool pool) {
       );
 
       final detail = await loadPlacementDetail(pool, placementId);
-      return Response.ok(jsonEncode(placementToMap(detail ?? placement)), headers: orgJsonHeaders);
+      return Response.ok(jsonEncode(placementToMap(detail ?? placement)),
+          headers: orgJsonHeaders);
     } catch (e) {
-      return Response.internalServerError(body: jsonEncode({'error': publicError(e)}), headers: orgJsonHeaders);
+      return Response.internalServerError(
+          body: jsonEncode({'error': publicError(e)}), headers: orgJsonHeaders);
     }
   });
 
@@ -365,35 +417,45 @@ void registerOrgPlacementsRoutes(Router router, Pool pool) {
   ) async {
     final userId = extractOrgUserId(request);
     if (userId == null) {
-      return Response(401, body: jsonEncode({'error': 'Unauthorized'}), headers: orgJsonHeaders);
+      return Response(401,
+          body: jsonEncode({'error': 'Unauthorized'}), headers: orgJsonHeaders);
     }
     try {
       if (!await requireOrgAdmin(pool, orgId, userId)) return orgForbidden();
 
       final placementResult = await pool.execute(
-        Sql.named('SELECT * FROM foster_placements WHERE id = @placementId AND organization_id = @orgId'),
+        Sql.named(
+            'SELECT * FROM foster_placements WHERE id = @placementId AND organization_id = @orgId'),
         parameters: {'placementId': placementId, 'orgId': orgId},
       );
       if (placementResult.isEmpty) {
-        return Response.notFound(jsonEncode({'error': 'Placement not found'}), headers: orgJsonHeaders);
+        return Response.notFound(jsonEncode({'error': 'Placement not found'}),
+            headers: orgJsonHeaders);
       }
       final placement = placementResult.first.toColumnMap();
       if (placement['status'] != placementStatusPendingConditions) {
-        return Response(400, body: jsonEncode({'error': 'Placement is not awaiting condition completion'}), headers: orgJsonHeaders);
+        return Response(400,
+            body: jsonEncode(
+                {'error': 'Placement is not awaiting condition completion'}),
+            headers: orgJsonHeaders);
       }
 
       await pool.execute(
         Sql.named('''
           UPDATE foster_placements SET status = @status, updated_at = NOW() WHERE id = @placementId
         '''),
-        parameters: {'status': placementStatusWaitingAdoption, 'placementId': placementId},
+        parameters: {
+          'status': placementStatusWaitingAdoption,
+          'placementId': placementId
+        },
       );
 
       final petResult = await pool.execute(
         Sql.named('SELECT name FROM pets WHERE id = @petId'),
         parameters: {'petId': placement['pet_id']},
       );
-      final petName = petResult.isEmpty ? 'Pet' : petResult.first.toColumnMap()['name'];
+      final petName =
+          petResult.isEmpty ? 'Pet' : petResult.first.toColumnMap()['name'];
 
       await createNotification(
         pool,
@@ -401,13 +463,16 @@ void registerOrgPlacementsRoutes(Router router, Pool pool) {
         petId: placement['pet_id']?.toString(),
         petName: petName?.toString(),
         title: 'Adoption ready to confirm',
-        message: 'Pre-adoption conditions for $petName are complete. Please confirm adoption.',
+        message:
+            'Pre-adoption conditions for $petName are complete. Please confirm adoption.',
       );
 
       final detail = await loadPlacementDetail(pool, placementId);
-      return Response.ok(jsonEncode(placementToMap(detail ?? placement)), headers: orgJsonHeaders);
+      return Response.ok(jsonEncode(placementToMap(detail ?? placement)),
+          headers: orgJsonHeaders);
     } catch (e) {
-      return Response.internalServerError(body: jsonEncode({'error': publicError(e)}), headers: orgJsonHeaders);
+      return Response.internalServerError(
+          body: jsonEncode({'error': publicError(e)}), headers: orgJsonHeaders);
     }
   });
 
@@ -418,33 +483,42 @@ void registerOrgPlacementsRoutes(Router router, Pool pool) {
   ) async {
     final userId = extractOrgUserId(request);
     if (userId == null) {
-      return Response(401, body: jsonEncode({'error': 'Unauthorized'}), headers: orgJsonHeaders);
+      return Response(401,
+          body: jsonEncode({'error': 'Unauthorized'}), headers: orgJsonHeaders);
     }
     try {
       if (!await requireOrgAdmin(pool, orgId, userId)) return orgForbidden();
-      final data = jsonDecode(await request.readAsString()) as Map<String, dynamic>;
-      final endDate = normalizeCalendarDateInput(data['end_date'] ?? data['endDate']);
+      final data =
+          jsonDecode(await request.readAsString()) as Map<String, dynamic>;
+      final endDate =
+          normalizeCalendarDateInput(data['end_date'] ?? data['endDate']);
 
       final placementResult = await pool.execute(
-        Sql.named('SELECT * FROM foster_placements WHERE id = @placementId AND organization_id = @orgId'),
+        Sql.named(
+            'SELECT * FROM foster_placements WHERE id = @placementId AND organization_id = @orgId'),
         parameters: {'placementId': placementId, 'orgId': orgId},
       );
       if (placementResult.isEmpty) {
-        return Response.notFound(jsonEncode({'error': 'Placement not found'}), headers: orgJsonHeaders);
+        return Response.notFound(jsonEncode({'error': 'Placement not found'}),
+            headers: orgJsonHeaders);
       }
       final placement = placementResult.first.toColumnMap();
       if (![placementStatusWaitingAdoption, placementStatusPendingConditions]
           .contains(placement['status'])) {
-        return Response(400, body: jsonEncode({'error': 'Placement is not in an adoption step'}), headers: orgJsonHeaders);
+        return Response(400,
+            body: jsonEncode({'error': 'Placement is not in an adoption step'}),
+            headers: orgJsonHeaders);
       }
 
       final petResult = await pool.execute(
         Sql.named('SELECT name FROM pets WHERE id = @petId'),
         parameters: {'petId': placement['pet_id']},
       );
-      final petName = petResult.isEmpty ? 'Pet' : petResult.first.toColumnMap()['name'];
+      final petName =
+          petResult.isEmpty ? 'Pet' : petResult.first.toColumnMap()['name'];
 
-      final updated = await cancelAdoptionPlacement(pool, placement, endDate: endDate);
+      final updated =
+          await cancelAdoptionPlacement(pool, placement, endDate: endDate);
 
       await createNotification(
         pool,
@@ -458,11 +532,13 @@ void registerOrgPlacementsRoutes(Router router, Pool pool) {
 
       final detail = await loadPlacementDetail(pool, placementId);
       return Response.ok(
-        jsonEncode(placementToMap(detail ?? updated, extras: {'pet_name': petName})),
+        jsonEncode(
+            placementToMap(detail ?? updated, extras: {'pet_name': petName})),
         headers: orgJsonHeaders,
       );
     } catch (e) {
-      return Response.internalServerError(body: jsonEncode({'error': publicError(e)}), headers: orgJsonHeaders);
+      return Response.internalServerError(
+          body: jsonEncode({'error': publicError(e)}), headers: orgJsonHeaders);
     }
   });
 
@@ -473,42 +549,60 @@ void registerOrgPlacementsRoutes(Router router, Pool pool) {
   ) async {
     final userId = extractOrgUserId(request);
     if (userId == null) {
-      return Response(401, body: jsonEncode({'error': 'Unauthorized'}), headers: orgJsonHeaders);
+      return Response(401,
+          body: jsonEncode({'error': 'Unauthorized'}), headers: orgJsonHeaders);
     }
     try {
       if (!await requireOrgAdmin(pool, orgId, userId)) return orgForbidden();
-      final data = jsonDecode(await request.readAsString()) as Map<String, dynamic>;
+      final data =
+          jsonDecode(await request.readAsString()) as Map<String, dynamic>;
       final fosterUserId =
           (data['foster_user_id'] ?? data['fosterUserId'])?.toString();
       final adoptionConditions =
-          (data['adoption_conditions'] ?? data['adoptionConditions'] ?? '').toString().trim();
+          (data['adoption_conditions'] ?? data['adoptionConditions'] ?? '')
+              .toString()
+              .trim();
       final notes = (data['notes'] ?? '').toString().trim();
 
       if (fosterUserId == null || fosterUserId.isEmpty) {
-        return Response(400, body: jsonEncode({'error': 'Foster parent user is required'}), headers: orgJsonHeaders);
+        return Response(400,
+            body: jsonEncode({'error': 'Foster parent user is required'}),
+            headers: orgJsonHeaders);
       }
 
       final petResult = await pool.execute(
-        Sql.named('SELECT id, name FROM pets WHERE id = @petId AND organization_id = @orgId'),
+        Sql.named(
+            'SELECT id, name FROM pets WHERE id = @petId AND organization_id = @orgId'),
         parameters: {'petId': petId, 'orgId': orgId},
       );
       if (petResult.isEmpty) {
-        return Response.notFound(jsonEncode({'error': 'Pet not found'}), headers: orgJsonHeaders);
+        return Response.notFound(jsonEncode({'error': 'Pet not found'}),
+            headers: orgJsonHeaders);
       }
       final pet = petResult.first.toColumnMap();
 
       final fosterMember = await pool.execute(
-        Sql.named('SELECT role FROM organization_users WHERE organization_id = @orgId AND user_id = @fosterUserId'),
+        Sql.named(
+            'SELECT role FROM organization_users WHERE organization_id = @orgId AND user_id = @fosterUserId'),
         parameters: {'orgId': orgId, 'fosterUserId': fosterUserId},
       );
       if (fosterMember.isEmpty ||
-          !isFosterParentMemberRole(fosterMember.first.toColumnMap()['role']?.toString())) {
-        return Response(400, body: jsonEncode({'error': 'Selected user is not a foster parent for this organization'}), headers: orgJsonHeaders);
+          !isFosterParentMemberRole(
+              fosterMember.first.toColumnMap()['role']?.toString())) {
+        return Response(400,
+            body: jsonEncode({
+              'error':
+                  'Selected user is not a foster parent for this organization'
+            }),
+            headers: orgJsonHeaders);
       }
 
       final existing = await getActivePlacementForPet(pool, petId);
       if (existing != null) {
-        return Response(409, body: jsonEncode({'error': 'Pet already has an active foster placement'}), headers: orgJsonHeaders);
+        return Response(409,
+            body: jsonEncode(
+                {'error': 'Pet already has an active foster placement'}),
+            headers: orgJsonHeaders);
       }
 
       final placementId = orgUuid.v4();
@@ -536,7 +630,8 @@ void registerOrgPlacementsRoutes(Router router, Pool pool) {
       );
 
       final adminResult = await pool.execute(
-        Sql.named('SELECT first_name, last_name, email FROM users WHERE id = @userId'),
+        Sql.named(
+            'SELECT first_name, last_name, email FROM users WHERE id = @userId'),
         parameters: {'userId': userId},
       );
       final adminName = adminResult.isEmpty
@@ -561,7 +656,8 @@ void registerOrgPlacementsRoutes(Router router, Pool pool) {
         headers: orgJsonHeaders,
       );
     } catch (e) {
-      return Response.internalServerError(body: jsonEncode({'error': publicError(e)}), headers: orgJsonHeaders);
+      return Response.internalServerError(
+          body: jsonEncode({'error': publicError(e)}), headers: orgJsonHeaders);
     }
   });
 }

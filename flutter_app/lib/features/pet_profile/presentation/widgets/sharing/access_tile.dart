@@ -34,7 +34,10 @@ class AccessTile extends ConsumerWidget {
             : null,
       ),
       title: Text(displayName),
-      subtitle: Text(roleLabel, style: TextStyle(color: theme.colorScheme.onSurfaceVariant)),
+      subtitle: Text(
+        roleLabel,
+        style: TextStyle(color: theme.colorScheme.onSurfaceVariant),
+      ),
       trailing: PopupMenuButton<String>(
         onSelected: (value) {
           if (value == 'remove') {
@@ -46,9 +49,16 @@ class AccessTile extends ConsumerWidget {
             value: 'remove',
             child: Row(
               children: [
-                Icon(Icons.person_remove, size: 20, color: theme.colorScheme.error),
+                Icon(
+                  Icons.person_remove,
+                  size: 20,
+                  color: theme.colorScheme.error,
+                ),
                 const SizedBox(width: 8),
-                Text(l.removeAccess, style: TextStyle(color: theme.colorScheme.error)),
+                Text(
+                  l.removeAccess,
+                  style: TextStyle(color: theme.colorScheme.error),
+                ),
               ],
             ),
           ),
@@ -57,7 +67,12 @@ class AccessTile extends ConsumerWidget {
     );
   }
 
-  void _confirmRemove(BuildContext context, WidgetRef ref, String name, AppLocalizations l) {
+  void _confirmRemove(
+    BuildContext context,
+    WidgetRef ref,
+    String name,
+    AppLocalizations l,
+  ) {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
@@ -74,7 +89,9 @@ class AccessTile extends ConsumerWidget {
             ),
             onPressed: () async {
               Navigator.pop(ctx);
-              await ref.read(petAccessNotifierProvider(petId).notifier).removeAccess(access.userId);
+              await ref
+                  .read(petAccessNotifierProvider(petId).notifier)
+                  .removeAccess(access.userId);
             },
             child: Text(l.removeAccess),
           ),
@@ -83,4 +100,3 @@ class AccessTile extends ConsumerWidget {
     );
   }
 }
-

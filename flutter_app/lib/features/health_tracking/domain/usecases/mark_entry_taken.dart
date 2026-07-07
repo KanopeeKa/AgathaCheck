@@ -13,7 +13,11 @@ class MarkEntryTaken {
   final HealthRepository repository;
 
   /// Executes the use case, marking the entry with [id] as taken.
-  Future<HealthEntry> call(String id, {String notes = '', DateTime? completedOn}) {
+  Future<HealthEntry> call(
+    String id, {
+    String notes = '',
+    DateTime? completedOn,
+  }) {
     return repository.markTaken(id, notes: notes, completedOn: completedOn);
   }
 }

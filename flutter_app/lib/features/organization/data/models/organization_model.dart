@@ -37,14 +37,26 @@ class OrganizationModel extends Organization {
       logoUrl: json['logo_url']?.toString() ?? '',
       createdBy: json['created_by']?.toString(),
       role: json['role']?.toString() ?? 'member',
-      memberCount: (json['member_count'] is int) ? json['member_count'] as int : int.tryParse(json['member_count']?.toString() ?? '0') ?? 0,
-      externalCount: (json['external_count'] is int) ? json['external_count'] as int : int.tryParse(json['external_count']?.toString() ?? '0') ?? 0,
-      petCount: (json['pet_count'] is int) ? json['pet_count'] as int : int.tryParse(json['pet_count']?.toString() ?? '0') ?? 0,
+      memberCount: (json['member_count'] is int)
+          ? json['member_count'] as int
+          : int.tryParse(json['member_count']?.toString() ?? '0') ?? 0,
+      externalCount: (json['external_count'] is int)
+          ? json['external_count'] as int
+          : int.tryParse(json['external_count']?.toString() ?? '0') ?? 0,
+      petCount: (json['pet_count'] is int)
+          ? json['pet_count'] as int
+          : int.tryParse(json['pet_count']?.toString() ?? '0') ?? 0,
       primaryContact: json['primary_contact'] is Map
-          ? OrgPrimaryContact.fromJson(Map<String, dynamic>.from(json['primary_contact'] as Map))
+          ? OrgPrimaryContact.fromJson(
+              Map<String, dynamic>.from(json['primary_contact'] as Map),
+            )
           : null,
-      createdAt: json['created_at'] != null ? DateTime.tryParse(json['created_at'].toString()) : null,
-      updatedAt: json['updated_at'] != null ? DateTime.tryParse(json['updated_at'].toString()) : null,
+      createdAt: json['created_at'] != null
+          ? DateTime.tryParse(json['created_at'].toString())
+          : null,
+      updatedAt: json['updated_at'] != null
+          ? DateTime.tryParse(json['updated_at'].toString())
+          : null,
     );
   }
 

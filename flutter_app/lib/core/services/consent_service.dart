@@ -112,6 +112,6 @@ class ConsentService extends StateNotifier<ConsentState> {
 
 final consentServiceProvider =
     StateNotifierProvider<ConsentService, ConsentState>((ref) {
-  final prefs = ref.watch(sharedPreferencesProvider);
-  return ConsentService(prefs);
-});
+      final prefs = ref.watch(sharedPreferencesProvider);
+      return ConsentService(prefs);
+    });

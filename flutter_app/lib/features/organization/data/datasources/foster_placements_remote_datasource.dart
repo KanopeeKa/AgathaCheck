@@ -5,16 +5,16 @@ import 'package:http/http.dart' as http;
 
 class FosterPlacementsRemoteDataSource {
   FosterPlacementsRemoteDataSource({String? baseUrl, http.Client? client})
-      : baseUrl = baseUrl ?? (kIsWeb ? '' : 'http://localhost:5000'),
-        _client = client ?? http.Client();
+    : baseUrl = baseUrl ?? (kIsWeb ? '' : 'http://localhost:5000'),
+      _client = client ?? http.Client();
 
   final String baseUrl;
   final http.Client _client;
 
   Map<String, String> _headers(String token) => {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer $token',
-      };
+    'Content-Type': 'application/json',
+    'Authorization': 'Bearer $token',
+  };
 
   Future<List<Map<String, dynamic>>> getPendingPlacements(String token) async {
     final response = await _client.get(
@@ -23,13 +23,18 @@ class FosterPlacementsRemoteDataSource {
     );
     if (response.statusCode >= 400) {
       final data = json.decode(response.body);
-      throw Exception(data['error'] ?? 'Failed to load pending foster placements');
+      throw Exception(
+        data['error'] ?? 'Failed to load pending foster placements',
+      );
     }
     final list = json.decode(response.body) as List;
     return list.cast<Map<String, dynamic>>();
   }
 
-  Future<Map<String, dynamic>> acceptPlacement(String placementId, String token) async {
+  Future<Map<String, dynamic>> acceptPlacement(
+    String placementId,
+    String token,
+  ) async {
     final response = await _client.post(
       Uri.parse('$baseUrl/api/foster-placements/$placementId/accept'),
       headers: _headers(token),
@@ -41,7 +46,10 @@ class FosterPlacementsRemoteDataSource {
     return data;
   }
 
-  Future<Map<String, dynamic>> declinePlacement(String placementId, String token) async {
+  Future<Map<String, dynamic>> declinePlacement(
+    String placementId,
+    String token,
+  ) async {
     final response = await _client.post(
       Uri.parse('$baseUrl/api/foster-placements/$placementId/decline'),
       headers: _headers(token),
@@ -66,7 +74,10 @@ class FosterPlacementsRemoteDataSource {
     return list.cast<Map<String, dynamic>>();
   }
 
-  Future<Map<String, dynamic>> confirmAdoption(String placementId, String token) async {
+  Future<Map<String, dynamic>> confirmAdoption(
+    String placementId,
+    String token,
+  ) async {
     final response = await _client.post(
       Uri.parse('$baseUrl/api/foster-placements/$placementId/confirm-adoption'),
       headers: _headers(token),

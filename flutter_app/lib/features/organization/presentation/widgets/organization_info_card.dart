@@ -75,7 +75,9 @@ class OrganizationInfoCard extends ConsumerWidget {
                           const SizedBox(height: 4),
                           Container(
                             padding: const EdgeInsets.symmetric(
-                                horizontal: 10, vertical: 4),
+                              horizontal: 10,
+                              vertical: 4,
+                            ),
                             decoration: BoxDecoration(
                               color: org.type == OrganizationType.professional
                                   ? AppTheme.orgBadgeBg
@@ -113,7 +115,10 @@ class OrganizationInfoCard extends ConsumerWidget {
                     _StatChip(
                       icon: Icons.people,
                       label: orgMemberCountLabel(
-                          l, org.memberCount, org.externalCount),
+                        l,
+                        org.memberCount,
+                        org.externalCount,
+                      ),
                       colorScheme: colorScheme,
                     ),
                     const SizedBox(width: 12),
@@ -138,8 +143,11 @@ class _StatChip extends StatelessWidget {
   final String label;
   final ColorScheme colorScheme;
 
-  const _StatChip(
-      {required this.icon, required this.label, required this.colorScheme});
+  const _StatChip({
+    required this.icon,
+    required this.label,
+    required this.colorScheme,
+  });
 
   @override
   Widget build(BuildContext context) {

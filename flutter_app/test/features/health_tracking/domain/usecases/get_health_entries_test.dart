@@ -28,8 +28,9 @@ void main() {
   ];
 
   test('returns entries from repository', () async {
-    when(mockRepository.getEntries(petId: null, type: null))
-        .thenAnswer((_) async => testEntries);
+    when(
+      mockRepository.getEntries(petId: null, type: null),
+    ).thenAnswer((_) async => testEntries);
 
     final result = await useCase();
     expect(result, testEntries);
@@ -37,16 +38,18 @@ void main() {
   });
 
   test('passes petId filter to repository', () async {
-    when(mockRepository.getEntries(petId: 'pet-1', type: null))
-        .thenAnswer((_) async => testEntries);
+    when(
+      mockRepository.getEntries(petId: 'pet-1', type: null),
+    ).thenAnswer((_) async => testEntries);
 
     await useCase(petId: 'pet-1');
     verify(mockRepository.getEntries(petId: 'pet-1', type: null)).called(1);
   });
 
   test('passes type filter to repository', () async {
-    when(mockRepository.getEntries(petId: null, type: HealthEntryType.preventive))
-        .thenAnswer((_) async => []);
+    when(
+      mockRepository.getEntries(petId: null, type: HealthEntryType.preventive),
+    ).thenAnswer((_) async => []);
 
     final result = await useCase(type: HealthEntryType.preventive);
     expect(result, isEmpty);

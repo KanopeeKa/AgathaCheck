@@ -51,7 +51,8 @@ Map<String, dynamic> placementToMap(
     'responded_at': row['responded_at']?.toString(),
     'pet_name': extras['pet_name'] ?? row['pet_name'],
     'pet_species': extras['pet_species'] ?? row['pet_species'],
-    'organization_name': extras['organization_name'] ?? row['organization_name'],
+    'organization_name':
+        extras['organization_name'] ?? row['organization_name'],
     'foster_name': extras['foster_name'] ?? row['foster_name'],
     'foster_email': extras['foster_email'] ?? row['foster_email'],
   };

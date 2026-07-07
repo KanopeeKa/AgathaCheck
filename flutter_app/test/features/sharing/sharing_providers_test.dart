@@ -18,8 +18,11 @@ class RecordingSharingRepository implements SharingRepository {
   Future<List<Map<String, dynamic>>> getPendingShares(String token) async => [];
 
   @override
-  Future<void> acceptPendingShare(String petId, String token,
-      {String? organizationId}) async {
+  Future<void> acceptPendingShare(
+    String petId,
+    String token, {
+    String? organizationId,
+  }) async {
     accepted.add(petId);
   }
 
@@ -31,15 +34,21 @@ class RecordingSharingRepository implements SharingRepository {
   // --- Unused-by-these-tests members ---
   @override
   Future<String> createShare(
-          String petId, Map<String, dynamic> petJson, String token) async =>
-      'code';
+    String petId,
+    Map<String, dynamic> petJson,
+    String token,
+  ) async => 'code';
   @override
   Future<String> acceptShare(String code, String token) async => 'pet-1';
   @override
   Future<List<PetAccess>> getAccess(String petId, String token) async => [];
   @override
   Future<void> updateRole(
-      String petId, String userId, String role, String token) async {}
+    String petId,
+    String userId,
+    String role,
+    String token,
+  ) async {}
   @override
   Future<void> removeAccess(String petId, String userId, String token) async {}
   @override
@@ -49,8 +58,11 @@ class RecordingSharingRepository implements SharingRepository {
   @override
   Future<void> stopFollowing(String petId, String token) async {}
   @override
-  Future<void> hideSharedPet(String petId, String token,
-      {required bool hidden}) async {}
+  Future<void> hideSharedPet(
+    String petId,
+    String token, {
+    required bool hidden,
+  }) async {}
   @override
   Future<List<Map<String, dynamic>>> getHiddenSharedPets(String token) async =>
       [];
@@ -64,11 +76,13 @@ class RecordingSharingRepository implements SharingRepository {
 }
 
 ProviderContainer makeContainer(RecordingSharingRepository repo) {
-  return ProviderContainer(overrides: [
-    authProvider.overrideWith((ref) => FakeAuthNotifier()),
-    sharingRepositoryProvider.overrideWithValue(repo),
-    allPetsIncludingOrgProvider.overrideWith((ref) async => <Pet>[]),
-  ]);
+  return ProviderContainer(
+    overrides: [
+      authProvider.overrideWith((ref) => FakeAuthNotifier()),
+      sharingRepositoryProvider.overrideWithValue(repo),
+      allPetsIncludingOrgProvider.overrideWith((ref) async => <Pet>[]),
+    ],
+  );
 }
 
 void main() {

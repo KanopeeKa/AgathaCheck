@@ -16,7 +16,8 @@ bool isProduction() => _isProduction();
 /// suppressed (it can leak DB/internal details) and [prodMessage] is returned;
 /// outside production the detailed message is returned so developers keep full
 /// diagnostics.
-String publicError(Object error, [String prodMessage = 'Internal server error']) {
+String publicError(Object error,
+    [String prodMessage = 'Internal server error']) {
   if (_isProduction()) return prodMessage;
   return error.toString();
 }

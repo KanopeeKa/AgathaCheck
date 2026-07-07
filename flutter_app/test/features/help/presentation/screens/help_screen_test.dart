@@ -21,10 +21,7 @@ void main() {
     expect(find.text(l.faqAccountTitle), findsOneWidget);
     expect(find.text(l.faqPetProfileTitle), findsOneWidget);
 
-    await tester.scrollUntilVisible(
-      find.text(l.faqSubscriptionTitle),
-      200,
-    );
+    await tester.scrollUntilVisible(find.text(l.faqSubscriptionTitle), 200);
     expect(find.text(l.faqSubscriptionTitle), findsOneWidget);
   });
 }

@@ -94,11 +94,7 @@ void main() {
     });
 
     test('handles null optional fields with defaults', () {
-      final json = {
-        'id': 'min-id',
-        'name': 'Min',
-        'species': 'Cat',
-      };
+      final json = {'id': 'min-id', 'name': 'Min', 'species': 'Cat'};
       final model = PetModel.fromJson(json);
 
       expect(model.breed, '');

@@ -43,12 +43,9 @@ class PetHealthSectionBuilder {
     final periodEntries = allEntries.where((e) {
       final d = e.startDate;
       return !d.isBefore(filterFrom) && !d.isAfter(filterTo);
-    }).toList()
-      ..sort((a, b) => a.startDate.compareTo(b.startDate));
+    }).toList()..sort((a, b) => a.startDate.compareTo(b.startDate));
 
-    final widgets = <pw.Widget>[
-      _sectionTitle(l.pdfHealthEventsSection),
-    ];
+    final widgets = <pw.Widget>[_sectionTitle(l.pdfHealthEventsSection)];
 
     if (currentRecurring.isNotEmpty) {
       widgets.add(_subSectionTitle(l.pdfCurrentRecurring));
@@ -56,12 +53,23 @@ class PetHealthSectionBuilder {
         pw.TableHelper.fromTextArray(
           border: pw.TableBorder.all(color: _borderColor, width: 0.5),
           headerStyle: pw.TextStyle(
-              fontSize: 8, fontWeight: pw.FontWeight.bold, color: _white),
+            fontSize: 8,
+            fontWeight: pw.FontWeight.bold,
+            color: _white,
+          ),
           headerDecoration: const pw.BoxDecoration(color: _brandPurple),
           cellStyle: const pw.TextStyle(fontSize: 8, color: _textDark),
-          cellPadding:
-              const pw.EdgeInsets.symmetric(horizontal: 6, vertical: 3),
-          headers: [l.pdfName, l.pdfType, l.pdfFrequency, l.pdfNextDue, l.pdfDosage],
+          cellPadding: const pw.EdgeInsets.symmetric(
+            horizontal: 6,
+            vertical: 3,
+          ),
+          headers: [
+            l.pdfName,
+            l.pdfType,
+            l.pdfFrequency,
+            l.pdfNextDue,
+            l.pdfDosage,
+          ],
           data: currentRecurring.map((e) {
             return [
               e.name,
@@ -78,15 +86,28 @@ class PetHealthSectionBuilder {
       widgets.add(pw.SizedBox(height: 10));
     }
 
-    widgets.add(_subSectionTitle(
-        l.pdfEventsFromTo(dateFormat.format(filterFrom), dateFormat.format(filterTo))));
+    widgets.add(
+      _subSectionTitle(
+        l.pdfEventsFromTo(
+          dateFormat.format(filterFrom),
+          dateFormat.format(filterTo),
+        ),
+      ),
+    );
 
     if (periodEntries.isEmpty) {
       widgets.add(_emptyMessage(l.pdfNoEventsInPeriod));
     } else {
       for (final entry in periodEntries) {
-        widgets.add(_buildHealthEntryBlock(
-            entry, dateFormat, includeFullLog, histories, l));
+        widgets.add(
+          _buildHealthEntryBlock(
+            entry,
+            dateFormat,
+            includeFullLog,
+            histories,
+            l,
+          ),
+        );
       }
     }
 
@@ -99,8 +120,9 @@ class PetHealthSectionBuilder {
       margin: const pw.EdgeInsets.only(bottom: 6),
       padding: const pw.EdgeInsets.only(bottom: 4),
       decoration: const pw.BoxDecoration(
-        border:
-            pw.Border(bottom: pw.BorderSide(color: _brandPurple, width: 1.5)),
+        border: pw.Border(
+          bottom: pw.BorderSide(color: _brandPurple, width: 1.5),
+        ),
       ),
       child: pw.Text(
         title.toUpperCase(),
@@ -135,8 +157,10 @@ class PetHealthSectionBuilder {
         border: pw.Border.all(color: _borderColor, width: 0.5),
         borderRadius: pw.BorderRadius.circular(4),
       ),
-      child: pw.Text(msg,
-          style: const pw.TextStyle(fontSize: 9, color: _textMuted)),
+      child: pw.Text(
+        msg,
+        style: const pw.TextStyle(fontSize: 9, color: _textMuted),
+      ),
     );
   }
 
@@ -163,24 +187,32 @@ class PetHealthSectionBuilder {
             mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
             children: [
               pw.Expanded(
-                child: pw.Text(entry.name,
-                    style: pw.TextStyle(
-                        fontSize: 11,
-                        fontWeight: pw.FontWeight.bold,
-                        color: _textDark)),
+                child: pw.Text(
+                  entry.name,
+                  style: pw.TextStyle(
+                    fontSize: 11,
+                    fontWeight: pw.FontWeight.bold,
+                    color: _textDark,
+                  ),
+                ),
               ),
               pw.Container(
-                padding:
-                    const pw.EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                padding: const pw.EdgeInsets.symmetric(
+                  horizontal: 6,
+                  vertical: 2,
+                ),
                 decoration: pw.BoxDecoration(
                   color: _brandPurpleLight,
                   borderRadius: pw.BorderRadius.circular(3),
                 ),
-                child: pw.Text(entry.type.label.toUpperCase(),
-                    style: pw.TextStyle(
-                        fontSize: 7,
-                        fontWeight: pw.FontWeight.bold,
-                        color: _brandPurple)),
+                child: pw.Text(
+                  entry.type.label.toUpperCase(),
+                  style: pw.TextStyle(
+                    fontSize: 7,
+                    fontWeight: pw.FontWeight.bold,
+                    color: _brandPurple,
+                  ),
+                ),
               ),
             ],
           ),
@@ -190,15 +222,19 @@ class PetHealthSectionBuilder {
               _miniDetail(l.pdfStart, dateFormat.format(entry.startDate)),
               pw.SizedBox(width: 16),
               _miniDetail(
-                  l.pdfDue,
-                  entry.isCompleted
-                      ? l.pdfCompleted
-                      : entry.nextDueDate != null
-                          ? dateFormat.format(entry.nextDueDate!)
-                          : l.notSet),
+                l.pdfDue,
+                entry.isCompleted
+                    ? l.pdfCompleted
+                    : entry.nextDueDate != null
+                    ? dateFormat.format(entry.nextDueDate!)
+                    : l.notSet,
+              ),
               if (entry.completedOn != null) ...[
                 pw.SizedBox(width: 16),
-                _miniDetail(l.completedOn, dateFormat.format(entry.completedOn!)),
+                _miniDetail(
+                  l.completedOn,
+                  dateFormat.format(entry.completedOn!),
+                ),
               ],
               if (entry.dosage.isNotEmpty) ...[
                 pw.SizedBox(width: 16),
@@ -210,9 +246,10 @@ class PetHealthSectionBuilder {
           ),
           if (entry.notes.isNotEmpty) ...[
             pw.SizedBox(height: 4),
-            pw.Text('${l.pdfNotes}: ${entry.notes}',
-                style:
-                    const pw.TextStyle(fontSize: 8, color: _textMuted)),
+            pw.Text(
+              '${l.pdfNotes}: ${entry.notes}',
+              style: const pw.TextStyle(fontSize: 8, color: _textMuted),
+            ),
           ],
           if (includeFullLog && history.isNotEmpty) ...[
             pw.SizedBox(height: 6),
@@ -225,31 +262,40 @@ class PetHealthSectionBuilder {
               child: pw.Column(
                 crossAxisAlignment: pw.CrossAxisAlignment.start,
                 children: [
-                  pw.Text(l.pdfAdminLog,
-                      style: pw.TextStyle(
-                          fontSize: 8,
-                          fontWeight: pw.FontWeight.bold,
-                          color: _brandPurple)),
+                  pw.Text(
+                    l.pdfAdminLog,
+                    style: pw.TextStyle(
+                      fontSize: 8,
+                      fontWeight: pw.FontWeight.bold,
+                      color: _brandPurple,
+                    ),
+                  ),
                   pw.SizedBox(height: 3),
                   ...history.map((h) {
                     final due = h['due_date'] as String?;
                     final completed = h['completed_on'] as String?;
-                    final markedRaw = h['marked_at'] ?? h['changed_at'] ?? h['taken_at'];
+                    final markedRaw =
+                        h['marked_at'] ?? h['changed_at'] ?? h['taken_at'];
                     final markedBy = h['marked_by_name'] as String? ?? '';
                     String fmt(String? raw) {
                       if (raw == null || raw.isEmpty) return l.notSet;
                       try {
-                        return dateFormat.format(DateTime.parse(
-                            raw.contains('T') ? raw : '${raw}T00:00:00'));
+                        return dateFormat.format(
+                          DateTime.parse(
+                            raw.contains('T') ? raw : '${raw}T00:00:00',
+                          ),
+                        );
                       } catch (_) {
                         return raw;
                       }
                     }
+
                     String markedFmt = l.notSet;
                     if (markedRaw != null) {
                       try {
-                        markedFmt = DateFormat.yMMMd().add_jm()
-                            .format(DateTime.parse(markedRaw.toString()));
+                        markedFmt = DateFormat.yMMMd().add_jm().format(
+                          DateTime.parse(markedRaw.toString()),
+                        );
                       } catch (_) {
                         markedFmt = markedRaw.toString();
                       }
@@ -266,7 +312,9 @@ class PetHealthSectionBuilder {
                       child: pw.Text(
                         '- $line${notes.isNotEmpty ? ' — $notes' : ''}',
                         style: const pw.TextStyle(
-                            fontSize: 8, color: _textDark),
+                          fontSize: 8,
+                          color: _textDark,
+                        ),
                       ),
                     );
                   }),
@@ -283,13 +331,18 @@ class PetHealthSectionBuilder {
     return pw.Column(
       crossAxisAlignment: pw.CrossAxisAlignment.start,
       children: [
-        pw.Text(label,
-            style: pw.TextStyle(
-                fontSize: 7,
-                fontWeight: pw.FontWeight.bold,
-                color: _textMuted)),
-        pw.Text(value,
-            style: const pw.TextStyle(fontSize: 9, color: _textDark)),
+        pw.Text(
+          label,
+          style: pw.TextStyle(
+            fontSize: 7,
+            fontWeight: pw.FontWeight.bold,
+            color: _textMuted,
+          ),
+        ),
+        pw.Text(
+          value,
+          style: const pw.TextStyle(fontSize: 9, color: _textDark),
+        ),
       ],
     );
   }

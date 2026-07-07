@@ -8,10 +8,7 @@ void main() {
   testWidgets('AboutScreen renders app title and legal links', (tester) async {
     final router = GoRouter(
       routes: [
-        GoRoute(
-          path: '/',
-          builder: (context, state) => const AboutScreen(),
-        ),
+        GoRoute(path: '/', builder: (context, state) => const AboutScreen()),
         GoRoute(
           path: '/legal/terms',
           builder: (context, state) => const Scaffold(body: Text('Terms')),

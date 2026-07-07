@@ -25,8 +25,11 @@ class PendingFosterPlacementsSection extends ConsumerWidget {
             children: [
               Row(
                 children: [
-                  Icon(Icons.home_work_outlined,
-                      size: 20, color: theme.colorScheme.primary),
+                  Icon(
+                    Icons.home_work_outlined,
+                    size: 20,
+                    color: theme.colorScheme.primary,
+                  ),
                   const SizedBox(width: 8),
                   Text(
                     l.pendingFosterPlacements,
@@ -37,8 +40,10 @@ class PendingFosterPlacementsSection extends ConsumerWidget {
                   ),
                   const SizedBox(width: 8),
                   Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 2,
+                    ),
                     decoration: BoxDecoration(
                       color: theme.colorScheme.primaryContainer,
                       borderRadius: BorderRadius.circular(10),
@@ -115,9 +120,9 @@ class PendingFosterPlacementCard extends ConsumerWidget {
                       }
                     } catch (e) {
                       if (context.mounted) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text('$e')),
-                        );
+                        ScaffoldMessenger.of(
+                          context,
+                        ).showSnackBar(SnackBar(content: Text('$e')));
                       }
                     }
                   },
@@ -137,9 +142,9 @@ class PendingFosterPlacementCard extends ConsumerWidget {
                       }
                     } catch (e) {
                       if (context.mounted) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text('$e')),
-                        );
+                        ScaffoldMessenger.of(
+                          context,
+                        ).showSnackBar(SnackBar(content: Text('$e')));
                       }
                     }
                   },

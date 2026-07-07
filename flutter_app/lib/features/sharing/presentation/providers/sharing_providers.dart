@@ -99,7 +99,8 @@ class PendingSharesNotifier extends AsyncNotifier<List<PendingShare>> {
 
 final pendingSharesProvider =
     AsyncNotifierProvider<PendingSharesNotifier, List<PendingShare>>(
-        PendingSharesNotifier.new);
+      PendingSharesNotifier.new,
+    );
 
 class HiddenSharedPet {
   final String id;
@@ -161,27 +162,33 @@ class HiddenSharedPetsNotifier extends AsyncNotifier<List<HiddenSharedPet>> {
 
 final hiddenSharedPetsProvider =
     AsyncNotifierProvider<HiddenSharedPetsNotifier, List<HiddenSharedPet>>(
-        HiddenSharedPetsNotifier.new);
+      HiddenSharedPetsNotifier.new,
+    );
 
-final petAccessProvider =
-    FutureProvider.family<List<PetAccess>, String>((ref, petId) async {
+final petAccessProvider = FutureProvider.family<List<PetAccess>, String>((
+  ref,
+  petId,
+) async {
   final token = await ref.read(authProvider.notifier).getValidAccessToken();
   if (token == null) return [];
   final repo = ref.watch(sharingRepositoryProvider);
   return repo.getAccess(petId, token);
 });
 
-final petAccessNotifierProvider = StateNotifierProvider.family<
-    PetAccessNotifier, AsyncValue<List<PetAccess>>, String>((ref, petId) {
-  return PetAccessNotifier(ref, petId);
-});
+final petAccessNotifierProvider =
+    StateNotifierProvider.family<
+      PetAccessNotifier,
+      AsyncValue<List<PetAccess>>,
+      String
+    >((ref, petId) {
+      return PetAccessNotifier(ref, petId);
+    });
 
 class PetAccessNotifier extends StateNotifier<AsyncValue<List<PetAccess>>> {
   final Ref _ref;
   final String petId;
 
-  PetAccessNotifier(this._ref, this.petId)
-      : super(const AsyncValue.loading()) {
+  PetAccessNotifier(this._ref, this.petId) : super(const AsyncValue.loading()) {
     _load();
   }
 
@@ -244,17 +251,21 @@ class PetAccessNotifier extends StateNotifier<AsyncValue<List<PetAccess>>> {
   }
 }
 
-final petShareLinksNotifierProvider = StateNotifierProvider.family<
-    PetShareLinksNotifier, AsyncValue<List<ShareLink>>, String>((ref, petId) {
-  return PetShareLinksNotifier(ref, petId);
-});
+final petShareLinksNotifierProvider =
+    StateNotifierProvider.family<
+      PetShareLinksNotifier,
+      AsyncValue<List<ShareLink>>,
+      String
+    >((ref, petId) {
+      return PetShareLinksNotifier(ref, petId);
+    });
 
 class PetShareLinksNotifier extends StateNotifier<AsyncValue<List<ShareLink>>> {
   final Ref _ref;
   final String petId;
 
   PetShareLinksNotifier(this._ref, this.petId)
-      : super(const AsyncValue.loading()) {
+    : super(const AsyncValue.loading()) {
     _load();
   }
 

@@ -38,8 +38,7 @@ void main() {
 
   group('getAllVets', () {
     test('returns list of vets from data source', () async {
-      when(mockDataSource.getAllVets())
-          .thenAnswer((_) async => [testModel]);
+      when(mockDataSource.getAllVets()).thenAnswer((_) async => [testModel]);
 
       final result = await repository.getAllVets();
 
@@ -49,8 +48,7 @@ void main() {
     });
 
     test('returns empty list when data source returns empty', () async {
-      when(mockDataSource.getAllVets())
-          .thenAnswer((_) async => []);
+      when(mockDataSource.getAllVets()).thenAnswer((_) async => []);
 
       final result = await repository.getAllVets();
 
@@ -60,8 +58,7 @@ void main() {
 
   group('getVet', () {
     test('returns vet from data source', () async {
-      when(mockDataSource.getVet('1'))
-          .thenAnswer((_) async => testModel);
+      when(mockDataSource.getVet('1')).thenAnswer((_) async => testModel);
 
       final result = await repository.getVet('1');
 
@@ -71,8 +68,7 @@ void main() {
     });
 
     test('returns null when data source returns null', () async {
-      when(mockDataSource.getVet('missing'))
-          .thenAnswer((_) async => null);
+      when(mockDataSource.getVet('missing')).thenAnswer((_) async => null);
 
       final result = await repository.getVet('missing');
 
@@ -83,8 +79,7 @@ void main() {
 
   group('createVet', () {
     test('delegates to data source with VetModel', () async {
-      when(mockDataSource.createVet(any))
-          .thenAnswer((_) async => testModel);
+      when(mockDataSource.createVet(any)).thenAnswer((_) async => testModel);
 
       final result = await repository.createVet(testVet);
 
@@ -95,8 +90,7 @@ void main() {
 
   group('updateVet', () {
     test('delegates to data source with VetModel', () async {
-      when(mockDataSource.updateVet(any))
-          .thenAnswer((_) async => testModel);
+      when(mockDataSource.updateVet(any)).thenAnswer((_) async => testModel);
 
       final result = await repository.updateVet(testVet);
 
@@ -107,8 +101,7 @@ void main() {
 
   group('deleteVet', () {
     test('delegates to data source', () async {
-      when(mockDataSource.deleteVet('1'))
-          .thenAnswer((_) async {});
+      when(mockDataSource.deleteVet('1')).thenAnswer((_) async {});
 
       await repository.deleteVet('1');
 

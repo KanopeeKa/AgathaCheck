@@ -45,7 +45,9 @@ class FamilyEvent {
       assignedToUserId: json['assigned_to_user_id']?.toString(),
       assignedName: (json['assigned_name'] ?? '').toString(),
       assignedEmail: (json['assigned_email'] ?? '').toString(),
-      fromDate: parseCalendarDate(json['from_date']) ?? calendarDateOnly(DateTime.now()),
+      fromDate:
+          parseCalendarDate(json['from_date']) ??
+          calendarDateOnly(DateTime.now()),
       toDate: parseCalendarDate(json['to_date']),
       notes: (json['notes'] ?? '').toString(),
       createdBy: json['created_by']?.toString(),

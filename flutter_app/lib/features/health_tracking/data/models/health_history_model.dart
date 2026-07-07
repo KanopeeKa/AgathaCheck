@@ -15,7 +15,8 @@ class HealthHistoryModel extends HealthHistoryEntry {
   });
 
   factory HealthHistoryModel.fromJson(Map<String, dynamic> json) {
-    final markedRaw = json['marked_at'] ?? json['changed_at'] ?? json['taken_at'];
+    final markedRaw =
+        json['marked_at'] ?? json['changed_at'] ?? json['taken_at'];
     return HealthHistoryModel(
       id: json['id'] as String? ?? '',
       entryId: (json['health_entry_id'] ?? json['entry_id']) as String? ?? '',

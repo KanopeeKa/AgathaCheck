@@ -60,7 +60,9 @@ class _LandingScreenState extends ConsumerState<LandingScreen>
     if (!_loginFormKey.currentState!.validate()) return;
     ref.read(authProvider.notifier).clearError();
 
-    await ref.read(authProvider.notifier).login(
+    await ref
+        .read(authProvider.notifier)
+        .login(
           email: _loginEmailController.text.trim(),
           password: _loginPasswordController.text,
         );
@@ -97,10 +99,9 @@ class _LandingScreenState extends ConsumerState<LandingScreen>
     _loginPasswordController.text = password;
     ref.read(authProvider.notifier).clearError();
 
-    await ref.read(authProvider.notifier).login(
-          email: email.trim(),
-          password: password,
-        );
+    await ref
+        .read(authProvider.notifier)
+        .login(email: email.trim(), password: password);
 
     if (!mounted) return;
     final auth = ref.read(authProvider);
@@ -118,7 +119,9 @@ class _LandingScreenState extends ConsumerState<LandingScreen>
     if (!_signupFormKey.currentState!.validate()) return;
     ref.read(authProvider.notifier).clearError();
 
-    await ref.read(authProvider.notifier).signup(
+    await ref
+        .read(authProvider.notifier)
+        .signup(
           email: _signupEmailController.text.trim(),
           password: _signupPasswordController.text,
           firstName: _signupFirstNameController.text.trim(),
@@ -191,7 +194,11 @@ class _LandingScreenState extends ConsumerState<LandingScreen>
         shape: BoxShape.circle,
       ),
       child: Center(
-        child: Icon(Icons.pets, size: size * 0.55, color: theme.colorScheme.primary),
+        child: Icon(
+          Icons.pets,
+          size: size * 0.55,
+          color: theme.colorScheme.primary,
+        ),
       ),
     );
 
@@ -268,7 +275,11 @@ class _LandingScreenState extends ConsumerState<LandingScreen>
     );
   }
 
-  Widget _buildAuthCard(ThemeData theme, AuthState auth, AppLocalizations l10n) {
+  Widget _buildAuthCard(
+    ThemeData theme,
+    AuthState auth,
+    AppLocalizations l10n,
+  ) {
     return Card(
       elevation: 2,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
@@ -317,196 +328,215 @@ class _LandingScreenState extends ConsumerState<LandingScreen>
     );
   }
 
-  Widget _buildLoginForm(ThemeData theme, AuthState auth, AppLocalizations l10n) {
+  Widget _buildLoginForm(
+    ThemeData theme,
+    AuthState auth,
+    AppLocalizations l10n,
+  ) {
     return AutofillGroup(
       child: Form(
-      key: _loginFormKey,
-      child: Column(
-        children: [
-          TextFormField(
-            key: const Key('login_email_field'),
-            controller: _loginEmailController,
-            decoration: InputDecoration(
-              labelText: l10n.email,
-              prefixIcon: const Icon(Icons.email_outlined),
-            ),
-            keyboardType: TextInputType.emailAddress,
-            autofillHints: const [AutofillHints.username, AutofillHints.email],
-            validator: (v) {
-              if (v == null || v.trim().isEmpty) return l10n.emailRequired;
-              if (!v.contains('@')) return l10n.enterValidEmail;
-              return null;
-            },
-          ),
-          const SizedBox(height: 16),
-          TextFormField(
-            key: const Key('login_password_field'),
-            controller: _loginPasswordController,
-            decoration: InputDecoration(
-              labelText: l10n.password,
-              prefixIcon: const Icon(Icons.lock_outlined),
-              suffixIcon: IconButton(
-                tooltip: _loginObscure ? l10n.showPassword : l10n.hidePassword,
-                icon: Icon(
-                    _loginObscure ? Icons.visibility_off : Icons.visibility),
-                onPressed: () =>
-                    setState(() => _loginObscure = !_loginObscure),
+        key: _loginFormKey,
+        child: Column(
+          children: [
+            TextFormField(
+              key: const Key('login_email_field'),
+              controller: _loginEmailController,
+              decoration: InputDecoration(
+                labelText: l10n.email,
+                prefixIcon: const Icon(Icons.email_outlined),
               ),
+              keyboardType: TextInputType.emailAddress,
+              autofillHints: const [
+                AutofillHints.username,
+                AutofillHints.email,
+              ],
+              validator: (v) {
+                if (v == null || v.trim().isEmpty) return l10n.emailRequired;
+                if (!v.contains('@')) return l10n.enterValidEmail;
+                return null;
+              },
             ),
-            obscureText: _loginObscure,
-            autofillHints: const [AutofillHints.password],
-            validator: (v) {
-              if (v == null || v.isEmpty) return l10n.passwordRequired;
-              return null;
-            },
-            onFieldSubmitted: (_) => _submitLogin(),
-          ),
-          Align(
-            alignment: Alignment.centerRight,
-            child: TextButton(
-              key: const Key('forgot_password_link'),
-              onPressed: () => context.go('/forgot-password'),
-              child: Text(
-                l10n.forgotPassword,
-                style: theme.textTheme.bodySmall?.copyWith(
-                  color: theme.colorScheme.primary,
+            const SizedBox(height: 16),
+            TextFormField(
+              key: const Key('login_password_field'),
+              controller: _loginPasswordController,
+              decoration: InputDecoration(
+                labelText: l10n.password,
+                prefixIcon: const Icon(Icons.lock_outlined),
+                suffixIcon: IconButton(
+                  tooltip: _loginObscure
+                      ? l10n.showPassword
+                      : l10n.hidePassword,
+                  icon: Icon(
+                    _loginObscure ? Icons.visibility_off : Icons.visibility,
+                  ),
+                  onPressed: () =>
+                      setState(() => _loginObscure = !_loginObscure),
+                ),
+              ),
+              obscureText: _loginObscure,
+              autofillHints: const [AutofillHints.password],
+              validator: (v) {
+                if (v == null || v.isEmpty) return l10n.passwordRequired;
+                return null;
+              },
+              onFieldSubmitted: (_) => _submitLogin(),
+            ),
+            Align(
+              alignment: Alignment.centerRight,
+              child: TextButton(
+                key: const Key('forgot_password_link'),
+                onPressed: () => context.go('/forgot-password'),
+                child: Text(
+                  l10n.forgotPassword,
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: theme.colorScheme.primary,
+                  ),
                 ),
               ),
             ),
-          ),
-          _buildErrorBanner(theme, auth),
-          const SizedBox(height: 8),
-          SizedBox(
-            width: double.infinity,
-            child: FilledButton(
-              key: const Key('login_submit_button'),
-              onPressed: auth.isLoading ? null : _submitLogin,
-              child: auth.isLoading
-                  ? const SizedBox(
-                      height: 20,
-                      width: 20,
-                      child: CircularProgressIndicator(strokeWidth: 2))
-                  : Text(l10n.signIn),
-            ),
-          ),
-          if (kIsWeb && _nativeLogin.isAvailable)
-            Padding(
-              padding: const EdgeInsets.only(top: 8),
-              child: TextButton.icon(
-                key: const Key('native_login_button'),
-                onPressed: auth.isLoading ? null : _showNativeLogin,
-                icon: const Icon(Icons.password_outlined, size: 18),
-                label: Text(l10n.signInWithPasswordManager),
+            _buildErrorBanner(theme, auth),
+            const SizedBox(height: 8),
+            SizedBox(
+              width: double.infinity,
+              child: FilledButton(
+                key: const Key('login_submit_button'),
+                onPressed: auth.isLoading ? null : _submitLogin,
+                child: auth.isLoading
+                    ? const SizedBox(
+                        height: 20,
+                        width: 20,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      )
+                    : Text(l10n.signIn),
               ),
             ),
-        ],
+            if (kIsWeb && _nativeLogin.isAvailable)
+              Padding(
+                padding: const EdgeInsets.only(top: 8),
+                child: TextButton.icon(
+                  key: const Key('native_login_button'),
+                  onPressed: auth.isLoading ? null : _showNativeLogin,
+                  icon: const Icon(Icons.password_outlined, size: 18),
+                  label: Text(l10n.signInWithPasswordManager),
+                ),
+              ),
+          ],
+        ),
       ),
-    ),
     );
   }
 
-  Widget _buildSignupForm(ThemeData theme, AuthState auth, AppLocalizations l10n) {
+  Widget _buildSignupForm(
+    ThemeData theme,
+    AuthState auth,
+    AppLocalizations l10n,
+  ) {
     return AutofillGroup(
       child: Form(
-      key: _signupFormKey,
-      child: Column(
-        children: [
-          TextFormField(
-            key: const Key('signup_first_name_field'),
-            controller: _signupFirstNameController,
-            decoration: InputDecoration(
-              labelText: l10n.firstName,
-              prefixIcon: const Icon(Icons.person_outlined),
+        key: _signupFormKey,
+        child: Column(
+          children: [
+            TextFormField(
+              key: const Key('signup_first_name_field'),
+              controller: _signupFirstNameController,
+              decoration: InputDecoration(
+                labelText: l10n.firstName,
+                prefixIcon: const Icon(Icons.person_outlined),
+              ),
+              textCapitalization: TextCapitalization.words,
+              autofillHints: const [AutofillHints.givenName],
             ),
-            textCapitalization: TextCapitalization.words,
-            autofillHints: const [AutofillHints.givenName],
-          ),
-          const SizedBox(height: 16),
-          TextFormField(
-            key: const Key('signup_last_name_field'),
-            controller: _signupLastNameController,
-            decoration: InputDecoration(
-              labelText: l10n.lastName,
-              prefixIcon: const Icon(Icons.person_outlined),
+            const SizedBox(height: 16),
+            TextFormField(
+              key: const Key('signup_last_name_field'),
+              controller: _signupLastNameController,
+              decoration: InputDecoration(
+                labelText: l10n.lastName,
+                prefixIcon: const Icon(Icons.person_outlined),
+              ),
+              textCapitalization: TextCapitalization.words,
+              autofillHints: const [AutofillHints.familyName],
             ),
-            textCapitalization: TextCapitalization.words,
-            autofillHints: const [AutofillHints.familyName],
-          ),
-          const SizedBox(height: 16),
-          TextFormField(
-            key: const Key('signup_email_field'),
-            controller: _signupEmailController,
-            decoration: InputDecoration(
-              labelText: l10n.email,
-              prefixIcon: const Icon(Icons.email_outlined),
+            const SizedBox(height: 16),
+            TextFormField(
+              key: const Key('signup_email_field'),
+              controller: _signupEmailController,
+              decoration: InputDecoration(
+                labelText: l10n.email,
+                prefixIcon: const Icon(Icons.email_outlined),
+              ),
+              keyboardType: TextInputType.emailAddress,
+              autofillHints: const [AutofillHints.email],
+              validator: (v) {
+                if (v == null || v.trim().isEmpty) return l10n.emailRequired;
+                if (!v.contains('@')) return l10n.enterValidEmail;
+                return null;
+              },
             ),
-            keyboardType: TextInputType.emailAddress,
-            autofillHints: const [AutofillHints.email],
-            validator: (v) {
-              if (v == null || v.trim().isEmpty) return l10n.emailRequired;
-              if (!v.contains('@')) return l10n.enterValidEmail;
-              return null;
-            },
-          ),
-          const SizedBox(height: 16),
-          TextFormField(
-            key: const Key('signup_password_field'),
-            controller: _signupPasswordController,
-            decoration: InputDecoration(
-              labelText: l10n.password,
-              prefixIcon: const Icon(Icons.lock_outlined),
-              suffixIcon: IconButton(
-                tooltip: _signupObscure ? l10n.showPassword : l10n.hidePassword,
-                icon: Icon(
-                    _signupObscure ? Icons.visibility_off : Icons.visibility),
-                onPressed: () =>
-                    setState(() => _signupObscure = !_signupObscure),
+            const SizedBox(height: 16),
+            TextFormField(
+              key: const Key('signup_password_field'),
+              controller: _signupPasswordController,
+              decoration: InputDecoration(
+                labelText: l10n.password,
+                prefixIcon: const Icon(Icons.lock_outlined),
+                suffixIcon: IconButton(
+                  tooltip: _signupObscure
+                      ? l10n.showPassword
+                      : l10n.hidePassword,
+                  icon: Icon(
+                    _signupObscure ? Icons.visibility_off : Icons.visibility,
+                  ),
+                  onPressed: () =>
+                      setState(() => _signupObscure = !_signupObscure),
+                ),
+              ),
+              obscureText: _signupObscure,
+              autofillHints: const [AutofillHints.newPassword],
+              validator: (v) {
+                if (v == null || v.isEmpty) return l10n.passwordRequired;
+                if (v.length < 6) return l10n.atLeast6Characters;
+                return null;
+              },
+            ),
+            const SizedBox(height: 16),
+            TextFormField(
+              key: const Key('signup_confirm_password_field'),
+              controller: _signupConfirmController,
+              decoration: InputDecoration(
+                labelText: l10n.confirmPassword,
+                prefixIcon: const Icon(Icons.lock_outlined),
+              ),
+              obscureText: true,
+              autofillHints: const [AutofillHints.newPassword],
+              validator: (v) {
+                if (v != _signupPasswordController.text) {
+                  return l10n.passwordsDoNotMatch;
+                }
+                return null;
+              },
+              onFieldSubmitted: (_) => _submitSignup(),
+            ),
+            _buildErrorBanner(theme, auth),
+            const SizedBox(height: 24),
+            SizedBox(
+              width: double.infinity,
+              child: FilledButton(
+                key: const Key('signup_submit_button'),
+                onPressed: auth.isLoading ? null : _submitSignup,
+                child: auth.isLoading
+                    ? const SizedBox(
+                        height: 20,
+                        width: 20,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      )
+                    : Text(l10n.createAccount),
               ),
             ),
-            obscureText: _signupObscure,
-            autofillHints: const [AutofillHints.newPassword],
-            validator: (v) {
-              if (v == null || v.isEmpty) return l10n.passwordRequired;
-              if (v.length < 6) return l10n.atLeast6Characters;
-              return null;
-            },
-          ),
-          const SizedBox(height: 16),
-          TextFormField(
-            key: const Key('signup_confirm_password_field'),
-            controller: _signupConfirmController,
-            decoration: InputDecoration(
-              labelText: l10n.confirmPassword,
-              prefixIcon: const Icon(Icons.lock_outlined),
-            ),
-            obscureText: true,
-            autofillHints: const [AutofillHints.newPassword],
-            validator: (v) {
-              if (v != _signupPasswordController.text) {
-                return l10n.passwordsDoNotMatch;
-              }
-              return null;
-            },
-            onFieldSubmitted: (_) => _submitSignup(),
-          ),
-          _buildErrorBanner(theme, auth),
-          const SizedBox(height: 24),
-          SizedBox(
-            width: double.infinity,
-            child: FilledButton(
-              key: const Key('signup_submit_button'),
-              onPressed: auth.isLoading ? null : _submitSignup,
-              child: auth.isLoading
-                  ? const SizedBox(
-                      height: 20,
-                      width: 20,
-                      child: CircularProgressIndicator(strokeWidth: 2))
-                  : Text(l10n.createAccount),
-            ),
-          ),
-        ],
+          ],
+        ),
       ),
-    ),
     );
   }
 
@@ -524,13 +554,18 @@ class _LandingScreenState extends ConsumerState<LandingScreen>
           child: Row(
             children: [
               ExcludeSemantics(
-                child: Icon(Icons.error_outline,
-                    color: theme.colorScheme.error, size: 20),
+                child: Icon(
+                  Icons.error_outline,
+                  color: theme.colorScheme.error,
+                  size: 20,
+                ),
               ),
               const SizedBox(width: 8),
               Expanded(
-                child: Text(auth.error!,
-                    style: TextStyle(color: theme.colorScheme.error)),
+                child: Text(
+                  auth.error!,
+                  style: TextStyle(color: theme.colorScheme.error),
+                ),
               ),
             ],
           ),

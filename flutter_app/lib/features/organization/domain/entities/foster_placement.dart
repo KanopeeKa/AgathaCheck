@@ -46,10 +46,7 @@ class FosterPlacement {
   bool get isAdopted => status == 'adopted';
   bool get isNotInFoster => status == 'not_in_foster';
   bool get isActive =>
-      isPending ||
-      isInProgress ||
-      isWaitingAdoption ||
-      isPendingConditions;
+      isPending || isInProgress || isWaitingAdoption || isPendingConditions;
   bool get isAdoptionInProgress => isWaitingAdoption || isPendingConditions;
 
   factory FosterPlacement.fromJson(Map<String, dynamic> json) {
@@ -80,10 +77,7 @@ class FosterPlacement {
 }
 
 class PetFosterPlacementState {
-  const PetFosterPlacementState({
-    required this.status,
-    this.placement,
-  });
+  const PetFosterPlacementState({required this.status, this.placement});
 
   final String status;
   final FosterPlacement? placement;

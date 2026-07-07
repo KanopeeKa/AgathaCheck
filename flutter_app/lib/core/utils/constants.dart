@@ -106,7 +106,11 @@ class AppConstants {
     }
   }
 
-  static Widget speciesIconWidget(String species, {double size = 32, Color? color}) {
+  static Widget speciesIconWidget(
+    String species, {
+    double size = 32,
+    Color? color,
+  }) {
     if (species.toLowerCase() == 'horse / poney') {
       return SizedBox(
         width: size,
@@ -120,10 +124,6 @@ class AppConstants {
         ),
       );
     }
-    return Icon(
-      speciesIcon(species),
-      size: size,
-      color: color,
-    );
+    return Icon(speciesIcon(species), size: size, color: color);
   }
 }

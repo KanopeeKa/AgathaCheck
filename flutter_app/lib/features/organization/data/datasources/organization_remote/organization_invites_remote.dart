@@ -20,7 +20,9 @@ class OrganizationInvitesRemote {
   }
 
   Future<Map<String, dynamic>> acceptInvite(
-      String inviteId, String token) async {
+    String inviteId,
+    String token,
+  ) async {
     final response = await _ctx.client.post(
       Uri.parse('${_ctx.baseUrl}/api/organizations/invites/$inviteId/accept'),
       headers: _ctx.headers(token),

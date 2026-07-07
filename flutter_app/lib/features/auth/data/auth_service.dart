@@ -75,8 +75,8 @@ class AuthService {
   final http.Client _client;
 
   AuthService({String? baseUrl, http.Client? client})
-      : baseUrl = baseUrl ?? (kIsWeb ? '' : 'http://localhost:5000'),
-        _client = client ?? http.Client();
+    : baseUrl = baseUrl ?? (kIsWeb ? '' : 'http://localhost:5000'),
+      _client = client ?? http.Client();
 
   Future<AuthResult> signup({
     required String email,
@@ -87,7 +87,12 @@ class AuthService {
     final response = await _client.post(
       Uri.parse('$baseUrl/api/auth/signup'),
       headers: {'Content-Type': 'application/json'},
-      body: json.encode({'email': email, 'password': password, 'first_name': firstName, 'last_name': lastName}),
+      body: json.encode({
+        'email': email,
+        'password': password,
+        'first_name': firstName,
+        'last_name': lastName,
+      }),
     );
     if (response.statusCode >= 400) {
       final body = json.decode(response.body);
@@ -152,7 +157,8 @@ class AuthService {
       throw Exception('Not authenticated');
     }
     return AuthUser.fromJson(
-        json.decode(response.body) as Map<String, dynamic>);
+      json.decode(response.body) as Map<String, dynamic>,
+    );
   }
 
   Future<AuthUser> updateMe(
@@ -183,19 +189,21 @@ class AuthService {
       throw Exception(data['error'] ?? 'Update failed');
     }
     return AuthUser.fromJson(
-        json.decode(response.body) as Map<String, dynamic>);
+      json.decode(response.body) as Map<String, dynamic>,
+    );
   }
 
   Future<AuthUser> uploadPhoto(
-      String accessToken, Uint8List bytes, String filename) async {
+    String accessToken,
+    Uint8List bytes,
+    String filename,
+  ) async {
     final uri = Uri.parse('$baseUrl/api/auth/me/photo');
     final request = http.MultipartRequest('POST', uri)
       ..headers['Authorization'] = 'Bearer $accessToken'
-      ..files.add(http.MultipartFile.fromBytes(
-        'photo',
-        bytes,
-        filename: filename,
-      ));
+      ..files.add(
+        http.MultipartFile.fromBytes('photo', bytes, filename: filename),
+      );
 
     final streamedResponse = await _client.send(request);
     final response = await http.Response.fromStream(streamedResponse);
@@ -204,7 +212,8 @@ class AuthService {
       throw Exception(data['error'] ?? 'Photo upload failed');
     }
     return AuthUser.fromJson(
-        json.decode(response.body) as Map<String, dynamic>);
+      json.decode(response.body) as Map<String, dynamic>,
+    );
   }
 
   Future<String> changePassword(
@@ -264,7 +273,10 @@ class AuthService {
     return data['message'] as String;
   }
 
-  Future<String> deleteAccount(String accessToken, {required String password}) async {
+  Future<String> deleteAccount(
+    String accessToken, {
+    required String password,
+  }) async {
     final response = await _client.delete(
       Uri.parse('$baseUrl/api/auth/me'),
       headers: {

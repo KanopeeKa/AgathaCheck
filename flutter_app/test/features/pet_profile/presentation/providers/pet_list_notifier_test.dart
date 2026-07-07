@@ -30,6 +30,7 @@ class RecordingPetRepository implements PetRepository {
     }
     return null;
   }
+
   @override
   Future<Pet> addPet(Pet pet) async {
     added.add(pet);
@@ -53,27 +54,30 @@ ProviderContainer makeContainer({
   http.Client? client,
   List<http.BaseRequest> capturedRequests = const [],
 }) {
-  final mockClient = client ??
+  final mockClient =
+      client ??
       MockClient((request) async {
         return http.Response('{"notified_count":0}', 200);
       });
-  final container = ProviderContainer(overrides: [
-    authProvider.overrideWith((ref) => FakeAuthNotifier()),
-    petRepositoryProvider.overrideWithValue(repo),
-    apiBaseUrlProvider.overrideWithValue('http://test.local'),
-    authHttpClientProvider.overrideWithValue(mockClient),
-    allPetsIncludingOrgProvider.overrideWith((ref) async => <Pet>[]),
-  ]);
+  final container = ProviderContainer(
+    overrides: [
+      authProvider.overrideWith((ref) => FakeAuthNotifier()),
+      petRepositoryProvider.overrideWithValue(repo),
+      apiBaseUrlProvider.overrideWithValue('http://test.local'),
+      authHttpClientProvider.overrideWithValue(mockClient),
+      allPetsIncludingOrgProvider.overrideWith((ref) async => <Pet>[]),
+    ],
+  );
   return container;
 }
 
 Pet samplePet({String id = 'pet-1', bool passedAway = false}) => Pet(
-      id: id,
-      name: 'Rex',
-      species: 'dog',
-      colorValue: 0xFF7E57C2,
-      passedAway: passedAway,
-    );
+  id: id,
+  name: 'Rex',
+  species: 'dog',
+  colorValue: 0xFF7E57C2,
+  passedAway: passedAway,
+);
 
 void main() {
   group('PetListNotifier.addPet', () {
@@ -83,11 +87,9 @@ void main() {
       addTearDown(container.dispose);
 
       await container.read(petListProvider.future);
-      final id = await container.read(petListProvider.notifier).addPet(
-            name: 'Buddy',
-            species: 'cat',
-            organizationId: 'org-9',
-          );
+      final id = await container
+          .read(petListProvider.notifier)
+          .addPet(name: 'Buddy', species: 'cat', organizationId: 'org-9');
 
       expect(repo.added, hasLength(1));
       expect(repo.added.single.name, 'Buddy');
@@ -144,8 +146,9 @@ void main() {
       addTearDown(container.dispose);
 
       await container.read(petListProvider.future);
-      final hasSharedUsers =
-          await container.read(petListProvider.notifier).markPassedAway('pet-1');
+      final hasSharedUsers = await container
+          .read(petListProvider.notifier)
+          .markPassedAway('pet-1');
 
       expect(repo.updated, hasLength(1));
       expect(repo.updated.single.passedAway, true);
@@ -155,37 +158,45 @@ void main() {
       expect(hasSharedUsers, true);
     });
 
-    test('sends a JSON-escaped pet name (no body corruption/injection)', () async {
-      final repo = RecordingPetRepository(
-          initial: [samplePet().copyWith(name: 'Re"x\\')]);
-      final requests = <http.Request>[];
-      final client = MockClient((request) async {
-        requests.add(request);
-        return http.Response('{"notified_count":0}', 200);
-      });
-      final container = makeContainer(repo: repo, client: client);
-      addTearDown(container.dispose);
+    test(
+      'sends a JSON-escaped pet name (no body corruption/injection)',
+      () async {
+        final repo = RecordingPetRepository(
+          initial: [samplePet().copyWith(name: 'Re"x\\')],
+        );
+        final requests = <http.Request>[];
+        final client = MockClient((request) async {
+          requests.add(request);
+          return http.Response('{"notified_count":0}', 200);
+        });
+        final container = makeContainer(repo: repo, client: client);
+        addTearDown(container.dispose);
 
-      await container.read(petListProvider.future);
-      await container.read(petListProvider.notifier).markPassedAway('pet-1');
+        await container.read(petListProvider.future);
+        await container.read(petListProvider.notifier).markPassedAway('pet-1');
 
-      // The body must be valid JSON that decodes back to the exact name.
-      final decoded = jsonDecode(requests.single.body) as Map<String, dynamic>;
-      expect(decoded['pet_name'], 'Re"x\\');
-    });
+        // The body must be valid JSON that decodes back to the exact name.
+        final decoded =
+            jsonDecode(requests.single.body) as Map<String, dynamic>;
+        expect(decoded['pet_name'], 'Re"x\\');
+      },
+    );
 
-    test('returns false and persists nothing when the pet is unknown', () async {
-      final repo = RecordingPetRepository(initial: [samplePet()]);
-      final container = makeContainer(repo: repo);
-      addTearDown(container.dispose);
+    test(
+      'returns false and persists nothing when the pet is unknown',
+      () async {
+        final repo = RecordingPetRepository(initial: [samplePet()]);
+        final container = makeContainer(repo: repo);
+        addTearDown(container.dispose);
 
-      await container.read(petListProvider.future);
-      final result = await container
-          .read(petListProvider.notifier)
-          .markPassedAway('does-not-exist');
+        await container.read(petListProvider.future);
+        final result = await container
+            .read(petListProvider.notifier)
+            .markPassedAway('does-not-exist');
 
-      expect(result, false);
-      expect(repo.updated, isEmpty);
-    });
+        expect(result, false);
+        expect(repo.updated, isEmpty);
+      },
+    );
   });
 }

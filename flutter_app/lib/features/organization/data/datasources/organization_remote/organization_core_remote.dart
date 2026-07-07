@@ -34,11 +34,14 @@ class OrganizationCoreRemote {
       _ctx.throwApiError(response, 'Failed to get organization');
     }
     return OrganizationModel.fromJson(
-        json.decode(response.body) as Map<String, dynamic>);
+      json.decode(response.body) as Map<String, dynamic>,
+    );
   }
 
   Future<OrganizationModel> createOrganization(
-      Map<String, dynamic> orgJson, String token) async {
+    Map<String, dynamic> orgJson,
+    String token,
+  ) async {
     final response = await _ctx.client.post(
       Uri.parse('${_ctx.baseUrl}/api/organizations'),
       headers: _ctx.headers(token),
@@ -48,11 +51,15 @@ class OrganizationCoreRemote {
       _ctx.throwApiError(response, 'Failed to create organization');
     }
     return OrganizationModel.fromJson(
-        json.decode(response.body) as Map<String, dynamic>);
+      json.decode(response.body) as Map<String, dynamic>,
+    );
   }
 
   Future<OrganizationModel> updateOrganization(
-      String id, Map<String, dynamic> orgJson, String token) async {
+    String id,
+    Map<String, dynamic> orgJson,
+    String token,
+  ) async {
     final response = await _ctx.client.put(
       Uri.parse('${_ctx.baseUrl}/api/organizations/$id'),
       headers: _ctx.headers(token),
@@ -62,7 +69,8 @@ class OrganizationCoreRemote {
       _ctx.throwApiError(response, 'Failed to update organization');
     }
     return OrganizationModel.fromJson(
-        json.decode(response.body) as Map<String, dynamic>);
+      json.decode(response.body) as Map<String, dynamic>,
+    );
   }
 
   Future<void> deleteOrganization(String id, String token) async {
@@ -76,7 +84,11 @@ class OrganizationCoreRemote {
   }
 
   Future<OrganizationModel> uploadPhoto(
-      String id, Uint8List bytes, String filename, String token) async {
+    String id,
+    Uint8List bytes,
+    String filename,
+    String token,
+  ) async {
     return _uploadOrgImage(
       '${_ctx.baseUrl}/api/organizations/$id/photo',
       bytes,
@@ -86,7 +98,11 @@ class OrganizationCoreRemote {
   }
 
   Future<OrganizationModel> uploadLogo(
-      String id, Uint8List bytes, String filename, String token) async {
+    String id,
+    Uint8List bytes,
+    String filename,
+    String token,
+  ) async {
     return _uploadOrgImage(
       '${_ctx.baseUrl}/api/organizations/$id/logo',
       bytes,
@@ -96,7 +112,10 @@ class OrganizationCoreRemote {
   }
 
   Future<OrganizationModel> setPrimaryContact(
-      String orgId, String recordId, String token) async {
+    String orgId,
+    String recordId,
+    String token,
+  ) async {
     final response = await _ctx.client.put(
       Uri.parse('${_ctx.baseUrl}/api/organizations/$orgId/primary-contact'),
       headers: _ctx.headers(token),
@@ -106,25 +125,29 @@ class OrganizationCoreRemote {
       _ctx.throwApiError(response, 'Failed to set primary contact');
     }
     return OrganizationModel.fromJson(
-        json.decode(response.body) as Map<String, dynamic>);
+      json.decode(response.body) as Map<String, dynamic>,
+    );
   }
 
   Future<OrganizationModel> _uploadOrgImage(
-      String url, Uint8List bytes, String filename, String token) async {
+    String url,
+    Uint8List bytes,
+    String filename,
+    String token,
+  ) async {
     final uri = Uri.parse(url);
     final request = http.MultipartRequest('POST', uri)
       ..headers['Authorization'] = 'Bearer $token'
-      ..files.add(http.MultipartFile.fromBytes(
-        'photo',
-        bytes,
-        filename: filename,
-      ));
+      ..files.add(
+        http.MultipartFile.fromBytes('photo', bytes, filename: filename),
+      );
     final streamedResponse = await _ctx.client.send(request);
     final response = await http.Response.fromStream(streamedResponse);
     if (response.statusCode >= 400) {
       _ctx.throwApiError(response, 'Image upload failed');
     }
     return OrganizationModel.fromJson(
-        json.decode(response.body) as Map<String, dynamic>);
+      json.decode(response.body) as Map<String, dynamic>,
+    );
   }
 }

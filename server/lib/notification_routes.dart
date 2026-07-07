@@ -26,61 +26,74 @@ Router notificationRoutes(Pool pool) {
   router.get('/', (Request request) async {
     final userId = _extractUserId(request);
     if (userId == null) {
-      return Response(401, body: jsonEncode({'error': 'Unauthorized'}), headers: _jsonHeaders);
+      return Response(401,
+          body: jsonEncode({'error': 'Unauthorized'}), headers: _jsonHeaders);
     }
     try {
       final results = await pool.execute(
-        Sql.named('SELECT * FROM notifications WHERE user_id = @userId ORDER BY created_at DESC'),
+        Sql.named(
+            'SELECT * FROM notifications WHERE user_id = @userId ORDER BY created_at DESC'),
         parameters: {'userId': userId},
       );
-      final notifications = results.map((row) => _notificationToMap(row)).toList();
+      final notifications =
+          results.map((row) => _notificationToMap(row)).toList();
       return Response.ok(jsonEncode(notifications), headers: _jsonHeaders);
     } catch (e) {
-      return Response.internalServerError(body: jsonEncode({'error': publicError(e)}), headers: _jsonHeaders);
+      return Response.internalServerError(
+          body: jsonEncode({'error': publicError(e)}), headers: _jsonHeaders);
     }
   });
 
   router.get('/unread-count', (Request request) async {
     final userId = _extractUserId(request);
     if (userId == null) {
-      return Response(401, body: jsonEncode({'error': 'Unauthorized'}), headers: _jsonHeaders);
+      return Response(401,
+          body: jsonEncode({'error': 'Unauthorized'}), headers: _jsonHeaders);
     }
     try {
       final results = await pool.execute(
-        Sql.named('SELECT COUNT(*) as count FROM notifications WHERE user_id = @userId AND (is_read = false OR (is_read IS NULL AND read = false))'),
+        Sql.named(
+            'SELECT COUNT(*) as count FROM notifications WHERE user_id = @userId AND (is_read = false OR (is_read IS NULL AND read = false))'),
         parameters: {'userId': userId},
       );
       final count = results.first.toColumnMap()['count'] ?? 0;
-      return Response.ok(jsonEncode({'unread_count': count}), headers: _jsonHeaders);
+      return Response.ok(jsonEncode({'unread_count': count}),
+          headers: _jsonHeaders);
     } catch (e) {
-      return Response.internalServerError(body: jsonEncode({'error': publicError(e)}), headers: _jsonHeaders);
+      return Response.internalServerError(
+          body: jsonEncode({'error': publicError(e)}), headers: _jsonHeaders);
     }
   });
 
   router.put('/read-all', (Request request) async {
     final userId = _extractUserId(request);
     if (userId == null) {
-      return Response(401, body: jsonEncode({'error': 'Unauthorized'}), headers: _jsonHeaders);
+      return Response(401,
+          body: jsonEncode({'error': 'Unauthorized'}), headers: _jsonHeaders);
     }
     try {
       await pool.execute(
-        Sql.named('UPDATE notifications SET is_read = true, read = true WHERE user_id = @userId'),
+        Sql.named(
+            'UPDATE notifications SET is_read = true, read = true WHERE user_id = @userId'),
         parameters: {'userId': userId},
       );
       return Response.ok(jsonEncode({'success': true}), headers: _jsonHeaders);
     } catch (e) {
-      return Response.internalServerError(body: jsonEncode({'error': publicError(e)}), headers: _jsonHeaders);
+      return Response.internalServerError(
+          body: jsonEncode({'error': publicError(e)}), headers: _jsonHeaders);
     }
   });
 
   router.get('/preferences', (Request request) async {
     final userId = _extractUserId(request);
     if (userId == null) {
-      return Response(401, body: jsonEncode({'error': 'Unauthorized'}), headers: _jsonHeaders);
+      return Response(401,
+          body: jsonEncode({'error': 'Unauthorized'}), headers: _jsonHeaders);
     }
     try {
       final results = await pool.execute(
-        Sql.named('SELECT * FROM notification_preferences WHERE user_id = @userId'),
+        Sql.named(
+            'SELECT * FROM notification_preferences WHERE user_id = @userId'),
         parameters: {'userId': userId},
       );
       final prefs = <String, dynamic>{};
@@ -90,54 +103,68 @@ Router notificationRoutes(Pool pool) {
       }
       return Response.ok(jsonEncode(prefs), headers: _jsonHeaders);
     } catch (e) {
-      return Response.internalServerError(body: jsonEncode({'error': publicError(e)}), headers: _jsonHeaders);
+      return Response.internalServerError(
+          body: jsonEncode({'error': publicError(e)}), headers: _jsonHeaders);
     }
   });
 
   router.put('/preferences', (Request request) async {
     final userId = _extractUserId(request);
     if (userId == null) {
-      return Response(401, body: jsonEncode({'error': 'Unauthorized'}), headers: _jsonHeaders);
+      return Response(401,
+          body: jsonEncode({'error': 'Unauthorized'}), headers: _jsonHeaders);
     }
     try {
-      final data = jsonDecode(await request.readAsString()) as Map<String, dynamic>;
+      final data =
+          jsonDecode(await request.readAsString()) as Map<String, dynamic>;
       for (final entry in data.entries) {
         await pool.execute(
-          Sql.named('INSERT INTO notification_preferences (id, user_id, preference, value) VALUES (gen_random_uuid(), @userId, @pref, @val) ON CONFLICT (id) DO UPDATE SET value = @val'),
-          parameters: {'userId': userId, 'pref': entry.key, 'val': entry.value.toString()},
+          Sql.named(
+              'INSERT INTO notification_preferences (id, user_id, preference, value) VALUES (gen_random_uuid(), @userId, @pref, @val) ON CONFLICT (id) DO UPDATE SET value = @val'),
+          parameters: {
+            'userId': userId,
+            'pref': entry.key,
+            'val': entry.value.toString()
+          },
         );
       }
       return Response.ok(jsonEncode(data), headers: _jsonHeaders);
     } catch (e) {
-      return Response.internalServerError(body: jsonEncode({'error': publicError(e)}), headers: _jsonHeaders);
+      return Response.internalServerError(
+          body: jsonEncode({'error': publicError(e)}), headers: _jsonHeaders);
     }
   });
 
   router.post('/check-due', (Request request) async {
     final userId = _extractUserId(request);
     if (userId == null) {
-      return Response(401, body: jsonEncode({'error': 'Unauthorized'}), headers: _jsonHeaders);
+      return Response(401,
+          body: jsonEncode({'error': 'Unauthorized'}), headers: _jsonHeaders);
     }
     try {
       return Response.ok(jsonEncode({'checked': true}), headers: _jsonHeaders);
     } catch (e) {
-      return Response.internalServerError(body: jsonEncode({'error': publicError(e)}), headers: _jsonHeaders);
+      return Response.internalServerError(
+          body: jsonEncode({'error': publicError(e)}), headers: _jsonHeaders);
     }
   });
 
   router.put('/<id>/read', (Request request, String id) async {
     final userId = _extractUserId(request);
     if (userId == null) {
-      return Response(401, body: jsonEncode({'error': 'Unauthorized'}), headers: _jsonHeaders);
+      return Response(401,
+          body: jsonEncode({'error': 'Unauthorized'}), headers: _jsonHeaders);
     }
     try {
       await pool.execute(
-        Sql.named('UPDATE notifications SET is_read = true, read = true WHERE id = @id AND user_id = @userId'),
+        Sql.named(
+            'UPDATE notifications SET is_read = true, read = true WHERE id = @id AND user_id = @userId'),
         parameters: {'id': id, 'userId': userId},
       );
       return Response.ok(jsonEncode({'success': true}), headers: _jsonHeaders);
     } catch (e) {
-      return Response.internalServerError(body: jsonEncode({'error': publicError(e)}), headers: _jsonHeaders);
+      return Response.internalServerError(
+          body: jsonEncode({'error': publicError(e)}), headers: _jsonHeaders);
     }
   });
 

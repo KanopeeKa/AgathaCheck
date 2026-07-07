@@ -33,21 +33,23 @@ class PetVetSection extends StatelessWidget {
             : const Icon(Icons.info_outline),
       ),
       items: [
-        DropdownMenuItem<String?>(
-          value: null,
-          child: Text(l.noVetAssigned),
+        DropdownMenuItem<String?>(value: null, child: Text(l.noVetAssigned)),
+        ...vets.map(
+          (vet) => DropdownMenuItem<String?>(
+            value: vet['id'],
+            child: Text(vet['name'] ?? ''),
+          ),
         ),
-        ...vets.map((vet) => DropdownMenuItem<String?>(
-              value: vet['id'],
-              child: Text(vet['name'] ?? ''),
-            )),
         DropdownMenuItem<String?>(
           value: '_createNewVet',
           child: Row(
             children: [
               const Icon(Icons.add_circle_outline, size: 18),
               SizedBox(width: 8),
-              Text('Create new vet', style: TextStyle(fontWeight: FontWeight.w600)),
+              Text(
+                'Create new vet',
+                style: TextStyle(fontWeight: FontWeight.w600),
+              ),
             ],
           ),
         ),

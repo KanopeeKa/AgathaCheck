@@ -21,6 +21,7 @@ const kOtherEventTypes = {
   HealthEntryType.familyEvent,
   HealthEntryType.procedure,
 };
+
 class HealthEntry {
   /// Creates a new [HealthEntry] instance.
   const HealthEntry({
@@ -175,15 +176,20 @@ class HealthEntry {
       frequency: frequency ?? this.frequency,
       frequencyDays: frequencyDays ?? this.frequencyDays,
       frequencyInterval: frequencyInterval ?? this.frequencyInterval,
-      repeatEndDate: clearRepeatEndDate ? null : (repeatEndDate ?? this.repeatEndDate),
+      repeatEndDate: clearRepeatEndDate
+          ? null
+          : (repeatEndDate ?? this.repeatEndDate),
       startDate: startDate ?? this.startDate,
       nextDueDate: clearNextDueDate ? null : (nextDueDate ?? this.nextDueDate),
-      completedOn:
-          clearCompletedOn ? null : (completedOn ?? this.completedOn),
+      completedOn: clearCompletedOn ? null : (completedOn ?? this.completedOn),
       recurrenceAnchor: recurrenceAnchor ?? this.recurrenceAnchor,
       notes: notes ?? this.notes,
-      healthIssueId: clearHealthIssueId ? null : (healthIssueId ?? this.healthIssueId),
-      healthIssueName: clearHealthIssueId ? null : (healthIssueName ?? this.healthIssueName),
+      healthIssueId: clearHealthIssueId
+          ? null
+          : (healthIssueId ?? this.healthIssueId),
+      healthIssueName: clearHealthIssueId
+          ? null
+          : (healthIssueName ?? this.healthIssueName),
       remindDaysBefore: remindDaysBefore ?? this.remindDaysBefore,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,

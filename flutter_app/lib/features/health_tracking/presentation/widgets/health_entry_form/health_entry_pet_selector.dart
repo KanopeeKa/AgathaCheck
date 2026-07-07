@@ -24,9 +24,7 @@ class HealthEntryPetSelector extends StatelessWidget {
     if (isEdit) {
       final pet = pets.where((p) => selectedPetIds.contains(p.id)).firstOrNull;
       return InputDecorator(
-        decoration: InputDecoration(
-          labelText: l.petLabel,
-        ),
+        decoration: InputDecoration(labelText: l.petLabel),
         child: Text(pet?.name ?? l.unknownPet),
       );
     }
@@ -70,7 +68,8 @@ class HealthEntryPetSelector extends StatelessWidget {
               avatar: isSelected
                   ? null
                   : CircleAvatar(
-                      backgroundColor: theme.colorScheme.surfaceContainerHighest,
+                      backgroundColor:
+                          theme.colorScheme.surfaceContainerHighest,
                       child: Text(
                         pet.name.isNotEmpty ? pet.name[0].toUpperCase() : '?',
                         style: TextStyle(

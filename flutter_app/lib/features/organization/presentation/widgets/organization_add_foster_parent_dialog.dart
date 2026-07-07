@@ -70,7 +70,9 @@ Future<void> showOrganizationAddFosterParentDialog({
                 const SizedBox(height: 8),
                 TextFormField(
                   controller: addressController,
-                  decoration: InputDecoration(labelText: l.fosterContactAddress),
+                  decoration: InputDecoration(
+                    labelText: l.fosterContactAddress,
+                  ),
                   textInputAction: TextInputAction.next,
                   maxLines: 2,
                 ),
@@ -133,7 +135,9 @@ Future<void> showOrganizationAddFosterParentDialog({
   }
 
   try {
-    await ref.read(orgPeopleProvider(orgId).notifier).createExternal(
+    await ref
+        .read(orgPeopleProvider(orgId).notifier)
+        .createExternal(
           displayName: nameController.text.trim(),
           email: emailController.text.trim(),
           phone: phoneController.text.trim().isEmpty
@@ -144,15 +148,13 @@ Future<void> showOrganizationAddFosterParentDialog({
           lawfulBasisConfirmed: true,
         );
     if (context.mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l.externalFosterNoticeSent)),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(l.externalFosterNoticeSent)));
     }
   } catch (e) {
     if (context.mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('$e')),
-      );
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('$e')));
     }
   } finally {
     nameController.dispose();

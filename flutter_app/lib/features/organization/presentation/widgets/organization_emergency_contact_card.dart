@@ -34,12 +34,12 @@ class OrganizationEmergencyContactCard extends ConsumerWidget {
 
     final initials = contact.displayName.trim().isNotEmpty
         ? contact.displayName
-            .trim()
-            .split(RegExp(r'\s+'))
-            .map((p) => p.isNotEmpty ? p[0] : '')
-            .take(2)
-            .join()
-            .toUpperCase()
+              .trim()
+              .split(RegExp(r'\s+'))
+              .map((p) => p.isNotEmpty ? p[0] : '')
+              .take(2)
+              .join()
+              .toUpperCase()
         : '?';
 
     return Card(
@@ -78,7 +78,9 @@ class OrganizationEmergencyContactCard extends ConsumerWidget {
                       const SizedBox(height: 4),
                       Container(
                         padding: const EdgeInsets.symmetric(
-                            horizontal: 8, vertical: 2),
+                          horizontal: 8,
+                          vertical: 2,
+                        ),
                         decoration: BoxDecoration(
                           color: AppTheme.orgSuperUserBg,
                           borderRadius: BorderRadius.circular(8),
@@ -97,9 +99,11 @@ class OrganizationEmergencyContactCard extends ConsumerWidget {
                         const SizedBox(height: 8),
                         Row(
                           children: [
-                            Icon(Icons.email_outlined,
-                                size: 16,
-                                color: colorScheme.onSurfaceVariant),
+                            Icon(
+                              Icons.email_outlined,
+                              size: 16,
+                              color: colorScheme.onSurfaceVariant,
+                            ),
                             const SizedBox(width: 6),
                             Expanded(
                               child: Text(
@@ -114,9 +118,11 @@ class OrganizationEmergencyContactCard extends ConsumerWidget {
                         const SizedBox(height: 6),
                         Row(
                           children: [
-                            Icon(Icons.phone_outlined,
-                                size: 16,
-                                color: colorScheme.onSurfaceVariant),
+                            Icon(
+                              Icons.phone_outlined,
+                              size: 16,
+                              color: colorScheme.onSurfaceVariant,
+                            ),
                             const SizedBox(width: 6),
                             Expanded(
                               child: Text(

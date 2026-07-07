@@ -26,7 +26,8 @@ class PrefsTokenStore implements TokenStore {
   @override
   Future<String?> readAccessToken() async => _prefs.getString(_accessTokenKey);
   @override
-  Future<String?> readRefreshToken() async => _prefs.getString(_refreshTokenKey);
+  Future<String?> readRefreshToken() async =>
+      _prefs.getString(_refreshTokenKey);
   @override
   Future<void> writeAccessToken(String token) async {
     await _prefs.setString(_accessTokenKey, token);

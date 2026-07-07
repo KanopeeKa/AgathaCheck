@@ -37,6 +37,7 @@ class HealthEntryFormScreen extends ConsumerStatefulWidget {
   final String? entryId;
   final String? petId;
   final HealthEntryType? initialType;
+
   /// When set, restricts the type dropdown (e.g. pet profile health events).
   final List<HealthEntryType>? allowedTypes;
 
@@ -45,27 +46,26 @@ class HealthEntryFormScreen extends ConsumerStatefulWidget {
       _HealthEntryFormScreenState();
 }
 
-
 class _HealthEntryFormScreenState extends ConsumerState<HealthEntryFormScreen> {
   final _formKey = GlobalKey<FormState>();
 
   HealthEntryFormParams get _params => HealthEntryFormParams(
-        entryId: widget.entryId,
-        petId: widget.petId,
-        initialType: widget.initialType,
-        allowedTypes: widget.allowedTypes,
-      );
+    entryId: widget.entryId,
+    petId: widget.petId,
+    initialType: widget.initialType,
+    allowedTypes: widget.allowedTypes,
+  );
 
   HealthEntryFormController get _controller =>
       ref.read(healthEntryFormControllerProvider(_params).notifier);
 
   HealthEntryDocumentHandler get _documents => HealthEntryDocumentHandler(
-        ref: ref,
-        context: context,
-        controller: _controller,
-        entryId: widget.entryId,
-        isMounted: () => mounted,
-      );
+    ref: ref,
+    context: context,
+    controller: _controller,
+    entryId: widget.entryId,
+    isMounted: () => mounted,
+  );
 
   @override
   void initState() {
@@ -98,7 +98,9 @@ class _HealthEntryFormScreenState extends ConsumerState<HealthEntryFormScreen> {
     final theme = Theme.of(context);
     return Scaffold(
       appBar: AppBar(
-        title: AppLogoTitle(title: form.isEdit ? l.editEntry : l.addHealthEntry2),
+        title: AppLogoTitle(
+          title: form.isEdit ? l.editEntry : l.addHealthEntry2,
+        ),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           tooltip: l.goBack,
@@ -148,9 +150,7 @@ class _HealthEntryFormScreenState extends ConsumerState<HealthEntryFormScreen> {
                     const SizedBox(height: 16),
                     DropdownButtonFormField<HealthEntryType>(
                       value: form.type,
-                      decoration: InputDecoration(
-                        labelText: l.entryType,
-                      ),
+                      decoration: InputDecoration(labelText: l.entryType),
                       items: form.selectableTypes.map((t) {
                         return DropdownMenuItem(
                           value: t,
@@ -213,7 +213,8 @@ class _HealthEntryFormScreenState extends ConsumerState<HealthEntryFormScreen> {
                       pendingPhotos: form.pendingPhotos,
                       isUploading: form.isUploadingPhoto,
                       baseUrl: ref.watch(apiBaseUrlProvider),
-                      onPickCamera: () => _documents.pickPhoto(ImageSource.camera),
+                      onPickCamera: () =>
+                          _documents.pickPhoto(ImageSource.camera),
                       onPickGallery: _documents.pickDocument,
                       onDelete: _documents.deletePhoto,
                       onRemovePending: _controller.removePendingPhoto,
@@ -223,11 +224,13 @@ class _HealthEntryFormScreenState extends ConsumerState<HealthEntryFormScreen> {
                       key: const Key('save_health_entry_button'),
                       onPressed: _submit,
                       icon: Icon(form.isEdit ? Icons.save : Icons.add),
-                      label: Text(form.isEdit
-                          ? l.save
-                          : form.selectedPetIds.length > 1
-                              ? l.addEntryForPets(form.selectedPetIds.length)
-                              : l.addEntry),
+                      label: Text(
+                        form.isEdit
+                            ? l.save
+                            : form.selectedPetIds.length > 1
+                            ? l.addEntryForPets(form.selectedPetIds.length)
+                            : l.addEntry,
+                      ),
                     ),
                     if (form.isEdit)
                       HealthEntryEditActions(
@@ -284,16 +287,15 @@ class _HealthEntryFormScreenState extends ConsumerState<HealthEntryFormScreen> {
           HealthEntrySubmitValidation.nameRequired => l.entryNameRequired,
           HealthEntrySubmitValidation.dueOrCompletedRequired =>
             l.dueOrCompletedRequired,
-          HealthEntrySubmitValidation.noPetsSelected =>
-            l.selectAtLeastOnePet,
+          HealthEntrySubmitValidation.noPetsSelected => l.selectAtLeastOnePet,
         };
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(message)),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(message)));
       case HealthEntrySubmitError(:final error):
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l.errorWithMessage('$error'))),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(l.errorWithMessage('$error'))));
       case HealthEntrySubmitSuccess(:final isEdit, :final petIds):
         for (final petId in petIds) {
           ref.invalidate(petHealthEntriesProvider(petId));
@@ -301,11 +303,13 @@ class _HealthEntryFormScreenState extends ConsumerState<HealthEntryFormScreen> {
         final count = petIds.length;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(isEdit
-                ? l.entryUpdated
-                : count > 1
-                    ? l.entriesCreated(count)
-                    : l.entryCreated),
+            content: Text(
+              isEdit
+                  ? l.entryUpdated
+                  : count > 1
+                  ? l.entriesCreated(count)
+                  : l.entryCreated,
+            ),
           ),
         );
         if (widget.petId != null && widget.petId!.isNotEmpty) {
@@ -335,42 +339,51 @@ class _HealthEntryFormScreenState extends ConsumerState<HealthEntryFormScreen> {
           final dateFormat = DateFormat.yMMMd();
           final dateTimeFormat = DateFormat.yMMMd().add_jm();
           return AlertDialog(
-          title: Text(l.administrationHistory),
-          content: SizedBox(
-            width: double.maxFinite,
-            child: history.isEmpty
-                ? Text(l.noHistoryYet)
-                : ListView.builder(
-                    shrinkWrap: true,
-                    itemCount: history.length,
-                    itemBuilder: (_, i) {
-                      final h = history[i];
-                      return ListTile(
-                        leading: const Icon(Icons.check_circle,
-                            color: Colors.green),
-                        title: Text(formatEventHistoryLine(
-                          h, l, dateFormat, dateTimeFormat,
-                        )),
-                        subtitle: h.notes.isNotEmpty
-                            ? Text(h.notes)
-                            : null,
-                      );
-                    },
-                  ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(ctx).pop(),
-              child: Text(l.close),
+            title: Text(l.administrationHistory),
+            content: SizedBox(
+              width: double.maxFinite,
+              child: history.isEmpty
+                  ? Text(l.noHistoryYet)
+                  : ListView.builder(
+                      shrinkWrap: true,
+                      itemCount: history.length,
+                      itemBuilder: (_, i) {
+                        final h = history[i];
+                        return ListTile(
+                          leading: const Icon(
+                            Icons.check_circle,
+                            color: Colors.green,
+                          ),
+                          title: Text(
+                            formatEventHistoryLine(
+                              h,
+                              l,
+                              dateFormat,
+                              dateTimeFormat,
+                            ),
+                          ),
+                          subtitle: h.notes.isNotEmpty ? Text(h.notes) : null,
+                        );
+                      },
+                    ),
             ),
-          ],
-        );
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(ctx).pop(),
+                child: Text(l.close),
+              ),
+            ],
+          );
         },
       );
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(AppLocalizations.of(context)!.failedToLoadHistory('$e'))),
+          SnackBar(
+            content: Text(
+              AppLocalizations.of(context)!.failedToLoadHistory('$e'),
+            ),
+          ),
         );
       }
     }
@@ -382,9 +395,11 @@ class _HealthEntryFormScreenState extends ConsumerState<HealthEntryFormScreen> {
       context: context,
       builder: (ctx) => AlertDialog(
         title: Text(AppLocalizations.of(context)!.deleteEntry),
-        content: Text(AppLocalizations.of(context)!.deleteEntryNamedConfirm(
-          ref.read(healthEntryFormControllerProvider(_params)).name,
-        )),
+        content: Text(
+          AppLocalizations.of(context)!.deleteEntryNamedConfirm(
+            ref.read(healthEntryFormControllerProvider(_params)).name,
+          ),
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(false),
@@ -402,7 +417,9 @@ class _HealthEntryFormScreenState extends ConsumerState<HealthEntryFormScreen> {
     );
     if (confirmed != true) return;
     try {
-      await ref.read(healthEntriesNotifierProvider.notifier).delete(widget.entryId!);
+      await ref
+          .read(healthEntriesNotifierProvider.notifier)
+          .delete(widget.entryId!);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(AppLocalizations.of(context)!.entryDeleted)),
@@ -416,10 +433,11 @@ class _HealthEntryFormScreenState extends ConsumerState<HealthEntryFormScreen> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(AppLocalizations.of(context)!.failedToDelete('$e'))),
+          SnackBar(
+            content: Text(AppLocalizations.of(context)!.failedToDelete('$e')),
+          ),
         );
       }
     }
   }
 }
-

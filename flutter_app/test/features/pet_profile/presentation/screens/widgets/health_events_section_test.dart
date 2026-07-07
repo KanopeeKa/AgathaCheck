@@ -14,8 +14,8 @@ import 'package:pet_profile_app/l10n/app_localizations.dart';
 class _TwoPetsNotifier extends PetListNotifier {
   @override
   Future<List<Pet>> build() async => const [
-        Pet(id: 'p1', name: 'Rex', species: 'Dog'),
-      ];
+    Pet(id: 'p1', name: 'Rex', species: 'Dog'),
+  ];
 }
 
 class _FakeHealthEntriesNotifier extends HealthEntriesNotifier {
@@ -27,14 +27,14 @@ class _FakeHealthEntriesNotifier extends HealthEntriesNotifier {
 }
 
 HealthEntry _entry(String id, HealthEntryType type) => HealthEntry(
-      id: id,
-      petId: 'p1',
-      name: 'Entry $id',
-      type: type,
-      frequency: HealthFrequency.monthly,
-      startDate: DateTime(2025, 1, 1),
-      nextDueDate: DateTime(2025, 2, 1),
-    );
+  id: id,
+  petId: 'p1',
+  name: 'Entry $id',
+  type: type,
+  frequency: HealthFrequency.monthly,
+  startDate: DateTime(2025, 1, 1),
+  nextDueDate: DateTime(2025, 2, 1),
+);
 
 void main() {
   testWidgets('health events section excludes care and other types', (
@@ -78,9 +78,7 @@ void main() {
         GoRoute(
           path: '/pet/:petId',
           builder: (context, state) => Scaffold(
-            body: HealthEventsSection(
-              petId: state.pathParameters['petId']!,
-            ),
+            body: HealthEventsSection(petId: state.pathParameters['petId']!),
           ),
         ),
         GoRoute(

@@ -24,9 +24,9 @@ class VetRemoteDataSourceImpl implements VetRemoteDataSource {
   final http.Client _client;
 
   Map<String, String> get _headers => {
-        'Content-Type': 'application/json',
-        if (token != null) 'Authorization': 'Bearer $token',
-      };
+    'Content-Type': 'application/json',
+    if (token != null) 'Authorization': 'Bearer $token',
+  };
 
   @override
   Future<List<VetModel>> getAllVets() async {
@@ -50,7 +50,8 @@ class VetRemoteDataSourceImpl implements VetRemoteDataSource {
     if (response.statusCode == 404) return null;
     _checkResponse(response);
     return VetModel.fromJson(
-        json.decode(response.body) as Map<String, dynamic>);
+      json.decode(response.body) as Map<String, dynamic>,
+    );
   }
 
   @override
@@ -62,7 +63,8 @@ class VetRemoteDataSourceImpl implements VetRemoteDataSource {
     );
     _checkResponse(response);
     return VetModel.fromJson(
-        json.decode(response.body) as Map<String, dynamic>);
+      json.decode(response.body) as Map<String, dynamic>,
+    );
   }
 
   @override
@@ -74,7 +76,8 @@ class VetRemoteDataSourceImpl implements VetRemoteDataSource {
     );
     _checkResponse(response);
     return VetModel.fromJson(
-        json.decode(response.body) as Map<String, dynamic>);
+      json.decode(response.body) as Map<String, dynamic>,
+    );
   }
 
   @override

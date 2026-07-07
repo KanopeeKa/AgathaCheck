@@ -34,12 +34,7 @@ class AppLogoTitle extends StatelessWidget {
           ),
         ),
         const SizedBox(width: 8),
-        Flexible(
-          child: Text(
-            title,
-            overflow: TextOverflow.ellipsis,
-          ),
-        ),
+        Flexible(child: Text(title, overflow: TextOverflow.ellipsis)),
       ],
     );
   }

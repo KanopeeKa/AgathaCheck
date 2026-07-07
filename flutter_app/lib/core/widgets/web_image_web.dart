@@ -42,35 +42,36 @@ class _WebAssetImageState extends State<WebAssetImage> {
       _ => 'contain',
     };
 
-    ui_web.platformViewRegistry.registerViewFactory(
-      _viewType,
-      (int viewId) {
-        final container = web.document.createElement('div') as web.HTMLDivElement;
-        container.style.width = '100%';
-        container.style.height = '100%';
-        container.style.display = 'flex';
-        container.style.alignItems = 'center';
-        container.style.justifyContent = 'center';
+    ui_web.platformViewRegistry.registerViewFactory(_viewType, (int viewId) {
+      final container = web.document.createElement('div') as web.HTMLDivElement;
+      container.style.width = '100%';
+      container.style.height = '100%';
+      container.style.display = 'flex';
+      container.style.alignItems = 'center';
+      container.style.justifyContent = 'center';
 
-        final imgElement = web.document.createElement('img') as web.HTMLImageElement;
-        imgElement.src = 'assets/${widget.assetPath}';
-        imgElement.style.width = '100%';
-        imgElement.style.height = '100%';
-        imgElement.style.setProperty('object-fit', fitValue);
-        imgElement.style.display = 'block';
+      final imgElement =
+          web.document.createElement('img') as web.HTMLImageElement;
+      imgElement.src = 'assets/${widget.assetPath}';
+      imgElement.style.width = '100%';
+      imgElement.style.height = '100%';
+      imgElement.style.setProperty('object-fit', fitValue);
+      imgElement.style.display = 'block';
 
-        if (widget.clipOval) {
-          imgElement.style.borderRadius = '50%';
-        }
+      if (widget.clipOval) {
+        imgElement.style.borderRadius = '50%';
+      }
 
-        imgElement.addEventListener('error', ((web.Event event) {
+      imgElement.addEventListener(
+        'error',
+        ((web.Event event) {
           imgElement.style.display = 'none';
-        }).toJS);
+        }).toJS,
+      );
 
-        container.append(imgElement);
-        return container;
-      },
-    );
+      container.append(imgElement);
+      return container;
+    });
   }
 
   @override

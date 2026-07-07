@@ -113,48 +113,77 @@ class PetReportService {
           final widgets = <pw.Widget>[];
 
           if (sections.petProfile) {
-            widgets.addAll(PetProfileSectionBuilder.build(
-              pet, vet, weightEntries, weightUnit, l));
+            widgets.addAll(
+              PetProfileSectionBuilder.build(
+                pet,
+                vet,
+                weightEntries,
+                weightUnit,
+                l,
+              ),
+            );
           }
 
           if (sections.weightTracking) {
-            widgets.addAll(PetWeightSectionBuilder.build(
-              weightEntries, dateFormat, weightUnit, l));
+            widgets.addAll(
+              PetWeightSectionBuilder.build(
+                weightEntries,
+                dateFormat,
+                weightUnit,
+                l,
+              ),
+            );
           }
 
           if (sections.healthEvents) {
-            widgets.addAll(PetHealthSectionBuilder.build(
-              healthEntries,
-              dateFormat,
-              sections.healthFrom,
-              sections.healthTo,
-              sections.includeFullLog,
-              healthHistories,
-              l,
-            ));
+            widgets.addAll(
+              PetHealthSectionBuilder.build(
+                healthEntries,
+                dateFormat,
+                sections.healthFrom,
+                sections.healthTo,
+                sections.includeFullLog,
+                healthHistories,
+                l,
+              ),
+            );
           }
 
           if (sections.healthIssues) {
             widgets.addAll(
-                PetHealthIssuesSectionBuilder.build(healthIssues, healthEntries, dateFormat, l));
+              PetHealthIssuesSectionBuilder.build(
+                healthIssues,
+                healthEntries,
+                dateFormat,
+                l,
+              ),
+            );
           }
 
           if (sections.familyEvents) {
             widgets.addAll(
-                PetFamilyEventsSectionBuilder.build(familyEvents, dateFormat, l));
+              PetFamilyEventsSectionBuilder.build(familyEvents, dateFormat, l),
+            );
           }
 
           if (sections.fosterHistory) {
-            widgets.addAll(PetFosterHistorySectionBuilder.build(
-              fosterPlacements,
-              dateFormat,
-              l,
-            ));
+            widgets.addAll(
+              PetFosterHistorySectionBuilder.build(
+                fosterPlacements,
+                dateFormat,
+                l,
+              ),
+            );
           }
 
           if (sections.notifications) {
             widgets.addAll(
-                PetNotificationsSectionBuilder.build(petNotifications, dateFormat, l));
+              PetNotificationsSectionBuilder.build(
+                petNotifications,
+                dateFormat,
+                l,
+              ),
+            );
           }
 
           if (sections.sharing) {
@@ -170,7 +199,11 @@ class PetReportService {
   }
 
   pw.Widget _buildHeader(
-      Pet pet, DateFormat dateFormat, pw.ImageProvider? logoImage, AppLocalizations l) {
+    Pet pet,
+    DateFormat dateFormat,
+    pw.ImageProvider? logoImage,
+    AppLocalizations l,
+  ) {
     return pw.Container(
       margin: const pw.EdgeInsets.only(bottom: 14),
       padding: const pw.EdgeInsets.all(12),
@@ -189,9 +222,7 @@ class PetReportService {
                 borderRadius: pw.BorderRadius.circular(24),
                 border: pw.Border.all(color: _white, width: 1.5),
               ),
-              child: pw.ClipOval(
-                child: _buildPetImage(pet.photoPath!),
-              ),
+              child: pw.ClipOval(child: _buildPetImage(pet.photoPath!)),
             ),
           pw.Expanded(
             child: pw.Column(
@@ -260,7 +291,11 @@ class PetReportService {
   }
 
   pw.Widget _buildFooter(
-      pw.Context context, DateTime generatedAt, DateFormat dateFormat, AppLocalizations l) {
+    pw.Context context,
+    DateTime generatedAt,
+    DateFormat dateFormat,
+    AppLocalizations l,
+  ) {
     return pw.Container(
       margin: const pw.EdgeInsets.only(top: 8),
       padding: const pw.EdgeInsets.only(top: 6),
@@ -283,7 +318,6 @@ class PetReportService {
     );
   }
 
-
   pw.Widget _buildPetImage(String base64Data) {
     try {
       String data = base64Data;
@@ -303,8 +337,10 @@ class PetReportService {
         height: 56,
         color: _brandPurpleLight,
         child: pw.Center(
-          child: pw.Text('?',
-              style: pw.TextStyle(fontSize: 20, color: _brandPurple)),
+          child: pw.Text(
+            '?',
+            style: pw.TextStyle(fontSize: 20, color: _brandPurple),
+          ),
         ),
       );
     }

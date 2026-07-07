@@ -61,10 +61,12 @@ Future<void> showOrganizationInviteByEmailDialog({
                   ),
                 ),
                 items: roleOptions
-                    .map((wire) => DropdownMenuItem(
-                          value: wire,
-                          child: Text(invitableRoleLabel(l, wire)),
-                        ))
+                    .map(
+                      (wire) => DropdownMenuItem(
+                        value: wire,
+                        child: Text(invitableRoleLabel(l, wire)),
+                      ),
+                    )
                     .toList(),
                 onChanged: (value) {
                   if (value != null) setState(() => selectedRole = value);
@@ -89,9 +91,9 @@ Future<void> showOrganizationInviteByEmailDialog({
                     .read(orgMembersProvider(orgId).notifier)
                     .inviteByEmail(email, selectedRole);
                 if (context.mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text(l.inviteSent)),
-                  );
+                  ScaffoldMessenger.of(
+                    context,
+                  ).showSnackBar(SnackBar(content: Text(l.inviteSent)));
                 }
               } catch (e) {
                 if (context.mounted) {
@@ -103,9 +105,9 @@ Future<void> showOrganizationInviteByEmailDialog({
                   } else if (errorMsg.contains('already_member')) {
                     displayMsg = l.alreadyMember;
                   }
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text(displayMsg)),
-                  );
+                  ScaffoldMessenger.of(
+                    context,
+                  ).showSnackBar(SnackBar(content: Text(displayMsg)));
                 }
               }
             },

@@ -44,7 +44,10 @@ void main() {
 
     expect(find.text('Email is required'), findsOneWidget);
 
-    await tester.enterText(find.byKey(const Key('org_invite_email')), 'not-an-email');
+    await tester.enterText(
+      find.byKey(const Key('org_invite_email')),
+      'not-an-email',
+    );
     await tester.tap(find.byKey(const Key('org_invite_send')));
     await tester.pumpAndSettle();
 

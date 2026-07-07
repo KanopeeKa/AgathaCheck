@@ -34,7 +34,10 @@ class HealthEntryCard extends StatelessWidget {
 
     final statusColor = healthEntryStatusColor(entry, colorScheme);
 
-    final statusLine = formatHealthEntryStatusLine(entry, AppLocalizations.of(context)!);
+    final statusLine = formatHealthEntryStatusLine(
+      entry,
+      AppLocalizations.of(context)!,
+    );
     final statusText = statusLine.toLowerCase();
 
     final showActions = !entry.isCompleted;

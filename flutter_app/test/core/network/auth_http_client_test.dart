@@ -89,7 +89,9 @@ void main() {
     });
 
     test('throws SessionExpiredException when the refresh fails', () async {
-      final inner = MockClient((req) async => http.Response('unauthorized', 401));
+      final inner = MockClient(
+        (req) async => http.Response('unauthorized', 401),
+      );
       final client = AuthHttpClient(
         inner: inner,
         getAccessToken: () => 'old',
@@ -134,21 +136,34 @@ void main() {
         refreshAccessToken: () async => 'new',
       );
 
-      final request = http.MultipartRequest(
-          'POST', Uri.parse('https://example.com/api/photos'))
-        ..files.add(
-            http.MultipartFile.fromBytes('photo', [1, 2, 3, 4], filename: 'p.png'))
-        ..fields['caption'] = 'hi';
+      final request =
+          http.MultipartRequest(
+              'POST',
+              Uri.parse('https://example.com/api/photos'),
+            )
+            ..files.add(
+              http.MultipartFile.fromBytes('photo', [
+                1,
+                2,
+                3,
+                4,
+              ], filename: 'p.png'),
+            )
+            ..fields['caption'] = 'hi';
 
       final streamed = await client.send(request);
 
       expect(streamed.statusCode, 200);
       expect(seenHeaders.length, 2);
       // Both attempts kept a valid multipart content-type with a boundary.
-      expect(seenHeaders[0]['content-type'],
-          contains('multipart/form-data; boundary='));
-      expect(seenHeaders[1]['content-type'],
-          contains('multipart/form-data; boundary='));
+      expect(
+        seenHeaders[0]['content-type'],
+        contains('multipart/form-data; boundary='),
+      );
+      expect(
+        seenHeaders[1]['content-type'],
+        contains('multipart/form-data; boundary='),
+      );
       // Retry used the refreshed token and preserved the field/file payload.
       expect(seenBodies[1], contains('caption'));
       expect(seenBodies[1], contains('filename="p.png"'));

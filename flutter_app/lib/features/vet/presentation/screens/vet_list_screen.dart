@@ -31,15 +31,16 @@ class VetListScreen extends ConsumerWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(Icons.error_outline,
-                  size: 48, color: theme.colorScheme.error),
+              Icon(
+                Icons.error_outline,
+                size: 48,
+                color: theme.colorScheme.error,
+              ),
               const SizedBox(height: 16),
-              Text('Failed to load vets: $error',
-                  textAlign: TextAlign.center),
+              Text('Failed to load vets: $error', textAlign: TextAlign.center),
               const SizedBox(height: 8),
               FilledButton(
-                onPressed: () =>
-                    ref.read(vetListProvider.notifier).refresh(),
+                onPressed: () => ref.read(vetListProvider.notifier).refresh(),
                 child: Text(l.retry),
               ),
             ],
@@ -51,11 +52,13 @@ class VetListScreen extends ConsumerWidget {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Icon(Icons.local_hospital_outlined,
-                      size: 80, color: theme.colorScheme.outline),
+                  Icon(
+                    Icons.local_hospital_outlined,
+                    size: 80,
+                    color: theme.colorScheme.outline,
+                  ),
                   const SizedBox(height: 16),
-                  Text(l.noVetsYet,
-                      style: theme.textTheme.headlineSmall),
+                  Text(l.noVetsYet, style: theme.textTheme.headlineSmall),
                   const SizedBox(height: 8),
                   Text(
                     'Tap the + button to add a vet.',
@@ -78,24 +81,30 @@ class VetListScreen extends ConsumerWidget {
               itemCount: vets.length,
               itemBuilder: (context, index) {
                 final vet = vets[index];
-                final linkedPets =
-                    pets.where((p) => p.vetId == vet.id).toList();
+                final linkedPets = pets
+                    .where((p) => p.vetId == vet.id)
+                    .toList();
                 return MergeSemantics(
                   child: Card(
                     key: Key('vet_card_${vet.name}'),
                     margin: const EdgeInsets.only(bottom: 8),
                     child: Semantics(
-                      label: 'Veterinarian: ${vet.name}${vet.phone.isNotEmpty ? ', Phone: ${vet.phone}' : ''}${vet.address.isNotEmpty ? ', Address: ${vet.address}' : ''}',
+                      label:
+                          'Veterinarian: ${vet.name}${vet.phone.isNotEmpty ? ', Phone: ${vet.phone}' : ''}${vet.address.isNotEmpty ? ', Address: ${vet.address}' : ''}',
                       child: ListTile(
                         leading: CircleAvatar(
                           backgroundColor: theme.colorScheme.primaryContainer,
                           child: ExcludeSemantics(
-                            child: Icon(Icons.local_hospital,
-                                color: theme.colorScheme.onPrimaryContainer),
+                            child: Icon(
+                              Icons.local_hospital,
+                              color: theme.colorScheme.onPrimaryContainer,
+                            ),
                           ),
                         ),
-                        title: Text(vet.name,
-                            style: theme.textTheme.titleMedium),
+                        title: Text(
+                          vet.name,
+                          style: theme.textTheme.titleMedium,
+                        ),
                         subtitle: _buildSubtitle(vet, linkedPets),
                         trailing: PopupMenuButton<String>(
                           tooltip: l.vetOptions,
@@ -157,7 +166,12 @@ class VetListScreen extends ConsumerWidget {
     return Text(parts.join(' \u2022 '));
   }
 
-  void _confirmDelete(BuildContext context, WidgetRef ref, vet, AppLocalizations l) async {
+  void _confirmDelete(
+    BuildContext context,
+    WidgetRef ref,
+    vet,
+    AppLocalizations l,
+  ) async {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(

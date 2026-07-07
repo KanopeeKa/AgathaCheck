@@ -9,11 +9,7 @@ import '../utils/org_member_count_label.dart';
 import 'org_image_avatar.dart';
 
 class OrgCard extends ConsumerWidget {
-  const OrgCard({
-    super.key,
-    required this.organization,
-    this.onTap,
-  });
+  const OrgCard({super.key, required this.organization, this.onTap});
 
   final Organization organization;
   final VoidCallback? onTap;
@@ -47,7 +43,8 @@ class OrgCard extends ConsumerWidget {
 
     return MergeSemantics(
       child: Semantics(
-        label: '${organization.name}, ${typeLabel(organization.type)}, '
+        label:
+            '${organization.name}, ${typeLabel(organization.type)}, '
             '$memberLabel, ${l.petCount(organization.petCount)}',
         child: Card(
           key: Key('org_card_${organization.id}'),
@@ -80,8 +77,9 @@ class OrgCard extends ConsumerWidget {
                         Row(
                           children: [
                             _TypeBadge(
-                                type: organization.type,
-                                label: typeLabel(organization.type)),
+                              type: organization.type,
+                              label: typeLabel(organization.type),
+                            ),
                             const SizedBox(width: 8),
                             if (organization.isSuperUser)
                               _RoleBadge(
@@ -108,9 +106,11 @@ class OrgCard extends ConsumerWidget {
                         const SizedBox(height: 6),
                         Row(
                           children: [
-                            Icon(Icons.people_outline,
-                                size: 16,
-                                color: theme.colorScheme.onSurfaceVariant),
+                            Icon(
+                              Icons.people_outline,
+                              size: 16,
+                              color: theme.colorScheme.onSurfaceVariant,
+                            ),
                             const SizedBox(width: 4),
                             Expanded(
                               child: Text(
@@ -121,9 +121,11 @@ class OrgCard extends ConsumerWidget {
                               ),
                             ),
                             const SizedBox(width: 12),
-                            Icon(Icons.pets,
-                                size: 16,
-                                color: theme.colorScheme.onSurfaceVariant),
+                            Icon(
+                              Icons.pets,
+                              size: 16,
+                              color: theme.colorScheme.onSurfaceVariant,
+                            ),
                             const SizedBox(width: 4),
                             Text(
                               l.petCount(organization.petCount),

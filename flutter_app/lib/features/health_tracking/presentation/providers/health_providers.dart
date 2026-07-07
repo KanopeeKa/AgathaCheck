@@ -75,7 +75,8 @@ final getEntryHistoryProvider = Provider<GetEntryHistory>((ref) {
 /// Manages the state of health entries with async loading.
 final healthEntriesNotifierProvider =
     AsyncNotifierProvider<HealthEntriesNotifier, List<HealthEntry>>(
-        HealthEntriesNotifier.new);
+      HealthEntriesNotifier.new,
+    );
 
 /// Notifier that manages loading, creating, updating, and deleting health entries.
 class HealthEntriesNotifier extends AsyncNotifier<List<HealthEntry>> {
@@ -109,8 +110,14 @@ class HealthEntriesNotifier extends AsyncNotifier<List<HealthEntry>> {
   }
 
   /// Marks a health entry as taken and refreshes the list.
-  Future<void> markTaken(String id, {String notes = '', DateTime? completedOn}) async {
-    await ref.read(markEntryTakenProvider).call(id, notes: notes, completedOn: completedOn);
+  Future<void> markTaken(
+    String id, {
+    String notes = '',
+    DateTime? completedOn,
+  }) async {
+    await ref
+        .read(markEntryTakenProvider)
+        .call(id, notes: notes, completedOn: completedOn);
     await refresh();
   }
 
@@ -135,46 +142,53 @@ class HealthEntriesNotifier extends AsyncNotifier<List<HealthEntry>> {
 
 /// Provides filtered entries by type.
 final filteredHealthEntriesProvider =
-    Provider.family<AsyncValue<List<HealthEntry>>, HealthEntryType?>(
-        (ref, type) {
-  final entriesAsync = ref.watch(healthEntriesNotifierProvider);
-  return entriesAsync.whenData((entries) {
-    if (type == null) return entries;
-    return entries.where((e) => e.type == type).toList();
-  });
-});
+    Provider.family<AsyncValue<List<HealthEntry>>, HealthEntryType?>((
+      ref,
+      type,
+    ) {
+      final entriesAsync = ref.watch(healthEntriesNotifierProvider);
+      return entriesAsync.whenData((entries) {
+        if (type == null) return entries;
+        return entries.where((e) => e.type == type).toList();
+      });
+    });
 
 /// Provides health entries filtered by a specific pet.
 final petHealthEntriesProvider =
     FutureProvider.family<List<HealthEntry>, String>((ref, petId) {
-  return ref.read(getHealthEntriesProvider).call(petId: petId);
-});
+      return ref.read(getHealthEntriesProvider).call(petId: petId);
+    });
 
 /// Health entries for a specific pet, derived reactively from the global list
 /// ([healthEntriesNotifierProvider]) so it reflects creates/edits/deletes and
 /// mark-taken without a separate fetch.
 final petHealthEntriesByIdProvider =
     Provider.family<AsyncValue<List<HealthEntry>>, String>((ref, petId) {
-  final entriesAsync = ref.watch(healthEntriesNotifierProvider);
-  return entriesAsync.whenData(
-      (entries) => entries.where((e) => e.petId == petId).toList());
-});
+      final entriesAsync = ref.watch(healthEntriesNotifierProvider);
+      return entriesAsync.whenData(
+        (entries) => entries.where((e) => e.petId == petId).toList(),
+      );
+    });
 
 /// Medication, preventive, and vet visit entries for the pet profile Health Events section.
 final petHealthEventsByIdProvider =
     Provider.family<AsyncValue<List<HealthEntry>>, String>((ref, petId) {
-  return ref.watch(petHealthEntriesByIdProvider(petId)).whenData(
-        (entries) => entries.where((e) => e.type.isHealthEvent).toList(),
-      );
-});
+      return ref
+          .watch(petHealthEntriesByIdProvider(petId))
+          .whenData(
+            (entries) => entries.where((e) => e.type.isHealthEvent).toList(),
+          );
+    });
 
 /// Care event and other entries for the pet profile Other events section.
 final petOtherEventsByIdProvider =
     Provider.family<AsyncValue<List<HealthEntry>>, String>((ref, petId) {
-  return ref.watch(petHealthEntriesByIdProvider(petId)).whenData(
-        (entries) => entries.where((e) => e.type.isOtherEvent).toList(),
-      );
-});
+      return ref
+          .watch(petHealthEntriesByIdProvider(petId))
+          .whenData(
+            (entries) => entries.where((e) => e.type.isOtherEvent).toList(),
+          );
+    });
 
 /// Whether a health entry is due today or overdue (and not completed).
 bool isEntryDueOrOverdue(HealthEntry entry) =>
@@ -192,5 +206,5 @@ final hasDueOrOverdueEventsProvider = Provider<bool>((ref) {
 /// Provides history for a specific entry.
 final entryHistoryProvider =
     FutureProvider.family<List<HealthHistoryEntry>, String>((ref, entryId) {
-  return ref.read(getEntryHistoryProvider).call(entryId);
-});
+      return ref.read(getEntryHistoryProvider).call(entryId);
+    });

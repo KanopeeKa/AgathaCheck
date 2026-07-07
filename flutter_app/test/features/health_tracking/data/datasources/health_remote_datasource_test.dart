@@ -22,8 +22,10 @@ void main() {
     'next_due_date': '2025-02-01T00:00:00.000',
   };
 
-  HealthRemoteDataSourceImpl makeDatasource(http.Client client,
-      {String? authToken = token}) {
+  HealthRemoteDataSourceImpl makeDatasource(
+    http.Client client, {
+    String? authToken = token,
+  }) {
     final ds = HealthRemoteDataSourceImpl(baseUrl: baseUrl, client: client);
     ds.authToken = authToken;
     return ds;
@@ -62,8 +64,10 @@ void main() {
 
     test('markTaken sends Authorization bearer header', () async {
       final client = MockClient((request) async {
-        expect(request.url.toString(),
-            '$baseUrl/api/health-entries/he-1/mark-taken');
+        expect(
+          request.url.toString(),
+          '$baseUrl/api/health-entries/he-1/mark-taken',
+        );
         expect(request.method, 'POST');
         expect(request.headers['Authorization'], 'Bearer $token');
         return http.Response(json.encode(testEntryJson), 200);
@@ -73,8 +77,10 @@ void main() {
 
     test('undoComplete sends Authorization bearer header', () async {
       final client = MockClient((request) async {
-        expect(request.url.toString(),
-            '$baseUrl/api/health-entries/he-1/undo-complete');
+        expect(
+          request.url.toString(),
+          '$baseUrl/api/health-entries/he-1/undo-complete',
+        );
         expect(request.method, 'POST');
         expect(request.headers['Authorization'], 'Bearer $token');
         return http.Response(json.encode(testEntryJson), 200);
@@ -102,8 +108,10 @@ void main() {
 
     test('getHistory sends Authorization bearer header', () async {
       final client = MockClient((request) async {
-        expect(request.url.toString(),
-            '$baseUrl/api/health-entries/he-1/history');
+        expect(
+          request.url.toString(),
+          '$baseUrl/api/health-entries/he-1/history',
+        );
         expect(request.headers['Authorization'], 'Bearer $token');
         return http.Response(json.encode([]), 200);
       });
@@ -120,26 +128,32 @@ void main() {
 
     test('getPhotos sends Authorization bearer header', () async {
       final client = MockClient((request) async {
-        expect(request.url.toString(),
-            '$baseUrl/api/health-entries/he-1/photos');
+        expect(
+          request.url.toString(),
+          '$baseUrl/api/health-entries/he-1/photos',
+        );
         expect(request.headers['Authorization'], 'Bearer $token');
         return http.Response(json.encode([]), 200);
       });
       await makeDatasource(client).getPhotos('he-1');
     });
 
-    test('uploadPhoto multipart request carries Authorization header',
-        () async {
-      final client = MockClient((request) async {
-        expect(request.method, 'POST');
-        expect(request.headers['Authorization'], 'Bearer $token');
-        return http.Response(
+    test(
+      'uploadPhoto multipart request carries Authorization header',
+      () async {
+        final client = MockClient((request) async {
+          expect(request.method, 'POST');
+          expect(request.headers['Authorization'], 'Bearer $token');
+          return http.Response(
             json.encode({'id': 1, 'event_id': 'he-1', 'photo_path': '/p.jpg'}),
-            200);
-      });
-      await makeDatasource(client)
-          .uploadPhoto('he-1', Uint8List.fromList([1, 2, 3]), 'p.jpg');
-    });
+            200,
+          );
+        });
+        await makeDatasource(
+          client,
+        ).uploadPhoto('he-1', Uint8List.fromList([1, 2, 3]), 'p.jpg');
+      },
+    );
 
     test('deletePhoto sends Authorization bearer header', () async {
       final client = MockClient((request) async {

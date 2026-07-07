@@ -33,18 +33,17 @@ class HealthIssue {
     DateTime? updatedAt,
     bool clearStartDate = false,
     bool clearEndDate = false,
-  }) =>
-      HealthIssue(
-        id: id ?? this.id,
-        petId: petId ?? this.petId,
-        title: title ?? this.title,
-        description: description ?? this.description,
-        eventIds: eventIds ?? this.eventIds,
-        startDate: clearStartDate ? null : (startDate ?? this.startDate),
-        endDate: clearEndDate ? null : (endDate ?? this.endDate),
-        createdAt: createdAt ?? this.createdAt,
-        updatedAt: updatedAt ?? this.updatedAt,
-      );
+  }) => HealthIssue(
+    id: id ?? this.id,
+    petId: petId ?? this.petId,
+    title: title ?? this.title,
+    description: description ?? this.description,
+    eventIds: eventIds ?? this.eventIds,
+    startDate: clearStartDate ? null : (startDate ?? this.startDate),
+    endDate: clearEndDate ? null : (endDate ?? this.endDate),
+    createdAt: createdAt ?? this.createdAt,
+    updatedAt: updatedAt ?? this.updatedAt,
+  );
 
   @override
   bool operator ==(Object other) =>

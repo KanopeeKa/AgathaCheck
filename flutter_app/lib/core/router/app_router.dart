@@ -182,7 +182,9 @@ final routerProvider = Provider<GoRouter>((ref) {
           final petId = state.pathParameters['petId']!;
           final typeParam = state.uri.queryParameters['type'];
           final initialType = typeParam != null
-              ? HealthEntryType.values.where((t) => t.name == typeParam).firstOrNull
+              ? HealthEntryType.values
+                    .where((t) => t.name == typeParam)
+                    .firstOrNull
               : null;
           return HealthEntryFormScreen(
             petId: petId,
@@ -211,7 +213,9 @@ final routerProvider = Provider<GoRouter>((ref) {
           final petId = state.pathParameters['petId']!;
           final typeParam = state.uri.queryParameters['type'];
           final initialType = typeParam != null
-              ? HealthEntryType.values.where((t) => t.name == typeParam).firstOrNull
+              ? HealthEntryType.values
+                    .where((t) => t.name == typeParam)
+                    .firstOrNull
               : null;
           return OtherEventFormScreen(petId: petId, initialType: initialType);
         },
@@ -236,7 +240,9 @@ final routerProvider = Provider<GoRouter>((ref) {
         builder: (context, state) {
           final typeParam = state.uri.queryParameters['type'];
           final initialType = typeParam != null
-              ? HealthEntryType.values.where((t) => t.name == typeParam).firstOrNull
+              ? HealthEntryType.values
+                    .where((t) => t.name == typeParam)
+                    .firstOrNull
               : null;
           return HealthEntryFormScreen(initialType: initialType);
         },
@@ -379,10 +385,7 @@ final routerProvider = Provider<GoRouter>((ref) {
         builder: (context, state) => const ConsentSettingsScreen(),
       ),
     ],
-    errorBuilder: (context, state) => Scaffold(
-      body: Center(
-        child: Text('Page not found: ${state.uri}'),
-      ),
-    ),
+    errorBuilder: (context, state) =>
+        Scaffold(body: Center(child: Text('Page not found: ${state.uri}'))),
   );
 });

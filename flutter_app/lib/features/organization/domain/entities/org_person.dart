@@ -71,10 +71,7 @@ class OrgPersonSummary {
 }
 
 class OrgPersonPlacementPet {
-  const OrgPersonPlacementPet({
-    required this.placement,
-    this.outcome,
-  });
+  const OrgPersonPlacementPet({required this.placement, this.outcome});
 
   final FosterPlacement placement;
   final String? outcome;

@@ -51,13 +51,10 @@ Router vetRoutes(Pool pool) {
     }
     try {
       final results = await pool.execute(
-        Sql.named(
-            'SELECT * FROM vets WHERE user_id = @userId ORDER BY name'),
+        Sql.named('SELECT * FROM vets WHERE user_id = @userId ORDER BY name'),
         parameters: {'userId': userId},
       );
-      final list = results
-          .map((r) => _vetRowToMap(r))
-          .toList();
+      final list = results.map((r) => _vetRowToMap(r)).toList();
       return Response.ok(jsonEncode(list), headers: _json);
     } catch (e) {
       return Response.internalServerError(
@@ -73,14 +70,14 @@ Router vetRoutes(Pool pool) {
     }
     try {
       final results = await pool.execute(
-        Sql.named(
-            'SELECT * FROM vets WHERE id = @id AND user_id = @userId'),
+        Sql.named('SELECT * FROM vets WHERE id = @id AND user_id = @userId'),
         parameters: {'id': id, 'userId': userId},
       );
       if (results.isEmpty) {
         return Response.notFound(jsonEncode({'error': 'Vet not found'}));
       }
-      return Response.ok(jsonEncode(_vetRowToMap(results.first)), headers: _json);
+      return Response.ok(jsonEncode(_vetRowToMap(results.first)),
+          headers: _json);
     } catch (e) {
       return Response.internalServerError(
           body: jsonEncode({'error': publicError(e)}));
@@ -111,7 +108,8 @@ Router vetRoutes(Pool pool) {
           'notes': body['notes'] ?? '',
         },
       );
-      return Response(201, body: jsonEncode(_vetRowToMap(results.first)), headers: _json);
+      return Response(201,
+          body: jsonEncode(_vetRowToMap(results.first)), headers: _json);
     } catch (e) {
       return Response.internalServerError(
           body: jsonEncode({'error': publicError(e)}));
@@ -144,7 +142,8 @@ Router vetRoutes(Pool pool) {
       if (results.isEmpty) {
         return Response.notFound(jsonEncode({'error': 'Vet not found'}));
       }
-      return Response.ok(jsonEncode(_vetRowToMap(results.first)), headers: _json);
+      return Response.ok(jsonEncode(_vetRowToMap(results.first)),
+          headers: _json);
     } catch (e) {
       return Response.internalServerError(
           body: jsonEncode({'error': publicError(e)}));
@@ -166,8 +165,8 @@ Router vetRoutes(Pool pool) {
       if (results.isEmpty) {
         return Response.notFound(jsonEncode({'error': 'Vet not found'}));
       }
-      return Response.ok(
-          jsonEncode({'message': 'Vet deleted'}), headers: _json);
+      return Response.ok(jsonEncode({'message': 'Vet deleted'}),
+          headers: _json);
     } catch (e) {
       return Response.internalServerError(
           body: jsonEncode({'error': publicError(e)}));

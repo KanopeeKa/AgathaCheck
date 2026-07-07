@@ -27,13 +27,19 @@ class OrganizationRepositoryImpl implements OrganizationRepository {
   }
 
   @override
-  Future<Organization> createOrganization(Organization org, String token) async {
+  Future<Organization> createOrganization(
+    Organization org,
+    String token,
+  ) async {
     final model = OrganizationModel.fromEntity(org);
     return await _dataSource.createOrganization(model.toJson(), token);
   }
 
   @override
-  Future<Organization> updateOrganization(Organization org, String token) async {
+  Future<Organization> updateOrganization(
+    Organization org,
+    String token,
+  ) async {
     final model = OrganizationModel.fromEntity(org);
     return await _dataSource.updateOrganization(org.id, model.toJson(), token);
   }
@@ -45,30 +51,48 @@ class OrganizationRepositoryImpl implements OrganizationRepository {
 
   @override
   Future<Organization> uploadPhoto(
-      String id, Uint8List bytes, String filename, String token) async {
+    String id,
+    Uint8List bytes,
+    String filename,
+    String token,
+  ) async {
     return await _dataSource.uploadPhoto(id, bytes, filename, token);
   }
 
   @override
   Future<Organization> uploadLogo(
-      String id, Uint8List bytes, String filename, String token) async {
+    String id,
+    Uint8List bytes,
+    String filename,
+    String token,
+  ) async {
     return await _dataSource.uploadLogo(id, bytes, filename, token);
   }
 
   @override
   Future<Organization> setPrimaryContact(
-      String orgId, String recordId, String token) async {
+    String orgId,
+    String recordId,
+    String token,
+  ) async {
     return await _dataSource.setPrimaryContact(orgId, recordId, token);
   }
 
   @override
-  Future<List<OrganizationMember>> getMembers(String orgId, String token) async {
+  Future<List<OrganizationMember>> getMembers(
+    String orgId,
+    String token,
+  ) async {
     return await _dataSource.getMembers(orgId, token);
   }
 
   @override
   Future<Map<String, dynamic>> inviteByEmail(
-      String orgId, String email, String role, String token) async {
+    String orgId,
+    String email,
+    String role,
+    String token,
+  ) async {
     return await _dataSource.inviteByEmail(orgId, email, role, token);
   }
 
@@ -78,7 +102,10 @@ class OrganizationRepositoryImpl implements OrganizationRepository {
   }
 
   @override
-  Future<Map<String, dynamic>> acceptInvite(String inviteId, String token) async {
+  Future<Map<String, dynamic>> acceptInvite(
+    String inviteId,
+    String token,
+  ) async {
     return await _dataSource.acceptInvite(inviteId, token);
   }
 
@@ -89,7 +116,11 @@ class OrganizationRepositoryImpl implements OrganizationRepository {
 
   @override
   Future<void> updateMemberRole(
-      String orgId, String userId, OrgMemberRole role, String token) async {
+    String orgId,
+    String userId,
+    OrgMemberRole role,
+    String token,
+  ) async {
     await _dataSource.updateMemberRole(orgId, userId, role.toWire(), token);
   }
 
@@ -105,19 +136,30 @@ class OrganizationRepositoryImpl implements OrganizationRepository {
 
   @override
   Future<List<Map<String, dynamic>>> getOrganizationPets(
-      String orgId, String token) async {
+    String orgId,
+    String token,
+  ) async {
     return await _dataSource.getOrganizationPets(orgId, token);
   }
 
   @override
   Future<Map<String, dynamic>> createOrganizationPet(
-      String orgId, Map<String, dynamic> petJson, String token) async {
+    String orgId,
+    Map<String, dynamic> petJson,
+    String token,
+  ) async {
     return await _dataSource.createOrganizationPet(orgId, petJson, token);
   }
 
   @override
   Future<void> transferPetToUser(
-      String orgId, String petId, {required String recipientEmail, String transferType = 'adoption', String notes = '', required String token}) async {
+    String orgId,
+    String petId, {
+    required String recipientEmail,
+    String transferType = 'adoption',
+    String notes = '',
+    required String token,
+  }) async {
     await _dataSource.transferPetToUser(
       orgId,
       petId,
@@ -130,7 +172,11 @@ class OrganizationRepositoryImpl implements OrganizationRepository {
 
   @override
   Future<void> transferPetToOrg(
-      String petId, String orgId, {String notes = '', required String token}) async {
+    String petId,
+    String orgId, {
+    String notes = '',
+    required String token,
+  }) async {
     await _dataSource.transferPetToOrg(
       petId,
       orgId,
@@ -141,7 +187,9 @@ class OrganizationRepositoryImpl implements OrganizationRepository {
 
   @override
   Future<List<ArchivedPet>> getOrganizationArchivedPets(
-      String orgId, String token) async {
+    String orgId,
+    String token,
+  ) async {
     return await _dataSource.getOrganizationArchivedPets(orgId, token);
   }
 
@@ -152,30 +200,45 @@ class OrganizationRepositoryImpl implements OrganizationRepository {
 
   @override
   Future<List<Map<String, dynamic>>> getFamilyEvents(
-      String token, String petId) async {
+    String token,
+    String petId,
+  ) async {
     return await _dataSource.getFamilyEvents(token, petId);
   }
 
   @override
   Future<Map<String, dynamic>> createFamilyEvent(
-      String token, String petId, Map<String, dynamic> body) async {
+    String token,
+    String petId,
+    Map<String, dynamic> body,
+  ) async {
     return await _dataSource.createFamilyEvent(token, petId, body);
   }
 
   @override
   Future<void> updateFamilyEvent(
-      String token, String petId, String eventId, Map<String, dynamic> body) async {
+    String token,
+    String petId,
+    String eventId,
+    Map<String, dynamic> body,
+  ) async {
     await _dataSource.updateFamilyEvent(token, petId, eventId, body);
   }
 
   @override
   Future<void> deleteFamilyEvent(
-      String token, String petId, String eventId) async {
+    String token,
+    String petId,
+    String eventId,
+  ) async {
     await _dataSource.deleteFamilyEvent(token, petId, eventId);
   }
 
   @override
-  Future<List<FosterParent>> getFosterParents(String orgId, String token) async {
+  Future<List<FosterParent>> getFosterParents(
+    String orgId,
+    String token,
+  ) async {
     final rows = await _dataSource.getFosterParents(orgId, token);
     return rows.map(FosterParent.fromJson).toList();
   }
@@ -279,13 +342,19 @@ class OrganizationRepositoryImpl implements OrganizationRepository {
 
   @override
   Future<void> deleteExternalFosterParent(
-      String orgId, String fosterParentId, String token) async {
+    String orgId,
+    String fosterParentId,
+    String token,
+  ) async {
     await _dataSource.deleteExternalFosterParent(orgId, fosterParentId, token);
   }
 
   @override
   Future<PetFosterPlacementState> getPetPlacement(
-      String orgId, String petId, String token) async {
+    String orgId,
+    String petId,
+    String token,
+  ) async {
     final row = await _dataSource.getPetPlacement(orgId, petId, token);
     return PetFosterPlacementState.fromJson(row);
   }

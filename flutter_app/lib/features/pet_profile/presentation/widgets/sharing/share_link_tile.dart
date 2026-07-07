@@ -25,7 +25,8 @@ class ShareLinkTile extends ConsumerWidget {
     final baseUrl = Uri.base.origin;
     final url = '$baseUrl/#/shared/${link.code}';
 
-    final statusLabel = link.isActive && (link.claimedByName?.isNotEmpty ?? false)
+    final statusLabel =
+        link.isActive && (link.claimedByName?.isNotEmpty ?? false)
         ? l.sharingWithActive(link.claimedByName!)
         : l.shareLinkPending;
 
@@ -59,9 +60,9 @@ class ShareLinkTile extends ConsumerWidget {
                   child: OutlinedButton.icon(
                     onPressed: () {
                       Clipboard.setData(ClipboardData(text: url));
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text(l.linkCopied)),
-                      );
+                      ScaffoldMessenger.of(
+                        context,
+                      ).showSnackBar(SnackBar(content: Text(l.linkCopied)));
                     },
                     icon: const Icon(Icons.copy, size: 18),
                     label: Text(l.copyLinkAgain),
@@ -71,7 +72,10 @@ class ShareLinkTile extends ConsumerWidget {
                 IconButton(
                   tooltip: l.deleteLink,
                   onPressed: () => _confirmDelete(context, ref, l),
-                  icon: Icon(Icons.delete_outline, color: theme.colorScheme.error),
+                  icon: Icon(
+                    Icons.delete_outline,
+                    color: theme.colorScheme.error,
+                  ),
                 ),
               ],
             ),
@@ -98,7 +102,9 @@ class ShareLinkTile extends ConsumerWidget {
             ),
             onPressed: () async {
               Navigator.pop(ctx);
-              await ref.read(petShareLinksNotifierProvider(petId).notifier).deleteLink(link.id);
+              await ref
+                  .read(petShareLinksNotifierProvider(petId).notifier)
+                  .deleteLink(link.id);
             },
             child: Text(l.deleteLink),
           ),

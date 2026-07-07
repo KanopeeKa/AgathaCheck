@@ -22,15 +22,15 @@ class PetOrgSection extends StatelessWidget {
       decoration: InputDecoration(
         labelText: l.organizations,
         prefixIcon: const Icon(Icons.business),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
       ),
       items: orgs
-          .map((o) => DropdownMenuItem(
-                value: o['id']?.toString(),
-                child: Text(o['name'] as String? ?? ''),
-              ))
+          .map(
+            (o) => DropdownMenuItem(
+              value: o['id']?.toString(),
+              child: Text(o['name'] as String? ?? ''),
+            ),
+          )
           .toList(),
       onChanged: onChanged,
     );

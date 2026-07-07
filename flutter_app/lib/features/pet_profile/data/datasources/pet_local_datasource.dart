@@ -34,10 +34,9 @@ class PetLocalDataSourceImpl implements PetLocalDataSource {
   final SharedPreferences _prefs;
   final String? userId;
 
-  String get _storageKey =>
-      userId != null && userId!.isNotEmpty
-          ? '${AppConstants.petsStorageKey}_$userId'
-          : AppConstants.petsStorageKey;
+  String get _storageKey => userId != null && userId!.isNotEmpty
+      ? '${AppConstants.petsStorageKey}_$userId'
+      : AppConstants.petsStorageKey;
 
   bool _migrated = false;
 

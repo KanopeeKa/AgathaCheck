@@ -74,5 +74,6 @@ class VetListNotifier extends AsyncNotifier<List<Vet>> {
   }
 }
 
-final vetListProvider =
-    AsyncNotifierProvider<VetListNotifier, List<Vet>>(VetListNotifier.new);
+final vetListProvider = AsyncNotifierProvider<VetListNotifier, List<Vet>>(
+  VetListNotifier.new,
+);

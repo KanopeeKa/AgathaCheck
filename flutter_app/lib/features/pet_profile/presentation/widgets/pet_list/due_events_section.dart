@@ -23,14 +23,15 @@ class DueEventsSection extends ConsumerWidget {
       loading: () => const SizedBox.shrink(),
       error: (_, __) => const SizedBox.shrink(),
       data: (entries) {
-        final dueEntries = entries
-            .where((e) => !e.isCompleted && (e.isOverdue || e.isDueToday))
-            .toList()
-          ..sort((a, b) {
-            final ad = a.nextDueDate ?? DateTime(2100);
-            final bd = b.nextDueDate ?? DateTime(2100);
-            return ad.compareTo(bd);
-          });
+        final dueEntries =
+            entries
+                .where((e) => !e.isCompleted && (e.isOverdue || e.isDueToday))
+                .toList()
+              ..sort((a, b) {
+                final ad = a.nextDueDate ?? DateTime(2100);
+                final bd = b.nextDueDate ?? DateTime(2100);
+                return ad.compareTo(bd);
+              });
 
         final petMap = {for (final p in pets) p.id: p};
 
@@ -78,7 +79,9 @@ class DueEventsSection extends ConsumerWidget {
                         const SizedBox(width: 8),
                         Container(
                           padding: const EdgeInsets.symmetric(
-                              horizontal: 8, vertical: 2),
+                            horizontal: 8,
+                            vertical: 2,
+                          ),
                           decoration: BoxDecoration(
                             color: colorScheme.error.withAlpha(30),
                             borderRadius: BorderRadius.circular(10),
@@ -136,8 +139,9 @@ class DueEventsSection extends ConsumerWidget {
                                 const SizedBox(width: 10),
                                 Expanded(
                                   child: Padding(
-                                    padding:
-                                        const EdgeInsets.symmetric(vertical: 4),
+                                    padding: const EdgeInsets.symmetric(
+                                      vertical: 4,
+                                    ),
                                     child: Row(
                                       children: [
                                         Expanded(
@@ -157,12 +161,13 @@ class DueEventsSection extends ConsumerWidget {
                                                     Text(
                                                       pet.name,
                                                       style: theme
-                                                          .textTheme.labelSmall
+                                                          .textTheme
+                                                          .labelSmall
                                                           ?.copyWith(
-                                                        color: petColor,
-                                                        fontWeight:
-                                                            FontWeight.w600,
-                                                      ),
+                                                            color: petColor,
+                                                            fontWeight:
+                                                                FontWeight.w600,
+                                                          ),
                                                     ),
                                                     const SizedBox(width: 6),
                                                   ],
@@ -177,11 +182,12 @@ class DueEventsSection extends ConsumerWidget {
                                                     child: Text(
                                                       entry.name,
                                                       style: theme
-                                                          .textTheme.bodySmall
+                                                          .textTheme
+                                                          .bodySmall
                                                           ?.copyWith(
-                                                        fontWeight:
-                                                            FontWeight.w600,
-                                                      ),
+                                                            fontWeight:
+                                                                FontWeight.w600,
+                                                          ),
                                                       overflow:
                                                           TextOverflow.ellipsis,
                                                     ),
@@ -194,27 +200,32 @@ class DueEventsSection extends ConsumerWidget {
                                         const SizedBox(width: 8),
                                         Container(
                                           padding: const EdgeInsets.symmetric(
-                                              horizontal: 6, vertical: 2),
+                                            horizontal: 6,
+                                            vertical: 2,
+                                          ),
                                           decoration: BoxDecoration(
                                             color: isOverdue
-                                                ? colorScheme.error
-                                                    .withAlpha(20)
+                                                ? colorScheme.error.withAlpha(
+                                                    20,
+                                                  )
                                                 : Colors.orange.withAlpha(20),
-                                            borderRadius:
-                                                BorderRadius.circular(6),
+                                            borderRadius: BorderRadius.circular(
+                                              6,
+                                            ),
                                           ),
                                           child: Text(
                                             isOverdue
-                                                ? dateFormat
-                                                    .format(entry.nextDueDate!)
+                                                ? dateFormat.format(
+                                                    entry.nextDueDate!,
+                                                  )
                                                 : 'Today',
                                             style: theme.textTheme.labelSmall
                                                 ?.copyWith(
-                                              color: isOverdue
-                                                  ? colorScheme.error
-                                                  : Colors.orange[800],
-                                              fontWeight: FontWeight.w600,
-                                            ),
+                                                  color: isOverdue
+                                                      ? colorScheme.error
+                                                      : Colors.orange[800],
+                                                  fontWeight: FontWeight.w600,
+                                                ),
                                           ),
                                         ),
                                       ],

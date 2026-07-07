@@ -67,7 +67,10 @@ class PetWeightSectionBuilder {
       pw.TableHelper.fromTextArray(
         border: pw.TableBorder.all(color: _borderColor, width: 0.5),
         headerStyle: pw.TextStyle(
-            fontSize: 8, fontWeight: pw.FontWeight.bold, color: _white),
+          fontSize: 8,
+          fontWeight: pw.FontWeight.bold,
+          color: _white,
+        ),
         headerDecoration: const pw.BoxDecoration(color: _brandPurple),
         cellStyle: const pw.TextStyle(fontSize: 8, color: _textDark),
         cellPadding: const pw.EdgeInsets.symmetric(horizontal: 6, vertical: 3),
@@ -94,8 +97,9 @@ class PetWeightSectionBuilder {
       margin: const pw.EdgeInsets.only(bottom: 6),
       padding: const pw.EdgeInsets.only(bottom: 4),
       decoration: const pw.BoxDecoration(
-        border:
-            pw.Border(bottom: pw.BorderSide(color: _brandPurple, width: 1.5)),
+        border: pw.Border(
+          bottom: pw.BorderSide(color: _brandPurple, width: 1.5),
+        ),
       ),
       child: pw.Text(
         title.toUpperCase(),
@@ -116,8 +120,10 @@ class PetWeightSectionBuilder {
         border: pw.Border.all(color: _borderColor, width: 0.5),
         borderRadius: pw.BorderRadius.circular(4),
       ),
-      child: pw.Text(msg,
-          style: const pw.TextStyle(fontSize: 9, color: _textMuted)),
+      child: pw.Text(
+        msg,
+        style: const pw.TextStyle(fontSize: 9, color: _textMuted),
+      ),
     );
   }
 
@@ -129,7 +135,10 @@ class PetWeightSectionBuilder {
     return List.generate(5, (i) => first + step * i);
   }
 
-  static List<double> _chartWeightLabels(List<WeightEntry> sorted, String weightUnit) {
+  static List<double> _chartWeightLabels(
+    List<WeightEntry> sorted,
+    String weightUnit,
+  ) {
     final weights = sorted.map((e) => e.weight).toList();
     final minW = weights.reduce((a, b) => a < b ? a : b);
     final maxW = weights.reduce((a, b) => a > b ? a : b);
@@ -142,10 +151,12 @@ class PetWeightSectionBuilder {
 
   static List<pw.PointChartValue> _chartDataPoints(List<WeightEntry> sorted) {
     return sorted
-        .map((e) => pw.PointChartValue(
-              e.date.millisecondsSinceEpoch.toDouble(),
-              e.weight,
-            ))
+        .map(
+          (e) => pw.PointChartValue(
+            e.date.millisecondsSinceEpoch.toDouble(),
+            e.weight,
+          ),
+        )
         .toList();
   }
 

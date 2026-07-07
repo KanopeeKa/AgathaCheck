@@ -32,23 +32,20 @@ class PetFamilyEventsSectionBuilder {
       pw.TableHelper.fromTextArray(
         border: pw.TableBorder.all(color: _borderColor, width: 0.5),
         headerStyle: pw.TextStyle(
-            fontSize: 8, fontWeight: pw.FontWeight.bold, color: _white),
+          fontSize: 8,
+          fontWeight: pw.FontWeight.bold,
+          color: _white,
+        ),
         headerDecoration: const pw.BoxDecoration(color: _brandPurple),
         cellStyle: const pw.TextStyle(fontSize: 8, color: _textDark),
-        cellPadding:
-            const pw.EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+        cellPadding: const pw.EdgeInsets.symmetric(horizontal: 6, vertical: 3),
         cellAlignments: {
           0: pw.Alignment.centerLeft,
           1: pw.Alignment.center,
           2: pw.Alignment.center,
           3: pw.Alignment.centerLeft,
         },
-        headers: [
-          l.pdfAssignedTo,
-          l.dueDate,
-          l.completedOn,
-          l.pdfNotes,
-        ],
+        headers: [l.pdfAssignedTo, l.dueDate, l.completedOn, l.pdfNotes],
         data: sorted.map((e) {
           return [
             e.assignedDisplay,
@@ -67,8 +64,9 @@ class PetFamilyEventsSectionBuilder {
       margin: const pw.EdgeInsets.only(bottom: 6),
       padding: const pw.EdgeInsets.only(bottom: 4),
       decoration: const pw.BoxDecoration(
-        border:
-            pw.Border(bottom: pw.BorderSide(color: _brandPurple, width: 1.5)),
+        border: pw.Border(
+          bottom: pw.BorderSide(color: _brandPurple, width: 1.5),
+        ),
       ),
       child: pw.Text(
         title.toUpperCase(),
@@ -89,8 +87,10 @@ class PetFamilyEventsSectionBuilder {
         border: pw.Border.all(color: _borderColor, width: 0.5),
         borderRadius: pw.BorderRadius.circular(4),
       ),
-      child: pw.Text(msg,
-          style: const pw.TextStyle(fontSize: 9, color: _textMuted)),
+      child: pw.Text(
+        msg,
+        style: const pw.TextStyle(fontSize: 9, color: _textMuted),
+      ),
     );
   }
 }

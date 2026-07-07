@@ -30,10 +30,7 @@ void main() {
 
   group('toCalendarDateString', () {
     test('serializes local calendar components', () {
-      expect(
-        toCalendarDateString(DateTime(2026, 6, 30)),
-        '2026-06-30',
-      );
+      expect(toCalendarDateString(DateTime(2026, 6, 30)), '2026-06-30');
     });
 
     test('returns null for null input', () {
@@ -66,7 +63,9 @@ void main() {
       final normalized = calendarDateOnly(july8CestMidnightUtc);
       expect(
         toCalendarDateString(normalized),
-        toCalendarDateString(DateTime.parse('2026-07-07T22:00:00.000Z').toLocal()),
+        toCalendarDateString(
+          DateTime.parse('2026-07-07T22:00:00.000Z').toLocal(),
+        ),
       );
     });
   });

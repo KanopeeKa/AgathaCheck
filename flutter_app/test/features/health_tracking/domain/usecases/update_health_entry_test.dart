@@ -26,8 +26,9 @@ void main() {
   );
 
   test('delegates to repository.updateEntry', () async {
-    when(mockRepository.updateEntry(testEntry))
-        .thenAnswer((_) async => testEntry);
+    when(
+      mockRepository.updateEntry(testEntry),
+    ).thenAnswer((_) async => testEntry);
 
     final result = await useCase(testEntry);
     expect(result, testEntry);
@@ -37,16 +38,18 @@ void main() {
 
   test('returns the updated entry from repository', () async {
     final updatedEntry = testEntry.copyWith(name: 'Updated Name');
-    when(mockRepository.updateEntry(testEntry))
-        .thenAnswer((_) async => updatedEntry);
+    when(
+      mockRepository.updateEntry(testEntry),
+    ).thenAnswer((_) async => updatedEntry);
 
     final result = await useCase(testEntry);
     expect(result.name, 'Updated Name');
   });
 
   test('propagates repository exceptions', () async {
-    when(mockRepository.updateEntry(testEntry))
-        .thenThrow(Exception('Server error'));
+    when(
+      mockRepository.updateEntry(testEntry),
+    ).thenThrow(Exception('Server error'));
 
     expect(() => useCase(testEntry), throwsException);
   });

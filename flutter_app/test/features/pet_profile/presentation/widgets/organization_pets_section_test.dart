@@ -40,14 +40,17 @@ void main() {
         GoRoute(
           path: '/',
           builder: (context, state) => const Scaffold(
-            body: _Host(orgGroups: {'Happy Paws Shelter': [_orgPet]}),
+            body: _Host(
+              orgGroups: {
+                'Happy Paws Shelter': [_orgPet],
+              },
+            ),
           ),
         ),
         GoRoute(
           path: '/pet/:petId',
-          builder: (context, state) => Scaffold(
-            body: Text('Pet ${state.pathParameters['petId']}'),
-          ),
+          builder: (context, state) =>
+              Scaffold(body: Text('Pet ${state.pathParameters['petId']}')),
         ),
       ],
     );

@@ -15,7 +15,8 @@ class HealthEventsSection extends ConsumerStatefulWidget {
   final Pet? pet;
 
   @override
-  ConsumerState<HealthEventsSection> createState() => _HealthEventsSectionState();
+  ConsumerState<HealthEventsSection> createState() =>
+      _HealthEventsSectionState();
 }
 
 class _HealthEventsSectionState extends ConsumerState<HealthEventsSection> {
@@ -33,8 +34,12 @@ class _HealthEventsSectionState extends ConsumerState<HealthEventsSection> {
         clipBehavior: Clip.antiAlias,
         child: ExpansionTile(
           leading: Icon(Icons.list_alt, color: colorScheme.primary),
-          title: Text(l.healthEvents,
-              style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600)),
+          title: Text(
+            l.healthEvents,
+            style: theme.textTheme.titleMedium?.copyWith(
+              fontWeight: FontWeight.w600,
+            ),
+          ),
           children: [
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -62,15 +67,16 @@ class _HealthEventsSectionState extends ConsumerState<HealthEventsSection> {
               ),
               error: (e, _) => Padding(
                 padding: const EdgeInsets.all(16),
-                child: Text(e.toString(),
-                    style: TextStyle(color: colorScheme.error)),
+                child: Text(
+                  e.toString(),
+                  style: TextStyle(color: colorScheme.error),
+                ),
               ),
               data: (entries) => PetEventEntryList(
                 entries: entries,
                 petId: widget.petId,
-                onEntryTap: (entry) => context.go(
-                  '/pet/${widget.petId}/health/edit/${entry.id}',
-                ),
+                onEntryTap: (entry) =>
+                    context.go('/pet/${widget.petId}/health/edit/${entry.id}'),
               ),
             ),
           ],

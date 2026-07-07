@@ -40,14 +40,16 @@ class OrgFilterChips extends StatelessWidget {
               selected: selected == '_fostered',
               onSelected: (_) => onSelected('_fostered'),
             ),
-          ...orgNames.map((org) => Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 4),
-                child: ChoiceChip(
-                  label: Text(org),
-                  selected: selected == org,
-                  onSelected: (_) => onSelected(org),
-                ),
-              )),
+          ...orgNames.map(
+            (org) => Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 4),
+              child: ChoiceChip(
+                label: Text(org),
+                selected: selected == org,
+                onSelected: (_) => onSelected(org),
+              ),
+            ),
+          ),
         ],
       ),
     );

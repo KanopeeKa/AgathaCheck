@@ -72,16 +72,13 @@ void main() {
         GoRoute(
           path: '/pet/:petId',
           builder: (context, state) => Scaffold(
-            body: OtherEventsSection(
-              petId: state.pathParameters['petId']!,
-            ),
+            body: OtherEventsSection(petId: state.pathParameters['petId']!),
           ),
         ),
         GoRoute(
           path: '/pet/:petId/other/add',
-          builder: (context, state) => OtherEventFormScreen(
-            petId: state.pathParameters['petId']!,
-          ),
+          builder: (context, state) =>
+              OtherEventFormScreen(petId: state.pathParameters['petId']!),
         ),
       ],
     );

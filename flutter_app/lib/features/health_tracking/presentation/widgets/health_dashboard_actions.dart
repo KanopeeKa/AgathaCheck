@@ -39,10 +39,12 @@ class HealthDashboardActions extends StatelessWidget {
             PopupMenuItem(
               value: GroupMode.dueDate,
               child: ListTile(
-                leading: Icon(Icons.schedule,
-                    color: groupMode == GroupMode.dueDate
-                        ? colorScheme.primary
-                        : null),
+                leading: Icon(
+                  Icons.schedule,
+                  color: groupMode == GroupMode.dueDate
+                      ? colorScheme.primary
+                      : null,
+                ),
                 title: Text(lByDueDate),
                 contentPadding: EdgeInsets.zero,
               ),
@@ -50,10 +52,12 @@ class HealthDashboardActions extends StatelessWidget {
             PopupMenuItem(
               value: GroupMode.pet,
               child: ListTile(
-                leading: Icon(Icons.pets,
-                    color: groupMode == GroupMode.pet
-                        ? colorScheme.primary
-                        : null),
+                leading: Icon(
+                  Icons.pets,
+                  color: groupMode == GroupMode.pet
+                      ? colorScheme.primary
+                      : null,
+                ),
                 title: Text(lByPet),
                 contentPadding: EdgeInsets.zero,
               ),
@@ -61,10 +65,12 @@ class HealthDashboardActions extends StatelessWidget {
             PopupMenuItem(
               value: GroupMode.petType,
               child: ListTile(
-                leading: Icon(Icons.category,
-                    color: groupMode == GroupMode.petType
-                        ? colorScheme.primary
-                        : null),
+                leading: Icon(
+                  Icons.category,
+                  color: groupMode == GroupMode.petType
+                      ? colorScheme.primary
+                      : null,
+                ),
                 title: Text(lBySpecies),
                 contentPadding: EdgeInsets.zero,
               ),

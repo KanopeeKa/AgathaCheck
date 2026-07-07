@@ -30,8 +30,12 @@ class ArchivedPetModel extends ArchivedPet {
       transferredToUserId: json['transferred_to_user_id']?.toString(),
       transferredToOrgId: json['transferred_to_org_id']?.toString(),
       notes: json['notes']?.toString() ?? '',
-      archivedAt: json['archived_at'] != null ? DateTime.tryParse(json['archived_at'].toString()) : null,
-      createdAt: json['created_at'] != null ? DateTime.tryParse(json['created_at'].toString()) : null,
+      archivedAt: json['archived_at'] != null
+          ? DateTime.tryParse(json['archived_at'].toString())
+          : null,
+      createdAt: json['created_at'] != null
+          ? DateTime.tryParse(json['created_at'].toString())
+          : null,
     );
   }
 
@@ -45,8 +49,10 @@ class ArchivedPetModel extends ArchivedPet {
       'species': species,
       'pdf_data': pdfData,
       'transfer_type': transferType,
-      if (transferredToUserId != null) 'transferred_to_user_id': transferredToUserId,
-      if (transferredToOrgId != null) 'transferred_to_org_id': transferredToOrgId,
+      if (transferredToUserId != null)
+        'transferred_to_user_id': transferredToUserId,
+      if (transferredToOrgId != null)
+        'transferred_to_org_id': transferredToOrgId,
       'notes': notes,
       if (archivedAt != null) 'archived_at': archivedAt!.toIso8601String(),
       if (createdAt != null) 'created_at': createdAt!.toIso8601String(),

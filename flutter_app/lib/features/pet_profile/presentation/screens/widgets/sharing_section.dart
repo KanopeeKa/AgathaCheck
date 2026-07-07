@@ -8,7 +8,6 @@ import '../../widgets/sharing/follower_sharing_content.dart';
 import '../../widgets/sharing/foster_sharing_content.dart';
 import '../../widgets/sharing/owner_sharing_content.dart';
 
-
 class SharingSection extends ConsumerWidget {
   const SharingSection({required this.petId, required this.pet, super.key});
 
@@ -27,11 +26,18 @@ class SharingSection extends ConsumerWidget {
           clipBehavior: Clip.antiAlias,
           child: ExpansionTile(
             leading: Icon(Icons.people, color: theme.colorScheme.primary),
-            title: Text(l.sharingSection,
-                style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600)),
+            title: Text(
+              l.sharingSection,
+              style: theme.textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.w600,
+              ),
+            ),
             children: [
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 8,
+                ),
                 child: FollowerSharingContent(petId: petId, pet: pet),
               ),
             ],
@@ -49,11 +55,18 @@ class SharingSection extends ConsumerWidget {
           clipBehavior: Clip.antiAlias,
           child: ExpansionTile(
             leading: Icon(Icons.people, color: theme.colorScheme.primary),
-            title: Text(l.sharingSection,
-                style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600)),
+            title: Text(
+              l.sharingSection,
+              style: theme.textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.w600,
+              ),
+            ),
             children: [
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 8,
+                ),
                 child: linksAsync.when(
                   loading: () => const Padding(
                     padding: EdgeInsets.all(16),
@@ -61,8 +74,10 @@ class SharingSection extends ConsumerWidget {
                   ),
                   error: (e, _) => Padding(
                     padding: const EdgeInsets.all(16),
-                    child: Text(l.couldNotLoadSharingInfo,
-                        style: TextStyle(color: theme.colorScheme.error)),
+                    child: Text(
+                      l.couldNotLoadSharingInfo,
+                      style: TextStyle(color: theme.colorScheme.error),
+                    ),
                   ),
                   data: (links) => FosterSharingContent(
                     petId: petId,
@@ -86,8 +101,12 @@ class SharingSection extends ConsumerWidget {
         clipBehavior: Clip.antiAlias,
         child: ExpansionTile(
           leading: Icon(Icons.people, color: theme.colorScheme.primary),
-          title: Text(l.sharingSection,
-              style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600)),
+          title: Text(
+            l.sharingSection,
+            style: theme.textTheme.titleMedium?.copyWith(
+              fontWeight: FontWeight.w600,
+            ),
+          ),
           children: [
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -98,8 +117,10 @@ class SharingSection extends ConsumerWidget {
                 ),
                 error: (e, _) => Padding(
                   padding: const EdgeInsets.all(16),
-                  child: Text(l.couldNotLoadSharingInfo,
-                      style: TextStyle(color: theme.colorScheme.error)),
+                  child: Text(
+                    l.couldNotLoadSharingInfo,
+                    style: TextStyle(color: theme.colorScheme.error),
+                  ),
                 ),
                 data: (accessList) => linksAsync.when(
                   loading: () => const Padding(
@@ -108,8 +129,10 @@ class SharingSection extends ConsumerWidget {
                   ),
                   error: (e, _) => Padding(
                     padding: const EdgeInsets.all(16),
-                    child: Text(l.couldNotLoadSharingInfo,
-                        style: TextStyle(color: theme.colorScheme.error)),
+                    child: Text(
+                      l.couldNotLoadSharingInfo,
+                      style: TextStyle(color: theme.colorScheme.error),
+                    ),
                   ),
                   data: (links) => OwnerSharingContent(
                     petId: petId,

@@ -13,18 +13,16 @@ abstract class WeightRemoteDataSource {
 }
 
 class WeightRemoteDataSourceImpl implements WeightRemoteDataSource {
-  WeightRemoteDataSourceImpl({
-    required this.baseUrl,
-    http.Client? client,
-  }) : _client = client ?? http.Client();
+  WeightRemoteDataSourceImpl({required this.baseUrl, http.Client? client})
+    : _client = client ?? http.Client();
 
   final String baseUrl;
   final http.Client _client;
 
   Map<String, String> _headers(String token) => {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer $token',
-      };
+    'Content-Type': 'application/json',
+    'Authorization': 'Bearer $token',
+  };
 
   @override
   Future<List<WeightEntryModel>> getEntries(String petId, String token) async {
@@ -40,7 +38,10 @@ class WeightRemoteDataSourceImpl implements WeightRemoteDataSource {
   }
 
   @override
-  Future<WeightEntryModel> createEntry(WeightEntryModel entry, String token) async {
+  Future<WeightEntryModel> createEntry(
+    WeightEntryModel entry,
+    String token,
+  ) async {
     final response = await _client.post(
       Uri.parse('$baseUrl/api/weight-entries'),
       headers: _headers(token),
@@ -53,7 +54,10 @@ class WeightRemoteDataSourceImpl implements WeightRemoteDataSource {
   }
 
   @override
-  Future<WeightEntryModel> updateEntry(WeightEntryModel entry, String token) async {
+  Future<WeightEntryModel> updateEntry(
+    WeightEntryModel entry,
+    String token,
+  ) async {
     final response = await _client.put(
       Uri.parse('$baseUrl/api/weight-entries/${entry.id}'),
       headers: _headers(token),

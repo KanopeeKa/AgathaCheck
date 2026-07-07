@@ -241,13 +241,13 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
             PetFormSubmitValidation.invalidWeight => 'Invalid weight',
             PetFormSubmitValidation.petNotFound => 'Pet not found',
           };
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(message)),
-          );
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text(message)));
         case PetFormSubmitError(:final error):
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Failed to save pet: $error')),
-          );
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text('Failed to save pet: $error')));
         case PetFormSubmitSuccess():
           _navigateAfterForm();
       }
@@ -448,8 +448,9 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
                   onPickNeuteredDate: _pickNeuteredDate,
                   onClearNeuteredDate: () {
                     setState(() => _neuteredDate = null);
-                    _controller.state =
-                        _controller.state.copyWith(neuteredDate: null);
+                    _controller.state = _controller.state.copyWith(
+                      neuteredDate: null,
+                    );
                   },
                 ),
               if (!AppConstants.speciesWithoutNeutering.contains(
@@ -464,7 +465,8 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
                   alignLabelWithHint: true,
                   helperText: 'Personality traits, likes, quirks',
                   suffixIcon: PetFormInfoTooltip(
-                    message: 'Anything a caregiver should know about your pet\'s temperament or habits',
+                    message:
+                        'Anything a caregiver should know about your pet\'s temperament or habits',
                   ),
                 ),
                 maxLines: 4,
@@ -476,7 +478,8 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
               PetFormVetSection(
                 selectedVetId: _selectedVetId,
                 controller: _controller,
-                onVetSelected: (value) => setState(() => _selectedVetId = value),
+                onVetSelected: (value) =>
+                    setState(() => _selectedVetId = value),
               ),
               const SizedBox(height: 16),
               TextFormField(
@@ -487,7 +490,8 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
                   alignLabelWithHint: true,
                   helperText: 'Policy info for emergencies or vet visits',
                   suffixIcon: PetFormInfoTooltip(
-                    message: 'Include details someone else would need to use your pet\'s insurance:\n\n'
+                    message:
+                        'Include details someone else would need to use your pet\'s insurance:\n\n'
                         '\u2022 Insurance company name\n'
                         '\u2022 Policy or contract number\n'
                         '\u2022 Policyholder name (if different from you)\n'
@@ -510,7 +514,8 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
                   labelText: l.idMicrochip,
                   helperText: 'Identification number for your pet',
                   suffixIcon: PetFormInfoTooltip(
-                    message: 'Enter the identification number relevant to your pet:\n\n'
+                    message:
+                        'Enter the identification number relevant to your pet:\n\n'
                         '\u2022 Dogs & Cats: microchip number (usually 15 digits), often required by law\n'
                         '\u2022 Horses & Ponies: passport or microchip number\n'
                         '\u2022 Ferrets & Rabbits: microchip number if implanted\n'

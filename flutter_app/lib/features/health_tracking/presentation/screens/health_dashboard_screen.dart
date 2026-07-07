@@ -13,7 +13,8 @@ import '../../domain/entities/health_entry.dart';
 import '../providers/health_providers.dart';
 import '../widgets/health_entry_card.dart';
 import '../widgets/mark_complete_sheet.dart';
-import '../widgets/health_dashboard_actions.dart' show HealthDashboardActions, GroupMode;
+import '../widgets/health_dashboard_actions.dart'
+    show HealthDashboardActions, GroupMode;
 
 class HealthDashboardScreen extends ConsumerStatefulWidget {
   const HealthDashboardScreen({
@@ -100,58 +101,72 @@ class _HealthDashboardScreenState extends ConsumerState<HealthDashboardScreen>
       body: widget.skipHeavyBody
           ? const SizedBox.shrink()
           : Column(
-        children: [
-          Consumer(builder: (context, ref, _) {
-            final allPetsAsync = ref.watch(allPetsIncludingOrgProvider);
-            final pets = allPetsAsync.valueOrNull ?? [];
-            final orgNames = pets
-                .where((p) => p.organizationName != null)
-                .map((p) => p.organizationName!)
-                .toSet()
-                .toList()
-              ..sort();
-            if (orgNames.isEmpty) return const SizedBox.shrink();
-            return Padding(
-              padding: const EdgeInsets.fromLTRB(12, 8, 12, 0),
-              child: SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Row(
-                  children: [
-                    FilterChip(
-                      label: Text(l.allPets),
-                      selected: _orgFilter == null,
-                      onSelected: (_) => setState(() => _orgFilter = null),
-                    ),
-                    const SizedBox(width: 8),
-                    FilterChip(
-                      label: Text(l.myPets),
-                      selected: _orgFilter == '_personal',
-                      onSelected: (_) => setState(() => _orgFilter = '_personal'),
-                    ),
-                    ...orgNames.map((name) => Padding(
-                      padding: const EdgeInsets.only(left: 8),
-                      child: FilterChip(
-                        avatar: const Icon(Icons.business, size: 16),
-                        label: Text(name),
-                        selected: _orgFilter == name,
-                        onSelected: (_) => setState(() => _orgFilter = name),
+              children: [
+                Consumer(
+                  builder: (context, ref, _) {
+                    final allPetsAsync = ref.watch(allPetsIncludingOrgProvider);
+                    final pets = allPetsAsync.valueOrNull ?? [];
+                    final orgNames =
+                        pets
+                            .where((p) => p.organizationName != null)
+                            .map((p) => p.organizationName!)
+                            .toSet()
+                            .toList()
+                          ..sort();
+                    if (orgNames.isEmpty) return const SizedBox.shrink();
+                    return Padding(
+                      padding: const EdgeInsets.fromLTRB(12, 8, 12, 0),
+                      child: SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: Row(
+                          children: [
+                            FilterChip(
+                              label: Text(l.allPets),
+                              selected: _orgFilter == null,
+                              onSelected: (_) =>
+                                  setState(() => _orgFilter = null),
+                            ),
+                            const SizedBox(width: 8),
+                            FilterChip(
+                              label: Text(l.myPets),
+                              selected: _orgFilter == '_personal',
+                              onSelected: (_) =>
+                                  setState(() => _orgFilter = '_personal'),
+                            ),
+                            ...orgNames.map(
+                              (name) => Padding(
+                                padding: const EdgeInsets.only(left: 8),
+                                child: FilterChip(
+                                  avatar: const Icon(Icons.business, size: 16),
+                                  label: Text(name),
+                                  selected: _orgFilter == name,
+                                  onSelected: (_) =>
+                                      setState(() => _orgFilter = name),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
-                    )),
-                  ],
+                    );
+                  },
                 ),
-              ),
-            );
-          }),
-          Expanded(
-            child: TabBarView(
-              controller: _tabController,
-              children: _tabs
-                  .map((type) => _EntryList(type: type, groupMode: _groupMode, orgFilter: _orgFilter))
-                  .toList(),
+                Expanded(
+                  child: TabBarView(
+                    controller: _tabController,
+                    children: _tabs
+                        .map(
+                          (type) => _EntryList(
+                            type: type,
+                            groupMode: _groupMode,
+                            orgFilter: _orgFilter,
+                          ),
+                        )
+                        .toList(),
+                  ),
+                ),
+              ],
             ),
-          ),
-        ],
-      ),
       floatingActionButton: FloatingActionButton.extended(
         key: const Key('add_health_entry_button'),
         tooltip: l.addHealthEntry,
@@ -173,8 +188,7 @@ class _HealthDashboardScreenState extends ConsumerState<HealthDashboardScreen>
   Future<void> _exportCsv() async {
     final l = AppLocalizations.of(context)!;
     try {
-      final csv =
-          await ref.read(healthRepositoryProvider).exportCsv();
+      final csv = await ref.read(healthRepositoryProvider).exportCsv();
       if (!mounted) return;
 
       showDialog(
@@ -194,9 +208,9 @@ class _HealthDashboardScreenState extends ConsumerState<HealthDashboardScreen>
       );
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l.exportFailed(e.toString()))),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(l.exportFailed(e.toString()))));
     }
   }
 
@@ -214,9 +228,17 @@ class _HealthDashboardScreenState extends ConsumerState<HealthDashboardScreen>
 
       if (_orgFilter != null) {
         final filteredPetIds = _orgFilter == '_personal'
-            ? pets.where((p) => p.organizationId == null).map((p) => p.id).toSet()
-            : pets.where((p) => p.organizationName == _orgFilter).map((p) => p.id).toSet();
-        entries = entries.where((e) => filteredPetIds.contains(e.petId)).toList();
+            ? pets
+                  .where((p) => p.organizationId == null)
+                  .map((p) => p.id)
+                  .toSet()
+            : pets
+                  .where((p) => p.organizationName == _orgFilter)
+                  .map((p) => p.id)
+                  .toSet();
+        entries = entries
+            .where((e) => filteredPetIds.contains(e.petId))
+            .toList();
       }
 
       final groups = _buildPdfGroups(entries, petMap, _groupMode);
@@ -240,14 +262,17 @@ class _HealthDashboardScreenState extends ConsumerState<HealthDashboardScreen>
       await pdf_saver.savePdf(bytes, 'Events_${dateStr}.pdf');
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l.pdfExportFailed(e.toString()))),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(l.pdfExportFailed(e.toString()))));
     }
   }
 
   List<MapEntry<String?, List<HealthEntry>>> _buildPdfGroups(
-      List<HealthEntry> entries, Map<String, Pet> petMap, GroupMode mode) {
+    List<HealthEntry> entries,
+    Map<String, Pet> petMap,
+    GroupMode mode,
+  ) {
     switch (mode) {
       case GroupMode.dueDate:
         return _pdfGroupByDueDate(entries);
@@ -259,7 +284,8 @@ class _HealthDashboardScreenState extends ConsumerState<HealthDashboardScreen>
   }
 
   List<MapEntry<String?, List<HealthEntry>>> _pdfGroupByDueDate(
-      List<HealthEntry> entries) {
+    List<HealthEntry> entries,
+  ) {
     final l = AppLocalizations.of(context)!;
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
@@ -279,7 +305,11 @@ class _HealthDashboardScreenState extends ConsumerState<HealthDashboardScreen>
       if (e.isCompleted) {
         buckets[l.completed]!.add(e);
       } else if (e.nextDueDate != null) {
-        final due = DateTime(e.nextDueDate!.year, e.nextDueDate!.month, e.nextDueDate!.day);
+        final due = DateTime(
+          e.nextDueDate!.year,
+          e.nextDueDate!.month,
+          e.nextDueDate!.day,
+        );
         if (due.isBefore(today)) {
           buckets[l.overdue]!.add(e);
         } else if (due.isAtSameMomentAs(today)) {
@@ -295,7 +325,14 @@ class _HealthDashboardScreenState extends ConsumerState<HealthDashboardScreen>
     }
 
     final result = <MapEntry<String?, List<HealthEntry>>>[];
-    for (final key in [l.overdue, l.today, l.tomorrow, l.thisWeek, l.later, l.completed]) {
+    for (final key in [
+      l.overdue,
+      l.today,
+      l.tomorrow,
+      l.thisWeek,
+      l.later,
+      l.completed,
+    ]) {
       if (buckets[key]!.isNotEmpty) {
         result.add(MapEntry(key, buckets[key]!));
       }
@@ -304,7 +341,9 @@ class _HealthDashboardScreenState extends ConsumerState<HealthDashboardScreen>
   }
 
   List<MapEntry<String?, List<HealthEntry>>> _pdfGroupByPet(
-      List<HealthEntry> entries, Map<String, Pet> petMap) {
+    List<HealthEntry> entries,
+    Map<String, Pet> petMap,
+  ) {
     final grouped = <String, List<HealthEntry>>{};
     for (final e in entries) {
       final petName = petMap[e.petId]?.name ?? 'Unknown Pet';
@@ -323,7 +362,9 @@ class _HealthDashboardScreenState extends ConsumerState<HealthDashboardScreen>
   }
 
   List<MapEntry<String?, List<HealthEntry>>> _pdfGroupByPetType(
-      List<HealthEntry> entries, Map<String, Pet> petMap) {
+    List<HealthEntry> entries,
+    Map<String, Pet> petMap,
+  ) {
     final grouped = <String, List<HealthEntry>>{};
     for (final e in entries) {
       final species = petMap[e.petId]?.species ?? 'Other';
@@ -362,8 +403,14 @@ class _EntryList extends ConsumerWidget {
     final filteredPetIds = orgFilter == null
         ? null
         : orgFilter == '_personal'
-            ? allPets.where((p) => p.organizationId == null).map((p) => p.id).toSet()
-            : allPets.where((p) => p.organizationName == orgFilter).map((p) => p.id).toSet();
+        ? allPets
+              .where((p) => p.organizationId == null)
+              .map((p) => p.id)
+              .toSet()
+        : allPets
+              .where((p) => p.organizationName == orgFilter)
+              .map((p) => p.id)
+              .toSet();
 
     return entriesAsync.when(
       loading: () => const Center(child: CircularProgressIndicator()),
@@ -371,12 +418,14 @@ class _EntryList extends ConsumerWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.error_outline,
-                semanticLabel: 'Error',
-                size: 48, color: Theme.of(context).colorScheme.error),
+            Icon(
+              Icons.error_outline,
+              semanticLabel: 'Error',
+              size: 48,
+              color: Theme.of(context).colorScheme.error,
+            ),
             const SizedBox(height: 16),
-            Text('Error loading entries:\n$error',
-                textAlign: TextAlign.center),
+            Text('Error loading entries:\n$error', textAlign: TextAlign.center),
             const SizedBox(height: 16),
             FilledButton(
               onPressed: () =>
@@ -389,16 +438,21 @@ class _EntryList extends ConsumerWidget {
       data: (allEntries) {
         final entries = filteredPetIds == null
             ? allEntries
-            : allEntries.where((e) => filteredPetIds.contains(e.petId)).toList();
+            : allEntries
+                  .where((e) => filteredPetIds.contains(e.petId))
+                  .toList();
         if (entries.isEmpty) {
           return Center(
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-            ExcludeSemantics(
-              child: Icon(Icons.list_alt,
-                    size: 64, color: Theme.of(context).colorScheme.outline),
-            ),
+                ExcludeSemantics(
+                  child: Icon(
+                    Icons.list_alt,
+                    size: 64,
+                    color: Theme.of(context).colorScheme.outline,
+                  ),
+                ),
                 const SizedBox(height: 16),
                 Text(
                   type == null
@@ -410,7 +464,8 @@ class _EntryList extends ConsumerWidget {
                 Text(
                   l.tapPlusToAdd,
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: Theme.of(context).colorScheme.outline),
+                    color: Theme.of(context).colorScheme.outline,
+                  ),
                 ),
               ],
             ),
@@ -431,7 +486,8 @@ class _EntryList extends ConsumerWidget {
                 return _buildHeader(context, group.title);
               }
               final item = group as _GroupEntry;
-              final isCareEvent = item.entry.type == HealthEntryType.familyEvent;
+              final isCareEvent =
+                  item.entry.type == HealthEntryType.familyEvent;
               final editRoute = isCareEvent
                   ? '/pet/${item.entry.petId}/other/edit/${item.entry.id}'
                   : '/health/edit/${item.entry.id}';
@@ -482,7 +538,10 @@ class _EntryList extends ConsumerWidget {
   }
 
   List<_GroupItem> _buildGroups(
-      BuildContext context, List<HealthEntry> entries, Map<String, Pet> petMap) {
+    BuildContext context,
+    List<HealthEntry> entries,
+    Map<String, Pet> petMap,
+  ) {
     switch (groupMode) {
       case GroupMode.dueDate:
         return _groupByDueDate(context, entries);
@@ -493,7 +552,10 @@ class _EntryList extends ConsumerWidget {
     }
   }
 
-  List<_GroupItem> _groupByDueDate(BuildContext context, List<HealthEntry> entries) {
+  List<_GroupItem> _groupByDueDate(
+    BuildContext context,
+    List<HealthEntry> entries,
+  ) {
     final l = AppLocalizations.of(context)!;
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
@@ -511,7 +573,11 @@ class _EntryList extends ConsumerWidget {
       if (e.isCompleted) {
         completed.add(e);
       } else if (e.nextDueDate != null) {
-        final due = DateTime(e.nextDueDate!.year, e.nextDueDate!.month, e.nextDueDate!.day);
+        final due = DateTime(
+          e.nextDueDate!.year,
+          e.nextDueDate!.month,
+          e.nextDueDate!.day,
+        );
         if (due.isBefore(today)) {
           overdue.add(e);
         } else if (due.isAtSameMomentAs(today)) {
@@ -544,7 +610,9 @@ class _EntryList extends ConsumerWidget {
   }
 
   List<_GroupItem> _groupByPet(
-      List<HealthEntry> entries, Map<String, Pet> petMap) {
+    List<HealthEntry> entries,
+    Map<String, Pet> petMap,
+  ) {
     final grouped = <String, List<HealthEntry>>{};
     for (final e in entries) {
       final petName = petMap[e.petId]?.name ?? 'Unknown Pet';
@@ -567,7 +635,9 @@ class _EntryList extends ConsumerWidget {
   }
 
   List<_GroupItem> _groupByPetType(
-      List<HealthEntry> entries, Map<String, Pet> petMap) {
+    List<HealthEntry> entries,
+    Map<String, Pet> petMap,
+  ) {
     final grouped = <String, List<HealthEntry>>{};
     for (final e in entries) {
       final species = petMap[e.petId]?.species ?? 'Other';
@@ -590,37 +660,57 @@ class _EntryList extends ConsumerWidget {
     return items;
   }
 
-  Future<void> _markTaken(BuildContext context, WidgetRef ref, HealthEntry entry) async {
+  Future<void> _markTaken(
+    BuildContext context,
+    WidgetRef ref,
+    HealthEntry entry,
+  ) async {
     final completedOn = await showMarkCompleteSheet(context);
     if (completedOn == null || !context.mounted) return;
-    await ref.read(healthEntriesNotifierProvider.notifier).markTaken(
-          entry.id,
-          completedOn: completedOn,
-        );
+    await ref
+        .read(healthEntriesNotifierProvider.notifier)
+        .markTaken(entry.id, completedOn: completedOn);
     if (context.mounted) {
       final l = AppLocalizations.of(context)!;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l.markedAsDone(entry.name))),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(l.markedAsDone(entry.name))));
     }
   }
 
-  Future<void> _undoComplete(BuildContext context, WidgetRef ref, HealthEntry entry) async {
-    await ref.read(healthEntriesNotifierProvider.notifier).undoComplete(entry.id);
+  Future<void> _undoComplete(
+    BuildContext context,
+    WidgetRef ref,
+    HealthEntry entry,
+  ) async {
+    await ref
+        .read(healthEntriesNotifierProvider.notifier)
+        .undoComplete(entry.id);
     if (context.mounted) {
       final l = AppLocalizations.of(context)!;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l.undoCompleteDone(entry.name))),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(l.undoCompleteDone(entry.name))));
     }
   }
 
-  Future<void> _snooze(BuildContext context, WidgetRef ref, HealthEntry entry, int days) async {
-    await ref.read(healthEntriesNotifierProvider.notifier).snooze(entry.id, days);
+  Future<void> _snooze(
+    BuildContext context,
+    WidgetRef ref,
+    HealthEntry entry,
+    int days,
+  ) async {
+    await ref
+        .read(healthEntriesNotifierProvider.notifier)
+        .snooze(entry.id, days);
     if (context.mounted) {
       final l = AppLocalizations.of(context)!;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l.snoozedForDays(entry.name, days, days == 1 ? l.day : l.days))),
+        SnackBar(
+          content: Text(
+            l.snoozedForDays(entry.name, days, days == 1 ? l.day : l.days),
+          ),
+        ),
       );
     }
   }

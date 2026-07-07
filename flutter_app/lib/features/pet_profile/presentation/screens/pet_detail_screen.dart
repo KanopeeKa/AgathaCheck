@@ -36,16 +36,14 @@ class PetDetailScreen extends ConsumerStatefulWidget {
 }
 
 class _PetDetailScreenState extends ConsumerState<PetDetailScreen> {
-
   @override
   Widget build(BuildContext context) {
     final petListAsync = ref.watch(allPetsIncludingOrgProvider);
     final l = AppLocalizations.of(context)!;
 
     return petListAsync.when(
-      loading: () => const Scaffold(
-        body: Center(child: CircularProgressIndicator()),
-      ),
+      loading: () =>
+          const Scaffold(body: Center(child: CircularProgressIndicator())),
       error: (error, _) => Scaffold(
         appBar: AppBar(title: AppLogoTitle(title: l.petDetails)),
         body: Center(child: Text(l.errorWithMessage(error.toString()))),
@@ -128,8 +126,10 @@ class _PetDetailScreenState extends ConsumerState<PetDetailScreen> {
                       backgroundColor: theme.colorScheme.primaryContainer,
                       child: Text(
                         ((auth.user?.firstName?.isNotEmpty == true)
-                          ? auth.user!.firstName![0]
-                          : (auth.user?.lastName?.isNotEmpty == true ? auth.user!.lastName![0] : auth.user?.email[0] ?? 'U'))
+                                ? auth.user!.firstName![0]
+                                : (auth.user?.lastName?.isNotEmpty == true
+                                      ? auth.user!.lastName![0]
+                                      : auth.user?.email[0] ?? 'U'))
                             .toUpperCase(),
                         style: TextStyle(
                           fontSize: 14,
@@ -155,14 +155,17 @@ class _PetDetailScreenState extends ConsumerState<PetDetailScreen> {
                             children: [
                               Text(
                                 auth.user?.firstName?.isNotEmpty == true
-                                  ? auth.user!.firstName!
-                                  : (auth.user?.lastName?.isNotEmpty == true ? auth.user!.lastName! : 'User'),
+                                    ? auth.user!.firstName!
+                                    : (auth.user?.lastName?.isNotEmpty == true
+                                          ? auth.user!.lastName!
+                                          : 'User'),
                                 style: theme.textTheme.titleSmall,
                               ),
                               Text(
                                 auth.user?.email ?? '',
                                 style: theme.textTheme.bodySmall?.copyWith(
-                                    color: theme.colorScheme.onSurfaceVariant),
+                                  color: theme.colorScheme.onSurfaceVariant,
+                                ),
                               ),
                             ],
                           ),
@@ -191,17 +194,13 @@ class _PetDetailScreenState extends ConsumerState<PetDetailScreen> {
                   ),
                 ],
               ),
-              SliverToBoxAdapter(
-                child: _PetProfileCard(pet: pet),
-              ),
-              if (pet.neuteredDate == null && !pet.neuterDismissed && !AppConstants.speciesWithoutNeutering.contains(pet.species))
-                SliverToBoxAdapter(
-                  child: NeuterReminderCard(pet: pet),
-                ),
+              SliverToBoxAdapter(child: _PetProfileCard(pet: pet)),
+              if (pet.neuteredDate == null &&
+                  !pet.neuterDismissed &&
+                  !AppConstants.speciesWithoutNeutering.contains(pet.species))
+                SliverToBoxAdapter(child: NeuterReminderCard(pet: pet)),
               if (pet.chipId.isEmpty && !pet.chipDismissed)
-                SliverToBoxAdapter(
-                  child: ChipReminderCard(pet: pet),
-                ),
+                SliverToBoxAdapter(child: ChipReminderCard(pet: pet)),
               if (isOrgPet && isOrgAdmin)
                 SliverToBoxAdapter(
                   child: PetFosterPlacementSection(
@@ -225,12 +224,8 @@ class _PetDetailScreenState extends ConsumerState<PetDetailScreen> {
               SliverToBoxAdapter(
                 child: SharingSection(petId: widget.petId, pet: pet),
               ),
-              SliverToBoxAdapter(
-                child: DownloadReportSection(pet: pet),
-              ),
-              const SliverToBoxAdapter(
-                child: SizedBox(height: 32),
-              ),
+              SliverToBoxAdapter(child: DownloadReportSection(pet: pet)),
+              const SliverToBoxAdapter(child: SizedBox(height: 32)),
             ],
           ),
         );
@@ -280,10 +275,7 @@ class _PetProfileCard extends ConsumerWidget {
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              SizedBox(
-                width: 140,
-                child: _PetPhoto(pet: pet),
-              ),
+              SizedBox(width: 140, child: _PetPhoto(pet: pet)),
               Expanded(
                 child: Padding(
                   padding: const EdgeInsets.all(16),
@@ -293,14 +285,20 @@ class _PetProfileCard extends ConsumerWidget {
                       Row(
                         children: [
                           Expanded(
-                            child: Text(pet.name,
-                                style: theme.textTheme.headlineSmall
-                                    ?.copyWith(fontWeight: FontWeight.bold)),
+                            child: Text(
+                              pet.name,
+                              style: theme.textTheme.headlineSmall?.copyWith(
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
                           ),
                           IconButton(
                             key: const Key('edit_pet_button'),
-                            icon: Icon(Icons.edit,
-                                size: 20, color: colorScheme.primary),
+                            icon: Icon(
+                              Icons.edit,
+                              size: 20,
+                              color: colorScheme.primary,
+                            ),
                             tooltip: AppLocalizations.of(context)!.editPet,
                             onPressed: () => context.go('/edit/${pet.id}'),
                             visualDensity: VisualDensity.compact,
@@ -314,51 +312,79 @@ class _PetProfileCard extends ConsumerWidget {
                         spacing: 8,
                         runSpacing: 8,
                         children: [
-                          _InfoChipWidget(iconWidget: AppConstants.speciesIconWidget(pet.species, size: 18), label: pet.species),
+                          _InfoChipWidget(
+                            iconWidget: AppConstants.speciesIconWidget(
+                              pet.species,
+                              size: 18,
+                            ),
+                            label: pet.species,
+                          ),
                           if (pet.breed.isNotEmpty)
                             _InfoChip(icon: Icons.pets, label: pet.breed),
                           if (pet.gender != null && pet.gender!.isNotEmpty)
                             _InfoChip(
-                                icon: pet.gender == 'Male'
-                                    ? Icons.male
-                                    : Icons.female,
-                                label: pet.gender!),
+                              icon: pet.gender == 'Male'
+                                  ? Icons.male
+                                  : Icons.female,
+                              label: pet.gender!,
+                            ),
                           if (pet.ageDisplay != null)
-                            _InfoChip(
-                                icon: Icons.cake,
-                                label: pet.ageDisplay!),
+                            _InfoChip(icon: Icons.cake, label: pet.ageDisplay!),
                           if (displayWeight != null)
-                            Consumer(builder: (context, ref, _) {
-                              final unit =
-                                  ref.watch(weightUnitProvider(pet.id));
-                              final converted =
-                                  convertWeight(displayWeight, unit);
-                              return _InfoChip(
+                            Consumer(
+                              builder: (context, ref, _) {
+                                final unit = ref.watch(
+                                  weightUnitProvider(pet.id),
+                                );
+                                final converted = convertWeight(
+                                  displayWeight,
+                                  unit,
+                                );
+                                return _InfoChip(
                                   icon: Icons.monitor_weight,
                                   label:
-                                      '${converted.toStringAsFixed(1)} ${weightUnitLabel(unit)}');
-                            }),
+                                      '${converted.toStringAsFixed(1)} ${weightUnitLabel(unit)}',
+                                );
+                              },
+                            ),
                         ],
                       ),
                       const SizedBox(height: 10),
-                      _buildVetRow(context, ref, assignedVet, vets,
-                          theme, colorScheme),
+                      _buildVetRow(
+                        context,
+                        ref,
+                        assignedVet,
+                        vets,
+                        theme,
+                        colorScheme,
+                      ),
                       if (pet.bio.isNotEmpty) ...[
                         const SizedBox(height: 12),
-                        Text(pet.bio,
-                            style: theme.textTheme.bodyMedium?.copyWith(
-                                color: colorScheme.onSurfaceVariant)),
+                        Text(
+                          pet.bio,
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            color: colorScheme.onSurfaceVariant,
+                          ),
+                        ),
                       ],
                       if (pet.neuteredDate != null) ...[
                         const SizedBox(height: 12),
                         Row(
                           children: [
-                            Icon(Icons.check_circle, size: 18,
-                                color: Colors.green),
+                            Icon(
+                              Icons.check_circle,
+                              size: 18,
+                              color: Colors.green,
+                            ),
                             const SizedBox(width: 8),
-                            Text(AppLocalizations.of(context)!.neuteredSpayed(DateFormat.yMMMd().format(pet.neuteredDate!)),
-                                style: theme.textTheme.bodyMedium?.copyWith(
-                                    color: colorScheme.onSurfaceVariant)),
+                            Text(
+                              AppLocalizations.of(context)!.neuteredSpayed(
+                                DateFormat.yMMMd().format(pet.neuteredDate!),
+                              ),
+                              style: theme.textTheme.bodyMedium?.copyWith(
+                                color: colorScheme.onSurfaceVariant,
+                              ),
+                            ),
                           ],
                         ),
                       ],
@@ -366,12 +392,18 @@ class _PetProfileCard extends ConsumerWidget {
                         const SizedBox(height: 12),
                         Row(
                           children: [
-                            Icon(Icons.memory, size: 18,
-                                color: colorScheme.primary),
+                            Icon(
+                              Icons.memory,
+                              size: 18,
+                              color: colorScheme.primary,
+                            ),
                             const SizedBox(width: 8),
-                            Text(AppLocalizations.of(context)!.idLabel(pet.chipId),
-                                style: theme.textTheme.bodyMedium?.copyWith(
-                                    color: colorScheme.onSurfaceVariant)),
+                            Text(
+                              AppLocalizations.of(context)!.idLabel(pet.chipId),
+                              style: theme.textTheme.bodyMedium?.copyWith(
+                                color: colorScheme.onSurfaceVariant,
+                              ),
+                            ),
                           ],
                         ),
                       ],
@@ -380,24 +412,33 @@ class _PetProfileCard extends ConsumerWidget {
                         Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Icon(Icons.shield, size: 18,
-                                color: colorScheme.primary),
+                            Icon(
+                              Icons.shield,
+                              size: 18,
+                              color: colorScheme.primary,
+                            ),
                             const SizedBox(width: 8),
                             Expanded(
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text(AppLocalizations.of(context)!.insuranceDetails,
-                                      style: theme.textTheme.labelMedium
-                                          ?.copyWith(
-                                              color: colorScheme.primary,
-                                              fontWeight: FontWeight.bold)),
+                                  Text(
+                                    AppLocalizations.of(
+                                      context,
+                                    )!.insuranceDetails,
+                                    style: theme.textTheme.labelMedium
+                                        ?.copyWith(
+                                          color: colorScheme.primary,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                  ),
                                   const SizedBox(height: 2),
-                                  Text(pet.insurance,
-                                      style: theme.textTheme.bodyMedium
-                                          ?.copyWith(
-                                              color: colorScheme
-                                                  .onSurfaceVariant)),
+                                  Text(
+                                    pet.insurance,
+                                    style: theme.textTheme.bodyMedium?.copyWith(
+                                      color: colorScheme.onSurfaceVariant,
+                                    ),
+                                  ),
                                 ],
                               ),
                             ),
@@ -415,40 +456,58 @@ class _PetProfileCard extends ConsumerWidget {
     );
   }
 
-  Widget _buildVetRow(BuildContext context, WidgetRef ref, dynamic assignedVet,
-      List vets, ThemeData theme, ColorScheme colorScheme) {
+  Widget _buildVetRow(
+    BuildContext context,
+    WidgetRef ref,
+    dynamic assignedVet,
+    List vets,
+    ThemeData theme,
+    ColorScheme colorScheme,
+  ) {
     final l = AppLocalizations.of(context)!;
     if (vets.isEmpty) {
       return Semantics(
         label: l.addVetFirst,
         button: true,
         child: GestureDetector(
-        onTap: () => GoRouter.of(context).go('/vets/add'),
-        child: Row(
-          children: [
-            Icon(Icons.local_hospital, size: 16,
-                color: colorScheme.onSurfaceVariant),
-            const SizedBox(width: 6),
-            Text(l.noVetAssigned,
+          onTap: () => GoRouter.of(context).go('/vets/add'),
+          child: Row(
+            children: [
+              Icon(
+                Icons.local_hospital,
+                size: 16,
+                color: colorScheme.onSurfaceVariant,
+              ),
+              const SizedBox(width: 6),
+              Text(
+                l.noVetAssigned,
                 style: theme.textTheme.bodyMedium?.copyWith(
-                    color: colorScheme.onSurfaceVariant)),
-            const SizedBox(width: 4),
-            Text('— Add one',
+                  color: colorScheme.onSurfaceVariant,
+                ),
+              ),
+              const SizedBox(width: 4),
+              Text(
+                '— Add one',
                 style: theme.textTheme.bodyMedium?.copyWith(
-                    color: colorScheme.primary,
-                    fontWeight: FontWeight.w500)),
-          ],
+                  color: colorScheme.primary,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ],
+          ),
         ),
-      ),
       );
     }
 
     return Row(
       children: [
-        Icon(Icons.local_hospital, size: 16,
-            color: assignedVet != null
-                ? colorScheme.primary
-                : colorScheme.onSurfaceVariant),
+        Icon(
+          Icons.local_hospital,
+          size: 16,
+          color: assignedVet != null
+              ? colorScheme.primary
+              : colorScheme.onSurfaceVariant,
+        ),
         const SizedBox(width: 6),
         Expanded(
           child: PopupMenuButton<String?>(
@@ -469,8 +528,11 @@ class _PetProfileCard extends ConsumerWidget {
                   ),
                 ),
                 const SizedBox(width: 4),
-                Icon(Icons.arrow_drop_down, size: 20,
-                    color: colorScheme.onSurfaceVariant),
+                Icon(
+                  Icons.arrow_drop_down,
+                  size: 20,
+                  color: colorScheme.onSurfaceVariant,
+                ),
               ],
             ),
             onSelected: (vetId) async {
@@ -481,15 +543,14 @@ class _PetProfileCard extends ConsumerWidget {
             },
             itemBuilder: (context) => [
               if (assignedVet != null)
-                PopupMenuItem<String?>(
-                  value: null,
-                  child: Text(l.removeVet),
+                PopupMenuItem<String?>(value: null, child: Text(l.removeVet)),
+              ...vets.map(
+                (vet) => PopupMenuItem<String?>(
+                  value: vet.id,
+                  enabled: assignedVet?.id != vet.id,
+                  child: Text(vet.name),
                 ),
-              ...vets.map((vet) => PopupMenuItem<String?>(
-                    value: vet.id,
-                    enabled: assignedVet?.id != vet.id,
-                    child: Text(vet.name),
-                  )),
+              ),
             ],
           ),
         ),
@@ -570,7 +631,11 @@ class _PetPhoto extends StatelessWidget {
         border: Border(left: BorderSide(color: petColor, width: 5)),
       ),
       child: Center(
-        child: AppConstants.speciesIconWidget(pet.species, size: 56, color: petColor.withValues(alpha: 0.6)),
+        child: AppConstants.speciesIconWidget(
+          pet.species,
+          size: 56,
+          color: petColor.withValues(alpha: 0.6),
+        ),
       ),
     );
   }
@@ -596,11 +661,14 @@ class _InfoChip extends StatelessWidget {
         children: [
           Icon(icon, size: 16, color: colorScheme.onSecondaryContainer),
           const SizedBox(width: 4),
-          Text(label,
-              style: TextStyle(
-                  fontSize: 13,
-                  color: colorScheme.onSecondaryContainer,
-                  fontWeight: FontWeight.w500)),
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 13,
+              color: colorScheme.onSecondaryContainer,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
         ],
       ),
     );
@@ -627,11 +695,14 @@ class _InfoChipWidget extends StatelessWidget {
         children: [
           iconWidget,
           const SizedBox(width: 4),
-          Text(label,
-              style: TextStyle(
-                  fontSize: 13,
-                  color: colorScheme.onSecondaryContainer,
-                  fontWeight: FontWeight.w500)),
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 13,
+              color: colorScheme.onSecondaryContainer,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
         ],
       ),
     );

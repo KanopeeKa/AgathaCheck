@@ -38,7 +38,10 @@ class AccountActionsSection extends StatelessWidget {
           child: Column(
             children: [
               ListTile(
-                leading: Icon(Icons.info_outline, color: theme.colorScheme.primary),
+                leading: Icon(
+                  Icons.info_outline,
+                  color: theme.colorScheme.primary,
+                ),
                 title: Text(l10nAboutUs),
                 trailing: const Icon(Icons.chevron_right),
                 onTap: onAbout,
@@ -53,7 +56,10 @@ class AccountActionsSection extends StatelessWidget {
               ),
               const Divider(height: 1),
               ListTile(
-                leading: Icon(Icons.cookie_outlined, color: theme.colorScheme.primary),
+                leading: Icon(
+                  Icons.cookie_outlined,
+                  color: theme.colorScheme.primary,
+                ),
                 title: Text(l10nConsentSettings),
                 subtitle: Text(l10nConsentManagePreferences),
                 trailing: const Icon(Icons.chevron_right),
@@ -67,7 +73,10 @@ class AccountActionsSection extends StatelessWidget {
           color: theme.colorScheme.errorContainer.withAlpha(80),
           child: ListTile(
             leading: Icon(Icons.delete_forever, color: theme.colorScheme.error),
-            title: Text(l10nDeleteAccount, style: TextStyle(color: theme.colorScheme.error)),
+            title: Text(
+              l10nDeleteAccount,
+              style: TextStyle(color: theme.colorScheme.error),
+            ),
             subtitle: Text(l10nDeleteAccountSubtitle),
             trailing: Icon(Icons.chevron_right, color: theme.colorScheme.error),
             onTap: onDelete,

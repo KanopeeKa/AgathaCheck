@@ -47,15 +47,20 @@ class OrganizationPetsSection extends StatelessWidget {
                   Icon(Icons.pets, size: 20, color: colorScheme.primary),
                   const SizedBox(width: 8),
                   Expanded(
-                    child: Text(l.orgPets,
-                        style: theme.textTheme.titleMedium?.copyWith(
-                            fontWeight: FontWeight.bold)),
+                    child: Text(
+                      l.orgPets,
+                      style: theme.textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                   ),
                   AnimatedRotation(
                     turns: petsExpanded ? 0.5 : 0.0,
                     duration: const Duration(milliseconds: 200),
-                    child: Icon(Icons.expand_more,
-                        color: colorScheme.onSurfaceVariant),
+                    child: Icon(
+                      Icons.expand_more,
+                      color: colorScheme.onSurfaceVariant,
+                    ),
                   ),
                 ],
               ),
@@ -74,10 +79,7 @@ class OrganizationPetsSection extends StatelessWidget {
                     children: [
                       Text('$e', style: TextStyle(color: colorScheme.error)),
                       const SizedBox(height: 8),
-                      TextButton(
-                        onPressed: onAddPet,
-                        child: Text(l.retry),
-                      ),
+                      TextButton(onPressed: onAddPet, child: Text(l.retry)),
                     ],
                   ),
                   data: (pets) {
@@ -87,12 +89,18 @@ class OrganizationPetsSection extends StatelessWidget {
                         child: Center(
                           child: Column(
                             children: [
-                              Icon(Icons.pets, size: 40,
-                                  color: colorScheme.outline),
+                              Icon(
+                                Icons.pets,
+                                size: 40,
+                                color: colorScheme.outline,
+                              ),
                               const SizedBox(height: 8),
-                              Text(l.orgNoPets,
-                                  style: theme.textTheme.bodyMedium?.copyWith(
-                                      color: colorScheme.onSurfaceVariant)),
+                              Text(
+                                l.orgNoPets,
+                                style: theme.textTheme.bodyMedium?.copyWith(
+                                  color: colorScheme.onSurfaceVariant,
+                                ),
+                              ),
                               if (isSuperUser && onAddPet != null) ...[
                                 const SizedBox(height: 12),
                                 FilledButton.icon(
@@ -109,13 +117,15 @@ class OrganizationPetsSection extends StatelessWidget {
                     }
                     return Column(
                       children: [
-                        ...pets.map((pet) => Padding(
-                          padding: const EdgeInsets.only(bottom: 8),
-                          child: PetCard(
-                            pet: pet,
-                            onTap: () => context.push('/pet/${pet.id}'),
+                        ...pets.map(
+                          (pet) => Padding(
+                            padding: const EdgeInsets.only(bottom: 8),
+                            child: PetCard(
+                              pet: pet,
+                              onTap: () => context.push('/pet/${pet.id}'),
+                            ),
                           ),
-                        )),
+                        ),
                         if (isSuperUser && onAddPet != null) ...[
                           const Divider(),
                           OutlinedButton.icon(

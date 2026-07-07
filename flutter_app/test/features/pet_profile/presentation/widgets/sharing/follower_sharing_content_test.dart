@@ -7,7 +7,9 @@ import 'package:pet_profile_app/features/pet_profile/presentation/widgets/sharin
 import 'package:pet_profile_app/l10n/app_localizations.dart';
 
 void main() {
-  testWidgets('FollowerSharingContent shows stop following button', (tester) async {
+  testWidgets('FollowerSharingContent shows stop following button', (
+    tester,
+  ) async {
     const pet = Pet(id: 'p1', name: 'Buddy', species: 'dog', breed: 'Lab');
 
     await tester.pumpWidget(

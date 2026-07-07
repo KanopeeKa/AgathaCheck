@@ -26,8 +26,11 @@ class PendingAdoptionPlacementsSection extends ConsumerWidget {
             children: [
               Row(
                 children: [
-                  Icon(Icons.favorite_border,
-                      size: 20, color: theme.colorScheme.primary),
+                  Icon(
+                    Icons.favorite_border,
+                    size: 20,
+                    color: theme.colorScheme.primary,
+                  ),
                   const SizedBox(width: 8),
                   Text(
                     l.pendingAdoptionConfirmations,
@@ -38,8 +41,10 @@ class PendingAdoptionPlacementsSection extends ConsumerWidget {
                   ),
                   const SizedBox(width: 8),
                   Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 2,
+                    ),
                     decoration: BoxDecoration(
                       color: theme.colorScheme.primaryContainer,
                       borderRadius: BorderRadius.circular(10),
@@ -56,7 +61,8 @@ class PendingAdoptionPlacementsSection extends ConsumerWidget {
               ),
               const SizedBox(height: 8),
               ...placements.map(
-                (placement) => PendingAdoptionPlacementCard(placement: placement),
+                (placement) =>
+                    PendingAdoptionPlacementCard(placement: placement),
               ),
             ],
           ),
@@ -123,9 +129,9 @@ class PendingAdoptionPlacementCard extends ConsumerWidget {
                       }
                     } catch (e) {
                       if (context.mounted) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text('$e')),
-                        );
+                        ScaffoldMessenger.of(
+                          context,
+                        ).showSnackBar(SnackBar(content: Text('$e')));
                       }
                     }
                   },
