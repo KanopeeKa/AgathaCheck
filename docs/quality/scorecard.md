@@ -47,7 +47,7 @@ Living metrics for Agatha Track quality. Update when CI or test counts change ma
 | File | Lines | Sprint |
 |---|---:|---|
 | `pet_form_screen.dart` | 553 | Sprint 2 (was 929) |
-| `health_entry_form_screen.dart` | 756 | Sprint 2 |
+| `health_entry_form_screen.dart` | 425 | Sprint 2 (was 756) |
 | `pet_detail_screen.dart` | 639 | Sprint 3 |
 | `health_dashboard_screen.dart` | 628 | Sprint 3 |
 | `my_details_screen.dart` | 608 | Sprint 3 |
