@@ -2,7 +2,7 @@
 
 Living metrics for Agatha Track quality. Update when CI or test counts change materially.
 
-**Last updated:** 2026-07-07
+**Last updated:** 2026-07-07 (Sprint 2 in progress)
 
 ---
 
@@ -10,7 +10,7 @@ Living metrics for Agatha Track quality. Update when CI or test counts change ma
 
 | Layer | Count | Gate |
 |---|---:|---|
-| Flutter unit/widget | 428 | CI on `main` |
+| Flutter unit/widget | 431+ | CI on `main` |
 | Flutter integration | 1 flow | CI on `main` (blocking) |
 | Node Jest | 544 | CI on `main` |
 | Playwright E2E | 15 | UAT deploy |
@@ -46,7 +46,7 @@ Living metrics for Agatha Track quality. Update when CI or test counts change ma
 
 | File | Lines | Sprint |
 |---|---:|---|
-| `pet_form_screen.dart` | 929 | Sprint 2 |
+| `pet_form_screen.dart` | 553 | Sprint 2 (was 929) |
 | `health_entry_form_screen.dart` | 756 | Sprint 2 |
 | `pet_detail_screen.dart` | 639 | Sprint 3 |
 | `health_dashboard_screen.dart` | 628 | Sprint 3 |
