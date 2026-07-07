@@ -55,8 +55,8 @@ architectural decisions deferred during the domain-by-domain refactor.
 |---|---|---|
 | `family_events_controller.dart` | P4 | **Stub — not wired.** Legacy `family_events` table; placement data migrated to `foster_placements` (migration 016). Flutter still has `familyEventsProvider` + PDF section; pets API CRUD exists. **Recommendation:** delete stub; use foster placements for new UI — or revive only if product wants pre-migration family-event editing. |
 | `health_entry_form_controller.dart` | P4 | Phase 2 done. Optional: extract frequency/recurrence widgets to slim screen further. |
-| Root `lib/` legacy Flutter tree | P1 | Slated for removal from git; confirm no external tooling still points at repo root `pubspec.yaml`. |
-| `attached_assets/` | P1 | Replit session dumps; remove from git after confirming team does not rely on them. |
+| Root `lib/` legacy Flutter tree | P1 | **Removed** — root `pubspec.yaml` deleted Sprint 2 |
+| `attached_assets/` | P1 | **Removed** — was already absent from git |
 | `npm run test:mocha` | P4 | Legacy runner; remove when team confirms no local scripts use it. |
 
 ---
@@ -68,7 +68,7 @@ architectural decisions deferred during the domain-by-domain refactor.
 | Split `pet_form_screen.dart` submit logic | P3 | Medium | **Done** — `PetFormController.submit()` |
 | `organization_providers_test.dart` split | P3 | Small | **Done** — `presentation/providers/*_test.dart` + shared helpers |
 | Executable Cucumber BDD | P4 | Medium | Gherkin exists; Playwright is executor today |
-| `test_integration/` in CI | P3 | Small | Single flow test; wire or relocate under `test/features/.../integration` |
+| `test_integration/` in CI | P3 | **Done** | Legacy file removed; canonical flow under `test/features/.../integration/` |
 | Rename `pet_profile_app` package | P4 | Large | Cosmetic; defer until dedicated rename sprint |
 | Dart `organization_routes.dart` foster/placements/people parity | P2 | Medium | **Done** — `foster_parents_routes`, `placements_routes`, people in `members_routes` |
 | Node-only production backend | P4 | Strategic | Documented in technical-debt; Dart kept for Replit/AOT until decided |

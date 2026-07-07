@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:intl/intl.dart';
 
 import '../controllers/pet_form_controller.dart';
 import '../controllers/pet_form_outcomes.dart';
@@ -10,10 +9,13 @@ import '../../../../core/utils/constants.dart';
 import '../../../../core/utils/calendar_date.dart';
 import '../../../../core/widgets/app_logo_title.dart';
 import '../../../../l10n/app_localizations.dart';
-import '../../../vet/domain/entities/vet.dart';
-import '../../../vet/presentation/providers/vet_providers.dart';
 import '../../domain/entities/pet.dart';
 import '../providers/pet_providers.dart';
+import '../widgets/pet_form/pet_form_edit_actions.dart';
+import '../widgets/pet_form/pet_form_info_tooltip.dart';
+import '../widgets/pet_form/pet_form_neutered_section.dart';
+import '../widgets/pet_form/pet_form_vet_section.dart';
+import '../widgets/pet_form/pet_form_weight_section.dart';
 import 'widgets/pet_photo_section.dart';
 import 'widgets/pet_species_section.dart';
 import 'widgets/pet_gender_section.dart';
@@ -324,7 +326,9 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
                 decoration: InputDecoration(
                   labelText: l.petName,
                   helperText: 'Your pet\'s name or nickname',
-                  suffixIcon: _infoTooltip('The name your pet responds to'),
+                  suffixIcon: PetFormInfoTooltip(
+                    message: 'The name your pet responds to',
+                  ),
                 ),
                 onChanged: (value) =>
                     _controller.state = _controller.state.copyWith(name: value),
@@ -378,85 +382,76 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
               ),
               const SizedBox(height: 16),
               if (_isEditing)
-                TextFormField(
-                  key: const Key('pet_weight_field'),
-                  controller: _weightController,
-                  decoration: InputDecoration(
-                    labelText: l.weightWithUnit('kg'),
-                  ),
-                  keyboardType: const TextInputType.numberWithOptions(
-                    decimal: true,
-                  ),
-                  onChanged: (value) => _controller.state = _controller.state
-                      .copyWith(weight: value),
-                  validator: (value) {
-                    if (value != null && value.isNotEmpty) {
-                      final num = double.tryParse(value);
-                      if (num == null || num < 0) {
-                        return 'Invalid weight';
-                      }
-                    }
-                    return null;
+                PetFormWeightSection(
+                  isEditing: true,
+                  showWeightInput: _showWeightInput,
+                  weightController: _weightController,
+                  newWeightController: _newWeightController,
+                  controller: _controller,
+                  onShowWeightInput: () {
+                    setState(() => _showWeightInput = true);
+                    _controller.setShowWeightInput(true);
+                  },
+                  onHideWeightInput: () {
+                    setState(() {
+                      _showWeightInput = false;
+                      _newWeightController.clear();
+                    });
+                    _controller.setShowWeightInput(false);
+                    _controller.setNewWeight('');
                   },
                 ),
               if (!_isEditing)
-                _showWeightInput
-                    ? TextFormField(
-                        key: const Key('pet_initial_weight_field'),
-                        controller: _newWeightController,
-                        decoration: InputDecoration(
-                          labelText: l.weightWithUnit('kg'),
-                          suffixIcon: IconButton(
-                            icon: const Icon(Icons.close, size: 18),
-                            tooltip: 'Remove weight entry',
-                            onPressed: () {
-                              setState(() {
-                                _showWeightInput = false;
-                                _newWeightController.clear();
-                              });
-                              _controller.setShowWeightInput(false);
-                              _controller.setNewWeight('');
-                            },
-                          ),
-                        ),
-                        keyboardType: const TextInputType.numberWithOptions(
-                          decimal: true,
-                        ),
-                        autofocus: true,
-                        onChanged: _controller.setNewWeight,
-                        validator: (value) {
-                          if (value != null && value.isNotEmpty) {
-                            final num = double.tryParse(value);
-                            if (num == null || num <= 0) {
-                              return 'Invalid weight';
-                            }
-                          }
-                          return null;
-                        },
-                      )
-                    : Tooltip(
-                        message: 'Add initial weight entry',
-                        child: OutlinedButton.icon(
-                          key: const Key('add_weight_entry_button'),
-                          onPressed: () {
-                            setState(() => _showWeightInput = true);
-                            _controller.setShowWeightInput(true);
-                          },
-                          icon: const Icon(
-                            Icons.monitor_weight_outlined,
-                            size: 18,
-                          ),
-                          label: Text(l.addWeightEntry),
-                          style: OutlinedButton.styleFrom(
-                            minimumSize: const Size(0, 48),
-                          ),
-                        ),
-                      ),
+                PetFormWeightSection(
+                  isEditing: false,
+                  showWeightInput: _showWeightInput,
+                  weightController: _weightController,
+                  newWeightController: _newWeightController,
+                  controller: _controller,
+                  onShowWeightInput: () {
+                    setState(() => _showWeightInput = true);
+                    _controller.setShowWeightInput(true);
+                  },
+                  onHideWeightInput: () {
+                    setState(() {
+                      _showWeightInput = false;
+                      _newWeightController.clear();
+                    });
+                    _controller.setShowWeightInput(false);
+                    _controller.setNewWeight('');
+                  },
+                ),
               const SizedBox(height: 16),
               if (!AppConstants.speciesWithoutNeutering.contains(
                 _selectedSpecies,
               ))
-                _buildNeuteredDateField(theme),
+                PetFormNeuteredSection(
+                  isNeutered: _isNeutered,
+                  neuteredDate: _neuteredDate,
+                  onNeuteredChanged: (val) {
+                    setState(() {
+                      _isNeutered = val;
+                      if (val == false) _neuteredDate = null;
+                    });
+                    if (val == true) {
+                      _controller.state = _controller.state.copyWith(
+                        isNeutered: true,
+                        neuterDismissed: false,
+                      );
+                    } else if (val == false) {
+                      _controller.state = _controller.state.copyWith(
+                        isNeutered: false,
+                        neuteredDate: null,
+                      );
+                    }
+                  },
+                  onPickNeuteredDate: _pickNeuteredDate,
+                  onClearNeuteredDate: () {
+                    setState(() => _neuteredDate = null);
+                    _controller.state =
+                        _controller.state.copyWith(neuteredDate: null);
+                  },
+                ),
               if (!AppConstants.speciesWithoutNeutering.contains(
                 _selectedSpecies,
               ))
@@ -468,8 +463,8 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
                   labelText: l.petBio,
                   alignLabelWithHint: true,
                   helperText: 'Personality traits, likes, quirks',
-                  suffixIcon: _infoTooltip(
-                    'Anything a caregiver should know about your pet\'s temperament or habits',
+                  suffixIcon: PetFormInfoTooltip(
+                    message: 'Anything a caregiver should know about your pet\'s temperament or habits',
                   ),
                 ),
                 maxLines: 4,
@@ -478,7 +473,11 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
                     _controller.state = _controller.state.copyWith(bio: value),
               ),
               const SizedBox(height: 16),
-              _buildVetDropdown(),
+              PetFormVetSection(
+                selectedVetId: _selectedVetId,
+                controller: _controller,
+                onVetSelected: (value) => setState(() => _selectedVetId = value),
+              ),
               const SizedBox(height: 16),
               TextFormField(
                 key: const Key('pet_insurance_field'),
@@ -487,15 +486,15 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
                   labelText: l.insuranceDetails,
                   alignLabelWithHint: true,
                   helperText: 'Policy info for emergencies or vet visits',
-                  suffixIcon: _infoTooltip(
-                    'Include details someone else would need to use your pet\'s insurance:\n\n'
-                    '\u2022 Insurance company name\n'
-                    '\u2022 Policy or contract number\n'
-                    '\u2022 Policyholder name (if different from you)\n'
-                    '\u2022 Coverage type (accident only, illness, wellness)\n'
-                    '\u2022 Excess/deductible amount\n'
-                    '\u2022 Emergency helpline number\n\n'
-                    'This is especially useful if a pet-sitter or family member needs to take your pet to the vet and claim on your behalf.',
+                  suffixIcon: PetFormInfoTooltip(
+                    message: 'Include details someone else would need to use your pet\'s insurance:\n\n'
+                        '\u2022 Insurance company name\n'
+                        '\u2022 Policy or contract number\n'
+                        '\u2022 Policyholder name (if different from you)\n'
+                        '\u2022 Coverage type (accident only, illness, wellness)\n'
+                        '\u2022 Excess/deductible amount\n'
+                        '\u2022 Emergency helpline number\n\n'
+                        'This is especially useful if a pet-sitter or family member needs to take your pet to the vet and claim on your behalf.',
                   ),
                 ),
                 maxLines: 4,
@@ -510,16 +509,16 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
                 decoration: InputDecoration(
                   labelText: l.idMicrochip,
                   helperText: 'Identification number for your pet',
-                  suffixIcon: _infoTooltip(
-                    'Enter the identification number relevant to your pet:\n\n'
-                    '\u2022 Dogs & Cats: microchip number (usually 15 digits), often required by law\n'
-                    '\u2022 Horses & Ponies: passport or microchip number\n'
-                    '\u2022 Ferrets & Rabbits: microchip number if implanted\n'
-                    '\u2022 Birds: leg ring or band number\n'
-                    '\u2022 Fish: tank or habitat label\n'
-                    '\u2022 Other pets: any ID tag or registration number\n\n'
-                    'This is essential if your pet is lost or needs emergency vet care. '
-                    'The number is usually found on adoption papers, vet records, or the registration database.',
+                  suffixIcon: PetFormInfoTooltip(
+                    message: 'Enter the identification number relevant to your pet:\n\n'
+                        '\u2022 Dogs & Cats: microchip number (usually 15 digits), often required by law\n'
+                        '\u2022 Horses & Ponies: passport or microchip number\n'
+                        '\u2022 Ferrets & Rabbits: microchip number if implanted\n'
+                        '\u2022 Birds: leg ring or band number\n'
+                        '\u2022 Fish: tank or habitat label\n'
+                        '\u2022 Other pets: any ID tag or registration number\n\n'
+                        'This is essential if your pet is lost or needs emergency vet care. '
+                        'The number is usually found on adoption papers, vet records, or the registration database.',
                   ),
                 ),
                 onChanged: (value) => _controller.state = _controller.state
@@ -538,380 +537,13 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
                     : const Icon(Icons.save),
                 label: Text(_isEditing ? 'Update Pet' : l.savePet),
               ),
-              if (_isEditing && !_isShared) ...[
-                const SizedBox(height: 32),
-                const Divider(),
-                const SizedBox(height: 16),
-                OutlinedButton.icon(
-                  key: const Key('delete_pet_button'),
-                  onPressed: _isLoading ? null : _confirmDeletePet,
-                  icon: Icon(
-                    Icons.delete_outline,
-                    color: theme.colorScheme.error,
-                  ),
-                  label: Text(
-                    l.deletePet,
-                    style: TextStyle(color: theme.colorScheme.error),
-                  ),
-                  style: OutlinedButton.styleFrom(
-                    side: BorderSide(
-                      color: theme.colorScheme.error.withAlpha(120),
-                    ),
-                  ),
+              if (_isEditing && !_isShared)
+                PetFormEditActions(
+                  isLoading: _isLoading,
+                  passedAway: _passedAway,
+                  onDelete: _confirmDeletePet,
+                  onPassedAway: _confirmPassedAway,
                 ),
-                if (!_passedAway) ...[
-                  const SizedBox(height: 12),
-                  OutlinedButton.icon(
-                    key: const Key('passed_away_button'),
-                    onPressed: _isLoading ? null : _confirmPassedAway,
-                    icon: ShaderMask(
-                      shaderCallback: (bounds) => const LinearGradient(
-                        colors: [
-                          Color(0xFFFF0000),
-                          Color(0xFFFF8800),
-                          Color(0xFFFFFF00),
-                          Color(0xFF00CC00),
-                          Color(0xFF0066FF),
-                          Color(0xFF8800CC),
-                        ],
-                      ).createShader(bounds),
-                      blendMode: BlendMode.srcIn,
-                      child: const Icon(Icons.air, size: 20),
-                    ),
-                    label: Text(l.passedAway),
-                    style: OutlinedButton.styleFrom(
-                      side: BorderSide(
-                        color: theme.colorScheme.outline.withAlpha(80),
-                      ),
-                    ),
-                  ),
-                ],
-                const SizedBox(height: 16),
-              ],
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _infoTooltip(String message) {
-    final l = AppLocalizations.of(context)!;
-    return IconButton(
-      icon: Icon(
-        Icons.info_outline,
-        size: 18,
-        color: Theme.of(context).colorScheme.outline,
-      ),
-      tooltip: message,
-      onPressed: () {
-        showDialog(
-          context: context,
-          builder: (ctx) => AlertDialog(
-            content: Text(message),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(ctx),
-                child: Text(l.ok),
-              ),
-            ],
-          ),
-        );
-      },
-    );
-  }
-
-  Widget _buildNeuteredDateField(ThemeData theme) {
-    final l = AppLocalizations.of(context)!;
-    final dateFormat = DateFormat.yMMMd();
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          children: [
-            Text(
-              l.neuteredSpayedDate,
-              style: theme.textTheme.bodyMedium?.copyWith(
-                color: theme.colorScheme.onSurfaceVariant,
-              ),
-            ),
-            const SizedBox(width: 4),
-            _infoTooltip(
-              'Whether your pet has been surgically sterilised:\n\n'
-              '\u2022 Neutered: male animals (castration)\n'
-              '\u2022 Spayed: female animals (ovariectomy / ovariohysterectomy)\n\n'
-              'This applies to dogs, cats, rabbits, and other mammals. '
-              'Recording the date helps your vet track recovery and adjust any health recommendations.\n\n'
-              'If your pet is not yet neutered/spayed, selecting "No" will show a reminder on their profile.',
-            ),
-          ],
-        ),
-        const SizedBox(height: 4),
-        Row(
-          children: [
-            SizedBox(
-              width: 120,
-              child: RadioListTile<bool>(
-                key: const Key('pet_neutered_yes'),
-                title: const Text('Yes'),
-                value: true,
-                groupValue: _isNeutered,
-                dense: true,
-                contentPadding: EdgeInsets.zero,
-                onChanged: (val) {
-                  setState(() {
-                    _isNeutered = true;
-                  });
-                  _controller.state = _controller.state.copyWith(
-                    isNeutered: true,
-                    neuterDismissed: false,
-                  );
-                },
-              ),
-            ),
-            SizedBox(
-              width: 120,
-              child: RadioListTile<bool>(
-                key: const Key('pet_neutered_no'),
-                title: const Text('No'),
-                value: false,
-                groupValue: _isNeutered,
-                dense: true,
-                contentPadding: EdgeInsets.zero,
-                onChanged: (val) {
-                  setState(() {
-                    _isNeutered = false;
-                    _neuteredDate = null;
-                  });
-                  _controller.state = _controller.state.copyWith(
-                    isNeutered: false,
-                    neuteredDate: null,
-                  );
-                },
-              ),
-            ),
-          ],
-        ),
-        if (_isNeutered == true)
-          InkWell(
-            key: const Key('pet_neutered_date_field'),
-            onTap: _pickNeuteredDate,
-            child: InputDecorator(
-              decoration: InputDecoration(
-                labelText: l.date,
-                suffixIcon: _neuteredDate != null
-                    ? IconButton(
-                        icon: const Icon(Icons.clear),
-                        tooltip: 'Clear date',
-                        onPressed: () {
-                          setState(() => _neuteredDate = null);
-                          _controller.state =
-                              _controller.state.copyWith(neuteredDate: null);
-                        },
-                      )
-                    : null,
-              ),
-              child: Text(
-                _neuteredDate != null
-                    ? dateFormat.format(_neuteredDate!)
-                    : 'Select date (optional)',
-                style: theme.textTheme.bodyLarge?.copyWith(
-                  color: _neuteredDate != null
-                      ? null
-                      : theme.colorScheme.onSurfaceVariant,
-                ),
-              ),
-            ),
-          ),
-      ],
-    );
-  }
-
-  static const _createNewVetSentinel = '__create_new_vet__';
-
-  Widget _buildVetDropdown() {
-    final l = AppLocalizations.of(context)!;
-    final vetsAsync = ref.watch(vetListProvider);
-
-    return vetsAsync.when(
-      loading: () => InputDecorator(
-        decoration: InputDecoration(labelText: l.veterinarians),
-        child: const Text('Loading vets...'),
-      ),
-      error: (_, __) => InputDecorator(
-        decoration: InputDecoration(labelText: l.veterinarians),
-        child: const Text('Could not load vets'),
-      ),
-      data: (vets) {
-        return DropdownButtonFormField<String?>(
-          value: vets.any((v) => v.id == _selectedVetId)
-              ? _selectedVetId
-              : null,
-          decoration: InputDecoration(
-            labelText: l.veterinarians,
-            suffixIcon: _selectedVetId != null
-                ? IconButton(
-                    icon: const Icon(Icons.clear),
-                    tooltip: 'Clear veterinarian',
-                    onPressed: () {
-                      setState(() => _selectedVetId = null);
-                      _controller.state =
-                          _controller.state.copyWith(selectedVetId: null);
-                    },
-                  )
-                : null,
-          ),
-          items: [
-            DropdownMenuItem<String?>(
-              value: null,
-              child: Text(l.noVetAssigned),
-            ),
-            ...vets.map(
-              (vet) => DropdownMenuItem<String?>(
-                value: vet.id,
-                child: Text(vet.name),
-              ),
-            ),
-            DropdownMenuItem<String?>(
-              value: _createNewVetSentinel,
-              child: Row(
-                children: [
-                  Icon(
-                    Icons.add_circle_outline,
-                    size: 18,
-                    color: Theme.of(context).colorScheme.primary,
-                  ),
-                  const SizedBox(width: 8),
-                  Text(
-                    'Create new vet',
-                    style: TextStyle(
-                      color: Theme.of(context).colorScheme.primary,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-          onChanged: (value) {
-            if (value == _createNewVetSentinel) {
-              _showCreateVetSheet();
-            } else {
-              setState(() => _selectedVetId = value);
-              _controller.state =
-                  _controller.state.copyWith(selectedVetId: value);
-            }
-          },
-        );
-      },
-    );
-  }
-
-  void _showCreateVetSheet() {
-    final nameController = TextEditingController();
-    final phoneController = TextEditingController();
-    final emailController = TextEditingController();
-    final addressController = TextEditingController();
-    final formKey = GlobalKey<FormState>();
-
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      builder: (ctx) => Padding(
-        padding: EdgeInsets.only(
-          left: 24,
-          right: 24,
-          top: 24,
-          bottom: MediaQuery.of(ctx).viewInsets.bottom + 24,
-        ),
-        child: Form(
-          key: formKey,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Text(
-                'New Veterinarian',
-                style: Theme.of(
-                  ctx,
-                ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 16),
-              TextFormField(
-                key: const Key('new_vet_name_field'),
-                controller: nameController,
-                decoration: const InputDecoration(
-                  labelText: 'Name',
-                  hintText: 'e.g., Dr. Smith Veterinary Clinic',
-                  prefixIcon: Icon(Icons.person),
-                ),
-                validator: (val) => val == null || val.trim().isEmpty
-                    ? 'Name is required'
-                    : null,
-              ),
-              const SizedBox(height: 12),
-              TextFormField(
-                key: const Key('new_vet_phone_field'),
-                controller: phoneController,
-                decoration: const InputDecoration(
-                  labelText: 'Phone (optional)',
-                  prefixIcon: Icon(Icons.phone),
-                ),
-                keyboardType: TextInputType.phone,
-              ),
-              const SizedBox(height: 12),
-              TextFormField(
-                key: const Key('new_vet_email_field'),
-                controller: emailController,
-                decoration: const InputDecoration(
-                  labelText: 'Email (optional)',
-                  prefixIcon: Icon(Icons.email),
-                ),
-                keyboardType: TextInputType.emailAddress,
-              ),
-              const SizedBox(height: 12),
-              TextFormField(
-                key: const Key('new_vet_address_field'),
-                controller: addressController,
-                decoration: const InputDecoration(
-                  labelText: 'Address (optional)',
-                  prefixIcon: Icon(Icons.location_on),
-                ),
-              ),
-              const SizedBox(height: 16),
-              FilledButton(
-                key: const Key('save_new_vet_button'),
-                onPressed: () async {
-                  if (!formKey.currentState!.validate()) return;
-                  final vet = Vet(
-                    id: '',
-                    name: nameController.text.trim(),
-                    phone: phoneController.text.trim(),
-                    email: emailController.text.trim(),
-                    address: addressController.text.trim(),
-                  );
-                  try {
-                    await ref.read(vetListProvider.notifier).createVet(vet);
-                    if (ctx.mounted) Navigator.pop(ctx);
-                    final updatedVets = await ref.read(vetListProvider.future);
-                    if (updatedVets.isNotEmpty) {
-                      setState(() {
-                        _selectedVetId = updatedVets.last.id;
-                      });
-                      _controller.state = _controller.state.copyWith(
-                        selectedVetId: updatedVets.last.id,
-                      );
-                    }
-                  } catch (e) {
-                    if (ctx.mounted) {
-                      ScaffoldMessenger.of(ctx).showSnackBar(
-                        SnackBar(content: Text('Failed to create vet: $e')),
-                      );
-                    }
-                  }
-                },
-                child: const Text('Create'),
-              ),
             ],
           ),
         ),

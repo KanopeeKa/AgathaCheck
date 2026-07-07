@@ -12,11 +12,14 @@ import 'package:pet_profile_app/features/notifications/domain/entities/app_notif
 import 'package:pet_profile_app/features/notifications/domain/entities/notification_preferences.dart';
 import 'package:pet_profile_app/features/notifications/presentation/providers/notification_providers.dart';
 import 'package:pet_profile_app/features/sharing/presentation/providers/sharing_providers.dart';
+import 'package:pet_profile_app/features/subscription/data/services/revenuecat_service.dart';
+import 'package:pet_profile_app/features/subscription/domain/entities/subscription_status.dart';
 import 'package:pet_profile_app/features/vet/domain/entities/vet.dart';
 import 'package:pet_profile_app/features/vet/presentation/providers/vet_providers.dart';
 import 'package:pet_profile_app/features/organization/domain/entities/organization.dart';
 import 'package:pet_profile_app/features/organization/presentation/providers/organization_providers.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:purchases_flutter/purchases_flutter.dart';
 
 class FakePetRepository implements PetRepository {
   @override
@@ -150,6 +153,39 @@ class FakeNotificationPreferencesNotifier extends NotificationPreferencesNotifie
 class FakePendingSharesNotifier extends PendingSharesNotifier {
   @override
   Future<List<PendingShare>> build() async => [];
+}
+
+/// Test double for [RevenueCatService] — avoids native Purchases SDK in widget tests.
+class FakeRevenueCatService implements RevenueCatService {
+  @override
+  bool get isInitialized => true;
+
+  @override
+  Future<void> initialize() async {}
+
+  @override
+  Future<void> login(String userId) async {}
+
+  @override
+  Future<void> logout() async {}
+
+  @override
+  Future<SubscriptionStatus> getSubscriptionStatus() async =>
+      SubscriptionStatus.free;
+
+  @override
+  Future<List<Offering>> getOfferings() async => [];
+
+  @override
+  Future<SubscriptionStatus> purchasePackage(Package package) async =>
+      SubscriptionStatus.free;
+
+  @override
+  Future<SubscriptionStatus> restorePurchases() async =>
+      SubscriptionStatus.free;
+
+  @override
+  void addCustomerInfoListener(void Function(SubscriptionStatus) listener) {}
 }
 
 final mockUser = AuthUser(

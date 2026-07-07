@@ -150,9 +150,7 @@ Tests span domain, data, provider/controller, and widget layers, with integratio
 
 > **Repository layout.** The canonical Flutter app lives in **`flutter_app/`** and
 > the backend in **`server/`**. Run all Flutter commands from `flutter_app/` and
-> all backend commands from `server/`. The minimal `lib/` + `pubspec.yaml` at the
-> repository root is **legacy** (an older pet-profile-only tree) and is not the
-> app you run — do not run `flutter pub get` at the repo root.
+> all backend commands from `server/`.
 
 ### Prerequisites
 
