@@ -108,32 +108,26 @@ void main() {
     });
 
     testWidgets('adds a pet and shows it in list', (tester) async {
-      final pet = Pet(
-        id: 'buddy',
-        name: 'Buddy',
-        species: 'Dog',
-        breed: '',
-        bio: '',
-        insurance: '',
-        chipId: '',
-        colorValue: 0xFF7E57C2,
-        passedAway: false,
-      );
-      final petListOverride = allPetsIncludingOrgProvider.overrideWith((ref) async => [pet]);
+      final testNotifier = TestPetListNotifier();
+      final petListOverride = petListProvider.overrideWith(() => testNotifier);
       await tester.pumpWidget(createApp(
         prefs: prefs,
-        overrides: [
-          sharedPreferencesProvider.overrideWithValue(prefs),
-          authOverride,
-          petsOverride,
-          fakePetRepositoryOverride,
-          petListOverride,
-          healthEntriesNotifierProvider.overrideWith(() => FakeHealthEntriesNotifier()),
-          notificationsProvider.overrideWith(() => FakeNotificationsNotifier()),
-          notificationPreferencesProvider.overrideWith(() => FakeNotificationPreferencesNotifier()),
-          pendingSharesProvider.overrideWith(() => FakePendingSharesNotifier()),
-        ],
+        overrides: [...baseOverrides(prefs), petListOverride],
       ));
+      await tester.pumpAndSettle();
+
+      final scaffoldContext = tester.element(find.byType(Scaffold));
+      final l10n = AppLocalizations.of(scaffoldContext)!;
+
+      await tester.tap(find.text(l10n.addPet));
+      await tester.pumpAndSettle();
+
+      await tester.enterText(find.byKey(const Key('pet_name_field')), 'Buddy');
+
+      final saveButton = find.text(l10n.savePet);
+      await tester.ensureVisible(saveButton);
+      await tester.pumpAndSettle();
+      await tester.tap(saveButton, warnIfMissed: false);
       await tester.pumpAndSettle();
 
       expect(find.text('Buddy'), findsOneWidget, reason: 'Should show Buddy in the list');
