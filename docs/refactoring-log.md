@@ -37,7 +37,7 @@ Tracks planned and completed refactor / quality work. See also `docs/refactoring
 
 | # | Action | Status | Notes |
 |---|--------|--------|-------|
-| 2.1 | Remove root legacy `lib/` / `pubspec.yaml` if unused | **Done** | Root `pubspec.yaml` removed; `lib/` already absent |
+| 2.1 | Remove root legacy `lib/` / `pubspec.yaml` if unused | **Done** | Root `pubspec.yaml` removed; orphaned root `analysis_options.yaml` removed in 2.7 |
 | 2.2 | Remove `attached_assets/` from git | **Done** | Already absent from repo |
 | 2.3 | Drop `npm run test:mocha` | **Done (Sprint 1)** | Removed with mocha/chai |
 | 2.4 | Split `pet_form_screen.dart` (929 → <500) | **In progress** | Extracted `widgets/pet_form/` (553 lines screen; further trim optional) |
