@@ -41,7 +41,7 @@ Tracks planned and completed refactor / quality work. See also `docs/refactoring
 | 2.2 | Remove `attached_assets/` from git | **Done** | Already absent from repo |
 | 2.3 | Drop `npm run test:mocha` | **Done (Sprint 1)** | Removed with mocha/chai |
 | 2.4 | Split `pet_form_screen.dart` (929 → <500) | **In progress** | Extracted `widgets/pet_form/` (553 lines screen; further trim optional) |
-| 2.5 | Split `health_entry_form_screen.dart` (756 → <500) | Planned | Per widget README |
+| 2.5 | Split `health_entry_form_screen.dart` (756 → <500) | **Done** | Extracted `widgets/health_entry_form/` (425 lines) |
 | 2.6 | Widget tests: `about`, `help`, `subscription` (smoke) | **Done** | Smoke tests added |
 | 2.7 | **Enforce** `dart format` in CI (remove warn-only) | Planned | End of Sprint 2 |
 | 2.8 | Playwright: `sharing.feature` implementation | Planned | + `@smoke` tag |
@@ -79,5 +79,5 @@ Tracks planned and completed refactor / quality work. See also `docs/refactoring
 
 | Date | Change |
 |---|---|
-| 2026-07-07 | Sprint 2 started: legacy cleanup, pet_form split, about/help/paywall smoke tests |
+| 2026-07-07 | Sprint 2.5: health_entry_form_screen split (756 → 425 lines) |
 | 2026-07-07 | Sprint 1 plan created; governance + CI implementation |
