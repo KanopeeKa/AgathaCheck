@@ -53,9 +53,9 @@ Tracks planned and completed refactor / quality work. See also `docs/refactoring
 
 | # | Action | Status | Notes |
 |---|--------|--------|-------|
-| 3.1 | Split `pet_detail_screen.dart` | Planned | |
-| 3.2 | Split `health_dashboard_screen.dart` | Planned | |
-| 3.3 | Split `my_details_screen.dart` | Planned | |
+| 3.1 | Split `pet_detail_screen.dart` (710 → 114) | **Done** | `widgets/pet_detail/` + 4 widget tests |
+| 3.2 | Split `health_dashboard_screen.dart` (729 → 232) | **Done** | `widgets/health_dashboard/` + org filter test |
+| 3.3 | Split `my_details_screen.dart` (618 → 321) | **Done** | `widgets/my_details/` (profile editor + settings) |
 | 3.4 | Split `server/lib/auth_routes.dart` → mirror `routes/auth/` | Planned | Dart parity |
 | 3.5 | Split `server/test/auth.test.js` → `test/auth/` | Planned | 1012 lines |
 | 3.6 | Split `server/test/pets.test.js` → `test/pets/` | Planned | 1072 lines |
@@ -79,6 +79,7 @@ Tracks planned and completed refactor / quality work. See also `docs/refactoring
 
 | Date | Change |
 |---|---|
+| 2026-07-07 | Sprint 3.1–3.3: pet_detail, health_dashboard, my_details screen splits merged |
 | 2026-07-07 | Sprint 2.9: Flutter domain coverage gate at 65% |
 | 2026-07-07 | Sprint 2.8: Playwright sharing.feature E2E tests |
 | 2026-07-07 | Sprint 2.5: health_entry_form_screen split (756 → 425 lines) |

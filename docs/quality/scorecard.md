@@ -2,7 +2,7 @@
 
 Living metrics for Agatha Track quality. Update when CI or test counts change materially.
 
-**Last updated:** 2026-07-07 (Sprint 2 complete)
+**Last updated:** 2026-07-07 (Sprint 3.1–3.3 screen splits)
 
 ---
 
@@ -10,7 +10,7 @@ Living metrics for Agatha Track quality. Update when CI or test counts change ma
 
 | Layer | Count | Gate |
 |---|---:|---|
-| Flutter unit/widget | 431+ | CI on `main` |
+| Flutter unit/widget | 442 | CI on `main` |
 | Flutter integration | 1 flow | CI on `main` (blocking) |
 | Node Jest | 544 | CI on `main` |
 | Playwright E2E | 15 | UAT deploy |
@@ -50,10 +50,10 @@ Domain gate: `flutter_app/scripts/check_domain_coverage.js` (runs after `run_tes
 |---|---:|---|
 | `pet_form_screen.dart` | 553 | Sprint 2 (was 929) |
 | `health_entry_form_screen.dart` | 425 | Sprint 2 (was 756) |
-| `pet_detail_screen.dart` | 639 | Sprint 3 |
-| `health_dashboard_screen.dart` | 628 | Sprint 3 |
-| `my_details_screen.dart` | 608 | Sprint 3 |
-| `server/lib/auth_routes.dart` | 736 | Sprint 3 |
+| `pet_detail_screen.dart` | 114 | Sprint 3 (was 710) |
+| `health_dashboard_screen.dart` | 232 | Sprint 3 (was 729) |
+| `my_details_screen.dart` | 321 | Sprint 3 (was 618) |
+| `server/lib/auth_routes.dart` | 769 | Sprint 3 |
 | `server/routes/healthEntries.js` | 541 | Sprint 4 |
 
 See `docs/refactoring-log.md` for full sprint plan.
@@ -68,5 +68,6 @@ Run `cd server && npm audit` locally. CI blocks **high** and **critical** (clean
 
 | Date | Change |
 |---|---|
+| 2026-07-07 | Sprint 3.1–3.3: screen splits merged; Flutter tests 442 |
 | 2026-07-07 | Sprint 2.9: Flutter domain coverage gate (65%) |
 | 2026-07-07 | Initial scorecard; Plans A+B governance and CI hardening |
