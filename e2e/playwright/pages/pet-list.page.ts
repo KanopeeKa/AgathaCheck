@@ -50,4 +50,10 @@ export class PetListPage {
       .click();
     await this.page.waitForTimeout(1000);
   }
+
+  async openOrganizations(): Promise<void> {
+    await dismissConsentBannerIfPresent(this.page);
+    await this.page.getByRole('button', { name: 'Organizations' }).click();
+    await this.page.getByText('My Organizations').waitFor({ timeout: 30_000 });
+  }
 }

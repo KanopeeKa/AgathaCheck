@@ -40,7 +40,7 @@ Tracks planned and completed refactor / quality work. See also `docs/refactoring
 | 2.1 | Remove root legacy `lib/` / `pubspec.yaml` if unused | **Done** | Root `pubspec.yaml` removed; orphaned root `analysis_options.yaml` removed in 2.7 |
 | 2.2 | Remove `attached_assets/` from git | **Done** | Already absent from repo |
 | 2.3 | Drop `npm run test:mocha` | **Done (Sprint 1)** | Removed with mocha/chai |
-| 2.4 | Split `pet_form_screen.dart` (929 → <500) | **In progress** | Extracted `widgets/pet_form/` (553 lines screen; further trim optional) |
+| 2.4 | Split `pet_form_screen.dart` (929 → <500) | **Done** | Extracted `widgets/pet_form/` incl. bio/insurance/chip + confirm dialogs |
 | 2.5 | Split `health_entry_form_screen.dart` (756 → <500) | **Done** | Extracted `widgets/health_entry_form/` (425 lines) |
 | 2.6 | Widget tests: `about`, `help`, `subscription` (smoke) | **Done** | Smoke tests added |
 | 2.7 | **Enforce** `dart format` in CI (remove warn-only) | **Done** | CI blocks; repo formatted |
@@ -59,8 +59,8 @@ Tracks planned and completed refactor / quality work. See also `docs/refactoring
 | 3.4 | Split `server/lib/auth_routes.dart` → mirror `routes/auth/` | Planned | Dart parity |
 | 3.5 | Split `server/test/auth.test.js` → `test/auth/` | Planned | 1012 lines |
 | 3.6 | Split `server/test/pets.test.js` → `test/pets/` | Planned | 1072 lines |
-| 3.7 | Playwright: `organisation_management.feature` | Planned | |
-| 3.8 | Expand `notifications` widget tests | Planned | |
+| 3.7 | Playwright: `organisation_management.feature` | **Done** | `organisation.management.spec.ts` + org page objects |
+| 3.8 | Expand `notifications` widget tests | **Done** | Screen + settings widget tests |
 
 ---
 

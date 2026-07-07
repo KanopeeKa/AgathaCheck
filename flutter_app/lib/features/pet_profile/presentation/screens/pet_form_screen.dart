@@ -11,8 +11,12 @@ import '../../../../core/widgets/app_logo_title.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../domain/entities/pet.dart';
 import '../providers/pet_providers.dart';
+import '../widgets/pet_form/pet_form_bio_section.dart';
+import '../widgets/pet_form/pet_form_chip_section.dart';
+import '../widgets/pet_form/pet_form_confirm_dialogs.dart';
 import '../widgets/pet_form/pet_form_edit_actions.dart';
 import '../widgets/pet_form/pet_form_info_tooltip.dart';
+import '../widgets/pet_form/pet_form_insurance_section.dart';
 import '../widgets/pet_form/pet_form_neutered_section.dart';
 import '../widgets/pet_form/pet_form_vet_section.dart';
 import '../widgets/pet_form/pet_form_weight_section.dart';
@@ -148,77 +152,27 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
   }
 
   Future<void> _confirmDeletePet() async {
-    final l = AppLocalizations.of(context)!;
-    final confirmed = await showDialog<bool>(
+    if (widget.petId == null) return;
+    await confirmDeletePet(
       context: context,
-      builder: (ctx) => AlertDialog(
-        title: Text(l.deletePet),
-        content: Text(l.deletePetConfirm('')),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx, false),
-            child: Text(l.cancel),
-          ),
-          TextButton(
-            onPressed: () => Navigator.pop(ctx, true),
-            child: Text(l.delete),
-          ),
-        ],
-      ),
+      ref: ref,
+      petId: widget.petId!,
+      onLoadingChanged: (bool loading) {
+        if (mounted) setState(() => _isLoading = loading);
+      },
     );
-    if (confirmed == true && widget.petId != null) {
-      setState(() => _isLoading = true);
-      try {
-        await ref.read(petListProvider.notifier).deletePet(widget.petId!);
-        if (mounted) context.go('/');
-      } catch (e) {
-        if (mounted) {
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(SnackBar(content: Text('Failed to delete pet: $e')));
-        }
-      } finally {
-        if (mounted) setState(() => _isLoading = false);
-      }
-    }
   }
 
   Future<void> _confirmPassedAway() async {
-    final l = AppLocalizations.of(context)!;
-    final confirmed = await showDialog<bool>(
+    if (widget.petId == null) return;
+    await confirmPassedAway(
       context: context,
-      builder: (ctx) => AlertDialog(
-        title: Text(l.passedAway),
-        content: const Text(
-          'Are you sure you want to mark this pet as passed away?',
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx, false),
-            child: Text(l.cancel),
-          ),
-          TextButton(
-            onPressed: () => Navigator.pop(ctx, true),
-            child: Text(l.ok),
-          ),
-        ],
-      ),
+      ref: ref,
+      petId: widget.petId!,
+      onLoadingChanged: (bool loading) {
+        if (mounted) setState(() => _isLoading = loading);
+      },
     );
-    if (confirmed == true && widget.petId != null) {
-      setState(() => _isLoading = true);
-      try {
-        await ref.read(petListProvider.notifier).markPassedAway(widget.petId!);
-        if (mounted) context.go('/');
-      } catch (e) {
-        if (mounted) {
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(SnackBar(content: Text('Failed to update pet: $e')));
-        }
-      } finally {
-        if (mounted) setState(() => _isLoading = false);
-      }
-    }
   }
 
   Future<void> _savePet() async {
@@ -457,20 +411,8 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
                 _selectedSpecies,
               ))
                 const SizedBox(height: 16),
-              TextFormField(
-                key: const Key('pet_bio_field'),
-                controller: _bioController,
-                decoration: InputDecoration(
-                  labelText: l.petBio,
-                  alignLabelWithHint: true,
-                  helperText: 'Personality traits, likes, quirks',
-                  suffixIcon: PetFormInfoTooltip(
-                    message:
-                        'Anything a caregiver should know about your pet\'s temperament or habits',
-                  ),
-                ),
-                maxLines: 4,
-                maxLength: 500,
+              PetFormBioSection(
+                textController: _bioController,
                 onChanged: (value) =>
                     _controller.state = _controller.state.copyWith(bio: value),
               ),
@@ -482,50 +424,14 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
                     setState(() => _selectedVetId = value),
               ),
               const SizedBox(height: 16),
-              TextFormField(
-                key: const Key('pet_insurance_field'),
-                controller: _insuranceController,
-                decoration: InputDecoration(
-                  labelText: l.insuranceDetails,
-                  alignLabelWithHint: true,
-                  helperText: 'Policy info for emergencies or vet visits',
-                  suffixIcon: PetFormInfoTooltip(
-                    message:
-                        'Include details someone else would need to use your pet\'s insurance:\n\n'
-                        '\u2022 Insurance company name\n'
-                        '\u2022 Policy or contract number\n'
-                        '\u2022 Policyholder name (if different from you)\n'
-                        '\u2022 Coverage type (accident only, illness, wellness)\n'
-                        '\u2022 Excess/deductible amount\n'
-                        '\u2022 Emergency helpline number\n\n'
-                        'This is especially useful if a pet-sitter or family member needs to take your pet to the vet and claim on your behalf.',
-                  ),
-                ),
-                maxLines: 4,
-                maxLength: 500,
+              PetFormInsuranceSection(
+                textController: _insuranceController,
                 onChanged: (value) => _controller.state = _controller.state
                     .copyWith(insurance: value),
               ),
               const SizedBox(height: 16),
-              TextFormField(
-                key: const Key('pet_chip_id_field'),
-                controller: _chipIdController,
-                decoration: InputDecoration(
-                  labelText: l.idMicrochip,
-                  helperText: 'Identification number for your pet',
-                  suffixIcon: PetFormInfoTooltip(
-                    message:
-                        'Enter the identification number relevant to your pet:\n\n'
-                        '\u2022 Dogs & Cats: microchip number (usually 15 digits), often required by law\n'
-                        '\u2022 Horses & Ponies: passport or microchip number\n'
-                        '\u2022 Ferrets & Rabbits: microchip number if implanted\n'
-                        '\u2022 Birds: leg ring or band number\n'
-                        '\u2022 Fish: tank or habitat label\n'
-                        '\u2022 Other pets: any ID tag or registration number\n\n'
-                        'This is essential if your pet is lost or needs emergency vet care. '
-                        'The number is usually found on adoption papers, vet records, or the registration database.',
-                  ),
-                ),
+              PetFormChipSection(
+                textController: _chipIdController,
                 onChanged: (value) => _controller.state = _controller.state
                     .copyWith(chipId: value),
               ),
