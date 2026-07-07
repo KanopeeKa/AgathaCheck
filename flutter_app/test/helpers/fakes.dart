@@ -148,11 +148,55 @@ class FakeNotificationsNotifier extends NotificationsNotifier {
   Future<void> checkDueEntries() async {}
 }
 
+class TestNotificationsNotifier extends NotificationsNotifier {
+  TestNotificationsNotifier(this._notifications);
+
+  final List<AppNotification> _notifications;
+  bool markAllAsReadCalled = false;
+
+  @override
+  Future<List<AppNotification>> build() async =>
+      List<AppNotification>.from(_notifications);
+
+  @override
+  Future<void> checkDueEntries() async {}
+
+  @override
+  Future<void> markAllAsRead() async {
+    markAllAsReadCalled = true;
+    state = AsyncValue.data(
+      _notifications.map((n) => n.copyWith(isRead: true)).toList(),
+    );
+  }
+
+  @override
+  Future<void> refresh() async {
+    state = AsyncValue.data(List<AppNotification>.from(_notifications));
+  }
+}
+
 class FakeNotificationPreferencesNotifier
     extends NotificationPreferencesNotifier {
   @override
   Future<NotificationPreferences> build() async =>
       const NotificationPreferences();
+}
+
+class TestNotificationPreferencesNotifier
+    extends NotificationPreferencesNotifier {
+  TestNotificationPreferencesNotifier(this._preferences);
+
+  final NotificationPreferences _preferences;
+  NotificationPreferences? lastSaved;
+
+  @override
+  Future<NotificationPreferences> build() async => _preferences;
+
+  @override
+  Future<void> updatePreferences(NotificationPreferences preferences) async {
+    lastSaved = preferences;
+    state = AsyncValue.data(preferences);
+  }
 }
 
 class FakePendingSharesNotifier extends PendingSharesNotifier {

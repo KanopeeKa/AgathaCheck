@@ -32,6 +32,44 @@ export interface ShareLink {
   link_id: string;
 }
 
+export interface TestOrganization {
+  id: string;
+  name: string;
+  type: string;
+  role: string;
+  bio?: string;
+}
+
+export interface TestOrgInvite {
+  id: string;
+  organization_id: string;
+  organization_name: string;
+  desired_role: string;
+}
+
+export interface TestOrgMember {
+  id: string;
+  user_id: string;
+  email: string;
+  first_name: string;
+  last_name: string;
+  role: string;
+}
+
+/** Map BDD role labels to API wire values. */
+export function mapBddOrgRole(role: string): string {
+  switch (role) {
+    case 'super_user':
+      return 'super_admin';
+    case 'member':
+      return 'admin';
+    case 'foster':
+      return 'foster';
+    default:
+      return role;
+  }
+}
+
 function apiUrl(path: string, baseURL: string): string {
   const root = baseURL.replace(/\/$/, '');
   return `${root}${API_PREFIX}${path}`;
@@ -102,6 +140,222 @@ export async function createPet(
 
   const json = await res.json();
   return { id: json.id, name: json.name };
+}
+
+export async function createOrganization(
+  baseURL: string,
+  token: string,
+  options: {
+    name: string;
+    type?: 'professional' | 'charity';
+    bio?: string;
+    email?: string;
+  },
+): Promise<TestOrganization> {
+  const res = await fetch(apiUrl('/organizations', baseURL), {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({
+      name: options.name,
+      type: options.type ?? 'professional',
+      bio: options.bio ?? '',
+      email: options.email ?? '',
+    }),
+  });
+
+  if (!res.ok) {
+    const body = await res.text();
+    throw new Error(`createOrganization failed (${res.status}): ${body}`);
+  }
+
+  const json = await res.json();
+  return {
+    id: json.id,
+    name: json.name,
+    type: json.type,
+    role: json.role,
+    bio: json.bio,
+  };
+}
+
+export async function getOrganizations(
+  baseURL: string,
+  token: string,
+): Promise<TestOrganization[]> {
+  const res = await fetch(apiUrl('/organizations', baseURL), {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+
+  if (!res.ok) {
+    const body = await res.text();
+    throw new Error(`getOrganizations failed (${res.status}): ${body}`);
+  }
+
+  return res.json();
+}
+
+export async function updateOrganization(
+  baseURL: string,
+  token: string,
+  orgId: string,
+  data: Record<string, string>,
+): Promise<TestOrganization> {
+  const res = await fetch(apiUrl(`/organizations/${orgId}`, baseURL), {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(data),
+  });
+
+  if (!res.ok) {
+    const body = await res.text();
+    throw new Error(`updateOrganization failed (${res.status}): ${body}`);
+  }
+
+  const json = await res.json();
+  return {
+    id: json.id ?? orgId,
+    name: json.name,
+    type: json.type,
+    role: json.role,
+    bio: json.bio,
+  };
+}
+
+export async function inviteToOrganization(
+  baseURL: string,
+  token: string,
+  orgId: string,
+  options: { email: string; role: string },
+): Promise<{ success: boolean; user_id: string }> {
+  const res = await fetch(apiUrl(`/organizations/${orgId}/invite`, baseURL), {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({
+      email: options.email,
+      role: mapBddOrgRole(options.role),
+    }),
+  });
+
+  const body = await res.text();
+  if (!res.ok) {
+    throw new Error(`inviteToOrganization failed (${res.status}): ${body}`);
+  }
+
+  return JSON.parse(body);
+}
+
+export async function getPendingInvites(
+  baseURL: string,
+  token: string,
+): Promise<TestOrgInvite[]> {
+  const res = await fetch(apiUrl('/organizations/invites/pending', baseURL), {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+
+  if (!res.ok) {
+    const body = await res.text();
+    throw new Error(`getPendingInvites failed (${res.status}): ${body}`);
+  }
+
+  return res.json();
+}
+
+export async function acceptInvite(
+  baseURL: string,
+  token: string,
+  inviteId: string,
+): Promise<{ organization_id: string; role: string }> {
+  const res = await fetch(apiUrl(`/organizations/invites/${inviteId}/accept`, baseURL), {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${token}` },
+  });
+
+  if (!res.ok) {
+    const body = await res.text();
+    throw new Error(`acceptInvite failed (${res.status}): ${body}`);
+  }
+
+  return res.json();
+}
+
+export async function declineInvite(
+  baseURL: string,
+  token: string,
+  inviteId: string,
+): Promise<void> {
+  const res = await fetch(apiUrl(`/organizations/invites/${inviteId}/decline`, baseURL), {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${token}` },
+  });
+
+  if (!res.ok) {
+    const body = await res.text();
+    throw new Error(`declineInvite failed (${res.status}): ${body}`);
+  }
+}
+
+export async function getOrgMembers(
+  baseURL: string,
+  token: string,
+  orgId: string,
+): Promise<TestOrgMember[]> {
+  const res = await fetch(apiUrl(`/organizations/${orgId}/members`, baseURL), {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+
+  if (!res.ok) {
+    const body = await res.text();
+    throw new Error(`getOrgMembers failed (${res.status}): ${body}`);
+  }
+
+  return res.json();
+}
+
+export async function leaveOrganization(
+  baseURL: string,
+  token: string,
+  orgId: string,
+): Promise<void> {
+  const res = await fetch(apiUrl(`/organizations/${orgId}/members/me`, baseURL), {
+    method: 'DELETE',
+    headers: { Authorization: `Bearer ${token}` },
+  });
+
+  if (!res.ok) {
+    const body = await res.text();
+    throw new Error(`leaveOrganization failed (${res.status}): ${body}`);
+  }
+}
+
+/** Seed org with owner, invite a user, and accept as the invitee. */
+export async function seedOrgWithMember(
+  baseURL: string,
+  owner: TestUser,
+  member: TestUser,
+  orgName: string,
+  memberRole: string = 'member',
+): Promise<TestOrganization> {
+  const org = await createOrganization(baseURL, owner.accessToken, { name: orgName });
+  await inviteToOrganization(baseURL, owner.accessToken, org.id, {
+    email: member.email,
+    role: memberRole,
+  });
+  const invites = await getPendingInvites(baseURL, member.accessToken);
+  const invite = invites.find((item) => item.organization_id === org.id);
+  if (!invite) {
+    throw new Error(`No pending invite found for ${orgName}`);
+  }
+  await acceptInvite(baseURL, member.accessToken, invite.id);
+  return org;
 }
 
 export async function createShareLink(
