@@ -9,6 +9,9 @@ import 'package:pet_profile_app/features/auth/presentation/providers/auth_provid
 import 'package:pet_profile_app/features/health_tracking/presentation/providers/health_providers.dart';
 import 'package:pet_profile_app/features/notifications/presentation/providers/notification_providers.dart';
 import 'package:pet_profile_app/features/sharing/presentation/providers/sharing_providers.dart';
+import 'package:pet_profile_app/features/organization/presentation/providers/organization_providers.dart';
+import 'package:pet_profile_app/features/vet/presentation/providers/vet_providers.dart';
+import 'package:pet_profile_app/core/providers/api_base_url_provider.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
@@ -33,9 +36,12 @@ void main() {
 
     List<Override> baseOverrides(SharedPreferences prefs) => [
       sharedPreferencesProvider.overrideWithValue(prefs),
+      apiBaseUrlProvider.overrideWithValue('http://test.local'),
       authOverride,
       petsOverride,
       fakePetRepositoryOverride,
+      vetListProvider.overrideWith(FakeVetListNotifier.new),
+      organizationListProvider.overrideWith(FakeOrganizationListNotifier.new),
       allPetsIncludingOrgProvider.overrideWith((ref) async => <Pet>[]),
       healthEntriesNotifierProvider.overrideWith(() => FakeHealthEntriesNotifier()),
       notificationsProvider.overrideWith(() => FakeNotificationsNotifier()),
@@ -50,7 +56,7 @@ void main() {
         prefs: prefs,
         overrides: [...baseOverrides(prefs), emptyPetListOverride],
       ));
-      await tester.pumpAndSettle();
+      await pumpApp(tester);
 
       final scaffoldContext = tester.element(find.byType(Scaffold));
       final l10n = AppLocalizations.of(scaffoldContext)!;
@@ -66,7 +72,7 @@ void main() {
         prefs: prefs,
         overrides: [...baseOverrides(prefs), emptyPetListOverride],
       ));
-      await tester.pumpAndSettle();
+      await pumpApp(tester);
 
       final scaffoldContext = tester.element(find.byType(Scaffold));
       final l10n = AppLocalizations.of(scaffoldContext)!;
@@ -74,7 +80,7 @@ void main() {
       final addPetButton = find.text(l10n.addPet);
       expect(addPetButton, findsOneWidget, reason: 'Should find Add Pet button');
       await tester.tap(addPetButton);
-      await tester.pumpAndSettle();
+      await pumpApp(tester);
 
       expect(find.text(l10n.petName), findsOneWidget, reason: 'Should show pet name field');
       expect(find.text(l10n.species), findsOneWidget, reason: 'Should show species field');
@@ -88,7 +94,7 @@ void main() {
         prefs: prefs,
         overrides: [...baseOverrides(prefs), emptyPetListOverride],
       ));
-      await tester.pumpAndSettle();
+      await pumpApp(tester);
 
       final scaffoldContext = tester.element(find.byType(Scaffold));
       final l10n = AppLocalizations.of(scaffoldContext)!;
@@ -96,13 +102,13 @@ void main() {
       final addPetButton = find.text(l10n.addPet);
       expect(addPetButton, findsOneWidget, reason: 'Should find Add Pet button');
       await tester.tap(addPetButton);
-      await tester.pumpAndSettle();
+      await pumpApp(tester);
 
-      final saveButton = find.text(l10n.savePet);
+      final saveButton = find.byKey(const Key('save_pet_button'));
       await tester.ensureVisible(saveButton);
-      await tester.pumpAndSettle();
+      await pumpApp(tester);
       await tester.tap(saveButton, warnIfMissed: false);
-      await tester.pumpAndSettle();
+      await pumpApp(tester);
 
       expect(find.text(l10n.petNameRequired), findsOneWidget, reason: 'Should show required name validation');
     });
@@ -114,23 +120,33 @@ void main() {
         prefs: prefs,
         overrides: [...baseOverrides(prefs), petListOverride],
       ));
-      await tester.pumpAndSettle();
+      await pumpApp(tester);
 
       final scaffoldContext = tester.element(find.byType(Scaffold));
       final l10n = AppLocalizations.of(scaffoldContext)!;
 
       await tester.tap(find.text(l10n.addPet));
-      await tester.pumpAndSettle();
+      await pumpApp(tester);
 
       await tester.enterText(find.byKey(const Key('pet_name_field')), 'Buddy');
+      await tester.tap(find.byKey(const Key('pet_species_field')));
+      await pumpApp(tester);
+      await tester.tap(find.text('Dog').last);
+      await pumpApp(tester);
 
-      final saveButton = find.text(l10n.savePet);
+      final saveButton = find.byKey(const Key('save_pet_button'));
       await tester.ensureVisible(saveButton);
-      await tester.pumpAndSettle();
+      await pumpApp(tester);
       await tester.tap(saveButton, warnIfMissed: false);
-      await tester.pumpAndSettle();
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 500));
+      await tester.pump(const Duration(milliseconds: 500));
 
-      expect(find.text('Buddy'), findsOneWidget, reason: 'Should show Buddy in the list');
+      expect(
+        find.byKey(const Key('pet_card_Buddy')),
+        findsOneWidget,
+        reason: 'Should show Buddy in the list',
+      );
     });
   });
 }

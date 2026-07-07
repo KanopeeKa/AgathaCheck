@@ -12,6 +12,10 @@ import 'package:pet_profile_app/features/notifications/domain/entities/app_notif
 import 'package:pet_profile_app/features/notifications/domain/entities/notification_preferences.dart';
 import 'package:pet_profile_app/features/notifications/presentation/providers/notification_providers.dart';
 import 'package:pet_profile_app/features/sharing/presentation/providers/sharing_providers.dart';
+import 'package:pet_profile_app/features/vet/domain/entities/vet.dart';
+import 'package:pet_profile_app/features/vet/presentation/providers/vet_providers.dart';
+import 'package:pet_profile_app/features/organization/domain/entities/organization.dart';
+import 'package:pet_profile_app/features/organization/presentation/providers/organization_providers.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class FakePetRepository implements PetRepository {
@@ -113,6 +117,16 @@ class TestPetListNotifier extends PetListNotifier {
     state = AsyncValue.data([pet]);
     return pet.id;
   }
+}
+
+class FakeVetListNotifier extends VetListNotifier {
+  @override
+  Future<List<Vet>> build() async => const [];
+}
+
+class FakeOrganizationListNotifier extends OrganizationListNotifier {
+  @override
+  Future<List<Organization>> build() async => const [];
 }
 
 class FakeHealthEntriesNotifier extends HealthEntriesNotifier {

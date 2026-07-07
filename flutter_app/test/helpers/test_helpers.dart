@@ -6,6 +6,9 @@ import 'package:pet_profile_app/core/router/app_router.dart';
 import 'package:pet_profile_app/core/theme/app_theme.dart';
 import 'package:pet_profile_app/core/utils/constants.dart';
 import 'package:pet_profile_app/l10n/app_localizations.dart';
+import 'package:pet_profile_app/core/providers/api_base_url_provider.dart';
+import 'package:pet_profile_app/features/organization/presentation/providers/organization_providers.dart';
+import 'package:pet_profile_app/features/vet/presentation/providers/vet_providers.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 Widget createApp({
@@ -32,6 +35,15 @@ Widget createApp({
       },
     ),
   );
+}
+
+/// Pumps a bounded number of frames without waiting on infinite animations
+/// (e.g. [CircularProgressIndicator]) that can hang CI under pumpAndSettle.
+Future<void> pumpApp(WidgetTester tester, {int frames = 3}) async {
+  for (var i = 0; i < frames; i++) {
+    await tester.pump();
+  }
+  await tester.pump(const Duration(milliseconds: 100));
 }
 
 Future<void> debugPrintTree(WidgetTester tester) async {
