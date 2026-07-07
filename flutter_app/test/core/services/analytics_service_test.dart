@@ -38,12 +38,18 @@ class FakeAnalyticsClient implements AnalyticsClient {
   }
 
   @override
-  Future<void> capture(String eventName, [Map<String, Object>? properties]) async {
+  Future<void> capture(
+    String eventName, [
+    Map<String, Object>? properties,
+  ]) async {
     events.add(eventName);
   }
 
   @override
-  Future<void> screen(String screenName, [Map<String, Object>? properties]) async {
+  Future<void> screen(
+    String screenName, [
+    Map<String, Object>? properties,
+  ]) async {
     screens.add(screenName);
   }
 }
@@ -78,7 +84,11 @@ void main() {
     test('identifies user on login when consented', () async {
       await service.applyConsent(hasResponded: true, analyticsConsent: true);
       await service.onLogin(
-        AuthUser(id: 'user-1', email: 'a@example.com', category: 'pet_guardian'),
+        AuthUser(
+          id: 'user-1',
+          email: 'a@example.com',
+          category: 'pet_guardian',
+        ),
       );
       expect(client.identifiedUserId, 'user-1');
     });

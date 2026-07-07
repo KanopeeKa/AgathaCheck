@@ -29,11 +29,15 @@ class FosterSharingContent extends ConsumerWidget {
       children: [
         Text(
           l.fosterSharingDescription(pet.name),
-          style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+          style: theme.textTheme.bodyMedium?.copyWith(
+            color: theme.colorScheme.onSurfaceVariant,
+          ),
         ),
         const SizedBox(height: 12),
         if (shareLinks.isNotEmpty) ...[
-          ...shareLinks.map((link) => ShareLinkTile(petId: petId, pet: pet, link: link)),
+          ...shareLinks.map(
+            (link) => ShareLinkTile(petId: petId, pet: pet, link: link),
+          ),
           const SizedBox(height: 8),
         ],
         SizedBox(
@@ -52,15 +56,17 @@ class FosterSharingContent extends ConsumerWidget {
   Future<void> _generateShareLink(BuildContext context, WidgetRef ref) async {
     final l = AppLocalizations.of(context)!;
     try {
-      final code = await ref.read(petShareLinksNotifierProvider(petId).notifier).createLink();
+      final code = await ref
+          .read(petShareLinksNotifierProvider(petId).notifier)
+          .createLink();
       if (context.mounted) {
         _showLinkDialog(context, l, code);
       }
     } catch (e) {
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Error: $e')));
       }
     }
   }
@@ -95,9 +101,9 @@ class FosterSharingContent extends ConsumerWidget {
           FilledButton.icon(
             onPressed: () {
               Clipboard.setData(ClipboardData(text: link));
-              ScaffoldMessenger.of(ctx).showSnackBar(
-                SnackBar(content: Text(l.linkCopied)),
-              );
+              ScaffoldMessenger.of(
+                ctx,
+              ).showSnackBar(SnackBar(content: Text(l.linkCopied)));
               Navigator.pop(ctx);
             },
             icon: const Icon(Icons.copy, size: 18),

@@ -56,7 +56,8 @@ class OrganizationFosterParentsSection extends ConsumerWidget {
                   child: CircularProgressIndicator(),
                 ),
               ),
-              error: (e, _) => Text('$e', style: TextStyle(color: colorScheme.error)),
+              error: (e, _) =>
+                  Text('$e', style: TextStyle(color: colorScheme.error)),
               data: (parents) {
                 if (parents.isEmpty) {
                   return Padding(
@@ -70,16 +71,18 @@ class OrganizationFosterParentsSection extends ConsumerWidget {
 
                 return Column(
                   children: [
-                    ...parents.map((parent) => _FosterParentTile(
-                          parent: parent,
-                          theme: theme,
-                          colorScheme: colorScheme,
-                          l: l,
-                          localizedRoleLabel: localizedRoleLabel,
-                          onDelete: parent.isExternal
-                              ? () => _confirmDelete(context, ref, parent)
-                              : null,
-                        )),
+                    ...parents.map(
+                      (parent) => _FosterParentTile(
+                        parent: parent,
+                        theme: theme,
+                        colorScheme: colorScheme,
+                        l: l,
+                        localizedRoleLabel: localizedRoleLabel,
+                        onDelete: parent.isExternal
+                            ? () => _confirmDelete(context, ref, parent)
+                            : null,
+                      ),
+                    ),
                     const Divider(),
                     OutlinedButton.icon(
                       key: const Key('org_add_foster_parent_button'),
@@ -129,9 +132,9 @@ class OrganizationFosterParentsSection extends ConsumerWidget {
         .read(orgFosterParentsProvider(orgId).notifier)
         .deleteExternal(parent.id);
     if (context.mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l.fosterParentDeleted)),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(l.fosterParentDeleted)));
     }
   }
 }
@@ -198,24 +201,24 @@ class _FosterParentTile extends StatelessWidget {
               color: parent.isExternal
                   ? Colors.blueGrey.withAlpha(30)
                   : parent.role?.isSuperAdmin == true
-                      ? AppTheme.orgSuperUserBg
-                      : AppTheme.orgChipBg,
+                  ? AppTheme.orgSuperUserBg
+                  : AppTheme.orgChipBg,
               borderRadius: BorderRadius.circular(8),
             ),
             child: Text(
               parent.isExternal
                   ? l.fosterParentNoAccount
                   : parent.role != null
-                      ? localizedRoleLabel(l, parent.role!)
-                      : '',
+                  ? localizedRoleLabel(l, parent.role!)
+                  : '',
               style: TextStyle(
                 fontSize: 11,
                 fontWeight: FontWeight.w600,
                 color: parent.isExternal
                     ? Colors.blueGrey.shade800
                     : parent.role?.isSuperAdmin == true
-                        ? AppTheme.orgSuperUserFg
-                        : AppTheme.orgChipFg,
+                    ? AppTheme.orgSuperUserFg
+                    : AppTheme.orgChipFg,
               ),
             ),
           ),

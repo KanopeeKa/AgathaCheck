@@ -58,9 +58,7 @@ class HealthEntryFrequencySection extends StatelessWidget {
                   value: frequencyInterval.clamp(1, 12),
                   decoration: InputDecoration(labelText: l.every),
                   items: List.generate(12, (i) => i + 1)
-                      .map(
-                        (n) => DropdownMenuItem(value: n, child: Text('$n')),
-                      )
+                      .map((n) => DropdownMenuItem(value: n, child: Text('$n')))
                       .toList(),
                   onChanged: (val) {
                     if (val != null) controller.setFrequencyInterval(val);
@@ -103,7 +101,8 @@ class HealthEntryFrequencySection extends StatelessWidget {
                   onSelected: (_) async {
                     final picked = await showDatePicker(
                       context: context,
-                      initialDate: repeatEndDate ??
+                      initialDate:
+                          repeatEndDate ??
                           DateTime.now().add(const Duration(days: 30)),
                       firstDate: DateTime.now(),
                       lastDate: DateTime(2100),

@@ -1,7 +1,4 @@
-enum HealthDocumentValidationError {
-  unsupportedFormat,
-  tooLarge,
-}
+enum HealthDocumentValidationError { unsupportedFormat, tooLarge }
 
 enum HealthEntrySubmitValidation {
   nameRequired,
@@ -35,10 +32,7 @@ class HealthEntrySubmitNeedsMarkCompleted extends HealthEntrySubmitOutcome {
 }
 
 class HealthEntrySubmitSuccess extends HealthEntrySubmitOutcome {
-  HealthEntrySubmitSuccess({
-    required this.isEdit,
-    required this.petIds,
-  });
+  HealthEntrySubmitSuccess({required this.isEdit, required this.petIds});
 
   final bool isEdit;
   final Set<String> petIds;
@@ -50,4 +44,3 @@ class HealthEntrySubmitError extends HealthEntrySubmitOutcome {
   HealthEntrySubmitError(this.error);
   final Object error;
 }
-

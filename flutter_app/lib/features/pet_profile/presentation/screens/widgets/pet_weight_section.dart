@@ -19,10 +19,7 @@ class PetWeightSection extends StatelessWidget {
     return TextFormField(
       key: const Key('pet_weight_field'),
       controller: controller,
-      decoration: InputDecoration(
-        labelText: label,
-        helperText: helperText,
-      ),
+      decoration: InputDecoration(labelText: label, helperText: helperText),
       keyboardType: const TextInputType.numberWithOptions(decimal: true),
       validator: validator,
     );

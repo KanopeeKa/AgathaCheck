@@ -25,7 +25,9 @@ class VetModel extends Vet {
   /// [String]) and gracefully defaults missing or null fields to empty strings.
   factory VetModel.fromJson(Map<String, dynamic> json) {
     return VetModel(
-      id: (json['id'] is int ? json['id'].toString() : json['id'] as String?) ?? '',
+      id:
+          (json['id'] is int ? json['id'].toString() : json['id'] as String?) ??
+          '',
       name: json['name'] as String? ?? '',
       phone: json['phone'] as String? ?? '',
       email: json['email'] as String? ?? '',

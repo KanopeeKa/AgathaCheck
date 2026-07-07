@@ -3,10 +3,7 @@ import 'package:flutter/material.dart';
 class PetBioSection extends StatelessWidget {
   final TextEditingController controller;
 
-  const PetBioSection({
-    super.key,
-    required this.controller,
-  });
+  const PetBioSection({super.key, required this.controller});
 
   @override
   Widget build(BuildContext context) {

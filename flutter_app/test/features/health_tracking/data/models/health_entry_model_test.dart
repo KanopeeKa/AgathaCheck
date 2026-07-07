@@ -103,10 +103,15 @@ void main() {
         'familyEvent': HealthEntryType.familyEvent,
       };
       for (final entry in expected.entries) {
-        final model =
-            HealthEntryModel.fromJson({...fullJson, 'type': entry.key});
-        expect(model.type, entry.value,
-            reason: 'type "${entry.key}" should parse to ${entry.value}');
+        final model = HealthEntryModel.fromJson({
+          ...fullJson,
+          'type': entry.key,
+        });
+        expect(
+          model.type,
+          entry.value,
+          reason: 'type "${entry.key}" should parse to ${entry.value}',
+        );
       }
     });
 
@@ -120,8 +125,10 @@ void main() {
         'custom': HealthFrequency.custom,
       };
       for (final entry in expected.entries) {
-        final model = HealthEntryModel.fromJson(
-            {...fullJson, 'frequency': entry.key});
+        final model = HealthEntryModel.fromJson({
+          ...fullJson,
+          'frequency': entry.key,
+        });
         expect(model.frequency, entry.value);
       }
     });
@@ -177,7 +184,10 @@ void main() {
       for (final entry in expected.entries) {
         expect(HealthEntryModel.typeToApi(entry.key), entry.value);
         // Each canonical string must also round-trip back to the same enum.
-        final restored = HealthEntryModel.fromJson({...fullJson, 'type': entry.value});
+        final restored = HealthEntryModel.fromJson({
+          ...fullJson,
+          'type': entry.value,
+        });
         expect(restored.type, entry.key);
       }
     });
@@ -193,29 +203,37 @@ void main() {
       };
       for (final entry in expected.entries) {
         expect(HealthEntryModel.frequencyToApi(entry.key), entry.value);
-        final restored =
-            HealthEntryModel.fromJson({...fullJson, 'frequency': entry.value});
+        final restored = HealthEntryModel.fromJson({
+          ...fullJson,
+          'frequency': entry.value,
+        });
         expect(restored.frequency, entry.key);
       }
     });
 
-    test('preventive and procedure types survive a toJson/fromJson round-trip', () {
-      // These previously used enum.name in toJson and would corrupt to
-      // medication after a round-trip in a release build.
-      for (final type in [HealthEntryType.preventive, HealthEntryType.procedure]) {
-        final model = HealthEntryModel(
-          id: 'r-1',
-          petId: 'pet-1',
-          name: 'Test',
-          type: type,
-          frequency: HealthFrequency.monthly,
-          startDate: DateTime(2025, 1, 1),
-          nextDueDate: DateTime(2025, 2, 1),
-        );
-        final restored = HealthEntryModel.fromJson(model.toJson());
-        expect(restored.type, type);
-      }
-    });
+    test(
+      'preventive and procedure types survive a toJson/fromJson round-trip',
+      () {
+        // These previously used enum.name in toJson and would corrupt to
+        // medication after a round-trip in a release build.
+        for (final type in [
+          HealthEntryType.preventive,
+          HealthEntryType.procedure,
+        ]) {
+          final model = HealthEntryModel(
+            id: 'r-1',
+            petId: 'pet-1',
+            name: 'Test',
+            type: type,
+            frequency: HealthFrequency.monthly,
+            startDate: DateTime(2025, 1, 1),
+            nextDueDate: DateTime(2025, 2, 1),
+          );
+          final restored = HealthEntryModel.fromJson(model.toJson());
+          expect(restored.type, type);
+        }
+      },
+    );
 
     test('fromEntity preserves all data', () {
       final entity = HealthEntry(
@@ -312,23 +330,28 @@ void main() {
       expect(json['next_due_date'], isNot(contains('T')));
     });
 
-    test('toJson preserves picked day when nextDueDate is UTC-flagged on web', () {
-      // Regression: July 8 picked in UTC+2 can appear as UTC July 7 22:00.
-      final model = HealthEntryModel(
-        id: 'e-1',
-        petId: 'pet-1',
-        name: 'Vet visit test 08/07/2026',
-        type: HealthEntryType.vetVisit,
-        frequency: HealthFrequency.once,
-        startDate: DateTime.parse('2026-07-07T22:00:00.000Z'),
-        nextDueDate: DateTime.parse('2026-07-07T22:00:00.000Z'),
-      );
-      final json = model.toJson();
-      expect(
-        json['next_due_date'],
-        toCalendarDateString(DateTime.parse('2026-07-07T22:00:00.000Z').toLocal()),
-      );
-      expect(json['next_due_date'], isNot(contains('T')));
-    });
+    test(
+      'toJson preserves picked day when nextDueDate is UTC-flagged on web',
+      () {
+        // Regression: July 8 picked in UTC+2 can appear as UTC July 7 22:00.
+        final model = HealthEntryModel(
+          id: 'e-1',
+          petId: 'pet-1',
+          name: 'Vet visit test 08/07/2026',
+          type: HealthEntryType.vetVisit,
+          frequency: HealthFrequency.once,
+          startDate: DateTime.parse('2026-07-07T22:00:00.000Z'),
+          nextDueDate: DateTime.parse('2026-07-07T22:00:00.000Z'),
+        );
+        final json = model.toJson();
+        expect(
+          json['next_due_date'],
+          toCalendarDateString(
+            DateTime.parse('2026-07-07T22:00:00.000Z').toLocal(),
+          ),
+        );
+        expect(json['next_due_date'], isNot(contains('T')));
+      },
+    );
   });
 }

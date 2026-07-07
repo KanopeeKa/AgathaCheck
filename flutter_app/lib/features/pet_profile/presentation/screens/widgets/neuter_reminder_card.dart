@@ -44,14 +44,14 @@ class NeuterReminderCard extends ConsumerWidget {
               Text(
                 pet.species == 'Other'
                     ? 'Neutering or spaying is not suitable for every species. '
-                      'If your pet is a species where neutering applies, it can '
-                      'help prevent certain health issues and control the population. '
-                      'Talk to your vet to find out if it is appropriate for your pet.'
+                          'If your pet is a species where neutering applies, it can '
+                          'help prevent certain health issues and control the population. '
+                          'Talk to your vet to find out if it is appropriate for your pet.'
                     : 'Neutering or spaying helps prevent certain cancers, '
-                      'reduces unwanted behaviours, and helps control the pet '
-                      'population. It can also lower the risk of infections and '
-                      'increase your pet\'s lifespan. Talk to your vet about the '
-                      'best time for the procedure.',
+                          'reduces unwanted behaviours, and helps control the pet '
+                          'population. It can also lower the risk of infections and '
+                          'increase your pet\'s lifespan. Talk to your vet about the '
+                          'best time for the procedure.',
                 style: theme.textTheme.bodySmall?.copyWith(
                   color: colorScheme.onTertiaryContainer.withAlpha(200),
                 ),
@@ -74,7 +74,9 @@ class NeuterReminderCard extends ConsumerWidget {
                     onPressed: () {
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
-                          content: Text(AppLocalizations.of(context)!.reminderSnooze),
+                          content: Text(
+                            AppLocalizations.of(context)!.reminderSnooze,
+                          ),
                         ),
                       );
                     },

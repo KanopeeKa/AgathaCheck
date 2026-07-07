@@ -30,8 +30,10 @@ void main() {
         return http.Response(json.encode([testVetJson]), 200);
       });
 
-      final datasource =
-          VetRemoteDataSourceImpl(baseUrl: baseUrl, client: client);
+      final datasource = VetRemoteDataSourceImpl(
+        baseUrl: baseUrl,
+        client: client,
+      );
       final result = await datasource.getAllVets();
 
       expect(result, hasLength(1));
@@ -44,8 +46,10 @@ void main() {
         return http.Response(json.encode([]), 200);
       });
 
-      final datasource =
-          VetRemoteDataSourceImpl(baseUrl: baseUrl, client: client);
+      final datasource = VetRemoteDataSourceImpl(
+        baseUrl: baseUrl,
+        client: client,
+      );
       final result = await datasource.getAllVets();
 
       expect(result, isEmpty);
@@ -53,17 +57,23 @@ void main() {
 
     test('throws on 400 error with JSON body', () async {
       final client = MockClient((request) async {
-        return http.Response(
-            json.encode({'error': 'Bad request'}), 400);
+        return http.Response(json.encode({'error': 'Bad request'}), 400);
       });
 
-      final datasource =
-          VetRemoteDataSourceImpl(baseUrl: baseUrl, client: client);
+      final datasource = VetRemoteDataSourceImpl(
+        baseUrl: baseUrl,
+        client: client,
+      );
 
       expect(
         () => datasource.getAllVets(),
-        throwsA(isA<Exception>().having(
-            (e) => e.toString(), 'message', contains('Bad request'))),
+        throwsA(
+          isA<Exception>().having(
+            (e) => e.toString(),
+            'message',
+            contains('Bad request'),
+          ),
+        ),
       );
     });
 
@@ -72,13 +82,20 @@ void main() {
         return http.Response('Internal Server Error', 500);
       });
 
-      final datasource =
-          VetRemoteDataSourceImpl(baseUrl: baseUrl, client: client);
+      final datasource = VetRemoteDataSourceImpl(
+        baseUrl: baseUrl,
+        client: client,
+      );
 
       expect(
         () => datasource.getAllVets(),
-        throwsA(isA<Exception>().having(
-            (e) => e.toString(), 'message', contains('HTTP 500'))),
+        throwsA(
+          isA<Exception>().having(
+            (e) => e.toString(),
+            'message',
+            contains('HTTP 500'),
+          ),
+        ),
       );
     });
   });
@@ -90,8 +107,10 @@ void main() {
         return http.Response(json.encode(testVetJson), 200);
       });
 
-      final datasource =
-          VetRemoteDataSourceImpl(baseUrl: baseUrl, client: client);
+      final datasource = VetRemoteDataSourceImpl(
+        baseUrl: baseUrl,
+        client: client,
+      );
       final result = await datasource.getVet('1');
 
       expect(result, isNotNull);
@@ -104,8 +123,10 @@ void main() {
         return http.Response('Not found', 404);
       });
 
-      final datasource =
-          VetRemoteDataSourceImpl(baseUrl: baseUrl, client: client);
+      final datasource = VetRemoteDataSourceImpl(
+        baseUrl: baseUrl,
+        client: client,
+      );
       final result = await datasource.getVet('missing');
 
       expect(result, isNull);
@@ -113,17 +134,23 @@ void main() {
 
     test('throws on 400 error', () async {
       final client = MockClient((request) async {
-        return http.Response(
-            json.encode({'error': 'Invalid ID'}), 400);
+        return http.Response(json.encode({'error': 'Invalid ID'}), 400);
       });
 
-      final datasource =
-          VetRemoteDataSourceImpl(baseUrl: baseUrl, client: client);
+      final datasource = VetRemoteDataSourceImpl(
+        baseUrl: baseUrl,
+        client: client,
+      );
 
       expect(
         () => datasource.getVet('bad-id'),
-        throwsA(isA<Exception>().having(
-            (e) => e.toString(), 'message', contains('Invalid ID'))),
+        throwsA(
+          isA<Exception>().having(
+            (e) => e.toString(),
+            'message',
+            contains('Invalid ID'),
+          ),
+        ),
       );
     });
   });
@@ -139,8 +166,10 @@ void main() {
         return http.Response(json.encode(testVetJson), 200);
       });
 
-      final datasource =
-          VetRemoteDataSourceImpl(baseUrl: baseUrl, client: client);
+      final datasource = VetRemoteDataSourceImpl(
+        baseUrl: baseUrl,
+        client: client,
+      );
       final vet = VetModel.fromJson(testVetJson);
       final result = await datasource.createVet(vet);
 
@@ -150,18 +179,24 @@ void main() {
 
     test('throws on 400 error', () async {
       final client = MockClient((request) async {
-        return http.Response(
-            json.encode({'error': 'Name required'}), 400);
+        return http.Response(json.encode({'error': 'Name required'}), 400);
       });
 
-      final datasource =
-          VetRemoteDataSourceImpl(baseUrl: baseUrl, client: client);
+      final datasource = VetRemoteDataSourceImpl(
+        baseUrl: baseUrl,
+        client: client,
+      );
       final vet = VetModel.fromJson(testVetJson);
 
       expect(
         () => datasource.createVet(vet),
-        throwsA(isA<Exception>().having(
-            (e) => e.toString(), 'message', contains('Name required'))),
+        throwsA(
+          isA<Exception>().having(
+            (e) => e.toString(),
+            'message',
+            contains('Name required'),
+          ),
+        ),
       );
     });
   });
@@ -175,8 +210,10 @@ void main() {
         return http.Response(json.encode(testVetJson), 200);
       });
 
-      final datasource =
-          VetRemoteDataSourceImpl(baseUrl: baseUrl, client: client);
+      final datasource = VetRemoteDataSourceImpl(
+        baseUrl: baseUrl,
+        client: client,
+      );
       final vet = VetModel.fromJson(testVetJson);
       final result = await datasource.updateVet(vet);
 
@@ -185,18 +222,24 @@ void main() {
 
     test('throws on 400 error', () async {
       final client = MockClient((request) async {
-        return http.Response(
-            json.encode({'error': 'Update failed'}), 400);
+        return http.Response(json.encode({'error': 'Update failed'}), 400);
       });
 
-      final datasource =
-          VetRemoteDataSourceImpl(baseUrl: baseUrl, client: client);
+      final datasource = VetRemoteDataSourceImpl(
+        baseUrl: baseUrl,
+        client: client,
+      );
       final vet = VetModel.fromJson(testVetJson);
 
       expect(
         () => datasource.updateVet(vet),
-        throwsA(isA<Exception>().having(
-            (e) => e.toString(), 'message', contains('Update failed'))),
+        throwsA(
+          isA<Exception>().having(
+            (e) => e.toString(),
+            'message',
+            contains('Update failed'),
+          ),
+        ),
       );
     });
   });
@@ -209,24 +252,32 @@ void main() {
         return http.Response('', 200);
       });
 
-      final datasource =
-          VetRemoteDataSourceImpl(baseUrl: baseUrl, client: client);
+      final datasource = VetRemoteDataSourceImpl(
+        baseUrl: baseUrl,
+        client: client,
+      );
       await datasource.deleteVet('1');
     });
 
     test('throws on 400 error', () async {
       final client = MockClient((request) async {
-        return http.Response(
-            json.encode({'error': 'Cannot delete'}), 400);
+        return http.Response(json.encode({'error': 'Cannot delete'}), 400);
       });
 
-      final datasource =
-          VetRemoteDataSourceImpl(baseUrl: baseUrl, client: client);
+      final datasource = VetRemoteDataSourceImpl(
+        baseUrl: baseUrl,
+        client: client,
+      );
 
       expect(
         () => datasource.deleteVet('1'),
-        throwsA(isA<Exception>().having(
-            (e) => e.toString(), 'message', contains('Cannot delete'))),
+        throwsA(
+          isA<Exception>().having(
+            (e) => e.toString(),
+            'message',
+            contains('Cannot delete'),
+          ),
+        ),
       );
     });
   });
@@ -237,13 +288,20 @@ void main() {
         return http.Response(json.encode({'status': 'fail'}), 400);
       });
 
-      final datasource =
-          VetRemoteDataSourceImpl(baseUrl: baseUrl, client: client);
+      final datasource = VetRemoteDataSourceImpl(
+        baseUrl: baseUrl,
+        client: client,
+      );
 
       expect(
         () => datasource.getAllVets(),
-        throwsA(isA<Exception>().having(
-            (e) => e.toString(), 'message', contains('Unknown error'))),
+        throwsA(
+          isA<Exception>().having(
+            (e) => e.toString(),
+            'message',
+            contains('Unknown error'),
+          ),
+        ),
       );
     });
   });

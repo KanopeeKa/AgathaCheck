@@ -13,12 +13,12 @@ class HealthRepositoryImpl implements HealthRepository {
   final HealthRemoteDataSource dataSource;
 
   @override
-  Future<List<HealthEntry>> getEntries(
-      {String? petId, HealthEntryType? type}) {
+  Future<List<HealthEntry>> getEntries({String? petId, HealthEntryType? type}) {
     // Use the canonical API string, not enum.name (minified in release builds).
     return dataSource.getEntries(
-        petId: petId,
-        type: type == null ? null : HealthEntryModel.typeToApi(type));
+      petId: petId,
+      type: type == null ? null : HealthEntryModel.typeToApi(type),
+    );
   }
 
   @override
@@ -42,7 +42,11 @@ class HealthRepositoryImpl implements HealthRepository {
   }
 
   @override
-  Future<HealthEntry> markTaken(String id, {String notes = '', DateTime? completedOn}) {
+  Future<HealthEntry> markTaken(
+    String id, {
+    String notes = '',
+    DateTime? completedOn,
+  }) {
     return dataSource.markTaken(id, notes: notes, completedOn: completedOn);
   }
 

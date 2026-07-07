@@ -30,60 +30,80 @@ class PersonalPetsSection extends StatelessWidget {
     }
     if (personalActive.isEmpty) return const SizedBox.shrink();
     return Column(
-      children: personalActive.map((pet) => Padding(
-        padding: const EdgeInsets.only(bottom: 8),
-        child: pet.isShared
-            ? Dismissible(
-                key: Key('hide_${pet.id}'),
-                direction: DismissDirection.endToStart,
-                background: Container(
-                  alignment: Alignment.centerRight,
-                  padding: const EdgeInsets.only(right: 20),
-                  decoration: BoxDecoration(
-                    color: theme.colorScheme.surfaceContainerHighest,
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(l.hideSharedPet, style: TextStyle(color: theme.colorScheme.onSurfaceVariant)),
-                      const SizedBox(width: 8),
-                      Icon(Icons.visibility_off, color: theme.colorScheme.onSurfaceVariant),
-                    ],
-                  ),
-                ),
-                confirmDismiss: (_) async {
-                  final confirmed = await showDialog<bool>(
-                    context: parentContext,
-                    builder: (ctx) => AlertDialog(
-                      title: Text(l.hideSharedPet),
-                      content: Text(l.hideSharedPetConfirm(pet.name)),
-                      actions: [
-                        TextButton(onPressed: () => Navigator.pop(ctx, false), child: Text(l.cancel)),
-                        FilledButton(onPressed: () => Navigator.pop(ctx, true), child: Text(l.hide)),
-                      ],
+      children: personalActive
+          .map(
+            (pet) => Padding(
+              padding: const EdgeInsets.only(bottom: 8),
+              child: pet.isShared
+                  ? Dismissible(
+                      key: Key('hide_${pet.id}'),
+                      direction: DismissDirection.endToStart,
+                      background: Container(
+                        alignment: Alignment.centerRight,
+                        padding: const EdgeInsets.only(right: 20),
+                        decoration: BoxDecoration(
+                          color: theme.colorScheme.surfaceContainerHighest,
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              l.hideSharedPet,
+                              style: TextStyle(
+                                color: theme.colorScheme.onSurfaceVariant,
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            Icon(
+                              Icons.visibility_off,
+                              color: theme.colorScheme.onSurfaceVariant,
+                            ),
+                          ],
+                        ),
+                      ),
+                      confirmDismiss: (_) async {
+                        final confirmed = await showDialog<bool>(
+                          context: parentContext,
+                          builder: (ctx) => AlertDialog(
+                            title: Text(l.hideSharedPet),
+                            content: Text(l.hideSharedPetConfirm(pet.name)),
+                            actions: [
+                              TextButton(
+                                onPressed: () => Navigator.pop(ctx, false),
+                                child: Text(l.cancel),
+                              ),
+                              FilledButton(
+                                onPressed: () => Navigator.pop(ctx, true),
+                                child: Text(l.hide),
+                              ),
+                            ],
+                          ),
+                        );
+                        if (confirmed == true) {
+                          await ref
+                              .read(hiddenSharedPetsProvider.notifier)
+                              .hideSharedPet(pet.id);
+                          if (parentContext.mounted) {
+                            ScaffoldMessenger.of(parentContext).showSnackBar(
+                              SnackBar(content: Text(l.petHidden(pet.name))),
+                            );
+                          }
+                        }
+                        return false;
+                      },
+                      child: PetCard(
+                        pet: pet,
+                        onTap: () => context.go('/pet/${pet.id}'),
+                      ),
+                    )
+                  : PetCard(
+                      pet: pet,
+                      onTap: () => context.go('/pet/${pet.id}'),
                     ),
-                  );
-                  if (confirmed == true) {
-                    await ref.read(hiddenSharedPetsProvider.notifier).hideSharedPet(pet.id);
-                    if (parentContext.mounted) {
-                      ScaffoldMessenger.of(parentContext).showSnackBar(
-                        SnackBar(content: Text(l.petHidden(pet.name))),
-                      );
-                    }
-                  }
-                  return false;
-                },
-                child: PetCard(
-                  pet: pet,
-                  onTap: () => context.go('/pet/${pet.id}'),
-                ),
-              )
-            : PetCard(
-                pet: pet,
-                onTap: () => context.go('/pet/${pet.id}'),
-              ),
-      )).toList(),
+            ),
+          )
+          .toList(),
     );
   }
 }

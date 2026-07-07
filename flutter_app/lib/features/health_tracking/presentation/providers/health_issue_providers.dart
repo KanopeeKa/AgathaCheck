@@ -7,8 +7,9 @@ import '../../domain/repositories/health_issue_repository.dart';
 import 'package:pet_profile_app/core/providers/api_base_url_provider.dart';
 import 'package:pet_profile_app/features/auth/presentation/providers/auth_providers.dart';
 
-final healthIssueDataSourceProvider =
-    Provider<HealthIssueRemoteDataSource>((ref) {
+final healthIssueDataSourceProvider = Provider<HealthIssueRemoteDataSource>((
+  ref,
+) {
   final baseUrl = ref.watch(apiBaseUrlProvider);
   return HealthIssueRemoteDataSourceImpl(
     baseUrl: baseUrl,
@@ -23,12 +24,13 @@ final healthIssueRepositoryProvider = Provider<HealthIssueRepository>((ref) {
 
 final petHealthIssuesProvider =
     FutureProvider.family<List<HealthIssue>, String>((ref, petId) {
-  final token = ref.watch(authProvider).accessToken;
-  if (token == null) return Future.value([]);
-  return ref.read(healthIssueRepositoryProvider).getIssues(petId, token);
-});
+      final token = ref.watch(authProvider).accessToken;
+      if (token == null) return Future.value([]);
+      return ref.read(healthIssueRepositoryProvider).getIssues(petId, token);
+    });
 
-class HealthIssueNotifier extends AutoDisposeFamilyAsyncNotifier<List<HealthIssue>, String> {
+class HealthIssueNotifier
+    extends AutoDisposeFamilyAsyncNotifier<List<HealthIssue>, String> {
   String? get _token => ref.read(authProvider).accessToken;
 
   @override
@@ -67,18 +69,23 @@ class HealthIssueNotifier extends AutoDisposeFamilyAsyncNotifier<List<HealthIssu
   Future<void> linkEvent(String issueId, String entryId) async {
     final token = _token;
     if (token == null) return;
-    await ref.read(healthIssueRepositoryProvider).linkEvent(issueId, entryId, token);
+    await ref
+        .read(healthIssueRepositoryProvider)
+        .linkEvent(issueId, entryId, token);
     await refresh();
   }
 
   Future<void> unlinkEvent(String issueId, String entryId) async {
     final token = _token;
     if (token == null) return;
-    await ref.read(healthIssueRepositoryProvider).unlinkEvent(issueId, entryId, token);
+    await ref
+        .read(healthIssueRepositoryProvider)
+        .unlinkEvent(issueId, entryId, token);
     await refresh();
   }
 }
 
 final healthIssueNotifierProvider = AsyncNotifierProvider.autoDispose
     .family<HealthIssueNotifier, List<HealthIssue>, String>(
-        HealthIssueNotifier.new);
+      HealthIssueNotifier.new,
+    );

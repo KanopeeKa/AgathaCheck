@@ -22,7 +22,6 @@ import '../widgets/pet_list/pending_foster_placements_section.dart';
 import '../widgets/pet_list/pending_shares_section.dart';
 import '../widgets/pet_list/pet_list_section_header.dart';
 
-
 /// Screen that displays the list of all pets owned by the user.
 ///
 /// Shows a scrollable list of [PetCard] widgets for each pet,
@@ -112,8 +111,10 @@ class _PetListScreenState extends ConsumerState<PetListScreen> {
               backgroundColor: theme.colorScheme.primaryContainer,
               child: Text(
                 ((auth.user?.firstName?.isNotEmpty == true)
-                  ? auth.user!.firstName![0]
-                  : (auth.user?.lastName?.isNotEmpty == true ? auth.user!.lastName![0] : auth.user?.email[0] ?? 'U'))
+                        ? auth.user!.firstName![0]
+                        : (auth.user?.lastName?.isNotEmpty == true
+                              ? auth.user!.lastName![0]
+                              : auth.user?.email[0] ?? 'U'))
                     .toUpperCase(),
                 style: TextStyle(
                   fontSize: 14,
@@ -141,14 +142,17 @@ class _PetListScreenState extends ConsumerState<PetListScreen> {
                     children: [
                       Text(
                         auth.user?.firstName?.isNotEmpty == true
-                          ? auth.user!.firstName!
-                          : (auth.user?.lastName?.isNotEmpty == true ? auth.user!.lastName! : 'User'),
+                            ? auth.user!.firstName!
+                            : (auth.user?.lastName?.isNotEmpty == true
+                                  ? auth.user!.lastName!
+                                  : 'User'),
                         style: theme.textTheme.titleSmall,
                       ),
                       Text(
                         auth.user?.email ?? '',
                         style: theme.textTheme.bodySmall?.copyWith(
-                            color: theme.colorScheme.onSurfaceVariant),
+                          color: theme.colorScheme.onSurfaceVariant,
+                        ),
                       ),
                     ],
                   ),
@@ -192,7 +196,11 @@ class _PetListScreenState extends ConsumerState<PetListScreen> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(Icons.error_outline, size: 48, color: theme.colorScheme.error),
+              Icon(
+                Icons.error_outline,
+                size: 48,
+                color: theme.colorScheme.error,
+              ),
               const SizedBox(height: 16),
               Text(l.failedToLoadPets(error.toString())),
               const SizedBox(height: 8),
@@ -217,10 +225,7 @@ class _PetListScreenState extends ConsumerState<PetListScreen> {
                     ),
                   ),
                   const SizedBox(height: 16),
-                  Text(
-                    l.noPetsYet,
-                    style: theme.textTheme.headlineSmall,
-                  ),
+                  Text(l.noPetsYet, style: theme.textTheme.headlineSmall),
                   const SizedBox(height: 8),
                   Text(
                     l.addFirstPet,
@@ -257,7 +262,8 @@ class _PetListScreenState extends ConsumerState<PetListScreen> {
                   if (_controller.orgFilter != null) ...[
                     const SizedBox(height: 16),
                     ElevatedButton(
-                      onPressed: () => setState(() => _controller.orgFilter = null),
+                      onPressed: () =>
+                          setState(() => _controller.orgFilter = null),
                       child: Text(l.showAllPets),
                     ),
                   ],
@@ -292,7 +298,8 @@ class _PetListScreenState extends ConsumerState<PetListScreen> {
               PendingFosterPlacementsSection(),
               PendingAdoptionPlacementsSection(),
               DueEventsSection(pets: allPets),
-              if (_controller.orgFilter == null || _controller.orgFilter == '_personal') ...[
+              if (_controller.orgFilter == null ||
+                  _controller.orgFilter == '_personal') ...[
                 if (personalActive.isNotEmpty ||
                     (_controller.orgFilter == null &&
                         (fosteredActive.isNotEmpty || orgGroups.isNotEmpty)))
@@ -336,10 +343,7 @@ class _PetListScreenState extends ConsumerState<PetListScreen> {
                   ref: ref,
                   parentContext: context,
                 ),
-              PassedAwayPetsSection(
-                allPassedAway: allPassedAway,
-                theme: theme,
-              ),
+              PassedAwayPetsSection(allPassedAway: allPassedAway, theme: theme),
             ],
           );
         },

@@ -10,11 +10,14 @@ class SharingRemoteDataSource {
   final http.Client _client;
 
   SharingRemoteDataSource({String? baseUrl, http.Client? client})
-      : baseUrl = baseUrl ?? (kIsWeb ? '' : 'http://localhost:5000'),
-        _client = client ?? http.Client();
+    : baseUrl = baseUrl ?? (kIsWeb ? '' : 'http://localhost:5000'),
+      _client = client ?? http.Client();
 
   Future<String> createShare(
-      String petId, Map<String, dynamic> petJson, String token) async {
+    String petId,
+    Map<String, dynamic> petJson,
+    String token,
+  ) async {
     final response = await _client.post(
       Uri.parse('$baseUrl/api/share'),
       headers: {
@@ -50,9 +53,7 @@ class SharingRemoteDataSource {
   Future<List<PetAccessModel>> getAccess(String petId, String token) async {
     final response = await _client.get(
       Uri.parse('$baseUrl/api/pets/$petId/access'),
-      headers: {
-        'Authorization': 'Bearer $token',
-      },
+      headers: {'Authorization': 'Bearer $token'},
     );
     if (response.statusCode == 403) {
       return [];
@@ -76,7 +77,11 @@ class SharingRemoteDataSource {
   }
 
   Future<void> updateRole(
-      String petId, String userId, String role, String token) async {
+    String petId,
+    String userId,
+    String role,
+    String token,
+  ) async {
     final response = await _client.put(
       Uri.parse('$baseUrl/api/pets/$petId/access/$userId/role'),
       headers: {
@@ -94,9 +99,7 @@ class SharingRemoteDataSource {
   Future<void> removeAccess(String petId, String userId, String token) async {
     final response = await _client.delete(
       Uri.parse('$baseUrl/api/pets/$petId/access/$userId'),
-      headers: {
-        'Authorization': 'Bearer $token',
-      },
+      headers: {'Authorization': 'Bearer $token'},
     );
     if (response.statusCode >= 400) {
       final data = json.decode(response.body);
@@ -104,12 +107,13 @@ class SharingRemoteDataSource {
     }
   }
 
-  Future<List<Map<String, dynamic>>> getShareLinks(String petId, String token) async {
+  Future<List<Map<String, dynamic>>> getShareLinks(
+    String petId,
+    String token,
+  ) async {
     final response = await _client.get(
       Uri.parse('$baseUrl/api/pets/$petId/share-links'),
-      headers: {
-        'Authorization': 'Bearer $token',
-      },
+      headers: {'Authorization': 'Bearer $token'},
     );
     if (response.statusCode == 403) {
       return [];
@@ -128,9 +132,7 @@ class SharingRemoteDataSource {
   Future<void> deleteShareLink(String linkId, String token) async {
     final response = await _client.delete(
       Uri.parse('$baseUrl/api/share/links/$linkId'),
-      headers: {
-        'Authorization': 'Bearer $token',
-      },
+      headers: {'Authorization': 'Bearer $token'},
     );
     if (response.statusCode >= 400) {
       final data = json.decode(response.body);
@@ -141,9 +143,7 @@ class SharingRemoteDataSource {
   Future<void> stopFollowing(String petId, String token) async {
     final response = await _client.delete(
       Uri.parse('$baseUrl/api/pets/$petId/follow'),
-      headers: {
-        'Authorization': 'Bearer $token',
-      },
+      headers: {'Authorization': 'Bearer $token'},
     );
     if (response.statusCode >= 400) {
       final data = json.decode(response.body);
@@ -154,9 +154,7 @@ class SharingRemoteDataSource {
   Future<List<Map<String, dynamic>>> getPendingShares(String token) async {
     final response = await _client.get(
       Uri.parse('$baseUrl/api/share/pending'),
-      headers: {
-        'Authorization': 'Bearer $token',
-      },
+      headers: {'Authorization': 'Bearer $token'},
     );
     if (response.statusCode >= 400) {
       return [];
@@ -168,7 +166,11 @@ class SharingRemoteDataSource {
     return [];
   }
 
-  Future<void> acceptPendingShare(String petId, String token, {String? organizationId}) async {
+  Future<void> acceptPendingShare(
+    String petId,
+    String token, {
+    String? organizationId,
+  }) async {
     final response = await _client.post(
       Uri.parse('$baseUrl/api/share/pending/$petId/accept'),
       headers: {
@@ -185,7 +187,11 @@ class SharingRemoteDataSource {
     }
   }
 
-  Future<void> hideSharedPet(String petId, String token, {required bool hidden}) async {
+  Future<void> hideSharedPet(
+    String petId,
+    String token, {
+    required bool hidden,
+  }) async {
     final response = await _client.put(
       Uri.parse('$baseUrl/api/share/$petId/hide'),
       headers: {
@@ -203,9 +209,7 @@ class SharingRemoteDataSource {
   Future<List<Map<String, dynamic>>> getHiddenSharedPets(String token) async {
     final response = await _client.get(
       Uri.parse('$baseUrl/api/share/hidden'),
-      headers: {
-        'Authorization': 'Bearer $token',
-      },
+      headers: {'Authorization': 'Bearer $token'},
     );
     if (response.statusCode >= 400) {
       return [];

@@ -37,16 +37,23 @@ class OwnerSharingContent extends ConsumerWidget {
             padding: const EdgeInsets.only(bottom: 12),
             child: Text(
               l.sharing,
-              style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
             ),
           ),
         if (shareLinks.isNotEmpty) ...[
-          ...shareLinks.map((link) => ShareLinkTile(petId: petId, pet: pet, link: link)),
+          ...shareLinks.map(
+            (link) => ShareLinkTile(petId: petId, pet: pet, link: link),
+          ),
           const SizedBox(height: 8),
         ],
         ...accessList
-            .where((access) => !shareLinks.any((link) =>
-                link.isActive && link.claimedBy == access.userId))
+            .where(
+              (access) => !shareLinks.any(
+                (link) => link.isActive && link.claimedBy == access.userId,
+              ),
+            )
             .map((access) => AccessTile(petId: petId, access: access)),
         if (accessList.isNotEmpty) const SizedBox(height: 8),
         SizedBox(
@@ -77,15 +84,17 @@ class OwnerSharingContent extends ConsumerWidget {
   Future<void> _generateShareLink(BuildContext context, WidgetRef ref) async {
     final l = AppLocalizations.of(context)!;
     try {
-      final code = await ref.read(petShareLinksNotifierProvider(petId).notifier).createLink();
+      final code = await ref
+          .read(petShareLinksNotifierProvider(petId).notifier)
+          .createLink();
       if (context.mounted) {
         _showLinkDialog(context, l, code);
       }
     } catch (e) {
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Error: $e')));
       }
     }
   }
@@ -120,9 +129,9 @@ class OwnerSharingContent extends ConsumerWidget {
           FilledButton.icon(
             onPressed: () {
               Clipboard.setData(ClipboardData(text: link));
-              ScaffoldMessenger.of(ctx).showSnackBar(
-                SnackBar(content: Text(l.linkCopied)),
-              );
+              ScaffoldMessenger.of(
+                ctx,
+              ).showSnackBar(SnackBar(content: Text(l.linkCopied)));
               Navigator.pop(ctx);
             },
             icon: const Icon(Icons.copy, size: 18),
@@ -184,7 +193,8 @@ class OwnerSharingContent extends ConsumerWidget {
                   if ((value?.trim() ?? '').isEmpty) {
                     return l.transferNameConfirmationHint;
                   }
-                  if (value!.trim().toLowerCase() != pet.name.trim().toLowerCase()) {
+                  if (value!.trim().toLowerCase() !=
+                      pet.name.trim().toLowerCase()) {
                     return l.transferNameMismatch;
                   }
                   return null;
@@ -218,22 +228,24 @@ class OwnerSharingContent extends ConsumerWidget {
     }
 
     try {
-      await ref.read(petAccessNotifierProvider(petId).notifier).transferOwnership(
+      await ref
+          .read(petAccessNotifierProvider(petId).notifier)
+          .transferOwnership(
             recipientEmail: emailController.text.trim(),
             confirmationName: nameController.text.trim(),
           );
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l.transferSuccess)),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(l.transferSuccess)));
         context.go('/');
       }
     } catch (e) {
       if (context.mounted) {
         final msg = e.toString().replaceFirst('Exception: ', '');
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(msg)),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(msg)));
       }
     } finally {
       emailController.dispose();

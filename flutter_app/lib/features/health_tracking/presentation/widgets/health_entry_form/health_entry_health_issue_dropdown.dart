@@ -35,10 +35,7 @@ class HealthEntryHealthIssueDropdown extends ConsumerWidget {
               value: selectedHealthIssueId,
               decoration: InputDecoration(labelText: l.healthIssueOptional),
               items: [
-                DropdownMenuItem<String?>(
-                  value: null,
-                  child: Text(l.none),
-                ),
+                DropdownMenuItem<String?>(value: null, child: Text(l.none)),
                 ...issues.map(
                   (issue) => DropdownMenuItem<String?>(
                     value: issue.id,
@@ -53,8 +50,9 @@ class HealthEntryHealthIssueDropdown extends ConsumerWidget {
                 padding: const EdgeInsets.only(top: 6, left: 12),
                 child: Text(
                   l.createHealthIssuesHint,
-                  style: theme.textTheme.bodySmall
-                      ?.copyWith(color: theme.colorScheme.outline),
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: theme.colorScheme.outline,
+                  ),
                 ),
               ),
           ],

@@ -19,8 +19,12 @@ Future<void> initPool() async {
   final databaseUrl = Platform.environment['DATABASE_URL'] ??
       'postgresql://user:password@localhost:5432/agatha_db';
   final uri = Uri.parse(databaseUrl);
-  final host = uri.host.isNotEmpty ? uri.host : (Platform.environment['PGHOST'] ?? 'localhost');
-  final port = uri.port > 0 ? uri.port : int.parse(Platform.environment['PGPORT'] ?? '5432');
+  final host = uri.host.isNotEmpty
+      ? uri.host
+      : (Platform.environment['PGHOST'] ?? 'localhost');
+  final port = uri.port > 0
+      ? uri.port
+      : int.parse(Platform.environment['PGPORT'] ?? '5432');
   final dbName = uri.pathSegments.isNotEmpty
       ? uri.pathSegments.first
       : (Platform.environment['PGDATABASE'] ?? 'agatha_db');
@@ -40,7 +44,8 @@ Future<void> initPool() async {
     password: password,
   );
 
-  final sslMode = uri.scheme == 'postgresqls' ? SslMode.require : SslMode.disable;
+  final sslMode =
+      uri.scheme == 'postgresqls' ? SslMode.require : SslMode.disable;
 
   _pool = Pool.withEndpoints(
     [endpoint],
@@ -63,11 +68,15 @@ Router apiHandler() {
   app.post('/pets/<id|[0-9a-fA-F\\-]{36}>/transfer-to-org', _transferPetToOrg);
   app.get('/pets/<id|[0-9a-fA-F\\-]{36}>/family-events', _getFamilyEvents);
   app.post('/pets/<id|[0-9a-fA-F\\-]{36}>/family-events', _createFamilyEvent);
-  app.put('/pets/<id|[0-9a-fA-F\\-]{36}>/family-events/<eventId|[0-9]+>', _updateFamilyEvent);
-  app.delete('/pets/<id|[0-9a-fA-F\\-]{36}>/family-events/<eventId|[0-9]+>', _deleteFamilyEvent);
+  app.put('/pets/<id|[0-9a-fA-F\\-]{36}>/family-events/<eventId|[0-9]+>',
+      _updateFamilyEvent);
+  app.delete('/pets/<id|[0-9a-fA-F\\-]{36}>/family-events/<eventId|[0-9]+>',
+      _deleteFamilyEvent);
   app.get('/pets/<id|[0-9a-fA-F\\-]{36}>/access', _getPetAccess);
-  app.put('/pets/<id|[0-9a-fA-F\\-]{36}>/access/<userId|[0-9]+>/role', _updatePetAccessRole);
-  app.delete('/pets/<id|[0-9a-fA-F\\-]{36}>/access/<userId|[0-9]+>', _deletePetAccess);
+  app.put('/pets/<id|[0-9a-fA-F\\-]{36}>/access/<userId|[0-9]+>/role',
+      _updatePetAccessRole);
+  app.delete(
+      '/pets/<id|[0-9a-fA-F\\-]{36}>/access/<userId|[0-9]+>', _deletePetAccess);
   app.delete('/pets/<id|[0-9a-fA-F\\-]{36}>/data', _deletePetData);
   app.post('/pets/<id|[0-9a-fA-F\\-]{36}>/passed-away', _markPetPassedAway);
   app.get('/health', (req) => Response.ok('OK'));
@@ -84,9 +93,21 @@ Router apiHandler() {
 const _jsonHeaders = {'Content-Type': 'application/json'};
 
 const _petColorPalette = [
-  0xFF7E57C2, 0xFF9575CD, 0xFF5C6BC0, 0xFF7986CB, 0xFF4DB6AC,
-  0xFF81C784, 0xFF4FC3F7, 0xFFBA68C8, 0xFFF06292, 0xFFE57373,
-  0xFFFFB74D, 0xFFA1887F, 0xFF90A4AE, 0xFF64B5F6, 0xFFAED581,
+  0xFF7E57C2,
+  0xFF9575CD,
+  0xFF5C6BC0,
+  0xFF7986CB,
+  0xFF4DB6AC,
+  0xFF81C784,
+  0xFF4FC3F7,
+  0xFFBA68C8,
+  0xFFF06292,
+  0xFFE57373,
+  0xFFFFB74D,
+  0xFFA1887F,
+  0xFF90A4AE,
+  0xFF64B5F6,
+  0xFFAED581,
 ];
 
 int? _resolveColorValue(dynamic raw) {
@@ -155,43 +176,52 @@ Future<void> _autoAssignColors(List<Map<String, dynamic>> pets) async {
 Future<Response> _getAllPets(Request request) async {
   final userId = _extractUserId(request);
   if (userId == null) {
-    return Response(401, body: jsonEncode({'error': 'Unauthorized'}), headers: _jsonHeaders);
+    return Response(401,
+        body: jsonEncode({'error': 'Unauthorized'}), headers: _jsonHeaders);
   }
   try {
     final results = await _pool.execute(
-      Sql.named('SELECT * FROM pets WHERE user_id = @userId ORDER BY created_at'),
+      Sql.named(
+          'SELECT * FROM pets WHERE user_id = @userId ORDER BY created_at'),
       parameters: {'userId': userId},
     );
     final pets = results.map(_petRowToMap).toList();
     await _autoAssignColors(pets);
     return Response.ok(jsonEncode(pets), headers: _jsonHeaders);
   } catch (e) {
-    return Response.internalServerError(body: jsonEncode({'error': publicError(e, 'Error fetching all pets')}), headers: _jsonHeaders);
+    return Response.internalServerError(
+        body: jsonEncode({'error': publicError(e, 'Error fetching all pets')}),
+        headers: _jsonHeaders);
   }
 }
 
 Future<Response> _getPets(Request request) async {
   final userId = _extractUserId(request);
   if (userId == null) {
-    return Response(401, body: jsonEncode({'error': 'Unauthorized'}), headers: _jsonHeaders);
+    return Response(401,
+        body: jsonEncode({'error': 'Unauthorized'}), headers: _jsonHeaders);
   }
   try {
     final results = await _pool.execute(
-      Sql.named('SELECT * FROM pets WHERE user_id = @userId ORDER BY created_at'),
+      Sql.named(
+          'SELECT * FROM pets WHERE user_id = @userId ORDER BY created_at'),
       parameters: {'userId': userId},
     );
     final pets = results.map(_petRowToMap).toList();
     await _autoAssignColors(pets);
     return Response.ok(jsonEncode(pets), headers: _jsonHeaders);
   } catch (e) {
-    return Response.internalServerError(body: jsonEncode({'error': publicError(e, 'Error fetching pets')}), headers: _jsonHeaders);
+    return Response.internalServerError(
+        body: jsonEncode({'error': publicError(e, 'Error fetching pets')}),
+        headers: _jsonHeaders);
   }
 }
 
 Future<Response> _getPetById(Request request, String id) async {
   final userId = _extractUserId(request);
   if (userId == null) {
-    return Response(401, body: jsonEncode({'error': 'Unauthorized'}), headers: _jsonHeaders);
+    return Response(401,
+        body: jsonEncode({'error': 'Unauthorized'}), headers: _jsonHeaders);
   }
   try {
     final results = await _pool.execute(
@@ -199,17 +229,22 @@ Future<Response> _getPetById(Request request, String id) async {
       parameters: {'id': id, 'userId': userId},
     );
     if (results.isEmpty) {
-      return Response.notFound(jsonEncode({'error': 'Pet not found'}), headers: _jsonHeaders);
+      return Response.notFound(jsonEncode({'error': 'Pet not found'}),
+          headers: _jsonHeaders);
     }
-    return Response.ok(jsonEncode(_petRowToMap(results.first)), headers: _jsonHeaders);
+    return Response.ok(jsonEncode(_petRowToMap(results.first)),
+        headers: _jsonHeaders);
   } catch (e) {
-    return Response.internalServerError(body: jsonEncode({'error': publicError(e, 'Error fetching pet')}), headers: _jsonHeaders);
+    return Response.internalServerError(
+        body: jsonEncode({'error': publicError(e, 'Error fetching pet')}),
+        headers: _jsonHeaders);
   }
 }
 
 Future<bool> _userInOrg(Object orgId, Object userId) async {
   final result = await _pool.execute(
-    Sql.named('SELECT 1 FROM organization_users WHERE organization_id = @orgId AND user_id = @userId LIMIT 1'),
+    Sql.named(
+        'SELECT 1 FROM organization_users WHERE organization_id = @orgId AND user_id = @userId LIMIT 1'),
     parameters: {'orgId': orgId, 'userId': userId},
   );
   return result.isNotEmpty;
@@ -218,20 +253,26 @@ Future<bool> _userInOrg(Object orgId, Object userId) async {
 Future<Response> _createPet(Request request) async {
   final userId = _extractUserId(request);
   if (userId == null) {
-    return Response(401, body: jsonEncode({'error': 'Unauthorized'}), headers: _jsonHeaders);
+    return Response(401,
+        body: jsonEncode({'error': 'Unauthorized'}), headers: _jsonHeaders);
   }
   try {
     final body = await request.readAsString();
     final data = jsonDecode(body) as Map<String, dynamic>;
     final id = data['id'] ?? _uuid.v4();
     final orgId = data['organization_id'];
-    if (orgId != null && orgId.toString().isNotEmpty && !(await _userInOrg(orgId, userId))) {
-      return Response(403, body: jsonEncode({'error': 'Not a member of this organization'}), headers: _jsonHeaders);
+    if (orgId != null &&
+        orgId.toString().isNotEmpty &&
+        !(await _userInOrg(orgId, userId))) {
+      return Response(403,
+          body: jsonEncode({'error': 'Not a member of this organization'}),
+          headers: _jsonHeaders);
     }
     final dobStr = data['dateOfBirth'] ?? data['date_of_birth'];
     final neuteredStr = data['neuteredDate'];
     final results = await _pool.execute(
-      Sql.named('INSERT INTO pets (id, user_id, name, species, breed, age, date_of_birth, weight, gender, bio, insurance, neutered_date, neuter_dismissed, chip_id, chip_dismissed, photo_path, vet_id, color_index, passed_away, organization_id) VALUES (@id, @user_id, @name, @species, @breed, @age, @dob, @weight, @gender, @bio, @insurance, @neutered_date, @neuter_dismissed, @chip_id, @chip_dismissed, @photo_path, @vet_id, @color_index, @passed_away, @organization_id) ON CONFLICT (id) DO UPDATE SET name = EXCLUDED.name, species = EXCLUDED.species, breed = EXCLUDED.breed, age = EXCLUDED.age, date_of_birth = EXCLUDED.date_of_birth, weight = EXCLUDED.weight, gender = EXCLUDED.gender, bio = EXCLUDED.bio, insurance = EXCLUDED.insurance, neutered_date = EXCLUDED.neutered_date, neuter_dismissed = EXCLUDED.neuter_dismissed, chip_id = EXCLUDED.chip_id, chip_dismissed = EXCLUDED.chip_dismissed, photo_path = EXCLUDED.photo_path, vet_id = EXCLUDED.vet_id, color_index = EXCLUDED.color_index, passed_away = EXCLUDED.passed_away, organization_id = EXCLUDED.organization_id, updated_at = NOW() WHERE pets.user_id = @user_id RETURNING *'),
+      Sql.named(
+          'INSERT INTO pets (id, user_id, name, species, breed, age, date_of_birth, weight, gender, bio, insurance, neutered_date, neuter_dismissed, chip_id, chip_dismissed, photo_path, vet_id, color_index, passed_away, organization_id) VALUES (@id, @user_id, @name, @species, @breed, @age, @dob, @weight, @gender, @bio, @insurance, @neutered_date, @neuter_dismissed, @chip_id, @chip_dismissed, @photo_path, @vet_id, @color_index, @passed_away, @organization_id) ON CONFLICT (id) DO UPDATE SET name = EXCLUDED.name, species = EXCLUDED.species, breed = EXCLUDED.breed, age = EXCLUDED.age, date_of_birth = EXCLUDED.date_of_birth, weight = EXCLUDED.weight, gender = EXCLUDED.gender, bio = EXCLUDED.bio, insurance = EXCLUDED.insurance, neutered_date = EXCLUDED.neutered_date, neuter_dismissed = EXCLUDED.neuter_dismissed, chip_id = EXCLUDED.chip_id, chip_dismissed = EXCLUDED.chip_dismissed, photo_path = EXCLUDED.photo_path, vet_id = EXCLUDED.vet_id, color_index = EXCLUDED.color_index, passed_away = EXCLUDED.passed_away, organization_id = EXCLUDED.organization_id, updated_at = NOW() WHERE pets.user_id = @user_id RETURNING *'),
       parameters: {
         'id': id,
         'user_id': userId,
@@ -255,28 +296,37 @@ Future<Response> _createPet(Request request) async {
         'organization_id': data['organization_id'],
       },
     );
-    return Response(201, body: jsonEncode(_petRowToMap(results.first)), headers: _jsonHeaders);
+    return Response(201,
+        body: jsonEncode(_petRowToMap(results.first)), headers: _jsonHeaders);
   } catch (e) {
-    return Response.internalServerError(body: jsonEncode({'error': publicError(e, 'Error creating pet')}), headers: _jsonHeaders);
+    return Response.internalServerError(
+        body: jsonEncode({'error': publicError(e, 'Error creating pet')}),
+        headers: _jsonHeaders);
   }
 }
 
 Future<Response> _updatePet(Request request, String id) async {
   final userId = _extractUserId(request);
   if (userId == null) {
-    return Response(401, body: jsonEncode({'error': 'Unauthorized'}), headers: _jsonHeaders);
+    return Response(401,
+        body: jsonEncode({'error': 'Unauthorized'}), headers: _jsonHeaders);
   }
   try {
     final body = await request.readAsString();
     final data = jsonDecode(body) as Map<String, dynamic>;
     final orgId = data['organization_id'];
-    if (orgId != null && orgId.toString().isNotEmpty && !(await _userInOrg(orgId, userId))) {
-      return Response(403, body: jsonEncode({'error': 'Not a member of this organization'}), headers: _jsonHeaders);
+    if (orgId != null &&
+        orgId.toString().isNotEmpty &&
+        !(await _userInOrg(orgId, userId))) {
+      return Response(403,
+          body: jsonEncode({'error': 'Not a member of this organization'}),
+          headers: _jsonHeaders);
     }
     final dobStr = data['dateOfBirth'] ?? data['date_of_birth'];
     final neuteredStr = data['neuteredDate'];
     final results = await _pool.execute(
-      Sql.named('UPDATE pets SET name = @name, species = @species, breed = @breed, age = @age, date_of_birth = @dob, weight = @weight, gender = @gender, bio = @bio, insurance = @insurance, neutered_date = @neutered_date, neuter_dismissed = @neuter_dismissed, chip_id = @chip_id, chip_dismissed = @chip_dismissed, photo_path = @photo_path, vet_id = @vet_id, color_index = @color_index, passed_away = @passed_away, organization_id = @organization_id, updated_at = NOW() WHERE id = @id AND user_id = @userId RETURNING *'),
+      Sql.named(
+          'UPDATE pets SET name = @name, species = @species, breed = @breed, age = @age, date_of_birth = @dob, weight = @weight, gender = @gender, bio = @bio, insurance = @insurance, neutered_date = @neutered_date, neuter_dismissed = @neuter_dismissed, chip_id = @chip_id, chip_dismissed = @chip_dismissed, photo_path = @photo_path, vet_id = @vet_id, color_index = @color_index, passed_away = @passed_away, organization_id = @organization_id, updated_at = NOW() WHERE id = @id AND user_id = @userId RETURNING *'),
       parameters: {
         'id': id,
         'userId': userId,
@@ -301,18 +351,23 @@ Future<Response> _updatePet(Request request, String id) async {
       },
     );
     if (results.isEmpty) {
-      return Response.notFound(jsonEncode({'error': 'Pet not found'}), headers: _jsonHeaders);
+      return Response.notFound(jsonEncode({'error': 'Pet not found'}),
+          headers: _jsonHeaders);
     }
-    return Response.ok(jsonEncode(_petRowToMap(results.first)), headers: _jsonHeaders);
+    return Response.ok(jsonEncode(_petRowToMap(results.first)),
+        headers: _jsonHeaders);
   } catch (e) {
-    return Response.internalServerError(body: jsonEncode({'error': publicError(e, 'Error updating pet')}), headers: _jsonHeaders);
+    return Response.internalServerError(
+        body: jsonEncode({'error': publicError(e, 'Error updating pet')}),
+        headers: _jsonHeaders);
   }
 }
 
 Future<Response> _deletePet(Request request, String id) async {
   final userId = _extractUserId(request);
   if (userId == null) {
-    return Response(401, body: jsonEncode({'error': 'Unauthorized'}), headers: _jsonHeaders);
+    return Response(401,
+        body: jsonEncode({'error': 'Unauthorized'}), headers: _jsonHeaders);
   }
   try {
     await _pool.execute(
@@ -321,7 +376,9 @@ Future<Response> _deletePet(Request request, String id) async {
     );
     return Response.ok(jsonEncode({'deleted': true}), headers: _jsonHeaders);
   } catch (e) {
-    return Response.internalServerError(body: jsonEncode({'error': publicError(e, 'Error deleting pet')}), headers: _jsonHeaders);
+    return Response.internalServerError(
+        body: jsonEncode({'error': publicError(e, 'Error deleting pet')}),
+        headers: _jsonHeaders);
   }
 }
 
@@ -343,11 +400,13 @@ Future<Response> _createFamilyEvent(Request request, String id) async {
   return _notImplemented();
 }
 
-Future<Response> _updateFamilyEvent(Request request, String id, String eventId) async {
+Future<Response> _updateFamilyEvent(
+    Request request, String id, String eventId) async {
   return _notImplemented();
 }
 
-Future<Response> _deleteFamilyEvent(Request request, String id, String eventId) async {
+Future<Response> _deleteFamilyEvent(
+    Request request, String id, String eventId) async {
   return _notImplemented();
 }
 
@@ -355,20 +414,24 @@ Future<Response> _getPetAccess(Request request, String id) async {
   return Response.ok(jsonEncode([]), headers: _jsonHeaders);
 }
 
-Future<Response> _updatePetAccessRole(Request request, String id, String userId) async {
+Future<Response> _updatePetAccessRole(
+    Request request, String id, String userId) async {
   return _notImplemented();
 }
 
-Future<Response> _deletePetAccess(Request request, String id, String userId) async {
+Future<Response> _deletePetAccess(
+    Request request, String id, String userId) async {
   return _notImplemented();
 }
 
 Future<Response> _deletePetData(Request request, String id) async {
-  return Response.ok(jsonEncode({'deleted': true, 'pet_id': id}), headers: _jsonHeaders);
+  return Response.ok(jsonEncode({'deleted': true, 'pet_id': id}),
+      headers: _jsonHeaders);
 }
 
 Future<Response> _markPetPassedAway(Request request, String id) async {
-  return Response.ok(jsonEncode({'passed_away': true, 'pet_id': id}), headers: _jsonHeaders);
+  return Response.ok(jsonEncode({'passed_away': true, 'pet_id': id}),
+      headers: _jsonHeaders);
 }
 
 String? _extractUserId(Request request) {
@@ -403,40 +466,48 @@ Map<String, dynamic> _vetRowToMap(ResultRow row) {
 Future<Response> _getVets(Request request) async {
   final userId = _extractUserId(request);
   if (userId == null) {
-    return Response(401, body: jsonEncode({'error': 'Unauthorized'}), headers: _jsonHeaders);
+    return Response(401,
+        body: jsonEncode({'error': 'Unauthorized'}), headers: _jsonHeaders);
   }
   try {
     final results = await _pool.execute(
       Sql.named('SELECT * FROM vets WHERE user_id = @userId ORDER BY name'),
       parameters: {'userId': userId},
     );
-    return Response.ok(jsonEncode(results.map(_vetRowToMap).toList()), headers: _jsonHeaders);
+    return Response.ok(jsonEncode(results.map(_vetRowToMap).toList()),
+        headers: _jsonHeaders);
   } catch (e) {
-    return Response.internalServerError(body: jsonEncode({'error': publicError(e)}));
+    return Response.internalServerError(
+        body: jsonEncode({'error': publicError(e)}));
   }
 }
 
 Future<Response> _getVetById(Request request, String id) async {
   final userId = _extractUserId(request);
   if (userId == null) {
-    return Response(401, body: jsonEncode({'error': 'Unauthorized'}), headers: _jsonHeaders);
+    return Response(401,
+        body: jsonEncode({'error': 'Unauthorized'}), headers: _jsonHeaders);
   }
   try {
     final results = await _pool.execute(
       Sql.named('SELECT * FROM vets WHERE id = @id AND user_id = @userId'),
       parameters: {'id': id, 'userId': userId},
     );
-    if (results.isEmpty) return Response.notFound(jsonEncode({'error': 'Vet not found'}));
-    return Response.ok(jsonEncode(_vetRowToMap(results.first)), headers: _jsonHeaders);
+    if (results.isEmpty)
+      return Response.notFound(jsonEncode({'error': 'Vet not found'}));
+    return Response.ok(jsonEncode(_vetRowToMap(results.first)),
+        headers: _jsonHeaders);
   } catch (e) {
-    return Response.internalServerError(body: jsonEncode({'error': publicError(e)}));
+    return Response.internalServerError(
+        body: jsonEncode({'error': publicError(e)}));
   }
 }
 
 Future<Response> _createVet(Request request) async {
   final userId = _extractUserId(request);
   if (userId == null) {
-    return Response(401, body: jsonEncode({'error': 'Unauthorized'}), headers: _jsonHeaders);
+    return Response(401,
+        body: jsonEncode({'error': 'Unauthorized'}), headers: _jsonHeaders);
   }
   try {
     final body = jsonDecode(await request.readAsString());
@@ -456,16 +527,19 @@ Future<Response> _createVet(Request request) async {
         'notes': body['notes'] ?? '',
       },
     );
-    return Response(201, body: jsonEncode(_vetRowToMap(results.first)), headers: _jsonHeaders);
+    return Response(201,
+        body: jsonEncode(_vetRowToMap(results.first)), headers: _jsonHeaders);
   } catch (e) {
-    return Response.internalServerError(body: jsonEncode({'error': publicError(e)}));
+    return Response.internalServerError(
+        body: jsonEncode({'error': publicError(e)}));
   }
 }
 
 Future<Response> _updateVet(Request request, String id) async {
   final userId = _extractUserId(request);
   if (userId == null) {
-    return Response(401, body: jsonEncode({'error': 'Unauthorized'}), headers: _jsonHeaders);
+    return Response(401,
+        body: jsonEncode({'error': 'Unauthorized'}), headers: _jsonHeaders);
   }
   try {
     final body = jsonDecode(await request.readAsString());
@@ -484,26 +558,34 @@ Future<Response> _updateVet(Request request, String id) async {
         'userId': userId,
       },
     );
-    if (results.isEmpty) return Response.notFound(jsonEncode({'error': 'Vet not found'}));
-    return Response.ok(jsonEncode(_vetRowToMap(results.first)), headers: _jsonHeaders);
+    if (results.isEmpty)
+      return Response.notFound(jsonEncode({'error': 'Vet not found'}));
+    return Response.ok(jsonEncode(_vetRowToMap(results.first)),
+        headers: _jsonHeaders);
   } catch (e) {
-    return Response.internalServerError(body: jsonEncode({'error': publicError(e)}));
+    return Response.internalServerError(
+        body: jsonEncode({'error': publicError(e)}));
   }
 }
 
 Future<Response> _deleteVet(Request request, String id) async {
   final userId = _extractUserId(request);
   if (userId == null) {
-    return Response(401, body: jsonEncode({'error': 'Unauthorized'}), headers: _jsonHeaders);
+    return Response(401,
+        body: jsonEncode({'error': 'Unauthorized'}), headers: _jsonHeaders);
   }
   try {
     final results = await _pool.execute(
-      Sql.named('DELETE FROM vets WHERE id = @id AND user_id = @userId RETURNING *'),
+      Sql.named(
+          'DELETE FROM vets WHERE id = @id AND user_id = @userId RETURNING *'),
       parameters: {'id': id, 'userId': userId},
     );
-    if (results.isEmpty) return Response.notFound(jsonEncode({'error': 'Vet not found'}));
-    return Response.ok(jsonEncode({'message': 'Vet deleted'}), headers: _jsonHeaders);
+    if (results.isEmpty)
+      return Response.notFound(jsonEncode({'error': 'Vet not found'}));
+    return Response.ok(jsonEncode({'message': 'Vet deleted'}),
+        headers: _jsonHeaders);
   } catch (e) {
-    return Response.internalServerError(body: jsonEncode({'error': publicError(e)}));
+    return Response.internalServerError(
+        body: jsonEncode({'error': publicError(e)}));
   }
 }

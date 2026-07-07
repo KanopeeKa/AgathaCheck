@@ -7,19 +7,16 @@ import '../../domain/legal_document_id.dart';
 import '../widgets/legal_document_body.dart';
 
 class LegalDocumentScreen extends StatelessWidget {
-  const LegalDocumentScreen({
-    super.key,
-    required this.documentId,
-  });
+  const LegalDocumentScreen({super.key, required this.documentId});
 
   final LegalDocumentId documentId;
 
   String _title(AppLocalizations l10n) => switch (documentId) {
-        LegalDocumentId.termsOfUse => l10n.termsOfService,
-        LegalDocumentId.privacyNotice => l10n.privacyPolicy,
-        LegalDocumentId.legalNotice => l10n.legalNotice,
-        LegalDocumentId.dataProcessingAddendum => l10n.dataProcessingAddendum,
-      };
+    LegalDocumentId.termsOfUse => l10n.termsOfService,
+    LegalDocumentId.privacyNotice => l10n.privacyPolicy,
+    LegalDocumentId.legalNotice => l10n.legalNotice,
+    LegalDocumentId.dataProcessingAddendum => l10n.dataProcessingAddendum,
+  };
 
   @override
   Widget build(BuildContext context) {
@@ -30,10 +27,7 @@ class LegalDocumentScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(title: AppLogoTitle(title: _title(l10n))),
       body: FutureBuilder<String>(
-        future: loader.load(
-          documentId: documentId,
-          languageCode: locale,
-        ),
+        future: loader.load(documentId: documentId, languageCode: locale),
         builder: (context, snapshot) {
           if (snapshot.connectionState != ConnectionState.done) {
             return const Center(child: CircularProgressIndicator());

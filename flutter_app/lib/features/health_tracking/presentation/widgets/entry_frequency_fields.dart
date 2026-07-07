@@ -37,11 +37,12 @@ class EntryFrequencyFields extends StatelessWidget {
           items: HealthFrequency.values
               .where((f) => f != HealthFrequency.custom)
               .map((f) {
-            return DropdownMenuItem(
-              value: f,
-              child: Text(entryFrequencyLabel(l, f)),
-            );
-          }).toList(),
+                return DropdownMenuItem(
+                  value: f,
+                  child: Text(entryFrequencyLabel(l, f)),
+                );
+              })
+              .toList(),
           onChanged: (val) {
             if (val != null) onFrequencyChanged(val);
           },
@@ -88,19 +89,23 @@ class EntryFrequencyFields extends StatelessWidget {
                 ),
                 const SizedBox(width: 8),
                 ChoiceChip(
-                  label: Text(repeatEndDate != null
-                      ? formatEntryDate(repeatEndDate!)
-                      : l.pickADate),
+                  label: Text(
+                    repeatEndDate != null
+                        ? formatEntryDate(repeatEndDate!)
+                        : l.pickADate,
+                  ),
                   selected: repeatEndDate != null,
                   onSelected: (_) async {
                     final picked = await showDatePicker(
                       context: context,
-                      initialDate: repeatEndDate ??
+                      initialDate:
+                          repeatEndDate ??
                           DateTime.now().add(const Duration(days: 30)),
                       firstDate: DateTime.now(),
                       lastDate: DateTime(2100),
                     );
-                    if (picked != null) onRepeatEndChanged(calendarDateOnly(picked));
+                    if (picked != null)
+                      onRepeatEndChanged(calendarDateOnly(picked));
                   },
                 ),
               ],

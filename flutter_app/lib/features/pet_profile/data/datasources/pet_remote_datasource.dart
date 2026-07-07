@@ -22,15 +22,15 @@ abstract class PetRemoteDataSource {
 
 class PetRemoteDataSourceImpl implements PetRemoteDataSource {
   PetRemoteDataSourceImpl({required this.baseUrl, http.Client? client})
-      : _client = client ?? http.Client();
+    : _client = client ?? http.Client();
 
   final String baseUrl;
   final http.Client _client;
 
   Map<String, String> _headers(String token) => {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer $token',
-      };
+    'Content-Type': 'application/json',
+    'Authorization': 'Bearer $token',
+  };
 
   @override
   Future<List<PetModel>> getAllPets(String token) async {
@@ -76,10 +76,14 @@ class PetRemoteDataSourceImpl implements PetRemoteDataSource {
       body: json.encode(pet.toJson()),
     );
     if (response.statusCode >= 400) {
-      throw PetRemoteException('Failed to save pet', statusCode: response.statusCode);
+      throw PetRemoteException(
+        'Failed to save pet',
+        statusCode: response.statusCode,
+      );
     }
     return PetModel.fromJson(
-        json.decode(response.body) as Map<String, dynamic>);
+      json.decode(response.body) as Map<String, dynamic>,
+    );
   }
 
   @override
@@ -90,10 +94,14 @@ class PetRemoteDataSourceImpl implements PetRemoteDataSource {
       body: json.encode(pet.toJson()),
     );
     if (response.statusCode >= 400) {
-      throw PetRemoteException('Failed to update pet', statusCode: response.statusCode);
+      throw PetRemoteException(
+        'Failed to update pet',
+        statusCode: response.statusCode,
+      );
     }
     return PetModel.fromJson(
-        json.decode(response.body) as Map<String, dynamic>);
+      json.decode(response.body) as Map<String, dynamic>,
+    );
   }
 
   @override
@@ -106,7 +114,10 @@ class PetRemoteDataSourceImpl implements PetRemoteDataSource {
       // Surface the failure to the caller instead of silently swallowing it —
       // otherwise the UI would remove the pet locally while it still exists
       // on the server.
-      throw PetRemoteException('Failed to delete pet', statusCode: response.statusCode);
+      throw PetRemoteException(
+        'Failed to delete pet',
+        statusCode: response.statusCode,
+      );
     }
   }
 }

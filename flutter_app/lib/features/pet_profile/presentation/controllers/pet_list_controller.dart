@@ -25,8 +25,7 @@ class PetListController {
     return names.toList()..sort();
   }
 
-  bool hasFosteredPets(List<Pet> allPets) =>
-      allPets.any((p) => p.isFoster);
+  bool hasFosteredPets(List<Pet> allPets) => allPets.any((p) => p.isFoster);
 
   bool _isPersonalPet(Pet p) =>
       !p.isFoster &&
@@ -43,8 +42,9 @@ class PetListController {
       return allPets.where((p) => p.isFoster).toList();
     }
     return allPets
-        .where((p) =>
-            !p.isShared && !p.isFoster && p.organizationName == orgFilter)
+        .where(
+          (p) => !p.isShared && !p.isFoster && p.organizationName == orgFilter,
+        )
         .toList();
   }
 
@@ -61,9 +61,7 @@ class PetListController {
   }
 
   List<Pet> getFosteredActive(List<Pet> filteredPets) {
-    return filteredPets
-        .where((p) => !p.passedAway && p.isFoster)
-        .toList();
+    return filteredPets.where((p) => !p.passedAway && p.isFoster).toList();
   }
 
   List<Pet> getFosteredPassed(List<Pet> filteredPets) {

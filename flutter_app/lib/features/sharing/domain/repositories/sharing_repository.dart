@@ -5,11 +5,19 @@ import '../entities/share_link.dart';
 /// abstraction rather than the remote datasource directly (clean architecture).
 abstract class SharingRepository {
   Future<String> createShare(
-      String petId, Map<String, dynamic> petJson, String token);
+    String petId,
+    Map<String, dynamic> petJson,
+    String token,
+  );
   Future<String> acceptShare(String code, String token);
 
   Future<List<PetAccess>> getAccess(String petId, String token);
-  Future<void> updateRole(String petId, String userId, String role, String token);
+  Future<void> updateRole(
+    String petId,
+    String userId,
+    String role,
+    String token,
+  );
   Future<void> removeAccess(String petId, String userId, String token);
 
   Future<List<ShareLink>> getShareLinks(String petId, String token);
@@ -17,11 +25,18 @@ abstract class SharingRepository {
   Future<void> stopFollowing(String petId, String token);
 
   Future<List<Map<String, dynamic>>> getPendingShares(String token);
-  Future<void> acceptPendingShare(String petId, String token,
-      {String? organizationId});
+  Future<void> acceptPendingShare(
+    String petId,
+    String token, {
+    String? organizationId,
+  });
   Future<void> declinePendingShare(String petId, String token);
 
-  Future<void> hideSharedPet(String petId, String token, {required bool hidden});
+  Future<void> hideSharedPet(
+    String petId,
+    String token, {
+    required bool hidden,
+  });
   Future<void> transferOwnership(
     String petId, {
     required String recipientEmail,

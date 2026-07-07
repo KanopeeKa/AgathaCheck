@@ -32,9 +32,7 @@ class PetFormWeightSection extends StatelessWidget {
       return TextFormField(
         key: const Key('pet_weight_field'),
         controller: weightController,
-        decoration: InputDecoration(
-          labelText: l.weightWithUnit('kg'),
-        ),
+        decoration: InputDecoration(labelText: l.weightWithUnit('kg')),
         keyboardType: const TextInputType.numberWithOptions(decimal: true),
         onChanged: (value) =>
             controller.state = controller.state.copyWith(weight: value),

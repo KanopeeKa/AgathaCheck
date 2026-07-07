@@ -36,8 +36,9 @@ class EntryDocumentSection extends StatelessWidget {
   String _displayName(String path) => path.split('/').last;
 
   String _documentUrl(String path) {
-    final normalizedBase =
-        baseUrl.endsWith('/') ? baseUrl.substring(0, baseUrl.length - 1) : baseUrl;
+    final normalizedBase = baseUrl.endsWith('/')
+        ? baseUrl.substring(0, baseUrl.length - 1)
+        : baseUrl;
     final normalizedPath = path.startsWith('/') ? path.substring(1) : path;
     return '$normalizedBase/$normalizedPath';
   }
@@ -119,8 +120,9 @@ class EntryDocumentSection extends StatelessWidget {
               const SizedBox(width: 8),
               Text(
                 l.addPhoto,
-                style: theme.textTheme.labelLarge
-                    ?.copyWith(color: colorScheme.primary),
+                style: theme.textTheme.labelLarge?.copyWith(
+                  color: colorScheme.primary,
+                ),
               ),
             ],
           ),
@@ -137,8 +139,9 @@ class EntryDocumentSection extends StatelessWidget {
             const SizedBox(width: 8),
             Text(
               l.photos,
-              style: theme.textTheme.titleSmall
-                  ?.copyWith(fontWeight: FontWeight.w600),
+              style: theme.textTheme.titleSmall?.copyWith(
+                fontWeight: FontWeight.w600,
+              ),
             ),
           ],
         ),
@@ -191,8 +194,9 @@ class EntryDocumentSection extends StatelessWidget {
                 _totalCount > 0
                     ? '${l.photoCountLabel(_totalCount)}${pendingPhotos.isNotEmpty ? l.pendingUploadSuffix(pendingPhotos.length) : ''}'
                     : l.upTo4Photos,
-                style: theme.textTheme.bodySmall
-                    ?.copyWith(color: colorScheme.outline),
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: colorScheme.outline,
+                ),
                 textAlign: TextAlign.center,
               ),
             ],
@@ -223,7 +227,10 @@ class EntryDocumentSection extends StatelessWidget {
                     fit: BoxFit.cover,
                     errorBuilder: (_, __, ___) => Container(
                       color: colorScheme.surfaceContainerHighest,
-                      child: Icon(Icons.broken_image, color: colorScheme.outline),
+                      child: Icon(
+                        Icons.broken_image,
+                        color: colorScheme.outline,
+                      ),
                     ),
                   ),
           ),
@@ -269,13 +276,11 @@ class EntryDocumentSection extends StatelessWidget {
               child: isPdf
                   ? _documentPlaceholder(context, file.name, colorScheme)
                   : snapshot.hasData
-                      ? Image.memory(snapshot.data!, fit: BoxFit.cover)
-                      : Container(
-                          color: colorScheme.surfaceContainerHighest,
-                          child: const Center(
-                            child: CircularProgressIndicator(),
-                          ),
-                        ),
+                  ? Image.memory(snapshot.data!, fit: BoxFit.cover)
+                  : Container(
+                      color: colorScheme.surfaceContainerHighest,
+                      child: const Center(child: CircularProgressIndicator()),
+                    ),
             ),
             Positioned(
               bottom: 0,
@@ -315,7 +320,11 @@ class EntryDocumentSection extends StatelessWidget {
                       color: Colors.black54,
                       borderRadius: BorderRadius.circular(12),
                     ),
-                    child: const Icon(Icons.close, size: 16, color: Colors.white),
+                    child: const Icon(
+                      Icons.close,
+                      size: 16,
+                      color: Colors.white,
+                    ),
                   ),
                 ),
               ),

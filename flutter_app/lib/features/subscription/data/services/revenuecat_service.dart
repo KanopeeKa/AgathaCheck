@@ -35,12 +35,15 @@ class RevenueCatService {
     if (_initialized) return;
 
     try {
-      final configuration = PurchasesConfiguration(RevenueCatConfig.publicApiKey)
-        ..appUserID = null;
+      final configuration = PurchasesConfiguration(
+        RevenueCatConfig.publicApiKey,
+      )..appUserID = null;
 
       await Purchases.configure(configuration);
       _initialized = true;
-      debugPrint('RevenueCat: Initialized successfully (platform: ${kIsWeb ? "web" : defaultTargetPlatform})');
+      debugPrint(
+        'RevenueCat: Initialized successfully (platform: ${kIsWeb ? "web" : defaultTargetPlatform})',
+      );
     } catch (e) {
       debugPrint('RevenueCat: Initialization failed: $e');
     }
@@ -136,7 +139,8 @@ class RevenueCatService {
   }
 
   SubscriptionStatus _mapCustomerInfo(CustomerInfo info) {
-    final entitlement = info.entitlements.active[RevenueCatConfig.entitlementId];
+    final entitlement =
+        info.entitlements.active[RevenueCatConfig.entitlementId];
     if (entitlement != null) {
       return SubscriptionStatus(
         tier: SubscriptionTier.unlimited,

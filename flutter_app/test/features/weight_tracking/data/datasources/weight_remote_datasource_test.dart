@@ -25,18 +25,20 @@ void main() {
   }
 
   group('auth header attachment', () {
-    test('getEntries sends Authorization bearer header and pet_id query',
-        () async {
-      final client = MockClient((request) async {
-        expect(request.method, 'GET');
-        expect(request.headers['Authorization'], 'Bearer $token');
-        expect(request.url.queryParameters['pet_id'], 'pet-1');
-        return http.Response(json.encode([testEntryJson]), 200);
-      });
-      final result = await makeDatasource(client).getEntries('pet-1', token);
-      expect(result, hasLength(1));
-      expect(result.first.weight, 12.5);
-    });
+    test(
+      'getEntries sends Authorization bearer header and pet_id query',
+      () async {
+        final client = MockClient((request) async {
+          expect(request.method, 'GET');
+          expect(request.headers['Authorization'], 'Bearer $token');
+          expect(request.url.queryParameters['pet_id'], 'pet-1');
+          return http.Response(json.encode([testEntryJson]), 200);
+        });
+        final result = await makeDatasource(client).getEntries('pet-1', token);
+        expect(result, hasLength(1));
+        expect(result.first.weight, 12.5);
+      },
+    );
 
     test('createEntry sends Authorization and JSON content type', () async {
       final client = MockClient((request) async {
@@ -62,11 +64,14 @@ void main() {
       final client = MockClient((request) async {
         expect(request.url.path, contains('/api/weight-entries/latest'));
         expect(request.headers['Authorization'], 'Bearer $token');
-        return http.Response(json.encode({'error': 'No weight entries found'}),
-            404);
+        return http.Response(
+          json.encode({'error': 'No weight entries found'}),
+          404,
+        );
       });
-      final result =
-          await makeDatasource(client).getLatestWeight('pet-1', token);
+      final result = await makeDatasource(
+        client,
+      ).getLatestWeight('pet-1', token);
       expect(result, isNull);
     });
   });

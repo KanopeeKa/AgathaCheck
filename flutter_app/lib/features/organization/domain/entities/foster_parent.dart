@@ -78,9 +78,10 @@ class FosterParent {
           : int.tryParse(json['active_pet_count']?.toString() ?? '') ?? 0,
       activePets: (json['active_pets'] as List<dynamic>? ?? const [])
           .whereType<Map>()
-          .map((e) => FosterParentAssignedPet.fromJson(
-                Map<String, dynamic>.from(e),
-              ))
+          .map(
+            (e) =>
+                FosterParentAssignedPet.fromJson(Map<String, dynamic>.from(e)),
+          )
           .toList(),
     );
   }

@@ -26,8 +26,9 @@ void main() {
   );
 
   test('marks entry as taken and returns updated entry', () async {
-    when(mockRepository.markTaken('1', notes: ''))
-        .thenAnswer((_) async => updatedEntry);
+    when(
+      mockRepository.markTaken('1', notes: ''),
+    ).thenAnswer((_) async => updatedEntry);
 
     final result = await useCase('1');
     expect(result.nextDueDate, DateTime(2025, 3, 1));
@@ -35,8 +36,9 @@ void main() {
   });
 
   test('passes notes to repository', () async {
-    when(mockRepository.markTaken('1', notes: 'Given with food'))
-        .thenAnswer((_) async => updatedEntry);
+    when(
+      mockRepository.markTaken('1', notes: 'Given with food'),
+    ).thenAnswer((_) async => updatedEntry);
 
     await useCase('1', notes: 'Given with food');
     verify(mockRepository.markTaken('1', notes: 'Given with food')).called(1);

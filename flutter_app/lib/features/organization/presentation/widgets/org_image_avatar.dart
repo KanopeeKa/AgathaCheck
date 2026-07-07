@@ -23,8 +23,7 @@ class OrgImageAvatar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isPro = type == OrganizationType.professional;
-    final placeholderColor =
-        isPro ? AppTheme.orgIconBg : AppTheme.orgCharityBg;
+    final placeholderColor = isPro ? AppTheme.orgIconBg : AppTheme.orgCharityBg;
     final iconColor = isPro ? AppTheme.orgIconFg : AppTheme.orgCharityFg;
 
     Widget child;
@@ -108,10 +107,7 @@ class OrgLogoImage extends StatelessWidget {
 
     return ClipRRect(
       borderRadius: BorderRadius.circular(8),
-      child: SizedBox(
-        height: height,
-        child: image,
-      ),
+      child: SizedBox(height: height, child: image),
     );
   }
 

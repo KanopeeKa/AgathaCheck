@@ -17,35 +17,43 @@ class PetRepositoryImpl implements PetRepository {
   Future<List<Pet>> getAllPets() async {
     if (remoteDataSource != null && token != null && token!.isNotEmpty) {
       try {
-        final remotePets = await remoteDataSource!.getAllPetsIncludingOrg(token!);
+        final remotePets = await remoteDataSource!.getAllPetsIncludingOrg(
+          token!,
+        );
         final localPets = await _localDataSource.getAllPets();
         final merged = <PetModel>[];
         for (final rp in remotePets) {
-          final localMatch = localPets.where((lp) => lp.id == rp.id).firstOrNull;
-          if (localMatch != null && localMatch.photoPath != null && localMatch.photoPath!.startsWith('data:')) {
-            merged.add(PetModel(
-              id: rp.id,
-              name: rp.name,
-              species: rp.species,
-              breed: rp.breed,
-              dateOfBirth: rp.dateOfBirth,
-              weight: rp.weight,
-              gender: rp.gender,
-              bio: rp.bio,
-              insurance: rp.insurance,
-              neuteredDate: rp.neuteredDate,
-              neuterDismissed: rp.neuterDismissed,
-              chipId: rp.chipId,
-              chipDismissed: rp.chipDismissed,
-              photoPath: localMatch.photoPath,
-              vetId: rp.vetId,
-              colorValue: rp.colorValue,
-              passedAway: rp.passedAway,
-              isShared: rp.isShared,
-              isFoster: rp.isFoster,
-              organizationId: rp.organizationId,
-              organizationName: rp.organizationName,
-            ));
+          final localMatch = localPets
+              .where((lp) => lp.id == rp.id)
+              .firstOrNull;
+          if (localMatch != null &&
+              localMatch.photoPath != null &&
+              localMatch.photoPath!.startsWith('data:')) {
+            merged.add(
+              PetModel(
+                id: rp.id,
+                name: rp.name,
+                species: rp.species,
+                breed: rp.breed,
+                dateOfBirth: rp.dateOfBirth,
+                weight: rp.weight,
+                gender: rp.gender,
+                bio: rp.bio,
+                insurance: rp.insurance,
+                neuteredDate: rp.neuteredDate,
+                neuterDismissed: rp.neuterDismissed,
+                chipId: rp.chipId,
+                chipDismissed: rp.chipDismissed,
+                photoPath: localMatch.photoPath,
+                vetId: rp.vetId,
+                colorValue: rp.colorValue,
+                passedAway: rp.passedAway,
+                isShared: rp.isShared,
+                isFoster: rp.isFoster,
+                organizationId: rp.organizationId,
+                organizationName: rp.organizationName,
+              ),
+            );
           } else {
             merged.add(rp);
           }
@@ -57,7 +65,9 @@ class PetRepositoryImpl implements PetRepository {
         await _saveAllLocal(merged);
         return merged.map((m) => m.toEntity()).toList();
       } on PetRemoteException catch (e) {
-        debugPrint('PetRepository: Remote error (${e.statusCode}): ${e.message}');
+        debugPrint(
+          'PetRepository: Remote error (${e.statusCode}): ${e.message}',
+        );
       } catch (e) {
         debugPrint('PetRepository: Network error, using local cache: $e');
       }

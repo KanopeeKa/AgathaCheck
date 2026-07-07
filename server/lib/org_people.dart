@@ -43,11 +43,13 @@ Map<String, dynamic> personSummaryToMap(Map<String, dynamic> row) {
         ? (row['display_name']?.toString() ?? '').trim()
         : row['email'],
     'email': row['email'],
-    'role': row['role'] != null ? normaliseOrgRole(row['role']?.toString()) : null,
+    'role':
+        row['role'] != null ? normaliseOrgRole(row['role']?.toString()) : null,
     'photo_url': row['photo_url'],
     'is_pending': row['is_pending'] == true,
     'is_primary_contact': row['is_primary_contact'] == true,
-    'active_foster_count': int.tryParse(row['active_foster_count']?.toString() ?? '') ?? 0,
+    'active_foster_count':
+        int.tryParse(row['active_foster_count']?.toString() ?? '') ?? 0,
     'category_rank': row['category_rank'],
   };
 }
@@ -72,7 +74,8 @@ Future<List<Map<String, dynamic>>> listOrgPeople(
   String orgId,
 ) async {
   final orgResult = await pool.execute(
-    Sql.named('SELECT primary_contact_ref FROM organizations WHERE id = @orgId'),
+    Sql.named(
+        'SELECT primary_contact_ref FROM organizations WHERE id = @orgId'),
     parameters: {'orgId': orgId},
   );
   final primaryContactRef = orgResult.isEmpty
@@ -133,11 +136,15 @@ Future<List<Map<String, dynamic>>> listOrgPeople(
     final rankA = a['category_rank'] as int;
     final rankB = b['category_rank'] as int;
     if (rankA != rankB) return rankA.compareTo(rankB);
-    final countA = int.tryParse(a['active_foster_count']?.toString() ?? '') ?? 0;
-    final countB = int.tryParse(b['active_foster_count']?.toString() ?? '') ?? 0;
+    final countA =
+        int.tryParse(a['active_foster_count']?.toString() ?? '') ?? 0;
+    final countB =
+        int.tryParse(b['active_foster_count']?.toString() ?? '') ?? 0;
     if (countA != countB) return countB.compareTo(countA);
-    final nameA = (a['display_name'] ?? a['email'] ?? '').toString().toLowerCase();
-    final nameB = (b['display_name'] ?? b['email'] ?? '').toString().toLowerCase();
+    final nameA =
+        (a['display_name'] ?? a['email'] ?? '').toString().toLowerCase();
+    final nameB =
+        (b['display_name'] ?? b['email'] ?? '').toString().toLowerCase();
     return nameA.compareTo(nameB);
   });
 
@@ -214,13 +221,15 @@ Future<Map<String, List<Map<String, dynamic>>>> _loadPersonPlacements(
       if (kind == 'member') {
         fosteredElsewhere = open['foster_user_id']?.toString() != userId;
       } else {
-        fosteredElsewhere = open['org_foster_parent_id']?.toString() != externalId;
+        fosteredElsewhere =
+            open['org_foster_parent_id']?.toString() != externalId;
       }
     } else if (!openPlacementStatuses.contains(row['status'])) {
       final currentOpen = openMap[petId];
       if (currentOpen != null) {
         if (kind == 'member') {
-          fosteredElsewhere = currentOpen['foster_user_id']?.toString() != userId;
+          fosteredElsewhere =
+              currentOpen['foster_user_id']?.toString() != userId;
         } else {
           fosteredElsewhere =
               currentOpen['org_foster_parent_id']?.toString() != externalId;
@@ -253,7 +262,8 @@ Future<Map<String, dynamic>?> getOrgPersonDetail(
   String recordId,
 ) async {
   final orgResult = await pool.execute(
-    Sql.named('SELECT primary_contact_ref FROM organizations WHERE id = @orgId'),
+    Sql.named(
+        'SELECT primary_contact_ref FROM organizations WHERE id = @orgId'),
     parameters: {'orgId': orgId},
   );
   final primaryContactRef = orgResult.isEmpty

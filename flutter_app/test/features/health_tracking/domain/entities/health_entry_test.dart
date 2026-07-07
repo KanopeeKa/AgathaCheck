@@ -34,38 +34,42 @@ void main() {
     });
 
     test('isOverdue returns true when past due', () {
-      final entry =
-          createEntry(nextDueDate: now.subtract(const Duration(days: 1)));
+      final entry = createEntry(
+        nextDueDate: now.subtract(const Duration(days: 1)),
+      );
       expect(entry.isOverdue, isTrue);
     });
 
     test('isOverdue returns false when not past due', () {
-      final entry =
-          createEntry(nextDueDate: now.add(const Duration(hours: 1)));
+      final entry = createEntry(nextDueDate: now.add(const Duration(hours: 1)));
       expect(entry.isOverdue, isFalse);
     });
 
     test('isDueToday returns true when due today', () {
       final todayEntry = createEntry(
-          nextDueDate: DateTime(now.year, now.month, now.day, 23, 59));
+        nextDueDate: DateTime(now.year, now.month, now.day, 23, 59),
+      );
       expect(todayEntry.isDueToday, isTrue);
     });
 
     test('isDueToday returns false when due another day', () {
-      final tomorrowEntry =
-          createEntry(nextDueDate: now.add(const Duration(days: 2)));
+      final tomorrowEntry = createEntry(
+        nextDueDate: now.add(const Duration(days: 2)),
+      );
       expect(tomorrowEntry.isDueToday, isFalse);
     });
 
     test('isDueSoon returns true when due within 24 hours', () {
-      final entry =
-          createEntry(nextDueDate: now.add(const Duration(hours: 12)));
+      final entry = createEntry(
+        nextDueDate: now.add(const Duration(hours: 12)),
+      );
       expect(entry.isDueSoon, isTrue);
     });
 
     test('isDueSoon returns false when overdue', () {
-      final entry =
-          createEntry(nextDueDate: now.subtract(const Duration(days: 1)));
+      final entry = createEntry(
+        nextDueDate: now.subtract(const Duration(days: 1)),
+      );
       expect(entry.isDueSoon, isFalse);
     });
 
@@ -115,21 +119,24 @@ void main() {
       expect(entry.isOverdue, isFalse);
     });
 
-    test('overdue recurring entry clears overdue once due date advances forward',
-        () {
-      final overdue = createEntry(
-        frequency: HealthFrequency.weekly,
-        nextDueDate: now.subtract(const Duration(days: 10)),
-      );
-      expect(overdue.isOverdue, isTrue);
+    test(
+      'overdue recurring entry clears overdue once due date advances forward',
+      () {
+        final overdue = createEntry(
+          frequency: HealthFrequency.weekly,
+          nextDueDate: now.subtract(const Duration(days: 10)),
+        );
+        expect(overdue.isOverdue, isTrue);
 
-      // Marking complete advances next_due_date into the future (server-side),
-      // which is what clears the overdue state in the UI.
-      final advanced =
-          overdue.copyWith(nextDueDate: now.add(const Duration(days: 4)));
-      expect(advanced.isOverdue, isFalse);
-      expect(advanced.isCompleted, isFalse);
-    });
+        // Marking complete advances next_due_date into the future (server-side),
+        // which is what clears the overdue state in the UI.
+        final advanced = overdue.copyWith(
+          nextDueDate: now.add(const Duration(days: 4)),
+        );
+        expect(advanced.isOverdue, isFalse);
+        expect(advanced.isCompleted, isFalse);
+      },
+    );
 
     test('copyWith creates modified copy', () {
       final entry = createEntry();

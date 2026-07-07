@@ -62,10 +62,8 @@ class OrganizationPeopleSection extends ConsumerWidget {
                   child: CircularProgressIndicator(),
                 ),
               ),
-              error: (e, _) => Text(
-                '$e',
-                style: TextStyle(color: colorScheme.error),
-              ),
+              error: (e, _) =>
+                  Text('$e', style: TextStyle(color: colorScheme.error)),
               data: (people) {
                 if (people.isEmpty) {
                   return Padding(
@@ -85,7 +83,8 @@ class OrganizationPeopleSection extends ConsumerWidget {
                         orgId: orgId,
                         localizedRoleLabel: localizedRoleLabel,
                         canSetPrimaryContact: isOrgAdmin,
-                        onSetPrimaryContact: isOrgAdmin &&
+                        onSetPrimaryContact:
+                            isOrgAdmin &&
                                 !person.isExternal &&
                                 !person.isPending &&
                                 (person.role?.isOrgAdmin ?? false)
@@ -94,7 +93,9 @@ class OrganizationPeopleSection extends ConsumerWidget {
                                   await ref
                                       .read(organizationListProvider.notifier)
                                       .setPrimaryContact(
-                                          orgId, person.recordId);
+                                        orgId,
+                                        person.recordId,
+                                      );
                                   if (context.mounted) {
                                     ScaffoldMessenger.of(context).showSnackBar(
                                       SnackBar(

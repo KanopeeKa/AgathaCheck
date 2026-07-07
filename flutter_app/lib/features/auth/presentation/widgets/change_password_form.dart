@@ -62,118 +62,136 @@ class ChangePasswordForm extends StatelessWidget {
         padding: const EdgeInsets.all(20),
         child: AutofillGroup(
           child: Form(
-          key: formKey,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(l10nChangePassword, style: theme.textTheme.titleLarge),
-              const SizedBox(height: 16),
-              TextFormField(
-                controller: currentPasswordController,
-                decoration: InputDecoration(
-                  labelText: l10nCurrentPassword,
-                  prefixIcon: const Icon(Icons.lock_outlined),
-                  suffixIcon: IconButton(
-                    tooltip: obscureCurrent ? l10nShowCurrentPassword : l10nHideCurrentPassword,
-                    icon: Icon(obscureCurrent ? Icons.visibility_off : Icons.visibility),
-                    onPressed: onToggleObscureCurrent,
-                  ),
-                ),
-                obscureText: obscureCurrent,
-                autofillHints: const [AutofillHints.password],
-                validator: (v) {
-                  if (v == null || v.isEmpty) {
-                    return l10nCurrentPasswordRequired;
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 16),
-              TextFormField(
-                controller: newPasswordController,
-                decoration: InputDecoration(
-                  labelText: l10nNewPassword,
-                  prefixIcon: const Icon(Icons.lock_reset),
-                  suffixIcon: IconButton(
-                    tooltip: obscureNew ? l10nShowNewPassword : l10nHideNewPassword,
-                    icon: Icon(obscureNew ? Icons.visibility_off : Icons.visibility),
-                    onPressed: onToggleObscureNew,
-                  ),
-                ),
-                obscureText: obscureNew,
-                autofillHints: const [AutofillHints.newPassword],
-                validator: (v) {
-                  if (v == null || v.isEmpty) {
-                    return l10nNewPasswordRequired;
-                  }
-                  if (v.length < 6) {
-                    return l10nAtLeast6Characters;
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 16),
-              TextFormField(
-                controller: confirmPasswordController,
-                decoration: InputDecoration(
-                  labelText: l10nConfirmNewPassword,
-                  prefixIcon: const Icon(Icons.lock_reset),
-                ),
-                obscureText: true,
-                autofillHints: const [AutofillHints.newPassword],
-                validator: (v) {
-                  if (v != newPasswordController.text) {
-                    return l10nPasswordsDoNotMatch;
-                  }
-                  return null;
-                },
-              ),
-              if (passwordMessage != null) ...[
+            key: formKey,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(l10nChangePassword, style: theme.textTheme.titleLarge),
                 const SizedBox(height: 16),
-                Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: passwordSuccess ? Colors.green.shade50 : theme.colorScheme.errorContainer,
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Row(
-                    children: [
-                      Icon(
-                        passwordSuccess ? Icons.check_circle : Icons.error_outline,
-                        color: passwordSuccess ? Colors.green : theme.colorScheme.error,
-                        size: 20,
+                TextFormField(
+                  controller: currentPasswordController,
+                  decoration: InputDecoration(
+                    labelText: l10nCurrentPassword,
+                    prefixIcon: const Icon(Icons.lock_outlined),
+                    suffixIcon: IconButton(
+                      tooltip: obscureCurrent
+                          ? l10nShowCurrentPassword
+                          : l10nHideCurrentPassword,
+                      icon: Icon(
+                        obscureCurrent
+                            ? Icons.visibility_off
+                            : Icons.visibility,
                       ),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: Text(
-                          passwordMessage!,
-                          style: TextStyle(
-                            color: passwordSuccess ? Colors.green.shade800 : theme.colorScheme.error,
+                      onPressed: onToggleObscureCurrent,
+                    ),
+                  ),
+                  obscureText: obscureCurrent,
+                  autofillHints: const [AutofillHints.password],
+                  validator: (v) {
+                    if (v == null || v.isEmpty) {
+                      return l10nCurrentPasswordRequired;
+                    }
+                    return null;
+                  },
+                ),
+                const SizedBox(height: 16),
+                TextFormField(
+                  controller: newPasswordController,
+                  decoration: InputDecoration(
+                    labelText: l10nNewPassword,
+                    prefixIcon: const Icon(Icons.lock_reset),
+                    suffixIcon: IconButton(
+                      tooltip: obscureNew
+                          ? l10nShowNewPassword
+                          : l10nHideNewPassword,
+                      icon: Icon(
+                        obscureNew ? Icons.visibility_off : Icons.visibility,
+                      ),
+                      onPressed: onToggleObscureNew,
+                    ),
+                  ),
+                  obscureText: obscureNew,
+                  autofillHints: const [AutofillHints.newPassword],
+                  validator: (v) {
+                    if (v == null || v.isEmpty) {
+                      return l10nNewPasswordRequired;
+                    }
+                    if (v.length < 6) {
+                      return l10nAtLeast6Characters;
+                    }
+                    return null;
+                  },
+                ),
+                const SizedBox(height: 16),
+                TextFormField(
+                  controller: confirmPasswordController,
+                  decoration: InputDecoration(
+                    labelText: l10nConfirmNewPassword,
+                    prefixIcon: const Icon(Icons.lock_reset),
+                  ),
+                  obscureText: true,
+                  autofillHints: const [AutofillHints.newPassword],
+                  validator: (v) {
+                    if (v != newPasswordController.text) {
+                      return l10nPasswordsDoNotMatch;
+                    }
+                    return null;
+                  },
+                ),
+                if (passwordMessage != null) ...[
+                  const SizedBox(height: 16),
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: passwordSuccess
+                          ? Colors.green.shade50
+                          : theme.colorScheme.errorContainer,
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Row(
+                      children: [
+                        Icon(
+                          passwordSuccess
+                              ? Icons.check_circle
+                              : Icons.error_outline,
+                          color: passwordSuccess
+                              ? Colors.green
+                              : theme.colorScheme.error,
+                          size: 20,
+                        ),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Text(
+                            passwordMessage!,
+                            style: TextStyle(
+                              color: passwordSuccess
+                                  ? Colors.green.shade800
+                                  : theme.colorScheme.error,
+                            ),
                           ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
+                  ),
+                ],
+                const SizedBox(height: 20),
+                SizedBox(
+                  width: double.infinity,
+                  child: OutlinedButton(
+                    key: const Key('change_password_button'),
+                    onPressed: changingPassword ? null : onChangePassword,
+                    child: changingPassword
+                        ? const SizedBox(
+                            height: 20,
+                            width: 20,
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          )
+                        : Text(l10nChangePassword),
                   ),
                 ),
               ],
-              const SizedBox(height: 20),
-              SizedBox(
-                width: double.infinity,
-                child: OutlinedButton(
-                  key: const Key('change_password_button'),
-                  onPressed: changingPassword ? null : onChangePassword,
-                  child: changingPassword
-                      ? const SizedBox(
-                          height: 20,
-                          width: 20,
-                          child: CircularProgressIndicator(strokeWidth: 2),
-                        )
-                      : Text(l10nChangePassword),
-                ),
-              ),
-            ],
+            ),
           ),
-        ),
         ),
       ),
     );

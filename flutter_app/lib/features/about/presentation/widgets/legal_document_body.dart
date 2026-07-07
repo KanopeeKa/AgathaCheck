@@ -4,10 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class LegalDocumentBody extends StatelessWidget {
-  const LegalDocumentBody({
-    super.key,
-    required this.markdown,
-  });
+  const LegalDocumentBody({super.key, required this.markdown});
 
   final String markdown;
 
@@ -35,9 +32,7 @@ class LegalDocumentBody extends StatelessWidget {
         listBullet: theme.textTheme.bodyMedium,
         blockquotePadding: const EdgeInsets.symmetric(horizontal: 16),
         horizontalRuleDecoration: BoxDecoration(
-          border: Border(
-            top: BorderSide(color: theme.dividerColor),
-          ),
+          border: Border(top: BorderSide(color: theme.dividerColor)),
         ),
       ),
       onTapLink: (text, href, title) {

@@ -8,18 +8,8 @@ import 'package:pet_profile_app/l10n/app_localizations.dart';
 void main() {
   group('HealthEntryPetSelector', () {
     final pets = [
-      Pet(
-        id: 'p1',
-        name: 'Buddy',
-        species: 'dog',
-        breed: 'Lab',
-      ),
-      Pet(
-        id: 'p2',
-        name: 'Mittens',
-        species: 'cat',
-        breed: '',
-      ),
+      Pet(id: 'p1', name: 'Buddy', species: 'dog', breed: 'Lab'),
+      Pet(id: 'p2', name: 'Mittens', species: 'cat', breed: ''),
     ];
 
     testWidgets('renders pet chips and toggles selection', (tester) async {

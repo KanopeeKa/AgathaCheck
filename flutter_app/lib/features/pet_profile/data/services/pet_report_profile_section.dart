@@ -35,27 +35,37 @@ class PetProfileSectionBuilder {
             if (pet.breed.isNotEmpty) _detailRow(l.pdfBreed, pet.breed),
             if (pet.gender != null && pet.gender!.isNotEmpty)
               _detailRow(l.pdfGender, pet.gender!),
-            if (pet.ageDisplay != null)
-              _detailRow(l.pdfAge, pet.ageDisplay!),
+            if (pet.ageDisplay != null) _detailRow(l.pdfAge, pet.ageDisplay!),
             if (pet.dateOfBirth != null)
-              _detailRow(l.pdfDateOfBirth, '${pet.dateOfBirth!.day}/${pet.dateOfBirth!.month}/${pet.dateOfBirth!.year}'),
+              _detailRow(
+                l.pdfDateOfBirth,
+                '${pet.dateOfBirth!.day}/${pet.dateOfBirth!.month}/${pet.dateOfBirth!.year}',
+              ),
             if (latestWeight != null)
-              _detailRow(l.pdfCurrentWeight, _formatWeight(latestWeight, weightUnit),
-                  highlight: true),
+              _detailRow(
+                l.pdfCurrentWeight,
+                _formatWeight(latestWeight, weightUnit),
+                highlight: true,
+              ),
             if (pet.bio.isNotEmpty) _detailRow(l.pdfBio, pet.bio),
             if (pet.neuteredDate != null)
-              _detailRow(l.pdfNeuteredSpayed, DateFormat.yMMMd().format(pet.neuteredDate!)),
-            if (pet.chipId.isNotEmpty)
-              _detailRow(l.pdfIdMicrochip, pet.chipId),
+              _detailRow(
+                l.pdfNeuteredSpayed,
+                DateFormat.yMMMd().format(pet.neuteredDate!),
+              ),
+            if (pet.chipId.isNotEmpty) _detailRow(l.pdfIdMicrochip, pet.chipId),
             if (pet.insurance.isNotEmpty)
               _detailRow(l.pdfInsurance, pet.insurance),
             if (vet != null)
-              _detailRow(l.pdfVet, [
-                vet.name,
-                if (vet.phone.isNotEmpty) vet.phone,
-                if (vet.email.isNotEmpty) vet.email,
-                if (vet.address.isNotEmpty) vet.address,
-              ].join(' - ')),
+              _detailRow(
+                l.pdfVet,
+                [
+                  vet.name,
+                  if (vet.phone.isNotEmpty) vet.phone,
+                  if (vet.email.isNotEmpty) vet.email,
+                  if (vet.address.isNotEmpty) vet.address,
+                ].join(' - '),
+              ),
           ],
         ),
       ),
@@ -68,8 +78,12 @@ class PetProfileSectionBuilder {
       margin: const pw.EdgeInsets.only(bottom: 6),
       padding: const pw.EdgeInsets.only(bottom: 4),
       decoration: const pw.BoxDecoration(
-        border:
-            pw.Border(bottom: pw.BorderSide(color: PdfColor.fromInt(0xFF6750A4), width: 1.5)),
+        border: pw.Border(
+          bottom: pw.BorderSide(
+            color: PdfColor.fromInt(0xFF6750A4),
+            width: 1.5,
+          ),
+        ),
       ),
       child: pw.Text(
         title.toUpperCase(),
@@ -83,7 +97,11 @@ class PetProfileSectionBuilder {
     );
   }
 
-  static pw.Widget _detailRow(String label, String value, {bool highlight = false}) {
+  static pw.Widget _detailRow(
+    String label,
+    String value, {
+    bool highlight = false,
+  }) {
     return pw.Padding(
       padding: const pw.EdgeInsets.symmetric(vertical: 2),
       child: pw.Row(
@@ -91,20 +109,26 @@ class PetProfileSectionBuilder {
         children: [
           pw.SizedBox(
             width: 100,
-            child: pw.Text(label,
-                style: pw.TextStyle(
-                    fontSize: 9,
-                    fontWeight: pw.FontWeight.bold,
-                    color: _textMuted)),
+            child: pw.Text(
+              label,
+              style: pw.TextStyle(
+                fontSize: 9,
+                fontWeight: pw.FontWeight.bold,
+                color: _textMuted,
+              ),
+            ),
           ),
           pw.Expanded(
-            child: pw.Text(value,
-                style: pw.TextStyle(
-                  fontSize: 9,
-                  color: _textDark,
-                  fontWeight:
-                      highlight ? pw.FontWeight.bold : pw.FontWeight.normal,
-                )),
+            child: pw.Text(
+              value,
+              style: pw.TextStyle(
+                fontSize: 9,
+                color: _textDark,
+                fontWeight: highlight
+                    ? pw.FontWeight.bold
+                    : pw.FontWeight.normal,
+              ),
+            ),
           ),
         ],
       ),
@@ -118,9 +142,7 @@ class PetProfileSectionBuilder {
     double? fallback,
   ) {
     if (entries.isEmpty) return fallback;
-    return entries
-        .reduce((a, b) => a.date.isAfter(b.date) ? a : b)
-        .weight;
+    return entries.reduce((a, b) => a.date.isAfter(b.date) ? a : b).weight;
   }
 
   static String _formatWeight(double kg, String unit) {

@@ -133,7 +133,9 @@ class Pet {
       gender: clearGender ? null : (gender ?? this.gender),
       bio: bio ?? this.bio,
       insurance: insurance ?? this.insurance,
-      neuteredDate: clearNeuteredDate ? null : (neuteredDate ?? this.neuteredDate),
+      neuteredDate: clearNeuteredDate
+          ? null
+          : (neuteredDate ?? this.neuteredDate),
       neuterDismissed: neuterDismissed ?? this.neuterDismissed,
       chipId: chipId ?? this.chipId,
       chipDismissed: chipDismissed ?? this.chipDismissed,

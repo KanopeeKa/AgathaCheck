@@ -33,9 +33,12 @@ class OrganizationMembersSection extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(l.people,
-                style: theme.textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold)),
+            Text(
+              l.people,
+              style: theme.textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
+            ),
             const SizedBox(height: 8),
             membersAsync.when(
               loading: () => const Center(
@@ -44,8 +47,8 @@ class OrganizationMembersSection extends StatelessWidget {
                   child: CircularProgressIndicator(),
                 ),
               ),
-              error: (e, _) => Text('$e',
-                  style: TextStyle(color: colorScheme.error)),
+              error: (e, _) =>
+                  Text('$e', style: TextStyle(color: colorScheme.error)),
               data: (members) {
                 return Column(
                   children: [
@@ -59,7 +62,11 @@ class OrganizationMembersSection extends StatelessWidget {
                                 ? Colors.grey.shade300
                                 : AppTheme.orgIconBg,
                             child: isPending
-                                ? Icon(Icons.hourglass_empty, size: 18, color: Colors.grey.shade600)
+                                ? Icon(
+                                    Icons.hourglass_empty,
+                                    size: 18,
+                                    color: Colors.grey.shade600,
+                                  )
                                 : Text(
                                     member.initials,
                                     style: const TextStyle(
@@ -71,19 +78,24 @@ class OrganizationMembersSection extends StatelessWidget {
                           title: Text(
                             member.displayName,
                             style: isPending
-                                ? TextStyle(fontStyle: FontStyle.italic, color: theme.colorScheme.onSurfaceVariant)
+                                ? TextStyle(
+                                    fontStyle: FontStyle.italic,
+                                    color: theme.colorScheme.onSurfaceVariant,
+                                  )
                                 : null,
                           ),
                           subtitle: Text(member.email),
                           trailing: Container(
                             padding: const EdgeInsets.symmetric(
-                                horizontal: 8, vertical: 2),
+                              horizontal: 8,
+                              vertical: 2,
+                            ),
                             decoration: BoxDecoration(
                               color: isPending
                                   ? Colors.orange.withAlpha(30)
                                   : member.role.isSuperAdmin
-                                      ? AppTheme.orgSuperUserBg
-                                      : AppTheme.orgChipBg,
+                                  ? AppTheme.orgSuperUserBg
+                                  : AppTheme.orgChipBg,
                               borderRadius: BorderRadius.circular(8),
                             ),
                             child: Text(
@@ -94,8 +106,8 @@ class OrganizationMembersSection extends StatelessWidget {
                                 color: isPending
                                     ? Colors.orange.shade800
                                     : member.role.isSuperAdmin
-                                        ? AppTheme.orgSuperUserFg
-                                        : AppTheme.orgChipFg,
+                                    ? AppTheme.orgSuperUserFg
+                                    : AppTheme.orgChipFg,
                               ),
                             ),
                           ),

@@ -143,8 +143,9 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
                   const SizedBox(height: 16),
                   Text(
                     _codeSent ? l10n.enterResetCode : l10n.forgotPasswordTitle,
-                    style: theme.textTheme.headlineSmall
-                        ?.copyWith(fontWeight: FontWeight.bold),
+                    style: theme.textTheme.headlineSmall?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                   const SizedBox(height: 8),
                   Text(
@@ -167,8 +168,11 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
                       ),
                       child: Row(
                         children: [
-                          Icon(Icons.check_circle_outline,
-                              color: Colors.green[700], size: 20),
+                          Icon(
+                            Icons.check_circle_outline,
+                            color: Colors.green[700],
+                            size: 20,
+                          ),
                           const SizedBox(width: 8),
                           Expanded(
                             child: Text(
@@ -192,15 +196,19 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
                         child: Row(
                           children: [
                             ExcludeSemantics(
-                              child: Icon(Icons.error_outline,
-                                  color: theme.colorScheme.error, size: 20),
+                              child: Icon(
+                                Icons.error_outline,
+                                color: theme.colorScheme.error,
+                                size: 20,
+                              ),
                             ),
                             const SizedBox(width: 8),
                             Expanded(
                               child: Text(
                                 _error!,
-                                style:
-                                    TextStyle(color: theme.colorScheme.error),
+                                style: TextStyle(
+                                  color: theme.colorScheme.error,
+                                ),
                               ),
                             ),
                           ],
@@ -223,151 +231,158 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
   Widget _buildEmailStep(ThemeData theme, AppLocalizations l10n) {
     return AutofillGroup(
       child: Form(
-      key: _emailFormKey,
-      child: Column(
-        children: [
-          TextFormField(
-            key: const Key('forgot_email_field'),
-            controller: _emailController,
-            decoration: InputDecoration(
-              labelText: l10n.email,
-              prefixIcon: const Icon(Icons.email_outlined),
+        key: _emailFormKey,
+        child: Column(
+          children: [
+            TextFormField(
+              key: const Key('forgot_email_field'),
+              controller: _emailController,
+              decoration: InputDecoration(
+                labelText: l10n.email,
+                prefixIcon: const Icon(Icons.email_outlined),
+              ),
+              keyboardType: TextInputType.emailAddress,
+              autofillHints: const [
+                AutofillHints.username,
+                AutofillHints.email,
+              ],
+              validator: (v) {
+                if (v == null || v.trim().isEmpty) return l10n.emailRequired;
+                if (!v.contains('@')) return l10n.enterValidEmail;
+                return null;
+              },
+              onFieldSubmitted: (_) => _requestCode(),
             ),
-            keyboardType: TextInputType.emailAddress,
-            autofillHints: const [AutofillHints.username, AutofillHints.email],
-            validator: (v) {
-              if (v == null || v.trim().isEmpty) return l10n.emailRequired;
-              if (!v.contains('@')) return l10n.enterValidEmail;
-              return null;
-            },
-            onFieldSubmitted: (_) => _requestCode(),
-          ),
-          const SizedBox(height: 24),
-          SizedBox(
-            width: double.infinity,
-            child: FilledButton(
-              key: const Key('forgot_submit_button'),
-              onPressed: _isLoading ? null : _requestCode,
-              child: _isLoading
-                  ? const SizedBox(
-                      height: 20,
-                      width: 20,
-                      child: CircularProgressIndicator(strokeWidth: 2))
-                  : Text(l10n.sendResetCode),
+            const SizedBox(height: 24),
+            SizedBox(
+              width: double.infinity,
+              child: FilledButton(
+                key: const Key('forgot_submit_button'),
+                onPressed: _isLoading ? null : _requestCode,
+                child: _isLoading
+                    ? const SizedBox(
+                        height: 20,
+                        width: 20,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      )
+                    : Text(l10n.sendResetCode),
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
-    ),
     );
   }
 
   Widget _buildResetStep(ThemeData theme, AppLocalizations l10n) {
     return AutofillGroup(
       child: Form(
-      key: _resetFormKey,
-      child: Column(
-        children: [
-          TextFormField(
-            key: const Key('reset_code_field'),
-            controller: _codeController,
-            decoration: InputDecoration(
-              labelText: l10n.resetCode,
-              prefixIcon: const Icon(Icons.lock_clock),
-              hintText: l10n.sixDigitCode,
+        key: _resetFormKey,
+        child: Column(
+          children: [
+            TextFormField(
+              key: const Key('reset_code_field'),
+              controller: _codeController,
+              decoration: InputDecoration(
+                labelText: l10n.resetCode,
+                prefixIcon: const Icon(Icons.lock_clock),
+                hintText: l10n.sixDigitCode,
+              ),
+              keyboardType: TextInputType.number,
+              autofillHints: const [AutofillHints.oneTimeCode],
+              maxLength: 6,
+              validator: (v) {
+                if (v == null || v.trim().isEmpty) return l10n.codeRequired;
+                if (v.trim().length != 6) return l10n.enterSixDigitCode;
+                return null;
+              },
             ),
-            keyboardType: TextInputType.number,
-            autofillHints: const [AutofillHints.oneTimeCode],
-            maxLength: 6,
-            validator: (v) {
-              if (v == null || v.trim().isEmpty) return l10n.codeRequired;
-              if (v.trim().length != 6) return l10n.enterSixDigitCode;
-              return null;
-            },
-          ),
-          const SizedBox(height: 16),
-          TextFormField(
-            key: const Key('reset_password_field'),
-            controller: _passwordController,
-            decoration: InputDecoration(
-              labelText: l10n.newPassword,
-              prefixIcon: const Icon(Icons.lock_outlined),
-              suffixIcon: IconButton(
-                tooltip:
-                    _obscurePassword ? l10n.showPassword : l10n.hidePassword,
-                icon: Icon(_obscurePassword
-                    ? Icons.visibility_off
-                    : Icons.visibility),
-                onPressed: () =>
-                    setState(() => _obscurePassword = !_obscurePassword),
+            const SizedBox(height: 16),
+            TextFormField(
+              key: const Key('reset_password_field'),
+              controller: _passwordController,
+              decoration: InputDecoration(
+                labelText: l10n.newPassword,
+                prefixIcon: const Icon(Icons.lock_outlined),
+                suffixIcon: IconButton(
+                  tooltip: _obscurePassword
+                      ? l10n.showPassword
+                      : l10n.hidePassword,
+                  icon: Icon(
+                    _obscurePassword ? Icons.visibility_off : Icons.visibility,
+                  ),
+                  onPressed: () =>
+                      setState(() => _obscurePassword = !_obscurePassword),
+                ),
+              ),
+              obscureText: _obscurePassword,
+              autofillHints: const [AutofillHints.newPassword],
+              validator: (v) {
+                if (v == null || v.isEmpty) return l10n.passwordRequired;
+                if (v.length < 6) return l10n.atLeast6Characters;
+                return null;
+              },
+            ),
+            const SizedBox(height: 16),
+            TextFormField(
+              key: const Key('reset_confirm_field'),
+              controller: _confirmController,
+              decoration: InputDecoration(
+                labelText: l10n.confirmPassword,
+                prefixIcon: const Icon(Icons.lock_outlined),
+                suffixIcon: IconButton(
+                  tooltip: _obscureConfirm
+                      ? l10n.showPassword
+                      : l10n.hidePassword,
+                  icon: Icon(
+                    _obscureConfirm ? Icons.visibility_off : Icons.visibility,
+                  ),
+                  onPressed: () =>
+                      setState(() => _obscureConfirm = !_obscureConfirm),
+                ),
+              ),
+              obscureText: _obscureConfirm,
+              autofillHints: const [AutofillHints.newPassword],
+              validator: (v) {
+                if (v != _passwordController.text) {
+                  return l10n.passwordsDoNotMatch;
+                }
+                return null;
+              },
+              onFieldSubmitted: (_) => _resetPassword(),
+            ),
+            const SizedBox(height: 24),
+            SizedBox(
+              width: double.infinity,
+              child: FilledButton(
+                key: const Key('reset_submit_button'),
+                onPressed: _isLoading ? null : _resetPassword,
+                child: _isLoading
+                    ? const SizedBox(
+                        height: 20,
+                        width: 20,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      )
+                    : Text(l10n.resetPassword),
               ),
             ),
-            obscureText: _obscurePassword,
-            autofillHints: const [AutofillHints.newPassword],
-            validator: (v) {
-              if (v == null || v.isEmpty) return l10n.passwordRequired;
-              if (v.length < 6) return l10n.atLeast6Characters;
-              return null;
-            },
-          ),
-          const SizedBox(height: 16),
-          TextFormField(
-            key: const Key('reset_confirm_field'),
-            controller: _confirmController,
-            decoration: InputDecoration(
-              labelText: l10n.confirmPassword,
-              prefixIcon: const Icon(Icons.lock_outlined),
-              suffixIcon: IconButton(
-                tooltip:
-                    _obscureConfirm ? l10n.showPassword : l10n.hidePassword,
-                icon: Icon(_obscureConfirm
-                    ? Icons.visibility_off
-                    : Icons.visibility),
-                onPressed: () =>
-                    setState(() => _obscureConfirm = !_obscureConfirm),
-              ),
+            const SizedBox(height: 12),
+            TextButton(
+              onPressed: () {
+                setState(() {
+                  _codeSent = false;
+                  _error = null;
+                  _successMessage = null;
+                  _codeController.clear();
+                  _passwordController.clear();
+                  _confirmController.clear();
+                });
+              },
+              child: Text(l10n.useDifferentEmail),
             ),
-            obscureText: _obscureConfirm,
-            autofillHints: const [AutofillHints.newPassword],
-            validator: (v) {
-              if (v != _passwordController.text) {
-                return l10n.passwordsDoNotMatch;
-              }
-              return null;
-            },
-            onFieldSubmitted: (_) => _resetPassword(),
-          ),
-          const SizedBox(height: 24),
-          SizedBox(
-            width: double.infinity,
-            child: FilledButton(
-              key: const Key('reset_submit_button'),
-              onPressed: _isLoading ? null : _resetPassword,
-              child: _isLoading
-                  ? const SizedBox(
-                      height: 20,
-                      width: 20,
-                      child: CircularProgressIndicator(strokeWidth: 2))
-                  : Text(l10n.resetPassword),
-            ),
-          ),
-          const SizedBox(height: 12),
-          TextButton(
-            onPressed: () {
-              setState(() {
-                _codeSent = false;
-                _error = null;
-                _successMessage = null;
-                _codeController.clear();
-                _passwordController.clear();
-                _confirmController.clear();
-              });
-            },
-            child: Text(l10n.useDifferentEmail),
-          ),
-        ],
+          ],
+        ),
       ),
-    ),
     );
   }
 }

@@ -10,7 +10,9 @@ import 'package:pet_profile_app/l10n/app_localizations.dart';
 import '../../../../helpers/fakes.dart';
 
 void main() {
-  testWidgets('PaywallScreen renders subscription title for free tier', (tester) async {
+  testWidgets('PaywallScreen renders subscription title for free tier', (
+    tester,
+  ) async {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [

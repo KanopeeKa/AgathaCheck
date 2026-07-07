@@ -66,10 +66,7 @@ class HealthEntryNotesField extends StatelessWidget {
     return TextFormField(
       key: const Key('health_notes_field'),
       initialValue: notes,
-      decoration: InputDecoration(
-        labelText: l.notes,
-        hintText: l.notesHint,
-      ),
+      decoration: InputDecoration(labelText: l.notes, hintText: l.notesHint),
       maxLines: 3,
       onChanged: onChanged,
     );

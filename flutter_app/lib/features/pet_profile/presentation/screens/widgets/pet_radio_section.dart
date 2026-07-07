@@ -21,7 +21,8 @@ class PetRadioSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        if (title != null) Text(title!, style: Theme.of(context).textTheme.bodyLarge),
+        if (title != null)
+          Text(title!, style: Theme.of(context).textTheme.bodyLarge),
         Row(
           children: [
             Expanded(

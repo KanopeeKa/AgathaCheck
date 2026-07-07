@@ -31,10 +31,7 @@ void main() {
     });
 
     test('should handle int id', () {
-      final json = {
-        'id': 42,
-        'name': 'Dr. Smith',
-      };
+      final json = {'id': 42, 'name': 'Dr. Smith'};
 
       final model = VetModel.fromJson(json);
       expect(model.id, '42');

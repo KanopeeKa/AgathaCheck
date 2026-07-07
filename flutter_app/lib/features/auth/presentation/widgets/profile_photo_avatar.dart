@@ -32,9 +32,11 @@ class ProfilePhotoAvatar extends StatelessWidget {
             backgroundImage: photoBytes != null
                 ? MemoryImage(photoBytes!)
                 : (photoUrl != null && photoUrl!.isNotEmpty
-                    ? NetworkImage(photoUrl!)
-                    : null) as ImageProvider?,
-            child: (photoBytes == null && (photoUrl == null || photoUrl!.isEmpty))
+                          ? NetworkImage(photoUrl!)
+                          : null)
+                      as ImageProvider?,
+            child:
+                (photoBytes == null && (photoUrl == null || photoUrl!.isEmpty))
                 ? Text(
                     initials,
                     style: theme.textTheme.headlineMedium?.copyWith(
@@ -53,8 +55,11 @@ class ProfilePhotoAvatar extends StatelessWidget {
                   color: theme.colorScheme.primary,
                   shape: BoxShape.circle,
                 ),
-                child: Icon(Icons.camera_alt,
-                    size: 16, color: theme.colorScheme.onPrimary),
+                child: Icon(
+                  Icons.camera_alt,
+                  size: 16,
+                  color: theme.colorScheme.onPrimary,
+                ),
               ),
             ),
         ],

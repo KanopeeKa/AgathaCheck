@@ -26,7 +26,9 @@ class PetFosterPlacementSection extends ConsumerWidget {
     final l = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
-    final placementAsync = ref.watch(petFosterPlacementProvider((orgId, petId)));
+    final placementAsync = ref.watch(
+      petFosterPlacementProvider((orgId, petId)),
+    );
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -37,8 +39,9 @@ class PetFosterPlacementSection extends ConsumerWidget {
             leading: Icon(Icons.home_work_outlined, color: colorScheme.primary),
             title: Text(
               l.fosterPlacement,
-              style: theme.textTheme.titleMedium
-                  ?.copyWith(fontWeight: FontWeight.w600),
+              style: theme.textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.w600,
+              ),
             ),
             children: const [
               Padding(
@@ -51,36 +54,38 @@ class PetFosterPlacementSection extends ConsumerWidget {
             leading: Icon(Icons.home_work_outlined, color: colorScheme.primary),
             title: Text(
               l.fosterPlacement,
-              style: theme.textTheme.titleMedium
-                  ?.copyWith(fontWeight: FontWeight.w600),
+              style: theme.textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.w600,
+              ),
             ),
             children: [
               Padding(
                 padding: const EdgeInsets.all(16),
-                child: Text(
-                  '$e',
-                  style: TextStyle(color: colorScheme.error),
-                ),
+                child: Text('$e', style: TextStyle(color: colorScheme.error)),
               ),
             ],
           ),
           data: (state) {
             final placement = state.placement;
-            final fosterLabel = placement != null &&
+            final fosterLabel =
+                placement != null &&
                     (placement.fosterName.isNotEmpty ||
                         placement.fosterEmail.isNotEmpty)
                 ? (placement.fosterName.isNotEmpty
-                    ? placement.fosterName
-                    : placement.fosterEmail)
+                      ? placement.fosterName
+                      : placement.fosterEmail)
                 : null;
 
             return ExpansionTile(
-              leading:
-                  Icon(Icons.home_work_outlined, color: colorScheme.primary),
+              leading: Icon(
+                Icons.home_work_outlined,
+                color: colorScheme.primary,
+              ),
               title: Text(
                 l.fosterPlacement,
-                style: theme.textTheme.titleMedium
-                    ?.copyWith(fontWeight: FontWeight.w600),
+                style: theme.textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.w600,
+                ),
               ),
               subtitle: Text(
                 fosterPlacementSummary(
@@ -94,8 +99,10 @@ class PetFosterPlacementSection extends ConsumerWidget {
               ),
               children: [
                 Padding(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 8,
+                  ),
                   child: state.isNotInFoster
                       ? _NotInFosterContent(
                           l: l,
@@ -114,14 +121,9 @@ class PetFosterPlacementSection extends ConsumerWidget {
                             l,
                             placement,
                           ),
-                          onEnd: () =>
-                              _confirmEnd(context, ref, l, placement),
-                          onCompleteConditions: () => _completeConditions(
-                            context,
-                            ref,
-                            l,
-                            placement,
-                          ),
+                          onEnd: () => _confirmEnd(context, ref, l, placement),
+                          onCompleteConditions: () =>
+                              _completeConditions(context, ref, l, placement),
                           onCancelAdoption: () => _confirmCancelAdoption(
                             context,
                             ref,
@@ -143,15 +145,17 @@ class PetFosterPlacementSection extends ConsumerWidget {
     WidgetRef ref,
     AppLocalizations l,
   ) async {
-    final fosterParents = await ref.read(orgFosterParentsProvider(orgId).future);
+    final fosterParents = await ref.read(
+      orgFosterParentsProvider(orgId).future,
+    );
     final memberParents = fosterParents
         .where((p) => p.isMember && p.userId != null && p.userId!.isNotEmpty)
         .toList();
     if (!context.mounted) return;
     if (memberParents.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l.noFosterParentsWithAccounts)),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(l.noFosterParentsWithAccounts)));
       return;
     }
 
@@ -172,10 +176,12 @@ class PetFosterPlacementSection extends ConsumerWidget {
                 value: selected,
                 decoration: InputDecoration(labelText: l.fosterParents),
                 items: memberParents
-                    .map((p) => DropdownMenuItem(
-                          value: p,
-                          child: Text(p.displayName),
-                        ))
+                    .map(
+                      (p) => DropdownMenuItem(
+                        value: p,
+                        child: Text(p.displayName),
+                      ),
+                    )
                     .toList(),
                 onChanged: (value) => setState(() => selected = value),
               ),
@@ -214,15 +220,15 @@ class PetFosterPlacementSection extends ConsumerWidget {
             notes: notesController.text.trim(),
           );
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l.fosterPlacementStarted)),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(l.fosterPlacementStarted)));
       }
     } catch (e) {
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('$e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('$e')));
       }
     } finally {
       notesController.dispose();
@@ -234,15 +240,17 @@ class PetFosterPlacementSection extends ConsumerWidget {
     WidgetRef ref,
     AppLocalizations l,
   ) async {
-    final fosterParents = await ref.read(orgFosterParentsProvider(orgId).future);
+    final fosterParents = await ref.read(
+      orgFosterParentsProvider(orgId).future,
+    );
     final memberParents = fosterParents
         .where((p) => p.isMember && p.userId != null && p.userId!.isNotEmpty)
         .toList();
     if (!context.mounted) return;
     if (memberParents.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l.noFosterParentsWithAccounts)),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(l.noFosterParentsWithAccounts)));
       return;
     }
 
@@ -264,10 +272,12 @@ class PetFosterPlacementSection extends ConsumerWidget {
                 value: selected,
                 decoration: InputDecoration(labelText: l.fosterParents),
                 items: memberParents
-                    .map((p) => DropdownMenuItem(
-                          value: p,
-                          child: Text(p.displayName),
-                        ))
+                    .map(
+                      (p) => DropdownMenuItem(
+                        value: p,
+                        child: Text(p.displayName),
+                      ),
+                    )
                     .toList(),
                 onChanged: (value) => setState(() => selected = value),
               ),
@@ -309,21 +319,23 @@ class PetFosterPlacementSection extends ConsumerWidget {
     }
 
     try {
-      await ref.read(petFosterPlacementProvider((orgId, petId)).notifier).directAdopt(
+      await ref
+          .read(petFosterPlacementProvider((orgId, petId)).notifier)
+          .directAdopt(
             fosterUserId: selected!.userId!,
             adoptionConditions: conditionsController.text.trim(),
             notes: notesController.text.trim(),
           );
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l.adoptionStarted)),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(l.adoptionStarted)));
       }
     } catch (e) {
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('$e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('$e')));
       }
     } finally {
       conditionsController.dispose();
@@ -385,15 +397,15 @@ class PetFosterPlacementSection extends ConsumerWidget {
             adoptionConditions: conditionsController.text.trim(),
           );
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l.adoptionStarted)),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(l.adoptionStarted)));
       }
     } catch (e) {
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('$e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('$e')));
       }
     } finally {
       conditionsController.dispose();
@@ -411,15 +423,15 @@ class PetFosterPlacementSection extends ConsumerWidget {
           .read(petFosterPlacementProvider((orgId, petId)).notifier)
           .completeAdoptionConditions(placement.id);
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l.adoptionConditionsMet)),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(l.adoptionConditionsMet)));
       }
     } catch (e) {
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('$e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('$e')));
       }
     }
   }
@@ -454,15 +466,15 @@ class PetFosterPlacementSection extends ConsumerWidget {
           .read(petFosterPlacementProvider((orgId, petId)).notifier)
           .cancelAdoption(placement.id);
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l.adoptionCancelled)),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(l.adoptionCancelled)));
       }
     } catch (e) {
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('$e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('$e')));
       }
     }
   }
@@ -497,15 +509,15 @@ class PetFosterPlacementSection extends ConsumerWidget {
           .read(petFosterPlacementProvider((orgId, petId)).notifier)
           .endPlacement(placement.id);
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l.fosterPlacementEnded)),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(l.fosterPlacementEnded)));
       }
     } catch (e) {
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('$e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('$e')));
       }
     }
   }
@@ -579,16 +591,15 @@ class _ActivePlacementContent extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         if (placement.startDate != null) ...[
-          Text(l.fosterPlacementStartDate(
-            DateFormat.yMMMd().format(placement.startDate!),
-          )),
+          Text(
+            l.fosterPlacementStartDate(
+              DateFormat.yMMMd().format(placement.startDate!),
+            ),
+          ),
           const SizedBox(height: 8),
         ],
         if (placement.adoptionConditions.isNotEmpty) ...[
-          Text(
-            l.adoptionConditions,
-            style: theme.textTheme.titleSmall,
-          ),
+          Text(l.adoptionConditions, style: theme.textTheme.titleSmall),
           const SizedBox(height: 4),
           Text(placement.adoptionConditions),
           const SizedBox(height: 8),

@@ -27,7 +27,8 @@ class NotificationModel extends AppNotification {
       message: json['message']?.toString() ?? '',
       type: _parseType(json['type']?.toString() ?? 'general'),
       isRead: json['is_read'] == true,
-      createdAt: DateTime.tryParse(json['created_at']?.toString() ?? '') ??
+      createdAt:
+          DateTime.tryParse(json['created_at']?.toString() ?? '') ??
           DateTime.now(),
     );
   }
@@ -106,7 +107,8 @@ class NotificationPreferencesModel {
       notifyOverdue: json['notify_overdue'] != false,
       notifyDueSoon: json['notify_due_soon'] != false,
       notifyCompleted: json['notify_completed'] != false,
-      mutedPetIds: (json['muted_pet_ids'] as List<dynamic>?)
+      mutedPetIds:
+          (json['muted_pet_ids'] as List<dynamic>?)
               ?.map((e) => e.toString())
               .toList() ??
           const [],

@@ -105,8 +105,10 @@ void main() {
     expect(find.text('Clear'), findsOneWidget);
     // The upload hint matches the accepted picker formats.
     expect(find.text('Documents'), findsOneWidget);
-    expect(find.text('up to 4 documents (jpg, png, pdf), max 2 MB'),
-        findsOneWidget);
+    expect(
+      find.text('up to 4 documents (jpg, png, pdf), max 2 MB'),
+      findsOneWidget,
+    );
     expect(healthDocumentAllowedExtensions, ['jpg', 'jpeg', 'png', 'pdf']);
     expect(healthDocumentMaxBytes, 2 * 1024 * 1024);
     // Type/frequency dropdowns are localized (not enum.label English).

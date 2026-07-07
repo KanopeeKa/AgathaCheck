@@ -49,7 +49,8 @@ Future<bool> _userOwnsPet(Pool pool, String? petId, String userId) async {
 // history/photos routes, which otherwise key only on health_entry_id (IDOR).
 Future<bool> _userOwnsEntry(Pool pool, String entryId, String userId) async {
   final r = await pool.execute(
-    Sql.named('SELECT 1 FROM health_entries WHERE id = @id AND user_id = @userId'),
+    Sql.named(
+        'SELECT 1 FROM health_entries WHERE id = @id AND user_id = @userId'),
     parameters: {'id': entryId, 'userId': userId},
   );
   return r.isNotEmpty;
@@ -94,8 +95,8 @@ String? _nextOccurrence(Map<String, dynamic> c, String completedOnIso) {
 
   final today = parseCalendarDate(todayCalendarIso())!;
   var next = advance(base);
-  while (!DateTime(next.year, next.month, next.day).isAfter(
-      DateTime(today.year, today.month, today.day))) {
+  while (!DateTime(next.year, next.month, next.day)
+      .isAfter(DateTime(today.year, today.month, today.day))) {
     next = advance(next);
   }
   return toCalendarDateString(next);
@@ -107,79 +108,106 @@ Router healthRoutes(Pool pool) {
   router.get('/', (Request request) async {
     final userId = _extractUserId(request);
     if (userId == null) {
-      return Response(401, body: jsonEncode({'error': 'Unauthorized'}), headers: _jsonHeaders);
+      return Response(401,
+          body: jsonEncode({'error': 'Unauthorized'}), headers: _jsonHeaders);
     }
     try {
       final results = await pool.execute(
-        Sql.named('SELECT he.*, p.name as pet_name FROM health_entries he JOIN pets p ON he.pet_id = p.id WHERE he.user_id = @userId ORDER BY he.next_due_date ASC NULLS LAST, he.created_at DESC'),
+        Sql.named(
+            'SELECT he.*, p.name as pet_name FROM health_entries he JOIN pets p ON he.pet_id = p.id WHERE he.user_id = @userId ORDER BY he.next_due_date ASC NULLS LAST, he.created_at DESC'),
         parameters: {'userId': userId},
       );
       final entries = results.map((row) => _healthEntryToMap(row)).toList();
       return Response.ok(jsonEncode(entries), headers: _jsonHeaders);
     } catch (e) {
-      return Response.internalServerError(body: jsonEncode({'error': publicError(e, 'Error fetching entries')}), headers: _jsonHeaders);
+      return Response.internalServerError(
+          body: jsonEncode({'error': publicError(e, 'Error fetching entries')}),
+          headers: _jsonHeaders);
     }
   });
 
   router.get('/export', (Request request) async {
     final userId = _extractUserId(request);
     if (userId == null) {
-      return Response(401, body: jsonEncode({'error': 'Unauthorized'}), headers: _jsonHeaders);
+      return Response(401,
+          body: jsonEncode({'error': 'Unauthorized'}), headers: _jsonHeaders);
     }
     try {
       final results = await pool.execute(
-        Sql.named('SELECT he.*, p.name as pet_name FROM health_entries he JOIN pets p ON he.pet_id = p.id WHERE he.user_id = @userId ORDER BY he.created_at DESC'),
+        Sql.named(
+            'SELECT he.*, p.name as pet_name FROM health_entries he JOIN pets p ON he.pet_id = p.id WHERE he.user_id = @userId ORDER BY he.created_at DESC'),
         parameters: {'userId': userId},
       );
-      final csv = StringBuffer('id,pet_name,name,type,dosage,frequency,start_date,next_due_date,notes\n');
+      final csv = StringBuffer(
+          'id,pet_name,name,type,dosage,frequency,start_date,next_due_date,notes\n');
       for (final row in results) {
         final c = row.toColumnMap();
         csv.writeln([
-          c['id'], c['pet_name'], c['name'], c['type'], c['dosage'],
-          c['frequency'], c['start_date'], c['next_due_date'], c['notes'],
+          c['id'],
+          c['pet_name'],
+          c['name'],
+          c['type'],
+          c['dosage'],
+          c['frequency'],
+          c['start_date'],
+          c['next_due_date'],
+          c['notes'],
         ].map(_csvCell).join(','));
       }
       return Response.ok(csv.toString(), headers: {'Content-Type': 'text/csv'});
     } catch (e) {
-      return Response.internalServerError(body: jsonEncode({'error': publicError(e, 'Export failed')}), headers: _jsonHeaders);
+      return Response.internalServerError(
+          body: jsonEncode({'error': publicError(e, 'Export failed')}),
+          headers: _jsonHeaders);
     }
   });
 
   router.get('/<id>', (Request request, String id) async {
     final userId = _extractUserId(request);
     if (userId == null) {
-      return Response(401, body: jsonEncode({'error': 'Unauthorized'}), headers: _jsonHeaders);
+      return Response(401,
+          body: jsonEncode({'error': 'Unauthorized'}), headers: _jsonHeaders);
     }
     try {
       final results = await pool.execute(
-        Sql.named('SELECT he.*, p.name as pet_name FROM health_entries he JOIN pets p ON he.pet_id = p.id WHERE he.id = @id AND he.user_id = @userId'),
+        Sql.named(
+            'SELECT he.*, p.name as pet_name FROM health_entries he JOIN pets p ON he.pet_id = p.id WHERE he.id = @id AND he.user_id = @userId'),
         parameters: {'id': id, 'userId': userId},
       );
       if (results.isEmpty) {
-        return Response.notFound(jsonEncode({'error': 'Entry not found'}), headers: _jsonHeaders);
+        return Response.notFound(jsonEncode({'error': 'Entry not found'}),
+            headers: _jsonHeaders);
       }
-      return Response.ok(jsonEncode(_healthEntryToMap(results.first)), headers: _jsonHeaders);
+      return Response.ok(jsonEncode(_healthEntryToMap(results.first)),
+          headers: _jsonHeaders);
     } catch (e) {
-      return Response.internalServerError(body: jsonEncode({'error': publicError(e)}), headers: _jsonHeaders);
+      return Response.internalServerError(
+          body: jsonEncode({'error': publicError(e)}), headers: _jsonHeaders);
     }
   });
 
   router.post('/', (Request request) async {
     final userId = _extractUserId(request);
     if (userId == null) {
-      return Response(401, body: jsonEncode({'error': 'Unauthorized'}), headers: _jsonHeaders);
+      return Response(401,
+          body: jsonEncode({'error': 'Unauthorized'}), headers: _jsonHeaders);
     }
     try {
-      final data = jsonDecode(await request.readAsString()) as Map<String, dynamic>;
+      final data =
+          jsonDecode(await request.readAsString()) as Map<String, dynamic>;
       final id = data['id'] ?? _uuid.v4();
       final petId = data['pet_id'] ?? data['petId'];
       if (!await _userOwnsPet(pool, petId?.toString(), userId)) {
-        return Response(403, body: jsonEncode({'error': 'Forbidden'}), headers: _jsonHeaders);
+        return Response(403,
+            body: jsonEncode({'error': 'Forbidden'}), headers: _jsonHeaders);
       }
-      final startDateStr = dateToIsoDate(data['start_date'] ?? data['startDate']);
-      final nextDueStr = dateToIsoDate(data['next_due_date'] ?? data['nextDueDate']);
+      final startDateStr =
+          dateToIsoDate(data['start_date'] ?? data['startDate']);
+      final nextDueStr =
+          dateToIsoDate(data['next_due_date'] ?? data['nextDueDate']);
       final results = await pool.execute(
-        Sql.named('INSERT INTO health_entries (id, pet_id, user_id, name, type, dosage, frequency, frequency_days, frequency_interval, start_date, next_due_date, notes, health_issue_id, remind_days_before, status) VALUES (@id, @pet_id, @user_id, @name, @type, @dosage, @frequency, @frequency_days, @frequency_interval, @start_date, @next_due_date, @notes, @health_issue_id, @remind_days_before, @status) RETURNING *'),
+        Sql.named(
+            'INSERT INTO health_entries (id, pet_id, user_id, name, type, dosage, frequency, frequency_days, frequency_interval, start_date, next_due_date, notes, health_issue_id, remind_days_before, status) VALUES (@id, @pet_id, @user_id, @name, @type, @dosage, @frequency, @frequency_days, @frequency_interval, @start_date, @next_due_date, @notes, @health_issue_id, @remind_days_before, @status) RETURNING *'),
         parameters: {
           'id': id,
           'pet_id': petId,
@@ -189,32 +217,43 @@ Router healthRoutes(Pool pool) {
           'dosage': data['dosage'] ?? '',
           'frequency': data['frequency'] ?? 'once',
           'frequency_days': data['frequency_days'] ?? data['frequencyDays'],
-          'frequency_interval': data['frequency_interval'] ?? data['frequencyInterval'] ?? 1,
+          'frequency_interval':
+              data['frequency_interval'] ?? data['frequencyInterval'] ?? 1,
           'start_date': startDateStr,
           'next_due_date': nextDueStr,
           'notes': data['notes'] ?? '',
           'health_issue_id': data['health_issue_id'] ?? data['healthIssueId'],
-          'remind_days_before': data['remind_days_before'] ?? data['remindDaysBefore'] ?? 1,
+          'remind_days_before':
+              data['remind_days_before'] ?? data['remindDaysBefore'] ?? 1,
           'status': data['status'] ?? 'active',
         },
       );
-      return Response(201, body: jsonEncode(_healthEntryToMap(results.first)), headers: _jsonHeaders);
+      return Response(201,
+          body: jsonEncode(_healthEntryToMap(results.first)),
+          headers: _jsonHeaders);
     } catch (e) {
-      return Response.internalServerError(body: jsonEncode({'error': publicError(e, 'Error creating entry')}), headers: _jsonHeaders);
+      return Response.internalServerError(
+          body: jsonEncode({'error': publicError(e, 'Error creating entry')}),
+          headers: _jsonHeaders);
     }
   });
 
   router.put('/<id>', (Request request, String id) async {
     final userId = _extractUserId(request);
     if (userId == null) {
-      return Response(401, body: jsonEncode({'error': 'Unauthorized'}), headers: _jsonHeaders);
+      return Response(401,
+          body: jsonEncode({'error': 'Unauthorized'}), headers: _jsonHeaders);
     }
     try {
-      final data = jsonDecode(await request.readAsString()) as Map<String, dynamic>;
-      final startDateStr = dateToIsoDate(data['start_date'] ?? data['startDate']);
-      final nextDueStr = dateToIsoDate(data['next_due_date'] ?? data['nextDueDate']);
+      final data =
+          jsonDecode(await request.readAsString()) as Map<String, dynamic>;
+      final startDateStr =
+          dateToIsoDate(data['start_date'] ?? data['startDate']);
+      final nextDueStr =
+          dateToIsoDate(data['next_due_date'] ?? data['nextDueDate']);
       final results = await pool.execute(
-        Sql.named('UPDATE health_entries SET name = @name, type = @type, dosage = @dosage, frequency = @frequency, frequency_days = @frequency_days, frequency_interval = @frequency_interval, start_date = @start_date, next_due_date = @next_due_date, notes = @notes, health_issue_id = @health_issue_id, remind_days_before = @remind_days_before, status = @status, updated_at = NOW() WHERE id = @id AND user_id = @userId RETURNING *'),
+        Sql.named(
+            'UPDATE health_entries SET name = @name, type = @type, dosage = @dosage, frequency = @frequency, frequency_days = @frequency_days, frequency_interval = @frequency_interval, start_date = @start_date, next_due_date = @next_due_date, notes = @notes, health_issue_id = @health_issue_id, remind_days_before = @remind_days_before, status = @status, updated_at = NOW() WHERE id = @id AND user_id = @userId RETURNING *'),
         parameters: {
           'id': id,
           'userId': userId,
@@ -223,106 +262,134 @@ Router healthRoutes(Pool pool) {
           'dosage': data['dosage'] ?? '',
           'frequency': data['frequency'] ?? 'once',
           'frequency_days': data['frequency_days'] ?? data['frequencyDays'],
-          'frequency_interval': data['frequency_interval'] ?? data['frequencyInterval'] ?? 1,
+          'frequency_interval':
+              data['frequency_interval'] ?? data['frequencyInterval'] ?? 1,
           'start_date': startDateStr,
           'next_due_date': nextDueStr,
           'notes': data['notes'] ?? '',
           'health_issue_id': data['health_issue_id'] ?? data['healthIssueId'],
-          'remind_days_before': data['remind_days_before'] ?? data['remindDaysBefore'] ?? 1,
+          'remind_days_before':
+              data['remind_days_before'] ?? data['remindDaysBefore'] ?? 1,
           'status': data['status'] ?? 'active',
         },
       );
       if (results.isEmpty) {
-        return Response.notFound(jsonEncode({'error': 'Entry not found'}), headers: _jsonHeaders);
+        return Response.notFound(jsonEncode({'error': 'Entry not found'}),
+            headers: _jsonHeaders);
       }
-      return Response.ok(jsonEncode(_healthEntryToMap(results.first)), headers: _jsonHeaders);
+      return Response.ok(jsonEncode(_healthEntryToMap(results.first)),
+          headers: _jsonHeaders);
     } catch (e) {
-      return Response.internalServerError(body: jsonEncode({'error': publicError(e, 'Error updating entry')}), headers: _jsonHeaders);
+      return Response.internalServerError(
+          body: jsonEncode({'error': publicError(e, 'Error updating entry')}),
+          headers: _jsonHeaders);
     }
   });
 
   router.delete('/<id>', (Request request, String id) async {
     final userId = _extractUserId(request);
     if (userId == null) {
-      return Response(401, body: jsonEncode({'error': 'Unauthorized'}), headers: _jsonHeaders);
+      return Response(401,
+          body: jsonEncode({'error': 'Unauthorized'}), headers: _jsonHeaders);
     }
     try {
       await pool.execute(
-        Sql.named('DELETE FROM health_entries WHERE id = @id AND user_id = @userId'),
+        Sql.named(
+            'DELETE FROM health_entries WHERE id = @id AND user_id = @userId'),
         parameters: {'id': id, 'userId': userId},
       );
       return Response.ok(jsonEncode({'deleted': true}), headers: _jsonHeaders);
     } catch (e) {
-      return Response.internalServerError(body: jsonEncode({'error': publicError(e)}), headers: _jsonHeaders);
+      return Response.internalServerError(
+          body: jsonEncode({'error': publicError(e)}), headers: _jsonHeaders);
     }
   });
 
   router.post('/<id>/mark-taken', (Request request, String id) async {
     final userId = _extractUserId(request);
     if (userId == null) {
-      return Response(401, body: jsonEncode({'error': 'Unauthorized'}), headers: _jsonHeaders);
+      return Response(401,
+          body: jsonEncode({'error': 'Unauthorized'}), headers: _jsonHeaders);
     }
     try {
       final existing = await pool.execute(
-        Sql.named('SELECT he.* FROM health_entries he WHERE he.id = @id AND he.user_id = @userId'),
+        Sql.named(
+            'SELECT he.* FROM health_entries he WHERE he.id = @id AND he.user_id = @userId'),
         parameters: {'id': id, 'userId': userId},
       );
       if (existing.isEmpty) {
-        return Response.notFound(jsonEncode({'error': 'Entry not found'}), headers: _jsonHeaders);
+        return Response.notFound(jsonEncode({'error': 'Entry not found'}),
+            headers: _jsonHeaders);
       }
-      final body = jsonDecode(await request.readAsString()) as Map<String, dynamic>;
+      final body =
+          jsonDecode(await request.readAsString()) as Map<String, dynamic>;
       final row = existing.first.toColumnMap();
-      final completedOnIso = dateToIsoDate(body['completed_on'] ?? body['completedOn'])
-          ?? todayCalendarIso();
+      final completedOnIso =
+          dateToIsoDate(body['completed_on'] ?? body['completedOn']) ??
+              todayCalendarIso();
       final freq = (row['frequency'] ?? 'once').toString();
-      final newDueDate = freq == 'once' ? null : _nextOccurrence(row, completedOnIso);
+      final newDueDate =
+          freq == 'once' ? null : _nextOccurrence(row, completedOnIso);
       final results = await pool.execute(
-        Sql.named('UPDATE health_entries SET status = \'completed\', completed_at = NOW(), next_due_date = @next_due, updated_at = NOW() WHERE id = @id AND user_id = @userId RETURNING *'),
+        Sql.named(
+            'UPDATE health_entries SET status = \'completed\', completed_at = NOW(), next_due_date = @next_due, updated_at = NOW() WHERE id = @id AND user_id = @userId RETURNING *'),
         parameters: {'id': id, 'userId': userId, 'next_due': newDueDate},
       );
       if (results.isEmpty) {
-        return Response.notFound(jsonEncode({'error': 'Entry not found'}), headers: _jsonHeaders);
+        return Response.notFound(jsonEncode({'error': 'Entry not found'}),
+            headers: _jsonHeaders);
       }
       await pool.execute(
-        Sql.named('INSERT INTO health_history (id, health_entry_id, status, notes) VALUES (@id, @entry_id, \'completed\', \'Marked as taken\')'),
+        Sql.named(
+            'INSERT INTO health_history (id, health_entry_id, status, notes) VALUES (@id, @entry_id, \'completed\', \'Marked as taken\')'),
         parameters: {'id': _uuid.v4(), 'entry_id': id},
       );
-      return Response.ok(jsonEncode(_healthEntryToMap(results.first)), headers: _jsonHeaders);
+      return Response.ok(jsonEncode(_healthEntryToMap(results.first)),
+          headers: _jsonHeaders);
     } catch (e) {
-      return Response.internalServerError(body: jsonEncode({'error': publicError(e)}), headers: _jsonHeaders);
+      return Response.internalServerError(
+          body: jsonEncode({'error': publicError(e)}), headers: _jsonHeaders);
     }
   });
 
   router.post('/<id>/undo-complete', (Request request, String id) async {
     final userId = _extractUserId(request);
     if (userId == null) {
-      return Response(401, body: jsonEncode({'error': 'Unauthorized'}), headers: _jsonHeaders);
+      return Response(401,
+          body: jsonEncode({'error': 'Unauthorized'}), headers: _jsonHeaders);
     }
     try {
       final results = await pool.execute(
-        Sql.named('UPDATE health_entries SET status = \'active\', completed_at = NULL, next_due_date = CASE WHEN frequency = \'once\' THEN start_date ELSE next_due_date END, updated_at = NOW() WHERE id = @id AND user_id = @userId RETURNING *'),
+        Sql.named(
+            'UPDATE health_entries SET status = \'active\', completed_at = NULL, next_due_date = CASE WHEN frequency = \'once\' THEN start_date ELSE next_due_date END, updated_at = NOW() WHERE id = @id AND user_id = @userId RETURNING *'),
         parameters: {'id': id, 'userId': userId},
       );
       if (results.isEmpty) {
-        return Response.notFound(jsonEncode({'error': 'Entry not found'}), headers: _jsonHeaders);
+        return Response.notFound(jsonEncode({'error': 'Entry not found'}),
+            headers: _jsonHeaders);
       }
-      return Response.ok(jsonEncode(_healthEntryToMap(results.first)), headers: _jsonHeaders);
+      return Response.ok(jsonEncode(_healthEntryToMap(results.first)),
+          headers: _jsonHeaders);
     } catch (e) {
-      return Response.internalServerError(body: jsonEncode({'error': publicError(e)}), headers: _jsonHeaders);
+      return Response.internalServerError(
+          body: jsonEncode({'error': publicError(e)}), headers: _jsonHeaders);
     }
   });
 
   router.get('/<id>/history', (Request request, String id) async {
     final userId = _extractUserId(request);
     if (userId == null) {
-      return Response(401, body: jsonEncode({'error': 'Unauthorized'}), headers: _jsonHeaders);
+      return Response(401,
+          body: jsonEncode({'error': 'Unauthorized'}), headers: _jsonHeaders);
     }
     try {
       if (!await _userOwnsEntry(pool, id, userId)) {
-        return Response.notFound(jsonEncode({'error': 'Entry not found'}), headers: _jsonHeaders);
+        return Response.notFound(jsonEncode({'error': 'Entry not found'}),
+            headers: _jsonHeaders);
       }
       final results = await pool.execute(
-        Sql.named('SELECT * FROM health_history WHERE health_entry_id = @id ORDER BY changed_at DESC'),
+        Sql.named(
+            'SELECT * FROM health_history WHERE health_entry_id = @id ORDER BY changed_at DESC'),
         parameters: {'id': id},
       );
       final history = results.map((row) {
@@ -337,21 +404,25 @@ Router healthRoutes(Pool pool) {
       }).toList();
       return Response.ok(jsonEncode(history), headers: _jsonHeaders);
     } catch (e) {
-      return Response.internalServerError(body: jsonEncode({'error': publicError(e)}), headers: _jsonHeaders);
+      return Response.internalServerError(
+          body: jsonEncode({'error': publicError(e)}), headers: _jsonHeaders);
     }
   });
 
   router.get('/<id>/photos', (Request request, String id) async {
     final userId = _extractUserId(request);
     if (userId == null) {
-      return Response(401, body: jsonEncode({'error': 'Unauthorized'}), headers: _jsonHeaders);
+      return Response(401,
+          body: jsonEncode({'error': 'Unauthorized'}), headers: _jsonHeaders);
     }
     try {
       if (!await _userOwnsEntry(pool, id, userId)) {
-        return Response.notFound(jsonEncode({'error': 'Entry not found'}), headers: _jsonHeaders);
+        return Response.notFound(jsonEncode({'error': 'Entry not found'}),
+            headers: _jsonHeaders);
       }
       final results = await pool.execute(
-        Sql.named('SELECT * FROM health_event_photos WHERE health_entry_id = @id ORDER BY created_at DESC'),
+        Sql.named(
+            'SELECT * FROM health_event_photos WHERE health_entry_id = @id ORDER BY created_at DESC'),
         parameters: {'id': id},
       );
       final photos = results.map((row) {
@@ -365,26 +436,32 @@ Router healthRoutes(Pool pool) {
       }).toList();
       return Response.ok(jsonEncode(photos), headers: _jsonHeaders);
     } catch (e) {
-      return Response.internalServerError(body: jsonEncode({'error': publicError(e)}), headers: _jsonHeaders);
+      return Response.internalServerError(
+          body: jsonEncode({'error': publicError(e)}), headers: _jsonHeaders);
     }
   });
 
-  router.delete('/<entryId>/photos/<photoId>', (Request request, String entryId, String photoId) async {
+  router.delete('/<entryId>/photos/<photoId>',
+      (Request request, String entryId, String photoId) async {
     final userId = _extractUserId(request);
     if (userId == null) {
-      return Response(401, body: jsonEncode({'error': 'Unauthorized'}), headers: _jsonHeaders);
+      return Response(401,
+          body: jsonEncode({'error': 'Unauthorized'}), headers: _jsonHeaders);
     }
     try {
       if (!await _userOwnsEntry(pool, entryId, userId)) {
-        return Response.notFound(jsonEncode({'error': 'Entry not found'}), headers: _jsonHeaders);
+        return Response.notFound(jsonEncode({'error': 'Entry not found'}),
+            headers: _jsonHeaders);
       }
       await pool.execute(
-        Sql.named('DELETE FROM health_event_photos WHERE id = @id AND health_entry_id = @entryId'),
+        Sql.named(
+            'DELETE FROM health_event_photos WHERE id = @id AND health_entry_id = @entryId'),
         parameters: {'id': photoId, 'entryId': entryId},
       );
       return Response.ok(jsonEncode({'deleted': true}), headers: _jsonHeaders);
     } catch (e) {
-      return Response.internalServerError(body: jsonEncode({'error': publicError(e)}), headers: _jsonHeaders);
+      return Response.internalServerError(
+          body: jsonEncode({'error': publicError(e)}), headers: _jsonHeaders);
     }
   });
 

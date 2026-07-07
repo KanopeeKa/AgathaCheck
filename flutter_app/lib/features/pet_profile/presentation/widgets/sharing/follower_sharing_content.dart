@@ -22,7 +22,9 @@ class FollowerSharingContent extends ConsumerWidget {
       children: [
         Text(
           l.sharedPetFollowerDescription(pet.name),
-          style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+          style: theme.textTheme.bodyMedium?.copyWith(
+            color: theme.colorScheme.onSurfaceVariant,
+          ),
         ),
         const SizedBox(height: 12),
         SizedBox(
@@ -38,7 +40,11 @@ class FollowerSharingContent extends ConsumerWidget {
     );
   }
 
-  void _confirmStopFollowing(BuildContext context, WidgetRef ref, AppLocalizations l) {
+  void _confirmStopFollowing(
+    BuildContext context,
+    WidgetRef ref,
+    AppLocalizations l,
+  ) {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
@@ -60,9 +66,9 @@ class FollowerSharingContent extends ConsumerWidget {
                 if (context.mounted) context.go('/');
               } catch (e) {
                 if (context.mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Error: $e')),
-                  );
+                  ScaffoldMessenger.of(
+                    context,
+                  ).showSnackBar(SnackBar(content: Text('Error: $e')));
                 }
               }
             },

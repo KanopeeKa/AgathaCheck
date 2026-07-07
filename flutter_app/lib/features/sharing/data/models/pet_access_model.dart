@@ -52,7 +52,8 @@ class PetAccessModel extends PetAccess {
           : PetAccessRole.shared,
       invitedBy: json['invited_by']?.toString(),
       shareCode: json['share_code']?.toString(),
-      createdAt: DateTime.tryParse(json['created_at']?.toString() ?? '') ??
+      createdAt:
+          DateTime.tryParse(json['created_at']?.toString() ?? '') ??
           DateTime.now(),
       user: json['user'] != null && json['user'] is Map<String, dynamic>
           ? PetAccessUserModel.fromJson(json['user'] as Map<String, dynamic>)

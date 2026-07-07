@@ -41,11 +41,9 @@ class Organization {
   final DateTime? createdAt;
   final DateTime? updatedAt;
 
-  bool get isSuperUser =>
-      role == 'super_admin' || role == 'super_user';
+  bool get isSuperUser => role == 'super_admin' || role == 'super_user';
 
-  bool get isOrgAdmin =>
-      isSuperUser || role == 'admin';
+  bool get isOrgAdmin => isSuperUser || role == 'admin';
 
   bool get isFoster => role == 'foster';
 
@@ -94,7 +92,9 @@ class Organization {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is Organization && runtimeType == other.runtimeType && id == other.id;
+      other is Organization &&
+          runtimeType == other.runtimeType &&
+          id == other.id;
 
   @override
   int get hashCode => id.hashCode;

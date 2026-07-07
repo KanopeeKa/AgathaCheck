@@ -9,8 +9,9 @@ import '../../domain/entities/app_notification.dart';
 import '../../domain/entities/notification_preferences.dart';
 import '../../domain/repositories/notification_repository.dart';
 
-final notificationDataSourceProvider =
-    Provider<NotificationRemoteDataSource>((ref) {
+final notificationDataSourceProvider = Provider<NotificationRemoteDataSource>((
+  ref,
+) {
   final baseUrl = ref.watch(apiBaseUrlProvider);
   return NotificationRemoteDataSourceImpl(
     baseUrl: baseUrl,
@@ -18,8 +19,10 @@ final notificationDataSourceProvider =
   );
 });
 
-final notificationsProvider = AsyncNotifierProvider<NotificationsNotifier,
-    List<AppNotification>>(NotificationsNotifier.new);
+final notificationsProvider =
+    AsyncNotifierProvider<NotificationsNotifier, List<AppNotification>>(
+      NotificationsNotifier.new,
+    );
 
 class NotificationsNotifier extends AsyncNotifier<List<AppNotification>> {
   @override
@@ -35,10 +38,7 @@ class NotificationsNotifier extends AsyncNotifier<List<AppNotification>> {
     if (auth.accessToken == null) {
       throw Exception('Not authenticated');
     }
-    return NotificationRepositoryImpl(
-      dataSource,
-      () => auth.accessToken!,
-    );
+    return NotificationRepositoryImpl(dataSource, () => auth.accessToken!);
   }
 
   Future<void> refresh() async {
@@ -81,9 +81,11 @@ final unreadNotificationCountProvider = Provider<int>((ref) {
       0;
 });
 
-final notificationPreferencesProvider = AsyncNotifierProvider<
-    NotificationPreferencesNotifier,
-    NotificationPreferences>(NotificationPreferencesNotifier.new);
+final notificationPreferencesProvider =
+    AsyncNotifierProvider<
+      NotificationPreferencesNotifier,
+      NotificationPreferences
+    >(NotificationPreferencesNotifier.new);
 
 class NotificationPreferencesNotifier
     extends AsyncNotifier<NotificationPreferences> {
@@ -102,16 +104,11 @@ class NotificationPreferencesNotifier
     if (auth.accessToken == null) {
       throw Exception('Not authenticated');
     }
-    return NotificationRepositoryImpl(
-      dataSource,
-      () => auth.accessToken!,
-    );
+    return NotificationRepositoryImpl(dataSource, () => auth.accessToken!);
   }
 
   Future<void> updatePreferences(NotificationPreferences prefs) async {
     state = const AsyncValue.loading();
-    state = await AsyncValue.guard(
-      () => _getRepo().updatePreferences(prefs),
-    );
+    state = await AsyncValue.guard(() => _getRepo().updatePreferences(prefs));
   }
 }

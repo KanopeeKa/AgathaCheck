@@ -33,7 +33,7 @@ cd flutter_app && dart run build_runner build --delete-conflicting-outputs
 cd flutter_app && flutter analyze --no-fatal-warnings --no-fatal-infos
 cd flutter_app && flutter test --concurrency=1 --exclude-tags=integration
 
-# Optional: format (CI warns for one sprint, will enforce later)
+# Format (required — CI enforces)
 dart format flutter_app/lib flutter_app/test server/lib
 ```
 
@@ -57,7 +57,7 @@ Use the PR template checklist. In summary:
 - `dart analyze lib` on `server/`
 - `npm audit --audit-level=high` (server + e2e)
 - CodeQL (JavaScript)
-- `dart format` check (**warn only** for Sprint 1 — see `docs/refactoring-log.md`)
+- `dart format --set-exit-if-changed` (blocks merge)
 - Coverage artifacts (report-only, no threshold yet)
 
 ## E2E and UAT

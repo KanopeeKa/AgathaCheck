@@ -9,7 +9,9 @@ class OrganizationMembersRemote {
   final OrganizationRemoteContext _ctx;
 
   Future<List<OrganizationMemberModel>> getMembers(
-      String orgId, String token) async {
+    String orgId,
+    String token,
+  ) async {
     final response = await _ctx.client.get(
       Uri.parse('${_ctx.baseUrl}/api/organizations/$orgId/members'),
       headers: _ctx.headers(token),
@@ -24,7 +26,11 @@ class OrganizationMembersRemote {
   }
 
   Future<Map<String, dynamic>> inviteByEmail(
-      String orgId, String email, String role, String token) async {
+    String orgId,
+    String email,
+    String role,
+    String token,
+  ) async {
     final response = await _ctx.client.post(
       Uri.parse('${_ctx.baseUrl}/api/organizations/$orgId/invite'),
       headers: _ctx.headers(token),
@@ -38,9 +44,15 @@ class OrganizationMembersRemote {
   }
 
   Future<void> updateMemberRole(
-      String orgId, String userId, String role, String token) async {
+    String orgId,
+    String userId,
+    String role,
+    String token,
+  ) async {
     final response = await _ctx.client.put(
-      Uri.parse('${_ctx.baseUrl}/api/organizations/$orgId/members/$userId/role'),
+      Uri.parse(
+        '${_ctx.baseUrl}/api/organizations/$orgId/members/$userId/role',
+      ),
       headers: _ctx.headers(token),
       body: json.encode({'role': role}),
     );

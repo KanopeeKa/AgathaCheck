@@ -50,24 +50,19 @@ class _OrgsNotifier extends OrganizationListNotifier {
   ];
 }
 
-Widget _wrapAddForm({
-  RecordingPetRepository? repo,
-  String? initialOrgId,
-}) {
+Widget _wrapAddForm({RecordingPetRepository? repo, String? initialOrgId}) {
   final repository = repo ?? RecordingPetRepository();
   final router = GoRouter(
     initialLocation: '/',
     routes: [
       GoRoute(
         path: '/',
-        builder: (context, state) =>
-            PetFormScreen(initialOrgId: initialOrgId),
+        builder: (context, state) => PetFormScreen(initialOrgId: initialOrgId),
       ),
       GoRoute(
         path: '/organizations/:orgId',
-        builder: (context, state) => Scaffold(
-          body: Text('Org ${state.pathParameters['orgId']}'),
-        ),
+        builder: (context, state) =>
+            Scaffold(body: Text('Org ${state.pathParameters['orgId']}')),
       ),
     ],
   );
@@ -151,8 +146,9 @@ void main() {
     expect(find.text('Dr Smith'), findsOneWidget);
   });
 
-  testWidgets('creates an organisation pet when initialOrgId is provided',
-      (tester) async {
+  testWidgets('creates an organisation pet when initialOrgId is provided', (
+    tester,
+  ) async {
     final repo = RecordingPetRepository();
 
     await tester.pumpWidget(_wrapAddForm(repo: repo, initialOrgId: 'org-1'));

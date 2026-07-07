@@ -89,8 +89,7 @@ void main() {
 
   group('getAllPets', () {
     test('should return list of pets from data source', () async {
-      when(mockDataSource.getAllPets())
-          .thenAnswer((_) async => [testModel]);
+      when(mockDataSource.getAllPets()).thenAnswer((_) async => [testModel]);
 
       final result = await repository.getAllPets();
 
@@ -110,8 +109,9 @@ void main() {
 
   group('getPetById', () {
     test('should return pet when found', () async {
-      when(mockDataSource.getPetById('test-id'))
-          .thenAnswer((_) async => testModel);
+      when(
+        mockDataSource.getPetById('test-id'),
+      ).thenAnswer((_) async => testModel);
 
       final result = await repository.getPetById('test-id');
 
@@ -120,8 +120,7 @@ void main() {
     });
 
     test('should return null when not found', () async {
-      when(mockDataSource.getPetById('unknown'))
-          .thenAnswer((_) async => null);
+      when(mockDataSource.getPetById('unknown')).thenAnswer((_) async => null);
 
       final result = await repository.getPetById('unknown');
 
@@ -153,8 +152,9 @@ void main() {
 
   group('deletePet', () {
     test('should delete pet from data source', () async {
-      when(mockDataSource.deletePet('test-id'))
-          .thenAnswer((_) async => Future.value());
+      when(
+        mockDataSource.deletePet('test-id'),
+      ).thenAnswer((_) async => Future.value());
 
       await repository.deletePet('test-id');
 
@@ -172,28 +172,42 @@ void main() {
     });
 
     test(
-        'getAllPets does NOT re-create local-only pets on the server and prunes '
-        'them locally', () async {
-      // A pet exists locally but the server no longer has it (e.g. deleted
-      // directly in the DB). It must not resurrect.
-      await local.addPet(testModel);
-      final remote = FakeRemoteDataSource(remotePets: const []);
-      final repo = PetRepositoryImpl(local,
-          remoteDataSource: remote, token: 'tok');
+      'getAllPets does NOT re-create local-only pets on the server and prunes '
+      'them locally',
+      () async {
+        // A pet exists locally but the server no longer has it (e.g. deleted
+        // directly in the DB). It must not resurrect.
+        await local.addPet(testModel);
+        final remote = FakeRemoteDataSource(remotePets: const []);
+        final repo = PetRepositoryImpl(
+          local,
+          remoteDataSource: remote,
+          token: 'tok',
+        );
 
-      final result = await repo.getAllPets();
+        final result = await repo.getAllPets();
 
-      expect(result, isEmpty, reason: 'remote is authoritative');
-      expect(remote.createdIds, isEmpty,
-          reason: 'must never re-push the deleted pet');
-      expect(await local.getAllPets(), isEmpty,
-          reason: 'stale local cache entry pruned');
-    });
+        expect(result, isEmpty, reason: 'remote is authoritative');
+        expect(
+          remote.createdIds,
+          isEmpty,
+          reason: 'must never re-push the deleted pet',
+        );
+        expect(
+          await local.getAllPets(),
+          isEmpty,
+          reason: 'stale local cache entry pruned',
+        );
+      },
+    );
 
     test('getAllPets keeps pets that still exist on the server', () async {
       final remote = FakeRemoteDataSource(remotePets: [testModel]);
-      final repo = PetRepositoryImpl(local,
-          remoteDataSource: remote, token: 'tok');
+      final repo = PetRepositoryImpl(
+        local,
+        remoteDataSource: remote,
+        token: 'tok',
+      );
 
       final result = await repo.getAllPets();
 
@@ -202,41 +216,65 @@ void main() {
       expect(remote.createdIds, isEmpty);
     });
 
-    test('addPet rolls back local write and rethrows when the server fails',
-        () async {
-      final remote = FakeRemoteDataSource(failCreate: true);
-      final repo = PetRepositoryImpl(local,
-          remoteDataSource: remote, token: 'tok');
+    test(
+      'addPet rolls back local write and rethrows when the server fails',
+      () async {
+        final remote = FakeRemoteDataSource(failCreate: true);
+        final repo = PetRepositoryImpl(
+          local,
+          remoteDataSource: remote,
+          token: 'tok',
+        );
 
-      await expectLater(repo.addPet(testPet), throwsA(isA<PetRemoteException>()));
-      expect(await local.getAllPets(), isEmpty,
-          reason: 'failed create must not linger in local cache');
-    });
+        await expectLater(
+          repo.addPet(testPet),
+          throwsA(isA<PetRemoteException>()),
+        );
+        expect(
+          await local.getAllPets(),
+          isEmpty,
+          reason: 'failed create must not linger in local cache',
+        );
+      },
+    );
 
     test('updatePet rethrows when the server rejects the update', () async {
       await local.addPet(testModel);
       final remote = FakeRemoteDataSource(failUpdate: true);
-      final repo = PetRepositoryImpl(local,
-          remoteDataSource: remote, token: 'tok');
+      final repo = PetRepositoryImpl(
+        local,
+        remoteDataSource: remote,
+        token: 'tok',
+      );
 
       await expectLater(
-          repo.updatePet(testPet), throwsA(isA<PetRemoteException>()));
+        repo.updatePet(testPet),
+        throwsA(isA<PetRemoteException>()),
+      );
     });
 
     test('deletePet rethrows when the server rejects the delete', () async {
       await local.addPet(testModel);
       final remote = FakeRemoteDataSource(failDelete: true);
-      final repo = PetRepositoryImpl(local,
-          remoteDataSource: remote, token: 'tok');
+      final repo = PetRepositoryImpl(
+        local,
+        remoteDataSource: remote,
+        token: 'tok',
+      );
 
       await expectLater(
-          repo.deletePet('test-id'), throwsA(isA<PetRemoteException>()));
+        repo.deletePet('test-id'),
+        throwsA(isA<PetRemoteException>()),
+      );
     });
 
     test('addPet persists locally when the server accepts it', () async {
       final remote = FakeRemoteDataSource();
-      final repo = PetRepositoryImpl(local,
-          remoteDataSource: remote, token: 'tok');
+      final repo = PetRepositoryImpl(
+        local,
+        remoteDataSource: remote,
+        token: 'tok',
+      );
 
       final result = await repo.addPet(testPet);
 
@@ -245,25 +283,39 @@ void main() {
       expect((await local.getAllPets()).single.id, 'test-id');
     });
 
-    test('getAllPets preserves a local data: photo for a pet kept on the server',
-        () async {
-      const dataPhoto = 'data:image/png;base64,AAAA';
-      await local.addPet(PetModel(
-        id: 'test-id',
-        name: 'Buddy',
-        species: 'Dog',
-        photoPath: dataPhoto,
-      ));
-      // The server returns the same pet but without the inline photo.
-      final remotePet = PetModel(id: 'test-id', name: 'Buddy', species: 'Dog');
-      final remote = FakeRemoteDataSource(remotePets: [remotePet]);
-      final repo = PetRepositoryImpl(local,
-          remoteDataSource: remote, token: 'tok');
+    test(
+      'getAllPets preserves a local data: photo for a pet kept on the server',
+      () async {
+        const dataPhoto = 'data:image/png;base64,AAAA';
+        await local.addPet(
+          PetModel(
+            id: 'test-id',
+            name: 'Buddy',
+            species: 'Dog',
+            photoPath: dataPhoto,
+          ),
+        );
+        // The server returns the same pet but without the inline photo.
+        final remotePet = PetModel(
+          id: 'test-id',
+          name: 'Buddy',
+          species: 'Dog',
+        );
+        final remote = FakeRemoteDataSource(remotePets: [remotePet]);
+        final repo = PetRepositoryImpl(
+          local,
+          remoteDataSource: remote,
+          token: 'tok',
+        );
 
-      final result = await repo.getAllPets();
+        final result = await repo.getAllPets();
 
-      expect(result.single.photoPath, dataPhoto,
-          reason: 'inline local photo must survive the remote merge');
-    });
+        expect(
+          result.single.photoPath,
+          dataPhoto,
+          reason: 'inline local photo must survive the remote merge',
+        );
+      },
+    );
   });
 }

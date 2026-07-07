@@ -51,14 +51,11 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
             icon: const Icon(Icons.done_all, size: 18),
             label: Text(l.markAllRead),
             onPressed: () async {
-              await ref
-                  .read(notificationsProvider.notifier)
-                  .markAllAsRead();
+              await ref.read(notificationsProvider.notifier).markAllAsRead();
               if (context.mounted) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                      content: Text(l.markAllRead)),
-                );
+                ScaffoldMessenger.of(
+                  context,
+                ).showSnackBar(SnackBar(content: Text(l.markAllRead)));
               }
             },
           ),
@@ -70,8 +67,11 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(Icons.error_outline,
-                  size: 48, color: theme.colorScheme.error),
+              Icon(
+                Icons.error_outline,
+                size: 48,
+                color: theme.colorScheme.error,
+              ),
               const SizedBox(height: 16),
               Text('Failed to load notifications: $error'),
               const SizedBox(height: 8),
@@ -95,11 +95,13 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Icon(Icons.notifications_none,
-                      size: 80, color: theme.colorScheme.outline),
+                  Icon(
+                    Icons.notifications_none,
+                    size: 80,
+                    color: theme.colorScheme.outline,
+                  ),
                   const SizedBox(height: 16),
-                  Text(l.noNotifications,
-                      style: theme.textTheme.headlineSmall),
+                  Text(l.noNotifications, style: theme.textTheme.headlineSmall),
                   const SizedBox(height: 8),
                   Text(
                     'You\'re all caught up! Notifications will appear\nwhen health entries are due.',
@@ -116,8 +118,7 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
           final grouped = _groupByDate(context, notifications);
 
           return RefreshIndicator(
-            onRefresh: () =>
-                ref.read(notificationsProvider.notifier).refresh(),
+            onRefresh: () => ref.read(notificationsProvider.notifier).refresh(),
             child: ListView.builder(
               padding: const EdgeInsets.symmetric(vertical: 8),
               itemCount: grouped.length,
@@ -148,7 +149,8 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
                           if (!context.mounted) return;
                           if (n.petId != null && n.petId!.isNotEmpty) {
                             context.go('/pet/${n.petId}');
-                          } else if (n.organizationId != null && n.organizationId!.isNotEmpty) {
+                          } else if (n.organizationId != null &&
+                              n.organizationId!.isNotEmpty) {
                             context.go('/organizations/${n.organizationId}');
                           }
                         },
@@ -164,7 +166,10 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
     );
   }
 
-  List<_NotificationGroup> _groupByDate(BuildContext context, List<AppNotification> notifications) {
+  List<_NotificationGroup> _groupByDate(
+    BuildContext context,
+    List<AppNotification> notifications,
+  ) {
     final l = AppLocalizations.of(context)!;
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
@@ -173,7 +178,11 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
     final Map<String, List<AppNotification>> groups = {};
 
     for (final n in notifications) {
-      final date = DateTime(n.createdAt.year, n.createdAt.month, n.createdAt.day);
+      final date = DateTime(
+        n.createdAt.year,
+        n.createdAt.month,
+        n.createdAt.day,
+      );
       String label;
       if (date == today) {
         label = l.today;
@@ -199,10 +208,7 @@ class _NotificationGroup {
 }
 
 class _NotificationTile extends ConsumerWidget {
-  const _NotificationTile({
-    required this.notification,
-    required this.onTap,
-  });
+  const _NotificationTile({required this.notification, required this.onTap});
 
   final AppNotification notification;
   final VoidCallback onTap;
@@ -215,7 +221,9 @@ class _NotificationTile extends ConsumerWidget {
     IconData icon;
     Color iconColor;
 
-    final hasOrg = notification.organizationId != null && notification.organizationId!.isNotEmpty;
+    final hasOrg =
+        notification.organizationId != null &&
+        notification.organizationId!.isNotEmpty;
     final hasPet = notification.petId != null && notification.petId!.isNotEmpty;
     final isOrgOnly = hasOrg && !hasPet;
 
@@ -248,12 +256,15 @@ class _NotificationTile extends ConsumerWidget {
         : null;
     final petColor = pet?.colorValue != null ? Color(pet!.colorValue!) : null;
 
-    final tileColor = isUnread ? theme.colorScheme.primaryContainer.withAlpha(40) : null;
+    final tileColor = isUnread
+        ? theme.colorScheme.primaryContainer.withAlpha(40)
+        : null;
     final stripColor = petColor ?? theme.colorScheme.outlineVariant;
 
     return MergeSemantics(
       child: Semantics(
-        label: '${notification.type.label} notification: ${notification.title}, ${_formatTime(notification.createdAt)}${isUnread ? ', unread' : ''}${notification.petName != null ? ', pet: ${notification.petName}' : ''}',
+        label:
+            '${notification.type.label} notification: ${notification.title}, ${_formatTime(notification.createdAt)}${isUnread ? ', unread' : ''}${notification.petName != null ? ', pet: ${notification.petName}' : ''}',
         child: InkWell(
           onTap: onTap,
           child: Container(
@@ -274,7 +285,10 @@ class _NotificationTile extends ConsumerWidget {
                   ),
                   Expanded(
                     child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 10,
+                      ),
                       child: Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -293,20 +307,29 @@ class _NotificationTile extends ConsumerWidget {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                if (notification.petName != null && notification.petName!.isNotEmpty)
+                                if (notification.petName != null &&
+                                    notification.petName!.isNotEmpty)
                                   Padding(
                                     padding: const EdgeInsets.only(bottom: 2),
                                     child: Row(
                                       children: [
-                                        Icon(Icons.pets, size: 13,
-                                            color: petColor ?? theme.colorScheme.primary),
+                                        Icon(
+                                          Icons.pets,
+                                          size: 13,
+                                          color:
+                                              petColor ??
+                                              theme.colorScheme.primary,
+                                        ),
                                         const SizedBox(width: 4),
                                         Text(
                                           notification.petName!,
-                                          style: theme.textTheme.labelMedium?.copyWith(
-                                            color: petColor ?? theme.colorScheme.primary,
-                                            fontWeight: FontWeight.w600,
-                                          ),
+                                          style: theme.textTheme.labelMedium
+                                              ?.copyWith(
+                                                color:
+                                                    petColor ??
+                                                    theme.colorScheme.primary,
+                                                fontWeight: FontWeight.w600,
+                                              ),
                                         ),
                                       ],
                                     ),
@@ -314,7 +337,9 @@ class _NotificationTile extends ConsumerWidget {
                                 Text(
                                   notification.title,
                                   style: theme.textTheme.bodyMedium?.copyWith(
-                                    fontWeight: isUnread ? FontWeight.bold : FontWeight.normal,
+                                    fontWeight: isUnread
+                                        ? FontWeight.bold
+                                        : FontWeight.normal,
                                   ),
                                 ),
                                 const SizedBox(height: 2),

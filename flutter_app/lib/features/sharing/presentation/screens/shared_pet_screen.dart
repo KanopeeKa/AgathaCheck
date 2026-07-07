@@ -56,8 +56,8 @@ class _SharedPetScreenState extends ConsumerState<SharedPetScreen> {
         final data = json.decode(response.body);
         setState(() {
           _petData = data['pet'] as Map<String, dynamic>?;
-          _healthEntries = (data['health_entries'] as List?)
-                  ?.cast<Map<String, dynamic>>() ??
+          _healthEntries =
+              (data['health_entries'] as List?)?.cast<Map<String, dynamic>>() ??
               [];
           _vetData = data['vet'] as Map<String, dynamic>?;
           _ownerData = data['owner'] as Map<String, dynamic>?;
@@ -84,9 +84,7 @@ class _SharedPetScreenState extends ConsumerState<SharedPetScreen> {
     final l = AppLocalizations.of(context)!;
 
     if (_loading) {
-      return const Scaffold(
-        body: Center(child: CircularProgressIndicator()),
-      );
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
 
     if (_error != null || _petData == null) {
@@ -98,8 +96,10 @@ class _SharedPetScreenState extends ConsumerState<SharedPetScreen> {
             children: [
               Icon(Icons.link_off, size: 64, color: colorScheme.outline),
               const SizedBox(height: 16),
-              Text(_error ?? 'Something went wrong',
-                  style: theme.textTheme.titleMedium),
+              Text(
+                _error ?? 'Something went wrong',
+                style: theme.textTheme.titleMedium,
+              ),
               const SizedBox(height: 24),
               FilledButton.icon(
                 onPressed: () => context.go('/'),
@@ -145,12 +145,18 @@ class _SharedPetScreenState extends ConsumerState<SharedPetScreen> {
             padding: const EdgeInsets.only(right: 8),
             child: ExcludeSemantics(
               child: Chip(
-                avatar: Icon(Icons.visibility, size: 16,
-                    color: colorScheme.onSecondaryContainer),
-                label: Text(l.viewOnly,
-                    style: TextStyle(
-                        fontSize: 12,
-                        color: colorScheme.onSecondaryContainer)),
+                avatar: Icon(
+                  Icons.visibility,
+                  size: 16,
+                  color: colorScheme.onSecondaryContainer,
+                ),
+                label: Text(
+                  l.viewOnly,
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: colorScheme.onSecondaryContainer,
+                  ),
+                ),
                 backgroundColor: colorScheme.secondaryContainer,
                 side: BorderSide.none,
               ),
@@ -184,20 +190,26 @@ class _SharedPetScreenState extends ConsumerState<SharedPetScreen> {
               setState(() => _accepting = true);
               try {
                 final repo = ref.read(sharingRepositoryProvider);
-                final token = await ref.read(authProvider.notifier).getValidAccessToken();
+                final token = await ref
+                    .read(authProvider.notifier)
+                    .getValidAccessToken();
                 if (token == null) return;
                 await repo.acceptShare(widget.shareCode, token);
                 ref.invalidate(allPetsIncludingOrgProvider);
                 await ref.read(allPetsIncludingOrgProvider.future);
                 if (!mounted) return;
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text(l.shareAccepted)),
-                );
+                ScaffoldMessenger.of(
+                  context,
+                ).showSnackBar(SnackBar(content: Text(l.shareAccepted)));
                 context.go('/');
               } catch (e) {
                 if (!mounted) return;
                 ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('Error: \\${e.toString().replaceFirst("Exception: ", "")}')),
+                  SnackBar(
+                    content: Text(
+                      'Error: \\${e.toString().replaceFirst("Exception: ", "")}',
+                    ),
+                  ),
                 );
               } finally {
                 if (mounted) setState(() => _accepting = false);
@@ -259,27 +271,30 @@ class _SharedPetScreenState extends ConsumerState<SharedPetScreen> {
                 child: Center(
                   child: Column(
                     children: [
-                      Icon(Icons.medical_services_outlined,
-                          size: 48, color: colorScheme.outline),
+                      Icon(
+                        Icons.medical_services_outlined,
+                        size: 48,
+                        color: colorScheme.outline,
+                      ),
                       const SizedBox(height: 12),
-                      Text(l.noEntriesYet,
-                          style: theme.textTheme.bodyLarge),
+                      Text(l.noEntriesYet, style: theme.textTheme.bodyLarge),
                     ],
                   ),
                 ),
               ),
             )
           else
-            ..._healthEntries.map((e) => SharedPetHealthEntryCard(
-                  entry: e,
-                  theme: theme,
-                  colorScheme: colorScheme,
-                )),
+            ..._healthEntries.map(
+              (e) => SharedPetHealthEntryCard(
+                entry: e,
+                theme: theme,
+                colorScheme: colorScheme,
+              ),
+            ),
         ],
       ),
     );
   }
-
 
   Widget _buildPhoto(String? photoPath, ColorScheme colorScheme) {
     if (photoPath != null && photoPath.isNotEmpty) {
@@ -291,8 +306,11 @@ class _SharedPetScreenState extends ConsumerState<SharedPetScreen> {
     return Container(
       color: colorScheme.primaryContainer,
       child: Center(
-        child: Icon(Icons.pets, size: 56,
-            color: colorScheme.onPrimaryContainer.withAlpha(100)),
+        child: Icon(
+          Icons.pets,
+          size: 56,
+          color: colorScheme.onPrimaryContainer.withAlpha(100),
+        ),
       ),
     );
   }
@@ -309,14 +327,16 @@ class _SharedPetScreenState extends ConsumerState<SharedPetScreen> {
         children: [
           Icon(icon, size: 16, color: colorScheme.onSecondaryContainer),
           const SizedBox(width: 4),
-          Text(label,
-              style: TextStyle(
-                  fontSize: 13,
-                  color: colorScheme.onSecondaryContainer,
-                  fontWeight: FontWeight.w500)),
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 13,
+              color: colorScheme.onSecondaryContainer,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
         ],
       ),
     );
   }
-
 }

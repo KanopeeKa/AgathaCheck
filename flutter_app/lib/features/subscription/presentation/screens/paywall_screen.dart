@@ -33,7 +33,8 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
           _offerings = offerings;
           _loading = false;
           if (offerings.isEmpty) {
-            _error = 'No subscription plans are available at the moment. Please try again later.';
+            _error =
+                'No subscription plans are available at the moment. Please try again later.';
           }
         });
       }
@@ -68,9 +69,9 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
     } catch (e) {
       if (mounted) {
         setState(() => _purchasing = false);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Purchase failed: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Purchase failed: $e')));
       }
     }
   }
@@ -81,9 +82,9 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
       await ref.read(subscriptionStatusProvider.notifier).restorePurchases();
       if (mounted) {
         final l = AppLocalizations.of(context)!;
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l.purchasesRestored)),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(l.purchasesRestored)));
       }
     } catch (e) {
       if (mounted) {
@@ -167,15 +168,18 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
                               padding: const EdgeInsets.all(16),
                               child: Row(
                                 children: [
-                                  Icon(Icons.info_outline,
-                                      color: theme.colorScheme.onErrorContainer),
+                                  Icon(
+                                    Icons.info_outline,
+                                    color: theme.colorScheme.onErrorContainer,
+                                  ),
                                   const SizedBox(width: 12),
                                   Expanded(
                                     child: Text(
                                       _error!,
                                       style: TextStyle(
-                                          color: theme
-                                              .colorScheme.onErrorContainer),
+                                        color:
+                                            theme.colorScheme.onErrorContainer,
+                                      ),
                                     ),
                                   ),
                                 ],
@@ -203,8 +207,7 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
                             width: double.infinity,
                             child: FilledButton.icon(
                               key: const Key('manage_subscription_button'),
-                              onPressed: () {
-                              },
+                              onPressed: () {},
                               icon: const Icon(Icons.settings),
                               label: Text(l.manageSubscription),
                             ),
@@ -235,9 +238,11 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
     for (final offering in _offerings) {
       for (final package in offering.availablePackages) {
         final product = package.storeProduct;
-        final isMonthly = product.identifier.contains('monthly') ||
+        final isMonthly =
+            product.identifier.contains('monthly') ||
             package.packageType == PackageType.monthly;
-        final isYearly = product.identifier.contains('yearly') ||
+        final isYearly =
+            product.identifier.contains('yearly') ||
             package.packageType == PackageType.annual;
 
         String periodLabel;
@@ -255,7 +260,9 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
           Padding(
             padding: const EdgeInsets.only(bottom: 12),
             child: _OfferingCard(
-              title: product.title.isNotEmpty ? product.title : (isYearly ? 'Yearly' : 'Monthly'),
+              title: product.title.isNotEmpty
+                  ? product.title
+                  : (isYearly ? 'Yearly' : 'Monthly'),
               price: product.priceString,
               periodLabel: periodLabel,
               savingsTag: savingsTag,
@@ -325,9 +332,7 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
         children: [
           Icon(icon, size: 20, color: theme.colorScheme.primary),
           const SizedBox(width: 12),
-          Expanded(
-            child: Text(text, style: theme.textTheme.bodyMedium),
-          ),
+          Expanded(child: Text(text, style: theme.textTheme.bodyMedium)),
         ],
       ),
     );
@@ -380,7 +385,10 @@ class _OfferingCard extends StatelessWidget {
             children: [
               if (savingsTag != null)
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 4,
+                  ),
                   margin: const EdgeInsets.only(bottom: 8),
                   decoration: BoxDecoration(
                     color: theme.colorScheme.primary,
@@ -434,7 +442,8 @@ class _OfferingCard extends StatelessWidget {
                       ? const SizedBox(
                           height: 20,
                           width: 20,
-                          child: CircularProgressIndicator(strokeWidth: 2))
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        )
                       : Text(l.subscribe),
                 ),
               ),

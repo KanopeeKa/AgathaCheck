@@ -40,7 +40,9 @@ class HealthEntryModel extends HealthEntry {
       frequencyDays: json['frequency_days'] as int?,
       frequencyInterval: json['frequency_interval'] as int? ?? 1,
       repeatEndDate: parseCalendarDate(json['repeat_end_date']),
-      startDate: parseCalendarDate(json['start_date']) ?? calendarDateOnly(DateTime.now()),
+      startDate:
+          parseCalendarDate(json['start_date']) ??
+          calendarDateOnly(DateTime.now()),
       nextDueDate: nextDue,
       completedOn: completedOn,
       recurrenceAnchor: RecurrenceAnchorApi.fromApi(
@@ -95,8 +97,10 @@ class HealthEntryModel extends HealthEntry {
       'frequency_interval': frequencyInterval,
       'repeat_end_date': toCalendarDateString(repeatEndDate),
       'start_date': toCalendarDateString(startDate),
-      if (nextDueDate != null) 'next_due_date': toCalendarDateString(nextDueDate),
-      if (completedOn != null) 'completed_on': toCalendarDateString(completedOn),
+      if (nextDueDate != null)
+        'next_due_date': toCalendarDateString(nextDueDate),
+      if (completedOn != null)
+        'completed_on': toCalendarDateString(completedOn),
       'recurrence_anchor': recurrenceAnchor.apiValue,
       'notes': notes,
       if (healthIssueId != null) 'health_issue_id': healthIssueId,

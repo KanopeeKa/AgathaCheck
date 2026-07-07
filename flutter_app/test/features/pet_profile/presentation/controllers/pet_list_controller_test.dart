@@ -128,10 +128,7 @@ void main() {
 
     expect(controller.getFosteredPassed([fosteredPassed]), hasLength(1));
     expect(controller.getOrgPassedGroups([fosteredPassed]), isEmpty);
-    expect(
-      controller.getAllPassedAway([], [fosteredPassed], {}),
-      hasLength(1),
-    );
+    expect(controller.getAllPassedAway([], [fosteredPassed], {}), hasLength(1));
   });
 
   test('syncOrgFilter clears stale organisation filter', () {

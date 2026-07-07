@@ -17,7 +17,10 @@ class SharedPetOwnerCard extends StatelessWidget {
     return Card(
       child: ListTile(
         leading: Icon(Icons.person, color: colorScheme.primary),
-        title: Text(ownerData['name'] ?? '', style: theme.textTheme.titleMedium),
+        title: Text(
+          ownerData['name'] ?? '',
+          style: theme.textTheme.titleMedium,
+        ),
         subtitle: Text(ownerData['email'] ?? ''),
       ),
     );

@@ -36,7 +36,9 @@ class PetModel {
       name: json['name'] as String,
       species: json['species'] as String,
       breed: (json['breed'] as String?) ?? '',
-      dateOfBirth: parseCalendarDate(json['dateOfBirth'] ?? json['date_of_birth']),
+      dateOfBirth: parseCalendarDate(
+        json['dateOfBirth'] ?? json['date_of_birth'],
+      ),
       weight: (json['weight'] as num?)?.toDouble(),
       gender: json['gender'] as String?,
       bio: (json['bio'] as String?) ?? '',
@@ -87,9 +89,7 @@ class PetModel {
   }
 
   factory PetModel.fromJsonString(String jsonString) {
-    return PetModel.fromJson(
-      json.decode(jsonString) as Map<String, dynamic>,
-    );
+    return PetModel.fromJson(json.decode(jsonString) as Map<String, dynamic>);
   }
 
   final String id;

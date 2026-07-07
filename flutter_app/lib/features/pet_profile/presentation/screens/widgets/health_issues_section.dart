@@ -15,7 +15,8 @@ class HealthIssuesSection extends ConsumerStatefulWidget {
   final Pet? pet;
 
   @override
-  ConsumerState<HealthIssuesSection> createState() => _HealthIssuesSectionState();
+  ConsumerState<HealthIssuesSection> createState() =>
+      _HealthIssuesSectionState();
 }
 
 class _HealthIssuesSectionState extends ConsumerState<HealthIssuesSection> {
@@ -37,7 +38,9 @@ class _HealthIssuesSectionState extends ConsumerState<HealthIssuesSection> {
               TextFormField(
                 controller: titleController,
                 decoration: InputDecoration(labelText: l.issueTitle),
-                validator: (v) => (v == null || v.trim().isEmpty) ? l.issueTitleRequired : null,
+                validator: (v) => (v == null || v.trim().isEmpty)
+                    ? l.issueTitleRequired
+                    : null,
               ),
               const SizedBox(height: 8),
               TextFormField(
@@ -73,7 +76,9 @@ class _HealthIssuesSectionState extends ConsumerState<HealthIssuesSection> {
         description: descController.text.trim(),
         startDate: calendarDateOnly(DateTime.now()),
       );
-      await ref.read(healthIssueNotifierProvider(widget.petId).notifier).create(issue);
+      await ref
+          .read(healthIssueNotifierProvider(widget.petId).notifier)
+          .create(issue);
     }
 
     titleController.dispose();
@@ -94,8 +99,12 @@ class _HealthIssuesSectionState extends ConsumerState<HealthIssuesSection> {
         clipBehavior: Clip.antiAlias,
         child: ExpansionTile(
           leading: Icon(Icons.health_and_safety, color: colorScheme.primary),
-          title: Text(l.healthIssues,
-              style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600)),
+          title: Text(
+            l.healthIssues,
+            style: theme.textTheme.titleMedium?.copyWith(
+              fontWeight: FontWeight.w600,
+            ),
+          ),
           children: [
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -121,7 +130,10 @@ class _HealthIssuesSectionState extends ConsumerState<HealthIssuesSection> {
               ),
               error: (e, _) => Padding(
                 padding: const EdgeInsets.all(16),
-                child: Text(e.toString(), style: TextStyle(color: colorScheme.error)),
+                child: Text(
+                  e.toString(),
+                  style: TextStyle(color: colorScheme.error),
+                ),
               ),
               data: (issues) {
                 if (issues.isEmpty) {
@@ -159,10 +171,17 @@ class _HealthIssuesSectionState extends ConsumerState<HealthIssuesSection> {
                         ],
                       ),
                       trailing: IconButton(
-                        icon: Icon(Icons.delete_outline, color: colorScheme.error),
+                        icon: Icon(
+                          Icons.delete_outline,
+                          color: colorScheme.error,
+                        ),
                         onPressed: () async {
                           await ref
-                              .read(healthIssueNotifierProvider(widget.petId).notifier)
+                              .read(
+                                healthIssueNotifierProvider(
+                                  widget.petId,
+                                ).notifier,
+                              )
                               .deleteIssue(issue.id);
                         },
                       ),

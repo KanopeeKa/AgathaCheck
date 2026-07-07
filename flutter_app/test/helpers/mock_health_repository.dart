@@ -15,53 +15,77 @@ class MockHealthRepository extends Mock implements HealthRepository {
   );
 
   @override
-  Future<List<HealthEntry>> getEntries({String? petId, HealthEntryType? type}) =>
+  Future<List<HealthEntry>> getEntries({
+    String? petId,
+    HealthEntryType? type,
+  }) =>
       super.noSuchMethod(
-        Invocation.method(#getEntries, [], {#petId: petId, #type: type}),
-        returnValue: Future.value(<HealthEntry>[]),
-      ) as Future<List<HealthEntry>>;
+            Invocation.method(#getEntries, [], {#petId: petId, #type: type}),
+            returnValue: Future.value(<HealthEntry>[]),
+          )
+          as Future<List<HealthEntry>>;
 
   @override
-  Future<HealthEntry> createEntry(HealthEntry? entry) => super.noSuchMethod(
-        Invocation.method(#createEntry, [entry]),
-        returnValue: Future.value(_fallbackEntry),
-      ) as Future<HealthEntry>;
-
-  @override
-  Future<HealthEntry> updateEntry(HealthEntry? entry) => super.noSuchMethod(
-        Invocation.method(#updateEntry, [entry]),
-        returnValue: Future.value(_fallbackEntry),
-      ) as Future<HealthEntry>;
-
-  @override
-  Future<void> deleteEntry(String? id) => super.noSuchMethod(
-        Invocation.method(#deleteEntry, [id]),
-        returnValue: Future.value(),
-      ) as Future<void>;
-
-  @override
-  Future<HealthEntry> markTaken(String? id, {String? notes, DateTime? completedOn}) =>
+  Future<HealthEntry> createEntry(HealthEntry? entry) =>
       super.noSuchMethod(
-        Invocation.method(#markTaken, [id], {#notes: notes, #completedOn: completedOn}),
-        returnValue: Future.value(_fallbackEntry),
-      ) as Future<HealthEntry>;
+            Invocation.method(#createEntry, [entry]),
+            returnValue: Future.value(_fallbackEntry),
+          )
+          as Future<HealthEntry>;
 
   @override
-  Future<HealthEntry> undoComplete(String? id) => super.noSuchMethod(
-        Invocation.method(#undoComplete, [id]),
-        returnValue: Future.value(_fallbackEntry),
-      ) as Future<HealthEntry>;
+  Future<HealthEntry> updateEntry(HealthEntry? entry) =>
+      super.noSuchMethod(
+            Invocation.method(#updateEntry, [entry]),
+            returnValue: Future.value(_fallbackEntry),
+          )
+          as Future<HealthEntry>;
+
+  @override
+  Future<void> deleteEntry(String? id) =>
+      super.noSuchMethod(
+            Invocation.method(#deleteEntry, [id]),
+            returnValue: Future.value(),
+          )
+          as Future<void>;
+
+  @override
+  Future<HealthEntry> markTaken(
+    String? id, {
+    String? notes,
+    DateTime? completedOn,
+  }) =>
+      super.noSuchMethod(
+            Invocation.method(
+              #markTaken,
+              [id],
+              {#notes: notes, #completedOn: completedOn},
+            ),
+            returnValue: Future.value(_fallbackEntry),
+          )
+          as Future<HealthEntry>;
+
+  @override
+  Future<HealthEntry> undoComplete(String? id) =>
+      super.noSuchMethod(
+            Invocation.method(#undoComplete, [id]),
+            returnValue: Future.value(_fallbackEntry),
+          )
+          as Future<HealthEntry>;
 
   @override
   Future<List<HealthHistoryEntry>> getHistory(String? entryId) =>
       super.noSuchMethod(
-        Invocation.method(#getHistory, [entryId]),
-        returnValue: Future.value(<HealthHistoryEntry>[]),
-      ) as Future<List<HealthHistoryEntry>>;
+            Invocation.method(#getHistory, [entryId]),
+            returnValue: Future.value(<HealthHistoryEntry>[]),
+          )
+          as Future<List<HealthHistoryEntry>>;
 
   @override
-  Future<String> exportCsv({String? petId}) => super.noSuchMethod(
-        Invocation.method(#exportCsv, [], {#petId: petId}),
-        returnValue: Future.value(''),
-      ) as Future<String>;
+  Future<String> exportCsv({String? petId}) =>
+      super.noSuchMethod(
+            Invocation.method(#exportCsv, [], {#petId: petId}),
+            returnValue: Future.value(''),
+          )
+          as Future<String>;
 }

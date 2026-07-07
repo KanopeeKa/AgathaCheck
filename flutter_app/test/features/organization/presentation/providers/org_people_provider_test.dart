@@ -12,7 +12,9 @@ void main() {
       addTearDown(container.dispose);
 
       await container.read(orgPeopleProvider('org-1').future);
-      await container.read(orgPeopleProvider('org-1').notifier).createExternal(
+      await container
+          .read(orgPeopleProvider('org-1').notifier)
+          .createExternal(
             displayName: 'Off-app Parent',
             email: 'off@example.com',
             phone: '555',
@@ -76,7 +78,9 @@ void main() {
         recordId: 'fp-1',
       );
       await container.read(orgPersonDetailProvider(key).future);
-      await container.read(orgPersonDetailProvider(key).notifier).updateContact(
+      await container
+          .read(orgPersonDetailProvider(key).notifier)
+          .updateContact(
             fosterPhone: '555',
             fosterAddress: 'Addr',
             adminNotes: 'Notes',

@@ -5,7 +5,6 @@ import 'package:pet_profile_app/features/pet_profile/domain/entities/pet.dart';
 import 'package:pet_profile_app/features/pet_profile/presentation/widgets/pet_card.dart';
 
 void main() {
-
   const testPet = Pet(
     id: 'test-id',
     name: 'Buddy',
@@ -29,14 +28,7 @@ void main() {
   );
 
   test('Pet constructor accepts empty strings for required fields', () {
-    expect(
-      () => const Pet(
-        id: 'id',
-        name: '',
-        species: '',
-      ),
-      returnsNormally,
-    );
+    expect(() => const Pet(id: 'id', name: '', species: ''), returnsNormally);
   });
 
   Widget createTestWidget(Widget child) {
@@ -49,9 +41,7 @@ void main() {
 
   group('PetCard', () {
     testWidgets('displays pet name and breed', (tester) async {
-      await tester.pumpWidget(
-        createTestWidget(PetCard(pet: testPet)),
-      );
+      await tester.pumpWidget(createTestWidget(PetCard(pet: testPet)));
 
       expect(find.text('Buddy'), findsOneWidget);
       expect(find.text('Dog - Golden Retriever'), findsOneWidget);
@@ -60,17 +50,13 @@ void main() {
     // Skipped: Pet entity does not have direct age property, age is computed from dateOfBirth
 
     testWidgets('displays species only when no breed', (tester) async {
-      await tester.pumpWidget(
-        createTestWidget(PetCard(pet: petNoBio)),
-      );
+      await tester.pumpWidget(createTestWidget(PetCard(pet: petNoBio)));
 
       expect(find.text('Cat'), findsOneWidget);
     });
 
     testWidgets('shows placeholder icon when no photo', (tester) async {
-      await tester.pumpWidget(
-        createTestWidget(PetCard(pet: testPet)),
-      );
+      await tester.pumpWidget(createTestWidget(PetCard(pet: testPet)));
 
       expect(find.byIcon(Icons.pets), findsOneWidget);
     });
@@ -85,15 +71,15 @@ void main() {
         organizationName: 'Happy Paws Shelter',
       );
 
-      await tester.pumpWidget(
-        createTestWidget(PetCard(pet: orgPet)),
-      );
+      await tester.pumpWidget(createTestWidget(PetCard(pet: orgPet)));
 
       expect(find.text('Happy Paws Shelter'), findsOneWidget);
       expect(find.byIcon(Icons.business), findsOneWidget);
     });
 
-    testWidgets('displays foster placement status for org pets', (tester) async {
+    testWidgets('displays foster placement status for org pets', (
+      tester,
+    ) async {
       const orgPet = Pet(
         id: 'org-pet-id',
         name: 'Max',
@@ -105,19 +91,17 @@ void main() {
         fosterName: 'Jane Foster',
       );
 
-      await tester.pumpWidget(
-        createTestWidget(PetCard(pet: orgPet)),
-      );
+      await tester.pumpWidget(createTestWidget(PetCard(pet: orgPet)));
 
       expect(find.textContaining('In foster care'), findsOneWidget);
       expect(find.textContaining('Jane Foster'), findsOneWidget);
       expect(find.byIcon(Icons.home_work_outlined), findsOneWidget);
     });
 
-    testWidgets('does not display foster placement for personal pets', (tester) async {
-      await tester.pumpWidget(
-        createTestWidget(PetCard(pet: testPet)),
-      );
+    testWidgets('does not display foster placement for personal pets', (
+      tester,
+    ) async {
+      await tester.pumpWidget(createTestWidget(PetCard(pet: testPet)));
 
       expect(find.byIcon(Icons.home_work_outlined), findsNothing);
     });
@@ -125,9 +109,7 @@ void main() {
     testWidgets('calls onTap when tapped', (tester) async {
       var tapped = false;
       await tester.pumpWidget(
-        createTestWidget(
-          PetCard(pet: testPet, onTap: () => tapped = true),
-        ),
+        createTestWidget(PetCard(pet: testPet, onTap: () => tapped = true)),
       );
 
       await tester.tap(find.byType(PetCard));

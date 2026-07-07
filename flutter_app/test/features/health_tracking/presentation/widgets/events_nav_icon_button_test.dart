@@ -39,11 +39,11 @@ void main() {
   final now = DateTime.now();
   final today = DateTime(now.year, now.month, now.day);
 
-  testWidgets('EventsNavIconButton uses alert styling when due or overdue',
-      (WidgetTester tester) async {
-    await tester.pumpWidget(_wrap(
-      const EventsNavIconButton(),
-      [
+  testWidgets('EventsNavIconButton uses alert styling when due or overdue', (
+    WidgetTester tester,
+  ) async {
+    await tester.pumpWidget(
+      _wrap(const EventsNavIconButton(), [
         healthEntriesNotifierProvider.overrideWith(
           () => _FakeHealthEntriesNotifier([
             _entry(
@@ -52,34 +52,34 @@ void main() {
             ),
           ]),
         ),
-      ],
-    ));
+      ]),
+    );
     await tester.pumpAndSettle();
 
     final icon = tester.widget<Icon>(find.byIcon(Icons.list_alt));
     final theme = Theme.of(tester.element(find.byType(EventsNavIconButton)));
 
-    expect(icon.size, EventsNavIconButton.baseIconSize * EventsNavIconButton.alertScale);
+    expect(
+      icon.size,
+      EventsNavIconButton.baseIconSize * EventsNavIconButton.alertScale,
+    );
     expect(icon.color, theme.colorScheme.error);
     expect(icon.weight, 700);
     expect(icon.fill, 1.0);
   });
 
-  testWidgets('EventsNavIconButton uses default styling when nothing is due',
-      (WidgetTester tester) async {
-    await tester.pumpWidget(_wrap(
-      const EventsNavIconButton(),
-      [
+  testWidgets('EventsNavIconButton uses default styling when nothing is due', (
+    WidgetTester tester,
+  ) async {
+    await tester.pumpWidget(
+      _wrap(const EventsNavIconButton(), [
         healthEntriesNotifierProvider.overrideWith(
           () => _FakeHealthEntriesNotifier([
-            _entry(
-              id: 'a',
-              nextDueDate: today.add(const Duration(days: 5)),
-            ),
+            _entry(id: 'a', nextDueDate: today.add(const Duration(days: 5))),
           ]),
         ),
-      ],
-    ));
+      ]),
+    );
     await tester.pumpAndSettle();
 
     final icon = tester.widget<Icon>(find.byIcon(Icons.list_alt));

@@ -39,7 +39,8 @@ class PetFormNeuteredSection extends StatelessWidget {
             ),
             const SizedBox(width: 4),
             PetFormInfoTooltip(
-              message: 'Whether your pet has been surgically sterilised:\n\n'
+              message:
+                  'Whether your pet has been surgically sterilised:\n\n'
                   '\u2022 Neutered: male animals (castration)\n'
                   '\u2022 Spayed: female animals (ovariectomy / ovariohysterectomy)\n\n'
                   'This applies to dogs, cats, rabbits, and other mammals. '

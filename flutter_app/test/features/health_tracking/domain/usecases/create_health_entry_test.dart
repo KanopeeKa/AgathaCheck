@@ -26,8 +26,9 @@ void main() {
   );
 
   test('delegates to repository.createEntry', () async {
-    when(mockRepository.createEntry(testEntry))
-        .thenAnswer((_) async => testEntry);
+    when(
+      mockRepository.createEntry(testEntry),
+    ).thenAnswer((_) async => testEntry);
 
     final result = await useCase(testEntry);
     expect(result, testEntry);
@@ -37,16 +38,18 @@ void main() {
 
   test('returns the created entry from repository', () async {
     final createdEntry = testEntry.copyWith(id: 'new-id');
-    when(mockRepository.createEntry(testEntry))
-        .thenAnswer((_) async => createdEntry);
+    when(
+      mockRepository.createEntry(testEntry),
+    ).thenAnswer((_) async => createdEntry);
 
     final result = await useCase(testEntry);
     expect(result.id, 'new-id');
   });
 
   test('propagates repository exceptions', () async {
-    when(mockRepository.createEntry(testEntry))
-        .thenThrow(Exception('Network error'));
+    when(
+      mockRepository.createEntry(testEntry),
+    ).thenThrow(Exception('Network error'));
 
     expect(() => useCase(testEntry), throwsException);
   });

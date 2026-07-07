@@ -22,7 +22,11 @@ abstract class HealthRepository {
   Future<void> deleteEntry(String id);
 
   /// Marks a health entry as taken and advances the next due date.
-  Future<HealthEntry> markTaken(String id, {String notes = '', DateTime? completedOn});
+  Future<HealthEntry> markTaken(
+    String id, {
+    String notes = '',
+    DateTime? completedOn,
+  });
 
   Future<HealthEntry> undoComplete(String id);
 

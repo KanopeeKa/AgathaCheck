@@ -30,48 +30,52 @@ class PetFormSubmitDeps {
     String? photoPath,
     String? vetId,
     String? organizationId,
-  }) addPet;
+  })
+  addPet;
   final Future<void> Function(Pet pet) updatePet;
   final void Function(String orgId)? invalidateOrgPets;
 
   factory PetFormSubmitDeps.fromWidgetRef(WidgetRef ref) {
     return PetFormSubmitDeps(
       readPets: () => ref.read(petListProvider).valueOrNull ?? [],
-      addPet: ({
-        required String name,
-        required String species,
-        String breed = '',
-        DateTime? dateOfBirth,
-        double? weight,
-        String? gender,
-        String bio = '',
-        String insurance = '',
-        DateTime? neuteredDate,
-        bool neuterDismissed = false,
-        String chipId = '',
-        bool chipDismissed = false,
-        String? photoPath,
-        String? vetId,
-        String? organizationId,
-      }) async {
-        await ref.read(petListProvider.notifier).addPet(
-              name: name,
-              species: species,
-              breed: breed,
-              dateOfBirth: dateOfBirth,
-              weight: weight,
-              gender: gender,
-              bio: bio,
-              insurance: insurance,
-              neuteredDate: neuteredDate,
-              neuterDismissed: neuterDismissed,
-              chipId: chipId,
-              chipDismissed: chipDismissed,
-              photoPath: photoPath,
-              vetId: vetId,
-              organizationId: organizationId,
-            );
-      },
+      addPet:
+          ({
+            required String name,
+            required String species,
+            String breed = '',
+            DateTime? dateOfBirth,
+            double? weight,
+            String? gender,
+            String bio = '',
+            String insurance = '',
+            DateTime? neuteredDate,
+            bool neuterDismissed = false,
+            String chipId = '',
+            bool chipDismissed = false,
+            String? photoPath,
+            String? vetId,
+            String? organizationId,
+          }) async {
+            await ref
+                .read(petListProvider.notifier)
+                .addPet(
+                  name: name,
+                  species: species,
+                  breed: breed,
+                  dateOfBirth: dateOfBirth,
+                  weight: weight,
+                  gender: gender,
+                  bio: bio,
+                  insurance: insurance,
+                  neuteredDate: neuteredDate,
+                  neuterDismissed: neuterDismissed,
+                  chipId: chipId,
+                  chipDismissed: chipDismissed,
+                  photoPath: photoPath,
+                  vetId: vetId,
+                  organizationId: organizationId,
+                );
+          },
       updatePet: (pet) => ref.read(petListProvider.notifier).updatePet(pet),
       invalidateOrgPets: (orgId) => ref.invalidate(orgPetsProvider(orgId)),
     );
@@ -80,41 +84,44 @@ class PetFormSubmitDeps {
   factory PetFormSubmitDeps.fromRef(Ref ref) {
     return PetFormSubmitDeps(
       readPets: () => ref.read(petListProvider).valueOrNull ?? [],
-      addPet: ({
-        required String name,
-        required String species,
-        String breed = '',
-        DateTime? dateOfBirth,
-        double? weight,
-        String? gender,
-        String bio = '',
-        String insurance = '',
-        DateTime? neuteredDate,
-        bool neuterDismissed = false,
-        String chipId = '',
-        bool chipDismissed = false,
-        String? photoPath,
-        String? vetId,
-        String? organizationId,
-      }) async {
-        await ref.read(petListProvider.notifier).addPet(
-              name: name,
-              species: species,
-              breed: breed,
-              dateOfBirth: dateOfBirth,
-              weight: weight,
-              gender: gender,
-              bio: bio,
-              insurance: insurance,
-              neuteredDate: neuteredDate,
-              neuterDismissed: neuterDismissed,
-              chipId: chipId,
-              chipDismissed: chipDismissed,
-              photoPath: photoPath,
-              vetId: vetId,
-              organizationId: organizationId,
-            );
-      },
+      addPet:
+          ({
+            required String name,
+            required String species,
+            String breed = '',
+            DateTime? dateOfBirth,
+            double? weight,
+            String? gender,
+            String bio = '',
+            String insurance = '',
+            DateTime? neuteredDate,
+            bool neuterDismissed = false,
+            String chipId = '',
+            bool chipDismissed = false,
+            String? photoPath,
+            String? vetId,
+            String? organizationId,
+          }) async {
+            await ref
+                .read(petListProvider.notifier)
+                .addPet(
+                  name: name,
+                  species: species,
+                  breed: breed,
+                  dateOfBirth: dateOfBirth,
+                  weight: weight,
+                  gender: gender,
+                  bio: bio,
+                  insurance: insurance,
+                  neuteredDate: neuteredDate,
+                  neuterDismissed: neuterDismissed,
+                  chipId: chipId,
+                  chipDismissed: chipDismissed,
+                  photoPath: photoPath,
+                  vetId: vetId,
+                  organizationId: organizationId,
+                );
+          },
       updatePet: (pet) => ref.read(petListProvider.notifier).updatePet(pet),
       invalidateOrgPets: (orgId) => ref.invalidate(orgPetsProvider(orgId)),
     );
@@ -123,11 +130,7 @@ class PetFormSubmitDeps {
 
 sealed class PetFormSubmitOutcome {}
 
-enum PetFormSubmitValidation {
-  nameRequired,
-  invalidWeight,
-  petNotFound,
-}
+enum PetFormSubmitValidation { nameRequired, invalidWeight, petNotFound }
 
 class PetFormSubmitValidationFailed extends PetFormSubmitOutcome {
   PetFormSubmitValidationFailed(this.reason);
@@ -135,10 +138,7 @@ class PetFormSubmitValidationFailed extends PetFormSubmitOutcome {
 }
 
 class PetFormSubmitSuccess extends PetFormSubmitOutcome {
-  PetFormSubmitSuccess({
-    this.petId,
-    this.orgId,
-  });
+  PetFormSubmitSuccess({this.petId, this.orgId});
 
   final String? petId;
   final String? orgId;

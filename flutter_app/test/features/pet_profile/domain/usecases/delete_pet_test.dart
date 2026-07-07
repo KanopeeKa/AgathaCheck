@@ -17,8 +17,9 @@ void main() {
   });
 
   test('should delete pet via repository', () async {
-    when(mockRepository.deletePet('test-id'))
-        .thenAnswer((_) async => Future.value());
+    when(
+      mockRepository.deletePet('test-id'),
+    ).thenAnswer((_) async => Future.value());
 
     await deletePet('test-id');
 

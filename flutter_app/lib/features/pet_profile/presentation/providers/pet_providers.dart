@@ -22,7 +22,10 @@ export '../../../../core/providers/shared_preferences_provider.dart';
 final petLocalDataSourceProvider = Provider<PetLocalDataSource>((ref) {
   final authState = ref.watch(authProvider);
   final userId = authState.user?.id;
-  return PetLocalDataSourceImpl(ref.watch(sharedPreferencesProvider), userId: userId);
+  return PetLocalDataSourceImpl(
+    ref.watch(sharedPreferencesProvider),
+    userId: userId,
+  );
 });
 
 final petRemoteDataSourceProvider = Provider<PetRemoteDataSource>((ref) {
@@ -177,10 +180,7 @@ class PetListNotifier extends AsyncNotifier<List<Pet>> {
     final pet = pets.where((p) => p.id == petId).firstOrNull;
     if (pet == null) return false;
 
-    final updated = pet.copyWith(
-      passedAway: true,
-      colorValue: 0xFFFFFFFF,
-    );
+    final updated = pet.copyWith(passedAway: true, colorValue: 0xFFFFFFFF);
     await ref.read(updatePetUseCaseProvider).call(updated);
 
     final baseUrl = ref.read(apiBaseUrlProvider);
@@ -196,7 +196,9 @@ class PetListNotifier extends AsyncNotifier<List<Pet>> {
       );
       if (response.statusCode == 200) {
         final body = response.body;
-        hasSharedUsers = body.contains('"notified_count"') && !body.contains('"notified_count":0');
+        hasSharedUsers =
+            body.contains('"notified_count"') &&
+            !body.contains('"notified_count":0');
       }
     } catch (_) {}
 
@@ -206,8 +208,9 @@ class PetListNotifier extends AsyncNotifier<List<Pet>> {
   }
 }
 
-final petListProvider =
-    AsyncNotifierProvider<PetListNotifier, List<Pet>>(PetListNotifier.new);
+final petListProvider = AsyncNotifierProvider<PetListNotifier, List<Pet>>(
+  PetListNotifier.new,
+);
 
 final petByIdProvider = FutureProvider.family<Pet?, String>((ref, id) async {
   final pets = await ref.watch(petListProvider.future);

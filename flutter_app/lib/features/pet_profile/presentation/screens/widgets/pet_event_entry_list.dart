@@ -63,10 +63,7 @@ class PetEventEntryList extends StatelessWidget {
         final statusLine = formatHealthEntryStatusLine(entry, l);
 
         return ListTile(
-          leading: Icon(
-            iconForType(entry.type),
-            color: statusColor,
-          ),
+          leading: Icon(iconForType(entry.type), color: statusColor),
           title: Text(entry.name),
           subtitle: Column(
             crossAxisAlignment: CrossAxisAlignment.start,

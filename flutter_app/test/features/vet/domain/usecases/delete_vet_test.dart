@@ -25,8 +25,9 @@ void main() {
   });
 
   test('should propagate repository exceptions', () async {
-    when(mockRepository.deleteVet(testId))
-        .thenThrow(Exception('Network error'));
+    when(
+      mockRepository.deleteVet(testId),
+    ).thenThrow(Exception('Network error'));
 
     expect(() => deleteVet(testId), throwsException);
   });

@@ -28,7 +28,10 @@ class RecurrenceAnchorToggle extends StatelessWidget {
           segments: [
             ButtonSegment(
               value: RecurrenceAnchor.fromCompletion,
-              label: Text(l.recurrenceFromCompletion, textAlign: TextAlign.center),
+              label: Text(
+                l.recurrenceFromCompletion,
+                textAlign: TextAlign.center,
+              ),
             ),
             ButtonSegment(
               value: RecurrenceAnchor.fromDueDate,
@@ -49,10 +52,7 @@ class RecurrenceAnchorToggle extends StatelessWidget {
             ),
           ),
           children: [
-            Text(
-              l.recurrenceAnchorInfoBody,
-              style: theme.textTheme.bodySmall,
-            ),
+            Text(l.recurrenceAnchorInfoBody, style: theme.textTheme.bodySmall),
           ],
         ),
       ],

@@ -13,11 +13,7 @@ import '../../domain/entities/pet.dart';
 /// Shows the pet's photo (or a placeholder icon), name, breed,
 /// and species. Tapping the card triggers [onTap].
 class PetCard extends StatelessWidget {
-  const PetCard({
-    super.key,
-    required this.pet,
-    this.onTap,
-  });
+  const PetCard({super.key, required this.pet, this.onTap});
 
   final Pet pet;
 
@@ -113,12 +109,15 @@ class PetCard extends StatelessWidget {
                             color: colorScheme.onSurfaceVariant,
                           ),
                         ),
-                        if (pet.ageDisplay != null || (pet.gender != null && pet.gender!.isNotEmpty)) ...[
+                        if (pet.ageDisplay != null ||
+                            (pet.gender != null && pet.gender!.isNotEmpty)) ...[
                           const SizedBox(height: 2),
                           Text(
                             [
-                              if (pet.ageDisplay != null) '${pet.ageDisplay!} old',
-                              if (pet.gender != null && pet.gender!.isNotEmpty) pet.gender!,
+                              if (pet.ageDisplay != null)
+                                '${pet.ageDisplay!} old',
+                              if (pet.gender != null && pet.gender!.isNotEmpty)
+                                pet.gender!,
                             ].join(' · '),
                             style: theme.textTheme.bodySmall?.copyWith(
                               color: colorScheme.onSurfaceVariant,
@@ -244,22 +243,36 @@ class PetCard extends StatelessWidget {
         shape: BoxShape.circle,
         border: Border.all(color: petColor, width: 3),
       ),
-      child: AppConstants.speciesIconWidget(pet.species, size: 32, color: petColor),
+      child: AppConstants.speciesIconWidget(
+        pet.species,
+        size: 32,
+        color: petColor,
+      ),
     );
   }
 }
 
 String _localizedSpecies(AppLocalizations l, String species) {
   switch (species) {
-    case 'Dog': return l.speciesDog;
-    case 'Cat': return l.speciesCat;
-    case 'Bird': return l.speciesBird;
-    case 'Fish': return l.speciesFish;
-    case 'Rabbit': return l.speciesRabbit;
-    case 'Hamster': return l.speciesHamster;
-    case 'Ferret': return l.speciesFerret;
-    case 'Horse / Poney': return l.speciesHorsePoney;
-    case 'Other': return l.speciesOther;
-    default: return species;
+    case 'Dog':
+      return l.speciesDog;
+    case 'Cat':
+      return l.speciesCat;
+    case 'Bird':
+      return l.speciesBird;
+    case 'Fish':
+      return l.speciesFish;
+    case 'Rabbit':
+      return l.speciesRabbit;
+    case 'Hamster':
+      return l.speciesHamster;
+    case 'Ferret':
+      return l.speciesFerret;
+    case 'Horse / Poney':
+      return l.speciesHorsePoney;
+    case 'Other':
+      return l.speciesOther;
+    default:
+      return species;
   }
 }

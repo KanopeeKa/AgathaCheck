@@ -32,7 +32,9 @@ void registerOrgFosterParentsRoutes(Router router, Pool pool) {
       'phone': row['phone'],
       'foster_address': row['foster_address']?.toString() ?? '',
       'notes': row['notes']?.toString() ?? '',
-      'role': row['role'] != null ? normaliseOrgRole(row['role']?.toString()) : null,
+      'role': row['role'] != null
+          ? normaliseOrgRole(row['role']?.toString())
+          : null,
       'photo_url': row['photo_url'],
       'active_pet_count':
           int.tryParse(row['active_pet_count']?.toString() ?? '') ?? 0,
@@ -43,7 +45,8 @@ void registerOrgFosterParentsRoutes(Router router, Pool pool) {
   router.get('/<orgId>/foster-parents', (Request request, String orgId) async {
     final userId = extractOrgUserId(request);
     if (userId == null) {
-      return Response(401, body: jsonEncode({'error': 'Unauthorized'}), headers: orgJsonHeaders);
+      return Response(401,
+          body: jsonEncode({'error': 'Unauthorized'}), headers: orgJsonHeaders);
     }
     try {
       if (!await requireOrgAdmin(pool, orgId, userId)) return orgForbidden();
@@ -135,36 +138,49 @@ void registerOrgFosterParentsRoutes(Router router, Pool pool) {
 
       return Response.ok(jsonEncode(combined), headers: orgJsonHeaders);
     } catch (e) {
-      return Response.internalServerError(body: jsonEncode({'error': publicError(e)}), headers: orgJsonHeaders);
+      return Response.internalServerError(
+          body: jsonEncode({'error': publicError(e)}), headers: orgJsonHeaders);
     }
   });
 
   router.post('/<orgId>/foster-parents', (Request request, String orgId) async {
     final userId = extractOrgUserId(request);
     if (userId == null) {
-      return Response(401, body: jsonEncode({'error': 'Unauthorized'}), headers: orgJsonHeaders);
+      return Response(401,
+          body: jsonEncode({'error': 'Unauthorized'}), headers: orgJsonHeaders);
     }
     try {
       if (!await requireOrgAdmin(pool, orgId, userId)) return orgForbidden();
-      final data = jsonDecode(await request.readAsString()) as Map<String, dynamic>;
+      final data =
+          jsonDecode(await request.readAsString()) as Map<String, dynamic>;
       final displayName =
           (data['display_name'] ?? data['displayName'] ?? '').toString().trim();
       final email = (data['email'] ?? '').toString().trim();
       final phone = (data['phone'] ?? '').toString().trim();
       final fosterAddress =
-          (data['foster_address'] ?? data['fosterAddress'] ?? '').toString().trim();
+          (data['foster_address'] ?? data['fosterAddress'] ?? '')
+              .toString()
+              .trim();
       final notes = (data['notes'] ?? '').toString().trim();
       final lawfulBasisConfirmed = data['lawful_basis_confirmed'] == true ||
           data['lawfulBasisConfirmed'] == true;
 
       if (displayName.isEmpty) {
-        return Response(400, body: jsonEncode({'error': 'Display name is required'}), headers: orgJsonHeaders);
+        return Response(400,
+            body: jsonEncode({'error': 'Display name is required'}),
+            headers: orgJsonHeaders);
       }
       if (!lawfulBasisConfirmed) {
-        return Response(400, body: jsonEncode({'error': 'Lawful basis confirmation is required'}), headers: orgJsonHeaders);
+        return Response(400,
+            body:
+                jsonEncode({'error': 'Lawful basis confirmation is required'}),
+            headers: orgJsonHeaders);
       }
       if (email.isEmpty) {
-        return Response(400, body: jsonEncode({'error': 'Email is required for external foster contacts'}), headers: orgJsonHeaders);
+        return Response(400,
+            body: jsonEncode(
+                {'error': 'Email is required for external foster contacts'}),
+            headers: orgJsonHeaders);
       }
 
       final id = orgUuid.v4();
@@ -201,7 +217,8 @@ void registerOrgFosterParentsRoutes(Router router, Pool pool) {
         headers: orgJsonHeaders,
       );
     } catch (e) {
-      return Response.internalServerError(body: jsonEncode({'error': publicError(e)}), headers: orgJsonHeaders);
+      return Response.internalServerError(
+          body: jsonEncode({'error': publicError(e)}), headers: orgJsonHeaders);
     }
   });
 
@@ -212,21 +229,27 @@ void registerOrgFosterParentsRoutes(Router router, Pool pool) {
   ) async {
     final userId = extractOrgUserId(request);
     if (userId == null) {
-      return Response(401, body: jsonEncode({'error': 'Unauthorized'}), headers: orgJsonHeaders);
+      return Response(401,
+          body: jsonEncode({'error': 'Unauthorized'}), headers: orgJsonHeaders);
     }
     try {
       if (!await requireOrgAdmin(pool, orgId, userId)) return orgForbidden();
-      final data = jsonDecode(await request.readAsString()) as Map<String, dynamic>;
+      final data =
+          jsonDecode(await request.readAsString()) as Map<String, dynamic>;
       final displayName =
           (data['display_name'] ?? data['displayName'] ?? '').toString().trim();
       final email = (data['email'] ?? '').toString().trim();
       final phone = (data['phone'] ?? '').toString().trim();
       final fosterAddress =
-          (data['foster_address'] ?? data['fosterAddress'] ?? '').toString().trim();
+          (data['foster_address'] ?? data['fosterAddress'] ?? '')
+              .toString()
+              .trim();
       final notes = (data['notes'] ?? '').toString().trim();
 
       if (displayName.isEmpty) {
-        return Response(400, body: jsonEncode({'error': 'Display name is required'}), headers: orgJsonHeaders);
+        return Response(400,
+            body: jsonEncode({'error': 'Display name is required'}),
+            headers: orgJsonHeaders);
       }
 
       final result = await pool.execute(
@@ -248,7 +271,9 @@ void registerOrgFosterParentsRoutes(Router router, Pool pool) {
         },
       );
       if (result.isEmpty) {
-        return Response.notFound(jsonEncode({'error': 'Foster parent not found'}), headers: orgJsonHeaders);
+        return Response.notFound(
+            jsonEncode({'error': 'Foster parent not found'}),
+            headers: orgJsonHeaders);
       }
       final row = result.first.toColumnMap();
       return Response.ok(
@@ -263,7 +288,8 @@ void registerOrgFosterParentsRoutes(Router router, Pool pool) {
         headers: orgJsonHeaders,
       );
     } catch (e) {
-      return Response.internalServerError(body: jsonEncode({'error': publicError(e)}), headers: orgJsonHeaders);
+      return Response.internalServerError(
+          body: jsonEncode({'error': publicError(e)}), headers: orgJsonHeaders);
     }
   });
 
@@ -274,7 +300,8 @@ void registerOrgFosterParentsRoutes(Router router, Pool pool) {
   ) async {
     final userId = extractOrgUserId(request);
     if (userId == null) {
-      return Response(401, body: jsonEncode({'error': 'Unauthorized'}), headers: orgJsonHeaders);
+      return Response(401,
+          body: jsonEncode({'error': 'Unauthorized'}), headers: orgJsonHeaders);
     }
     try {
       if (!await requireOrgAdmin(pool, orgId, userId)) return orgForbidden();
@@ -287,14 +314,17 @@ void registerOrgFosterParentsRoutes(Router router, Pool pool) {
         parameters: {'fosterParentId': fosterParentId, 'orgId': orgId},
       );
       if (result.isEmpty) {
-        return Response.notFound(jsonEncode({'error': 'Foster parent not found'}), headers: orgJsonHeaders);
+        return Response.notFound(
+            jsonEncode({'error': 'Foster parent not found'}),
+            headers: orgJsonHeaders);
       }
       return Response.ok(
         jsonEncode({'deleted': true, 'id': fosterParentId}),
         headers: orgJsonHeaders,
       );
     } catch (e) {
-      return Response.internalServerError(body: jsonEncode({'error': publicError(e)}), headers: orgJsonHeaders);
+      return Response.internalServerError(
+          body: jsonEncode({'error': publicError(e)}), headers: orgJsonHeaders);
     }
   });
 }

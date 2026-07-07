@@ -8,9 +8,14 @@ class OrganizationPlacementsRemote {
   final OrganizationRemoteContext _ctx;
 
   Future<Map<String, dynamic>> getPetPlacement(
-      String orgId, String petId, String token) async {
+    String orgId,
+    String petId,
+    String token,
+  ) async {
     final response = await _ctx.client.get(
-      Uri.parse('${_ctx.baseUrl}/api/organizations/$orgId/pets/$petId/placement'),
+      Uri.parse(
+        '${_ctx.baseUrl}/api/organizations/$orgId/pets/$petId/placement',
+      ),
       headers: _ctx.headers(token),
     );
     final data = json.decode(response.body) as Map<String, dynamic>;
@@ -29,7 +34,9 @@ class OrganizationPlacementsRemote {
     required String token,
   }) async {
     final response = await _ctx.client.post(
-      Uri.parse('${_ctx.baseUrl}/api/organizations/$orgId/pets/$petId/placements'),
+      Uri.parse(
+        '${_ctx.baseUrl}/api/organizations/$orgId/pets/$petId/placements',
+      ),
       headers: _ctx.headers(token),
       body: json.encode({
         'foster_user_id': fosterUserId,
@@ -52,11 +59,10 @@ class OrganizationPlacementsRemote {
   }) async {
     final response = await _ctx.client.post(
       Uri.parse(
-          '${_ctx.baseUrl}/api/organizations/$orgId/placements/$placementId/end'),
+        '${_ctx.baseUrl}/api/organizations/$orgId/placements/$placementId/end',
+      ),
       headers: _ctx.headers(token),
-      body: json.encode({
-        if (endDate != null) 'end_date': endDate,
-      }),
+      body: json.encode({if (endDate != null) 'end_date': endDate}),
     );
     final data = json.decode(response.body) as Map<String, dynamic>;
     if (response.statusCode >= 400) {
@@ -73,7 +79,8 @@ class OrganizationPlacementsRemote {
   }) async {
     final response = await _ctx.client.post(
       Uri.parse(
-          '${_ctx.baseUrl}/api/organizations/$orgId/placements/$placementId/start-adoption'),
+        '${_ctx.baseUrl}/api/organizations/$orgId/placements/$placementId/start-adoption',
+      ),
       headers: _ctx.headers(token),
       body: json.encode({
         if (adoptionConditions.isNotEmpty)
@@ -94,12 +101,15 @@ class OrganizationPlacementsRemote {
   }) async {
     final response = await _ctx.client.post(
       Uri.parse(
-          '${_ctx.baseUrl}/api/organizations/$orgId/placements/$placementId/complete-conditions'),
+        '${_ctx.baseUrl}/api/organizations/$orgId/placements/$placementId/complete-conditions',
+      ),
       headers: _ctx.headers(token),
     );
     final data = json.decode(response.body) as Map<String, dynamic>;
     if (response.statusCode >= 400) {
-      throw Exception(data['error'] ?? 'Failed to complete adoption conditions');
+      throw Exception(
+        data['error'] ?? 'Failed to complete adoption conditions',
+      );
     }
     return data;
   }
@@ -112,11 +122,10 @@ class OrganizationPlacementsRemote {
   }) async {
     final response = await _ctx.client.post(
       Uri.parse(
-          '${_ctx.baseUrl}/api/organizations/$orgId/placements/$placementId/cancel-adoption'),
+        '${_ctx.baseUrl}/api/organizations/$orgId/placements/$placementId/cancel-adoption',
+      ),
       headers: _ctx.headers(token),
-      body: json.encode({
-        if (endDate != null) 'end_date': endDate,
-      }),
+      body: json.encode({if (endDate != null) 'end_date': endDate}),
     );
     final data = json.decode(response.body) as Map<String, dynamic>;
     if (response.statusCode >= 400) {
@@ -135,7 +144,8 @@ class OrganizationPlacementsRemote {
   }) async {
     final response = await _ctx.client.post(
       Uri.parse(
-          '${_ctx.baseUrl}/api/organizations/$orgId/pets/$petId/placements/direct-adopt'),
+        '${_ctx.baseUrl}/api/organizations/$orgId/pets/$petId/placements/direct-adopt',
+      ),
       headers: _ctx.headers(token),
       body: json.encode({
         'foster_user_id': fosterUserId,
@@ -158,7 +168,8 @@ class OrganizationPlacementsRemote {
   ) async {
     final response = await _ctx.client.get(
       Uri.parse(
-          '${_ctx.baseUrl}/api/organizations/$orgId/pets/$petId/foster-history'),
+        '${_ctx.baseUrl}/api/organizations/$orgId/pets/$petId/foster-history',
+      ),
       headers: _ctx.headers(token),
     );
     if (response.statusCode >= 400) {

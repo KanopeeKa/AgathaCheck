@@ -43,7 +43,7 @@ Tracks planned and completed refactor / quality work. See also `docs/refactoring
 | 2.4 | Split `pet_form_screen.dart` (929 → <500) | **In progress** | Extracted `widgets/pet_form/` (553 lines screen; further trim optional) |
 | 2.5 | Split `health_entry_form_screen.dart` (756 → <500) | **Done** | Extracted `widgets/health_entry_form/` (425 lines) |
 | 2.6 | Widget tests: `about`, `help`, `subscription` (smoke) | **Done** | Smoke tests added |
-| 2.7 | **Enforce** `dart format` in CI (remove warn-only) | Planned | End of Sprint 2 |
+| 2.7 | **Enforce** `dart format` in CI (remove warn-only) | **Done** | CI blocks; repo formatted |
 | 2.8 | Playwright: `sharing.feature` implementation | Planned | + `@smoke` tag |
 | 2.9 | Coverage threshold discussion (ratchet to 65% Flutter domain) | Planned | report-only → gate |
 

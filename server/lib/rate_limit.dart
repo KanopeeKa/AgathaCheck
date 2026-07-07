@@ -41,14 +41,14 @@ Response? checkAuthRateLimit(Request request) {
   final key = _clientKey(request);
   final window = _buckets[key];
   if (window == null || now.isAfter(window.resetAt)) {
-    _buckets[key] =
-        _Window(1, now.add(Duration(milliseconds: _windowMs)));
+    _buckets[key] = _Window(1, now.add(Duration(milliseconds: _windowMs)));
     return null;
   }
   window.count++;
   if (window.count > _limit) {
     return Response(429,
-        body: jsonEncode({'error': 'Too many requests, please try again later.'}),
+        body:
+            jsonEncode({'error': 'Too many requests, please try again later.'}),
         headers: {'Content-Type': 'application/json'});
   }
   return null;

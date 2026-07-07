@@ -9,11 +9,11 @@ import 'organization_providers.dart';
 
 final fosterPlacementsDataSourceProvider =
     Provider<FosterPlacementsRemoteDataSource>((ref) {
-  return FosterPlacementsRemoteDataSource(
-    baseUrl: ref.watch(apiBaseUrlProvider),
-    client: ref.watch(authHttpClientProvider),
-  );
-});
+      return FosterPlacementsRemoteDataSource(
+        baseUrl: ref.watch(apiBaseUrlProvider),
+        client: ref.watch(authHttpClientProvider),
+      );
+    });
 
 class PendingFosterPlacementsNotifier
     extends AsyncNotifier<List<FosterPlacement>> {
@@ -46,8 +46,10 @@ class PendingFosterPlacementsNotifier
 }
 
 final pendingFosterPlacementsProvider =
-    AsyncNotifierProvider<PendingFosterPlacementsNotifier, List<FosterPlacement>>(
-        PendingFosterPlacementsNotifier.new);
+    AsyncNotifierProvider<
+      PendingFosterPlacementsNotifier,
+      List<FosterPlacement>
+    >(PendingFosterPlacementsNotifier.new);
 
 class PendingAdoptionPlacementsNotifier
     extends AsyncNotifier<List<FosterPlacement>> {
@@ -72,8 +74,10 @@ class PendingAdoptionPlacementsNotifier
 }
 
 final pendingAdoptionPlacementsProvider =
-    AsyncNotifierProvider<PendingAdoptionPlacementsNotifier, List<FosterPlacement>>(
-        PendingAdoptionPlacementsNotifier.new);
+    AsyncNotifierProvider<
+      PendingAdoptionPlacementsNotifier,
+      List<FosterPlacement>
+    >(PendingAdoptionPlacementsNotifier.new);
 
 class PetFosterPlacementNotifier
     extends FamilyAsyncNotifier<PetFosterPlacementState, (String, String)> {
@@ -180,17 +184,21 @@ class PetFosterPlacementNotifier
   }
 }
 
-final petFosterHistoryProvider = FutureProvider.family<List<FosterPlacement>, (String, String)>(
-  (ref, arg) async {
-    final (orgId, petId) = arg;
-    final token = ref.watch(authProvider).accessToken;
-    if (token == null) return [];
-    final repo = ref.read(organizationRepositoryProvider);
-    return repo.getPetFosterHistory(orgId, petId, token);
-  },
-);
+final petFosterHistoryProvider =
+    FutureProvider.family<List<FosterPlacement>, (String, String)>((
+      ref,
+      arg,
+    ) async {
+      final (orgId, petId) = arg;
+      final token = ref.watch(authProvider).accessToken;
+      if (token == null) return [];
+      final repo = ref.read(organizationRepositoryProvider);
+      return repo.getPetFosterHistory(orgId, petId, token);
+    });
 
-final petFosterPlacementProvider = AsyncNotifierProvider.family<
-    PetFosterPlacementNotifier,
-    PetFosterPlacementState,
-    (String, String)>(PetFosterPlacementNotifier.new);
+final petFosterPlacementProvider =
+    AsyncNotifierProvider.family<
+      PetFosterPlacementNotifier,
+      PetFosterPlacementState,
+      (String, String)
+    >(PetFosterPlacementNotifier.new);

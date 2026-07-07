@@ -32,8 +32,12 @@ class OrganizationMemberModel extends OrganizationMember {
       lastName: json['last_name']?.toString() ?? '',
       email: json['email']?.toString() ?? '',
       photoUrl: json['photo_url']?.toString() ?? '',
-      createdAt: json['created_at'] != null ? DateTime.tryParse(json['created_at'].toString()) : null,
-      updatedAt: json['updated_at'] != null ? DateTime.tryParse(json['updated_at'].toString()) : null,
+      createdAt: json['created_at'] != null
+          ? DateTime.tryParse(json['created_at'].toString())
+          : null,
+      updatedAt: json['updated_at'] != null
+          ? DateTime.tryParse(json['updated_at'].toString())
+          : null,
     );
   }
 
@@ -45,7 +49,8 @@ class OrganizationMemberModel extends OrganizationMember {
       'role': role.toWire(),
       if (invitedBy != null) 'invited_by': invitedBy,
       if (inviteCode != null) 'invite_code': inviteCode,
-      if (inviteExpiresAt != null) 'invite_expires_at': inviteExpiresAt!.toIso8601String(),
+      if (inviteExpiresAt != null)
+        'invite_expires_at': inviteExpiresAt!.toIso8601String(),
       'first_name': firstName,
       'last_name': lastName,
       'email': email,

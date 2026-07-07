@@ -15,8 +15,7 @@ void main() {
   });
 
   test('delegates to repository.deleteEntry', () async {
-    when(mockRepository.deleteEntry('entry-1'))
-        .thenAnswer((_) async {});
+    when(mockRepository.deleteEntry('entry-1')).thenAnswer((_) async {});
 
     await useCase('entry-1');
     verify(mockRepository.deleteEntry('entry-1')).called(1);
@@ -24,8 +23,9 @@ void main() {
   });
 
   test('propagates repository exceptions', () async {
-    when(mockRepository.deleteEntry('entry-1'))
-        .thenThrow(Exception('Not found'));
+    when(
+      mockRepository.deleteEntry('entry-1'),
+    ).thenThrow(Exception('Not found'));
 
     expect(() => useCase('entry-1'), throwsException);
   });

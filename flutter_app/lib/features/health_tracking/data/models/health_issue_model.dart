@@ -20,7 +20,8 @@ class HealthIssueModel extends HealthIssue {
       petId: json['pet_id'] as String? ?? '',
       title: json['title'] as String? ?? '',
       description: json['description'] as String? ?? '',
-      eventIds: (json['event_ids'] as List<dynamic>?)
+      eventIds:
+          (json['event_ids'] as List<dynamic>?)
               ?.map((e) => e.toString())
               .toList() ??
           const [],

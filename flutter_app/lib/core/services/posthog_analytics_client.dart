@@ -20,10 +20,16 @@ class NoopAnalyticsClient implements AnalyticsClient {
   Future<void> reset() async {}
 
   @override
-  Future<void> capture(String eventName, [Map<String, Object>? properties]) async {}
+  Future<void> capture(
+    String eventName, [
+    Map<String, Object>? properties,
+  ]) async {}
 
   @override
-  Future<void> screen(String screenName, [Map<String, Object>? properties]) async {}
+  Future<void> screen(
+    String screenName, [
+    Map<String, Object>? properties,
+  ]) async {}
 }
 
 class PosthogAnalyticsClient implements AnalyticsClient {
@@ -78,10 +84,7 @@ class PosthogAnalyticsClient implements AnalyticsClient {
     Map<String, Object>? properties,
   }) async {
     if (!_enabled || !_initialized) return;
-    await Posthog().identify(
-      userId: userId,
-      userProperties: properties,
-    );
+    await Posthog().identify(userId: userId, userProperties: properties);
   }
 
   @override
@@ -91,7 +94,10 @@ class PosthogAnalyticsClient implements AnalyticsClient {
   }
 
   @override
-  Future<void> capture(String eventName, [Map<String, Object>? properties]) async {
+  Future<void> capture(
+    String eventName, [
+    Map<String, Object>? properties,
+  ]) async {
     if (!_enabled || !_initialized) return;
     await Posthog().capture(
       eventName: eventName,
@@ -100,7 +106,10 @@ class PosthogAnalyticsClient implements AnalyticsClient {
   }
 
   @override
-  Future<void> screen(String screenName, [Map<String, Object>? properties]) async {
+  Future<void> screen(
+    String screenName, [
+    Map<String, Object>? properties,
+  ]) async {
     if (!_enabled || !_initialized) return;
     await Posthog().screen(
       screenName: screenName,

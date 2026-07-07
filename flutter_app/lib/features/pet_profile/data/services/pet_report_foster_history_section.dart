@@ -82,8 +82,9 @@ class PetFosterHistorySectionBuilder {
       margin: const pw.EdgeInsets.only(bottom: 6),
       padding: const pw.EdgeInsets.only(bottom: 4),
       decoration: const pw.BoxDecoration(
-        border:
-            pw.Border(bottom: pw.BorderSide(color: _brandPurple, width: 1.5)),
+        border: pw.Border(
+          bottom: pw.BorderSide(color: _brandPurple, width: 1.5),
+        ),
       ),
       child: pw.Text(
         title.toUpperCase(),
@@ -104,8 +105,10 @@ class PetFosterHistorySectionBuilder {
         border: pw.Border.all(color: _borderColor, width: 0.5),
         borderRadius: pw.BorderRadius.circular(4),
       ),
-      child: pw.Text(msg,
-          style: const pw.TextStyle(fontSize: 9, color: _textMuted)),
+      child: pw.Text(
+        msg,
+        style: const pw.TextStyle(fontSize: 9, color: _textMuted),
+      ),
     );
   }
 }

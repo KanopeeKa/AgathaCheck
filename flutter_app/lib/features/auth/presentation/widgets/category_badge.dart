@@ -14,10 +14,14 @@ class CategoryBadge extends StatelessWidget {
       label: Text(
         isPro ? l10n.professionalMultiPet : l10n.petGuardian,
         style: TextStyle(
-          color: isPro ? Colors.deepPurple.shade900 : theme.colorScheme.onSecondaryContainer,
+          color: isPro
+              ? Colors.deepPurple.shade900
+              : theme.colorScheme.onSecondaryContainer,
         ),
       ),
-      backgroundColor: isPro ? Colors.deepPurple.shade50 : theme.colorScheme.secondaryContainer,
+      backgroundColor: isPro
+          ? Colors.deepPurple.shade50
+          : theme.colorScheme.secondaryContainer,
     );
   }
 }

@@ -11,23 +11,26 @@ abstract class NotificationRemoteDataSource {
   Future<void> markAllAsRead(String token);
   Future<NotificationPreferencesModel> getPreferences(String token);
   Future<NotificationPreferencesModel> updatePreferences(
-      String token, NotificationPreferencesModel preferences);
-  Future<void> checkDueEntries(String token, {Map<String, String> petNames = const {}});
+    String token,
+    NotificationPreferencesModel preferences,
+  );
+  Future<void> checkDueEntries(
+    String token, {
+    Map<String, String> petNames = const {},
+  });
 }
 
 class NotificationRemoteDataSourceImpl implements NotificationRemoteDataSource {
-  NotificationRemoteDataSourceImpl({
-    required this.baseUrl,
-    http.Client? client,
-  }) : _client = client ?? http.Client();
+  NotificationRemoteDataSourceImpl({required this.baseUrl, http.Client? client})
+    : _client = client ?? http.Client();
 
   final String baseUrl;
   final http.Client _client;
 
   Map<String, String> _headers(String token) => {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer $token',
-      };
+    'Content-Type': 'application/json',
+    'Authorization': 'Bearer $token',
+  };
 
   @override
   Future<List<NotificationModel>> getNotifications(String token) async {
@@ -79,12 +82,15 @@ class NotificationRemoteDataSourceImpl implements NotificationRemoteDataSource {
     );
     _checkResponse(response);
     return NotificationPreferencesModel.fromJson(
-        json.decode(response.body) as Map<String, dynamic>);
+      json.decode(response.body) as Map<String, dynamic>,
+    );
   }
 
   @override
   Future<NotificationPreferencesModel> updatePreferences(
-      String token, NotificationPreferencesModel preferences) async {
+    String token,
+    NotificationPreferencesModel preferences,
+  ) async {
     final response = await _client.put(
       Uri.parse('$baseUrl/api/notifications/preferences'),
       headers: _headers(token),
@@ -92,11 +98,15 @@ class NotificationRemoteDataSourceImpl implements NotificationRemoteDataSource {
     );
     _checkResponse(response);
     return NotificationPreferencesModel.fromJson(
-        json.decode(response.body) as Map<String, dynamic>);
+      json.decode(response.body) as Map<String, dynamic>,
+    );
   }
 
   @override
-  Future<void> checkDueEntries(String token, {Map<String, String> petNames = const {}}) async {
+  Future<void> checkDueEntries(
+    String token, {
+    Map<String, String> petNames = const {},
+  }) async {
     final response = await _client.post(
       Uri.parse('$baseUrl/api/notifications/check-due'),
       headers: _headers(token),

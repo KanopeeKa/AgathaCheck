@@ -48,99 +48,125 @@ class OrganizationListScreen extends ConsumerWidget {
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(l.pendingInvites,
-                        style: theme.textTheme.labelLarge?.copyWith(
-                          color: colorScheme.primary,
-                          fontWeight: FontWeight.w600,
-                        )),
+                    Text(
+                      l.pendingInvites,
+                      style: theme.textTheme.labelLarge?.copyWith(
+                        color: colorScheme.primary,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
                     const SizedBox(height: 8),
-                    ...invites.map((invite) => Card(
-                      color: colorScheme.primaryContainer.withAlpha(40),
-                      margin: const EdgeInsets.only(bottom: 8),
-                      child: Padding(
-                        padding: const EdgeInsets.all(12),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              l.inviteToJoinOrg(invite.organizationName),
-                              style: theme.textTheme.bodyMedium?.copyWith(
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                            const SizedBox(height: 4),
-                            Text(
-                              l.inviteAsRole(
-                                  localizedOrgRoleWire(l, invite.desiredRole)),
-                              style: theme.textTheme.bodySmall?.copyWith(
-                                color: colorScheme.onSurfaceVariant,
-                              ),
-                            ),
-                            if (invite.inviterName.isNotEmpty || invite.inviterEmail.isNotEmpty) ...[
-                              const SizedBox(height: 2),
+                    ...invites.map(
+                      (invite) => Card(
+                        color: colorScheme.primaryContainer.withAlpha(40),
+                        margin: const EdgeInsets.only(bottom: 8),
+                        child: Padding(
+                          padding: const EdgeInsets.all(12),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
                               Text(
-                                l.invitedBy(invite.inviterName.isNotEmpty
-                                    ? invite.inviterName
-                                    : invite.inviterEmail),
+                                l.inviteToJoinOrg(invite.organizationName),
+                                style: theme.textTheme.bodyMedium?.copyWith(
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                l.inviteAsRole(
+                                  localizedOrgRoleWire(l, invite.desiredRole),
+                                ),
                                 style: theme.textTheme.bodySmall?.copyWith(
                                   color: colorScheme.onSurfaceVariant,
                                 ),
                               ),
-                            ],
-                            const SizedBox(height: 8),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.end,
-                              children: [
-                                OutlinedButton(
-                                  onPressed: () async {
-                                    try {
-                                      await ref
-                                          .read(pendingOrgInvitesProvider.notifier)
-                                          .declineInvite(invite.id);
-                                      if (context.mounted) {
-                                        ScaffoldMessenger.of(context).showSnackBar(
-                                          SnackBar(content: Text(l.inviteDeclined)),
-                                        );
-                                      }
-                                    } catch (e) {
-                                      if (context.mounted) {
-                                        ScaffoldMessenger.of(context).showSnackBar(
-                                          SnackBar(content: Text('$e')),
-                                        );
-                                      }
-                                    }
-                                  },
-                                  child: Text(l.declineInvite),
-                                ),
-                                const SizedBox(width: 8),
-                                FilledButton(
-                                  onPressed: () async {
-                                    try {
-                                      final orgId = await ref
-                                          .read(pendingOrgInvitesProvider.notifier)
-                                          .acceptInvite(invite.id);
-                                      if (context.mounted) {
-                                        ScaffoldMessenger.of(context).showSnackBar(
-                                          SnackBar(content: Text(l.inviteAccepted)),
-                                        );
-                                        context.push('/organizations/$orgId');
-                                      }
-                                    } catch (e) {
-                                      if (context.mounted) {
-                                        ScaffoldMessenger.of(context).showSnackBar(
-                                          SnackBar(content: Text('$e')),
-                                        );
-                                      }
-                                    }
-                                  },
-                                  child: Text(l.acceptInvite),
+                              if (invite.inviterName.isNotEmpty ||
+                                  invite.inviterEmail.isNotEmpty) ...[
+                                const SizedBox(height: 2),
+                                Text(
+                                  l.invitedBy(
+                                    invite.inviterName.isNotEmpty
+                                        ? invite.inviterName
+                                        : invite.inviterEmail,
+                                  ),
+                                  style: theme.textTheme.bodySmall?.copyWith(
+                                    color: colorScheme.onSurfaceVariant,
+                                  ),
                                 ),
                               ],
-                            ),
-                          ],
+                              const SizedBox(height: 8),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                children: [
+                                  OutlinedButton(
+                                    onPressed: () async {
+                                      try {
+                                        await ref
+                                            .read(
+                                              pendingOrgInvitesProvider
+                                                  .notifier,
+                                            )
+                                            .declineInvite(invite.id);
+                                        if (context.mounted) {
+                                          ScaffoldMessenger.of(
+                                            context,
+                                          ).showSnackBar(
+                                            SnackBar(
+                                              content: Text(l.inviteDeclined),
+                                            ),
+                                          );
+                                        }
+                                      } catch (e) {
+                                        if (context.mounted) {
+                                          ScaffoldMessenger.of(
+                                            context,
+                                          ).showSnackBar(
+                                            SnackBar(content: Text('$e')),
+                                          );
+                                        }
+                                      }
+                                    },
+                                    child: Text(l.declineInvite),
+                                  ),
+                                  const SizedBox(width: 8),
+                                  FilledButton(
+                                    onPressed: () async {
+                                      try {
+                                        final orgId = await ref
+                                            .read(
+                                              pendingOrgInvitesProvider
+                                                  .notifier,
+                                            )
+                                            .acceptInvite(invite.id);
+                                        if (context.mounted) {
+                                          ScaffoldMessenger.of(
+                                            context,
+                                          ).showSnackBar(
+                                            SnackBar(
+                                              content: Text(l.inviteAccepted),
+                                            ),
+                                          );
+                                          context.push('/organizations/$orgId');
+                                        }
+                                      } catch (e) {
+                                        if (context.mounted) {
+                                          ScaffoldMessenger.of(
+                                            context,
+                                          ).showSnackBar(
+                                            SnackBar(content: Text('$e')),
+                                          );
+                                        }
+                                      }
+                                    },
+                                    child: Text(l.acceptInvite),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
                         ),
                       ),
-                    )),
+                    ),
                     const Divider(height: 24),
                   ],
                 );
@@ -157,7 +183,11 @@ class OrganizationListScreen extends ConsumerWidget {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Icon(Icons.error_outline, size: 48, color: colorScheme.error),
+                    Icon(
+                      Icons.error_outline,
+                      size: 48,
+                      color: colorScheme.error,
+                    ),
                     const SizedBox(height: 16),
                     Text('$error'),
                     const SizedBox(height: 8),
@@ -201,13 +231,18 @@ class OrganizationListScreen extends ConsumerWidget {
                 }
 
                 return Column(
-                  children: orgs.map((org) => Padding(
-                    padding: const EdgeInsets.only(bottom: 8),
-                    child: OrgCard(
-                      organization: org,
-                      onTap: () => context.push('/organizations/${org.id}'),
-                    ),
-                  )).toList(),
+                  children: orgs
+                      .map(
+                        (org) => Padding(
+                          padding: const EdgeInsets.only(bottom: 8),
+                          child: OrgCard(
+                            organization: org,
+                            onTap: () =>
+                                context.push('/organizations/${org.id}'),
+                          ),
+                        ),
+                      )
+                      .toList(),
                 );
               },
             ),

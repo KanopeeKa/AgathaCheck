@@ -9,10 +9,7 @@ import '../../domain/entities/archived_pet.dart';
 import '../providers/organization_providers.dart';
 
 class ArchivedPetsScreen extends ConsumerWidget {
-  const ArchivedPetsScreen({
-    super.key,
-    this.orgId,
-  });
+  const ArchivedPetsScreen({super.key, this.orgId});
 
   final String? orgId;
 
@@ -75,10 +72,7 @@ class ArchivedPetsScreen extends ConsumerWidget {
                     ),
                   ),
                   const SizedBox(height: 16),
-                  Text(
-                    l.noArchivedPets,
-                    style: theme.textTheme.headlineSmall,
-                  ),
+                  Text(l.noArchivedPets, style: theme.textTheme.headlineSmall),
                 ],
               ),
             );
@@ -126,7 +120,8 @@ class _ArchivedPetCard extends StatelessWidget {
 
     return MergeSemantics(
       child: Semantics(
-        label: '${archivedPet.petName}, ${archivedPet.species}, '
+        label:
+            '${archivedPet.petName}, ${archivedPet.species}, '
             '${transferLabel(archivedPet.transferType)}, '
             '${archivedDate != null ? dateFormat.format(archivedDate) : ''}',
         child: Card(
@@ -178,11 +173,13 @@ class _ArchivedPetCard extends StatelessWidget {
                           ],
                           Container(
                             padding: const EdgeInsets.symmetric(
-                                horizontal: 8, vertical: 2),
+                              horizontal: 8,
+                              vertical: 2,
+                            ),
                             decoration: BoxDecoration(
                               color: _transferTypeColor(
-                                      archivedPet.transferType)
-                                  .withAlpha(30),
+                                archivedPet.transferType,
+                              ).withAlpha(30),
                               borderRadius: BorderRadius.circular(8),
                             ),
                             child: Text(
@@ -191,7 +188,8 @@ class _ArchivedPetCard extends StatelessWidget {
                                 fontSize: 11,
                                 fontWeight: FontWeight.w600,
                                 color: _transferTypeColor(
-                                    archivedPet.transferType),
+                                  archivedPet.transferType,
+                                ),
                               ),
                             ),
                           ),

@@ -13,7 +13,9 @@ import '../../../../helpers/fakes.dart';
 import '../../helpers/organization_provider_test_helpers.dart';
 
 void main() {
-  testWidgets('people section shows members and add external foster button', (tester) async {
+  testWidgets('people section shows members and add external foster button', (
+    tester,
+  ) async {
     const people = [
       OrgPersonSummary(
         id: 'member:ou-1',
@@ -68,9 +70,7 @@ void main() {
       ProviderScope(
         overrides: [
           authProvider.overrideWith((ref) => FakeAuthNotifier()),
-          organizationRepositoryProvider.overrideWithValue(
-            _PeopleRepo(people),
-          ),
+          organizationRepositoryProvider.overrideWithValue(_PeopleRepo(people)),
         ],
         child: MaterialApp.router(
           routerConfig: router,
@@ -85,7 +85,10 @@ void main() {
     expect(find.text('People'), findsOneWidget);
     expect(find.text('Jane Foster'), findsOneWidget);
     expect(find.text('Off-app Parent'), findsOneWidget);
-    expect(find.byKey(const Key('org_add_external_foster_button')), findsOneWidget);
+    expect(
+      find.byKey(const Key('org_add_external_foster_button')),
+      findsOneWidget,
+    );
     expect(find.byKey(const Key('org_add_user_button')), findsOneWidget);
 
     await tester.tap(find.text('Jane Foster'));
@@ -93,7 +96,9 @@ void main() {
     expect(find.text('Person ou-1'), findsOneWidget);
   });
 
-  testWidgets('people section hides add user button for non-super users', (tester) async {
+  testWidgets('people section hides add user button for non-super users', (
+    tester,
+  ) async {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
@@ -133,7 +138,10 @@ void main() {
 
     await tester.pumpAndSettle();
 
-    expect(find.byKey(const Key('org_add_external_foster_button')), findsOneWidget);
+    expect(
+      find.byKey(const Key('org_add_external_foster_button')),
+      findsOneWidget,
+    );
     expect(find.byKey(const Key('org_add_user_button')), findsNothing);
   });
 }

@@ -105,7 +105,11 @@ class AuthNotifier extends StateNotifier<AuthState> {
     state = state.copyWith(isLoading: true, clearError: true);
     try {
       final result = await _authService.signup(
-          email: email, password: password, firstName: firstName, lastName: lastName);
+        email: email,
+        password: password,
+        firstName: firstName,
+        lastName: lastName,
+      );
       await _saveTokens(result.accessToken, result.refreshToken);
       state = AuthState(
         user: result.user,
@@ -125,21 +129,14 @@ class AuthNotifier extends StateNotifier<AuthState> {
       } else if (msg.contains('Signup failed')) {
         msg = 'Signup failed. Please try again.';
       }
-      state = state.copyWith(
-        isLoading: false,
-        error: msg,
-      );
+      state = state.copyWith(isLoading: false, error: msg);
     }
   }
 
-  Future<void> login({
-    required String email,
-    required String password,
-  }) async {
+  Future<void> login({required String email, required String password}) async {
     state = state.copyWith(isLoading: true, clearError: true);
     try {
-      final result =
-          await _authService.login(email: email, password: password);
+      final result = await _authService.login(email: email, password: password);
       await _saveTokens(result.accessToken, result.refreshToken);
       state = AuthState(
         user: result.user,
@@ -148,7 +145,9 @@ class AuthNotifier extends StateNotifier<AuthState> {
       );
     } catch (e) {
       state = state.copyWith(
-          isLoading: false, error: e.toString().replaceFirst('Exception: ', ''));
+        isLoading: false,
+        error: e.toString().replaceFirst('Exception: ', ''),
+      );
     }
   }
 
@@ -183,7 +182,9 @@ class AuthNotifier extends StateNotifier<AuthState> {
       state = state.copyWith(user: user, isLoading: false);
     } catch (e) {
       state = state.copyWith(
-          isLoading: false, error: e.toString().replaceFirst('Exception: ', ''));
+        isLoading: false,
+        error: e.toString().replaceFirst('Exception: ', ''),
+      );
     }
   }
 
@@ -199,7 +200,9 @@ class AuthNotifier extends StateNotifier<AuthState> {
       state = state.copyWith(user: user, isLoading: false);
     } catch (e) {
       state = state.copyWith(
-          isLoading: false, error: e.toString().replaceFirst('Exception: ', ''));
+        isLoading: false,
+        error: e.toString().replaceFirst('Exception: ', ''),
+      );
     }
   }
 
@@ -260,8 +263,9 @@ class AuthNotifier extends StateNotifier<AuthState> {
   /// 401s only triggers one network round-trip. On failure the session is
   /// cleared and [AuthState.sessionExpired] is set so the UI can react.
   Future<String?> forceRefreshAccessToken() {
-    return _refreshFuture ??=
-        _runForcedRefresh().whenComplete(() => _refreshFuture = null);
+    return _refreshFuture ??= _runForcedRefresh().whenComplete(
+      () => _refreshFuture = null,
+    );
   }
 
   Future<String?> _runForcedRefresh() async {

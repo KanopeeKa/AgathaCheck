@@ -49,11 +49,13 @@ class FakePrefs implements SharedPreferences {
     _store[key] = value;
     return true;
   }
+
   @override
   Future<bool> remove(String key) async {
     _store.remove(key);
     return true;
   }
+
   @override
   noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }
@@ -74,7 +76,8 @@ class FakeAuthNotifier extends AuthNotifier {
 }
 
 class TestPetListNotifier extends PetListNotifier {
-  TestPetListNotifier([List<Pet> initialPets = const []]) : _initialPets = initialPets;
+  TestPetListNotifier([List<Pet> initialPets = const []])
+    : _initialPets = initialPets;
   final List<Pet> _initialPets;
 
   @override
@@ -145,9 +148,11 @@ class FakeNotificationsNotifier extends NotificationsNotifier {
   Future<void> checkDueEntries() async {}
 }
 
-class FakeNotificationPreferencesNotifier extends NotificationPreferencesNotifier {
+class FakeNotificationPreferencesNotifier
+    extends NotificationPreferencesNotifier {
   @override
-  Future<NotificationPreferences> build() async => const NotificationPreferences();
+  Future<NotificationPreferences> build() async =>
+      const NotificationPreferences();
 }
 
 class FakePendingSharesNotifier extends PendingSharesNotifier {

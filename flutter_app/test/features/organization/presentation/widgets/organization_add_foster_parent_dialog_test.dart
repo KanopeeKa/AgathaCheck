@@ -32,7 +32,9 @@ class _AddFosterDialogHost extends ConsumerWidget {
 }
 
 void main() {
-  testWidgets('add external foster dialog requires display name and email', (tester) async {
+  testWidgets('add external foster dialog requires display name and email', (
+    tester,
+  ) async {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
@@ -62,7 +64,9 @@ void main() {
     );
   });
 
-  testWidgets('add external foster dialog requires lawful basis confirmation', (tester) async {
+  testWidgets('add external foster dialog requires lawful basis confirmation', (
+    tester,
+  ) async {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [

@@ -14,23 +14,22 @@ abstract class HealthIssueRemoteDataSource {
 }
 
 class HealthIssueRemoteDataSourceImpl implements HealthIssueRemoteDataSource {
-  HealthIssueRemoteDataSourceImpl({
-    required this.baseUrl,
-    http.Client? client,
-  }) : _client = client ?? http.Client();
+  HealthIssueRemoteDataSourceImpl({required this.baseUrl, http.Client? client})
+    : _client = client ?? http.Client();
 
   final String baseUrl;
   final http.Client _client;
 
   Map<String, String> _headers(String token) => {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer $token',
-      };
+    'Content-Type': 'application/json',
+    'Authorization': 'Bearer $token',
+  };
 
   @override
   Future<List<HealthIssueModel>> getIssues(String petId, String token) async {
-    final uri = Uri.parse('$baseUrl/api/health-issues')
-        .replace(queryParameters: {'pet_id': petId});
+    final uri = Uri.parse(
+      '$baseUrl/api/health-issues',
+    ).replace(queryParameters: {'pet_id': petId});
     final response = await _client.get(uri, headers: _headers(token));
     _checkResponse(response);
     final list = json.decode(response.body) as List<dynamic>;
@@ -40,7 +39,10 @@ class HealthIssueRemoteDataSourceImpl implements HealthIssueRemoteDataSource {
   }
 
   @override
-  Future<HealthIssueModel> createIssue(HealthIssueModel model, String token) async {
+  Future<HealthIssueModel> createIssue(
+    HealthIssueModel model,
+    String token,
+  ) async {
     final response = await _client.post(
       Uri.parse('$baseUrl/api/health-issues'),
       headers: _headers(token),
@@ -48,11 +50,15 @@ class HealthIssueRemoteDataSourceImpl implements HealthIssueRemoteDataSource {
     );
     _checkResponse(response);
     return HealthIssueModel.fromJson(
-        json.decode(response.body) as Map<String, dynamic>);
+      json.decode(response.body) as Map<String, dynamic>,
+    );
   }
 
   @override
-  Future<HealthIssueModel> updateIssue(HealthIssueModel model, String token) async {
+  Future<HealthIssueModel> updateIssue(
+    HealthIssueModel model,
+    String token,
+  ) async {
     final response = await _client.put(
       Uri.parse('$baseUrl/api/health-issues/${model.id}'),
       headers: _headers(token),
@@ -60,13 +66,16 @@ class HealthIssueRemoteDataSourceImpl implements HealthIssueRemoteDataSource {
     );
     _checkResponse(response);
     return HealthIssueModel.fromJson(
-        json.decode(response.body) as Map<String, dynamic>);
+      json.decode(response.body) as Map<String, dynamic>,
+    );
   }
 
   @override
   Future<void> deleteIssue(String id, String token) async {
-    final response =
-        await _client.delete(Uri.parse('$baseUrl/api/health-issues/$id'), headers: _headers(token));
+    final response = await _client.delete(
+      Uri.parse('$baseUrl/api/health-issues/$id'),
+      headers: _headers(token),
+    );
     _checkResponse(response);
   }
 
@@ -83,8 +92,9 @@ class HealthIssueRemoteDataSourceImpl implements HealthIssueRemoteDataSource {
   @override
   Future<void> unlinkEvent(String issueId, String entryId, String token) async {
     final response = await _client.delete(
-        Uri.parse('$baseUrl/api/health-issues/$issueId/events/$entryId'),
-        headers: _headers(token));
+      Uri.parse('$baseUrl/api/health-issues/$issueId/events/$entryId'),
+      headers: _headers(token),
+    );
     _checkResponse(response);
   }
 

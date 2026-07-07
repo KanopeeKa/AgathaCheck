@@ -15,17 +15,16 @@ HealthEntry _entry({
   DateTime? nextDueDate,
   HealthFrequency frequency = HealthFrequency.monthly,
   DateTime? completedOn,
-}) =>
-    HealthEntry(
-      id: id,
-      petId: 'pet-1',
-      name: 'Entry $id',
-      type: HealthEntryType.medication,
-      frequency: frequency,
-      startDate: DateTime(2025, 1, 1),
-      nextDueDate: nextDueDate,
-      completedOn: completedOn,
-    );
+}) => HealthEntry(
+  id: id,
+  petId: 'pet-1',
+  name: 'Entry $id',
+  type: HealthEntryType.medication,
+  frequency: frequency,
+  startDate: DateTime(2025, 1, 1),
+  nextDueDate: nextDueDate,
+  completedOn: completedOn,
+);
 
 void main() {
   group('isEntryDueOrOverdue', () {
@@ -64,47 +63,48 @@ void main() {
     });
   });
 
-  test('hasDueOrOverdueEventsProvider is true when any entry is due or overdue',
-      () async {
-    final now = DateTime.now();
-    final today = DateTime(now.year, now.month, now.day);
-    final entries = [
-      _entry(
-        id: 'a',
-        nextDueDate: today.add(const Duration(days: 5)),
-      ),
-      _entry(
-        id: 'b',
-        nextDueDate: today.subtract(const Duration(days: 1)),
-      ),
-    ];
-    final container = ProviderContainer(overrides: [
-      healthEntriesNotifierProvider
-          .overrideWith(() => _FakeHealthEntriesNotifier(entries)),
-    ]);
-    addTearDown(container.dispose);
+  test(
+    'hasDueOrOverdueEventsProvider is true when any entry is due or overdue',
+    () async {
+      final now = DateTime.now();
+      final today = DateTime(now.year, now.month, now.day);
+      final entries = [
+        _entry(id: 'a', nextDueDate: today.add(const Duration(days: 5))),
+        _entry(id: 'b', nextDueDate: today.subtract(const Duration(days: 1))),
+      ];
+      final container = ProviderContainer(
+        overrides: [
+          healthEntriesNotifierProvider.overrideWith(
+            () => _FakeHealthEntriesNotifier(entries),
+          ),
+        ],
+      );
+      addTearDown(container.dispose);
 
-    await container.read(healthEntriesNotifierProvider.future);
-    expect(container.read(hasDueOrOverdueEventsProvider), isTrue);
-  });
+      await container.read(healthEntriesNotifierProvider.future);
+      expect(container.read(hasDueOrOverdueEventsProvider), isTrue);
+    },
+  );
 
-  test('hasDueOrOverdueEventsProvider is false when no due or overdue entries',
-      () async {
-    final now = DateTime.now();
-    final today = DateTime(now.year, now.month, now.day);
-    final entries = [
-      _entry(
-        id: 'a',
-        nextDueDate: today.add(const Duration(days: 5)),
-      ),
-    ];
-    final container = ProviderContainer(overrides: [
-      healthEntriesNotifierProvider
-          .overrideWith(() => _FakeHealthEntriesNotifier(entries)),
-    ]);
-    addTearDown(container.dispose);
+  test(
+    'hasDueOrOverdueEventsProvider is false when no due or overdue entries',
+    () async {
+      final now = DateTime.now();
+      final today = DateTime(now.year, now.month, now.day);
+      final entries = [
+        _entry(id: 'a', nextDueDate: today.add(const Duration(days: 5))),
+      ];
+      final container = ProviderContainer(
+        overrides: [
+          healthEntriesNotifierProvider.overrideWith(
+            () => _FakeHealthEntriesNotifier(entries),
+          ),
+        ],
+      );
+      addTearDown(container.dispose);
 
-    await container.read(healthEntriesNotifierProvider.future);
-    expect(container.read(hasDueOrOverdueEventsProvider), isFalse);
-  });
+      await container.read(healthEntriesNotifierProvider.future);
+      expect(container.read(hasDueOrOverdueEventsProvider), isFalse);
+    },
+  );
 }

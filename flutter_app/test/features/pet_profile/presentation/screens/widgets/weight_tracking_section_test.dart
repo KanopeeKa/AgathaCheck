@@ -22,8 +22,9 @@ class _FakeWeightEntriesNotifier extends WeightEntriesNotifier {
 Widget _wrap(List<WeightEntry> entries) {
   return ProviderScope(
     overrides: [
-      weightEntriesNotifierProvider
-          .overrideWith(() => _FakeWeightEntriesNotifier(entries)),
+      weightEntriesNotifierProvider.overrideWith(
+        () => _FakeWeightEntriesNotifier(entries),
+      ),
     ],
     child: MaterialApp(
       localizationsDelegates: AppLocalizations.localizationsDelegates,
@@ -45,8 +46,9 @@ void main() {
     SharedPreferences.setMockInitialValues({});
   });
 
-  testWidgets('shows empty state when there are no entries',
-      (WidgetTester tester) async {
+  testWidgets('shows empty state when there are no entries', (
+    WidgetTester tester,
+  ) async {
     await tester.pumpWidget(_wrap(const []));
     await tester.pump();
     await tester.pump();
@@ -60,8 +62,9 @@ void main() {
     expect(find.byType(WeightChart), findsNothing);
   });
 
-  testWidgets('renders the weight chart when two or more entries exist',
-      (WidgetTester tester) async {
+  testWidgets('renders the weight chart when two or more entries exist', (
+    WidgetTester tester,
+  ) async {
     final entries = [
       _entry('w1', DateTime(2026, 1, 1), 10.0),
       _entry('w2', DateTime(2026, 2, 1), 11.5),
@@ -81,8 +84,9 @@ void main() {
     expect(find.byTooltip('Delete weight entry'), findsNWidgets(3));
   });
 
-  testWidgets('hides the chart but lists a single entry',
-      (WidgetTester tester) async {
+  testWidgets('hides the chart but lists a single entry', (
+    WidgetTester tester,
+  ) async {
     final entries = [_entry('w1', DateTime(2026, 1, 1), 10.0)];
     await tester.pumpWidget(_wrap(entries));
     await tester.pump();

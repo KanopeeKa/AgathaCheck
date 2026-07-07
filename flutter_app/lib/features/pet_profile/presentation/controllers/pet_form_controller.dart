@@ -119,29 +119,26 @@ class PetFormController {
           clearDateOfBirth: state.dateOfBirth == null,
         );
         await deps.updatePet(updated);
-        return PetFormSubmitSuccess(
-          petId: petId,
-          orgId: state.selectedOrgId,
-        );
+        return PetFormSubmitSuccess(petId: petId, orgId: state.selectedOrgId);
       }
 
       await deps.addPet(
-            name: state.name.trim(),
-            species: state.selectedSpecies,
-            breed: state.breed.trim(),
-            dateOfBirth: state.dateOfBirth,
-            weight: weight,
-            gender: state.selectedGender,
-            bio: state.bio.trim(),
-            insurance: state.insurance.trim(),
-            neuteredDate: state.neuteredDate,
-            neuterDismissed: state.neuterDismissed,
-            chipId: state.chipId.trim(),
-            chipDismissed: state.chipDismissed,
-            photoPath: state.photoBase64,
-            vetId: state.selectedVetId,
-            organizationId: state.selectedOrgId,
-          );
+        name: state.name.trim(),
+        species: state.selectedSpecies,
+        breed: state.breed.trim(),
+        dateOfBirth: state.dateOfBirth,
+        weight: weight,
+        gender: state.selectedGender,
+        bio: state.bio.trim(),
+        insurance: state.insurance.trim(),
+        neuteredDate: state.neuteredDate,
+        neuterDismissed: state.neuterDismissed,
+        chipId: state.chipId.trim(),
+        chipDismissed: state.chipDismissed,
+        photoPath: state.photoBase64,
+        vetId: state.selectedVetId,
+        organizationId: state.selectedOrgId,
+      );
 
       final orgId = state.selectedOrgId;
       if (orgId != null) {
@@ -154,8 +151,7 @@ class PetFormController {
   }
 
   PetFormSubmitValidation? _validateWeight({required bool isEditing}) {
-    final weightStr =
-        isEditing ? state.weight.trim() : state.newWeight.trim();
+    final weightStr = isEditing ? state.weight.trim() : state.newWeight.trim();
     if (weightStr.isEmpty) return null;
 
     final parsed = double.tryParse(weightStr);
@@ -169,8 +165,7 @@ class PetFormController {
   }
 
   double? _parsedWeight({required bool isEditing}) {
-    final weightStr =
-        isEditing ? state.weight.trim() : state.newWeight.trim();
+    final weightStr = isEditing ? state.weight.trim() : state.newWeight.trim();
     if (weightStr.isEmpty) return null;
     return double.tryParse(weightStr);
   }

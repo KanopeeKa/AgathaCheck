@@ -12,36 +12,42 @@ import 'package:pet_profile_app/l10n/app_localizations.dart';
 import '../../../../helpers/fakes.dart';
 
 void main() {
-  testWidgets('MyDetailsScreen renders and shows not logged in if user is null', (WidgetTester tester) async {
-    SharedPreferences.setMockInitialValues({});
-    final prefs = await SharedPreferences.getInstance();
+  testWidgets(
+    'MyDetailsScreen renders and shows not logged in if user is null',
+    (WidgetTester tester) async {
+      SharedPreferences.setMockInitialValues({});
+      final prefs = await SharedPreferences.getInstance();
 
-    await tester.pumpWidget(
-      ProviderScope(
-        overrides: [
-          sharedPreferencesProvider.overrideWithValue(prefs),
-          authProvider.overrideWith((ref) {
-            final notifier = AuthNotifier(FakeAuthService(), PrefsTokenStore(prefs));
-            notifier.state = const AuthState();
-            return notifier;
-          }),
-        ],
-        child: const MaterialApp(
-          localizationsDelegates: [
-            AppLocalizations.delegate,
-            GlobalMaterialLocalizations.delegate,
-            GlobalWidgetsLocalizations.delegate,
-            GlobalCupertinoLocalizations.delegate,
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            sharedPreferencesProvider.overrideWithValue(prefs),
+            authProvider.overrideWith((ref) {
+              final notifier = AuthNotifier(
+                FakeAuthService(),
+                PrefsTokenStore(prefs),
+              );
+              notifier.state = const AuthState();
+              return notifier;
+            }),
           ],
-          supportedLocales: AppLocalizations.supportedLocales,
-          home: MyDetailsScreen(),
+          child: const MaterialApp(
+            localizationsDelegates: [
+              AppLocalizations.delegate,
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate,
+              GlobalCupertinoLocalizations.delegate,
+            ],
+            supportedLocales: AppLocalizations.supportedLocales,
+            home: MyDetailsScreen(),
+          ),
         ),
-      ),
-    );
-    await tester.pumpAndSettle();
+      );
+      await tester.pumpAndSettle();
 
-    final scaffoldContext = tester.element(find.byType(Scaffold));
-    final l10n = AppLocalizations.of(scaffoldContext)!;
-    expect(find.text(l10n.notLoggedIn), findsOneWidget);
-  });
+      final scaffoldContext = tester.element(find.byType(Scaffold));
+      final l10n = AppLocalizations.of(scaffoldContext)!;
+      expect(find.text(l10n.notLoggedIn), findsOneWidget);
+    },
+  );
 }

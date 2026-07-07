@@ -31,9 +31,13 @@ class SharedPetAcceptSection extends StatelessWidget {
           children: [
             Icon(Icons.person_add, size: 32, color: colorScheme.primary),
             const SizedBox(height: 8),
-            Text(promptText,
-                style: theme.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w500),
-                textAlign: TextAlign.center),
+            Text(
+              promptText,
+              style: theme.textTheme.bodyMedium?.copyWith(
+                fontWeight: FontWeight.w500,
+              ),
+              textAlign: TextAlign.center,
+            ),
             const SizedBox(height: 12),
             FilledButton.icon(
               onPressed: accepting ? null : onAccept,

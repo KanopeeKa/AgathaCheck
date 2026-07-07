@@ -10,11 +10,7 @@ import '../../../../weight_tracking/presentation/providers/weight_providers.dart
 /// Expects at least two [entries]; the caller is responsible for that check.
 /// Weights are converted from the stored kilograms into [unit] for display.
 class WeightChart extends StatelessWidget {
-  const WeightChart({
-    required this.entries,
-    required this.unit,
-    super.key,
-  });
+  const WeightChart({required this.entries, required this.unit, super.key});
 
   /// The weight entries to plot. Order is irrelevant — the chart sorts a copy
   /// chronologically before rendering.
@@ -65,10 +61,12 @@ class WeightChart extends StatelessWidget {
         ),
         borderData: FlBorderData(show: false),
         titlesData: FlTitlesData(
-          topTitles:
-              const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-          rightTitles:
-              const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+          topTitles: const AxisTitles(
+            sideTitles: SideTitles(showTitles: false),
+          ),
+          rightTitles: const AxisTitles(
+            sideTitles: SideTitles(showTitles: false),
+          ),
           leftTitles: AxisTitles(
             sideTitles: SideTitles(
               showTitles: true,
@@ -82,8 +80,9 @@ class WeightChart extends StatelessWidget {
                   padding: const EdgeInsets.only(right: 4),
                   child: Text(
                     value.toStringAsFixed(1),
-                    style: theme.textTheme.labelSmall
-                        ?.copyWith(color: colorScheme.onSurfaceVariant),
+                    style: theme.textTheme.labelSmall?.copyWith(
+                      color: colorScheme.onSurfaceVariant,
+                    ),
                   ),
                 );
               },
@@ -106,8 +105,9 @@ class WeightChart extends StatelessWidget {
                   padding: const EdgeInsets.only(top: 6),
                   child: Text(
                     DateFormat.Md().format(sorted[index].date),
-                    style: theme.textTheme.labelSmall
-                        ?.copyWith(color: colorScheme.onSurfaceVariant),
+                    style: theme.textTheme.labelSmall?.copyWith(
+                      color: colorScheme.onSurfaceVariant,
+                    ),
                   ),
                 );
               },
@@ -140,8 +140,7 @@ class WeightChart extends StatelessWidget {
             barWidth: 3,
             dotData: FlDotData(
               show: true,
-              getDotPainter: (spot, percent, bar, index) =>
-                  FlDotCirclePainter(
+              getDotPainter: (spot, percent, bar, index) => FlDotCirclePainter(
                 radius: 3,
                 color: colorScheme.primary,
                 strokeWidth: 0,

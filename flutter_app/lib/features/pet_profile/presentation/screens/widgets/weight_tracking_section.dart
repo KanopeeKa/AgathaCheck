@@ -29,9 +29,12 @@ class WeightTrackingSection extends ConsumerWidget {
         clipBehavior: Clip.antiAlias,
         child: ExpansionTile(
           leading: Icon(Icons.monitor_weight, color: colorScheme.primary),
-          title: Text(l.weightTracking,
-              style: theme.textTheme.titleMedium
-                  ?.copyWith(fontWeight: FontWeight.w600)),
+          title: Text(
+            l.weightTracking,
+            style: theme.textTheme.titleMedium?.copyWith(
+              fontWeight: FontWeight.w600,
+            ),
+          ),
           children: [
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -43,7 +46,8 @@ class WeightTrackingSection extends ConsumerWidget {
                       ButtonSegment(value: WeightUnit.lb, label: Text('lb')),
                     ],
                     selected: {unit},
-                    onSelectionChanged: (sel) => controller.setWeightUnit(petId, sel.first),
+                    onSelectionChanged: (sel) =>
+                        controller.setWeightUnit(petId, sel.first),
                     style: SegmentedButton.styleFrom(
                       visualDensity: VisualDensity.compact,
                     ),
@@ -52,7 +56,13 @@ class WeightTrackingSection extends ConsumerWidget {
                   Tooltip(
                     message: l.addWeightEntry,
                     child: FilledButton.tonalIcon(
-                      onPressed: () => _showAddWeightSheet(context, ref, unit, unitLabel, controller),
+                      onPressed: () => _showAddWeightSheet(
+                        context,
+                        ref,
+                        unit,
+                        unitLabel,
+                        controller,
+                      ),
                       icon: const Icon(Icons.add, size: 18),
                       label: Text(l.addWeightEntry),
                     ),
@@ -68,8 +78,10 @@ class WeightTrackingSection extends ConsumerWidget {
               ),
               error: (error, _) => Padding(
                 padding: const EdgeInsets.all(16),
-                child: Text(l.errorLoadingWeightData(error.toString()),
-                    style: TextStyle(color: colorScheme.error)),
+                child: Text(
+                  l.errorLoadingWeightData(error.toString()),
+                  style: TextStyle(color: colorScheme.error),
+                ),
               ),
               data: (entries) {
                 if (entries.isEmpty) {
@@ -77,16 +89,25 @@ class WeightTrackingSection extends ConsumerWidget {
                     padding: const EdgeInsets.all(24),
                     child: Column(
                       children: [
-                        Icon(Icons.scale_outlined, size: 48,
-                            color: colorScheme.outline),
+                        Icon(
+                          Icons.scale_outlined,
+                          size: 48,
+                          color: colorScheme.outline,
+                        ),
                         const SizedBox(height: 8),
-                        Text(l.noWeightDataYet,
-                            style: theme.textTheme.bodyLarge?.copyWith(
-                                color: colorScheme.onSurfaceVariant)),
+                        Text(
+                          l.noWeightDataYet,
+                          style: theme.textTheme.bodyLarge?.copyWith(
+                            color: colorScheme.onSurfaceVariant,
+                          ),
+                        ),
                         const SizedBox(height: 4),
-                        Text(l.tapAddEntryToStart,
-                            style: theme.textTheme.bodySmall?.copyWith(
-                                color: colorScheme.outline)),
+                        Text(
+                          l.tapAddEntryToStart,
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            color: colorScheme.outline,
+                          ),
+                        ),
                       ],
                     ),
                   );
@@ -115,23 +136,41 @@ class WeightTrackingSection extends ConsumerWidget {
                           contentPadding: EdgeInsets.zero,
                           leading: CircleAvatar(
                             backgroundColor: colorScheme.primaryContainer,
-                            child: Icon(Icons.monitor_weight, size: 20,
-                                color: colorScheme.onPrimaryContainer),
+                            child: Icon(
+                              Icons.monitor_weight,
+                              size: 20,
+                              color: colorScheme.onPrimaryContainer,
+                            ),
                           ),
-                          title: Text('${convertWeight(entry.weight, unit).toStringAsFixed(1)} $unitLabel',
-                              style: theme.textTheme.titleSmall
-                                  ?.copyWith(fontWeight: FontWeight.w600)),
+                          title: Text(
+                            '${convertWeight(entry.weight, unit).toStringAsFixed(1)} $unitLabel',
+                            style: theme.textTheme.titleSmall?.copyWith(
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
                           subtitle: Text(
                             DateFormat.yMMMd().format(entry.date) +
-                                (entry.notes.isNotEmpty ? ' — ${entry.notes}' : ''),
-                            style: theme.textTheme.bodySmall
-                                ?.copyWith(color: colorScheme.onSurfaceVariant),
+                                (entry.notes.isNotEmpty
+                                    ? ' — ${entry.notes}'
+                                    : ''),
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              color: colorScheme.onSurfaceVariant,
+                            ),
                           ),
                           trailing: IconButton(
-                            icon: Icon(Icons.delete_outline, color: colorScheme.error, size: 20),
-                            tooltip: AppLocalizations.of(context)!.deleteWeightEntry,
+                            icon: Icon(
+                              Icons.delete_outline,
+                              color: colorScheme.error,
+                              size: 20,
+                            ),
+                            tooltip: AppLocalizations.of(
+                              context,
+                            )!.deleteWeightEntry,
                             onPressed: () async {
-                              await controller.deleteWeightEntry(petId, entry.id);
+                              await controller.deleteWeightEntry(
+                                petId,
+                                entry.id,
+                              );
                             },
                           ),
                         );
@@ -148,7 +187,13 @@ class WeightTrackingSection extends ConsumerWidget {
     );
   }
 
-  void _showAddWeightSheet(BuildContext context, WidgetRef ref, WeightUnit unit, String unitLabel, WeightTrackingController controller) {
+  void _showAddWeightSheet(
+    BuildContext context,
+    WidgetRef ref,
+    WeightUnit unit,
+    String unitLabel,
+    WeightTrackingController controller,
+  ) {
     final weightController = TextEditingController();
     final notesController = TextEditingController();
     var selectedDate = DateTime.now();
@@ -171,42 +216,50 @@ class WeightTrackingSection extends ConsumerWidget {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                Text(AppLocalizations.of(ctx)!.addWeightEntry,
-                    style: theme.textTheme.titleLarge
-                        ?.copyWith(fontWeight: FontWeight.bold)),
+                Text(
+                  AppLocalizations.of(ctx)!.addWeightEntry,
+                  style: theme.textTheme.titleLarge?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
                 const SizedBox(height: 20),
                 Semantics(
                   label: 'Select date for weight entry',
                   button: true,
                   child: InkWell(
-                  onTap: () async {
-                    final picked = await showDatePicker(
-                      context: ctx,
-                      initialDate: selectedDate,
-                      firstDate: DateTime(2000),
-                      lastDate: DateTime.now(),
-                    );
-                    if (picked != null) {
-                      setSheetState(() => selectedDate = calendarDateOnly(picked));
-                    }
-                  },
-                  child: InputDecorator(
-                    decoration: InputDecoration(
-                      labelText: AppLocalizations.of(ctx)!.date,
-                      prefixIcon: const Icon(Icons.calendar_today),
-                      border: const OutlineInputBorder(),
+                    onTap: () async {
+                      final picked = await showDatePicker(
+                        context: ctx,
+                        initialDate: selectedDate,
+                        firstDate: DateTime(2000),
+                        lastDate: DateTime.now(),
+                      );
+                      if (picked != null) {
+                        setSheetState(
+                          () => selectedDate = calendarDateOnly(picked),
+                        );
+                      }
+                    },
+                    child: InputDecorator(
+                      decoration: InputDecoration(
+                        labelText: AppLocalizations.of(ctx)!.date,
+                        prefixIcon: const Icon(Icons.calendar_today),
+                        border: const OutlineInputBorder(),
+                      ),
+                      child: Text(DateFormat.yMMMd().format(selectedDate)),
                     ),
-                    child: Text(DateFormat.yMMMd().format(selectedDate)),
                   ),
-                ),
                 ),
                 const SizedBox(height: 16),
                 TextField(
                   controller: weightController,
-                  keyboardType:
-                      const TextInputType.numberWithOptions(decimal: true),
+                  keyboardType: const TextInputType.numberWithOptions(
+                    decimal: true,
+                  ),
                   decoration: InputDecoration(
-                    labelText: AppLocalizations.of(ctx)!.weightWithUnit(unitLabel),
+                    labelText: AppLocalizations.of(
+                      ctx,
+                    )!.weightWithUnit(unitLabel),
                     prefixIcon: const Icon(Icons.monitor_weight),
                     border: const OutlineInputBorder(),
                     helperText: AppLocalizations.of(ctx)!.weightFormatHint,
@@ -234,8 +287,11 @@ class WeightTrackingSection extends ConsumerWidget {
                     final weightText = weightController.text.trim();
                     final inputWeight = double.tryParse(weightText);
                     if (inputWeight == null || inputWeight <= 0) {
-                      setSheetState(() =>
-                          weightError = AppLocalizations.of(ctx)!.weightFormatHint);
+                      setSheetState(
+                        () => weightError = AppLocalizations.of(
+                          ctx,
+                        )!.weightFormatHint,
+                      );
                       return;
                     }
 

@@ -19,7 +19,11 @@ class AboutScreen extends StatelessWidget {
         shape: BoxShape.circle,
       ),
       child: Center(
-        child: Icon(Icons.pets, size: size * 0.55, color: theme.colorScheme.primary),
+        child: Icon(
+          Icons.pets,
+          size: size * 0.55,
+          color: theme.colorScheme.primary,
+        ),
       ),
     );
 
@@ -135,7 +139,10 @@ class AboutScreen extends StatelessWidget {
                 for (final document in legalDocuments) ...[
                   Card(
                     child: ListTile(
-                      leading: Icon(document.icon, color: theme.colorScheme.primary),
+                      leading: Icon(
+                        document.icon,
+                        color: theme.colorScheme.primary,
+                      ),
                       title: Text(document.title),
                       trailing: const Icon(Icons.chevron_right),
                       onTap: () => context.push(document.id.routePath),

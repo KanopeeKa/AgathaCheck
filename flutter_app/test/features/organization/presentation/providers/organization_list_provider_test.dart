@@ -16,19 +16,22 @@ void main() {
       expect(orgs.single.name, 'Clinic');
     });
 
-    test('createOrganization converts the form map to a domain entity', () async {
-      final repo = RecordingOrganizationRepository();
-      final container = makeOrgProviderTestContainer(repo);
-      addTearDown(container.dispose);
+    test(
+      'createOrganization converts the form map to a domain entity',
+      () async {
+        final repo = RecordingOrganizationRepository();
+        final container = makeOrgProviderTestContainer(repo);
+        addTearDown(container.dispose);
 
-      await container.read(organizationListProvider.future);
-      await container.read(organizationListProvider.notifier).createOrganization(
-            {'name': 'New Clinic', 'type': 'charity'},
-          );
+        await container.read(organizationListProvider.future);
+        await container
+            .read(organizationListProvider.notifier)
+            .createOrganization({'name': 'New Clinic', 'type': 'charity'});
 
-      expect(repo.created, hasLength(1));
-      expect(repo.created.single.name, 'New Clinic');
-      expect(repo.created.single.type, OrganizationType.charity);
-    });
+        expect(repo.created, hasLength(1));
+        expect(repo.created.single.name, 'New Clinic');
+        expect(repo.created.single.type, OrganizationType.charity);
+      },
+    );
   });
 }

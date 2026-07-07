@@ -12,7 +12,9 @@ import '../../../../helpers/fakes.dart';
 import '../../helpers/organization_provider_test_helpers.dart';
 
 void main() {
-  testWidgets('foster parents section shows members and add button', (tester) async {
+  testWidgets('foster parents section shows members and add button', (
+    tester,
+  ) async {
     const parents = [
       FosterParent(
         id: 'ou-1',
@@ -72,7 +74,10 @@ void main() {
     expect(find.text('Jane Foster'), findsOneWidget);
     expect(find.text('Max'), findsOneWidget);
     expect(find.text('Off-app Parent'), findsOneWidget);
-    expect(find.byKey(const Key('org_add_foster_parent_button')), findsOneWidget);
+    expect(
+      find.byKey(const Key('org_add_foster_parent_button')),
+      findsOneWidget,
+    );
   });
 }
 
@@ -82,6 +87,8 @@ class _FosterParentsRepo extends RecordingOrganizationRepository {
   final List<FosterParent> _parents;
 
   @override
-  Future<List<FosterParent>> getFosterParents(String orgId, String token) async =>
-      _parents;
+  Future<List<FosterParent>> getFosterParents(
+    String orgId,
+    String token,
+  ) async => _parents;
 }
