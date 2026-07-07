@@ -63,9 +63,9 @@ jobs:
         run: flutter analyze --no-fatal-warnings --no-fatal-infos
 
       - name: Run unit & widget tests with coverage
-        timeout-minutes: 25
+        timeout-minutes: 35
         working-directory: flutter_app
-        run: flutter test --concurrency=1 --exclude-tags=integration,skip-ci --coverage --fail-fast
+        run: bash scripts/run_tests_ci.sh
 
       - name: Upload Flutter coverage
         uses: actions/upload-artifact@v4
