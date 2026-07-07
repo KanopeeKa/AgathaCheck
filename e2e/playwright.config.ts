@@ -1,6 +1,8 @@
 import { defineConfig, devices } from '@playwright/test';
 
 const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
+/** Live UAT (cPanel auto-SSL) may present a cert chain GitHub runners do not trust. */
+const tlsInsecure = process.env.E2E_TLS_INSECURE === '1';
 
 export default defineConfig({
   testDir: './playwright/tests',
@@ -14,6 +16,7 @@ export default defineConfig({
   ],
   use: {
     baseURL,
+    ignoreHTTPSErrors: tlsInsecure,
     viewport: { width: 1280, height: 720 },
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',

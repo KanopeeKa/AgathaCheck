@@ -111,7 +111,9 @@ Tag fast, critical journeys with `@smoke` in the test title (e.g. login). Run lo
 cd e2e && npm run test:smoke
 ```
 
-Live UAT smoke E2E uses `E2E_BASE_URL=https://uat.agathatrack.com`. Set `E2E=1` on the UAT Node app if auth rate limits interfere.
+Live UAT smoke E2E uses `E2E_BASE_URL=https://uat.agathatrack.com`. The UAT deploy workflow sets `E2E_TLS_INSECURE=1` because cPanel auto-SSL may present a certificate chain that GitHub Actions runners do not trust (curl exit 60 / Node `self-signed certificate`). Localhost E2E does not need this flag.
+
+Set `E2E=1` on the UAT Node app if auth rate limits interfere.
 
 ## Writing new journeys
 
