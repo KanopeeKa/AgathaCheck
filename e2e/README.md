@@ -20,6 +20,7 @@ Playwright specs in `playwright/tests/` are annotated with `@bdd <feature>` comm
 | `auth.signup.spec.ts` | `authentication.feature` | Sign up success; password mismatch; email/password validation; duplicate email |
 | `pet.profiles.spec.ts` | `pet_profiles.feature` | Empty list; create pet; view detail; edit name |
 | `health.tracking.spec.ts` | `health_tracking.feature` | View due entry; mark one-time entry complete (API + UI); verify created entry on dashboard |
+| `sharing.spec.ts` | `sharing.feature` | Create share link; view shared pet (anonymous); health/vet/owner on preview; accept share; invalid link |
 
 ## Flutter web notes
 
