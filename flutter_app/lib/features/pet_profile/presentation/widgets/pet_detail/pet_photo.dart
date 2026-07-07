@@ -1,0 +1,91 @@
+import 'dart:convert';
+
+import 'package:flutter/material.dart';
+import '../../../../../core/utils/constants.dart';
+import '../../../domain/entities/pet.dart';
+
+/// Renders a pet's photo (or a species placeholder) for the profile card.
+///
+/// When the pet has passed away the photo is lightened and overlaid with the
+/// rainbow-wings memorial image.
+class PetPhoto extends StatelessWidget {
+  const PetPhoto({super.key, required this.pet});
+
+  final Pet pet;
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final petColor = pet.colorValue != null
+        ? Color(pet.colorValue!)
+        : colorScheme.primary;
+
+    Widget photoContent;
+
+    if (pet.photoPath != null && pet.photoPath!.isNotEmpty) {
+      try {
+        final bytes = base64Decode(pet.photoPath!);
+        photoContent = Container(
+          decoration: BoxDecoration(
+            border: Border(left: BorderSide(color: petColor, width: 5)),
+          ),
+          child: Image.memory(
+            bytes,
+            fit: BoxFit.cover,
+            semanticLabel: 'Photo of ${pet.name}',
+          ),
+        );
+      } catch (_) {
+        photoContent = _buildPlaceholder(petColor);
+      }
+    } else {
+      photoContent = _buildPlaceholder(petColor);
+    }
+
+    if (pet.passedAway) {
+      return ClipRect(
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            ColorFiltered(
+              colorFilter: const ColorFilter.mode(
+                Color(0xDDFFFFFF),
+                BlendMode.lighten,
+              ),
+              child: photoContent,
+            ),
+            Center(
+              child: Opacity(
+                opacity: 0.35,
+                child: Image.asset(
+                  'assets/rainbow_wings.png',
+                  width: 80,
+                  height: 80,
+                  fit: BoxFit.contain,
+                ),
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
+    return photoContent;
+  }
+
+  Widget _buildPlaceholder(Color petColor) {
+    return Container(
+      decoration: BoxDecoration(
+        color: petColor.withValues(alpha: 0.12),
+        border: Border(left: BorderSide(color: petColor, width: 5)),
+      ),
+      child: Center(
+        child: AppConstants.speciesIconWidget(
+          pet.species,
+          size: 56,
+          color: petColor.withValues(alpha: 0.6),
+        ),
+      ),
+    );
+  }
+}
