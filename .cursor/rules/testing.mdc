@@ -1,0 +1,38 @@
+---
+description: Test expectations across unit, integration, BDD, and E2E layers
+globs: flutter_app/test/**,server/test/**,e2e/**
+alwaysApply: true
+---
+
+# Testing
+
+## Pre-push (required)
+
+```bash
+cd server && npx jest --env=node --forceExit
+cd flutter_app && dart run build_runner build --delete-conflicting-outputs
+cd flutter_app && flutter analyze --no-fatal-warnings --no-fatal-infos
+cd flutter_app && flutter test --concurrency=1 --exclude-tags=integration
+```
+
+## Layer expectations
+
+| Layer | Tool | Rule |
+|---|---|---|
+| Node routes | Jest + supertest | Every route module gets a test file |
+| Dart routes | `dart analyze lib` | Same PR as Node when HTTP behaviour changes |
+| Flutter domain/data | `flutter test` | Models, repos, datasources |
+| Flutter UI | Widget tests | Extracted widgets + critical screens |
+| Integration | `flutter test` integration dir | **Blocking in CI** — no `continue-on-error` |
+| Journeys | Playwright (`e2e/`) | UAT gate only; annotate `@bdd` + `@smoke` for critical paths |
+
+## BDD (hybrid — no Cucumber runner)
+
+- Gherkin specs: `flutter_app/test/bdd/features/`
+- Playwright implementations: `e2e/playwright/tests/` with `/** @bdd <feature> */` comment
+- New user journey → add Gherkin scenario **and** Playwright spec (or link debt issue)
+
+## Coverage
+
+- Add tests before or during extraction, not after.
+- New route → Jest; new widget → widget test in mirrored path.

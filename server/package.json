@@ -8,11 +8,10 @@
     "start": "node bin/server.js",
     "dev": "node --watch bin/server.js",
     "test": "jest --env=node --runInBand",
-    "test:mocha": "mocha 'test/**/*.test.js' --timeout 10000 --exit",
     "audit-retention": "node scripts/audit-retention.js"
   },
   "dependencies": {
-    "bcrypt": "^5.1.0",
+    "bcrypt": "^6.0.0",
     "body-parser": "^1.20.2",
     "cors": "^2.8.5",
     "dotenv": "^16.0.3",
@@ -24,18 +23,15 @@
     "pg": "^8.10.0",
     "pino": "^10.3.1",
     "sinon": "^21.0.3",
-    "uuid": "^9.0.0"
+    "uuid": "^11.1.0"
   },
   "devDependencies": {
     "@babel/core": "^7.29.0",
     "@babel/preset-env": "^7.29.2",
     "babel-jest": "^30.3.0",
     "babel-plugin-transform-import-meta": "^2.3.3",
-    "chai": "^4.3.0",
     "jest": "^30.3.0",
-    "mocha": "^11.0.0",
     "nodemon": "^3.0.1",
     "supertest": "^7.2.2"
-  },
-  "mocha": {}
+  }
 }

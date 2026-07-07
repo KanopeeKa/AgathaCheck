@@ -1,0 +1,29 @@
+---
+description: Security patterns for API error handling, dependencies, and secrets
+globs: server/**,server/lib/**
+alwaysApply: true
+---
+
+# Security
+
+## Error responses (5xx)
+
+- **Never** return raw `err.message`, `e.toString()`, or `'$e'` in production 5xx bodies.
+- Use `publicError()` / `errorDetails()` from `server/config/security.js` and `server/lib/http_security.dart`.
+- Before claiming redaction is complete, grep **all** of: `err.message`, `e.toString()`, `$e`, `details` inside JSON error bodies on **both** Node and Dart backends.
+
+## Dependencies
+
+- Run `npm audit` in `server/` and `e2e/` before push.
+- Do not ignore **high** or **critical** advisories without a linked issue.
+- CI blocks merges on high+ npm audit findings.
+
+## Secrets
+
+- Never commit API keys, JWT secrets, or passwords.
+- JWT dev fallback is documented in `.agents/memory/jwt-secret-dev-fallback.md` — ensure production requires explicit secret.
+
+## Auth
+
+- Sensitive auth endpoints use rate limiting (`server/config/rateLimit.js`).
+- Passwords hashed with bcrypt; tokens via jsonwebtoken.

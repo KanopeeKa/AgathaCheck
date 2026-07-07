@@ -7,6 +7,7 @@ on:
 
 env:
   FLUTTER_VERSION: '3.32.0'
+  NODE_VERSION: '22'
 
 jobs:
   flutter:
@@ -44,6 +45,15 @@ jobs:
             echo "build_runner not configured; skipping codegen."
           fi
 
+      - name: Check Dart format (warn only — Sprint 1)
+        continue-on-error: true
+        run: |
+          dart format --output=none --set-exit-if-changed \
+            flutter_app/lib flutter_app/test server/lib || {
+            echo "::warning::dart format would change files. Run 'dart format flutter_app/lib flutter_app/test server/lib' locally. Enforcement starts Sprint 2 (see docs/refactoring-log.md)."
+            exit 0
+          }
+
       - name: Sync legal documents into app assets
         run: dart run scripts/sync_legal_documents.dart
 
@@ -51,13 +61,19 @@ jobs:
         working-directory: flutter_app
         run: flutter analyze --no-fatal-warnings --no-fatal-infos
 
-      - name: Run unit & widget tests
+      - name: Run unit & widget tests with coverage
         working-directory: flutter_app
-        run: flutter test --concurrency=1 --exclude-tags=integration
+        run: flutter test --concurrency=1 --exclude-tags=integration --coverage
+
+      - name: Upload Flutter coverage
+        uses: actions/upload-artifact@v4
+        with:
+          name: flutter-coverage
+          path: flutter_app/coverage/lcov.info
+          if-no-files-found: warn
 
       - name: Run integration tests (if present)
         working-directory: flutter_app
-        continue-on-error: true
         run: |
           if [ -d "test/features/pet_profile/presentation/integration" ]; then
             flutter test test/features/pet_profile/presentation/integration/ --concurrency=1
@@ -87,7 +103,7 @@ jobs:
           path: flutter_app/build/web/
 
   backend:
-    name: Backend (Node.js Jest tests)
+    name: Backend (Node.js Jest + Dart analyze)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -95,7 +111,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: ${{ env.NODE_VERSION }}
           cache: npm
           cache-dependency-path: server/package-lock.json
 
@@ -103,6 +119,47 @@ jobs:
         working-directory: server
         run: npm ci
 
-      - name: Run backend tests
+      - name: npm audit (high and above)
         working-directory: server
-        run: npx jest --env=node --forceExit
+        run: npm audit --audit-level=high
+
+      - name: Run backend tests with coverage
+        working-directory: server
+        run: npx jest --env=node --forceExit --coverage
+
+      - name: Upload Jest coverage
+        uses: actions/upload-artifact@v4
+        with:
+          name: jest-coverage
+          path: server/coverage/
+          if-no-files-found: warn
+
+      - name: Set up Dart
+        uses: dart-lang/setup-dart@v1
+        with:
+          sdk: '3.8.0'
+
+      - name: Dart analyze (server lib)
+        working-directory: server
+        run: dart pub get && dart analyze lib
+
+  e2e-audit:
+    name: E2E package audit
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: e2e/package-lock.json
+
+      - name: Install E2E dependencies
+        working-directory: e2e
+        run: npm ci
+
+      - name: npm audit (high and above)
+        working-directory: e2e
+        run: npm audit --audit-level=high

@@ -1,0 +1,31 @@
+---
+description: Branching, merge, and conflict-avoidance policy
+alwaysApply: true
+---
+
+# Merge policy
+
+## Trunk-based development
+
+- Merge frequently to `main` — avoid long-lived feature branches.
+- Full Playwright E2E runs on **UAT deploy** (`release/uat-*`), not on every PR.
+- Unit/widget + Jest + security scans gate every PR to `main`.
+
+## Before every commit / push
+
+1. **Sync with main** to avoid duplicate/conflicting commits:
+   ```bash
+   git fetch origin main
+   git rebase origin/main   # or: git merge origin/main
+   ```
+2. If rebase/merge reports conflicts, **resolve before pushing**.
+3. Run pre-push tests (see `testing.mdc`).
+
+## Branch naming (cloud agents)
+
+- Use `cursor/<descriptive-name>-13e3` for agent branches.
+
+## Refactoring
+
+- Track sprint work in `docs/refactoring-log.md`.
+- One domain/screen per PR; must keep CI green.

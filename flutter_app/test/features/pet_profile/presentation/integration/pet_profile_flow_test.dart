@@ -119,7 +119,7 @@ void main() {
         colorValue: 0xFF7E57C2,
         passedAway: false,
       );
-      final petListOverride = allPetsIncludingOrgProvider.overrideWith((ref) async => [pet]);
+      final petListOverride = petListProvider.overrideWith(() => TestPetListNotifier([pet]));
       await tester.pumpWidget(createApp(
         prefs: prefs,
         overrides: [

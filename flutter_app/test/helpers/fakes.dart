@@ -67,11 +67,11 @@ class FakeAuthNotifier extends AuthNotifier {
 }
 
 class TestPetListNotifier extends PetListNotifier {
-  TestPetListNotifier();
+  TestPetListNotifier([List<Pet> initialPets = const []]) : _initialPets = initialPets;
+  final List<Pet> _initialPets;
+
   @override
-  Future<List<Pet>> build() async {
-    return [];
-  }
+  Future<List<Pet>> build() async => List<Pet>.from(_initialPets);
   @override
   Future<String> addPet({
     required String name,
