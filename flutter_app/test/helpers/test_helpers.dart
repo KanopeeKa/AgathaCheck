@@ -6,9 +6,6 @@ import 'package:pet_profile_app/core/router/app_router.dart';
 import 'package:pet_profile_app/core/theme/app_theme.dart';
 import 'package:pet_profile_app/core/utils/constants.dart';
 import 'package:pet_profile_app/l10n/app_localizations.dart';
-import 'package:pet_profile_app/core/providers/api_base_url_provider.dart';
-import 'package:pet_profile_app/features/organization/presentation/providers/organization_providers.dart';
-import 'package:pet_profile_app/features/vet/presentation/providers/vet_providers.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 Widget createApp({
