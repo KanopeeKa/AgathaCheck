@@ -1,3 +1,7 @@
 # Per-test timeouts — prevents a crashed flutter_tester subprocess from hanging CI.
 timeouts:
   test: 2m
+
+tags:
+  integration:
+  skip-ci:

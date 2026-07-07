@@ -1,3 +1,9 @@
+// Linux CI: flutter_tester segfaults during teardown of this full-screen mount
+// (TabController + ConsumerStatefulWidget). Covered locally; actions widget has
+// its own test in health_dashboard_actions_test.dart.
+@Tags(['skip-ci'])
+library;
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pet_profile_app/features/health_tracking/presentation/screens/health_dashboard_screen.dart';

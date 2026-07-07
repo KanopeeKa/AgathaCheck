@@ -1,5 +1,5 @@
 # Full Playwright E2E against a local stack (Postgres + Flutter web + Node server).
-# Used on PRs, release/uat-* branches, and as the localhost regression gate before prod.
+# Used on release/uat-* deploy (deploy-uat.yml) and weekly manual/cron (e2e.yml) — not on every PR.
 name: Reusable E2E (localhost)
 
 on:
