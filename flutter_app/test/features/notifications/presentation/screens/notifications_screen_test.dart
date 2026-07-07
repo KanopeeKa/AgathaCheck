@@ -75,7 +75,9 @@ Widget _wrap({
 }
 
 void main() {
-  testWidgets('shows empty state when there are no notifications', (tester) async {
+  testWidgets('shows empty state when there are no notifications', (
+    tester,
+  ) async {
     await tester.pumpWidget(_wrap(child: const NotificationsScreen()));
     await tester.pumpAndSettle();
 
@@ -147,7 +149,9 @@ void main() {
     expect(find.text('Visible alert'), findsOneWidget);
   });
 
-  testWidgets('mark all read button marks notifications as read', (tester) async {
+  testWidgets('mark all read button marks notifications as read', (
+    tester,
+  ) async {
     late TestNotificationsNotifier notifier;
 
     await tester.pumpWidget(
