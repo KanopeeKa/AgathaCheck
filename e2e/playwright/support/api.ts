@@ -1,6 +1,9 @@
 /**
  * Thin REST client for seeding E2E data via the Node API.
  * Uses the same single-origin `/backend` prefix as the Flutter web app.
+ *
+ * Live UAT: set `E2E_TLS_INSECURE=1` in the environment (deploy workflow sets
+ * `NODE_TLS_REJECT_UNAUTHORIZED=0`) when cPanel auto-SSL is not trusted by CI runners.
  */
 
 const API_PREFIX = process.env.E2E_API_PREFIX ?? '/backend/api';

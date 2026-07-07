@@ -100,17 +100,19 @@ jobs:
       - name: Wait for UAT to become healthy
         run: |
           set -e
+          # UAT cPanel auto-SSL may not chain to a CA trusted by GitHub runners (curl exit 60).
+          CURL="curl -sfk"
           for i in $(seq 1 18); do
-            if curl -sf "${UAT_BASE_URL}/backend/health" | grep -q '"status":"OK"'; then
+            if $CURL "${UAT_BASE_URL}/backend/health" | grep -q '"status":"OK"'; then
               echo "Backend healthy after attempt $i"
               break
             fi
             echo "Waiting for Passenger restart ($i/18)..."
             sleep 10
           done
-          curl -sf "${UAT_BASE_URL}/backend/health"
-          curl -sf "${UAT_BASE_URL}/landing" -o /dev/null
-          curl -sf "${UAT_BASE_URL}/backend/" | grep -q 'Backend alive'
+          $CURL "${UAT_BASE_URL}/backend/health"
+          $CURL "${UAT_BASE_URL}/landing" -o /dev/null
+          $CURL "${UAT_BASE_URL}/backend/" | grep -q 'Backend alive'
 
   # Live UAT smoke E2E — runs in parallel with manual UAT; does not block deploy.
   uat-e2e-smoke:
@@ -137,6 +139,9 @@ jobs:
         working-directory: e2e
         env:
           E2E_BASE_URL: ${{ env.UAT_BASE_URL }}
+          E2E_TLS_INSECURE: '1'
+          # cPanel auto-SSL on UAT is not trusted by GitHub runners (self-signed / incomplete chain).
+          NODE_TLS_REJECT_UNAUTHORIZED: '0'
         run: npm run test:smoke
 
       - name: Upload Playwright report
