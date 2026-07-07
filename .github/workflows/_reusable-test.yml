@@ -47,8 +47,9 @@ jobs:
           fi
 
       - name: Check Dart format
-        run: dart format --output=none --set-exit-if-changed \
-          flutter_app/lib flutter_app/test server/lib
+        run: |
+          (cd server && dart pub get)
+          dart format --output=none --set-exit-if-changed flutter_app/lib flutter_app/test server/lib
 
       - name: Sync legal documents into app assets
         run: dart run scripts/sync_legal_documents.dart
