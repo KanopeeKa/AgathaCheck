@@ -27,6 +27,11 @@ export interface TestHealthEntry {
   name: string;
 }
 
+export interface ShareLink {
+  share_code: string;
+  link_id: string;
+}
+
 function apiUrl(path: string, baseURL: string): string {
   const root = baseURL.replace(/\/$/, '');
   return `${root}${API_PREFIX}${path}`;
@@ -97,6 +102,78 @@ export async function createPet(
 
   const json = await res.json();
   return { id: json.id, name: json.name };
+}
+
+export async function createShareLink(
+  baseURL: string,
+  token: string,
+  petId: string,
+): Promise<ShareLink> {
+  const res = await fetch(apiUrl('/share', baseURL), {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({ pet_id: petId }),
+  });
+
+  if (!res.ok) {
+    const body = await res.text();
+    throw new Error(`createShareLink failed (${res.status}): ${body}`);
+  }
+
+  const json = await res.json();
+  return { share_code: json.share_code, link_id: json.link_id };
+}
+
+export async function createVet(
+  baseURL: string,
+  token: string,
+  name: string,
+): Promise<{ id: string; name: string }> {
+  const res = await fetch(apiUrl('/vets', baseURL), {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({ name, clinic: 'E2E Clinic', phone: '555-0100', email: 'vet@example.com' }),
+  });
+
+  if (!res.ok) {
+    const body = await res.text();
+    throw new Error(`createVet failed (${res.status}): ${body}`);
+  }
+
+  const json = await res.json();
+  return { id: json.id, name: json.name };
+}
+
+export async function updatePetVet(
+  baseURL: string,
+  token: string,
+  petId: string,
+  pet: { name: string; species: string; vetId: string },
+): Promise<void> {
+  const res = await fetch(apiUrl(`/pets/${petId}`, baseURL), {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({
+      name: pet.name,
+      species: pet.species,
+      breed: '',
+      vetId: pet.vetId,
+    }),
+  });
+
+  if (!res.ok) {
+    const body = await res.text();
+    throw new Error(`updatePetVet failed (${res.status}): ${body}`);
+  }
 }
 
 export async function getHealthEntry(

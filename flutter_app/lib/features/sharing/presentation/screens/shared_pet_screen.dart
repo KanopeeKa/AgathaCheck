@@ -143,23 +143,21 @@ class _SharedPetScreenState extends ConsumerState<SharedPetScreen> {
         actions: [
           Padding(
             padding: const EdgeInsets.only(right: 8),
-            child: ExcludeSemantics(
-              child: Chip(
-                avatar: Icon(
-                  Icons.visibility,
-                  size: 16,
+            child: Chip(
+              avatar: Icon(
+                Icons.visibility,
+                size: 16,
+                color: colorScheme.onSecondaryContainer,
+              ),
+              label: Text(
+                l.viewOnly,
+                style: TextStyle(
+                  fontSize: 12,
                   color: colorScheme.onSecondaryContainer,
                 ),
-                label: Text(
-                  l.viewOnly,
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: colorScheme.onSecondaryContainer,
-                  ),
-                ),
-                backgroundColor: colorScheme.secondaryContainer,
-                side: BorderSide.none,
               ),
+              backgroundColor: colorScheme.secondaryContainer,
+              side: BorderSide.none,
             ),
           ),
         ],

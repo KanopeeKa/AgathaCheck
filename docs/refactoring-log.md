@@ -44,7 +44,7 @@ Tracks planned and completed refactor / quality work. See also `docs/refactoring
 | 2.5 | Split `health_entry_form_screen.dart` (756 → <500) | **Done** | Extracted `widgets/health_entry_form/` (425 lines) |
 | 2.6 | Widget tests: `about`, `help`, `subscription` (smoke) | **Done** | Smoke tests added |
 | 2.7 | **Enforce** `dart format` in CI (remove warn-only) | **Done** | CI blocks; repo formatted |
-| 2.8 | Playwright: `sharing.feature` implementation | Planned | + `@smoke` tag |
+| 2.8 | Playwright: `sharing.feature` implementation | **Done** | `sharing.spec.ts` + `@smoke` anonymous preview |
 | 2.9 | Coverage threshold (ratchet to 65% Flutter domain) | **Done** | CI gate via `check_domain_coverage.js` |
 
 ---
@@ -80,5 +80,6 @@ Tracks planned and completed refactor / quality work. See also `docs/refactoring
 | Date | Change |
 |---|---|
 | 2026-07-07 | Sprint 2.9: Flutter domain coverage gate at 65% |
+| 2026-07-07 | Sprint 2.8: Playwright sharing.feature E2E tests |
 | 2026-07-07 | Sprint 2.5: health_entry_form_screen split (756 → 425 lines) |
 | 2026-07-07 | Sprint 1 plan created; governance + CI implementation |

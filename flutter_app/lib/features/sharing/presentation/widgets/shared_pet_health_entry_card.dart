@@ -14,16 +14,19 @@ class SharedPetHealthEntryCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final title = (entry['name'] ?? entry['title'] ?? '').toString();
+    final date = (entry['next_due_date'] ?? entry['date'] ?? '').toString();
+    final notes = entry['notes']?.toString() ?? '';
+
     return Card(
       child: ListTile(
         leading: Icon(
           Icons.medical_services_outlined,
           color: colorScheme.primary,
         ),
-        title: Text(entry['title'] ?? '', style: theme.textTheme.titleMedium),
-        subtitle: Text(entry['date'] ?? ''),
-        trailing:
-            entry['notes'] != null && (entry['notes'] as String).isNotEmpty
+        title: Text(title, style: theme.textTheme.titleMedium),
+        subtitle: Text(date),
+        trailing: notes.isNotEmpty
             ? Icon(Icons.notes, color: colorScheme.primary)
             : null,
       ),
