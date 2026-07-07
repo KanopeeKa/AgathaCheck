@@ -87,7 +87,7 @@ npm run report       # open HTML report after a run
 | Workflow | Trigger | Role |
 |----------|---------|------|
 | `ci.yml` | push/PR → `main` | Flutter analyze + unit/widget tests + web build; backend Jest |
-| `e2e.yml` | manual only | Full Playwright against **localhost** (on demand; not per PR commit) |
+| `e2e.yml` | manual + weekly cron (non-blocking) | Full Playwright against **localhost** |
 | `deploy-uat.yml` | push → `release/uat-*` | Fast FTP deploy → post-deploy smoke + live `@smoke` E2E + full localhost E2E → `prod-ready` gate |
 | `deploy-prod.yml` | manual `workflow_dispatch` (preferred) or release publish | FTP + SSH deploy; post-deploy HTTP smoke |
 
@@ -110,6 +110,8 @@ Tag fast, critical journeys with `@smoke` in the test title (e.g. login). Run lo
 ```bash
 cd e2e && npm run test:smoke
 ```
+
+`@smoke` tests run **axe** accessibility scans after the journey completes. CI fails on **critical** and **serious** violations (see `playwright/support/axe.ts`).
 
 Live UAT smoke E2E uses `E2E_BASE_URL=https://uat.agathatrack.com`. The UAT deploy workflow sets `E2E_TLS_INSECURE=1` because cPanel auto-SSL may present a certificate chain that GitHub Actions runners do not trust (curl exit 60 / Node `self-signed certificate`). Localhost E2E does not need this flag.
 

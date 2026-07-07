@@ -73,4 +73,20 @@ personal + org field inventory in `docs/calendar-dates.md` and the shared helper
 - Node route changes that affect HTTP behaviour require matching Dart Shelf parity in the same change when feasible.
 - Park stubs and uncertain items in `docs/refactoring-debt.md` rather than deleting without review.
 - Deferrals for product/infra (PostHog, GDPR, etc.) go in `docs/technical-debt.md`.
-- Before push: `cd server && npx jest --env=node --forceExit` and `cd flutter_app && flutter analyze --no-fatal-warnings --no-fatal-infos && flutter test --concurrency=1 --exclude-tags=integration`.
+- Sprint refactor plan and status: `docs/refactoring-log.md`.
+- Cursor project rules: `.cursor/rules/` (modularity, testing, security, dual-backend, accessibility, merge-policy).
+- See `CONTRIBUTING.md` for full PR checklist.
+
+### Merge policy & conflict avoidance
+- Trunk-based: merge small PRs to `main` frequently; full Playwright E2E runs on UAT (`release/uat-*`) only.
+- **Before every push:** `git fetch origin main && git rebase origin/main` (or merge) and resolve conflicts — duplicate commits on `main` are common.
+- CI on `main`: Flutter analyze/test, blocking integration test, Jest, `dart analyze lib`, `npm audit --audit-level=high`, CodeQL.
+- `dart format` is warn-only in CI for Sprint 1 (see `docs/refactoring-log.md`).
+
+### Pre-push commands
+```bash
+cd server && npm audit --audit-level=high && npx jest --env=node --forceExit
+cd flutter_app && dart run build_runner build --delete-conflicting-outputs
+cd flutter_app && flutter analyze --no-fatal-warnings --no-fatal-infos
+cd flutter_app && flutter test --concurrency=1 --exclude-tags=integration
+```

@@ -16,7 +16,16 @@ import '../widgets/mark_complete_sheet.dart';
 import '../widgets/health_dashboard_actions.dart' show HealthDashboardActions, GroupMode;
 
 class HealthDashboardScreen extends ConsumerStatefulWidget {
-  const HealthDashboardScreen({super.key});
+  const HealthDashboardScreen({
+    super.key,
+    @visibleForTesting this.skipHeavyBody = false,
+  });
+
+  /// When true, omits the [TabBarView] body so widget tests can assert the
+  /// app bar / tab bar without spinning up six async entry lists (Linux CI
+  /// segfault during flutter_tester teardown otherwise).
+  @visibleForTesting
+  final bool skipHeavyBody;
 
   @override
   ConsumerState<HealthDashboardScreen> createState() =>
@@ -88,7 +97,9 @@ class _HealthDashboardScreenState extends ConsumerState<HealthDashboardScreen>
           isScrollable: true,
         ),
       ),
-      body: Column(
+      body: widget.skipHeavyBody
+          ? const SizedBox.shrink()
+          : Column(
         children: [
           Consumer(builder: (context, ref, _) {
             final allPetsAsync = ref.watch(allPetsIncludingOrgProvider);

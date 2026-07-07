@@ -1,0 +1,23 @@
+## Summary
+
+<!-- What changed and why (1–3 sentences) -->
+
+## Checklist
+
+- [ ] Synced with `main` (`git fetch origin main && git rebase origin/main`) — no unresolved conflicts
+- [ ] `cd server && npx jest --env=node --forceExit` passes
+- [ ] `cd flutter_app && flutter analyze` and `flutter test --concurrency=1 --exclude-tags=integration` pass
+- [ ] Codegen run if Mockito mocks changed (`dart run build_runner build --delete-conflicting-outputs`)
+- [ ] New/changed Node routes have Jest coverage
+- [ ] New/changed widgets have widget tests (mirrored path)
+- [ ] HTTP behaviour changes mirrored in Dart routes (if applicable)
+- [ ] `API.md` updated if wire format changed
+- [ ] No raw `err.message` / `e.toString()` in 5xx responses (`publicError()` used)
+- [ ] Form fields have labels; interactive cards use semantics where appropriate
+- [ ] User journeys: Gherkin + Playwright with `@bdd` (or debt issue linked)
+- [ ] `docs/refactoring-log.md` updated if part of sprint refactor work
+- [ ] `docs/refactoring-debt.md` or `docs/technical-debt.md` updated for deferrals
+
+## Test plan
+
+<!-- How you verified the change -->
