@@ -14,10 +14,8 @@ class SharedPetHealthEntryCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final title =
-        (entry['name'] ?? entry['title'] ?? '').toString();
-    final date =
-        (entry['next_due_date'] ?? entry['date'] ?? '').toString();
+    final title = (entry['name'] ?? entry['title'] ?? '').toString();
+    final date = (entry['next_due_date'] ?? entry['date'] ?? '').toString();
     final notes = entry['notes']?.toString() ?? '';
 
     return Card(

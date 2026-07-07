@@ -16,18 +16,14 @@ class SharedPetOwnerCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final first = ownerData['first_name'] as String? ?? '';
     final last = ownerData['last_name'] as String? ?? '';
-    final name =
-        (ownerData['name'] as String?)?.trim().isNotEmpty == true
-            ? ownerData['name'] as String
-            : '$first $last'.trim();
+    final name = (ownerData['name'] as String?)?.trim().isNotEmpty == true
+        ? ownerData['name'] as String
+        : '$first $last'.trim();
 
     return Card(
       child: ListTile(
         leading: Icon(Icons.person, color: colorScheme.primary),
-        title: Text(
-          name,
-          style: theme.textTheme.titleMedium,
-        ),
+        title: Text(name, style: theme.textTheme.titleMedium),
         subtitle: Text(ownerData['email'] ?? ''),
       ),
     );
