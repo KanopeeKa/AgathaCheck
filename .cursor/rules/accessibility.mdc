@@ -1,0 +1,24 @@
+---
+description: Accessibility conventions for Flutter UI and Playwright E2E
+globs: flutter_app/lib/**,e2e/**
+alwaysApply: true
+---
+
+# Accessibility
+
+## Flutter UI
+
+- Form fields: use `labelText` / `hintText` in `InputDecoration` (drives aria-label on web).
+- Interactive cards: wrap with `MergeSemantics` where multiple elements read as one unit.
+- Add `Semantics(identifier: …)` only when the tree is insufficient for E2E or screen readers.
+- Tooltips on icon-only buttons.
+
+## Playwright E2E
+
+- Enable semantics via `enableFlutterAccessibility()` before interacting (see `e2e/playwright/support/flutter.ts`).
+- Selector priority: `getByRole` → `getByLabel` / aria-label inputs → `getByText`.
+- `@smoke` tests run axe (`checkA11y`) — fail on **critical** and **serious** violations.
+
+## UAT gate
+
+Full accessibility scanning runs on `@smoke` Playwright tests during UAT deploy, not on every PR to `main`.

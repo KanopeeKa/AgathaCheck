@@ -1,0 +1,37 @@
+---
+description: File size limits, domain structure, and extraction conventions for Agatha Track
+globs: flutter_app/lib/**,server/**,server/lib/**
+alwaysApply: true
+---
+
+# Modularity
+
+Follow `docs/architecture/modularity.md`.
+
+## File size (hand-written code only)
+
+| Lines | Action |
+|------:|--------|
+| < 300 | Ideal for screens, route modules, widgets |
+| 300–500 | Acceptable; split when adding features |
+| 500–800 | Split on next touch |
+| > 800 | Split immediately |
+
+Exceptions: generated code (`l10n/`, `*.g.dart`, `*.mocks.dart`), lockfiles, canonical SQL.
+
+## Flutter
+
+- No private widget classes > 80 lines inside screen files — move to `widgets/`.
+- Controllers own validation, submit, and async orchestration; screens own layout.
+- Mirror `lib/features/<feature>/` under `test/features/<feature>/`.
+
+## Backend (Node)
+
+- Route modules live in `server/routes/<domain>/`.
+- Tests mirror route modules in `server/test/<domain>/`.
+- Mount static paths before `/:id` param routes.
+
+## Refactoring tracking
+
+- Log planned and completed refactor work in `docs/refactoring-log.md` (by sprint).
+- Park uncertain items in `docs/refactoring-debt.md`.

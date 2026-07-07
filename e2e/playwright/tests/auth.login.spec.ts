@@ -3,6 +3,7 @@
  * Scenario: Logging in with valid credentials
  */
 import { test, expect, loginAs } from '../fixtures/auth.fixture';
+import { checkA11y } from '../support/axe';
 
 test.describe('Authentication', () => {
   test('@smoke user can log in with valid credentials and reach the pet list', async ({
@@ -15,6 +16,7 @@ test.describe('Authentication', () => {
     await landingPage.login(testUser.email, testUser.password);
     await petListPage.expectLoaded();
     await expect(page.getByRole('button', { name: 'To Do' })).toBeVisible();
+    await checkA11y(page, 'post-login pet list');
   });
 
   test('login fails with incorrect password', async ({ page, testUser, landingPage }) => {

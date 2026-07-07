@@ -1,0 +1,26 @@
+---
+description: Node/Dart backend parity requirements
+globs: server/routes/**,server/lib/**
+alwaysApply: true
+---
+
+# Dual backend parity
+
+Node.js Express is **canonical** (fully tested). Dart Shelf mirrors HTTP behaviour.
+
+## Same PR checklist (when changing routes)
+
+- [ ] Route path + HTTP method
+- [ ] Auth / role guards
+- [ ] Request body validation
+- [ ] Response JSON shape
+- [ ] Status codes (incl. 501 stubs)
+- [ ] Calendar date fields (`YYYY-MM-DD` via `calendarDate.js` / `calendar_date.dart`)
+
+## CI
+
+- `dart analyze lib` on `server/` runs in CI — keep Dart routes clean.
+
+## Known Dart gaps
+
+Audit logging and PostHog delete are Node-only today (see `docs/technical-debt.md`).
