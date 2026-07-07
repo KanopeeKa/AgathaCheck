@@ -10,7 +10,6 @@ import '../../../../l10n/app_localizations.dart';
 import 'package:pet_profile_app/core/providers/api_base_url_provider.dart';
 import '../../data/datasources/health_remote_datasource.dart';
 import '../../domain/entities/health_entry.dart';
-import '../../domain/repositories/health_repository.dart';
 import '../providers/health_providers.dart';
 import '../widgets/entry_due_completed_row.dart';
 import '../widgets/recurrence_anchor_toggle.dart';
@@ -20,7 +19,6 @@ import '../widgets/entry_frequency_fields.dart';
 import '../widgets/entry_remind_before_field.dart';
 import '../widgets/health_entry_type_labels.dart';
 import '../controllers/health_entry_form_constants.dart';
-import 'health_entry_form_screen.dart';
 
 /// Simplified add/edit form for pet profile Other events (care + misc.).
 class OtherEventFormScreen extends ConsumerStatefulWidget {
@@ -51,7 +49,6 @@ class _OtherEventFormScreenState extends ConsumerState<OtherEventFormScreen> {
   DateTime _startDate = DateTime.now();
   DateTime? _dueDate;
   DateTime? _completedOn;
-  DateTime? _nextDueDate;
   RecurrenceAnchor _recurrenceAnchor = RecurrenceAnchor.fromCompletion;
   DateTime? _repeatEndDate;
   bool _isEdit = false;
@@ -105,7 +102,6 @@ class _OtherEventFormScreenState extends ConsumerState<OtherEventFormScreen> {
           _startDate = entry.startDate;
           _dueDate = entry.nextDueDate;
           _completedOn = entry.completedOn;
-          _nextDueDate = entry.nextDueDate;
           _recurrenceAnchor = entry.recurrenceAnchor;
           _repeatEndDate = entry.repeatEndDate;
           _remindDaysBefore = entry.remindDaysBefore;
@@ -295,7 +291,7 @@ class _OtherEventFormScreenState extends ConsumerState<OtherEventFormScreen> {
       if (result == null) return;
       markCompleted = result;
       if (markCompleted) {
-        setState(() => _completedOn = dueOnly ?? todayOnly);
+        setState(() => _completedOn = dueOnly);
       }
     }
 
@@ -494,7 +490,6 @@ class _OtherEventFormScreenState extends ConsumerState<OtherEventFormScreen> {
                       completedOn: _completedOn,
                       onDueDateChanged: (d) => setState(() {
                         _dueDate = d;
-                        _nextDueDate = d;
                         if (d != null) _startDate = d;
                       }),
                       onCompletedOnChanged: (d) =>

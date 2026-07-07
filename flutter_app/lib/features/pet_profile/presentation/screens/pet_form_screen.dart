@@ -44,15 +44,12 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
   final _assignmentNotesController = TextEditingController();
 
   String _selectedSpecies = '';
-  String? _selectedGender;
   String? _photoBase64;
   String? _selectedOrgId;
   String? _selectedVetId;
   DateTime? _dateOfBirth;
   DateTime? _neuteredDate;
   bool? _isNeutered;
-  bool _neuterDismissed = false;
-  bool _chipDismissed = false;
   bool _passedAway = false;
   bool _isShared = false;
   bool _isLoading = false;
@@ -109,14 +106,11 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
     _insuranceController.text = pet.insurance;
     _chipIdController.text = pet.chipId;
     _selectedSpecies = pet.species;
-    _selectedGender = pet.gender;
     _photoBase64 = pet.photoPath;
     _selectedVetId = pet.vetId;
     _dateOfBirth = pet.dateOfBirth;
     _neuteredDate = pet.neuteredDate;
     _isNeutered = pet.neuteredDate != null ? true : null;
-    _neuterDismissed = pet.neuterDismissed;
-    _chipDismissed = pet.chipDismissed;
     _passedAway = pet.passedAway;
     _isShared = pet.isShared;
     _selectedOrgId = pet.organizationId;
@@ -143,7 +137,6 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
       final date = calendarDateOnly(picked);
       setState(() {
         _neuteredDate = date;
-        _neuterDismissed = false;
       });
       _controller.state = _controller.state.copyWith(
         neuteredDate: date,
@@ -370,7 +363,7 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
                   _controller.state = _controller.state.copyWith(
                     selectedGender: value,
                   );
-                  setState(() => _selectedGender = value);
+                  setState(() {});
                 },
               ),
               const SizedBox(height: 16),
@@ -668,7 +661,6 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
                 onChanged: (val) {
                   setState(() {
                     _isNeutered = true;
-                    _neuterDismissed = false;
                   });
                   _controller.state = _controller.state.copyWith(
                     isNeutered: true,
