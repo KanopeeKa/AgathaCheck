@@ -2,7 +2,7 @@
 
 Living metrics for Agatha Track quality. Update when CI or test counts change materially.
 
-**Last updated:** 2026-07-07 (Sprint 2 in progress)
+**Last updated:** 2026-07-07 (Sprint 2 complete)
 
 ---
 
@@ -38,9 +38,11 @@ Living metrics for Agatha Track quality. Update when CI or test counts change ma
 
 | Layer | Status |
 |---|---|
-| Flutter lcov | CI artifact (report-only) |
+| Flutter domain (`lib/**/domain/**`) | **65% line coverage gate** (CI) |
+| Flutter lcov (full app) | CI artifact |
 | Jest Istanbul | CI artifact (report-only) |
-| Threshold enforcement | Deferred to Sprint 2 |
+
+Domain gate: `flutter_app/scripts/check_domain_coverage.js` (runs after `run_tests_ci.sh` merges per-file lcov). Repository interfaces with no executable lines are excluded automatically.
 
 ## Modularity debt (files >500 lines)
 
@@ -66,4 +68,5 @@ Run `cd server && npm audit` locally. CI blocks **high** and **critical** (clean
 
 | Date | Change |
 |---|---|
+| 2026-07-07 | Sprint 2.9: Flutter domain coverage gate (65%) |
 | 2026-07-07 | Initial scorecard; Plans A+B governance and CI hardening |
