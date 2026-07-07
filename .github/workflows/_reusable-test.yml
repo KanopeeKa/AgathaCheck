@@ -13,6 +13,7 @@ jobs:
   flutter:
     name: Flutter (analyze, test, build web)
     runs-on: ubuntu-latest
+    timeout-minutes: 45
     steps:
       - uses: actions/checkout@v4
 
@@ -62,8 +63,9 @@ jobs:
         run: flutter analyze --no-fatal-warnings --no-fatal-infos
 
       - name: Run unit & widget tests with coverage
+        timeout-minutes: 25
         working-directory: flutter_app
-        run: flutter test --concurrency=1 --exclude-tags=integration --coverage
+        run: flutter test --concurrency=1 --exclude-tags=integration,skip-ci --coverage --fail-fast
 
       - name: Upload Flutter coverage
         uses: actions/upload-artifact@v4
@@ -73,10 +75,11 @@ jobs:
           if-no-files-found: warn
 
       - name: Run integration tests (if present)
+        timeout-minutes: 10
         working-directory: flutter_app
         run: |
           if [ -d "test/features/pet_profile/presentation/integration" ]; then
-            flutter test test/features/pet_profile/presentation/integration/ --concurrency=1
+            flutter test test/features/pet_profile/presentation/integration/ --concurrency=1 --fail-fast
           else
             echo "No integration tests directory found; skipping."
           fi
@@ -105,6 +108,7 @@ jobs:
   backend:
     name: Backend (Node.js Jest + Dart analyze)
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
 
@@ -146,6 +150,7 @@ jobs:
   e2e-audit:
     name: E2E package audit
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
 
