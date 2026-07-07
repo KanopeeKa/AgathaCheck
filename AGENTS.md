@@ -80,7 +80,7 @@ personal + org field inventory in `docs/calendar-dates.md` and the shared helper
 ### Merge policy & conflict avoidance
 - Trunk-based: merge small PRs to `main` frequently; full Playwright E2E runs on UAT (`release/uat-*`) only.
 - **Before every push:** `git fetch origin main && git rebase origin/main` (or merge) and resolve conflicts — duplicate commits on `main` are common.
-- CI on `main`: Flutter analyze/test, blocking integration test, Jest, `dart analyze lib`, `dart format`, `npm audit --audit-level=high`, CodeQL.
+- CI on `main`: Flutter analyze/test (incl. **65% domain line coverage**), blocking integration test, Jest, `dart analyze lib`, `dart format`, `npm audit --audit-level=high`, CodeQL.
 
 ### Pre-push commands
 ```bash

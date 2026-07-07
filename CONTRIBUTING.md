@@ -58,7 +58,8 @@ Use the PR template checklist. In summary:
 - `npm audit --audit-level=high` (server + e2e)
 - CodeQL (JavaScript)
 - `dart format --set-exit-if-changed` (blocks merge)
-- Coverage artifacts (report-only, no threshold yet)
+- Flutter domain line coverage ≥ 65% (`check_domain_coverage.js`)
+- Coverage artifacts: full Flutter lcov + Jest Istanbul (report-only beyond domain gate)
 
 ## E2E and UAT
 
