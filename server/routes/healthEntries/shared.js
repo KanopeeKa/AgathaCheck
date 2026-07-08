@@ -36,9 +36,10 @@ export function saveHealthDocument(file, id) {
   const { filename } = saveUploadedFile({
     buffer: file.buffer,
     mimeType: file.mimetype,
-    filenameStem: id,
+    fileId: id,
     rootDir: dir,
     allowedExtensions: HEALTH_DOCUMENT_EXTENSIONS,
+    maxBytes: MAX_HEALTH_DOCUMENT_BYTES,
   });
   return `/uploads/health_documents/${filename}`;
 }

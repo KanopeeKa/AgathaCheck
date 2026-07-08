@@ -1,6 +1,7 @@
 import path from 'path';
 import multer from 'multer';
 import jwt from 'jsonwebtoken';
+import { v4 as uuidv4 } from 'uuid';
 
 import { JWT_SECRET } from '../../config/jwtSecret.js';
 import { isActiveMember, isOrgAdmin, isSuperAdmin, normaliseRole } from '../../lib/orgRoles.js';
@@ -34,14 +35,16 @@ export function orgUploadDir(subdir) {
   return process.env.ORG_UPLOAD_DIR || path.resolve(process.cwd(), 'uploads', subdir);
 }
 
-export function saveOrgImage(file, orgId, subdir) {
+export function saveOrgImage(file, _orgId, subdir) {
   const dir = orgUploadDir(subdir);
+  const fileId = uuidv4();
   const { filename } = saveUploadedFile({
     buffer: file.buffer,
     mimeType: file.mimetype,
-    filenameStem: `${orgId}_${Date.now()}`,
+    fileId,
     rootDir: dir,
     allowedExtensions: ORG_IMAGE_EXTENSIONS,
+    maxBytes: MAX_ORG_IMAGE_BYTES,
   });
   return `/uploads/${subdir}/${filename}`;
 }

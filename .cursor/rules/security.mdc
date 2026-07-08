@@ -32,6 +32,6 @@ alwaysApply: true
 
 ## File uploads
 
-- Never build filesystem paths from `file.originalname`. Derive extensions from MIME via `server/lib/safeUpload.js` (`extensionForMime`, `saveUploadedFile`).
+- Never build filesystem paths from `file.originalname` or request params. Use a server-generated UUID as `fileId` and pass it to `saveUploadedFile()`.
 - Always persist uploads with `saveUploadedFile()` (path containment under a fixed root, mode `0o600`).
 - Multer must use `memoryStorage()` plus MIME allowlists in `fileFilter`.
