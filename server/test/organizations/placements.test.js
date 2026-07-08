@@ -65,8 +65,8 @@ describe('Organizations API', () => {
     });
   
   describe('POST /:orgId/pets/:petId/transfer', () => {
-      it('transfers org pet to recipient by email', async () => {
-        let newOwnerId = null;
+      it('creates pending custody transfer for recipient by email', async () => {
+        let insertedTransfer = false;
         const innerQuery = async (sql, params) => {
           if (sql.includes('SELECT id FROM users WHERE email')) {
             return { rows: [{ id: 'recipient-1' }] };
@@ -74,20 +74,23 @@ describe('Organizations API', () => {
           if (sql.includes('SELECT id, name, species, user_id, organization_id FROM pets WHERE id = $1 AND organization_id = $2')) {
             return { rows: [{ id: 'pet-1', name: 'Buddy', species: 'dog', user_id: userId, organization_id: orgId }] };
           }
+          if (sql.includes('SELECT * FROM pets WHERE id = $1')) {
+            return { rows: [{ id: 'pet-1', name: 'Buddy', organization_id: orgId, user_id: userId }] };
+          }
           if (sql.includes('SELECT id, first_name, last_name, email FROM users WHERE id = $1')) {
             return { rows: [{ id: params[0], first_name: 'New', last_name: 'Owner', email: 'new@example.com' }] };
           }
-          if (sql.includes('SELECT fp.*') && sql.includes('WHERE fp.pet_id = $1')) {
+          if (sql.includes('SELECT 1 FROM custody_transfers WHERE pet_id')) {
             return { rows: [] };
           }
-          if (sql.includes('UPDATE pets') && sql.includes('user_id = $1')) {
-            newOwnerId = params[0];
+          if (sql.includes('INSERT INTO custody_transfers')) {
+            insertedTransfer = true;
             return { rows: [] };
           }
-          if (sql.includes('DELETE FROM pet_access')) return { rows: [] };
-          if (sql.includes('INSERT INTO archived_pets')) return { rows: [] };
           if (sql.includes('INSERT INTO notifications')) return { rows: [] };
-          if (sql === 'BEGIN' || sql === 'COMMIT' || sql === 'ROLLBACK') return { rows: [] };
+          if (sql.includes('SELECT 1 FROM organization_users') && sql.includes('super_admin')) {
+            return { rows: [{ '?column?': 1 }] };
+          }
           return { rows: [] };
         };
         const pool = buildMockPool({
@@ -101,9 +104,9 @@ describe('Organizations API', () => {
           .post(`/api/organizations/${orgId}/pets/pet-1/transfer`)
           .set('Authorization', `Bearer ${token}`)
           .send({ recipient_email: 'new@example.com' });
-        expect(res.statusCode).toBe(200);
-        expect(res.body).toHaveProperty('transferred', true);
-        expect(newOwnerId).toBe('recipient-1');
+        expect(res.statusCode).toBe(201);
+        expect(res.body).toHaveProperty('pending', true);
+        expect(insertedTransfer).toBe(true);
       });
   
       it('returns 400 without recipient email', async () => {

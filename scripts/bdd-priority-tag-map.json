@@ -141,13 +141,23 @@
   },
   "pet_ownership_and_adoption.feature": {
     "Sharing an organisation pet with a prospective adopter": "P1",
-    "Adopter places a shared pet into their personal list": "P1",
-    "Adopter places a shared pet into another organisation": "P1",
-    "Archiving a pet from the organisation after adoption": "P1",
-    "Viewing archived pets": "P1",
-    "Restoring an archived pet": "P1",
-    "Hiding a shared pet from the organisation view": "P1",
-    "Unhiding a previously hidden shared pet": "P1"
+    "Viewing frozen shadow after adoption leaves the org": "P1"
+  },
+  "org_foster_and_adoption.feature": {
+    "Foster placement gives Eve care while Rescue Hearts keeps guardianship": "P1",
+    "Direct adoption requires foster confirmation": "P1",
+    "Org admin hides a fostered pet from their home list only": "P1",
+    "Fosterer hides a fostered pet from notifications and health dashboard": "P1",
+    "Hide is cleared when foster ends": "P1"
+  },
+  "org_to_org_transfer.feature": {
+    "Connected orgs can transfer a pet with recipient acceptance": "P1",
+    "Org transfer requires an active connection": "P1",
+    "Disconnecting orgs cancels pending transfers between them": "P1"
+  },
+  "org_pet_return.feature": {
+    "Individual guardian returns an adopted pet to Rescue Hearts": "P1",
+    "Receiving org returns a transferred pet to the sending org": "P1"
   },
   "veterinarian_management.feature": {
     "Creating a veterinarian with all details": "P1",

@@ -11,6 +11,10 @@ import {
   PLACEMENT_STATUS_WAITING_ADOPTION,
   revokeFosterPetAccess,
 } from '../../../lib/fosterPlacements.js';
+import {
+  clearOrgPetHomeHiddenForPet,
+  setOrgGuardianAndCare,
+} from '../../../lib/petCustody.js';
 import { extractUserId, requireOrgAdmin } from '../shared.js';
 import { publicError } from '../../../config/security.js';
 
@@ -60,6 +64,8 @@ export function registerPlacementActionRoutes(router, pool) {
 
       if (placement.status === PLACEMENT_STATUS_IN_PROGRESS) {
         await revokeFosterPetAccess(pool, placement.pet_id, placement.foster_user_id);
+        await setOrgGuardianAndCare(pool, placement.pet_id, orgId);
+        await clearOrgPetHomeHiddenForPet(pool, placement.pet_id);
       }
 
       await createNotification(pool, {

@@ -3,6 +3,11 @@
  */
 import { v4 as uuidv4 } from 'uuid';
 import { dateToIsoDate } from './calendarDate.js';
+import { applyIndividualGuardianshipTransfer } from './custodyTransfers.js';
+import {
+  clearOrgPetHomeHiddenForPet,
+  setOrgGuardianAndCare,
+} from './petCustody.js';
 
 export const PLACEMENT_STATUS_PENDING = 'pending';
 export const PLACEMENT_STATUS_IN_PROGRESS = 'in_progress';
@@ -98,39 +103,13 @@ export async function revokeFosterPetAccess(pool, petId, userId) {
  * Caller must run inside a transaction when atomicity is required.
  */
 export async function completeAdoptionTransfer(db, placement, pet) {
-  const fosterUserId = placement.foster_user_id;
-  const petId = placement.pet_id;
-
-  await db.query(
-    `UPDATE pets
-     SET user_id = $1, organization_id = NULL, updated_at = NOW()
-     WHERE id = $2`,
-    [fosterUserId, petId],
-  );
-
-  await db.query(
-    'DELETE FROM pet_access WHERE pet_id = $1 AND user_id = $2',
-    [petId, fosterUserId],
-  );
-
-  const archiveId = uuidv4();
-  await db.query(
-    `INSERT INTO archived_pets (
-       id, organization_id, user_id, pet_id, pet_name, species,
-       transfer_type, transferred_to_user_id, notes
-     ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`,
-    [
-      archiveId,
-      placement.organization_id,
-      pet.user_id,
-      petId,
-      pet.name,
-      pet.species || '',
-      'adoption',
-      fosterUserId,
-      placement.notes || '',
-    ],
-  );
+  await applyIndividualGuardianshipTransfer(db, {
+    pet,
+    fromOrgId: placement.organization_id,
+    toUserId: placement.foster_user_id,
+    actorUserId: placement.foster_user_id,
+    notes: placement.notes,
+  });
 
   const updateResult = await db.query(
     `UPDATE foster_placements
@@ -159,6 +138,8 @@ export async function cancelAdoptionPlacement(db, placement, endDate = null) {
   );
 
   await revokeFosterPetAccess(db, placement.pet_id, placement.foster_user_id);
+  await setOrgGuardianAndCare(db, placement.pet_id, placement.organization_id);
+  await clearOrgPetHomeHiddenForPet(db, placement.pet_id);
   return updateResult.rows[0];
 }
 
@@ -174,6 +155,8 @@ export async function closeActivePlacementForPet(pool, petId, endDate = null) {
 
   if (active.status === PLACEMENT_STATUS_IN_PROGRESS) {
     await revokeFosterPetAccess(pool, petId, active.foster_user_id);
+    await setOrgGuardianAndCare(pool, petId, active.organization_id);
+    await clearOrgPetHomeHiddenForPet(pool, petId);
   }
 
   const updateResult = await pool.query(

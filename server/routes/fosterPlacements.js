@@ -16,6 +16,7 @@ import {
   PLACEMENT_STATUS_WAITING_ADOPTION,
   revokeFosterPetAccess,
 } from '../lib/fosterPlacements.js';
+import { setFosterCare } from '../lib/petCustody.js';
 
 function extractUserId(req) {
   const auth = req.headers['authorization'] || req.headers['Authorization'];
@@ -126,6 +127,12 @@ export default function fosterPlacementsRoutes(pool) {
         placement.pet_id,
         userId,
         placement.created_by,
+      );
+      await setFosterCare(
+        pool,
+        placement.pet_id,
+        userId,
+        placement.organization_id,
       );
 
       const fosterResult = await pool.query(
