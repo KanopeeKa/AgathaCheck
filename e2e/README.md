@@ -14,13 +14,20 @@ Playwright specs in `playwright/tests/` are annotated with `@bdd <feature>` comm
 
 ### Current coverage
 
-| Playwright spec | BDD feature | Journey |
-|-----------------|-------------|---------|
-| `auth.login.spec.ts` | `authentication.feature` | Log in with valid credentials; reject bad password |
-| `auth.signup.spec.ts` | `authentication.feature` | Sign up success; password mismatch; email/password validation; duplicate email |
-| `pet.profiles.spec.ts` | `pet_profiles.feature` | Empty list; create pet; view detail; edit name |
-| `health.tracking.spec.ts` | `health_tracking.feature` | View due entry; mark one-time entry complete (API + UI); verify created entry on dashboard |
-| `sharing.spec.ts` | `sharing.feature` | Create share link; view shared pet (anonymous); health/vet/owner on preview; accept share; invalid link |
+Run `node e2e/scripts/check_bdd_coverage.js --report-only` to see the live counts.
+
+**As of Sprint 4.3:** 48 / 161 scenarios mapped (29.8%) — gate set at 81 (50%).
+
+| Playwright spec | BDD feature | Scenarios mapped |
+|-----------------|-------------|-----------------|
+| `auth.login.spec.ts` | `authentication.feature` | 1 |
+| `auth.signup.spec.ts` | `authentication.feature` | 5 |
+| `health.tracking.spec.ts` | `health_tracking.feature` | 2 |
+| `notifications.spec.ts` | `notifications.feature` | 9 |
+| `organisation.management.spec.ts` | `organisation_management.feature` | 11 |
+| `pet.profiles.spec.ts` | `pet_profiles.feature` | 4 |
+| `sharing.spec.ts` | `sharing.feature` | 7 |
+| `weight.tracking.spec.ts` | `weight_tracking.feature` | 9 |
 
 ## Flutter web notes
 
