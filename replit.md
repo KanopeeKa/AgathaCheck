@@ -46,7 +46,8 @@ The application is built with a clean architecture, separating concerns into dat
 -   **Pitfall**: Dart enum `.name` is minified in release builds — always use direct enum comparison or a `.label` getter, never `.name`.
 
 ## CI / CD
--   **`.github/workflows/ci.yml`**: triggered on push/PR to `main`. Calls `_reusable-test.yml` — `flutter` (analyze → test → web build → artifact) and `backend` (Jest) in parallel.
+-   **`.github/workflows/ci.yml`**: triggered on PR to `main` (and `workflow_dispatch`). Calls `_reusable-test.yml` — `flutter` (analyze → test → web build → artifact) and `backend` (Jest) in parallel. No `push` to `main` trigger — branch rules require PRs, so post-merge runs were redundant.
+-   **`.github/workflows/codeql.yml`**: triggered on PR to `main` and weekly (Monday 04:30 UTC). JavaScript/TypeScript static analysis; no duplicate `push` to `main` trigger.
 -   **`.github/workflows/e2e.yml`**: **`workflow_dispatch` only** — full Playwright against localhost on demand. Not triggered on PR commits (too slow); UAT CD runs the same suite via `uat-e2e-full`.
 -   **`.github/workflows/deploy-uat.yml`**: triggered on push to `release/uat-*`. **Fast deploy path** — no unit-test re-run. Jobs: `deploy` (FTP to `uat.agathatrack.com`) → parallel `smoke` (HTTP), `uat-e2e-smoke` (Playwright `@smoke` on live UAT), `uat-e2e-full` (full localhost E2E) → `prod-ready` aggregate for prod promotion. UAT is FTP-only; `npm install` and DB migrations remain manual on UAT.
 -   **`.github/workflows/deploy-prod.yml`**: triggered by **`workflow_dispatch`** (pass the UAT-validated commit SHA) or GitHub release publish. No pre-deploy unit re-run — trust UAT `prod-ready`. FTP + SSH deploy to `/public_html/Prod/`; SSH runs `npm ci --omit=dev`, `node scripts/migrate.js up`, restart. Post-deploy HTTP smoke on `https://agathatrack.com`.

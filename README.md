@@ -253,7 +253,8 @@ See `DEPLOYMENT_DB.md` for the full database deployment guide and `DEPLOYMENT_CP
 
 | Workflow | Trigger | Purpose |
 |----------|---------|---------|
-| `ci.yml` | push/PR → `main` | Lint, unit/widget tests, backend Jest, web build |
+| `ci.yml` | PR → `main` (+ manual dispatch) | Lint, unit/widget tests, backend Jest, web build |
+| `codeql.yml` | PR → `main` (+ weekly schedule) | Static security analysis (JavaScript/TypeScript) |
 | `e2e.yml` | manual dispatch | Full Playwright E2E on demand (not per PR commit) |
 | `deploy-uat.yml` | `release/uat-*` | Fast UAT deploy + smoke + E2E gates → `prod-ready` |
 | `deploy-prod.yml` | manual dispatch / release | Prod deploy + post-deploy smoke |
