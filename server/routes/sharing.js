@@ -3,6 +3,7 @@ import crypto from 'crypto';
 import { v4 as uuidv4 } from 'uuid';
 import jwt from 'jsonwebtoken';
 
+import { createApiLimiter } from '../config/rateLimit.js';
 import { JWT_SECRET } from '../config/jwtSecret.js';
 import { publicError } from '../config/security.js';
 import { createNotification, userDisplayName } from '../lib/notificationHelper.js';
@@ -106,6 +107,7 @@ async function loadShareLink(pool, code) {
 
 export default function sharingRoutes(pool) {
   const router = express.Router();
+  router.use(createApiLimiter());
 
   router.post('/', async (req, res) => {
     const userId = extractUserId(req);

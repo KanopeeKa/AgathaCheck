@@ -1,29 +1,25 @@
-import fs from 'fs';
 import path from 'path';
 import multer from 'multer';
 import jwt from 'jsonwebtoken';
+import { v4 as uuidv4 } from 'uuid';
 
 import { JWT_SECRET } from '../../config/jwtSecret.js';
 import { isActiveMember, isOrgAdmin, isSuperAdmin, normaliseRole } from '../../lib/orgRoles.js';
+import { extensionForMime, saveUploadedFile } from '../../lib/safeUpload.js';
 
 const MAX_ORG_IMAGE_BYTES = 2 * 1024 * 1024;
 const ORG_IMAGE_EXTENSIONS = new Set(['.jpg', '.jpeg', '.png', '.webp']);
-const ORG_IMAGE_MIME_TYPES = new Set([
-  'image/jpeg',
-  'image/png',
-  'image/webp',
-]);
 
 const orgImageUpload = multer({
   storage: multer.memoryStorage(),
   limits: { fileSize: MAX_ORG_IMAGE_BYTES },
   fileFilter: (_req, file, cb) => {
-    const ext = path.extname(file.originalname).toLowerCase();
-    if (ORG_IMAGE_EXTENSIONS.has(ext) && ORG_IMAGE_MIME_TYPES.has(file.mimetype)) {
+    try {
+      extensionForMime(file.mimetype, ORG_IMAGE_EXTENSIONS);
       cb(null, true);
-      return;
+    } catch {
+      cb(new Error('Only JPG, PNG, and WebP images are allowed'));
     }
-    cb(new Error('Only JPG, PNG, and WebP images are allowed'));
   },
 });
 
@@ -39,12 +35,17 @@ export function orgUploadDir(subdir) {
   return process.env.ORG_UPLOAD_DIR || path.resolve(process.cwd(), 'uploads', subdir);
 }
 
-export function saveOrgImage(file, orgId, subdir) {
-  const ext = path.extname(file.originalname).toLowerCase() || '.jpg';
+export function saveOrgImage(file, _orgId, subdir) {
   const dir = orgUploadDir(subdir);
-  fs.mkdirSync(dir, { recursive: true });
-  const filename = `${orgId}_${Date.now()}${ext}`;
-  fs.writeFileSync(path.join(dir, filename), file.buffer);
+  const fileId = uuidv4();
+  const { filename } = saveUploadedFile({
+    buffer: file.buffer,
+    mimeType: file.mimetype,
+    fileId,
+    rootDir: dir,
+    allowedExtensions: ORG_IMAGE_EXTENSIONS,
+    maxBytes: MAX_ORG_IMAGE_BYTES,
+  });
   return `/uploads/${subdir}/${filename}`;
 }
 
