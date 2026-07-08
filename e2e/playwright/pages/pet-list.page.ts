@@ -1,4 +1,5 @@
 import type { Page } from '@playwright/test';
+import { expect } from '@playwright/test';
 import { dismissConsentBannerIfPresent } from '../support/flutter';
 
 /**
@@ -42,6 +43,12 @@ export class PetListPage {
       .waitFor({ timeout: 30_000 });
   }
 
+  async expectPetCount(n: number): Promise<void> {
+    await expect(
+      this.page.getByRole('button', { name: /Pet:/i }),
+    ).toHaveCount(n, { timeout: 30_000 });
+  }
+
   async openPet(name: string): Promise<void> {
     await this.expectPetVisible(name);
     await this.page
@@ -55,5 +62,45 @@ export class PetListPage {
     await dismissConsentBannerIfPresent(this.page);
     await this.page.getByRole('button', { name: 'Organizations' }).click();
     await this.page.getByText('My Organizations').waitFor({ timeout: 30_000 });
+  }
+
+  async openVets(): Promise<void> {
+    await dismissConsentBannerIfPresent(this.page);
+    await this.page.getByRole('button', { name: 'Veterinarians' }).click();
+    await this.page.getByText('Veterinarians').first().waitFor({ timeout: 30_000 });
+  }
+
+  /**
+   * Simulate a left swipe on a shared-pet card to trigger the hide-pet
+   * Dismissible action (DismissDirection.endToStart).
+   */
+  async swipeLeftPetCard(name: string): Promise<void> {
+    const card = this.page
+      .getByRole('button', { name: new RegExp(`Pet:\\s*${name}`, 'i') })
+      .first();
+    const box = await card.boundingBox();
+    if (!box) throw new Error(`Pet card "${name}" not found`);
+    const startX = box.x + box.width * 0.88;
+    const endX = box.x + box.width * 0.05;
+    const midY = box.y + box.height / 2;
+    await this.page.mouse.move(startX, midY);
+    await this.page.mouse.down();
+    for (let i = 1; i <= 20; i++) {
+      await this.page.mouse.move(startX + (endX - startX) * (i / 20), midY);
+    }
+    await this.page.mouse.up();
+    await this.page.waitForTimeout(750);
+  }
+
+  async confirmHidePet(): Promise<void> {
+    // AlertDialog title "Hide Pet", buttons: "Cancel", "Hide"
+    await this.page.getByRole('button', { name: 'Hide' }).last().click();
+    await this.page.waitForTimeout(1_000);
+  }
+
+  async expectPetHidden(name: string): Promise<void> {
+    await expect(
+      this.page.getByRole('button', { name: new RegExp(`Pet:\\s*${name}`, 'i') }),
+    ).toHaveCount(0);
   }
 }

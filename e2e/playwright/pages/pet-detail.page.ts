@@ -24,6 +24,10 @@ export class PetDetailPage {
       .waitFor();
   }
 
+  async expectBreed(breed: string): Promise<void> {
+    await this.page.getByText(breed, { exact: false }).first().waitFor({ timeout: 15_000 });
+  }
+
   async openEdit(): Promise<void> {
     await this.page.getByRole('button', { name: 'Edit Pet', exact: true }).click();
     await this.page.getByRole('button', { name: 'Update Pet' }).waitFor({ timeout: 30_000 });

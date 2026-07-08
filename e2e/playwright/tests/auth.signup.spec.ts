@@ -5,6 +5,7 @@
  * Scenario: Signing up without an email
  * Scenario: Signing up with an invalid email
  * Scenario: Signing up with a password shorter than 6 characters
+ * Scenario: Signing up with an already registered email
  */
 import { test, expect } from '@playwright/test';
 import { LandingPage } from '../pages/landing.page';

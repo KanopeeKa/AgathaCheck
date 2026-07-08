@@ -1,6 +1,7 @@
 /**
  * @bdd authentication.feature
  * Scenario: Logging in with valid credentials
+ * Scenario: Logging in with incorrect password
  */
 import { test, expect, loginAs } from '../fixtures/auth.fixture';
 import { checkA11y } from '../support/axe';

@@ -7,9 +7,15 @@
  * Scenario: Viewing owner information on shared pet page
  * Scenario: Accepting a share into personal pet list
  * Scenario: Opening an expired or invalid share link
+ * Scenario: Hiding a shared pet via swipe
+ * NOTE: "Pending share appears in pet list" and "Declining a pending share" are not
+ *       covered here because the backend's link-based sharing model always returns an
+ *       empty pending-share list (/share/pending → []) — there is no server-side
+ *       pending queue in the current implementation.
  */
 import { test, expect, loginAs } from '../fixtures/auth.fixture';
 import {
+  acceptShareByCode,
   createHealthEntry,
   createPet,
   createShareLink,
@@ -108,5 +114,31 @@ test.describe('Pet sharing', () => {
     const sharedPet = new SharedPetPage(page);
     await sharedPet.goto('not-a-real-share-code');
     await sharedPet.expectInvalidLink();
+  });
+
+  test('user can hide a shared pet via swipe', async ({ page }) => {
+    const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
+    const owner = await signupUser(baseURL, { firstName: 'Alice', lastName: 'Owner' });
+    const bob = await signupUser(baseURL, { firstName: 'Bob', lastName: 'Follower' });
+    const pet = await createPet(baseURL, owner.accessToken, 'Bella', 'Dog');
+    const link = await createShareLink(baseURL, owner.accessToken, pet.id);
+
+    // Bob accepts the share via the API so the pet appears in his list as shared.
+    await acceptShareByCode(baseURL, bob.accessToken, link.share_code);
+
+    // Bob logs in and verifies Bella is visible in the pet list.
+    await loginAs(page, bob);
+    const petList = new PetListPage(page);
+    await petList.expectLoaded();
+    await petList.expectPetVisible('Bella');
+
+    // Swipe left on Bella's card to trigger the Dismissible hide action.
+    await petList.swipeLeftPetCard('Bella');
+
+    // Confirm the hide in the dialog that appears ("Hide Pet" / "Hide" button).
+    await petList.confirmHidePet();
+
+    // Bella should no longer appear in the pet list.
+    await petList.expectPetHidden('Bella');
   });
 });

@@ -1,0 +1,84 @@
+import type { Page } from '@playwright/test';
+import { expect } from '@playwright/test';
+import {
+  dismissConsentBannerIfPresent,
+  refreshFlutterAccessibility,
+} from '../support/flutter';
+
+/**
+ * Veterinarian list screen (`/vets`).
+ * Maps to: flutter_app/test/bdd/features/veterinarian_management.feature
+ */
+export class VetListPage {
+  constructor(private readonly page: Page) {}
+
+  async expectLoaded(): Promise<void> {
+    await dismissConsentBannerIfPresent(this.page);
+    await this.page.getByText('Veterinarians').first().waitFor({ timeout: 30_000 });
+  }
+
+  async expectEmptyState(): Promise<void> {
+    await this.page.getByText('No veterinarians yet').waitFor({ timeout: 30_000 });
+  }
+
+  async openAddForm(): Promise<void> {
+    await this.page.getByRole('button', { name: 'Add Vet' }).click();
+    await this.page.getByRole('textbox', { name: 'Name *' }).waitFor({ timeout: 30_000 });
+  }
+
+  async expectVetVisible(name: string): Promise<void> {
+    await this.page.getByText(name).first().waitFor({ timeout: 30_000 });
+  }
+
+  async expectVetNotVisible(name: string): Promise<void> {
+    await expect(this.page.getByText(name)).toHaveCount(0);
+  }
+
+  async expectVetCount(n: number): Promise<void> {
+    await expect(
+      this.page.getByRole('button', { name: /Veterinarian:/ }),
+    ).toHaveCount(n, { timeout: 30_000 });
+  }
+
+  /** Open the three-dot options menu for the first vet card matching `name`. */
+  async openVetMenu(name: string): Promise<void> {
+    // Find the vet options button within the card for the given vet name.
+    // Since MergeSemantics may merge children, we locate the nearest "Vet options"
+    // button after the vet name text appears.
+    await this.expectVetVisible(name);
+    await this.page.getByRole('button', { name: 'Vet options' }).first().click();
+    await refreshFlutterAccessibility(this.page);
+  }
+
+  async clickEditVet(name: string): Promise<void> {
+    await this.openVetMenu(name);
+    await this.page.getByRole('menuitem', { name: 'Edit' }).click();
+    await this.page.getByRole('textbox', { name: 'Name *' }).waitFor({ timeout: 30_000 });
+  }
+
+  async clickDeleteVet(name: string): Promise<void> {
+    await this.openVetMenu(name);
+    await this.page.getByRole('menuitem', { name: 'Delete' }).click();
+    await refreshFlutterAccessibility(this.page);
+  }
+
+  async confirmDeletion(): Promise<void> {
+    // AlertDialog title: "Delete Vet"; buttons: Cancel, Delete
+    await this.page.getByRole('button', { name: 'Delete' }).last().click();
+    await this.page.waitForTimeout(1_000);
+  }
+
+  async cancelDeletion(): Promise<void> {
+    await this.page.getByRole('button', { name: 'Cancel' }).click();
+    await this.page.waitForTimeout(500);
+  }
+
+  async goBack(): Promise<void> {
+    await this.page.getByRole('button', { name: /go back/i }).click();
+    await this.page.waitForTimeout(500);
+  }
+
+  async expectPhoneVisible(phone: string): Promise<void> {
+    await this.page.getByText(phone).first().waitFor({ timeout: 15_000 });
+  }
+}

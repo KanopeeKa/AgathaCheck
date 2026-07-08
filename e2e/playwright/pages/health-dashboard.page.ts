@@ -53,4 +53,30 @@ export class HealthDashboardPage {
     await this.page.getByText(name, { exact: false }).first().waitFor();
     await this.page.getByText('Undo', { exact: false }).first().waitFor({ timeout: 30_000 });
   }
+
+  async expectEmptyState(): Promise<void> {
+    await this.page
+      .getByText('No entries yet', { exact: false })
+      .first()
+      .waitFor({ timeout: 15_000 });
+  }
+
+  async selectTab(tabName: string): Promise<void> {
+    await this.page
+      .getByRole('tab', { name: tabName, exact: true })
+      .or(this.page.getByText(tabName, { exact: true }))
+      .first()
+      .click();
+    await this.page.waitForTimeout(500);
+  }
+
+  async expectEntryNotVisible(name: string): Promise<void> {
+    const matches = this.page.getByText(name, { exact: false });
+    const count = await matches.count();
+    for (let i = 0; i < count; i++) {
+      if (await matches.nth(i).isVisible()) {
+        throw new Error(`Expected entry "${name}" to not be visible but found a visible instance`);
+      }
+    }
+  }
 }

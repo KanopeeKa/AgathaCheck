@@ -118,11 +118,48 @@ export async function signupUser(
   };
 }
 
+export async function updateUserProfile(
+  baseURL: string,
+  token: string,
+  data: Partial<{
+    first_name: string;
+    last_name: string;
+    category: string;
+    bio: string;
+    locale: string;
+  }>,
+): Promise<TestUser> {
+  const res = await fetch(apiUrl('/auth/me', baseURL), {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(data),
+  });
+
+  if (!res.ok) {
+    const body = await res.text();
+    throw new Error(`updateUserProfile failed (${res.status}): ${body}`);
+  }
+
+  const json = await res.json();
+  return {
+    email: json.email,
+    password: '',
+    firstName: json.first_name ?? '',
+    lastName: json.last_name ?? '',
+    accessToken: token,
+    userId: json.id ?? json.user_id,
+  };
+}
+
 export async function createPet(
   baseURL: string,
   token: string,
   name: string,
   species = 'Dog',
+  breed = '',
 ): Promise<TestPet> {
   const res = await fetch(apiUrl('/pets', baseURL), {
     method: 'POST',
@@ -130,7 +167,7 @@ export async function createPet(
       'Content-Type': 'application/json',
       Authorization: `Bearer ${token}`,
     },
-    body: JSON.stringify({ name, species, breed: '' }),
+    body: JSON.stringify({ name, species, breed }),
   });
 
   if (!res.ok) {
@@ -381,6 +418,20 @@ export async function createShareLink(
   return { share_code: json.share_code, link_id: json.link_id };
 }
 
+// ── Veterinarian helpers ──────────────────────────────────────────────────────
+
+export interface TestVet {
+  id: string;
+  user_id?: string;
+  name: string;
+  clinic?: string;
+  phone?: string;
+  email?: string;
+  website?: string;
+  address?: string;
+  notes?: string;
+}
+
 export async function createVet(
   baseURL: string,
   token: string,
@@ -402,6 +453,141 @@ export async function createVet(
 
   const json = await res.json();
   return { id: json.id, name: json.name };
+}
+
+export async function createVetFull(
+  baseURL: string,
+  token: string,
+  options: {
+    name: string;
+    clinic?: string;
+    phone?: string;
+    email?: string;
+    website?: string;
+    address?: string;
+    notes?: string;
+  },
+): Promise<TestVet> {
+  const res = await fetch(apiUrl('/vets', baseURL), {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({
+      name: options.name,
+      clinic: options.clinic ?? '',
+      phone: options.phone ?? '',
+      email: options.email ?? '',
+      website: options.website ?? '',
+      address: options.address ?? '',
+      notes: options.notes ?? '',
+    }),
+  });
+
+  if (!res.ok) {
+    const body = await res.text();
+    throw new Error(`createVetFull failed (${res.status}): ${body}`);
+  }
+
+  return res.json() as Promise<TestVet>;
+}
+
+export async function getVets(baseURL: string, token: string): Promise<TestVet[]> {
+  const res = await fetch(apiUrl('/vets', baseURL), {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+
+  if (!res.ok) {
+    const body = await res.text();
+    throw new Error(`getVets failed (${res.status}): ${body}`);
+  }
+
+  return res.json() as Promise<TestVet[]>;
+}
+
+export async function updateVetDetails(
+  baseURL: string,
+  token: string,
+  vetId: string,
+  data: Partial<{
+    name: string;
+    clinic: string;
+    phone: string;
+    email: string;
+    website: string;
+    address: string;
+    notes: string;
+  }>,
+): Promise<TestVet> {
+  // PUT requires all fields; fetch the current vet first to fill defaults.
+  const current = await (
+    await fetch(apiUrl(`/vets/${vetId}`, baseURL), {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+  ).json() as TestVet;
+
+  const res = await fetch(apiUrl(`/vets/${vetId}`, baseURL), {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({
+      name: data.name ?? current.name,
+      clinic: data.clinic ?? current.clinic ?? '',
+      phone: data.phone ?? current.phone ?? '',
+      email: data.email ?? current.email ?? '',
+      website: data.website ?? current.website ?? '',
+      address: data.address ?? current.address ?? '',
+      notes: data.notes ?? current.notes ?? '',
+    }),
+  });
+
+  if (!res.ok) {
+    const body = await res.text();
+    throw new Error(`updateVetDetails failed (${res.status}): ${body}`);
+  }
+
+  return res.json() as Promise<TestVet>;
+}
+
+export async function deleteVet(baseURL: string, token: string, vetId: string): Promise<void> {
+  const res = await fetch(apiUrl(`/vets/${vetId}`, baseURL), {
+    method: 'DELETE',
+    headers: { Authorization: `Bearer ${token}` },
+  });
+
+  if (!res.ok) {
+    const body = await res.text();
+    throw new Error(`deleteVet failed (${res.status}): ${body}`);
+  }
+}
+
+export async function acceptShareByCode(
+  baseURL: string,
+  token: string,
+  shareCode: string,
+  organizationId?: string,
+): Promise<{ pet_id?: string }> {
+  const body: Record<string, string> = {};
+  if (organizationId) body['organization_id'] = organizationId;
+
+  const res = await fetch(apiUrl(`/share/${shareCode}/accept`, baseURL), {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(body),
+  });
+
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error(`acceptShareByCode failed (${res.status}): ${text}`);
+  }
+
+  return res.json() as Promise<{ pet_id?: string }>;
 }
 
 export async function updatePetVet(
@@ -506,6 +692,120 @@ export async function createHealthEntry(
 
   const json = await res.json();
   return { id: json.id, name: json.name };
+}
+
+export async function updateHealthEntry(
+  baseURL: string,
+  token: string,
+  entryId: string,
+  options: {
+    name: string;
+    type?: string;
+    nextDueDate: string;
+    dosage?: string;
+    frequency?: string;
+    frequencyDays?: number;
+  },
+): Promise<TestHealthEntry> {
+  const frequency = options.frequency ?? 'monthly';
+  const res = await fetch(apiUrl(`/health-entries/${entryId}`, baseURL), {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({
+      name: options.name,
+      type: options.type ?? 'medication',
+      dosage: options.dosage ?? '1 tablet',
+      frequency,
+      frequency_days: frequency === 'once' ? null : (options.frequencyDays ?? 30),
+      next_due_date: options.nextDueDate,
+      status: 'active',
+    }),
+  });
+
+  if (!res.ok) {
+    const body = await res.text();
+    throw new Error(`updateHealthEntry failed (${res.status}): ${body}`);
+  }
+
+  const json = await res.json();
+  return { id: json.id, name: json.name };
+}
+
+export async function deleteHealthEntry(
+  baseURL: string,
+  token: string,
+  entryId: string,
+): Promise<void> {
+  const res = await fetch(apiUrl(`/health-entries/${entryId}`, baseURL), {
+    method: 'DELETE',
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!res.ok) {
+    const body = await res.text();
+    throw new Error(`deleteHealthEntry failed (${res.status}): ${body}`);
+  }
+}
+
+export async function undoCompleteHealthEntry(
+  baseURL: string,
+  token: string,
+  entryId: string,
+): Promise<{ status: string; next_due_date: string | null; name: string }> {
+  const res = await fetch(apiUrl(`/health-entries/${entryId}/undo-complete`, baseURL), {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!res.ok) {
+    const body = await res.text();
+    throw new Error(`undoCompleteHealthEntry failed (${res.status}): ${body}`);
+  }
+  return res.json();
+}
+
+export async function getHealthEntries(
+  baseURL: string,
+  token: string,
+): Promise<Array<{ id: string; name: string; type: string; status: string; next_due_date: string | null }>> {
+  const res = await fetch(apiUrl('/health-entries', baseURL), {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!res.ok) {
+    const body = await res.text();
+    throw new Error(`getHealthEntries failed (${res.status}): ${body}`);
+  }
+  return res.json();
+}
+
+export async function exportHealthEntriesCsv(
+  baseURL: string,
+  token: string,
+): Promise<string> {
+  const res = await fetch(apiUrl('/health-entries/export', baseURL), {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!res.ok) {
+    const body = await res.text();
+    throw new Error(`exportHealthEntriesCsv failed (${res.status}): ${body}`);
+  }
+  return res.text();
+}
+
+export async function getHealthEntryHistory(
+  baseURL: string,
+  token: string,
+  entryId: string,
+): Promise<Array<{ id: string; status: string; completed_on: string | null; changed_at: string }>> {
+  const res = await fetch(apiUrl(`/health-entries/${entryId}/history`, baseURL), {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!res.ok) {
+    const body = await res.text();
+    throw new Error(`getHealthEntryHistory failed (${res.status}): ${body}`);
+  }
+  return res.json();
 }
 
 // ── Notification helpers ──────────────────────────────────────────────────────

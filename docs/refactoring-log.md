@@ -68,9 +68,9 @@ Tracks planned and completed refactor / quality work. See also `docs/refactoring
 
 | # | Action | Status | Notes |
 |---|--------|--------|-------|
-| 4.1 | Split `server/routes/healthEntries.js` | Planned | |
-| 4.2 | Playwright: `notifications.feature`, `weight_tracking.feature` | Planned | |
-| 4.3 | BDD coverage target 50% of priority scenarios | Planned | |
+| 4.1 | Split `server/routes/healthEntries.js` | **Done** | `routes/healthEntries/` (#101) |
+| 4.2 | Playwright: `notifications.feature`, `weight_tracking.feature` | **Done** | #99 |
+| 4.3 | BDD coverage target **50% of all scenarios (81/161)** | Done (integration branch) | `e2e/scripts/check_bdd_coverage.js`; see `docs/quality/bdd-journey-matrix.md` |
 | 4.4 | Resolve moderate `npm audit` findings (bcrypt 6.x, uuid) | **Done (Sprint 1)** | bcrypt ^6, uuid ^11 |
 
 ---
@@ -79,6 +79,8 @@ Tracks planned and completed refactor / quality work. See also `docs/refactoring
 
 | Date | Change |
 |---|---|
+| 2026-07-08 | Sprint 4.3 complete on integration branch: 81/161 BDD scenarios mapped; 79 Playwright tests |
+| 2026-07-08 | Sprint 4.3: BDD journey matrix; 4.1–4.2 done; 50% all-scenario gate |
 | 2026-07-08 | Sprint 3 complete (all 8 items): 3.4 auth_routes.dart split PR #94, 3.5 auth.test.js split PR #92, 3.6 pets.test.js split PR #93 |
 | 2026-07-07 | Sprint 3.1–3.3: pet_detail, health_dashboard, my_details screen splits merged |
 | 2026-07-07 | Sprint 2.9: Flutter domain coverage gate at 65% |

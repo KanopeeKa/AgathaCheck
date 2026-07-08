@@ -1,5 +1,5 @@
 import type { Page } from '@playwright/test';
-import { dismissConsentBannerIfPresent, enableFlutterAccessibility, fillTextbox, selectDropdownOption } from '../support/flutter';
+import { dismissConsentBannerIfPresent, enableFlutterAccessibility, fillTextbox, refreshFlutterAccessibility, selectDropdownOption } from '../support/flutter';
 
 /**
  * Add / edit pet form (`/add`, `/edit/:id`).
@@ -24,6 +24,10 @@ export class PetFormPage {
     await selectDropdownOption(this.page, 'Species *', species);
   }
 
+  async fillBreed(breed: string): Promise<void> {
+    await fillTextbox(this.page, /^Breed/, breed);
+  }
+
   async save(): Promise<void> {
     const saveButton = this.page.getByRole('button', { name: /Save Pet|Update Pet/ });
     await saveButton.click();
@@ -40,5 +44,69 @@ export class PetFormPage {
     await this.page.waitForTimeout(300);
     await this.fillName(name);
     await this.save();
+  }
+
+  async createPetWithBreed(name: string, species: string, breed: string): Promise<void> {
+    await this.expectLoaded();
+    await this.selectSpecies(species);
+    await this.page.waitForTimeout(300);
+    await this.fillName(name);
+    await this.fillBreed(breed);
+    await this.save();
+  }
+
+  /** Click the "Delete Pet" button to open the confirmation dialog. */
+  async clickDeletePet(): Promise<void> {
+    const deleteBtn = this.page.getByRole('button', { name: 'Delete Pet', exact: false });
+    await deleteBtn.scrollIntoViewIfNeeded();
+    await deleteBtn.click();
+    await refreshFlutterAccessibility(this.page);
+    await this.page.getByRole('button', { name: 'Delete', exact: true }).waitFor({ timeout: 15_000 });
+  }
+
+  /** Confirm the delete dialog. */
+  async confirmDelete(): Promise<void> {
+    await this.page.getByRole('button', { name: 'Delete', exact: true }).click();
+    await this.page
+      .getByRole('button', { name: 'To Do' })
+      .or(this.page.getByRole('button', { name: 'Add Pet' }))
+      .or(this.page.getByText('No pets yet'))
+      .first()
+      .waitFor({ timeout: 30_000 });
+  }
+
+  /** Cancel the delete dialog. */
+  async cancelDelete(): Promise<void> {
+    await this.page.getByRole('button', { name: 'Cancel', exact: true }).click();
+    await this.page.waitForTimeout(500);
+    // Should still be on the edit form
+    await this.page.getByRole('button', { name: /Update Pet/ }).waitFor({ timeout: 15_000 });
+  }
+
+  /** Click the "Passed Away" button to open the confirmation dialog. */
+  async clickPassedAway(): Promise<void> {
+    const btn = this.page.getByRole('button', { name: 'Passed Away', exact: false });
+    await btn.scrollIntoViewIfNeeded();
+    await btn.click();
+    await refreshFlutterAccessibility(this.page);
+    // Dialog shows OK and Cancel
+    await this.page.getByRole('button', { name: 'OK', exact: true }).waitFor({ timeout: 15_000 });
+  }
+
+  /** Confirm the passed-away dialog. */
+  async confirmPassedAway(): Promise<void> {
+    await this.page.getByRole('button', { name: 'OK', exact: true }).click();
+    await this.page
+      .getByRole('button', { name: 'To Do' })
+      .or(this.page.getByRole('button', { name: 'Add Pet' }))
+      .first()
+      .waitFor({ timeout: 30_000 });
+  }
+
+  /** Cancel the passed-away dialog. */
+  async cancelPassedAway(): Promise<void> {
+    await this.page.getByRole('button', { name: 'Cancel', exact: true }).click();
+    await this.page.waitForTimeout(500);
+    await this.page.getByRole('button', { name: /Update Pet/ }).waitFor({ timeout: 15_000 });
   }
 }
