@@ -1,6 +1,15 @@
 # Contributing to Agatha Track
 
-Thank you for contributing. This project uses **trunk-based development**: merge small PRs to `main` frequently; full browser E2E runs on UAT release branches only.
+Thank you for contributing. This project uses **trunk-based development** on `main`, with **integration branches** for multi-agent sprint work.
+
+## Branch strategy
+
+| Situation | Target branch |
+|-----------|---------------|
+| Single developer / single agent, one domain | PR directly to `main` |
+| One request spawning **multiple parallel agents** | `cursor/sprint-<N>-<topic>-integration-13e3` → agents merge there → **one PR** to `main` |
+
+Rationale: batching reduces repeated CI on `main` as coverage grows. See `.cursor/rules/merge-policy.mdc` and `.cursor/rules/agent-coordination.mdc`.
 
 ## Before you start
 
@@ -35,6 +44,10 @@ cd flutter_app && flutter test --concurrency=1 --exclude-tags=integration
 
 # Format (required — CI enforces)
 dart format flutter_app/lib flutter_app/test server/lib
+
+# Governance gates (required — CI enforces)
+node scripts/check_file_size.js
+node e2e/scripts/check_bdd_coverage.js
 ```
 
 ## Pull request expectations
@@ -59,6 +72,8 @@ Use the PR template checklist. In summary:
 - CodeQL (JavaScript)
 - `dart format --set-exit-if-changed` (blocks merge)
 - Flutter domain line coverage ≥ 65% (`check_domain_coverage.js`)
+- BDD scenario mapping ≥ 81/161 (`e2e/scripts/check_bdd_coverage.js`)
+- Hand-written file size ≤ 500 lines (`scripts/check_file_size.js`; grandfather ratchet for legacy monoliths)
 - Coverage artifacts: full Flutter lcov + Jest Istanbul (report-only beyond domain gate)
 
 ## E2E and UAT

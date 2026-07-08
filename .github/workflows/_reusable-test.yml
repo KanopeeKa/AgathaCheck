@@ -10,6 +10,24 @@ env:
   NODE_VERSION: '22'
 
 jobs:
+  governance:
+    name: Governance (BDD + file size)
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: BDD scenario coverage gate (81/161)
+        run: node e2e/scripts/check_bdd_coverage.js
+
+      - name: File size gate (500 lines)
+        run: node scripts/check_file_size.js
+
   flutter:
     name: Flutter (analyze, test, build web)
     runs-on: ubuntu-latest

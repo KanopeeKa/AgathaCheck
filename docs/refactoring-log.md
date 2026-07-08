@@ -2,7 +2,7 @@
 
 Tracks planned and completed refactor / quality work. See also `docs/refactoring-debt.md` and `docs/architecture/modularity.md`.
 
-**Policy:** One domain or screen per PR; merge to `main` frequently; full E2E on UAT only.
+**Policy:** Multi-agent / sprint milestones use an **integration branch** → single PR to `main`. Single-agent domain PRs may go direct to `main`. Full E2E on UAT only. See `.cursor/rules/merge-policy.mdc` and `.cursor/rules/agent-coordination.mdc`.
 
 ---
 
@@ -70,16 +70,81 @@ Tracks planned and completed refactor / quality work. See also `docs/refactoring
 |---|--------|--------|-------|
 | 4.1 | Split `server/routes/healthEntries.js` | **Done** | `routes/healthEntries/` (#101) |
 | 4.2 | Playwright: `notifications.feature`, `weight_tracking.feature` | **Done** | #99 |
-| 4.3 | BDD coverage target **50% of all scenarios (81/161)** | Done (integration branch) | `e2e/scripts/check_bdd_coverage.js`; see `docs/quality/bdd-journey-matrix.md` |
+| 4.3 | BDD coverage target **50% of all scenarios (81/161)** | **Done** | #102; `e2e/scripts/check_bdd_coverage.js` |
 | 4.4 | Resolve moderate `npm audit` findings (bcrypt 6.x, uuid) | **Done (Sprint 1)** | bcrypt ^6, uuid ^11 |
+
+**Sprint 4 exit criteria:** All items merged (#99, #101, #102).
 
 ---
 
-## Changelog
+## Sprint 5 — Governance hardening + monolith splits (planned)
+
+**Integration branch:** `cursor/sprint-5-governance-integration-13e3` (create when parallel work starts)
+
+| # | Action | Status | Parallel agent | Owns |
+|---|--------|--------|----------------|------|
+| 5.1 | Quality review doc + integration-branch policy + agent-coordination rule | **Done** | `docs/quality/review-2026-07-08.md`, `.cursor/rules/` |
+| 5.2 | CI: `check_file_size.js` (500-line gate + grandfather ratchet) | **Done** | `scripts/check_file_size.js`, governance CI job |
+| 5.3 | CI: `check_bdd_coverage.js` (81/161 gate, ratchet later) | **Done** | `_reusable-test.yml` |
+| 5.4 | Split placements/foster monoliths (663 + 653 + 518 lines) | Planned | **2** | Agent A: `pet_foster_placement_section.dart` + widgets; Agent B: `placements_routes.dart` + `placementsRouter.js` — **serial** on shared types/API contract first |
+| 5.5 | GDPR `/me/export` completeness + Jest tests | Planned | 1 | `server/routes/auth/` export handler |
+| 5.6 | `@P0`/`@P1`/`@P2` tags on `.feature` files | Planned | 1 | `flutter_app/test/bdd/features/` only |
+
+**5.4 agent order:** Foundation agent documents placement API shapes → Node split → Dart widget split (avoids `api.ts` / route conflicts).
+
+---
+
+## Sprint 6 — Org-operator BDD + help (planned)
+
+**Integration branch:** `cursor/sprint-6-org-bdd-integration-13e3`
+
+| # | Action | Status | Parallel agents | Owns |
+|---|--------|--------|-----------------|------|
+| 6.1 | Playwright: `organisation_pet_management.feature` (6) | Planned | 1 | `organisation.pet.management.spec.ts` + org pet pages |
+| 6.2 | Playwright: `pet_ownership_and_adoption.feature` (8) | Planned | 1 | `adoption.spec.ts` — **after** product confirms archive API |
+| 6.3 | Playwright: `organisation_pet_timeline.feature` (subset 4/6) | Planned | 1 | `org.timeline.spec.ts` |
+| 6.4 | Playwright: `help_faq.feature` (10) | Planned | 1 | `help.faq.spec.ts` |
+| 6.5 | Realign `@smoke` + axe to P0 guardian paths | Planned | 1 | `e2e/playwright/tests/` smoke titles only |
+
+**Parallelism:** 6.1 + 6.4 can run together (disjoint). 6.2 depends on archive API validation. 6.3 after 6.1 (shared org pet fixtures). Foundation agent extends `api.ts` once.
+
+**Exit gate:** BDD ≥ **105/161 (65%)** + persona gate: ≥ **80% of @P1 guardian scenarios** (once tags land in 5.6).
+
+---
+
+## Sprint 7 — Compliance + subscriptions (planned)
+
+| # | Action | Status | Notes |
+|---|--------|--------|-------|
+| 7.1 | Gherkin + Playwright: GDPR export + account delete (J13) | Planned | After 5.5 export payload complete |
+| 7.2 | `subscriptions.feature` E2E (subset) | Planned | UAT RevenueCat sandbox required |
+| 7.3 | Clear grandfather allowlist entries (all files <500) | Planned | After 5.4 splits |
+| 7.4 | BDD gate ratchet to **105/161 (65%)** in CI | Planned | |
+
+---
+
+## Parallel-agent ownership matrix (reference)
+
+Use this template when spawning agents on an integration branch:
+
+| Phase | Agent | Branch suffix | Files / directories |
+|-------|-------|---------------|---------------------|
+| 0 Foundation | `foundation` | merge first | `e2e/playwright/support/api.ts`, shared fixtures |
+| 1a | `e2e-health` | parallel | `health*.spec.ts`, `health-*.page.ts` |
+| 1b | `e2e-auth-pet` | parallel | `auth.*.spec.ts`, `pet.profiles.spec.ts`, related pages |
+| 1c | `e2e-org` | parallel | `organisation*.spec.ts`, `adoption*.spec.ts` |
+| 2 | `node-<domain>` | parallel per domain | `server/routes/<domain>/` |
+| 2 | `flutter-<screen>` | parallel per screen | one screen + `widgets/` subtree |
+
+**Never parallelise:** same spec file, same page object, `api.ts`, CI workflows, `file-size-allowlist.json`.
+
+---
+
 
 | Date | Change |
 |---|---|
-| 2026-07-08 | Sprint 4.3 complete on integration branch: 81/161 BDD scenarios mapped; 79 Playwright tests |
+| 2026-07-08 | Sprint 5–7 plan; integration-branch policy; parallel-agent ownership matrix |
+| 2026-07-08 | Sprint 4.3 merged #102: 81/161 BDD scenarios; 79 Playwright tests |
 | 2026-07-08 | Sprint 4.3: BDD journey matrix; 4.1–4.2 done; 50% all-scenario gate |
 | 2026-07-08 | Sprint 3 complete (all 8 items): 3.4 auth_routes.dart split PR #94, 3.5 auth.test.js split PR #92, 3.6 pets.test.js split PR #93 |
 | 2026-07-07 | Sprint 3.1–3.3: pet_detail, health_dashboard, my_details screen splits merged |
