@@ -1,10 +1,10 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 
 import '../../../../l10n/app_localizations.dart';
 import '../../../pet_profile/domain/entities/pet.dart';
 import '../../domain/entities/health_entry.dart';
+import 'health_entry_card_actions.dart';
+import 'health_entry_card_pet_strip.dart';
 import 'health_entry_status.dart';
 
 class HealthEntryCard extends StatelessWidget {
@@ -54,7 +54,7 @@ class HealthEntryCard extends StatelessWidget {
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                _PetStrip(pet: pet, colorScheme: colorScheme),
+                HealthEntryPetStrip(pet: pet, colorScheme: colorScheme),
                 Expanded(
                   child: InkWell(
                     onTap: onTap,
@@ -140,7 +140,7 @@ class HealthEntryCard extends StatelessWidget {
                                 ),
                               ),
                               const Spacer(),
-                              _FrequencyBadge(
+                              HealthEntryFrequencyBadge(
                                 frequency: entry.frequency,
                                 interval: entry.frequencyInterval,
                               ),
@@ -152,11 +152,15 @@ class HealthEntryCard extends StatelessWidget {
                   ),
                 ),
                 if (showActions && onMarkTaken != null) ...[
-                  if (onSnooze != null) _SnoozeButton(onSnooze: onSnooze),
-                  _MarkDoneButton(onPressed: onMarkTaken, petStripWidth: 52),
+                  if (onSnooze != null)
+                    HealthEntrySnoozeButton(onSnooze: onSnooze),
+                  HealthEntryMarkDoneButton(
+                    onPressed: onMarkTaken,
+                    petStripWidth: 52,
+                  ),
                 ],
                 if (entry.isCompleted) ...[
-                  _UndoCompleteButton(
+                  HealthEntryUndoCompleteButton(
                     onPressed: onUndoComplete,
                     petStripWidth: 52,
                   ),
@@ -182,324 +186,5 @@ class HealthEntryCard extends StatelessWidget {
       case HealthEntryType.familyEvent:
         return Icons.family_restroom;
     }
-  }
-}
-
-class _MarkDoneButton extends StatelessWidget {
-  const _MarkDoneButton({this.onPressed, required this.petStripWidth});
-
-  final VoidCallback? onPressed;
-  final double petStripWidth;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final l = AppLocalizations.of(context)!;
-    return SizedBox(
-      width: petStripWidth * 2,
-      child: Material(
-        color: Colors.green.shade50,
-        child: InkWell(
-          onTap: onPressed,
-          splashColor: Colors.green.shade100,
-          child: Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(
-                  Icons.check_circle_outline,
-                  size: 22,
-                  color: Colors.green.shade700,
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  l.markAsDone,
-                  style: theme.textTheme.labelSmall?.copyWith(
-                    color: Colors.green.shade700,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 11,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _UndoCompleteButton extends StatelessWidget {
-  const _UndoCompleteButton({this.onPressed, required this.petStripWidth});
-
-  final VoidCallback? onPressed;
-  final double petStripWidth;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final l = AppLocalizations.of(context)!;
-    return SizedBox(
-      width: petStripWidth * 2,
-      child: Material(
-        color: Colors.orange.shade50,
-        child: InkWell(
-          onTap: onPressed,
-          splashColor: Colors.orange.shade100,
-          child: Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(Icons.undo, size: 22, color: Colors.orange.shade700),
-                const SizedBox(height: 4),
-                Text(
-                  l.undoComplete,
-                  style: theme.textTheme.labelSmall?.copyWith(
-                    color: Colors.orange.shade700,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 11,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _SnoozeButton extends StatelessWidget {
-  const _SnoozeButton({this.onSnooze});
-
-  final void Function(int days)? onSnooze;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final l = AppLocalizations.of(context)!;
-    return SizedBox(
-      width: 48,
-      child: Material(
-        color: Colors.orange.shade50,
-        child: InkWell(
-          onTap: () => _showSnoozePicker(context),
-          splashColor: Colors.orange.shade100,
-          child: Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(Icons.snooze, size: 18, color: Colors.orange.shade700),
-                const SizedBox(height: 2),
-                Text(
-                  l.snooze,
-                  style: theme.textTheme.labelSmall?.copyWith(
-                    color: Colors.orange.shade700,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 9,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  void _showSnoozePicker(BuildContext context) {
-    final l = AppLocalizations.of(context)!;
-    int selectedDays = 1;
-    showDialog(
-      context: context,
-      builder: (ctx) {
-        return StatefulBuilder(
-          builder: (ctx, setDialogState) {
-            return AlertDialog(
-              title: Row(
-                children: [
-                  Icon(Icons.snooze, color: Colors.orange.shade700, size: 22),
-                  const SizedBox(width: 8),
-                  Text('${l.snooze} Event'),
-                ],
-              ),
-              content: SizedBox(
-                height: 160,
-                child: Column(
-                  children: [
-                    Text(
-                      'Postpone for how many days?',
-                      style: Theme.of(ctx).textTheme.bodyMedium,
-                    ),
-                    const SizedBox(height: 16),
-                    Expanded(
-                      child: ListWheelScrollView.useDelegate(
-                        itemExtent: 40,
-                        diameterRatio: 1.5,
-                        physics: const FixedExtentScrollPhysics(),
-                        onSelectedItemChanged: (index) {
-                          setDialogState(() => selectedDays = index + 1);
-                        },
-                        childDelegate: ListWheelChildBuilderDelegate(
-                          childCount: 90,
-                          builder: (context, index) {
-                            final day = index + 1;
-                            final isSelected = day == selectedDays;
-                            return Center(
-                              child: Text(
-                                day == 1 ? '1 ${l.day}' : '$day ${l.days}',
-                                style: TextStyle(
-                                  fontSize: isSelected ? 20 : 15,
-                                  fontWeight: isSelected
-                                      ? FontWeight.bold
-                                      : FontWeight.normal,
-                                  color: isSelected
-                                      ? Colors.orange.shade800
-                                      : Colors.grey,
-                                ),
-                              ),
-                            );
-                          },
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.of(ctx).pop(),
-                  child: Text(l.cancel),
-                ),
-                FilledButton(
-                  style: FilledButton.styleFrom(
-                    backgroundColor: Colors.orange.shade700,
-                  ),
-                  onPressed: () {
-                    Navigator.of(ctx).pop();
-                    onSnooze?.call(selectedDays);
-                  },
-                  child: Text(
-                    '${l.snooze} $selectedDays ${selectedDays == 1 ? l.day : l.days}',
-                  ),
-                ),
-              ],
-            );
-          },
-        );
-      },
-    );
-  }
-}
-
-class _PetStrip extends StatelessWidget {
-  const _PetStrip({this.pet, required this.colorScheme});
-
-  final Pet? pet;
-  final ColorScheme colorScheme;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final petColor = pet?.colorValue != null
-        ? Color(pet!.colorValue!)
-        : colorScheme.surfaceContainerHighest;
-
-    return Container(
-      width: 52,
-      decoration: BoxDecoration(color: petColor.withValues(alpha: 0.18)),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          _buildAvatar(petColor),
-          const SizedBox(height: 2),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 2),
-            child: Text(
-              pet?.name ?? '?',
-              style: theme.textTheme.labelSmall?.copyWith(
-                fontSize: 9,
-                fontWeight: FontWeight.w600,
-                color: colorScheme.onSurfaceVariant,
-              ),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              textAlign: TextAlign.center,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildAvatar(Color petColor) {
-    if (pet?.photoPath != null && pet!.photoPath!.isNotEmpty) {
-      try {
-        final bytes = base64Decode(pet!.photoPath!);
-        return Container(
-          width: 30,
-          height: 30,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            border: Border.all(color: petColor, width: 2),
-          ),
-          child: ClipOval(
-            child: Image.memory(
-              bytes,
-              width: 26,
-              height: 26,
-              fit: BoxFit.cover,
-            ),
-          ),
-        );
-      } catch (_) {}
-    }
-    return Container(
-      width: 30,
-      height: 30,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        color: petColor.withValues(alpha: 0.25),
-        border: Border.all(color: petColor, width: 2),
-      ),
-      child: Icon(Icons.pets, size: 14, color: petColor),
-    );
-  }
-}
-
-class _FrequencyBadge extends StatelessWidget {
-  const _FrequencyBadge({required this.frequency, this.interval = 1});
-
-  final HealthFrequency frequency;
-  final int interval;
-
-  String _displayLabel(BuildContext context) {
-    final l = AppLocalizations.of(context)!;
-    if (frequency == HealthFrequency.once) return l.doesNotRepeat;
-    if (frequency == HealthFrequency.custom) return l.custom;
-    final period = frequency.label;
-    if (interval == 1) return l.everyPeriod(period);
-    return l.everyNPeriods(interval, '${period}s');
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-      decoration: BoxDecoration(
-        color: theme.colorScheme.secondaryContainer,
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Text(
-        _displayLabel(context),
-        style: theme.textTheme.labelSmall?.copyWith(
-          fontSize: 10,
-          color: theme.colorScheme.onSecondaryContainer,
-          fontWeight: FontWeight.w600,
-        ),
-      ),
-    );
   }
 }
