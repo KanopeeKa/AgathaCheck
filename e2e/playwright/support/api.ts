@@ -118,11 +118,48 @@ export async function signupUser(
   };
 }
 
+export async function updateUserProfile(
+  baseURL: string,
+  token: string,
+  data: Partial<{
+    first_name: string;
+    last_name: string;
+    category: string;
+    bio: string;
+    locale: string;
+  }>,
+): Promise<TestUser> {
+  const res = await fetch(apiUrl('/auth/me', baseURL), {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(data),
+  });
+
+  if (!res.ok) {
+    const body = await res.text();
+    throw new Error(`updateUserProfile failed (${res.status}): ${body}`);
+  }
+
+  const json = await res.json();
+  return {
+    email: json.email,
+    password: '',
+    firstName: json.first_name ?? '',
+    lastName: json.last_name ?? '',
+    accessToken: token,
+    userId: json.id ?? json.user_id,
+  };
+}
+
 export async function createPet(
   baseURL: string,
   token: string,
   name: string,
   species = 'Dog',
+  breed = '',
 ): Promise<TestPet> {
   const res = await fetch(apiUrl('/pets', baseURL), {
     method: 'POST',
@@ -130,7 +167,7 @@ export async function createPet(
       'Content-Type': 'application/json',
       Authorization: `Bearer ${token}`,
     },
-    body: JSON.stringify({ name, species, breed: '' }),
+    body: JSON.stringify({ name, species, breed }),
   });
 
   if (!res.ok) {
