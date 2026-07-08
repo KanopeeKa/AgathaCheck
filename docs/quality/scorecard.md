@@ -52,8 +52,9 @@ CI blocks **new** files above 500 lines. Legacy monoliths are ratcheted in `scri
 
 | File | Lines | Sprint |
 |---|---:|---|
-| `placements_routes.dart` | 663 | 5.4 |
-| `pet_foster_placement_section.dart` | 653 | 5.4 |
+| `placements_routes.dart` | 12 (composer) | 5.4 — Done |
+| `pet_foster_placement_section.dart` | 178 | 5.4 — Done |
+| `placementsRouter.js` | 1 (re-export) | 5.4 — Done |
 | `organization_providers.dart` | 607 | 5.4+ |
 | `server/lib/routes.dart` | 591 | 5.4+ |
 | `landing_screen.dart` | 576 | 5.4+ |
@@ -76,6 +77,7 @@ Run `cd server && npm audit` locally. CI blocks **high** and **critical** (clean
 
 | Date | Change |
 |---|---|
+| 2026-07-08 | Sprint 5.4: placements split; grandfather allowlist 8→5 |
 | 2026-07-08 | Sprint 5.1: review doc; CI BDD + file-size gates; integration-branch policy |
 | 2026-07-08 | Sprint 4.3 BDD gate met: 81/161 scenarios mapped; Playwright 79 tests |
 | 2026-07-08 | Sprint 4.3 BDD journey matrix; 50% gate = 81/161 scenarios; Playwright 47 |

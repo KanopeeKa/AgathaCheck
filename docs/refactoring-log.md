@@ -77,7 +77,7 @@ Tracks planned and completed refactor / quality work. See also `docs/refactoring
 
 ---
 
-## Sprint 5 — Governance hardening + monolith splits (planned)
+## Sprint 5 — Governance hardening + monolith splits (in progress)
 
 **Integration branch:** `cursor/sprint-5-governance-integration-13e3` (create when parallel work starts)
 
@@ -86,7 +86,7 @@ Tracks planned and completed refactor / quality work. See also `docs/refactoring
 | 5.1 | Quality review doc + integration-branch policy + agent-coordination rule | **Done** | `docs/quality/review-2026-07-08.md`, `.cursor/rules/` |
 | 5.2 | CI: `check_file_size.js` (500-line gate + grandfather ratchet) | **Done** | `scripts/check_file_size.js`, governance CI job |
 | 5.3 | CI: `check_bdd_coverage.js` (81/161 gate, ratchet later) | **Done** | `_reusable-test.yml` |
-| 5.4 | Split placements/foster monoliths (663 + 653 + 518 lines) | Planned | **2** | Agent A: `pet_foster_placement_section.dart` + widgets; Agent B: `placements_routes.dart` + `placementsRouter.js` — **serial** on shared types/API contract first |
+| 5.4 | Split placements/foster monoliths (663 + 653 + 518 lines) | **Done** | Node `routes/organizations/placements/`; Dart `lib/organizations/placements/`; Flutter `pet_foster_placement/` |
 | 5.5 | GDPR `/me/export` completeness + Jest tests | Planned | 1 | `server/routes/auth/` export handler |
 | 5.6 | `@P0`/`@P1`/`@P2` tags on `.feature` files | Planned | 1 | `flutter_app/test/bdd/features/` only |
 
