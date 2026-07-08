@@ -2,6 +2,10 @@ import { errorDetails } from '../../config/security.js';
 import { listFosterContactsForUser } from '../../lib/orgPeople.js';
 import { logAuditEventSafe } from '../../lib/audit.js';
 import { deletePostHogPerson } from '../../lib/posthogServer.js';
+import {
+  buildUserDataExport,
+  exportAuditMetadata,
+} from '../../lib/gdprUserExport.js';
 import { extractToken, userRowToMap, verifyToken } from './shared.js';
 
 export function registerProfileRoutes(router, pool, { comparePassword }) {
@@ -167,23 +171,18 @@ export function registerProfileRoutes(router, pool, { comparePassword }) {
         return res.status(404).json({ error: 'User not found' });
       }
       const user = userRowToMap(userResult.rows[0]);
-      const petsResult = await pool.query('SELECT * FROM pets WHERE user_id = $1', [payload.id]);
-      const vetsResult = await pool.query('SELECT * FROM vets WHERE user_id = $1', [payload.id]);
+      const exportData = await buildUserDataExport(pool, payload.id);
       logAuditEventSafe(pool, {
         actorUserId: payload.id,
         action: 'auth.data_export',
         resourceType: 'user',
         resourceId: payload.id,
-        metadata: {
-          pet_count: petsResult.rows.length,
-          vet_count: vetsResult.rows.length,
-        },
+        metadata: exportAuditMetadata(exportData),
         req,
       });
       res.status(200).json({
         user,
-        pets: petsResult.rows,
-        vets: vetsResult.rows,
+        ...exportData,
         exported_at: new Date().toISOString(),
       });
     } catch (err) {

@@ -76,6 +76,7 @@ Run `cd server && npm audit` locally. CI blocks **high** and **critical** (clean
 
 | Date | Change |
 |---|---|
+| 2026-07-08 | Sprint 5.5–5.6: GDPR export completeness; @P0/@P1/@P2 on all 161 scenarios + CI gate |
 | 2026-07-08 | Sprint 5.4b: all 5 remaining monoliths split; grandfather allowlist cleared |
 | 2026-07-08 | Sprint 5.4: placements split; grandfather allowlist 8→5 |
 | 2026-07-08 | Sprint 5.1: review doc; CI BDD + file-size gates; integration-branch policy |

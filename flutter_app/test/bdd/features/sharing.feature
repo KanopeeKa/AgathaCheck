@@ -8,6 +8,7 @@ Feature: Pet Sharing
 
   # ── Creating Share Links ─────────────────────────────────────
 
+  @P0
   Scenario: Creating a share link for a pet
     When "Alice" creates a share link for "Bella"
     Then a unique share link should be generated
@@ -15,6 +16,7 @@ Feature: Pet Sharing
 
   # ── Viewing Shared Pet (Unauthenticated) ─────────────────────
 
+  @P0
   Scenario: Viewing a shared pet without being logged in
     Given "Alice" has created a share link for "Bella"
     When an anonymous user opens the share link
@@ -22,18 +24,21 @@ Feature: Pet Sharing
     And the user should see a "View Only" badge
     And the user should see a prompt to sign up or log in
 
+  @P1
   Scenario: Viewing a shared pet's health entries
     Given "Bella" has health entries "Vaccination" and "Flea Treatment"
     And "Alice" has created a share link for "Bella"
     When a user opens the share link
     Then the user should see health entries "Vaccination" and "Flea Treatment"
 
+  @P1
   Scenario: Viewing a shared pet's vet information
     Given "Bella" is linked to vet "Dr. Smith"
     And "Alice" has created a share link for "Bella"
     When a user opens the share link
     Then the user should see "Dr. Smith" in the veterinarian section
 
+  @P1
   Scenario: Viewing owner information on shared pet page
     Given "Alice" has created a share link for "Bella"
     When a user opens the share link
@@ -41,6 +46,7 @@ Feature: Pet Sharing
 
   # ── Accepting Shares ─────────────────────────────────────────
 
+  @P1
   Scenario: Accepting a share into personal pet list
     Given a registered user "Bob"
     And "Alice" has created a share link for "Bella"
@@ -48,23 +54,27 @@ Feature: Pet Sharing
     And "Bob" taps "Accept & Add"
     Then "Bella" should appear in "Bob"'s pet list as a shared pet
 
+  @P2
   Scenario: Pending share appears in pet list
     Given "Bob" has a pending share for "Bella"
     When "Bob" views the pet list
     Then a pending share card for "Bella" should appear
     And the card should have "Accept" and "Decline" buttons
 
+  @P2
   Scenario: Accepting a pending share into personal list
     Given "Bob" has a pending share for "Bella"
     When "Bob" accepts the pending share into their personal list
     Then "Bella" should appear under "My Pets" for "Bob"
 
+  @P2
   Scenario: Accepting a pending share into an organisation
     Given "Bob" is a member of organisation "Pet Care Team"
     And "Bob" has a pending share for "Bella"
     When "Bob" accepts the pending share into "Pet Care Team"
     Then "Bella" should appear under "Pet Care Team" for "Bob"
 
+  @P2
   Scenario: Declining a pending share
     Given "Bob" has a pending share for "Bella"
     When "Bob" declines the pending share for "Bella"
@@ -73,6 +83,7 @@ Feature: Pet Sharing
 
   # ── Hiding Shared Pets ───────────────────────────────────────
 
+  @P2
   Scenario: Hiding a shared pet via swipe
     Given "Bob" has a shared pet "Bella" in their pet list
     When "Bob" swipes left on "Bella"'s card
@@ -81,6 +92,7 @@ Feature: Pet Sharing
     And "Bella" should not appear in "Bob"'s health dashboard
     And "Bella" should not generate notifications for "Bob"
 
+  @P2
   Scenario: Unhiding a shared pet
     Given "Bob" has hidden the shared pet "Bella"
     When "Bob" navigates to the organisation detail page
@@ -89,6 +101,7 @@ Feature: Pet Sharing
 
   # ── Invalid Share Links ──────────────────────────────────────
 
+  @P1
   Scenario: Opening an expired or invalid share link
     When a user opens an invalid share link
     Then an error message "Pet not found or share link expired" should be displayed

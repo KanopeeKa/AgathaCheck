@@ -10,6 +10,7 @@ Feature: Organisation Pet Timeline
 
   # ── Family Events as Timeline ────────────────────────────────
 
+  @P1
   Scenario: Recording a foster stay for a pet
     Given a registered user "Frank" who is a member of "Rescue Hearts"
     When "Alice" creates a family event for "Max" assigned to "Frank" from "2025-06-01" to "2025-08-31" with notes "Summer fostering"
@@ -17,12 +18,14 @@ Feature: Organisation Pet Timeline
     And the event should have from date "2025-06-01" and to date "2025-08-31"
     And the event notes should be "Summer fostering"
 
+  @P1
   Scenario: Recording an open-ended placement
     Given a registered user "Grace" who is a member of "Rescue Hearts"
     When "Alice" creates a family event for "Max" assigned to "Grace" from "2025-09-01" without an end date with notes "Long-term care"
     Then "Max" should have a family event assigned to "Grace"
     And the event should have from date "2025-09-01" and no end date
 
+  @P1
   Scenario: Viewing all family events for a pet
     Given "Max" has the following family events:
       | assigned_to | from       | to         | notes            |
@@ -32,6 +35,7 @@ Feature: Organisation Pet Timeline
     Then she should see 2 family events
     And the events should be ordered by from date
 
+  @P1
   Scenario: Removing a family event
     Given "Max" has a family event assigned to "Frank" from "2025-06-01" to "2025-08-31"
     When "Alice" removes the family event assigned to "Frank" for "Max"
@@ -39,11 +43,13 @@ Feature: Organisation Pet Timeline
 
   # ── Timeline in Health Dashboard ─────────────────────────────
 
+  @P1
   Scenario: Family events appear in the health dashboard
     Given "Max" has a family event assigned to "Frank" from "2025-06-01" to "2025-06-15"
     When "Alice" views the health dashboard
     Then the family event for "Max" should appear under the "Family Events" tab
 
+  @P1
   Scenario: Notifications for ending family events
     Given "Max" has a family event assigned to "Frank" from "2025-06-01" to tomorrow
     When the system checks for due notifications

@@ -8,6 +8,7 @@ Feature: Veterinarian Management
 
   # ── Creating Vets ────────────────────────────────────────────
 
+  @P1
   Scenario: Creating a veterinarian with all details
     When the user navigates to the veterinarian list
     And the user taps the "Add Vet" button
@@ -20,23 +21,27 @@ Feature: Veterinarian Management
     Then "Dr. Smith" should appear in the veterinarian list
     And the vet details should show phone "555-1234"
 
+  @P1
   Scenario: Creating a veterinarian with only a name
     When the user creates a vet named "Dr. Jones"
     Then "Dr. Jones" should appear in the veterinarian list
 
   # ── Viewing Vets ─────────────────────────────────────────────
 
+  @P1
   Scenario: Viewing the veterinarian list
     Given vets "Dr. Smith" and "Dr. Jones" exist
     When the user navigates to the veterinarian list
     Then the user should see 2 veterinarian cards
 
+  @P1
   Scenario: Viewing vet with linked pets
     Given a vet "Dr. Smith" exists
     And pets "Bella" and "Max" are linked to "Dr. Smith"
     When the user views the veterinarian list
     Then "Dr. Smith" should show "Bella" and "Max" as linked pets
 
+  @P1
   Scenario: Empty vet list shows prompt
     Given the user has no veterinarians
     When the user navigates to the veterinarian list
@@ -44,6 +49,7 @@ Feature: Veterinarian Management
 
   # ── Editing Vets ─────────────────────────────────────────────
 
+  @P1
   Scenario: Editing a veterinarian's phone number
     Given a vet "Dr. Smith" with phone "555-1234" exists
     When the user edits "Dr. Smith" and changes the phone to "555-5678"
@@ -52,12 +58,14 @@ Feature: Veterinarian Management
 
   # ── Deleting Vets ────────────────────────────────────────────
 
+  @P1
   Scenario: Deleting a veterinarian
     Given a vet "Dr. Smith" exists
     When the user deletes "Dr. Smith"
     And the user confirms the deletion
     Then "Dr. Smith" should no longer appear in the veterinarian list
 
+  @P1
   Scenario: Cancelling vet deletion
     Given a vet "Dr. Smith" exists
     When the user attempts to delete "Dr. Smith"
@@ -66,10 +74,12 @@ Feature: Veterinarian Management
 
   # ── Navigation ───────────────────────────────────────────────
 
+  @P1
   Scenario: Navigating to vet list from the app bar
     When the user taps the veterinarian icon in the app bar
     Then the user should be navigated to the veterinarian list screen
 
+  @P1
   Scenario: Navigating back from vet list
     Given the user is on the veterinarian list screen
     When the user taps the back button

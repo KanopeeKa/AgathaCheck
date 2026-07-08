@@ -7,6 +7,7 @@ import 'package:shelf_router/shelf_router.dart';
 
 import '../http_security.dart';
 import 'auth_shared.dart';
+import '../gdpr_user_export.dart';
 
 void registerProfileRoutes(Router router, Pool pool) {
   router.get('/me', (Request request) async {
@@ -227,23 +228,12 @@ void registerProfileRoutes(Router router, Pool pool) {
 
       final user = userRowToMap(userResult.first);
 
-      final petsResult = await pool.execute(
-        Sql.named('SELECT * FROM pets WHERE user_id = @id'),
-        parameters: {'id': userId},
-      );
-      final pets = petsResult.map((r) => r.toColumnMap()).toList();
-
-      final vetsResult = await pool.execute(
-        Sql.named('SELECT * FROM vets WHERE user_id = @id'),
-        parameters: {'id': userId},
-      );
-      final vets = vetsResult.map((r) => r.toColumnMap()).toList();
+      final exportData = await buildUserDataExport(pool, userId);
 
       return Response.ok(
           json.encode({
             'user': user,
-            'pets': pets,
-            'vets': vets,
+            ...exportData,
             'exported_at': DateTime.now().toIso8601String(),
           }),
           headers: jsonHeaders);

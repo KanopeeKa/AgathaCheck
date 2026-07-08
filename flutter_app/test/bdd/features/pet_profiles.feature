@@ -8,6 +8,7 @@ Feature: Pet Profiles
 
   # ── Creating Pets ────────────────────────────────────────────
 
+  @P0
   Scenario: Creating a new pet with required fields
     When the user taps the "Add Pet" button
     And the user enters pet name "Bella"
@@ -16,6 +17,7 @@ Feature: Pet Profiles
     Then "Bella" should appear in the pet list
     And "Bella" should have species "Dog"
 
+  @P1
   Scenario: Creating a pet with all fields populated
     When the user taps the "Add Pet" button
     And the user enters pet name "Max"
@@ -28,10 +30,12 @@ Feature: Pet Profiles
     Then "Max" should appear in the pet list
     And "Max" should have breed "Siamese"
 
+  @P1
   Scenario: Pet is assigned a unique color on creation
     When the user creates a pet named "Luna"
     Then "Luna" should have a color assigned from the 15-color palette
 
+  @P1
   Scenario: Age is dynamically calculated from date of birth
     Given a pet "Milo" with date of birth "2022-01-01"
     When the user views the profile of "Milo"
@@ -39,18 +43,21 @@ Feature: Pet Profiles
 
   # ── Viewing Pets ─────────────────────────────────────────────
 
+  @P1
   Scenario: Viewing the pet list
     Given the user has pets "Bella", "Max", and "Luna"
     When the user views the pet list
     Then the user should see 3 pet cards
     And each pet card should show the pet's name, species, and color
 
+  @P0
   Scenario: Viewing pet details
     Given a pet "Bella" of species "Dog" with breed "Labrador"
     When the user taps on "Bella" in the pet list
     Then the user should see the pet detail screen for "Bella"
     And the screen should display species "Dog" and breed "Labrador"
 
+  @P0
   Scenario: Empty pet list shows prompt
     Given the user has no pets
     When the user views the pet list
@@ -59,12 +66,14 @@ Feature: Pet Profiles
 
   # ── Editing Pets ─────────────────────────────────────────────
 
+  @P1
   Scenario: Editing a pet's name
     Given a pet "Bella" exists
     When the user edits "Bella" and changes the name to "Bella Rose"
     And the user saves the pet
     Then the pet list should show "Bella Rose"
 
+  @P1
   Scenario: Editing a pet's breed
     Given a pet "Bella" with breed "Labrador" exists
     When the user edits "Bella" and changes the breed to "Golden Retriever"
@@ -73,12 +82,14 @@ Feature: Pet Profiles
 
   # ── Deleting Pets ────────────────────────────────────────────
 
+  @P1
   Scenario: Deleting a pet
     Given a pet "Bella" exists
     When the user deletes "Bella"
     And the user confirms the deletion
     Then "Bella" should no longer appear in the pet list
 
+  @P1
   Scenario: Cancelling pet deletion
     Given a pet "Bella" exists
     When the user attempts to delete "Bella"
@@ -87,6 +98,7 @@ Feature: Pet Profiles
 
   # ── Passed Away ──────────────────────────────────────────────
 
+  @P1
   Scenario: Marking a pet as passed away
     Given a pet "Buddy" exists
     When the user marks "Buddy" as passed away
@@ -94,6 +106,7 @@ Feature: Pet Profiles
     And "Buddy"'s color should change to white
     And a rainbow wings overlay should be applied to "Buddy"'s photo
 
+  @P1
   Scenario: Passed away pets appear in a collapsible section
     Given a pet "Buddy" has been marked as passed away
     When the user views the pet list
@@ -102,11 +115,13 @@ Feature: Pet Profiles
 
   # ── Identification Reminder ──────────────────────────────────
 
+  @P2
   Scenario: Showing identification reminder for pet without ID
     Given a pet "Luna" without an identification number
     When the user views the profile of "Luna"
     Then a species-specific identification reminder should be displayed
 
+  @P2
   Scenario: No identification reminder for pet with ID
     Given a pet "Luna" with identification number "FR-123-456"
     When the user views the profile of "Luna"
@@ -114,6 +129,7 @@ Feature: Pet Profiles
 
   # ── Pet Photo ────────────────────────────────────────────────
 
+  @P1
   Scenario: Adding a photo to a pet profile
     Given a pet "Bella" exists without a photo
     When the user edits "Bella" and adds a photo
@@ -122,6 +138,7 @@ Feature: Pet Profiles
 
   # ── Linking Vet ──────────────────────────────────────────────
 
+  @P1
   Scenario: Linking a veterinarian to a pet
     Given a pet "Bella" exists
     And a veterinarian "Dr. Jones" exists

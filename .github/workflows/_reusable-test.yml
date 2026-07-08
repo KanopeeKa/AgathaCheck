@@ -25,6 +25,9 @@ jobs:
       - name: BDD scenario coverage gate (81/161)
         run: node e2e/scripts/check_bdd_coverage.js
 
+      - name: BDD priority tags (@P0/@P1/@P2 on every scenario)
+        run: node scripts/check_bdd_priority_tags.js
+
       - name: File size gate (500 lines)
         run: node scripts/check_file_size.js
 

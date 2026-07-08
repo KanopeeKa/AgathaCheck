@@ -8,16 +8,19 @@ Feature: Organisation Management
 
   # ── Creation ──────────────────────────────────────────────────
 
+  @P0
   Scenario: Creating a Professional organisation
     When "Alice" creates a Professional organisation named "Happy Paws Clinic"
     Then the organisation "Happy Paws Clinic" should exist with type "Professional"
     And "Alice" should be a super user of "Happy Paws Clinic"
 
+  @P1
   Scenario: Creating a Charity organisation
     When "Alice" creates a Charity organisation named "Rescue Hearts"
     Then the organisation "Rescue Hearts" should exist with type "Charity"
     And "Alice" should be a super user of "Rescue Hearts"
 
+  @P1
   Scenario: Organisation requires a name
     When "Alice" attempts to create an organisation without a name
     Then the organisation should not be created
@@ -25,24 +28,28 @@ Feature: Organisation Management
 
   # ── Inviting Members ─────────────────────────────────────────
 
+  @P1
   Scenario: Inviting a volunteer as a member
     Given "Alice" is a super user of organisation "Happy Paws Clinic"
     And a registered user "Bob"
     When "Alice" invites "Bob" to "Happy Paws Clinic" with the role "member"
     Then "Bob" should have a pending invite for "Happy Paws Clinic"
 
+  @P1
   Scenario: Accepting an organisation invite
     Given "Bob" has a pending invite for "Happy Paws Clinic" with the role "member"
     When "Bob" accepts the invite for "Happy Paws Clinic"
     Then "Bob" should be a member of "Happy Paws Clinic"
     And "Bob" should no longer have a pending invite for "Happy Paws Clinic"
 
+  @P1
   Scenario: Declining an organisation invite
     Given "Bob" has a pending invite for "Happy Paws Clinic" with the role "member"
     When "Bob" declines the invite for "Happy Paws Clinic"
     Then "Bob" should not be a member of "Happy Paws Clinic"
     And "Bob" should no longer have a pending invite for "Happy Paws Clinic"
 
+  @P1
   Scenario: Inviting a user as a super user
     Given "Alice" is a super user of organisation "Happy Paws Clinic"
     And a registered user "Carol"
@@ -50,6 +57,7 @@ Feature: Organisation Management
     And "Carol" accepts the invite for "Happy Paws Clinic"
     Then "Carol" should be a super user of "Happy Paws Clinic"
 
+  @P1
   Scenario: Only super users can invite new members
     Given "Bob" is a member of organisation "Happy Paws Clinic"
     And a registered user "Dave"
@@ -59,6 +67,7 @@ Feature: Organisation Management
 
   # ── Organisation Details ─────────────────────────────────────
 
+  @P1
   Scenario: Viewing organisation details
     Given "Alice" is a super user of organisation "Happy Paws Clinic"
     And "Bob" is a member of "Happy Paws Clinic"
@@ -67,11 +76,13 @@ Feature: Organisation Management
     And she should see 2 members listed
     And she should see "Bob" listed as a member
 
+  @P1
   Scenario: Updating organisation information
     Given "Alice" is a super user of organisation "Happy Paws Clinic"
     When "Alice" updates the bio of "Happy Paws Clinic" to "Full-service veterinary clinic"
     Then the bio of "Happy Paws Clinic" should be "Full-service veterinary clinic"
 
+  @P1
   Scenario: Leaving an organisation
     Given "Bob" is a member of organisation "Happy Paws Clinic"
     When "Bob" leaves "Happy Paws Clinic"

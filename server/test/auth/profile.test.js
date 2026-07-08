@@ -276,6 +276,53 @@ describe('Auth Routes — Profile', () => {
       expect(res.body).toHaveProperty('exported_at');
     });
 
+    it('should include all GDPR export sections', async () => {
+      const exportSections = {
+        health_entries: [{ id: 'he-1' }],
+        health_issues: [{ id: 'hi-1' }],
+        weight_entries: [{ id: 'we-1' }],
+        notifications: [{ id: 'n-1' }],
+        notification_preferences: [{ preference: 'health_reminders' }],
+        organization_memberships: [{ organization_id: 'org-1', role: 'member' }],
+        organizations: [{ id: 'org-1', name: 'Test Org' }],
+        pet_access: [{ pet_id: 'pet-2', role: 'shared' }],
+        pet_share_links: [{ code: 'abc123' }],
+        shared_pets: [],
+        archived_pets: [],
+        family_events: [],
+        foster_placements: [],
+        org_foster_parent_records: [],
+        health_history: [],
+        health_event_photos: [],
+        health_issue_events: [],
+      };
+      const pool = buildMockPool({
+        selectExportSection: async (sql) => {
+          if (sql.includes('health_entries WHERE')) return { rows: exportSections.health_entries };
+          if (sql.includes('health_issues WHERE')) return { rows: exportSections.health_issues };
+          if (sql.includes('weight_entries WHERE')) return { rows: exportSections.weight_entries };
+          if (sql.includes('notifications WHERE')) return { rows: exportSections.notifications };
+          if (sql.includes('notification_preferences')) return { rows: exportSections.notification_preferences };
+          if (sql.includes('organization_users WHERE')) return { rows: exportSections.organization_memberships };
+          if (sql.includes('organizations o')) return { rows: exportSections.organizations };
+          if (sql.includes('pet_access WHERE')) return { rows: exportSections.pet_access };
+          if (sql.includes('pet_share_links')) return { rows: exportSections.pet_share_links };
+          return { rows: [] };
+        },
+      });
+      const exportApp = createApp(pool, mockComparePassword);
+      const token = makeToken();
+      const res = await request(exportApp)
+        .get('/api/auth/me/export')
+        .set('Authorization', `Bearer ${token}`);
+      expect(res.statusCode).toBe(200);
+      for (const [key, value] of Object.entries(exportSections)) {
+        expect(res.body).toHaveProperty(key);
+        expect(res.body[key]).toEqual(value);
+      }
+      expect(res.body.user).not.toHaveProperty('password_hash');
+    });
+
     it('should return 401 without token', async () => {
       const res = await request(app).get('/api/auth/me/export');
       expect(res.statusCode).toBe(401);

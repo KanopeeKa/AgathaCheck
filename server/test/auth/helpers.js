@@ -50,6 +50,7 @@ export function buildMockPool(overrides = {}) {
     deleteUser: async (sql, params) => ({ rows: [] }),
     selectPets: async (sql, params) => ({ rows: [{ id: 'pet-1', name: 'Buddy' }] }),
     selectVets: async (sql, params) => ({ rows: [{ id: 'vet-1', name: 'Dr. Smith' }] }),
+    selectExportSection: async (sql, params) => ({ rows: [] }),
     selectResetToken: async (sql, params) => ({ rows: [] }),
     insertResetToken: async (sql, params) => ({ rows: [] }),
     deleteResetToken: async (sql, params) => ({ rows: [] }),
@@ -72,6 +73,17 @@ export function buildMockPool(overrides = {}) {
       if (sql.includes('DELETE FROM users')) return handlers.deleteUser(sql, params);
       if (sql.includes('SELECT * FROM pets')) return handlers.selectPets(sql, params);
       if (sql.includes('SELECT * FROM vets')) return handlers.selectVets(sql, params);
+      if (sql.includes('FROM health_entries') || sql.includes('FROM health_issues')
+        || sql.includes('FROM health_history') || sql.includes('FROM health_event_photos')
+        || sql.includes('FROM health_issue_events') || sql.includes('FROM weight_entries')
+        || sql.includes('FROM notifications') || sql.includes('FROM notification_preferences')
+        || sql.includes('FROM organization_users') || sql.includes('FROM organizations o')
+        || sql.includes('FROM pet_access') || sql.includes('FROM pet_share_links')
+        || sql.includes('FROM shared_pets') || sql.includes('FROM archived_pets')
+        || sql.includes('FROM family_events') || sql.includes('FROM foster_placements')
+        || sql.includes('FROM org_foster_parents')) {
+        return handlers.selectExportSection(sql, params);
+      }
       if (sql.includes('FROM users WHERE email') && sql.includes('SELECT id')) return handlers.selectUserByEmail(sql, params);
       if (sql.includes('INSERT INTO password_reset_tokens')) return handlers.insertResetToken(sql, params);
       if (sql.includes('DELETE FROM password_reset_tokens')) return handlers.deleteResetToken(sql, params);

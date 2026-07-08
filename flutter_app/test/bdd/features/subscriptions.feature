@@ -8,6 +8,7 @@ Feature: Subscriptions
 
   # ── Free Plan ────────────────────────────────────────────────
 
+  @P1
   Scenario: Viewing the paywall on a free plan
     Given the user is on the free plan
     When the user navigates to the subscription screen
@@ -15,6 +16,7 @@ Feature: Subscriptions
     And the user should see a list of premium features
     And the user should see available subscription offerings
 
+  @P1
   Scenario: Viewing premium features list
     Given the user is on the free plan
     When the user views the subscription screen
@@ -29,6 +31,7 @@ Feature: Subscriptions
 
   # ── Purchasing ───────────────────────────────────────────────
 
+  @P1
   Scenario: Purchasing a monthly subscription
     Given the user is on the free plan
     And a monthly subscription offering is available
@@ -36,6 +39,7 @@ Feature: Subscriptions
     Then the subscription should be processed
     And the user should see "Agatha Track Unlimited" as the current plan
 
+  @P1
   Scenario: Purchasing a yearly subscription
     Given the user is on the free plan
     And a yearly subscription offering is available
@@ -43,6 +47,7 @@ Feature: Subscriptions
     Then the subscription should be processed
     And the yearly plan should show a "Best Value" tag
 
+  @P1
   Scenario: Purchase failure shows error
     Given the user is on the free plan
     When the user attempts to purchase a subscription and the purchase fails
@@ -50,6 +55,7 @@ Feature: Subscriptions
 
   # ── Active Subscription ──────────────────────────────────────
 
+  @P1
   Scenario: Viewing active subscription details
     Given the user has an active unlimited subscription
     When the user navigates to the subscription screen
@@ -57,6 +63,7 @@ Feature: Subscriptions
     And the user should see a renewal date
     And a premium icon should be displayed
 
+  @P1
   Scenario: Managing active subscription
     Given the user has an active unlimited subscription with a management URL
     When the user navigates to the subscription screen
@@ -64,11 +71,13 @@ Feature: Subscriptions
 
   # ── Restoring Purchases ─────────────────────────────────────
 
+  @P1
   Scenario: Restoring previous purchases
     When the user taps "Restore Purchases"
     Then the app should check for previous purchases
     And a confirmation message should appear
 
+  @P1
   Scenario: Restore purchases with no previous purchases
     Given the user has no previous purchases
     When the user taps "Restore Purchases"
@@ -76,12 +85,14 @@ Feature: Subscriptions
 
   # ── No Offerings Available ───────────────────────────────────
 
+  @P1
   Scenario: No subscription offerings available
     Given no subscription offerings are configured
     When the user navigates to the subscription screen
     Then an error message "No subscription plans are available" should be displayed
     And a "Load Plans" retry button should be visible
 
+  @P1
   Scenario: Failed to load subscription offerings
     Given the subscription service is unavailable
     When the user navigates to the subscription screen
