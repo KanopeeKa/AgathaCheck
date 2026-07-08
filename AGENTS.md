@@ -69,21 +69,25 @@ personal + org field inventory in `docs/calendar-dates.md` and the shared helper
 
 ### Modularity & refactoring (always apply)
 - Follow `docs/architecture/modularity.md`: prefer small files, domain-by-domain changes, tests leading refactors.
-- Hand-written files should stay under ~500 lines; split immediately if over ~800.
+- Hand-written files must stay **≤500 lines** (CI enforces via `scripts/check_file_size.js`; grandfather ratchet in `scripts/file-size-allowlist.json`).
 - Node route changes that affect HTTP behaviour require matching Dart Shelf parity in the same change when feasible.
 - Park stubs and uncertain items in `docs/refactoring-debt.md` rather than deleting without review.
 - Deferrals for product/infra (PostHog, GDPR, etc.) go in `docs/technical-debt.md`.
 - Sprint refactor plan and status: `docs/refactoring-log.md`.
-- Cursor project rules: `.cursor/rules/` (modularity, testing, security, dual-backend, accessibility, merge-policy).
+- Cursor project rules: `.cursor/rules/` (modularity, testing, security, dual-backend, accessibility, merge-policy, agent-coordination).
 - See `CONTRIBUTING.md` for full PR checklist.
 
 ### Merge policy & conflict avoidance
-- Trunk-based: merge small PRs to `main` frequently; full Playwright E2E runs on UAT (`release/uat-*`) only.
-- **Before every push:** `git fetch origin main && git rebase origin/main` (or merge) and resolve conflicts — duplicate commits on `main` are common.
-- CI on `main`: Flutter analyze/test (incl. **65% domain line coverage**), blocking integration test, Jest, `dart analyze lib`, `dart format`, `npm audit --audit-level=high`, CodeQL.
+
+- **Single-agent / single-domain PRs:** merge directly to `main` when CI is green.
+- **Multi-agent requests (one spawn → many agents):** use an **integration branch** (`cursor/sprint-<N>-<topic>-integration-13e3`); merge all agent work there; **one PR** to `main` when the sprint gate is met. See `.cursor/rules/merge-policy.mdc` and `.cursor/rules/agent-coordination.mdc`.
+- **Before every push:** sync with your target branch (`git fetch origin main && git rebase origin/main` or rebase onto integration parent).
+- **CI on `main`:** Flutter analyze/test (incl. **65% domain line coverage**), blocking integration test, Jest, `dart analyze lib`, `dart format`, `npm audit --audit-level=high`, CodeQL, **BDD 81/161 gate**, **file size ≤500 gate**.
 
 ### Pre-push commands
 ```bash
+node scripts/check_file_size.js
+node e2e/scripts/check_bdd_coverage.js
 cd server && npm audit --audit-level=high && npx jest --env=node --forceExit
 cd flutter_app && dart run build_runner build --delete-conflicting-outputs
 cd flutter_app && flutter analyze --no-fatal-warnings --no-fatal-infos

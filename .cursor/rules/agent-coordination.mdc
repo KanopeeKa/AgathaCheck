@@ -1,0 +1,46 @@
+---
+description: Parallel cloud-agent coordination — ownership, integration branches, verification
+alwaysApply: true
+---
+
+# Agent coordination (parallel work)
+
+Use when spawning **multiple agents** from one user request.
+
+## Workflow
+
+1. Create `cursor/sprint-<N>-<topic>-integration-13e3` from `main`.
+2. Publish **file ownership map** in `docs/refactoring-log.md` before spawning agents.
+3. **Foundation agent first** (if needed): shared `api.ts`, fixtures, CI scripts — merge to integration.
+4. Spawn parallel agents on **disjoint paths** only.
+5. Each agent: branch from integration → work → push → verify tip on correct branch.
+6. Operator merges agent branches into integration (or cherry-pick on mix-up).
+7. Single PR: integration → `main` when sprint exit criteria met.
+
+## File ownership (default splits)
+
+| Agent | Owns | Avoid |
+|-------|------|-------|
+| E2E health | `e2e/**/health*`, `health.tracking.spec.ts` | `api.ts` after foundation merge |
+| E2E auth/pet | `auth.*.spec.ts`, `pet.profiles.spec.ts`, related pages | vet, org specs |
+| E2E org | `organisation*.spec.ts`, adoption specs | sharing, api.ts |
+| Node routes | `server/routes/<domain>/` | other domains |
+| Flutter screen | `lib/features/<domain>/presentation/screens/<one>/` | same feature widgets unless assigned |
+| Governance | `scripts/`, `.github/`, `docs/quality/` | product code |
+
+## Post-agent checklist
+
+```bash
+git fetch origin
+git log --oneline origin/<expected-branch> -5
+# Confirm commit messages match the agent's task
+```
+
+If commits appear on the wrong branch, **cherry-pick** onto integration; do not re-run full work.
+
+## Anti-patterns
+
+- Two agents editing `e2e/playwright/support/api.ts` concurrently
+- Multiple agents committing to the same branch name without pull/rebase
+- Merging agents directly to `main` (bypasses integration batching)
+- Spawning agents before ownership map is written

@@ -366,10 +366,12 @@ main
 
 - [ ] Add `@P0` / `@P1` / `@P2` tags to scenarios (ordering aid)
 - [x] Implement `e2e/scripts/check_bdd_coverage.js` — **50% of 161** gate
+- [x] Wire BDD gate into PR CI (`_reusable-test.yml` governance job)
 - [x] Execute Waves A–D on integration branch (parallel agents)
+- [ ] Add `@P0` / `@P1` / `@P2` tags to scenarios (ordering aid) — Sprint 5.6
 - [ ] Update `e2e/README.md` coverage table
-- [ ] Single PR: integration branch → `main` when gate ≥ 81 scenarios
-- [ ] Keep `@smoke` aligned with `@P0` for UAT
+- [x] Single PR: integration branch → `main` when gate ≥ 81 scenarios (#102)
+- [ ] Keep `@smoke` aligned with `@P0` for UAT — Sprint 6.5
 
 ---
 
