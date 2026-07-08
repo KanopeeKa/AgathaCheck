@@ -84,19 +84,26 @@ class OrganizationPetsScreen extends ConsumerWidget {
                     if (isOrgAdmin)
                       Padding(
                         padding: const EdgeInsets.only(left: 16, bottom: 8),
-                        child: Align(
-                          alignment: Alignment.centerLeft,
-                          child: TextButton.icon(
-                            key: Key('org_transfer_pet_${pet.id}'),
-                            onPressed: () => context.push(
-                              '/organizations/$orgId/transfer/${pet.id}',
+                        child: Wrap(
+                          spacing: 8,
+                          children: [
+                            TextButton.icon(
+                              key: Key('org_transfer_pet_${pet.id}'),
+                              onPressed: () => context.push(
+                                '/organizations/$orgId/transfer/${pet.id}',
+                              ),
+                              icon: const Icon(Icons.swap_horiz, size: 18),
+                              label: Text(l.transferPet),
                             ),
-                            icon: const Icon(Icons.swap_horiz, size: 18),
-                            label: Text(l.transferPet),
-                            style: TextButton.styleFrom(
-                              foregroundColor: colorScheme.primary,
+                            TextButton.icon(
+                              key: Key('org_transfer_org_${pet.id}'),
+                              onPressed: () => context.push(
+                                '/organizations/$orgId/transfer/${pet.id}/to-org',
+                              ),
+                              icon: const Icon(Icons.hub_outlined, size: 18),
+                              label: Text(l.transferToOrganisation),
                             ),
-                          ),
+                          ],
                         ),
                       ),
                   ],

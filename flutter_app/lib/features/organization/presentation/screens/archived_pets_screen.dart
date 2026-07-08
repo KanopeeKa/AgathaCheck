@@ -83,7 +83,10 @@ class ArchivedPetsScreen extends ConsumerWidget {
             itemCount: archivedPets.length,
             itemBuilder: (context, index) {
               final archived = archivedPets[index];
-              return _ArchivedPetCard(archivedPet: archived);
+              return _ArchivedPetCard(
+                archivedPet: archived,
+                orgId: orgId,
+              );
             },
           );
         },
@@ -93,9 +96,10 @@ class ArchivedPetsScreen extends ConsumerWidget {
 }
 
 class _ArchivedPetCard extends StatelessWidget {
-  const _ArchivedPetCard({required this.archivedPet});
+  const _ArchivedPetCard({required this.archivedPet, this.orgId});
 
   final ArchivedPet archivedPet;
+  final String? orgId;
 
   @override
   Widget build(BuildContext context) {
@@ -127,30 +131,47 @@ class _ArchivedPetCard extends StatelessWidget {
         child: Card(
           key: Key('org_archived_card_${archivedPet.id}'),
           margin: const EdgeInsets.only(bottom: 8),
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Row(
-              children: [
-                CircleAvatar(
-                  radius: 24,
-                  backgroundColor: colorScheme.surfaceContainerHighest,
-                  child: Icon(
-                    _transferTypeIcon(archivedPet.transferType),
-                    color: colorScheme.onSurfaceVariant,
+          child: InkWell(
+            onTap: orgId != null && archivedPet.hasShadowSnapshot
+                ? () => context.push(
+                    '/organizations/$orgId/archived/${archivedPet.id}',
+                  )
+                : null,
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Row(
+                children: [
+                  CircleAvatar(
+                    radius: 24,
+                    backgroundColor: colorScheme.surfaceContainerHighest,
+                    child: Icon(
+                      archivedPet.hasShadowSnapshot
+                          ? Icons.ac_unit
+                          : _transferTypeIcon(archivedPet.transferType),
+                      color: colorScheme.onSurfaceVariant,
+                    ),
                   ),
-                ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        archivedPet.petName,
-                        style: theme.textTheme.titleSmall?.copyWith(
-                          fontWeight: FontWeight.bold,
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          archivedPet.petName,
+                          style: theme.textTheme.titleSmall?.copyWith(
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
-                      ),
-                      const SizedBox(height: 4),
+                        if (archivedPet.hasShadowSnapshot) ...[
+                          const SizedBox(height: 4),
+                          Text(
+                            l.frozenShadow,
+                            style: theme.textTheme.labelSmall?.copyWith(
+                              color: colorScheme.primary,
+                            ),
+                          ),
+                        ],
+                        const SizedBox(height: 4),
                       Row(
                         children: [
                           if (archivedPet.species.isNotEmpty) ...[
@@ -224,6 +245,7 @@ class _ArchivedPetCard extends StatelessWidget {
           ),
         ),
       ),
+    ),
     );
   }
 

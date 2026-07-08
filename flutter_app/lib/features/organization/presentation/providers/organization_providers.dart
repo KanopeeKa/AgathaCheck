@@ -4,3 +4,5 @@ export 'org_provider_people.dart';
 export 'org_provider_pets.dart';
 export 'org_provider_invites.dart';
 export 'org_provider_family_events.dart';
+export 'org_provider_connections.dart';
+export 'org_provider_custody.dart';

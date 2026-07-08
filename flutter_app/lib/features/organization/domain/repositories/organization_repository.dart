@@ -1,8 +1,11 @@
 import 'dart:typed_data';
 
 import '../entities/archived_pet.dart';
+import '../entities/custody_transfer.dart';
 import '../entities/foster_parent.dart';
 import '../entities/foster_placement.dart';
+import '../entities/org_connection.dart';
+import '../entities/org_home_hidden_pet.dart';
 import '../entities/org_person.dart';
 import '../entities/organization.dart';
 import '../entities/organization_member.dart';
@@ -193,4 +196,60 @@ abstract class OrganizationRepository {
     String petId,
     String token,
   );
+
+  Future<List<OrgConnection>> getConnections(String orgId, String token);
+
+  Future<Map<String, dynamic>> createConnectionRequest(
+    String orgId, {
+    required String targetOrgId,
+    required String token,
+  });
+
+  Future<List<OrgConnectionRequest>> getConnectionRequests(
+    String orgId,
+    String token,
+  );
+
+  Future<void> revokeConnectionRequest(
+    String orgId,
+    String requestId,
+    String token,
+  );
+
+  Future<void> acceptConnectionRequest(String token, String requestToken);
+
+  Future<void> disconnectOrgs(
+    String orgId,
+    String otherOrgId,
+    String token,
+  );
+
+  Future<Map<String, dynamic>> requestCustodyTransfer(
+    String orgId,
+    String petId, {
+    required String transferKind,
+    String? toOrgId,
+    String? toUserId,
+    String notes = '',
+    required String token,
+  });
+
+  Future<List<CustodyTransfer>> getPendingCustodyTransfers(String token);
+
+  Future<void> acceptCustodyTransfer(String transferId, String token);
+
+  Future<void> cancelCustodyTransfer(
+    String transferId,
+    String token, {
+    String reason = '',
+  });
+
+  Future<void> setPetHomeHidden(
+    String orgId,
+    String petId, {
+    required bool hidden,
+    required String token,
+  });
+
+  Future<List<OrgHomeHiddenPet>> getHomeHiddenPets(String orgId, String token);
 }

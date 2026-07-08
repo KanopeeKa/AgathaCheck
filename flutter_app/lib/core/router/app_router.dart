@@ -15,7 +15,9 @@ import '../../features/notifications/presentation/screens/notifications_screen.d
 import '../../features/pet_profile/presentation/screens/pet_detail_screen.dart';
 import '../../features/pet_profile/presentation/screens/pet_form_screen.dart';
 import '../../features/pet_profile/presentation/screens/pet_list_screen.dart';
+import '../../features/organization/presentation/screens/archived_pet_detail_screen.dart';
 import '../../features/organization/presentation/screens/archived_pets_screen.dart';
+import '../../features/organization/presentation/screens/accept_connection_screen.dart';
 import '../../features/organization/presentation/screens/organization_detail_screen.dart';
 import '../../features/organization/presentation/screens/organization_form_screen.dart';
 import '../../features/organization/presentation/screens/organization_list_screen.dart';
@@ -23,6 +25,7 @@ import '../../features/organization/presentation/screens/organization_members_sc
 import '../../features/organization/presentation/screens/organization_person_detail_screen.dart';
 import '../../features/organization/presentation/screens/organization_pets_screen.dart';
 import '../../features/organization/presentation/screens/transfer_pet_screen.dart';
+import '../../features/organization/presentation/screens/transfer_pet_to_org_screen.dart';
 import '../../features/sharing/presentation/screens/shared_pet_screen.dart';
 import '../../features/about/presentation/screens/about_screen.dart';
 import '../../features/about/presentation/screens/legal_document_screen.dart';
@@ -364,6 +367,32 @@ final routerProvider = Provider<GoRouter>((ref) {
           final orgId = state.pathParameters['id']!;
           final petId = state.pathParameters['petId']!;
           return TransferPetScreen(orgId: orgId, petId: petId);
+        },
+      ),
+      GoRoute(
+        path: '/organizations/:id/transfer/:petId/to-org',
+        name: 'transferPetToOrg',
+        builder: (context, state) {
+          final orgId = state.pathParameters['id']!;
+          final petId = state.pathParameters['petId']!;
+          return TransferPetToOrgScreen(orgId: orgId, petId: petId);
+        },
+      ),
+      GoRoute(
+        path: '/organizations/connect/:token',
+        name: 'acceptOrgConnection',
+        builder: (context, state) {
+          final token = state.pathParameters['token']!;
+          return AcceptConnectionScreen(token: token);
+        },
+      ),
+      GoRoute(
+        path: '/organizations/:id/archived/:archiveId',
+        name: 'archivedPetDetail',
+        builder: (context, state) {
+          final orgId = state.pathParameters['id']!;
+          final archiveId = state.pathParameters['archiveId']!;
+          return ArchivedPetDetailScreen(orgId: orgId, archiveId: archiveId);
         },
       ),
       GoRoute(

@@ -15,6 +15,8 @@ class ArchivedPetModel extends ArchivedPet {
     super.notes,
     super.archivedAt,
     super.createdAt,
+    super.shadowSnapshot,
+    super.frozenAt,
   });
 
   factory ArchivedPetModel.fromJson(Map<String, dynamic> json) {
@@ -36,6 +38,12 @@ class ArchivedPetModel extends ArchivedPet {
       createdAt: json['created_at'] != null
           ? DateTime.tryParse(json['created_at'].toString())
           : null,
+      shadowSnapshot: json['shadow_snapshot'] is Map<String, dynamic>
+          ? Map<String, dynamic>.from(json['shadow_snapshot'] as Map)
+          : null,
+      frozenAt: json['frozen_at'] != null
+          ? DateTime.tryParse(json['frozen_at'].toString())
+          : null,
     );
   }
 
@@ -56,6 +64,8 @@ class ArchivedPetModel extends ArchivedPet {
       'notes': notes,
       if (archivedAt != null) 'archived_at': archivedAt!.toIso8601String(),
       if (createdAt != null) 'created_at': createdAt!.toIso8601String(),
+      if (shadowSnapshot != null) 'shadow_snapshot': shadowSnapshot,
+      if (frozenAt != null) 'frozen_at': frozenAt!.toIso8601String(),
     };
   }
 }

@@ -2,8 +2,11 @@ import 'dart:typed_data';
 
 import '../../../../core/utils/calendar_date.dart';
 import '../../domain/entities/archived_pet.dart';
+import '../../domain/entities/custody_transfer.dart';
 import '../../domain/entities/foster_parent.dart';
 import '../../domain/entities/foster_placement.dart';
+import '../../domain/entities/org_connection.dart';
+import '../../domain/entities/org_home_hidden_pet.dart';
 import '../../domain/entities/org_person.dart';
 import '../../domain/entities/organization.dart';
 import '../../domain/entities/organization_member.dart';
@@ -469,5 +472,110 @@ class OrganizationRepositoryImpl implements OrganizationRepository {
   ) async {
     final rows = await _dataSource.getPetFosterHistory(orgId, petId, token);
     return rows.map(FosterPlacement.fromJson).toList();
+  }
+
+  @override
+  Future<List<OrgConnection>> getConnections(String orgId, String token) =>
+      _dataSource.getConnections(orgId, token);
+
+  @override
+  Future<Map<String, dynamic>> createConnectionRequest(
+    String orgId, {
+    required String targetOrgId,
+    required String token,
+  }) => _dataSource.createConnectionRequest(
+    orgId,
+    targetOrgId: targetOrgId,
+    token: token,
+  );
+
+  @override
+  Future<List<OrgConnectionRequest>> getConnectionRequests(
+    String orgId,
+    String token,
+  ) => _dataSource.getConnectionRequests(orgId, token);
+
+  @override
+  Future<void> revokeConnectionRequest(
+    String orgId,
+    String requestId,
+    String token,
+  ) => _dataSource.revokeConnectionRequest(orgId, requestId, token);
+
+  @override
+  Future<void> acceptConnectionRequest(String token, String requestToken) =>
+      _dataSource.acceptConnectionRequest(token, requestToken);
+
+  @override
+  Future<void> disconnectOrgs(
+    String orgId,
+    String otherOrgId,
+    String token,
+  ) => _dataSource.disconnectOrgs(orgId, otherOrgId, token);
+
+  @override
+  Future<Map<String, dynamic>> requestCustodyTransfer(
+    String orgId,
+    String petId, {
+    required String transferKind,
+    String? toOrgId,
+    String? toUserId,
+    String notes = '',
+    required String token,
+  }) => _dataSource.requestCustodyTransfer(
+    orgId,
+    petId,
+    transferKind: transferKind,
+    toOrgId: toOrgId,
+    toUserId: toUserId,
+    notes: notes,
+    token: token,
+  );
+
+  @override
+  Future<List<CustodyTransfer>> getPendingCustodyTransfers(String token) =>
+      _dataSource.getPendingCustodyTransfers(token);
+
+  @override
+  Future<void> acceptCustodyTransfer(String transferId, String token) =>
+      _dataSource.acceptCustodyTransfer(transferId, token);
+
+  @override
+  Future<void> cancelCustodyTransfer(
+    String transferId,
+    String token, {
+    String reason = '',
+  }) => _dataSource.cancelCustodyTransfer(transferId, token, reason: reason);
+
+  @override
+  Future<void> setPetHomeHidden(
+    String orgId,
+    String petId, {
+    required bool hidden,
+    required String token,
+  }) => _dataSource.setPetHomeHidden(
+    orgId,
+    petId,
+    hidden: hidden,
+    token: token,
+  );
+
+  @override
+  Future<List<OrgHomeHiddenPet>> getHomeHiddenPets(
+    String orgId,
+    String token,
+  ) async {
+    final rows = await _dataSource.getHomeHiddenPets(orgId, token);
+    return rows
+        .map(
+          (row) => OrgHomeHiddenPet(
+            petId: row['pet_id']?.toString() ?? '',
+            petName: row['pet_name']?.toString() ?? '',
+            hiddenAt: row['created_at'] != null
+                ? DateTime.tryParse(row['created_at'].toString())
+                : null,
+          ),
+        )
+        .toList();
   }
 }

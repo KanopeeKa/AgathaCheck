@@ -13,6 +13,8 @@ class ArchivedPet {
     this.notes = '',
     this.archivedAt,
     this.createdAt,
+    this.shadowSnapshot,
+    this.frozenAt,
   });
 
   final String id;
@@ -28,6 +30,11 @@ class ArchivedPet {
   final String notes;
   final DateTime? archivedAt;
   final DateTime? createdAt;
+  final Map<String, dynamic>? shadowSnapshot;
+  final DateTime? frozenAt;
+
+  bool get hasShadowSnapshot =>
+      shadowSnapshot != null && shadowSnapshot!.isNotEmpty;
 
   @override
   bool operator ==(Object other) =>

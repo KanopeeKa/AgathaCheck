@@ -1693,7 +1693,120 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get transferSuccess => 'Pet transferred successfully';
+  String get transferSuccess => 'Custody transfer request sent';
+
+  @override
+  String get transferRequestSent =>
+      'Custody transfer request sent. The recipient must accept to complete the transfer.';
+
+  @override
+  String get pendingCustodyTransfers => 'Pending custody transfers';
+
+  @override
+  String get acceptCustodyTransfer => 'Accept transfer';
+
+  @override
+  String get custodyTransferAccepted => 'Custody transfer accepted';
+
+  @override
+  String get custodyTransferKindIndividual => 'Adoption to individual';
+
+  @override
+  String get custodyTransferKindOrgToOrg => 'Transfer to organisation';
+
+  @override
+  String get custodyTransferKindReturn => 'Return to organisation';
+
+  @override
+  String get orgConnections => 'Connected organisations';
+
+  @override
+  String get orgConnectionsEmpty => 'No connected organisations yet';
+
+  @override
+  String get createConnectionRequest => 'Connect to organisation';
+
+  @override
+  String get targetOrgId => 'Target organisation ID';
+
+  @override
+  String get connectionTokenCreated =>
+      'Connection link created. Share this token with the other organisation\'s admin:';
+
+  @override
+  String get acceptConnection => 'Accept connection';
+
+  @override
+  String get connectionAccepted => 'Organisations are now connected';
+
+  @override
+  String get disconnectOrganisation => 'Disconnect';
+
+  @override
+  String disconnectOrganisationConfirm(String orgName) {
+    return 'Disconnect from $orgName? Pending transfers between you will be cancelled.';
+  }
+
+  @override
+  String get transferToOrganisation => 'Transfer to organisation';
+
+  @override
+  String get selectConnectedOrg => 'Select connected organisation';
+
+  @override
+  String get requestReturnToOrg => 'Return to organisation';
+
+  @override
+  String get returnRequestSent => 'Return request sent';
+
+  @override
+  String get homeHiddenPets => 'Hidden from home list';
+
+  @override
+  String get hideFromHomeList => 'Hide from home list';
+
+  @override
+  String hideFromHomeListConfirm(String petName) {
+    return 'Hide $petName from your home pet list? The pet stays visible in the organisation section.';
+  }
+
+  @override
+  String get hideFosteredPet => 'Hide fostered pet';
+
+  @override
+  String hideFosteredPetConfirm(String petName) {
+    return 'Hide $petName from your list and health dashboard?';
+  }
+
+  @override
+  String get frozenShadow => 'Frozen shadow';
+
+  @override
+  String get shadowSnapshotReadOnly =>
+      'Point-in-time snapshot — does not sync with the live pet.';
+
+  @override
+  String shadowCapturedAt(String date) {
+    return 'Captured $date';
+  }
+
+  @override
+  String get shadowHealthEntries => 'Health entries in snapshot';
+
+  @override
+  String get shadowWeightEntries => 'Weight entries in snapshot';
+
+  @override
+  String get revokeConnectionRequest => 'Revoke request';
+
+  @override
+  String get connectionRequests => 'Connection requests';
+
+  @override
+  String get noConnectionRequests => 'No connection requests';
+
+  @override
+  String get orgToOrgTransferNotes => 'Transfer notes (optional)';
 
   @override
   String get transferOwnership => 'Transfer ownership';

@@ -67,4 +67,14 @@ export class OrganizationDetailPage {
       .last()
       .waitFor({ timeout: 30_000 });
   }
+
+  async openArchivedPets(): Promise<void> {
+    await this.page.getByText('Archived Pets').click();
+    await this.page.getByRole('button', { name: 'Archived Pets' }).waitFor({ timeout: 30_000 });
+  }
+
+  async expectFrozenShadowVisible(petName: string): Promise<void> {
+    await this.page.getByText('Frozen shadow').first().waitFor({ timeout: 30_000 });
+    await expect(this.page.getByText(petName).first()).toBeVisible();
+  }
 }

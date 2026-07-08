@@ -12,9 +12,11 @@ import '../../../pet_profile/domain/entities/pet.dart';
 import '../providers/organization_providers.dart';
 import '../widgets/organization_archived_section.dart';
 import '../widgets/organization_branding_section.dart';
+import '../widgets/organization_connections_section.dart';
 import '../widgets/organization_contact_card.dart';
 import '../widgets/organization_emergency_contact_card.dart';
 import '../widgets/organization_hidden_shared_pets_section.dart';
+import '../widgets/organization_home_hidden_pets_section.dart';
 import '../widgets/organization_info_card.dart';
 import '../widgets/organization_invite_by_email_dialog.dart';
 import '../widgets/organization_people_section.dart';
@@ -238,8 +240,22 @@ class _OrganizationDetailScreenState
                   l: l,
                   onTap: () => context.push('/organizations/$orgId/archived'),
                 ),
+                const SizedBox(height: 16),
+                OrganizationConnectionsSection(
+                  orgId: orgId,
+                  theme: theme,
+                  colorScheme: colorScheme,
+                  l: l,
+                ),
               ],
               if (isOrgAdmin) ...[
+                const SizedBox(height: 16),
+                OrganizationHomeHiddenPetsSection(
+                  orgId: orgId,
+                  theme: theme,
+                  colorScheme: colorScheme,
+                  l: l,
+                ),
                 const SizedBox(height: 16),
                 Builder(
                   builder: (context) {

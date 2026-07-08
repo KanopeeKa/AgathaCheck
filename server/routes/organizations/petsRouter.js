@@ -210,6 +210,26 @@ export function registerPetsRoutes(router, pool) {
       }
     });
 
+    router.get('/:orgId/home-hidden', async (req, res) => {
+      const userId = extractUserId(req);
+      if (!userId) return res.status(401).json({ error: 'Unauthorized' });
+      const { orgId } = req.params;
+      try {
+        if (!(await requireOrgAdmin(pool, res, orgId, userId))) return;
+        const result = await pool.query(
+          `SELECT oh.pet_id, p.name AS pet_name, oh.created_at
+           FROM org_pet_home_hidden oh
+           JOIN pets p ON p.id = oh.pet_id
+           WHERE oh.user_id = $1 AND oh.organization_id = $2
+           ORDER BY oh.created_at DESC`,
+          [userId, orgId],
+        );
+        res.json(result.rows);
+      } catch (err) {
+        res.status(500).json({ error: publicError(err) });
+      }
+    });
+
     router.get('/:orgId/archived', async (req, res) => {
       const userId = extractUserId(req);
       if (!userId) return res.status(401).json({ error: 'Unauthorized' });
