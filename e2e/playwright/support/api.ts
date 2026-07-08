@@ -507,3 +507,240 @@ export async function createHealthEntry(
   const json = await res.json();
   return { id: json.id, name: json.name };
 }
+
+// ── Notification helpers ──────────────────────────────────────────────────────
+
+export interface TestNotification {
+  id: string;
+  user_id: string;
+  pet_id: string | null;
+  pet_name: string | null;
+  health_entry_id: string | null;
+  organization_id: string | null;
+  title: string;
+  message: string;
+  type: string;
+  is_read: boolean;
+  created_at: string | null;
+}
+
+export async function getNotifications(
+  baseURL: string,
+  token: string,
+): Promise<TestNotification[]> {
+  const res = await fetch(apiUrl('/notifications', baseURL), {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!res.ok) {
+    const body = await res.text();
+    throw new Error(`getNotifications failed (${res.status}): ${body}`);
+  }
+  return res.json();
+}
+
+export async function getUnreadNotificationCount(
+  baseURL: string,
+  token: string,
+): Promise<number> {
+  const res = await fetch(apiUrl('/notifications/unread-count', baseURL), {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!res.ok) {
+    const body = await res.text();
+    throw new Error(`getUnreadNotificationCount failed (${res.status}): ${body}`);
+  }
+  const json = await res.json();
+  return json.unread_count as number;
+}
+
+export async function markNotificationRead(
+  baseURL: string,
+  token: string,
+  id: string,
+): Promise<void> {
+  const res = await fetch(apiUrl(`/notifications/${id}/read`, baseURL), {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!res.ok) {
+    const body = await res.text();
+    throw new Error(`markNotificationRead failed (${res.status}): ${body}`);
+  }
+}
+
+export async function markAllNotificationsRead(
+  baseURL: string,
+  token: string,
+): Promise<void> {
+  const res = await fetch(apiUrl('/notifications/read-all', baseURL), {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!res.ok) {
+    const body = await res.text();
+    throw new Error(`markAllNotificationsRead failed (${res.status}): ${body}`);
+  }
+}
+
+export async function triggerCheckDueNotifications(
+  baseURL: string,
+  token: string,
+): Promise<void> {
+  const res = await fetch(apiUrl('/notifications/check-due', baseURL), {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({}),
+  });
+  if (!res.ok) {
+    const body = await res.text();
+    throw new Error(`triggerCheckDueNotifications failed (${res.status}): ${body}`);
+  }
+}
+
+export async function seedOverdueNotification(
+  baseURL: string,
+  token: string,
+  options: { petName?: string; entryName?: string } = {},
+): Promise<{ notification: TestNotification; pet: TestPet; entry: TestHealthEntry }> {
+  const petName = options.petName ?? 'Bella';
+  const entryName = options.entryName ?? 'Vaccination';
+  const pet = await createPet(baseURL, token, petName);
+  const pastDate = new Date();
+  pastDate.setDate(pastDate.getDate() - 7);
+  const overdueDate = pastDate.toISOString().slice(0, 10);
+  const entry = await createHealthEntry(baseURL, token, pet.id, {
+    name: entryName,
+    nextDueDate: overdueDate,
+  });
+  await triggerCheckDueNotifications(baseURL, token);
+  const notifications = await getNotifications(baseURL, token);
+  const notification = notifications.find(
+    (n: TestNotification) => n.health_entry_id === entry.id && n.type === 'overdue',
+  );
+  if (!notification) {
+    throw new Error(`No overdue notification generated for entry: ${entryName}`);
+  }
+  return { notification, pet, entry };
+}
+
+// ── Weight entry helpers ──────────────────────────────────────────────────────
+
+export interface TestWeightEntry {
+  id: string;
+  pet_id: string;
+  pet_name: string | null;
+  weight: number;
+  unit: string;
+  date: string | null;
+  notes: string;
+  created_at: string | null;
+}
+
+export async function createWeightEntry(
+  baseURL: string,
+  token: string,
+  petId: string,
+  options: {
+    weight: number;
+    unit?: 'kg' | 'lb';
+    date?: string;
+    notes?: string;
+  },
+): Promise<TestWeightEntry> {
+  const date = options.date ?? new Date().toISOString().slice(0, 10);
+  const res = await fetch(apiUrl('/weight-entries', baseURL), {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({
+      pet_id: petId,
+      weight: options.weight,
+      unit: options.unit ?? 'kg',
+      date,
+      notes: options.notes ?? '',
+    }),
+  });
+  if (!res.ok) {
+    const body = await res.text();
+    throw new Error(`createWeightEntry failed (${res.status}): ${body}`);
+  }
+  return res.json();
+}
+
+export async function getWeightEntries(
+  baseURL: string,
+  token: string,
+  petId: string,
+): Promise<TestWeightEntry[]> {
+  const res = await fetch(
+    apiUrl(`/weight-entries?pet_id=${encodeURIComponent(petId)}`, baseURL),
+    { headers: { Authorization: `Bearer ${token}` } },
+  );
+  if (!res.ok) {
+    const body = await res.text();
+    throw new Error(`getWeightEntries failed (${res.status}): ${body}`);
+  }
+  return res.json();
+}
+
+export async function getLatestWeightEntry(
+  baseURL: string,
+  token: string,
+  petId: string,
+): Promise<TestWeightEntry> {
+  const res = await fetch(
+    apiUrl(`/weight-entries/latest?pet_id=${encodeURIComponent(petId)}`, baseURL),
+    { headers: { Authorization: `Bearer ${token}` } },
+  );
+  if (!res.ok) {
+    const body = await res.text();
+    throw new Error(`getLatestWeightEntry failed (${res.status}): ${body}`);
+  }
+  return res.json();
+}
+
+export async function updateWeightEntry(
+  baseURL: string,
+  token: string,
+  id: string,
+  options: { weight: number; unit?: 'kg' | 'lb'; date?: string; notes?: string },
+): Promise<TestWeightEntry> {
+  const res = await fetch(apiUrl(`/weight-entries/${id}`, baseURL), {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({
+      weight: options.weight,
+      unit: options.unit ?? 'kg',
+      date: options.date ?? new Date().toISOString().slice(0, 10),
+      notes: options.notes ?? '',
+    }),
+  });
+  if (!res.ok) {
+    const body = await res.text();
+    throw new Error(`updateWeightEntry failed (${res.status}): ${body}`);
+  }
+  return res.json();
+}
+
+export async function deleteWeightEntry(
+  baseURL: string,
+  token: string,
+  id: string,
+): Promise<void> {
+  const res = await fetch(apiUrl(`/weight-entries/${id}`, baseURL), {
+    method: 'DELETE',
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!res.ok) {
+    const body = await res.text();
+    throw new Error(`deleteWeightEntry failed (${res.status}): ${body}`);
+  }
+}
