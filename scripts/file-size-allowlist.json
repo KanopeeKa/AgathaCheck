@@ -1,11 +1,8 @@
 {
   "_comment": "Grandfather list for scripts/check_file_size.js. Remove a path when split below 500 lines. maxLines is a ratchet ceiling — CI fails if the file grows beyond it.",
-  "server/lib/organizations/placements_routes.dart": 663,
-  "flutter_app/lib/features/organization/presentation/widgets/pet_foster_placement_section.dart": 653,
   "flutter_app/lib/features/organization/presentation/providers/organization_providers.dart": 607,
   "server/lib/routes.dart": 591,
   "flutter_app/lib/features/auth/presentation/screens/landing_screen.dart": 576,
   "flutter_app/lib/features/health_tracking/presentation/screens/other_event_form_screen.dart": 565,
-  "server/routes/organizations/placementsRouter.js": 518,
   "flutter_app/lib/features/health_tracking/presentation/widgets/health_entry_card.dart": 505
 }

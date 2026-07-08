@@ -12,7 +12,7 @@ Modular Express routers for `/api/organizations` and `/backend/api/organizations
 | `membersRouter.js` | Members list, people directory, invites, role changes |
 | `petsRouter.js` | Org pets, create, transfer, archived list |
 | `fosterParentsRouter.js` | Foster parent directory (member + external) |
-| `placementsRouter.js` | Foster placements lifecycle and direct adopt |
+| `placementsRouter.js` | Foster placements lifecycle and direct adopt (`placements/` sub-modules) |
 | `index.js` | Composes routers (static routes registered before `/:id`) |
 
 ## Tests
