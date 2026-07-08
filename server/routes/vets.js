@@ -2,6 +2,7 @@ import express from 'express';
 import { v4 as uuidv4 } from 'uuid';
 import jwt from 'jsonwebtoken';
 
+import { createApiLimiter } from '../config/rateLimit.js';
 import { JWT_SECRET } from '../config/jwtSecret.js';
 import { publicError } from '../config/security.js';
 
@@ -34,6 +35,7 @@ function vetRowToMap(row) {
 
 export default function vetsRoutes(pool) {
   const router = express.Router();
+  router.use(createApiLimiter());
 
   router.get('/', async (req, res) => {
     const userId = extractUserId(req);

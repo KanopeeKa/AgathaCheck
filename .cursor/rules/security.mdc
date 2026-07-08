@@ -25,5 +25,13 @@ alwaysApply: true
 
 ## Auth
 
-- Sensitive auth endpoints use rate limiting (`server/config/rateLimit.js`).
+- Sensitive auth endpoints use rate limiting (`server/config/rateLimit.js` → `createAuthLimiter()`): signup, login, forgot/reset password.
+- All other API routers that perform DB or filesystem access must call `router.use(createApiLimiter())` in their route composer (`routes/*/index.js` or the top of a monolithic route module) before registering handlers. This satisfies CodeQL `js/missing-rate-limiting` and mitigates DoS.
+- `createApiLimiter()` is skipped under `NODE_ENV=test` and `E2E=1` (same as auth limiter).
 - Passwords hashed with bcrypt; tokens via jsonwebtoken.
+
+## File uploads
+
+- Never build filesystem paths from `file.originalname`. Derive extensions from MIME via `server/lib/safeUpload.js` (`extensionForMime`, `saveUploadedFile`).
+- Always persist uploads with `saveUploadedFile()` (path containment under a fixed root, mode `0o600`).
+- Multer must use `memoryStorage()` plus MIME allowlists in `fileFilter`.

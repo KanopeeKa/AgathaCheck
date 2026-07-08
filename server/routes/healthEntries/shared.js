@@ -1,10 +1,10 @@
-import fs from 'fs';
 import path from 'path';
 import multer from 'multer';
 import jwt from 'jsonwebtoken';
 
 import { JWT_SECRET } from '../../config/jwtSecret.js';
 import { dateToIsoDate } from '../../lib/calendarDate.js';
+import { extensionForMime, saveUploadedFile } from '../../lib/safeUpload.js';
 
 export const MAX_HEALTH_DOCUMENT_BYTES = 2 * 1024 * 1024;
 export const HEALTH_DOCUMENT_EXTENSIONS = new Set(['.jpg', '.jpeg', '.png', '.pdf']);
@@ -18,15 +18,12 @@ const _upload = multer({
   storage: multer.memoryStorage(),
   limits: { fileSize: MAX_HEALTH_DOCUMENT_BYTES },
   fileFilter: (_req, file, cb) => {
-    const ext = path.extname(file.originalname).toLowerCase();
-    if (
-      HEALTH_DOCUMENT_EXTENSIONS.has(ext) &&
-      HEALTH_DOCUMENT_MIME_TYPES.has(file.mimetype)
-    ) {
+    try {
+      extensionForMime(file.mimetype, HEALTH_DOCUMENT_EXTENSIONS);
       cb(null, true);
-      return;
+    } catch {
+      cb(new Error('Only JPG, PNG, and PDF documents are allowed'));
     }
-    cb(new Error('Only JPG, PNG, and PDF documents are allowed'));
   },
 });
 
@@ -35,11 +32,14 @@ export function healthUploadDir() {
 }
 
 export function saveHealthDocument(file, id) {
-  const ext = path.extname(file.originalname).toLowerCase();
   const dir = healthUploadDir();
-  fs.mkdirSync(dir, { recursive: true });
-  const filename = `${id}${ext}`;
-  fs.writeFileSync(path.join(dir, filename), file.buffer);
+  const { filename } = saveUploadedFile({
+    buffer: file.buffer,
+    mimeType: file.mimetype,
+    filenameStem: id,
+    rootDir: dir,
+    allowedExtensions: HEALTH_DOCUMENT_EXTENSIONS,
+  });
   return `/uploads/health_documents/${filename}`;
 }
 

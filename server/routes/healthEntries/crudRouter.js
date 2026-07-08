@@ -1,7 +1,7 @@
 import { v4 as uuidv4 } from 'uuid';
 
 import { publicError } from '../../config/security.js';
-import { assertAtLeastOneDate, nextOccurrence } from '../../lib/recurrenceHelper.js';
+import { assertAtLeastOneDate } from '../../lib/recurrenceHelper.js';
 import { dateToIsoDate, normalizeCalendarDateInput } from '../../lib/calendarDate.js';
 import {
   accessiblePetSql,

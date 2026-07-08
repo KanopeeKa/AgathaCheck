@@ -1,4 +1,5 @@
 import express from 'express';
+import { createApiLimiter } from '../../config/rateLimit.js';
 import { registerInvitesRoutes } from './invitesRouter.js';
 import { registerCoreRoutes } from './coreRouter.js';
 import { registerMembersRoutes } from './membersRouter.js';
@@ -8,6 +9,7 @@ import { registerPlacementsRoutes } from './placementsRouter.js';
 
 export default function organizationsRoutes(pool) {
   const router = express.Router();
+  router.use(createApiLimiter());
   registerInvitesRoutes(router, pool);
   registerCoreRoutes(router, pool);
   registerMembersRoutes(router, pool);

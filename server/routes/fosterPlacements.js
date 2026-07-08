@@ -1,6 +1,7 @@
 import express from 'express';
 import jwt from 'jsonwebtoken';
 
+import { createApiLimiter } from '../config/rateLimit.js';
 import { JWT_SECRET } from '../config/jwtSecret.js';
 import { publicError } from '../config/security.js';
 import { normalizeCalendarDateInput } from '../lib/calendarDate.js';
@@ -28,6 +29,7 @@ function extractUserId(req) {
 
 export default function fosterPlacementsRoutes(pool) {
   const router = express.Router();
+  router.use(createApiLimiter());
 
   router.get('/pending', async (req, res) => {
     const userId = extractUserId(req);

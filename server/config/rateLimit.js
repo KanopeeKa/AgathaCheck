@@ -12,6 +12,10 @@
  */
 import rateLimit from 'express-rate-limit';
 
+function shouldSkipRateLimit() {
+  return process.env.NODE_ENV === 'test' || process.env.E2E === '1';
+}
+
 export function createAuthLimiter() {
   const windowMs = Number(process.env.AUTH_RATE_LIMIT_WINDOW_MS) || 15 * 60 * 1000;
   const limit = Number(process.env.AUTH_RATE_LIMIT_MAX) || 10;
@@ -21,8 +25,26 @@ export function createAuthLimiter() {
     standardHeaders: 'draft-7',
     legacyHeaders: false,
     skip: () =>
-      process.env.AUTH_RATE_LIMIT_TEST !== '1' &&
-      (process.env.NODE_ENV === 'test' || process.env.E2E === '1'),
+      process.env.AUTH_RATE_LIMIT_TEST !== '1' && shouldSkipRateLimit(),
+    message: { error: 'Too many requests, please try again later.' },
+  });
+}
+
+/**
+ * General API rate limiter for authenticated CRUD routes (DB / file access).
+ * Satisfies CodeQL js/missing-rate-limiting when applied via router.use().
+ * Configurable via API_RATE_LIMIT_WINDOW_MS (default 1 min) and
+ * API_RATE_LIMIT_MAX (default 200 requests per window per IP).
+ */
+export function createApiLimiter() {
+  const windowMs = Number(process.env.API_RATE_LIMIT_WINDOW_MS) || 60 * 1000;
+  const limit = Number(process.env.API_RATE_LIMIT_MAX) || 200;
+  return rateLimit({
+    windowMs,
+    limit,
+    standardHeaders: 'draft-7',
+    legacyHeaders: false,
+    skip: shouldSkipRateLimit,
     message: { error: 'Too many requests, please try again later.' },
   });
 }
