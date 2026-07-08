@@ -1,6 +1,13 @@
 import { v4 as uuidv4 } from 'uuid';
 import { dateToIsoDate, normalizeCalendarDateInput } from '../../lib/calendarDate.js';
 import { transferOrgPetToUser } from '../../lib/orgPetTransfer.js';
+import {
+  requestCustodyTransfer,
+  TRANSFER_INDIVIDUAL,
+  TRANSFER_ORG_TO_ORG,
+  TRANSFER_RETURN,
+} from '../../lib/custodyTransfers.js';
+import { petIsFosteredByOrg, setOrgGuardianAndCare } from '../../lib/petCustody.js';
 import { extractUserId, requireOrgAdmin } from './shared.js';
 import { publicError } from '../../config/security.js';
 
@@ -78,6 +85,7 @@ export function registerPetsRoutes(router, pool) {
             orgId,
           ],
         );
+        await setOrgGuardianAndCare(pool, id, orgId);
         const row = result.rows[0];
         res.status(201).json({
           id: row.id,
@@ -124,10 +132,80 @@ export function registerPetsRoutes(router, pool) {
           transferType,
           notes,
         });
-        res.json(result);
+        res.status(201).json(result);
       } catch (err) {
         if (err.statusCode === 404) return res.status(404).json({ error: err.message });
         if (err.statusCode === 400) return res.status(400).json({ error: err.message });
+        res.status(500).json({ error: publicError(err) });
+      }
+    });
+
+    router.post('/:orgId/pets/:petId/custody-transfers', async (req, res) => {
+      const userId = extractUserId(req);
+      if (!userId) return res.status(401).json({ error: 'Unauthorized' });
+      const { orgId, petId } = req.params;
+      const data = req.body || {};
+      const transferKind = (data.transfer_kind || data.transferKind || '').trim();
+      const toOrgId = data.to_org_id || data.toOrgId || null;
+      const toUserId = data.to_user_id || data.toUserId || null;
+      const notes = (data.notes || '').trim();
+
+      if (![TRANSFER_INDIVIDUAL, TRANSFER_ORG_TO_ORG, TRANSFER_RETURN].includes(transferKind)) {
+        return res.status(400).json({ error: 'Invalid transfer_kind' });
+      }
+
+      try {
+        if (transferKind === TRANSFER_RETURN) {
+          if (!toOrgId) {
+            return res.status(400).json({ error: 'to_org_id is required' });
+          }
+        } else if (!(await requireOrgAdmin(pool, res, orgId, userId))) {
+          return;
+        }
+
+        const result = await requestCustodyTransfer(pool, {
+          petId,
+          transferKind,
+          requestedByUserId: userId,
+          requestingOrgId: transferKind === TRANSFER_RETURN ? null : orgId,
+          toUserId,
+          toOrgId,
+          notes,
+        });
+        res.status(201).json(result);
+      } catch (err) {
+        if (err.statusCode) return res.status(err.statusCode).json({ error: err.message });
+        res.status(500).json({ error: publicError(err) });
+      }
+    });
+
+    router.put('/:orgId/pets/:petId/home-hidden', async (req, res) => {
+      const userId = extractUserId(req);
+      if (!userId) return res.status(401).json({ error: 'Unauthorized' });
+      const { orgId, petId } = req.params;
+      const hidden = req.body?.hidden ?? req.body?.home_hidden ?? true;
+
+      try {
+        if (!(await requireOrgAdmin(pool, res, orgId, userId))) return;
+        if (!(await petIsFosteredByOrg(pool, petId, orgId))) {
+          return res.status(400).json({ error: 'Only fostered org pets can be hidden from the home list' });
+        }
+
+        if (hidden) {
+          await pool.query(
+            `INSERT INTO org_pet_home_hidden (user_id, pet_id, organization_id)
+             VALUES ($1, $2, $3)
+             ON CONFLICT (user_id, pet_id) DO UPDATE SET organization_id = $3`,
+            [userId, petId, orgId],
+          );
+        } else {
+          await pool.query(
+            'DELETE FROM org_pet_home_hidden WHERE user_id = $1 AND pet_id = $2',
+            [userId, petId],
+          );
+        }
+        res.json({ hidden: Boolean(hidden) });
+      } catch (err) {
         res.status(500).json({ error: publicError(err) });
       }
     });

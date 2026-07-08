@@ -82,6 +82,9 @@ function buildMockPool(overrides = {}) {
     if (sql.includes('SELECT first_name, last_name, email FROM users WHERE id = $1')) {
       return { rows: [{ first_name: 'Alice', last_name: 'Owner', email: 'alice@example.com' }] };
     }
+    if (sql.includes('SELECT role FROM pet_access') && sql.includes("role = 'foster'")) {
+      return { rows: [{ role: 'foster' }] };
+    }
     if (sql.includes('SELECT role FROM pet_access WHERE pet_id = $1 AND user_id = $2')) {
       return { rows: [] };
     }
@@ -334,7 +337,7 @@ describe('Sharing API', () => {
   });
 
   describe('PUT /:petId/hide', () => {
-    it('hides a shared pet', async () => {
+    it('hides a fostered pet for the fosterer', async () => {
       const res = await request(app)
         .put(`/api/share/${petId}/hide`)
         .set('Authorization', `Bearer ${token}`)
@@ -343,7 +346,7 @@ describe('Sharing API', () => {
       expect(res.body).toHaveProperty('message', 'Pet hidden');
     });
 
-    it('unhides a shared pet', async () => {
+    it('unhides a fostered pet', async () => {
       const res = await request(app)
         .put(`/api/share/${petId}/hide`)
         .set('Authorization', `Bearer ${token}`)

@@ -218,9 +218,18 @@ export default function sharingRoutes(pool) {
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     try {
       const { hidden } = req.body;
+      const accessResult = await pool.query(
+        `SELECT role FROM pet_access
+         WHERE pet_id = $1 AND user_id = $2 AND role = 'foster'
+         LIMIT 1`,
+        [req.params.petId, userId],
+      );
+      if (accessResult.rows.length === 0) {
+        return res.status(403).json({ error: 'Only fosterers can hide fostered pets' });
+      }
       await pool.query(
-        'UPDATE pet_access SET hidden = $1 WHERE pet_id = $2 AND user_id = $3',
-        [hidden, req.params.petId, userId]
+        'UPDATE pet_access SET hidden = $1 WHERE pet_id = $2 AND user_id = $3 AND role = $4',
+        [hidden, req.params.petId, userId, 'foster'],
       );
       res.json({ message: hidden ? 'Pet hidden' : 'Pet unhidden' });
     } catch (err) {

@@ -10,14 +10,8 @@ const ownerId = 'owner-1';
 const recipientId = 'recipient-1';
 
 function makeTransferPool() {
-  let updatedOwnerId = null;
-  let updatedOrgId = null;
-  let archivedRow = null;
-
+  let careUpdated = false;
   const handleQuery = async (sql, params) => {
-    if (sql === 'BEGIN' || sql === 'COMMIT' || sql === 'ROLLBACK') {
-      return { rows: [] };
-    }
     if (sql.includes('SELECT id, name, species, user_id, organization_id FROM pets WHERE id = $1 AND organization_id = $2')) {
       return { rows: [{ id: petId, name: 'Buddy', species: 'dog', user_id: ownerId, organization_id: orgId }] };
     }
@@ -30,41 +24,29 @@ function makeTransferPool() {
     if (sql.includes('SELECT 1 FROM organization_users') && sql.includes('super_admin')) {
       return { rows: [{ '?column?': 1 }] };
     }
-    if (sql.includes('SELECT fp.*') && sql.includes('WHERE fp.pet_id = $1')) {
+    if (sql.includes('SELECT * FROM pets WHERE id = $1')) {
+      return { rows: [{ id: petId, name: 'Buddy', organization_id: orgId, user_id: ownerId }] };
+    }
+    if (sql.includes('SELECT 1 FROM custody_transfers WHERE pet_id')) {
       return { rows: [] };
     }
-    if (sql.includes('UPDATE pets') && sql.includes('user_id = $1')) {
-      updatedOwnerId = params[0];
-      return { rows: [] };
-    }
-    if (sql.includes('UPDATE pets') && sql.includes('organization_id = $1')) {
-      updatedOrgId = params[0];
-      return { rows: [] };
-    }
-    if (sql.includes('DELETE FROM pet_access')) return { rows: [] };
-    if (sql.includes('INSERT INTO archived_pets')) {
-      archivedRow = params;
-      return { rows: [] };
-    }
+    if (sql.includes('INSERT INTO custody_transfers')) return { rows: [] };
     if (sql.includes('INSERT INTO notifications')) return { rows: [] };
+    if (sql.includes('UPDATE pets SET') && sql.includes('care_holder_kind')) {
+      careUpdated = true;
+      return { rows: [] };
+    }
     return { rows: [] };
   };
 
-  const pool = {
+  return {
     query: handleQuery,
-    connect: async () => ({
-      query: handleQuery,
-      release: () => {},
-    }),
-    get updatedOwnerId() { return updatedOwnerId; },
-    get updatedOrgId() { return updatedOrgId; },
-    get archivedRow() { return archivedRow; },
+    get careUpdated() { return careUpdated; },
   };
-  return pool;
 }
 
 describe('orgPetTransfer', () => {
-  it('transferOrgPetToUser updates owner and archives transfer', async () => {
+  it('transferOrgPetToUser creates pending custody transfer', async () => {
     const pool = makeTransferPool();
     const result = await transferOrgPetToUser(pool, {
       orgId,
@@ -74,14 +56,12 @@ describe('orgPetTransfer', () => {
       transferType: 'adoption',
       notes: 'Happy home',
     });
-    expect(result.transferred).toBe(true);
-    expect(result.new_owner_id).toBe(recipientId);
-    expect(pool.updatedOwnerId).toBe(recipientId);
-    expect(pool.archivedRow[6]).toBe('adoption');
-    expect(pool.archivedRow[7]).toBe(recipientId);
+    expect(result.pending).toBe(true);
+    expect(result.transfer_id).toBeTruthy();
+    expect(result.recipient_id).toBe(recipientId);
   });
 
-  it('transferPetToOrganization assigns org custody', async () => {
+  it('transferPetToOrganization assigns org guardian and care', async () => {
     const pool = makeTransferPool();
     const result = await transferPetToOrganization(pool, {
       petId,
@@ -92,8 +72,6 @@ describe('orgPetTransfer', () => {
     });
     expect(result.transferred).toBe(true);
     expect(result.organization_id).toBe(orgId);
-    expect(pool.updatedOrgId).toBe(orgId);
-    expect(pool.archivedRow[6]).toBe('transfer');
-    expect(pool.archivedRow[7]).toBe(orgId);
+    expect(pool.careUpdated).toBe(true);
   });
 });

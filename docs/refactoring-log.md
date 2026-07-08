@@ -102,12 +102,12 @@ Tracks planned and completed refactor / quality work. See also `docs/refactoring
 | # | Action | Status | Parallel agents | Owns |
 |---|--------|--------|-----------------|------|
 | 6.1 | Playwright: `organisation_pet_management.feature` (6) | Planned | 1 | `organisation.pet.management.spec.ts` + org pet pages |
-| 6.2 | Playwright: `pet_ownership_and_adoption.feature` (8) | Planned | 1 | `adoption.spec.ts` — **after** product confirms archive API |
+| 6.2 | Playwright: org custody features (`org_foster_and_adoption`, `org_to_org_transfer`, `org_pet_return`, sharing/shadow) | Unblocked (API) | 1 | `adoption.spec.ts` — custody APIs + rewritten Gherkin on `cursor/org-custody-integration-13e3` |
 | 6.3 | Playwright: `organisation_pet_timeline.feature` (subset 4/6) | Planned | 1 | `org.timeline.spec.ts` |
 | 6.4 | Playwright: `help_faq.feature` (10) | Planned | 1 | `help.faq.spec.ts` |
 | 6.5 | Realign `@smoke` + axe to P0 guardian paths | Planned | 1 | `e2e/playwright/tests/` smoke titles only |
 
-**Parallelism:** 6.1 + 6.4 can run together (disjoint). 6.2 depends on archive API validation. 6.3 after 6.1 (shared org pet fixtures). Foundation agent extends `api.ts` once.
+**Parallelism:** 6.1 + 6.4 can run together (disjoint). 6.2 backend custody model landed in org-custody PR (migration 020, shadow snapshots, connections, pending transfers). 6.3 after 6.1 (shared org pet fixtures). Foundation agent extends `api.ts` once.
 
 **Exit gate:** BDD ≥ **105/161 (65%)** + persona gate: ≥ **80% of @P1 guardian scenarios** (once tags land in 5.6).
 

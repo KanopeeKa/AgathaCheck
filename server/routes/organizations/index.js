@@ -6,10 +6,12 @@ import { registerMembersRoutes } from './membersRouter.js';
 import { registerPetsRoutes } from './petsRouter.js';
 import { registerFosterParentsRoutes } from './fosterParentsRouter.js';
 import { registerPlacementsRoutes } from './placementsRouter.js';
+import { registerConnectionRoutes } from './connectionsRouter.js';
 
 export default function organizationsRoutes(pool) {
   const router = express.Router();
   router.use(createApiLimiter());
+  registerConnectionRoutes(router, pool);
   registerInvitesRoutes(router, pool);
   registerCoreRoutes(router, pool);
   registerMembersRoutes(router, pool);

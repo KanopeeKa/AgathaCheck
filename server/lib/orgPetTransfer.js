@@ -1,20 +1,12 @@
 /**
  * Organisation pet custody transfers (Inc 7).
  */
-import { v4 as uuidv4 } from 'uuid';
-
 import { createNotification, userDisplayName } from './notificationHelper.js';
 import {
-  closeActivePlacementForPet,
-  PLACEMENT_STATUS_NOT_IN_FOSTER,
-} from './fosterPlacements.js';
-
-const ALLOWED_TRANSFER_TYPES = new Set([
-  'adoption',
-  'transfer',
-  'release',
-  'other',
-]);
+  requestCustodyTransfer,
+  TRANSFER_INDIVIDUAL,
+} from './custodyTransfers.js';
+import { setOrgGuardianAndCare } from './petCustody.js';
 
 export async function transferOrgPetToUser(
   pool,
@@ -27,8 +19,6 @@ export async function transferOrgPetToUser(
     notes = '',
   },
 ) {
-  const type = ALLOWED_TRANSFER_TYPES.has(transferType) ? transferType : 'other';
-
   const petResult = await pool.query(
     'SELECT id, name, species, user_id, organization_id FROM pets WHERE id = $1 AND organization_id = $2',
     [petId, orgId],
@@ -56,77 +46,25 @@ export async function transferOrgPetToUser(
     throw err;
   }
   const recipient = recipientResult.rows[0];
-
-  const adminResult = await pool.query(
-    'SELECT first_name, last_name, email FROM users WHERE id = $1',
-    [adminId],
-  );
-  const adminName = userDisplayName(adminResult.rows[0] || {});
   const recipientName = userDisplayName(recipient);
 
-  const client = typeof pool.connect === 'function' ? await pool.connect() : null;
-  const db = client || pool;
+  const result = await requestCustodyTransfer(pool, {
+    petId,
+    transferKind: TRANSFER_INDIVIDUAL,
+    requestedByUserId: adminId,
+    requestingOrgId: orgId,
+    toUserId: recipientId,
+    notes: notes || transferType,
+  });
 
-  try {
-    if (client) await client.query('BEGIN');
-
-    await closeActivePlacementForPet(db, petId);
-
-    await db.query(
-      `UPDATE pets
-       SET user_id = $1, organization_id = NULL, updated_at = NOW()
-       WHERE id = $2`,
-      [recipientId, petId],
-    );
-
-    await db.query(
-      'DELETE FROM pet_access WHERE pet_id = $1 AND user_id = $2',
-      [petId, recipientId],
-    );
-
-    const archiveId = uuidv4();
-    await db.query(
-      `INSERT INTO archived_pets (
-         id, organization_id, user_id, pet_id, pet_name, species,
-         transfer_type, transferred_to_user_id, notes
-       ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`,
-      [
-        archiveId,
-        orgId,
-        adminId,
-        petId,
-        pet.name,
-        pet.species || '',
-        type,
-        recipientId,
-        notes || '',
-      ],
-    );
-
-    if (client) await client.query('COMMIT');
-
-    await createNotification(pool, {
-      userId: recipientId,
-      petId,
-      petName: pet.name,
-      title: 'Pet transferred to you',
-      message: `${adminName} transferred ${pet.name} to you from the organisation.`,
-      type: 'general',
-    });
-
-    return {
-      transferred: true,
-      pet_id: petId,
-      new_owner_id: recipientId,
-      transfer_type: type,
-      recipient_name: recipientName,
-    };
-  } catch (err) {
-    if (client) await client.query('ROLLBACK');
-    throw err;
-  } finally {
-    if (client) client.release();
-  }
+  return {
+    pending: true,
+    transfer_id: result.id,
+    pet_id: petId,
+    recipient_id: recipientId,
+    transfer_type: transferType,
+    recipient_name: recipientName,
+  };
 }
 
 export async function transferPetToOrganization(
@@ -139,7 +77,7 @@ export async function transferPetToOrganization(
     notes = '',
   },
 ) {
-  const type = ALLOWED_TRANSFER_TYPES.has(transferType) ? transferType : 'transfer';
+  const type = transferType || 'transfer';
 
   const petResult = await pool.query(
     'SELECT id, name, species, user_id, organization_id FROM pets WHERE id = $1 AND user_id = $2',
@@ -170,36 +108,13 @@ export async function transferPetToOrganization(
     throw err;
   }
 
-  await pool.query(
-    `UPDATE pets
-     SET organization_id = $1, updated_at = NOW()
-     WHERE id = $2`,
-    [orgId, petId],
-  );
-
-  const archiveId = uuidv4();
-  await pool.query(
-    `INSERT INTO archived_pets (
-       id, organization_id, user_id, pet_id, pet_name, species,
-       transfer_type, transferred_to_org_id, notes
-     ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`,
-    [
-      archiveId,
-      orgId,
-      ownerId,
-      petId,
-      pet.name,
-      pet.species || '',
-      type,
-      orgId,
-      notes || '',
-    ],
-  );
+  await setOrgGuardianAndCare(pool, petId, orgId);
 
   return {
     transferred: true,
     pet_id: petId,
     organization_id: orgId,
     transfer_type: type,
+    notes: notes || '',
   };
 }
