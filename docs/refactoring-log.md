@@ -49,16 +49,16 @@ Tracks planned and completed refactor / quality work. See also `docs/refactoring
 
 ---
 
-## Sprint 3 — Screen splits + backend test modularization (planned)
+## Sprint 3 — Screen splits + backend test modularization (complete — all 8 items done)
 
 | # | Action | Status | Notes |
 |---|--------|--------|-------|
 | 3.1 | Split `pet_detail_screen.dart` (710 → 114) | **Done** | `widgets/pet_detail/` + 4 widget tests |
 | 3.2 | Split `health_dashboard_screen.dart` (729 → 232) | **Done** | `widgets/health_dashboard/` + org filter test |
 | 3.3 | Split `my_details_screen.dart` (618 → 321) | **Done** | `widgets/my_details/` (profile editor + settings) |
-| 3.4 | Split `server/lib/auth_routes.dart` → mirror `routes/auth/` | Planned | Dart parity |
-| 3.5 | Split `server/test/auth.test.js` → `test/auth/` | Planned | 1012 lines |
-| 3.6 | Split `server/test/pets.test.js` → `test/pets/` | Planned | 1072 lines |
+| 3.4 | Split `server/lib/auth_routes.dart` → mirror `routes/auth/` | **Done** | PR #94; 14-line composer delegating to `routes/auth/`; was 769 lines |
+| 3.5 | Split `server/test/auth.test.js` → `test/auth/` | **Done** | PR #92; split from 1012 lines into `test/auth/` modules |
+| 3.6 | Split `server/test/pets.test.js` → `test/pets/` | **Done** | PR #93; split from 1072 lines into `test/pets/` modules |
 | 3.7 | Playwright: `organisation_management.feature` | **Done** | `organisation.management.spec.ts` + org page objects |
 | 3.8 | Expand `notifications` widget tests | **Done** | Screen + settings widget tests |
 
@@ -79,6 +79,7 @@ Tracks planned and completed refactor / quality work. See also `docs/refactoring
 
 | Date | Change |
 |---|---|
+| 2026-07-08 | Sprint 3 complete (all 8 items): 3.4 auth_routes.dart split PR #94, 3.5 auth.test.js split PR #92, 3.6 pets.test.js split PR #93 |
 | 2026-07-07 | Sprint 3.1–3.3: pet_detail, health_dashboard, my_details screen splits merged |
 | 2026-07-07 | Sprint 2.9: Flutter domain coverage gate at 65% |
 | 2026-07-07 | Sprint 2.8: Playwright sharing.feature E2E tests |
