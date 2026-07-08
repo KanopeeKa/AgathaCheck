@@ -5,6 +5,7 @@ Feature: Authentication
 
   # ── Sign Up ──────────────────────────────────────────────────
 
+  @P0
   Scenario: Signing up with valid credentials
     Given the user is on the signup screen
     When the user enters first name "Alice"
@@ -16,6 +17,7 @@ Feature: Authentication
     Then the user should be logged in
     And the user should be navigated to the pet list screen
 
+  @P1
   Scenario: Signing up with mismatched passwords
     Given the user is on the signup screen
     When the user enters password "secret123"
@@ -23,18 +25,21 @@ Feature: Authentication
     And the user taps the "Create Account" button
     Then an error should indicate that passwords do not match
 
+  @P1
   Scenario: Signing up without an email
     Given the user is on the signup screen
     When the user leaves the email field empty
     And the user taps the "Create Account" button
     Then an error should indicate that email is required
 
+  @P1
   Scenario: Signing up with an invalid email
     Given the user is on the signup screen
     When the user enters email "not-an-email"
     And the user taps the "Create Account" button
     Then an error should indicate that the email is invalid
 
+  @P1
   Scenario: Signing up with a password shorter than 6 characters
     Given the user is on the signup screen
     When the user enters password "abc"
@@ -42,6 +47,7 @@ Feature: Authentication
     And the user taps the "Create Account" button
     Then an error should indicate that the password must be at least 6 characters
 
+  @P1
   Scenario: Signing up with an already registered email
     Given a user with email "alice@example.com" already exists
     And the user is on the signup screen
@@ -53,6 +59,7 @@ Feature: Authentication
 
   # ── Log In ───────────────────────────────────────────────────
 
+  @P0
   Scenario: Logging in with valid credentials
     Given a registered user with email "alice@example.com" and password "secret123"
     And the user is on the login screen
@@ -62,6 +69,7 @@ Feature: Authentication
     Then the user should be logged in
     And the user should be navigated to the pet list screen
 
+  @P0
   Scenario: Logging in with incorrect password
     Given a registered user with email "alice@example.com" and password "secret123"
     And the user is on the login screen
@@ -70,6 +78,7 @@ Feature: Authentication
     And the user taps the "Sign In" button
     Then an error should indicate invalid credentials
 
+  @P2
   Scenario: Logging in with a non-existent email
     Given the user is on the login screen
     When the user enters email "nobody@example.com"
@@ -77,12 +86,14 @@ Feature: Authentication
     And the user taps the "Sign In" button
     Then an error should indicate invalid credentials
 
+  @P2
   Scenario: Logging in without an email
     Given the user is on the login screen
     When the user leaves the email field empty
     And the user taps the "Sign In" button
     Then an error should indicate that email is required
 
+  @P2
   Scenario: Logging in without a password
     Given the user is on the login screen
     When the user enters email "alice@example.com"
@@ -92,6 +103,7 @@ Feature: Authentication
 
   # ── Password Visibility ─────────────────────────────────────
 
+  @P2
   Scenario: Toggling password visibility on the login screen
     Given the user is on the login screen
     When the user taps the show password toggle
@@ -101,6 +113,7 @@ Feature: Authentication
 
   # ── Log Out ──────────────────────────────────────────────────
 
+  @P1
   Scenario: Logging out from the app
     Given the user is logged in
     When the user opens the user menu
@@ -110,6 +123,7 @@ Feature: Authentication
 
   # ── My Details ───────────────────────────────────────────────
 
+  @P1
   Scenario: Viewing user details
     Given the user is logged in as "Alice Smith" with email "alice@example.com"
     When the user opens the user menu
@@ -117,6 +131,7 @@ Feature: Authentication
     Then the user should see their name "Alice Smith"
     And the user should see their email "alice@example.com"
 
+  @P1
   Scenario: Updating user profile
     Given the user is logged in
     When the user navigates to "My Details"
@@ -127,11 +142,13 @@ Feature: Authentication
 
   # ── Navigation ───────────────────────────────────────────────
 
+  @P2
   Scenario: Navigating from login to signup
     Given the user is on the login screen
     When the user taps the "Sign Up" link
     Then the user should be navigated to the signup screen
 
+  @P2
   Scenario: Navigating from signup to login
     Given the user is on the signup screen
     When the user taps the "Sign In" link

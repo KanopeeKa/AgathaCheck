@@ -9,6 +9,7 @@ Feature: Health Tracking
 
   # ── Creating Health Entries ──────────────────────────────────
 
+  @P0
   Scenario: Creating a medication entry
     When the user navigates to the health dashboard
     And the user taps the "Add Entry" button
@@ -22,18 +23,22 @@ Feature: Health Tracking
     Then "Heartworm Prevention" should appear in the health dashboard
     And "Heartworm Prevention" should be of type "Medication"
 
+  @P1
   Scenario: Creating a preventive entry
     When the user creates a health entry "Flea Treatment" of type "Preventive" for "Bella"
     Then "Flea Treatment" should appear under the "Preventives" tab
 
+  @P1
   Scenario: Creating a vet visit entry
     When the user creates a health entry "Annual Checkup" of type "Vet Visit" for "Bella"
     Then "Annual Checkup" should appear under the "Vet Visits" tab
 
+  @P1
   Scenario: Creating a procedure entry
     When the user creates a health entry "Dental Cleaning" of type "Procedure" for "Bella"
     Then "Dental Cleaning" should appear under the "Other" tab
 
+  @P1
   Scenario: Adding a photo attachment to a health entry
     When the user creates a health entry "Vaccination" for "Bella"
     And the user attaches a photo to the entry
@@ -42,18 +47,21 @@ Feature: Health Tracking
 
   # ── Viewing Health Entries ───────────────────────────────────
 
+  @P0
   Scenario: Viewing all health entries in the dashboard
     Given "Bella" has health entries "Heartworm", "Flea Treatment", and "Annual Checkup"
     When the user navigates to the health dashboard
     And the user selects the "All" tab
     Then the user should see all 3 entries listed
 
+  @P1
   Scenario: Filtering entries by type using tabs
     Given "Bella" has a medication "Heartworm" and a preventive "Flea Treatment"
     When the user navigates to the health dashboard
     And the user selects the "Medications" tab
     Then only "Heartworm" should be displayed
 
+  @P1
   Scenario: Grouping entries by due date
     Given "Bella" has an overdue entry and a future entry
     When the user navigates to the health dashboard
@@ -61,16 +69,19 @@ Feature: Health Tracking
     Then entries should be grouped into "Overdue", "Today", "This Week", and "Later" sections
     And future entries should show their next due date in "dd/mm/yy" format
 
+  @P1
   Scenario: Grouping entries by pet
     Given "Bella" and "Max" each have health entries
     When the user selects group by "Pet"
     Then entries should be grouped under "Bella" and "Max"
 
+  @P1
   Scenario: Grouping entries by species
     Given "Bella" is a Dog and "Whiskers" is a Cat with health entries
     When the user selects group by "Species"
     Then entries should be grouped under "Dogs" and "Cats"
 
+  @P1
   Scenario: Empty health dashboard shows prompt
     Given "Bella" has no health entries
     When the user navigates to the health dashboard
@@ -78,6 +89,7 @@ Feature: Health Tracking
 
   # ── Updating Health Entries ──────────────────────────────────
 
+  @P1
   Scenario: Editing a health entry
     Given "Bella" has a health entry "Heartworm" with dosage "1 tablet"
     When the user edits "Heartworm" and changes dosage to "2 tablets"
@@ -86,6 +98,7 @@ Feature: Health Tracking
 
   # ── Deleting Health Entries ──────────────────────────────────
 
+  @P1
   Scenario: Deleting a health entry
     Given "Bella" has a health entry "Old Treatment"
     When the user deletes "Old Treatment"
@@ -94,12 +107,14 @@ Feature: Health Tracking
 
   # ── Marking Entries as Done ──────────────────────────────────
 
+  @P0
   Scenario: Marking a health entry as taken
     Given "Bella" has a due health entry "Heartworm"
     When the user marks "Heartworm" as taken
     Then "Heartworm" should move to the "Completed" section
     And a success message "Marked as done" should appear
 
+  @P1
   Scenario: Undoing a completed entry
     Given "Bella" has a completed health entry "Heartworm"
     When the user undoes the completion of "Heartworm"
@@ -107,6 +122,7 @@ Feature: Health Tracking
 
   # ── Snoozing Entries ─────────────────────────────────────────
 
+  @P1
   Scenario: Snoozing a health entry
     Given "Bella" has a due health entry "Flea Treatment"
     When the user snoozes "Flea Treatment" for 3 days
@@ -115,6 +131,7 @@ Feature: Health Tracking
 
   # ── Entry History ────────────────────────────────────────────
 
+  @P1
   Scenario: Viewing history for a health entry
     Given "Bella" has a health entry "Heartworm" that has been marked taken 3 times
     When the user views the history for "Heartworm"
@@ -122,11 +139,13 @@ Feature: Health Tracking
 
   # ── Health Issues ────────────────────────────────────────────
 
+  @P1
   Scenario: Creating a health issue for a pet
     Given a pet "Bella" exists
     When the user creates a health issue "Arthritis" for "Bella" with start date "2024-01-15"
     Then "Bella" should have a health issue "Arthritis"
 
+  @P1
   Scenario: Linking a health entry to a health issue
     Given "Bella" has a health issue "Arthritis"
     When the user creates a health entry "Pain Medication" linked to "Arthritis"
@@ -134,12 +153,14 @@ Feature: Health Tracking
 
   # ── Due Events on Pet List ──────────────────────────────────
 
+  @P1
   Scenario: Due events appear on the pet list screen
     Given "Bella" has a health entry due today
     When the user views the pet list
     Then a "Due & Overdue Events" section should be visible
     And the due entry for "Bella" should be listed
 
+  @P1
   Scenario: No due events shows all caught up
     Given no health entries are due or overdue
     When the user views the pet list
@@ -147,6 +168,7 @@ Feature: Health Tracking
 
   # ── CSV Export ───────────────────────────────────────────────
 
+  @P2
   Scenario: Exporting health entries as CSV
     Given "Bella" has health entries
     When the user taps the CSV export button on the health dashboard
@@ -154,6 +176,7 @@ Feature: Health Tracking
 
   # ── PDF Export ───────────────────────────────────────────────
 
+  @P2
   Scenario: Exporting health entries as PDF
     Given "Bella" has health entries
     When the user taps the PDF export button on the health dashboard
@@ -161,6 +184,7 @@ Feature: Health Tracking
 
   # ── Organisation Filter ─────────────────────────────────────
 
+  @P2
   Scenario: Filtering health entries by organisation
     Given the user has pets in "Happy Paws Clinic" and personal pets
     When the user selects the "Happy Paws Clinic" filter chip

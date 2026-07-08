@@ -49,7 +49,7 @@ Use this for **context and prioritisation**; create [GitHub Issues](https://gith
 | Item | Priority | Effort | Notes |
 |---|---|---|---|
 | Mirror **PostHog / audit retention** in **FR privacy notice** | P2 | Small | EN privacy notice updated in #48; FR `politique-de-confidentialite.md` not yet aligned. |
-| **GDPR export** completeness | P2 | Medium | `/me/export` returns user, pets, vets only — missing health, weight, org, sharing, notifications. Documented gap vs privacy policy claims. |
+| **GDPR export** completeness | — | Done (5.5) | `/me/export` includes health, weight, org, sharing, notifications |
 | **Consent preferences** server-side record | P3 | Medium | Consent banner is client-only (`SharedPreferences`). Consider persisting consent timestamp + choices for auditability. |
 | Automated **retention jobs** (notifications, tokens) | P2 | Medium | Documented in `INTERNAL_GDPR.md` (90-day notifications, token purge) but not coded. |
 | Complete **`INTERNAL_GDPR.md`** placeholders | P2 | Ongoing | DPO, hosting provider DPAs, incident response plan, supervisory authority — marked TO BE COMPLETED. |

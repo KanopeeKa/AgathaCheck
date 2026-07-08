@@ -88,8 +88,8 @@ Tracks planned and completed refactor / quality work. See also `docs/refactoring
 | 5.3 | CI: `check_bdd_coverage.js` (81/161 gate, ratchet later) | **Done** | `_reusable-test.yml` |
 | 5.4 | Split placements/foster monoliths (663 + 653 + 518 lines) | **Done** | Node `routes/organizations/placements/`; Dart `lib/organizations/placements/`; Flutter `pet_foster_placement/` |
 | 5.4b | Clear remaining 5 grandfathered monoliths (org providers, Dart routes, landing, other-event form, health card) | **Done** | `org_provider_*.dart`; `routes_{pool,common,pet,vet}_*.dart`; `widgets/landing/`; `other_event_form/` handlers |
-| 5.5 | GDPR `/me/export` completeness + Jest tests | Planned | 1 | `server/routes/auth/` export handler |
-| 5.6 | `@P0`/`@P1`/`@P2` tags on `.feature` files | Planned | 1 | `flutter_app/test/bdd/features/` only |
+| 5.5 | GDPR `/me/export` completeness + Jest tests | **Done** | `server/lib/gdprUserExport.js` + Dart `gdpr_user_export.dart` |
+| 5.6 | `@P0`/`@P1`/`@P2` tags on `.feature` files | **Done** | `scripts/bdd-priority-tag-map.json` + CI gate |
 
 **5.4 agent order:** Foundation agent documents placement API shapes → Node split → Dart widget split (avoids `api.ts` / route conflicts).
 
@@ -144,6 +144,7 @@ Use this template when spawning agents on an integration branch:
 
 | Date | Change |
 |---|---|
+| 2026-07-08 | Sprint 5.5–5.6: GDPR `/me/export` full payload; BDD priority tags (16 P0 / 111 P1 / 34 P2) |
 | 2026-07-08 | Sprint 5.4b: cleared 5 remaining monoliths; empty `file-size-allowlist.json` |
 | 2026-07-08 | Sprint 5–7 plan; integration-branch policy; parallel-agent ownership matrix |
 | 2026-07-08 | Sprint 4.3 merged #102: 81/161 BDD scenarios; 79 Playwright tests |

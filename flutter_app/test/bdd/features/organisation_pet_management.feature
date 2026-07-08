@@ -9,16 +9,19 @@ Feature: Organisation Pet Management
 
   # ── Adding Pets ──────────────────────────────────────────────
 
+  @P1
   Scenario: Super user creates a pet under the organisation
     When "Alice" creates a pet named "Bella" of species "Dog" under "Happy Paws Clinic"
     Then "Bella" should belong to organisation "Happy Paws Clinic"
     And "Alice" should see "Bella" in her pet list under "Happy Paws Clinic"
 
+  @P1
   Scenario: All organisation members can see an organisation pet
     Given a pet "Bella" exists under "Happy Paws Clinic"
     When "Bob" views his pet list
     Then "Bob" should see "Bella" listed under "Happy Paws Clinic"
 
+  @P1
   Scenario: Organisation pets appear grouped by organisation
     Given a pet "Bella" exists under "Happy Paws Clinic"
     And "Alice" has a personal pet named "Milo"
@@ -28,6 +31,7 @@ Feature: Organisation Pet Management
 
   # ── Assigning Members ───────────────────────────────────────
 
+  @P1
   Scenario: Assigning a member to an organisation pet on creation
     When "Alice" creates a pet named "Luna" under "Happy Paws Clinic" assigned to "Bob"
     Then "Luna" should belong to "Happy Paws Clinic"
@@ -35,12 +39,14 @@ Feature: Organisation Pet Management
 
   # ── Health Tracking for Org Pets ─────────────────────────────
 
+  @P1
   Scenario: Adding a health entry to an organisation pet
     Given a pet "Bella" exists under "Happy Paws Clinic"
     When "Bob" adds a health entry "Annual Vaccination" of type "preventive" for "Bella"
     Then "Bella" should have a health entry named "Annual Vaccination"
     And "Alice" should also see "Annual Vaccination" in the health dashboard
 
+  @P1
   Scenario: Organisation pet events appear in all members' dashboards
     Given a pet "Bella" exists under "Happy Paws Clinic"
     And "Bella" has a health entry "Flea Treatment" due tomorrow

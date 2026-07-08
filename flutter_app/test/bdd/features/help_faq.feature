@@ -8,17 +8,20 @@ Feature: Help / FAQ
 
   # ── Accessing Help ───────────────────────────────────────────
 
+  @P2
   Scenario: Opening the Help page from the user menu
     When the user opens the user menu
     And the user taps "Help"
     Then the user should be navigated to the Help screen
 
+  @P2
   Scenario: Help page displays the title
     When the user navigates to the Help screen
     Then the page title should be "Help & FAQ"
 
   # ── FAQ Sections ─────────────────────────────────────────────
 
+  @P2
   Scenario: Help page shows all feature sections
     When the user views the Help screen
     Then the user should see FAQ sections for:
@@ -36,33 +39,39 @@ Feature: Help / FAQ
       | PDF Reports            |
       | Language / Localization |
 
+  @P2
   Scenario: Expanding a FAQ section
     When the user taps on the "Pet Profiles" section
     Then the section should expand to show Q&A pairs
     And each Q&A pair should have a question and answer
 
+  @P2
   Scenario: Collapsing a FAQ section
     Given the "Pet Profiles" section is expanded
     When the user taps on the "Pet Profiles" section header again
     Then the section should collapse
 
+  @P2
   Scenario: Multiple sections can be expanded
     When the user expands "Account & Login" and "Health Tracking"
     Then both sections should be visible with their Q&A content
 
   # ── Scrolling ────────────────────────────────────────────────
 
+  @P2
   Scenario: Help page is scrollable
     When the user views the Help screen
     Then the user should be able to scroll through all FAQ sections
 
   # ── Localization ─────────────────────────────────────────────
 
+  @P2
   Scenario: Help page content in English
     Given the app language is set to English
     When the user views the Help screen
     Then all FAQ content should be displayed in English
 
+  @P2
   Scenario: Help page content in French
     Given the app language is set to French
     When the user views the Help screen
@@ -70,6 +79,7 @@ Feature: Help / FAQ
 
   # ── Navigation ───────────────────────────────────────────────
 
+  @P2
   Scenario: Navigating back from the Help page
     Given the user is on the Help screen
     When the user taps the back button
