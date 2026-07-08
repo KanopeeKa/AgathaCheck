@@ -70,12 +70,12 @@ Journeys are ordered **P0 → P1 → P2** at the journey level. Within each jour
 | P0 | Log in (happy path) | Logging in with valid credentials | `auth.login.spec.ts` `@smoke` | ✅ |
 | P0 | Reject wrong password | Logging in with incorrect password | `auth.login.spec.ts` | ✅ |
 | P1 | Sign-up validation | mismatched / missing email / invalid email / short password / duplicate email (5) | `auth.signup.spec.ts` | ✅ |
-| P1 | Log out | Logging out from the app | — | ❌ |
-| P1 | View / edit profile | Viewing user details; Updating user profile | — | ❌ |
+| P1 | Log out | Logging out from the app | `auth.profile.spec.ts` | ✅ |
+| P1 | View / edit profile | Viewing user details; Updating user profile | `auth.profile.spec.ts` | ✅ |
 | P2 | Login edge validation | non-existent email; missing email/password | — | ❌ |
 | P2 | UX | Toggle password visibility; login ↔ signup navigation | — | ❌ |
 
-**Feature:** `authentication.feature` (17 scenarios) — **8/17 implemented (~47%)**
+**Feature:** `authentication.feature` (17 scenarios) — **11/17 implemented (~65%)**
 
 ---
 
@@ -88,11 +88,11 @@ Journeys are ordered **P0 → P1 → P2** at the journey level. Within each jour
 | P0 | Empty state | Empty pet list shows prompt | `pet.profiles.spec.ts` | ✅ |
 | P0 | Create pet | Creating a new pet with required fields | `pet.profiles.spec.ts` | ✅ |
 | P0 | View detail | Viewing pet details | `pet.profiles.spec.ts` | ✅ |
-| P1 | Edit pet | Editing a pet's name (breed, delete, cancel, passed away…) | `pet.profiles.spec.ts` (name only) | partial |
-| P1 | Full profile | all fields, color, age from DOB, photo, vet link | — | ❌ |
+| P1 | Edit pet | Editing a pet's name (breed, delete, cancel, passed away…) | `pet.profiles.spec.ts` | ✅ partial |
+| P1 | Full profile | all fields, color, age from DOB, photo, vet link | `pet.profiles.spec.ts` (all fields partial) | partial |
 | P2 | Identification reminders | chip reminders | — | ❌ |
 
-**Feature:** `pet_profiles.feature` (17) — **4/17 (~24%)**
+**Feature:** `pet_profiles.feature` (17) — **11/17 (~65%)**
 
 ---
 
@@ -105,14 +105,14 @@ Journeys are ordered **P0 → P1 → P2** at the journey level. Within each jour
 | P0 | See due work | Viewing all health entries / due on dashboard | `health.tracking.spec.ts` | ✅ partial |
 | P0 | Mark complete | Marking a health entry as taken | `health.tracking.spec.ts` | ✅ |
 | P0 | Add medication | Creating a medication entry | `health.tracking.spec.ts` | ✅ |
-| P1 | Entry types | preventive, vet visit, procedure, photo attachment | — | ❌ |
-| P1 | Dashboard UX | filter tabs, group by date/pet/species, empty state | — | ❌ |
-| P1 | Edit / delete / undo / snooze / history | 5 scenarios | — | ❌ |
+| P1 | Entry types | preventive, vet visit, procedure, photo attachment | `health.tracking.spec.ts` (preventive, vet visit, procedure) | partial |
+| P1 | Dashboard UX | filter tabs, group by date/pet/species, empty state | `health.tracking.spec.ts` (filter tabs, empty state) | partial |
+| P1 | Edit / delete / undo / snooze / history | 5 scenarios | `health.tracking.spec.ts` (edit, delete, undo, snooze) | partial |
 | P1 | Health issues & link to entries | 2 scenarios | — | ❌ |
-| P1 | Pet list due badges | due events on pet list | — | ❌ |
-| P2 | Export CSV/PDF; org filter | 3 scenarios | — | ❌ |
+| P1 | Pet list due badges | due events on pet list | `health.tracking.spec.ts` | ✅ |
+| P2 | Export CSV/PDF; org filter | 3 scenarios | `health.tracking.spec.ts` (CSV) | partial |
 
-**Feature:** `health_tracking.feature` (24) — **3/24 (~13%)**
+**Feature:** `health_tracking.feature` (24) — **14/24 (~58%)**
 
 ---
 
@@ -194,7 +194,7 @@ Journeys are ordered **P0 → P1 → P2** at the journey level. Within each jour
 
 ### J9 — Veterinarian directory (P1)
 
-**Feature:** `veterinarian_management.feature` (10) — **0/10**
+**Feature:** `veterinarian_management.feature` (10) — **9/10** (`veterinarian.spec.ts`; linked-pets view pending)
 
 ---
 
@@ -255,17 +255,17 @@ Persona: **organisation super user** transferring pets to private adopters and m
 
 **Product note:** Overlaps `sharing.feature` (accept/hide flows) but from **org adoption** context with archive/restore. Confirm with product whether archive API is still active before implementing E2E.
 
-## Coverage summary (main @ 2026-07-08)
+## Coverage summary (integration branch @ 2026-07-08)
 
 | Metric | Value |
 |--------|------:|
 | Gherkin scenarios (all features) | **161** |
-| Playwright tests (`e2e/playwright/tests/`) | **47** |
-| Scenarios with explicit Playwright mapping (estimate) | **~49** |
-| **Sprint 4.3 gate (50% of all scenarios)** | **≥ 81** |
-| **Gap to gate** | **~32 scenarios** |
-| Current all-scenario coverage | **~30%** (49/161) |
-| Features touched | **7 / 13** |
+| Playwright tests (`e2e/playwright/tests/`) | **79** |
+| Scenarios with explicit Playwright mapping | **81** |
+| **Sprint 4.3 gate (50% of all scenarios)** | **≥ 81** ✅ |
+| **Gap to gate** | **0** |
+| Current all-scenario coverage | **50.3%** (81/161) |
+| Features touched | **9 / 13** |
 
 ### Priority tags (for ordering work, not the CI gate)
 
@@ -322,17 +322,17 @@ Persona: **organisation super user** transferring pets to private adopters and m
 
 | Gherkin feature | Playwright spec | Tests | Scenarios | Mapped |
 |-----------------|-----------------|------:|----------:|-------:|
-| `authentication.feature` | `auth.login.spec.ts`, `auth.signup.spec.ts` | 8 | 17 | ~8 |
-| `pet_profiles.feature` | `pet.profiles.spec.ts` | 4 | 17 | 4 |
-| `health_tracking.feature` | `health.tracking.spec.ts` | 3 | 24 | 3 |
+| `authentication.feature` | `auth.login.spec.ts`, `auth.signup.spec.ts`, `auth.profile.spec.ts` | 12 | 17 | 11 |
+| `pet_profiles.feature` | `pet.profiles.spec.ts` | 10 | 17 | 11 |
+| `health_tracking.feature` | `health.tracking.spec.ts` | 15 | 24 | 14 |
 | `notifications.feature` | `notifications.spec.ts` | 8 | 18 | 9 |
-| `weight_tracking.feature` | `weight.tracking.spec.ts` | 8 | 10 | 8 |
-| `sharing.feature` | `sharing.spec.ts` | 6 | 13 | 6 |
+| `weight_tracking.feature` | `weight.tracking.spec.ts` | 8 | 10 | 9 |
+| `sharing.feature` | `sharing.spec.ts` | 7 | 13 | 8 |
 | `organisation_management.feature` | `organisation.management.spec.ts` | 10 | 11 | 11 |
+| `veterinarian_management.feature` | `veterinarian.spec.ts` | 9 | 10 | 9 |
 | `organisation_pet_management.feature` | — | 0 | 6 | 0 |
 | `organisation_pet_timeline.feature` | — | 0 | 6 | 0 |
 | `pet_ownership_and_adoption.feature` | — | 0 | 8 | 0 |
-| `veterinarian_management.feature` | — | 0 | 10 | 0 |
 | `subscriptions.feature` | — | 0 | 11 | 0 |
 | `help_faq.feature` | — | 0 | 10 | 0 |
 
@@ -365,8 +365,8 @@ main
 ## 4.3 implementation checklist
 
 - [ ] Add `@P0` / `@P1` / `@P2` tags to scenarios (ordering aid)
-- [ ] Implement `e2e/scripts/check_bdd_coverage.js` — **50% of 161** gate
-- [ ] Execute Waves A–D on integration branch (parallel agents)
+- [x] Implement `e2e/scripts/check_bdd_coverage.js` — **50% of 161** gate
+- [x] Execute Waves A–D on integration branch (parallel agents)
 - [ ] Update `e2e/README.md` coverage table
 - [ ] Single PR: integration branch → `main` when gate ≥ 81 scenarios
 - [ ] Keep `@smoke` aligned with `@P0` for UAT

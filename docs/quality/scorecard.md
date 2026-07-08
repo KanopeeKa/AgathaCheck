@@ -2,7 +2,7 @@
 
 Living metrics for Agatha Track quality. Update when CI or test counts change materially.
 
-**Last updated:** 2026-07-08 (Sprint 4.3 BDD planning)
+**Last updated:** 2026-07-08 (Sprint 4.3 BDD — gate met)
 
 ---
 
@@ -13,9 +13,9 @@ Living metrics for Agatha Track quality. Update when CI or test counts change ma
 | Flutter unit/widget | 449 | CI on `main` |
 | Flutter integration | 1 flow | CI on `main` (blocking) |
 | Node Jest | 544 | CI on `main` |
-| Playwright E2E | 47 | UAT deploy |
+| Playwright E2E | 79 | UAT deploy |
 | BDD Gherkin scenarios | 161 | Spec (hybrid — Playwright executor) |
-| BDD → Playwright coverage | ~30% (~49/161) | **Gate: 50% (81/161)** — Sprint 4.3; see `docs/quality/bdd-journey-matrix.md` |
+| BDD → Playwright coverage | **50.3% (81/161)** | Gate met — `e2e/scripts/check_bdd_coverage.js`; see `docs/quality/bdd-journey-matrix.md` |
 
 ## CI security
 
@@ -64,6 +64,7 @@ Run `cd server && npm audit` locally. CI blocks **high** and **critical** (clean
 
 | Date | Change |
 |---|---|
+| 2026-07-08 | Sprint 4.3 BDD gate met: 81/161 scenarios mapped; Playwright 79 tests |
 | 2026-07-08 | Sprint 4.3 BDD journey matrix; 50% gate = 81/161 scenarios; Playwright 47 |
 | 2026-07-08 | Sprint 3 complete; Flutter tests 449; Playwright E2E 31; auth_routes.dart → 14 lines (PR #94) |
 | 2026-07-07 | Sprint 3.1–3.3: screen splits merged; Flutter tests 442 |

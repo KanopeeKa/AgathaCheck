@@ -7,6 +7,8 @@
  * Scenario: Editing a veterinarian's phone number
  * Scenario: Deleting a veterinarian
  * Scenario: Navigating to vet list from the app bar
+ * Scenario: Cancelling vet deletion
+ * Scenario: Navigating back from vet list
  */
 import { test, expect, loginAs } from '../fixtures/auth.fixture';
 import {
@@ -138,6 +140,37 @@ test.describe('Veterinarian management', () => {
 
     const vets = await getVets(baseURL, user.accessToken);
     expect(vets.some((v) => v.name === 'Dr. Smith')).toBe(false);
+  });
+
+  test('user can cancel vet deletion and the vet remains in the list', async ({ page }) => {
+    const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
+    const user = await signupUser(baseURL, { firstName: 'Alice', lastName: 'Vet' });
+    await createVetFull(baseURL, user.accessToken, { name: 'Dr. Smith' });
+
+    const petList = await loginAs(page, user);
+    await petList.openVets();
+
+    const vetList = new VetListPage(page);
+    await vetList.expectLoaded();
+    await vetList.clickDeleteVet('Dr. Smith');
+    await vetList.cancelDeletion();
+
+    await vetList.expectVetVisible('Dr. Smith');
+
+    const vets = await getVets(baseURL, user.accessToken);
+    expect(vets.some((v) => v.name === 'Dr. Smith')).toBe(true);
+  });
+
+  test('user can navigate back from vet list to the pet list', async ({ page, testUser }) => {
+    const petList = await loginAs(page, testUser);
+    await petList.openVets();
+
+    const vetList = new VetListPage(page);
+    await vetList.expectLoaded();
+    await vetList.goBack();
+
+    await petList.expectLoaded();
+    await expect(page.getByRole('button', { name: 'Add Pet' })).toBeVisible();
   });
 
   test('user can navigate to vet list from the app bar', async ({ page, testUser }) => {

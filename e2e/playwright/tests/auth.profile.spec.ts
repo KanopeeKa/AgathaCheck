@@ -1,7 +1,7 @@
 /**
  * @bdd authentication.feature
  * Scenario: Logging out from the app
- * Scenario: Viewing user details / My Details screen
+ * Scenario: Viewing user details
  * Scenario: Updating user profile
  */
 import { test, expect, loginAs } from '../fixtures/auth.fixture';

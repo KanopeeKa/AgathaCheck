@@ -2,7 +2,8 @@
  * @bdd pet_profiles.feature
  * Scenario: Empty pet list shows prompt
  * Scenario: Creating a new pet with required fields
- * Scenario: Creating a new pet with all key optional fields
+ * Scenario: Creating a pet with all fields populated
+ * Scenario: Viewing the pet list
  * Scenario: Viewing pet details
  * Scenario: Editing a pet's name
  * Scenario: Editing a pet's breed
@@ -46,6 +47,20 @@ test.describe('Pet profiles', () => {
     const detail = new PetDetailPage(page);
     await detail.expectLoaded('Bella');
     await detail.expectSpecies('Dog');
+  });
+
+  test('user can view the pet list with multiple pets', async ({ page, testUser }) => {
+    const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
+    await createPet(baseURL, testUser.accessToken, 'Bella', 'Dog');
+    await createPet(baseURL, testUser.accessToken, 'Max', 'Cat');
+    await createPet(baseURL, testUser.accessToken, 'Luna', 'Dog');
+
+    const petList = await loginAs(page, testUser);
+    await petList.expectLoaded();
+    await petList.expectPetCount(3);
+    await petList.expectPetVisible('Bella');
+    await petList.expectPetVisible('Max');
+    await petList.expectPetVisible('Luna');
   });
 
   test('user can edit a pet name', async ({ page, testUser }) => {

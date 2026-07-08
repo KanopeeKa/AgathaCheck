@@ -73,6 +73,11 @@ export class VetListPage {
     await this.page.waitForTimeout(500);
   }
 
+  async goBack(): Promise<void> {
+    await this.page.getByRole('button', { name: /go back/i }).click();
+    await this.page.waitForTimeout(500);
+  }
+
   async expectPhoneVisible(phone: string): Promise<void> {
     await this.page.getByText(phone).first().waitFor({ timeout: 15_000 });
   }

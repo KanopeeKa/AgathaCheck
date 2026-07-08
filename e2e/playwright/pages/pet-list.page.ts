@@ -43,6 +43,12 @@ export class PetListPage {
       .waitFor({ timeout: 30_000 });
   }
 
+  async expectPetCount(n: number): Promise<void> {
+    await expect(
+      this.page.getByRole('button', { name: /Pet:/i }),
+    ).toHaveCount(n, { timeout: 30_000 });
+  }
+
   async openPet(name: string): Promise<void> {
     await this.expectPetVisible(name);
     await this.page
