@@ -19,14 +19,17 @@ class FosterPlacementDialogs {
     required String petId,
     required String petName,
   }) async {
-    final fosterParents = await ref.read(orgFosterParentsProvider(orgId).future);
+    final fosterParents = await ref.read(
+      orgFosterParentsProvider(orgId).future,
+    );
     final memberParents = fosterParents
         .where((p) => p.isMember && p.userId != null && p.userId!.isNotEmpty)
         .toList();
     if (!context.mounted) return;
     if (memberParents.isEmpty) {
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text(l.noFosterParentsWithAccounts)));
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(l.noFosterParentsWithAccounts)));
       return;
     }
 
@@ -91,12 +94,15 @@ class FosterPlacementDialogs {
             notes: notesController.text.trim(),
           );
       if (context.mounted) {
-        ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text(l.fosterPlacementStarted)));
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(l.fosterPlacementStarted)));
       }
     } catch (e) {
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('$e')));
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('$e')));
       }
     } finally {
       notesController.dispose();
@@ -111,14 +117,17 @@ class FosterPlacementDialogs {
     required String petId,
     required String petName,
   }) async {
-    final fosterParents = await ref.read(orgFosterParentsProvider(orgId).future);
+    final fosterParents = await ref.read(
+      orgFosterParentsProvider(orgId).future,
+    );
     final memberParents = fosterParents
         .where((p) => p.isMember && p.userId != null && p.userId!.isNotEmpty)
         .toList();
     if (!context.mounted) return;
     if (memberParents.isEmpty) {
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text(l.noFosterParentsWithAccounts)));
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(l.noFosterParentsWithAccounts)));
       return;
     }
 
@@ -195,12 +204,15 @@ class FosterPlacementDialogs {
             notes: notesController.text.trim(),
           );
       if (context.mounted) {
-        ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text(l.adoptionStarted)));
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(l.adoptionStarted)));
       }
     } catch (e) {
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('$e')));
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('$e')));
       }
     } finally {
       conditionsController.dispose();
@@ -265,12 +277,15 @@ class FosterPlacementDialogs {
             adoptionConditions: conditionsController.text.trim(),
           );
       if (context.mounted) {
-        ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text(l.adoptionStarted)));
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(l.adoptionStarted)));
       }
     } catch (e) {
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('$e')));
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('$e')));
       }
     } finally {
       conditionsController.dispose();
@@ -290,12 +305,15 @@ class FosterPlacementDialogs {
           .read(petFosterPlacementProvider((orgId, petId)).notifier)
           .completeAdoptionConditions(placement.id);
       if (context.mounted) {
-        ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text(l.adoptionConditionsMet)));
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(l.adoptionConditionsMet)));
       }
     } catch (e) {
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('$e')));
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('$e')));
       }
     }
   }
@@ -333,12 +351,15 @@ class FosterPlacementDialogs {
           .read(petFosterPlacementProvider((orgId, petId)).notifier)
           .cancelAdoption(placement.id);
       if (context.mounted) {
-        ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text(l.adoptionCancelled)));
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(l.adoptionCancelled)));
       }
     } catch (e) {
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('$e')));
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('$e')));
       }
     }
   }
@@ -376,12 +397,15 @@ class FosterPlacementDialogs {
           .read(petFosterPlacementProvider((orgId, petId)).notifier)
           .endPlacement(placement.id);
       if (context.mounted) {
-        ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text(l.fosterPlacementEnded)));
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(l.fosterPlacementEnded)));
       }
     } catch (e) {
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('$e')));
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('$e')));
       }
     }
   }
