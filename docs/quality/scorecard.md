@@ -48,19 +48,18 @@ Domain gate: `flutter_app/scripts/check_domain_coverage.js` (runs after `run_tes
 
 ## Modularity debt (grandfathered >500 lines)
 
-CI blocks **new** files above 500 lines. Legacy monoliths are ratcheted in `scripts/file-size-allowlist.json` — target Sprint 5.4 splits.
+CI blocks **new** files above 500 lines. **`scripts/file-size-allowlist.json` is empty** as of Sprint 5.4b — all legacy monoliths split.
 
 | File | Lines | Sprint |
 |---|---:|---|
+| `organization_providers.dart` | 6 (barrel) | 5.4b — Done |
+| `server/lib/routes.dart` | 41 (composer) | 5.4b — Done |
+| `landing_screen.dart` | 219 | 5.4b — Done |
+| `other_event_form_screen.dart` | 301 | 5.4b — Done |
+| `health_entry_card.dart` | 190 | 5.4b — Done |
 | `placements_routes.dart` | 12 (composer) | 5.4 — Done |
 | `pet_foster_placement_section.dart` | 178 | 5.4 — Done |
 | `placementsRouter.js` | 1 (re-export) | 5.4 — Done |
-| `organization_providers.dart` | 607 | 5.4+ |
-| `server/lib/routes.dart` | 591 | 5.4+ |
-| `landing_screen.dart` | 576 | 5.4+ |
-| `other_event_form_screen.dart` | 565 | 5.4+ |
-| `placementsRouter.js` | 518 | 5.4 |
-| `health_entry_card.dart` | 505 | 5.4+ |
 | `pet_form_screen.dart` | 464 | Sprint 2 — Done |
 | `server/lib/auth_routes.dart` | 14 | Sprint 3 — Done |
 | `server/routes/healthEntries.js` | 1 (re-export) | Sprint 4 — Done |
@@ -77,6 +76,7 @@ Run `cd server && npm audit` locally. CI blocks **high** and **critical** (clean
 
 | Date | Change |
 |---|---|
+| 2026-07-08 | Sprint 5.4b: all 5 remaining monoliths split; grandfather allowlist cleared |
 | 2026-07-08 | Sprint 5.4: placements split; grandfather allowlist 8→5 |
 | 2026-07-08 | Sprint 5.1: review doc; CI BDD + file-size gates; integration-branch policy |
 | 2026-07-08 | Sprint 4.3 BDD gate met: 81/161 scenarios mapped; Playwright 79 tests |
