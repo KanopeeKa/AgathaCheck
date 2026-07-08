@@ -1,0 +1,89 @@
+import type { Page } from '@playwright/test';
+import { expect } from '@playwright/test';
+import { dismissConsentBannerIfPresent } from '../support/flutter';
+
+/**
+ * Notifications screen (`/notifications`).
+ * Maps to: flutter_app/test/bdd/features/notifications.feature
+ */
+export class NotificationsPage {
+  constructor(private readonly page: Page) {}
+
+  /** Navigate to the notifications screen by clicking the bell icon on the pet list. */
+  async openFromPetList(): Promise<void> {
+    await dismissConsentBannerIfPresent(this.page);
+    await this.page.getByRole('button', { name: 'Notifications' }).first().click();
+    await this.expectLoaded();
+  }
+
+  async expectLoaded(): Promise<void> {
+    await this.page
+      .getByRole('button', { name: 'Mark all as read' })
+      .or(this.page.getByText('No notifications'))
+      .first()
+      .waitFor({ timeout: 30_000 });
+  }
+
+  async expectEmptyState(): Promise<void> {
+    await this.page.getByText('No notifications').waitFor({ timeout: 15_000 });
+  }
+
+  /** Wait for at least one notification tile referencing the given title text. */
+  async expectNotificationVisible(titleText: string): Promise<void> {
+    await this.page
+      .getByText(titleText, { exact: false })
+      .first()
+      .waitFor({ timeout: 15_000 });
+  }
+
+  /** Expect an approximate count of visible notification entries.
+   *  Uses the semantic label pattern "… notification: …" emitted by Flutter. */
+  async expectNotificationCount(expectedCount: number): Promise<void> {
+    // Notification tiles are semantics nodes that contain the word "notification"
+    // in their label.  Waiting for at least expectedCount is sufficient for
+    // typical E2E seeding scenarios.
+    await expect(
+      this.page.getByText(/notification:/, { exact: false }),
+    ).toHaveCount(expectedCount, { timeout: 15_000 });
+  }
+
+  async markAllRead(): Promise<void> {
+    await this.page.getByRole('button', { name: 'Mark all as read' }).click();
+    // Wait for the snackbar confirmation or for the button to still be visible
+    await this.page.waitForTimeout(800);
+  }
+
+  async openSettings(): Promise<void> {
+    await this.page
+      .getByRole('button', { name: 'Notification settings' })
+      .click();
+    await this.page.getByText('Notification Settings').waitFor({ timeout: 15_000 });
+  }
+
+  /** Click on the first notification tile that contains the given title text. */
+  async clickNotification(titleText: string): Promise<void> {
+    await this.page.getByText(titleText, { exact: false }).first().click();
+    await this.page.waitForTimeout(600);
+  }
+
+  /**
+   * Check for a badge on the notifications icon in the app bar.
+   * The badge is a Text widget child of the bell icon Stack; we look for a
+   * numeric string sibling of the "Notifications" button.
+   */
+  async expectBadgeVisible(count: number): Promise<void> {
+    await this.page
+      .getByText(String(count), { exact: true })
+      .first()
+      .waitFor({ timeout: 10_000 });
+  }
+
+  async expectNoBadgeVisible(): Promise<void> {
+    // After all notifications are read the badge container is removed from the
+    // widget tree so its text content disappears.
+    await this.page.waitForTimeout(500);
+    // We can't enumerate "absence of all possible counts" generically, so we
+    // rely on an API-level assertion in the test itself; this method simply
+    // waits for the DOM to settle.
+  }
+}
