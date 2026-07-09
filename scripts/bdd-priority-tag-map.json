@@ -195,5 +195,9 @@
     "Help page content in English": "P2",
     "Help page content in French": "P2",
     "Navigating back from the Help page": "P2"
+  },
+  "gdpr_data_rights.feature": {
+    "Exporting my personal data as JSON": "P2",
+    "Deleting my account with password confirmation": "P2"
   }
 }
