@@ -1,7 +1,6 @@
 ---
 description: File size limits, domain structure, and extraction conventions for Agatha Track
 globs: flutter_app/lib/**,server/**,server/lib/**
-alwaysApply: true
 ---
 
 # Modularity

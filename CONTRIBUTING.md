@@ -32,23 +32,28 @@ If you are unsure whether `main` moved while you worked, run the fetch + rebase 
 ## Pre-push checklist
 
 ```bash
-# Backend
-cd server && npm ci && npm audit --audit-level=high
-cd server && npx jest --env=node --forceExit
+./scripts/pre-push.sh
+```
 
-# Frontend (codegen required when mocks change)
-cd flutter_app && flutter pub get
-cd flutter_app && dart run build_runner build --delete-conflicting-outputs
+For faster iteration during development, use `./scripts/pre-push-changed.sh` (runs a subset based on changed files). See `/pre-push-verify` skill and `docs/agent-efficiency-plan.md`.
+
+Manual breakdown if needed:
+
+```bash
+cd server && npm ci && npm audit --audit-level=high && npx jest --env=node --forceExit
+cd flutter_app && flutter pub get && dart run build_runner build --delete-conflicting-outputs
 cd flutter_app && flutter analyze --no-fatal-warnings --no-fatal-infos
 cd flutter_app && flutter test --concurrency=1 --exclude-tags=integration
-
-# Format (required — CI enforces)
 dart format flutter_app/lib flutter_app/test server/lib
-
-# Governance gates (required — CI enforces)
-node scripts/check_file_size.js
-node e2e/scripts/check_bdd_coverage.js
+node scripts/check_file_size.js && node e2e/scripts/check_bdd_coverage.js
 ```
+
+## Agent workflow
+
+- Domain map: `docs/architecture/index.md`
+- Skills: `.cursor/skills/` (split screens, BDD, dual-backend, spawn agents, security audit, pre-push)
+- Parallel sprints: `docs/agent-efficiency/prompt-templates.md`
+- Babysit merge-ready PRs: `/babysit` command
 
 ## Pull request expectations
 

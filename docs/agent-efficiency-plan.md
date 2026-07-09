@@ -1,0 +1,126 @@
+# Agent efficiency — implementation plan
+
+Living plan to reduce token burn, speed up agent iterations, and encode recurring
+workflows. Pauses functional product sprints while infra lands on `main`.
+
+**Status:** In progress (Sprint 8–11)  
+**Owner:** Cloud agents / governance  
+**Companion:** `docs/refactoring-log.md` (Sprint 8–11 entries)
+
+---
+
+## Goals
+
+| Goal | How we measure success |
+|------|------------------------|
+| Less duplicated context per turn | Slim always-on rules; path-scoped rules + Skills |
+| Faster agent iterations | `scripts/pre-push-changed.sh` default during work |
+| Repeatable sprint mechanics | Six Skills under `.cursor/skills/` |
+| Self-service PR hygiene | `/babysit` command + PR governance workflow |
+| Onboarding without re-explaining | `docs/architecture/index.md` domain map |
+
+---
+
+## Sprint 8 — Foundation (scripts + domain map)
+
+| # | Deliverable | Status |
+|---|-------------|--------|
+| 8.1 | This plan (`docs/agent-efficiency-plan.md`) | Done |
+| 8.2 | `scripts/pre-push.sh` — full gate (single source of truth) | Done |
+| 8.3 | `scripts/pre-push-changed.sh` — changed-files subset | Done |
+| 8.4 | `docs/architecture/index.md` — domain → routes → Flutter → tests | Done |
+| 8.5 | `docs/refactoring-log.md` Sprint 8 entry | Done |
+
+**Exit:** Scripts executable; index covers all 12 Flutter features + Node domains.
+
+---
+
+## Sprint 9 — Skills library
+
+Skills live in `.cursor/skills/<name>/SKILL.md`. Agents auto-discover via `description`;
+invoke explicitly with `/skill-name`.
+
+| # | Skill | `paths` scope | Status |
+|---|-------|---------------|--------|
+| 9.1 | `split-flutter-screen` | `flutter_app/lib/**` | Done |
+| 9.2 | `add-bdd-playwright-scenario` | `e2e/**`, `flutter_app/test/bdd/**` | Done |
+| 9.3 | `dual-backend-route-change` | `server/routes/**`, `server/lib/**` | Done |
+| 9.4 | `spawn-sprint-agents` | (global — spawn prompts) | Done |
+| 9.5 | `security-error-audit` | `server/**` | Done |
+| 9.6 | `pre-push-verify` | (global — before push) | Done |
+
+**Memory cross-links:** Skills reference `.agents/memory/` where domain semantics matter
+(auth refresh, health completion, localization enums, org_id validation, tool scrambling).
+
+**Exit:** All six skills committed; `MEMORY.md` index updated.
+
+---
+
+## Sprint 10 — Rule scoping & doc dedup
+
+| # | Action | Status |
+|---|--------|--------|
+| 10.1 | New slim `agent-core.mdc` (always-on pointers only) | Done |
+| 10.2 | Remove `alwaysApply` from path-scoped rules (modularity, testing, security, dual-backend, a11y) | Done |
+| 10.3 | Slim `merge-policy.mdc`; move long tables to this plan + skills | Done |
+| 10.4 | `agent-coordination.mdc` — scoped to spawn docs, not always-on | Done |
+| 10.5 | Slim `AGENTS.md` + `CONTRIBUTING.md` → point at `scripts/pre-push.sh` | Done |
+
+**Exit:** Always-on rule payload &lt; 5 KB; no triplicated pre-push blocks.
+
+---
+
+## Sprint 11 — Automations & babysit
+
+| # | Deliverable | Status |
+|---|-------------|--------|
+| 11.1 | `.cursor/commands/babysit.md` — merge-ready PR loop | Done |
+| 11.2 | `.github/workflows/pr-governance-hints.yml` — non-blocking PR hints (file size, BDD delta) | Done |
+| 11.3 | `docs/agent-efficiency/prompt-templates.md` — copy-paste spawn prompts | Done |
+| 11.4 | Update `CONTRIBUTING.md` agent workflow section | Done |
+
+**Exit:** Babysit command available; PRs get governance hints without changing CI gates.
+
+---
+
+## Ongoing policy (after Sprint 11)
+
+### During agent iteration
+
+```bash
+./scripts/pre-push-changed.sh
+```
+
+### Before integration → `main` PR (or single-agent merge)
+
+```bash
+./scripts/pre-push.sh
+```
+
+### Multi-agent spawn checklist
+
+1. Read `/spawn-sprint-agents` skill (or `docs/agent-efficiency/prompt-templates.md`).
+2. Create integration branch; publish ownership row in `docs/refactoring-log.md`.
+3. Foundation agent merges shared fixtures (`api.ts`) first.
+4. Parallel agents on **disjoint directories only**.
+5. Coordinator runs `./scripts/pre-push.sh` once before final PR.
+
+### When to escalate to human review
+
+- Security-sensitive auth/crypto changes
+- Database migrations altering production data shape
+- Breaking API contract changes without version bump
+- CI workflow gate changes (never weaken to pass)
+- Product decisions (UX copy, pricing, legal text)
+
+---
+
+## Maintenance
+
+| Trigger | Action |
+|---------|--------|
+| New Flutter feature | Add row to `docs/architecture/index.md` |
+| New Node route domain | Same |
+| New recurring agent workflow | Add Skill under `.cursor/skills/` |
+| CI gate change | Update `scripts/pre-push.sh` + `agent-core.mdc` |
+| Sprint parallel work | Update ownership matrix in `refactoring-log.md` |

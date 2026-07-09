@@ -124,6 +124,24 @@ Tracks planned and completed refactor / quality work. See also `docs/refactoring
 
 ---
 
+## Sprint 8 — Agent efficiency infrastructure (in progress)
+
+**Goal:** Reduce agent token burn; encode recurring workflows as Skills; changed-files pre-push.  
+**Plan:** `docs/agent-efficiency-plan.md`
+
+| # | Action | Status | Notes |
+|---|--------|--------|-------|
+| 8.1 | Master plan + architecture index | **Done** | `docs/agent-efficiency-plan.md`, `docs/architecture/index.md` |
+| 8.2 | `scripts/pre-push.sh` + `pre-push-changed.sh` | **Done** | Single verify source of truth |
+| 8.3 | Six Cursor Skills | **Done** | `.cursor/skills/` |
+| 8.4 | Slim `agent-core.mdc`; scope path rules | **Done** | Less always-on duplication |
+| 8.5 | `/babysit` + PR governance hints workflow | **Done** | Advisory only; CI unchanged |
+| 8.6 | Prompt templates + slim AGENTS.md | **Done** | `docs/agent-efficiency/prompt-templates.md` |
+
+**Exit:** Merged to `main`. Resume Sprint 6 functional work after merge.
+
+---
+
 ## Parallel-agent ownership matrix (reference)
 
 Use this template when spawning agents on an integration branch:
@@ -144,6 +162,7 @@ Use this template when spawning agents on an integration branch:
 
 | Date | Change |
 |---|---|
+| 2026-07-09 | Sprint 8: agent efficiency infra — Skills, pre-push scripts, scoped rules, babysit |
 | 2026-07-08 | Sprint 5.5–5.6: GDPR `/me/export` full payload; BDD priority tags (16 P0 / 111 P1 / 34 P2) |
 | 2026-07-08 | Sprint 5.4b: cleared 5 remaining monoliths; empty `file-size-allowlist.json` |
 | 2026-07-08 | Sprint 5–7 plan; integration-branch policy; parallel-agent ownership matrix |

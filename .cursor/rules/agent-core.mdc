@@ -1,0 +1,56 @@
+---
+description: Slim always-on agent pointers — details live in Skills, docs, and path-scoped rules
+alwaysApply: true
+---
+
+# Agent core (Agatha Track)
+
+## Start here
+
+- **Domain map:** `docs/architecture/index.md` (read before broad search)
+- **Efficiency plan:** `docs/agent-efficiency-plan.md`
+- **Sprint status:** `docs/refactoring-log.md`
+- **Institutional memory:** `.agents/memory/MEMORY.md`
+
+## Pre-push (single source of truth)
+
+| When | Command |
+|------|---------|
+| During iteration | `./scripts/pre-push-changed.sh` |
+| Before merge to `main` | `./scripts/pre-push.sh` |
+
+Do not duplicate these commands in chat — run the script. Skill: `/pre-push-verify`.
+
+## Skills (recurring workflows)
+
+| Skill | Use for |
+|-------|---------|
+| `/split-flutter-screen` | Screen/widget extraction |
+| `/dual-backend-route-change` | Node + Dart API changes |
+| `/add-bdd-playwright-scenario` | Gherkin → Playwright |
+| `/spawn-sprint-agents` | Parallel sprint coordination |
+| `/security-error-audit` | 5xx error redaction |
+| `/pre-push-verify` | Which tests to run |
+
+## Non-negotiables
+
+- Hand-written files ≤ **500 lines** (`node scripts/check_file_size.js`)
+- BDD gate **81/161** scenarios mapped (`node e2e/scripts/check_bdd_coverage.js`)
+- Node canonical; Dart mirrors HTTP when routes change
+- Never raw exception text in prod 5xx bodies
+- Calendar dates as `YYYY-MM-DD` on the wire
+
+## Merge policy (summary)
+
+- **Single domain / single agent:** PR direct to `main` when CI green.
+- **Multi-agent sprint:** integration branch → one PR to `main`. See `merge-policy.mdc` + `/spawn-sprint-agents`.
+
+## Cloud environment
+
+PostgreSQL: `sudo pg_ctlcluster 16 main start` each session.  
+Backend: `cd server && PGUSER=user PGPASSWORD=password PGHOST=localhost PGPORT=5432 PGDATABASE=agatha_db node bin/start.js`  
+Full cloud caveats: `AGENTS.md`.
+
+## Path-scoped rules (auto-apply when editing matching files)
+
+`modularity.mdc`, `testing.mdc`, `security.mdc`, `dual-backend.mdc`, `accessibility.mdc`, `agent-coordination.mdc`

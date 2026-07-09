@@ -1,21 +1,13 @@
 ---
 description: Test expectations across unit, integration, BDD, and E2E layers
 globs: flutter_app/test/**,server/test/**,e2e/**
-alwaysApply: true
 ---
 
 # Testing
 
-## Pre-push (required)
+## Pre-push
 
-```bash
-cd server && npx jest --env=node --forceExit
-cd flutter_app && dart run build_runner build --delete-conflicting-outputs
-cd flutter_app && flutter analyze --no-fatal-warnings --no-fatal-infos
-cd flutter_app && flutter test --concurrency=1 --exclude-tags=integration
-node scripts/check_file_size.js
-node e2e/scripts/check_bdd_coverage.js
-```
+Run `./scripts/pre-push-changed.sh` during iteration or `./scripts/pre-push.sh` before merge to `main`. See `/pre-push-verify` skill.
 
 ## Layer expectations
 

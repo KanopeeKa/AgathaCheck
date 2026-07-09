@@ -1,0 +1,96 @@
+# Non-blocking PR hints for governance (does not change CI gates).
+name: PR governance hints
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  hints:
+    name: Governance hints (advisory)
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Collect advisory notes
+        id: notes
+        run: |
+          set -euo pipefail
+          NOTES=""
+          BASE="${{ github.event.pull_request.base.sha }}"
+          HEAD="${{ github.event.pull_request.head.sha }}"
+          CHANGED="$(git diff --name-only "$BASE" "$HEAD")"
+          BODY_FILE="$RUNNER_TEMP/governance-hint-body.md"
+
+          while IFS= read -r f; do
+            [[ -z "$f" ]] && continue
+            case "$f" in
+              flutter_app/lib/*|server/routes/*|server/lib/*)
+                if [[ -f "$f" ]] && [[ "$f" != *.g.dart && "$f" != *.mocks.dart ]]; then
+                  lines=$(wc -l < "$f" | tr -d ' ')
+                  if [[ "$lines" -gt 450 ]]; then
+                    NOTES="${NOTES}"$'\n'"- ⚠️ \`${f}\` is **${lines}** lines (CI blocks >500). Consider splitting before merge."
+                  fi
+                fi
+                ;;
+            esac
+          done <<< "$CHANGED"
+
+          if echo "$CHANGED" | grep -qE '^e2e/playwright/tests/'; then
+            NOTES="${NOTES}"$'\n'"- 📋 BDD specs changed — ensure \`@bdd\` headers match Gherkin \`Scenario:\` titles exactly. Run \`node e2e/scripts/check_bdd_coverage.js\`."
+          fi
+
+          if echo "$CHANGED" | grep -qE '^(scripts/|\.cursor/|docs/agent-efficiency)'; then
+            NOTES="${NOTES}"$'\n'"- 🤖 Agent infra changed — run \`./scripts/pre-push.sh\` before merge."
+          fi
+
+          if [[ -z "$NOTES" ]]; then
+            echo "has_notes=false" >> "$GITHUB_OUTPUT"
+          else
+            printf "### Governance hints (advisory)%s\n\n*CI gates remain authoritative; this comment does not block merge.*" "$NOTES" > "$BODY_FILE"
+            echo "has_notes=true" >> "$GITHUB_OUTPUT"
+            echo "body_file=$BODY_FILE" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Comment on PR
+        if: steps.notes.outputs.has_notes == 'true'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const marker = '<!-- governance-hints -->';
+            const body = marker + '\n' + fs.readFileSync('${{ steps.notes.outputs.body_file }}', 'utf8');
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            });
+            const existing = comments.find(c => c.body && c.body.includes(marker));
+            if (existing) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: existing.id,
+                body,
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body,
+              });
+            }
