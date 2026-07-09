@@ -288,6 +288,31 @@ function hasLabel(issue, labelName) {
   });
 }
 
+async function reopenIssue(owner, repo, issueNumber, token) {
+  await rest('PATCH', `/repos/${owner}/${repo}/issues/${issueNumber}`, token, {
+    state: 'open',
+  });
+}
+
+async function triggerWorkflowDispatch({
+  owner,
+  repo,
+  workflowFile,
+  workflowRef,
+  token,
+  inputs = {},
+}) {
+  await rest(
+    'POST',
+    `/repos/${owner}/${repo}/actions/workflows/${workflowFile}/dispatches`,
+    token,
+    {
+      ref: workflowRef,
+      inputs,
+    },
+  );
+}
+
 module.exports = {
   graphql,
   rest,
@@ -300,6 +325,8 @@ module.exports = {
   upsertMarkerComment,
   setLabels,
   assignIssue,
+  reopenIssue,
+  triggerWorkflowDispatch,
   parseRepo,
   hasLabel,
   getIssueProjectStatus,
