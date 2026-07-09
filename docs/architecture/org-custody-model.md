@@ -45,6 +45,12 @@ Supersedes parts of `docs/org-fostering-strategy.md` glossary where they conflic
 | `org_to_org` | Sending org admin | Receiving org admin |
 | `return_to_org` | Current guardian (user or org) | Original org admin |
 
+## Hide (home list only)
+
+- **Fostered org pets:** org admins/super admins may hide from **personal home** list (`org_pet_home_hidden`). Org section always shows full inventory.
+- **Fosterer hide:** `pet_access.hidden` only when `role = foster` and placement active.
+- Auto-clear home hide when foster ends (`not_in_foster`).
+
 ## Flutter UI (Sprint 6.2)
 
 | Surface | Location |
@@ -56,11 +62,6 @@ Supersedes parts of `docs/org-fostering-strategy.md` glossary where they conflic
 | Home hide (fostered) | Swipe on org-grouped pets in home list; unhide in `OrganizationHomeHiddenPetsSection` |
 | Fosterer hide | Swipe on fostered pets section |
 | Frozen shadow detail | `ArchivedPetDetailScreen` from archived list |
-
-
-- **Fostered org pets:** org admins/super admins may hide from **personal home** list (`org_pet_home_hidden`). Org section always shows full inventory.
-- **Fosterer hide:** `pet_access.hidden` only when `role = foster` and placement active.
-- Auto-clear home hide when foster ends (`not_in_foster`).
 
 ## API surface (Node canonical)
 
