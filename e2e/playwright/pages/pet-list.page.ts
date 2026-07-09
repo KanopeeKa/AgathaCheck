@@ -1,6 +1,6 @@
 import type { Page } from '@playwright/test';
 import { expect } from '@playwright/test';
-import { dismissConsentBannerIfPresent } from '../support/flutter';
+import { dismissConsentBannerIfPresent, waitForFlutterRoute } from '../support/flutter';
 
 /**
  * Home / pet list screen (`/`).
@@ -61,7 +61,11 @@ export class PetListPage {
   async openOrganizations(): Promise<void> {
     await dismissConsentBannerIfPresent(this.page);
     await this.page.getByRole('button', { name: 'Organizations' }).click();
-    await this.page.getByText('My Organizations').waitFor({ timeout: 30_000 });
+    await this.page
+      .getByRole('button', { name: 'Create' })
+      .or(this.page.getByRole('button', { name: /Rescue Hearts|Partner Shelter/i }))
+      .first()
+      .waitFor({ timeout: 30_000 });
   }
 
   async openVets(): Promise<void> {
@@ -119,7 +123,7 @@ export class PetListPage {
   }
 
   async goHome(): Promise<void> {
-    await this.page.goto('/');
+    await waitForFlutterRoute(this.page, '/');
     await this.expectLoaded();
   }
 }
