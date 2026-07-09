@@ -21,6 +21,7 @@ class HealthEntryModel extends HealthEntry {
     super.notes,
     super.healthIssueId,
     super.healthIssueName,
+    super.petName,
     super.remindDaysBefore,
     super.createdAt,
     super.updatedAt,
@@ -51,6 +52,7 @@ class HealthEntryModel extends HealthEntry {
       notes: json['notes'] as String? ?? '',
       healthIssueId: json['health_issue_id'] as String?,
       healthIssueName: json['health_issue_title'] as String?,
+      petName: json['pet_name'] as String?,
       remindDaysBefore: json['remind_days_before'] as int? ?? 1,
       createdAt: json['created_at'] != null
           ? DateTime.tryParse(json['created_at'] as String)
@@ -79,6 +81,7 @@ class HealthEntryModel extends HealthEntry {
       notes: entry.notes,
       healthIssueId: entry.healthIssueId,
       healthIssueName: entry.healthIssueName,
+      petName: entry.petName,
       remindDaysBefore: entry.remindDaysBefore,
       createdAt: entry.createdAt,
       updatedAt: entry.updatedAt,

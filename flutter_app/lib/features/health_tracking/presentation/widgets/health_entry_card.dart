@@ -45,7 +45,7 @@ class HealthEntryCard extends StatelessWidget {
     return MergeSemantics(
       child: Semantics(
         label:
-            '${entry.name}, ${entry.type.label}, $statusText${pet != null ? ', for ${pet!.name}' : ''}',
+            '${entry.name}, ${entry.type.label}, $statusText${pet != null ? ', for ${pet!.name}' : entry.petName != null ? ', for ${entry.petName}' : ''}',
         child: Card(
           elevation: 0.5,
           clipBehavior: Clip.antiAlias,
@@ -54,7 +54,11 @@ class HealthEntryCard extends StatelessWidget {
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                HealthEntryPetStrip(pet: pet, colorScheme: colorScheme),
+                HealthEntryPetStrip(
+                  pet: pet,
+                  petName: entry.petName,
+                  colorScheme: colorScheme,
+                ),
                 Expanded(
                   child: InkWell(
                     onTap: onTap,

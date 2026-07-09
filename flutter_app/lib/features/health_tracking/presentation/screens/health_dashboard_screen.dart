@@ -178,7 +178,7 @@ class _HealthDashboardScreenState extends ConsumerState<HealthDashboardScreen>
       final typeFilter = tabIndex < _tabs.length ? _tabs[tabIndex] : null;
 
       final entriesAsync = ref.read(filteredHealthEntriesProvider(typeFilter));
-      final petsAsync = ref.read(allPetsIncludingOrgProvider);
+      final petsAsync = ref.read(petListProvider);
       var entries = entriesAsync.valueOrNull ?? [];
       final pets = petsAsync.valueOrNull ?? <Pet>[];
       final petMap = {for (final p in pets) p.id: p};

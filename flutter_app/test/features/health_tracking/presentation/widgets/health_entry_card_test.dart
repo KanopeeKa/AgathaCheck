@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 
 import 'package:pet_profile_app/features/health_tracking/domain/entities/health_entry.dart';
 import 'package:pet_profile_app/features/health_tracking/presentation/widgets/health_entry_card.dart';
+import 'package:pet_profile_app/features/pet_profile/domain/entities/pet.dart';
 import 'package:pet_profile_app/l10n/app_localizations.dart';
 
 void main() {
@@ -37,6 +38,64 @@ void main() {
       startDate: DateTime(2025, 1, 1),
       nextDueDate: DateTime.now().add(const Duration(days: 5)),
     );
+
+    testWidgets('displays pet name from pet strip when pet is provided', (
+      tester,
+    ) async {
+      const pet = Pet(
+        id: 'pet-1',
+        name: 'Bella',
+        species: 'Dog',
+        colorValue: 0xFF2196F3,
+      );
+      await tester.pumpWidget(
+        MaterialApp(
+          localizationsDelegates: const [
+            AppLocalizations.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: AppLocalizations.supportedLocales,
+          locale: const Locale('en'),
+          home: Scaffold(
+            body: HealthEntryCard(
+              entry: futureEntry,
+              pet: pet,
+              onMarkTaken: () {},
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+      expect(find.text('Bella'), findsOneWidget);
+    });
+
+    testWidgets('displays pet name from entry when pet object is missing', (
+      tester,
+    ) async {
+      final entryWithPetName = futureEntry.copyWith(petName: 'Rex');
+      await tester.pumpWidget(
+        MaterialApp(
+          localizationsDelegates: const [
+            AppLocalizations.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: AppLocalizations.supportedLocales,
+          locale: const Locale('en'),
+          home: Scaffold(
+            body: HealthEntryCard(
+              entry: entryWithPetName,
+              onMarkTaken: () {},
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+      expect(find.text('Rex'), findsOneWidget);
+    });
 
     testWidgets('displays entry name', (tester) async {
       await tester.pumpWidget(buildCard(futureEntry));
