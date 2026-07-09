@@ -1207,6 +1207,390 @@ export async function transferOrgPetToUser(
   return res.json();
 }
 
+// ── Foster placement helpers (Sprint 6.A) ─────────────────────────────────────
+
+export interface TestFosterPlacement {
+  id: string;
+  status: string;
+  pet_id: string;
+  foster_user_id: string;
+  organization_id: string;
+  pet_name?: string;
+}
+
+export interface TestPetDetail {
+  id: string;
+  name: string;
+  organization_id: string | null;
+  organization_name?: string | null;
+  user_id: string;
+  is_foster?: boolean;
+  is_shared?: boolean;
+}
+
+export async function getPet(
+  baseURL: string,
+  token: string,
+  petId: string,
+): Promise<TestPetDetail> {
+  const res = await fetch(apiUrl(`/pets/${petId}`, baseURL), {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!res.ok) {
+    const body = await res.text();
+    throw new Error(`getPet failed (${res.status}): ${body}`);
+  }
+  return res.json();
+}
+
+export async function createFosterPlacement(
+  baseURL: string,
+  token: string,
+  orgId: string,
+  petId: string,
+  fosterUserId: string,
+  options: { startDate?: string; notes?: string } = {},
+): Promise<TestFosterPlacement> {
+  const res = await fetch(apiUrl(`/organizations/${orgId}/pets/${petId}/placements`, baseURL), {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({
+      foster_user_id: fosterUserId,
+      start_date: options.startDate,
+      notes: options.notes ?? '',
+    }),
+  });
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error(`createFosterPlacement failed (${res.status}): ${text}`);
+  }
+  return res.json();
+}
+
+export async function acceptFosterPlacement(
+  baseURL: string,
+  token: string,
+  placementId: string,
+): Promise<TestFosterPlacement> {
+  const res = await fetch(apiUrl(`/foster-placements/${placementId}/accept`, baseURL), {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error(`acceptFosterPlacement failed (${res.status}): ${text}`);
+  }
+  return res.json();
+}
+
+export async function getPendingFosterPlacements(
+  baseURL: string,
+  token: string,
+): Promise<TestFosterPlacement[]> {
+  const res = await fetch(apiUrl('/foster-placements/pending', baseURL), {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error(`getPendingFosterPlacements failed (${res.status}): ${text}`);
+  }
+  return res.json();
+}
+
+export async function endFosterPlacement(
+  baseURL: string,
+  token: string,
+  orgId: string,
+  placementId: string,
+  options: { endDate?: string } = {},
+): Promise<TestFosterPlacement> {
+  const res = await fetch(
+    apiUrl(`/organizations/${orgId}/placements/${placementId}/end`, baseURL),
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ end_date: options.endDate }),
+    },
+  );
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error(`endFosterPlacement failed (${res.status}): ${text}`);
+  }
+  return res.json();
+}
+
+export async function initiateDirectAdoption(
+  baseURL: string,
+  token: string,
+  orgId: string,
+  petId: string,
+  fosterUserId: string,
+  options: { adoptionConditions?: string; notes?: string } = {},
+): Promise<TestFosterPlacement> {
+  const res = await fetch(
+    apiUrl(`/organizations/${orgId}/pets/${petId}/placements/direct-adopt`, baseURL),
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        foster_user_id: fosterUserId,
+        adoption_conditions: options.adoptionConditions ?? '',
+        notes: options.notes ?? '',
+      }),
+    },
+  );
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error(`initiateDirectAdoption failed (${res.status}): ${text}`);
+  }
+  return res.json();
+}
+
+export async function getPendingAdoptions(
+  baseURL: string,
+  token: string,
+): Promise<TestFosterPlacement[]> {
+  const res = await fetch(apiUrl('/foster-placements/pending-adoptions', baseURL), {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error(`getPendingAdoptions failed (${res.status}): ${text}`);
+  }
+  return res.json();
+}
+
+export async function confirmAdoption(
+  baseURL: string,
+  token: string,
+  placementId: string,
+): Promise<TestFosterPlacement & { adopted?: boolean; new_owner_id?: string }> {
+  const res = await fetch(apiUrl(`/foster-placements/${placementId}/confirm-adoption`, baseURL), {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error(`confirmAdoption failed (${res.status}): ${text}`);
+  }
+  return res.json();
+}
+
+export async function requestOrgToOrgTransfer(
+  baseURL: string,
+  token: string,
+  orgId: string,
+  petId: string,
+  toOrgId: string,
+  notes = '',
+): Promise<{ id: string; status: string }> {
+  return requestCustodyTransfer(baseURL, token, orgId, petId, {
+    transfer_kind: 'org_to_org',
+    to_org_id: toOrgId,
+    notes,
+  });
+}
+
+export async function tryRequestCustodyTransfer(
+  baseURL: string,
+  token: string,
+  orgId: string,
+  petId: string,
+  body: {
+    transfer_kind: string;
+    to_org_id?: string;
+    to_user_id?: string;
+    notes?: string;
+  },
+): Promise<{ ok: boolean; status: number; body: unknown }> {
+  const res = await fetch(
+    apiUrl(`/organizations/${orgId}/pets/${petId}/custody-transfers`, baseURL),
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(body),
+    },
+  );
+  const text = await res.text();
+  let parsed: unknown = text;
+  try {
+    parsed = JSON.parse(text);
+  } catch {
+    // keep raw text
+  }
+  return { ok: res.ok, status: res.status, body: parsed };
+}
+
+export async function requestPetReturn(
+  baseURL: string,
+  token: string,
+  petId: string,
+  toOrgId: string,
+  notes = '',
+): Promise<{ id: string; status: string }> {
+  const res = await fetch(
+    apiUrl(`/organizations/${toOrgId}/pets/${petId}/custody-transfers`, baseURL),
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        transfer_kind: 'return_to_org',
+        to_org_id: toOrgId,
+        notes,
+      }),
+    },
+  );
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error(`requestPetReturn failed (${res.status}): ${text}`);
+  }
+  return res.json();
+}
+
+export async function disconnectOrgs(
+  baseURL: string,
+  token: string,
+  orgId: string,
+  otherOrgId: string,
+): Promise<void> {
+  const res = await fetch(apiUrl(`/organizations/${orgId}/connections/${otherOrgId}`, baseURL), {
+    method: 'DELETE',
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error(`disconnectOrgs failed (${res.status}): ${text}`);
+  }
+}
+
+export async function connectOrganizations(
+  baseURL: string,
+  requesterToken: string,
+  requesterOrgId: string,
+  targetOrgId: string,
+  acceptorToken: string,
+): Promise<void> {
+  const { token } = await createOrgConnectionRequest(
+    baseURL,
+    requesterToken,
+    requesterOrgId,
+    targetOrgId,
+  );
+  await acceptOrgConnectionRequest(baseURL, acceptorToken, token);
+}
+
+export async function hideOrgPetFromHome(
+  baseURL: string,
+  token: string,
+  orgId: string,
+  petId: string,
+  hidden = true,
+): Promise<void> {
+  const res = await fetch(apiUrl(`/organizations/${orgId}/pets/${petId}/home-hidden`, baseURL), {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({ hidden }),
+  });
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error(`hideOrgPetFromHome failed (${res.status}): ${text}`);
+  }
+}
+
+export async function hideFosteredPet(
+  baseURL: string,
+  token: string,
+  petId: string,
+  hidden = true,
+): Promise<void> {
+  const res = await fetch(apiUrl(`/share/${petId}/hide`, baseURL), {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({ hidden }),
+  });
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error(`hideFosteredPet failed (${res.status}): ${text}`);
+  }
+}
+
+/** Alice super-user + Eve foster parent of Rescue Hearts (BDD Background). */
+export async function seedRescueHearts(baseURL: string): Promise<{
+  alice: TestUser;
+  eve: TestUser;
+  org: TestOrganization;
+}> {
+  const alice = await signupUser(baseURL, {
+    firstName: 'Alice',
+    lastName: 'Super',
+    email: `alice-${Date.now()}@example.com`,
+  });
+  const eve = await signupUser(baseURL, {
+    firstName: 'Eve',
+    lastName: 'Foster',
+    email: `eve-${Date.now()}@example.com`,
+  });
+  const org = await createOrganization(baseURL, alice.accessToken, {
+    name: 'Rescue Hearts',
+    type: 'charity',
+  });
+  await inviteToOrganization(baseURL, alice.accessToken, org.id, {
+    email: eve.email,
+    role: 'foster',
+  });
+  const invites = await getPendingInvites(baseURL, eve.accessToken);
+  const invite = invites.find((item) => item.organization_id === org.id);
+  if (!invite) {
+    throw new Error('No pending foster invite found for Rescue Hearts');
+  }
+  await acceptInvite(baseURL, eve.accessToken, invite.id);
+  return { alice, eve, org };
+}
+
+/** Create and accept a foster placement (active in-progress state). */
+export async function seedActiveFosterPlacement(
+  baseURL: string,
+  alice: TestUser,
+  eve: TestUser,
+  org: TestOrganization,
+  petName = 'Max',
+): Promise<{ pet: TestPet; placement: TestFosterPlacement }> {
+  const pet = await createOrgPet(baseURL, alice.accessToken, org.id, {
+    name: petName,
+    species: 'dog',
+  });
+  const placement = await createFosterPlacement(
+    baseURL,
+    alice.accessToken,
+    org.id,
+    pet.id,
+    eve.userId,
+  );
+  const accepted = await acceptFosterPlacement(baseURL, eve.accessToken, placement.id);
+  return { pet, placement: accepted };
+}
+
 // ── Org pet management helpers (Sprint 6.1 BDD) ───────────────────────────────
 
 export interface TestPetSummary {
