@@ -14,6 +14,7 @@ jobs:
     name: Governance hints (advisory)
     runs-on: ubuntu-latest
     timeout-minutes: 5
+    continue-on-error: true
     steps:
       - uses: actions/checkout@v4
         with:
@@ -32,8 +33,8 @@ jobs:
           BASE="${{ github.event.pull_request.base.sha }}"
           HEAD="${{ github.event.pull_request.head.sha }}"
           CHANGED="$(git diff --name-only "$BASE" "$HEAD")"
+          BODY_FILE="$RUNNER_TEMP/governance-hint-body.md"
 
-          # Files approaching 500-line limit (>450 hand-written under scan roots)
           while IFS= read -r f; do
             [[ -z "$f" ]] && continue
             case "$f" in
@@ -41,36 +42,27 @@ jobs:
                 if [[ -f "$f" ]] && [[ "$f" != *.g.dart && "$f" != *.mocks.dart ]]; then
                   lines=$(wc -l < "$f" | tr -d ' ')
                   if [[ "$lines" -gt 450 ]]; then
-                    NOTES="${NOTES}\n- ⚠️ \`${f}\` is **${lines}** lines (CI blocks >500). Consider splitting before merge."
+                    NOTES="${NOTES}"$'\n'"- ⚠️ \`${f}\` is **${lines}** lines (CI blocks >500). Consider splitting before merge."
                   fi
                 fi
                 ;;
             esac
           done <<< "$CHANGED"
 
-          # BDD spec changes — remind to run coverage script
           if echo "$CHANGED" | grep -qE '^e2e/playwright/tests/'; then
-            REPORT="$(node e2e/scripts/check_bdd_coverage.js --report-only 2>/dev/null || true)"
-            NOTES="${NOTES}\n- 📋 BDD specs changed — ensure \`@bdd\` headers match Gherkin \`Scenario:\` titles exactly. Run \`node e2e/scripts/check_bdd_coverage.js\`."
-            if [[ -n "$REPORT" ]]; then
-              NOTES="${NOTES}\n\`\`\`\n${REPORT}\n\`\`\`"
-            fi
+            NOTES="${NOTES}"$'\n'"- 📋 BDD specs changed — ensure \`@bdd\` headers match Gherkin \`Scenario:\` titles exactly. Run \`node e2e/scripts/check_bdd_coverage.js\`."
           fi
 
-          # Agent infra / scripts — point to full pre-push
           if echo "$CHANGED" | grep -qE '^(scripts/|\.cursor/|docs/agent-efficiency)'; then
-            NOTES="${NOTES}\n- 🤖 Agent infra changed — run \`./scripts/pre-push.sh\` before merge."
+            NOTES="${NOTES}"$'\n'"- 🤖 Agent infra changed — run \`./scripts/pre-push.sh\` before merge."
           fi
 
           if [[ -z "$NOTES" ]]; then
             echo "has_notes=false" >> "$GITHUB_OUTPUT"
           else
+            printf "### Governance hints (advisory)%s\n\n*CI gates remain authoritative; this comment does not block merge.*" "$NOTES" > "$BODY_FILE"
             echo "has_notes=true" >> "$GITHUB_OUTPUT"
-            {
-              echo 'body<<EOF'
-              printf "### Governance hints (advisory)\n%s\n\n*CI gates remain authoritative; this comment does not block merge.*" "$NOTES"
-              echo 'EOF'
-            } >> "$GITHUB_OUTPUT"
+            echo "body_file=$BODY_FILE" >> "$GITHUB_OUTPUT"
           fi
 
       - name: Comment on PR
@@ -78,8 +70,9 @@ jobs:
         uses: actions/github-script@v7
         with:
           script: |
+            const fs = require('fs');
             const marker = '<!-- governance-hints -->';
-            const body = marker + '\n' + process.env.BODY;
+            const body = marker + '\n' + fs.readFileSync('${{ steps.notes.outputs.body_file }}', 'utf8');
             const { data: comments } = await github.rest.issues.listComments({
               owner: context.repo.owner,
               repo: context.repo.repo,
@@ -101,5 +94,3 @@ jobs:
                 body,
               });
             }
-        env:
-          BODY: ${{ steps.notes.outputs.body }}
