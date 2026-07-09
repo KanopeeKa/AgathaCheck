@@ -3,10 +3,16 @@ name: Deploy UAT (uat.agathatrack.com)
 on:
   push:
     branches: ['release/uat-*']
+  workflow_dispatch:
+    inputs:
+      deploy_ref:
+        description: Release branch to deploy (release/uat-*)
+        required: true
 
 env:
   FLUTTER_VERSION: '3.32.0'
   UAT_BASE_URL: https://uat.agathatrack.com
+  DEPLOY_REF: ${{ github.event_name == 'workflow_dispatch' && inputs.deploy_ref || github.ref_name }}
 
 jobs:
   # Fast path: build + FTP deploy. Unit tests already ran on main CI.
@@ -16,6 +22,8 @@ jobs:
     environment: UAT
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.DEPLOY_REF }}
 
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
@@ -174,3 +182,30 @@ jobs:
             exit 1
           fi
           echo "All UAT gates passed. Safe to deploy commit ${{ github.sha }} to prod."
+
+  # Update GitHub issue / Project status when this deploy was triggered for an agent issue branch.
+  agent-uat-notify:
+    name: Notify linked agent issue
+    needs: [prod-ready]
+    if: always() && contains(env.DEPLOY_REF, '-issue-')
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Update linked issue from UAT result
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_PROJECTS_PAT: ${{ secrets.GH_PROJECTS_PAT }}
+          GH_PROJECT_ID: ${{ secrets.GH_PROJECT_ID }}
+          GH_STATUS_FIELD_ID: ${{ secrets.GH_STATUS_FIELD_ID }}
+          HANDLER_MODE: uat-result
+          BRANCH_NAME: ${{ env.DEPLOY_REF }}
+          WORKFLOW_CONCLUSION: ${{ needs.prod-ready.result == 'success' && 'success' || 'failure' }}
+          WORKFLOW_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: node .github/scripts/issue-agent-handlers.js

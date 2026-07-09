@@ -7,14 +7,18 @@ const {
   setLabels,
   upsertMarkerComment,
   assignIssue,
+  reopenIssue,
+  triggerWorkflowDispatch,
   rest,
   parseRepo,
 } = require('./github-project-lib');
 
 const ASSIGNEE = process.env.AGENT_ASSIGNEE || 'KanopeeKa';
+const UAT_WORKFLOW_FILE = 'deploy-uat.yml';
 
 function parseLinkedIssues(prBody) {
-  const matches = prBody.match(/\b(?:fixes|closes|resolves)\s+#(\d+)/gi) || [];
+  const matches =
+    prBody.match(/\b(?:fixes|closes|resolves|refs)\s+#(\d+)/gi) || [];
   return [...new Set(matches.map((m) => Number(m.replace(/\D/g, ''))))];
 }
 
@@ -26,11 +30,50 @@ function uatBranchName(issueNumber) {
   return `release/uat-${yy}${mm}${dd}-issue-${issueNumber}`;
 }
 
+async function createOrUpdateUatBranch({ owner, repo, branch, mergeSha, token }) {
+  try {
+    await rest('POST', `/repos/${owner}/${repo}/git/refs`, token, {
+      ref: `refs/heads/${branch}`,
+      sha: mergeSha,
+    });
+  } catch (error) {
+    if (String(error.message).includes('422')) {
+      await rest(
+        'PATCH',
+        `/repos/${owner}/${repo}/git/refs/heads/${encodeURIComponent(branch)}`,
+        token,
+        { sha: mergeSha, force: true },
+      );
+    } else {
+      throw error;
+    }
+  }
+}
+
+async function triggerUatDeploy({ owner, repo, branch, workflowToken }) {
+  if (!workflowToken) {
+    console.warn(
+      'GH_PROJECTS_PAT not set — cannot dispatch UAT deploy. Push the branch manually or add the PAT.',
+    );
+    return { triggered: false, reason: 'missing workflow token' };
+  }
+
+  await triggerWorkflowDispatch({
+    owner,
+    repo,
+    workflowFile: UAT_WORKFLOW_FILE,
+    workflowRef: 'main',
+    token: workflowToken,
+    inputs: { deploy_ref: branch },
+  });
+
+  return { triggered: true, branch };
+}
+
 async function handleMergedPr({
   owner,
   repo,
   prNumber,
-  prTitle,
   prBody,
   mergeSha,
   token,
@@ -48,10 +91,12 @@ async function handleMergedPr({
   for (const issueNumber of issueNumbers) {
     const issue = await fetchIssue(owner, repo, issueNumber, token);
     await setLabels(owner, repo, issueNumber, [], ['busy'], token);
+    await reopenIssue(owner, repo, issueNumber, token);
 
     if (projectsPat && projectId && statusFieldId) {
+      const refreshedIssue = await fetchIssue(owner, repo, issueNumber, token);
       await updateProjectStatus({
-        issue,
+        issue: refreshedIssue,
         projectId,
         statusFieldId,
         statusName: 'In Main',
@@ -60,13 +105,25 @@ async function handleMergedPr({
     }
 
     const branch = uatBranchName(issueNumber);
-    const marker = '<!-- agent-uat-branch -->';
+    await createOrUpdateUatBranch({ owner, repo, branch, mergeSha, token });
+
+    const deploy = await triggerUatDeploy({
+      owner,
+      repo,
+      branch,
+      workflowToken: projectsPat,
+    });
+
+    const deployNote = deploy.triggered
+      ? 'UAT deployment workflow was triggered automatically.'
+      : 'UAT deployment was **not** triggered automatically — push the release branch or run **Deploy UAT** manually with `deploy_ref` set to the branch below.';
+
     await upsertMarkerComment({
       owner,
       repo,
       issueNumber,
-      marker,
-      body: `${marker}
+      marker: '<!-- agent-uat-branch -->',
+      body: `<!-- agent-uat-branch -->
 ## Merged to main
 
 PR #${prNumber} merged for this issue.
@@ -74,36 +131,21 @@ PR #${prNumber} merged for this issue.
 - Merge commit: \`${mergeSha}\`
 - UAT branch: \`${branch}\`
 - Project status: **In Main**
+- Issue reopened for UAT tracking (use **Done** after validation; do not rely on auto-close).
 
-UAT deployment will start when the release branch is pushed.`,
+${deployNote}`,
       token,
     });
 
-    try {
-      await rest(
-        'POST',
-        `/repos/${owner}/${repo}/git/refs`,
-        token,
-        {
-          ref: `refs/heads/${branch}`,
-          sha: mergeSha,
-        },
-      );
-    } catch (error) {
-      if (String(error.message).includes('422')) {
-        await rest(
-          'PATCH',
-          `/repos/${owner}/${repo}/git/refs/heads/${encodeURIComponent(branch)}`,
-          token,
-          { sha: mergeSha, force: true },
-        );
-      } else {
-        throw error;
-      }
-    }
-
-    results.push({ issueNumber, branch, status: 'In Main' });
-    console.log(`Issue #${issueNumber}: status In Main, pushed ${branch}`);
+    results.push({
+      issueNumber,
+      branch,
+      status: 'In Main',
+      uatDeployTriggered: deploy.triggered,
+    });
+    console.log(
+      `Issue #${issueNumber}: reopened, status In Main, branch ${branch}, uatDeploy=${deploy.triggered}`,
+    );
   }
 
   return { results };
@@ -127,11 +169,13 @@ async function handleUatWorkflowResult({
 
   const issueNumber = Number(match[1]);
   const issue = await fetchIssue(owner, repo, issueNumber, token);
+  await reopenIssue(owner, repo, issueNumber, token);
 
   if (conclusion === 'success') {
     if (projectsPat && projectId && statusFieldId) {
+      const refreshedIssue = await fetchIssue(owner, repo, issueNumber, token);
       await updateProjectStatus({
-        issue,
+        issue: refreshedIssue,
         projectId,
         statusFieldId,
         statusName: 'In UAT',
@@ -152,7 +196,7 @@ Branch \`${branchName}\` deployed successfully.
 - Workflow: ${workflowUrl}
 - Project status: **In UAT**
 
-Validate on UAT, then move the issue to **Done** when complete.`,
+Validate on UAT, then move the issue to **Done** and close when complete.`,
       token,
     });
 
@@ -200,7 +244,6 @@ async function main() {
       owner,
       repo,
       prNumber: process.env.PR_NUMBER,
-      prTitle: process.env.PR_TITLE || '',
       prBody: process.env.PR_BODY || '',
       mergeSha: process.env.MERGE_SHA,
       token,
@@ -243,4 +286,5 @@ module.exports = {
   uatBranchName,
   handleMergedPr,
   handleUatWorkflowResult,
+  triggerUatDeploy,
 };

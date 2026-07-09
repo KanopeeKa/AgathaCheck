@@ -48,7 +48,7 @@ No`;
   assert.ok(payload.constraints.forbiddenPaths.includes('.github/workflows/'));
 });
 
-test('buildAgentPrompt includes Fixes directive and forbidden paths', () => {
+test('buildAgentPrompt includes Refs directive and forbidden paths', () => {
   const payload = buildAgentPayload(
     {
       number: 7,
@@ -60,7 +60,8 @@ test('buildAgentPrompt includes Fixes directive and forbidden paths', () => {
     'https://github.com/o/r',
   );
   const prompt = buildAgentPrompt(payload);
-  assert.match(prompt, /Fixes #7/);
+  assert.match(prompt, /Refs #7/);
+  assert.doesNotMatch(prompt, /Fixes #7/);
   assert.match(prompt, /\.github\/workflows/);
   assert.match(prompt, /pre-push-changed/);
 });

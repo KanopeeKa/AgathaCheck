@@ -65,7 +65,7 @@ function buildAgentPayload(issue, repoUrl) {
       commands: ['./scripts/pre-push-changed.sh'],
     },
     handoff: {
-      onSuccess: `Open a PR against main with "Fixes #${issue.number}" in the body, then summarize changes.`,
+      onSuccess: `Open a PR against main with "Refs #${issue.number}" in the body (do not use Fixes/Closes — the issue must stay open until UAT is validated). Then summarize changes.`,
       onBlocked:
         'Stop without opening a PR. Explain clearly what is missing or unclear in your final message.',
     },
@@ -114,7 +114,7 @@ function buildAgentPrompt(payload) {
     `1. Create branch \`${payload.constraints.suggestedBranch}\` from \`${payload.constraints.baseBranch}\`.`,
     '2. Implement only within allowed paths.',
     '3. Run `./scripts/pre-push-changed.sh` before opening a PR.',
-    `4. On success: push branch, open PR against \`${payload.constraints.baseBranch}\` with body containing \`Fixes #${payload.issue.number}\`.`,
+    `4. On success: push branch, open PR against \`${payload.constraints.baseBranch}\` with body containing \`Refs #${payload.issue.number}\` (not Fixes/Closes).`,
     '5. On blocked/underspecified work: stop, do not open a PR, explain what is missing.',
     '',
     '## Allowed paths',
