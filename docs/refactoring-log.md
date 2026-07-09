@@ -101,7 +101,7 @@ Tracks planned and completed refactor / quality work. See also `docs/refactoring
 
 | # | Action | Status | Parallel agents | Owns |
 |---|--------|--------|-----------------|------|
-| 6.1 | Playwright: `organisation_pet_management.feature` (6) | Planned | 1 | `organisation.pet.management.spec.ts` + org pet pages |
+| 6.1 | Playwright: `organisation_pet_management.feature` (6) | **Done** | `organisation.pet.management.spec.ts` |
 | 6.2 | Playwright: org custody features (`org_foster_and_adoption`, `org_to_org_transfer`, `org_pet_return`, sharing/shadow) | Unblocked (API) | 1 | `adoption.spec.ts` — custody APIs + rewritten Gherkin on `cursor/org-custody-integration-13e3` |
 | 6.3 | Playwright: `organisation_pet_timeline.feature` (subset 4/6) | Planned | 1 | `org.timeline.spec.ts` |
 | 6.4 | Playwright: `help_faq.feature` (10) | Planned | 1 | `help.faq.spec.ts` |

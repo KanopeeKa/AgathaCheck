@@ -77,4 +77,13 @@ export class OrganizationDetailPage {
     await this.page.getByText('Frozen shadow').first().waitFor({ timeout: 30_000 });
     await expect(this.page.getByText(petName).first()).toBeVisible();
   }
+
+  async openAddOrgPet(): Promise<void> {
+    const addButton = this.page
+      .getByRole('button', { name: 'Add Pet' })
+      .or(this.page.locator('[flt-semantics-identifier="org_add_pet_button"]'))
+      .or(this.page.locator('[flt-semantics-identifier="org_add_pet_empty"]'));
+    await addButton.first().click();
+    await this.page.getByRole('button', { name: 'Save Pet' }).waitFor({ timeout: 30_000 });
+  }
 }

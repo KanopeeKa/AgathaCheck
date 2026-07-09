@@ -1206,3 +1206,97 @@ export async function transferOrgPetToUser(
   }
   return res.json();
 }
+
+// ── Org pet management helpers (Sprint 6.1 BDD) ───────────────────────────────
+
+export interface TestPetSummary {
+  id: string;
+  name: string;
+  organization_id?: string | null;
+  organization_name?: string | null;
+}
+
+export async function getAllPets(
+  baseURL: string,
+  token: string,
+): Promise<TestPetSummary[]> {
+  const res = await fetch(apiUrl('/pets/all', baseURL), {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!res.ok) {
+    const body = await res.text();
+    throw new Error(`getAllPets failed (${res.status}): ${body}`);
+  }
+  return res.json();
+}
+
+export interface TestFamilyEvent {
+  id: string;
+  assigned_to_user_id: string | null;
+  assigned_name?: string;
+}
+
+export async function getFamilyEvents(
+  baseURL: string,
+  token: string,
+  petId: string,
+): Promise<TestFamilyEvent[]> {
+  const res = await fetch(apiUrl(`/pets/${petId}/family-events`, baseURL), {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!res.ok) {
+    const body = await res.text();
+    throw new Error(`getFamilyEvents failed (${res.status}): ${body}`);
+  }
+  return res.json();
+}
+
+export async function createFamilyEvent(
+  baseURL: string,
+  token: string,
+  petId: string,
+  options: {
+    assignedToUserId: string;
+    fromDate?: string;
+    eventType?: string;
+  },
+): Promise<TestFamilyEvent> {
+  const fromDate = options.fromDate ?? new Date().toISOString().slice(0, 10);
+  const res = await fetch(apiUrl(`/pets/${petId}/family-events`, baseURL), {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({
+      assigned_to_user_id: options.assignedToUserId,
+      from_date: fromDate,
+      event_type: options.eventType ?? 'placement',
+    }),
+  });
+  if (!res.ok) {
+    const body = await res.text();
+    throw new Error(`createFamilyEvent failed (${res.status}): ${body}`);
+  }
+  return res.json();
+}
+
+/** Alice super-user + Bob member of the same org (BDD Background). */
+export async function seedHappyPawsClinic(baseURL: string): Promise<{
+  alice: TestUser;
+  bob: TestUser;
+  org: TestOrganization;
+}> {
+  const alice = await signupUser(baseURL, {
+    firstName: 'Alice',
+    lastName: 'Super',
+    email: `alice-${Date.now()}@example.com`,
+  });
+  const bob = await signupUser(baseURL, {
+    firstName: 'Bob',
+    lastName: 'Member',
+    email: `bob-${Date.now()}@example.com`,
+  });
+  const org = await seedOrgWithMember(baseURL, alice, bob, 'Happy Paws Clinic');
+  return { alice, bob, org };
+}
