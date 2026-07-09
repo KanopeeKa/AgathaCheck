@@ -97,19 +97,22 @@ Tracks planned and completed refactor / quality work. See also `docs/refactoring
 
 ## Sprint 6 — Org-operator BDD + help (planned)
 
-**Integration branch:** `cursor/sprint-6-org-bdd-integration-13e3`
+**Integration branch:** `cursor/sprint-6-org-bdd-integration-13e3`  
+**Execution plan:** `docs/sprint-6-execution-plan.md`
 
 | # | Action | Status | Parallel agents | Owns |
 |---|--------|--------|-----------------|------|
-| 6.1 | Playwright: `organisation_pet_management.feature` (6) | **Done** | `organisation.pet.management.spec.ts` |
-| 6.2 | Playwright: org custody features (`org_foster_and_adoption`, `org_to_org_transfer`, `org_pet_return`, sharing/shadow) | Unblocked (API) | 1 | `adoption.spec.ts` — custody APIs + rewritten Gherkin on `cursor/org-custody-integration-13e3` |
-| 6.3 | Playwright: `organisation_pet_timeline.feature` (subset 4/6) | Planned | 1 | `org.timeline.spec.ts` |
-| 6.4 | Playwright: `help_faq.feature` (10) | Planned | 1 | `help.faq.spec.ts` |
-| 6.5 | Realign `@smoke` + axe to P0 guardian paths | Planned | 1 | `e2e/playwright/tests/` smoke titles only |
+| 6.1 | Playwright: `organisation_pet_management.feature` (6) | **Done** (#111) | — | `organisation.pet.management.spec.ts` |
+| 6.A | Foundation: `api.ts` foster/custody/return helpers | Planned | 1 (merge first) | `e2e/playwright/support/api.ts` |
+| 6.2 | Playwright: org custody (4 features, 12 scenarios) | Planned | 1 | `adoption.spec.ts` (+ optional split) |
+| 6.3 | Playwright: `organisation_pet_timeline.feature` (4/6) | Planned | 1 | `org.timeline.spec.ts` |
+| 6.4 | Playwright: `help_faq.feature` (10) | Planned | 1 | `help.faq.spec.ts` + `help.page.ts` |
+| 6.5 | Realign `@smoke` + axe to P0 guardian paths | Planned | 1 | `@smoke` titles in existing specs |
 
-**Parallelism:** 6.1 + 6.4 can run together (disjoint). 6.2 backend custody model landed in org-custody PR (migration 020, shadow snapshots, connections, pending transfers). 6.3 after 6.1 (shared org pet fixtures). Foundation agent extends `api.ts` once.
+**Parallelism (recommended):** 6.A → then **6.4 ∥ 6.2** → 6.3 → 6.5 → exit.  
+**Single-agent order:** 6.A → 6.4 → 6.2 → 6.3 → 6.5 (fastest path to 105 BDD gate).
 
-**Exit gate:** BDD ≥ **105/161 (65%)** + persona gate: ≥ **80% of @P1 guardian scenarios** (once tags land in 5.6).
+**Exit gate:** BDD ≥ **105/165 (65%)** + persona gate: ≥ **80% of @P1 guardian scenarios**.
 
 ---
 
