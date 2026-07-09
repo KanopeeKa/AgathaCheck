@@ -124,10 +124,10 @@ Tracks planned and completed refactor / quality work. See also `docs/refactoring
 
 ---
 
-## Sprint 8 — Agent efficiency infrastructure (in progress)
+## Sprint 8 — Agent efficiency infrastructure (complete)
 
 **Goal:** Reduce agent token burn; encode recurring workflows as Skills; changed-files pre-push.  
-**Plan:** `docs/agent-efficiency-plan.md`
+**Plan:** `docs/agent-efficiency-plan.md` · **Merged:** #109
 
 | # | Action | Status | Notes |
 |---|--------|--------|-------|
@@ -138,7 +138,7 @@ Tracks planned and completed refactor / quality work. See also `docs/refactoring
 | 8.5 | `/babysit` + PR governance hints workflow | **Done** | Advisory only; CI unchanged |
 | 8.6 | Prompt templates + slim AGENTS.md | **Done** | `docs/agent-efficiency/prompt-templates.md` |
 
-**Exit:** Merged to `main`. Resume Sprint 6 functional work after merge.
+**Exit:** Merged to `main` (#109). Resume Sprint 6 functional work.
 
 ---
 
