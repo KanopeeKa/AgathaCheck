@@ -5,6 +5,10 @@ import 'package:http/http.dart' as http;
 import '../models/archived_pet_model.dart';
 import '../models/organization_member_model.dart';
 import '../models/organization_model.dart';
+import '../../domain/entities/custody_transfer.dart';
+import '../../domain/entities/org_connection.dart';
+import 'organization_remote/organization_connections_remote.dart';
+import 'organization_remote/organization_custody_remote.dart';
 import 'organization_remote/organization_core_remote.dart';
 import 'organization_remote/organization_foster_parents_remote.dart';
 import 'organization_remote/organization_invites_remote.dart';
@@ -23,6 +27,8 @@ class OrganizationRemoteDataSource {
     _pets = OrganizationPetsRemote(_ctx);
     _fosterParents = OrganizationFosterParentsRemote(_ctx);
     _placements = OrganizationPlacementsRemote(_ctx);
+    _connections = OrganizationConnectionsRemote(_ctx);
+    _custody = OrganizationCustodyRemote(_ctx);
   }
 
   final OrganizationRemoteContext _ctx;
@@ -32,6 +38,8 @@ class OrganizationRemoteDataSource {
   late final OrganizationPetsRemote _pets;
   late final OrganizationFosterParentsRemote _fosterParents;
   late final OrganizationPlacementsRemote _placements;
+  late final OrganizationConnectionsRemote _connections;
+  late final OrganizationCustodyRemote _custody;
 
   String get baseUrl => _ctx.baseUrl;
 
@@ -332,4 +340,76 @@ class OrganizationRemoteDataSource {
     String petId,
     String token,
   ) => _placements.getPetFosterHistory(orgId, petId, token);
+
+  Future<List<OrgConnection>> getConnections(String orgId, String token) =>
+      _connections.getConnections(orgId, token);
+
+  Future<Map<String, dynamic>> createConnectionRequest(
+    String orgId, {
+    required String targetOrgId,
+    required String token,
+  }) => _connections.createConnectionRequest(
+    orgId,
+    targetOrgId: targetOrgId,
+    token: token,
+  );
+
+  Future<List<OrgConnectionRequest>> getConnectionRequests(
+    String orgId,
+    String token,
+  ) => _connections.getConnectionRequests(orgId, token);
+
+  Future<void> revokeConnectionRequest(
+    String orgId,
+    String requestId,
+    String token,
+  ) => _connections.revokeConnectionRequest(orgId, requestId, token);
+
+  Future<void> acceptConnectionRequest(String token, String requestToken) =>
+      _connections.acceptConnectionRequest(token, requestToken);
+
+  Future<void> disconnectOrgs(String orgId, String otherOrgId, String token) =>
+      _connections.disconnectOrgs(orgId, otherOrgId, token);
+
+  Future<Map<String, dynamic>> requestCustodyTransfer(
+    String orgId,
+    String petId, {
+    required String transferKind,
+    String? toOrgId,
+    String? toUserId,
+    String notes = '',
+    required String token,
+  }) => _custody.requestCustodyTransfer(
+    orgId,
+    petId,
+    transferKind: transferKind,
+    toOrgId: toOrgId,
+    toUserId: toUserId,
+    notes: notes,
+    token: token,
+  );
+
+  Future<List<CustodyTransfer>> getPendingCustodyTransfers(String token) =>
+      _custody.getPendingCustodyTransfers(token);
+
+  Future<void> acceptCustodyTransfer(String transferId, String token) =>
+      _custody.acceptCustodyTransfer(transferId, token);
+
+  Future<void> cancelCustodyTransfer(
+    String transferId,
+    String token, {
+    String reason = '',
+  }) => _custody.cancelCustodyTransfer(transferId, token, reason: reason);
+
+  Future<void> setPetHomeHidden(
+    String orgId,
+    String petId, {
+    required bool hidden,
+    required String token,
+  }) => _custody.setPetHomeHidden(orgId, petId, hidden: hidden, token: token);
+
+  Future<List<Map<String, dynamic>>> getHomeHiddenPets(
+    String orgId,
+    String token,
+  ) => _custody.getHomeHiddenPets(orgId, token);
 }

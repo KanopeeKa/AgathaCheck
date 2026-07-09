@@ -65,6 +65,10 @@ export function registerCoreRoutes(router, pool) {
              WHERE pa.pet_id = p.id AND pa.user_id = $1
                AND pa.role = $3 AND COALESCE(pa.hidden, false) = false
            )
+           AND NOT EXISTS (
+             SELECT 1 FROM org_pet_home_hidden oh
+             WHERE oh.pet_id = p.id AND oh.user_id = $1
+           )
          ORDER BY created_at`,
         [userId, COLLABORATOR_ROLES, FOSTER_PET_ACCESS_ROLE, OPEN_PLACEMENT_STATUSES]
       );

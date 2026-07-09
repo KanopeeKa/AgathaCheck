@@ -1044,3 +1044,165 @@ export async function deleteWeightEntry(
     throw new Error(`deleteWeightEntry failed (${res.status}): ${body}`);
   }
 }
+
+// ── Org custody helpers ───────────────────────────────────────────────────────
+
+export async function createOrgPet(
+  baseURL: string,
+  token: string,
+  orgId: string,
+  options: { name: string; species?: string },
+): Promise<TestPet> {
+  const res = await fetch(apiUrl(`/organizations/${orgId}/pets`, baseURL), {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({
+      name: options.name,
+      species: options.species ?? 'dog',
+    }),
+  });
+  if (!res.ok) {
+    const body = await res.text();
+    throw new Error(`createOrgPet failed (${res.status}): ${body}`);
+  }
+  const json = await res.json();
+  return { id: json.id, name: json.name };
+}
+
+export async function requestCustodyTransfer(
+  baseURL: string,
+  token: string,
+  orgId: string,
+  petId: string,
+  body: {
+    transfer_kind: string;
+    to_org_id?: string;
+    to_user_id?: string;
+    notes?: string;
+  },
+): Promise<{ id: string; status: string }> {
+  const res = await fetch(
+    apiUrl(`/organizations/${orgId}/pets/${petId}/custody-transfers`, baseURL),
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(body),
+    },
+  );
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error(`requestCustodyTransfer failed (${res.status}): ${text}`);
+  }
+  return res.json();
+}
+
+export async function acceptCustodyTransfer(
+  baseURL: string,
+  token: string,
+  transferId: string,
+): Promise<void> {
+  const res = await fetch(apiUrl(`/custody-transfers/${transferId}/accept`, baseURL), {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error(`acceptCustodyTransfer failed (${res.status}): ${text}`);
+  }
+}
+
+export async function getPendingCustodyTransfers(
+  baseURL: string,
+  token: string,
+): Promise<Array<{ id: string; pet_name?: string; transfer_kind: string }>> {
+  const res = await fetch(apiUrl('/custody-transfers/pending', baseURL), {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error(`getPendingCustodyTransfers failed (${res.status}): ${text}`);
+  }
+  return res.json();
+}
+
+export async function createOrgConnectionRequest(
+  baseURL: string,
+  token: string,
+  orgId: string,
+  targetOrgId: string,
+): Promise<{ token: string }> {
+  const res = await fetch(apiUrl(`/organizations/${orgId}/connection-requests`, baseURL), {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({ target_org_id: targetOrgId }),
+  });
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error(`createOrgConnectionRequest failed (${res.status}): ${text}`);
+  }
+  return res.json();
+}
+
+export async function acceptOrgConnectionRequest(
+  baseURL: string,
+  token: string,
+  connectionToken: string,
+): Promise<void> {
+  const res = await fetch(
+    apiUrl(`/organizations/connection-requests/${connectionToken}/accept`, baseURL),
+    {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${token}` },
+    },
+  );
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error(`acceptOrgConnectionRequest failed (${res.status}): ${text}`);
+  }
+}
+
+export async function getOrgArchivedPets(
+  baseURL: string,
+  token: string,
+  orgId: string,
+): Promise<Array<{ id: string; pet_name: string; shadow_snapshot?: Record<string, unknown> }>> {
+  const res = await fetch(apiUrl(`/organizations/${orgId}/archived`, baseURL), {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error(`getOrgArchivedPets failed (${res.status}): ${text}`);
+  }
+  return res.json();
+}
+
+export async function transferOrgPetToUser(
+  baseURL: string,
+  token: string,
+  orgId: string,
+  petId: string,
+  recipientEmail: string,
+): Promise<{ transfer_id?: string; pending?: boolean }> {
+  const res = await fetch(apiUrl(`/organizations/${orgId}/pets/${petId}/transfer`, baseURL), {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({ recipient_email: recipientEmail }),
+  });
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error(`transferOrgPetToUser failed (${res.status}): ${text}`);
+  }
+  return res.json();
+}

@@ -51,6 +51,18 @@ Supersedes parts of `docs/org-fostering-strategy.md` glossary where they conflic
 - **Fosterer hide:** `pet_access.hidden` only when `role = foster` and placement active.
 - Auto-clear home hide when foster ends (`not_in_foster`).
 
+## Flutter UI (Sprint 6.2)
+
+| Surface | Location |
+|---------|----------|
+| Pending custody inbox | Home list `PendingCustodyTransfersSection` |
+| Org connections | `OrganizationConnectionsSection` on org detail |
+| Org→org transfer | `TransferPetToOrgScreen` |
+| Connection accept | `/organizations/connect/:token` |
+| Home hide (fostered) | Swipe on org-grouped pets in home list; unhide in `OrganizationHomeHiddenPetsSection` |
+| Fosterer hide | Swipe on fostered pets section |
+| Frozen shadow detail | `ArchivedPetDetailScreen` from archived list |
+
 ## API surface (Node canonical)
 
 | Area | Routes |

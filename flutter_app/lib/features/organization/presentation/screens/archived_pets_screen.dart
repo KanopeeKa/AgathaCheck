@@ -83,7 +83,7 @@ class ArchivedPetsScreen extends ConsumerWidget {
             itemCount: archivedPets.length,
             itemBuilder: (context, index) {
               final archived = archivedPets[index];
-              return _ArchivedPetCard(archivedPet: archived);
+              return _ArchivedPetCard(archivedPet: archived, orgId: orgId);
             },
           );
         },
@@ -93,9 +93,10 @@ class ArchivedPetsScreen extends ConsumerWidget {
 }
 
 class _ArchivedPetCard extends StatelessWidget {
-  const _ArchivedPetCard({required this.archivedPet});
+  const _ArchivedPetCard({required this.archivedPet, this.orgId});
 
   final ArchivedPet archivedPet;
+  final String? orgId;
 
   @override
   Widget build(BuildContext context) {
@@ -127,99 +128,117 @@ class _ArchivedPetCard extends StatelessWidget {
         child: Card(
           key: Key('org_archived_card_${archivedPet.id}'),
           margin: const EdgeInsets.only(bottom: 8),
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Row(
-              children: [
-                CircleAvatar(
-                  radius: 24,
-                  backgroundColor: colorScheme.surfaceContainerHighest,
-                  child: Icon(
-                    _transferTypeIcon(archivedPet.transferType),
-                    color: colorScheme.onSurfaceVariant,
+          child: InkWell(
+            onTap: orgId != null && archivedPet.hasShadowSnapshot
+                ? () => context.push(
+                    '/organizations/$orgId/archived/${archivedPet.id}',
+                  )
+                : null,
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Row(
+                children: [
+                  CircleAvatar(
+                    radius: 24,
+                    backgroundColor: colorScheme.surfaceContainerHighest,
+                    child: Icon(
+                      archivedPet.hasShadowSnapshot
+                          ? Icons.ac_unit
+                          : _transferTypeIcon(archivedPet.transferType),
+                      color: colorScheme.onSurfaceVariant,
+                    ),
                   ),
-                ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        archivedPet.petName,
-                        style: theme.textTheme.titleSmall?.copyWith(
-                          fontWeight: FontWeight.bold,
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          archivedPet.petName,
+                          style: theme.textTheme.titleSmall?.copyWith(
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
-                      ),
-                      const SizedBox(height: 4),
-                      Row(
-                        children: [
-                          if (archivedPet.species.isNotEmpty) ...[
-                            Text(
-                              archivedPet.species,
-                              style: theme.textTheme.bodySmall?.copyWith(
-                                color: colorScheme.onSurfaceVariant,
-                              ),
-                            ),
-                            const SizedBox(width: 8),
-                            Container(
-                              width: 4,
-                              height: 4,
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                color: colorScheme.onSurfaceVariant,
-                              ),
-                            ),
-                            const SizedBox(width: 8),
-                          ],
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 8,
-                              vertical: 2,
-                            ),
-                            decoration: BoxDecoration(
-                              color: _transferTypeColor(
-                                archivedPet.transferType,
-                              ).withAlpha(30),
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            child: Text(
-                              transferLabel(archivedPet.transferType),
-                              style: TextStyle(
-                                fontSize: 11,
-                                fontWeight: FontWeight.w600,
-                                color: _transferTypeColor(
-                                  archivedPet.transferType,
-                                ),
-                              ),
+                        if (archivedPet.hasShadowSnapshot) ...[
+                          const SizedBox(height: 4),
+                          Text(
+                            l.frozenShadow,
+                            style: theme.textTheme.labelSmall?.copyWith(
+                              color: colorScheme.primary,
                             ),
                           ),
                         ],
-                      ),
-                      if (archivedDate != null) ...[
                         const SizedBox(height: 4),
-                        Text(
-                          l.archivedOn(dateFormat.format(archivedDate)),
-                          style: theme.textTheme.bodySmall?.copyWith(
-                            color: colorScheme.onSurfaceVariant,
-                          ),
+                        Row(
+                          children: [
+                            if (archivedPet.species.isNotEmpty) ...[
+                              Text(
+                                archivedPet.species,
+                                style: theme.textTheme.bodySmall?.copyWith(
+                                  color: colorScheme.onSurfaceVariant,
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                              Container(
+                                width: 4,
+                                height: 4,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color: colorScheme.onSurfaceVariant,
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                            ],
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 8,
+                                vertical: 2,
+                              ),
+                              decoration: BoxDecoration(
+                                color: _transferTypeColor(
+                                  archivedPet.transferType,
+                                ).withAlpha(30),
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: Text(
+                                transferLabel(archivedPet.transferType),
+                                style: TextStyle(
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.w600,
+                                  color: _transferTypeColor(
+                                    archivedPet.transferType,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
-                      ],
-                      if (archivedPet.notes.isNotEmpty) ...[
-                        const SizedBox(height: 4),
-                        Text(
-                          archivedPet.notes,
-                          style: theme.textTheme.bodySmall?.copyWith(
-                            color: colorScheme.onSurfaceVariant,
-                            fontStyle: FontStyle.italic,
+                        if (archivedDate != null) ...[
+                          const SizedBox(height: 4),
+                          Text(
+                            l.archivedOn(dateFormat.format(archivedDate)),
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              color: colorScheme.onSurfaceVariant,
+                            ),
                           ),
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                        ),
+                        ],
+                        if (archivedPet.notes.isNotEmpty) ...[
+                          const SizedBox(height: 4),
+                          Text(
+                            archivedPet.notes,
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              color: colorScheme.onSurfaceVariant,
+                              fontStyle: FontStyle.italic,
+                            ),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ],
                       ],
-                    ],
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),

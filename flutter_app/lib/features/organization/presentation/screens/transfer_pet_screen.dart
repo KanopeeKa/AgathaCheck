@@ -58,7 +58,7 @@ class _TransferPetScreenState extends ConsumerState<TransferPetScreen> {
       if (mounted) {
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(SnackBar(content: Text(l.transferSuccess)));
+        ).showSnackBar(SnackBar(content: Text(l.transferRequestSent)));
         context.pop();
       }
     } catch (e) {

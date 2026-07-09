@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import '../../../organization/presentation/providers/organization_providers.dart';
+import '../../../organization/presentation/utils/pet_custody_helpers.dart';
 import '../../../sharing/presentation/providers/sharing_providers.dart';
 import '../../domain/entities/pet.dart';
 import '../widgets/pet_card.dart';
@@ -39,82 +41,112 @@ class OrganizationPetsSection extends StatelessWidget {
               ...orgGroups[orgName]!.map(
                 (pet) => Padding(
                   padding: const EdgeInsets.only(bottom: 8),
-                  child: pet.isShared
-                      ? Dismissible(
-                          key: Key('hide_${pet.id}'),
-                          direction: DismissDirection.endToStart,
-                          background: Container(
-                            alignment: Alignment.centerRight,
-                            padding: const EdgeInsets.only(right: 20),
-                            decoration: BoxDecoration(
-                              color: theme.colorScheme.surfaceContainerHighest,
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Text(
-                                  l.hideSharedPet,
-                                  style: TextStyle(
-                                    color: theme.colorScheme.onSurfaceVariant,
-                                  ),
-                                ),
-                                const SizedBox(width: 8),
-                                Icon(
-                                  Icons.visibility_off,
-                                  color: theme.colorScheme.onSurfaceVariant,
-                                ),
-                              ],
-                            ),
-                          ),
-                          confirmDismiss: (_) async {
-                            final confirmed = await showDialog<bool>(
-                              context: parentContext,
-                              builder: (ctx) => AlertDialog(
-                                title: Text(l.hideSharedPet),
-                                content: Text(l.hideSharedPetConfirm(pet.name)),
-                                actions: [
-                                  TextButton(
-                                    onPressed: () => Navigator.pop(ctx, false),
-                                    child: Text(l.cancel),
-                                  ),
-                                  FilledButton(
-                                    onPressed: () => Navigator.pop(ctx, true),
-                                    child: Text(l.hide),
-                                  ),
-                                ],
-                              ),
-                            );
-                            if (confirmed == true) {
-                              await ref
-                                  .read(hiddenSharedPetsProvider.notifier)
-                                  .hideSharedPet(pet.id);
-                              if (parentContext.mounted) {
-                                ScaffoldMessenger.of(
-                                  parentContext,
-                                ).showSnackBar(
-                                  SnackBar(
-                                    content: Text(l.petHidden(pet.name)),
-                                  ),
-                                );
-                              }
-                            }
-                            return false;
-                          },
-                          child: PetCard(
-                            pet: pet,
-                            onTap: () => context.go('/pet/${pet.id}'),
-                          ),
-                        )
-                      : PetCard(
-                          pet: pet,
-                          onTap: () => context.go('/pet/${pet.id}'),
-                        ),
+                  child: _buildPetTile(context, pet),
                 ),
               ),
             ],
           ),
       ],
+    );
+  }
+
+  Widget _buildPetTile(BuildContext context, Pet pet) {
+    final card = PetCard(pet: pet, onTap: () => context.go('/pet/${pet.id}'));
+    if (pet.isShared) {
+      return _buildDismissible(
+        pet: pet,
+        keySuffix: 'hide_${pet.id}',
+        label: l.hideSharedPet,
+        confirmTitle: l.hideSharedPet,
+        confirmMessage: l.hideSharedPetConfirm(pet.name),
+        onConfirm: () =>
+            ref.read(hiddenSharedPetsProvider.notifier).hideSharedPet(pet.id),
+        child: card,
+      );
+    }
+    final orgId = pet.organizationId;
+    final canHomeHide =
+        orgId != null &&
+        pet.isFosteredOrgPet &&
+        ref.watch(isOrgAdminProvider(orgId));
+    if (canHomeHide) {
+      return _buildDismissible(
+        pet: pet,
+        keySuffix: 'home_hide_${pet.id}',
+        label: l.hideFromHomeList,
+        confirmTitle: l.hideFromHomeList,
+        confirmMessage: l.hideFromHomeListConfirm(pet.name),
+        onConfirm: () =>
+            ref.read(orgHomeHiddenPetsProvider(orgId).notifier).hide(pet.id),
+        child: card,
+      );
+    }
+    return card;
+  }
+
+  Widget _buildDismissible({
+    required Pet pet,
+    required String keySuffix,
+    required String label,
+    required String confirmTitle,
+    required String confirmMessage,
+    required Future<void> Function() onConfirm,
+    required Widget child,
+  }) {
+    return Dismissible(
+      key: Key(keySuffix),
+      direction: DismissDirection.endToStart,
+      background: Container(
+        alignment: Alignment.centerRight,
+        padding: const EdgeInsets.only(right: 20),
+        decoration: BoxDecoration(
+          color: theme.colorScheme.surfaceContainerHighest,
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              label,
+              style: TextStyle(color: theme.colorScheme.onSurfaceVariant),
+            ),
+            const SizedBox(width: 8),
+            Icon(
+              Icons.visibility_off,
+              color: theme.colorScheme.onSurfaceVariant,
+            ),
+          ],
+        ),
+      ),
+      confirmDismiss: (_) async {
+        final confirmed = await showDialog<bool>(
+          context: parentContext,
+          builder: (ctx) => AlertDialog(
+            title: Text(confirmTitle),
+            content: Text(confirmMessage),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(ctx, false),
+                child: Text(l.cancel),
+              ),
+              FilledButton(
+                onPressed: () => Navigator.pop(ctx, true),
+                child: Text(l.hide),
+              ),
+            ],
+          ),
+        );
+        if (confirmed == true) {
+          await onConfirm();
+          if (parentContext.mounted) {
+            ScaffoldMessenger.of(
+              parentContext,
+            ).showSnackBar(SnackBar(content: Text(l.petHidden(pet.name))));
+          }
+        }
+        return false;
+      },
+      child: child,
     );
   }
 }

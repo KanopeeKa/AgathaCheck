@@ -3196,8 +3196,212 @@ abstract class AppLocalizations {
   /// No description provided for @transferSuccess.
   ///
   /// In en, this message translates to:
-  /// **'Pet transferred successfully'**
+  /// **'Custody transfer request sent'**
   String get transferSuccess;
+
+  /// No description provided for @transferRequestSent.
+  ///
+  /// In en, this message translates to:
+  /// **'Custody transfer request sent. The recipient must accept to complete the transfer.'**
+  String get transferRequestSent;
+
+  /// No description provided for @pendingCustodyTransfers.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending custody transfers'**
+  String get pendingCustodyTransfers;
+
+  /// No description provided for @acceptCustodyTransfer.
+  ///
+  /// In en, this message translates to:
+  /// **'Accept transfer'**
+  String get acceptCustodyTransfer;
+
+  /// No description provided for @custodyTransferAccepted.
+  ///
+  /// In en, this message translates to:
+  /// **'Custody transfer accepted'**
+  String get custodyTransferAccepted;
+
+  /// No description provided for @custodyTransferKindIndividual.
+  ///
+  /// In en, this message translates to:
+  /// **'Adoption to individual'**
+  String get custodyTransferKindIndividual;
+
+  /// No description provided for @custodyTransferKindOrgToOrg.
+  ///
+  /// In en, this message translates to:
+  /// **'Transfer to organisation'**
+  String get custodyTransferKindOrgToOrg;
+
+  /// No description provided for @custodyTransferKindReturn.
+  ///
+  /// In en, this message translates to:
+  /// **'Return to organisation'**
+  String get custodyTransferKindReturn;
+
+  /// No description provided for @orgConnections.
+  ///
+  /// In en, this message translates to:
+  /// **'Connected organisations'**
+  String get orgConnections;
+
+  /// No description provided for @orgConnectionsEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No connected organisations yet'**
+  String get orgConnectionsEmpty;
+
+  /// No description provided for @createConnectionRequest.
+  ///
+  /// In en, this message translates to:
+  /// **'Connect to organisation'**
+  String get createConnectionRequest;
+
+  /// No description provided for @targetOrgId.
+  ///
+  /// In en, this message translates to:
+  /// **'Target organisation ID'**
+  String get targetOrgId;
+
+  /// No description provided for @connectionTokenCreated.
+  ///
+  /// In en, this message translates to:
+  /// **'Connection link created. Share this token with the other organisation\'s admin:'**
+  String get connectionTokenCreated;
+
+  /// No description provided for @acceptConnection.
+  ///
+  /// In en, this message translates to:
+  /// **'Accept connection'**
+  String get acceptConnection;
+
+  /// No description provided for @connectionAccepted.
+  ///
+  /// In en, this message translates to:
+  /// **'Organisations are now connected'**
+  String get connectionAccepted;
+
+  /// No description provided for @disconnectOrganisation.
+  ///
+  /// In en, this message translates to:
+  /// **'Disconnect'**
+  String get disconnectOrganisation;
+
+  /// No description provided for @disconnectOrganisationConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Disconnect from {orgName}? Pending transfers between you will be cancelled.'**
+  String disconnectOrganisationConfirm(String orgName);
+
+  /// No description provided for @transferToOrganisation.
+  ///
+  /// In en, this message translates to:
+  /// **'Transfer to organisation'**
+  String get transferToOrganisation;
+
+  /// No description provided for @selectConnectedOrg.
+  ///
+  /// In en, this message translates to:
+  /// **'Select connected organisation'**
+  String get selectConnectedOrg;
+
+  /// No description provided for @requestReturnToOrg.
+  ///
+  /// In en, this message translates to:
+  /// **'Return to organisation'**
+  String get requestReturnToOrg;
+
+  /// No description provided for @returnRequestSent.
+  ///
+  /// In en, this message translates to:
+  /// **'Return request sent'**
+  String get returnRequestSent;
+
+  /// No description provided for @homeHiddenPets.
+  ///
+  /// In en, this message translates to:
+  /// **'Hidden from home list'**
+  String get homeHiddenPets;
+
+  /// No description provided for @hideFromHomeList.
+  ///
+  /// In en, this message translates to:
+  /// **'Hide from home list'**
+  String get hideFromHomeList;
+
+  /// No description provided for @hideFromHomeListConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Hide {petName} from your home pet list? The pet stays visible in the organisation section.'**
+  String hideFromHomeListConfirm(String petName);
+
+  /// No description provided for @hideFosteredPet.
+  ///
+  /// In en, this message translates to:
+  /// **'Hide fostered pet'**
+  String get hideFosteredPet;
+
+  /// No description provided for @hideFosteredPetConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Hide {petName} from your list and health dashboard?'**
+  String hideFosteredPetConfirm(String petName);
+
+  /// No description provided for @frozenShadow.
+  ///
+  /// In en, this message translates to:
+  /// **'Frozen shadow'**
+  String get frozenShadow;
+
+  /// No description provided for @shadowSnapshotReadOnly.
+  ///
+  /// In en, this message translates to:
+  /// **'Point-in-time snapshot — does not sync with the live pet.'**
+  String get shadowSnapshotReadOnly;
+
+  /// No description provided for @shadowCapturedAt.
+  ///
+  /// In en, this message translates to:
+  /// **'Captured {date}'**
+  String shadowCapturedAt(String date);
+
+  /// No description provided for @shadowHealthEntries.
+  ///
+  /// In en, this message translates to:
+  /// **'Health entries in snapshot'**
+  String get shadowHealthEntries;
+
+  /// No description provided for @shadowWeightEntries.
+  ///
+  /// In en, this message translates to:
+  /// **'Weight entries in snapshot'**
+  String get shadowWeightEntries;
+
+  /// No description provided for @revokeConnectionRequest.
+  ///
+  /// In en, this message translates to:
+  /// **'Revoke request'**
+  String get revokeConnectionRequest;
+
+  /// No description provided for @connectionRequests.
+  ///
+  /// In en, this message translates to:
+  /// **'Connection requests'**
+  String get connectionRequests;
+
+  /// No description provided for @noConnectionRequests.
+  ///
+  /// In en, this message translates to:
+  /// **'No connection requests'**
+  String get noConnectionRequests;
+
+  /// No description provided for @orgToOrgTransferNotes.
+  ///
+  /// In en, this message translates to:
+  /// **'Transfer notes (optional)'**
+  String get orgToOrgTransferNotes;
 
   /// No description provided for @transferOwnership.
   ///
