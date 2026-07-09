@@ -1,0 +1,112 @@
+name: "🐞 Bug"
+description: File a bug report
+title: "[BUG] "
+labels: ["bug", "needs-triage"]
+body:
+  - type: checkboxes
+    attributes:
+      label: Is there an existing issue for this?
+      description: Please search to see if an issue already exists for the bug you encountered.
+      options:
+        - label: I have searched the existing issues
+          required: true
+
+  - type: textarea
+    id: current_behavior
+    attributes:
+      label: Current Behavior
+      description: What is happening right now?
+      placeholder: A concise description of the bug.
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected_behavior
+    attributes:
+      label: Expected Behavior
+      description: What should have happened instead?
+      placeholder: Describe the expected result.
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps_to_reproduce
+    attributes:
+      label: Steps To Reproduce
+      description: Please provide the shortest reliable path to reproduce the issue.
+      placeholder: |
+        1. Go to ...
+        2. Click ...
+        3. Enter ...
+        4. Observe ...
+    validations:
+      required: true
+
+  - type: input
+    id: frequency
+    attributes:
+      label: Frequency
+      description: How often does this happen?
+      placeholder: e.g. Always, often, intermittently, once
+    validations:
+      required: false
+
+  - type: input
+    id: severity
+    attributes:
+      label: Severity / Impact
+      description: How bad is the impact?
+      placeholder: e.g. Low, medium, high, critical
+    validations:
+      required: true
+
+  - type: input
+    id: affected_area
+    attributes:
+      label: Affected Area
+      description: Which part of the product is affected?
+      placeholder: e.g. checkout, auth, dashboard, onboarding
+    validations:
+      required: true
+
+  - type: input
+    id: regression
+    attributes:
+      label: Regression?
+      description: Did this work before?
+      placeholder: e.g. Yes / No / Unknown
+    validations:
+      required: false
+
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: Provide as much detail as possible.
+      value: |
+        - OS:
+        - Browser:
+        - Environment: production / UAT / staging / local
+        - App version / commit:
+        - Node:
+        - npm:
+      render: markdown
+    validations:
+      required: true
+
+  - type: textarea
+    id: sensitive_area
+    attributes:
+      label: Security or Sensitive Area
+      description: Does this bug involve authentication, billing, secrets, infrastructure, or permissions?
+      placeholder: e.g. No / Yes - auth / Yes - billing / Yes - permissions
+    validations:
+      required: true
+
+  - type: textarea
+    id: additional_context
+    attributes:
+      label: Additional Context
+      description: Add logs, screenshots, videos, links, or anything else that helps explain the issue.
+    validations:
+      required: false
