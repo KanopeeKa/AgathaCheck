@@ -1,7 +1,6 @@
 ---
 description: Accessibility conventions for Flutter UI and Playwright E2E
 globs: flutter_app/lib/**,e2e/**
-alwaysApply: true
 ---
 
 # Accessibility

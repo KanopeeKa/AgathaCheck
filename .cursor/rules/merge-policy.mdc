@@ -5,55 +5,18 @@ alwaysApply: true
 
 # Merge policy
 
-## Trunk-based development
-
 - `main` is the release trunk; keep it green.
-- Unit/widget + Jest + governance gates run on **every PR** to `main`.
-- Full Playwright E2E runs on **UAT deploy** (`release/uat-*`), not on every PR.
+- **Single-agent / single-domain PRs** → `main` when CI green.
+- **Multi-agent sprints** → `cursor/sprint-<N>-<topic>-integration-13e3`; agents merge there; **one PR** to `main`. Use `/spawn-sprint-agents`.
 
-## Integration branch (preferred for multi-agent work)
+## Before every push
 
-When **one request spawns multiple agents** (or parallel feature waves), **do not commit directly to `main`**. Use:
+1. `git fetch origin main && git rebase origin/main` (or onto integration parent)
+2. `./scripts/pre-push-changed.sh` during work; `./scripts/pre-push.sh` before final merge PR
 
-```
-main
- └── cursor/sprint-<N>-<topic>-integration-13e3   ← integration branch
-      ├── cursor/<agent-a>-13e3   (disjoint file ownership)
-      ├── cursor/<agent-b>-13e3
-      └── single PR → main when milestone gate is met
-```
-
-**Rationale:** Cloud-agent delivery is fast; batching reduces repeated CI on `main` as test coverage grows. The human operator can coordinate spawns and minimise overlap.
-
-**Rules:**
-
-| Rule | Detail |
-|------|--------|
-| Lifetime | One sprint / one milestone; rebase on `main` before final PR |
-| Merge target | Agents → **integration branch**; integration → `main` in **one PR** |
-| File ownership | One agent per directory/domain; see sprint plan in `docs/refactoring-log.md` |
-| Shared files | Serialise edits to `e2e/playwright/support/api.ts`, shared page objects, CI scripts |
-| Verification | After each agent: confirm commits landed on the **intended** branch (`git log origin/<branch> -3`) |
-| Recovery | Cherry-pick misplaced commits onto integration; do not leave orphan work |
-
-**Direct-to-`main` PRs** remain fine for single-agent, single-domain changes that pass CI.
-
-## Before every commit / push
-
-1. **Sync with target branch** (`main` or integration parent):
-   ```bash
-   git fetch origin main
-   git rebase origin/main   # or merge; resolve conflicts before push
-   ```
-2. Run pre-push tests (see `testing.mdc`).
-3. For integration work: `node scripts/check_file_size.js` and `node e2e/scripts/check_bdd_coverage.js`.
-
-## Branch naming (cloud agents)
+## Branch naming
 
 - Integration: `cursor/sprint-<N>-<topic>-integration-13e3`
-- Agent branches: `cursor/<descriptive-name>-13e3`
+- Agent: `cursor/<descriptive-name>-13e3` or `cursor/<descriptive-name>-feec`
 
-## Refactoring
-
-- Track sprint work in `docs/refactoring-log.md`.
-- One domain/screen per agent PR into integration; integration PR to `main` when sprint gate is met.
+Full ownership matrix and anti-patterns: `.cursor/rules/agent-coordination.mdc` and `docs/agent-efficiency-plan.md`.

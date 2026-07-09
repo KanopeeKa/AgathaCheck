@@ -1,7 +1,6 @@
 ---
 description: Node/Dart backend parity requirements
 globs: server/routes/**,server/lib/**
-alwaysApply: true
 ---
 
 # Dual backend parity

@@ -1,6 +1,6 @@
 ---
 description: Parallel cloud-agent coordination — ownership, integration branches, verification
-alwaysApply: true
+globs: docs/refactoring-log.md,docs/agent-efficiency-plan.md,docs/agent-efficiency/**,.cursor/skills/spawn-sprint-agents/**
 ---
 
 # Agent coordination (parallel work)

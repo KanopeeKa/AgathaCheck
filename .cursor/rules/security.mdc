@@ -1,7 +1,6 @@
 ---
 description: Security patterns for API error handling, dependencies, and secrets
 globs: server/**,server/lib/**
-alwaysApply: true
 ---
 
 # Security
