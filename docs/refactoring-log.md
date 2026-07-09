@@ -99,7 +99,7 @@ Tracks planned and completed refactor / quality work. See also `docs/refactoring
 
 **Integration branch:** `cursor/sprint-6-org-bdd-integration-feec`  
 **Execution plan:** `docs/sprint-6-execution-plan.md`  
-**Integration PR:** pending → `main`
+**Integration PR:** **Merged** #116 → `main`
 
 | # | Action | Status | Notes |
 |---|--------|--------|-------|
