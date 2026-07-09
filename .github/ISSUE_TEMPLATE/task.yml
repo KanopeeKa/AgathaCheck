@@ -1,0 +1,86 @@
+name: "📋 Task"
+description: Track internal engineering or maintenance work
+title: "[TASK] "
+labels: ["task", "needs-triage"]
+body:
+  - type: textarea
+    id: summary
+    attributes:
+      label: Summary
+      description: A short, clear description of the task.
+      placeholder: e.g. Refactor custody model tests for org fostering
+    validations:
+      required: true
+
+  - type: textarea
+    id: objective
+    attributes:
+      label: Objective
+      description: What outcome should this task achieve?
+      placeholder: Describe the goal in one or two sentences.
+    validations:
+      required: true
+
+  - type: textarea
+    id: scope
+    attributes:
+      label: Scope
+      description: What is included in this work?
+      placeholder: List files, modules, or areas to change.
+    validations:
+      required: true
+
+  - type: textarea
+    id: out_of_scope
+    attributes:
+      label: Out of Scope
+      description: What should explicitly not be changed?
+      placeholder: e.g. No API changes, no UI changes, no migrations.
+    validations:
+      required: false
+
+  - type: textarea
+    id: definition_of_done
+    attributes:
+      label: Definition of Done
+      description: How will we know this task is complete?
+      placeholder: |
+        - [ ] Criterion 1
+        - [ ] Criterion 2
+    validations:
+      required: true
+
+  - type: input
+    id: priority
+    attributes:
+      label: Priority
+      description: How urgent is this task?
+      placeholder: e.g. Low, medium, high, critical
+    validations:
+      required: true
+
+  - type: input
+    id: affected_area
+    attributes:
+      label: Affected Area
+      description: Which part of the codebase or product does this touch?
+      placeholder: e.g. server, flutter_app, e2e, docs, ci
+    validations:
+      required: true
+
+  - type: textarea
+    id: sensitive_area
+    attributes:
+      label: Security or Sensitive Area
+      description: Does this involve authentication, billing, secrets, infrastructure, migrations, or CI/workflow changes?
+      placeholder: e.g. No / Yes - auth / Yes - infra / Yes - migrations
+    validations:
+      required: true
+
+  - type: textarea
+    id: additional_context
+    attributes:
+      label: Additional Context
+      description: Add links, related issues, sprint notes, or anything else that helps explain the task.
+    validations:
+      required: false

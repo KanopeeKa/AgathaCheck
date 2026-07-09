@@ -1,0 +1,94 @@
+name: "✨ Feature"
+description: Request a new feature or enhancement
+title: "[FEATURE] "
+labels: ["feature", "needs-triage"]
+body:
+  - type: checkboxes
+    attributes:
+      label: Is there an existing issue for this?
+      description: Please search to see if a similar feature has already been requested.
+      options:
+        - label: I have searched the existing issues
+          required: true
+
+  - type: textarea
+    id: summary
+    attributes:
+      label: Summary
+      description: A short, clear description of the feature.
+      placeholder: e.g. Add bulk export for organization reports
+    validations:
+      required: true
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem to Solve
+      description: What user or business problem does this address?
+      placeholder: Describe the pain point or gap in the current product.
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposed_solution
+    attributes:
+      label: Proposed Solution
+      description: How should this work from the user's perspective?
+      placeholder: Describe the desired behavior or UX.
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives Considered
+      description: What other approaches did you consider?
+      placeholder: e.g. Workarounds, simpler variants, or related features that partially solve the problem.
+    validations:
+      required: false
+
+  - type: textarea
+    id: acceptance_criteria
+    attributes:
+      label: Acceptance Criteria
+      description: How will we know this is done?
+      placeholder: |
+        - [ ] Criterion 1
+        - [ ] Criterion 2
+    validations:
+      required: true
+
+  - type: input
+    id: priority
+    attributes:
+      label: Priority / Impact
+      description: How important is this feature?
+      placeholder: e.g. Low, medium, high, critical
+    validations:
+      required: true
+
+  - type: input
+    id: affected_area
+    attributes:
+      label: Affected Area
+      description: Which part of the product does this touch?
+      placeholder: e.g. reports, auth, dashboard, onboarding
+    validations:
+      required: true
+
+  - type: textarea
+    id: sensitive_area
+    attributes:
+      label: Security or Sensitive Area
+      description: Does this involve authentication, billing, secrets, infrastructure, or permissions?
+      placeholder: e.g. No / Yes - auth / Yes - billing / Yes - permissions
+    validations:
+      required: true
+
+  - type: textarea
+    id: additional_context
+    attributes:
+      label: Additional Context
+      description: Add mockups, links, related issues, or anything else that helps explain the request.
+    validations:
+      required: false
