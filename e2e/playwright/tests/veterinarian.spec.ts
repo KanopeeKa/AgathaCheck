@@ -22,7 +22,7 @@ import { VetListPage } from '../pages/vet-list.page';
 import { VetFormPage } from '../pages/vet-form.page';
 
 test.describe('Veterinarian management', () => {
-  test('@smoke user can create a vet with all details', async ({ page, testUser }) => {
+  test('user can create a vet with all details', async ({ page, testUser }) => {
     const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
 
     const petList = await loginAs(page, testUser);

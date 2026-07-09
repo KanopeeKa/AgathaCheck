@@ -1,0 +1,134 @@
+import type { Page } from '@playwright/test';
+import { expect } from '@playwright/test';
+import {
+  dismissConsentBannerIfPresent,
+  refreshFlutterAccessibility,
+} from '../support/flutter';
+
+/** English FAQ section titles from app_en.arb. */
+export const FAQ_SECTIONS_EN = [
+  'Account & Authentication',
+  'Pet Profiles',
+  'Health Tracking',
+  'Weight Tracking',
+  'Veterinarian Management',
+  'Pet Sharing',
+  'Organisations',
+  'Family Events',
+  'Notifications',
+  'Reports',
+  'Subscription',
+  'Language & Accessibility',
+] as const;
+
+/** French FAQ section titles from app_fr.arb. */
+export const FAQ_SECTIONS_FR = [
+  'Compte & Authentification',
+  'Profils des animaux',
+  'Suivi de santé',
+  'Suivi du poids',
+  'Gestion des vétérinaires',
+  'Partage d\'animaux',
+  'Organisations',
+  'Événements familiaux',
+  'Notifications',
+  'Rapports',
+  'Abonnement',
+  'Langue & Accessibilité',
+] as const;
+
+/**
+ * Help & FAQ screen (`/help`).
+ * Maps to: flutter_app/test/bdd/features/help_faq.feature
+ */
+export class HelpPage {
+  constructor(private readonly page: Page) {}
+
+  async openFromUserMenu(): Promise<void> {
+    await dismissConsentBannerIfPresent(this.page);
+    await this.page.getByRole('button', { name: /user.menu/i }).click();
+    await this.page.waitForTimeout(500);
+    await this.page
+      .getByRole('menuitem', { name: /help/i })
+      .or(this.page.getByText('Help', { exact: true }))
+      .or(this.page.getByText('Aide', { exact: true }))
+      .first()
+      .click();
+    await this.expectLoaded();
+  }
+
+  async expectLoaded(title: string = 'Help & FAQ'): Promise<void> {
+    await dismissConsentBannerIfPresent(this.page);
+    await this.page
+      .getByText(title, { exact: true })
+      .first()
+      .waitFor({ timeout: 30_000 });
+  }
+
+  async expectTitle(title: string): Promise<void> {
+    await this.expectLoaded(title);
+  }
+
+  async expectAllSections(sections: readonly string[]): Promise<void> {
+    for (const section of sections) {
+      await this.scrollToSection(section);
+      await expect(this.page.getByText(section, { exact: true }).first()).toBeVisible({
+        timeout: 15_000,
+      });
+    }
+  }
+
+  async scrollToSection(sectionTitle: string): Promise<void> {
+    const heading = this.page.getByText(sectionTitle, { exact: true }).first();
+    await heading.scrollIntoViewIfNeeded();
+    await this.page.waitForTimeout(300);
+  }
+
+  async expandSection(sectionTitle: string): Promise<void> {
+    await this.scrollToSection(sectionTitle);
+    await this.page.getByText(sectionTitle, { exact: true }).first().click();
+    await this.page.waitForTimeout(400);
+    await refreshFlutterAccessibility(this.page);
+  }
+
+  async collapseSection(sectionTitle: string): Promise<void> {
+    await this.expandSection(sectionTitle);
+  }
+
+  async expectSectionQuestionsVisible(sectionTitle: string, sampleQuestion: string): Promise<void> {
+    await expect(this.page.getByText(sampleQuestion, { exact: true }).first()).toBeVisible({
+      timeout: 15_000,
+    });
+  }
+
+  async expectSectionQuestionsHidden(sampleQuestion: string): Promise<void> {
+    await expect(this.page.getByText(sampleQuestion, { exact: true })).toHaveCount(0);
+  }
+
+  async expandQuestion(question: string): Promise<void> {
+    await this.page.getByText(question, { exact: true }).first().click();
+    await this.page.waitForTimeout(400);
+    await refreshFlutterAccessibility(this.page);
+  }
+
+  async expectQuestionAndAnswer(question: string, answerSnippet: string): Promise<void> {
+    await expect(this.page.getByText(question, { exact: true }).first()).toBeVisible({
+      timeout: 15_000,
+    });
+    await this.expandQuestion(question);
+    await expect(this.page.getByText(answerSnippet, { exact: false }).first()).toBeVisible({
+      timeout: 15_000,
+    });
+  }
+
+  async expectSubtitle(subtitle: string): Promise<void> {
+    await expect(this.page.getByText(subtitle, { exact: true }).first()).toBeVisible({
+      timeout: 15_000,
+    });
+  }
+
+  async goBack(): Promise<void> {
+    await this.page.getByRole('button', { name: /go back/i }).click();
+    await this.page.waitForTimeout(500);
+  }
+}

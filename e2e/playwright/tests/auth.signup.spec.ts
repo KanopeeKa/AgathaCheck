@@ -85,7 +85,7 @@ test.describe('Authentication signup', () => {
     await expect(page.getByRole('button', { name: 'To Do' })).not.toBeVisible();
   });
 
-  test('user can sign up with valid credentials and reach the pet list', async ({ page }) => {
+  test('@smoke user can sign up with valid credentials and reach the pet list', async ({ page }) => {
     const suffix = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
     const email = `e2e-signup-${suffix}@example.com`;
     const password = 'E2eTestPass1';

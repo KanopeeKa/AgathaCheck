@@ -27,7 +27,7 @@ import { PetListPage } from '../pages/pet-list.page';
 test.describe('Notifications', () => {
   // ── Empty state ───────────────────────────────────────────────────────────
 
-  test('@smoke empty notifications screen shows "No notifications"', async ({
+  test('empty notifications screen shows "No notifications"', async ({
     page,
     testUser,
   }) => {

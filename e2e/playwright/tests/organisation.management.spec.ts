@@ -30,7 +30,7 @@ import { OrganizationListPage } from '../pages/organization-list.page';
 import { PetListPage } from '../pages/pet-list.page';
 
 test.describe('Organisation management', () => {
-  test('@smoke user can create a Professional organisation', async ({ page, testUser }) => {
+  test('user can create a Professional organisation', async ({ page, testUser }) => {
     const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
     const petList = await loginAs(page, testUser);
     await petList.openOrganizations();

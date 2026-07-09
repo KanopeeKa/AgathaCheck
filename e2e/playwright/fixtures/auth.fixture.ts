@@ -30,6 +30,26 @@ export { expect };
 export async function loginAs(page: import('@playwright/test').Page, user: TestUser): Promise<PetListPage> {
   const landing = new LandingPage(page);
   const petList = new PetListPage(page);
+  await page.context().clearCookies();
+  await page.goto('/');
+  await page.evaluate(async () => {
+    window.localStorage.clear();
+    window.sessionStorage.clear();
+    if ('indexedDB' in window && typeof indexedDB.databases === 'function') {
+      const databases = await indexedDB.databases();
+      await Promise.all(
+        databases
+          .map((db) => db.name)
+          .filter((name): name is string => Boolean(name))
+          .map((name) => new Promise<void>((resolve) => {
+            const request = indexedDB.deleteDatabase(name);
+            request.onsuccess = () => resolve();
+            request.onerror = () => resolve();
+            request.onblocked = () => resolve();
+          })),
+      );
+    }
+  });
   await landing.goto();
   await landing.login(user.email, user.password);
   await petList.expectLoaded();

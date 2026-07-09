@@ -33,7 +33,7 @@ import {
 test.describe('Health tracking', () => {
   // ── Existing Wave 0 tests ─────────────────────────────────────────────────
 
-  test('due health entry appears on dashboard after API seed', async ({ page, testUser }) => {
+  test('@smoke due health entry appears on dashboard after API seed', async ({ page, testUser }) => {
     const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
     const { entry } = await seedPetWithDueHealthEntry(baseURL, testUser, {
       petName: 'Bella',
