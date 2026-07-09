@@ -79,4 +79,13 @@ export class HealthDashboardPage {
       }
     }
   }
+
+  async selectOrgFilter(orgName: string): Promise<void> {
+    await this.page
+      .getByRole('button', { name: orgName, exact: true })
+      .or(this.page.getByText(orgName, { exact: true }))
+      .first()
+      .click();
+    await this.page.waitForTimeout(500);
+  }
 }

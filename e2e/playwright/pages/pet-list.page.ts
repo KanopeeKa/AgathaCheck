@@ -103,4 +103,23 @@ export class PetListPage {
       this.page.getByRole('button', { name: new RegExp(`Pet:\\s*${name}`, 'i') }),
     ).toHaveCount(0);
   }
+
+  async expectSectionHeader(title: string): Promise<void> {
+    await this.page.getByText(title, { exact: true }).first().waitFor({ timeout: 30_000 });
+  }
+
+  /** Org pets show aria-label "Pet: Name, OrgName, …" on the home list. */
+  async expectPetUnderOrganization(petName: string, orgName: string): Promise<void> {
+    await this.page
+      .getByRole('button', {
+        name: new RegExp(`Pet:\\s*${petName}.*${orgName}`, 'i'),
+      })
+      .first()
+      .waitFor({ timeout: 30_000 });
+  }
+
+  async goHome(): Promise<void> {
+    await this.page.goto('/');
+    await this.expectLoaded();
+  }
 }
