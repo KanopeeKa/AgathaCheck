@@ -43,6 +43,7 @@ jobs:
           ensure_label "busy" "FBCA04" "Work in progress; do not pick up concurrently"
           ensure_label "manual-only" "F9D0C4" "Must be handled manually; not for Cursor"
           ensure_label "agent-approved" "0E8A16" "Passed deterministic triage; eligible for Cursor"
+          ensure_label "blocked" "B60205" "Agent started but blocked; needs human input"
 
       - name: Run deterministic triage
         env:

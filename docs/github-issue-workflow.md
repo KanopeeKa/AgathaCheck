@@ -41,6 +41,7 @@ Use a single Project **Status** field with these values:
 | `busy` | A process or agent is currently working on this issue. Do not pick it up concurrently. Remove when work stops or ownership transfers. |
 | `manual-only` | Never send this issue to autonomous implementation. Requires human execution only. |
 | `agent-approved` | The issue passed the deterministic policy gate and is eligible for Cursor. |
+| `blocked` | Agent run started but could not finish; issue stays **In Progress** and needs human input. |
 
 ## Workflow
 
@@ -56,15 +57,156 @@ Backlog → Human Reviewed → [Auto Check] → Ready → In Progress → In Mai
    - If the issue is complete and safe → move to **Ready** and apply `agent-approved`.
    - If more information is needed → add `question`, comment on what is missing, and move the issue to **Backlog** until resolved.
    - If the issue must not be automated → add `manual-only` and leave status in **Human Reviewed**.
-4. **Ready** — Issue is approved for implementation. It may be handed to Cursor or picked up manually.
-5. **In Progress** — When work starts, move here and add `busy`. Remove `busy` when work stops or ownership transfers.
-6. **In Main** — After the change merges to `main`.
-7. **In UAT** — While the change is validated in UAT.
+4. **Ready** — Issue is approved for implementation. The [agent dispatch workflow](../.github/workflows/agent-dispatch.yml) picks it up automatically when `agent-approved` is present and status is **Ready**.
+5. **In Progress** — Cursor agent dispatched (`busy` added). Stays here while the PR is open. If blocked, add `blocked` + `question` but keep **In Progress**.
+6. **In Main** — After the agent PR merges to `main` ([merge handler](../.github/workflows/issue-agent-pr-merge.yml)).
+7. **In UAT** — After UAT deploy succeeds for the linked `release/uat-YYMMDD-issue-<N>` branch ([UAT tracker](../.github/workflows/uat-deploy-tracker.yml)).
 8. **Done** — Validation complete; close the issue.
 
 Throughout the workflow, use `busy` to signal active work and `question` when blocked on missing information.
 
-To re-run triage after updating an issue, remove `question` (if present) and re-add `human-reviewed`.
+To re-run triage after updating an issue, remove `question` and `blocked` (if present) and re-add `human-reviewed`.
+
+`busy` is removed when the agent PR merges to `main`.
+
+## Cursor agent execution layer
+
+GitHub remains the source of truth. Cursor Cloud Agents are workers that implement `agent-approved` issues.
+
+### Components
+
+| File | Purpose |
+|------|---------|
+| [`.github/workflows/agent-dispatch.yml`](../.github/workflows/agent-dispatch.yml) | Find eligible issues and launch Cursor agents |
+| [`.github/workflows/agent-monitor.yml`](../.github/workflows/agent-monitor.yml) | Poll agent runs; comment; apply `blocked` / success handoff |
+| [`.github/workflows/issue-agent-pr-merge.yml`](../.github/workflows/issue-agent-pr-merge.yml) | On merged `cursor/**` PR → **In Main**, push UAT branch |
+| [`.github/workflows/uat-deploy-tracker.yml`](../.github/workflows/uat-deploy-tracker.yml) | On UAT deploy result → **In UAT** or escalate |
+| [`.github/workflows/agent-pr-safety-gate.yml`](../.github/workflows/agent-pr-safety-gate.yml) | Fail PRs that touch forbidden paths |
+| [`.github/scripts/agent-payload-lib.js`](../.github/scripts/agent-payload-lib.js) | Sanitized task payload + prompt |
+| [`.github/scripts/agent-safety-lib.js`](../.github/scripts/agent-safety-lib.js) | Preflight + forbidden path rules |
+| [`.github/scripts/launch-cursor-agent.js`](../.github/scripts/launch-cursor-agent.js) | Calls Cursor Cloud Agents API v1 |
+| [`.github/scripts/monitor-cursor-agent.js`](../.github/scripts/monitor-cursor-agent.js) | Polls run status via Cursor API |
+| [`.github/scripts/issue-agent-handlers.js`](../.github/scripts/issue-agent-handlers.js) | Merge + UAT status transitions |
+
+### Eligibility
+
+An issue is dispatched when **all** are true:
+
+- Project status **Ready** (when project secrets configured; otherwise label-only fallback)
+- Labels: `agent-approved`
+- Labels **not** present: `busy`, `manual-only`, `question`, `blocked`
+- Passes deterministic preflight (re-checks risky scope)
+- No active `<!-- cursor-agent-run: ... -->` marker with status `running`
+
+Dispatch is **single-threaded** (`concurrency: agent-dispatch`) — one issue at a time.
+
+Triggers:
+
+- `agent-approved` label added (immediate, after triage)
+- Cron every 30 minutes (reconciliation)
+- Manual `workflow_dispatch` (optional `issue_number`, `dry_run`)
+
+### Sanitized task payload
+
+Raw issue comments are **never** sent to Cursor. The dispatch script:
+
+1. Parses issue form sections via `triage-lib.js` (`### Heading` markdown).
+2. Builds a structured JSON payload (summary, objective, scope, acceptance, reproduction for bugs).
+3. Renders a prompt with explicit allowed/forbidden paths and verification commands.
+
+The agent must run `./scripts/pre-push-changed.sh` and open a PR with `Fixes #<n>` on success.
+
+### Agent outcomes
+
+| Outcome | Labels | Project status | Assignee |
+|---------|--------|----------------|----------|
+| Dispatched | +`busy` | **In Progress** | — |
+| PR opened | keep `busy` | **In Progress** | — |
+| Blocked / failed | +`blocked`, +`question`, −`busy` | **In Progress** | `KanopeeKa` |
+| PR merged | −`busy` | **In Main** | — |
+| UAT deploy OK | — | **In UAT** | — |
+| UAT deploy fail | +`question` | unchanged | `KanopeeKa` |
+
+To retry after a block: fix the issue, remove `blocked` and `question`, re-add `human-reviewed`.
+
+### Safety boundaries
+
+Encoded in the sanitized prompt **and** enforced in CI:
+
+**Forbidden paths** (agent PR safety gate fails the PR):
+
+- `.github/workflows/**`
+- `db/migrations/**`
+- `server/config/security.js`
+- `infra/**`
+
+**Forbidden actions** (documented in prompt):
+
+- Push directly to `main`
+- Bypass PRs
+- Access or log secrets
+- Modify auth, billing, permissions, or CI
+
+Triage already blocks risky issues with `manual-only` before dispatch.
+
+### Branch and PR conventions
+
+- Agent branches: `cursor/issue-<n>-<slug>-7a9a` (Cursor may auto-generate `cursor/...`; prompt requests this pattern)
+- PRs: against `main`, body must include `Fixes #<n>`
+- UAT promotion branch: `release/uat-YYMMDD-issue-<n>` (pushed automatically on merge)
+
+### Required secrets
+
+| Secret | Purpose |
+|--------|---------|
+| `cursor_api_key` | Cursor User API Key (**github-actions-pawpet-automation** in Cursor dashboard) |
+| `GH_PROJECTS_PAT` | Project GraphQL updates |
+| `GH_PROJECT_ID` | GitHub Project v2 node ID |
+| `GH_STATUS_FIELD_ID` | Status field node ID |
+
+Optional:
+
+| Variable / secret | Default |
+|-------------------|---------|
+| `CURSOR_AGENT_MODEL` | Cursor default model |
+| `AGENT_ASSIGNEE` | `KanopeeKa` |
+
+#### Cursor API key setup
+
+This repository uses a **dedicated User API Key** (non-Enterprise plans do not expose separate service accounts):
+
+1. Cursor dashboard → **API** → create key named `github-actions-pawpet-automation`.
+2. GitHub → repo → **Settings → Secrets and variables → Actions** → repository secret `cursor_api_key`.
+3. Verify repo access: `curl -H "Authorization: Bearer $KEY" https://api.cursor.com/v1/repositories`
+
+#### Project IDs (user-owned repo)
+
+```bash
+GH_PROJECTS_PAT=ghp_... node .github/scripts/discover-project-ids.js --user KanopeeKa
+```
+
+For organization-owned repos, use `--org <login>` instead.
+
+### Monitoring and debugging
+
+- **Dispatch logs:** Actions → **Agent dispatch**
+- **Run polling:** Actions → **Agent monitor** (every 10 minutes)
+- **Issue comment marker:** `<!-- cursor-agent-run: {...} -->` stores `agentId`, `runId`, status
+- **Cursor UI:** follow the agent URL posted in the dispatch comment
+- **Dry run:** `workflow_dispatch` on **Agent dispatch** with `dry_run: true`
+
+### UAT CD notes
+
+Current UAT deploy (`deploy-uat.yml`) is FTP-based and does not automatically apply database migrations or restart the server. The merge handler pushes `release/uat-*` branches; the [UAT tracker](../.github/workflows/uat-deploy-tracker.yml) sets **In UAT** only when the full UAT workflow succeeds.
+
+**Recommended CD improvements** (future):
+
+1. Add SSH deploy step with `UAT_SSH_HOST`, `UAT_SSH_KEY`, `UAT_DATABASE_URL` secrets.
+2. Run `node server/scripts/migrate.js up` when `db/migrations/` changes.
+3. Restart Passenger/Node after backend deploy (consume `server/tmp/restart.txt` or explicit restart command).
+4. Gate **In UAT** on `smoke` + `prod-ready` jobs, not frontend FTP alone.
+
+**Production promotion** remains manual via `deploy-prod.yml` (`workflow_dispatch`) after UAT validation.
 
 ## Deterministic triage automation
 
@@ -156,17 +298,12 @@ Use a machine/bot account PAT where possible rather than a personal developer to
 From a clone of this repository:
 
 ```bash
-GH_PROJECTS_PAT=ghp_... node .github/scripts/discover-project-ids.js <org-login>
+GH_PROJECTS_PAT=ghp_... node .github/scripts/discover-project-ids.js --user <github-login>
+# or: --org <org-login>
 ```
 
 The script prints `GH_PROJECT_ID`, `GH_STATUS_FIELD_ID`, and the option IDs for each status value.
 
-**Organization assumption:** This automation expects an **organization-owned** repository with a GitHub Project v2 board. If the repository is user-owned, Project GraphQL access may be limited; move the repo to an organization or adjust the discovery script query.
+**Repository ownership:** This repo is **user-owned**. Use `--user <login>` when discovering project IDs. Organization-owned repos can use `--org <login>`.
 
-If secrets are not configured, the workflow still runs label and comment updates but skips Project status changes and logs a warning.
-
-### Cursor handoff (future)
-
-Cursor agent handoff is **not implemented yet**. When added, only issues in **Ready** with `agent-approved` (and without `manual-only` or `busy`) should be eligible.
-
-The handoff must use a **sanitized task payload** derived from approved fields, not the raw issue body.
+If secrets are not configured, triage and agent workflows still update labels and comments but skip Project status changes and log a warning.
