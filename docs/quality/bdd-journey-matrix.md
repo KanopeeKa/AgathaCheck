@@ -173,22 +173,25 @@ Journeys are ordered **P0 → P1 → P2** at the journey level. Within each jour
 
 | Pri | Behaviour | Gherkin scenario | Playwright | Status |
 |-----|-----------|------------------|------------|--------|
-| P0 | Create org | Creating a Professional organisation | `organisation.management.spec.ts` `@smoke` | ✅ |
+| P0 | Create org | Creating a Professional organisation | `organisation.management.spec.ts` | ✅ (demoted @smoke Sprint 6.5) |
 | P1 | Full org CRUD & membership | remaining 10 scenarios | `organisation.management.spec.ts` | ✅ |
 
 **Feature:** `organisation_management.feature` (11) — **11/11 (100%)**
 
 ---
 
-### J8 — Organisation pets & placements (P1 product, not yet E2E)
+### J8 — Organisation pets & placements (P1 product)
 
 | Feature | Scenarios | Implemented |
 |---------|----------:|------------:|
-| `organisation_pet_management.feature` | 6 | 0 |
-| `organisation_pet_timeline.feature` | 6 | 0 |
-| `pet_ownership_and_adoption.feature` | 8 | 0 |
+| `organisation_pet_management.feature` | 6 | 6 |
+| `organisation_pet_timeline.feature` | 6 | 4 |
+| `org_foster_and_adoption.feature` | 5 | 5 |
+| `org_to_org_transfer.feature` | 3 | 3 |
+| `org_pet_return.feature` | 2 | 2 |
+| `pet_ownership_and_adoption.feature` | 2 | 2 |
 
-**Subtotal:** 20 scenarios — **0%** (org operator journey continuation)
+**Subtotal:** 24 scenarios mapped in Sprint 6 — **22/24** (2 timeline scenarios deferred)
 
 ---
 
@@ -206,7 +209,7 @@ Journeys are ordered **P0 → P1 → P2** at the journey level. Within each jour
 
 ### J11 — Help & FAQ (P2)
 
-**Feature:** `help_faq.feature` (10) — **0/10** (widget smoke exists; no journey E2E)
+**Feature:** `help_faq.feature` (10) — **10/10** (`help.faq.spec.ts`)
 
 ---
 
@@ -330,11 +333,11 @@ Persona: **organisation super user** transferring pets to private adopters and m
 | `sharing.feature` | `sharing.spec.ts` | 7 | 13 | 8 |
 | `organisation_management.feature` | `organisation.management.spec.ts` | 10 | 11 | 11 |
 | `veterinarian_management.feature` | `veterinarian.spec.ts` | 9 | 10 | 9 |
-| `organisation_pet_management.feature` | — | 0 | 6 | 0 |
-| `organisation_pet_timeline.feature` | — | 0 | 6 | 0 |
-| `pet_ownership_and_adoption.feature` | — | 0 | 8 | 0 |
+| `organisation_pet_management.feature` | `organisation.pet.management.spec.ts` | 6 | 6 | 6 |
+| `organisation_pet_timeline.feature` | `org.timeline.spec.ts` | 4 | 6 | 4 |
+| `pet_ownership_and_adoption.feature` | `adoption.spec.ts` | 2 | 2 | 2 |
+| `help_faq.feature` | `help.faq.spec.ts` | 10 | 10 | 10 |
 | `subscriptions.feature` | — | 0 | 11 | 0 |
-| `help_faq.feature` | — | 0 | 10 | 0 |
 
 ---
 

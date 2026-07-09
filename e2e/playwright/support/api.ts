@@ -1618,6 +1618,9 @@ export interface TestFamilyEvent {
   id: string;
   assigned_to_user_id: string | null;
   assigned_name?: string;
+  from_date?: string;
+  to_date?: string | null;
+  notes?: string;
 }
 
 export async function getFamilyEvents(
@@ -1642,25 +1645,31 @@ export async function createFamilyEvent(
   options: {
     assignedToUserId: string;
     fromDate?: string;
+    toDate?: string;
+    notes?: string;
     eventType?: string;
   },
 ): Promise<TestFamilyEvent> {
   const fromDate = options.fromDate ?? new Date().toISOString().slice(0, 10);
+  const body: Record<string, string> = {
+    assigned_to_user_id: options.assignedToUserId,
+    from_date: fromDate,
+    event_type: options.eventType ?? 'placement',
+  };
+  if (options.toDate) body.to_date = options.toDate;
+  if (options.notes) body.notes = options.notes;
+
   const res = await fetch(apiUrl(`/pets/${petId}/family-events`, baseURL), {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
       Authorization: `Bearer ${token}`,
     },
-    body: JSON.stringify({
-      assigned_to_user_id: options.assignedToUserId,
-      from_date: fromDate,
-      event_type: options.eventType ?? 'placement',
-    }),
+    body: JSON.stringify(body),
   });
   if (!res.ok) {
-    const body = await res.text();
-    throw new Error(`createFamilyEvent failed (${res.status}): ${body}`);
+    const bodyText = await res.text();
+    throw new Error(`createFamilyEvent failed (${res.status}): ${bodyText}`);
   }
   return res.json();
 }
