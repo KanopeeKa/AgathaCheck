@@ -1,0 +1,54 @@
+name: Triage human-reviewed issues
+
+on:
+  issues:
+    types: [labeled]
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  triage:
+    name: Deterministic issue triage
+    if: github.event.label.name == 'human-reviewed'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Ensure triage labels exist
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          ensure_label() {
+            local name="$1"
+            local color="$2"
+            local description="$3"
+            if gh label list --json name --jq '.[].name' | grep -Fxq "$name"; then
+              return 0
+            fi
+            gh label create "$name" --color "$color" --description "$description"
+          }
+
+          ensure_label "human-reviewed" "C5DEF5" "Human has reviewed this issue; triggers deterministic triage"
+          ensure_label "question" "D876E3" "More information is needed"
+          ensure_label "busy" "FBCA04" "Work in progress; do not pick up concurrently"
+          ensure_label "manual-only" "F9D0C4" "Must be handled manually; not for Cursor"
+          ensure_label "agent-approved" "0E8A16" "Passed deterministic triage; eligible for Cursor"
+
+      - name: Run deterministic triage
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_PROJECTS_PAT: ${{ secrets.GH_PROJECTS_PAT }}
+          GH_PROJECT_ID: ${{ secrets.GH_PROJECT_ID }}
+          GH_STATUS_FIELD_ID: ${{ secrets.GH_STATUS_FIELD_ID }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+        run: node .github/scripts/triage-human-reviewed.js
