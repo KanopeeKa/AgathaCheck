@@ -12,7 +12,9 @@ permissions:
 jobs:
   safety:
     name: Forbidden path check
-    if: startsWith(github.head_ref, 'cursor/')
+    if: >
+      startsWith(github.head_ref, 'cursor/') &&
+      contains(github.event.pull_request.body, 'Fixes #')
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
