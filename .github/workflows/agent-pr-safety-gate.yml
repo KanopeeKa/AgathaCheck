@@ -14,7 +14,7 @@ jobs:
     name: Forbidden path check
     if: >
       startsWith(github.head_ref, 'cursor/') &&
-      contains(github.event.pull_request.body, 'Fixes #')
+      contains(github.event.pull_request.body, '<!-- CURSOR_AGENT_PR_BODY_BEGIN -->')
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
