@@ -307,3 +307,9 @@ The script prints `GH_PROJECT_ID`, `GH_STATUS_FIELD_ID`, and the option IDs for 
 **Repository ownership:** This repo is **user-owned**. Use `--user <login>` when discovering project IDs. Organization-owned repos can use `--org <login>`.
 
 If secrets are not configured, triage and agent workflows still update labels and comments but skip Project status changes and log a warning.
+
+## Smoke-test log
+
+| Date | Issue | Note |
+|------|-------|------|
+| 2026-07-09 | #122 | UAT delivery path smoke test — documentation-only change validating triage → Cursor agent → PR → merge to `main` → `release/uat-YYMMDD-issue-122` → UAT deploy. |
