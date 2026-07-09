@@ -154,6 +154,60 @@ export async function updateUserProfile(
   };
 }
 
+export interface UserDataExport {
+  user: { id: string; email: string };
+  pets: Array<{ id: string; name: string }>;
+  exported_at: string;
+  health_entries?: unknown[];
+  vets?: unknown[];
+}
+
+export async function exportUserData(
+  baseURL: string,
+  token: string,
+): Promise<UserDataExport> {
+  const res = await fetch(apiUrl('/auth/me/export', baseURL), {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!res.ok) {
+    const body = await res.text();
+    throw new Error(`exportUserData failed (${res.status}): ${body}`);
+  }
+  return res.json();
+}
+
+export async function deleteAccount(
+  baseURL: string,
+  token: string,
+  password: string,
+): Promise<void> {
+  const res = await fetch(apiUrl('/auth/me', baseURL), {
+    method: 'DELETE',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({ password }),
+  });
+  if (!res.ok) {
+    const body = await res.text();
+    throw new Error(`deleteAccount failed (${res.status}): ${body}`);
+  }
+}
+
+export async function tryLogin(
+  baseURL: string,
+  email: string,
+  password: string,
+): Promise<{ ok: boolean; status: number }> {
+  const res = await fetch(apiUrl('/auth/login', baseURL), {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email, password }),
+  });
+  return { ok: res.ok, status: res.status };
+}
+
 export async function createPet(
   baseURL: string,
   token: string,

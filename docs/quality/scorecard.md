@@ -14,8 +14,8 @@ Living metrics for Agatha Track quality. Update when CI or test counts change ma
 | Flutter integration | 1 flow | CI on `main` (blocking) |
 | Node Jest | 544 | CI on `main` |
 | Playwright E2E | 79 | UAT deploy |
-| BDD Gherkin scenarios | 161 | Spec (hybrid — Playwright executor) |
-| BDD → Playwright coverage | **50.3% (81/161)** | CI gate — `e2e/scripts/check_bdd_coverage.js` |
+| BDD Gherkin scenarios | 167 | Spec (hybrid — Playwright executor) |
+| BDD → Playwright coverage | **69% (115/167)** | CI gate **105/165** — `e2e/scripts/check_bdd_coverage.js` |
 
 ## CI security
 
@@ -33,7 +33,7 @@ Living metrics for Agatha Track quality. Update when CI or test counts change ma
 | `flutter analyze` | Yes |
 | `dart analyze lib` (server) | Yes |
 | `dart format --set-exit-if-changed` | Yes |
-| BDD scenarios mapped ≥ 81/161 | Yes |
+| BDD scenarios mapped ≥ 105/165 | Yes |
 | Hand-written file size ≤ 500 lines | Yes (grandfather ratchet) |
 
 ## Coverage

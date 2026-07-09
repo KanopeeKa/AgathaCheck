@@ -228,14 +228,10 @@ Journeys are ordered **P0 → P1 → P2** at the journey level. Within each jour
 
 ### J13 — GDPR / data rights (P2, all users)
 
-**Goal:** Users can exercise data-subject rights (see `regulatory/` docs).
-
 | Pri | Behaviour | Gherkin scenario | Playwright | Status |
 |-----|-----------|------------------|------------|--------|
-| P2 | Export my data | *Planned — no `.feature` file yet* | — | ❌ |
-| P2 | Delete my account | *Planned — no `.feature` file yet* | — | ❌ |
-
-**Note:** API supports `GET /api/auth/me/export` and `DELETE /api/auth/me`; Gherkin + Playwright to be added when legal/product sign off. **Not in 4.3 scope.**
+| P2 | Export my data | Exporting my personal data as JSON | `gdpr.data-rights.spec.ts` | ✅ |
+| P2 | Delete my account | Deleting my account with password confirmation | `gdpr.data-rights.spec.ts` | ✅ |
 
 ---
 
@@ -337,6 +333,7 @@ Persona: **organisation super user** transferring pets to private adopters and m
 | `organisation_pet_timeline.feature` | `org.timeline.spec.ts` | 4 | 6 | 4 |
 | `pet_ownership_and_adoption.feature` | `adoption.spec.ts` | 2 | 2 | 2 |
 | `help_faq.feature` | `help.faq.spec.ts` | 10 | 10 | 10 |
+| `gdpr_data_rights.feature` | `gdpr.data-rights.spec.ts` | 2 | 2 | 2 |
 | `subscriptions.feature` | — | 0 | 11 | 0 |
 
 ---

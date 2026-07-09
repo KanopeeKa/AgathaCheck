@@ -60,4 +60,20 @@ export class MyDetailsPage {
       .first()
       .waitFor({ timeout: 15_000 });
   }
+
+  async exportMyData(): Promise<void> {
+    await this.page.getByText('Export My Data', { exact: true }).click();
+    await this.page.getByText('Your data has been exported').waitFor({ timeout: 30_000 });
+  }
+
+  async deleteAccount(password: string): Promise<void> {
+    await this.page.getByText('Delete Account', { exact: true }).first().click();
+    await this.page.getByRole('dialog').waitFor({ timeout: 15_000 });
+    await fillLabelledField(this.page, 'Current Password', password);
+    await this.page
+      .getByRole('button', { name: 'Delete Account', exact: true })
+      .last()
+      .click();
+    await this.page.waitForTimeout(2000);
+  }
 }

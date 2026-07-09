@@ -77,7 +77,7 @@ Use the PR template checklist. In summary:
 - CodeQL (JavaScript)
 - `dart format --set-exit-if-changed` (blocks merge)
 - Flutter domain line coverage ≥ 65% (`check_domain_coverage.js`)
-- BDD scenario mapping ≥ 81/161 (`e2e/scripts/check_bdd_coverage.js`)
+- BDD scenario mapping ≥ 105/165 (`e2e/scripts/check_bdd_coverage.js`)
 - Hand-written file size ≤ 500 lines (`scripts/check_file_size.js`; grandfather ratchet for legacy monoliths)
 - Coverage artifacts: full Flutter lcov + Jest Istanbul (report-only beyond domain gate)
 

@@ -58,7 +58,7 @@ User-facing dates are calendar days (`YYYY-MM-DD` on the wire). See `docs/calend
 
 ### Policies (details in `.cursor/rules/` + Skills)
 
-- Modularity ≤500 lines · dual-backend parity · BDD 81/161 gate
+- Modularity ≤500 lines · dual-backend parity · BDD 105/165 gate
 - Single-agent PRs → `main`; multi-agent → integration branch (`/spawn-sprint-agents`)
 - Memories: `.agents/memory/MEMORY.md`
 - Sprint log: `docs/refactoring-log.md`

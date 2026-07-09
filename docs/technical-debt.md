@@ -56,6 +56,15 @@ Use this for **context and prioritisation**; create [GitHub Issues](https://gith
 
 ---
 
+## Subscriptions & billing (deferred — product review)
+
+| Item | Priority | Effort | Notes |
+|---|---|---|---|
+| **`subscriptions.feature` Playwright E2E** | P2 | Medium | **Deferred Sprint 7.2.** Requires functional review: operator is likely moving away from RevenueCat toward an **EU-based billing solution**. Do not invest in RevenueCat sandbox E2E until billing architecture is decided. Gherkin spec (`subscriptions.feature`, 11 scenarios) remains for future implementation. |
+| RevenueCat UAT sandbox wiring | P3 | Medium | Blocked on billing provider decision above. |
+
+---
+
 ## Testing & tooling
 
 | Item | Priority | Effort | Notes |

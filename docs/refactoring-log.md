@@ -115,14 +115,18 @@ Tracks planned and completed refactor / quality work. See also `docs/refactoring
 
 ---
 
-## Sprint 7 — Compliance + subscriptions (planned)
+## Sprint 7 — Compliance + governance close-out (complete)
 
 | # | Action | Status | Notes |
 |---|--------|--------|-------|
-| 7.1 | Gherkin + Playwright: GDPR export + account delete (J13) | Planned | After 5.5 export payload complete |
-| 7.2 | `subscriptions.feature` E2E (subset) | Planned | UAT RevenueCat sandbox required |
-| 7.3 | Clear grandfather allowlist entries (all files <500) | Planned | After 5.4 splits |
-| 7.4 | BDD gate ratchet to **105/161 (65%)** in CI | Planned | |
+| 7.1 | Gherkin + Playwright: GDPR export + account delete (J13) | **Done** | `gdpr_data_rights.feature`, `gdpr.data-rights.spec.ts` |
+| 7.2 | `subscriptions.feature` E2E | **Deferred** | RevenueCat — see `docs/technical-debt.md`; pending EU billing solution review |
+| 7.3 | Clear grandfather allowlist entries (all files <500) | **Done** | Verified Sprint 5.4b; allowlist empty, 0 grandfathered |
+| 7.4 | BDD gate ratchet to **105/165 (65%)** in CI | **Done** | `check_bdd_coverage.js`, workflow, docs |
+
+**BDD mapped:** **115/167** after 7.1 (+2 scenarios). Gate **105** enforced in CI.
+
+**Refactoring programme:** Sprints 1–7 + agent-efficiency (8–11) complete for scoped modularization/BDD work. Remaining items → `docs/refactoring-debt.md` and `docs/technical-debt.md`.
 
 ---
 
@@ -164,7 +168,8 @@ Use this template when spawning agents on an integration branch:
 
 | Date | Change |
 |---|---|
-| 2026-07-09 | Sprint 8: agent efficiency infra — Skills, pre-push scripts, scoped rules, babysit |
+| 2026-07-09 | Sprint 7: GDPR data-rights E2E; BDD gate 105/165; subscriptions E2E deferred (EU billing review) |
+| 2026-07-09 | Sprint 6 complete (#116): 113/165 BDD; org custody + help FAQ |
 | 2026-07-08 | Sprint 5.5–5.6: GDPR `/me/export` full payload; BDD priority tags (16 P0 / 111 P1 / 34 P2) |
 | 2026-07-08 | Sprint 5.4b: cleared 5 remaining monoliths; empty `file-size-allowlist.json` |
 | 2026-07-08 | Sprint 5–7 plan; integration-branch policy; parallel-agent ownership matrix |

@@ -5,7 +5,7 @@ architectural decisions deferred during the domain-by-domain refactor.
 
 **Related:** `docs/technical-debt.md` (product/infra deferrals) · `docs/architecture/modularity.md` (rules)
 
-**Last updated:** 2026-07-06
+**Last updated:** 2026-07-09
 
 ---
 
@@ -32,7 +32,7 @@ architectural decisions deferred during the domain-by-domain refactor.
 
 ---
 
-## In progress (this refactor branch)
+## Completed domains (modularization programme)
 
 | Domain | Status | Notes |
 |---|---|---|
@@ -56,6 +56,8 @@ architectural decisions deferred during the domain-by-domain refactor.
 | `family_events_controller.dart` | P4 | **Stub — not wired.** Legacy `family_events` table; placement data migrated to `foster_placements` (migration 016). Flutter still has `familyEventsProvider` + PDF section; pets API CRUD exists. **Recommendation:** delete stub; use foster placements for new UI — or revive only if product wants pre-migration family-event editing. |
 | `health_entry_form_controller.dart` | P4 | Phase 2 done. Optional: extract frequency/recurrence widgets to slim screen further. |
 | Root `lib/` legacy Flutter tree | P1 | **Removed** — root `pubspec.yaml` deleted Sprint 2 |
+| Organisation pet timeline — remove event + ending notifications | P3 | Sprint 6.3 defer — no family-event delete UI; org notification cron not wired |
+| `subscriptions.feature` E2E (11 scenarios) | P2 | Sprint 7.2 defer — RevenueCat likely replaced; see `docs/technical-debt.md` |
 | `attached_assets/` | P1 | **Removed** — was already absent from git |
 | `npm run test:mocha` | P4 | Legacy runner; remove when team confirms no local scripts use it. |
 
