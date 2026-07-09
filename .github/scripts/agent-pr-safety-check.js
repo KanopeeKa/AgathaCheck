@@ -3,11 +3,24 @@
 
 const { findForbiddenPaths } = require('./agent-safety-lib');
 
+/** Agent implementation PRs include a standalone issue link line (Refs/Fixes #N). */
+function isAgentImplementationPr(prBody) {
+  if (!prBody) return false;
+  return /(?:^|\n)\s*(?:Refs|Fixes|Closes|Resolves)\s+#\d+\s*$/im.test(prBody);
+}
+
 async function main() {
   const base = process.env.BASE_SHA;
   const head = process.env.HEAD_SHA;
+  const prBody = process.env.PR_BODY || '';
+
   if (!base || !head) {
     throw new Error('BASE_SHA and HEAD_SHA are required');
+  }
+
+  if (!isAgentImplementationPr(prBody)) {
+    console.log('Skipping safety gate — not an agent implementation PR (no standalone Refs/Fixes line).');
+    return;
   }
 
   const { execSync } = require('child_process');
@@ -26,7 +39,11 @@ async function main() {
   console.log(`Safety gate passed (${files.length} files checked).`);
 }
 
-main().catch((error) => {
-  console.error(error.message || error);
-  process.exit(1);
-});
+if (require.main === module) {
+  main().catch((error) => {
+    console.error(error.message || error);
+    process.exit(1);
+  });
+}
+
+module.exports = { isAgentImplementationPr };

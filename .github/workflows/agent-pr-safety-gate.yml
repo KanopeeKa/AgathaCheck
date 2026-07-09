@@ -12,9 +12,7 @@ permissions:
 jobs:
   safety:
     name: Forbidden path check
-    if: >
-      startsWith(github.head_ref, 'cursor/') &&
-      contains(github.event.pull_request.body, '<!-- CURSOR_AGENT_PR_BODY_BEGIN -->')
+    if: startsWith(github.head_ref, 'cursor/')
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
@@ -30,6 +28,7 @@ jobs:
         env:
           BASE_SHA: ${{ github.event.pull_request.base.sha }}
           HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          PR_BODY: ${{ github.event.pull_request.body }}
         run: node .github/scripts/agent-pr-safety-check.js
 
       - name: Comment when safety gate fails
