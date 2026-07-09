@@ -41,18 +41,14 @@ class OrganizationConnectionsRemote {
     String token,
   ) async {
     final response = await _ctx.client.get(
-      Uri.parse(
-        '${_ctx.baseUrl}/api/organizations/$orgId/connection-requests',
-      ),
+      Uri.parse('${_ctx.baseUrl}/api/organizations/$orgId/connection-requests'),
       headers: _ctx.headers(token),
     );
     if (response.statusCode >= 400) {
       _ctx.throwApiError(response, 'Failed to load connection requests');
     }
     final list = json.decode(response.body) as List;
-    return list
-        .map((e) => _mapRequest(e as Map<String, dynamic>))
-        .toList();
+    return list.map((e) => _mapRequest(e as Map<String, dynamic>)).toList();
   }
 
   Future<void> revokeConnectionRequest(
@@ -71,7 +67,10 @@ class OrganizationConnectionsRemote {
     }
   }
 
-  Future<void> acceptConnectionRequest(String token, String requestToken) async {
+  Future<void> acceptConnectionRequest(
+    String token,
+    String requestToken,
+  ) async {
     final response = await _ctx.client.post(
       Uri.parse(
         '${_ctx.baseUrl}/api/organizations/connection-requests/$requestToken/accept',

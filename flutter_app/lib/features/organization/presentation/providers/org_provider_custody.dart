@@ -36,9 +36,10 @@ class PendingCustodyTransfersNotifier
 }
 
 final pendingCustodyTransfersProvider =
-    AsyncNotifierProvider<PendingCustodyTransfersNotifier, List<CustodyTransfer>>(
-      PendingCustodyTransfersNotifier.new,
-    );
+    AsyncNotifierProvider<
+      PendingCustodyTransfersNotifier,
+      List<CustodyTransfer>
+    >(PendingCustodyTransfersNotifier.new);
 
 class OrgHomeHiddenPetsNotifier
     extends FamilyAsyncNotifier<List<OrgHomeHiddenPet>, String> {

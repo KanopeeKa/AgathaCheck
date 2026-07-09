@@ -83,10 +83,7 @@ class ArchivedPetsScreen extends ConsumerWidget {
             itemCount: archivedPets.length,
             itemBuilder: (context, index) {
               final archived = archivedPets[index];
-              return _ArchivedPetCard(
-                archivedPet: archived,
-                orgId: orgId,
-              );
+              return _ArchivedPetCard(archivedPet: archived, orgId: orgId);
             },
           );
         },
@@ -172,80 +169,80 @@ class _ArchivedPetCard extends StatelessWidget {
                           ),
                         ],
                         const SizedBox(height: 4),
-                      Row(
-                        children: [
-                          if (archivedPet.species.isNotEmpty) ...[
-                            Text(
-                              archivedPet.species,
-                              style: theme.textTheme.bodySmall?.copyWith(
-                                color: colorScheme.onSurfaceVariant,
+                        Row(
+                          children: [
+                            if (archivedPet.species.isNotEmpty) ...[
+                              Text(
+                                archivedPet.species,
+                                style: theme.textTheme.bodySmall?.copyWith(
+                                  color: colorScheme.onSurfaceVariant,
+                                ),
                               ),
-                            ),
-                            const SizedBox(width: 8),
+                              const SizedBox(width: 8),
+                              Container(
+                                width: 4,
+                                height: 4,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color: colorScheme.onSurfaceVariant,
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                            ],
                             Container(
-                              width: 4,
-                              height: 4,
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                color: colorScheme.onSurfaceVariant,
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 8,
+                                vertical: 2,
                               ),
-                            ),
-                            const SizedBox(width: 8),
-                          ],
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 8,
-                              vertical: 2,
-                            ),
-                            decoration: BoxDecoration(
-                              color: _transferTypeColor(
-                                archivedPet.transferType,
-                              ).withAlpha(30),
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            child: Text(
-                              transferLabel(archivedPet.transferType),
-                              style: TextStyle(
-                                fontSize: 11,
-                                fontWeight: FontWeight.w600,
+                              decoration: BoxDecoration(
                                 color: _transferTypeColor(
                                   archivedPet.transferType,
+                                ).withAlpha(30),
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: Text(
+                                transferLabel(archivedPet.transferType),
+                                style: TextStyle(
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.w600,
+                                  color: _transferTypeColor(
+                                    archivedPet.transferType,
+                                  ),
                                 ),
                               ),
                             ),
+                          ],
+                        ),
+                        if (archivedDate != null) ...[
+                          const SizedBox(height: 4),
+                          Text(
+                            l.archivedOn(dateFormat.format(archivedDate)),
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              color: colorScheme.onSurfaceVariant,
+                            ),
                           ),
                         ],
-                      ),
-                      if (archivedDate != null) ...[
-                        const SizedBox(height: 4),
-                        Text(
-                          l.archivedOn(dateFormat.format(archivedDate)),
-                          style: theme.textTheme.bodySmall?.copyWith(
-                            color: colorScheme.onSurfaceVariant,
+                        if (archivedPet.notes.isNotEmpty) ...[
+                          const SizedBox(height: 4),
+                          Text(
+                            archivedPet.notes,
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              color: colorScheme.onSurfaceVariant,
+                              fontStyle: FontStyle.italic,
+                            ),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
                           ),
-                        ),
+                        ],
                       ],
-                      if (archivedPet.notes.isNotEmpty) ...[
-                        const SizedBox(height: 4),
-                        Text(
-                          archivedPet.notes,
-                          style: theme.textTheme.bodySmall?.copyWith(
-                            color: colorScheme.onSurfaceVariant,
-                            fontStyle: FontStyle.italic,
-                          ),
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ],
-                    ],
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),
       ),
-    ),
     );
   }
 

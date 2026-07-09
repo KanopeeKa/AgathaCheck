@@ -394,8 +394,10 @@ class RecordingOrganizationRepository implements OrganizationRepository {
   ) async => [];
 
   @override
-  Future<List<OrgConnection>> getConnections(String orgId, String token) async =>
-      [];
+  Future<List<OrgConnection>> getConnections(
+    String orgId,
+    String token,
+  ) async => [];
 
   @override
   Future<Map<String, dynamic>> createConnectionRequest(
@@ -418,7 +420,10 @@ class RecordingOrganizationRepository implements OrganizationRepository {
   ) async {}
 
   @override
-  Future<void> acceptConnectionRequest(String token, String requestToken) async {}
+  Future<void> acceptConnectionRequest(
+    String token,
+    String requestToken,
+  ) async {}
 
   @override
   Future<void> disconnectOrgs(
@@ -439,8 +444,9 @@ class RecordingOrganizationRepository implements OrganizationRepository {
   }) async => {'id': 'transfer-1', 'status': 'pending'};
 
   @override
-  Future<List<CustodyTransfer>> getPendingCustodyTransfers(String token) async =>
-      [];
+  Future<List<CustodyTransfer>> getPendingCustodyTransfers(
+    String token,
+  ) async => [];
 
   @override
   Future<void> acceptCustodyTransfer(String transferId, String token) async {}

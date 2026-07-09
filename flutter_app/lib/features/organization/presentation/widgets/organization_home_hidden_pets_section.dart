@@ -87,7 +87,9 @@ class _OrganizationHomeHiddenPetsSectionState
                         onPressed: () async {
                           await ref
                               .read(
-                                orgHomeHiddenPetsProvider(widget.orgId).notifier,
+                                orgHomeHiddenPetsProvider(
+                                  widget.orgId,
+                                ).notifier,
                               )
                               .unhide(pet.petId);
                         },

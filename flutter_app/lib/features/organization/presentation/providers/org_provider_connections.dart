@@ -5,7 +5,8 @@ import 'org_provider_custody.dart';
 import 'org_provider_deps.dart';
 import 'org_provider_list.dart';
 
-class OrgConnectionsNotifier extends FamilyAsyncNotifier<List<OrgConnection>, String> {
+class OrgConnectionsNotifier
+    extends FamilyAsyncNotifier<List<OrgConnection>, String> {
   @override
   Future<List<OrgConnection>> build(String orgId) async {
     final token = ref.watch(orgTokenProvider);
@@ -38,9 +39,11 @@ class OrgConnectionsNotifier extends FamilyAsyncNotifier<List<OrgConnection>, St
 }
 
 final orgConnectionsProvider =
-    AsyncNotifierProvider.family<OrgConnectionsNotifier, List<OrgConnection>, String>(
-      OrgConnectionsNotifier.new,
-    );
+    AsyncNotifierProvider.family<
+      OrgConnectionsNotifier,
+      List<OrgConnection>,
+      String
+    >(OrgConnectionsNotifier.new);
 
 class OrgConnectionRequestsNotifier
     extends FamilyAsyncNotifier<List<OrgConnectionRequest>, String> {

@@ -368,11 +368,8 @@ class OrganizationRemoteDataSource {
   Future<void> acceptConnectionRequest(String token, String requestToken) =>
       _connections.acceptConnectionRequest(token, requestToken);
 
-  Future<void> disconnectOrgs(
-    String orgId,
-    String otherOrgId,
-    String token,
-  ) => _connections.disconnectOrgs(orgId, otherOrgId, token);
+  Future<void> disconnectOrgs(String orgId, String otherOrgId, String token) =>
+      _connections.disconnectOrgs(orgId, otherOrgId, token);
 
   Future<Map<String, dynamic>> requestCustodyTransfer(
     String orgId,
@@ -409,12 +406,7 @@ class OrganizationRemoteDataSource {
     String petId, {
     required bool hidden,
     required String token,
-  }) => _custody.setPetHomeHidden(
-    orgId,
-    petId,
-    hidden: hidden,
-    token: token,
-  );
+  }) => _custody.setPetHomeHidden(orgId, petId, hidden: hidden, token: token);
 
   Future<List<Map<String, dynamic>>> getHomeHiddenPets(
     String orgId,

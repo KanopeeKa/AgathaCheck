@@ -16,7 +16,8 @@ class AcceptConnectionScreen extends ConsumerStatefulWidget {
       _AcceptConnectionScreenState();
 }
 
-class _AcceptConnectionScreenState extends ConsumerState<AcceptConnectionScreen> {
+class _AcceptConnectionScreenState
+    extends ConsumerState<AcceptConnectionScreen> {
   bool _submitting = false;
 
   Future<void> _accept() async {

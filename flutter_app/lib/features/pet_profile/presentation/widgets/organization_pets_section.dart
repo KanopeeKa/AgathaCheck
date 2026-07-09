@@ -59,14 +59,14 @@ class OrganizationPetsSection extends StatelessWidget {
         label: l.hideSharedPet,
         confirmTitle: l.hideSharedPet,
         confirmMessage: l.hideSharedPetConfirm(pet.name),
-        onConfirm: () => ref
-            .read(hiddenSharedPetsProvider.notifier)
-            .hideSharedPet(pet.id),
+        onConfirm: () =>
+            ref.read(hiddenSharedPetsProvider.notifier).hideSharedPet(pet.id),
         child: card,
       );
     }
     final orgId = pet.organizationId;
-    final canHomeHide = orgId != null &&
+    final canHomeHide =
+        orgId != null &&
         pet.isFosteredOrgPet &&
         ref.watch(isOrgAdminProvider(orgId));
     if (canHomeHide) {
@@ -76,9 +76,8 @@ class OrganizationPetsSection extends StatelessWidget {
         label: l.hideFromHomeList,
         confirmTitle: l.hideFromHomeList,
         confirmMessage: l.hideFromHomeListConfirm(pet.name),
-        onConfirm: () => ref
-            .read(orgHomeHiddenPetsProvider(orgId).notifier)
-            .hide(pet.id),
+        onConfirm: () =>
+            ref.read(orgHomeHiddenPetsProvider(orgId).notifier).hide(pet.id),
         child: card,
       );
     }
@@ -112,7 +111,10 @@ class OrganizationPetsSection extends StatelessWidget {
               style: TextStyle(color: theme.colorScheme.onSurfaceVariant),
             ),
             const SizedBox(width: 8),
-            Icon(Icons.visibility_off, color: theme.colorScheme.onSurfaceVariant),
+            Icon(
+              Icons.visibility_off,
+              color: theme.colorScheme.onSurfaceVariant,
+            ),
           ],
         ),
       ),
@@ -137,9 +139,9 @@ class OrganizationPetsSection extends StatelessWidget {
         if (confirmed == true) {
           await onConfirm();
           if (parentContext.mounted) {
-            ScaffoldMessenger.of(parentContext).showSnackBar(
-              SnackBar(content: Text(l.petHidden(pet.name))),
-            );
+            ScaffoldMessenger.of(
+              parentContext,
+            ).showSnackBar(SnackBar(content: Text(l.petHidden(pet.name))));
           }
         }
         return false;

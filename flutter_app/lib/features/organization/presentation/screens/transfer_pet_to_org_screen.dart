@@ -22,7 +22,8 @@ class TransferPetToOrgScreen extends ConsumerStatefulWidget {
       _TransferPetToOrgScreenState();
 }
 
-class _TransferPetToOrgScreenState extends ConsumerState<TransferPetToOrgScreen> {
+class _TransferPetToOrgScreenState
+    extends ConsumerState<TransferPetToOrgScreen> {
   final _notesController = TextEditingController();
   OrgConnection? _selected;
   bool _submitting = false;
@@ -68,7 +69,8 @@ class _TransferPetToOrgScreenState extends ConsumerState<TransferPetToOrgScreen>
     final l = AppLocalizations.of(context)!;
     final connectionsAsync = ref.watch(orgConnectionsProvider(widget.orgId));
     final petsAsync = ref.watch(orgPetsProvider(widget.orgId));
-    final petName = petsAsync.whenOrNull(
+    final petName =
+        petsAsync.whenOrNull(
           data: (pets) =>
               pets.where((p) => p.id == widget.petId).firstOrNull?.name,
         ) ??

@@ -218,11 +218,7 @@ abstract class OrganizationRepository {
 
   Future<void> acceptConnectionRequest(String token, String requestToken);
 
-  Future<void> disconnectOrgs(
-    String orgId,
-    String otherOrgId,
-    String token,
-  );
+  Future<void> disconnectOrgs(String orgId, String otherOrgId, String token);
 
   Future<Map<String, dynamic>> requestCustodyTransfer(
     String orgId,

@@ -117,7 +117,9 @@ class _OrganizationConnectionsSectionState
   @override
   Widget build(BuildContext context) {
     final connectionsAsync = ref.watch(orgConnectionsProvider(widget.orgId));
-    final requestsAsync = ref.watch(orgConnectionRequestsProvider(widget.orgId));
+    final requestsAsync = ref.watch(
+      orgConnectionRequestsProvider(widget.orgId),
+    );
 
     return Card(
       color: AppTheme.orgBlueDarker,

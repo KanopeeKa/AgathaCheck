@@ -44,9 +44,7 @@ class OrganizationCustodyRemote {
       _ctx.throwApiError(response, 'Failed to load custody transfers');
     }
     final list = json.decode(response.body) as List;
-    return list
-        .map((e) => _mapTransfer(e as Map<String, dynamic>))
-        .toList();
+    return list.map((e) => _mapTransfer(e as Map<String, dynamic>)).toList();
   }
 
   Future<void> acceptCustodyTransfer(String transferId, String token) async {
