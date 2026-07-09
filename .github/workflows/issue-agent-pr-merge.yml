@@ -1,0 +1,36 @@
+name: Agent PR merge handler
+
+on:
+  pull_request:
+    types: [closed]
+    branches: [main]
+
+permissions:
+  contents: write
+  issues: write
+
+jobs:
+  on-merge:
+    name: Update linked issue after merge
+    if: github.event.pull_request.merged == true && startsWith(github.event.pull_request.head.ref, 'cursor/')
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Handle merged agent PR
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_PROJECTS_PAT: ${{ secrets.GH_PROJECTS_PAT }}
+          GH_PROJECT_ID: ${{ secrets.GH_PROJECT_ID }}
+          GH_STATUS_FIELD_ID: ${{ secrets.GH_STATUS_FIELD_ID }}
+          HANDLER_MODE: pr-merged
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          PR_TITLE: ${{ github.event.pull_request.title }}
+          PR_BODY: ${{ github.event.pull_request.body }}
+          MERGE_SHA: ${{ github.event.pull_request.merge_commit_sha }}
+        run: node .github/scripts/issue-agent-handlers.js

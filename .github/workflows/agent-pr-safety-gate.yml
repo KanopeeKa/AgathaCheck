@@ -1,0 +1,50 @@
+name: Agent PR safety gate
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    branches: [main]
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  safety:
+    name: Forbidden path check
+    if: startsWith(github.head_ref, 'cursor/')
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Check forbidden paths
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: node .github/scripts/agent-pr-safety-check.js
+
+      - name: Comment when safety gate fails
+        if: failure()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const marker = '<!-- agent-pr-safety-gate -->';
+            const body = `${marker}
+            ## Agent PR safety gate failed
+
+            This PR from a Cursor agent branch modifies forbidden paths (workflows, migrations, security config, infra, etc.).
+
+            Please review manually or close the PR and handle the linked issue with a human implementation.`;
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body,
+            });

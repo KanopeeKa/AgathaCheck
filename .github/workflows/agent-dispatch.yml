@@ -1,0 +1,86 @@
+name: Agent dispatch
+
+on:
+  issues:
+    types: [labeled]
+  schedule:
+    - cron: '*/30 * * * *'
+  workflow_dispatch:
+    inputs:
+      issue_number:
+        description: Optional issue number to dispatch directly
+        required: false
+      dry_run:
+        description: Build payload only (no Cursor API call)
+        type: boolean
+        default: false
+
+concurrency:
+  group: agent-dispatch
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  dispatch:
+    name: Dispatch Cursor agent
+    if: >
+      github.event_name == 'schedule' ||
+      github.event_name == 'workflow_dispatch' ||
+      (github.event_name == 'issues' && github.event.label.name == 'agent-approved')
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Ensure agent workflow labels exist
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          ensure_label() {
+            local name="$1"
+            local color="$2"
+            local description="$3"
+            if gh label list --json name --jq '.[].name' | grep -Fxq "$name"; then
+              return 0
+            fi
+            gh label create "$name" --color "$color" --description "$description"
+          }
+          ensure_label "blocked" "B60205" "Agent started but blocked; needs human input"
+          ensure_label "busy" "FBCA04" "Work in progress; do not pick up concurrently"
+          ensure_label "question" "D876E3" "More information is needed"
+          ensure_label "agent-approved" "0E8A16" "Passed deterministic triage"
+
+      - name: Find eligible issue
+        id: eligible
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_PROJECTS_PAT: ${{ secrets.GH_PROJECTS_PAT }}
+          GH_PROJECT_ID: ${{ secrets.GH_PROJECT_ID }}
+          GH_STATUS_FIELD_ID: ${{ secrets.GH_STATUS_FIELD_ID }}
+        run: |
+          if [ -n "${{ github.event.inputs.issue_number }}" ]; then
+            echo "has_eligible=true" >> "$GITHUB_OUTPUT"
+            echo "issue_number=${{ github.event.inputs.issue_number }}" >> "$GITHUB_OUTPUT"
+          else
+            node .github/scripts/agent-eligibility.js
+          fi
+
+      - name: Launch Cursor agent
+        if: steps.eligible.outputs.has_eligible == 'true' && steps.eligible.outputs.issue_number != ''
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_PROJECTS_PAT: ${{ secrets.GH_PROJECTS_PAT }}
+          GH_PROJECT_ID: ${{ secrets.GH_PROJECT_ID }}
+          GH_STATUS_FIELD_ID: ${{ secrets.GH_STATUS_FIELD_ID }}
+          cursor_api_key: ${{ secrets.cursor_api_key }}
+          ISSUE_NUMBER: ${{ steps.eligible.outputs.issue_number }}
+          DRY_RUN: ${{ github.event.inputs.dry_run || 'false' }}
+        run: node .github/scripts/launch-cursor-agent.js
