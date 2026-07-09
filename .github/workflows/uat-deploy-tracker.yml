@@ -1,0 +1,38 @@
+name: Agent UAT deploy tracker
+
+on:
+  workflow_run:
+    workflows: ['Deploy UAT (uat.agathatrack.com)']
+    types: [completed]
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  track:
+    name: Update issue from UAT deploy result
+    if: >
+      github.event.workflow_run.conclusion != 'cancelled' &&
+      startsWith(github.event.workflow_run.head_branch, 'release/uat-') &&
+      contains(github.event.workflow_run.head_branch, '-issue-')
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Update linked issue
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_PROJECTS_PAT: ${{ secrets.GH_PROJECTS_PAT }}
+          GH_PROJECT_ID: ${{ secrets.GH_PROJECT_ID }}
+          GH_STATUS_FIELD_ID: ${{ secrets.GH_STATUS_FIELD_ID }}
+          HANDLER_MODE: uat-result
+          BRANCH_NAME: ${{ github.event.workflow_run.head_branch }}
+          WORKFLOW_CONCLUSION: ${{ github.event.workflow_run.conclusion }}
+          WORKFLOW_URL: ${{ github.event.workflow_run.html_url }}
+        run: node .github/scripts/issue-agent-handlers.js
