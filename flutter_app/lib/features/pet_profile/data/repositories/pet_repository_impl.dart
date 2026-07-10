@@ -104,13 +104,19 @@ class PetRepositoryImpl implements PetRepository {
   @override
   Future<Pet> updatePet(Pet pet) async {
     final model = PetModel.fromEntity(pet);
+    final prior = await _localDataSource.getPetById(model.id);
     final saved = await _localDataSource.updatePet(model);
     if (remoteDataSource != null && token != null && token!.isNotEmpty) {
       try {
         await remoteDataSource!.updatePet(model, token!);
       } catch (e) {
-        // Surface the failure (matching addPet) so the UI does not report
-        // success while the server copy still diverges from the local one.
+        // Server rejected the update. Restore the pre-mutation local snapshot so
+        // the cache does not diverge from the server and surface the failure.
+        if (prior != null) {
+          await _localDataSource.updatePet(prior);
+        } else {
+          await _localDataSource.deletePet(model.id);
+        }
         debugPrint('PetRepository: Failed to update pet on server: $e');
         rethrow;
       }
@@ -120,13 +126,17 @@ class PetRepositoryImpl implements PetRepository {
 
   @override
   Future<void> deletePet(String id) async {
+    final prior = await _localDataSource.getPetById(id);
     await _localDataSource.deletePet(id);
     if (remoteDataSource != null && token != null && token!.isNotEmpty) {
       try {
         await remoteDataSource!.deletePet(id, token!);
       } catch (e) {
-        // Surface the failure so the UI does not report success while the pet
-        // still exists on the server.
+        // Server rejected the delete. Restore the pre-mutation local snapshot so
+        // the cache does not diverge from the server and surface the failure.
+        if (prior != null) {
+          await _localDataSource.addPet(prior);
+        }
         debugPrint('PetRepository: Failed to delete pet from server: $e');
         rethrow;
       }
