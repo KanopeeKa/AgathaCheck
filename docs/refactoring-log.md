@@ -185,12 +185,12 @@ Tracks planned and completed refactor / quality work. See also `docs/refactoring
 
 | # | Action | Status | PR / notes |
 |---|--------|--------|------------|
-| 9.0 | Dart foster parity branch audit | **In progress** | `dart-foster-audit` agent |
-| 9.1 | Mobile token store migration | **In progress** | `flutter-token-migration` agent |
-| 9.2 | Web upload photo URL resolution | **In progress** | `flutter-photo-url` agent |
-| 9.3 | Pet repo remote-failure rollback | **In progress** | `flutter-pet-sync` agent |
-| 9.4 | E2E notification badge scoping | **In progress** | `e2e-notifications` agent |
-| 9.5 | E2E vet/health assertion hardening | **In progress** | `e2e-vet-health` agent |
+| 9.0 | Dart foster parity branch audit | **Done** | Superseded by #64; branch safe to delete — see `docs/sprint-9-dart-foster-audit.md` |
+| 9.1 | Mobile token store migration | **Done** | Prefs→Secure one-time migration |
+| 9.2 | Web upload photo URL resolution | **Done** | `resolveStaticAssetUrl` helper |
+| 9.3 | Pet repo remote-failure rollback | **Done** | update/delete rollback on remote fail |
+| 9.4 | E2E notification badge scoping | **Done** | Scoped badge assertions |
+| 9.5 | E2E vet/health assertion hardening | **Done** | Named vet menu + snooze/dosage/GET status |
 
 ---
 
