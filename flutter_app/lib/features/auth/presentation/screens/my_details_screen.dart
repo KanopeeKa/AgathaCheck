@@ -10,6 +10,7 @@ import 'package:go_router/go_router.dart';
 import 'export_data_stub.dart' if (dart.library.html) 'export_data_web.dart';
 
 import '../../../../core/providers/api_base_url_provider.dart';
+import '../../../../core/utils/resolve_static_asset_url.dart';
 import '../../../../core/providers/locale_provider.dart';
 import '../../../../core/widgets/app_logo_title.dart';
 import '../../../../l10n/app_localizations.dart';
@@ -48,14 +49,10 @@ class _MyDetailsScreenState extends ConsumerState<MyDetailsScreen> {
   }
 
   String _resolvePhotoUrl(String photoUrl) {
-    if (photoUrl.isEmpty) return '';
-    if (photoUrl.startsWith('http://') || photoUrl.startsWith('https://')) {
-      return photoUrl;
-    }
-    // Resolve relative upload paths against the shared API base URL
-    // ('/backend' on web) for consistency with the rest of the app.
-    final baseUrl = ref.read(apiBaseUrlProvider);
-    return '$baseUrl$photoUrl';
+    return resolveStaticAssetUrl(
+      photoUrl,
+      apiBaseUrl: ref.read(apiBaseUrlProvider),
+    );
   }
 
   void _openEditorSheet() {

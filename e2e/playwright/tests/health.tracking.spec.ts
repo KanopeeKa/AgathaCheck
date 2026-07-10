@@ -184,6 +184,7 @@ test.describe('Health tracking', () => {
 
     const updated = await getHealthEntry(baseURL, testUser.accessToken, entry.id);
     expect(updated.name).toBe('Heartworm');
+    expect(updated.dosage).toBe('2 tablets');
 
     await loginAs(page, testUser);
     const petList = new PetListPage(page);
@@ -254,17 +255,18 @@ test.describe('Health tracking', () => {
       nextDueDate: today,
     });
 
-    const snoozedDate = new Date();
-    snoozedDate.setDate(snoozedDate.getDate() + 3);
-    const newDueDate = snoozedDate.toISOString().slice(0, 10);
+    const expectedDue = new Date(`${today}T12:00:00`);
+    expectedDue.setDate(expectedDue.getDate() + 3);
+    const snoozedDueDate = expectedDue.toISOString().slice(0, 10);
 
     await updateHealthEntry(baseURL, testUser.accessToken, entry.id, {
       name: entry.name,
-      nextDueDate: newDueDate,
+      nextDueDate: snoozedDueDate,
     });
 
     const updated = await getHealthEntry(baseURL, testUser.accessToken, entry.id);
     expect(updated.name).toBe(entry.name);
+    expect(updated.next_due_date).toBe(snoozedDueDate);
 
     await loginAs(page, testUser);
     const petList = new PetListPage(page);

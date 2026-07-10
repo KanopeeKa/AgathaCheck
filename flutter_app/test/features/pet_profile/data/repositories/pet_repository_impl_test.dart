@@ -238,35 +238,52 @@ void main() {
       },
     );
 
-    test('updatePet rethrows when the server rejects the update', () async {
-      await local.addPet(testModel);
-      final remote = FakeRemoteDataSource(failUpdate: true);
-      final repo = PetRepositoryImpl(
-        local,
-        remoteDataSource: remote,
-        token: 'tok',
-      );
+    test(
+      'updatePet rolls back local write and rethrows when the server fails',
+      () async {
+        await local.addPet(testModel);
+        final remote = FakeRemoteDataSource(failUpdate: true);
+        final repo = PetRepositoryImpl(
+          local,
+          remoteDataSource: remote,
+          token: 'tok',
+        );
+        final updatedPet = testPet.copyWith(name: 'Changed');
 
-      await expectLater(
-        repo.updatePet(testPet),
-        throwsA(isA<PetRemoteException>()),
-      );
-    });
+        await expectLater(
+          repo.updatePet(updatedPet),
+          throwsA(isA<PetRemoteException>()),
+        );
+        expect(
+          (await local.getAllPets()).single.name,
+          'Buddy',
+          reason: 'failed update must restore the prior local snapshot',
+        );
+      },
+    );
 
-    test('deletePet rethrows when the server rejects the delete', () async {
-      await local.addPet(testModel);
-      final remote = FakeRemoteDataSource(failDelete: true);
-      final repo = PetRepositoryImpl(
-        local,
-        remoteDataSource: remote,
-        token: 'tok',
-      );
+    test(
+      'deletePet rolls back local write and rethrows when the server fails',
+      () async {
+        await local.addPet(testModel);
+        final remote = FakeRemoteDataSource(failDelete: true);
+        final repo = PetRepositoryImpl(
+          local,
+          remoteDataSource: remote,
+          token: 'tok',
+        );
 
-      await expectLater(
-        repo.deletePet('test-id'),
-        throwsA(isA<PetRemoteException>()),
-      );
-    });
+        await expectLater(
+          repo.deletePet('test-id'),
+          throwsA(isA<PetRemoteException>()),
+        );
+        expect(
+          (await local.getAllPets()).single.id,
+          'test-id',
+          reason: 'failed delete must restore the prior local snapshot',
+        );
+      },
+    );
 
     test('addPet persists locally when the server accepts it', () async {
       final remote = FakeRemoteDataSource();

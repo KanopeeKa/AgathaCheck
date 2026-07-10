@@ -39,6 +39,65 @@ void main() {
     });
   });
 
+  group('migrateLegacyTokensFromPrefs', () {
+    test(
+      'copies prefs tokens into secure storage when secure is empty',
+      () async {
+        SharedPreferences.setMockInitialValues({
+          'auth_access_token': 'legacy-access',
+          'auth_refresh_token': 'legacy-refresh',
+        });
+        final prefs = await SharedPreferences.getInstance();
+        final secure = <String, String>{};
+
+        await migrateLegacyTokensFromPrefs(
+          prefs: prefs,
+          readSecure: (key) async => secure[key],
+          writeSecure: (key, value) async => secure[key] = value,
+        );
+
+        expect(secure['auth_access_token'], 'legacy-access');
+        expect(secure['auth_refresh_token'], 'legacy-refresh');
+        expect(prefs.getString('auth_access_token'), isNull);
+        expect(prefs.getString('auth_refresh_token'), isNull);
+      },
+    );
+
+    test('does not overwrite existing secure tokens', () async {
+      SharedPreferences.setMockInitialValues({
+        'auth_access_token': 'legacy-access',
+        'auth_refresh_token': 'legacy-refresh',
+      });
+      final prefs = await SharedPreferences.getInstance();
+      final secure = <String, String>{'auth_access_token': 'secure-access'};
+
+      await migrateLegacyTokensFromPrefs(
+        prefs: prefs,
+        readSecure: (key) async => secure[key],
+        writeSecure: (key, value) async => secure[key] = value,
+      );
+
+      expect(secure['auth_access_token'], 'secure-access');
+      expect(secure.containsKey('auth_refresh_token'), isFalse);
+      expect(prefs.getString('auth_access_token'), 'legacy-access');
+      expect(prefs.getString('auth_refresh_token'), 'legacy-refresh');
+    });
+
+    test('no-op when both stores are empty', () async {
+      SharedPreferences.setMockInitialValues({});
+      final prefs = await SharedPreferences.getInstance();
+      final secure = <String, String>{};
+
+      await migrateLegacyTokensFromPrefs(
+        prefs: prefs,
+        readSecure: (key) async => secure[key],
+        writeSecure: (key, value) async => secure[key] = value,
+      );
+
+      expect(secure, isEmpty);
+    });
+  });
+
   group('createTokenStore platform selection', () {
     late SharedPreferences prefs;
     setUp(() async {

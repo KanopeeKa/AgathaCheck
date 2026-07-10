@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/providers/api_base_url_provider.dart';
+import '../../../../core/utils/resolve_static_asset_url.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../auth/presentation/widgets/profile_photo_avatar.dart';
@@ -22,9 +23,10 @@ class OrganizationEmergencyContactCard extends ConsumerWidget {
   final AppLocalizations l;
 
   String _resolvePhotoUrl(WidgetRef ref, String? path) {
-    if (path == null || path.isEmpty) return '';
-    if (path.startsWith('http://') || path.startsWith('https://')) return path;
-    return '${ref.read(apiBaseUrlProvider)}$path';
+    return resolveStaticAssetUrl(
+      path ?? '',
+      apiBaseUrl: ref.read(apiBaseUrlProvider),
+    );
   }
 
   @override
