@@ -196,6 +196,26 @@ Tracks planned and completed refactor / quality work. See also `docs/refactoring
 
 ---
 
+## Sprint 10 — Flutter 3.44 / Dart 3.12 toolchain upgrade (planned)
+
+**Goal:** Upgrade Flutter 3.32 → 3.44 (Dart 3.8 → 3.12); unblock blocked pub Dependabot PRs (#77–#81).  
+**Execution plan:** `docs/sprint-10-flutter-344-execution-plan.md`  
+**Integration branch:** `cursor/sprint-10-flutter-344-integration-c246` → single PR to `main`
+
+| # | Action | Status | Agent / notes |
+|---|--------|--------|---------------|
+| 10.A | Foundation: CI pins, SDK constraints, docs | Planned | `foundation-toolchain` — workflows + `pubspec.yaml` SDK only |
+| 10.B | Pub batch: fl_chart, pdf, printing, mockito, flutter_lints | Planned | `pub-upgrade` — lockfiles + `build_runner` |
+| 10.C | `fl_chart` 1.x migration (`weight_chart.dart`) | Planned | `fl-chart-migration` |
+| 10.D | `flutter_lints` 6 analyze cleanup | Planned | `lints-cleanup` |
+| 10.E | Full `./scripts/pre-push.sh`; rebase Dependabot #77–#81 | Planned | Coordinator |
+
+**Out of scope:** Babel 8 (#73, #75) — close/ignore until separate decision.
+
+**Sprint 10 exit criteria:** CI green on Flutter 3.44; blocked pub PRs merged or superseded; UAT deploy smoke passes.
+
+---
+
 ## Parallel-agent ownership matrix (reference)
 
 Use this template when spawning agents on an integration branch:
@@ -216,6 +236,7 @@ Use this template when spawning agents on an integration branch:
 
 | Date | Change |
 |---|---|
+| 2026-07-10 | Sprint 10 planned: Flutter 3.44 / Dart 3.12 upgrade; execution plan `docs/sprint-10-flutter-344-execution-plan.md` |
 | 2026-07-10 | Sprint 9 merged #129: Bugbot remediation (token migration, photo URLs, pet sync rollback, E2E hardening); dart-foster audit |
 | 2026-07-09 | Sprint 7: GDPR data-rights E2E; BDD gate 105/165; subscriptions E2E deferred (EU billing review) |
 | 2026-07-09 | Sprint 6 complete (#116): 113/165 BDD; org custody + help FAQ |
