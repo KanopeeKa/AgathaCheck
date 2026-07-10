@@ -148,6 +148,52 @@ Tracks planned and completed refactor / quality work. See also `docs/refactoring
 
 ---
 
+## Sprint 9 — Bugbot remediation + Dart foster parity audit (2026-07-10)
+
+**Goal:** Investigate and fix still-valid Bugbot findings from merged PRs #2, #3, #99, #102; audit stale branch `cursor/dart-org-foster-parity-b4c2` for relevance vs supersession.
+
+**Integration branch:** `cursor/sprint-9-bugbot-remediation-integration-2799` → single PR to `main` when exit criteria met.
+
+### In-flight PRs — do not touch
+
+| PR | Branch | Avoid paths |
+|----|--------|-------------|
+| #126 | `cursor/to-do-screen-pet-info-1fba` | `health_entry_card*`, `health_dashboard*`, `health_entry_model*`, `pet_providers.dart` |
+| #128 | `cursor/agent-workflow-pause-uat-fixes-3842` | `.github/**`, `docs/github-issue-workflow.md`, `flutter_app/web/.htaccess` |
+| #127 | `cursor/fix-deploy-uat-env-if-3842` | `.github/workflows/deploy-uat.yml` (superseded by #128) |
+
+**Coordinator:** rebase integration on `origin/main` after #126/#128 merge; resolve conflicts before final PR.
+
+### Ownership map (spawned agents)
+
+| Phase | Agent | Branch | Owns | Bugbot source | Exit criteria |
+|-------|-------|--------|------|---------------|---------------|
+| 0 | `dart-foster-audit` | `cursor/sprint-9-dart-foster-audit-2799` | `docs/sprint-9-dart-foster-audit.md` only (read-only compare) | stale `dart-org-foster-parity-b4c2` | Written verdict: cherry-pick / partial / superseded / obsolete |
+| 1a | `flutter-token-migration` | `cursor/sprint-9-token-migration-2799` | `flutter_app/lib/features/auth/data/token_store.dart`, `flutter_app/test/features/auth/data/token_store_test.dart` | PR #3 High | Prefs→Secure migration on mobile upgrade; tests green |
+| 1b | `flutter-photo-url` | `cursor/sprint-9-photo-url-fix-2799` | shared photo URL helper + `my_details_screen.dart`, org/sharing call sites using wrong `/backend` prefix for `/uploads` | PR #2 Medium | `/uploads` resolves to site root on web |
+| 1c | `flutter-pet-sync` | `cursor/sprint-9-pet-sync-rollback-2799` | `pet_repository_impl.dart`, `pet_repository_impl_test.dart` | PR #2 Medium | Remote update/delete failure rolls back local state |
+| 1d | `e2e-notifications` | `cursor/sprint-9-e2e-notifications-2799` | `e2e/playwright/pages/notifications.page.ts`, `notifications.spec.ts` | PR #99 Medium | Badge scoped to app-bar bell; `expectNoBadgeVisible` asserts absence |
+| 1e | `e2e-vet-health` | `cursor/sprint-9-e2e-vet-health-2799` | `vet-list.page.ts`, `health.tracking.spec.ts`, vet detail helpers | PR #102 Low–Med | Vet menu targets named card; snooze/dosage/GET-vet assertions |
+
+**Deferred (audit-dependent):** Dart org `501` stubs (`placements_routes.dart` etc.) — action only if `dart-foster-audit` recommends cherry-pick.
+
+**Sprint 9 exit criteria:**
+
+- All agent branches merged to integration; `./scripts/pre-push.sh` green on integration
+- Audit doc published; valid Bugbot items fixed or documented false-positive
+- No edits under in-flight PR paths until those PRs land on `main`
+
+| # | Action | Status | PR / notes |
+|---|--------|--------|------------|
+| 9.0 | Dart foster parity branch audit | **In progress** | `dart-foster-audit` agent |
+| 9.1 | Mobile token store migration | **In progress** | `flutter-token-migration` agent |
+| 9.2 | Web upload photo URL resolution | **In progress** | `flutter-photo-url` agent |
+| 9.3 | Pet repo remote-failure rollback | **In progress** | `flutter-pet-sync` agent |
+| 9.4 | E2E notification badge scoping | **In progress** | `e2e-notifications` agent |
+| 9.5 | E2E vet/health assertion hardening | **In progress** | `e2e-vet-health` agent |
+
+---
+
 ## Parallel-agent ownership matrix (reference)
 
 Use this template when spawning agents on an integration branch:
