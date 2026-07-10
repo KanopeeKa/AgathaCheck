@@ -3,8 +3,6 @@ name: Agent dispatch
 on:
   issues:
     types: [labeled]
-  schedule:
-    - cron: '*/30 * * * *'
   workflow_dispatch:
     inputs:
       issue_number:
@@ -27,7 +25,6 @@ jobs:
   dispatch:
     name: Dispatch Cursor agent
     if: >
-      github.event_name == 'schedule' ||
       github.event_name == 'workflow_dispatch' ||
       (github.event_name == 'issues' && github.event.label.name == 'agent-approved')
     runs-on: ubuntu-latest
