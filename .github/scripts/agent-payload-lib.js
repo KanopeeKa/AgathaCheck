@@ -185,9 +185,9 @@ The agent could not complete this issue autonomously.
 
 **Reason:** ${reason}
 
-Labels \`blocked\` and \`question\` were added. Project status stays **In Progress**.
+Labels \`blocked\` and \`question\` were added. The \`human-reviewed\` label was removed to pause the workflow.
 
-Please update the issue, remove \`blocked\` and \`question\`, then re-add \`human-reviewed\` to re-run triage.`;
+Please update the issue, then re-add \`human-reviewed\` to re-run triage (which will clear \`question\` when checks pass).`;
 }
 
 module.exports = {

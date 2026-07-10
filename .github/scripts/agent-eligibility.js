@@ -59,6 +59,7 @@ async function findEligibleIssues({
       const issue = entry.issue;
       if (entry.status !== 'Ready') continue;
       if (!hasLabel(issue, 'agent-approved')) continue;
+      if (!hasLabel(issue, 'human-reviewed')) continue;
       candidates.push(issue);
     }
   } else {

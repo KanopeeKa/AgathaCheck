@@ -210,7 +210,7 @@ async function listProjectIssues({ projectId, statusFieldId, projectsPat }) {
 
 async function searchEligibleIssues(owner, repo, token) {
   const q = encodeURIComponent(
-    `repo:${owner}/${repo} is:issue is:open label:agent-approved -label:busy -label:manual-only -label:question -label:blocked`,
+    `repo:${owner}/${repo} is:issue is:open label:agent-approved label:human-reviewed -label:busy -label:manual-only -label:blocked`,
   );
   const data = await rest('GET', `/search/issues?q=${q}&per_page=20`, token);
   return data.items || [];

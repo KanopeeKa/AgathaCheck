@@ -312,7 +312,7 @@ Please plan and implement this work with human review. When updated, you may re-
   return `${marker}
 ## Triage result: more information needed
 
-The deterministic checker could not approve this issue yet. Please update the issue body with the missing fields, then remove the \`question\` label and re-add \`human-reviewed\` when ready.
+The deterministic checker could not approve this issue yet. Please update the issue body with the missing fields, then re-add \`human-reviewed\` when ready (triage will clear \`question\` automatically when checks pass).
 
 **Missing or insufficient fields:**
 ${missingList}
