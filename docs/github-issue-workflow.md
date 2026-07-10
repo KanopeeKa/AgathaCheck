@@ -105,7 +105,6 @@ Dispatch is **single-threaded** (`concurrency: agent-dispatch`) — one issue at
 Triggers:
 
 - `agent-approved` label added (immediate, after triage)
-- Cron every 30 minutes (reconciliation)
 - Manual `workflow_dispatch` (optional `issue_number`, `dry_run`)
 
 ### Sanitized task payload
@@ -205,7 +204,7 @@ For organization-owned repos, use `--org <login>` instead.
 ### Monitoring and debugging
 
 - **Dispatch logs:** Actions → **Agent dispatch**
-- **Run polling:** Actions → **Agent monitor** (every 10 minutes)
+- **Run polling:** Actions → **Agent monitor** (manual `workflow_dispatch` only; scheduled polling disabled)
 - **Issue comment marker:** `<!-- cursor-agent-run: {...} -->` stores `agentId`, `runId`, status
 - **Cursor UI:** follow the agent URL posted in the dispatch comment
 - **Dry run:** `workflow_dispatch` on **Agent dispatch** with `dry_run: true`
