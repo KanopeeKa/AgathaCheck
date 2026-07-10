@@ -187,7 +187,12 @@ jobs:
   agent-uat-notify:
     name: Notify linked agent issue
     needs: [prod-ready]
-    if: always() && contains(env.DEPLOY_REF, '-issue-')
+    # Job-level `if` cannot reference workflow `env`; inline the deploy ref expression.
+    if: >-
+      always() && (
+        contains(github.ref_name, '-issue-') ||
+        (github.event_name == 'workflow_dispatch' && contains(github.event.inputs.deploy_ref, '-issue-'))
+      )
     runs-on: ubuntu-latest
     permissions:
       issues: write
