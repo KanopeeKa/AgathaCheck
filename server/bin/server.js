@@ -103,7 +103,7 @@ export function createApp(customPool, comparePassword) {
 
   const flutterWebDir = path.resolve(getServerDir(), '../../flutter_app/build/web');
   app.use(express.static(flutterWebDir));
-  app.get('*', (req, res) => {
+  app.get('/*splat', (req, res) => {
     res.sendFile(path.join(flutterWebDir, 'index.html'), (err) => {
       if (err) {
         res.status(404).json({ error: 'Not found' });
