@@ -41,6 +41,7 @@ class HealthEntry {
     this.notes = '',
     this.healthIssueId,
     this.healthIssueName,
+    this.petName,
     this.remindDaysBefore = 1,
     this.createdAt,
     this.updatedAt,
@@ -93,6 +94,9 @@ class HealthEntry {
 
   /// The title of the linked health issue, if any.
   final String? healthIssueName;
+
+  /// Pet display name from the API (denormalized for list views).
+  final String? petName;
 
   /// How many days before the due date to send a reminder notification.
   final int remindDaysBefore;
@@ -162,6 +166,7 @@ class HealthEntry {
     String? notes,
     String? healthIssueId,
     String? healthIssueName,
+    String? petName,
     bool clearHealthIssueId = false,
     int? remindDaysBefore,
     DateTime? createdAt,
@@ -190,6 +195,7 @@ class HealthEntry {
       healthIssueName: clearHealthIssueId
           ? null
           : (healthIssueName ?? this.healthIssueName),
+      petName: petName ?? this.petName,
       remindDaysBefore: remindDaysBefore ?? this.remindDaysBefore,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,

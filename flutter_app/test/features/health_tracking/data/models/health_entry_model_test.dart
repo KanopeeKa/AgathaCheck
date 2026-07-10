@@ -20,6 +20,7 @@ void main() {
       'notes': 'Give with food',
       'health_issue_id': 'issue-42',
       'health_issue_title': 'Heart condition',
+      'pet_name': 'Buddy',
       'remind_days_before': 3,
       'created_at': '2025-01-01T00:00:00.000Z',
       'updated_at': '2025-01-15T00:00:00.000Z',
@@ -46,6 +47,7 @@ void main() {
       expect(model.notes, 'Give with food');
       expect(model.healthIssueId, 'issue-42');
       expect(model.healthIssueName, 'Heart condition');
+      expect(model.petName, 'Buddy');
       expect(model.remindDaysBefore, 3);
       expect(model.createdAt, isNotNull);
       expect(model.createdAt!.year, 2025);

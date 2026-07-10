@@ -32,22 +32,7 @@ class HealthDashboardEntryList extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l = AppLocalizations.of(context)!;
     final entriesAsync = ref.watch(filteredHealthEntriesProvider(type));
-    final petsAsync = ref.watch(allPetsIncludingOrgProvider);
-
-    final allPets = petsAsync.valueOrNull ?? <Pet>[];
-    final petMap = {for (final p in allPets) p.id: p};
-
-    final filteredPetIds = orgFilter == null
-        ? null
-        : orgFilter == '_personal'
-        ? allPets
-              .where((p) => p.organizationId == null)
-              .map((p) => p.id)
-              .toSet()
-        : allPets
-              .where((p) => p.organizationName == orgFilter)
-              .map((p) => p.id)
-              .toSet();
+    final petsAsync = ref.watch(petListProvider);
 
     return entriesAsync.when(
       loading: () => const Center(child: CircularProgressIndicator()),
@@ -72,78 +57,126 @@ class HealthDashboardEntryList extends ConsumerWidget {
           ],
         ),
       ),
-      data: (allEntries) {
-        final entries = filteredPetIds == null
-            ? allEntries
-            : allEntries
-                  .where((e) => filteredPetIds.contains(e.petId))
-                  .toList();
-        if (entries.isEmpty) {
-          return Center(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                ExcludeSemantics(
-                  child: Icon(
-                    Icons.list_alt,
-                    size: 64,
-                    color: Theme.of(context).colorScheme.outline,
-                  ),
-                ),
-                const SizedBox(height: 16),
-                Text(
-                  type == null
-                      ? l.noEntriesYet
-                      : l.noTypeEntriesYet(type!.label.toLowerCase()),
-                  style: Theme.of(context).textTheme.titleMedium,
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  l.tapPlusToAdd,
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: Theme.of(context).colorScheme.outline,
-                  ),
-                ),
-              ],
+      data: (allEntries) => petsAsync.when(
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (error, stack) => Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                Icons.error_outline,
+                semanticLabel: 'Error',
+                size: 48,
+                color: Theme.of(context).colorScheme.error,
+              ),
+              const SizedBox(height: 16),
+              Text('Error loading pets:\n$error', textAlign: TextAlign.center),
+              const SizedBox(height: 16),
+              FilledButton(
+                onPressed: () => ref.invalidate(petListProvider),
+                child: Text(l.retry),
+              ),
+            ],
+          ),
+        ),
+        data: (allPets) =>
+            _buildEntryList(context, ref, l, allEntries, allPets),
+      ),
+    );
+  }
+
+  Widget _buildEntryList(
+    BuildContext context,
+    WidgetRef ref,
+    AppLocalizations l,
+    List<HealthEntry> allEntries,
+    List<Pet> allPets,
+  ) {
+    final petMap = {for (final p in allPets) p.id: p};
+
+    final filteredPetIds = orgFilter == null
+        ? null
+        : orgFilter == '_personal'
+        ? allPets
+              .where((p) => p.organizationId == null)
+              .map((p) => p.id)
+              .toSet()
+        : allPets
+              .where((p) => p.organizationName == orgFilter)
+              .map((p) => p.id)
+              .toSet();
+
+    final entries = filteredPetIds == null
+        ? allEntries
+        : allEntries.where((e) => filteredPetIds.contains(e.petId)).toList();
+    if (entries.isEmpty) {
+      return Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ExcludeSemantics(
+              child: Icon(
+                Icons.list_alt,
+                size: 64,
+                color: Theme.of(context).colorScheme.outline,
+              ),
+            ),
+            const SizedBox(height: 16),
+            Text(
+              type == null
+                  ? l.noEntriesYet
+                  : l.noTypeEntriesYet(type!.label.toLowerCase()),
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
+            const SizedBox(height: 8),
+            Text(
+              l.tapPlusToAdd,
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                color: Theme.of(context).colorScheme.outline,
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
+    final groups = _buildGroups(context, entries, petMap);
+
+    return RefreshIndicator(
+      onRefresh: () async {
+        ref.invalidate(petListProvider);
+        await Future.wait([
+          ref.read(healthEntriesNotifierProvider.notifier).refresh(),
+          ref.read(petListProvider.future),
+        ]);
+      },
+      child: ListView.builder(
+        padding: const EdgeInsets.all(12),
+        itemCount: groups.length,
+        itemBuilder: (context, index) {
+          final group = groups[index];
+          if (group is _GroupHeader) {
+            return _buildHeader(context, group.title);
+          }
+          final item = group as _GroupEntry;
+          final isCareEvent = item.entry.type == HealthEntryType.familyEvent;
+          final editRoute = isCareEvent
+              ? '/pet/${item.entry.petId}/other/edit/${item.entry.id}'
+              : '/health/edit/${item.entry.id}';
+          return Padding(
+            padding: const EdgeInsets.only(bottom: 6),
+            child: HealthEntryCard(
+              entry: item.entry,
+              pet: petMap[item.entry.petId],
+              healthIssueName: item.entry.healthIssueName,
+              onTap: () => context.go(editRoute),
+              onMarkTaken: () => _markTaken(context, ref, item.entry),
+              onSnooze: (days) => _snooze(context, ref, item.entry, days),
+              onUndoComplete: () => _undoComplete(context, ref, item.entry),
             ),
           );
-        }
-
-        final groups = _buildGroups(context, entries, petMap);
-
-        return RefreshIndicator(
-          onRefresh: () =>
-              ref.read(healthEntriesNotifierProvider.notifier).refresh(),
-          child: ListView.builder(
-            padding: const EdgeInsets.all(12),
-            itemCount: groups.length,
-            itemBuilder: (context, index) {
-              final group = groups[index];
-              if (group is _GroupHeader) {
-                return _buildHeader(context, group.title);
-              }
-              final item = group as _GroupEntry;
-              final isCareEvent =
-                  item.entry.type == HealthEntryType.familyEvent;
-              final editRoute = isCareEvent
-                  ? '/pet/${item.entry.petId}/other/edit/${item.entry.id}'
-                  : '/health/edit/${item.entry.id}';
-              return Padding(
-                padding: const EdgeInsets.only(bottom: 6),
-                child: HealthEntryCard(
-                  entry: item.entry,
-                  pet: petMap[item.entry.petId],
-                  healthIssueName: item.entry.healthIssueName,
-                  onTap: () => context.go(editRoute),
-                  onMarkTaken: () => _markTaken(context, ref, item.entry),
-                  onSnooze: (days) => _snooze(context, ref, item.entry, days),
-                  onUndoComplete: () => _undoComplete(context, ref, item.entry),
-                ),
-              );
-            },
-          ),
-        );
-      },
+        },
+      ),
     );
   }
 
@@ -252,7 +285,7 @@ class HealthDashboardEntryList extends ConsumerWidget {
   ) {
     final grouped = <String, List<HealthEntry>>{};
     for (final e in entries) {
-      final petName = petMap[e.petId]?.name ?? 'Unknown Pet';
+      final petName = petMap[e.petId]?.name ?? e.petName ?? 'Unknown Pet';
       grouped.putIfAbsent(petName, () => []).add(e);
     }
 

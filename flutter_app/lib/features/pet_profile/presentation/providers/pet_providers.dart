@@ -217,10 +217,12 @@ final petByIdProvider = FutureProvider.family<Pet?, String>((ref, id) async {
   return pets.where((p) => p.id == id).firstOrNull;
 });
 
+/// All pets visible to the user (owned, shared, foster, org) with local photo merge.
+///
+/// Uses [getAllPetsUseCaseProvider] so photos stored locally as `data:` URLs are
+/// preserved — the raw `/api/pets/all` response omits them.
 final allPetsIncludingOrgProvider = FutureProvider<List<Pet>>((ref) async {
   final token = ref.watch(_accessTokenProvider);
   if (token == null || token.isEmpty) return [];
-  final remote = ref.watch(petRemoteDataSourceProvider);
-  final models = await remote.getAllPetsIncludingOrg(token);
-  return models.map((m) => m.toEntity()).toList();
+  return ref.read(getAllPetsUseCaseProvider).call();
 });

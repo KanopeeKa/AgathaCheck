@@ -7,10 +7,24 @@ import '../../../pet_profile/domain/entities/pet.dart';
 import '../../domain/entities/health_entry.dart';
 
 class HealthEntryPetStrip extends StatelessWidget {
-  const HealthEntryPetStrip({super.key, this.pet, required this.colorScheme});
+  const HealthEntryPetStrip({
+    super.key,
+    this.pet,
+    this.petName,
+    required this.colorScheme,
+  });
 
   final Pet? pet;
+  final String? petName;
   final ColorScheme colorScheme;
+
+  String get _displayName {
+    final fromPet = pet?.name;
+    if (fromPet != null && fromPet.isNotEmpty) return fromPet;
+    final fromEntry = petName;
+    if (fromEntry != null && fromEntry.isNotEmpty) return fromEntry;
+    return '?';
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -30,7 +44,7 @@ class HealthEntryPetStrip extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 2),
             child: Text(
-              pet?.name ?? '?',
+              _displayName,
               style: theme.textTheme.labelSmall?.copyWith(
                 fontSize: 9,
                 fontWeight: FontWeight.w600,
@@ -49,7 +63,11 @@ class HealthEntryPetStrip extends StatelessWidget {
   Widget _buildAvatar(Color petColor) {
     if (pet?.photoPath != null && pet!.photoPath!.isNotEmpty) {
       try {
-        final bytes = base64Decode(pet!.photoPath!);
+        var data = pet!.photoPath!;
+        if (data.contains(',')) {
+          data = data.split(',').last;
+        }
+        final bytes = base64Decode(data);
         return Container(
           width: 30,
           height: 30,
