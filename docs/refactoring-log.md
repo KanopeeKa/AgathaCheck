@@ -192,6 +192,8 @@ Tracks planned and completed refactor / quality work. See also `docs/refactoring
 | 9.4 | E2E notification badge scoping | **Done** | Scoped badge assertions |
 | 9.5 | E2E vet/health assertion hardening | **Done** | Named vet menu + snooze/dosage/GET status |
 
+**Exit:** Merged to `main` (#129).
+
 ---
 
 ## Parallel-agent ownership matrix (reference)
@@ -214,6 +216,7 @@ Use this template when spawning agents on an integration branch:
 
 | Date | Change |
 |---|---|
+| 2026-07-10 | Sprint 9 merged #129: Bugbot remediation (token migration, photo URLs, pet sync rollback, E2E hardening); dart-foster audit |
 | 2026-07-09 | Sprint 7: GDPR data-rights E2E; BDD gate 105/165; subscriptions E2E deferred (EU billing review) |
 | 2026-07-09 | Sprint 6 complete (#116): 113/165 BDD; org custody + help FAQ |
 | 2026-07-08 | Sprint 5.5–5.6: GDPR `/me/export` full payload; BDD priority tags (16 P0 / 111 P1 / 34 P2) |
