@@ -19,7 +19,7 @@
     "express-rate-limit": "^8.5.2",
     "jsonwebtoken": "^9.0.3",
     "multer": "^2.2.0",
-    "nodemailer": "^9.0.1",
+    "nodemailer": "^9.0.3",
     "pg": "^8.10.0",
     "pino": "^10.3.1",
     "sinon": "^21.0.3",
