@@ -40,14 +40,24 @@ export class VetListPage {
     ).toHaveCount(n, { timeout: 30_000 });
   }
 
-  /** Open the three-dot options menu for the first vet card matching `name`. */
+  /** Open the three-dot options menu for the vet card matching `name`. */
   async openVetMenu(name: string): Promise<void> {
-    // Find the vet options button within the card for the given vet name.
-    // Since MergeSemantics may merge children, we locate the nearest "Vet options"
-    // button after the vet name text appears.
     await this.expectVetVisible(name);
-    await this.page.getByRole('button', { name: 'Vet options' }).first().click();
-    await refreshFlutterAccessibility(this.page);
+    const escaped = name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const namePattern = new RegExp(`Veterinarian:\\s*${escaped}(?:,|$)`);
+    const vetCards = this.page.getByRole('button', { name: /Veterinarian:/ });
+    const cardCount = await vetCards.count();
+    for (let i = 0; i < cardCount; i++) {
+      const card = vetCards.nth(i);
+      const accessibleName =
+        (await card.getAttribute('aria-label')) ?? (await card.innerText());
+      if (namePattern.test(accessibleName)) {
+        await this.page.getByRole('button', { name: 'Vet options' }).nth(i).click();
+        await refreshFlutterAccessibility(this.page);
+        return;
+      }
+    }
+    throw new Error(`Could not find vet options menu for "${name}"`);
   }
 
   async clickEditVet(name: string): Promise<void> {
