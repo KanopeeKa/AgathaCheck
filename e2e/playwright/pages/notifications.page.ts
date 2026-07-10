@@ -67,23 +67,30 @@ export class NotificationsPage {
   }
 
   /**
-   * Check for a badge on the notifications icon in the app bar.
-   * The badge is a Text widget child of the bell icon Stack; we look for a
-   * numeric string sibling of the "Notifications" button.
+   * Flutter renders the bell IconButton and unread badge Text as siblings inside
+   * a Stack; scope lookups to that parent so we don't match unrelated numbers.
    */
-  async expectBadgeVisible(count: number): Promise<void> {
-    await this.page
-      .getByText(String(count), { exact: true })
+  private notificationsBadgeScope() {
+    return this.page
+      .getByRole('button', { name: 'Notifications' })
       .first()
-      .waitFor({ timeout: 10_000 });
+      .locator('xpath=..');
   }
 
+  /** Assert the unread-count badge on the app-bar notifications control. */
+  async expectBadgeVisible(count: number): Promise<void> {
+    const label = count > 99 ? '99+' : String(count);
+    await expect(
+      this.notificationsBadgeScope().getByText(label, { exact: true }),
+    ).toBeVisible({ timeout: 10_000 });
+  }
+
+  /** Assert no unread-count badge on the app-bar notifications control. */
   async expectNoBadgeVisible(): Promise<void> {
-    // After all notifications are read the badge container is removed from the
-    // widget tree so its text content disappears.
-    await this.page.waitForTimeout(500);
-    // We can't enumerate "absence of all possible counts" generically, so we
-    // rely on an API-level assertion in the test itself; this method simply
-    // waits for the DOM to settle.
+    await expect(
+      this.notificationsBadgeScope().getByText(/^(?:99\+|[1-9]\d?)$/, {
+        exact: true,
+      }),
+    ).toHaveCount(0, { timeout: 10_000 });
   }
 }
