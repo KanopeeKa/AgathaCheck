@@ -37,7 +37,7 @@ Use a single Project **Status** field with these values:
 | Label | Meaning |
 |-------|---------|
 | `human-reviewed` | A maintainer has manually reviewed the issue. **Adding this label triggers the deterministic triage workflow.** |
-| `question` | More information is needed at any point in the workflow. Add a comment explaining what is missing. |
+| `question` | More information is needed. Informational only — does **not** pause the workflow. |
 | `busy` | A process or agent is currently working on this issue. Do not pick it up concurrently. Remove when work stops or ownership transfers. |
 | `manual-only` | Never send this issue to autonomous implementation. Requires human execution only. |
 | `agent-approved` | The issue passed the deterministic policy gate and is eligible for Cursor. |
@@ -48,24 +48,24 @@ Use a single Project **Status** field with these values:
 ```
 Backlog → Human Reviewed → [Auto Check] → Ready → In Progress → In Main → In UAT → Done
                                     ↓
-                              question label (loop back when answered)
+              remove human-reviewed (pause) — re-add when answered
 ```
 
 1. **Backlog** — New issues enter here after filing via a form.
 2. **Human Reviewed** — A maintainer reviews the issue: confirms clarity, priority, and that it belongs in the backlog. Move the status to **Human Reviewed** and add the `human-reviewed` label.
 3. **Auto Check** (process, not a status) — The [triage workflow](../.github/workflows/triage-human-reviewed.yml) runs when `human-reviewed` is applied:
    - If the issue is complete and safe → move to **Ready** and apply `agent-approved`.
-   - If more information is needed → add `question`, comment on what is missing, and move the issue to **Backlog** until resolved.
+   - If more information is needed → add `question`, **remove `human-reviewed`** (pauses the workflow), comment on what is missing, and move the issue to **Backlog** until resolved.
    - If the issue must not be automated → add `manual-only` and leave status in **Human Reviewed**.
 4. **Ready** — Issue is approved for implementation. The [agent dispatch workflow](../.github/workflows/agent-dispatch.yml) picks it up automatically when `agent-approved` is present and status is **Ready**.
-5. **In Progress** — Cursor agent dispatched (`busy` added). Stays here while the PR is open. If blocked, add `blocked` + `question` but keep **In Progress**.
+5. **In Progress** — Cursor agent dispatched (`busy` added). Stays here while the PR is open. If blocked, add `blocked` + `question`, **remove `human-reviewed`** (pauses dispatch), but keep **In Progress**.
 6. **In Main** — After the agent PR merges to `main` ([merge handler](../.github/workflows/issue-agent-pr-merge.yml)).
 7. **In UAT** — After UAT deploy succeeds for the linked `release/uat-YYMMDD-issue-<N>` branch (`deploy-uat.yml` notify job).
 8. **Done** — Validation complete; close the issue.
 
-Throughout the workflow, use `busy` to signal active work and `question` when blocked on missing information.
+Throughout the workflow, use `busy` to signal active work. Use `question` for visibility when more information is needed; **workflow pause is controlled by removing `human-reviewed`**.
 
-To re-run triage after updating an issue, remove `question` and `blocked` (if present) and re-add `human-reviewed`.
+To re-run triage after updating an issue, re-add `human-reviewed` (triage clears `question` and `blocked` automatically when checks pass).
 
 `busy` is removed when the agent PR merges to `main`.
 
@@ -94,7 +94,9 @@ An issue is dispatched when **all** are true:
 
 - Project status **Ready** (when project secrets configured; otherwise label-only fallback)
 - Labels: `agent-approved`
-- Labels **not** present: `busy`, `manual-only`, `question`, `blocked`
+- Labels **not** present: `busy`, `manual-only`, `blocked`
+- Labels **required**: `human-reviewed` (workflow pause when removed)
+- `question` is informational and does not block dispatch
 - Passes deterministic preflight (re-checks risky scope)
 - No active `<!-- cursor-agent-run: ... -->` marker with status `running`
 
@@ -122,12 +124,12 @@ The agent must run `./scripts/pre-push-changed.sh` and open a PR with `Refs #<n>
 |---------|--------|----------------|----------|
 | Dispatched | +`busy` | **In Progress** | — |
 | PR opened | keep `busy` | **In Progress** | — |
-| Blocked / failed | +`blocked`, +`question`, −`busy` | **In Progress** | `KanopeeKa` |
+| Blocked / failed | +`blocked`, +`question`, −`busy`, −`human-reviewed` | **In Progress** | `KanopeeKa` |
 | PR merged | −`busy` | **In Main** | — |
 | UAT deploy OK | — | **In UAT** | — |
-| UAT deploy fail | +`question` | unchanged | `KanopeeKa` |
+| UAT deploy fail | +`question`, −`human-reviewed` | unchanged | `KanopeeKa` |
 
-To retry after a block: fix the issue, remove `blocked` and `question`, re-add `human-reviewed`.
+To retry after a block: update the issue, then re-add `human-reviewed` (triage clears `question` / `blocked` when checks pass).
 
 ### Safety boundaries
 

@@ -48,7 +48,7 @@ async function main() {
   });
 
   const labelsToAdd = [];
-  const labelsToRemove = new Set(['agent-approved', 'question', 'manual-only']);
+  const labelsToRemove = new Set(['agent-approved', 'question', 'manual-only', 'blocked']);
 
   if (result.decision === 'pass') {
     labelsToAdd.push('agent-approved');
@@ -59,6 +59,7 @@ async function main() {
   } else {
     labelsToAdd.push('question');
     labelsToRemove.delete('question');
+    labelsToRemove.add('human-reviewed');
   }
 
   await setLabels(owner, repo, issueNumber, labelsToAdd, [...labelsToRemove], token);

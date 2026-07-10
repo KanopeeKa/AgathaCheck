@@ -94,7 +94,14 @@ async function markBlocked({
   projectId,
   statusFieldId,
 }) {
-  await setLabels(owner, repo, issueNumber, ['blocked', 'question'], ['busy'], token);
+  await setLabels(
+    owner,
+    repo,
+    issueNumber,
+    ['blocked', 'question'],
+    ['busy', 'human-reviewed'],
+    token,
+  );
   await assignIssue(owner, repo, issueNumber, ASSIGNEE, token);
 
   const updatedMarker = {

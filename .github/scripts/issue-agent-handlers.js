@@ -203,7 +203,7 @@ Validate on UAT, then move the issue to **Done** and close when complete.`,
     return { issueNumber, status: 'In UAT' };
   }
 
-  await setLabels(owner, repo, issueNumber, ['question'], [], token);
+  await setLabels(owner, repo, issueNumber, ['question'], ['human-reviewed'], token);
   await assignIssue(owner, repo, issueNumber, ASSIGNEE, token);
 
   await upsertMarkerComment({
@@ -219,7 +219,7 @@ Branch \`${branchName}\` deployment did not pass all gates.
 - Workflow: ${workflowUrl}
 - Conclusion: **${conclusion}**
 
-Assigned @${ASSIGNEE} for investigation. The \`question\` label was added.`,
+Assigned @${ASSIGNEE} for investigation. The \`question\` label was added and \`human-reviewed\` was removed to pause the workflow until resolved.`,
     token,
   });
 
