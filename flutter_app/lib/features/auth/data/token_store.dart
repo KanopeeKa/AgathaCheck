@@ -46,29 +46,91 @@ class PrefsTokenStore implements TokenStore {
   }
 }
 
+/// One-time migration for app upgrades that switched mobile from
+/// [PrefsTokenStore] to [SecureTokenStore]: copy legacy SharedPreferences
+/// tokens into secure storage when secure storage is empty, then clear prefs.
+@visibleForTesting
+Future<void> migrateLegacyTokensFromPrefs({
+  required SharedPreferences prefs,
+  required Future<String?> Function(String key) readSecure,
+  required Future<void> Function(String key, String value) writeSecure,
+}) async {
+  final secureAccess = await readSecure(_accessTokenKey);
+  final secureRefresh = await readSecure(_refreshTokenKey);
+  if (secureAccess != null || secureRefresh != null) return;
+
+  final prefsAccess = prefs.getString(_accessTokenKey);
+  final prefsRefresh = prefs.getString(_refreshTokenKey);
+  if (prefsAccess == null && prefsRefresh == null) return;
+
+  if (prefsAccess != null) {
+    await writeSecure(_accessTokenKey, prefsAccess);
+  }
+  if (prefsRefresh != null) {
+    await writeSecure(_refreshTokenKey, prefsRefresh);
+  }
+  await prefs.remove(_accessTokenKey);
+  await prefs.remove(_refreshTokenKey);
+}
+
 /// flutter_secure_storage-backed store for mobile (iOS Keychain / Android
 /// EncryptedSharedPreferences/Keystore).
 class SecureTokenStore implements TokenStore {
-  SecureTokenStore(this._storage);
+  SecureTokenStore(this._storage, {SharedPreferences? legacyPrefs})
+      : _legacyPrefs = legacyPrefs;
+
   final FlutterSecureStorage _storage;
+  final SharedPreferences? _legacyPrefs;
+  bool _migrationAttempted = false;
+
+  Future<void> _maybeMigrateFromPrefs() async {
+    if (_migrationAttempted || _legacyPrefs == null) return;
+    _migrationAttempted = true;
+    await migrateLegacyTokensFromPrefs(
+      prefs: _legacyPrefs!,
+      readSecure: (key) => _storage.read(key: key),
+      writeSecure: (key, value) => _storage.write(key: key, value: value),
+    );
+  }
+
+  Future<void> _clearLegacyPrefs() async {
+    if (_legacyPrefs == null) return;
+    await _legacyPrefs!.remove(_accessTokenKey);
+    await _legacyPrefs!.remove(_refreshTokenKey);
+  }
 
   @override
-  Future<String?> readAccessToken() => _storage.read(key: _accessTokenKey);
+  Future<String?> readAccessToken() async {
+    await _maybeMigrateFromPrefs();
+    return _storage.read(key: _accessTokenKey);
+  }
+
   @override
-  Future<String?> readRefreshToken() => _storage.read(key: _refreshTokenKey);
+  Future<String?> readRefreshToken() async {
+    await _maybeMigrateFromPrefs();
+    return _storage.read(key: _refreshTokenKey);
+  }
+
   @override
-  Future<void> writeAccessToken(String token) =>
-      _storage.write(key: _accessTokenKey, value: token);
+  Future<void> writeAccessToken(String token) async {
+    await _maybeMigrateFromPrefs();
+    await _storage.write(key: _accessTokenKey, value: token);
+    await _clearLegacyPrefs();
+  }
+
   @override
   Future<void> writeTokens(String access, String refresh) async {
+    await _maybeMigrateFromPrefs();
     await _storage.write(key: _accessTokenKey, value: access);
     await _storage.write(key: _refreshTokenKey, value: refresh);
+    await _clearLegacyPrefs();
   }
 
   @override
   Future<void> clear() async {
     await _storage.delete(key: _accessTokenKey);
     await _storage.delete(key: _refreshTokenKey);
+    await _clearLegacyPrefs();
   }
 }
 
@@ -78,7 +140,7 @@ TokenStore createTokenStore(SharedPreferences prefs) {
   if (!kIsWeb &&
       (defaultTargetPlatform == TargetPlatform.android ||
           defaultTargetPlatform == TargetPlatform.iOS)) {
-    return SecureTokenStore(const FlutterSecureStorage());
+    return SecureTokenStore(const FlutterSecureStorage(), legacyPrefs: prefs);
   }
   return PrefsTokenStore(prefs);
 }
