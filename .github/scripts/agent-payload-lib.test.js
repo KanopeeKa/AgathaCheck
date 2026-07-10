@@ -81,6 +81,25 @@ test('preflight rejects busy issues', () => {
   assert.equal(result.ok, false);
 });
 
+test('preflight requires human-reviewed label', () => {
+  const result = preflightIssue({
+    title: 'Test',
+    body: 'body long enough for testing preflight checks here',
+    labels: [{ name: 'agent-approved' }],
+  });
+  assert.equal(result.ok, false);
+  assert.match(result.reason, /human-reviewed/);
+});
+
+test('preflight allows question label when human-reviewed present', () => {
+  const result = preflightIssue({
+    title: 'Test',
+    body: 'body long enough for testing preflight checks here',
+    labels: [{ name: 'agent-approved' }, { name: 'human-reviewed' }, { name: 'question' }],
+  });
+  assert.equal(result.ok, true);
+});
+
 test('findForbiddenPaths flags workflow edits', () => {
   const forbidden = findForbiddenPaths([
     'flutter_app/lib/main.dart',

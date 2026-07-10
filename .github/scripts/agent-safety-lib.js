@@ -44,7 +44,6 @@ function issueHasBlockingLabels(labels) {
   return (
     normalized.includes('busy') ||
     normalized.includes('manual-only') ||
-    normalized.includes('question') ||
     normalized.includes('blocked')
   );
 }
@@ -58,6 +57,13 @@ function preflightIssue(issue) {
 
   if (!labels.map((l) => l.toLowerCase()).includes('agent-approved')) {
     return { ok: false, reason: 'missing agent-approved label' };
+  }
+
+  if (!labels.map((l) => l.toLowerCase()).includes('human-reviewed')) {
+    return {
+      ok: false,
+      reason: 'missing human-reviewed label (workflow paused until human re-review)',
+    };
   }
 
   if (issueHasBlockingLabels(labels)) {
