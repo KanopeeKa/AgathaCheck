@@ -213,6 +213,27 @@ For organization-owned repos, use `--org <login>` instead.
 
 Current UAT deploy (`deploy-uat.yml`) is FTP-based and does not automatically apply database migrations or restart the server. The merge handler pushes `release/uat-*` branches and dispatches deploy; the **Notify linked agent issue** job sets **In UAT** when all UAT gates pass.
 
+#### CloudLinux `node_modules` (cPanel Node.js Selector)
+
+UAT backend dependencies are **not** shipped over FTP. CloudLinux stores packages under `~/nodevenv/...` and expects **`backend/node_modules` to be a symlink** it creates when you click **Run NPM Install** in **Setup Node.js App**.
+
+| Do | Don't |
+|----|-------|
+| Deploy `package.json` + `package-lock.json` via FTP | Upload or keep a real `backend/node_modules/` folder on the server |
+| Run **Run NPM Install** in cPanel after `package.json` changes | Run plain `npm install` in SSH outside the CloudLinux venv |
+| Delete a stale real `backend/node_modules` once, then use cPanel npm | Assume destroying/recreating the Node app removes FTP files |
+
+The deploy workflow strips any local `server/node_modules` before FTP and excludes `node_modules` from the upload. **FTP does not delete** an existing remote folder — a leftover real `node_modules` from an older SSH/cPanel install must be removed manually once.
+
+**Verify backend after deploy:**
+
+```bash
+curl -sk -w "\nHTTP %{http_code}\n" "https://uat.agathatrack.com/backend/health"
+# expect: {"status":"OK"} and HTTP 200
+```
+
+**Apache SPA routing:** `flutter_app/web/.htaccess` excludes `/backend` from the Flutter `index.html` fallback so API routes reach Passenger.
+
 **Recommended CD improvements** (future):
 
 1. Add SSH deploy step with `UAT_SSH_HOST`, `UAT_SSH_KEY`, `UAT_DATABASE_URL` secrets.

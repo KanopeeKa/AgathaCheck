@@ -1,7 +1,9 @@
 # SPA fallback for Flutter path URLs (e.g. /landing) on Apache/cPanel hosting.
+# Do not rewrite /backend/* — that path is served by Passenger/Node.
 <IfModule mod_rewrite.c>
 RewriteEngine On
 RewriteBase /
+RewriteCond %{REQUEST_URI} !^/backend(/|$)
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule ^ index.html [L]

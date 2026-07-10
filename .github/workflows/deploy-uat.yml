@@ -74,6 +74,9 @@ jobs:
           mkdir -p server/db server/tmp
           cp -R db/migrations server/db/migrations
           date -u +"restart %Y-%m-%dT%H:%M:%SZ" > server/tmp/restart.txt
+          # CloudLinux/cPanel owns backend/node_modules as a symlink into nodevenv/.
+          # Never ship a real folder from CI (stale copies break "Run NPM Install").
+          rm -rf server/node_modules
           ls server/db/migrations
           cat server/tmp/restart.txt
 
@@ -86,6 +89,10 @@ jobs:
           server-dir: ./backend/
           local-dir: server/
           exclude: |
+            **/.git*
+            **/.git*/**
+            node_modules
+            node_modules/**
             **/node_modules/**
             **/test/**
             **/.dart_tool/**

@@ -71,6 +71,7 @@ jobs:
         run: |
           mkdir -p server/db
           cp -R db/migrations server/db/migrations
+          rm -rf server/node_modules
           ls server/db/migrations
 
       - name: Deploy backend to agathatrack.com/backend/
@@ -82,6 +83,10 @@ jobs:
           server-dir: /public_html/Prod/backend/
           local-dir: server/
           exclude: |
+            **/.git*
+            **/.git*/**
+            node_modules
+            node_modules/**
             **/node_modules/**
             **/test/**
             **/.dart_tool/**
