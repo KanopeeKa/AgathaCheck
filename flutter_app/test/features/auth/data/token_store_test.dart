@@ -40,25 +40,28 @@ void main() {
   });
 
   group('migrateLegacyTokensFromPrefs', () {
-    test('copies prefs tokens into secure storage when secure is empty', () async {
-      SharedPreferences.setMockInitialValues({
-        'auth_access_token': 'legacy-access',
-        'auth_refresh_token': 'legacy-refresh',
-      });
-      final prefs = await SharedPreferences.getInstance();
-      final secure = <String, String>{};
+    test(
+      'copies prefs tokens into secure storage when secure is empty',
+      () async {
+        SharedPreferences.setMockInitialValues({
+          'auth_access_token': 'legacy-access',
+          'auth_refresh_token': 'legacy-refresh',
+        });
+        final prefs = await SharedPreferences.getInstance();
+        final secure = <String, String>{};
 
-      await migrateLegacyTokensFromPrefs(
-        prefs: prefs,
-        readSecure: (key) async => secure[key],
-        writeSecure: (key, value) async => secure[key] = value,
-      );
+        await migrateLegacyTokensFromPrefs(
+          prefs: prefs,
+          readSecure: (key) async => secure[key],
+          writeSecure: (key, value) async => secure[key] = value,
+        );
 
-      expect(secure['auth_access_token'], 'legacy-access');
-      expect(secure['auth_refresh_token'], 'legacy-refresh');
-      expect(prefs.getString('auth_access_token'), isNull);
-      expect(prefs.getString('auth_refresh_token'), isNull);
-    });
+        expect(secure['auth_access_token'], 'legacy-access');
+        expect(secure['auth_refresh_token'], 'legacy-refresh');
+        expect(prefs.getString('auth_access_token'), isNull);
+        expect(prefs.getString('auth_refresh_token'), isNull);
+      },
+    );
 
     test('does not overwrite existing secure tokens', () async {
       SharedPreferences.setMockInitialValues({
@@ -66,9 +69,7 @@ void main() {
         'auth_refresh_token': 'legacy-refresh',
       });
       final prefs = await SharedPreferences.getInstance();
-      final secure = <String, String>{
-        'auth_access_token': 'secure-access',
-      };
+      final secure = <String, String>{'auth_access_token': 'secure-access'};
 
       await migrateLegacyTokensFromPrefs(
         prefs: prefs,

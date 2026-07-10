@@ -184,7 +184,7 @@ test.describe('Health tracking', () => {
 
     const updated = await getHealthEntry(baseURL, testUser.accessToken, entry.id);
     expect(updated.name).toBe('Heartworm');
-    expect((updated as { dosage: string }).dosage).toBe('2 tablets');
+    expect(updated.dosage).toBe('2 tablets');
 
     await loginAs(page, testUser);
     const petList = new PetListPage(page);
@@ -266,7 +266,7 @@ test.describe('Health tracking', () => {
 
     const updated = await getHealthEntry(baseURL, testUser.accessToken, entry.id);
     expect(updated.name).toBe(entry.name);
-    expect((updated as { next_due_date: string }).next_due_date).toBe(snoozedDueDate);
+    expect(updated.next_due_date).toBe(snoozedDueDate);
 
     await loginAs(page, testUser);
     const petList = new PetListPage(page);

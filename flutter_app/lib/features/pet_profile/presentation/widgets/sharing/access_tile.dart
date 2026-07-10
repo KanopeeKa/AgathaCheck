@@ -36,9 +36,7 @@ class AccessTile extends ConsumerWidget {
         backgroundImage: resolvedPhotoUrl.isNotEmpty
             ? NetworkImage(resolvedPhotoUrl)
             : null,
-        child: resolvedPhotoUrl.isEmpty
-            ? Text(initials)
-            : null,
+        child: resolvedPhotoUrl.isEmpty ? Text(initials) : null,
       ),
       title: Text(displayName),
       subtitle: Text(

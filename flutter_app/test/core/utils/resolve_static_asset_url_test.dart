@@ -4,10 +4,7 @@ import 'package:pet_profile_app/core/utils/resolve_static_asset_url.dart';
 void main() {
   group('resolveStaticAssetUrl', () {
     test('returns empty string for empty path', () {
-      expect(
-        resolveStaticAssetUrl('', apiBaseUrl: '/backend'),
-        '',
-      );
+      expect(resolveStaticAssetUrl('', apiBaseUrl: '/backend'), '');
     });
 
     test('passes through absolute http(s) URLs', () {

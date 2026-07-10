@@ -3,10 +3,7 @@
 /// Static uploads under `/uploads/` are served at site root, not under the API
 /// prefix (`/backend` on web). Other relative paths are prefixed with
 /// [apiBaseUrl].
-String resolveStaticAssetUrl(
-  String path, {
-  required String apiBaseUrl,
-}) {
+String resolveStaticAssetUrl(String path, {required String apiBaseUrl}) {
   if (path.isEmpty) return '';
   if (path.startsWith('http://') || path.startsWith('https://')) {
     return path;

@@ -575,11 +575,14 @@ export async function updateVetDetails(
   }>,
 ): Promise<TestVet> {
   // PUT requires all fields; fetch the current vet first to fill defaults.
-  const current = await (
-    await fetch(apiUrl(`/vets/${vetId}`, baseURL), {
-      headers: { Authorization: `Bearer ${token}` },
-    })
-  ).json() as TestVet;
+  const getRes = await fetch(apiUrl(`/vets/${vetId}`, baseURL), {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!getRes.ok) {
+    const body = await getRes.text();
+    throw new Error(`getVetById failed (${getRes.status}): ${body}`);
+  }
+  const current = (await getRes.json()) as TestVet;
 
   const res = await fetch(apiUrl(`/vets/${vetId}`, baseURL), {
     method: 'PUT',
@@ -674,7 +677,13 @@ export async function getHealthEntry(
   baseURL: string,
   token: string,
   entryId: string,
-): Promise<{ status: string; completed_on: string | null; name: string }> {
+): Promise<{
+  status: string;
+  completed_on: string | null;
+  name: string;
+  dosage?: string | null;
+  next_due_date?: string | null;
+}> {
   const res = await fetch(apiUrl(`/health-entries/${entryId}`, baseURL), {
     headers: { Authorization: `Bearer ${token}` },
   });

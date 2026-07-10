@@ -77,7 +77,7 @@ Future<void> migrateLegacyTokensFromPrefs({
 /// EncryptedSharedPreferences/Keystore).
 class SecureTokenStore implements TokenStore {
   SecureTokenStore(this._storage, {SharedPreferences? legacyPrefs})
-      : _legacyPrefs = legacyPrefs;
+    : _legacyPrefs = legacyPrefs;
 
   final FlutterSecureStorage _storage;
   final SharedPreferences? _legacyPrefs;
