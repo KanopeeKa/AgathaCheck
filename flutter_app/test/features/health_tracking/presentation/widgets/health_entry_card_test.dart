@@ -86,10 +86,7 @@ void main() {
           supportedLocales: AppLocalizations.supportedLocales,
           locale: const Locale('en'),
           home: Scaffold(
-            body: HealthEntryCard(
-              entry: entryWithPetName,
-              onMarkTaken: () {},
-            ),
+            body: HealthEntryCard(entry: entryWithPetName, onMarkTaken: () {}),
           ),
         ),
       );

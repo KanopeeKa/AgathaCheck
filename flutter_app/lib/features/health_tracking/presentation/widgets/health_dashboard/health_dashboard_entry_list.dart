@@ -79,13 +79,8 @@ class HealthDashboardEntryList extends ConsumerWidget {
             ],
           ),
         ),
-        data: (allPets) => _buildEntryList(
-          context,
-          ref,
-          l,
-          allEntries,
-          allPets,
-        ),
+        data: (allPets) =>
+            _buildEntryList(context, ref, l, allEntries, allPets),
       ),
     );
   }
@@ -113,9 +108,7 @@ class HealthDashboardEntryList extends ConsumerWidget {
 
     final entries = filteredPetIds == null
         ? allEntries
-        : allEntries
-              .where((e) => filteredPetIds.contains(e.petId))
-              .toList();
+        : allEntries.where((e) => filteredPetIds.contains(e.petId)).toList();
     if (entries.isEmpty) {
       return Center(
         child: Column(
@@ -166,8 +159,7 @@ class HealthDashboardEntryList extends ConsumerWidget {
             return _buildHeader(context, group.title);
           }
           final item = group as _GroupEntry;
-          final isCareEvent =
-              item.entry.type == HealthEntryType.familyEvent;
+          final isCareEvent = item.entry.type == HealthEntryType.familyEvent;
           final editRoute = isCareEvent
               ? '/pet/${item.entry.petId}/other/edit/${item.entry.id}'
               : '/health/edit/${item.entry.id}';
