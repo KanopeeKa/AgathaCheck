@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/providers/api_base_url_provider.dart';
+import '../../../../core/utils/resolve_static_asset_url.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../domain/entities/organization.dart';
@@ -15,9 +16,10 @@ class OrgCard extends ConsumerWidget {
   final VoidCallback? onTap;
 
   String _resolveUrl(WidgetRef ref, String path) {
-    if (path.isEmpty) return '';
-    if (path.startsWith('http://') || path.startsWith('https://')) return path;
-    return '${ref.read(apiBaseUrlProvider)}$path';
+    return resolveStaticAssetUrl(
+      path,
+      apiBaseUrl: ref.read(apiBaseUrlProvider),
+    );
   }
 
   @override

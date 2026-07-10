@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../../core/providers/api_base_url_provider.dart';
+import '../../../../../core/utils/resolve_static_asset_url.dart';
 import '../../../../../l10n/app_localizations.dart';
 import '../../../../sharing/domain/entities/pet_access.dart';
 import '../../../../sharing/presentation/providers/sharing_providers.dart';
@@ -21,15 +23,20 @@ class AccessTile extends ConsumerWidget {
     final isGuardian = access.role == PetAccessRole.guardian;
     final roleLabel = isGuardian ? l.guardian : l.sharing;
 
+    final resolvedPhotoUrl = resolveStaticAssetUrl(
+      user?.photoUrl ?? '',
+      apiBaseUrl: ref.read(apiBaseUrlProvider),
+    );
+
     return ListTile(
       contentPadding: EdgeInsets.zero,
       leading: CircleAvatar(
         backgroundColor: theme.colorScheme.primaryContainer,
         foregroundColor: theme.colorScheme.onPrimaryContainer,
-        backgroundImage: user?.photoUrl != null && user!.photoUrl.isNotEmpty
-            ? NetworkImage(user.photoUrl)
+        backgroundImage: resolvedPhotoUrl.isNotEmpty
+            ? NetworkImage(resolvedPhotoUrl)
             : null,
-        child: user?.photoUrl == null || user!.photoUrl.isEmpty
+        child: resolvedPhotoUrl.isEmpty
             ? Text(initials)
             : null,
       ),
