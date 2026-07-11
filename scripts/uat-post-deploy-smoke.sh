@@ -43,7 +43,7 @@ error_hint() {
     directory_listing)
       cat <<'EOF'
 Apache is serving /backend/ as a static directory listing — Passenger/Node is not running.
-cPanel: Node.js App Manager → app root .../backend, startup file bin/server.js, set JWT_SECRET,
+cPanel: Node.js App Manager → app root .../backend, startup file bin/start.js, set JWT_SECRET,
 Run NPM Install (CloudLinux symlink for node_modules), then Restart.
 If a real backend/node_modules folder exists on the server, delete it once before Run NPM Install.
 EOF
