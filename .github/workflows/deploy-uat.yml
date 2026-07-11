@@ -106,11 +106,52 @@ jobs:
           echo "New migration files in this deploy:"
           ls -1 db/migrations/*.sql 2>/dev/null || true
 
-      # Optional SSH restart (UAT_SSH_ENABLED=true). o2switch often blocks GitHub Actions
-      # egress on port 22 — continue-on-error so FTP deploy still gates smoke/E2E.
+      # Optional SSH restart (UAT_SSH_ENABLED=true). Whitelist runner IP via o2switch API
+      # before SSH; continue-on-error so FTP deploy still gates smoke/E2E.
+      - name: Get runner public IP for o2switch SSH whitelist
+        id: runner_ip
+        if: vars.UAT_SSH_ENABLED == 'true'
+        uses: haythem/public-ip@v1.3
+
+      - name: o2switch SSH whitelist — clear CI slots
+        id: whitelist_clear
+        if: vars.UAT_SSH_ENABLED == 'true'
+        continue-on-error: true
+        env:
+          CPANEL_SERVER: ${{ secrets.UAT_SSH_HOST }}
+          CPANEL_USER: ${{ secrets.UAT_SSH_USER }}
+          CPANEL_TOKEN: ${{ secrets.UAT_CPANEL_API_TOKEN }}
+        run: bash scripts/o2switch-ssh-whitelist.sh remove_all
+
+      - name: o2switch SSH whitelist — allow GitHub runner
+        id: whitelist_add
+        if: vars.UAT_SSH_ENABLED == 'true' && steps.whitelist_clear.outcome == 'success'
+        continue-on-error: true
+        env:
+          CPANEL_SERVER: ${{ secrets.UAT_SSH_HOST }}
+          CPANEL_USER: ${{ secrets.UAT_SSH_USER }}
+          CPANEL_TOKEN: ${{ secrets.UAT_CPANEL_API_TOKEN }}
+          RUNNER_IP: ${{ steps.runner_ip.outputs.ipv4 }}
+        run: bash scripts/o2switch-ssh-whitelist.sh add
+
+      - name: o2switch SSH whitelist — verify runner IP
+        id: whitelist_verify
+        if: vars.UAT_SSH_ENABLED == 'true' && steps.whitelist_add.outcome == 'success'
+        continue-on-error: true
+        env:
+          CPANEL_SERVER: ${{ secrets.UAT_SSH_HOST }}
+          CPANEL_USER: ${{ secrets.UAT_SSH_USER }}
+          CPANEL_TOKEN: ${{ secrets.UAT_CPANEL_API_TOKEN }}
+        run: |
+          bash scripts/o2switch-ssh-whitelist.sh list | grep -q "${{ steps.runner_ip.outputs.ipv4 }}"
+
+      - name: Wait for o2switch firewall to apply
+        if: vars.UAT_SSH_ENABLED == 'true' && steps.whitelist_verify.outcome == 'success'
+        run: sleep 30
+
       - name: Install dependencies & restart Node.js app (UAT SSH)
         id: uat_ssh
-        if: vars.UAT_SSH_ENABLED == 'true'
+        if: vars.UAT_SSH_ENABLED == 'true' && steps.whitelist_verify.outcome == 'success'
         continue-on-error: true
         uses: appleboy/ssh-action@v1.0.3
         with:
@@ -127,12 +168,28 @@ jobs:
             mkdir -p tmp
             touch tmp/restart.txt
 
-      - name: UAT SSH unreachable reminder
-        if: vars.UAT_SSH_ENABLED == 'true' && steps.uat_ssh.outcome == 'failure'
+      - name: o2switch SSH whitelist — cleanup runner IP
+        if: always() && steps.runner_ip.outcome == 'success'
+        continue-on-error: true
+        env:
+          CPANEL_SERVER: ${{ secrets.UAT_SSH_HOST }}
+          CPANEL_USER: ${{ secrets.UAT_SSH_USER }}
+          CPANEL_TOKEN: ${{ secrets.UAT_CPANEL_API_TOKEN }}
+          RUNNER_IP: ${{ steps.runner_ip.outputs.ipv4 }}
+        run: bash scripts/o2switch-ssh-whitelist.sh remove
+
+      - name: UAT SSH whitelist or connect reminder
+        if: >-
+          vars.UAT_SSH_ENABLED == 'true' && (
+            steps.whitelist_clear.outcome == 'failure' ||
+            steps.whitelist_add.outcome == 'failure' ||
+            steps.whitelist_verify.outcome == 'failure' ||
+            steps.uat_ssh.outcome == 'failure'
+          )
         run: |
-          echo "::warning::UAT SSH step failed (often dial tcp i/o timeout — o2switch blocks GitHub Actions on port 22)."
-          echo "::warning::FTP deploy succeeded. If package.json changed, run NPM Install + Restart in cPanel."
-          echo "::warning::Or set repository variable UAT_SSH_ENABLED=false until SSH from CI is allowed."
+          echo "::warning::UAT SSH automation did not complete successfully."
+          echo "::warning::Add UAT_CPANEL_API_TOKEN (cPanel → Manage API Tokens) to the UAT environment."
+          echo "::warning::FTP deploy succeeded — run NPM Install + Restart in cPanel if needed."
 
   # Post-deploy HTTP smoke — validates DNS, TLS, Passenger restart, API prefix.
   # continue-on-error: let localhost E2E finish; prod-ready is the aggregate gate.

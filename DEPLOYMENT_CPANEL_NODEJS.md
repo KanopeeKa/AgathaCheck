@@ -143,11 +143,26 @@ Expected response: `{"status":"OK"}`
 
 ### 9. **GitHub Actions SSH (optional)**
 
-The deploy workflow can SSH after FTP when the repository variable `UAT_SSH_ENABLED=true` and `UAT_SSH_*` secrets are set. **o2switch often blocks GitHub Actions IP ranges on port 22** (`dial tcp … i/o timeout`) even when SSH from your home IP works.
+When `UAT_SSH_ENABLED=true`, the deploy workflow:
 
-- FTP deploy still succeeds; the SSH step is non-blocking (`continue-on-error`).
-- After deploys that change `package.json`, run **Exécuter NPM Install** + **REDÉMARRER** in cPanel if CI SSH cannot connect.
-- Set `UAT_SSH_ENABLED=false` until your host allows CI egress on SSH, or use a self-hosted runner on the server.
+1. Whitelists the GitHub runner IP via o2switch **SshWhitelist** API ([docs](https://faq.o2switch.fr/cpanel/outils/exception-parefeu/))
+2. Runs `npm ci --omit=dev` + `touch tmp/restart.txt` over SSH
+3. Removes the runner IP from the whitelist when the job finishes
+
+**UAT environment secrets required for SSH:**
+
+| Secret | Value |
+|--------|--------|
+| `UAT_SSH_HOST` | cPanel server hostname (e.g. `grenouille.o2switch.net`) |
+| `UAT_SSH_USER` | cPanel username |
+| `UAT_SSH_PRIVATE_KEY` | Deploy SSH private key |
+| `UAT_CPANEL_API_TOKEN` | API token from cPanel → **Manage API Tokens** |
+| `UAT_SSH_PASSPHRASE` | Optional (only if key has passphrase) |
+| `UAT_SSH_PORT` | Optional (default `22`) |
+
+**Note:** `remove_all` at deploy start clears existing SSH whitelist entries in the cPanel tool (max 5 slots). Re-add your home IP manually if you rely on it outside CI.
+
+The SSH step uses `continue-on-error` — FTP deploy still gates smoke/E2E if SSH fails.
 
 ## Troubleshooting
 
