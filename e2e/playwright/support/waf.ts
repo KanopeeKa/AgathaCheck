@@ -1,51 +1,71 @@
 import type { Page } from '@playwright/test';
-import { setPlaywrightApiRequest } from './api-fetch';
+import { clearApiFetchTransports, setPlaywrightPage } from './api-fetch';
+import { isLiveHostingTarget } from './hosting';
 
-const LIVE_HOST_PATTERN = /agathatrack\.com/i;
 const WAF_MARKERS = ['o2s-browser-check', 'Security check', 'Test de sécurité'];
-
-export function isLiveHostingTarget(baseURL?: string): boolean {
-  const url = baseURL ?? process.env.E2E_BASE_URL ?? '';
-  return LIVE_HOST_PATTERN.test(url);
-}
 
 function pageShowsWafChallenge(html: string): boolean {
   return WAF_MARKERS.some((marker) => html.includes(marker));
 }
 
+function resolveBaseURL(baseURL?: string): string {
+  return (baseURL ?? process.env.E2E_BASE_URL ?? '').replace(/\/$/, '');
+}
+
+async function probeBackendHealth(page: Page, baseURL: string): Promise<boolean> {
+  const healthUrl = `${baseURL}/backend/health`;
+  return page.evaluate(async (url) => {
+    try {
+      const res = await fetch(url, { credentials: 'include' });
+      if (!res.ok) return false;
+      const body = await res.text();
+      return body.includes('OK');
+    } catch {
+      return false;
+    }
+  }, healthUrl);
+}
+
 /**
- * o2switch serves a JavaScript browser challenge to non-browser clients.
- * Visit the site in Playwright first so API seeding can reuse the session cookies.
+ * o2switch Tiger Protect serves a JavaScript challenge to bot-like clients.
+ * Load the app in Chromium, wait for the challenge to finish, then verify
+ * `/backend/health` via in-browser fetch (same cookie jar as the UI).
  */
 export async function passHostingWaf(page: Page, baseURL?: string): Promise<void> {
   if (!isLiveHostingTarget(baseURL)) {
     return;
   }
 
+  const root = resolveBaseURL(baseURL);
   await page.goto('/', { waitUntil: 'domcontentloaded' });
 
-  for (let attempt = 0; attempt < 12; attempt++) {
+  const deadline = Date.now() + 90_000;
+  while (Date.now() < deadline) {
     const html = await page.content();
     if (!pageShowsWafChallenge(html)) {
-      return;
+      try {
+        await page.waitForSelector('flutter-view, flt-glass-pane', { timeout: 15_000 });
+      } catch {
+        // Flutter may load on a routed path after the challenge redirect.
+      }
+      if (await probeBackendHealth(page, root)) {
+        return;
+      }
     }
-    await page.waitForTimeout(2_500);
+    await page.waitForTimeout(3_000);
   }
 
-  const html = await page.content();
-  if (pageShowsWafChallenge(html)) {
-    throw new Error('Hosting WAF challenge did not clear after visiting UAT');
-  }
+  throw new Error('Hosting WAF challenge did not clear after visiting UAT');
 }
 
-/** Warm WAF cookies and route api.ts through page.request for live UAT runs. */
+/** Warm WAF cookies and route api.ts through in-browser fetch for live UAT runs. */
 export async function prepareLiveApiAccess(page: Page, baseURL?: string): Promise<void> {
   await passHostingWaf(page, baseURL);
   if (isLiveHostingTarget(baseURL)) {
-    setPlaywrightApiRequest(page.request);
+    setPlaywrightPage(page);
   }
 }
 
 export function clearLiveApiAccess(): void {
-  setPlaywrightApiRequest(null);
+  clearApiFetchTransports();
 }

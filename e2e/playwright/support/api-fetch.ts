@@ -1,4 +1,5 @@
-import type { APIRequestContext, APIResponse } from '@playwright/test';
+import type { APIRequestContext, APIResponse, Page } from '@playwright/test';
+import { isLiveHostingTarget } from './hosting';
 
 export interface ApiFetchResponse {
   ok: boolean;
@@ -7,9 +8,15 @@ export interface ApiFetchResponse {
   json(): Promise<unknown>;
 }
 
+let playwrightPage: Page | null = null;
 let playwrightRequest: APIRequestContext | null = null;
 
-/** Route REST seeding through the browser context (shares WAF cookies on live UAT). */
+/** Route REST seeding through the open Playwright page on live UAT. */
+export function setPlaywrightPage(page: Page | null): void {
+  playwrightPage = page;
+}
+
+/** Fallback transport when browser fetch is unavailable. */
 export function setPlaywrightApiRequest(ctx: APIRequestContext | null): void {
   playwrightRequest = ctx;
 }
@@ -32,6 +39,38 @@ function wrapNodeResponse(res: Response): ApiFetchResponse {
   };
 }
 
+function wrapBrowserResult(result: { ok: boolean; status: number; text: string }): ApiFetchResponse {
+  return {
+    ok: result.ok,
+    status: result.status,
+    text: async () => result.text,
+    json: async () => JSON.parse(result.text),
+  };
+}
+
+async function browserApiFetch(
+  url: string,
+  init: {
+    method?: string;
+    headers?: Record<string, string>;
+    body?: string;
+  },
+): Promise<ApiFetchResponse> {
+  const result = await playwrightPage!.evaluate(
+    async ({ fetchUrl, fetchInit }) => {
+      const res = await fetch(fetchUrl, {
+        method: fetchInit.method ?? 'GET',
+        headers: fetchInit.headers,
+        body: fetchInit.body,
+        credentials: 'include',
+      });
+      return { ok: res.ok, status: res.status, text: await res.text() };
+    },
+    { fetchUrl: url, fetchInit: init },
+  );
+  return wrapBrowserResult(result);
+}
+
 export async function apiFetch(
   url: string,
   init: {
@@ -40,6 +79,10 @@ export async function apiFetch(
     body?: string;
   } = {},
 ): Promise<ApiFetchResponse> {
+  if (playwrightPage && isLiveHostingTarget()) {
+    return browserApiFetch(url, init);
+  }
+
   if (playwrightRequest) {
     const res = await playwrightRequest.fetch(url, {
       method: init.method,
@@ -51,4 +94,9 @@ export async function apiFetch(
 
   const res = await fetch(url, init);
   return wrapNodeResponse(res);
+}
+
+export function clearApiFetchTransports(): void {
+  playwrightPage = null;
+  playwrightRequest = null;
 }
