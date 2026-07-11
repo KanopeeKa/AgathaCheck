@@ -34,7 +34,7 @@ export class WeightTrackingPage {
   async expectEmptyState(): Promise<void> {
     await this.openSection();
     await this.page
-      .getByText('No weight data yet')
+      .getByRole('group', { name: /No weight data yet/i })
       .or(this.page.getByText(/no weight/i))
       .first()
       .waitFor({ timeout: 15_000 });
@@ -80,8 +80,10 @@ export class WeightTrackingPage {
    */
   async expectWeightEntryVisible(weight: number, unit = 'kg'): Promise<void> {
     const label = `${weight.toFixed(1)} ${unit}`;
+    const pattern = new RegExp(label.replace('.', '\\.'), 'i');
     await this.page
-      .getByText(label, { exact: false })
+      .getByRole('group', { name: pattern })
+      .or(this.page.getByText(label, { exact: false }))
       .first()
       .waitFor({ timeout: 15_000 });
   }
@@ -89,15 +91,15 @@ export class WeightTrackingPage {
   /** Count weight entry rows visible in the expanded section. */
   async expectWeightEntryCount(count: number): Promise<void> {
     await this.openSection();
-    // Weight entries are ListTile elements; their title text matches "{n.n} kg"
-    const entries = this.page.getByText(/^\d+\.\d+ (kg|lb)$/, { exact: true });
+    const entries = this.page.getByRole('group', { name: /^\d+\.\d+ (kg|lb)/ });
     await expect(entries).toHaveCount(count, { timeout: 15_000 });
   }
 
-  /** Expect the kg / lb unit segmented button to be present. */
+  /** Expect the kg / lb unit segmented control to be present. */
   async expectUnitSelectorVisible(): Promise<void> {
     await this.openSection();
-    await this.page.getByRole('button', { name: 'kg' }).waitFor({ timeout: 10_000 });
-    await this.page.getByRole('button', { name: 'lb' }).waitFor({ timeout: 10_000 });
+    // Flutter SegmentedButton exposes segments as radio controls, not buttons.
+    await this.page.getByRole('radio', { name: 'kg' }).waitFor({ timeout: 10_000 });
+    await this.page.getByRole('radio', { name: 'lb' }).waitFor({ timeout: 10_000 });
   }
 }

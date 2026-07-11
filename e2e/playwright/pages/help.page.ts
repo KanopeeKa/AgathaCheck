@@ -2,6 +2,7 @@ import type { Page } from '@playwright/test';
 import { expect } from '@playwright/test';
 import {
   dismissConsentBannerIfPresent,
+  expectAppBarTitle,
   refreshFlutterAccessibility,
 } from '../support/flutter';
 
@@ -59,10 +60,8 @@ export class HelpPage {
 
   async expectLoaded(title: string = 'Help & FAQ'): Promise<void> {
     await dismissConsentBannerIfPresent(this.page);
-    await this.page
-      .getByText(title, { exact: true })
-      .first()
-      .waitFor({ timeout: 30_000 });
+    await refreshFlutterAccessibility(this.page);
+    await expectAppBarTitle(this.page, title);
   }
 
   async expectTitle(title: string): Promise<void> {
@@ -96,7 +95,16 @@ export class HelpPage {
   }
 
   async expectSectionQuestionsVisible(sectionTitle: string, sampleQuestion: string): Promise<void> {
-    await expect(this.page.getByText(sampleQuestion, { exact: true }).first()).toBeVisible({
+    const questionPattern = new RegExp(
+      sampleQuestion.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'),
+      'i',
+    );
+    await expect(
+      this.page
+        .getByRole('button', { name: questionPattern })
+        .or(this.page.getByRole('group', { name: questionPattern }))
+        .first(),
+    ).toBeVisible({
       timeout: 15_000,
     });
   }
@@ -112,11 +120,20 @@ export class HelpPage {
   }
 
   async expectQuestionAndAnswer(question: string, answerSnippet: string): Promise<void> {
-    await expect(this.page.getByText(question, { exact: true }).first()).toBeVisible({
+    const answerPattern = new RegExp(
+      answerSnippet.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'),
+      'i',
+    );
+    await expect(this.page.getByRole('button', { name: question, exact: true }).first()).toBeVisible({
       timeout: 15_000,
     });
     await this.expandQuestion(question);
-    await expect(this.page.getByText(answerSnippet, { exact: false }).first()).toBeVisible({
+    await expect(
+      this.page
+        .getByRole('group', { name: answerPattern })
+        .or(this.page.getByText(answerSnippet, { exact: false }))
+        .first(),
+    ).toBeVisible({
       timeout: 15_000,
     });
   }
@@ -128,7 +145,7 @@ export class HelpPage {
   }
 
   async goBack(): Promise<void> {
-    await this.page.getByRole('button', { name: /go back/i }).click();
+    await this.page.getByRole('button', { name: /^Back$/i }).click();
     await this.page.waitForTimeout(500);
   }
 }

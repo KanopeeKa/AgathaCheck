@@ -1,5 +1,11 @@
 import type { Page } from '@playwright/test';
-import { dismissConsentBannerIfPresent, fillLabelledField, refreshFlutterAccessibility } from '../support/flutter';
+import { expect } from '@playwright/test';
+import {
+  dismissConsentBannerIfPresent,
+  expectAppBarTitle,
+  fillLabelledField,
+  refreshFlutterAccessibility,
+} from '../support/flutter';
 
 /**
  * My Details screen (`/my-details`).
@@ -8,25 +14,50 @@ import { dismissConsentBannerIfPresent, fillLabelledField, refreshFlutterAccessi
 export class MyDetailsPage {
   constructor(private readonly page: Page) {}
 
+  async openFromUserMenu(): Promise<void> {
+    await dismissConsentBannerIfPresent(this.page);
+    await this.page.getByRole('button', { name: /user.menu/i }).click();
+    await this.page.waitForTimeout(500);
+    await this.page
+      .getByRole('menuitem', { name: /my.details/i })
+      .or(this.page.getByText('My Details', { exact: true }))
+      .first()
+      .click();
+    await this.expectLoaded();
+  }
+
   async expectLoaded(): Promise<void> {
     await dismissConsentBannerIfPresent(this.page);
-    await this.page
-      .getByRole('heading', { name: 'My Details', exact: false })
-      .or(this.page.getByText('My Details').first())
-      .first()
-      .waitFor({ timeout: 30_000 });
+    await refreshFlutterAccessibility(this.page);
+    await expectAppBarTitle(this.page, 'My Details');
   }
 
   async expectDisplayName(name: string): Promise<void> {
-    await this.page.getByText(name, { exact: false }).first().waitFor({ timeout: 15_000 });
+    const pattern = new RegExp(name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i');
+    await expect(async () => {
+      await refreshFlutterAccessibility(this.page);
+      await expect(this.page.getByRole('button', { name: pattern }).first()).toBeVisible();
+    }).toPass({ timeout: 20_000 });
   }
 
   async expectEmail(email: string): Promise<void> {
-    await this.page.getByText(email, { exact: false }).first().waitFor({ timeout: 15_000 });
+    const pattern = new RegExp(email.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i');
+    await expect(this.page.getByRole('button', { name: pattern }).first()).toBeVisible({
+      timeout: 15_000,
+    });
   }
 
   async expectBio(bio: string): Promise<void> {
-    await this.page.getByText(bio, { exact: false }).first().waitFor({ timeout: 15_000 });
+    const pattern = new RegExp(bio.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i');
+    await expect(async () => {
+      await refreshFlutterAccessibility(this.page);
+      await expect(
+        this.page
+          .getByRole('button', { name: pattern })
+          .or(this.page.getByText(bio, { exact: false }))
+          .first(),
+      ).toBeVisible();
+    }).toPass({ timeout: 20_000 });
   }
 
   async openEditSheet(): Promise<void> {
@@ -51,7 +82,9 @@ export class MyDetailsPage {
 
   async saveProfileEdits(): Promise<void> {
     await this.page.getByRole('button', { name: 'Save', exact: true }).click();
-    await this.page.waitForTimeout(2000);
+    await this.expectProfileUpdated();
+    await this.page.waitForTimeout(500);
+    await refreshFlutterAccessibility(this.page);
   }
 
   async expectProfileUpdated(): Promise<void> {
@@ -62,13 +95,17 @@ export class MyDetailsPage {
   }
 
   async exportMyData(): Promise<void> {
-    await this.page.getByText('Export My Data', { exact: true }).click();
-    await this.page.getByText('Your data has been exported').waitFor({ timeout: 30_000 });
+    const exportButton = this.page.getByRole('button', { name: /Export My Data/i });
+    await exportButton.scrollIntoViewIfNeeded();
+    await exportButton.click();
+    await this.page.getByText('Your data has been exported').first().waitFor({ timeout: 30_000 });
   }
 
   async deleteAccount(password: string): Promise<void> {
-    await this.page.getByText('Delete Account', { exact: true }).first().click();
-    await this.page.getByRole('dialog').waitFor({ timeout: 15_000 });
+    const deleteButton = this.page.getByRole('button', { name: /Delete Account/i }).first();
+    await deleteButton.scrollIntoViewIfNeeded();
+    await deleteButton.click();
+    await this.page.getByRole('dialog', { name: 'Alert' }).waitFor({ timeout: 15_000 });
     await fillLabelledField(this.page, 'Current Password', password);
     await this.page
       .getByRole('button', { name: 'Delete Account', exact: true })

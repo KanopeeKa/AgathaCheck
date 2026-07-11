@@ -23,8 +23,14 @@ class ProfileHeaderCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return MergeSemantics(
       child: Semantics(
-        label:
-            '${user.displayName}, ${user.email}, ${user.category == 'professional_multi_pet' ? l10n.professionalMultiPet : l10n.petGuardian}',
+        label: [
+          user.displayName,
+          user.email,
+          user.category == 'professional_multi_pet'
+              ? l10n.professionalMultiPet
+              : l10n.petGuardian,
+          if (user.bio != null && user.bio!.isNotEmpty) user.bio!,
+        ].join(', '),
         child: Card(
           child: Padding(
             padding: const EdgeInsets.all(20),

@@ -41,6 +41,15 @@ export async function refreshFlutterAccessibility(page: Page): Promise<void> {
   await page.waitForTimeout(300);
 }
 
+/** AppLogoTitle exposes a banner like "Go to home {title}" in Flutter semantics. */
+export async function expectAppBarTitle(page: Page, title: string | RegExp): Promise<void> {
+  const pattern =
+    typeof title === 'string'
+      ? new RegExp(title.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i')
+      : title;
+  await page.getByRole('banner', { name: pattern }).waitFor({ timeout: 30_000 });
+}
+
 /** Dismiss the GDPR consent banner when shown (first visit). */
 export async function dismissConsentBannerIfPresent(page: Page): Promise<void> {
   const accept = page.getByRole('button', { name: 'Accept All' });
@@ -66,7 +75,14 @@ async function typeIntoField(
 ): Promise<void> {
   await field.click();
   await field.fill(value);
-  if ((await field.inputValue()) !== value) {
+  try {
+    const current = await field.inputValue({ timeout: 2_000 });
+    if (current !== value) {
+      await field.fill('');
+      await field.pressSequentially(value, { delay: 30 });
+    }
+  } catch {
+    // Flutter web semantics textboxes often lack a readable inputValue().
     await field.fill('');
     await field.pressSequentially(value, { delay: 30 });
   }
@@ -90,8 +106,10 @@ export async function fillLabelledField(
   const ariaSelectors = [
     `input[aria-label="${label}"]`,
     `input[aria-label="${label} *"]`,
+    `input[aria-label^="${label}"]`,
     `textarea[aria-label="${label}"]`,
     `textarea[aria-label="${label} *"]`,
+    `textarea[aria-label^="${label}"]`,
   ];
 
   for (const selector of ariaSelectors) {
