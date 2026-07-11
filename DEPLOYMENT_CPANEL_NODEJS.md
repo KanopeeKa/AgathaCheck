@@ -151,14 +151,16 @@ When `UAT_SSH_ENABLED=true`, the deploy workflow:
 
 **UAT environment secrets required for SSH:**
 
-| Secret | Value |
-|--------|--------|
-| `UAT_SSH_HOST` | cPanel server hostname (e.g. `grenouille.o2switch.net`) |
-| `UAT_SSH_USER` | cPanel username |
+| Secret | Where to get it |
+|--------|-----------------|
+| `UAT_CPANEL_API_TOKEN` | cPanel → **Security → Manage API Tokens** → Create (copy once) |
+| `UAT_SSH_HOST` | Server hostname (e.g. `grenouille.o2switch.net`) |
+| `UAT_SSH_USER` | cPanel username (e.g. `bixo5840`) |
 | `UAT_SSH_PRIVATE_KEY` | Deploy SSH private key |
-| `UAT_CPANEL_API_TOKEN` | API token from cPanel → **Manage API Tokens** |
 | `UAT_SSH_PASSPHRASE` | Optional (only if key has passphrase) |
 | `UAT_SSH_PORT` | Optional (default `22`) |
+
+Add these under **GitHub → Settings → Environments → UAT → Environment secrets** (not repository-level secrets — the deploy job uses `environment: UAT`).
 
 **Note:** `remove_all` at deploy start clears existing SSH whitelist entries in the cPanel tool (max 5 slots). Re-add your home IP manually if you rely on it outside CI.
 
