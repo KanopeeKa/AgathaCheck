@@ -141,6 +141,14 @@ curl -sk https://uat.agathatrack.com/backend/health
 
 Expected response: `{"status":"OK"}`
 
+### 9. **GitHub Actions SSH (optional)**
+
+The deploy workflow can SSH after FTP when the repository variable `UAT_SSH_ENABLED=true` and `UAT_SSH_*` secrets are set. **o2switch often blocks GitHub Actions IP ranges on port 22** (`dial tcp … i/o timeout`) even when SSH from your home IP works.
+
+- FTP deploy still succeeds; the SSH step is non-blocking (`continue-on-error`).
+- After deploys that change `package.json`, run **Exécuter NPM Install** + **REDÉMARRER** in cPanel if CI SSH cannot connect.
+- Set `UAT_SSH_ENABLED=false` until your host allows CI egress on SSH, or use a self-hosted runner on the server.
+
 ## Troubleshooting
 
 ### Application won't start?

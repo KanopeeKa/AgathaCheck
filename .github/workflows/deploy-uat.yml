@@ -106,9 +106,12 @@ jobs:
           echo "New migration files in this deploy:"
           ls -1 db/migrations/*.sql 2>/dev/null || true
 
-      # Optional: mirror prod SSH restart when repo variable UAT_SSH_ENABLED=true and UAT_SSH_* secrets are set.
+      # Optional SSH restart (UAT_SSH_ENABLED=true). o2switch often blocks GitHub Actions
+      # egress on port 22 — continue-on-error so FTP deploy still gates smoke/E2E.
       - name: Install dependencies & restart Node.js app (UAT SSH)
+        id: uat_ssh
         if: vars.UAT_SSH_ENABLED == 'true'
+        continue-on-error: true
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.UAT_SSH_HOST }}
@@ -123,6 +126,13 @@ jobs:
             npm ci --omit=dev
             mkdir -p tmp
             touch tmp/restart.txt
+
+      - name: UAT SSH unreachable reminder
+        if: vars.UAT_SSH_ENABLED == 'true' && steps.uat_ssh.outcome == 'failure'
+        run: |
+          echo "::warning::UAT SSH step failed (often dial tcp i/o timeout — o2switch blocks GitHub Actions on port 22)."
+          echo "::warning::FTP deploy succeeded. If package.json changed, run NPM Install + Restart in cPanel."
+          echo "::warning::Or set repository variable UAT_SSH_ENABLED=false until SSH from CI is allowed."
 
   # Post-deploy HTTP smoke — validates DNS, TLS, Passenger restart, API prefix.
   # continue-on-error: let localhost E2E finish; prod-ready is the aggregate gate.
