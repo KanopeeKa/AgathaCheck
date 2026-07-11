@@ -20,16 +20,8 @@ test.describe('GDPR data rights', () => {
     const petList = await loginAs(page, testUser);
     await petList.expectLoaded();
 
-    await page.getByRole('button', { name: /user.menu/i }).click();
-    await page.waitForTimeout(500);
-    await page
-      .getByRole('menuitem', { name: /my.details/i })
-      .or(page.getByText('My Details', { exact: true }))
-      .first()
-      .click();
-
     const myDetails = new MyDetailsPage(page);
-    await myDetails.expectLoaded();
+    await myDetails.openFromUserMenu();
     await myDetails.exportMyData();
 
     const exportPayload = await exportUserData(baseURL, testUser.accessToken);
@@ -44,16 +36,8 @@ test.describe('GDPR data rights', () => {
     const petList = await loginAs(page, testUser);
     await petList.expectLoaded();
 
-    await page.getByRole('button', { name: /user.menu/i }).click();
-    await page.waitForTimeout(500);
-    await page
-      .getByRole('menuitem', { name: /my.details/i })
-      .or(page.getByText('My Details', { exact: true }))
-      .first()
-      .click();
-
     const myDetails = new MyDetailsPage(page);
-    await myDetails.expectLoaded();
+    await myDetails.openFromUserMenu();
     await myDetails.deleteAccount(testUser.password);
 
     const landing = new LandingPage(page);

@@ -5,6 +5,7 @@
  * Scenario: Updating user profile
  */
 import { test, expect, loginAs } from '../fixtures/auth.fixture';
+import { getCurrentUser } from '../support/api';
 import { MyDetailsPage } from '../pages/my-details.page';
 import { LandingPage } from '../pages/landing.page';
 
@@ -36,34 +37,16 @@ test.describe('Authentication – profile and session', () => {
   }) => {
     await loginAs(page, testUser);
 
-    // Open the user menu
-    await page.getByRole('button', { name: /user.menu/i }).click();
-    await page.waitForTimeout(500);
-
-    // Click "My Details"
-    await page.getByRole('menuitem', { name: /my.details/i })
-      .or(page.getByText('My Details', { exact: true }))
-      .first()
-      .click();
-
     const myDetails = new MyDetailsPage(page);
-    await myDetails.expectLoaded();
+    await myDetails.openFromUserMenu();
     await myDetails.expectEmail(testUser.email);
   });
 
   test('user can update their first name from My Details', async ({ page, testUser }) => {
     await loginAs(page, testUser);
 
-    // Navigate to My Details via the user menu
-    await page.getByRole('button', { name: /user.menu/i }).click();
-    await page.waitForTimeout(500);
-    await page.getByRole('menuitem', { name: /my.details/i })
-      .or(page.getByText('My Details', { exact: true }))
-      .first()
-      .click();
-
     const myDetails = new MyDetailsPage(page);
-    await myDetails.expectLoaded();
+    await myDetails.openFromUserMenu();
 
     // Open the editor sheet and update first name
     await myDetails.openEditSheet();
@@ -76,18 +59,11 @@ test.describe('Authentication – profile and session', () => {
   });
 
   test('user can update their bio from My Details', async ({ page, testUser }) => {
+    const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
     await loginAs(page, testUser);
 
-    // Navigate to My Details via the user menu
-    await page.getByRole('button', { name: /user.menu/i }).click();
-    await page.waitForTimeout(500);
-    await page.getByRole('menuitem', { name: /my.details/i })
-      .or(page.getByText('My Details', { exact: true }))
-      .first()
-      .click();
-
     const myDetails = new MyDetailsPage(page);
-    await myDetails.expectLoaded();
+    await myDetails.openFromUserMenu();
 
     // Open the editor sheet and update bio
     await myDetails.openEditSheet();
@@ -96,6 +72,7 @@ test.describe('Authentication – profile and session', () => {
     await myDetails.saveProfileEdits();
 
     await myDetails.expectProfileUpdated();
-    await myDetails.expectBio(bio);
+    const profile = await getCurrentUser(baseURL, testUser.accessToken);
+    expect(profile.bio).toBe(bio);
   });
 });

@@ -122,6 +122,20 @@ export async function signupUser(
   };
 }
 
+export async function getCurrentUser(
+  baseURL: string,
+  token: string,
+): Promise<{ id: string; email: string; bio?: string; first_name?: string; last_name?: string }> {
+  const res = await apiFetch(apiUrl('/auth/me', baseURL), {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!res.ok) {
+    const body = await res.text();
+    throw new Error(`getCurrentUser failed (${res.status}): ${body}`);
+  }
+  return res.json();
+}
+
 export async function updateUserProfile(
   baseURL: string,
   token: string,

@@ -1,6 +1,6 @@
 import type { Page } from '@playwright/test';
 import { expect } from '@playwright/test';
-import { dismissConsentBannerIfPresent } from '../support/flutter';
+import { dismissConsentBannerIfPresent, expectAppBarTitle } from '../support/flutter';
 
 /**
  * Organization list screen (`/organizations`).
@@ -11,7 +11,7 @@ export class OrganizationListPage {
 
   async expectLoaded(): Promise<void> {
     await dismissConsentBannerIfPresent(this.page);
-    await this.page.getByText('My Organizations').waitFor({ timeout: 30_000 });
+    await expectAppBarTitle(this.page, 'My Organizations');
   }
 
   async openCreateForm(): Promise<void> {

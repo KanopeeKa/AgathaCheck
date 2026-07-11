@@ -1,4 +1,5 @@
 import type { Page } from '@playwright/test';
+import { escapeRegExp, refreshFlutterAccessibility, semanticsByName } from '../support/flutter';
 
 /**
  * Health dashboard (`/health`).
@@ -32,7 +33,9 @@ export class HealthDashboardPage {
   }
 
   async expectEntryVisible(name: string): Promise<void> {
-    await this.page.getByText(name, { exact: false }).first().waitFor();
+    await semanticsByName(this.page, new RegExp(escapeRegExp(name), 'i')).waitFor({
+      timeout: 15_000,
+    });
   }
 
   async openEntryForEdit(name: string): Promise<void> {
@@ -50,13 +53,16 @@ export class HealthDashboardPage {
   }
 
   async expectEntryMarkedComplete(name: string): Promise<void> {
-    await this.page.getByText(name, { exact: false }).first().waitFor();
-    await this.page.getByText('Undo', { exact: false }).first().waitFor({ timeout: 30_000 });
+    await semanticsByName(this.page, new RegExp(escapeRegExp(name), 'i')).waitFor({
+      timeout: 15_000,
+    });
+    await this.page.getByRole('button', { name: /Undo/i }).first().waitFor({ timeout: 30_000 });
   }
 
   async expectEmptyState(): Promise<void> {
     await this.page
-      .getByText('No entries yet', { exact: false })
+      .getByRole('tabpanel', { name: /No entries yet/i })
+      .or(this.page.getByText(/No entries yet/i))
       .first()
       .waitFor({ timeout: 15_000 });
   }
