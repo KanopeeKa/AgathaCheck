@@ -25,6 +25,7 @@ import {
 } from '../support/api';
 import { checkA11y } from '../support/axe';
 import { clearLiveApiAccess, prepareLiveApiAccess } from '../support/waf';
+import { createTestUser } from '../support/ui-auth';
 import { PetDetailPage } from '../pages/pet-detail.page';
 import { PetListPage } from '../pages/pet-list.page';
 import { SharedPetPage } from '../pages/shared-pet.page';
@@ -34,7 +35,7 @@ test.describe('Pet sharing', () => {
     const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
     await prepareLiveApiAccess(page, baseURL);
     try {
-      const owner = await signupUser(baseURL, { firstName: 'Alice', lastName: 'Owner' });
+      const owner = await createTestUser(page, baseURL, { firstName: 'Alice', lastName: 'Owner' });
       const pet = await createPet(baseURL, owner.accessToken, 'Bella', 'Dog');
       const link = await createShareLink(baseURL, owner.accessToken, pet.id);
 
