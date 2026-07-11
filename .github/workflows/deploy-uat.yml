@@ -106,33 +106,44 @@ jobs:
           echo "New migration files in this deploy:"
           ls -1 db/migrations/*.sql 2>/dev/null || true
 
+      # Optional: mirror prod SSH restart when repo variable UAT_SSH_ENABLED=true and UAT_SSH_* secrets are set.
+      - name: Install dependencies & restart Node.js app (UAT SSH)
+        if: vars.UAT_SSH_ENABLED == 'true'
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.UAT_SSH_HOST }}
+          username: ${{ secrets.UAT_SSH_USER }}
+          key: ${{ secrets.UAT_SSH_PRIVATE_KEY }}
+          passphrase: ${{ secrets.UAT_SSH_PASSPHRASE }}
+          port: ${{ secrets.UAT_SSH_PORT || 22 }}
+          timeout: 120s
+          script: |
+            set -e
+            cd ~/public_html/uat.agathatrack.com/backend
+            npm ci --omit=dev
+            mkdir -p tmp
+            touch tmp/restart.txt
+
   # Post-deploy HTTP smoke — validates DNS, TLS, Passenger restart, API prefix.
+  # continue-on-error: let localhost E2E finish; prod-ready is the aggregate gate.
   smoke:
     name: UAT post-deploy smoke
     needs: deploy
+    continue-on-error: true
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v4
+
       - name: Wait for UAT to become healthy
-        run: |
-          set -e
-          # UAT cPanel auto-SSL may not chain to a CA trusted by GitHub runners (curl exit 60).
-          CURL="curl -sfk"
-          for i in $(seq 1 18); do
-            if $CURL "${UAT_BASE_URL}/backend/health" | grep -q '"status":"OK"'; then
-              echo "Backend healthy after attempt $i"
-              break
-            fi
-            echo "Waiting for Passenger restart ($i/18)..."
-            sleep 10
-          done
-          $CURL "${UAT_BASE_URL}/backend/health"
-          $CURL "${UAT_BASE_URL}/landing" -o /dev/null
-          $CURL "${UAT_BASE_URL}/backend/" | grep -q 'Backend alive'
+        env:
+          UAT_BASE_URL: ${{ env.UAT_BASE_URL }}
+        run: bash scripts/uat-post-deploy-smoke.sh
 
   # Live UAT smoke E2E — runs in parallel with manual UAT; does not block deploy.
   uat-e2e-smoke:
     name: UAT live smoke E2E
     needs: [deploy, smoke]
+    if: needs.smoke.result == 'success'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
