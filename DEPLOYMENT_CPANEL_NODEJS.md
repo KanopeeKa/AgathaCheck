@@ -2,11 +2,11 @@
 
 ## Prerequisites Checklist
 
-✅ **Already Configured in cPanel:**
-- Node.js 10.24.1 runtime
-- Application root: `uat.agathatrack.com/backend`
-- Application URL: `uat.agathatrack.com:backend`
-- Application startup file: `server`
+✅ **Already Configured in cPanel (o2switch / CloudLinux nodevenv):**
+- Node.js 22.x runtime (e.g. 22.22.3)
+- Application root: `uat.agathatrack.com/backend` (on disk: `~/uat.agathatrack.com/backend`)
+- Application URL: `uat.agathatrack.com`
+- Application startup file: **`bin/start.js`** (see §4 — do **not** use `bin/server.js` on cPanel)
 - Environment variables configured:
   - `PGDATABASE`: your_db_name
   - `PGHOST`: localhost
@@ -96,30 +96,28 @@ APP_PUBLIC_URL=https://uat.agathatrack.com
 
 After changing these values, **Restart** the Node.js app. Check cPanel error logs for `Password reset email failed` — the underlying SMTP error is logged there.
 
-### 4. **Verify Application Startup File**
-Your application startup file is named `server`, which cPanel will run as:
-```bash
-node server
-```
+### 4. **Application startup file (important)**
 
-**But the actual Node.js entry point is `bin/server.js`.**
+On o2switch/cPanel, CloudLinux runs the startup file as a **script** (`node <startup-file>`). Use:
 
-**Solution**: Create a file named `server` (no extension) in your application root:
+| File | Role |
+|------|------|
+| **`bin/start.js`** | **cPanel startup file** — loads env, imports the Express app, calls `listen()` on `PORT` |
+| `bin/server.js` | App module (routes, `/backend/health`) — used by Jest and `start.js`; **not** a cPanel startup file |
 
-```bash
-#!/usr/bin/env node
-require('./bin/server.js');
-```
+Set **Fichier de démarrage** to **`bin/start.js`**.
 
-**Or, update cPanel's "Application startup file" to: `bin/server.js`**
+**Do not** point cPanel at `bin/server.js`: it only exports the Express app (ESM `export default`) and never calls `listen()`, so Passenger/nodevenv will hang or fail to spawn.
+
+**Production mode** in cPanel is fine with `bin/start.js` — it sets `NODE_ENV=production` for error redaction, JWT enforcement, and SMTP.
 
 ### 5. **Set Correct File Permissions**
 Ensure proper permissions on key files:
 
 ```bash
-chmod 755 ~/public_html/uat.agathatrack.com/backend/bin/server.js
-chmod 644 ~/public_html/uat.agathatrack.com/backend/.env
-chmod 644 ~/public_html/uat.agathatrack.com/backend/package.json
+chmod 755 ~/uat.agathatrack.com/backend/bin/start.js
+chmod 644 ~/uat.agathatrack.com/backend/.env
+chmod 644 ~/uat.agathatrack.com/backend/package.json
 ```
 
 ### 6. **CORS Configuration**
@@ -135,7 +133,11 @@ In cPanel, click "Restart":
 - Select your application
 - Click **Restart**
 
-Then verify: `curl -X GET http://uat.agathatrack.com:3000/health`
+Then verify:
+
+```bash
+curl -sk https://uat.agathatrack.com/backend/health
+```
 
 Expected response: `{"status":"OK"}`
 
@@ -143,8 +145,10 @@ Expected response: `{"status":"OK"}`
 
 ### Application won't start?
 1. Check Node.js error logs in cPanel: **Error and Debug Logs**
-2. Verify `.env` file exists and has correct credentials
-3. Verify PostgreSQL connection:
+2. **Startup file must be `bin/start.js`** — `bin/server.js` will not listen on cPanel
+3. **Environment variables** in cPanel must be `KEY=value` (no bare emails). Values with spaces or `<>` (e.g. `UAT_MAIL_FROM`) can break the CloudLinux `nodevenv` wrapper — use a plain address like `noreply@uat.agathatrack.com` first
+4. Verify `.env` file exists and has correct credentials (backup; cPanel env vars are what nodevenv uses at spawn)
+5. Verify PostgreSQL connection:
    ```bash
    psql -U your_db_user -h localhost -d your_db_name -c "SELECT 1;"
    ```

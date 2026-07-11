@@ -119,7 +119,7 @@ jobs:
           timeout: 120s
           script: |
             set -e
-            cd ~/public_html/uat.agathatrack.com/backend
+            cd ~/uat.agathatrack.com/backend
             npm ci --omit=dev
             mkdir -p tmp
             touch tmp/restart.txt
