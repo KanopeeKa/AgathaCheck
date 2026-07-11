@@ -7,7 +7,7 @@
  * Scenario: Signing up with a password shorter than 6 characters
  * Scenario: Signing up with an already registered email
  */
-import { test, expect } from '@playwright/test';
+import { test, expect } from '../fixtures/live.fixture';
 import { LandingPage } from '../pages/landing.page';
 import { PetListPage } from '../pages/pet-list.page';
 import { signupUser } from '../support/api';

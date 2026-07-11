@@ -1,6 +1,9 @@
 import { test as base, expect } from '@playwright/test';
-import { createHealthEntry, createPet, signupUser, type TestUser } from '../support/api';
-import { clearLiveApiAccess, prepareLiveApiAccess } from '../support/waf';
+import { createHealthEntry, createPet, type TestUser } from '../support/api';
+import { applyLiveHostingStealth } from '../support/stealth';
+import { createTestUser } from '../support/ui-auth';
+import { clearLiveApiAccess, passHostingWaf, prepareLiveApiAccess, resetHostingWafSession } from '../support/waf';
+import { isLiveHostingTarget } from '../support/hosting';
 import { LandingPage } from '../pages/landing.page';
 import { PetListPage } from '../pages/pet-list.page';
 
@@ -11,11 +14,16 @@ type AuthFixtures = {
 };
 
 export const test = base.extend<AuthFixtures>({
+  context: async ({ context }, use) => {
+    await applyLiveHostingStealth(context);
+    await use(context);
+  },
+
   testUser: async ({ page }, use) => {
     const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
     await prepareLiveApiAccess(page, baseURL);
     try {
-      const user = await signupUser(baseURL);
+      const user = await createTestUser(page, baseURL);
       await use(user);
     } finally {
       clearLiveApiAccess();
@@ -36,7 +44,11 @@ export { expect };
 export async function loginAs(page: import('@playwright/test').Page, user: TestUser): Promise<PetListPage> {
   const landing = new LandingPage(page);
   const petList = new PetListPage(page);
+  const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
   await page.context().clearCookies();
+  if (isLiveHostingTarget(baseURL)) {
+    resetHostingWafSession();
+  }
   await page.goto('/');
   await page.evaluate(async () => {
     window.localStorage.clear();
@@ -56,6 +68,9 @@ export async function loginAs(page: import('@playwright/test').Page, user: TestU
       );
     }
   });
+  if (isLiveHostingTarget(baseURL)) {
+    await passHostingWaf(page, baseURL);
+  }
   await landing.goto();
   await landing.login(user.email, user.password);
   await petList.expectLoaded();

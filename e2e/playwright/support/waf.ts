@@ -4,6 +4,8 @@ import { isLiveHostingTarget } from './hosting';
 
 const WAF_MARKERS = ['o2s-browser-check', 'Security check', 'Test de sécurité'];
 
+let sessionWafCleared = false;
+
 function pageShowsWafChallenge(html: string): boolean {
   return WAF_MARKERS.some((marker) => html.includes(marker));
 }
@@ -29,6 +31,18 @@ async function probeBackendHealth(page: Page, baseURL: string): Promise<HealthPr
   }, healthUrl);
 }
 
+async function waitForAppShell(page: Page, timeoutMs = 5_000): Promise<boolean> {
+  try {
+    await page.waitForSelector('flutter-view, flt-glass-pane', {
+      state: 'attached',
+      timeout: timeoutMs,
+    });
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 function backendDownMessage(baseURL: string): string {
   return [
     `UAT backend is not healthy at ${baseURL}/backend/health`,
@@ -40,44 +54,52 @@ function backendDownMessage(baseURL: string): string {
 
 /**
  * o2switch Tiger Protect serves a JavaScript challenge to bot-like clients.
- * Load the app in Chromium, wait for the challenge to finish, then verify
- * `/backend/health` via in-browser fetch (same cookie jar as the UI).
+ * Load the app in Chromium (headed on CI), wait for the challenge to finish,
+ * then verify the Flutter shell is reachable.
  */
 export async function passHostingWaf(page: Page, baseURL?: string): Promise<void> {
   if (!isLiveHostingTarget(baseURL)) {
     return;
   }
+  if (sessionWafCleared) {
+    return;
+  }
 
   const root = resolveBaseURL(baseURL);
-  await page.goto('/', { waitUntil: 'domcontentloaded' });
+  await page.goto('/landing', { waitUntil: 'domcontentloaded', timeout: 60_000 });
 
-  let sawWaf = false;
-  const deadline = Date.now() + 90_000;
+  const deadline = Date.now() + 120_000;
   while (Date.now() < deadline) {
     const html = await page.content();
     if (pageShowsWafChallenge(html)) {
-      sawWaf = true;
-      await page.waitForTimeout(3_000);
+      await page.waitForTimeout(2_000);
       continue;
     }
 
-    const health = await probeBackendHealth(page, root);
-    if (health === 'ok') {
-      return;
-    }
-    if (health === 'waf') {
-      sawWaf = true;
-      await page.waitForTimeout(3_000);
-      continue;
+    if (await waitForAppShell(page)) {
+      const health = await probeBackendHealth(page, root);
+      if (health === 'ok' || health === 'waf') {
+        sessionWafCleared = true;
+        return;
+      }
+      throw new Error(backendDownMessage(root));
     }
 
-    throw new Error(backendDownMessage(root));
+    await page.waitForTimeout(2_000);
   }
 
-  if (sawWaf) {
-    throw new Error('Hosting WAF challenge did not clear after visiting UAT');
+  if (pageShowsWafChallenge(await page.content())) {
+    throw new Error(
+      'Hosting WAF challenge did not clear after visiting UAT. '
+      + 'Whitelist GitHub Actions IPs in o2switch Tiger Protect or disable browser challenges for UAT.',
+    );
   }
   throw new Error(backendDownMessage(root));
+}
+
+/** Call after clearing cookies so the next navigation re-runs the WAF warmup. */
+export function resetHostingWafSession(): void {
+  sessionWafCleared = false;
 }
 
 /** Warm WAF cookies and route api.ts through in-browser fetch for live UAT runs. */
