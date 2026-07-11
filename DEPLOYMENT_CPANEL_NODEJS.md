@@ -141,6 +141,29 @@ curl -sk https://uat.agathatrack.com/backend/health
 
 Expected response: `{"status":"OK"}`
 
+### 9. **GitHub Actions SSH (optional)**
+
+When `UAT_SSH_ENABLED=true`, the deploy workflow:
+
+1. Whitelists the GitHub runner IP via o2switch **SshWhitelist** API ([docs](https://faq.o2switch.fr/cpanel/outils/exception-parefeu/))
+2. Runs `npm ci --omit=dev` + `touch tmp/restart.txt` over SSH
+3. Removes the runner IP from the whitelist when the job finishes
+
+**UAT environment secrets required for SSH:**
+
+| Secret | Value |
+|--------|--------|
+| `UAT_SSH_HOST` | cPanel server hostname (e.g. `grenouille.o2switch.net`) |
+| `UAT_SSH_USER` | cPanel username |
+| `UAT_SSH_PRIVATE_KEY` | Deploy SSH private key |
+| `UAT_CPANEL_API_TOKEN` | API token from cPanel → **Manage API Tokens** |
+| `UAT_SSH_PASSPHRASE` | Optional (only if key has passphrase) |
+| `UAT_SSH_PORT` | Optional (default `22`) |
+
+**Note:** `remove_all` at deploy start clears existing SSH whitelist entries in the cPanel tool (max 5 slots). Re-add your home IP manually if you rely on it outside CI.
+
+The SSH step uses `continue-on-error` — FTP deploy still gates smoke/E2E if SSH fails.
+
 ## Troubleshooting
 
 ### Application won't start?
