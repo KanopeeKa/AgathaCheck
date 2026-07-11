@@ -4,7 +4,11 @@
  *
  * Live UAT: set `E2E_TLS_INSECURE=1` in the environment (deploy workflow sets
  * `NODE_TLS_REJECT_UNAUTHORIZED=0`) when cPanel auto-SSL is not trusted by CI runners.
+ * On o2switch, call `prepareLiveApiAccess(page)` before seeding so requests reuse
+ * the browser WAF session instead of raw Node fetch (blocked with 503).
  */
+
+import { apiFetch } from './api-fetch';
 
 const API_PREFIX = process.env.E2E_API_PREFIX ?? '/backend/api';
 
@@ -90,7 +94,7 @@ export async function signupUser(
   const firstName = overrides.firstName ?? 'E2E';
   const lastName = overrides.lastName ?? 'User';
 
-  const res = await fetch(apiUrl('/auth/signup', baseURL), {
+  const res = await apiFetch(apiUrl('/auth/signup', baseURL), {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
@@ -129,7 +133,7 @@ export async function updateUserProfile(
     locale: string;
   }>,
 ): Promise<TestUser> {
-  const res = await fetch(apiUrl('/auth/me', baseURL), {
+  const res = await apiFetch(apiUrl('/auth/me', baseURL), {
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json',
@@ -166,7 +170,7 @@ export async function exportUserData(
   baseURL: string,
   token: string,
 ): Promise<UserDataExport> {
-  const res = await fetch(apiUrl('/auth/me/export', baseURL), {
+  const res = await apiFetch(apiUrl('/auth/me/export', baseURL), {
     headers: { Authorization: `Bearer ${token}` },
   });
   if (!res.ok) {
@@ -181,7 +185,7 @@ export async function deleteAccount(
   token: string,
   password: string,
 ): Promise<void> {
-  const res = await fetch(apiUrl('/auth/me', baseURL), {
+  const res = await apiFetch(apiUrl('/auth/me', baseURL), {
     method: 'DELETE',
     headers: {
       'Content-Type': 'application/json',
@@ -200,7 +204,7 @@ export async function tryLogin(
   email: string,
   password: string,
 ): Promise<{ ok: boolean; status: number }> {
-  const res = await fetch(apiUrl('/auth/login', baseURL), {
+  const res = await apiFetch(apiUrl('/auth/login', baseURL), {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ email, password }),
@@ -215,7 +219,7 @@ export async function createPet(
   species = 'Dog',
   breed = '',
 ): Promise<TestPet> {
-  const res = await fetch(apiUrl('/pets', baseURL), {
+  const res = await apiFetch(apiUrl('/pets', baseURL), {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -243,7 +247,7 @@ export async function createOrganization(
     email?: string;
   },
 ): Promise<TestOrganization> {
-  const res = await fetch(apiUrl('/organizations', baseURL), {
+  const res = await apiFetch(apiUrl('/organizations', baseURL), {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -276,7 +280,7 @@ export async function getOrganizations(
   baseURL: string,
   token: string,
 ): Promise<TestOrganization[]> {
-  const res = await fetch(apiUrl('/organizations', baseURL), {
+  const res = await apiFetch(apiUrl('/organizations', baseURL), {
     headers: { Authorization: `Bearer ${token}` },
   });
 
@@ -294,7 +298,7 @@ export async function updateOrganization(
   orgId: string,
   data: Record<string, string>,
 ): Promise<TestOrganization> {
-  const res = await fetch(apiUrl(`/organizations/${orgId}`, baseURL), {
+  const res = await apiFetch(apiUrl(`/organizations/${orgId}`, baseURL), {
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json',
@@ -324,7 +328,7 @@ export async function inviteToOrganization(
   orgId: string,
   options: { email: string; role: string },
 ): Promise<{ success: boolean; user_id: string }> {
-  const res = await fetch(apiUrl(`/organizations/${orgId}/invite`, baseURL), {
+  const res = await apiFetch(apiUrl(`/organizations/${orgId}/invite`, baseURL), {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -348,7 +352,7 @@ export async function getPendingInvites(
   baseURL: string,
   token: string,
 ): Promise<TestOrgInvite[]> {
-  const res = await fetch(apiUrl('/organizations/invites/pending', baseURL), {
+  const res = await apiFetch(apiUrl('/organizations/invites/pending', baseURL), {
     headers: { Authorization: `Bearer ${token}` },
   });
 
@@ -365,7 +369,7 @@ export async function acceptInvite(
   token: string,
   inviteId: string,
 ): Promise<{ organization_id: string; role: string }> {
-  const res = await fetch(apiUrl(`/organizations/invites/${inviteId}/accept`, baseURL), {
+  const res = await apiFetch(apiUrl(`/organizations/invites/${inviteId}/accept`, baseURL), {
     method: 'POST',
     headers: { Authorization: `Bearer ${token}` },
   });
@@ -383,7 +387,7 @@ export async function declineInvite(
   token: string,
   inviteId: string,
 ): Promise<void> {
-  const res = await fetch(apiUrl(`/organizations/invites/${inviteId}/decline`, baseURL), {
+  const res = await apiFetch(apiUrl(`/organizations/invites/${inviteId}/decline`, baseURL), {
     method: 'POST',
     headers: { Authorization: `Bearer ${token}` },
   });
@@ -399,7 +403,7 @@ export async function getOrgMembers(
   token: string,
   orgId: string,
 ): Promise<TestOrgMember[]> {
-  const res = await fetch(apiUrl(`/organizations/${orgId}/members`, baseURL), {
+  const res = await apiFetch(apiUrl(`/organizations/${orgId}/members`, baseURL), {
     headers: { Authorization: `Bearer ${token}` },
   });
 
@@ -416,7 +420,7 @@ export async function leaveOrganization(
   token: string,
   orgId: string,
 ): Promise<void> {
-  const res = await fetch(apiUrl(`/organizations/${orgId}/members/me`, baseURL), {
+  const res = await apiFetch(apiUrl(`/organizations/${orgId}/members/me`, baseURL), {
     method: 'DELETE',
     headers: { Authorization: `Bearer ${token}` },
   });
@@ -454,7 +458,7 @@ export async function createShareLink(
   token: string,
   petId: string,
 ): Promise<ShareLink> {
-  const res = await fetch(apiUrl('/share', baseURL), {
+  const res = await apiFetch(apiUrl('/share', baseURL), {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -491,7 +495,7 @@ export async function createVet(
   token: string,
   name: string,
 ): Promise<{ id: string; name: string }> {
-  const res = await fetch(apiUrl('/vets', baseURL), {
+  const res = await apiFetch(apiUrl('/vets', baseURL), {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -522,7 +526,7 @@ export async function createVetFull(
     notes?: string;
   },
 ): Promise<TestVet> {
-  const res = await fetch(apiUrl('/vets', baseURL), {
+  const res = await apiFetch(apiUrl('/vets', baseURL), {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -548,7 +552,7 @@ export async function createVetFull(
 }
 
 export async function getVets(baseURL: string, token: string): Promise<TestVet[]> {
-  const res = await fetch(apiUrl('/vets', baseURL), {
+  const res = await apiFetch(apiUrl('/vets', baseURL), {
     headers: { Authorization: `Bearer ${token}` },
   });
 
@@ -575,7 +579,7 @@ export async function updateVetDetails(
   }>,
 ): Promise<TestVet> {
   // PUT requires all fields; fetch the current vet first to fill defaults.
-  const getRes = await fetch(apiUrl(`/vets/${vetId}`, baseURL), {
+  const getRes = await apiFetch(apiUrl(`/vets/${vetId}`, baseURL), {
     headers: { Authorization: `Bearer ${token}` },
   });
   if (!getRes.ok) {
@@ -584,7 +588,7 @@ export async function updateVetDetails(
   }
   const current = (await getRes.json()) as TestVet;
 
-  const res = await fetch(apiUrl(`/vets/${vetId}`, baseURL), {
+  const res = await apiFetch(apiUrl(`/vets/${vetId}`, baseURL), {
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json',
@@ -610,7 +614,7 @@ export async function updateVetDetails(
 }
 
 export async function deleteVet(baseURL: string, token: string, vetId: string): Promise<void> {
-  const res = await fetch(apiUrl(`/vets/${vetId}`, baseURL), {
+  const res = await apiFetch(apiUrl(`/vets/${vetId}`, baseURL), {
     method: 'DELETE',
     headers: { Authorization: `Bearer ${token}` },
   });
@@ -630,7 +634,7 @@ export async function acceptShareByCode(
   const body: Record<string, string> = {};
   if (organizationId) body['organization_id'] = organizationId;
 
-  const res = await fetch(apiUrl(`/share/${shareCode}/accept`, baseURL), {
+  const res = await apiFetch(apiUrl(`/share/${shareCode}/accept`, baseURL), {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -653,7 +657,7 @@ export async function updatePetVet(
   petId: string,
   pet: { name: string; species: string; vetId: string },
 ): Promise<void> {
-  const res = await fetch(apiUrl(`/pets/${petId}`, baseURL), {
+  const res = await apiFetch(apiUrl(`/pets/${petId}`, baseURL), {
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json',
@@ -684,7 +688,7 @@ export async function getHealthEntry(
   dosage?: string | null;
   next_due_date?: string | null;
 }> {
-  const res = await fetch(apiUrl(`/health-entries/${entryId}`, baseURL), {
+  const res = await apiFetch(apiUrl(`/health-entries/${entryId}`, baseURL), {
     headers: { Authorization: `Bearer ${token}` },
   });
   if (!res.ok) {
@@ -700,7 +704,7 @@ export async function markHealthEntryTaken(
   entryId: string,
   completedOn?: string,
 ): Promise<void> {
-  const res = await fetch(apiUrl(`/health-entries/${entryId}/mark-taken`, baseURL), {
+  const res = await apiFetch(apiUrl(`/health-entries/${entryId}/mark-taken`, baseURL), {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -730,7 +734,7 @@ export async function createHealthEntry(
   },
 ): Promise<TestHealthEntry> {
   const frequency = options.frequency ?? 'monthly';
-  const res = await fetch(apiUrl('/health-entries', baseURL), {
+  const res = await apiFetch(apiUrl('/health-entries', baseURL), {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -771,7 +775,7 @@ export async function updateHealthEntry(
   },
 ): Promise<TestHealthEntry> {
   const frequency = options.frequency ?? 'monthly';
-  const res = await fetch(apiUrl(`/health-entries/${entryId}`, baseURL), {
+  const res = await apiFetch(apiUrl(`/health-entries/${entryId}`, baseURL), {
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json',
@@ -802,7 +806,7 @@ export async function deleteHealthEntry(
   token: string,
   entryId: string,
 ): Promise<void> {
-  const res = await fetch(apiUrl(`/health-entries/${entryId}`, baseURL), {
+  const res = await apiFetch(apiUrl(`/health-entries/${entryId}`, baseURL), {
     method: 'DELETE',
     headers: { Authorization: `Bearer ${token}` },
   });
@@ -817,7 +821,7 @@ export async function undoCompleteHealthEntry(
   token: string,
   entryId: string,
 ): Promise<{ status: string; next_due_date: string | null; name: string }> {
-  const res = await fetch(apiUrl(`/health-entries/${entryId}/undo-complete`, baseURL), {
+  const res = await apiFetch(apiUrl(`/health-entries/${entryId}/undo-complete`, baseURL), {
     method: 'POST',
     headers: { Authorization: `Bearer ${token}` },
   });
@@ -832,7 +836,7 @@ export async function getHealthEntries(
   baseURL: string,
   token: string,
 ): Promise<Array<{ id: string; name: string; type: string; status: string; next_due_date: string | null }>> {
-  const res = await fetch(apiUrl('/health-entries', baseURL), {
+  const res = await apiFetch(apiUrl('/health-entries', baseURL), {
     headers: { Authorization: `Bearer ${token}` },
   });
   if (!res.ok) {
@@ -846,7 +850,7 @@ export async function exportHealthEntriesCsv(
   baseURL: string,
   token: string,
 ): Promise<string> {
-  const res = await fetch(apiUrl('/health-entries/export', baseURL), {
+  const res = await apiFetch(apiUrl('/health-entries/export', baseURL), {
     headers: { Authorization: `Bearer ${token}` },
   });
   if (!res.ok) {
@@ -861,7 +865,7 @@ export async function getHealthEntryHistory(
   token: string,
   entryId: string,
 ): Promise<Array<{ id: string; status: string; completed_on: string | null; changed_at: string }>> {
-  const res = await fetch(apiUrl(`/health-entries/${entryId}/history`, baseURL), {
+  const res = await apiFetch(apiUrl(`/health-entries/${entryId}/history`, baseURL), {
     headers: { Authorization: `Bearer ${token}` },
   });
   if (!res.ok) {
@@ -891,7 +895,7 @@ export async function getNotifications(
   baseURL: string,
   token: string,
 ): Promise<TestNotification[]> {
-  const res = await fetch(apiUrl('/notifications', baseURL), {
+  const res = await apiFetch(apiUrl('/notifications', baseURL), {
     headers: { Authorization: `Bearer ${token}` },
   });
   if (!res.ok) {
@@ -905,7 +909,7 @@ export async function getUnreadNotificationCount(
   baseURL: string,
   token: string,
 ): Promise<number> {
-  const res = await fetch(apiUrl('/notifications/unread-count', baseURL), {
+  const res = await apiFetch(apiUrl('/notifications/unread-count', baseURL), {
     headers: { Authorization: `Bearer ${token}` },
   });
   if (!res.ok) {
@@ -921,7 +925,7 @@ export async function markNotificationRead(
   token: string,
   id: string,
 ): Promise<void> {
-  const res = await fetch(apiUrl(`/notifications/${id}/read`, baseURL), {
+  const res = await apiFetch(apiUrl(`/notifications/${id}/read`, baseURL), {
     method: 'POST',
     headers: { Authorization: `Bearer ${token}` },
   });
@@ -935,7 +939,7 @@ export async function markAllNotificationsRead(
   baseURL: string,
   token: string,
 ): Promise<void> {
-  const res = await fetch(apiUrl('/notifications/read-all', baseURL), {
+  const res = await apiFetch(apiUrl('/notifications/read-all', baseURL), {
     method: 'POST',
     headers: { Authorization: `Bearer ${token}` },
   });
@@ -949,7 +953,7 @@ export async function triggerCheckDueNotifications(
   baseURL: string,
   token: string,
 ): Promise<void> {
-  const res = await fetch(apiUrl('/notifications/check-due', baseURL), {
+  const res = await apiFetch(apiUrl('/notifications/check-due', baseURL), {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -1014,7 +1018,7 @@ export async function createWeightEntry(
   },
 ): Promise<TestWeightEntry> {
   const date = options.date ?? new Date().toISOString().slice(0, 10);
-  const res = await fetch(apiUrl('/weight-entries', baseURL), {
+  const res = await apiFetch(apiUrl('/weight-entries', baseURL), {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -1040,7 +1044,7 @@ export async function getWeightEntries(
   token: string,
   petId: string,
 ): Promise<TestWeightEntry[]> {
-  const res = await fetch(
+  const res = await apiFetch(
     apiUrl(`/weight-entries?pet_id=${encodeURIComponent(petId)}`, baseURL),
     { headers: { Authorization: `Bearer ${token}` } },
   );
@@ -1056,7 +1060,7 @@ export async function getLatestWeightEntry(
   token: string,
   petId: string,
 ): Promise<TestWeightEntry> {
-  const res = await fetch(
+  const res = await apiFetch(
     apiUrl(`/weight-entries/latest?pet_id=${encodeURIComponent(petId)}`, baseURL),
     { headers: { Authorization: `Bearer ${token}` } },
   );
@@ -1073,7 +1077,7 @@ export async function updateWeightEntry(
   id: string,
   options: { weight: number; unit?: 'kg' | 'lb'; date?: string; notes?: string },
 ): Promise<TestWeightEntry> {
-  const res = await fetch(apiUrl(`/weight-entries/${id}`, baseURL), {
+  const res = await apiFetch(apiUrl(`/weight-entries/${id}`, baseURL), {
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json',
@@ -1098,7 +1102,7 @@ export async function deleteWeightEntry(
   token: string,
   id: string,
 ): Promise<void> {
-  const res = await fetch(apiUrl(`/weight-entries/${id}`, baseURL), {
+  const res = await apiFetch(apiUrl(`/weight-entries/${id}`, baseURL), {
     method: 'DELETE',
     headers: { Authorization: `Bearer ${token}` },
   });
@@ -1116,7 +1120,7 @@ export async function createOrgPet(
   orgId: string,
   options: { name: string; species?: string },
 ): Promise<TestPet> {
-  const res = await fetch(apiUrl(`/organizations/${orgId}/pets`, baseURL), {
+  const res = await apiFetch(apiUrl(`/organizations/${orgId}/pets`, baseURL), {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -1147,7 +1151,7 @@ export async function requestCustodyTransfer(
     notes?: string;
   },
 ): Promise<{ id: string; status: string }> {
-  const res = await fetch(
+  const res = await apiFetch(
     apiUrl(`/organizations/${orgId}/pets/${petId}/custody-transfers`, baseURL),
     {
       method: 'POST',
@@ -1170,7 +1174,7 @@ export async function acceptCustodyTransfer(
   token: string,
   transferId: string,
 ): Promise<void> {
-  const res = await fetch(apiUrl(`/custody-transfers/${transferId}/accept`, baseURL), {
+  const res = await apiFetch(apiUrl(`/custody-transfers/${transferId}/accept`, baseURL), {
     method: 'POST',
     headers: { Authorization: `Bearer ${token}` },
   });
@@ -1184,7 +1188,7 @@ export async function getPendingCustodyTransfers(
   baseURL: string,
   token: string,
 ): Promise<Array<{ id: string; pet_name?: string; transfer_kind: string }>> {
-  const res = await fetch(apiUrl('/custody-transfers/pending', baseURL), {
+  const res = await apiFetch(apiUrl('/custody-transfers/pending', baseURL), {
     headers: { Authorization: `Bearer ${token}` },
   });
   if (!res.ok) {
@@ -1200,7 +1204,7 @@ export async function createOrgConnectionRequest(
   orgId: string,
   targetOrgId: string,
 ): Promise<{ token: string }> {
-  const res = await fetch(apiUrl(`/organizations/${orgId}/connection-requests`, baseURL), {
+  const res = await apiFetch(apiUrl(`/organizations/${orgId}/connection-requests`, baseURL), {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -1220,7 +1224,7 @@ export async function acceptOrgConnectionRequest(
   token: string,
   connectionToken: string,
 ): Promise<void> {
-  const res = await fetch(
+  const res = await apiFetch(
     apiUrl(`/organizations/connection-requests/${connectionToken}/accept`, baseURL),
     {
       method: 'POST',
@@ -1238,7 +1242,7 @@ export async function getOrgArchivedPets(
   token: string,
   orgId: string,
 ): Promise<Array<{ id: string; pet_name: string; shadow_snapshot?: Record<string, unknown> }>> {
-  const res = await fetch(apiUrl(`/organizations/${orgId}/archived`, baseURL), {
+  const res = await apiFetch(apiUrl(`/organizations/${orgId}/archived`, baseURL), {
     headers: { Authorization: `Bearer ${token}` },
   });
   if (!res.ok) {
@@ -1255,7 +1259,7 @@ export async function transferOrgPetToUser(
   petId: string,
   recipientEmail: string,
 ): Promise<{ transfer_id?: string; pending?: boolean }> {
-  const res = await fetch(apiUrl(`/organizations/${orgId}/pets/${petId}/transfer`, baseURL), {
+  const res = await apiFetch(apiUrl(`/organizations/${orgId}/pets/${petId}/transfer`, baseURL), {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -1296,7 +1300,7 @@ export async function getPet(
   token: string,
   petId: string,
 ): Promise<TestPetDetail> {
-  const res = await fetch(apiUrl(`/pets/${petId}`, baseURL), {
+  const res = await apiFetch(apiUrl(`/pets/${petId}`, baseURL), {
     headers: { Authorization: `Bearer ${token}` },
   });
   if (!res.ok) {
@@ -1314,7 +1318,7 @@ export async function createFosterPlacement(
   fosterUserId: string,
   options: { startDate?: string; notes?: string } = {},
 ): Promise<TestFosterPlacement> {
-  const res = await fetch(apiUrl(`/organizations/${orgId}/pets/${petId}/placements`, baseURL), {
+  const res = await apiFetch(apiUrl(`/organizations/${orgId}/pets/${petId}/placements`, baseURL), {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -1338,7 +1342,7 @@ export async function acceptFosterPlacement(
   token: string,
   placementId: string,
 ): Promise<TestFosterPlacement> {
-  const res = await fetch(apiUrl(`/foster-placements/${placementId}/accept`, baseURL), {
+  const res = await apiFetch(apiUrl(`/foster-placements/${placementId}/accept`, baseURL), {
     method: 'POST',
     headers: { Authorization: `Bearer ${token}` },
   });
@@ -1353,7 +1357,7 @@ export async function getPendingFosterPlacements(
   baseURL: string,
   token: string,
 ): Promise<TestFosterPlacement[]> {
-  const res = await fetch(apiUrl('/foster-placements/pending', baseURL), {
+  const res = await apiFetch(apiUrl('/foster-placements/pending', baseURL), {
     headers: { Authorization: `Bearer ${token}` },
   });
   if (!res.ok) {
@@ -1370,7 +1374,7 @@ export async function endFosterPlacement(
   placementId: string,
   options: { endDate?: string } = {},
 ): Promise<TestFosterPlacement> {
-  const res = await fetch(
+  const res = await apiFetch(
     apiUrl(`/organizations/${orgId}/placements/${placementId}/end`, baseURL),
     {
       method: 'POST',
@@ -1396,7 +1400,7 @@ export async function initiateDirectAdoption(
   fosterUserId: string,
   options: { adoptionConditions?: string; notes?: string } = {},
 ): Promise<TestFosterPlacement> {
-  const res = await fetch(
+  const res = await apiFetch(
     apiUrl(`/organizations/${orgId}/pets/${petId}/placements/direct-adopt`, baseURL),
     {
       method: 'POST',
@@ -1422,7 +1426,7 @@ export async function getPendingAdoptions(
   baseURL: string,
   token: string,
 ): Promise<TestFosterPlacement[]> {
-  const res = await fetch(apiUrl('/foster-placements/pending-adoptions', baseURL), {
+  const res = await apiFetch(apiUrl('/foster-placements/pending-adoptions', baseURL), {
     headers: { Authorization: `Bearer ${token}` },
   });
   if (!res.ok) {
@@ -1437,7 +1441,7 @@ export async function confirmAdoption(
   token: string,
   placementId: string,
 ): Promise<TestFosterPlacement & { adopted?: boolean; new_owner_id?: string }> {
-  const res = await fetch(apiUrl(`/foster-placements/${placementId}/confirm-adoption`, baseURL), {
+  const res = await apiFetch(apiUrl(`/foster-placements/${placementId}/confirm-adoption`, baseURL), {
     method: 'POST',
     headers: { Authorization: `Bearer ${token}` },
   });
@@ -1475,7 +1479,7 @@ export async function tryRequestCustodyTransfer(
     notes?: string;
   },
 ): Promise<{ ok: boolean; status: number; body: unknown }> {
-  const res = await fetch(
+  const res = await apiFetch(
     apiUrl(`/organizations/${orgId}/pets/${petId}/custody-transfers`, baseURL),
     {
       method: 'POST',
@@ -1503,7 +1507,7 @@ export async function requestPetReturn(
   toOrgId: string,
   notes = '',
 ): Promise<{ id: string; status: string }> {
-  const res = await fetch(
+  const res = await apiFetch(
     apiUrl(`/organizations/${toOrgId}/pets/${petId}/custody-transfers`, baseURL),
     {
       method: 'POST',
@@ -1531,7 +1535,7 @@ export async function disconnectOrgs(
   orgId: string,
   otherOrgId: string,
 ): Promise<void> {
-  const res = await fetch(apiUrl(`/organizations/${orgId}/connections/${otherOrgId}`, baseURL), {
+  const res = await apiFetch(apiUrl(`/organizations/${orgId}/connections/${otherOrgId}`, baseURL), {
     method: 'DELETE',
     headers: { Authorization: `Bearer ${token}` },
   });
@@ -1564,7 +1568,7 @@ export async function hideOrgPetFromHome(
   petId: string,
   hidden = true,
 ): Promise<void> {
-  const res = await fetch(apiUrl(`/organizations/${orgId}/pets/${petId}/home-hidden`, baseURL), {
+  const res = await apiFetch(apiUrl(`/organizations/${orgId}/pets/${petId}/home-hidden`, baseURL), {
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json',
@@ -1584,7 +1588,7 @@ export async function hideFosteredPet(
   petId: string,
   hidden = true,
 ): Promise<void> {
-  const res = await fetch(apiUrl(`/share/${petId}/hide`, baseURL), {
+  const res = await apiFetch(apiUrl(`/share/${petId}/hide`, baseURL), {
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json',
@@ -1667,7 +1671,7 @@ export async function getAllPets(
   baseURL: string,
   token: string,
 ): Promise<TestPetSummary[]> {
-  const res = await fetch(apiUrl('/pets/all', baseURL), {
+  const res = await apiFetch(apiUrl('/pets/all', baseURL), {
     headers: { Authorization: `Bearer ${token}` },
   });
   if (!res.ok) {
@@ -1691,7 +1695,7 @@ export async function getFamilyEvents(
   token: string,
   petId: string,
 ): Promise<TestFamilyEvent[]> {
-  const res = await fetch(apiUrl(`/pets/${petId}/family-events`, baseURL), {
+  const res = await apiFetch(apiUrl(`/pets/${petId}/family-events`, baseURL), {
     headers: { Authorization: `Bearer ${token}` },
   });
   if (!res.ok) {
@@ -1722,7 +1726,7 @@ export async function createFamilyEvent(
   if (options.toDate) body.to_date = options.toDate;
   if (options.notes) body.notes = options.notes;
 
-  const res = await fetch(apiUrl(`/pets/${petId}/family-events`, baseURL), {
+  const res = await apiFetch(apiUrl(`/pets/${petId}/family-events`, baseURL), {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',

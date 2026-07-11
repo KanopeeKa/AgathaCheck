@@ -1,5 +1,6 @@
 import { test as base, expect } from '@playwright/test';
 import { createHealthEntry, createPet, signupUser, type TestUser } from '../support/api';
+import { clearLiveApiAccess, prepareLiveApiAccess } from '../support/waf';
 import { LandingPage } from '../pages/landing.page';
 import { PetListPage } from '../pages/pet-list.page';
 
@@ -10,10 +11,15 @@ type AuthFixtures = {
 };
 
 export const test = base.extend<AuthFixtures>({
-  testUser: async ({}, use) => {
+  testUser: async ({ page }, use) => {
     const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
-    const user = await signupUser(baseURL);
-    await use(user);
+    await prepareLiveApiAccess(page, baseURL);
+    try {
+      const user = await signupUser(baseURL);
+      await use(user);
+    } finally {
+      clearLiveApiAccess();
+    }
   },
 
   landingPage: async ({ page }, use) => {

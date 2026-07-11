@@ -24,6 +24,7 @@ import {
   updatePetVet,
 } from '../support/api';
 import { checkA11y } from '../support/axe';
+import { clearLiveApiAccess, prepareLiveApiAccess } from '../support/waf';
 import { PetDetailPage } from '../pages/pet-detail.page';
 import { PetListPage } from '../pages/pet-list.page';
 import { SharedPetPage } from '../pages/shared-pet.page';
@@ -31,16 +32,21 @@ import { SharedPetPage } from '../pages/shared-pet.page';
 test.describe('Pet sharing', () => {
   test('@smoke anonymous user can view a shared pet profile', async ({ page }) => {
     const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
-    const owner = await signupUser(baseURL, { firstName: 'Alice', lastName: 'Owner' });
-    const pet = await createPet(baseURL, owner.accessToken, 'Bella', 'Dog');
-    const link = await createShareLink(baseURL, owner.accessToken, pet.id);
+    await prepareLiveApiAccess(page, baseURL);
+    try {
+      const owner = await signupUser(baseURL, { firstName: 'Alice', lastName: 'Owner' });
+      const pet = await createPet(baseURL, owner.accessToken, 'Bella', 'Dog');
+      const link = await createShareLink(baseURL, owner.accessToken, pet.id);
 
-    const sharedPet = new SharedPetPage(page);
-    await sharedPet.goto(link.share_code);
-    await sharedPet.expectLoaded('Bella');
-    await sharedPet.expectViewOnlyBadge();
-    await sharedPet.expectSpecies('Dog');
-    await checkA11y(page, 'shared pet preview');
+      const sharedPet = new SharedPetPage(page);
+      await sharedPet.goto(link.share_code);
+      await sharedPet.expectLoaded('Bella');
+      await sharedPet.expectViewOnlyBadge();
+      await sharedPet.expectSpecies('Dog');
+      await checkA11y(page, 'shared pet preview');
+    } finally {
+      clearLiveApiAccess();
+    }
   });
 
   test('owner can create a share link from the pet detail screen', async ({ page, testUser }) => {
