@@ -1,4 +1,5 @@
 import type { Page } from '@playwright/test';
+import { passHostingWaf } from './waf';
 
 /** Wait until the Flutter web canvas is mounted. */
 export async function waitForFlutter(page: Page): Promise<void> {
@@ -7,6 +8,9 @@ export async function waitForFlutter(page: Page): Promise<void> {
 
 /** Navigate to a Flutter route and enable the accessibility tree. */
 export async function waitForFlutterRoute(page: Page, path: string): Promise<void> {
+  if (path === '/landing' || path === '/') {
+    await passHostingWaf(page);
+  }
   await page.goto(path);
   await page.waitForSelector('flutter-view, flt-glass-pane', { state: 'attached', timeout: 60_000 });
   await enableFlutterAccessibility(page);
