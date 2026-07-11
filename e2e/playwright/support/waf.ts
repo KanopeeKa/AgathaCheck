@@ -12,18 +12,30 @@ function resolveBaseURL(baseURL?: string): string {
   return (baseURL ?? process.env.E2E_BASE_URL ?? '').replace(/\/$/, '');
 }
 
-async function probeBackendHealth(page: Page, baseURL: string): Promise<boolean> {
+type HealthProbe = 'ok' | 'waf' | 'down';
+
+async function probeBackendHealth(page: Page, baseURL: string): Promise<HealthProbe> {
   const healthUrl = `${baseURL}/backend/health`;
   return page.evaluate(async (url) => {
     try {
       const res = await fetch(url, { credentials: 'include' });
-      if (!res.ok) return false;
       const body = await res.text();
-      return body.includes('OK');
+      if (body.includes('"status":"OK"')) return 'ok';
+      if (body.includes('o2s-browser-check') || body.includes('Security check')) return 'waf';
+      return 'down';
     } catch {
-      return false;
+      return 'down';
     }
   }, healthUrl);
+}
+
+function backendDownMessage(baseURL: string): string {
+  return [
+    `UAT backend is not healthy at ${baseURL}/backend/health`,
+    '(expected JSON {"status":"OK"}, got HTML or an error).',
+    'On cPanel: confirm Passenger/Node is running, Run NPM Install (CloudLinux symlink),',
+    'and that the deployed .htaccess excludes /backend from the Flutter SPA rewrite.',
+  ].join(' ');
 }
 
 /**
@@ -39,23 +51,33 @@ export async function passHostingWaf(page: Page, baseURL?: string): Promise<void
   const root = resolveBaseURL(baseURL);
   await page.goto('/', { waitUntil: 'domcontentloaded' });
 
+  let sawWaf = false;
   const deadline = Date.now() + 90_000;
   while (Date.now() < deadline) {
     const html = await page.content();
-    if (!pageShowsWafChallenge(html)) {
-      try {
-        await page.waitForSelector('flutter-view, flt-glass-pane', { timeout: 15_000 });
-      } catch {
-        // Flutter may load on a routed path after the challenge redirect.
-      }
-      if (await probeBackendHealth(page, root)) {
-        return;
-      }
+    if (pageShowsWafChallenge(html)) {
+      sawWaf = true;
+      await page.waitForTimeout(3_000);
+      continue;
     }
-    await page.waitForTimeout(3_000);
+
+    const health = await probeBackendHealth(page, root);
+    if (health === 'ok') {
+      return;
+    }
+    if (health === 'waf') {
+      sawWaf = true;
+      await page.waitForTimeout(3_000);
+      continue;
+    }
+
+    throw new Error(backendDownMessage(root));
   }
 
-  throw new Error('Hosting WAF challenge did not clear after visiting UAT');
+  if (sawWaf) {
+    throw new Error('Hosting WAF challenge did not clear after visiting UAT');
+  }
+  throw new Error(backendDownMessage(root));
 }
 
 /** Warm WAF cookies and route api.ts through in-browser fetch for live UAT runs. */
