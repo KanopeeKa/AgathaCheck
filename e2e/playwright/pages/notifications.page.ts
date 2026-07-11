@@ -1,6 +1,6 @@
 import type { Page } from '@playwright/test';
 import { expect } from '@playwright/test';
-import { dismissConsentBannerIfPresent } from '../support/flutter';
+import { dismissConsentBannerIfPresent, expectAppBarTitle } from '../support/flutter';
 
 /**
  * Notifications screen (`/notifications`).
@@ -17,6 +17,7 @@ export class NotificationsPage {
   }
 
   async expectLoaded(): Promise<void> {
+    await expectAppBarTitle(this.page, 'Notifications');
     await this.page
       .getByRole('button', { name: 'Mark all as read' })
       .or(this.page.getByText('No notifications'))
@@ -57,7 +58,7 @@ export class NotificationsPage {
     await this.page
       .getByRole('button', { name: 'Notification settings' })
       .click();
-    await this.page.getByText('Notification Settings').waitFor({ timeout: 15_000 });
+    await expectAppBarTitle(this.page, 'Notification Settings');
   }
 
   /** Click on the first notification tile that contains the given title text. */

@@ -2,7 +2,10 @@ import type { Page } from '@playwright/test';
 import { expect } from '@playwright/test';
 import {
   dismissConsentBannerIfPresent,
+  escapeRegExp,
+  expectAppBarTitle,
   refreshFlutterAccessibility,
+  semanticsByName,
 } from '../support/flutter';
 
 /**
@@ -14,11 +17,11 @@ export class VetListPage {
 
   async expectLoaded(): Promise<void> {
     await dismissConsentBannerIfPresent(this.page);
-    await this.page.getByText('Veterinarians').first().waitFor({ timeout: 30_000 });
+    await expectAppBarTitle(this.page, 'Veterinarians');
   }
 
   async expectEmptyState(): Promise<void> {
-    await this.page.getByText('No veterinarians yet').waitFor({ timeout: 30_000 });
+    await this.page.getByText(/no veterinarians yet/i).waitFor({ timeout: 30_000 });
   }
 
   async openAddForm(): Promise<void> {
@@ -27,25 +30,40 @@ export class VetListPage {
   }
 
   async expectVetVisible(name: string): Promise<void> {
-    await this.page.getByText(name).first().waitFor({ timeout: 30_000 });
+    await semanticsByName(
+      this.page,
+      new RegExp(`Veterinarian:\\s*${escapeRegExp(name)}`, 'i'),
+    ).waitFor({ timeout: 30_000 });
   }
 
   async expectVetNotVisible(name: string): Promise<void> {
-    await expect(this.page.getByText(name)).toHaveCount(0);
+    await expect(
+      this.page
+        .getByRole('button', { name: new RegExp(`Veterinarian:\\s*${escapeRegExp(name)}`, 'i') })
+        .or(
+          this.page.getByRole('group', {
+            name: new RegExp(`Veterinarian:\\s*${escapeRegExp(name)}`, 'i'),
+          }),
+        ),
+    ).toHaveCount(0);
   }
 
   async expectVetCount(n: number): Promise<void> {
     await expect(
-      this.page.getByRole('button', { name: /Veterinarian:/ }),
+      this.page
+        .getByRole('button', { name: /Veterinarian:/i })
+        .or(this.page.getByRole('group', { name: /Veterinarian:/i })),
     ).toHaveCount(n, { timeout: 30_000 });
   }
 
   /** Open the three-dot options menu for the vet card matching `name`. */
   async openVetMenu(name: string): Promise<void> {
     await this.expectVetVisible(name);
-    const escaped = name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const escaped = escapeRegExp(name);
     const namePattern = new RegExp(`Veterinarian:\\s*${escaped}(?:,|$)`);
-    const vetCards = this.page.getByRole('button', { name: /Veterinarian:/ });
+    const vetCards = this.page
+      .getByRole('button', { name: /Veterinarian:/i })
+      .or(this.page.getByRole('group', { name: /Veterinarian:/i }));
     const cardCount = await vetCards.count();
     for (let i = 0; i < cardCount; i++) {
       const card = vetCards.nth(i);
@@ -73,7 +91,6 @@ export class VetListPage {
   }
 
   async confirmDeletion(): Promise<void> {
-    // AlertDialog title: "Delete Vet"; buttons: Cancel, Delete
     await this.page.getByRole('button', { name: 'Delete' }).last().click();
     await this.page.waitForTimeout(1_000);
   }
@@ -89,6 +106,8 @@ export class VetListPage {
   }
 
   async expectPhoneVisible(phone: string): Promise<void> {
-    await this.page.getByText(phone).first().waitFor({ timeout: 15_000 });
+    await semanticsByName(this.page, new RegExp(escapeRegExp(phone), 'i')).waitFor({
+      timeout: 15_000,
+    });
   }
 }

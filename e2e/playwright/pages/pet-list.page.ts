@@ -1,6 +1,13 @@
 import type { Page } from '@playwright/test';
 import { expect } from '@playwright/test';
-import { dismissConsentBannerIfPresent, waitForFlutterRoute } from '../support/flutter';
+import {
+  dismissConsentBannerIfPresent,
+  escapeRegExp,
+  expectAppBarTitle,
+  refreshFlutterAccessibility,
+  semanticsByName,
+  waitForFlutterRoute,
+} from '../support/flutter';
 
 /**
  * Home / pet list screen (`/`).
@@ -15,6 +22,7 @@ export class PetListPage {
       .getByRole('button', { name: 'To Do' })
       .or(this.page.getByRole('button', { name: 'Add Pet' }))
       .or(this.page.getByText('No pets yet'))
+      .or(this.page.getByRole('banner', { name: /Agatha Track/i }))
       .first()
       .waitFor({ timeout: 30_000 });
   }
@@ -37,24 +45,26 @@ export class PetListPage {
   }
 
   async expectPetVisible(name: string): Promise<void> {
-    await this.page
-      .getByRole('button', { name: new RegExp(`Pet:\\s*${name}`, 'i') })
-      .first()
-      .waitFor({ timeout: 30_000 });
+    await semanticsByName(
+      this.page,
+      new RegExp(`Pet:\\s*${escapeRegExp(name)}`, 'i'),
+    ).waitFor({ timeout: 30_000 });
   }
 
   async expectPetCount(n: number): Promise<void> {
     await expect(
-      this.page.getByRole('button', { name: /Pet:/i }),
+      this.page
+        .getByRole('button', { name: /Pet:/i })
+        .or(this.page.getByRole('group', { name: /Pet:/i })),
     ).toHaveCount(n, { timeout: 30_000 });
   }
 
   async openPet(name: string): Promise<void> {
     await this.expectPetVisible(name);
-    await this.page
-      .getByRole('button', { name: new RegExp(`Pet:\\s*${name}`, 'i') })
-      .first()
-      .click();
+    await semanticsByName(
+      this.page,
+      new RegExp(`Pet:\\s*${escapeRegExp(name)}`, 'i'),
+    ).click();
     await this.page.waitForTimeout(1000);
   }
 
@@ -71,7 +81,7 @@ export class PetListPage {
   async openVets(): Promise<void> {
     await dismissConsentBannerIfPresent(this.page);
     await this.page.getByRole('button', { name: 'Veterinarians' }).click();
-    await this.page.getByText('Veterinarians').first().waitFor({ timeout: 30_000 });
+    await expectAppBarTitle(this.page, 'Veterinarians');
   }
 
   /**
@@ -79,9 +89,10 @@ export class PetListPage {
    * Dismissible action (DismissDirection.endToStart).
    */
   async swipeLeftPetCard(name: string): Promise<void> {
-    const card = this.page
-      .getByRole('button', { name: new RegExp(`Pet:\\s*${name}`, 'i') })
-      .first();
+    const card = semanticsByName(
+      this.page,
+      new RegExp(`Pet:\\s*${escapeRegExp(name)}`, 'i'),
+    );
     const box = await card.boundingBox();
     if (!box) throw new Error(`Pet card "${name}" not found`);
     const startX = box.x + box.width * 0.88;
@@ -104,7 +115,9 @@ export class PetListPage {
 
   async expectPetHidden(name: string): Promise<void> {
     await expect(
-      this.page.getByRole('button', { name: new RegExp(`Pet:\\s*${name}`, 'i') }),
+      this.page
+        .getByRole('button', { name: new RegExp(`Pet:\\s*${escapeRegExp(name)}`, 'i') })
+        .or(this.page.getByRole('group', { name: new RegExp(`Pet:\\s*${escapeRegExp(name)}`, 'i') })),
     ).toHaveCount(0);
   }
 
@@ -114,12 +127,10 @@ export class PetListPage {
 
   /** Org pets show aria-label "Pet: Name, OrgName, …" on the home list. */
   async expectPetUnderOrganization(petName: string, orgName: string): Promise<void> {
-    await this.page
-      .getByRole('button', {
-        name: new RegExp(`Pet:\\s*${petName}.*${orgName}`, 'i'),
-      })
-      .first()
-      .waitFor({ timeout: 30_000 });
+    await semanticsByName(
+      this.page,
+      new RegExp(`Pet:\\s*${escapeRegExp(petName)}.*${escapeRegExp(orgName)}`, 'i'),
+    ).waitFor({ timeout: 30_000 });
   }
 
   async goHome(): Promise<void> {

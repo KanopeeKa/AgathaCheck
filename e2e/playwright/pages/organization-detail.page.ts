@@ -3,6 +3,7 @@ import { expect } from '@playwright/test';
 import {
   dismissConsentBannerIfPresent,
   enableFlutterAccessibility,
+  expectAppBarTitle,
   fillTextbox,
   refreshFlutterAccessibility,
   selectDropdownOption,
@@ -77,7 +78,7 @@ export class OrganizationDetailPage {
     await this.openMenu();
     await this.page.getByRole('menuitem', { name: 'Leave Organization' }).click();
     await this.page.getByRole('button', { name: 'Leave Organization' }).last().click();
-    await this.page.getByText('My Organizations').waitFor({ timeout: 30_000 });
+    await expectAppBarTitle(this.page, 'My Organizations');
   }
 
   async openEdit(): Promise<void> {

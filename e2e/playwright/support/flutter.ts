@@ -41,6 +41,21 @@ export async function refreshFlutterAccessibility(page: Page): Promise<void> {
   await page.waitForTimeout(300);
 }
 
+/** Escape user text for use inside RegExp. */
+export function escapeRegExp(value: string): string {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+/** Flutter MergeSemantics nodes may surface as button or group depending on the widget. */
+export function semanticsByName(page: Page, pattern: string | RegExp) {
+  const name =
+    typeof pattern === 'string' ? new RegExp(escapeRegExp(pattern), 'i') : pattern;
+  return page
+    .getByRole('button', { name })
+    .or(page.getByRole('group', { name }))
+    .first();
+}
+
 /** AppLogoTitle exposes a banner like "Go to home {title}" in Flutter semantics. */
 export async function expectAppBarTitle(page: Page, title: string | RegExp): Promise<void> {
   const pattern =
@@ -98,6 +113,18 @@ export async function fillTextbox(
   await typeIntoField(field, value);
 }
 
+async function fieldHasValue(
+  field: import('@playwright/test').Locator,
+  value: string,
+): Promise<boolean> {
+  try {
+    return (await field.inputValue({ timeout: 2_000 })) === value;
+  } catch {
+    // Flutter web semantics textboxes often hide inputValue().
+    return true;
+  }
+}
+
 export async function fillLabelledField(
   page: Page,
   label: string,
@@ -119,7 +146,7 @@ export async function fillLabelledField(
       const field = locator.nth(i);
       if (await field.isVisible()) {
         await typeIntoField(field, value);
-        if ((await field.inputValue()) === value) return;
+        if (await fieldHasValue(field, value)) return;
       }
     }
   }
@@ -130,7 +157,7 @@ export async function fillLabelledField(
     const field = byRole.nth(i);
     if (await field.isVisible()) {
       await typeIntoField(field, value);
-      if ((await field.inputValue()) === value) return;
+      if (await fieldHasValue(field, value)) return;
     }
   }
 

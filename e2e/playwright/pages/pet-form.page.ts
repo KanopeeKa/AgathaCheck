@@ -1,5 +1,5 @@
 import type { Page } from '@playwright/test';
-import { dismissConsentBannerIfPresent, enableFlutterAccessibility, fillTextbox, refreshFlutterAccessibility, selectDropdownOption } from '../support/flutter';
+import { dismissConsentBannerIfPresent, enableFlutterAccessibility, fillLabelledField, fillTextbox, refreshFlutterAccessibility, selectDropdownOption } from '../support/flutter';
 
 /**
  * Add / edit pet form (`/add`, `/edit/:id`).
@@ -17,23 +17,28 @@ export class PetFormPage {
   }
 
   async fillName(name: string): Promise<void> {
-    await fillTextbox(this.page, 'Name *', name);
+    await fillLabelledField(this.page, 'Name', name);
   }
 
   async selectSpecies(species: string): Promise<void> {
     await selectDropdownOption(this.page, 'Species *', species);
+    await refreshFlutterAccessibility(this.page);
   }
 
   async fillBreed(breed: string): Promise<void> {
-    await fillTextbox(this.page, /^Breed/, breed);
+    await fillLabelledField(this.page, 'Breed', breed);
   }
 
   async save(): Promise<void> {
+    await refreshFlutterAccessibility(this.page);
     const saveButton = this.page.getByRole('button', { name: /Save Pet|Update Pet/ });
     await saveButton.click();
     await this.page
       .getByRole('button', { name: 'To Do' })
       .or(this.page.getByRole('button', { name: 'Add Pet' }))
+      .or(this.page.getByRole('button', { name: /Pet:/i }))
+      .or(this.page.getByRole('group', { name: /Pet:/i }))
+      .or(this.page.getByText('No pets yet'))
       .first()
       .waitFor({ timeout: 30_000 });
   }

@@ -1,5 +1,5 @@
 import type { Page } from '@playwright/test';
-import { fillTextbox } from '../support/flutter';
+import { fillLabelledField, fillTextbox, refreshFlutterAccessibility } from '../support/flutter';
 
 /**
  * Veterinarian create / edit form (`/vets/add`, `/vets/edit/:id`).
@@ -13,7 +13,7 @@ export class VetFormPage {
   }
 
   async fillName(name: string): Promise<void> {
-    await fillTextbox(this.page, 'Name *', name);
+    await fillLabelledField(this.page, 'Name', name);
   }
 
   async fillPhone(phone: string): Promise<void> {
@@ -33,12 +33,13 @@ export class VetFormPage {
   }
 
   async save(): Promise<void> {
+    await refreshFlutterAccessibility(this.page);
     await this.page.getByRole('button', { name: /^Add Vet$|^Save$/ }).click();
   }
 
   async expectSaved(mode: 'create' | 'edit' = 'create'): Promise<void> {
     const text = mode === 'create' ? 'Vet added' : 'Vet updated';
-    await this.page.getByText(text).waitFor({ timeout: 15_000 });
+    await this.page.getByText(text).first().waitFor({ timeout: 15_000 });
   }
 
   async createVet(options: {
