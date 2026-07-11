@@ -132,7 +132,7 @@ jobs:
   # Live UAT smoke E2E — runs in parallel with manual UAT; does not block deploy.
   uat-e2e-smoke:
     name: UAT live smoke E2E
-    needs: deploy
+    needs: [deploy, smoke]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
