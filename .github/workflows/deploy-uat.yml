@@ -201,7 +201,12 @@ jobs:
       - name: Get runner public IP for o2switch SSH whitelist
         id: runner_ip
         if: vars.UAT_SSH_ENABLED == 'true' && steps.uat_ssh_config.outputs.configured == 'true'
-        uses: haythem/public-ip@v1.3
+        run: |
+          # haythem/public-ip@v1.3 is Node 20 and broken on Node 24 runners.
+          # A plain curl to a reliable IP echo service is simpler and has no runtime dep.
+          ip="$(curl -sf --retry 3 https://api.ipify.org || curl -sf --retry 3 https://ifconfig.me)"
+          echo "ipv4=${ip}" >> "$GITHUB_OUTPUT"
+          echo "Runner public IP: ${ip}"
 
       - name: o2switch SSH whitelist — clear CI slots
         id: whitelist_clear
