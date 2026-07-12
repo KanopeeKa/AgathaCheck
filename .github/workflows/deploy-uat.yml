@@ -108,8 +108,73 @@ jobs:
           echo "New migration files in this deploy:"
           ls -1 db/migrations/*.sql 2>/dev/null || true
 
-      # Optional SSH restart (UAT_SSH_ENABLED=true). Whitelist runner IP via o2switch API
-      # before SSH; continue-on-error so FTP deploy still gates smoke/E2E.
+      # ── cPanel UAPI restart (FTP-compatible, no SSH required) ────────────────
+      # This calls NodeJS::restart_application via port 2083 (HTTPS), which tells
+      # Passenger to pick up the newly-uploaded files. It does NOT run npm install,
+      # so node_modules/ in /backend is never touched.
+      #
+      # Requires three UAT environment secrets (same ones used by SSH whitelist):
+      #   UAT_SSH_HOST          — cPanel server hostname (e.g. server42.o2switch.net)
+      #   UAT_SSH_USER          — cPanel username
+      #   UAT_CPANEL_API_TOKEN  — token from cPanel → Security → Manage API Tokens
+      #
+      # Set UAT_CPANEL_RESTART_ENABLED=true (repo variable) to activate.
+      # If the token is missing the step warns and skips — FTP deploy still succeeds.
+      - name: Detect package.json changes (for conditional npm install)
+        id: pkg_changed
+        run: |
+          # Compare against origin/main to detect package.json changes in this release branch.
+          # Falls back to "false" (restart-only) on any error — safe default since npm install
+          # is only needed when dependencies actually changed.
+          git fetch --depth=1 origin main 2>/dev/null || true
+          if git diff --name-only origin/main...HEAD 2>/dev/null | grep -q '^server/package'; then
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+            echo "::notice::server/package.json changed — cPanel npm install will run after restart."
+          else
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Restart UAT Node.js app via cPanel UAPI (no SSH)
+        id: cpanel_restart
+        if: vars.UAT_CPANEL_RESTART_ENABLED == 'true'
+        continue-on-error: true
+        env:
+          CPANEL_SERVER: ${{ secrets.UAT_SSH_HOST }}
+          CPANEL_USER: ${{ secrets.UAT_SSH_USER }}
+          CPANEL_TOKEN: ${{ secrets.UAT_CPANEL_API_TOKEN }}
+          APP_DOMAIN: uat.agathatrack.com
+          # Only run npm install via nodevenv when package.json actually changed.
+          # Never run bare `npm install` — it would create node_modules/ in /backend.
+          NPM_INSTALL: ${{ steps.pkg_changed.outputs.changed }}
+        run: bash scripts/cpanel-restart-app.sh
+
+      - name: cPanel UAPI restart skipped or failed — manual reminder
+        if: >-
+          vars.UAT_CPANEL_RESTART_ENABLED != 'true' ||
+          steps.cpanel_restart.outcome == 'failure'
+        run: |
+          if [ "${{ vars.UAT_CPANEL_RESTART_ENABLED }}" != "true" ]; then
+            echo "::notice::UAT_CPANEL_RESTART_ENABLED not set — FTP files uploaded but app not restarted automatically."
+          else
+            echo "::warning::cPanel UAPI restart failed — restart app manually in cPanel → Node.js Apps."
+          fi
+          echo "::notice::To activate automatic restarts: set UAT_CPANEL_RESTART_ENABLED=true (repo variable)"
+          echo "::notice::and ensure UAT_SSH_HOST / UAT_SSH_USER / UAT_CPANEL_API_TOKEN are in the UAT environment secrets."
+
+      # ── Optional SSH restart (UAT_SSH_ENABLED=true) ───────────────────────────
+      # SSH is blocked by o2switch's per-IP firewall. The workflow uses the
+      # SshWhitelist cPanel API to temporarily open port 22 for the runner IP,
+      # runs the restart, then removes the runner IP from the whitelist.
+      #
+      # Setup (one-time, per environment):
+      #   1. cPanel → Security → Manage API Tokens → Create (name: github-actions-uat)
+      #   2. GitHub → Settings → Environments → UAT → Environment secrets:
+      #      UAT_SSH_HOST, UAT_SSH_USER, UAT_CPANEL_API_TOKEN, UAT_SSH_PRIVATE_KEY
+      #   3. GitHub → Settings → Environments → UAT → Environment variables:
+      #      UAT_SSH_ENABLED = true
+      #
+      # SSH adds `npm ci --omit=dev` capability but is not required for a basic restart
+      # now that cPanel UAPI restart (above) handles the common case.
       - name: Verify UAT SSH + cPanel API secrets
         id: uat_ssh_config
         if: vars.UAT_SSH_ENABLED == 'true'
@@ -136,7 +201,12 @@ jobs:
       - name: Get runner public IP for o2switch SSH whitelist
         id: runner_ip
         if: vars.UAT_SSH_ENABLED == 'true' && steps.uat_ssh_config.outputs.configured == 'true'
-        uses: haythem/public-ip@v1.3
+        run: |
+          # haythem/public-ip@v1.3 is Node 20 and broken on Node 24 runners.
+          # A plain curl to a reliable IP echo service is simpler and has no runtime dep.
+          ip="$(curl -sf --retry 3 https://api.ipify.org || curl -sf --retry 3 https://ifconfig.me)"
+          echo "ipv4=${ip}" >> "$GITHUB_OUTPUT"
+          echo "Runner public IP: ${ip}"
 
       - name: o2switch SSH whitelist — clear CI slots
         id: whitelist_clear
