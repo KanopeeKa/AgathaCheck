@@ -69,3 +69,4 @@ server/yarn.lock
 node_modules/
 server/uploads/
 flutter_app/coverage/
+.uat-backend-deploy/

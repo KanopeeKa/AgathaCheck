@@ -69,16 +69,19 @@ jobs:
           exclude: |
             **/backend/**
 
-      - name: Stage migrations + restart trigger under server/
+      - name: Stage UAT backend for FTP (excludes node_modules)
+        run: bash scripts/stage-uat-backend-deploy.sh
+
+      - name: Assert node_modules not in UAT backend staging
         run: |
-          mkdir -p server/db server/tmp
-          cp -R db/migrations server/db/migrations
-          date -u +"restart %Y-%m-%dT%H:%M:%SZ" > server/tmp/restart.txt
-          # CloudLinux/cPanel owns backend/node_modules as a symlink into nodevenv/.
-          # Never ship a real folder from CI (stale copies break "Run NPM Install").
-          rm -rf server/node_modules
-          ls server/db/migrations
-          cat server/tmp/restart.txt
+          if [ -e .uat-backend-deploy/node_modules ]; then
+            echo "::error::node_modules in staging dir — refusing FTP deploy"
+            exit 1
+          fi
+          if find .uat-backend-deploy -type d -name node_modules | grep -q .; then
+            echo "::error::nested node_modules in staging dir — refusing FTP deploy"
+            exit 1
+          fi
 
       - name: Deploy backend to uat.agathatrack.com/backend/
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
@@ -87,13 +90,12 @@ jobs:
           username: ${{ secrets.UAT_FTP_USERNAME }}
           password: ${{ secrets.UAT_FTP_PASSWORD }}
           server-dir: ./backend/
-          local-dir: server/
+          local-dir: .uat-backend-deploy/
           exclude: |
             **/.git*
             **/.git*/**
-            node_modules
-            node_modules/**
             **/node_modules/**
+            node_modules/**
             **/test/**
             **/.dart_tool/**
             **/coverage/**
@@ -199,7 +201,11 @@ jobs:
           script: |
             set -e
             cd ~/uat.agathatrack.com/backend
-            npm ci --omit=dev
+            # CloudLinux: never npm ci over SSH — it creates a real node_modules folder
+            # and breaks the cPanel symlink. Use cPanel "Run NPM Install" when package.json changes.
+            if [ -d node_modules ] && [ ! -L node_modules ]; then
+              echo "WARNING: real node_modules folder detected — remove it and use cPanel Run NPM Install"
+            fi
             mkdir -p tmp
             touch tmp/restart.txt
 

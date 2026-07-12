@@ -146,8 +146,10 @@ Expected response: `{"status":"OK"}`
 When `UAT_SSH_ENABLED=true`, the deploy workflow:
 
 1. Whitelists the GitHub runner IP via o2switch **SshWhitelist** API ([docs](https://faq.o2switch.fr/cpanel/outils/exception-parefeu/))
-2. Runs `npm ci --omit=dev` + `touch tmp/restart.txt` over SSH
+2. Runs `touch tmp/restart.txt` over SSH (Passenger restart trigger)
 3. Removes the runner IP from the whitelist when the job finishes
+
+**Do not** run `npm ci` over SSH on o2switch — it creates a real `backend/node_modules` folder and breaks CloudLinux's symlink. When `package.json` / `package-lock.json` change, use cPanel **Exécuter NPM Install** after deploy.
 
 **UAT environment secrets required for SSH:**
 
