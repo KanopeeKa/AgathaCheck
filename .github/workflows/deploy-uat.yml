@@ -108,14 +108,37 @@ jobs:
 
       # Optional SSH restart (UAT_SSH_ENABLED=true). Whitelist runner IP via o2switch API
       # before SSH; continue-on-error so FTP deploy still gates smoke/E2E.
+      - name: Verify UAT SSH + cPanel API secrets
+        id: uat_ssh_config
+        if: vars.UAT_SSH_ENABLED == 'true'
+        env:
+          CPANEL_SERVER: ${{ secrets.UAT_SSH_HOST }}
+          CPANEL_USER: ${{ secrets.UAT_SSH_USER }}
+          CPANEL_TOKEN: ${{ secrets.UAT_CPANEL_API_TOKEN }}
+          SSH_KEY: ${{ secrets.UAT_SSH_PRIVATE_KEY }}
+        run: |
+          missing=()
+          [ -z "$CPANEL_SERVER" ] && missing+=('UAT_SSH_HOST')
+          [ -z "$CPANEL_USER" ] && missing+=('UAT_SSH_USER')
+          [ -z "$CPANEL_TOKEN" ] && missing+=('UAT_CPANEL_API_TOKEN')
+          [ -z "$SSH_KEY" ] && missing+=('UAT_SSH_PRIVATE_KEY')
+          if [ ${#missing[@]} -gt 0 ]; then
+            echo "configured=false" >> "$GITHUB_OUTPUT"
+            echo "::warning::UAT_SSH_ENABLED=true but missing UAT environment secrets: ${missing[*]}"
+            echo "::warning::Add UAT_CPANEL_API_TOKEN: cPanel → Security → Manage API Tokens → Create"
+            echo "::warning::Then GitHub → Settings → Environments → UAT → Environment secrets (not repository secrets)"
+            exit 0
+          fi
+          echo "configured=true" >> "$GITHUB_OUTPUT"
+
       - name: Get runner public IP for o2switch SSH whitelist
         id: runner_ip
-        if: vars.UAT_SSH_ENABLED == 'true'
+        if: vars.UAT_SSH_ENABLED == 'true' && steps.uat_ssh_config.outputs.configured == 'true'
         uses: haythem/public-ip@v1.3
 
       - name: o2switch SSH whitelist — clear CI slots
         id: whitelist_clear
-        if: vars.UAT_SSH_ENABLED == 'true'
+        if: vars.UAT_SSH_ENABLED == 'true' && steps.uat_ssh_config.outputs.configured == 'true'
         continue-on-error: true
         env:
           CPANEL_SERVER: ${{ secrets.UAT_SSH_HOST }}
@@ -125,7 +148,10 @@ jobs:
 
       - name: o2switch SSH whitelist — allow GitHub runner
         id: whitelist_add
-        if: vars.UAT_SSH_ENABLED == 'true' && steps.whitelist_clear.outcome == 'success'
+        if: >-
+          vars.UAT_SSH_ENABLED == 'true' &&
+          steps.uat_ssh_config.outputs.configured == 'true' &&
+          steps.whitelist_clear.outcome == 'success'
         continue-on-error: true
         env:
           CPANEL_SERVER: ${{ secrets.UAT_SSH_HOST }}
@@ -136,7 +162,10 @@ jobs:
 
       - name: o2switch SSH whitelist — verify runner IP
         id: whitelist_verify
-        if: vars.UAT_SSH_ENABLED == 'true' && steps.whitelist_add.outcome == 'success'
+        if: >-
+          vars.UAT_SSH_ENABLED == 'true' &&
+          steps.uat_ssh_config.outputs.configured == 'true' &&
+          steps.whitelist_add.outcome == 'success'
         continue-on-error: true
         env:
           CPANEL_SERVER: ${{ secrets.UAT_SSH_HOST }}
@@ -146,12 +175,18 @@ jobs:
           bash scripts/o2switch-ssh-whitelist.sh list | grep -q "${{ steps.runner_ip.outputs.ipv4 }}"
 
       - name: Wait for o2switch firewall to apply
-        if: vars.UAT_SSH_ENABLED == 'true' && steps.whitelist_verify.outcome == 'success'
+        if: >-
+          vars.UAT_SSH_ENABLED == 'true' &&
+          steps.uat_ssh_config.outputs.configured == 'true' &&
+          steps.whitelist_verify.outcome == 'success'
         run: sleep 30
 
       - name: Install dependencies & restart Node.js app (UAT SSH)
         id: uat_ssh
-        if: vars.UAT_SSH_ENABLED == 'true' && steps.whitelist_verify.outcome == 'success'
+        if: >-
+          vars.UAT_SSH_ENABLED == 'true' &&
+          steps.uat_ssh_config.outputs.configured == 'true' &&
+          steps.whitelist_verify.outcome == 'success'
         continue-on-error: true
         uses: appleboy/ssh-action@v1.0.3
         with:
@@ -169,7 +204,10 @@ jobs:
             touch tmp/restart.txt
 
       - name: o2switch SSH whitelist — cleanup runner IP
-        if: always() && steps.runner_ip.outcome == 'success'
+        if: >-
+          always() &&
+          steps.uat_ssh_config.outputs.configured == 'true' &&
+          steps.runner_ip.outcome == 'success'
         continue-on-error: true
         env:
           CPANEL_SERVER: ${{ secrets.UAT_SSH_HOST }}
@@ -181,6 +219,7 @@ jobs:
       - name: UAT SSH whitelist or connect reminder
         if: >-
           vars.UAT_SSH_ENABLED == 'true' && (
+            steps.uat_ssh_config.outputs.configured != 'true' ||
             steps.whitelist_clear.outcome == 'failure' ||
             steps.whitelist_add.outcome == 'failure' ||
             steps.whitelist_verify.outcome == 'failure' ||
@@ -188,7 +227,11 @@ jobs:
           )
         run: |
           echo "::warning::UAT SSH automation did not complete successfully."
-          echo "::warning::Add UAT_CPANEL_API_TOKEN (cPanel → Manage API Tokens) to the UAT environment."
+          if [ "${{ steps.uat_ssh_config.outputs.configured }}" != "true" ]; then
+            echo "::warning::Missing UAT_CPANEL_API_TOKEN and/or other UAT SSH secrets."
+            echo "::warning::GitHub → Settings → Environments → UAT → Environment secrets"
+            echo "::warning::cPanel → Security → Manage API Tokens → Create → paste as UAT_CPANEL_API_TOKEN"
+          fi
           echo "::warning::FTP deploy succeeded — run NPM Install + Restart in cPanel if needed."
 
   # Post-deploy HTTP smoke — validates DNS, TLS, Passenger restart, API prefix.
