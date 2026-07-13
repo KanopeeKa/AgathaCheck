@@ -196,7 +196,15 @@ jobs:
             echo "::warning::Then GitHub → Settings → Environments → UAT → Environment secrets (not repository secrets)"
             exit 0
           fi
+          # Derive and print the public key so the operator can add it to cPanel if SSH auth fails.
+          # This is safe: public keys are not secret.
           echo "configured=true" >> "$GITHUB_OUTPUT"
+          pubkey="$(echo "$SSH_KEY" | ssh-keygen -y -f /dev/stdin 2>/dev/null || true)"
+          if [ -n "$pubkey" ]; then
+            echo "::notice::SSH public key (paste into cPanel → Security → SSH Access → Manage Keys → Import): ${pubkey}"
+          else
+            echo "::warning::Could not derive public key — ensure UAT_SSH_PRIVATE_KEY is a valid PEM/OpenSSH private key"
+          fi
 
       - name: Get runner public IP for o2switch SSH whitelist
         id: runner_ip
@@ -270,14 +278,46 @@ jobs:
           timeout: 120s
           script: |
             set -e
-            cd ~/uat.agathatrack.com/backend
-            # CloudLinux: never npm ci over SSH — it creates a real node_modules folder
-            # and breaks the cPanel symlink. Use cPanel "Run NPM Install" when package.json changes.
-            if [ -d node_modules ] && [ ! -L node_modules ]; then
-              echo "WARNING: real node_modules folder detected — remove it and use cPanel Run NPM Install"
+            APPDIR="$HOME/uat.agathatrack.com/backend"
+            NODEVENV_BASE="$HOME/nodevenv/uat.agathatrack.com/backend"
+            cd "$APPDIR"
+
+            echo "=== node_modules state ==="
+            if [ -L node_modules ]; then
+              echo "OK: node_modules is a symlink -> $(readlink -f node_modules)"
+            elif [ -d node_modules ]; then
+              echo "FIXING: real node_modules directory found — removing and relinking nodevenv..."
+              rm -rf node_modules
+              # o2switch nodevenv: ~/nodevenv/<domain>/<app-path>/<node-version>/lib/node_modules
+              linked=false
+              for candidate in \
+                  "${NODEVENV_BASE}/22/lib/node_modules" \
+                  "${NODEVENV_BASE}/22/node_modules" \
+                  "${NODEVENV_BASE}/20/lib/node_modules" \
+                  "${NODEVENV_BASE}/20/node_modules"; do
+                if [ -d "$candidate" ]; then
+                  ln -sf "$candidate" node_modules
+                  echo "Linked: node_modules -> $candidate"
+                  linked=true
+                  break
+                fi
+              done
+              if [ "$linked" = false ]; then
+                echo "WARNING: nodevenv dir not found under ${NODEVENV_BASE}"
+                echo "Action needed: cPanel -> Node.js Apps -> Run NPM Install"
+              fi
+            else
+              echo "WARNING: node_modules does not exist — app will fail to start"
+              echo "Action needed: cPanel -> Node.js Apps -> Run NPM Install"
             fi
+
+            echo "=== env check ==="
+            [ -f .env ] && echo ".env present" || echo "WARNING: .env missing — check cPanel Node.js App env vars"
+
+            echo "=== triggering Passenger restart ==="
             mkdir -p tmp
             touch tmp/restart.txt
+            echo "Passenger restart triggered via tmp/restart.txt"
 
       - name: o2switch SSH whitelist — cleanup runner IP
         if: >-

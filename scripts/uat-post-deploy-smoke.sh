@@ -19,6 +19,8 @@ classify_body() {
     echo "waf"
   elif grep -q 'Backend alive' <<<"$body"; then
     echo "backend_root"
+  elif grep -qiE 'Passenger|application error|We're sorry|Internal Server Error' <<<"$body"; then
+    echo "passenger_crash"
   else
     echo "unknown"
   fi
@@ -34,6 +36,10 @@ probe_url() {
   body="$(cat "$tmp")"
   kind="$(classify_body "$body")"
   rm -f "$tmp"
+  # Expose body on 5xx so CI log shows the Passenger error page snippet.
+  if [[ "$code" =~ ^5 ]] && [ "$kind" != "ok" ]; then
+    echo "::debug::HTTP ${code} response body (first 500 chars): ${body:0:500}" >&2
+  fi
   printf '%s|%s' "$code" "$kind"
 }
 
@@ -58,6 +64,21 @@ EOF
       ;;
     waf)
       echo 'Hosting WAF challenge page — verify in a browser or whitelist GitHub Actions egress for UAT.'
+      ;;
+    passenger_crash)
+      cat <<'EOF'
+Passenger returned a 500 crash page — the Node.js app is failing to start.
+Most common causes on o2switch CloudLinux:
+  1. node_modules is a real dir instead of the nodevenv symlink — SSH step should have fixed it.
+     Manual fix: cPanel → File Manager → /backend → delete node_modules → Node.js Apps → Run NPM Install.
+  2. JWT_SECRET or other required env vars missing — set them in cPanel → Node.js Apps → Env vars.
+  3. .env file absent or has wrong DB credentials — verify /backend/.env on the server.
+  4. SSH key not authorized — add the public key printed in "Verify UAT SSH" step to cPanel → SSH Access.
+EOF
+      ;;
+    unknown)
+      echo "Backend did not return {\"status\":\"OK\"} (HTTP ${last_code:-?}). On the server: curl -sk ${UAT_BASE_URL}/backend/health"
+      echo "Enable debug logs in the workflow run to see the response body."
       ;;
     *)
       echo "Backend did not return {\"status\":\"OK\"}. On the server: curl -sk ${UAT_BASE_URL}/backend/health"
@@ -97,7 +118,7 @@ for i in $(seq 1 "$MAX_ATTEMPTS"); do
 
   if [ "$i" -eq 1 ] || [ $((i % 6)) -eq 0 ]; then
     echo "Attempt ${i}/${MAX_ATTEMPTS}: HTTP ${last_code} — ${last_kind}"
-    if [ "$last_kind" = "directory_listing" ] || [ "$last_kind" = "flutter_spa" ]; then
+    if [ "$last_kind" = "directory_listing" ] || [ "$last_kind" = "flutter_spa" ] || [ "$last_kind" = "passenger_crash" ]; then
       error_hint "$last_kind" | while IFS= read -r line; do
         [ -n "$line" ] && echo "::notice::${line}"
       done

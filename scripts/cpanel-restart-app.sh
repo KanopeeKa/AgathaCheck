@@ -1,9 +1,10 @@
 #!/usr/bin/env bash
 # cPanel UAPI — restart the Node.js application after FTP deploy (no SSH required).
 #
-# o2switch CloudLinux exposes the standard cPanel NodeJS UAPI module at port 2083.
-# "restart_application" touches the app's restart file via the cPanel daemon, which
-# is equivalent to `touch tmp/restart.txt` done through Passenger — without SSH.
+# o2switch CloudLinux exposes a subset of the standard cPanel UAPI.
+# The NodeJS module (NodeJS::restart_application) is NOT available on all o2switch
+# plans. When it is missing this script exits 0 with a notice — the SSH restart step
+# in the workflow handles the actual Passenger restart in that case.
 #
 # Required env vars:
 #   CPANEL_SERVER  — hostname (same as UAT_SSH_HOST secret, e.g. server42.o2switch.net)
@@ -13,8 +14,6 @@
 #
 # Optional:
 #   NPM_INSTALL    — set to "true" to also run npm install via cPanel NodeJS UAPI.
-#                    Only set this when package.json actually changed. On o2switch,
-#                    "npm_install_packages" runs inside nodevenv — never a bare npm install.
 set -euo pipefail
 
 CPANEL_SERVER="${CPANEL_SERVER:?CPANEL_SERVER required}"
@@ -32,17 +31,25 @@ cpanel_call() {
   local url="${BASE}/${endpoint}$*"
   local response
   echo "cPanel UAPI → ${endpoint} for ${APP_DOMAIN}"
-  if ! response="$(curl -sfSm 60 -H "$AUTH" "$url")"; then
-    echo "::error::cPanel UAPI request failed: ${url}" >&2
-    exit 1
+  if ! response="$(curl -sfSm 60 -H "$AUTH" "$url" 2>&1)"; then
+    echo "::warning::cPanel UAPI request failed (network): ${url}" >&2
+    return 1
   fi
-  # cPanel UAPI wraps results: {"status":1,"data":...} on success, {"status":0,"errors":[...]} on failure
+
+  # Detect "module not found" — o2switch does not ship Cpanel::API::NodeJS on all plans.
+  if echo "$response" | grep -q "Can't locate Cpanel/API/NodeJS.pm"; then
+    echo "::notice::cPanel NodeJS UAPI module is not available on this server."
+    echo "::notice::The SSH restart step (UAT_SSH_ENABLED=true) will handle Passenger restart."
+    echo "::notice::Alternatively: restart via cPanel → Node.js Apps → Restart."
+    return 0
+  fi
+
   if command -v jq >/dev/null 2>&1; then
     local status
     status="$(echo "$response" | jq -r '.status // 0')"
     if [ "$status" != "1" ]; then
       echo "::error::cPanel UAPI error on ${endpoint}: $(echo "$response" | jq -c '.errors // .messages // .')" >&2
-      exit 1
+      return 1
     fi
     echo "cPanel UAPI ${endpoint} → OK"
     echo "$response" | jq -c '.data // empty'
@@ -53,11 +60,10 @@ cpanel_call() {
 
 if [ "$NPM_INSTALL" = "true" ]; then
   echo "Running npm install via cPanel NodeJS UAPI (nodevenv-managed, not bare npm)..."
-  # This installs packages into the virtual environment under nodevenv/, never into node_modules/ directly.
-  cpanel_call "npm_install_packages" "?domain=${APP_DOMAIN}"
+  cpanel_call "npm_install_packages" "?domain=${APP_DOMAIN}" || true
 fi
 
 echo "Restarting Node.js application via cPanel UAPI..."
-cpanel_call "restart_application" "?domain=${APP_DOMAIN}"
+cpanel_call "restart_application" "?domain=${APP_DOMAIN}" || true
 
-echo "::notice::Node.js app restarted via cPanel UAPI. Passenger will pick up new files from FTP."
+echo "::notice::cPanel UAPI restart attempt complete. SSH step will also touch tmp/restart.txt if configured."
