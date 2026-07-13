@@ -62,7 +62,7 @@ jobs:
         working-directory: flutter_app
         run: |
           if grep -q "build_runner" pubspec.yaml; then
-            flutter pub run build_runner build --delete-conflicting-outputs
+            dart run build_runner build
           else
             echo "build_runner not configured; skipping codegen."
           fi
