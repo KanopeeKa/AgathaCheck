@@ -12,30 +12,47 @@ export class WeightTrackingPage {
 
   /** Expand the Weight Tracking ExpansionTile if it is not already open. */
   async openSection(): Promise<void> {
-    const tile = this.page.getByRole('button', { name: /Weight Tracking/i });
-    await tile.scrollIntoViewIfNeeded();
-    const expanded = await tile.getAttribute('aria-expanded');
-    if (expanded !== 'true') {
-      await tile.click();
-      await this.page.waitForTimeout(600);
+    const expandedMarker = this.page.getByRole('radio', { name: 'kg' });
+    if (await expandedMarker.isVisible().catch(() => false)) {
       await refreshFlutterAccessibility(this.page);
+      return;
     }
+
+    const tile = this.page
+      .getByRole('button', { name: /Weight Tracking/i })
+      .or(this.page.getByRole('group', { name: /Weight Tracking/i }))
+      .first();
+    await tile.scrollIntoViewIfNeeded();
+    await tile.click();
+    await this.page.waitForTimeout(600);
+    await refreshFlutterAccessibility(this.page);
   }
 
   /** Wait until the Weight Tracking section header is visible on the page. */
   async expectLoaded(): Promise<void> {
     await this.page
       .getByRole('button', { name: /Weight Tracking/i })
+      .or(this.page.getByRole('group', { name: /Weight Tracking/i }))
       .first()
       .waitFor({ timeout: 30_000 });
+  }
+
+  /** Wait until the async weight list has finished loading (empty, entries, or error). */
+  private async waitForWeightDataSettled(): Promise<void> {
+    await this.page
+      .getByRole('group', { name: /no weight data yet|\d+\.\d+ (kg|lb)/i })
+      .or(this.page.getByText(/no weight data yet|\d+\.\d+ (kg|lb)|error loading weight/i))
+      .first()
+      .waitFor({ timeout: 15_000 });
   }
 
   /** Expect the empty-state prompt shown when there are no weight entries. */
   async expectEmptyState(): Promise<void> {
     await this.openSection();
+    await this.waitForWeightDataSettled();
     await this.page
-      .getByRole('group', { name: /No weight data yet/i })
-      .or(this.page.getByText(/no weight/i))
+      .getByText(/no weight data yet/i)
+      .or(this.page.getByRole('group', { name: /No weight data yet/i }))
       .first()
       .waitFor({ timeout: 15_000 });
   }
@@ -79,6 +96,8 @@ export class WeightTrackingPage {
    * The entry is rendered as a ListTile with text "25.5 kg".
    */
   async expectWeightEntryVisible(weight: number, unit = 'kg'): Promise<void> {
+    await this.openSection();
+    await this.waitForWeightDataSettled();
     const label = `${weight.toFixed(1)} ${unit}`;
     const pattern = new RegExp(label.replace('.', '\\.'), 'i');
     await this.page
