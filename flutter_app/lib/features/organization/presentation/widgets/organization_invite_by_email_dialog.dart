@@ -56,6 +56,7 @@ Future<void> showOrganizationInviteByEmailDialog({
               DropdownButtonFormField<String>(
                 value: selectedRole,
                 decoration: InputDecoration(
+                  labelText: l.selectRole,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),

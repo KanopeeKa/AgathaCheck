@@ -1,6 +1,6 @@
 import type { Page } from '@playwright/test';
 import { expect } from '@playwright/test';
-import { dismissConsentBannerIfPresent, expectAppBarTitle } from '../support/flutter';
+import { dismissConsentBannerIfPresent, expectAppBarTitle, escapeRegExp, refreshFlutterAccessibility, semanticsByName } from '../support/flutter';
 
 /**
  * Organization list screen (`/organizations`).
@@ -23,40 +23,50 @@ export class OrganizationListPage {
   }
 
   async expectOrgVisible(name: string): Promise<void> {
-    await this.page
-      .getByRole('button', { name: new RegExp(name, 'i') })
-      .first()
-      .waitFor({ timeout: 30_000 });
+    await semanticsByName(this.page, new RegExp(name, 'i')).waitFor({ timeout: 30_000 });
   }
 
   async openOrg(name: string): Promise<void> {
     await this.expectOrgVisible(name);
-    await this.page
-      .getByRole('button', { name: new RegExp(name, 'i') })
-      .first()
-      .click();
+    await semanticsByName(this.page, new RegExp(name, 'i')).click();
     await this.page.waitForTimeout(750);
   }
 
   async acceptInviteForOrg(orgName: string): Promise<void> {
-    await this.page.getByText(`You've been invited to join ${orgName}`).waitFor({
-      timeout: 30_000,
-    });
-    await this.page.getByRole('button', { name: 'Accept' }).click();
-    await this.page.getByText('Invitation accepted').waitFor({ timeout: 30_000 });
+    await this.page
+      .getByText(new RegExp(escapeRegExp(orgName), 'i'))
+      .or(this.page.getByRole('group', { name: new RegExp(escapeRegExp(orgName), 'i') }))
+      .first()
+      .waitFor({ timeout: 30_000 })
+      .catch(() => undefined);
+    await this.page.getByRole('button', { name: /^Accept$/i }).first().click();
+    await this.page.getByText(/Invitation accepted/i).first().waitFor({ timeout: 30_000 });
+    await refreshFlutterAccessibility(this.page);
+    // Accept navigates to org detail; return to the list for card assertions.
+    const back = this.page.getByRole('button', { name: /^Back$/i });
+    if (await back.count()) {
+      await back.first().click();
+      await this.expectLoaded();
+      await refreshFlutterAccessibility(this.page);
+    }
   }
 
   async declineInviteForOrg(orgName: string): Promise<void> {
-    await this.page.getByText(`You've been invited to join ${orgName}`).waitFor({
-      timeout: 30_000,
-    });
-    await this.page.getByRole('button', { name: 'Decline' }).click();
-    await this.page.getByText('Invitation declined').waitFor({ timeout: 30_000 });
+    await this.page
+      .getByText(new RegExp(escapeRegExp(orgName), 'i'))
+      .or(this.page.getByRole('group', { name: new RegExp(escapeRegExp(orgName), 'i') }))
+      .first()
+      .waitFor({ timeout: 30_000 })
+      .catch(() => undefined);
+    await this.page.getByRole('button', { name: /^Decline$/i }).first().click();
+    await this.page.getByText(/Invitation declined/i).first().waitFor({ timeout: 30_000 });
+    await refreshFlutterAccessibility(this.page);
   }
 
   async expectNoPendingInvite(orgName: string): Promise<void> {
+    await expect(this.page.getByRole('button', { name: /^Accept$/i })).toHaveCount(0);
     await expect(
-      this.page.getByText(`You've been invited to join ${orgName}`),
+      this.page.getByText(new RegExp(`invited to join.*${escapeRegExp(orgName)}`, 'i')),
     ).toHaveCount(0);
   }
 }

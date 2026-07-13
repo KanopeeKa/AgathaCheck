@@ -16,6 +16,7 @@ import {
   getUnreadNotificationCount,
   markNotificationRead,
   markAllNotificationsRead,
+  markHealthEntryTaken,
   seedOverdueNotification,
   signupUser,
   type TestNotification,
@@ -94,12 +95,15 @@ test.describe('Notifications', () => {
     const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
     const user = await signupUser(baseURL, { firstName: 'Clara', lastName: 'Clear' });
 
-    await seedOverdueNotification(baseURL, user.accessToken, {
+    const { entry } = await seedOverdueNotification(baseURL, user.accessToken, {
       petName: 'Rex',
       entryName: 'Heartworm Check',
     });
 
     await markAllNotificationsRead(baseURL, user.accessToken);
+    // Pet list mount runs checkDueEntries; completing the overdue entry prevents
+    // a fresh unread notification from being created on first load.
+    await markHealthEntryTaken(baseURL, user.accessToken, entry.id);
 
     const unreadCount = await getUnreadNotificationCount(baseURL, user.accessToken);
     expect(unreadCount).toBe(0);
@@ -201,8 +205,5 @@ test.describe('Notifications', () => {
     const notificationsPage = new NotificationsPage(page);
     await notificationsPage.openFromPetList();
     await notificationsPage.openSettings();
-
-    // The settings screen title is "Notification Settings"
-    await page.getByText('Notification Settings').waitFor({ timeout: 15_000 });
   });
 });

@@ -58,19 +58,21 @@ export class VetListPage {
 
   /** Open the three-dot options menu for the vet card matching `name`. */
   async openVetMenu(name: string): Promise<void> {
-    await this.expectVetVisible(name);
-    const escaped = escapeRegExp(name);
-    const namePattern = new RegExp(`Veterinarian:\\s*${escaped}(?:,|$)`);
-    const vetCards = this.page
-      .getByRole('button', { name: /Veterinarian:/i })
-      .or(this.page.getByRole('group', { name: /Veterinarian:/i }));
-    const cardCount = await vetCards.count();
-    for (let i = 0; i < cardCount; i++) {
-      const card = vetCards.nth(i);
-      const accessibleName =
-        (await card.getAttribute('aria-label')) ?? (await card.innerText());
-      if (namePattern.test(accessibleName)) {
-        await this.page.getByRole('button', { name: 'Vet options' }).nth(i).click();
+    const card = semanticsByName(
+      this.page,
+      new RegExp(`Veterinarian:\\s*${escapeRegExp(name)}`, 'i'),
+    );
+    await card.waitFor({ timeout: 30_000 });
+    const box = await card.boundingBox();
+    if (!box) throw new Error(`Vet card "${name}" not found`);
+
+    const menus = this.page.getByRole('button', { name: /vet options/i });
+    const count = await menus.count();
+    for (let i = 0; i < count; i++) {
+      const menu = menus.nth(i);
+      const menuBox = await menu.boundingBox();
+      if (menuBox && Math.abs(menuBox.y - box.y) <= box.height) {
+        await menu.click();
         await refreshFlutterAccessibility(this.page);
         return;
       }

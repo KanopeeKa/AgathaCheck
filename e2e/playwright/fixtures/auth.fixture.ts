@@ -6,6 +6,7 @@ import { clearLiveApiAccess, passHostingWaf, prepareLiveApiAccess, resetHostingW
 import { isLiveHostingTarget } from '../support/hosting';
 import { LandingPage } from '../pages/landing.page';
 import { PetListPage } from '../pages/pet-list.page';
+import { refreshFlutterAccessibility } from '../support/flutter';
 
 type AuthFixtures = {
   testUser: TestUser;
@@ -73,6 +74,7 @@ export async function loginAs(page: import('@playwright/test').Page, user: TestU
   }
   await landing.goto();
   await landing.login(user.email, user.password);
+  await refreshFlutterAccessibility(page);
   await petList.expectLoaded();
   return petList;
 }

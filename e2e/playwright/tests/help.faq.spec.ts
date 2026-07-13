@@ -12,8 +12,8 @@
  * Scenario: Navigating back from the Help page
  */
 import { test, expect, loginAs } from '../fixtures/auth.fixture';
-import { updateUserProfile } from '../support/api';
 import { PetListPage } from '../pages/pet-list.page';
+import { MyDetailsPage } from '../pages/my-details.page';
 import {
   FAQ_SECTIONS_EN,
   FAQ_SECTIONS_FR,
@@ -117,20 +117,11 @@ test.describe('Help / FAQ', () => {
     page,
     testUser,
   }) => {
-    const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
     await loginAs(page, testUser);
-    await updateUserProfile(baseURL, testUser.accessToken, { locale: 'fr' });
 
-    await page.evaluate(() => {
-      localStorage.setItem('flutter.app_locale', 'fr');
-    });
-
-    await page.reload();
-    await page.waitForSelector('flutter-view, flt-glass-pane', {
-      state: 'attached',
-      timeout: 60_000,
-    });
-    await loginAs(page, testUser);
+    const myDetails = new MyDetailsPage(page);
+    await myDetails.openFromUserMenu();
+    await myDetails.setLanguage('fr');
 
     const help = new HelpPage(page);
     await help.openFromUserMenu();

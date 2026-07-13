@@ -84,58 +84,54 @@ class VetListScreen extends ConsumerWidget {
                 final linkedPets = pets
                     .where((p) => p.vetId == vet.id)
                     .toList();
-                return MergeSemantics(
-                  child: Card(
-                    key: Key('vet_card_${vet.name}'),
-                    margin: const EdgeInsets.only(bottom: 8),
-                    child: Semantics(
-                      label:
-                          'Veterinarian: ${vet.name}${vet.phone.isNotEmpty ? ', Phone: ${vet.phone}' : ''}${vet.address.isNotEmpty ? ', Address: ${vet.address}' : ''}',
-                      child: ListTile(
-                        leading: CircleAvatar(
-                          backgroundColor: theme.colorScheme.primaryContainer,
-                          child: ExcludeSemantics(
-                            child: Icon(
-                              Icons.local_hospital,
-                              color: theme.colorScheme.onPrimaryContainer,
-                            ),
+                return Card(
+                  key: Key('vet_card_${vet.name}'),
+                  margin: const EdgeInsets.only(bottom: 8),
+                  child: Semantics(
+                    label:
+                        'Veterinarian: ${vet.name}${vet.phone.isNotEmpty ? ', Phone: ${vet.phone}' : ''}${vet.address.isNotEmpty ? ', Address: ${vet.address}' : ''}',
+                    explicitChildNodes: true,
+                    child: ListTile(
+                      leading: CircleAvatar(
+                        backgroundColor: theme.colorScheme.primaryContainer,
+                        child: ExcludeSemantics(
+                          child: Icon(
+                            Icons.local_hospital,
+                            color: theme.colorScheme.onPrimaryContainer,
                           ),
                         ),
-                        title: Text(
-                          vet.name,
-                          style: theme.textTheme.titleMedium,
-                        ),
-                        subtitle: _buildSubtitle(vet, linkedPets),
-                        trailing: PopupMenuButton<String>(
-                          tooltip: l.vetOptions,
-                          onSelected: (value) {
-                            if (value == 'edit') {
-                              context.go('/vets/edit/${vet.id}');
-                            } else if (value == 'delete') {
-                              _confirmDelete(context, ref, vet, l);
-                            }
-                          },
-                          itemBuilder: (context) => [
-                            PopupMenuItem(
-                              value: 'edit',
-                              child: ListTile(
-                                leading: const Icon(Icons.edit),
-                                title: Text(l.edit),
-                                contentPadding: EdgeInsets.zero,
-                              ),
-                            ),
-                            PopupMenuItem(
-                              value: 'delete',
-                              child: ListTile(
-                                leading: const Icon(Icons.delete),
-                                title: Text(l.delete),
-                                contentPadding: EdgeInsets.zero,
-                              ),
-                            ),
-                          ],
-                        ),
-                        onTap: () => context.go('/vets/edit/${vet.id}'),
                       ),
+                      title: Text(vet.name, style: theme.textTheme.titleMedium),
+                      subtitle: _buildSubtitle(vet, linkedPets),
+                      trailing: PopupMenuButton<String>(
+                        tooltip: l.vetOptions,
+                        onSelected: (value) {
+                          if (value == 'edit') {
+                            context.go('/vets/edit/${vet.id}');
+                          } else if (value == 'delete') {
+                            _confirmDelete(context, ref, vet, l);
+                          }
+                        },
+                        itemBuilder: (context) => [
+                          PopupMenuItem(
+                            value: 'edit',
+                            child: ListTile(
+                              leading: const Icon(Icons.edit),
+                              title: Text(l.edit),
+                              contentPadding: EdgeInsets.zero,
+                            ),
+                          ),
+                          PopupMenuItem(
+                            value: 'delete',
+                            child: ListTile(
+                              leading: const Icon(Icons.delete),
+                              title: Text(l.delete),
+                              contentPadding: EdgeInsets.zero,
+                            ),
+                          ),
+                        ],
+                      ),
+                      onTap: () => context.go('/vets/edit/${vet.id}'),
                     ),
                   ),
                 );

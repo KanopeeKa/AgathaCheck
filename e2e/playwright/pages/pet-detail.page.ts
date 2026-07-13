@@ -29,7 +29,7 @@ export class PetDetailPage {
   }
 
   async openEdit(): Promise<void> {
-    await this.page.getByRole('button', { name: 'Edit Pet', exact: true }).click();
+    await this.page.getByRole('button', { name: /edit pet/i }).first().click();
     await this.page.getByRole('button', { name: 'Update Pet' }).waitFor({ timeout: 30_000 });
   }
 

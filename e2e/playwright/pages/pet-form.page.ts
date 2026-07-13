@@ -26,7 +26,7 @@ export class PetFormPage {
   }
 
   async fillBreed(breed: string): Promise<void> {
-    await fillLabelledField(this.page, 'Breed', breed);
+    await fillTextbox(this.page, 'Breed', breed);
   }
 
   async save(): Promise<void> {

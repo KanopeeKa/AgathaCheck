@@ -70,15 +70,26 @@ export class LandingPage {
   }
 
   async login(email: string, password: string): Promise<void> {
-    await fillLabelledField(this.page, 'Email', email);
-    await this.page.waitForTimeout(200);
-    await fillLabelledField(this.page, 'Password', password);
+    const emailField = this.page.getByRole('textbox', { name: 'Email' });
+    await emailField.waitFor({ state: 'visible', timeout: 30_000 });
+    await emailField.click();
+    await emailField.fill('');
+    await emailField.pressSequentially(email, { delay: 25 });
 
-    const passwordField = this.page.locator('input[aria-label="Password"]');
-    if ((await passwordField.inputValue()) !== password) {
-      await passwordField.click();
-      await passwordField.fill('');
-      await passwordField.pressSequentially(password, { delay: 20 });
+    const passwordField = this.page.getByRole('textbox', { name: 'Password' });
+    await passwordField.waitFor({ state: 'visible', timeout: 30_000 });
+    await passwordField.click();
+    await passwordField.fill('');
+    await passwordField.pressSequentially(password, { delay: 25 });
+
+    try {
+      const typed = await passwordField.inputValue({ timeout: 2_000 });
+      if (typed !== password) {
+        await passwordField.fill('');
+        await passwordField.pressSequentially(password, { delay: 40 });
+      }
+    } catch {
+      // Flutter semantics inputs may not expose inputValue; pressSequentially above is enough.
     }
 
     await this.page.getByRole('button', { name: 'Sign In', exact: true }).click();

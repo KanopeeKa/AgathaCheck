@@ -82,7 +82,7 @@ function buildMockPool(overrides = {}) {
     if (sql.includes('SELECT first_name, last_name, email FROM users WHERE id = $1')) {
       return { rows: [{ first_name: 'Alice', last_name: 'Owner', email: 'alice@example.com' }] };
     }
-    if (sql.includes('SELECT role FROM pet_access') && sql.includes("role = 'foster'")) {
+    if (sql.includes('SELECT role FROM pet_access') && sql.includes("role IN ('shared', 'foster')")) {
       return { rows: [{ role: 'foster' }] };
     }
     if (sql.includes('SELECT role FROM pet_access WHERE pet_id = $1 AND user_id = $2')) {
@@ -353,6 +353,28 @@ describe('Sharing API', () => {
         .send({ hidden: false });
       expect(res.statusCode).toBe(200);
       expect(res.body).toHaveProperty('message', 'Pet unhidden');
+    });
+
+    it('hides a shared pet for the collaborator', async () => {
+      const pool = buildMockPool({
+        query: async (sql, params) => {
+          if (sql.includes("role IN ('shared', 'foster')")) {
+            return { rows: [{ role: 'shared' }] };
+          }
+          if (sql.includes('UPDATE pet_access SET hidden')) {
+            expect(params[3]).toBe('shared');
+            return { rows: [] };
+          }
+          return buildMockPool().query(sql, params);
+        },
+      });
+      const appWithShared = createApp(pool);
+      const res = await request(appWithShared)
+        .put(`/api/share/${petId}/hide`)
+        .set('Authorization', `Bearer ${token}`)
+        .send({ hidden: true });
+      expect(res.statusCode).toBe(200);
+      expect(res.body).toHaveProperty('message', 'Pet hidden');
     });
   });
 
