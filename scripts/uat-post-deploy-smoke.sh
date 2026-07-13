@@ -19,7 +19,7 @@ classify_body() {
     echo "waf"
   elif grep -q 'Backend alive' <<<"$body"; then
     echo "backend_root"
-  elif grep -qiE 'Passenger|application error|We're sorry|Internal Server Error' <<<"$body"; then
+  elif grep -qiE 'Passenger|application error|Internal Server Error' <<<"$body"; then
     echo "passenger_crash"
   else
     echo "unknown"
@@ -77,7 +77,7 @@ Most common causes on o2switch CloudLinux:
 EOF
       ;;
     unknown)
-      echo "Backend did not return {\"status\":\"OK\"} (HTTP ${last_code:-?}). On the server: curl -sk ${UAT_BASE_URL}/backend/health"
+      echo "Backend did not return {\"status\":\"OK\"}. On the server: curl -sk ${UAT_BASE_URL}/backend/health"
       echo "Enable debug logs in the workflow run to see the response body."
       ;;
     *)
