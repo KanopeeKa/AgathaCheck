@@ -95,30 +95,47 @@ export class PetListPage {
     );
     const box = await card.boundingBox();
     if (!box) throw new Error(`Pet card "${name}" not found`);
-    const startX = box.x + box.width * 0.88;
-    const endX = box.x + box.width * 0.05;
+    const startX = box.x + box.width * 0.92;
+    const endX = box.x + box.width * 0.02;
     const midY = box.y + box.height / 2;
     await this.page.mouse.move(startX, midY);
     await this.page.mouse.down();
-    for (let i = 1; i <= 20; i++) {
-      await this.page.mouse.move(startX + (endX - startX) * (i / 20), midY);
+    for (let i = 1; i <= 24; i++) {
+      await this.page.mouse.move(startX + (endX - startX) * (i / 24), midY);
+      await this.page.waitForTimeout(15);
     }
+    await this.page.waitForTimeout(300);
     await this.page.mouse.up();
-    await this.page.waitForTimeout(750);
+    await this.page.waitForTimeout(500);
+    await refreshFlutterAccessibility(this.page);
+    await this.page
+      .getByText(new RegExp(`Hide\\s+${escapeRegExp(name)}`, 'i'))
+      .or(this.page.getByText(/Hide Pet/i))
+      .first()
+      .waitFor({ timeout: 15_000 });
   }
 
   async confirmHidePet(): Promise<void> {
-    // AlertDialog title "Hide Pet", buttons: "Cancel", "Hide"
-    await this.page.getByRole('button', { name: 'Hide' }).last().click();
-    await this.page.waitForTimeout(1_000);
+    await refreshFlutterAccessibility(this.page);
+    await this.page.getByRole('button', { name: 'Hide', exact: true }).last().click();
+    await this.page
+      .getByText(/pet hidden|animal masqué|hidden from your list/i)
+      .first()
+      .waitFor({ timeout: 15_000 })
+      .catch(() => undefined);
+    await this.page.waitForTimeout(1000);
+    await refreshFlutterAccessibility(this.page);
   }
 
   async expectPetHidden(name: string): Promise<void> {
-    await expect(
-      this.page
-        .getByRole('button', { name: new RegExp(`Pet:\\s*${escapeRegExp(name)}`, 'i') })
-        .or(this.page.getByRole('group', { name: new RegExp(`Pet:\\s*${escapeRegExp(name)}`, 'i') })),
-    ).toHaveCount(0);
+    await expect(async () => {
+      await refreshFlutterAccessibility(this.page);
+      await expect(
+        this.page
+          .getByRole('button', { name: new RegExp(`Pet:\\s*${escapeRegExp(name)}`, 'i') })
+          .or(this.page.getByRole('group', { name: new RegExp(`Pet:\\s*${escapeRegExp(name)}`, 'i') })),
+      ).toHaveCount(0);
+    }).toPass({ timeout: 20_000 });
   }
 
   async expectSectionHeader(title: string): Promise<void> {

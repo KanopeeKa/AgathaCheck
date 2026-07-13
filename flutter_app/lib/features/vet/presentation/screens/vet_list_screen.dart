@@ -84,14 +84,14 @@ class VetListScreen extends ConsumerWidget {
                 final linkedPets = pets
                     .where((p) => p.vetId == vet.id)
                     .toList();
-                return MergeSemantics(
-                  child: Card(
-                    key: Key('vet_card_${vet.name}'),
-                    margin: const EdgeInsets.only(bottom: 8),
-                    child: Semantics(
-                      label:
-                          'Veterinarian: ${vet.name}${vet.phone.isNotEmpty ? ', Phone: ${vet.phone}' : ''}${vet.address.isNotEmpty ? ', Address: ${vet.address}' : ''}',
-                      child: ListTile(
+                return Card(
+                  key: Key('vet_card_${vet.name}'),
+                  margin: const EdgeInsets.only(bottom: 8),
+                  child: Semantics(
+                    label:
+                        'Veterinarian: ${vet.name}${vet.phone.isNotEmpty ? ', Phone: ${vet.phone}' : ''}${vet.address.isNotEmpty ? ', Address: ${vet.address}' : ''}',
+                    explicitChildNodes: true,
+                    child: ListTile(
                         leading: CircleAvatar(
                           backgroundColor: theme.colorScheme.primaryContainer,
                           child: ExcludeSemantics(
@@ -137,7 +137,6 @@ class VetListScreen extends ConsumerWidget {
                         onTap: () => context.go('/vets/edit/${vet.id}'),
                       ),
                     ),
-                  ),
                 );
               },
             ),

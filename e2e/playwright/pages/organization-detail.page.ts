@@ -63,9 +63,9 @@ export class OrganizationDetailPage {
     await this.openMenu();
     await this.page.getByRole('menuitem', { name: 'Invite Member' }).click();
     await fillTextbox(this.page, 'Email', email);
-    await selectDropdownOption(this.page, 'Select role', roleLabel);
+    await selectDropdownOption(this.page, 'Select Role', roleLabel);
     await this.page.getByRole('button', { name: 'Send Invite' }).click();
-    await this.page.getByText('Invitation sent successfully').waitFor({ timeout: 30_000 });
+    await this.page.getByText('Invitation sent successfully').first().waitFor({ timeout: 30_000 });
   }
 
   async expectInviteMenuHidden(): Promise<void> {

@@ -110,6 +110,7 @@ export class WeightTrackingPage {
   /** Count weight entry rows visible in the expanded section. */
   async expectWeightEntryCount(count: number): Promise<void> {
     await this.openSection();
+    await this.waitForWeightDataSettled();
     const entries = this.page.getByRole('group', { name: /^\d+\.\d+ (kg|lb)/ });
     await expect(entries).toHaveCount(count, { timeout: 15_000 });
   }

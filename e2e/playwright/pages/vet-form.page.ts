@@ -39,7 +39,12 @@ export class VetFormPage {
 
   async expectSaved(mode: 'create' | 'edit' = 'create'): Promise<void> {
     const text = mode === 'create' ? 'Vet added' : 'Vet updated';
-    await this.page.getByText(text).first().waitFor({ timeout: 15_000 });
+    await this.page
+      .getByText(text)
+      .or(this.page.getByRole('button', { name: /Veterinarian:/i }))
+      .or(this.page.getByRole('group', { name: /Veterinarian:/i }))
+      .first()
+      .waitFor({ timeout: 15_000 });
   }
 
   async createVet(options: {

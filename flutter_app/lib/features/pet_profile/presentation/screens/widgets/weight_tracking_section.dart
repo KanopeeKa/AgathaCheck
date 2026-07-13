@@ -85,30 +85,35 @@ class WeightTrackingSection extends ConsumerWidget {
               ),
               data: (entries) {
                 if (entries.isEmpty) {
-                  return Padding(
-                    padding: const EdgeInsets.all(24),
-                    child: Column(
-                      children: [
-                        Icon(
-                          Icons.scale_outlined,
-                          size: 48,
-                          color: colorScheme.outline,
+                  return MergeSemantics(
+                    child: Semantics(
+                      label: l.noWeightDataYet,
+                      child: Padding(
+                        padding: const EdgeInsets.all(24),
+                        child: Column(
+                          children: [
+                            Icon(
+                              Icons.scale_outlined,
+                              size: 48,
+                              color: colorScheme.outline,
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              l.noWeightDataYet,
+                              style: theme.textTheme.bodyLarge?.copyWith(
+                                color: colorScheme.onSurfaceVariant,
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              l.tapAddEntryToStart,
+                              style: theme.textTheme.bodySmall?.copyWith(
+                                color: colorScheme.outline,
+                              ),
+                            ),
+                          ],
                         ),
-                        const SizedBox(height: 8),
-                        Text(
-                          l.noWeightDataYet,
-                          style: theme.textTheme.bodyLarge?.copyWith(
-                            color: colorScheme.onSurfaceVariant,
-                          ),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          l.tapAddEntryToStart,
-                          style: theme.textTheme.bodySmall?.copyWith(
-                            color: colorScheme.outline,
-                          ),
-                        ),
-                      ],
+                      ),
                     ),
                   );
                 }
@@ -132,6 +137,9 @@ class WeightTrackingSection extends ConsumerWidget {
                       separatorBuilder: (_, __) => const Divider(height: 1),
                       itemBuilder: (context, index) {
                         final entry = entries[entries.length - 1 - index];
+                        final displayWeight =
+                            '${convertWeight(entry.weight, unit).toStringAsFixed(1)} $unitLabel';
+                        final dateLabel = DateFormat.yMMMd().format(entry.date);
                         return ListTile(
                           contentPadding: EdgeInsets.zero,
                           leading: CircleAvatar(
@@ -143,13 +151,13 @@ class WeightTrackingSection extends ConsumerWidget {
                             ),
                           ),
                           title: Text(
-                            '${convertWeight(entry.weight, unit).toStringAsFixed(1)} $unitLabel',
+                            displayWeight,
                             style: theme.textTheme.titleSmall?.copyWith(
                               fontWeight: FontWeight.w600,
                             ),
                           ),
                           subtitle: Text(
-                            DateFormat.yMMMd().format(entry.date) +
+                            dateLabel +
                                 (entry.notes.isNotEmpty
                                     ? ' — ${entry.notes}'
                                     : ''),

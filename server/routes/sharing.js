@@ -220,16 +220,17 @@ export default function sharingRoutes(pool) {
       const { hidden } = req.body;
       const accessResult = await pool.query(
         `SELECT role FROM pet_access
-         WHERE pet_id = $1 AND user_id = $2 AND role = 'foster'
+         WHERE pet_id = $1 AND user_id = $2 AND role IN ('shared', 'foster')
          LIMIT 1`,
         [req.params.petId, userId],
       );
       if (accessResult.rows.length === 0) {
-        return res.status(403).json({ error: 'Only fosterers can hide fostered pets' });
+        return res.status(403).json({ error: 'Only shared or fostered pets can be hidden' });
       }
+      const role = accessResult.rows[0].role;
       await pool.query(
         'UPDATE pet_access SET hidden = $1 WHERE pet_id = $2 AND user_id = $3 AND role = $4',
-        [hidden, req.params.petId, userId, 'foster'],
+        [hidden, req.params.petId, userId, role],
       );
       res.json({ message: hidden ? 'Pet hidden' : 'Pet unhidden' });
     } catch (err) {

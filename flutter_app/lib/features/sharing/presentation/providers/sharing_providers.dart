@@ -148,6 +148,7 @@ class HiddenSharedPetsNotifier extends AsyncNotifier<List<HiddenSharedPet>> {
     await repo.hideSharedPet(petId, token, hidden: true);
     ref.invalidateSelf();
     ref.invalidate(allPetsIncludingOrgProvider);
+    ref.invalidate(petListProvider);
   }
 
   Future<void> unhideSharedPet(String petId) async {
@@ -157,6 +158,7 @@ class HiddenSharedPetsNotifier extends AsyncNotifier<List<HiddenSharedPet>> {
     await repo.hideSharedPet(petId, token, hidden: false);
     ref.invalidateSelf();
     ref.invalidate(allPetsIncludingOrgProvider);
+    ref.invalidate(petListProvider);
   }
 }
 

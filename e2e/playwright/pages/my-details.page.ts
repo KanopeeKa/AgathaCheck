@@ -16,11 +16,12 @@ export class MyDetailsPage {
 
   async openFromUserMenu(): Promise<void> {
     await dismissConsentBannerIfPresent(this.page);
-    await this.page.getByRole('button', { name: /user.menu/i }).click();
+    await this.page.getByRole('button', { name: /user menu|menu utilisateur/i }).click();
     await this.page.waitForTimeout(500);
     await this.page
-      .getByRole('menuitem', { name: /my.details/i })
+      .getByRole('menuitem', { name: /my details|mon profil/i })
       .or(this.page.getByText('My Details', { exact: true }))
+      .or(this.page.getByText('Mon profil', { exact: true }))
       .first()
       .click();
     await this.expectLoaded();
@@ -92,6 +93,26 @@ export class MyDetailsPage {
       .getByText(/Profile updated/i)
       .first()
       .waitFor({ timeout: 15_000 });
+  }
+
+  async setLanguage(code: 'en' | 'fr'): Promise<void> {
+    const optionLabel = code === 'fr' ? 'Français' : 'English';
+    const languageHeading = this.page
+      .getByText('Language', { exact: false })
+      .or(this.page.getByText('Langue', { exact: false }));
+    await languageHeading.first().scrollIntoViewIfNeeded();
+    const dropdown = this.page
+      .getByRole('button', { name: /English|Français/i })
+      .or(this.page.getByRole('combobox'))
+      .first();
+    await dropdown.click();
+    await this.page
+      .getByRole('menuitem', { name: optionLabel, exact: true })
+      .or(this.page.getByText(optionLabel, { exact: true }))
+      .first()
+      .click();
+    await refreshFlutterAccessibility(this.page);
+    await this.page.waitForTimeout(500);
   }
 
   async exportMyData(): Promise<void> {

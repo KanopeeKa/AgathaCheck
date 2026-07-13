@@ -1,6 +1,6 @@
 import type { Page } from '@playwright/test';
 import { expect } from '@playwright/test';
-import { dismissConsentBannerIfPresent, expectAppBarTitle } from '../support/flutter';
+import { dismissConsentBannerIfPresent, expectAppBarTitle, refreshFlutterAccessibility } from '../support/flutter';
 
 /**
  * Notifications screen (`/notifications`).
@@ -12,7 +12,11 @@ export class NotificationsPage {
   /** Navigate to the notifications screen by clicking the bell icon on the pet list. */
   async openFromPetList(): Promise<void> {
     await dismissConsentBannerIfPresent(this.page);
-    await this.page.getByRole('button', { name: 'Notifications' }).first().click();
+    await this.page
+      .getByRole('button', { name: /^Notifications/i })
+      .or(this.page.getByRole('group', { name: /^Notifications/i }))
+      .first()
+      .click();
     await this.expectLoaded();
   }
 
@@ -56,8 +60,9 @@ export class NotificationsPage {
 
   async openSettings(): Promise<void> {
     await this.page
-      .getByRole('button', { name: 'Notification settings' })
+      .getByRole('button', { name: /notification settings/i })
       .click();
+    await refreshFlutterAccessibility(this.page);
     await expectAppBarTitle(this.page, 'Notification Settings');
   }
 
@@ -67,31 +72,31 @@ export class NotificationsPage {
     await this.page.waitForTimeout(600);
   }
 
-  /**
-   * Flutter renders the bell IconButton and unread badge Text as siblings inside
-   * a Stack; scope lookups to that parent so we don't match unrelated numbers.
-   */
-  private notificationsBadgeScope() {
-    return this.page
-      .getByRole('button', { name: 'Notifications' })
-      .first()
-      .locator('xpath=..');
-  }
-
   /** Assert the unread-count badge on the app-bar notifications control. */
   async expectBadgeVisible(count: number): Promise<void> {
     const label = count > 99 ? '99+' : String(count);
-    await expect(
-      this.notificationsBadgeScope().getByText(label, { exact: true }),
-    ).toBeVisible({ timeout: 10_000 });
+    await this.page
+      .getByRole('button', {
+        name: new RegExp(`Notifications,\\s*${label}\\s*unread`, 'i'),
+      })
+      .or(
+        this.page.getByRole('group', {
+          name: new RegExp(`Notifications,\\s*${label}\\s*unread`, 'i'),
+        }),
+      )
+      .first()
+      .waitFor({ timeout: 10_000 });
   }
 
   /** Assert no unread-count badge on the app-bar notifications control. */
   async expectNoBadgeVisible(): Promise<void> {
-    await expect(
-      this.notificationsBadgeScope().getByText(/^(?:99\+|[1-9]\d?)$/, {
-        exact: true,
-      }),
-    ).toHaveCount(0, { timeout: 10_000 });
+    const control = this.page
+      .getByRole('button', { name: /^Notifications/i })
+      .or(this.page.getByRole('group', { name: /^Notifications/i }))
+      .first();
+    await control.waitFor({ timeout: 10_000 });
+    const label =
+      (await control.getAttribute('aria-label')) ?? (await control.innerText());
+    expect(label).not.toMatch(/,\s*(?:99\+|[1-9]\d?)\s*unread/i);
   }
 }

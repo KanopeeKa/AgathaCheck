@@ -47,7 +47,7 @@ export class HelpPage {
 
   async openFromUserMenu(): Promise<void> {
     await dismissConsentBannerIfPresent(this.page);
-    await this.page.getByRole('button', { name: /user.menu/i }).click();
+    await this.page.getByRole('button', { name: /user menu|menu utilisateur/i }).click();
     await this.page.waitForTimeout(500);
     await this.page
       .getByRole('menuitem', { name: /help/i })
