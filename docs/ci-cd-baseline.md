@@ -50,6 +50,7 @@ Append rows as phases complete:
 | 0 | | Smoke gate integrity fix | | | |
 | 0.5 | | Observability summaries | | | |
 | 1 | | Concurrency + actionlint | | | |
+| 2 | | Shared build + manifest | | | |
 | 3 | | UAT→PROD artifact promotion | | | |
 | 4 | | `flutter clean` experiment | | | |
 

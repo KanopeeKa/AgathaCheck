@@ -95,7 +95,7 @@ Post-deploy blocking job:
 |-----|---------|
 | `Production post-deploy smoke` | `curl` health + landing |
 
-**Future (Phase 3+):** PROD will download the UAT-built web artifact for the same SHA (UAT → PROD promotion).
+**Future (Phase 3+):** PROD will download the UAT-built web artifact for the same SHA (UAT → PROD promotion). Build contract: [ci-build-artifact-contract.md](./ci-build-artifact-contract.md).
 
 ---
 
