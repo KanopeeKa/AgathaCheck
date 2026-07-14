@@ -47,6 +47,11 @@ is_web_root() {
   [[ -f "${dir}/index.html" ]] && { [[ -f "${dir}/main.dart.js" ]] || [[ -f "${dir}/main.dart.mjs" ]]; }
 }
 
+is_complete_web_artifact() {
+  local dir="$1"
+  is_web_root "$dir" && [[ -f "${dir}/build-manifest.json" ]]
+}
+
 copy_web_root() {
   local from="$1"
   local to="$2"
@@ -59,10 +64,7 @@ copy_web_root() {
 mkdir -p "$DEST"
 
 SOURCE_MODE=""
-if is_web_root "$DEST"; then
-  SOURCE_MODE="already-present"
-  echo "Web root already present at ${DEST}"
-elif is_web_root "$SOURCE"; then
+if is_web_root "$SOURCE"; then
   SOURCE_MODE="flat"
   copy_web_root "$SOURCE" "$DEST"
   echo "Materialized web root from flat download at ${SOURCE}"
@@ -82,7 +84,13 @@ else
     SOURCE_MODE="nested"
     copy_web_root "$found" "$DEST"
     echo "Materialized web root from nested download ${found}"
+  elif is_complete_web_artifact "$DEST"; then
+    SOURCE_MODE="already-present"
+    echo "Complete web artifact already present at ${DEST}"
   else
+    if is_web_root "$DEST"; then
+      echo "::warning::Stale partial web root at ${DEST} (missing build-manifest.json) — could not replace from ${SOURCE}" >&2
+    fi
     echo "::error::Could not locate web root under ${SOURCE} (expected index.html + main.dart.js)" >&2
     find "$SOURCE" -maxdepth 3 -type f 2>/dev/null | head -20 || true
     exit 1

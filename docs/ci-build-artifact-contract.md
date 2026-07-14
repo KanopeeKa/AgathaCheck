@@ -9,10 +9,40 @@ Implementation: `scripts/ci/build-flutter-web.sh` (called directly or via
 | Path | `RUN_CODEGEN` | `RUN_CLEAN` | Notes |
 |------|---------------|-------------|-------|
 | **CI** (`_reusable-test.yml` flutter job) | `false` at build time | `false` | `build_runner` runs earlier in the same job before analyze/tests |
-| **UAT / PROD deploy** | `true` | `true`* | Standalone deploy job; full codegen before build |
+| **UAT deploy** | `true` | `false`* | Phase 4 experiment — skip clean by default for faster builds |
+| **PROD rebuild fallback** | `true` | `true` | Audited non-promoted path only; promoted artifacts inherit UAT manifest |
 | **Localhost E2E** (`_reusable-e2e-local.yml`) | `false` | `false` | Minimal path; follow-up debt if generated code required |
 
-\* `RUN_CLEAN` on deploy may change in Phase 4 experiment.
+\* **Phase 4 (`RUN_CLEAN` on UAT):** default is **off** (no `flutter clean`). Restore prior behavior:
+
+| Trigger | How to enable `flutter clean` |
+|---------|-------------------------------|
+| `release/uat-*` push | Set repo variable `UAT_FLUTTER_CLEAN=true` |
+| `workflow_dispatch` | Set input `run_clean=true` |
+
+`build-manifest.json` records `run_clean` for duration/correctness comparisons. Compare UAT `build-web` job `duration_sec` in Actions summaries before/after.
+
+### Rapid rollback
+
+If UAT builds show stale artifacts or codegen drift after skipping clean, restore the
+pre-experiment path without a code change:
+
+```bash
+# GitHub → Settings → Variables → Actions → New repository variable
+# Name: UAT_FLUTTER_CLEAN
+# Value: true
+```
+
+Or for a one-off manual deploy:
+
+```bash
+gh workflow run deploy-uat.yml \
+  -f deploy_ref=release/uat-YYYY-MM-DD \
+  -f run_clean=true
+```
+
+Job summaries include `run_clean_source` (`workflow_dispatch_input` vs `repo_variable`)
+and `resolved_run_clean` for incident triage.
 
 ## Build flags (defined once in `build-flutter-web.sh`)
 
