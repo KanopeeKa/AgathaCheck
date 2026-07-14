@@ -57,13 +57,16 @@ summarize_workflow() {
     return
   fi
 
-  local durations="" failures=0 cancelled=0 success=0
-  local -a ids=()
+  local durations="" failures=0 cancelled=0 success=0 latest_failed_id=""
   while IFS=$'\t' read -r id conclusion created updated; do
-    ids+=("$id")
     case "$conclusion" in
       success) success=$((success + 1)) ;;
-      failure) failures=$((failures + 1)) ;;
+      failure)
+        failures=$((failures + 1))
+        if [[ -z "$latest_failed_id" && -n "$id" ]]; then
+          latest_failed_id="$id"
+        fi
+        ;;
       cancelled) cancelled=$((cancelled + 1)) ;;
     esac
     if [[ -n "$created" && -n "$updated" ]]; then
@@ -84,9 +87,9 @@ for r in json.loads(sys.argv[1]):
   local fail_rate
   fail_rate="$(python3 -c 'import sys; s,f,c=map(int,sys.argv[1:]); t=s+f+c; print(f"{(f/t*100):.0f}%" if t else "n/a")' "$success" "$failures" "$cancelled")"
   local top_fail="n/a"
-  if ((${#ids[@]} > 0)); then
-    top_fail="$(gh run view "${ids[0]}" --repo "$REPO" --json jobs --jq '[.jobs[] | select(.conclusion=="failure") | .name] | join(", ")' 2>/dev/null || true)"
-    [[ -z "$top_fail" ]] && top_fail="(see latest run jobs)"
+  if [[ -n "$latest_failed_id" ]]; then
+    top_fail="$(gh run view "$latest_failed_id" --repo "$REPO" --json jobs --jq '[.jobs[] | select(.conclusion=="failure") | .name] | join(", ")' 2>/dev/null || true)"
+    [[ -z "$top_fail" ]] && top_fail="(see latest failed run jobs)"
   fi
   echo "| $workflow_name | \`$workflow_file\` | $count | ${median}m | ${p95}m | $fail_rate | ${top_fail:-n/a} |"
 }
@@ -100,8 +103,8 @@ echo "- **Generator:** \`scripts/ci/collect-baseline.sh\`"
 echo
 echo "## Workflow duration summary"
 echo
-echo "| Workflow | File | Runs | Median | p95 | Failure rate | Sample failing jobs (latest run) |"
-echo "|----------|------|------|--------|-----|--------------|----------------------------------|"
+echo "| Workflow | File | Runs | Median | p95 | Failure rate | Sample failing jobs (latest failed run) |"
+echo "|----------|------|------|--------|-----|--------------|-----------------------------------------|"
 summarize_workflow "ci.yml" "CI"
 summarize_workflow "deploy-uat.yml" "Deploy UAT (uat.agathatrack.com)"
 summarize_workflow "deploy-prod.yml" "Deploy Production (agathatrack.com)"

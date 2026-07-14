@@ -15,9 +15,9 @@ Pre-refactor snapshot for the CI/CD hardening program (Phases -1–6). Re-run
 
 ## Workflow duration summary
 
-| Workflow | File | Runs | Median | p95 | Failure rate | Top failing job (latest run) |
-|----------|------|------|--------|-----|--------------|------------------------------|
-| CI | `ci.yml` | 20 | 13m | 20m | 20% | — (latest run succeeded) |
+| Workflow | File | Runs | Median | p95 | Failure rate | Top failing job (latest failed run) |
+|----------|------|------|--------|-----|--------------|-------------------------------------|
+| CI | `ci.yml` | 20 | 13m | 20m | 20% | test-suite / Flutter (analyze, test, build web) |
 | Deploy UAT | `deploy-uat.yml` | 20 | 42m | 72m | 85% | UAT live smoke E2E |
 | Deploy Production | `deploy-prod.yml` | 0 | — | — | — | No runs in window |
 | E2E (Playwright) | `e2e.yml` | 14 | 6m | 18m | 7% | Playwright E2E (localhost) |

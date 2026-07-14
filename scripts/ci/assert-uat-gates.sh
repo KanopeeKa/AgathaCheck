@@ -14,10 +14,8 @@ append_summary() {
 }
 
 require_success() {
-  local name="$1"
-  local result="$2"
+  local result="$1"
   if [[ "$result" != "success" ]]; then
-    echo "::error title=UAT gate failed::$name concluded with '$result' (expected success)"
     return 1
   fi
   return 0
@@ -34,6 +32,7 @@ GITHUB_RUN_ID="${GITHUB_RUN_ID:-}"
 failed=0
 summary_tmp="$(mktemp)"
 trap 'rm -f "$summary_tmp"' EXIT
+exec 3>&1
 
 {
   echo "## UAT prod-ready gate summary"
@@ -54,9 +53,10 @@ trap 'rm -f "$summary_tmp"' EXIT
     "uat-e2e-full (localhost)|${FULL_E2E_RESULT}"; do
     label="${row%%|*}"
     result="${row#*|}"
-    if require_success "$label" "$result"; then
+    if require_success "$result"; then
       printf '| %s | `%s` | yes | yes |\n' "$label" "$result"
     else
+      echo "::error title=UAT gate failed::$label concluded with '$result' (expected success)" >&3
       printf '| %s | `%s` | yes | no |\n' "$label" "$result"
       failed=1
     fi
