@@ -351,11 +351,10 @@ jobs:
           echo "::warning::FTP deploy succeeded — run NPM Install + Restart in cPanel if needed."
 
   # Post-deploy HTTP smoke — validates DNS, TLS, Passenger restart, API prefix.
-  # continue-on-error: let localhost E2E finish; prod-ready is the aggregate gate.
+  # Blocking gate: failures must fail prod-ready (uat-e2e-full still runs in parallel).
   smoke:
     name: UAT post-deploy smoke
     needs: deploy
-    continue-on-error: true
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -411,21 +410,22 @@ jobs:
   # Aggregate status for GitHub Environment protection on PROD (required check).
   prod-ready:
     name: Prod ready
-    needs: [smoke, uat-e2e-smoke, uat-e2e-full]
+    needs: [deploy, smoke, uat-e2e-smoke, uat-e2e-full]
     if: always()
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v4
+
       - name: Verify all UAT gates passed
-        run: |
-          smoke="${{ needs.smoke.result }}"
-          live="${{ needs.uat-e2e-smoke.result }}"
-          full="${{ needs.uat-e2e-full.result }}"
-          echo "smoke=$smoke live_smoke_e2e=$live full_e2e=$full"
-          if [ "$smoke" != "success" ] || [ "$live" != "success" ] || [ "$full" != "success" ]; then
-            echo "::error::Not all UAT gates passed — do not deploy to prod."
-            exit 1
-          fi
-          echo "All UAT gates passed. Safe to deploy commit ${{ github.sha }} to prod."
+        env:
+          DEPLOY_RESULT: ${{ needs.deploy.result }}
+          SMOKE_RESULT: ${{ needs.smoke.result }}
+          LIVE_SMOKE_RESULT: ${{ needs.uat-e2e-smoke.result }}
+          FULL_E2E_RESULT: ${{ needs.uat-e2e-full.result }}
+          DEPLOY_REF: ${{ env.DEPLOY_REF }}
+          GITHUB_SHA: ${{ github.sha }}
+          GITHUB_RUN_ID: ${{ github.run_id }}
+        run: bash scripts/ci/assert-uat-gates.sh
 
   # Update GitHub issue / Project status when this deploy was triggered for an agent issue branch.
   agent-uat-notify:

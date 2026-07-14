@@ -22,7 +22,7 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
 
-      - name: BDD scenario coverage gate (105/165)
+      - name: BDD scenario coverage gate (≥105 mapped)
         run: node e2e/scripts/check_bdd_coverage.js
 
       - name: BDD priority tags (@P0/@P1/@P2 on every scenario)
