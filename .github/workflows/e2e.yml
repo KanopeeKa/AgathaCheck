@@ -8,9 +8,15 @@ on:
   schedule:
     - cron: '0 5 * * 0'
 
+# Weekly cron runs cancel superseded schedule runs; manual dispatches do not
+# cancel each other (separate concurrency groups).
 concurrency:
-  group: e2e-${{ github.event_name }}
-  cancel-in-progress: true
+  group: >-
+    ${{
+      github.event_name == 'schedule' && 'e2e-schedule-main' ||
+      format('e2e-manual-{0}', github.ref)
+    }}
+  cancel-in-progress: ${{ github.event_name == 'schedule' }}
 
 permissions:
   contents: read
