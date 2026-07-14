@@ -67,6 +67,7 @@ retention). PROD downloads that artifact instead of rebuilding when possible.
 | Script | Role |
 |--------|------|
 | `scripts/ci/download-uat-artifact.sh` | Resolve UAT run, download artifact, call provenance check |
+| `scripts/ci/materialize-web-artifact.sh` | Flatten download dir to `flutter_app/build/web/` (handles nested layouts) |
 | `scripts/ci/assert-artifact-provenance.sh` | Manifest `git_sha`, `source_workflow`, `artifact_name`; optional `Prod ready` |
 
 **Promotion path (default):**

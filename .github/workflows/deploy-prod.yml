@@ -129,6 +129,7 @@ jobs:
             "promotion_path=promoted" \
             "deploy_sha=${{ steps.deploy_sha.outputs.sha }}" \
             "artifact=web-build-${{ steps.deploy_sha.outputs.sha }}" \
+            "uat_run_id=${{ steps.promote.outputs.uat_run_id }}" \
             "run_id=${{ github.run_id }}"
 
       - name: Deploy frontend to agathatrack.com
@@ -198,6 +199,7 @@ jobs:
             "ref=${{ steps.deploy_sha.outputs.target_ref }}" \
             "sha=${{ steps.deploy_sha.outputs.sha }}" \
             "promotion_path=${{ steps.promote.outcome == 'success' && 'promoted' || 'rebuild-or-failed' }}" \
+            "uat_run_id=${{ steps.promote.outputs.uat_run_id || inputs.uat_run_id || '' }}" \
             "run_id=${{ github.run_id }}" \
             "duration_sec=${dur}"
 

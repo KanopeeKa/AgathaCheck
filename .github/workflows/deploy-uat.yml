@@ -52,7 +52,14 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: ${{ needs.build-web.outputs.artifact_name }}
-          path: flutter_app/build/web
+          path: .ci-web-download
+
+      - name: Materialize web root for FTP deploy
+        run: |
+          bash scripts/ci/materialize-web-artifact.sh \
+            --source .ci-web-download \
+            --artifact-name "${{ needs.build-web.outputs.artifact_name }}" \
+            --dest flutter_app/build/web
 
       - name: Deploy frontend to uat.agathatrack.com
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5

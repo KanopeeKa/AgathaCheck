@@ -1,0 +1,87 @@
+#!/usr/bin/env bash
+# Flatten a downloaded web artifact into the deploy web root (index.html at dest/).
+set -euo pipefail
+
+SOURCE=""
+DEST=""
+ARTIFACT_NAME=""
+
+usage() {
+  echo "usage: materialize-web-artifact.sh --source <dir> --dest <dir> [--artifact-name <name>]" >&2
+}
+
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --source)
+      SOURCE="$2"
+      shift 2
+      ;;
+    --dest)
+      DEST="$2"
+      shift 2
+      ;;
+    --artifact-name)
+      ARTIFACT_NAME="$2"
+      shift 2
+      ;;
+    -h | --help)
+      usage
+      exit 0
+      ;;
+    *)
+      echo "unknown argument: $1" >&2
+      usage
+      exit 1
+      ;;
+  esac
+done
+
+if [[ -z "$SOURCE" || -z "$DEST" ]]; then
+  echo "::error::--source and --dest are required" >&2
+  usage
+  exit 1
+fi
+
+is_web_root() {
+  local dir="$1"
+  [[ -f "${dir}/index.html" ]] && { [[ -f "${dir}/main.dart.js" ]] || [[ -f "${dir}/main.dart.mjs" ]]; }
+}
+
+copy_web_root() {
+  local from="$1"
+  local to="$2"
+  mkdir -p "$to"
+  shopt -s dotglob nullglob
+  rm -rf "${to:?}"/*
+  cp -a "${from}/." "${to}/"
+}
+
+mkdir -p "$DEST"
+
+if is_web_root "$DEST"; then
+  echo "Web root already present at ${DEST}"
+elif is_web_root "$SOURCE"; then
+  copy_web_root "$SOURCE" "$DEST"
+  echo "Materialized web root from flat download at ${SOURCE}"
+elif [[ -n "$ARTIFACT_NAME" ]] && is_web_root "${SOURCE}/${ARTIFACT_NAME}"; then
+  copy_web_root "${SOURCE}/${ARTIFACT_NAME}" "$DEST"
+  echo "Materialized web root from nested download ${SOURCE}/${ARTIFACT_NAME}"
+else
+  found=""
+  for candidate in "${SOURCE}"/*; do
+    if [[ -d "$candidate" ]] && is_web_root "$candidate"; then
+      found="$candidate"
+      break
+    fi
+  done
+  if [[ -n "$found" ]]; then
+    copy_web_root "$found" "$DEST"
+    echo "Materialized web root from nested download ${found}"
+  else
+    echo "::error::Could not locate web root under ${SOURCE} (expected index.html + main.dart.js)" >&2
+    find "$SOURCE" -maxdepth 3 -type f 2>/dev/null | head -20 || true
+    exit 1
+  fi
+fi
+
+WEB_DIR="$DEST" bash "$(cd "$(dirname "$0")" && pwd)/verify-web-artifact.sh"

@@ -52,13 +52,15 @@ ARTIFACT_NAME="web-build-${SHA}"
 
 if [[ -z "$UAT_RUN_ID" ]]; then
   UAT_RUN_ID="$(gh run list --repo "$REPO" --workflow=deploy-uat.yml --limit=40 \
-    --json databaseId,headSha,conclusion \
-    --jq --arg sha "$SHA" '[.[] | select(.headSha == $sha and .conclusion == "success")] | .[0].databaseId // empty')"
+    --json databaseId,headSha,conclusion,createdAt \
+    --jq --arg sha "$SHA" \
+      '[.[] | select(.headSha == $sha and .conclusion == "success")]
+       | sort_by(.databaseId) | reverse | .[0].databaseId // empty')"
   if [[ -z "$UAT_RUN_ID" ]]; then
     echo "::error::No successful Deploy UAT workflow run found for commit ${SHA}" >&2
     exit 1
   fi
-  echo "Resolved UAT workflow run ${UAT_RUN_ID} for commit ${SHA}"
+  echo "Resolved UAT workflow run ${UAT_RUN_ID} for commit ${SHA} (most recent successful)"
 fi
 
 prod_ready="$(gh run view "$UAT_RUN_ID" --repo "$REPO" --json jobs \
@@ -69,8 +71,15 @@ if [[ "$prod_ready" != "success" ]]; then
 fi
 
 mkdir -p "$OUTPUT_DIR"
+TMP_DIR="$(mktemp -d)"
+trap 'rm -rf "$TMP_DIR"' EXIT
 echo "Downloading artifact ${ARTIFACT_NAME} from UAT run ${UAT_RUN_ID}"
-gh run download "$UAT_RUN_ID" --repo "$REPO" -n "$ARTIFACT_NAME" -D "$OUTPUT_DIR"
+gh run download "$UAT_RUN_ID" --repo "$REPO" -n "$ARTIFACT_NAME" -D "$TMP_DIR"
+
+bash "$(cd "$(dirname "$0")" && pwd)/materialize-web-artifact.sh" \
+  --source "$TMP_DIR" \
+  --artifact-name "$ARTIFACT_NAME" \
+  --dest "$OUTPUT_DIR"
 
 MANIFEST_PATH="${OUTPUT_DIR}/build-manifest.json" \
   EXPECTED_SHA="$SHA" \
@@ -78,3 +87,10 @@ MANIFEST_PATH="${OUTPUT_DIR}/build-manifest.json" \
   bash "$(cd "$(dirname "$0")" && pwd)/assert-artifact-provenance.sh"
 
 echo "Promoted artifact ${ARTIFACT_NAME} from UAT run ${UAT_RUN_ID}"
+
+if [[ -n "${GITHUB_OUTPUT:-}" ]]; then
+  {
+    echo "uat_run_id=${UAT_RUN_ID}"
+    echo "artifact_name=${ARTIFACT_NAME}"
+  } >> "$GITHUB_OUTPUT"
+fi
