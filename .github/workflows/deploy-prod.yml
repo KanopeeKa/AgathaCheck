@@ -128,7 +128,7 @@ jobs:
           bash scripts/ci/append-summary.sh "PROD frontend source" \
             "promotion_path=promoted" \
             "deploy_sha=${{ steps.deploy_sha.outputs.sha }}" \
-            "artifact=web-build-${{ steps.deploy_sha.outputs.sha }}" \
+            "artifact_name=${{ steps.promote.outputs.artifact_name }}" \
             "uat_run_id=${{ steps.promote.outputs.uat_run_id }}" \
             "run_id=${{ github.run_id }}"
 
@@ -199,6 +199,7 @@ jobs:
             "ref=${{ steps.deploy_sha.outputs.target_ref }}" \
             "sha=${{ steps.deploy_sha.outputs.sha }}" \
             "promotion_path=${{ steps.promote.outcome == 'success' && 'promoted' || 'rebuild-or-failed' }}" \
+            "artifact_name=${{ steps.promote.outputs.artifact_name || format('web-build-{0}', steps.deploy_sha.outputs.sha) }}" \
             "uat_run_id=${{ steps.promote.outputs.uat_run_id || inputs.uat_run_id || '' }}" \
             "run_id=${{ github.run_id }}" \
             "duration_sec=${dur}"

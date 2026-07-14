@@ -55,7 +55,7 @@ if [[ -z "$UAT_RUN_ID" ]]; then
     --json databaseId,headSha,conclusion,createdAt \
     --jq --arg sha "$SHA" \
       '[.[] | select(.headSha == $sha and .conclusion == "success")]
-       | sort_by(.databaseId) | reverse | .[0].databaseId // empty')"
+       | sort_by(.createdAt) | reverse | .[0].databaseId // empty')"
   if [[ -z "$UAT_RUN_ID" ]]; then
     echo "::error::No successful Deploy UAT workflow run found for commit ${SHA}" >&2
     exit 1

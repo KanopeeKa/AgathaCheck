@@ -58,12 +58,16 @@ copy_web_root() {
 
 mkdir -p "$DEST"
 
+SOURCE_MODE=""
 if is_web_root "$DEST"; then
+  SOURCE_MODE="already-present"
   echo "Web root already present at ${DEST}"
 elif is_web_root "$SOURCE"; then
+  SOURCE_MODE="flat"
   copy_web_root "$SOURCE" "$DEST"
   echo "Materialized web root from flat download at ${SOURCE}"
 elif [[ -n "$ARTIFACT_NAME" ]] && is_web_root "${SOURCE}/${ARTIFACT_NAME}"; then
+  SOURCE_MODE="nested"
   copy_web_root "${SOURCE}/${ARTIFACT_NAME}" "$DEST"
   echo "Materialized web root from nested download ${SOURCE}/${ARTIFACT_NAME}"
 else
@@ -75,6 +79,7 @@ else
     fi
   done
   if [[ -n "$found" ]]; then
+    SOURCE_MODE="nested"
     copy_web_root "$found" "$DEST"
     echo "Materialized web root from nested download ${found}"
   else
@@ -85,3 +90,12 @@ else
 fi
 
 WEB_DIR="$DEST" bash "$(cd "$(dirname "$0")" && pwd)/verify-web-artifact.sh"
+
+summary_args=(
+  "source_mode=${SOURCE_MODE}"
+  "dest=${DEST}"
+)
+if [[ -n "$ARTIFACT_NAME" ]]; then
+  summary_args+=("artifact_name=${ARTIFACT_NAME}")
+fi
+bash "$(cd "$(dirname "$0")" && pwd)/append-summary.sh" "Web artifact materialize" "${summary_args[@]}"
