@@ -122,6 +122,7 @@ jobs:
             echo "No integration tests directory found; skipping."
           fi
 
+      # Codegen already ran earlier in this job (Generate code step) — do not repeat.
       - name: Build web release (shared)
         env:
           POSTHOG_API_KEY: ${{ secrets.POSTHOG_API_KEY }}

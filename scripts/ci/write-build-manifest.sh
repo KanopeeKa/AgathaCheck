@@ -4,7 +4,7 @@ set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 WEB_DIR="${WEB_DIR:-${ROOT}/flutter_app/build/web}"
-MANIFEST="${WEB_DIR}/build-manifest.json}"
+MANIFEST="${WEB_DIR}/build-manifest.json"
 LOCKFILE="${ROOT}/flutter_app/pubspec.lock"
 
 if [[ ! -d "$WEB_DIR" ]]; then
@@ -21,8 +21,10 @@ fi
 python3 - "$MANIFEST" <<'PY'
 import json
 import os
+import sys
 from datetime import datetime, timezone
 
+manifest_path = sys.argv[1]
 manifest = {
     "git_sha": os.environ.get("GITHUB_SHA", ""),
     "git_ref": os.environ.get("GITHUB_REF", ""),
@@ -40,8 +42,8 @@ manifest = {
     "artifact_name": os.environ.get("ARTIFACT_NAME", "web-build"),
     "built_at": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
 }
-with open("$MANIFEST", "w", encoding="utf-8") as fh:
+with open(manifest_path, "w", encoding="utf-8") as fh:
     json.dump(manifest, fh, indent=2)
     fh.write("\n")
-print(f"Wrote {manifest['artifact_name']} manifest to $MANIFEST")
+print(f"Wrote {manifest['artifact_name']} manifest to {manifest_path}")
 PY

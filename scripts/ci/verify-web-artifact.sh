@@ -35,4 +35,9 @@ if [[ ! -f "${WEB_DIR}/build-manifest.json" ]]; then
   exit 1
 fi
 
+if ! python3 -m json.tool "${WEB_DIR}/build-manifest.json" >/dev/null; then
+  echo "::error::build-manifest.json is not valid JSON" >&2
+  exit 1
+fi
+
 echo "Web artifact verification passed"
