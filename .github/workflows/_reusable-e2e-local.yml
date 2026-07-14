@@ -86,8 +86,9 @@ jobs:
           E2E: '1'
         run: |
           node bin/start.js &
-          for i in $(seq 1 30); do
+          for attempt in $(seq 1 30); do
             curl -sf http://localhost:3000/landing && break
+            echo "Waiting for server (${attempt}/30)..."
             sleep 2
           done
 
@@ -108,7 +109,8 @@ jobs:
         if: always()
         run: |
           end=$(date +%s)
-          dur=$((end - ${JOB_START_EPOCH:-end}))
+          start="${JOB_START_EPOCH:-$end}"
+          dur=$((end - start))
           bash scripts/ci/append-summary.sh "Localhost E2E job" \
             "workflow=reusable-e2e-local" \
             "job=e2e" \

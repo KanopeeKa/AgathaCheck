@@ -63,7 +63,7 @@ jobs:
           flutter clean
           flutter pub get
           flutter build web --release --no-tree-shake-icons \
-            --dart-define=POSTHOG_API_KEY=${POSTHOG_API_KEY} \
+            --dart-define=POSTHOG_API_KEY="${POSTHOG_API_KEY}" \
             --dart-define=POSTHOG_HOST=https://eu.i.posthog.com
 
       - name: Deploy frontend to agathatrack.com
@@ -125,7 +125,8 @@ jobs:
         if: always()
         run: |
           end=$(date +%s)
-          dur=$((end - ${JOB_START_EPOCH:-end}))
+          start="${JOB_START_EPOCH:-$end}"
+          dur=$((end - start))
           bash scripts/ci/append-summary.sh "Production deploy job" \
             "workflow=deploy-prod" \
             "job=deploy" \
@@ -163,7 +164,8 @@ jobs:
         if: always()
         run: |
           end=$(date +%s)
-          dur=$((end - ${JOB_START_EPOCH:-end}))
+          start="${JOB_START_EPOCH:-$end}"
+          dur=$((end - start))
           bash scripts/ci/append-summary.sh "Production smoke job" \
             "workflow=deploy-prod" \
             "job=smoke" \
