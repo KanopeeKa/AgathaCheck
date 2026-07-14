@@ -16,7 +16,7 @@ Playwright specs in `playwright/tests/` are annotated with `@bdd <feature>` comm
 
 Run `node e2e/scripts/check_bdd_coverage.js --report-only` to see the live counts.
 
-**As of Sprint 4.3 (integration branch):** 81 / 161 scenarios mapped (50.3%) — gate met.
+**Live counts:** run `node e2e/scripts/check_bdd_coverage.js --report-only` (gate: ≥ 105 mapped scenarios; totals drift as features grow).
 
 | Playwright spec | BDD feature | Scenarios mapped |
 |-----------------|-------------|-----------------|
