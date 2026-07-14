@@ -89,7 +89,7 @@ for r in json.loads(sys.argv[1]):
   local top_fail="n/a"
   if [[ -n "$latest_failed_id" ]]; then
     top_fail="$(gh run view "$latest_failed_id" --repo "$REPO" --json jobs --jq '[.jobs[] | select(.conclusion=="failure") | .name] | join(", ")' 2>/dev/null || true)"
-    [[ -z "$top_fail" ]] && top_fail="(see latest failed run job list)"
+    [[ -z "$top_fail" ]] && top_fail="(failed to retrieve job names)"
   fi
   echo "| $workflow_name | \`$workflow_file\` | $count | ${median}m | ${p95}m | $fail_rate | ${top_fail:-n/a} |"
 }

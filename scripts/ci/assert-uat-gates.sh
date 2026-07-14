@@ -14,7 +14,8 @@ append_summary() {
 }
 
 require_success() {
-  local result="$1"
+  local name="$1"
+  local result="$2"
   if [[ "$result" != "success" ]]; then
     return 1
   fi
@@ -54,7 +55,7 @@ exec 3>&1
     "uat-e2e-full (localhost)|${FULL_E2E_RESULT}"; do
     label="${row%%|*}"
     result="${row#*|}"
-    if require_success "$result"; then
+    if require_success "$label" "$result"; then
       printf '| %s | `%s` | yes | yes |\n' "$label" "$result"
     else
       echo "::error title=UAT gate failed::$label concluded with '$result' (expected success)" >&3
