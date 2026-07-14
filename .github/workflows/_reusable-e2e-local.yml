@@ -12,6 +12,7 @@ jobs:
   e2e:
     name: Playwright E2E (localhost)
     runs-on: ubuntu-latest
+    timeout-minutes: 90
     services:
       postgres:
         image: postgres:16
@@ -29,6 +30,9 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+
+      - name: Begin job timing
+        run: echo "JOB_START_EPOCH=$(date +%s)" >> "$GITHUB_ENV"
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
@@ -100,3 +104,15 @@ jobs:
         with:
           name: playwright-report-localhost
           path: e2e/playwright-report/
+
+      - name: Write E2E job summary
+        if: always()
+        run: |
+          end=$(date +%s)
+          dur=$((end - ${JOB_START_EPOCH:-end}))
+          bash scripts/ci/append-summary.sh "Localhost E2E job" \
+            "workflow=reusable-e2e-local" \
+            "job=e2e" \
+            "sha=${{ github.sha }}" \
+            "run_id=${{ github.run_id }}" \
+            "duration_sec=${dur}"

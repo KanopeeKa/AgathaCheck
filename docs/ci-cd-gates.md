@@ -141,6 +141,23 @@ Gate: **≥ 105 mapped scenarios** (ratchet defined in `e2e/scripts/check_bdd_co
 
 ---
 
+## 9. Workflow run summaries
+
+Major jobs append a standardized table to the Actions **Summary** tab via
+`scripts/ci/append-summary.sh`. Fields include:
+
+| Field | Meaning |
+|-------|---------|
+| `workflow` | Logical workflow id (e.g. `deploy-uat`) |
+| `job` | Job name |
+| `duration_sec` | Wall-clock job duration |
+| `artifact` | Uploaded artifact name when applicable |
+| `run_id` | GitHub Actions run id |
+
+UAT `prod-ready` also writes a gate table via `scripts/ci/assert-uat-gates.sh`.
+
+---
+
 ## Document maintenance
 
 Update this file when:

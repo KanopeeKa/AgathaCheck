@@ -14,16 +14,27 @@ env:
   UAT_BASE_URL: https://uat.agathatrack.com
   DEPLOY_REF: ${{ github.event_name == 'workflow_dispatch' && inputs.deploy_ref || github.ref_name }}
 
+concurrency:
+  group: deploy-uat
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
 jobs:
   # Fast path: build + FTP deploy. Unit tests already ran on main CI.
   deploy:
     name: Build and deploy to UAT
     runs-on: ubuntu-latest
+    timeout-minutes: 45
     environment: UAT
     steps:
       - uses: actions/checkout@v4
         with:
           ref: ${{ env.DEPLOY_REF }}
+
+      - name: Begin job timing
+        run: echo "JOB_START_EPOCH=$(date +%s)" >> "$GITHUB_ENV"
 
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
@@ -350,19 +361,49 @@ jobs:
           fi
           echo "::warning::FTP deploy succeeded — run NPM Install + Restart in cPanel if needed."
 
+      - name: Write deploy job summary
+        if: always()
+        run: |
+          end=$(date +%s)
+          dur=$((end - ${JOB_START_EPOCH:-end}))
+          bash scripts/ci/append-summary.sh "UAT deploy job" \
+            "workflow=deploy-uat" \
+            "job=deploy" \
+            "ref=${{ env.DEPLOY_REF }}" \
+            "sha=${{ github.sha }}" \
+            "run_id=${{ github.run_id }}" \
+            "duration_sec=${dur}"
+
   # Post-deploy HTTP smoke — validates DNS, TLS, Passenger restart, API prefix.
   # Blocking gate: failures must fail prod-ready (uat-e2e-full still runs in parallel).
   smoke:
     name: UAT post-deploy smoke
     needs: deploy
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
+
+      - name: Begin job timing
+        run: echo "JOB_START_EPOCH=$(date +%s)" >> "$GITHUB_ENV"
 
       - name: Wait for UAT to become healthy
         env:
           UAT_BASE_URL: ${{ env.UAT_BASE_URL }}
         run: bash scripts/uat-post-deploy-smoke.sh
+
+      - name: Write smoke job summary
+        if: always()
+        run: |
+          end=$(date +%s)
+          dur=$((end - ${JOB_START_EPOCH:-end}))
+          bash scripts/ci/append-summary.sh "UAT smoke job" \
+            "workflow=deploy-uat" \
+            "job=smoke" \
+            "ref=${{ env.DEPLOY_REF }}" \
+            "sha=${{ github.sha }}" \
+            "run_id=${{ github.run_id }}" \
+            "duration_sec=${dur}"
 
   # Live UAT smoke E2E — runs in parallel with manual UAT; does not block deploy.
   uat-e2e-smoke:
@@ -370,8 +411,12 @@ jobs:
     needs: [deploy, smoke]
     if: needs.smoke.result == 'success'
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
+
+      - name: Begin job timing
+        run: echo "JOB_START_EPOCH=$(date +%s)" >> "$GITHUB_ENV"
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
@@ -402,6 +447,19 @@ jobs:
           name: playwright-report-uat-smoke
           path: e2e/playwright-report/
 
+      - name: Write live smoke E2E job summary
+        if: always()
+        run: |
+          end=$(date +%s)
+          dur=$((end - ${JOB_START_EPOCH:-end}))
+          bash scripts/ci/append-summary.sh "UAT live smoke E2E job" \
+            "workflow=deploy-uat" \
+            "job=uat-e2e-smoke" \
+            "ref=${{ env.DEPLOY_REF }}" \
+            "sha=${{ github.sha }}" \
+            "run_id=${{ github.run_id }}" \
+            "duration_sec=${dur}"
+
   # Full localhost E2E — prod-readiness gate; runs in parallel with deploy.
   uat-e2e-full:
     name: UAT full E2E (localhost)
@@ -413,6 +471,7 @@ jobs:
     needs: [deploy, smoke, uat-e2e-smoke, uat-e2e-full]
     if: always()
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     steps:
       - uses: actions/checkout@v4
 
