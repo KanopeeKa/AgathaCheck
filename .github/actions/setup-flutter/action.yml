@@ -1,0 +1,33 @@
+name: Set up Flutter
+description: Install Flutter SDK with tool-cache and one retry on download flake.
+
+inputs:
+  flutter-version:
+    description: Flutter version (e.g. 3.32.0)
+    required: true
+  channel:
+    description: Flutter channel
+    required: false
+    default: stable
+
+runs:
+  using: composite
+  steps:
+    - name: Set up Flutter (attempt 1)
+      id: attempt1
+      uses: subosito/flutter-action@v2
+      continue-on-error: true
+      with:
+        channel: ${{ inputs.channel }}
+        flutter-version: ${{ inputs.flutter-version }}
+        cache: true
+        pub-cache: false
+
+    - name: Set up Flutter (retry after download flake)
+      if: steps.attempt1.outcome == 'failure'
+      uses: subosito/flutter-action@v2
+      with:
+        channel: ${{ inputs.channel }}
+        flutter-version: ${{ inputs.flutter-version }}
+        cache: true
+        pub-cache: false
