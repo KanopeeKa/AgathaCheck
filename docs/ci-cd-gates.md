@@ -66,6 +66,11 @@ Workflow: **Deploy UAT (uat.agathatrack.com)** — `.github/workflows/deploy-uat
 
 **`prod-ready` validation:** `scripts/ci/assert-uat-gates.sh` — single summary table in the Actions run summary.
 
+**Phase 4 build experiment:** UAT `build-web` skips `flutter clean` by default (`run_clean=false`).
+Set repo variable `UAT_FLUTTER_CLEAN=true` on push, or `workflow_dispatch` input
+`run_clean=true`, to restore the pre-experiment path. Manifest + job summaries record
+`run_clean` for duration comparisons.
+
 ---
 
 ## 4. Signal only — weekly / manual E2E

@@ -35,6 +35,9 @@ on:
       deploy_sha:
         description: Commit SHA that was built
         value: ${{ jobs.build-web.outputs.deploy_sha }}
+      run_clean:
+        description: Whether flutter clean ran before build
+        value: ${{ jobs.build-web.outputs.run_clean }}
 
 env:
   FLUTTER_VERSION: '3.32.0'
@@ -47,6 +50,7 @@ jobs:
     outputs:
       artifact_name: ${{ steps.meta.outputs.artifact_name }}
       deploy_sha: ${{ steps.meta.outputs.deploy_sha }}
+      run_clean: ${{ steps.meta.outputs.run_clean }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -58,9 +62,15 @@ jobs:
           sha="$(git rev-parse HEAD)"
           echo "sha=${sha}" >> "$GITHUB_OUTPUT"
           echo "artifact_name=web-build-${sha}" >> "$GITHUB_OUTPUT"
+          echo "run_clean=${{ inputs.run_clean }}" >> "$GITHUB_OUTPUT"
 
       - name: Begin job timing
         run: echo "JOB_START_EPOCH=$(date +%s)" >> "$GITHUB_ENV"
+
+      - name: Flutter clean experiment notice
+        if: inputs.run_clean != true
+        run: |
+          echo "::notice::flutter clean skipped (Phase 4 UAT experiment). Set repo variable UAT_FLUTTER_CLEAN=true or workflow_dispatch run_clean=true to restore."
 
       - name: Set up Flutter
         uses: ./.github/actions/setup-flutter
@@ -105,6 +115,7 @@ jobs:
             "workflow=reusable-build-web" \
             "job=build-web" \
             "sha=${{ steps.meta.outputs.deploy_sha }}" \
+            "run_clean=${{ inputs.run_clean }}" \
             "run_id=${{ github.run_id }}" \
             "duration_sec=${dur}" \
             "artifact=${{ steps.meta.outputs.artifact_name }}"

@@ -9,10 +9,18 @@ Implementation: `scripts/ci/build-flutter-web.sh` (called directly or via
 | Path | `RUN_CODEGEN` | `RUN_CLEAN` | Notes |
 |------|---------------|-------------|-------|
 | **CI** (`_reusable-test.yml` flutter job) | `false` at build time | `false` | `build_runner` runs earlier in the same job before analyze/tests |
-| **UAT / PROD deploy** | `true` | `true`* | Standalone deploy job; full codegen before build |
+| **UAT deploy** | `true` | `false`* | Phase 4 experiment — skip clean by default for faster builds |
+| **PROD rebuild fallback** | `true` | `true` | Audited non-promoted path only; promoted artifacts inherit UAT manifest |
 | **Localhost E2E** (`_reusable-e2e-local.yml`) | `false` | `false` | Minimal path; follow-up debt if generated code required |
 
-\* `RUN_CLEAN` on deploy may change in Phase 4 experiment.
+\* **Phase 4 (`RUN_CLEAN` on UAT):** default is **off** (no `flutter clean`). Restore prior behavior:
+
+| Trigger | How to enable `flutter clean` |
+|---------|-------------------------------|
+| `release/uat-*` push | Set repo variable `UAT_FLUTTER_CLEAN=true` |
+| `workflow_dispatch` | Set input `run_clean=true` |
+
+`build-manifest.json` records `run_clean` for duration/correctness comparisons. Compare UAT `build-web` job `duration_sec` in Actions summaries before/after.
 
 ## Build flags (defined once in `build-flutter-web.sh`)
 

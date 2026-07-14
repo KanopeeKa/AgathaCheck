@@ -8,6 +8,10 @@ on:
       deploy_ref:
         description: Release branch to deploy (release/uat-*)
         required: true
+      run_clean:
+        description: Run flutter clean before web build (push uses UAT_FLUTTER_CLEAN repo variable)
+        type: boolean
+        default: false
 
 env:
   FLUTTER_VERSION: '3.32.0'
@@ -29,7 +33,7 @@ jobs:
       POSTHOG_API_KEY: ${{ secrets.POSTHOG_API_KEY }}
     with:
       ref: ${{ github.event_name == 'workflow_dispatch' && inputs.deploy_ref || github.ref_name }}
-      run_clean: true
+      run_clean: ${{ github.event_name == 'workflow_dispatch' && inputs.run_clean || github.event_name != 'workflow_dispatch' && vars.UAT_FLUTTER_CLEAN == 'true' }}
       run_codegen: true
       upload_artifact: true
 
@@ -365,6 +369,7 @@ jobs:
             "ref=${{ env.DEPLOY_REF }}" \
             "sha=${{ needs.build-web.outputs.deploy_sha }}" \
             "artifact=${{ needs.build-web.outputs.artifact_name }}" \
+            "run_clean=${{ needs.build-web.outputs.run_clean }}" \
             "run_id=${{ github.run_id }}" \
             "duration_sec=${dur}"
 
