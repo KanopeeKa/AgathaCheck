@@ -6,6 +6,13 @@ on:
       ref:
         description: 'Git ref validated on UAT (commit SHA, tag, or branch)'
         required: true
+      uat_run_id:
+        description: UAT workflow run ID with green Prod ready (recommended)
+        required: false
+      rebuild_if_missing:
+        description: Rebuild web if promoted artifact is missing/expired (audited fallback)
+        type: boolean
+        default: false
   release:
     types: [published]
 
@@ -19,6 +26,7 @@ concurrency:
 
 permissions:
   contents: read
+  actions: read
 
 jobs:
   deploy:
@@ -34,12 +42,46 @@ jobs:
       - name: Begin job timing
         run: echo "JOB_START_EPOCH=$(date +%s)" >> "$GITHUB_ENV"
 
+      - name: Resolve deployment commit SHA
+        id: deploy_sha
+        run: |
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            target_ref="${{ inputs.ref }}"
+          else
+            target_ref="${{ github.sha }}"
+          fi
+          sha="$(git rev-parse "${target_ref}^{commit}")"
+          echo "sha=${sha}" >> "$GITHUB_OUTPUT"
+          echo "target_ref=${target_ref}" >> "$GITHUB_OUTPUT"
+
+      - name: Download promoted UAT web artifact
+        id: promote
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          UAT_RUN_ID: ${{ github.event_name == 'workflow_dispatch' && inputs.uat_run_id || '' }}
+        run: |
+          set -euo pipefail
+          args=(--sha "${{ steps.deploy_sha.outputs.sha }}")
+          if [[ -n "${UAT_RUN_ID}" ]]; then
+            args+=(--uat-run-id "${UAT_RUN_ID}")
+          fi
+          bash scripts/ci/download-uat-artifact.sh "${args[@]}"
+
       - name: Set up Flutter
+        if: >-
+          steps.promote.outcome == 'failure' &&
+          github.event_name == 'workflow_dispatch' &&
+          inputs.rebuild_if_missing == true
         uses: ./.github/actions/setup-flutter
         with:
           flutter-version: ${{ env.FLUTTER_VERSION }}
 
       - name: Cache Flutter dependencies
+        if: >-
+          steps.promote.outcome == 'failure' &&
+          github.event_name == 'workflow_dispatch' &&
+          inputs.rebuild_if_missing == true
         uses: actions/cache@v4
         with:
           path: |
@@ -49,15 +91,45 @@ jobs:
           restore-keys: |
             flutter-${{ runner.os }}-${{ env.FLUTTER_VERSION }}-
 
-      - name: Build Flutter web (shared)
+      - name: Rebuild web (non-promoted fallback)
+        if: >-
+          steps.promote.outcome == 'failure' &&
+          github.event_name == 'workflow_dispatch' &&
+          inputs.rebuild_if_missing == true
         env:
           POSTHOG_API_KEY: ${{ secrets.POSTHOG_API_KEY }}
           RUN_CLEAN: 'true'
           RUN_CODEGEN: 'true'
-          ARTIFACT_NAME: web-build
-          SOURCE_WORKFLOW: deploy-prod
+          ARTIFACT_NAME: web-build-${{ steps.deploy_sha.outputs.sha }}
+          SOURCE_WORKFLOW: deploy-prod-rebuild
           FLUTTER_VERSION: ${{ env.FLUTTER_VERSION }}
-        run: bash scripts/ci/build-flutter-web.sh
+        run: |
+          echo "::warning::NON-PROMOTED REBUILD PATH USED — promoted UAT artifact was unavailable"
+          bash scripts/ci/build-flutter-web.sh
+          bash scripts/ci/append-summary.sh "PROD frontend source" \
+            "promotion_path=non-promoted-rebuild" \
+            "deploy_sha=${{ steps.deploy_sha.outputs.sha }}" \
+            "run_id=${{ github.run_id }}"
+
+      - name: Fail closed when promotion unavailable
+        if: >-
+          steps.promote.outcome == 'failure' && (
+            github.event_name != 'workflow_dispatch' ||
+            inputs.rebuild_if_missing != true
+          )
+        run: |
+          echo "::error::Promoted UAT artifact unavailable for ${{ steps.deploy_sha.outputs.sha }}."
+          echo "::error::Release publishes require a promoted artifact. Use workflow_dispatch with uat_run_id or rebuild_if_missing=true only as an audited override."
+          exit 1
+
+      - name: Record promoted frontend source
+        if: steps.promote.outcome == 'success'
+        run: |
+          bash scripts/ci/append-summary.sh "PROD frontend source" \
+            "promotion_path=promoted" \
+            "deploy_sha=${{ steps.deploy_sha.outputs.sha }}" \
+            "artifact=web-build-${{ steps.deploy_sha.outputs.sha }}" \
+            "run_id=${{ github.run_id }}"
 
       - name: Deploy frontend to agathatrack.com
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
@@ -123,8 +195,9 @@ jobs:
           bash scripts/ci/append-summary.sh "Production deploy job" \
             "workflow=deploy-prod" \
             "job=deploy" \
-            "ref=${{ github.event_name == 'workflow_dispatch' && inputs.ref || github.ref }}" \
-            "sha=${{ github.sha }}" \
+            "ref=${{ steps.deploy_sha.outputs.target_ref }}" \
+            "sha=${{ steps.deploy_sha.outputs.sha }}" \
+            "promotion_path=${{ steps.promote.outcome == 'success' && 'promoted' || 'rebuild-or-failed' }}" \
             "run_id=${{ github.run_id }}" \
             "duration_sec=${dur}"
 
@@ -142,12 +215,12 @@ jobs:
       - name: Wait for production to become healthy
         run: |
           set -e
-          for i in $(seq 1 12); do
+          for attempt in $(seq 1 12); do
             if curl -sf "${PROD_BASE_URL}/backend/health" | grep -q '"status":"OK"'; then
-              echo "Backend healthy after attempt $i"
+              echo "Backend healthy after attempt ${attempt}"
               break
             fi
-            echo "Waiting for Passenger restart ($i/12)..."
+            echo "Waiting for Passenger restart (${attempt}/12)..."
             sleep 10
           done
           curl -sf "${PROD_BASE_URL}/backend/health"

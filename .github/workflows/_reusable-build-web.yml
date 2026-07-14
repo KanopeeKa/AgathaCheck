@@ -1,10 +1,14 @@
 # Shared Flutter web release build with manifest + verification.
-# Called by deploy workflows (Phase 3 may split build/deploy jobs).
+# Called by deploy workflows (UAT build job; PROD rebuild fallback).
 name: Reusable build Flutter web
 
 on:
   workflow_call:
     inputs:
+      ref:
+        description: Git ref to checkout before build (branch, tag, or SHA)
+        type: string
+        default: ''
       run_clean:
         description: Run flutter clean before build
         type: boolean
@@ -13,21 +17,24 @@ on:
         description: Run build_runner before build
         type: boolean
         default: true
-      artifact_name:
-        description: Artifact and manifest name
-        type: string
-        default: web-build
       upload_artifact:
         description: Upload flutter_app/build/web as a workflow artifact
         type: boolean
         default: true
       source_workflow:
-        description: Provenance label written to build-manifest.json
+        description: Provenance label written to build-manifest.json (empty = caller workflow name)
         type: string
         default: ''
     secrets:
       POSTHOG_API_KEY:
         required: false
+    outputs:
+      artifact_name:
+        description: Uploaded artifact name (web-build-<sha>)
+        value: ${{ jobs.build-web.outputs.artifact_name }}
+      deploy_sha:
+        description: Commit SHA that was built
+        value: ${{ jobs.build-web.outputs.deploy_sha }}
 
 env:
   FLUTTER_VERSION: '3.32.0'
@@ -37,8 +44,20 @@ jobs:
     name: Build Flutter web
     runs-on: ubuntu-latest
     timeout-minutes: 30
+    outputs:
+      artifact_name: ${{ steps.meta.outputs.artifact_name }}
+      deploy_sha: ${{ steps.meta.outputs.deploy_sha }}
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.ref != '' && inputs.ref || github.ref }}
+
+      - name: Resolve build metadata
+        id: meta
+        run: |
+          sha="$(git rev-parse HEAD)"
+          echo "sha=${sha}" >> "$GITHUB_OUTPUT"
+          echo "artifact_name=web-build-${sha}" >> "$GITHUB_OUTPUT"
 
       - name: Begin job timing
         run: echo "JOB_START_EPOCH=$(date +%s)" >> "$GITHUB_ENV"
@@ -63,7 +82,7 @@ jobs:
           POSTHOG_API_KEY: ${{ secrets.POSTHOG_API_KEY }}
           RUN_CLEAN: ${{ inputs.run_clean }}
           RUN_CODEGEN: ${{ inputs.run_codegen }}
-          ARTIFACT_NAME: ${{ inputs.artifact_name }}
+          ARTIFACT_NAME: ${{ steps.meta.outputs.artifact_name }}
           SOURCE_WORKFLOW: ${{ inputs.source_workflow != '' && inputs.source_workflow || github.workflow }}
           FLUTTER_VERSION: ${{ env.FLUTTER_VERSION }}
         run: bash scripts/ci/build-flutter-web.sh
@@ -72,8 +91,9 @@ jobs:
         if: inputs.upload_artifact
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ inputs.artifact_name }}
+          name: ${{ steps.meta.outputs.artifact_name }}
           path: flutter_app/build/web/
+          retention-days: 30
 
       - name: Write build job summary
         if: always()
@@ -84,7 +104,7 @@ jobs:
           bash scripts/ci/append-summary.sh "Flutter web build job" \
             "workflow=reusable-build-web" \
             "job=build-web" \
-            "sha=${{ github.sha }}" \
+            "sha=${{ steps.meta.outputs.deploy_sha }}" \
             "run_id=${{ github.run_id }}" \
             "duration_sec=${dur}" \
-            "artifact=${{ inputs.artifact_name }}"
+            "artifact=${{ steps.meta.outputs.artifact_name }}"
