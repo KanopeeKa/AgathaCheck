@@ -22,6 +22,28 @@ Implementation: `scripts/ci/build-flutter-web.sh` (called directly or via
 
 `build-manifest.json` records `run_clean` for duration/correctness comparisons. Compare UAT `build-web` job `duration_sec` in Actions summaries before/after.
 
+### Rapid rollback
+
+If UAT builds show stale artifacts or codegen drift after skipping clean, restore the
+pre-experiment path without a code change:
+
+```bash
+# GitHub → Settings → Variables → Actions → New repository variable
+# Name: UAT_FLUTTER_CLEAN
+# Value: true
+```
+
+Or for a one-off manual deploy:
+
+```bash
+gh workflow run deploy-uat.yml \
+  -f deploy_ref=release/uat-YYYY-MM-DD \
+  -f run_clean=true
+```
+
+Job summaries include `run_clean_source` (`workflow_dispatch_input` vs `repo_variable`)
+and `resolved_run_clean` for incident triage.
+
 ## Build flags (defined once in `build-flutter-web.sh`)
 
 - `flutter build web --release --no-tree-shake-icons`

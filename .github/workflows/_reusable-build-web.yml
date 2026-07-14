@@ -35,9 +35,9 @@ on:
       deploy_sha:
         description: Commit SHA that was built
         value: ${{ jobs.build-web.outputs.deploy_sha }}
-      run_clean:
-        description: Whether flutter clean ran before build
-        value: ${{ jobs.build-web.outputs.run_clean }}
+      resolved_run_clean:
+        description: Effective flutter clean flag used by the build job
+        value: ${{ jobs.build-web.outputs.resolved_run_clean }}
 
 env:
   FLUTTER_VERSION: '3.32.0'
@@ -50,7 +50,7 @@ jobs:
     outputs:
       artifact_name: ${{ steps.meta.outputs.artifact_name }}
       deploy_sha: ${{ steps.meta.outputs.deploy_sha }}
-      run_clean: ${{ steps.meta.outputs.run_clean }}
+      resolved_run_clean: ${{ steps.meta.outputs.resolved_run_clean }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -63,7 +63,7 @@ jobs:
           {
             echo "sha=${sha}"
             echo "artifact_name=web-build-${sha}"
-            echo "run_clean=${{ inputs.run_clean }}"
+            echo "resolved_run_clean=${{ inputs.run_clean }}"
           } >> "$GITHUB_OUTPUT"
 
       - name: Begin job timing
@@ -117,7 +117,7 @@ jobs:
             "workflow=reusable-build-web" \
             "job=build-web" \
             "sha=${{ steps.meta.outputs.deploy_sha }}" \
-            "run_clean=${{ inputs.run_clean }}" \
+            "resolved_run_clean=${{ inputs.run_clean }}" \
             "run_id=${{ github.run_id }}" \
             "duration_sec=${dur}" \
             "artifact=${{ steps.meta.outputs.artifact_name }}"
