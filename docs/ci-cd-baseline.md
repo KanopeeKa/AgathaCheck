@@ -47,11 +47,11 @@ Append rows as phases complete:
 | Phase | Date | Change | Median UAT deploy | Median PROD deploy | Notes |
 |-------|------|--------|-------------------|--------------------|-------|
 | -1 | 2026-07-14 | Baseline captured | 42m | n/a | Starting point |
-| 0 | | Smoke gate integrity fix | | | |
-| 0.5 | | Observability summaries | | | |
-| 1 | | Concurrency + actionlint | | | |
-| 2 | | Shared build + manifest | | | |
-| 3 | | UAT→PROD artifact promotion | | | |
+| 0 | 2026-07-14 | Smoke gate integrity fix | | | PR #162 |
+| 0.5 | 2026-07-14 | Observability summaries | | | PR #163 |
+| 1 | 2026-07-14 | Concurrency + actionlint | | | PR #163 |
+| 2 | 2026-07-14 | Shared build + manifest | | | PR #164 |
+| 3 | 2026-07-14 | UAT→PROD artifact promotion | | | PR pending — split UAT build job; PROD promotes `web-build-<sha>` |
 | 4 | | `flutter clean` experiment | | | |
 
 ## Regenerating this table

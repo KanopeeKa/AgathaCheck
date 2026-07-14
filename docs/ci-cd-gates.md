@@ -55,7 +55,8 @@ Workflow: **Deploy UAT (uat.agathatrack.com)** — `.github/workflows/deploy-uat
 
 | Job | Blocking for `prod-ready`? | Purpose |
 |-----|----------------------------|---------|
-| `Build and deploy to UAT` (`deploy`) | **Yes** | Flutter build + FTP frontend/backend |
+| `Build Flutter web` (`build-web`) | **Yes** | Shared web build + `web-build-<sha>` artifact |
+| `Build and deploy to UAT` (`deploy`) | **Yes** | Download artifact + FTP frontend/backend |
 | `UAT post-deploy smoke` (`smoke`) | **Yes** | HTTP health on live UAT (`scripts/uat-post-deploy-smoke.sh`) |
 | `UAT live smoke E2E` (`uat-e2e-smoke`) | **Yes** | Playwright `@smoke` on live UAT |
 | `UAT full E2E (localhost)` (`uat-e2e-full`) | **Yes** | Full Playwright on localhost stack |
@@ -87,15 +88,32 @@ Before `workflow_dispatch` or release publish:
 1. **Same commit SHA** validated on UAT (via `release/uat-*` deploy).
 2. GitHub Environment **`PROD`** must require status check:
    - **`Deploy UAT / Prod ready`** (exact name — verify in Settings → Environments → PROD).
-3. Optional: environment reviewers / wait timer.
+3. **Promoted web artifact** `web-build-<sha>` from a UAT run with green `Prod ready`.
+4. Optional: environment reviewers / wait timer.
+
+### PROD frontend promotion
+
+| Path | When | Behavior |
+|------|------|----------|
+| **Promoted (default)** | UAT artifact exists | `download-uat-artifact.sh` → manifest provenance check → FTP deploy |
+| **Fail closed** | Release publish, or dispatch without fallback | Job fails if artifact missing/expired |
+| **Rebuild fallback** | `workflow_dispatch` + `rebuild_if_missing: true` | Rebuilds via `build-flutter-web.sh`; summary records `non-promoted-rebuild` |
+
+`workflow_dispatch` inputs:
+
+| Input | Purpose |
+|-------|---------|
+| `ref` | Commit SHA, tag, or branch (must match UAT-validated SHA) |
+| `uat_run_id` | Pin specific UAT workflow run (recommended when multiple runs exist) |
+| `rebuild_if_missing` | Audited override when artifact expired (default `false`) |
+
+Build contract: [ci-build-artifact-contract.md](./ci-build-artifact-contract.md).
 
 Post-deploy blocking job:
 
 | Job | Purpose |
 |-----|---------|
 | `Production post-deploy smoke` | `curl` health + landing |
-
-**Future (Phase 3+):** PROD will download the UAT-built web artifact for the same SHA (UAT → PROD promotion). Build contract: [ci-build-artifact-contract.md](./ci-build-artifact-contract.md).
 
 ---
 

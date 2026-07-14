@@ -22,9 +22,21 @@ permissions:
   contents: read
 
 jobs:
-  # Fast path: build + FTP deploy. Unit tests already ran on main CI.
+  build-web:
+    name: Build Flutter web
+    uses: ./.github/workflows/_reusable-build-web.yml
+    secrets:
+      POSTHOG_API_KEY: ${{ secrets.POSTHOG_API_KEY }}
+    with:
+      ref: ${{ github.event_name == 'workflow_dispatch' && inputs.deploy_ref || github.ref_name }}
+      run_clean: true
+      run_codegen: true
+      upload_artifact: true
+
+  # Fast path: promote tested web artifact + FTP deploy. Unit tests already ran on main CI.
   deploy:
     name: Build and deploy to UAT
+    needs: build-web
     runs-on: ubuntu-latest
     timeout-minutes: 45
     environment: UAT
@@ -36,30 +48,18 @@ jobs:
       - name: Begin job timing
         run: echo "JOB_START_EPOCH=$(date +%s)" >> "$GITHUB_ENV"
 
-      - name: Set up Flutter
-        uses: ./.github/actions/setup-flutter
+      - name: Download built web artifact
+        uses: actions/download-artifact@v4
         with:
-          flutter-version: ${{ env.FLUTTER_VERSION }}
+          name: ${{ needs.build-web.outputs.artifact_name }}
+          path: .ci-web-download
 
-      - name: Cache Flutter dependencies
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/.pub-cache
-            flutter_app/.dart_tool
-          key: flutter-${{ runner.os }}-${{ env.FLUTTER_VERSION }}-${{ hashFiles('flutter_app/pubspec.lock') }}
-          restore-keys: |
-            flutter-${{ runner.os }}-${{ env.FLUTTER_VERSION }}-
-
-      - name: Build Flutter web (shared)
-        env:
-          POSTHOG_API_KEY: ${{ secrets.POSTHOG_API_KEY }}
-          RUN_CLEAN: 'true'
-          RUN_CODEGEN: 'true'
-          ARTIFACT_NAME: web-build
-          SOURCE_WORKFLOW: deploy-uat
-          FLUTTER_VERSION: ${{ env.FLUTTER_VERSION }}
-        run: bash scripts/ci/build-flutter-web.sh
+      - name: Materialize web root for FTP deploy
+        run: |
+          bash scripts/ci/materialize-web-artifact.sh \
+            --source .ci-web-download \
+            --artifact-name "${{ needs.build-web.outputs.artifact_name }}" \
+            --dest flutter_app/build/web
 
       - name: Deploy frontend to uat.agathatrack.com
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
@@ -363,7 +363,8 @@ jobs:
             "workflow=deploy-uat" \
             "job=deploy" \
             "ref=${{ env.DEPLOY_REF }}" \
-            "sha=${{ github.sha }}" \
+            "sha=${{ needs.build-web.outputs.deploy_sha }}" \
+            "artifact=${{ needs.build-web.outputs.artifact_name }}" \
             "run_id=${{ github.run_id }}" \
             "duration_sec=${dur}"
 
