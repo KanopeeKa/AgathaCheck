@@ -32,6 +32,7 @@ GITHUB_RUN_ID="${GITHUB_RUN_ID:-}"
 failed=0
 summary_tmp="$(mktemp)"
 trap 'rm -f "$summary_tmp"' EXIT
+# Preserve workflow-command output on the original stdout outside the summary capture block.
 exec 3>&1
 
 {
