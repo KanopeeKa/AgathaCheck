@@ -13,20 +13,30 @@ env:
   FLUTTER_VERSION: '3.32.0'
   PROD_BASE_URL: https://agathatrack.com
 
+concurrency:
+  group: deploy-prod
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
 jobs:
   deploy:
     name: Build and deploy to Production
     runs-on: ubuntu-latest
+    timeout-minutes: 45
     environment: PROD
     steps:
       - uses: actions/checkout@v4
         with:
           ref: ${{ github.event_name == 'workflow_dispatch' && inputs.ref || github.ref }}
 
+      - name: Begin job timing
+        run: echo "JOB_START_EPOCH=$(date +%s)" >> "$GITHUB_ENV"
+
       - name: Set up Flutter
-        uses: subosito/flutter-action@v2
+        uses: ./.github/actions/setup-flutter
         with:
-          channel: stable
           flutter-version: ${{ env.FLUTTER_VERSION }}
 
       - name: Cache Flutter dependencies
@@ -53,7 +63,7 @@ jobs:
           flutter clean
           flutter pub get
           flutter build web --release --no-tree-shake-icons \
-            --dart-define=POSTHOG_API_KEY=${POSTHOG_API_KEY} \
+            --dart-define=POSTHOG_API_KEY="${POSTHOG_API_KEY}" \
             --dart-define=POSTHOG_HOST=https://eu.i.posthog.com
 
       - name: Deploy frontend to agathatrack.com
@@ -111,11 +121,31 @@ jobs:
             mkdir -p tmp
             touch tmp/restart.txt
 
+      - name: Write deploy job summary
+        if: always()
+        run: |
+          end=$(date +%s)
+          start="${JOB_START_EPOCH:-$end}"
+          dur=$((end - start))
+          bash scripts/ci/append-summary.sh "Production deploy job" \
+            "workflow=deploy-prod" \
+            "job=deploy" \
+            "ref=${{ github.event_name == 'workflow_dispatch' && inputs.ref || github.ref }}" \
+            "sha=${{ github.sha }}" \
+            "run_id=${{ github.run_id }}" \
+            "duration_sec=${dur}"
+
   smoke:
     name: Production post-deploy smoke
     needs: deploy
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
+      - uses: actions/checkout@v4
+
+      - name: Begin job timing
+        run: echo "JOB_START_EPOCH=$(date +%s)" >> "$GITHUB_ENV"
+
       - name: Wait for production to become healthy
         run: |
           set -e
@@ -129,6 +159,19 @@ jobs:
           done
           curl -sf "${PROD_BASE_URL}/backend/health"
           curl -sf "${PROD_BASE_URL}/landing" -o /dev/null
+
+      - name: Write smoke job summary
+        if: always()
+        run: |
+          end=$(date +%s)
+          start="${JOB_START_EPOCH:-$end}"
+          dur=$((end - start))
+          bash scripts/ci/append-summary.sh "Production smoke job" \
+            "workflow=deploy-prod" \
+            "job=smoke" \
+            "sha=${{ github.sha }}" \
+            "run_id=${{ github.run_id }}" \
+            "duration_sec=${dur}"
 
   # Future: add @smoke Playwright against PROD_BASE_URL once a dedicated smoke
   # test account or cleanup strategy is in place (live signup pollutes prod DB).

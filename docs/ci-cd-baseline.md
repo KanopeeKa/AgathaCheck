@@ -48,6 +48,8 @@ Append rows as phases complete:
 |-------|------|--------|-------------------|--------------------|-------|
 | -1 | 2026-07-14 | Baseline captured | 42m | n/a | Starting point |
 | 0 | | Smoke gate integrity fix | | | |
+| 0.5 | | Observability summaries | | | |
+| 1 | | Concurrency + actionlint | | | |
 | 3 | | UAT→PROD artifact promotion | | | |
 | 4 | | `flutter clean` experiment | | | |
 

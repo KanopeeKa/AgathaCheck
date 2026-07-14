@@ -17,6 +17,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Begin job timing
+        run: echo "JOB_START_EPOCH=$(date +%s)" >> "$GITHUB_ENV"
+
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
@@ -31,6 +34,19 @@ jobs:
       - name: File size gate (500 lines)
         run: node scripts/check_file_size.js
 
+      - name: Write governance job summary
+        if: always()
+        run: |
+          end=$(date +%s)
+          start="${JOB_START_EPOCH:-$end}"
+          dur=$((end - start))
+          bash scripts/ci/append-summary.sh "CI governance job" \
+            "workflow=reusable-test" \
+            "job=governance" \
+            "sha=${{ github.sha }}" \
+            "run_id=${{ github.run_id }}" \
+            "duration_sec=${dur}"
+
   flutter:
     name: Flutter (analyze, test, build web)
     runs-on: ubuntu-latest
@@ -38,10 +54,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Begin job timing
+        run: echo "JOB_START_EPOCH=$(date +%s)" >> "$GITHUB_ENV"
+
       - name: Set up Flutter
-        uses: subosito/flutter-action@v2
+        uses: ./.github/actions/setup-flutter
         with:
-          channel: stable
           flutter-version: ${{ env.FLUTTER_VERSION }}
 
       - name: Cache Flutter dependencies
@@ -116,7 +134,7 @@ jobs:
           POSTHOG_API_KEY: ${{ secrets.POSTHOG_API_KEY }}
         run: |
           flutter build web --release --no-tree-shake-icons \
-            --dart-define=POSTHOG_API_KEY=${POSTHOG_API_KEY} \
+            --dart-define=POSTHOG_API_KEY="${POSTHOG_API_KEY}" \
             --dart-define=POSTHOG_HOST=https://eu.i.posthog.com
 
       - name: Upload web artifact
@@ -125,12 +143,29 @@ jobs:
           name: web-build
           path: flutter_app/build/web/
 
+      - name: Write Flutter job summary
+        if: always()
+        run: |
+          end=$(date +%s)
+          start="${JOB_START_EPOCH:-$end}"
+          dur=$((end - start))
+          bash scripts/ci/append-summary.sh "CI Flutter job" \
+            "workflow=reusable-test" \
+            "job=flutter" \
+            "sha=${{ github.sha }}" \
+            "run_id=${{ github.run_id }}" \
+            "duration_sec=${dur}" \
+            "artifact=web-build"
+
   backend:
     name: Backend (Node.js Jest + Dart analyze)
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
+
+      - name: Begin job timing
+        run: echo "JOB_START_EPOCH=$(date +%s)" >> "$GITHUB_ENV"
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
@@ -167,12 +202,28 @@ jobs:
         working-directory: server
         run: dart pub get && dart analyze lib
 
+      - name: Write backend job summary
+        if: always()
+        run: |
+          end=$(date +%s)
+          start="${JOB_START_EPOCH:-$end}"
+          dur=$((end - start))
+          bash scripts/ci/append-summary.sh "CI backend job" \
+            "workflow=reusable-test" \
+            "job=backend" \
+            "sha=${{ github.sha }}" \
+            "run_id=${{ github.run_id }}" \
+            "duration_sec=${dur}"
+
   e2e-audit:
     name: E2E package audit
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
+
+      - name: Begin job timing
+        run: echo "JOB_START_EPOCH=$(date +%s)" >> "$GITHUB_ENV"
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
@@ -188,3 +239,16 @@ jobs:
       - name: npm audit (high and above)
         working-directory: e2e
         run: npm audit --audit-level=high
+
+      - name: Write E2E audit job summary
+        if: always()
+        run: |
+          end=$(date +%s)
+          start="${JOB_START_EPOCH:-$end}"
+          dur=$((end - start))
+          bash scripts/ci/append-summary.sh "CI E2E audit job" \
+            "workflow=reusable-test" \
+            "job=e2e-audit" \
+            "sha=${{ github.sha }}" \
+            "run_id=${{ github.run_id }}" \
+            "duration_sec=${dur}"

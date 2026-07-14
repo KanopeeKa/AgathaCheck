@@ -12,6 +12,7 @@ jobs:
   e2e:
     name: Playwright E2E (localhost)
     runs-on: ubuntu-latest
+    timeout-minutes: 90
     services:
       postgres:
         image: postgres:16
@@ -30,6 +31,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Begin job timing
+        run: echo "JOB_START_EPOCH=$(date +%s)" >> "$GITHUB_ENV"
+
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
@@ -40,9 +44,8 @@ jobs:
             e2e/package-lock.json
 
       - name: Set up Flutter
-        uses: subosito/flutter-action@v2
+        uses: ./.github/actions/setup-flutter
         with:
-          channel: stable
           flutter-version: ${{ env.FLUTTER_VERSION }}
 
       - name: Install server dependencies
@@ -83,8 +86,9 @@ jobs:
           E2E: '1'
         run: |
           node bin/start.js &
-          for i in $(seq 1 30); do
+          for attempt in $(seq 1 30); do
             curl -sf http://localhost:3000/landing && break
+            echo "Waiting for server (${attempt}/30)..."
             sleep 2
           done
 
@@ -100,3 +104,16 @@ jobs:
         with:
           name: playwright-report-localhost
           path: e2e/playwright-report/
+
+      - name: Write E2E job summary
+        if: always()
+        run: |
+          end=$(date +%s)
+          start="${JOB_START_EPOCH:-$end}"
+          dur=$((end - start))
+          bash scripts/ci/append-summary.sh "Localhost E2E job" \
+            "workflow=reusable-e2e-local" \
+            "job=e2e" \
+            "sha=${{ github.sha }}" \
+            "run_id=${{ github.run_id }}" \
+            "duration_sec=${dur}"
