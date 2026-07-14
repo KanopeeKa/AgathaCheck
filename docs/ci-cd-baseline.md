@@ -52,7 +52,8 @@ Append rows as phases complete:
 | 1 | 2026-07-14 | Concurrency + actionlint | | | PR #163 |
 | 2 | 2026-07-14 | Shared build + manifest | | | PR #164 |
 | 3 | 2026-07-14 | UAT→PROD artifact promotion | | | PR #165 |
-| 4 | 2026-07-14 | UAT `flutter clean` experiment (default off) | | | PR pending — `UAT_FLUTTER_CLEAN` escape hatch |
+| 4 | 2026-07-14 | UAT `flutter clean` experiment (default off) | | | PR #166 |
+| 5 | 2026-07-14 | Backend staging unify (UAT + PROD) | | | PR pending — `scripts/ci/stage-backend-deploy.sh` |
 
 ## Regenerating this table
 
