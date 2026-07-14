@@ -23,6 +23,11 @@ runs:
         cache: true
         pub-cache: false
 
+    - name: Warn before Flutter setup retry
+      if: steps.attempt1.outcome == 'failure'
+      shell: bash
+      run: echo "::warning::Retrying Flutter setup after first-attempt download failure"
+
     - name: Set up Flutter (retry after download flake)
       if: steps.attempt1.outcome == 'failure'
       uses: subosito/flutter-action@v2

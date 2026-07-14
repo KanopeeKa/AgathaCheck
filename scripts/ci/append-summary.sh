@@ -24,6 +24,15 @@ else
   exec 3>>"$SUMMARY_FILE"
 fi
 
+# Prevent | and newlines from breaking markdown table layout.
+escape_md_table_cell() {
+  local s="$1"
+  s="${s//$'\r'/}"
+  s="${s//$'\n'/ }"
+  s="${s//|/\&#124;}"
+  printf '%s' "$s"
+}
+
 format_duration() {
   local sec="$1"
   if [[ "$sec" -lt 60 ]]; then
@@ -34,7 +43,7 @@ format_duration() {
 }
 
 {
-  echo "### ${title}"
+  echo "### $(escape_md_table_cell "$title")"
   echo
   echo "| Field | Value |"
   echo "|-------|-------|"
@@ -48,10 +57,13 @@ format_duration() {
         fi
         ;;
       gate_outcome)
-        value="\`${value}\`"
+        value="\`$(escape_md_table_cell "$value")\`"
+        ;;
+      *)
+        value="$(escape_md_table_cell "$value")"
         ;;
     esac
-    echo "| ${key} | ${value} |"
+    echo "| $(escape_md_table_cell "$key") | ${value} |"
   done
   echo
 } >&3
