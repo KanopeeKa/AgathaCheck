@@ -122,20 +122,15 @@ jobs:
             echo "No integration tests directory found; skipping."
           fi
 
-      - name: Inject PostHog web snippet
-        working-directory: flutter_app
+      - name: Build web release (shared)
         env:
           POSTHOG_API_KEY: ${{ secrets.POSTHOG_API_KEY }}
-        run: bash scripts/inject_posthog_web.sh
-
-      - name: Build web release
-        working-directory: flutter_app
-        env:
-          POSTHOG_API_KEY: ${{ secrets.POSTHOG_API_KEY }}
-        run: |
-          flutter build web --release --no-tree-shake-icons \
-            --dart-define=POSTHOG_API_KEY="${POSTHOG_API_KEY}" \
-            --dart-define=POSTHOG_HOST=https://eu.i.posthog.com
+          RUN_CLEAN: 'false'
+          RUN_CODEGEN: 'false'
+          ARTIFACT_NAME: web-build
+          SOURCE_WORKFLOW: reusable-test
+          FLUTTER_VERSION: ${{ env.FLUTTER_VERSION }}
+        run: bash scripts/ci/build-flutter-web.sh
 
       - name: Upload web artifact
         uses: actions/upload-artifact@v4

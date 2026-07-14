@@ -1,0 +1,90 @@
+# Shared Flutter web release build with manifest + verification.
+# Called by deploy workflows (Phase 3 may split build/deploy jobs).
+name: Reusable build Flutter web
+
+on:
+  workflow_call:
+    inputs:
+      run_clean:
+        description: Run flutter clean before build
+        type: boolean
+        default: false
+      run_codegen:
+        description: Run build_runner before build
+        type: boolean
+        default: true
+      artifact_name:
+        description: Artifact and manifest name
+        type: string
+        default: web-build
+      upload_artifact:
+        description: Upload flutter_app/build/web as a workflow artifact
+        type: boolean
+        default: true
+      source_workflow:
+        description: Provenance label written to build-manifest.json
+        type: string
+        default: ''
+    secrets:
+      POSTHOG_API_KEY:
+        required: false
+
+env:
+  FLUTTER_VERSION: '3.32.0'
+
+jobs:
+  build-web:
+    name: Build Flutter web
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Begin job timing
+        run: echo "JOB_START_EPOCH=$(date +%s)" >> "$GITHUB_ENV"
+
+      - name: Set up Flutter
+        uses: ./.github/actions/setup-flutter
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+
+      - name: Cache Flutter dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.pub-cache
+            flutter_app/.dart_tool
+          key: flutter-${{ runner.os }}-${{ env.FLUTTER_VERSION }}-${{ hashFiles('flutter_app/pubspec.lock') }}
+          restore-keys: |
+            flutter-${{ runner.os }}-${{ env.FLUTTER_VERSION }}-
+
+      - name: Build Flutter web (shared)
+        env:
+          POSTHOG_API_KEY: ${{ secrets.POSTHOG_API_KEY }}
+          RUN_CLEAN: ${{ inputs.run_clean }}
+          RUN_CODEGEN: ${{ inputs.run_codegen }}
+          ARTIFACT_NAME: ${{ inputs.artifact_name }}
+          SOURCE_WORKFLOW: ${{ inputs.source_workflow != '' && inputs.source_workflow || github.workflow }}
+          FLUTTER_VERSION: ${{ env.FLUTTER_VERSION }}
+        run: bash scripts/ci/build-flutter-web.sh
+
+      - name: Upload web artifact
+        if: inputs.upload_artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ inputs.artifact_name }}
+          path: flutter_app/build/web/
+
+      - name: Write build job summary
+        if: always()
+        run: |
+          end=$(date +%s)
+          start="${JOB_START_EPOCH:-$end}"
+          dur=$((end - start))
+          bash scripts/ci/append-summary.sh "Flutter web build job" \
+            "workflow=reusable-build-web" \
+            "job=build-web" \
+            "sha=${{ github.sha }}" \
+            "run_id=${{ github.run_id }}" \
+            "duration_sec=${dur}" \
+            "artifact=${{ inputs.artifact_name }}"

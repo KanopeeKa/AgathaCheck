@@ -49,22 +49,15 @@ jobs:
           restore-keys: |
             flutter-${{ runner.os }}-${{ env.FLUTTER_VERSION }}-
 
-      - name: Inject PostHog web snippet
-        working-directory: flutter_app
+      - name: Build Flutter web (shared)
         env:
           POSTHOG_API_KEY: ${{ secrets.POSTHOG_API_KEY }}
-        run: bash scripts/inject_posthog_web.sh
-
-      - name: Build Flutter Web
-        working-directory: flutter_app
-        env:
-          POSTHOG_API_KEY: ${{ secrets.POSTHOG_API_KEY }}
-        run: |
-          flutter clean
-          flutter pub get
-          flutter build web --release --no-tree-shake-icons \
-            --dart-define=POSTHOG_API_KEY="${POSTHOG_API_KEY}" \
-            --dart-define=POSTHOG_HOST=https://eu.i.posthog.com
+          RUN_CLEAN: 'true'
+          RUN_CODEGEN: 'true'
+          ARTIFACT_NAME: web-build
+          SOURCE_WORKFLOW: deploy-prod
+          FLUTTER_VERSION: ${{ env.FLUTTER_VERSION }}
+        run: bash scripts/ci/build-flutter-web.sh
 
       - name: Deploy frontend to agathatrack.com
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
