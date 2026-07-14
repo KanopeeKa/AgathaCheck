@@ -60,9 +60,11 @@ jobs:
         id: meta
         run: |
           sha="$(git rev-parse HEAD)"
-          echo "sha=${sha}" >> "$GITHUB_OUTPUT"
-          echo "artifact_name=web-build-${sha}" >> "$GITHUB_OUTPUT"
-          echo "run_clean=${{ inputs.run_clean }}" >> "$GITHUB_OUTPUT"
+          {
+            echo "sha=${sha}"
+            echo "artifact_name=web-build-${sha}"
+            echo "run_clean=${{ inputs.run_clean }}"
+          } >> "$GITHUB_OUTPUT"
 
       - name: Begin job timing
         run: echo "JOB_START_EPOCH=$(date +%s)" >> "$GITHUB_ENV"
