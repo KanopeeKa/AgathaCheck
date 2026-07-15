@@ -149,92 +149,95 @@ void main() {
   });
 
   group('action matrix (experience x role x admin)', () {
-    final cases = <({
-      String label,
-      Pet pet,
-      AppExperience experience,
-      PetViewerRole role,
-      bool isOrgAdmin,
-      Set<PetDetailAction> expected,
-    })>[
-      (
-        label: 'guardian / guardian',
-        pet: _pet(),
-        experience: AppExperience.guardian,
-        role: PetViewerRole.guardian,
-        isOrgAdmin: false,
-        expected: {
-          PetDetailAction.editProfile,
-          PetDetailAction.assignVet,
-          PetDetailAction.manageSharing,
-          PetDetailAction.downloadReport,
-        },
-      ),
-      (
-        label: 'guardian / sharedCarer',
-        pet: _pet(isShared: true),
-        experience: AppExperience.guardian,
-        role: PetViewerRole.sharedCarer,
-        isOrgAdmin: false,
-        expected: {PetDetailAction.downloadReport},
-      ),
-      (
-        label: 'guardian / fosterCarer',
-        pet: _pet(isFoster: true, organizationName: 'Shelter'),
-        experience: AppExperience.guardian,
-        role: PetViewerRole.fosterCarer,
-        isOrgAdmin: false,
-        expected: {PetDetailAction.downloadReport},
-      ),
-      (
-        label: 'organization / org admin',
-        pet: _pet(organizationId: 'o1', organizationName: 'Shelter'),
-        experience: AppExperience.organization,
-        role: PetViewerRole.organization,
-        isOrgAdmin: true,
-        expected: {
-          PetDetailAction.editProfile,
-          PetDetailAction.assignVet,
-          PetDetailAction.manageSharing,
-          PetDetailAction.fosterPlacement,
-          PetDetailAction.downloadReport,
-        },
-      ),
-      (
-        label: 'organization / org non-admin',
-        pet: _pet(organizationId: 'o1', organizationName: 'Shelter'),
-        experience: AppExperience.organization,
-        role: PetViewerRole.organization,
-        isOrgAdmin: false,
-        expected: {PetDetailAction.downloadReport},
-      ),
-      (
-        label: 'organization experience / personal guardian pet',
-        pet: _pet(),
-        experience: AppExperience.organization,
-        role: PetViewerRole.guardian,
-        isOrgAdmin: false,
-        expected: {
-          PetDetailAction.editProfile,
-          PetDetailAction.assignVet,
-          PetDetailAction.manageSharing,
-          PetDetailAction.downloadReport,
-        },
-      ),
-      (
-        label: 'guardian experience / org inventory pet',
-        pet: _pet(organizationId: 'o1', organizationName: 'Shelter'),
-        experience: AppExperience.guardian,
-        role: PetViewerRole.guardian,
-        isOrgAdmin: false,
-        expected: {
-          PetDetailAction.editProfile,
-          PetDetailAction.assignVet,
-          PetDetailAction.manageSharing,
-          PetDetailAction.downloadReport,
-        },
-      ),
-    ];
+    final cases =
+        <
+          ({
+            String label,
+            Pet pet,
+            AppExperience experience,
+            PetViewerRole role,
+            bool isOrgAdmin,
+            Set<PetDetailAction> expected,
+          })
+        >[
+          (
+            label: 'guardian / guardian',
+            pet: _pet(),
+            experience: AppExperience.guardian,
+            role: PetViewerRole.guardian,
+            isOrgAdmin: false,
+            expected: {
+              PetDetailAction.editProfile,
+              PetDetailAction.assignVet,
+              PetDetailAction.manageSharing,
+              PetDetailAction.downloadReport,
+            },
+          ),
+          (
+            label: 'guardian / sharedCarer',
+            pet: _pet(isShared: true),
+            experience: AppExperience.guardian,
+            role: PetViewerRole.sharedCarer,
+            isOrgAdmin: false,
+            expected: {PetDetailAction.downloadReport},
+          ),
+          (
+            label: 'guardian / fosterCarer',
+            pet: _pet(isFoster: true, organizationName: 'Shelter'),
+            experience: AppExperience.guardian,
+            role: PetViewerRole.fosterCarer,
+            isOrgAdmin: false,
+            expected: {PetDetailAction.downloadReport},
+          ),
+          (
+            label: 'organization / org admin',
+            pet: _pet(organizationId: 'o1', organizationName: 'Shelter'),
+            experience: AppExperience.organization,
+            role: PetViewerRole.organization,
+            isOrgAdmin: true,
+            expected: {
+              PetDetailAction.editProfile,
+              PetDetailAction.assignVet,
+              PetDetailAction.manageSharing,
+              PetDetailAction.fosterPlacement,
+              PetDetailAction.downloadReport,
+            },
+          ),
+          (
+            label: 'organization / org non-admin',
+            pet: _pet(organizationId: 'o1', organizationName: 'Shelter'),
+            experience: AppExperience.organization,
+            role: PetViewerRole.organization,
+            isOrgAdmin: false,
+            expected: {PetDetailAction.downloadReport},
+          ),
+          (
+            label: 'organization experience / personal guardian pet',
+            pet: _pet(),
+            experience: AppExperience.organization,
+            role: PetViewerRole.guardian,
+            isOrgAdmin: false,
+            expected: {
+              PetDetailAction.editProfile,
+              PetDetailAction.assignVet,
+              PetDetailAction.manageSharing,
+              PetDetailAction.downloadReport,
+            },
+          ),
+          (
+            label: 'guardian experience / org inventory pet',
+            pet: _pet(organizationId: 'o1', organizationName: 'Shelter'),
+            experience: AppExperience.guardian,
+            role: PetViewerRole.guardian,
+            isOrgAdmin: false,
+            expected: {
+              PetDetailAction.editProfile,
+              PetDetailAction.assignVet,
+              PetDetailAction.manageSharing,
+              PetDetailAction.downloadReport,
+            },
+          ),
+        ];
 
     for (final c in cases) {
       test(c.label, () {

@@ -48,12 +48,12 @@ void main() {
 
   test('returns restricted context while pets are loading', () async {
     final container = await _container([
-        allPetsIncludingOrgProvider.overrideWith(
-          (ref) => Completer<List<Pet>>().future,
-        ),
-        organizationListProvider.overrideWith(
-          () => _LoadedOrgsNotifier(const []),
-        ),
+      allPetsIncludingOrgProvider.overrideWith(
+        (ref) => Completer<List<Pet>>().future,
+      ),
+      organizationListProvider.overrideWith(
+        () => _LoadedOrgsNotifier(const []),
+      ),
     ]);
     addTearDown(container.dispose);
 
@@ -64,10 +64,10 @@ void main() {
 
   test('resolves guardian actions when inputs are ready', () async {
     final container = await _container([
-        allPetsIncludingOrgProvider.overrideWith((ref) async => const [pet]),
-        organizationListProvider.overrideWith(
-          () => _LoadedOrgsNotifier(const []),
-        ),
+      allPetsIncludingOrgProvider.overrideWith((ref) async => const [pet]),
+      organizationListProvider.overrideWith(
+        () => _LoadedOrgsNotifier(const []),
+      ),
     ]);
     addTearDown(container.dispose);
     await _waitForPolicyInputs(container);
@@ -87,17 +87,17 @@ void main() {
       organizationName: 'Shelter',
     );
     final container = await _container([
-        allPetsIncludingOrgProvider.overrideWith((ref) async => [orgPet]),
-        organizationListProvider.overrideWith(
-          () => _LoadedOrgsNotifier(const [
-            Organization(
-              id: 'o1',
-              name: 'Shelter',
-              type: OrganizationType.charity,
-              role: 'admin',
-            ),
-          ]),
-        ),
+      allPetsIncludingOrgProvider.overrideWith((ref) async => [orgPet]),
+      organizationListProvider.overrideWith(
+        () => _LoadedOrgsNotifier(const [
+          Organization(
+            id: 'o1',
+            name: 'Shelter',
+            type: OrganizationType.charity,
+            role: 'admin',
+          ),
+        ]),
+      ),
     ]);
     addTearDown(container.dispose);
     await _waitForPolicyInputs(container);

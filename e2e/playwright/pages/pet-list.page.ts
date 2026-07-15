@@ -74,7 +74,13 @@ export class PetListPage {
 
   async openOrganizations(): Promise<void> {
     await dismissConsentBannerIfPresent(this.page);
-    await this.page.getByRole('button', { name: 'Organizations' }).click();
+    const orgNav = this.page.getByRole('button', { name: 'Organizations' });
+    if (await orgNav.isVisible({ timeout: 2_000 }).catch(() => false)) {
+      await orgNav.click();
+    } else {
+      await this.page.goto('/organizations');
+      await refreshFlutterAccessibility(this.page);
+    }
     await this.page
       .getByRole('button', { name: 'Create' })
       .or(this.page.getByRole('button', { name: /Rescue Hearts|Partner Shelter/i }))

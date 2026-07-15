@@ -28,7 +28,9 @@ void main() {
     SharedPreferences.setMockInitialValues({});
   });
 
-  testWidgets('redirects shared carer away from edit deep link', (tester) async {
+  testWidgets('redirects shared carer away from edit deep link', (
+    tester,
+  ) async {
     final router = GoRouter(
       initialLocation: '/edit/p1',
       routes: [
@@ -52,15 +54,17 @@ void main() {
       ProviderScope(
         overrides: [
           ...overrides,
-          allPetsIncludingOrgProvider.overrideWith((ref) async => const [
-            Pet(
-              id: 'p1',
-              name: 'Rex',
-              species: 'Dog',
-              isShared: true,
-              guardianName: 'Alex',
-            ),
-          ]),
+          allPetsIncludingOrgProvider.overrideWith(
+            (ref) async => const [
+              Pet(
+                id: 'p1',
+                name: 'Rex',
+                species: 'Dog',
+                isShared: true,
+                guardianName: 'Alex',
+              ),
+            ],
+          ),
         ],
         child: MaterialApp.router(routerConfig: router),
       ),
@@ -93,9 +97,9 @@ void main() {
       ProviderScope(
         overrides: [
           ...overrides,
-          allPetsIncludingOrgProvider.overrideWith((ref) async => const [
-            Pet(id: 'p1', name: 'Rex', species: 'Dog'),
-          ]),
+          allPetsIncludingOrgProvider.overrideWith(
+            (ref) async => const [Pet(id: 'p1', name: 'Rex', species: 'Dog')],
+          ),
         ],
         child: MaterialApp.router(routerConfig: router),
       ),

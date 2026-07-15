@@ -6,35 +6,33 @@ import '../../domain/services/pet_detail_actions.dart';
 import '../providers/pet_providers.dart';
 
 /// Resolved pet-detail policy for [petId], or restricted context while inputs load.
-final petDetailViewerContextProvider = Provider.family<PetDetailContext, String>((
-  ref,
-  petId,
-) {
-  final petsAsync = ref.watch(allPetsIncludingOrgProvider);
-  final orgsAsync = ref.watch(organizationListProvider);
-  final experience = ref.watch(resolvedExperienceProvider);
+final petDetailViewerContextProvider =
+    Provider.family<PetDetailContext, String>((ref, petId) {
+      final petsAsync = ref.watch(allPetsIncludingOrgProvider);
+      final orgsAsync = ref.watch(organizationListProvider);
+      final experience = ref.watch(resolvedExperienceProvider);
 
-  if (petsAsync.isLoading || orgsAsync.isLoading) {
-    return PetDetailContext.restricted(experience: experience);
-  }
+      if (petsAsync.isLoading || orgsAsync.isLoading) {
+        return PetDetailContext.restricted(experience: experience);
+      }
 
-  if (petsAsync.hasError || orgsAsync.hasError) {
-    return PetDetailContext.restricted(experience: experience);
-  }
+      if (petsAsync.hasError || orgsAsync.hasError) {
+        return PetDetailContext.restricted(experience: experience);
+      }
 
-  final pet = petsAsync.value?.where((p) => p.id == petId).firstOrNull;
-  if (pet == null) {
-    return PetDetailContext.restricted(experience: experience);
-  }
+      final pet = petsAsync.value?.where((p) => p.id == petId).firstOrNull;
+      if (pet == null) {
+        return PetDetailContext.restricted(experience: experience);
+      }
 
-  final isOrgAdmin = pet.organizationId != null
-      ? ref.watch(isOrgAdminProvider(pet.organizationId!))
-      : false;
+      final isOrgAdmin = pet.organizationId != null
+          ? ref.watch(isOrgAdminProvider(pet.organizationId!))
+          : false;
 
-  return PetDetailActions.resolveContext(
-    pet: pet,
-    experience: experience,
-    isOrgAdmin: isOrgAdmin,
-    policyInputsResolved: true,
-  );
-});
+      return PetDetailActions.resolveContext(
+        pet: pet,
+        experience: experience,
+        isOrgAdmin: isOrgAdmin,
+        policyInputsResolved: true,
+      );
+    });

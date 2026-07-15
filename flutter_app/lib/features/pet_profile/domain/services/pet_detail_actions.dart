@@ -101,7 +101,9 @@ class PetDetailContext {
   bool can(PetDetailAction action) =>
       isPolicyResolved && actions.contains(action);
 
-  /// Safe default while async policy inputs (pets, orgs, admin) are loading.
+  /// Deny-by-default context until policy inputs (pets, org memberships, admin role)
+  /// have finished loading. UI must treat [isPolicyResolved] == false as "show nothing
+  /// privileged" — never flash edit/share/placement actions during provider churn.
   factory PetDetailContext.restricted({
     AppExperience experience = AppExperience.guardian,
   }) {

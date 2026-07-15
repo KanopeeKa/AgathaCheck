@@ -21,7 +21,8 @@ class FosterPortalRouteGuard extends ConsumerStatefulWidget {
       _FosterPortalRouteGuardState();
 }
 
-class _FosterPortalRouteGuardState extends ConsumerState<FosterPortalRouteGuard> {
+class _FosterPortalRouteGuardState
+    extends ConsumerState<FosterPortalRouteGuard> {
   var _redirected = false;
 
   @override
@@ -33,6 +34,7 @@ class _FosterPortalRouteGuardState extends ConsumerState<FosterPortalRouteGuard>
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
 
+    // Single redirect to [fallbackPath]; [_redirected] prevents loops if the guard rebuilds.
     if (isFosterPortal && !_redirected) {
       _redirected = true;
       WidgetsBinding.instance.addPostFrameCallback((_) {

@@ -39,8 +39,7 @@ void main() {
       routes: [
         GoRoute(
           path: '/o/home',
-          builder: (context, state) =>
-              const Scaffold(body: Text('org home')),
+          builder: (context, state) => const Scaffold(body: Text('org home')),
         ),
         GoRoute(
           path: '/o/invite',
@@ -75,8 +74,7 @@ void main() {
       routes: [
         GoRoute(
           path: '/o/home',
-          builder: (context, state) =>
-              const Scaffold(body: Text('org home')),
+          builder: (context, state) => const Scaffold(body: Text('org home')),
         ),
         GoRoute(
           path: '/o/invite',
