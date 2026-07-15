@@ -12,8 +12,12 @@ OUT="${ROOT}/.ci-uat-ssh-remote.sh"
   echo 'set -euo pipefail'
   cat "$LIB"
   echo
-  # Deploy body without shebang, set -euo, or local lib source (lib is inlined above).
-  awk 'NR>4 { print }' "$DEPLOY"
+  # Deploy body starts at HOME= (lib is inlined above; never source on remote).
+  awk '/^HOME=.*uat_nm_home_dir/,0' "$DEPLOY"
 } >"$OUT"
 chmod +x "$OUT"
+if grep -qE '^source .*(assert-node-modules|uat_nm)' "$OUT"; then
+  echo "::error::${OUT} still sources external lib — bundle is broken for remote SSH" >&2
+  exit 1
+fi
 echo "Wrote ${OUT} ($(wc -l <"$OUT") lines)"
