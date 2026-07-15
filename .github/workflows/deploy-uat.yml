@@ -378,6 +378,7 @@ jobs:
           steps.uat_ssh_config.outputs.configured == 'true' &&
           steps.whitelist_verify.outcome == 'success' &&
           steps.uat_ssh.outcome == 'success'
+        continue-on-error: true
         env:
           UAT_SSH_HOST: ${{ secrets.UAT_SSH_HOST }}
           UAT_SSH_USER: ${{ secrets.UAT_SSH_USER }}
