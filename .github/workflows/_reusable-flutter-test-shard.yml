@@ -23,7 +23,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 25
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Begin job timing
         run: echo "JOB_START_EPOCH=$(date +%s)" >> "$GITHUB_ENV"
@@ -34,7 +34,7 @@ jobs:
           flutter-version: ${{ env.FLUTTER_VERSION }}
 
       - name: Cache Flutter dependencies
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: |
             ~/.pub-cache
@@ -48,7 +48,7 @@ jobs:
         run: flutter pub get
 
       - name: Download Flutter prep artifact
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v6
         with:
           name: flutter-prep-${{ github.sha }}
 
@@ -74,7 +74,7 @@ jobs:
           fi
 
       - name: Upload shard coverage
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: flutter-coverage-${{ inputs.shard }}
           path: flutter_app/coverage/lcov.info

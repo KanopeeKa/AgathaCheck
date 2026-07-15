@@ -14,13 +14,13 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Begin job timing
         run: echo "JOB_START_EPOCH=$(date +%s)" >> "$GITHUB_ENV"
 
       - name: Download shard coverage artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v6
         with:
           pattern: flutter-coverage-*
           path: _coverage_shards
@@ -34,7 +34,7 @@ jobs:
         run: bash scripts/merge_flutter_coverage.sh ../_coverage_shards
 
       - name: Upload merged Flutter coverage
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: flutter-coverage
           path: flutter_app/coverage/lcov.info

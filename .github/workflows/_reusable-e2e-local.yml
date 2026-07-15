@@ -29,13 +29,13 @@ jobs:
           --health-retries 10
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Begin job timing
         run: echo "JOB_START_EPOCH=$(date +%s)" >> "$GITHUB_ENV"
 
       - name: Set up Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version: 22
           cache: npm
@@ -100,7 +100,7 @@ jobs:
 
       - name: Upload Playwright report
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: playwright-report-localhost
           path: e2e/playwright-report/

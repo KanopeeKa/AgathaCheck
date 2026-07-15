@@ -35,7 +35,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           sparse-checkout: |
             scripts/ci/assert-git-ref-exists.sh
@@ -67,7 +67,7 @@ jobs:
     timeout-minutes: 45
     environment: UAT
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           ref: ${{ env.DEPLOY_REF }}
 
@@ -119,7 +119,7 @@ jobs:
             "source_value=${{ github.event_name == 'workflow_dispatch' && format('{0}', inputs.run_clean) || vars.UAT_FLUTTER_CLEAN || 'unset' }}"
 
       - name: Download built web artifact
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v6
         with:
           name: ${{ needs.build-web.outputs.artifact_name }}
           path: .ci-web-download
@@ -132,7 +132,7 @@ jobs:
             --dest flutter_app/build/web
 
       - name: Deploy frontend to uat.agathatrack.com
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        uses: SamKirkland/FTP-Deploy-Action@v4.4.0
         with:
           server: ${{ secrets.UAT_FTP_SERVER }}
           username: ${{ secrets.UAT_FTP_USERNAME }}
@@ -150,7 +150,7 @@ jobs:
         run: bash scripts/ci/stage-backend-deploy.sh --target uat
 
       - name: Deploy backend to uat.agathatrack.com/backend/
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        uses: SamKirkland/FTP-Deploy-Action@v4.4.0
         with:
           server: ${{ secrets.UAT_FTP_SERVER }}
           username: ${{ secrets.UAT_FTP_USERNAME }}
@@ -459,7 +459,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Begin job timing
         run: echo "JOB_START_EPOCH=$(date +%s)" >> "$GITHUB_ENV"
@@ -491,13 +491,13 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Begin job timing
         run: echo "JOB_START_EPOCH=$(date +%s)" >> "$GITHUB_ENV"
 
       - name: Set up Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version: 22
           cache: npm
@@ -520,7 +520,7 @@ jobs:
 
       - name: Upload Playwright report
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: playwright-report-uat-smoke
           path: e2e/playwright-report/
@@ -552,7 +552,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Verify all UAT gates passed
         env:
@@ -579,9 +579,9 @@ jobs:
     permissions:
       issues: write
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
           node-version: '22'
 
