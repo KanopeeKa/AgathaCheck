@@ -43,6 +43,7 @@ jobs:
 
       - name: Verify release branch exists on origin
         env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           REQUIRED_REF_PREFIX: release/uat-
         run: bash scripts/ci/assert-git-ref-exists.sh "${{ env.DEPLOY_REF }}" "heads/release/uat-"
 
