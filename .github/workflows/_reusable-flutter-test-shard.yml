@@ -46,6 +46,15 @@ jobs:
         working-directory: flutter_app
         run: flutter pub get
 
+      - name: Generate code (build_runner)
+        working-directory: flutter_app
+        run: |
+          if grep -q "build_runner" pubspec.yaml; then
+            dart run build_runner build --delete-conflicting-outputs
+          else
+            echo "build_runner not configured; skipping codegen."
+          fi
+
       - name: Sync legal documents into app assets
         run: dart run scripts/sync_legal_documents.dart
 
