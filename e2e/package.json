@@ -5,6 +5,7 @@
   "description": "Playwright BDD/E2E tests for Agatha Track (Flutter web + Node API)",
   "scripts": {
     "test": "playwright test",
+    "test:shard": "playwright test --shard",
     "test:smoke": "playwright test --grep @smoke",
     "test:ui": "playwright test --ui",
     "test:headed": "playwright test --headed",

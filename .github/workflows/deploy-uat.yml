@@ -579,10 +579,19 @@ jobs:
             "run_id=${{ github.run_id }}" \
             "duration_sec=${dur}"
 
-  # Full localhost E2E — prod-readiness gate; runs in parallel with deploy.
+  # Full localhost E2E — prod-readiness gate; shards run in parallel after web build.
   uat-e2e-full:
     name: UAT full E2E (localhost)
+    needs: build-web
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [1, 2, 3, 4]
     uses: ./.github/workflows/_reusable-e2e-local.yml
+    with:
+      shard_index: ${{ matrix.shard }}
+      shard_total: 4
+      web_artifact_name: ${{ needs.build-web.outputs.artifact_name }}
 
   # Aggregate status for GitHub Environment protection on PROD (required check).
   prod-ready:
