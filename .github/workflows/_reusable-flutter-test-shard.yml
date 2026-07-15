@@ -1,0 +1,95 @@
+# Run one Flutter domain test shard with per-shard coverage output.
+# Caller: ci.yml jobs flutter-test-{pet,health,org,rest}.
+# Canonical codegen + legal sync run in flutter-analyze; this job restores that prep artifact.
+name: Reusable Flutter test shard
+
+on:
+  workflow_call:
+    inputs:
+      shard:
+        description: Domain shard name (pet, health, org, or rest)
+        type: string
+        required: true
+
+env:
+  FLUTTER_VERSION: '3.32.0'
+
+permissions:
+  contents: read
+
+jobs:
+  test-shard:
+    name: Flutter tests (${{ inputs.shard }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Begin job timing
+        run: echo "JOB_START_EPOCH=$(date +%s)" >> "$GITHUB_ENV"
+
+      - name: Set up Flutter
+        uses: ./.github/actions/setup-flutter
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+
+      - name: Cache Flutter dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.pub-cache
+            flutter_app/.dart_tool
+          key: flutter-${{ runner.os }}-${{ env.FLUTTER_VERSION }}-${{ hashFiles('flutter_app/pubspec.lock') }}
+          restore-keys: |
+            flutter-${{ runner.os }}-${{ env.FLUTTER_VERSION }}-
+
+      - name: Fetch Flutter dependencies
+        working-directory: flutter_app
+        run: flutter pub get
+
+      - name: Download Flutter prep artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: flutter-prep-${{ github.sha }}
+
+      - name: Verify Flutter prep download
+        run: bash scripts/ci/verify-flutter-prep-download.sh flutter-prep-artifact.tar.gz "${{ github.sha }}"
+
+      - name: Restore Flutter prep state
+        run: bash scripts/ci/restore-flutter-prep-artifact.sh flutter-prep-artifact.tar.gz
+
+      - name: Install lcov
+        run: sudo apt-get update && sudo apt-get install -y lcov
+
+      - name: Run shard tests with coverage
+        timeout-minutes: 20
+        working-directory: flutter_app
+        run: bash scripts/run_tests_ci_shard.sh "${{ inputs.shard }}"
+
+      - name: Stage shard coverage artifact
+        working-directory: flutter_app
+        run: |
+          if [[ -f "coverage/lcov.${{ inputs.shard }}.info" ]]; then
+            cp "coverage/lcov.${{ inputs.shard }}.info" "coverage/lcov.info"
+          fi
+
+      - name: Upload shard coverage
+        uses: actions/upload-artifact@v4
+        with:
+          name: flutter-coverage-${{ inputs.shard }}
+          path: flutter_app/coverage/lcov.info
+          if-no-files-found: error
+
+      - name: Write shard job summary
+        if: always()
+        run: |
+          end=$(date +%s)
+          start="${JOB_START_EPOCH:-$end}"
+          dur=$((end - start))
+          bash scripts/ci/append-summary.sh "Flutter test shard job" \
+            "workflow=flutter-test-shard" \
+            "job=test-shard" \
+            "shard=${{ inputs.shard }}" \
+            "sha=${{ github.sha }}" \
+            "run_id=${{ github.run_id }}" \
+            "duration_sec=${dur}"

@@ -71,7 +71,7 @@ Use the PR template checklist. In summary:
 
 **Gate contract (blocking vs advisory, UAT/PROD rules):** [docs/ci-cd-gates.md](docs/ci-cd-gates.md)
 
-- Flutter analyze + unit/widget tests + web build
+- Flutter analyze, format, and parallel domain test shards (`pet`, `health`, `org`, `rest`) + merged domain coverage
 - Flutter integration test (blocking)
 - Node Jest tests
 - `dart analyze lib` on `server/`
