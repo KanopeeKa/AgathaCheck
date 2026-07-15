@@ -45,7 +45,7 @@ test.describe('Organisation pet management', () => {
     await form.createPet('Bella', 'Dog');
 
     await detail.expectLoaded(ORG_NAME);
-    await page.getByText('Bella', { exact: true }).first().waitFor({ timeout: 30_000 });
+    await detail.expectPetVisible('Bella');
 
     const pets = await getAllPets(baseURL, alice.accessToken);
     const bella = pets.find((p) => p.name === 'Bella');

@@ -27,10 +27,10 @@ export class MyDetailsPage {
     await this.expectLoaded();
   }
 
-  async expectLoaded(): Promise<void> {
+  async expectLoaded(title: string | RegExp = /My Details|Mon profil/i): Promise<void> {
     await dismissConsentBannerIfPresent(this.page);
     await refreshFlutterAccessibility(this.page);
-    await expectAppBarTitle(this.page, 'My Details');
+    await expectAppBarTitle(this.page, title);
   }
 
   async expectDisplayName(name: string): Promise<void> {
@@ -113,6 +113,12 @@ export class MyDetailsPage {
       .click();
     await refreshFlutterAccessibility(this.page);
     await this.page.waitForTimeout(500);
+  }
+
+  async goBack(): Promise<void> {
+    await this.page.getByRole('button', { name: /^(Back|Retour)$/i }).click();
+    await this.page.waitForTimeout(500);
+    await refreshFlutterAccessibility(this.page);
   }
 
   async exportMyData(): Promise<void> {

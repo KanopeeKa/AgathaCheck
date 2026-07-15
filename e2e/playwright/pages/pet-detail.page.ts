@@ -1,5 +1,5 @@
 import type { Page } from '@playwright/test';
-import { dismissConsentBannerIfPresent } from '../support/flutter';
+import { dismissConsentBannerIfPresent, escapeRegExp } from '../support/flutter';
 
 /**
  * Pet detail screen (`/pet/:petId`).
@@ -25,7 +25,13 @@ export class PetDetailPage {
   }
 
   async expectBreed(breed: string): Promise<void> {
-    await this.page.getByText(breed, { exact: false }).first().waitFor({ timeout: 15_000 });
+    const pattern = new RegExp(escapeRegExp(breed), 'i');
+    await this.page
+      .getByRole('group', { name: pattern })
+      .or(this.page.getByRole('button', { name: pattern }))
+      .or(this.page.getByText(pattern))
+      .first()
+      .waitFor({ timeout: 15_000 });
   }
 
   async openEdit(): Promise<void> {

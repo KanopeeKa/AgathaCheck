@@ -580,19 +580,19 @@ jobs:
             "run_id=${{ github.run_id }}" \
             "duration_sec=${dur}"
 
-  # Full localhost E2E — prod-readiness gate; six Playwright shards after build-web.
+  # Full localhost E2E — prod-readiness gate; ten file-balanced shards after build-web.
   uat-e2e-full:
     name: UAT full E2E (localhost)
     needs: build-web
     strategy:
       fail-fast: false
-      # Shard count: 6 — update matrix.shard and shard_total below together (and mirror in e2e.yml).
+      # Shard count: 10 — update matrix.shard, shard_total, and e2e/scripts/shard-files.mjs together.
       matrix:
-        shard: [1, 2, 3, 4, 5, 6]
+        shard: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
     uses: ./.github/workflows/_reusable-e2e-local.yml
     with:
       shard_index: ${{ matrix.shard }}
-      shard_total: 6
+      shard_total: 10
       web_artifact_name: ${{ needs.build-web.outputs.artifact_name }}
 
   # Aggregate status for GitHub Environment protection on PROD (required check).

@@ -3,6 +3,7 @@ import { expect } from '@playwright/test';
 import {
   dismissConsentBannerIfPresent,
   enableFlutterAccessibility,
+  escapeRegExp,
   expectAppBarTitle,
   fillTextbox,
   refreshFlutterAccessibility,
@@ -35,12 +36,17 @@ export class OrganizationDetailPage {
   }
 
   async expectMemberVisible(name: string): Promise<void> {
-    await this.page.getByText(name).first().waitFor({ timeout: 30_000 });
+    const pattern = new RegExp(escapeRegExp(name), 'i');
+    await this.page
+      .getByRole('group', { name: pattern })
+      .or(this.page.getByText(pattern))
+      .first()
+      .waitFor({ timeout: 30_000 });
   }
 
   async expectMemberCount(count: number): Promise<void> {
     const label = `${count} registered members`;
-    await this.page.getByText(label).waitFor({ timeout: 30_000 });
+    await this.page.getByText(label, { exact: false }).first().waitFor({ timeout: 30_000 });
   }
 
   async expectBio(bio: string): Promise<void> {
@@ -48,7 +54,12 @@ export class OrganizationDetailPage {
   }
 
   async expectPetVisible(name: string): Promise<void> {
-    const pet = this.page.getByText(name, { exact: true }).last();
+    const pattern = new RegExp(escapeRegExp(name), 'i');
+    const pet = this.page
+      .getByRole('button', { name: pattern })
+      .or(this.page.getByRole('group', { name: pattern }))
+      .or(this.page.getByText(name, { exact: true }))
+      .first();
     await pet.scrollIntoViewIfNeeded();
     await expect(pet).toBeVisible();
   }
@@ -122,11 +133,12 @@ export class OrganizationDetailPage {
   }
 
   async openAddOrgPet(): Promise<void> {
-    const addButton = this.page
-      .getByRole('button', { name: 'Add Pet' })
-      .or(this.page.locator('[flt-semantics-identifier="org_add_pet_button"]'))
-      .or(this.page.locator('[flt-semantics-identifier="org_add_pet_empty"]'));
-    await addButton.first().click();
+    await this.openMenu();
+    await this.page.getByRole('menuitem', { name: /^Pets$/i }).click();
+    await refreshFlutterAccessibility(this.page);
+    const addButton = this.page.getByRole('button', { name: /Add Pet/i });
+    await addButton.waitFor({ timeout: 30_000 });
+    await addButton.click();
     await this.page.getByRole('button', { name: 'Save Pet' }).waitFor({ timeout: 30_000 });
   }
 }

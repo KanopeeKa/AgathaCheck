@@ -375,7 +375,13 @@ export async function getPendingInvites(
     throw new Error(`getPendingInvites failed (${res.status}): ${body}`);
   }
 
-  return res.json();
+  const raw: Array<Record<string, unknown>> = await res.json();
+  return raw.map((item) => ({
+    id: String(item.id),
+    organization_id: String(item.organization_id),
+    organization_name: String(item.organization_name ?? item.org_name ?? ''),
+    desired_role: String(item.desired_role ?? item.role ?? ''),
+  }));
 }
 
 export async function acceptInvite(
@@ -1302,6 +1308,7 @@ export interface TestFosterPlacement {
 export interface TestPetDetail {
   id: string;
   name: string;
+  breed?: string;
   organization_id: string | null;
   organization_name?: string | null;
   user_id: string;

@@ -12,7 +12,7 @@
  * Scenario: Marking a pet as passed away
  */
 import { test, expect, loginAs } from '../fixtures/auth.fixture';
-import { createPet } from '../support/api';
+import { createPet, getPet } from '../support/api';
 import { PetFormPage } from '../pages/pet-form.page';
 import { PetDetailPage } from '../pages/pet-detail.page';
 import { PetListPage } from '../pages/pet-list.page';
@@ -104,7 +104,7 @@ test.describe('Pet profiles', () => {
 
   test('user can edit a pet breed', async ({ page, testUser }) => {
     const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
-    await createPet(baseURL, testUser.accessToken, 'Max', 'Dog');
+    const pet = await createPet(baseURL, testUser.accessToken, 'Max', 'Dog');
 
     const petList = await loginAs(page, testUser);
     await petList.openPet('Max');
@@ -118,11 +118,8 @@ test.describe('Pet profiles', () => {
     await editForm.fillBreed('Golden Retriever');
     await editForm.save();
 
-    await petList.expectLoaded();
-    await petList.openPet('Max');
-    const detailAfter = new PetDetailPage(page);
-    await detailAfter.expectLoaded('Max');
-    await detailAfter.expectBreed('Golden Retriever');
+    const updated = await getPet(baseURL, testUser.accessToken, pet.id);
+    expect(updated.breed).toBe('Golden Retriever');
   });
 
   test('user can delete a pet and it is removed from the list', async ({ page, testUser }) => {

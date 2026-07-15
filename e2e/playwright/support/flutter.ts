@@ -120,8 +120,8 @@ async function fieldHasValue(
   try {
     return (await field.inputValue({ timeout: 2_000 })) === value;
   } catch {
-    // Flutter web semantics textboxes often hide inputValue().
-    return true;
+    // Flutter web semantics textboxes often hide inputValue(); caller should keep typing.
+    return false;
   }
 }
 

@@ -1,5 +1,10 @@
 import type { Page } from '@playwright/test';
-import { dismissConsentBannerIfPresent, enableFlutterAccessibility, fillLabelledField, fillTextbox, refreshFlutterAccessibility, selectDropdownOption } from '../support/flutter';
+import {
+  dismissConsentBannerIfPresent,
+  enableFlutterAccessibility,
+  refreshFlutterAccessibility,
+  selectDropdownOption,
+} from '../support/flutter';
 
 /**
  * Add / edit pet form (`/add`, `/edit/:id`).
@@ -17,7 +22,24 @@ export class PetFormPage {
   }
 
   async fillName(name: string): Promise<void> {
-    await fillLabelledField(this.page, 'Name', name);
+    await this.typeIntoPetField(/^Name/, name);
+  }
+
+  async fillBreed(breed: string): Promise<void> {
+    await this.typeIntoPetField(/^Breed/, breed);
+  }
+
+  /** Type into a Flutter web pet form textbox; fill() alone does not fire onChanged. */
+  private async typeIntoPetField(name: string | RegExp, value: string): Promise<void> {
+    const field = this.page.getByRole('textbox', { name });
+    await field.waitFor({ state: 'visible' });
+    await field.click();
+    await this.page.waitForTimeout(200);
+    await field.press('Control+a');
+    await this.page.keyboard.press('Backspace');
+    await this.page.keyboard.type(value, { delay: 45 });
+    await field.press('Tab');
+    await this.page.waitForTimeout(200);
   }
 
   async selectSpecies(species: string): Promise<void> {
@@ -25,37 +47,37 @@ export class PetFormPage {
     await refreshFlutterAccessibility(this.page);
   }
 
-  async fillBreed(breed: string): Promise<void> {
-    await fillTextbox(this.page, 'Breed', breed);
-  }
-
   async save(): Promise<void> {
     await refreshFlutterAccessibility(this.page);
     const saveButton = this.page.getByRole('button', { name: /Save Pet|Update Pet/ });
     await saveButton.click();
     await this.page
+      .getByRole('button', { name: /Save Pet|Update Pet/ })
+      .waitFor({ state: 'hidden', timeout: 30_000 });
+    await this.page
       .getByRole('button', { name: 'To Do' })
-      .or(this.page.getByRole('button', { name: 'Add Pet' }))
+      .or(this.page.getByRole('button', { name: /Add Pet/i }))
       .or(this.page.getByRole('button', { name: /Pet:/i }))
       .or(this.page.getByRole('group', { name: /Pet:/i }))
       .or(this.page.getByText('No pets yet'))
+      .or(this.page.getByRole('button', { name: 'Edit Organization' }))
       .first()
       .waitFor({ timeout: 30_000 });
   }
 
   async createPet(name: string, species: string): Promise<void> {
     await this.expectLoaded();
+    await this.fillName(name);
     await this.selectSpecies(species);
     await this.page.waitForTimeout(300);
-    await this.fillName(name);
     await this.save();
   }
 
   async createPetWithBreed(name: string, species: string, breed: string): Promise<void> {
     await this.expectLoaded();
+    await this.fillName(name);
     await this.selectSpecies(species);
     await this.page.waitForTimeout(300);
-    await this.fillName(name);
     await this.fillBreed(breed);
     await this.save();
   }
