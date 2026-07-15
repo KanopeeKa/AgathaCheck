@@ -53,6 +53,22 @@ uat_nm_write_state() {
   } >"$state_file"
 }
 
+# Append deploy execution proofs (sentinels in state file for runner collection).
+uat_nm_finalize_deploy_proofs() {
+  local state_file restart_file restart_epoch
+  state_file="$(uat_nm_state_file)"
+  restart_file="${UAT_APP_DIR:-$(uat_nm_home_dir)/uat.agathatrack.com/backend}/tmp/restart.txt"
+  restart_epoch="0"
+  if [[ -f "$restart_file" ]]; then
+    restart_epoch="$(stat -c %Y "$restart_file" 2>/dev/null || stat -f %m "$restart_file" 2>/dev/null || echo 0)"
+  fi
+  {
+    echo "ssh_deploy_begin=true"
+    echo "ssh_deploy_end=true"
+    echo "restart_txt_epoch=${restart_epoch}"
+  } >>"$state_file"
+}
+
 # Sets UAT_NM_KIND and returns exit code (0, 10, 11, 12).
 uat_nm_classify() {
   local home_dir appdir nm target

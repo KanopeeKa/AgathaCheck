@@ -10,6 +10,8 @@ echo "==> Governance gates"
 node scripts/check_file_size.js
 node e2e/scripts/check_bdd_coverage.js
 node scripts/check_bdd_priority_tags.js
+bash scripts/ci/check-uat-ssh-action-pin.sh
+bash scripts/ci/shellcheck-uat-deploy-scripts.sh
 
 echo "==> Server (audit + Jest)"
 (

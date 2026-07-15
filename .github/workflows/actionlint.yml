@@ -22,3 +22,9 @@ jobs:
 
       - name: Run actionlint
         run: ./actionlint -color
+
+      - name: Install shellcheck
+        run: sudo apt-get update && sudo apt-get install -y shellcheck
+
+      - name: Shellcheck UAT deploy CI scripts
+        run: bash scripts/ci/shellcheck-uat-deploy-scripts.sh

@@ -10,7 +10,8 @@ source "$(cd "$(dirname "$0")" && pwd)/assert-node-modules-symlink.lib.sh"
 
 HOME="$(uat_nm_home_dir)"
 export HOME
-export UAT_DEPLOY_STATE_FILE="$(uat_nm_state_file)"
+UAT_DEPLOY_STATE_FILE="$(uat_nm_state_file)"
+export UAT_DEPLOY_STATE_FILE
 
 SITE_ROOT="${UAT_SITE_ROOT:-${HOME}/uat.agathatrack.com}"
 APPDIR="${SITE_ROOT}/backend"
@@ -21,6 +22,7 @@ PKG_CHANGED="${PKG_CHANGED:-false}"
 export UAT_SITE_ROOT
 export UAT_APP_DIR="$APPDIR"
 
+echo "UAT_SSH_DEPLOY_BEGIN"
 echo "=== UAT SSH backend deploy ==="
 echo "site_root=${SITE_ROOT}"
 echo "app_dir=${APPDIR}"
@@ -64,6 +66,8 @@ echo "Passenger restart triggered via tmp/restart.txt"
 echo "=== node_modules invariant (post-restart) ==="
 uat_nm_assert post "$POST_RESTART_RETRIES" "$POST_RESTART_SLEEP_SEC"
 
+uat_nm_finalize_deploy_proofs
+echo "UAT_SSH_DEPLOY_END"
 echo "=== UAT SSH backend deploy complete ==="
 echo "deploy_state_file=${UAT_DEPLOY_STATE_FILE}"
 cat "${UAT_DEPLOY_STATE_FILE}" 2>/dev/null || true
