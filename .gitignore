@@ -72,4 +72,5 @@ flutter_app/coverage/
 .uat-backend-deploy/
 .prod-backend-deploy/
 .backend-deploy-staging/
+.ci-uat-ssh-remote.sh
 actionlint

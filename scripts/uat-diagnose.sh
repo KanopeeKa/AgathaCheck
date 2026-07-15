@@ -21,11 +21,12 @@ if [ -L "$APPDIR/node_modules" ]; then
   echo "SYMLINK -> $target"
   [ -d "$target" ] && echo "Target exists (OK)" || echo "TARGET MISSING — re-run cPanel Run NPM Install"
 elif [ -d "$APPDIR/node_modules" ]; then
-  echo "REAL DIR (broken state)"
-  echo "Fix: rm -rf $APPDIR/node_modules && cPanel -> Node.js Apps -> Run NPM Install"
+  echo "REAL DIR (broken state — exit 11 in CI)"
+  echo "Fix: rm -rf $APPDIR/node_modules && cPanel -> Setup Node.js App -> Run NPM Install"
+  echo "See docs/uat-backend-node-modules-runbook.md"
   echo "Count: $(find "$APPDIR/node_modules" -maxdepth 1 -mindepth 1 | wc -l) top-level packages"
 else
-  echo "MISSING — run cPanel -> Node.js Apps -> Run NPM Install"
+  echo "MISSING (exit 10 in CI) — cPanel -> Setup Node.js App -> Run NPM Install"
 fi
 
 sep "nodevenv directory"

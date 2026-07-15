@@ -115,11 +115,16 @@ jobs:
           password: ${{ secrets.UAT_FTP_PASSWORD }}
           server-dir: ./backend/
           local-dir: ${{ steps.stage_backend.outputs.staging_dir }}/
+          state-name: ./backend/.ftp-deploy-sync-state.json
           exclude: |
             **/.git*
             **/.git*/**
+            node_modules
+            **/node_modules
             **/node_modules/**
             node_modules/**
+            .env
+            **/.env
             **/test/**
             **/.dart_tool/**
             **/coverage/**
@@ -150,15 +155,24 @@ jobs:
         id: pkg_changed
         run: |
           # Compare against origin/main to detect package.json changes in this release branch.
-          # Falls back to "false" (restart-only) on any error — safe default since npm install
-          # is only needed when dependencies actually changed.
           git fetch --depth=1 origin main 2>/dev/null || true
           if git diff --name-only origin/main...HEAD 2>/dev/null | grep -q '^server/package'; then
             echo "changed=true" >> "$GITHUB_OUTPUT"
-            echo "::notice::server/package.json changed — cPanel npm install will run after restart."
+            echo "::warning title=Dependencies changed::server/package.json or package-lock.json changed — manual cPanel Run NPM Install required after deploy."
           else
             echo "changed=false" >> "$GITHUB_OUTPUT"
           fi
+
+      - name: Record package.json change banner
+        if: steps.pkg_changed.outputs.changed == 'true'
+        run: |
+          {
+            echo "## Dependencies changed"
+            echo
+            echo "This deploy includes \`server/package.json\` or \`server/package-lock.json\` changes."
+            echo "**Manual action required:** cPanel → **Setup Node.js App** → **Run NPM Install** → **Restart**"
+            echo "(Automated CloudLinux install-modules is Phase 3 — not enabled yet.)"
+          } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Restart UAT Node.js app via cPanel UAPI (no SSH)
         id: cpanel_restart
@@ -169,9 +183,8 @@ jobs:
           CPANEL_USER: ${{ secrets.UAT_SSH_USER }}
           CPANEL_TOKEN: ${{ secrets.UAT_CPANEL_API_TOKEN }}
           APP_DOMAIN: uat.agathatrack.com
-          # Only run npm install via nodevenv when package.json actually changed.
-          # Never run bare `npm install` — it would create node_modules/ in /backend.
-          NPM_INSTALL: ${{ steps.pkg_changed.outputs.changed }}
+          # Never bare npm on UAT — o2switch uses nodevenv symlinks (see docs/uat-backend-node-modules-runbook.md).
+          NPM_INSTALL: false
         run: bash scripts/cpanel-restart-app.sh
 
       - name: cPanel UAPI restart skipped or failed — manual reminder
@@ -199,8 +212,8 @@ jobs:
       #   3. GitHub → Settings → Environments → UAT → Environment variables:
       #      UAT_SSH_ENABLED = true
       #
-      # SSH adds `npm ci --omit=dev` capability but is not required for a basic restart
-      # now that cPanel UAPI restart (above) handles the common case.
+      # SSH verifies node_modules symlink invariants (pre/post restart) and restarts Passenger.
+      # Connectivity/whitelist steps may soft-fail; invariant failure fails the deploy job.
       - name: Verify UAT SSH + cPanel API secrets
         id: uat_ssh_config
         if: vars.UAT_SSH_ENABLED == 'true'
@@ -287,84 +300,47 @@ jobs:
           steps.whitelist_verify.outcome == 'success'
         run: sleep 30
 
-      - name: Install dependencies & restart Node.js app (UAT SSH)
+      - name: Prepare UAT SSH remote bundle
+        if: >-
+          vars.UAT_SSH_ENABLED == 'true' &&
+          steps.uat_ssh_config.outputs.configured == 'true' &&
+          steps.whitelist_verify.outcome == 'success'
+        run: bash scripts/ci/prepare-uat-ssh-remote.sh
+
+      - name: UAT backend deploy via SSH
         id: uat_ssh
         if: >-
           vars.UAT_SSH_ENABLED == 'true' &&
           steps.uat_ssh_config.outputs.configured == 'true' &&
           steps.whitelist_verify.outcome == 'success'
-        continue-on-error: true
         uses: appleboy/ssh-action@v1.0.3
+        env:
+          PKG_CHANGED: ${{ steps.pkg_changed.outputs.changed }}
+          POST_RESTART_RETRIES: 3
+          POST_RESTART_SLEEP_SEC: 10
         with:
           host: ${{ secrets.UAT_SSH_HOST }}
           username: ${{ secrets.UAT_SSH_USER }}
           key: ${{ secrets.UAT_SSH_PRIVATE_KEY }}
           passphrase: ${{ secrets.UAT_SSH_PASSPHRASE }}
           port: ${{ secrets.UAT_SSH_PORT || 22 }}
-          timeout: 120s
-          script: |
-            set -e
-            ROOTDIR="$HOME/uat.agathatrack.com"
-            APPDIR="${ROOTDIR}/backend"
-            NODEVENV_BASE="$HOME/nodevenv/uat.agathatrack.com/backend"
-            cd "$APPDIR"
+          timeout: 180s
+          script_path: .ci-uat-ssh-remote.sh
+          envs: PKG_CHANGED,POST_RESTART_RETRIES,POST_RESTART_SLEEP_SEC
 
-            echo "=== SPA .htaccess at domain root ==="
-            if [ -f "${ROOTDIR}/htaccess.spa" ]; then
-              install -m 644 "${ROOTDIR}/htaccess.spa" "${ROOTDIR}/.htaccess"
-              echo "Installed ${ROOTDIR}/.htaccess from htaccess.spa"
-            elif [ -f "${ROOTDIR}/.htaccess" ]; then
-              echo "OK: ${ROOTDIR}/.htaccess already present"
-            else
-              echo "WARNING: no htaccess.spa or .htaccess at domain root — Flutter deep links may break"
-            fi
-
-            echo "=== Passenger .htaccess in backend ==="
-            if [ -f .htaccess ] && grep -qE 'Passenger(AppRoot|Enabled|BaseURI)' .htaccess 2>/dev/null; then
-              echo "OK: backend/.htaccess contains Passenger directives"
-            else
-              echo "ERROR: backend/.htaccess missing or not a Passenger config (Apache is serving a directory listing)."
-              echo "Action: cPanel -> Setup Node.js App -> app root .../backend, startup bin/start.js -> Save -> Restart"
-              echo "Do not upload backend/.htaccess via FTP — cPanel generates it."
-              exit 1
-            fi
-
-            echo "=== node_modules state ==="
-            if [ -L node_modules ]; then
-              echo "OK: node_modules is a symlink -> $(readlink -f node_modules)"
-            elif [ -d node_modules ]; then
-              echo "FIXING: real node_modules directory found — removing and relinking nodevenv..."
-              rm -rf node_modules
-              # o2switch nodevenv: ~/nodevenv/<domain>/<app-path>/<node-version>/lib/node_modules
-              linked=false
-              for candidate in \
-                  "${NODEVENV_BASE}/22/lib/node_modules" \
-                  "${NODEVENV_BASE}/22/node_modules" \
-                  "${NODEVENV_BASE}/20/lib/node_modules" \
-                  "${NODEVENV_BASE}/20/node_modules"; do
-                if [ -d "$candidate" ]; then
-                  ln -sf "$candidate" node_modules
-                  echo "Linked: node_modules -> $candidate"
-                  linked=true
-                  break
-                fi
-              done
-              if [ "$linked" = false ]; then
-                echo "WARNING: nodevenv dir not found under ${NODEVENV_BASE}"
-                echo "Action needed: cPanel -> Node.js Apps -> Run NPM Install"
-              fi
-            else
-              echo "WARNING: node_modules does not exist — app will fail to start"
-              echo "Action needed: cPanel -> Node.js Apps -> Run NPM Install"
-            fi
-
-            echo "=== env check ==="
-            [ -f .env ] && echo ".env present" || echo "WARNING: .env missing — check cPanel Node.js App env vars"
-
-            echo "=== triggering Passenger restart ==="
-            mkdir -p tmp
-            touch tmp/restart.txt
-            echo "Passenger restart triggered via tmp/restart.txt"
+      - name: Collect UAT deploy state
+        id: uat_deploy_state
+        if: >-
+          vars.UAT_SSH_ENABLED == 'true' &&
+          steps.uat_ssh_config.outputs.configured == 'true' &&
+          steps.whitelist_verify.outcome == 'success' &&
+          steps.uat_ssh.outcome == 'success'
+        env:
+          UAT_SSH_HOST: ${{ secrets.UAT_SSH_HOST }}
+          UAT_SSH_USER: ${{ secrets.UAT_SSH_USER }}
+          UAT_SSH_PRIVATE_KEY: ${{ secrets.UAT_SSH_PRIVATE_KEY }}
+          UAT_SSH_PORT: ${{ secrets.UAT_SSH_PORT || 22 }}
+        run: bash scripts/ci/uat-collect-deploy-state.sh
 
       - name: o2switch SSH whitelist — cleanup runner IP
         if: >-
@@ -411,6 +387,14 @@ jobs:
             "artifact=${{ needs.build-web.outputs.artifact_name }}" \
             "resolved_run_clean=${{ needs.build-web.outputs.resolved_run_clean }}" \
             "run_clean_source=${{ github.event_name == 'workflow_dispatch' && 'workflow_dispatch_input' || 'repo_variable' }}" \
+            "package_json_changed=${{ steps.pkg_changed.outputs.changed }}" \
+            "node_modules_kind=${{ steps.uat_deploy_state.outputs.node_modules_kind || 'not_verified' }}" \
+            "node_modules_target=${{ steps.uat_deploy_state.outputs.node_modules_target || 'n/a' }}" \
+            "passenger_htaccess_ok=${{ steps.uat_deploy_state.outputs.passenger_htaccess_ok || 'not_verified' }}" \
+            "server_hostname=${{ steps.uat_deploy_state.outputs.server_hostname || 'n/a' }}" \
+            "node_major=${{ steps.uat_deploy_state.outputs.node_major || 'n/a' }}" \
+            "app_root=${{ steps.uat_deploy_state.outputs.app_root || 'n/a' }}" \
+            "ssh_invariant=${{ steps.uat_ssh.outcome == 'success' && 'passed' || steps.uat_ssh.outcome == 'failure' && 'failed' || 'skipped' }}" \
             "run_id=${{ github.run_id }}" \
             "duration_sec=${dur}"
 
