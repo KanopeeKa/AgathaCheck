@@ -1,5 +1,7 @@
 name: CI
 
+# Caller job ids below map to GitHub required checks as `{job_id} / {reusable job name}`.
+# See docs/ci-cd-gates.md §1 (branch protection table).
 on:
   pull_request:
     branches: [ "main" ]

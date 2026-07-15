@@ -1,4 +1,5 @@
 # Fast localhost stack smoke for pull requests (Postgres + Node startup + health).
+# Caller: ci.yml job id `startup-smoke` → required check `startup-smoke / PR startup smoke`.
 name: Reusable PR startup smoke
 
 on:
