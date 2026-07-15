@@ -157,7 +157,8 @@ jobs:
           password: ${{ secrets.UAT_FTP_PASSWORD }}
           server-dir: ./backend/
           local-dir: ${{ steps.stage_backend.outputs.staging_dir }}/
-          state-name: ./backend/.ftp-deploy-sync-state.json
+          # State file lives inside staging dir (FTP-Deploy joins local-dir + state-name).
+          state-name: .ftp-deploy-sync-state.json
           exclude: |
             **/.git*
             **/.git*/**
