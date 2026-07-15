@@ -1,4 +1,4 @@
-import type { Page } from '@playwright/test';
+import type { Locator, Page } from '@playwright/test';
 import { passHostingWaf } from './waf';
 
 /** Wait until the Flutter web canvas is mounted. */
@@ -44,6 +44,29 @@ export async function refreshFlutterAccessibility(page: Page): Promise<void> {
 /** Escape user text for use inside RegExp. */
 export function escapeRegExp(value: string): string {
   return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+/**
+ * Legacy pet list (`/`) or post-experience-split guardian shell (`/g/home`).
+ * Prefer this over a single "To Do" button after the experience split.
+ */
+export function homeShellLocator(page: Page): Locator {
+  return page
+    .getByRole('button', { name: 'To Do' })
+    .or(page.getByRole('button', { name: 'Add Pet' }))
+    .or(page.getByText('No pets yet'))
+    .or(page.getByRole('button', { name: 'Home' }))
+    .or(page.getByRole('button', { name: 'Events' }));
+}
+
+/** Wait until the user has landed on a home surface after login or signup. */
+export async function expectHomeShellVisible(
+  page: Page,
+  timeout = 60_000,
+): Promise<void> {
+  await dismissConsentBannerIfPresent(page);
+  await refreshFlutterAccessibility(page);
+  await homeShellLocator(page).first().waitFor({ timeout });
 }
 
 /** Flutter MergeSemantics nodes may surface as button or group depending on the widget. */
