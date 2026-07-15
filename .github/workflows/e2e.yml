@@ -30,11 +30,11 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        shard: [1, 2, 3, 4]
+        shard: [1, 2, 3, 4, 5, 6]
     uses: ./.github/workflows/_reusable-e2e-local.yml
     with:
       shard_index: ${{ matrix.shard }}
-      shard_total: 4
+      shard_total: 6
       web_artifact_name: ${{ needs.build-web.outputs.artifact_name }}
 
   # Weekly signal only — does not block merges to main.
