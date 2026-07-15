@@ -93,7 +93,7 @@ npm run report       # open HTML report after a run
 
 ## CI
 
-Shard count for full localhost E2E is **six** (`env.E2E_SHARD_TOTAL` in `deploy-uat.yml` and `e2e.yml`; keep `matrix.shard` in sync).
+Shard count for full localhost E2E is **six** — update `matrix.shard` and `shard_total: 6` together in `deploy-uat.yml` and `e2e.yml`.
 
 | Workflow | Trigger | Role |
 |----------|---------|------|

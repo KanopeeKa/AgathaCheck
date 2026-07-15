@@ -18,10 +18,6 @@ concurrency:
     }}
   cancel-in-progress: ${{ github.event_name == 'schedule' }}
 
-env:
-  # Playwright --shard count; matrix.shard must list 1..E2E_SHARD_TOTAL (keep in sync with deploy-uat.yml).
-  E2E_SHARD_TOTAL: '6'
-
 permissions:
   contents: read
 
@@ -33,12 +29,13 @@ jobs:
     needs: build-web
     strategy:
       fail-fast: false
+      # Shard count: 6 — update matrix.shard and shard_total below together (and mirror in deploy-uat.yml).
       matrix:
         shard: [1, 2, 3, 4, 5, 6]
     uses: ./.github/workflows/_reusable-e2e-local.yml
     with:
       shard_index: ${{ matrix.shard }}
-      shard_total: ${{ fromJSON(env.E2E_SHARD_TOTAL) }}
+      shard_total: 6
       web_artifact_name: ${{ needs.build-web.outputs.artifact_name }}
 
   # Weekly signal only — does not block merges to main.
