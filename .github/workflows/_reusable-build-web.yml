@@ -66,6 +66,7 @@ jobs:
           sha="$(git rev-parse HEAD)"
           {
             echo "sha=${sha}"
+            echo "deploy_sha=${sha}"
             echo "artifact_name=web-build-${sha}"
             echo "resolved_run_clean=${{ inputs.run_clean }}"
           } >> "$GITHUB_OUTPUT"
@@ -97,7 +98,7 @@ jobs:
         if: inputs.use_flutter_prep_artifact
         uses: actions/download-artifact@v4
         with:
-          name: flutter-prep-${{ steps.meta.outputs.deploy_sha }}
+          name: flutter-prep-${{ github.sha }}
 
       - name: Restore Flutter prep state
         if: inputs.use_flutter_prep_artifact
