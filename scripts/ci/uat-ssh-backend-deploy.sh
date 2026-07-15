@@ -7,6 +7,8 @@ set -euo pipefail
 
 # shellcheck source=assert-node-modules-symlink.lib.sh
 source "$(cd "$(dirname "$0")" && pwd)/assert-node-modules-symlink.lib.sh"
+# shellcheck source=uat-htaccess.lib.sh
+source "$(cd "$(dirname "$0")" && pwd)/uat-htaccess.lib.sh"
 
 HOME="$(uat_nm_home_dir)"
 export HOME
@@ -34,23 +36,18 @@ if [[ "$PKG_CHANGED" == "true" ]]; then
 fi
 
 echo "=== SPA .htaccess at domain root ==="
-if [[ -f "${SITE_ROOT}/htaccess.spa" ]]; then
-  install -m 644 "${SITE_ROOT}/htaccess.spa" "${SITE_ROOT}/.htaccess"
-  echo "Installed ${SITE_ROOT}/.htaccess from htaccess.spa"
-elif [[ -f "${SITE_ROOT}/.htaccess" ]]; then
-  echo "OK: ${SITE_ROOT}/.htaccess already present"
-else
-  echo "::warning::no htaccess.spa or .htaccess at domain root — Flutter deep links may break"
-fi
+uat_install_root_htaccess "${SITE_ROOT}"
 
-echo "=== Passenger .htaccess in backend ==="
+echo "=== Passenger .htaccess ==="
+PASSENGER_HTACCESS_FILE="$(uat_find_passenger_htaccess "${SITE_ROOT}" "${APPDIR}")"
 PASSENGER_HTACCESS_OK="false"
-if [[ -f "${APPDIR}/.htaccess" ]] && grep -qE 'Passenger(AppRoot|Enabled|BaseURI)' "${APPDIR}/.htaccess" 2>/dev/null; then
+if [[ -n "$PASSENGER_HTACCESS_FILE" ]]; then
   PASSENGER_HTACCESS_OK="true"
-  echo "OK: backend/.htaccess contains Passenger directives"
+  echo "OK: Passenger config in ${PASSENGER_HTACCESS_FILE}"
 else
-  echo "::error::backend/.htaccess missing or not a Passenger config"
-  echo "Action: cPanel → Setup Node.js App → app root ${APPDIR#"$HOME"/} → startup bin/start.js → Save → Restart"
+  echo "::error::Passenger .htaccess not found at ${SITE_ROOT}/.htaccess or ${APPDIR}/.htaccess"
+  echo "Action: cPanel → Setup Node.js App → app root ${APPDIR#"$HOME"/} → startup bin/start.js → Save (regenerates Passenger block) → Restart"
+  echo "Note: o2switch usually writes Passenger directives at the domain root — never upload .htaccess via FTP."
   exit 1
 fi
 export PASSENGER_HTACCESS_OK
