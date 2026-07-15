@@ -71,6 +71,11 @@ Set repo variable `UAT_FLUTTER_CLEAN=true` on push, or `workflow_dispatch` input
 `run_clean=true`, to restore the pre-experiment path. Manifest + job summaries record
 `run_clean` for duration comparisons.
 
+**Backend FTP staging (Phase 5):** UAT and PROD use `scripts/ci/stage-backend-deploy.sh`
+(`--target uat` → `.uat-backend-deploy/`, `--target prod` → `.prod-backend-deploy/`).
+Excludes `node_modules`, tests, and `.env`; copies `db/migrations/` into the staging tree.
+Job summaries record `staging_dir` and `migration_count`.
+
 ---
 
 ## 4. Signal only — weekly / manual E2E
@@ -113,6 +118,10 @@ Before `workflow_dispatch` or release publish:
 | `rebuild_if_missing` | Audited override when artifact expired (default `false`) |
 
 Build contract: [ci-build-artifact-contract.md](./ci-build-artifact-contract.md).
+
+**Backend FTP staging:** `scripts/ci/stage-backend-deploy.sh --target prod` stages to
+`.prod-backend-deploy/` (same exclusions as UAT). SSH `npm ci` + `migrate.js up` run on
+the live host after FTP.
 
 Post-deploy blocking job:
 

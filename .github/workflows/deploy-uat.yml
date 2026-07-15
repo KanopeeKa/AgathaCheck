@@ -83,19 +83,9 @@ jobs:
           exclude: |
             **/backend/**
 
-      - name: Stage UAT backend for FTP (excludes node_modules)
-        run: bash scripts/stage-uat-backend-deploy.sh
-
-      - name: Assert node_modules not in UAT backend staging
-        run: |
-          if [ -e .uat-backend-deploy/node_modules ]; then
-            echo "::error::node_modules in staging dir — refusing FTP deploy"
-            exit 1
-          fi
-          if find .uat-backend-deploy -type d -name node_modules | grep -q .; then
-            echo "::error::nested node_modules in staging dir — refusing FTP deploy"
-            exit 1
-          fi
+      - name: Stage backend for FTP (shared)
+        id: stage_backend
+        run: bash scripts/ci/stage-backend-deploy.sh --target uat
 
       - name: Deploy backend to uat.agathatrack.com/backend/
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
@@ -104,7 +94,7 @@ jobs:
           username: ${{ secrets.UAT_FTP_USERNAME }}
           password: ${{ secrets.UAT_FTP_PASSWORD }}
           server-dir: ./backend/
-          local-dir: .uat-backend-deploy/
+          local-dir: ${{ steps.stage_backend.outputs.staging_dir }}/
           exclude: |
             **/.git*
             **/.git*/**
