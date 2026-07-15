@@ -35,15 +35,35 @@ if [[ "$PKG_CHANGED" == "true" ]]; then
   echo "::warning::Manual action required: cPanel → Setup Node.js App → Run NPM Install → Restart"
 fi
 
-echo "=== SPA .htaccess at domain root ==="
-uat_install_root_htaccess "${SITE_ROOT}"
+echo "=== Discover Passenger .htaccess (pre-merge) ==="
+uat_htaccess_discover_passenger "${SITE_ROOT}" "${APPDIR}"
+if [[ -n "${UAT_HT_PASSENGER_SOURCE:-}" ]]; then
+  echo "passenger_discovered=${UAT_HT_PASSENGER_SOURCE}"
+  echo "passenger_blocks_preserved=$([[ -n "${UAT_HT_PRESERVED_BLOCKS:-}" ]] && echo true || echo false)"
+else
+  echo "passenger_discovered=none"
+  echo "passenger_blocks_preserved=false"
+fi
 
-echo "=== Passenger .htaccess ==="
+echo "=== Merge SPA .htaccess at domain root ==="
+uat_htaccess_apply_spa_merge "${SITE_ROOT}" "${UAT_HT_PRESERVED_BLOCKS:-}"
+
+PASSENGER_EXPECTED_IN_ROOT="false"
+if [[ "${UAT_HT_PASSENGER_SOURCE:-}" == "${SITE_ROOT}/.htaccess" ]] \
+  || [[ "${UAT_HT_PASSENGER_MERGED_TO_ROOT:-}" == "true" ]]; then
+  PASSENGER_EXPECTED_IN_ROOT="true"
+fi
+
+echo "=== Verify merged root .htaccess ==="
+uat_htaccess_verify_merged_root "${SITE_ROOT}" "$PASSENGER_EXPECTED_IN_ROOT" "${UAT_HT_ROOT_APPLIED:-false}"
+
+echo "=== Re-verify Passenger .htaccess (post-merge) ==="
 PASSENGER_HTACCESS_FILE="$(uat_find_passenger_htaccess "${SITE_ROOT}" "${APPDIR}")"
 PASSENGER_HTACCESS_OK="false"
 if [[ -n "$PASSENGER_HTACCESS_FILE" ]]; then
   PASSENGER_HTACCESS_OK="true"
   echo "OK: Passenger config in ${PASSENGER_HTACCESS_FILE}"
+  echo "passenger_htaccess_file=${PASSENGER_HTACCESS_FILE}"
 else
   echo "::error::Passenger .htaccess not found at ${SITE_ROOT}/.htaccess or ${APPDIR}/.htaccess"
   echo "Action: cPanel → Setup Node.js App → app root ${APPDIR#"$HOME"/} → startup bin/start.js → Save (regenerates Passenger block) → Restart"
@@ -51,6 +71,7 @@ else
   exit 1
 fi
 export PASSENGER_HTACCESS_OK
+export PASSENGER_HTACCESS_FILE
 
 echo "=== node_modules invariant (pre-restart) ==="
 uat_nm_assert pre 1 0

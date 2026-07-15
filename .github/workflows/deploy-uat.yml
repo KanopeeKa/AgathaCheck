@@ -471,6 +471,7 @@ jobs:
             "node_modules_kind=${NODE_MODULES_KIND}" \
             "node_modules_target=${{ steps.uat_deploy_state.outputs.node_modules_target || 'n/a' }}" \
             "passenger_htaccess_ok=${{ steps.uat_deploy_state.outputs.passenger_htaccess_ok || 'not_verified' }}" \
+            "passenger_htaccess_file=${{ steps.uat_deploy_state.outputs.passenger_htaccess_file || 'n/a' }}" \
             "restart_txt_epoch=${{ steps.uat_deploy_state.outputs.restart_txt_epoch || 'n/a' }}" \
             "server_hostname=${{ steps.uat_deploy_state.outputs.server_hostname || 'n/a' }}" \
             "node_major=${{ steps.uat_deploy_state.outputs.node_major || 'n/a' }}" \

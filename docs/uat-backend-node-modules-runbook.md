@@ -46,9 +46,12 @@ Remote script prints log sentinels **`UAT_SSH_DEPLOY_BEGIN`** / **`UAT_SSH_DEPLO
 When enabled:
 
 1. FTP deploys code only (never `node_modules` or `backend/.htaccess`).
-2. SSH runs `scripts/ci/uat-ssh-backend-deploy.sh` (bundled):
-   - Merges `htaccess.spa` at domain root **preserving** CloudLinux Passenger/env blocks (root or `backend/.htaccess`)
-   - Verifies Passenger config at domain root **or** `backend/.htaccess`
+2. SSH runs `scripts/ci/uat-ssh-backend-deploy.sh` (bundled), in order:
+   1. **Discover** Passenger blocks (root or `backend/.htaccess`) before any write
+   2. **Backup** existing root `.htaccess` → `.htaccess.bak.<epoch>`
+   3. **Merge/apply** `htaccess.spa` + preserved CloudLinux blocks at domain root
+   4. **Verify** merged root has SPA `/backend` exclusion; Passenger markers when expected
+   5. **Re-verify** Passenger at domain root **or** `backend/.htaccess`
    - **Pre-restart:** `assert-node-modules-symlink` (blocking)
    - `touch tmp/restart.txt`
    - **Post-restart:** invariant with 3 retries / 10s (~30s)
@@ -66,6 +69,7 @@ When **disabled:** symlink checks are skipped (`node_modules_kind=not_verified`,
 | `ssh_invariant_enforced` | Policy — `UAT_SSH_ENABLED=true` |
 | `ssh_invariant` | Execution — `passed` / `failed` / `skipped` (whitelist, SSH, or invariant) |
 | `deploy_verification` | `verified` only when **all** proofs pass: `ssh_invariant=passed`, `node_modules_kind=symlink`, `passenger_htaccess_ok=true`, `state_collected=true`, `ssh_deploy_end=true`, fresh `restart_txt_epoch` |
+| `passenger_htaccess_file` | Path to Passenger config (`…/uat.agathatrack.com/.htaccess` or `…/backend/.htaccess`) for triage |
 | `pre_smoke_ok` | Job output — smoke blocked when `false` and SSH enforced |
 | `ssh_proofs_ok` | Aggregate proof gate result |
 
