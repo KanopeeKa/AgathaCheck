@@ -18,20 +18,12 @@
 ## Additional Requirements
 
 ### 1. **Install Node.js Dependencies**
-Run this on your server via SSH or cPanel terminal:
 
-```bash
-cd ~/public_html/uat.agathatrack.com/backend
-npm install
-```
+On o2switch / CloudLinux, **do not** run bare `npm install` in the application root.
 
-This will install:
-- `express` - Web framework
-- `pg` - PostgreSQL client
-- `uuid` - UUID generation
-- `body-parser` - JSON parsing
-- `dotenv` - Environment variable management
-- `express-cors` - CORS support
+Use **cPanel → Setup Node.js App → Run NPM Install** (creates `backend/node_modules` as a symlink into `~/nodevenv/...`).
+
+See `docs/uat-backend-node-modules-runbook.md` for recovery steps and forbidden commands.
 
 ### 2. **Verify Database Migration**
 The schema is now managed by the Dart migration runner (`server/bin/migrate.dart`) and the canonical schema file `db/migrations/v3__initial_uuid_schema.sql` (19 application tables + a `_migrations` tracker, all UUID-keyed).

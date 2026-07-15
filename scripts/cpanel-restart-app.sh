@@ -16,11 +16,16 @@
 #   NPM_INSTALL    — set to "true" to also run npm install via cPanel NodeJS UAPI.
 set -euo pipefail
 
+# shellcheck source=ci/mask-log-value.lib.sh
+source "$(cd "$(dirname "$0")" && pwd)/ci/mask-log-value.lib.sh"
+
 CPANEL_SERVER="${CPANEL_SERVER:?CPANEL_SERVER required}"
 CPANEL_USER="${CPANEL_USER:?CPANEL_USER required}"
 CPANEL_TOKEN="${CPANEL_TOKEN:?CPANEL_TOKEN required}"
 APP_DOMAIN="${APP_DOMAIN:?APP_DOMAIN required}"
 NPM_INSTALL="${NPM_INSTALL:-false}"
+MASKED_SERVER="$(ci_mask_host "$CPANEL_SERVER")"
+MASKED_USER="$(ci_mask_user "$CPANEL_USER")"
 
 AUTH="Authorization: cpanel ${CPANEL_USER}:${CPANEL_TOKEN}"
 BASE="https://${CPANEL_SERVER}:2083/execute/NodeJS"
@@ -30,9 +35,9 @@ cpanel_call() {
   shift
   local url="${BASE}/${endpoint}$*"
   local response
-  echo "cPanel UAPI → ${endpoint} for ${APP_DOMAIN}"
+  echo "cPanel UAPI → ${endpoint} for ${APP_DOMAIN} (server ${MASKED_SERVER}, user ${MASKED_USER})"
   if ! response="$(curl -sfSm 60 -H "$AUTH" "$url" 2>&1)"; then
-    echo "::warning::cPanel UAPI request failed (network): ${url}" >&2
+    echo "::warning::cPanel UAPI request failed (network): ${endpoint} on server ${MASKED_SERVER}" >&2
     return 1
   fi
 

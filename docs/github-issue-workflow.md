@@ -225,6 +225,18 @@ UAT backend dependencies are **not** shipped over FTP. CloudLinux stores package
 
 The deploy workflow strips any local `server/node_modules` before FTP and excludes `node_modules` from the upload. **FTP does not delete** an existing remote folder — a leftover real `node_modules` from an older SSH/cPanel install must be removed manually once.
 
+**Forbidden on UAT (see `docs/uat-backend-node-modules-runbook.md`):**
+
+| Do not | Why |
+|--------|-----|
+| `npm ci` / `npm install` in `backend/` without nodevenv | Creates real `node_modules/` |
+| Delete or FTP-overwrite `backend/.htaccess` | Breaks Passenger |
+| Upload `node_modules/` via FTP | Breaks CloudLinux symlink |
+
+**CI invariant (requires `UAT_SSH_ENABLED=true`):** `scripts/ci/assert-node-modules-symlink.sh` runs pre/post restart; deploy fails on exit `10` (missing), `11` (real dir), `12` (broken symlink). Manual `workflow_dispatch` deploys **fail** when SSH is disabled unless `allow_unverified_deploy=true` (emergency bypass). Push deploys warn in the Actions summary when SSH is off.
+
+Deploy summary includes `ssh_invariant_enforced` (policy), `ssh_invariant` (execution), and `deploy_verification=verified|unverified` (derived). Emergency bypass: `allow_unverified_deploy` — see `docs/uat-backend-node-modules-runbook.md`.
+
 **Verify backend after deploy:**
 
 ```bash
