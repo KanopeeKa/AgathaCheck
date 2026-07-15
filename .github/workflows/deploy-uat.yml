@@ -21,6 +21,8 @@ env:
   FLUTTER_VERSION: '3.32.0'
   UAT_BASE_URL: https://uat.agathatrack.com
   DEPLOY_REF: ${{ github.event_name == 'workflow_dispatch' && inputs.deploy_ref || github.ref_name }}
+  # Playwright --shard count for uat-e2e-full; matrix.shard must list 1..E2E_SHARD_TOTAL.
+  E2E_SHARD_TOTAL: '6'
 
 concurrency:
   group: deploy-uat
@@ -579,7 +581,7 @@ jobs:
             "run_id=${{ github.run_id }}" \
             "duration_sec=${dur}"
 
-  # Full localhost E2E — prod-readiness gate; shards run in parallel after web build.
+  # Full localhost E2E — prod-readiness gate; six Playwright shards after build-web.
   uat-e2e-full:
     name: UAT full E2E (localhost)
     needs: build-web
@@ -590,7 +592,7 @@ jobs:
     uses: ./.github/workflows/_reusable-e2e-local.yml
     with:
       shard_index: ${{ matrix.shard }}
-      shard_total: 6
+      shard_total: ${{ fromJSON(env.E2E_SHARD_TOTAL) }}
       web_artifact_name: ${{ needs.build-web.outputs.artifact_name }}
 
   # Aggregate status for GitHub Environment protection on PROD (required check).

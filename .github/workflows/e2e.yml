@@ -1,7 +1,7 @@
 name: E2E (Playwright)
 
 # Full localhost E2E is intentionally NOT run on every PR commit (too slow).
-# It runs on UAT CD (deploy-uat.yml → uat-e2e-full), weekly on main (non-blocking),
+# It runs on UAT CD (deploy-uat.yml → uat-e2e-full, six shards), weekly on main (non-blocking),
 # and can be triggered manually.
 on:
   workflow_dispatch:
@@ -17,6 +17,10 @@ concurrency:
       format('e2e-manual-{0}', github.ref)
     }}
   cancel-in-progress: ${{ github.event_name == 'schedule' }}
+
+env:
+  # Playwright --shard count; matrix.shard must list 1..E2E_SHARD_TOTAL (keep in sync with deploy-uat.yml).
+  E2E_SHARD_TOTAL: '6'
 
 permissions:
   contents: read
@@ -34,7 +38,7 @@ jobs:
     uses: ./.github/workflows/_reusable-e2e-local.yml
     with:
       shard_index: ${{ matrix.shard }}
-      shard_total: 6
+      shard_total: ${{ fromJSON(env.E2E_SHARD_TOTAL) }}
       web_artifact_name: ${{ needs.build-web.outputs.artifact_name }}
 
   # Weekly signal only — does not block merges to main.

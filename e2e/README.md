@@ -93,6 +93,8 @@ npm run report       # open HTML report after a run
 
 ## CI
 
+Shard count for full localhost E2E is **six** (`env.E2E_SHARD_TOTAL` in `deploy-uat.yml` and `e2e.yml`; keep `matrix.shard` in sync).
+
 | Workflow | Trigger | Role |
 |----------|---------|------|
 | `ci.yml` | PR → `main` (+ manual dispatch) | Flutter analyze + unit/widget tests + web build; backend Jest |

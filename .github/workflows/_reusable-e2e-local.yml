@@ -1,6 +1,7 @@
 # Full Playwright E2E against a local stack (Postgres + Flutter web + Node server).
 # Used on release/uat-* deploy (deploy-uat.yml) and weekly manual/cron (e2e.yml) — not on every PR.
-# Supports Playwright --shard for parallel CI matrix legs (each leg gets its own Postgres + server).
+# CI runs six parallel matrix legs (Playwright --shard); callers define env.E2E_SHARD_TOTAL
+# and matrix.shard [1..N] — keep those in sync when changing shard count.
 name: Reusable E2E (localhost)
 
 on:
