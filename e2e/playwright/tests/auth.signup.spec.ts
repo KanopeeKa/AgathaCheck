@@ -94,7 +94,7 @@ test.describe('Authentication signup', () => {
     const petList = new PetListPage(page);
 
     await landing.goto();
-    await landing.signup({
+    await landing.signupAndReachHome({
       firstName: 'Alice',
       lastName: 'Smith',
       email,

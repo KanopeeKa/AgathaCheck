@@ -58,6 +58,11 @@ export class LandingPage {
 
     await this.page.getByRole('button', { name: 'Create Account', exact: true }).click();
     await refreshFlutterAccessibility(this.page);
+  }
+
+  /** Fill and submit signup, then wait until the home pet list is shown. */
+  async signupAndReachHome(details: SignupDetails): Promise<void> {
+    await this.signup(details);
     await this.page
       .getByRole('button', { name: 'To Do' })
       .or(this.page.getByRole('button', { name: 'Add Pet' }))
