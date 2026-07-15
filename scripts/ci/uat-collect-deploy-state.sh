@@ -43,6 +43,8 @@ collect_failed() {
   if [[ "$GITHUB_EVENT_NAME" == "workflow_dispatch" ]]; then
     exit 1
   fi
+  echo "::warning title=UAT_SSH_DEPLOY_STATE_MISSING::${reason}" >&2
+  echo "UAT_SSH_DEPLOY_STATE_MISSING reason=${reason}"
   echo "::warning::Push deploy continuing without collected SSH proofs — smoke may fail."
   exit 0
 }

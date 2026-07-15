@@ -82,6 +82,7 @@ if [[ "$GITHUB_EVENT_NAME" == "workflow_dispatch" ]]; then
   exit 1
 fi
 
-echo "::warning::${msg}" >&2
+echo "::warning title=UAT_SSH_PROOFS_INCOMPLETE::${msg}" >&2
+echo "UAT_SSH_PROOFS_INCOMPLETE reasons=${reasons[*]}"
 echo "::warning::Push deploy continuing — smoke gate will require proofs."
 exit 0

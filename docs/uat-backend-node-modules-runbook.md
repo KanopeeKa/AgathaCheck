@@ -67,7 +67,7 @@ When **disabled:** symlink checks are skipped (`node_modules_kind=not_verified`,
 
 Deploy summary records: `deploy_verification`, `ssh_proofs_ok`, `state_collected`, `ssh_invariant_enforced`, `ssh_invariant`, `node_modules_kind`, `restart_txt_epoch`, fingerprint fields.
 
-**Proof failures:** `workflow_dispatch` deploys **fail** when SSH ran but proofs are missing; push deploys **warn** and block smoke via `pre_smoke_ok=false`.
+**Proof failures:** `workflow_dispatch` deploys **fail** when SSH ran but proofs are missing; push deploys **warn** (`UAT_SSH_PROOFS_INCOMPLETE` / `UAT_SSH_DEPLOY_STATE_MISSING` in logs) and block smoke via `pre_smoke_ok=false`.
 
 ## Emergency bypass (`allow_unverified_deploy`)
 

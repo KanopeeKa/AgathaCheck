@@ -10,7 +10,8 @@ source "$(cd "$(dirname "$0")" && pwd)/assert-node-modules-symlink.lib.sh"
 
 HOME="$(uat_nm_home_dir)"
 export HOME
-export UAT_DEPLOY_STATE_FILE="$(uat_nm_state_file)"
+UAT_DEPLOY_STATE_FILE="$(uat_nm_state_file)"
+export UAT_DEPLOY_STATE_FILE
 
 SITE_ROOT="${UAT_SITE_ROOT:-${HOME}/uat.agathatrack.com}"
 APPDIR="${SITE_ROOT}/backend"
