@@ -142,6 +142,8 @@ jobs:
           local-dir: ./flutter_app/build/web/
           exclude: |
             **/backend/**
+            **/.htaccess
+            **/.last_build_id
 
       - name: Stage backend for FTP (shared)
         id: stage_backend
@@ -166,6 +168,7 @@ jobs:
             **/coverage/**
             **/*.test.js
             **/babel.config.cjs
+            **/.htaccess
 
       - name: Install dependencies & restart Node.js app
         uses: appleboy/ssh-action@v1.0.3

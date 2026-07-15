@@ -97,6 +97,9 @@ jobs:
           local-dir: flutter_app/build/web/
           exclude: |
             **/backend/**
+            # ftp-deploy often omits dotfiles from sync; never delete server copies.
+            **/.htaccess
+            **/.last_build_id
 
       - name: Stage backend for FTP (shared)
         id: stage_backend
@@ -120,6 +123,8 @@ jobs:
             **/coverage/**
             **/*.test.js
             **/babel.config.cjs
+            # cPanel generates backend/.htaccess (Passenger) — never publish or delete via FTP.
+            **/.htaccess
 
       - name: Migration reminder
         run: |
@@ -297,9 +302,30 @@ jobs:
           timeout: 120s
           script: |
             set -e
-            APPDIR="$HOME/uat.agathatrack.com/backend"
+            ROOTDIR="$HOME/uat.agathatrack.com"
+            APPDIR="${ROOTDIR}/backend"
             NODEVENV_BASE="$HOME/nodevenv/uat.agathatrack.com/backend"
             cd "$APPDIR"
+
+            echo "=== SPA .htaccess at domain root ==="
+            if [ -f "${ROOTDIR}/htaccess.spa" ]; then
+              install -m 644 "${ROOTDIR}/htaccess.spa" "${ROOTDIR}/.htaccess"
+              echo "Installed ${ROOTDIR}/.htaccess from htaccess.spa"
+            elif [ -f "${ROOTDIR}/.htaccess" ]; then
+              echo "OK: ${ROOTDIR}/.htaccess already present"
+            else
+              echo "WARNING: no htaccess.spa or .htaccess at domain root — Flutter deep links may break"
+            fi
+
+            echo "=== Passenger .htaccess in backend ==="
+            if [ -f .htaccess ] && grep -qE 'Passenger(AppRoot|Enabled|BaseURI)' .htaccess 2>/dev/null; then
+              echo "OK: backend/.htaccess contains Passenger directives"
+            else
+              echo "ERROR: backend/.htaccess missing or not a Passenger config (Apache is serving a directory listing)."
+              echo "Action: cPanel -> Setup Node.js App -> app root .../backend, startup bin/start.js -> Save -> Restart"
+              echo "Do not upload backend/.htaccess via FTP — cPanel generates it."
+              exit 1
+            fi
 
             echo "=== node_modules state ==="
             if [ -L node_modules ]; then

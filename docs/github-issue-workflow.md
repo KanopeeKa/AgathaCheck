@@ -232,7 +232,7 @@ curl -sk -w "\nHTTP %{http_code}\n" "https://uat.agathatrack.com/backend/health"
 # expect: {"status":"OK"} and HTTP 200
 ```
 
-**Apache SPA routing:** `flutter_app/web/.htaccess` excludes `/backend` from the Flutter `index.html` fallback so API routes reach Passenger.
+**Apache SPA routing:** `flutter_app/web/.htaccess` excludes `/backend` from the Flutter `index.html` fallback so API routes reach Passenger. CI stages a non-dot copy as `htaccess.spa` because FTP deploy may omit dotfiles; the UAT SSH step renames it to `.htaccess` at the domain root. **Never delete** cPanel-generated `backend/.htaccess` (Passenger) — backend FTP excludes `**/.htaccess`.
 
 **Recommended CD improvements** (future):
 

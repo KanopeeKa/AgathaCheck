@@ -16,6 +16,16 @@ if [[ ! -f "$INDEX" ]]; then
   exit 1
 fi
 
+if [[ ! -f "${WEB_DIR}/.htaccess" ]]; then
+  echo "::error::Missing ${WEB_DIR}/.htaccess (SPA rewrite + /backend exclusion for Passenger)" >&2
+  exit 1
+fi
+
+if [[ ! -f "${WEB_DIR}/htaccess.spa" ]]; then
+  echo "::error::Missing ${WEB_DIR}/htaccess.spa (FTP-visible copy of SPA .htaccess)" >&2
+  exit 1
+fi
+
 if [[ -n "${POSTHOG_API_KEY:-}" ]]; then
   if ! grep -q 'POSTHOG_WEB_BEGIN' "$INDEX"; then
     echo "::error::PostHog injection marker missing from built index.html" >&2

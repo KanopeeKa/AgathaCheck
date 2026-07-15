@@ -97,6 +97,14 @@ else
   fi
 fi
 
+ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
+HT_SRC="${ROOT}/flutter_app/web/.htaccess"
+if [[ -f "$HT_SRC" ]]; then
+  cp -f "$HT_SRC" "${DEST}/.htaccess"
+  cp -f "$HT_SRC" "${DEST}/htaccess.spa"
+  echo "Ensured SPA .htaccess at ${DEST}/.htaccess and htaccess.spa"
+fi
+
 WEB_DIR="$DEST" bash "$(cd "$(dirname "$0")" && pwd)/verify-web-artifact.sh"
 
 summary_args=(
