@@ -30,7 +30,10 @@ import '../widgets/pet_list/pet_list_section_header.dart';
 /// access veterinarian and health tracking features from the app bar.
 class PetListScreen extends ConsumerStatefulWidget {
   /// Creates a [PetListScreen].
-  const PetListScreen({super.key});
+  const PetListScreen({super.key, this.embeddedInShell = false});
+
+  /// When true, renders list body only (guardian shell provides top nav).
+  final bool embeddedInShell;
 
   @override
   ConsumerState<PetListScreen> createState() => _PetListScreenState();
@@ -55,6 +58,190 @@ class _PetListScreenState extends ConsumerState<PetListScreen> {
     final unreadCount = ref.watch(unreadNotificationCountProvider);
     final theme = Theme.of(context);
     final l = AppLocalizations.of(context)!;
+
+    final scaffoldBody = petListAsync.when(
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (error, stack) => Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                Icons.error_outline,
+                size: 48,
+                color: theme.colorScheme.error,
+              ),
+              const SizedBox(height: 16),
+              Text(l.failedToLoadPets(error.toString())),
+              const SizedBox(height: 8),
+              ElevatedButton(
+                onPressed: () => ref.invalidate(petListProvider),
+                child: Text(l.retry),
+              ),
+            ],
+          ),
+        ),
+        data: (allPets) {
+          if (allPets.isEmpty) {
+            return Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  ExcludeSemantics(
+                    child: Icon(
+                      Icons.pets,
+                      size: 80,
+                      color: theme.colorScheme.outline,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  Text(l.noPetsYet, style: theme.textTheme.headlineSmall),
+                  const SizedBox(height: 8),
+                  Text(
+                    l.addFirstPet,
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: theme.colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                ],
+              ),
+            );
+          }
+
+          final orgNames = widget.embeddedInShell
+              ? <String>[]
+              : _controller.getOrgNames(allPets);
+          final hasFosteredPets = _controller.hasFosteredPets(allPets);
+          _controller.syncOrgFilter(orgNames);
+          final filteredPets = widget.embeddedInShell
+              ? _controller.guardianShellPets(allPets)
+              : _controller.filterPets(allPets);
+
+          if (filteredPets.isEmpty) {
+            return Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(
+                    Icons.filter_list_off,
+                    size: 48,
+                    color: theme.colorScheme.outline,
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    l.noPetsMatchFilter,
+                    style: theme.textTheme.bodyLarge,
+                    textAlign: TextAlign.center,
+                  ),
+                  if (_controller.orgFilter != null) ...[
+                    const SizedBox(height: 16),
+                    ElevatedButton(
+                      onPressed: () =>
+                          setState(() => _controller.orgFilter = null),
+                      child: Text(l.showAllPets),
+                    ),
+                  ],
+                ],
+              ),
+            );
+          }
+          final personalActive = _controller.getPersonalActive(filteredPets);
+          final personalPassed = _controller.getPersonalPassed(filteredPets);
+          final fosteredActive = _controller.getFosteredActive(filteredPets);
+          final fosteredPassed = _controller.getFosteredPassed(filteredPets);
+          final orgGroups = _controller.getOrgGroups(filteredPets);
+          final orgPassedGroups = _controller.getOrgPassedGroups(filteredPets);
+          final allPassedAway = _controller.getAllPassedAway(
+            personalPassed,
+            fosteredPassed,
+            orgPassedGroups,
+          );
+
+          return ListView(
+            padding: const EdgeInsets.all(16),
+            children: [
+              if (orgNames.isNotEmpty || hasFosteredPets)
+                OrgFilterChips(
+                  orgNames: orgNames,
+                  showFosteredChip: hasFosteredPets,
+                  selected: _controller.orgFilter,
+                  onSelected: (v) => setState(() => _controller.orgFilter = v),
+                  l: l,
+                ),
+              PendingSharesSection(),
+              PendingFosterPlacementsSection(),
+              PendingAdoptionPlacementsSection(),
+              const PendingCustodyTransfersSection(),
+              DueEventsSection(pets: allPets),
+              if (_controller.orgFilter == null ||
+                  _controller.orgFilter == '_personal') ...[
+                if (personalActive.isNotEmpty ||
+                    (_controller.orgFilter == null &&
+                        (fosteredActive.isNotEmpty || orgGroups.isNotEmpty)))
+                  PetListSectionHeader(
+                    icon: Icons.person,
+                    title: l.myPets,
+                    count: personalActive.length,
+                  ),
+                PersonalPetsSection(
+                  personalActive: personalActive,
+                  orgFilter: _controller.orgFilter,
+                  l: l,
+                  theme: theme,
+                  ref: ref,
+                  parentContext: context,
+                ),
+              ],
+              if (_controller.orgFilter == null ||
+                  _controller.orgFilter == '_fostered') ...[
+                if (fosteredActive.isNotEmpty ||
+                    _controller.orgFilter == '_fostered')
+                  PetListSectionHeader(
+                    icon: Icons.home_work_outlined,
+                    title: l.myFosteredPets,
+                    count: fosteredActive.length,
+                  ),
+                FosteredPetsSection(
+                  fosteredActive: fosteredActive,
+                  orgFilter: _controller.orgFilter,
+                  l: l,
+                  theme: theme,
+                ),
+              ],
+              if (!widget.embeddedInShell &&
+                  (_controller.orgFilter == null ||
+                      (_controller.orgFilter != '_personal' &&
+                          _controller.orgFilter != '_fostered')))
+                OrganizationPetsSection(
+                  orgGroups: orgGroups,
+                  l: l,
+                  theme: theme,
+                  ref: ref,
+                  parentContext: context,
+                ),
+              PassedAwayPetsSection(allPassedAway: allPassedAway, theme: theme),
+            ],
+          );
+        },
+      );
+
+    if (widget.embeddedInShell) {
+      return Stack(
+        children: [
+          Positioned.fill(child: scaffoldBody),
+          Positioned(
+            right: 16,
+            bottom: 16,
+            child: FloatingActionButton.extended(
+              key: const Key('add_pet_button'),
+              onPressed: () => context.push('/add'),
+              tooltip: l.addNewPet,
+              icon: const Icon(Icons.add),
+              label: Text(l.addPet),
+            ),
+          ),
+        ],
+      );
+    }
 
     return Scaffold(
       appBar: AppBar(
@@ -201,165 +388,7 @@ class _PetListScreenState extends ConsumerState<PetListScreen> {
           ),
         ],
       ),
-      body: petListAsync.when(
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (error, stack) => Center(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(
-                Icons.error_outline,
-                size: 48,
-                color: theme.colorScheme.error,
-              ),
-              const SizedBox(height: 16),
-              Text(l.failedToLoadPets(error.toString())),
-              const SizedBox(height: 8),
-              ElevatedButton(
-                onPressed: () => ref.invalidate(petListProvider),
-                child: Text(l.retry),
-              ),
-            ],
-          ),
-        ),
-        data: (allPets) {
-          if (allPets.isEmpty) {
-            return Center(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  ExcludeSemantics(
-                    child: Icon(
-                      Icons.pets,
-                      size: 80,
-                      color: theme.colorScheme.outline,
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  Text(l.noPetsYet, style: theme.textTheme.headlineSmall),
-                  const SizedBox(height: 8),
-                  Text(
-                    l.addFirstPet,
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                      color: theme.colorScheme.onSurfaceVariant,
-                    ),
-                  ),
-                ],
-              ),
-            );
-          }
-
-          final orgNames = _controller.getOrgNames(allPets);
-          final hasFosteredPets = _controller.hasFosteredPets(allPets);
-          _controller.syncOrgFilter(orgNames);
-          final filteredPets = _controller.filterPets(allPets);
-
-          if (filteredPets.isEmpty) {
-            return Center(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(
-                    Icons.filter_list_off,
-                    size: 48,
-                    color: theme.colorScheme.outline,
-                  ),
-                  const SizedBox(height: 16),
-                  Text(
-                    l.noPetsMatchFilter,
-                    style: theme.textTheme.bodyLarge,
-                    textAlign: TextAlign.center,
-                  ),
-                  if (_controller.orgFilter != null) ...[
-                    const SizedBox(height: 16),
-                    ElevatedButton(
-                      onPressed: () =>
-                          setState(() => _controller.orgFilter = null),
-                      child: Text(l.showAllPets),
-                    ),
-                  ],
-                ],
-              ),
-            );
-          }
-          final personalActive = _controller.getPersonalActive(filteredPets);
-          final personalPassed = _controller.getPersonalPassed(filteredPets);
-          final fosteredActive = _controller.getFosteredActive(filteredPets);
-          final fosteredPassed = _controller.getFosteredPassed(filteredPets);
-          final orgGroups = _controller.getOrgGroups(filteredPets);
-          final orgPassedGroups = _controller.getOrgPassedGroups(filteredPets);
-          final allPassedAway = _controller.getAllPassedAway(
-            personalPassed,
-            fosteredPassed,
-            orgPassedGroups,
-          );
-
-          return ListView(
-            padding: const EdgeInsets.all(16),
-            children: [
-              if (orgNames.isNotEmpty || hasFosteredPets)
-                OrgFilterChips(
-                  orgNames: orgNames,
-                  showFosteredChip: hasFosteredPets,
-                  selected: _controller.orgFilter,
-                  onSelected: (v) => setState(() => _controller.orgFilter = v),
-                  l: l,
-                ),
-              PendingSharesSection(),
-              PendingFosterPlacementsSection(),
-              PendingAdoptionPlacementsSection(),
-              const PendingCustodyTransfersSection(),
-              DueEventsSection(pets: allPets),
-              if (_controller.orgFilter == null ||
-                  _controller.orgFilter == '_personal') ...[
-                if (personalActive.isNotEmpty ||
-                    (_controller.orgFilter == null &&
-                        (fosteredActive.isNotEmpty || orgGroups.isNotEmpty)))
-                  PetListSectionHeader(
-                    icon: Icons.person,
-                    title: l.myPets,
-                    count: personalActive.length,
-                  ),
-                PersonalPetsSection(
-                  personalActive: personalActive,
-                  orgFilter: _controller.orgFilter,
-                  l: l,
-                  theme: theme,
-                  ref: ref,
-                  parentContext: context,
-                ),
-              ],
-              if (_controller.orgFilter == null ||
-                  _controller.orgFilter == '_fostered') ...[
-                if (fosteredActive.isNotEmpty ||
-                    _controller.orgFilter == '_fostered')
-                  PetListSectionHeader(
-                    icon: Icons.home_work_outlined,
-                    title: l.myFosteredPets,
-                    count: fosteredActive.length,
-                  ),
-                FosteredPetsSection(
-                  fosteredActive: fosteredActive,
-                  orgFilter: _controller.orgFilter,
-                  l: l,
-                  theme: theme,
-                ),
-              ],
-              if (_controller.orgFilter == null ||
-                  (_controller.orgFilter != '_personal' &&
-                      _controller.orgFilter != '_fostered'))
-                OrganizationPetsSection(
-                  orgGroups: orgGroups,
-                  l: l,
-                  theme: theme,
-                  ref: ref,
-                  parentContext: context,
-                ),
-              PassedAwayPetsSection(allPassedAway: allPassedAway, theme: theme),
-            ],
-          );
-        },
-      ),
+      body: scaffoldBody,
       floatingActionButton: FloatingActionButton.extended(
         key: const Key('add_pet_button'),
         onPressed: () => context.push('/add'),

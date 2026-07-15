@@ -14,7 +14,6 @@ import '../../features/notifications/presentation/screens/notification_settings_
 import '../../features/notifications/presentation/screens/notifications_screen.dart';
 import '../../features/pet_profile/presentation/screens/pet_detail_screen.dart';
 import '../../features/pet_profile/presentation/screens/pet_form_screen.dart';
-import '../../features/pet_profile/presentation/screens/pet_list_screen.dart';
 import '../../features/organization/presentation/screens/archived_pet_detail_screen.dart';
 import '../../features/organization/presentation/screens/archived_pets_screen.dart';
 import '../../features/organization/presentation/screens/accept_connection_screen.dart';
@@ -37,6 +36,7 @@ import '../../features/vet/presentation/screens/vet_form_screen.dart';
 import '../../features/vet/presentation/screens/vet_list_screen.dart';
 import '../widgets/consent_banner.dart';
 import '../providers/analytics_providers.dart';
+import 'experience_routes.dart';
 
 class AuthChangeNotifier extends ChangeNotifier {
   AuthState _authState;
@@ -91,12 +91,17 @@ final routerProvider = Provider<GoRouter>((ref) {
       }
 
       if (isLoggedIn && path == '/landing') {
-        return '/';
+        return '/app/resolve';
+      }
+
+      if (isLoggedIn && path == '/') {
+        return '/app/resolve';
       }
 
       return null;
     },
     routes: [
+      ...buildExperienceRoutes(),
       GoRoute(
         path: '/landing',
         name: 'landing',
@@ -109,8 +114,8 @@ final routerProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(
         path: '/',
-        name: 'home',
-        builder: (context, state) => const PetListScreen(),
+        name: 'legacyHome',
+        redirect: (context, state) => '/app/resolve',
       ),
       GoRoute(
         path: '/my-details',

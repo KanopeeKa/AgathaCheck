@@ -68,6 +68,11 @@ class PetListController {
     return filteredPets.where((p) => p.passedAway && p.isFoster).toList();
   }
 
+  /// Pets visible in the guardian shell (personal + fostered; no org inventory).
+  List<Pet> guardianShellPets(List<Pet> allPets) {
+    return allPets.where((p) => _isPersonalPet(p) || p.isFoster).toList();
+  }
+
   Map<String, List<Pet>> getOrgGroups(List<Pet> filteredPets) {
     final groups = <String, List<Pet>>{};
     for (final pet in filteredPets) {

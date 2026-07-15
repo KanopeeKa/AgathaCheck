@@ -10,7 +10,9 @@ import '../providers/notification_providers.dart';
 import '../../../pet_profile/presentation/providers/pet_providers.dart';
 
 class NotificationsScreen extends ConsumerStatefulWidget {
-  const NotificationsScreen({super.key});
+  const NotificationsScreen({super.key, this.backPath = '/'});
+
+  final String backPath;
 
   @override
   ConsumerState<NotificationsScreen> createState() =>
@@ -38,7 +40,7 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           tooltip: l.goBack,
-          onPressed: () => context.go('/'),
+          onPressed: () => context.go(widget.backPath),
         ),
         actions: [
           IconButton(

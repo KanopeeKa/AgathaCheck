@@ -10,7 +10,9 @@ import '../widgets/org_card.dart';
 import '../widgets/organization_role_labels.dart';
 
 class OrganizationListScreen extends ConsumerWidget {
-  const OrganizationListScreen({super.key});
+  const OrganizationListScreen({super.key, this.embeddedInShell = false});
+
+  final bool embeddedInShell;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -20,19 +22,7 @@ class OrganizationListScreen extends ConsumerWidget {
     final colorScheme = theme.colorScheme;
     final l = AppLocalizations.of(context)!;
 
-    return Scaffold(
-      backgroundColor: AppTheme.orgBlue,
-      appBar: AppBar(
-        backgroundColor: AppTheme.orgBlue,
-        title: AppLogoTitle(title: l.myOrganizations),
-        leading: IconButton(
-          key: const Key('org_back_button'),
-          icon: const Icon(Icons.arrow_back),
-          tooltip: MaterialLocalizations.of(context).backButtonTooltip,
-          onPressed: () => context.go('/'),
-        ),
-      ),
-      body: RefreshIndicator(
+    final body = RefreshIndicator(
         onRefresh: () async {
           ref.invalidate(organizationListProvider);
           ref.invalidate(pendingOrgInvitesProvider);
@@ -264,7 +254,25 @@ class OrganizationListScreen extends ConsumerWidget {
             ),
           ],
         ),
+      );
+
+    if (embeddedInShell) {
+      return body;
+    }
+
+    return Scaffold(
+      backgroundColor: AppTheme.orgBlue,
+      appBar: AppBar(
+        backgroundColor: AppTheme.orgBlue,
+        title: AppLogoTitle(title: l.myOrganizations),
+        leading: IconButton(
+          key: const Key('org_back_button'),
+          icon: const Icon(Icons.arrow_back),
+          tooltip: MaterialLocalizations.of(context).backButtonTooltip,
+          onPressed: () => context.go('/'),
+        ),
       ),
+      body: body,
     );
   }
 }

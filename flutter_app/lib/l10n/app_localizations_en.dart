@@ -3155,4 +3155,80 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get documentTooLarge => 'Document must be 2 MB or smaller';
+
+  @override
+  String get home => 'Home';
+
+  @override
+  String get eventsNavLabel => 'Events';
+
+  @override
+  String get settings => 'Settings';
+
+  @override
+  String get upcomingEvents => 'Upcoming events';
+
+  @override
+  String get invite => 'Invite';
+
+  @override
+  String get contact => 'Contact';
+
+  @override
+  String get continueButton => 'Continue';
+
+  @override
+  String get experienceChooserTitle => 'How will you use Agatha Track?';
+
+  @override
+  String get experienceChooserSubtitle =>
+      'Choose the experience that fits what you need today.';
+
+  @override
+  String get experienceGuardianTitle => 'Individual Pet Guardian';
+
+  @override
+  String get experienceGuardianSubtitle =>
+      'Track care, reminders, and shared looking-after for your pets.';
+
+  @override
+  String get experienceOrganizationTitle => 'Shelter / Organisation';
+
+  @override
+  String get experienceOrganizationSubtitle =>
+      'Manage pets, fosters, adoptions, and your team.';
+
+  @override
+  String get experienceBoardingTitle => 'Pet boarding';
+
+  @override
+  String get experienceBoardingSubtitle => 'Coming soon';
+
+  @override
+  String get experienceRememberChoice => 'Remember my choice for next time';
+
+  @override
+  String get experienceRememberChoiceHint =>
+      'You can change your default view later in Settings.';
+
+  @override
+  String get experienceOrgView => 'Organisation view';
+
+  @override
+  String get experienceGuardianView => 'Pet guardian view';
+
+  @override
+  String get experienceDefaultSettingTitle => 'Default experience';
+
+  @override
+  String get experienceDefaultSettingSubtitle =>
+      'Used when you sign in. You can still switch anytime from the menu.';
+
+  @override
+  String get experienceGuardianInviteHint =>
+      'Add a pet or open a pet profile to share care with someone.';
+
+  @override
+  String get experienceOrganizationInviteHint =>
+      'Invite team members to help run your organisation.';
 }
