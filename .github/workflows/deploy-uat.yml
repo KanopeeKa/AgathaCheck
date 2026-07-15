@@ -66,6 +66,10 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 45
     environment: UAT
+    outputs:
+      deploy_verification: ${{ steps.assert_ssh_proofs.outputs.deploy_verification || 'unverified' }}
+      pre_smoke_ok: ${{ steps.ssh_enforcement.outputs.ssh_invariant_enforced != 'true' && 'true' || steps.assert_ssh_proofs.outputs.pre_smoke_ok || 'false' }}
+      ssh_proofs_ok: ${{ steps.ssh_enforcement.outputs.ssh_invariant_enforced != 'true' && 'skipped' || steps.assert_ssh_proofs.outputs.ssh_proofs_ok || 'false' }}
     steps:
       - uses: actions/checkout@v5
         with:
@@ -350,13 +354,14 @@ jobs:
           steps.whitelist_verify.outcome == 'success'
         run: bash scripts/ci/prepare-uat-ssh-remote.sh
 
+      # script_path requires appleboy/ssh-action >= v1.2.0 — pin full SHA (v1.0.x silently no-ops).
       - name: UAT backend deploy via SSH
         id: uat_ssh
         if: >-
           vars.UAT_SSH_ENABLED == 'true' &&
           steps.uat_ssh_config.outputs.configured == 'true' &&
           steps.whitelist_verify.outcome == 'success'
-        uses: appleboy/ssh-action@v1.2.2
+        uses: appleboy/ssh-action@2ead5e36573f08b82fbfce1504f1a4b05a647c6f # v1.2.2
         env:
           PKG_CHANGED: ${{ steps.pkg_changed.outputs.changed }}
           POST_RESTART_RETRIES: 3
@@ -372,7 +377,6 @@ jobs:
           script_path: .ci-uat-ssh-remote.sh
           envs: PKG_CHANGED,POST_RESTART_RETRIES,POST_RESTART_SLEEP_SEC
 
-      # State collection is non-blocking: script warns and exits 0 if ~/.uat-deploy-state.env is missing.
       - name: Collect UAT deploy state
         id: uat_deploy_state
         if: >-
@@ -385,7 +389,26 @@ jobs:
           UAT_SSH_USER: ${{ secrets.UAT_SSH_USER }}
           UAT_SSH_PRIVATE_KEY: ${{ secrets.UAT_SSH_PRIVATE_KEY }}
           UAT_SSH_PORT: ${{ secrets.UAT_SSH_PORT || 22 }}
+          GITHUB_EVENT_NAME: ${{ github.event_name }}
         run: bash scripts/ci/uat-collect-deploy-state.sh
+
+      - name: Assert UAT SSH deploy proofs
+        id: assert_ssh_proofs
+        if: >-
+          always() &&
+          steps.ssh_enforcement.outputs.ssh_invariant_enforced == 'true' &&
+          steps.uat_ssh.outcome == 'success'
+        env:
+          SSH_INVARIANT_ENFORCED: ${{ steps.ssh_enforcement.outputs.ssh_invariant_enforced }}
+          SSH_INVARIANT: ${{ steps.uat_ssh.outcome == 'success' && 'passed' || steps.uat_ssh.outcome == 'failure' && 'failed' || 'skipped' }}
+          STATE_COLLECTED: ${{ steps.uat_deploy_state.outputs.state_collected || 'false' }}
+          NODE_MODULES_KIND: ${{ steps.uat_deploy_state.outputs.node_modules_kind || 'not_verified' }}
+          PASSENGER_HTACCESS_OK: ${{ steps.uat_deploy_state.outputs.passenger_htaccess_ok || 'not_verified' }}
+          SSH_DEPLOY_END: ${{ steps.uat_deploy_state.outputs.ssh_deploy_end || 'false' }}
+          RESTART_TXT_EPOCH: ${{ steps.uat_deploy_state.outputs.restart_txt_epoch || '0' }}
+          JOB_START_EPOCH: ${{ env.JOB_START_EPOCH }}
+          GITHUB_EVENT_NAME: ${{ github.event_name }}
+        run: bash scripts/ci/assert-uat-ssh-deploy-proofs.sh
 
       - name: o2switch SSH whitelist — cleanup runner IP
         if: >-
@@ -423,20 +446,14 @@ jobs:
         env:
           SSH_INVARIANT_ENFORCED: ${{ steps.ssh_enforcement.outputs.ssh_invariant_enforced }}
           SSH_INVARIANT: ${{ steps.uat_ssh.outcome == 'success' && 'passed' || steps.uat_ssh.outcome == 'failure' && 'failed' || 'skipped' }}
+          DEPLOY_VERIFICATION: ${{ steps.assert_ssh_proofs.outputs.deploy_verification || 'unverified' }}
+          SSH_PROOFS_OK: ${{ steps.assert_ssh_proofs.outputs.ssh_proofs_ok || (steps.ssh_enforcement.outputs.ssh_invariant_enforced != 'true' && 'skipped' || 'false') }}
+          STATE_COLLECTED: ${{ steps.uat_deploy_state.outputs.state_collected || 'false' }}
           NODE_MODULES_KIND: ${{ steps.uat_deploy_state.outputs.node_modules_kind || 'not_verified' }}
         run: |
           end=$(date +%s)
           start="${JOB_START_EPOCH:-$end}"
           dur=$((end - start))
-          # verified requires SSH script evidence (node_modules_kind=symlink), not merely step success.
-          if [ "${SSH_INVARIANT_ENFORCED}" = "true" ] && [ "${SSH_INVARIANT}" = "passed" ] && [ "${NODE_MODULES_KIND}" = "symlink" ]; then
-            deploy_verification=verified
-          else
-            deploy_verification=unverified
-          fi
-          if [ "${SSH_INVARIANT_ENFORCED}" = "true" ] && [ "${SSH_INVARIANT}" = "passed" ] && [ "${NODE_MODULES_KIND}" = "not_verified" ]; then
-            echo "::warning::SSH step succeeded but invariant state was not collected — remote script may not have run."
-          fi
           bash scripts/ci/append-summary.sh "UAT deploy job" \
             "workflow=deploy-uat" \
             "job=deploy" \
@@ -448,10 +465,13 @@ jobs:
             "package_json_changed=${{ steps.pkg_changed.outputs.changed }}" \
             "ssh_invariant_enforced=${SSH_INVARIANT_ENFORCED}" \
             "ssh_invariant=${SSH_INVARIANT}" \
-            "deploy_verification=${deploy_verification}" \
+            "ssh_proofs_ok=${SSH_PROOFS_OK}" \
+            "state_collected=${STATE_COLLECTED}" \
+            "deploy_verification=${DEPLOY_VERIFICATION}" \
             "node_modules_kind=${NODE_MODULES_KIND}" \
             "node_modules_target=${{ steps.uat_deploy_state.outputs.node_modules_target || 'n/a' }}" \
             "passenger_htaccess_ok=${{ steps.uat_deploy_state.outputs.passenger_htaccess_ok || 'not_verified' }}" \
+            "restart_txt_epoch=${{ steps.uat_deploy_state.outputs.restart_txt_epoch || 'n/a' }}" \
             "server_hostname=${{ steps.uat_deploy_state.outputs.server_hostname || 'n/a' }}" \
             "node_major=${{ steps.uat_deploy_state.outputs.node_major || 'n/a' }}" \
             "app_root=${{ steps.uat_deploy_state.outputs.app_root || 'n/a' }}" \
@@ -470,6 +490,19 @@ jobs:
 
       - name: Begin job timing
         run: echo "JOB_START_EPOCH=$(date +%s)" >> "$GITHUB_ENV"
+
+      - name: Require UAT SSH deploy proofs before smoke
+        if: vars.UAT_SSH_ENABLED == 'true'
+        env:
+          PRE_SMOKE_OK: ${{ needs.deploy.outputs.pre_smoke_ok }}
+          DEPLOY_VERIFICATION: ${{ needs.deploy.outputs.deploy_verification }}
+        run: |
+          if [ "${PRE_SMOKE_OK}" != "true" ]; then
+            echo "::error::Smoke blocked — deploy did not produce SSH proofs (deploy_verification=${DEPLOY_VERIFICATION})."
+            echo "::error::Check UAT backend deploy via SSH logs for UAT_SSH_DEPLOY_BEGIN/END and invariant OK lines."
+            exit 1
+          fi
+          echo "Deploy proofs OK (deploy_verification=${DEPLOY_VERIFICATION}) — proceeding to HTTP smoke."
 
       - name: Wait for UAT to become healthy
         env:

@@ -37,7 +37,9 @@ Never a real directory in `backend/`.
 
 ## CI automation (deploy-uat.yml)
 
-**Requires `UAT_SSH_ENABLED=true`** and `appleboy/ssh-action` **≥ v1.2.0** (`script_path` support). v1.0.x silently runs an empty SSH command.
+**Requires `UAT_SSH_ENABLED=true`** and `appleboy/ssh-action` pinned to **full commit SHA ≥ v1.2.2** (`script_path`; v1.0.x silently no-ops). Guard: `scripts/ci/check-uat-ssh-action-pin.sh`.
+
+Remote script prints log sentinels **`UAT_SSH_DEPLOY_BEGIN`** / **`UAT_SSH_DEPLOY_END`** and writes proof fields to `~/.uat-deploy-state.env`.
 
 When enabled:
 
@@ -59,9 +61,13 @@ When **disabled:** symlink checks are skipped (`node_modules_kind=not_verified`,
 |-------|---------|
 | `ssh_invariant_enforced` | Policy — `UAT_SSH_ENABLED=true` |
 | `ssh_invariant` | Execution — `passed` / `failed` / `skipped` (whitelist, SSH, or invariant) |
-| `deploy_verification` | Derived — `verified` only when enforced **and** `ssh_invariant=passed`; else `unverified` |
+| `deploy_verification` | `verified` only when **all** proofs pass: `ssh_invariant=passed`, `node_modules_kind=symlink`, `passenger_htaccess_ok=true`, `state_collected=true`, `ssh_deploy_end=true`, fresh `restart_txt_epoch` |
+| `pre_smoke_ok` | Job output — smoke blocked when `false` and SSH enforced |
+| `ssh_proofs_ok` | Aggregate proof gate result |
 
-Deploy summary records: `deploy_verification`, `ssh_invariant_enforced`, `ssh_invariant`, `node_modules_kind`, `node_modules_target`, `passenger_htaccess_ok`, `server_hostname`, `node_major`, `app_root`.
+Deploy summary records: `deploy_verification`, `ssh_proofs_ok`, `state_collected`, `ssh_invariant_enforced`, `ssh_invariant`, `node_modules_kind`, `restart_txt_epoch`, fingerprint fields.
+
+**Proof failures:** `workflow_dispatch` deploys **fail** when SSH ran but proofs are missing; push deploys **warn** and block smoke via `pre_smoke_ok=false`.
 
 ## Emergency bypass (`allow_unverified_deploy`)
 
