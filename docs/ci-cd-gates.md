@@ -219,10 +219,10 @@ Workflow: **Deploy UAT (uat.agathatrack.com)** — `.github/workflows/deploy-uat
 | `Build and deploy to UAT` (`deploy`) | **Yes** | Download artifact + FTP frontend/backend |
 | `UAT post-deploy smoke` (`smoke`) | **Yes** | HTTP health on live UAT (`scripts/uat-post-deploy-smoke.sh`) |
 | `UAT live smoke E2E` (`uat-e2e-smoke`) | **Yes** | Playwright `@smoke` on live UAT |
-| `UAT full E2E (localhost)` (`uat-e2e-full`) | **Yes** | Full Playwright on localhost stack |
+| `UAT full E2E (localhost)` (`uat-e2e-full`) | **Yes** | Full Playwright on localhost stack (6 parallel shards) |
 | `Prod ready` (`prod-ready`) | **Yes** (aggregate) | Required for PROD environment gate |
 
-**Parallelism:** `uat-e2e-full` runs in parallel with `deploy` (does not wait for HTTP smoke). All four gates must pass for `prod-ready`.
+**Parallelism:** `uat-e2e-full` runs six Playwright shards in parallel (each with its own Postgres + server) after `build-web` completes; shards still overlap with `deploy` FTP work. All four UAT gates must pass for `prod-ready`. Shard count is set in `deploy-uat.yml` and `e2e.yml` (`matrix.shard` + `shard_total: 6`).
 
 **`prod-ready` validation:** `scripts/ci/assert-uat-gates.sh` — single summary table in the Actions run summary.
 

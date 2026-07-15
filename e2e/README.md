@@ -87,16 +87,19 @@ npm test
 cd e2e
 npm run test:ui      # interactive UI mode
 npm run test:headed  # watch the browser
+npm run test:shard -- 1/6   # run one CI shard locally (requires stack running)
 npm run report       # open HTML report after a run
 ```
 
 ## CI
 
+Shard count for full localhost E2E is **six** — update `matrix.shard` and `shard_total: 6` together in `deploy-uat.yml` and `e2e.yml`.
+
 | Workflow | Trigger | Role |
 |----------|---------|------|
 | `ci.yml` | PR → `main` (+ manual dispatch) | Flutter analyze + unit/widget tests + web build; backend Jest |
 | `codeql.yml` | PR → `main` (+ weekly schedule) | Static security analysis (JavaScript/TypeScript) |
-| `e2e.yml` | manual + weekly cron (non-blocking) | Full Playwright against **localhost** |
+| `e2e.yml` | manual + weekly cron (non-blocking) | Full Playwright against **localhost** (6 parallel shards) |
 | `deploy-uat.yml` | push → `release/uat-*` | Fast FTP deploy → post-deploy smoke + live `@smoke` E2E + full localhost E2E → `prod-ready` gate |
 | `deploy-prod.yml` | manual `workflow_dispatch` (preferred) or release publish | FTP + SSH deploy; post-deploy HTTP smoke |
 
@@ -104,7 +107,7 @@ npm run report       # open HTML report after a run
 
 1. Cut `release/uat-*` from green `main` — **no unit-test re-run** (CI already validated the code).
 2. `deploy` job FTP-publishes frontend + backend (~5 min).
-3. In parallel: `smoke` (HTTP), `uat-e2e-smoke` (Playwright `@smoke` on live UAT), `uat-e2e-full` (full suite on localhost).
+3. In parallel: `smoke` (HTTP), `uat-e2e-smoke` (Playwright `@smoke` on live UAT), `uat-e2e-full` (full suite on localhost, **6 Playwright shards** after `build-web`).
 4. When all three pass, `prod-ready` goes green — configure the **PROD** GitHub Environment to require this check before `workflow_dispatch` deploys.
 5. Apply UAT DB migrations manually when `db/migrations/` changes (FTP-only hosting).
 

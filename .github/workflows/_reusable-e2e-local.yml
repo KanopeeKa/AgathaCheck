@@ -1,18 +1,34 @@
 # Full Playwright E2E against a local stack (Postgres + Flutter web + Node server).
 # Used on release/uat-* deploy (deploy-uat.yml) and weekly manual/cron (e2e.yml) — not on every PR.
+# CI runs six parallel matrix legs (Playwright --shard); callers pass shard_total: 6
+# and matrix.shard [1..6] — keep those in sync when changing shard count.
 name: Reusable E2E (localhost)
 
 on:
   workflow_call:
+    inputs:
+      shard_index:
+        description: Playwright shard index (1-based)
+        type: number
+        default: 1
+      shard_total:
+        description: Total Playwright shards
+        type: number
+        default: 1
+      web_artifact_name:
+        description: Pre-built web artifact to download (skips Flutter build when set)
+        type: string
+        default: ''
 
 env:
   FLUTTER_VERSION: '3.32.0'
 
 jobs:
   e2e:
-    name: Playwright E2E (localhost)
+    name: >-
+      Playwright E2E (localhost${{ inputs.shard_total > 1 && format(' shard {0}/{1}', inputs.shard_index, inputs.shard_total) || '' }})
     runs-on: ubuntu-latest
-    timeout-minutes: 90
+    timeout-minutes: 45
     services:
       postgres:
         image: postgres:16
@@ -43,11 +59,6 @@ jobs:
             server/package-lock.json
             e2e/package-lock.json
 
-      - name: Set up Flutter
-        uses: ./.github/actions/setup-flutter
-        with:
-          flutter-version: ${{ env.FLUTTER_VERSION }}
-
       - name: Install server dependencies
         working-directory: server
         run: npm ci
@@ -63,7 +74,29 @@ jobs:
           chmod +x e2e/scripts/bootstrap-db.sh
           ./e2e/scripts/bootstrap-db.sh
 
+      - name: Download pre-built web artifact
+        if: inputs.web_artifact_name != ''
+        uses: actions/download-artifact@v6
+        with:
+          name: ${{ inputs.web_artifact_name }}
+          path: .ci-web-download
+
+      - name: Materialize web root from artifact
+        if: inputs.web_artifact_name != ''
+        run: |
+          bash scripts/ci/materialize-web-artifact.sh \
+            --source .ci-web-download \
+            --artifact-name "${{ inputs.web_artifact_name }}" \
+            --dest flutter_app/build/web
+
+      - name: Set up Flutter
+        if: inputs.web_artifact_name == ''
+        uses: ./.github/actions/setup-flutter
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+
       - name: Build Flutter web
+        if: inputs.web_artifact_name == ''
         working-directory: flutter_app
         run: |
           flutter pub get
@@ -96,13 +129,13 @@ jobs:
         working-directory: e2e
         env:
           E2E_BASE_URL: http://localhost:3000
-        run: npm test
+        run: npm run test:shard -- ${{ inputs.shard_index }}/${{ inputs.shard_total }}
 
       - name: Upload Playwright report
         if: always()
         uses: actions/upload-artifact@v6
         with:
-          name: playwright-report-localhost
+          name: playwright-report-localhost-shard-${{ inputs.shard_index }}-of-${{ inputs.shard_total }}
           path: e2e/playwright-report/
 
       - name: Write E2E job summary
@@ -114,6 +147,8 @@ jobs:
           bash scripts/ci/append-summary.sh "Localhost E2E job" \
             "workflow=reusable-e2e-local" \
             "job=e2e" \
+            "shard=${{ inputs.shard_index }}/${{ inputs.shard_total }}" \
+            "web_artifact=${{ inputs.web_artifact_name != '' && inputs.web_artifact_name || 'built-in-job' }}" \
             "sha=${{ github.sha }}" \
             "run_id=${{ github.run_id }}" \
             "duration_sec=${dur}"

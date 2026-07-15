@@ -1,7 +1,7 @@
 name: E2E (Playwright)
 
 # Full localhost E2E is intentionally NOT run on every PR commit (too slow).
-# It runs on UAT CD (deploy-uat.yml → uat-e2e-full), weekly on main (non-blocking),
+# It runs on UAT CD (deploy-uat.yml → uat-e2e-full, six shards), weekly on main (non-blocking),
 # and can be triggered manually.
 on:
   workflow_dispatch:
@@ -22,8 +22,21 @@ permissions:
   contents: read
 
 jobs:
+  build-web:
+    uses: ./.github/workflows/_reusable-build-web.yml
+
   e2e:
+    needs: build-web
+    strategy:
+      fail-fast: false
+      # Shard count: 6 — update matrix.shard and shard_total below together (and mirror in deploy-uat.yml).
+      matrix:
+        shard: [1, 2, 3, 4, 5, 6]
     uses: ./.github/workflows/_reusable-e2e-local.yml
+    with:
+      shard_index: ${{ matrix.shard }}
+      shard_total: 6
+      web_artifact_name: ${{ needs.build-web.outputs.artifact_name }}
 
   # Weekly signal only — does not block merges to main.
   notify-on-failure:
