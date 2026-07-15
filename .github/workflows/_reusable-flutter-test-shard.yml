@@ -51,10 +51,9 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: flutter-prep-${{ github.sha }}
-          path: .flutter-prep-artifact
 
       - name: Restore Flutter prep state
-        run: bash scripts/ci/restore-flutter-prep-artifact.sh .flutter-prep-artifact
+        run: bash scripts/ci/restore-flutter-prep-artifact.sh flutter-prep-artifact.tar.gz
 
       - name: Install lcov
         run: sudo apt-get update && sudo apt-get install -y lcov

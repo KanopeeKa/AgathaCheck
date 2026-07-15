@@ -6,8 +6,9 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 cd "$ROOT"
 
-STAGING="${1:-.flutter-prep-artifact}"
-rm -rf "$STAGING"
+STAGING="${1:-flutter-prep-artifact}"
+ARCHIVE="${2:-flutter-prep-artifact.tar.gz}"
+rm -rf "$STAGING" "$ARCHIVE"
 mkdir -p "$STAGING/flutter_app/assets"
 
 mock_count=0
@@ -35,4 +36,7 @@ cat >"$STAGING/manifest.json" <<EOF
 }
 EOF
 
-echo "Staged Flutter prep artifact: mocks=${mock_count} legal=${legal_count} -> ${STAGING}"
+tar -czf "$ARCHIVE" -C "$STAGING" .
+rm -rf "$STAGING"
+
+echo "Staged Flutter prep archive: mocks=${mock_count} legal=${legal_count} -> ${ARCHIVE}"

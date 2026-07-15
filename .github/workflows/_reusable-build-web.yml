@@ -98,11 +98,10 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: flutter-prep-${{ steps.meta.outputs.deploy_sha }}
-          path: .flutter-prep-artifact
 
       - name: Restore Flutter prep state
         if: inputs.use_flutter_prep_artifact
-        run: bash scripts/ci/restore-flutter-prep-artifact.sh .flutter-prep-artifact
+        run: bash scripts/ci/restore-flutter-prep-artifact.sh flutter-prep-artifact.tar.gz
 
       - name: Build Flutter web (shared)
         env:

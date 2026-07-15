@@ -46,10 +46,9 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: flutter-prep-${{ github.sha }}
-          path: .flutter-prep-artifact
 
       - name: Restore Flutter prep state
-        run: bash scripts/ci/restore-flutter-prep-artifact.sh .flutter-prep-artifact
+        run: bash scripts/ci/restore-flutter-prep-artifact.sh flutter-prep-artifact.tar.gz
 
       - name: Run integration tests
         timeout-minutes: 10
