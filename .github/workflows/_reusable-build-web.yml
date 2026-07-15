@@ -56,7 +56,7 @@ jobs:
       deploy_sha: ${{ steps.meta.outputs.deploy_sha }}
       resolved_run_clean: ${{ steps.meta.outputs.resolved_run_clean }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         id: checkout
         with:
           ref: ${{ inputs.ref != '' && inputs.ref || github.ref }}
@@ -86,7 +86,7 @@ jobs:
           flutter-version: ${{ env.FLUTTER_VERSION }}
 
       - name: Cache Flutter dependencies
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: |
             ~/.pub-cache
@@ -97,7 +97,7 @@ jobs:
 
       - name: Download Flutter prep artifact
         if: inputs.use_flutter_prep_artifact
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v6
         with:
           name: flutter-prep-${{ github.sha }}
 
@@ -121,7 +121,7 @@ jobs:
 
       - name: Upload web artifact
         if: inputs.upload_artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: ${{ steps.meta.outputs.artifact_name }}
           path: flutter_app/build/web/
