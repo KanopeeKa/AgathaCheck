@@ -43,8 +43,17 @@ Future<void> pumpApp(WidgetTester tester, {int frames = 3}) async {
   await tester.pump(const Duration(milliseconds: 100));
 }
 
+/// Resolves [AppLocalizations] from a shell widget (avoids ambiguous [Scaffold]).
+AppLocalizations l10nFromTester(WidgetTester tester) {
+  final anchor = find.byKey(const Key('add_pet_button'));
+  final context = anchor.evaluate().isNotEmpty
+      ? tester.element(anchor)
+      : tester.element(find.byType(Scaffold).first);
+  return AppLocalizations.of(context)!;
+}
+
 Future<void> debugPrintTree(WidgetTester tester) async {
   debugPrint('\n--- WIDGET TREE START ---');
-  debugPrint(tester.element(find.byType(Scaffold)).toStringDeep());
+  debugPrint(tester.element(find.byType(Scaffold).first).toStringDeep());
   debugPrint('\n--- WIDGET TREE END ---');
 }
