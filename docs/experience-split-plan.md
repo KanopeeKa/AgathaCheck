@@ -1,7 +1,7 @@
 # AgathaTrack experience split — implementation plan
 
 **Branch:** `cursor/experience-split-17a0`  
-**Status:** In progress (Phase 1)  
+**Status:** In progress (Phase 2 complete; Phase 3 next)  
 **Last updated:** 2026-07-15
 
 Product decisions are locked in planning conversations. This document is the **execution tracker** for agents and humans.
@@ -71,7 +71,7 @@ Both shells use **top nav**:
 
 ## Incremental phases
 
-### Phase 1 — Foundation (current)
+### Phase 1 — Foundation (done)
 
 **Goal:** Chooser, shells, routes, preferences, drawer switch, BDD + tests.
 
@@ -89,17 +89,19 @@ Both shells use **top nav**:
 
 **Exit criteria:** Guardian-only login lands on `/g/home`; dual-user sees chooser; remember works; drawer switches shells.
 
-### Phase 2 — Split home content
+### Phase 2 — Split home content (done)
 
-| ID | Deliverable |
-|----|-------------|
-| 2.1 | Guardian home: due events + My Pets + Shared/Fostered sections (no org inventory) |
-| 2.2 | Group shared pets by sharer/org label |
-| 2.3 | Org home: per-org sections + org-only event filter |
-| 2.4 | Inline event actions on guardian home cards |
-| 2.5 | Remove org icon from old guardian chrome |
+| ID | Deliverable | Status |
+|----|-------------|--------|
+| 2.1 | Guardian home: due events + My Pets + Shared/Fostered sections (no org inventory) | Done |
+| 2.2 | Group shared pets by sharer/org label (`guardian_name` API + grouping) | Done |
+| 2.3 | Org home: per-org sections + org-only event filter | Done |
+| 2.4 | Inline event actions on home due-event cards | Done |
+| 2.5 | Remove org icon from old guardian chrome | Done (Phase 1 shell) |
 
-### Phase 3 — Pet detail context
+**Exit criteria:** `/g/home` shows grouped guardian content; `/o/home` shows org inventory; `/g/events` and `/o/events` scope pets correctly.
+
+### Phase 3 — Pet detail context (next)
 
 | ID | Deliverable |
 |----|-------------|
@@ -192,3 +194,4 @@ See planning doc user story tables (G1–G5, O1–O9, F1–F10, A1–A7, etc.).
 | Date | Phase | Notes |
 |------|-------|-------|
 | 2026-07-15 | 1 | Branch created; plan doc; Phase 1 foundation implemented |
+| 2026-07-15 | 2 | Guardian/org shell home widgets; `guardian_name` on `/pets/all`; scoped events dashboard; inline due-event actions; controller grouping tests |

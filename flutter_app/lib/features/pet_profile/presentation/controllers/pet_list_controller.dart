@@ -73,6 +73,55 @@ class PetListController {
     return allPets.where((p) => _isPersonalPet(p) || p.isFoster).toList();
   }
 
+  /// Org inventory pets for the organisation shell home.
+  List<Pet> orgShellPets(List<Pet> allPets) {
+    return allPets
+        .where(
+          (p) =>
+              !p.passedAway &&
+              !p.isFoster &&
+              !p.isShared &&
+              p.organizationId != null &&
+              p.organizationName != null &&
+              p.organizationName!.isNotEmpty,
+        )
+        .toList();
+  }
+
+  List<Pet> getOwnedPets(List<Pet> shellPets) {
+    return shellPets
+        .where((p) => !p.passedAway && !p.isShared && !p.isFoster)
+        .toList();
+  }
+
+  Map<String, List<Pet>> groupSharedPets(List<Pet> shellPets) {
+    final groups = <String, List<Pet>>{};
+    for (final pet in shellPets.where((p) => !p.passedAway && p.isShared)) {
+      final label = _sharedGroupLabel(pet);
+      groups.putIfAbsent(label, () => []).add(pet);
+    }
+    return groups;
+  }
+
+  Map<String, List<Pet>> groupFosteredPets(List<Pet> shellPets) {
+    final groups = <String, List<Pet>>{};
+    for (final pet in shellPets.where((p) => !p.passedAway && p.isFoster)) {
+      final label = pet.organizationName?.trim().isNotEmpty == true
+          ? pet.organizationName!.trim()
+          : 'Organisation';
+      groups.putIfAbsent(label, () => []).add(pet);
+    }
+    return groups;
+  }
+
+  String _sharedGroupLabel(Pet pet) {
+    final guardian = pet.guardianName?.trim();
+    if (guardian != null && guardian.isNotEmpty) return guardian;
+    final org = pet.organizationName?.trim();
+    if (org != null && org.isNotEmpty) return org;
+    return 'Shared care';
+  }
+
   Map<String, List<Pet>> getOrgGroups(List<Pet> filteredPets) {
     final groups = <String, List<Pet>>{};
     for (final pet in filteredPets) {

@@ -1035,5 +1035,13 @@
   "experienceDefaultSettingTitle": "Expérience par défaut",
   "experienceDefaultSettingSubtitle": "Utilisée à la connexion. Vous pouvez toujours changer via le menu.",
   "experienceGuardianInviteHint": "Ajoutez un animal ou ouvrez sa fiche pour partager les soins.",
-  "experienceOrganizationInviteHint": "Invitez des membres de l'équipe pour gérer votre organisation."
+  "experienceOrganizationInviteHint": "Invitez des membres de l'équipe pour gérer votre organisation.",
+  "sharedWithGroupTitle": "Partagé avec {name}",
+  "@sharedWithGroupTitle": { "placeholders": { "name": { "type": "String" } } },
+  "fosteredViaGroupTitle": "Famille d'accueil via {orgName}",
+  "@fosteredViaGroupTitle": { "placeholders": { "orgName": { "type": "String" } } },
+  "homeAllCaughtUp": "Tout est à jour",
+  "homeNoDueEvents": "Aucun événement en retard ou prévu aujourd'hui.",
+  "open": "Ouvrir",
+  "viewOrganization": "Voir l'organisation"
 }

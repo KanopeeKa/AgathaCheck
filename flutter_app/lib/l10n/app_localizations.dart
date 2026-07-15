@@ -5862,6 +5862,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Invite team members to help run your organisation.'**
   String get experienceOrganizationInviteHint;
+
+  /// No description provided for @sharedWithGroupTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Shared with {name}'**
+  String sharedWithGroupTitle(String name);
+
+  /// No description provided for @fosteredViaGroupTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Fostered via {orgName}'**
+  String fosteredViaGroupTitle(String orgName);
+
+  /// No description provided for @homeAllCaughtUp.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'re all caught up'**
+  String get homeAllCaughtUp;
+
+  /// No description provided for @homeNoDueEvents.
+  ///
+  /// In en, this message translates to:
+  /// **'No events are overdue or due today.'**
+  String get homeNoDueEvents;
+
+  /// No description provided for @open.
+  ///
+  /// In en, this message translates to:
+  /// **'Open'**
+  String get open;
+
+  /// No description provided for @viewOrganization.
+  ///
+  /// In en, this message translates to:
+  /// **'View organisation'**
+  String get viewOrganization;
 }
 
 class _AppLocalizationsDelegate

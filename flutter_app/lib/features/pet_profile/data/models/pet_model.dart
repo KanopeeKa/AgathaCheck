@@ -28,6 +28,7 @@ class PetModel {
     this.organizationName,
     this.fosterPlacementStatus,
     this.fosterName,
+    this.guardianName,
   });
 
   factory PetModel.fromJson(Map<String, dynamic> json) {
@@ -57,6 +58,7 @@ class PetModel {
       organizationName: json['organization_name'] as String?,
       fosterPlacementStatus: json['foster_placement_status'] as String?,
       fosterName: json['foster_name'] as String?,
+      guardianName: json['guardian_name'] as String?,
     );
   }
 
@@ -85,6 +87,7 @@ class PetModel {
       organizationName: pet.organizationName,
       fosterPlacementStatus: pet.fosterPlacementStatus,
       fosterName: pet.fosterName,
+      guardianName: pet.guardianName,
     );
   }
 
@@ -115,6 +118,7 @@ class PetModel {
   final String? organizationName;
   final String? fosterPlacementStatus;
   final String? fosterName;
+  final String? guardianName;
 
   Map<String, dynamic> toJson() {
     return {
@@ -167,6 +171,7 @@ class PetModel {
       organizationName: organizationName,
       fosterPlacementStatus: fosterPlacementStatus,
       fosterName: fosterName,
+      guardianName: guardianName,
     );
   }
 }

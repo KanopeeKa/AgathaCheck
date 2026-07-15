@@ -77,7 +77,7 @@ Tracks planned and completed refactor / quality work. See also `docs/refactoring
 
 ---
 
-## Experience split — Phase 1 (2026-07-15, in progress)
+## Experience split — Phases 1–2 (2026-07-15)
 
 **Branch:** `cursor/experience-split-17a0`  
 **Plan:** `docs/experience-split-plan.md`
@@ -89,7 +89,7 @@ Tracks planned and completed refactor / quality work. See also `docs/refactoring
 | XP-3 | Guardian home excludes org inventory (`guardianShellPets`) | **Done** |
 | XP-4 | BDD `experience_navigation.feature` + Playwright spec | **Partial** (1/6 scenarios E2E) |
 | XP-5 | Settings default experience | **Done** |
-| XP-6 | Phase 2 home grouping + inline event actions | Planned |
+| XP-6 | Phase 2 home grouping + inline event actions + scoped events | **Done** |
 
 ---
 

@@ -3262,4 +3262,27 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get experienceOrganizationInviteHint =>
       'Invitez des membres de l\'équipe pour gérer votre organisation.';
+
+  @override
+  String sharedWithGroupTitle(String name) {
+    return 'Partagé avec $name';
+  }
+
+  @override
+  String fosteredViaGroupTitle(String orgName) {
+    return 'Famille d\'accueil via $orgName';
+  }
+
+  @override
+  String get homeAllCaughtUp => 'Tout est à jour';
+
+  @override
+  String get homeNoDueEvents =>
+      'Aucun événement en retard ou prévu aujourd\'hui.';
+
+  @override
+  String get open => 'Ouvrir';
+
+  @override
+  String get viewOrganization => 'Voir l\'organisation';
 }

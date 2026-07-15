@@ -7,6 +7,7 @@ import '../../features/experience/presentation/screens/experience_home_screens.d
 import '../../features/experience/presentation/screens/experience_resolve_screen.dart';
 import '../../features/experience/presentation/screens/experience_settings_screen.dart';
 import '../../features/experience/presentation/widgets/experience_shell_scaffold.dart';
+import '../../features/health_tracking/domain/health_events_scope.dart';
 import '../../features/health_tracking/presentation/screens/health_dashboard_screen.dart';
 import '../../features/notifications/presentation/screens/notifications_screen.dart';
 
@@ -101,7 +102,11 @@ class _GuardianEventsScreen extends StatelessWidget {
     return ExperienceShellScaffold(
       experience: AppExperience.guardian,
       currentLocation: GoRouterState.of(context).uri.path,
-      child: const HealthDashboardScreen(),
+      child: const HealthDashboardScreen(
+        embeddedInShell: true,
+        scope: HealthEventsScope.guardian,
+        backPath: '/g/home',
+      ),
     );
   }
 }
@@ -114,7 +119,11 @@ class _OrgEventsScreen extends StatelessWidget {
     return ExperienceShellScaffold(
       experience: AppExperience.organization,
       currentLocation: GoRouterState.of(context).uri.path,
-      child: const HealthDashboardScreen(),
+      child: const HealthDashboardScreen(
+        embeddedInShell: true,
+        scope: HealthEventsScope.organization,
+        backPath: '/o/home',
+      ),
     );
   }
 }

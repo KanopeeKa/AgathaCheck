@@ -3231,4 +3231,26 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get experienceOrganizationInviteHint =>
       'Invite team members to help run your organisation.';
+
+  @override
+  String sharedWithGroupTitle(String name) {
+    return 'Shared with $name';
+  }
+
+  @override
+  String fosteredViaGroupTitle(String orgName) {
+    return 'Fostered via $orgName';
+  }
+
+  @override
+  String get homeAllCaughtUp => 'You\'re all caught up';
+
+  @override
+  String get homeNoDueEvents => 'No events are overdue or due today.';
+
+  @override
+  String get open => 'Open';
+
+  @override
+  String get viewOrganization => 'View organisation';
 }
