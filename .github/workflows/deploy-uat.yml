@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
     inputs:
       deploy_ref:
-        description: Release branch to deploy (release/uat-*)
+        description: Release branch to deploy (must exist on origin; e.g. release/uat-260715-fix2)
         required: true
       run_clean:
         description: Run flutter clean before web build (push uses UAT_FLUTTER_CLEAN repo variable)
@@ -26,8 +26,25 @@ permissions:
   contents: read
 
 jobs:
+  validate-ref:
+    name: Validate deploy ref
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            scripts/ci/assert-git-ref-exists.sh
+          sparse-checkout-cone-mode: false
+
+      - name: Verify release branch exists on origin
+        env:
+          REQUIRED_REF_PREFIX: release/uat-
+        run: bash scripts/ci/assert-git-ref-exists.sh "${{ env.DEPLOY_REF }}" "heads/release/uat-"
+
   build-web:
     name: Build Flutter web
+    needs: validate-ref
     uses: ./.github/workflows/_reusable-build-web.yml
     secrets:
       POSTHOG_API_KEY: ${{ secrets.POSTHOG_API_KEY }}
@@ -82,6 +99,9 @@ jobs:
           local-dir: flutter_app/build/web/
           exclude: |
             **/backend/**
+            # ftp-deploy often omits dotfiles from sync; never delete server copies.
+            **/.htaccess
+            **/.last_build_id
 
       - name: Stage backend for FTP (shared)
         id: stage_backend
@@ -105,6 +125,8 @@ jobs:
             **/coverage/**
             **/*.test.js
             **/babel.config.cjs
+            # cPanel generates backend/.htaccess (Passenger) — never publish or delete via FTP.
+            **/.htaccess
 
       - name: Migration reminder
         run: |
@@ -282,9 +304,30 @@ jobs:
           timeout: 120s
           script: |
             set -e
-            APPDIR="$HOME/uat.agathatrack.com/backend"
+            ROOTDIR="$HOME/uat.agathatrack.com"
+            APPDIR="${ROOTDIR}/backend"
             NODEVENV_BASE="$HOME/nodevenv/uat.agathatrack.com/backend"
             cd "$APPDIR"
+
+            echo "=== SPA .htaccess at domain root ==="
+            if [ -f "${ROOTDIR}/htaccess.spa" ]; then
+              install -m 644 "${ROOTDIR}/htaccess.spa" "${ROOTDIR}/.htaccess"
+              echo "Installed ${ROOTDIR}/.htaccess from htaccess.spa"
+            elif [ -f "${ROOTDIR}/.htaccess" ]; then
+              echo "OK: ${ROOTDIR}/.htaccess already present"
+            else
+              echo "WARNING: no htaccess.spa or .htaccess at domain root — Flutter deep links may break"
+            fi
+
+            echo "=== Passenger .htaccess in backend ==="
+            if [ -f .htaccess ] && grep -qE 'Passenger(AppRoot|Enabled|BaseURI)' .htaccess 2>/dev/null; then
+              echo "OK: backend/.htaccess contains Passenger directives"
+            else
+              echo "ERROR: backend/.htaccess missing or not a Passenger config (Apache is serving a directory listing)."
+              echo "Action: cPanel -> Setup Node.js App -> app root .../backend, startup bin/start.js -> Save -> Restart"
+              echo "Do not upload backend/.htaccess via FTP — cPanel generates it."
+              exit 1
+            fi
 
             echo "=== node_modules state ==="
             if [ -L node_modules ]; then

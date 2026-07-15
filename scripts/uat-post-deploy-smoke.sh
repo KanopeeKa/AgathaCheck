@@ -11,6 +11,8 @@ classify_body() {
   local body="$1"
   if grep -q '"status":"OK"' <<<"$body"; then
     echo "ok"
+  elif grep -qiE '<title>404 Not Found</title>|The requested URL was not found' <<<"$body"; then
+    echo "apache_404"
   elif grep -q 'Index of /backend' <<<"$body"; then
     echo "directory_listing"
   elif grep -qE 'flutter-view|flutter\.js|<base href="/">' <<<"$body"; then
@@ -46,6 +48,14 @@ probe_url() {
 error_hint() {
   local kind="$1"
   case "$kind" in
+    apache_404)
+      cat <<'EOF'
+Apache returned a static 404 page for /backend/health — Passenger is not handling /backend.
+Usually backend/.htaccess (cPanel Passenger config) is missing or the Node.js app is not registered.
+cPanel: Setup Node.js App -> app root .../backend, startup file bin/start.js -> Save -> Restart.
+Ensure FTP deploy excludes backend/.htaccess (do not delete the cPanel-generated file).
+EOF
+      ;;
     directory_listing)
       cat <<'EOF'
 Apache is serving /backend/ as a static directory listing — Passenger/Node is not running.
@@ -94,6 +104,17 @@ emit_error() {
   echo "::error title=UAT backend unhealthy (HTTP ${code}, ${kind})::${hint//$'\n'/ }"
 }
 
+echo "Probing ${UAT_BASE_URL}/backend/ (directory listing check)..."
+IFS='|' read -r root_code root_kind <<<"$(probe_url "${UAT_BASE_URL}/backend/")"
+if [ "$root_kind" = "directory_listing" ]; then
+  echo "Backend root is an Apache directory listing (HTTP ${root_code}) — Passenger is not running."
+  error_hint "$root_kind" | while IFS= read -r line; do
+    [ -n "$line" ] && echo "::notice::${line}"
+  done
+  emit_error "$root_kind" "$root_code"
+  exit 1
+fi
+
 echo "Probing ${UAT_BASE_URL}/backend/health (up to ${MAX_ATTEMPTS} attempts, ${SLEEP_SECS}s apart)..."
 
 last_code=""
@@ -118,7 +139,7 @@ for i in $(seq 1 "$MAX_ATTEMPTS"); do
 
   if [ "$i" -eq 1 ] || [ $((i % 6)) -eq 0 ]; then
     echo "Attempt ${i}/${MAX_ATTEMPTS}: HTTP ${last_code} — ${last_kind}"
-    if [ "$last_kind" = "directory_listing" ] || [ "$last_kind" = "flutter_spa" ] || [ "$last_kind" = "passenger_crash" ]; then
+    if [ "$last_kind" = "directory_listing" ] || [ "$last_kind" = "flutter_spa" ] || [ "$last_kind" = "passenger_crash" ] || [ "$last_kind" = "apache_404" ]; then
       error_hint "$last_kind" | while IFS= read -r line; do
         [ -n "$line" ] && echo "::notice::${line}"
       done

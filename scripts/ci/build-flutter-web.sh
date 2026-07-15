@@ -54,6 +54,12 @@ fi
     --dart-define=POSTHOG_HOST="${POSTHOG_HOST}"
 )
 
+# Belt-and-suspenders: FTP deploy may not sync dotfiles; also stage a visible copy for SSH rename.
+if [[ -f flutter_app/web/.htaccess ]]; then
+  cp -f flutter_app/web/.htaccess flutter_app/build/web/.htaccess
+  cp -f flutter_app/web/.htaccess flutter_app/build/web/htaccess.spa
+fi
+
 if [[ "$WRITE_MANIFEST" == "true" ]]; then
   export FLUTTER_VERSION ARTIFACT_NAME SOURCE_WORKFLOW
   export RUN_CLEAN RUN_CODEGEN

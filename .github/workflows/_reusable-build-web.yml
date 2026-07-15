@@ -57,6 +57,7 @@ jobs:
       resolved_run_clean: ${{ steps.meta.outputs.resolved_run_clean }}
     steps:
       - uses: actions/checkout@v4
+        id: checkout
         with:
           ref: ${{ inputs.ref != '' && inputs.ref || github.ref }}
 
@@ -129,6 +130,14 @@ jobs:
       - name: Write build job summary
         if: always()
         run: |
+          if [[ "${{ steps.checkout.outcome }}" != "success" ]]; then
+            {
+              echo "### Flutter web build job"
+              echo
+              echo "Checkout failed — the deploy ref may not exist on origin. See the **Validate deploy ref** job or checkout step logs."
+            } >> "${GITHUB_STEP_SUMMARY}"
+            exit 0
+          fi
           end=$(date +%s)
           start="${JOB_START_EPOCH:-$end}"
           dur=$((end - start))
