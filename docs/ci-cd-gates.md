@@ -5,6 +5,26 @@ prerequisites. GitHub branch/environment settings must match the check names bel
 
 See also: [ci-cd-baseline.md](./ci-cd-baseline.md) (metrics), [CONTRIBUTING.md](../CONTRIBUTING.md) (contributor checklist).
 
+**Program status:** Phases -1–6 merged (#162–#168). Phase 7 (#169) closes build-artifact
+hygiene. Gate contract below is the maintained source of truth for branch protection
+and environment checks.
+
+### Suggested next iteration track (post-program)
+
+The hardening program (Phases -1–7) focused on gates, artifacts, and PR signal.
+**Recommended follow-up initiative:** UAT deploy reliability.
+
+| Metric | Baseline (2026-07-14) | Post-program sample (2026-07-15) | **Target (next 20 runs)** |
+|--------|----------------------|----------------------------------|---------------------------|
+| UAT deploy failure rate | 85% | 80% | **≤ 40%** |
+| UAT deploy median duration | 42m | —* | **≤ 30m** (stretch) |
+
+\* Re-measure with `scripts/ci/collect-baseline.sh` after a window of non-cancelled runs.
+
+**Scope ideas (not yet scheduled):** live `@smoke` flake reduction (TLS/hosting),
+localhost E2E stability on deploy-uat, supervised PROD promotion dry-run, regenerate
+baseline table in [ci-cd-baseline.md](./ci-cd-baseline.md) when targets are met.
+
 ## Quick reference
 
 | Stage | Blocking? | Workflow |
@@ -62,8 +82,8 @@ gh pr checks <PR_NUMBER>
 
 #### Branch protection setup (`main`)
 
-After **PR #168** (or any PR) has run CI once on `main`, add the new check using the
-**exact** string from `gh pr checks` (not the job `name:` alone):
+After Phase 6 merged (#168), add the startup smoke check using the **exact** string from
+`gh pr checks` (not the job `name:` alone):
 
 **Required new check:** `startup-smoke / PR startup smoke`
 

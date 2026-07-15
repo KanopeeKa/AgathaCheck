@@ -35,7 +35,7 @@ attached_assets/
 # Runtime uploads at repo root (server/uploads/ already ignored)
 /uploads/
 
-# Flutter build caches
+# Flutter build caches (never commit — CI/UAT build artifacts)
 flutter_app/build/
 *.cache.dill*
 **/.filecache
@@ -72,3 +72,4 @@ flutter_app/coverage/
 .uat-backend-deploy/
 .prod-backend-deploy/
 .backend-deploy-staging/
+actionlint
