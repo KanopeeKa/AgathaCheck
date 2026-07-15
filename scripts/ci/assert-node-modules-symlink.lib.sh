@@ -46,6 +46,7 @@ uat_nm_write_state() {
     echo "node_modules_kind=${kind}"
     echo "node_modules_target=${target}"
     echo "passenger_htaccess_ok=${ht_ok}"
+    echo "passenger_htaccess_file=${PASSENGER_HTACCESS_FILE:-}"
     echo "server_hostname=${hostname}"
     echo "node_major=${node_major}"
     echo "app_root=${appdir}"

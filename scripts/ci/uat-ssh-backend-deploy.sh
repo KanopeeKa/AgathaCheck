@@ -7,6 +7,8 @@ set -euo pipefail
 
 # shellcheck source=assert-node-modules-symlink.lib.sh
 source "$(cd "$(dirname "$0")" && pwd)/assert-node-modules-symlink.lib.sh"
+# shellcheck source=uat-htaccess.lib.sh
+source "$(cd "$(dirname "$0")" && pwd)/uat-htaccess.lib.sh"
 
 HOME="$(uat_nm_home_dir)"
 export HOME
@@ -33,27 +35,43 @@ if [[ "$PKG_CHANGED" == "true" ]]; then
   echo "::warning::Manual action required: cPanel → Setup Node.js App → Run NPM Install → Restart"
 fi
 
-echo "=== SPA .htaccess at domain root ==="
-if [[ -f "${SITE_ROOT}/htaccess.spa" ]]; then
-  install -m 644 "${SITE_ROOT}/htaccess.spa" "${SITE_ROOT}/.htaccess"
-  echo "Installed ${SITE_ROOT}/.htaccess from htaccess.spa"
-elif [[ -f "${SITE_ROOT}/.htaccess" ]]; then
-  echo "OK: ${SITE_ROOT}/.htaccess already present"
+echo "=== Discover Passenger .htaccess (pre-merge) ==="
+uat_htaccess_discover_passenger "${SITE_ROOT}" "${APPDIR}"
+if [[ -n "${UAT_HT_PASSENGER_SOURCE:-}" ]]; then
+  echo "passenger_discovered=${UAT_HT_PASSENGER_SOURCE}"
+  echo "passenger_blocks_preserved=$([[ -n "${UAT_HT_PRESERVED_BLOCKS:-}" ]] && echo true || echo false)"
 else
-  echo "::warning::no htaccess.spa or .htaccess at domain root — Flutter deep links may break"
+  echo "passenger_discovered=none"
+  echo "passenger_blocks_preserved=false"
 fi
 
-echo "=== Passenger .htaccess in backend ==="
+echo "=== Merge SPA .htaccess at domain root ==="
+uat_htaccess_apply_spa_merge "${SITE_ROOT}" "${UAT_HT_PRESERVED_BLOCKS:-}"
+
+PASSENGER_EXPECTED_IN_ROOT="false"
+if [[ "${UAT_HT_PASSENGER_SOURCE:-}" == "${SITE_ROOT}/.htaccess" ]] \
+  || [[ "${UAT_HT_PASSENGER_MERGED_TO_ROOT:-}" == "true" ]]; then
+  PASSENGER_EXPECTED_IN_ROOT="true"
+fi
+
+echo "=== Verify merged root .htaccess ==="
+uat_htaccess_verify_merged_root "${SITE_ROOT}" "$PASSENGER_EXPECTED_IN_ROOT" "${UAT_HT_ROOT_APPLIED:-false}"
+
+echo "=== Re-verify Passenger .htaccess (post-merge) ==="
+PASSENGER_HTACCESS_FILE="$(uat_find_passenger_htaccess "${SITE_ROOT}" "${APPDIR}")"
 PASSENGER_HTACCESS_OK="false"
-if [[ -f "${APPDIR}/.htaccess" ]] && grep -qE 'Passenger(AppRoot|Enabled|BaseURI)' "${APPDIR}/.htaccess" 2>/dev/null; then
+if [[ -n "$PASSENGER_HTACCESS_FILE" ]]; then
   PASSENGER_HTACCESS_OK="true"
-  echo "OK: backend/.htaccess contains Passenger directives"
+  echo "OK: Passenger config in ${PASSENGER_HTACCESS_FILE}"
+  echo "passenger_htaccess_file=${PASSENGER_HTACCESS_FILE}"
 else
-  echo "::error::backend/.htaccess missing or not a Passenger config"
-  echo "Action: cPanel → Setup Node.js App → app root ${APPDIR#"$HOME"/} → startup bin/start.js → Save → Restart"
+  echo "::error::Passenger .htaccess not found at ${SITE_ROOT}/.htaccess or ${APPDIR}/.htaccess"
+  echo "Action: cPanel → Setup Node.js App → app root ${APPDIR#"$HOME"/} → startup bin/start.js → Save (regenerates Passenger block) → Restart"
+  echo "Note: o2switch usually writes Passenger directives at the domain root — never upload .htaccess via FTP."
   exit 1
 fi
 export PASSENGER_HTACCESS_OK
+export PASSENGER_HTACCESS_FILE
 
 echo "=== node_modules invariant (pre-restart) ==="
 uat_nm_assert pre 1 0

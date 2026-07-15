@@ -15,8 +15,9 @@ Never a real directory in `backend/`.
 | Action | Why |
 |--------|-----|
 | `npm ci` or `npm install` in `backend/` without nodevenv activate | Creates real `backend/node_modules/` |
-| Deleting `backend/.htaccess` | Breaks Passenger |
-| Uploading `backend/.htaccess` via FTP | Overwrites cPanel Passenger config |
+| Deleting Passenger `.htaccess` (root or `backend/`) | Breaks Passenger |
+| Uploading `.htaccess` via FTP | Overwrites cPanel Passenger config |
+| Blind overwrite of domain-root `.htaccess` with SPA-only rules | Wipes CloudLinux Passenger block (o2switch often puts it at **domain root**, not `backend/`) |
 | FTP-uploading `node_modules/` | Breaks CloudLinux symlink model |
 | `rm -rf ~/uat.agathatrack.com/backend` | Destroys Passenger config + symlink |
 
@@ -28,8 +29,9 @@ Never a real directory in `backend/`.
    - Application root: `uat.agathatrack.com/backend`
    - Startup file: `bin/start.js`
 4. Click **Run NPM Install** (creates the nodevenv symlink).
-5. Click **Restart**.
-6. Verify over SSH:
+5. Click **Save** (regenerates Passenger `.htaccess` — often at **domain root** on o2switch).
+6. Click **Restart**.
+7. Verify over SSH:
    ```bash
    ls -la ~/uat.agathatrack.com/backend/node_modules
    curl -sk https://uat.agathatrack.com/backend/health
@@ -44,7 +46,12 @@ Remote script prints log sentinels **`UAT_SSH_DEPLOY_BEGIN`** / **`UAT_SSH_DEPLO
 When enabled:
 
 1. FTP deploys code only (never `node_modules` or `backend/.htaccess`).
-2. SSH runs `scripts/ci/uat-ssh-backend-deploy.sh` (bundled):
+2. SSH runs `scripts/ci/uat-ssh-backend-deploy.sh` (bundled), in order:
+   1. **Discover** Passenger blocks (root or `backend/.htaccess`) before any write
+   2. **Backup** existing root `.htaccess` → `.htaccess.bak.<epoch>`
+   3. **Merge/apply** `htaccess.spa` + preserved CloudLinux blocks at domain root
+   4. **Verify** merged root has SPA `/backend` exclusion; Passenger markers when expected
+   5. **Re-verify** Passenger at domain root **or** `backend/.htaccess`
    - **Pre-restart:** `assert-node-modules-symlink` (blocking)
    - `touch tmp/restart.txt`
    - **Post-restart:** invariant with 3 retries / 10s (~30s)
@@ -62,6 +69,7 @@ When **disabled:** symlink checks are skipped (`node_modules_kind=not_verified`,
 | `ssh_invariant_enforced` | Policy — `UAT_SSH_ENABLED=true` |
 | `ssh_invariant` | Execution — `passed` / `failed` / `skipped` (whitelist, SSH, or invariant) |
 | `deploy_verification` | `verified` only when **all** proofs pass: `ssh_invariant=passed`, `node_modules_kind=symlink`, `passenger_htaccess_ok=true`, `state_collected=true`, `ssh_deploy_end=true`, fresh `restart_txt_epoch` |
+| `passenger_htaccess_file` | Path to Passenger config (`…/uat.agathatrack.com/.htaccess` or `…/backend/.htaccess`) for triage |
 | `pre_smoke_ok` | Job output — smoke blocked when `false` and SSH enforced |
 | `ssh_proofs_ok` | Aggregate proof gate result |
 
