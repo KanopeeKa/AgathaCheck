@@ -90,6 +90,7 @@ Tracks planned and completed refactor / quality work. See also `docs/refactoring
 | XP-4 | BDD `experience_navigation.feature` + Playwright spec | **Done** (6/6 scenarios E2E) |
 | XP-5 | Settings default experience | **Done** |
 | XP-6 | Phase 2 home grouping + inline event actions + scoped events | **Done** |
+| XP-7 | PR A+B tests: experience in `rest` shard; L1/L2 coverage; domain gate **72.4%** | **Done** |
 
 ---
 

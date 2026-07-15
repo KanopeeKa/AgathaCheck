@@ -77,4 +77,75 @@ void main() {
       expect(e.hasGuardianContext, isTrue);
     });
   });
+
+  group('ExperienceEligibility negative paths', () {
+    late ExperienceEligibility dual;
+    late ExperienceEligibility guardianOnly;
+    late ExperienceEligibility orgOnly;
+
+    setUp(() {
+      dual = ExperienceEligibilityRules.compute(
+        pets: [
+          _pet(),
+          _pet(organizationId: 'o1', organizationName: 'Shelter'),
+        ],
+        orgMembershipCount: 1,
+      );
+      guardianOnly = ExperienceEligibilityRules.compute(
+        pets: const [],
+        orgMembershipCount: 0,
+      );
+      orgOnly = ExperienceEligibilityRules.compute(
+        pets: [_pet(organizationId: 'o1', organizationName: 'Shelter')],
+        orgMembershipCount: 1,
+      );
+    });
+
+    test('dual user availableExperiences lists guardian and organization', () {
+      expect(dual.availableExperiences, [
+        AppExperience.guardian,
+        AppExperience.organization,
+      ]);
+    });
+
+    test('guardian-only availableExperiences excludes organization', () {
+      expect(guardianOnly.availableExperiences, [AppExperience.guardian]);
+      expect(guardianOnly.canUseOrganization, isFalse);
+    });
+
+    test('org-only cannot use guardian shell', () {
+      expect(orgOnly.canUseGuardian, isFalse);
+      expect(orgOnly.canUseOrganization, isTrue);
+      expect(orgOnly.showChooser, isFalse);
+    });
+
+    test('dual user without saved default returns null for chooser', () {
+      expect(dual.resolveAutoExperience(), isNull);
+    });
+
+    test('org-only ignores guardian saved default', () {
+      expect(
+        orgOnly.resolveAutoExperience(savedDefault: AppExperience.guardian),
+        AppExperience.organization,
+      );
+    });
+
+    test('personal pet without org name still counts as guardian context', () {
+      final e = ExperienceEligibilityRules.compute(
+        pets: const [Pet(id: '1', name: 'A', species: 'Cat')],
+        orgMembershipCount: 1,
+      );
+      expect(e.hasGuardianContext, isTrue);
+      expect(e.showChooser, isTrue);
+    });
+
+    test('org inventory pet alone is not guardian context', () {
+      expect(
+        ExperienceEligibilityRules.hasGuardianContextFromPets([
+          _pet(organizationId: 'o1', organizationName: 'Shelter'),
+        ]),
+        isFalse,
+      );
+    });
+  });
 }

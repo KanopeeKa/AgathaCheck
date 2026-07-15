@@ -18,6 +18,7 @@ shard_paths() {
     org) printf '%s\n' test/features/organization ;;
     rest)
       printf '%s\n' \
+        test/features/experience \
         test/features/vet \
         test/features/auth \
         test/features/sharing \

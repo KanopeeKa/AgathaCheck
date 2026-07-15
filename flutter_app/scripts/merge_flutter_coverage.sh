@@ -4,7 +4,7 @@ set -euo pipefail
 
 cd "$(dirname "$0")/.."
 INPUT_ROOT="${1:-_coverage_shards}"
-THRESHOLD="${DOMAIN_COVERAGE_THRESHOLD:-65}"
+THRESHOLD="${DOMAIN_COVERAGE_THRESHOLD:-70}"
 
 shards=(pet health org rest)
 merged="coverage/lcov.merged.info"
