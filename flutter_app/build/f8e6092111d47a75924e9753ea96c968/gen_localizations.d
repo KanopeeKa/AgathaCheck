@@ -1,1 +1,0 @@
- /workspace/flutter_app/lib/l10n/app_localizations_en.dart /workspace/flutter_app/lib/l10n/app_localizations_fr.dart /workspace/flutter_app/lib/l10n/app_localizations.dart:  /workspace/flutter_app/l10n.yaml /workspace/flutter_app/lib/l10n/app_en.arb /workspace/flutter_app/lib/l10n/app_fr.arb

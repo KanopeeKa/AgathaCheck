@@ -5,6 +5,9 @@ prerequisites. GitHub branch/environment settings must match the check names bel
 
 See also: [ci-cd-baseline.md](./ci-cd-baseline.md) (metrics), [CONTRIBUTING.md](../CONTRIBUTING.md) (contributor checklist).
 
+**Program status:** Phases -1–6 merged (#162–#168). Gate contract below is the maintained
+source of truth for branch protection and environment checks.
+
 ## Quick reference
 
 | Stage | Blocking? | Workflow |
@@ -62,8 +65,8 @@ gh pr checks <PR_NUMBER>
 
 #### Branch protection setup (`main`)
 
-After **PR #168** (or any PR) has run CI once on `main`, add the new check using the
-**exact** string from `gh pr checks` (not the job `name:` alone):
+After Phase 6 merged (#168), add the startup smoke check using the **exact** string from
+`gh pr checks` (not the job `name:` alone):
 
 **Required new check:** `startup-smoke / PR startup smoke`
 
