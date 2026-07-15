@@ -118,5 +118,134 @@ void main() {
       );
       expect(actions, {PetDetailAction.downloadReport});
     });
+
+    test('unresolved policy inputs deny all privileged actions', () {
+      final actions = PetDetailActions.visible(
+        pet: _pet(),
+        experience: AppExperience.guardian,
+        role: PetViewerRole.guardian,
+        policyInputsResolved: false,
+      );
+      expect(actions, isEmpty);
+
+      final ctx = PetDetailActions.resolveContext(
+        pet: _pet(),
+        experience: AppExperience.guardian,
+        policyInputsResolved: false,
+      );
+      expect(ctx.isPolicyResolved, isFalse);
+      expect(ctx.can(PetDetailAction.editProfile), isFalse);
+      expect(ctx.can(PetDetailAction.downloadReport), isFalse);
+    });
+
+    test('restricted context factory denies every action', () {
+      final ctx = PetDetailContext.restricted();
+      expect(ctx.isPolicyResolved, isFalse);
+      expect(ctx.actions, isEmpty);
+      for (final action in PetDetailAction.values) {
+        expect(ctx.can(action), isFalse);
+      }
+    });
+  });
+
+  group('action matrix (experience x role x admin)', () {
+    final cases = <({
+      String label,
+      Pet pet,
+      AppExperience experience,
+      PetViewerRole role,
+      bool isOrgAdmin,
+      Set<PetDetailAction> expected,
+    })>[
+      (
+        label: 'guardian / guardian',
+        pet: _pet(),
+        experience: AppExperience.guardian,
+        role: PetViewerRole.guardian,
+        isOrgAdmin: false,
+        expected: {
+          PetDetailAction.editProfile,
+          PetDetailAction.assignVet,
+          PetDetailAction.manageSharing,
+          PetDetailAction.downloadReport,
+        },
+      ),
+      (
+        label: 'guardian / sharedCarer',
+        pet: _pet(isShared: true),
+        experience: AppExperience.guardian,
+        role: PetViewerRole.sharedCarer,
+        isOrgAdmin: false,
+        expected: {PetDetailAction.downloadReport},
+      ),
+      (
+        label: 'guardian / fosterCarer',
+        pet: _pet(isFoster: true, organizationName: 'Shelter'),
+        experience: AppExperience.guardian,
+        role: PetViewerRole.fosterCarer,
+        isOrgAdmin: false,
+        expected: {PetDetailAction.downloadReport},
+      ),
+      (
+        label: 'organization / org admin',
+        pet: _pet(organizationId: 'o1', organizationName: 'Shelter'),
+        experience: AppExperience.organization,
+        role: PetViewerRole.organization,
+        isOrgAdmin: true,
+        expected: {
+          PetDetailAction.editProfile,
+          PetDetailAction.assignVet,
+          PetDetailAction.manageSharing,
+          PetDetailAction.fosterPlacement,
+          PetDetailAction.downloadReport,
+        },
+      ),
+      (
+        label: 'organization / org non-admin',
+        pet: _pet(organizationId: 'o1', organizationName: 'Shelter'),
+        experience: AppExperience.organization,
+        role: PetViewerRole.organization,
+        isOrgAdmin: false,
+        expected: {PetDetailAction.downloadReport},
+      ),
+      (
+        label: 'organization experience / personal guardian pet',
+        pet: _pet(),
+        experience: AppExperience.organization,
+        role: PetViewerRole.guardian,
+        isOrgAdmin: false,
+        expected: {
+          PetDetailAction.editProfile,
+          PetDetailAction.assignVet,
+          PetDetailAction.manageSharing,
+          PetDetailAction.downloadReport,
+        },
+      ),
+      (
+        label: 'guardian experience / org inventory pet',
+        pet: _pet(organizationId: 'o1', organizationName: 'Shelter'),
+        experience: AppExperience.guardian,
+        role: PetViewerRole.guardian,
+        isOrgAdmin: false,
+        expected: {
+          PetDetailAction.editProfile,
+          PetDetailAction.assignVet,
+          PetDetailAction.manageSharing,
+          PetDetailAction.downloadReport,
+        },
+      ),
+    ];
+
+    for (final c in cases) {
+      test(c.label, () {
+        final actions = PetDetailActions.visible(
+          pet: c.pet,
+          experience: c.experience,
+          role: c.role,
+          isOrgAdmin: c.isOrgAdmin,
+        );
+        expect(actions, c.expected);
+      });
+    }
   });
 }

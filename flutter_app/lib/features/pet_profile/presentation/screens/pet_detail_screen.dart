@@ -4,12 +4,10 @@ import '../../../../core/utils/constants.dart';
 import '../../../../core/widgets/app_logo_title.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../../core/theme/app_theme.dart';
-import '../../../experience/domain/entities/app_experience.dart';
 import '../../../experience/presentation/providers/experience_providers.dart';
-import '../../../organization/presentation/providers/organization_providers.dart';
 import '../../../organization/presentation/widgets/pet_foster_placement_section.dart';
-import '../../domain/entities/pet.dart';
 import '../../domain/services/pet_detail_actions.dart';
+import '../providers/pet_detail_viewer_context_provider.dart';
 import '../providers/pet_providers.dart';
 import '../widgets/pet_detail/pet_detail_app_bar.dart';
 import '../widgets/pet_detail/pet_detail_profile_card.dart';
@@ -55,14 +53,8 @@ class _PetDetailScreenState extends ConsumerState<PetDetailScreen> {
 
         final theme = Theme.of(context);
         final isOrgPet = pet.organizationId != null;
-        final isOrgAdmin = pet.organizationId != null
-            ? ref.watch(isOrgAdminProvider(pet.organizationId!))
-            : false;
-        final experience = ref.watch(resolvedExperienceProvider);
-        final viewerContext = PetDetailActions.resolveContext(
-          pet: pet,
-          experience: experience,
-          isOrgAdmin: isOrgAdmin,
+        final viewerContext = ref.watch(
+          petDetailViewerContextProvider(widget.petId),
         );
         final backPath = ref.watch(experienceHomePathProvider);
 
@@ -107,9 +99,12 @@ class _PetDetailScreenState extends ConsumerState<PetDetailScreen> {
               SliverToBoxAdapter(
                 child: OtherEventsSection(petId: widget.petId, pet: pet),
               ),
-              SliverToBoxAdapter(
-                child: SharingSection(petId: widget.petId, pet: pet),
-              ),
+              if (viewerContext.can(PetDetailAction.manageSharing) ||
+                  pet.isShared ||
+                  pet.isFoster)
+                SliverToBoxAdapter(
+                  child: SharingSection(petId: widget.petId, pet: pet),
+                ),
               if (viewerContext.can(PetDetailAction.downloadReport))
                 SliverToBoxAdapter(child: DownloadReportSection(pet: pet)),
               const SliverToBoxAdapter(child: SizedBox(height: 32)),

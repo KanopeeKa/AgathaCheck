@@ -14,6 +14,7 @@ import '../../features/notifications/presentation/screens/notification_settings_
 import '../../features/notifications/presentation/screens/notifications_screen.dart';
 import '../../features/pet_profile/presentation/screens/pet_detail_screen.dart';
 import '../../features/pet_profile/presentation/screens/pet_form_screen.dart';
+import '../../features/pet_profile/presentation/widgets/pet_edit_permission_guard.dart';
 import '../../features/organization/presentation/screens/archived_pet_detail_screen.dart';
 import '../../features/organization/presentation/screens/archived_pets_screen.dart';
 import '../../features/organization/presentation/screens/accept_connection_screen.dart';
@@ -172,7 +173,7 @@ final routerProvider = Provider<GoRouter>((ref) {
         name: 'editPet',
         builder: (context, state) {
           final petId = state.pathParameters['id']!;
-          return PetFormScreen(petId: petId);
+          return PetEditPermissionGuard(petId: petId);
         },
       ),
       GoRoute(

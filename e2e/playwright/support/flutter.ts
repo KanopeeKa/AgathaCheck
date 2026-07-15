@@ -69,6 +69,49 @@ export async function expectHomeShellVisible(
   await homeShellLocator(page).first().waitFor({ timeout });
 }
 
+/** True when the post-split experience shell (`/g/home` or `/o/home`) is visible. */
+export async function isExperienceShellVisible(page: Page): Promise<boolean> {
+  const homeNav = page.getByRole('button', { name: 'Home' });
+  return homeNav.isVisible({ timeout: 3_000 }).catch(() => false);
+}
+
+/** Open the experience shell drawer (hamburger menu). */
+export async function openExperienceDrawer(page: Page): Promise<void> {
+  await dismissConsentBannerIfPresent(page);
+  await refreshFlutterAccessibility(page);
+  await page.getByRole('button', { name: 'Settings' }).click();
+  await page.waitForTimeout(400);
+  await refreshFlutterAccessibility(page);
+}
+
+/** Log out via legacy user menu or experience shell drawer. */
+export async function logOutFromApp(page: Page): Promise<void> {
+  await dismissConsentBannerIfPresent(page);
+  const legacyMenu = page.getByRole('button', { name: /user menu|menu utilisateur/i });
+  if (await legacyMenu.isVisible({ timeout: 2_000 }).catch(() => false)) {
+    await legacyMenu.click();
+    await page.waitForTimeout(500);
+    await page
+      .getByRole('menuitem', { name: /log.out|déconnexion/i })
+      .or(page.getByText('Log Out', { exact: true }))
+      .first()
+      .click();
+    return;
+  }
+
+  if (await isExperienceShellVisible(page)) {
+    await openExperienceDrawer(page);
+    await page
+      .getByText('Log Out', { exact: true })
+      .or(page.getByText('Déconnexion', { exact: true }))
+      .first()
+      .click();
+    return;
+  }
+
+  throw new Error('Could not find a logout entry point');
+}
+
 /** Flutter MergeSemantics nodes may surface as button or group depending on the widget. */
 export function semanticsByName(page: Page, pattern: string | RegExp) {
   const name =

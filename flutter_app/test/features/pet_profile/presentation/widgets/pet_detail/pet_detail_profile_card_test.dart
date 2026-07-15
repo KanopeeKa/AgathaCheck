@@ -124,4 +124,47 @@ void main() {
     expect(find.text('Fostered via Shelter'), findsOneWidget);
     expect(find.byKey(const Key('edit_pet_button')), findsNothing);
   });
+
+  testWidgets('restricted context hides privileged controls before policy resolves', (
+    tester,
+  ) async {
+    const pet = Pet(id: 'p1', name: 'Rex', species: 'Dog');
+    final restricted = PetDetailContext.restricted();
+
+    await tester.pumpWidget(_wrap(pet, viewerContext: restricted));
+    await tester.pump();
+
+    expect(find.byKey(const Key('edit_pet_button')), findsNothing);
+    expect(find.byIcon(Icons.local_hospital), findsNothing);
+  });
+
+  testWidgets('recomputes label when experience switches at runtime', (
+    tester,
+  ) async {
+    const orgPet = Pet(
+      id: 'p1',
+      name: 'Rex',
+      species: 'Dog',
+      organizationId: 'o1',
+      organizationName: 'Shelter',
+    );
+    var ctx = PetDetailActions.resolveContext(
+      pet: orgPet,
+      experience: AppExperience.guardian,
+      isOrgAdmin: true,
+    );
+
+    await tester.pumpWidget(_wrap(orgPet, viewerContext: ctx));
+    await tester.pumpAndSettle();
+    expect(find.text('You are the pet guardian'), findsOneWidget);
+
+    ctx = PetDetailActions.resolveContext(
+      pet: orgPet,
+      experience: AppExperience.organization,
+      isOrgAdmin: true,
+    );
+    await tester.pumpWidget(_wrap(orgPet, viewerContext: ctx));
+    await tester.pumpAndSettle();
+    expect(find.text('Shelter · Organisation custody'), findsOneWidget);
+  });
 }

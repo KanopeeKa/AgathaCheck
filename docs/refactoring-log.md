@@ -103,6 +103,7 @@ Tracks planned and completed refactor / quality work. See also `docs/refactoring
 | XP-9 | Responsibility labels on pet detail header | **Done** |
 | XP-10 | Foster portal drawer filter (hide invite + upcoming events) | **Done** |
 | XP-11 | Experience-aware back nav on pet detail | **Done** |
+| XP-12 | Review hardening: default-deny policy provider, edit/route guards, matrix tests, E2E shell nav | **Done** |
 
 ---
 

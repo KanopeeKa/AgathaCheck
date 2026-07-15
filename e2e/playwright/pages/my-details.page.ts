@@ -4,6 +4,7 @@ import {
   dismissConsentBannerIfPresent,
   expectAppBarTitle,
   fillLabelledField,
+  isExperienceShellVisible,
   refreshFlutterAccessibility,
 } from '../support/flutter';
 
@@ -16,15 +17,35 @@ export class MyDetailsPage {
 
   async openFromUserMenu(): Promise<void> {
     await dismissConsentBannerIfPresent(this.page);
-    await this.page.getByRole('button', { name: /user menu|menu utilisateur/i }).click();
-    await this.page.waitForTimeout(500);
-    await this.page
-      .getByRole('menuitem', { name: /my details|mon profil/i })
-      .or(this.page.getByText('My Details', { exact: true }))
-      .or(this.page.getByText('Mon profil', { exact: true }))
-      .first()
-      .click();
-    await this.expectLoaded();
+    const legacyMenu = this.page.getByRole('button', {
+      name: /user menu|menu utilisateur/i,
+    });
+    if (await legacyMenu.isVisible({ timeout: 2_000 }).catch(() => false)) {
+      await legacyMenu.click();
+      await this.page.waitForTimeout(500);
+      await this.page
+        .getByRole('menuitem', { name: /my details|mon profil/i })
+        .or(this.page.getByText('My Details', { exact: true }))
+        .or(this.page.getByText('Mon profil', { exact: true }))
+        .first()
+        .click();
+      await this.expectLoaded();
+      return;
+    }
+
+    if (await isExperienceShellVisible(this.page)) {
+      await this.page.goto('/g/settings');
+      await refreshFlutterAccessibility(this.page);
+      await this.page
+        .getByText('My Details', { exact: true })
+        .or(this.page.getByText('Mon profil', { exact: true }))
+        .first()
+        .click();
+      await this.expectLoaded();
+      return;
+    }
+
+    throw new Error('Could not open My Details: unknown navigation shell');
   }
 
   async expectLoaded(title: string | RegExp = /My Details|Mon profil/i): Promise<void> {

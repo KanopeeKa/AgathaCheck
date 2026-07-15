@@ -15,12 +15,24 @@ enum PetDetailAction {
 class PetDetailActions {
   const PetDetailActions._();
 
+  static const privilegedActions = {
+    PetDetailAction.editProfile,
+    PetDetailAction.assignVet,
+    PetDetailAction.manageSharing,
+    PetDetailAction.fosterPlacement,
+  };
+
   static Set<PetDetailAction> visible({
     required Pet pet,
     required AppExperience experience,
     required PetViewerRole role,
     bool isOrgAdmin = false,
+    bool policyInputsResolved = true,
   }) {
+    if (!policyInputsResolved) {
+      return const {};
+    }
+
     final actions = <PetDetailAction>{PetDetailAction.downloadReport};
 
     switch (role) {
@@ -51,6 +63,7 @@ class PetDetailActions {
     required Pet pet,
     required AppExperience experience,
     bool isOrgAdmin = false,
+    bool policyInputsResolved = true,
   }) {
     final role = PetViewerRoleResolver.resolve(
       pet: pet,
@@ -64,7 +77,9 @@ class PetDetailActions {
         experience: experience,
         role: role,
         isOrgAdmin: isOrgAdmin,
+        policyInputsResolved: policyInputsResolved,
       ),
+      isPolicyResolved: policyInputsResolved,
     );
   }
 }
@@ -75,11 +90,26 @@ class PetDetailContext {
     required this.experience,
     required this.role,
     required this.actions,
+    required this.isPolicyResolved,
   });
 
   final AppExperience experience;
   final PetViewerRole role;
   final Set<PetDetailAction> actions;
+  final bool isPolicyResolved;
 
-  bool can(PetDetailAction action) => actions.contains(action);
+  bool can(PetDetailAction action) =>
+      isPolicyResolved && actions.contains(action);
+
+  /// Safe default while async policy inputs (pets, orgs, admin) are loading.
+  factory PetDetailContext.restricted({
+    AppExperience experience = AppExperience.guardian,
+  }) {
+    return PetDetailContext(
+      experience: experience,
+      role: PetViewerRole.guardian,
+      actions: const {},
+      isPolicyResolved: false,
+    );
+  }
 }
