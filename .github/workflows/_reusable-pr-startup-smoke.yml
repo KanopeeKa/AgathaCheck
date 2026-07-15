@@ -1,0 +1,72 @@
+# Fast localhost stack smoke for pull requests (Postgres + Node startup + health).
+# Caller: ci.yml job id `startup-smoke` → required check `startup-smoke / PR startup smoke`.
+name: Reusable PR startup smoke
+
+on:
+  workflow_call:
+
+env:
+  NODE_VERSION: '22'
+
+permissions:
+  contents: read
+
+jobs:
+  startup-smoke:
+    name: PR startup smoke
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: user
+          POSTGRES_PASSWORD: password
+          POSTGRES_DB: agatha_db
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U user -d agatha_db"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Begin job timing
+        run: echo "JOB_START_EPOCH=$(date +%s)" >> "$GITHUB_ENV"
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: server/package-lock.json
+
+      - name: Install server dependencies
+        working-directory: server
+        run: npm ci
+
+      - name: Run PR startup smoke
+        env:
+          PGUSER: user
+          PGPASSWORD: password
+          PGHOST: localhost
+          PGPORT: 5432
+          PGDATABASE: agatha_db
+          E2E: '1'
+        run: bash scripts/ci/pr-startup-smoke.sh
+
+      - name: Write startup smoke job summary
+        if: always()
+        run: |
+          end=$(date +%s)
+          start="${JOB_START_EPOCH:-$end}"
+          dur=$((end - start))
+          bash scripts/ci/append-summary.sh "PR startup smoke job" \
+            "workflow=pr-startup-smoke" \
+            "job=startup-smoke" \
+            "sha=${{ github.sha }}" \
+            "run_id=${{ github.run_id }}" \
+            "duration_sec=${dur}"

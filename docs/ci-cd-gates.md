@@ -10,6 +10,7 @@ See also: [ci-cd-baseline.md](./ci-cd-baseline.md) (metrics), [CONTRIBUTING.md](
 | Stage | Blocking? | Workflow |
 |-------|-----------|----------|
 | PR → `main` | **Yes** (required checks) | `ci.yml`, `codeql.yml` |
+| PR startup smoke | **Yes** (with CI) | `ci.yml` → `_reusable-pr-startup-smoke.yml` |
 | PR hints | No (advisory) | `pr-governance-hints.yml` |
 | Agent `cursor/*` PRs | **Yes** (forbidden paths) | `agent-pr-safety-gate.yml` |
 | `release/uat-*` deploy | **Yes** (UAT + `prod-ready`) | `deploy-uat.yml` |
@@ -20,14 +21,35 @@ See also: [ci-cd-baseline.md](./ci-cd-baseline.md) (metrics), [CONTRIBUTING.md](
 
 ## 1. Blocking — pull request to `main`
 
-Triggered by `.github/workflows/ci.yml` → `_reusable-test.yml` and `codeql.yml`.
+Triggered by `.github/workflows/ci.yml` → `_reusable-pr-startup-smoke.yml`,
+`_reusable-test.yml`, and `codeql.yml`.
+
+### GitHub required check names (branch protection)
+
+Reusable workflow jobs appear as **`{caller_job_id} / {reusable_job_name}`** on PRs.
+Do **not** use the reusable workflow file name (`_reusable-pr-startup-smoke.yml`) in
+branch protection — use the strings below.
+
+| GitHub required check name | Caller job (`ci.yml`) | Reusable job `name:` | Workflow file |
+|----------------------------|----------------------|----------------------|---------------|
+| `startup-smoke / PR startup smoke` | `startup-smoke` | `PR startup smoke` | `_reusable-pr-startup-smoke.yml` |
+| `test-suite / Governance (BDD + file size)` | `test-suite` | `Governance (BDD + file size)` | `_reusable-test.yml` |
+| `test-suite / Flutter (analyze, test, build web)` | `test-suite` | `Flutter (analyze, test, build web)` | `_reusable-test.yml` |
+| `test-suite / Backend (Node.js Jest + Dart analyze)` | `test-suite` | `Backend (Node.js Jest + Dart analyze)` | `_reusable-test.yml` |
+| `test-suite / E2E package audit` | `test-suite` | `E2E package audit` | `_reusable-test.yml` |
+| `Analyze JavaScript` | — | `Analyze JavaScript` | `codeql.yml` (direct job) |
+
+**Stability note:** Keep `ci.yml` caller ids (`startup-smoke`, `test-suite`) and reusable
+job `name:` fields aligned with this table when renaming — branch protection matches these
+display strings exactly.
 
 | GitHub check name (job) | Workflow file | What it enforces |
 |-------------------------|---------------|------------------|
-| `Governance (BDD + file size)` | `_reusable-test.yml` | BDD mapping ≥ 105 scenarios, priority tags, file size ≤ 500 lines |
-| `Flutter (analyze, test, build web)` | `_reusable-test.yml` | analyze, tests, domain coverage 65%, format, integration tests, web build |
-| `Backend (Node.js Jest + Dart analyze)` | `_reusable-test.yml` | Jest, npm audit high+, `dart analyze lib` |
-| `E2E package audit` | `_reusable-test.yml` | e2e `npm audit` high+ |
+| `startup-smoke / PR startup smoke` | `_reusable-pr-startup-smoke.yml` | Postgres bootstrap, `node bin/start.js`, `/backend/health` + root |
+| `test-suite / Governance (BDD + file size)` | `_reusable-test.yml` | BDD mapping ≥ 105 scenarios, priority tags, file size ≤ 500 lines |
+| `test-suite / Flutter (analyze, test, build web)` | `_reusable-test.yml` | analyze, tests, domain coverage 65%, format, integration tests, web build |
+| `test-suite / Backend (Node.js Jest + Dart analyze)` | `_reusable-test.yml` | Jest, npm audit high+, `dart analyze lib` |
+| `test-suite / E2E package audit` | `_reusable-test.yml` | e2e `npm audit` high+ |
 | `Analyze JavaScript` | `codeql.yml` | CodeQL static analysis |
 
 **Note:** Exact check names appear in the GitHub PR checks UI. Verify periodically with:
@@ -37,6 +59,46 @@ gh pr checks <PR_NUMBER>
 ```
 
 **Not run on every PR commit:** full Playwright E2E (too slow). Full E2E runs on UAT deploy and weekly cron.
+
+#### Branch protection setup (`main`)
+
+After **PR #168** (or any PR) has run CI once on `main`, add the new check using the
+**exact** string from `gh pr checks` (not the job `name:` alone):
+
+**Required new check:** `startup-smoke / PR startup smoke`
+
+**GitHub UI (classic branch protection):**
+
+1. Open **Settings → Branches** → edit the rule for **`main`** (or **Add rule**).
+2. Enable **Require status checks to pass before merging**.
+3. Enable **Require branches to be up to date before merging** (recommended).
+4. In **Status checks that are required**, search for and add:
+   - `startup-smoke / PR startup smoke` ← **new (Phase 6)**
+   - Existing CI checks if not already listed (see table above), e.g.:
+     - `test-suite / Governance (BDD + file size)`
+     - `test-suite / Flutter (analyze, test, build web)`
+     - `test-suite / Backend (Node.js Jest + Dart analyze)`
+     - `test-suite / E2E package audit`
+     - `Analyze JavaScript`
+5. **Save changes**.
+
+**Rulesets (if your org uses Rules → Rulesets instead of Branches):**
+
+1. **Settings → Rules → Rulesets** → open the ruleset targeting **`main`**.
+2. Under **Require status checks to pass** → **Add checks**.
+3. Search `startup-smoke / PR startup smoke` and select it.
+4. Save / publish the ruleset.
+
+**Verify (admin or maintainer):**
+
+```bash
+gh pr checks 168   # or any open PR to main — copy exact check names
+gh api repos/KanopeeKa/AgathaCheck/branches/main/protection \
+  --jq '.required_status_checks.contexts'
+```
+
+If the search box does not show the new check, push a commit to a PR targeting `main` and
+wait for one green **CI** run — GitHub only lists checks that have reported at least once.
 
 ---
 
