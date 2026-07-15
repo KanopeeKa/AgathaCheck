@@ -25,6 +25,10 @@ on:
         description: Provenance label written to build-manifest.json (empty = caller workflow name)
         type: string
         default: ''
+      use_flutter_prep_artifact:
+        description: Restore flutter-prep-<sha> from flutter-analyze (CI only)
+        type: boolean
+        default: false
     secrets:
       POSTHOG_API_KEY:
         required: false
@@ -88,6 +92,17 @@ jobs:
           key: flutter-${{ runner.os }}-${{ env.FLUTTER_VERSION }}-${{ hashFiles('flutter_app/pubspec.lock') }}
           restore-keys: |
             flutter-${{ runner.os }}-${{ env.FLUTTER_VERSION }}-
+
+      - name: Download Flutter prep artifact
+        if: inputs.use_flutter_prep_artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: flutter-prep-${{ steps.meta.outputs.deploy_sha }}
+          path: .flutter-prep-artifact
+
+      - name: Restore Flutter prep state
+        if: inputs.use_flutter_prep_artifact
+        run: bash scripts/ci/restore-flutter-prep-artifact.sh .flutter-prep-artifact
 
       - name: Build Flutter web (shared)
         env:

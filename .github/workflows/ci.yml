@@ -62,6 +62,7 @@ jobs:
     uses: ./.github/workflows/_reusable-build-web.yml
     with:
       run_codegen: false
+      use_flutter_prep_artifact: true
       source_workflow: ci
     secrets:
       POSTHOG_API_KEY: ${{ secrets.POSTHOG_API_KEY }}

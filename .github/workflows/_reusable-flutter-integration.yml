@@ -1,5 +1,6 @@
 # Flutter integration tests (pet profile flow).
 # Caller: ci.yml job id `flutter-integration`.
+# Canonical codegen + legal sync run in flutter-analyze; this job restores that prep artifact.
 name: Reusable Flutter integration
 
 on:
@@ -41,17 +42,14 @@ jobs:
         working-directory: flutter_app
         run: flutter pub get
 
-      - name: Generate code (build_runner)
-        working-directory: flutter_app
-        run: |
-          if grep -q "build_runner" pubspec.yaml; then
-            dart run build_runner build --delete-conflicting-outputs
-          else
-            echo "build_runner not configured; skipping codegen."
-          fi
+      - name: Download Flutter prep artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: flutter-prep-${{ github.sha }}
+          path: .flutter-prep-artifact
 
-      - name: Sync legal documents into app assets
-        run: dart run scripts/sync_legal_documents.dart
+      - name: Restore Flutter prep state
+        run: bash scripts/ci/restore-flutter-prep-artifact.sh .flutter-prep-artifact
 
       - name: Run integration tests
         timeout-minutes: 10

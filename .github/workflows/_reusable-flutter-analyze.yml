@@ -62,6 +62,17 @@ jobs:
         working-directory: flutter_app
         run: flutter analyze --no-fatal-warnings --no-fatal-infos
 
+      - name: Stage Flutter prep artifact
+        run: bash scripts/ci/stage-flutter-prep-artifact.sh
+
+      - name: Upload Flutter prep artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: flutter-prep-${{ github.sha }}
+          path: .flutter-prep-artifact/
+          retention-days: 1
+          if-no-files-found: error
+
       - name: Write analyze job summary
         if: always()
         run: |

@@ -68,6 +68,53 @@ the merge gate `flutter-coverage / Flutter domain coverage` covers shard failure
 **Removed (replace in branch protection):** `test-suite / Flutter (analyze, test, build web)` — split into the
 `flutter-*` checks above (parallel shards initiative).
 
+#### Atomic branch-protection migration (Flutter parallel shards)
+
+Merging this change **removes** the legacy monolithic Flutter job from CI. Until branch
+protection is updated, `main` may be briefly under-protected (no Flutter gate) or PRs may
+be blocked (legacy required check never reports). Treat protection update as part of the
+same rollout window as the merge — not a follow-up chore.
+
+**Pre-merge (on the introducing PR — e.g. #170):**
+
+1. Wait for a **green CI run** on the PR targeting `main`.
+2. Copy exact check names from the run (do not guess):
+
+```bash
+gh pr checks <PR_NUMBER> | rg '^flutter-'
+```
+
+Expected new contexts (verify against your run):
+
+- `flutter-analyze / Flutter (analyze & format)`
+- `flutter-coverage / Flutter domain coverage`
+- `flutter-integration / Flutter integration`
+- `flutter-build-web / Build Flutter web`
+
+**Merge + protection (single operator session, one ruleset save):**
+
+1. Merge the PR to `main`.
+2. Open **Settings → Branches** (classic) or **Settings → Rules → Rulesets**.
+3. In **one edit**, before saving:
+   - **Add** all four `flutter-*` checks listed above (and keep existing non-Flutter checks).
+   - **Remove** `test-suite / Flutter (analyze, test, build web)` only after the four are added.
+4. **Save once** (atomic). Do not remove the legacy check in a separate save first.
+
+**Verify immediately after save:**
+
+```bash
+gh api repos/KanopeeKa/AgathaCheck/branches/main/protection \
+  --jq '.required_status_checks.contexts'
+# or for rulesets: inspect the ruleset required-check list in the UI
+```
+
+**Optional shard checks** (`flutter-test-{pet,health,org,rest} / Flutter tests (<shard>)`) need
+not be required individually — `flutter-coverage` fails when any shard fails.
+
+**Codegen contract:** `flutter-analyze` runs canonical `build_runner` + legal sync once and
+uploads `flutter-prep-<sha>`; downstream `flutter-test-*`, `flutter-integration`, and
+`flutter-build-web` restore that artifact (no redundant prep in shards).
+
 **Stability note:** Keep `ci.yml` caller ids (`startup-smoke`, `test-suite`, `flutter-analyze`, etc.) and reusable
 job `name:` fields aligned with this table when renaming — branch protection matches these
 display strings exactly.
@@ -76,7 +123,7 @@ display strings exactly.
 |-------------------------|---------------|------------------|
 | `startup-smoke / PR startup smoke` | `_reusable-pr-startup-smoke.yml` | Postgres bootstrap, `node bin/start.js`, `/backend/health` + root |
 | `test-suite / Governance (BDD + file size)` | `_reusable-test.yml` | BDD mapping ≥ 105 scenarios, priority tags, file size ≤ 500 lines |
-| `flutter-analyze / Flutter (analyze & format)` | `_reusable-flutter-analyze.yml` | format, legal sync, codegen, `flutter analyze` |
+| `flutter-analyze / Flutter (analyze & format)` | `_reusable-flutter-analyze.yml` | format, legal sync, codegen, analyze; uploads `flutter-prep-<sha>` |
 | `flutter-test-* / Flutter tests (<shard>)` | `_reusable-flutter-test-shard.yml` | domain test shards (pet, health, org, rest) with per-shard coverage |
 | `flutter-coverage / Flutter domain coverage` | `_reusable-flutter-coverage.yml` | merge shard lcov, domain coverage ≥ 65% |
 | `flutter-integration / Flutter integration` | `_reusable-flutter-integration.yml` | pet profile integration tests |
@@ -105,9 +152,9 @@ After Phase 6 merged (#168), add the startup smoke check using the **exact** str
 1. Open **Settings → Branches** → edit the rule for **`main`** (or **Add rule**).
 2. Enable **Require status checks to pass before merging**.
 3. Enable **Require branches to be up to date before merging** (recommended).
-4. In **Status checks that are required**, search for and add:
+4. In **Status checks that are required**, search for and add (see **Atomic branch-protection migration** above — add all four before removing legacy):
    - `startup-smoke / PR startup smoke` ← **new (Phase 6)**
-   - Flutter parallel checks (replace `test-suite / Flutter (analyze, test, build web)`):
+   - Flutter parallel checks:
      - `flutter-analyze / Flutter (analyze & format)`
      - `flutter-coverage / Flutter domain coverage`
      - `flutter-integration / Flutter integration`
@@ -117,7 +164,7 @@ After Phase 6 merged (#168), add the startup smoke check using the **exact** str
      - `test-suite / Backend (Node.js Jest + Dart analyze)`
      - `test-suite / E2E package audit`
      - `Analyze JavaScript`
-5. **Remove** the deprecated check `test-suite / Flutter (analyze, test, build web)` if still listed.
+5. **Remove** `test-suite / Flutter (analyze, test, build web)` in the **same** ruleset edit (step 4), then save once.
 6. **Save changes**.
 
 **Rulesets (if your org uses Rules → Rulesets instead of Branches):**
