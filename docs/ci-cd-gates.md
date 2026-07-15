@@ -84,12 +84,24 @@ same rollout window as the merge — not a follow-up chore.
 gh pr checks <PR_NUMBER> | rg '^flutter-'
 ```
 
-Expected new contexts (verify against your run):
+Expected new contexts — **verified on PR #170** (no `(pull_request)` suffix on this repo):
 
 - `flutter-analyze / Flutter (analyze & format)`
 - `flutter-coverage / Flutter domain coverage`
 - `flutter-integration / Flutter integration`
 - `flutter-build-web / Build Flutter web`
+
+Re-verify before editing branch protection (names can differ by org/ruleset):
+
+```bash
+gh pr checks 170 | rg '^flutter-'
+# or via API (authoritative check-run names):
+gh api repos/KanopeeKa/AgathaCheck/commits/$(gh pr view 170 --json headRefOid -q .headRefOid)/check-runs \
+  --jq '.check_runs[] | select(.name | startswith("flutter-")) | .name'
+```
+
+If your ruleset UI shows a `(pull_request)` suffix, use the **exact** string from
+`gh pr checks` / the API — do not strip or add suffixes by hand.
 
 **Merge + protection (single operator session, one ruleset save):**
 
@@ -112,8 +124,9 @@ gh api repos/KanopeeKa/AgathaCheck/branches/main/protection \
 not be required individually — `flutter-coverage` fails when any shard fails.
 
 **Codegen contract:** `flutter-analyze` runs canonical `build_runner` + legal sync once and
-uploads `flutter-prep-<sha>`; downstream `flutter-test-*`, `flutter-integration`, and
-`flutter-build-web` restore that artifact (no redundant prep in shards).
+uploads `flutter-prep-<sha>.tar.gz`; downstream `flutter-test-*`, `flutter-integration`, and
+`flutter-build-web` download, verify, and restore that archive (no redundant prep in shards).
+Missing or corrupt prep artifacts fail at download/verify/restore with `::error::` annotations.
 
 **Stability note:** Keep `ci.yml` caller ids (`startup-smoke`, `test-suite`, `flutter-analyze`, etc.) and reusable
 job `name:` fields aligned with this table when renaming — branch protection matches these

@@ -100,6 +100,10 @@ jobs:
         with:
           name: flutter-prep-${{ github.sha }}
 
+      - name: Verify Flutter prep download
+        if: inputs.use_flutter_prep_artifact
+        run: bash scripts/ci/verify-flutter-prep-download.sh flutter-prep-artifact.tar.gz "${{ github.sha }}"
+
       - name: Restore Flutter prep state
         if: inputs.use_flutter_prep_artifact
         run: bash scripts/ci/restore-flutter-prep-artifact.sh flutter-prep-artifact.tar.gz
@@ -131,8 +135,9 @@ jobs:
           bash scripts/ci/append-summary.sh "Flutter web build job" \
             "workflow=reusable-build-web" \
             "job=build-web" \
-            "sha=${{ steps.meta.outputs.deploy_sha }}" \
+            "sha=${{ steps.meta.outputs.sha }}" \
             "resolved_run_clean=${{ inputs.run_clean }}" \
+            "use_flutter_prep_artifact=${{ inputs.use_flutter_prep_artifact }}" \
             "run_id=${{ github.run_id }}" \
             "duration_sec=${dur}" \
             "artifact=${{ steps.meta.outputs.artifact_name }}"

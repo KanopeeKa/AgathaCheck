@@ -47,6 +47,9 @@ jobs:
         with:
           name: flutter-prep-${{ github.sha }}
 
+      - name: Verify Flutter prep download
+        run: bash scripts/ci/verify-flutter-prep-download.sh flutter-prep-artifact.tar.gz "${{ github.sha }}"
+
       - name: Restore Flutter prep state
         run: bash scripts/ci/restore-flutter-prep-artifact.sh flutter-prep-artifact.tar.gz
 
