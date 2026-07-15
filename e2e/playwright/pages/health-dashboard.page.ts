@@ -1,5 +1,5 @@
 import type { Page } from '@playwright/test';
-import { escapeRegExp, homeShellLocator, refreshFlutterAccessibility, semanticsByName } from '../support/flutter';
+import { escapeRegExp, refreshFlutterAccessibility, semanticsByName } from '../support/flutter';
 
 /**
  * Health dashboard (`/health`).
