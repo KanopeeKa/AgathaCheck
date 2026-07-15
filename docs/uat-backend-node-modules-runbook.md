@@ -37,7 +37,7 @@ Never a real directory in `backend/`.
 
 ## CI automation (deploy-uat.yml)
 
-**Requires `UAT_SSH_ENABLED=true`** in GitHub → Environments → UAT → Variables.
+**Requires `UAT_SSH_ENABLED=true`** and `appleboy/ssh-action` **≥ v1.2.0** (`script_path` support). v1.0.x silently runs an empty SSH command.
 
 When enabled:
 

@@ -356,7 +356,7 @@ jobs:
           vars.UAT_SSH_ENABLED == 'true' &&
           steps.uat_ssh_config.outputs.configured == 'true' &&
           steps.whitelist_verify.outcome == 'success'
-        uses: appleboy/ssh-action@v1.0.3
+        uses: appleboy/ssh-action@v1.2.2
         env:
           PKG_CHANGED: ${{ steps.pkg_changed.outputs.changed }}
           POST_RESTART_RETRIES: 3
@@ -368,6 +368,7 @@ jobs:
           passphrase: ${{ secrets.UAT_SSH_PASSPHRASE }}
           port: ${{ secrets.UAT_SSH_PORT || 22 }}
           timeout: 180s
+          command_timeout: 10m
           script_path: .ci-uat-ssh-remote.sh
           envs: PKG_CHANGED,POST_RESTART_RETRIES,POST_RESTART_SLEEP_SEC
 
@@ -422,15 +423,19 @@ jobs:
         env:
           SSH_INVARIANT_ENFORCED: ${{ steps.ssh_enforcement.outputs.ssh_invariant_enforced }}
           SSH_INVARIANT: ${{ steps.uat_ssh.outcome == 'success' && 'passed' || steps.uat_ssh.outcome == 'failure' && 'failed' || 'skipped' }}
+          NODE_MODULES_KIND: ${{ steps.uat_deploy_state.outputs.node_modules_kind || 'not_verified' }}
         run: |
           end=$(date +%s)
           start="${JOB_START_EPOCH:-$end}"
           dur=$((end - start))
-          # ssh_invariant_enforced = policy (UAT_SSH_ENABLED); ssh_invariant = execution result.
-          if [ "${SSH_INVARIANT_ENFORCED}" = "true" ] && [ "${SSH_INVARIANT}" = "passed" ]; then
+          # verified requires SSH script evidence (node_modules_kind=symlink), not merely step success.
+          if [ "${SSH_INVARIANT_ENFORCED}" = "true" ] && [ "${SSH_INVARIANT}" = "passed" ] && [ "${NODE_MODULES_KIND}" = "symlink" ]; then
             deploy_verification=verified
           else
             deploy_verification=unverified
+          fi
+          if [ "${SSH_INVARIANT_ENFORCED}" = "true" ] && [ "${SSH_INVARIANT}" = "passed" ] && [ "${NODE_MODULES_KIND}" = "not_verified" ]; then
+            echo "::warning::SSH step succeeded but invariant state was not collected — remote script may not have run."
           fi
           bash scripts/ci/append-summary.sh "UAT deploy job" \
             "workflow=deploy-uat" \
@@ -444,7 +449,7 @@ jobs:
             "ssh_invariant_enforced=${SSH_INVARIANT_ENFORCED}" \
             "ssh_invariant=${SSH_INVARIANT}" \
             "deploy_verification=${deploy_verification}" \
-            "node_modules_kind=${{ steps.uat_deploy_state.outputs.node_modules_kind || 'not_verified' }}" \
+            "node_modules_kind=${NODE_MODULES_KIND}" \
             "node_modules_target=${{ steps.uat_deploy_state.outputs.node_modules_target || 'n/a' }}" \
             "passenger_htaccess_ok=${{ steps.uat_deploy_state.outputs.passenger_htaccess_ok || 'not_verified' }}" \
             "server_hostname=${{ steps.uat_deploy_state.outputs.server_hostname || 'n/a' }}" \
