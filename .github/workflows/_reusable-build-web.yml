@@ -127,18 +127,17 @@ jobs:
           path: flutter_app/build/web/
           retention-days: 30
 
-      - name: Note checkout failure in summary
-        if: failure() && steps.checkout.outcome == 'failure'
-        run: |
-          {
-            echo "### Flutter web build job"
-            echo
-            echo "Checkout failed — the deploy ref may not exist on origin. See the **Validate deploy ref** job or checkout step logs."
-          } >> "${GITHUB_STEP_SUMMARY}"
-
       - name: Write build job summary
-        if: always() && steps.checkout.outcome == 'success'
+        if: always()
         run: |
+          if [[ "${{ steps.checkout.outcome }}" != "success" ]]; then
+            {
+              echo "### Flutter web build job"
+              echo
+              echo "Checkout failed — the deploy ref may not exist on origin. See the **Validate deploy ref** job or checkout step logs."
+            } >> "${GITHUB_STEP_SUMMARY}"
+            exit 0
+          fi
           end=$(date +%s)
           start="${JOB_START_EPOCH:-$end}"
           dur=$((end - start))
