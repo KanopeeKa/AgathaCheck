@@ -1,13 +1,12 @@
 # CI/CD baseline metrics
 
 Pre-refactor snapshot and post-program metrics for the CI/CD hardening program
-(Phases -1–6). Re-run `scripts/ci/collect-baseline.sh` after major workflow changes.
+(Phases -1–7). Re-run `scripts/ci/collect-baseline.sh` after major workflow changes.
 
 ## Program status
 
-**Phases -1 through 6 complete** (PRs #162–#168). Phase 7 closes hygiene debt:
-untrack `flutter_app/build/` so UAT artifact materialize never sees stale checkout
-web roots.
+**Phases -1 through 7** (#162–#169). Phase 7 removes tracked `flutter_app/build/`
+so UAT artifact materialize never sees stale checkout web roots.
 
 | Phase | PR | Summary |
 |-------|-----|---------|
@@ -84,7 +83,26 @@ Use this when classifying regressions during later phases:
 | 4 | 2026-07-14 | UAT `flutter clean` experiment (default off) | | | PR #166 |
 | 5 | 2026-07-14 | Backend staging unify (UAT + PROD) | | | PR #167 |
 | 6 | 2026-07-15 | PR startup smoke on `main` PRs | | | PR #168 |
-| 7 | 2026-07-15 | Untrack `flutter_app/build/` | | | PR pending — fixes checkout stale web root |
+| 7 | 2026-07-15 | Untrack `flutter_app/build/` | | | PR #169 — fixes checkout stale web root |
+
+### Post-merge verification (Phase 7 closure)
+
+Run after **#169** merges to `main` to confirm hygiene and deploy path:
+
+| Step | Command / action | Pass criteria |
+|------|------------------|---------------|
+| 1. No tracked build output | `git ls-files 'flutter_app/build/**'` | **Empty output** (0 files) |
+| 2. Ignore rule active | `git check-ignore -v flutter_app/build/web/index.html` | Matches `flutter_app/build/` in `.gitignore` |
+| 3. One UAT deploy | Trigger `release/uat-*` push or `workflow_dispatch` | `Build and deploy to UAT` succeeds |
+| 4. Artifact materialize | Open deploy job log → `Materialize web root` step | `source_mode` is `flat` or `nested`, **not** stale `already-present` without manifest |
+| 5. Optional baseline refresh | `bash scripts/ci/collect-baseline.sh --limit 20` | Paste snapshot into this doc |
+
+```bash
+# Quick audit (from repo root on main after merge):
+git fetch origin main && git checkout main
+test "$(git ls-files 'flutter_app/build/**' | wc -l)" -eq 0 && echo "OK: no tracked build artifacts"
+gh run list --workflow=deploy-uat.yml --limit 3
+```
 
 ## Regenerating this table
 
