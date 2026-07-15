@@ -1,6 +1,6 @@
 # Conditions d’utilisation
 
-**Dernière mise à jour :** 15 juillet 2026
+**Dernière mise à jour :** 5 juillet 2026
 
 ## 1. Acceptation des conditions
 

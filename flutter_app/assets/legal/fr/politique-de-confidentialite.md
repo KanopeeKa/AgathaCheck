@@ -1,6 +1,6 @@
 # Politique de confidentialité
 
-**Dernière mise à jour :** 15 juillet 2026
+**Dernière mise à jour :** 5 juillet 2026
 
 La présente politique de confidentialité explique comment **SAS McCauley Conseils**, exploitant la marque **Agatha Track**, collecte, utilise, conserve et partage les données à caractère personnel dans le cadre de l’utilisation du site [agathatrack.com](https://agathatrack.com) et des services Agatha Track. Elle s’applique :
 - aux utilisateurs particuliers qui utilisent Agatha Track uniquement pour leurs propres animaux ;
