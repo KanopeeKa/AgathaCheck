@@ -5875,6 +5875,18 @@ abstract class AppLocalizations {
   /// **'Fostered via {orgName}'**
   String fosteredViaGroupTitle(String orgName);
 
+  /// No description provided for @petResponsibilityGuardian.
+  ///
+  /// In en, this message translates to:
+  /// **'You are the pet guardian'**
+  String get petResponsibilityGuardian;
+
+  /// No description provided for @petResponsibilityOrgCustody.
+  ///
+  /// In en, this message translates to:
+  /// **'{orgName} · Organisation custody'**
+  String petResponsibilityOrgCustody(String orgName);
+
   /// No description provided for @homeAllCaughtUp.
   ///
   /// In en, this message translates to:

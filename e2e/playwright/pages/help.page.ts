@@ -3,6 +3,8 @@ import { expect } from '@playwright/test';
 import {
   dismissConsentBannerIfPresent,
   expectAppBarTitle,
+  isExperienceShellVisible,
+  openExperienceDrawer,
   refreshFlutterAccessibility,
 } from '../support/flutter';
 
@@ -47,15 +49,32 @@ export class HelpPage {
 
   async openFromUserMenu(): Promise<void> {
     await dismissConsentBannerIfPresent(this.page);
-    await this.page.getByRole('button', { name: /user menu|menu utilisateur/i }).click();
-    await this.page.waitForTimeout(500);
-    await this.page
-      .getByRole('menuitem', { name: /help|aide/i })
-      .or(this.page.getByText('Help', { exact: true }))
-      .or(this.page.getByText('Aide', { exact: true }))
-      .first()
-      .click();
-    await this.expectLoaded();
+    const legacyMenu = this.page.getByRole('button', { name: /user menu|menu utilisateur/i });
+    if (await legacyMenu.isVisible({ timeout: 2_000 }).catch(() => false)) {
+      await legacyMenu.click();
+      await this.page.waitForTimeout(500);
+      await this.page
+        .getByRole('menuitem', { name: /help|aide/i })
+        .or(this.page.getByText('Help', { exact: true }))
+        .or(this.page.getByText('Aide', { exact: true }))
+        .first()
+        .click();
+      await this.expectLoaded();
+      return;
+    }
+
+    if (await isExperienceShellVisible(this.page)) {
+      await openExperienceDrawer(this.page);
+      await this.page
+        .getByText('Contact', { exact: true })
+        .or(this.page.getByText('Contactez-nous', { exact: true }))
+        .first()
+        .click();
+      await this.expectLoaded();
+      return;
+    }
+
+    throw new Error('Could not open Help: unknown navigation shell');
   }
 
   async expectLoaded(title: string | RegExp = /Help & FAQ|Aide & FAQ/i): Promise<void> {

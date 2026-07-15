@@ -39,6 +39,33 @@ final savedDefaultExperienceProvider = Provider<AppExperience?>((ref) {
 
 final activeExperienceProvider = StateProvider<AppExperience?>((ref) => null);
 
+/// Home path for the user's current experience (active → saved → auto → guardian).
+final experienceHomePathProvider = Provider<String>((ref) {
+  final active = ref.watch(activeExperienceProvider);
+  if (active != null) return active.homePath();
+
+  final saved = ref.watch(savedDefaultExperienceProvider);
+  if (saved != null) return saved.homePath();
+
+  final eligibility = ref.watch(experienceEligibilityProvider).valueOrNull;
+  final auto = eligibility?.resolveAutoExperience(savedDefault: saved);
+  return auto?.homePath() ?? AppExperience.guardian.homePath();
+});
+
+/// True when every org membership is foster-role (limited org portal).
+final isFosterPortalUserProvider = Provider<bool>((ref) {
+  final orgs = ref.watch(organizationListProvider).valueOrNull;
+  if (orgs == null || orgs.isEmpty) return false;
+  return orgs.every((o) => o.isFoster);
+});
+
+/// Resolved experience for pet-detail and other cross-route context.
+final resolvedExperienceProvider = Provider<AppExperience>((ref) {
+  return ref.watch(activeExperienceProvider) ??
+      ref.watch(savedDefaultExperienceProvider) ??
+      AppExperience.guardian;
+});
+
 String resolvePostLoginPath({
   required ExperienceEligibility eligibility,
   AppExperience? savedDefault,

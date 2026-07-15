@@ -4,6 +4,8 @@ import {
   dismissConsentBannerIfPresent,
   escapeRegExp,
   expectAppBarTitle,
+  expectHomeShellVisible,
+  homeShellLocator,
   refreshFlutterAccessibility,
   semanticsByName,
   waitForFlutterRoute,
@@ -18,27 +20,26 @@ export class PetListPage {
   constructor(private readonly page: Page) {}
 
   async expectLoaded(): Promise<void> {
-    await dismissConsentBannerIfPresent(this.page);
-    await refreshFlutterAccessibility(this.page);
-    const timeout = isLiveHostingTarget() ? 60_000 : 30_000;
-    await this.page
-      .getByRole('button', { name: 'To Do' })
-      .or(this.page.getByRole('button', { name: 'Add Pet' }))
-      .or(this.page.getByText('No pets yet'))
-      .or(this.page.getByRole('banner', { name: /Agatha Track/i }))
-      .first()
-      .waitFor({ timeout });
+    await expectHomeShellVisible(
+      this.page,
+      isLiveHostingTarget() ? 60_000 : 30_000,
+    );
   }
 
   async openHealthDashboard(): Promise<void> {
     await dismissConsentBannerIfPresent(this.page);
-    await this.page.getByRole('button', { name: 'To Do' }).click();
+    const eventsNav = this.page.getByRole('button', { name: 'Events' });
+    if (await eventsNav.isVisible().catch(() => false)) {
+      await eventsNav.click();
+    } else {
+      await this.page.getByRole('button', { name: 'To Do' }).click();
+    }
     await this.page.getByRole('button', { name: 'Add Health Event' }).waitFor({ timeout: 30_000 });
   }
 
   async expectEmptyState(): Promise<void> {
     await this.page.getByText('No pets yet').waitFor();
-    await this.page.getByRole('button', { name: 'Add Pet' }).waitFor();
+    await homeShellLocator(this.page).first().waitFor();
   }
 
   async openAddPet(): Promise<void> {
@@ -73,7 +74,13 @@ export class PetListPage {
 
   async openOrganizations(): Promise<void> {
     await dismissConsentBannerIfPresent(this.page);
-    await this.page.getByRole('button', { name: 'Organizations' }).click();
+    const orgNav = this.page.getByRole('button', { name: 'Organizations' });
+    if (await orgNav.isVisible({ timeout: 2_000 }).catch(() => false)) {
+      await orgNav.click();
+    } else {
+      await this.page.goto('/organizations');
+      await refreshFlutterAccessibility(this.page);
+    }
     await this.page
       .getByRole('button', { name: 'Create' })
       .or(this.page.getByRole('button', { name: /Rescue Hearts|Partner Shelter/i }))

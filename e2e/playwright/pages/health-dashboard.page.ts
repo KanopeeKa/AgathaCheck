@@ -28,7 +28,12 @@ export class HealthDashboardPage {
 
   async returnToDashboard(): Promise<void> {
     await this.page.getByRole('button', { name: 'Go back' }).click();
-    await this.page.getByRole('button', { name: 'To Do' }).click();
+    const eventsNav = this.page.getByRole('button', { name: 'Events' });
+    if (await eventsNav.isVisible().catch(() => false)) {
+      await eventsNav.click();
+    } else {
+      await this.page.getByRole('button', { name: 'To Do' }).click();
+    }
     await this.expectLoaded();
   }
 

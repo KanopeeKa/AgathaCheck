@@ -2,6 +2,7 @@ import type { Page } from '@playwright/test';
 import {
   dismissConsentBannerIfPresent,
   enableFlutterAccessibility,
+  homeShellLocator,
   refreshFlutterAccessibility,
   selectDropdownOption,
 } from '../support/flutter';
@@ -54,12 +55,9 @@ export class PetFormPage {
     await this.page
       .getByRole('button', { name: /Save Pet|Update Pet/ })
       .waitFor({ state: 'hidden', timeout: 30_000 });
-    await this.page
-      .getByRole('button', { name: 'To Do' })
-      .or(this.page.getByRole('button', { name: /Add Pet/i }))
+    await homeShellLocator(this.page)
       .or(this.page.getByRole('button', { name: /Pet:/i }))
       .or(this.page.getByRole('group', { name: /Pet:/i }))
-      .or(this.page.getByText('No pets yet'))
       .or(this.page.getByRole('button', { name: 'Edit Organization' }))
       .first()
       .waitFor({ timeout: 30_000 });
@@ -94,12 +92,7 @@ export class PetFormPage {
   /** Confirm the delete dialog. */
   async confirmDelete(): Promise<void> {
     await this.page.getByRole('button', { name: 'Delete', exact: true }).click();
-    await this.page
-      .getByRole('button', { name: 'To Do' })
-      .or(this.page.getByRole('button', { name: 'Add Pet' }))
-      .or(this.page.getByText('No pets yet'))
-      .first()
-      .waitFor({ timeout: 30_000 });
+    await homeShellLocator(this.page).first().waitFor({ timeout: 30_000 });
   }
 
   /** Cancel the delete dialog. */
@@ -123,11 +116,7 @@ export class PetFormPage {
   /** Confirm the passed-away dialog. */
   async confirmPassedAway(): Promise<void> {
     await this.page.getByRole('button', { name: 'OK', exact: true }).click();
-    await this.page
-      .getByRole('button', { name: 'To Do' })
-      .or(this.page.getByRole('button', { name: 'Add Pet' }))
-      .first()
-      .waitFor({ timeout: 30_000 });
+    await homeShellLocator(this.page).first().waitFor({ timeout: 30_000 });
   }
 
   /** Cancel the passed-away dialog. */

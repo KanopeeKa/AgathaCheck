@@ -5,6 +5,7 @@ import '../../features/experience/domain/entities/app_experience.dart';
 import '../../features/experience/presentation/screens/experience_chooser_screen.dart';
 import '../../features/experience/presentation/screens/experience_home_screens.dart';
 import '../../features/experience/presentation/screens/experience_resolve_screen.dart';
+import '../../features/experience/presentation/widgets/foster_portal_route_guard.dart';
 import '../../features/experience/presentation/screens/experience_settings_screen.dart';
 import '../../features/experience/presentation/widgets/experience_shell_scaffold.dart';
 import '../../features/health_tracking/domain/health_events_scope.dart';
@@ -67,7 +68,10 @@ List<RouteBase> buildExperienceRoutes() {
         GoRoute(
           path: '/o/events',
           name: 'orgEvents',
-          builder: (context, state) => const _OrgEventsScreen(),
+          builder: (context, state) => const FosterPortalRouteGuard(
+            fallbackPath: '/o/home',
+            child: _OrgEventsScreen(),
+          ),
         ),
         GoRoute(
           path: '/o/settings',
@@ -79,8 +83,11 @@ List<RouteBase> buildExperienceRoutes() {
         GoRoute(
           path: '/o/invite',
           name: 'orgInvite',
-          builder: (context, state) => const ExperienceInviteScreen(
-            experience: AppExperience.organization,
+          builder: (context, state) => const FosterPortalRouteGuard(
+            fallbackPath: '/o/home',
+            child: ExperienceInviteScreen(
+              experience: AppExperience.organization,
+            ),
           ),
         ),
         GoRoute(

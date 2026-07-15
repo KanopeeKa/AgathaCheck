@@ -6,6 +6,7 @@
  */
 import { test, expect, loginAs } from '../fixtures/auth.fixture';
 import { getCurrentUser } from '../support/api';
+import { homeShellLocator, logOutFromApp } from '../support/flutter';
 import { MyDetailsPage } from '../pages/my-details.page';
 import { LandingPage } from '../pages/landing.page';
 
@@ -13,22 +14,14 @@ test.describe('Authentication – profile and session', () => {
   test('user can log out and is returned to the landing page', async ({ page, testUser }) => {
     await loginAs(page, testUser);
 
-    // Open the user menu (avatar / popup)
-    await page.getByRole('button', { name: /user.menu/i }).click();
-    await page.waitForTimeout(500);
-
-    // Click "Log Out"
-    await page.getByRole('menuitem', { name: /log.out/i })
-      .or(page.getByText('Log Out', { exact: true }))
-      .first()
-      .click();
+    await logOutFromApp(page);
     await page.waitForTimeout(2000);
 
     // Should be back on the landing / login page
     const landing = new LandingPage(page);
     await landing.goto();
     await expect(page.getByRole('button', { name: 'Sign In', exact: true })).toBeVisible();
-    await expect(page.getByRole('button', { name: 'To Do' })).not.toBeVisible();
+    await expect(homeShellLocator(page)).not.toBeVisible();
   });
 
   test('user can view the My Details screen showing their name and email', async ({

@@ -1,5 +1,5 @@
 import type { Page } from '@playwright/test';
-import { fillLabelledField, refreshFlutterAccessibility, waitForFlutter } from '../support/flutter';
+import { fillLabelledField, expectHomeShellVisible, refreshFlutterAccessibility, waitForFlutter } from '../support/flutter';
 
 export interface SignupDetails {
   firstName: string;
@@ -63,12 +63,7 @@ export class LandingPage {
   /** Fill and submit signup, then wait until the home pet list is shown. */
   async signupAndReachHome(details: SignupDetails): Promise<void> {
     await this.signup(details);
-    await this.page
-      .getByRole('button', { name: 'To Do' })
-      .or(this.page.getByRole('button', { name: 'Add Pet' }))
-      .or(this.page.getByText('No pets yet'))
-      .first()
-      .waitFor({ timeout: 60_000 });
+    await expectHomeShellVisible(this.page);
   }
 
   async submitSignupForm(): Promise<void> {
@@ -104,6 +99,7 @@ export class LandingPage {
     }
 
     await this.page.getByRole('button', { name: 'Sign In', exact: true }).click();
+    await refreshFlutterAccessibility(this.page);
     await this.page.waitForTimeout(2000);
   }
 

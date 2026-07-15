@@ -15,10 +15,12 @@ class PetDetailAppBar extends ConsumerWidget {
     super.key,
     required this.petName,
     required this.isOrgPet,
+    this.backPath = '/g/home',
   });
 
   final String petName;
   final bool isOrgPet;
+  final String backPath;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -34,7 +36,7 @@ class PetDetailAppBar extends ConsumerWidget {
       leading: IconButton(
         icon: const Icon(Icons.arrow_back),
         tooltip: l.goBack,
-        onPressed: () => context.go('/'),
+        onPressed: () => context.go(backPath),
       ),
       actions: [
         Stack(
