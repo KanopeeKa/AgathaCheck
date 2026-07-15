@@ -12,6 +12,10 @@ on:
         description: Run flutter clean before web build (push uses UAT_FLUTTER_CLEAN repo variable)
         type: boolean
         default: false
+      allow_unverified_deploy:
+        description: Emergency bypass — allow manual deploy when UAT_SSH_ENABLED is not true (skips node_modules invariant)
+        type: boolean
+        default: false
 
 env:
   FLUTTER_VERSION: '3.32.0'
@@ -68,6 +72,42 @@ jobs:
 
       - name: Begin job timing
         run: echo "JOB_START_EPOCH=$(date +%s)" >> "$GITHUB_ENV"
+
+      - name: Require SSH invariant enforcement
+        id: ssh_enforcement
+        run: |
+          enforced=false
+          if [ "${{ vars.UAT_SSH_ENABLED }}" = "true" ]; then
+            enforced=true
+          fi
+          echo "ssh_invariant_enforced=${enforced}" >> "$GITHUB_OUTPUT"
+
+          if [ "$enforced" = "true" ]; then
+            echo "::notice::SSH node_modules invariant enforcement is enabled (UAT_SSH_ENABLED=true)."
+            exit 0
+          fi
+
+          {
+            echo "## SSH invariant NOT enforced"
+            echo
+            echo "\`UAT_SSH_ENABLED\` is not \`true\` — \`backend/node_modules\` symlink checks are **skipped**."
+            echo "Deploy may succeed with \`node_modules_kind=not_verified\` and \`ssh_invariant_enforced=false\`."
+            echo
+            echo "**Fix:** GitHub → Settings → Environments → **UAT** → Variables → \`UAT_SSH_ENABLED=true\`"
+          } >> "$GITHUB_STEP_SUMMARY"
+          echo "::warning title=SSH invariant not enforced::UAT_SSH_ENABLED is not true — node_modules symlink checks are skipped."
+
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            if [ "${{ inputs.allow_unverified_deploy }}" = "true" ]; then
+              echo "::warning::allow_unverified_deploy=true — proceeding without SSH invariant (emergency bypass)."
+              exit 0
+            fi
+            echo "::error::Manual UAT deploy requires SSH invariant enforcement."
+            echo "::error::Set UAT_SSH_ENABLED=true in the UAT environment, or re-run with allow_unverified_deploy=true."
+            exit 1
+          fi
+
+          echo "::warning::Push deploy proceeding without SSH invariant — set UAT_SSH_ENABLED=true before relying on automated drift protection."
 
       - name: Record run_clean decision source
         run: |
@@ -388,6 +428,7 @@ jobs:
             "resolved_run_clean=${{ needs.build-web.outputs.resolved_run_clean }}" \
             "run_clean_source=${{ github.event_name == 'workflow_dispatch' && 'workflow_dispatch_input' || 'repo_variable' }}" \
             "package_json_changed=${{ steps.pkg_changed.outputs.changed }}" \
+            "ssh_invariant_enforced=${{ steps.ssh_enforcement.outputs.ssh_invariant_enforced }}" \
             "node_modules_kind=${{ steps.uat_deploy_state.outputs.node_modules_kind || 'not_verified' }}" \
             "node_modules_target=${{ steps.uat_deploy_state.outputs.node_modules_target || 'n/a' }}" \
             "passenger_htaccess_ok=${{ steps.uat_deploy_state.outputs.passenger_htaccess_ok || 'not_verified' }}" \

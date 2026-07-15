@@ -37,7 +37,9 @@ Never a real directory in `backend/`.
 
 ## CI automation (deploy-uat.yml)
 
-When `UAT_SSH_ENABLED=true`:
+**Requires `UAT_SSH_ENABLED=true`** in GitHub → Environments → UAT → Variables.
+
+When enabled:
 
 1. FTP deploys code only (never `node_modules` or `backend/.htaccess`).
 2. SSH runs `scripts/ci/uat-ssh-backend-deploy.sh` (bundled):
@@ -49,7 +51,9 @@ When `UAT_SSH_ENABLED=true`:
    - `11` — real directory
    - `12` — broken symlink / wrong target
 
-Deploy summary records: `node_modules_kind`, `node_modules_target`, `passenger_htaccess_ok`, `server_hostname`, `node_major`, `app_root`.
+When **disabled:** symlink checks are skipped (`node_modules_kind=not_verified`, `ssh_invariant_enforced=false`). Manual `workflow_dispatch` deploys fail unless `allow_unverified_deploy=true`. Push deploys warn in the Actions summary.
+
+Deploy summary records: `ssh_invariant_enforced`, `node_modules_kind`, `node_modules_target`, `passenger_htaccess_ok`, `server_hostname`, `node_major`, `app_root`.
 
 ## When `server/package*.json` changes
 
