@@ -122,6 +122,7 @@ test.describe('Help / FAQ', () => {
     const myDetails = new MyDetailsPage(page);
     await myDetails.openFromUserMenu();
     await myDetails.setLanguage('fr');
+    await myDetails.goBack();
 
     const help = new HelpPage(page);
     await help.openFromUserMenu();

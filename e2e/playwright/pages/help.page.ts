@@ -50,7 +50,7 @@ export class HelpPage {
     await this.page.getByRole('button', { name: /user menu|menu utilisateur/i }).click();
     await this.page.waitForTimeout(500);
     await this.page
-      .getByRole('menuitem', { name: /help/i })
+      .getByRole('menuitem', { name: /help|aide/i })
       .or(this.page.getByText('Help', { exact: true }))
       .or(this.page.getByText('Aide', { exact: true }))
       .first()
@@ -58,7 +58,7 @@ export class HelpPage {
     await this.expectLoaded();
   }
 
-  async expectLoaded(title: string = 'Help & FAQ'): Promise<void> {
+  async expectLoaded(title: string | RegExp = /Help & FAQ|Aide & FAQ/i): Promise<void> {
     await dismissConsentBannerIfPresent(this.page);
     await refreshFlutterAccessibility(this.page);
     await expectAppBarTitle(this.page, title);

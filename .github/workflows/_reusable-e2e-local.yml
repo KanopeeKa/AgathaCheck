@@ -1,7 +1,7 @@
 # Full Playwright E2E against a local stack (Postgres + Flutter web + Node server).
 # Used on release/uat-* deploy (deploy-uat.yml) and weekly manual/cron (e2e.yml) — not on every PR.
-# CI runs six parallel matrix legs (Playwright --shard); callers pass shard_total: 6
-# and matrix.shard [1..6] — keep those in sync when changing shard count.
+# CI runs ten parallel matrix legs (file-balanced manifest in e2e/scripts/shard-files.mjs);
+# callers pass shard_total: 10 and matrix.shard [1..10] — keep in sync when changing shard count.
 name: Reusable E2E (localhost)
 
 on:
@@ -129,7 +129,7 @@ jobs:
         working-directory: e2e
         env:
           E2E_BASE_URL: http://localhost:3000
-        run: npm run test:shard -- ${{ inputs.shard_index }}/${{ inputs.shard_total }}
+        run: npm run test:ci-shard -- ${{ inputs.shard_index }}
 
       - name: Upload Playwright report
         if: always()

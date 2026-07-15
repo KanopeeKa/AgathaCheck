@@ -6,6 +6,8 @@
   "scripts": {
     "test": "playwright test",
     "test:shard": "playwright test --shard",
+    "test:ci-shard": "node scripts/run-ci-shard.mjs",
+    "shard:plan": "node scripts/shard-files.mjs --summary",
     "test:smoke": "playwright test --grep @smoke",
     "test:ui": "playwright test --ui",
     "test:headed": "playwright test --headed",
