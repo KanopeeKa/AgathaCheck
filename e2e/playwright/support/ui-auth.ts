@@ -40,7 +40,7 @@ export async function signupUserViaUi(
 
   const landing = new LandingPage(page);
   await landing.goto();
-  await landing.signup({ firstName, lastName, email, password });
+  await landing.signupAndReachHome({ firstName, lastName, email, password });
 
   await refreshFlutterAccessibility(page);
   const petList = new PetListPage(page);
