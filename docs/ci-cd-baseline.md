@@ -53,7 +53,8 @@ Append rows as phases complete:
 | 2 | 2026-07-14 | Shared build + manifest | | | PR #164 |
 | 3 | 2026-07-14 | UAT→PROD artifact promotion | | | PR #165 |
 | 4 | 2026-07-14 | UAT `flutter clean` experiment (default off) | | | PR #166 |
-| 5 | 2026-07-14 | Backend staging unify (UAT + PROD) | | | PR pending — `scripts/ci/stage-backend-deploy.sh` |
+| 5 | 2026-07-14 | Backend staging unify (UAT + PROD) | | | PR #167 |
+| 6 | 2026-07-15 | PR startup smoke on `main` PRs | | | PR pending — `_reusable-pr-startup-smoke.yml` |
 
 ## Regenerating this table
 

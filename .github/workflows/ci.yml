@@ -10,5 +10,8 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  startup-smoke:
+    uses: ./.github/workflows/_reusable-pr-startup-smoke.yml
+
   test-suite:
     uses: ./.github/workflows/_reusable-test.yml

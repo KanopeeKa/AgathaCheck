@@ -10,6 +10,7 @@ See also: [ci-cd-baseline.md](./ci-cd-baseline.md) (metrics), [CONTRIBUTING.md](
 | Stage | Blocking? | Workflow |
 |-------|-----------|----------|
 | PR → `main` | **Yes** (required checks) | `ci.yml`, `codeql.yml` |
+| PR startup smoke | **Yes** (with CI) | `ci.yml` → `_reusable-pr-startup-smoke.yml` |
 | PR hints | No (advisory) | `pr-governance-hints.yml` |
 | Agent `cursor/*` PRs | **Yes** (forbidden paths) | `agent-pr-safety-gate.yml` |
 | `release/uat-*` deploy | **Yes** (UAT + `prod-ready`) | `deploy-uat.yml` |
@@ -24,6 +25,7 @@ Triggered by `.github/workflows/ci.yml` → `_reusable-test.yml` and `codeql.yml
 
 | GitHub check name (job) | Workflow file | What it enforces |
 |-------------------------|---------------|------------------|
+| `PR startup smoke` | `_reusable-pr-startup-smoke.yml` | Postgres bootstrap, `node bin/start.js`, `/backend/health` + root |
 | `Governance (BDD + file size)` | `_reusable-test.yml` | BDD mapping ≥ 105 scenarios, priority tags, file size ≤ 500 lines |
 | `Flutter (analyze, test, build web)` | `_reusable-test.yml` | analyze, tests, domain coverage 65%, format, integration tests, web build |
 | `Backend (Node.js Jest + Dart analyze)` | `_reusable-test.yml` | Jest, npm audit high+, `dart analyze lib` |
