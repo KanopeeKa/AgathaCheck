@@ -2,9 +2,11 @@
 
 **Branch:** `cursor/experience-split-17a0`  
 **Status:** In progress (Phase 2 complete; Phase 3 next)  
-**Last updated:** 2026-07-15
+**Last updated:** 2026-07-15 (test governance locked)
 
 Product decisions are locked in planning conversations. This document is the **execution tracker** for agents and humans.
+
+**Locked decisions (2026-07-15):** see [Test governance](#test-governance-for-experience-split) and [Decisions](#decisions-locked).
 
 ---
 
@@ -140,7 +142,7 @@ Both shells use **top nav**:
 
 ## User stories backlog (by phase)
 
-### Phase 1 (implementing now)
+### Phase 1 (done — see traceability matrix)
 
 - **E1a** Guardian-only user skips chooser → `/g/home`
 - **E1b** Org-only user skips chooser → `/o/home`
@@ -149,9 +151,147 @@ Both shells use **top nav**:
 - **E2a** Settings → Default experience
 - **E5** Drawer Org view / Pet guardian view
 
-### Phase 2+
+### Phase 2 (done — home content)
+
+- **G-H1** Guardian home: due events + My Pets + grouped shared/fostered (no org inventory)
+- **G-H2** Shared pets grouped by sharer/org label
+- **O-H1** Org home: per-org sections + org-scoped due events
+- **G-H3** Inline event actions on home due-event cards
+- **G-H4** Scoped events dashboard (`/g/events`, `/o/events`)
+
+### Phase 3+
 
 See planning doc user story tables (G1–G5, O1–O9, F1–F10, A1–A7, etc.).
+
+---
+
+## Test governance for experience split
+
+Coverage percentage is **necessary but insufficient**. All experience-split work must climb a **quality ladder** and satisfy **multi-dimensional CI gates** before non-draft merge.
+
+### Quality ladder (L1–L4)
+
+| Level | What | Examples (experience split) |
+|-------|------|-----------------------------|
+| **L1 — Contract** | Domain entities/services: pure logic, no UI | `AppExperience` wire/paths; `ExperienceEligibility` + negative cases; `resolvePostLoginPath`; `ExperiencePreferencesStore` |
+| **L2 — Widget behaviour** | Screens/sections with provider overrides | Chooser card visibility; drawer org/guardian switch; guardian/org home sections; `DueEventRow` inline actions |
+| **L3 — Integration** | Full app router + fakes, post-login flows | `pet_profile_flow_test` on `/g/home`; resolve → shell navigation; add-pet FAB in shell |
+| **L4 — E2E / BDD** | Persona journeys, Playwright + Gherkin | `experience_navigation.feature` (6 scenarios); auth post-login destination |
+
+**Rule:** A phase deliverable is not “tested” until it has at least **L1 + one of L2/L3**, and any user-facing journey also has **L4** when a BDD scenario exists.
+
+### Traceability matrix (Phase 1–2)
+
+Gaps drive PR B/C work. Status: **Done** · **Partial** · **Gap**.
+
+| Story | BDD scenario | L1 unit | L2 widget | L3 integration | L4 Playwright | Status |
+|-------|--------------|---------|-----------|----------------|---------------|--------|
+| **E1a** | Guardian-only user lands on guardian home after login | `experience_eligibility_test.dart` | `experience_chooser_screen_test.dart` | `pet_profile_flow_test.dart` | `experience.navigation.spec.ts` | **Partial** — L1 not in CI shard yet; `app_experience_test` missing |
+| **E1b** | *(no dedicated scenario — add or map to org-only resolve)* | `experience_eligibility_test.dart` (org-only) | — | — | — | **Gap** — needs BDD + E2E |
+| **E1c** | Dual-role user sees experience chooser after login | `experience_eligibility_test.dart` | `experience_chooser_screen_test.dart` | — | `experience.navigation.spec.ts` | **Partial** — L3 optional |
+| **E2** | Dual-role user remembers guardian choice | `experience_preferences_store_test.dart` | `experience_chooser_screen_test.dart` (hint) | — | `experience.navigation.spec.ts` | **Partial** |
+| **E2** | Remembered guardian choice skips chooser on next login | `experience_preferences_store_test.dart` | — | — | `experience.navigation.spec.ts` | **Partial** — `resolvePostLoginPath` L1 missing |
+| **E2a** | Settings → Default experience | `experience_preferences_store_test.dart` | — | — | — | **Gap** — L2 + BDD |
+| **E5** | User switches to organisation view from guardian drawer | — | — | — | `experience.navigation.spec.ts` | **Partial** — L1/L2 missing |
+| **E1c** | Guardian chooser hides organisation option for guardian-only users | `experience_eligibility_test.dart` | `experience_chooser_screen_test.dart` | — | `experience.navigation.spec.ts` | **Done** |
+| **G-H1** | *(pet_profiles.feature — future)* | `pet_list_controller_guardian_shell_test.dart` | — | `pet_profile_flow_test.dart` | — | **Partial** — L2 home sections |
+| **G-H2** | *(grouping)* | `pet_list_controller_guardian_shell_test.dart` | — | — | — | **Partial** — L2/L4 |
+| **O-H1** | *(organisation_management.feature — future)* | `pet_list_controller_guardian_shell_test.dart` (`orgShellPets`) | — | — | — | **Partial** — L2 org home |
+| **G-H3** | *(health_tracking due events)* | — | — | — | — | **Gap** — `due_event_row_test` |
+| **G-H4** | *(scoped events)* | `health_events_scope` (enum) | — | — | — | **Gap** — L2 health dashboard embedded |
+
+*New stories must add a row before implementation merges.*
+
+### CI gates (multi-dimensional)
+
+| Gate | When | Requirement |
+|------|------|-------------|
+| **Domain coverage** | Every PR (merged lcov) | ≥ **65%** until PR A lands; then ratchet → **70%** (same sprint); **75%** after Tier C entity debt |
+| **Per-file floor** | Long-term | No **logic-bearing** domain file &lt; **60%** (getters, parsing, eligibility, `fromJson` with branches) |
+| **BDD priority map** | Every PR | All scenarios in `bdd-priority-tag-map.json` with `@P0`/`@P1`/`@P2` |
+| **BDD coverage** | Every PR | ≥ 105 mapped scenarios (`check_bdd_coverage.js`) |
+| **Changed-files test** | PR touches `lib/features/experience/**` | Same PR must add/update tests under `test/features/experience/**` (or linked controller/API tests) |
+| **Critical journey** | Experience-split PRs before non-draft merge | All **P0** + applicable **P1** `experience_navigation.feature` scenarios green in CI |
+| **Phase regression** | PR touches split-related code | Fast subset below must pass |
+
+Pure data-only structs (fields + `const` constructor, no getters/parsing) are excluded from the per-file floor unless they gain logic.
+
+### Coverage ratchet milestones
+
+| Milestone | Target | Trigger |
+|-----------|--------|---------|
+| **Now (unblock)** | 65% overall domain | PR A: shard + experience L1 tests |
+| **Same sprint** | **70%** overall domain | After PR A merges; bump `DOMAIN_COVERAGE_THRESHOLD` |
+| **After entity debt** | **75%** overall domain | PR C: org/sharing/notification entity tests |
+| **Per-file floor** | ≥ 60% on logic-bearing domain files | Enforced in review; optional script later |
+
+### L1 negative / mutation-style assertions
+
+Core rules must include **failure paths**, not only happy paths:
+
+| Rule | Negative assertion |
+|------|-------------------|
+| Saved default | Invalid / stale `savedDefault` → chooser (`resolveAutoExperience` → null) |
+| Org-only user | Cannot auto-land guardian (`canUseGuardian` false → org home) |
+| Guardian-only | Organisation card not in `availableExperiences` / chooser |
+| Dual-role + no default | `showChooser` true; `resolvePostLoginPath` → `/app/choose` |
+| Active experience override | Invalid `activeExperience` ignored; falls through to auto/chooser |
+| `AppExperienceWire.fromWire` | Unknown wire → `null` |
+
+File: expand `experience_eligibility_test.dart` + new `app_experience_test.dart` + `resolve_post_login_path_test.dart`.
+
+### Flake prevention (shell architecture)
+
+Encoded guidelines for all experience tests:
+
+1. **Prefer keys** over broad finds: `Key('add_pet_button')`, `experience_nav_home`, `drawer_org_view` — not `find.byType(Scaffold).single`.
+2. **Use helpers** in `test/helpers/test_helpers.dart`: `pumpGuardianHome()`, `l10nFromTester()` — anchor l10n from a shell widget, not an ambiguous root.
+3. **Override eligibility** in integration tests: `experienceEligibilityProvider` → guardian-only or dual as needed.
+4. **Avoid** `pumpAndSettle` on shells with `CircularProgressIndicator` unless bounded; use `pumpApp` / keyed waits.
+5. **Provider overrides** in widget tests — do not spin full GoRouter unless testing routing.
+
+### Phase regression suite (fast PR gate)
+
+When any of `lib/features/experience/**`, `experience_routes.dart`, `experience_navigation.feature`, or Phase 2 home widgets change, CI must run at minimum:
+
+**Flutter (L1 + L3)**
+
+- `test/features/experience/` (all files)
+- `test/features/pet_profile/presentation/controllers/pet_list_controller_guardian_shell_test.dart`
+- `test/features/pet_profile/presentation/integration/pet_profile_flow_test.dart` (integration job)
+
+**Playwright (L4 — P0/P1 subset)**
+
+| Priority | Scenario |
+|----------|----------|
+| P0 | Guardian-only user lands on guardian home after login |
+| P1 | Dual-role user sees experience chooser after login |
+| P1 | Dual-role user remembers guardian choice |
+| P1 | Remembered guardian choice skips chooser on next login |
+| P1 | User switches to organisation view from guardian drawer |
+
+Full 6-scenario `experience.navigation.spec.ts` + nightly E2E shards for broader regression.
+
+### Implementation sequencing (PRs)
+
+| PR | Scope | Quality levels | Unblocks |
+|----|--------|----------------|----------|
+| **PR A** | Tier A: add `test/features/experience` to **`rest` CI shard**; `app_experience_test`; expand eligibility negatives; `resolvePostLoginPath` L1 | L1 | Domain coverage ≥ 65% → 70% ratchet |
+| **PR B** | Tier B: shell/chooser/home widget tests; `due_event_row_test`; settings section | L2 (+ L1 gaps) | Behaviour hardening |
+| **PR C** | Tier C: org/sharing entity domain debt (archived_pet, pet_access, organization, etc.) | L1 | Headroom → 75% ratchet |
+
+**Do not** add a dedicated `experience` CI shard unless `rest` shard runtime becomes a bottleneck.
+
+---
+
+## Decisions (locked)
+
+| # | Decision | Choice |
+|---|----------|--------|
+| 1 | **CI shard placement** | Include `test/features/experience` in **`rest` shard** now; revisit dedicated shard only if runtime bottlenecks |
+| 2 | **Scope sequencing** | **PR A** → **PR B** → **PR C** (as table above) |
+| 3 | **Coverage ratchet** | Keep gate at **65%** until PR A lands; bump to **70%** within same sprint; **75%** after PR C |
+| 4 | **Merge readiness** | Experience-split PRs require all **P0** + applicable **P1** `experience_navigation` scenarios green before **non-draft** merge |
 
 ---
 
@@ -166,13 +306,14 @@ See planning doc user story tables (G1–G5, O1–O9, F1–F10, A1–A7, etc.).
 
 ---
 
-## Test strategy
+## Test strategy (summary)
 
-1. **TDD:** unit tests for eligibility + preferences before UI
-2. **Widget tests:** chooser, shell, settings tile
-3. **BDD:** Gherkin scenario titles must match Playwright `@bdd` headers exactly
-4. **E2E:** update `pet-list.page.ts` for `/g/home`; add `experience.page.ts`
-5. **Pre-push:** `./scripts/pre-push-changed.sh` each iteration; full before merge PR
+1. **Quality ladder:** L1 contract → L2 widget → L3 integration → L4 BDD (see [Test governance](#test-governance-for-experience-split)).
+2. **TDD:** L1 before UI for eligibility, preferences, route resolution.
+3. **Traceability:** Every story row in the matrix must be updated in the same PR that closes the story.
+4. **BDD:** Gherkin `Scenario:` titles must match Playwright `@bdd` headers exactly.
+5. **Pre-push:** `./scripts/pre-push-changed.sh` during iteration; `./scripts/pre-push.sh` before merge to `main`.
+6. **Domain coverage:** `flutter_app/scripts/merge_flutter_coverage.sh` after all four shards; gate per ratchet table.
 
 ---
 
@@ -195,3 +336,4 @@ See planning doc user story tables (G1–G5, O1–O9, F1–F10, A1–A7, etc.).
 |------|-------|-------|
 | 2026-07-15 | 1 | Branch created; plan doc; Phase 1 foundation implemented |
 | 2026-07-15 | 2 | Guardian/org shell home widgets; `guardian_name` on `/pets/all`; scoped events dashboard; inline due-event actions; controller grouping tests |
+| 2026-07-15 | Test | Test governance locked: quality ladder L1–L4, traceability matrix, CI gates, PR A/B/C sequencing, ratchet 65→70→75 |
