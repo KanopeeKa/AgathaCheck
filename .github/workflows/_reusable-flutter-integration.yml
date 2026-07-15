@@ -1,0 +1,68 @@
+# Flutter integration tests (pet profile flow).
+# Caller: ci.yml job id `flutter-integration`.
+name: Reusable Flutter integration
+
+on:
+  workflow_call:
+
+env:
+  FLUTTER_VERSION: '3.32.0'
+
+permissions:
+  contents: read
+
+jobs:
+  integration:
+    name: Flutter integration
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Begin job timing
+        run: echo "JOB_START_EPOCH=$(date +%s)" >> "$GITHUB_ENV"
+
+      - name: Set up Flutter
+        uses: ./.github/actions/setup-flutter
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+
+      - name: Cache Flutter dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.pub-cache
+            flutter_app/.dart_tool
+          key: flutter-${{ runner.os }}-${{ env.FLUTTER_VERSION }}-${{ hashFiles('flutter_app/pubspec.lock') }}
+          restore-keys: |
+            flutter-${{ runner.os }}-${{ env.FLUTTER_VERSION }}-
+
+      - name: Fetch Flutter dependencies
+        working-directory: flutter_app
+        run: flutter pub get
+
+      - name: Sync legal documents into app assets
+        run: dart run scripts/sync_legal_documents.dart
+
+      - name: Run integration tests
+        timeout-minutes: 10
+        working-directory: flutter_app
+        run: |
+          if [ -d "test/features/pet_profile/presentation/integration" ]; then
+            flutter test test/features/pet_profile/presentation/integration/ --concurrency=1 --fail-fast
+          else
+            echo "No integration tests directory found; skipping."
+          fi
+
+      - name: Write integration job summary
+        if: always()
+        run: |
+          end=$(date +%s)
+          start="${JOB_START_EPOCH:-$end}"
+          dur=$((end - start))
+          bash scripts/ci/append-summary.sh "Flutter integration job" \
+            "workflow=flutter-integration" \
+            "job=integration" \
+            "sha=${{ github.sha }}" \
+            "run_id=${{ github.run_id }}" \
+            "duration_sec=${dur}"

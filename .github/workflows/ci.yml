@@ -17,3 +17,51 @@ jobs:
 
   test-suite:
     uses: ./.github/workflows/_reusable-test.yml
+
+  flutter-analyze:
+    uses: ./.github/workflows/_reusable-flutter-analyze.yml
+
+  flutter-test-pet:
+    needs: flutter-analyze
+    uses: ./.github/workflows/_reusable-flutter-test-shard.yml
+    with:
+      shard: pet
+
+  flutter-test-health:
+    needs: flutter-analyze
+    uses: ./.github/workflows/_reusable-flutter-test-shard.yml
+    with:
+      shard: health
+
+  flutter-test-org:
+    needs: flutter-analyze
+    uses: ./.github/workflows/_reusable-flutter-test-shard.yml
+    with:
+      shard: org
+
+  flutter-test-rest:
+    needs: flutter-analyze
+    uses: ./.github/workflows/_reusable-flutter-test-shard.yml
+    with:
+      shard: rest
+
+  flutter-coverage:
+    needs:
+      - flutter-test-pet
+      - flutter-test-health
+      - flutter-test-org
+      - flutter-test-rest
+    uses: ./.github/workflows/_reusable-flutter-coverage.yml
+
+  flutter-integration:
+    needs: flutter-analyze
+    uses: ./.github/workflows/_reusable-flutter-integration.yml
+
+  flutter-build-web:
+    needs: flutter-analyze
+    uses: ./.github/workflows/_reusable-build-web.yml
+    with:
+      run_codegen: false
+      source_workflow: ci
+    secrets:
+      POSTHOG_API_KEY: ${{ secrets.POSTHOG_API_KEY }}

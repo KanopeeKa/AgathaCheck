@@ -54,12 +54,21 @@ branch protection — use the strings below.
 |----------------------------|----------------------|----------------------|---------------|
 | `startup-smoke / PR startup smoke` | `startup-smoke` | `PR startup smoke` | `_reusable-pr-startup-smoke.yml` |
 | `test-suite / Governance (BDD + file size)` | `test-suite` | `Governance (BDD + file size)` | `_reusable-test.yml` |
-| `test-suite / Flutter (analyze, test, build web)` | `test-suite` | `Flutter (analyze, test, build web)` | `_reusable-test.yml` |
+| `flutter-analyze / Flutter (analyze & format)` | `flutter-analyze` | `Flutter (analyze & format)` | `_reusable-flutter-analyze.yml` |
+| `flutter-coverage / Flutter domain coverage` | `flutter-coverage` | `Flutter domain coverage` | `_reusable-flutter-coverage.yml` |
+| `flutter-integration / Flutter integration` | `flutter-integration` | `Flutter integration` | `_reusable-flutter-integration.yml` |
+| `flutter-build-web / Build Flutter web` | `flutter-build-web` | `Build Flutter web` | `_reusable-build-web.yml` |
 | `test-suite / Backend (Node.js Jest + Dart analyze)` | `test-suite` | `Backend (Node.js Jest + Dart analyze)` | `_reusable-test.yml` |
 | `test-suite / E2E package audit` | `test-suite` | `E2E package audit` | `_reusable-test.yml` |
 | `Analyze JavaScript` | — | `Analyze JavaScript` | `codeql.yml` (direct job) |
 
-**Stability note:** Keep `ci.yml` caller ids (`startup-smoke`, `test-suite`) and reusable
+**Optional (visible, not required individually):** `flutter-test-{pet,health,org,rest} / Flutter tests (<shard>)` —
+the merge gate `flutter-coverage / Flutter domain coverage` covers shard failures.
+
+**Removed (replace in branch protection):** `test-suite / Flutter (analyze, test, build web)` — split into the
+`flutter-*` checks above (parallel shards initiative).
+
+**Stability note:** Keep `ci.yml` caller ids (`startup-smoke`, `test-suite`, `flutter-analyze`, etc.) and reusable
 job `name:` fields aligned with this table when renaming — branch protection matches these
 display strings exactly.
 
@@ -67,7 +76,11 @@ display strings exactly.
 |-------------------------|---------------|------------------|
 | `startup-smoke / PR startup smoke` | `_reusable-pr-startup-smoke.yml` | Postgres bootstrap, `node bin/start.js`, `/backend/health` + root |
 | `test-suite / Governance (BDD + file size)` | `_reusable-test.yml` | BDD mapping ≥ 105 scenarios, priority tags, file size ≤ 500 lines |
-| `test-suite / Flutter (analyze, test, build web)` | `_reusable-test.yml` | analyze, tests, domain coverage 65%, format, integration tests, web build |
+| `flutter-analyze / Flutter (analyze & format)` | `_reusable-flutter-analyze.yml` | format, legal sync, codegen, `flutter analyze` |
+| `flutter-test-* / Flutter tests (<shard>)` | `_reusable-flutter-test-shard.yml` | domain test shards (pet, health, org, rest) with per-shard coverage |
+| `flutter-coverage / Flutter domain coverage` | `_reusable-flutter-coverage.yml` | merge shard lcov, domain coverage ≥ 65% |
+| `flutter-integration / Flutter integration` | `_reusable-flutter-integration.yml` | pet profile integration tests |
+| `flutter-build-web / Build Flutter web` | `_reusable-build-web.yml` | web release build + `web-build-<sha>` artifact |
 | `test-suite / Backend (Node.js Jest + Dart analyze)` | `_reusable-test.yml` | Jest, npm audit high+, `dart analyze lib` |
 | `test-suite / E2E package audit` | `_reusable-test.yml` | e2e `npm audit` high+ |
 | `Analyze JavaScript` | `codeql.yml` | CodeQL static analysis |
@@ -94,13 +107,18 @@ After Phase 6 merged (#168), add the startup smoke check using the **exact** str
 3. Enable **Require branches to be up to date before merging** (recommended).
 4. In **Status checks that are required**, search for and add:
    - `startup-smoke / PR startup smoke` ← **new (Phase 6)**
+   - Flutter parallel checks (replace `test-suite / Flutter (analyze, test, build web)`):
+     - `flutter-analyze / Flutter (analyze & format)`
+     - `flutter-coverage / Flutter domain coverage`
+     - `flutter-integration / Flutter integration`
+     - `flutter-build-web / Build Flutter web`
    - Existing CI checks if not already listed (see table above), e.g.:
      - `test-suite / Governance (BDD + file size)`
-     - `test-suite / Flutter (analyze, test, build web)`
      - `test-suite / Backend (Node.js Jest + Dart analyze)`
      - `test-suite / E2E package audit`
      - `Analyze JavaScript`
-5. **Save changes**.
+5. **Remove** the deprecated check `test-suite / Flutter (analyze, test, build web)` if still listed.
+6. **Save changes**.
 
 **Rulesets (if your org uses Rules → Rulesets instead of Branches):**
 
