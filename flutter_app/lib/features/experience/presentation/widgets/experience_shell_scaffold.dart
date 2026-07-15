@@ -22,7 +22,8 @@ class ExperienceShellScaffold extends ConsumerWidget {
   final Widget child;
 
   bool get _isHome =>
-      currentLocation == '/g/home' || currentLocation.startsWith('/o/home') ||
+      currentLocation == '/g/home' ||
+      currentLocation.startsWith('/o/home') ||
       (experience == AppExperience.organization &&
           RegExp(r'^/o/[^/]+$').hasMatch(currentLocation));
 
@@ -52,7 +53,9 @@ class ExperienceShellScaffold extends ConsumerWidget {
             const SizedBox(width: 4),
             TextButton(
               key: const Key('experience_nav_home'),
-              onPressed: _isHome ? null : () => context.go(experience.homePath()),
+              onPressed: _isHome
+                  ? null
+                  : () => context.go(experience.homePath()),
               child: Text(
                 l.home,
                 style: TextStyle(
@@ -155,7 +158,9 @@ class _ExperienceDrawer extends ConsumerWidget {
               title: Text(l.notifications),
               onTap: () {
                 Navigator.pop(context);
-                final prefix = experience == AppExperience.guardian ? '/g' : '/o';
+                final prefix = experience == AppExperience.guardian
+                    ? '/g'
+                    : '/o';
                 context.push('$prefix/notifications');
               },
             ),

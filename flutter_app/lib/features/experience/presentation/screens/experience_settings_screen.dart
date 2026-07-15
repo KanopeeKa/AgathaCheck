@@ -9,10 +9,7 @@ import '../widgets/experience_shell_scaffold.dart';
 
 /// Settings screen within an experience shell.
 class ExperienceSettingsScreen extends ConsumerWidget {
-  const ExperienceSettingsScreen({
-    super.key,
-    required this.experience,
-  });
+  const ExperienceSettingsScreen({super.key, required this.experience});
 
   final AppExperience experience;
 
@@ -45,10 +42,7 @@ class ExperienceSettingsScreen extends ConsumerWidget {
 
 /// Invite entry point — guardian: add pet/share; org: members (phase 1 routing).
 class ExperienceInviteScreen extends ConsumerWidget {
-  const ExperienceInviteScreen({
-    super.key,
-    required this.experience,
-  });
+  const ExperienceInviteScreen({super.key, required this.experience});
 
   final AppExperience experience;
 
@@ -72,10 +66,7 @@ class ExperienceInviteScreen extends ConsumerWidget {
                 color: Theme.of(context).colorScheme.primary,
               ),
               const SizedBox(height: 16),
-              Text(
-                l.invite,
-                style: Theme.of(context).textTheme.headlineSmall,
-              ),
+              Text(l.invite, style: Theme.of(context).textTheme.headlineSmall),
               const SizedBox(height: 8),
               Text(
                 experience == AppExperience.guardian

@@ -11,21 +11,21 @@ class ExperienceResolveScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    ref.listen<AsyncValue<ExperienceEligibility>>(experienceEligibilityProvider, (
-      _,
-      next,
-    ) {
-      next.whenData((eligibility) {
-        final saved = ref.read(savedDefaultExperienceProvider);
-        final active = ref.read(activeExperienceProvider);
-        final path = resolvePostLoginPath(
-          eligibility: eligibility,
-          savedDefault: saved,
-          activeExperience: active,
-        );
-        context.go(path);
-      });
-    });
+    ref.listen<AsyncValue<ExperienceEligibility>>(
+      experienceEligibilityProvider,
+      (_, next) {
+        next.whenData((eligibility) {
+          final saved = ref.read(savedDefaultExperienceProvider);
+          final active = ref.read(activeExperienceProvider);
+          final path = resolvePostLoginPath(
+            eligibility: eligibility,
+            savedDefault: saved,
+            activeExperience: active,
+          );
+          context.go(path);
+        });
+      },
+    );
 
     final eligibility = ref.watch(experienceEligibilityProvider);
     eligibility.whenOrNull(
@@ -50,8 +50,6 @@ class ExperienceResolveScreen extends ConsumerWidget {
       },
     );
 
-    return const Scaffold(
-      body: Center(child: CircularProgressIndicator()),
-    );
+    return const Scaffold(body: Center(child: CircularProgressIndicator()));
   }
 }

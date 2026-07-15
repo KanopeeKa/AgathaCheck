@@ -20,7 +20,12 @@ export class ExperiencePage {
       .waitFor({ timeout: 30_000 });
   }
 
+  async selectGuardianCard(): Promise<void> {
+    await this.page.getByText('Individual Pet Guardian').click();
+  }
+
   async chooseGuardian(remember = false): Promise<void> {
+    await this.selectGuardianCard();
     if (remember) {
       await this.page.getByRole('checkbox').click();
     }
@@ -37,5 +42,10 @@ export class ExperiencePage {
     await this.page.getByRole('button', { name: 'Settings' }).click();
     await this.page.getByText('Organisation view').click();
     await this.page.waitForURL(/\/o\/home/, { timeout: 30_000 });
+  }
+
+  async gotoChooser(): Promise<void> {
+    await this.page.goto('/app/choose');
+    await refreshFlutterAccessibility(this.page);
   }
 }

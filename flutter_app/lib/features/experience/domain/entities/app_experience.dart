@@ -1,8 +1,5 @@
 /// Product experience shell: individual guardian vs shelter/organisation.
-enum AppExperience {
-  guardian,
-  organization,
-}
+enum AppExperience { guardian, organization }
 
 extension AppExperienceWire on AppExperience {
   String get wire => switch (this) {

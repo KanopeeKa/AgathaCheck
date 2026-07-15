@@ -73,7 +73,8 @@ class _OrgHomeScreenState extends ConsumerState<OrgHomeScreen> {
       child: petListAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (e, _) => Center(child: Text('$e')),
-        data: (pets) => OrgShellHomeContent(allPets: pets, controller: _controller),
+        data: (pets) =>
+            OrgShellHomeContent(allPets: pets, controller: _controller),
       ),
     );
   }

@@ -46,9 +46,8 @@ List<RouteBase> buildExperienceRoutes() {
         GoRoute(
           path: '/g/invite',
           name: 'guardianInvite',
-          builder: (context, state) => const ExperienceInviteScreen(
-            experience: AppExperience.guardian,
-          ),
+          builder: (context, state) =>
+              const ExperienceInviteScreen(experience: AppExperience.guardian),
         ),
         GoRoute(
           path: '/g/notifications',

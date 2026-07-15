@@ -150,7 +150,8 @@ class _HealthDashboardScreenState extends ConsumerState<HealthDashboardScreen>
                 HealthDashboardActions(
                   onExportPdf: _exportPdf,
                   onExportCsv: _exportCsv,
-                  onGroupModeChanged: (mode) => setState(() => _groupMode = mode),
+                  onGroupModeChanged: (mode) =>
+                      setState(() => _groupMode = mode),
                   groupMode: _groupMode,
                   lGroupBy: l.groupBy,
                   lByDueDate: l.byDueDate,

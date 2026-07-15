@@ -1,22 +1,111 @@
 /**
  * @bdd experience_navigation.feature
  * Scenario: Guardian-only user lands on guardian home after login
+ * Scenario: Dual-role user sees experience chooser after login
+ * Scenario: Dual-role user remembers guardian choice
+ * Scenario: Remembered guardian choice skips chooser on next login
+ * Scenario: User switches to organisation view from guardian drawer
+ * Scenario: Guardian chooser hides organisation option for guardian-only users
  */
-import { test, expect, loginAs } from '../fixtures/auth.fixture';
-import { dismissConsentBannerIfPresent, refreshFlutterAccessibility } from '../support/flutter';
+import { test, expect } from '../fixtures/auth.fixture';
+import { LandingPage } from '../pages/landing.page';
+import { ExperiencePage } from '../pages/experience.page';
+import { createPet, seedDualRoleUser, signupUser } from '../support/api';
+import {
+  dismissConsentBannerIfPresent,
+  refreshFlutterAccessibility,
+} from '../support/flutter';
+import { prepareLiveApiAccess } from '../support/waf';
+
+const baseURL = () => process.env.E2E_BASE_URL ?? 'http://localhost:3000';
+
+async function loginFromLanding(
+  page: import('@playwright/test').Page,
+  email: string,
+  password: string,
+): Promise<void> {
+  const landing = new LandingPage(page);
+  await landing.goto();
+  await landing.login(email, password);
+  await dismissConsentBannerIfPresent(page);
+  await refreshFlutterAccessibility(page);
+}
 
 test.describe('Experience navigation', () => {
   test('guardian-only user lands on guardian home after login', async ({
     page,
     testUser,
-    landingPage,
   }) => {
-    await landingPage.goto();
-    await landingPage.login(testUser.email, testUser.password);
-    await dismissConsentBannerIfPresent(page);
-    await refreshFlutterAccessibility(page);
+    await loginFromLanding(page, testUser.email, testUser.password);
     await page.waitForURL(/\/g\/home/, { timeout: 60_000 });
+    const experience = new ExperiencePage(page);
+    await experience.expectGuardianShell();
+  });
+
+  test('dual-role user sees experience chooser after login', async ({ page }) => {
+    await prepareLiveApiAccess(page, baseURL());
+    const { user } = await seedDualRoleUser(baseURL());
+    await loginFromLanding(page, user.email, user.password);
+    await page.waitForURL(/\/app\/choose/, { timeout: 60_000 });
+    const experience = new ExperiencePage(page);
+    await experience.expectChooserVisible();
+  });
+
+  test('dual-role user remembers guardian choice', async ({ page }) => {
+    await prepareLiveApiAccess(page, baseURL());
+    const { user } = await seedDualRoleUser(baseURL());
+    await loginFromLanding(page, user.email, user.password);
+    await page.waitForURL(/\/app\/choose/, { timeout: 60_000 });
+    const experience = new ExperiencePage(page);
+    await experience.chooseGuardian(true);
+    await experience.expectGuardianShell();
+  });
+
+  test('remembered guardian choice skips chooser on next login', async ({
+    page,
+  }) => {
+    await prepareLiveApiAccess(page, baseURL());
+    const { user } = await seedDualRoleUser(baseURL());
+    await loginFromLanding(page, user.email, user.password);
+    await page.waitForURL(/\/app\/choose/, { timeout: 60_000 });
+    const experience = new ExperiencePage(page);
+    await experience.chooseGuardian(true);
+
+    await page.context().clearCookies();
+    await loginFromLanding(page, user.email, user.password);
+    await page.waitForURL(/\/g\/home/, { timeout: 60_000 });
+    await experience.expectGuardianShell();
+  });
+
+  test('user switches to organisation view from guardian drawer', async ({
+    page,
+  }) => {
+    await prepareLiveApiAccess(page, baseURL());
+    const { user } = await seedDualRoleUser(baseURL());
+    await loginFromLanding(page, user.email, user.password);
+    await page.waitForURL(/\/app\/choose/, { timeout: 60_000 });
+    const experience = new ExperiencePage(page);
+    await experience.chooseGuardian(false);
+    await experience.openDrawerOrgView();
     await expect(page.getByRole('button', { name: 'Home' })).toBeVisible();
-    await expect(page.getByRole('button', { name: 'Events' })).toBeVisible();
+  });
+
+  test('guardian chooser hides organisation option for guardian-only users', async ({
+    page,
+  }) => {
+    await prepareLiveApiAccess(page, baseURL());
+    const user = await signupUser(baseURL());
+    await createPet(baseURL, user.accessToken, 'Solo Pet');
+    await loginFromLanding(page, user.email, user.password);
+    await page.waitForURL(/\/g\/home/, { timeout: 60_000 });
+
+    const experience = new ExperiencePage(page);
+    await experience.gotoChooser();
+    await expect(
+      page.getByText('Shelter / Organisation'),
+    ).not.toBeVisible();
+    await expect(
+      page.getByText('Individual Pet Guardian'),
+    ).toBeVisible();
   });
 });

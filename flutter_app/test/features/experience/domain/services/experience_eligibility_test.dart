@@ -30,10 +30,7 @@ void main() {
       expect(e.canUseGuardian, isTrue);
       expect(e.canUseOrganization, isFalse);
       expect(e.showChooser, isFalse);
-      expect(
-        e.resolveAutoExperience(),
-        AppExperience.guardian,
-      );
+      expect(e.resolveAutoExperience(), AppExperience.guardian);
     });
 
     test('org-only admin without guardian pets auto-opens org', () {
@@ -44,10 +41,7 @@ void main() {
       expect(e.canUseGuardian, isFalse);
       expect(e.canUseOrganization, isTrue);
       expect(e.showChooser, isFalse);
-      expect(
-        e.resolveAutoExperience(),
-        AppExperience.organization,
-      );
+      expect(e.resolveAutoExperience(), AppExperience.organization);
     });
 
     test('dual user sees chooser unless default saved', () {

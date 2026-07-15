@@ -15,7 +15,8 @@ class ExperienceChooserScreen extends ConsumerStatefulWidget {
       _ExperienceChooserScreenState();
 }
 
-class _ExperienceChooserScreenState extends ConsumerState<ExperienceChooserScreen> {
+class _ExperienceChooserScreenState
+    extends ConsumerState<ExperienceChooserScreen> {
   AppExperience? _selected;
   bool _remember = false;
 
@@ -50,7 +51,8 @@ class _ExperienceChooserScreenState extends ConsumerState<ExperienceChooserScree
                   subtitle: l.experienceGuardianSubtitle,
                   icon: Icons.pets,
                   selected: _selected == AppExperience.guardian,
-                  onTap: () => setState(() => _selected = AppExperience.guardian),
+                  onTap: () =>
+                      setState(() => _selected = AppExperience.guardian),
                 ),
               if (options.contains(AppExperience.organization)) ...[
                 const SizedBox(height: 12),

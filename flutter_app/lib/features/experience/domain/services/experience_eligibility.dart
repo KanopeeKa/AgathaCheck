@@ -63,9 +63,7 @@ class ExperienceEligibilityRules {
     required int orgMembershipCount,
   }) {
     final hasOrg = orgMembershipCount > 0;
-    final hasGuardian = hasOrg
-        ? hasGuardianContextFromPets(pets)
-        : true;
+    final hasGuardian = hasOrg ? hasGuardianContextFromPets(pets) : true;
     return ExperienceEligibility(
       hasOrgMembership: hasOrg,
       hasGuardianContext: hasGuardian,

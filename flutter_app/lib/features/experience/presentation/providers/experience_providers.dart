@@ -6,33 +6,32 @@ import '../../data/experience_preferences_store.dart';
 import '../../domain/entities/app_experience.dart';
 import '../../domain/services/experience_eligibility.dart';
 
-final experiencePreferencesStoreProvider = Provider<ExperiencePreferencesStore>((
-  ref,
-) {
-  return ExperiencePreferencesStore(ref.watch(sharedPreferencesProvider));
-});
-
-final experienceEligibilityProvider = Provider<AsyncValue<ExperienceEligibility>>(
+final experiencePreferencesStoreProvider = Provider<ExperiencePreferencesStore>(
   (ref) {
-    final petsAsync = ref.watch(petListProvider);
-    final orgsAsync = ref.watch(organizationListProvider);
+    return ExperiencePreferencesStore(ref.watch(sharedPreferencesProvider));
+  },
+);
 
-    return petsAsync.when(
-      data: (pets) => orgsAsync.when(
-        data: (orgs) => AsyncValue.data(
-          ExperienceEligibilityRules.compute(
-            pets: pets,
-            orgMembershipCount: orgs.length,
+final experienceEligibilityProvider =
+    Provider<AsyncValue<ExperienceEligibility>>((ref) {
+      final petsAsync = ref.watch(petListProvider);
+      final orgsAsync = ref.watch(organizationListProvider);
+
+      return petsAsync.when(
+        data: (pets) => orgsAsync.when(
+          data: (orgs) => AsyncValue.data(
+            ExperienceEligibilityRules.compute(
+              pets: pets,
+              orgMembershipCount: orgs.length,
+            ),
           ),
+          loading: () => const AsyncValue.loading(),
+          error: (e, st) => AsyncValue.error(e, st),
         ),
         loading: () => const AsyncValue.loading(),
         error: (e, st) => AsyncValue.error(e, st),
-      ),
-      loading: () => const AsyncValue.loading(),
-      error: (e, st) => AsyncValue.error(e, st),
-    );
-  },
-);
+      );
+    });
 
 final savedDefaultExperienceProvider = Provider<AppExperience?>((ref) {
   return ref.watch(experiencePreferencesStoreProvider).readDefaultExperience();

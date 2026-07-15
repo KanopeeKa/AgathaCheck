@@ -56,7 +56,10 @@ void main() {
     expect(find.byKey(const Key('remember_experience_choice')), findsOneWidget);
     expect(find.byKey(const Key('remember_experience_hint')), findsOneWidget);
     expect(find.byKey(const Key('experience_card_guardian')), findsOneWidget);
-    expect(find.byKey(const Key('experience_card_organization')), findsOneWidget);
+    expect(
+      find.byKey(const Key('experience_card_organization')),
+      findsOneWidget,
+    );
   });
 
   testWidgets('chooser hides organisation card for guardian-only eligibility', (

@@ -67,7 +67,9 @@ class HomeEventActions {
       },
     );
     if (days == null || !context.mounted) return;
-    await ref.read(healthEntriesNotifierProvider.notifier).snooze(entry.id, days);
+    await ref
+        .read(healthEntriesNotifierProvider.notifier)
+        .snooze(entry.id, days);
     if (!context.mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(

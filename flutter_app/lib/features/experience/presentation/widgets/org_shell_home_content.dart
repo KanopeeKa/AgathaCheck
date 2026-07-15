@@ -50,7 +50,10 @@ class OrgShellHomeContent extends ConsumerWidget {
                     color: theme.colorScheme.outline,
                   ),
                   const SizedBox(height: 16),
-                  Text(l.orgNoOrganizations, style: theme.textTheme.headlineSmall),
+                  Text(
+                    l.orgNoOrganizations,
+                    style: theme.textTheme.headlineSmall,
+                  ),
                   const SizedBox(height: 24),
                   FilledButton.icon(
                     onPressed: () => context.push('/organizations/new'),
@@ -69,10 +72,7 @@ class OrgShellHomeContent extends ConsumerWidget {
             PendingFosterPlacementsSection(),
             PendingAdoptionPlacementsSection(),
             PendingCustodyTransfersSection(),
-            DueEventsSection(
-              pets: orgPets,
-              showInlineActions: true,
-            ),
+            DueEventsSection(pets: orgPets, showInlineActions: true),
             ...orgGroups.entries.map((entry) {
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.start,

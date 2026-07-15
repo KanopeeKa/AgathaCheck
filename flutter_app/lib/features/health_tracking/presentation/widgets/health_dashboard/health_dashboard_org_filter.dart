@@ -29,13 +29,15 @@ class HealthDashboardOrgFilter extends ConsumerWidget {
     final allPetsAsync = ref.watch(allPetsIncludingOrgProvider);
     final pets = allPetsAsync.valueOrNull ?? [];
     final scopedPets = switch (scope) {
-      HealthEventsScope.organization =>
-        PetListController().orgShellPets(pets),
+      HealthEventsScope.organization => PetListController().orgShellPets(pets),
       _ => pets,
     };
     final orgNames =
         scopedPets
-            .where((p) => p.organizationName != null && p.organizationName!.isNotEmpty)
+            .where(
+              (p) =>
+                  p.organizationName != null && p.organizationName!.isNotEmpty,
+            )
             .map((p) => p.organizationName!)
             .toSet()
             .toList()
