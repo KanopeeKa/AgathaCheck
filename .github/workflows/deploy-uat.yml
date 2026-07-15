@@ -100,6 +100,7 @@ jobs:
           if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
             if [ "${{ inputs.allow_unverified_deploy }}" = "true" ]; then
               echo "::warning::allow_unverified_deploy=true — proceeding without SSH invariant (emergency bypass)."
+              echo "::warning::See docs/uat-backend-node-modules-runbook.md — required follow-up checks and owner sign-off apply."
               exit 0
             fi
             echo "::error::Manual UAT deploy requires SSH invariant enforcement."
@@ -415,10 +416,19 @@ jobs:
 
       - name: Write deploy job summary
         if: always()
+        env:
+          SSH_INVARIANT_ENFORCED: ${{ steps.ssh_enforcement.outputs.ssh_invariant_enforced }}
+          SSH_INVARIANT: ${{ steps.uat_ssh.outcome == 'success' && 'passed' || steps.uat_ssh.outcome == 'failure' && 'failed' || 'skipped' }}
         run: |
           end=$(date +%s)
           start="${JOB_START_EPOCH:-$end}"
           dur=$((end - start))
+          # ssh_invariant_enforced = policy (UAT_SSH_ENABLED); ssh_invariant = execution result.
+          if [ "${SSH_INVARIANT_ENFORCED}" = "true" ] && [ "${SSH_INVARIANT}" = "passed" ]; then
+            deploy_verification=verified
+          else
+            deploy_verification=unverified
+          fi
           bash scripts/ci/append-summary.sh "UAT deploy job" \
             "workflow=deploy-uat" \
             "job=deploy" \
@@ -428,14 +438,15 @@ jobs:
             "resolved_run_clean=${{ needs.build-web.outputs.resolved_run_clean }}" \
             "run_clean_source=${{ github.event_name == 'workflow_dispatch' && 'workflow_dispatch_input' || 'repo_variable' }}" \
             "package_json_changed=${{ steps.pkg_changed.outputs.changed }}" \
-            "ssh_invariant_enforced=${{ steps.ssh_enforcement.outputs.ssh_invariant_enforced }}" \
+            "ssh_invariant_enforced=${SSH_INVARIANT_ENFORCED}" \
+            "ssh_invariant=${SSH_INVARIANT}" \
+            "deploy_verification=${deploy_verification}" \
             "node_modules_kind=${{ steps.uat_deploy_state.outputs.node_modules_kind || 'not_verified' }}" \
             "node_modules_target=${{ steps.uat_deploy_state.outputs.node_modules_target || 'n/a' }}" \
             "passenger_htaccess_ok=${{ steps.uat_deploy_state.outputs.passenger_htaccess_ok || 'not_verified' }}" \
             "server_hostname=${{ steps.uat_deploy_state.outputs.server_hostname || 'n/a' }}" \
             "node_major=${{ steps.uat_deploy_state.outputs.node_major || 'n/a' }}" \
             "app_root=${{ steps.uat_deploy_state.outputs.app_root || 'n/a' }}" \
-            "ssh_invariant=${{ steps.uat_ssh.outcome == 'success' && 'passed' || steps.uat_ssh.outcome == 'failure' && 'failed' || 'skipped' }}" \
             "run_id=${{ github.run_id }}" \
             "duration_sec=${dur}"
 

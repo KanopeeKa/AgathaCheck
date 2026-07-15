@@ -51,9 +51,38 @@ When enabled:
    - `11` — real directory
    - `12` — broken symlink / wrong target
 
-When **disabled:** symlink checks are skipped (`node_modules_kind=not_verified`, `ssh_invariant_enforced=false`). Manual `workflow_dispatch` deploys fail unless `allow_unverified_deploy=true`. Push deploys warn in the Actions summary.
+When **disabled:** symlink checks are skipped (`node_modules_kind=not_verified`, `ssh_invariant_enforced=false`, `deploy_verification=unverified`). Manual `workflow_dispatch` deploys fail unless `allow_unverified_deploy=true`. Push deploys warn in the Actions summary.
 
-Deploy summary records: `ssh_invariant_enforced`, `node_modules_kind`, `node_modules_target`, `passenger_htaccess_ok`, `server_hostname`, `node_major`, `app_root`.
+**Summary signals (distinct):**
+
+| Field | Meaning |
+|-------|---------|
+| `ssh_invariant_enforced` | Policy — `UAT_SSH_ENABLED=true` |
+| `ssh_invariant` | Execution — `passed` / `failed` / `skipped` (whitelist, SSH, or invariant) |
+| `deploy_verification` | Derived — `verified` only when enforced **and** `ssh_invariant=passed`; else `unverified` |
+
+Deploy summary records: `deploy_verification`, `ssh_invariant_enforced`, `ssh_invariant`, `node_modules_kind`, `node_modules_target`, `passenger_htaccess_ok`, `server_hostname`, `node_major`, `app_root`.
+
+## Emergency bypass (`allow_unverified_deploy`)
+
+Use only for **incidents** when SSH automation is temporarily unavailable and a manual deploy cannot wait.
+
+**Who:** release owner or on-call with explicit sign-off (note in the linked issue or deploy thread).
+
+**When allowed** (`workflow_dispatch` + `allow_unverified_deploy=true`):
+
+1. Complete the deploy knowing `deploy_verification=unverified`.
+2. **Required follow-up before calling UAT healthy:**
+   - SSH to UAT (or cPanel File Manager) and verify symlink:
+     ```bash
+     ls -la ~/uat.agathatrack.com/backend/node_modules
+     ```
+   - `curl -sk https://uat.agathatrack.com/backend/health` → HTTP 200
+   - If `server/package*.json` changed: cPanel → **Run NPM Install** → **Restart**
+3. Restore `UAT_SSH_ENABLED=true` and re-run a normal deploy to obtain `deploy_verification=verified`.
+4. Record what broke (whitelist, secrets, connectivity) and fix root cause.
+
+**Policy after rollout stabilizes:** once **3 consecutive** UAT deploys show `deploy_verification=verified`, treat `allow_unverified_deploy=true` as **incident-only** — do not use for convenience deploys.
 
 ## When `server/package*.json` changes
 
