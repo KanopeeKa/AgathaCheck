@@ -74,11 +74,23 @@ export class MyDetailsPage {
   }
 
   async fillFirstName(firstName: string): Promise<void> {
-    await fillLabelledField(this.page, 'First Name', firstName);
+    await this.typeIntoProfileField(/^First Name/, firstName);
   }
 
   async fillBio(bio: string): Promise<void> {
-    await fillLabelledField(this.page, 'Bio', bio);
+    await this.typeIntoProfileField(/^Bio/, bio);
+  }
+
+  private async typeIntoProfileField(name: RegExp, value: string): Promise<void> {
+    const field = this.page.getByRole('textbox', { name });
+    await field.waitFor({ state: 'visible' });
+    await field.click();
+    await this.page.waitForTimeout(150);
+    await field.press('Control+a');
+    await this.page.keyboard.press('Backspace');
+    await this.page.keyboard.type(value, { delay: 45 });
+    await field.press('Tab');
+    await this.page.waitForTimeout(150);
   }
 
   async saveProfileEdits(): Promise<void> {

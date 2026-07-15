@@ -3,6 +3,7 @@ import { LandingPage } from '../pages/landing.page';
 import { PetListPage } from '../pages/pet-list.page';
 import type { TestUser } from './api';
 import { isLiveHostingTarget } from './hosting';
+import { refreshFlutterAccessibility } from './flutter';
 
 async function readAccessToken(page: Page): Promise<string> {
   const token = await page.evaluate(() => {
@@ -41,6 +42,7 @@ export async function signupUserViaUi(
   await landing.goto();
   await landing.signup({ firstName, lastName, email, password });
 
+  await refreshFlutterAccessibility(page);
   const petList = new PetListPage(page);
   await petList.expectLoaded();
 
@@ -65,15 +67,24 @@ export async function createTestUser(
     lastName: string;
   }> = {},
 ): Promise<TestUser> {
+  const { signupUser, getCurrentUser } = await import('./api');
+
   if (!isLiveHostingTarget(baseURL)) {
-    const { signupUser } = await import('./api');
     return signupUser(baseURL, overrides);
   }
 
-  const { signupUser } = await import('./api');
-  try {
-    return await signupUser(baseURL, overrides);
-  } catch {
-    return signupUserViaUi(page, overrides);
+  for (let attempt = 0; attempt < 3; attempt++) {
+    try {
+      const user = await signupUser(baseURL, overrides);
+      const profile = await getCurrentUser(baseURL, user.accessToken);
+      if (profile?.email === user.email) {
+        return user;
+      }
+    } catch {
+      // Retry after WAF / cold-start blips on live UAT.
+    }
+    await page.waitForTimeout(1_500);
   }
+
+  return signupUserViaUi(page, overrides);
 }
