@@ -1,5 +1,5 @@
 import type { Page } from '@playwright/test';
-import { fillLabelledField, waitForFlutter } from '../support/flutter';
+import { fillLabelledField, refreshFlutterAccessibility, waitForFlutter } from '../support/flutter';
 
 export interface SignupDetails {
   firstName: string;
@@ -57,7 +57,13 @@ export class LandingPage {
     }
 
     await this.page.getByRole('button', { name: 'Create Account', exact: true }).click();
-    await this.page.waitForTimeout(2000);
+    await refreshFlutterAccessibility(this.page);
+    await this.page
+      .getByRole('button', { name: 'To Do' })
+      .or(this.page.getByRole('button', { name: 'Add Pet' }))
+      .or(this.page.getByText('No pets yet'))
+      .first()
+      .waitFor({ timeout: 60_000 });
   }
 
   async submitSignupForm(): Promise<void> {

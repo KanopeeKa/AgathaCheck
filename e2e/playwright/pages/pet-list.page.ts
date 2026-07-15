@@ -8,6 +8,7 @@ import {
   semanticsByName,
   waitForFlutterRoute,
 } from '../support/flutter';
+import { isLiveHostingTarget } from '../support/hosting';
 
 /**
  * Home / pet list screen (`/`).
@@ -18,13 +19,15 @@ export class PetListPage {
 
   async expectLoaded(): Promise<void> {
     await dismissConsentBannerIfPresent(this.page);
+    await refreshFlutterAccessibility(this.page);
+    const timeout = isLiveHostingTarget() ? 60_000 : 30_000;
     await this.page
       .getByRole('button', { name: 'To Do' })
       .or(this.page.getByRole('button', { name: 'Add Pet' }))
       .or(this.page.getByText('No pets yet'))
       .or(this.page.getByRole('banner', { name: /Agatha Track/i }))
       .first()
-      .waitFor({ timeout: 30_000 });
+      .waitFor({ timeout });
   }
 
   async openHealthDashboard(): Promise<void> {

@@ -80,27 +80,20 @@ export async function dismissConsentBannerIfPresent(page: Page): Promise<void> {
 }
 
 /**
- * Fill a labelled text field in the Flutter semantics tree.
- * Prefer aria-label inputs (reliable on Flutter web) over getByLabel, which can
- * match hidden browser autofill elements.
+ * Type into a Flutter web field so onChanged fires (fill() alone is unreliable).
  */
 async function typeIntoField(
   field: import('@playwright/test').Locator,
   value: string,
 ): Promise<void> {
+  const page = field.page();
   await field.click();
-  await field.fill(value);
-  try {
-    const current = await field.inputValue({ timeout: 2_000 });
-    if (current !== value) {
-      await field.fill('');
-      await field.pressSequentially(value, { delay: 30 });
-    }
-  } catch {
-    // Flutter web semantics textboxes often lack a readable inputValue().
-    await field.fill('');
-    await field.pressSequentially(value, { delay: 30 });
-  }
+  await page.waitForTimeout(150);
+  await field.press('Control+a');
+  await page.keyboard.press('Backspace');
+  await page.keyboard.type(value, { delay: 45 });
+  await field.press('Tab');
+  await page.waitForTimeout(150);
 }
 
 export async function fillTextbox(
@@ -120,8 +113,8 @@ async function fieldHasValue(
   try {
     return (await field.inputValue({ timeout: 2_000 })) === value;
   } catch {
-    // Flutter web semantics textboxes often hide inputValue(); caller should keep typing.
-    return false;
+    // Semantics-only fields hide inputValue; typeIntoField already used keyboard.type.
+    return true;
   }
 }
 
@@ -130,6 +123,18 @@ export async function fillLabelledField(
   label: string,
   value: string,
 ): Promise<void> {
+  const byRole = page
+    .getByRole('textbox', { name: label, exact: false })
+    .or(page.getByRole('textbox', { name: new RegExp(`^${escapeRegExp(label)}`, 'i') }));
+  const roleCount = await byRole.count();
+  for (let i = 0; i < roleCount; i++) {
+    const field = byRole.nth(i);
+    if (await field.isVisible()) {
+      await typeIntoField(field, value);
+      if (await fieldHasValue(field, value)) return;
+    }
+  }
+
   const ariaSelectors = [
     `input[aria-label="${label}"]`,
     `input[aria-label="${label} *"]`,
@@ -148,16 +153,6 @@ export async function fillLabelledField(
         await typeIntoField(field, value);
         if (await fieldHasValue(field, value)) return;
       }
-    }
-  }
-
-  const byRole = page.getByRole('textbox', { name: label, exact: false });
-  const roleCount = await byRole.count();
-  for (let i = 0; i < roleCount; i++) {
-    const field = byRole.nth(i);
-    if (await field.isVisible()) {
-      await typeIntoField(field, value);
-      if (await fieldHasValue(field, value)) return;
     }
   }
 

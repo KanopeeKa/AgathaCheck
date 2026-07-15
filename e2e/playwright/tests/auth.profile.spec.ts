@@ -72,7 +72,10 @@ test.describe('Authentication – profile and session', () => {
     await myDetails.saveProfileEdits();
 
     await myDetails.expectProfileUpdated();
-    const profile = await getCurrentUser(baseURL, testUser.accessToken);
-    expect(profile.bio).toBe(bio);
+    await myDetails.expectBio(bio);
+    await expect(async () => {
+      const profile = await getCurrentUser(baseURL, testUser.accessToken);
+      expect(profile.bio).toBe(bio);
+    }).toPass({ timeout: 15_000 });
   });
 });
