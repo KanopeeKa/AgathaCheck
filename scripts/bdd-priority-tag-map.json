@@ -199,5 +199,13 @@
   "gdpr_data_rights.feature": {
     "Exporting my personal data as JSON": "P2",
     "Deleting my account with password confirmation": "P2"
+  },
+  "experience_navigation.feature": {
+    "Guardian-only user lands on guardian home after login": "P0",
+    "Dual-role user sees experience chooser after login": "P1",
+    "Dual-role user remembers guardian choice": "P1",
+    "Remembered guardian choice skips chooser on next login": "P1",
+    "User switches to organisation view from guardian drawer": "P1",
+    "Guardian chooser hides organisation option for guardian-only users": "P2"
   }
 }

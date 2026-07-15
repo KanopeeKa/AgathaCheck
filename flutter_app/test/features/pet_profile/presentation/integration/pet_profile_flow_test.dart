@@ -11,13 +11,25 @@ import 'package:pet_profile_app/features/notifications/presentation/providers/no
 import 'package:pet_profile_app/features/sharing/presentation/providers/sharing_providers.dart';
 import 'package:pet_profile_app/features/organization/presentation/providers/organization_providers.dart';
 import 'package:pet_profile_app/features/vet/presentation/providers/vet_providers.dart';
+import 'package:pet_profile_app/features/experience/domain/services/experience_eligibility.dart';
+import 'package:pet_profile_app/features/experience/presentation/providers/experience_providers.dart';
 import 'package:pet_profile_app/core/providers/api_base_url_provider.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:pet_profile_app/l10n/app_localizations.dart';
 import '../../../../helpers/fakes.dart';
 import '../../../../helpers/test_helpers.dart';
+
+final guardianOnlyEligibility = ExperienceEligibilityRules.compute(
+  pets: const [],
+  orgMembershipCount: 0,
+);
+
+final experienceOverrides = [
+  experienceEligibilityProvider.overrideWith(
+    (ref) => AsyncValue.data(guardianOnlyEligibility),
+  ),
+];
 
 final fakePetRepositoryOverride = petRepositoryProvider.overrideWithValue(
   FakePetRepository(),
@@ -53,7 +65,18 @@ void main() {
         () => FakeNotificationPreferencesNotifier(),
       ),
       pendingSharesProvider.overrideWith(() => FakePendingSharesNotifier()),
+      ...experienceOverrides,
     ];
+
+    Future<void> pumpGuardianHome(WidgetTester tester) async {
+      await pumpApp(tester, frames: 5);
+      for (var i = 0; i < 30; i++) {
+        await tester.pump(const Duration(milliseconds: 50));
+        if (find.byKey(const Key('add_pet_button')).evaluate().isNotEmpty) {
+          return;
+        }
+      }
+    }
 
     testWidgets('shows empty state initially', (tester) async {
       final testNotifier = TestPetListNotifier();
@@ -66,10 +89,9 @@ void main() {
           overrides: [...baseOverrides(prefs), emptyPetListOverride],
         ),
       );
-      await pumpApp(tester);
+      await pumpGuardianHome(tester);
 
-      final scaffoldContext = tester.element(find.byType(Scaffold));
-      final l10n = AppLocalizations.of(scaffoldContext)!;
+      final l10n = l10nFromTester(tester);
 
       expect(
         find.text(l10n.noPetsYet),
@@ -77,9 +99,9 @@ void main() {
         reason: 'Should show empty state text',
       );
       expect(
-        find.text(l10n.addPet),
+        find.byKey(const Key('add_pet_button')),
         findsOneWidget,
-        reason: 'Should show Add Pet button',
+        reason: 'Should show Add Pet FAB on guardian home',
       );
     });
 
@@ -94,12 +116,11 @@ void main() {
           overrides: [...baseOverrides(prefs), emptyPetListOverride],
         ),
       );
-      await pumpApp(tester);
+      await pumpGuardianHome(tester);
 
-      final scaffoldContext = tester.element(find.byType(Scaffold));
-      final l10n = AppLocalizations.of(scaffoldContext)!;
+      final l10n = l10nFromTester(tester);
 
-      final addPetButton = find.text(l10n.addPet);
+      final addPetButton = find.byKey(const Key('add_pet_button'));
       expect(
         addPetButton,
         findsOneWidget,
@@ -136,12 +157,11 @@ void main() {
           overrides: [...baseOverrides(prefs), emptyPetListOverride],
         ),
       );
-      await pumpApp(tester);
+      await pumpGuardianHome(tester);
 
-      final scaffoldContext = tester.element(find.byType(Scaffold));
-      final l10n = AppLocalizations.of(scaffoldContext)!;
+      final l10n = l10nFromTester(tester);
 
-      final addPetButton = find.text(l10n.addPet);
+      final addPetButton = find.byKey(const Key('add_pet_button'));
       expect(
         addPetButton,
         findsOneWidget,
@@ -172,12 +192,11 @@ void main() {
           overrides: [...baseOverrides(prefs), petListOverride],
         ),
       );
-      await pumpApp(tester);
+      await pumpGuardianHome(tester);
 
-      final scaffoldContext = tester.element(find.byType(Scaffold));
-      final l10n = AppLocalizations.of(scaffoldContext)!;
+      final l10n = l10nFromTester(tester);
 
-      await tester.tap(find.text(l10n.addPet));
+      await tester.tap(find.byKey(const Key('add_pet_button')));
       await pumpApp(tester);
 
       await tester.enterText(find.byKey(const Key('pet_name_field')), 'Buddy');

@@ -22,11 +22,13 @@ class HealthDashboardEntryList extends ConsumerWidget {
     this.type,
     required this.groupMode,
     this.orgFilter,
+    this.petIdFilter,
   });
 
   final HealthEntryType? type;
   final GroupMode groupMode;
   final String? orgFilter;
+  final Set<String>? petIdFilter;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -94,21 +96,7 @@ class HealthDashboardEntryList extends ConsumerWidget {
   ) {
     final petMap = {for (final p in allPets) p.id: p};
 
-    final filteredPetIds = orgFilter == null
-        ? null
-        : orgFilter == '_personal'
-        ? allPets
-              .where((p) => p.organizationId == null)
-              .map((p) => p.id)
-              .toSet()
-        : allPets
-              .where((p) => p.organizationName == orgFilter)
-              .map((p) => p.id)
-              .toSet();
-
-    final entries = filteredPetIds == null
-        ? allEntries
-        : allEntries.where((e) => filteredPetIds.contains(e.petId)).toList();
+    final entries = _filterEntries(allEntries, allPets);
     if (entries.isEmpty) {
       return Center(
         child: Column(
@@ -383,6 +371,31 @@ class HealthDashboardEntryList extends ConsumerWidget {
         ),
       );
     }
+  }
+
+  List<HealthEntry> _filterEntries(
+    List<HealthEntry> allEntries,
+    List<Pet> allPets,
+  ) {
+    Set<String>? allowed;
+    if (orgFilter != null) {
+      allowed = orgFilter == '_personal'
+          ? allPets
+                .where((p) => p.organizationId == null)
+                .map((p) => p.id)
+                .toSet()
+          : allPets
+                .where((p) => p.organizationName == orgFilter)
+                .map((p) => p.id)
+                .toSet();
+    }
+    if (petIdFilter != null) {
+      allowed = allowed == null
+          ? petIdFilter
+          : allowed.intersection(petIdFilter!);
+    }
+    if (allowed == null) return allEntries;
+    return allEntries.where((e) => allowed!.contains(e.petId)).toList();
   }
 }
 

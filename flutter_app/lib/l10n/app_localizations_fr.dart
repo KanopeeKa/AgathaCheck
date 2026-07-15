@@ -3185,4 +3185,104 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get documentTooLarge => 'Le document doit faire 2 Mo ou moins';
+
+  @override
+  String get home => 'Accueil';
+
+  @override
+  String get eventsNavLabel => 'Événements';
+
+  @override
+  String get settings => 'Paramètres';
+
+  @override
+  String get upcomingEvents => 'Événements à venir';
+
+  @override
+  String get invite => 'Inviter';
+
+  @override
+  String get contact => 'Contact';
+
+  @override
+  String get continueButton => 'Continuer';
+
+  @override
+  String get experienceChooserTitle => 'Comment utiliserez-vous Agatha Track ?';
+
+  @override
+  String get experienceChooserSubtitle =>
+      'Choisissez l\'expérience adaptée à vos besoins du jour.';
+
+  @override
+  String get experienceGuardianTitle => 'Gardien d\'animal individuel';
+
+  @override
+  String get experienceGuardianSubtitle =>
+      'Suivez les soins, rappels et garde partagée de vos animaux.';
+
+  @override
+  String get experienceOrganizationTitle => 'Refuge / Organisation';
+
+  @override
+  String get experienceOrganizationSubtitle =>
+      'Gérez les animaux, familles d\'accueil, adoptions et votre équipe.';
+
+  @override
+  String get experienceBoardingTitle => 'Pension pour animaux';
+
+  @override
+  String get experienceBoardingSubtitle => 'Bientôt disponible';
+
+  @override
+  String get experienceRememberChoice =>
+      'Mémoriser mon choix pour la prochaine fois';
+
+  @override
+  String get experienceRememberChoiceHint =>
+      'Vous pourrez modifier la vue par défaut plus tard dans les Paramètres.';
+
+  @override
+  String get experienceOrgView => 'Vue organisation';
+
+  @override
+  String get experienceGuardianView => 'Vue gardien';
+
+  @override
+  String get experienceDefaultSettingTitle => 'Expérience par défaut';
+
+  @override
+  String get experienceDefaultSettingSubtitle =>
+      'Utilisée à la connexion. Vous pouvez toujours changer via le menu.';
+
+  @override
+  String get experienceGuardianInviteHint =>
+      'Ajoutez un animal ou ouvrez sa fiche pour partager les soins.';
+
+  @override
+  String get experienceOrganizationInviteHint =>
+      'Invitez des membres de l\'équipe pour gérer votre organisation.';
+
+  @override
+  String sharedWithGroupTitle(String name) {
+    return 'Partagé avec $name';
+  }
+
+  @override
+  String fosteredViaGroupTitle(String orgName) {
+    return 'Famille d\'accueil via $orgName';
+  }
+
+  @override
+  String get homeAllCaughtUp => 'Tout est à jour';
+
+  @override
+  String get homeNoDueEvents =>
+      'Aucun événement en retard ou prévu aujourd\'hui.';
+
+  @override
+  String get open => 'Ouvrir';
+
+  @override
+  String get viewOrganization => 'Voir l\'organisation';
 }

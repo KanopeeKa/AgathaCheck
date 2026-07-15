@@ -5724,6 +5724,180 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Document must be 2 MB or smaller'**
   String get documentTooLarge;
+
+  /// No description provided for @home.
+  ///
+  /// In en, this message translates to:
+  /// **'Home'**
+  String get home;
+
+  /// No description provided for @eventsNavLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Events'**
+  String get eventsNavLabel;
+
+  /// No description provided for @settings.
+  ///
+  /// In en, this message translates to:
+  /// **'Settings'**
+  String get settings;
+
+  /// No description provided for @upcomingEvents.
+  ///
+  /// In en, this message translates to:
+  /// **'Upcoming events'**
+  String get upcomingEvents;
+
+  /// No description provided for @invite.
+  ///
+  /// In en, this message translates to:
+  /// **'Invite'**
+  String get invite;
+
+  /// No description provided for @contact.
+  ///
+  /// In en, this message translates to:
+  /// **'Contact'**
+  String get contact;
+
+  /// No description provided for @continueButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue'**
+  String get continueButton;
+
+  /// No description provided for @experienceChooserTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'How will you use Agatha Track?'**
+  String get experienceChooserTitle;
+
+  /// No description provided for @experienceChooserSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose the experience that fits what you need today.'**
+  String get experienceChooserSubtitle;
+
+  /// No description provided for @experienceGuardianTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Individual Pet Guardian'**
+  String get experienceGuardianTitle;
+
+  /// No description provided for @experienceGuardianSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Track care, reminders, and shared looking-after for your pets.'**
+  String get experienceGuardianSubtitle;
+
+  /// No description provided for @experienceOrganizationTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Shelter / Organisation'**
+  String get experienceOrganizationTitle;
+
+  /// No description provided for @experienceOrganizationSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage pets, fosters, adoptions, and your team.'**
+  String get experienceOrganizationSubtitle;
+
+  /// No description provided for @experienceBoardingTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Pet boarding'**
+  String get experienceBoardingTitle;
+
+  /// No description provided for @experienceBoardingSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Coming soon'**
+  String get experienceBoardingSubtitle;
+
+  /// No description provided for @experienceRememberChoice.
+  ///
+  /// In en, this message translates to:
+  /// **'Remember my choice for next time'**
+  String get experienceRememberChoice;
+
+  /// No description provided for @experienceRememberChoiceHint.
+  ///
+  /// In en, this message translates to:
+  /// **'You can change your default view later in Settings.'**
+  String get experienceRememberChoiceHint;
+
+  /// No description provided for @experienceOrgView.
+  ///
+  /// In en, this message translates to:
+  /// **'Organisation view'**
+  String get experienceOrgView;
+
+  /// No description provided for @experienceGuardianView.
+  ///
+  /// In en, this message translates to:
+  /// **'Pet guardian view'**
+  String get experienceGuardianView;
+
+  /// No description provided for @experienceDefaultSettingTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Default experience'**
+  String get experienceDefaultSettingTitle;
+
+  /// No description provided for @experienceDefaultSettingSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Used when you sign in. You can still switch anytime from the menu.'**
+  String get experienceDefaultSettingSubtitle;
+
+  /// No description provided for @experienceGuardianInviteHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Add a pet or open a pet profile to share care with someone.'**
+  String get experienceGuardianInviteHint;
+
+  /// No description provided for @experienceOrganizationInviteHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Invite team members to help run your organisation.'**
+  String get experienceOrganizationInviteHint;
+
+  /// No description provided for @sharedWithGroupTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Shared with {name}'**
+  String sharedWithGroupTitle(String name);
+
+  /// No description provided for @fosteredViaGroupTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Fostered via {orgName}'**
+  String fosteredViaGroupTitle(String orgName);
+
+  /// No description provided for @homeAllCaughtUp.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'re all caught up'**
+  String get homeAllCaughtUp;
+
+  /// No description provided for @homeNoDueEvents.
+  ///
+  /// In en, this message translates to:
+  /// **'No events are overdue or due today.'**
+  String get homeNoDueEvents;
+
+  /// No description provided for @open.
+  ///
+  /// In en, this message translates to:
+  /// **'Open'**
+  String get open;
+
+  /// No description provided for @viewOrganization.
+  ///
+  /// In en, this message translates to:
+  /// **'View organisation'**
+  String get viewOrganization;
 }
 
 class _AppLocalizationsDelegate

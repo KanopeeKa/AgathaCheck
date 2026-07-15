@@ -6,10 +6,12 @@ import 'package:intl/intl.dart';
 import '../../../../core/widgets/app_logo_title.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../pet_profile/domain/entities/pet.dart';
+import '../../../pet_profile/presentation/controllers/pet_list_controller.dart';
 import '../../../pet_profile/presentation/providers/pet_providers.dart';
 import '../../../pet_profile/data/services/pdf_saver.dart' as pdf_saver;
 import '../../data/services/events_pdf_service.dart';
 import '../../domain/entities/health_entry.dart';
+import '../../domain/health_events_scope.dart';
 import '../providers/health_providers.dart';
 import '../widgets/health_dashboard_actions.dart'
     show HealthDashboardActions, GroupMode;
@@ -21,6 +23,9 @@ class HealthDashboardScreen extends ConsumerStatefulWidget {
   const HealthDashboardScreen({
     super.key,
     @visibleForTesting this.skipHeavyBody = false,
+    this.embeddedInShell = false,
+    this.scope = HealthEventsScope.all,
+    this.backPath = '/',
   });
 
   /// When true, omits the [TabBarView] body so widget tests can assert the
@@ -28,6 +33,14 @@ class HealthDashboardScreen extends ConsumerStatefulWidget {
   /// segfault during flutter_tester teardown otherwise).
   @visibleForTesting
   final bool skipHeavyBody;
+
+  /// When true, renders without [Scaffold] app bar (parent shell provides nav).
+  final bool embeddedInShell;
+
+  /// Limits which pets appear in lists and export filters.
+  final HealthEventsScope scope;
+
+  final String backPath;
 
   @override
   ConsumerState<HealthDashboardScreen> createState() =>
@@ -64,13 +77,104 @@ class _HealthDashboardScreenState extends ConsumerState<HealthDashboardScreen>
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context)!;
+    final showOrgFilter =
+        widget.scope == HealthEventsScope.all ||
+        widget.scope == HealthEventsScope.organization;
+
+    final body = widget.skipHeavyBody
+        ? const SizedBox.shrink()
+        : Column(
+            children: [
+              if (showOrgFilter)
+                HealthDashboardOrgFilter(
+                  selectedFilter: _orgFilter,
+                  onFilterChanged: (filter) =>
+                      setState(() => _orgFilter = filter),
+                  scope: widget.scope,
+                ),
+              Expanded(
+                child: TabBarView(
+                  controller: _tabController,
+                  children: _tabs
+                      .map(
+                        (type) => HealthDashboardEntryList(
+                          type: type,
+                          groupMode: _groupMode,
+                          orgFilter: _effectiveOrgFilter(),
+                          petIdFilter: _scopedPetIds(),
+                        ),
+                      )
+                      .toList(),
+                ),
+              ),
+            ],
+          );
+
+    final tabBar = TabBar(
+      controller: _tabController,
+      tabs: [
+        Tab(key: const Key('health_tab_all'), text: l.all),
+        Tab(key: const Key('health_tab_medications'), text: l.medications),
+        Tab(key: const Key('health_tab_preventives'), text: l.preventives),
+        Tab(key: const Key('health_tab_vet_visits'), text: l.vetVisits),
+        Tab(key: const Key('health_tab_other'), text: l.other),
+        Tab(key: const Key('health_tab_family'), text: l.careEvents),
+      ],
+      isScrollable: true,
+    );
+
+    final fab = FloatingActionButton.extended(
+      key: const Key('add_health_entry_button'),
+      tooltip: l.addHealthEntry,
+      onPressed: () {
+        final tabIndex = _tabController.index;
+        final type = tabIndex < _tabs.length ? _tabs[tabIndex] : null;
+        if (type != null) {
+          context.go('/health/add?type=${type.name}');
+        } else {
+          context.go('/health/add');
+        }
+      },
+      icon: const Icon(Icons.add),
+      label: Text(l.addEntry),
+    );
+
+    if (widget.embeddedInShell) {
+      return Column(
+        children: [
+          Material(
+            color: Theme.of(context).colorScheme.surface,
+            child: Row(
+              children: [
+                Expanded(child: tabBar),
+                HealthDashboardActions(
+                  onExportPdf: _exportPdf,
+                  onExportCsv: _exportCsv,
+                  onGroupModeChanged: (mode) =>
+                      setState(() => _groupMode = mode),
+                  groupMode: _groupMode,
+                  lGroupBy: l.groupBy,
+                  lByDueDate: l.byDueDate,
+                  lByPet: l.byPet,
+                  lBySpecies: l.bySpecies,
+                  lExportPdf: l.exportPdf,
+                  lExportCsv: l.exportCsv,
+                ),
+              ],
+            ),
+          ),
+          Expanded(child: body),
+        ],
+      );
+    }
+
     return Scaffold(
       appBar: AppBar(
         title: AppLogoTitle(title: l.events),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           tooltip: l.goBack,
-          onPressed: () => context.go('/'),
+          onPressed: () => context.go(widget.backPath),
         ),
         actions: [
           HealthDashboardActions(
@@ -86,60 +190,27 @@ class _HealthDashboardScreenState extends ConsumerState<HealthDashboardScreen>
             lExportCsv: l.exportCsv,
           ),
         ],
-        bottom: TabBar(
-          controller: _tabController,
-          tabs: [
-            Tab(key: const Key('health_tab_all'), text: l.all),
-            Tab(key: const Key('health_tab_medications'), text: l.medications),
-            Tab(key: const Key('health_tab_preventives'), text: l.preventives),
-            Tab(key: const Key('health_tab_vet_visits'), text: l.vetVisits),
-            Tab(key: const Key('health_tab_other'), text: l.other),
-            Tab(key: const Key('health_tab_family'), text: l.careEvents),
-          ],
-          isScrollable: true,
-        ),
+        bottom: tabBar,
       ),
-      body: widget.skipHeavyBody
-          ? const SizedBox.shrink()
-          : Column(
-              children: [
-                HealthDashboardOrgFilter(
-                  selectedFilter: _orgFilter,
-                  onFilterChanged: (filter) =>
-                      setState(() => _orgFilter = filter),
-                ),
-                Expanded(
-                  child: TabBarView(
-                    controller: _tabController,
-                    children: _tabs
-                        .map(
-                          (type) => HealthDashboardEntryList(
-                            type: type,
-                            groupMode: _groupMode,
-                            orgFilter: _orgFilter,
-                          ),
-                        )
-                        .toList(),
-                  ),
-                ),
-              ],
-            ),
-      floatingActionButton: FloatingActionButton.extended(
-        key: const Key('add_health_entry_button'),
-        tooltip: l.addHealthEntry,
-        onPressed: () {
-          final tabIndex = _tabController.index;
-          final type = tabIndex < _tabs.length ? _tabs[tabIndex] : null;
-          if (type != null) {
-            context.go('/health/add?type=${type.name}');
-          } else {
-            context.go('/health/add');
-          }
-        },
-        icon: const Icon(Icons.add),
-        label: Text(l.addEntry),
-      ),
+      body: body,
+      floatingActionButton: fab,
     );
+  }
+
+  Set<String>? _scopedPetIds() {
+    final pets = ref.read(petListProvider).valueOrNull ?? [];
+    if (widget.scope == HealthEventsScope.all) return null;
+    if (widget.scope == HealthEventsScope.guardian) {
+      final controller = PetListController();
+      return controller.guardianShellPets(pets).map((p) => p.id).toSet();
+    }
+    final controller = PetListController();
+    return controller.orgShellPets(pets).map((p) => p.id).toSet();
+  }
+
+  String? _effectiveOrgFilter() {
+    if (widget.scope == HealthEventsScope.organization) return _orgFilter;
+    return widget.scope == HealthEventsScope.all ? _orgFilter : null;
   }
 
   Future<void> _exportCsv() async {

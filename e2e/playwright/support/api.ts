@@ -1762,6 +1762,30 @@ export async function createFamilyEvent(
   return res.json();
 }
 
+/** Dual-role user: personal pet + organisation membership (BDD experience journeys). */
+export async function seedDualRoleUser(
+  baseURL: string,
+  overrides: Partial<{
+    email: string;
+    password: string;
+    firstName: string;
+    lastName: string;
+    petName: string;
+    orgName: string;
+  }> = {},
+): Promise<{ user: TestUser; org: TestOrganization; pet: TestPet }> {
+  const user = await signupUser(baseURL, overrides);
+  const pet = await createPet(
+    baseURL,
+    user.accessToken,
+    overrides.petName ?? 'Personal Pet',
+  );
+  const org = await createOrganization(baseURL, user.accessToken, {
+    name: overrides.orgName ?? `E2E Rescue ${Date.now()}`,
+  });
+  return { user, org, pet };
+}
+
 /** Alice super-user + Bob member of the same org (BDD Background). */
 export async function seedHappyPawsClinic(baseURL: string): Promise<{
   alice: TestUser;

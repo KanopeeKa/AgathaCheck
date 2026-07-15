@@ -77,6 +77,23 @@ Tracks planned and completed refactor / quality work. See also `docs/refactoring
 
 ---
 
+## Experience split — Phases 1–2 (2026-07-15)
+
+**Branch:** `cursor/experience-split-17a0`  
+**Plan:** `docs/experience-split-plan.md`
+
+| # | Deliverable | Status |
+|---|-------------|--------|
+| XP-1 | Experience chooser + eligibility + remember choice | **Done** |
+| XP-2 | Guardian shell `/g/*` + org shell `/o/*` + top nav drawer | **Done** |
+| XP-3 | Guardian home excludes org inventory (`guardianShellPets`) | **Done** |
+| XP-4 | BDD `experience_navigation.feature` + Playwright spec | **Done** (6/6 scenarios E2E) |
+| XP-5 | Settings default experience | **Done** |
+| XP-6 | Phase 2 home grouping + inline event actions + scoped events | **Done** |
+| XP-7 | PR A+B tests: experience in `rest` shard; L1/L2 coverage; domain gate **72.4%** | **Done** |
+
+---
+
 ## Sprint 5 — Governance hardening + monolith splits (in progress)
 
 **Integration branch:** `cursor/sprint-5-governance-integration-13e3` (create when parallel work starts)

@@ -18,6 +18,11 @@ export const FOSTER_PLACEMENT_SELECT_SQL = `
    ORDER BY fp.created_at DESC
    LIMIT 1) AS foster_name`;
 
+export const GUARDIAN_NAME_SELECT_SQL = `
+  (SELECT NULLIF(TRIM(COALESCE(u.first_name, '') || ' ' || COALESCE(u.last_name, '')), '')
+   FROM users u
+   WHERE u.id = p.user_id) AS guardian_name`;
+
 export const PET_COLOR_PALETTE = [
   0xFF7E57C2, 0xFF9575CD, 0xFF5C6BC0, 0xFF7986CB, 0xFF4DB6AC,
   0xFF81C784, 0xFF4FC3F7, 0xFFBA68C8, 0xFFF06292, 0xFFE57373,
@@ -74,6 +79,7 @@ export function petRowToMap(row) {
     is_foster: isFoster,
     foster_placement_status: row.foster_placement_status || null,
     foster_name: row.foster_name || null,
+    guardian_name: row.guardian_name || null,
     created_at: row.created_at,
     updated_at: row.updated_at,
   };

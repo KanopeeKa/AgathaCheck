@@ -15,7 +15,7 @@ Feature: Authentication
     And the user confirms password "secret123"
     And the user taps the "Create Account" button
     Then the user should be logged in
-    And the user should be navigated to the pet list screen
+    And the user should be navigated to the guardian home screen
 
   @P1
   Scenario: Signing up with mismatched passwords
@@ -67,7 +67,7 @@ Feature: Authentication
     And the user enters password "secret123"
     And the user taps the "Sign In" button
     Then the user should be logged in
-    And the user should be navigated to the pet list screen
+    And the user should be navigated to the guardian home screen
 
   @P0
   Scenario: Logging in with incorrect password

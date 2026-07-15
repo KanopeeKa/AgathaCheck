@@ -67,7 +67,7 @@ class _LandingScreenState extends ConsumerState<LandingScreen>
 
     if (mounted && ref.read(authProvider).isLoggedIn) {
       TextInput.finishAutofillContext();
-      context.go('/');
+      context.go('/app/resolve');
     }
   }
 
@@ -106,7 +106,7 @@ class _LandingScreenState extends ConsumerState<LandingScreen>
     if (auth.isLoggedIn) {
       TextInput.finishAutofillContext();
       _nativeLogin.hide();
-      context.go('/');
+      context.go('/app/resolve');
     } else {
       _nativeLogin.setBusy(false);
       _nativeLogin.setError(auth.error ?? AppLocalizations.of(context)!.error);
@@ -128,7 +128,7 @@ class _LandingScreenState extends ConsumerState<LandingScreen>
 
     if (mounted && ref.read(authProvider).isLoggedIn) {
       TextInput.finishAutofillContext();
-      context.go('/');
+      context.go('/app/resolve');
     }
   }
 

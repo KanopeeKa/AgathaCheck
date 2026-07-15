@@ -4,7 +4,7 @@
  * (lib/.../domain/... dart files that have executable lines in lcov).
  *
  * Usage:
- *   node scripts/check_domain_coverage.js [--lcov coverage/lcov.info] [--threshold 65]
+ *   node scripts/check_domain_coverage.js [--lcov coverage/lcov.info] [--threshold 70]
  */
 
 const fs = require('fs');
@@ -15,7 +15,7 @@ const flutterRoot = path.resolve(__dirname, '..');
 
 function parseArgs(argv) {
   let lcovPath = path.join(flutterRoot, 'coverage', 'lcov.info');
-  let threshold = 65;
+  let threshold = 70;
 
   for (let i = 2; i < argv.length; i++) {
     if (argv[i] === '--lcov' && argv[i + 1]) {

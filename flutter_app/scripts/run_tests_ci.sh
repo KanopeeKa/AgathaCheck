@@ -51,7 +51,7 @@ if [ -f coverage/lcov.merged.info ]; then
 fi
 
 if [ -f coverage/lcov.info ]; then
-  node scripts/check_domain_coverage.js --threshold "${DOMAIN_COVERAGE_THRESHOLD:-65}"
+  node scripts/check_domain_coverage.js --threshold "${DOMAIN_COVERAGE_THRESHOLD:-70}"
 else
   echo "::warning::No coverage/lcov.info produced; skipping domain coverage gate"
 fi

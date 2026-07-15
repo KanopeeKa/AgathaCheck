@@ -119,6 +119,7 @@ describe('Pets API', () => {
         user_id: 'other-owner',
         organization_id: 'org-uuid-1',
         is_shared: true,
+        guardian_name: 'Jane Guardian',
       });
       const app = createApp(createMockPool(async (sql) => {
         if (sql.includes('false AS is_shared') || sql.includes('UNION ALL')) {
@@ -135,6 +136,7 @@ describe('Pets API', () => {
         name: 'Buddy',
         is_shared: true,
         organization_id: null,
+        guardian_name: 'Jane Guardian',
       });
     });
   });

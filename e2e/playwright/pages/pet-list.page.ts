@@ -154,7 +154,7 @@ export class PetListPage {
   }
 
   async goHome(): Promise<void> {
-    await waitForFlutterRoute(this.page, '/');
+    await waitForFlutterRoute(this.page, '/g/home');
     await this.expectLoaded();
   }
 }
