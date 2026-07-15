@@ -7,16 +7,23 @@ import '../../../../../l10n/app_localizations.dart';
 import '../../../../vet/presentation/providers/vet_providers.dart';
 import '../../../../weight_tracking/presentation/providers/weight_providers.dart';
 import '../../../domain/entities/pet.dart';
+import '../../../domain/services/pet_detail_actions.dart';
 import '../../providers/pet_providers.dart';
+import '../../utils/pet_responsibility_label.dart';
 import 'pet_info_chip.dart';
 import 'pet_photo.dart';
 
 /// The header card on the pet detail screen: photo, name, quick-info chips,
 /// assigned vet selector, and optional bio / neuter / chip / insurance rows.
 class PetDetailProfileCard extends ConsumerWidget {
-  const PetDetailProfileCard({super.key, required this.pet});
+  const PetDetailProfileCard({
+    super.key,
+    required this.pet,
+    required this.viewerContext,
+  });
 
   final Pet pet;
+  final PetDetailContext viewerContext;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -32,6 +39,9 @@ class PetDetailProfileCard extends ConsumerWidget {
     final latestWeightAsync = ref.watch(latestWeightProvider(pet.id));
     final latestWeight = latestWeightAsync.valueOrNull;
     final displayWeight = latestWeight?.weight ?? pet.weight;
+    final l = AppLocalizations.of(context)!;
+    final canEdit = viewerContext.can(PetDetailAction.editProfile);
+    final canAssignVet = viewerContext.can(PetDetailAction.assignVet);
 
     return Padding(
       padding: const EdgeInsets.all(16),
@@ -58,20 +68,32 @@ class PetDetailProfileCard extends ConsumerWidget {
                               ),
                             ),
                           ),
-                          IconButton(
-                            key: const Key('edit_pet_button'),
-                            icon: Icon(
-                              Icons.edit,
-                              size: 20,
-                              color: colorScheme.primary,
+                          if (canEdit)
+                            IconButton(
+                              key: const Key('edit_pet_button'),
+                              icon: Icon(
+                                Icons.edit,
+                                size: 20,
+                                color: colorScheme.primary,
+                              ),
+                              tooltip: l.editPet,
+                              onPressed: () => context.go('/edit/${pet.id}'),
+                              visualDensity: VisualDensity.compact,
+                              padding: EdgeInsets.zero,
+                              constraints: const BoxConstraints(),
                             ),
-                            tooltip: AppLocalizations.of(context)!.editPet,
-                            onPressed: () => context.go('/edit/${pet.id}'),
-                            visualDensity: VisualDensity.compact,
-                            padding: EdgeInsets.zero,
-                            constraints: const BoxConstraints(),
-                          ),
                         ],
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(top: 4),
+                        child: Text(
+                          key: const Key('pet_responsibility_label'),
+                          petResponsibilityLabel(l, pet, viewerContext.role),
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            color: colorScheme.onSurfaceVariant,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
                       ),
                       const SizedBox(height: 10),
                       Wrap(
@@ -119,14 +141,15 @@ class PetDetailProfileCard extends ConsumerWidget {
                         ],
                       ),
                       const SizedBox(height: 10),
-                      _buildVetRow(
-                        context,
-                        ref,
-                        assignedVet,
-                        vets,
-                        theme,
-                        colorScheme,
-                      ),
+                      if (canAssignVet)
+                        _buildVetRow(
+                          context,
+                          ref,
+                          assignedVet,
+                          vets,
+                          theme,
+                          colorScheme,
+                        ),
                       if (pet.bio.isNotEmpty) ...[
                         const SizedBox(height: 12),
                         Text(

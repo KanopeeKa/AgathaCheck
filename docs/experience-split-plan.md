@@ -1,8 +1,8 @@
 # AgathaTrack experience split — implementation plan
 
-**Branch:** `cursor/experience-split-17a0`  
-**Status:** In progress (Phase 2 complete; PR A+B tests landed; Phase 3 next)  
-**Last updated:** 2026-07-15 (PR A+B test implementation)
+**Branch:** `cursor/experience-phase3-pet-detail-17a0`  
+**Status:** In progress (Phase 3 — pet detail context)  
+**Last updated:** 2026-07-15 (Phase 3 started post-#184 merge)
 
 Product decisions are locked in planning conversations. This document is the **execution tracker** for agents and humans.
 
@@ -103,13 +103,15 @@ Both shells use **top nav**:
 
 **Exit criteria:** `/g/home` shows grouped guardian content; `/o/home` shows org inventory; `/g/events` and `/o/events` scope pets correctly.
 
-### Phase 3 — Pet detail context (next)
+### Phase 3 — Pet detail context (in progress)
 
-| ID | Deliverable |
-|----|-------------|
-| 3.1 | `PetDetailActions` registry by experience + pet role |
-| 3.2 | Responsibility labels on pet header |
-| 3.3 | Foster role-filtered drawer |
+| ID | Deliverable | Status |
+|----|-------------|--------|
+| 3.1 | `PetDetailActions` registry by experience + pet role | **Done** |
+| 3.2 | Responsibility labels on pet header | **Done** |
+| 3.3 | Foster role-filtered drawer | **Done** |
+
+**Also in Phase 3 PR:** experience-aware back navigation on pet detail (`backPath` from `experienceHomePathProvider`).
 
 ### Phase 4 — Onboarding wizards
 
@@ -159,9 +161,17 @@ Both shells use **top nav**:
 - **G-H3** Inline event actions on home due-event cards
 - **G-H4** Scoped events dashboard (`/g/events`, `/o/events`)
 
-### Phase 3+
+### Phase 3 (pet detail context)
 
-See planning doc user story tables (G1–G5, O1–O9, F1–F10, A1–A7, etc.).
+| Story | L1 | L2 | Status |
+|-------|----|----|--------|
+| **G1** | `pet_detail_actions_test.dart` (guardian owner) | `pet_detail_profile_card_test.dart` | **Done** |
+| **G2** | `pet_detail_actions_test.dart` (shared carer) | profile card label + no edit | **Done** |
+| **G3** | `pet_detail_actions_test.dart` (foster carer) | profile card foster label | **Done** |
+| **G4** | `pet_detail_actions_test.dart` (org admin) | foster placement gate | **Done** |
+| **G5** | `isFosterPortalUserProvider` | `experience_shell_scaffold_test.dart` | **Done** |
+
+### Phase 3+ (remaining)
 
 ---
 
@@ -338,3 +348,5 @@ Full 6-scenario `experience.navigation.spec.ts` + nightly E2E shards for broader
 | 2026-07-15 | 2 | Guardian/org shell home widgets; `guardian_name` on `/pets/all`; scoped events dashboard; inline due-event actions; controller grouping tests |
 | 2026-07-15 | Test | Test governance locked: quality ladder L1–L4, traceability matrix, CI gates, PR A/B/C sequencing, ratchet 65→70→75 |
 | 2026-07-15 | Test | PR A+B implemented: experience in `rest` shard; L1 (`app_experience`, eligibility negatives, `resolvePostLoginPath`); L2 (shell, settings, `due_event_row`); entity headroom (`archived_pet`, `pet_access`) |
+| 2026-07-15 | — | **#184 merged** to `main` (Phases 1–2 + test coverage) |
+| 2026-07-15 | 3 | Phase 3: `PetDetailActions` registry, responsibility labels, foster portal drawer filter, experience-aware pet detail back nav |

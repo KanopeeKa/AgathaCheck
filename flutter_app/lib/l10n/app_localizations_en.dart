@@ -3243,6 +3243,14 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get petResponsibilityGuardian => 'You are the pet guardian';
+
+  @override
+  String petResponsibilityOrgCustody(String orgName) {
+    return '$orgName · Organisation custody';
+  }
+
+  @override
   String get homeAllCaughtUp => 'You\'re all caught up';
 
   @override

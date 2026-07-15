@@ -4,8 +4,12 @@ import '../../../../core/utils/constants.dart';
 import '../../../../core/widgets/app_logo_title.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../../core/theme/app_theme.dart';
+import '../../../experience/domain/entities/app_experience.dart';
+import '../../../experience/presentation/providers/experience_providers.dart';
 import '../../../organization/presentation/providers/organization_providers.dart';
 import '../../../organization/presentation/widgets/pet_foster_placement_section.dart';
+import '../../domain/entities/pet.dart';
+import '../../domain/services/pet_detail_actions.dart';
 import '../providers/pet_providers.dart';
 import '../widgets/pet_detail/pet_detail_app_bar.dart';
 import '../widgets/pet_detail/pet_detail_profile_card.dart';
@@ -54,20 +58,36 @@ class _PetDetailScreenState extends ConsumerState<PetDetailScreen> {
         final isOrgAdmin = pet.organizationId != null
             ? ref.watch(isOrgAdminProvider(pet.organizationId!))
             : false;
+        final experience = ref.watch(resolvedExperienceProvider);
+        final viewerContext = PetDetailActions.resolveContext(
+          pet: pet,
+          experience: experience,
+          isOrgAdmin: isOrgAdmin,
+        );
+        final backPath = ref.watch(experienceHomePathProvider);
 
         Widget body = Scaffold(
           backgroundColor: isOrgPet ? AppTheme.orgBlue : null,
           body: CustomScrollView(
             slivers: [
-              PetDetailAppBar(petName: pet.name, isOrgPet: isOrgPet),
-              SliverToBoxAdapter(child: PetDetailProfileCard(pet: pet)),
+              PetDetailAppBar(
+                petName: pet.name,
+                isOrgPet: isOrgPet,
+                backPath: backPath,
+              ),
+              SliverToBoxAdapter(
+                child: PetDetailProfileCard(
+                  pet: pet,
+                  viewerContext: viewerContext,
+                ),
+              ),
               if (pet.neuteredDate == null &&
                   !pet.neuterDismissed &&
                   !AppConstants.speciesWithoutNeutering.contains(pet.species))
                 SliverToBoxAdapter(child: NeuterReminderCard(pet: pet)),
               if (pet.chipId.isEmpty && !pet.chipDismissed)
                 SliverToBoxAdapter(child: ChipReminderCard(pet: pet)),
-              if (isOrgPet && isOrgAdmin)
+              if (viewerContext.can(PetDetailAction.fosterPlacement))
                 SliverToBoxAdapter(
                   child: PetFosterPlacementSection(
                     orgId: pet.organizationId!,
@@ -90,7 +110,8 @@ class _PetDetailScreenState extends ConsumerState<PetDetailScreen> {
               SliverToBoxAdapter(
                 child: SharingSection(petId: widget.petId, pet: pet),
               ),
-              SliverToBoxAdapter(child: DownloadReportSection(pet: pet)),
+              if (viewerContext.can(PetDetailAction.downloadReport))
+                SliverToBoxAdapter(child: DownloadReportSection(pet: pet)),
               const SliverToBoxAdapter(child: SizedBox(height: 32)),
             ],
           ),

@@ -8,10 +8,24 @@ import 'package:pet_profile_app/features/experience/domain/services/experience_e
 import 'package:pet_profile_app/features/experience/presentation/providers/experience_providers.dart';
 import 'package:pet_profile_app/features/experience/presentation/widgets/experience_shell_scaffold.dart';
 import 'package:pet_profile_app/features/notifications/presentation/providers/notification_providers.dart';
+import 'package:pet_profile_app/features/organization/domain/entities/organization.dart';
+import 'package:pet_profile_app/features/organization/presentation/providers/organization_providers.dart';
 import 'package:pet_profile_app/features/pet_profile/domain/entities/pet.dart';
 import 'package:pet_profile_app/l10n/app_localizations.dart';
 
 import '../../../../helpers/fakes.dart';
+
+class _FosterOrgListNotifier extends OrganizationListNotifier {
+  @override
+  Future<List<Organization>> build() async => const [
+    Organization(
+      id: 'o1',
+      name: 'Shelter',
+      type: OrganizationType.charity,
+      role: 'foster',
+    ),
+  ];
+}
 
 void main() {
   final dualEligibility = ExperienceEligibilityRules.compute(
@@ -95,5 +109,58 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.byKey(const Key('drawer_org_view')), findsOneWidget);
+  });
+
+  testWidgets('org foster portal drawer hides invite and upcoming events', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          organizationListProvider.overrideWith(_FosterOrgListNotifier.new),
+          experienceEligibilityProvider.overrideWith(
+            (ref) => AsyncValue.data(
+              ExperienceEligibilityRules.compute(
+                pets: const [
+                  Pet(
+                    id: '2',
+                    name: 'B',
+                    species: 'Dog',
+                    organizationId: 'o1',
+                    organizationName: 'Shelter',
+                    isFoster: true,
+                  ),
+                ],
+                orgMembershipCount: 1,
+              ),
+            ),
+          ),
+          unreadNotificationCountProvider.overrideWith((ref) => 0),
+          authProvider.overrideWith((ref) => FakeAuthNotifier()),
+        ],
+        child: MaterialApp(
+          localizationsDelegates: const [
+            AppLocalizations.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: ExperienceShellScaffold(
+            experience: AppExperience.organization,
+            currentLocation: '/o/home',
+            child: const SizedBox.shrink(),
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.byKey(const Key('experience_settings_menu')));
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(const Key('drawer_invite')), findsNothing);
+    expect(find.text('Upcoming events'), findsNothing);
+    expect(find.text('Settings'), findsOneWidget);
   });
 }

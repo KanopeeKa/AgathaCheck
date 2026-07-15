@@ -90,7 +90,19 @@ Tracks planned and completed refactor / quality work. See also `docs/refactoring
 | XP-4 | BDD `experience_navigation.feature` + Playwright spec | **Done** (6/6 scenarios E2E) |
 | XP-5 | Settings default experience | **Done** |
 | XP-6 | Phase 2 home grouping + inline event actions + scoped events | **Done** |
-| XP-7 | PR A+B tests: experience in `rest` shard; L1/L2 coverage; domain gate **72.4%** | **Done** |
+| XP-7 | PR A+B tests: experience in `rest` shard; L1/L2 coverage; domain gate **72.4%** | **Done** (#184) |
+
+## Experience split — Phase 3 (2026-07-15)
+
+**Branch:** `cursor/experience-phase3-pet-detail-17a0`  
+**Plan:** `docs/experience-split-plan.md`
+
+| # | Deliverable | Status |
+|---|-------------|--------|
+| XP-8 | `PetDetailActions` + `PetViewerRole` registry | **Done** |
+| XP-9 | Responsibility labels on pet detail header | **Done** |
+| XP-10 | Foster portal drawer filter (hide invite + upcoming events) | **Done** |
+| XP-11 | Experience-aware back nav on pet detail | **Done** |
 
 ---
 

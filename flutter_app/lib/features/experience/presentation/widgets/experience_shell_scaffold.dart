@@ -36,6 +36,7 @@ class ExperienceShellScaffold extends ConsumerWidget {
     final theme = Theme.of(context);
     final eligibility = ref.watch(experienceEligibilityProvider).valueOrNull;
     final unread = ref.watch(unreadNotificationCountProvider);
+    final isFosterPortal = ref.watch(isFosterPortalUserProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -96,6 +97,8 @@ class ExperienceShellScaffold extends ConsumerWidget {
         unreadCount: unread,
         showOrgView: eligibility?.canUseOrganization ?? false,
         showGuardianView: eligibility?.canUseGuardian ?? true,
+        isFosterPortal:
+            experience == AppExperience.organization && isFosterPortal,
       ),
       body: child,
     );
@@ -108,12 +111,14 @@ class _ExperienceDrawer extends ConsumerWidget {
     required this.unreadCount,
     required this.showOrgView,
     required this.showGuardianView,
+    required this.isFosterPortal,
   });
 
   final AppExperience experience;
   final int unreadCount;
   final bool showOrgView;
   final bool showGuardianView;
+  final bool isFosterPortal;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -164,26 +169,29 @@ class _ExperienceDrawer extends ConsumerWidget {
                 context.push('$prefix/notifications');
               },
             ),
-            ListTile(
-              leading: const Icon(Icons.event_outlined),
-              title: Text(l.upcomingEvents),
-              onTap: () {
-                Navigator.pop(context);
-                context.go(experience.eventsPath);
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.person_add_outlined),
-              title: Text(l.invite),
-              onTap: () {
-                Navigator.pop(context);
-                context.push(
-                  experience == AppExperience.guardian
-                      ? '/g/invite'
-                      : '/o/invite',
-                );
-              },
-            ),
+            if (!isFosterPortal)
+              ListTile(
+                leading: const Icon(Icons.event_outlined),
+                title: Text(l.upcomingEvents),
+                onTap: () {
+                  Navigator.pop(context);
+                  context.go(experience.eventsPath);
+                },
+              ),
+            if (!isFosterPortal)
+              ListTile(
+                key: const Key('drawer_invite'),
+                leading: const Icon(Icons.person_add_outlined),
+                title: Text(l.invite),
+                onTap: () {
+                  Navigator.pop(context);
+                  context.push(
+                    experience == AppExperience.guardian
+                        ? '/g/invite'
+                        : '/o/invite',
+                  );
+                },
+              ),
             const Divider(),
             if (experience == AppExperience.guardian && showOrgView)
               ListTile(
