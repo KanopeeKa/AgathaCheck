@@ -1,6 +1,22 @@
 # Shared helpers for assert-node-modules-symlink.sh and uat-ssh-backend-deploy.sh (sourced, not executed).
 # shellcheck shell=bash
 
+uat_nm_home_dir() {
+  if [[ -n "${HOME:-}" ]]; then
+    printf '%s\n' "$HOME"
+    return 0
+  fi
+  cd ~ && pwd
+}
+
+uat_nm_state_file() {
+  if [[ -n "${UAT_DEPLOY_STATE_FILE:-}" ]]; then
+    printf '%s\n' "$UAT_DEPLOY_STATE_FILE"
+    return 0
+  fi
+  printf '%s\n' "$(uat_nm_home_dir)/.uat-deploy-state.env"
+}
+
 uat_nm_remediation() {
   cat <<'EOF'
 Manual recovery (cPanel):
@@ -16,8 +32,9 @@ uat_nm_write_state() {
   local target="${2:-}"
   local ht_ok="${3:-unknown}"
   local phase="${4:-unknown}"
-  local appdir="${UAT_APP_DIR:-$HOME/uat.agathatrack.com/backend}"
-  local state_file="${UAT_DEPLOY_STATE_FILE:-$HOME/.uat-deploy-state.env}"
+  local appdir="${UAT_APP_DIR:-$(uat_nm_home_dir)/uat.agathatrack.com/backend}"
+  local state_file
+  state_file="$(uat_nm_state_file)"
   local hostname node_major
   hostname="$(hostname -f 2>/dev/null || hostname 2>/dev/null || echo unknown)"
   node_major="unknown"
@@ -38,9 +55,10 @@ uat_nm_write_state() {
 
 # Sets UAT_NM_KIND and returns exit code (0, 10, 11, 12).
 uat_nm_classify() {
-  local appdir="${UAT_APP_DIR:-$HOME/uat.agathatrack.com/backend}"
-  local nm="${appdir}/node_modules"
-  local target
+  local home_dir appdir nm target
+  home_dir="$(uat_nm_home_dir)"
+  appdir="${UAT_APP_DIR:-${home_dir}/uat.agathatrack.com/backend}"
+  nm="${appdir}/node_modules"
 
   if [[ ! -e "$nm" && ! -L "$nm" ]]; then
     UAT_NM_KIND="missing"
@@ -52,7 +70,7 @@ uat_nm_classify() {
       UAT_NM_KIND="broken_symlink"
       return 12
     fi
-    if [[ "$target" != "${HOME}/nodevenv/"* ]]; then
+    if [[ "$target" != "${home_dir}/nodevenv/"* ]]; then
       UAT_NM_KIND="broken_symlink"
       return 12
     fi

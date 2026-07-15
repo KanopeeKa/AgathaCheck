@@ -8,7 +8,11 @@ set -euo pipefail
 # shellcheck source=assert-node-modules-symlink.lib.sh
 source "$(cd "$(dirname "$0")" && pwd)/assert-node-modules-symlink.lib.sh"
 
-SITE_ROOT="${UAT_SITE_ROOT:-$HOME/uat.agathatrack.com}"
+HOME="$(uat_nm_home_dir)"
+export HOME
+export UAT_DEPLOY_STATE_FILE="$(uat_nm_state_file)"
+
+SITE_ROOT="${UAT_SITE_ROOT:-${HOME}/uat.agathatrack.com}"
 APPDIR="${SITE_ROOT}/backend"
 POST_RESTART_RETRIES="${POST_RESTART_RETRIES:-3}"
 POST_RESTART_SLEEP_SEC="${POST_RESTART_SLEEP_SEC:-10}"
@@ -61,4 +65,5 @@ echo "=== node_modules invariant (post-restart) ==="
 uat_nm_assert post "$POST_RESTART_RETRIES" "$POST_RESTART_SLEEP_SEC"
 
 echo "=== UAT SSH backend deploy complete ==="
-cat "${UAT_DEPLOY_STATE_FILE:-$HOME/.uat-deploy-state.env}" 2>/dev/null || true
+echo "deploy_state_file=${UAT_DEPLOY_STATE_FILE}"
+cat "${UAT_DEPLOY_STATE_FILE}" 2>/dev/null || true

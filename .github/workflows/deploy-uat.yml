@@ -371,6 +371,7 @@ jobs:
           script_path: .ci-uat-ssh-remote.sh
           envs: PKG_CHANGED,POST_RESTART_RETRIES,POST_RESTART_SLEEP_SEC
 
+      # State collection is non-blocking: script warns and exits 0 if ~/.uat-deploy-state.env is missing.
       - name: Collect UAT deploy state
         id: uat_deploy_state
         if: >-
