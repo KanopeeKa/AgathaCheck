@@ -125,6 +125,18 @@ gh pr checks <PR_NUMBER> | rg '^ci-gate'
 gh api repos/KanopeeKa/AgathaCheck/rulesets/18979034 --jq '.rules[] | select(.type=="required_status_checks")'
 ```
 
+**Troubleshooting — “Expected — Waiting for status to be reported” for `CI passed`:**
+
+The workflow reports **`ci-gate / CI passed`**, not bare **`CI passed`**. If the
+ruleset lists `CI passed`, GitHub waits forever while `ci-gate / CI passed` is
+already green (two different checks). Fix: remove `CI passed` from the ruleset,
+add **`ci-gate / CI passed`** exactly (copy from `gh pr checks <PR>`).
+
+```bash
+gh pr checks 193 | rg '^ci-gate'
+# ci-gate / CI passed    pass    …
+```
+
 #### Atomic branch-protection migration (Flutter parallel shards — historical)
 
 Merging this change **removes** the legacy monolithic Flutter job from CI. Until branch
