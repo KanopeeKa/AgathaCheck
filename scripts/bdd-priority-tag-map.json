@@ -213,5 +213,9 @@
   "guardian_onboarding.feature": {
     "New guardian user sees onboarding wizard after first login": "P1",
     "Guardian completes onboarding with pet and reminder": "P1"
+  },
+  "org_onboarding.feature": {
+    "New org super-admin sees onboarding wizard after first login": "P1",
+    "Org super-admin completes onboarding with inventory pet and reminder": "P1"
   }
 }

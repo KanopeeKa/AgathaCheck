@@ -5929,6 +5929,78 @@ abstract class AppLocalizations {
   /// **'Finish setup'**
   String get guardianOnboardingFinish;
 
+  /// No description provided for @orgOnboardingTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Set up your organisation'**
+  String get orgOnboardingTitle;
+
+  /// No description provided for @orgOnboardingSkip.
+  ///
+  /// In en, this message translates to:
+  /// **'Skip for now'**
+  String get orgOnboardingSkip;
+
+  /// No description provided for @orgOnboardingWelcomeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Welcome to your organisation workspace'**
+  String get orgOnboardingWelcomeTitle;
+
+  /// No description provided for @orgOnboardingWelcomeBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Create your organisation profile, add your first inventory pet, and set a reminder to stay on top of care.'**
+  String get orgOnboardingWelcomeBody;
+
+  /// No description provided for @orgOnboardingGetStarted.
+  ///
+  /// In en, this message translates to:
+  /// **'Get started'**
+  String get orgOnboardingGetStarted;
+
+  /// No description provided for @orgOnboardingOrgStepTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Create your organisation'**
+  String get orgOnboardingOrgStepTitle;
+
+  /// No description provided for @orgOnboardingOrgStepBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Tell us about your shelter or organisation. You can add more details later.'**
+  String get orgOnboardingOrgStepBody;
+
+  /// No description provided for @orgOnboardingPetStepTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Add your first inventory pet'**
+  String get orgOnboardingPetStepTitle;
+
+  /// No description provided for @orgOnboardingPetStepBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Add a pet your organisation is caring for. Foster and adoption workflows come next.'**
+  String get orgOnboardingPetStepBody;
+
+  /// No description provided for @orgOnboardingReminderStepTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Set your first reminder'**
+  String get orgOnboardingReminderStepTitle;
+
+  /// No description provided for @orgOnboardingReminderStepBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Medications, vaccines, and vet visits — we will remind your team when they are due.'**
+  String get orgOnboardingReminderStepBody;
+
+  /// No description provided for @orgOnboardingFinish.
+  ///
+  /// In en, this message translates to:
+  /// **'Finish setup'**
+  String get orgOnboardingFinish;
+
   /// No description provided for @failedToSaveOnboarding.
   ///
   /// In en, this message translates to:
