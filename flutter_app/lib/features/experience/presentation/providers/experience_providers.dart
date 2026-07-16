@@ -1,16 +1,29 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../organization/presentation/providers/organization_providers.dart';
+import '../../../pet_profile/domain/entities/pet.dart';
 import '../../../pet_profile/presentation/providers/pet_providers.dart';
 import '../../data/experience_preferences_store.dart';
+import '../../data/guardian_onboarding_store.dart';
 import '../../domain/entities/app_experience.dart';
 import '../../domain/services/experience_eligibility.dart';
+import '../../domain/services/guardian_onboarding_rules.dart';
 
 final experiencePreferencesStoreProvider = Provider<ExperiencePreferencesStore>(
   (ref) {
     return ExperiencePreferencesStore(ref.watch(sharedPreferencesProvider));
   },
 );
+
+final guardianOnboardingStoreProvider = Provider<GuardianOnboardingStore>((
+  ref,
+) {
+  return GuardianOnboardingStore(ref.watch(sharedPreferencesProvider));
+});
+
+final guardianOnboardingCompletedProvider = Provider<bool>((ref) {
+  return ref.watch(guardianOnboardingStoreProvider).readCompleted();
+});
 
 final experienceEligibilityProvider =
     Provider<AsyncValue<ExperienceEligibility>>((ref) {
@@ -70,12 +83,25 @@ String resolvePostLoginPath({
   required ExperienceEligibility eligibility,
   AppExperience? savedDefault,
   AppExperience? activeExperience,
+  List<Pet> pets = const [],
+  bool guardianOnboardingCompleted = true,
 }) {
+  String path;
   if (activeExperience != null &&
       eligibility.availableExperiences.contains(activeExperience)) {
-    return activeExperience.homePath();
+    path = activeExperience.homePath();
+  } else {
+    final auto = eligibility.resolveAutoExperience(savedDefault: savedDefault);
+    if (auto != null) {
+      path = auto.homePath();
+    } else {
+      return '/app/choose';
+    }
   }
-  final auto = eligibility.resolveAutoExperience(savedDefault: savedDefault);
-  if (auto != null) return auto.homePath();
-  return '/app/choose';
+
+  return GuardianOnboardingRules.resolveGuardianDestination(
+    targetPath: path,
+    pets: pets,
+    onboardingCompleted: guardianOnboardingCompleted,
+  );
 }

@@ -209,5 +209,9 @@
     "Dual-role user sets default experience to organisation in settings": "P1",
     "User switches to organisation view from guardian drawer": "P1",
     "Guardian chooser hides organisation option for guardian-only users": "P2"
+  },
+  "guardian_onboarding.feature": {
+    "New guardian user sees onboarding wizard after first login": "P1",
+    "Guardian completes onboarding with pet and reminder": "P1"
   }
 }
