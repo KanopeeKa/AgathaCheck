@@ -34,6 +34,31 @@ void main() {
       );
     });
 
+    test('shared and foster pets do not skip onboarding', () {
+      expect(
+        GuardianOnboardingRules.hasOwnedGuardianPets(const [
+          Pet(id: '1', name: 'Shared', species: 'Cat', isShared: true),
+          Pet(id: '2', name: 'Foster', species: 'Dog', isFoster: true),
+        ]),
+        isFalse,
+      );
+    });
+
+    test('org inventory pets do not skip onboarding', () {
+      expect(
+        GuardianOnboardingRules.hasOwnedGuardianPets(const [
+          Pet(
+            id: '1',
+            name: 'Shelter',
+            species: 'Dog',
+            organizationId: 'o1',
+            organizationName: 'Rescue',
+          ),
+        ]),
+        isFalse,
+      );
+    });
+
     test('redirects guardian home to onboarding when needed', () {
       expect(
         GuardianOnboardingRules.resolveGuardianDestination(

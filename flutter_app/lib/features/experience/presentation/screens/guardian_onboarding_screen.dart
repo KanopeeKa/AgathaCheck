@@ -39,8 +39,13 @@ class _GuardianOnboardingScreenState
     super.dispose();
   }
 
-  Future<void> _skip() async {
+  Future<void> _persistOnboardingComplete() async {
     await ref.read(guardianOnboardingStoreProvider).markCompleted();
+    ref.invalidate(guardianOnboardingCompletedProvider);
+  }
+
+  Future<void> _skip() async {
+    await _persistOnboardingComplete();
     if (!mounted) return;
     context.go('/g/home');
   }
@@ -67,7 +72,7 @@ class _GuardianOnboardingScreenState
         nextDueDate: _dueDate,
       );
       await ref.read(healthEntriesNotifierProvider.notifier).create(entry);
-      await ref.read(guardianOnboardingStoreProvider).markCompleted();
+      await _persistOnboardingComplete();
       if (!mounted) return;
       context.go('/g/home');
     } catch (e) {
@@ -82,6 +87,7 @@ class _GuardianOnboardingScreenState
 
   void _nextStep() {
     if (_step == 1 && _petNameController.text.trim().isEmpty) return;
+    if (_step == 2 && _reminderNameController.text.trim().isEmpty) return;
     if (_step >= 2) {
       _finish();
       return;

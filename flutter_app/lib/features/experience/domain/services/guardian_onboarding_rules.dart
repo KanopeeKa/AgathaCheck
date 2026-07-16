@@ -1,5 +1,4 @@
 import '../../../pet_profile/domain/entities/pet.dart';
-import '../../../pet_profile/presentation/controllers/pet_list_controller.dart';
 
 /// Pure rules for when guardian onboarding should appear.
 class GuardianOnboardingRules {
@@ -8,15 +7,29 @@ class GuardianOnboardingRules {
   static const guardianHomePath = '/g/home';
   static const onboardingPath = '/g/onboarding';
 
+  /// True when [pet] is an owned personal guardian pet (not shared/foster/org).
+  static bool isOwnedGuardianPet(Pet pet) {
+    if (pet.passedAway || pet.isShared || pet.isFoster) return false;
+    return pet.organizationId == null ||
+        pet.organizationName == null ||
+        pet.organizationName!.isEmpty;
+  }
+
+  /// True when the user has at least one owned personal guardian pet.
+  static bool hasOwnedGuardianPets(List<Pet> pets) {
+    for (final pet in pets) {
+      if (isOwnedGuardianPet(pet)) return true;
+    }
+    return false;
+  }
+
   /// True when the user should see the guardian onboarding wizard.
   static bool needsOnboarding({
     required List<Pet> pets,
     required bool onboardingCompleted,
   }) {
     if (onboardingCompleted) return false;
-    final controller = PetListController();
-    final owned = controller.getOwnedPets(controller.guardianShellPets(pets));
-    return owned.isEmpty;
+    return !hasOwnedGuardianPets(pets);
   }
 
   /// Maps a resolved guardian home path to onboarding when needed.
