@@ -36,7 +36,7 @@ test.describe('Guardian onboarding', () => {
 
     await page.waitForURL(/\/g\/onboarding/, { timeout: 60_000 });
     const onboarding = new OnboardingPage(page);
-    await onboarding.expectVisible();
+    await onboarding.expectGuardianVisible();
   });
 
   test('guardian completes onboarding with pet and reminder', async ({ page }) => {
