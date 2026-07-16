@@ -202,6 +202,7 @@
   },
   "experience_navigation.feature": {
     "Guardian-only user lands on guardian home after login": "P0",
+    "Organisation-only user lands on organisation home after login": "P1",
     "Dual-role user sees experience chooser after login": "P1",
     "Dual-role user remembers guardian choice": "P1",
     "Remembered guardian choice skips chooser on next login": "P1",

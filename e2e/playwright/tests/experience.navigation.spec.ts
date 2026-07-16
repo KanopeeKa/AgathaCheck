@@ -1,6 +1,7 @@
 /**
  * @bdd experience_navigation.feature
  * Scenario: Guardian-only user lands on guardian home after login
+ * Scenario: Organisation-only user lands on organisation home after login
  * Scenario: Dual-role user sees experience chooser after login
  * Scenario: Dual-role user remembers guardian choice
  * Scenario: Remembered guardian choice skips chooser on next login
@@ -10,7 +11,7 @@
 import { test, expect } from '../fixtures/auth.fixture';
 import { LandingPage } from '../pages/landing.page';
 import { ExperiencePage } from '../pages/experience.page';
-import { createPet, seedDualRoleUser, signupUser } from '../support/api';
+import { createPet, seedDualRoleUser, seedRescueHearts, signupUser } from '../support/api';
 import {
   dismissConsentBannerIfPresent,
   refreshFlutterAccessibility,
@@ -40,6 +41,18 @@ test.describe('Experience navigation', () => {
     await page.waitForURL(/\/g\/home/, { timeout: 60_000 });
     const experience = new ExperiencePage(page);
     await experience.expectGuardianShell();
+  });
+
+  test('organisation-only user lands on organisation home after login', async ({
+    page,
+  }) => {
+    await prepareLiveApiAccess(page, baseURL());
+    const { alice } = await seedRescueHearts(baseURL());
+    await loginFromLanding(page, alice.email, alice.password);
+    await page.waitForURL(/\/o\/home/, { timeout: 60_000 });
+    const experience = new ExperiencePage(page);
+    await experience.expectOrgShell();
+    await expect(page.getByText(/How will you use Agatha Track/i)).not.toBeVisible();
   });
 
   test('dual-role user sees experience chooser after login', async ({ page }) => {

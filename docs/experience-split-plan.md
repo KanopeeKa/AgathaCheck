@@ -1,8 +1,8 @@
 # AgathaTrack experience split — implementation plan
 
-**Branch:** `cursor/experience-phase3-pet-detail-17a0`  
-**Status:** In progress (Phase 3 — pet detail context)  
-**Last updated:** 2026-07-15 (Phase 3 started post-#184 merge)
+**Branch:** `cursor/experience-e1b-org-only-17a0`  
+**Status:** Phase 3 complete; E1b org-only landing in progress  
+**Last updated:** 2026-07-16 (post-#186/#187 merge)
 
 Product decisions are locked in planning conversations. This document is the **execution tracker** for agents and humans.
 
@@ -103,15 +103,15 @@ Both shells use **top nav**:
 
 **Exit criteria:** `/g/home` shows grouped guardian content; `/o/home` shows org inventory; `/g/events` and `/o/events` scope pets correctly.
 
-### Phase 3 — Pet detail context (in progress)
+### Phase 3 — Pet detail context (done)
 
 | ID | Deliverable | Status |
 |----|-------------|--------|
-| 3.1 | `PetDetailActions` registry by experience + pet role | **Done** |
-| 3.2 | Responsibility labels on pet header | **Done** |
-| 3.3 | Foster role-filtered drawer | **Done** |
+| 3.1 | `PetDetailActions` registry by experience + pet role | **Done** (#186) |
+| 3.2 | Responsibility labels on pet header | **Done** (#186) |
+| 3.3 | Foster role-filtered drawer | **Done** (#186) |
 
-**Also in Phase 3 PR:** experience-aware back navigation on pet detail (`backPath` from `experienceHomePathProvider`).
+**Also in Phase 3 PR:** experience-aware back navigation on pet detail (`backPath` from `experienceHomePathProvider`). E2E shell nav hardening in #187.
 
 ### Phase 4 — Onboarding wizards
 
@@ -197,7 +197,7 @@ Gaps drive PR B/C work. Status: **Done** · **Partial** · **Gap**.
 | Story | BDD scenario | L1 unit | L2 widget | L3 integration | L4 Playwright | Status |
 |-------|--------------|---------|-----------|----------------|---------------|--------|
 | **E1a** | Guardian-only user lands on guardian home after login | `experience_eligibility_test.dart`, `app_experience_test.dart`, `resolve_post_login_path_test.dart` | `experience_chooser_screen_test.dart` | `pet_profile_flow_test.dart` | `experience.navigation.spec.ts` | **Done** |
-| **E1b** | *(no dedicated scenario — add or map to org-only resolve)* | `experience_eligibility_test.dart` (org-only), `resolve_post_login_path_test.dart` | — | — | — | **Partial** — needs BDD + E2E |
+| **E1b** | Organisation-only user lands on organisation home after login | `experience_eligibility_test.dart` (org-only), `resolve_post_login_path_test.dart` | — | — | `experience.navigation.spec.ts` | **Done** |
 | **E1c** | Dual-role user sees experience chooser after login | `experience_eligibility_test.dart`, `resolve_post_login_path_test.dart` | `experience_chooser_screen_test.dart` | — | `experience.navigation.spec.ts` | **Done** |
 | **E2** | Dual-role user remembers guardian choice | `experience_preferences_store_test.dart` | `experience_chooser_screen_test.dart` (hint) | — | `experience.navigation.spec.ts` | **Done** |
 | **E2** | Remembered guardian choice skips chooser on next login | `experience_preferences_store_test.dart`, `resolve_post_login_path_test.dart` | — | — | `experience.navigation.spec.ts` | **Done** |
@@ -350,3 +350,5 @@ Full 6-scenario `experience.navigation.spec.ts` + nightly E2E shards for broader
 | 2026-07-15 | Test | PR A+B implemented: experience in `rest` shard; L1 (`app_experience`, eligibility negatives, `resolvePostLoginPath`); L2 (shell, settings, `due_event_row`); entity headroom (`archived_pet`, `pet_access`) |
 | 2026-07-15 | — | **#184 merged** to `main` (Phases 1–2 + test coverage) |
 | 2026-07-15 | 3 | Phase 3: `PetDetailActions` registry, responsibility labels, foster portal drawer filter, experience-aware pet detail back nav |
+| 2026-07-16 | — | **#186/#187 merged** — Phase 3 + E2E shell hardening |
+| 2026-07-16 | E1b | Org-only post-login landing: BDD scenario + Playwright |
