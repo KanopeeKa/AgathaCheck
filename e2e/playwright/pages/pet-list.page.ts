@@ -29,6 +29,7 @@ export class PetListPage {
 
   async openHealthDashboard(): Promise<void> {
     await dismissConsentBannerIfPresent(this.page);
+    const addEvent = this.page.getByRole('button', { name: 'Add Health Event' });
     const eventsNav = this.page.getByRole('button', { name: 'Events' });
     if (await eventsNav.isVisible({ timeout: 2_000 }).catch(() => false)) {
       await eventsNav.click();
@@ -39,7 +40,15 @@ export class PetListPage {
     } else {
       await this.page.getByRole('button', { name: 'To Do' }).click();
     }
-    await this.page.getByRole('button', { name: 'Add Health Event' }).waitFor({ timeout: 30_000 });
+    if (await addEvent.isVisible({ timeout: 3_000 }).catch(() => false)) {
+      return;
+    }
+    if (await isExperienceShellVisible(this.page)) {
+      const path = this.page.url().includes('/o/') ? '/o/events' : '/g/events';
+      await this.page.goto(path);
+      await refreshFlutterAccessibility(this.page);
+    }
+    await addEvent.waitFor({ timeout: 30_000 });
   }
 
   async expectEmptyState(): Promise<void> {

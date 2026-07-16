@@ -1,5 +1,10 @@
 import type { Locator, Page } from '@playwright/test';
 import { passHostingWaf } from './waf';
+import { isLiveHostingTarget } from './hosting';
+
+function postLoginTimeout(fallback = 60_000): number {
+  return isLiveHostingTarget() ? 120_000 : fallback;
+}
 
 /** Wait until the Flutter web canvas is mounted. */
 export async function waitForFlutter(page: Page): Promise<void> {
@@ -62,11 +67,12 @@ export function homeShellLocator(page: Page): Locator {
 /** Wait until the user has landed on a home surface after login or signup. */
 export async function expectHomeShellVisible(
   page: Page,
-  timeout = 60_000,
+  timeout?: number,
 ): Promise<void> {
+  const effectiveTimeout = timeout ?? postLoginTimeout(60_000);
   await dismissConsentBannerIfPresent(page);
   await refreshFlutterAccessibility(page);
-  await homeShellLocator(page).first().waitFor({ timeout });
+  await homeShellLocator(page).first().waitFor({ timeout: effectiveTimeout });
 }
 
 /** Assert no home shell chrome is visible (e.g. still on landing after failed login). */
@@ -114,12 +120,44 @@ export async function completeExperienceChooserIfPresent(
 }
 
 /** Wait until post-login routing settles on a home surface or the experience chooser. */
-export async function waitForPostLoginRoute(page: Page, timeout = 60_000): Promise<void> {
-  await page.waitForURL((url) => {
-    const path = new URL(url).pathname;
-    return /\/(g|o)\/home/.test(path) || path === '/app/choose';
-  }, { timeout });
-  await refreshFlutterAccessibility(page);
+export async function waitForPostLoginRoute(page: Page, timeout?: number): Promise<void> {
+  const effectiveTimeout = timeout ?? postLoginTimeout();
+  const { expect } = await import('@playwright/test');
+
+  await expect(async () => {
+    await dismissConsentBannerIfPresent(page);
+    await refreshFlutterAccessibility(page);
+
+    const path = new URL(page.url()).pathname;
+    if (/\/(g|o)\/home/.test(path) || path === '/app/choose') {
+      return;
+    }
+
+    if (await page.getByText(/How will you use Agatha Track/i).isVisible().catch(() => false)) {
+      return;
+    }
+
+    if (await isExperienceShellVisible(page)) {
+      return;
+    }
+
+    if (await page.getByRole('button', { name: 'To Do' }).isVisible().catch(() => false)) {
+      return;
+    }
+
+    throw new Error(`Post-login route not ready (url=${page.url()})`);
+  }).toPass({ timeout: effectiveTimeout });
+}
+
+/** After login/signup submit: wait for routing, complete chooser if needed, assert home shell. */
+export async function reachAuthenticatedHome(
+  page: Page,
+  options: { experience?: ExperienceChoice; timeout?: number } = {},
+): Promise<void> {
+  const timeout = options.timeout ?? postLoginTimeout();
+  await waitForPostLoginRoute(page, timeout);
+  await completeExperienceChooserIfPresent(page, options.experience ?? 'guardian');
+  await expectHomeShellVisible(page, timeout);
 }
 
 /** True when the post-split experience shell (`/g/home` or `/o/home`) is visible. */

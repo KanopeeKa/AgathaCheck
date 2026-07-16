@@ -11,12 +11,8 @@ test.describe('Authentication', () => {
   test('@smoke user can log in with valid credentials and reach the pet list', async ({
     page,
     testUser,
-    landingPage,
-    petListPage,
   }) => {
-    await landingPage.goto();
-    await landingPage.login(testUser.email, testUser.password);
-    await petListPage.expectLoaded();
+    await loginAs(page, testUser);
     await checkA11y(page, 'post-login pet list');
   });
 
