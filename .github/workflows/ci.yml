@@ -68,6 +68,7 @@ jobs:
       POSTHOG_API_KEY: ${{ secrets.POSTHOG_API_KEY }}
 
   # Umbrella required check for branch protection. Granular jobs stay visible on PRs.
+  # Required check name is the job name: "CI passed" (not caller/reusable "id / name" form).
   # Maintenance: any new blocking ci.yml job MUST be added to needs: below and to
   # scripts/ci/assert-ci-gate.sh — see docs/ci-cd-gates.md and docs/promotion-contract.md.
   ci-gate:

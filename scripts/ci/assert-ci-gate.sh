@@ -39,12 +39,11 @@ failed=0
   echo
   echo "| Job | Result | Pass |"
   echo "|-----|--------|------|"
-
   for job in startup-smoke test-suite flutter-analyze \
     flutter-test-pet flutter-test-health flutter-test-org flutter-test-rest \
     flutter-coverage flutter-integration flutter-build-web; do
     result="${RESULTS[$job]}"
-  if require_success "$job" "$result"; then
+    if require_success "$job" "$result"; then
       pass="yes"
     else
       pass="**no**"
@@ -59,7 +58,7 @@ failed=0
   else
     echo "**CI gate failed** — one or more jobs did not succeed."
     echo
-    echo "Granular checks remain visible on the PR; only \`ci-gate / CI passed\` is required for merge."
+    echo "Granular checks remain visible on the PR; only \`CI passed\` is required for merge."
   fi
 } | append_summary
 

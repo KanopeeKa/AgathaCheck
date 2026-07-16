@@ -12,7 +12,7 @@ and branch rules: [ci-cd-gates.md](./ci-cd-gates.md).
 
 | Kind | Pattern (regex) | Example | Created by |
 |------|-----------------|---------|------------|
-| **UAT** | `^uat-[0-9]{6}-[0-9]+$` | `uat-260716-170` | `promote-uat.yml` on merge to `main` |
+| **UAT** | `^uat-[0-9]{6}-[0-9]+$` | `uat-260716-170` | `promote-uat.yml` (Phase 2) on merge to `main` |
 | **Prod (stable)** | `^v[0-9]+\.[0-9]+\.[0-9]+$` | `v1.0.3` | `deploy-prod.yml` when `PROD_DEPLOY_ENABLED=true` |
 | **Prod (stub / pre-infra)** | `^v[0-9]+\.[0-9]+\.[0-9]+-rc\.[0-9]+$` | `v1.0.3-rc.1` | `deploy-prod.yml` when `PROD_DEPLOY_ENABLED` is not `true` |
 
@@ -54,11 +54,11 @@ step summary for alerting (`PROMOTION_WEBHOOK_URL` optional).
 
 ## Accepted trade-off: no CI re-run on `main`
 
-After merge, **`promote-uat.yml` does not re-run CI** on the merge commit.
+After merge, **`promote-uat.yml`** (Phase 2) does not re-run CI on the merge commit.
 
 We rely on:
 
-- `ci-gate / CI passed` + `Analyze JavaScript` on the PR
+- `CI passed` + `Analyze JavaScript` on the PR
 - **Require branches to be up to date before merging** (`strict_required_status_checks_policy`)
 
 Squash/rebase merge SHAs may differ from the last PR head SHA. Residual risk is
