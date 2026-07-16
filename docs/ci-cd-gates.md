@@ -38,7 +38,7 @@ baseline table in [ci-cd-baseline.md](./ci-cd-baseline.md) when targets are met.
 | Agent `cursor/*` PRs | **Yes** (forbidden paths) | `agent-pr-safety-gate.yml` |
 | `uat-*` tag deploy | **Yes** (UAT + `prod-ready`) | `promote-uat.yml` → `deploy-uat.yml` |
 | Weekly E2E on `main` | **No** (signal only) | `e2e.yml` |
-| PROD deploy | **Yes** (environment + smoke) | `deploy-prod.yml` |
+| PROD deploy / stub tag | **Yes** (environment when live) | `deploy-prod.yml` (auto after UAT `prod-ready`) |
 
 ---
 
@@ -324,10 +324,24 @@ Workflow: **E2E (Playwright)** — `.github/workflows/e2e.yml`
 
 Workflow: **Deploy Production (agathatrack.com)** — `.github/workflows/deploy-prod.yml`
 
-Before `workflow_dispatch` or release publish:
+### Auto-promotion (default)
+
+After **Deploy UAT** completes with green **`Prod ready`**, `deploy-prod.yml` runs via
+`workflow_run` (no manual dispatch). Behaviour depends on repo variable
+`PROD_DEPLOY_ENABLED`:
+
+| `PROD_DEPLOY_ENABLED` | FTP/SSH deploy | Release tag |
+|-----------------------|----------------|-------------|
+| unset / not `true` | **Skipped** (intentional success) | `vX.Y.Z-rc.N` stub tag |
+| `true` | Full deploy + smoke | Stable `vX.Y.Z` |
+
+Stub mode writes an explicit step summary: no FTP/SSH steps ran. Semver is automatic
+— see [promotion-contract.md](./promotion-contract.md).
+
+### Manual `workflow_dispatch` / release publish
 
 1. **Same commit SHA** validated on UAT (via `uat-*` tag deploy).
-2. GitHub Environment **`PROD`** must require status check:
+2. GitHub Environment **`PROD`** must require status check (live deploy only):
    - **`Deploy UAT / Prod ready`** (exact name — verify in Settings → Environments → PROD).
 3. **Promoted web artifact** `web-build-<sha>` from a UAT run with green `Prod ready`.
 4. Optional: environment reviewers / wait timer.

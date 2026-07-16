@@ -3,7 +3,8 @@
 Canonical reference for **auto-promotion** on `KanopeeKa/AgathaCheck`: merge to
 `main` → UAT tag → UAT deploy → prod stub/release tag.
 
-Implementation phases: PR **#A** (ci-gate) through **#F** (cleanup). Gate names
+Implementation phases: PR **#A** (ci-gate) through **#F** (cleanup). Phase **#D**
+(prod stub + auto semver) is implemented in `deploy-prod.yml`. Gate names
 and branch rules: [ci-cd-gates.md](./ci-cd-gates.md).
 
 ---
