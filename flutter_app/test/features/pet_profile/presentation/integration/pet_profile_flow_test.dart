@@ -11,6 +11,7 @@ import 'package:pet_profile_app/features/notifications/presentation/providers/no
 import 'package:pet_profile_app/features/sharing/presentation/providers/sharing_providers.dart';
 import 'package:pet_profile_app/features/organization/presentation/providers/organization_providers.dart';
 import 'package:pet_profile_app/features/vet/presentation/providers/vet_providers.dart';
+import 'package:pet_profile_app/features/experience/data/guardian_onboarding_store.dart';
 import 'package:pet_profile_app/features/experience/domain/services/experience_eligibility.dart';
 import 'package:pet_profile_app/features/experience/presentation/providers/experience_providers.dart';
 import 'package:pet_profile_app/core/providers/api_base_url_provider.dart';
@@ -44,7 +45,9 @@ void main() {
     late SharedPreferences prefs;
 
     setUp(() async {
-      SharedPreferences.setMockInitialValues({});
+      SharedPreferences.setMockInitialValues({
+        GuardianOnboardingStore.completedKey: true,
+      });
       prefs = await SharedPreferences.getInstance();
     });
 
