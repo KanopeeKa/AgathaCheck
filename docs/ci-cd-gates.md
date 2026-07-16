@@ -3,7 +3,8 @@
 Single source of truth for **blocking vs advisory** automation and PROD promotion
 prerequisites. GitHub branch/environment settings must match the check names below.
 
-See also: [ci-cd-baseline.md](./ci-cd-baseline.md) (metrics), [CONTRIBUTING.md](../CONTRIBUTING.md) (contributor checklist).
+See also: [ci-cd-baseline.md](./ci-cd-baseline.md) (metrics), [CONTRIBUTING.md](../CONTRIBUTING.md) (contributor checklist),
+[promotion-contract.md](./promotion-contract.md) (auto-promotion tags, idempotency, semver).
 
 **Program status:** Phases -1–6 merged (#162–#168). Phase 7 (#169) closes build-artifact
 hygiene. Gate contract below is the maintained source of truth for branch protection
@@ -29,8 +30,9 @@ baseline table in [ci-cd-baseline.md](./ci-cd-baseline.md) when targets are met.
 
 | Stage | Blocking? | Workflow |
 |-------|-----------|----------|
-| PR → `main` | **Yes** (required checks) | `ci.yml`, `codeql.yml` |
-| PR startup smoke | **Yes** (with CI) | `ci.yml` → `_reusable-pr-startup-smoke.yml` |
+| PR → `main` | **Yes** (2 required checks) | `ci.yml` → `ci-gate`, `codeql.yml` |
+| PR granular CI jobs | Visible, not individually required | `ci.yml` (startup-smoke, test-suite, flutter-*, …) |
+| PR startup smoke | **Yes** (via `ci-gate`) | `ci.yml` → `_reusable-pr-startup-smoke.yml` |
 | PR hints | No (advisory) | `pr-governance-hints.yml` |
 | Agent `cursor/*` PRs | **Yes** (forbidden paths) | `agent-pr-safety-gate.yml` |
 | `release/uat-*` deploy | **Yes** (UAT + `prod-ready`) | `deploy-uat.yml` |
@@ -46,11 +48,35 @@ Triggered by `.github/workflows/ci.yml` → `_reusable-pr-startup-smoke.yml`,
 
 ### GitHub required check names (branch protection)
 
-Reusable workflow jobs appear as **`{caller_job_id} / {reusable_job_name}`** on PRs.
-Do **not** use the reusable workflow file name (`_reusable-pr-startup-smoke.yml`) in
-branch protection — use the strings below.
+**Required for merge (2 checks):**
 
-| GitHub required check name | Caller job (`ci.yml`) | Reusable job `name:` | Workflow file |
+| GitHub required check name | Workflow |
+|----------------------------|----------|
+| `ci-gate / CI passed` | `ci.yml` → `_reusable-ci-gate.yml` (aggregator — see maintenance note below) |
+| `Analyze JavaScript` | `codeql.yml` (separate workflow; weekly schedule preserved) |
+
+**Conditional:** `Forbidden path check` — agent `cursor/*` PRs only (`agent-pr-safety-gate.yml`).
+
+#### `ci-gate` maintenance (dependency list drift)
+
+The `ci-gate` job uses `needs:` on every blocking caller job in `ci.yml` and
+`scripts/ci/assert-ci-gate.sh` mirrors the same list. **When you add, remove, or
+rename a blocking CI job**, update **all three** in the same PR:
+
+1. `.github/workflows/ci.yml` — new caller job + add to `ci-gate` `needs:` and `_reusable-ci-gate.yml` inputs
+2. `scripts/ci/assert-ci-gate.sh` — `RESULTS` map and summary table row
+3. This file — granular jobs table below (if the job is user-visible)
+
+Missing an entry lets a failing job slip through while `ci-gate` stays green.
+
+Reusable workflow jobs appear as **`{caller_job_id} / {reusable_job_name}`** on PRs.
+The umbrella gate uses caller id `ci-gate` and reusable job name **`CI passed`**
+→ required check **`ci-gate / CI passed`**. Granular flutter/test jobs remain visible
+but are not individually required once the ruleset is migrated.
+
+#### Granular CI jobs (visible on PR, not individually required)
+
+| GitHub check name (job) | Caller job (`ci.yml`) | Reusable job `name:` | Workflow file |
 |----------------------------|----------------------|----------------------|---------------|
 | `startup-smoke / PR startup smoke` | `startup-smoke` | `PR startup smoke` | `_reusable-pr-startup-smoke.yml` |
 | `test-suite / Governance (BDD + file size)` | `test-suite` | `Governance (BDD + file size)` | `_reusable-test.yml` |
@@ -60,15 +86,58 @@ branch protection — use the strings below.
 | `flutter-build-web / Build Flutter web` | `flutter-build-web` | `Build Flutter web` | `_reusable-build-web.yml` |
 | `test-suite / Backend (Node.js Jest + Dart analyze)` | `test-suite` | `Backend (Node.js Jest + Dart analyze)` | `_reusable-test.yml` |
 | `test-suite / E2E package audit` | `test-suite` | `E2E package audit` | `_reusable-test.yml` |
-| `Analyze JavaScript` | — | `Analyze JavaScript` | `codeql.yml` (direct job) |
+| `Analyze JavaScript` | — | `Analyze JavaScript` | `codeql.yml` (direct job; **required separately**) |
+
+**Legacy branch protection (replace in ruleset):** the nine individual flutter/test
+checks listed in **Main protection** ruleset should be removed when
+**`ci-gate / CI passed`** is added. Keep `Analyze JavaScript`.
 
 **Optional (visible, not required individually):** `flutter-test-{pet,health,org,rest} / Flutter tests (<shard>)` —
-the merge gate `flutter-coverage / Flutter domain coverage` covers shard failures.
+the merge gate `flutter-coverage / Flutter domain coverage` covers shard failures (enforced via `ci-gate`).
 
-**Removed (replace in branch protection):** `test-suite / Flutter (analyze, test, build web)` — split into the
-`flutter-*` checks above (parallel shards initiative).
+#### Accepted trade-off: no CI re-run on merge to `main`
 
-#### Atomic branch-protection migration (Flutter parallel shards)
+Auto-promotion (`promote-uat.yml`, planned) does **not** re-run CI on the merge commit.
+See [promotion-contract.md](./promotion-contract.md). PR gates + strict up-to-date merge
+are the trust boundary.
+
+#### Atomic branch-protection migration (`ci-gate`)
+
+**Pre-merge (on the introducing PR):**
+
+1. Wait for a **green CI run** showing **`ci-gate / CI passed`**.
+2. Copy exact check name from the run:
+
+```bash
+gh pr checks <PR_NUMBER> | rg '^ci-gate'
+```
+
+**Merge + ruleset (single edit):**
+
+1. **Settings → Rules → Rulesets** → **Main protection**
+2. **Add** `ci-gate / CI passed`
+3. **Remove** the nine legacy individual flutter/test checks (keep `Analyze JavaScript`)
+4. Save once
+
+**Verify:**
+
+```bash
+gh api repos/KanopeeKa/AgathaCheck/rulesets/18979034 --jq '.rules[] | select(.type=="required_status_checks")'
+```
+
+**Troubleshooting — “Expected — Waiting for status to be reported” for `CI passed`:**
+
+The workflow reports **`ci-gate / CI passed`**, not bare **`CI passed`**. If the
+ruleset lists `CI passed`, GitHub waits forever while `ci-gate / CI passed` is
+already green (two different checks). Fix: remove `CI passed` from the ruleset,
+add **`ci-gate / CI passed`** exactly (copy from `gh pr checks <PR>`).
+
+```bash
+gh pr checks 193 | rg '^ci-gate'
+# ci-gate / CI passed    pass    …
+```
+
+#### Atomic branch-protection migration (Flutter parallel shards — historical)
 
 Merging this change **removes** the legacy monolithic Flutter job from CI. Until branch
 protection is updated, `main` may be briefly under-protected (no Flutter gate) or PRs may
