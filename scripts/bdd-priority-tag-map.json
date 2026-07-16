@@ -206,6 +206,7 @@
     "Dual-role user sees experience chooser after login": "P1",
     "Dual-role user remembers guardian choice": "P1",
     "Remembered guardian choice skips chooser on next login": "P1",
+    "Dual-role user sets default experience to organisation in settings": "P1",
     "User switches to organisation view from guardian drawer": "P1",
     "Guardian chooser hides organisation option for guardian-only users": "P2"
   }
