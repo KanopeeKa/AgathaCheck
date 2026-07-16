@@ -5,6 +5,7 @@
  * Scenario: Dual-role user sees experience chooser after login
  * Scenario: Dual-role user remembers guardian choice
  * Scenario: Remembered guardian choice skips chooser on next login
+ * Scenario: Dual-role user sets default experience to organisation in settings
  * Scenario: User switches to organisation view from guardian drawer
  * Scenario: Guardian chooser hides organisation option for guardian-only users
  */
@@ -14,7 +15,9 @@ import { ExperiencePage } from '../pages/experience.page';
 import { createPet, seedDualRoleUser, seedRescueHearts, signupUser } from '../support/api';
 import {
   dismissConsentBannerIfPresent,
+  logOutFromApp,
   refreshFlutterAccessibility,
+  waitForPostLoginRoute,
 } from '../support/flutter';
 import { prepareLiveApiAccess } from '../support/waf';
 
@@ -29,6 +32,7 @@ async function loginFromLanding(
   await landing.goto();
   await landing.login(email, password);
   await dismissConsentBannerIfPresent(page);
+  await waitForPostLoginRoute(page);
   await refreshFlutterAccessibility(page);
 }
 
@@ -88,6 +92,27 @@ test.describe('Experience navigation', () => {
     await loginFromLanding(page, user.email, user.password);
     await page.waitForURL(/\/g\/home/, { timeout: 60_000 });
     await experience.expectGuardianShell();
+  });
+
+  test('dual-role user sets default experience to organisation in settings', async ({
+    page,
+  }) => {
+    await prepareLiveApiAccess(page, baseURL());
+    const { user } = await seedDualRoleUser(baseURL());
+    await loginFromLanding(page, user.email, user.password);
+    await page.waitForURL(/\/app\/choose/, { timeout: 60_000 });
+    const experience = new ExperiencePage(page);
+    await experience.chooseGuardian(false);
+    await experience.expectGuardianShell();
+    await experience.openGuardianSettingsFromDrawer();
+    await experience.setDefaultExperience('organization');
+    await logOutFromApp(page);
+
+    await page.context().clearCookies();
+    await loginFromLanding(page, user.email, user.password);
+    await page.waitForURL(/\/o\/home/, { timeout: 60_000 });
+    await experience.expectOrgShell();
+    await expect(page.getByText(/How will you use Agatha Track/i)).not.toBeVisible();
   });
 
   test('user switches to organisation view from guardian drawer', async ({
