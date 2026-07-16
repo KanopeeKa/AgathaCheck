@@ -51,6 +51,11 @@ export class ExperiencePage {
     await expect(this.page.getByRole('button', { name: 'Events' })).toBeVisible();
   }
 
+  async expectOrgShell(): Promise<void> {
+    await expect(this.page.getByRole('button', { name: 'Home' })).toBeVisible();
+    await expect(this.page.getByRole('button', { name: 'Events' })).toBeVisible();
+  }
+
   async openDrawerOrgView(): Promise<void> {
     await this.page.getByRole('button', { name: 'Settings' }).click();
     await this.page.getByText('Organisation view').click();

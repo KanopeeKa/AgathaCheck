@@ -16,6 +16,17 @@ Feature: Experience navigation
     Then the user should be navigated to the guardian home screen
 
   @P1
+  Scenario: Organisation-only user lands on organisation home after login
+    Given a registered user with email "orgadmin@example.com" and password "secret123"
+    And the user belongs to an organisation
+    And the user has no personal guardian pets
+    And the user is on the login screen
+    When the user enters email "orgadmin@example.com"
+    And the user enters password "secret123"
+    And the user taps the "Sign In" button
+    Then the user should be navigated to the organisation home screen
+
+  @P1
   Scenario: Dual-role user sees experience chooser after login
     Given a registered user with email "dual@example.com" and password "secret123"
     And the user belongs to an organisation
