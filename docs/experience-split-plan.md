@@ -1,8 +1,8 @@
 # AgathaTrack experience split — implementation plan
 
 **Branch:** `cursor/experience-e2a-default-settings-17a0`  
-**Status:** E2a default experience settings in progress  
-**Last updated:** 2026-07-16 (post-#188 merge)
+**Status:** Phase 3 complete; E1b and E2a **Done**  
+**Last updated:** 2026-07-16 (post-#188 merge; E2a in this PR)
 
 Product decisions are locked in planning conversations. This document is the **execution tracker** for agents and humans.
 
