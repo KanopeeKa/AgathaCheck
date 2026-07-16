@@ -26,6 +26,12 @@ Run `./scripts/pre-push-changed.sh` during iteration or `./scripts/pre-push.sh` 
 - Playwright implementations: `e2e/playwright/tests/` with `/** @bdd <feature> */` comment
 - New user journey → add Gherkin scenario **and** Playwright spec (or link debt issue)
 
+## E2E locator hygiene
+
+- Assert **visibility**, not DOM absence — Flutter web may keep semantics nodes in the tree while off-screen (`expectHomeShellHidden` pattern).
+- Scope assertions to the **target control/row**, not parent containers (drawer `innerText`, full-page regex) — avoids false positives from unrelated text (emails, IDs).
+- Address **PR review comments in the same PR** when valid — do not defer Copilot/human feedback to follow-up issues unless explicitly out of scope.
+
 ## Coverage
 
 - Add tests before or during extraction, not after.

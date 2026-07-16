@@ -116,6 +116,8 @@ export class NotificationsPage {
 
   /** Assert no unread-count badge on the legacy app bar or experience drawer. */
   async expectNoBadgeVisible(): Promise<void> {
+    const unreadPattern = /,\s*(?:99\+|[1-9]\d?)\s*unread/i;
+
     const legacyControl = this.page
       .getByRole('button', { name: /^Notifications/i })
       .or(this.page.getByRole('group', { name: /^Notifications/i }))
@@ -123,16 +125,31 @@ export class NotificationsPage {
     if (await legacyControl.isVisible({ timeout: 2_000 }).catch(() => false)) {
       const badgeLabel =
         (await legacyControl.getAttribute('aria-label')) ?? (await legacyControl.innerText());
-      expect(badgeLabel).not.toMatch(/,\s*(?:99\+|[1-9]\d?)\s*unread/i);
+      expect(badgeLabel).not.toMatch(unreadPattern);
       return;
     }
 
     if (await isExperienceShellVisible(this.page)) {
       await openExperienceDrawer(this.page);
+      const notificationsEntry = this.page
+        .getByRole('button', { name: /^Notifications/i })
+        .or(this.page.getByRole('group', { name: /^Notifications/i }))
+        .or(this.page.getByRole('menuitem', { name: /^Notifications/i }))
+        .first();
+      if (await notificationsEntry.isVisible({ timeout: 2_000 }).catch(() => false)) {
+        const badgeLabel =
+          (await notificationsEntry.getAttribute('aria-label')) ?? (await notificationsEntry.innerText());
+        expect(badgeLabel).not.toMatch(unreadPattern);
+        return;
+      }
+
       const notificationsTile = this.page.getByText('Notifications', { exact: true });
       await notificationsTile.waitFor({ timeout: 10_000 });
-      const drawerText = await this.page.locator('nav, [role="dialog"]').innerText().catch(() => '');
-      expect(drawerText).not.toMatch(/\b(?:99\+|[1-9]\d?)\b(?=[\s\S]*Notifications)/);
+      const rowText = await notificationsTile
+        .locator('xpath=ancestor::*[self::button or @role="button" or @role="group" or @role="menuitem"][1]')
+        .innerText()
+        .catch(() => notificationsTile.innerText());
+      expect(rowText).not.toMatch(/\b(?:99\+|[1-9]\d?)\b/);
       return;
     }
 

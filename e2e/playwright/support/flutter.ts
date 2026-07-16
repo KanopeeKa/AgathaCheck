@@ -75,7 +75,15 @@ export async function expectHomeShellHidden(
   timeout = 15_000,
 ): Promise<void> {
   const { expect } = await import('@playwright/test');
-  await expect(homeShellLocator(page)).toHaveCount(0, { timeout });
+  await expect(async () => {
+    await refreshFlutterAccessibility(page);
+    const matches = await homeShellLocator(page).all();
+    for (const match of matches) {
+      if (await match.isVisible()) {
+        throw new Error('Home shell chrome is still visible');
+      }
+    }
+  }).toPass({ timeout });
 }
 
 export type ExperienceChoice = 'guardian' | 'organization';
