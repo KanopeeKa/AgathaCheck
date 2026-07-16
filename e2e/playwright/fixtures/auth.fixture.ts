@@ -6,7 +6,11 @@ import { clearLiveApiAccess, passHostingWaf, prepareLiveApiAccess, resetHostingW
 import { isLiveHostingTarget } from '../support/hosting';
 import { LandingPage } from '../pages/landing.page';
 import { PetListPage } from '../pages/pet-list.page';
-import { refreshFlutterAccessibility } from '../support/flutter';
+import {
+  completeExperienceChooserIfPresent,
+  type ExperienceChoice,
+  waitForPostLoginRoute,
+} from '../support/flutter';
 
 type AuthFixtures = {
   testUser: TestUser;
@@ -42,7 +46,16 @@ export const test = base.extend<AuthFixtures>({
 
 export { expect };
 
-export async function loginAs(page: import('@playwright/test').Page, user: TestUser): Promise<PetListPage> {
+export type LoginAsOptions = {
+  /** When dual-role users see the experience chooser, pick this shell (default guardian). */
+  experience?: ExperienceChoice;
+};
+
+export async function loginAs(
+  page: import('@playwright/test').Page,
+  user: TestUser,
+  options: LoginAsOptions = {},
+): Promise<PetListPage> {
   const landing = new LandingPage(page);
   const petList = new PetListPage(page);
   const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
@@ -74,7 +87,8 @@ export async function loginAs(page: import('@playwright/test').Page, user: TestU
   }
   await landing.goto();
   await landing.login(user.email, user.password);
-  await refreshFlutterAccessibility(page);
+  await waitForPostLoginRoute(page);
+  await completeExperienceChooserIfPresent(page, options.experience ?? 'guardian');
   await petList.expectLoaded();
   return petList;
 }

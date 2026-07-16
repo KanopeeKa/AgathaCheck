@@ -10,7 +10,7 @@
 import { test, expect } from '../fixtures/live.fixture';
 import { LandingPage } from '../pages/landing.page';
 import { PetListPage } from '../pages/pet-list.page';
-import { homeShellLocator } from '../support/flutter';
+import { expectHomeShellHidden } from '../support/flutter';
 import { signupUser } from '../support/api';
 
 test.describe('Authentication signup', () => {
@@ -27,7 +27,7 @@ test.describe('Authentication signup', () => {
       confirmPassword: 'different456',
     });
     await landing.expectSignupValidation('Passwords do not match');
-    await expect(homeShellLocator(page)).not.toBeVisible();
+    await expectHomeShellHidden(page);
   });
 
   test('signup requires an email address', async ({ page }) => {
@@ -83,7 +83,7 @@ test.describe('Authentication signup', () => {
       confirmPassword: 'AnotherPass1',
     });
     await landing.expectSignupValidation(/already exists/i);
-    await expect(homeShellLocator(page)).not.toBeVisible();
+    await expectHomeShellHidden(page);
   });
 
   test('@smoke user can sign up with valid credentials and reach the pet list', async ({ page }) => {
@@ -102,6 +102,5 @@ test.describe('Authentication signup', () => {
       password,
     });
     await petList.expectLoaded();
-    await expect(homeShellLocator(page)).toBeVisible();
   });
 });

@@ -69,6 +69,59 @@ export async function expectHomeShellVisible(
   await homeShellLocator(page).first().waitFor({ timeout });
 }
 
+/** Assert no home shell chrome is visible (e.g. still on landing after failed login). */
+export async function expectHomeShellHidden(
+  page: Page,
+  timeout = 15_000,
+): Promise<void> {
+  const { expect } = await import('@playwright/test');
+  await expect(async () => {
+    await refreshFlutterAccessibility(page);
+    const matches = await homeShellLocator(page).all();
+    for (const match of matches) {
+      if (await match.isVisible()) {
+        throw new Error('Home shell chrome is still visible');
+      }
+    }
+  }).toPass({ timeout });
+}
+
+export type ExperienceChoice = 'guardian' | 'organization';
+
+/** Complete the post-login experience chooser when dual-role users land on `/app/choose`. */
+export async function completeExperienceChooserIfPresent(
+  page: Page,
+  choice: ExperienceChoice = 'guardian',
+): Promise<void> {
+  await dismissConsentBannerIfPresent(page);
+  await refreshFlutterAccessibility(page);
+
+  const chooserHeading = page.getByText(/How will you use Agatha Track/i);
+  const onChooserUrl = /\/app\/choose/.test(page.url());
+  const chooserVisible = onChooserUrl
+    || (await chooserHeading.isVisible({ timeout: 3_000 }).catch(() => false));
+  if (!chooserVisible) return;
+
+  if (choice === 'guardian') {
+    await page.getByText('Individual Pet Guardian').click();
+  } else {
+    await page.getByText('Shelter / Organisation').click();
+  }
+  await page.getByRole('button', { name: 'Continue' }).click();
+  const homePattern = choice === 'guardian' ? /\/g\/home/ : /\/o\/home/;
+  await page.waitForURL(homePattern, { timeout: 30_000 });
+  await refreshFlutterAccessibility(page);
+}
+
+/** Wait until post-login routing settles on a home surface or the experience chooser. */
+export async function waitForPostLoginRoute(page: Page, timeout = 60_000): Promise<void> {
+  await page.waitForURL((url) => {
+    const path = new URL(url).pathname;
+    return /\/(g|o)\/home/.test(path) || path === '/app/choose';
+  }, { timeout });
+  await refreshFlutterAccessibility(page);
+}
+
 /** True when the post-split experience shell (`/g/home` or `/o/home`) is visible. */
 export async function isExperienceShellVisible(page: Page): Promise<boolean> {
   const homeNav = page.getByRole('button', { name: 'Home' });

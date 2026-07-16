@@ -5,7 +5,7 @@
  */
 import { test, expect, loginAs } from '../fixtures/auth.fixture';
 import { checkA11y } from '../support/axe';
-import { homeShellLocator } from '../support/flutter';
+import { expectHomeShellHidden } from '../support/flutter';
 
 test.describe('Authentication', () => {
   test('@smoke user can log in with valid credentials and reach the pet list', async ({
@@ -17,7 +17,6 @@ test.describe('Authentication', () => {
     await landingPage.goto();
     await landingPage.login(testUser.email, testUser.password);
     await petListPage.expectLoaded();
-    await expect(homeShellLocator(page)).toBeVisible();
     await checkA11y(page, 'post-login pet list');
   });
 
@@ -26,6 +25,6 @@ test.describe('Authentication', () => {
     await landingPage.login(testUser.email, 'WrongPassword99');
     await page.waitForTimeout(1500);
     await expect(page.getByRole('button', { name: 'Sign In', exact: true })).toBeVisible();
-    await expect(homeShellLocator(page)).not.toBeVisible();
+    await expectHomeShellHidden(page);
   });
 });

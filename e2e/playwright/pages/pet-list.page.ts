@@ -6,6 +6,7 @@ import {
   expectAppBarTitle,
   expectHomeShellVisible,
   homeShellLocator,
+  isExperienceShellVisible,
   refreshFlutterAccessibility,
   semanticsByName,
   waitForFlutterRoute,
@@ -29,8 +30,12 @@ export class PetListPage {
   async openHealthDashboard(): Promise<void> {
     await dismissConsentBannerIfPresent(this.page);
     const eventsNav = this.page.getByRole('button', { name: 'Events' });
-    if (await eventsNav.isVisible().catch(() => false)) {
+    if (await eventsNav.isVisible({ timeout: 2_000 }).catch(() => false)) {
       await eventsNav.click();
+    } else if (await isExperienceShellVisible(this.page)) {
+      const path = this.page.url().includes('/o/') ? '/o/events' : '/g/events';
+      await this.page.goto(path);
+      await refreshFlutterAccessibility(this.page);
     } else {
       await this.page.getByRole('button', { name: 'To Do' }).click();
     }
@@ -90,7 +95,13 @@ export class PetListPage {
 
   async openVets(): Promise<void> {
     await dismissConsentBannerIfPresent(this.page);
-    await this.page.getByRole('button', { name: 'Veterinarians' }).click();
+    const vetsNav = this.page.getByRole('button', { name: 'Veterinarians' });
+    if (await vetsNav.isVisible({ timeout: 2_000 }).catch(() => false)) {
+      await vetsNav.click();
+    } else {
+      await this.page.goto('/vets');
+      await refreshFlutterAccessibility(this.page);
+    }
     await expectAppBarTitle(this.page, 'Veterinarians');
   }
 

@@ -31,3 +31,4 @@ Institutional knowledge for cloud agents. Domain workflows live in **Skills** (`
 - Domain map: `docs/architecture/index.md`
 - Efficiency plan: `docs/agent-efficiency-plan.md`
 - Pre-push: `./scripts/pre-push-changed.sh` (iteration) · `./scripts/pre-push.sh` (merge)
+- PR reviews: fix valid Copilot/human feedback **in the same PR** before merge — no follow-up debt for locator/assertion hardening.
