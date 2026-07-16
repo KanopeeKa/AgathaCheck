@@ -5863,6 +5863,78 @@ abstract class AppLocalizations {
   /// **'Invite team members to help run your organisation.'**
   String get experienceOrganizationInviteHint;
 
+  /// No description provided for @guardianOnboardingTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Get started'**
+  String get guardianOnboardingTitle;
+
+  /// No description provided for @guardianOnboardingSkip.
+  ///
+  /// In en, this message translates to:
+  /// **'Skip for now'**
+  String get guardianOnboardingSkip;
+
+  /// No description provided for @guardianOnboardingWelcomeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Welcome to Agatha Track'**
+  String get guardianOnboardingWelcomeTitle;
+
+  /// No description provided for @guardianOnboardingWelcomeBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Add your first pet and a reminder so you never miss important care.'**
+  String get guardianOnboardingWelcomeBody;
+
+  /// No description provided for @guardianOnboardingGetStarted.
+  ///
+  /// In en, this message translates to:
+  /// **'Get started'**
+  String get guardianOnboardingGetStarted;
+
+  /// No description provided for @guardianOnboardingPetStepTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Add your first pet'**
+  String get guardianOnboardingPetStepTitle;
+
+  /// No description provided for @guardianOnboardingPetStepBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Tell us who you are caring for. You can add more details later.'**
+  String get guardianOnboardingPetStepBody;
+
+  /// No description provided for @guardianOnboardingReminderStepTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Set your first reminder'**
+  String get guardianOnboardingReminderStepTitle;
+
+  /// No description provided for @guardianOnboardingReminderStepBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Medications, preventives, and vet visits — we will remind you when they are due.'**
+  String get guardianOnboardingReminderStepBody;
+
+  /// No description provided for @guardianOnboardingReminderNameLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Reminder name'**
+  String get guardianOnboardingReminderNameLabel;
+
+  /// No description provided for @guardianOnboardingFinish.
+  ///
+  /// In en, this message translates to:
+  /// **'Finish setup'**
+  String get guardianOnboardingFinish;
+
+  /// No description provided for @failedToSaveOnboarding.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not save your setup: {error}'**
+  String failedToSaveOnboarding(String error);
+
   /// No description provided for @sharedWithGroupTitle.
   ///
   /// In en, this message translates to:

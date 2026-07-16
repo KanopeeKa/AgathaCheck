@@ -36,9 +36,50 @@ ExperienceEligibility _orgOnly() => ExperienceEligibilityRules.compute(
 
 void main() {
   group('resolvePostLoginPath', () {
-    test('guardian-only user lands on guardian home', () {
-      expect(resolvePostLoginPath(eligibility: _guardianOnly()), '/g/home');
+    test('guardian-only user lands on guardian home when onboarding done', () {
+      expect(
+        resolvePostLoginPath(
+          eligibility: _guardianOnly(),
+          guardianOnboardingCompleted: true,
+        ),
+        '/g/home',
+      );
     });
+
+    test('guardian-only user with no pets goes to onboarding', () {
+      expect(
+        resolvePostLoginPath(
+          eligibility: _guardianOnly(),
+          pets: const [],
+          guardianOnboardingCompleted: false,
+        ),
+        '/g/onboarding',
+      );
+    });
+
+    test(
+      'dual-role user with owned pets goes to guardian home not onboarding',
+      () {
+        expect(
+          resolvePostLoginPath(
+            eligibility: _dual(),
+            savedDefault: AppExperience.guardian,
+            pets: const [
+              Pet(id: '1', name: 'Mine', species: 'Cat'),
+              Pet(
+                id: '2',
+                name: 'Shelter',
+                species: 'Dog',
+                organizationId: 'o1',
+                organizationName: 'Rescue',
+              ),
+            ],
+            guardianOnboardingCompleted: false,
+          ),
+          '/g/home',
+        );
+      },
+    );
 
     test('org-only user lands on organisation home', () {
       expect(resolvePostLoginPath(eligibility: _orgOnly()), '/o/home');

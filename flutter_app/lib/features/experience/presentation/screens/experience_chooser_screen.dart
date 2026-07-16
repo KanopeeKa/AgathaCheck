@@ -3,7 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../l10n/app_localizations.dart';
+import '../../../pet_profile/presentation/providers/pet_providers.dart';
 import '../../domain/entities/app_experience.dart';
+import '../../domain/services/guardian_onboarding_rules.dart';
 import '../providers/experience_providers.dart';
 
 /// Post-login experience selection when user may use both shells.
@@ -141,7 +143,17 @@ class _ExperienceChooserScreenState
     }
     ref.read(activeExperienceProvider.notifier).state = experience;
     if (!context.mounted) return;
-    context.go(experience.homePath());
+    var path = experience.homePath();
+    if (experience == AppExperience.guardian) {
+      final pets = ref.read(petListProvider).valueOrNull ?? [];
+      final completed = ref.read(guardianOnboardingCompletedProvider);
+      path = GuardianOnboardingRules.resolveGuardianDestination(
+        targetPath: path,
+        pets: pets,
+        onboardingCompleted: completed,
+      );
+    }
+    context.go(path);
   }
 }
 

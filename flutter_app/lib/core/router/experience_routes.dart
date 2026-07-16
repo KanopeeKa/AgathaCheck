@@ -5,6 +5,7 @@ import '../../features/experience/domain/entities/app_experience.dart';
 import '../../features/experience/presentation/screens/experience_chooser_screen.dart';
 import '../../features/experience/presentation/screens/experience_home_screens.dart';
 import '../../features/experience/presentation/screens/experience_resolve_screen.dart';
+import '../../features/experience/presentation/screens/guardian_onboarding_screen.dart';
 import '../../features/experience/presentation/widgets/foster_portal_route_guard.dart';
 import '../../features/experience/presentation/screens/experience_settings_screen.dart';
 import '../../features/experience/presentation/widgets/experience_shell_scaffold.dart';
@@ -23,6 +24,11 @@ List<RouteBase> buildExperienceRoutes() {
       path: '/app/choose',
       name: 'experienceChoose',
       builder: (context, state) => const ExperienceChooserScreen(),
+    ),
+    GoRoute(
+      path: '/g/onboarding',
+      name: 'guardianOnboarding',
+      builder: (context, state) => const GuardianOnboardingScreen(),
     ),
     ShellRoute(
       builder: (context, state, child) => child,
