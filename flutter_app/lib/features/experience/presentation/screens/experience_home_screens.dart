@@ -6,6 +6,8 @@ import '../../../../l10n/app_localizations.dart';
 import '../../../pet_profile/presentation/controllers/pet_list_controller.dart';
 import '../../../pet_profile/presentation/providers/pet_providers.dart';
 import '../../domain/entities/app_experience.dart';
+import '../../domain/services/guardian_onboarding_rules.dart';
+import '../providers/experience_providers.dart';
 import '../widgets/experience_shell_scaffold.dart';
 import '../widgets/guardian_shell_home_content.dart';
 import '../widgets/org_shell_home_content.dart';
@@ -22,9 +24,34 @@ class _GuardianHomeScreenState extends ConsumerState<GuardianHomeScreen> {
   final _controller = PetListController();
 
   @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback(
+      (_) => _redirectIfOnboardingNeeded(),
+    );
+  }
+
+  void _redirectIfOnboardingNeeded() {
+    if (!mounted) return;
+    final pets = ref.read(petListProvider).valueOrNull;
+    if (pets == null) return;
+    final completed = ref.read(guardianOnboardingCompletedProvider);
+    if (GuardianOnboardingRules.needsOnboarding(
+      pets: pets,
+      onboardingCompleted: completed,
+    )) {
+      context.go(GuardianOnboardingRules.onboardingPath);
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     final petListAsync = ref.watch(petListProvider);
     final l = AppLocalizations.of(context);
+
+    ref.listen(petListProvider, (_, next) {
+      next.whenData((_) => _redirectIfOnboardingNeeded());
+    });
 
     return ExperienceShellScaffold(
       experience: AppExperience.guardian,

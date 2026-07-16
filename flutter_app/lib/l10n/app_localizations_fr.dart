@@ -3264,6 +3264,48 @@ class AppLocalizationsFr extends AppLocalizations {
       'Invitez des membres de l\'équipe pour gérer votre organisation.';
 
   @override
+  String get guardianOnboardingTitle => 'Premiers pas';
+
+  @override
+  String get guardianOnboardingSkip => 'Passer pour l\'instant';
+
+  @override
+  String get guardianOnboardingWelcomeTitle => 'Bienvenue sur Agatha Track';
+
+  @override
+  String get guardianOnboardingWelcomeBody =>
+      'Ajoutez votre premier animal et un rappel pour ne rien oublier.';
+
+  @override
+  String get guardianOnboardingGetStarted => 'Commencer';
+
+  @override
+  String get guardianOnboardingPetStepTitle => 'Ajoutez votre premier animal';
+
+  @override
+  String get guardianOnboardingPetStepBody =>
+      'Dites-nous qui vous accompagnez. Vous pourrez ajouter plus de détails plus tard.';
+
+  @override
+  String get guardianOnboardingReminderStepTitle =>
+      'Créez votre premier rappel';
+
+  @override
+  String get guardianOnboardingReminderStepBody =>
+      'Médicaments, préventifs et visites vétérinaires — nous vous rappellerons les échéances.';
+
+  @override
+  String get guardianOnboardingReminderNameLabel => 'Nom du rappel';
+
+  @override
+  String get guardianOnboardingFinish => 'Terminer la configuration';
+
+  @override
+  String failedToSaveOnboarding(String error) {
+    return 'Impossible d\'enregistrer la configuration : $error';
+  }
+
+  @override
   String sharedWithGroupTitle(String name) {
     return 'Partagé avec $name';
   }

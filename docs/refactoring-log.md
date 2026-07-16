@@ -114,6 +114,16 @@ Tracks planned and completed refactor / quality work. See also `docs/refactoring
 | XP-15 | BDD `Dual-role user sets default experience to organisation in settings` | **Done** |
 | XP-16 | Playwright E2a + `resolvePostLoginPath` org-default L1 test | **Done** |
 
+## Experience split — Phase 4.1 guardian onboarding (2026-07-16)
+
+**Branch:** `cursor/guardian-onboarding-wizard-17a0`
+
+| # | Deliverable | Status |
+|---|-------------|--------|
+| XP-17 | `/g/onboarding` wizard (pet + first reminder) + skip | **In progress** |
+| XP-18 | Post-login redirect for new guardians with no pets | **In progress** |
+| XP-19 | BDD `guardian_onboarding.feature` + Playwright | **In progress** |
+
 ---
 
 ## Sprint 5 — Governance hardening + monolith splits (in progress)

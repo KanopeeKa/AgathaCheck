@@ -37,6 +37,7 @@ export const SHARDS = [
     'playwright/tests/sharing.spec.ts',
     'playwright/tests/help.faq.spec.ts',
     'playwright/tests/experience.foster-portal.spec.ts',
+    'playwright/tests/guardian.onboarding.spec.ts',
   ],
 ];
 

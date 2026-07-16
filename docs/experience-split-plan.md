@@ -1,8 +1,8 @@
 # AgathaTrack experience split — implementation plan
 
-**Branch:** `cursor/experience-e2a-default-settings-17a0`  
-**Status:** Phase 3 complete; E1b and E2a **Done**  
-**Last updated:** 2026-07-16 (post-#188 merge; E2a in this PR)
+**Branch:** `cursor/guardian-onboarding-wizard-17a0`  
+**Status:** Phase 4.1 in progress — guardian onboarding wizard (pet + first reminder)  
+**Last updated:** 2026-07-16 (post-#191 merge; Phase 4.1 in this PR)
 
 Product decisions are locked in planning conversations. This document is the **execution tracker** for agents and humans.
 
@@ -115,11 +115,11 @@ Both shells use **top nav**:
 
 ### Phase 4 — Onboarding wizards
 
-| ID | Deliverable |
-|----|-------------|
-| 4.1 | Guardian onboarding (pet + first reminder) |
-| 4.2 | Org super-admin onboarding |
-| 4.3 | Invited admin / foster flows |
+| ID | Deliverable | Status |
+|----|-------------|--------|
+| 4.1 | Guardian onboarding (pet + first reminder) | **In progress** (#TBD) |
+| 4.2 | Org super-admin onboarding | Planned |
+| 4.3 | Invited admin / foster flows | Planned |
 
 ### Phase 5 — Org operations (paperwork & permissions)
 

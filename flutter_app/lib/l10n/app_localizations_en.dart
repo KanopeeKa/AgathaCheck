@@ -3233,6 +3233,47 @@ class AppLocalizationsEn extends AppLocalizations {
       'Invite team members to help run your organisation.';
 
   @override
+  String get guardianOnboardingTitle => 'Get started';
+
+  @override
+  String get guardianOnboardingSkip => 'Skip for now';
+
+  @override
+  String get guardianOnboardingWelcomeTitle => 'Welcome to Agatha Track';
+
+  @override
+  String get guardianOnboardingWelcomeBody =>
+      'Add your first pet and a reminder so you never miss important care.';
+
+  @override
+  String get guardianOnboardingGetStarted => 'Get started';
+
+  @override
+  String get guardianOnboardingPetStepTitle => 'Add your first pet';
+
+  @override
+  String get guardianOnboardingPetStepBody =>
+      'Tell us who you are caring for. You can add more details later.';
+
+  @override
+  String get guardianOnboardingReminderStepTitle => 'Set your first reminder';
+
+  @override
+  String get guardianOnboardingReminderStepBody =>
+      'Medications, preventives, and vet visits — we will remind you when they are due.';
+
+  @override
+  String get guardianOnboardingReminderNameLabel => 'Reminder name';
+
+  @override
+  String get guardianOnboardingFinish => 'Finish setup';
+
+  @override
+  String failedToSaveOnboarding(String error) {
+    return 'Could not save your setup: $error';
+  }
+
+  @override
   String sharedWithGroupTitle(String name) {
     return 'Shared with $name';
   }

@@ -116,8 +116,11 @@ export async function completeExperienceChooserIfPresent(
     await page.getByText('Shelter / Organisation').click();
   }
   await page.getByRole('button', { name: 'Continue' }).click();
-  const homePattern = choice === 'guardian' ? /\/g\/home/ : /\/o\/home/;
+  const homePattern = choice === 'guardian' ? /\/g\/(home|onboarding)/ : /\/o\/home/;
   await page.waitForURL(homePattern, { timeout: effectiveTimeout });
+  if (choice === 'guardian' && /\/g\/onboarding/.test(page.url())) {
+    await skipGuardianOnboardingIfPresent(page, effectiveTimeout);
+  }
   await refreshFlutterAccessibility(page);
 }
 
@@ -131,7 +134,7 @@ export async function waitForPostLoginRoute(page: Page, timeout?: number): Promi
     await refreshFlutterAccessibility(page);
 
     const path = new URL(page.url()).pathname;
-    if (/\/(g|o)\/home/.test(path) || path === '/app/choose') {
+    if (/\/(g|o)\/home/.test(path) || path === '/app/choose' || path === '/g/onboarding') {
       return;
     }
 
@@ -151,6 +154,46 @@ export async function waitForPostLoginRoute(page: Page, timeout?: number): Promi
   }).toPass({ timeout: effectiveTimeout });
 }
 
+/** Skip the guardian onboarding wizard when shown (fresh users with no pets). */
+export async function skipGuardianOnboardingIfPresent(
+  page: Page,
+  timeout?: number,
+): Promise<void> {
+  const effectiveTimeout = timeout ?? postLoginTimeout(30_000);
+  await dismissConsentBannerIfPresent(page);
+  await refreshFlutterAccessibility(page);
+
+  const onOnboardingUrl = /\/g\/onboarding/.test(page.url());
+  const skipButton = page.getByRole('button', { name: /skip for now/i });
+  const skipVisible = onOnboardingUrl
+    || (await skipButton.isVisible({ timeout: 3_000 }).catch(() => false));
+  if (!skipVisible) return;
+
+  await skipButton.click();
+  await page.waitForURL(/\/g\/home/, { timeout: effectiveTimeout });
+  await refreshFlutterAccessibility(page);
+}
+
+/** Complete the guardian onboarding wizard (pet + reminder). */
+export async function completeGuardianOnboarding(
+  page: Page,
+  petName: string,
+  reminderName: string,
+  timeout?: number,
+): Promise<void> {
+  const effectiveTimeout = timeout ?? postLoginTimeout(60_000);
+  await page.waitForURL(/\/g\/onboarding/, { timeout: effectiveTimeout });
+  await refreshFlutterAccessibility(page);
+
+  await page.getByRole('button', { name: /get started/i }).click();
+  await fillLabelledField(page, 'Name', petName);
+  await page.getByRole('button', { name: 'Continue' }).click();
+  await fillLabelledField(page, 'Reminder name', reminderName);
+  await page.getByRole('button', { name: /finish setup/i }).click();
+  await page.waitForURL(/\/g\/home/, { timeout: effectiveTimeout });
+  await refreshFlutterAccessibility(page);
+}
+
 /** After login/signup submit: wait for routing, complete chooser if needed, assert home shell. */
 export async function reachAuthenticatedHome(
   page: Page,
@@ -159,6 +202,7 @@ export async function reachAuthenticatedHome(
   const timeout = options.timeout ?? postLoginTimeout();
   await waitForPostLoginRoute(page, timeout);
   await completeExperienceChooserIfPresent(page, options.experience ?? 'guardian', timeout);
+  await skipGuardianOnboardingIfPresent(page, timeout);
   await expectHomeShellVisible(page, timeout);
 }
 
