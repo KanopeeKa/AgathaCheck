@@ -3301,6 +3301,48 @@ class AppLocalizationsFr extends AppLocalizations {
   String get guardianOnboardingFinish => 'Terminer la configuration';
 
   @override
+  String get orgOnboardingTitle => 'Configurer votre organisation';
+
+  @override
+  String get orgOnboardingSkip => 'Passer pour l\'instant';
+
+  @override
+  String get orgOnboardingWelcomeTitle =>
+      'Bienvenue dans l\'espace organisation';
+
+  @override
+  String get orgOnboardingWelcomeBody =>
+      'Créez le profil de votre organisation, ajoutez votre premier animal en inventaire et un rappel pour ne rien oublier.';
+
+  @override
+  String get orgOnboardingGetStarted => 'Commencer';
+
+  @override
+  String get orgOnboardingOrgStepTitle => 'Créez votre organisation';
+
+  @override
+  String get orgOnboardingOrgStepBody =>
+      'Parlez-nous de votre refuge ou organisation. Vous pourrez ajouter plus de détails plus tard.';
+
+  @override
+  String get orgOnboardingPetStepTitle =>
+      'Ajoutez votre premier animal en inventaire';
+
+  @override
+  String get orgOnboardingPetStepBody =>
+      'Ajoutez un animal pris en charge par votre organisation. Les parcours famille d\'accueil et adoption viendront ensuite.';
+
+  @override
+  String get orgOnboardingReminderStepTitle => 'Créez votre premier rappel';
+
+  @override
+  String get orgOnboardingReminderStepBody =>
+      'Médicaments, vaccins et visites vétérinaires — nous rappellerons à votre équipe les échéances.';
+
+  @override
+  String get orgOnboardingFinish => 'Terminer la configuration';
+
+  @override
   String failedToSaveOnboarding(String error) {
     return 'Impossible d\'enregistrer la configuration : $error';
   }

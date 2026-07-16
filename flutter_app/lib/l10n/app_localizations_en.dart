@@ -3269,6 +3269,47 @@ class AppLocalizationsEn extends AppLocalizations {
   String get guardianOnboardingFinish => 'Finish setup';
 
   @override
+  String get orgOnboardingTitle => 'Set up your organisation';
+
+  @override
+  String get orgOnboardingSkip => 'Skip for now';
+
+  @override
+  String get orgOnboardingWelcomeTitle =>
+      'Welcome to your organisation workspace';
+
+  @override
+  String get orgOnboardingWelcomeBody =>
+      'Create your organisation profile, add your first inventory pet, and set a reminder to stay on top of care.';
+
+  @override
+  String get orgOnboardingGetStarted => 'Get started';
+
+  @override
+  String get orgOnboardingOrgStepTitle => 'Create your organisation';
+
+  @override
+  String get orgOnboardingOrgStepBody =>
+      'Tell us about your shelter or organisation. You can add more details later.';
+
+  @override
+  String get orgOnboardingPetStepTitle => 'Add your first inventory pet';
+
+  @override
+  String get orgOnboardingPetStepBody =>
+      'Add a pet your organisation is caring for. Foster and adoption workflows come next.';
+
+  @override
+  String get orgOnboardingReminderStepTitle => 'Set your first reminder';
+
+  @override
+  String get orgOnboardingReminderStepBody =>
+      'Medications, vaccines, and vet visits — we will remind your team when they are due.';
+
+  @override
+  String get orgOnboardingFinish => 'Finish setup';
+
+  @override
   String failedToSaveOnboarding(String error) {
     return 'Could not save your setup: $error';
   }
