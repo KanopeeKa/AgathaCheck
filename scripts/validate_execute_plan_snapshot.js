@@ -291,10 +291,20 @@ function main() {
   }
 
   if (fixHash) {
-    obj.content_hash = computeHash(obj);
-    fs.writeFileSync(filePath, `${JSON.stringify(obj, null, 2)}\n`);
-    console.log(`validate_execute_plan_snapshot: updated content_hash in ${filePath}`);
+  obj.content_hash = computeHash(obj);
+  const nextContent = `${JSON.stringify(obj, null, 2)}\n`;
+
+  const fd = fs.openSync(filePath, "r+");
+  try {
+    fs.ftruncateSync(fd, 0);
+    fs.writeFileSync(fd, nextContent, "utf8");
+    fs.fsyncSync(fd);
+  } finally {
+    fs.closeSync(fd);
   }
+
+  console.log(`validate_execute_plan_snapshot: updated content_hash in ${filePath}`);
+}
 
   validateSnapshot(obj, { checkHash: !fixHash });
 
