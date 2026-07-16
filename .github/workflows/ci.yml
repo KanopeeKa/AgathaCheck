@@ -66,3 +66,43 @@ jobs:
       source_workflow: ci
     secrets:
       POSTHOG_API_KEY: ${{ secrets.POSTHOG_API_KEY }}
+
+  # Umbrella required check for branch protection. Granular jobs stay visible on PRs.
+  # Maintenance: any new blocking ci.yml job MUST be added to needs: below and to
+  # scripts/ci/assert-ci-gate.sh — see docs/ci-cd-gates.md and docs/promotion-contract.md.
+  ci-gate:
+    name: CI passed
+    needs:
+      - startup-smoke
+      - test-suite
+      - flutter-analyze
+      - flutter-test-pet
+      - flutter-test-health
+      - flutter-test-org
+      - flutter-test-rest
+      - flutter-coverage
+      - flutter-integration
+      - flutter-build-web
+    if: always()
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          sparse-checkout: |
+            scripts/ci/assert-ci-gate.sh
+          sparse-checkout-cone-mode: false
+
+      - name: Verify all CI jobs passed
+        env:
+          STARTUP_SMOKE: ${{ needs.startup-smoke.result }}
+          TEST_SUITE: ${{ needs.test-suite.result }}
+          FLUTTER_ANALYZE: ${{ needs.flutter-analyze.result }}
+          FLUTTER_TEST_PET: ${{ needs.flutter-test-pet.result }}
+          FLUTTER_TEST_HEALTH: ${{ needs.flutter-test-health.result }}
+          FLUTTER_TEST_ORG: ${{ needs.flutter-test-org.result }}
+          FLUTTER_TEST_REST: ${{ needs.flutter-test-rest.result }}
+          FLUTTER_COVERAGE: ${{ needs.flutter-coverage.result }}
+          FLUTTER_INTEGRATION: ${{ needs.flutter-integration.result }}
+          FLUTTER_BUILD_WEB: ${{ needs.flutter-build-web.result }}
+        run: bash scripts/ci/assert-ci-gate.sh
