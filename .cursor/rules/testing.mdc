@@ -30,7 +30,7 @@ Run `./scripts/pre-push-changed.sh` during iteration or `./scripts/pre-push.sh` 
 
 - Assert **visibility**, not DOM absence — Flutter web may keep semantics nodes in the tree while off-screen (`expectHomeShellHidden` pattern).
 - Scope assertions to the **target control/row**, not parent containers (drawer `innerText`, full-page regex) — avoids false positives from unrelated text (emails, IDs).
-- Address **PR review comments in the same PR** when valid — do not defer Copilot/human feedback to follow-up issues unless explicitly out of scope.
+- Address **PR review comments in the same PR** when valid (must-fix / in-scope). Out-of-scope suggestions and deferred nits → GitHub issues per `docs/agent-efficiency/autonomous-pr-policy.md` §Debt issues (dedupe required). `/babysit++` and `/execute-plan` enforce this; plain `/babysit` defers to human judgment.
 
 ## Coverage
 

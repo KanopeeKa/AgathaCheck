@@ -1,0 +1,74 @@
+{
+  "schema_version": 1,
+  "plan_id": "example-plan",
+  "approved_at": "2026-07-16T21:00:00Z",
+  "approved_by": "documentation",
+  "approved_until": "2026-07-18T21:00:00Z",
+  "content_hash": "sha256:85e5ef0a2fbdbd5a99a259933e594269d5fb83dc8f698c748b4624e2b8e19e19",
+  "autonomy": "halted",
+  "default_merge_mode": "manual",
+  "base_branch": "main",
+  "control_issue": 1,
+  "artifact_branch_policy": "phase-branch",
+  "phases": [
+    {
+      "id": "1",
+      "title": "Extract FosterCard widgets",
+      "branch": "cursor/example-foster-widgets-aec1",
+      "allowed_paths": [
+        "flutter_app/lib/features/foster/presentation/**",
+        "flutter_app/test/features/foster/**"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_mode": "manual",
+      "merge_method": "squash",
+      "exit_checklist": "flutter-screen-split",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "2",
+      "title": "Wire tests and docs",
+      "branch": "cursor/example-foster-docs-aec1",
+      "allowed_paths": [
+        "flutter_app/test/features/foster/**",
+        "docs/architecture/index.md"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_mode": "manual",
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null,
+      "debt_issue_refs": []
+    }
+  ]
+}
