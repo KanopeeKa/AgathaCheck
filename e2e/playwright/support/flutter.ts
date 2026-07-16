@@ -98,7 +98,9 @@ export type ExperienceChoice = 'guardian' | 'organization';
 export async function completeExperienceChooserIfPresent(
   page: Page,
   choice: ExperienceChoice = 'guardian',
+  timeout?: number,
 ): Promise<void> {
+  const effectiveTimeout = timeout ?? postLoginTimeout(30_000);
   await dismissConsentBannerIfPresent(page);
   await refreshFlutterAccessibility(page);
 
@@ -115,7 +117,7 @@ export async function completeExperienceChooserIfPresent(
   }
   await page.getByRole('button', { name: 'Continue' }).click();
   const homePattern = choice === 'guardian' ? /\/g\/home/ : /\/o\/home/;
-  await page.waitForURL(homePattern, { timeout: 30_000 });
+  await page.waitForURL(homePattern, { timeout: effectiveTimeout });
   await refreshFlutterAccessibility(page);
 }
 
@@ -133,7 +135,7 @@ export async function waitForPostLoginRoute(page: Page, timeout?: number): Promi
       return;
     }
 
-    if (await page.getByText(/How will you use Agatha Track/i).isVisible().catch(() => false)) {
+    if (await page.getByText(/How will you use Agatha Track/i).isVisible({ timeout: 1_000 }).catch(() => false)) {
       return;
     }
 
@@ -141,7 +143,7 @@ export async function waitForPostLoginRoute(page: Page, timeout?: number): Promi
       return;
     }
 
-    if (await page.getByRole('button', { name: 'To Do' }).isVisible().catch(() => false)) {
+    if (await page.getByRole('button', { name: 'To Do' }).isVisible({ timeout: 1_000 }).catch(() => false)) {
       return;
     }
 
@@ -156,7 +158,7 @@ export async function reachAuthenticatedHome(
 ): Promise<void> {
   const timeout = options.timeout ?? postLoginTimeout();
   await waitForPostLoginRoute(page, timeout);
-  await completeExperienceChooserIfPresent(page, options.experience ?? 'guardian');
+  await completeExperienceChooserIfPresent(page, options.experience ?? 'guardian', timeout);
   await expectHomeShellVisible(page, timeout);
 }
 
