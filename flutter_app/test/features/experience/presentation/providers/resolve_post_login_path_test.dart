@@ -58,6 +58,16 @@ void main() {
       );
     });
 
+    test('dual-role user with saved organisation default skips chooser', () {
+      expect(
+        resolvePostLoginPath(
+          eligibility: _dual(),
+          savedDefault: AppExperience.organization,
+        ),
+        '/o/home',
+      );
+    });
+
     test('invalid saved default for org-only falls through to org home', () {
       expect(
         resolvePostLoginPath(

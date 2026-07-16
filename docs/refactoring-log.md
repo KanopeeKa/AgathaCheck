@@ -105,14 +105,14 @@ Tracks planned and completed refactor / quality work. See also `docs/refactoring
 | XP-11 | Experience-aware back nav on pet detail | **Done** |
 | XP-12 | Review hardening: default-deny policy provider, edit/route guards, matrix tests, E2E shell nav | **Done** (#186, #187) |
 
-## Experience split — E1b org-only landing (2026-07-16)
+## Experience split — E2a default experience settings (2026-07-16)
 
-**Branch:** `cursor/experience-e1b-org-only-17a0`
+**Branch:** `cursor/experience-e2a-default-settings-17a0`
 
 | # | Deliverable | Status |
 |---|-------------|--------|
-| XP-13 | BDD `Organisation-only user lands on organisation home after login` | **Done** |
-| XP-14 | Playwright E1b scenario + `expectOrgShell` page object | **Done** |
+| XP-15 | BDD `Dual-role user sets default experience to organisation in settings` | **Done** |
+| XP-16 | Playwright E2a + `resolvePostLoginPath` org-default L1 test | **Done** |
 
 ---
 
@@ -275,6 +275,7 @@ Use this template when spawning agents on an integration branch:
 
 | Date | Change |
 |---|---|
+| 2026-07-16 | #188 merged: E1b org-only user lands on organisation home |
 | 2026-07-16 | #187 merged: E2E guardian shell nav hardening (chooser, strict-mode, shell fallbacks) |
 | 2026-07-16 | #186 merged: Experience Phase 3 pet detail context |
 | 2026-07-10 | Sprint 10 planned: Flutter 3.44 / Dart 3.12 upgrade; execution plan `docs/sprint-10-flutter-344-execution-plan.md` |
