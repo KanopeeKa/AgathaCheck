@@ -3,6 +3,7 @@
 #
 # Env:
 #   UAT_SITE_ROOT, PKG_CHANGED, POST_RESTART_RETRIES, POST_RESTART_SLEEP_SEC
+#   UAT_AUTO_MIGRATE — when "true", run node scripts/migrate.js up before restart
 set -euo pipefail
 
 # shellcheck source=assert-node-modules-symlink.lib.sh
@@ -20,6 +21,8 @@ APPDIR="${SITE_ROOT}/backend"
 POST_RESTART_RETRIES="${POST_RESTART_RETRIES:-3}"
 POST_RESTART_SLEEP_SEC="${POST_RESTART_SLEEP_SEC:-10}"
 PKG_CHANGED="${PKG_CHANGED:-false}"
+UAT_AUTO_MIGRATE="${UAT_AUTO_MIGRATE:-false}"
+MIGRATE_AUTO_APPLIED="false"
 
 export UAT_SITE_ROOT
 export UAT_APP_DIR="$APPDIR"
@@ -72,6 +75,48 @@ else
 fi
 export PASSENGER_HTACCESS_OK
 export PASSENGER_HTACCESS_FILE
+
+echo "=== Database migrations ==="
+cd "${APPDIR}"
+if [[ "${UAT_AUTO_MIGRATE}" == "true" ]]; then
+  echo "UAT_AUTO_MIGRATE=true — applying pending migrations (node scripts/migrate.js up)"
+  node scripts/migrate.js up
+  MIGRATE_AUTO_APPLIED="true"
+else
+  echo "UAT_AUTO_MIGRATE is not true — skipping migrate.js up (status only)"
+fi
+
+migrate_status_out=""
+migrate_pending_count=0
+if migrate_status_out="$(node scripts/migrate.js status 2>&1)"; then
+  echo "${migrate_status_out}"
+  migrate_pending_count="$(
+    printf '%s\n' "${migrate_status_out}" \
+      | grep -Eo '[0-9]+ applied, [0-9]+ pending\.' \
+      | tail -1 \
+      | sed -E 's/.*, ([0-9]+) pending\./\1/' || echo 0
+  )"
+  {
+    echo "migrate_status_collected=true"
+    echo "migrate_pending_count=${migrate_pending_count}"
+    echo "migrate_auto_applied=${MIGRATE_AUTO_APPLIED}"
+  } >>"${UAT_DEPLOY_STATE_FILE}"
+  if [[ "${migrate_pending_count}" -gt 0 ]]; then
+    echo "::warning title=Pending UAT migrations::${migrate_pending_count} migration(s) still pending on UAT."
+    if [[ "${UAT_AUTO_MIGRATE}" != "true" ]]; then
+      echo "::warning::Set UAT_AUTO_MIGRATE=true in the UAT environment to apply automatically over SSH."
+    fi
+  fi
+else
+  echo "::error::node scripts/migrate.js status failed on UAT backend"
+  echo "${migrate_status_out}"
+  {
+    echo "migrate_status_collected=false"
+    echo "migrate_pending_count=unknown"
+    echo "migrate_auto_applied=${MIGRATE_AUTO_APPLIED}"
+  } >>"${UAT_DEPLOY_STATE_FILE}"
+  exit 1
+fi
 
 echo "=== node_modules invariant (pre-restart) ==="
 uat_nm_assert pre 1 0

@@ -307,6 +307,13 @@ Set repo variable `UAT_FLUTTER_CLEAN=true` on push, or `workflow_dispatch` input
 Excludes `node_modules`, tests, and `.env`; copies `db/migrations/` into the staging tree.
 Job summaries record `staging_dir` and `migration_count`.
 
+**UAT database migrations (Phase 5):** when `UAT_SSH_ENABLED=true`, the SSH deploy
+bundle runs `node scripts/migrate.js status` and records `migrate_pending_count` in
+`~/.uat-deploy-state.env`. Set UAT environment variable `UAT_AUTO_MIGRATE=true` to
+also run `migrate.js up` over SSH (mirrors prod). `prod-ready` fails when live
+status shows pending migrations and auto-migrate is off. FTP-only deploys still
+require manual SQL; the migration gate is skipped when status cannot be collected.
+
 ---
 
 ## 4. Signal only — weekly / manual E2E
