@@ -18,6 +18,7 @@ import {
   logOutFromApp,
   refreshFlutterAccessibility,
   skipGuardianOnboardingIfPresent,
+  skipOrgOnboardingIfPresent,
   waitForPostLoginRoute,
 } from '../support/flutter';
 import { prepareLiveApiAccess } from '../support/waf';
@@ -35,6 +36,7 @@ async function loginFromLanding(
   await dismissConsentBannerIfPresent(page);
   await waitForPostLoginRoute(page);
   await skipGuardianOnboardingIfPresent(page);
+  await skipOrgOnboardingIfPresent(page);
   await refreshFlutterAccessibility(page);
 }
 

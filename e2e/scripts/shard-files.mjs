@@ -38,6 +38,7 @@ export const SHARDS = [
     'playwright/tests/help.faq.spec.ts',
     'playwright/tests/experience.foster-portal.spec.ts',
     'playwright/tests/guardian.onboarding.spec.ts',
+    'playwright/tests/org.onboarding.spec.ts',
   ],
 ];
 

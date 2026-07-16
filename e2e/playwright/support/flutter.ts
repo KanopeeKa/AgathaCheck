@@ -116,10 +116,16 @@ export async function completeExperienceChooserIfPresent(
     await page.getByText('Shelter / Organisation').click();
   }
   await page.getByRole('button', { name: 'Continue' }).click();
-  const homePattern = choice === 'guardian' ? /\/g\/(home|onboarding)/ : /\/o\/home/;
+  const homePattern =
+    choice === 'guardian'
+      ? /\/g\/(home|onboarding)/
+      : /\/o\/(home|onboarding)/;
   await page.waitForURL(homePattern, { timeout: effectiveTimeout });
   if (choice === 'guardian' && /\/g\/onboarding/.test(page.url())) {
     await skipGuardianOnboardingIfPresent(page, effectiveTimeout);
+  }
+  if (choice === 'organization' && /\/o\/onboarding/.test(page.url())) {
+    await skipOrgOnboardingIfPresent(page, effectiveTimeout);
   }
   await refreshFlutterAccessibility(page);
 }
@@ -134,7 +140,7 @@ export async function waitForPostLoginRoute(page: Page, timeout?: number): Promi
     await refreshFlutterAccessibility(page);
 
     const path = new URL(page.url()).pathname;
-    if (/\/(g|o)\/home/.test(path) || path === '/app/choose' || path === '/g/onboarding') {
+    if (/\/(g|o)\/home/.test(path) || path === '/app/choose' || path === '/g/onboarding' || path === '/o/onboarding') {
       return;
     }
 
@@ -152,6 +158,51 @@ export async function waitForPostLoginRoute(page: Page, timeout?: number): Promi
 
     throw new Error(`Post-login route not ready (url=${page.url()})`);
   }).toPass({ timeout: effectiveTimeout });
+}
+
+/** Skip the org super-admin onboarding wizard when shown. */
+export async function skipOrgOnboardingIfPresent(
+  page: Page,
+  timeout?: number,
+): Promise<void> {
+  const effectiveTimeout = timeout ?? postLoginTimeout(30_000);
+  await dismissConsentBannerIfPresent(page);
+  await refreshFlutterAccessibility(page);
+
+  const onOnboardingUrl = /\/o\/onboarding/.test(page.url());
+  const skipButton = page.getByRole('button', { name: /skip for now/i });
+  const skipVisible = onOnboardingUrl
+    || (await skipButton.isVisible({ timeout: 3_000 }).catch(() => false));
+  if (!skipVisible) return;
+
+  await skipButton.click();
+  await page.waitForURL(/\/o\/home/, { timeout: effectiveTimeout });
+  await refreshFlutterAccessibility(page);
+}
+
+/** Complete the org super-admin onboarding wizard (inventory pet + reminder). */
+export async function completeOrgOnboarding(
+  page: Page,
+  petName: string,
+  reminderName: string,
+  timeout?: number,
+): Promise<void> {
+  const effectiveTimeout = timeout ?? postLoginTimeout(60_000);
+  await page.waitForURL(/\/o\/onboarding/, { timeout: effectiveTimeout });
+  await refreshFlutterAccessibility(page);
+
+  await page.getByRole('button', { name: /get started/i }).click();
+  const orgNameField = page.getByRole('textbox', { name: /organization name/i });
+  if (await orgNameField.isVisible({ timeout: 2_000 }).catch(() => false)) {
+    await fillLabelledField(page, 'Organization Name', 'Rescue Hearts');
+    await page.getByRole('button', { name: 'Continue' }).click();
+  }
+  await fillLabelledField(page, 'Name', petName);
+  await page.getByRole('button', { name: 'Continue' }).click();
+  await fillLabelledField(page, 'Reminder name', reminderName);
+  await page.getByRole('button', { name: /finish setup/i }).click();
+  await page.waitForURL(/\/o\/home/, { timeout: effectiveTimeout });
+  await refreshFlutterAccessibility(page);
 }
 
 /** Skip the guardian onboarding wizard when shown (fresh users with no pets). */
@@ -203,6 +254,7 @@ export async function reachAuthenticatedHome(
   await waitForPostLoginRoute(page, timeout);
   await completeExperienceChooserIfPresent(page, options.experience ?? 'guardian', timeout);
   await skipGuardianOnboardingIfPresent(page, timeout);
+  await skipOrgOnboardingIfPresent(page, timeout);
   await expectHomeShellVisible(page, timeout);
 }
 

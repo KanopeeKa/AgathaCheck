@@ -6,6 +6,7 @@ import '../../features/experience/presentation/screens/experience_chooser_screen
 import '../../features/experience/presentation/screens/experience_home_screens.dart';
 import '../../features/experience/presentation/screens/experience_resolve_screen.dart';
 import '../../features/experience/presentation/screens/guardian_onboarding_screen.dart';
+import '../../features/experience/presentation/screens/org_onboarding_screen.dart';
 import '../../features/experience/presentation/widgets/foster_portal_route_guard.dart';
 import '../../features/experience/presentation/screens/experience_settings_screen.dart';
 import '../../features/experience/presentation/widgets/experience_shell_scaffold.dart';
@@ -29,6 +30,11 @@ List<RouteBase> buildExperienceRoutes() {
       path: '/g/onboarding',
       name: 'guardianOnboarding',
       builder: (context, state) => const GuardianOnboardingScreen(),
+    ),
+    GoRoute(
+      path: '/o/onboarding',
+      name: 'orgOnboarding',
+      builder: (context, state) => const OrgOnboardingScreen(),
     ),
     ShellRoute(
       builder: (context, state, child) => child,

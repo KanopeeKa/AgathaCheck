@@ -2,6 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:pet_profile_app/features/experience/domain/entities/app_experience.dart';
 import 'package:pet_profile_app/features/experience/domain/services/experience_eligibility.dart';
 import 'package:pet_profile_app/features/experience/presentation/providers/experience_providers.dart';
+import 'package:pet_profile_app/features/organization/domain/entities/organization.dart';
 import 'package:pet_profile_app/features/pet_profile/domain/entities/pet.dart';
 
 ExperienceEligibility _dual() => ExperienceEligibilityRules.compute(
@@ -80,6 +81,50 @@ void main() {
         );
       },
     );
+
+    test('org-only user with inventory pet lands on organisation home', () {
+      expect(
+        resolvePostLoginPath(
+          eligibility: _orgOnly(),
+          pets: const [
+            Pet(
+              id: '2',
+              name: 'Shelter',
+              species: 'Dog',
+              organizationId: 'o1',
+              organizationName: 'Rescue',
+            ),
+          ],
+          orgs: const [
+            Organization(
+              id: 'o1',
+              name: 'Rescue',
+              type: OrganizationType.charity,
+            ),
+          ],
+          orgOnboardingCompleted: true,
+        ),
+        '/o/home',
+      );
+    });
+
+    test('org-only user with no inventory pets goes to onboarding', () {
+      expect(
+        resolvePostLoginPath(
+          eligibility: _orgOnly(),
+          pets: const [],
+          orgs: const [
+            Organization(
+              id: 'o1',
+              name: 'Rescue',
+              type: OrganizationType.charity,
+            ),
+          ],
+          orgOnboardingCompleted: false,
+        ),
+        '/o/onboarding',
+      );
+    });
 
     test('org-only user lands on organisation home', () {
       expect(resolvePostLoginPath(eligibility: _orgOnly()), '/o/home');

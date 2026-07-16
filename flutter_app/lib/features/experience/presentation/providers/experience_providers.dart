@@ -1,13 +1,16 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../organization/presentation/providers/organization_providers.dart';
+import '../../../organization/domain/entities/organization.dart';
 import '../../../pet_profile/domain/entities/pet.dart';
 import '../../../pet_profile/presentation/providers/pet_providers.dart';
 import '../../data/experience_preferences_store.dart';
 import '../../data/guardian_onboarding_store.dart';
+import '../../data/org_onboarding_store.dart';
 import '../../domain/entities/app_experience.dart';
 import '../../domain/services/experience_eligibility.dart';
 import '../../domain/services/guardian_onboarding_rules.dart';
+import '../../domain/services/org_onboarding_rules.dart';
 
 final experiencePreferencesStoreProvider = Provider<ExperiencePreferencesStore>(
   (ref) {
@@ -23,6 +26,14 @@ final guardianOnboardingStoreProvider = Provider<GuardianOnboardingStore>((
 
 final guardianOnboardingCompletedProvider = Provider<bool>((ref) {
   return ref.watch(guardianOnboardingStoreProvider).readCompleted();
+});
+
+final orgOnboardingStoreProvider = Provider<OrgOnboardingStore>((ref) {
+  return OrgOnboardingStore(ref.watch(sharedPreferencesProvider));
+});
+
+final orgOnboardingCompletedProvider = Provider<bool>((ref) {
+  return ref.watch(orgOnboardingStoreProvider).readCompleted();
 });
 
 final experienceEligibilityProvider =
@@ -84,7 +95,9 @@ String resolvePostLoginPath({
   AppExperience? savedDefault,
   AppExperience? activeExperience,
   List<Pet> pets = const [],
+  List<Organization> orgs = const [],
   bool guardianOnboardingCompleted = true,
+  bool orgOnboardingCompleted = true,
 }) {
   String path;
   if (activeExperience != null &&
@@ -99,9 +112,15 @@ String resolvePostLoginPath({
     }
   }
 
-  return GuardianOnboardingRules.resolveGuardianDestination(
+  path = GuardianOnboardingRules.resolveGuardianDestination(
     targetPath: path,
     pets: pets,
     onboardingCompleted: guardianOnboardingCompleted,
+  );
+  return OrgOnboardingRules.resolveOrgDestination(
+    targetPath: path,
+    pets: pets,
+    orgs: orgs,
+    onboardingCompleted: orgOnboardingCompleted,
   );
 }
