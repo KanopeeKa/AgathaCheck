@@ -52,7 +52,7 @@ Triggered by `.github/workflows/ci.yml` → `_reusable-pr-startup-smoke.yml`,
 
 | GitHub required check name | Workflow |
 |----------------------------|----------|
-| `CI passed` | `ci.yml` → `ci-gate` job (aggregator — see maintenance note below) |
+| `ci-gate / CI passed` | `ci.yml` → `_reusable-ci-gate.yml` (aggregator — see maintenance note below) |
 | `Analyze JavaScript` | `codeql.yml` (separate workflow; weekly schedule preserved) |
 
 **Conditional:** `Forbidden path check` — agent `cursor/*` PRs only (`agent-pr-safety-gate.yml`).
@@ -63,16 +63,16 @@ The `ci-gate` job uses `needs:` on every blocking caller job in `ci.yml` and
 `scripts/ci/assert-ci-gate.sh` mirrors the same list. **When you add, remove, or
 rename a blocking CI job**, update **all three** in the same PR:
 
-1. `.github/workflows/ci.yml` — new caller job + add to `ci-gate` `needs:`
+1. `.github/workflows/ci.yml` — new caller job + add to `ci-gate` `needs:` and `_reusable-ci-gate.yml` inputs
 2. `scripts/ci/assert-ci-gate.sh` — `RESULTS` map and summary table row
 3. This file — granular jobs table below (if the job is user-visible)
 
 Missing an entry lets a failing job slip through while `ci-gate` stays green.
 
 Reusable workflow jobs appear as **`{caller_job_id} / {reusable_job_name}`** on PRs.
-The `ci-gate` job is a **direct** workflow job — its required check name is the job
-`name:` field only: **`CI passed`** (same pattern as CodeQL’s `Analyze JavaScript`).
-Do **not** use the reusable-workflow `id / name` form for `ci-gate` in branch protection.
+The umbrella gate uses caller id `ci-gate` and reusable job name **`CI passed`**
+→ required check **`ci-gate / CI passed`**. Granular flutter/test jobs remain visible
+but are not individually required once the ruleset is migrated.
 
 #### Granular CI jobs (visible on PR, not individually required)
 
@@ -89,8 +89,8 @@ Do **not** use the reusable-workflow `id / name` form for `ci-gate` in branch pr
 | `Analyze JavaScript` | — | `Analyze JavaScript` | `codeql.yml` (direct job; **required separately**) |
 
 **Legacy branch protection (replace in ruleset):** the nine individual flutter/test
-checks listed in **Main protection** ruleset should be removed when **`CI passed`**
-is added. Keep `Analyze JavaScript`.
+checks listed in **Main protection** ruleset should be removed when
+**`ci-gate / CI passed`** is added. Keep `Analyze JavaScript`.
 
 **Optional (visible, not required individually):** `flutter-test-{pet,health,org,rest} / Flutter tests (<shard>)` —
 the merge gate `flutter-coverage / Flutter domain coverage` covers shard failures (enforced via `ci-gate`).
@@ -105,17 +105,17 @@ are the trust boundary.
 
 **Pre-merge (on the introducing PR):**
 
-1. Wait for a **green CI run** showing **`CI passed`**.
+1. Wait for a **green CI run** showing **`ci-gate / CI passed`**.
 2. Copy exact check name from the run:
 
 ```bash
-gh pr checks <PR_NUMBER> | rg '^CI passed'
+gh pr checks <PR_NUMBER> | rg '^ci-gate'
 ```
 
 **Merge + ruleset (single edit):**
 
 1. **Settings → Rules → Rulesets** → **Main protection**
-2. **Add** `CI passed`
+2. **Add** `ci-gate / CI passed`
 3. **Remove** the nine legacy individual flutter/test checks (keep `Analyze JavaScript`)
 4. Save once
 

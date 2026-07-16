@@ -1,0 +1,65 @@
+# Umbrella CI gate — caller job id + this job name → required check `ci-gate / CI passed`.
+name: Reusable CI gate
+
+on:
+  workflow_call:
+    inputs:
+      startup_smoke:
+        required: true
+        type: string
+      test_suite:
+        required: true
+        type: string
+      flutter_analyze:
+        required: true
+        type: string
+      flutter_test_pet:
+        required: true
+        type: string
+      flutter_test_health:
+        required: true
+        type: string
+      flutter_test_org:
+        required: true
+        type: string
+      flutter_test_rest:
+        required: true
+        type: string
+      flutter_coverage:
+        required: true
+        type: string
+      flutter_integration:
+        required: true
+        type: string
+      flutter_build_web:
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  gate:
+    name: CI passed
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          sparse-checkout: |
+            scripts/ci/assert-ci-gate.sh
+          sparse-checkout-cone-mode: false
+
+      - name: Verify all CI jobs passed
+        env:
+          STARTUP_SMOKE: ${{ inputs.startup_smoke }}
+          TEST_SUITE: ${{ inputs.test_suite }}
+          FLUTTER_ANALYZE: ${{ inputs.flutter_analyze }}
+          FLUTTER_TEST_PET: ${{ inputs.flutter_test_pet }}
+          FLUTTER_TEST_HEALTH: ${{ inputs.flutter_test_health }}
+          FLUTTER_TEST_ORG: ${{ inputs.flutter_test_org }}
+          FLUTTER_TEST_REST: ${{ inputs.flutter_test_rest }}
+          FLUTTER_COVERAGE: ${{ inputs.flutter_coverage }}
+          FLUTTER_INTEGRATION: ${{ inputs.flutter_integration }}
+          FLUTTER_BUILD_WEB: ${{ inputs.flutter_build_web }}
+        run: bash scripts/ci/assert-ci-gate.sh

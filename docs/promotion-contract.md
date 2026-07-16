@@ -18,15 +18,19 @@ and branch rules: [ci-cd-gates.md](./ci-cd-gates.md).
 
 **UAT tag composition:** `uat-` + `YYMMDD` (UTC) + `-` + PR number.
 
-Malformed refs must be rejected in workflow validation (`scripts/ci/assert-uat-tag.sh`)
+Malformed refs must be rejected in workflow validation via
+[`scripts/ci/assert-uat-tag.sh`](../scripts/ci/assert-uat-tag.sh) (added in Phase 1)
 before any deploy or tag push.
 
 GitHub tag rulesets (repository settings):
 
 - **UAT tag** — `refs/tags/uat-*`, immutable
-- **PROD tag** — `refs/tags/v**.**.*`, immutable, requires successful **UAT**
-  environment deployment before `v*` creation (stable tags only; `-rc` tags use
-  the same ruleset pattern if they match `v*.*.*`)
+- **PROD tag** — `refs/tags/v*.*.*` (fnmatch; matches `v1.0.3`, `v1.0.3-rc.1`, etc.),
+  immutable, requires successful **UAT** environment deployment before tag creation
+
+  **Operator note:** ruleset **PROD tag** (id `19066125`) must use `refs/tags/v*.*.*`.
+  If the UI shows `refs/tags/v**.**.*` (double-star typo), correct it — that pattern
+  is not the intended semver glob.
 
 ---
 
@@ -58,7 +62,7 @@ After merge, **`promote-uat.yml`** (Phase 2) does not re-run CI on the merge com
 
 We rely on:
 
-- `CI passed` + `Analyze JavaScript` on the PR
+- `ci-gate / CI passed` + `Analyze JavaScript` on the PR
 - **Require branches to be up to date before merging** (`strict_required_status_checks_policy`)
 
 Squash/rebase merge SHAs may differ from the last PR head SHA. Residual risk is
@@ -121,7 +125,7 @@ Step summary must state explicitly:
 
 | Workflow | Group | `cancel-in-progress` | Rationale |
 |----------|-------|----------------------|-----------|
-| `promote-uat.yml` | `promote-uat-main` | `false` | Queue promotions — no lost tags |
+| `promote-uat.yml` (Phase 2) | `promote-uat-main` | `false` | Queue promotions — no lost tags |
 | `deploy-uat.yml` | `deploy-uat` | **`false`** | **Queue** — preserve full E2E run as audit evidence; freshness via queue order |
 | `deploy-prod.yml` | `deploy-prod` | `false` | One prod promotion at a time |
 
@@ -142,7 +146,7 @@ Existing fields via `scripts/ci/write-build-manifest.sh`. Promotion phases add:
 
 ### `promotion-manifest.json` (Actions artifact)
 
-Written by `promote-uat.yml`; updated downstream with run IDs:
+Written by `promote-uat.yml` (Phase 2); updated downstream with run IDs:
 
 ```json
 {
@@ -170,7 +174,7 @@ Written by `promote-uat.yml`; updated downstream with run IDs:
 
 ## Machine-readable promotion outcomes
 
-`promote-uat.yml` exports to `GITHUB_OUTPUT` and step summary:
+`promote-uat.yml` (Phase 2) exports to `GITHUB_OUTPUT` and step summary:
 
 | Field | Values |
 |-------|--------|
@@ -189,4 +193,4 @@ Use these fields for webhooks and dashboards.
 - Any new **blocking** job added to `ci.yml` must be listed in `ci-gate` `needs:` —
   see [ci-cd-gates.md §1](./ci-cd-gates.md#1-blocking--pull-request-to-main).
 - Tag regex or semver policy changes require updates to this file and
-  `scripts/ci/assert-uat-tag.sh`.
+  [`scripts/ci/assert-uat-tag.sh`](../scripts/ci/assert-uat-tag.sh) (Phase 1).

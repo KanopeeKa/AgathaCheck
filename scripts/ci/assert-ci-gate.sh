@@ -58,7 +58,7 @@ failed=0
   else
     echo "**CI gate failed** — one or more jobs did not succeed."
     echo
-    echo "Granular checks remain visible on the PR; only \`CI passed\` is required for merge."
+    echo "Granular checks remain visible on the PR; only \`ci-gate / CI passed\` is required for merge."
   fi
 } | append_summary
 
