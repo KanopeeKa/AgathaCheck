@@ -6,7 +6,7 @@
  */
 import { test, expect, loginAs } from '../fixtures/auth.fixture';
 import { getCurrentUser } from '../support/api';
-import { homeShellLocator, logOutFromApp } from '../support/flutter';
+import { expectHomeShellHidden, logOutFromApp } from '../support/flutter';
 import { MyDetailsPage } from '../pages/my-details.page';
 import { LandingPage } from '../pages/landing.page';
 
@@ -21,7 +21,7 @@ test.describe('Authentication – profile and session', () => {
     const landing = new LandingPage(page);
     await landing.goto();
     await expect(page.getByRole('button', { name: 'Sign In', exact: true })).toBeVisible();
-    await expect(homeShellLocator(page)).not.toBeVisible();
+    await expectHomeShellHidden(page);
   });
 
   test('user can view the My Details screen showing their name and email', async ({

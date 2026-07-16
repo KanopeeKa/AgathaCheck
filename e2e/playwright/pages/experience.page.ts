@@ -33,6 +33,19 @@ export class ExperiencePage {
     await this.page.waitForURL(/\/g\/home/, { timeout: 30_000 });
   }
 
+  async selectOrganizationCard(): Promise<void> {
+    await this.page.getByText('Shelter / Organisation').click();
+  }
+
+  async chooseOrganization(remember = false): Promise<void> {
+    await this.selectOrganizationCard();
+    if (remember) {
+      await this.page.getByRole('checkbox').click();
+    }
+    await this.page.getByRole('button', { name: 'Continue' }).click();
+    await this.page.waitForURL(/\/o\/home/, { timeout: 30_000 });
+  }
+
   async expectGuardianShell(): Promise<void> {
     await expect(this.page.getByRole('button', { name: 'Home' })).toBeVisible();
     await expect(this.page.getByRole('button', { name: 'Events' })).toBeVisible();

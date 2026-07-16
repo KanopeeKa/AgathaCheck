@@ -34,13 +34,8 @@ export class MyDetailsPage {
     }
 
     if (await isExperienceShellVisible(this.page)) {
-      await this.page.goto('/g/settings');
+      await this.page.goto('/my-details');
       await refreshFlutterAccessibility(this.page);
-      await this.page
-        .getByText('My Details', { exact: true })
-        .or(this.page.getByText('Mon profil', { exact: true }))
-        .first()
-        .click();
       await this.expectLoaded();
       return;
     }
