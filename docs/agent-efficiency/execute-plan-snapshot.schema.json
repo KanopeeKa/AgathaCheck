@@ -1,0 +1,181 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agatha-track.local/schemas/execute-plan-snapshot-v1.json",
+  "title": "ExecutePlanSnapshot",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "plan_id",
+    "approved_at",
+    "approved_by",
+    "approved_until",
+    "content_hash",
+    "autonomy",
+    "default_merge_mode",
+    "base_branch",
+    "control_issue",
+    "artifact_branch_policy",
+    "phases"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": { "const": 1 },
+    "plan_id": { "type": "string", "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$" },
+    "approved_at": { "type": "string", "format": "date-time" },
+    "approved_by": { "type": "string", "minLength": 1 },
+    "approved_until": { "type": "string", "format": "date-time" },
+    "content_hash": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" },
+    "autonomy": {
+      "type": "string",
+      "enum": ["active", "completed", "halted", "revoked"]
+    },
+    "default_merge_mode": {
+      "type": "string",
+      "enum": ["manual", "labeled", "auto"]
+    },
+    "base_branch": { "type": "string", "minLength": 1 },
+    "control_issue": { "type": "integer", "minimum": 1 },
+    "artifact_branch_policy": {
+      "type": "string",
+      "enum": ["phase-branch", "main"]
+    },
+    "phases": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/phase" }
+    }
+  },
+  "$defs": {
+    "allowed_exception": {
+      "type": "string",
+      "enum": [
+        "tests",
+        "docs",
+        "dual-backend-mirror",
+        "file-split",
+        "governance-allowlist",
+        "spawn-integration"
+      ]
+    },
+    "phase_status": {
+      "type": "string",
+      "enum": ["pending", "in_progress", "merged", "halted", "blocked"]
+    },
+    "status_reason": {
+      "type": "string",
+      "enum": [
+        "revoked",
+        "session_limit",
+        "human_pause",
+        "drift",
+        "ci_exhausted",
+        "merge_failed",
+        "escalation",
+        "issue_create_failed",
+        "resume_mismatch"
+      ]
+    },
+    "exception_file": {
+      "type": "object",
+      "required": ["path", "code", "phase_id"],
+      "additionalProperties": false,
+      "properties": {
+        "path": { "type": "string" },
+        "code": { "$ref": "#/$defs/allowed_exception" },
+        "phase_id": { "type": "string" }
+      }
+    },
+    "spawn_config": {
+      "type": "object",
+      "required": ["integration_branch", "ownership_ref"],
+      "additionalProperties": false,
+      "properties": {
+        "integration_branch": { "type": "string" },
+        "ownership_ref": { "type": "string" }
+      }
+    },
+    "phase": {
+      "type": "object",
+      "required": [
+        "id",
+        "title",
+        "branch",
+        "allowed_paths",
+        "forbidden_paths",
+        "allowed_exceptions",
+        "spawn_allowed",
+        "exit_checklist",
+        "status",
+        "status_reason"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "type": "string" },
+        "title": { "type": "string" },
+        "branch": { "type": "string" },
+        "allowed_paths": {
+          "type": "array",
+          "items": { "type": "string" },
+          "minItems": 1
+        },
+        "forbidden_paths": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "allowed_exceptions": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/allowed_exception" }
+        },
+        "spawn_allowed": { "type": "boolean" },
+        "spawn_config": {
+          "oneOf": [{ "$ref": "#/$defs/spawn_config" }, { "type": "null" }]
+        },
+        "merge_mode": {
+          "type": "string",
+          "enum": ["manual", "labeled", "auto"]
+        },
+        "merge_method": {
+          "type": "string",
+          "enum": ["squash", "merge", "rebase"]
+        },
+        "exit_checklist": { "type": "string" },
+        "status": { "$ref": "#/$defs/phase_status" },
+        "status_reason": {
+          "oneOf": [{ "$ref": "#/$defs/status_reason" }, { "type": "null" }]
+        },
+        "status_detail": { "type": ["string", "null"] },
+        "pr_url": { "type": ["string", "null"] },
+        "pr_head_sha": { "type": ["string", "null"] },
+        "merge_commit": { "type": ["string", "null"] },
+        "debt_issue_refs": {
+          "type": "array",
+          "items": { "type": "integer", "minimum": 1 }
+        },
+        "exception_files": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/exception_file" }
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": { "status": { "enum": ["halted", "blocked"] } },
+            "required": ["status"]
+          },
+          "then": { "properties": { "status_reason": { "$ref": "#/$defs/status_reason" } } }
+        },
+        {
+          "if": {
+            "properties": { "status": { "enum": ["pending", "in_progress", "merged"] } },
+            "required": ["status"]
+          },
+          "then": { "properties": { "status_reason": { "const": null } } }
+        },
+        {
+          "if": { "properties": { "spawn_allowed": { "const": true } } },
+          "then": { "required": ["spawn_config"] }
+        }
+      ]
+    }
+  }
+}

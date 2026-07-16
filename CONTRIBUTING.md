@@ -53,7 +53,8 @@ node scripts/check_file_size.js && node e2e/scripts/check_bdd_coverage.js
 - Domain map: `docs/architecture/index.md`
 - Skills: `.cursor/skills/` (split screens, BDD, dual-backend, spawn agents, security audit, pre-push)
 - Parallel sprints: `docs/agent-efficiency/prompt-templates.md`
-- Babysit merge-ready PRs: `/babysit` command
+- Babysit merge-ready PRs: `/babysit` command (lightweight)
+- Autonomous PR + multi-phase plans: `docs/agent-efficiency/autonomous-pr-policy.md` (`/babysit++`, `/execute-plan` — skills land in Sprint 12 Phase B+)
 
 ## Pull request expectations
 

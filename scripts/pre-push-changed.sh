@@ -67,6 +67,8 @@ done <<< "$CHANGED"
 run_governance() {
   echo "==> Governance"
   node scripts/check_file_size.js
+  node scripts/validate_execute_plan_snapshot.js .agents/plans/_example.snapshot.json
+  node scripts/validate_execute_plan_snapshot.js --drift-test
   node e2e/scripts/check_bdd_coverage.js
   bash scripts/ci/check-uat-ssh-action-pin.sh
   bash scripts/ci/shellcheck-uat-deploy-scripts.sh
