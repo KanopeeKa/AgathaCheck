@@ -31,11 +31,12 @@ baseline table in [ci-cd-baseline.md](./ci-cd-baseline.md) when targets are met.
 | Stage | Blocking? | Workflow |
 |-------|-----------|----------|
 | PR → `main` | **Yes** (2 required checks) | `ci.yml` → `ci-gate`, `codeql.yml` |
+| Merge → `main` | **Yes** (auto-promotion) | `promote-uat.yml` → `uat-*` tag |
 | PR granular CI jobs | Visible, not individually required | `ci.yml` (startup-smoke, test-suite, flutter-*, …) |
 | PR startup smoke | **Yes** (via `ci-gate`) | `ci.yml` → `_reusable-pr-startup-smoke.yml` |
 | PR hints | No (advisory) | `pr-governance-hints.yml` |
 | Agent `cursor/*` PRs | **Yes** (forbidden paths) | `agent-pr-safety-gate.yml` |
-| `release/uat-*` deploy | **Yes** (UAT + `prod-ready`) | `deploy-uat.yml` |
+| `uat-*` tag deploy | **Yes** (UAT + `prod-ready`) | `promote-uat.yml` → `deploy-uat.yml` |
 | Weekly E2E on `main` | **No** (signal only) | `e2e.yml` |
 | PROD deploy | **Yes** (environment + smoke) | `deploy-prod.yml` |
 
@@ -278,9 +279,10 @@ wait for one green **CI** run — GitHub only lists checks that have reported at
 
 ---
 
-## 3. Blocking — UAT deploy (`release/uat-*`)
+## 3. Blocking — UAT deploy (`uat-*` tag)
 
-Workflow: **Deploy UAT (uat.agathatrack.com)** — `.github/workflows/deploy-uat.yml`
+Workflows: **Promote UAT** (`promote-uat.yml`) on merge to `main`, then **Deploy UAT**
+(`deploy-uat.yml`) on `uat-*` tag push.
 
 | Job | Blocking for `prod-ready`? | Purpose |
 |-----|----------------------------|---------|
@@ -324,7 +326,7 @@ Workflow: **Deploy Production (agathatrack.com)** — `.github/workflows/deploy-
 
 Before `workflow_dispatch` or release publish:
 
-1. **Same commit SHA** validated on UAT (via `release/uat-*` deploy).
+1. **Same commit SHA** validated on UAT (via `uat-*` tag deploy).
 2. GitHub Environment **`PROD`** must require status check:
    - **`Deploy UAT / Prod ready`** (exact name — verify in Settings → Environments → PROD).
 3. **Promoted web artifact** `web-build-<sha>` from a UAT run with green `Prod ready`.
