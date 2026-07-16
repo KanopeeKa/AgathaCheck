@@ -7,9 +7,8 @@ import { isLiveHostingTarget } from '../support/hosting';
 import { LandingPage } from '../pages/landing.page';
 import { PetListPage } from '../pages/pet-list.page';
 import {
-  completeExperienceChooserIfPresent,
   type ExperienceChoice,
-  waitForPostLoginRoute,
+  reachAuthenticatedHome,
 } from '../support/flutter';
 
 type AuthFixtures = {
@@ -87,8 +86,7 @@ export async function loginAs(
   }
   await landing.goto();
   await landing.login(user.email, user.password);
-  await waitForPostLoginRoute(page);
-  await completeExperienceChooserIfPresent(page, options.experience ?? 'guardian');
+  await reachAuthenticatedHome(page, options);
   await petList.expectLoaded();
   return petList;
 }
