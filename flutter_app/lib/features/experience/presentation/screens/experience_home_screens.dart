@@ -26,7 +26,9 @@ class _GuardianHomeScreenState extends ConsumerState<GuardianHomeScreen> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) => _redirectIfOnboardingNeeded());
+    WidgetsBinding.instance.addPostFrameCallback(
+      (_) => _redirectIfOnboardingNeeded(),
+    );
   }
 
   void _redirectIfOnboardingNeeded() {

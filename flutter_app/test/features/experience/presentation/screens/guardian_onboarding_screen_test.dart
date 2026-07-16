@@ -26,7 +26,10 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.byKey(const Key('guardian_onboarding_screen')), findsOneWidget);
-    expect(find.byKey(const Key('guardian_onboarding_welcome')), findsOneWidget);
+    expect(
+      find.byKey(const Key('guardian_onboarding_welcome')),
+      findsOneWidget,
+    );
     expect(find.byKey(const Key('guardian_onboarding_skip')), findsOneWidget);
     expect(find.text('Welcome to Agatha Track'), findsOneWidget);
   });

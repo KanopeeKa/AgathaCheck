@@ -57,26 +57,29 @@ void main() {
       );
     });
 
-    test('dual-role user with owned pets goes to guardian home not onboarding', () {
-      expect(
-        resolvePostLoginPath(
-          eligibility: _dual(),
-          savedDefault: AppExperience.guardian,
-          pets: const [
-            Pet(id: '1', name: 'Mine', species: 'Cat'),
-            Pet(
-              id: '2',
-              name: 'Shelter',
-              species: 'Dog',
-              organizationId: 'o1',
-              organizationName: 'Rescue',
-            ),
-          ],
-          guardianOnboardingCompleted: false,
-        ),
-        '/g/home',
-      );
-    });
+    test(
+      'dual-role user with owned pets goes to guardian home not onboarding',
+      () {
+        expect(
+          resolvePostLoginPath(
+            eligibility: _dual(),
+            savedDefault: AppExperience.guardian,
+            pets: const [
+              Pet(id: '1', name: 'Mine', species: 'Cat'),
+              Pet(
+                id: '2',
+                name: 'Shelter',
+                species: 'Dog',
+                organizationId: 'o1',
+                organizationName: 'Rescue',
+              ),
+            ],
+            guardianOnboardingCompleted: false,
+          ),
+          '/g/home',
+        );
+      },
+    );
 
     test('org-only user lands on organisation home', () {
       expect(resolvePostLoginPath(eligibility: _orgOnly()), '/o/home');

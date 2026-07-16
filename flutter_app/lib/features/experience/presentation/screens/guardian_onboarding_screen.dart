@@ -53,10 +53,9 @@ class _GuardianOnboardingScreenState
 
     setState(() => _isSaving = true);
     try {
-      final petId = await ref.read(petListProvider.notifier).addPet(
-        name: petName,
-        species: _species,
-      );
+      final petId = await ref
+          .read(petListProvider.notifier)
+          .addPet(name: petName, species: _species);
       final entry = HealthEntry(
         id: const Uuid().v4(),
         petId: petId,
@@ -112,10 +111,7 @@ class _GuardianOnboardingScreenState
       ),
       body: Column(
         children: [
-          LinearProgressIndicator(
-            value: (_step + 1) / 3,
-            minHeight: 4,
-          ),
+          LinearProgressIndicator(value: (_step + 1) / 3, minHeight: 4),
           Expanded(
             child: PageView(
               controller: _pageController,
@@ -139,7 +135,9 @@ class _GuardianOnboardingScreenState
                       context: context,
                       initialDate: _dueDate,
                       firstDate: DateTime.now(),
-                      lastDate: DateTime.now().add(const Duration(days: 365 * 5)),
+                      lastDate: DateTime.now().add(
+                        const Duration(days: 365 * 5),
+                      ),
                     );
                     if (picked != null) setState(() => _dueDate = picked);
                   },
@@ -179,11 +177,7 @@ class _GuardianOnboardingScreenState
 }
 
 class _WelcomeStep extends StatelessWidget {
-  const _WelcomeStep({
-    super.key,
-    required this.title,
-    required this.body,
-  });
+  const _WelcomeStep({super.key, required this.title, required this.body});
 
   final String title;
   final String body;
@@ -198,7 +192,11 @@ class _WelcomeStep extends StatelessWidget {
         children: [
           Icon(Icons.pets, size: 72, color: theme.colorScheme.primary),
           const SizedBox(height: 24),
-          Text(title, style: theme.textTheme.headlineSmall, textAlign: TextAlign.center),
+          Text(
+            title,
+            style: theme.textTheme.headlineSmall,
+            textAlign: TextAlign.center,
+          ),
           const SizedBox(height: 12),
           Text(
             body,
@@ -230,7 +228,10 @@ class _PetStep extends StatelessWidget {
     return ListView(
       padding: const EdgeInsets.all(24),
       children: [
-        Text(l.guardianOnboardingPetStepTitle, style: Theme.of(context).textTheme.titleLarge),
+        Text(
+          l.guardianOnboardingPetStepTitle,
+          style: Theme.of(context).textTheme.titleLarge,
+        ),
         const SizedBox(height: 8),
         Text(l.guardianOnboardingPetStepBody),
         const SizedBox(height: 24),
