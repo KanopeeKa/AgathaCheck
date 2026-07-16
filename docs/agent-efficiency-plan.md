@@ -17,6 +17,7 @@ workflows. Pauses functional product sprints while infra lands on `main`.
 | Faster agent iterations | `scripts/pre-push-changed.sh` default during work |
 | Repeatable sprint mechanics | Six Skills under `.cursor/skills/` |
 | Self-service PR hygiene | `/babysit` command + PR governance workflow |
+| Autonomous multi-phase plans | `/execute-plan` + schema in `docs/agent-efficiency/` (Sprint 12+) |
 | Onboarding without re-explaining | `docs/architecture/index.md` domain map |
 
 ---
@@ -80,6 +81,26 @@ invoke explicitly with `/skill-name`.
 | 11.4 | Update `CONTRIBUTING.md` agent workflow section | Done |
 
 **Exit:** Babysit command available; PRs get governance hints without changing CI gates.
+
+---
+
+## Sprint 12 — Autonomous plan schema (Phase A)
+
+Foundation for `/execute-plan` and `/babysit++` skills. Schema and policy docs only — no skills in this sprint.
+
+| # | Deliverable | Status |
+|---|-------------|--------|
+| 12.1 | `docs/agent-efficiency/execute-plan-schema.md` + JSON schema | Done |
+| 12.2 | `docs/agent-efficiency/plan-template.md` | Done |
+| 12.3 | `docs/agent-efficiency/phase-exit-checklists.md` | Done |
+| 12.4 | `docs/agent-efficiency/autonomous-pr-policy.md` | Done |
+| 12.5 | `docs/agent-efficiency/github-labels.md` | Done |
+| 12.6 | `.agents/plans/` example + README | Done |
+| 12.7 | `scripts/validate_execute_plan_snapshot.js` | Done |
+
+**Policy highlights:** frozen snapshot, `status` + `status_reason`, `allowed_exceptions` enum, 48h `approved_until`, halt-only revoke, debt issue dedupe, merge-done phase gate.
+
+**Next:** Phase B `babysit-plus-plus` skill → Phase D `execute-plan` skill. See `docs/agent-efficiency/autonomous-pr-policy.md`.
 
 ---
 
