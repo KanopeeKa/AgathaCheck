@@ -61,6 +61,17 @@ Feature: Experience navigation
     Then the user should be navigated to the guardian home screen
 
   @P1
+  Scenario: Dual-role user sets default experience to organisation in settings
+    Given a registered user with email "dual@example.com" and password "secret123"
+    And the user belongs to an organisation
+    And the user has personal guardian pets
+    And the user is on the guardian settings screen
+    When the user selects "Shelter / Organisation" as the default experience
+    And the user logs out of the app
+    And the user logs in with email "dual@example.com" and password "secret123"
+    Then the user should be navigated to the organisation home screen
+
+  @P1
   Scenario: User switches to organisation view from guardian drawer
     Given a registered user with email "dual@example.com" and password "secret123"
     And the user belongs to an organisation

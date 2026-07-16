@@ -2,7 +2,9 @@ import type { Page } from '@playwright/test';
 import { expect } from '@playwright/test';
 import {
   dismissConsentBannerIfPresent,
+  openExperienceDrawer,
   refreshFlutterAccessibility,
+  waitForFlutterRoute,
 } from '../support/flutter';
 
 /**
@@ -65,5 +67,44 @@ export class ExperiencePage {
   async gotoChooser(): Promise<void> {
     await this.page.goto('/app/choose');
     await refreshFlutterAccessibility(this.page);
+  }
+
+  async gotoGuardianSettings(): Promise<void> {
+    await dismissConsentBannerIfPresent(this.page);
+    await waitForFlutterRoute(this.page, '/g/settings');
+    await this.expectDefaultExperienceSectionVisible();
+  }
+
+  async openGuardianSettingsFromDrawer(): Promise<void> {
+    await dismissConsentBannerIfPresent(this.page);
+    await openExperienceDrawer(this.page);
+    await this.page
+      .getByRole('dialog', { name: /navigation menu/i })
+      .getByRole('button', { name: 'Settings' })
+      .click();
+    await refreshFlutterAccessibility(this.page);
+    await this.expectDefaultExperienceSectionVisible();
+  }
+
+  async expectDefaultExperienceSectionVisible(): Promise<void> {
+    await expect(async () => {
+      await refreshFlutterAccessibility(this.page);
+      await expect(
+        this.page.getByText('Default experience', { exact: true }),
+      ).toBeVisible();
+    }).toPass({ timeout: 45_000 });
+  }
+
+  async setDefaultExperience(choice: 'guardian' | 'organization'): Promise<void> {
+    const label =
+      choice === 'guardian' ? 'Individual Pet Guardian' : 'Shelter / Organisation';
+    const radio = this.page.getByRole('radio', { name: label });
+    if (await radio.isVisible({ timeout: 2_000 }).catch(() => false)) {
+      await radio.click();
+    } else {
+      await this.page.getByText(label, { exact: true }).click();
+    }
+    await refreshFlutterAccessibility(this.page);
+    await this.page.waitForTimeout(400);
   }
 }

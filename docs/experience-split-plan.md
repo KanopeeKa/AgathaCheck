@@ -1,8 +1,8 @@
 # AgathaTrack experience split — implementation plan
 
-**Branch:** `cursor/experience-e1b-org-only-17a0`  
-**Status:** Phase 3 complete; E1b org-only landing in progress  
-**Last updated:** 2026-07-16 (post-#186/#187 merge)
+**Branch:** `cursor/experience-e2a-default-settings-17a0`  
+**Status:** E2a default experience settings in progress  
+**Last updated:** 2026-07-16 (post-#188 merge)
 
 Product decisions are locked in planning conversations. This document is the **execution tracker** for agents and humans.
 
@@ -201,7 +201,7 @@ Gaps drive PR B/C work. Status: **Done** · **Partial** · **Gap**.
 | **E1c** | Dual-role user sees experience chooser after login | `experience_eligibility_test.dart`, `resolve_post_login_path_test.dart` | `experience_chooser_screen_test.dart` | — | `experience.navigation.spec.ts` | **Done** |
 | **E2** | Dual-role user remembers guardian choice | `experience_preferences_store_test.dart` | `experience_chooser_screen_test.dart` (hint) | — | `experience.navigation.spec.ts` | **Done** |
 | **E2** | Remembered guardian choice skips chooser on next login | `experience_preferences_store_test.dart`, `resolve_post_login_path_test.dart` | — | — | `experience.navigation.spec.ts` | **Done** |
-| **E2a** | Settings → Default experience | `experience_preferences_store_test.dart` | `experience_settings_section_test.dart` | — | — | **Partial** — BDD scenario still missing |
+| **E2a** | Dual-role user sets default experience to organisation in settings | `experience_preferences_store_test.dart` | `experience_settings_section_test.dart` | — | `experience.navigation.spec.ts` | **Done** |
 | **E5** | User switches to organisation view from guardian drawer | — | `experience_shell_scaffold_test.dart` (drawer) | — | `experience.navigation.spec.ts` | **Done** |
 | **E1c** | Guardian chooser hides organisation option for guardian-only users | `experience_eligibility_test.dart` | `experience_chooser_screen_test.dart` | — | `experience.navigation.spec.ts` | **Done** |
 | **G-H1** | *(pet_profiles.feature — future)* | `pet_list_controller_guardian_shell_test.dart` | — | `pet_profile_flow_test.dart` | — | **Partial** — L2 home sections |
@@ -352,3 +352,4 @@ Full 6-scenario `experience.navigation.spec.ts` + nightly E2E shards for broader
 | 2026-07-15 | 3 | Phase 3: `PetDetailActions` registry, responsibility labels, foster portal drawer filter, experience-aware pet detail back nav |
 | 2026-07-16 | — | **#186/#187 merged** — Phase 3 + E2E shell hardening |
 | 2026-07-16 | E1b | Org-only post-login landing: BDD scenario + Playwright |
+| 2026-07-16 | E2a | Settings default experience: BDD scenario + Playwright |
