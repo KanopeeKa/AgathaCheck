@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:uuid/uuid.dart';
 
+import '../../../../core/utils/calendar_date.dart';
 import '../../../../core/utils/constants.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../health_tracking/domain/entities/health_entry.dart';
@@ -28,7 +29,9 @@ class _GuardianOnboardingScreenState
 
   int _step = 0;
   String _species = AppConstants.species.first;
-  DateTime _dueDate = DateTime.now().add(const Duration(days: 7));
+  DateTime _dueDate = calendarDateOnly(
+    DateTime.now().add(const Duration(days: 7)),
+  );
   bool _isSaving = false;
 
   @override
@@ -68,8 +71,8 @@ class _GuardianOnboardingScreenState
         type: HealthEntryType.medication,
         frequency: HealthFrequency.monthly,
         frequencyInterval: 1,
-        startDate: DateTime.now(),
-        nextDueDate: _dueDate,
+        startDate: calendarDateOnly(DateTime.now()),
+        nextDueDate: calendarDateOnly(_dueDate),
       );
       await ref.read(healthEntriesNotifierProvider.notifier).create(entry);
       await _persistOnboardingComplete();
@@ -137,15 +140,18 @@ class _GuardianOnboardingScreenState
                   nameController: _reminderNameController,
                   dueDate: _dueDate,
                   onPickDate: () async {
+                    final today = calendarDateOnly(DateTime.now());
                     final picked = await showDatePicker(
                       context: context,
-                      initialDate: _dueDate,
-                      firstDate: DateTime.now(),
-                      lastDate: DateTime.now().add(
-                        const Duration(days: 365 * 5),
+                      initialDate: calendarDateOnly(_dueDate),
+                      firstDate: today,
+                      lastDate: calendarDateOnly(
+                        today.add(const Duration(days: 365 * 5)),
                       ),
                     );
-                    if (picked != null) setState(() => _dueDate = picked);
+                    if (picked != null) {
+                      setState(() => _dueDate = calendarDateOnly(picked));
+                    }
                   },
                 ),
               ],
