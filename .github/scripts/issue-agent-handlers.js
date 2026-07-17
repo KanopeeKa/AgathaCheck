@@ -58,7 +58,7 @@ async function handleMergedPr({
     return { skipped: true, reason: 'no linked issues' };
   }
 
-  const expectedTag = uatTagName(Number(prNumber));
+  const expectedTag = `uat-YYMMDD-${Number(prNumber)}`;
   const results = [];
   for (const issueNumber of issueNumbers) {
     await fetchIssue(owner, repo, issueNumber, token);
