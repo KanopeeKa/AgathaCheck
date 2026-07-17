@@ -5,7 +5,7 @@
 #   scripts/ci/assert-git-ref-exists.sh <branch-or-tag> [matching-refs-hint] [required-prefix]
 #
 # Environment (optional):
-#   REQUIRED_REF_PREFIX — branch must start with this prefix (e.g. release/uat-)
+#   REQUIRED_REF_PREFIX — ref must start with this prefix (e.g. uat-)
 #
 # Requires GITHUB_REPOSITORY and GITHUB_TOKEN.
 set -euo pipefail
