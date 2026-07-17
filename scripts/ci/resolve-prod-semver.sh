@@ -34,7 +34,7 @@ bump_patch() {
   echo "v${major}.${minor}.$((patch + 1))"
 }
 
-git fetch --tags --force origin 2>/dev/null || true
+git fetch --tags --force origin
 
 mapfile -t stable_tags < <(
   git tag -l 'v[0-9]*.[0-9]*.[0-9]*' | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+$' | sort -V
