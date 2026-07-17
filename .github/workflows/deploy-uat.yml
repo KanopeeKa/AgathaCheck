@@ -2,11 +2,12 @@ name: Deploy UAT (uat.agathatrack.com)
 
 on:
   push:
-    branches: ['release/uat-*']
+    tags:
+      - 'uat-*'
   workflow_dispatch:
     inputs:
       deploy_ref:
-        description: Release branch to deploy (must exist on origin; e.g. release/uat-260715-fix2)
+        description: UAT tag to deploy (e.g. uat-260716-193)
         required: true
       run_clean:
         description: Run flutter clean before web build (push uses UAT_FLUTTER_CLEAN repo variable)
@@ -38,14 +39,17 @@ jobs:
       - uses: actions/checkout@v5
         with:
           sparse-checkout: |
+            scripts/ci/assert-uat-tag.sh
             scripts/ci/assert-git-ref-exists.sh
           sparse-checkout-cone-mode: false
 
-      - name: Verify release branch exists on origin
+      - name: Validate UAT tag format
+        run: bash scripts/ci/assert-uat-tag.sh "${{ env.DEPLOY_REF }}"
+
+      - name: Verify UAT tag exists on origin
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          REQUIRED_REF_PREFIX: release/uat-
-        run: bash scripts/ci/assert-git-ref-exists.sh "${{ env.DEPLOY_REF }}" "heads/release/uat-"
+        run: bash scripts/ci/assert-git-ref-exists.sh "${{ env.DEPLOY_REF }}" "tags/uat-"
 
   build-web:
     name: Build Flutter web
@@ -70,6 +74,9 @@ jobs:
       deploy_verification: ${{ steps.assert_ssh_proofs.outputs.deploy_verification || 'unverified' }}
       pre_smoke_ok: ${{ steps.ssh_enforcement.outputs.ssh_invariant_enforced != 'true' && 'true' || steps.assert_ssh_proofs.outputs.pre_smoke_ok || 'false' }}
       ssh_proofs_ok: ${{ steps.ssh_enforcement.outputs.ssh_invariant_enforced != 'true' && 'skipped' || steps.assert_ssh_proofs.outputs.ssh_proofs_ok || 'false' }}
+      migrate_status_collected: ${{ steps.uat_deploy_state.outputs.migrate_status_collected || 'false' }}
+      migrate_pending_count: ${{ steps.uat_deploy_state.outputs.migrate_pending_count || 'unknown' }}
+      migrate_auto_applied: ${{ steps.uat_deploy_state.outputs.migrate_auto_applied || 'false' }}
     steps:
       - uses: actions/checkout@v5
         with:
@@ -180,11 +187,11 @@ jobs:
             # cPanel generates backend/.htaccess (Passenger) — never publish or delete via FTP.
             **/.htaccess
 
-      - name: Migration reminder
+      - name: Migration bundle reminder
         run: |
-          echo "::notice::UAT is FTP-only — apply any new SQL in server/db/migrations/ manually on UAT Postgres before running live E2E."
-          echo "New migration files in this deploy:"
-          ls -1 db/migrations/*.sql 2>/dev/null || true
+          echo "::notice::When UAT_SSH_ENABLED is not true, apply new SQL in server/db/migrations/ manually on UAT Postgres before live E2E."
+          echo "Migration SQL files staged in this deploy:"
+          ls -1 server/db/migrations/*.sql 2>/dev/null || ls -1 db/migrations/*.sql 2>/dev/null || true
 
       # ── cPanel UAPI restart (FTP-compatible, no SSH required) ────────────────
       # This calls NodeJS::restart_application via port 2083 (HTTPS), which tells
@@ -366,6 +373,7 @@ jobs:
           PKG_CHANGED: ${{ steps.pkg_changed.outputs.changed }}
           POST_RESTART_RETRIES: 3
           POST_RESTART_SLEEP_SEC: 10
+          UAT_AUTO_MIGRATE: ${{ vars.UAT_AUTO_MIGRATE }}
         with:
           host: ${{ secrets.UAT_SSH_HOST }}
           username: ${{ secrets.UAT_SSH_USER }}
@@ -375,7 +383,7 @@ jobs:
           timeout: 180s
           command_timeout: 10m
           script_path: .ci-uat-ssh-remote.sh
-          envs: PKG_CHANGED,POST_RESTART_RETRIES,POST_RESTART_SLEEP_SEC
+          envs: PKG_CHANGED,POST_RESTART_RETRIES,POST_RESTART_SLEEP_SEC,UAT_AUTO_MIGRATE
 
       - name: Collect UAT deploy state
         id: uat_deploy_state
@@ -391,6 +399,16 @@ jobs:
           UAT_SSH_PORT: ${{ secrets.UAT_SSH_PORT || 22 }}
           GITHUB_EVENT_NAME: ${{ github.event_name }}
         run: bash scripts/ci/uat-collect-deploy-state.sh
+
+      - name: Record UAT migration status
+        if: always()
+        env:
+          MIGRATE_STATUS_COLLECTED: ${{ steps.uat_deploy_state.outputs.migrate_status_collected || 'false' }}
+          MIGRATE_PENDING_COUNT: ${{ steps.uat_deploy_state.outputs.migrate_pending_count || 'unknown' }}
+          MIGRATE_AUTO_APPLIED: ${{ steps.uat_deploy_state.outputs.migrate_auto_applied || 'false' }}
+          UAT_AUTO_MIGRATE: ${{ vars.UAT_AUTO_MIGRATE || 'unset' }}
+          UAT_SSH_ENABLED: ${{ vars.UAT_SSH_ENABLED }}
+        run: bash scripts/ci/append-uat-migrate-summary.sh
 
       - name: Assert UAT SSH deploy proofs
         id: assert_ssh_proofs
@@ -473,6 +491,10 @@ jobs:
             "passenger_htaccess_ok=${{ steps.uat_deploy_state.outputs.passenger_htaccess_ok || 'not_verified' }}" \
             "passenger_htaccess_file=${{ steps.uat_deploy_state.outputs.passenger_htaccess_file || 'n/a' }}" \
             "restart_txt_epoch=${{ steps.uat_deploy_state.outputs.restart_txt_epoch || 'n/a' }}" \
+            "migrate_status_collected=${{ steps.uat_deploy_state.outputs.migrate_status_collected || 'false' }}" \
+            "migrate_pending_count=${{ steps.uat_deploy_state.outputs.migrate_pending_count || 'unknown' }}" \
+            "migrate_auto_applied=${{ steps.uat_deploy_state.outputs.migrate_auto_applied || 'false' }}" \
+            "uat_auto_migrate=${{ vars.UAT_AUTO_MIGRATE || 'unset' }}" \
             "server_hostname=${{ steps.uat_deploy_state.outputs.server_hostname || 'n/a' }}" \
             "node_major=${{ steps.uat_deploy_state.outputs.node_major || 'n/a' }}" \
             "app_root=${{ steps.uat_deploy_state.outputs.app_root || 'n/a' }}" \
@@ -614,6 +636,9 @@ jobs:
           DEPLOY_REF: ${{ env.DEPLOY_REF }}
           GITHUB_SHA: ${{ github.sha }}
           GITHUB_RUN_ID: ${{ github.run_id }}
+          MIGRATE_STATUS_COLLECTED: ${{ needs.deploy.outputs.migrate_status_collected }}
+          MIGRATE_PENDING_COUNT: ${{ needs.deploy.outputs.migrate_pending_count }}
+          UAT_AUTO_MIGRATE: ${{ vars.UAT_AUTO_MIGRATE }}
         run: bash scripts/ci/assert-uat-gates.sh
 
   # Update GitHub issue / Project status when this deploy was triggered for an agent issue branch.
@@ -623,8 +648,8 @@ jobs:
     # Job-level `if` cannot reference workflow `env`; inline the deploy ref expression.
     if: >-
       always() && (
-        contains(github.ref_name, '-issue-') ||
-        (github.event_name == 'workflow_dispatch' && contains(github.event.inputs.deploy_ref, '-issue-'))
+        startsWith(github.ref_name, 'uat-') ||
+        (github.event_name == 'workflow_dispatch' && startsWith(github.event.inputs.deploy_ref, 'uat-'))
       )
     runs-on: ubuntu-latest
     permissions:

@@ -1,5 +1,5 @@
 # Full Playwright E2E against a local stack (Postgres + Flutter web + Node server).
-# Used on release/uat-* deploy (deploy-uat.yml) and weekly manual/cron (e2e.yml) — not on every PR.
+# Used on uat-* tag deploy (deploy-uat.yml) and weekly manual/cron (e2e.yml) — not on every PR.
 # CI runs ten parallel matrix legs (file-balanced manifest in e2e/scripts/shard-files.mjs);
 # callers pass shard_total: 10 and matrix.shard [1..10] — keep in sync when changing shard count.
 name: Reusable E2E (localhost)

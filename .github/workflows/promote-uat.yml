@@ -1,0 +1,120 @@
+name: Promote UAT (tag on merge to main)
+
+# PR merge → uat-YYMMDD-PR# tag → deploy-uat.yml (tag push).
+# See docs/promotion-contract.md
+on:
+  push:
+    branches: [main]
+
+concurrency:
+  group: promote-uat-main
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  pull-requests: read
+
+jobs:
+  resolve-pr:
+    name: Resolve merge PR
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      pr_number: ${{ steps.resolve.outputs.pr_number }}
+      promotion_status: ${{ steps.resolve.outputs.promotion_status }}
+      promotion_block_reason: ${{ steps.resolve.outputs.promotion_block_reason }}
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          sparse-checkout: |
+            scripts/ci/resolve-merge-pr.sh
+            scripts/ci/append-summary.sh
+          sparse-checkout-cone-mode: false
+
+      - name: Begin job timing
+        run: echo "JOB_START_EPOCH=$(date +%s)" >> "$GITHUB_ENV"
+
+      - name: Resolve associated pull request
+        id: resolve
+        env:
+          COMMIT_SHA: ${{ github.sha }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: bash scripts/ci/resolve-merge-pr.sh
+
+      - name: Write resolve summary
+        if: always()
+        run: |
+          end=$(date +%s)
+          start="${JOB_START_EPOCH:-$end}"
+          dur=$((end - start))
+          bash scripts/ci/append-summary.sh "Promote UAT — resolve PR" \
+            "workflow=promote-uat" \
+            "job=resolve-pr" \
+            "commit_sha=${{ github.sha }}" \
+            "pr_number=${{ steps.resolve.outputs.pr_number || 'n/a' }}" \
+            "promotion_status=${{ steps.resolve.outputs.promotion_status || 'blocked' }}" \
+            "promotion_block_reason=${{ steps.resolve.outputs.promotion_block_reason || 'n/a' }}" \
+            "run_id=${{ github.run_id }}" \
+            "duration_sec=${dur}"
+
+  promote-tag:
+    name: Create UAT tag
+    needs: resolve-pr
+    if: needs.resolve-pr.outputs.promotion_status == 'ok'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    outputs:
+      uat_tag: ${{ steps.promote.outputs.uat_tag }}
+      promotion_status: ${{ steps.promote.outputs.promotion_status }}
+      already_promoted: ${{ steps.promote.outputs.already_promoted }}
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 1
+
+      - name: Begin job timing
+        run: echo "JOB_START_EPOCH=$(date +%s)" >> "$GITHUB_ENV"
+
+      - name: Create or verify UAT tag
+        id: promote
+        env:
+          PR_NUMBER: ${{ needs.resolve-pr.outputs.pr_number }}
+          COMMIT_SHA: ${{ github.sha }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: bash scripts/ci/promote-uat-tag.sh
+
+      - name: Write promotion manifest
+        env:
+          COMMIT_SHA: ${{ github.sha }}
+          PR_NUMBER: ${{ needs.resolve-pr.outputs.pr_number }}
+          UAT_TAG: ${{ steps.promote.outputs.uat_tag }}
+          PROMOTION_STATUS: ${{ steps.promote.outputs.promotion_status }}
+          PROMOTE_RUN_ID: ${{ github.run_id }}
+        run: bash scripts/ci/write-promotion-manifest.sh promotion-manifest.json
+
+      - name: Upload promotion manifest
+        uses: actions/upload-artifact@v6
+        with:
+          name: promotion-manifest-${{ steps.promote.outputs.uat_tag }}
+          path: promotion-manifest.json
+          retention-days: 90
+
+      - name: Write promote summary
+        if: always()
+        run: |
+          end=$(date +%s)
+          start="${JOB_START_EPOCH:-$end}"
+          dur=$((end - start))
+          bash scripts/ci/append-summary.sh "Promote UAT — tag" \
+            "workflow=promote-uat" \
+            "job=promote-tag" \
+            "commit_sha=${{ github.sha }}" \
+            "pr_number=${{ needs.resolve-pr.outputs.pr_number }}" \
+            "uat_tag=${{ steps.promote.outputs.uat_tag || 'n/a' }}" \
+            "promotion_status=${{ steps.promote.outputs.promotion_status || 'failed' }}" \
+            "already_promoted=${{ steps.promote.outputs.already_promoted || 'false' }}" \
+            "run_id=${{ github.run_id }}" \
+            "duration_sec=${dur}"

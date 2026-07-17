@@ -31,13 +31,14 @@ baseline table in [ci-cd-baseline.md](./ci-cd-baseline.md) when targets are met.
 | Stage | Blocking? | Workflow |
 |-------|-----------|----------|
 | PR → `main` | **Yes** (2 required checks) | `ci.yml` → `ci-gate`, `codeql.yml` |
+| Merge → `main` | **Yes** (auto-promotion) | `promote-uat.yml` → `uat-*` tag |
 | PR granular CI jobs | Visible, not individually required | `ci.yml` (startup-smoke, test-suite, flutter-*, …) |
 | PR startup smoke | **Yes** (via `ci-gate`) | `ci.yml` → `_reusable-pr-startup-smoke.yml` |
 | PR hints | No (advisory) | `pr-governance-hints.yml` |
 | Agent `cursor/*` PRs | **Yes** (forbidden paths) | `agent-pr-safety-gate.yml` |
-| `release/uat-*` deploy | **Yes** (UAT + `prod-ready`) | `deploy-uat.yml` |
+| `uat-*` tag deploy | **Yes** (UAT + `prod-ready`) | `promote-uat.yml` → `deploy-uat.yml` |
 | Weekly E2E on `main` | **No** (signal only) | `e2e.yml` |
-| PROD deploy | **Yes** (environment + smoke) | `deploy-prod.yml` |
+| PROD deploy / stub tag | **Yes** (environment when live) | `deploy-prod.yml` (auto after UAT `prod-ready`) |
 
 ---
 
@@ -278,9 +279,10 @@ wait for one green **CI** run — GitHub only lists checks that have reported at
 
 ---
 
-## 3. Blocking — UAT deploy (`release/uat-*`)
+## 3. Blocking — UAT deploy (`uat-*` tag)
 
-Workflow: **Deploy UAT (uat.agathatrack.com)** — `.github/workflows/deploy-uat.yml`
+Workflows: **Promote UAT** (`promote-uat.yml`) on merge to `main`, then **Deploy UAT**
+(`deploy-uat.yml`) on `uat-*` tag push.
 
 | Job | Blocking for `prod-ready`? | Purpose |
 |-----|----------------------------|---------|
@@ -305,6 +307,13 @@ Set repo variable `UAT_FLUTTER_CLEAN=true` on push, or `workflow_dispatch` input
 Excludes `node_modules`, tests, and `.env`; copies `db/migrations/` into the staging tree.
 Job summaries record `staging_dir` and `migration_count`.
 
+**UAT database migrations (Phase 5):** when `UAT_SSH_ENABLED=true`, the SSH deploy
+bundle runs `node scripts/migrate.js status` and records `migrate_pending_count` in
+`~/.uat-deploy-state.env`. Set UAT environment variable `UAT_AUTO_MIGRATE=true` to
+also run `migrate.js up` over SSH (mirrors prod). `prod-ready` fails when live
+status shows pending migrations and auto-migrate is off. FTP-only deploys still
+require manual SQL; the migration gate is skipped when status cannot be collected.
+
 ---
 
 ## 4. Signal only — weekly / manual E2E
@@ -322,10 +331,24 @@ Workflow: **E2E (Playwright)** — `.github/workflows/e2e.yml`
 
 Workflow: **Deploy Production (agathatrack.com)** — `.github/workflows/deploy-prod.yml`
 
-Before `workflow_dispatch` or release publish:
+### Auto-promotion (default)
 
-1. **Same commit SHA** validated on UAT (via `release/uat-*` deploy).
-2. GitHub Environment **`PROD`** must require status check:
+After **Deploy UAT** completes with green **`Prod ready`**, `deploy-prod.yml` runs via
+`workflow_run` (no manual dispatch). Behaviour depends on repo variable
+`PROD_DEPLOY_ENABLED`:
+
+| `PROD_DEPLOY_ENABLED` | FTP/SSH deploy | Release tag |
+|-----------------------|----------------|-------------|
+| unset / not `true` | **Skipped** (intentional success) | `vX.Y.Z-rc.N` stub tag |
+| `true` | Full deploy + smoke | Stable `vX.Y.Z` |
+
+Stub mode writes an explicit step summary: no FTP/SSH steps ran. Semver is automatic
+— see [promotion-contract.md](./promotion-contract.md).
+
+### Manual `workflow_dispatch` / release publish
+
+1. **Same commit SHA** validated on UAT (via `uat-*` tag deploy).
+2. GitHub Environment **`PROD`** must require status check (live deploy only):
    - **`Deploy UAT / Prod ready`** (exact name — verify in Settings → Environments → PROD).
 3. **Promoted web artifact** `web-build-<sha>` from a UAT run with green `Prod ready`.
 4. Optional: environment reviewers / wait timer.

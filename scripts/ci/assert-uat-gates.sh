@@ -29,6 +29,9 @@ FULL_E2E_RESULT="${FULL_E2E_RESULT:-}"
 DEPLOY_REF="${DEPLOY_REF:-}"
 GITHUB_SHA="${GITHUB_SHA:-}"
 GITHUB_RUN_ID="${GITHUB_RUN_ID:-}"
+MIGRATE_STATUS_COLLECTED="${MIGRATE_STATUS_COLLECTED:-false}"
+MIGRATE_PENDING_COUNT="${MIGRATE_PENDING_COUNT:-unknown}"
+UAT_AUTO_MIGRATE="${UAT_AUTO_MIGRATE:-false}"
 
 failed=0
 summary_tmp="$(mktemp)"
@@ -63,6 +66,34 @@ exec 3>&1
       failed=1
     fi
   done
+
+  migrate_gate="skipped"
+  if [[ "${MIGRATE_STATUS_COLLECTED}" == "true" ]]; then
+    if [[ "${MIGRATE_PENDING_COUNT}" =~ ^[0-9]+$ ]]; then
+      if [[ "${MIGRATE_PENDING_COUNT}" -eq 0 ]]; then
+        migrate_gate="pass"
+        printf '| migrations (live status) | `%s pending` | yes | yes |\n' "${MIGRATE_PENDING_COUNT}"
+      elif [[ "${UAT_AUTO_MIGRATE}" == "true" ]]; then
+        migrate_gate="fail"
+        echo "::error title=UAT migrations still pending::${MIGRATE_PENDING_COUNT} pending after UAT_AUTO_MIGRATE=true" >&3
+        printf '| migrations (live status) | `%s pending after auto-migrate` | yes | no |\n' "${MIGRATE_PENDING_COUNT}"
+        failed=1
+      else
+        migrate_gate="fail"
+        echo "::error title=UAT migrations pending::${MIGRATE_PENDING_COUNT} pending — set UAT_AUTO_MIGRATE=true or apply SQL manually" >&3
+        printf '| migrations (live status) | `%s pending` | yes | no |\n' "${MIGRATE_PENDING_COUNT}"
+        failed=1
+      fi
+    else
+      migrate_gate="fail"
+      echo "::error title=UAT migration status invalid::migrate_pending_count='${MIGRATE_PENDING_COUNT}'" >&3
+      printf '| migrations (live status) | `invalid pending count` | yes | no |\n'
+      failed=1
+    fi
+  else
+    echo "::notice::Migration gate skipped — live status not collected (SSH/migrate.js status unavailable)." >&3
+    printf '| migrations (live status) | `not collected` | no | n/a |\n'
+  fi
   echo
 } >"$summary_tmp"
 

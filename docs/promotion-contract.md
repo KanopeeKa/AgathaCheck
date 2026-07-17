@@ -3,7 +3,9 @@
 Canonical reference for **auto-promotion** on `KanopeeKa/AgathaCheck`: merge to
 `main` → UAT tag → UAT deploy → prod stub/release tag.
 
-Implementation phases: PR **#A** (ci-gate) through **#F** (cleanup). Gate names
+Implementation phases: PR **#A** (ci-gate) through **#F** (cleanup). Phase **#D**
+(prod stub + auto semver) is implemented in `deploy-prod.yml`. Phase **#E**
+(UAT DB migrations) is implemented in `deploy-uat.yml`. Gate names
 and branch rules: [ci-cd-gates.md](./ci-cd-gates.md).
 
 ---
@@ -12,7 +14,7 @@ and branch rules: [ci-cd-gates.md](./ci-cd-gates.md).
 
 | Kind | Pattern (regex) | Example | Created by |
 |------|-----------------|---------|------------|
-| **UAT** | `^uat-[0-9]{6}-[0-9]+$` | `uat-260716-170` | `promote-uat.yml` (Phase 2) on merge to `main` |
+| **UAT** | `^uat-[0-9]{6}-[0-9]+$` | `uat-260716-170` | `promote-uat.yml` on merge to `main` |
 | **Prod (stable)** | `^v[0-9]+\.[0-9]+\.[0-9]+$` | `v1.0.3` | `deploy-prod.yml` when `PROD_DEPLOY_ENABLED=true` |
 | **Prod (stub / pre-infra)** | `^v[0-9]+\.[0-9]+\.[0-9]+-rc\.[0-9]+$` | `v1.0.3-rc.1` | `deploy-prod.yml` when `PROD_DEPLOY_ENABLED` is not `true` |
 
@@ -58,7 +60,7 @@ step summary for alerting (`PROMOTION_WEBHOOK_URL` optional).
 
 ## Accepted trade-off: no CI re-run on `main`
 
-After merge, **`promote-uat.yml`** (Phase 2) does not re-run CI on the merge commit.
+After merge, **`promote-uat.yml`** does not re-run CI on the merge commit.
 
 We rely on:
 
@@ -125,7 +127,7 @@ Step summary must state explicitly:
 
 | Workflow | Group | `cancel-in-progress` | Rationale |
 |----------|-------|----------------------|-----------|
-| `promote-uat.yml` (Phase 2) | `promote-uat-main` | `false` | Queue promotions — no lost tags |
+| `promote-uat.yml` | `promote-uat-main` | `false` | Queue promotions — no lost tags |
 | `deploy-uat.yml` | `deploy-uat` | **`false`** | **Queue** — preserve full E2E run as audit evidence; freshness via queue order |
 | `deploy-prod.yml` | `deploy-prod` | `false` | One prod promotion at a time |
 
@@ -146,7 +148,7 @@ Existing fields via `scripts/ci/write-build-manifest.sh`. Promotion phases add:
 
 ### `promotion-manifest.json` (Actions artifact)
 
-Written by `promote-uat.yml` (Phase 2); updated downstream with run IDs:
+Written by `promote-uat.yml`; updated downstream with run IDs:
 
 ```json
 {
@@ -174,7 +176,7 @@ Written by `promote-uat.yml` (Phase 2); updated downstream with run IDs:
 
 ## Machine-readable promotion outcomes
 
-`promote-uat.yml` (Phase 2) exports to `GITHUB_OUTPUT` and step summary:
+`promote-uat.yml` exports to `GITHUB_OUTPUT` and step summary:
 
 | Field | Values |
 |-------|--------|
