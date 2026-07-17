@@ -1,9 +1,9 @@
 ---
-name: babysit-plus-plus
+name: babysit-plus
 description: Autonomous PR operator — triage review comments (must-fix / nits / ignore), apply fixes, track debt issues, CI retry loop, optional merge per frozen plan. Use during /execute-plan phases or when full autonomous PR hygiene is needed. Policy lives in docs/agent-efficiency/autonomous-pr-policy.md.
 ---
 
-# Babysit++
+# Babysit+
 
 Autonomous PR operator. Extends lightweight `/babysit` with mandatory triage, debt-issue tracking, CI budgets, and merge gates.
 
@@ -12,7 +12,7 @@ Autonomous PR operator. Extends lightweight `/babysit` with mandatory triage, de
 **Labels / dedupe:** `docs/agent-efficiency/github-labels.md`  
 **Lightweight sibling:** `.cursor/commands/babysit.md` — use plain babysit when debt tracking and merge automation are not required.
 
-During `/execute-plan`, always use **babysit++**, never plain babysit alone.
+During `/execute-plan`, always use **/babysit-plus**, never plain babysit alone.
 
 ---
 
@@ -55,7 +55,7 @@ Rules: see autonomous-pr-policy §Review triage. **Never ignore** blocker / crit
 Template:
 
 ```markdown
-## Babysit++ triage
+## Babysit+ triage
 
 | Thread | Bucket | Action |
 |--------|--------|--------|

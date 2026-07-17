@@ -1,6 +1,6 @@
 # Phase exit checklists
 
-Named profiles referenced by `exit_checklist` in plan snapshots. Agents must run **every applicable item** before calling babysit++ merge step.
+Named profiles referenced by `exit_checklist` in plan snapshots. Agents must run **every applicable item** before calling babysit-plus merge step.
 
 Canonical merge gates for PRs: [autonomous-pr-policy.md](./autonomous-pr-policy.md) §Merge gates.
 
@@ -27,7 +27,7 @@ Profiles are **additive**: `exit_checklist: dual-backend-route` means `default` 
 - [ ] Hand-written files ≤ 500 lines (or allowlist ratchet only with `governance-allowlist` exception)
 - [ ] `./scripts/pre-push-changed.sh` green
 - [ ] `./scripts/pre-push.sh` green before merge attempt
-- [ ] Babysit++ triage posted on PR
+- [ ] Babysit+ triage posted on PR
 - [ ] All must-fix review items addressed in PR
 - [ ] Deferred / ignored items tracked in GitHub issues (dedupe per autonomous-pr-policy)
 - [ ] Commit messages use `phase(N/M):` prefix

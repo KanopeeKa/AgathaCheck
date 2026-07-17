@@ -1,6 +1,6 @@
 # Autonomous PR policy (canonical)
 
-Single source of truth for `/babysit`, `/babysit++`, and `/execute-plan`. Skills and commands **link here**; they do not restate full policy in different wording.
+Single source of truth for `/babysit`, `/babysit-plus`, and `/execute-plan`. Skills and commands **link here**; they do not restate full policy in different wording.
 
 | Topic | Canonical location |
 |-------|-------------------|
@@ -8,7 +8,7 @@ Single source of truth for `/babysit`, `/babysit++`, and `/execute-plan`. Skills
 | Phase exit profiles | [phase-exit-checklists.md](./phase-exit-checklists.md) |
 | GitHub labels | [github-labels.md](./github-labels.md) |
 | Lightweight PR loop | `.cursor/commands/babysit.md` |
-| Babysit++ skill | `.cursor/skills/babysit-plus-plus/SKILL.md` |
+| Babysit+ skill | `.cursor/skills/babysit-plus/SKILL.md` |
 | Execute-plan skill | `.cursor/skills/execute-plan/SKILL.md` (Phase D) |
 
 ---
@@ -18,10 +18,10 @@ Single source of truth for `/babysit`, `/babysit++`, and `/execute-plan`. Skills
 | Entry | Role |
 |-------|------|
 | `/babysit` | Lightweight: sync, conflicts, comments, CI, push |
-| `/babysit++` | Autonomous PR operator: triage, fixes, debt issues, CI budget, merge |
-| `/execute-plan` | Multi-phase orchestrator; delegates merge-readiness to `/babysit++` |
+| `/babysit-plus` | Autonomous PR operator: triage, fixes, debt issues, CI budget, merge |
+| `/execute-plan` | Multi-phase orchestrator; delegates merge-readiness to `/babysit-plus` |
 
-During `/execute-plan`, always use **babysit++**, never plain babysit alone.
+During `/execute-plan`, always use **babysit-plus**, never plain babysit alone.
 
 ---
 

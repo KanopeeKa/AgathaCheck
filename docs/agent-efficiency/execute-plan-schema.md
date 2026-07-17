@@ -1,7 +1,7 @@
 # Execute-plan snapshot schema (canonical)
 
 **Schema version:** 1  
-**Status:** Phase A foundation — skills (`execute-plan`, `babysit-plus-plus`) must import from this document, not redefine policy in prose.
+**Status:** Phase A foundation — skills (`execute-plan`, `babysit-plus`) must import from this document, not redefine policy in prose.
 
 Companion docs:
 
@@ -145,7 +145,7 @@ Unclassified out-of-path file → `status: blocked`, `status_reason: drift`.
 
 ## Drift detection algorithm (canonical)
 
-Run at each commit and before babysit++ merge step.
+Run at each commit and before babysit-plus merge step.
 
 ```
 FOR each file F in git diff(base..HEAD):

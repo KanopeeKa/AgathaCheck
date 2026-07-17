@@ -1,6 +1,6 @@
 # GitHub labels — autonomous workflows
 
-Labels for `/execute-plan`, `/babysit++`, and debt tracking. Create in repo settings if missing (document-only in Phase A).
+Labels for `/execute-plan`, `/babysit-plus`, and debt tracking. Create in repo settings if missing (document-only in Phase A).
 
 ---
 
@@ -48,7 +48,7 @@ Remove revoke label; comment `resume-plan <plan_id>`.
 | Label | Purpose |
 |-------|---------|
 | `agent-merge-ok` | Required for `labeled` merge mode |
-| `do-not-merge` | Babysit++ and execute-plan skip merge |
+| `do-not-merge` | Babysit+ and execute-plan skip merge |
 
 ---
 

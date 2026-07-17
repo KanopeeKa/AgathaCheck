@@ -86,7 +86,7 @@ invoke explicitly with `/skill-name`.
 
 ## Sprint 12 — Autonomous plan schema (Phase A)
 
-Foundation for `/execute-plan` and `/babysit++` skills. Schema and policy docs only — no skills in this sprint.
+Foundation for `/execute-plan` and `/babysit-plus` skills. Schema and policy docs only — no skills in this sprint.
 
 | # | Deliverable | Status |
 |---|-------------|--------|
@@ -104,11 +104,11 @@ Foundation for `/execute-plan` and `/babysit++` skills. Schema and policy docs o
 
 ---
 
-## Sprint 12 — Phase B: Babysit++ skill
+## Sprint 12 — Phase B: Babysit+ skill
 
 | # | Deliverable | Status |
 |---|-------------|--------|
-| 12.B.1 | `.cursor/skills/babysit-plus-plus/SKILL.md` | Done |
+| 12.B.1 | `.cursor/skills/babysit-plus/SKILL.md` | Done |
 | 12.B.2 | Policy cross-links updated | Done |
 
 **Exit:** Skill operational; links to canonical policy (no duplicated prose). Plain `/babysit` unchanged.
