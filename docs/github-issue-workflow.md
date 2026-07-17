@@ -60,7 +60,7 @@ Backlog → Human Reviewed → [Auto Check] → Ready → In Progress → In Mai
 4. **Ready** — Issue is approved for implementation. The [agent dispatch workflow](../.github/workflows/agent-dispatch.yml) picks it up automatically when `agent-approved` is present and status is **Ready**.
 5. **In Progress** — Cursor agent dispatched (`busy` added). Stays here while the PR is open. If blocked, add `blocked` + `question`, **remove `human-reviewed`** (pauses dispatch), but keep **In Progress**.
 6. **In Main** — After the agent PR merges to `main` ([merge handler](../.github/workflows/issue-agent-pr-merge.yml)).
-7. **In UAT** — After UAT deploy succeeds for the linked `release/uat-YYMMDD-issue-<N>` branch (`deploy-uat.yml` notify job).
+7. **In UAT** — After UAT deploy succeeds for the linked `uat-YYMMDD-PR#` tag (`deploy-uat.yml` notify job).
 8. **Done** — Validation complete; close the issue.
 
 Throughout the workflow, use `busy` to signal active work. Use `question` for visibility when more information is needed; **workflow pause is controlled by removing `human-reviewed`**.
@@ -79,7 +79,8 @@ GitHub remains the source of truth. Cursor Cloud Agents are workers that impleme
 |------|---------|
 | [`.github/workflows/agent-dispatch.yml`](../.github/workflows/agent-dispatch.yml) | Find eligible issues and launch Cursor agents |
 | [`.github/workflows/agent-monitor.yml`](../.github/workflows/agent-monitor.yml) | Poll agent runs; comment; apply `blocked` / success handoff |
-| [`.github/workflows/issue-agent-pr-merge.yml`](../.github/workflows/issue-agent-pr-merge.yml) | On merged `cursor/**` PR → **In Main**, push UAT branch |
+| [`.github/workflows/issue-agent-pr-merge.yml`](../.github/workflows/issue-agent-pr-merge.yml) | On merged `cursor/**` PR → **In Main**, record expected UAT tag |
+| [`.github/workflows/promote-uat.yml`](../.github/workflows/promote-uat.yml) | On push to `main` → create `uat-YYMMDD-PR#` tag |
 | [`.github/workflows/deploy-uat.yml`](../.github/workflows/deploy-uat.yml) | UAT deploy + **Notify linked agent issue** job → **In UAT** or escalate |
 | [`.github/workflows/agent-pr-safety-gate.yml`](../.github/workflows/agent-pr-safety-gate.yml) | Fail PRs that touch forbidden paths |
 | [`.github/scripts/agent-payload-lib.js`](../.github/scripts/agent-payload-lib.js) | Sanitized task payload + prompt |
@@ -157,24 +158,23 @@ Triage already blocks risky issues with `manual-only` before dispatch.
 
 ### Merge → UAT automation
 
-When an agent PR merges to `main`, the [merge handler](../.github/workflows/issue-agent-pr-merge.yml):
+When an agent PR merges to `main`:
 
-1. Parses `Refs #<n>` / `Fixes #<n>` from the PR body
-2. Removes `busy`, **reopens** the issue, sets Project status **In Main**
-3. Creates `release/uat-YYMMDD-issue-<N>` at the merge commit
-4. Dispatches **Deploy UAT** via `workflow_dispatch` using `GH_PROJECTS_PAT` (required — `GITHUB_TOKEN` cannot trigger other workflows)
+1. **[merge handler](../.github/workflows/issue-agent-pr-merge.yml)** parses `Refs #<n>` / `Fixes #<n>` from the PR body, removes `busy`, **reopens** the issue, sets Project status **In Main**, and posts the expected UAT tag (`uat-YYMMDD-PR#`).
+2. **[promote-uat.yml](../.github/workflows/promote-uat.yml)** runs on the `main` push, resolves the merged PR, and creates the `uat-YYMMDD-PR#` tag on the merge commit.
+3. Tag push triggers **[deploy-uat.yml](../.github/workflows/deploy-uat.yml)** automatically.
 
 When UAT deploy finishes, the **Notify linked agent issue** job in `deploy-uat.yml` sets **In UAT** (or adds `question` on failure).
 
-Manual UAT rerun: **Actions → Deploy UAT (uat.agathatrack.com) → Run workflow** with `deploy_ref` = your release branch (e.g. `release/uat-260709-issue-122`).
-- UAT promotion branch: `release/uat-YYMMDD-issue-<n>` (pushed automatically on merge)
+Manual UAT rerun: **Actions → Deploy UAT (uat.agathatrack.com) → Run workflow** with `deploy_ref` = your UAT tag (e.g. `uat-260709-122`).
+- UAT promotion tag: `uat-YYMMDD-PR#` (created automatically on merge to `main`)
 
 ### Required secrets
 
 | Secret | Purpose |
 |--------|---------|
 | `cursor_api_key` | Cursor User API Key (**github-actions-pawpet-automation** in Cursor dashboard) |
-| `GH_PROJECTS_PAT` | Project GraphQL updates **and** dispatching the UAT deploy workflow (`workflow_dispatch`) |
+| `GH_PROJECTS_PAT` | Project GraphQL updates (UAT deploy is tag-triggered; no `workflow_dispatch` needed) |
 | `GH_PROJECT_ID` | GitHub Project v2 node ID |
 | `GH_STATUS_FIELD_ID` | Status field node ID |
 
@@ -211,7 +211,7 @@ For organization-owned repos, use `--org <login>` instead.
 
 ### UAT CD notes
 
-Current UAT deploy (`deploy-uat.yml`) is FTP-based and does not automatically apply database migrations or restart the server. The merge handler pushes `release/uat-*` branches and dispatches deploy; the **Notify linked agent issue** job sets **In UAT** when all UAT gates pass.
+Current UAT deploy (`deploy-uat.yml`) is FTP-based. When `UAT_SSH_ENABLED=true`, SSH deploy can restart the backend and run migrations (`UAT_AUTO_MIGRATE=true` for automatic `migrate.js up`). **`promote-uat.yml`** creates `uat-*` tags on merge to `main`; the **Notify linked agent issue** job sets **In UAT** when all UAT gates pass.
 
 #### CloudLinux `node_modules` (cPanel Node.js Selector)
 
@@ -359,4 +359,4 @@ If secrets are not configured, triage and agent workflows still update labels an
 
 | Date | Issue | Note |
 |------|-------|------|
-| 2026-07-09 | #122 | UAT delivery path smoke test — documentation-only change validating triage → Cursor agent → PR → merge to `main` → `release/uat-YYMMDD-issue-122` → UAT deploy. |
+| 2026-07-09 | #122 | UAT delivery path smoke test — documentation-only change validating triage → Cursor agent → PR → merge to `main` → `uat-YYMMDD-PR#` tag → UAT deploy (legacy path used `release/uat-*` branches). |

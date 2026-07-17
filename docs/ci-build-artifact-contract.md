@@ -17,7 +17,7 @@ Implementation: `scripts/ci/build-flutter-web.sh` (called directly or via
 
 | Trigger | How to enable `flutter clean` |
 |---------|-------------------------------|
-| `release/uat-*` push | Set repo variable `UAT_FLUTTER_CLEAN=true` |
+| `uat-*` tag push | Set repo variable `UAT_FLUTTER_CLEAN=true` |
 | `workflow_dispatch` | Set input `run_clean=true` |
 
 `build-manifest.json` records `run_clean` for duration/correctness comparisons. Compare UAT `build-web` job `duration_sec` in Actions summaries before/after.
@@ -37,7 +37,7 @@ Or for a one-off manual deploy:
 
 ```bash
 gh workflow run deploy-uat.yml \
-  -f deploy_ref=release/uat-YYYY-MM-DD \
+  -f deploy_ref=uat-260716-193 \
   -f run_clean=true
 ```
 

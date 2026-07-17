@@ -86,7 +86,7 @@ Use the PR template checklist. In summary:
 
 ## E2E and UAT
 
-- Full Playwright suite: UAT deploy (`release/uat-*`) and manual `workflow_dispatch`.
+- Full Playwright suite: UAT deploy (`uat-*` tag push after merge to `main`) and manual `workflow_dispatch`.
 - `@smoke` tests run against live UAT and include axe accessibility checks (critical + serious).
 - Weekly non-blocking E2E cron on `main` (see `.github/workflows/e2e.yml`).
 

@@ -98,7 +98,7 @@ the merge gate `flutter-coverage / Flutter domain coverage` covers shard failure
 
 #### Accepted trade-off: no CI re-run on merge to `main`
 
-Auto-promotion (`promote-uat.yml`, planned) does **not** re-run CI on the merge commit.
+Auto-promotion (`promote-uat.yml`) does **not** re-run CI on the merge commit.
 See [promotion-contract.md](./promotion-contract.md). PR gates + strict up-to-date merge
 are the trust boundary.
 

@@ -93,7 +93,7 @@ Run after **#169** merges to `main` to confirm hygiene and deploy path:
 |------|------------------|---------------|
 | 1. No tracked build output | `git ls-files 'flutter_app/build/**'` | **Empty output** (0 files) |
 | 2. Ignore rule active | `git check-ignore -v flutter_app/build/web/index.html` | Matches `flutter_app/build/` in `.gitignore` |
-| 3. One UAT deploy | Trigger `release/uat-*` push or `workflow_dispatch` | `Build and deploy to UAT` succeeds |
+| 3. One UAT deploy | Merge to `main` (auto `uat-*` tag) or `workflow_dispatch` with `uat-*` tag | `Build and deploy to UAT` succeeds |
 | 4. Artifact materialize | Open deploy job log → `Materialize web root` step | `source_mode` is `flat` or `nested`, **not** stale `already-present` without manifest |
 | 5. Optional baseline refresh | `bash scripts/ci/collect-baseline.sh --limit 20` | Paste snapshot into this doc |
 

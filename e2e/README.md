@@ -105,20 +105,23 @@ cd e2e && npm run test:ci-shard -- 3   # run one shard locally (stack must be ru
 | `ci.yml` | PR → `main` (+ manual dispatch) | Flutter analyze + unit/widget tests + web build; backend Jest |
 | `codeql.yml` | PR → `main` (+ weekly schedule) | Static security analysis (JavaScript/TypeScript) |
 | `e2e.yml` | manual + weekly cron (non-blocking) | Full Playwright against **localhost** (10 file-balanced shards) |
-| `deploy-uat.yml` | push → `release/uat-*` | Fast FTP deploy → post-deploy smoke + live `@smoke` E2E + full localhost E2E → `prod-ready` gate |
-| `deploy-prod.yml` | manual `workflow_dispatch` (preferred) or release publish | FTP + SSH deploy; post-deploy HTTP smoke |
+| `promote-uat.yml` | push → `main` | Create `uat-YYMMDD-PR#` tag on merge (see `docs/promotion-contract.md`) |
+| `deploy-uat.yml` | push → `uat-*` tag | Fast FTP deploy → post-deploy smoke + live `@smoke` E2E + full localhost E2E → `prod-ready` gate |
+| `deploy-prod.yml` | auto after UAT `prod-ready` (+ manual dispatch / release) | Stub `vX.Y.Z-rc.N` tag or live FTP + SSH deploy; post-deploy HTTP smoke |
 
 ### UAT deploy flow
 
-1. Cut `release/uat-*` from green `main` — **no unit-test re-run** (CI already validated the code).
-2. `deploy` job FTP-publishes frontend + backend (~5 min).
+1. Merge PR to `main` → **`promote-uat.yml`** creates `uat-YYMMDD-PR#` tag — **no unit-test re-run** (CI already validated the code on the PR).
+2. Tag push triggers **`deploy-uat.yml`**; `deploy` job FTP-publishes frontend + backend (~5 min).
 3. In parallel: `smoke` (HTTP), `uat-e2e-smoke` (Playwright `@smoke` on live UAT), `uat-e2e-full` (full suite on localhost, **10 file-balanced shards** after `build-web`).
-4. When all three pass, `prod-ready` goes green — configure the **PROD** GitHub Environment to require this check before `workflow_dispatch` deploys.
-5. Apply UAT DB migrations manually when `db/migrations/` changes (FTP-only hosting).
+4. When all gates pass, `prod-ready` goes green — **`deploy-prod.yml`** runs automatically (stub or live per `PROD_DEPLOY_ENABLED`).
+5. UAT DB migrations: automatic when `UAT_SSH_ENABLED=true` and `UAT_AUTO_MIGRATE=true`; otherwise apply manually when `db/migrations/` changes.
 
 ### Prod deploy
 
-Use **Actions → Deploy Production → Run workflow** with the UAT-validated commit SHA. Post-deploy smoke hits `https://agathatrack.com/backend/health` and `/landing`.
+**Default:** `deploy-prod.yml` runs automatically after green UAT **`Prod ready`** (stub semver tag when `PROD_DEPLOY_ENABLED` is not `true`; full deploy when `true`).
+
+**Manual override:** **Actions → Deploy Production → Run workflow** with the UAT-validated commit SHA. Post-deploy smoke hits `https://agathatrack.com/backend/health` and `/landing`.
 
 ### `@smoke` tests
 
