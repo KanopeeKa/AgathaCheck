@@ -31,6 +31,7 @@ Do not duplicate these commands in chat — run the script. Skill: `/pre-push-ve
 | `/spawn-sprint-agents` | Parallel sprint coordination |
 | `/security-error-audit` | 5xx error redaction |
 | `/pre-push-verify` | Which tests to run |
+| `/babysit-plus-plus` | Autonomous PR triage, debt issues, CI loop, merge |
 
 ## Non-negotiables
 

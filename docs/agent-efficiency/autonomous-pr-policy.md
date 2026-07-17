@@ -8,7 +8,7 @@ Single source of truth for `/babysit`, `/babysit++`, and `/execute-plan`. Skills
 | Phase exit profiles | [phase-exit-checklists.md](./phase-exit-checklists.md) |
 | GitHub labels | [github-labels.md](./github-labels.md) |
 | Lightweight PR loop | `.cursor/commands/babysit.md` |
-| Babysit++ skill | `.cursor/skills/babysit-plus-plus/SKILL.md` (Phase B) |
+| Babysit++ skill | `.cursor/skills/babysit-plus-plus/SKILL.md` |
 | Execute-plan skill | `.cursor/skills/execute-plan/SKILL.md` (Phase D) |
 
 ---
