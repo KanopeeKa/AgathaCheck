@@ -262,6 +262,25 @@ function runDriftTests() {
   console.log('validate_execute_plan_snapshot: drift tests passed');
 }
 
+function atomicWriteFile(filePath, content) {
+  const dir = path.dirname(filePath);
+  const tempPath = path.join(
+    dir,
+    `.validate_execute_plan_snapshot.${process.pid}.${Date.now()}.tmp`
+  );
+
+  try {
+    fs.writeFileSync(tempPath, content, { mode: 0o600 });
+    fs.renameSync(tempPath, filePath);
+  } finally {
+    try {
+      fs.unlinkSync(tempPath);
+    } catch (e) {
+      if (!e || e.code !== 'ENOENT') throw e;
+    }
+  }
+}
+
 function main() {
   const args = process.argv.slice(2);
   if (args.includes('--drift-test')) {
@@ -280,9 +299,15 @@ function main() {
   }
 
   const filePath = path.resolve(fileArg);
-  if (!fs.existsSync(filePath)) fail(`file not found: ${filePath}`);
-
-  const raw = fs.readFileSync(filePath, 'utf8');
+  let raw;
+  try {
+    raw = fs.readFileSync(filePath, 'utf8');
+  } catch (e) {
+    if (e && e.code === 'ENOENT') {
+      fail(`file not found: ${filePath}`);
+    }
+    fail(`failed to read file: ${e.message}`);
+  }
   let obj;
   try {
     obj = JSON.parse(raw);
@@ -291,20 +316,11 @@ function main() {
   }
 
   if (fixHash) {
-  obj.content_hash = computeHash(obj);
-  const nextContent = `${JSON.stringify(obj, null, 2)}\n`;
-
-  const fd = fs.openSync(filePath, "r+");
-  try {
-    fs.ftruncateSync(fd, 0);
-    fs.writeFileSync(fd, nextContent, "utf8");
-    fs.fsyncSync(fd);
-  } finally {
-    fs.closeSync(fd);
+    obj.content_hash = computeHash(obj);
+    const nextContent = `${JSON.stringify(obj, null, 2)}\n`;
+    atomicWriteFile(filePath, nextContent);
+    console.log(`validate_execute_plan_snapshot: updated content_hash in ${filePath}`);
   }
-
-  console.log(`validate_execute_plan_snapshot: updated content_hash in ${filePath}`);
-}
 
   validateSnapshot(obj, { checkHash: !fixHash });
 
