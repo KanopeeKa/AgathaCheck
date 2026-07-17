@@ -86,7 +86,7 @@ invoke explicitly with `/skill-name`.
 
 ## Sprint 12 — Autonomous plan schema (Phase A)
 
-Foundation for `/execute-plan` and `/babysit++` skills. Schema and policy docs only — no skills in this sprint.
+Foundation for `/execute-plan` and `/babysit-plus` skills. Schema and policy docs only — no skills in this sprint.
 
 | # | Deliverable | Status |
 |---|-------------|--------|
@@ -100,7 +100,20 @@ Foundation for `/execute-plan` and `/babysit++` skills. Schema and policy docs o
 
 **Policy highlights:** frozen snapshot, `status` + `status_reason`, `allowed_exceptions` enum, 48h `approved_until`, halt-only revoke, debt issue dedupe, merge-done phase gate.
 
-**Next:** Phase B `babysit-plus-plus` skill → Phase D `execute-plan` skill. See `docs/agent-efficiency/autonomous-pr-policy.md`.
+**Next:** Phase C control issue runtime → Phase D `execute-plan` skill. See `docs/agent-efficiency/autonomous-pr-policy.md`.
+
+---
+
+## Sprint 12 — Phase B: Babysit+ skill
+
+| # | Deliverable | Status |
+|---|-------------|--------|
+| 12.B.1 | `.cursor/skills/babysit-plus/SKILL.md` | Done |
+| 12.B.2 | Policy cross-links updated | Done |
+
+**Exit:** Skill operational; links to canonical policy (no duplicated prose). Plain `/babysit` unchanged.
+
+**Next:** Phase C control issue + plan artifact runtime → Phase D `execute-plan` skill.
 
 ---
 
