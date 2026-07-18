@@ -76,8 +76,17 @@ fi
 export PASSENGER_HTACCESS_OK
 export PASSENGER_HTACCESS_FILE
 
+echo "=== node_modules invariant (pre-restart) ==="
+uat_nm_assert pre 1 0
+
 echo "=== Database migrations ==="
 cd "${APPDIR}"
+if ! uat_nm_use_node; then
+  echo "::error::node not found in PATH or CloudLinux nodevenv — cannot run migrate.js"
+  echo "Expected: ~/nodevenv/uat.agathatrack.com/backend/<version>/bin/node"
+  exit 1
+fi
+echo "node_bin=${UAT_NODE_BIN}"
 if [[ "${UAT_AUTO_MIGRATE}" == "true" ]]; then
   echo "UAT_AUTO_MIGRATE=true — applying pending migrations (node scripts/migrate.js up)"
   node scripts/migrate.js up
@@ -117,9 +126,6 @@ else
   } >>"${UAT_DEPLOY_STATE_FILE}"
   exit 1
 fi
-
-echo "=== node_modules invariant (pre-restart) ==="
-uat_nm_assert pre 1 0
 
 echo "=== triggering Passenger restart ==="
 mkdir -p "${APPDIR}/tmp"
