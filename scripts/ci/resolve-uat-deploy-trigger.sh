@@ -66,8 +66,19 @@ def tag_commit_sha(tag_name: str) -> str:
     tag_obj = api(f"/repos/{repo}/git/tags/{obj['sha']}")
     return tag_obj["object"]["sha"]
 
-refs = api(f"/repos/{repo}/git/matching-refs/tags/uat-")
-for item in refs:
+def iter_matching_uat_refs():
+    page = 1
+    while True:
+        batch = api(f"/repos/{repo}/git/matching-refs/tags/uat-?per_page=100&page={page}")
+        if not batch:
+            break
+        for item in batch:
+            yield item
+        if len(batch) < 100:
+            break
+        page += 1
+
+for item in iter_matching_uat_refs():
     ref = item.get("ref", "")
     if not ref.startswith("refs/tags/uat-"):
         continue
