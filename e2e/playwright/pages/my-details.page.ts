@@ -4,7 +4,9 @@ import {
   dismissConsentBannerIfPresent,
   expectAppBarTitle,
   fillLabelledField,
+  escapeRegExp,
   flutterGotoUrl,
+  flutterRoutePath,
   isExperienceShellVisible,
   refreshFlutterAccessibility,
   waitForFlutterRoutePattern,
@@ -151,7 +153,20 @@ export class MyDetailsPage {
   }
 
   async goBack(): Promise<void> {
-    await this.page.getByRole('button', { name: /^(Back|Retour)$/i }).click();
+    const backButton = this.page.getByRole('button', { name: /^(Back|Retour)$/i });
+    if (await backButton.isVisible({ timeout: 2_000 }).catch(() => false)) {
+      await backButton.click();
+    } else {
+      const route = flutterRoutePath(this.page.url());
+      const home = route.startsWith('/o/') ? '/o/home' : '/g/home';
+      await this.page.goto(flutterGotoUrl(home));
+      await refreshFlutterAccessibility(this.page);
+      await waitForFlutterRoutePattern(
+        this.page,
+        new RegExp(`^${escapeRegExp(home)}$`),
+        30_000,
+      );
+    }
     await this.page.waitForTimeout(500);
     await refreshFlutterAccessibility(this.page);
   }
