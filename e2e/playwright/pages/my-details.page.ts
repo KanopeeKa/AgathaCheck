@@ -55,8 +55,6 @@ export class MyDetailsPage {
     await refreshFlutterAccessibility(this.page);
     await waitForFlutterRoutePattern(this.page, /\/my-details$/, 30_000);
     await this.expectLoaded();
-
-    throw new Error('Could not open My Details: unknown navigation shell');
   }
 
   async expectLoaded(title: string | RegExp = /My Details|Mon profil/i): Promise<void> {
