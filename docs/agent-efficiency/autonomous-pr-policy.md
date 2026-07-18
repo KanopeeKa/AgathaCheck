@@ -27,6 +27,24 @@ During `/execute-plan`, always use **babysit-plus**, never plain babysit alone.
 
 ---
 
+## Automatic reviews (mandatory wait)
+
+Applies to `/babysit` and `/babysit-plus`.
+
+1. Automatic reviewers (Copilot, Bugbot, etc.) run only after the PR is **ready for review** — not while draft.
+2. If draft: mark ready first (`gh pr ready <url>`).
+3. **Poll** until bot reviews land or the wait budget expires — even when CI is already green.
+   - `gh api repos/{owner}/{repo}/pulls/{n}/reviews` — formal reviews
+   - `gh api repos/{owner}/{repo}/pulls/{n}/comments` — inline review comments
+   - `gh api repos/{owner}/{repo}/issues/{n}/comments` — PR conversation comments (some bots post here only)
+   - (`{n}` = PR number)
+4. Poll every **30–60s** for up to **15 minutes**.
+5. Do not triage, merge, or declare done while expected automatic reviews are still pending.
+6. On timeout: comment on the PR listing pending reviewers and halt.
+7. After each push that changes the diff, repeat when new automatic reviews are expected.
+
+---
+
 ## Review triage
 
 Post a **triage comment** on the PR before applying fixes.
@@ -95,22 +113,26 @@ Then halt. Never weaken CI gates to pass.
 
 ## Merge modes
 
-Per-phase `merge_mode` in frozen snapshot; fallback to `default_merge_mode`.
-
 | Mode | Behavior |
 |------|----------|
 | `manual` | Agent pushes; human merges |
 | `labeled` | Agent merges only if PR has `agent-merge-ok` |
 | `auto` | Agent merges when all gates pass |
 
-### Precedence (highest first)
+### Resolving `merge_mode`
 
-1. `do-not-merge` label → never merge
-2. Control issue `autonomous-revoked` → never merge
-3. PR is `draft` → never merge
-4. Phase `merge_mode` from snapshot
-5. `default_merge_mode`
-6. `agent-merge-ok` required only for `labeled`; ignored for `manual`; not sufficient alone for `auto`
+Halting gates (always, before mode selection): `do-not-merge` label, control issue `autonomous-revoked`, or PR is `draft`.
+
+Then branch on context:
+
+| Context | Resolution order (first wins) |
+|---------|----------------------------|
+| **Execute-plan** (active phase snapshot) | `phase.merge_mode` → `default_merge_mode` from frozen snapshot |
+| **Standalone babysit-plus** (no snapshot) | explicit caller `merge_mode` input → **`auto`** |
+
+Caller `merge_mode` on a standalone run overrides the `auto` default. During execute-plan, snapshot fields win; do not substitute caller input unless the run documents an explicit override.
+
+`agent-merge-ok` is required only for `labeled`; ignored for `manual`; not sufficient alone for `auto`.
 
 **Snapshot wins over labels** (e.g. `manual` + `agent-merge-ok` → do not merge).
 
