@@ -32,6 +32,21 @@ permissions:
   actions: read
 
 jobs:
+  uat-promotion-blocked:
+    name: Block promotion when UAT failed
+    if: >-
+      github.event_name == 'workflow_run' &&
+      github.event.workflow_run.conclusion != 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Fail closed — UAT deploy was not fully green
+        run: |
+          echo "::error::Deploy UAT run ${{ github.event.workflow_run.id }} concluded with '${{ github.event.workflow_run.conclusion }}'."
+          echo "::error::Production promotion requires a successful UAT workflow including green Prod ready."
+          echo "UAT run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.event.workflow_run.id }}"
+          exit 1
+
   resolve-trigger:
     name: Resolve promotion trigger
     runs-on: ubuntu-latest

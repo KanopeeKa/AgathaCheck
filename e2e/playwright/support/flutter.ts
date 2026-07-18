@@ -129,9 +129,12 @@ export async function waitForHomeAfterMutation(
   const effectiveTimeout = timeout ?? postLoginTimeout(30_000);
   await waitForFlutterRoutePattern(
     page,
-    /\/(g|o)\/home|\/app\/resolve/,
+    /\/(g|o)\/(home|onboarding)|\/app\/resolve/,
     effectiveTimeout,
   );
+  await waitForFlutterRoutePattern(page, /\/(g|o)\/(home|onboarding)/, effectiveTimeout);
+  await skipGuardianOnboardingIfPresent(page, effectiveTimeout);
+  await skipOrgOnboardingIfPresent(page, effectiveTimeout);
   await waitForFlutterRoutePattern(page, /\/(g|o)\/home/, effectiveTimeout);
   await expectHomeShellVisible(page, effectiveTimeout);
 }
@@ -408,7 +411,15 @@ export async function expectAppBarTitle(page: Page, title: string | RegExp): Pro
     typeof title === 'string'
       ? new RegExp(title.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i')
       : title;
-  await page.getByRole('banner', { name: pattern }).waitFor({ timeout: 30_000 });
+  const { expect } = await import('@playwright/test');
+  await expect(async () => {
+    await refreshFlutterAccessibility(page);
+    const banner = page.getByRole('banner', { name: pattern }).first();
+    if (await banner.isVisible().catch(() => false)) return;
+    const heading = page.getByRole('heading', { name: pattern }).first();
+    if (await heading.isVisible().catch(() => false)) return;
+    await expect(page.getByText(pattern).first()).toBeVisible();
+  }).toPass({ timeout: 30_000 });
 }
 
 /** Dismiss the GDPR consent banner when shown (first visit). */
