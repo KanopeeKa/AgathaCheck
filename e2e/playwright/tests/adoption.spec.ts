@@ -55,6 +55,7 @@ import { OrganizationDetailPage } from '../pages/organization-detail.page';
 import { OrganizationListPage } from '../pages/organization-list.page';
 import { PetListPage } from '../pages/pet-list.page';
 import { SharedPetPage } from '../pages/shared-pet.page';
+import { reachAuthenticatedHome } from '../support/flutter';
 
 const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
 
@@ -214,7 +215,9 @@ test.describe('Organisation custody', () => {
     await dashboard.expectEntryVisible(visibleEntry);
 
     await hideFosteredPet(baseURL, eve.accessToken, pet.id);
-    await petList.goHome();
+    await page.reload();
+    await reachAuthenticatedHome(page);
+    await petList.expectLoaded();
     await petList.expectPetHidden('Max');
 
     await petList.openHealthDashboard();

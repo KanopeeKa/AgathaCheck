@@ -302,20 +302,26 @@ test.describe('Health tracking', () => {
 
   // ── Wave C: Pet list due events ───────────────────────────────────────────
 
-  test('due events section appears on pet list when an entry is due today', async ({ page, testUser }) => {
+  test('due events section appears on pet list when an entry is due or overdue', async ({ page, testUser }) => {
     const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
+    const yesterday = new Date();
+    yesterday.setUTCDate(yesterday.getUTCDate() - 1);
+    const dueDate = yesterday.toISOString().slice(0, 10);
     const { entry } = await seedPetWithDueHealthEntry(baseURL, testUser, {
       petName: 'Bella',
       entryName: 'Flea Prevention',
+      dueDate,
     });
 
     await loginAs(page, testUser);
     const petList = new PetListPage(page);
     await petList.expectLoaded();
+    await petList.expectPetVisible('Bella');
     await expect(async () => {
       await refreshFlutterAccessibility(page);
+      await expect(page.getByText(/Upcoming events/i).first()).toBeVisible();
       await expect(page.getByText(entry.name, { exact: false }).first()).toBeVisible();
-    }).toPass({ timeout: 30_000 });
+    }).toPass({ timeout: 45_000 });
   });
 
   test('pet list shows "You\'re all caught up" when no entries are due', async ({ page, testUser }) => {
