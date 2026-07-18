@@ -58,6 +58,7 @@ User-facing dates are calendar days (`YYYY-MM-DD` on the wire). See `docs/calend
 
 ### Policies (details in `.cursor/rules/` + Skills)
 
+- **Atomic PRs:** one verifiable outcome per PR; cross-domain OK when serving that outcome. Snag ladder + zero untracked debt → `docs/agent-efficiency/atomic-pr-policy.md`
 - Modularity ≤500 lines · dual-backend parity · BDD 105/165 gate
 - Single-agent PRs → `main`; multi-agent → integration branch (`/spawn-sprint-agents`)
 - Memories: `.agents/memory/MEMORY.md`

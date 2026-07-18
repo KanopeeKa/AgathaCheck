@@ -1,9 +1,19 @@
-## Summary
+## Outcome
 
-<!-- What changed and why (1–3 sentences) -->
+<!-- One sentence: what this PR achieves (cross-domain OK if same outcome) -->
+
+## Scope
+
+<!-- Areas touched — confirm they all serve the outcome above -->
+
+## Snags
+
+<!-- Fixed inline / micro-PR #___ / issue #___ — or "none" -->
 
 ## Checklist
 
+- [ ] **One outcome** — no unrelated "and also…" changes ([policy](docs/agent-efficiency/atomic-pr-policy.md))
+- [ ] **Snags** — trivial fixes applied or tracked (issue / micro-PR); no silent deferrals
 - [ ] Synced with `main` (`git fetch origin main && git rebase origin/main`) — no unresolved conflicts
 - [ ] `cd server && npx jest --env=node --forceExit` passes
 - [ ] `cd flutter_app && flutter analyze` and `flutter test --concurrency=1 --exclude-tags=integration` pass

@@ -58,6 +58,51 @@ jobs:
             NOTES="${NOTES}"$'\n'"- 🤖 Agent infra changed — run \`./scripts/pre-push.sh\` before merge."
           fi
 
+          # Multi-area advisory (outcome-based policy — not a block). See docs/agent-efficiency/atomic-pr-policy.md
+          tag_area() {
+            case "$1" in
+              flutter_app/lib/features/auth/*|server/routes/auth/*|server/lib/auth/*|server/test/auth/*|e2e/playwright/tests/auth.*.spec.ts)
+                echo "auth" ;;
+              flutter_app/lib/features/pet_profile/*|server/routes/pets/*|server/test/pets/*|e2e/playwright/tests/pet.*.spec.ts)
+                echo "pets" ;;
+              flutter_app/lib/features/health_tracking/*|server/routes/health*|server/test/health*|e2e/playwright/tests/health.*.spec.ts)
+                echo "health" ;;
+              flutter_app/lib/features/weight_tracking/*|server/routes/weight*|server/test/weight*|e2e/playwright/tests/weight.*.spec.ts)
+                echo "weight" ;;
+              flutter_app/lib/features/vet/*|server/routes/vets*|server/test/vets*)
+                echo "vet" ;;
+              flutter_app/lib/features/sharing/*|server/routes/sharing*|server/test/sharing*|e2e/playwright/tests/sharing.spec.ts)
+                echo "sharing" ;;
+              flutter_app/lib/features/notifications/*|server/routes/notifications*|server/test/notifications*|e2e/playwright/tests/notifications.spec.ts)
+                echo "notifications" ;;
+              flutter_app/lib/features/organization/*|server/routes/organizations/*|server/routes/foster*|server/routes/custody*|server/test/organizations/*|server/test/foster*|server/test/custody*|e2e/playwright/tests/organisation*|e2e/playwright/tests/adoption*)
+                echo "org" ;;
+              flutter_app/lib/features/subscription/*)
+                echo "subscription" ;;
+              flutter_app/lib/features/help/*|flutter_app/lib/features/about/*)
+                echo "help" ;;
+              flutter_app/lib/core/*|flutter_app/lib/l10n/*)
+                echo "core-flutter" ;;
+              e2e/playwright/tests/*|e2e/playwright/pages/*|e2e/playwright/support/*)
+                echo "e2e" ;;
+              *) ;;
+            esac
+          }
+
+          AREAS=""
+          while IFS= read -r f; do
+            [[ -z "$f" ]] && continue
+            tag="$(tag_area "$f")"
+            [[ -n "$tag" ]] && AREAS="${AREAS}"$'\n'"${tag}"
+          done <<< "$CHANGED"
+          UNIQUE_AREAS="$(echo "$AREAS" | sed '/^$/d' | sort -u)"
+          AREA_COUNT="$(echo "$UNIQUE_AREAS" | sed '/^$/d' | wc -l | tr -d ' ')"
+
+          if [[ "$AREA_COUNT" -ge 2 ]]; then
+            AREA_LIST="$(echo "$UNIQUE_AREAS" | sed '/^$/d' | paste -sd ', ' -)"
+            NOTES="${NOTES}"$'\n'"- 📐 Touches **${AREA_COUNT}** areas (\`${AREA_LIST}\`). **OK if one outcome** (see \`docs/agent-efficiency/atomic-pr-policy.md\`). Split if changes are independent."
+          fi
+
           if [[ -z "$NOTES" ]]; then
             echo "has_notes=false" >> "$GITHUB_OUTPUT"
           else
