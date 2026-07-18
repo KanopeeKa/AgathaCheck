@@ -22,7 +22,7 @@ Repo docs are the source of truth. `.cursor/rules/*.mdc` + `AGENTS.md` are the a
 
 **CI/CD (do not break)**: only umbrella `ci-gate / CI passed` is required on PRs — any new blocking job must be added to ci-gate `needs` AND `scripts/ci/assert-ci-gate.sh`. Promotion is tag-first and automated: merge to main → `promote-uat` creates `uat-YYMMDD-PR#` tag → `deploy-uat` via workflow_run → `Prod ready` gate → `deploy-prod` (artifact promotion, provenance-checked; `PROD_DEPLOY_ENABLED`, `UAT_SSH_ENABLED`, `UAT_AUTO_MIGRATE` flags). Tags immutable. UAT `node_modules` must stay a symlink.
 
-**PR flow (user decision):** GitHub branch protection enforces PRs to `main`; prefer routing changes through a PR (so ci-gate + CodeQL run) where practical rather than direct-to-main commits.
+**PR flow (user decision):** GitHub branch protection enforces PRs to `main`; prefer routing changes through a PR (so ci-gate + CodeQL run) where practical rather than direct-to-main commits. Mechanics: push local work with `git push https://x-access-token:$GITHUB_TOKEN@github.com/KanopeeKa/AgathaCheck.git HEAD:refs/heads/replit/<topic>`, then open the PR via the GitHub REST API with the same token (user dismissed the OAuth connector; the fine-grained PAT lives in the `GITHUB_TOKEN` secret). Local checkpoints still land on local main — after the user merges a PR, sync local main from `origin/main` (delegate any destructive git to a background task).
 
 **Dart/Node parity gap (known state, decision pending):** Dart lags Node — share-by-code is a 501 stub, foster placements partial; Replit preview runs the Dart server so those features look broken in preview but work on UAT/prod. Do not "fix" as a regression; discuss with user first.
 
