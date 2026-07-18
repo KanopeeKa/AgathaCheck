@@ -339,7 +339,9 @@ Workflow: **Deploy Production (agathatrack.com)** — `.github/workflows/deploy-
 ### Auto-promotion (default)
 
 After **Deploy UAT** completes with green **`Prod ready`**, `deploy-prod.yml` runs via
-`workflow_run` (no manual dispatch). Behaviour depends on repo variable
+`workflow_run` (no manual dispatch). If UAT failed or `Prod ready` was not green, the
+**Block promotion when UAT failed** job fails the production workflow (no FTP/SSH, no stub
+tag) so a green prod run always means promotion was allowed. Behaviour depends on repo variable
 `PROD_DEPLOY_ENABLED`:
 
 | `PROD_DEPLOY_ENABLED` | FTP/SSH deploy | Release tag |
