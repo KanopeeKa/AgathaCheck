@@ -229,7 +229,10 @@ git merge-base --is-ancestor <mergeCommit.oid> origin/<base_branch>
 ```bash
 node scripts/validate_execute_plan_snapshot.js .agents/plans/_example.snapshot.json
 node scripts/validate_execute_plan_snapshot.js --drift-test
+node scripts/execute_plan_runtime.js gate <plan_id> --labels autonomous-approved
 ```
+
+Runtime CLI: [execute-plan-runtime.md](./execute-plan-runtime.md).
 
 ---
 

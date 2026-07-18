@@ -1,0 +1,375 @@
+'use strict';
+
+const fs = require('fs');
+const path = require('path');
+const { execSync } = require('child_process');
+const {
+  AUTONOMY,
+  ExecutePlanError,
+  PHASE_STATUS,
+  STATUS_REASON,
+} = require('./execute_plan_constants');
+const {
+  REPO_ROOT,
+  atomicWriteFile,
+  getPhase,
+  loadSnapshot,
+  planPaths,
+} = require('./execute_plan_schema');
+
+const RUNTIME_BLOCK_RE = /```yaml\r?\n([\s\S]*?)\r?\n```/;
+
+function findCurrentPhase(snapshot) {
+  return (
+    snapshot.phases.find((p) => p.status === 'in_progress') ||
+    snapshot.phases.find((p) => p.status === 'blocked') ||
+    snapshot.phases.find((p) => p.status === 'halted') ||
+    null
+  );
+}
+
+function findNextPendingPhase(snapshot) {
+  return snapshot.phases.find((p) => p.status === 'pending') || null;
+}
+
+function effectiveMergeMode(snapshot, phase) {
+  return phase.merge_mode || snapshot.default_merge_mode;
+}
+
+function parseRuntimeBlock(markdown) {
+  const match = markdown.match(RUNTIME_BLOCK_RE);
+  if (!match) return null;
+  const state = {};
+  let key = null;
+  const nested = {};
+
+  for (const line of match[1].split('\n')) {
+    if (!line.trim() || line.trim().startsWith('#')) continue;
+    const top = line.match(/^([a-z_]+):\s*(.*)$/);
+    if (top && !line.startsWith('  ')) {
+      key = top[1];
+      const val = top[2].trim();
+      if (val === '' || val === 'null') {
+        state[key] = null;
+        nested[key] = {};
+      } else if (val === '[]' || val === '{}') {
+        state[key] = val === '[]' ? [] : {};
+      } else if (val.startsWith('"')) {
+        state[key] = JSON.parse(val);
+      } else {
+        state[key] = val;
+      }
+      continue;
+    }
+    const sub = line.match(/^  ([a-z_]+):\s*(.*)$/);
+    if (sub && key) {
+      const val = sub[2].trim();
+      if (!nested[key]) nested[key] = {};
+      nested[key][sub[1]] =
+        val === 'null' ? null : val.startsWith('"') ? JSON.parse(val) : val;
+      state[key] = nested[key];
+    }
+  }
+  return state;
+}
+
+function yamlScalar(value) {
+  if (value === null || value === undefined) return 'null';
+  if (typeof value === 'string') {
+    if (/^[a-z0-9_./:+-]+$/i.test(value)) return value;
+    return `"${value.replace(/\\/g, '\\\\').replace(/"/g, '\\"')}"`;
+  }
+  if (typeof value === 'object') return JSON.stringify(value);
+  return String(value);
+}
+
+function renderRuntimeBlock(state) {
+  const artifact = state.artifact_ref || {};
+  return [
+    'autonomy: ' + yamlScalar(state.autonomy ?? null),
+    'current_phase: ' + yamlScalar(state.current_phase ?? null),
+    'last_completed_phase: ' + yamlScalar(state.last_completed_phase ?? null),
+    'halt_reason: ' + yamlScalar(state.halt_reason ?? null),
+    'next_action: ' + yamlScalar(state.next_action ?? null),
+    'artifact_ref:',
+    '  branch: ' + yamlScalar(artifact.branch ?? null),
+    '  plan_path: ' + yamlScalar(artifact.plan_path ?? null),
+    '  plan_commit: ' + yamlScalar(artifact.plan_commit ?? null),
+    '  snapshot_path: ' + yamlScalar(artifact.snapshot_path ?? null),
+    '  snapshot_commit: ' + yamlScalar(artifact.snapshot_commit ?? null),
+    'open_prs: ' + yamlScalar(state.open_prs ?? []),
+    'merge_commits: ' + yamlScalar(state.merge_commits ?? {}),
+    'debt_issue_refs: ' + yamlScalar(state.debt_issue_refs ?? []),
+  ].join('\n');
+}
+
+function updatePlanRuntimeBlock(planMdPath, partial) {
+  const markdown = fs.readFileSync(planMdPath, 'utf8');
+  const existing = parseRuntimeBlock(markdown) || {};
+  const merged = {
+    ...existing,
+    ...partial,
+    artifact_ref: {
+      ...(existing.artifact_ref || {}),
+      ...(partial.artifact_ref || {}),
+    },
+  };
+  const block = '```yaml\n' + renderRuntimeBlock(merged) + '\n```';
+  if (!RUNTIME_BLOCK_RE.test(markdown)) {
+    throw new ExecutePlanError(`runtime yaml block not found in ${planMdPath}`);
+  }
+  atomicWriteFile(planMdPath, markdown.replace(RUNTIME_BLOCK_RE, block));
+  return merged;
+}
+
+function renderControlIssueTitle(planId) {
+  return `[execute-plan] ${planId}`;
+}
+
+function renderControlIssueBody(snapshot) {
+  const rows = snapshot.phases
+    .map((p) => {
+      const mode = effectiveMergeMode(snapshot, p);
+      return `| ${p.id} | ${p.title} | ${mode} | ${p.status} |`;
+    })
+    .join('\n');
+  return [
+    '## Plan',
+    `- **ID:** ${snapshot.plan_id}`,
+    `- **Snapshot:** \`.agents/plans/${snapshot.plan_id}.snapshot.json\``,
+    `- **Content hash:** ${snapshot.content_hash}`,
+    `- **Approved until:** ${snapshot.approved_until} (48h default)`,
+    '',
+    '## Phases',
+    '| ID | Title | Merge mode | Status |',
+    '|----|-------|------------|--------|',
+    rows,
+    '',
+    '## Revoke',
+    'Add label `autonomous-revoked` (halt only — does not close PRs).',
+    '',
+    '## Resume',
+    `Remove revoke label; comment \`resume-plan ${snapshot.plan_id}\`.`,
+    '',
+  ].join('\n');
+}
+
+function controlIssueLabels(planId) {
+  return ['execute-plan', `plan:${planId}`, 'autonomous-approved'];
+}
+
+function renderHaltComment(snapshot, { reason, detail }) {
+  const phase = findCurrentPhase(snapshot);
+  const lines = [
+    '## Execute-plan halt',
+    '',
+    `- **plan_id:** ${snapshot.plan_id}`,
+    `- **autonomy:** ${snapshot.autonomy}`,
+    `- **reason:** ${reason}`,
+  ];
+  if (detail) lines.push(`- **detail:** ${detail}`);
+  if (phase) {
+    lines.push(`- **phase:** ${phase.id} (${phase.title})`);
+    if (phase.pr_url) lines.push(`- **pr:** ${phase.pr_url}`);
+  }
+  lines.push('', 'Resume: remove `autonomous-revoked`, comment `resume-plan ' + snapshot.plan_id + '`.');
+  return lines.join('\n');
+}
+
+function normalizeLabels(labels) {
+  if (!labels) return [];
+  if (Array.isArray(labels)) return labels.map(String);
+  return String(labels)
+    .split(',')
+    .map((s) => s.trim())
+    .filter(Boolean);
+}
+
+function checkAutonomyGate(snapshot, { now = new Date(), labels = [] } = {}) {
+  const labelSet = new Set(normalizeLabels(labels));
+  if (labelSet.has('autonomous-revoked')) {
+    return { ok: false, code: 'revoked', message: 'control issue has autonomous-revoked' };
+  }
+  if (!labelSet.has('autonomous-approved')) {
+    return {
+      ok: false,
+      code: 'not_approved',
+      message: 'control issue missing autonomous-approved label',
+    };
+  }
+  if (snapshot.autonomy === 'revoked' || snapshot.autonomy === 'halted') {
+    return {
+      ok: false,
+      code: snapshot.autonomy,
+      message: `snapshot autonomy is ${snapshot.autonomy}`,
+    };
+  }
+  if (snapshot.autonomy === 'completed') {
+    return { ok: false, code: 'completed', message: 'plan already completed' };
+  }
+  if (snapshot.autonomy !== 'active') {
+    return { ok: false, code: 'inactive', message: `snapshot autonomy is ${snapshot.autonomy}` };
+  }
+  if (new Date(snapshot.approved_until) <= now) {
+    return {
+      ok: false,
+      code: 'expired',
+      message: `approved_until ${snapshot.approved_until} is in the past`,
+    };
+  }
+  return { ok: true };
+}
+
+function checkResume(snapshot, phaseId, options = {}) {
+  const gate = checkAutonomyGate(snapshot, options);
+  if (!gate.ok) return { ok: false, code: gate.code, message: gate.message };
+
+  const phase = getPhase(snapshot, phaseId);
+  if (phase.status === 'merged') {
+    return { ok: false, code: 'phase_merged', message: `phase ${phaseId} already merged` };
+  }
+
+  const { prHeadOid, acceptHead = false } = options;
+  if (
+    phase.pr_head_sha &&
+    prHeadOid &&
+    phase.pr_head_sha !== prHeadOid &&
+    !acceptHead
+  ) {
+    return {
+      ok: false,
+      code: 'resume_mismatch',
+      message: `PR head ${prHeadOid} != recorded ${phase.pr_head_sha}; comment accept-head to override`,
+    };
+  }
+  return { ok: true, phase };
+}
+
+function computeNextAction(snapshot) {
+  const blocked = snapshot.phases.find((p) => p.status === 'blocked');
+  if (blocked) return `unblock phase ${blocked.id}: ${blocked.status_reason}`;
+  const active = findCurrentPhase(snapshot);
+  if (active) {
+    if (active.status === 'in_progress') {
+      return `continue phase ${active.id} on branch ${active.branch}`;
+    }
+    return `resume phase ${active.id} (${active.status_reason})`;
+  }
+  const next = findNextPendingPhase(snapshot);
+  if (next) return `start phase ${next.id}: checkout ${next.branch}`;
+  if (snapshot.phases.every((p) => p.status === 'merged')) return 'plan complete';
+  return null;
+}
+
+function setAutonomyHalted(snapshot, { autonomy, reason, detail, phaseId }) {
+  if (!AUTONOMY.has(autonomy) || (autonomy !== 'halted' && autonomy !== 'revoked')) {
+    throw new ExecutePlanError('halt autonomy must be halted or revoked');
+  }
+  if (!STATUS_REASON.has(reason)) {
+    throw new ExecutePlanError(`invalid halt reason: ${reason}`);
+  }
+  snapshot.autonomy = autonomy;
+  const target =
+    (phaseId && getPhase(snapshot, phaseId)) ||
+    findCurrentPhase(snapshot) ||
+    findNextPendingPhase(snapshot);
+  if (target && target.status === 'in_progress') {
+    target.status = 'halted';
+    target.status_reason = reason;
+    target.status_detail = detail || null;
+  }
+  return snapshot;
+}
+
+function setPhaseStatus(snapshot, phaseId, status, fields = {}) {
+  if (!PHASE_STATUS.has(status)) throw new ExecutePlanError(`invalid phase status: ${status}`);
+  const phase = getPhase(snapshot, phaseId);
+  phase.status = status;
+  if (status === 'halted' || status === 'blocked') {
+    if (!fields.statusReason || !STATUS_REASON.has(fields.statusReason)) {
+      throw new ExecutePlanError(`status_reason required for status=${status}`);
+    }
+    phase.status_reason = fields.statusReason;
+    phase.status_detail = fields.statusDetail ?? null;
+  } else {
+    phase.status_reason = null;
+    phase.status_detail = fields.statusDetail ?? null;
+  }
+  if ('prUrl' in fields) phase.pr_url = fields.prUrl;
+  if ('prHeadSha' in fields) phase.pr_head_sha = fields.prHeadSha;
+  if ('mergeCommit' in fields) phase.merge_commit = fields.mergeCommit;
+  if (fields.debtIssueRefs) phase.debt_issue_refs = fields.debtIssueRefs;
+  return phase;
+}
+
+function gitRevParse(ref = 'HEAD') {
+  return execSync(`git rev-parse ${ref}`, { cwd: REPO_ROOT, encoding: 'utf8' }).trim();
+}
+
+function gitBranchName() {
+  return execSync('git rev-parse --abbrev-ref HEAD', {
+    cwd: REPO_ROOT,
+    encoding: 'utf8',
+  }).trim();
+}
+
+function buildArtifactRef(planId, overrides = {}) {
+  const paths = planPaths(planId);
+  return {
+    branch: overrides.branch ?? gitBranchName(),
+    plan_path: path.relative(REPO_ROOT, paths.planMd),
+    plan_commit: overrides.planCommit ?? gitRevParse('HEAD'),
+    snapshot_path: path.relative(REPO_ROOT, paths.snapshotJson),
+    snapshot_commit: overrides.snapshotCommit ?? gitRevParse('HEAD'),
+  };
+}
+
+function syncRuntimeState(planId, overrides = {}) {
+  const snapshot = loadSnapshot(planId);
+  const paths = planPaths(planId);
+  const current = findCurrentPhase(snapshot) || findNextPendingPhase(snapshot);
+  const lastMerged = [...snapshot.phases].reverse().find((p) => p.status === 'merged');
+  const runtime = {
+    autonomy: snapshot.autonomy,
+    current_phase: current ? current.id : null,
+    last_completed_phase: lastMerged ? lastMerged.id : null,
+    halt_reason:
+      snapshot.autonomy === 'halted' || snapshot.autonomy === 'revoked'
+        ? current?.status_reason || snapshot.autonomy
+        : null,
+    next_action: computeNextAction(snapshot),
+    artifact_ref: buildArtifactRef(planId, overrides),
+    open_prs: snapshot.phases
+      .filter((p) => p.pr_url && p.status !== 'merged')
+      .map((p) => p.pr_url),
+    merge_commits: Object.fromEntries(
+      snapshot.phases.filter((p) => p.merge_commit).map((p) => [p.id, p.merge_commit])
+    ),
+    debt_issue_refs: [...new Set(snapshot.phases.flatMap((p) => p.debt_issue_refs || []))],
+  };
+  updatePlanRuntimeBlock(paths.planMd, runtime);
+  return runtime;
+}
+
+module.exports = {
+  buildArtifactRef,
+  checkAutonomyGate,
+  checkResume,
+  computeNextAction,
+  controlIssueLabels,
+  effectiveMergeMode,
+  findCurrentPhase,
+  findNextPendingPhase,
+  gitBranchName,
+  gitRevParse,
+  normalizeLabels,
+  parseRuntimeBlock,
+  renderControlIssueBody,
+  renderControlIssueTitle,
+  renderHaltComment,
+  renderRuntimeBlock,
+  setAutonomyHalted,
+  setPhaseStatus,
+  syncRuntimeState,
+  updatePlanRuntimeBlock,
+};

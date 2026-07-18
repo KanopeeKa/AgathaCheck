@@ -113,7 +113,22 @@ Foundation for `/execute-plan` and `/babysit-plus` skills. Schema and policy doc
 
 **Exit:** Skill operational; links to canonical policy (no duplicated prose). Plain `/babysit` unchanged.
 
-**Next:** Phase C control issue + plan artifact runtime → Phase D `execute-plan` skill.
+**Next:** Phase D `execute-plan` skill. See `docs/agent-efficiency/autonomous-pr-policy.md`.
+
+---
+
+## Sprint 12 — Phase C: Control issue + plan artifact runtime
+
+| # | Deliverable | Status |
+|---|-------------|--------|
+| 12.C.1 | `scripts/lib/execute_plan_lib.js` — shared validation + runtime | Done |
+| 12.C.2 | `scripts/execute_plan_runtime.js` — gate, halt, resume, sync CLI | Done |
+| 12.C.3 | `scripts/execute_plan_runtime.test.js` | Done |
+| 12.C.4 | `docs/agent-efficiency/execute-plan-runtime.md` | Done |
+
+**Exit:** Agents can gate autonomy, sync plan artifacts, render control-issue templates, and halt/resume without duplicating policy prose.
+
+**Next:** Phase D `execute-plan` skill (orchestrator).
 
 ---
 

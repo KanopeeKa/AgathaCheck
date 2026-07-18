@@ -32,7 +32,7 @@ During `/execute-plan`, always use **/babysit-plus**, never plain babysit alone.
 ### 0. Preflight
 
 1. `git fetch origin main && git rebase origin/main` on the PR branch.
-2. If execute-plan: confirm control issue has `autonomous-approved`, not `autonomous-revoked`, and `approved_until` is in the future.
+2. If execute-plan: confirm control issue has `autonomous-approved`, not `autonomous-revoked`, and `approved_until` is in the future (`node scripts/execute_plan_runtime.js gate <plan_id> --labels ...`).
 3. `gh pr view <url> --json state,isDraft,labels,headRefOid,baseRefName`
 4. Stop if: `do-not-merge`, draft (when merge intended), revoked, or expired.
 
