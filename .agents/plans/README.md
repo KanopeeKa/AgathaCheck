@@ -14,6 +14,7 @@ Multi-phase autonomous work artifacts for `/execute-plan`.
 **Docs:**
 
 - [execute-plan-schema.md](../docs/agent-efficiency/execute-plan-schema.md)
+- [execute-plan-runtime.md](../docs/agent-efficiency/execute-plan-runtime.md)
 - [plan-template.md](../docs/agent-efficiency/plan-template.md)
 - [autonomous-pr-policy.md](../docs/agent-efficiency/autonomous-pr-policy.md)
 

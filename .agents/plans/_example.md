@@ -59,4 +59,13 @@ current_phase: null
 last_completed_phase: null
 halt_reason: "documentation example — not for execution"
 next_action: null
+artifact_ref:
+  branch: null
+  plan_path: .agents/plans/example-plan.md
+  plan_commit: null
+  snapshot_path: .agents/plans/example-plan.snapshot.json
+  snapshot_commit: null
+open_prs: []
+merge_commits: {}
+debt_issue_refs: []
 ```
