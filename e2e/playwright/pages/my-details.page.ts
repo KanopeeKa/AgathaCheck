@@ -6,7 +6,6 @@ import {
   fillLabelledField,
   flutterGotoUrl,
   isExperienceShellVisible,
-  openExperienceDrawer,
   refreshFlutterAccessibility,
   waitForFlutterRoutePattern,
 } from '../support/flutter';
@@ -37,14 +36,8 @@ export class MyDetailsPage {
     }
 
     if (await isExperienceShellVisible(this.page)) {
-      await openExperienceDrawer(this.page);
-      await this.page.getByText('Settings', { exact: true }).first().click();
+      await this.page.goto(flutterGotoUrl('/my-details'));
       await refreshFlutterAccessibility(this.page);
-      await this.page
-        .getByText('My Details', { exact: true })
-        .or(this.page.getByText('Mon profil', { exact: true }))
-        .first()
-        .click();
       await waitForFlutterRoutePattern(this.page, /\/my-details$/, 30_000);
       await this.expectLoaded();
       return;
