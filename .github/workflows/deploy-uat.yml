@@ -4,6 +4,9 @@ on:
   push:
     tags:
       - 'uat-*'
+  workflow_run:
+    workflows: ['Promote UAT (tag on merge to main)']
+    types: [completed]
   workflow_dispatch:
     inputs:
       deploy_ref:
@@ -21,7 +24,6 @@ on:
 env:
   FLUTTER_VERSION: '3.32.0'
   UAT_BASE_URL: https://uat.agathatrack.com
-  DEPLOY_REF: ${{ github.event_name == 'workflow_dispatch' && inputs.deploy_ref || github.ref_name }}
 
 concurrency:
   group: deploy-uat
@@ -29,10 +31,62 @@ concurrency:
 
 permissions:
   contents: read
+  actions: read
 
 jobs:
+  resolve-trigger:
+    name: Resolve deploy trigger
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      proceed: ${{ steps.resolve.outputs.proceed }}
+      deploy_ref: ${{ steps.resolve.outputs.deploy_ref }}
+      trigger_source: ${{ steps.resolve.outputs.trigger_source }}
+      promote_run_id: ${{ steps.resolve.outputs.promote_run_id }}
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          sparse-checkout: |
+            scripts/ci/resolve-uat-deploy-trigger.sh
+            scripts/ci/assert-uat-tag.sh
+            scripts/ci/append-summary.sh
+          sparse-checkout-cone-mode: false
+
+      - name: Begin job timing
+        run: echo "JOB_START_EPOCH=$(date +%s)" >> "$GITHUB_ENV"
+
+      - name: Resolve trigger context
+        id: resolve
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          WORKFLOW_RUN_ID: ${{ github.event.workflow_run.id }}
+          WORKFLOW_RUN_CONCLUSION: ${{ github.event.workflow_run.conclusion }}
+          WORKFLOW_RUN_HEAD_SHA: ${{ github.event.workflow_run.head_sha }}
+          DISPATCH_REF: ${{ github.event_name == 'workflow_dispatch' && inputs.deploy_ref || '' }}
+          GITHUB_REF_NAME: ${{ github.ref_name }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: bash scripts/ci/resolve-uat-deploy-trigger.sh
+
+      - name: Write resolve summary
+        if: always()
+        run: |
+          end=$(date +%s)
+          start="${JOB_START_EPOCH:-$end}"
+          dur=$((end - start))
+          bash scripts/ci/append-summary.sh "Deploy UAT — resolve trigger" \
+            "workflow=deploy-uat" \
+            "job=resolve-trigger" \
+            "deploy_ref=${{ steps.resolve.outputs.deploy_ref || 'n/a' }}" \
+            "trigger_source=${{ steps.resolve.outputs.trigger_source || 'n/a' }}" \
+            "promote_run_id=${{ steps.resolve.outputs.promote_run_id || 'n/a' }}" \
+            "proceed=${{ steps.resolve.outputs.proceed || 'false' }}" \
+            "run_id=${{ github.run_id }}" \
+            "duration_sec=${dur}"
+
   validate-ref:
     name: Validate deploy ref
+    needs: resolve-trigger
+    if: needs.resolve-trigger.outputs.proceed == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
@@ -44,21 +98,22 @@ jobs:
           sparse-checkout-cone-mode: false
 
       - name: Validate UAT tag format
-        run: bash scripts/ci/assert-uat-tag.sh "${{ env.DEPLOY_REF }}"
+        run: bash scripts/ci/assert-uat-tag.sh "${{ needs.resolve-trigger.outputs.deploy_ref }}"
 
       - name: Verify UAT tag exists on origin
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: bash scripts/ci/assert-git-ref-exists.sh "${{ env.DEPLOY_REF }}" "tags/uat-"
+        run: bash scripts/ci/assert-git-ref-exists.sh "${{ needs.resolve-trigger.outputs.deploy_ref }}" "tags/uat-"
 
   build-web:
     name: Build Flutter web
-    needs: validate-ref
+    needs: [resolve-trigger, validate-ref]
+    if: needs.resolve-trigger.outputs.proceed == 'true'
     uses: ./.github/workflows/_reusable-build-web.yml
     secrets:
       POSTHOG_API_KEY: ${{ secrets.POSTHOG_API_KEY }}
     with:
-      ref: ${{ github.event_name == 'workflow_dispatch' && inputs.deploy_ref || github.ref_name }}
+      ref: ${{ needs.resolve-trigger.outputs.deploy_ref }}
       run_clean: ${{ github.event_name == 'workflow_dispatch' && inputs.run_clean || github.event_name != 'workflow_dispatch' && vars.UAT_FLUTTER_CLEAN == 'true' }}
       run_codegen: true
       upload_artifact: true
@@ -66,7 +121,8 @@ jobs:
   # Fast path: promote tested web artifact + FTP deploy. Unit tests already ran on main CI.
   deploy:
     name: Build and deploy to UAT
-    needs: build-web
+    needs: [resolve-trigger, build-web]
+    if: needs.resolve-trigger.outputs.proceed == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 45
     environment: UAT
@@ -80,7 +136,7 @@ jobs:
     steps:
       - uses: actions/checkout@v5
         with:
-          ref: ${{ env.DEPLOY_REF }}
+          ref: ${{ needs.resolve-trigger.outputs.deploy_ref }}
 
       - name: Begin job timing
         run: echo "JOB_START_EPOCH=$(date +%s)" >> "$GITHUB_ENV"
@@ -475,7 +531,7 @@ jobs:
           bash scripts/ci/append-summary.sh "UAT deploy job" \
             "workflow=deploy-uat" \
             "job=deploy" \
-            "ref=${{ env.DEPLOY_REF }}" \
+            "ref=${{ needs.resolve-trigger.outputs.deploy_ref }}" \
             "sha=${{ needs.build-web.outputs.deploy_sha }}" \
             "artifact=${{ needs.build-web.outputs.artifact_name }}" \
             "resolved_run_clean=${{ needs.build-web.outputs.resolved_run_clean }}" \
@@ -505,7 +561,7 @@ jobs:
   # Blocking gate: failures must fail prod-ready (uat-e2e-full still runs in parallel).
   smoke:
     name: UAT post-deploy smoke
-    needs: deploy
+    needs: [resolve-trigger, deploy]
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
@@ -541,7 +597,7 @@ jobs:
           bash scripts/ci/append-summary.sh "UAT smoke job" \
             "workflow=deploy-uat" \
             "job=smoke" \
-            "ref=${{ env.DEPLOY_REF }}" \
+            "ref=${{ needs.resolve-trigger.outputs.deploy_ref }}" \
             "sha=${{ github.sha }}" \
             "run_id=${{ github.run_id }}" \
             "duration_sec=${dur}"
@@ -549,7 +605,7 @@ jobs:
   # Live UAT smoke E2E — runs in parallel with manual UAT; does not block deploy.
   uat-e2e-smoke:
     name: UAT live smoke E2E
-    needs: [deploy, smoke]
+    needs: [resolve-trigger, deploy, smoke]
     if: needs.smoke.result == 'success'
     runs-on: ubuntu-latest
     timeout-minutes: 30
@@ -597,7 +653,7 @@ jobs:
           bash scripts/ci/append-summary.sh "UAT live smoke E2E job" \
             "workflow=deploy-uat" \
             "job=uat-e2e-smoke" \
-            "ref=${{ env.DEPLOY_REF }}" \
+            "ref=${{ needs.resolve-trigger.outputs.deploy_ref }}" \
             "sha=${{ github.sha }}" \
             "run_id=${{ github.run_id }}" \
             "duration_sec=${dur}"
@@ -620,7 +676,7 @@ jobs:
   # Aggregate status for GitHub Environment protection on PROD (required check).
   prod-ready:
     name: Prod ready
-    needs: [deploy, smoke, uat-e2e-smoke, uat-e2e-full]
+    needs: [resolve-trigger, deploy, smoke, uat-e2e-smoke, uat-e2e-full]
     if: always()
     runs-on: ubuntu-latest
     timeout-minutes: 5
@@ -633,7 +689,7 @@ jobs:
           SMOKE_RESULT: ${{ needs.smoke.result }}
           LIVE_SMOKE_RESULT: ${{ needs.uat-e2e-smoke.result }}
           FULL_E2E_RESULT: ${{ needs.uat-e2e-full.result }}
-          DEPLOY_REF: ${{ env.DEPLOY_REF }}
+          DEPLOY_REF: ${{ needs.resolve-trigger.outputs.deploy_ref }}
           GITHUB_SHA: ${{ github.sha }}
           GITHUB_RUN_ID: ${{ github.run_id }}
           MIGRATE_STATUS_COLLECTED: ${{ needs.deploy.outputs.migrate_status_collected }}
@@ -644,13 +700,9 @@ jobs:
   # Update GitHub issue / Project status when this deploy was triggered for an agent issue branch.
   agent-uat-notify:
     name: Notify linked agent issue
-    needs: [prod-ready]
-    # Job-level `if` cannot reference workflow `env`; inline the deploy ref expression.
+    needs: [resolve-trigger, prod-ready]
     if: >-
-      always() && (
-        startsWith(github.ref_name, 'uat-') ||
-        (github.event_name == 'workflow_dispatch' && startsWith(github.event.inputs.deploy_ref, 'uat-'))
-      )
+      always() && startsWith(needs.resolve-trigger.outputs.deploy_ref, 'uat-')
     runs-on: ubuntu-latest
     permissions:
       issues: write
@@ -668,7 +720,7 @@ jobs:
           GH_PROJECT_ID: ${{ secrets.GH_PROJECT_ID }}
           GH_STATUS_FIELD_ID: ${{ secrets.GH_STATUS_FIELD_ID }}
           HANDLER_MODE: uat-result
-          BRANCH_NAME: ${{ env.DEPLOY_REF }}
+          BRANCH_NAME: ${{ needs.resolve-trigger.outputs.deploy_ref }}
           WORKFLOW_CONCLUSION: ${{ needs.prod-ready.result == 'success' && 'success' || 'failure' }}
           WORKFLOW_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
         run: node .github/scripts/issue-agent-handlers.js

@@ -63,6 +63,12 @@ step summary for alerting (`PROMOTION_WEBHOOK_URL` optional).
 
 After merge, **`promote-uat.yml`** does not re-run CI on the merge commit.
 
+**Tag push → deploy chain:** `promote-uat.yml` creates `uat-*` tags with the default
+`GITHUB_TOKEN`. GitHub does **not** fire `on: push: tags` workflows for those refs
+(to prevent recursive runs). **`deploy-uat.yml`** therefore also listens for
+`workflow_run` after **Promote UAT** completes and resolves the tag for the merge
+commit. Manual tag pushes (non-`GITHUB_TOKEN`) still trigger `deploy-uat` via tag push.
+
 We rely on:
 
 - `ci-gate / CI passed` + `Analyze JavaScript` on the PR
