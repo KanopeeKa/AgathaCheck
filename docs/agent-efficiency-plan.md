@@ -100,7 +100,7 @@ Foundation for `/execute-plan` and `/babysit-plus` skills. Schema and policy doc
 
 **Policy highlights:** frozen snapshot, `status` + `status_reason`, `allowed_exceptions` enum, 48h `approved_until`, halt-only revoke, debt issue dedupe, merge-done phase gate.
 
-**Next:** Phase C control issue runtime → Phase D `execute-plan` skill. See `docs/agent-efficiency/autonomous-pr-policy.md`.
+**Next:** See Phase D below (done).
 
 ---
 
@@ -113,7 +113,7 @@ Foundation for `/execute-plan` and `/babysit-plus` skills. Schema and policy doc
 
 **Exit:** Skill operational; links to canonical policy (no duplicated prose). Plain `/babysit` unchanged.
 
-**Next:** Phase D `execute-plan` skill. See `docs/agent-efficiency/autonomous-pr-policy.md`.
+**Next:** See Phase D below (done).
 
 ---
 
@@ -128,7 +128,21 @@ Foundation for `/execute-plan` and `/babysit-plus` skills. Schema and policy doc
 
 **Exit:** Agents can gate autonomy, sync plan artifacts, render control-issue templates, and halt/resume without duplicating policy prose.
 
-**Next:** Phase D `execute-plan` skill (orchestrator).
+**Next:** Phase E auto/labeled merge hardening. See `docs/agent-efficiency/autonomous-pr-policy.md`.
+
+---
+
+## Sprint 12 — Phase D: Execute-plan skill
+
+| # | Deliverable | Status |
+|---|-------------|--------|
+| 12.D.1 | `.cursor/skills/execute-plan/SKILL.md` | Done |
+| 12.D.2 | `.cursor/commands/execute-plan.md` | Done |
+| 12.D.3 | Policy cross-links updated | Done |
+
+**Exit:** Orchestrator skill operational; **babysit-plus active by default with merge mode `auto`** unless snapshot overrides; phase gate = merge-done; links to canonical policy (no duplicated prose).
+
+**Next:** Phase E merge-mode hardening → Phase F spawn-within-phase → Phase G hardening + docs.
 
 ---
 

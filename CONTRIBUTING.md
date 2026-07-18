@@ -55,7 +55,7 @@ node scripts/check_file_size.js && node e2e/scripts/check_bdd_coverage.js
 - Parallel sprints: `docs/agent-efficiency/prompt-templates.md`
 - Babysit merge-ready PRs: `/babysit` command (lightweight)
 - Atomic PRs (one outcome, snag ladder): `docs/agent-efficiency/atomic-pr-policy.md`
-- Autonomous PR + multi-phase plans: `docs/agent-efficiency/autonomous-pr-policy.md` (`/babysit-plus` skill, `/execute-plan` — Phase D)
+- Autonomous PR + multi-phase plans: `docs/agent-efficiency/autonomous-pr-policy.md` (`/babysit-plus` skill, `/execute-plan` skill)
 
 ## Atomic PRs
 
