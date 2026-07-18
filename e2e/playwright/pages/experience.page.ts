@@ -5,6 +5,7 @@ import {
   openExperienceDrawer,
   refreshFlutterAccessibility,
   waitForFlutterRoute,
+  waitForFlutterRoutePattern,
 } from '../support/flutter';
 
 /**
@@ -32,7 +33,7 @@ export class ExperiencePage {
       await this.page.getByRole('checkbox').click();
     }
     await this.page.getByRole('button', { name: 'Continue' }).click();
-    await this.page.waitForURL(/\/g\/home/, { timeout: 30_000 });
+    await waitForFlutterRoutePattern(this.page, /\/g\/home/, 30_000);
   }
 
   async selectOrganizationCard(): Promise<void> {
@@ -45,7 +46,7 @@ export class ExperiencePage {
       await this.page.getByRole('checkbox').click();
     }
     await this.page.getByRole('button', { name: 'Continue' }).click();
-    await this.page.waitForURL(/\/o\/home/, { timeout: 30_000 });
+    await waitForFlutterRoutePattern(this.page, /\/o\/home/, 30_000);
   }
 
   async expectGuardianShell(): Promise<void> {
@@ -61,7 +62,7 @@ export class ExperiencePage {
   async openDrawerOrgView(): Promise<void> {
     await this.page.getByRole('button', { name: 'Settings' }).click();
     await this.page.getByText('Organisation view').click();
-    await this.page.waitForURL(/\/o\/home/, { timeout: 30_000 });
+    await waitForFlutterRoutePattern(this.page, /\/o\/home/, 30_000);
   }
 
   async gotoChooser(): Promise<void> {

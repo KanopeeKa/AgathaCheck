@@ -13,6 +13,7 @@ import {
   dismissConsentBannerIfPresent,
   refreshFlutterAccessibility,
   waitForPostLoginRoute,
+  waitForFlutterRoutePattern,
 } from '../support/flutter';
 import { prepareLiveApiAccess } from '../support/waf';
 
@@ -34,7 +35,7 @@ test.describe('Guardian onboarding', () => {
     await dismissConsentBannerIfPresent(page);
     await waitForPostLoginRoute(page);
 
-    await page.waitForURL(/\/g\/onboarding/, { timeout: 60_000 });
+    await waitForFlutterRoutePattern(page, /\/g\/onboarding/, 60_000);
     const onboarding = new OnboardingPage(page);
     await onboarding.expectGuardianVisible();
   });

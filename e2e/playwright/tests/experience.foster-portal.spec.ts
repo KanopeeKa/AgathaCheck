@@ -7,6 +7,7 @@ import { seedRescueHearts } from '../support/api';
 import {
   dismissConsentBannerIfPresent,
   refreshFlutterAccessibility,
+  waitForFlutterRoutePattern,
 } from '../support/flutter';
 import { prepareLiveApiAccess } from '../support/waf';
 
@@ -22,7 +23,7 @@ async function loginFosterOnly(
   await landing.login(email, password);
   await dismissConsentBannerIfPresent(page);
   await refreshFlutterAccessibility(page);
-  await page.waitForURL(/\/o\/home/, { timeout: 60_000 });
+  await waitForFlutterRoutePattern(page, /\/o\/home/, 60_000);
 }
 
 test.describe('Foster portal route guards', () => {
@@ -35,7 +36,7 @@ test.describe('Foster portal route guards', () => {
 
     await page.goto('/o/invite');
     await refreshFlutterAccessibility(page);
-    await page.waitForURL(/\/o\/home/, { timeout: 15_000 });
+    await waitForFlutterRoutePattern(page, /\/o\/home/, 15_000);
     await expect(page.getByRole('button', { name: 'Home' })).toBeVisible();
     await expect(page.getByText('Invite', { exact: true })).not.toBeVisible();
   });
@@ -49,7 +50,7 @@ test.describe('Foster portal route guards', () => {
 
     await page.goto('/o/events');
     await refreshFlutterAccessibility(page);
-    await page.waitForURL(/\/o\/home/, { timeout: 15_000 });
+    await waitForFlutterRoutePattern(page, /\/o\/home/, 15_000);
     await expect(page.getByRole('button', { name: 'Home' })).toBeVisible();
     await expect(page.getByRole('button', { name: 'Add Health Event' })).not.toBeVisible();
   });

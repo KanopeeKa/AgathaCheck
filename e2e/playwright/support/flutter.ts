@@ -15,6 +15,25 @@ export function flutterRoutePath(url: string): string {
   return parsed.pathname;
 }
 
+/**
+ * Poll until the effective Flutter route matches.
+ * Prefer over `page.waitForURL` — hash SPA navigations do not fire `load`.
+ */
+export async function waitForFlutterRoutePattern(
+  page: Page,
+  pattern: RegExp,
+  timeout?: number,
+): Promise<void> {
+  const effectiveTimeout = timeout ?? postLoginTimeout(30_000);
+  const { expect } = await import('@playwright/test');
+  await expect(async () => {
+    const path = flutterRoutePath(page.url());
+    if (!pattern.test(path)) {
+      throw new Error(`Route ${path} does not match ${pattern} (url=${page.url()})`);
+    }
+  }).toPass({ timeout: effectiveTimeout });
+}
+
 /** Wait until the Flutter web canvas is mounted. */
 export async function waitForFlutter(page: Page): Promise<void> {
   await waitForFlutterRoute(page, '/landing');
@@ -114,7 +133,7 @@ export async function completeExperienceChooserIfPresent(
   await refreshFlutterAccessibility(page);
 
   const chooserHeading = page.getByText(/How will you use Agatha Track/i);
-  const onChooserUrl = /\/app\/choose/.test(page.url());
+  const onChooserUrl = flutterRoutePath(page.url()) === '/app/choose';
   const chooserVisible = onChooserUrl
     || (await chooserHeading.isVisible({ timeout: 3_000 }).catch(() => false));
   if (!chooserVisible) return;
@@ -129,11 +148,12 @@ export async function completeExperienceChooserIfPresent(
     choice === 'guardian'
       ? /\/g\/(home|onboarding)/
       : /\/o\/(home|onboarding)/;
-  await page.waitForURL(homePattern, { timeout: effectiveTimeout });
-  if (choice === 'guardian' && /\/g\/onboarding/.test(page.url())) {
+  await waitForFlutterRoutePattern(page, homePattern, effectiveTimeout);
+  const route = flutterRoutePath(page.url());
+  if (choice === 'guardian' && route === '/g/onboarding') {
     await skipGuardianOnboardingIfPresent(page, effectiveTimeout);
   }
-  if (choice === 'organization' && /\/o\/onboarding/.test(page.url())) {
+  if (choice === 'organization' && route === '/o/onboarding') {
     await skipOrgOnboardingIfPresent(page, effectiveTimeout);
   }
   await refreshFlutterAccessibility(page);
@@ -178,14 +198,13 @@ export async function skipOrgOnboardingIfPresent(
   await dismissConsentBannerIfPresent(page);
   await refreshFlutterAccessibility(page);
 
-  const onOnboardingUrl = /\/o\/onboarding/.test(page.url());
+  if (flutterRoutePath(page.url()) !== '/o/onboarding') return;
+
   const skipButton = page.getByRole('button', { name: /skip for now/i });
-  const skipVisible = onOnboardingUrl
-    || (await skipButton.isVisible({ timeout: 3_000 }).catch(() => false));
-  if (!skipVisible) return;
+  if (!(await skipButton.isVisible({ timeout: 3_000 }).catch(() => false))) return;
 
   await skipButton.click();
-  await page.waitForURL(/\/o\/home/, { timeout: effectiveTimeout });
+  await waitForFlutterRoutePattern(page, /\/o\/home/, effectiveTimeout);
   await refreshFlutterAccessibility(page);
 }
 
@@ -197,7 +216,7 @@ export async function completeOrgOnboarding(
   timeout?: number,
 ): Promise<void> {
   const effectiveTimeout = timeout ?? postLoginTimeout(60_000);
-  await page.waitForURL(/\/o\/onboarding/, { timeout: effectiveTimeout });
+  await waitForFlutterRoutePattern(page, /\/o\/onboarding/, effectiveTimeout);
   await refreshFlutterAccessibility(page);
 
   await page.getByRole('button', { name: /get started/i }).click();
@@ -210,7 +229,7 @@ export async function completeOrgOnboarding(
   await page.getByRole('button', { name: 'Continue' }).click();
   await fillLabelledField(page, 'Reminder name', reminderName);
   await page.getByRole('button', { name: /finish setup/i }).click();
-  await page.waitForURL(/\/o\/home/, { timeout: effectiveTimeout });
+  await waitForFlutterRoutePattern(page, /\/o\/home/, effectiveTimeout);
   await refreshFlutterAccessibility(page);
 }
 
@@ -223,14 +242,13 @@ export async function skipGuardianOnboardingIfPresent(
   await dismissConsentBannerIfPresent(page);
   await refreshFlutterAccessibility(page);
 
-  const onOnboardingUrl = /\/g\/onboarding/.test(page.url());
+  if (flutterRoutePath(page.url()) !== '/g/onboarding') return;
+
   const skipButton = page.getByRole('button', { name: /skip for now/i });
-  const skipVisible = onOnboardingUrl
-    || (await skipButton.isVisible({ timeout: 3_000 }).catch(() => false));
-  if (!skipVisible) return;
+  if (!(await skipButton.isVisible({ timeout: 3_000 }).catch(() => false))) return;
 
   await skipButton.click();
-  await page.waitForURL(/\/g\/home/, { timeout: effectiveTimeout });
+  await waitForFlutterRoutePattern(page, /\/g\/home/, effectiveTimeout);
   await refreshFlutterAccessibility(page);
 }
 
@@ -242,7 +260,7 @@ export async function completeGuardianOnboarding(
   timeout?: number,
 ): Promise<void> {
   const effectiveTimeout = timeout ?? postLoginTimeout(60_000);
-  await page.waitForURL(/\/g\/onboarding/, { timeout: effectiveTimeout });
+  await waitForFlutterRoutePattern(page, /\/g\/onboarding/, effectiveTimeout);
   await refreshFlutterAccessibility(page);
 
   await page.getByRole('button', { name: /get started/i }).click();
@@ -250,7 +268,7 @@ export async function completeGuardianOnboarding(
   await page.getByRole('button', { name: 'Continue' }).click();
   await fillLabelledField(page, 'Reminder name', reminderName);
   await page.getByRole('button', { name: /finish setup/i }).click();
-  await page.waitForURL(/\/g\/home/, { timeout: effectiveTimeout });
+  await waitForFlutterRoutePattern(page, /\/g\/home/, effectiveTimeout);
   await refreshFlutterAccessibility(page);
 }
 
