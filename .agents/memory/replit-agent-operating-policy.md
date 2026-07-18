@@ -22,7 +22,15 @@ Repo docs are the source of truth. `.cursor/rules/*.mdc` + `AGENTS.md` are the a
 
 **CI/CD (do not break)**: only umbrella `ci-gate / CI passed` is required on PRs — any new blocking job must be added to ci-gate `needs` AND `scripts/ci/assert-ci-gate.sh`. Promotion is tag-first and automated: merge to main → `promote-uat` creates `uat-YYMMDD-PR#` tag → `deploy-uat` via workflow_run → `Prod ready` gate → `deploy-prod` (artifact promotion, provenance-checked; `PROD_DEPLOY_ENABLED`, `UAT_SSH_ENABLED`, `UAT_AUTO_MIGRATE` flags). Tags immutable. UAT `node_modules` must stay a symlink.
 
-**PR flow (user decision):** GitHub branch protection enforces PRs to `main`; prefer routing changes through a PR (so ci-gate + CodeQL run) where practical rather than direct-to-main commits. Mechanics: push local work with `git push https://x-access-token:$GITHUB_TOKEN@github.com/KanopeeKa/AgathaCheck.git HEAD:refs/heads/replit/<topic>`, then open the PR via the GitHub REST API with the same token (user dismissed the OAuth connector; the fine-grained PAT lives in the `GITHUB_TOKEN` secret). Local checkpoints still land on local main — after the user merges a PR, sync local main from `origin/main` (delegate any destructive git to a background task).
+**PR flow (user decision):** GitHub branch protection enforces PRs to `main`; prefer routing changes through a PR (so ci-gate + CodeQL run) where practical rather than direct-to-main commits.
+
+**PR checklist — follow in this order every time:**
+1. **Rebase first**: `git fetch origin && git rebase origin/main` — resolve any conflicts before pushing; never open a PR that is behind main.
+2. **Push branch**: `git push https://x-access-token:$GITHUB_TOKEN@github.com/KanopeeKa/AgathaCheck.git HEAD:refs/heads/replit/<topic>`
+3. **Open PR via GitHub REST API** (PAT is `GITHUB_TOKEN` secret — user dismissed the OAuth connector). Create as ready (not draft) so automatic reviewers fire immediately.
+4. **Request Copilot review immediately** (parallel to CI — do not wait for CI first): `POST /repos/KanopeeKa/AgathaCheck/pulls/{n}/requested_reviewers` with `{"reviewers":["copilot-pull-request-reviewer"]}`. Canonical policy: `.cursor/skills/babysit-plus/SKILL.md` §0b — poll reviews every 30–60 s for up to 15 min alongside CI; triage must-fix / nit / ignore before merging.
+5. **Monitor CI** via `GET /repos/KanopeeKa/AgathaCheck/commits/{sha}/check-runs` — poll every 60–90 s; address failures. Flutter test shards take ~3–5 min, full suite ~8–10 min.
+6. **After both CI and reviews are green/triaged**: merge is user's click (branch protection). After merge, sync local main: `git fetch origin && git reset --hard origin/main` (or delegate if destructive).
 
 **Dart/Node parity gap (known state, decision pending):** Dart lags Node — share-by-code is a 501 stub, foster placements partial; Replit preview runs the Dart server so those features look broken in preview but work on UAT/prod. Do not "fix" as a regression; discuss with user first.
 
