@@ -6,6 +6,15 @@ function postLoginTimeout(fallback = 60_000): number {
   return isLiveHostingTarget() ? 120_000 : fallback;
 }
 
+/** Effective Flutter route path (hash routes win over pathname on Flutter web). */
+export function flutterRoutePath(url: string): string {
+  const parsed = new URL(url);
+  if (parsed.hash.startsWith('#/')) {
+    return parsed.hash.slice(1).split('?')[0];
+  }
+  return parsed.pathname;
+}
+
 /** Wait until the Flutter web canvas is mounted. */
 export async function waitForFlutter(page: Page): Promise<void> {
   await waitForFlutterRoute(page, '/landing');
@@ -139,7 +148,7 @@ export async function waitForPostLoginRoute(page: Page, timeout?: number): Promi
     await dismissConsentBannerIfPresent(page);
     await refreshFlutterAccessibility(page);
 
-    const path = new URL(page.url()).pathname;
+    const path = flutterRoutePath(page.url());
     if (/\/(g|o)\/home/.test(path) || path === '/app/choose' || path === '/g/onboarding' || path === '/o/onboarding') {
       return;
     }
