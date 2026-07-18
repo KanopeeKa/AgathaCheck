@@ -1,0 +1,24 @@
+---
+description: One-outcome PRs, snag ladder, zero untracked debt — links to canonical policy
+alwaysApply: true
+---
+
+# Atomic PRs
+
+**One PR = one verifiable outcome** (single sentence, independent merge/revert). Cross-domain is fine when it serves that outcome.
+
+## Before you PR
+
+1. One sentence without “and also…”? If no → split.
+2. Unrelated drive-by changes? → micro-PR or debt issue, not this PR.
+3. Multi-step work? → stacked PRs: prep → behavior → E2E (merge each before the next).
+
+## Snag ladder
+
+| Situation | Action |
+|-----------|--------|
+| Same file, ≤15 lines, no behavior change | Fix in current PR |
+| Same outcome, other file, low risk | Micro-PR (preferred) or same PR if blocking |
+| Different outcome / needs decision | Debt issue — never silent deferral |
+
+Full policy: `docs/agent-efficiency/atomic-pr-policy.md`

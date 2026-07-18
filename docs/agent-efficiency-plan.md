@@ -146,6 +146,13 @@ Foundation for `/execute-plan` and `/babysit-plus` skills. Schema and policy doc
 ./scripts/pre-push.sh
 ```
 
+### Atomic PRs (one outcome)
+
+- Canonical: `docs/agent-efficiency/atomic-pr-policy.md`
+- One verifiable outcome per PR; cross-domain OK when serving that outcome
+- Snag ladder: fix trivial same-file issues inline; else micro-PR or debt issue
+- PR governance hints workflow posts **advisory** multi-area reminders (not blocking)
+
 ### Multi-agent spawn checklist
 
 1. Read `/spawn-sprint-agents` skill (or `docs/agent-efficiency/prompt-templates.md`).

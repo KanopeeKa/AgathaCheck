@@ -41,6 +41,12 @@ Do not duplicate these commands in chat — run the script. Skill: `/pre-push-ve
 - Never raw exception text in prod 5xx bodies
 - Calendar dates as `YYYY-MM-DD` on the wire
 
+## Atomic PRs (summary)
+
+- **One PR = one verifiable outcome** (single sentence; cross-domain OK when serving that outcome).
+- **Snags:** fix trivial same-file issues inline; else micro-PR or debt issue — never silent deferral.
+- Full policy: `docs/agent-efficiency/atomic-pr-policy.md`
+
 ## Merge policy (summary)
 
 - **Single domain / single agent:** PR direct to `main` when CI green.
