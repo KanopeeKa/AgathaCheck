@@ -18,6 +18,7 @@ import {
   getHealthEntries,
   seedHappyPawsClinic,
 } from '../support/api';
+import { ExperiencePage } from '../pages/experience.page';
 import { HealthDashboardPage } from '../pages/health-dashboard.page';
 import { OrganizationDetailPage } from '../pages/organization-detail.page';
 import { OrganizationListPage } from '../pages/organization-list.page';
@@ -31,7 +32,7 @@ test.describe('Organisation pet management', () => {
     const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
     const { alice, org } = await seedHappyPawsClinic(baseURL);
 
-    const petList = await loginAs(page, alice);
+    const petList = await loginAs(page, alice, { experience: 'organization' });
     await petList.openOrganizations();
 
     const orgList = new OrganizationListPage(page);
@@ -65,7 +66,7 @@ test.describe('Organisation pet management', () => {
       species: 'dog',
     });
 
-    const petList = await loginAs(page, bob);
+    const petList = await loginAs(page, bob, { experience: 'organization' });
     await petList.expectLoaded();
     await petList.expectPetUnderOrganization('Bella', ORG_NAME);
   });
@@ -82,6 +83,9 @@ test.describe('Organisation pet management', () => {
     const petList = await loginAs(page, alice);
     await petList.expectSectionHeader('My Pets');
     await petList.expectPetVisible('Milo');
+
+    const experience = new ExperiencePage(page);
+    await experience.openDrawerOrgView();
     await petList.expectSectionHeader(ORG_NAME);
     await petList.expectPetUnderOrganization('Bella', ORG_NAME);
   });
@@ -90,7 +94,7 @@ test.describe('Organisation pet management', () => {
     const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
     const { alice, bob, org } = await seedHappyPawsClinic(baseURL);
 
-    const petList = await loginAs(page, alice);
+    const petList = await loginAs(page, alice, { experience: 'organization' });
     await petList.openOrganizations();
 
     const orgList = new OrganizationListPage(page);
@@ -135,7 +139,7 @@ test.describe('Organisation pet management', () => {
     const bobEntries = await getHealthEntries(baseURL, bob.accessToken);
     expect(bobEntries.some((e) => e.name === 'Annual Vaccination')).toBe(true);
 
-    const petList = await loginAs(page, alice);
+    const petList = await loginAs(page, alice, { experience: 'organization' });
     await petList.openHealthDashboard();
 
     const dashboard = new HealthDashboardPage(page);
@@ -160,7 +164,7 @@ test.describe('Organisation pet management', () => {
       nextDueDate: dueDate,
     });
 
-    const petList = await loginAs(page, alice);
+    const petList = await loginAs(page, alice, { experience: 'organization' });
     await petList.openHealthDashboard();
 
     const dashboard = new HealthDashboardPage(page);

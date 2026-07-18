@@ -2,9 +2,12 @@ import type { Page } from '@playwright/test';
 import { expect } from '@playwright/test';
 import {
   dismissConsentBannerIfPresent,
+  flutterGotoUrl,
   openExperienceDrawer,
   refreshFlutterAccessibility,
+  skipOrgOnboardingIfPresent,
   waitForFlutterRoute,
+  waitForFlutterRoutePattern,
 } from '../support/flutter';
 
 /**
@@ -32,7 +35,7 @@ export class ExperiencePage {
       await this.page.getByRole('checkbox').click();
     }
     await this.page.getByRole('button', { name: 'Continue' }).click();
-    await this.page.waitForURL(/\/g\/home/, { timeout: 30_000 });
+    await waitForFlutterRoutePattern(this.page, /\/g\/home/, 30_000);
   }
 
   async selectOrganizationCard(): Promise<void> {
@@ -45,7 +48,7 @@ export class ExperiencePage {
       await this.page.getByRole('checkbox').click();
     }
     await this.page.getByRole('button', { name: 'Continue' }).click();
-    await this.page.waitForURL(/\/o\/home/, { timeout: 30_000 });
+    await waitForFlutterRoutePattern(this.page, /\/o\/home/, 30_000);
   }
 
   async expectGuardianShell(): Promise<void> {
@@ -59,13 +62,15 @@ export class ExperiencePage {
   }
 
   async openDrawerOrgView(): Promise<void> {
-    await this.page.getByRole('button', { name: 'Settings' }).click();
+    await openExperienceDrawer(this.page);
     await this.page.getByText('Organisation view').click();
-    await this.page.waitForURL(/\/o\/home/, { timeout: 30_000 });
+    await waitForFlutterRoutePattern(this.page, /\/o\/(home|onboarding)/, 30_000);
+    await skipOrgOnboardingIfPresent(this.page);
+    await waitForFlutterRoutePattern(this.page, /\/o\/home/, 30_000);
   }
 
   async gotoChooser(): Promise<void> {
-    await this.page.goto('/app/choose');
+    await this.page.goto(flutterGotoUrl('/app/choose'));
     await refreshFlutterAccessibility(this.page);
   }
 
@@ -78,20 +83,19 @@ export class ExperiencePage {
   async openGuardianSettingsFromDrawer(): Promise<void> {
     await dismissConsentBannerIfPresent(this.page);
     await openExperienceDrawer(this.page);
-    await this.page
-      .getByRole('dialog', { name: /navigation menu/i })
-      .getByRole('button', { name: 'Settings' })
-      .click();
-    await refreshFlutterAccessibility(this.page);
+    await this.page.getByText('Settings', { exact: true }).click();
     await this.expectDefaultExperienceSectionVisible();
   }
 
   async expectDefaultExperienceSectionVisible(): Promise<void> {
     await expect(async () => {
       await refreshFlutterAccessibility(this.page);
-      await expect(
-        this.page.getByText('Default experience', { exact: true }),
-      ).toBeVisible();
+      const marker = this.page
+        .getByRole('radio', { name: 'Individual Pet Guardian' })
+        .or(this.page.getByRole('radio', { name: 'Shelter / Organisation' }))
+        .or(this.page.getByText('Default experience', { exact: true }))
+        .first();
+      await expect(marker).toBeVisible();
     }).toPass({ timeout: 45_000 });
   }
 

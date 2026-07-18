@@ -9,11 +9,18 @@ export class HealthDashboardPage {
   constructor(private readonly page: Page) {}
 
   async expectLoaded(): Promise<void> {
-    await this.page
-      .getByRole('button', { name: 'Add Health Event' })
-      .or(this.page.getByText('All', { exact: true }))
-      .first()
-      .waitFor({ timeout: 30_000 });
+    const { expect } = await import('@playwright/test');
+    await expect(async () => {
+      await refreshFlutterAccessibility(this.page);
+      const marker = this.page
+        .getByRole('button', { name: 'Add Health Event' })
+        .or(this.page.getByRole('tab', { name: 'All' }))
+        .or(this.page.getByText('All', { exact: true }))
+        .or(this.page.getByText('Medications', { exact: true }))
+        .or(this.page.getByText('Today', { exact: true }))
+        .first();
+      await expect(marker).toBeVisible();
+    }).toPass({ timeout: 30_000 });
   }
 
   async openAddEntry(): Promise<void> {

@@ -28,4 +28,6 @@ Check PR status, comments, and latest CI and resolve any issues until the PR is 
 7. **Verify locally:** `./scripts/pre-push-changed.sh` for scoped fix; `./scripts/pre-push.sh` before final push when near merge.
 8. **Push** scoped fixes and re-watch CI until mergeable + green + comments triaged. Run `./scripts/babysit_sync_base.sh --pr <url>` before each push. After each push that changes the diff, return to step 4 if new automatic reviews are expected.
 
+**Babysit+ only (after merge to `main`):** continue per `.cursor/skills/babysit-plus/SKILL.md` §8 until **Deploy UAT / Prod ready** is green.
+
 Escalate to human when: security/crypto changes, breaking API contracts, migration risk, or product/legal decisions.

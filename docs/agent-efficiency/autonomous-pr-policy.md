@@ -174,6 +174,23 @@ Verify merge commit is ancestor of `origin/<base_branch>` before next phase.
 
 ---
 
+## Post-merge UAT prod-ready (babysit-plus)
+
+**Do not stop at PR merge** when the work ships to `main` and triggers UAT promotion (`promote-uat.yml` → `deploy-uat.yml`).
+
+After merge (or when babysitting an already-merged fix):
+
+1. Record merge SHA; poll until **Deploy UAT / Prod ready** succeeds or CI budget is exhausted.
+2. On UAT failure: triage gate table (`scripts/ci/assert-uat-gates.sh` output) — `deploy`, HTTP `smoke`, live `@smoke`, localhost E2E (10 shards), migrations when collected.
+3. Remediate in a follow-up PR; repeat babysit-plus from §0 through this section.
+4. **Done** only when `prod-ready` is green (or escalation per §Escalation).
+
+See `docs/ci-cd-gates.md` §3 and `docs/e2e-ci-canary-plan.md` Phase 5 (runtime helpers may land later).
+
+**Infra-only blockers** (e.g. `UAT_AUTO_MIGRATE` unset with pending live migrations) → comment on PR/control issue and escalate; do not weaken gates.
+
+---
+
 ## Halt and resume
 
 ### Revoke = halt only

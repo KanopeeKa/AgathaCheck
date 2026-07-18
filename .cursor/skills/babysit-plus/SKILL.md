@@ -143,11 +143,27 @@ gh pr view <url> --json state,mergedAt,mergeCommit
 
 Verify merge commit is ancestor of `origin/<base_branch>` before execute-plan advances to next phase.
 
----
+### 8. Post-merge UAT prod-ready (mandatory — do not stop at merge)
 
-## Escalation (always halt)
+When the PR merges to `main` (or you are babysitting a merged fix), continue until **Deploy UAT / Prod ready** is green.
 
-See autonomous-pr-policy §Escalation. Includes security/crypto, breaking API, prod migrations, CI gate changes, product/legal, drift, CI budget exhausted, issue tracking failed.
+1. Note merge SHA (`gh pr view <url> --json mergeCommit`).
+2. Poll promotion + deploy:
+   ```bash
+   gh run list --workflow promote-uat.yml --limit 3
+   gh run list --workflow deploy-uat.yml --limit 3
+   gh run view <deploy-run-id>   # wait for Prod ready job
+   ```
+   Poll every **60–120s**. UAT full E2E can take **~45–60 min** (10 shards).
+3. On failure: read `prod-ready` summary + failed shard logs; open remedial PR; return to §0.
+4. Use the same CI retry budget as §5 for remedial PRs.
+5. **Declare done** only when `prod-ready` succeeds (or §Escalation).
+
+Gate reference: `docs/ci-cd-gates.md` §3 · `scripts/ci/assert-uat-gates.sh`.
+
+### 9. Escalation (always halt)
+
+See autonomous-pr-policy §Escalation. Includes security/crypto, breaking API, prod migrations, CI gate changes, product/legal, drift, CI budget exhausted, issue tracking failed, **UAT prod-ready blocked by infra config** (e.g. pending live migrations with `UAT_AUTO_MIGRATE` off).
 
 ---
 

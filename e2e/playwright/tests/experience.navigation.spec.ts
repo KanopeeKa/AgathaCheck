@@ -20,6 +20,7 @@ import {
   skipGuardianOnboardingIfPresent,
   skipOrgOnboardingIfPresent,
   waitForPostLoginRoute,
+  waitForFlutterRoutePattern,
 } from '../support/flutter';
 import { prepareLiveApiAccess } from '../support/waf';
 
@@ -46,7 +47,7 @@ test.describe('Experience navigation', () => {
     testUser,
   }) => {
     await loginFromLanding(page, testUser.email, testUser.password);
-    await page.waitForURL(/\/g\/home/, { timeout: 60_000 });
+    await waitForFlutterRoutePattern(page, /\/g\/home/, 60_000);
     const experience = new ExperiencePage(page);
     await experience.expectGuardianShell();
   });
@@ -57,7 +58,7 @@ test.describe('Experience navigation', () => {
     await prepareLiveApiAccess(page, baseURL());
     const { alice } = await seedRescueHearts(baseURL());
     await loginFromLanding(page, alice.email, alice.password);
-    await page.waitForURL(/\/o\/home/, { timeout: 60_000 });
+    await waitForFlutterRoutePattern(page, /\/o\/home/, 60_000);
     const experience = new ExperiencePage(page);
     await experience.expectOrgShell();
     await expect(page.getByText(/How will you use Agatha Track/i)).not.toBeVisible();
@@ -67,7 +68,7 @@ test.describe('Experience navigation', () => {
     await prepareLiveApiAccess(page, baseURL());
     const { user } = await seedDualRoleUser(baseURL());
     await loginFromLanding(page, user.email, user.password);
-    await page.waitForURL(/\/app\/choose/, { timeout: 60_000 });
+    await waitForFlutterRoutePattern(page, /\/app\/choose/, 60_000);
     const experience = new ExperiencePage(page);
     await experience.expectChooserVisible();
   });
@@ -76,7 +77,7 @@ test.describe('Experience navigation', () => {
     await prepareLiveApiAccess(page, baseURL());
     const { user } = await seedDualRoleUser(baseURL());
     await loginFromLanding(page, user.email, user.password);
-    await page.waitForURL(/\/app\/choose/, { timeout: 60_000 });
+    await waitForFlutterRoutePattern(page, /\/app\/choose/, 60_000);
     const experience = new ExperiencePage(page);
     await experience.chooseGuardian(true);
     await experience.expectGuardianShell();
@@ -88,13 +89,13 @@ test.describe('Experience navigation', () => {
     await prepareLiveApiAccess(page, baseURL());
     const { user } = await seedDualRoleUser(baseURL());
     await loginFromLanding(page, user.email, user.password);
-    await page.waitForURL(/\/app\/choose/, { timeout: 60_000 });
+    await waitForFlutterRoutePattern(page, /\/app\/choose/, 60_000);
     const experience = new ExperiencePage(page);
     await experience.chooseGuardian(true);
 
-    await page.context().clearCookies();
+    await logOutFromApp(page);
     await loginFromLanding(page, user.email, user.password);
-    await page.waitForURL(/\/g\/home/, { timeout: 60_000 });
+    await waitForFlutterRoutePattern(page, /\/g\/home/, 60_000);
     await experience.expectGuardianShell();
   });
 
@@ -104,17 +105,19 @@ test.describe('Experience navigation', () => {
     await prepareLiveApiAccess(page, baseURL());
     const { user } = await seedDualRoleUser(baseURL());
     await loginFromLanding(page, user.email, user.password);
-    await page.waitForURL(/\/app\/choose/, { timeout: 60_000 });
+    await waitForFlutterRoutePattern(page, /\/app\/choose/, 60_000);
     const experience = new ExperiencePage(page);
     await experience.chooseGuardian(false);
     await experience.expectGuardianShell();
-    await experience.openGuardianSettingsFromDrawer();
+    await experience.gotoGuardianSettings();
     await experience.setDefaultExperience('organization');
+    await refreshFlutterAccessibility(page);
     await logOutFromApp(page);
 
-    await page.context().clearCookies();
+    await logOutFromApp(page);
+
     await loginFromLanding(page, user.email, user.password);
-    await page.waitForURL(/\/o\/home/, { timeout: 60_000 });
+    await waitForFlutterRoutePattern(page, /\/o\/home/, 60_000);
     await experience.expectOrgShell();
     await expect(page.getByText(/How will you use Agatha Track/i)).not.toBeVisible();
   });
@@ -125,7 +128,7 @@ test.describe('Experience navigation', () => {
     await prepareLiveApiAccess(page, baseURL());
     const { user } = await seedDualRoleUser(baseURL());
     await loginFromLanding(page, user.email, user.password);
-    await page.waitForURL(/\/app\/choose/, { timeout: 60_000 });
+    await waitForFlutterRoutePattern(page, /\/app\/choose/, 60_000);
     const experience = new ExperiencePage(page);
     await experience.chooseGuardian(false);
     await experience.openDrawerOrgView();
@@ -137,9 +140,9 @@ test.describe('Experience navigation', () => {
   }) => {
     await prepareLiveApiAccess(page, baseURL());
     const user = await signupUser(baseURL());
-    await createPet(baseURL, user.accessToken, 'Solo Pet');
+    await createPet(baseURL(), user.accessToken, 'Solo Pet');
     await loginFromLanding(page, user.email, user.password);
-    await page.waitForURL(/\/g\/home/, { timeout: 60_000 });
+    await waitForFlutterRoutePattern(page, /\/g\/home/, 60_000);
 
     const experience = new ExperiencePage(page);
     await experience.gotoChooser();
