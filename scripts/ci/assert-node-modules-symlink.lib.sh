@@ -13,9 +13,9 @@ uat_nm_home_dir() {
 # Prefer the active backend/node_modules symlink target (cPanel-selected version)
 # before scanning version directories — avoids picking a stale nodevenv install.
 uat_nm_resolve_node() {
-  local home_dir appdir nm target candidate v
-  if command -v node >/dev/null 2>&1; then
-    command -v node
+  local home_dir appdir nm target candidate ver
+  if type -P node >/dev/null 2>&1; then
+    type -P node
     return 0
   fi
   home_dir="$(uat_nm_home_dir)"
@@ -31,20 +31,29 @@ uat_nm_resolve_node() {
       fi
     fi
   fi
-  for v in 22 20 18; do
-    candidate="${home_dir}/nodevenv/uat.agathatrack.com/backend/${v}/bin/node"
-    if [[ -x "$candidate" ]]; then
-      printf '%s\n' "$candidate"
-      return 0
-    fi
-  done
+  local nodevenv_root="${home_dir}/nodevenv/uat.agathatrack.com/backend"
+  if [[ -d "$nodevenv_root" ]]; then
+    while IFS= read -r ver; do
+      [[ -n "$ver" ]] || continue
+      candidate="${nodevenv_root}/${ver}/bin/node"
+      if [[ -x "$candidate" ]]; then
+        printf '%s\n' "$candidate"
+        return 0
+      fi
+    done < <(ls -1 "$nodevenv_root" 2>/dev/null | sort -t. -k1,1nr -k2,2nr -k3,3nr)
+  fi
   return 1
 }
 
 uat_nm_use_node() {
-  local node_bin
+  local node_bin node_dir
   node_bin="$(uat_nm_resolve_node)" || return 1
-  export PATH="$(dirname "$node_bin"):${PATH:-}"
+  node_dir="$(dirname "$node_bin")"
+  if [[ -n "${PATH:-}" ]]; then
+    export PATH="${node_dir}:${PATH}"
+  else
+    export PATH="$node_dir"
+  fi
   export UAT_NODE_BIN="$node_bin"
 }
 
