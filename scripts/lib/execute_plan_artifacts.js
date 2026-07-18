@@ -77,7 +77,7 @@ function yamlScalar(value) {
   if (value === null || value === undefined) return 'null';
   if (typeof value === 'string') {
     if (/^[a-z0-9_./:+-]+$/i.test(value)) return value;
-    return `"${value.replace(/"/g, '\\"')}"`;
+    return `"${value.replace(/\\/g, '\\\\').replace(/"/g, '\\"')}"`;
   }
   if (typeof value === 'object') return JSON.stringify(value);
   return String(value);

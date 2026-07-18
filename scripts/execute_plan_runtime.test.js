@@ -129,6 +129,27 @@ test('parseRuntimeBlock reads example plan runtime yaml', () => {
   assert.equal(state.current_phase, null);
 });
 
+test('renderRuntimeBlock quotes strings with special characters', () => {
+  const yaml = renderRuntimeBlock({
+    autonomy: 'active',
+    current_phase: 'path\\to\\phase',
+    last_completed_phase: null,
+    halt_reason: 'say "hello"',
+    next_action: null,
+    artifact_ref: {
+      branch: null,
+      plan_path: null,
+      plan_commit: null,
+      snapshot_path: null,
+      snapshot_commit: null,
+    },
+    open_prs: [],
+    merge_commits: {},
+    debt_issue_refs: [],
+  });
+  assert.match(yaml, /current_phase: "path\\\\to\\\\phase"/);
+  assert.match(yaml, /halt_reason: "say \\"hello\\""/);
+});
 test('renderRuntimeBlock round-trips core fields', () => {
   const state = {
     autonomy: 'active',
