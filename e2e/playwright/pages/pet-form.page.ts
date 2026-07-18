@@ -5,6 +5,7 @@ import {
   homeShellLocator,
   refreshFlutterAccessibility,
   selectDropdownOption,
+  waitForHomeAfterMutation,
 } from '../support/flutter';
 
 /**
@@ -92,7 +93,7 @@ export class PetFormPage {
   /** Confirm the delete dialog. */
   async confirmDelete(): Promise<void> {
     await this.page.getByRole('button', { name: 'Delete', exact: true }).click();
-    await homeShellLocator(this.page).first().waitFor({ timeout: 30_000 });
+    await waitForHomeAfterMutation(this.page);
   }
 
   /** Cancel the delete dialog. */
@@ -116,7 +117,7 @@ export class PetFormPage {
   /** Confirm the passed-away dialog. */
   async confirmPassedAway(): Promise<void> {
     await this.page.getByRole('button', { name: 'OK', exact: true }).click();
-    await homeShellLocator(this.page).first().waitFor({ timeout: 30_000 });
+    await waitForHomeAfterMutation(this.page);
   }
 
   /** Cancel the passed-away dialog. */

@@ -3,9 +3,11 @@ import { expect } from '@playwright/test';
 import {
   dismissConsentBannerIfPresent,
   expectAppBarTitle,
+  flutterRoutePath,
   isExperienceShellVisible,
   openExperienceDrawer,
   refreshFlutterAccessibility,
+  waitForFlutterRoutePattern,
 } from '../support/flutter';
 
 /**
@@ -25,8 +27,13 @@ export class NotificationsPage {
     if (await legacyBell.isVisible({ timeout: 2_000 }).catch(() => false)) {
       await legacyBell.click();
     } else if (await isExperienceShellVisible(this.page)) {
-      const path = this.page.url().includes('/o/') ? '/o/notifications' : '/g/notifications';
-      await this.page.goto(path);
+      const route = flutterRoutePath(this.page.url());
+      const notificationsPattern = route.startsWith('/o/')
+        ? /\/o\/notifications$/
+        : /\/g\/notifications$/;
+      await openExperienceDrawer(this.page);
+      await this.page.getByText('Notifications', { exact: true }).first().click();
+      await waitForFlutterRoutePattern(this.page, notificationsPattern, 30_000);
       await refreshFlutterAccessibility(this.page);
     } else {
       throw new Error('Could not open notifications: no app-bar bell or experience shell');

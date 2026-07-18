@@ -4,8 +4,11 @@ import {
   dismissConsentBannerIfPresent,
   expectAppBarTitle,
   fillLabelledField,
+  flutterGotoUrl,
   isExperienceShellVisible,
+  openExperienceDrawer,
   refreshFlutterAccessibility,
+  waitForFlutterRoutePattern,
 } from '../support/flutter';
 
 /**
@@ -34,11 +37,24 @@ export class MyDetailsPage {
     }
 
     if (await isExperienceShellVisible(this.page)) {
-      await this.page.goto('/my-details');
+      await openExperienceDrawer(this.page);
+      await this.page.getByText('Settings', { exact: true }).first().click();
       await refreshFlutterAccessibility(this.page);
+      await this.page
+        .getByText('My Details', { exact: true })
+        .or(this.page.getByText('Mon profil', { exact: true }))
+        .first()
+        .click();
+      await waitForFlutterRoutePattern(this.page, /\/my-details$/, 30_000);
       await this.expectLoaded();
       return;
     }
+
+    // Fallback: direct hash-route navigation (e.g. drawer unavailable).
+    await this.page.goto(flutterGotoUrl('/my-details'));
+    await refreshFlutterAccessibility(this.page);
+    await waitForFlutterRoutePattern(this.page, /\/my-details$/, 30_000);
+    await this.expectLoaded();
 
     throw new Error('Could not open My Details: unknown navigation shell');
   }
