@@ -118,6 +118,24 @@ export async function expectHomeShellVisible(
   await homeShellLocator(page).first().waitFor({ timeout: effectiveTimeout });
 }
 
+/**
+ * Wait for home after mutations that `context.go('/')` (delete pet, mark passed away).
+ * Flutter redirects `/` → `/app/resolve` → `/g/home` or `/o/home`.
+ */
+export async function waitForHomeAfterMutation(
+  page: Page,
+  timeout?: number,
+): Promise<void> {
+  const effectiveTimeout = timeout ?? postLoginTimeout(30_000);
+  await waitForFlutterRoutePattern(
+    page,
+    /\/(g|o)\/home|\/app\/resolve/,
+    effectiveTimeout,
+  );
+  await waitForFlutterRoutePattern(page, /\/(g|o)\/home/, effectiveTimeout);
+  await expectHomeShellVisible(page, effectiveTimeout);
+}
+
 /** Assert no home shell chrome is visible (e.g. still on landing after failed login). */
 export async function expectHomeShellHidden(
   page: Page,

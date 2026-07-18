@@ -309,8 +309,10 @@ test.describe('Health tracking', () => {
     });
 
     await loginAs(page, testUser);
+    const petList = new PetListPage(page);
+    await petList.expectLoaded();
     await page
-      .getByText('Due & Overdue Events', { exact: false })
+      .getByText(/Upcoming events/i)
       .first()
       .waitFor({ timeout: 20_000 });
     await page.getByText(entry.name, { exact: false }).first().waitFor({ timeout: 15_000 });

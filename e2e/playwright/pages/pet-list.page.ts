@@ -104,9 +104,12 @@ export class PetListPage {
     const vetsNav = this.page.getByRole('button', { name: 'Veterinarians' });
     if (await vetsNav.isVisible({ timeout: 2_000 }).catch(() => false)) {
       await vetsNav.click();
-    } else {
-      await this.page.goto('/vets');
+    } else if (await isExperienceShellVisible(this.page)) {
+      await this.page.goto(flutterGotoUrl('/vets'));
       await refreshFlutterAccessibility(this.page);
+      await waitForFlutterRoutePattern(this.page, /\/vets$/, 30_000);
+    } else {
+      await waitForFlutterRoute(this.page, '/vets');
     }
     await expectAppBarTitle(this.page, 'Veterinarians');
   }
@@ -187,18 +190,23 @@ export class PetListPage {
       (options.experience !== 'guardian' &&
         (route.startsWith('/o/') || route.startsWith('/organizations')));
     const home = useOrgHome ? '/o/home' : '/g/home';
+    const onHome =
+      route === home ||
+      (useOrgHome && route.startsWith('/o/') && !route.includes('/onboarding'));
 
     await dismissConsentBannerIfPresent(this.page);
-    const homeNav = this.page.getByRole('button', { name: 'Home' });
-    if (await homeNav.isVisible({ timeout: 2_000 }).catch(() => false)) {
-      await homeNav.click();
-      await waitForFlutterRoutePattern(
-        this.page,
-        new RegExp(`^${escapeRegExp(home)}$`),
-        30_000,
-      );
-    } else {
-      await waitForFlutterRoute(this.page, home);
+    if (!onHome) {
+      const homeNav = this.page.getByRole('button', { name: 'Home' });
+      if (await homeNav.isVisible({ timeout: 2_000 }).catch(() => false)) {
+        await homeNav.click({ force: true });
+        await waitForFlutterRoutePattern(
+          this.page,
+          new RegExp(`^${escapeRegExp(home)}$`),
+          30_000,
+        );
+      } else {
+        await waitForFlutterRoute(this.page, home);
+      }
     }
     if (useOrgHome) {
       await skipOrgOnboardingIfPresent(this.page);
