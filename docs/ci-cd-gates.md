@@ -31,12 +31,12 @@ baseline table in [ci-cd-baseline.md](./ci-cd-baseline.md) when targets are met.
 | Stage | Blocking? | Workflow |
 |-------|-----------|----------|
 | PR → `main` | **Yes** (2 required checks) | `ci.yml` → `ci-gate`, `codeql.yml` |
-| Merge → `main` | **Yes** (auto-promotion) | `promote-uat.yml` → `uat-*` tag |
+| Merge → `main` | **Yes** (auto-promotion) | `promote-uat.yml` → `uat-*` tag → `deploy-uat.yml` (`workflow_run`) |
 | PR granular CI jobs | Visible, not individually required | `ci.yml` (startup-smoke, test-suite, flutter-*, …) |
 | PR startup smoke | **Yes** (via `ci-gate`) | `ci.yml` → `_reusable-pr-startup-smoke.yml` |
 | PR hints | No (advisory) | `pr-governance-hints.yml` |
 | Agent `cursor/*` PRs | **Yes** (forbidden paths) | `agent-pr-safety-gate.yml` |
-| `uat-*` tag deploy | **Yes** (UAT + `prod-ready`) | `promote-uat.yml` → `deploy-uat.yml` |
+| `uat-*` tag deploy | **Yes** (UAT + `prod-ready`) | `deploy-uat.yml` (tag push or `workflow_run` after promote) |
 | Weekly E2E on `main` | **No** (signal only) | `e2e.yml` |
 | PROD deploy / stub tag | **Yes** (environment when live) | `deploy-prod.yml` (auto after UAT `prod-ready`) |
 
@@ -282,7 +282,8 @@ wait for one green **CI** run — GitHub only lists checks that have reported at
 ## 3. Blocking — UAT deploy (`uat-*` tag)
 
 Workflows: **Promote UAT** (`promote-uat.yml`) on merge to `main`, then **Deploy UAT**
-(`deploy-uat.yml`) on `uat-*` tag push.
+(`deploy-uat.yml`) via `workflow_run` (tag push from `GITHUB_TOKEN` does not chain
+workflows) or `uat-*` tag push when the tag was created outside Actions.
 
 | Job | Blocking for `prod-ready`? | Purpose |
 |-----|----------------------------|---------|
