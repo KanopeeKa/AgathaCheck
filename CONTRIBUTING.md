@@ -54,7 +54,14 @@ node scripts/check_file_size.js && node e2e/scripts/check_bdd_coverage.js
 - Skills: `.cursor/skills/` (split screens, BDD, dual-backend, spawn agents, security audit, pre-push)
 - Parallel sprints: `docs/agent-efficiency/prompt-templates.md`
 - Babysit merge-ready PRs: `/babysit` command (lightweight)
+- Atomic PRs (one outcome, snag ladder): `docs/agent-efficiency/atomic-pr-policy.md`
 - Autonomous PR + multi-phase plans: `docs/agent-efficiency/autonomous-pr-policy.md` (`/babysit-plus` skill, `/execute-plan` — Phase D)
+
+## Atomic PRs
+
+**One PR = one verifiable outcome** (describe it in one sentence). Cross-domain changes are fine when they serve that outcome (e.g. UI + API + E2E for one flow). Split independent outcomes into stacked PRs.
+
+**Snags:** fix trivial same-file issues (≤15 lines, no behavior change) in the PR; otherwise open a micro-PR or a debt issue — no silent deferrals. Full policy: [docs/agent-efficiency/atomic-pr-policy.md](docs/agent-efficiency/atomic-pr-policy.md).
 
 ## Pull request expectations
 
