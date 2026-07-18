@@ -13,7 +13,7 @@ Check PR status, comments, and latest CI and resolve any issues until the PR is 
    ```bash
    ./scripts/babysit_sync_base.sh --pr <url> --push
    ```
-   Uses the PR's base branch (`main` or integration parent). Re-run **before every push**, before entering the CI wait loop, and after long polls (automatic reviews). Manual equivalent: `git fetch origin main && git rebase origin/main`.
+   Uses the PR's base branch (`main` or integration parent). Re-run **before every push**, before entering the CI wait loop, and after long polls (automatic reviews). Manual equivalent: `BASE=$(gh pr view <url> --json baseRefName -q .baseRefName) && git fetch origin "$BASE" && git rebase "origin/$BASE"`.
 2. **Merge conflicts:** Intelligently resolve, preserving intent of both sides. If intents conflict, stop and ask.
 3. **Ready for review:** If the PR is still a draft, mark it ready (`gh pr ready <url>`). Automatic reviewers (e.g. Copilot, Bugbot) only run after the PR is ready — not while draft.
 4. **Wait for automatic reviews (mandatory):** After marking ready, poll until bot reviews land or the budget expires. Do **not** triage, merge, or declare done while reviews are still pending.

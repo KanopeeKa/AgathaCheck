@@ -87,8 +87,8 @@ if ! git rev-parse --verify "$REMOTE_BASE" >/dev/null 2>&1; then
   exit 2
 fi
 
-BEHIND="$(git rev-list --count HEAD.."$REMOTE_BASE" 2>/dev/null || echo 0)"
-AHEAD="$(git rev-list --count "$REMOTE_BASE"..HEAD 2>/dev/null || echo 0)"
+BEHIND="$(git rev-list --count HEAD.."$REMOTE_BASE")"
+AHEAD="$(git rev-list --count "$REMOTE_BASE"..HEAD)"
 
 if [[ "$BEHIND" -eq 0 ]]; then
   echo "babysit_sync_base: up to date with $REMOTE_BASE ($AHEAD commit(s) ahead)"
@@ -99,6 +99,11 @@ echo "babysit_sync_base: behind $REMOTE_BASE by $BEHIND commit(s) ($AHEAD ahead)
 
 if [[ "$CHECK_ONLY" == true ]] || [[ "$REBASE" == false ]]; then
   exit 1
+fi
+
+if [[ -n "$(git status --porcelain)" ]]; then
+  echo "babysit_sync_base: working tree not clean — commit or stash changes before rebase" >&2
+  exit 2
 fi
 
 if ! git rebase "$REMOTE_BASE"; then
