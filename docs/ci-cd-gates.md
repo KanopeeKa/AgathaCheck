@@ -26,6 +26,10 @@ The hardening program (Phases -1–7) focused on gates, artifacts, and PR signal
 localhost E2E stability on deploy-uat, supervised PROD promotion dry-run, regenerate
 baseline table in [ci-cd-baseline.md](./ci-cd-baseline.md) when targets are met.
 
+**Approved initiative (phased plan):** [e2e-ci-canary-plan.md](./e2e-ci-canary-plan.md) —
+`@smoke-ci` on PR CI (retries 0), `@smoke-uat` on live UAT (retries 0), full E2E
+shards unchanged for prod-ready. Prod security scans noted in Phase 6 (future).
+
 ## Quick reference
 
 | Stage | Blocking? | Workflow |

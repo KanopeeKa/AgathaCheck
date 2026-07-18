@@ -13,8 +13,9 @@ Check PR status, comments, and latest CI and resolve any issues until the PR is 
 2. **Merge conflicts:** Intelligently resolve, preserving intent of both sides. If intents conflict, stop and ask.
 3. **Ready for review:** If the PR is still a draft, mark it ready (`gh pr ready <url>`). Automatic reviewers (e.g. Copilot, Bugbot) only run after the PR is ready — not while draft.
 4. **Wait for automatic reviews (mandatory):** After marking ready, poll until bot reviews land or the budget expires. Do **not** triage, merge, or declare done while reviews are still pending.
-   - Fetch reviews: `gh api repos/{owner}/{repo}/pulls/{n}/reviews`
-   - Fetch review comments: `gh api repos/{owner}/{repo}/pulls/{n}/comments`
+   - Formal reviews: `gh api repos/{owner}/{repo}/pulls/{n}/reviews`
+   - Review comments (inline): `gh api repos/{owner}/{repo}/pulls/{n}/comments`
+   - PR conversation comments (bots may post here instead of a formal review): `gh api repos/{owner}/{repo}/issues/{n}/comments`
    - Poll every 30–60s for up to **15 minutes** (reviews often arrive after CI is already green).
    - Treat Copilot / Bugbot / other configured bots as blocking until their review exists or the wait budget expires.
    - On timeout: comment on the PR listing pending reviewers and halt — do not skip review triage.

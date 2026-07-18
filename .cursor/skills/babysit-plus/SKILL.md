@@ -21,7 +21,7 @@ During `/execute-plan`, always use **/babysit-plus**, never plain babysit alone.
 | Input | Required | Notes |
 |-------|----------|-------|
 | PR URL or branch | yes | `gh pr view` / `ManagePullRequest` |
-| `merge_mode` | no | Default **`auto`** when not in execute-plan; snapshot wins during execute-plan |
+| `merge_mode` | no | See §0 step 5 — explicit override; otherwise **`auto`** (standalone) or snapshot (execute-plan) |
 | `plan_id` | when in execute-plan | For debt-issue dedupe keys |
 | Phase snapshot | when in execute-plan | `merge_mode`, `exit_checklist`, `allowed_paths` |
 | `approved_until` | when in execute-plan | Halt if past expiry |
@@ -36,7 +36,9 @@ During `/execute-plan`, always use **/babysit-plus**, never plain babysit alone.
 2. If execute-plan: confirm control issue has `autonomous-approved`, not `autonomous-revoked`, and `approved_until` is in the future (`node scripts/execute_plan_runtime.js gate <plan_id> --labels ...`).
 3. `gh pr view <url> --json state,isDraft,labels,headRefOid,baseRefName`
 4. Stop if: `do-not-merge`, draft (when merge intended), revoked, or expired.
-5. Resolve effective `merge_mode`: phase snapshot → `default_merge_mode` → **`auto`** (standalone babysit-plus default).
+5. **Resolve effective `merge_mode`** (see autonomous-pr-policy §Merge modes):
+   - **Execute-plan** (active phase snapshot): `phase.merge_mode` → else `default_merge_mode` from snapshot. Caller `merge_mode` input is ignored unless the run explicitly documents an override.
+   - **Standalone** (no snapshot): caller `merge_mode` input if provided → else **`auto`**.
 
 ### 0b. Ready for review + wait for automatic reviews (mandatory)
 
@@ -47,7 +49,9 @@ Applies to **both** `/babysit` and `/babysit-plus`. Automatic reviewers run only
    ```bash
    gh api repos/{owner}/{repo}/pulls/{n}/reviews
    gh api repos/{owner}/{repo}/pulls/{n}/comments
+   gh api repos/{owner}/{repo}/issues/{n}/comments
    ```
+   (`{n}` = PR number; PRs are issues in the GitHub API. Conversation comments catch bot feedback that never creates a formal review.)
 3. Poll every **30–60s** for up to **15 minutes**. Track which bots have submitted (`copilot`, `bugbot`, etc.).
 4. Do **not** triage, merge, or declare done while expected automatic reviews are still pending.
 5. On timeout: comment on the PR listing pending reviewers and **halt** — do not skip review triage.
