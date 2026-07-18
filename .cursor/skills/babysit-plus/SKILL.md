@@ -32,7 +32,11 @@ During `/execute-plan`, always use **/babysit-plus**, never plain babysit alone.
 
 ### 0. Preflight
 
-1. `git fetch origin main && git rebase origin/main` on the PR branch.
+1. **Proactive base sync** — rebase immediately when the base moved; do not wait for CI:
+   ```bash
+   ./scripts/babysit_sync_base.sh --pr <url> --push
+   ```
+   Re-run before every push, before the CI wait loop, and after long automatic-review polls. See autonomous-pr-policy §Proactive base sync.
 2. If execute-plan: confirm control issue has `autonomous-approved`, not `autonomous-revoked`, and `approved_until` is in the future (`node scripts/execute_plan_runtime.js gate <plan_id> --labels ...`).
 3. `gh pr view <url> --json state,isDraft,labels,headRefOid,baseRefName`
 4. Stop if: `do-not-merge`, draft (when merge intended), revoked, or expired.
@@ -109,9 +113,10 @@ For every **ignore** and every **skipped nit**:
 | Caused by this PR | 5 |
 | Flaky / unrelated (after rebase on latest base) | 3 |
 
-1. Push fixes; watch CI (`ManagePullRequest get_ci_status` or `gh pr checks`).
-2. Rebase on latest base before counting unrelated failures.
-3. Exhaust budget → halt; comment on PR + control issue.
+1. **Before watching CI:** `./scripts/babysit_sync_base.sh --pr <url> --push` — if the base moved while you were fixing or polling reviews, rebase now instead of waiting for a failure.
+2. Push fixes; watch CI (`ManagePullRequest get_ci_status` or `gh pr checks`).
+3. Rebase on latest base before counting unrelated failures (`babysit_sync_base.sh` or manual rebase).
+4. Exhaust budget → halt; comment on PR + control issue.
 
 ### 6. Exit checklist
 
