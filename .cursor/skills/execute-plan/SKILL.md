@@ -142,7 +142,7 @@ Invoke **/babysit-plus** with:
 | `plan_id` | current plan |
 | Phase snapshot | current phase object |
 | `approved_until` | from snapshot |
-| **Effective `merge_mode`** | `phase.merge_mode ?? default_merge_mode ?? auto` |
+| **Effective `merge_mode`** | `phase.merge_mode ?? snapshot.default_merge_mode ?? auto` |
 
 Babysit+ handles: sync, triage, fixes, debt issues (dedupe mandatory), CI budget, exit checklist, merge per effective mode.
 
