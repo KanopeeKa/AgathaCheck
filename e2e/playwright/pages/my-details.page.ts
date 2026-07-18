@@ -4,9 +4,7 @@ import {
   dismissConsentBannerIfPresent,
   expectAppBarTitle,
   fillLabelledField,
-  escapeRegExp,
   flutterGotoUrl,
-  flutterRoutePath,
   isExperienceShellVisible,
   refreshFlutterAccessibility,
   waitForFlutterRoutePattern,
@@ -157,15 +155,15 @@ export class MyDetailsPage {
     if (await backButton.isVisible({ timeout: 2_000 }).catch(() => false)) {
       await backButton.click();
     } else {
-      const route = flutterRoutePath(this.page.url());
-      const home = route.startsWith('/o/') ? '/o/home' : '/g/home';
-      await this.page.goto(flutterGotoUrl(home));
-      await refreshFlutterAccessibility(this.page);
-      await waitForFlutterRoutePattern(
-        this.page,
-        new RegExp(`^${escapeRegExp(home)}$`),
-        30_000,
-      );
+      const homeNav = this.page.getByRole('button', { name: 'Home' });
+      if (await homeNav.isVisible({ timeout: 2_000 }).catch(() => false)) {
+        await homeNav.click({ force: true });
+        await waitForFlutterRoutePattern(this.page, /\/(g|o)\/home/, 30_000);
+      } else {
+        await this.page.goto(flutterGotoUrl('/g/home'));
+        await refreshFlutterAccessibility(this.page);
+        await waitForFlutterRoutePattern(this.page, /^\/g\/home$/, 30_000);
+      }
     }
     await this.page.waitForTimeout(500);
     await refreshFlutterAccessibility(this.page);

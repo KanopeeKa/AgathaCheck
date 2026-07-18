@@ -29,10 +29,9 @@ export class NotificationsPage {
       await legacyBell.click();
     } else if (await isExperienceShellVisible(this.page)) {
       const route = flutterRoutePath(this.page.url());
-      const notificationsPath = route.startsWith('/o/')
-        ? '/o/notifications'
-        : '/g/notifications';
-      const notificationsPattern = route.startsWith('/o/')
+      const useOrgHome = route.startsWith('/o/') || route.startsWith('/organizations');
+      const notificationsPath = useOrgHome ? '/o/notifications' : '/g/notifications';
+      const notificationsPattern = useOrgHome
         ? /\/o\/notifications$/
         : /\/g\/notifications$/;
       await this.page.goto(flutterGotoUrl(notificationsPath));
