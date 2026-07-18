@@ -10,7 +10,7 @@ Single source of truth for `/babysit`, `/babysit-plus`, and `/execute-plan`. Ski
 | GitHub labels | [github-labels.md](./github-labels.md) |
 | Lightweight PR loop | `.cursor/commands/babysit.md` |
 | Babysit+ skill | `.cursor/skills/babysit-plus/SKILL.md` |
-| Execute-plan skill | `.cursor/skills/execute-plan/SKILL.md` (Phase D) |
+| Execute-plan skill | `.cursor/skills/execute-plan/SKILL.md` |
 | Runtime CLI | [execute-plan-runtime.md](./execute-plan-runtime.md) |
 
 ---

@@ -15,7 +15,7 @@ Copy to `.agents/plans/<plan_id>.md` and fill in. Pair with `<plan_id>.snapshot.
 | **author** | |
 | **created** | YYYY-MM-DD |
 | **base_branch** | `main` |
-| **default_merge_mode** | `manual` \| `labeled` \| `auto` |
+| **default_merge_mode** | `manual` \| `labeled` \| `auto` (default for `/execute-plan`: **`auto`**) |
 | **artifact_branch_policy** | `phase-branch` (default) |
 
 ---
