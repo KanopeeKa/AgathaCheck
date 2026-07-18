@@ -76,6 +76,9 @@ fi
 export PASSENGER_HTACCESS_OK
 export PASSENGER_HTACCESS_FILE
 
+echo "=== node_modules invariant (pre-restart) ==="
+uat_nm_assert pre 1 0
+
 echo "=== Database migrations ==="
 cd "${APPDIR}"
 if ! uat_nm_use_node; then
@@ -123,9 +126,6 @@ else
   } >>"${UAT_DEPLOY_STATE_FILE}"
   exit 1
 fi
-
-echo "=== node_modules invariant (pre-restart) ==="
-uat_nm_assert pre 1 0
 
 echo "=== triggering Passenger restart ==="
 mkdir -p "${APPDIR}/tmp"

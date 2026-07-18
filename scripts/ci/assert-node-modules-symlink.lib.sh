@@ -10,6 +10,8 @@ uat_nm_home_dir() {
 }
 
 # CloudLinux non-interactive SSH often has no node on PATH; resolve nodevenv binary.
+# Prefer the active backend/node_modules symlink target (cPanel-selected version)
+# before scanning version directories — avoids picking a stale nodevenv install.
 uat_nm_resolve_node() {
   local home_dir appdir nm target candidate v
   if command -v node >/dev/null 2>&1; then
@@ -18,17 +20,10 @@ uat_nm_resolve_node() {
   fi
   home_dir="$(uat_nm_home_dir)"
   appdir="${UAT_APP_DIR:-${home_dir}/uat.agathatrack.com/backend}"
-  for v in 22 20 18; do
-    candidate="${home_dir}/nodevenv/uat.agathatrack.com/backend/${v}/bin/node"
-    if [[ -x "$candidate" ]]; then
-      printf '%s\n' "$candidate"
-      return 0
-    fi
-  done
   nm="${appdir}/node_modules"
   if [[ -L "$nm" ]]; then
     target="$(readlink -f "$nm" 2>/dev/null || true)"
-    if [[ "$target" == */lib/node_modules ]]; then
+    if [[ "$target" == "${home_dir}/nodevenv/"*/lib/node_modules ]]; then
       candidate="${target%/lib/node_modules}/bin/node"
       if [[ -x "$candidate" ]]; then
         printf '%s\n' "$candidate"
@@ -36,6 +31,13 @@ uat_nm_resolve_node() {
       fi
     fi
   fi
+  for v in 22 20 18; do
+    candidate="${home_dir}/nodevenv/uat.agathatrack.com/backend/${v}/bin/node"
+    if [[ -x "$candidate" ]]; then
+      printf '%s\n' "$candidate"
+      return 0
+    fi
+  done
   return 1
 }
 
