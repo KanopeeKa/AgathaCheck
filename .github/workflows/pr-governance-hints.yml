@@ -69,17 +69,17 @@ jobs:
                 echo "health" ;;
               flutter_app/lib/features/weight_tracking/*|server/routes/weight*|server/test/weight*|e2e/playwright/tests/weight.*.spec.ts)
                 echo "weight" ;;
-              flutter_app/lib/features/vet/*|server/routes/vets*|server/test/vets*)
+              flutter_app/lib/features/vet/*|server/routes/vets*|server/test/vets*|e2e/playwright/tests/veterinarian.spec.ts)
                 echo "vet" ;;
               flutter_app/lib/features/sharing/*|server/routes/sharing*|server/test/sharing*|e2e/playwright/tests/sharing.spec.ts)
                 echo "sharing" ;;
               flutter_app/lib/features/notifications/*|server/routes/notifications*|server/test/notifications*|e2e/playwright/tests/notifications.spec.ts)
                 echo "notifications" ;;
-              flutter_app/lib/features/organization/*|server/routes/organizations/*|server/routes/foster*|server/routes/custody*|server/test/organizations/*|server/test/foster*|server/test/custody*|e2e/playwright/tests/organisation*|e2e/playwright/tests/adoption*)
+              flutter_app/lib/features/organization/*|server/routes/organizations/*|server/routes/foster*|server/routes/custody*|server/test/organizations/*|server/test/foster*|server/test/custody*|e2e/playwright/tests/organisation*|e2e/playwright/tests/adoption*|e2e/playwright/tests/org.*.spec.ts)
                 echo "org" ;;
               flutter_app/lib/features/subscription/*)
                 echo "subscription" ;;
-              flutter_app/lib/features/help/*|flutter_app/lib/features/about/*)
+              flutter_app/lib/features/help/*|flutter_app/lib/features/about/*|e2e/playwright/tests/help.*.spec.ts)
                 echo "help" ;;
               flutter_app/lib/core/*|flutter_app/lib/l10n/*)
                 echo "core-flutter" ;;
@@ -99,7 +99,7 @@ jobs:
           AREA_COUNT="$(echo "$UNIQUE_AREAS" | sed '/^$/d' | wc -l | tr -d ' ')"
 
           if [[ "$AREA_COUNT" -ge 2 ]]; then
-            AREA_LIST="$(echo "$UNIQUE_AREAS" | sed '/^$/d' | paste -sd ', ' -)"
+            AREA_LIST="$(echo "$UNIQUE_AREAS" | sed '/^$/d' | paste -sd, - | sed 's/,/, /g')"
             NOTES="${NOTES}"$'\n'"- 📐 Touches **${AREA_COUNT}** areas (\`${AREA_LIST}\`). **OK if one outcome** (see \`docs/agent-efficiency/atomic-pr-policy.md\`). Split if changes are independent."
           fi
 
