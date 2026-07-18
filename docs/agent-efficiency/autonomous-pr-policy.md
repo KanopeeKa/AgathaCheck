@@ -4,6 +4,7 @@ Single source of truth for `/babysit`, `/babysit-plus`, and `/execute-plan`. Ski
 
 | Topic | Canonical location |
 |-------|-------------------|
+| One-outcome PRs + snag ladder | [atomic-pr-policy.md](./atomic-pr-policy.md) |
 | Plan snapshot schema | [execute-plan-schema.md](./execute-plan-schema.md) |
 | Phase exit profiles | [phase-exit-checklists.md](./phase-exit-checklists.md) |
 | GitHub labels | [github-labels.md](./github-labels.md) |
