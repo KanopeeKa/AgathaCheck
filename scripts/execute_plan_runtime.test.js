@@ -8,6 +8,7 @@ const path = require('path');
 const {
   checkAutonomyGate,
   checkResume,
+  computeHash,
   computeNextAction,
   parseRuntimeBlock,
   renderControlIssueBody,
@@ -26,6 +27,17 @@ const examplePlan = path.join(REPO_ROOT, '.agents/plans/_example.md');
 test('validateSnapshot accepts example snapshot', () => {
   const snapshot = loadSnapshotFromPath(exampleSnapshot);
   validateSnapshot(snapshot);
+});
+
+test('mutated snapshot fails validation until content_hash is recomputed', () => {
+  const snapshot = loadSnapshotFromPath(exampleSnapshot);
+  snapshot.autonomy = 'active';
+  assert.throws(
+    () => validateSnapshot(snapshot, { checkHash: true }),
+    /content_hash mismatch/
+  );
+  snapshot.content_hash = computeHash(snapshot);
+  validateSnapshot(snapshot, { checkHash: true });
 });
 
 test('renderControlIssueTitle uses plan id', () => {

@@ -199,10 +199,10 @@ function loadSnapshot(planId) {
   return obj;
 }
 
-function saveSnapshot(planId, obj, { fixHash = false } = {}) {
+function saveSnapshot(planId, obj) {
   const { snapshotJson } = planPaths(planId);
-  if (fixHash) obj.content_hash = computeHash(obj);
-  validateSnapshot(obj, { checkHash: fixHash });
+  obj.content_hash = computeHash(obj);
+  validateSnapshot(obj, { checkHash: true });
   atomicWriteFile(snapshotJson, `${JSON.stringify(obj, null, 2)}\n`);
 }
 
