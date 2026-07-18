@@ -246,14 +246,17 @@ curl -sk -w "\nHTTP %{http_code}\n" "https://uat.agathatrack.com/backend/health"
 
 **Apache SPA routing:** `flutter_app/web/.htaccess` excludes `/backend` from the Flutter `index.html` fallback so API routes reach Passenger. CI stages a non-dot copy as `htaccess.spa` because FTP deploy may omit dotfiles; the UAT SSH step renames it to `.htaccess` at the domain root. **Never delete** cPanel-generated `backend/.htaccess` (Passenger) — backend FTP excludes `**/.htaccess`.
 
-**Recommended CD improvements** (future):
+**UAT SSH and migrations (Phase 5):** when `UAT_SSH_ENABLED=true`, the SSH deploy
+bundle restarts the backend and records deploy proofs before HTTP smoke. Set
+`UAT_AUTO_MIGRATE=true` to run `node scripts/migrate.js up` over SSH (mirrors prod).
+FTP-only deploys still require cPanel **Run NPM Install** and manual SQL when SSH
+or auto-migrate is off. **In UAT** is set only after all `deploy-uat.yml` gates pass
+(`smoke`, live `@smoke` E2E, full localhost E2E, and `prod-ready`).
 
-1. Add SSH deploy step with `UAT_SSH_HOST`, `UAT_SSH_KEY`, `UAT_DATABASE_URL` secrets.
-2. Run `node server/scripts/migrate.js up` when `db/migrations/` changes.
-3. Restart Passenger/Node after backend deploy (consume `server/tmp/restart.txt` or explicit restart command).
-4. Gate **In UAT** on `smoke` + `prod-ready` jobs, not frontend FTP alone.
-
-**Production promotion** remains manual via `deploy-prod.yml` (`workflow_dispatch`) after UAT validation.
+**Production promotion:** `deploy-prod.yml` runs automatically after green UAT
+**`Prod ready`** (stub `vX.Y.Z-rc.N` tag when `PROD_DEPLOY_ENABLED` is not `true`;
+full FTP + SSH deploy when `true`). Manual **`workflow_dispatch`** remains available
+for overrides. See [promotion-contract.md](./promotion-contract.md).
 
 ## Deterministic triage automation
 
