@@ -9,6 +9,54 @@ uat_nm_home_dir() {
   cd ~ && pwd
 }
 
+# CloudLinux non-interactive SSH often has no node on PATH; resolve nodevenv binary.
+# Prefer the active backend/node_modules symlink target (cPanel-selected version)
+# before scanning version directories — avoids picking a stale nodevenv install.
+uat_nm_resolve_node() {
+  local home_dir appdir nm target candidate ver
+  if type -P node >/dev/null 2>&1; then
+    type -P node
+    return 0
+  fi
+  home_dir="$(uat_nm_home_dir)"
+  appdir="${UAT_APP_DIR:-${home_dir}/uat.agathatrack.com/backend}"
+  nm="${appdir}/node_modules"
+  if [[ -L "$nm" ]]; then
+    target="$(readlink -f "$nm" 2>/dev/null || true)"
+    if [[ "$target" == "${home_dir}/nodevenv/"*/lib/node_modules ]]; then
+      candidate="${target%/lib/node_modules}/bin/node"
+      if [[ -x "$candidate" ]]; then
+        printf '%s\n' "$candidate"
+        return 0
+      fi
+    fi
+  fi
+  local nodevenv_root="${home_dir}/nodevenv/uat.agathatrack.com/backend"
+  if [[ -d "$nodevenv_root" ]]; then
+    while IFS= read -r ver; do
+      [[ -n "$ver" ]] || continue
+      candidate="${nodevenv_root}/${ver}/bin/node"
+      if [[ -x "$candidate" ]]; then
+        printf '%s\n' "$candidate"
+        return 0
+      fi
+    done < <(ls -1 "$nodevenv_root" 2>/dev/null | sort -t. -k1,1nr -k2,2nr -k3,3nr)
+  fi
+  return 1
+}
+
+uat_nm_use_node() {
+  local node_bin node_dir
+  node_bin="$(uat_nm_resolve_node)" || return 1
+  node_dir="$(dirname "$node_bin")"
+  if [[ -n "${PATH:-}" ]]; then
+    export PATH="${node_dir}:${PATH}"
+  else
+    export PATH="$node_dir"
+  fi
+  export UAT_NODE_BIN="$node_bin"
+}
+
 uat_nm_state_file() {
   if [[ -n "${UAT_DEPLOY_STATE_FILE:-}" ]]; then
     printf '%s\n' "$UAT_DEPLOY_STATE_FILE"
@@ -38,8 +86,9 @@ uat_nm_write_state() {
   local hostname node_major
   hostname="$(hostname -f 2>/dev/null || hostname 2>/dev/null || echo unknown)"
   node_major="unknown"
-  if command -v node >/dev/null 2>&1; then
-    node_major="$(node -p 'process.versions.node.split(".")[0]' 2>/dev/null || echo unknown)"
+  local node_bin
+  if node_bin="$(uat_nm_resolve_node 2>/dev/null)"; then
+    node_major="$("$node_bin" -p 'process.versions.node.split(".")[0]' 2>/dev/null || echo unknown)"
   fi
   mkdir -p "$(dirname "$state_file")"
   {
