@@ -21,6 +21,7 @@ During `/execute-plan`, always use **/babysit-plus**, never plain babysit alone.
 | Input | Required | Notes |
 |-------|----------|-------|
 | PR URL or branch | yes | `gh pr view` / `ManagePullRequest` |
+| `merge_mode` | no | Default **`auto`** when not in execute-plan; snapshot wins during execute-plan |
 | `plan_id` | when in execute-plan | For debt-issue dedupe keys |
 | Phase snapshot | when in execute-plan | `merge_mode`, `exit_checklist`, `allowed_paths` |
 | `approved_until` | when in execute-plan | Halt if past expiry |
@@ -35,6 +36,22 @@ During `/execute-plan`, always use **/babysit-plus**, never plain babysit alone.
 2. If execute-plan: confirm control issue has `autonomous-approved`, not `autonomous-revoked`, and `approved_until` is in the future (`node scripts/execute_plan_runtime.js gate <plan_id> --labels ...`).
 3. `gh pr view <url> --json state,isDraft,labels,headRefOid,baseRefName`
 4. Stop if: `do-not-merge`, draft (when merge intended), revoked, or expired.
+5. Resolve effective `merge_mode`: phase snapshot → `default_merge_mode` → **`auto`** (standalone babysit-plus default).
+
+### 0b. Ready for review + wait for automatic reviews (mandatory)
+
+Applies to **both** `/babysit` and `/babysit-plus`. Automatic reviewers run only after the PR is ready — not while draft.
+
+1. If `isDraft`: `gh pr ready <url>` (or equivalent).
+2. Poll until configured bot reviews land or the wait budget expires — **even when CI is already green** (reviews often arrive later).
+   ```bash
+   gh api repos/{owner}/{repo}/pulls/{n}/reviews
+   gh api repos/{owner}/{repo}/pulls/{n}/comments
+   ```
+3. Poll every **30–60s** for up to **15 minutes**. Track which bots have submitted (`copilot`, `bugbot`, etc.).
+4. Do **not** triage, merge, or declare done while expected automatic reviews are still pending.
+5. On timeout: comment on the PR listing pending reviewers and **halt** — do not skip review triage.
+6. After each push that changes the diff, repeat this step when new automatic reviews are expected.
 
 ### 1. Sync and conflicts
 
@@ -102,11 +119,13 @@ Always before merge attempt: `./scripts/pre-push.sh` green locally.
 
 Precedence and gates: autonomous-pr-policy §Merge modes + §Merge gates.
 
+**Default:** standalone babysit-plus (no execute-plan snapshot) uses **`auto`** — merge when all gates pass unless the caller overrides `merge_mode`.
+
 | `merge_mode` | Agent may merge when all gates pass? |
 |--------------|--------------------------------------|
 | `manual` | No — push only; human merges |
 | `labeled` | Yes if `agent-merge-ok` label present |
-| `auto` | Yes |
+| `auto` | Yes (default for ad-hoc babysit-plus) |
 
 ```bash
 gh pr merge <url> --squash   # add --auto when using GitHub merge queue

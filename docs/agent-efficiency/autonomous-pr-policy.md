@@ -26,6 +26,22 @@ During `/execute-plan`, always use **babysit-plus**, never plain babysit alone.
 
 ---
 
+## Automatic reviews (mandatory wait)
+
+Applies to `/babysit` and `/babysit-plus`.
+
+1. Automatic reviewers (Copilot, Bugbot, etc.) run only after the PR is **ready for review** — not while draft.
+2. If draft: mark ready first (`gh pr ready <url>`).
+3. **Poll** until bot reviews land or the wait budget expires — even when CI is already green.
+   - `gh api repos/{owner}/{repo}/pulls/{n}/reviews`
+   - `gh api repos/{owner}/{repo}/pulls/{n}/comments`
+4. Poll every **30–60s** for up to **15 minutes**.
+5. Do not triage, merge, or declare done while expected automatic reviews are still pending.
+6. On timeout: comment on the PR listing pending reviewers and halt.
+7. After each push that changes the diff, repeat when new automatic reviews are expected.
+
+---
+
 ## Review triage
 
 Post a **triage comment** on the PR before applying fixes.
@@ -96,6 +112,8 @@ Then halt. Never weaken CI gates to pass.
 
 Per-phase `merge_mode` in frozen snapshot; fallback to `default_merge_mode`.
 
+**Standalone babysit-plus** (no execute-plan snapshot): default **`auto`** — merge when all gates pass unless the caller explicitly sets `merge_mode`.
+
 | Mode | Behavior |
 |------|----------|
 | `manual` | Agent pushes; human merges |
@@ -109,7 +127,8 @@ Per-phase `merge_mode` in frozen snapshot; fallback to `default_merge_mode`.
 3. PR is `draft` → never merge
 4. Phase `merge_mode` from snapshot
 5. `default_merge_mode`
-6. `agent-merge-ok` required only for `labeled`; ignored for `manual`; not sufficient alone for `auto`
+6. **`auto`** (standalone babysit-plus only, when no snapshot)
+7. `agent-merge-ok` required only for `labeled`; ignored for `manual`; not sufficient alone for `auto`
 
 **Snapshot wins over labels** (e.g. `manual` + `agent-merge-ok` → do not merge).
 
