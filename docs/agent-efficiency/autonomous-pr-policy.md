@@ -27,6 +27,21 @@ During `/execute-plan`, always use **babysit-plus**, never plain babysit alone.
 
 ---
 
+## Proactive base sync
+
+Do **not** wait for CI to fail before rebasing when `main` (or the PR base branch) has moved.
+
+| When | Command |
+|------|---------|
+| Start of babysit / babysit-plus | `./scripts/babysit_sync_base.sh --pr <url> --push` |
+| Before every push | Same (or `--check` to detect only) |
+| Before entering CI wait loop | Same |
+| After long automatic-review poll | Same |
+
+Script: `scripts/babysit_sync_base.sh` — fetches `origin/<base>`, rebases when behind, optional `--push` with `--force-with-lease`. Use `--pr <url>` so integration-branch PRs rebase onto their declared base, not always `main`.
+
+---
+
 ## Automatic reviews (mandatory wait)
 
 Applies to `/babysit` and `/babysit-plus`.
