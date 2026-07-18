@@ -157,4 +157,4 @@ See autonomous-pr-policy §Escalation. Includes security/crypto, breaking API, p
 |-------|------|
 | `/pre-push-verify` | Before every push; full suite before merge |
 | `/spawn-sprint-agents` | Parallel agents inside a phase (when snapshot allows) |
-| `/execute-plan` | Multi-phase orchestrator (Phase D) — delegates PR hygiene here |
+| `/execute-plan` | Multi-phase orchestrator — delegates PR hygiene here (default merge mode `auto`) |

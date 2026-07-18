@@ -1,6 +1,6 @@
 # Execute-plan runtime (Phase C)
 
-Control issue + plan artifact runtime for `/execute-plan` and `/babysit-plus`. Phase D (`execute-plan` skill) orchestrates these commands; agents call them directly during autonomous runs.
+Control issue + plan artifact runtime for `/execute-plan` and `/babysit-plus`. The [execute-plan skill](../../.cursor/skills/execute-plan/SKILL.md) orchestrates these commands; agents call them directly during autonomous runs.
 
 **Canonical policy:** [autonomous-pr-policy.md](./autonomous-pr-policy.md)  
 **Snapshot schema:** [execute-plan-schema.md](./execute-plan-schema.md)  
