@@ -15,6 +15,14 @@ export function flutterRoutePath(url: string): string {
   return parsed.pathname;
 }
 
+/** Test [path] against [pattern] safely inside retry loops (reset global/sticky lastIndex). */
+function matchesFlutterRoute(path: string, pattern: RegExp): boolean {
+  if (pattern.global || pattern.sticky) {
+    pattern.lastIndex = 0;
+  }
+  return pattern.test(path);
+}
+
 /**
  * Poll until the effective Flutter route matches.
  * Prefer over `page.waitForURL` — hash SPA navigations do not fire `load`.
@@ -28,10 +36,17 @@ export async function waitForFlutterRoutePattern(
   const { expect } = await import('@playwright/test');
   await expect(async () => {
     const path = flutterRoutePath(page.url());
-    if (!pattern.test(path)) {
+    if (!matchesFlutterRoute(path, pattern)) {
       throw new Error(`Route ${path} does not match ${pattern} (url=${page.url()})`);
     }
   }).toPass({ timeout: effectiveTimeout });
+}
+
+/** Build a URL that reaches a Flutter hash route on web. */
+export function flutterGotoUrl(path: string): string {
+  if (path === '/landing' || path === '/' || path === '') return '/landing';
+  const normalized = path.startsWith('/') ? path : `/${path}`;
+  return `/landing#${normalized}`;
 }
 
 /** Wait until the Flutter web canvas is mounted. */
@@ -44,7 +59,7 @@ export async function waitForFlutterRoute(page: Page, path: string): Promise<voi
   if (path === '/landing' || path === '/') {
     await passHostingWaf(page);
   }
-  await page.goto(path);
+  await page.goto(flutterGotoUrl(path));
   await page.waitForSelector('flutter-view, flt-glass-pane', { state: 'attached', timeout: 60_000 });
   await enableFlutterAccessibility(page);
   await dismissConsentBannerIfPresent(page);
@@ -220,13 +235,18 @@ export async function completeOrgOnboarding(
   await refreshFlutterAccessibility(page);
 
   await page.getByRole('button', { name: /get started/i }).click();
+  await refreshFlutterAccessibility(page);
   const orgNameField = page.getByRole('textbox', { name: /organization name/i });
   if (await orgNameField.isVisible({ timeout: 2_000 }).catch(() => false)) {
     await fillLabelledField(page, 'Organization Name', 'Rescue Hearts');
     await page.getByRole('button', { name: 'Continue' }).click();
+    await refreshFlutterAccessibility(page);
   }
+  await page.getByRole('textbox', { name: /name/i }).first().waitFor({ timeout: effectiveTimeout });
   await fillLabelledField(page, 'Name', petName);
   await page.getByRole('button', { name: 'Continue' }).click();
+  await refreshFlutterAccessibility(page);
+  await page.getByRole('textbox', { name: /reminder name/i }).waitFor({ timeout: effectiveTimeout });
   await fillLabelledField(page, 'Reminder name', reminderName);
   await page.getByRole('button', { name: /finish setup/i }).click();
   await waitForFlutterRoutePattern(page, /\/o\/home/, effectiveTimeout);
@@ -264,8 +284,12 @@ export async function completeGuardianOnboarding(
   await refreshFlutterAccessibility(page);
 
   await page.getByRole('button', { name: /get started/i }).click();
+  await refreshFlutterAccessibility(page);
+  await page.getByRole('textbox', { name: /name/i }).first().waitFor({ timeout: effectiveTimeout });
   await fillLabelledField(page, 'Name', petName);
   await page.getByRole('button', { name: 'Continue' }).click();
+  await refreshFlutterAccessibility(page);
+  await page.getByRole('textbox', { name: /reminder name/i }).waitFor({ timeout: effectiveTimeout });
   await fillLabelledField(page, 'Reminder name', reminderName);
   await page.getByRole('button', { name: /finish setup/i }).click();
   await waitForFlutterRoutePattern(page, /\/g\/home/, effectiveTimeout);
@@ -287,8 +311,11 @@ export async function reachAuthenticatedHome(
 
 /** True when the post-split experience shell (`/g/home` or `/o/home`) is visible. */
 export async function isExperienceShellVisible(page: Page): Promise<boolean> {
-  const homeNav = page.getByRole('button', { name: 'Home' });
-  return homeNav.isVisible({ timeout: 3_000 }).catch(() => false);
+  const shellMarker = page
+    .getByRole('button', { name: 'Home' })
+    .or(page.getByRole('button', { name: 'Events' }))
+    .or(page.getByRole('button', { name: 'Settings' }));
+  return shellMarker.first().isVisible({ timeout: 3_000 }).catch(() => false);
 }
 
 /** Open the experience shell drawer (hamburger menu). */
@@ -303,25 +330,44 @@ export async function openExperienceDrawer(page: Page): Promise<void> {
 /** Log out via legacy user menu or experience shell drawer. */
 export async function logOutFromApp(page: Page): Promise<void> {
   await dismissConsentBannerIfPresent(page);
+  await refreshFlutterAccessibility(page);
+
+  const clickLogoutEntry = async (): Promise<boolean> => {
+    await refreshFlutterAccessibility(page);
+    const entry = page
+      .getByRole('button', { name: /log out|déconnexion/i })
+      .or(page.getByRole('menuitem', { name: /log out|déconnexion/i }))
+      .or(page.getByText('Log Out', { exact: true }))
+      .or(page.getByText('Déconnexion', { exact: true }))
+      .first();
+    if (await entry.isVisible({ timeout: 3_000 }).catch(() => false)) {
+      await entry.click();
+      return true;
+    }
+    const forced = page.locator('text=/^Log Out$/i').first();
+    if (await forced.count()) {
+      await forced.click({ force: true });
+      return true;
+    }
+    return false;
+  };
+
   const legacyMenu = page.getByRole('button', { name: /user menu|menu utilisateur/i });
   if (await legacyMenu.isVisible({ timeout: 2_000 }).catch(() => false)) {
     await legacyMenu.click();
     await page.waitForTimeout(500);
-    await page
-      .getByRole('menuitem', { name: /log.out|déconnexion/i })
-      .or(page.getByText('Log Out', { exact: true }))
-      .first()
-      .click();
-    return;
+    if (await clickLogoutEntry()) return;
   }
+
+  if (await clickLogoutEntry()) return;
 
   if (await isExperienceShellVisible(page)) {
     await openExperienceDrawer(page);
-    await page
-      .getByText('Log Out', { exact: true })
-      .or(page.getByText('Déconnexion', { exact: true }))
-      .first()
-      .click();
+    if (await clickLogoutEntry()) return;
+  }
+
+  const path = flutterRoutePath(page.url());
+  if (path === '/landing' || path === '/') {
     return;
   }
 

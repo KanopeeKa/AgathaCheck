@@ -1,15 +1,21 @@
 import type { Page } from '@playwright/test';
 import { expect } from '@playwright/test';
+import { HealthDashboardPage } from './health-dashboard.page';
 import {
   dismissConsentBannerIfPresent,
   escapeRegExp,
   expectAppBarTitle,
   expectHomeShellVisible,
+  flutterGotoUrl,
   homeShellLocator,
   isExperienceShellVisible,
   refreshFlutterAccessibility,
   semanticsByName,
+  skipGuardianOnboardingIfPresent,
+  skipOrgOnboardingIfPresent,
   waitForFlutterRoute,
+  waitForFlutterRoutePattern,
+  flutterRoutePath,
 } from '../support/flutter';
 import { isLiveHostingTarget } from '../support/hosting';
 
@@ -29,26 +35,21 @@ export class PetListPage {
 
   async openHealthDashboard(): Promise<void> {
     await dismissConsentBannerIfPresent(this.page);
-    const addEvent = this.page.getByRole('button', { name: 'Add Health Event' });
+    const eventsPath = flutterRoutePath(this.page.url()).startsWith('/o/')
+      ? '/o/events'
+      : '/g/events';
     const eventsNav = this.page.getByRole('button', { name: 'Events' });
     if (await eventsNav.isVisible({ timeout: 2_000 }).catch(() => false)) {
       await eventsNav.click();
+      await waitForFlutterRoutePattern(this.page, /\/(g|o)\/events/, 30_000);
     } else if (await isExperienceShellVisible(this.page)) {
-      const path = this.page.url().includes('/o/') ? '/o/events' : '/g/events';
-      await this.page.goto(path);
+      await this.page.goto(flutterGotoUrl(eventsPath));
       await refreshFlutterAccessibility(this.page);
+      await waitForFlutterRoutePattern(this.page, /\/(g|o)\/events/, 30_000);
     } else {
       await this.page.getByRole('button', { name: 'To Do' }).click();
     }
-    if (await addEvent.isVisible({ timeout: 3_000 }).catch(() => false)) {
-      return;
-    }
-    if (await isExperienceShellVisible(this.page)) {
-      const path = this.page.url().includes('/o/') ? '/o/events' : '/g/events';
-      await this.page.goto(path);
-      await refreshFlutterAccessibility(this.page);
-    }
-    await addEvent.waitFor({ timeout: 30_000 });
+    await new HealthDashboardPage(this.page).expectLoaded();
   }
 
   async expectEmptyState(): Promise<void> {
@@ -92,14 +93,10 @@ export class PetListPage {
     if (await orgNav.isVisible({ timeout: 2_000 }).catch(() => false)) {
       await orgNav.click();
     } else {
-      await this.page.goto('/organizations');
-      await refreshFlutterAccessibility(this.page);
+      await waitForFlutterRoute(this.page, '/organizations');
     }
-    await this.page
-      .getByRole('button', { name: 'Create' })
-      .or(this.page.getByRole('button', { name: /Rescue Hearts|Partner Shelter/i }))
-      .first()
-      .waitFor({ timeout: 30_000 });
+    await refreshFlutterAccessibility(this.page);
+    await expectAppBarTitle(this.page, 'My Organizations');
   }
 
   async openVets(): Promise<void> {
@@ -169,7 +166,10 @@ export class PetListPage {
   }
 
   async expectSectionHeader(title: string): Promise<void> {
-    await this.page.getByText(title, { exact: true }).first().waitFor({ timeout: 30_000 });
+    await expect(async () => {
+      await refreshFlutterAccessibility(this.page);
+      await expect(this.page.getByText(title, { exact: false }).first()).toBeVisible();
+    }).toPass({ timeout: 30_000 });
   }
 
   /** Org pets show aria-label "Pet: Name, OrgName, …" on the home list. */
@@ -180,8 +180,31 @@ export class PetListPage {
     ).waitFor({ timeout: 30_000 });
   }
 
-  async goHome(): Promise<void> {
-    await waitForFlutterRoute(this.page, '/g/home');
+  async goHome(options: { experience?: 'guardian' | 'organization' } = {}): Promise<void> {
+    const route = flutterRoutePath(this.page.url());
+    const useOrgHome =
+      options.experience === 'organization' ||
+      (options.experience !== 'guardian' &&
+        (route.startsWith('/o/') || route.startsWith('/organizations')));
+    const home = useOrgHome ? '/o/home' : '/g/home';
+
+    await dismissConsentBannerIfPresent(this.page);
+    const homeNav = this.page.getByRole('button', { name: 'Home' });
+    if (await homeNav.isVisible({ timeout: 2_000 }).catch(() => false)) {
+      await homeNav.click();
+      await waitForFlutterRoutePattern(
+        this.page,
+        new RegExp(`^${escapeRegExp(home)}$`),
+        30_000,
+      );
+    } else {
+      await waitForFlutterRoute(this.page, home);
+    }
+    if (useOrgHome) {
+      await skipOrgOnboardingIfPresent(this.page);
+    } else {
+      await skipGuardianOnboardingIfPresent(this.page);
+    }
     await this.expectLoaded();
   }
 }

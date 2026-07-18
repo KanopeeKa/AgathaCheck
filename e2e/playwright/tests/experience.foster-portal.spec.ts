@@ -6,6 +6,7 @@ import { LandingPage } from '../pages/landing.page';
 import { seedRescueHearts } from '../support/api';
 import {
   dismissConsentBannerIfPresent,
+  flutterGotoUrl,
   refreshFlutterAccessibility,
   waitForFlutterRoutePattern,
 } from '../support/flutter';
@@ -34,7 +35,7 @@ test.describe('Foster portal route guards', () => {
     const { eve } = await seedRescueHearts(baseURL());
     await loginFosterOnly(page, eve.email, eve.password);
 
-    await page.goto('/o/invite');
+    await page.goto(flutterGotoUrl('/o/invite'));
     await refreshFlutterAccessibility(page);
     await waitForFlutterRoutePattern(page, /\/o\/home/, 15_000);
     await expect(page.getByRole('button', { name: 'Home' })).toBeVisible();
@@ -48,7 +49,7 @@ test.describe('Foster portal route guards', () => {
     const { eve } = await seedRescueHearts(baseURL());
     await loginFosterOnly(page, eve.email, eve.password);
 
-    await page.goto('/o/events');
+    await page.goto(flutterGotoUrl('/o/events'));
     await refreshFlutterAccessibility(page);
     await waitForFlutterRoutePattern(page, /\/o\/home/, 15_000);
     await expect(page.getByRole('button', { name: 'Home' })).toBeVisible();

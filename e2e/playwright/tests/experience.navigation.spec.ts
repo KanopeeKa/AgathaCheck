@@ -93,7 +93,7 @@ test.describe('Experience navigation', () => {
     const experience = new ExperiencePage(page);
     await experience.chooseGuardian(true);
 
-    await page.context().clearCookies();
+    await logOutFromApp(page);
     await loginFromLanding(page, user.email, user.password);
     await waitForFlutterRoutePattern(page, /\/g\/home/, 60_000);
     await experience.expectGuardianShell();
@@ -109,11 +109,13 @@ test.describe('Experience navigation', () => {
     const experience = new ExperiencePage(page);
     await experience.chooseGuardian(false);
     await experience.expectGuardianShell();
-    await experience.openGuardianSettingsFromDrawer();
+    await experience.gotoGuardianSettings();
     await experience.setDefaultExperience('organization');
+    await refreshFlutterAccessibility(page);
     await logOutFromApp(page);
 
-    await page.context().clearCookies();
+    await logOutFromApp(page);
+
     await loginFromLanding(page, user.email, user.password);
     await waitForFlutterRoutePattern(page, /\/o\/home/, 60_000);
     await experience.expectOrgShell();
@@ -138,7 +140,7 @@ test.describe('Experience navigation', () => {
   }) => {
     await prepareLiveApiAccess(page, baseURL());
     const user = await signupUser(baseURL());
-    await createPet(baseURL, user.accessToken, 'Solo Pet');
+    await createPet(baseURL(), user.accessToken, 'Solo Pet');
     await loginFromLanding(page, user.email, user.password);
     await waitForFlutterRoutePattern(page, /\/g\/home/, 60_000);
 
