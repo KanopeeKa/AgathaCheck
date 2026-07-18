@@ -78,6 +78,12 @@ export PASSENGER_HTACCESS_FILE
 
 echo "=== Database migrations ==="
 cd "${APPDIR}"
+if ! uat_nm_use_node; then
+  echo "::error::node not found in PATH or CloudLinux nodevenv — cannot run migrate.js"
+  echo "Expected: ~/nodevenv/uat.agathatrack.com/backend/<version>/bin/node"
+  exit 1
+fi
+echo "node_bin=${UAT_NODE_BIN}"
 if [[ "${UAT_AUTO_MIGRATE}" == "true" ]]; then
   echo "UAT_AUTO_MIGRATE=true — applying pending migrations (node scripts/migrate.js up)"
   node scripts/migrate.js up

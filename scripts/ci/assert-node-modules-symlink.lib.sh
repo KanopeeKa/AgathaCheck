@@ -9,6 +9,43 @@ uat_nm_home_dir() {
   cd ~ && pwd
 }
 
+# CloudLinux non-interactive SSH often has no node on PATH; resolve nodevenv binary.
+uat_nm_resolve_node() {
+  local home_dir appdir nm target candidate v
+  if command -v node >/dev/null 2>&1; then
+    command -v node
+    return 0
+  fi
+  home_dir="$(uat_nm_home_dir)"
+  appdir="${UAT_APP_DIR:-${home_dir}/uat.agathatrack.com/backend}"
+  for v in 22 20 18; do
+    candidate="${home_dir}/nodevenv/uat.agathatrack.com/backend/${v}/bin/node"
+    if [[ -x "$candidate" ]]; then
+      printf '%s\n' "$candidate"
+      return 0
+    fi
+  done
+  nm="${appdir}/node_modules"
+  if [[ -L "$nm" ]]; then
+    target="$(readlink -f "$nm" 2>/dev/null || true)"
+    if [[ "$target" == */lib/node_modules ]]; then
+      candidate="${target%/lib/node_modules}/bin/node"
+      if [[ -x "$candidate" ]]; then
+        printf '%s\n' "$candidate"
+        return 0
+      fi
+    fi
+  fi
+  return 1
+}
+
+uat_nm_use_node() {
+  local node_bin
+  node_bin="$(uat_nm_resolve_node)" || return 1
+  export PATH="$(dirname "$node_bin"):${PATH:-}"
+  export UAT_NODE_BIN="$node_bin"
+}
+
 uat_nm_state_file() {
   if [[ -n "${UAT_DEPLOY_STATE_FILE:-}" ]]; then
     printf '%s\n' "$UAT_DEPLOY_STATE_FILE"
@@ -38,8 +75,9 @@ uat_nm_write_state() {
   local hostname node_major
   hostname="$(hostname -f 2>/dev/null || hostname 2>/dev/null || echo unknown)"
   node_major="unknown"
-  if command -v node >/dev/null 2>&1; then
-    node_major="$(node -p 'process.versions.node.split(".")[0]' 2>/dev/null || echo unknown)"
+  local node_bin
+  if node_bin="$(uat_nm_resolve_node 2>/dev/null)"; then
+    node_major="$("$node_bin" -p 'process.versions.node.split(".")[0]' 2>/dev/null || echo unknown)"
   fi
   mkdir -p "$(dirname "$state_file")"
   {
