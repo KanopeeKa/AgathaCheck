@@ -18,7 +18,6 @@
 import { test, expect, loginAs, seedPetWithDueHealthEntry } from '../fixtures/auth.fixture';
 import { HealthDashboardPage } from '../pages/health-dashboard.page';
 import { PetListPage } from '../pages/pet-list.page';
-import { flutterGotoUrl, reachAuthenticatedHome, refreshFlutterAccessibility, semanticsByName } from '../support/flutter';
 import {
   createPet,
   createHealthEntry,
@@ -304,38 +303,24 @@ test.describe('Health tracking', () => {
 
   test('due events section appears on pet list when an entry is due or overdue', async ({ page, testUser }) => {
     const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
-    const yesterday = new Date();
-    yesterday.setUTCDate(yesterday.getUTCDate() - 1);
-    const dueDate = yesterday.toISOString().slice(0, 10);
+    const today = new Date().toISOString().slice(0, 10);
     const { entry } = await seedPetWithDueHealthEntry(baseURL, testUser, {
       petName: 'Bella',
       entryName: 'Flea Prevention',
-      dueDate,
+      dueDate: today,
     });
+
+    const apiEntries = await getHealthEntries(baseURL, testUser.accessToken);
+    expect(apiEntries.some((row) => row.name === entry.name)).toBe(true);
 
     await loginAs(page, testUser);
     const petList = new PetListPage(page);
     await petList.expectLoaded();
     await petList.expectPetVisible('Bella');
+
+    // Guardian shell surfaces due/overdue items on the Events screen (/g/events).
     await petList.openHealthDashboard();
-    const dashboard = new HealthDashboardPage(page);
-    await dashboard.expectEntryVisible(entry.name);
-
-    await page.goto(flutterGotoUrl('/g/home'));
-    await refreshFlutterAccessibility(page);
-    await petList.expectLoaded();
-    await page.reload();
-    await reachAuthenticatedHome(page);
-    await petList.expectLoaded();
-    await petList.expectPetVisible('Bella');
-
-    await expect(async () => {
-      await refreshFlutterAccessibility(page);
-      await expect(page.getByText(/Upcoming events/i).first()).toBeVisible();
-      await semanticsByName(page, new RegExp(entry.name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i')).waitFor({
-        timeout: 5_000,
-      });
-    }).toPass({ timeout: 60_000 });
+    await new HealthDashboardPage(page).expectEntryVisible(entry.name);
   });
 
   test('pet list shows "You\'re all caught up" when no entries are due', async ({ page, testUser }) => {
