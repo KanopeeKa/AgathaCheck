@@ -12,7 +12,8 @@
     "test:ui": "playwright test --ui",
     "test:headed": "playwright test --headed",
     "report": "playwright show-report",
-    "install:browsers": "playwright install chromium --with-deps"
+    "install:browsers": "playwright install chromium --with-deps",
+    "test:unit": "node --experimental-strip-types --test playwright/support/*.test.ts"
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.10.1",
