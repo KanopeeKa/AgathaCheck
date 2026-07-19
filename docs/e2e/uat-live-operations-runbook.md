@@ -26,7 +26,7 @@ GitHub Actions deploy-uat.yml
 | **Passenger / node_modules** | `/backend/health` HTML not JSON | `docs/uat-backend-node-modules-runbook.md` |
 | **DB migrations** | API `500` on routes using new tables/columns | SSH step `=== Database migrations ===` |
 | **DB ownership** | `doit être le propriétaire de la relation …` | Same SSH step; `migrate.js` output |
-| **Auth / rate limit** | `401` on API seed; `429` on signup | UAT access logs; `server/config/rateLimit.js` |
+| **Auth / rate limit** | `401` on API seed; `429` on signup; **all** smoke timeout on login | UAT access logs; `server/config/rateLimit.js`; UAT Node `E2E=1` |
 | **Token shape** | `401` after login; E2E “unexpected token shape” | `e2e/playwright/support/normalize-stored-token.ts` |
 | **E2E test pattern** | Timeout on `expectPetVisible` with no API error | Spec order: seed **before** `loginAs` |
 | **Flutter / WAF** | WAF challenge HTML; semantics timeout | `e2e/playwright/support/waf.ts`, `flutter.ts` |
@@ -62,6 +62,7 @@ GitHub Actions deploy-uat.yml
 | `expectDueEntryOnHome` timeout | Home `DueEventsSection` not refreshed after API seed | `PetListPage.refreshByRemount()` after login |
 | Health dashboard entry timeout on UAT only | Live latency / WAF | `isLiveHostingTarget()` longer timeouts; `prepareLiveApiAccess` in fixture |
 | Signup smoke `429` | Bypass token not in workflow env | `E2E_BYPASS_TOKEN` on smoke step (human-owned workflow PR) |
+| **All** `@smoke` tests timeout ~2.4 min | Login rate limit — UAT Node missing `E2E=1` | Set `E2E=1` on UAT Node app (cPanel) and restart |
 | `globalSetup` health probe fail | UAT down, WAF, or bad TLS chain | `E2E_TLS_INSECURE=1`, `NODE_TLS_REJECT_UNAUTHORIZED=0` on CI |
 
 ---
@@ -136,6 +137,7 @@ UAT Node app `.env` (cPanel):
 | `DATABASE_URL` or `PG*` | DB connection for app + migrate.js |
 | `JWT_SECRET` | Must be stable across restarts |
 | `E2E_BYPASS_ALLOWED` / `E2E_BYPASS_TOKEN` | Signup rate-limit bypass for smoke |
+| **`E2E=1`** | **Required** — disables auth + general API rate limits for CI (live `@smoke` will hang without it; UAT-only) |
 
 ---
 
@@ -171,7 +173,9 @@ SELECT name FROM _migrations ORDER BY applied_at;
 | Playwright header | `e2e/playwright/support/e2e-bypass.ts`, `api-fetch.ts` |
 | Tests | `server/test/auth/e2e-bypass.test.js` |
 
-Localhost CI: `E2E=1` disables rate limits — bypass not needed.
+Localhost CI: `E2E=1` disables auth + general API rate limits — bypass not needed.
+
+**Live UAT:** `E2E=1` must be set on the UAT Node app (cPanel env vars). `shouldSkipRateLimit()` in `server/config/rateLimit.js` skips both `createAuthLimiter()` and `createApiLimiter()` when `E2E=1`. Without it, repeated login attempts from the GitHub Actions runner IP hit the auth rate limit and every `@smoke` test stalls on the login screen (~2.4 min timeout each). Signup bypass (`E2E_BYPASS_*`) alone is not sufficient — login still rate-limits. **Do not set `E2E=1` on production.**
 
 ---
 
@@ -215,3 +219,4 @@ Localhost CI: `E2E=1` disables rate limits — bypass not needed.
 | `500` on `/pets/all`, `/custody-transfers/pending` | 20 pending migrations on UAT | `UAT_AUTO_MIGRATE` + ownership |
 | Weight `@smoke` timeout | API seed after login | Seed before login (#225) |
 | Health `@smoke` passed after migrations | Was blocked by API 500s / separate UI timing | Migrations first; remount for home due events |
+| All live `@smoke` timeout ~2.4 min | UAT Node missing `E2E=1` | Set `E2E=1` + restart; verified [run 29694789075](https://github.com/KanopeeKa/AgathaCheck/actions/runs/29694789075) |

@@ -17,6 +17,7 @@
 | `doit être le propriétaire` | DB user needs **OWNER**, not GRANT — app user must own `public` tables |
 | `401` E2E API after login | `normalize-stored-token.ts`; token must be raw JWT |
 | `429` signup smoke | `E2E_BYPASS_TOKEN` in workflow + UAT `E2E_BYPASS_ALLOWED` (signup only) |
+| **All** `@smoke` timeout ~2.4 min on login | UAT Node missing `E2E=1` — login rate limit blocks CI runner IP | Set `E2E=1` on UAT Node app + restart |
 | Pet visible timeout, API OK | Spec seeds **after** `loginAs` — fix: `createPet` before login or `refreshByRemount` |
 | Due events not on home | `refreshByRemount()` after API seed (see `e2e-navigation-contract.md`) |
 
@@ -34,8 +35,11 @@ Never depend on post-login API create + stale home list on live UAT.
 
 - `UAT_SSH_ENABLED=true`
 - `UAT_AUTO_MIGRATE=true`
-- UAT Node: `E2E_BYPASS_ALLOWED=true` + `E2E_BYPASS_TOKEN` (matches GitHub secret)
+- UAT Node: **`E2E=1`** (disables auth + general API rate limits for CI — required for live `@smoke`; UAT-only)
+- UAT Node: `E2E_BYPASS_ALLOWED=true` + `E2E_BYPASS_TOKEN` (matches GitHub secret; signup bypass only)
 - Workflow smoke step needs `E2E_BYPASS_TOKEN` (human PR — `cursor/*` cannot edit workflows)
+
+**Verified green (Jul 2026):** deploy run [29694789075](https://github.com/KanopeeKa/AgathaCheck/actions/runs/29694789075) after migrations + ownership + `E2E=1` + bypass token wiring.
 
 ## Key paths
 
