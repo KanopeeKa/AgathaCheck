@@ -137,7 +137,7 @@ UAT Node app `.env` (cPanel):
 | `DATABASE_URL` or `PG*` | DB connection for app + migrate.js |
 | `JWT_SECRET` | Must be stable across restarts |
 | `E2E_BYPASS_ALLOWED` / `E2E_BYPASS_TOKEN` | Signup rate-limit bypass for smoke |
-| **`E2E=1`** | **Required** — disables auth rate limits for CI login/signup (live `@smoke` will hang without it) |
+| **`E2E=1`** | **Required** — disables auth + general API rate limits for CI (live `@smoke` will hang without it; UAT-only) |
 
 ---
 
@@ -173,9 +173,9 @@ SELECT name FROM _migrations ORDER BY applied_at;
 | Playwright header | `e2e/playwright/support/e2e-bypass.ts`, `api-fetch.ts` |
 | Tests | `server/test/auth/e2e-bypass.test.js` |
 
-Localhost CI: `E2E=1` disables rate limits — bypass not needed.
+Localhost CI: `E2E=1` disables auth + general API rate limits — bypass not needed.
 
-**Live UAT:** `E2E=1` must be set on the UAT Node app (cPanel env vars). Without it, repeated login attempts from the GitHub Actions runner IP hit the auth rate limit and every `@smoke` test stalls on the login screen (~2.4 min timeout each). Signup bypass (`E2E_BYPASS_*`) alone is not sufficient — login still rate-limits.
+**Live UAT:** `E2E=1` must be set on the UAT Node app (cPanel env vars). `shouldSkipRateLimit()` in `server/config/rateLimit.js` skips both `createAuthLimiter()` and `createApiLimiter()` when `E2E=1`. Without it, repeated login attempts from the GitHub Actions runner IP hit the auth rate limit and every `@smoke` test stalls on the login screen (~2.4 min timeout each). Signup bypass (`E2E_BYPASS_*`) alone is not sufficient — login still rate-limits. **Do not set `E2E=1` on production.**
 
 ---
 
