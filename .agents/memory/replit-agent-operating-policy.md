@@ -14,7 +14,7 @@ Repo docs are the source of truth. `.cursor/rules/*.mdc` + `AGENTS.md` are the a
 - **Security**: never return raw `err.message`/`e.toString()`/`$e` in prod 5xx — use `publicError()`; rate-limit DB/filesystem routes; UUID filenames + path containment for uploads.
 - **Atomic outcome**: one verifiable outcome per change set; snags >15 lines become separate work items, never silently deferred.
 
-**Sensitive paths — explicit user confirmation required** (source of truth: `.github/scripts/agent-safety-lib.js`): `.github/workflows/`, `db/migrations/`, `server/config/security.js`, `infra/`, and any path matching `/auth/`, `/billing/`, `/secrets?/`. Note: `server/config/` broadly is NOT forbidden — only `security.js` within it.
+**Sensitive paths — explicit user confirmation required** (source of truth: `.github/scripts/agent-safety-lib.js`; gate enforced by `agent-pr-safety-gate.yml` on **both** `cursor/*` and `replit/*` branches): `.github/workflows/`, `db/migrations/`, `server/config/security.js`, `infra/`, and any path matching `/auth/`, `/billing/`, `/secrets?/`. Note: `server/config/` broadly is NOT forbidden — only `security.js` within it.
 
 **Migrations**: use `cd server && node scripts/migrate.js up` (AGENTS.md: `dart run bin/migrate.dart fresh` is BROKEN with pinned postgres driver — never use fresh). No `gen_random_uuid()` in SQL — generate UUIDs in code.
 
