@@ -110,12 +110,7 @@ export async function prepareLiveApiAccess(page: Page, baseURL?: string): Promis
 
   const root = resolveBaseURL(baseURL);
   if (sessionWafCleared) {
-    let health: HealthProbe = 'down';
-    try {
-      health = await probeBackendHealth(page, root);
-    } catch {
-      health = 'down';
-    }
+    const health = await probeBackendHealth(page, root).catch((): HealthProbe => 'down');
     if (health !== 'ok') {
       sessionWafCleared = false;
     }
