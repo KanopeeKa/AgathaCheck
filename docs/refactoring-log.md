@@ -298,6 +298,7 @@ Use this template when spawning agents on an integration branch:
 | 2026-07-19 | PR C (#220): due-events E2E restores home `DueEventsSection` assertion via `PetListPage.refreshByRemount()` after API seed (#216 events-screen proxy superseded). |
 | 2026-07-19 | #219 merged: E2E shell-navigation fallback contract (`navigateWithShellFallback`). |
 | 2026-07-19 | #218 merged: UAT pre-flight health probe before live smoke workers. |
+| 2026-07-16 | #188 merged: E1b org-only user lands on organisation home |
 | 2026-07-16 | #187 merged: E2E guardian shell nav hardening (chooser, strict-mode, shell fallbacks) |
 | 2026-07-16 | #186 merged: Experience Phase 3 pet detail context |
 | 2026-07-10 | Sprint 10 planned: Flutter 3.44 / Dart 3.12 upgrade; execution plan `docs/sprint-10-flutter-344-execution-plan.md` |

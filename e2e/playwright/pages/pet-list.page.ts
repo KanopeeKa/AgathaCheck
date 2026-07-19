@@ -105,12 +105,14 @@ export class PetListPage {
   /** Assert a due/overdue entry appears in the home DueEventsSection card. */
   async expectDueEntryOnHome(entryName: string): Promise<void> {
     await refreshFlutterAccessibility(this.page);
+    await expect(
+      this.page
+        .getByRole('group', { name: /Upcoming events|Événements à venir/i })
+        .first(),
+    ).toBeVisible({ timeout: 20_000 });
     await semanticsByName(
       this.page,
-      new RegExp(
-        `(Upcoming events|Événements à venir).*${escapeRegExp(entryName)}`,
-        'i',
-      ),
+      new RegExp(escapeRegExp(entryName), 'i'),
     ).waitFor({ timeout: 20_000 });
   }
 
