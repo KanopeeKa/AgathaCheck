@@ -24,8 +24,8 @@
 
 ```ts
 await createPet(baseURL, testUser.accessToken, name);
-await loginAs(page, testUser);
-// then assert on home list
+const petList = await loginAs(page, testUser);
+await petList.expectPetVisible(name);
 ```
 
 Never depend on post-login API create + stale home list on live UAT.

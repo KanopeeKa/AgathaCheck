@@ -19,7 +19,7 @@ When seeding via `playwright/support/api.ts` and asserting on the **home pet lis
 
 ```ts
 const pet = await createPet(baseURL, testUser.accessToken, 'Bella');
-await loginAs(page, testUser);
+const petList = await loginAs(page, testUser);
 await petList.expectPetVisible(pet.name);
 ```
 
