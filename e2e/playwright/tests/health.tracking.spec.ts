@@ -18,6 +18,7 @@
 import { test, expect, loginAs, seedPetWithDueHealthEntry } from '../fixtures/auth.fixture';
 import { HealthDashboardPage } from '../pages/health-dashboard.page';
 import { PetListPage } from '../pages/pet-list.page';
+import { isLiveHostingTarget } from '../support/hosting';
 import {
   createPet,
   createHealthEntry,
@@ -40,13 +41,15 @@ test.describe('Health tracking', () => {
       entryName: 'Heartworm Prevention',
     });
 
-    await loginAs(page, testUser);
+    await loginAs(page, testUser, { experience: 'guardian' });
     const petList = new PetListPage(page);
-    await petList.openHealthDashboard();
+    await petList.expectLoaded();
+    await petList.openHealthDashboard({ experience: 'guardian' });
 
     const dashboard = new HealthDashboardPage(page);
     await dashboard.expectLoaded();
-    await dashboard.expectEntryVisible(entry.name);
+    const entryTimeout = isLiveHostingTarget(baseURL) ? 45_000 : 15_000;
+    await dashboard.expectEntryVisible(entry.name, entryTimeout);
   });
 
   test('user can mark a due health entry as done', async ({ page, testUser }) => {

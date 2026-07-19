@@ -43,9 +43,9 @@ export class HealthDashboardPage {
     await this.expectLoaded();
   }
 
-  async expectEntryVisible(name: string): Promise<void> {
+  async expectEntryVisible(name: string, timeout = 15_000): Promise<void> {
     await semanticsByName(this.page, new RegExp(escapeRegExp(name), 'i')).waitFor({
-      timeout: 15_000,
+      timeout,
     });
   }
 

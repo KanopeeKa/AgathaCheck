@@ -21,6 +21,8 @@ import {
   signupUser,
 } from '../support/api';
 import { checkA11y } from '../support/axe';
+import { readAccessTokenFromPage } from '../support/ui-auth';
+import { prepareLiveApiAccess } from '../support/waf';
 import { PetListPage } from '../pages/pet-list.page';
 import { PetDetailPage } from '../pages/pet-detail.page';
 import { WeightTrackingPage } from '../pages/weight-tracking.page';
@@ -30,10 +32,12 @@ test.describe('Weight tracking', () => {
 
   test('@smoke empty weight history shows add-entry prompt', async ({ page, testUser }) => {
     const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
-    const pet = await createPet(baseURL, testUser.accessToken, 'Bella');
+    const petList = await loginAs(page, testUser, { experience: 'guardian' });
+    await prepareLiveApiAccess(page, baseURL);
+    const token = await readAccessTokenFromPage(page);
+    const pet = await createPet(baseURL, token, 'Bella');
 
-    await loginAs(page, testUser);
-    const petList = new PetListPage(page);
+    await petList.expectPetVisible(pet.name);
     await petList.openPet(pet.name);
 
     const petDetail = new PetDetailPage(page);
