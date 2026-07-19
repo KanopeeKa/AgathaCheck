@@ -724,3 +724,45 @@ jobs:
           WORKFLOW_CONCLUSION: ${{ needs.prod-ready.result == 'success' && 'success' || 'failure' }}
           WORKFLOW_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
         run: node .github/scripts/issue-agent-handlers.js
+
+  # Only dispatch deploy-prod after a green Prod ready gate — never on UAT workflow completion alone.
+  trigger-prod-promotion:
+    name: Trigger production promotion
+    needs: [resolve-trigger, prod-ready]
+    if: >-
+      needs.resolve-trigger.outputs.proceed == 'true' &&
+      needs.prod-ready.result == 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      actions: write
+      contents: read
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          sparse-checkout: scripts/ci/trigger-prod-promotion.sh
+          sparse-checkout-cone-mode: false
+
+      - name: Dispatch deploy-prod workflow
+        env:
+          DEPLOY_REF: ${{ needs.resolve-trigger.outputs.deploy_ref }}
+          UAT_RUN_ID: ${{ github.run_id }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: bash scripts/ci/trigger-prod-promotion.sh
+
+  # Fail the UAT workflow when Prod ready is red so downstream checks and summaries stay accurate.
+  uat-workflow-conclusion:
+    name: UAT release conclusion
+    needs: [resolve-trigger, prod-ready, agent-uat-notify, trigger-prod-promotion]
+    if: always() && needs.resolve-trigger.outputs.proceed == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Require green Prod ready gate
+        run: |
+          if [ "${{ needs.prod-ready.result }}" != "success" ]; then
+            echo "::error::Prod ready gate failed (result=${{ needs.prod-ready.result }}) — production promotion was not triggered."
+            exit 1
+          fi
+          echo "Prod ready gate passed — production promotion dispatched when applicable."
