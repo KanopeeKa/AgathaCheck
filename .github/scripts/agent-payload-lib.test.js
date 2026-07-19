@@ -45,7 +45,8 @@ No`;
   assert.equal(payload.issue.number, 12);
   assert.equal(payload.issue.type, 'feature');
   assert.match(payload.constraints.suggestedBranch, /^cursor\/issue-12-/);
-  assert.ok(payload.constraints.forbiddenPaths.includes('.github/workflows/'));
+  assert.ok(payload.constraints.allowedPaths.includes('.github/workflows/'));
+  assert.ok(!payload.constraints.forbiddenPaths.includes('.github/workflows/'));
 });
 
 test('buildAgentPrompt includes Refs directive and forbidden paths', () => {
@@ -100,10 +101,23 @@ test('preflight allows question label when human-reviewed present', () => {
   assert.equal(result.ok, true);
 });
 
-test('findForbiddenPaths flags workflow edits', () => {
+test('findForbiddenPaths allows workflow edits', () => {
   const forbidden = findForbiddenPaths([
     'flutter_app/lib/main.dart',
     '.github/workflows/agent-dispatch.yml',
   ]);
-  assert.deepEqual(forbidden, ['.github/workflows/agent-dispatch.yml']);
+  assert.deepEqual(forbidden, []);
+});
+
+test('findForbiddenPaths still flags migrations and security config', () => {
+  const forbidden = findForbiddenPaths([
+    'db/migrations/099_example.sql',
+    'server/config/security.js',
+    'server/routes/auth/login.js',
+  ]);
+  assert.deepEqual(forbidden, [
+    'db/migrations/099_example.sql',
+    'server/config/security.js',
+    'server/routes/auth/login.js',
+  ]);
 });

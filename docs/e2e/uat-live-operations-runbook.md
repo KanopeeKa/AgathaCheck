@@ -61,7 +61,7 @@ GitHub Actions deploy-uat.yml
 | `expectPetVisible` timeout after `createPet` | Pet created **after** `loginAs` — home list already painted empty | **Seed via API before login** (`testUser.accessToken`); see [API seed ordering](#api-seed-ordering-critical-for-live-uat) |
 | `expectDueEntryOnHome` timeout | Home `DueEventsSection` not refreshed after API seed | `PetListPage.refreshByRemount()` after login |
 | Health dashboard entry timeout on UAT only | Live latency / WAF | `isLiveHostingTarget()` longer timeouts; `prepareLiveApiAccess` in fixture |
-| Signup smoke `429` | Bypass token not in workflow env | `E2E_BYPASS_TOKEN` on smoke step (human-owned workflow PR) |
+| Signup smoke `429` | Bypass token not in workflow env | `E2E_BYPASS_TOKEN` on smoke step in `deploy-uat.yml` |
 | **All** `@smoke` tests timeout ~2.4 min | Login rate limit — UAT Node missing `E2E=1` | Set `E2E=1` on UAT Node app (cPanel) and restart |
 | `globalSetup` health probe fail | UAT down, WAF, or bad TLS chain | `E2E_TLS_INSECURE=1`, `NODE_TLS_REJECT_UNAUTHORIZED=0` on CI |
 
@@ -111,7 +111,7 @@ Before merging route code that references new tables:
 - **Signup only** — login rate limits must still apply (`server/config/rateLimit.js` + `isSignupAuthRequest`).
 - Gated by `E2E_BYPASS_ALLOWED=true` + `E2E_BYPASS_TOKEN` on **UAT Node app only** — never production.
 - Playwright sends header via `api-fetch.ts` / `e2e-bypass.ts`.
-- Workflow env must pass `E2E_BYPASS_TOKEN` to smoke job (`cursor/*` branches **cannot** edit workflows — human PR required).
+- Workflow env passes `E2E_BYPASS_TOKEN` to the live smoke job (`deploy-uat.yml`).
 
 ### Flutter list screens + remote data
 

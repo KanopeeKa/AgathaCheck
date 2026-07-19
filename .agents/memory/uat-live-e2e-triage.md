@@ -37,7 +37,7 @@ Never depend on post-login API create + stale home list on live UAT.
 - `UAT_AUTO_MIGRATE=true`
 - UAT Node: **`E2E=1`** (disables auth + general API rate limits for CI — required for live `@smoke`; UAT-only)
 - UAT Node: `E2E_BYPASS_ALLOWED=true` + `E2E_BYPASS_TOKEN` (matches GitHub secret; signup bypass only)
-- Workflow smoke step needs `E2E_BYPASS_TOKEN` (human PR — `cursor/*` cannot edit workflows)
+- Workflow smoke step passes `E2E_BYPASS_TOKEN` from GitHub secrets (`deploy-uat.yml`).
 
 **Verified green (Jul 2026):** deploy run [29694789075](https://github.com/KanopeeKa/AgathaCheck/actions/runs/29694789075) after migrations + ownership + `E2E=1` + bypass token wiring.
 

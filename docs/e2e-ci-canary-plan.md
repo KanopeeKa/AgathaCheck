@@ -2,7 +2,8 @@
 
 **Status:** Approved direction — not yet implemented  
 **Owner track:** CI/CD reliability (see [ci-cd-gates.md](./ci-cd-gates.md), [ci-cd-baseline.md](./ci-cd-baseline.md))  
-**Related:** [e2e/README.md](../e2e/README.md), [promotion-contract.md](./promotion-contract.md)
+**Related:** [e2e/README.md](../e2e/README.md), [promotion-contract.md](./promotion-contract.md)  
+**Agent policy:** `cursor/*` PRs may edit `.github/workflows/` (see `agent-safety-lib.js`); update `ci-gate` / `assert-ci-gate.sh` / `docs/ci-cd-gates.md` in the same PR when adding blocking jobs.
 
 ---
 
