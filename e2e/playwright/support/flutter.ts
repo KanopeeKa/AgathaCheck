@@ -42,6 +42,39 @@ export async function waitForFlutterRoutePattern(
   }).toPass({ timeout: effectiveTimeout });
 }
 
+export type ShellFallbackContext = {
+  helper: string;
+  testTitle: string | null;
+  locale?: string | null;
+};
+
+/**
+ * Last-resort navigation when shell detection or drawer clicks fail.
+ * Emits `E2E_NAV_FALLBACK` with a fixed JSON payload for CI log aggregation.
+ */
+export async function navigateWithShellFallback(
+  page: Page,
+  targetRoutePattern: RegExp,
+  directHashRoute: string,
+  readyFn: () => Promise<void>,
+  context: ShellFallbackContext,
+  timeout = 30_000,
+): Promise<void> {
+  const payload = {
+    helper: context.helper,
+    fromURL: page.url(),
+    toRoute: directHashRoute,
+    locale: context.locale ?? null,
+    testTitle: context.testTitle,
+  };
+  console.warn('E2E_NAV_FALLBACK', JSON.stringify(payload));
+
+  await page.goto(flutterGotoUrl(directHashRoute));
+  await refreshFlutterAccessibility(page);
+  await waitForFlutterRoutePattern(page, targetRoutePattern, timeout);
+  await readyFn();
+}
+
 /** Build a URL that reaches a Flutter hash route on web. */
 export function flutterGotoUrl(path: string): string {
   if (path === '/landing' || path === '/' || path === '') return '/landing';

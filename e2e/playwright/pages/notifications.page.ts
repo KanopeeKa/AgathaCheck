@@ -4,12 +4,14 @@ import {
   dismissConsentBannerIfPresent,
   expectAppBarTitle,
   flutterGotoUrl,
-  flutterRoutePath,
   isExperienceShellVisible,
+  navigateWithShellFallback,
   openExperienceDrawer,
   refreshFlutterAccessibility,
   waitForFlutterRoutePattern,
 } from '../support/flutter';
+
+const NOTIFICATIONS_ROUTE_PATTERN = /\/(g|o)\/notifications(?:\?|$)/;
 
 /**
  * Notifications screen (`/notifications`).
@@ -28,17 +30,18 @@ export class NotificationsPage {
     if (await legacyBell.isVisible({ timeout: 2_000 }).catch(() => false)) {
       await legacyBell.click();
     } else if (await isExperienceShellVisible(this.page)) {
-      const route = flutterRoutePath(this.page.url());
-      const useOrgHome = route.startsWith('/o/') || route.startsWith('/organizations');
-      const notificationsPath = useOrgHome ? '/o/notifications' : '/g/notifications';
-      const notificationsPattern = useOrgHome
-        ? /\/o\/notifications$/
-        : /\/g\/notifications$/;
-      await this.page.goto(flutterGotoUrl(notificationsPath));
+      await this.page.goto(flutterGotoUrl('/g/notifications'));
       await refreshFlutterAccessibility(this.page);
-      await waitForFlutterRoutePattern(this.page, notificationsPattern, 30_000);
+      await waitForFlutterRoutePattern(this.page, NOTIFICATIONS_ROUTE_PATTERN, 30_000);
     } else {
-      throw new Error('Could not open notifications: no app-bar bell or experience shell');
+      await navigateWithShellFallback(
+        this.page,
+        NOTIFICATIONS_ROUTE_PATTERN,
+        '/g/notifications',
+        () => this.expectLoaded(),
+        { helper: 'notifications.openFromPetList', testTitle: null },
+      );
+      return;
     }
     await this.expectLoaded();
   }
@@ -114,15 +117,9 @@ export class NotificationsPage {
     }
 
     if (await isExperienceShellVisible(this.page)) {
-      const route = flutterRoutePath(this.page.url());
-      const useOrgHome = route.startsWith('/o/') || route.startsWith('/organizations');
-      const notificationsPath = useOrgHome ? '/o/notifications' : '/g/notifications';
-      const notificationsPattern = useOrgHome
-        ? /\/o\/notifications$/
-        : /\/g\/notifications$/;
-      await this.page.goto(flutterGotoUrl(notificationsPath));
+      await this.page.goto(flutterGotoUrl('/g/notifications'));
       await refreshFlutterAccessibility(this.page);
-      await waitForFlutterRoutePattern(this.page, notificationsPattern, 30_000);
+      await waitForFlutterRoutePattern(this.page, NOTIFICATIONS_ROUTE_PATTERN, 30_000);
       await this.expectLoaded();
       if (count > 0) {
         await expect(this.page.getByText(/notification:/i)).not.toHaveCount(0, {

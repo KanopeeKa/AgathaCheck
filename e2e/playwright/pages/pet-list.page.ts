@@ -43,18 +43,19 @@ export class PetListPage {
       (options.experience !== 'guardian' &&
         (route.startsWith('/o/') || route.startsWith('/organizations')));
     const eventsPath = useOrgHome ? '/o/events' : '/g/events';
+    const eventsRoutePattern = /\/(g|o)\/events(?:\?|$)/;
     if (await isExperienceShellVisible(this.page)) {
       await this.page.goto(flutterGotoUrl(eventsPath));
       await refreshFlutterAccessibility(this.page);
-      await waitForFlutterRoutePattern(this.page, /\/(g|o)\/events/, 30_000);
+      await waitForFlutterRoutePattern(this.page, eventsRoutePattern, 30_000);
     } else {
       const eventsNav = this.page.getByRole('button', { name: /^(Events|Événements|To Do)$/i });
       if (await eventsNav.isVisible({ timeout: 2_000 }).catch(() => false)) {
         await eventsNav.click();
-        await waitForFlutterRoutePattern(this.page, /\/(g|o)\/events/, 30_000);
       } else {
-        await this.page.getByRole('button', { name: 'To Do' }).click();
+        await this.page.getByRole('button', { name: /^(To Do|À faire)$/i }).first().click();
       }
+      await waitForFlutterRoutePattern(this.page, eventsRoutePattern, 30_000);
     }
     await new HealthDashboardPage(this.page).expectLoaded();
   }

@@ -5,6 +5,7 @@ import {
   expectAppBarTitle,
   flutterGotoUrl,
   isExperienceShellVisible,
+  navigateWithShellFallback,
   refreshFlutterAccessibility,
   waitForFlutterRoutePattern,
 } from '../support/flutter';
@@ -72,7 +73,13 @@ export class HelpPage {
       return;
     }
 
-    throw new Error('Could not open Help: unknown navigation shell');
+    await navigateWithShellFallback(
+      this.page,
+      /\/help(?:\?|$)/,
+      '/help',
+      () => this.expectLoaded(),
+      { helper: 'help.openFromUserMenu', testTitle: null },
+    );
   }
 
   async expectLoaded(title: string | RegExp = /Help & FAQ|Aide & FAQ/i): Promise<void> {

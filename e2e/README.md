@@ -12,6 +12,8 @@ flutter_app/test/bdd/features/
 
 Playwright specs in `playwright/tests/` are annotated with `@bdd <feature>` comments and implement priority user journeys from those files. Over time we can wire [@cucumber/cucumber](https://github.com/cucumber/cucumber-js) to execute the `.feature` files directly; the page objects in `playwright/pages/` are the reusable layer for either approach.
 
+**Navigation contract:** page-object actions must wait for route + ready state before returning. See [`docs/e2e-navigation-contract.md`](../docs/e2e-navigation-contract.md).
+
 ### Current coverage
 
 Run `node e2e/scripts/check_bdd_coverage.js --report-only` to see the live counts.
