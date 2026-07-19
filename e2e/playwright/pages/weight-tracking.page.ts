@@ -19,8 +19,8 @@ export class WeightTrackingPage {
     }
 
     const tile = this.page
-      .getByRole('button', { name: /Weight Tracking/i })
-      .or(this.page.getByRole('group', { name: /Weight Tracking/i }))
+      .getByRole('button', { name: /Weight Tracking|Suivi du poids/i })
+      .or(this.page.getByRole('group', { name: /Weight Tracking|Suivi du poids/i }))
       .first();
     await tile.scrollIntoViewIfNeeded();
     await tile.click();
@@ -31,8 +31,8 @@ export class WeightTrackingPage {
   /** Wait until the Weight Tracking section header is visible on the page. */
   async expectLoaded(): Promise<void> {
     await this.page
-      .getByRole('button', { name: /Weight Tracking/i })
-      .or(this.page.getByRole('group', { name: /Weight Tracking/i }))
+      .getByRole('button', { name: /Weight Tracking|Suivi du poids/i })
+      .or(this.page.getByRole('group', { name: /Weight Tracking|Suivi du poids/i }))
       .first()
       .waitFor({ timeout: 30_000 });
   }
@@ -40,8 +40,10 @@ export class WeightTrackingPage {
   /** Wait until the async weight list has finished loading (empty, entries, or error). */
   private async waitForWeightDataSettled(): Promise<void> {
     await this.page
-      .getByRole('group', { name: /no weight data yet|\d+\.\d+ (kg|lb)/i })
-      .or(this.page.getByText(/no weight data yet|\d+\.\d+ (kg|lb)|error loading weight/i))
+      .getByRole('group', {
+        name: /no weight data yet|aucune donnée de poids|\d+\.\d+ (kg|lb)/i,
+      })
+      .or(this.page.getByText(/no weight data yet|aucune donnée de poids|\d+\.\d+ (kg|lb)|error loading weight/i))
       .first()
       .waitFor({ timeout: 15_000 });
   }
@@ -51,8 +53,8 @@ export class WeightTrackingPage {
     await this.openSection();
     await this.waitForWeightDataSettled();
     await this.page
-      .getByText(/no weight data yet/i)
-      .or(this.page.getByRole('group', { name: /No weight data yet/i }))
+      .getByText(/no weight data yet|aucune donnée de poids/i)
+      .or(this.page.getByRole('group', { name: /No weight data yet|Aucune donnée de poids/i }))
       .first()
       .waitFor({ timeout: 15_000 });
   }

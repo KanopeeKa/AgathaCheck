@@ -5,7 +5,7 @@ import type { TestUser } from './api';
 import { isLiveHostingTarget } from './hosting';
 import { refreshFlutterAccessibility } from './flutter';
 
-async function readAccessToken(page: Page): Promise<string> {
+export async function readAccessTokenFromPage(page: Page): Promise<string> {
   const token = await page.evaluate(() => {
     const keys = Object.keys(localStorage);
     for (const key of keys) {
@@ -46,7 +46,7 @@ export async function signupUserViaUi(
   const petList = new PetListPage(page);
   await petList.expectLoaded();
 
-  const accessToken = await readAccessToken(page);
+  const accessToken = await readAccessTokenFromPage(page);
   return {
     email,
     password,
