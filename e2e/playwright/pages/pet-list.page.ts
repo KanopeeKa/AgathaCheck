@@ -33,10 +33,15 @@ export class PetListPage {
     );
   }
 
-  async openHealthDashboard(): Promise<void> {
+  async openHealthDashboard(
+    options: { experience?: 'guardian' | 'organization' } = {},
+  ): Promise<void> {
     await dismissConsentBannerIfPresent(this.page);
     const route = flutterRoutePath(this.page.url());
-    const useOrgHome = route.startsWith('/o/') || route.startsWith('/organizations');
+    const useOrgHome =
+      options.experience === 'organization' ||
+      (options.experience !== 'guardian' &&
+        (route.startsWith('/o/') || route.startsWith('/organizations')));
     const eventsPath = useOrgHome ? '/o/events' : '/g/events';
     if (await isExperienceShellVisible(this.page)) {
       await this.page.goto(flutterGotoUrl(eventsPath));

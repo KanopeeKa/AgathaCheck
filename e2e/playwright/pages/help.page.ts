@@ -162,7 +162,23 @@ export class HelpPage {
   }
 
   async goBack(): Promise<void> {
-    await this.page.getByRole('button', { name: /^Back$/i }).click();
+    const backButton = this.page.getByRole('button', { name: /^(Back|Retour)$/i });
+    if (await backButton.isVisible({ timeout: 2_000 }).catch(() => false)) {
+      await backButton.click();
+    } else if (await isExperienceShellVisible(this.page)) {
+      const homeNav = this.page.getByRole('button', { name: /^(Home|Accueil)$/i });
+      if (await homeNav.isVisible({ timeout: 2_000 }).catch(() => false)) {
+        await homeNav.click({ force: true });
+        await waitForFlutterRoutePattern(this.page, /\/(g|o)\/home/, 30_000);
+      } else {
+        await this.page.goto(flutterGotoUrl('/g/home'));
+        await refreshFlutterAccessibility(this.page);
+        await waitForFlutterRoutePattern(this.page, /^\/g\/home$/, 30_000);
+      }
+    } else {
+      await this.page.goBack();
+    }
     await this.page.waitForTimeout(500);
+    await refreshFlutterAccessibility(this.page);
   }
 }
