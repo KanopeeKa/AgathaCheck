@@ -133,7 +133,9 @@ cd e2e && npm run test:smoke
 
 `@smoke` tests run **axe** accessibility scans after the journey completes. CI fails on **critical** and **serious** violations (see `playwright/support/axe.ts`).
 
-Live UAT smoke E2E uses `E2E_BASE_URL=https://uat.agathatrack.com`. The UAT deploy workflow sets `E2E_TLS_INSECURE=1` because cPanel auto-SSL may present a certificate chain that GitHub Actions runners do not trust (curl exit 60 / Node `self-signed certificate`). Localhost E2E does not need this flag.
+Live UAT smoke E2E uses `E2E_BASE_URL=https://uat.agathatrack.com`. The UAT deploy workflow sets `E2E_TLS_INSECURE=1` because cPanel auto-SSL may present a certificate chain that GitHub Actions runners do not trust (curl exit 60 / Node `self-signed certificate`). Localhost E2E does not need this flag. For live runs, also set `NODE_TLS_REJECT_UNAUTHORIZED=0` when probing UAT from Node (Playwright `globalSetup` pre-flight and `api.ts` seeding); browser tests use `ignoreHTTPSErrors` via the same `E2E_TLS_INSECURE=1` flag.
+
+Before live `@smoke` workers start, Playwright `globalSetup` probes `GET /backend/health` (15s timeout) and fails fast with a typed error when UAT is down, misconfigured, or serving a WAF challenge.
 
 Set `E2E=1` on the UAT Node app if auth rate limits interfere.
 
