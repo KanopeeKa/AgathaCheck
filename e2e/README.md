@@ -135,6 +135,8 @@ cd e2e && npm run test:smoke
 
 Live UAT smoke E2E uses `E2E_BASE_URL=https://uat.agathatrack.com`. The UAT deploy workflow sets `E2E_TLS_INSECURE=1` because cPanel auto-SSL may present a certificate chain that GitHub Actions runners do not trust (curl exit 60 / Node `self-signed certificate`). Localhost E2E does not need this flag.
 
+Before live `@smoke` workers start, Playwright `globalSetup` probes `GET /backend/health` (15s timeout) and fails fast with a typed error when UAT is down, misconfigured, or serving a WAF challenge.
+
 Set `E2E=1` on the UAT Node app if auth rate limits interfere.
 
 ## Writing new journeys
