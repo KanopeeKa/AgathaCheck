@@ -60,6 +60,62 @@ export class PetListPage {
     await new HealthDashboardPage(this.page).expectLoaded();
   }
 
+  /**
+   * Force the home screen to remount after API-side mutations.
+   * Navigates away to the health dashboard, then hash-navigates back to home.
+   */
+  async refreshByRemount(
+    options: { experience?: 'guardian' | 'organization' } = {},
+  ): Promise<void> {
+    try {
+      await this.openHealthDashboard(options);
+    } catch (error) {
+      const detail = error instanceof Error ? error.message : String(error);
+      throw new Error(`health dashboard did not load during refreshByRemount: ${detail}`);
+    }
+
+    const route = flutterRoutePath(this.page.url());
+    const useOrgHome =
+      options.experience === 'organization' ||
+      (options.experience !== 'guardian' &&
+        (route.startsWith('/o/') || route.startsWith('/organizations')));
+    const homePath = useOrgHome ? '/o/home' : '/g/home';
+
+    try {
+      await dismissConsentBannerIfPresent(this.page);
+      await this.page.goto(flutterGotoUrl(homePath));
+      await refreshFlutterAccessibility(this.page);
+      await waitForFlutterRoutePattern(
+        this.page,
+        new RegExp(`^${escapeRegExp(homePath)}(?:\\?|$)`),
+        30_000,
+      );
+      if (useOrgHome) {
+        await skipOrgOnboardingIfPresent(this.page);
+      } else {
+        await skipGuardianOnboardingIfPresent(this.page);
+      }
+      await this.expectLoaded();
+    } catch (error) {
+      const detail = error instanceof Error ? error.message : String(error);
+      throw new Error(`pet list did not reload after refreshByRemount: ${detail}`);
+    }
+  }
+
+  /** Assert a due/overdue entry appears in the home DueEventsSection card. */
+  async expectDueEntryOnHome(entryName: string): Promise<void> {
+    await refreshFlutterAccessibility(this.page);
+    await expect(
+      this.page
+        .getByRole('group', { name: /Upcoming events|Événements à venir/i })
+        .first(),
+    ).toBeVisible({ timeout: 20_000 });
+    await semanticsByName(
+      this.page,
+      new RegExp(escapeRegExp(entryName), 'i'),
+    ).waitFor({ timeout: 20_000 });
+  }
+
   async expectEmptyState(): Promise<void> {
     await this.page.getByText('No pets yet').waitFor();
     await homeShellLocator(this.page).first().waitFor();
