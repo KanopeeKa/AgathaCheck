@@ -116,10 +116,10 @@ next_action: "continue phase 0 on branch cursor/e2e-canary-phase0-instrument-48e
 artifact_ref:
   branch: cursor/e2e-canary-phase0-instrument-48ef
   plan_path: .agents/plans/e2e-ci-canary.md
-  plan_commit: 318c28f365c19ee11875a1393d3126f54205bf0a
+  plan_commit: 278c167564b1b13dfc94413ed31a453e77bc8200
   snapshot_path: .agents/plans/e2e-ci-canary.snapshot.json
-  snapshot_commit: 318c28f365c19ee11875a1393d3126f54205bf0a
-open_prs: []
+  snapshot_commit: 278c167564b1b13dfc94413ed31a453e77bc8200
+open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/229"]
 merge_commits: {}
 debt_issue_refs: []
 ```

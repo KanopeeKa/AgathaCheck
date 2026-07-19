@@ -4,7 +4,7 @@
   "approved_at": "2026-07-19T22:15:00Z",
   "approved_by": "KanopeeKa",
   "approved_until": "2026-07-21T22:15:00Z",
-  "content_hash": "sha256:17f1c24e5a8e1406332d019c29f443eba367f3802908de3e4582f88f05c27939",
+  "content_hash": "sha256:b1774f7d38e8ea4155f4fb6451d1e83a951a8b7e0d134d746fa945917559a3e8",
   "autonomy": "active",
   "default_merge_mode": "auto",
   "base_branch": "main",
@@ -37,7 +37,9 @@
       "status": "in_progress",
       "status_reason": null,
       "status_detail": null,
-      "debt_issue_refs": []
+      "debt_issue_refs": [],
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/229",
+      "pr_head_sha": "278c167564b1b13dfc94413ed31a453e77bc8200"
     },
     {
       "id": "1",
