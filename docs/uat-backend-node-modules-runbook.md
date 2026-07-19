@@ -121,5 +121,6 @@ UAT_APP_DIR=~/uat.agathatrack.com/backend bash scripts/ci/assert-node-modules-sy
 ## Related docs
 
 - `docs/github-issue-workflow.md` — UAT CD notes
+- `docs/e2e/uat-live-operations-runbook.md` — migrations, ownership, live smoke triage
 - `DEPLOYMENT_CPANEL_NODEJS.md` — cPanel setup
 - `docs/ci-cd-gates.md` — deploy gates

@@ -14,6 +14,8 @@ Playwright specs in `playwright/tests/` are annotated with `@bdd <feature>` comm
 
 **Navigation contract:** page-object actions must wait for route + ready state before returning. See [`docs/e2e-navigation-contract.md`](../docs/e2e-navigation-contract.md).
 
+**UAT live ops:** symptom triage, env checklist, and prevention patterns — [`docs/e2e/uat-live-operations-runbook.md`](../docs/e2e/uat-live-operations-runbook.md).
+
 ### Current coverage
 
 Run `node e2e/scripts/check_bdd_coverage.js --report-only` to see the live counts.
