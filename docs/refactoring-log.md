@@ -295,7 +295,7 @@ Use this template when spawning agents on an integration branch:
 
 | Date | Change |
 |---|---|
-| 2026-07-19 | PR C (#TBD): due-events E2E restores home `DueEventsSection` assertion via `PetListPage.refreshByRemount()` after API seed (#216 events-screen proxy superseded). |
+| 2026-07-19 | PR C (#220): due-events E2E restores home `DueEventsSection` assertion via `PetListPage.refreshByRemount()` after API seed (#216 events-screen proxy superseded). |
 | 2026-07-19 | #219 merged: E2E shell-navigation fallback contract (`navigateWithShellFallback`). |
 | 2026-07-19 | #218 merged: UAT pre-flight health probe before live smoke workers. |
 | 2026-07-16 | #187 merged: E2E guardian shell nav hardening (chooser, strict-mode, shell fallbacks) |
