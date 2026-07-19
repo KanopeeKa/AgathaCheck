@@ -155,7 +155,7 @@ export class MyDetailsPage {
     if (await backButton.isVisible({ timeout: 2_000 }).catch(() => false)) {
       await backButton.click();
     } else {
-      const homeNav = this.page.getByRole('button', { name: 'Home' });
+      const homeNav = this.page.getByRole('button', { name: /^(Home|Accueil)$/i });
       if (await homeNav.isVisible({ timeout: 2_000 }).catch(() => false)) {
         await homeNav.click({ force: true });
         await waitForFlutterRoutePattern(this.page, /\/(g|o)\/home/, 30_000);

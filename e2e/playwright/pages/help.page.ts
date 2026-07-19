@@ -3,9 +3,10 @@ import { expect } from '@playwright/test';
 import {
   dismissConsentBannerIfPresent,
   expectAppBarTitle,
+  flutterGotoUrl,
   isExperienceShellVisible,
-  openExperienceDrawer,
   refreshFlutterAccessibility,
+  waitForFlutterRoutePattern,
 } from '../support/flutter';
 
 /** English FAQ section titles from app_en.arb. */
@@ -64,12 +65,9 @@ export class HelpPage {
     }
 
     if (await isExperienceShellVisible(this.page)) {
-      await openExperienceDrawer(this.page);
-      await this.page
-        .getByText('Contact', { exact: true })
-        .or(this.page.getByText('Contactez-nous', { exact: true }))
-        .first()
-        .click();
+      await this.page.goto(flutterGotoUrl('/help'));
+      await refreshFlutterAccessibility(this.page);
+      await waitForFlutterRoutePattern(this.page, /\/help$/, 30_000);
       await this.expectLoaded();
       return;
     }

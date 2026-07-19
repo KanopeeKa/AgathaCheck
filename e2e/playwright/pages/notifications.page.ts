@@ -114,9 +114,21 @@ export class NotificationsPage {
     }
 
     if (await isExperienceShellVisible(this.page)) {
-      await openExperienceDrawer(this.page);
-      await this.page.getByText('Notifications', { exact: true }).waitFor({ timeout: 10_000 });
-      await this.page.getByText(label, { exact: true }).first().waitFor({ timeout: 10_000 });
+      const route = flutterRoutePath(this.page.url());
+      const useOrgHome = route.startsWith('/o/') || route.startsWith('/organizations');
+      const notificationsPath = useOrgHome ? '/o/notifications' : '/g/notifications';
+      const notificationsPattern = useOrgHome
+        ? /\/o\/notifications$/
+        : /\/g\/notifications$/;
+      await this.page.goto(flutterGotoUrl(notificationsPath));
+      await refreshFlutterAccessibility(this.page);
+      await waitForFlutterRoutePattern(this.page, notificationsPattern, 30_000);
+      await this.expectLoaded();
+      if (count > 0) {
+        await expect(this.page.getByText(/notification:/i)).not.toHaveCount(0, {
+          timeout: 15_000,
+        });
+      }
       return;
     }
 
