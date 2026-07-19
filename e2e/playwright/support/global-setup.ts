@@ -32,15 +32,15 @@ function resolveLiveBaseUrl(): string {
 function errorCodes(err: unknown): string[] {
   const codes: string[] = [];
   let current: unknown = err;
-  for (let depth = 0; depth < 4 && current; depth += 1) {
-    if (current && typeof current === 'object' && 'code' in current) {
+  for (let depth = 0; depth < 4 && current != null; depth += 1) {
+    if (typeof current === 'object' && 'code' in current) {
       const code = (current as { code?: unknown }).code;
       if (typeof code === 'string' && code.length > 0) {
         codes.push(code);
       }
     }
     current =
-      current && typeof current === 'object' && 'cause' in current
+      typeof current === 'object' && 'cause' in current
         ? (current as { cause?: unknown }).cause
         : undefined;
   }
