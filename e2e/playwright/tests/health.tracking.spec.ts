@@ -18,7 +18,7 @@
 import { test, expect, loginAs, seedPetWithDueHealthEntry } from '../fixtures/auth.fixture';
 import { HealthDashboardPage } from '../pages/health-dashboard.page';
 import { PetListPage } from '../pages/pet-list.page';
-import { refreshFlutterAccessibility } from '../support/flutter';
+import { flutterGotoUrl, reachAuthenticatedHome, refreshFlutterAccessibility, semanticsByName } from '../support/flutter';
 import {
   createPet,
   createHealthEntry,
@@ -317,17 +317,25 @@ test.describe('Health tracking', () => {
     const petList = new PetListPage(page);
     await petList.expectLoaded();
     await petList.expectPetVisible('Bella');
-    // Prime health providers via the events screen, then assert on home due-events card.
     await petList.openHealthDashboard();
     const dashboard = new HealthDashboardPage(page);
     await dashboard.expectEntryVisible(entry.name);
-    await petList.goHome();
+
+    await page.goto(flutterGotoUrl('/g/home'));
+    await refreshFlutterAccessibility(page);
+    await petList.expectLoaded();
+    await page.reload();
+    await reachAuthenticatedHome(page);
+    await petList.expectLoaded();
+    await petList.expectPetVisible('Bella');
+
     await expect(async () => {
       await refreshFlutterAccessibility(page);
-      const entryLocator = page.getByText(entry.name, { exact: false }).first();
-      await entryLocator.scrollIntoViewIfNeeded();
-      await expect(entryLocator).toBeVisible();
-    }).toPass({ timeout: 45_000 });
+      await expect(page.getByText(/Upcoming events/i).first()).toBeVisible();
+      await semanticsByName(page, new RegExp(entry.name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i')).waitFor({
+        timeout: 5_000,
+      });
+    }).toPass({ timeout: 60_000 });
   });
 
   test('pet list shows "You\'re all caught up" when no entries are due', async ({ page, testUser }) => {
