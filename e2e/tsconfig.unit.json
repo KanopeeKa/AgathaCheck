@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "CommonJS",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "types": ["node"],
+    "outDir": "dist/unit",
+    "rootDir": "playwright/support",
+    "noEmit": false,
+    "declaration": false,
+    "sourceMap": false
+  },
+  "include": [
+    "playwright/support/normalize-stored-token.ts",
+    "playwright/support/normalize-stored-token.test.ts"
+  ]
+}

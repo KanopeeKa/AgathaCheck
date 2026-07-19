@@ -12,7 +12,8 @@
     "test:ui": "playwright test --ui",
     "test:headed": "playwright test --headed",
     "report": "playwright show-report",
-    "install:browsers": "playwright install chromium --with-deps"
+    "install:browsers": "playwright install chromium --with-deps",
+    "test:unit": "tsc -p tsconfig.unit.json && node --test dist/unit/*.test.js"
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.10.1",
