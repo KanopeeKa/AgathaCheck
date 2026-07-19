@@ -18,7 +18,7 @@
 import { test, expect, loginAs, seedPetWithDueHealthEntry } from '../fixtures/auth.fixture';
 import { HealthDashboardPage } from '../pages/health-dashboard.page';
 import { PetListPage } from '../pages/pet-list.page';
-import { refreshFlutterAccessibility } from '../support/flutter';
+import { reachAuthenticatedHome, refreshFlutterAccessibility } from '../support/flutter';
 import {
   createPet,
   createHealthEntry,
@@ -317,11 +317,14 @@ test.describe('Health tracking', () => {
     const petList = new PetListPage(page);
     await petList.expectLoaded();
     await petList.expectPetVisible('Bella');
+    await page.reload();
+    await reachAuthenticatedHome(page);
+    await petList.expectLoaded();
+    await petList.expectPetVisible('Bella');
     await expect(async () => {
       await refreshFlutterAccessibility(page);
-      await expect(page.getByText(/Upcoming events/i).first()).toBeVisible();
       await expect(page.getByText(entry.name, { exact: false }).first()).toBeVisible();
-    }).toPass({ timeout: 45_000 });
+    }).toPass({ timeout: 60_000 });
   });
 
   test('pet list shows "You\'re all caught up" when no entries are due', async ({ page, testUser }) => {

@@ -35,19 +35,21 @@ export class PetListPage {
 
   async openHealthDashboard(): Promise<void> {
     await dismissConsentBannerIfPresent(this.page);
-    const eventsPath = flutterRoutePath(this.page.url()).startsWith('/o/')
-      ? '/o/events'
-      : '/g/events';
-    const eventsNav = this.page.getByRole('button', { name: 'Events' });
-    if (await eventsNav.isVisible({ timeout: 2_000 }).catch(() => false)) {
-      await eventsNav.click();
-      await waitForFlutterRoutePattern(this.page, /\/(g|o)\/events/, 30_000);
-    } else if (await isExperienceShellVisible(this.page)) {
+    const route = flutterRoutePath(this.page.url());
+    const useOrgHome = route.startsWith('/o/') || route.startsWith('/organizations');
+    const eventsPath = useOrgHome ? '/o/events' : '/g/events';
+    if (await isExperienceShellVisible(this.page)) {
       await this.page.goto(flutterGotoUrl(eventsPath));
       await refreshFlutterAccessibility(this.page);
       await waitForFlutterRoutePattern(this.page, /\/(g|o)\/events/, 30_000);
     } else {
-      await this.page.getByRole('button', { name: 'To Do' }).click();
+      const eventsNav = this.page.getByRole('button', { name: /^(Events|Événements|To Do)$/i });
+      if (await eventsNav.isVisible({ timeout: 2_000 }).catch(() => false)) {
+        await eventsNav.click();
+        await waitForFlutterRoutePattern(this.page, /\/(g|o)\/events/, 30_000);
+      } else {
+        await this.page.getByRole('button', { name: 'To Do' }).click();
+      }
     }
     await new HealthDashboardPage(this.page).expectLoaded();
   }
