@@ -6,6 +6,9 @@ const FORBIDDEN_PATH_PREFIXES = [
   'db/migrations/',
   'server/config/security.js',
   'infra/',
+  '**/auth/**',
+  '**/billing/**',
+  '**/secrets?/**',
 ];
 
 const FORBIDDEN_PATH_PATTERNS = [
