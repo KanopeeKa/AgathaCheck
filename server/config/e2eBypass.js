@@ -5,7 +5,7 @@
  *   E2E_BYPASS_ALLOWED=true  (set only on UAT — never on production)
  *   E2E_BYPASS_TOKEN         (shared secret; also in GitHub Actions secrets)
  *
- * Clients send header X-E2E-Bypass-Token. Token value is never logged.
+ * Clients send header X-E2E-Bypass-Token on signup requests only. Token value is never logged.
  */
 import crypto from 'node:crypto';
 
@@ -34,7 +34,7 @@ export function isE2eAuthBypassAuthorized(req) {
     return false;
   }
 
-  const provided = req.headers[E2E_BYPASS_HEADER] ?? req.headers['X-E2E-Bypass-Token'];
+  const provided = req.get(E2E_BYPASS_HEADER);
   if (typeof provided !== 'string' || provided.length === 0) {
     return false;
   }

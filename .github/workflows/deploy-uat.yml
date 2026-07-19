@@ -632,7 +632,6 @@ jobs:
         working-directory: e2e
         env:
           E2E_BASE_URL: ${{ env.UAT_BASE_URL }}
-          E2E_BYPASS_TOKEN: ${{ secrets.E2E_BYPASS_TOKEN }}
           E2E_TLS_INSECURE: '1'
           # cPanel auto-SSL on UAT is not trusted by GitHub runners (self-signed / incomplete chain).
           NODE_TLS_REJECT_UNAUTHORIZED: '0'

@@ -120,4 +120,30 @@ describe('Auth E2E rate-limit bypass', () => {
       restoreEnv('E2E_BYPASS_TOKEN', prevToken);
     }
   });
+
+  it('does not bypass login rate limit even with a valid bypass header', async () => {
+    const prevTest = process.env.AUTH_RATE_LIMIT_TEST;
+    const prevMax = process.env.AUTH_RATE_LIMIT_MAX;
+    const prevAllowed = process.env.E2E_BYPASS_ALLOWED;
+    const prevToken = process.env.E2E_BYPASS_TOKEN;
+    process.env.AUTH_RATE_LIMIT_TEST = '1';
+    process.env.AUTH_RATE_LIMIT_MAX = '2';
+    process.env.E2E_BYPASS_ALLOWED = 'true';
+    process.env.E2E_BYPASS_TOKEN = 'ci-secret-token';
+    try {
+      const app = createApp(buildMockPool(), mockComparePassword);
+      const send = () => request(app)
+        .post('/api/auth/login')
+        .set('X-E2E-Bypass-Token', 'ci-secret-token')
+        .send({ email: 'x@example.com', password: 'wrongpass' });
+      expect((await send()).statusCode).toBe(401);
+      expect((await send()).statusCode).toBe(401);
+      expect((await send()).statusCode).toBe(429);
+    } finally {
+      restoreEnv('AUTH_RATE_LIMIT_TEST', prevTest);
+      restoreEnv('AUTH_RATE_LIMIT_MAX', prevMax);
+      restoreEnv('E2E_BYPASS_ALLOWED', prevAllowed);
+      restoreEnv('E2E_BYPASS_TOKEN', prevToken);
+    }
+  });
 });

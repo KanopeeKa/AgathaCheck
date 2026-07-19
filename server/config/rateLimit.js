@@ -20,11 +20,20 @@ function shouldSkipRateLimit() {
   return process.env.NODE_ENV === 'test' || process.env.E2E === '1';
 }
 
+function isSignupAuthRequest(req) {
+  const path = String(req.path ?? '');
+  if (path === '/signup' || path.endsWith('/signup')) {
+    return true;
+  }
+  const url = String(req.originalUrl ?? req.url ?? '');
+  return /\/api\/auth\/signup(?:\?|$)/.test(url);
+}
+
 function shouldSkipAuthRateLimit(req) {
   if (process.env.AUTH_RATE_LIMIT_TEST !== '1' && shouldSkipRateLimit()) {
     return true;
   }
-  if (isE2eAuthBypassAuthorized(req)) {
+  if (isSignupAuthRequest(req) && isE2eAuthBypassAuthorized(req)) {
     recordE2eAuthBypassSkip();
     return true;
   }
