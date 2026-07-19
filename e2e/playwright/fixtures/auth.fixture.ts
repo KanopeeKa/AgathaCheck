@@ -2,6 +2,7 @@ import { test as base, expect } from '@playwright/test';
 import { createHealthEntry, createPet, type TestUser } from '../support/api';
 import { applyLiveHostingStealth } from '../support/stealth';
 import { createTestUser } from '../support/ui-auth';
+import { setPlaywrightPage } from '../support/api-fetch';
 import { clearLiveApiAccess, passHostingWaf, prepareLiveApiAccess, resetHostingWafSession } from '../support/waf';
 import { isLiveHostingTarget } from '../support/hosting';
 import { LandingPage } from '../pages/landing.page';
@@ -83,6 +84,7 @@ export async function loginAs(
   });
   if (isLiveHostingTarget(baseURL)) {
     await passHostingWaf(page, baseURL);
+    setPlaywrightPage(page);
   }
   await landing.goto();
   await landing.login(user.email, user.password);
