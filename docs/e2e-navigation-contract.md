@@ -13,6 +13,18 @@ When shell detection or drawer clicks fail, call `navigateWithShellFallback()` i
 
 Use fallback **only** after the normal path fails. Healthy localhost runs should emit **zero** fallback warnings.
 
+## API seed ordering (live UAT)
+
+When seeding via `playwright/support/api.ts` and asserting on the **home pet list**, create data **before** `loginAs` using `testUser.accessToken`. Post-login API creates leave a stale empty list on live UAT (passes on fast localhost).
+
+```ts
+const pet = await createPet(baseURL, testUser.accessToken, 'Bella');
+await loginAs(page, testUser);
+await petList.expectPetVisible(pet.name);
+```
+
+For **due events on home** after API seed, call `refreshByRemount()` — the section does not hot-reload. Details: [`docs/e2e/uat-live-operations-runbook.md`](../docs/e2e/uat-live-operations-runbook.md).
+
 ## Due events on home (PR C)
 
 After API seeding, the guardian home `DueEventsSection` does not refresh until the screen remounts. Use `PetListPage.refreshByRemount()` before asserting due entries on `/g/home`. The events-screen assertion in #216 was a temporary workaround.
