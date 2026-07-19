@@ -1,5 +1,6 @@
 import type { APIRequestContext, APIResponse, Page } from '@playwright/test';
 import { isLiveHostingTarget } from './hosting';
+import { e2eBypassHeadersForUrl } from './e2e-bypass';
 
 export interface ApiFetchResponse {
   ok: boolean;
@@ -79,20 +80,26 @@ export async function apiFetch(
     body?: string;
   } = {},
 ): Promise<ApiFetchResponse> {
+  const headers = {
+    ...init.headers,
+    ...e2eBypassHeadersForUrl(url),
+  };
+  const requestInit = { ...init, headers };
+
   if (playwrightPage && isLiveHostingTarget()) {
-    return browserApiFetch(url, init);
+    return browserApiFetch(url, requestInit);
   }
 
   if (playwrightRequest) {
     const res = await playwrightRequest.fetch(url, {
-      method: init.method,
-      headers: init.headers,
-      data: init.body,
+      method: requestInit.method,
+      headers: requestInit.headers,
+      data: requestInit.body,
     });
     return wrapPlaywrightResponse(res);
   }
 
-  const res = await fetch(url, init);
+  const res = await fetch(url, requestInit);
   return wrapNodeResponse(res);
 }
 

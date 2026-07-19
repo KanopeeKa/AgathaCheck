@@ -11,9 +11,24 @@
  * behavior change in the Dart server's `lib/rate_limit.dart`.
  */
 import rateLimit from 'express-rate-limit';
+import {
+  isE2eAuthBypassAuthorized,
+  recordE2eAuthBypassSkip,
+} from './e2eBypass.js';
 
 function shouldSkipRateLimit() {
   return process.env.NODE_ENV === 'test' || process.env.E2E === '1';
+}
+
+function shouldSkipAuthRateLimit(req) {
+  if (process.env.AUTH_RATE_LIMIT_TEST !== '1' && shouldSkipRateLimit()) {
+    return true;
+  }
+  if (isE2eAuthBypassAuthorized(req)) {
+    recordE2eAuthBypassSkip();
+    return true;
+  }
+  return false;
 }
 
 export function createAuthLimiter() {
@@ -24,8 +39,7 @@ export function createAuthLimiter() {
     limit,
     standardHeaders: 'draft-7',
     legacyHeaders: false,
-    skip: () =>
-      process.env.AUTH_RATE_LIMIT_TEST !== '1' && shouldSkipRateLimit(),
+    skip: shouldSkipAuthRateLimit,
     message: { error: 'Too many requests, please try again later.' },
   });
 }

@@ -35,7 +35,8 @@ Run `node e2e/scripts/check_bdd_coverage.js --report-only` to see the live count
 
 - Enable the semantics tree on load via `flt-semantics-placeholder` (handled in `playwright/support/flutter.ts`).
 - Use `input[aria-label="…"]` for form fields; `fill()` alone is unreliable — the helper falls back to `pressSequentially`.
-- Auth rate limiting is disabled when the server runs with `E2E=1` (set in `run-local.sh` and CI).
+- Auth rate limiting is disabled when the server runs with `E2E=1` (set in `run-local.sh` and localhost CI).
+- Live UAT CI may send `X-E2E-Bypass-Token` when `E2E_BYPASS_TOKEN` is set in GitHub Actions secrets. The UAT Node app must have matching `E2E_BYPASS_TOKEN` and `E2E_BYPASS_ALLOWED=true` (never on production).
 
 ## Project layout
 
