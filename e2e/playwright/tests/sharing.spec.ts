@@ -40,6 +40,7 @@ test.describe('Pet sharing', () => {
       const link = await createShareLink(baseURL, owner.accessToken, pet.id);
 
       await page.context().clearCookies();
+      await page.goto('/', { waitUntil: 'domcontentloaded' });
       await page.evaluate(() => {
         window.localStorage.clear();
         window.sessionStorage.clear();
