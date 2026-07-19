@@ -38,8 +38,7 @@ Run `node e2e/scripts/check_bdd_coverage.js --report-only` to see the live count
 - Enable the semantics tree on load via `flt-semantics-placeholder` (handled in `playwright/support/flutter.ts`).
 - Use `input[aria-label="…"]` for form fields; `fill()` alone is unreliable — the helper falls back to `pressSequentially`.
 - Auth rate limiting is disabled when the server runs with `E2E=1` (set in `run-local.sh` and localhost CI).
-- Live UAT E2E may send `X-E2E-Bypass-Token` on signup API calls when `E2E_BYPASS_TOKEN` is available to the smoke job. The UAT Node app must have matching `E2E_BYPASS_TOKEN` and `E2E_BYPASS_ALLOWED=true` (never on production).
-- **Ops (human-owned PR):** `cursor/*` branches cannot edit `.github/workflows/` (`agent-pr-safety-gate`). After this server/e2e code merges, apply on a human branch: add `E2E_BYPASS_TOKEN: ${{ secrets.E2E_BYPASS_TOKEN }}` to the `Run @smoke Playwright tests against live UAT` step env in `.github/workflows/deploy-uat.yml`.
+- Live UAT E2E may send `X-E2E-Bypass-Token` on signup API calls when `E2E_BYPASS_TOKEN` is available to the smoke job. The UAT Node app must have matching `E2E_BYPASS_TOKEN` and `E2E_BYPASS_ALLOWED=true` (never on production). `deploy-uat.yml` passes `E2E_BYPASS_TOKEN` from GitHub secrets to the live smoke step.
 
 ## Project layout
 
