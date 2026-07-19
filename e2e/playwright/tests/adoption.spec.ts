@@ -208,19 +208,19 @@ test.describe('Organisation custody', () => {
       nextDueDate: isoDay(-1),
     });
 
-    const petList = await loginAs(page, eve);
-    await petList.openHealthDashboard();
+    const petList = await loginAs(page, eve, { experience: 'guardian' });
+    await petList.openHealthDashboard({ experience: 'guardian' });
     const dashboard = new HealthDashboardPage(page);
     await dashboard.expectLoaded();
     await dashboard.expectEntryVisible(visibleEntry);
 
     await hideFosteredPet(baseURL, eve.accessToken, pet.id);
     await page.reload();
-    await reachAuthenticatedHome(page);
+    await reachAuthenticatedHome(page, { experience: 'guardian' });
     await petList.expectLoaded();
     await petList.expectPetHidden('Max');
 
-    await petList.openHealthDashboard();
+    await petList.openHealthDashboard({ experience: 'guardian' });
     await dashboard.expectLoaded();
     await dashboard.expectEntryNotVisible(visibleEntry);
 
