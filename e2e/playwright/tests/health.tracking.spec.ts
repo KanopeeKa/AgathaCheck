@@ -316,14 +316,13 @@ test.describe('Health tracking', () => {
     const apiEntries = await getHealthEntries(baseURL, testUser.accessToken);
     expect(apiEntries.some((row) => row.name === entry.name)).toBe(true);
 
-    await loginAs(page, testUser);
+    await loginAs(page, testUser, { experience: 'guardian' });
     const petList = new PetListPage(page);
     await petList.expectLoaded();
     await petList.expectPetVisible('Bella');
 
-    // Guardian shell surfaces due/overdue items on the Events screen (/g/events).
-    await petList.openHealthDashboard();
-    await new HealthDashboardPage(page).expectEntryVisible(entry.name);
+    await petList.refreshByRemount({ experience: 'guardian' });
+    await petList.expectDueEntryOnHome(entry.name);
   });
 
   test('pet list shows "You\'re all caught up" when no entries are due', async ({ page, testUser }) => {

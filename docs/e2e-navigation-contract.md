@@ -13,6 +13,10 @@ When shell detection or drawer clicks fail, call `navigateWithShellFallback()` i
 
 Use fallback **only** after the normal path fails. Healthy localhost runs should emit **zero** fallback warnings.
 
+## Due events on home (PR C)
+
+After API seeding, the guardian home `DueEventsSection` does not refresh until the screen remounts. Use `PetListPage.refreshByRemount()` before asserting due entries on `/g/home`. The events-screen assertion in #216 was a temporary workaround.
+
 ## TODO (next candidates)
 
 - `pet-list.openVets`, `help.goBack`, `notifications.expectBadgeVisible` throw paths
