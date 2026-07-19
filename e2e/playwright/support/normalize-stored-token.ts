@@ -26,10 +26,13 @@ export function normalizeStoredToken(raw: string | null | undefined): string {
     // Not JSON — use the raw string (legacy/plain storage).
   }
 
+  if (!candidate) {
+    throw new Error('auth_access_token missing from localStorage');
+  }
+
   if (!JWT_SHAPE.test(candidate)) {
-    const preview = candidate.length > 24 ? `${candidate.slice(0, 24)}…` : candidate;
     throw new Error(
-      `auth_access_token in localStorage failed JWT-shape validation after normalization: ${preview}`,
+      `auth_access_token in localStorage failed JWT-shape validation after normalization (length=${candidate.length})`,
     );
   }
 

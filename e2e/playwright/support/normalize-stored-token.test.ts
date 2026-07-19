@@ -1,6 +1,6 @@
-import test from 'node:test';
+import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { normalizeStoredToken } from './normalize-stored-token.ts';
+import { normalizeStoredToken } from './normalize-stored-token';
 
 test('unwraps JSON-encoded JWT string from shared_preferences_web', () => {
   assert.equal(
@@ -28,4 +28,8 @@ test('throws on empty or missing values', () => {
 test('throws when value is not JWT-shaped after normalization', () => {
   assert.throws(() => normalizeStoredToken('"not-a-jwt"'), /JWT-shape validation/);
   assert.throws(() => normalizeStoredToken('only-two.parts'), /JWT-shape validation/);
+});
+
+test('treats JSON whitespace-only string as missing', () => {
+  assert.throws(() => normalizeStoredToken('"   "'), /missing from localStorage/);
 });
