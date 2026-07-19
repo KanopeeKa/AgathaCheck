@@ -32,7 +32,7 @@ function parseArgs(argv) {
 /**
  * Parse Playwright list reporter lines (CI log friendly).
  * @param {string} text
- * @returns {Map<string, TestOutcome>}
+ * @returns {TestOutcome[]}
  */
 function parseListReporter(text) {
   /** @type {Map<string, { title: string, attempts: Array<'fail' | 'pass'> }>} */
@@ -176,10 +176,9 @@ async function main() {
       ? fs.readFileSync(path.resolve(opts.file), 'utf8')
       : await readStdin();
     if (!text.trim()) {
-      console.error(
-        'summarize-playwright-retries: no input (pipe list output, --file, or --json)',
-      );
-      process.exit(1);
+      console.log(JSON.stringify(summarize([]), null, 2));
+      console.error('summarize-playwright-retries: no input (empty summary)');
+      return;
     }
     outcomes = parseListReporter(text);
   }
@@ -190,5 +189,22 @@ async function main() {
 
 main().catch((err) => {
   console.error(err.message || err);
-  process.exit(1);
+  console.log(
+    JSON.stringify(
+      {
+        counts: {
+          total: 0,
+          pass_first: 0,
+          pass_only: 0,
+          pass_on_retry: 0,
+          fail_both: 0,
+        },
+        recovery_rate_on_first_fail: null,
+        tests: [],
+        error: String(err.message || err),
+      },
+      null,
+      2,
+    ),
+  );
 });
