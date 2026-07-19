@@ -11,6 +11,7 @@ import {
   type ExperienceChoice,
   reachAuthenticatedHome,
 } from '../support/flutter';
+import { clearBrowserSessionState } from '../support/session';
 
 type AuthFixtures = {
   testUser: TestUser;
@@ -59,29 +60,10 @@ export async function loginAs(
   const landing = new LandingPage(page);
   const petList = new PetListPage(page);
   const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
-  await page.context().clearCookies();
   if (isLiveHostingTarget(baseURL)) {
     resetHostingWafSession();
   }
-  await page.goto('/');
-  await page.evaluate(async () => {
-    window.localStorage.clear();
-    window.sessionStorage.clear();
-    if ('indexedDB' in window && typeof indexedDB.databases === 'function') {
-      const databases = await indexedDB.databases();
-      await Promise.all(
-        databases
-          .map((db) => db.name)
-          .filter((name): name is string => Boolean(name))
-          .map((name) => new Promise<void>((resolve) => {
-            const request = indexedDB.deleteDatabase(name);
-            request.onsuccess = () => resolve();
-            request.onerror = () => resolve();
-            request.onblocked = () => resolve();
-          })),
-      );
-    }
-  });
+  await clearBrowserSessionState(page);
   if (isLiveHostingTarget(baseURL)) {
     await passHostingWaf(page, baseURL);
     setPlaywrightPage(page);
