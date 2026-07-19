@@ -30,6 +30,25 @@ skip() {
   exit 0
 }
 
+resolve_remote_ref_to_sha() {
+  local ref="$1"
+  local repo="${GITHUB_REPOSITORY:?GITHUB_REPOSITORY is required}"
+  local sha
+
+  ref="${ref#refs/heads/}"
+  ref="${ref#refs/tags/}"
+
+  if ! sha="$(gh api "repos/${repo}/commits/${ref}" --jq .sha 2>/dev/null)"; then
+    echo "::error::Could not resolve git ref '${ref}' on ${repo}" >&2
+    exit 1
+  fi
+  if [[ -z "$sha" || "$sha" == "null" ]]; then
+    echo "::error::Could not resolve git ref '${ref}' on ${repo}" >&2
+    exit 1
+  fi
+  printf '%s\n' "$sha"
+}
+
 assert_prod_ready_success() {
   local uat_run_id="$1"
   local repo="${GITHUB_REPOSITORY:?GITHUB_REPOSITORY is required}"
@@ -46,7 +65,7 @@ assert_prod_ready_success() {
 case "$EVENT_NAME" in
   workflow_dispatch)
     DISPATCH_REF="${DISPATCH_REF:?DISPATCH_REF is required for workflow_dispatch}"
-    COMMIT_SHA="$(git rev-parse "${DISPATCH_REF}^{commit}")"
+    COMMIT_SHA="$(resolve_remote_ref_to_sha "$DISPATCH_REF")"
     if [[ -n "${DISPATCH_UAT_RUN_ID:-}" ]]; then
       assert_prod_ready_success "$DISPATCH_UAT_RUN_ID"
     fi

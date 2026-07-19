@@ -43,10 +43,9 @@ jobs:
     steps:
       - uses: actions/checkout@v5
         with:
-          ref: >-
-            ${{ github.event_name == 'workflow_dispatch' && inputs.ref ||
-                github.event_name == 'release' && github.ref ||
-                'main' }}
+          # Always run trigger validation from main so dispatch cannot bypass guards
+          # by pointing inputs.ref at an older tag/branch missing this script.
+          ref: main
           fetch-depth: 1
           sparse-checkout: |
             scripts/ci/resolve-prod-trigger.sh
