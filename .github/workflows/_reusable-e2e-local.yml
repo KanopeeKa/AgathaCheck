@@ -1,7 +1,8 @@
-# Full Playwright E2E against a local stack (Postgres + Flutter web + Node server).
-# Used on uat-* tag deploy (deploy-uat.yml) and weekly manual/cron (e2e.yml) — not on every PR.
-# CI runs ten parallel matrix legs (file-balanced manifest in e2e/scripts/shard-files.mjs);
+# Playwright E2E against a local stack (Postgres + Flutter web + Node server).
+# Used on uat-* tag deploy (deploy-uat.yml), weekly manual/cron (e2e.yml), and PR CI canary (ci.yml).
+# Full suite: ten parallel matrix legs (file-balanced manifest in e2e/scripts/shard-files.mjs);
 # callers pass shard_total: 10 and matrix.shard [1..10] — keep in sync when changing shard count.
+# PR canary: test_suite smoke-ci runs @smoke-ci only (retries 0).
 name: Reusable E2E (localhost)
 
 on:
@@ -19,6 +20,10 @@ on:
         description: Pre-built web artifact to download (skips Flutter build when set)
         type: string
         default: ''
+      test_suite:
+        description: Playwright suite — shard (file-balanced CI shard) or smoke-ci (PR @smoke-ci canary)
+        type: string
+        default: shard
 
 env:
   FLUTTER_VERSION: '3.32.0'
@@ -26,7 +31,7 @@ env:
 jobs:
   e2e:
     name: >-
-      Playwright E2E (localhost${{ inputs.shard_total > 1 && format(' shard {0}/{1}', inputs.shard_index, inputs.shard_total) || '' }})
+      ${{ inputs.test_suite == 'smoke-ci' && 'Playwright @smoke-ci canary (localhost)' || format('Playwright E2E (localhost{0})', inputs.shard_total > 1 && format(' shard {0}/{1}', inputs.shard_index, inputs.shard_total) || '') }}
     runs-on: ubuntu-latest
     timeout-minutes: 45
     services:
@@ -129,13 +134,19 @@ jobs:
         working-directory: e2e
         env:
           E2E_BASE_URL: http://localhost:3000
-        run: npm run test:ci-shard -- ${{ inputs.shard_index }}
+        run: |
+          if [ "${{ inputs.test_suite }}" = "smoke-ci" ]; then
+            npm run test:smoke-ci
+          else
+            npm run test:ci-shard -- ${{ inputs.shard_index }}
+          fi
 
       - name: Upload Playwright report
         if: always()
         uses: actions/upload-artifact@v6
         with:
-          name: playwright-report-localhost-shard-${{ inputs.shard_index }}-of-${{ inputs.shard_total }}
+          name: >-
+            ${{ inputs.test_suite == 'smoke-ci' && 'playwright-report-localhost-smoke-ci' || format('playwright-report-localhost-shard-{0}-of-{1}', inputs.shard_index, inputs.shard_total) }}
           path: e2e/playwright-report/
 
       - name: Write E2E job summary
@@ -147,6 +158,7 @@ jobs:
           bash scripts/ci/append-summary.sh "Localhost E2E job" \
             "workflow=reusable-e2e-local" \
             "job=e2e" \
+            "test_suite=${{ inputs.test_suite }}" \
             "shard=${{ inputs.shard_index }}/${{ inputs.shard_total }}" \
             "web_artifact=${{ inputs.web_artifact_name != '' && inputs.web_artifact_name || 'built-in-job' }}" \
             "sha=${{ github.sha }}" \
