@@ -8,6 +8,8 @@ set -euo pipefail
 
 # shellcheck source=assert-node-modules-symlink.lib.sh
 source "$(cd "$(dirname "$0")" && pwd)/assert-node-modules-symlink.lib.sh"
+# shellcheck source=uat-e2e-env.lib.sh
+source "$(cd "$(dirname "$0")" && pwd)/uat-e2e-env.lib.sh"
 # shellcheck source=uat-htaccess.lib.sh
 source "$(cd "$(dirname "$0")" && pwd)/uat-htaccess.lib.sh"
 
@@ -87,6 +89,10 @@ if ! uat_nm_use_node; then
   exit 1
 fi
 echo "node_bin=${UAT_NODE_BIN}"
+
+echo "=== Ensure UAT E2E env (rate-limit skip for live smoke) ==="
+uat_ensure_e2e_env "${APPDIR}/.env" "${E2E_BYPASS_TOKEN:-}"
+
 if [[ "${UAT_AUTO_MIGRATE}" == "true" ]]; then
   echo "UAT_AUTO_MIGRATE=true — applying pending migrations (node scripts/migrate.js up)"
   node scripts/migrate.js up

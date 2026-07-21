@@ -430,6 +430,7 @@ jobs:
           POST_RESTART_RETRIES: 3
           POST_RESTART_SLEEP_SEC: 10
           UAT_AUTO_MIGRATE: ${{ vars.UAT_AUTO_MIGRATE }}
+          E2E_BYPASS_TOKEN: ${{ secrets.E2E_BYPASS_TOKEN }}
         with:
           host: ${{ secrets.UAT_SSH_HOST }}
           username: ${{ secrets.UAT_SSH_USER }}
@@ -439,7 +440,7 @@ jobs:
           timeout: 180s
           command_timeout: 10m
           script_path: .ci-uat-ssh-remote.sh
-          envs: PKG_CHANGED,POST_RESTART_RETRIES,POST_RESTART_SLEEP_SEC,UAT_AUTO_MIGRATE
+          envs: PKG_CHANGED,POST_RESTART_RETRIES,POST_RESTART_SLEEP_SEC,UAT_AUTO_MIGRATE,E2E_BYPASS_TOKEN
 
       - name: Collect UAT deploy state
         id: uat_deploy_state
