@@ -6,8 +6,10 @@
  * Usage: node scripts/sync_legal_documents.js [--date=YYYY-MM-DD]
  */
 
-import { readFileSync, writeFileSync, mkdirSync, existsSync } from 'fs';
-import { dirname, join } from 'path';
+'use strict';
+
+const { readFileSync, writeFileSync, mkdirSync, existsSync } = require('fs');
+const { dirname } = require('path');
 
 const EN_MONTHS = [
   'January', 'February', 'March', 'April', 'May', 'June',
