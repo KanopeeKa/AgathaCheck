@@ -28,7 +28,7 @@ import { WeightTrackingPage } from '../pages/weight-tracking.page';
 test.describe('Weight tracking', () => {
   // ── Empty state ───────────────────────────────────────────────────────────
 
-  test('@smoke empty weight history shows add-entry prompt', async ({ page, testUser }) => {
+  test('@smoke-uat empty weight history shows add-entry prompt', async ({ page, testUser }) => {
     const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
     const pet = await createPet(baseURL, testUser.accessToken, 'Bella');
 

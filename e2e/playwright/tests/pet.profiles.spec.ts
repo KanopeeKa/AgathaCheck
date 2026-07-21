@@ -25,7 +25,7 @@ test.describe('Pet profiles', () => {
     await expect(page.getByRole('button', { name: 'Add Pet' })).toBeVisible();
   });
 
-  test('@smoke user can create a pet with required fields', async ({ page, testUser }) => {
+  test('@smoke-uat user can create a pet with required fields', async ({ page, testUser }) => {
     const petList = await loginAs(page, testUser);
     await petList.openAddPet();
 
