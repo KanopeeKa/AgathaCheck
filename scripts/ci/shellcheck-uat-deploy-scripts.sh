@@ -18,6 +18,7 @@ mapfile -t FILES < <(
     -name 'uat-collect-deploy-state.sh' -o \
     -name 'uat-ssh-backend-deploy.sh' -o \
     -name 'uat-htaccess.lib.sh' -o \
+    -name 'uat-e2e-env.lib.sh' -o \
     -name 'prepare-uat-ssh-remote.sh' -o \
     -name 'mask-log-value.lib.sh' \
   \) | sort
