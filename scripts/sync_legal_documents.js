@@ -48,6 +48,7 @@ function parseDate(args) {
         process.exit(1);
       }
       return { y, m: month, d };
+    }
   }
   const now = new Date();
   return { y: now.getFullYear(), m: now.getMonth(), d: now.getDate() };
