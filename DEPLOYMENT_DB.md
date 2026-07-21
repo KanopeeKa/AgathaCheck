@@ -80,12 +80,12 @@ Lists every migration file with `[applied]` or `[PENDING]`.
 Migration files live in `db/migrations/`:
 
 - `NNN_short_name.sql` — incremental migrations applied by `up` (**production authority**)
-- `v3__initial_uuid_schema.sql` — legacy baseline for fresh installs (retired in Phase 3; see below)
 - `db/schema/canonical.sql` — **generated** end-state snapshot; verified by `scripts/db/check-schema-equivalence.sh`
+- `db/migrations/archive/v3__initial_uuid_schema.sql` — archived legacy baseline (regeneration + CI only)
 
 **Phased bootstrap model:** [docs/db-schema-bootstrap-plan.md](docs/db-schema-bootstrap-plan.md)
 
-To add a new migration:
+Fresh installs (dev/E2E) use `e2e/scripts/bootstrap-db.sh` (canonical + migration ledger). Production/UAT upgrades use `migrate.js up` only.
 
 1. Create the next numbered file (e.g. `021_add_feature.sql`).
 2. Append the filename to `db/schema/migration-manifest.json`.

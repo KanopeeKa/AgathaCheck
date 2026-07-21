@@ -15,6 +15,9 @@ bash "${ROOT}/e2e/scripts/bootstrap-db.sh"
 echo "==> Schema drift check (canonical vs bootstrap path)"
 RESET_DB=false bash "${ROOT}/scripts/db/check-schema-equivalence.sh"
 
+echo "==> Bootstrap path equivalence (legacy vs canonical+ledger)"
+RESET_DB=false bash "${ROOT}/scripts/db/check-bootstrap-paths-equivalence.sh"
+
 cd "${ROOT}/server"
 node bin/start.js >"$SERVER_LOG" 2>&1 &
 SERVER_PID=$!
