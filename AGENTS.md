@@ -8,8 +8,11 @@ This repo is **Agatha Track**: Flutter web (`flutter_app/`) + Node.js API (`serv
 
 ### Toolchain
 
-- Flutter 3.32.0 at `/opt/flutter/bin` (on `PATH` via `~/.bashrc`)
+- Flutter 3.32.0 at `/opt/flutter/bin` (provisioned by `.cursor/Dockerfile` on Cloud Agents)
 - Node 22, `psql` (PostgreSQL 16)
+- Cloud environment: `.cursor/environment.json` + `.cursor/Dockerfile` — install/start via `.cursor/scripts/cloud-*.sh`
+
+If a Cloud Agent pod reports missing `flutter` or `pg_ctlcluster`, confirm the repo `build.dockerfile` image is used (delete stale dashboard-only snapshots that override `.cursor/environment.json`).
 
 ### PostgreSQL (start each session)
 
