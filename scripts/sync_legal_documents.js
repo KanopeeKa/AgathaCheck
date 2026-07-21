@@ -56,9 +56,11 @@ function parseDate(args) {
 function transformContent(content, { isFrench, enDate, frDate }) {
   const privacyRoute = '/legal/privacy-notice';
 
-  let transformed = content
-    .replaceAll('[insert date]', enDate)
-    .replaceAll('[à compléter]', frDate)
+  const dateStr = isFrench ? frDate : enDate;
+
+  return content
+    .replaceAll('[insert date]', dateStr)
+    .replaceAll('[à compléter]', dateStr)
     .replaceAll('(link-to-privacy-notice)', `(${privacyRoute})`)
     .replaceAll('(lien-vers-la-politique)', `(${privacyRoute})`)
     .replaceAll('(link)', `(${privacyRoute})`)
@@ -71,14 +73,6 @@ function transformContent(content, { isFrench, enDate, frDate }) {
       '[lien vers la liste des sous-traitants ou section de la Politique de confidentialité]',
       `[Politique de confidentialité](${privacyRoute})`,
     );
-
-  if (isFrench) {
-    transformed = transformed.replaceAll('[insert date]', frDate);
-  } else {
-    transformed = transformed.replaceAll('[à compléter]', enDate);
-  }
-
-  return transformed;
 }
 
 const pairs = [
