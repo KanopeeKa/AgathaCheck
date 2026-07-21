@@ -56,15 +56,25 @@ function main() {
     fail('incremental_migrations must be sorted lexicographically by filename');
   }
 
-  const baselinePath = path.join(ROOT, manifest.baseline?.file ?? '');
-  if (!fs.existsSync(baselinePath)) {
-    fail(`baseline file missing: ${manifest.baseline?.file}`);
+  const baselineFile = manifest.baseline?.file;
+  if (!baselineFile || typeof baselineFile !== 'string' || !baselineFile.trim()) {
+    fail('baseline.file must be a non-empty string');
   }
 
-  const canonicalPath = path.join(ROOT, manifest.canonical ?? '');
+  const canonicalFile = manifest.canonical;
+  if (!canonicalFile || typeof canonicalFile !== 'string' || !canonicalFile.trim()) {
+    fail('canonical must be a non-empty string');
+  }
+
+  const baselinePath = path.join(ROOT, baselineFile);
+  if (!fs.existsSync(baselinePath)) {
+    fail(`baseline file missing: ${baselineFile}`);
+  }
+
+  const canonicalPath = path.join(ROOT, canonicalFile);
   if (!fs.existsSync(canonicalPath)) {
     fail(
-      `canonical snapshot missing at ${manifest.canonical} — run scripts/db/regenerate-canonical.sh`
+      `canonical snapshot missing at ${canonicalFile} — run scripts/db/regenerate-canonical.sh`
     );
   }
 

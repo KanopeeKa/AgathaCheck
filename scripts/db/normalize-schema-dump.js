@@ -8,6 +8,7 @@
  *   node scripts/db/normalize-schema-dump.js path/to/dump.sql
  */
 import fs from 'fs';
+import { fileURLToPath } from 'url';
 
 const NOISE_PREFIXES = [
   'SET ',
@@ -42,4 +43,6 @@ function main() {
   process.stdout.write(normalizeSchemaDump(input));
 }
 
-main();
+if (process.argv[1] === fileURLToPath(import.meta.url)) {
+  main();
+}
