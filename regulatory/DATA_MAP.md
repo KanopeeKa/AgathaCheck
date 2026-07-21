@@ -236,8 +236,8 @@ Veterinarian contact information stored includes: name, clinic, phone, email, ad
 ```
 ┌─────────────────┐         HTTPS/REST API          ┌──────────────────┐
 │                 │  ──────────────────────────────► │                  │
-│  Flutter Web    │  JSON requests with JWT auth     │  Dart API Server │
-│  Client         │  ◄────────────────────────────── │  (bin/server.dart)│
+│  Flutter Web    │  JSON requests with JWT auth     │  Node.js API     │
+│  Client         │  ◄────────────────────────────── │  Server          │
 │                 │  JSON responses                  │                  │
 └────────┬────────┘                                  └────────┬─────────┘
          │                                                    │

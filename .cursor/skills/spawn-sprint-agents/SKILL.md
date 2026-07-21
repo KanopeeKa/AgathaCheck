@@ -55,7 +55,7 @@ description: Coordinate parallel cloud agents on an integration branch with file
 - Same spec file or page object
 - `e2e/playwright/support/api.ts` (after foundation)
 - `.github/workflows/`, `scripts/file-size-allowlist.json`
-- Dual-backend edits to the **same** endpoint across agents
+- Backend edits to the **same** endpoint across agents
 
 ## Recovery
 

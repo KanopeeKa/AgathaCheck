@@ -2,7 +2,7 @@
 name: JWT secret dev/test fallback is load-bearing for CI
 description: Why the 'default_secret' fallback must survive even after prod hardening
 ---
-The JWT signing secret is resolved in one shared module per backend (`server/config/jwtSecret.js`, `server/lib/jwt_secret.dart`): `JWT_SECRET || SESSION_SECRET`, throwing only when `NODE_ENV=production`.
+The JWT signing secret is resolved in one shared module (`server/config/jwtSecret.js`): `JWT_SECRET || SESSION_SECRET`, throwing only when `NODE_ENV=production`.
 
 **Rule:** keep the non-production `'default_secret'` fallback. Do NOT make the throw unconditional.
 

@@ -89,15 +89,14 @@ Exit:
 
 ---
 
-## Dual-backend route change
+## Single-backend route change
 
 ```
 Endpoint: METHOD /api/PATH
 Domain: DOMAIN
 
-Skill: /dual-backend-route-change
+Skill: /single-backend-route-change
 Node: server/routes/DOMAIN/
-Dart: server/lib/ matching routes
 Jest: server/test/DOMAIN/
 
 Also run: /security-error-audit before push

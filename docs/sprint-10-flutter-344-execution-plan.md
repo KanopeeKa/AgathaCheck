@@ -130,7 +130,7 @@ flowchart TB
 ### Exit criteria (Wave A)
 
 - `flutter pub get` succeeds in `flutter_app/` on Dart 3.12.
-- `dart pub get && dart analyze lib` succeeds in `server/`.
+- ~~`dart pub get && dart analyze lib` succeeds in `server/`.~~ Dart backend removed 2026-07-21.
 - CI Flutter job gets past **Fetch Flutter dependencies** on integration.
 
 ---
@@ -147,8 +147,8 @@ flutter analyze --no-fatal-warnings --no-fatal-infos
 flutter test --concurrency=1 --exclude-tags=integration
 
 cd ../server
-dart pub get
-dart analyze lib
+npm ci
+npx jest --env=node --forceExit
 ```
 
 Commit lockfiles. If `fl_chart` 1.2.0 still conflicts at 3.44, try `^1.1.0` (Dependabot suggestion) before escalating.

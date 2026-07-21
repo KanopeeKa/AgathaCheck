@@ -15,7 +15,7 @@ architectural decisions deferred during the domain-by-domain refactor.
 |---|---|
 | Stub code kept pending review | Scope is clear and someone will implement |
 | “For later” split not done this pass | Ready to schedule in a sprint |
-| Dual-backend parity gaps | Dart server still needed in prod |
+| Single-backend gaps | Node.js server is canonical |
 
 **Priority:** P1 critical · P2 high · P3 recommended · P4 for later
 

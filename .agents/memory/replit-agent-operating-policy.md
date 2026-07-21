@@ -5,7 +5,7 @@ description: Binding rules distilled from AGENTS.md, .cursor/rules/*.mdc, and CI
 
 Repo docs are the source of truth. `.cursor/rules/*.mdc` + `AGENTS.md` are the authoritative shared engineering policy for ALL agents; `replit.md` is the project overview/preferences layer and must stay consistent with them. If any two sources conflict, stop and ask the user — never improvise a compromise. Inspect first, change second; smallest safe change.
 
-**Per-request startup:** read the `.cursor/rules/*.mdc` relevant to the touched area (dual-backend, security, testing, modularity, atomic-pr), summarize applicable constraints, then implement.
+**Per-request startup:** read the `.cursor/rules/*.mdc` relevant to the touched area (single-backend, security, testing, modularity, atomic-pr), summarize applicable constraints, then implement.
 
 **Binding engineering rules:**
 - **Modularity**: CI enforces a 500-line limit on all hand-written `.js`/`.dart` files across `flutter_app/lib`, `server/routes` (`scripts/check_file_size.js`); grandfathered files have an allowlist with a ratchet ceiling. Target new files <300 lines.
@@ -15,7 +15,7 @@ Repo docs are the source of truth. `.cursor/rules/*.mdc` + `AGENTS.md` are the a
 
 **Sensitive paths — explicit user confirmation required** (source of truth: `.github/scripts/agent-safety-lib.js`; gate enforced by `agent-pr-safety-gate.yml` on **both** `cursor/*` and `replit/*` branches): `.github/workflows/`, `db/migrations/`, `server/config/security.js`, `infra/`, and any path matching `/auth/`, `/billing/`, `/secrets?/`. Note: `server/config/` broadly is NOT forbidden — only `security.js` within it.
 
-**Migrations**: use `cd server && node scripts/migrate.js up` (AGENTS.md: `dart run bin/migrate.dart fresh` is BROKEN with pinned postgres driver — never use fresh). No `gen_random_uuid()` in SQL — generate UUIDs in code.
+**Migrations**: use `cd server && node scripts/migrate.js up`. No `gen_random_uuid()` in SQL — generate UUIDs in code.
 
 **Testing commands (current)**: backend `cd server && npx jest --env=node --forceExit`; Flutter `cd flutter_app && flutter test --concurrency=1 --exclude-tags=integration`; analyze with `cd flutter_app && flutter analyze --no-fatal-warnings --no-fatal-infos`; run `dart run build_runner build --delete-conflicting-outputs` when mocks change. BDD coverage gate: ≥105 mapped scenarios (`node e2e/scripts/check_bdd_coverage.js` — denominator is computed dynamically from feature files, not fixed at 165).
 
