@@ -384,8 +384,10 @@ Stub mode writes an explicit step summary: no FTP/SSH steps ran. Semver is autom
 Build contract: [ci-build-artifact-contract.md](./ci-build-artifact-contract.md).
 
 **Backend FTP staging:** `scripts/ci/stage-backend-deploy.sh --target prod` stages to
-`.prod-backend-deploy/` (same exclusions as UAT). SSH `npm ci` + `migrate.js up` run on
-the live host after FTP.
+`.prod-backend-deploy/` (same exclusions as UAT). SSH runs `migrate.js up` + Passenger
+restart over SSH after whitelisting the runner IP via `PROD_CPANEL_API_TOKEN` and
+`scripts/o2switch-ssh-whitelist.sh` (no `npm ci` on CloudLinux — use cPanel Run NPM
+Install when `package.json` changes).
 
 Post-deploy blocking job:
 

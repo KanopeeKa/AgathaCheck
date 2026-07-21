@@ -31,7 +31,8 @@ uat_nm_resolve_node() {
       fi
     fi
   fi
-  local nodevenv_root="${home_dir}/nodevenv/uat.agathatrack.com/backend"
+  local app_rel="${appdir#"${home_dir}/"}"
+  local nodevenv_root="${home_dir}/nodevenv/${app_rel%/*}/backend"
   if [[ -d "$nodevenv_root" ]]; then
     while IFS= read -r ver; do
       [[ -n "$ver" ]] || continue
