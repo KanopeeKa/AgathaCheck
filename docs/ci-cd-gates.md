@@ -39,7 +39,7 @@ shards unchanged for prod-ready. Prod security scans noted in Phase 6 (future).
 | PR granular CI jobs | Visible, not individually required | `ci.yml` (startup-smoke, test-suite, flutter-*, …) |
 | PR startup smoke | **Yes** (via `ci-gate`) | `ci.yml` → `_reusable-pr-startup-smoke.yml` |
 | PR hints | No (advisory) | `pr-governance-hints.yml` |
-| Agent `cursor/*` PRs | **Yes** (forbidden paths) | `agent-pr-safety-gate.yml` |
+| Agent `cursor/*` PRs | **Yes** (forbidden paths — migrations, security config, infra, auth/billing/secrets routes) | `agent-pr-safety-gate.yml` |
 | `uat-*` tag deploy | **Yes** (UAT + `prod-ready`) | `deploy-uat.yml` (tag push or `workflow_run` after promote) |
 | Weekly E2E on `main` | **No** (signal only) | `e2e.yml` |
 | PROD deploy / stub tag | **Yes** (environment when live) | `deploy-prod.yml` (auto after UAT `prod-ready`) |
@@ -279,7 +279,7 @@ wait for one green **CI** run — GitHub only lists checks that have reported at
 | Check / action | Workflow | Behavior |
 |----------------|----------|----------|
 | `Governance hints (advisory)` | `pr-governance-hints.yml` | PR comment only; does not block merge |
-| `Forbidden path check` | `agent-pr-safety-gate.yml` | **Blocks** PRs from `cursor/*` branches that touch forbidden paths; human branches unaffected |
+| `Forbidden path check` | `agent-pr-safety-gate.yml` | **Blocks** PRs from `cursor/*` branches that touch forbidden paths (migrations, `server/config/security.js`, `infra/`, auth/billing/secrets routes). Workflow edits under `.github/workflows/` are allowed when paired with gate doc updates. Human branches unaffected |
 
 ---
 

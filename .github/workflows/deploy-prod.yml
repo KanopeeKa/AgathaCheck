@@ -1,9 +1,7 @@
 name: Deploy Production (agathatrack.com)
 
 on:
-  workflow_run:
-    workflows: ['Deploy UAT (uat.agathatrack.com)']
-    types: [completed]
+  # Prod promotion is dispatched explicitly from deploy-uat.yml only when Prod ready is green.
   workflow_dispatch:
     inputs:
       ref:
@@ -32,21 +30,6 @@ permissions:
   actions: read
 
 jobs:
-  uat-promotion-blocked:
-    name: Block promotion when UAT failed
-    if: >-
-      github.event_name == 'workflow_run' &&
-      github.event.workflow_run.conclusion != 'success'
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
-    steps:
-      - name: Fail closed — UAT deploy was not fully green
-        run: |
-          echo "::error::Deploy UAT run ${{ github.event.workflow_run.id }} concluded with '${{ github.event.workflow_run.conclusion }}'."
-          echo "::error::Production promotion requires a successful UAT workflow including green Prod ready."
-          echo "UAT run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.event.workflow_run.id }}"
-          exit 1
-
   resolve-trigger:
     name: Resolve promotion trigger
     runs-on: ubuntu-latest
@@ -60,10 +43,9 @@ jobs:
     steps:
       - uses: actions/checkout@v5
         with:
-          ref: >-
-            ${{ github.event_name == 'workflow_dispatch' && inputs.ref ||
-                github.event_name == 'release' && github.ref ||
-                'main' }}
+          # Always run trigger validation from main so dispatch cannot bypass guards
+          # by pointing inputs.ref at an older tag/branch missing this script.
+          ref: main
           fetch-depth: 1
           sparse-checkout: |
             scripts/ci/resolve-prod-trigger.sh
@@ -77,9 +59,6 @@ jobs:
         id: resolve
         env:
           EVENT_NAME: ${{ github.event_name }}
-          WORKFLOW_RUN_ID: ${{ github.event.workflow_run.id }}
-          WORKFLOW_RUN_CONCLUSION: ${{ github.event.workflow_run.conclusion }}
-          WORKFLOW_RUN_HEAD_SHA: ${{ github.event.workflow_run.head_sha }}
           DISPATCH_REF: ${{ github.event_name == 'workflow_dispatch' && inputs.ref || '' }}
           DISPATCH_UAT_RUN_ID: ${{ github.event_name == 'workflow_dispatch' && inputs.uat_run_id || '' }}
           RELEASE_SHA: ${{ github.sha }}

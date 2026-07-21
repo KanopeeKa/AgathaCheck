@@ -104,10 +104,20 @@ export function resetHostingWafSession(): void {
 
 /** Warm WAF cookies and route api.ts through in-browser fetch for live UAT runs. */
 export async function prepareLiveApiAccess(page: Page, baseURL?: string): Promise<void> {
-  await passHostingWaf(page, baseURL);
-  if (isLiveHostingTarget(baseURL)) {
-    setPlaywrightPage(page);
+  if (!isLiveHostingTarget(baseURL)) {
+    return;
   }
+
+  const root = resolveBaseURL(baseURL);
+  if (sessionWafCleared) {
+    const health = await probeBackendHealth(page, root).catch((): HealthProbe => 'down');
+    if (health !== 'ok') {
+      sessionWafCleared = false;
+    }
+  }
+
+  await passHostingWaf(page, baseURL);
+  setPlaywrightPage(page);
 }
 
 export function clearLiveApiAccess(): void {

@@ -3,12 +3,30 @@ import { expect } from '@playwright/test';
 import {
   dismissConsentBannerIfPresent,
   expectAppBarTitle,
+  flutterGotoUrl,
   flutterRoutePath,
   isExperienceShellVisible,
+  navigateWithShellFallback,
   openExperienceDrawer,
   refreshFlutterAccessibility,
   waitForFlutterRoutePattern,
 } from '../support/flutter';
+
+const NOTIFICATIONS_ROUTE_PATTERN = /\/(g|o)\/notifications(?:\?|$)/;
+
+/** Pick guardian vs org notifications route from the current effective URL. */
+function notificationsPathForPage(page: Page): string {
+  const route = flutterRoutePath(page.url());
+  const useOrgHome = route.startsWith('/o/') || route.startsWith('/organizations');
+  return useOrgHome ? '/o/notifications' : '/g/notifications';
+}
+
+async function gotoNotificationsRoute(page: Page): Promise<void> {
+  const notificationsPath = notificationsPathForPage(page);
+  await page.goto(flutterGotoUrl(notificationsPath));
+  await refreshFlutterAccessibility(page);
+  await waitForFlutterRoutePattern(page, NOTIFICATIONS_ROUTE_PATTERN, 30_000);
+}
 
 /**
  * Notifications screen (`/notifications`).
@@ -27,16 +45,17 @@ export class NotificationsPage {
     if (await legacyBell.isVisible({ timeout: 2_000 }).catch(() => false)) {
       await legacyBell.click();
     } else if (await isExperienceShellVisible(this.page)) {
-      const route = flutterRoutePath(this.page.url());
-      const notificationsPattern = route.startsWith('/o/')
-        ? /\/o\/notifications$/
-        : /\/g\/notifications$/;
-      await openExperienceDrawer(this.page);
-      await this.page.getByText('Notifications', { exact: true }).first().click();
-      await waitForFlutterRoutePattern(this.page, notificationsPattern, 30_000);
-      await refreshFlutterAccessibility(this.page);
+      await gotoNotificationsRoute(this.page);
     } else {
-      throw new Error('Could not open notifications: no app-bar bell or experience shell');
+      const notificationsPath = notificationsPathForPage(this.page);
+      await navigateWithShellFallback(
+        this.page,
+        NOTIFICATIONS_ROUTE_PATTERN,
+        notificationsPath,
+        () => this.expectLoaded(),
+        { helper: 'notifications.openFromPetList', testTitle: null },
+      );
+      return;
     }
     await this.expectLoaded();
   }
@@ -112,9 +131,13 @@ export class NotificationsPage {
     }
 
     if (await isExperienceShellVisible(this.page)) {
-      await openExperienceDrawer(this.page);
-      await this.page.getByText('Notifications', { exact: true }).waitFor({ timeout: 10_000 });
-      await this.page.getByText(label, { exact: true }).first().waitFor({ timeout: 10_000 });
+      await gotoNotificationsRoute(this.page);
+      await this.expectLoaded();
+      if (count > 0) {
+        await expect(this.page.getByText(/notification:/i)).not.toHaveCount(0, {
+          timeout: 15_000,
+        });
+      }
       return;
     }
 

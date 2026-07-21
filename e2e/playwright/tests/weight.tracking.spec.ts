@@ -32,8 +32,8 @@ test.describe('Weight tracking', () => {
     const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
     const pet = await createPet(baseURL, testUser.accessToken, 'Bella');
 
-    await loginAs(page, testUser);
-    const petList = new PetListPage(page);
+    const petList = await loginAs(page, testUser, { experience: 'guardian' });
+    await petList.expectPetVisible(pet.name);
     await petList.openPet(pet.name);
 
     const petDetail = new PetDetailPage(page);

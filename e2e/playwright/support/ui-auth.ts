@@ -4,9 +4,10 @@ import { PetListPage } from '../pages/pet-list.page';
 import type { TestUser } from './api';
 import { isLiveHostingTarget } from './hosting';
 import { refreshFlutterAccessibility } from './flutter';
+import { normalizeStoredToken } from './normalize-stored-token';
 
-async function readAccessToken(page: Page): Promise<string> {
-  const token = await page.evaluate(() => {
+export async function readAccessTokenFromPage(page: Page): Promise<string> {
+  const raw = await page.evaluate(() => {
     const keys = Object.keys(localStorage);
     for (const key of keys) {
       if (key.includes('auth_access_token')) {
@@ -16,10 +17,10 @@ async function readAccessToken(page: Page): Promise<string> {
     }
     return localStorage.getItem('auth_access_token');
   });
-  if (!token) {
+  if (!raw) {
     throw new Error('UI signup succeeded but no auth_access_token found in localStorage');
   }
-  return token;
+  return normalizeStoredToken(raw);
 }
 
 /** Create a user through the Flutter signup form (no REST pre-seed). */
@@ -46,7 +47,7 @@ export async function signupUserViaUi(
   const petList = new PetListPage(page);
   await petList.expectLoaded();
 
-  const accessToken = await readAccessToken(page);
+  const accessToken = await readAccessTokenFromPage(page);
   return {
     email,
     password,

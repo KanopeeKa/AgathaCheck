@@ -33,23 +33,87 @@ export class PetListPage {
     );
   }
 
-  async openHealthDashboard(): Promise<void> {
+  async openHealthDashboard(
+    options: { experience?: 'guardian' | 'organization' } = {},
+  ): Promise<void> {
     await dismissConsentBannerIfPresent(this.page);
-    const eventsPath = flutterRoutePath(this.page.url()).startsWith('/o/')
-      ? '/o/events'
-      : '/g/events';
-    const eventsNav = this.page.getByRole('button', { name: 'Events' });
-    if (await eventsNav.isVisible({ timeout: 2_000 }).catch(() => false)) {
-      await eventsNav.click();
-      await waitForFlutterRoutePattern(this.page, /\/(g|o)\/events/, 30_000);
-    } else if (await isExperienceShellVisible(this.page)) {
+    const route = flutterRoutePath(this.page.url());
+    const useOrgHome =
+      options.experience === 'organization' ||
+      (options.experience !== 'guardian' &&
+        (route.startsWith('/o/') || route.startsWith('/organizations')));
+    const eventsPath = useOrgHome ? '/o/events' : '/g/events';
+    const eventsRoutePattern = /\/(g|o)\/events(?:\?|$)/;
+    if (await isExperienceShellVisible(this.page)) {
       await this.page.goto(flutterGotoUrl(eventsPath));
       await refreshFlutterAccessibility(this.page);
-      await waitForFlutterRoutePattern(this.page, /\/(g|o)\/events/, 30_000);
+      await waitForFlutterRoutePattern(this.page, eventsRoutePattern, 30_000);
     } else {
-      await this.page.getByRole('button', { name: 'To Do' }).click();
+      const eventsNav = this.page.getByRole('button', { name: /^(Events|Événements|To Do)$/i });
+      if (await eventsNav.isVisible({ timeout: 2_000 }).catch(() => false)) {
+        await eventsNav.click();
+      } else {
+        await this.page.getByRole('button', { name: /^(To Do|À faire)$/i }).first().click();
+      }
+      await waitForFlutterRoutePattern(this.page, eventsRoutePattern, 30_000);
     }
     await new HealthDashboardPage(this.page).expectLoaded();
+  }
+
+  /**
+   * Force the home screen to remount after API-side mutations.
+   * Navigates away to the health dashboard, then hash-navigates back to home.
+   */
+  async refreshByRemount(
+    options: { experience?: 'guardian' | 'organization' } = {},
+  ): Promise<void> {
+    try {
+      await this.openHealthDashboard(options);
+    } catch (error) {
+      const detail = error instanceof Error ? error.message : String(error);
+      throw new Error(`health dashboard did not load during refreshByRemount: ${detail}`);
+    }
+
+    const route = flutterRoutePath(this.page.url());
+    const useOrgHome =
+      options.experience === 'organization' ||
+      (options.experience !== 'guardian' &&
+        (route.startsWith('/o/') || route.startsWith('/organizations')));
+    const homePath = useOrgHome ? '/o/home' : '/g/home';
+
+    try {
+      await dismissConsentBannerIfPresent(this.page);
+      await this.page.goto(flutterGotoUrl(homePath));
+      await refreshFlutterAccessibility(this.page);
+      await waitForFlutterRoutePattern(
+        this.page,
+        new RegExp(`^${escapeRegExp(homePath)}(?:\\?|$)`),
+        30_000,
+      );
+      if (useOrgHome) {
+        await skipOrgOnboardingIfPresent(this.page);
+      } else {
+        await skipGuardianOnboardingIfPresent(this.page);
+      }
+      await this.expectLoaded();
+    } catch (error) {
+      const detail = error instanceof Error ? error.message : String(error);
+      throw new Error(`pet list did not reload after refreshByRemount: ${detail}`);
+    }
+  }
+
+  /** Assert a due/overdue entry appears in the home DueEventsSection card. */
+  async expectDueEntryOnHome(entryName: string): Promise<void> {
+    await refreshFlutterAccessibility(this.page);
+    await expect(
+      this.page
+        .getByRole('group', { name: /Upcoming events|Événements à venir/i })
+        .first(),
+    ).toBeVisible({ timeout: 20_000 });
+    await semanticsByName(
+      this.page,
+      new RegExp(escapeRegExp(entryName), 'i'),
+    ).waitFor({ timeout: 20_000 });
   }
 
   async expectEmptyState(): Promise<void> {

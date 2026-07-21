@@ -42,6 +42,39 @@ export async function waitForFlutterRoutePattern(
   }).toPass({ timeout: effectiveTimeout });
 }
 
+export type ShellFallbackContext = {
+  helper: string;
+  testTitle: string | null;
+  locale?: string | null;
+};
+
+/**
+ * Last-resort navigation when shell detection or drawer clicks fail.
+ * Emits `E2E_NAV_FALLBACK` with a fixed JSON payload for CI log aggregation.
+ */
+export async function navigateWithShellFallback(
+  page: Page,
+  targetRoutePattern: RegExp,
+  directHashRoute: string,
+  readyFn: () => Promise<void>,
+  context: ShellFallbackContext,
+  timeout = 30_000,
+): Promise<void> {
+  const payload = {
+    helper: context.helper,
+    fromURL: page.url(),
+    toRoute: directHashRoute,
+    locale: context.locale ?? null,
+    testTitle: context.testTitle,
+  };
+  console.warn('E2E_NAV_FALLBACK', JSON.stringify(payload));
+
+  await page.goto(flutterGotoUrl(directHashRoute));
+  await refreshFlutterAccessibility(page);
+  await waitForFlutterRoutePattern(page, targetRoutePattern, timeout);
+  await readyFn();
+}
+
 /** Build a URL that reaches a Flutter hash route on web. */
 export function flutterGotoUrl(path: string): string {
   if (path === '/landing' || path === '/' || path === '') return '/landing';
@@ -103,8 +136,8 @@ export function homeShellLocator(page: Page): Locator {
     .getByRole('button', { name: 'To Do' })
     .or(page.getByRole('button', { name: 'Add Pet' }))
     .or(page.getByText('No pets yet'))
-    .or(page.getByRole('button', { name: 'Home' }))
-    .or(page.getByRole('button', { name: 'Events' }));
+    .or(page.getByRole('button', { name: /^(Home|Accueil)$/i }))
+    .or(page.getByRole('button', { name: /^(Events|Événements)$/i }));
 }
 
 /** Wait until the user has landed on a home surface after login or signup. */
@@ -330,20 +363,32 @@ export async function reachAuthenticatedHome(
   await expectHomeShellVisible(page, timeout);
 }
 
+/** Top-nav / drawer controls for the post-split experience shell (EN + FR). */
+export function experienceShellNavLocator(page: Page): Locator {
+  return page
+    .getByRole('button', { name: /^(Home|Accueil)$/i })
+    .or(page.getByRole('button', { name: /^(Events|Événements)$/i }))
+    .or(page.getByRole('button', { name: /^(Settings|Paramètres)$/i }));
+}
+
 /** True when the post-split experience shell (`/g/home` or `/o/home`) is visible. */
 export async function isExperienceShellVisible(page: Page): Promise<boolean> {
-  const shellMarker = page
-    .getByRole('button', { name: 'Home' })
-    .or(page.getByRole('button', { name: 'Events' }))
-    .or(page.getByRole('button', { name: 'Settings' }));
-  return shellMarker.first().isVisible({ timeout: 3_000 }).catch(() => false);
+  return experienceShellNavLocator(page)
+    .first()
+    .isVisible({ timeout: 3_000 })
+    .catch(() => false);
 }
 
 /** Open the experience shell drawer (hamburger menu). */
 export async function openExperienceDrawer(page: Page): Promise<void> {
   await dismissConsentBannerIfPresent(page);
   await refreshFlutterAccessibility(page);
-  await page.getByRole('button', { name: 'Settings' }).click();
+  const menuButton = page.getByRole('button', { name: /^(Settings|Paramètres)$/i });
+  if (await menuButton.isVisible({ timeout: 2_000 }).catch(() => false)) {
+    await menuButton.click();
+  } else {
+    await page.getByRole('button', { name: /menu/i }).first().click();
+  }
   await page.waitForTimeout(400);
   await refreshFlutterAccessibility(page);
 }

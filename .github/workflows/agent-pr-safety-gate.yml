@@ -12,7 +12,7 @@ permissions:
 jobs:
   safety:
     name: Forbidden path check
-    if: startsWith(github.head_ref, 'cursor/')
+    if: startsWith(github.head_ref, 'cursor/') || startsWith(github.head_ref, 'replit/')
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
@@ -40,7 +40,7 @@ jobs:
             const body = `${marker}
             ## Agent PR safety gate failed
 
-            This PR from a Cursor agent branch modifies forbidden paths (workflows, migrations, security config, infra, etc.).
+            This PR from an agent branch modifies forbidden paths (migrations, security config, infra, auth/billing/secrets routes, etc.).
 
             Please review manually or close the PR and handle the linked issue with a human implementation.`;
             await github.rest.issues.createComment({

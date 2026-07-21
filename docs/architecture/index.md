@@ -155,3 +155,4 @@ Full conventions: `docs/architecture/modularity.md`.
 | Parallel sprint | `/spawn-sprint-agents` skill |
 | Before push | `/pre-push-verify` skill or `./scripts/pre-push-changed.sh` |
 | Security audit | `/security-error-audit` skill |
+| UAT deploy / live smoke red | `docs/e2e/uat-live-operations-runbook.md` · `.agents/memory/uat-live-e2e-triage.md` |

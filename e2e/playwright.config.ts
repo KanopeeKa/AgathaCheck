@@ -7,6 +7,7 @@ const isLiveUat = tlsInsecure;
 
 export default defineConfig({
   testDir: './playwright/tests',
+  globalSetup: require.resolve('./playwright/support/global-setup'),
   fullyParallel: false,
   forbidOnly: !!process.env.CI,
   retries: 1,

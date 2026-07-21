@@ -12,6 +12,10 @@ flutter_app/test/bdd/features/
 
 Playwright specs in `playwright/tests/` are annotated with `@bdd <feature>` comments and implement priority user journeys from those files. Over time we can wire [@cucumber/cucumber](https://github.com/cucumber/cucumber-js) to execute the `.feature` files directly; the page objects in `playwright/pages/` are the reusable layer for either approach.
 
+**Navigation contract:** page-object actions must wait for route + ready state before returning. See [`docs/e2e-navigation-contract.md`](../docs/e2e-navigation-contract.md).
+
+**UAT live ops:** symptom triage, env checklist, and prevention patterns — [`docs/e2e/uat-live-operations-runbook.md`](../docs/e2e/uat-live-operations-runbook.md).
+
 ### Current coverage
 
 Run `node e2e/scripts/check_bdd_coverage.js --report-only` to see the live counts.
@@ -33,7 +37,8 @@ Run `node e2e/scripts/check_bdd_coverage.js --report-only` to see the live count
 
 - Enable the semantics tree on load via `flt-semantics-placeholder` (handled in `playwright/support/flutter.ts`).
 - Use `input[aria-label="…"]` for form fields; `fill()` alone is unreliable — the helper falls back to `pressSequentially`.
-- Auth rate limiting is disabled when the server runs with `E2E=1` (set in `run-local.sh` and CI).
+- Auth rate limiting is disabled when the server runs with `E2E=1` (set in `run-local.sh` and localhost CI).
+- Live UAT E2E may send `X-E2E-Bypass-Token` on signup API calls when `E2E_BYPASS_TOKEN` is available to the smoke job. The UAT Node app must have matching `E2E_BYPASS_TOKEN` and `E2E_BYPASS_ALLOWED=true` (never on production). `deploy-uat.yml` passes `E2E_BYPASS_TOKEN` from GitHub secrets to the live smoke step.
 
 ## Project layout
 
@@ -133,7 +138,9 @@ cd e2e && npm run test:smoke
 
 `@smoke` tests run **axe** accessibility scans after the journey completes. CI fails on **critical** and **serious** violations (see `playwright/support/axe.ts`).
 
-Live UAT smoke E2E uses `E2E_BASE_URL=https://uat.agathatrack.com`. The UAT deploy workflow sets `E2E_TLS_INSECURE=1` because cPanel auto-SSL may present a certificate chain that GitHub Actions runners do not trust (curl exit 60 / Node `self-signed certificate`). Localhost E2E does not need this flag.
+Live UAT smoke E2E uses `E2E_BASE_URL=https://uat.agathatrack.com`. The UAT deploy workflow sets `E2E_TLS_INSECURE=1` because cPanel auto-SSL may present a certificate chain that GitHub Actions runners do not trust (curl exit 60 / Node `self-signed certificate`). Localhost E2E does not need this flag. For live runs, also set `NODE_TLS_REJECT_UNAUTHORIZED=0` when probing UAT from Node (Playwright `globalSetup` pre-flight and `api.ts` seeding); browser tests use `ignoreHTTPSErrors` via the same `E2E_TLS_INSECURE=1` flag.
+
+Before live `@smoke` workers start, Playwright `globalSetup` probes `GET /backend/health` (15s timeout) and fails fast with a typed error when UAT is down, misconfigured, or serving a WAF challenge.
 
 Set `E2E=1` on the UAT Node app if auth rate limits interfere.
 

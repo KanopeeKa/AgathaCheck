@@ -1,0 +1,206 @@
+{
+  "schema_version": 1,
+  "plan_id": "e2e-ci-canary",
+  "approved_at": "2026-07-19T22:15:00Z",
+  "approved_by": "KanopeeKa",
+  "approved_until": "2026-07-21T22:15:00Z",
+  "content_hash": "sha256:b1774f7d38e8ea4155f4fb6451d1e83a951a8b7e0d134d746fa945917559a3e8",
+  "autonomy": "active",
+  "default_merge_mode": "auto",
+  "base_branch": "main",
+  "control_issue": 1,
+  "artifact_branch_policy": "phase-branch",
+  "phases": [
+    {
+      "id": "0",
+      "title": "Instrumentation",
+      "branch": "cursor/e2e-canary-phase0-instrument-48ef",
+      "allowed_paths": [
+        "e2e/scripts/**",
+        "docs/ci-cd-baseline.md",
+        "docs/e2e-ci-canary-plan.md",
+        ".agents/plans/**"
+      ],
+      "forbidden_paths": [
+        "db/migrations/**",
+        "server/config/security.js",
+        "infra/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "governance",
+      "status": "in_progress",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/229",
+      "pr_head_sha": "278c167564b1b13dfc94413ed31a453e77bc8200"
+    },
+    {
+      "id": "1",
+      "title": "Smoke tags and Playwright projects",
+      "branch": "cursor/e2e-canary-phase1-tags-48ef",
+      "allowed_paths": [
+        "e2e/**",
+        "docs/e2e-ci-canary-plan.md",
+        "e2e/README.md",
+        ".cursor/rules/accessibility.mdc",
+        ".agents/plans/**",
+        "scripts/pre-push-changed.sh"
+      ],
+      "forbidden_paths": [
+        "db/migrations/**",
+        "server/config/security.js",
+        "infra/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "governance-allowlist"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "governance",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "2a",
+      "title": "PR CI canary advisory",
+      "branch": "cursor/e2e-canary-phase2a-ci-advisory-48ef",
+      "allowed_paths": [
+        ".github/workflows/**",
+        "scripts/ci/**",
+        "docs/ci-cd-gates.md",
+        "e2e/**",
+        ".agents/plans/**"
+      ],
+      "forbidden_paths": [
+        "db/migrations/**",
+        "server/config/security.js",
+        "infra/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "governance",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": "Job runs parallel with flutter-test-rest; not in ci-gate yet",
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "2b",
+      "title": "PR CI canary blocking",
+      "branch": "cursor/e2e-canary-phase2b-ci-blocking-48ef",
+      "allowed_paths": [
+        ".github/workflows/**",
+        "scripts/ci/**",
+        "docs/ci-cd-gates.md",
+        ".agents/plans/**"
+      ],
+      "forbidden_paths": [
+        "db/migrations/**",
+        "server/config/security.js",
+        "infra/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "governance",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": "Soak gate: >=5 green advisory runs and <5% pass-on-retry before merge",
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "3",
+      "title": "UAT live smoke hardening",
+      "branch": "cursor/e2e-canary-phase3-uat-smoke-48ef",
+      "allowed_paths": [
+        ".github/workflows/deploy-uat.yml",
+        ".github/workflows/_reusable-e2e-local.yml",
+        "e2e/**",
+        "docs/e2e-ci-canary-plan.md",
+        "docs/e2e/**",
+        ".agents/plans/**"
+      ],
+      "forbidden_paths": [
+        "db/migrations/**",
+        "server/config/security.js",
+        "infra/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "governance",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "4",
+      "title": "Full shard retry tuning",
+      "branch": "cursor/e2e-canary-phase4-shard-retries-48ef",
+      "allowed_paths": [
+        "e2e/**",
+        ".github/workflows/deploy-uat.yml",
+        "docs/ci-cd-baseline.md",
+        ".agents/plans/**"
+      ],
+      "forbidden_paths": [
+        "db/migrations/**",
+        "server/config/security.js",
+        "infra/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "governance",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null,
+      "debt_issue_refs": []
+    }
+  ]
+}

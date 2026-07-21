@@ -1,9 +1,8 @@
 #!/usr/bin/env bash
-# Resolve deploy-prod trigger context (workflow_run, dispatch, or release).
+# Resolve deploy-prod trigger context (workflow_dispatch or release).
 #
 # Environment:
 #   EVENT_NAME — github.event_name
-#   WORKFLOW_RUN_ID, WORKFLOW_RUN_CONCLUSION, WORKFLOW_RUN_HEAD_SHA — workflow_run payload
 #   DISPATCH_REF, DISPATCH_UAT_RUN_ID — workflow_dispatch inputs
 #   RELEASE_SHA — github.sha for release events
 #   GITHUB_TOKEN, GITHUB_REPOSITORY
@@ -31,34 +30,45 @@ skip() {
   exit 0
 }
 
+resolve_remote_ref_to_sha() {
+  local ref="$1"
+  local repo="${GITHUB_REPOSITORY:?GITHUB_REPOSITORY is required}"
+  local sha
+
+  ref="${ref#refs/heads/}"
+  ref="${ref#refs/tags/}"
+
+  if ! sha="$(gh api "repos/${repo}/commits/${ref}" --jq .sha 2>/dev/null)"; then
+    echo "::error::Could not resolve git ref '${ref}' on ${repo}" >&2
+    exit 1
+  fi
+  if [[ -z "$sha" || "$sha" == "null" ]]; then
+    echo "::error::Could not resolve git ref '${ref}' on ${repo}" >&2
+    exit 1
+  fi
+  printf '%s\n' "$sha"
+}
+
+assert_prod_ready_success() {
+  local uat_run_id="$1"
+  local repo="${GITHUB_REPOSITORY:?GITHUB_REPOSITORY is required}"
+  local prod_ready
+  prod_ready="$(
+    gh run view "$uat_run_id" --repo "$repo" --json jobs \
+      --jq '.jobs[] | select(.name=="Prod ready") | .conclusion' | head -1
+  )"
+  if [[ "$prod_ready" != "success" ]]; then
+    skip "prod_ready_not_success"
+  fi
+}
+
 case "$EVENT_NAME" in
-  workflow_run)
-    if [[ "${WORKFLOW_RUN_CONCLUSION:-}" != "success" ]]; then
-      skip "uat_workflow_not_success"
-    fi
-
-    UAT_RUN_ID="${WORKFLOW_RUN_ID:?WORKFLOW_RUN_ID is required for workflow_run}"
-    COMMIT_SHA="${WORKFLOW_RUN_HEAD_SHA:?WORKFLOW_RUN_HEAD_SHA is required for workflow_run}"
-
-    REPO="${GITHUB_REPOSITORY:?GITHUB_REPOSITORY is required}"
-    prod_ready="$(
-      gh run view "$UAT_RUN_ID" --repo "$REPO" --json jobs \
-        --jq '.jobs[] | select(.name=="Prod ready") | .conclusion' | head -1
-    )"
-    if [[ "$prod_ready" != "success" ]]; then
-      skip "prod_ready_not_success"
-    fi
-
-    emit_output proceed true
-    emit_output commit_sha "$COMMIT_SHA"
-    emit_output uat_run_id "$UAT_RUN_ID"
-    emit_output target_ref "$COMMIT_SHA"
-    emit_output trigger_source workflow_run
-    ;;
-
   workflow_dispatch)
     DISPATCH_REF="${DISPATCH_REF:?DISPATCH_REF is required for workflow_dispatch}"
-    COMMIT_SHA="$(git rev-parse "${DISPATCH_REF}^{commit}")"
+    COMMIT_SHA="$(resolve_remote_ref_to_sha "$DISPATCH_REF")"
+    if [[ -n "${DISPATCH_UAT_RUN_ID:-}" ]]; then
+      assert_prod_ready_success "$DISPATCH_UAT_RUN_ID"
+    fi
     emit_output proceed true
     emit_output commit_sha "$COMMIT_SHA"
     emit_output uat_run_id "${DISPATCH_UAT_RUN_ID:-}"

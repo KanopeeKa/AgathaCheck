@@ -112,3 +112,28 @@ bash scripts/ci/collect-baseline.sh --limit 20 > /tmp/baseline-snapshot.md
 ```
 
 Paste the workflow summary into this doc or attach as a PR artifact.
+
+## Playwright retry recovery (E2E canary baseline — 2026-07-19)
+
+Instrumentation for the [e2e-ci-canary plan](./e2e-ci-canary-plan.md). Summarize live-smoke logs with:
+
+```bash
+node e2e/scripts/summarize-playwright-retries.mjs --file /path/to/playwright-list.log
+```
+
+### Empirical samples (deploy-uat live `@smoke`, global `retries: 1`)
+
+| Source | Observation |
+|--------|-------------|
+| Run 29246682227 | ~67% of first-fail live smokes recovered on retry (~11s); cascade/timeout failures recovered 0% |
+| Run 29287640604 | Six failing smokes with retries doubled wall-clock (~10 min) vs fail-fast estimate |
+| Run 29515186100, 29459793976 | Cross-cutting bugs → 9–10/10 full E2E shards fail together (retries waste ~30–40 min) |
+| Post #218 (UAT pre-flight) | Smoke workers fail fast when `/backend/health` down — separates infra from test flakes |
+
+### Interpretation (Phase 0)
+
+- **Quick semantics flakes** (~sub-15s) sometimes pass on retry; address with `expect().toPass()` in Phase 1/3, not whole-test retry.
+- **Cascade / routing / timeout** failures never benefit from retry — motivates `@smoke-ci` on PR and `retries: 0` on smoke tiers.
+- **Full shard matrix** still dominates UAT deploy duration; Phase 4 targets `fail-fast` + `retries: 0` on `full` project after smoke tiers stabilize.
+
+Regenerate counts after Phase 3 using archived `playwright-report-uat-smoke` artifacts from green/failed deploy runs.

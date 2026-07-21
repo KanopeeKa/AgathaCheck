@@ -26,6 +26,7 @@ Institutional knowledge for cloud agents. Domain workflows live in **Skills** (`
 - [Replit agent operating policy](replit-agent-operating-policy.md) — READ FIRST every task: repo .cursor rules are binding; PR flow to main; sensitive paths need confirmation.
 - [Flutter pub cache Matrix4 quirk](flutter-pubcache-matrix4.md) — `flutter test` failing inside the SDK's painting lib (Matrix4/Vector4 undefined) = stale cache; run `flutter pub get` first.
 - [Body-supplied organization_id validation](body-supplied-org-id-validation.md) — pet create/update must verify caller is in organization_users before persisting org_id; backend enforces 403 on non-member.
+- [UAT live E2E & deploy triage](uat-live-e2e-triage.md) — migrations/ownership, auth bypass, **`E2E=1` required on UAT Node**, API seed-before-login, 500/401/429 symptom map; full runbook `docs/e2e/uat-live-operations-runbook.md`.
 
 ## Quick references
 

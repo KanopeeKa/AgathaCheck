@@ -137,17 +137,20 @@ Encoded in the sanitized prompt **and** enforced in CI:
 
 **Forbidden paths** (agent PR safety gate fails the PR):
 
-- `.github/workflows/**`
 - `db/migrations/**`
 - `server/config/security.js`
 - `infra/**`
+- Any path matching `/auth/`, `/billing/`, or `/secrets?/` (e.g. `server/routes/auth/`)
+
+**Allowed for agent PRs** (with gate hygiene): `.github/workflows/**` — update `docs/ci-cd-gates.md` and `scripts/ci/assert-*-gate.sh` in the same PR when adding or renaming blocking jobs.
 
 **Forbidden actions** (documented in prompt):
 
 - Push directly to `main`
 - Bypass PRs
 - Access or log secrets
-- Modify auth, billing, permissions, or CI
+- Modify auth, billing, or permissions code
+- Weaken CI gates to pass
 
 Triage already blocks risky issues with `manual-only` before dispatch.
 

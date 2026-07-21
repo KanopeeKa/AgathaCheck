@@ -13,11 +13,10 @@ export class HealthDashboardPage {
     await expect(async () => {
       await refreshFlutterAccessibility(this.page);
       const marker = this.page
-        .getByRole('button', { name: 'Add Health Event' })
-        .or(this.page.getByRole('tab', { name: 'All' }))
-        .or(this.page.getByText('All', { exact: true }))
-        .or(this.page.getByText('Medications', { exact: true }))
-        .or(this.page.getByText('Today', { exact: true }))
+        .getByRole('tab', { name: /^(All|Tous)$/i })
+        .or(this.page.getByRole('tab', { name: /^(Medications|Médicaments)$/i }))
+        .or(this.page.getByRole('button', { name: /Add Health Event/i }))
+        .or(this.page.getByText(/No entries yet|Aucun événement/i))
         .first();
       await expect(marker).toBeVisible();
     }).toPass({ timeout: 30_000 });
@@ -44,9 +43,9 @@ export class HealthDashboardPage {
     await this.expectLoaded();
   }
 
-  async expectEntryVisible(name: string): Promise<void> {
+  async expectEntryVisible(name: string, timeout = 15_000): Promise<void> {
     await semanticsByName(this.page, new RegExp(escapeRegExp(name), 'i')).waitFor({
-      timeout: 15_000,
+      timeout,
     });
   }
 

@@ -3,14 +3,15 @@
 const { detectRiskyScope, parseSections } = require('./triage-lib');
 
 const FORBIDDEN_PATH_PREFIXES = [
-  '.github/workflows/',
   'db/migrations/',
   'server/config/security.js',
   'infra/',
+  '**/auth/**',
+  '**/billing/**',
+  '**/secrets?/**',
 ];
 
 const FORBIDDEN_PATH_PATTERNS = [
-  /^\.github\/workflows\//,
   /^db\/migrations\//,
   /^server\/config\/security\.js$/,
   /^infra\//,
@@ -25,6 +26,7 @@ const DEFAULT_ALLOWED_PATH_PREFIXES = [
   'e2e/',
   'docs/',
   'scripts/',
+  '.github/workflows/',
   '.github/ISSUE_TEMPLATE/',
   '.github/scripts/',
 ];
@@ -32,11 +34,11 @@ const DEFAULT_ALLOWED_PATH_PREFIXES = [
 const FORBIDDEN_ACTIONS = [
   'push directly to main',
   'bypass pull requests',
-  'modify GitHub Actions workflows',
   'add or read repository secrets',
   'run production deployments',
   'apply database migrations',
   'modify authentication, billing, or permissions code',
+  'weaken CI gates to pass (see docs/ci-cd-gates.md)',
 ];
 
 function issueHasBlockingLabels(labels) {

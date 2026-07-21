@@ -18,7 +18,7 @@
 import { test, expect, loginAs, seedPetWithDueHealthEntry } from '../fixtures/auth.fixture';
 import { HealthDashboardPage } from '../pages/health-dashboard.page';
 import { PetListPage } from '../pages/pet-list.page';
-import { refreshFlutterAccessibility } from '../support/flutter';
+import { isLiveHostingTarget } from '../support/hosting';
 import {
   createPet,
   createHealthEntry,
@@ -41,13 +41,15 @@ test.describe('Health tracking', () => {
       entryName: 'Heartworm Prevention',
     });
 
-    await loginAs(page, testUser);
+    await loginAs(page, testUser, { experience: 'guardian' });
     const petList = new PetListPage(page);
-    await petList.openHealthDashboard();
+    await petList.expectLoaded();
+    await petList.openHealthDashboard({ experience: 'guardian' });
 
     const dashboard = new HealthDashboardPage(page);
     await dashboard.expectLoaded();
-    await dashboard.expectEntryVisible(entry.name);
+    const entryTimeout = isLiveHostingTarget(baseURL) ? 45_000 : 15_000;
+    await dashboard.expectEntryVisible(entry.name, entryTimeout);
   });
 
   test('user can mark a due health entry as done', async ({ page, testUser }) => {
@@ -302,20 +304,25 @@ test.describe('Health tracking', () => {
 
   // ── Wave C: Pet list due events ───────────────────────────────────────────
 
-  test('due events section appears on pet list when an entry is due today', async ({ page, testUser }) => {
+  test('due events section appears on pet list when an entry is due or overdue', async ({ page, testUser }) => {
     const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
+    const today = new Date().toISOString().slice(0, 10);
     const { entry } = await seedPetWithDueHealthEntry(baseURL, testUser, {
       petName: 'Bella',
       entryName: 'Flea Prevention',
+      dueDate: today,
     });
 
-    await loginAs(page, testUser);
+    const apiEntries = await getHealthEntries(baseURL, testUser.accessToken);
+    expect(apiEntries.some((row) => row.name === entry.name)).toBe(true);
+
+    await loginAs(page, testUser, { experience: 'guardian' });
     const petList = new PetListPage(page);
     await petList.expectLoaded();
-    await expect(async () => {
-      await refreshFlutterAccessibility(page);
-      await expect(page.getByText(entry.name, { exact: false }).first()).toBeVisible();
-    }).toPass({ timeout: 30_000 });
+    await petList.expectPetVisible('Bella');
+
+    await petList.refreshByRemount({ experience: 'guardian' });
+    await petList.expectDueEntryOnHome(entry.name);
   });
 
   test('pet list shows "You\'re all caught up" when no entries are due', async ({ page, testUser }) => {
