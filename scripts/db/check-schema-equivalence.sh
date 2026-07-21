@@ -4,6 +4,12 @@
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
+export APP_ENV="${APP_ENV:-development}"
+
+if [[ "${RESET_DB:-true}" == "true" ]]; then
+  node "${ROOT}/scripts/db/guard-non-prod-cli.js" check-schema-equivalence-reset
+fi
+
 export PGUSER="${PGUSER:-user}"
 export PGPASSWORD="${PGPASSWORD:-password}"
 export PGHOST="${PGHOST:-localhost}"

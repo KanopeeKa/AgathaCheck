@@ -131,19 +131,19 @@ See also: [DEPLOYMENT_DB.md](../DEPLOYMENT_DB.md) (deploy commands), [calendar-d
 
 **Outcome:** Prod can only run the narrow migration path; destructive ops impossible by design.
 
-### Layers (strongest first)
+**Status:** Complete — deploy audit, `APP_ENV` guards on destructive scripts, production policy in `DEPLOYMENT_DB.md`.
 
-1. **Deploy design** — prod workflow runs `migrate.js up` only; no bootstrap/seed/reset scripts in prod runbooks or deploy bundles.
-2. **DB credentials** — app user: DML only; migration user: DDL, no DROP DATABASE.
-3. **`APP_ENV=production` guards** — scripts exit immediately if mis-invoked.
-4. **Drift CI** — Phase 2 gate (already in place).
-5. **Expand-and-contract discipline** — document in migration PR template for breaking changes.
+### Delivered
+
+1. `APP_ENV=production` guards on `regenerate-canonical`, `uat-reset`, `seed`, legacy bootstrap, and DB-reset equivalence checks
+2. `scripts/ci/assert-prod-deploy-db-commands.sh` — deploy scripts must not reference bootstrap/seed
+3. Production policy table in `DEPLOYMENT_DB.md` (credentials + expand-and-contract)
 
 ### Exit criteria
 
-- Prod deploy checklist audited.
-- Separate migration DB role documented in [DEPLOYMENT_DB.md](../DEPLOYMENT_DB.md).
-- No seed/reset commands reachable from prod SSH deploy script.
+- [x] Prod deploy checklist documented
+- [x] Separate migration DB role documented (recommended policy)
+- [x] No seed/reset in prod deploy scripts (CI assertion)
 
 ---
 

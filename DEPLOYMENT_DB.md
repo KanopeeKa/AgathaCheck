@@ -117,6 +117,24 @@ Replit automatically provides `DATABASE_URL` pointing to the built-in PostgreSQL
 
 Set `DATABASE_URL` and `SESSION_SECRET` in your deployment platform's environment configuration. For an existing database, run `node scripts/migrate.js up` before starting the server.
 
+#### Production database policy
+
+| Allowed in production | Forbidden in production |
+|----------------------|-------------------------|
+| `node scripts/migrate.js up` | `e2e/scripts/bootstrap-db.sh` |
+| | `scripts/db/uat-reset.sh` |
+| | `scripts/db/regenerate-canonical.sh` |
+| | `node server/scripts/seed.js` |
+| | `scripts/db/bootstrap-legacy-db.sh` |
+
+Deploy workflows (`deploy-prod.yml`, UAT SSH deploy) are audited by `scripts/ci/assert-prod-deploy-db-commands.sh` to invoke **only** `migrate.js up`.
+
+Set `APP_ENV=production` on production hosts. Destructive/bootstrap scripts refuse to run when `APP_ENV` or `NODE_ENV` is `production`.
+
+**Database credentials (recommended):** application runtime user — DML only (`SELECT`, `INSERT`, `UPDATE`, `DELETE`). Migration user — DDL for `migrate.js up` only; no `DROP DATABASE`. Never use superuser credentials in the app `.env`.
+
+**Breaking schema changes:** use expand-and-contract (add → backfill → deploy code → drop in a later migration). See `docs/db-schema-bootstrap-plan.md`.
+
 > Replit-managed production deployments use the **Publish** flow (which provisions and migrates the production DB through the Replit UI) — do **not** run `fresh` against a Replit-managed prod DB.
 
 ### CI/CD Pipeline
