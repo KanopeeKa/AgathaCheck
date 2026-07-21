@@ -176,16 +176,17 @@ Verify merge commit is ancestor of `origin/<base_branch>` before next phase.
 
 ## Post-merge UAT prod-ready (babysit-plus)
 
-**Do not stop at PR merge** when the work ships to `main` and triggers UAT promotion (`promote-uat.yml` → `deploy-uat.yml`).
+**Do not stop at PR merge** when the work ships to `main` and triggers UAT promotion (`promote-uat.yml` → `deploy-uat.yml`). **Do not block main work** on the UAT poll either — delegate to a **non-blocking UAT babysit sub-agent** (babysit-plus §8).
 
 After merge (or when babysitting an already-merged fix):
 
-1. Record merge SHA; poll until **Deploy UAT / Prod ready** succeeds or CI budget is exhausted.
-2. On UAT failure: triage gate table (`scripts/ci/assert-uat-gates.sh` output) — `deploy`, HTTP `smoke`, live `@smoke`, localhost E2E (10 shards), migrations when collected.
-3. Remediate in a follow-up PR; repeat babysit-plus from §0 through this section.
-4. **Done** only when `prod-ready` is green (or escalation per §Escalation).
+1. Record merge SHA; **spawn UAT babysit sub-agent** (background Task) to poll until **Deploy UAT / Prod ready** succeeds or fails.
+2. **Main agent continues** (next execute-plan phase, next task, etc.) without waiting for prod-ready.
+3. Sub-agent on **success:** comment that `prod-ready` is green; no main-work interruption.
+4. Sub-agent on **failure:** triage gate table (`scripts/ci/assert-uat-gates.sh` output) — `deploy`, HTTP `smoke`, live `@smoke`, localhost E2E (10 shards), migrations when collected; **halt main work** (execute-plan: `uat_failed`) or pivot to remedial babysit-plus (standalone).
+5. Remediate in a follow-up PR when needed; repeat babysit-plus from §0; spawn a fresh sub-agent for the remedial merge SHA.
 
-See `docs/ci-cd-gates.md` §3 and `docs/e2e-ci-canary-plan.md` Phase 5 (runtime helpers may land later).
+See `docs/ci-cd-gates.md` §3 · babysit-plus §8b–8c · `docs/e2e-ci-canary-plan.md` Phase 5.
 
 **Infra-only blockers** (e.g. `UAT_AUTO_MIGRATE` unset with pending live migrations) → comment on PR/control issue and escalate; do not weaken gates.
 
@@ -234,6 +235,7 @@ Plan changes after approval → new snapshot + `approve-autonomous` again.
 - Drift (`status_reason: drift`)
 - CI budget exhausted
 - Issue tracking failed
+- UAT prod-ready failure (`status_reason: uat_failed`)
 
 ---
 

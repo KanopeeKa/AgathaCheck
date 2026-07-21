@@ -72,7 +72,8 @@
         "merge_failed",
         "escalation",
         "issue_create_failed",
-        "resume_mismatch"
+        "resume_mismatch",
+        "uat_failed"
       ]
     },
     "exception_file": {

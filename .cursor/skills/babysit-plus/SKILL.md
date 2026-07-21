@@ -143,21 +143,39 @@ gh pr view <url> --json state,mergedAt,mergeCommit
 
 Verify merge commit is ancestor of `origin/<base_branch>` before execute-plan advances to next phase.
 
-### 8. Post-merge UAT prod-ready (mandatory — do not stop at merge)
+### 8. Post-merge UAT prod-ready (non-blocking sub-agent)
 
-When the PR merges to `main` (or you are babysitting a merged fix), continue until **Deploy UAT / Prod ready** is green.
+When the PR merges to `main` (or you are babysitting a merged fix), **do not block main work** on the UAT deploy poll. Spawn a dedicated sub-agent to watch promotion through **Deploy UAT / Prod ready**; **halt main work only on failure**.
+
+#### 8a. Main agent (after merge verified)
 
 1. Note merge SHA (`gh pr view <url> --json mergeCommit`).
-2. Poll promotion + deploy:
+2. **Spawn UAT babysit sub-agent** (Task tool, `subagent_type: generalPurpose`, `run_in_background: true`):
+   - **Inputs:** merge SHA, PR URL/number, `plan_id` + control issue URL when in execute-plan
+   - **Prompt:** follow §8b below; on failure, report back with failure summary + failed gate/shard so main work can halt
+3. Post a short PR/control-issue comment: UAT babysit sub-agent started for `<merge-sha>`; main work continues.
+4. **Declare babysit-plus done for this PR** — main agent may advance (next execute-plan phase, next task, etc.) without waiting for prod-ready.
+5. **Do not start another UAT sub-agent** for the same merge SHA unless the prior one reported failure and you are re-spawning after a remedial fix.
+
+#### 8b. UAT babysit sub-agent (parallel — does not block main work)
+
+1. Resolve tag + deploy run for the merge SHA:
    ```bash
-   gh run list --workflow promote-uat.yml --limit 3
-   gh run list --workflow deploy-uat.yml --limit 3
+   gh run list --workflow promote-uat.yml --limit 5
+   gh run list --workflow deploy-uat.yml --limit 5
    gh run view <deploy-run-id>   # wait for Prod ready job
    ```
    Poll every **60–120s**. UAT full E2E can take **~45–60 min** (10 shards).
-3. On failure: read `prod-ready` summary + failed shard logs; open remedial PR; return to §0.
-4. Use the same CI retry budget as §5 for remedial PRs.
-5. **Declare done** only when `prod-ready` succeeds (or §Escalation).
+2. On **success:** comment on PR (+ control issue when `plan_id` set) that `prod-ready` is green; exit quietly — **do not interrupt** main work.
+3. On **failure:** read `prod-ready` summary + failed shard logs (`scripts/ci/assert-uat-gates.sh` output); comment on PR + control issue with gate table; **signal main work to halt**:
+   - **Execute-plan:** `node scripts/execute_plan_runtime.js halt <plan_id> --reason uat_failed --detail "<gate summary>" --write` + render halt comment
+   - **Standalone:** stop current work; open remedial PR; invoke babysit-plus §0 on that PR
+4. Remedial PRs use the same CI retry budget as §5; after merge, spawn a fresh §8b sub-agent for the new merge SHA.
+
+#### 8c. Main work re-engagement (failure only)
+
+- **Success:** no action required from main agent.
+- **Failure / infra blocker:** main agent halts (execute-plan) or pivots to remedial babysit-plus (standalone). Infra-only blockers (e.g. `UAT_AUTO_MIGRATE` off with pending migrations) → §9 Escalation; do not weaken gates.
 
 Gate reference: `docs/ci-cd-gates.md` §3 · `scripts/ci/assert-uat-gates.sh`.
 
