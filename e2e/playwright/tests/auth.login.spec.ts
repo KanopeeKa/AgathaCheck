@@ -8,7 +8,14 @@ import { checkA11y } from '../support/axe';
 import { expectHomeShellHidden } from '../support/flutter';
 
 test.describe('Authentication', () => {
-  test('@smoke user can log in with valid credentials and reach the pet list', async ({
+  test('@smoke-ci @smoke-uat user can log in with valid credentials and reach the pet list', async ({
+    page,
+    testUser,
+  }) => {
+    await loginAs(page, testUser);
+  });
+
+  test('@smoke-a11y @smoke-uat post-login pet list passes axe accessibility scan', async ({
     page,
     testUser,
   }) => {
