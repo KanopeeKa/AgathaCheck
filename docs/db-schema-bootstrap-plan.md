@@ -1,0 +1,181 @@
+# Database schema bootstrap — phased plan
+
+**Status:** Phase 1 in progress (validation infrastructure).  
+**Principle:** Forward-only migrations are the production authority. The canonical schema is a **CI-verified snapshot** for fast bootstraps and drift detection — not a hand-edited alternate truth.
+
+See also: [DEPLOYMENT_DB.md](../DEPLOYMENT_DB.md) (deploy commands), [calendar-dates.md](./calendar-dates.md) (wire format).
+
+---
+
+## Operating model
+
+| Artifact | Path | Role | Production? |
+|----------|------|------|-------------|
+| **Incremental migrations** | `db/migrations/NNN_*.sql` | Authoritative upgrade path | **Yes** — `migrate.js up` only |
+| **Migration manifest** | `db/schema/migration-manifest.json` | Ledger of incrementals; CI integrity | No (metadata) |
+| **Canonical snapshot** | `db/schema/canonical.sql` | Generated end-state DDL; drift check | No (bootstrap only) |
+| **Legacy baseline** | `db/migrations/v3__initial_uuid_schema.sql` | Historical fresh-install base | Retired in Phase 3 |
+| **UAT/demo seeds** | `db/seeds/` (Phase 4) | Idempotent personas | **Never** |
+
+### Data categories (Phase 4+)
+
+| Type | Examples | Where |
+|------|----------|-------|
+| **Reference data** | Rows the app assumes exist on day one | Forward migration or controlled bootstrap |
+| **Demo / UAT data** | Alice, Happy Paws Clinic, foster scenarios | `db/seeds/` only; non-prod |
+
+---
+
+## Phase 1 — Validation infrastructure (current)
+
+**Outcome:** Prove the bootstrap path produces a schema that matches the committed canonical snapshot, without changing prod/UAT deploy behaviour.
+
+### Deliverables
+
+| Item | Purpose |
+|------|---------|
+| `db/schema/migration-manifest.json` | Authoritative list of `NNN_*.sql` files |
+| `db/schema/canonical.sql` | Generated snapshot at migration 020 |
+| `scripts/db/check-migration-manifest.js` | Manifest ↔ disk integrity |
+| `scripts/db/normalize-schema-dump.js` | Stable `pg_dump` comparison |
+| `scripts/db/check-schema-equivalence.sh` | Bootstrap path → dump → diff canonical |
+| `scripts/db/regenerate-canonical.sh` | Regenerate snapshot after schema PRs |
+
+### Developer workflow (schema change PR)
+
+1. Add `db/migrations/021_feature.sql` (forward-only).
+2. Append filename to `db/schema/migration-manifest.json`.
+3. Run `scripts/db/regenerate-canonical.sh` and commit `canonical.sql`.
+4. Run `scripts/db/check-schema-equivalence.sh` locally (Postgres required).
+5. Production/UAT deploy unchanged: `node scripts/migrate.js up` only.
+
+### Exit criteria
+
+- [x] Manifest lists all incremental migrations on disk.
+- [x] Canonical snapshot regenerated from v3 + 001–020 bootstrap path.
+- [x] Equivalence check passes locally.
+- [x] Manifest check in governance pre-push (lightweight, no Postgres).
+- [x] Equivalence check in PR startup smoke (Postgres already provisioned).
+
+### Non-goals (Phase 1)
+
+- No bootstrap path switch (still `v3` + incrementals).
+- No seed layer.
+- No prod credential or deploy changes.
+
+---
+
+## Phase 2 — Blocking CI gate
+
+**Outcome:** Schema drift cannot merge to `main`.
+
+**Status:** Delivered alongside Phase 1 — `pr-startup-smoke` runs equivalence after bootstrap (already behind `ci-gate / CI passed`).
+
+### Remaining work
+
+1. ~~Add equivalence check to PR startup smoke~~ (done).
+2. Document in [ci-cd-gates.md](./ci-cd-gates.md) (optional follow-up).
+3. `pre-push-changed.sh`: schema-path changes run equivalence when Postgres is up (done).
+
+### Exit criteria
+
+- [x] PR with stale `canonical.sql` fails CI (via startup smoke).
+- [x] PR with manifest/disk mismatch fails governance.
+- [x] `ci-gate / CI passed` includes schema drift (via startup-smoke).
+
+---
+
+## Phase 3 — Fast bootstrap switch
+
+**Outcome:** New environments apply one canonical file instead of v3 + 20 replay steps.
+
+**Precondition:** Phase 2 green for several weeks; canonical proven stable.
+
+### Work
+
+1. Update `e2e/scripts/bootstrap-db.sh`:
+   - Empty DB → `db/schema/canonical.sql` only.
+   - Pre-seed `_migrations` from manifest (formal baseline ceremony).
+2. Add `scripts/db/seed-migration-ledger.js` — inserts manifest rows into `_migrations` with stable UUIDs or app-generated UUIDs.
+3. CI verifies: `canonical-only + ledger` ≡ `baseline + all migrations` (both paths still checked until v3 removed).
+4. Deprecate `v3__initial_uuid_schema.sql` (move to `archive/`).
+
+### Baselining rules
+
+- Canonical is an **approved baseline** only when equivalence CI is green.
+- Ledger pre-seed must match manifest exactly; CI fails on divergence.
+- **Never** mark migrations applied in prod — prod always runs `migrate.js up`.
+
+### Exit criteria
+
+- Cloud agent / E2E boot time reduced (single SQL file + ledger).
+- v3 archived; docs updated.
+
+---
+
+## Phase 4 — UAT/demo seed layer
+
+**Outcome:** Human testers get stable personas without API signup friction.
+
+### Work
+
+1. `db/seeds/uat-demo.sql` or `server/scripts/seed.js` — fixed UUIDs, known passwords (documented in internal runbook only).
+2. Scenarios: `guardian`, `org-clinic`, `foster`, `sharing` (extract from `e2e/playwright/support/api.ts` personas).
+3. Idempotent upserts (`ON CONFLICT DO NOTHING` / merge).
+4. `APP_ENV` guard: refuse seed when `production`.
+
+### Exit criteria
+
+- `make uat-reset` or documented one-command UAT refresh (non-prod only).
+- E2E can optionally use SQL seed for stable live-UAT smoke.
+
+---
+
+## Phase 5 — Production hardening
+
+**Outcome:** Prod can only run the narrow migration path; destructive ops impossible by design.
+
+### Layers (strongest first)
+
+1. **Deploy design** — prod workflow runs `migrate.js up` only; no bootstrap/seed/reset scripts in prod runbooks or deploy bundles.
+2. **DB credentials** — app user: DML only; migration user: DDL, no DROP DATABASE.
+3. **`APP_ENV=production` guards** — scripts exit immediately if mis-invoked.
+4. **Drift CI** — Phase 2 gate (already in place).
+5. **Expand-and-contract discipline** — document in migration PR template for breaking changes.
+
+### Exit criteria
+
+- Prod deploy checklist audited.
+- Separate migration DB role documented in [DEPLOYMENT_DB.md](../DEPLOYMENT_DB.md).
+- No seed/reset commands reachable from prod SSH deploy script.
+
+---
+
+## Command reference
+
+| Command | Postgres? | When |
+|---------|-----------|------|
+| `node scripts/db/check-migration-manifest.js` | No | Every schema PR; governance |
+| `scripts/db/check-schema-equivalence.sh` | Yes | After schema changes; CI Phase 2 |
+| `scripts/db/regenerate-canonical.sh` | Yes | After new migration committed |
+| `node scripts/migrate.js up` | Yes | **Prod/UAT deploy only** |
+| `e2e/scripts/bootstrap-db.sh` | Yes | Dev/E2E (Phase 3: canonical-only) |
+
+---
+
+## Migration authoring rules (all phases)
+
+1. **Forward-only** — no `down` in prod path; add a new migration to revert.
+2. **No `gen_random_uuid()` in SQL** — generate UUIDs in Node (see `016` pattern).
+3. **Reference vs demo** — prod-required rows in migrations; personas in seeds only.
+4. **Expand-and-contract** for breaking changes: add → backfill → deploy code → drop (later migration).
+
+---
+
+## Related debt
+
+| Item | Tracking |
+|------|----------|
+| v3 drift (inlines 001–007 only) | Resolved by canonical snapshot; v3 retired Phase 3 |
+| Hand-merge policy in DEPLOYMENT_DB.md | Superseded by regenerate script |
+| E2E API-only seeds | Phase 4 — promote stable personas to SQL |

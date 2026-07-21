@@ -1,0 +1,10 @@
+-- Agatha Track — canonical schema snapshot (generated; do not edit by hand).
+--
+-- Source of truth for production: forward-only db/migrations/NNN_*.sql via migrate.js up.
+-- This file is produced by scripts/db/regenerate-canonical.sh and verified by
+-- scripts/db/check-schema-equivalence.sh (bootstrap path must match committed snapshot).
+--
+-- Regenerate after schema changes:
+--   scripts/db/regenerate-canonical.sh
+--
+-- See docs/db-schema-bootstrap-plan.md for the phased bootstrap model.

@@ -79,10 +79,20 @@ Lists every migration file with `[applied]` or `[PENDING]`.
 
 Migration files live in `db/migrations/`:
 
-- `v3__initial_uuid_schema.sql` — canonical full schema reference for new databases
-- `NNN_short_name.sql` — incremental migrations applied by `up`
+- `NNN_short_name.sql` — incremental migrations applied by `up` (**production authority**)
+- `v3__initial_uuid_schema.sql` — legacy baseline for fresh installs (retired in Phase 3; see below)
+- `db/schema/canonical.sql` — **generated** end-state snapshot; verified by `scripts/db/check-schema-equivalence.sh`
 
-To add a new migration, create the next numbered file (e.g. `008_add_feature.sql`) **and** also add the same change inline to `v3__initial_uuid_schema.sql` so future fresh installs include it. The runner does not support `down`; use a new forward migration to revert schema changes.
+**Phased bootstrap model:** [docs/db-schema-bootstrap-plan.md](docs/db-schema-bootstrap-plan.md)
+
+To add a new migration:
+
+1. Create the next numbered file (e.g. `021_add_feature.sql`).
+2. Append the filename to `db/schema/migration-manifest.json`.
+3. Run `scripts/db/regenerate-canonical.sh` and commit `db/schema/canonical.sql`.
+4. Run `scripts/db/check-schema-equivalence.sh` (requires local Postgres).
+
+Do **not** hand-edit `canonical.sql`. The runner does not support `down`; use a new forward migration to revert schema changes.
 
 ## 4. Start the Server
 
