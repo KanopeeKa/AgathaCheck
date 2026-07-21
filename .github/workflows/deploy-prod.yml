@@ -245,22 +245,129 @@ jobs:
             **/babel.config.cjs
             **/.htaccess
 
-      - name: Install dependencies & restart Node.js app
-        uses: appleboy/ssh-action@v1.0.3
+      - name: Detect package.json changes (for conditional npm install)
+        id: pkg_changed
+        run: |
+          git fetch --depth=1 origin main 2>/dev/null || true
+          if git diff --name-only origin/main...HEAD 2>/dev/null | grep -q '^server/package'; then
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+            echo "::warning title=Dependencies changed::server/package.json or package-lock.json changed — manual cPanel Run NPM Install required after deploy."
+          else
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      # ── o2switch SSH whitelist (PROD_SSH_PORT, default 22) ───────────────────
+      # GitHub runner IPs are blocked until whitelisted via cPanel SshWhitelist API.
+      # Requires PROD_CPANEL_API_TOKEN in the PROD environment (same host/user as SSH).
+      - name: Verify PROD SSH + cPanel API secrets
+        id: prod_ssh_config
+        env:
+          CPANEL_SERVER: ${{ secrets.PROD_SSH_HOST }}
+          CPANEL_USER: ${{ secrets.PROD_SSH_USER }}
+          CPANEL_TOKEN: ${{ secrets.PROD_CPANEL_API_TOKEN }}
+          SSH_KEY: ${{ secrets.PROD_SSH_PRIVATE_KEY }}
+        run: |
+          missing=()
+          [ -z "$CPANEL_SERVER" ] && missing+=('PROD_SSH_HOST')
+          [ -z "$CPANEL_USER" ] && missing+=('PROD_SSH_USER')
+          [ -z "$CPANEL_TOKEN" ] && missing+=('PROD_CPANEL_API_TOKEN')
+          [ -z "$SSH_KEY" ] && missing+=('PROD_SSH_PRIVATE_KEY')
+          if [ ${#missing[@]} -gt 0 ]; then
+            echo "configured=false" >> "$GITHUB_OUTPUT"
+            echo "::error::Missing PROD environment secrets: ${missing[*]}"
+            echo "::error::Add PROD_CPANEL_API_TOKEN: cPanel → Security → Manage API Tokens → Create"
+            exit 1
+          fi
+          echo "configured=true" >> "$GITHUB_OUTPUT"
+          pubkey="$(echo "$SSH_KEY" | ssh-keygen -y -f /dev/stdin 2>/dev/null || true)"
+          if [ -n "$pubkey" ]; then
+            echo "::notice::SSH public key (cPanel → SSH Access → Manage Keys): ${pubkey}"
+          fi
+
+      - name: Get runner public IP for o2switch SSH whitelist
+        id: runner_ip
+        if: steps.prod_ssh_config.outputs.configured == 'true'
+        run: bash scripts/ci/get-runner-public-ipv4.sh
+
+      - name: o2switch SSH whitelist — clear CI slots
+        id: whitelist_clear
+        if: steps.prod_ssh_config.outputs.configured == 'true'
+        env:
+          CPANEL_SERVER: ${{ secrets.PROD_SSH_HOST }}
+          CPANEL_USER: ${{ secrets.PROD_SSH_USER }}
+          CPANEL_TOKEN: ${{ secrets.PROD_CPANEL_API_TOKEN }}
+        run: bash scripts/o2switch-ssh-whitelist.sh remove_all
+
+      - name: o2switch SSH whitelist — allow GitHub runner
+        id: whitelist_add
+        if: >-
+          steps.prod_ssh_config.outputs.configured == 'true' &&
+          steps.whitelist_clear.outcome == 'success'
+        env:
+          CPANEL_SERVER: ${{ secrets.PROD_SSH_HOST }}
+          CPANEL_USER: ${{ secrets.PROD_SSH_USER }}
+          CPANEL_TOKEN: ${{ secrets.PROD_CPANEL_API_TOKEN }}
+          SSH_PORT: ${{ secrets.PROD_SSH_PORT || 22 }}
+          RUNNER_IP: ${{ steps.runner_ip.outputs.ipv4 }}
+        run: bash scripts/o2switch-ssh-whitelist.sh add
+
+      - name: o2switch SSH whitelist — verify runner IP
+        id: whitelist_verify
+        if: >-
+          steps.prod_ssh_config.outputs.configured == 'true' &&
+          steps.whitelist_add.outcome == 'success'
+        env:
+          CPANEL_SERVER: ${{ secrets.PROD_SSH_HOST }}
+          CPANEL_USER: ${{ secrets.PROD_SSH_USER }}
+          CPANEL_TOKEN: ${{ secrets.PROD_CPANEL_API_TOKEN }}
+        run: |
+          bash scripts/o2switch-ssh-whitelist.sh list | grep -q "${{ steps.runner_ip.outputs.ipv4 }}"
+
+      - name: Wait for o2switch firewall to apply
+        if: >-
+          steps.prod_ssh_config.outputs.configured == 'true' &&
+          steps.whitelist_verify.outcome == 'success'
+        run: sleep 30
+
+      - name: Prepare PROD SSH remote bundle
+        if: >-
+          steps.prod_ssh_config.outputs.configured == 'true' &&
+          steps.whitelist_verify.outcome == 'success'
+        run: bash scripts/ci/prepare-prod-ssh-remote.sh
+
+      # script_path requires appleboy/ssh-action >= v1.2.0 — pin full SHA (v1.0.x silently no-ops).
+      - name: PROD backend deploy via SSH
+        id: prod_ssh
+        if: >-
+          steps.prod_ssh_config.outputs.configured == 'true' &&
+          steps.whitelist_verify.outcome == 'success'
+        uses: appleboy/ssh-action@2ead5e36573f08b82fbfce1504f1a4b05a647c6f # v1.2.2
+        env:
+          PKG_CHANGED: ${{ steps.pkg_changed.outputs.changed }}
         with:
           host: ${{ secrets.PROD_SSH_HOST }}
           username: ${{ secrets.PROD_SSH_USER }}
           key: ${{ secrets.PROD_SSH_PRIVATE_KEY }}
           passphrase: ${{ secrets.PROD_SSH_PASSPHRASE }}
           port: ${{ secrets.PROD_SSH_PORT || 22 }}
-          timeout: 60s
-          script: |
-            set -e
-            cd ~/public_html/Prod/backend
-            npm ci --omit=dev
-            node scripts/migrate.js up
-            mkdir -p tmp
-            touch tmp/restart.txt
+          timeout: 180s
+          command_timeout: 10m
+          script_path: .ci-prod-ssh-remote.sh
+          envs: PKG_CHANGED
+
+      - name: o2switch SSH whitelist — cleanup runner IP
+        if: >-
+          always() &&
+          steps.prod_ssh_config.outputs.configured == 'true' &&
+          steps.runner_ip.outcome == 'success'
+        continue-on-error: true
+        env:
+          CPANEL_SERVER: ${{ secrets.PROD_SSH_HOST }}
+          CPANEL_USER: ${{ secrets.PROD_SSH_USER }}
+          CPANEL_TOKEN: ${{ secrets.PROD_CPANEL_API_TOKEN }}
+          SSH_PORT: ${{ secrets.PROD_SSH_PORT || 22 }}
+          RUNNER_IP: ${{ steps.runner_ip.outputs.ipv4 }}
+        run: bash scripts/o2switch-ssh-whitelist.sh remove
 
       - name: Write deploy job summary
         if: always()

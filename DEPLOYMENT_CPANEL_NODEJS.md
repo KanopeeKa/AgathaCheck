@@ -134,6 +134,29 @@ When `UAT_SSH_ENABLED=true`, the deploy workflow:
 
 **Do not** run `npm ci` over SSH on o2switch — it creates a real `backend/node_modules` folder and breaks CloudLinux's symlink. When `package.json` / `package-lock.json` change, use cPanel **Exécuter NPM Install** after deploy.
 
+**PROD environment secrets required for SSH (o2switch firewall whitelist):**
+
+| Secret | Where to get it |
+|--------|-----------------|
+| `PROD_CPANEL_API_TOKEN` | cPanel → **Security → Manage API Tokens** → Create (copy once) |
+| `PROD_SSH_HOST` | Server hostname (e.g. `grenouille.o2switch.net`) |
+| `PROD_SSH_USER` | cPanel username (e.g. `bixo5840`) |
+| `PROD_SSH_PRIVATE_KEY` | Deploy SSH private key |
+| `PROD_SSH_PASSPHRASE` | Optional (only if key has passphrase) |
+| `PROD_SSH_PORT` | Optional (default `22`) |
+
+Add these under **GitHub → Settings → Environments → PROD → Environment secrets**.
+
+When `deploy-prod.yml` runs with `PROD_DEPLOY_ENABLED=true`, the workflow:
+
+1. Whitelists the GitHub runner IP via o2switch **SshWhitelist** API ([docs](https://faq.o2switch.fr/cpanel/outils/exception-parefeu/))
+2. Runs `node scripts/migrate.js up` and `touch tmp/restart.txt` over SSH (no `npm ci` on CloudLinux)
+3. Removes the runner IP from the whitelist when the job finishes
+
+**Do not** run `npm ci` over SSH on o2switch — use cPanel **Run NPM Install** when `package.json` changes.
+
+**Note:** `remove_all` at deploy start clears existing SSH whitelist entries in the cPanel tool (max 5 slots). Re-add your home IP manually in **Exception pare-feu** if you rely on it outside CI.
+
 **UAT environment secrets required for SSH:**
 
 | Secret | Where to get it |
