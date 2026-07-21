@@ -1,6 +1,6 @@
 # Agatha Track
 
-A modular Flutter web application for comprehensive pet management, built with clean architecture principles and feature-driven design. Backed by a Postgres database and an interchangeable Dart **or** Node.js API server.
+A modular Flutter web application for comprehensive pet management, built with clean architecture principles and feature-driven design. Backed by a Postgres database and a Node.js API server.
 
 > The historical project name was **PetProfileApp**; the product is now **Agatha Track**. Some legacy paths and class names still use the old name.
 
@@ -142,8 +142,7 @@ Tests span domain, data, provider/controller, and widget layers, with integratio
 | Localization       | intl (EN / FR)                           |
 | Testing            | flutter_test, mockito                    |
 | Design System      | Material 3 (deep purple / violet theme)  |
-| Backend (Dart)     | shelf, postgres, dart_jsonwebtoken       |
-| Backend (Node.js)  | express, pg, jsonwebtoken, bcrypt        |
+| Backend            | Node.js, express, pg, jsonwebtoken, bcrypt |
 | Database           | PostgreSQL 14+                           |
 
 ## Getting Started
@@ -190,13 +189,11 @@ npm ci
 #   JWT_SECRET  — required in production; a dev fallback is used otherwise
 # Apply the schema, then start the API (serves the Flutter web build + API on
 # the same origin at http://localhost:3000):
-node scripts/migrate.js up      # or: dart run bin/migrate.dart up
+node scripts/migrate.js up
 node bin/start.js               # note: `npm start` only exports the app; use bin/start.js
 ```
 
-The backend ships as two interchangeable implementations sharing one Postgres
-schema — Node.js/Express (canonical, Jest-tested) and Dart/Shelf. Run **one** of
-them. Backend tests: `npx jest --env=node --forceExit`.
+Backend tests: `npx jest --env=node --forceExit`.
 
 
 ## Legacy Structure
@@ -228,23 +225,19 @@ lib/
 - Observability: tiered audit logging, structured API logs, consent-gated PostHog analytics (see `docs/observability.md`)
 - Material 3 design with deep purple / violet theme
 - Clean architecture with clear layer separation
-- Comprehensive test coverage (Flutter widget/model tests, 380+ backend Jest tests, Dart parity backend)
+- Comprehensive test coverage (Flutter widget/model tests, 380+ backend Jest tests)
 
 ## Backend & Database
 
-The backend lives in `server/`. Two interchangeable implementations share the same Postgres schema:
+The backend lives in `server/`. Node.js / Express serves the API and the Flutter web build.
 
-- `server/bin/server.dart` — Dart / Shelf (used by the Replit workflow)
-- `server/bin/server.js` — Node.js / Express (used by the cPanel deployment)
-
-Database schema is managed by `server/bin/migrate.dart`:
+Database schema is managed by `server/scripts/migrate.js`:
 
 ```bash
 cd server
-dart run bin/migrate.dart status                                # show applied / pending
-dart run bin/migrate.dart up                                    # apply pending NNN_*.sql migrations
-dart run bin/migrate.dart down                                  # roll back the most recent migration
-MIGRATE_CONFIRM=DROP_ALL dart run bin/migrate.dart fresh        # wipe + recreate from canonical v3 schema
+node scripts/migrate.js status          # show applied / pending
+node scripts/migrate.js up              # apply pending NNN_*.sql migrations
+node scripts/migrate.js down            # roll back the most recent migration
 ```
 
 See `DEPLOYMENT_DB.md` for the full database deployment guide and `DEPLOYMENT_CPANEL_NODEJS.md` for cPanel-specific instructions.

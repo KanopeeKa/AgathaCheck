@@ -44,14 +44,14 @@ cd server && npm ci && npm audit --audit-level=high && npx jest --env=node --for
 cd flutter_app && flutter pub get && dart run build_runner build --delete-conflicting-outputs
 cd flutter_app && flutter analyze --no-fatal-warnings --no-fatal-infos
 cd flutter_app && flutter test --concurrency=1 --exclude-tags=integration
-dart format flutter_app/lib flutter_app/test server/lib
+dart format flutter_app/lib flutter_app/test
 node scripts/check_file_size.js && node e2e/scripts/check_bdd_coverage.js
 ```
 
 ## Agent workflow
 
 - Domain map: `docs/architecture/index.md`
-- Skills: `.cursor/skills/` (split screens, BDD, dual-backend, spawn agents, security audit, pre-push)
+- Skills: `.cursor/skills/` (split screens, BDD, spawn agents, security audit, pre-push)
 - Parallel sprints: `docs/agent-efficiency/prompt-templates.md`
 - Babysit merge-ready PRs: `/babysit` command (lightweight)
 - Atomic PRs (one outcome, snag ladder): `docs/agent-efficiency/atomic-pr-policy.md`
@@ -69,7 +69,7 @@ Use the PR template checklist. In summary:
 
 | Change type | Requirement |
 |---|---|
-| Node route | Jest tests + Dart parity when HTTP behaviour changes |
+| Node route | Jest tests |
 | Flutter widget | Widget test in mirrored `test/features/` path |
 | User journey | Gherkin scenario + Playwright spec with `@bdd` comment |
 | Security fix | No raw errors in 5xx; audit clean for high+ |
@@ -82,10 +82,9 @@ Use the PR template checklist. In summary:
 - Flutter analyze, format, and parallel domain test shards (`pet`, `health`, `org`, `rest`) + merged domain coverage
 - Flutter integration test (blocking)
 - Node Jest tests
-- `dart analyze lib` on `server/`
 - `npm audit --audit-level=high` (server + e2e)
 - CodeQL (JavaScript)
-- `dart format --set-exit-if-changed` (blocks merge)
+- `dart format --set-exit-if-changed` (Flutter code only, blocks merge)
 - Flutter domain line coverage ≥ 65% (`check_domain_coverage.js`)
 - BDD scenario mapping ≥ 105 mapped scenarios (`e2e/scripts/check_bdd_coverage.js`; live total via `--report-only`)
 - Hand-written file size ≤ 500 lines (`scripts/check_file_size.js`; grandfather ratchet for legacy monoliths)

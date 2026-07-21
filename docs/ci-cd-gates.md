@@ -215,7 +215,7 @@ display strings exactly.
 | `flutter-coverage / Flutter domain coverage` | `_reusable-flutter-coverage.yml` | merge shard lcov, domain coverage ≥ 65% |
 | `flutter-integration / Flutter integration` | `_reusable-flutter-integration.yml` | pet profile integration tests |
 | `flutter-build-web / Build Flutter web` | `_reusable-build-web.yml` | web release build + `web-build-<sha>` artifact |
-| `test-suite / Backend (Node.js Jest + Dart analyze)` | `_reusable-test.yml` | Jest, npm audit high+, `dart analyze lib` |
+| `test-suite / Backend (Node.js Jest)` | `_reusable-test.yml` | Jest, npm audit high+ |
 | `test-suite / E2E package audit` | `_reusable-test.yml` | e2e `npm audit` high+ |
 | `Analyze JavaScript` | `codeql.yml` | CodeQL static analysis |
 

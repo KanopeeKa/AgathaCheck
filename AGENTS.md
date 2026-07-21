@@ -2,13 +2,13 @@
 
 ## Cursor Cloud specific instructions
 
-This repo is **Agatha Track**: Flutter web (`flutter_app/`) + Node/Dart API (`server/`) + PostgreSQL.
+This repo is **Agatha Track**: Flutter web (`flutter_app/`) + Node.js API (`server/`) + PostgreSQL.
 
 **Agent quick-start:** `docs/architecture/index.md` · Skills in `.cursor/skills/` · Plan in `docs/agent-efficiency-plan.md`
 
 ### Toolchain
 
-- Flutter 3.32.0 / Dart 3.8.0 at `/opt/flutter/bin` (on `PATH` via `~/.bashrc`)
+- Flutter 3.32.0 at `/opt/flutter/bin` (on `PATH` via `~/.bashrc`)
 - Node 22, `psql` (PostgreSQL 16)
 
 ### PostgreSQL (start each session)
@@ -19,7 +19,7 @@ sudo pg_ctlcluster 16 main start
 
 Dev DB defaults (no `.env` needed): `agatha_db`, user `user` / password `password`, `localhost:5432`.
 
-**Migrations:** `cd server && node scripts/migrate.js up`. Do not use `dart run bin/migrate.dart fresh` (broken with pinned postgres driver). Do not use `gen_random_uuid()` in SQL — generate UUIDs in code.
+**Migrations:** `cd server && node scripts/migrate.js up`. Do not use `gen_random_uuid()` in SQL — generate UUIDs in code.
 
 ### Running the backend (single-origin E2E)
 
@@ -59,7 +59,8 @@ User-facing dates are calendar days (`YYYY-MM-DD` on the wire). See `docs/calend
 ### Policies (details in `.cursor/rules/` + Skills)
 
 - **Atomic PRs:** one verifiable outcome per PR; cross-domain OK when serving that outcome. Snag ladder + zero untracked debt → `docs/agent-efficiency/atomic-pr-policy.md`
-- Modularity ≤500 lines · dual-backend parity · BDD 105/165 gate
+- Modularity ≤500 lines · BDD 105/165 gate
 - Single-agent PRs → `main`; multi-agent → integration branch (`/spawn-sprint-agents`)
 - Memories: `.agents/memory/MEMORY.md`
 - Sprint log: `docs/refactoring-log.md`
+- Single-backend (Node.js only): no Dart port in `server/`

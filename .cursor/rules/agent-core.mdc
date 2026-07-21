@@ -26,7 +26,7 @@ Do not duplicate these commands in chat — run the script. Skill: `/pre-push-ve
 | Skill | Use for |
 |-------|---------|
 | `/split-flutter-screen` | Screen/widget extraction |
-| `/dual-backend-route-change` | Node + Dart API changes |
+| `/single-backend-route-change` | Node API changes |
 | `/add-bdd-playwright-scenario` | Gherkin → Playwright |
 | `/spawn-sprint-agents` | Parallel sprint coordination |
 | `/security-error-audit` | 5xx error redaction |
@@ -38,7 +38,7 @@ Do not duplicate these commands in chat — run the script. Skill: `/pre-push-ve
 
 - Hand-written files ≤ **500 lines** (`node scripts/check_file_size.js`)
 - BDD gate **105/165** scenarios mapped (`node e2e/scripts/check_bdd_coverage.js`)
-- Node canonical; Dart mirrors HTTP when routes change
+- Node.js is the canonical backend
 - Never raw exception text in prod 5xx bodies
 - Calendar dates as `YYYY-MM-DD` on the wire
 
@@ -61,4 +61,4 @@ Full cloud caveats: `AGENTS.md`.
 
 ## Path-scoped rules (auto-apply when editing matching files)
 
-`modularity.mdc`, `testing.mdc`, `security.mdc`, `dual-backend.mdc`, `accessibility.mdc`, `agent-coordination.mdc`
+`modularity.mdc`, `testing.mdc`, `security.mdc`, `single-backend.mdc`, `accessibility.mdc`, `agent-coordination.mdc`

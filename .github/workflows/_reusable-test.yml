@@ -48,7 +48,7 @@ jobs:
             "duration_sec=${dur}"
 
   backend:
-    name: Backend (Node.js Jest + Dart analyze)
+    name: Backend (Node.js Jest)
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
@@ -82,15 +82,6 @@ jobs:
           name: jest-coverage
           path: server/coverage/
           if-no-files-found: warn
-
-      - name: Set up Dart
-        uses: dart-lang/setup-dart@v1
-        with:
-          sdk: '3.8.0'
-
-      - name: Dart analyze (server lib)
-        working-directory: server
-        run: dart pub get && dart analyze lib
 
       - name: Write backend job summary
         if: always()

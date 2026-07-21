@@ -1,6 +1,6 @@
 # Data Processing Addendum
 
-**Effective date:** 5 July 2026
+**Effective date:** 21 July 2026
 
 This Data Processing Addendum (“DPA”) forms part of the Agreement between you (“Customer” or “Controller”) and **SAS McCauley Conseils**, trading as **Agatha Track** (“Processor”), governing the processing of personal data under the Agreement. In the event of any conflict between this DPA and the Agreement, this DPA shall prevail with respect to data protection matters.
 

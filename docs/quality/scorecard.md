@@ -31,8 +31,6 @@ Living metrics for Agatha Track quality. Update when CI or test counts change ma
 | Check | Blocks `main`? |
 |---|---|
 | `flutter analyze` | Yes |
-| `dart analyze lib` (server) | Yes |
-| `dart format --set-exit-if-changed` | Yes |
 | BDD scenarios mapped ≥ 105/165 | Yes |
 | Hand-written file size ≤ 500 lines | Yes (grandfather ratchet) |
 
@@ -53,7 +51,6 @@ CI blocks **new** files above 500 lines. **`scripts/file-size-allowlist.json` is
 | File | Lines | Sprint |
 |---|---:|---|
 | `organization_providers.dart` | 6 (barrel) | 5.4b — Done |
-| `server/lib/routes.dart` | 41 (composer) | 5.4b — Done |
 | `landing_screen.dart` | 219 | 5.4b — Done |
 | `other_event_form_screen.dart` | 301 | 5.4b — Done |
 | `health_entry_card.dart` | 190 | 5.4b — Done |
@@ -61,7 +58,6 @@ CI blocks **new** files above 500 lines. **`scripts/file-size-allowlist.json` is
 | `pet_foster_placement_section.dart` | 178 | 5.4 — Done |
 | `placementsRouter.js` | 1 (re-export) | 5.4 — Done |
 | `pet_form_screen.dart` | 464 | Sprint 2 — Done |
-| `server/lib/auth_routes.dart` | 14 | Sprint 3 — Done |
 | `server/routes/healthEntries.js` | 1 (re-export) | Sprint 4 — Done |
 
 See `docs/quality/review-2026-07-08.md` and `docs/refactoring-log.md`.

@@ -1,7 +1,7 @@
 # Modularity & refactoring rules
 
 Conventions for Agatha Track to keep files small, testable, and aligned across
-Flutter, Node.js, and Dart backends.
+Flutter and Node.js.
 
 ---
 
@@ -10,7 +10,7 @@ Flutter, Node.js, and Dart backends.
 1. **Prefer many small files over few large ones.** When unsure, split.
 2. **Tests and docs lead refactors** — extract or add tests before moving production code.
 3. **Preserve business logic** — behaviour-preserving moves only; no drive-by feature changes.
-4. **Domain by domain** — finish one bounded context (routes + tests + Dart parity + Flutter UI) before starting the next.
+4. **Domain by domain** — finish one bounded context (routes + tests + Flutter UI) before starting the next.
 5. **Committed code must run** — `flutter analyze`, `flutter test`, and `npx jest` green before push.
 
 ---

@@ -8,8 +8,8 @@ globs: server/**,server/lib/**
 ## Error responses (5xx)
 
 - **Never** return raw `err.message`, `e.toString()`, or `'$e'` in production 5xx bodies.
-- Use `publicError()` / `errorDetails()` from `server/config/security.js` and `server/lib/http_security.dart`.
-- Before claiming redaction is complete, grep **all** of: `err.message`, `e.toString()`, `$e`, `details` inside JSON error bodies on **both** Node and Dart backends.
+- Use `publicError()` / `errorDetails()` from `server/config/security.js`.
+- Before claiming redaction is complete, grep **all** of: `err.message`, `e.toString()`, `$e`, `details` inside JSON error bodies on the Node backend.
 
 ## Dependencies
 

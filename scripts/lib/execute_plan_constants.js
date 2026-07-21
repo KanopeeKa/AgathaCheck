@@ -11,7 +11,6 @@ class ExecutePlanError extends Error {
 const ALLOWED_EXCEPTIONS = new Set([
   'tests',
   'docs',
-  'dual-backend-mirror',
   'file-split',
   'governance-allowlist',
   'spawn-integration',

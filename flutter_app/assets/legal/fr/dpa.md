@@ -1,6 +1,6 @@
 # Avenant de traitement des données (DPA)
 
-**Date d’entrée en vigueur :** 5 juillet 2026
+**Date d’entrée en vigueur :** 21 juillet 2026
 
 Le présent avenant de traitement des données (« DPA ») fait partie intégrante du contrat entre vous (« Client » ou « Responsable du traitement ») et **SAS McCauley Conseils**, exploitant la marque **Agatha Track** (« Sous-traitant »), régissant le traitement des données à caractère personnel dans le cadre du contrat. En cas de contradiction entre le présent DPA et le contrat, le présent DPA prévaut en matière de protection des données.
 

@@ -24,7 +24,6 @@ const ALLOWLIST_PATH = path.join(__dirname, 'file-size-allowlist.json');
 const SCAN_ROOTS = [
   'flutter_app/lib',
   'server/routes',
-  'server/lib',
 ];
 
 const EXCLUDE_DIR_NAMES = new Set(['l10n']);

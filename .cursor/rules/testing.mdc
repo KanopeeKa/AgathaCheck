@@ -14,7 +14,6 @@ Run `./scripts/pre-push-changed.sh` during iteration or `./scripts/pre-push.sh` 
 | Layer | Tool | Rule |
 |---|---|---|
 | Node routes | Jest + supertest | Every route module gets a test file |
-| Dart routes | `dart analyze lib` | Same PR as Node when HTTP behaviour changes |
 | Flutter domain/data | `flutter test` | Models, repos, datasources |
 | Flutter UI | Widget tests | Extracted widgets + critical screens |
 | Integration | `flutter test` integration dir | **Blocking in CI** — no `continue-on-error` |

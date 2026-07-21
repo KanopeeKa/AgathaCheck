@@ -1,6 +1,6 @@
 # Privacy Notice
 
-**Last updated:** 5 July 2026
+**Last updated:** 21 July 2026
 
 This Privacy Notice explains how **SAS McCauley Conseils**, trading as **Agatha Track**, collects, uses, stores, and shares personal data when you use [agathatrack.com](https://agathatrack.com) and the Agatha Track services. This notice applies to:
 - personal users who use Agatha Track only for their own pets;

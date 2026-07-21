@@ -20,6 +20,6 @@ The Flutter `HealthEntry` entity tracks:
 
 **Undo:** reverts the latest history row and restores `next_due_date` / clears `completed_on` on the entry.
 
-Keep Node (`server/routes/healthEntries.js`) and Dart (`server/lib/health_routes.dart`) handlers in lockstep via `server/lib/recurrenceHelper.js`.
+Handler logic is in `server/routes/healthEntries.js`; shared recurrence helpers live in `server/lib/recurrenceHelper.js`.
 
 **Org family events:** `from_date` = due, `to_date` = completed on; `family_event_history` stores the three-date audit trail.
