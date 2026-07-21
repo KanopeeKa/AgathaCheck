@@ -15,6 +15,8 @@ const {
   renderControlIssueTitle,
   renderRuntimeBlock,
   setAutonomyHalted,
+  setPhasePaused,
+  resumeFromUatPause,
   setPhaseStatus,
   validateSnapshot,
   loadSnapshotFromPath,
@@ -126,6 +128,28 @@ test('setPhaseStatus clears status_reason for in_progress', () => {
   setPhaseStatus(snapshot, '1', 'in_progress');
   assert.equal(snapshot.phases[0].status, 'in_progress');
   assert.equal(snapshot.phases[0].status_reason, null);
+});
+
+test('setPhasePaused keeps autonomy active and halts in_progress phase', () => {
+  const snapshot = loadSnapshotFromPath(exampleSnapshot);
+  snapshot.autonomy = 'active';
+  snapshot.phases[0].status = 'in_progress';
+  setPhasePaused(snapshot, { reason: 'uat_paused', detail: 'smoke failed' });
+  assert.equal(snapshot.autonomy, 'active');
+  assert.equal(snapshot.phases[0].status, 'halted');
+  assert.equal(snapshot.phases[0].status_reason, 'uat_paused');
+  assert.equal(snapshot.phases[0].status_detail, 'smoke failed');
+});
+
+test('resumeFromUatPause restores in_progress without human resume', () => {
+  const snapshot = loadSnapshotFromPath(exampleSnapshot);
+  snapshot.autonomy = 'active';
+  snapshot.phases[0].status = 'halted';
+  snapshot.phases[0].status_reason = 'uat_paused';
+  const { phase } = resumeFromUatPause(snapshot);
+  assert.equal(phase.status, 'in_progress');
+  assert.equal(phase.status_reason, null);
+  assert.equal(snapshot.autonomy, 'active');
 });
 
 test('computeNextAction suggests start for pending plan', () => {

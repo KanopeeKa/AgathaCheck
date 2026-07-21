@@ -138,18 +138,17 @@ flowchart TD
 
 ---
 
-## Phase 5 — Post-merge babysit (`babysit-deploy`)
+## Phase 5 — Post-merge babysit (babysit-plus §8 sub-agent)
 
 **Deliverables** (see prior analysis; separate PR series)
 
 | Item | Detail |
 |------|--------|
-| Runtime | `scripts/uat_deploy_runtime.js` — resolve merge SHA → tag → deploy run → gate table |
-| Skill | `.cursor/skills/babysit-deploy/SKILL.md` — watch promote + deploy-uat through prod-ready |
-| Babysit+ §8–10 | After auto-merge: poll until prod-ready or remediate |
+| Runtime | `scripts/uat_deploy_runtime.js` — resolve merge SHA → tag → deploy run → gate table (optional helper for §8b) |
+| Skill | `.cursor/skills/babysit-plus/SKILL.md` §8 — spawn **non-blocking** UAT babysit sub-agent after merge |
 | Failure dispatch | `agent-uat-fix` label → agent-dispatch on UAT failure |
 
-**Exit:** Cloud agent does not stop at merge; reaches **In UAT** / prod-ready autonomously.
+**Exit:** Main work does not wait on the UAT poll; sub-agent reports success quietly, or **pauses** main work on failure and **auto-resumes** when remedial prod-ready is green.
 
 **Risk:** High — 48h autonomy window, infra vs code classification.
 
@@ -181,7 +180,7 @@ Track in [ci-cd-gates.md](./ci-cd-gates.md) § follow-up when scheduled.
 | D | 2 | Flip canary to blocking |
 | E | 3 | UAT live smoke retries 0 + test hardening |
 | F | 4 | Full shard retry / fail-fast tuning |
-| G | 5 | babysit-deploy skill + runtime (independent track) |
+| G | 5 | babysit-plus §8 UAT sub-agent + optional `uat_deploy_runtime.js` |
 
 ---
 
