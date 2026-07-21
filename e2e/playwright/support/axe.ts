@@ -2,7 +2,7 @@ import AxeBuilder from '@axe-core/playwright';
 import type { Page } from '@playwright/test';
 import { expect } from '@playwright/test';
 
-/** Impact levels that fail CI (UAT @smoke gate). */
+/** Impact levels that fail UAT smoke / @smoke-a11y gate. */
 const FAILING_IMPACTS = new Set(['critical', 'serious']);
 
 /**

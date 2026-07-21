@@ -16,8 +16,9 @@ globs: flutter_app/lib/**,e2e/**
 
 - Enable semantics via `enableFlutterAccessibility()` before interacting (see `e2e/playwright/support/flutter.ts`).
 - Selector priority: `getByRole` → `getByLabel` / aria-label inputs → `getByText`.
-- `@smoke` tests run axe (`checkA11y`) — fail on **critical** and **serious** violations.
+- `@smoke-a11y` tests run axe (`checkA11y`) — fail on **critical** and **serious** violations.
+- `@smoke-ci` / `@smoke-uat` are fast journey tiers; axe stays on `@smoke-a11y` (not PR CI canary).
 
 ## UAT gate
 
-Full accessibility scanning runs on `@smoke` Playwright tests during UAT deploy, not on every PR to `main`.
+Full accessibility scanning runs on `@smoke-a11y` and remaining `@smoke-uat` Playwright tests during UAT deploy, not on every PR to `main`.
