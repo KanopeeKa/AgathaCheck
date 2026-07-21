@@ -11,6 +11,8 @@ node scripts/check_file_size.js
 node scripts/validate_execute_plan_snapshot.js .agents/plans/_example.snapshot.json
 node scripts/validate_execute_plan_snapshot.js --drift-test
 node --test scripts/execute_plan_runtime.test.js
+node --test scripts/db/normalize-schema-dump.test.js
+node scripts/db/check-migration-manifest.js
 node e2e/scripts/check_bdd_coverage.js
 node scripts/check_bdd_priority_tags.js
 bash scripts/ci/check-uat-ssh-action-pin.sh
