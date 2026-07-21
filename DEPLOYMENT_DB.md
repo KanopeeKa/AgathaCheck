@@ -52,7 +52,7 @@ export PORT=5000  # Server port, defaults to 5000
 
 ## 3. Run Migrations
 
-The migration runner lives at `server/scripts/migrate.js` and exposes three commands.
+The migration runner lives at `server/scripts/migrate.js` and exposes two commands.
 
 ### Apply pending migrations (up) — for existing databases
 
@@ -65,15 +65,6 @@ This will:
 - Create the `_migrations` tracking table if it does not exist
 - Apply any pending `NNN_*.sql` migration files from `db/migrations/`
 - Skip migrations already recorded in `_migrations`
-
-### Roll back the last migration (down)
-
-```bash
-cd server
-node scripts/migrate.js down
-```
-
-Looks up the most recently applied migration in `_migrations` and runs the corresponding `*_down.sql` file. Rolls back exactly one migration per invocation; not a full wipe.
 
 ### Show status
 
@@ -88,10 +79,10 @@ Lists every migration file with `[applied]` or `[PENDING]`.
 
 Migration files live in `db/migrations/`:
 
-- `v3__initial_uuid_schema.sql` — canonical full schema (used by `fresh`)
-- `NNN_short_name.sql` / `NNN_short_name_down.sql` — incremental migration pairs (used by `up`/`down`)
+- `v3__initial_uuid_schema.sql` — canonical full schema reference for new databases
+- `NNN_short_name.sql` — incremental migrations applied by `up`
 
-To add a new migration, create the next numbered pair (e.g. `008_add_feature.sql` / `008_add_feature_down.sql`) **and** also add the same change inline to `v3__initial_uuid_schema.sql` so future fresh installs include it.
+To add a new migration, create the next numbered file (e.g. `008_add_feature.sql`) **and** also add the same change inline to `v3__initial_uuid_schema.sql` so future fresh installs include it. The runner does not support `down`; use a new forward migration to revert schema changes.
 
 ## 4. Start the Server
 

@@ -237,8 +237,9 @@ Database schema is managed by `server/scripts/migrate.js`:
 cd server
 node scripts/migrate.js status          # show applied / pending
 node scripts/migrate.js up              # apply pending NNN_*.sql migrations
-node scripts/migrate.js down            # roll back the most recent migration
 ```
+
+Rollbacks are not supported by the migration runner (`up` and `status` only). Revert schema changes via a new forward migration.
 
 See `DEPLOYMENT_DB.md` for the full database deployment guide and `DEPLOYMENT_CPANEL_NODEJS.md` for cPanel-specific instructions.
 
