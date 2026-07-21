@@ -119,7 +119,7 @@ artifact_ref:
   plan_commit: pending
   snapshot_path: .agents/plans/e2e-ci-canary.snapshot.json
   snapshot_commit: pending
-open_prs: []
+open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/246"]
 merge_commits: {"0":"dd82521a52bb51be8b5d0a177e4679d0a6229098","1":"8f4cce4"}
 debt_issue_refs: []
 ```

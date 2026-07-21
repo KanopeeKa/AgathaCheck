@@ -100,8 +100,8 @@
       "status": "in_progress",
       "status_reason": null,
       "status_detail": "Job runs parallel with flutter-test-rest; not in ci-gate yet",
-      "pr_url": null,
-      "pr_head_sha": null,
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/246",
+      "pr_head_sha": "449863b",
       "merge_commit": null,
       "debt_issue_refs": []
     },
