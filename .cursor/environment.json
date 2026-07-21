@@ -1,0 +1,4 @@
+{
+  "install": "bash .cursor/scripts/cloud-install.sh",
+  "start": "sudo pg_ctlcluster 16 main start || true"
+}
