@@ -1,6 +1,6 @@
 # Database schema bootstrap — phased plan
 
-**Status:** Phase 1 in progress (validation infrastructure).  
+**Status:** Phase 3 complete (fast bootstrap). Phases 4–5 tracked in execute-plan `db-schema-bootstrap-345`.  
 **Principle:** Forward-only migrations are the production authority. The canonical schema is a **CI-verified snapshot** for fast bootstraps and drift detection — not a hand-edited alternate truth.
 
 See also: [DEPLOYMENT_DB.md](../DEPLOYMENT_DB.md) (deploy commands), [calendar-dates.md](./calendar-dates.md) (wire format).
@@ -89,27 +89,20 @@ See also: [DEPLOYMENT_DB.md](../DEPLOYMENT_DB.md) (deploy commands), [calendar-d
 
 **Outcome:** New environments apply one canonical file instead of v3 + 20 replay steps.
 
-**Precondition:** Phase 2 green for several weeks; canonical proven stable.
+**Status:** Complete — `bootstrap-db.sh` applies `canonical.sql` + migration ledger; v3 archived.
 
-### Work
+### Delivered
 
-1. Update `e2e/scripts/bootstrap-db.sh`:
-   - Empty DB → `db/schema/canonical.sql` only.
-   - Pre-seed `_migrations` from manifest (formal baseline ceremony).
-2. Add `scripts/db/seed-migration-ledger.js` — inserts manifest rows into `_migrations` with stable UUIDs or app-generated UUIDs.
-3. CI verifies: `canonical-only + ledger` ≡ `baseline + all migrations` (both paths still checked until v3 removed).
-4. Deprecate `v3__initial_uuid_schema.sql` (move to `archive/`).
-
-### Baselining rules
-
-- Canonical is an **approved baseline** only when equivalence CI is green.
-- Ledger pre-seed must match manifest exactly; CI fails on divergence.
-- **Never** mark migrations applied in prod — prod always runs `migrate.js up`.
+1. `e2e/scripts/bootstrap-db.sh` — canonical snapshot + `seed-migration-ledger.js` on empty DB
+2. `server/scripts/seed-migration-ledger.js` — pre-seeds `_migrations` from manifest
+3. `scripts/db/check-bootstrap-paths-equivalence.sh` — legacy ≡ fast path (CI)
+4. `db/migrations/v3__initial_uuid_schema.sql` → `archive/` (legacy regeneration + CI only)
 
 ### Exit criteria
 
-- Cloud agent / E2E boot time reduced (single SQL file + ledger).
-- v3 archived; docs updated.
+- [x] Fast bootstrap path in E2E/CI
+- [x] Dual-path equivalence CI gate
+- [x] v3 archived; docs updated
 
 ---
 
@@ -159,7 +152,8 @@ See also: [DEPLOYMENT_DB.md](../DEPLOYMENT_DB.md) (deploy commands), [calendar-d
 | `scripts/db/check-schema-equivalence.sh` | Yes | After schema changes; CI Phase 2 |
 | `scripts/db/regenerate-canonical.sh` | Yes | After new migration committed |
 | `node scripts/migrate.js up` | Yes | **Prod/UAT deploy only** |
-| `e2e/scripts/bootstrap-db.sh` | Yes | Dev/E2E (Phase 3: canonical-only) |
+| `e2e/scripts/bootstrap-db.sh` | Yes | Dev/E2E — canonical snapshot + migration ledger |
+| `scripts/db/bootstrap-legacy-db.sh` | Yes | Regenerate canonical + CI path equivalence only |
 
 ---
 

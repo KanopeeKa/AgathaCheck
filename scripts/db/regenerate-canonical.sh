@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# Regenerate db/schema/canonical.sql from the authoritative bootstrap path.
-# Run after adding migrations, then commit canonical.sql + migration-manifest.json.
+# Regenerate db/schema/canonical.sql from the legacy bootstrap path (authoritative build).
+# After adding migrations: update manifest, run this, commit canonical.sql.
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
@@ -25,7 +25,7 @@ DROP DATABASE IF EXISTS "${PGDATABASE}";
 CREATE DATABASE "${PGDATABASE}" OWNER "${PGUSER}";
 SQL
 
-bash "${ROOT}/e2e/scripts/bootstrap-db.sh"
+bash "${ROOT}/scripts/db/bootstrap-legacy-db.sh"
 
 mkdir -p "$(dirname "$CANONICAL")"
 
@@ -36,4 +36,4 @@ mkdir -p "$(dirname "$CANONICAL")"
 } | node "${ROOT}/scripts/db/normalize-schema-dump.js" > "$CANONICAL"
 
 echo "Wrote ${CANONICAL}"
-echo "Next: node scripts/db/check-migration-manifest.js && scripts/db/check-schema-equivalence.sh"
+echo "Next: scripts/db/check-bootstrap-paths-equivalence.sh && scripts/db/check-schema-equivalence.sh"

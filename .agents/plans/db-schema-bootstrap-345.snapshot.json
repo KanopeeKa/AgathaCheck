@@ -1,0 +1,120 @@
+{
+  "schema_version": 1,
+  "plan_id": "db-schema-bootstrap-345",
+  "approved_at": "2026-07-21T22:25:00Z",
+  "approved_by": "user",
+  "approved_until": "2026-07-23T22:25:00Z",
+  "content_hash": "sha256:5c9d8260e3042a78c00cfb705debfe374d3afce6bb3cc5c152c80288f0d645c3",
+  "autonomy": "active",
+  "default_merge_mode": "auto",
+  "base_branch": "main",
+  "control_issue": 251,
+  "artifact_branch_policy": "phase-branch",
+  "phases": [
+    {
+      "id": "3",
+      "title": "Fast bootstrap switch",
+      "branch": "cursor/db-fast-bootstrap-b9c1",
+      "allowed_paths": [
+        "db/**",
+        "e2e/scripts/bootstrap-db.sh",
+        "server/scripts/seed-migration-ledger.js",
+        "scripts/db/**",
+        "scripts/ci/pr-startup-smoke.sh",
+        "docs/db-schema-bootstrap-plan.md",
+        "DEPLOYMENT_DB.md",
+        ".agents/plans/db-schema-bootstrap-345.*"
+      ],
+      "forbidden_paths": [
+        "server/routes/**",
+        ".github/workflows/**",
+        "flutter_app/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "governance-allowlist"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "governance",
+      "status": "in_progress",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "4",
+      "title": "UAT demo seed layer",
+      "branch": "cursor/db-uat-seeds-b9c1",
+      "allowed_paths": [
+        "db/seeds/**",
+        "server/scripts/seed.js",
+        "server/lib/db/**",
+        "server/test/seed.test.js",
+        "scripts/db/uat-reset.sh",
+        "scripts/db/guard-non-prod.js",
+        "docs/db-schema-bootstrap-plan.md",
+        "docs/e2e/uat-demo-personas.md",
+        ".agents/plans/db-schema-bootstrap-345.*"
+      ],
+      "forbidden_paths": [
+        "db/migrations/**",
+        ".github/workflows/**",
+        "flutter_app/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "single-backend-route",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "5",
+      "title": "Production hardening",
+      "branch": "cursor/db-prod-hardening-b9c1",
+      "allowed_paths": [
+        "scripts/db/**",
+        "server/scripts/**",
+        "DEPLOYMENT_DB.md",
+        "docs/db-schema-bootstrap-plan.md",
+        "docs/ci-cd-gates.md",
+        ".agents/plans/db-schema-bootstrap-345.*"
+      ],
+      "forbidden_paths": [
+        "db/migrations/**",
+        "flutter_app/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "governance-allowlist"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "governance",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null,
+      "debt_issue_refs": []
+    }
+  ]
+}

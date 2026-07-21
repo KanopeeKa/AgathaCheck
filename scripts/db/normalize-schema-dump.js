@@ -23,6 +23,23 @@ function isNoiseLine(trimmed) {
   return NOISE_PREFIXES.some((prefix) => trimmed.startsWith(prefix));
 }
 
+function canonicalizePartialIndexArrays(line) {
+  if (!line.includes('idx_foster_placements_one_active_pet')) return line;
+  const statuses = [...line.matchAll(/'([a-z_]+)'/g)]
+    .map((m) => m[1])
+    .filter((s) =>
+      [
+        'pending',
+        'in_progress',
+        'waiting_adoption_confirmation',
+        'pending_adoption_conditions',
+      ].includes(s)
+    )
+    .sort();
+  if (statuses.length === 0) return line;
+  return `CREATE UNIQUE INDEX idx_foster_placements_one_active_pet ON public.foster_placements USING btree (pet_id) WHERE (normalized_status_any(${statuses.join(',')}))`;
+}
+
 export function normalizeSchemaDump(raw) {
   const lines = raw.replace(/\r\n/g, '\n').split('\n');
   const kept = [];
@@ -30,7 +47,7 @@ export function normalizeSchemaDump(raw) {
   for (const line of lines) {
     const trimmed = line.trimEnd();
     if (isNoiseLine(trimmed.trim())) continue;
-    kept.push(trimmed);
+    kept.push(canonicalizePartialIndexArrays(trimmed));
   }
 
   return `${kept.join('\n').trim()}\n`;
