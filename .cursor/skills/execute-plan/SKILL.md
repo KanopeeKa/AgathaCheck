@@ -215,5 +215,5 @@ See autonomous-pr-policy §Escalation. Includes security/crypto, breaking API, p
 | `/babysit-plus` | **Every phase PR** — triage, debt, CI, merge (default mode `auto`) |
 | `/pre-push-verify` | Before every push; full suite before merge |
 | `/spawn-sprint-agents` | Phase with `spawn_allowed: true` |
-| `/dual-backend-route-change` | Route phases per exit checklist |
+| `/single-backend-route-change` | Route phases per exit checklist |
 | `/split-flutter-screen` | Screen-split phases per exit checklist |

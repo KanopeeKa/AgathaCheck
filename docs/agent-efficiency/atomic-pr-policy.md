@@ -77,7 +77,7 @@ Parallel agents use an integration branch → one PR to `main`. Atomicity applie
 | Same outcome, different file, low risk (missing semantic label, format, test mirror path) | **Micro-PR** same day (preferred) or same PR if blocking merge |
 | Different outcome, or needs product/architecture decision | **Debt issue** immediately — never bundle |
 | Reviewer nit, out of scope for this PR | **Debt issue** with dedupe per [autonomous-pr-policy.md](./autonomous-pr-policy.md) §Debt issues |
-| Blocker / security / dual-backend gap | Fix in **current PR** — never defer |
+| Blocker / security gap | Fix in **current PR** — never defer |
 
 ### Micro-PR conventions
 

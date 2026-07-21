@@ -52,11 +52,10 @@ jobs:
 
       - name: Check Dart format
         run: |
-          (cd server && dart pub get)
-          dart format --output=none --set-exit-if-changed flutter_app/lib flutter_app/test server/lib
+          dart format --output=none --set-exit-if-changed flutter_app/lib flutter_app/test
 
       - name: Sync legal documents into app assets
-        run: dart run scripts/sync_legal_documents.dart
+        run: node scripts/sync_legal_documents.js
 
       - name: Analyze
         working-directory: flutter_app

@@ -1,0 +1,21 @@
+---
+description: Single backend architecture (Node.js only)
+globs: server/routes/**
+---
+
+# Single backend architecture
+
+Node.js Express is the **only** backend. There is no Dart mirror.
+
+## Same PR checklist (when changing routes)
+
+- [ ] Route path + HTTP method
+- [ ] Auth / role guards
+- [ ] Request body validation
+- [ ] Response JSON shape
+- [ ] Status codes
+- [ ] Calendar date fields (`YYYY-MM-DD` via `calendarDate.js`)
+
+## CI
+
+- Jest tests on `server/routes/*.js` run in CI — keep Node routes covered.

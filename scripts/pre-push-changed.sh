@@ -32,7 +32,6 @@ echo "$CHANGED" | sed 's/^/  /'
 needs_governance=false
 needs_server=false
 needs_flutter=false
-needs_dart_analyze=false
 needs_codegen=false
 
 while IFS= read -r f; do
@@ -43,7 +42,6 @@ while IFS= read -r f; do
       ;;
     server/routes/*|server/test/*|server/config/*|server/lib/*)
       needs_server=true
-      needs_dart_analyze=true
       ;;
     flutter_app/lib/*|flutter_app/test/*)
       needs_flutter=true
@@ -134,15 +132,9 @@ run_flutter() {
   )
 }
 
-run_dart_analyze() {
-  echo "==> Dart server analyze"
-  (cd server && dart pub get && dart analyze lib)
-}
-
 $needs_governance && run_governance
 $needs_server && run_server
 $needs_flutter && run_flutter
-$needs_dart_analyze && run_dart_analyze
 
 echo "✓ Changed-files pre-push passed"
 echo "  Run ./scripts/pre-push.sh before merging to main"

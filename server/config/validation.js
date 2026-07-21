@@ -1,6 +1,5 @@
 /**
- * Small input-validation helpers shared by the auth routes. Mirrors the Dart
- * server's `lib/validation.dart`; keep the two in lockstep.
+ * Small input-validation helpers shared by the auth routes.
  */
 
 /** Minimum accepted password length (characters). */

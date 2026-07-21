@@ -68,7 +68,6 @@ via `POST /api/pets/:id/family-events`. Both paths normalize writes with
   - `dateToIsoDate` — DB value → `YYYY-MM-DD` for JSON responses
   - `normalizeCalendarDateInput` — request body → `YYYY-MM-DD` for DB writes
   - `todayCalendarIso` — today's calendar date on the server
-- **Dart shelf server:** `server/lib/calendar_date.dart` (parity with Node)
 
 ## Date pickers
 

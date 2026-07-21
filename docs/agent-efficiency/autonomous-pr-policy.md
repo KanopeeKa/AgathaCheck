@@ -66,7 +66,7 @@ Post a **triage comment** on the PR before applying fixes.
 
 | Bucket | Signals | Action |
 |--------|---------|--------|
-| **Must-fix** | `request changes`, failing tests, bugs, security, migration risk, dual-backend gaps, `blocker` / `critical` / `high` / `must` | Fix in this PR |
+| **Must-fix** | `request changes`, failing tests, bugs, security, migration risk, `blocker` / `critical` / `high` / `must` | Fix in this PR |
 | **Nits** | `nit`, `minor`, `optional`, style-only in touched files | Fix if local + low-risk |
 | **Ignore** | scope creep, future ideas, wrong reviewer read | Do not code; track in issue |
 
@@ -78,7 +78,7 @@ Post a **triage comment** on the PR before applying fixes.
 
 ### Nit heuristics
 
-Apply when all true: same files as PR diff (or allowed exception), no API/behavior change, no dual-backend gap, reviewer not wrong, matches repo rules.
+Apply when all true: same files as PR diff (or allowed exception), no API/behavior change, reviewer not wrong, matches repo rules.
 
 Skip nit → debt issue when: auth/security paths, conflicts with conventions, needs product/architecture decision.
 

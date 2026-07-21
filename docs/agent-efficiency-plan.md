@@ -45,7 +45,7 @@ invoke explicitly with `/skill-name`.
 |---|-------|---------------|--------|
 | 9.1 | `split-flutter-screen` | `flutter_app/lib/**` | Done |
 | 9.2 | `add-bdd-playwright-scenario` | `e2e/**`, `flutter_app/test/bdd/**` | Done |
-| 9.3 | `dual-backend-route-change` | `server/routes/**`, `server/lib/**` | Done |
+| 9.3 | `single-backend-route-change` | `server/routes/**`, `server/lib/**` | Done |
 | 9.4 | `spawn-sprint-agents` | (global — spawn prompts) | Done |
 | 9.5 | `security-error-audit` | `server/**` | Done |
 | 9.6 | `pre-push-verify` | (global — before push) | Done |
@@ -62,7 +62,7 @@ invoke explicitly with `/skill-name`.
 | # | Action | Status |
 |---|--------|--------|
 | 10.1 | New slim `agent-core.mdc` (always-on pointers only) | Done |
-| 10.2 | Remove `alwaysApply` from path-scoped rules (modularity, testing, security, dual-backend, a11y) | Done |
+| 10.2 | Remove `alwaysApply` from path-scoped rules (modularity, testing, security, single-backend, a11y) | Done |
 | 10.3 | Slim `merge-policy.mdc`; move long tables to this plan + skills | Done |
 | 10.4 | `agent-coordination.mdc` — scoped to spawn docs, not always-on | Done |
 | 10.5 | Slim `AGENTS.md` + `CONTRIBUTING.md` → point at `scripts/pre-push.sh` | Done |

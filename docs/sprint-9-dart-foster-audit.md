@@ -1,3 +1,5 @@
+> **Historical note:** The Dart backend was removed on 2026-07-21. This audit of a Dart parity branch is preserved as historical record.
+>
 # Sprint 9 — Dart org foster parity branch audit
 
 **Agent:** `dart-foster-audit`  

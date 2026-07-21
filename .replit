@@ -27,7 +27,7 @@ outputType = "webview"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "cd /home/runner/workspace/server && dart pub get && PORT=5000 dart run bin/server.dart"
+args = "cd /home/runner/workspace/server && npm ci && PORT=5000 node bin/start.js"
 waitForPort = 5000
 
 [[ports]]
@@ -41,10 +41,9 @@ externalPort = 80
 [deployment]
 deploymentTarget = "autoscale"
 publicDir = "deploy/public"
-build = ["bash", "-c", "cd flutter_app && flutter pub get && flutter build web --release --no-tree-shake-icons && cd ../server && dart pub get && dart compile exe bin/server.dart -o bin/server"]
-run = ["bash", "-c", "cd server && exec ./bin/server"]
+build = ["bash", "-c", "cd flutter_app && flutter pub get && flutter build web --release --no-tree-shake-icons && cd ../server && npm ci"]
+run = ["bash", "-c", "cd server && PORT=5000 exec node bin/start.js"]
 
 [userenv]
 
 [userenv.shared]
-REVENUECAT_API_SECRET = "sk_hOhscihmVbyDGjZulKdDiYPVNRuBe"

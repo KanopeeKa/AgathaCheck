@@ -26,25 +26,16 @@ Use **cPanel → Setup Node.js App → Run NPM Install** (creates `backend/node_
 See `docs/uat-backend-node-modules-runbook.md` for recovery steps and forbidden commands.
 
 ### 2. **Verify Database Migration**
-The schema is now managed by the Dart migration runner (`server/bin/migrate.dart`) and the canonical schema file `db/migrations/v3__initial_uuid_schema.sql` (19 application tables + a `_migrations` tracker, all UUID-keyed).
+The schema is managed by the Node.js migration runner (`server/scripts/migrate.js`) and the canonical schema file `db/migrations/v3__initial_uuid_schema.sql` (19 application tables + a `_migrations` tracker, all UUID-keyed).
 
-For a brand-new empty database, run the fresh-install command from a machine that has Dart and access to the cPanel Postgres:
-
-```bash
-cd server
-DATABASE_URL="postgresql://your_db_user:your_db_password@localhost:5432/your_db_name" \
-MIGRATE_CONFIRM=DROP_ALL \
-dart run bin/migrate.dart fresh
-```
-
-For an existing database that just needs pending incremental migrations applied:
+For an existing database that needs pending incremental migrations applied:
 
 ```bash
 cd server
-DATABASE_URL="postgresql://..." dart run bin/migrate.dart up
+DATABASE_URL="postgresql://..." node scripts/migrate.js up
 ```
 
-If Dart is not available on the cPanel host, run the migration from your dev machine while pointing `DATABASE_URL` at the remote database (or apply `db/migrations/v3__initial_uuid_schema.sql` directly via `psql` against an empty DB).
+For a brand-new empty database, apply `db/migrations/v3__initial_uuid_schema.sql` directly via `psql`, then mark all incremental migrations as applied via `node scripts/migrate.js up`.
 
 ### 3. **Create `.env` File**
 cPanel should read environment variables, but create `.env` in your application root as backup:
@@ -192,11 +183,6 @@ Once deployed, your API will be accessible at:
 - **Update Pet**: `PUT http://uat.agathatrack.com:3000/api/pets/{id}` (with JSON body)
 - **Delete Pet**: `DELETE http://uat.agathatrack.com:3000/api/pets/{id}`
 
-## Dart vs Node.js Backends
+## Backend
 
-The repository ships **two interchangeable backends** that share the same Postgres schema and expose the same routes:
-
-- **Dart / Shelf** (`server/bin/server.dart`) — used by the Replit workflow and the AOT-compiled production binary
-- **Node.js / Express** (`server/bin/server.js`) — used here on cPanel because cPanel Node.js hosting doesn't support a Dart runtime
-
-Both are kept in sync (parity is enforced by the Jest suite against the Node routes plus `dart analyze` on the Dart shelf server; there is no separate Dart test runner). Either can serve any database created by `migrate.dart`.
+The repository ships a single **Node.js / Express** backend (`server/bin/start.js`) that serves the API and the Flutter web build.

@@ -24,6 +24,6 @@ Mirrored under `server/test/organizations/`:
 - `authorization.test.js`, `fosterParents.test.js`, `people.test.js`
 - `placements.test.js`, `edgeCases.test.js`
 
-## Dart parity
+## Shared libs
 
-Shelf implementation: `server/lib/organizations/` (foster/placements/people parity with Node).
+`server/lib/organizations/` contains shared helpers (role guards, people directory, foster placements, custody transfers).

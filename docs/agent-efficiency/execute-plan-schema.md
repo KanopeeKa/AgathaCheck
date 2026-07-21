@@ -97,7 +97,7 @@ Every file **outside** `allowed_paths` must map to exactly one code at drift-che
 |------|--------|
 | `tests` | Tests/fixtures for touched production code |
 | `docs` | Docs required by exit checklist profile |
-| `dual-backend-mirror` | Paired Node/Dart route files per dual-backend rules |
+| `backend-route` | Node route changes |
 | `file-split` | New files from splitting an allowed-path file |
 | `governance-allowlist` | e.g. `scripts/file-size-allowlist.json` when phase permits |
 | `spawn-integration` | Files on integration branch per ownership map |

@@ -1,7 +1,6 @@
 /**
  * Shared HTTP security helpers (CORS policy + error-detail redaction) used by
- * the Express server and its route modules. Mirrors the Dart server's
- * `lib/http_security.dart`; keep the two in lockstep.
+ * the Express server and its route modules.
  */
 
 const isProduction = () => process.env.NODE_ENV === 'production';

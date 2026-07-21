@@ -13,7 +13,6 @@ Full conventions: `docs/architecture/modularity.md`.
 | Flutter tests | `flutter_app/test/features/<feature>/` | Mirror `lib/` structure |
 | Node API (canonical) | `server/routes/<domain>/` | Express, Jest |
 | Node tests | `server/test/<domain>/` | supertest + mock pool |
-| Dart Shelf mirror | `server/lib/` | `*_routes.dart`; parity with Node |
 | BDD specs | `flutter_app/test/bdd/features/*.feature` | Gherkin, not executed directly |
 | Playwright E2E | `e2e/playwright/tests/*.spec.ts` | `@bdd` header links scenarios |
 | Page objects | `e2e/playwright/pages/` | Reusable UI vocabulary |
@@ -31,7 +30,6 @@ Full conventions: `docs/architecture/modularity.md`.
 |---|------|
 | Flutter | `flutter_app/lib/features/auth/` |
 | Node routes | `server/routes/auth/` |
-| Dart routes | `server/lib/auth/` |
 | Jest | `server/test/auth/` |
 | BDD | `authentication.feature` |
 | E2E | `auth.login.spec.ts`, `auth.signup.spec.ts`, `auth.profile.spec.ts` |
@@ -139,11 +137,11 @@ Full conventions: `docs/architecture/modularity.md`.
 
 | Concern | Path |
 |---------|------|
-| Security / errors | `server/config/security.js`, `server/lib/http_security.dart` |
+| Security / errors | `server/config/security.js` |
 | Rate limits | `server/config/rateLimit.js` |
 | Uploads | `server/lib/safeUpload.js` |
-| GDPR export | `server/lib/gdprUserExport.js`, `server/lib/gdpr_user_export.dart` |
-| Calendar dates | `server/lib/calendarDate.js`, `server/lib/calendar_date.dart` |
+| GDPR export | `server/lib/gdprUserExport.js` |
+| Calendar dates | `server/lib/calendarDate.js` |
 
 ---
 
@@ -152,7 +150,7 @@ Full conventions: `docs/architecture/modularity.md`.
 | Task | Start here |
 |------|------------|
 | Split a screen | `/split-flutter-screen` skill |
-| New API endpoint | `/dual-backend-route-change` skill |
+| New API endpoint | `/single-backend-route-change` skill |
 | BDD → Playwright | `/add-bdd-playwright-scenario` skill |
 | Parallel sprint | `/spawn-sprint-agents` skill |
 | Before push | `/pre-push-verify` skill or `./scripts/pre-push-changed.sh` |

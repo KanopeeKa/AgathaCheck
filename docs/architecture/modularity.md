@@ -1,7 +1,7 @@
 # Modularity & refactoring rules
 
 Conventions for Agatha Track to keep files small, testable, and aligned across
-Flutter, Node.js, and Dart backends.
+Flutter and Node.js.
 
 ---
 
@@ -10,7 +10,7 @@ Flutter, Node.js, and Dart backends.
 1. **Prefer many small files over few large ones.** When unsure, split.
 2. **Tests and docs lead refactors** — extract or add tests before moving production code.
 3. **Preserve business logic** — behaviour-preserving moves only; no drive-by feature changes.
-4. **Domain by domain** — finish one bounded context (routes + tests + Dart parity + Flutter UI) before starting the next.
+4. **Domain by domain** — finish one bounded context (routes + tests + Flutter UI) before starting the next.
 5. **Committed code must run** — `flutter analyze`, `flutter test`, and `npx jest` green before push.
 
 ---
@@ -47,13 +47,6 @@ server/test/<domain>/
 
 ---
 
-## Backend (Dart / Shelf)
-
-- Mirror Node route modules in `server/lib/` (e.g. `organization_routes.dart` may split into `organization_*_routes.dart` when &gt; 500 lines).
-- Share validation via `server/lib/validation.dart`, dates via `calendar_date.dart`.
-
----
-
 ## Flutter
 
 ```
@@ -78,7 +71,7 @@ test/features/<feature>/   # Mirror lib structure
 | Layer | Tool | When |
 |---|---|---|
 | Node routes | Jest + supertest | Every route module |
-| Dart routes | `dart analyze` + manual parity checklist | Same PR as Node |
+| Node shared libs | Jest (integration via route tests) | When adding cross-route helpers |
 | Flutter domain/data | `flutter test` | Models, repos, datasources |
 | Flutter UI | Widget tests | Extracted widgets + critical screens |
 | Journeys | Playwright (`e2e/`) | After domain stabilises; annotate `@bdd` |
@@ -98,5 +91,5 @@ Add tests **before or during** extraction, not after.
 ## Legal assets
 
 - Source of truth: `regulatory/legal/`
-- App bundle: `flutter_app/assets/legal/` via `dart run scripts/sync_legal_documents.dart`
+- App bundle: `flutter_app/assets/legal/` via `node scripts/sync_legal_documents.js`
 - Run sync before release builds (CI step recommended).

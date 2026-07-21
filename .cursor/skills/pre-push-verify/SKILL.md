@@ -27,7 +27,7 @@ git rebase origin/main   # or rebase onto integration parent
 | Changed paths | Runs |
 |---------------|------|
 | `server/routes/**`, `server/test/**` | Targeted or full Jest |
-| `server/lib/**` | Jest + `dart analyze lib` |
+| `server/lib/**` | Jest |
 | `flutter_app/lib/features/<x>/**` | analyze + `test/features/<x>/` |
 | `e2e/**` | BDD coverage + file size gates |
 | `scripts/**`, `.github/**` | Governance gates |
@@ -37,7 +37,7 @@ git rebase origin/main   # or rebase onto integration parent
 - `check_file_size.js`, `check_bdd_coverage.js`, `check_bdd_priority_tags.js`
 - `npm audit --audit-level=high` + full Jest
 - `build_runner`, `flutter analyze`, full `flutter test`
-- `dart analyze lib`, `dart format` check
+- `dart format` check (Flutter code only)
 
 ## CI is authoritative
 

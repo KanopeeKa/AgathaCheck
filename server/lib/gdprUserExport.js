@@ -1,6 +1,6 @@
 /**
  * Builds a GDPR Art. 15/20 JSON export for a single user.
- * Used by GET /api/auth/me/export (Node + Dart Shelf parity).
+ * Used by GET /api/auth/me/export.
  */
 
 export async function buildUserDataExport(pool, userId) {

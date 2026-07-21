@@ -1,6 +1,6 @@
 ---
 description: File size limits, domain structure, and extraction conventions for Agatha Track
-globs: flutter_app/lib/**,server/**,server/lib/**
+globs: flutter_app/lib/**,server/**
 ---
 
 # Modularity
@@ -16,7 +16,7 @@ Follow `docs/architecture/modularity.md`.
 | 500–800 | Split on next touch — **CI blocks new files above 500** |
 | > 800 | Split immediately |
 
-**CI gate:** `node scripts/check_file_size.js` — fails if any non-grandfathered hand-written `.dart`/`.js` under `flutter_app/lib`, `server/routes`, `server/lib` exceeds **500 lines**. Grandfathered paths live in `scripts/file-size-allowlist.json` with a **ratchet ceiling** (must not grow). Remove from allowlist when split below 500.
+**CI gate:** `node scripts/check_file_size.js` — fails if any non-grandfathered hand-written `.dart`/`.js` under `flutter_app/lib`, `server/routes` exceeds **500 lines**. Grandfathered paths live in `scripts/file-size-allowlist.json` with a **ratchet ceiling** (must not grow). Remove from allowlist when split below 500.
 
 Exceptions: generated code (`l10n/`, `*.g.dart`, `*.mocks.dart`), lockfiles, canonical SQL.
 

@@ -12,11 +12,11 @@ Canonical merge gates for PRs: [autonomous-pr-policy.md](./autonomous-pr-policy.
 |---------|----------|
 | `default` | Any phase — always included |
 | `flutter-screen-split` | Extracting widgets/screens under `flutter_app/lib/` |
-| `dual-backend-route` | Node route + Dart mirror changes |
+| `single-backend-route` | Node route changes |
 | `bdd-journey` | User journey / E2E behavior change |
 | `governance` | Scripts, CI, allowlists, docs/agent-efficiency |
 
-Profiles are **additive**: `exit_checklist: dual-backend-route` means `default` + `dual-backend-route` sections.
+Profiles are **additive**: `exit_checklist: single-backend-route` means `default` + `single-backend-route` sections.
 
 ---
 
@@ -46,16 +46,13 @@ Includes **default**.
 
 ---
 
-## dual-backend-route
+## single-backend-route
 
 Includes **default**.
 
 - [ ] Jest tests for route module (`server/test/<domain>/`)
-- [ ] Dart mirror updated when HTTP behaviour changes (`server/lib/`)
-- [ ] `dart analyze lib` on `server/`
 - [ ] No raw exception text in prod 5xx responses
 - [ ] Calendar dates as `YYYY-MM-DD` on the wire
-- [ ] `dual-backend-mirror` exception files recorded in `exception_files`
 
 ---
 
@@ -86,7 +83,7 @@ Includes **default**.
 |------------------------|------------------|
 | `default` | default |
 | `flutter-screen-split` | default + flutter-screen-split |
-| `dual-backend-route` | default + dual-backend-route |
+| `single-backend-route` | default + single-backend-route |
 | `bdd-journey` | default + bdd-journey |
 | `governance` | default + governance |
 

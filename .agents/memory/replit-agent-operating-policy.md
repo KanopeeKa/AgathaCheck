@@ -5,18 +5,17 @@ description: Binding rules distilled from AGENTS.md, .cursor/rules/*.mdc, and CI
 
 Repo docs are the source of truth. `.cursor/rules/*.mdc` + `AGENTS.md` are the authoritative shared engineering policy for ALL agents; `replit.md` is the project overview/preferences layer and must stay consistent with them. If any two sources conflict, stop and ask the user — never improvise a compromise. Inspect first, change second; smallest safe change.
 
-**Per-request startup:** read the `.cursor/rules/*.mdc` relevant to the touched area (dual-backend, security, testing, modularity, atomic-pr), summarize applicable constraints, then implement.
+**Per-request startup:** read the `.cursor/rules/*.mdc` relevant to the touched area (single-backend, security, testing, modularity, atomic-pr), summarize applicable constraints, then implement.
 
 **Binding engineering rules:**
-- **Dual-backend parity**: Node (`server/routes/*.js`) is canonical; any route change (path/method/auth/validation/response shape) must be mirrored in Dart (`server/lib/*.dart`) in the same change set. Known allowed Node-only: audit logging, PostHog delete.
-- **Modularity**: CI enforces a 500-line limit on all hand-written `.js`/`.dart` files across `flutter_app/lib`, `server/routes`, `server/lib` (`scripts/check_file_size.js`); grandfathered files have an allowlist with a ratchet ceiling. Target new files <300 lines.
+- **Modularity**: CI enforces a 500-line limit on all hand-written `.js`/`.dart` files across `flutter_app/lib`, `server/routes` (`scripts/check_file_size.js`); grandfathered files have an allowlist with a ratchet ceiling. Target new files <300 lines.
 - **Calendar dates**: wire dates are `YYYY-MM-DD` (see `docs/calendar-dates.md`).
 - **Security**: never return raw `err.message`/`e.toString()`/`$e` in prod 5xx — use `publicError()`; rate-limit DB/filesystem routes; UUID filenames + path containment for uploads.
 - **Atomic outcome**: one verifiable outcome per change set; snags >15 lines become separate work items, never silently deferred.
 
 **Sensitive paths — explicit user confirmation required** (source of truth: `.github/scripts/agent-safety-lib.js`; gate enforced by `agent-pr-safety-gate.yml` on **both** `cursor/*` and `replit/*` branches): `db/migrations/`, `server/config/security.js`, `infra/`, and any path matching `/auth/`, `/billing/`, `/secrets?/`. Note: `server/config/` broadly is NOT forbidden — only `security.js` within it. **`.github/workflows/` is allowed** for agent PRs when CI gate docs are updated in the same change.
 
-**Migrations**: use `cd server && node scripts/migrate.js up` (AGENTS.md: `dart run bin/migrate.dart fresh` is BROKEN with pinned postgres driver — never use fresh). No `gen_random_uuid()` in SQL — generate UUIDs in code.
+**Migrations**: use `cd server && node scripts/migrate.js up`. No `gen_random_uuid()` in SQL — generate UUIDs in code.
 
 **Testing commands (current)**: backend `cd server && npx jest --env=node --forceExit`; Flutter `cd flutter_app && flutter test --concurrency=1 --exclude-tags=integration`; analyze with `cd flutter_app && flutter analyze --no-fatal-warnings --no-fatal-infos`; run `dart run build_runner build --delete-conflicting-outputs` when mocks change. BDD coverage gate: ≥105 mapped scenarios (`node e2e/scripts/check_bdd_coverage.js` — denominator is computed dynamically from feature files, not fixed at 165).
 
@@ -37,7 +36,7 @@ Repo docs are the source of truth. `.cursor/rules/*.mdc` + `AGENTS.md` are the a
 5. **Monitor CI** via `GET /repos/KanopeeKa/AgathaCheck/commits/{sha}/check-runs` — poll every 60–90 s; address failures. Flutter test shards take ~3–5 min, full suite ~8–10 min.
 6. **After both CI and reviews are green/triaged**: merge is user's click (branch protection). After merge, sync local main: `git fetch origin && git reset --hard origin/main` (or delegate if destructive).
 
-**Dart/Node parity gap (known state, decision pending):** Dart lags Node — share-by-code is a 501 stub, foster placements partial; Replit preview runs the Dart server so those features look broken in preview but work on UAT/prod. Do not "fix" as a regression; discuss with user first.
+**Single backend:** Node.js (`server/routes/*.js`) is the only backend. Replit preview runs the Node server.
 
 **Why:** The user works across Cursor and Replit and requires zero drift between agents; these gates are CI-enforced, so violating them locally produces work that cannot merge.
 

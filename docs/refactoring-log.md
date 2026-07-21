@@ -12,13 +12,13 @@ Tracks planned and completed refactor / quality work. See also `docs/refactoring
 
 | # | Action | Status | PR / notes |
 |---|--------|--------|------------|
-| 1.1 | Cursor rules (modularity, testing, security, dual-backend, a11y, merge-policy) | Done | `.cursor/rules/` |
+| 1.1 | Cursor rules (modularity, testing, security, single-backend, a11y, merge-policy) | Done | `.cursor/rules/` |
 | 1.2 | `CONTRIBUTING.md` + PR template | Done | |
 | 1.3 | `docs/quality/scorecard.md` | Done | |
 | 1.4 | CI: `npm audit --audit-level=high` (server + e2e) | Done | `_reusable-test.yml` |
 | 1.5 | CI: CodeQL JavaScript | Done | `codeql.yml` |
 | 1.6 | Dependabot (server, e2e, flutter_app pub) | Done | `dependabot.yml` |
-| 1.7 | CI: `dart analyze lib` on server | Done | |
+| 1.7 | CI: `dart analyze lib` on server | ~~Done~~ Removed — Dart backend deleted 2026-07-21 | |
 | 1.8 | CI: Node 22 alignment | Done | |
 | 1.9 | CI: Flutter integration test blocking | Done | removed `continue-on-error` |
 | 1.10 | CI: `dart format` check — **warn only** | Done | enforce in Sprint 2 |

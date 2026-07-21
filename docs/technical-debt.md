@@ -79,7 +79,6 @@ Use this for **context and prioritisation**; create [GitHub Issues](https://gith
 | Item | Priority | Effort | Notes |
 |---|---|---|---|
 | Document **PostHog env vars** in deploy runbook | P2 | Trivial | `POSTHOG_API_KEY` GitHub secret + inject script documented in `docs/observability.md`. Add one-liner to `replit.md` or deployment doc if team uses cPanel checklist. |
-| **Dart server parity** for audit/PostHog | P4 | Medium | Node backend is canonical; Shelf Dart routes not wired to audit helper or PostHog delete. Only matters if Dart server used in prod. |
 
 ---
 

@@ -31,14 +31,7 @@ echo "==> Flutter (codegen + analyze + test)"
   flutter test --concurrency=1 --exclude-tags=integration
 )
 
-echo "==> Dart server analyze"
-(
-  cd server
-  dart pub get
-  dart analyze lib
-)
-
 echo "==> Format check"
-dart format --output=none --set-exit-if-changed flutter_app/lib flutter_app/test server/lib
+dart format --output=none --set-exit-if-changed flutter_app/lib flutter_app/test
 
 echo "✓ Full pre-push passed"

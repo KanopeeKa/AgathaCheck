@@ -51,7 +51,7 @@
       "enum": [
         "tests",
         "docs",
-        "dual-backend-mirror",
+        "backend-route",
         "file-split",
         "governance-allowlist",
         "spawn-integration"

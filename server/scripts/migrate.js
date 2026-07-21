@@ -1,13 +1,9 @@
 #!/usr/bin/env node
 /**
- * Node.js migration runner — runs on the deployed (UAT/PROD) backend where
- * Dart is unavailable. Mirrors the behavior of `server/bin/migrate.dart` for
- * the commands the deploy pipeline needs: `up` and `status` (no `down`/`fresh`,
- * which remain Dart-only for local/manual use).
+ * Node.js migration runner — runs on the deployed (UAT/PROD) backend.
+ * Supports `up` and `status`.
  *
- * Tracks applied migrations in the `_migrations` table — same table used by
- * the Dart runner — so the two are interoperable: a migration applied by the
- * Dart runner is recognized by the Node runner and vice versa.
+ * Tracks applied migrations in the `_migrations` table.
  *
  * Migration discovery: looks for `db/migrations/*.sql` (excluding `_down.sql`
  * files) in two candidate locations to support both local dev and the remote
@@ -192,8 +188,6 @@ async function main() {
         console.log('  up      apply pending NNN_*.sql migrations');
         console.log('  status  show which migrations are applied/pending');
         console.log('');
-        console.log('For `down` and `fresh`, use the Dart runner locally:');
-        console.log('  dart run bin/migrate.dart [down|fresh]');
         process.exit(2);
     }
   } catch (err) {
