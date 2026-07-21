@@ -6,6 +6,9 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 cd "$ROOT"
 
+# Non-interactive install does not source ~/.bashrc (see AGENTS.md).
+export PATH="/opt/flutter/bin:$PATH"
+
 echo ">>> [install:] flutter_app"
 (
   cd flutter_app
