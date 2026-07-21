@@ -22,17 +22,33 @@ ensure_postgresql() {
     "postgresql-${PG_VERSION}" "postgresql-client-${PG_VERSION}"
 }
 
-ensure_postgresql
+wait_for_postgres() {
+  local attempt
+  for attempt in $(seq 1 30); do
+    if pg_isready -h localhost -p 5432 -q; then
+      return 0
+    fi
+    sleep 1
+  done
+  return 1
+}
 
-INIT_SCRIPT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/cloud-pg-init.sh"
-if [[ -x "$INIT_SCRIPT" ]]; then
-  bash "$INIT_SCRIPT"
-elif [[ -x /usr/local/bin/agatha-cloud-pg-init.sh ]]; then
-  /usr/local/bin/agatha-cloud-pg-init.sh
-fi
+ensure_postgresql
 
 start_rc=0
 sudo pg_ctlcluster "${PG_VERSION}" main start || start_rc=$?
+
+if ! wait_for_postgres; then
+  sudo pg_ctlcluster "${PG_VERSION}" main status >&2 || true
+  die "PostgreSQL ${PG_VERSION}/main is not accepting connections (pg_ctlcluster exit ${start_rc})"
+fi
+
+INIT_SCRIPT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/cloud-pg-init.sh"
+if [[ -f "$INIT_SCRIPT" ]]; then
+  bash "$INIT_SCRIPT"
+elif [[ -f /usr/local/bin/agatha-cloud-pg-init.sh ]]; then
+  bash /usr/local/bin/agatha-cloud-pg-init.sh
+fi
 
 if pg_isready -h localhost -p 5432 -q; then
   log "PostgreSQL ready on localhost:5432"
@@ -40,4 +56,4 @@ if pg_isready -h localhost -p 5432 -q; then
 fi
 
 sudo pg_ctlcluster "${PG_VERSION}" main status >&2 || true
-die "PostgreSQL ${PG_VERSION}/main is not accepting connections (pg_ctlcluster exit ${start_rc})"
+die "PostgreSQL ${PG_VERSION}/main is not accepting connections after init"
