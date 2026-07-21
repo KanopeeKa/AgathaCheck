@@ -157,6 +157,16 @@ When `deploy-prod.yml` runs with `PROD_DEPLOY_ENABLED=true`, the workflow:
 
 **Note:** `remove_all` at deploy start clears existing SSH whitelist entries in the cPanel tool (max 5 slots). Re-add your home IP manually in **Exception pare-feu** if you rely on it outside CI.
 
+**Production (agathatrack.com) cPanel layout** — mirrors UAT addon-domain paths:
+
+| Setting | Value |
+|---------|-------|
+| Application root | `agathatrack.com/backend` (on disk: `~/agathatrack.com/backend`) |
+| Application URL | `agathatrack.com` |
+| Startup file | `bin/start.js` |
+| FTP frontend target | `agathatrack.com/` |
+| FTP backend target | `agathatrack.com/backend/` |
+
 **UAT environment secrets required for SSH:**
 
 | Secret | Where to get it |
