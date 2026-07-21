@@ -256,7 +256,7 @@ jobs:
             echo "changed=false" >> "$GITHUB_OUTPUT"
           fi
 
-      # ── o2switch SSH whitelist (port 22) ─────────────────────────────────────
+      # ── o2switch SSH whitelist (PROD_SSH_PORT, default 22) ───────────────────
       # GitHub runner IPs are blocked until whitelisted via cPanel SshWhitelist API.
       # Requires PROD_CPANEL_API_TOKEN in the PROD environment (same host/user as SSH).
       - name: Verify PROD SSH + cPanel API secrets
@@ -287,10 +287,7 @@ jobs:
       - name: Get runner public IP for o2switch SSH whitelist
         id: runner_ip
         if: steps.prod_ssh_config.outputs.configured == 'true'
-        run: |
-          ip="$(curl -sf --retry 3 https://api.ipify.org || curl -sf --retry 3 https://ifconfig.me)"
-          echo "ipv4=${ip}" >> "$GITHUB_OUTPUT"
-          echo "Runner public IP: ${ip}"
+        run: bash scripts/ci/get-runner-public-ipv4.sh
 
       - name: o2switch SSH whitelist — clear CI slots
         id: whitelist_clear
@@ -310,6 +307,7 @@ jobs:
           CPANEL_SERVER: ${{ secrets.PROD_SSH_HOST }}
           CPANEL_USER: ${{ secrets.PROD_SSH_USER }}
           CPANEL_TOKEN: ${{ secrets.PROD_CPANEL_API_TOKEN }}
+          SSH_PORT: ${{ secrets.PROD_SSH_PORT || 22 }}
           RUNNER_IP: ${{ steps.runner_ip.outputs.ipv4 }}
         run: bash scripts/o2switch-ssh-whitelist.sh add
 
@@ -367,6 +365,7 @@ jobs:
           CPANEL_SERVER: ${{ secrets.PROD_SSH_HOST }}
           CPANEL_USER: ${{ secrets.PROD_SSH_USER }}
           CPANEL_TOKEN: ${{ secrets.PROD_CPANEL_API_TOKEN }}
+          SSH_PORT: ${{ secrets.PROD_SSH_PORT || 22 }}
           RUNNER_IP: ${{ steps.runner_ip.outputs.ipv4 }}
         run: bash scripts/o2switch-ssh-whitelist.sh remove
 
