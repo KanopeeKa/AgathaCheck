@@ -4,7 +4,7 @@
   "approved_at": "2026-07-21T22:25:00Z",
   "approved_by": "user",
   "approved_until": "2026-07-23T22:25:00Z",
-  "content_hash": "sha256:6b0cfce07bfe3f3152a217d5cc76b7be41179a28e5fada94843c4107611f6c35",
+  "content_hash": "sha256:5c9d8260e3042a78c00cfb705debfe374d3afce6bb3cc5c152c80288f0d645c3",
   "autonomy": "active",
   "default_merge_mode": "auto",
   "base_branch": "main",
@@ -69,8 +69,7 @@
       ],
       "allowed_exceptions": [
         "tests",
-        "docs",
-        "backend-route"
+        "docs"
       ],
       "spawn_allowed": false,
       "spawn_config": null,
