@@ -2,8 +2,8 @@
   "version": 1,
   "description": "Authoritative list of incremental SQL migrations. Production upgrades use migrate.js up only. The canonical schema snapshot is generated from baseline + these files and verified in CI.",
   "baseline": {
-    "file": "db/migrations/v3__initial_uuid_schema.sql",
-    "note": "Legacy fresh-install baseline (inlines migrations 001-007). Retained until Phase 3 bootstrap switch; canonical.sql is the drift-check target."
+    "file": "db/migrations/archive/v3__initial_uuid_schema.sql",
+    "note": "Archived legacy baseline — used only by bootstrap-legacy-db.sh for regeneration and CI path equivalence."
   },
   "canonical": "db/schema/canonical.sql",
   "incremental_migrations": [
