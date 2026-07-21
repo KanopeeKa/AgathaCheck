@@ -41,12 +41,13 @@ function parseDate(args) {
       const y = parseInt(m[1], 10);
       const month = parseInt(m[2], 10) - 1;
       const d = parseInt(m[3], 10);
-      if (month < 0 || month > 11 || d < 1 || d > 31) {
+
+      const dt = new Date(Date.UTC(y, month, d));
+      if (dt.getUTCFullYear() !== y || dt.getUTCMonth() !== month || dt.getUTCDate() !== d) {
         console.error(`Invalid --date value: ${raw}.`);
         process.exit(1);
       }
       return { y, m: month, d };
-    }
   }
   const now = new Date();
   return { y: now.getFullYear(), m: now.getMonth(), d: now.getDate() };
