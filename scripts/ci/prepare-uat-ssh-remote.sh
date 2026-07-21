@@ -5,6 +5,7 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 NM_LIB="${ROOT}/scripts/ci/assert-node-modules-symlink.lib.sh"
 HT_LIB="${ROOT}/scripts/ci/uat-htaccess.lib.sh"
+E2E_LIB="${ROOT}/scripts/ci/uat-e2e-env.lib.sh"
 DEPLOY="${ROOT}/scripts/ci/uat-ssh-backend-deploy.sh"
 OUT="${ROOT}/.ci-uat-ssh-remote.sh"
 
@@ -14,6 +15,8 @@ OUT="${ROOT}/.ci-uat-ssh-remote.sh"
   cat "$NM_LIB"
   echo
   cat "$HT_LIB"
+  echo
+  cat "$E2E_LIB"
   echo
   # Deploy body starts at HOME= (libs inlined above; never source on remote).
   awk '/^HOME=.*uat_nm_home_dir/,0' "$DEPLOY"

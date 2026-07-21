@@ -1,0 +1,34 @@
+{
+  "version": 1,
+  "description": "Authoritative list of incremental SQL migrations. Production upgrades use migrate.js up only. The canonical schema snapshot is generated from baseline + these files and verified in CI.",
+  "baseline": {
+    "file": "db/migrations/v3__initial_uuid_schema.sql",
+    "note": "Legacy fresh-install baseline (inlines migrations 001-007). Retained until Phase 3 bootstrap switch; canonical.sql is the drift-check target."
+  },
+  "canonical": "db/schema/canonical.sql",
+  "incremental_migrations": [
+    "001_add_pet_access_hidden.sql",
+    "002_add_missing_pet_columns.sql",
+    "003_add_missing_columns.sql",
+    "004_color_index_bigint.sql",
+    "005_add_vet_fields.sql",
+    "006_add_weight_entry_fields.sql",
+    "007_archived_pets_alignment.sql",
+    "008_pet_share_links.sql",
+    "009_share_link_single_use.sql",
+    "010_event_three_date_logic.sql",
+    "011_next_due_date_to_date.sql",
+    "012_org_roles.sql",
+    "013_org_foster_parents.sql",
+    "014_foster_placements.sql",
+    "015_foster_adoption.sql",
+    "016_migrate_family_events_placements.sql",
+    "017_org_people_contact_fields.sql",
+    "018_org_branding_primary_contact.sql",
+    "019_audit_events.sql",
+    "020_org_custody.sql"
+  ],
+  "code_migrations": [
+    "016_migrate_family_events_placements.sql"
+  ]
+}

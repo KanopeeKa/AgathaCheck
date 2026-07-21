@@ -144,7 +144,7 @@ Invoke **/babysit-plus** with:
 | `approved_until` | from snapshot |
 | **Effective `merge_mode`** | `phase.merge_mode ?? snapshot.default_merge_mode ?? auto` |
 
-Babysit+ handles: sync, triage, fixes, debt issues (dedupe mandatory), CI budget, exit checklist, merge per effective mode.
+Babysit+ handles: sync, triage, fixes, debt issues (dedupe mandatory), CI budget, exit checklist, merge per effective mode, and **spawns a non-blocking UAT babysit sub-agent** after merge (babysit-plus §8).
 
 **Phase gate = merge-done** — do not advance until:
 
@@ -157,6 +157,8 @@ gh pr view <url> --json state,mergedAt,mergeCommit,baseRefName
 git fetch origin <base_branch>
 git merge-base --is-ancestor <mergeCommit.oid> origin/<base_branch>
 ```
+
+**UAT prod-ready is not a phase gate.** The §8 sub-agent watches deploy in parallel; on failure it **pauses** main work (`uat_paused`) and auto-resumes when remedial prod-ready is green. Do not wait for prod-ready before starting the next phase.
 
 ### 6. Complete phase
 
@@ -176,6 +178,8 @@ If more `pending` phases → loop to §1. If all `merged` → set `autonomy: com
 ## Halt (graceful shutdown)
 
 Stop immediately on: revoke label, past `approved_until`, escalation, drift, CI budget exhausted, debt issue create failure, merge failure, or session limit.
+
+**UAT prod-ready failure** → pause (`uat_paused`) via §8 sub-agent; auto-resume when remedial prod-ready is green — not a halt trigger.
 
 ```bash
 node scripts/execute_plan_runtime.js halt <plan_id> \

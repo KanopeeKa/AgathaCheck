@@ -34,10 +34,15 @@ needs_governance=false
 needs_server=false
 needs_flutter=false
 needs_codegen=false
+needs_schema=false
 
 while IFS= read -r f; do
   [[ -z "$f" ]] && continue
   case "$f" in
+    db/migrations/*|db/schema/*|scripts/db/*|e2e/scripts/bootstrap-db.sh)
+      needs_schema=true
+      needs_governance=true
+      ;;
     scripts/*|.github/*|docs/agent-efficiency*|docs/architecture/index.md)
       needs_governance=true
       ;;
@@ -69,6 +74,8 @@ run_governance() {
   node scripts/validate_execute_plan_snapshot.js .agents/plans/_example.snapshot.json
   node scripts/validate_execute_plan_snapshot.js --drift-test
   node --test scripts/execute_plan_runtime.test.js
+  node --test scripts/db/normalize-schema-dump.test.js
+  node scripts/db/check-migration-manifest.js
   node e2e/scripts/check_bdd_coverage.js
   node e2e/scripts/check-smoke-tags.mjs
   bash scripts/ci/check-uat-ssh-action-pin.sh
@@ -137,6 +144,15 @@ run_flutter() {
 $needs_governance && run_governance
 $needs_server && run_server
 $needs_flutter && run_flutter
+
+if $needs_schema; then
+  if pg_isready -h "${PGHOST:-localhost}" -p "${PGPORT:-5432}" -q 2>/dev/null; then
+    echo "==> Schema drift check"
+    RESET_DB=false bash scripts/db/check-schema-equivalence.sh
+  else
+    echo "WARN: Postgres not ready — skip schema equivalence (run scripts/db/check-schema-equivalence.sh before push)"
+  fi
+fi
 
 echo "✓ Changed-files pre-push passed"
 echo "  Run ./scripts/pre-push.sh before merging to main"

@@ -176,6 +176,81 @@ function renderHaltComment(snapshot, { reason, detail }) {
   return lines.join('\n');
 }
 
+function findUatPausedPhase(snapshot) {
+  return snapshot.phases.find(
+    (p) => p.status === 'halted' && p.status_reason === 'uat_paused'
+  );
+}
+
+/** Pause in-progress work for UAT remedial — keeps snapshot autonomy active. */
+function setPhasePaused(snapshot, { reason, detail, phaseId }) {
+  if (!STATUS_REASON.has(reason)) {
+    throw new ExecutePlanError(`invalid pause reason: ${reason}`);
+  }
+  const target =
+    (phaseId && getPhase(snapshot, phaseId)) ||
+    snapshot.phases.find((p) => p.status === 'in_progress') ||
+    findNextPendingPhase(snapshot);
+  if (!target) {
+    throw new ExecutePlanError('no in_progress or pending phase to pause');
+  }
+  target.status = 'halted';
+  target.status_reason = reason;
+  target.status_detail = detail || null;
+  return { snapshot, phase: target };
+}
+
+/** Auto-resume after UAT prod-ready green — no human resume-plan required. */
+function resumeFromUatPause(snapshot, { phaseId } = {}) {
+  const target =
+    (phaseId && getPhase(snapshot, phaseId)) ||
+    findUatPausedPhase(snapshot);
+  if (!target) {
+    throw new ExecutePlanError('no phase paused with uat_paused');
+  }
+  if (target.status_reason !== 'uat_paused') {
+    throw new ExecutePlanError(
+      `phase ${target.id} is ${target.status_reason}, not uat_paused`
+    );
+  }
+  target.status = 'in_progress';
+  target.status_reason = null;
+  target.status_detail = null;
+  return { snapshot, phase: target };
+}
+
+function renderPauseComment(snapshot, { reason, detail }) {
+  const phase = findCurrentPhase(snapshot);
+  const lines = [
+    '## Execute-plan pause (UAT remedial)',
+    '',
+    `- **plan_id:** ${snapshot.plan_id}`,
+    `- **reason:** ${reason}`,
+  ];
+  if (detail) lines.push(`- **detail:** ${detail}`);
+  if (phase) {
+    lines.push(`- **phase:** ${phase.id} (${phase.title})`);
+    if (phase.pr_url) lines.push(`- **pr:** ${phase.pr_url}`);
+  }
+  lines.push(
+    '',
+    'Main work is paused at the next safe checkpoint. The UAT babysit sub-agent owns remedial work.',
+    '**Auto-resume:** when prod-ready is green, the sub-agent calls `resume-uat` — no manual `resume-plan` needed.'
+  );
+  return lines.join('\n');
+}
+
+function renderUatResumeComment(snapshot, { phase }) {
+  return [
+    '## Execute-plan resume (UAT prod-ready green)',
+    '',
+    `- **plan_id:** ${snapshot.plan_id}`,
+    `- **phase:** ${phase.id} (${phase.title})`,
+    '',
+    'UAT prod-ready passed after remedial work. Main agent may continue from checkpoint.',
+  ].join('\n');
+}
+
 function normalizeLabels(labels) {
   if (!labels) return [];
   if (Array.isArray(labels)) return labels.map(String);
@@ -360,6 +435,7 @@ module.exports = {
   effectiveMergeMode,
   findCurrentPhase,
   findNextPendingPhase,
+  findUatPausedPhase,
   gitBranchName,
   gitRevParse,
   normalizeLabels,
@@ -367,8 +443,12 @@ module.exports = {
   renderControlIssueBody,
   renderControlIssueTitle,
   renderHaltComment,
+  renderPauseComment,
   renderRuntimeBlock,
+  renderUatResumeComment,
+  resumeFromUatPause,
   setAutonomyHalted,
+  setPhasePaused,
   setPhaseStatus,
   syncRuntimeState,
   updatePlanRuntimeBlock,
