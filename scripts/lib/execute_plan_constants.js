@@ -34,7 +34,7 @@ const STATUS_REASON = new Set([
   'escalation',
   'issue_create_failed',
   'resume_mismatch',
-  'uat_failed',
+  'uat_paused',
 ]);
 
 const MERGE_MODES = new Set(['manual', 'labeled', 'auto']);

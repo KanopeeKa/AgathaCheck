@@ -183,8 +183,8 @@ After merge (or when babysitting an already-merged fix):
 1. Record merge SHA; **spawn UAT babysit sub-agent** (background Task) to poll until **Deploy UAT / Prod ready** succeeds or fails.
 2. **Main agent continues** (next execute-plan phase, next task, etc.) without waiting for prod-ready.
 3. Sub-agent on **success:** comment that `prod-ready` is green; no main-work interruption.
-4. Sub-agent on **failure:** triage gate table (`scripts/ci/assert-uat-gates.sh` output) — `deploy`, HTTP `smoke`, live `@smoke`, localhost E2E (10 shards), migrations when collected; **halt main work** (execute-plan: `uat_failed`) or pivot to remedial babysit-plus (standalone).
-5. Remediate in a follow-up PR when needed; repeat babysit-plus from §0; spawn a fresh sub-agent for the remedial merge SHA.
+4. Sub-agent on **failure:** triage gate table (`scripts/ci/assert-uat-gates.sh` output); **pause** main work (`uat_paused` via `pause` CLI); sub-agent owns remedial PR through prod-ready; **auto-resume** main work when green (`resume-uat` CLI — no human `resume-plan`).
+5. Remediate in a follow-up PR when needed; sub-agent repeats §8b until prod-ready passes or §9 escalation applies.
 
 See `docs/ci-cd-gates.md` §3 · babysit-plus §8b–8c · `docs/e2e-ci-canary-plan.md` Phase 5.
 
@@ -235,7 +235,8 @@ Plan changes after approval → new snapshot + `approve-autonomous` again.
 - Drift (`status_reason: drift`)
 - CI budget exhausted
 - Issue tracking failed
-- UAT prod-ready failure (`status_reason: uat_failed`)
+
+(UAT prod-ready failure uses **pause** + sub-agent remedial + **auto-resume** — not escalation. True halt only for infra blockers per babysit-plus §9.)
 
 ---
 

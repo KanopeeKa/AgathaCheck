@@ -64,6 +64,25 @@ node scripts/execute_plan_runtime.js halt <plan_id> \
 
 `--autonomy` defaults to `halted`; use `revoked` when `autonomous-revoked` label applied.
 
+### Pause (UAT remedial — keeps autonomy active)
+
+Pauses the in-progress phase without setting snapshot `autonomy` to `halted`. Used by the UAT babysit sub-agent when prod-ready fails.
+
+```bash
+node scripts/execute_plan_runtime.js pause <plan_id> \
+  --reason uat_paused --detail "prod-ready: smoke shard 3 failed" --write
+```
+
+### Resume UAT (auto-resume — no human `resume-plan`)
+
+Clears `uat_paused` on the halted phase and restores `in_progress`. Sub-agent calls this when remedial prod-ready is green.
+
+```bash
+node scripts/execute_plan_runtime.js resume-uat <plan_id> --write
+```
+
+Prints JSON (`next_action`, phase) plus a resume comment for the control issue. Main agent continues via `/execute-plan <plan_id> resume` without manual intervention.
+
 ### Phase status + artifact sync
 
 ```bash

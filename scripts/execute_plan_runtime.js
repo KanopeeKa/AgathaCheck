@@ -6,6 +6,8 @@
  *   node scripts/execute_plan_runtime.js gate <plan_id> [--labels a,b]
  *   node scripts/execute_plan_runtime.js resume-check <plan_id> --phase <id> [--pr-head <sha>] [--labels a,b] [--accept-head]
  *   node scripts/execute_plan_runtime.js halt <plan_id> --reason <status_reason> [--autonomy halted|revoked] [--detail text] [--write]
+ *   node scripts/execute_plan_runtime.js pause <plan_id> --reason <status_reason> [--phase <id>] [--detail text] [--write]
+ *   node scripts/execute_plan_runtime.js resume-uat <plan_id> [--phase <id>] [--write]
  *   node scripts/execute_plan_runtime.js set-phase <plan_id> --phase <id> --status <status> [--reason r] [--pr-url u] [--pr-head sha] [--write]
  *   node scripts/execute_plan_runtime.js sync-runtime <plan_id> [--branch b] [--write]
  *   node scripts/execute_plan_runtime.js render-control-issue <plan_id> [--title]
@@ -27,8 +29,12 @@ const {
   renderControlIssueBody,
   renderControlIssueTitle,
   renderHaltComment,
+  renderPauseComment,
+  renderUatResumeComment,
+  resumeFromUatPause,
   saveSnapshot,
   setAutonomyHalted,
+  setPhasePaused,
   setPhaseStatus,
   syncRuntimeState,
   validateSnapshot,
@@ -42,6 +48,8 @@ Commands:
   gate <plan_id> [--labels label1,label2]
   resume-check <plan_id> --phase <id> [--pr-head <sha>] [--labels ...] [--accept-head]
   halt <plan_id> --reason <status_reason> [--autonomy halted|revoked] [--detail text] [--write]
+  pause <plan_id> --reason <status_reason> [--phase <id>] [--detail text] [--write]
+  resume-uat <plan_id> [--phase <id>] [--write]
   set-phase <plan_id> --phase <id> --status <status> [--reason r] [--detail t] [--pr-url u] [--pr-head sha] [--write]
   sync-runtime <plan_id> [--branch b] [--write]
   render-control-issue <plan_id> [--title]
@@ -130,6 +138,50 @@ function main() {
           saveSnapshot(planId, snapshot);
           syncRuntimeState(planId);
         }
+        console.log(comment);
+        if (!flags.write) {
+          console.error('execute_plan_runtime: dry-run (pass --write to persist)');
+        }
+        break;
+      }
+
+      case 'pause': {
+        if (!planId || !flags.reason) usage();
+        const snapshot = loadSnapshot(planId);
+        setPhasePaused(snapshot, {
+          reason: flags.reason,
+          detail: flags.detail,
+          phaseId: flags.phase,
+        });
+        const comment = renderPauseComment(snapshot, {
+          reason: flags.reason,
+          detail: flags.detail,
+        });
+        if (flags.write) {
+          saveSnapshot(planId, snapshot);
+          syncRuntimeState(planId);
+        }
+        console.log(comment);
+        if (!flags.write) {
+          console.error('execute_plan_runtime: dry-run (pass --write to persist)');
+        }
+        break;
+      }
+
+      case 'resume-uat': {
+        if (!planId) usage();
+        const snapshot = loadSnapshot(planId);
+        const { phase } = resumeFromUatPause(snapshot, { phaseId: flags.phase });
+        const comment = renderUatResumeComment(snapshot, { phase });
+        if (flags.write) {
+          saveSnapshot(planId, snapshot);
+          syncRuntimeState(planId);
+        }
+        printJson({
+          ok: true,
+          phase: { id: phase.id, status: phase.status, branch: phase.branch },
+          next_action: computeNextAction(snapshot),
+        });
         console.log(comment);
         if (!flags.write) {
           console.error('execute_plan_runtime: dry-run (pass --write to persist)');

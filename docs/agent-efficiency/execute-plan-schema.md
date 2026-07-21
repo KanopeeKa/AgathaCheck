@@ -140,7 +140,7 @@ Unclassified out-of-path file → `status: blocked`, `status_reason: drift`.
 | `escalation` | `blocked` | Security / API / migration / product decision |
 | `issue_create_failed` | `blocked` | Debt issue create/update failed |
 | `resume_mismatch` | `blocked` | PR `headRefOid` ≠ recorded `pr_head_sha` |
-| `uat_failed` | `blocked` | UAT babysit sub-agent reported prod-ready failure |
+| `uat_paused` | `halted` | UAT babysit sub-agent paused main work pending remedial prod-ready |
 
 ---
 

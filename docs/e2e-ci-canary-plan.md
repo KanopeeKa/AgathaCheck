@@ -148,7 +148,7 @@ flowchart TD
 | Skill | `.cursor/skills/babysit-plus/SKILL.md` §8 — spawn **non-blocking** UAT babysit sub-agent after merge |
 | Failure dispatch | `agent-uat-fix` label → agent-dispatch on UAT failure |
 
-**Exit:** Main work does not wait on the UAT poll; sub-agent reports success quietly or **halts main work on failure** (`uat_failed`).
+**Exit:** Main work does not wait on the UAT poll; sub-agent reports success quietly, or **pauses** main work on failure and **auto-resumes** when remedial prod-ready is green.
 
 **Risk:** High — 48h autonomy window, infra vs code classification.
 

@@ -73,7 +73,7 @@
         "escalation",
         "issue_create_failed",
         "resume_mismatch",
-        "uat_failed"
+        "uat_paused"
       ]
     },
     "exception_file": {
