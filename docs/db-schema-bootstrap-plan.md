@@ -110,17 +110,20 @@ See also: [DEPLOYMENT_DB.md](../DEPLOYMENT_DB.md) (deploy commands), [calendar-d
 
 **Outcome:** Human testers get stable personas without API signup friction.
 
-### Work
+**Status:** Complete — idempotent seed script + `uat-reset.sh` with `APP_ENV` guards.
 
-1. `db/seeds/uat-demo.sql` or `server/scripts/seed.js` — fixed UUIDs, known passwords (documented in internal runbook only).
-2. Scenarios: `guardian`, `org-clinic`, `foster`, `sharing` (extract from `e2e/playwright/support/api.ts` personas).
-3. Idempotent upserts (`ON CONFLICT DO NOTHING` / merge).
-4. `APP_ENV` guard: refuse seed when `production`.
+### Delivered
+
+- `server/scripts/seed.js` — scenarios `guardian`, `org-clinic`, `all`
+- `scripts/db/uat-reset.sh` — drop + bootstrap + seed (non-prod only)
+- `scripts/db/guard-non-prod.js` — shared production refusal helper
+- `docs/e2e/uat-demo-personas.md` — stable credentials and UUIDs
 
 ### Exit criteria
 
-- `make uat-reset` or documented one-command UAT refresh (non-prod only).
-- E2E can optionally use SQL seed for stable live-UAT smoke.
+- [x] Documented one-command UAT refresh (`scripts/db/uat-reset.sh`)
+- [x] `APP_ENV=production` refuses seed/reset
+- [x] Jest coverage for guard + demo constants
 
 ---
 
