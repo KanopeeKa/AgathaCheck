@@ -66,17 +66,17 @@
       "spawn_config": null,
       "merge_method": "squash",
       "exit_checklist": "governance",
-      "status": "in_progress",
+      "status": "merged",
       "status_reason": null,
       "status_detail": null,
       "debt_issue_refs": [],
       "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/243",
-      "pr_head_sha": "9f2577f"
+      "merge_commit": "8f4cce4"
     },
     {
       "id": "2a",
       "title": "PR CI canary advisory",
-      "branch": "cursor/e2e-canary-phase2a-ci-advisory-48ef",
+      "branch": "cursor/e2e-canary-phase2a-ci-advisory-8b4d",
       "allowed_paths": [
         ".github/workflows/**",
         "scripts/ci/**",
@@ -97,7 +97,7 @@
       "spawn_config": null,
       "merge_method": "squash",
       "exit_checklist": "governance",
-      "status": "pending",
+      "status": "in_progress",
       "status_reason": null,
       "status_detail": "Job runs parallel with flutter-test-rest; not in ci-gate yet",
       "pr_url": null,

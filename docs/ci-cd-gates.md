@@ -89,6 +89,7 @@ but are not individually required once the ruleset is migrated.
 | `flutter-coverage / Flutter domain coverage` | `flutter-coverage` | `Flutter domain coverage` | `_reusable-flutter-coverage.yml` |
 | `flutter-integration / Flutter integration` | `flutter-integration` | `Flutter integration` | `_reusable-flutter-integration.yml` |
 | `flutter-build-web / Build Flutter web` | `flutter-build-web` | `Build Flutter web` | `_reusable-build-web.yml` |
+| `ci-e2e-canary / Playwright @smoke-ci canary (localhost)` | `ci-e2e-canary` | `Playwright @smoke-ci canary (localhost)` | `_reusable-e2e-local.yml` |
 | `test-suite / Backend (Node.js Jest + Dart analyze)` | `test-suite` | `Backend (Node.js Jest + Dart analyze)` | `_reusable-test.yml` |
 | `test-suite / E2E package audit` | `test-suite` | `E2E package audit` | `_reusable-test.yml` |
 | `Analyze JavaScript` | — | `Analyze JavaScript` | `codeql.yml` (direct job; **required separately**) |
@@ -99,6 +100,10 @@ checks listed in **Main protection** ruleset should be removed when
 
 **Optional (visible, not required individually):** `flutter-test-{pet,health,org,rest} / Flutter tests (<shard>)` —
 the merge gate `flutter-coverage / Flutter domain coverage` covers shard failures (enforced via `ci-gate`).
+
+**Advisory (visible, not required):** `ci-e2e-canary / Playwright @smoke-ci canary (localhost)` —
+PR Playwright canary (`@smoke-ci`, retries 0). Soak on green runs before Phase 2b adds it to `ci-gate`.
+See [e2e-ci-canary-plan.md](./e2e-ci-canary-plan.md).
 
 #### Accepted trade-off: no CI re-run on merge to `main`
 
