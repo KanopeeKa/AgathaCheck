@@ -22,7 +22,7 @@
     "nodemailer": "^9.0.3",
     "pg": "^8.22.0",
     "pino": "^10.3.1",
-    "sinon": "^22.0.0",
+    "sinon": "^22.1.0",
     "uuid": "^14.0.1"
   },
   "devDependencies": {
