@@ -164,8 +164,9 @@ When `deploy-prod.yml` runs with `PROD_DEPLOY_ENABLED=true`, the workflow:
 | Application root | `agathatrack.com/backend` (on disk: `~/agathatrack.com/backend`) |
 | Application URL | `agathatrack.com` |
 | Startup file | `bin/start.js` |
-| FTP frontend target | `agathatrack.com/` |
-| FTP backend target | `agathatrack.com/backend/` |
+| FTP frontend target | `./agathatrack.com/` |
+| FTP backend target | `./agathatrack.com/backend/` |
+| SSH site root (on disk) | `~/agathatrack.com` |
 
 **UAT environment secrets required for SSH:**
 
