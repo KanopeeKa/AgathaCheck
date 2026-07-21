@@ -17,6 +17,7 @@ node e2e/scripts/check_bdd_coverage.js
 node scripts/check_bdd_priority_tags.js
 bash scripts/ci/check-uat-ssh-action-pin.sh
 bash scripts/ci/shellcheck-uat-deploy-scripts.sh
+bash scripts/ci/assert-prod-deploy-db-commands.sh
 
 echo "==> Server (audit + Jest)"
 (

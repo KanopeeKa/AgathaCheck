@@ -80,6 +80,7 @@ run_governance() {
   node e2e/scripts/check-smoke-tags.mjs
   bash scripts/ci/check-uat-ssh-action-pin.sh
   bash scripts/ci/shellcheck-uat-deploy-scripts.sh
+  bash scripts/ci/assert-prod-deploy-db-commands.sh
 }
 
 run_server() {
