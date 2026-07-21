@@ -2,7 +2,7 @@
 # PROD post-FTP backend steps over SSH (migrate + Passenger restart).
 #
 # Env:
-#   PROD_SITE_ROOT — default ~/public_html/Prod
+#   PROD_SITE_ROOT — default ~/agathatrack.com (o2switch addon-domain layout)
 #   PKG_CHANGED — when "true", logs manual cPanel Run NPM Install reminder
 set -euo pipefail
 
@@ -11,7 +11,7 @@ source "$(cd "$(dirname "$0")" && pwd)/assert-node-modules-symlink.lib.sh"
 
 HOME="$(uat_nm_home_dir)"
 export HOME
-PROD_SITE_ROOT="${PROD_SITE_ROOT:-${HOME}/public_html/Prod}"
+PROD_SITE_ROOT="${PROD_SITE_ROOT:-${HOME}/agathatrack.com}"
 APPDIR="${PROD_SITE_ROOT}/backend"
 PKG_CHANGED="${PKG_CHANGED:-false}"
 
