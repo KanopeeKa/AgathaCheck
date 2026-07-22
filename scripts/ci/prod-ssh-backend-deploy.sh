@@ -23,6 +23,16 @@ echo "site_root=${PROD_SITE_ROOT}"
 echo "app_dir=${APPDIR}"
 echo "pkg_changed=${PKG_CHANGED}"
 
+echo "pkg_changed=${PKG_CHANGED}"
+
+if [[ ! -f "${APPDIR}/package.json" ]]; then
+  echo "::error::${APPDIR}/package.json missing after FTP deploy." >&2
+  echo "::error::PROD FTP account is likely jailed to a subfolder (e.g. agathatrack.com/PROD_user)." >&2
+  echo "::error::Fix cPanel → FTP Accounts → set Directory to /home/<cpanel-user>/agathatrack.com (same pattern as UAT → uat.agathatrack.com)." >&2
+  echo "::error::Then move misplaced files up and re-run deploy. See DEPLOYMENT_CPANEL_NODEJS.md." >&2
+  exit 1
+fi
+
 if [[ "$PKG_CHANGED" == "true" ]]; then
   echo "::warning title=Dependencies changed::server/package.json or package-lock.json changed in this deploy."
   echo "::warning::Manual action required: cPanel → Setup Node.js App → Run NPM Install → Restart"
