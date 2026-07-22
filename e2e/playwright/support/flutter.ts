@@ -326,26 +326,26 @@ export async function skipGuardianOnboardingIfPresent(
   await refreshFlutterAccessibility(page);
 }
 
-/** Complete the guardian onboarding wizard (pet + reminder). */
+/** Complete the guardian onboarding wizard (pet only). */
 export async function completeGuardianOnboarding(
   page: Page,
   petName: string,
-  reminderName: string,
   timeout?: number,
 ): Promise<void> {
   const effectiveTimeout = timeout ?? postLoginTimeout(60_000);
   await waitForFlutterRoutePattern(page, /\/g\/onboarding/, effectiveTimeout);
   await refreshFlutterAccessibility(page);
 
-  await page.getByRole('button', { name: /get started/i }).click();
+  await page.getByRole('button', { name: /get started|commencer/i }).click();
   await refreshFlutterAccessibility(page);
-  await page.getByRole('textbox', { name: /name/i }).first().waitFor({ timeout: effectiveTimeout });
-  await fillLabelledField(page, 'Name', petName);
-  await page.getByRole('button', { name: 'Continue' }).click();
-  await refreshFlutterAccessibility(page);
-  await page.getByRole('textbox', { name: /reminder name/i }).waitFor({ timeout: effectiveTimeout });
-  await fillLabelledField(page, 'Reminder name', reminderName);
-  await page.getByRole('button', { name: /finish setup/i }).click();
+  await page
+    .getByRole('textbox', { name: /name|nom/i })
+    .first()
+    .waitFor({ timeout: effectiveTimeout });
+  await fillTextbox(page, /name|nom/i, petName);
+  await page
+    .getByRole('button', { name: /finish setup|terminer la configuration/i })
+    .click();
   await waitForFlutterRoutePattern(page, /\/g\/home/, effectiveTimeout);
   await refreshFlutterAccessibility(page);
 }

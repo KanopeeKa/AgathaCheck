@@ -212,7 +212,7 @@
   },
   "guardian_onboarding.feature": {
     "New guardian user sees onboarding wizard after first login": "P1",
-    "Guardian completes onboarding with pet and reminder": "P1"
+    "Guardian completes onboarding with pet": "P1"
   },
   "org_onboarding.feature": {
     "New org super-admin sees onboarding wizard after first login": "P1",
