@@ -67,7 +67,7 @@ jobs:
     secrets:
       POSTHOG_API_KEY: ${{ secrets.POSTHOG_API_KEY }}
 
-  # Advisory PR canary — @smoke-ci (retries 0). Visible on PRs; not in ci-gate until Phase 2b soak.
+  # PR canary — @smoke-ci (retries 0). Blocking via ci-gate (Phase 2b).
   ci-e2e-canary:
     needs: flutter-build-web
     if: needs.flutter-build-web.result == 'success'
@@ -91,6 +91,7 @@ jobs:
       - flutter-coverage
       - flutter-integration
       - flutter-build-web
+      - ci-e2e-canary
     if: always()
     uses: ./.github/workflows/_reusable-ci-gate.yml
     with:
@@ -104,3 +105,4 @@ jobs:
       flutter_coverage: ${{ needs.flutter-coverage.result }}
       flutter_integration: ${{ needs.flutter-integration.result }}
       flutter_build_web: ${{ needs.flutter-build-web.result }}
+      ci_e2e_canary: ${{ needs.ci-e2e-canary.result }}

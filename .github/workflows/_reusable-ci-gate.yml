@@ -34,6 +34,9 @@ on:
       flutter_build_web:
         required: true
         type: string
+      ci_e2e_canary:
+        required: true
+        type: string
 
 permissions:
   contents: read
@@ -62,4 +65,5 @@ jobs:
           FLUTTER_COVERAGE: ${{ inputs.flutter_coverage }}
           FLUTTER_INTEGRATION: ${{ inputs.flutter_integration }}
           FLUTTER_BUILD_WEB: ${{ inputs.flutter_build_web }}
+          CI_E2E_CANARY: ${{ inputs.ci_e2e_canary }}
         run: bash scripts/ci/assert-ci-gate.sh
