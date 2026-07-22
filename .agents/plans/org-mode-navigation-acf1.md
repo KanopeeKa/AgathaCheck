@@ -33,7 +33,7 @@ Formalise the org-mode user journey: guardian users without org membership can e
 |-------|-------|
 | **approved_at** | `2026-07-22T12:31:00Z` |
 | **approved_until** | `2026-07-24T12:31:00Z` |
-| **control_issue** | TBD |
+| **control_issue** | #262 |
 | **autonomy** | `active` |
 
 ## Phases
