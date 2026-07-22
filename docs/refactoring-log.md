@@ -275,6 +275,28 @@ Tracks planned and completed refactor / quality work. See also `docs/refactoring
 
 ---
 
+## Sprint 11 — UI theme rework (planned)
+
+**Goal:** Calm care-coordination visual system — sage palette, tokenized theme, phased screen alignment.  
+**Execution plan:** `docs/design/ui-rework-plan.md` (phases 0–7)  
+**Governance:** `docs/design/index.md`, `.cursor/rules/design.mdc`, skills `/ui-check`, `/ui-design-deep`  
+**PR #267:** design governance + plan doc
+
+| Phase | Outcome | Status |
+|-------|---------|--------|
+| 0 | `tokens.md` + `app_theme.dart` only | Planned |
+| 1 | Shared components + `AppTheme.org*` → tokens | Planned |
+| 2 | Auth, landing, onboarding | Planned |
+| 3 | Guardian shell, pet list/detail, notifications | Planned |
+| 4 | Health, vet, weight forms | Planned |
+| 5 | Organisation + foster portal | Planned |
+| 6 | Sharing, help, about, paywall, stragglers | Planned |
+| 7 | QA, a11y coverage, doc closeout | Planned |
+
+**Sprint 11 exit criteria:** No purple-seed theme; zero undocumented `Color(0x` outside theme/charts; `./scripts/pre-push.sh` green; axe clean on primary journeys.
+
+---
+
 ## Parallel-agent ownership matrix (reference)
 
 Use this template when spawning agents on an integration branch:
@@ -295,6 +317,7 @@ Use this template when spawning agents on an integration branch:
 
 | Date | Change |
 |---|---|
+| 2026-07-22 | Sprint 11 planned: UI theme rework — `docs/design/ui-rework-plan.md`; design governance PR #267 |
 | 2026-07-19 | PR C (#220): due-events E2E restores home `DueEventsSection` assertion via `PetListPage.refreshByRemount()` after API seed (#216 events-screen proxy superseded). |
 | 2026-07-19 | #219 merged: E2E shell-navigation fallback contract (`navigateWithShellFallback`). |
 | 2026-07-19 | #218 merged: UAT pre-flight health probe before live smoke workers. |

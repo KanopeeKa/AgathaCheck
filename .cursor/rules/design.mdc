@@ -23,7 +23,7 @@ AgathaTrack is **calm care coordination** — professional for shelters, warm fo
 - **State:** color is not the only signal — pair with text, icon, or weight for status/urgency.
 - **Copy:** operational flows = direct; warmth OK in onboarding, empty states, confirmations. No cute jokes in medical/admin tasks.
 - **Context:** one product — guardian (`/g/*`) vs org (`/o/*`) differs by route/`AppExperience`, not a second visual system. See `docs/experience-split-plan.md`.
-- **Strings:** user-facing text in ARB/l10n; localize enum `.label` when touched (`.agents/memory/localization-enum-labels.md`).
+- **Strings:** user-facing text in ARB/l10n; localize enum `.label` when touched (`.agents/memory/localization-enum-labels.md`). Copy tone: `docs/design/copy-tone.md`.
 
 ## Deeper work
 
@@ -32,5 +32,7 @@ AgathaTrack is **calm care coordination** — professional for shelters, warm fo
 | Touching a screen or widget | This rule + `accessibility.mdc` |
 | PR polish / quick review | Skill: `/ui-check` |
 | New flow, theme shift, multi-screen consistency | Skill: `/ui-design-deep` → `docs/design/principles.md` |
+| Auth / landing on web | `.agents/memory/flutter-web-password-managers.md` |
+| UI rework / theme project | `docs/design/ui-rework-plan.md` |
 
 **Theme source:** `flutter_app/lib/core/theme/app_theme.dart`
