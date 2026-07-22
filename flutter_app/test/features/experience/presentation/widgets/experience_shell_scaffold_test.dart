@@ -27,6 +27,11 @@ class _FosterOrgListNotifier extends OrganizationListNotifier {
   ];
 }
 
+class _EmptyOrgListNotifier extends OrganizationListNotifier {
+  @override
+  Future<List<Organization>> build() async => [];
+}
+
 void main() {
   final dualEligibility = ExperienceEligibilityRules.compute(
     pets: const [
@@ -42,6 +47,11 @@ void main() {
     orgMembershipCount: 1,
   );
 
+  final guardianOnlyEligibility = ExperienceEligibilityRules.compute(
+    pets: const [Pet(id: '1', name: 'A', species: 'Cat')],
+    orgMembershipCount: 0,
+  );
+
   testWidgets('guardian shell shows home and events nav keys', (tester) async {
     await tester.pumpWidget(
       ProviderScope(
@@ -49,7 +59,7 @@ void main() {
           experienceEligibilityProvider.overrideWith(
             (ref) => AsyncValue.data(dualEligibility),
           ),
-          unreadNotificationCountProvider.overrideWith((ref) => 0),
+          guardianUnreadNotificationCountProvider.overrideWith((ref) => 0),
           authProvider.overrideWith((ref) => FakeAuthNotifier()),
         ],
         child: MaterialApp(
@@ -75,6 +85,40 @@ void main() {
     expect(find.byKey(const Key('experience_settings_menu')), findsOneWidget);
   });
 
+  testWidgets('org shell hides events from top nav', (tester) async {
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          organizationListProvider.overrideWith(_EmptyOrgListNotifier.new),
+          experienceEligibilityProvider.overrideWith(
+            (ref) => AsyncValue.data(dualEligibility),
+          ),
+          orgUnreadNotificationCountProvider.overrideWith((ref) => 0),
+          guardianUnreadNotificationCountProvider.overrideWith((ref) => 0),
+          authProvider.overrideWith((ref) => FakeAuthNotifier()),
+        ],
+        child: MaterialApp(
+          localizationsDelegates: const [
+            AppLocalizations.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: ExperienceShellScaffold(
+            experience: AppExperience.organization,
+            currentLocation: '/o/home',
+            child: const SizedBox.shrink(),
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(const Key('experience_nav_home')), findsOneWidget);
+    expect(find.byKey(const Key('experience_nav_events')), findsNothing);
+  });
+
   testWidgets('drawer shows organisation view for dual-role guardian shell', (
     tester,
   ) async {
@@ -84,7 +128,7 @@ void main() {
           experienceEligibilityProvider.overrideWith(
             (ref) => AsyncValue.data(dualEligibility),
           ),
-          unreadNotificationCountProvider.overrideWith((ref) => 0),
+          guardianUnreadNotificationCountProvider.overrideWith((ref) => 0),
           authProvider.overrideWith((ref) => FakeAuthNotifier()),
         ],
         child: MaterialApp(
@@ -109,9 +153,47 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.byKey(const Key('drawer_org_view')), findsOneWidget);
+    expect(find.byKey(const Key('drawer_create_organisation')), findsOneWidget);
   });
 
-  testWidgets('org foster portal drawer hides invite and upcoming events', (
+  testWidgets('guardian drawer always shows create organisation entry', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          experienceEligibilityProvider.overrideWith(
+            (ref) => AsyncValue.data(guardianOnlyEligibility),
+          ),
+          guardianUnreadNotificationCountProvider.overrideWith((ref) => 0),
+          authProvider.overrideWith((ref) => FakeAuthNotifier()),
+        ],
+        child: MaterialApp(
+          localizationsDelegates: const [
+            AppLocalizations.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: ExperienceShellScaffold(
+            experience: AppExperience.guardian,
+            currentLocation: '/g/home',
+            child: const SizedBox.shrink(),
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.byKey(const Key('experience_settings_menu')));
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(const Key('drawer_create_organisation')), findsOneWidget);
+    expect(find.byKey(const Key('drawer_org_view')), findsNothing);
+  });
+
+  testWidgets('org drawer lists organisations and my pets for foster portal', (
     tester,
   ) async {
     await tester.pumpWidget(
@@ -135,7 +217,8 @@ void main() {
               ),
             ),
           ),
-          unreadNotificationCountProvider.overrideWith((ref) => 0),
+          orgUnreadNotificationCountProvider.overrideWith((ref) => 0),
+          guardianUnreadNotificationCountProvider.overrideWith((ref) => 2),
           authProvider.overrideWith((ref) => FakeAuthNotifier()),
         ],
         child: MaterialApp(
@@ -159,8 +242,10 @@ void main() {
     await tester.tap(find.byKey(const Key('experience_settings_menu')));
     await tester.pumpAndSettle();
 
+    expect(find.byKey(const Key('drawer_org_o1')), findsOneWidget);
+    expect(find.text('Shelter'), findsOneWidget);
+    expect(find.byKey(const Key('drawer_my_pets')), findsOneWidget);
+    expect(find.byKey(const Key('drawer_org_events')), findsOneWidget);
     expect(find.byKey(const Key('drawer_invite')), findsNothing);
-    expect(find.text('Upcoming events'), findsNothing);
-    expect(find.text('Settings'), findsOneWidget);
   });
 }

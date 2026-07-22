@@ -5833,6 +5833,18 @@ abstract class AppLocalizations {
   /// **'Organisation view'**
   String get experienceOrgView;
 
+  /// No description provided for @drawerCreateOrg.
+  ///
+  /// In en, this message translates to:
+  /// **'Create an org'**
+  String get drawerCreateOrg;
+
+  /// No description provided for @orgNotificationsDrawer.
+  ///
+  /// In en, this message translates to:
+  /// **'Org. notifications'**
+  String get orgNotificationsDrawer;
+
   /// No description provided for @experienceGuardianView.
   ///
   /// In en, this message translates to:

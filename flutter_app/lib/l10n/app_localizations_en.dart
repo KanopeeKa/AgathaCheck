@@ -3215,6 +3215,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get experienceOrgView => 'Organisation view';
 
   @override
+  String get drawerCreateOrg => 'Create an org';
+
+  @override
+  String get orgNotificationsDrawer => 'Org. notifications';
+
+  @override
   String get experienceGuardianView => 'Pet guardian view';
 
   @override

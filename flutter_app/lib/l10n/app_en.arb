@@ -1120,6 +1120,8 @@
   "experienceRememberChoice": "Remember my choice for next time",
   "experienceRememberChoiceHint": "You can change your default view later in Settings.",
   "experienceOrgView": "Organisation view",
+  "drawerCreateOrg": "Create an org",
+  "orgNotificationsDrawer": "Org. notifications",
   "experienceGuardianView": "Pet guardian view",
   "experienceDefaultSettingTitle": "Default experience",
   "experienceDefaultSettingSubtitle": "Used when you sign in. You can still switch anytime from the menu.",

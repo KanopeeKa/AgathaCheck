@@ -1031,6 +1031,8 @@
   "experienceRememberChoice": "Mémoriser mon choix pour la prochaine fois",
   "experienceRememberChoiceHint": "Vous pourrez modifier la vue par défaut plus tard dans les Paramètres.",
   "experienceOrgView": "Vue organisation",
+  "drawerCreateOrg": "Créer une organisation",
+  "orgNotificationsDrawer": "Notifications organisation",
   "experienceGuardianView": "Vue gardien",
   "experienceDefaultSettingTitle": "Expérience par défaut",
   "experienceDefaultSettingSubtitle": "Utilisée à la connexion. Vous pouvez toujours changer via le menu.",
