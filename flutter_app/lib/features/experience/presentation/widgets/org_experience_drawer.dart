@@ -109,7 +109,7 @@ class OrgExperienceDrawer extends ConsumerWidget {
                   },
                 ),
                 const Divider(),
-                if (showGuardianView)
+                if (showGuardianView) ...[
                   ListTile(
                     key: const Key('drawer_my_pets'),
                     leading: Badge(
@@ -125,7 +125,8 @@ class OrgExperienceDrawer extends ConsumerWidget {
                       context.go(AppExperience.guardian.homePath());
                     },
                   ),
-                const Divider(),
+                  const Divider(),
+                ],
                 ListTile(
                   leading: const Icon(Icons.settings_outlined),
                   title: Text(l.settings),

@@ -4,7 +4,6 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../l10n/app_localizations.dart';
 import '../../../auth/presentation/providers/auth_providers.dart';
-import '../../../notifications/presentation/providers/notification_providers.dart';
 import '../../domain/entities/app_experience.dart';
 import '../../domain/services/org_onboarding_rules.dart';
 import '../providers/experience_providers.dart';
