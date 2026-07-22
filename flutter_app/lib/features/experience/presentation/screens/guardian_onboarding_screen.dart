@@ -1,18 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:intl/intl.dart';
-import 'package:uuid/uuid.dart';
 
-import '../../../../core/utils/calendar_date.dart';
 import '../../../../core/utils/constants.dart';
 import '../../../../l10n/app_localizations.dart';
-import '../../../health_tracking/domain/entities/health_entry.dart';
-import '../../../health_tracking/presentation/providers/health_providers.dart';
 import '../../../pet_profile/presentation/providers/pet_providers.dart';
 import '../providers/experience_providers.dart';
 
-/// Guided wizard for new guardians: add first pet + first reminder.
+/// Guided wizard for new guardians: add first pet.
 class GuardianOnboardingScreen extends ConsumerStatefulWidget {
   const GuardianOnboardingScreen({super.key});
 
@@ -23,22 +18,19 @@ class GuardianOnboardingScreen extends ConsumerStatefulWidget {
 
 class _GuardianOnboardingScreenState
     extends ConsumerState<GuardianOnboardingScreen> {
+  static const _stepCount = 2;
+
   final _pageController = PageController();
   final _petNameController = TextEditingController();
-  final _reminderNameController = TextEditingController();
 
   int _step = 0;
   String _species = AppConstants.species.first;
-  DateTime _dueDate = calendarDateOnly(
-    DateTime.now().add(const Duration(days: 7)),
-  );
   bool _isSaving = false;
 
   @override
   void dispose() {
     _pageController.dispose();
     _petNameController.dispose();
-    _reminderNameController.dispose();
     super.dispose();
   }
 
@@ -56,25 +48,13 @@ class _GuardianOnboardingScreenState
   Future<void> _finish() async {
     final l = AppLocalizations.of(context)!;
     final petName = _petNameController.text.trim();
-    final reminderName = _reminderNameController.text.trim();
-    if (petName.isEmpty || reminderName.isEmpty) return;
+    if (petName.isEmpty) return;
 
     setState(() => _isSaving = true);
     try {
-      final petId = await ref
+      await ref
           .read(petListProvider.notifier)
           .addPet(name: petName, species: _species);
-      final entry = HealthEntry(
-        id: const Uuid().v4(),
-        petId: petId,
-        name: reminderName,
-        type: HealthEntryType.medication,
-        frequency: HealthFrequency.monthly,
-        frequencyInterval: 1,
-        startDate: calendarDateOnly(DateTime.now()),
-        nextDueDate: calendarDateOnly(_dueDate),
-      );
-      await ref.read(healthEntriesNotifierProvider.notifier).create(entry);
       await _persistOnboardingComplete();
       if (!mounted) return;
       context.go('/g/home');
@@ -90,8 +70,7 @@ class _GuardianOnboardingScreenState
 
   void _nextStep() {
     if (_step == 1 && _petNameController.text.trim().isEmpty) return;
-    if (_step == 2 && _reminderNameController.text.trim().isEmpty) return;
-    if (_step >= 2) {
+    if (_step >= 1) {
       _finish();
       return;
     }
@@ -120,7 +99,7 @@ class _GuardianOnboardingScreenState
       ),
       body: Column(
         children: [
-          LinearProgressIndicator(value: (_step + 1) / 3, minHeight: 4),
+          LinearProgressIndicator(value: (_step + 1) / _stepCount, minHeight: 4),
           Expanded(
             child: PageView(
               controller: _pageController,
@@ -136,24 +115,6 @@ class _GuardianOnboardingScreenState
                   species: _species,
                   onSpeciesChanged: (value) => setState(() => _species = value),
                 ),
-                _ReminderStep(
-                  nameController: _reminderNameController,
-                  dueDate: _dueDate,
-                  onPickDate: () async {
-                    final today = calendarDateOnly(DateTime.now());
-                    final picked = await showDatePicker(
-                      context: context,
-                      initialDate: calendarDateOnly(_dueDate),
-                      firstDate: today,
-                      lastDate: calendarDateOnly(
-                        today.add(const Duration(days: 365 * 5)),
-                      ),
-                    );
-                    if (picked != null) {
-                      setState(() => _dueDate = calendarDateOnly(picked));
-                    }
-                  },
-                ),
               ],
             ),
           ),
@@ -162,7 +123,7 @@ class _GuardianOnboardingScreenState
             child: SizedBox(
               width: double.infinity,
               child: FilledButton(
-                key: _step == 2
+                key: _step == 1
                     ? const Key('guardian_onboarding_complete')
                     : const Key('guardian_onboarding_continue'),
                 onPressed: _isSaving ? null : _nextStep,
@@ -175,9 +136,7 @@ class _GuardianOnboardingScreenState
                     : Text(
                         _step == 0
                             ? l.guardianOnboardingGetStarted
-                            : _step == 2
-                            ? l.guardianOnboardingFinish
-                            : l.continueButton,
+                            : l.guardianOnboardingFinish,
                       ),
               ),
             ),
@@ -254,7 +213,7 @@ class _PetStep extends StatelessWidget {
             labelText: l.petName,
             border: const OutlineInputBorder(),
           ),
-          textInputAction: TextInputAction.next,
+          textInputAction: TextInputAction.done,
         ),
         const SizedBox(height: 16),
         DropdownButtonFormField<String>(
@@ -270,53 +229,6 @@ class _PetStep extends StatelessWidget {
           onChanged: (value) {
             if (value != null) onSpeciesChanged(value);
           },
-        ),
-      ],
-    );
-  }
-}
-
-class _ReminderStep extends StatelessWidget {
-  const _ReminderStep({
-    required this.nameController,
-    required this.dueDate,
-    required this.onPickDate,
-  });
-
-  final TextEditingController nameController;
-  final DateTime dueDate;
-  final VoidCallback onPickDate;
-
-  @override
-  Widget build(BuildContext context) {
-    final l = AppLocalizations.of(context)!;
-    return ListView(
-      padding: const EdgeInsets.all(24),
-      children: [
-        Text(
-          l.guardianOnboardingReminderStepTitle,
-          style: Theme.of(context).textTheme.titleLarge,
-        ),
-        const SizedBox(height: 8),
-        Text(l.guardianOnboardingReminderStepBody),
-        const SizedBox(height: 24),
-        TextField(
-          key: const Key('onboarding_reminder_name_field'),
-          controller: nameController,
-          decoration: InputDecoration(
-            labelText: l.guardianOnboardingReminderNameLabel,
-            border: const OutlineInputBorder(),
-          ),
-          textInputAction: TextInputAction.done,
-        ),
-        const SizedBox(height: 16),
-        ListTile(
-          key: const Key('onboarding_reminder_due_date'),
-          contentPadding: EdgeInsets.zero,
-          title: Text(l.nextDueDate),
-          subtitle: Text(DateFormat.yMMMd().format(dueDate)),
-          trailing: const Icon(Icons.calendar_today),
-          onTap: onPickDate,
         ),
       ],
     );

@@ -3249,7 +3249,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get guardianOnboardingWelcomeBody =>
-      'Add your first pet and a reminder so you never miss important care.';
+      'Add your first pet to start tracking their care.';
 
   @override
   String get guardianOnboardingGetStarted => 'Get started';

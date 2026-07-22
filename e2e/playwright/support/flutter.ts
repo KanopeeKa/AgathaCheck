@@ -326,11 +326,10 @@ export async function skipGuardianOnboardingIfPresent(
   await refreshFlutterAccessibility(page);
 }
 
-/** Complete the guardian onboarding wizard (pet + reminder). */
+/** Complete the guardian onboarding wizard (pet only). */
 export async function completeGuardianOnboarding(
   page: Page,
   petName: string,
-  reminderName: string,
   timeout?: number,
 ): Promise<void> {
   const effectiveTimeout = timeout ?? postLoginTimeout(60_000);
@@ -341,10 +340,6 @@ export async function completeGuardianOnboarding(
   await refreshFlutterAccessibility(page);
   await page.getByRole('textbox', { name: /name/i }).first().waitFor({ timeout: effectiveTimeout });
   await fillLabelledField(page, 'Name', petName);
-  await page.getByRole('button', { name: 'Continue' }).click();
-  await refreshFlutterAccessibility(page);
-  await page.getByRole('textbox', { name: /reminder name/i }).waitFor({ timeout: effectiveTimeout });
-  await fillLabelledField(page, 'Reminder name', reminderName);
   await page.getByRole('button', { name: /finish setup/i }).click();
   await waitForFlutterRoutePattern(page, /\/g\/home/, effectiveTimeout);
   await refreshFlutterAccessibility(page);
