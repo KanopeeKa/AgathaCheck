@@ -53,7 +53,11 @@ void main() {
         isTrue,
       );
       expect(
-        NotificationScopeRules.includes(n, NotificationScope.organization, pets),
+        NotificationScopeRules.includes(
+          n,
+          NotificationScope.organization,
+          pets,
+        ),
         isFalse,
       );
     });
@@ -65,7 +69,11 @@ void main() {
         isTrue,
       );
       expect(
-        NotificationScopeRules.includes(n, NotificationScope.organization, pets),
+        NotificationScopeRules.includes(
+          n,
+          NotificationScope.organization,
+          pets,
+        ),
         isTrue,
       );
     });
@@ -77,7 +85,11 @@ void main() {
         isFalse,
       );
       expect(
-        NotificationScopeRules.includes(n, NotificationScope.organization, pets),
+        NotificationScopeRules.includes(
+          n,
+          NotificationScope.organization,
+          pets,
+        ),
         isTrue,
       );
     });
@@ -89,7 +101,11 @@ void main() {
         isTrue,
       );
       expect(
-        NotificationScopeRules.includes(n, NotificationScope.organization, pets),
+        NotificationScopeRules.includes(
+          n,
+          NotificationScope.organization,
+          pets,
+        ),
         isFalse,
       );
     });
@@ -97,7 +113,11 @@ void main() {
     test('org-only notification without pet is org-only', () {
       final n = _notif(organizationId: 'org-1');
       expect(
-        NotificationScopeRules.includes(n, NotificationScope.organization, pets),
+        NotificationScopeRules.includes(
+          n,
+          NotificationScope.organization,
+          pets,
+        ),
         isTrue,
       );
       expect(

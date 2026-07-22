@@ -12,16 +12,23 @@ class NotificationScopeRules {
         !pet.isFoster &&
         !pet.isShared &&
         pet.organizationId != null &&
+        pet.organizationId!.isNotEmpty &&
         pet.organizationName != null &&
         pet.organizationName!.isNotEmpty;
   }
 
   /// Personally owned pet (not foster, shared, or org inventory).
   static bool isPersonallyOwnedPet(Pet pet) {
-    return !pet.passedAway && !pet.isFoster && !pet.isShared && !isOrgInventoryPet(pet);
+    return !pet.passedAway &&
+        !pet.isFoster &&
+        !pet.isShared &&
+        !isOrgInventoryPet(pet);
   }
 
-  static Pet? _petForNotification(AppNotification notification, List<Pet> pets) {
+  static Pet? _petForNotification(
+    AppNotification notification,
+    List<Pet> pets,
+  ) {
     final petId = notification.petId;
     if (petId == null || petId.isEmpty) return null;
     for (final pet in pets) {

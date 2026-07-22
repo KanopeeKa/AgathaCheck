@@ -12,14 +12,12 @@ import '../providers/notification_providers.dart';
 import '../../../pet_profile/presentation/providers/pet_providers.dart';
 
 class NotificationsScreen extends ConsumerStatefulWidget {
-  const NotificationsScreen({
-    super.key,
-    this.backPath = '/',
-    this.scope = NotificationScope.guardian,
-  });
+  const NotificationsScreen({super.key, this.backPath = '/', this.scope});
 
   final String backPath;
-  final NotificationScope scope;
+
+  /// When null, scope is inferred from [backPath] (`/o/*` → organisation).
+  final NotificationScope? scope;
 
   @override
   ConsumerState<NotificationsScreen> createState() =>
@@ -28,7 +26,8 @@ class NotificationsScreen extends ConsumerStatefulWidget {
 
 class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
   NotificationScope get _effectiveScope {
-    if (widget.scope != NotificationScope.guardian) return widget.scope;
+    final explicit = widget.scope;
+    if (explicit != null) return explicit;
     return widget.backPath.startsWith('/o/')
         ? NotificationScope.organization
         : NotificationScope.guardian;
