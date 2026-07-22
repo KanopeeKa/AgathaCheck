@@ -1,6 +1,7 @@
 import type { Page } from '@playwright/test';
 import { expect } from '@playwright/test';
 import { refreshFlutterAccessibility } from '../support/flutter';
+import { isLiveHostingTarget } from '../support/hosting';
 
 /**
  * Weight Tracking section on the Pet Detail screen.
@@ -50,13 +51,18 @@ export class WeightTrackingPage {
 
   /** Expect the empty-state prompt shown when there are no weight entries. */
   async expectEmptyState(): Promise<void> {
-    await this.openSection();
-    await this.waitForWeightDataSettled();
-    await this.page
-      .getByText(/no weight data yet|aucune donnée de poids/i)
-      .or(this.page.getByRole('group', { name: /No weight data yet|Aucune donnée de poids/i }))
-      .first()
-      .waitFor({ timeout: 15_000 });
+    const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
+    const timeout = isLiveHostingTarget(baseURL) ? 45_000 : 20_000;
+    await expect(async () => {
+      await this.openSection();
+      await this.waitForWeightDataSettled();
+      await expect(
+        this.page
+          .getByText(/no weight data yet|aucune donnée de poids/i)
+          .or(this.page.getByRole('group', { name: /No weight data yet|Aucune donnée de poids/i }))
+          .first(),
+      ).toBeVisible();
+    }).toPass({ timeout });
   }
 
   /** Click the "Add weight entry" button to open the bottom sheet. */
