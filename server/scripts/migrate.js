@@ -12,7 +12,7 @@
  *   2. `<server>/db/migrations` — remote (deploy stages files under server/)
  *
  * Usage:
- *   node scripts/migrate.js up      apply pending migrations
+ *   node scripts/migrate.js up      apply pending migrations (auto-seeds ledger after canonical bootstrap)
  *   node scripts/migrate.js status  show applied/pending
  */
 import fs from 'fs';
@@ -22,6 +22,7 @@ import dotenv from 'dotenv';
 import pg from 'pg';
 import { v4 as uuidv4 } from 'uuid';
 import { migrateFamilyEventsPlacements } from './migrations/016_migrate_family_events_placements.js';
+import { maybeAutoSeedMigrationLedger } from './lib/migration-ledger.js';
 
 const { Pool } = pg;
 const __filename = fileURLToPath(import.meta.url);
@@ -109,6 +110,7 @@ async function applyMigration(client, name, sql) {
 
 async function runUp(pool) {
   await ensureMigrationsTable(pool);
+  await maybeAutoSeedMigrationLedger(pool);
   const applied = await appliedMigrations(pool);
   const dir = resolveMigrationsDir();
   const files = listMigrationFiles(dir);

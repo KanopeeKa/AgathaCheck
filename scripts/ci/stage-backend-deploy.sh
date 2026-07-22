@@ -58,9 +58,12 @@ tar -C "$SRC" \
   --exclude=.env \
   -cf - . | tar -C "$DEST" -xf -
 
-mkdir -p "${DEST}/db" "${DEST}/tmp"
+mkdir -p "${DEST}/db" "${DEST}/db/schema" "${DEST}/tmp"
 if [[ -d "${ROOT}/db/migrations" ]]; then
   cp -R "${ROOT}/db/migrations" "${DEST}/db/migrations"
+fi
+if [[ -f "${ROOT}/db/schema/migration-manifest.json" ]]; then
+  cp "${ROOT}/db/schema/migration-manifest.json" "${DEST}/db/schema/migration-manifest.json"
 fi
 date -u +"restart %Y-%m-%dT%H:%M:%SZ" > "${DEST}/tmp/restart.txt"
 
