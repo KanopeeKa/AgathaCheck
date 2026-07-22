@@ -116,10 +116,10 @@ next_action: "continue phase 4 on branch cursor/e2e-canary-phase4-shard-retries-
 artifact_ref:
   branch: cursor/e2e-canary-phase4-shard-retries-48ef
   plan_path: .agents/plans/e2e-ci-canary.md
-  plan_commit: 2440f6f121a4fb6c54d55674bd74354e7750fdc0
+  plan_commit: cdd21f3e4ca9917e2d20d8d2acabc57bfae073ab
   snapshot_path: .agents/plans/e2e-ci-canary.snapshot.json
-  snapshot_commit: 2440f6f121a4fb6c54d55674bd74354e7750fdc0
-open_prs: []
+  snapshot_commit: cdd21f3e4ca9917e2d20d8d2acabc57bfae073ab
+open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/270"]
 merge_commits: {"0":"dd82521a52bb51be8b5d0a177e4679d0a6229098","1":"8f4cce4","3":"1df09327cd84093c43258c6a61d0ac934bd7b12e","2a":"764a21d","2b":"85b33cd025950cf8650cbf5bbe4fdaee9104123f"}
 debt_issue_refs: []
 ```
