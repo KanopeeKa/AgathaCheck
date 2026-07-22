@@ -354,7 +354,7 @@ POST /backend/api/auth/login
 
 ### Family Events (per-pet) — STUB
 
-> **Status:** the per-pet family-events routes below exist in both the Node.js and Dart servers but are currently stubs that return empty arrays / no-op responses. Real family events live on **organization pets** (see the organization routes) and are implemented there. The `family_events` table exists in the canonical schema but is not written to by these endpoints.
+> **Status:** the per-pet family-events routes below are currently stubs that return empty arrays / no-op responses. Real family events live on **organization pets** (see the organization routes) and are implemented there. The `family_events` table exists in the canonical schema but is not written to by these endpoints.
 
 - **GET** `/api/pets/{id}/family-events` — Returns `[]`.
 - **POST** `/api/pets/{id}/family-events` — No-op stub.

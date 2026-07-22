@@ -227,7 +227,7 @@ Tracks planned and completed refactor / quality work. See also `docs/refactoring
 
 | Phase | Agent | Branch | Owns | Bugbot source | Exit criteria |
 |-------|-------|--------|------|---------------|---------------|
-| 0 | `dart-foster-audit` | `cursor/sprint-9-dart-foster-audit-2799` | `docs/sprint-9-dart-foster-audit.md` only (read-only compare) | stale `dart-org-foster-parity-b4c2` | Written verdict: cherry-pick / partial / superseded / obsolete |
+| 0 | `dart-foster-audit` | `cursor/sprint-9-dart-foster-audit-2799` | read-only branch compare (doc removed 2026-07-22) | stale `dart-org-foster-parity-b4c2` | Verdict: superseded by #64; Dart backend removed #240 |
 | 1a | `flutter-token-migration` | `cursor/sprint-9-token-migration-2799` | `flutter_app/lib/features/auth/data/token_store.dart`, `flutter_app/test/features/auth/data/token_store_test.dart` | PR #3 High | Prefs→Secure migration on mobile upgrade; tests green |
 | 1b | `flutter-photo-url` | `cursor/sprint-9-photo-url-fix-2799` | shared photo URL helper + `my_details_screen.dart`, org/sharing call sites using wrong `/backend` prefix for `/uploads` | PR #2 Medium | `/uploads` resolves to site root on web |
 | 1c | `flutter-pet-sync` | `cursor/sprint-9-pet-sync-rollback-2799` | `pet_repository_impl.dart`, `pet_repository_impl_test.dart` | PR #2 Medium | Remote update/delete failure rolls back local state |
@@ -244,7 +244,7 @@ Tracks planned and completed refactor / quality work. See also `docs/refactoring
 
 | # | Action | Status | PR / notes |
 |---|--------|--------|------------|
-| 9.0 | Dart foster parity branch audit | **Done** | Superseded by #64; branch safe to delete — see `docs/sprint-9-dart-foster-audit.md` |
+| 9.0 | Dart foster parity branch audit | **Done** | Superseded by #64; Dart backend removed #240; stale branch safe to delete |
 | 9.1 | Mobile token store migration | **Done** | Prefs→Secure one-time migration |
 | 9.2 | Web upload photo URL resolution | **Done** | `resolveStaticAssetUrl` helper |
 | 9.3 | Pet repo remote-failure rollback | **Done** | update/delete rollback on remote fail |
