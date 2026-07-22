@@ -10,6 +10,23 @@ Lightweight by default. Go deeper only when the task needs it.
 | **1 — UI check** | Review before merge, polish pass, “does this feel right?” | Skill `/ui-check` |
 | **2 — Design deep** | New flow, auth/landing refresh, theme work, multi-screen consistency | Skill `/ui-design-deep` + `principles.md` |
 
+## Theme project
+
+**Execution plan:** `ui-rework-plan.md` (phases 0–7).  
+**Deliverable in Phase 0:** `tokens.md` — until then, match `app_theme.dart`.
+
+## Reference implementations
+
+Copy patterns from these — do not invent parallel styles:
+
+| Pattern | Path |
+|---------|------|
+| Experience shell + nav | `features/experience/presentation/widgets/experience_shell_scaffold.dart` |
+| Accessible tappable card | `features/organization/presentation/widgets/org_card.dart` |
+| Pet list + sections | `features/pet_profile/presentation/screens/pet_list_screen.dart` |
+| Auth / landing layout | `features/auth/presentation/screens/landing_screen.dart` |
+| Theme (current) | `flutter_app/lib/core/theme/app_theme.dart` |
+
 ## Phased UI refactor (only when explicitly requested)
 
 1. **Tokens** — `app_theme.dart` only; no screen churn

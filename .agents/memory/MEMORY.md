@@ -18,8 +18,10 @@ Institutional knowledge for cloud agents. Domain workflows live in **Skills** (`
 ## Design (UI/UX)
 
 - Map: `docs/design/index.md` — tier 0 everyday rules, `/ui-check`, `/ui-design-deep`
+- **UI rework plan:** `docs/design/ui-rework-plan.md` (phases 0–7)
+- Copy / org branding: `docs/design/copy-tone.md`
 - Principles (deep only): `docs/design/principles.md`
-- Theme: `flutter_app/lib/core/theme/app_theme.dart`
+- Theme: `flutter_app/lib/core/theme/app_theme.dart` → `docs/design/tokens.md` (Phase 0)
 
 ## Domain semantics (memories)
 

@@ -20,11 +20,14 @@ paths:
 ## Read first
 
 1. `docs/design/index.md` — tier and refactor phases
-2. `docs/design/principles.md` — personality, palette target, layout
-3. `docs/experience-split-plan.md` — if guardian/org/foster context matters
-4. `flutter_app/lib/core/theme/app_theme.dart`
-5. `.cursor/rules/design.mdc` + `accessibility.mdc`
-6. Screens/widgets under review
+2. `docs/design/ui-rework-plan.md` — if theme rework or multi-phase UI work
+3. `docs/design/principles.md` — personality, palette target, layout
+4. `docs/design/copy-tone.md` — copy and org branding boundaries
+5. `docs/experience-split-plan.md` — if guardian/org/foster context matters
+6. `flutter_app/lib/core/theme/app_theme.dart` (+ `docs/design/tokens.md` once Phase 0 lands)
+7. `.cursor/rules/design.mdc` + `accessibility.mdc`
+8. Auth/landing on web: `.agents/memory/flutter-web-password-managers.md`
+9. Screens/widgets under review
 
 ## Steps
 
@@ -47,7 +50,7 @@ Prefer theme/shared widget changes over one-off screen styling.
 
 ### 4. Phased rollout (refactors)
 
-Follow `docs/design/index.md` phases. One atomic PR per phase unless user bundles explicitly.
+Follow `docs/design/ui-rework-plan.md` (or `docs/design/index.md` for ad-hoc slices). One atomic PR per phase slice unless user bundles explicitly. **Phase 0** creates `docs/design/tokens.md`.
 
 ### 5. Output
 

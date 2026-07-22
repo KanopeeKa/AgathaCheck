@@ -10,7 +10,7 @@ Calm, dependable, emotionally intelligent, low-stress. Users feel oriented and i
 
 ## Audience
 
-One design system; subtle context via `AppExperience` (`/g/*` guardian, `/o/*` organisation), copy, and selective accent — not two brands. Org custom branding must not break text contrast or error/focus semantics.
+One design system; subtle context via `AppExperience` (`/g/*` guardian, `/o/*` organisation), copy, and selective accent — not two brands. Org branding rules: `copy-tone.md`.
 
 ## Visual direction (target)
 

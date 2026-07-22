@@ -15,6 +15,15 @@ paths:
 
 **Not for:** theme overhauls, new multi-step flows, or product-wide consistency — use `/ui-design-deep`.
 
+## Escalate to `/ui-design-deep` when any apply
+
+- Editing `app_theme.dart` or adding `tokens.md`
+- Auth, landing, onboarding, or experience chooser
+- New multi-step wizard or flow
+- Changes spanning `/g/*` and `/o/*`
+- User asks for redesign, refresh, or brand work
+- Starting a phase from `docs/design/ui-rework-plan.md`
+
 ## Read first
 
 - `.cursor/rules/design.mdc`

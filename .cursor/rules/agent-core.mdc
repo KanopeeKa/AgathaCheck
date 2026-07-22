@@ -38,7 +38,7 @@ Do not duplicate these commands in chat — run the script. Skill: `/pre-push-ve
 
 ## UX (everyday drift guards)
 
-Calm care coordination — not a cute pet app, not loud generic SaaS. **Clarity and a11y beat decoration.** Use theme tokens; keep focus visible; ≥48dp touch targets; operational copy direct. Deeper reviews: `docs/design/index.md`, skills `/ui-check` and `/ui-design-deep`.
+**UX:** Calm care coordination — see `design.mdc` when editing Flutter; `/ui-check` or `/ui-design-deep` for reviews (`docs/design/index.md`). UI rework: `docs/design/ui-rework-plan.md`.
 
 ## Non-negotiables
 
