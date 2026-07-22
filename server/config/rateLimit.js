@@ -7,8 +7,7 @@
  *
  * The limiter is skipped under `NODE_ENV=test` (Jest) and `E2E=1` (Playwright)
  * so automated suites are not throttled, unless a test opts in by setting
- * `AUTH_RATE_LIMIT_TEST=1` (used by the dedicated rate-limit test). Mirror any
- * behavior change in the Dart server's `lib/rate_limit.dart`.
+ * `AUTH_RATE_LIMIT_TEST=1` (used by the dedicated rate-limit test).
  */
 import rateLimit from 'express-rate-limit';
 import {

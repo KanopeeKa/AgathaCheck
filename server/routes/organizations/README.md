@@ -26,4 +26,4 @@ Mirrored under `server/test/organizations/`:
 
 ## Shared libs
 
-`server/lib/organizations/` contains shared helpers (role guards, people directory, foster placements, custody transfers).
+Shared helpers live under `server/lib/`: `orgRoles.js`, `orgPeople.js`, `fosterPlacements.js`, `petCustody.js`, and related modules (role guards, people directory, foster placements, custody transfers).
