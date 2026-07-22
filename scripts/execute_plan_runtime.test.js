@@ -13,8 +13,10 @@ const {
   parseRuntimeBlock,
   renderControlIssueBody,
   renderControlIssueTitle,
+  renderCompletePlanComment,
   renderRuntimeBlock,
   setAutonomyHalted,
+  setAutonomyCompleted,
   setPhasePaused,
   resumeFromUatPause,
   setPhaseStatus,
@@ -22,6 +24,7 @@ const {
   loadSnapshotFromPath,
   REPO_ROOT,
 } = require('./lib/execute_plan_lib');
+const { normalizeStatusName } = require('./lib/execute_plan_project');
 
 const exampleSnapshot = path.join(REPO_ROOT, '.agents/plans/_example.snapshot.json');
 const examplePlan = path.join(REPO_ROOT, '.agents/plans/_example.md');
@@ -207,4 +210,33 @@ test('renderRuntimeBlock round-trips core fields', () => {
   const yaml = renderRuntimeBlock(state);
   assert.match(yaml, /autonomy: active/);
   assert.match(yaml, /current_phase: 1/);
+});
+
+test('setAutonomyCompleted requires all phases merged', () => {
+  const snapshot = loadSnapshotFromPath(exampleSnapshot);
+  snapshot.autonomy = 'active';
+  assert.throws(() => setAutonomyCompleted(snapshot), /phases not merged/);
+  snapshot.phases.forEach((p) => {
+    p.status = 'merged';
+  });
+  setAutonomyCompleted(snapshot);
+  assert.equal(snapshot.autonomy, 'completed');
+});
+
+test('renderCompletePlanComment summarizes merged phases', () => {
+  const snapshot = loadSnapshotFromPath(exampleSnapshot);
+  snapshot.phases.forEach((p) => {
+    p.status = 'merged';
+    p.pr_url = 'https://github.com/o/r/pull/1';
+  });
+  const body = renderCompletePlanComment(snapshot, 'example-plan');
+  assert.match(body, /Plan complete/);
+  assert.match(body, /Done/);
+  assert.match(body, /example-plan/);
+});
+
+test('normalizeStatusName maps common aliases', () => {
+  assert.equal(normalizeStatusName('backlog'), 'Backlog');
+  assert.equal(normalizeStatusName('in_progress'), 'In Progress');
+  assert.equal(normalizeStatusName('done'), 'Done');
 });

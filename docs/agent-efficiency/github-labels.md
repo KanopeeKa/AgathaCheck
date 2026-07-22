@@ -94,3 +94,15 @@ Match on dedupe key (see [autonomous-pr-policy.md](./autonomous-pr-policy.md) §
 | `approve-autonomous <plan_id>` | (Usually in agent chat) Grants autonomy |
 | `resume-plan <plan_id>` | Human acknowledges resume |
 | `accept-head` | Acknowledge PR force-push; agent may update `pr_head_sha` |
+
+---
+
+## Project status (control issue)
+
+Per `docs/github-issue-workflow.md`. Debt issues created during babysit+ stay in **Backlog** until separately picked up.
+
+| Stage | Project status |
+|-------|----------------|
+| `init-control-issue` / `gh issue create` | **Backlog** |
+| First work session after `gate` passes | **In Progress** (`set-project-status`) |
+| `complete-plan --write` (all phases merged) | **Done** + issue closed |

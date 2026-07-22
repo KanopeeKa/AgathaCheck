@@ -14,6 +14,8 @@
  *   node scripts/execute_plan_runtime.js render-halt-comment <plan_id> --reason <status_reason> [--detail text]
  *   node scripts/execute_plan_runtime.js current-phase <plan_id>
  *   node scripts/execute_plan_runtime.js init-control-issue <plan_id>
+ *   node scripts/execute_plan_runtime.js set-project-status <plan_id> --status <name> [--issue N]
+ *   node scripts/execute_plan_runtime.js complete-plan <plan_id> [--write] [--skip-close]
  */
 
 'use strict';
@@ -29,17 +31,23 @@ const {
   renderControlIssueBody,
   renderControlIssueTitle,
   renderHaltComment,
+  renderCompletePlanComment,
   renderPauseComment,
   renderUatResumeComment,
   resumeFromUatPause,
   saveSnapshot,
   setAutonomyHalted,
+  setAutonomyCompleted,
   setPhasePaused,
   setPhaseStatus,
   syncRuntimeState,
   validateSnapshot,
   ExecutePlanError,
 } = require('./lib/execute_plan_lib');
+const {
+  closeIssueWithComment,
+  updateIssueProjectStatus,
+} = require('./lib/execute_plan_project');
 
 function usage() {
   console.error(`Usage: node scripts/execute_plan_runtime.js <command> [options]
@@ -56,6 +64,8 @@ Commands:
   render-halt-comment <plan_id> --reason <status_reason> [--detail text]
   current-phase <plan_id>
   init-control-issue <plan_id>
+  set-project-status <plan_id> --status <name> [--issue N]
+  complete-plan <plan_id> [--write] [--skip-close]
 `);
   process.exit(1);
 }
@@ -96,8 +106,23 @@ function main() {
   const planId = positional[1];
   if (!cmd) usage();
 
+  const asyncCmds = new Set(['set-project-status', 'complete-plan']);
+  if (asyncCmds.has(cmd)) {
+    runAsync(cmd, planId, flags).catch((e) => {
+      fail(e instanceof ExecutePlanError ? e.message : e.message);
+    });
+    return;
+  }
+
   try {
-    switch (cmd) {
+    runSync(cmd, planId, flags);
+  } catch (e) {
+    fail(e instanceof ExecutePlanError ? e.message : e.message);
+  }
+}
+
+function runSync(cmd, planId, flags) {
+  switch (cmd) {
       case 'gate': {
         if (!planId) usage();
         const snapshot = loadSnapshot(planId);
@@ -269,7 +294,10 @@ function main() {
           title: renderControlIssueTitle(planId),
           body: renderControlIssueBody(snapshot),
           labels,
+          project_status: 'Backlog',
           gh_command: `gh issue create --title "${renderControlIssueTitle(planId)}" --body-file - --label ${labels.map((l) => `"${l}"`).join(' --label ')}`,
+          project_status_note:
+            'New control issues enter Project status Backlog. Move to In Progress when work starts (set-project-status).',
         });
         break;
       }
@@ -277,8 +305,63 @@ function main() {
       default:
         usage();
     }
-  } catch (e) {
-    fail(e instanceof ExecutePlanError ? e.message : e.message);
+}
+
+async function runAsync(cmd, planId, flags) {
+  switch (cmd) {
+    case 'set-project-status': {
+      if (!planId || !flags.status) usage();
+      const snapshot = loadSnapshot(planId);
+      validateSnapshot(snapshot);
+      const issueNumber = Number(flags.issue || snapshot.control_issue);
+      if (!Number.isInteger(issueNumber) || issueNumber < 1) {
+        throw new ExecutePlanError('issue number required (--issue or snapshot.control_issue)');
+      }
+      const result = await updateIssueProjectStatus(issueNumber, flags.status);
+      printJson(result);
+      if (!result.ok && !result.skipped) {
+        process.exit(1);
+      }
+      break;
+    }
+
+    case 'complete-plan': {
+      if (!planId) usage();
+      const snapshot = loadSnapshot(planId);
+      validateSnapshot(snapshot);
+      setAutonomyCompleted(snapshot);
+      const comment = renderCompletePlanComment(snapshot, planId);
+      const issueNumber = snapshot.control_issue;
+      if (flags.write) {
+        saveSnapshot(planId, snapshot);
+        syncRuntimeState(planId);
+      }
+      const statusResult = await updateIssueProjectStatus(issueNumber, 'Done');
+      let closeResult = { skipped: true, reason: 'skip_close_flag' };
+      if (!flags['skip-close']) {
+        try {
+          closeResult = closeIssueWithComment(issueNumber, comment);
+        } catch (e) {
+          closeResult = { ok: false, error: e.message, gh_hint: `gh issue close ${issueNumber}` };
+        }
+      }
+      printJson({
+        ok: true,
+        plan_id: planId,
+        autonomy: snapshot.autonomy,
+        control_issue: issueNumber,
+        project_status: statusResult,
+        issue_close: closeResult,
+        comment,
+      });
+      if (!flags.write) {
+        console.error('execute_plan_runtime: dry-run (pass --write to persist snapshot)');
+      }
+      break;
+    }
+
+    default:
+      usage();
   }
 }
 
