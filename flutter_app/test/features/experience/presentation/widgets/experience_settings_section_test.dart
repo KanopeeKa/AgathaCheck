@@ -82,7 +82,10 @@ void main() {
     testWidgets('updates selected radio when default experience changes', (
       tester,
     ) async {
-      await prefs.setString('experience_default', 'organization');
+      await prefs.setString(
+        'experience_default',
+        AppExperience.organization.wire,
+      );
 
       await tester.pumpWidget(
         _wrap(
@@ -104,19 +107,21 @@ void main() {
       }
 
       expect(
-        radioTile(tester, 'organization').groupValue,
+        radioTile(tester, AppExperience.organization.wire).groupValue,
         AppExperience.organization,
       );
 
-      await tester.tap(find.byKey(const Key('default_experience_guardian')));
+      await tester.tap(
+        find.byKey(Key('default_experience_${AppExperience.guardian.wire}')),
+      );
       await tester.pumpAndSettle();
 
       expect(
-        radioTile(tester, 'guardian').groupValue,
+        radioTile(tester, AppExperience.guardian.wire).groupValue,
         AppExperience.guardian,
       );
       expect(
-        radioTile(tester, 'organization').groupValue,
+        radioTile(tester, AppExperience.organization.wire).groupValue,
         AppExperience.guardian,
       );
     });
