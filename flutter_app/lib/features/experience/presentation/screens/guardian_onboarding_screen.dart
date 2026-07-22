@@ -99,7 +99,10 @@ class _GuardianOnboardingScreenState
       ),
       body: Column(
         children: [
-          LinearProgressIndicator(value: (_step + 1) / _stepCount, minHeight: 4),
+          LinearProgressIndicator(
+            value: (_step + 1) / _stepCount,
+            minHeight: 4,
+          ),
           Expanded(
             child: PageView(
               controller: _pageController,

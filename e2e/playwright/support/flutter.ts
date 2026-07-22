@@ -336,11 +336,16 @@ export async function completeGuardianOnboarding(
   await waitForFlutterRoutePattern(page, /\/g\/onboarding/, effectiveTimeout);
   await refreshFlutterAccessibility(page);
 
-  await page.getByRole('button', { name: /get started/i }).click();
+  await page.getByRole('button', { name: /get started|commencer/i }).click();
   await refreshFlutterAccessibility(page);
-  await page.getByRole('textbox', { name: /name/i }).first().waitFor({ timeout: effectiveTimeout });
-  await fillLabelledField(page, 'Name', petName);
-  await page.getByRole('button', { name: /finish setup/i }).click();
+  await page
+    .getByRole('textbox', { name: /name|nom/i })
+    .first()
+    .waitFor({ timeout: effectiveTimeout });
+  await fillTextbox(page, /name|nom/i, petName);
+  await page
+    .getByRole('button', { name: /finish setup|terminer la configuration/i })
+    .click();
   await waitForFlutterRoutePattern(page, /\/g\/home/, effectiveTimeout);
   await refreshFlutterAccessibility(page);
 }
