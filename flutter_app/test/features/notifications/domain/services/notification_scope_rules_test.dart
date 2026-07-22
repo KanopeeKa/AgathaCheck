@@ -104,19 +104,15 @@ void main() {
       );
       final n = _notif(petId: 'p-empty-org');
       expect(
-        NotificationScopeRules.includes(
-          n,
-          NotificationScope.organization,
-          [emptyOrgIdPet],
-        ),
+        NotificationScopeRules.includes(n, NotificationScope.organization, [
+          emptyOrgIdPet,
+        ]),
         isFalse,
       );
       expect(
-        NotificationScopeRules.includes(
-          n,
-          NotificationScope.guardian,
-          [emptyOrgIdPet],
-        ),
+        NotificationScopeRules.includes(n, NotificationScope.guardian, [
+          emptyOrgIdPet,
+        ]),
         isTrue,
       );
     });
