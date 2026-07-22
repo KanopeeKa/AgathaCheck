@@ -22,6 +22,7 @@ node scripts/execute_plan_runtime.js current-phase <plan_id>
 3. **Phase gate = merge-done** — PR merged into base before next phase
 4. **Halt only on revoke** — do not close PRs; see autonomous-pr-policy §Halt and resume
 5. **48h `approved_until`** — mandatory; re-approve if expired
+6. **Project status** — control issue: Backlog → In Progress (on start) → Done + close (`complete-plan --write`)
 
 ## Resume
 

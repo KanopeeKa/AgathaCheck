@@ -95,15 +95,33 @@ node scripts/execute_plan_runtime.js current-phase <plan_id>
 
 `sync-runtime` writes the `## Runtime state` YAML block in `.agents/plans/<plan_id>.md` including `artifact_ref` (branch + commit SHAs from current git context).
 
+### Project status (control issue)
+
+Aligns with `docs/github-issue-workflow.md` status field:
+
+| When | Project status | Command |
+|------|----------------|---------|
+| Control issue created | **Backlog** | Default on `gh issue create` / `init-control-issue` |
+| Work starts (after gate) | **In Progress** | `set-project-status <plan_id> --status "In Progress"` |
+| All phases merged | **Done** + close issue | `complete-plan <plan_id> --write` |
+
+```bash
+node scripts/execute_plan_runtime.js set-project-status <plan_id> --status "In Progress"
+node scripts/execute_plan_runtime.js complete-plan <plan_id> --write
+```
+
+Secrets: `GH_PROJECTS_PAT`, `GH_PROJECT_ID`, `GH_STATUS_FIELD_ID`. Without them, `set-project-status` returns `skipped: true` — update the board manually.
+
 ---
 
 ## Agent workflow (summary)
 
-1. Human approves → freeze snapshot → `init-control-issue` → create GitHub issue → set `control_issue` number
-2. Each session: `gate` → `current-phase` → work on phase branch
+1. Human approves → freeze snapshot → `init-control-issue` → create GitHub issue (**Backlog**) → set `control_issue` number
+2. Each session: `gate` → `set-project-status … "In Progress"` → `current-phase` → work on phase branch
 3. On push: `set-phase` + `sync-runtime --write`
 4. On revoke/expiry/escalation: `halt --write` + add `autonomous-revoked` label (halt only — do not close PRs)
-5. Resume: remove revoke label → `resume-check` → continue from `next_action`
+5. All phases merged: `complete-plan <plan_id> --write` → **Done** + close control issue
+6. Resume: remove revoke label → `resume-check` → continue from `next_action`
 
 Full halt/resume semantics: [autonomous-pr-policy.md](./autonomous-pr-policy.md) §Halt and resume.
 

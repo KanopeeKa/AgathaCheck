@@ -336,6 +336,38 @@ function computeNextAction(snapshot) {
   return null;
 }
 
+function setAutonomyCompleted(snapshot) {
+  const pending = snapshot.phases.filter((p) => p.status !== 'merged');
+  if (pending.length > 0) {
+    throw new ExecutePlanError(
+      `cannot complete plan: phases not merged: ${pending.map((p) => p.id).join(', ')}`
+    );
+  }
+  snapshot.autonomy = 'completed';
+  return snapshot;
+}
+
+function renderCompletePlanComment(snapshot, planId) {
+  const merged = snapshot.phases.filter((p) => p.status === 'merged');
+  const rows = merged
+    .map((p) => {
+      const pr = p.pr_url ? `[link](${p.pr_url})` : '—';
+      return `| ${p.id} | ${p.title || '—'} | ${p.branch || '—'} | ${pr} |`;
+    })
+    .join('\n');
+  return `## Plan complete
+
+All ${merged.length} phase(s) merged for **${planId}**.
+
+| Phase | Title | Branch | PR |
+|-------|-------|--------|-----|
+${rows}
+
+- **autonomy:** completed
+- Project status: **Done**
+`;
+}
+
 function setAutonomyHalted(snapshot, { autonomy, reason, detail, phaseId }) {
   if (!AUTONOMY.has(autonomy) || (autonomy !== 'halted' && autonomy !== 'revoked')) {
     throw new ExecutePlanError('halt autonomy must be halted or revoked');
@@ -440,6 +472,7 @@ module.exports = {
   gitRevParse,
   normalizeLabels,
   parseRuntimeBlock,
+  renderCompletePlanComment,
   renderControlIssueBody,
   renderControlIssueTitle,
   renderHaltComment,
@@ -447,6 +480,7 @@ module.exports = {
   renderRuntimeBlock,
   renderUatResumeComment,
   resumeFromUatPause,
+  setAutonomyCompleted,
   setAutonomyHalted,
   setPhasePaused,
   setPhaseStatus,

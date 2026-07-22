@@ -59,7 +59,8 @@ Run when drafting a plan, **before** `approve-autonomous`:
    ```bash
    node scripts/execute_plan_runtime.js init-control-issue <plan_id>
    ```
-   Create issue via rendered `gh issue create` command; set `control_issue` in snapshot; re-validate
+   Create issue via rendered `gh issue create` command; set `control_issue` in snapshot; re-validate.
+   **Project status:** new control issues enter **Backlog** (default when added to the project board).
 5. Sanity check (plan-template §Sanity check expectations): `proceed` \| `proceed-high-risk` \| `reject`
 6. Human comments `approve-autonomous <plan_id>`; freeze snapshot (`content_hash` must not change after approval)
 
@@ -88,6 +89,11 @@ Run when drafting a plan, **before** `approve-autonomous`:
    node scripts/execute_plan_runtime.js current-phase <plan_id>
    ```
 6. Rebase phase branch on `origin/<base_branch>` (or integration parent when spawn phase)
+7. **Project status — In Progress** (control issue; every session after gate passes):
+   ```bash
+   node scripts/execute_plan_runtime.js set-project-status <plan_id> --status "In Progress"
+   ```
+   Distinguishes active plan work from backlog. Skip only if already **In Progress**. Requires `GH_PROJECTS_PAT`, `GH_PROJECT_ID`, `GH_STATUS_FIELD_ID` (see `docs/github-issue-workflow.md`); when unset, CLI prints `skipped` — agent must move status manually on the board.
 
 ---
 
@@ -171,7 +177,15 @@ Update snapshot `merge_commit` via runtime (`set-phase` + `saveSnapshot`). Sync 
 
 ### 7. Next phase
 
-If more `pending` phases → loop to §1. If all `merged` → set `autonomy: completed`, final `sync-runtime --write`, comment on control issue.
+If more `pending` phases → loop to §1.
+
+If all `merged` → **complete plan** (snapshot + project board + close control issue):
+
+```bash
+node scripts/execute_plan_runtime.js complete-plan <plan_id> --write
+```
+
+This sets `autonomy: completed`, syncs runtime, moves the control issue to **Done**, and closes it with a summary comment. Use `--skip-close` only for dry-run inspection. Post the rendered `comment` on the control issue if `gh issue close` could not run.
 
 ---
 
