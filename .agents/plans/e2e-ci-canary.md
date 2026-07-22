@@ -120,6 +120,6 @@ artifact_ref:
   snapshot_path: .agents/plans/e2e-ci-canary.snapshot.json
   snapshot_commit: f999b642aca566f12db3e533b25b12a1a17bd44c
 open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/268"]
-merge_commits: {"0":"dd82521a52bb51be8b5d0a177e4679d0a6229098","1":"8f4cce4","2a":"764a21d"}
+merge_commits: {"0":"dd82521a52bb51be8b5d0a177e4679d0a6229098","1":"8f4cce4","2a":"764a21d","2b":"85b33cd025950cf8650cbf5bbe4fdaee9104123f"}
 debt_issue_refs: []
 ```

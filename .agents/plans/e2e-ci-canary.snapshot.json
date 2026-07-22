@@ -4,7 +4,7 @@
   "approved_at": "2026-07-19T22:15:00Z",
   "approved_by": "KanopeeKa",
   "approved_until": "2026-07-24T09:49:00Z",
-  "content_hash": "sha256:b8304992c31bb5071e97f44f1face359114ee72610a69dfb68867d597c25d5c5",
+  "content_hash": "sha256:7daf6d67615591123ca2030020db45afbec46ab2a903aa208788ed552dad3a8e",
   "autonomy": "active",
   "default_merge_mode": "auto",
   "base_branch": "main",
@@ -132,6 +132,7 @@
       "status_detail": null,
       "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/258",
       "pr_head_sha": "8514fe2",
+      "merge_commit": "85b33cd025950cf8650cbf5bbe4fdaee9104123f",
       "debt_issue_refs": []
     },
     {
