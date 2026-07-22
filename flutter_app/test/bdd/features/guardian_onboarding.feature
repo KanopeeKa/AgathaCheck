@@ -1,7 +1,7 @@
 Feature: Guardian onboarding
   As a new pet guardian
   I want a guided setup after my first login
-  So that I can add a pet and reminder quickly
+  So that I can add a pet quickly
 
   @P1
   Scenario: New guardian user sees onboarding wizard after first login
@@ -15,11 +15,11 @@ Feature: Guardian onboarding
     Then the user should see the guardian onboarding wizard
 
   @P1
-  Scenario: Guardian completes onboarding with pet and reminder
+  Scenario: Guardian completes onboarding with pet
     Given a registered user with email "setupguardian@example.com" and password "secret123"
     And the user has no organisation memberships
     And the user has no pets
     And the user is on the guardian onboarding wizard
-    When the user completes guardian onboarding for pet "Bella" with reminder "Heartworm pill"
+    When the user completes guardian onboarding for pet "Bella"
     Then the user should be navigated to the guardian home screen
     And the pet "Bella" should appear on the home screen

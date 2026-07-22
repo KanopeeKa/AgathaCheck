@@ -3280,7 +3280,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get guardianOnboardingWelcomeBody =>
-      'Ajoutez votre premier animal et un rappel pour ne rien oublier.';
+      'Ajoutez votre premier animal pour commencer à suivre ses soins.';
 
   @override
   String get guardianOnboardingGetStarted => 'Commencer';

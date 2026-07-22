@@ -1,7 +1,7 @@
 /**
  * @bdd guardian_onboarding.feature
  * Scenario: New guardian user sees onboarding wizard after first login
- * Scenario: Guardian completes onboarding with pet and reminder
+ * Scenario: Guardian completes onboarding with pet
  */
 import { test, expect } from '../fixtures/auth.fixture';
 import { LandingPage } from '../pages/landing.page';
@@ -40,7 +40,7 @@ test.describe('Guardian onboarding', () => {
     await onboarding.expectGuardianVisible();
   });
 
-  test('guardian completes onboarding with pet and reminder', async ({ page }) => {
+  test('guardian completes onboarding with pet', async ({ page }) => {
     await prepareLiveApiAccess(page, baseURL());
     const user = await signupUser(baseURL(), {
       email: `setup-${Date.now()}@example.com`,
@@ -53,7 +53,7 @@ test.describe('Guardian onboarding', () => {
     await dismissConsentBannerIfPresent(page);
     await waitForPostLoginRoute(page);
 
-    await completeGuardianOnboarding(page, 'Bella', 'Heartworm pill');
+    await completeGuardianOnboarding(page, 'Bella');
 
     const experience = new ExperiencePage(page);
     await experience.expectGuardianShell();
