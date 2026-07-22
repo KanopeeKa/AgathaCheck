@@ -6,13 +6,20 @@ import 'package:intl/intl.dart';
 import '../../../../core/widgets/app_logo_title.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../domain/entities/app_notification.dart';
+import '../../domain/entities/notification_scope.dart';
+import '../../domain/services/notification_scope_rules.dart';
 import '../providers/notification_providers.dart';
 import '../../../pet_profile/presentation/providers/pet_providers.dart';
 
 class NotificationsScreen extends ConsumerStatefulWidget {
-  const NotificationsScreen({super.key, this.backPath = '/'});
+  const NotificationsScreen({
+    super.key,
+    this.backPath = '/',
+    this.scope = NotificationScope.guardian,
+  });
 
   final String backPath;
+  final NotificationScope scope;
 
   @override
   ConsumerState<NotificationsScreen> createState() =>
@@ -20,6 +27,13 @@ class NotificationsScreen extends ConsumerStatefulWidget {
 }
 
 class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
+  NotificationScope get _effectiveScope {
+    if (widget.scope != NotificationScope.guardian) return widget.scope;
+    return widget.backPath.startsWith('/o/')
+        ? NotificationScope.organization
+        : NotificationScope.guardian;
+  }
+
   @override
   void initState() {
     super.initState();
@@ -87,10 +101,14 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
         ),
         data: (allNotifications) {
           final prefs = ref.watch(notificationPreferencesProvider).valueOrNull;
-          final mutedIds = prefs?.mutedPetIds ?? [];
-          final notifications = allNotifications
-              .where((n) => n.petId == null || !mutedIds.contains(n.petId))
-              .toList();
+          final mutedIds = prefs?.mutedPetIds.toSet() ?? {};
+          final pets = ref.watch(petListProvider).valueOrNull ?? [];
+          final notifications = NotificationScopeRules.filter(
+            allNotifications,
+            _effectiveScope,
+            pets,
+            mutedPetIds: mutedIds,
+          );
 
           if (notifications.isEmpty) {
             return Center(

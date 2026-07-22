@@ -7,6 +7,8 @@ import 'package:pet_profile_app/features/notifications/domain/entities/app_notif
 import 'package:pet_profile_app/features/notifications/domain/entities/notification_preferences.dart';
 import 'package:pet_profile_app/features/notifications/presentation/providers/notification_providers.dart';
 import 'package:pet_profile_app/features/notifications/presentation/screens/notifications_screen.dart';
+import 'package:pet_profile_app/features/notifications/domain/entities/notification_scope.dart';
+import 'package:pet_profile_app/features/pet_profile/domain/entities/pet.dart';
 import 'package:pet_profile_app/features/pet_profile/presentation/providers/pet_providers.dart';
 import 'package:pet_profile_app/l10n/app_localizations.dart';
 
@@ -38,6 +40,7 @@ Widget _wrap({
   required Widget child,
   List<AppNotification> notifications = const [],
   List<String> mutedPetIds = const [],
+  List<Pet> pets = const [],
 }) {
   return ProviderScope(
     overrides: [
@@ -50,7 +53,7 @@ Widget _wrap({
           NotificationPreferences(mutedPetIds: mutedPetIds),
         ),
       ),
-      petListProvider.overrideWith(() => TestPetListNotifier()),
+      petListProvider.overrideWith(() => TestPetListNotifier(pets)),
     ],
     child: MaterialApp.router(
       localizationsDelegates: AppLocalizations.localizationsDelegates,
@@ -188,5 +191,47 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(notifier.markAllAsReadCalled, isTrue);
+  });
+
+  testWidgets('org scope hides owned pet notifications', (tester) async {
+    const owned = Pet(id: 'p-owned', name: 'Bella', species: 'Dog');
+    const foster = Pet(
+      id: 'p-foster',
+      name: 'Rex',
+      species: 'Dog',
+      isFoster: true,
+      organizationId: 'org-1',
+      organizationName: 'Shelter',
+    );
+
+    await tester.pumpWidget(
+      _wrap(
+        child: const NotificationsScreen(
+          backPath: '/o/home',
+          scope: NotificationScope.organization,
+        ),
+        pets: [owned, foster],
+        notifications: [
+          _sampleNotification(
+            id: 'n-owned',
+            title: 'Bella overdue',
+            message: 'Due today',
+            petId: 'p-owned',
+            petName: 'Bella',
+          ),
+          _sampleNotification(
+            id: 'n-foster',
+            title: 'Rex overdue',
+            message: 'Due today',
+            petId: 'p-foster',
+            petName: 'Rex',
+          ),
+        ],
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('Bella overdue'), findsNothing);
+    expect(find.text('Rex overdue'), findsOneWidget);
   });
 }

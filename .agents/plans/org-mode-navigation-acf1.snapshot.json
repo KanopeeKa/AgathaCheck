@@ -1,0 +1,135 @@
+{
+  "schema_version": 1,
+  "plan_id": "org-mode-navigation-acf1",
+  "approved_at": "2026-07-22T12:31:00Z",
+  "approved_by": "user",
+  "approved_until": "2026-07-24T12:31:00Z",
+  "content_hash": "sha256:9e23766bac48be254a5835d5c5f14ef9fd220344741fe963158b0044111ddef0",
+  "autonomy": "active",
+  "default_merge_mode": "auto",
+  "base_branch": "main",
+  "control_issue": 262,
+  "artifact_branch_policy": "phase-branch",
+  "phases": [
+    {
+      "id": "1",
+      "title": "Notification scope rules",
+      "branch": "cursor/org-mode-nav-phase1-scope-acf1",
+      "allowed_paths": [
+        "flutter_app/lib/features/notifications/**",
+        "flutter_app/test/features/notifications/**"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "in_progress",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "2",
+      "title": "Org-mode drawer and top-nav",
+      "branch": "cursor/org-mode-nav-phase2-drawer-acf1",
+      "allowed_paths": [
+        "flutter_app/lib/features/experience/**",
+        "flutter_app/test/features/experience/**",
+        "flutter_app/lib/l10n/**"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "flutter-screen-split",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "3",
+      "title": "Org shell coverage and Contact screen",
+      "branch": "cursor/org-mode-nav-phase3-shell-acf1",
+      "allowed_paths": [
+        "flutter_app/lib/core/router/**",
+        "flutter_app/lib/features/organization/**",
+        "flutter_app/lib/features/about/**",
+        "flutter_app/lib/features/help/**",
+        "flutter_app/test/features/organization/**",
+        "flutter_app/test/features/about/**"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "flutter-screen-split",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "4",
+      "title": "BDD and Playwright org-mode journey",
+      "branch": "cursor/org-mode-nav-phase4-bdd-acf1",
+      "allowed_paths": [
+        "flutter_app/test/bdd/features/org_mode_navigation.feature",
+        "e2e/playwright/tests/org.mode.navigation.spec.ts",
+        "e2e/playwright/pages/experience.page.ts",
+        "e2e/playwright/support/**"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "bdd-journey",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null,
+      "debt_issue_refs": []
+    }
+  ]
+}

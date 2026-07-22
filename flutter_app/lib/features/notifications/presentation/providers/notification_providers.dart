@@ -6,6 +6,8 @@ import 'package:pet_profile_app/core/providers/api_base_url_provider.dart';
 import '../../data/datasources/notification_remote_datasource.dart';
 import '../../data/repositories/notification_repository_impl.dart';
 import '../../domain/entities/app_notification.dart';
+import '../../domain/entities/notification_scope.dart';
+import '../../domain/services/notification_scope_rules.dart';
 import '../../domain/entities/notification_preferences.dart';
 import '../../domain/repositories/notification_repository.dart';
 
@@ -69,17 +71,32 @@ class NotificationsNotifier extends AsyncNotifier<List<AppNotification>> {
 }
 
 final unreadNotificationCountProvider = Provider<int>((ref) {
+  return ref.watch(guardianUnreadNotificationCountProvider);
+});
+
+final guardianUnreadNotificationCountProvider = Provider<int>((ref) {
+  return _scopedUnreadCount(ref, NotificationScope.guardian);
+});
+
+final orgUnreadNotificationCountProvider = Provider<int>((ref) {
+  return _scopedUnreadCount(ref, NotificationScope.organization);
+});
+
+int _scopedUnreadCount(Ref ref, NotificationScope scope) {
   final notifs = ref.watch(notificationsProvider);
   final prefs = ref.watch(notificationPreferencesProvider).valueOrNull;
-  final mutedIds = prefs?.mutedPetIds ?? [];
+  final pets = ref.watch(petListProvider).valueOrNull ?? [];
+  final mutedIds = prefs?.mutedPetIds.toSet() ?? {};
   return notifs.whenOrNull(
-        data: (list) => list
-            .where((n) => !n.isRead)
-            .where((n) => n.petId == null || !mutedIds.contains(n.petId))
-            .length,
+        data: (list) => NotificationScopeRules.unreadCount(
+          list,
+          scope,
+          pets,
+          mutedPetIds: mutedIds,
+        ),
       ) ??
       0;
-});
+}
 
 final notificationPreferencesProvider =
     AsyncNotifierProvider<
