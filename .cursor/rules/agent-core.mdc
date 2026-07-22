@@ -33,6 +33,12 @@ Do not duplicate these commands in chat — run the script. Skill: `/pre-push-ve
 | `/pre-push-verify` | Which tests to run |
 | `/babysit-plus` | Autonomous PR triage, debt issues, CI loop, merge |
 | `/execute-plan` | Multi-phase autonomous orchestrator (delegates to `/babysit-plus`) |
+| `/ui-check` | Quick UX/a11y pass on UI changes |
+| `/ui-design-deep` | In-depth UX/design review or refactor planning |
+
+## UX (everyday drift guards)
+
+Calm care coordination — not a cute pet app, not loud generic SaaS. **Clarity and a11y beat decoration.** Use theme tokens; keep focus visible; ≥48dp touch targets; operational copy direct. Deeper reviews: `docs/design/index.md`, skills `/ui-check` and `/ui-design-deep`.
 
 ## Non-negotiables
 
@@ -61,4 +67,4 @@ Full cloud caveats: `AGENTS.md`.
 
 ## Path-scoped rules (auto-apply when editing matching files)
 
-`modularity.mdc`, `testing.mdc`, `security.mdc`, `single-backend.mdc`, `accessibility.mdc`, `agent-coordination.mdc`
+`modularity.mdc`, `testing.mdc`, `security.mdc`, `single-backend.mdc`, `accessibility.mdc`, `design.mdc`, `agent-coordination.mdc`
