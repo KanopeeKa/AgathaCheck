@@ -94,6 +94,33 @@ void main() {
       );
     });
 
+    test('empty organizationId is not treated as org inventory', () {
+      const emptyOrgIdPet = Pet(
+        id: 'p-empty-org',
+        name: 'Empty',
+        species: 'Dog',
+        organizationId: '',
+        organizationName: 'Shelter',
+      );
+      final n = _notif(petId: 'p-empty-org');
+      expect(
+        NotificationScopeRules.includes(
+          n,
+          NotificationScope.organization,
+          [emptyOrgIdPet],
+        ),
+        isFalse,
+      );
+      expect(
+        NotificationScopeRules.includes(
+          n,
+          NotificationScope.guardian,
+          [emptyOrgIdPet],
+        ),
+        isTrue,
+      );
+    });
+
     test('shared pet notification is guardian-only', () {
       final n = _notif(petId: 'p-shared');
       expect(
