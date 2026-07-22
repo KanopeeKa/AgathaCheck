@@ -66,9 +66,9 @@ class OrgExperienceDrawer extends ConsumerWidget {
                 ),
                 if (orgs.isEmpty)
                   ListTile(
-                    key: const Key('drawer_create_org'),
+                    key: const Key('drawer_create_organisation'),
                     leading: const Icon(Icons.add_business_outlined),
-                    title: Text(l.drawerCreateOrg),
+                    title: Text(l.createOrJoinOrganization),
                     onTap: () {
                       Navigator.pop(context);
                       context.go(OrgOnboardingRules.onboardingPath);

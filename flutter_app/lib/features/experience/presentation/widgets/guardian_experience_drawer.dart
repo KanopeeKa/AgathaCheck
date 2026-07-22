@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../../../l10n/app_localizations.dart';
 import '../../../auth/presentation/providers/auth_providers.dart';
@@ -18,6 +19,15 @@ class GuardianExperienceDrawer extends ConsumerWidget {
 
   final int unreadCount;
   final bool showOrgView;
+
+  static const _supportEmail = 'contact@agathatrack.com';
+
+  Future<void> _openContactEmail() async {
+    final uri = Uri(scheme: 'mailto', path: _supportEmail);
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri);
+    }
+  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -117,9 +127,9 @@ class GuardianExperienceDrawer extends ConsumerWidget {
             ListTile(
               leading: const Icon(Icons.mail_outline),
               title: Text(l.contact),
-              onTap: () {
+              onTap: () async {
                 Navigator.pop(context);
-                context.push('/help');
+                await _openContactEmail();
               },
             ),
             const Divider(),
