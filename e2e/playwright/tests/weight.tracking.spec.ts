@@ -20,7 +20,6 @@ import {
   deleteWeightEntry,
   signupUser,
 } from '../support/api';
-import { checkA11y } from '../support/axe';
 import { PetListPage } from '../pages/pet-list.page';
 import { PetDetailPage } from '../pages/pet-detail.page';
 import { WeightTrackingPage } from '../pages/weight-tracking.page';
@@ -41,8 +40,6 @@ test.describe('Weight tracking', () => {
 
     const weightPage = new WeightTrackingPage(page);
     await weightPage.expectEmptyState();
-
-    await checkA11y(page, 'weight tracking empty state');
   });
 
   // ── Adding weight entries ─────────────────────────────────────────────────

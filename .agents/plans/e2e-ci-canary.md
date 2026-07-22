@@ -109,17 +109,17 @@ Add a fast PR Playwright canary (`@smoke-ci`, retries 0), harden UAT live smoke 
 
 ```yaml
 autonomy: active
-current_phase: 2b
-last_completed_phase: 2a
+current_phase: 3
+last_completed_phase: 2b
 halt_reason: null
-next_action: "continue phase 2b on branch cursor/e2e-canary-phase2b-ci-blocking-8b4d"
+next_action: "continue phase 3 on branch cursor/e2e-canary-phase3-uat-smoke-48ef"
 artifact_ref:
-  branch: cursor/e2e-canary-phase2b-ci-blocking-8b4d
+  branch: cursor/e2e-canary-phase3-uat-smoke-48ef
   plan_path: .agents/plans/e2e-ci-canary.md
-  plan_commit: 78361f1532e8102891dc916c7097b2aa00680b95
+  plan_commit: 710f8eb8a9df0564b9e971e76f6610c54d62854e
   snapshot_path: .agents/plans/e2e-ci-canary.snapshot.json
-  snapshot_commit: 78361f1532e8102891dc916c7097b2aa00680b95
-open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/258"]
+  snapshot_commit: 710f8eb8a9df0564b9e971e76f6610c54d62854e
+open_prs: []
 merge_commits: {"0":"dd82521a52bb51be8b5d0a177e4679d0a6229098","1":"8f4cce4","2a":"764a21d"}
 debt_issue_refs: []
 ```

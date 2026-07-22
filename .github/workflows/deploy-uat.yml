@@ -629,7 +629,7 @@ jobs:
           npm ci
           npx playwright install chromium --with-deps
 
-      - name: Run @smoke Playwright tests against live UAT
+      - name: Run @smoke-uat Playwright tests against live UAT
         working-directory: e2e
         env:
           E2E_BASE_URL: ${{ env.UAT_BASE_URL }}
@@ -637,7 +637,7 @@ jobs:
           E2E_TLS_INSECURE: '1'
           # cPanel auto-SSL on UAT is not trusted by GitHub runners (self-signed / incomplete chain).
           NODE_TLS_REJECT_UNAUTHORIZED: '0'
-        run: xvfb-run --auto-servernum npm run test:smoke
+        run: xvfb-run --auto-servernum npm run test:smoke-uat
 
       - name: Upload Playwright report
         if: always()

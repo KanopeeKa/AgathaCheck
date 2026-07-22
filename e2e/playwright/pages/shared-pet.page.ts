@@ -1,4 +1,5 @@
 import type { Page } from '@playwright/test';
+import { expect } from '@playwright/test';
 import { dismissConsentBannerIfPresent, enableFlutterAccessibility } from '../support/flutter';
 import { isLiveHostingTarget } from '../support/hosting';
 import { passHostingWaf } from '../support/waf';
@@ -29,24 +30,34 @@ export class SharedPetPage {
   }
 
   async expectLoaded(petName: string): Promise<void> {
-    await this.page
-      .getByRole('banner', { name: new RegExp(petName, 'i') })
-      .waitFor({ timeout: 30_000 });
+    const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
+    const timeout = isLiveHostingTarget(baseURL) ? 45_000 : 30_000;
+    const pattern = new RegExp(petName, 'i');
+    await expect(async () => {
+      await enableFlutterAccessibility(this.page);
+      await expect(this.page.getByRole('banner', { name: pattern })).toBeVisible();
+    }).toPass({ timeout });
   }
 
   async expectViewOnlyBadge(): Promise<void> {
-    await this.page
-      .getByText(/^(View Only|Lecture seule)$/i)
-      .waitFor({ timeout: 30_000 });
+    const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
+    const timeout = isLiveHostingTarget(baseURL) ? 45_000 : 30_000;
+    await expect(async () => {
+      await expect(this.page.getByText(/^(View Only|Lecture seule)$/i)).toBeVisible();
+    }).toPass({ timeout });
   }
 
   async expectSpecies(species: string): Promise<void> {
+    const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
+    const timeout = isLiveHostingTarget(baseURL) ? 45_000 : 30_000;
     const localized: Record<string, string> = { Dog: 'Chien', Cat: 'Chat' };
     const fr = localized[species];
     const pattern = fr
       ? new RegExp(`\\b(${species}|${fr})\\b`, 'i')
       : new RegExp(`\\b${species}\\b`, 'i');
-    await this.page.getByText(pattern).first().waitFor({ timeout: 30_000 });
+    await expect(async () => {
+      await expect(this.page.getByText(pattern).first()).toBeVisible();
+    }).toPass({ timeout });
   }
 
   async expectOwnerName(name: string): Promise<void> {
