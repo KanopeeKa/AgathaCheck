@@ -177,7 +177,11 @@ When `deploy-prod.yml` runs with `PROD_DEPLOY_ENABLED=true`, the workflow:
 | `PROD_FTP_USERNAME` | FTP account whose **directory** in cPanel is `agathatrack.com` / `~/agathatrack.com` |
 | `PROD_FTP_PASSWORD` | That FTP account's password |
 
-cPanel → **FTP Accounts** → create or edit the prod account so **Directory** is `/home/<cpanel-user>/agathatrack.com` (mirror UAT: UAT FTP logs into `~/uat.agathatrack.com/`, prod into `~/agathatrack.com/`). If the FTP home is a nested subfolder under the domain (e.g. `~/agathatrack.com/my_ftp_user/`), deploy will land under `my_ftp_user/...` and Node.js will not see `package.json` at `agathatrack.com/backend/`.
+cPanel → **FTP Accounts** → create or edit the prod account so **Directory** is `/home/<cpanel-user>/agathatrack.com` (mirror UAT: UAT FTP logs into `~/uat.agathatrack.com/`, prod into `~/agathatrack.com/`).
+
+**Do not** use an FTP account jailed to a subfolder (e.g. `~/agathatrack.com/PROD_user/`). With `server-dir: ./`, files land in that subfolder — Node/cPanel expect `~/agathatrack.com/backend/package.json`. SSH deploy now fails fast if `package.json` is missing at the app root.
+
+**One-time cleanup after a misplaced deploy:** move `PROD_user/*` (or nested `agathatrack.com/*`) into `~/agathatrack.com/`, fix the FTP account directory, then re-run prod deploy.
 
 **UAT environment secrets required for SSH:**
 
