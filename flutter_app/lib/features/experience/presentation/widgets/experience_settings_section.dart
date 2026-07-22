@@ -14,8 +14,8 @@ class ExperienceSettingsSection extends ConsumerWidget {
     final l = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final eligibility = ref.watch(experienceEligibilityProvider).valueOrNull;
-    final store = ref.watch(experiencePreferencesStoreProvider);
-    final saved = store.readDefaultExperience();
+    final saved = ref.watch(savedDefaultExperienceProvider);
+    final store = ref.read(experiencePreferencesStoreProvider);
 
     if (eligibility == null || !eligibility.showChooser) {
       return const SizedBox.shrink();

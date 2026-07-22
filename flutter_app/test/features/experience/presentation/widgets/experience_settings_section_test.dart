@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:pet_profile_app/core/providers/shared_preferences_provider.dart';
+import 'package:pet_profile_app/features/experience/domain/entities/app_experience.dart';
 import 'package:pet_profile_app/features/experience/domain/services/experience_eligibility.dart';
 import 'package:pet_profile_app/features/experience/presentation/providers/experience_providers.dart';
 import 'package:pet_profile_app/features/experience/presentation/widgets/experience_settings_section.dart';
@@ -76,6 +77,53 @@ void main() {
         findsOneWidget,
       );
       expect(find.text('Default experience'), findsOneWidget);
+    });
+
+    testWidgets('updates selected radio when default experience changes', (
+      tester,
+    ) async {
+      await prefs.setString(
+        'experience_default',
+        AppExperience.organization.wire,
+      );
+
+      await tester.pumpWidget(
+        _wrap(
+          const ExperienceSettingsSection(),
+          overrides: [
+            sharedPreferencesProvider.overrideWithValue(prefs),
+            experienceEligibilityProvider.overrideWith(
+              (ref) => AsyncValue.data(dualEligibility),
+            ),
+          ],
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      RadioListTile<AppExperience> radioTile(WidgetTester t, String wire) {
+        return t.widget<RadioListTile<AppExperience>>(
+          find.byKey(Key('default_experience_$wire')),
+        );
+      }
+
+      expect(
+        radioTile(tester, AppExperience.organization.wire).groupValue,
+        AppExperience.organization,
+      );
+
+      await tester.tap(
+        find.byKey(Key('default_experience_${AppExperience.guardian.wire}')),
+      );
+      await tester.pumpAndSettle();
+
+      expect(
+        radioTile(tester, AppExperience.guardian.wire).groupValue,
+        AppExperience.guardian,
+      );
+      expect(
+        radioTile(tester, AppExperience.organization.wire).groupValue,
+        AppExperience.guardian,
+      );
     });
 
     testWidgets('hides section for guardian-only users', (tester) async {
