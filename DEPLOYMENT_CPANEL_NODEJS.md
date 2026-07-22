@@ -164,7 +164,7 @@ When `deploy-prod.yml` runs with `PROD_DEPLOY_ENABLED=true`, the workflow:
 | Application root | `agathatrack.com/backend` (on disk: `~/agathatrack.com/backend`) |
 | Application URL | `agathatrack.com` |
 | Startup file | `bin/start.js` |
-| FTP account directory | `~/agathatrack.com` (FTP login root — **not** a subfolder like `PROD_user/`) |
+| FTP account directory | `~/agathatrack.com` (FTP login root — **not** a nested subfolder under the domain) |
 | FTP frontend target | `./` (relative to FTP root) |
 | FTP backend target | `./backend/` |
 | SSH site root (on disk) | `~/agathatrack.com` |
@@ -177,7 +177,7 @@ When `deploy-prod.yml` runs with `PROD_DEPLOY_ENABLED=true`, the workflow:
 | `PROD_FTP_USERNAME` | FTP account whose **directory** in cPanel is `agathatrack.com` / `~/agathatrack.com` |
 | `PROD_FTP_PASSWORD` | That FTP account's password |
 
-cPanel → **FTP Accounts** → create or edit the prod account so **Directory** is `/home/bixo5840/agathatrack.com` (mirror UAT: UAT FTP logs into `~/uat.agathatrack.com/`, prod into `~/agathatrack.com/`). If the FTP home is a nested folder (e.g. `~/agathatrack.com/PROD_user/`), deploy will land under `PROD_user/agathatrack.com/...` and Node.js will not see `package.json` at `agathatrack.com/backend/`.
+cPanel → **FTP Accounts** → create or edit the prod account so **Directory** is `/home/<cpanel-user>/agathatrack.com` (mirror UAT: UAT FTP logs into `~/uat.agathatrack.com/`, prod into `~/agathatrack.com/`). If the FTP home is a nested subfolder under the domain (e.g. `~/agathatrack.com/my_ftp_user/`), deploy will land under `my_ftp_user/...` and Node.js will not see `package.json` at `agathatrack.com/backend/`.
 
 **UAT environment secrets required for SSH:**
 
