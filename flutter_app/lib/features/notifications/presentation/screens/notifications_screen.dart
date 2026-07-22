@@ -1,18 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:intl/intl.dart';
 
 import '../../../../core/widgets/app_logo_title.dart';
 import '../../../../l10n/app_localizations.dart';
-import '../../domain/entities/app_notification.dart';
+import '../../domain/entities/notification_scope.dart';
+import '../../domain/services/notification_scope_rules.dart';
 import '../providers/notification_providers.dart';
+import '../widgets/notification_date_groups.dart';
+import '../widgets/notification_tile.dart';
 import '../../../pet_profile/presentation/providers/pet_providers.dart';
 
 class NotificationsScreen extends ConsumerStatefulWidget {
-  const NotificationsScreen({super.key, this.backPath = '/'});
+  const NotificationsScreen({super.key, this.backPath = '/', this.scope});
 
   final String backPath;
+
+  /// When null, scope is inferred from [backPath] (`/o/*` → organisation).
+  final NotificationScope? scope;
 
   @override
   ConsumerState<NotificationsScreen> createState() =>
@@ -20,6 +25,14 @@ class NotificationsScreen extends ConsumerStatefulWidget {
 }
 
 class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
+  NotificationScope get _effectiveScope {
+    final explicit = widget.scope;
+    if (explicit != null) return explicit;
+    return widget.backPath.startsWith('/o/')
+        ? NotificationScope.organization
+        : NotificationScope.guardian;
+  }
+
   @override
   void initState() {
     super.initState();
@@ -87,10 +100,14 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
         ),
         data: (allNotifications) {
           final prefs = ref.watch(notificationPreferencesProvider).valueOrNull;
-          final mutedIds = prefs?.mutedPetIds ?? [];
-          final notifications = allNotifications
-              .where((n) => n.petId == null || !mutedIds.contains(n.petId))
-              .toList();
+          final mutedIds = prefs?.mutedPetIds.toSet() ?? {};
+          final pets = ref.watch(petListProvider).valueOrNull ?? [];
+          final notifications = NotificationScopeRules.filter(
+            allNotifications,
+            _effectiveScope,
+            pets,
+            mutedPetIds: mutedIds,
+          );
 
           if (notifications.isEmpty) {
             return Center(
@@ -117,7 +134,7 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
             );
           }
 
-          final grouped = _groupByDate(context, notifications);
+          final grouped = groupNotificationsByDate(context, notifications);
 
           return RefreshIndicator(
             onRefresh: () => ref.read(notificationsProvider.notifier).refresh(),
@@ -140,7 +157,7 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
                       ),
                     ),
                     ...group.notifications.map(
-                      (n) => _NotificationTile(
+                      (n) => NotificationTile(
                         notification: n,
                         onTap: () async {
                           if (!n.isRead) {
@@ -166,242 +183,5 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
         },
       ),
     );
-  }
-
-  List<_NotificationGroup> _groupByDate(
-    BuildContext context,
-    List<AppNotification> notifications,
-  ) {
-    final l = AppLocalizations.of(context)!;
-    final now = DateTime.now();
-    final today = DateTime(now.year, now.month, now.day);
-    final yesterday = today.subtract(const Duration(days: 1));
-
-    final Map<String, List<AppNotification>> groups = {};
-
-    for (final n in notifications) {
-      final date = DateTime(
-        n.createdAt.year,
-        n.createdAt.month,
-        n.createdAt.day,
-      );
-      String label;
-      if (date == today) {
-        label = l.today;
-      } else if (date == yesterday) {
-        label = 'Yesterday';
-      } else {
-        label = DateFormat.yMMMd().format(date);
-      }
-      groups.putIfAbsent(label, () => []).add(n);
-    }
-
-    return groups.entries
-        .map((e) => _NotificationGroup(label: e.key, notifications: e.value))
-        .toList();
-  }
-}
-
-class _NotificationGroup {
-  final String label;
-  final List<AppNotification> notifications;
-
-  _NotificationGroup({required this.label, required this.notifications});
-}
-
-class _NotificationTile extends ConsumerWidget {
-  const _NotificationTile({required this.notification, required this.onTap});
-
-  final AppNotification notification;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final theme = Theme.of(context);
-    final isUnread = !notification.isRead;
-
-    IconData icon;
-    Color iconColor;
-
-    final hasOrg =
-        notification.organizationId != null &&
-        notification.organizationId!.isNotEmpty;
-    final hasPet = notification.petId != null && notification.petId!.isNotEmpty;
-    final isOrgOnly = hasOrg && !hasPet;
-
-    switch (notification.type) {
-      case NotificationType.overdue:
-        icon = Icons.warning_amber_rounded;
-        iconColor = theme.colorScheme.error;
-        break;
-      case NotificationType.dueSoon:
-        icon = Icons.schedule;
-        iconColor = Colors.orange;
-        break;
-      case NotificationType.reminder:
-        icon = Icons.schedule;
-        iconColor = theme.colorScheme.primary;
-        break;
-      case NotificationType.completed:
-        icon = Icons.check_circle;
-        iconColor = Colors.green;
-        break;
-      case NotificationType.general:
-        icon = isOrgOnly ? Icons.business : Icons.notifications;
-        iconColor = isOrgOnly ? Colors.indigo : theme.colorScheme.primary;
-        break;
-    }
-
-    final pets = ref.watch(petListProvider).valueOrNull ?? [];
-    final pet = notification.petId != null
-        ? pets.where((p) => p.id == notification.petId).firstOrNull
-        : null;
-    final petColor = pet?.colorValue != null ? Color(pet!.colorValue!) : null;
-
-    final tileColor = isUnread
-        ? theme.colorScheme.primaryContainer.withAlpha(40)
-        : null;
-    final stripColor = petColor ?? theme.colorScheme.outlineVariant;
-
-    return MergeSemantics(
-      child: Semantics(
-        label:
-            '${notification.type.label} notification: ${notification.title}, ${_formatTime(notification.createdAt)}${isUnread ? ', unread' : ''}${notification.petName != null ? ', pet: ${notification.petName}' : ''}',
-        child: InkWell(
-          onTap: onTap,
-          child: Container(
-            color: tileColor,
-            child: IntrinsicHeight(
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Container(
-                    width: 4,
-                    decoration: BoxDecoration(
-                      color: stripColor,
-                      borderRadius: const BorderRadius.only(
-                        topRight: Radius.circular(2),
-                        bottomRight: Radius.circular(2),
-                      ),
-                    ),
-                  ),
-                  Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 10,
-                      ),
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.only(top: 2),
-                            child: CircleAvatar(
-                              radius: 18,
-                              backgroundColor: iconColor.withAlpha(30),
-                              child: ExcludeSemantics(
-                                child: Icon(icon, color: iconColor, size: 20),
-                              ),
-                            ),
-                          ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                if (notification.petName != null &&
-                                    notification.petName!.isNotEmpty)
-                                  Padding(
-                                    padding: const EdgeInsets.only(bottom: 2),
-                                    child: Row(
-                                      children: [
-                                        Icon(
-                                          Icons.pets,
-                                          size: 13,
-                                          color:
-                                              petColor ??
-                                              theme.colorScheme.primary,
-                                        ),
-                                        const SizedBox(width: 4),
-                                        Text(
-                                          notification.petName!,
-                                          style: theme.textTheme.labelMedium
-                                              ?.copyWith(
-                                                color:
-                                                    petColor ??
-                                                    theme.colorScheme.primary,
-                                                fontWeight: FontWeight.w600,
-                                              ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                Text(
-                                  notification.title,
-                                  style: theme.textTheme.bodyMedium?.copyWith(
-                                    fontWeight: isUnread
-                                        ? FontWeight.bold
-                                        : FontWeight.normal,
-                                  ),
-                                ),
-                                const SizedBox(height: 2),
-                                Text(
-                                  notification.message,
-                                  maxLines: 2,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: theme.textTheme.bodySmall?.copyWith(
-                                    color: theme.colorScheme.onSurfaceVariant,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          const SizedBox(width: 8),
-                          Column(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: [
-                              Text(
-                                _formatTime(notification.createdAt),
-                                style: theme.textTheme.labelSmall?.copyWith(
-                                  color: theme.colorScheme.onSurfaceVariant,
-                                ),
-                              ),
-                              if (isUnread)
-                                ExcludeSemantics(
-                                  child: Container(
-                                    margin: const EdgeInsets.only(top: 4),
-                                    width: 8,
-                                    height: 8,
-                                    decoration: BoxDecoration(
-                                      color: theme.colorScheme.primary,
-                                      shape: BoxShape.circle,
-                                    ),
-                                  ),
-                                ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  String _formatTime(DateTime dateTime) {
-    final now = DateTime.now();
-    final diff = now.difference(dateTime);
-    if (diff.inMinutes < 60) {
-      return '${diff.inMinutes}m ago';
-    } else if (diff.inHours < 24) {
-      return '${diff.inHours}h ago';
-    } else {
-      return DateFormat.Hm().format(dateTime);
-    }
   }
 }
