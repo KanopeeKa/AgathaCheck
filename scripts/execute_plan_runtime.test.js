@@ -239,4 +239,6 @@ test('normalizeStatusName maps common aliases', () => {
   assert.equal(normalizeStatusName('backlog'), 'Backlog');
   assert.equal(normalizeStatusName('in_progress'), 'In Progress');
   assert.equal(normalizeStatusName('done'), 'Done');
+  assert.equal(normalizeStatusName('  Ready  '), 'Ready');
+  assert.equal(normalizeStatusName(42), '42');
 });

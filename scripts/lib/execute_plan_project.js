@@ -15,8 +15,9 @@ const STATUS_ALIASES = {
 };
 
 function normalizeStatusName(status) {
-  const key = String(status).trim().toLowerCase();
-  return STATUS_ALIASES[key] || status;
+  const normalized = String(status).trim();
+  const key = normalized.toLowerCase();
+  return STATUS_ALIASES[key] || normalized;
 }
 
 function resolveRepository() {
@@ -45,7 +46,6 @@ function getProjectConfig() {
 
 async function updateIssueProjectStatus(issueNumber, statusName) {
   const status = normalizeStatusName(statusName);
-  const { owner, repo } = resolveRepository();
   const config = getProjectConfig();
 
   if (!config) {
@@ -60,6 +60,7 @@ async function updateIssueProjectStatus(issueNumber, statusName) {
     };
   }
 
+  const { owner, repo } = resolveRepository();
   const issue = await fetchIssue(owner, repo, issueNumber, config.projectsPat);
   await updateProjectStatus({
     issue,

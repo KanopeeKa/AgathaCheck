@@ -338,24 +338,39 @@ async function runAsync(cmd, planId, flags) {
       }
       const statusResult = await updateIssueProjectStatus(issueNumber, 'Done');
       let closeResult = { skipped: true, reason: 'skip_close_flag' };
+      let ok = true;
+      const errors = [];
+
+      if (!statusResult.ok && !statusResult.skipped) {
+        ok = false;
+        errors.push('project_status_failed');
+      }
+
       if (!flags['skip-close']) {
         try {
           closeResult = closeIssueWithComment(issueNumber, comment);
         } catch (e) {
           closeResult = { ok: false, error: e.message, gh_hint: `gh issue close ${issueNumber}` };
+          ok = false;
+          errors.push('issue_close_failed');
         }
       }
+
       printJson({
-        ok: true,
+        ok,
         plan_id: planId,
         autonomy: snapshot.autonomy,
         control_issue: issueNumber,
         project_status: statusResult,
         issue_close: closeResult,
+        errors: errors.length ? errors : undefined,
         comment,
       });
       if (!flags.write) {
         console.error('execute_plan_runtime: dry-run (pass --write to persist snapshot)');
+      }
+      if (!ok) {
+        process.exit(1);
       }
       break;
     }
