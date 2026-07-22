@@ -23,8 +23,6 @@ echo "site_root=${PROD_SITE_ROOT}"
 echo "app_dir=${APPDIR}"
 echo "pkg_changed=${PKG_CHANGED}"
 
-echo "pkg_changed=${PKG_CHANGED}"
-
 if [[ ! -f "${APPDIR}/package.json" ]]; then
   echo "::error::${APPDIR}/package.json missing after FTP deploy." >&2
   echo "::error::PROD FTP account is likely jailed to a subfolder (e.g. agathatrack.com/PROD_user)." >&2
