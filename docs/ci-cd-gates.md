@@ -101,9 +101,8 @@ checks listed in **Main protection** ruleset should be removed when
 **Optional (visible, not required individually):** `flutter-test-{pet,health,org,rest} / Flutter tests (<shard>)` —
 the merge gate `flutter-coverage / Flutter domain coverage` covers shard failures (enforced via `ci-gate`).
 
-**Advisory (visible, not required):** `ci-e2e-canary / Playwright @smoke-ci canary (localhost)` —
-PR Playwright canary (`@smoke-ci`, retries 0). Soak on green runs before Phase 2b adds it to `ci-gate`.
-See [e2e-ci-canary-plan.md](./e2e-ci-canary-plan.md).
+**Blocking via `ci-gate`:** `ci-e2e-canary / Playwright @smoke-ci canary (localhost)` —
+PR Playwright canary (`@smoke-ci`, retries 0). Required when `flutter-build-web` succeeds; skipped when build fails (gate still fails on build). Enforced in `scripts/ci/assert-ci-gate.sh`. See [e2e-ci-canary-plan.md](./e2e-ci-canary-plan.md).
 
 #### Accepted trade-off: no CI re-run on merge to `main`
 

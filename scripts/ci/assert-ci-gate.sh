@@ -31,7 +31,19 @@ declare -A RESULTS=(
   [flutter-coverage]="${FLUTTER_COVERAGE:-}"
   [flutter-integration]="${FLUTTER_INTEGRATION:-}"
   [flutter-build-web]="${FLUTTER_BUILD_WEB:-}"
+  [ci-e2e-canary]="${CI_E2E_CANARY:-}"
 )
+
+# ci-e2e-canary skips when flutter-build-web fails; require green canary when build succeeded.
+ci_e2e_canary_passes() {
+  local canary="${CI_E2E_CANARY:-}"
+  local build="${FLUTTER_BUILD_WEB:-}"
+  if [[ "$build" == "success" ]]; then
+    [[ "$canary" == "success" ]]
+  else
+    [[ "$canary" == "success" || "$canary" == "skipped" ]]
+  fi
+}
 
 failed=0
 {
@@ -41,9 +53,16 @@ failed=0
   echo "|-----|--------|------|"
   for job in startup-smoke test-suite flutter-analyze \
     flutter-test-pet flutter-test-health flutter-test-org flutter-test-rest \
-    flutter-coverage flutter-integration flutter-build-web; do
+    flutter-coverage flutter-integration flutter-build-web ci-e2e-canary; do
     result="${RESULTS[$job]}"
-    if require_success "$job" "$result"; then
+    if [[ "$job" == "ci-e2e-canary" ]]; then
+      if ci_e2e_canary_passes; then
+        pass="yes"
+      else
+        pass="**no**"
+        failed=1
+      fi
+    elif require_success "$job" "$result"; then
       pass="yes"
     else
       pass="**no**"
