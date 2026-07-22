@@ -116,10 +116,10 @@ next_action: "continue phase 2b on branch cursor/e2e-canary-phase2b-ci-blocking-
 artifact_ref:
   branch: cursor/e2e-canary-phase2b-ci-blocking-8b4d
   plan_path: .agents/plans/e2e-ci-canary.md
-  plan_commit: pending
+  plan_commit: 78361f1532e8102891dc916c7097b2aa00680b95
   snapshot_path: .agents/plans/e2e-ci-canary.snapshot.json
-  snapshot_commit: pending
-open_prs: []
+  snapshot_commit: 78361f1532e8102891dc916c7097b2aa00680b95
+open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/258"]
 merge_commits: {"0":"dd82521a52bb51be8b5d0a177e4679d0a6229098","1":"8f4cce4","2a":"764a21d"}
 debt_issue_refs: []
 ```
