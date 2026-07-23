@@ -2,10 +2,12 @@
 # Assert all CI caller jobs succeeded — used by ci.yml ci-gate job.
 # When adding a new blocking job to ci.yml, add its needs.*.result env below
 # AND add the job id to ci-gate needs: in .github/workflows/ci.yml.
+# Optional CI_SCOPE_JSON (from ci-scope job) marks jobs that may be skipped.
 # See docs/ci-cd-gates.md and docs/promotion-contract.md.
 set -euo pipefail
 
 SUMMARY_FILE="${GITHUB_STEP_SUMMARY:-}"
+SCOPE_JSON="${CI_SCOPE_JSON:-}"
 
 append_summary() {
   if [[ -n "$SUMMARY_FILE" ]]; then
@@ -17,6 +19,22 @@ require_success() {
   local name="$1"
   local result="$2"
   [[ "$result" == "success" ]]
+}
+
+job_in_skip_list() {
+  local job="$1"
+  [[ -z "$SCOPE_JSON" ]] && return 1
+  python3 -c 'import json,sys; job=sys.argv[1]; data=json.loads(sys.stdin.read()); sys.exit(0 if job in data.get("skip_jobs", []) else 1)' "$job" <<<"$SCOPE_JSON"
+}
+
+job_passes() {
+  local job="$1"
+  local result="$2"
+  if job_expects_skip "$job"; then
+    [[ "$result" == "success" || "$result" == "skipped" ]]
+    return
+  fi
+  require_success "$job" "$result"
 }
 
 # Job id → needs.<job_id>.result (keep in sync with ci.yml ci-gate needs:)
@@ -35,10 +53,14 @@ declare -A RESULTS=(
   [ci-e2e-canary]="${CI_E2E_CANARY:-}"
 )
 
-# ci-e2e-canary skips when flutter-build-web fails; require green canary when build succeeded.
+# ci-e2e-canary skips when flutter-build-web fails or scope skips stack; require green when build ran.
 ci_e2e_canary_passes() {
   local canary="${CI_E2E_CANARY:-}"
   local build="${FLUTTER_BUILD_WEB:-}"
+  if job_expects_skip "ci-e2e-canary"; then
+    [[ "$canary" == "success" || "$canary" == "skipped" ]]
+    return
+  fi
   if [[ "$build" == "success" ]]; then
     [[ "$canary" == "success" ]]
   else
@@ -47,8 +69,17 @@ ci_e2e_canary_passes() {
 }
 
 failed=0
+scope_label=""
+if [[ -n "$SCOPE_JSON" ]]; then
+  scope_label="$(python3 -c 'import json,sys; print(json.load(sys.stdin).get("scope","?"))' <<<"$SCOPE_JSON")"
+fi
+
 {
   echo "## CI gate summary"
+  if [[ -n "$scope_label" ]]; then
+    echo
+    echo "CI scope: \`$scope_label\`"
+  fi
   echo
   echo "| Job | Result | Pass |"
   echo "|-----|--------|------|"
@@ -63,18 +94,21 @@ failed=0
         pass="**no**"
         failed=1
       fi
-    elif require_success "$job" "$result"; then
+    elif job_passes "$job" "$result"; then
       pass="yes"
     else
       pass="**no**"
       failed=1
+    fi
+    if job_expects_skip "$job"; then
+      pass="${pass} (scoped skip ok)"
     fi
     echo "| \`${job}\` | ${result:-unknown} | ${pass} |"
   done
 
   echo
   if [[ "$failed" -eq 0 ]]; then
-    echo "**CI passed** — all caller jobs succeeded."
+    echo "**CI passed** — all required caller jobs succeeded."
   else
     echo "**CI gate failed** — one or more jobs did not succeed."
     echo
