@@ -1,5 +1,6 @@
 import type { Page } from '@playwright/test';
-import { fillLabelledField, reachAuthenticatedHome, refreshFlutterAccessibility, waitForFlutter } from '../support/flutter';
+import { fillLabelledField, reachAuthenticatedHome, refreshFlutterAccessibility, waitForFlutter, flutterRoutePath } from '../support/flutter';
+import { isLiveHostingTarget } from '../support/hosting';
 
 export interface SignupDetails {
   firstName: string;
@@ -76,6 +77,34 @@ export class LandingPage {
   }
 
   async login(email: string, password: string): Promise<void> {
+    const attempts = isLiveHostingTarget() ? 2 : 1;
+    for (let attempt = 1; attempt <= attempts; attempt++) {
+      await this.fillLoginForm(email, password);
+      await this.page.getByRole('button', { name: 'Sign In', exact: true }).click();
+      await refreshFlutterAccessibility(this.page);
+
+      if (attempt >= attempts) return;
+
+      const leftLanding = await this.page
+        .waitForFunction(
+          () => {
+            const hash = window.location.hash.replace(/^#/, '') || window.location.pathname;
+            return hash !== '/landing' && hash !== '/';
+          },
+          undefined,
+          { timeout: 8_000 },
+        )
+        .then(() => true)
+        .catch(() => false);
+
+      if (leftLanding) return;
+
+      if (flutterRoutePath(this.page.url()) !== '/landing') return;
+      await this.page.waitForTimeout(1_500);
+    }
+  }
+
+  private async fillLoginForm(email: string, password: string): Promise<void> {
     const emailField = this.page.getByRole('textbox', { name: 'Email' });
     await emailField.waitFor({ state: 'visible', timeout: 30_000 });
     await emailField.click();
@@ -97,9 +126,6 @@ export class LandingPage {
     } catch {
       // Flutter semantics inputs may not expose inputValue; pressSequentially above is enough.
     }
-
-    await this.page.getByRole('button', { name: 'Sign In', exact: true }).click();
-    await refreshFlutterAccessibility(this.page);
   }
 
   async expectLoginError(): Promise<void> {
