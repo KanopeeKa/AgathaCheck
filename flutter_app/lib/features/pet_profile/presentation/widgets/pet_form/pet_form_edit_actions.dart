@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../../../core/theme/app_color_tokens.dart';
 import '../../../../../l10n/app_localizations.dart';
 
 /// Delete and passed-away actions shown when editing a non-shared pet.
@@ -47,14 +48,7 @@ class PetFormEditActions extends StatelessWidget {
             onPressed: isLoading ? null : onPassedAway,
             icon: ShaderMask(
               shaderCallback: (bounds) => const LinearGradient(
-                colors: [
-                  Color(0xFFFF0000),
-                  Color(0xFFFF8800),
-                  Color(0xFFFFFF00),
-                  Color(0xFF00CC00),
-                  Color(0xFF0066FF),
-                  Color(0xFF8800CC),
-                ],
+                colors: AppColorTokens.petRainbowIconGradient,
               ).createShader(bounds),
               blendMode: BlendMode.srcIn,
               child: const Icon(Icons.air, size: 20),

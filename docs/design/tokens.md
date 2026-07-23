@@ -118,3 +118,12 @@ Respect `prefers-reduced-motion`. Calm, short transitions only.
 
 - Minimum tap target: 48×48 logical px
 - Border radius: cards 16, inputs/buttons 12, dialogs 20 (unchanged from current theme)
+
+## Documented color exceptions
+
+| Token | Use |
+|-------|-----|
+| `passedAwayPhotoOverlay` | Memorial lighten on passed-away pet photos |
+| `orgSuperAdminBorder` / `orgAdminBorder` | Org member role card rings |
+| `petRainbowIconGradient` | Passed-away form icon only |
+| `pet.colorValue` | Per-pet user-chosen color (not system) |
