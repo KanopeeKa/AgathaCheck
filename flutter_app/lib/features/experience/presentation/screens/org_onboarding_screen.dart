@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:uuid/uuid.dart';
 
+import '../../../../core/theme/experience_colors.dart';
 import '../../../../core/utils/calendar_date.dart';
 import '../../../../core/utils/constants.dart';
 import '../../../../l10n/app_localizations.dart';
@@ -160,11 +161,21 @@ class _OrgOnboardingScreenState extends ConsumerState<OrgOnboardingScreen> {
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context)!;
+    final xp = context.experienceColors;
+    final orgTheme = Theme.of(context).copyWith(
+      colorScheme: Theme.of(context).colorScheme.copyWith(
+        primary: xp.organizationPrimary,
+        onPrimary: xp.organizationOnPrimary,
+        primaryContainer: xp.organizationLight,
+        onPrimaryContainer: xp.organizationPrimary,
+      ),
+    );
     final pages = <Widget>[
       _WelcomeStep(
         key: const Key('org_onboarding_welcome'),
         title: l.orgOnboardingWelcomeTitle,
         body: l.orgOnboardingWelcomeBody,
+        iconColor: xp.organizationPrimary,
       ),
       if (_needsOrgStep)
         _OrgStep(
@@ -197,61 +208,72 @@ class _OrgOnboardingScreenState extends ConsumerState<OrgOnboardingScreen> {
       ),
     ];
 
-    return Scaffold(
-      key: const Key('org_onboarding_screen'),
-      appBar: AppBar(
-        title: Text(l.orgOnboardingTitle),
-        actions: [
-          TextButton(
-            key: const Key('org_onboarding_skip'),
-            onPressed: _isSaving ? null : _skip,
-            child: Text(l.orgOnboardingSkip),
-          ),
-        ],
-      ),
-      body: Column(
-        children: [
-          LinearProgressIndicator(
-            value: (_step + 1) / _totalSteps,
-            minHeight: 4,
-          ),
-          Expanded(
-            child: PageView(
-              controller: _pageController,
-              physics: const NeverScrollableScrollPhysics(),
-              children: pages,
+    return Theme(
+      data: orgTheme,
+      child: Scaffold(
+        key: const Key('org_onboarding_screen'),
+        appBar: AppBar(
+          title: Text(l.orgOnboardingTitle),
+          actions: [
+            TextButton(
+              key: const Key('org_onboarding_skip'),
+              onPressed: _isSaving ? null : _skip,
+              child: Text(l.orgOnboardingSkip),
             ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(24),
-            child: SizedBox(
-              width: double.infinity,
-              child: FilledButton(
-                key: _step >= _totalSteps - 1
-                    ? const Key('org_onboarding_complete')
-                    : const Key('org_onboarding_continue'),
-                onPressed: _isSaving ? null : _nextStep,
-                child: _isSaving
-                    ? const SizedBox(
-                        width: 20,
-                        height: 20,
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      )
-                    : Text(_primaryButtonLabel(l)),
+          ],
+        ),
+        body: Column(
+          children: [
+            LinearProgressIndicator(
+              value: (_step + 1) / _totalSteps,
+              minHeight: 4,
+              color: xp.organizationPrimary,
+              backgroundColor: xp.organizationSoft,
+            ),
+            Expanded(
+              child: PageView(
+                controller: _pageController,
+                physics: const NeverScrollableScrollPhysics(),
+                children: pages,
               ),
             ),
-          ),
-        ],
+            Padding(
+              padding: const EdgeInsets.all(24),
+              child: SizedBox(
+                width: double.infinity,
+                child: FilledButton(
+                  key: _step >= _totalSteps - 1
+                      ? const Key('org_onboarding_complete')
+                      : const Key('org_onboarding_continue'),
+                  onPressed: _isSaving ? null : _nextStep,
+                  child: _isSaving
+                      ? const SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        )
+                      : Text(_primaryButtonLabel(l)),
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
 }
 
 class _WelcomeStep extends StatelessWidget {
-  const _WelcomeStep({super.key, required this.title, required this.body});
+  const _WelcomeStep({
+    super.key,
+    required this.title,
+    required this.body,
+    required this.iconColor,
+  });
 
   final String title;
   final String body;
+  final Color iconColor;
 
   @override
   Widget build(BuildContext context) {
@@ -261,7 +283,7 @@ class _WelcomeStep extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.business, size: 72, color: theme.colorScheme.primary),
+          Icon(Icons.business, size: 72, color: iconColor),
           const SizedBox(height: 24),
           Text(
             title,

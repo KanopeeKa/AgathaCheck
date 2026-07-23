@@ -183,7 +183,7 @@ class _LandingScreenState extends ConsumerState<LandingScreen>
                 children: [
                   isWide
                       ? Row(
-                          crossAxisAlignment: CrossAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Expanded(
                               child: LandingBrandingSection(
@@ -196,7 +196,7 @@ class _LandingScreenState extends ConsumerState<LandingScreen>
                           ],
                         )
                       : Column(
-                          crossAxisAlignment: CrossAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
                             LandingBrandingSection(theme: theme, l10n: l10n),
                             const SizedBox(height: 32),
