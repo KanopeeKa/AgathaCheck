@@ -86,17 +86,17 @@ Formalise the org-mode user journey: guardian users without org membership can e
 ## Runtime state
 
 ```yaml
-autonomy: active
+autonomy: halted
 current_phase: 3
 last_completed_phase: 2
-halt_reason: null
+halt_reason: halted
 next_action: "start phase 3: checkout cursor/org-mode-nav-phase3-shell-acf1"
 artifact_ref:
-  branch: cursor/remove-dart-server-doc-remnants-acf1
+  branch: cursor/sync-org-mode-plan-snapshot-acf1
   plan_path: .agents/plans/org-mode-navigation-acf1.md
-  plan_commit: e366027cec5ef9ce9a992ed6cb02c62663714e7d
+  plan_commit: c9d1b33da490801d670955a5525770bb9d9f8447
   snapshot_path: .agents/plans/org-mode-navigation-acf1.snapshot.json
-  snapshot_commit: e366027cec5ef9ce9a992ed6cb02c62663714e7d
+  snapshot_commit: c9d1b33da490801d670955a5525770bb9d9f8447
 open_prs: []
 merge_commits: {}
 debt_issue_refs: []
