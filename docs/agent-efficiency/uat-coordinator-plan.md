@@ -1,6 +1,6 @@
 # Cross-agent UAT coordinator — implementation plan
 
-**Status:** Draft for review  
+**Status:** Approved — Phase 1 implementation in progress  
 **Owner track:** Agent efficiency + CI/CD reliability  
 **Related:** [autonomous-pr-policy.md](./autonomous-pr-policy.md) §Post-merge UAT, [e2e-ci-canary-plan.md](../e2e-ci-canary-plan.md) Phase 5, [promotion-contract.md](../promotion-contract.md), [github-issue-workflow.md](../github-issue-workflow.md)  
 **Supersedes (when implemented):** per-merge Task sub-agents in babysit-plus §8; per-plan-only UAT watch ledgers
