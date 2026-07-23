@@ -86,10 +86,31 @@ function closeIssueWithComment(issueNumber, comment) {
   return { ok: true, issueNumber, closed: true };
 }
 
+function postIssueComment(issueNumber, comment) {
+  const { owner, repo } = resolveRepository();
+  const args = [
+    'issue',
+    'comment',
+    String(issueNumber),
+    '--repo',
+    `${owner}/${repo}`,
+    '--body',
+    comment,
+  ];
+  const result = spawnSync('gh', args, { encoding: 'utf8' });
+  if (result.status !== 0) {
+    throw new Error(
+      `gh issue comment failed with exit ${result.status}: ${result.stderr || result.stdout}`
+    );
+  }
+  return { ok: true, issueNumber };
+}
+
 module.exports = {
   closeIssueWithComment,
   getProjectConfig,
   normalizeStatusName,
+  postIssueComment,
   resolveRepository,
   updateIssueProjectStatus,
 };

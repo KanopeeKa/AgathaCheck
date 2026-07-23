@@ -180,15 +180,29 @@ Verify merge commit is ancestor of `origin/<base_branch>` before next phase.
 
 After merge (or when babysitting an already-merged fix):
 
-1. Record merge SHA; **spawn UAT babysit sub-agent** (background Task) to poll until **Deploy UAT / Prod ready** succeeds or fails.
-2. **Main agent continues** (next execute-plan phase, next task, etc.) without waiting for prod-ready.
+1. Record merge SHA; **spawn UAT babysit sub-agent immediately** (background Task) — main agent continues phase work in parallel.
+2. Sub-agent polls until **Deploy UAT / Prod ready** succeeds or fails.
 3. Sub-agent on **success:** comment that `prod-ready` is green; no main-work interruption.
-4. Sub-agent on **failure:** triage gate table (`scripts/ci/assert-uat-gates.sh` output); **pause** main work (`uat_paused` via `pause` CLI); sub-agent owns remedial PR through prod-ready; **auto-resume** main work when green (`resume-uat` CLI — no human `resume-plan`).
+4. Sub-agent on **failure:** triage gate table (`scripts/ci/assert-uat-gates.sh` output); **pause** main work (`uat_paused` via `pause --post-comment` CLI); sub-agent owns remedial PR through prod-ready; **auto-resume** main work when green (`resume-uat --post-comment` CLI — no human `resume-plan`).
 5. Remediate in a follow-up PR when needed; sub-agent repeats §8b until prod-ready passes or §9 escalation applies.
 
 See `docs/ci-cd-gates.md` §3 · babysit-plus §8b–8c · `docs/e2e-ci-canary-plan.md` Phase 5.
 
 **Infra-only blockers** (e.g. `UAT_AUTO_MIGRATE` unset with pending live migrations) → comment on PR/control issue and escalate; do not weaken gates.
+
+---
+
+## Issue hygiene (autonomous runs)
+
+| When | Action |
+|------|--------|
+| Create issue and **start work immediately** | `node scripts/github_issue_workflow.js start-work --issue <n> --body "…"` |
+| Create debt issue for **later** | Backlog; comment on PR with issue # |
+| Progress / milestone | Comment on the issue |
+| Pause or question for human | Comment with `**Needs you:**` + reason; halt/pause execute-plan when blocked |
+| Plan or task complete | Close with summary comment (`complete-plan --write` for control issues) |
+
+Project status updates require `GH_PROJECTS_PAT`, `GH_PROJECT_ID`, `GH_STATUS_FIELD_ID` — see `docs/github-issue-workflow.md` and `AGENTS.md` §GitHub Project board.
 
 ---
 

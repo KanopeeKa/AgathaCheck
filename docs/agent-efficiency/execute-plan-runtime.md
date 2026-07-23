@@ -110,7 +110,9 @@ node scripts/execute_plan_runtime.js set-project-status <plan_id> --status "In P
 node scripts/execute_plan_runtime.js complete-plan <plan_id> --write
 ```
 
-Secrets: `GH_PROJECTS_PAT`, `GH_PROJECT_ID`, `GH_STATUS_FIELD_ID`. Without them, `set-project-status` returns `skipped: true` — update the board manually.
+Secrets: `GH_PROJECTS_PAT`, `GH_PROJECT_ID`, `GH_STATUS_FIELD_ID`. Without them, `set-project-status` returns `skipped: true` — use `scripts/github_issue_workflow.js` after configuring secrets, or update the board manually.
+
+**Issue comments:** use `--post-comment` on `halt`, `pause`, `resume-uat`; `complete-plan --write` closes with summary. For ad-hoc updates: `node scripts/github_issue_workflow.js comment --issue <n> --body "…"`.
 
 ---
 

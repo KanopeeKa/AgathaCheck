@@ -59,6 +59,33 @@ Web build: `flutter build web --release --no-tree-shake-icons`
 
 User-facing dates are calendar days (`YYYY-MM-DD` on the wire). See `docs/calendar-dates.md`.
 
+### GitHub Project board (Cloud Agents)
+
+Moving issues to **In Progress** / **Done** requires three environment variables in the Cloud Agent environment (Cursor dashboard → Environment → Secrets):
+
+| Variable | Purpose |
+|----------|---------|
+| `GH_PROJECTS_PAT` | PAT with **Projects** read/write (classic: `repo` + `project` scopes; or fine-grained with Projects permission on the user/org) |
+| `GH_PROJECT_ID` | GitHub Project v2 node ID |
+| `GH_STATUS_FIELD_ID` | Status single-select field node ID |
+
+Discover IDs:
+
+```bash
+GH_PROJECTS_PAT=ghp_... node .github/scripts/discover-project-ids.js --user KanopeeKa
+```
+
+**This pod:** `GH_TOKEN` can comment/close issues via `gh`, but **cannot** update Project status without the three variables above (`gh project list` returns "Resource not accessible").
+
+Agent helpers:
+
+```bash
+node scripts/execute_plan_runtime.js set-project-status <plan_id> --status "In Progress"
+node scripts/github_issue_workflow.js start-work --issue <n> --body "Work started …"
+```
+
+See `docs/github-issue-workflow.md` for the full issue lifecycle.
+
 ### Policies (details in `.cursor/rules/` + Skills)
 
 - **Atomic PRs:** one verifiable outcome per PR; cross-domain OK when serving that outcome. Snag ladder + zero untracked debt → `docs/agent-efficiency/atomic-pr-policy.md`

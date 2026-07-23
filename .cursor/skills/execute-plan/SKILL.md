@@ -93,7 +93,36 @@ Run when drafting a plan, **before** `approve-autonomous`:
    ```bash
    node scripts/execute_plan_runtime.js set-project-status <plan_id> --status "In Progress"
    ```
-   Distinguishes active plan work from backlog. Skip only if already **In Progress**. Requires `GH_PROJECTS_PAT`, `GH_PROJECT_ID`, `GH_STATUS_FIELD_ID` (see `docs/github-issue-workflow.md`); when unset, CLI prints `skipped` — agent must move status manually on the board.
+   Distinguishes active plan work from backlog. Skip only if already **In Progress**. Requires `GH_PROJECTS_PAT`, `GH_PROJECT_ID`, `GH_STATUS_FIELD_ID` (see `docs/github-issue-workflow.md`); when unset, CLI prints `skipped` — use `node scripts/github_issue_workflow.js set-status --issue <n> --status "In Progress"` after configuring secrets, or move manually on the board.
+8. **Control issue session comment** — post what you are starting (phase id, branch, PR if any):
+   ```bash
+   gh issue comment <control_issue> --body "## Session start
+   - phase: <id> — <title>
+   - branch: <branch>
+   - next: implement | babysit+ | resume"
+   ```
+   Or: `node scripts/github_issue_workflow.js comment --issue <n> --body "..."`
+
+---
+
+## Issue hygiene (mandatory)
+
+The **control issue** is the human dashboard for plan status. Keep it current.
+
+| When | Action |
+|------|--------|
+| Work starts (session preflight) | **In Progress** (`set-project-status`) + session-start comment |
+| Phase milestone (PR opened, CI green, merged) | Short comment on control issue |
+| **Pause** (UAT remedial, waiting on you) | `pause --write --post-comment` — state checkpoint + what you need |
+| **Halt** (revoke, escalation, CI exhausted) | `halt --write --post-comment` — state reason + resume steps |
+| **Question for human** (blocks work) | Comment on control issue with `**Needs you:**` + halt if execute-plan cannot continue |
+| All phases merged | `complete-plan <plan_id> --write` → **Done** + close with summary comment |
+
+Debt issues created during babysit+ stay **Backlog** until picked up. When you **start work** on any issue (debt or otherwise), move it to **In Progress** and comment what you are doing:
+
+```bash
+node scripts/github_issue_workflow.js start-work --issue <n> --body "Starting remedial fix for …"
+```
 
 ---
 
@@ -138,9 +167,9 @@ Commit plan artifacts on the phase branch (`artifact_branch_policy: phase-branch
   ```
 - Push plan artifact commits to phase branch before babysit-plus
 
-### 5. Babysit+ (mandatory)
+### 5. Babysit+ through merge; spawn UAT sub-agent (mandatory)
 
-Invoke **/babysit-plus** with:
+**Main agent** invokes **/babysit-plus** §0–7 for the phase PR (sync → triage → fixes → debt issues → CI → exit checklist → **merge** per effective mode).
 
 | Parameter | Value |
 |-----------|-------|
@@ -150,7 +179,16 @@ Invoke **/babysit-plus** with:
 | `approved_until` | from snapshot |
 | **Effective `merge_mode`** | `phase.merge_mode ?? snapshot.default_merge_mode ?? auto` |
 
-Babysit+ handles: sync, triage, fixes, debt issues (dedupe mandatory), CI budget, exit checklist, merge per effective mode, and **spawns a non-blocking UAT babysit sub-agent** after merge (babysit-plus §8).
+**After merge is verified** (PR `MERGED`, merge commit on base), **main agent** spawns the **UAT babysit sub-agent** (babysit-plus §8a) — a background Task that owns §8b until **Prod ready** is green or triggers a pause. **Do not wait** for UAT/prod-ready before completing the phase or starting the next one.
+
+```text
+Main agent                          UAT babysit sub-agent (background)
+──────────                          ─────────────────────────────────
+babysit+ §0–7 → merge ─────────────► spawn after merge SHA known
+complete phase §6                   poll promote-uat → deploy-uat → prod-ready
+start next phase §7                 on failure: pause main + remedial loop
+                                    on success: comment + exit (no interrupt)
+```
 
 **Phase gate = merge-done** — do not advance until:
 
@@ -173,11 +211,11 @@ node scripts/execute_plan_runtime.js set-phase <plan_id> \
   --phase <id> --status merged --pr-url <url> --pr-head <sha> --write
 ```
 
-Update snapshot `merge_commit` via runtime (`set-phase` + `saveSnapshot`). Sync live plan; comment summary on control issue.
+Update snapshot `merge_commit` via runtime (`set-phase` + `saveSnapshot`). Sync live plan; comment phase summary on control issue.
 
-### 7. Next phase
+### 7. Next phase (parallel with UAT babysit)
 
-If more `pending` phases → loop to §1.
+If more `pending` phases → loop to §1 **immediately** — any in-flight UAT babysit sub-agents from prior merges continue in the background per babysit-plus §8.
 
 If all `merged` → **complete plan** (snapshot + project board + close control issue):
 
@@ -185,7 +223,7 @@ If all `merged` → **complete plan** (snapshot + project board + close control 
 node scripts/execute_plan_runtime.js complete-plan <plan_id> --write
 ```
 
-This sets `autonomy: completed`, syncs runtime, moves the control issue to **Done**, and closes it with a summary comment. Use `--skip-close` only for dry-run inspection. Post the rendered `comment` on the control issue if `gh issue close` could not run.
+This sets `autonomy: completed`, syncs runtime, moves the control issue to **Done**, and closes it with a summary comment. Use `--skip-close` only for dry-run inspection. If `gh issue close` fails, post the rendered `comment` manually on the control issue.
 
 ---
 
@@ -197,13 +235,13 @@ Stop immediately on: revoke label, past `approved_until`, escalation, drift, CI 
 
 ```bash
 node scripts/execute_plan_runtime.js halt <plan_id> \
-  --reason <status_reason> --detail "<checkpoint>" --write
+  --reason <status_reason> --detail "<checkpoint>" --write --post-comment
 node scripts/execute_plan_runtime.js render-halt-comment <plan_id> \
   --reason <status_reason> --detail "<checkpoint>"
 ```
 
 1. Finish safe atomic step only; **do not merge** if revoke detected pre-merge
-2. Post halt comment on control issue (and open PRs)
+2. Post halt comment on control issue (and open PRs) — prefer `--post-comment` on `halt`
 3. Push plan artifact to phase branch
 4. **Halt only** — do not close PRs, delete branches, or revert merged commits
 5. On revoke: human adds `autonomous-revoked` on control issue; optional `do-not-merge` on open PRs

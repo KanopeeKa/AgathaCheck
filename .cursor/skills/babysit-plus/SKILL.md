@@ -106,6 +106,14 @@ For every **ignore** and every **skipped nit**:
 4. Batch ≥3 trivial nits same file/reviewer/PR into one issue.
 5. On failure → `status: blocked`, `status_reason: issue_create_failed` (execute-plan).
 
+**When you start work on a debt issue** (same session or later), move it to **In Progress** and comment:
+
+```bash
+node scripts/github_issue_workflow.js start-work --issue <n> --body "Addressing deferred review item from PR #…"
+```
+
+Deferred debt issues that are not being worked yet stay **Backlog**.
+
 ### 5. CI loop
 
 | Failure type | Max iterations |
@@ -145,19 +153,21 @@ Verify merge commit is ancestor of `origin/<base_branch>` before execute-plan ad
 
 ### 8. Post-merge UAT prod-ready (non-blocking sub-agent)
 
-When the PR merges to `main` (or you are babysitting a merged fix), **do not block main work** on the UAT deploy poll. Spawn a dedicated sub-agent to watch promotion through **Deploy UAT / Prod ready**; **pause main work only on failure** (auto-resume when remedial prod-ready is green).
+When the PR merges to `main`, UAT promotion starts (`promote-uat.yml` → `deploy-uat.yml`). **The main agent must not block** on this deploy poll — spawn a dedicated sub-agent immediately after merge verification.
 
-#### 8a. Main agent (after merge verified)
+**Trigger:** merge commit is on `origin/main` (or integration base) and UAT workflows are queued/running for that SHA.
+
+#### 8a. Main agent (after merge verified — spawn immediately)
 
 1. Note merge SHA (`gh pr view <url> --json mergeCommit`).
 2. **Spawn UAT babysit sub-agent** (Task tool, `subagent_type: generalPurpose`, `run_in_background: true`):
    - **Inputs:** merge SHA, PR URL/number, `plan_id` + control issue URL when in execute-plan
    - **Prompt:** follow §8b below; on failure, pause main work at the next safe checkpoint (§8c)
 3. Post a short PR/control-issue comment: UAT babysit sub-agent started for `<merge-sha>`; main work continues.
-4. **Declare babysit-plus done for this PR** — main agent may advance (next execute-plan phase, next task, etc.) without waiting for prod-ready.
+4. **Declare babysit-plus done for this PR** — main agent may advance (next execute-plan phase, next task, etc.) **without waiting** for prod-ready.
 5. **Do not start another UAT sub-agent** for the same merge SHA unless the prior one exited after a remedial cycle.
 
-#### 8b. UAT babysit sub-agent (owns poll + remedial loop)
+#### 8b. UAT babysit sub-agent (owns poll + remedial loop until Prod ready)
 
 1. Resolve tag + deploy run for the merge SHA:
    ```bash
@@ -171,9 +181,9 @@ When the PR merges to `main` (or you are babysitting a merged fix), **do not blo
    - **Execute-plan:** checkpoint at next safe atomic step, then:
      ```bash
      node scripts/execute_plan_runtime.js pause <plan_id> \
-       --reason uat_paused --detail "<gate summary>" --write
+       --reason uat_paused --detail "<gate summary>" --write --post-comment
      ```
-   - **Standalone:** stop current work at checkpoint; sub-agent owns remedial flow below.
+   - **Standalone:** stop current work at checkpoint; comment the blocking issue with `**Needs you:**` when human input is required; sub-agent owns remedial flow below.
 4. **Remedial loop (sub-agent owns end-to-end):** open remedial PR → babysit-plus §0–7 → merge → poll prod-ready for the new merge SHA (repeat §8b steps 1–3). Use the same CI retry budget as §5.
 5. When remedial **prod-ready is green:** auto-resume main work (§8c) and exit quietly.
 
@@ -185,7 +195,7 @@ When the PR merges to `main` (or you are babysitting a merged fix), **do not blo
 - **Pause:** main agent finishes the current safe atomic step, then **waits** — do not start new phases/commits until resumed. Snapshot `autonomy` stays `active`; only the in-progress phase is `halted` / `uat_paused`.
 - **Auto-resume (sub-agent, after remedial prod-ready green):**
   ```bash
-  node scripts/execute_plan_runtime.js resume-uat <plan_id> --write
+  node scripts/execute_plan_runtime.js resume-uat <plan_id> --write --post-comment
   ```
   Post the rendered resume comment on the control issue; **re-invoke main agent** (`/execute-plan <plan_id> resume` or continue the paused session) — **no human `resume-plan` comment required**.
 - **True halt** only when auto-resume is impossible (§9 infra/legal/security). Use `halt` only if the run can restart without manual intervention; otherwise escalate.

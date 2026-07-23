@@ -99,10 +99,20 @@ Match on dedupe key (see [autonomous-pr-policy.md](./autonomous-pr-policy.md) §
 
 ## Project status (control issue)
 
-Per `docs/github-issue-workflow.md`. Debt issues created during babysit+ stay in **Backlog** until separately picked up.
+Per `docs/github-issue-workflow.md`. Debt issues created during babysit+ stay in **Backlog** until separately picked up (then `start-work`).
 
 | Stage | Project status |
 |-------|----------------|
 | `init-control-issue` / `gh issue create` | **Backlog** |
 | First work session after `gate` passes | **In Progress** (`set-project-status`) |
 | `complete-plan --write` (all phases merged) | **Done** + issue closed |
+
+**Agent CLI helpers:**
+
+```bash
+node scripts/execute_plan_runtime.js set-project-status <plan_id> --status "In Progress"
+node scripts/github_issue_workflow.js start-work --issue <n> --body "…"
+node scripts/github_issue_workflow.js comment --issue <n> --body "…"
+```
+
+Pause/halt/complete: prefer `--post-comment` on `pause`, `halt`, `resume-uat`, and `complete-plan`.
