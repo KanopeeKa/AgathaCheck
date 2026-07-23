@@ -46,6 +46,7 @@ const {
 } = require('./lib/execute_plan_lib');
 const {
   closeIssueWithComment,
+  postIssueComment,
   updateIssueProjectStatus,
 } = require('./lib/execute_plan_project');
 
@@ -55,9 +56,9 @@ function usage() {
 Commands:
   gate <plan_id> [--labels label1,label2]
   resume-check <plan_id> --phase <id> [--pr-head <sha>] [--labels ...] [--accept-head]
-  halt <plan_id> --reason <status_reason> [--autonomy halted|revoked] [--detail text] [--write]
-  pause <plan_id> --reason <status_reason> [--phase <id>] [--detail text] [--write]
-  resume-uat <plan_id> [--phase <id>] [--write]
+  halt <plan_id> --reason <status_reason> [--autonomy halted|revoked] [--detail text] [--write] [--post-comment]
+  pause <plan_id> --reason <status_reason> [--phase <id>] [--detail text] [--write] [--post-comment]
+  resume-uat <plan_id> [--phase <id>] [--write] [--post-comment]
   set-phase <plan_id> --phase <id> --status <status> [--reason r] [--detail t] [--pr-url u] [--pr-head sha] [--write]
   sync-runtime <plan_id> [--branch b] [--write]
   render-control-issue <plan_id> [--title]
@@ -65,7 +66,7 @@ Commands:
   current-phase <plan_id>
   init-control-issue <plan_id>
   set-project-status <plan_id> --status <name> [--issue N]
-  complete-plan <plan_id> [--write] [--skip-close]
+  complete-plan <plan_id> [--write] [--skip-close] [--post-comment]
 `);
   process.exit(1);
 }
@@ -163,7 +164,8 @@ function runSync(cmd, planId, flags) {
           saveSnapshot(planId, snapshot);
           syncRuntimeState(planId);
         }
-        console.log(comment);
+        const posted = maybePostControlComment(snapshot, comment, flags);
+        printJson({ comment_preview: comment, posted });
         if (!flags.write) {
           console.error('execute_plan_runtime: dry-run (pass --write to persist)');
         }
@@ -186,7 +188,8 @@ function runSync(cmd, planId, flags) {
           saveSnapshot(planId, snapshot);
           syncRuntimeState(planId);
         }
-        console.log(comment);
+        const posted = maybePostControlComment(snapshot, comment, flags);
+        printJson({ comment_preview: comment, posted });
         if (!flags.write) {
           console.error('execute_plan_runtime: dry-run (pass --write to persist)');
         }
@@ -206,8 +209,9 @@ function runSync(cmd, planId, flags) {
           ok: true,
           phase: { id: phase.id, status: phase.status, branch: phase.branch },
           next_action: computeNextAction(snapshot),
+          comment_preview: comment,
+          posted: maybePostControlComment(snapshot, comment, flags),
         });
-        console.log(comment);
         if (!flags.write) {
           console.error('execute_plan_runtime: dry-run (pass --write to persist)');
         }
@@ -297,7 +301,7 @@ function runSync(cmd, planId, flags) {
           project_status: 'Backlog',
           gh_command: `gh issue create --title "${renderControlIssueTitle(planId)}" --body-file - --label ${labels.map((l) => `"${l}"`).join(' --label ')}`,
           project_status_note:
-            'New control issues enter Project status Backlog. Move to In Progress when work starts (set-project-status).',
+            'New control issues enter Project status Backlog (human/Actions). Agents use start-work (comment + busy) when work begins.',
         });
         break;
       }
@@ -305,6 +309,19 @@ function runSync(cmd, planId, flags) {
       default:
         usage();
     }
+}
+
+function maybePostControlComment(snapshot, comment, flags) {
+  if (!flags['post-comment']) return { skipped: true };
+  const issueNumber = snapshot.control_issue;
+  if (!Number.isInteger(issueNumber) || issueNumber < 1) {
+    return { skipped: true, reason: 'no_control_issue' };
+  }
+  try {
+    return postIssueComment(issueNumber, comment);
+  } catch (e) {
+    return { ok: false, error: e.message };
+  }
 }
 
 async function runAsync(cmd, planId, flags) {
@@ -353,6 +370,14 @@ async function runAsync(cmd, planId, flags) {
           closeResult = { ok: false, error: e.message, gh_hint: `gh issue close ${issueNumber}` };
           ok = false;
           errors.push('issue_close_failed');
+        }
+      } else if (flags['post-comment']) {
+        try {
+          closeResult = postIssueComment(issueNumber, comment);
+        } catch (e) {
+          closeResult = { ok: false, error: e.message };
+          ok = false;
+          errors.push('issue_comment_failed');
         }
       }
 

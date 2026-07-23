@@ -55,11 +55,11 @@ After creating the issue, set `control_issue` in the snapshot JSON and re-run va
 
 ### Halt (graceful shutdown)
 
-Updates snapshot + live plan runtime block; prints markdown comment for control issue (agent posts via `gh`).
+Updates snapshot + live plan runtime block; prints JSON with `comment_preview`. Pass `--post-comment` to post on the control issue via `gh`.
 
 ```bash
 node scripts/execute_plan_runtime.js halt <plan_id> \
-  --reason session_limit --detail "checkpoint" --write
+  --reason session_limit --detail "checkpoint" --write --post-comment
 ```
 
 `--autonomy` defaults to `halted`; use `revoked` when `autonomous-revoked` label applied.
@@ -70,7 +70,7 @@ Pauses the in-progress phase without setting snapshot `autonomy` to `halted`. Us
 
 ```bash
 node scripts/execute_plan_runtime.js pause <plan_id> \
-  --reason uat_paused --detail "prod-ready: smoke shard 3 failed" --write
+  --reason uat_paused --detail "prod-ready: smoke shard 3 failed" --write --post-comment
 ```
 
 ### Resume UAT (auto-resume — no human `resume-plan`)
@@ -78,10 +78,10 @@ node scripts/execute_plan_runtime.js pause <plan_id> \
 Clears `uat_paused` on the halted phase and restores `in_progress`. Sub-agent calls this when remedial prod-ready is green.
 
 ```bash
-node scripts/execute_plan_runtime.js resume-uat <plan_id> --write
+node scripts/execute_plan_runtime.js resume-uat <plan_id> --write --post-comment
 ```
 
-Prints JSON (`next_action`, phase) plus a resume comment for the control issue. Main agent continues via `/execute-plan <plan_id> resume` without manual intervention.
+Prints one JSON object (`next_action`, phase, `comment_preview`, optional `posted`). Main agent continues via `/execute-plan <plan_id> resume` without manual intervention.
 
 ### Phase status + artifact sync
 
@@ -97,27 +97,29 @@ node scripts/execute_plan_runtime.js current-phase <plan_id>
 
 ### Project status (control issue)
 
-Aligns with `docs/github-issue-workflow.md` status field:
+Aligns with `docs/github-issue-workflow.md` status field. **Cloud Agents skip board updates** — comments + `busy` label only.
 
-| When | Project status | Command |
-|------|----------------|---------|
-| Control issue created | **Backlog** | Default on `gh issue create` / `init-control-issue` |
-| Work starts (after gate) | **In Progress** | `set-project-status <plan_id> --status "In Progress"` |
-| All phases merged | **Done** + close issue | `complete-plan <plan_id> --write` |
+| When | Agent action |
+|------|----------------|
+| Control issue created | `gh issue create` / `init-control-issue` |
+| Work starts (after gate) | `start-work` — comment + `busy` |
+| All phases merged | `complete-plan <plan_id> --write` — close with summary |
 
 ```bash
-node scripts/execute_plan_runtime.js set-project-status <plan_id> --status "In Progress"
+node scripts/github_issue_workflow.js start-work --issue <control_issue> --body "…"
 node scripts/execute_plan_runtime.js complete-plan <plan_id> --write
 ```
 
-Secrets: `GH_PROJECTS_PAT`, `GH_PROJECT_ID`, `GH_STATUS_FIELD_ID`. Without them, `set-project-status` returns `skipped: true` — update the board manually.
+`set-project-status` is for GitHub Actions (repo secret `GH_PROJECTS_PAT`) — not agent sessions.
+
+**Issue comments:** use `--post-comment` on `halt`, `pause`, `resume-uat`; `complete-plan --write` closes with summary. For ad-hoc updates: `node scripts/github_issue_workflow.js comment --issue <n> --body "…"`.
 
 ---
 
 ## Agent workflow (summary)
 
 1. Human approves → freeze snapshot → `init-control-issue` → create GitHub issue (**Backlog**) → set `control_issue` number
-2. Each session: `gate` → `set-project-status … "In Progress"` → `current-phase` → work on phase branch
+2. Each session: `gate` → `start-work` on control issue → `current-phase` → work on phase branch
 3. On push: `set-phase` + `sync-runtime --write`
 4. On revoke/expiry/escalation: `halt --write` + add `autonomous-revoked` label (halt only — do not close PRs)
 5. All phases merged: `complete-plan <plan_id> --write` → **Done** + close control issue

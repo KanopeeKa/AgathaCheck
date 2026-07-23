@@ -59,6 +59,21 @@ Web build: `flutter build web --release --no-tree-shake-icons`
 
 User-facing dates are calendar days (`YYYY-MM-DD` on the wire). See `docs/calendar-dates.md`.
 
+### GitHub issues (Cloud Agents)
+
+Agents can **comment**, **close**, and add/remove **labels** via `GH_TOKEN`. They **cannot** update GitHub Project board status (Projects write is not available on agent tokens).
+
+Use comments + the `busy` label as the agent signal for active work:
+
+```bash
+node scripts/github_issue_workflow.js start-work --issue <n> --body "Work started …"
+node scripts/github_issue_workflow.js comment --issue <n> --body "…"
+```
+
+Move Project board columns manually when you want **In Progress** / **Done** on the board. GitHub Actions workflows may still update the board when `GH_PROJECTS_PAT` is configured in repo secrets.
+
+See `docs/github-issue-workflow.md` for the full issue lifecycle.
+
 ### Policies (details in `.cursor/rules/` + Skills)
 
 - **Atomic PRs:** one verifiable outcome per PR; cross-domain OK when serving that outcome. Snag ladder + zero untracked debt → `docs/agent-efficiency/atomic-pr-policy.md`

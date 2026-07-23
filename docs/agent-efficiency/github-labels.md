@@ -99,10 +99,21 @@ Match on dedupe key (see [autonomous-pr-policy.md](./autonomous-pr-policy.md) §
 
 ## Project status (control issue)
 
-Per `docs/github-issue-workflow.md`. Debt issues created during babysit+ stay in **Backlog** until separately picked up.
+Per `docs/github-issue-workflow.md`. **Cloud Agents do not update Project board columns** — use comments + `busy` instead. Debt issues get `start-work` only when picked up.
 
-| Stage | Project status |
+| Stage | Agent action |
 |-------|----------------|
-| `init-control-issue` / `gh issue create` | **Backlog** |
-| First work session after `gate` passes | **In Progress** (`set-project-status`) |
-| `complete-plan --write` (all phases merged) | **Done** + issue closed |
+| `init-control-issue` / `gh issue create` | Create issue (board **Backlog** is human/Actions) |
+| First work session after `gate` passes | `start-work` — comment + `busy` |
+| `complete-plan --write` (all phases merged) | Close with summary comment |
+
+**Agent CLI helpers:**
+
+```bash
+node scripts/github_issue_workflow.js start-work --issue <n> --body "…"
+node scripts/github_issue_workflow.js comment --issue <n> --body "…"
+```
+
+Pause/halt/complete: prefer `--post-comment` on `pause`, `halt`, `resume-uat`, and `complete-plan`.
+
+`set-project-status` exists for GitHub Actions / local ops with `GH_PROJECTS_PAT` — agents skip it.
