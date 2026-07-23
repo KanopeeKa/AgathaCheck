@@ -6,6 +6,7 @@ import '../../../../core/theme/app_theme.dart';
 import '../../../../core/widgets/app_logo_title.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../providers/organization_providers.dart';
+import '../utils/org_screen_theme.dart';
 import '../widgets/organization_invite_by_email_dialog.dart';
 import '../widgets/organization_add_foster_parent_dialog.dart';
 import '../widgets/organization_role_labels.dart';
@@ -25,122 +26,124 @@ class OrganizationMembersScreen extends ConsumerWidget {
     final colorScheme = theme.colorScheme;
     final l = AppLocalizations.of(context)!;
 
-    return Scaffold(
-      backgroundColor: AppTheme.orgBlue,
-      appBar: AppBar(
-        backgroundColor: AppTheme.orgBlue,
-        title: AppLogoTitle(title: l.orgMembers),
-        leading: IconButton(
-          key: const Key('org_members_back'),
-          icon: const Icon(Icons.arrow_back),
-          tooltip: MaterialLocalizations.of(context).backButtonTooltip,
-          onPressed: () => context.pop(),
-        ),
-        actions: [
-          if (isOrgAdmin)
-            IconButton(
-              key: const Key('org_generate_invite'),
-              icon: const Icon(Icons.person_add),
-              tooltip: l.orgInviteMember,
-              onPressed: () => showOrganizationInviteByEmailDialog(
-                context: context,
-                ref: ref,
-                orgId: orgId,
-              ),
-            ),
-        ],
-      ),
-      body: peopleAsync.when(
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (e, _) => Center(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(Icons.error_outline, size: 48, color: colorScheme.error),
-              const SizedBox(height: 16),
-              Text('$e'),
-              const SizedBox(height: 8),
-              ElevatedButton(
-                key: const Key('org_members_retry'),
-                onPressed: () => ref.invalidate(orgPeopleProvider(orgId)),
-                child: Text(l.retry),
-              ),
-            ],
+    return orgThemed(
+      child: Scaffold(
+        appBar: AppBar(
+          title: AppLogoTitle(title: l.orgMembers),
+          leading: IconButton(
+            key: const Key('org_members_back'),
+            icon: const Icon(Icons.arrow_back),
+            tooltip: MaterialLocalizations.of(context).backButtonTooltip,
+            onPressed: () => context.pop(),
           ),
-        ),
-        data: (people) {
-          return ListView(
-            padding: const EdgeInsets.all(16),
-            children: [
-              Text(
-                l.orgPeopleDescription,
-                style: theme.textTheme.bodySmall?.copyWith(
-                  color: colorScheme.onSurfaceVariant,
-                ),
-              ),
-              const SizedBox(height: 12),
-              if (people.isEmpty)
-                Center(child: Text(l.orgNoMembers))
-              else
-                ...people.map(
-                  (person) => OrgPersonCard(
-                    person: person,
-                    orgId: orgId,
-                    localizedRoleLabel: localizedOrgMemberRole,
-                    canSetPrimaryContact: isOrgAdmin,
-                    onSetPrimaryContact:
-                        isOrgAdmin &&
-                            !person.isExternal &&
-                            !person.isPending &&
-                            (person.role?.isOrgAdmin ?? false)
-                        ? () async {
-                            try {
-                              await ref
-                                  .read(organizationListProvider.notifier)
-                                  .setPrimaryContact(orgId, person.recordId);
-                              if (context.mounted) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(content: Text(l.orgPrimaryContact)),
-                                );
-                              }
-                            } catch (e) {
-                              if (context.mounted) {
-                                ScaffoldMessenger.of(
-                                  context,
-                                ).showSnackBar(SnackBar(content: Text('$e')));
-                              }
-                            }
-                          }
-                        : null,
-                    onTap: person.isPending
-                        ? null
-                        : () => context.push(person.detailPath(orgId)),
-                  ),
-                ),
-              const SizedBox(height: 16),
-              if (isSuperAdmin)
-                OutlinedButton.icon(
-                  onPressed: () => showOrganizationInviteByEmailDialog(
-                    context: context,
-                    ref: ref,
-                    orgId: orgId,
-                  ),
-                  icon: const Icon(Icons.person_add, size: 18),
-                  label: Text(l.addUser),
-                ),
-              const SizedBox(height: 8),
-              OutlinedButton.icon(
-                onPressed: () => showOrganizationAddFosterParentDialog(
+          actions: [
+            if (isOrgAdmin)
+              IconButton(
+                key: const Key('org_generate_invite'),
+                icon: const Icon(Icons.person_add),
+                tooltip: l.orgInviteMember,
+                onPressed: () => showOrganizationInviteByEmailDialog(
                   context: context,
                   ref: ref,
                   orgId: orgId,
                 ),
-                icon: const Icon(Icons.person_add_alt_1, size: 18),
-                label: Text(l.addExternalFoster),
               ),
-            ],
-          );
-        },
+          ],
+        ),
+        body: peopleAsync.when(
+          loading: () => const Center(child: CircularProgressIndicator()),
+          error: (e, _) => Center(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(Icons.error_outline, size: 48, color: colorScheme.error),
+                const SizedBox(height: 16),
+                Text('$e'),
+                const SizedBox(height: 8),
+                ElevatedButton(
+                  key: const Key('org_members_retry'),
+                  onPressed: () => ref.invalidate(orgPeopleProvider(orgId)),
+                  child: Text(l.retry),
+                ),
+              ],
+            ),
+          ),
+          data: (people) {
+            return ListView(
+              padding: const EdgeInsets.all(16),
+              children: [
+                Text(
+                  l.orgPeopleDescription,
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: colorScheme.onSurfaceVariant,
+                  ),
+                ),
+                const SizedBox(height: 12),
+                if (people.isEmpty)
+                  Center(child: Text(l.orgNoMembers))
+                else
+                  ...people.map(
+                    (person) => OrgPersonCard(
+                      person: person,
+                      orgId: orgId,
+                      localizedRoleLabel: localizedOrgMemberRole,
+                      canSetPrimaryContact: isOrgAdmin,
+                      onSetPrimaryContact:
+                          isOrgAdmin &&
+                              !person.isExternal &&
+                              !person.isPending &&
+                              (person.role?.isOrgAdmin ?? false)
+                          ? () async {
+                              try {
+                                await ref
+                                    .read(organizationListProvider.notifier)
+                                    .setPrimaryContact(orgId, person.recordId);
+                                if (context.mounted) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Text(l.orgPrimaryContact),
+                                    ),
+                                  );
+                                }
+                              } catch (e) {
+                                if (context.mounted) {
+                                  ScaffoldMessenger.of(
+                                    context,
+                                  ).showSnackBar(SnackBar(content: Text('$e')));
+                                }
+                              }
+                            }
+                          : null,
+                      onTap: person.isPending
+                          ? null
+                          : () => context.push(person.detailPath(orgId)),
+                    ),
+                  ),
+                const SizedBox(height: 16),
+                if (isSuperAdmin)
+                  OutlinedButton.icon(
+                    onPressed: () => showOrganizationInviteByEmailDialog(
+                      context: context,
+                      ref: ref,
+                      orgId: orgId,
+                    ),
+                    icon: const Icon(Icons.person_add, size: 18),
+                    label: Text(l.addUser),
+                  ),
+                const SizedBox(height: 8),
+                OutlinedButton.icon(
+                  onPressed: () => showOrganizationAddFosterParentDialog(
+                    context: context,
+                    ref: ref,
+                    orgId: orgId,
+                  ),
+                  icon: const Icon(Icons.person_add_alt_1, size: 18),
+                  label: Text(l.addExternalFoster),
+                ),
+              ],
+            );
+          },
+        ),
       ),
     );
   }
