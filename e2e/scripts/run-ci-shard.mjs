@@ -31,8 +31,12 @@ if (files.length === 0) {
   process.exit(1);
 }
 
-const result = spawnSync('npx', ['playwright', 'test', '--project=full', ...files], {
-  cwd: e2eRoot,
-  stdio: 'inherit',
-});
+const result = spawnSync(
+  'npx',
+  ['playwright', 'test', '--project=full', '--max-failures=1', ...files],
+  {
+    cwd: e2eRoot,
+    stdio: 'inherit',
+  },
+);
 process.exit(result.status ?? 1);

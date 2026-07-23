@@ -1,6 +1,7 @@
 # Cross-agent UAT coordinator — implementation plan
 
-**Status:** Approved — Phase 1 implementation in progress  
+**Status:** Phase 1–2 merged (#281, #307) — **bootstrap not done**; Phase 3 not started  
+**Soak:** Jul 23 2026 — 50 deploy runs, 26% success; see [§Jul 23 soak review](#jul-23-soak-review)  
 **Owner track:** Agent efficiency + CI/CD reliability  
 **Related:** [autonomous-pr-policy.md](./autonomous-pr-policy.md) §Post-merge UAT, [e2e-ci-canary-plan.md](../e2e-ci-canary-plan.md) Phase 5, [promotion-contract.md](../promotion-contract.md), [github-issue-workflow.md](../github-issue-workflow.md)  
 **Supersedes (when implemented):** per-merge Task sub-agents in babysit-plus §8; per-plan-only UAT watch ledgers
@@ -9,37 +10,112 @@
 
 ## Summary
 
-Coordinate UAT babysitting **across all agents** (issue agents, execute-plan phases, ad-hoc babysit+) using a **repo-backed queue ledger**, a **main barrier** for rebase coordination, and a **single UAT coordinator agent** dispatched only on failure or stale watcher.
+Coordinate UAT babysitting **across all agents** (issue agents, execute-plan phases, ad-hoc babysit+) using a **repo-backed queue ledger**, a **main barrier** for rebase coordination, a **single UAT coordinator agent** dispatched on failure, and **optional CI promote/deploy throttling** when the queue is unhealthy.
 
-**Success path = zero agent babysitting.** GitHub Actions already queues `promote-uat` and `deploy-uat`; `agent-uat-notify` already posts results to linked issues. This plan adds the missing cross-session coordination layer.
+**Success path = zero agent babysitting.** GitHub Actions queues `promote-uat` and `deploy-uat`; `agent-uat-notify` posts results to linked issues. This plan adds cross-session **agent** coordination and, where needed, **CI back-pressure** so rapid merges do not stack doomed deploys.
+
+---
+
+## Is the UAT coordinator still a good idea?
+
+**Yes — but the original plan solved only half the Jul 23 problem.**
+
+| Problem class | Coordinator helps? | Evidence (Jul 23 soak) |
+|---------------|-------------------|------------------------|
+| Duplicate agent polling / competing remedial PRs | **Yes** — core value | Task sub-agents were unreliable; #307 replaced with enqueue |
+| Cross-session ledger / barrier for rebases | **Yes** — if bootstrapped | Ledger never activated (`UAT_COORDINATION_ISSUE` unset) |
+| Single failure owner | **Yes** — Phase 3 | Failures assigned to @KanopeeKa per-issue; no coordinator dispatch |
+| **Too many promote/deploy runs** | **No (alone)** | 33 promotes on Jul 23; ledger freeze does not stop `promote-uat` |
+| **WAF / infra smoke failures** | **Partially** | Coordinator escalates (§9); does not replace host whitelist |
+| **E2E drift on large UI sprints** | **Partially** | Coordinator opens remedial PRs; prevention = integration branch + PR E2E |
+
+**Verdict:** Keep the coordinator. **Revise scope:** treat agent coordination and CI back-pressure as one system. Ledger-only freeze was a **necessary but insufficient** brake — Jul 23 proved agents keep merging when the ledger is inert or barrier-check is optional.
+
+**Do not build:** a coordinator that only updates GitHub issue comments while CI runs 33 full deploy cycles. That burns CI minutes without improving UAT signal.
 
 ---
 
 ## Problem
 
-Today, babysit-plus §8 tells each agent to spawn a **background Task sub-agent** after merge to poll UAT deploy until `prod-ready`. That breaks down when multiple agents work in parallel:
+Babysit-plus §8 previously told each agent to spawn a **Task sub-agent** after merge to poll UAT until `prod-ready`. That breaks down under parallel agents:
 
 | Gap | Effect |
 |-----|--------|
-| Task sub-agents are **session-ephemeral** | A new agent session cannot see prior UAT babysitters |
-| **No cross-agent ledger** | Each run may re-poll the same deploy run |
-| **Duplicate failure triage** | Two agents may open competing remedial PRs |
-| **No rebase signal** | When main moves due to a UAT remedial fix, agents with open PRs discover stale bases late |
-| **Expensive idle waiting** | Agents blocking in-session on another agent's UAT poll burns Cloud Agent minutes |
+| Task sub-agents are **session-ephemeral** | New sessions cannot see prior babysitters |
+| **No cross-agent ledger** | Duplicate polls; no shared failure state |
+| **Duplicate failure triage** | Competing remedial PRs for the same gate |
+| **No rebase signal** | Stale PR bases after remedial merges |
+| **Expensive idle waiting** | Agents block ~45–60 min on UAT poll |
 
-UAT **deploy** is already serialized by GitHub Actions (`deploy-uat` concurrency group, `cancel-in-progress: false` per [promotion-contract.md](../promotion-contract.md)). The gap is **agent attention**, not deploy slots.
+**Additional gap (discovered Jul 23):** even with enqueue-and-exit, **nothing stops the next merge** when:
+
+- Bootstrap is missing (ledger is a no-op)
+- Phase 3 coordinator does not exist
+- `promote-uat.yml` fires on **every** `main` push regardless of queue health
+
+UAT **deploy** is serialized by GitHub Actions (`deploy-uat` concurrency, `cancel-in-progress: false`). The original plan correctly identified **agent attention** as the primary gap. The soak showed a **secondary gap: promote/deploy volume** when merge rate exceeds UAT capacity.
 
 ---
 
 ## Design principles
 
-1. **CI queues deploys; ledger queues agent responsibility.**
+1. **CI queues deploys; ledger queues agent responsibility; promote gate limits volume when unhealthy.**
 2. **Passive success** — no agent babysit when `prod-ready` is green.
 3. **Active failure only** — one coordinator agent owns triage + remedial loop.
-4. **Enqueue and exit** — agents do not block in-session waiting for another agent's UAT.
-5. **Main barrier, not hand-written notes** — remedial merge advances `main_barrier_sha`; all agents check before merge/push.
-6. **Marker comments on a canonical issue** — same pattern as `<!-- agent-uat-result -->` in `issue-agent-handlers.js`.
-7. **Challenge accepted:** strict FIFO agent waiting is rejected in favour of barrier + preflight.
+4. **Enqueue and exit** — work agents do not block on another agent's UAT poll.
+5. **Main barrier + merge hold** — remedial merge advances `main_barrier_sha`; work agents **must** `barrier-check` before merge; execute-plan adds **soft hold** when head queue entry is `failed`/`remedial` (see [§Review decision 3 revised](#3-execute-plan-on-uat-failure--revised-jul-23)).
+6. **Bootstrap is not optional** — code without `UAT_COORDINATION_ISSUE` provides zero coordination.
+7. **Marker comments on a canonical issue** — same pattern as `<!-- agent-uat-result -->`.
+8. **Infra vs code classification first** — WAF/migration/SSH blockers escalate; do not burn remedial PRs on host config.
+
+---
+
+## Jul 23 soak review
+
+Analysis of the last 50 `deploy-uat.yml` runs (Jul 21 22:33 – Jul 23 22:36 UTC).
+
+### Outcomes
+
+| Result | Count | Notes |
+|--------|-------|-------|
+| Success | 13 (26%) | Clustered early morning + after CI remedials (#274, #279, #283) |
+| Failure | 30 (60%) | Root cause always post-deploy gates, not FTP deploy |
+| Cancelled | 7 (14%) | Zero jobs started — queued runs superseded before start |
+
+**Deploy job:** 43/43 success when build succeeded. **Build:** 1 failure (compile error).
+
+### Root failure taxonomy (coordinator triage input)
+
+| Gate | Failures | Dominant error | Coordinator action |
+|------|----------|----------------|-------------------|
+| HTTP smoke | 8 | o2switch **WAF 503** on auth warmup (11/12 smoke-related) | **Escalate §9** — whitelist GitHub Actions egress; do not code-fix |
+| Live `@smoke-uat` E2E | 12 | Stuck on `#/landing` after login (120s timeout) | Often WAF/auth readiness; check smoke first |
+| Localhost E2E shard | 9 | Nav v2 / org / notifications locator drift | Remedial PR; batch if same shard class |
+| Flutter build | 1 | `colorScheme` compile error | Should have been caught in PR CI |
+
+### What worked vs what failed
+
+| Merge pattern | UAT result |
+|---------------|------------|
+| Small CI/UAT infra fix (`fix(ci):`, `fix(uat):`) | Usually green |
+| E2E alignment in same PR as UI change (#269) | Green |
+| Stacked theme/Nav v2 `phase(N/M):` merges | **0/11 green** on first deploy |
+| Rapid remedial chains (`fix(uat):` after `fix(uat):`) | Often fails next gate |
+
+### Coordinator implementation state during soak
+
+| Component | State during soak |
+|-----------|-------------------|
+| Phase 1 code (#281, 13:18 UTC) | Merged |
+| Phase 2 skills (#307, 22:35 UTC) | Merged (too late for afternoon sprint) |
+| Coordination issue | **Not created** |
+| `UAT_COORDINATION_ISSUE` variable | **Unset** (empty in workflow logs) |
+| `uat-coordinator-dispatch.yml` | **Not built** |
+| Ledger enqueue/sync | Always `skipped: true` |
+
+### Key lesson
+
+**Phase 1 shipped as "safe to merge without bootstrap"** — technically true (no-op), but operationally **false**: the afternoon theme sprint ran with **no coordination layer at all**, while agents believed enqueue would help.
 
 ---
 
@@ -47,44 +123,49 @@ UAT **deploy** is already serialized by GitHub Actions (`deploy-uat` concurrency
 
 ```mermaid
 flowchart TD
-  subgraph agents [Agents A B C — any source]
-    MERGE[PR merged to main] --> ENQ[uat_queue_runtime.js enqueue]
-    ENQ --> CONT[Continue work or end session]
-    PREF[preflight barrier-check] --> REBASE{bneeds rebase?}
-    REBASE -->|yes| SYNC[babysit_sync_base.sh]
-    REBASE -->|no| WORK[merge / push / next task]
-    SYNC --> WORK
+  subgraph agents [Work agents]
+    PREF[preflight: reconcile + barrier-check + queue-head-hold] --> MERGE{merge allowed?}
+    MERGE -->|no| WAIT[hold / rebase / wait for barrier]
+    MERGE -->|yes| ENQ[enqueue]
+    ENQ --> CONT[continue — no UAT poll]
   end
 
-  subgraph ci [GitHub Actions — existing]
-    ENQ --> PROM[promote-uat queue]
+  subgraph ci [GitHub Actions]
+    ENQ --> HOLD{promote hold?}
+    HOLD -->|remedial / head failed| SKIP[skip tag — ledger only]
+    HOLD -->|ok| PROM[promote-uat]
     PROM --> DEP[deploy-uat queue]
     DEP --> GATE[prod-ready]
     GATE -->|success| NOTIFY[agent-uat-notify + ledger complete]
-    GATE -->|failure| FAIL[failure marker on coord issue]
+    GATE -->|failure| FAIL[ledger failed + dispatch coordinator]
   end
 
-  subgraph coord [UAT coordinator — one at a time]
+  subgraph coord [UAT coordinator — Phase 3]
     FAIL --> DISPATCH[uat-coordinator-dispatch.yml]
-    DISPATCH --> AGENT[UAT coordinator agent]
-    AGENT --> TRIAGE[triage gates]
-    TRIAGE --> FIX[remedial PR → babysit+ → merge]
-    FIX --> BARRIER[set main_barrier_sha]
-    BARRIER --> RERUN[reconcile queue / re-enqueue if needed]
+    DISPATCH --> AGENT[coordinator agent]
+    AGENT --> CLASSIFY{infra or code?}
+    CLASSIFY -->|infra| ESC[escalate §9 — no gate weaken]
+    CLASSIFY -->|code| FIX[remedial PR → merge → set-barrier]
+    FIX --> UNHOLD[clear promote hold / unfreeze entries]
   end
-
-  NOTIFY --> DONE[Entry state: complete]
 ```
 
 ### Responsibility split
 
 | Layer | Owns | Does not own |
 |-------|------|--------------|
-| `promote-uat.yml` / `deploy-uat.yml` | Tag creation, deploy, E2E gates, `prod-ready` | Agent remedial PRs |
-| `agent-uat-notify` | Linked issue status (**In UAT** / failure) | Cross-agent queue |
-| **UAT queue ledger** (new) | Enqueue, barrier, watcher lease, entry state | Running E2E tests |
-| **UAT coordinator agent** (new) | Failure triage, remedial PR, barrier update | PR CI for unrelated agents |
-| **Work agents** (A/B/C) | Enqueue after merge; `barrier-check` before merge | Polling deploy on success path |
+| `promote-uat.yml` | Tag creation (**may hold** when queue unhealthy — Phase 3b) | Agent remedial PRs |
+| `deploy-uat.yml` | Deploy, E2E gates, `prod-ready` | Cross-agent triage |
+| `agent-uat-notify` | Linked issue status; ledger sync | Dispatching coordinator (Phase 3) |
+| **UAT queue ledger** | Enqueue, barrier, watcher lease, entry state | Running E2E tests |
+| **UAT coordinator agent** | Failure triage, remedial PR, barrier, infra escalation | PR CI for unrelated agents |
+| **Work agents** | Enqueue; preflight gates; respect merge hold | Polling deploy on success path |
+
+### What the coordinator does **not** do
+
+- Replace `prod-ready` gates or reduce shard count
+- Fix o2switch WAF without human/host action
+- Guarantee UAT green on stacked UI sprint merges (use integration branch)
 
 ---
 
@@ -92,381 +173,326 @@ flowchart TD
 
 ### 1. UAT coordination issue
 
-A single pinned GitHub issue (e.g. `[uat-coordinator] queue`) — not per-plan, not per-PR.
+Single pinned issue — not per-plan, not per-PR.
 
 | Property | Value |
 |----------|-------|
 | Title | `[uat-coordinator] UAT deploy queue` |
 | Labels | `uat-coordinator`, `governance` |
-| Body | Human summary + link to this doc |
-| Machine state | Upserted marker comments (see below) |
+| Body | Human summary + link to this doc + bootstrap checklist |
+| Machine state | `<!-- uat-queue-state:v1 -->` marker comment |
 
-**Marker types** (upserted by CLI or Actions):
+**Bootstrap (blocking — not a follow-up):**
 
-```html
-<!-- uat-queue-state:v1 -->
-<!-- uat-queue-entry seq=2 pr=205 merge=abc1234 state=pending -->
-<!-- uat-queue-barrier sha=def5678 reason="UAT remedial PR #199" -->
-<!-- uat-queue-watcher holder=bc-xyz lease=2026-07-23T14:00:00Z -->
-```
+1. Create and pin the issue.
+2. Set repo Actions variable: `UAT_COORDINATION_ISSUE=<n>`.
+3. Run smoke verification (see Phase 1b).
+4. Post initial empty ledger via `render-state` + first `enqueue` test.
 
-The canonical JSON lives inside `<!-- uat-queue-state:v1 -->` for `reconcile` to parse. Per-entry markers are optional denormalized hints for humans.
+Until step 2 is done, Phase 1 code is **inactive**. PRs that add queue code must not merge without a tracked bootstrap issue or same-PR bootstrap instructions executed by operator within 24h.
 
 ### 2. Queue ledger schema
 
+Unchanged from v1 — see prior schema. Add optional field on ledger root:
+
 ```json
 {
-  "version": 1,
-  "updated_at": "2026-07-23T12:00:00Z",
-  "main_barrier_sha": "def5678",
-  "main_barrier_reason": "UAT remedial PR #199 merged",
-  "main_barrier_at": "2026-07-23T11:45:00Z",
-  "active_watcher": {
-    "holder": "bc-xyz",
-    "lease_until": "2026-07-23T14:00:00Z",
-    "watching_seq": 2
-  },
-  "entries": [
-    {
-      "seq": 1,
-      "pr_number": 201,
-      "merge_sha": "sha1",
-      "uat_tag": "uat-260723-201",
-      "enqueued_by": "issue-42",
-      "enqueued_at": "2026-07-23T10:00:00Z",
-      "state": "complete",
-      "result": "success",
-      "deploy_run_id": "12345",
-      "completed_at": "2026-07-23T10:55:00Z"
-    },
-    {
-      "seq": 2,
-      "pr_number": 205,
-      "merge_sha": "sha2",
-      "uat_tag": "uat-260723-205",
-      "enqueued_by": "plan:e2e-ci-canary phase-3",
-      "enqueued_at": "2026-07-23T11:00:00Z",
-      "state": "failed",
-      "result": "failure",
-      "deploy_run_id": "12346",
-      "gate_summary_ref": "run 12346 prod-ready job"
-    }
-  ]
+  "promote_hold": false,
+  "promote_hold_reason": null,
+  "promote_hold_since": null
 }
 ```
 
-**Entry `state` values:**
+Set by coordinator on `failed`/`remedial`; cleared on `set-barrier` or infra resolution.
 
-| State | Meaning |
-|-------|---------|
-| `pending` | Enqueued; deploy not started or not yet observed |
-| `deploying` | Deploy run identified; in progress |
-| `complete` | `prod-ready` green |
-| `failed` | `prod-ready` red |
-| `remedial` | Coordinator owns fix PR; **freezes** later entries |
-| `frozen` | Waiting for remedial barrier to clear |
-| `superseded` | Skipped (e.g. duplicate enqueue for same merge SHA) |
+**Entry states:** `pending` | `deploying` | `complete` | `failed` | `remedial` | `frozen` | `superseded`
 
-**Dedupe key:** `merge_sha` (one active entry per merge commit).
+**Dedupe key:** `merge_sha`
 
 ### 3. CLI — `scripts/uat_queue_runtime.js`
 
-Shared library: `scripts/lib/uat_queue_lib.js` (parse markers, merge state, CAS watcher lease).
-
 | Command | Caller | Purpose |
 |---------|--------|---------|
-| `enqueue --merge <sha> --pr <n> --ref <context>` | Any agent after merge | Add entry; idempotent on `merge_sha` |
-| `reconcile [--issue <n>]` | Session preflight, Actions job | Sync ledger from Actions + marker comments |
-| `status [--merge <sha> \| --seq <n>]` | Any | Resolve tag → deploy run → gate table |
-| `barrier-check [--branch <name>]` | Before merge/push | `needs_rebase` vs `origin/main` and barrier |
-| `acquire-watcher [--issue <n>]` | Coordinator only | CAS lease; exit `2` if held |
-| `release-watcher --result <success\|failure>` | Coordinator | Clear lease |
-| `set-barrier --sha <sha> --reason <text>` | Coordinator after remedial merge | Advance main barrier |
-| `render-state` | Debug | Print current ledger JSON |
+| `enqueue` | Work agent after merge | Add entry; idempotent |
+| `reconcile` | Preflight, Actions | Sync from Actions API |
+| `status` | Any | Tag → deploy run → gate table |
+| `barrier-check` | Before merge/push | `needs_rebase` vs barrier |
+| `queue-head-hold` | Execute-plan preflight | Exit `2` if head entry `failed`/`remedial` |
+| `acquire-watcher` / `release-watcher` | Coordinator | CAS lease |
+| `set-barrier` | Coordinator after remedial | Advance barrier; unfreeze; clear promote hold |
+| `set-promote-hold` / `clear-promote-hold` | Coordinator | Phase 3b CI gate |
+| `health-check` | CI / operator | Verify issue + variable + writable marker |
 
-**Exit codes:** `0` = ok; `2` = expected wait (watcher held, barrier blocks); `1` = error.
+**Exit codes:** `0` ok; `2` expected wait; `1` error.
 
-`status` wraps `scripts/ci/assert-uat-gates.sh` output when deploy run is terminal.
+### 4. UAT coordinator agent (Phase 3)
 
-### 4. UAT coordinator agent
-
-**Skill:** `.cursor/skills/uat-coordinator/SKILL.md` (new)
-
-**Dispatch:** `.github/workflows/uat-coordinator-dispatch.yml` (new)
+**Skill:** `.cursor/skills/uat-coordinator/SKILL.md`  
+**Dispatch:** `.github/workflows/uat-coordinator-dispatch.yml`
 
 | Trigger | Dispatch? |
 |---------|-----------|
-| `deploy-uat.yml` completed with `prod-ready` failure | Yes (primary) |
-| `workflow_dispatch` on `uat-coordinator-dispatch.yml` | Yes (recovery / manual) |
-| Enqueue + `failed` entry + stale watcher lease | Yes (via reconcile hook) |
-| `prod-ready` success | No |
+| `deploy-uat` `prod-ready` failure | Yes (primary) |
+| `workflow_dispatch` on coordinator workflow | Yes (recovery) |
+| Stale watcher + head `failed` | Phase 4 |
 
-```yaml
-concurrency:
-  group: uat-coordinator
-  cancel-in-progress: false
-```
+**Concurrency:** `group: uat-coordinator`, `cancel-in-progress: false`
 
-**Remedial freeze (review decision):** While any entry is `remedial`, later queue entries stay `frozen` — do not start or advance their deploy observation until the coordinator clears the barrier. Avoids doomed ~45–60 min deploy runs that would fail and require rebase anyway. Entries resume in original queue order after `set-barrier`.
+#### Triage playbook (gate → action)
 
-Coordinator workflow:
-
-1. `reconcile` → identify head `failed` or `deploying` entry needing attention
-2. `acquire-watcher`
-3. If `failed`: triage gate table → remedial PR → babysit+ §0–7 → merge → `set-barrier`
-4. If `deploying`: poll until terminal (coordinator may watch one run; success path usually resolved by Actions before coordinator starts)
-5. `release-watcher`
-6. Comment summary on coordination issue + affected PRs/control issues
+| Failed gate | First check | Remedial? |
+|-------------|-------------|-----------|
+| HTTP smoke — WAF body | `signup probe WAF challenge` in logs | **No** — escalate §9 |
+| HTTP smoke — Passenger/404 | `uat-post-deploy-smoke.sh` hint | Infra — escalate or cPanel fix |
+| Live E2E — `#/landing` stall | HTTP smoke / WAF on same run | Often infra; else auth E2E fix |
+| Localhost E2E — single shard | Shard test name + screenshot artifact | Yes — one PR per root cause |
+| Localhost E2E — Nav v2 cluster | Multiple shards, same sprint | Batch remedial; consider integration branch stop |
+| Flutter build | Compile log | Yes — should be PR CI gap |
+| Migrations pending | `migrate_pending_count` | Escalate if `UAT_AUTO_MIGRATE` off |
 
 **Remedial PR conventions:**
 
-- Branch: `cursor/uat-fix-<pr>-bfaa`
-- Body: `Refs #<original-issue>` + link to failed deploy run
-- One remedial PR per failure burst when failures share root cause; batched when gate table shows same shard class
+- Branch: `cursor/uat-fix-<pr>-2b0b`
+- Body: `Refs #<issue>` + failed run URL + gate table
+- One remedial PR per failure **burst** when root cause shared
 
-### 5. Agent workflow changes
+**Coordinator must not:** weaken gates, disable shards, or merge without green PR CI.
 
-#### After merge (all agents — issue, execute-plan, babysit+)
+### 5. Work-agent workflow
+
+#### After merge
 
 ```bash
 node scripts/uat_queue_runtime.js enqueue \
-  --merge "$MERGE_SHA" --pr "$PR_NUMBER" --ref "issue-$ISSUE"
-# Do NOT spawn Task sub-agent on success path
+  --merge "$MERGE_SHA" --pr "$PR_NUMBER" --ref "issue-$ISSUE" --write
 ```
 
 #### Session preflight (before merge, push, or resume)
 
 ```bash
-node scripts/uat_queue_runtime.js reconcile
+node scripts/uat_queue_runtime.js health-check || exit 1
+node scripts/uat_queue_runtime.js reconcile --write
 node scripts/uat_queue_runtime.js barrier-check --branch "$(git branch --show-current)"
-# if needs_rebase:
-./scripts/babysit_sync_base.sh --pr <url> --push
+node scripts/uat_queue_runtime.js queue-head-hold   # exit 2 → do not merge yet
 ```
 
-#### Execute-plan integration
+#### Execute-plan
 
-- **Do not halt** execute-plan phases on UAT failure (`uat_paused` removed for UAT — see §Review decisions).
-- On failure: coordinator comments on the plan **control issue**; plan work continues.
-- Before merge/push on any phase: `barrier-check` → rebase if behind barrier (usually a small rebase).
-- `resume-uat` is **not** used for UAT coordination; barrier advancement is the resume signal.
-
----
-
-## Scenario walkthrough (agents A, B, C)
-
-| Step | Agent | Action |
-|------|-------|--------|
-| 1 | A merges PR #201 | `enqueue`; CI deploy #1 starts; A continues or ends session |
-| 2 | B finishes CI, ready to merge | `barrier-check` → clean → merge #205 → `enqueue` |
-| 3 | C same | `barrier-check` → merge #210 → `enqueue` |
-| 4 | CI | Deploys queue: #201 → #205 → #210 (existing Actions concurrency) |
-| 5 | Deploy #201 fails | `agent-uat-notify` + ledger `failed`; dispatch coordinator |
-| 6 | Coordinator | Triage → remedial PR #212 → merge → `set-barrier` to new `main` SHA |
-| 7 | B resumes (open PR) | Preflight `barrier-check` → `needs_rebase: true` → `babysit_sync_base.sh` |
-| 8 | C resumes (open PR) | Same |
-| 9 | C already merged before fix | No rebase — merge SHA is immutable; deploy #210 may fail same gate; coordinator handles or marks `superseded` if fix already on main when deploy runs |
-
-**Note:** Agents B and C never waited in-session for A. Barrier + preflight replaces ad-hoc "rebase required" notes.
+- **Soft hold:** if `queue-head-hold` exits `2`, finish open PR work but **do not merge** until coordinator clears barrier or head entry is `complete`/`superseded`.
+- Plan phases may continue in parallel (branches, CI); merge is the throttle.
+- Coordinator comments on control issue on failure.
 
 ---
 
-## Phased delivery
+## Phased delivery (revised)
 
-### Phase 0 — Design sign-off (this document)
+### Phase 0 — Design sign-off
 
-**Exit:** Review approved; coordination issue number chosen; `uat-coordinator` label created.
+**Exit:** This document approved. `uat-coordinator` label exists.
 
-### Phase 1 — Ledger + CLI (no coordinator yet)
+**Status:** Done.
+
+### Phase 1 — Ledger + CLI
+
+| Deliverable | Status |
+|-------------|--------|
+| `uat_queue_lib.js`, `uat_queue_runtime.js`, tests | **Done** (#281) |
+| `issue-agent-handlers.js` enqueue + deploy sync | **Done** |
+| Workflows pass `UAT_COORDINATION_ISSUE` | **Done** |
+| Coordination issue + repo variable | **Not done** |
+
+### Phase 1b — Bootstrap + health gate (new — blocking)
 
 | Deliverable | Detail |
 |-------------|--------|
-| `scripts/lib/uat_queue_lib.js` | Parse/merge marker state; dedupe; barrier logic |
-| `scripts/uat_queue_runtime.js` | CLI commands above |
-| `scripts/uat_queue_runtime.test.js` | Unit tests (marker merge, dedupe, barrier-check) |
-| Coordination issue | Created manually; number in `scripts/lib/uat_queue_constants.js` |
-| Extend `agent-uat-notify` | On success/failure: `reconcile` + update ledger entry state |
-| Docs | Label entry in [github-labels.md](./github-labels.md) |
+| Create coordination issue | Operator or bootstrap PR |
+| Set `UAT_COORDINATION_ISSUE` | Repo Actions variable |
+| `health-check` command | Fails if issue missing / marker not writable |
+| CI smoke | Optional: weekly or post-deploy job asserts variable set |
+| Verify enqueue on merge | `issue-agent-pr-merge` log shows `enqueued`, not `skipped` |
 
-**Policy change (docs only until Phase 2):** babysit-plus §8 → `enqueue` instead of Task spawn.
+**Exit:** One test merge produces ledger entry; deploy result updates entry state.
 
-**Exit:** After merge, `enqueue` works; Actions updates ledger; `barrier-check` returns correct `needs_rebase`; tests green in `./scripts/pre-push-changed.sh`.
-
-**Risk:** Low.
+**Risk:** Low. **This should have been Phase 1 exit criteria.**
 
 ### Phase 2 — Work-agent integration
 
+| Deliverable | Status |
+|-------------|--------|
+| babysit-plus §8 enqueue | **Done** (#307) |
+| execute-plan preflight docs | **Done** |
+| autonomous-pr-policy link | **Done** |
+| Agents actually calling `enqueue --write` | **Unverified** — depends on 1b |
+
+**Exit:** No Task sub-agents; enqueue in merge handler logs.
+
+### Phase 3 — Coordinator dispatch + triage skill
+
 | Deliverable | Detail |
 |-------------|--------|
-| Update `.cursor/skills/babysit-plus/SKILL.md` §8 | `enqueue` + remove Task sub-agent |
-| Update `.cursor/skills/execute-plan/SKILL.md` preflight | `reconcile` + `barrier-check` |
-| Update [autonomous-pr-policy.md](./autonomous-pr-policy.md) §Post-merge UAT | Link this plan |
-| Update [github-issue-workflow.md](../github-issue-workflow.md) | Post-merge step mentions enqueue |
+| `uat-coordinator-dispatch.yml` | On `deploy-uat` failure + `workflow_dispatch` |
+| `.cursor/skills/uat-coordinator/SKILL.md` | Triage playbook (§4 table) |
+| `launch-cursor-agent.js` payload | Sanitized failure context |
+| `queue-head-hold` CLI | Exit `2` when merge should wait |
+| Coordinator sets `remedial`, `set-promote-hold` | Freezes ledger + signals CI |
 
-**Exit:** Issue agents and execute-plan agents call CLI; no Task sub-agents spawned.
+**Exit:** Simulated failure → one coordinator → remedial or escalate → barrier advanced.
 
-**Risk:** Low — behaviour change is "stop polling on success."
+### Phase 3b — CI promote/deploy back-pressure (new — recommended)
 
-### Phase 3 — UAT coordinator dispatch
+Addresses Jul 23 queue pile-up. **Not in original plan; required for merge-rate control.**
 
-| Deliverable | Detail |
-|-------------|--------|
-| `.github/workflows/uat-coordinator-dispatch.yml` | Failure trigger + `workflow_dispatch` |
-| `.cursor/skills/uat-coordinator/SKILL.md` | Coordinator playbook |
-| `launch-cursor-agent.js` payload | Sanitized UAT failure context |
-| Label `agent-uat-fix` | Eligibility for coordinator dispatch (optional) |
+| Mechanism | Detail |
+|-----------|--------|
+| **Promote hold** | `promote-uat.yml` reads ledger (or env from reconcile job): skip tag when `promote_hold=true` or head entry `remedial` |
+| **Deploy supersede** | When `UAT_CANCEL_IN_PROGRESS=true`, cancel queued `deploy-uat` runs with no started jobs when newer tag promoted |
+| **Latest-wins deploy** | Optional: only deploy head `pending` entry's tag after hold clears |
 
-**Exit:** Simulated UAT failure dispatches one coordinator; remedial PR merges; barrier advances; frozen entries unfreeze.
+| Repo variable | Default | Effect |
+|---------------|---------|--------|
+| `UAT_PROMOTE_HOLD_ENABLED` | `true` after Phase 3b | Enforce promote skip on hold |
+| `UAT_CANCEL_IN_PROGRESS` | `false` | Cancel stale queued deploys (freshness over audit) |
 
-**Risk:** Medium — coordinator autonomy window; infra vs code classification.
+**Trade-off:** Skipping promote delays UAT for held merges but saves ~45–60 min × N doomed runs. Aligns with [promotion-contract.md](../promotion-contract.md) §Concurrency optional freshness mode.
 
-### Phase 4 — Hardening (optional)
+**Exit:** 5 rapid merges with head failure → ≤2 deploy runs start (not 5).
+
+### Phase 4 — Hardening
 
 | Item | Detail |
 |------|--------|
 | Stale watcher reclaim | `acquire-watcher` after lease expiry |
-| `uat_deploy_runtime.js` alias | Thin wrapper if callers expect deploy-specific name from e2e-ci-canary plan |
-| Dashboard comment | Periodic coordination-issue summary table |
-
-**Exit:** No duplicate coordinators in soak test; lease reclaim verified.
-
-*(Remedial freeze is Phase 3 behaviour, not optional hardening.)*
+| Dashboard comment | Periodic coordination-issue summary |
+| Soak metric alerts | Success rate &lt; 50% over 24h → comment on coord issue |
 
 ---
 
-## PR sequencing
+## PR sequencing (revised)
 
-| PR | Phase | Scope | One-sentence outcome |
-|----|-------|-------|----------------------|
-| A | 1 | `uat_queue_lib.js` + `uat_queue_runtime.js` + tests | Cross-agent UAT queue CLI exists with tests. |
-| B | 1 | Extend `agent-uat-notify` + constants + label doc | Actions updates UAT ledger on deploy result. |
-| C | 2 | babysit-plus + execute-plan + autonomous-pr-policy docs | Work agents enqueue instead of spawning Task sub-agents. |
-| D | 3 | `uat-coordinator-dispatch.yml` + coordinator skill + remedial freeze | UAT failure dispatches one coordinator; later entries freeze until barrier clears. |
-| E | 4 | Lease hardening + stale-watcher reclaim | Queue resists duplicate coordinators and stale leases. |
-
-Each PR is independently mergeable; later PRs depend on earlier ones.
-
----
-
-## Labels and issues
-
-| Label | Purpose |
-|-------|---------|
-| `uat-coordinator` | Marks the coordination issue |
-| `agent-uat-fix` | Optional — triggers coordinator dispatch (Phase 3) |
-
-| Issue | Purpose |
-|-------|---------|
-| `[uat-coordinator] UAT deploy queue` | Canonical ledger host (pinned) |
-| Per-issue / per-plan control issues | Unchanged; receive coordinator comments on failure |
+| PR | Phase | Scope | Outcome |
+|----|-------|-------|---------|
+| A | 1 | Queue lib + CLI + tests | **Merged** (#281) |
+| B | 1 | agent-uat-notify hooks | **Merged** (#281) |
+| C | 2 | Skill + policy updates | **Merged** (#307) |
+| **D** | **1b** | Bootstrap issue + `health-check` + operator runbook | Ledger live |
+| **E** | 3 | Dispatch workflow + coordinator skill + `queue-head-hold` | Failure owner |
+| **F** | 3b | Promote hold + optional deploy cancel | CI back-pressure |
+| G | 4 | Lease hardening | Duplicate coordinator resistance |
 
 ---
 
-## Policy updates (when implemented)
+## Success metrics (revised)
 
-| Document | Change |
-|----------|--------|
-| `babysit-plus/SKILL.md` §8 | `enqueue` replaces Task sub-agent; coordinator owns failure |
-| `execute-plan/SKILL.md` | Preflight: `reconcile` + `barrier-check` |
-| `autonomous-pr-policy.md` §Post-merge UAT | Link queue + passive success model |
-| `e2e-ci-canary-plan.md` Phase 5 | Point to this plan as canonical |
-| `execute-plan-runtime.md` | Note UAT uses barrier only (no `uat_paused` halt) |
-
----
-
-## Cost model
-
-| Approach | Agent minutes (3 merges, all succeed) | On 1 UAT failure |
-|----------|--------------------------------------|------------------|
-| Current (3 Task sub-agents polling) | ~135–180 min | Up to 3 agents triage |
-| In-session queue (B,C wait for A) | ~90–120 min idle + work | Better; still wasteful |
-| **This plan** | **~0 min** (enqueue only) | **~1 coordinator session** |
-
----
-
-## Success metrics
-
-| Metric | Baseline | Target |
-|--------|----------|--------|
-| Duplicate UAT poll sessions per merge SHA | Unbounded (per agent session) | ≤ 1 (coordinator only on failure) |
-| Competing remedial PRs per UAT failure | Possible | 1 |
-| Agent session time blocked on UAT | Up to 60 min | 0 (enqueue + exit) |
-| Open PRs rebased before merge after remedial | Ad hoc | 100% via `barrier-check` |
-| Success-path agent involvement post-merge | Task sub-agent spawn | `enqueue` only (~seconds) |
+| Metric | Baseline (Jul 23) | Target |
+|--------|-------------------|--------|
+| UAT deploy success rate (rolling 50) | 26% | ≥ 60% (after infra + sprint discipline) |
+| Promotes per day during sprint | 33 | ≤ 12 or promote-hold active |
+| Ledger `skipped: true` on merge | 100% | 0% |
+| Duplicate coordinator sessions per failure | N/A | ≤ 1 |
+| Competing remedial PRs per failure | Possible | 1 |
+| Agent minutes blocked on UAT poll | ~0 after #307 | 0 |
+| Queued deploys cancelled before start | 7 / 50 | 0 when hold works; acceptable when supersede intentional |
+| Infra failures opened as code remedials | Unknown | 0 (WAF → escalate) |
 
 ---
 
 ## Non-goals
 
 - Replacing the 10-shard UAT E2E contract or `prod-ready` gates
-- Serializing `deploy-uat` further (already queued)
-- Making UAT prod-ready a mandatory execute-plan phase gate (optional `uat_gate: serial` may be a future snapshot field)
-- Project board writes from Cloud Agents (unchanged)
 - Weakening gates to pass UAT
+- Project board writes from Cloud Agents
+- Coordinator as substitute for WAF whitelist or `UAT_SSH_ENABLED` / `UAT_AUTO_MIGRATE`
+
+## Goals (clarified — changed from original)
+
+- **May** skip or delay `promote-uat` when queue head is unhealthy (Phase 3b)
+- **May** cancel queued `deploy-uat` runs superseded by newer tags when `UAT_CANCEL_IN_PROGRESS=true`
+- **Should** use integration branches for multi-phase UI sprints (process, not coordinator code)
 
 ---
 
-## Risks and mitigations
+## Risks and mitigations (revised)
 
 | Risk | Mitigation |
 |------|------------|
-| Coordination issue comment races | Canonical state in single `<!-- uat-queue-state:v1 -->` marker; `reconcile` is idempotent; watcher CAS with lease |
-| Coordinator session dies mid-remedial | Lease expires; redispatch on `workflow_dispatch` or next failure notify |
-| Already-merged PR fails UAT for code merged earlier | Coordinator remedial fix on `main`; later deploys pick up fix automatically if their merge commit includes it |
-| Infra blocker (`UAT_AUTO_MIGRATE` off) | Escalate per babysit-plus §9; do not weaken gates |
-| Ledger drift from Actions | `reconcile` pulls `gh run list` + existing `agent-uat-notify` markers |
+| Bootstrap never done | Phase 1b blocking; `health-check` in agent preflight |
+| Ledger freeze without CI effect | Phase 3b promote hold |
+| Barrier-only insufficient for execute-plan | `queue-head-hold` soft merge stop |
+| WAF misclassified as code failure | Coordinator triage table §4; escalate §9 |
+| Coordination issue comment races | Single marker; CAS watcher lease |
+| Coordinator dies mid-remedial | Lease expiry + `workflow_dispatch` recovery |
+| Large UI sprint stacks failures | Integration branch policy; coordinator batches remedials |
+| Skill-only enforcement | Merge handler enqueue (Actions) + preflight CLI |
 
 ---
 
 ## Review decisions
 
-Decisions from plan review (2026-07-23). Each item includes pros/cons and the adopted choice.
-
 ### 1. Coordination issue — dedicated new issue
 
-| Option | Pros | Cons |
-|--------|------|------|
-| **New dedicated issue** (chosen) | Single machine-state host; pin without noise; survives plan/issue close; no `plan_id` coupling; clear ownership for all agents | One more issue to discover; not on product board workflow (intentional) |
-| Reuse governance / existing issue | Fewer issues; may already be watched | Human comments mix with ledger markers; risk of accidental close; conflates product discussion with infra state |
+**Unchanged.** New pinned issue; `UAT_COORDINATION_ISSUE` repo variable.
 
-**Recommendation: new dedicated issue** — title `[uat-coordinator] UAT deploy queue`, labels `uat-coordinator` + `governance`, pinned. Issue number stored in `scripts/lib/uat_queue_constants.js` at bootstrap.
+**Revision:** Bootstrap is **Phase 1b exit**, not "after merge at operator leisure."
 
-### 2. Remedial freeze — freeze while coordinator fixes (chosen)
+### 2. Remedial freeze — ledger + CI (revised Jul 23)
 
-| Option | Pros | Cons |
-|--------|------|------|
-| **Freeze later entries** (chosen) | Avoids predictable failed deploys (~45–60 min each); less CI noise; matches expectation that rebases will be needed | No “would have failed” audit for frozen entries until re-run after barrier; ledger gains `frozen` state |
-| Allow queue to run | Full failure audit trail per entry | Wasted CI; duplicate failure notifications; agents may triage failures the remedial PR will obsolete |
+| Layer | Original | Revised |
+|-------|----------|---------|
+| Ledger `frozen` state | Yes | Yes — agent visibility |
+| Stop `promote-uat` | No | **Yes** when `UAT_PROMOTE_HOLD_ENABLED` and head `remedial`/`failed` |
+| Cancel queued deploys | Optional `UAT_CANCEL_IN_PROGRESS` | Recommend `true` during high-churn sprints |
 
-**Recommendation: freeze.** On `remedial`, mark subsequent `pending`/`deploying` entries `frozen`. After `set-barrier`, unfreeze in original `seq` order. Reconcile re-observes deploy state — no cancel of in-flight `deploy-uat` runs unless repo variable `UAT_CANCEL_IN_PROGRESS=true` is already set for other reasons.
+**Rationale:** Jul 23 — ledger-only freeze did nothing to CI; 7 runs cancelled manually or by queue pressure without coordinated supersede.
 
-### 3. Execute-plan on UAT failure — plan continues; barrier only (chosen)
+### 3. Execute-plan on UAT failure — revised Jul 23
 
-| Option | Pros | Cons |
-|--------|------|------|
-| **`uat_paused` halts next phase** | Prevents stacking merges on broken main; visible in snapshot | Blocks throughput; duplicates barrier; next phase often unaffected until merge |
-| **Barrier only; plan continues** (chosen) | Matches enqueue-and-exit; next phase proceeds; `barrier-check` + small rebase before merge usually suffices | Prior-phase UAT failure visible only via coordinator comment, not snapshot halt; rare double-rebase if main moves twice |
-| Both (halt + barrier) | Belt and suspenders | Redundant; contradicts non-blocking phase model |
+| Option | Original | Revised |
+|--------|----------|---------|
+| Plan continues | Yes | Yes — phases keep building |
+| Merge throttle | Barrier only | **Barrier + `queue-head-hold`** — no merge while head `failed`/`remedial` |
+| `uat_paused` halt | No | Still no full plan halt |
 
-**Recommendation: barrier only; drop `uat_paused` for UAT.** Coordinator comments on the plan control issue when a linked merge fails. Execute-plan sessions keep going; `barrier-check` before merge/push handles rebase. Existing `pause`/`resume-uat` CLI remains for non-UAT halts but is **not** invoked for UAT failure.
+**Rationale:** Afternoon Jul 23 — agents merged phases 1–10 while UAT was red; barrier-check alone did not stop merges (ledger inert + no hold command).
 
 ### 4. Coordinator dispatch triggers
 
-| Trigger | Pros | Cons |
-|---------|------|------|
-| **Deploy failure** (primary) | Automatic; no human action | Stuck if notify job fails without a matching dispatch |
-| **`workflow_dispatch` on coordinator workflow** (chosen) | Recovery after dead coordinator; manual reconcile; soak/debug | Extra agent cost if misused (mitigated: `concurrency: uat-coordinator`) |
-| Enqueue + stale watcher | Catches orphaned queue without waiting for failure | Extra complexity; may race with failure dispatch |
-| Dispatch on *every* repo `workflow_dispatch` | — | Too broad; unrelated workflows would spawn coordinators |
+**Unchanged:** deploy failure (primary) + `workflow_dispatch` (recovery).
 
-**Recommendation: deploy failure (primary) + `workflow_dispatch` on `uat-coordinator-dispatch.yml` only** — not every workflow in the repo. Optional inputs: `coordination_issue`, `dry_run`, `force_seq`. Enqueue stale-watcher reclaim is Phase 4 hardening, not day-one.
+**Add:** dispatch payload includes gate taxonomy (smoke/e2e/build) from `assert-uat-gates.sh` summary.
+
+---
+
+## Immediate actions (operator)
+
+1. Create `[uat-coordinator] UAT deploy queue` issue; pin it.
+2. Set `UAT_COORDINATION_ISSUE=<n>`.
+3. Merge a trivial PR; confirm merge handler log: `UAT queue: enqueued PR #…`.
+4. Prioritize PR **E** (Phase 3) then **F** (Phase 3b).
+5. Open infra issue: whitelist GitHub Actions egress on UAT (WAF) — blocks 40% of Jul 23 failures.
+
+---
+
+## Implemented quick wins (2026-07-23)
+
+| Item | Implementation |
+|------|----------------|
+| WAF fail-fast | `scripts/ci/uat-waf.lib.sh`; streak default 3 in smoke, warmup, Playwright `globalSetup` |
+| Full E2E after smoke | `uat-e2e-full` waits for HTTP smoke — no shard burn on WAF/deploy failure |
+| Shard 11 split | `org.onboarding` isolated in shard 10; lighter specs in shard 11 |
+| Playwright fail-fast | `--max-failures=1` on localhost shards and live `@smoke-uat` |
+| Full E2E cadence | `scripts/ci/uat-full-e2e-cadence.sh` + `UAT_FULL_E2E_MERGE_THRESHOLD` (default 1) |
+| Queue CLI | `health-check`, `queue-head-hold` |
+
+**Coordinator + cadence:** when full E2E is skipped by cadence, coordinator should set `UAT_FULL_E2E_FORCE_RUN=true` on the next remedial recovery deploy if failure was test drift (not WAF).
 
 ---
 
 ## References
 
-- `docs/promotion-contract.md` §Concurrency — UAT deploy queue
-- `.github/scripts/issue-agent-handlers.js` — `<!-- agent-uat-result -->` pattern
-- `.github/workflows/deploy-uat.yml` — `agent-uat-notify` job
-- `.cursor/skills/babysit-plus/SKILL.md` §8 — current post-merge UAT (to be updated)
-- `scripts/babysit_sync_base.sh` — rebase helper for barrier response
-- `scripts/ci/assert-uat-gates.sh` — gate table for coordinator triage
+- `docs/promotion-contract.md` §Concurrency
+- `.github/scripts/issue-agent-handlers.js`
+- `.github/workflows/deploy-uat.yml` — `agent-uat-notify`
+- `.cursor/skills/babysit-plus/SKILL.md` §8
+- `scripts/ci/assert-uat-gates.sh`
+- `scripts/ci/warmup-uat-auth.sh` — WAF detection
+- `docs/e2e/uat-live-operations-runbook.md`

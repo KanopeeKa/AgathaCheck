@@ -2,6 +2,10 @@
 # Post-deploy HTTP smoke for UAT — classifies failure modes and emits actionable CI errors.
 set -euo pipefail
 
+ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+# shellcheck source=scripts/ci/uat-waf.lib.sh
+source "${ROOT}/scripts/ci/uat-waf.lib.sh"
+
 UAT_BASE_URL="${UAT_BASE_URL:-https://uat.agathatrack.com}"
 MAX_ATTEMPTS="${MAX_ATTEMPTS:-18}"
 SLEEP_SECS="${SLEEP_SECS:-10}"
@@ -73,7 +77,7 @@ cPanel-generated backend/.htaccess (Passenger config) via FTP.
 EOF
       ;;
     waf)
-      echo 'Hosting WAF challenge page — verify in a browser or whitelist GitHub Actions egress for UAT.'
+      echo 'Hosting WAF challenge page (o2switch Tiger Protect) — GitHub Actions egress cannot be whitelisted on this host; deploy will fail fast after repeated WAF responses. Retry later or validate manually.'
       ;;
     passenger_crash)
       cat <<'EOF'
@@ -130,6 +134,7 @@ for i in $(seq 1 "$MAX_ATTEMPTS"); do
   IFS='|' read -r last_code last_kind <<<"$(probe_url "${UAT_BASE_URL}/backend/health")"
 
   if [ "$last_kind" = "ok" ]; then
+    uat_waf_clear_streak
     echo "Backend healthy after attempt ${i} (HTTP ${last_code})"
     curl -sfk "${UAT_BASE_URL}/landing" -o /dev/null
     echo "Landing page reachable"
@@ -141,6 +146,16 @@ for i in $(seq 1 "$MAX_ATTEMPTS"); do
     fi
     echo "Backend root OK (HTTP ${root_code})"
     exit 0
+  fi
+
+  if [ "$last_kind" = "waf" ]; then
+    waf_rc=0
+    uat_waf_note_challenge "health probe" || waf_rc=$?
+    if [ "$waf_rc" -eq 2 ]; then
+      exit 2
+    fi
+  else
+    uat_waf_clear_streak
   fi
 
   if [ "$i" -eq 1 ] || [ $((i % 6)) -eq 0 ]; then

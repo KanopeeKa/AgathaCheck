@@ -13,6 +13,7 @@ const {
   expectedUatTag,
   parseStateFromCommentBody,
   parseUatTag,
+  queueHeadHold,
   renderStateCommentBody,
   setBarrier,
 } = require('./lib/uat_queue_lib');
@@ -154,4 +155,28 @@ test('acquireWatcher rejects invalid lease minutes', () => {
     () => acquireWatcher(state, { holder: 'a', leaseMinutes: 'bad' }),
     /positive number/
   );
+});
+
+test('queueHeadHold blocks on failed or remedial head entry', () => {
+  const state = createEmptyState();
+  state.entries = [
+    { seq: 1, pr_number: 1, merge_sha: 'a', state: 'failed' },
+    { seq: 2, pr_number: 2, merge_sha: 'b', state: 'pending' },
+  ];
+  const failed = queueHeadHold(state);
+  assert.equal(failed.hold, true);
+  assert.equal(failed.reason, 'head_entry_failed');
+
+  state.entries[0].state = 'remedial';
+  const remedial = queueHeadHold(state);
+  assert.equal(remedial.hold, true);
+  assert.equal(remedial.reason, 'head_entry_remedial');
+});
+
+test('queueHeadHold clear when head is pending only', () => {
+  const state = createEmptyState();
+  state.entries = [{ seq: 1, pr_number: 1, merge_sha: 'a', state: 'pending' }];
+  const result = queueHeadHold(state);
+  assert.equal(result.hold, false);
+  assert.equal(result.reason, 'clear');
 });

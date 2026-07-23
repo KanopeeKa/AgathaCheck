@@ -26,6 +26,8 @@ DEPLOY_RESULT="${DEPLOY_RESULT:-}"
 SMOKE_RESULT="${SMOKE_RESULT:-}"
 LIVE_SMOKE_RESULT="${LIVE_SMOKE_RESULT:-}"
 FULL_E2E_RESULT="${FULL_E2E_RESULT:-}"
+UAT_FULL_E2E_CADENCE_SKIP="${UAT_FULL_E2E_CADENCE_SKIP:-false}"
+UAT_FULL_E2E_CADENCE_REASON="${UAT_FULL_E2E_CADENCE_REASON:-}"
 DEPLOY_REF="${DEPLOY_REF:-}"
 GITHUB_SHA="${GITHUB_SHA:-}"
 GITHUB_RUN_ID="${GITHUB_RUN_ID:-}"
@@ -54,8 +56,7 @@ exec 3>&1
   for row in \
     "deploy|${DEPLOY_RESULT}" \
     "smoke (HTTP)|${SMOKE_RESULT}" \
-    "uat-e2e-smoke (live @smoke)|${LIVE_SMOKE_RESULT}" \
-    "uat-e2e-full (localhost)|${FULL_E2E_RESULT}"; do
+    "uat-e2e-smoke (live @smoke)|${LIVE_SMOKE_RESULT}"; do
     label="${row%%|*}"
     result="${row#*|}"
     if require_success "$label" "$result"; then
@@ -66,6 +67,19 @@ exec 3>&1
       failed=1
     fi
   done
+
+  if [[ "${FULL_E2E_RESULT}" == "skipped" && "${SMOKE_RESULT}" != "success" ]]; then
+    printf '| uat-e2e-full (localhost) | `skipped (smoke failed)` | no | n/a |\n'
+  elif [[ "${FULL_E2E_RESULT}" == "skipped" && "${UAT_FULL_E2E_CADENCE_SKIP}" == "true" ]]; then
+    echo "::notice::Full localhost E2E skipped by cadence (${UAT_FULL_E2E_CADENCE_REASON:-n/a}) — HTTP + live smoke gates still required." >&3
+    printf '| uat-e2e-full (localhost) | `skipped (%s)` | cadence | yes |\n' "${UAT_FULL_E2E_CADENCE_REASON:-cadence}"
+  elif require_success "uat-e2e-full (localhost)" "${FULL_E2E_RESULT}"; then
+    printf '| uat-e2e-full (localhost) | `%s` | yes | yes |\n' "${FULL_E2E_RESULT}"
+  else
+    echo "::error title=UAT gate failed::uat-e2e-full (localhost) concluded with '${FULL_E2E_RESULT}' (expected success)" >&3
+    printf '| uat-e2e-full (localhost) | `%s` | yes | no |\n' "${FULL_E2E_RESULT}"
+    failed=1
+  fi
 
   migrate_gate="skipped"
   if [[ "${MIGRATE_STATUS_COLLECTED}" == "true" ]]; then

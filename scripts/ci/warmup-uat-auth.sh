@@ -4,15 +4,14 @@
 # are ready — live @smoke-uat then stalls on #/landing for the full post-login timeout.
 set -euo pipefail
 
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# shellcheck source=scripts/ci/uat-waf.lib.sh
+source "${SCRIPT_DIR}/uat-waf.lib.sh"
+
 UAT_BASE_URL="${UAT_BASE_URL:-https://uat.agathatrack.com}"
 MAX_ATTEMPTS="${AUTH_WARMUP_ATTEMPTS:-18}"
 SLEEP_SECS="${AUTH_WARMUP_SLEEP_SEC:-10}"
 CURL_TLS_FLAGS="${CURL_TLS_FLAGS:--k}"
-
-is_waf_body() {
-  local body="$1"
-  grep -qiE 'o2s-browser-check|Security check|Test de sécurité' <<<"$body"
-}
 
 curl_landing() {
   curl -sfk ${CURL_TLS_FLAGS} "${UAT_BASE_URL}/landing" -o /dev/null 2>/dev/null || true
@@ -86,7 +85,7 @@ login_probe() {
   return 1
 }
 
-echo "Warming UAT auth (up to ${MAX_ATTEMPTS} signup probes, ${SLEEP_SECS}s apart)..."
+echo "Warming UAT auth (up to ${MAX_ATTEMPTS} signup probes, ${SLEEP_SECS}s apart; WAF fail-fast after ${WAF_FAIL_FAST_STREAK} challenges)..."
 curl_landing
 
 for i in $(seq 1 "$MAX_ATTEMPTS"); do
@@ -107,6 +106,17 @@ for i in $(seq 1 "$MAX_ATTEMPTS"); do
       rc=1
     fi
   fi
+
+  if [ "$rc" -eq 2 ]; then
+    waf_rc=0
+    uat_waf_note_challenge "signup probe" || waf_rc=$?
+    if [ "$waf_rc" -eq 2 ]; then
+      exit 2
+    fi
+  else
+    uat_waf_clear_streak
+  fi
+
   if [ "$i" -lt "$MAX_ATTEMPTS" ]; then
     if [ "$rc" -eq 2 ]; then
       echo "WAF challenge (${i}/${MAX_ATTEMPTS}), sleeping ${SLEEP_SECS}s..."

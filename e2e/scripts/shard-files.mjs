@@ -1,16 +1,18 @@
 #!/usr/bin/env node
 /**
- * File-balanced Playwright shards for CI (~10 parallel jobs).
+ * File-balanced Playwright shards for CI (~11 parallel jobs).
  *
  * Playwright --shard splits by test count; slow specs (adoption, health) dominate
  * wall-clock. This manifest isolates the heaviest files and packs the rest by
  * approximate weight (spec line count). Rebalance when adding large spec files.
  *
+ * Shard 10 isolates org.onboarding (historically flaky after Nav v2 / theme work).
+ *
  * Usage:
  *   node e2e/scripts/shard-files.mjs           # print manifest summary
  *   node e2e/scripts/shard-files.mjs 3         # print space-separated paths for shard 3
  */
-export const SHARD_TOTAL = 10;
+export const SHARD_TOTAL = 11;
 
 /** @type {string[][]} */
 export const SHARDS = [
@@ -33,12 +35,12 @@ export const SHARDS = [
     'playwright/tests/org.timeline.spec.ts',
     'playwright/tests/auth.signup.spec.ts',
   ],
+  ['playwright/tests/org.onboarding.spec.ts'],
   [
     'playwright/tests/sharing.spec.ts',
     'playwright/tests/help.faq.spec.ts',
     'playwright/tests/experience.foster-portal.spec.ts',
     'playwright/tests/guardian.onboarding.spec.ts',
-    'playwright/tests/org.onboarding.spec.ts',
   ],
 ];
 
