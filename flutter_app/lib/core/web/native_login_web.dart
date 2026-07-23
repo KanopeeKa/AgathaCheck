@@ -13,20 +13,19 @@ void ensureNativeLoginInlineViewRegistered() {
   if (_inlineViewRegistered) return;
   _inlineViewRegistered = true;
 
-  ui_web.platformViewRegistry.registerViewFactory(
-    nativeLoginInlineViewType,
-    (int viewId) {
-      final container = web.document.createElement('div') as web.HTMLDivElement;
-      container.style.width = '100%';
+  ui_web.platformViewRegistry.registerViewFactory(nativeLoginInlineViewType, (
+    int viewId,
+  ) {
+    final container = web.document.createElement('div') as web.HTMLDivElement;
+    container.style.width = '100%';
 
-      final root = web.document.getElementById('agatha-native-login');
-      if (root != null) {
-        container.append(root);
-      }
+    final root = web.document.getElementById('agatha-native-login');
+    if (root != null) {
+      container.append(root);
+    }
 
-      return container;
-    },
-  );
+    return container;
+  });
 }
 
 /// Handle to the JS controller object defined in `web/index.html`
