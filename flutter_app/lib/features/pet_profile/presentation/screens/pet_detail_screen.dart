@@ -4,6 +4,7 @@ import '../../../../core/utils/constants.dart';
 import '../../../../core/widgets/app_logo_title.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../../core/theme/app_theme.dart';
+import '../../../experience/domain/entities/app_experience.dart';
 import '../../../experience/presentation/providers/experience_providers.dart';
 import '../../../organization/presentation/widgets/pet_foster_placement_section.dart';
 import '../../domain/services/pet_detail_actions.dart';
@@ -53,18 +54,21 @@ class _PetDetailScreenState extends ConsumerState<PetDetailScreen> {
 
         final theme = Theme.of(context);
         final isOrgPet = pet.organizationId != null;
+        final experience = ref.watch(resolvedExperienceProvider);
+        final useOrgChrome =
+            isOrgPet && experience == AppExperience.organization;
         final viewerContext = ref.watch(
           petDetailViewerContextProvider(widget.petId),
         );
         final backPath = ref.watch(experienceHomePathProvider);
 
         Widget body = Scaffold(
-          backgroundColor: isOrgPet ? AppTheme.orgBlue : null,
+          backgroundColor: useOrgChrome ? AppTheme.orgBlue : null,
           body: CustomScrollView(
             slivers: [
               PetDetailAppBar(
                 petName: pet.name,
-                isOrgPet: isOrgPet,
+                isOrgPet: useOrgChrome,
                 backPath: backPath,
               ),
               SliverToBoxAdapter(
@@ -112,7 +116,7 @@ class _PetDetailScreenState extends ConsumerState<PetDetailScreen> {
           ),
         );
 
-        if (isOrgPet) {
+        if (useOrgChrome) {
           body = Theme(
             data: theme.copyWith(
               cardTheme: theme.cardTheme.copyWith(
