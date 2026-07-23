@@ -1,28 +1,26 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../branding/logo_assets.dart';
 import '../../features/experience/domain/entities/app_experience.dart';
-import '../../features/experience/presentation/providers/experience_providers.dart';
 
 /// A reusable AppBar title widget that displays the Agatha Track logo
 /// followed by the screen title text.
 ///
 /// Tapping the logo navigates to the home page (`/`).
 /// Used across all screens to provide consistent branding and navigation.
-class AppLogoTitle extends ConsumerWidget {
+class AppLogoTitle extends StatelessWidget {
   /// The title text displayed next to the logo.
   final String title;
 
-  /// Optional experience override; otherwise resolved from route + preferences.
+  /// Optional experience override; otherwise resolved from the current route.
   final AppExperience? experience;
 
   const AppLogoTitle({super.key, required this.title, this.experience});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final resolved = experience ?? _resolveExperience(context, ref);
+  Widget build(BuildContext context) {
+    final resolved = experience ?? LogoAssets.experienceForContext(context);
     final assetPath = LogoAssets.pngFor(resolved);
 
     return Row(
@@ -48,13 +46,5 @@ class AppLogoTitle extends ConsumerWidget {
         Flexible(child: Text(title, overflow: TextOverflow.ellipsis)),
       ],
     );
-  }
-
-  AppExperience _resolveExperience(BuildContext context, WidgetRef ref) {
-    final routeExperience = LogoAssets.experienceForContext(context);
-    if (routeExperience == AppExperience.organization) {
-      return routeExperience;
-    }
-    return ref.watch(activeExperienceProvider) ?? AppExperience.guardian;
   }
 }

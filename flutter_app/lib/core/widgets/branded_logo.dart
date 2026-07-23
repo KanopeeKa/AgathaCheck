@@ -1,14 +1,12 @@
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../branding/logo_assets.dart';
 import '../../features/experience/domain/entities/app_experience.dart';
-import '../../features/experience/presentation/providers/experience_providers.dart';
 import 'web_image.dart';
 
 /// Agatha Track logo image, tinted plum (guardian) or teal (organisation).
-class BrandedLogo extends ConsumerWidget {
+class BrandedLogo extends StatelessWidget {
   const BrandedLogo({
     super.key,
     required this.size,
@@ -25,8 +23,8 @@ class BrandedLogo extends ConsumerWidget {
   final bool clipOval;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final resolved = experience ?? _resolveExperience(context, ref);
+  Widget build(BuildContext context) {
+    final resolved = experience ?? LogoAssets.experienceForContext(context);
     final assetPath = useJpg
         ? LogoAssets.jpgFor(resolved)
         : LogoAssets.pngFor(resolved);
@@ -77,13 +75,5 @@ class BrandedLogo extends ConsumerWidget {
     }
 
     return Semantics(label: 'Agatha Track logo', child: image);
-  }
-
-  AppExperience _resolveExperience(BuildContext context, WidgetRef ref) {
-    final routeExperience = LogoAssets.experienceForContext(context);
-    if (routeExperience == AppExperience.organization) {
-      return routeExperience;
-    }
-    return ref.watch(activeExperienceProvider) ?? AppExperience.guardian;
   }
 }
