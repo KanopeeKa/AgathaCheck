@@ -256,20 +256,37 @@ export class PetListPage {
     const home = useOrgHome ? '/o/home' : '/g/home';
     const onHome =
       route === home ||
-      (useOrgHome && route.startsWith('/o/') && !route.includes('/onboarding'));
+      (useOrgHome && route.startsWith('/o/') && !route.includes('/onboarding')) ||
+      (!useOrgHome && route.startsWith('/g/') && !route.includes('/onboarding'));
 
     await dismissConsentBannerIfPresent(this.page);
     if (!onHome) {
-      const homeNav = this.page.getByRole('button', { name: 'Home' });
-      if (await homeNav.isVisible({ timeout: 2_000 }).catch(() => false)) {
-        await homeNav.click({ force: true });
+      const switchingExperience =
+        options.experience === 'organization'
+          ? !route.startsWith('/o/')
+          : options.experience === 'guardian'
+            ? !route.startsWith('/g/')
+            : false;
+      if (switchingExperience) {
+        await this.page.goto(flutterGotoUrl(home));
+        await refreshFlutterAccessibility(this.page);
         await waitForFlutterRoutePattern(
           this.page,
-          new RegExp(`^${escapeRegExp(home)}$`),
+          new RegExp(`^${escapeRegExp(home)}(?:\\?|$)`),
           30_000,
         );
       } else {
-        await waitForFlutterRoute(this.page, home);
+        const homeNav = this.page.getByRole('button', { name: 'Home' });
+        if (await homeNav.isVisible({ timeout: 2_000 }).catch(() => false)) {
+          await homeNav.click({ force: true });
+          await waitForFlutterRoutePattern(
+            this.page,
+            new RegExp(`^${escapeRegExp(home)}(?:\\?|$)`),
+            30_000,
+          );
+        } else {
+          await waitForFlutterRoute(this.page, home);
+        }
       }
     }
     if (useOrgHome) {
