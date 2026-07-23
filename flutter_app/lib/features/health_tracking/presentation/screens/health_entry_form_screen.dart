@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+
+import '../../../../core/theme/app_color_tokens.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
@@ -350,9 +352,9 @@ class _HealthEntryFormScreenState extends ConsumerState<HealthEntryFormScreen> {
                       itemBuilder: (_, i) {
                         final h = history[i];
                         return ListTile(
-                          leading: const Icon(
+                          leading: Icon(
                             Icons.check_circle,
-                            color: Colors.green,
+                            color: AppColorTokens.success,
                           ),
                           title: Text(
                             formatEventHistoryLine(
