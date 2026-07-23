@@ -4,7 +4,7 @@
   "approved_at": "2026-07-23T14:00:00Z",
   "approved_by": "human-go-2026-07-23",
   "approved_until": "2026-07-25T14:00:00Z",
-  "content_hash": "sha256:cacd4bd940d9cb666dd9015a5d419b2d068b4e623d6136a3e89a1398e77a1a9e",
+  "content_hash": "sha256:2a0fcaa0a486fa4bc3794fccec61d0370964fa39bf23b630bea7c779b3362b44",
   "autonomy": "active",
   "default_merge_mode": "auto",
   "base_branch": "main",
@@ -38,9 +38,8 @@
       "status": "in_progress",
       "status_reason": null,
       "status_detail": null,
-      "pr_url": null,
-      "pr_head_sha": null,
-      "merge_commit": null,
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/286",
+      "pr_head_sha": "5a94a37e1c345db22609d48f83e6bc1d0fe362af",
       "debt_issue_refs": []
     },
     {
