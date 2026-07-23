@@ -5,9 +5,18 @@
 set -euo pipefail
 
 UAT_BASE_URL="${UAT_BASE_URL:-https://uat.agathatrack.com}"
-MAX_ATTEMPTS="${AUTH_WARMUP_ATTEMPTS:-12}"
+MAX_ATTEMPTS="${AUTH_WARMUP_ATTEMPTS:-18}"
 SLEEP_SECS="${AUTH_WARMUP_SLEEP_SEC:-10}"
 CURL_TLS_FLAGS="${CURL_TLS_FLAGS:--k}"
+
+is_waf_body() {
+  local body="$1"
+  grep -qiE 'o2s-browser-check|Security check|Test de sécurité' <<<"$body"
+}
+
+curl_landing() {
+  curl -sfk ${CURL_TLS_FLAGS} "${UAT_BASE_URL}/landing" -o /dev/null 2>/dev/null || true
+}
 
 signup_probe() {
   local email="e2e-warmup-$(date +%s)-${RANDOM}@example.com"
@@ -34,19 +43,32 @@ signup_probe() {
     return 0
   fi
 
+  if is_waf_body "$body"; then
+    echo "signup probe WAF challenge (HTTP ${code})"
+    return 2
+  fi
+
   echo "signup probe HTTP ${code}: ${body:0:200}"
   return 1
 }
 
 echo "Warming UAT auth (up to ${MAX_ATTEMPTS} signup probes, ${SLEEP_SECS}s apart)..."
+curl_landing
 
 for i in $(seq 1 "$MAX_ATTEMPTS"); do
-  if signup_probe; then
+  curl_landing
+  signup_probe
+  rc=$?
+  if [ "$rc" -eq 0 ]; then
     echo "UAT auth warmup OK after attempt ${i}"
     exit 0
   fi
   if [ "$i" -lt "$MAX_ATTEMPTS" ]; then
-    echo "Auth not ready (${i}/${MAX_ATTEMPTS}), sleeping ${SLEEP_SECS}s..."
+    if [ "$rc" -eq 2 ]; then
+      echo "WAF challenge (${i}/${MAX_ATTEMPTS}), sleeping ${SLEEP_SECS}s..."
+    else
+      echo "Auth not ready (${i}/${MAX_ATTEMPTS}), sleeping ${SLEEP_SECS}s..."
+    fi
     sleep "$SLEEP_SECS"
   fi
 done
