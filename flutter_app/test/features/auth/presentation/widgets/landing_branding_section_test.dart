@@ -15,9 +15,7 @@ Widget _wrap(Widget child) {
       GlobalCupertinoLocalizations.delegate,
     ],
     supportedLocales: AppLocalizations.supportedLocales,
-    home: Scaffold(
-      body: SingleChildScrollView(child: child),
-    ),
+    home: Scaffold(body: SingleChildScrollView(child: child)),
   );
 }
 
@@ -68,7 +66,10 @@ void main() {
     await tester.tap(find.text('See how it works'));
     await tester.pumpAndSettle();
 
-    expect(find.textContaining('Coordinate with your household'), findsOneWidget);
+    expect(
+      find.textContaining('Coordinate with your household'),
+      findsOneWidget,
+    );
     expect(find.text('Show less'), findsOneWidget);
   });
 }
