@@ -8,7 +8,7 @@ import 'package:pet_profile_app/l10n/app_localizations.dart';
 
 import '../../../../../helpers/fakes.dart';
 
-Widget _wrap({required int unreadCount, required bool isOrgPet}) {
+Widget _wrap({required int unreadCount}) {
   return ProviderScope(
     overrides: [
       authProvider.overrideWith((ref) => FakeAuthNotifier()),
@@ -18,9 +18,7 @@ Widget _wrap({required int unreadCount, required bool isOrgPet}) {
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
       home: Scaffold(
-        body: CustomScrollView(
-          slivers: [PetDetailAppBar(petName: 'Rex', isOrgPet: isOrgPet)],
-        ),
+        body: CustomScrollView(slivers: [PetDetailAppBar(petName: 'Rex')]),
       ),
     ),
   );
@@ -29,7 +27,7 @@ Widget _wrap({required int unreadCount, required bool isOrgPet}) {
 void main() {
   testWidgets('shows the pet name and no badge when there are no unread '
       'notifications', (tester) async {
-    await tester.pumpWidget(_wrap(unreadCount: 0, isOrgPet: false));
+    await tester.pumpWidget(_wrap(unreadCount: 0));
     await tester.pumpAndSettle();
 
     expect(find.text('Rex'), findsOneWidget);
@@ -39,14 +37,14 @@ void main() {
   });
 
   testWidgets('shows the unread notification badge count', (tester) async {
-    await tester.pumpWidget(_wrap(unreadCount: 3, isOrgPet: false));
+    await tester.pumpWidget(_wrap(unreadCount: 3));
     await tester.pumpAndSettle();
 
     expect(find.text('3'), findsOneWidget);
   });
 
   testWidgets('caps the unread badge at 99+', (tester) async {
-    await tester.pumpWidget(_wrap(unreadCount: 150, isOrgPet: false));
+    await tester.pumpWidget(_wrap(unreadCount: 150));
     await tester.pumpAndSettle();
 
     expect(find.text('99+'), findsOneWidget);

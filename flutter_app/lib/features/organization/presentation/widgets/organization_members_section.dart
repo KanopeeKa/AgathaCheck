@@ -61,7 +61,7 @@ class OrganizationMembersSection extends StatelessWidget {
                           leading: CircleAvatar(
                             backgroundColor: isPending
                                 ? Colors.grey.shade300
-                                : AppTheme.orgIconBg,
+                                : colorScheme.primaryContainer,
                             child: isPending
                                 ? Icon(
                                     Icons.hourglass_empty,
@@ -70,8 +70,8 @@ class OrganizationMembersSection extends StatelessWidget {
                                   )
                                 : Text(
                                     member.initials,
-                                    style: const TextStyle(
-                                      color: AppTheme.orgIconFg,
+                                    style: TextStyle(
+                                      color: colorScheme.onPrimaryContainer,
                                       fontWeight: FontWeight.bold,
                                     ),
                                   ),

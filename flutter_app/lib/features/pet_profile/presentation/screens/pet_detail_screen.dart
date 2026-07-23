@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/utils/constants.dart';
+import '../../../../core/widgets/app_logo_title.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../../experience/domain/entities/app_experience.dart';
 import '../../../experience/presentation/providers/experience_providers.dart';
 import '../../../organization/presentation/widgets/pet_foster_placement_section.dart';
@@ -62,11 +64,7 @@ class _PetDetailScreenState extends ConsumerState<PetDetailScreen> {
         Widget body = Scaffold(
           body: CustomScrollView(
             slivers: [
-              PetDetailAppBar(
-                petName: pet.name,
-                isOrgPet: useOrgChrome,
-                backPath: backPath,
-              ),
+              PetDetailAppBar(petName: pet.name, backPath: backPath),
               SliverToBoxAdapter(
                 child: PetDetailProfileCard(
                   pet: pet,
