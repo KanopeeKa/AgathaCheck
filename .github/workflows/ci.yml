@@ -57,9 +57,7 @@ jobs:
       - flutter-test-health
       - flutter-test-org
       - flutter-test-rest-a
-      - flutter-test-rest-b-a
-      - flutter-test-rest-a
-      - flutter-test-rest-b-b
+      - flutter-test-rest-b
     uses: ./.github/workflows/_reusable-flutter-coverage.yml
 
   flutter-integration:
