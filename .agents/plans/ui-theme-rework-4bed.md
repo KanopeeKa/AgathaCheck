@@ -43,13 +43,13 @@ autonomy: active
 current_phase: 1
 last_completed_phase: 0
 halt_reason: null
-next_action: "start phase 1: checkout cursor/ui-theme-phase1-components-4bed"
+next_action: "continue phase 1 on branch cursor/ui-theme-phase1-components-4bed"
 artifact_ref:
-  branch: main
+  branch: cursor/ui-theme-phase1-components-4bed
   plan_path: .agents/plans/ui-theme-rework-4bed.md
-  plan_commit: ed4b47b7abd838a56f11fa79f04fb2b4b870d1fc
+  plan_commit: 3ae638b1545a7d740a61371981af3fcfd7e3b082
   snapshot_path: .agents/plans/ui-theme-rework-4bed.snapshot.json
-  snapshot_commit: ed4b47b7abd838a56f11fa79f04fb2b4b870d1fc
+  snapshot_commit: 3ae638b1545a7d740a61371981af3fcfd7e3b082
 open_prs: []
 merge_commits: {}
 debt_issue_refs: []
