@@ -151,7 +151,11 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    expect(find.text('3'), findsOneWidget);
+    final menuButton = find.byKey(const Key('experience_settings_menu'));
+    expect(
+      find.descendant(of: menuButton, matching: find.text('3')),
+      findsOneWidget,
+    );
   });
 
   testWidgets('drawer shows organisation view for dual-role guardian shell', (
