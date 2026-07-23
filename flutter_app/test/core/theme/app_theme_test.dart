@@ -36,5 +36,10 @@ void main() {
       expect(AppTheme.orgIconFg, AppColorTokens.organizationPrimary);
       expect(AppTheme.orgBlue, AppColorTokens.organizationLight);
     });
+
+    test('role and memorial tokens are defined', () {
+      expect(AppColorTokens.orgSuperAdminBorder, isNotNull);
+      expect(AppColorTokens.petRainbowIconGradient, hasLength(6));
+    });
   });
 }

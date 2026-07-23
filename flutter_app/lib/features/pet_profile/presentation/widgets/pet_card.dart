@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 
+import '../../../../core/theme/app_color_tokens.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../core/utils/constants.dart';
 import '../../../../l10n/app_localizations.dart';
@@ -209,7 +210,7 @@ class PetCard extends StatelessWidget {
             children: [
               ColorFiltered(
                 colorFilter: const ColorFilter.mode(
-                  Color(0xDDFFFFFF),
+                  AppColorTokens.passedAwayPhotoOverlay,
                   BlendMode.lighten,
                 ),
                 child: avatar,

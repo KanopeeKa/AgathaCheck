@@ -40,16 +40,16 @@ Replace purple-seed Material theme with locked AgathaTrack tokens: plum guardian
 
 ```yaml
 autonomy: active
-current_phase: 0
-last_completed_phase: null
+current_phase: 1
+last_completed_phase: 0
 halt_reason: null
-next_action: "continue phase 0 on branch cursor/ui-theme-phase0-tokens-4bed"
+next_action: "continue phase 1 on branch cursor/ui-theme-phase1-components-4bed"
 artifact_ref:
-  branch: cursor/ui-theme-phase0-tokens-4bed
+  branch: cursor/ui-theme-phase1-components-4bed
   plan_path: .agents/plans/ui-theme-rework-4bed.md
-  plan_commit: 3b53e600339862c14b9de47aa60e26e2154b94d7
+  plan_commit: 9b63fc7c4f19bc7cf8355c2ac90055e3949da5ff
   snapshot_path: .agents/plans/ui-theme-rework-4bed.snapshot.json
-  snapshot_commit: 3b53e600339862c14b9de47aa60e26e2154b94d7
+  snapshot_commit: 9b63fc7c4f19bc7cf8355c2ac90055e3949da5ff
 open_prs: [true]
 merge_commits: {}
 debt_issue_refs: []

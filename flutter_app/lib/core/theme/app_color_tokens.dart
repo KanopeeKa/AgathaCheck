@@ -42,4 +42,21 @@ abstract final class AppColorTokens {
   static const Color successLight = Color(0xFFE8F5E9);
   static const Color warning = Color(0xFFD6A63A);
   static const Color danger = Color(0xFFC65B58);
+
+  /// Memorial overlay on passed-away pet photos (lighten blend).
+  static const Color passedAwayPhotoOverlay = Color(0xDDFFFFFF);
+
+  /// Org member role border accents (avatar/card ring).
+  static const Color orgSuperAdminBorder = Color(0xFFD4AF37);
+  static const Color orgAdminBorder = Color(0xFFC0C0C0);
+
+  /// Rainbow gradient for passed-away memorial icon (pet form).
+  static const List<Color> petRainbowIconGradient = [
+    Color(0xFFFF0000),
+    Color(0xFFFF8800),
+    Color(0xFFFFFF00),
+    Color(0xFF00CC00),
+    Color(0xFF0066FF),
+    Color(0xFF8800CC),
+  ];
 }

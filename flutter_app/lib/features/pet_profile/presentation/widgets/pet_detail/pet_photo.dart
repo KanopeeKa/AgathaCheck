@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import '../../../../../core/theme/app_color_tokens.dart';
 import '../../../../../core/utils/constants.dart';
 import '../../../domain/entities/pet.dart';
 
@@ -49,7 +50,7 @@ class PetPhoto extends StatelessWidget {
           children: [
             ColorFiltered(
               colorFilter: const ColorFilter.mode(
-                Color(0xDDFFFFFF),
+                AppColorTokens.passedAwayPhotoOverlay,
                 BlendMode.lighten,
               ),
               child: photoContent,

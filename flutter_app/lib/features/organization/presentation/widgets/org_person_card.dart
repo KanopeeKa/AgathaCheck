@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../../core/theme/app_color_tokens.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../domain/entities/organization_member.dart';
@@ -10,10 +11,10 @@ Color orgPersonBorderColor(OrgPersonSummary person) {
   final role = person.role;
   if (role == null) return Colors.grey.shade400;
   if (role.isSuperAdmin || role == OrgMemberRole.pendingSuperAdmin) {
-    return const Color(0xFFD4AF37);
+    return AppColorTokens.orgSuperAdminBorder;
   }
   if (role.isOrgAdmin || role == OrgMemberRole.pendingAdmin) {
-    return const Color(0xFFC0C0C0);
+    return AppColorTokens.orgAdminBorder;
   }
   return Colors.transparent;
 }
