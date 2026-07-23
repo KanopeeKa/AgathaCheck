@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../../core/theme/app_color_tokens.dart';
-import '../../../../core/theme/app_theme.dart';
+import '../../../../core/theme/experience_colors.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../domain/entities/organization_member.dart';
 import '../../domain/entities/org_person.dart';
@@ -46,6 +46,7 @@ class OrgPersonCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
     final l = AppLocalizations.of(context)!;
     final borderColor = orgPersonBorderColor(person);
     final roleLabel = person.isExternal
@@ -57,7 +58,7 @@ class OrgPersonCard extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.only(bottom: 8),
       child: Material(
-        color: AppTheme.orgBlueDarker,
+        color: colorScheme.primaryContainer,
         borderRadius: BorderRadius.circular(12),
         child: InkWell(
           onTap: person.isPending ? null : onTap,
@@ -143,10 +144,11 @@ class _PrimaryContactChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
       decoration: BoxDecoration(
-        color: AppTheme.orgSuperUserBg,
+        color: AppColorTokens.organizationLight,
         borderRadius: BorderRadius.circular(8),
       ),
       child: Text(
@@ -154,7 +156,7 @@ class _PrimaryContactChip extends StatelessWidget {
         style: TextStyle(
           fontSize: 11,
           fontWeight: FontWeight.w600,
-          color: AppTheme.orgSuperUserFg,
+          color: colorScheme.primary,
         ),
       ),
     );
@@ -176,16 +178,19 @@ class _RoleChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final xp = context.experienceColors;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
       decoration: BoxDecoration(
         color: isPending
-            ? Colors.orange.withAlpha(30)
+            ? xp.warning.withAlpha(77)
             : isExternal
-            ? Colors.blueGrey.withAlpha(30)
+            ? colorScheme.outlineVariant.withAlpha(77)
             : isSuperAdmin
-            ? AppTheme.orgSuperUserBg
-            : AppTheme.orgChipBg,
+            ? AppColorTokens.organizationLight
+            : colorScheme.primaryContainer,
         borderRadius: BorderRadius.circular(8),
       ),
       child: Text(
@@ -194,12 +199,12 @@ class _RoleChip extends StatelessWidget {
           fontSize: 11,
           fontWeight: FontWeight.w600,
           color: isPending
-              ? Colors.orange.shade800
+              ? xp.warning
               : isExternal
-              ? Colors.blueGrey.shade800
+              ? colorScheme.onSurfaceVariant
               : isSuperAdmin
-              ? AppTheme.orgSuperUserFg
-              : AppTheme.orgChipFg,
+              ? colorScheme.primary
+              : colorScheme.onPrimaryContainer,
         ),
       ),
     );
@@ -213,12 +218,14 @@ class _FosterStatusDisk extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final xp = context.experienceColors;
     final active = count > 0;
     return Container(
       width: 36,
       height: 36,
       decoration: BoxDecoration(
-        color: active ? Colors.green : Colors.grey.shade400,
+        color: active ? xp.success : theme.colorScheme.outlineVariant,
         shape: BoxShape.circle,
       ),
       alignment: Alignment.center,

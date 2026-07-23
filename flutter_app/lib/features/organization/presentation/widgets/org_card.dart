@@ -50,7 +50,7 @@ class OrgCard extends ConsumerWidget {
             '$memberLabel, ${l.petCount(organization.petCount)}',
         child: Card(
           key: Key('org_card_${organization.id}'),
-          color: AppTheme.orgBlueDarker,
+          color: colorScheme.primaryContainer,
           clipBehavior: Clip.antiAlias,
           child: InkWell(
             onTap: onTap,

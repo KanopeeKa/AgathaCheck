@@ -1,6 +1,6 @@
 # UI rework — phased execution plan
 
-**Status:** Phase 0 in progress — `tokens.md` + `ExperienceColors` + `app_theme.dart`  
+**Status:** Complete (phases 0–7 merged 2026-07-23)  
 **Companion:** `docs/design/index.md` (tiers), `docs/design/principles.md` (personality), `docs/design/tokens.md` (created in Phase 0)  
 **Skill:** `/ui-design-deep` for reviews; `/ui-check` per PR before merge
 

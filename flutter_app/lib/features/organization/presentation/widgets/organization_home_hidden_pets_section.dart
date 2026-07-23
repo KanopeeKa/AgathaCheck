@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../../core/theme/app_theme.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../providers/organization_providers.dart';
 
@@ -38,7 +37,7 @@ class _OrganizationHomeHiddenPetsSectionState
       data: (hiddenPets) {
         if (hiddenPets.isEmpty) return const SizedBox.shrink();
         return Card(
-          color: AppTheme.orgBlueDarker,
+          color: colorScheme.primaryContainer,
           child: Padding(
             padding: const EdgeInsets.all(16),
             child: Column(

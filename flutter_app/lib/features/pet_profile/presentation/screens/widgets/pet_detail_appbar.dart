@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../../core/widgets/app_logo_title.dart';
-import '../../../../../core/theme/app_theme.dart';
 import '../../../../../l10n/app_localizations.dart';
 import '../../../../health_tracking/presentation/widgets/events_nav_icon_button.dart';
 
@@ -28,7 +27,7 @@ class PetDetailAppBar extends StatelessWidget {
     final l = AppLocalizations.of(context)!;
     return SliverAppBar(
       pinned: true,
-      backgroundColor: isOrgPet ? AppTheme.orgBlue : null,
+      backgroundColor: null,
       title: AppLogoTitle(title: petName),
       leading: IconButton(
         icon: const Icon(Icons.arrow_back),

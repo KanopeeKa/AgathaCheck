@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../../core/theme/app_theme.dart';
+import '../../../../core/theme/app_color_tokens.dart';
+import '../../../../core/theme/experience_colors.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../domain/entities/organization_member.dart';
 
@@ -27,7 +28,7 @@ class OrganizationMembersSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      color: AppTheme.orgBlueDarker,
+      color: colorScheme.primaryContainer,
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -85,31 +86,36 @@ class OrganizationMembersSection extends StatelessWidget {
                                 : null,
                           ),
                           subtitle: Text(member.email),
-                          trailing: Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 8,
-                              vertical: 2,
-                            ),
-                            decoration: BoxDecoration(
-                              color: isPending
-                                  ? Colors.orange.withAlpha(30)
-                                  : member.role.isSuperAdmin
-                                  ? AppTheme.orgSuperUserBg
-                                  : AppTheme.orgChipBg,
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            child: Text(
-                              localizedRoleLabel(l, member.role),
-                              style: TextStyle(
-                                fontSize: 11,
-                                fontWeight: FontWeight.w600,
-                                color: isPending
-                                    ? Colors.orange.shade800
-                                    : member.role.isSuperAdmin
-                                    ? AppTheme.orgSuperUserFg
-                                    : AppTheme.orgChipFg,
-                              ),
-                            ),
+                          trailing: Builder(
+                            builder: (context) {
+                              final xp = context.experienceColors;
+                              return Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 8,
+                                  vertical: 2,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: isPending
+                                      ? xp.warning.withAlpha(77)
+                                      : member.role.isSuperAdmin
+                                      ? AppColorTokens.organizationLight
+                                      : colorScheme.primaryContainer,
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: Text(
+                                  localizedRoleLabel(l, member.role),
+                                  style: TextStyle(
+                                    fontSize: 11,
+                                    fontWeight: FontWeight.w600,
+                                    color: isPending
+                                        ? xp.warning
+                                        : member.role.isSuperAdmin
+                                        ? colorScheme.primary
+                                        : colorScheme.onPrimaryContainer,
+                                  ),
+                                ),
+                              );
+                            },
                           ),
                           dense: true,
                         ),

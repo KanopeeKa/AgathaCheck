@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../../../../core/theme/app_theme.dart';
 import '../../../../l10n/app_localizations.dart';
 
 class OrganizationArchivedSection extends StatelessWidget {
@@ -21,7 +20,7 @@ class OrganizationArchivedSection extends StatelessWidget {
     return Semantics(
       label: l.orgArchived,
       child: Card(
-        color: AppTheme.orgBlueDarker,
+        color: colorScheme.primaryContainer,
         child: ListTile(
           key: const Key('org_view_archived'),
           leading: Icon(Icons.archive, color: colorScheme.onSurfaceVariant),

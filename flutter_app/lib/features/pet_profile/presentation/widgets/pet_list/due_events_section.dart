@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../../core/theme/experience_colors.dart';
 import '../../../../../l10n/app_localizations.dart';
 import '../../../../health_tracking/presentation/providers/health_providers.dart';
 import '../../../domain/entities/pet.dart';
@@ -17,6 +18,7 @@ class DueEventsSection extends ConsumerWidget {
     final entriesAsync = ref.watch(healthEntriesNotifierProvider);
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
+    final xp = context.experienceColors;
     final l = AppLocalizations.of(context)!;
 
     return entriesAsync.when(
@@ -66,7 +68,7 @@ class DueEventsSection extends ConsumerWidget {
                             : Icons.schedule,
                         size: 20,
                         color: dueEntries.isEmpty
-                            ? Colors.green
+                            ? xp.success
                             : colorScheme.error,
                       ),
                       const SizedBox(width: 8),

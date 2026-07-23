@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
+import '../../../../../core/theme/experience_colors.dart';
 import '../../../../../core/utils/constants.dart';
 import '../../../../../l10n/app_localizations.dart';
 import '../../../../health_tracking/domain/entities/health_entry.dart';
@@ -25,6 +26,7 @@ class DueEventRow extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
+    final xp = context.experienceColors;
     final l = AppLocalizations.of(context)!;
     final petColor = pet?.colorValue != null
         ? Color(pet!.colorValue!)
@@ -109,7 +111,7 @@ class DueEventRow extends ConsumerWidget {
                             decoration: BoxDecoration(
                               color: isOverdue
                                   ? colorScheme.error.withAlpha(20)
-                                  : Colors.orange.withAlpha(20),
+                                  : xp.warning.withAlpha(51),
                               borderRadius: BorderRadius.circular(6),
                             ),
                             child: Text(
@@ -119,7 +121,7 @@ class DueEventRow extends ConsumerWidget {
                               style: theme.textTheme.labelSmall?.copyWith(
                                 color: isOverdue
                                     ? colorScheme.error
-                                    : Colors.orange[800],
+                                    : xp.warning,
                                 fontWeight: FontWeight.w600,
                               ),
                             ),

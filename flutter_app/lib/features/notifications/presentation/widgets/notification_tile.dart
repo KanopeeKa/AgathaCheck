@@ -39,7 +39,7 @@ class NotificationTile extends ConsumerWidget {
         break;
       case NotificationType.dueSoon:
         icon = Icons.schedule;
-        iconColor = Colors.orange;
+        iconColor = xp.warning;
         break;
       case NotificationType.reminder:
         icon = Icons.schedule;
@@ -47,7 +47,7 @@ class NotificationTile extends ConsumerWidget {
         break;
       case NotificationType.completed:
         icon = Icons.check_circle;
-        iconColor = Colors.green;
+        iconColor = xp.success;
         break;
       case NotificationType.general:
         icon = isOrgOnly ? Icons.business : Icons.notifications;

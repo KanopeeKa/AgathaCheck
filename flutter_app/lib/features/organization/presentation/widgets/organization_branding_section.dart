@@ -4,7 +4,6 @@ import 'package:image_picker/image_picker.dart';
 
 import '../../../../core/providers/api_base_url_provider.dart';
 import '../../../../core/utils/resolve_static_asset_url.dart';
-import '../../../../core/theme/app_theme.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../domain/entities/organization.dart';
 import '../providers/organization_providers.dart';
@@ -76,7 +75,7 @@ class OrganizationBrandingSection extends ConsumerWidget {
     final resolvedLogo = _resolveUrl(ref, org.logoUrl);
 
     return Card(
-      color: AppTheme.orgBlueDarker,
+      color: colorScheme.primaryContainer,
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
