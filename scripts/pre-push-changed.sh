@@ -44,7 +44,7 @@ if [[ "$CI_SCOPE_FORCE_FULL" == true ]]; then
   needs_governance=true
   needs_server=true
   needs_flutter=true
-elif ci_scope_server_touch; then
+elif ci_scope_run_backend; then
   needs_server=true
   needs_governance=true
 fi

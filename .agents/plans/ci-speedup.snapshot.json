@@ -4,7 +4,7 @@
   "approved_at": "2026-07-23T14:00:00Z",
   "approved_by": "human-go-2026-07-23",
   "approved_until": "2026-07-25T14:00:00Z",
-  "content_hash": "sha256:a541d25564ca7204b391e5765a6b63fc0126751faab8eb9f70b886fbff331246",
+  "content_hash": "sha256:9cfa4779765cc01126d30b277b5eaf3230724cf2258f0304443431a2b4d96a7a",
   "autonomy": "active",
   "default_merge_mode": "auto",
   "base_branch": "main",
@@ -136,7 +136,9 @@
       "status": "in_progress",
       "status_reason": null,
       "status_detail": null,
-      "debt_issue_refs": []
+      "debt_issue_refs": [],
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/292",
+      "pr_head_sha": "bbf7692116a51101f724b703ca5604aa9bd19259"
     }
   ]
 }

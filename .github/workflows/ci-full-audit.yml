@@ -142,22 +142,31 @@ jobs:
     if: >-
       always() &&
       needs.decide.outputs.should_run == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
     continue-on-error: true
-    uses: ./.github/workflows/_reusable-ci-gate.yml
-    with:
-      ci_scope_json: ''
-      startup_smoke: ${{ needs.startup-smoke.result }}
-      test_suite: ${{ needs.test-suite.result }}
-      flutter_analyze: ${{ needs.flutter-analyze.result }}
-      flutter_test_pet: ${{ needs.flutter-test-pet.result }}
-      flutter_test_health: ${{ needs.flutter-test-health.result }}
-      flutter_test_org: ${{ needs.flutter-test-org.result }}
-      flutter_test_rest_a: ${{ needs.flutter-test-rest-a.result }}
-      flutter_test_rest_b: ${{ needs.flutter-test-rest-b.result }}
-      flutter_coverage: ${{ needs.flutter-coverage.result }}
-      flutter_integration: ${{ needs.flutter-integration.result }}
-      flutter_build_web: ${{ needs.flutter-build-web.result }}
-      ci_e2e_canary: ${{ needs.ci-e2e-canary.result }}
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          sparse-checkout: |
+            scripts/ci/assert-ci-gate.sh
+          sparse-checkout-cone-mode: false
+
+      - name: Verify full audit jobs passed
+        env:
+          STARTUP_SMOKE: ${{ needs.startup-smoke.result }}
+          TEST_SUITE: ${{ needs.test-suite.result }}
+          FLUTTER_ANALYZE: ${{ needs.flutter-analyze.result }}
+          FLUTTER_TEST_PET: ${{ needs.flutter-test-pet.result }}
+          FLUTTER_TEST_HEALTH: ${{ needs.flutter-test-health.result }}
+          FLUTTER_TEST_ORG: ${{ needs.flutter-test-org.result }}
+          FLUTTER_TEST_REST_A: ${{ needs.flutter-test-rest-a.result }}
+          FLUTTER_TEST_REST_B: ${{ needs.flutter-test-rest-b.result }}
+          FLUTTER_COVERAGE: ${{ needs.flutter-coverage.result }}
+          FLUTTER_INTEGRATION: ${{ needs.flutter-integration.result }}
+          FLUTTER_BUILD_WEB: ${{ needs.flutter-build-web.result }}
+          CI_E2E_CANARY: ${{ needs.ci-e2e-canary.result }}
+        run: bash scripts/ci/assert-ci-gate.sh
 
   spawn-agent-on-failure:
     name: Spawn audit fix agent
