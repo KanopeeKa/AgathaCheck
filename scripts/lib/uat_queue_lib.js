@@ -21,6 +21,9 @@ function createEmptyState() {
     main_barrier_sha: null,
     main_barrier_reason: null,
     main_barrier_at: null,
+    promote_hold: false,
+    promote_hold_reason: null,
+    promote_hold_since: null,
     active_watcher: null,
     entries: [],
   };
@@ -36,6 +39,9 @@ function normalizeState(raw) {
     main_barrier_sha: raw.main_barrier_sha || null,
     main_barrier_reason: raw.main_barrier_reason || null,
     main_barrier_at: raw.main_barrier_at || null,
+    promote_hold: Boolean(raw.promote_hold),
+    promote_hold_reason: raw.promote_hold_reason || null,
+    promote_hold_since: raw.promote_hold_since || null,
     active_watcher: raw.active_watcher || null,
     entries: Array.isArray(raw.entries) ? raw.entries.map(normalizeEntry) : [],
   };
@@ -286,6 +292,28 @@ function headEntryNeedingAttention(state) {
   );
 }
 
+/**
+ * Soft merge hold — exit 2 when work agents should not merge until coordinator clears barrier.
+ */
+function queueHeadHold(state) {
+  const head = headEntryNeedingAttention(state);
+  if (head && (head.state === 'failed' || head.state === 'remedial')) {
+    return {
+      hold: true,
+      reason: `head_entry_${head.state}`,
+      entry: head,
+    };
+  }
+  if (state.promote_hold) {
+    return {
+      hold: true,
+      reason: 'promote_hold',
+      entry: head,
+    };
+  }
+  return { hold: false, reason: 'clear', entry: head };
+}
+
 module.exports = {
   UatQueueError,
   acquireWatcher,
@@ -303,6 +331,7 @@ module.exports = {
   normalizeState,
   parseStateFromCommentBody,
   parseUatTag,
+  queueHeadHold,
   releaseWatcher,
   renderStateCommentBody,
   setBarrier,

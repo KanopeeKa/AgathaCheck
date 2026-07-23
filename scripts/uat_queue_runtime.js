@@ -30,6 +30,7 @@ const {
   findEntryByMergeSha,
   headEntryNeedingAttention,
   isWatcherLeaseActive,
+  queueHeadHold,
   releaseWatcher,
   setBarrier,
 } = require('./lib/uat_queue_lib');
@@ -48,6 +49,8 @@ Commands:
   enqueue --merge <sha> --pr <n> [--ref context] [--issue N] [--write]
   status [--merge <sha> | --seq <n>] [--issue N]
   barrier-check [--branch <name>] [--issue N]
+  queue-head-hold [--issue N]
+  health-check [--issue N]
   acquire-watcher --holder <id> [--lease-minutes N] [--issue N] [--write]
   release-watcher [--issue N] [--write]
   set-barrier --sha <sha> [--reason text] [--issue N] [--write]
@@ -229,6 +232,47 @@ async function runCommand(cmd, flags) {
       printJson({ command: 'barrier-check', ...result });
       if (result.needs_rebase) {
         process.exit(2);
+      }
+      return;
+    }
+
+    case 'queue-head-hold': {
+      const { state } = await loadIssueState(flags);
+      const result = queueHeadHold(state);
+      printJson({ command: 'queue-head-hold', ...result });
+      if (result.hold) {
+        process.exit(2);
+      }
+      return;
+    }
+
+    case 'health-check': {
+      const issueNumber = resolveCoordinationIssue(flags.issue);
+      if (!issueNumber) {
+        printJson({
+          command: 'health-check',
+          ok: false,
+          reason: 'coordination_issue_not_configured',
+        });
+        process.exit(1);
+      }
+      try {
+        const loaded = await loadStateFromIssue(issueNumber);
+        printJson({
+          command: 'health-check',
+          ok: true,
+          issue_number: issueNumber,
+          entries: loaded.state.entries.length,
+          watcher_lease_active: isWatcherLeaseActive(loaded.state),
+        });
+      } catch (e) {
+        printJson({
+          command: 'health-check',
+          ok: false,
+          issue_number: issueNumber,
+          reason: e.message,
+        });
+        process.exit(1);
       }
       return;
     }

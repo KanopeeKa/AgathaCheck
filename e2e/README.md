@@ -92,13 +92,13 @@ npm test
 cd e2e
 npm run test:ui      # interactive UI mode
 npm run test:headed  # watch the browser
-npm run test:ci-shard -- 1/10   # run one CI shard locally (requires stack running)
+npm run test:ci-shard -- 1    # run CI shard 1 locally (requires stack running)
 npm run report       # open HTML report after a run
 ```
 
 ## CI
 
-Shard count for full localhost E2E is **ten** — update `matrix.shard`, `shard_total: 10`, and `e2e/scripts/shard-files.mjs` together in `deploy-uat.yml` and `e2e.yml`.
+Shard count for full localhost E2E is **eleven** — update `matrix.shard`, `shard_total: 11`, and `e2e/scripts/shard-files.mjs` together in `deploy-uat.yml` and `e2e.yml`.
 
 ```bash
 cd e2e && npm run shard:plan    # list file groups per shard
@@ -109,7 +109,7 @@ cd e2e && npm run test:ci-shard -- 3   # run one shard locally (stack must be ru
 |----------|---------|------|
 | `ci.yml` | PR → `main` (+ manual dispatch) | Flutter analyze + unit/widget tests + web build; backend Jest |
 | `codeql.yml` | PR → `main` (+ weekly schedule) | Static security analysis (JavaScript/TypeScript) |
-| `e2e.yml` | manual + weekly cron (non-blocking) | Full Playwright against **localhost** (10 file-balanced shards) |
+| `e2e.yml` | manual + weekly cron (non-blocking) | Full Playwright against **localhost** (11 file-balanced shards) |
 | `promote-uat.yml` | push → `main` | Create `uat-YYMMDD-PR#` tag on merge (see `docs/promotion-contract.md`) |
 | `deploy-uat.yml` | push → `uat-*` tag | Fast FTP deploy → post-deploy smoke + live `@smoke-uat` E2E + full localhost E2E → `prod-ready` gate |
 | `deploy-prod.yml` | auto after UAT `prod-ready` (+ manual dispatch / release) | Stub `vX.Y.Z-rc.N` tag or live FTP + SSH deploy; post-deploy HTTP smoke |
@@ -118,7 +118,7 @@ cd e2e && npm run test:ci-shard -- 3   # run one shard locally (stack must be ru
 
 1. Merge PR to `main` → **`promote-uat.yml`** creates `uat-YYMMDD-PR#` tag — **no unit-test re-run** (CI already validated the code on the PR).
 2. Tag push triggers **`deploy-uat.yml`**; `deploy` job FTP-publishes frontend + backend (~5 min).
-3. In parallel: `smoke` (HTTP), `uat-e2e-smoke` (Playwright `@smoke-uat` on live UAT), `uat-e2e-full` (full suite on localhost, **10 file-balanced shards** after `build-web`).
+3. After HTTP smoke: `uat-e2e-smoke` (Playwright `@smoke-uat` on live UAT), and `uat-e2e-full` when cadence allows (full suite on localhost, **11 file-balanced shards**).
 4. When all gates pass, `prod-ready` goes green — **`deploy-prod.yml`** runs automatically (stub or live per `PROD_DEPLOY_ENABLED`).
 5. UAT DB migrations: automatic when `UAT_SSH_ENABLED=true` and `UAT_AUTO_MIGRATE=true`; otherwise apply manually when `db/migrations/` changes.
 

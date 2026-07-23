@@ -318,10 +318,10 @@ workflows) or `uat-*` tag push when the tag was created outside Actions.
 | `Build and deploy to UAT` (`deploy`) | **Yes** | Download artifact + FTP frontend/backend |
 | `UAT post-deploy smoke` (`smoke`) | **Yes** | HTTP health on live UAT (`scripts/uat-post-deploy-smoke.sh`) |
 | `UAT live smoke E2E` (`uat-e2e-smoke`) | **Yes** | Playwright `@smoke` on live UAT |
-| `UAT full E2E (localhost)` (`uat-e2e-full`) | **Yes** | Full Playwright on localhost stack (10 file-balanced shards) |
+| `UAT full E2E (localhost)` (`uat-e2e-full`) | **Yes** (cadence: every N merges via `UAT_FULL_E2E_MERGE_THRESHOLD`, default 1) | Full Playwright on localhost stack (11 file-balanced shards) |
 | `Prod ready` (`prod-ready`) | **Yes** (aggregate) | Required for PROD environment gate |
 
-**Parallelism:** `uat-e2e-full` runs ten file-balanced Playwright shards in parallel (manifest: `e2e/scripts/shard-files.mjs`; each shard gets its own Postgres + server) after `build-web` completes; shards still overlap with `deploy` FTP work. All four UAT gates must pass for `prod-ready`.
+**Parallelism:** `uat-e2e-full` runs eleven file-balanced Playwright shards in parallel (manifest: `e2e/scripts/shard-files.mjs`) **after HTTP smoke passes**; matrix `fail-fast: true` cancels remaining shards on first failure. HTTP smoke + live `@smoke-uat` always run when deploy proceeds. All required UAT gates must pass for `prod-ready` (full E2E may be cadence-skipped when `UAT_FULL_E2E_MERGE_THRESHOLD` > 1).
 
 **`prod-ready` validation:** `scripts/ci/assert-uat-gates.sh` — single summary table in the Actions run summary.
 

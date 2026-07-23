@@ -587,12 +587,14 @@ jobs:
       - name: Wait for UAT to become healthy
         env:
           UAT_BASE_URL: ${{ env.UAT_BASE_URL }}
+          WAF_FAIL_FAST_STREAK: '3'
         run: bash scripts/uat-post-deploy-smoke.sh
 
       - name: Warm up UAT auth before live smoke
         env:
           UAT_BASE_URL: ${{ env.UAT_BASE_URL }}
           E2E_BYPASS_TOKEN: ${{ secrets.E2E_BYPASS_TOKEN }}
+          WAF_FAIL_FAST_STREAK: '3'
         run: bash scripts/ci/warmup-uat-auth.sh
 
       - name: Write smoke job summary
@@ -641,6 +643,7 @@ jobs:
           E2E_BASE_URL: ${{ env.UAT_BASE_URL }}
           E2E_BYPASS_TOKEN: ${{ secrets.E2E_BYPASS_TOKEN }}
           E2E_TLS_INSECURE: '1'
+          WAF_FAIL_FAST_STREAK: '3'
           # cPanel auto-SSL on UAT is not trusted by GitHub runners (self-signed / incomplete chain).
           NODE_TLS_REJECT_UNAUTHORIZED: '0'
         run: xvfb-run --auto-servernum npm run test:smoke-uat
@@ -666,25 +669,69 @@ jobs:
             "run_id=${{ github.run_id }}" \
             "duration_sec=${dur}"
 
-  # Full localhost E2E — prod-readiness gate; ten file-balanced shards after build-web.
+  # Full localhost E2E — prod-readiness gate; eleven file-balanced shards (org.onboarding isolated).
+  # Starts only after HTTP smoke passes (fail-fast — do not burn shards on WAF/deploy failures).
+  # Cadence: UAT_FULL_E2E_MERGE_THRESHOLD (default 1 = every merge); coordinator may force via UAT_FULL_E2E_FORCE_RUN.
+  uat-full-e2e-decide:
+    name: UAT full E2E cadence
+    needs: [resolve-trigger, build-web, smoke]
+    if: >-
+      needs.resolve-trigger.outputs.proceed == 'true' &&
+      needs.smoke.result == 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      should_run: ${{ steps.cadence.outputs.should_run }}
+      reason: ${{ steps.cadence.outputs.reason }}
+      merge_count: ${{ steps.cadence.outputs.merge_count }}
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Restore full E2E cadence state
+        uses: actions/cache/restore@v5
+        with:
+          path: .ci-uat-full-e2e-state
+          key: uat-full-e2e-state-${{ github.run_id }}
+          restore-keys: |
+            uat-full-e2e-state-
+
+      - name: Decide full localhost E2E cadence
+        id: cadence
+        env:
+          UAT_FULL_E2E_STATE_FILE: .ci-uat-full-e2e-state/state.json
+          UAT_FULL_E2E_MERGE_THRESHOLD: ${{ vars.UAT_FULL_E2E_MERGE_THRESHOLD || '1' }}
+          UAT_FULL_E2E_FORCE_RUN: ${{ vars.UAT_FULL_E2E_FORCE_RUN || 'false' }}
+        run: bash scripts/ci/uat-full-e2e-cadence.sh decide
+
+      - name: Save full E2E cadence state
+        if: always()
+        uses: actions/cache/save@v5
+        with:
+          path: .ci-uat-full-e2e-state
+          key: uat-full-e2e-state-${{ github.run_id }}
+
   uat-e2e-full:
     name: UAT full E2E (localhost)
-    needs: build-web
+    needs: [resolve-trigger, build-web, smoke, uat-full-e2e-decide]
+    if: >-
+      needs.resolve-trigger.outputs.proceed == 'true' &&
+      needs.smoke.result == 'success' &&
+      needs.uat-full-e2e-decide.outputs.should_run == 'true'
     strategy:
       fail-fast: true
-      # Shard count: 10 — update matrix.shard, shard_total, and e2e/scripts/shard-files.mjs together.
+      # Shard count: 11 — update matrix.shard, shard_total, and e2e/scripts/shard-files.mjs together.
       matrix:
-        shard: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+        shard: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
     uses: ./.github/workflows/_reusable-e2e-local.yml
     with:
       shard_index: ${{ matrix.shard }}
-      shard_total: 10
+      shard_total: 11
       web_artifact_name: ${{ needs.build-web.outputs.artifact_name }}
 
   # Aggregate status for GitHub Environment protection on PROD (required check).
   prod-ready:
     name: Prod ready
-    needs: [resolve-trigger, deploy, smoke, uat-e2e-smoke, uat-e2e-full]
+    needs: [resolve-trigger, deploy, smoke, uat-e2e-smoke, uat-full-e2e-decide, uat-e2e-full]
     if: always()
     runs-on: ubuntu-latest
     timeout-minutes: 5
@@ -696,7 +743,9 @@ jobs:
           DEPLOY_RESULT: ${{ needs.deploy.result }}
           SMOKE_RESULT: ${{ needs.smoke.result }}
           LIVE_SMOKE_RESULT: ${{ needs.uat-e2e-smoke.result }}
-          FULL_E2E_RESULT: ${{ needs.uat-e2e-full.result }}
+          FULL_E2E_RESULT: ${{ needs.smoke.result != 'success' && 'skipped' || (needs.uat-full-e2e-decide.outputs.should_run == 'false' && 'skipped' || needs.uat-e2e-full.result) }}
+          UAT_FULL_E2E_CADENCE_SKIP: ${{ needs.smoke.result == 'success' && needs.uat-full-e2e-decide.outputs.should_run == 'false' && 'true' || 'false' }}
+          UAT_FULL_E2E_CADENCE_REASON: ${{ needs.uat-full-e2e-decide.outputs.reason || '' }}
           DEPLOY_REF: ${{ needs.resolve-trigger.outputs.deploy_ref }}
           GITHUB_SHA: ${{ github.sha }}
           GITHUB_RUN_ID: ${{ github.run_id }}

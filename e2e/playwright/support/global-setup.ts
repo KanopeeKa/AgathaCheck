@@ -9,6 +9,7 @@ const PREFLIGHT_TIMEOUT_MS = 15_000;
 /** Match scripts/uat-post-deploy-smoke.sh — Tiger Protect can challenge fresh runner IPs. */
 const WAF_RETRY_ATTEMPTS = 18;
 const WAF_RETRY_SLEEP_MS = 10_000;
+const WAF_FAIL_FAST_STREAK = Number(process.env.WAF_FAIL_FAST_STREAK ?? '3') || 3;
 const CONFIG_ERROR =
   'UAT pre-flight config error: E2E_BASE_URL (or UAT_BASE_URL fallback) is missing or malformed.';
 
@@ -116,6 +117,7 @@ export default async function globalSetup(): Promise<void> {
   const baseURL = resolveLiveBaseUrl();
   const healthURL = `${baseURL}/backend/health`;
   const started = Date.now();
+  let wafStreak = 0;
 
   try {
     for (let attempt = 1; attempt <= WAF_RETRY_ATTEMPTS; attempt += 1) {
@@ -125,9 +127,15 @@ export default async function globalSetup(): Promise<void> {
       const body = await response.text();
 
       if (bodyShowsWafChallenge(body)) {
+        wafStreak += 1;
+        if (wafStreak >= WAF_FAIL_FAST_STREAK) {
+          throw new Error(
+            `UAT pre-flight failed [waf-challenge]: ${WAF_FAIL_FAST_STREAK} consecutive WAF responses from GitHub Actions — fail-fast (cannot whitelist o2switch). Last body: ${bodySnippet(body)}`,
+          );
+        }
         if (attempt < WAF_RETRY_ATTEMPTS) {
           console.log(
-            `UAT pre-flight WAF challenge (${attempt}/${WAF_RETRY_ATTEMPTS}), retrying in ${WAF_RETRY_SLEEP_MS / 1000}s...`,
+            `UAT pre-flight WAF challenge (${wafStreak}/${WAF_FAIL_FAST_STREAK} streak, attempt ${attempt}/${WAF_RETRY_ATTEMPTS}), retrying in ${WAF_RETRY_SLEEP_MS / 1000}s...`,
           );
           await new Promise((resolve) => setTimeout(resolve, WAF_RETRY_SLEEP_MS));
           continue;
@@ -136,6 +144,8 @@ export default async function globalSetup(): Promise<void> {
           `UAT pre-flight failed [waf-challenge]: GET ${healthURL} — ${bodySnippet(body)}`,
         );
       }
+
+      wafStreak = 0;
 
       if (response.status !== 200 || !body.includes(HEALTH_OK_MARKER)) {
         throw new Error(
