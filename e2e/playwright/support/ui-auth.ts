@@ -74,9 +74,15 @@ export async function createTestUser(
     return signupUser(baseURL, overrides);
   }
 
+  // Track the first successful API signup even when verification fails.
+  // If getCurrentUser is blocked (WAF, cold-start) but the account was created,
+  // use that user rather than falling back to UI signup which can be blocked by
+  // the consent banner, form latency, or other live-UAT issues.
+  let firstCreatedUser: TestUser | null = null;
   for (let attempt = 0; attempt < 3; attempt++) {
     try {
       const user = await signupUser(baseURL, overrides);
+      if (!firstCreatedUser) firstCreatedUser = user;
       const profile = await getCurrentUser(baseURL, user.accessToken);
       if (profile?.email === user.email) {
         return user;
@@ -87,5 +93,8 @@ export async function createTestUser(
     await page.waitForTimeout(1_500);
   }
 
+  // Prefer the API-created user when available: avoids WAF / consent-banner
+  // pitfalls in the UI signup path that can leave the browser on /landing.
+  if (firstCreatedUser) return firstCreatedUser;
   return signupUserViaUi(page, overrides);
 }
