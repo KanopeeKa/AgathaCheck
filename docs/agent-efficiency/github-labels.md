@@ -59,7 +59,7 @@ Remove revoke label; comment `resume-plan <plan_id>`.
 |-------|---------|
 | `uat-coordinator` | Marks the pinned `[uat-coordinator] UAT deploy queue` issue |
 
-**Bootstrap:** create the coordination issue, pin it, set `UAT_COORDINATION_ISSUE=<n>` in repo Actions variables (and locally for CLI `--write`). Ledger CLI: `scripts/uat_queue_runtime.js` — see [uat-coordinator-plan.md](./uat-coordinator-plan.md).
+**Bootstrap:** create the coordination issue, pin it, set `UAT_COORDINATION_ISSUE=<n>` in repo Actions variables (and locally for CLI `--write`). Runbook: [uat-coordinator-bootstrap.md](./uat-coordinator-bootstrap.md). Ledger CLI: `scripts/uat_queue_runtime.js` — see [uat-coordinator-plan.md](./uat-coordinator-plan.md).
 
 | Label | Purpose |
 |-------|---------|

@@ -1,6 +1,6 @@
 # Cross-agent UAT coordinator — implementation plan
 
-**Status:** Phase 1–2 merged (#281, #307) — **bootstrap not done**; Phase 3 not started  
+**Status:** Phase 1–2 merged (#281, #307); **Phase 1b bootstrap in progress**; Phase 3 not started  
 **Soak:** Jul 23 2026 — 50 deploy runs, 26% success; see [§Jul 23 soak review](#jul-23-soak-review)  
 **Owner track:** Agent efficiency + CI/CD reliability  
 **Related:** [autonomous-pr-policy.md](./autonomous-pr-policy.md) §Post-merge UAT, [e2e-ci-canary-plan.md](../e2e-ci-canary-plan.md) Phase 5, [promotion-contract.md](../promotion-contract.md), [github-issue-workflow.md](../github-issue-workflow.md)  
@@ -299,17 +299,18 @@ node scripts/uat_queue_runtime.js queue-head-hold   # exit 2 → do not merge ye
 | `uat_queue_lib.js`, `uat_queue_runtime.js`, tests | **Done** (#281) |
 | `issue-agent-handlers.js` enqueue + deploy sync | **Done** |
 | Workflows pass `UAT_COORDINATION_ISSUE` | **Done** |
-| Coordination issue + repo variable | **Not done** |
+| Coordination issue + repo variable | **Issue #313** (pinned, marker live); **variable pending operator** |
 
 ### Phase 1b — Bootstrap + health gate (new — blocking)
 
 | Deliverable | Detail |
 |-------------|--------|
-| Create coordination issue | Operator or bootstrap PR |
-| Set `UAT_COORDINATION_ISSUE` | Repo Actions variable |
-| `health-check` command | Fails if issue missing / marker not writable |
-| CI smoke | Optional: weekly or post-deploy job asserts variable set |
-| Verify enqueue on merge | `issue-agent-pr-merge` log shows `enqueued`, not `skipped` |
+| Create coordination issue | **Done** — [#313](https://github.com/KanopeeKa/AgathaCheck/issues/313) |
+| Set `UAT_COORDINATION_ISSUE` | **Pending** — requires repo admin (`gh variable set`) |
+| `health-check` command | **Done** |
+| CI smoke | **Done** — `uat-queue-health.yml` (weekly + dispatch) |
+| Bootstrap script + runbook | **This PR** — `scripts/uat_coordinator_bootstrap.js` |
+| Verify enqueue on merge | PR #312 backfilled; CI merge handler after variable set |
 
 **Exit:** One test merge produces ledger entry; deploy result updates entry state.
 
@@ -374,7 +375,7 @@ Addresses Jul 23 queue pile-up. **Not in original plan; required for merge-rate 
 | A | 1 | Queue lib + CLI + tests | **Merged** (#281) |
 | B | 1 | agent-uat-notify hooks | **Merged** (#281) |
 | C | 2 | Skill + policy updates | **Merged** (#307) |
-| **D** | **1b** | Bootstrap issue + `health-check` + operator runbook | Ledger live |
+| **D** | **1b** | Bootstrap issue + `health-check` + operator runbook | **In PR** — issue #313 live; variable pending |
 | **E** | 3 | Dispatch workflow + coordinator skill + `queue-head-hold` | Failure owner |
 | **F** | 3b | Promote hold + optional deploy cancel | CI back-pressure |
 | G | 4 | Lease hardening | Duplicate coordinator resistance |
