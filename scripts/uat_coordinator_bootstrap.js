@@ -36,7 +36,15 @@ function parseArgs(argv) {
     } else if (arg === '--pin') {
       flags.pin = true;
     } else if (arg === '--issue') {
-      flags.issue = Number(argv[i + 1]);
+      const raw = argv[i + 1];
+      if (!raw || raw.startsWith('--')) {
+        throw new Error('--issue requires a positive integer');
+      }
+      const value = Number(raw);
+      if (!Number.isInteger(value) || value < 1) {
+        throw new Error('--issue must be a positive integer');
+      }
+      flags.issue = value;
       i += 1;
     } else if (arg === '--help' || arg === '-h') {
       console.log(`Usage: node scripts/uat_coordinator_bootstrap.js [--write] [--issue N] [--pin]`);
@@ -89,14 +97,15 @@ function findExistingIssue() {
   return (issues || []).find((issue) => issue.title === COORDINATION_TITLE) || null;
 }
 
-function renderIssueBody(issueNumber) {
+function renderIssueBody(issueNumber, owner, repo) {
   const n = issueNumber ? String(issueNumber) : '<n>';
+  const base = `https://github.com/${owner}/${repo}/blob/main`;
   return `## UAT deploy queue
 
 Cross-agent ledger for UAT promote/deploy coordination. Machine state lives in a marker comment (\`<!-- uat-queue-state:v1 -->\`).
 
-**Plan:** [uat-coordinator-plan.md](https://github.com/KanopeeKa/AgathaCheck/blob/main/docs/agent-efficiency/uat-coordinator-plan.md)  
-**Runbook:** [uat-coordinator-bootstrap.md](https://github.com/KanopeeKa/AgathaCheck/blob/main/docs/agent-efficiency/uat-coordinator-bootstrap.md)
+**Plan:** [uat-coordinator-plan.md](${base}/docs/agent-efficiency/uat-coordinator-plan.md)  
+**Runbook:** [uat-coordinator-bootstrap.md](${base}/docs/agent-efficiency/uat-coordinator-bootstrap.md)
 
 ### Bootstrap checklist
 
@@ -118,7 +127,7 @@ Do not edit the marker comment by hand.`;
 }
 
 async function createOrUpdateIssue(owner, repo, token, issueNumber, write) {
-  const body = renderIssueBody(issueNumber);
+  const body = renderIssueBody(issueNumber, owner, repo);
   if (issueNumber) {
     if (write) {
       await rest('PATCH', `/repos/${owner}/${repo}/issues/${issueNumber}`, token, {
@@ -150,14 +159,14 @@ function pinIssue(issueNumber) {
 async function ensureMarkerComment(issueNumber, token, write) {
   const loaded = await loadStateFromIssue(issueNumber, token);
   if (loaded.commentId) {
-    return { initialized: false, commentId: loaded.commentId };
+    return { initialized: false, comment_id: loaded.commentId };
   }
   if (!write) {
-    return { initialized: false, commentId: null, needs_write: true };
+    return { initialized: false, comment_id: null, needs_write: true };
   }
   const state = createEmptyState();
   const saved = await saveStateToIssue(issueNumber, state, token);
-  return { initialized: true, commentId: saved.commentId };
+  return { initialized: true, comment_id: saved.commentId };
 }
 
 function printRepoVariableInstructions(issueNumber) {
@@ -176,7 +185,9 @@ async function main() {
   }
 
   const { owner, repo } = resolveRepository();
-  await ensureLabels(owner, repo, token);
+  if (flags.write) {
+    await ensureLabels(owner, repo, token);
+  }
 
   let issueNumber = flags.issue;
   if (!issueNumber) {

@@ -14,10 +14,16 @@ test('COORDINATION_TITLE is stable', () => {
 });
 
 test('renderIssueBody includes issue number in checklist', () => {
-  const body = renderIssueBody(313);
+  const body = renderIssueBody(313, 'KanopeeKa', 'AgathaCheck');
   assert.match(body, /UAT_COORDINATION_ISSUE=313/);
   assert.match(body, /uat-coordinator-bootstrap\.md/);
-  assert.match(body, /Pin this issue/);
+  assert.match(body, /github\.com\/KanopeeKa\/AgathaCheck/);
+});
+
+test('parseArgs rejects invalid --issue', () => {
+  assert.throws(() => parseArgs(['--issue']), /--issue requires/);
+  assert.throws(() => parseArgs(['--issue', '0']), /--issue must be a positive integer/);
+  assert.throws(() => parseArgs(['--issue', 'abc']), /--issue must be a positive integer/);
 });
 
 test('parseArgs defaults', () => {
