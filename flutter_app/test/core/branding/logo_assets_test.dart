@@ -6,9 +6,15 @@ void main() {
   group('LogoAssets', () {
     test('maps guardian to plum and organisation to teal', () {
       expect(LogoAssets.pngFor(AppExperience.guardian), 'assets/logo-plum.png');
-      expect(LogoAssets.pngFor(AppExperience.organization), 'assets/logo-teal.png');
+      expect(
+        LogoAssets.pngFor(AppExperience.organization),
+        'assets/logo-teal.png',
+      );
       expect(LogoAssets.jpgFor(AppExperience.guardian), 'assets/logo-plum.jpg');
-      expect(LogoAssets.jpgFor(AppExperience.organization), 'assets/logo-teal.jpg');
+      expect(
+        LogoAssets.jpgFor(AppExperience.organization),
+        'assets/logo-teal.jpg',
+      );
     });
 
     test('detects organisation routes', () {
@@ -20,14 +26,8 @@ void main() {
         LogoAssets.experienceForRoute('/organizations/abc'),
         AppExperience.organization,
       );
-      expect(
-        LogoAssets.experienceForRoute('/g/home'),
-        AppExperience.guardian,
-      );
-      expect(
-        LogoAssets.experienceForRoute('/about'),
-        AppExperience.guardian,
-      );
+      expect(LogoAssets.experienceForRoute('/g/home'), AppExperience.guardian);
+      expect(LogoAssets.experienceForRoute('/about'), AppExperience.guardian);
     });
   });
 }

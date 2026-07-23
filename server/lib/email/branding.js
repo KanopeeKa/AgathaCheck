@@ -3,10 +3,7 @@
 export const APP_NAME = 'Agatha Track';
 export const PRIMARY_COLOR = '#755B68';
 export const PRIMARY_COLOR_HOVER = '#664C59';
-export const ORGANIZATION_PRIMARY_COLOR = '#218B6C';
-export const ORGANIZATION_PRIMARY_COLOR_HOVER = '#1B765C';
 export const LOGO_CID = 'agatha-logo';
-export const ORGANIZATION_LOGO_CID = 'agatha-logo-org';
 
 /** Public app URL used in email links and footers (no trailing slash). */
 export function getPublicUrl() {

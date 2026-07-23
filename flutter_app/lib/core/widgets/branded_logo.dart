@@ -66,7 +66,7 @@ class BrandedLogo extends ConsumerWidget {
         height: size,
         width: size,
         fit: BoxFit.cover,
-        semanticLabel: 'Agatha Track logo',
+        excludeFromSemantics: true,
         errorBuilder: (context, error, stackTrace) => fallback,
       );
       if (clipOval) {
