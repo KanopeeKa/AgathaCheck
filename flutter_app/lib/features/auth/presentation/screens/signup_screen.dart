@@ -3,6 +3,8 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../core/widgets/branded_logo.dart';
+import '../../../../features/experience/domain/entities/app_experience.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../providers/auth_providers.dart';
 
@@ -67,15 +69,10 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(16),
-                    child: Image.asset(
-                      'assets/logo.png',
-                      height: 80,
-                      width: 80,
-                      fit: BoxFit.cover,
-                      semanticLabel: 'Agatha Track logo',
-                    ),
+                  const BrandedLogo(
+                    size: 80,
+                    experience: AppExperience.guardian,
+                    borderRadius: BorderRadius.all(Radius.circular(16)),
                   ),
                   const SizedBox(height: 16),
                   Text(

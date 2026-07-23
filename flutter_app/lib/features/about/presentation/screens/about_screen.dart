@@ -1,53 +1,16 @@
-import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/widgets/app_logo_title.dart';
-import '../../../../core/widgets/web_image.dart';
+import '../../../../core/widgets/branded_logo.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../domain/legal_document_id.dart';
 
 class AboutScreen extends StatelessWidget {
   const AboutScreen({super.key});
 
-  Widget _buildLogo(ThemeData theme, {required double size}) {
-    final fallback = Container(
-      height: size,
-      width: size,
-      decoration: BoxDecoration(
-        color: theme.colorScheme.primaryContainer.withValues(alpha: 0.3),
-        shape: BoxShape.circle,
-      ),
-      child: Center(
-        child: Icon(
-          Icons.pets,
-          size: size * 0.55,
-          color: theme.colorScheme.primary,
-        ),
-      ),
-    );
-
-    return Semantics(
-      label: 'Agatha Track logo',
-      child: kIsWeb
-          ? WebAssetImage(
-              assetPath: 'assets/logo.jpg',
-              height: size,
-              width: size,
-              fit: BoxFit.cover,
-              fallback: fallback,
-              clipOval: true,
-            )
-          : ClipOval(
-              child: Image.asset(
-                'assets/logo.jpg',
-                height: size,
-                width: size,
-                fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) => fallback,
-              ),
-            ),
-    );
+  Widget _buildLogo({required double size}) {
+    return BrandedLogo(size: size, useJpg: true, clipOval: true);
   }
 
   @override
@@ -88,7 +51,7 @@ class AboutScreen extends StatelessWidget {
             child: Column(
               children: [
                 const SizedBox(height: 16),
-                _buildLogo(theme, size: 120),
+                _buildLogo(size: 120),
                 const SizedBox(height: 20),
                 Text(
                   l10n.appTitle,

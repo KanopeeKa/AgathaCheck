@@ -50,6 +50,38 @@
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     }
     #agatha-native-login * { box-sizing: border-box; }
+<<<<<<< HEAD
+=======
+    #agatha-native-login .anl-card {
+      width: 100%;
+      max-width: 400px;
+      background: #ffffff;
+      border-radius: 16px;
+      padding: 28px 24px;
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.28);
+    }
+    #agatha-native-login .anl-logo {
+      display: block;
+      width: 64px;
+      height: 64px;
+      border-radius: 14px;
+      object-fit: cover;
+      margin: 0 auto 12px;
+    }
+    #agatha-native-login .anl-title {
+      margin: 0 0 4px;
+      text-align: center;
+      font-size: 20px;
+      font-weight: 700;
+      color: #755B68;
+    }
+    #agatha-native-login .anl-subtitle {
+      margin: 0 0 20px;
+      text-align: center;
+      font-size: 13px;
+      color: #6b6776;
+    }
+>>>>>>> 14930aa (Add plum and teal logo variants wired by experience)
     #agatha-native-login label {
       display: block;
       font-size: 12px;
@@ -70,6 +102,7 @@
       color: #1c1b1f;
       background: #fff;
     }
+<<<<<<< HEAD
     #agatha-native-login input:focus {
       border-color: #6750A4;
       border-width: 2px;
@@ -81,6 +114,9 @@
       justify-content: flex-end;
       margin: -4px 0 8px;
     }
+=======
+    #agatha-native-login input:focus { border-color: #755B68; }
+>>>>>>> 14930aa (Add plum and teal logo variants wired by experience)
     #agatha-native-login .anl-error {
       display: none;
       margin-bottom: 12px;
@@ -97,24 +133,25 @@
       font-size: 15px;
       font-weight: 600;
       color: #ffffff;
-      background: #6750A4;
+      background: #755B68;
       border: none;
       border-radius: 20px;
       cursor: pointer;
       transition: background 0.15s ease;
     }
-    #agatha-native-login .anl-submit:hover { background: #58459a; }
+    #agatha-native-login .anl-submit:hover { background: #664C59; }
     #agatha-native-login .anl-submit:disabled { opacity: 0.6; cursor: default; }
     #agatha-native-login .anl-link {
       background: none;
       border: none;
       padding: 4px;
       font-size: 13px;
-      color: #6750A4;
+      color: #755B68;
       cursor: pointer;
     }
     #agatha-native-login .anl-link:hover { text-decoration: underline; }
     @media (prefers-color-scheme: dark) {
+<<<<<<< HEAD
       #agatha-native-login label { color: #cac4d0; }
       #agatha-native-login input {
         background: #2a2730;
@@ -122,12 +159,29 @@
         border-color: #938f99;
       }
       #agatha-native-login .anl-link { color: #cfbcff; }
+=======
+      #agatha-native-login .anl-card { background: #1e1b24; }
+      #agatha-native-login .anl-title { color: #E7DCE2; }
+      #agatha-native-login .anl-subtitle { color: #a9a4b3; }
+      #agatha-native-login label { color: #cac4d0; }
+      #agatha-native-login input { background: #2a2730; color: #ece6f0; border-color: #49454f; }
+      #agatha-native-login .anl-link { color: #E7DCE2; }
+>>>>>>> 14930aa (Add plum and teal logo variants wired by experience)
     }
   </style>
 </head>
 <body>
+<<<<<<< HEAD
   <div id="agatha-native-login-host">
     <div id="agatha-native-login">
+=======
+  <div id="agatha-native-login" role="dialog" aria-modal="true" aria-labelledby="anl-title">
+    <div class="anl-card">
+      <img id="anl-logo" class="anl-logo" src="assets/assets/logo-plum.jpg" alt=""
+           onerror="this.style.display='none'">
+      <h1 id="anl-title" class="anl-title">Agatha Track</h1>
+      <p id="anl-subtitle" class="anl-subtitle"></p>
+>>>>>>> 14930aa (Add plum and teal logo variants wired by experience)
       <form id="anl-form" autocomplete="on" novalidate>
         <label id="anl-email-label" for="anl-email">Email</label>
         <input id="anl-email" name="username" type="email"

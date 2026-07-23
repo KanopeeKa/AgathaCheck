@@ -57,7 +57,7 @@ describe('password reset email template', () => {
     expect(text).toContain("If you didn't request this");
 
     expect(html).toContain('Agatha Track');
-    expect(html).toContain('#6750A4');
+    expect(html).toContain('#755B68');
     expect(html).toContain('cid:agatha-logo');
     expect(html).toContain('482915');
     expect(html).toContain('Open Agatha Track');
