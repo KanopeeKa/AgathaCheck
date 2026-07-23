@@ -55,6 +55,6 @@ class AppLogoTitle extends ConsumerWidget {
     if (routeExperience == AppExperience.organization) {
       return routeExperience;
     }
-    return ref.watch(resolvedExperienceProvider);
+    return ref.watch(activeExperienceProvider) ?? AppExperience.guardian;
   }
 }

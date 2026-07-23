@@ -29,6 +29,10 @@ class LogoAssets {
     return AppExperience.guardian;
   }
 
-  static AppExperience experienceForContext(BuildContext context) =>
-      experienceForRoute(GoRouterState.of(context).uri.path);
+  static AppExperience experienceForContext(BuildContext context) {
+    final router = GoRouter.maybeOf(context);
+    if (router == null) return AppExperience.guardian;
+    final path = router.routerDelegate.currentConfiguration.uri.path;
+    return experienceForRoute(path);
+  }
 }
