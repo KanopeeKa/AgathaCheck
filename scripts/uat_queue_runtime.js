@@ -16,7 +16,7 @@
 
 'use strict';
 
-const { execSync } = require('child_process');
+const { execFileSync } = require('child_process');
 const path = require('path');
 const {
   COORDINATION_ISSUE_NUMBER,
@@ -128,12 +128,12 @@ function printJson(obj) {
 }
 
 function gitRevParse(ref) {
-  return execSync(`git rev-parse ${ref}`, { cwd: REPO_ROOT, encoding: 'utf8' }).trim();
+  return execFileSync('git', ['rev-parse', ref], { cwd: REPO_ROOT, encoding: 'utf8' }).trim();
 }
 
 function gitIsAncestor(ancestor, descendant) {
   try {
-    execSync(`git merge-base --is-ancestor ${ancestor} ${descendant}`, {
+    execFileSync('git', ['merge-base', '--is-ancestor', ancestor, descendant], {
       cwd: REPO_ROOT,
       stdio: 'ignore',
     });
@@ -149,7 +149,10 @@ function resolveBranchTip(branchName) {
     return gitRevParse('HEAD');
   }
   try {
-    execSync('git fetch origin main --quiet', { cwd: REPO_ROOT, stdio: 'ignore' });
+    execFileSync('git', ['fetch', 'origin', 'main', '--quiet'], {
+      cwd: REPO_ROOT,
+      stdio: 'ignore',
+    });
   } catch {
     // offline / no remote
   }
