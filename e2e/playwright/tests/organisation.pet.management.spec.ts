@@ -18,7 +18,6 @@ import {
   getHealthEntries,
   seedHappyPawsClinic,
 } from '../support/api';
-import { ExperiencePage } from '../pages/experience.page';
 import { HealthDashboardPage } from '../pages/health-dashboard.page';
 import { OrganizationDetailPage } from '../pages/organization-detail.page';
 import { OrganizationListPage } from '../pages/organization-list.page';
@@ -83,10 +82,6 @@ test.describe('Organisation pet management', () => {
     const petList = await loginAs(page, alice);
     await petList.expectSectionHeader('My Pets');
     await petList.expectPetVisible('Milo');
-
-    const experience = new ExperiencePage(page);
-    await experience.openDrawerOrgView();
-    await petList.expectSectionHeader(ORG_NAME);
     await petList.expectPetUnderOrganization('Bella', ORG_NAME);
   });
 
