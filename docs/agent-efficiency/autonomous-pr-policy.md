@@ -176,19 +176,17 @@ Verify merge commit is ancestor of `origin/<base_branch>` before next phase.
 
 ## Post-merge UAT prod-ready (babysit-plus)
 
-**Do not stop at PR merge** when the work ships to `main` and triggers UAT promotion (`promote-uat.yml` → `deploy-uat.yml`). **Do not block main work** on the UAT poll either — delegate to a **non-blocking UAT babysit sub-agent** (babysit-plus §8).
+**Do not stop at PR merge** when the work ships to `main` and triggers UAT promotion (`promote-uat.yml` → `deploy-uat.yml`). **Do not block main work** on the UAT poll — **enqueue and exit** (babysit-plus §8).
 
 After merge (or when babysitting an already-merged fix):
 
-1. Record merge SHA; **spawn UAT babysit sub-agent immediately** (background Task) — main agent continues phase work in parallel.
-2. Sub-agent polls until **Deploy UAT / Prod ready** succeeds or fails.
-3. Sub-agent on **success:** comment that `prod-ready` is green; no main-work interruption.
-4. Sub-agent on **failure:** triage gate table (`scripts/ci/assert-uat-gates.sh` output); **pause** main work (`uat_paused` via `pause --post-comment` CLI); sub-agent owns remedial PR through prod-ready; **auto-resume** main work when green (`resume-uat --post-comment` CLI — no human `resume-plan`).
-5. Remediate in a follow-up PR when needed; sub-agent repeats §8b until prod-ready passes or §9 escalation applies.
+1. Record merge SHA; **enqueue immediately** via `uat_queue_runtime.js enqueue --write` — main agent continues phase work in parallel.
+2. **Do not spawn Task / `task_v2` sub-agents** to poll deploy — session-ephemeral and agents often wait for sub-agent return even when `run_in_background: true`.
+3. **Success path:** GitHub Actions + `agent-uat-notify` comment when prod-ready is green; no agent involvement.
+4. **Failure path:** UAT coordinator agent triages and opens remedial PR; comments on PR + control issue. Work agents **do not pause** execute-plan — use `barrier-check` before the next merge/push.
+5. Before every merge attempt: `barrier-check` → rebase if behind UAT barrier (`babysit_sync_base.sh`).
 
-See `docs/ci-cd-gates.md` §3 · babysit-plus §8b–8c · `docs/e2e-ci-canary-plan.md` Phase 5.
-
-**Planned (review):** [uat-coordinator-plan.md](./uat-coordinator-plan.md) — cross-agent queue ledger, main barrier for rebases, passive success path, dedicated coordinator on failure only (replaces per-merge Task sub-agents).
+See `docs/ci-cd-gates.md` §3 · [uat-coordinator-plan.md](./uat-coordinator-plan.md) · babysit-plus §8.
 
 **Infra-only blockers** (e.g. `UAT_AUTO_MIGRATE` unset with pending live migrations) → comment on PR/control issue and escalate; do not weaken gates.
 

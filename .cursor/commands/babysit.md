@@ -28,6 +28,6 @@ Check PR status, comments, and latest CI and resolve any issues until the PR is 
 7. **Verify locally:** `./scripts/pre-push-changed.sh` for scoped fix; `./scripts/pre-push.sh` before final push when near merge.
 8. **Push** scoped fixes and re-watch CI until mergeable + green + comments triaged. Run `./scripts/babysit_sync_base.sh --pr <url>` before each push. After each push that changes the diff, return to step 4 if new automatic reviews are expected.
 
-**Babysit+ only (after merge to `main`):** spawn a non-blocking UAT babysit sub-agent per `.cursor/skills/babysit-plus/SKILL.md` §8; on prod-ready failure the sub-agent pauses main work and auto-resumes when remedial prod-ready is green.
+**Babysit+ only (after merge to `main`):** enqueue UAT via `uat_queue_runtime.js enqueue --write` per `.cursor/skills/babysit-plus/SKILL.md` §8 — **do not** spawn Task sub-agents to poll deploy; use `barrier-check` before the next merge.
 
 Escalate to human when: security/crypto changes, breaking API contracts, migration risk, or product/legal decisions.

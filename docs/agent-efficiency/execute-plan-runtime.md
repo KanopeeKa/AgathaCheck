@@ -66,7 +66,9 @@ node scripts/execute_plan_runtime.js halt <plan_id> \
 
 ### Pause (UAT remedial — keeps autonomy active)
 
-Pauses the in-progress phase without setting snapshot `autonomy` to `halted`. Used by the UAT babysit sub-agent when prod-ready fails.
+> **Note (2026-07):** UAT failure no longer pauses execute-plan — see [uat-coordinator-plan.md](./uat-coordinator-plan.md). Work agents use `barrier-check` before merge; the UAT coordinator owns remedial work. The `pause`/`resume-uat` CLI below remains for non-UAT halts and legacy snapshots.
+
+Pauses the in-progress phase without setting snapshot `autonomy` to `halted`. **Not invoked for UAT prod-ready failure** under the queue-coordinator model.
 
 ```bash
 node scripts/execute_plan_runtime.js pause <plan_id> \
@@ -75,7 +77,7 @@ node scripts/execute_plan_runtime.js pause <plan_id> \
 
 ### Resume UAT (auto-resume — no human `resume-plan`)
 
-Clears `uat_paused` on the halted phase and restores `in_progress`. Sub-agent calls this when remedial prod-ready is green.
+Clears `uat_paused` on the halted phase and restores `in_progress`. **Legacy** — UAT coordination now uses `barrier-check` instead of `resume-uat`.
 
 ```bash
 node scripts/execute_plan_runtime.js resume-uat <plan_id> --write --post-comment
