@@ -27,7 +27,8 @@ declare -A RESULTS=(
   [flutter-test-pet]="${FLUTTER_TEST_PET:-}"
   [flutter-test-health]="${FLUTTER_TEST_HEALTH:-}"
   [flutter-test-org]="${FLUTTER_TEST_ORG:-}"
-  [flutter-test-rest]="${FLUTTER_TEST_REST:-}"
+  [flutter-test-rest-a]="${FLUTTER_TEST_REST_A:-}"
+  [flutter-test-rest-b]="${FLUTTER_TEST_REST_B:-}"
   [flutter-coverage]="${FLUTTER_COVERAGE:-}"
   [flutter-integration]="${FLUTTER_INTEGRATION:-}"
   [flutter-build-web]="${FLUTTER_BUILD_WEB:-}"
@@ -52,7 +53,7 @@ failed=0
   echo "| Job | Result | Pass |"
   echo "|-----|--------|------|"
   for job in startup-smoke test-suite flutter-analyze \
-    flutter-test-pet flutter-test-health flutter-test-org flutter-test-rest \
+    flutter-test-pet flutter-test-health flutter-test-org flutter-test-rest-a flutter-test-rest-b \
     flutter-coverage flutter-integration flutter-build-web ci-e2e-canary; do
     result="${RESULTS[$job]}"
     if [[ "$job" == "ci-e2e-canary" ]]; then
