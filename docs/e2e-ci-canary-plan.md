@@ -138,19 +138,22 @@ flowchart TD
 
 ---
 
-## Phase 5 — Post-merge babysit (babysit-plus §8 sub-agent)
+## Phase 5 — Post-merge UAT coordination (cross-agent)
 
-**Deliverables** (see prior analysis; separate PR series)
+**Canonical plan:** [uat-coordinator-plan.md](./agent-efficiency/uat-coordinator-plan.md) (draft for review).
+
+Supersedes the earlier per-merge Task sub-agent sketch. Cross-agent queue ledger + main barrier + coordinator dispatch on failure only.
 
 | Item | Detail |
 |------|--------|
-| Runtime | `scripts/uat_deploy_runtime.js` — resolve merge SHA → tag → deploy run → gate table (optional helper for §8b) |
-| Skill | `.cursor/skills/babysit-plus/SKILL.md` §8 — spawn **non-blocking** UAT babysit sub-agent after merge |
-| Failure dispatch | `agent-uat-fix` label → agent-dispatch on UAT failure |
+| Runtime | `scripts/uat_queue_runtime.js` — enqueue, barrier-check, reconcile, watcher lease |
+| Passive success | Extend `agent-uat-notify` to update ledger; no agent poll on green `prod-ready` |
+| Failure | `uat-coordinator-dispatch.yml` + `.cursor/skills/uat-coordinator/SKILL.md` |
+| Work agents | babysit-plus §8 → `enqueue` after merge; preflight `barrier-check` |
 
-**Exit:** Main work does not wait on the UAT poll; sub-agent reports success quietly, or **pauses** main work on failure and **auto-resumes** when remedial prod-ready is green.
+**Exit:** Main work does not wait on UAT poll; success path uses zero agent babysitting; one coordinator owns failure remedial + barrier.
 
-**Risk:** High — 48h autonomy window, infra vs code classification.
+**Risk:** Medium — coordinator autonomy window; infra vs code classification.
 
 ---
 
