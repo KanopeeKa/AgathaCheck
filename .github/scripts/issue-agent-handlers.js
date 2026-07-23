@@ -105,6 +105,23 @@ UAT deploy runs automatically when the tag is pushed.`,
     );
   }
 
+  try {
+    const { syncEnqueueAfterMerge } = require('../../scripts/lib/uat_queue_apply');
+    const queueResult = await syncEnqueueAfterMerge({
+      mergeSha,
+      prNumber: Number(prNumber),
+      enqueuedBy: `issue-${issueNumbers.join(',')}`,
+      token,
+    });
+    if (!queueResult.skipped) {
+      console.log(
+        `UAT queue: enqueued PR #${prNumber} merge ${mergeSha} on issue #${queueResult.issueNumber}`,
+      );
+    }
+  } catch (error) {
+    console.warn(`UAT queue enqueue skipped: ${error.message}`);
+  }
+
   return { results };
 }
 
@@ -189,6 +206,25 @@ Assigned @${ASSIGNEE} for investigation. The \`question\` label was added and \`
     });
 
     results.push({ issueNumber, status: 'failed', assigned: ASSIGNEE });
+  }
+
+  try {
+    const { syncDeployResult } = require('../../scripts/lib/uat_queue_apply');
+    const runId = process.env.GITHUB_RUN_ID || '';
+    const queueResult = await syncDeployResult({
+      deployRef,
+      conclusion: conclusion === 'success' ? 'success' : 'failure',
+      deployRunId: runId || null,
+      gateSummaryRef: workflowUrl,
+      token,
+    });
+    if (!queueResult.skipped) {
+      console.log(
+        `UAT queue: updated PR #${parsed.prNumber} → ${queueResult.entry.state} on issue #${queueResult.issueNumber}`,
+      );
+    }
+  } catch (error) {
+    console.warn(`UAT queue deploy sync skipped: ${error.message}`);
   }
 
   return { prNumber: parsed.prNumber, results };

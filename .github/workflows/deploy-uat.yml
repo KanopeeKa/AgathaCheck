@@ -731,6 +731,8 @@ jobs:
           BRANCH_NAME: ${{ needs.resolve-trigger.outputs.deploy_ref }}
           WORKFLOW_CONCLUSION: ${{ needs.prod-ready.result == 'success' && 'success' || 'failure' }}
           WORKFLOW_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          GITHUB_RUN_ID: ${{ github.run_id }}
+          UAT_COORDINATION_ISSUE: ${{ vars.UAT_COORDINATION_ISSUE }}
         run: node .github/scripts/issue-agent-handlers.js
 
   # Only dispatch deploy-prod after a green Prod ready gate — never on UAT workflow completion alone.
