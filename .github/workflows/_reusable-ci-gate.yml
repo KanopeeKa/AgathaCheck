@@ -22,7 +22,10 @@ on:
       flutter_test_org:
         required: true
         type: string
-      flutter_test_rest:
+      flutter_test_rest_a:
+        required: true
+        type: string
+      flutter_test_rest_b:
         required: true
         type: string
       flutter_coverage:
@@ -61,7 +64,8 @@ jobs:
           FLUTTER_TEST_PET: ${{ inputs.flutter_test_pet }}
           FLUTTER_TEST_HEALTH: ${{ inputs.flutter_test_health }}
           FLUTTER_TEST_ORG: ${{ inputs.flutter_test_org }}
-          FLUTTER_TEST_REST: ${{ inputs.flutter_test_rest }}
+          FLUTTER_TEST_REST_A: ${{ inputs.flutter_test_rest_a }}
+          FLUTTER_TEST_REST_B: ${{ inputs.flutter_test_rest_b }}
           FLUTTER_COVERAGE: ${{ inputs.flutter_coverage }}
           FLUTTER_INTEGRATION: ${{ inputs.flutter_integration }}
           FLUTTER_BUILD_WEB: ${{ inputs.flutter_build_web }}
