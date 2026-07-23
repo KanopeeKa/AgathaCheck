@@ -128,8 +128,9 @@ export function escapeRegExp(value: string): string {
 }
 
 /**
- * Legacy pet list (`/`) or post-experience-split guardian shell (`/g/home`).
- * Prefer this over a single "To Do" button after the experience split.
+ * Nav v2 shell home indicators: Home nav button, Add Pet FAB, empty-state text,
+ * or hamburger/Settings menu (prefix match handles badge-augmented accessible names).
+ * "To Do" retained for legacy local builds. Events removed — nav v2 phase 3.
  */
 export function homeShellLocator(page: Page): Locator {
   return page
@@ -137,7 +138,7 @@ export function homeShellLocator(page: Page): Locator {
     .or(page.getByRole('button', { name: 'Add Pet' }))
     .or(page.getByText('No pets yet'))
     .or(page.getByRole('button', { name: /^(Home|Accueil)$/i }))
-    .or(page.getByRole('button', { name: /^(Events|Événements)$/i }));
+    .or(page.getByRole('button', { name: /^(Settings|Paramètres)/i }));
 }
 
 /** Wait until the user has landed on a home surface after login or signup. */
@@ -238,7 +239,12 @@ export async function waitForPostLoginRoute(page: Page, timeout?: number): Promi
     await refreshFlutterAccessibility(page);
 
     const path = flutterRoutePath(page.url());
-    if (/\/(g|o)\/home/.test(path) || path === '/app/choose' || path === '/g/onboarding' || path === '/o/onboarding') {
+    if (
+      /\/(g|o)\/home/.test(path) ||
+      path === '/app/choose' ||
+      path === '/g/onboarding' ||
+      path === '/o/onboarding'
+    ) {
       return;
     }
 
@@ -252,6 +258,24 @@ export async function waitForPostLoginRoute(page: Page, timeout?: number): Promi
 
     if (await page.getByRole('button', { name: 'To Do' }).isVisible({ timeout: 1_000 }).catch(() => false)) {
       return;
+    }
+
+    // If an auth token is already in localStorage but Flutter is still showing /landing,
+    // the GoRouter redirect hasn't fired yet (race on slow live UAT cold-start).
+    // Navigate directly to /app/resolve to kick-start post-login routing.
+    if (path === '/landing') {
+      const hasAuthToken = await page
+        .evaluate(() =>
+          Object.keys(localStorage).some(
+            (k) => k.includes('auth_access_token') && !!localStorage.getItem(k),
+          ),
+        )
+        .catch(() => false);
+      if (hasAuthToken) {
+        await page.goto(flutterGotoUrl('/app/resolve'));
+        await page.waitForTimeout(1_500);
+        await refreshFlutterAccessibility(page);
+      }
     }
 
     throw new Error(`Post-login route not ready (url=${page.url()})`);
@@ -363,12 +387,16 @@ export async function reachAuthenticatedHome(
   await expectHomeShellVisible(page, timeout);
 }
 
-/** Top-nav / drawer controls for the post-split experience shell (EN + FR). */
+/**
+ * Top-nav controls for the nav v2 experience shell (EN + FR).
+ * Nav v2 (phase 3): Events removed; shell has Home + hamburger whose tooltip is
+ * "Settings" / "Paramètres" — prefix match required because a badge prepends the
+ * unread count to the accessible name (e.g. "Settings, 3 unread").
+ */
 export function experienceShellNavLocator(page: Page): Locator {
   return page
     .getByRole('button', { name: /^(Home|Accueil)$/i })
-    .or(page.getByRole('button', { name: /^(Events|Événements)$/i }))
-    .or(page.getByRole('button', { name: /^(Settings|Paramètres)$/i }));
+    .or(page.getByRole('button', { name: /^(Settings|Paramètres)/i }));
 }
 
 /** True when the post-split experience shell (`/g/home` or `/o/home`) is visible. */
