@@ -4,7 +4,7 @@
   "approved_at": "2026-07-23T10:15:00Z",
   "approved_by": "user",
   "approved_until": "2026-07-25T10:15:00Z",
-  "content_hash": "sha256:b5b386a3d838f04e5c3be4f6fcdfd3b965f978c6512b9b1a5f8acba0f02b73a1",
+  "content_hash": "sha256:724535e455f122f1cd6cd9955e2e4a2d07f645452d157026e4b4337cd315a40d",
   "autonomy": "active",
   "default_merge_mode": "auto",
   "base_branch": "main",
@@ -254,7 +254,9 @@
       "status": "in_progress",
       "status_reason": null,
       "status_detail": null,
-      "debt_issue_refs": []
+      "debt_issue_refs": [],
+      "pr_url": true,
+      "pr_head_sha": "020519c704b59b87e0e333fa123521bc75c88591"
     }
   ]
 }
