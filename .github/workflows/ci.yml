@@ -26,6 +26,9 @@ jobs:
       scope_name: ${{ steps.scope.outputs.scope_name }}
       run_flutter_analyze: ${{ steps.scope.outputs.run_flutter_analyze }}
       run_flutter_stack: ${{ steps.scope.outputs.run_flutter_stack }}
+      run_backend: ${{ steps.scope.outputs.run_backend }}
+      run_e2e_audit: ${{ steps.scope.outputs.run_e2e_audit }}
+      run_flutter_integration: ${{ steps.scope.outputs.run_flutter_integration }}
     steps:
       - uses: actions/checkout@v5
         with:
@@ -44,7 +47,11 @@ jobs:
     uses: ./.github/workflows/_reusable-pr-startup-smoke.yml
 
   test-suite:
+    needs: ci-scope
     uses: ./.github/workflows/_reusable-test.yml
+    with:
+      run_backend: ${{ needs.ci-scope.outputs.run_backend == 'true' }}
+      run_e2e_audit: ${{ needs.ci-scope.outputs.run_e2e_audit == 'true' }}
 
   flutter-analyze:
     needs: ci-scope
@@ -99,7 +106,7 @@ jobs:
 
   flutter-integration:
     needs: [ci-scope, flutter-analyze]
-    if: needs.ci-scope.outputs.run_flutter_stack == 'true'
+    if: needs.ci-scope.outputs.run_flutter_integration == 'true'
     uses: ./.github/workflows/_reusable-flutter-integration.yml
 
   flutter-build-web:

@@ -6,6 +6,7 @@ import '../../../../core/theme/app_theme.dart';
 import '../../../../core/widgets/app_logo_title.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../providers/organization_providers.dart';
+import '../utils/org_screen_theme.dart';
 import '../widgets/org_card.dart';
 import '../widgets/organization_role_labels.dart';
 
@@ -253,19 +254,19 @@ class OrganizationListScreen extends ConsumerWidget {
       return body;
     }
 
-    return Scaffold(
-      backgroundColor: AppTheme.orgBlue,
-      appBar: AppBar(
-        backgroundColor: AppTheme.orgBlue,
-        title: AppLogoTitle(title: l.myOrganizations),
-        leading: IconButton(
-          key: const Key('org_back_button'),
-          icon: const Icon(Icons.arrow_back),
-          tooltip: MaterialLocalizations.of(context).backButtonTooltip,
-          onPressed: () => context.go('/'),
+    return orgThemed(
+      child: Scaffold(
+        appBar: AppBar(
+          title: AppLogoTitle(title: l.myOrganizations),
+          leading: IconButton(
+            key: const Key('org_back_button'),
+            icon: const Icon(Icons.arrow_back),
+            tooltip: MaterialLocalizations.of(context).backButtonTooltip,
+            onPressed: () => context.go('/'),
+          ),
         ),
+        body: body,
       ),
-      body: body,
     );
   }
 }

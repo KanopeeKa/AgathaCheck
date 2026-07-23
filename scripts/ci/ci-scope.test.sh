@@ -61,4 +61,10 @@ assert_eq "$(ci_scope_resolve_name)" "FULL" "ci-full escape forces full"
 json="$(ci_scope_emit_json)"
 assert_json_field "$json" run_flutter_stack True "escape runs stack"
 
+# Flutter-only skips backend
+ci_scope_classify_paths $'flutter_app/lib/features/auth/presentation/screens/login_screen.dart'
+json="$(ci_scope_emit_json)"
+assert_json_field "$json" run_backend False "flutter-only skips backend"
+assert_json_field "$json" run_flutter_integration False "flutter-only without pet_profile skips integration"
+
 echo "ci-scope tests passed"

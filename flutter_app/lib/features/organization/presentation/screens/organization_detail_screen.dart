@@ -10,6 +10,7 @@ import '../../domain/entities/organization.dart';
 import '../../domain/entities/organization_member.dart';
 import '../../../pet_profile/domain/entities/pet.dart';
 import '../providers/organization_providers.dart';
+import '../utils/org_screen_theme.dart';
 import '../widgets/organization_archived_section.dart';
 import '../widgets/organization_branding_section.dart';
 import '../widgets/organization_connections_section.dart';
@@ -81,212 +82,212 @@ class _OrganizationDetailScreenState
           );
         }
 
-        return Scaffold(
-          backgroundColor: AppTheme.orgBlue,
-          appBar: AppBar(
-            backgroundColor: AppTheme.orgBlue,
-            title: AppLogoTitle(title: org.name),
-            leading: IconButton(
-              key: const Key('org_detail_back'),
-              icon: const Icon(Icons.arrow_back),
-              tooltip: MaterialLocalizations.of(context).backButtonTooltip,
-              onPressed: () => context.go('/organizations'),
-            ),
-            actions: [
-              if (isSuperUser)
-                IconButton(
-                  key: const Key('org_edit_button'),
-                  icon: const Icon(Icons.edit),
-                  tooltip: l.editOrganization,
-                  onPressed: () => context.push('/organizations/$orgId/edit'),
-                ),
-              PopupMenuButton<String>(
-                key: const Key('org_detail_menu'),
-                tooltip: MaterialLocalizations.of(context).showMenuTooltip,
-                onSelected: (value) =>
-                    _handleMenuAction(context, ref, value, org),
-                itemBuilder: (context) => [
-                  if (isOrgAdmin) ...[
-                    PopupMenuItem(
-                      value: 'invite',
-                      child: ListTile(
-                        leading: const Icon(Icons.person_add),
-                        title: Text(l.orgInviteMember),
-                        dense: true,
-                        contentPadding: EdgeInsets.zero,
-                      ),
-                    ),
-                    PopupMenuItem(
-                      value: 'members',
-                      child: ListTile(
-                        leading: const Icon(Icons.people),
-                        title: Text(l.orgMembers),
-                        dense: true,
-                        contentPadding: EdgeInsets.zero,
-                      ),
-                    ),
-                    PopupMenuItem(
-                      value: 'pets',
-                      child: ListTile(
-                        leading: const Icon(Icons.pets),
-                        title: Text(l.orgPets),
-                        dense: true,
-                        contentPadding: EdgeInsets.zero,
-                      ),
-                    ),
-                    PopupMenuItem(
-                      value: 'archived',
-                      child: ListTile(
-                        leading: const Icon(Icons.archive),
-                        title: Text(l.orgArchived),
-                        dense: true,
-                        contentPadding: EdgeInsets.zero,
-                      ),
-                    ),
-                    const PopupMenuDivider(),
-                  ],
-                  PopupMenuItem(
-                    value: 'leave',
-                    child: ListTile(
-                      leading: const Icon(
-                        Icons.exit_to_app,
-                        color: Colors.orange,
-                      ),
-                      title: Text(
-                        l.orgLeave,
-                        style: const TextStyle(color: Colors.orange),
-                      ),
-                      dense: true,
-                      contentPadding: EdgeInsets.zero,
-                    ),
+        return orgThemed(
+          child: Scaffold(
+            appBar: AppBar(
+              title: AppLogoTitle(title: org.name),
+              leading: IconButton(
+                key: const Key('org_detail_back'),
+                icon: const Icon(Icons.arrow_back),
+                tooltip: MaterialLocalizations.of(context).backButtonTooltip,
+                onPressed: () => context.go('/organizations'),
+              ),
+              actions: [
+                if (isSuperUser)
+                  IconButton(
+                    key: const Key('org_edit_button'),
+                    icon: const Icon(Icons.edit),
+                    tooltip: l.editOrganization,
+                    onPressed: () => context.push('/organizations/$orgId/edit'),
                   ),
-                  if (isSuperUser)
+                PopupMenuButton<String>(
+                  key: const Key('org_detail_menu'),
+                  tooltip: MaterialLocalizations.of(context).showMenuTooltip,
+                  onSelected: (value) =>
+                      _handleMenuAction(context, ref, value, org),
+                  itemBuilder: (context) => [
+                    if (isOrgAdmin) ...[
+                      PopupMenuItem(
+                        value: 'invite',
+                        child: ListTile(
+                          leading: const Icon(Icons.person_add),
+                          title: Text(l.orgInviteMember),
+                          dense: true,
+                          contentPadding: EdgeInsets.zero,
+                        ),
+                      ),
+                      PopupMenuItem(
+                        value: 'members',
+                        child: ListTile(
+                          leading: const Icon(Icons.people),
+                          title: Text(l.orgMembers),
+                          dense: true,
+                          contentPadding: EdgeInsets.zero,
+                        ),
+                      ),
+                      PopupMenuItem(
+                        value: 'pets',
+                        child: ListTile(
+                          leading: const Icon(Icons.pets),
+                          title: Text(l.orgPets),
+                          dense: true,
+                          contentPadding: EdgeInsets.zero,
+                        ),
+                      ),
+                      PopupMenuItem(
+                        value: 'archived',
+                        child: ListTile(
+                          leading: const Icon(Icons.archive),
+                          title: Text(l.orgArchived),
+                          dense: true,
+                          contentPadding: EdgeInsets.zero,
+                        ),
+                      ),
+                      const PopupMenuDivider(),
+                    ],
                     PopupMenuItem(
-                      value: 'delete',
+                      value: 'leave',
                       child: ListTile(
-                        leading: const Icon(Icons.delete, color: Colors.red),
+                        leading: const Icon(
+                          Icons.exit_to_app,
+                          color: Colors.orange,
+                        ),
                         title: Text(
-                          l.deleteOrganization,
-                          style: const TextStyle(color: Colors.red),
+                          l.orgLeave,
+                          style: const TextStyle(color: Colors.orange),
                         ),
                         dense: true,
                         contentPadding: EdgeInsets.zero,
                       ),
                     ),
+                    if (isSuperUser)
+                      PopupMenuItem(
+                        value: 'delete',
+                        child: ListTile(
+                          leading: const Icon(Icons.delete, color: Colors.red),
+                          title: Text(
+                            l.deleteOrganization,
+                            style: const TextStyle(color: Colors.red),
+                          ),
+                          dense: true,
+                          contentPadding: EdgeInsets.zero,
+                        ),
+                      ),
+                  ],
+                ),
+              ],
+            ),
+            body: ListView(
+              padding: const EdgeInsets.all(16),
+              children: [
+                OrganizationInfoCard(
+                  org: org,
+                  theme: theme,
+                  colorScheme: colorScheme,
+                  l: l,
+                  localizedTypeLabel: _localizedTypeLabel,
+                ),
+                if (isOrgAdmin) ...[
+                  const SizedBox(height: 16),
+                  OrganizationBrandingSection(
+                    org: org,
+                    theme: theme,
+                    colorScheme: colorScheme,
+                    l: l,
+                  ),
                 ],
-              ),
-            ],
-          ),
-          body: ListView(
-            padding: const EdgeInsets.all(16),
-            children: [
-              OrganizationInfoCard(
-                org: org,
-                theme: theme,
-                colorScheme: colorScheme,
-                l: l,
-                localizedTypeLabel: _localizedTypeLabel,
-              ),
-              if (isOrgAdmin) ...[
                 const SizedBox(height: 16),
-                OrganizationBrandingSection(
+                OrganizationEmergencyContactCard(
                   org: org,
                   theme: theme,
                   colorScheme: colorScheme,
                   l: l,
                 ),
+                const SizedBox(height: 16),
+                OrganizationContactCard(
+                  org: org,
+                  theme: theme,
+                  colorScheme: colorScheme,
+                ),
+                if (isOrgAdmin) ...[
+                  const SizedBox(height: 16),
+                  OrganizationPeopleSection(
+                    orgId: orgId,
+                    theme: theme,
+                    colorScheme: colorScheme,
+                    l: l,
+                    localizedRoleLabel: _localizedRoleLabel,
+                    isSuperUser: isSuperUser,
+                    isOrgAdmin: isOrgAdmin,
+                  ),
+                  const SizedBox(height: 16),
+                  OrganizationPetsSection(
+                    petsAsync: petsAsync,
+                    isSuperUser: isOrgAdmin,
+                    theme: theme,
+                    colorScheme: colorScheme,
+                    l: l,
+                    orgId: orgId,
+                    petsExpanded: _petsExpanded,
+                    onToggleExpand: () =>
+                        setState(() => _petsExpanded = !_petsExpanded),
+                    onAddPet: () => context.push('/add?orgId=$orgId'),
+                  ),
+                  const SizedBox(height: 16),
+                  OrganizationArchivedSection(
+                    theme: theme,
+                    colorScheme: colorScheme,
+                    l: l,
+                    onTap: () => context.push('/organizations/$orgId/archived'),
+                  ),
+                  const SizedBox(height: 16),
+                  OrganizationConnectionsSection(
+                    orgId: orgId,
+                    theme: theme,
+                    colorScheme: colorScheme,
+                    l: l,
+                  ),
+                ],
+                if (isOrgAdmin) ...[
+                  const SizedBox(height: 16),
+                  OrganizationHomeHiddenPetsSection(
+                    orgId: orgId,
+                    theme: theme,
+                    colorScheme: colorScheme,
+                    l: l,
+                  ),
+                  const SizedBox(height: 16),
+                  Builder(
+                    builder: (context) {
+                      final hiddenAsync = ref.watch(hiddenSharedPetsProvider);
+                      final hiddenPets = hiddenAsync.valueOrNull ?? [];
+                      final orgHidden = hiddenPets
+                          .where((p) => p.organizationId == orgId)
+                          .toList();
+                      return OrganizationHiddenSharedPetsSection(
+                        orgHidden: orgHidden,
+                        theme: theme,
+                        colorScheme: colorScheme,
+                        l: l,
+                        hiddenExpanded: _hiddenExpanded,
+                        onToggleExpand: () =>
+                            setState(() => _hiddenExpanded = !_hiddenExpanded),
+                        onUnhide: (pet) async {
+                          await ref
+                              .read(hiddenSharedPetsProvider.notifier)
+                              .unhideSharedPet(pet.id);
+                          if (context.mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text(l.petUnhidden(pet.name))),
+                            );
+                          }
+                        },
+                      );
+                    },
+                  ),
+                ],
               ],
-              const SizedBox(height: 16),
-              OrganizationEmergencyContactCard(
-                org: org,
-                theme: theme,
-                colorScheme: colorScheme,
-                l: l,
-              ),
-              const SizedBox(height: 16),
-              OrganizationContactCard(
-                org: org,
-                theme: theme,
-                colorScheme: colorScheme,
-              ),
-              if (isOrgAdmin) ...[
-                const SizedBox(height: 16),
-                OrganizationPeopleSection(
-                  orgId: orgId,
-                  theme: theme,
-                  colorScheme: colorScheme,
-                  l: l,
-                  localizedRoleLabel: _localizedRoleLabel,
-                  isSuperUser: isSuperUser,
-                  isOrgAdmin: isOrgAdmin,
-                ),
-                const SizedBox(height: 16),
-                OrganizationPetsSection(
-                  petsAsync: petsAsync,
-                  isSuperUser: isOrgAdmin,
-                  theme: theme,
-                  colorScheme: colorScheme,
-                  l: l,
-                  orgId: orgId,
-                  petsExpanded: _petsExpanded,
-                  onToggleExpand: () =>
-                      setState(() => _petsExpanded = !_petsExpanded),
-                  onAddPet: () => context.push('/add?orgId=$orgId'),
-                ),
-                const SizedBox(height: 16),
-                OrganizationArchivedSection(
-                  theme: theme,
-                  colorScheme: colorScheme,
-                  l: l,
-                  onTap: () => context.push('/organizations/$orgId/archived'),
-                ),
-                const SizedBox(height: 16),
-                OrganizationConnectionsSection(
-                  orgId: orgId,
-                  theme: theme,
-                  colorScheme: colorScheme,
-                  l: l,
-                ),
-              ],
-              if (isOrgAdmin) ...[
-                const SizedBox(height: 16),
-                OrganizationHomeHiddenPetsSection(
-                  orgId: orgId,
-                  theme: theme,
-                  colorScheme: colorScheme,
-                  l: l,
-                ),
-                const SizedBox(height: 16),
-                Builder(
-                  builder: (context) {
-                    final hiddenAsync = ref.watch(hiddenSharedPetsProvider);
-                    final hiddenPets = hiddenAsync.valueOrNull ?? [];
-                    final orgHidden = hiddenPets
-                        .where((p) => p.organizationId == orgId)
-                        .toList();
-                    return OrganizationHiddenSharedPetsSection(
-                      orgHidden: orgHidden,
-                      theme: theme,
-                      colorScheme: colorScheme,
-                      l: l,
-                      hiddenExpanded: _hiddenExpanded,
-                      onToggleExpand: () =>
-                          setState(() => _hiddenExpanded = !_hiddenExpanded),
-                      onUnhide: (pet) async {
-                        await ref
-                            .read(hiddenSharedPetsProvider.notifier)
-                            .unhideSharedPet(pet.id);
-                        if (context.mounted) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text(l.petUnhidden(pet.name))),
-                          );
-                        }
-                      },
-                    );
-                  },
-                ),
-              ],
-            ],
+            ),
           ),
         );
       },

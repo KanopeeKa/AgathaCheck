@@ -1,0 +1,198 @@
+# Non-blocking full CI audit on main — every N merges (default 12) or stale window.
+# Complements path-scoped PR CI; does not block merges.
+name: CI full audit (main)
+
+on:
+  workflow_run:
+    workflows: ["Promote UAT (tag on merge to main)"]
+    types: [completed]
+
+permissions:
+  actions: write
+  contents: read
+  issues: write
+
+concurrency:
+  group: ci-full-audit-main
+  cancel-in-progress: false
+
+jobs:
+  decide:
+    name: Merge counter
+    if: github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      should_run: ${{ steps.counter.outputs.should_run }}
+      main_sha: ${{ github.event.workflow_run.head_sha }}
+      reason: ${{ steps.counter.outputs.reason }}
+      merge_count: ${{ steps.counter.outputs.merge_count }}
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Bump counter and decide
+        id: counter
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: bash scripts/ci/merge-audit-counter.sh decide
+
+  startup-smoke:
+    needs: decide
+    if: needs.decide.outputs.should_run == 'true'
+    uses: ./.github/workflows/_reusable-pr-startup-smoke.yml
+
+  test-suite:
+    needs: decide
+    if: needs.decide.outputs.should_run == 'true'
+    uses: ./.github/workflows/_reusable-test.yml
+
+  flutter-analyze:
+    needs: decide
+    if: needs.decide.outputs.should_run == 'true'
+    uses: ./.github/workflows/_reusable-flutter-analyze.yml
+
+  flutter-test-pet:
+    needs: [decide, flutter-analyze]
+    if: needs.decide.outputs.should_run == 'true'
+    uses: ./.github/workflows/_reusable-flutter-test-shard.yml
+    with:
+      shard: pet
+
+  flutter-test-health:
+    needs: [decide, flutter-analyze]
+    if: needs.decide.outputs.should_run == 'true'
+    uses: ./.github/workflows/_reusable-flutter-test-shard.yml
+    with:
+      shard: health
+
+  flutter-test-org:
+    needs: [decide, flutter-analyze]
+    if: needs.decide.outputs.should_run == 'true'
+    uses: ./.github/workflows/_reusable-flutter-test-shard.yml
+    with:
+      shard: org
+
+  flutter-test-rest-a:
+    needs: [decide, flutter-analyze]
+    if: needs.decide.outputs.should_run == 'true'
+    uses: ./.github/workflows/_reusable-flutter-test-shard.yml
+    with:
+      shard: rest-a
+
+  flutter-test-rest-b:
+    needs: [decide, flutter-analyze]
+    if: needs.decide.outputs.should_run == 'true'
+    uses: ./.github/workflows/_reusable-flutter-test-shard.yml
+    with:
+      shard: rest-b
+
+  flutter-coverage:
+    needs:
+      - decide
+      - flutter-test-pet
+      - flutter-test-health
+      - flutter-test-org
+      - flutter-test-rest-a
+      - flutter-test-rest-b
+    if: needs.decide.outputs.should_run == 'true'
+    uses: ./.github/workflows/_reusable-flutter-coverage.yml
+
+  flutter-integration:
+    needs: [decide, flutter-analyze]
+    if: needs.decide.outputs.should_run == 'true'
+    uses: ./.github/workflows/_reusable-flutter-integration.yml
+
+  flutter-build-web:
+    needs: [decide, flutter-analyze]
+    if: needs.decide.outputs.should_run == 'true'
+    uses: ./.github/workflows/_reusable-build-web.yml
+    with:
+      run_codegen: false
+      use_flutter_prep_artifact: true
+      source_workflow: ci-full-audit
+    secrets:
+      POSTHOG_API_KEY: ${{ secrets.POSTHOG_API_KEY }}
+
+  ci-e2e-canary:
+    needs: [decide, flutter-build-web]
+    if: >-
+      needs.decide.outputs.should_run == 'true' &&
+      needs.flutter-build-web.result == 'success'
+    uses: ./.github/workflows/_reusable-e2e-local.yml
+    with:
+      test_suite: smoke-ci
+      web_artifact_name: ${{ needs.flutter-build-web.outputs.artifact_name }}
+
+  audit-gate:
+    name: Full audit passed
+    needs:
+      - decide
+      - startup-smoke
+      - test-suite
+      - flutter-analyze
+      - flutter-test-pet
+      - flutter-test-health
+      - flutter-test-org
+      - flutter-test-rest-a
+      - flutter-test-rest-b
+      - flutter-coverage
+      - flutter-integration
+      - flutter-build-web
+      - ci-e2e-canary
+    if: >-
+      always() &&
+      needs.decide.outputs.should_run == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          sparse-checkout: |
+            scripts/ci/assert-ci-gate.sh
+          sparse-checkout-cone-mode: false
+
+      - name: Verify full audit jobs passed
+        env:
+          STARTUP_SMOKE: ${{ needs.startup-smoke.result }}
+          TEST_SUITE: ${{ needs.test-suite.result }}
+          FLUTTER_ANALYZE: ${{ needs.flutter-analyze.result }}
+          FLUTTER_TEST_PET: ${{ needs.flutter-test-pet.result }}
+          FLUTTER_TEST_HEALTH: ${{ needs.flutter-test-health.result }}
+          FLUTTER_TEST_ORG: ${{ needs.flutter-test-org.result }}
+          FLUTTER_TEST_REST_A: ${{ needs.flutter-test-rest-a.result }}
+          FLUTTER_TEST_REST_B: ${{ needs.flutter-test-rest-b.result }}
+          FLUTTER_COVERAGE: ${{ needs.flutter-coverage.result }}
+          FLUTTER_INTEGRATION: ${{ needs.flutter-integration.result }}
+          FLUTTER_BUILD_WEB: ${{ needs.flutter-build-web.result }}
+          CI_E2E_CANARY: ${{ needs.ci-e2e-canary.result }}
+        run: bash scripts/ci/assert-ci-gate.sh
+
+  spawn-agent-on-failure:
+    name: Spawn audit fix agent
+    needs: [decide, audit-gate]
+    if: >-
+      always() &&
+      needs.decide.outputs.should_run == 'true' &&
+      needs.audit-gate.result == 'failure'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Open agent issue
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          AUDIT_SHA: ${{ needs.decide.outputs.main_sha }}
+          AUDIT_RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          AUDIT_SUMMARY: "Full audit failed (merge #${{ needs.decide.outputs.merge_count }}, reason: ${{ needs.decide.outputs.reason }})."
+        run: bash scripts/ci/spawn-ci-audit-agent-issue.sh
+
+  skip-notice:
+    name: Audit skipped
+    needs: decide
+    if: needs.decide.outputs.should_run != 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          echo "::notice::CI full audit skipped (merge_count=${{ needs.decide.outputs.merge_count }}). Next at multiples of 12 or stale window."

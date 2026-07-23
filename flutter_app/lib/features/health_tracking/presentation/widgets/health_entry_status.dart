@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
+import '../../../../core/theme/app_color_tokens.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../domain/entities/health_entry.dart';
 
@@ -22,9 +23,9 @@ String formatHealthEntryStatusLine(HealthEntry entry, AppLocalizations l) {
 
 /// Status color for due/overdue/completed entries (text conveys the date).
 Color healthEntryStatusColor(HealthEntry entry, ColorScheme colorScheme) {
-  if (entry.isCompleted) return Colors.green;
+  if (entry.isCompleted) return AppColorTokens.success;
   if (entry.isOverdue) return colorScheme.error;
-  if (entry.isDueToday) return Colors.orange;
-  if (entry.isDueSoon) return Colors.amber.shade700;
+  if (entry.isDueToday) return AppColorTokens.warning;
+  if (entry.isDueSoon) return AppColorTokens.warning;
   return colorScheme.primary;
 }
