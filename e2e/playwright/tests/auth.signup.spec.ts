@@ -86,7 +86,7 @@ test.describe('Authentication signup', () => {
     await expectHomeShellHidden(page);
   });
 
-  test('@smoke-uat user can sign up with valid credentials and reach the pet list', async ({ page }) => {
+  test('user can sign up with valid credentials and reach the pet list', async ({ page }) => {
     const suffix = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
     const email = `e2e-signup-${suffix}@example.com`;
     const password = 'E2eTestPass1';

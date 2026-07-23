@@ -57,8 +57,13 @@ export class ExperiencePage {
   }
 
   async expectOrgShell(): Promise<void> {
+    await dismissConsentBannerIfPresent(this.page);
+    await refreshFlutterAccessibility(this.page);
     await expect(this.page.getByRole('button', { name: 'Home' })).toBeVisible();
-    await expect(this.page.getByRole('button', { name: 'Events' })).toBeVisible();
+    // Org shell hides Events from top nav (drawer only) — see experience_shell_scaffold.dart
+    await expect(
+      this.page.getByRole('button', { name: 'Events' }),
+    ).not.toBeVisible();
   }
 
   async openDrawerOrgView(): Promise<void> {

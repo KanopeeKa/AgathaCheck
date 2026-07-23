@@ -1,4 +1,5 @@
 import type { Page } from '@playwright/test';
+import { expect } from '@playwright/test';
 import { escapeRegExp, refreshFlutterAccessibility, semanticsByName } from '../support/flutter';
 
 /**
@@ -44,9 +45,11 @@ export class HealthDashboardPage {
   }
 
   async expectEntryVisible(name: string, timeout = 15_000): Promise<void> {
-    await semanticsByName(this.page, new RegExp(escapeRegExp(name), 'i')).waitFor({
-      timeout,
-    });
+    const pattern = new RegExp(escapeRegExp(name), 'i');
+    await expect(async () => {
+      await refreshFlutterAccessibility(this.page);
+      await expect(semanticsByName(this.page, pattern)).toBeVisible();
+    }).toPass({ timeout });
   }
 
   async openEntryForEdit(name: string): Promise<void> {
