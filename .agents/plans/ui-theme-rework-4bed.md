@@ -47,10 +47,10 @@ next_action: "continue phase 3 on branch cursor/ui-theme-phase3-guardian-4bed"
 artifact_ref:
   branch: cursor/ui-theme-phase3-guardian-4bed
   plan_path: .agents/plans/ui-theme-rework-4bed.md
-  plan_commit: 828fefa3df062c2da131e17cecff0956e4894010
+  plan_commit: 5b40c6208a48948935549f990fb7b28d334058f9
   snapshot_path: .agents/plans/ui-theme-rework-4bed.snapshot.json
-  snapshot_commit: 828fefa3df062c2da131e17cecff0956e4894010
-open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/282"]
+  snapshot_commit: 5b40c6208a48948935549f990fb7b28d334058f9
+open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/282","https://github.com/KanopeeKa/AgathaCheck/pull/284"]
 merge_commits: {}
 debt_issue_refs: []
 ```
