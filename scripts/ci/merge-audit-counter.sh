@@ -5,7 +5,7 @@ set -euo pipefail
 
 MERGE_THRESHOLD="${CI_FULL_AUDIT_MERGE_THRESHOLD:-12}"
 STALE_DAYS="${CI_FULL_AUDIT_STALE_DAYS:-7}"
-STATE_FILE="${CI_AUDIT_STATE_FILE:-.ci-full-audit-state.json}"
+STATE_FILE="${CI_AUDIT_STATE_FILE:-.ci-full-audit-state/state.json}"
 
 read_state() {
   python3 - "$STATE_FILE" <<'PY'

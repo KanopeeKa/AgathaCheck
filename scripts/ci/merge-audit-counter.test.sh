@@ -38,4 +38,23 @@ assert_eq "$(grep '^merge_count=' <<<"$out" | cut -d= -f2)" "3" "third merge"
 assert_eq "$(grep '^should_run=' <<<"$out" | cut -d= -f2)" "true" "threshold triggers audit"
 assert_eq "$(grep '^reason=' <<<"$out" | cut -d= -f2)" "merge_count_mod_3" "mod threshold reason"
 
+# Stale window — off-threshold merge with old last_run triggers audit
+STALE_TMP="$(mktemp -d)"
+STALE_STATE="$STALE_TMP/state.json"
+mkdir -p "$(dirname "$STALE_STATE")"
+python3 - "$STALE_STATE" <<'PY'
+import json, pathlib, sys
+from datetime import datetime, timedelta, timezone
+
+path = pathlib.Path(sys.argv[1])
+old = (datetime.now(timezone.utc) - timedelta(days=10)).strftime("%Y-%m-%dT%H:%M:%SZ")
+path.write_text(json.dumps({"merge_count": 4, "last_run": old}, indent=2) + "\n")
+PY
+export CI_AUDIT_STATE_FILE="$STALE_STATE"
+out="$(run_decide)"
+assert_eq "$(grep '^merge_count=' <<<"$out" | cut -d= -f2)" "5" "stale path bumps count"
+assert_eq "$(grep '^should_run=' <<<"$out" | cut -d= -f2)" "true" "stale last_run triggers audit"
+assert_eq "$(grep '^reason=' <<<"$out" | cut -d= -f2)" "stale_7d" "stale reason"
+rm -rf "$STALE_TMP"
+
 echo "OK: merge-audit-counter tests passed"
