@@ -27,6 +27,34 @@ class AppLocalizationsFr extends AppLocalizations {
       'Connectez-vous pour reprendre là où vous vous êtes arrêté, ou créez un compte gratuit pour commencer à garder l\'historique de santé de votre animal en sécurité et accessible à tout moment.';
 
   @override
+  String get landingGuardianPathSummary =>
+      'Pour les particuliers et les familles d\'accueil';
+
+  @override
+  String get landingGuardianPathExpandCta => 'Découvrir le fonctionnement';
+
+  @override
+  String get landingGuardianPathCollapseCta => 'Réduire';
+
+  @override
+  String get landingGuardianPathDetail =>
+      'Suivez les visites vétérinaires, les médicaments, le poids et les soins quotidiens en un seul endroit. Coordonnez-vous avec votre foyer et gardez l\'historique de santé de chaque animal en sécurité.';
+
+  @override
+  String get landingOrgPathSummary =>
+      'Pour les refuges, associations et équipes de soins';
+
+  @override
+  String get landingOrgPathExpandCta => 'Découvrir les fonctions organisation';
+
+  @override
+  String get landingOrgPathCollapseCta => 'Réduire';
+
+  @override
+  String get landingOrgPathDetail =>
+      'Gérez les animaux en inventaire, coordonnez le personnel et les bénévoles, et partagez les dossiers de soins au sein de votre organisation.';
+
+  @override
   String get signIn => 'Se connecter';
 
   @override

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../core/theme/experience_colors.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../organization/presentation/providers/organization_providers.dart';
 import '../../../pet_profile/presentation/providers/pet_providers.dart';
@@ -55,6 +56,9 @@ class _ExperienceChooserScreenState
                   subtitle: l.experienceGuardianSubtitle,
                   icon: Icons.pets,
                   selected: _selected == AppExperience.guardian,
+                  accentColor: context.experienceColors.guardianPrimary,
+                  onAccentColor: context.experienceColors.guardianOnPrimary,
+                  accentContainer: context.experienceColors.guardianLight,
                   onTap: () =>
                       setState(() => _selected = AppExperience.guardian),
                 ),
@@ -66,6 +70,9 @@ class _ExperienceChooserScreenState
                   subtitle: l.experienceOrganizationSubtitle,
                   icon: Icons.business,
                   selected: _selected == AppExperience.organization,
+                  accentColor: context.experienceColors.organizationPrimary,
+                  onAccentColor: context.experienceColors.organizationOnPrimary,
+                  accentContainer: context.experienceColors.organizationLight,
                   onTap: () =>
                       setState(() => _selected = AppExperience.organization),
                 ),
@@ -78,6 +85,9 @@ class _ExperienceChooserScreenState
                 icon: Icons.house_siding_outlined,
                 selected: false,
                 enabled: false,
+                accentColor: theme.colorScheme.outline,
+                onAccentColor: theme.colorScheme.onSurface,
+                accentContainer: theme.colorScheme.surfaceContainerHighest,
                 onTap: () {},
               ),
               if (showRemember) ...[
@@ -177,6 +187,9 @@ class _ExperienceCard extends StatelessWidget {
     required this.icon,
     required this.selected,
     required this.onTap,
+    required this.accentColor,
+    required this.onAccentColor,
+    required this.accentContainer,
     this.enabled = true,
   });
 
@@ -186,19 +199,22 @@ class _ExperienceCard extends StatelessWidget {
   final bool selected;
   final bool enabled;
   final VoidCallback onTap;
+  final Color accentColor;
+  final Color onAccentColor;
+  final Color accentContainer;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final borderColor = selected
-        ? theme.colorScheme.primary
+        ? accentColor
         : theme.colorScheme.outlineVariant;
 
     return Opacity(
       opacity: enabled ? 1 : 0.5,
       child: Material(
         color: selected
-            ? theme.colorScheme.primaryContainer.withValues(alpha: 0.35)
+            ? accentContainer.withValues(alpha: 0.65)
             : theme.colorScheme.surface,
         borderRadius: BorderRadius.circular(12),
         child: InkWell(
@@ -212,7 +228,7 @@ class _ExperienceCard extends StatelessWidget {
             ),
             child: Row(
               children: [
-                Icon(icon, size: 36, color: theme.colorScheme.primary),
+                Icon(icon, size: 36, color: accentColor),
                 const SizedBox(width: 16),
                 Expanded(
                   child: Column(
@@ -229,8 +245,7 @@ class _ExperienceCard extends StatelessWidget {
                     ],
                   ),
                 ),
-                if (selected)
-                  Icon(Icons.check_circle, color: theme.colorScheme.primary),
+                if (selected) Icon(Icons.check_circle, color: accentColor),
               ],
             ),
           ),
