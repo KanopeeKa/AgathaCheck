@@ -196,13 +196,13 @@ See `docs/ci-cd-gates.md` §3 · babysit-plus §8b–8c · `docs/e2e-ci-canary-p
 
 | When | Action |
 |------|--------|
-| Create issue and **start work immediately** | `node scripts/github_issue_workflow.js start-work --issue <n> --body "…"` |
-| Create debt issue for **later** | Backlog; comment on PR with issue # |
+| Create issue and **start work immediately** | `node scripts/github_issue_workflow.js start-work --issue <n> --body "…"` (comment + `busy`) |
+| Create debt issue for **later** | Comment on PR with issue # only |
 | Progress / milestone | Comment on the issue |
 | Pause or question for human | Comment with `**Needs you:**` + reason; halt/pause execute-plan when blocked |
 | Plan or task complete | Close with summary comment (`complete-plan --write` for control issues) |
 
-Project status updates require `GH_PROJECTS_PAT`, `GH_PROJECT_ID`, `GH_STATUS_FIELD_ID` — see `docs/github-issue-workflow.md` and `AGENTS.md` §GitHub Project board.
+**Project board status** (In Progress, Done, etc.) is **not** updated by Cloud Agents — GitHub does not grant Projects write on agent tokens. Use comments + `busy`; humans or GitHub Actions update the board when needed.
 
 ---
 

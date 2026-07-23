@@ -301,7 +301,7 @@ function runSync(cmd, planId, flags) {
           project_status: 'Backlog',
           gh_command: `gh issue create --title "${renderControlIssueTitle(planId)}" --body-file - --label ${labels.map((l) => `"${l}"`).join(' --label ')}`,
           project_status_note:
-            'New control issues enter Project status Backlog. Move to In Progress when work starts (set-project-status).',
+            'New control issues enter Project status Backlog (human/Actions). Agents use start-work (comment + busy) when work begins.',
         });
         break;
       }

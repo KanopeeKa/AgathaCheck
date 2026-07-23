@@ -10,19 +10,21 @@
  */
 
 const fs = require('fs');
+const { spawnSync } = require('child_process');
 const {
   postIssueComment,
+  resolveRepository,
   updateIssueProjectStatus,
 } = require('./lib/execute_plan_project');
 
 function usage() {
   console.error(`Usage:
-  node scripts/github_issue_workflow.js set-status --issue <n> --status <name>
   node scripts/github_issue_workflow.js comment --issue <n> [--body text | --body-file path]
   node scripts/github_issue_workflow.js start-work --issue <n> [--body text | --body-file path]
+  node scripts/github_issue_workflow.js set-status --issue <n> --status <name>  # CI/Actions only; agents skip
 
-Project status requires GH_PROJECTS_PAT, GH_PROJECT_ID, GH_STATUS_FIELD_ID.
-See docs/github-issue-workflow.md`);
+Agents cannot update GitHub Project board status — use comments + the \`busy\` label.
+See docs/agent-efficiency/github-labels.md`);
   process.exit(1);
 }
 
@@ -53,6 +55,23 @@ function printJson(obj) {
   console.log(JSON.stringify(obj, null, 2));
 }
 
+function editIssueLabels(issueNumber, { add = [], remove = [] } = {}) {
+  const { owner, repo } = resolveRepository();
+  const args = ['issue', 'edit', String(issueNumber), '--repo', `${owner}/${repo}`];
+  for (const label of add) args.push('--add-label', label);
+  for (const label of remove) args.push('--remove-label', label);
+  if (add.length === 0 && remove.length === 0) {
+    return { skipped: true, reason: 'no_label_changes' };
+  }
+  const result = spawnSync('gh', args, { encoding: 'utf8' });
+  if (result.status !== 0) {
+    throw new Error(
+      `gh issue edit failed with exit ${result.status}: ${result.stderr || result.stdout}`
+    );
+  }
+  return { ok: true, issueNumber, added: add, removed: remove };
+}
+
 async function main() {
   const [cmd, ...rest] = process.argv.slice(2);
   const flags = parseFlags(rest);
@@ -75,11 +94,11 @@ async function main() {
     }
 
     case 'start-work': {
-      const statusResult = await updateIssueProjectStatus(issueNumber, 'In Progress');
       const body = readBody(flags) || 'Work started.';
       const commentResult = postIssueComment(issueNumber, body);
-      printJson({ status: statusResult, comment: commentResult });
-      process.exit(statusResult.ok || statusResult.skipped ? 0 : 1);
+      const labelResult = editIssueLabels(issueNumber, { add: ['busy'] });
+      printJson({ comment: commentResult, labels: labelResult });
+      break;
     }
 
     default:

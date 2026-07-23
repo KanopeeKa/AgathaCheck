@@ -106,13 +106,13 @@ For every **ignore** and every **skipped nit**:
 4. Batch ≥3 trivial nits same file/reviewer/PR into one issue.
 5. On failure → `status: blocked`, `status_reason: issue_create_failed` (execute-plan).
 
-**When you start work on a debt issue** (same session or later), move it to **In Progress** and comment:
+**When you start work on a debt issue** (same session or later), comment and add `busy`:
 
 ```bash
 node scripts/github_issue_workflow.js start-work --issue <n> --body "Addressing deferred review item from PR #…"
 ```
 
-Deferred debt issues that are not being worked yet stay **Backlog**.
+Deferred debt issues that are not being worked yet need no label.
 
 ### 5. CI loop
 

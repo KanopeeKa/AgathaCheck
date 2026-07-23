@@ -89,19 +89,15 @@ Run when drafting a plan, **before** `approve-autonomous`:
    node scripts/execute_plan_runtime.js current-phase <plan_id>
    ```
 6. Rebase phase branch on `origin/<base_branch>` (or integration parent when spawn phase)
-7. **Project status — In Progress** (control issue; every session after gate passes):
+7. **Control issue session comment** — post what you are starting (phase id, branch, PR if any). Add `busy` on first session:
    ```bash
-   node scripts/execute_plan_runtime.js set-project-status <plan_id> --status "In Progress"
-   ```
-   Distinguishes active plan work from backlog. Skip only if already **In Progress**. Requires `GH_PROJECTS_PAT`, `GH_PROJECT_ID`, `GH_STATUS_FIELD_ID` (see `docs/github-issue-workflow.md`); when unset, CLI prints `skipped` — use `node scripts/github_issue_workflow.js set-status --issue <n> --status "In Progress"` after configuring secrets, or move manually on the board.
-8. **Control issue session comment** — post what you are starting (phase id, branch, PR if any):
-   ```bash
-   gh issue comment <control_issue> --body "## Session start
+   node scripts/github_issue_workflow.js start-work --issue <control_issue> --body "## Session start
    - phase: <id> — <title>
    - branch: <branch>
    - next: implement | babysit+ | resume"
    ```
-   Or: `node scripts/github_issue_workflow.js comment --issue <n> --body "..."`
+
+   **Do not** attempt GitHub Project board status updates — Cloud Agents cannot write Projects. Comments + `busy` are the agent-visible signal; you move board columns manually if needed.
 
 ---
 
@@ -111,14 +107,14 @@ The **control issue** is the human dashboard for plan status. Keep it current.
 
 | When | Action |
 |------|--------|
-| Work starts (session preflight) | **In Progress** (`set-project-status`) + session-start comment |
+| Work starts (session preflight) | `start-work` comment + `busy` label on control issue |
 | Phase milestone (PR opened, CI green, merged) | Short comment on control issue |
 | **Pause** (UAT remedial, waiting on you) | `pause --write --post-comment` — state checkpoint + what you need |
 | **Halt** (revoke, escalation, CI exhausted) | `halt --write --post-comment` — state reason + resume steps |
 | **Question for human** (blocks work) | Comment on control issue with `**Needs you:**` + halt if execute-plan cannot continue |
-| All phases merged | `complete-plan <plan_id> --write` → **Done** + close with summary comment |
+| All phases merged | `complete-plan <plan_id> --write` → close control issue with summary comment |
 
-Debt issues created during babysit+ stay **Backlog** until picked up. When you **start work** on any issue (debt or otherwise), move it to **In Progress** and comment what you are doing:
+Debt issues created during babysit+ are deferred until picked up. When you **start work** on any issue, comment and add `busy`:
 
 ```bash
 node scripts/github_issue_workflow.js start-work --issue <n> --body "Starting remedial fix for …"
@@ -217,13 +213,13 @@ Update snapshot `merge_commit` via runtime (`set-phase` + `saveSnapshot`). Sync 
 
 If more `pending` phases → loop to §1 **immediately** — any in-flight UAT babysit sub-agents from prior merges continue in the background per babysit-plus §8.
 
-If all `merged` → **complete plan** (snapshot + project board + close control issue):
+If all `merged` → **complete plan** (snapshot + close control issue):
 
 ```bash
 node scripts/execute_plan_runtime.js complete-plan <plan_id> --write
 ```
 
-This sets `autonomy: completed`, syncs runtime, moves the control issue to **Done**, and closes it with a summary comment. Use `--skip-close` only for dry-run inspection. If `gh issue close` fails, post the rendered `comment` manually on the control issue.
+This sets `autonomy: completed`, syncs runtime, and closes the control issue with a summary comment (removes `busy` if still present). Use `--skip-close` only for dry-run inspection. If `gh issue close` fails, post the rendered `comment` manually on the control issue. Project board columns are human-maintained — agents do not update them.
 
 ---
 
