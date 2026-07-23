@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import '../../../../../core/theme/app_theme.dart';
 import '../../../../../core/widgets/app_logo_title.dart';
 import '../../../../../l10n/app_localizations.dart';
 import '../../../../auth/presentation/providers/auth_providers.dart';
@@ -31,7 +30,6 @@ class PetDetailAppBar extends ConsumerWidget {
 
     return SliverAppBar(
       pinned: true,
-      backgroundColor: isOrgPet ? AppTheme.orgBlue : null,
       title: AppLogoTitle(title: petName),
       leading: IconButton(
         icon: const Icon(Icons.arrow_back),

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../../../../core/theme/app_theme.dart';
 import '../../../../l10n/app_localizations.dart';
 
 class OrganizationHiddenSharedPetsSection extends StatelessWidget {
@@ -26,7 +25,7 @@ class OrganizationHiddenSharedPetsSection extends StatelessWidget {
   Widget build(BuildContext context) {
     if (orgHidden.isEmpty) return const SizedBox.shrink();
     return Card(
-      color: AppTheme.orgBlueDarker,
+      color: colorScheme.primaryContainer,
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(

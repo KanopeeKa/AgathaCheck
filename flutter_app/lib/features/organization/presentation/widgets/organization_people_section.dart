@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../../core/theme/app_theme.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../domain/entities/organization_member.dart';
 import '../providers/organization_providers.dart';
@@ -35,7 +34,7 @@ class OrganizationPeopleSection extends ConsumerWidget {
     final peopleAsync = ref.watch(orgPeopleProvider(orgId));
 
     return Card(
-      color: AppTheme.orgBlueDarker,
+      color: colorScheme.primaryContainer,
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(

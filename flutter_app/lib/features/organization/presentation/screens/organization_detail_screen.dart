@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../../core/theme/app_theme.dart';
+import '../../../../core/theme/experience_colors.dart';
 import '../../../../core/widgets/app_logo_title.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../sharing/presentation/providers/sharing_providers.dart';
@@ -63,6 +63,7 @@ class _OrganizationDetailScreenState
         ? ref.watch(orgPetsProvider(orgId))
         : const AsyncValue<List<Pet>>.data([]);
     final theme = Theme.of(context);
+    final xp = context.experienceColors;
     final colorScheme = theme.colorScheme;
     final l = AppLocalizations.of(context)!;
 
@@ -148,13 +149,10 @@ class _OrganizationDetailScreenState
                     PopupMenuItem(
                       value: 'leave',
                       child: ListTile(
-                        leading: const Icon(
-                          Icons.exit_to_app,
-                          color: Colors.orange,
-                        ),
+                        leading: Icon(Icons.exit_to_app, color: xp.warning),
                         title: Text(
                           l.orgLeave,
-                          style: const TextStyle(color: Colors.orange),
+                          style: TextStyle(color: xp.warning),
                         ),
                         dense: true,
                         contentPadding: EdgeInsets.zero,
@@ -328,6 +326,7 @@ class _OrganizationDetailScreenState
 
   void _showLeaveDialog(BuildContext context, WidgetRef ref) {
     final l = AppLocalizations.of(context)!;
+    final xp = context.experienceColors;
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
@@ -341,7 +340,7 @@ class _OrganizationDetailScreenState
           ),
           FilledButton(
             key: const Key('org_leave_confirm'),
-            style: FilledButton.styleFrom(backgroundColor: Colors.orange),
+            style: FilledButton.styleFrom(backgroundColor: xp.warning),
             onPressed: () async {
               Navigator.pop(ctx);
               try {

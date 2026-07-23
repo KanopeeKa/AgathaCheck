@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/utils/constants.dart';
-import '../../../../core/widgets/app_logo_title.dart';
-import '../../../../l10n/app_localizations.dart';
-import '../../../../core/theme/app_theme.dart';
 import '../../../experience/domain/entities/app_experience.dart';
 import '../../../experience/presentation/providers/experience_providers.dart';
 import '../../../organization/presentation/widgets/pet_foster_placement_section.dart';
@@ -63,7 +60,6 @@ class _PetDetailScreenState extends ConsumerState<PetDetailScreen> {
         final backPath = ref.watch(experienceHomePathProvider);
 
         Widget body = Scaffold(
-          backgroundColor: useOrgChrome ? AppTheme.orgBlue : null,
           body: CustomScrollView(
             slivers: [
               PetDetailAppBar(
@@ -120,7 +116,7 @@ class _PetDetailScreenState extends ConsumerState<PetDetailScreen> {
           body = Theme(
             data: theme.copyWith(
               cardTheme: theme.cardTheme.copyWith(
-                color: AppTheme.orgBlueDarker,
+                color: theme.colorScheme.surface,
               ),
             ),
             child: body,

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../../core/theme/app_theme.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../domain/entities/org_connection.dart';
 import '../providers/organization_providers.dart';
@@ -122,7 +121,7 @@ class _OrganizationConnectionsSectionState
     );
 
     return Card(
-      color: AppTheme.orgBlueDarker,
+      color: colorScheme.primaryContainer,
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(

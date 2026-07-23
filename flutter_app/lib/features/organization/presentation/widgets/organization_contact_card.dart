@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../../../../core/theme/app_theme.dart';
 import '../../domain/entities/organization.dart';
 
 class OrganizationContactCard extends StatelessWidget {
@@ -25,7 +24,7 @@ class OrganizationContactCard extends StatelessWidget {
     if (!hasContact) return const SizedBox.shrink();
 
     return Card(
-      color: AppTheme.orgBlueDarker,
+      color: colorScheme.primaryContainer,
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(

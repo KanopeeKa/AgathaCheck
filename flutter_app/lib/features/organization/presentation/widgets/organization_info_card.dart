@@ -41,7 +41,7 @@ class OrganizationInfoCard extends ConsumerWidget {
       child: Semantics(
         label: '${org.name}, ${localizedTypeLabel(l, org.type)}',
         child: Card(
-          color: AppTheme.orgBlueDarker,
+          color: colorScheme.primaryContainer,
           child: Padding(
             padding: const EdgeInsets.all(20),
             child: Column(

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../../core/theme/app_theme.dart';
 import '../../../../core/widgets/app_logo_title.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../domain/entities/org_person.dart';
@@ -116,7 +115,7 @@ class _OrganizationPersonDetailScreenState
                 ),
                 const SizedBox(height: 16),
                 Card(
-                  color: AppTheme.orgBlueDarker,
+                  color: colorScheme.primaryContainer,
                   child: Padding(
                     padding: const EdgeInsets.all(16),
                     child: Column(

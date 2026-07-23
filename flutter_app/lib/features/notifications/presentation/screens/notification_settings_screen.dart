@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../core/theme/experience_colors.dart';
 import '../../../../core/widgets/app_logo_title.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../domain/entities/notification_preferences.dart';
@@ -31,6 +32,7 @@ class _NotificationSettingsScreenState
   Widget build(BuildContext context) {
     final prefsAsync = ref.watch(notificationPreferencesProvider);
     final theme = Theme.of(context);
+    final xp = context.experienceColors;
     final l = AppLocalizations.of(context)!;
 
     prefsAsync.whenData((prefs) {
@@ -80,7 +82,7 @@ class _NotificationSettingsScreenState
               ),
               value: _notifyDueSoon,
               onChanged: (v) => setState(() => _notifyDueSoon = v),
-              secondary: Icon(Icons.schedule, color: Colors.orange),
+              secondary: Icon(Icons.schedule, color: xp.warning),
             ),
             SwitchListTile(
               title: Text(l.completedAlerts),
@@ -89,7 +91,7 @@ class _NotificationSettingsScreenState
               ),
               value: _notifyCompleted,
               onChanged: (v) => setState(() => _notifyCompleted = v),
-              secondary: Icon(Icons.check_circle, color: Colors.green),
+              secondary: Icon(Icons.check_circle, color: xp.success),
             ),
             const Divider(),
             _SectionHeader(title: l.emailReminders, theme: theme),

@@ -317,6 +317,7 @@ Use this template when spawning agents on an integration branch:
 
 | Date | Change |
 |---|---|
+| 2026-07-23 | UI theme rework complete (`ui-theme-rework-4bed`): plum guardian / teal org tokens, phases 0–7 merged (#273–#294); `docs/design/tokens.md` |
 | 2026-07-22 | Sprint 11 planned: UI theme rework — `docs/design/ui-rework-plan.md`; design governance PR #267 |
 | 2026-07-19 | PR C (#220): due-events E2E restores home `DueEventsSection` assertion via `PetListPage.refreshByRemount()` after API seed (#216 events-screen proxy superseded). |
 | 2026-07-19 | #219 merged: E2E shell-navigation fallback contract (`navigateWithShellFallback`). |

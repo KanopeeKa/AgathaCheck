@@ -29,7 +29,7 @@ class OrganizationFosterParentsSection extends ConsumerWidget {
     final fosterParentsAsync = ref.watch(orgFosterParentsProvider(orgId));
 
     return Card(
-      color: AppTheme.orgBlueDarker,
+      color: colorScheme.primaryContainer,
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(

@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
+import '../../../../core/theme/app_color_tokens.dart';
 import '../../../../core/widgets/app_logo_title.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../domain/entities/archived_pet.dart';
@@ -262,13 +263,13 @@ class _ArchivedPetCard extends StatelessWidget {
   Color _transferTypeColor(String type) {
     switch (type.toLowerCase()) {
       case 'adoption':
-        return Colors.pink;
+        return AppColorTokens.warmAccent;
       case 'transfer':
-        return Colors.blue;
+        return AppColorTokens.info;
       case 'release':
-        return Colors.green;
+        return AppColorTokens.success;
       default:
-        return Colors.grey;
+        return AppColorTokens.muted;
     }
   }
 }
