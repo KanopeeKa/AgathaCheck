@@ -1,0 +1,62 @@
+# Weekly non-blocking npm audit advisory on main (belt-and-suspenders for scoped PR CI).
+name: Audit advisory (weekly)
+
+on:
+  schedule:
+    - cron: '0 6 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  audit:
+    name: npm audit advisory
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: |
+            server/package-lock.json
+            e2e/package-lock.json
+
+      - name: Server npm audit
+        id: server_audit
+        continue-on-error: true
+        working-directory: server
+        run: |
+          npm ci
+          npm audit --audit-level=high
+
+      - name: E2E npm audit
+        id: e2e_audit
+        continue-on-error: true
+        working-directory: e2e
+        run: |
+          npm ci
+          npm audit --audit-level=high
+
+      - name: Open advisory issue on failure
+        if: steps.server_audit.outcome == 'failure' || steps.e2e_audit.outcome == 'failure'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          title="audit-advisory: weekly npm audit found high+ vulnerabilities"
+          body="Weekly non-blocking audit on \`main\` ($(date -u +%Y-%m-%d)).
+
+          - server audit: ${{ steps.server_audit.outcome }}
+          - e2e audit: ${{ steps.e2e_audit.outcome }}
+
+          Review Dependabot or bump lockfiles. Does **not** block merges."
+          if gh issue list --state open --search "$title" --json title --jq '.[].title' | grep -Fq "$title"; then
+            echo "Advisory issue already open"
+            exit 0
+          fi
+          gh issue create --title "$title" --body "$body" --label tech-debt

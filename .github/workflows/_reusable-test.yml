@@ -5,6 +5,15 @@ name: Reusable tests
 
 on:
   workflow_call:
+    inputs:
+      run_backend:
+        description: Run backend Jest + server npm audit
+        type: boolean
+        default: true
+      run_e2e_audit:
+        description: Run e2e package npm audit
+        type: boolean
+        default: true
 
 env:
   NODE_VERSION: '22'
@@ -49,6 +58,7 @@ jobs:
 
   backend:
     name: Backend (Node.js Jest)
+    if: inputs.run_backend
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
@@ -98,6 +108,7 @@ jobs:
 
   e2e-audit:
     name: E2E package audit
+    if: inputs.run_e2e_audit
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
