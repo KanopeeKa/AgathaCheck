@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
+import '../../../../core/theme/experience_colors.dart';
 import '../../../pet_profile/presentation/providers/pet_providers.dart';
 import '../../domain/entities/app_notification.dart';
 
@@ -19,6 +20,7 @@ class NotificationTile extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
+    final xp = context.experienceColors;
     final isUnread = !notification.isRead;
 
     IconData icon;
@@ -49,7 +51,9 @@ class NotificationTile extends ConsumerWidget {
         break;
       case NotificationType.general:
         icon = isOrgOnly ? Icons.business : Icons.notifications;
-        iconColor = isOrgOnly ? Colors.indigo : theme.colorScheme.primary;
+        iconColor = isOrgOnly
+            ? xp.organizationPrimary
+            : theme.colorScheme.primary;
         break;
     }
 

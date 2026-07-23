@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import '../../../../../core/theme/app_color_tokens.dart';
 import '../../../../../core/utils/constants.dart';
 import '../../../domain/entities/pet.dart';
+import '../../utils/pet_accent_color.dart';
 
 /// Renders a pet's photo (or a species placeholder) for the profile card.
 ///
@@ -16,10 +17,7 @@ class PetPhoto extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-    final petColor = pet.colorValue != null
-        ? Color(pet.colorValue!)
-        : colorScheme.primary;
+    final petColor = resolvePetAccentColor(context, pet);
 
     Widget photoContent;
 

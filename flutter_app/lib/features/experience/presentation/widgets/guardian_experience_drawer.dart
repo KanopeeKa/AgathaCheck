@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../../../../core/theme/experience_colors.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../auth/presentation/providers/auth_providers.dart';
 import '../../domain/entities/app_experience.dart';
@@ -33,6 +34,7 @@ class GuardianExperienceDrawer extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l = AppLocalizations.of(context)!;
     final auth = ref.watch(authProvider);
+    final xp = context.experienceColors;
 
     return Drawer(
       child: SafeArea(
@@ -40,6 +42,7 @@ class GuardianExperienceDrawer extends ConsumerWidget {
           padding: EdgeInsets.zero,
           children: [
             UserAccountsDrawerHeader(
+              decoration: BoxDecoration(color: xp.guardianPrimary),
               accountName: Text(
                 auth.user?.firstName?.isNotEmpty == true
                     ? auth.user!.firstName!

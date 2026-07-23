@@ -3,11 +3,12 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 
 import '../../../../core/theme/app_color_tokens.dart';
-import '../../../../core/theme/app_theme.dart';
+import '../../../../core/theme/experience_colors.dart';
 import '../../../../core/utils/constants.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../organization/presentation/utils/foster_placement_display.dart';
 import '../../domain/entities/pet.dart';
+import '../utils/pet_accent_color.dart';
 
 /// A Material 3 card widget that displays a pet's summary information.
 ///
@@ -28,6 +29,9 @@ class PetCard extends StatelessWidget {
     final l = AppLocalizations.of(context)!;
     final speciesDisplay = _localizedSpecies(l, pet.species);
     final fosterLine = petFosterPlacementCardLine(l, pet);
+    final isOrgPet =
+        pet.organizationId != null && pet.organizationId!.isNotEmpty;
+    final orgAccent = context.experienceColors.organizationPrimary;
 
     return MergeSemantics(
       child: Semantics(
@@ -37,14 +41,13 @@ class PetCard extends StatelessWidget {
         child: Card(
           key: Key('pet_card_${pet.name}'),
           clipBehavior: Clip.antiAlias,
-          color: pet.organizationId != null ? AppTheme.orgBlue : null,
           child: InkWell(
             onTap: onTap,
             child: Padding(
               padding: const EdgeInsets.all(12),
               child: Row(
                 children: [
-                  _buildAvatar(colorScheme),
+                  _buildAvatar(context),
                   const SizedBox(width: 16),
                   Expanded(
                     child: Column(
@@ -64,14 +67,18 @@ class PetCard extends StatelessWidget {
                               Icon(
                                 Icons.business,
                                 size: 14,
-                                color: colorScheme.primary,
+                                color: isOrgPet
+                                    ? orgAccent
+                                    : colorScheme.primary,
                               ),
                               const SizedBox(width: 4),
                               Expanded(
                                 child: Text(
                                   pet.organizationName!,
                                   style: theme.textTheme.bodySmall?.copyWith(
-                                    color: colorScheme.primary,
+                                    color: isOrgPet
+                                        ? orgAccent
+                                        : colorScheme.primary,
                                     fontWeight: FontWeight.w500,
                                   ),
                                   maxLines: 1,
@@ -167,10 +174,8 @@ class PetCard extends StatelessWidget {
     );
   }
 
-  Widget _buildAvatar(ColorScheme colorScheme) {
-    final petColor = pet.colorValue != null
-        ? Color(pet.colorValue!)
-        : colorScheme.primary;
+  Widget _buildAvatar(BuildContext context) {
+    final petColor = resolvePetAccentColor(context, pet);
 
     Widget avatar;
 
