@@ -11,10 +11,7 @@ export class OrganizationListPage {
 
   async expectLoaded(): Promise<void> {
     await dismissConsentBannerIfPresent(this.page);
-    await expect(async () => {
-      await refreshFlutterAccessibility(this.page);
-      await expectAppBarTitle(this.page, 'My Organizations');
-    }).toPass({ timeout: 30_000 });
+    await expectAppBarTitle(this.page, 'My Organizations');
   }
 
   async openCreateForm(): Promise<void> {
