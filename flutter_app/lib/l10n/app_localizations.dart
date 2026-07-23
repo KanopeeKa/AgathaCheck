@@ -5893,6 +5893,30 @@ abstract class AppLocalizations {
   /// **'Organisation notifications'**
   String get orgNotificationsDrawer;
 
+  /// No description provided for @guardianNotificationsDrawer.
+  ///
+  /// In en, this message translates to:
+  /// **'Guardian notifications'**
+  String get guardianNotificationsDrawer;
+
+  /// No description provided for @myVets.
+  ///
+  /// In en, this message translates to:
+  /// **'My vets'**
+  String get myVets;
+
+  /// No description provided for @orgVets.
+  ///
+  /// In en, this message translates to:
+  /// **'Org vets'**
+  String get orgVets;
+
+  /// No description provided for @myOrganisation.
+  ///
+  /// In en, this message translates to:
+  /// **'My Organisation'**
+  String get myOrganisation;
+
   /// No description provided for @experienceGuardianView.
   ///
   /// In en, this message translates to:
