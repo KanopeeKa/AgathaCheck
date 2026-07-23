@@ -13,12 +13,10 @@ class PetDetailAppBar extends ConsumerWidget {
   const PetDetailAppBar({
     super.key,
     required this.petName,
-    required this.isOrgPet,
     this.backPath = '/g/home',
   });
 
   final String petName;
-  final bool isOrgPet;
   final String backPath;
 
   @override

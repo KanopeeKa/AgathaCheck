@@ -7,7 +7,6 @@ import '../../../../health_tracking/presentation/widgets/events_nav_icon_button.
 class PetDetailAppBar extends StatelessWidget {
   final String petName;
   final int unreadCount;
-  final bool isOrgPet;
   final ThemeData theme;
   final dynamic authUser; // Replace with your AuthUser type
   final void Function(String) onMenuSelected;
@@ -16,7 +15,6 @@ class PetDetailAppBar extends StatelessWidget {
     super.key,
     required this.petName,
     required this.unreadCount,
-    required this.isOrgPet,
     required this.theme,
     required this.authUser,
     required this.onMenuSelected,
@@ -27,7 +25,6 @@ class PetDetailAppBar extends StatelessWidget {
     final l = AppLocalizations.of(context)!;
     return SliverAppBar(
       pinned: true,
-      backgroundColor: null,
       title: AppLogoTitle(title: petName),
       leading: IconButton(
         icon: const Icon(Icons.arrow_back),
