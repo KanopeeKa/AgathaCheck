@@ -7,7 +7,7 @@ on:
   workflow_call:
     inputs:
       shard:
-        description: Domain shard name (pet, health, org, or rest)
+        description: Domain shard name (pet, health, org, rest-a, or rest-b)
         type: string
         required: true
 

@@ -39,18 +39,27 @@ jobs:
     with:
       shard: org
 
-  flutter-test-rest:
+  flutter-test-rest-a:
     needs: flutter-analyze
     uses: ./.github/workflows/_reusable-flutter-test-shard.yml
     with:
-      shard: rest
+      shard: rest-a
+
+  flutter-test-rest-b:
+    needs: flutter-analyze
+    uses: ./.github/workflows/_reusable-flutter-test-shard.yml
+    with:
+      shard: rest-b
 
   flutter-coverage:
     needs:
       - flutter-test-pet
       - flutter-test-health
       - flutter-test-org
-      - flutter-test-rest
+      - flutter-test-rest-a
+      - flutter-test-rest-b-a
+      - flutter-test-rest-a
+      - flutter-test-rest-b-b
     uses: ./.github/workflows/_reusable-flutter-coverage.yml
 
   flutter-integration:
@@ -87,7 +96,8 @@ jobs:
       - flutter-test-pet
       - flutter-test-health
       - flutter-test-org
-      - flutter-test-rest
+      - flutter-test-rest-a
+      - flutter-test-rest-b
       - flutter-coverage
       - flutter-integration
       - flutter-build-web
@@ -101,7 +111,8 @@ jobs:
       flutter_test_pet: ${{ needs.flutter-test-pet.result }}
       flutter_test_health: ${{ needs.flutter-test-health.result }}
       flutter_test_org: ${{ needs.flutter-test-org.result }}
-      flutter_test_rest: ${{ needs.flutter-test-rest.result }}
+      flutter_test_rest_a: ${{ needs.flutter-test-rest-a.result }}
+      flutter_test_rest_b: ${{ needs.flutter-test-rest-b.result }}
       flutter_coverage: ${{ needs.flutter-coverage.result }}
       flutter_integration: ${{ needs.flutter-integration.result }}
       flutter_build_web: ${{ needs.flutter-build-web.result }}
