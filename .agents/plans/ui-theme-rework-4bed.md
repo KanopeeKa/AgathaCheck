@@ -45,11 +45,11 @@ last_completed_phase: 7
 halt_reason: null
 next_action: "plan complete"
 artifact_ref:
-  branch: cursor/ui-theme-phase7-closeout-4bed
+  branch: cursor/plan-complete-ui-theme-4bed
   plan_path: .agents/plans/ui-theme-rework-4bed.md
-  plan_commit: a40491aeb3be8cd51df94497c1c5f74646a85e6c
+  plan_commit: a39f94ec1d97ba852134eb26f74634ffddd07dc4
   snapshot_path: .agents/plans/ui-theme-rework-4bed.snapshot.json
-  snapshot_commit: a40491aeb3be8cd51df94497c1c5f74646a85e6c
+  snapshot_commit: a39f94ec1d97ba852134eb26f74634ffddd07dc4
 open_prs: []
 merge_commits: {}
 debt_issue_refs: []
