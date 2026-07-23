@@ -27,6 +27,32 @@ class AppLocalizationsEn extends AppLocalizations {
       'Log in to pick up where you left off, or create a free account to start keeping your pet\'s health history safe and accessible anytime.';
 
   @override
+  String get landingGuardianPathSummary => 'For pet parents and foster carers';
+
+  @override
+  String get landingGuardianPathExpandCta => 'See how it works';
+
+  @override
+  String get landingGuardianPathCollapseCta => 'Show less';
+
+  @override
+  String get landingGuardianPathDetail =>
+      'Track vet visits, medications, weight, and daily care in one place. Coordinate with your household and keep every pet\'s health history safe.';
+
+  @override
+  String get landingOrgPathSummary => 'For shelters, rescues, and care teams';
+
+  @override
+  String get landingOrgPathExpandCta => 'See organisation features';
+
+  @override
+  String get landingOrgPathCollapseCta => 'Show less';
+
+  @override
+  String get landingOrgPathDetail =>
+      'Manage inventory pets, coordinate staff and volunteers, and share care records across your organisation.';
+
+  @override
   String get signIn => 'Sign In';
 
   @override

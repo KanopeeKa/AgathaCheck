@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../core/theme/experience_colors.dart';
 import '../../../../core/utils/constants.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../pet_profile/presentation/providers/pet_providers.dart';
@@ -84,77 +85,99 @@ class _GuardianOnboardingScreenState
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context)!;
-
-    return Scaffold(
-      key: const Key('guardian_onboarding_screen'),
-      appBar: AppBar(
-        title: Text(l.guardianOnboardingTitle),
-        actions: [
-          TextButton(
-            key: const Key('guardian_onboarding_skip'),
-            onPressed: _isSaving ? null : _skip,
-            child: Text(l.guardianOnboardingSkip),
-          ),
-        ],
+    final xp = context.experienceColors;
+    final guardianTheme = Theme.of(context).copyWith(
+      colorScheme: Theme.of(context).colorScheme.copyWith(
+        primary: xp.guardianPrimary,
+        onPrimary: xp.guardianOnPrimary,
+        primaryContainer: xp.guardianLight,
+        onPrimaryContainer: xp.guardianPrimary,
       ),
-      body: Column(
-        children: [
-          LinearProgressIndicator(
-            value: (_step + 1) / _stepCount,
-            minHeight: 4,
-          ),
-          Expanded(
-            child: PageView(
-              controller: _pageController,
-              physics: const NeverScrollableScrollPhysics(),
-              children: [
-                _WelcomeStep(
-                  key: const Key('guardian_onboarding_welcome'),
-                  title: l.guardianOnboardingWelcomeTitle,
-                  body: l.guardianOnboardingWelcomeBody,
-                ),
-                _PetStep(
-                  nameController: _petNameController,
-                  species: _species,
-                  onSpeciesChanged: (value) => setState(() => _species = value),
-                ),
-              ],
+    );
+
+    return Theme(
+      data: guardianTheme,
+      child: Scaffold(
+        key: const Key('guardian_onboarding_screen'),
+        appBar: AppBar(
+          title: Text(l.guardianOnboardingTitle),
+          actions: [
+            TextButton(
+              key: const Key('guardian_onboarding_skip'),
+              onPressed: _isSaving ? null : _skip,
+              child: Text(l.guardianOnboardingSkip),
             ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(24),
-            child: SizedBox(
-              width: double.infinity,
-              child: FilledButton(
-                key: _step == 1
-                    ? const Key('guardian_onboarding_complete')
-                    : const Key('guardian_onboarding_continue'),
-                onPressed: _isSaving ? null : _nextStep,
-                child: _isSaving
-                    ? const SizedBox(
-                        width: 20,
-                        height: 20,
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      )
-                    : Text(
-                        _step == 0
-                            ? l.guardianOnboardingGetStarted
-                            : l.guardianOnboardingFinish,
-                      ),
+          ],
+        ),
+        body: Column(
+          children: [
+            LinearProgressIndicator(
+              value: (_step + 1) / _stepCount,
+              minHeight: 4,
+              color: xp.guardianPrimary,
+              backgroundColor: xp.guardianSoft,
+            ),
+            Expanded(
+              child: PageView(
+                controller: _pageController,
+                physics: const NeverScrollableScrollPhysics(),
+                children: [
+                  _WelcomeStep(
+                    key: const Key('guardian_onboarding_welcome'),
+                    title: l.guardianOnboardingWelcomeTitle,
+                    body: l.guardianOnboardingWelcomeBody,
+                    iconColor: xp.guardianPrimary,
+                  ),
+                  _PetStep(
+                    nameController: _petNameController,
+                    species: _species,
+                    onSpeciesChanged: (value) =>
+                        setState(() => _species = value),
+                  ),
+                ],
               ),
             ),
-          ),
-        ],
+            Padding(
+              padding: const EdgeInsets.all(24),
+              child: SizedBox(
+                width: double.infinity,
+                child: FilledButton(
+                  key: _step == 1
+                      ? const Key('guardian_onboarding_complete')
+                      : const Key('guardian_onboarding_continue'),
+                  onPressed: _isSaving ? null : _nextStep,
+                  child: _isSaving
+                      ? const SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        )
+                      : Text(
+                          _step == 0
+                              ? l.guardianOnboardingGetStarted
+                              : l.guardianOnboardingFinish,
+                        ),
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
 }
 
 class _WelcomeStep extends StatelessWidget {
-  const _WelcomeStep({super.key, required this.title, required this.body});
+  const _WelcomeStep({
+    super.key,
+    required this.title,
+    required this.body,
+    required this.iconColor,
+  });
 
   final String title;
   final String body;
+  final Color iconColor;
 
   @override
   Widget build(BuildContext context) {
@@ -164,7 +187,7 @@ class _WelcomeStep extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.pets, size: 72, color: theme.colorScheme.primary),
+          Icon(Icons.pets, size: 72, color: iconColor),
           const SizedBox(height: 24),
           Text(
             title,

@@ -128,6 +128,54 @@ abstract class AppLocalizations {
   /// **'Log in to pick up where you left off, or create a free account to start keeping your pet\'s health history safe and accessible anytime.'**
   String get appCta;
 
+  /// No description provided for @landingGuardianPathSummary.
+  ///
+  /// In en, this message translates to:
+  /// **'For pet parents and foster carers'**
+  String get landingGuardianPathSummary;
+
+  /// No description provided for @landingGuardianPathExpandCta.
+  ///
+  /// In en, this message translates to:
+  /// **'See how it works'**
+  String get landingGuardianPathExpandCta;
+
+  /// No description provided for @landingGuardianPathCollapseCta.
+  ///
+  /// In en, this message translates to:
+  /// **'Show less'**
+  String get landingGuardianPathCollapseCta;
+
+  /// No description provided for @landingGuardianPathDetail.
+  ///
+  /// In en, this message translates to:
+  /// **'Track vet visits, medications, weight, and daily care in one place. Coordinate with your household and keep every pet\'s health history safe.'**
+  String get landingGuardianPathDetail;
+
+  /// No description provided for @landingOrgPathSummary.
+  ///
+  /// In en, this message translates to:
+  /// **'For shelters, rescues, and care teams'**
+  String get landingOrgPathSummary;
+
+  /// No description provided for @landingOrgPathExpandCta.
+  ///
+  /// In en, this message translates to:
+  /// **'See organisation features'**
+  String get landingOrgPathExpandCta;
+
+  /// No description provided for @landingOrgPathCollapseCta.
+  ///
+  /// In en, this message translates to:
+  /// **'Show less'**
+  String get landingOrgPathCollapseCta;
+
+  /// No description provided for @landingOrgPathDetail.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage inventory pets, coordinate staff and volunteers, and share care records across your organisation.'**
+  String get landingOrgPathDetail;
+
   /// No description provided for @signIn.
   ///
   /// In en, this message translates to:
@@ -5896,7 +5944,7 @@ abstract class AppLocalizations {
   /// No description provided for @guardianOnboardingWelcomeBody.
   ///
   /// In en, this message translates to:
-  /// **'Add your first pet and a reminder so you never miss important care.'**
+  /// **'Add your first pet to start tracking their care.'**
   String get guardianOnboardingWelcomeBody;
 
   /// No description provided for @guardianOnboardingGetStarted.
