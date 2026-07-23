@@ -52,7 +52,9 @@ void main() {
     orgMembershipCount: 0,
   );
 
-  testWidgets('guardian shell shows home and events nav keys', (tester) async {
+  testWidgets('guardian shell shows home nav without top events shortcut', (
+    tester,
+  ) async {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
@@ -81,7 +83,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.byKey(const Key('experience_nav_home')), findsOneWidget);
-    expect(find.byKey(const Key('experience_nav_events')), findsOneWidget);
+    expect(find.byKey(const Key('experience_nav_events')), findsNothing);
     expect(find.byKey(const Key('experience_settings_menu')), findsOneWidget);
   });
 
@@ -119,6 +121,43 @@ void main() {
     expect(find.byKey(const Key('experience_nav_events')), findsNothing);
   });
 
+  testWidgets('hamburger shows unread badge for guardian shell', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          experienceEligibilityProvider.overrideWith(
+            (ref) => AsyncValue.data(dualEligibility),
+          ),
+          guardianUnreadNotificationCountProvider.overrideWith((ref) => 3),
+          authProvider.overrideWith((ref) => FakeAuthNotifier()),
+        ],
+        child: MaterialApp(
+          localizationsDelegates: const [
+            AppLocalizations.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: ExperienceShellScaffold(
+            experience: AppExperience.guardian,
+            currentLocation: '/g/home',
+            child: const SizedBox.shrink(),
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    final menuButton = find.byKey(const Key('experience_settings_menu'));
+    expect(
+      find.descendant(of: menuButton, matching: find.text('3')),
+      findsOneWidget,
+    );
+  });
+
   testWidgets('drawer shows organisation view for dual-role guardian shell', (
     tester,
   ) async {
@@ -153,47 +192,49 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.byKey(const Key('drawer_org_view')), findsOneWidget);
-    expect(find.byKey(const Key('drawer_create_organisation')), findsOneWidget);
+    expect(find.byKey(const Key('drawer_create_organisation')), findsNothing);
+    expect(find.byKey(const Key('drawer_my_pets')), findsOneWidget);
   });
 
-  testWidgets('guardian drawer always shows create organisation entry', (
-    tester,
-  ) async {
-    await tester.pumpWidget(
-      ProviderScope(
-        overrides: [
-          experienceEligibilityProvider.overrideWith(
-            (ref) => AsyncValue.data(guardianOnlyEligibility),
-          ),
-          guardianUnreadNotificationCountProvider.overrideWith((ref) => 0),
-          authProvider.overrideWith((ref) => FakeAuthNotifier()),
-        ],
-        child: MaterialApp(
-          localizationsDelegates: const [
-            AppLocalizations.delegate,
-            GlobalMaterialLocalizations.delegate,
-            GlobalWidgetsLocalizations.delegate,
-            GlobalCupertinoLocalizations.delegate,
+  testWidgets(
+    'guardian drawer shows organisation view for guardian-only users',
+    (tester) async {
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            experienceEligibilityProvider.overrideWith(
+              (ref) => AsyncValue.data(guardianOnlyEligibility),
+            ),
+            guardianUnreadNotificationCountProvider.overrideWith((ref) => 0),
+            authProvider.overrideWith((ref) => FakeAuthNotifier()),
           ],
-          supportedLocales: AppLocalizations.supportedLocales,
-          home: ExperienceShellScaffold(
-            experience: AppExperience.guardian,
-            currentLocation: '/g/home',
-            child: const SizedBox.shrink(),
+          child: MaterialApp(
+            localizationsDelegates: const [
+              AppLocalizations.delegate,
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate,
+              GlobalCupertinoLocalizations.delegate,
+            ],
+            supportedLocales: AppLocalizations.supportedLocales,
+            home: ExperienceShellScaffold(
+              experience: AppExperience.guardian,
+              currentLocation: '/g/home',
+              child: const SizedBox.shrink(),
+            ),
           ),
         ),
-      ),
-    );
-    await tester.pumpAndSettle();
+      );
+      await tester.pumpAndSettle();
 
-    await tester.tap(find.byKey(const Key('experience_settings_menu')));
-    await tester.pumpAndSettle();
+      await tester.tap(find.byKey(const Key('experience_settings_menu')));
+      await tester.pumpAndSettle();
 
-    expect(find.byKey(const Key('drawer_create_organisation')), findsOneWidget);
-    expect(find.byKey(const Key('drawer_org_view')), findsNothing);
-  });
+      expect(find.byKey(const Key('drawer_org_view')), findsOneWidget);
+      expect(find.byKey(const Key('drawer_create_organisation')), findsNothing);
+    },
+  );
 
-  testWidgets('org drawer lists organisations and my pets for foster portal', (
+  testWidgets('org drawer uses navigation v2 menu for foster portal', (
     tester,
   ) async {
     await tester.pumpWidget(
@@ -242,9 +283,9 @@ void main() {
     await tester.tap(find.byKey(const Key('experience_settings_menu')));
     await tester.pumpAndSettle();
 
-    expect(find.byKey(const Key('drawer_org_o1')), findsOneWidget);
-    expect(find.text('Shelter'), findsOneWidget);
-    expect(find.byKey(const Key('drawer_my_pets')), findsOneWidget);
+    expect(find.byKey(const Key('drawer_my_organisation')), findsOneWidget);
+    expect(find.byKey(const Key('drawer_guardian_view')), findsOneWidget);
+    expect(find.byKey(const Key('drawer_org_o1')), findsNothing);
     expect(find.byKey(const Key('drawer_org_events')), findsOneWidget);
     expect(find.byKey(const Key('drawer_invite')), findsNothing);
   });

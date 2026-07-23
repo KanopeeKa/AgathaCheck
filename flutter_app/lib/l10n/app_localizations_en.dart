@@ -3247,6 +3247,18 @@ class AppLocalizationsEn extends AppLocalizations {
   String get orgNotificationsDrawer => 'Organisation notifications';
 
   @override
+  String get guardianNotificationsDrawer => 'Guardian notifications';
+
+  @override
+  String get myVets => 'My vets';
+
+  @override
+  String get orgVets => 'Org vets';
+
+  @override
+  String get myOrganisation => 'My Organisation';
+
+  @override
   String get experienceGuardianView => 'Pet guardian view';
 
   @override

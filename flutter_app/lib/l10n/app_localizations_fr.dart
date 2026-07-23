@@ -3280,6 +3280,18 @@ class AppLocalizationsFr extends AppLocalizations {
   String get orgNotificationsDrawer => 'Notifications organisation';
 
   @override
+  String get guardianNotificationsDrawer => 'Notifications gardien';
+
+  @override
+  String get myVets => 'Mes vétérinaires';
+
+  @override
+  String get orgVets => 'Vétérinaires de l\'organisation';
+
+  @override
+  String get myOrganisation => 'Mon organisation';
+
+  @override
   String get experienceGuardianView => 'Vue gardien';
 
   @override

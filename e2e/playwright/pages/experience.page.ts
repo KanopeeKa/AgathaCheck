@@ -5,7 +5,6 @@ import {
   flutterGotoUrl,
   openExperienceDrawer,
   refreshFlutterAccessibility,
-  skipOrgOnboardingIfPresent,
   waitForFlutterRoute,
   waitForFlutterRoutePattern,
 } from '../support/flutter';
@@ -53,7 +52,10 @@ export class ExperiencePage {
 
   async expectGuardianShell(): Promise<void> {
     await expect(this.page.getByRole('button', { name: 'Home' })).toBeVisible();
-    await expect(this.page.getByRole('button', { name: 'Events' })).toBeVisible();
+    // Events moved to drawer only — see docs/design/navigation-v2.md
+    await expect(
+      this.page.getByRole('button', { name: 'Events' }),
+    ).not.toBeVisible();
   }
 
   async expectOrgShell(): Promise<void> {
@@ -69,9 +71,7 @@ export class ExperiencePage {
   async openDrawerOrgView(): Promise<void> {
     await openExperienceDrawer(this.page);
     await this.page.getByText('Organisation view').click();
-    await waitForFlutterRoutePattern(this.page, /\/o\/(home|onboarding)/, 30_000);
-    await skipOrgOnboardingIfPresent(this.page);
-    await waitForFlutterRoutePattern(this.page, /\/o\/home/, 30_000);
+    await waitForFlutterRoutePattern(this.page, /\/organizations/, 30_000);
   }
 
   async gotoChooser(): Promise<void> {

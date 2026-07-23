@@ -29,18 +29,17 @@ class ExperienceShellScaffold extends ConsumerWidget {
       (experience == AppExperience.organization &&
           RegExp(r'^/o/[^/]+$').hasMatch(currentLocation));
 
-  bool get _isEvents =>
-      currentLocation == '/g/events' || currentLocation == '/o/events';
-
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final eligibility = ref.watch(experienceEligibilityProvider).valueOrNull;
     final guardianUnread = ref.watch(guardianUnreadNotificationCountProvider);
+    final orgUnread = ref.watch(orgUnreadNotificationCountProvider);
     final isFosterPortal = ref.watch(isFosterPortalUserProvider);
     final isOrg = experience == AppExperience.organization;
     final shellTheme = themeForAppExperience(theme, experience);
+    final menuUnread = isOrg ? orgUnread : guardianUnread;
 
     return Theme(
       data: shellTheme,
@@ -52,7 +51,11 @@ class ExperienceShellScaffold extends ConsumerWidget {
               Builder(
                 builder: (ctx) => IconButton(
                   key: const Key('experience_settings_menu'),
-                  icon: const Icon(Icons.menu),
+                  icon: Badge(
+                    isLabelVisible: menuUnread > 0,
+                    label: Text('$menuUnread'),
+                    child: const Icon(Icons.menu),
+                  ),
                   tooltip: l.settings,
                   onPressed: () => Scaffold.of(ctx).openDrawer(),
                 ),
@@ -73,32 +76,6 @@ class ExperienceShellScaffold extends ConsumerWidget {
                   ),
                 ),
               ),
-              if (!isOrg) ...[
-                const Spacer(),
-                TextButton.icon(
-                  key: const Key('experience_nav_events'),
-                  onPressed: _isEvents
-                      ? null
-                      : () => context.go(experience.eventsPath),
-                  icon: Icon(
-                    Icons.event,
-                    color: _isEvents
-                        ? shellTheme.colorScheme.primary
-                        : shellTheme.colorScheme.onSurface,
-                  ),
-                  label: Text(
-                    l.eventsNavLabel,
-                    style: TextStyle(
-                      fontWeight: _isEvents
-                          ? FontWeight.bold
-                          : FontWeight.normal,
-                      color: _isEvents
-                          ? shellTheme.colorScheme.primary
-                          : shellTheme.colorScheme.onSurface,
-                    ),
-                  ),
-                ),
-              ],
             ],
           ),
         ),
@@ -107,10 +84,7 @@ class ExperienceShellScaffold extends ConsumerWidget {
                 showGuardianView: eligibility?.canUseGuardian ?? true,
                 isFosterPortal: isFosterPortal,
               )
-            : GuardianExperienceDrawer(
-                unreadCount: guardianUnread,
-                showOrgView: eligibility?.canUseOrganization ?? false,
-              ),
+            : const GuardianExperienceDrawer(),
         body: child,
       ),
     );
