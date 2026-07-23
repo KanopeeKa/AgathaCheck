@@ -163,7 +163,8 @@ The canonical JSON lives inside `<!-- uat-queue-state:v1 -->` for `reconcile` to
 | `deploying` | Deploy run identified; in progress |
 | `complete` | `prod-ready` green |
 | `failed` | `prod-ready` red |
-| `remedial` | Coordinator owns fix PR |
+| `remedial` | Coordinator owns fix PR; **freezes** later entries |
+| `frozen` | Waiting for remedial barrier to clear |
 | `superseded` | Skipped (e.g. duplicate enqueue for same merge SHA) |
 
 **Dedupe key:** `merge_sha` (one active entry per merge commit).
@@ -195,9 +196,9 @@ Shared library: `scripts/lib/uat_queue_lib.js` (parse markers, merge state, CAS 
 
 | Trigger | Dispatch? |
 |---------|-----------|
-| `deploy-uat.yml` completed with `prod-ready` failure | Yes |
-| `workflow_dispatch` (manual) | Yes |
-| Enqueue + pending `failed` + no fresh watcher lease | Yes (via reconcile hook or periodic dispatch) |
+| `deploy-uat.yml` completed with `prod-ready` failure | Yes (primary) |
+| `workflow_dispatch` on `uat-coordinator-dispatch.yml` | Yes (recovery / manual) |
+| Enqueue + `failed` entry + stale watcher lease | Yes (via reconcile hook) |
 | `prod-ready` success | No |
 
 ```yaml
@@ -205,6 +206,8 @@ concurrency:
   group: uat-coordinator
   cancel-in-progress: false
 ```
+
+**Remedial freeze (review decision):** While any entry is `remedial`, later queue entries stay `frozen` — do not start or advance their deploy observation until the coordinator clears the barrier. Avoids doomed ~45–60 min deploy runs that would fail and require rebase anyway. Entries resume in original queue order after `set-barrier`.
 
 Coordinator workflow:
 
@@ -242,9 +245,10 @@ node scripts/uat_queue_runtime.js barrier-check --branch "$(git branch --show-cu
 
 #### Execute-plan integration
 
-- **Keep** `uat_paused` / `resume-uat` for plan-scoped pause when coordinator blocks a specific plan's next phase.
-- **Replace** babysit-plus §8 Task spawn with `enqueue`.
-- Coordinator calls `pause` / `resume-uat` on control issue when plan context is known (`--ref plan:<id>`).
+- **Do not halt** execute-plan phases on UAT failure (`uat_paused` removed for UAT — see §Review decisions).
+- On failure: coordinator comments on the plan **control issue**; plan work continues.
+- Before merge/push on any phase: `barrier-check` → rebase if behind barrier (usually a small rebase).
+- `resume-uat` is **not** used for UAT coordination; barrier advancement is the resume signal.
 
 ---
 
@@ -311,20 +315,21 @@ node scripts/uat_queue_runtime.js barrier-check --branch "$(git branch --show-cu
 | `launch-cursor-agent.js` payload | Sanitized UAT failure context |
 | Label `agent-uat-fix` | Eligibility for coordinator dispatch (optional) |
 
-**Exit:** Simulated UAT failure dispatches one coordinator; remedial PR merges; barrier advances; `resume-uat` fires for paused plans.
+**Exit:** Simulated UAT failure dispatches one coordinator; remedial PR merges; barrier advances; frozen entries unfreeze.
 
-**Risk:** Medium — 48h autonomy window; infra vs code classification.
+**Risk:** Medium — coordinator autonomy window; infra vs code classification.
 
 ### Phase 4 — Hardening (optional)
 
 | Item | Detail |
 |------|--------|
-| Remedial freeze | While `state: remedial`, hold dequeuing of later entries until barrier clears |
 | Stale watcher reclaim | `acquire-watcher` after lease expiry |
 | `uat_deploy_runtime.js` alias | Thin wrapper if callers expect deploy-specific name from e2e-ci-canary plan |
 | Dashboard comment | Periodic coordination-issue summary table |
 
 **Exit:** No duplicate coordinators in soak test; lease reclaim verified.
+
+*(Remedial freeze is Phase 3 behaviour, not optional hardening.)*
 
 ---
 
@@ -335,8 +340,8 @@ node scripts/uat_queue_runtime.js barrier-check --branch "$(git branch --show-cu
 | A | 1 | `uat_queue_lib.js` + `uat_queue_runtime.js` + tests | Cross-agent UAT queue CLI exists with tests. |
 | B | 1 | Extend `agent-uat-notify` + constants + label doc | Actions updates UAT ledger on deploy result. |
 | C | 2 | babysit-plus + execute-plan + autonomous-pr-policy docs | Work agents enqueue instead of spawning Task sub-agents. |
-| D | 3 | `uat-coordinator-dispatch.yml` + coordinator skill | UAT failure dispatches a single coordinator agent. |
-| E | 4 | Freeze + lease hardening | Queue resists duplicate coordinators and stale leases. |
+| D | 3 | `uat-coordinator-dispatch.yml` + coordinator skill + remedial freeze | UAT failure dispatches one coordinator; later entries freeze until barrier clears. |
+| E | 4 | Lease hardening + stale-watcher reclaim | Queue resists duplicate coordinators and stale leases. |
 
 Each PR is independently mergeable; later PRs depend on earlier ones.
 
@@ -364,7 +369,7 @@ Each PR is independently mergeable; later PRs depend on earlier ones.
 | `execute-plan/SKILL.md` | Preflight: `reconcile` + `barrier-check` |
 | `autonomous-pr-policy.md` §Post-merge UAT | Link queue + passive success model |
 | `e2e-ci-canary-plan.md` Phase 5 | Point to this plan as canonical |
-| `execute-plan-runtime.md` | Note `resume-uat` triggered by coordinator, not Task sub-agent |
+| `execute-plan-runtime.md` | Note UAT uses barrier only (no `uat_paused` halt) |
 
 ---
 
@@ -412,12 +417,48 @@ Each PR is independently mergeable; later PRs depend on earlier ones.
 
 ---
 
-## Open questions for review
+## Review decisions
 
-1. **Coordination issue number** — dedicated new issue vs reusing an existing governance issue?
-2. **Remedial freeze** — while coordinator fixes, should later queued deploys be cancelled (`UAT_CANCEL_IN_PROGRESS=true`) or allowed to fail and retry? Default: allow queue (audit evidence); coordinator sets barrier before they run when possible.
-3. **Execute-plan `uat_paused`** — keep plan-scoped pause, or rely solely on global barrier? Recommendation: both — barrier for open PRs; `uat_paused` when coordinator blocks next phase commit.
-4. **Coordinator payload** — dispatch from failed deploy run only, or also from `workflow_dispatch` on coordination issue? Recommendation: both.
+Decisions from plan review (2026-07-23). Each item includes pros/cons and the adopted choice.
+
+### 1. Coordination issue — dedicated new issue
+
+| Option | Pros | Cons |
+|--------|------|------|
+| **New dedicated issue** (chosen) | Single machine-state host; pin without noise; survives plan/issue close; no `plan_id` coupling; clear ownership for all agents | One more issue to discover; not on product board workflow (intentional) |
+| Reuse governance / existing issue | Fewer issues; may already be watched | Human comments mix with ledger markers; risk of accidental close; conflates product discussion with infra state |
+
+**Recommendation: new dedicated issue** — title `[uat-coordinator] UAT deploy queue`, labels `uat-coordinator` + `governance`, pinned. Issue number stored in `scripts/lib/uat_queue_constants.js` at bootstrap.
+
+### 2. Remedial freeze — freeze while coordinator fixes (chosen)
+
+| Option | Pros | Cons |
+|--------|------|------|
+| **Freeze later entries** (chosen) | Avoids predictable failed deploys (~45–60 min each); less CI noise; matches expectation that rebases will be needed | No “would have failed” audit for frozen entries until re-run after barrier; ledger gains `frozen` state |
+| Allow queue to run | Full failure audit trail per entry | Wasted CI; duplicate failure notifications; agents may triage failures the remedial PR will obsolete |
+
+**Recommendation: freeze.** On `remedial`, mark subsequent `pending`/`deploying` entries `frozen`. After `set-barrier`, unfreeze in original `seq` order. Reconcile re-observes deploy state — no cancel of in-flight `deploy-uat` runs unless repo variable `UAT_CANCEL_IN_PROGRESS=true` is already set for other reasons.
+
+### 3. Execute-plan on UAT failure — plan continues; barrier only (chosen)
+
+| Option | Pros | Cons |
+|--------|------|------|
+| **`uat_paused` halts next phase** | Prevents stacking merges on broken main; visible in snapshot | Blocks throughput; duplicates barrier; next phase often unaffected until merge |
+| **Barrier only; plan continues** (chosen) | Matches enqueue-and-exit; next phase proceeds; `barrier-check` + small rebase before merge usually suffices | Prior-phase UAT failure visible only via coordinator comment, not snapshot halt; rare double-rebase if main moves twice |
+| Both (halt + barrier) | Belt and suspenders | Redundant; contradicts non-blocking phase model |
+
+**Recommendation: barrier only; drop `uat_paused` for UAT.** Coordinator comments on the plan control issue when a linked merge fails. Execute-plan sessions keep going; `barrier-check` before merge/push handles rebase. Existing `pause`/`resume-uat` CLI remains for non-UAT halts but is **not** invoked for UAT failure.
+
+### 4. Coordinator dispatch triggers
+
+| Trigger | Pros | Cons |
+|---------|------|------|
+| **Deploy failure** (primary) | Automatic; no human action | Stuck if notify job fails without a matching dispatch |
+| **`workflow_dispatch` on coordinator workflow** (chosen) | Recovery after dead coordinator; manual reconcile; soak/debug | Extra agent cost if misused (mitigated: `concurrency: uat-coordinator`) |
+| Enqueue + stale watcher | Catches orphaned queue without waiting for failure | Extra complexity; may race with failure dispatch |
+| Dispatch on *every* repo `workflow_dispatch` | — | Too broad; unrelated workflows would spawn coordinators |
+
+**Recommendation: deploy failure (primary) + `workflow_dispatch` on `uat-coordinator-dispatch.yml` only** — not every workflow in the repo. Optional inputs: `coordination_issue`, `dry_run`, `force_seq`. Enqueue stale-watcher reclaim is Phase 4 hardening, not day-one.
 
 ---
 
