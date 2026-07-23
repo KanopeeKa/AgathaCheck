@@ -104,6 +104,10 @@ emit_error() {
   echo "::error title=UAT backend unhealthy (HTTP ${code}, ${kind})::${hint//$'\n'/ }"
 }
 
+curl_landing() {
+  curl -sfk ${CURL_TLS_FLAGS} "${UAT_BASE_URL}/landing" -o /dev/null 2>/dev/null || true
+}
+
 echo "Probing ${UAT_BASE_URL}/backend/ (directory listing check)..."
 IFS='|' read -r root_code root_kind <<<"$(probe_url "${UAT_BASE_URL}/backend/")"
 if [ "$root_kind" = "directory_listing" ]; then
@@ -116,11 +120,13 @@ if [ "$root_kind" = "directory_listing" ]; then
 fi
 
 echo "Probing ${UAT_BASE_URL}/backend/health (up to ${MAX_ATTEMPTS} attempts, ${SLEEP_SECS}s apart)..."
+curl_landing
 
 last_code=""
 last_kind="unknown"
 
 for i in $(seq 1 "$MAX_ATTEMPTS"); do
+  curl_landing
   IFS='|' read -r last_code last_kind <<<"$(probe_url "${UAT_BASE_URL}/backend/health")"
 
   if [ "$last_kind" = "ok" ]; then

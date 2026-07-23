@@ -107,8 +107,15 @@ export class VetListPage {
     await this.page.waitForTimeout(500);
   }
 
-  async expectPhoneVisible(phone: string): Promise<void> {
-    await semanticsByName(this.page, new RegExp(escapeRegExp(phone), 'i')).waitFor({
+  async expectPhoneVisible(phone: string, vetName?: string): Promise<void> {
+    await refreshFlutterAccessibility(this.page);
+    const pattern = vetName
+      ? new RegExp(
+          `Veterinarian:\\s*${escapeRegExp(vetName)}[\\s\\S]*${escapeRegExp(phone)}`,
+          'i',
+        )
+      : new RegExp(escapeRegExp(phone), 'i');
+    await semanticsByName(this.page, pattern).waitFor({
       timeout: 15_000,
     });
   }
