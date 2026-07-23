@@ -109,9 +109,12 @@ jobs:
 
       - name: Install E2E dependencies
         working-directory: e2e
-        run: |
-          npm ci
-          npx playwright install chromium --with-deps
+        run: npm ci
+
+      - name: Set up Playwright browsers
+        uses: ./.github/actions/setup-playwright
+        with:
+          working-directory: e2e
 
       - name: Start server
         working-directory: server

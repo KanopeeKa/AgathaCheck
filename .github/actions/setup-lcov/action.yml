@@ -1,0 +1,35 @@
+name: Set up lcov
+description: Install lcov with apt archive cache (skip when already present).
+
+runs:
+  using: composite
+  steps:
+    - name: Cache apt archives for lcov
+      uses: actions/cache@v5
+      id: apt-cache
+      with:
+        path: |
+          /var/cache/apt/archives
+        key: apt-lcov-${{ runner.os }}-v1
+        restore-keys: |
+          apt-lcov-${{ runner.os }}-
+
+    - name: Install lcov
+      shell: bash
+      run: |
+        if command -v lcov >/dev/null 2>&1; then
+          echo "::notice::lcov already available: $(lcov --version | head -1)"
+          exit 0
+        fi
+        sudo apt-get update
+        sudo apt-get install -y lcov
+        lcov --version | head -1
+
+    - name: lcov apt cache summary
+      shell: bash
+      run: |
+        if [[ "${{ steps.apt-cache.outputs.cache-hit }}" == "true" ]]; then
+          echo "::notice::apt archive cache hit for lcov"
+        else
+          echo "::notice::lcov installed (apt cache miss)"
+        fi
