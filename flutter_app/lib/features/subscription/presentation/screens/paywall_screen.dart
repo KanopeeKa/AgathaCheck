@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
+import '../../../../core/theme/app_color_tokens.dart';
 import '../../../../core/widgets/app_logo_title.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../providers/subscription_providers.dart';
@@ -61,7 +62,7 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(l.welcomeUnlimited),
-              backgroundColor: Colors.green,
+              backgroundColor: AppColorTokens.success,
             ),
           );
         }
@@ -124,7 +125,7 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
                             : Icons.star_outline,
                         size: 64,
                         color: subscriptionStatus.hasUnlimited
-                            ? Colors.amber
+                            ? AppColorTokens.warmAccent
                             : theme.colorScheme.primary,
                         semanticLabel: subscriptionStatus.hasUnlimited
                             ? 'Active subscription'

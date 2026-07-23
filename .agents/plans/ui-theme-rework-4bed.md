@@ -40,17 +40,17 @@ Replace purple-seed Material theme with locked AgathaTrack tokens: plum guardian
 
 ```yaml
 autonomy: active
-current_phase: 5
-last_completed_phase: 4
+current_phase: 6
+last_completed_phase: 5
 halt_reason: null
-next_action: "continue phase 5 on branch cursor/ui-theme-phase5-org-4bed"
+next_action: "continue phase 6 on branch cursor/ui-theme-phase6-longtail-4bed"
 artifact_ref:
-  branch: cursor/ui-theme-phase5-org-4bed
+  branch: cursor/ui-theme-phase6-longtail-4bed
   plan_path: .agents/plans/ui-theme-rework-4bed.md
-  plan_commit: 8abedf5010aa118a2148e475d17e4548727f69aa
+  plan_commit: ea7fc2563ec1984bb95927aa0a44bea6ce1edfab
   snapshot_path: .agents/plans/ui-theme-rework-4bed.snapshot.json
-  snapshot_commit: 8abedf5010aa118a2148e475d17e4548727f69aa
-open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/290"]
+  snapshot_commit: ea7fc2563ec1984bb95927aa0a44bea6ce1edfab
+open_prs: []
 merge_commits: {}
 debt_issue_refs: []
 ```
