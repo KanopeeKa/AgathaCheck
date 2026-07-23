@@ -47,10 +47,10 @@ next_action: "continue phase 1 on branch cursor/ui-theme-phase1-components-4bed"
 artifact_ref:
   branch: cursor/ui-theme-phase1-components-4bed
   plan_path: .agents/plans/ui-theme-rework-4bed.md
-  plan_commit: 3ae638b1545a7d740a61371981af3fcfd7e3b082
+  plan_commit: 9b63fc7c4f19bc7cf8355c2ac90055e3949da5ff
   snapshot_path: .agents/plans/ui-theme-rework-4bed.snapshot.json
-  snapshot_commit: 3ae638b1545a7d740a61371981af3fcfd7e3b082
-open_prs: []
+  snapshot_commit: 9b63fc7c4f19bc7cf8355c2ac90055e3949da5ff
+open_prs: [true]
 merge_commits: {}
 debt_issue_refs: []
 ```
