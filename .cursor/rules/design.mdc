@@ -1,0 +1,38 @@
+---
+description: Lightweight UX guardrails for Flutter UI — calm, clear, accessible
+globs: flutter_app/lib/**
+---
+
+# Design (everyday)
+
+AgathaTrack is **calm care coordination** — professional for shelters, warm for carers. Not a cute pet app; not loud generic SaaS.
+
+## Priority (when tradeoffs arise)
+
+1. Accessibility and clarity
+2. Usability and obvious next action
+3. Mobile-friendly touch and layout
+4. Consistency with `AppTheme` and existing patterns
+5. Visual polish
+
+## Everyday rules
+
+- **Theme first:** use `Theme.of(context)` / `colorScheme` — avoid ad-hoc `Color(0x…)` except charts or org branding hooks.
+- **Touch:** interactive targets ≥ **48×48** logical px (`minimumSize`, padded `IconButton`).
+- **Focus:** never remove or hide focus indicators.
+- **State:** color is not the only signal — pair with text, icon, or weight for status/urgency.
+- **Copy:** operational flows = direct; warmth OK in onboarding, empty states, confirmations. No cute jokes in medical/admin tasks.
+- **Context:** one product — guardian (`/g/*`) vs org (`/o/*`) differs by route/`AppExperience`, not a second visual system. See `docs/experience-split-plan.md`.
+- **Strings:** user-facing text in ARB/l10n; localize enum `.label` when touched (`.agents/memory/localization-enum-labels.md`). Copy tone: `docs/design/copy-tone.md`.
+
+## Deeper work
+
+| Situation | Use |
+|-----------|-----|
+| Touching a screen or widget | This rule + `accessibility.mdc` |
+| PR polish / quick review | Skill: `/ui-check` |
+| New flow, theme shift, multi-screen consistency | Skill: `/ui-design-deep` → `docs/design/principles.md` |
+| Auth / landing on web | `.agents/memory/flutter-web-password-managers.md` |
+| UI rework / theme project | `docs/design/ui-rework-plan.md` |
+
+**Theme source:** `flutter_app/lib/core/theme/app_theme.dart`

@@ -12,6 +12,16 @@ Institutional knowledge for cloud agents. Domain workflows live in **Skills** (`
 | `/spawn-sprint-agents` | Parallel sprint coordination |
 | `/security-error-audit` | 5xx redaction grep |
 | `/pre-push-verify` | Which tests to run |
+| `/ui-check` | Quick UX/a11y pass on UI changes |
+| `/ui-design-deep` | In-depth UX/design review or refactor planning |
+
+## Design (UI/UX)
+
+- Map: `docs/design/index.md` — tier 0 everyday rules, `/ui-check`, `/ui-design-deep`
+- **UI rework plan:** `docs/design/ui-rework-plan.md` (phases 0–7)
+- Copy / org branding: `docs/design/copy-tone.md`
+- Principles (deep only): `docs/design/principles.md`
+- Theme: `flutter_app/lib/core/theme/app_theme.dart` → `docs/design/tokens.md` (Phase 0)
 
 ## Domain semantics (memories)
 

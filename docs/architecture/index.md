@@ -19,6 +19,7 @@ Full conventions: `docs/architecture/modularity.md`.
 | E2E API helpers | `e2e/playwright/support/api.ts` | **Serialize edits** across agents |
 | Governance scripts | `scripts/` | file size, BDD gate, priority tags |
 | Calendar dates | `docs/calendar-dates.md` | `YYYY-MM-DD` wire format |
+| Design / UX | `docs/design/index.md` | Tiers, `ui-rework-plan.md`, `/ui-check`, `/ui-design-deep` |
 
 ---
 
@@ -154,5 +155,6 @@ Full conventions: `docs/architecture/modularity.md`.
 | BDD → Playwright | `/add-bdd-playwright-scenario` skill |
 | Parallel sprint | `/spawn-sprint-agents` skill |
 | Before push | `/pre-push-verify` skill or `./scripts/pre-push-changed.sh` |
+| UI review / theme rework | `docs/design/index.md` · `/ui-check` · `/ui-design-deep` · `docs/design/ui-rework-plan.md` |
 | Security audit | `/security-error-audit` skill |
 | UAT deploy / live smoke red | `docs/e2e/uat-live-operations-runbook.md` · `.agents/memory/uat-live-e2e-triage.md` |

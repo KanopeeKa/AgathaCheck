@@ -5,6 +5,8 @@ globs: flutter_app/lib/**,e2e/**
 
 # Accessibility
 
+Tone and visual consistency: `design.mdc`. Deep design reference: `docs/design/`.
+
 ## Flutter UI
 
 - Form fields: use `labelText` / `hintText` in `InputDecoration` (drives aria-label on web).
