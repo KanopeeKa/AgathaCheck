@@ -6,6 +6,9 @@ import { isLiveHostingTarget } from './hosting';
 const WAF_MARKERS = ['o2s-browser-check', 'Security check', 'Test de sécurité'];
 const HEALTH_OK_MARKER = '"status":"OK"';
 const PREFLIGHT_TIMEOUT_MS = 15_000;
+/** Match scripts/uat-post-deploy-smoke.sh — Tiger Protect can challenge fresh runner IPs. */
+const WAF_RETRY_ATTEMPTS = 18;
+const WAF_RETRY_SLEEP_MS = 10_000;
 const CONFIG_ERROR =
   'UAT pre-flight config error: E2E_BASE_URL (or UAT_BASE_URL fallback) is missing or malformed.';
 
@@ -115,25 +118,34 @@ export default async function globalSetup(): Promise<void> {
   const started = Date.now();
 
   try {
-    const response = await fetch(healthURL, {
-      signal: AbortSignal.timeout(PREFLIGHT_TIMEOUT_MS),
-    });
-    const body = await response.text();
-    const elapsedMs = Date.now() - started;
+    for (let attempt = 1; attempt <= WAF_RETRY_ATTEMPTS; attempt += 1) {
+      const response = await fetch(healthURL, {
+        signal: AbortSignal.timeout(PREFLIGHT_TIMEOUT_MS),
+      });
+      const body = await response.text();
 
-    if (bodyShowsWafChallenge(body)) {
-      throw new Error(
-        `UAT pre-flight failed [waf-challenge]: GET ${healthURL} — ${bodySnippet(body)}`,
-      );
+      if (bodyShowsWafChallenge(body)) {
+        if (attempt < WAF_RETRY_ATTEMPTS) {
+          console.log(
+            `UAT pre-flight WAF challenge (${attempt}/${WAF_RETRY_ATTEMPTS}), retrying in ${WAF_RETRY_SLEEP_MS / 1000}s...`,
+          );
+          await new Promise((resolve) => setTimeout(resolve, WAF_RETRY_SLEEP_MS));
+          continue;
+        }
+        throw new Error(
+          `UAT pre-flight failed [waf-challenge]: GET ${healthURL} — ${bodySnippet(body)}`,
+        );
+      }
+
+      if (response.status !== 200 || !body.includes(HEALTH_OK_MARKER)) {
+        throw new Error(
+          `UAT pre-flight failed [${response.status}]: ${bodySnippet(body)}`,
+        );
+      }
+
+      writeSuccessSummary(Date.now() - started);
+      return;
     }
-
-    if (response.status !== 200 || !body.includes(HEALTH_OK_MARKER)) {
-      throw new Error(
-        `UAT pre-flight failed [${response.status}]: ${bodySnippet(body)}`,
-      );
-    }
-
-    writeSuccessSummary(elapsedMs);
   } catch (err) {
     if (err instanceof Error && err.message.startsWith('UAT pre-flight')) {
       throw err;
