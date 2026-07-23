@@ -37,7 +37,7 @@ class _OrganizationHomeHiddenPetsSectionState
       data: (hiddenPets) {
         if (hiddenPets.isEmpty) return const SizedBox.shrink();
         return Card(
-          color: colorScheme.primaryContainer,
+          color: widget.colorScheme.primaryContainer,
           child: Padding(
             padding: const EdgeInsets.all(16),
             child: Column(
