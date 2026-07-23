@@ -45,17 +45,20 @@ Legacy routes redirect for one release cycle.
 
 ---
 
-## Navigation (locked)
+## Navigation (v2 — 2026-07-23)
 
-Both shells use **top nav**:
+**Canonical spec:** `docs/design/navigation-v2.md`
+
+Both shells use **top nav** (Home + Hamburger only):
 
 ```
-☰ Settings drawer  |  Home  |  Events
+☰ (unread badge)  |  Home
 ```
 
-- **Events:** calendar default, list toggle
-- **Drawer:** Settings, Notifications, Upcoming events, Invite, About, Contact, experience switch
-- **Dual-role users:** drawer shows Org view / Pet guardian view
+- **Events, notifications, vets:** drawer only — not in top bar.
+- **Drawer:** text-first; semantic groups (plum / green / off-white utility); see navigation-v2.md for order.
+- **Dual-role users:** In **guardian** mode, drawer **Organisation view** → `/organizations`. In **organisation** mode, drawer **Guardian view** → `/g/home`.
+- **Deep routes:** compact chrome (☰ + Back + Home) — see navigation-v2.md.
 
 ---
 
@@ -65,7 +68,7 @@ Both shells use **top nav**:
 |------|---------|
 | Guardian only (no org membership) | Skip → `/g/home` |
 | Org only (member, no guardian context) | Skip → `/o/home` |
-| Both | `/app/choose` with remember tick + info box |
+| Both | `/app/choose` with **Guardian pre-selected** + remember tick; Continue → `/g/home` |
 
 **Remember my choice:** persisted; changeable in Settings → Default experience.
 

@@ -13,6 +13,7 @@ Lightweight by default. Go deeper only when the task needs it.
 ## Theme project
 
 **Execution plan:** `ui-rework-plan.md` (phases 0–7).  
+**Navigation v2:** `navigation-v2.md` (execute-plan `ui-navigation-v2-14ee`).  
 **Deliverable in Phase 0:** `tokens.md` — live at `docs/design/tokens.md`.
 
 ## Reference implementations
