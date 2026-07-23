@@ -104,6 +104,25 @@ the merge gate `flutter-coverage / Flutter domain coverage` covers shard failure
 **Blocking via `ci-gate`:** `ci-e2e-canary / Playwright @smoke-ci canary (localhost)` —
 PR Playwright canary (`@smoke-ci`, retries 0). Required when `flutter-build-web` succeeds; skipped when build fails (gate still fails on build). Enforced in `scripts/ci/assert-ci-gate.sh`. See [e2e-ci-canary-plan.md](./e2e-ci-canary-plan.md).
 
+#### Path-scoped PR CI (`ci-scope`)
+
+`ci.yml` job **`ci-scope / Resolve CI scope`** classifies the PR diff (shared rules in
+`scripts/ci/ci-scope-lib.sh`, also used by `pre-push-changed.sh`). Flutter jobs may be
+**skipped** when out of scope; `ci-gate` accepts `skipped` only for jobs listed in
+`skip_jobs` in the scope JSON.
+
+| Always runs | May skip on narrow diffs |
+|-------------|--------------------------|
+| `startup-smoke`, `test-suite` (governance + backend + e2e audit), CodeQL | Flutter analyze*, shards, coverage, integration, build-web, `@smoke-ci` canary |
+
+\*Flutter **analyze** still runs when `server/routes/**` or `server/lib/**` changed (API contract), even if `flutter_app/**` is untouched.
+
+**Force full suite:** PR label `ci-full`, commit message token `[ci-full]`, or `workflow_dispatch` with `force_full: true`.
+
+**Never skip (force full):** migrations, `server/config/security.js`, `flutter_app/lib/core/**`, `e2e/**`, `.github/workflows/**`, lockfiles, `scripts/ci/**`.
+
+**Drift backstop:** non-blocking **`CI full audit (main)`** (`ci-full-audit.yml`) runs the **full** suite on `main` every **12 merges** (counter on successful `promote-uat.yml`) or when the last audit is older than **7 days**. Failures open an `agent-approved` issue for `agent-dispatch.yml`. Weekly `audit-advisory.yml` runs non-blocking `npm audit` on `main`.
+
 #### Accepted trade-off: no CI re-run on merge to `main`
 
 Auto-promotion (`promote-uat.yml`) does **not** re-run CI on the merge commit.

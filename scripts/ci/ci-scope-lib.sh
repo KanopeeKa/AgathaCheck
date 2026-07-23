@@ -16,6 +16,9 @@ CI_SCOPE_HAS_E2E=false
 CI_SCOPE_HAS_WORKFLOWS=false
 CI_SCOPE_HAS_SCRIPTS_CI=false
 CI_SCOPE_ONLY_DOCS=true
+CI_SCOPE_HAS_PET_PROFILE=false
+CI_SCOPE_SERVER_LOCK_CHANGED=false
+CI_SCOPE_E2E_LOCK_CHANGED=false
 
 ci_scope_reset() {
   CI_SCOPE_FORCE_FULL=false
@@ -30,6 +33,9 @@ ci_scope_reset() {
   CI_SCOPE_HAS_WORKFLOWS=false
   CI_SCOPE_HAS_SCRIPTS_CI=false
   CI_SCOPE_ONLY_DOCS=true
+  CI_SCOPE_HAS_PET_PROFILE=false
+  CI_SCOPE_SERVER_LOCK_CHANGED=false
+  CI_SCOPE_E2E_LOCK_CHANGED=false
 }
 
 ci_scope_is_doc_path() {
@@ -78,6 +84,10 @@ ci_scope_classify_path() {
       CI_SCOPE_FORCE_FULL=true
       CI_SCOPE_HAS_FLUTTER=true
       ;;
+    flutter_app/lib/features/pet_profile/*|flutter_app/test/features/pet_profile/*)
+      CI_SCOPE_HAS_PET_PROFILE=true
+      CI_SCOPE_HAS_FLUTTER=true
+      ;;
     flutter_app/lib/*|flutter_app/test/*)
       CI_SCOPE_HAS_FLUTTER=true
       ;;
@@ -93,7 +103,12 @@ ci_scope_classify_path() {
       CI_SCOPE_FORCE_FULL=true
       CI_SCOPE_HAS_SCRIPTS_CI=true
       ;;
-    server/package-lock.json|e2e/package-lock.json)
+    server/package-lock.json)
+      CI_SCOPE_SERVER_LOCK_CHANGED=true
+      CI_SCOPE_FORCE_FULL=true
+      ;;
+    e2e/package-lock.json)
+      CI_SCOPE_E2E_LOCK_CHANGED=true
       CI_SCOPE_FORCE_FULL=true
       ;;
   esac
@@ -158,6 +173,25 @@ ci_scope_run_flutter_stack() {
   return 1
 }
 
+ci_scope_run_backend() {
+  [[ "$CI_SCOPE_FORCE_FULL" == true || "$CI_SCOPE_ESCAPE_FULL" == true ]] && return 0
+  ci_scope_server_touch && return 0
+  return 1
+}
+
+ci_scope_run_e2e_audit() {
+  [[ "$CI_SCOPE_FORCE_FULL" == true || "$CI_SCOPE_ESCAPE_FULL" == true ]] && return 0
+  [[ "$CI_SCOPE_E2E_LOCK_CHANGED" == true ]] && return 0
+  return 1
+}
+
+ci_scope_run_integration() {
+  ci_scope_run_flutter_stack || return 1
+  [[ "$CI_SCOPE_FORCE_FULL" == true || "$CI_SCOPE_ESCAPE_FULL" == true ]] && return 0
+  [[ "$CI_SCOPE_HAS_PET_PROFILE" == true ]] && return 0
+  return 1
+}
+
 ci_scope_bool() {
   if "$1"; then
     echo "true"
@@ -169,16 +203,31 @@ ci_scope_bool() {
 ci_scope_emit_json() {
   local scope
   scope="$(ci_scope_resolve_name)"
-  local run_analyze run_stack
+  local run_analyze run_stack run_backend run_e2e_audit run_integration
   run_analyze="$(ci_scope_bool ci_scope_run_flutter_analyze)"
   run_stack="$(ci_scope_bool ci_scope_run_flutter_stack)"
+  run_backend="$(ci_scope_bool ci_scope_run_backend)"
+  run_e2e_audit="$(ci_scope_bool ci_scope_run_e2e_audit)"
+  run_integration="$(ci_scope_bool ci_scope_run_integration)"
 
-  python3 - "$scope" "$CI_SCOPE_FORCE_FULL" "$CI_SCOPE_ESCAPE_FULL" "$run_analyze" "$run_stack" <<'PY'
+  python3 - "$scope" "$CI_SCOPE_FORCE_FULL" "$CI_SCOPE_ESCAPE_FULL" "$run_analyze" "$run_stack" "$run_backend" "$run_e2e_audit" "$run_integration" <<'PY'
 import json, sys
 
-scope, force_full, escape_full, run_analyze, run_stack = sys.argv[1:6]
+(
+    scope,
+    force_full,
+    escape_full,
+    run_analyze,
+    run_stack,
+    run_backend,
+    run_e2e_audit,
+    run_integration,
+) = sys.argv[1:9]
 run_analyze = run_analyze == "true"
 run_stack = run_stack == "true"
+run_backend = run_backend == "true"
+run_e2e_audit = run_e2e_audit == "true"
+run_integration = run_integration == "true"
 
 skip_jobs = []
 if not run_analyze:
@@ -192,11 +241,12 @@ if not run_stack:
             "flutter-test-rest-a",
             "flutter-test-rest-b",
             "flutter-coverage",
-            "flutter-integration",
             "flutter-build-web",
             "ci-e2e-canary",
         ]
     )
+if not run_integration:
+    skip_jobs.append("flutter-integration")
 
 print(
     json.dumps(
@@ -206,6 +256,9 @@ print(
             "escape_full": escape_full == "true",
             "run_flutter_analyze": run_analyze,
             "run_flutter_stack": run_stack,
+            "run_backend": run_backend,
+            "run_e2e_audit": run_e2e_audit,
+            "run_flutter_integration": run_integration,
             "skip_jobs": skip_jobs,
         },
         separators=(",", ":"),
