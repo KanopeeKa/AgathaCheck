@@ -7,10 +7,7 @@ import '../../domain/entities/drawer_menu_item.dart';
 import 'experience_drawer_menu_item.dart';
 
 /// Background fill for a drawer menu group (no borders).
-Color drawerGroupBackground(
-  BuildContext context,
-  DrawerMenuGroup group,
-) {
+Color drawerGroupBackground(BuildContext context, DrawerMenuGroup group) {
   final xp = context.experienceColors;
   return switch (group) {
     DrawerMenuGroup.guardianPlum => xp.guardianLight,
@@ -81,6 +78,9 @@ class ExperienceDrawerMenu extends StatelessWidget {
       );
     }
 
-    return ListView(padding: const EdgeInsets.symmetric(vertical: 8), children: children);
+    return ListView(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      children: children,
+    );
   }
 }
