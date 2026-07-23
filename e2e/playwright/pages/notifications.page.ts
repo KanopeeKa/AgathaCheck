@@ -140,14 +140,19 @@ export class NotificationsPage {
     }
 
     if (await isExperienceShellVisible(this.page)) {
-      const settingsButton = this.page.getByRole('button', {
-        name: /^(Settings|Paramètres)$/i,
-      });
-      if (await settingsButton.isVisible({ timeout: 2_000 }).catch(() => false)) {
-        const badgeDigit = settingsButton.getByText(
+      const menuButton = this.page
+        .getByRole('button', { name: /^(Settings|Paramètres)/i })
+        .first();
+      if (await menuButton.isVisible({ timeout: 5_000 }).catch(() => false)) {
+        const menuLabel =
+          (await menuButton.getAttribute('aria-label')) ?? (await menuButton.innerText());
+        if (new RegExp(`${label.replace('+', '\\+')}\\s*unread`, 'i').test(menuLabel)) {
+          return;
+        }
+        const badgeDigit = menuButton.getByText(
           new RegExp(`^${label.replace('+', '\\+')}$`),
         );
-        if (await badgeDigit.isVisible({ timeout: 5_000 }).catch(() => false)) {
+        if (await badgeDigit.isVisible({ timeout: 3_000 }).catch(() => false)) {
           return;
         }
       }
@@ -193,11 +198,11 @@ export class NotificationsPage {
     }
 
     if (await isExperienceShellVisible(this.page)) {
-      const settingsButton = this.page.getByRole('button', {
-        name: /^(Settings|Paramètres)$/i,
-      });
-      if (await settingsButton.isVisible({ timeout: 2_000 }).catch(() => false)) {
-        const badgeDigit = settingsButton.getByText(/^(?:99\+|[1-9]\d?)$/);
+      const menuButton = this.page
+        .getByRole('button', { name: /^(Settings|Paramètres)/i })
+        .first();
+      if (await menuButton.isVisible({ timeout: 5_000 }).catch(() => false)) {
+        const badgeDigit = menuButton.getByText(/^(?:99\+|[1-9]\d?)$/);
         await expect(badgeDigit).toHaveCount(0, { timeout: 5_000 });
       }
 

@@ -383,12 +383,11 @@ export async function isExperienceShellVisible(page: Page): Promise<boolean> {
 export async function openExperienceDrawer(page: Page): Promise<void> {
   await dismissConsentBannerIfPresent(page);
   await refreshFlutterAccessibility(page);
-  const menuButton = page.getByRole('button', { name: /^(Settings|Paramètres)$/i });
-  if (await menuButton.isVisible({ timeout: 2_000 }).catch(() => false)) {
-    await menuButton.click();
-  } else {
-    await page.getByRole('button', { name: /menu/i }).first().click();
-  }
+  const menuButton = page
+    .getByRole('button', { name: /^(Settings|Paramètres)/i })
+    .or(page.getByRole('button', { name: /menu/i }))
+    .first();
+  await menuButton.click({ timeout: 10_000 });
   await page.waitForTimeout(400);
   await refreshFlutterAccessibility(page);
 }
