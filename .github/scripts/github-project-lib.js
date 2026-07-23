@@ -216,6 +216,27 @@ async function searchEligibleIssues(owner, repo, token) {
   return data.items || [];
 }
 
+async function fetchAllIssueComments(owner, repo, issueNumber, token) {
+  const comments = [];
+  let page = 1;
+  while (true) {
+    const batch = await rest(
+      'GET',
+      `/repos/${owner}/${repo}/issues/${issueNumber}/comments?per_page=100&page=${page}`,
+      token,
+    );
+    if (!batch.length) {
+      break;
+    }
+    comments.push(...batch);
+    if (batch.length < 100) {
+      break;
+    }
+    page += 1;
+  }
+  return comments;
+}
+
 async function upsertMarkerComment({
   owner,
   repo,
@@ -224,11 +245,7 @@ async function upsertMarkerComment({
   body,
   token,
 }) {
-  const comments = await rest(
-    'GET',
-    `/repos/${owner}/${repo}/issues/${issueNumber}/comments?per_page=100`,
-    token,
-  );
+  const comments = await fetchAllIssueComments(owner, repo, issueNumber, token);
   const existing = comments.find((comment) => comment.body?.includes(marker));
 
   if (existing) {
