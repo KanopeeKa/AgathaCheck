@@ -125,7 +125,33 @@ test('state marker round-trip', () => {
   const enq = enqueueEntry(state, { mergeSha: 'deadbeef', prNumber: 42, enqueuedBy: 'test' });
   const body = renderStateCommentBody(enq.state);
   assert.match(body, new RegExp(STATE_MARKER.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
+  assert.ok(enq.state.updated_at);
   const parsed = parseStateFromCommentBody(body);
   assert.equal(parsed.entries.length, 1);
   assert.equal(parsed.entries[0].merge_sha, 'deadbeef');
+});
+
+test('parseStateFromCommentBody reads json fence with braces in string values', () => {
+  const body = `${STATE_MARKER}
+\`\`\`json
+{
+  "version": 1,
+  "updated_at": "2026-07-23T12:00:00Z",
+  "main_barrier_sha": "abc",
+  "main_barrier_reason": "fix {braces} in reason",
+  "main_barrier_at": null,
+  "active_watcher": null,
+  "entries": []
+}
+\`\`\``;
+  const parsed = parseStateFromCommentBody(body);
+  assert.equal(parsed.main_barrier_reason, 'fix {braces} in reason');
+});
+
+test('acquireWatcher rejects invalid lease minutes', () => {
+  const state = createEmptyState();
+  assert.throws(
+    () => acquireWatcher(state, { holder: 'a', leaseMinutes: 'bad' }),
+    /positive number/
+  );
 });

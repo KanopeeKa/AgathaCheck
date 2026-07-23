@@ -85,6 +85,44 @@ function parseArgs(argv) {
   return { positional, flags };
 }
 
+function requireStringFlag(flags, name) {
+  const value = flags[name];
+  if (typeof value !== 'string' || !value.trim()) {
+    throw new UatQueueError(`--${name} requires a value`);
+  }
+  return value.trim();
+}
+
+function requirePositiveIntFlag(flags, name) {
+  const raw = requireStringFlag(flags, name);
+  const value = Number(raw);
+  if (!Number.isInteger(value) || value < 1) {
+    throw new UatQueueError(`--${name} must be a positive integer`);
+  }
+  return value;
+}
+
+function optionalStringFlag(flags, name) {
+  if (flags[name] === undefined) {
+    return null;
+  }
+  return requireStringFlag(flags, name);
+}
+
+function optionalPositiveIntFlag(flags, name, defaultValue) {
+  if (flags[name] === undefined) {
+    return defaultValue;
+  }
+  if (flags[name] === true) {
+    throw new UatQueueError(`--${name} requires a value`);
+  }
+  const value = Number(flags[name]);
+  if (!Number.isInteger(value) || value < 1) {
+    throw new UatQueueError(`--${name} must be a positive integer`);
+  }
+  return value;
+}
+
 function printJson(obj) {
   console.log(JSON.stringify(obj, null, 2));
 }
@@ -141,10 +179,10 @@ async function runCommand(cmd, flags) {
     case 'enqueue': {
       const { state, issueNumber } = await loadIssueState(flags);
       const result = enqueueEntry(state, {
-        mergeSha: flags.merge,
-        prNumber: flags.pr,
-        enqueuedBy: flags.ref,
-        uatTag: flags.tag,
+        mergeSha: requireStringFlag(flags, 'merge'),
+        prNumber: requirePositiveIntFlag(flags, 'pr'),
+        enqueuedBy: optionalStringFlag(flags, 'ref'),
+        uatTag: optionalStringFlag(flags, 'tag'),
       });
       const saveMeta = await maybeSave(flags, issueNumber, result.state);
       printJson({ command: 'enqueue', entry: result.entry, created: result.created, ...saveMeta });
@@ -196,8 +234,12 @@ async function runCommand(cmd, flags) {
       const { state, issueNumber } = await loadIssueState(flags);
       const head = headEntryNeedingAttention(state);
       const result = acquireWatcher(state, {
-        holder: flags.holder,
-        leaseMinutes: Number(flags['lease-minutes'] || DEFAULT_WATCHER_LEASE_MINUTES),
+        holder: requireStringFlag(flags, 'holder'),
+        leaseMinutes: optionalPositiveIntFlag(
+          flags,
+          'lease-minutes',
+          DEFAULT_WATCHER_LEASE_MINUTES
+        ),
         watchingSeq: head?.seq,
       });
       if (!result.acquired) {
@@ -219,7 +261,10 @@ async function runCommand(cmd, flags) {
 
     case 'set-barrier': {
       const { state, issueNumber } = await loadIssueState(flags);
-      setBarrier(state, { sha: flags.sha, reason: flags.reason });
+      setBarrier(state, {
+        sha: requireStringFlag(flags, 'sha'),
+        reason: optionalStringFlag(flags, 'reason'),
+      });
       const saveMeta = await maybeSave(flags, issueNumber, state);
       printJson({
         command: 'set-barrier',

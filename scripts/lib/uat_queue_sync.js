@@ -28,18 +28,35 @@ function getGithubToken() {
   return process.env.GITHUB_TOKEN || process.env.GH_TOKEN || null;
 }
 
+async function fetchIssueComments(owner, repo, issueNumber, token) {
+  const comments = [];
+  let page = 1;
+  while (true) {
+    const batch = await rest(
+      'GET',
+      `/repos/${owner}/${repo}/issues/${issueNumber}/comments?per_page=100&page=${page}`,
+      token
+    );
+    if (!batch.length) {
+      break;
+    }
+    comments.push(...batch);
+    if (batch.length < 100) {
+      break;
+    }
+    page += 1;
+  }
+  return comments;
+}
+
 async function loadStateFromIssue(issueNumber, token) {
   const { owner, repo } = resolveRepository();
   const authToken = token || getGithubToken();
   if (!authToken) {
-    throw new Error('GITHUB_TOKEN or gh auth required to load uat queue state');
+    throw new Error('GITHUB_TOKEN or GH_TOKEN is required to load uat queue state');
   }
 
-  const comments = await rest(
-    'GET',
-    `/repos/${owner}/${repo}/issues/${issueNumber}/comments?per_page=100`,
-    authToken
-  );
+  const comments = await fetchIssueComments(owner, repo, issueNumber, authToken);
 
   const markerComment = [...comments]
     .reverse()
@@ -60,7 +77,7 @@ async function saveStateToIssue(issueNumber, state, token) {
   const { owner, repo } = resolveRepository();
   const authToken = token || getGithubToken();
   if (!authToken) {
-    throw new Error('GITHUB_TOKEN or gh auth required to save uat queue state');
+    throw new Error('GITHUB_TOKEN or GH_TOKEN is required to save uat queue state');
   }
 
   const body = renderStateCommentBody(state);

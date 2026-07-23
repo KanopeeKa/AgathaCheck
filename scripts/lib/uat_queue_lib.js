@@ -61,32 +61,18 @@ function parseStateFromCommentBody(body) {
   if (!body || !body.includes(STATE_MARKER)) {
     return createEmptyState();
   }
-  const start = body.indexOf(STATE_MARKER) + STATE_MARKER.length;
-  const jsonStart = body.indexOf('{', start);
-  if (jsonStart === -1) {
-    return createEmptyState();
-  }
-  let depth = 0;
-  let jsonEnd = -1;
-  for (let i = jsonStart; i < body.length; i += 1) {
-    if (body[i] === '{') depth += 1;
-    if (body[i] === '}') {
-      depth -= 1;
-      if (depth === 0) {
-        jsonEnd = i + 1;
-        break;
-      }
-    }
-  }
-  if (jsonEnd === -1) {
+  const fenceMatch = body.match(/```json\s*([\s\S]*?)\s*```/);
+  if (!fenceMatch) {
     throw new UatQueueError('invalid uat-queue-state JSON in marker comment');
   }
-  return normalizeState(JSON.parse(body.slice(jsonStart, jsonEnd)));
+  return normalizeState(JSON.parse(fenceMatch[1]));
 }
 
 function renderStateCommentBody(state) {
   const payload = normalizeState(state);
-  payload.updated_at = nowIso();
+  const updatedAt = nowIso();
+  payload.updated_at = updatedAt;
+  state.updated_at = updatedAt;
   return `${STATE_MARKER}\n\`\`\`json\n${JSON.stringify(payload, null, 2)}\n\`\`\``;
 }
 
@@ -245,14 +231,23 @@ function isWatcherLeaseActive(state, now = new Date()) {
   return new Date(watcher.lease_until).getTime() > now.getTime();
 }
 
+function normalizeLeaseMinutes(leaseMinutes) {
+  const value = Number(leaseMinutes);
+  if (!Number.isFinite(value) || value <= 0) {
+    throw new UatQueueError('leaseMinutes must be a positive number');
+  }
+  return value;
+}
+
 function acquireWatcher(state, { holder, leaseMinutes = 90, watchingSeq, now = new Date() }) {
-  if (!holder) {
+  if (!holder || typeof holder !== 'string') {
     throw new UatQueueError('acquire-watcher requires --holder');
   }
   if (isWatcherLeaseActive(state, now)) {
     return { state, acquired: false, reason: 'lease_held', holder: state.active_watcher.holder };
   }
-  const leaseUntil = new Date(now.getTime() + leaseMinutes * 60 * 1000);
+  const minutes = normalizeLeaseMinutes(leaseMinutes);
+  const leaseUntil = new Date(now.getTime() + minutes * 60 * 1000);
   state.active_watcher = {
     holder,
     lease_until: leaseUntil.toISOString(),
