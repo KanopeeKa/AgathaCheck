@@ -12,14 +12,16 @@ Calm, dependable, emotionally intelligent, low-stress. Users feel oriented and i
 
 One design system; subtle context via `AppExperience` (`/g/*` guardian, `/o/*` organisation), copy, and selective accent — not two brands. Org branding rules: `copy-tone.md`.
 
-## Visual direction (target)
+## Visual direction
 
 - Warm neutral surfaces; hierarchy from spacing and typography more than decorative color
-- Operational accent: muted sage / forest green (calm, trust, care)
-- Secondary warmth: muted coral/peach sparingly for guardian/foster-facing moments
-- Semantic colors (success, warning, danger) stay functional and accessible
+- **Guardian primary:** plum `#755B68` — full primary on `/g/*` CTAs
+- **Organisation primary:** teal `#218B6C` — full primary on `/o/*` CTAs
+- **Warm accent:** coral `#D6A08F` — restrained; never primary CTA
+- **Success:** `#2B7A2E` (S2) — small signals, not large fills
+- Semantic colors stay functional and shared across modes
 
-**Current codebase:** theme is still purple-seed Material 3 (`app_theme.dart`). Treat palette above as migration target, not assumed present.
+Tokens: `docs/design/tokens.md` · Implementation: `flutter_app/lib/core/theme/`
 
 ## Layout
 

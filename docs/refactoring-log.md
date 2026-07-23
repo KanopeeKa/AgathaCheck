@@ -284,7 +284,7 @@ Tracks planned and completed refactor / quality work. See also `docs/refactoring
 
 | Phase | Outcome | Status |
 |-------|---------|--------|
-| 0 | `tokens.md` + `app_theme.dart` only | Planned |
+| 0 | `tokens.md` + `app_theme.dart` + `ExperienceColors` | In progress |
 | 1 | Shared components + `AppTheme.org*` → tokens | Planned |
 | 2 | Auth, landing, onboarding | Planned |
 | 3 | Guardian shell, pet list/detail, notifications | Planned |

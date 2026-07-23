@@ -13,7 +13,7 @@ Lightweight by default. Go deeper only when the task needs it.
 ## Theme project
 
 **Execution plan:** `ui-rework-plan.md` (phases 0–7).  
-**Deliverable in Phase 0:** `tokens.md` — until then, match `app_theme.dart`.
+**Deliverable in Phase 0:** `tokens.md` — live at `docs/design/tokens.md`.
 
 ## Reference implementations
 

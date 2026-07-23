@@ -1,6 +1,6 @@
 # UI rework — phased execution plan
 
-**Status:** Planned — not started  
+**Status:** Phase 0 in progress — `tokens.md` + `ExperienceColors` + `app_theme.dart`  
 **Companion:** `docs/design/index.md` (tiers), `docs/design/principles.md` (personality), `docs/design/tokens.md` (created in Phase 0)  
 **Skill:** `/ui-design-deep` for reviews; `/ui-check` per PR before merge
 
@@ -27,13 +27,15 @@ Product goal: calm, trustworthy care coordination — warm neutrals, sage operat
 
 | # | Decision | Proposal |
 |---|----------|----------|
-| D1 | Primary accent | Muted sage / forest green |
-| D2 | Secondary warmth | Muted coral/peach — guardian/foster contexts only |
-| D3 | Surfaces | Warm off-white background; white/near-white cards |
-| D4 | Typography | Material 3 defaults first; custom font only if load/accessibility validated |
-| D5 | Dark mode | Out of scope until native apps |
-| D6 | Org branding | Logo/name/photo only; system locks errors/focus/contrast (`copy-tone.md`) |
-| D7 | Experience accents | Same components; subtle shift via `AppExperience`, not duplicate widgets |
+| D1 | Guardian primary | Plum `#755B68` — full primary on `/g/*` |
+| D2 | Organisation primary | Teal `#218B6C` — full primary on `/o/*` |
+| D3 | Warm accent | Coral `#D6A08F` — never primary CTA |
+| D4 | Success | `#2B7A2E` (S2) |
+| D5 | Surfaces | `#F8F5F1` background; white cards |
+| D6 | Typography | Material 3 defaults |
+| D7 | Dark mode | Out of scope until native apps |
+| D8 | Org branding | Logo/name/photo only (`copy-tone.md`) |
+| D9 | Implementation | `ThemeData` + `ExperienceColors` extension |
 
 ---
 
