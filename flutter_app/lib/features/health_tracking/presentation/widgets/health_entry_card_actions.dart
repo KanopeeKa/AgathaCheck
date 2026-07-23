@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../../core/theme/app_color_tokens.dart';
 import '../../../../l10n/app_localizations.dart';
 
 class HealthEntryMarkDoneButton extends StatelessWidget {
@@ -19,10 +20,10 @@ class HealthEntryMarkDoneButton extends StatelessWidget {
     return SizedBox(
       width: petStripWidth * 2,
       child: Material(
-        color: Colors.green.shade50,
+        color: AppColorTokens.successLight,
         child: InkWell(
           onTap: onPressed,
-          splashColor: Colors.green.shade100,
+          splashColor: AppColorTokens.successLight,
           child: Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -30,13 +31,13 @@ class HealthEntryMarkDoneButton extends StatelessWidget {
                 Icon(
                   Icons.check_circle_outline,
                   size: 22,
-                  color: Colors.green.shade700,
+                  color: AppColorTokens.success,
                 ),
                 const SizedBox(height: 4),
                 Text(
                   l.markAsDone,
                   style: theme.textTheme.labelSmall?.copyWith(
-                    color: Colors.green.shade700,
+                    color: AppColorTokens.success,
                     fontWeight: FontWeight.bold,
                     fontSize: 11,
                   ),
@@ -67,20 +68,20 @@ class HealthEntryUndoCompleteButton extends StatelessWidget {
     return SizedBox(
       width: petStripWidth * 2,
       child: Material(
-        color: Colors.orange.shade50,
+        color: AppColorTokens.warmAccentLight,
         child: InkWell(
           onTap: onPressed,
-          splashColor: Colors.orange.shade100,
+          splashColor: AppColorTokens.warmAccentLight,
           child: Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(Icons.undo, size: 22, color: Colors.orange.shade700),
+                Icon(Icons.undo, size: 22, color: AppColorTokens.warmAccent),
                 const SizedBox(height: 4),
                 Text(
                   l.undoComplete,
                   style: theme.textTheme.labelSmall?.copyWith(
-                    color: Colors.orange.shade700,
+                    color: AppColorTokens.heading,
                     fontWeight: FontWeight.bold,
                     fontSize: 11,
                   ),
@@ -107,20 +108,20 @@ class HealthEntrySnoozeButton extends StatelessWidget {
     return SizedBox(
       width: 48,
       child: Material(
-        color: Colors.orange.shade50,
+        color: AppColorTokens.warmAccentLight,
         child: InkWell(
           onTap: () => _showSnoozePicker(context),
-          splashColor: Colors.orange.shade100,
+          splashColor: AppColorTokens.warmAccentLight,
           child: Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(Icons.snooze, size: 18, color: Colors.orange.shade700),
+                Icon(Icons.snooze, size: 18, color: AppColorTokens.warning),
                 const SizedBox(height: 2),
                 Text(
                   l.snooze,
                   style: theme.textTheme.labelSmall?.copyWith(
-                    color: Colors.orange.shade700,
+                    color: AppColorTokens.warning,
                     fontWeight: FontWeight.bold,
                     fontSize: 9,
                   ),
@@ -144,7 +145,7 @@ class HealthEntrySnoozeButton extends StatelessWidget {
             return AlertDialog(
               title: Row(
                 children: [
-                  Icon(Icons.snooze, color: Colors.orange.shade700, size: 22),
+                  Icon(Icons.snooze, color: AppColorTokens.warning, size: 22),
                   const SizedBox(width: 8),
                   Text('${l.snooze} Event'),
                 ],
@@ -180,8 +181,8 @@ class HealthEntrySnoozeButton extends StatelessWidget {
                                       ? FontWeight.bold
                                       : FontWeight.normal,
                                   color: isSelected
-                                      ? Colors.orange.shade800
-                                      : Colors.grey,
+                                      ? AppColorTokens.warning
+                                      : AppColorTokens.muted,
                                 ),
                               ),
                             );
@@ -199,7 +200,7 @@ class HealthEntrySnoozeButton extends StatelessWidget {
                 ),
                 FilledButton(
                   style: FilledButton.styleFrom(
-                    backgroundColor: Colors.orange.shade700,
+                    backgroundColor: AppColorTokens.warning,
                   ),
                   onPressed: () {
                     Navigator.of(ctx).pop();
