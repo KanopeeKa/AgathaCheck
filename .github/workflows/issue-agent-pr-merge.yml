@@ -33,4 +33,5 @@ jobs:
           PR_TITLE: ${{ github.event.pull_request.title }}
           PR_BODY: ${{ github.event.pull_request.body }}
           MERGE_SHA: ${{ github.event.pull_request.merge_commit_sha }}
+          UAT_COORDINATION_ISSUE: ${{ vars.UAT_COORDINATION_ISSUE }}
         run: node .github/scripts/issue-agent-handlers.js

@@ -188,6 +188,8 @@ After merge (or when babysitting an already-merged fix):
 
 See `docs/ci-cd-gates.md` §3 · babysit-plus §8b–8c · `docs/e2e-ci-canary-plan.md` Phase 5.
 
+**Planned (review):** [uat-coordinator-plan.md](./uat-coordinator-plan.md) — cross-agent queue ledger, main barrier for rebases, passive success path, dedicated coordinator on failure only (replaces per-merge Task sub-agents).
+
 **Infra-only blockers** (e.g. `UAT_AUTO_MIGRATE` unset with pending live migrations) → comment on PR/control issue and escalate; do not weaken gates.
 
 ---
