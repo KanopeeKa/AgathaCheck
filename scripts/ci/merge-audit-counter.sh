@@ -1,35 +1,49 @@
 #!/usr/bin/env bash
 # Bump main merge counter and decide whether to run a full CI audit on main.
-# Uses repository variables CI_FULL_AUDIT_MERGE_COUNT and CI_FULL_AUDIT_LAST_RUN.
+# Persists state in CI_AUDIT_STATE_FILE (restored/saved via Actions cache in ci-full-audit.yml).
 set -euo pipefail
 
 MERGE_THRESHOLD="${CI_FULL_AUDIT_MERGE_THRESHOLD:-12}"
 STALE_DAYS="${CI_FULL_AUDIT_STALE_DAYS:-7}"
-VAR_COUNT="CI_FULL_AUDIT_MERGE_COUNT"
-VAR_LAST="CI_FULL_AUDIT_LAST_RUN"
-REPO="${GITHUB_REPOSITORY:?GITHUB_REPOSITORY required}"
+STATE_FILE="${CI_AUDIT_STATE_FILE:-.ci-full-audit-state.json}"
 
-read_var() {
-  local name="$1" default="${2:-0}"
-  gh api "repos/${REPO}/actions/variables/${name}" --jq .value 2>/dev/null || echo "$default"
+read_state() {
+  python3 - "$STATE_FILE" <<'PY'
+import json, pathlib, sys
+
+path = pathlib.Path(sys.argv[1])
+if not path.is_file():
+    print(json.dumps({"merge_count": 0, "last_run": ""}))
+else:
+    data = json.loads(path.read_text())
+    print(json.dumps({
+        "merge_count": int(data.get("merge_count", 0)),
+        "last_run": data.get("last_run") or "",
+    }))
+PY
 }
 
-write_var() {
-  local name="$1" value="$2"
-  if gh api "repos/${REPO}/actions/variables/${name}" >/dev/null 2>&1; then
-    gh api "repos/${REPO}/actions/variables/${name}" -X PATCH -f value="$value" >/dev/null
-  else
-    gh api "repos/${REPO}/actions/variables" -X POST \
-      -f name="$name" -f value="$value" >/dev/null
-  fi
+write_state() {
+  local count="$1" last="$2"
+  python3 - "$STATE_FILE" "$count" "$last" <<'PY'
+import json, pathlib, sys
+
+path = pathlib.Path(sys.argv[1])
+path.parent.mkdir(parents=True, exist_ok=True)
+path.write_text(json.dumps({
+    "merge_count": int(sys.argv[2]),
+    "last_run": sys.argv[3],
+}, indent=2) + "\n")
+PY
 }
 
 cmd="${1:-decide}"
 case "$cmd" in
   decide)
-    count="$(read_var "$VAR_COUNT" 0)"
+    state="$(read_state)"
+    count="$(python3 -c 'import json,sys; print(json.load(sys.stdin)["merge_count"])' <<<"$state")"
+    last="$(python3 -c 'import json,sys; print(json.load(sys.stdin)["last_run"])' <<<"$state")"
     count=$((count + 1))
-    write_var "$VAR_COUNT" "$count"
 
     should_run=false
     reason=""
@@ -38,7 +52,6 @@ case "$cmd" in
       reason="merge_count_mod_${MERGE_THRESHOLD}"
     fi
 
-    last="$(read_var "$VAR_LAST" "")"
     if [[ "$should_run" != true && -n "$last" ]]; then
       if python3 - "$last" "$STALE_DAYS" <<'PY'
 import sys
@@ -58,9 +71,11 @@ PY
       reason="first_audit"
     fi
 
+    new_last="$last"
     if [[ "$should_run" == true ]]; then
-      write_var "$VAR_LAST" "$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+      new_last="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
     fi
+    write_state "$count" "$new_last"
 
     echo "merge_count=$count"
     echo "should_run=$should_run"

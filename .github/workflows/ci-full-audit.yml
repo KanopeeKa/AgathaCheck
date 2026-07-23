@@ -30,10 +30,19 @@ jobs:
     steps:
       - uses: actions/checkout@v5
 
+      - name: Restore merge counter state
+        uses: actions/cache@v5
+        with:
+          path: .ci-full-audit-state
+          key: ci-full-audit-state-v1
+          restore-keys: |
+            ci-full-audit-state-v1
+          save-always: true
+
       - name: Bump counter and decide
         id: counter
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CI_AUDIT_STATE_FILE: .ci-full-audit-state/state.json
         run: bash scripts/ci/merge-audit-counter.sh decide
 
   startup-smoke:
