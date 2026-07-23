@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../../l10n/app_localizations.dart';
 import '../../../../../core/web/native_login.dart';
+import '../../../../../core/web/native_login_inline_view.dart';
 import '../../providers/auth_providers.dart';
 import 'landing_error_banner.dart';
 import 'landing_logo.dart';
@@ -20,7 +21,8 @@ class LandingLoginForm extends StatefulWidget {
     required this.onSubmit,
     required this.onClearError,
     required this.nativeLogin,
-    required this.onShowNativeLogin,
+    required this.onNativeLogin,
+    required this.onNativeForgot,
   });
 
   final ThemeData theme;
@@ -32,7 +34,8 @@ class LandingLoginForm extends StatefulWidget {
   final Future<void> Function() onSubmit;
   final VoidCallback onClearError;
   final NativeLogin nativeLogin;
-  final VoidCallback onShowNativeLogin;
+  final Future<void> Function(String email, String password) onNativeLogin;
+  final VoidCallback onNativeForgot;
 
   @override
   State<LandingLoginForm> createState() => _LandingLoginFormState();
@@ -42,7 +45,56 @@ class _LandingLoginFormState extends State<LandingLoginForm> {
   bool _obscure = true;
 
   @override
+  void initState() {
+    super.initState();
+    if (kIsWeb && widget.nativeLogin.isAvailable) {
+      widget.nativeLogin.attachInline(
+        emailLabel: widget.l10n.email,
+        passwordLabel: widget.l10n.password,
+        signInLabel: widget.l10n.signIn,
+        forgotLabel: widget.l10n.forgotPassword,
+        onSubmit: (email, password) => widget.onNativeLogin(email, password),
+        onForgot: widget.onNativeForgot,
+      );
+    }
+  }
+
+  @override
+  void didUpdateWidget(covariant LandingLoginForm oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (!kIsWeb || !widget.nativeLogin.isAvailable) return;
+
+    if (widget.auth.error != oldWidget.auth.error) {
+      widget.nativeLogin.setError(widget.auth.error ?? '');
+      if (widget.auth.error == null) {
+        widget.nativeLogin.setBusy(false);
+      }
+    }
+
+    widget.nativeLogin.attachInline(
+      emailLabel: widget.l10n.email,
+      passwordLabel: widget.l10n.password,
+      signInLabel: widget.l10n.signIn,
+      forgotLabel: widget.l10n.forgotPassword,
+      onSubmit: (email, password) => widget.onNativeLogin(email, password),
+      onForgot: widget.onNativeForgot,
+    );
+  }
+
+  @override
+  void dispose() {
+    if (kIsWeb && widget.nativeLogin.isAvailable) {
+      widget.nativeLogin.detach();
+    }
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    if (kIsWeb && widget.nativeLogin.isAvailable) {
+      return const NativeLoginInlineView();
+    }
+
     return AutofillGroup(
       child: Form(
         key: widget.formKey,
@@ -122,18 +174,6 @@ class _LandingLoginFormState extends State<LandingLoginForm> {
                     : Text(widget.l10n.signIn),
               ),
             ),
-            if (kIsWeb && widget.nativeLogin.isAvailable)
-              Padding(
-                padding: const EdgeInsets.only(top: 8),
-                child: TextButton.icon(
-                  key: const Key('native_login_button'),
-                  onPressed: widget.auth.isLoading
-                      ? null
-                      : widget.onShowNativeLogin,
-                  icon: const Icon(Icons.password_outlined, size: 18),
-                  label: Text(widget.l10n.signInWithPasswordManager),
-                ),
-              ),
           ],
         ),
       ),

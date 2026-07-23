@@ -42,7 +42,7 @@ class _LandingScreenState extends ConsumerState<LandingScreen>
 
   @override
   void dispose() {
-    _nativeLogin.hide();
+    _nativeLogin.detach();
     _tabController.dispose();
     _loginEmailController.dispose();
     _loginPasswordController.dispose();
@@ -71,30 +71,7 @@ class _LandingScreenState extends ConsumerState<LandingScreen>
     }
   }
 
-  void _showNativeLogin() {
-    final l10n = AppLocalizations.of(context)!;
-    ref.read(authProvider.notifier).clearError();
-    _nativeLogin.show(
-      email: _loginEmailController.text.trim(),
-      title: l10n.signIn,
-      subtitle: l10n.signInToAccount,
-      emailLabel: l10n.email,
-      passwordLabel: l10n.password,
-      signInLabel: l10n.signIn,
-      forgotLabel: l10n.forgotPassword,
-      dismissLabel: l10n.cancel,
-      onSubmit: _handleNativeLogin,
-      onForgot: () {
-        _nativeLogin.hide();
-        if (mounted) context.go('/forgot-password');
-      },
-      onDismiss: _nativeLogin.hide,
-    );
-  }
-
   Future<void> _handleNativeLogin(String email, String password) async {
-    _loginEmailController.text = email;
-    _loginPasswordController.text = password;
     ref.read(authProvider.notifier).clearError();
 
     await ref
@@ -105,7 +82,7 @@ class _LandingScreenState extends ConsumerState<LandingScreen>
     final auth = ref.read(authProvider);
     if (auth.isLoggedIn) {
       TextInput.finishAutofillContext();
-      _nativeLogin.hide();
+      _nativeLogin.detach();
       context.go('/app/resolve');
     } else {
       _nativeLogin.setBusy(false);
@@ -156,7 +133,10 @@ class _LandingScreenState extends ConsumerState<LandingScreen>
         onSubmit: _submitLogin,
         onClearError: () => ref.read(authProvider.notifier).clearError(),
         nativeLogin: _nativeLogin,
-        onShowNativeLogin: _showNativeLogin,
+        onNativeLogin: _handleNativeLogin,
+        onNativeForgot: () {
+          if (mounted) context.go('/forgot-password');
+        },
       ),
       signupForm: LandingSignupForm(
         theme: theme,
