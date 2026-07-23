@@ -1,0 +1,35 @@
+name: UAT queue health
+
+on:
+  workflow_dispatch:
+  schedule:
+    # Weekly smoke — ledger inactive until UAT_COORDINATION_ISSUE is set.
+    - cron: '0 9 * * 1'
+
+permissions:
+  issues: read
+
+jobs:
+  health-check:
+    name: UAT queue ledger health
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+
+      - name: Verify coordination issue configured
+        env:
+          UAT_COORDINATION_ISSUE: ${{ vars.UAT_COORDINATION_ISSUE }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if [ -z "${UAT_COORDINATION_ISSUE}" ]; then
+            echo "::warning::UAT_COORDINATION_ISSUE repo variable is unset — ledger enqueue is skipped on merge"
+            echo "Run: node scripts/uat_coordinator_bootstrap.js --write --pin"
+            echo "Then: gh variable set UAT_COORDINATION_ISSUE --body \"<issue_number>\""
+            exit 0
+          fi
+          node scripts/uat_queue_runtime.js health-check
