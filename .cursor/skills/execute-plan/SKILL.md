@@ -1,6 +1,6 @@
 ---
 name: execute-plan
-description: Multi-phase autonomous orchestrator — runs frozen plan snapshots phase-by-phase, gates on merge-done, delegates PR hygiene to /babysit-plus (default merge mode auto). Use after approve-autonomous or to resume a halted plan.
+description: Multi-phase autonomous orchestrator — runs frozen plan snapshots phase-by-phase, gates on merge-done, delegates PR hygiene to /babysit-plus (default merge mode auto). Post-merge UAT: enqueue only — never Task sub-agents.
 ---
 
 # Execute-plan
@@ -89,7 +89,14 @@ Run when drafting a plan, **before** `approve-autonomous`:
    node scripts/execute_plan_runtime.js current-phase <plan_id>
    ```
 6. Rebase phase branch on `origin/<base_branch>` (or integration parent when spawn phase)
-7. **Control issue session comment** — post what you are starting (phase id, branch, PR if any). Add `busy` on first session:
+7. **UAT queue preflight** — before merge/push on any phase:
+   ```bash
+   # reconcile requires UAT_COORDINATION_ISSUE or --issue (skip when unset)
+   node scripts/uat_queue_runtime.js reconcile --write --issue <coordination-issue>
+   node scripts/uat_queue_runtime.js barrier-check --branch "$(git branch --show-current)"
+   ```
+   Exit `2` from `barrier-check` → `./scripts/babysit_sync_base.sh --pr <url> --push` before continuing.
+8. **Control issue session comment** — post what you are starting (phase id, branch, PR if any). Add `busy` on first session:
    ```bash
    node scripts/github_issue_workflow.js start-work --issue <control_issue> --body "## Session start
    - phase: <id> — <title>
@@ -163,7 +170,7 @@ Commit plan artifacts on the phase branch (`artifact_branch_policy: phase-branch
   ```
 - Push plan artifact commits to phase branch before babysit-plus
 
-### 5. Babysit+ through merge; spawn UAT sub-agent (mandatory)
+### 5. Babysit+ through merge; enqueue UAT (mandatory)
 
 **Main agent** invokes **/babysit-plus** §0–7 for the phase PR (sync → triage → fixes → debt issues → CI → exit checklist → **merge** per effective mode).
 
@@ -175,15 +182,23 @@ Commit plan artifacts on the phase branch (`artifact_branch_policy: phase-branch
 | `approved_until` | from snapshot |
 | **Effective `merge_mode`** | `phase.merge_mode ?? snapshot.default_merge_mode ?? auto` |
 
-**After merge is verified** (PR `MERGED`, merge commit on base), **main agent** spawns the **UAT babysit sub-agent** (babysit-plus §8a) — a background Task that owns §8b until **Prod ready** is green or triggers a pause. **Do not wait** for UAT/prod-ready before completing the phase or starting the next one.
+**Before merge attempt:** run `barrier-check` (session preflight §7). Rebase if behind UAT barrier.
+
+**After merge is verified** (PR `MERGED`, merge commit on base), **main agent enqueues UAT** (babysit-plus §8a) — **do not spawn Task sub-agents** and **do not wait** for prod-ready before completing the phase or starting the next one.
+
+```bash
+node scripts/uat_queue_runtime.js enqueue \
+  --merge <merge-sha> --pr <n> \
+  --ref "plan:<plan_id> phase-<id>" \
+  --write
+```
 
 ```text
-Main agent                          UAT babysit sub-agent (background)
-──────────                          ─────────────────────────────────
-babysit+ §0–7 → merge ─────────────► spawn after merge SHA known
-complete phase §6                   poll promote-uat → deploy-uat → prod-ready
-start next phase §7                 on failure: pause main + remedial loop
-                                    on success: comment + exit (no interrupt)
+Main agent                          UAT (passive — no agent poll)
+──────────                          ─────────────────────────────
+babysit+ §0–7 → merge ─────────────► enqueue merge SHA (~seconds)
+complete phase §6                   Actions: promote-uat → deploy-uat → prod-ready
+start next phase §7                 on failure: coordinator comments; barrier-check before next merge
 ```
 
 **Phase gate = merge-done** — do not advance until:
@@ -198,7 +213,7 @@ git fetch origin <base_branch>
 git merge-base --is-ancestor <mergeCommit.oid> origin/<base_branch>
 ```
 
-**UAT prod-ready is not a phase gate.** The §8 sub-agent watches deploy in parallel; on failure it **pauses** main work (`uat_paused`) and auto-resumes when remedial prod-ready is green. Do not wait for prod-ready before starting the next phase.
+**UAT prod-ready is not a phase gate.** GitHub Actions + the UAT queue ledger own deploy observation. On failure the UAT coordinator comments; work agents continue phases and use `barrier-check` before the next merge. **Never spawn Task sub-agents to poll UAT** — agents often block waiting for sub-agent return even with `run_in_background: true`.
 
 ### 6. Complete phase
 
@@ -209,9 +224,9 @@ node scripts/execute_plan_runtime.js set-phase <plan_id> \
 
 Update snapshot `merge_commit` via runtime (`set-phase` + `saveSnapshot`). Sync live plan; comment phase summary on control issue.
 
-### 7. Next phase (parallel with UAT babysit)
+### 7. Next phase (parallel with UAT deploy)
 
-If more `pending` phases → loop to §1 **immediately** — any in-flight UAT babysit sub-agents from prior merges continue in the background per babysit-plus §8.
+If more `pending` phases → loop to §1 **immediately** — prior merges' UAT deploys run in GitHub Actions; no agent polling required (babysit-plus §8).
 
 If all `merged` → **complete plan** (snapshot + close control issue):
 
@@ -227,7 +242,7 @@ This sets `autonomy: completed`, syncs runtime, and closes the control issue wit
 
 Stop immediately on: revoke label, past `approved_until`, escalation, drift, CI budget exhausted, debt issue create failure, merge failure, or session limit.
 
-**UAT prod-ready failure** → pause (`uat_paused`) via §8 sub-agent; auto-resume when remedial prod-ready is green — not a halt trigger.
+**UAT prod-ready failure** → coordinator comments on control issue; use `barrier-check` before next merge — **not** a halt or `uat_paused` trigger.
 
 ```bash
 node scripts/execute_plan_runtime.js halt <plan_id> \
