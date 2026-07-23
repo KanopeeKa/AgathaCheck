@@ -44,33 +44,7 @@ class LandingLoginForm extends StatefulWidget {
 class _LandingLoginFormState extends State<LandingLoginForm> {
   bool _obscure = true;
 
-  @override
-  void initState() {
-    super.initState();
-    if (kIsWeb && widget.nativeLogin.isAvailable) {
-      widget.nativeLogin.attachInline(
-        emailLabel: widget.l10n.email,
-        passwordLabel: widget.l10n.password,
-        signInLabel: widget.l10n.signIn,
-        forgotLabel: widget.l10n.forgotPassword,
-        onSubmit: (email, password) => widget.onNativeLogin(email, password),
-        onForgot: widget.onNativeForgot,
-      );
-    }
-  }
-
-  @override
-  void didUpdateWidget(covariant LandingLoginForm oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (!kIsWeb || !widget.nativeLogin.isAvailable) return;
-
-    if (widget.auth.error != oldWidget.auth.error) {
-      widget.nativeLogin.setError(widget.auth.error ?? '');
-      if (widget.auth.error == null) {
-        widget.nativeLogin.setBusy(false);
-      }
-    }
-
+  void _attachNativeLogin() {
     widget.nativeLogin.attachInline(
       emailLabel: widget.l10n.email,
       passwordLabel: widget.l10n.password,
@@ -79,6 +53,28 @@ class _LandingLoginFormState extends State<LandingLoginForm> {
       onSubmit: (email, password) => widget.onNativeLogin(email, password),
       onForgot: widget.onNativeForgot,
     );
+    _syncNativeLoginState();
+  }
+
+  void _syncNativeLoginState() {
+    widget.nativeLogin.setBusy(widget.auth.isLoading);
+    widget.nativeLogin.setError(widget.auth.error ?? '');
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    if (kIsWeb && widget.nativeLogin.isAvailable) {
+      _attachNativeLogin();
+    }
+  }
+
+  @override
+  void didUpdateWidget(covariant LandingLoginForm oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (!kIsWeb || !widget.nativeLogin.isAvailable) return;
+
+    _attachNativeLogin();
   }
 
   @override
