@@ -9,13 +9,13 @@
  *   node scripts/github_issue_workflow.js start-work --issue <n> --body "..."
  */
 
-const fs = require('fs');
 const { spawnSync } = require('child_process');
 const {
   postIssueComment,
   resolveRepository,
   updateIssueProjectStatus,
 } = require('./lib/execute_plan_project');
+const { parseFlags, readBody } = require('./lib/github_issue_workflow_lib');
 
 function usage() {
   console.error(`Usage:
@@ -26,29 +26,6 @@ function usage() {
 Agents cannot update GitHub Project board status — use comments + the \`busy\` label.
 See docs/agent-efficiency/github-labels.md`);
   process.exit(1);
-}
-
-function parseFlags(argv) {
-  const flags = {};
-  for (let i = 0; i < argv.length; i += 1) {
-    const arg = argv[i];
-    if (!arg.startsWith('--')) continue;
-    const key = arg.slice(2);
-    const next = argv[i + 1];
-    if (next && !next.startsWith('--')) {
-      flags[key] = next;
-      i += 1;
-    } else {
-      flags[key] = true;
-    }
-  }
-  return flags;
-}
-
-function readBody(flags) {
-  if (flags.body) return flags.body;
-  if (flags['body-file']) return fs.readFileSync(flags['body-file'], 'utf8');
-  return null;
 }
 
 function printJson(obj) {

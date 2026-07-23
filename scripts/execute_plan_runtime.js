@@ -209,9 +209,9 @@ function runSync(cmd, planId, flags) {
           ok: true,
           phase: { id: phase.id, status: phase.status, branch: phase.branch },
           next_action: computeNextAction(snapshot),
+          comment_preview: comment,
+          posted: maybePostControlComment(snapshot, comment, flags),
         });
-        const posted = maybePostControlComment(snapshot, comment, flags);
-        printJson({ comment_preview: comment, posted });
         if (!flags.write) {
           console.error('execute_plan_runtime: dry-run (pass --write to persist)');
         }

@@ -55,11 +55,11 @@ After creating the issue, set `control_issue` in the snapshot JSON and re-run va
 
 ### Halt (graceful shutdown)
 
-Updates snapshot + live plan runtime block; prints markdown comment for control issue (agent posts via `gh`).
+Updates snapshot + live plan runtime block; prints JSON with `comment_preview`. Pass `--post-comment` to post on the control issue via `gh`.
 
 ```bash
 node scripts/execute_plan_runtime.js halt <plan_id> \
-  --reason session_limit --detail "checkpoint" --write
+  --reason session_limit --detail "checkpoint" --write --post-comment
 ```
 
 `--autonomy` defaults to `halted`; use `revoked` when `autonomous-revoked` label applied.
@@ -70,7 +70,7 @@ Pauses the in-progress phase without setting snapshot `autonomy` to `halted`. Us
 
 ```bash
 node scripts/execute_plan_runtime.js pause <plan_id> \
-  --reason uat_paused --detail "prod-ready: smoke shard 3 failed" --write
+  --reason uat_paused --detail "prod-ready: smoke shard 3 failed" --write --post-comment
 ```
 
 ### Resume UAT (auto-resume — no human `resume-plan`)
@@ -78,10 +78,10 @@ node scripts/execute_plan_runtime.js pause <plan_id> \
 Clears `uat_paused` on the halted phase and restores `in_progress`. Sub-agent calls this when remedial prod-ready is green.
 
 ```bash
-node scripts/execute_plan_runtime.js resume-uat <plan_id> --write
+node scripts/execute_plan_runtime.js resume-uat <plan_id> --write --post-comment
 ```
 
-Prints JSON (`next_action`, phase) plus a resume comment for the control issue. Main agent continues via `/execute-plan <plan_id> resume` without manual intervention.
+Prints one JSON object (`next_action`, phase, `comment_preview`, optional `posted`). Main agent continues via `/execute-plan <plan_id> resume` without manual intervention.
 
 ### Phase status + artifact sync
 
