@@ -66,9 +66,10 @@ export class MyDetailsPage {
 
   async expectEmail(email: string): Promise<void> {
     const pattern = new RegExp(email.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i');
-    await expect(this.page.getByRole('button', { name: pattern }).first()).toBeVisible({
-      timeout: 15_000,
-    });
+    await expect(async () => {
+      await refreshFlutterAccessibility(this.page);
+      await expect(this.page.getByRole('button', { name: pattern }).first()).toBeVisible();
+    }).toPass({ timeout: 20_000 });
   }
 
   async expectBio(bio: string): Promise<void> {

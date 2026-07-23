@@ -134,6 +134,12 @@ node e2e/scripts/summarize-playwright-retries.mjs --file /path/to/playwright-lis
 
 - **Quick semantics flakes** (~sub-15s) sometimes pass on retry; address with `expect().toPass()` in Phase 1/3, not whole-test retry.
 - **Cascade / routing / timeout** failures never benefit from retry — motivates `@smoke-ci` on PR and `retries: 0` on smoke tiers.
-- **Full shard matrix** still dominates UAT deploy duration; Phase 4 targets `fail-fast` + `retries: 0` on `full` project after smoke tiers stabilize.
+- **Full shard matrix** still dominates UAT deploy duration; Phase 4 sets `fail-fast: true` on the UAT full E2E matrix and `retries: 0` on the Playwright `full` project (after smoke tiers stabilized in Phase 3).
+
+### Phase 4 rollout (2026-07-22)
+
+- `e2e/playwright.config.ts`: `full` project `retries: 0`
+- `deploy-uat.yml`: `uat-e2e-full` matrix `fail-fast: true`
+- Page-object polling hardening for `auth.profile` / `organisation.management` flake paths
 
 Regenerate counts after Phase 3 using archived `playwright-report-uat-smoke` artifacts from green/failed deploy runs.

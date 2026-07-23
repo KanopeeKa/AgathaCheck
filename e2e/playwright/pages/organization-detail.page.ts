@@ -28,11 +28,15 @@ export class OrganizationDetailPage {
 
   async expectLoaded(orgName: string): Promise<void> {
     await dismissConsentBannerIfPresent(this.page);
-    await this.page
-      .getByText(orgName, { exact: true })
-      .or(this.page.getByRole('button', { name: 'Edit Organization' }))
-      .first()
-      .waitFor({ timeout: 30_000 });
+    await expect(async () => {
+      await refreshFlutterAccessibility(this.page);
+      await expect(
+        this.page
+          .getByText(orgName, { exact: true })
+          .or(this.page.getByRole('button', { name: 'Edit Organization' }))
+          .first(),
+      ).toBeVisible();
+    }).toPass({ timeout: 30_000 });
   }
 
   async expectMemberVisible(name: string): Promise<void> {
