@@ -14,6 +14,15 @@ import {
 
 const NOTIFICATIONS_ROUTE_PATTERN = /\/(g|o)\/notifications(?:\?|$)/;
 
+/** Nav v2 drawer labels (EN + FR) — replaces legacy top-bar "Notifications". */
+const NOTIFICATIONS_DRAWER_LABEL =
+  /^(?:Notifications|Guardian notifications|Organisation notifications|Notifications gardien|Notifications organisation)$/i;
+
+const NOTIFICATIONS_DRAWER_ROLE =
+  /^(?:Notifications|Guardian notifications|Organisation notifications|Notifications gardien|Notifications organisation)/i;
+
+const NOTIFICATIONS_UNREAD_SUFFIX = /,\s*(?:99\+|[1-9]\d?)\s*unread/i;
+
 /** Pick guardian vs org notifications route from the current effective URL. */
 function notificationsPathForPage(page: Page): string {
   const route = flutterRoutePath(page.url());
@@ -112,7 +121,7 @@ export class NotificationsPage {
     await this.page.waitForTimeout(600);
   }
 
-  /** Assert the unread-count badge on the legacy app bar or experience drawer. */
+  /** Assert the unread-count badge on the legacy app bar, hamburger, or experience drawer. */
   async expectBadgeVisible(count: number): Promise<void> {
     const label = count > 99 ? '99+' : String(count);
     const legacyControl = this.page
@@ -131,6 +140,32 @@ export class NotificationsPage {
     }
 
     if (await isExperienceShellVisible(this.page)) {
+      const settingsButton = this.page.getByRole('button', {
+        name: /^(Settings|Paramètres)$/i,
+      });
+      if (await settingsButton.isVisible({ timeout: 2_000 }).catch(() => false)) {
+        const badgeDigit = settingsButton.getByText(
+          new RegExp(`^${label.replace('+', '\\+')}$`),
+        );
+        if (await badgeDigit.isVisible({ timeout: 5_000 }).catch(() => false)) {
+          return;
+        }
+      }
+
+      await openExperienceDrawer(this.page);
+      const drawerEntry = this.page
+        .getByRole('button', { name: NOTIFICATIONS_DRAWER_ROLE })
+        .or(this.page.getByRole('menuitem', { name: NOTIFICATIONS_DRAWER_ROLE }))
+        .first();
+      if (await drawerEntry.isVisible({ timeout: 5_000 }).catch(() => false)) {
+        const badgeLabel =
+          (await drawerEntry.getAttribute('aria-label')) ?? (await drawerEntry.innerText());
+        expect(badgeLabel).toMatch(
+          new RegExp(`${label.replace('+', '\\+')}\\s*unread`, 'i'),
+        );
+        return;
+      }
+
       await gotoNotificationsRoute(this.page);
       await this.expectLoaded();
       if (count > 0) {
@@ -144,10 +179,8 @@ export class NotificationsPage {
     throw new Error(`Notifications badge (${label}) not found`);
   }
 
-  /** Assert no unread-count badge on the legacy app bar or experience drawer. */
+  /** Assert no unread-count badge on the legacy app bar, hamburger, or experience drawer. */
   async expectNoBadgeVisible(): Promise<void> {
-    const unreadPattern = /,\s*(?:99\+|[1-9]\d?)\s*unread/i;
-
     const legacyControl = this.page
       .getByRole('button', { name: /^Notifications/i })
       .or(this.page.getByRole('group', { name: /^Notifications/i }))
@@ -155,28 +188,39 @@ export class NotificationsPage {
     if (await legacyControl.isVisible({ timeout: 2_000 }).catch(() => false)) {
       const badgeLabel =
         (await legacyControl.getAttribute('aria-label')) ?? (await legacyControl.innerText());
-      expect(badgeLabel).not.toMatch(unreadPattern);
+      expect(badgeLabel).not.toMatch(NOTIFICATIONS_UNREAD_SUFFIX);
       return;
     }
 
     if (await isExperienceShellVisible(this.page)) {
+      const settingsButton = this.page.getByRole('button', {
+        name: /^(Settings|Paramètres)$/i,
+      });
+      if (await settingsButton.isVisible({ timeout: 2_000 }).catch(() => false)) {
+        const badgeDigit = settingsButton.getByText(/^(?:99\+|[1-9]\d?)$/);
+        await expect(badgeDigit).toHaveCount(0, { timeout: 5_000 });
+      }
+
       await openExperienceDrawer(this.page);
       const notificationsEntry = this.page
-        .getByRole('button', { name: /^Notifications/i })
-        .or(this.page.getByRole('group', { name: /^Notifications/i }))
-        .or(this.page.getByRole('menuitem', { name: /^Notifications/i }))
+        .getByRole('button', { name: NOTIFICATIONS_DRAWER_ROLE })
+        .or(this.page.getByRole('group', { name: NOTIFICATIONS_DRAWER_ROLE }))
+        .or(this.page.getByRole('menuitem', { name: NOTIFICATIONS_DRAWER_ROLE }))
         .first();
-      if (await notificationsEntry.isVisible({ timeout: 2_000 }).catch(() => false)) {
+      if (await notificationsEntry.isVisible({ timeout: 5_000 }).catch(() => false)) {
         const badgeLabel =
-          (await notificationsEntry.getAttribute('aria-label')) ?? (await notificationsEntry.innerText());
-        expect(badgeLabel).not.toMatch(unreadPattern);
+          (await notificationsEntry.getAttribute('aria-label')) ??
+          (await notificationsEntry.innerText());
+        expect(badgeLabel).not.toMatch(NOTIFICATIONS_UNREAD_SUFFIX);
         return;
       }
 
-      const notificationsTile = this.page.getByText('Notifications', { exact: true });
+      const notificationsTile = this.page.getByText(NOTIFICATIONS_DRAWER_LABEL);
       await notificationsTile.waitFor({ timeout: 10_000 });
       const rowText = await notificationsTile
-        .locator('xpath=ancestor::*[self::button or @role="button" or @role="group" or @role="menuitem"][1]')
+        .locator(
+          'xpath=ancestor::*[self::button or @role="button" or @role="group" or @role="menuitem"][1]',
+        )
         .innerText()
         .catch(() => notificationsTile.innerText());
       expect(rowText).not.toMatch(/\b(?:99\+|[1-9]\d?)\b/);
