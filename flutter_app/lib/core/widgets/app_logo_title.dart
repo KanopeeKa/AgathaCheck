@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import '../branding/logo_assets.dart';
+import '../../features/experience/domain/entities/app_experience.dart';
+
 /// A reusable AppBar title widget that displays the Agatha Track logo
 /// followed by the screen title text.
 ///
@@ -10,10 +13,16 @@ class AppLogoTitle extends StatelessWidget {
   /// The title text displayed next to the logo.
   final String title;
 
-  const AppLogoTitle({super.key, required this.title});
+  /// Optional experience override; otherwise resolved from the current route.
+  final AppExperience? experience;
+
+  const AppLogoTitle({super.key, required this.title, this.experience});
 
   @override
   Widget build(BuildContext context) {
+    final resolved = experience ?? LogoAssets.experienceForContext(context);
+    final assetPath = LogoAssets.pngFor(resolved);
+
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -24,7 +33,7 @@ class AppLogoTitle extends StatelessWidget {
             child: ClipRRect(
               borderRadius: BorderRadius.circular(6),
               child: Image.asset(
-                'assets/logo.png',
+                assetPath,
                 height: 32,
                 width: 32,
                 fit: BoxFit.cover,

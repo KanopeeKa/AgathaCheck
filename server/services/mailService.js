@@ -7,13 +7,13 @@ import { LOGO_CID } from '../lib/email/branding.js';
 import { buildPasswordResetEmail } from '../lib/email/templates/passwordReset.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const logoPath = path.join(__dirname, '../assets/logo.png');
+const logoPath = path.join(__dirname, '../assets/logo-plum.png');
 
 function logoAttachment() {
   if (!fs.existsSync(logoPath)) return [];
   return [
     {
-      filename: 'logo.png',
+      filename: 'logo-plum.png',
       path: logoPath,
       cid: LOGO_CID,
     },

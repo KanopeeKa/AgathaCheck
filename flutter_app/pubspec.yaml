@@ -42,8 +42,10 @@ flutter:
   generate: true
   uses-material-design: true
   assets:
-    - assets/logo.png
-    - assets/logo.jpg
+    - assets/logo-plum.png
+    - assets/logo-plum.jpg
+    - assets/logo-teal.png
+    - assets/logo-teal.jpg
     - assets/rainbow_wings.png
     - assets/legal/en/
     - assets/legal/fr/
