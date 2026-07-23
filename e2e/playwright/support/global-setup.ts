@@ -145,8 +145,6 @@ export default async function globalSetup(): Promise<void> {
         );
       }
 
-      wafStreak = 0;
-
       if (response.status !== 200 || !body.includes(HEALTH_OK_MARKER)) {
         throw new Error(
           `UAT pre-flight failed [${response.status}]: ${bodySnippet(body)}`,

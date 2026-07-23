@@ -108,11 +108,10 @@ for i in $(seq 1 "$MAX_ATTEMPTS"); do
   fi
 
   if [ "$rc" -eq 2 ]; then
-    if ! uat_waf_note_challenge "signup probe"; then
-      waf_rc=$?
-      if [ "$waf_rc" -eq 2 ]; then
-        exit 2
-      fi
+    waf_rc=0
+    uat_waf_note_challenge "signup probe" || waf_rc=$?
+    if [ "$waf_rc" -eq 2 ]; then
+      exit 2
     fi
   else
     uat_waf_clear_streak

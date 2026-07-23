@@ -149,7 +149,9 @@ for i in $(seq 1 "$MAX_ATTEMPTS"); do
   fi
 
   if [ "$last_kind" = "waf" ]; then
-    if ! uat_waf_note_challenge "health probe"; then
+    waf_rc=0
+    uat_waf_note_challenge "health probe" || waf_rc=$?
+    if [ "$waf_rc" -eq 2 ]; then
       exit 2
     fi
   else
