@@ -589,6 +589,12 @@ jobs:
           UAT_BASE_URL: ${{ env.UAT_BASE_URL }}
         run: bash scripts/uat-post-deploy-smoke.sh
 
+      - name: Warm up UAT auth before live smoke
+        env:
+          UAT_BASE_URL: ${{ env.UAT_BASE_URL }}
+          E2E_BYPASS_TOKEN: ${{ secrets.E2E_BYPASS_TOKEN }}
+        run: bash scripts/ci/warmup-uat-auth.sh
+
       - name: Write smoke job summary
         if: always()
         run: |
