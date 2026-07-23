@@ -47,9 +47,9 @@ next_action: "continue phase 5 on branch cursor/ui-theme-phase5-org-4bed"
 artifact_ref:
   branch: cursor/ui-theme-phase5-org-4bed
   plan_path: .agents/plans/ui-theme-rework-4bed.md
-  plan_commit: pending
+  plan_commit: 8abedf5010aa118a2148e475d17e4548727f69aa
   snapshot_path: .agents/plans/ui-theme-rework-4bed.snapshot.json
-  snapshot_commit: pending
+  snapshot_commit: 8abedf5010aa118a2148e475d17e4548727f69aa
 open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/290"]
 merge_commits: {}
 debt_issue_refs: []
