@@ -9,6 +9,8 @@ set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT"
+# shellcheck source=scripts/ci/ci-scope-lib.sh
+source "$ROOT/scripts/ci/ci-scope-lib.sh"
 
 if [[ "${1:-}" == "--full" ]]; then
   exec "$ROOT/scripts/pre-push.sh"
@@ -36,6 +38,22 @@ needs_flutter=false
 needs_codegen=false
 needs_schema=false
 
+ci_scope_classify_paths "$CHANGED"
+
+if [[ "$CI_SCOPE_FORCE_FULL" == true ]]; then
+  needs_governance=true
+  needs_server=true
+  needs_flutter=true
+elif ci_scope_server_touch; then
+  needs_server=true
+  needs_governance=true
+fi
+
+if [[ "$CI_SCOPE_HAS_FLUTTER" == true ]]; then
+  needs_flutter=true
+  needs_governance=true
+fi
+
 while IFS= read -r f; do
   [[ -z "$f" ]] && continue
   case "$f" in
@@ -46,15 +64,8 @@ while IFS= read -r f; do
     scripts/*|.github/*|docs/agent-efficiency*|docs/architecture/index.md)
       needs_governance=true
       ;;
-    server/routes/*|server/test/*|server/config/*|server/lib/*)
-      needs_server=true
-      ;;
-    flutter_app/lib/*|flutter_app/test/*)
-      needs_flutter=true
-      ;;
-    flutter_app/pubspec.*|flutter_app/build.yaml|**/*.mocks.dart|**/*_test.dart)
+    flutter_app/pubspec.*|flutter_app/build.yaml|**/*.mocks.dart)
       needs_codegen=true
-      needs_flutter=true
       ;;
     e2e/*)
       needs_governance=true
@@ -63,10 +74,17 @@ while IFS= read -r f; do
       # config only — no product tests
       ;;
     *)
-      needs_governance=true
+      if [[ "$CI_SCOPE_ONLY_DOCS" != true ]]; then
+        needs_governance=true
+      fi
       ;;
   esac
 done <<< "$CHANGED"
+
+# Docs-only or scripts-infra with no server/flutter still need governance.
+if [[ "$CI_SCOPE_ONLY_DOCS" == true ]] || { ! ci_scope_server_touch && [[ "$CI_SCOPE_HAS_FLUTTER" != true ]]; }; then
+  needs_governance=true
+fi
 
 run_governance() {
   echo "==> Governance"
