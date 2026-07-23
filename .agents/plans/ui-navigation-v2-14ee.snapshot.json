@@ -4,7 +4,7 @@
   "approved_at": "2026-07-23T20:05:00Z",
   "approved_by": "user",
   "approved_until": "2026-07-25T20:05:00Z",
-  "content_hash": "sha256:720d13905d394b57b6ecb83012c01f725afd641201a51633813244e177776f43",
+  "content_hash": "sha256:a5d248d0c4b38f322c3aeea78f40c1bd3391f92ef051d5e04e6a678298a2ed73",
   "autonomy": "active",
   "default_merge_mode": "auto",
   "base_branch": "main",
@@ -17,10 +17,13 @@
       "branch": "cursor/ui-nav-v2-phase1-docs-14ee",
       "allowed_paths": [
         "docs/design/navigation-v2.md",
+        "docs/design/index.md",
         "docs/experience-split-plan.md",
         "docs/design/tokens.md",
         "docs/refactoring-debt.md",
-        "docs/refactoring-log.md"
+        "docs/refactoring-log.md",
+        ".agents/plans/ui-navigation-v2-14ee.md",
+        ".agents/plans/ui-navigation-v2-14ee.snapshot.json"
       ],
       "forbidden_paths": [
         "flutter_app/**",

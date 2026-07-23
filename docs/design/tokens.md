@@ -87,6 +87,8 @@ Shell top bar uses experience primary (plum on `/g/*`, green on `/o/*`). Utility
 
 Use foundation **body** / **muted** text on **w** group backgrounds — not guardian plum or org teal as text color for utility labels.
 
+## Accessibility
+
 - Normal text ≥ 4.5:1; large text / UI boundaries ≥ 3:1
 - Focus ring ≥ 3:1 against adjacent colors; never shadow-only
 - Touch targets ≥ 48dp logical px
@@ -118,6 +120,10 @@ Default `ColorScheme.primary` = guardian plum (pet-guardian-first landing).
 Experience-specific primaries via `Theme.of(context).extension<ExperienceColors>()` and `experiencePrimaryFor(AppExperience)`.
 
 ## Accessibility
+
+See contrast and touch rules above.
+
+## Motion
 
 Respect `prefers-reduced-motion`. Calm, short transitions only.
 

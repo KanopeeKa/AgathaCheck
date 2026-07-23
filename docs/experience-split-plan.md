@@ -57,7 +57,7 @@ Both shells use **top nav** (Home + Hamburger only):
 
 - **Events, notifications, vets:** drawer only — not in top bar.
 - **Drawer:** text-first; semantic groups (plum / green / off-white utility); see navigation-v2.md for order.
-- **Dual-role users:** drawer shows Organisation view → `/organizations` (guardian) or Guardian view → `/g/home` (org).
+- **Dual-role users:** In **guardian** mode, drawer **Organisation view** → `/organizations`. In **organisation** mode, drawer **Guardian view** → `/g/home`.
 - **Deep routes:** compact chrome (☰ + Back + Home) — see navigation-v2.md.
 
 ---
