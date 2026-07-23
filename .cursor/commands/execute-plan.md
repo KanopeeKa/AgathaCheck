@@ -22,7 +22,7 @@ node scripts/execute_plan_runtime.js current-phase <plan_id>
 3. **Phase gate = merge-done** — PR merged into base before next phase
 4. **Halt only on revoke** — do not close PRs; see autonomous-pr-policy §Halt and resume
 5. **48h `approved_until`** — mandatory; re-approve if expired
-6. **Issue hygiene** — control issue: comment milestones; `start-work` + `busy` on session start; close on complete (`complete-plan --write`). Project board columns are human/Actions — agents do not update them. After merge: `uat_queue_runtime.js enqueue` (babysit-plus §8) — **never** spawn Task sub-agents to poll UAT.
+6. **Issue hygiene** — control issue: comment milestones; `start-work` + `busy` on session start; close on complete (`complete-plan --write`). Project board columns are human/Actions — agents do not update them. After merge: `node scripts/uat_queue_runtime.js enqueue --write` (babysit-plus §8) — **never** spawn Task sub-agents to poll UAT.
 
 ## Resume
 

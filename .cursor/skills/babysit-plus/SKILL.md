@@ -187,7 +187,7 @@ When the PR merges to `main`, UAT promotion starts (`promote-uat.yml` → `deplo
 |-------|------|
 | GitHub Actions | `promote-uat.yml` → `deploy-uat.yml` → `prod-ready` gates |
 | `agent-uat-notify` + ledger | Success/failure markers on linked issues; `reconcile` updates queue state |
-| **UAT coordinator agent** (on failure) | Triage, remedial PR, `set-barrier` — see [uat-coordinator-plan.md](../../docs/agent-efficiency/uat-coordinator-plan.md) |
+| **UAT coordinator agent** (on failure) | Triage, remedial PR, `set-barrier` — see [uat-coordinator-plan.md](../../../docs/agent-efficiency/uat-coordinator-plan.md) |
 
 **Success path:** zero agent babysitting. `agent-uat-notify` comments when prod-ready is green.
 
@@ -200,7 +200,8 @@ When the PR merges to `main`, UAT promotion starts (`promote-uat.yml` → `deplo
 Run at execute-plan preflight and before every phase merge attempt:
 
 ```bash
-node scripts/uat_queue_runtime.js reconcile --write   # optional; sync ledger from Actions
+# reconcile requires UAT_COORDINATION_ISSUE or --issue (skip when unset)
+node scripts/uat_queue_runtime.js reconcile --write --issue <coordination-issue>
 node scripts/uat_queue_runtime.js barrier-check --branch "$(git branch --show-current)"
 # exit 2 → needs rebase:
 ./scripts/babysit_sync_base.sh --pr <url> --push

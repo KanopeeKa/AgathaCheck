@@ -91,7 +91,8 @@ Run when drafting a plan, **before** `approve-autonomous`:
 6. Rebase phase branch on `origin/<base_branch>` (or integration parent when spawn phase)
 7. **UAT queue preflight** — before merge/push on any phase:
    ```bash
-   node scripts/uat_queue_runtime.js reconcile --write
+   # reconcile requires UAT_COORDINATION_ISSUE or --issue (skip when unset)
+   node scripts/uat_queue_runtime.js reconcile --write --issue <coordination-issue>
    node scripts/uat_queue_runtime.js barrier-check --branch "$(git branch --show-current)"
    ```
    Exit `2` from `barrier-check` → `./scripts/babysit_sync_base.sh --pr <url> --push` before continuing.

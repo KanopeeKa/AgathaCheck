@@ -64,7 +64,7 @@ node scripts/execute_plan_runtime.js halt <plan_id> \
 
 `--autonomy` defaults to `halted`; use `revoked` when `autonomous-revoked` label applied.
 
-### Pause (UAT remedial — keeps autonomy active)
+### Pause phase (legacy — keeps autonomy active)
 
 > **Note (2026-07):** UAT failure no longer pauses execute-plan — see [uat-coordinator-plan.md](./uat-coordinator-plan.md). Work agents use `barrier-check` before merge; the UAT coordinator owns remedial work. The `pause`/`resume-uat` CLI below remains for non-UAT halts and legacy snapshots.
 
