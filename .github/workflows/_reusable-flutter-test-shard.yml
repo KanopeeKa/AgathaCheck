@@ -58,8 +58,8 @@ jobs:
       - name: Restore Flutter prep state
         run: bash scripts/ci/restore-flutter-prep-artifact.sh flutter-prep-artifact.tar.gz
 
-      - name: Install lcov
-        run: sudo apt-get update && sudo apt-get install -y lcov
+      - name: Set up lcov
+        uses: ./.github/actions/setup-lcov
 
       - name: Run shard tests with coverage
         timeout-minutes: 20

@@ -1,0 +1,34 @@
+name: Set up Playwright browsers
+description: Restore or install Playwright Chromium with apt deps (keyed on e2e package lock).
+
+inputs:
+  working-directory:
+    description: Directory containing package-lock.json for cache key
+    required: false
+    default: e2e
+
+runs:
+  using: composite
+  steps:
+    - name: Cache Playwright browsers
+      uses: actions/cache@v5
+      id: playwright-cache
+      with:
+        path: ~/.cache/ms-playwright
+        key: playwright-${{ runner.os }}-${{ hashFiles(format('{0}/package-lock.json', inputs.working-directory)) }}
+        restore-keys: |
+          playwright-${{ runner.os }}-
+
+    - name: Install Playwright Chromium
+      shell: bash
+      working-directory: ${{ inputs.working-directory }}
+      run: npx playwright install chromium --with-deps
+
+    - name: Playwright cache summary
+      shell: bash
+      run: |
+        if [[ "${{ steps.playwright-cache.outputs.cache-hit }}" == "true" ]]; then
+          echo "::notice::Playwright browser cache hit"
+        else
+          echo "::notice::Playwright browsers installed (cache miss)"
+        fi

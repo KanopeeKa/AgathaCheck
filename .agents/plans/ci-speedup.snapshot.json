@@ -1,0 +1,148 @@
+{
+  "schema_version": 1,
+  "plan_id": "ci-speedup",
+  "approved_at": "2026-07-23T14:00:00Z",
+  "approved_by": "human-go-2026-07-23",
+  "approved_until": "2026-07-25T14:00:00Z",
+  "content_hash": "sha256:2a0fcaa0a486fa4bc3794fccec61d0370964fa39bf23b630bea7c779b3362b44",
+  "autonomy": "active",
+  "default_merge_mode": "auto",
+  "base_branch": "main",
+  "control_issue": 285,
+  "artifact_branch_policy": "phase-branch",
+  "phases": [
+    {
+      "id": "1",
+      "title": "Runner setup caching",
+      "branch": "cursor/ci-speedup-phase1-cache-b697",
+      "allowed_paths": [
+        ".github/actions/**",
+        ".github/workflows/_reusable-e2e-local.yml",
+        ".github/workflows/_reusable-flutter-test-shard.yml",
+        ".github/workflows/_reusable-flutter-coverage.yml",
+        ".agents/plans/**"
+      ],
+      "forbidden_paths": [
+        "db/migrations/**",
+        "server/config/security.js",
+        "infra/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "governance",
+      "status": "in_progress",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/286",
+      "pr_head_sha": "5a94a37e1c345db22609d48f83e6bc1d0fe362af",
+      "debt_issue_refs": []
+    },
+    {
+      "id": "2",
+      "title": "Rebalance rest Flutter shard",
+      "branch": "cursor/ci-speedup-phase2-shards-b697",
+      "allowed_paths": [
+        "flutter_app/scripts/run_tests_ci_shard.sh",
+        "flutter_app/scripts/merge_flutter_coverage.sh",
+        ".github/workflows/ci.yml",
+        ".github/workflows/_reusable-ci-gate.yml",
+        "scripts/ci/assert-ci-gate.sh",
+        "docs/ci-cd-gates.md",
+        ".agents/plans/**"
+      ],
+      "forbidden_paths": [
+        "db/migrations/**",
+        "server/config/security.js",
+        "infra/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "governance",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "3",
+      "title": "Path-scoped PR CI",
+      "branch": "cursor/ci-speedup-phase3-scope-b697",
+      "allowed_paths": [
+        "scripts/ci/ci-scope-lib.sh",
+        "scripts/ci/resolve-ci-scope.sh",
+        "scripts/pre-push-changed.sh",
+        ".github/workflows/ci.yml",
+        "scripts/ci/assert-ci-gate.sh",
+        ".github/workflows/_reusable-ci-gate.yml",
+        "docs/ci-cd-gates.md",
+        "scripts/ci/ci-scope.test.js",
+        ".agents/plans/**"
+      ],
+      "forbidden_paths": [
+        "db/migrations/**",
+        "server/config/security.js",
+        "infra/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "governance",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "4",
+      "title": "Conditional gates + 12-merge full audit",
+      "branch": "cursor/ci-speedup-phase4-audit-b697",
+      "allowed_paths": [
+        ".github/workflows/**",
+        "scripts/ci/**",
+        "docs/ci-cd-gates.md",
+        "scripts/pre-push-changed.sh",
+        ".agents/plans/**"
+      ],
+      "forbidden_paths": [
+        "db/migrations/**",
+        "server/config/security.js",
+        "infra/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "governance",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null,
+      "debt_issue_refs": []
+    }
+  ]
+}
