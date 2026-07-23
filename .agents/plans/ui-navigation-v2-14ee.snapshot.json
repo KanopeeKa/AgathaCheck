@@ -1,0 +1,296 @@
+{
+  "schema_version": 1,
+  "plan_id": "ui-navigation-v2-14ee",
+  "approved_at": "2026-07-23T20:05:00Z",
+  "approved_by": "user",
+  "approved_until": "2026-07-25T20:05:00Z",
+  "content_hash": "sha256:e40ff420037067cf29884ae152a37b0a8866b808da987496121f3b20187209b9",
+  "autonomy": "active",
+  "default_merge_mode": "auto",
+  "base_branch": "main",
+  "control_issue": 299,
+  "artifact_branch_policy": "phase-branch",
+  "phases": [
+    {
+      "id": "1",
+      "title": "Navigation v2 doc contract",
+      "branch": "cursor/ui-nav-v2-phase1-docs-14ee",
+      "allowed_paths": [
+        "docs/design/navigation-v2.md",
+        "docs/experience-split-plan.md",
+        "docs/design/tokens.md",
+        "docs/refactoring-debt.md",
+        "docs/refactoring-log.md"
+      ],
+      "forbidden_paths": [
+        "flutter_app/**",
+        "server/**",
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "governance",
+      "status": "in_progress",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "2",
+      "title": "Drawer config primitive and semantic groups",
+      "branch": "cursor/ui-nav-v2-phase2-drawer-primitive-14ee",
+      "allowed_paths": [
+        "flutter_app/lib/features/experience/presentation/widgets/experience_drawer*.dart",
+        "flutter_app/lib/features/experience/domain/**",
+        "flutter_app/test/features/experience/**"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "flutter-screen-split",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "3",
+      "title": "Menus live, hamburger badge, remove Events nav",
+      "branch": "cursor/ui-nav-v2-phase3-menus-shell-14ee",
+      "allowed_paths": [
+        "flutter_app/lib/features/experience/**",
+        "flutter_app/lib/l10n/**",
+        "flutter_app/test/features/experience/**",
+        "e2e/playwright/pages/experience.page.ts",
+        "e2e/playwright/tests/experience.navigation.spec.ts"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "bdd-journey",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "4",
+      "title": "Chooser guardian pre-selected",
+      "branch": "cursor/ui-nav-v2-phase4-chooser-14ee",
+      "allowed_paths": [
+        "flutter_app/lib/features/experience/presentation/screens/experience_chooser_screen.dart",
+        "flutter_app/test/features/experience/**",
+        "flutter_app/test/bdd/features/experience_navigation.feature",
+        "e2e/playwright/tests/experience.navigation.spec.ts",
+        "e2e/playwright/pages/experience.page.ts"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "bdd-journey",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "5",
+      "title": "Org list styling and switcher destination",
+      "branch": "cursor/ui-nav-v2-phase5-org-list-14ee",
+      "allowed_paths": [
+        "flutter_app/lib/features/organization/presentation/screens/organization_list_screen.dart",
+        "flutter_app/lib/features/organization/presentation/widgets/org_card.dart",
+        "flutter_app/lib/features/organization/presentation/utils/org_screen_theme.dart",
+        "flutter_app/test/features/organization/**"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "flutter-screen-split",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "6",
+      "title": "Landing hero center and path button-cards",
+      "branch": "cursor/ui-nav-v2-phase6-landing-14ee",
+      "allowed_paths": [
+        "flutter_app/lib/features/auth/presentation/screens/landing_screen.dart",
+        "flutter_app/lib/features/auth/presentation/widgets/landing/**",
+        "flutter_app/test/features/auth/**",
+        "e2e/playwright/tests/auth.login.spec.ts"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "flutter-screen-split",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "7",
+      "title": "Pet ownership accents and foster label",
+      "branch": "cursor/ui-nav-v2-phase7-pet-accents-14ee",
+      "allowed_paths": [
+        "flutter_app/lib/features/pet_profile/presentation/utils/**",
+        "flutter_app/lib/features/pet_profile/presentation/widgets/pet_card.dart",
+        "flutter_app/lib/features/organization/presentation/utils/foster_placement_display.dart",
+        "flutter_app/lib/features/organization/presentation/widgets/foster_pet_mini_card.dart",
+        "flutter_app/test/features/pet_profile/**"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "flutter-screen-split",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "8",
+      "title": "Notification semantic palette",
+      "branch": "cursor/ui-nav-v2-phase8-notifications-14ee",
+      "allowed_paths": [
+        "flutter_app/lib/features/notifications/**",
+        "flutter_app/test/features/notifications/**"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "flutter-screen-split",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "9",
+      "title": "Vet organization_id API",
+      "branch": "cursor/ui-nav-v2-phase9-vet-api-14ee",
+      "allowed_paths": [
+        "server/routes/vets.js",
+        "server/test/vets.test.js",
+        "db/migrations/**",
+        "db/schema/canonical.sql"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "single-backend-route",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "10",
+      "title": "Vet UI shell routes and filter chips",
+      "branch": "cursor/ui-nav-v2-phase10-vet-ui-14ee",
+      "allowed_paths": [
+        "flutter_app/lib/features/vet/**",
+        "flutter_app/lib/core/router/**",
+        "flutter_app/test/features/vet/**",
+        "flutter_app/test/bdd/features/veterinarian_management.feature",
+        "e2e/playwright/tests/veterinarian.spec.ts",
+        "e2e/playwright/pages/vet-list.page.ts",
+        "e2e/playwright/pages/pet-list.page.ts"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "bdd-journey",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": []
+    }
+  ]
+}

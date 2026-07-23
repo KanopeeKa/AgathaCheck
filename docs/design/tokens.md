@@ -67,11 +67,25 @@ Empty states, onboarding, welcome — not main action buttons.
 | warning | `#D6A63A` | prefer icon/badge; validate on light surfaces |
 | danger | `#C65B58` | errors, destructive |
 
-## Utility (drawer: settings, logout, FAQ)
+## Drawer grouping (v2)
 
-Use foundation **body** / **muted** — not guardian plum or org teal.
+Semantic **background fill only** — no borders on menu rows.
 
-## Accessibility
+| Code | Token | Guardian menu | Organisation menu |
+|------|-------|---------------|-------------------|
+| **p** | `guardianLight` | My Pets, Notifications, Events, My vets | Guardian view (switch) |
+| **g** | `organizationLight` | Organisation view (switch) | My Organisation, Notifications, Events, Org vets |
+| **w** | `surfaceAlt` | Settings, Help, About, Contact, Legal, Invite, Log out | same utility block |
+
+Shell top bar uses experience primary (plum on `/g/*`, green on `/o/*`). Utility group never uses mode primary as row background.
+
+**Ownership accents** (pets, vets, notifications): plum = guardian/personal; green = fostered/org-linked. Pair with text + icon (`docs/design/navigation-v2.md`).
+
+**Super admin** tag: warm coral (`orgSuperUserBg` / `orgSuperUserFg`) — distinct from ownership colors.
+
+## Utility (drawer: settings, logout, FAQ, contact)
+
+Use foundation **body** / **muted** text on **w** group backgrounds — not guardian plum or org teal as text color for utility labels.
 
 - Normal text ≥ 4.5:1; large text / UI boundaries ≥ 3:1
 - Focus ring ≥ 3:1 against adjacent colors; never shadow-only
@@ -103,14 +117,7 @@ Default `ColorScheme.primary` = guardian plum (pet-guardian-first landing).
 
 Experience-specific primaries via `Theme.of(context).extension<ExperienceColors>()` and `experiencePrimaryFor(AppExperience)`.
 
-## Drawer grouping
-
-| Current view | Shell + home CTAs | Role block in drawer | Utility block |
-|--------------|-------------------|----------------------|---------------|
-| `/g/*` | plum | guardian plum; org section teal | neutral |
-| `/o/*` | teal | org teal; guardian section plum | neutral |
-
-## Motion
+## Accessibility
 
 Respect `prefers-reduced-motion`. Calm, short transitions only.
 

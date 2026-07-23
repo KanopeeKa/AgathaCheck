@@ -87,6 +87,21 @@ When changing org (or any) routes, add Jest coverage in the same PR (`single-bac
 
 ---
 
+## Navigation v2 — shell migration backlog (P3)
+
+Tracked by execute-plan `ui-navigation-v2-14ee`. Spec: `docs/design/navigation-v2.md`.
+
+| Tier | Scope | Status |
+|------|--------|--------|
+| 1 | Hub routes (`/g/home`, `/o/*` hubs, `/organizations`) | In progress (phases 2–5) |
+| 2 | Deep routes (pet detail, forms, vet edit) | Pending |
+| 3 | Long tail (help, paywall, transfer, archived) | Deferred |
+| 4 | Out of shell (landing, anonymous shared) | N/A |
+
+**Help copy debt:** FAQ strings still reference top-bar bell / stethoscope — update after phase 3 (menus).
+
+---
+
 ## Changelog
 
 | Date | Change |
