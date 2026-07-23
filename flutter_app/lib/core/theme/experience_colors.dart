@@ -111,7 +111,8 @@ class ExperienceColors extends ThemeExtension<ExperienceColors> {
       guardianLight: guardianLight ?? this.guardianLight,
       guardianSoft: guardianSoft ?? this.guardianSoft,
       organizationPrimary: organizationPrimary ?? this.organizationPrimary,
-      organizationOnPrimary: organizationOnPrimary ?? this.organizationOnPrimary,
+      organizationOnPrimary:
+          organizationOnPrimary ?? this.organizationOnPrimary,
       organizationHover: organizationHover ?? this.organizationHover,
       organizationActive: organizationActive ?? this.organizationActive,
       organizationLight: organizationLight ?? this.organizationLight,
@@ -146,7 +147,10 @@ class ExperienceColors extends ThemeExtension<ExperienceColors> {
         other.organizationOnPrimary,
       ),
       organizationHover: lerpColor(organizationHover, other.organizationHover),
-      organizationActive: lerpColor(organizationActive, other.organizationActive),
+      organizationActive: lerpColor(
+        organizationActive,
+        other.organizationActive,
+      ),
       organizationLight: lerpColor(organizationLight, other.organizationLight),
       organizationSoft: lerpColor(organizationSoft, other.organizationSoft),
       warmAccent: lerpColor(warmAccent, other.warmAccent),
