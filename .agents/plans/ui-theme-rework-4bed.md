@@ -47,10 +47,10 @@ next_action: "continue phase 6 on branch cursor/ui-theme-phase6-longtail-4bed"
 artifact_ref:
   branch: cursor/ui-theme-phase6-longtail-4bed
   plan_path: .agents/plans/ui-theme-rework-4bed.md
-  plan_commit: ea7fc2563ec1984bb95927aa0a44bea6ce1edfab
+  plan_commit: e7b15e233d338d966f7b9ac4aaf29e120a3e03ed
   snapshot_path: .agents/plans/ui-theme-rework-4bed.snapshot.json
-  snapshot_commit: ea7fc2563ec1984bb95927aa0a44bea6ce1edfab
-open_prs: []
+  snapshot_commit: e7b15e233d338d966f7b9ac4aaf29e120a3e03ed
+open_prs: [true]
 merge_commits: {}
 debt_issue_refs: []
 ```
