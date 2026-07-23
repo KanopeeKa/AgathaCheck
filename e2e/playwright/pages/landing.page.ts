@@ -105,6 +105,17 @@ export class LandingPage {
   }
 
   private async fillLoginForm(email: string, password: string): Promise<void> {
+    const nativeEmail = this.page.locator('#anl-email');
+    const nativeVisible = await nativeEmail
+      .waitFor({ state: 'visible', timeout: 5_000 })
+      .then(() => true)
+      .catch(() => false);
+    if (nativeVisible) {
+      await nativeEmail.fill(email);
+      await this.page.locator('#anl-password').fill(password);
+      return;
+    }
+
     const emailField = this.page.getByRole('textbox', { name: 'Email' });
     await emailField.waitFor({ state: 'visible', timeout: 30_000 });
     await emailField.click();

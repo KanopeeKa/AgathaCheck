@@ -18,22 +18,25 @@ so the displayed value lives on the canvas, not in the DOM.
   **not** fix the extension case. Flutter 3.29+ removed the old HTML renderer
   that used to help, so there is no renderer toggle that fixes this.
 
-## The fix: native HTML login form bridge
+## The fix: inline native HTML login form
+
 Put a real `<form>` (email + password, proper `autocomplete`) directly in
-`web/index.html`, exposed via a JS controller object on `window`. A Dart
-conditional-import bridge (`dart:js_interop` extension type over the JS object;
-no-op stub off-web) shows/hides it and registers callbacks. Auth stays in Dart —
-JS only sources the typed/autofilled credentials and calls back; Dart drives the
-overlay busy/error/hide state after the login future settles.
+`web/index.html`, embedded in the landing Sign In tab via `HtmlElementView`.
+A Dart conditional-import bridge (`dart:js_interop` extension type over the JS
+object; no-op stub off-web) mounts the form and registers callbacks. Auth stays
+in Dart — JS only sources the typed/autofilled credentials and calls back; Dart
+drives the form busy/error state after the login future settles.
 
 **Why this shape:** keeping auth in Dart avoids duplicating token handling in JS
 and avoids Promise interop. The JS form only needs to be real DOM for the
-extensions to see it.
+extensions to see it. Inline embedding (not a modal overlay) keeps fields visible
+and discoverable on page load without duplicating the whole login card.
 
 **How to apply:**
 - The logged-out entry is `/landing` (LandingScreen), not `/login` (LoginScreen
-  exists but is unrouted). Integrate the overlay there.
-- `hide()` must clear the password/email fields and null the callbacks so
+  exists but is unrouted). Web uses `NativeLoginInlineView` in
+  `LandingLoginForm`; mobile/desktop apps keep Flutter `TextFormField`s.
+- `detach()` must clear the password/email fields and null the callbacks so
   credentials aren't retained in the DOM after dismissal.
 - index.html lives in `web/`; the running workflow serves the prebuilt
   `build/web`, so any index.html or Dart change needs `flutter build web`
