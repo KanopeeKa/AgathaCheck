@@ -390,7 +390,7 @@ export async function reachAuthenticatedHome(
 /**
  * Top-nav controls for the nav v2 experience shell (EN + FR).
  * Nav v2 (phase 3): Events removed; shell has Home + hamburger whose tooltip is
- * "Settings" / "Paramètres" — prefix match required because a badge prepends the
+ * "Settings" / "Paramètres" — prefix match required because a badge appends the
  * unread count to the accessible name (e.g. "Settings, 3 unread").
  */
 export function experienceShellNavLocator(page: Page): Locator {
