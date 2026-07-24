@@ -733,7 +733,10 @@ jobs:
   prod-ready:
     name: Prod ready
     needs: [resolve-trigger, deploy, smoke, uat-e2e-smoke, uat-full-e2e-decide, uat-e2e-full]
-    if: always()
+    # Skip (not fail) when resolve-trigger cleanly opted out (no tag / promote-tag
+    # skipped) — otherwise this aggregate gate turns a no-op run red, which is
+    # exactly the misleading "ghost deploy failure" signal this PR removes.
+    if: always() && needs.resolve-trigger.outputs.proceed == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
