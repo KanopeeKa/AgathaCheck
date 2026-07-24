@@ -4,7 +4,9 @@ import 'package:pet_profile_app/core/theme/app_color_tokens.dart';
 import 'package:pet_profile_app/features/auth/presentation/widgets/landing/landing_path_card.dart';
 
 void main() {
-  testWidgets('landing path card uses accent fill without border', (tester) async {
+  testWidgets('landing path card uses accent fill without border', (
+    tester,
+  ) async {
     const accent = AppColorTokens.guardianPrimary;
     const onAccent = AppColorTokens.inverse;
 
@@ -65,7 +67,10 @@ void main() {
     await tester.tap(find.text('See how it works'));
     await tester.pumpAndSettle();
 
-    expect(find.textContaining('Coordinate with your household'), findsOneWidget);
+    expect(
+      find.textContaining('Coordinate with your household'),
+      findsOneWidget,
+    );
     expect(find.text('Show less'), findsOneWidget);
   });
 }
