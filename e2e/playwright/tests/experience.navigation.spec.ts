@@ -3,6 +3,7 @@
  * Scenario: Guardian-only user lands on guardian home after login
  * Scenario: Organisation-only user lands on organisation home after login
  * Scenario: Dual-role user sees experience chooser after login
+ * Scenario: Dual-role chooser pre-selects guardian
  * Scenario: Dual-role user remembers guardian choice
  * Scenario: Remembered guardian choice skips chooser on next login
  * Scenario: Dual-role user sets default experience to organisation in settings
@@ -71,6 +72,17 @@ test.describe('Experience navigation', () => {
     await waitForFlutterRoutePattern(page, /\/app\/choose/, 60_000);
     const experience = new ExperiencePage(page);
     await experience.expectChooserVisible();
+  });
+
+  test('dual-role chooser pre-selects guardian', async ({ page }) => {
+    await prepareLiveApiAccess(page, baseURL());
+    const { user } = await seedDualRoleUser(baseURL());
+    await loginFromLanding(page, user.email, user.password);
+    await waitForFlutterRoutePattern(page, /\/app\/choose/, 60_000);
+    const experience = new ExperiencePage(page);
+    await experience.expectChooserVisible();
+    await experience.continuePreselectedGuardian(false);
+    await experience.expectGuardianShell();
   });
 
   test('dual-role user remembers guardian choice', async ({ page }) => {

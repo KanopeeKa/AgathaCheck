@@ -38,7 +38,12 @@ class _ExperienceChooserScreenState
         error: (e, _) => Center(child: Text(l.failedToLoadPets(e.toString()))),
         data: (eligibility) {
           final options = eligibility.availableExperiences;
-          _selected ??= options.first;
+          final defaultSelection = options.contains(AppExperience.guardian)
+              ? AppExperience.guardian
+              : options.first;
+          if (_selected == null || !options.contains(_selected)) {
+            _selected = defaultSelection;
+          }
           final showRemember = eligibility.showChooser;
 
           return ListView(

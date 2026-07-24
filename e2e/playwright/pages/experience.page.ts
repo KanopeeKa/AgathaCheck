@@ -37,6 +37,17 @@ export class ExperiencePage {
     await waitForFlutterRoutePattern(this.page, /\/g\/home/, 30_000);
   }
 
+  /** Continue on chooser without tapping a card (guardian is pre-selected). */
+  async continuePreselectedGuardian(remember = false): Promise<void> {
+    await dismissConsentBannerIfPresent(this.page);
+    await refreshFlutterAccessibility(this.page);
+    if (remember) {
+      await this.page.getByRole('checkbox').click();
+    }
+    await this.page.getByRole('button', { name: 'Continue' }).click();
+    await waitForFlutterRoutePattern(this.page, /\/g\/home/, 30_000);
+  }
+
   async selectOrganizationCard(): Promise<void> {
     await this.page.getByText('Shelter / Organisation').click();
   }
