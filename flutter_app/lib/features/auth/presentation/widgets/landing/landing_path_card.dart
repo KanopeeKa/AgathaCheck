@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-/// Expandable landing path card with experience accent (guardian plum or org teal).
+/// Expandable landing path card — full-card button with experience accent fill.
 class LandingPathCard extends StatefulWidget {
   const LandingPathCard({
     super.key,
@@ -28,72 +28,75 @@ class LandingPathCard extends StatefulWidget {
 class _LandingPathCardState extends State<LandingPathCard> {
   bool _expanded = false;
 
+  void _toggleExpanded() => setState(() => _expanded = !_expanded);
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final detailColor = widget.onAccentColor.withValues(alpha: 0.9);
+    final ctaLabel = _expanded ? widget.collapseLabel : widget.expandLabel;
 
-    return Material(
-      color: theme.colorScheme.surface,
-      elevation: 0,
-      shape: RoundedRectangleBorder(
+    return Semantics(
+      button: true,
+      expanded: _expanded,
+      label: '${widget.summary}. $ctaLabel',
+      child: Material(
+        color: widget.accentColor,
+        elevation: 0,
         borderRadius: BorderRadius.circular(12),
-        side: BorderSide(color: theme.colorScheme.outlineVariant),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
+        clipBehavior: Clip.antiAlias,
+        child: InkWell(
+          onTap: _toggleExpanded,
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Icon(widget.icon, color: widget.accentColor, size: 28),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Text(
-                    widget.summary,
-                    style: theme.textTheme.titleSmall?.copyWith(
-                      fontWeight: FontWeight.w600,
-                      color: theme.colorScheme.onSurface,
-                      height: 1.4,
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Icon(widget.icon, color: widget.onAccentColor, size: 28),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Text(
+                        widget.summary,
+                        style: theme.textTheme.titleSmall?.copyWith(
+                          fontWeight: FontWeight.w600,
+                          color: widget.onAccentColor,
+                          height: 1.4,
+                        ),
+                      ),
                     ),
+                    Icon(
+                      _expanded ? Icons.expand_less : Icons.expand_more,
+                      color: widget.onAccentColor,
+                      size: 24,
+                    ),
+                  ],
+                ),
+                if (_expanded) ...[
+                  const SizedBox(height: 12),
+                  Text(
+                    widget.detail,
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: detailColor,
+                      height: 1.5,
+                    ),
+                  ),
+                ],
+                const SizedBox(height: 12),
+                Text(
+                  ctaLabel,
+                  style: theme.textTheme.labelLarge?.copyWith(
+                    color: widget.onAccentColor,
+                    fontWeight: FontWeight.w600,
+                    decoration: TextDecoration.underline,
+                    decorationColor: widget.onAccentColor,
                   ),
                 ),
               ],
             ),
-            if (_expanded) ...[
-              const SizedBox(height: 12),
-              Text(
-                widget.detail,
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  color: theme.colorScheme.onSurfaceVariant,
-                  height: 1.5,
-                ),
-              ),
-            ],
-            const SizedBox(height: 12),
-            Align(
-              alignment: Alignment.centerLeft,
-              child: TextButton(
-                onPressed: () => setState(() => _expanded = !_expanded),
-                style: TextButton.styleFrom(
-                  foregroundColor: widget.onAccentColor,
-                  backgroundColor: widget.accentColor,
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 10,
-                  ),
-                  minimumSize: const Size(0, 44),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                ),
-                child: Text(
-                  _expanded ? widget.collapseLabel : widget.expandLabel,
-                ),
-              ),
-            ),
-          ],
+          ),
         ),
       ),
     );

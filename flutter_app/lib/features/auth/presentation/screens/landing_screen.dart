@@ -154,44 +154,57 @@ class _LandingScreenState extends ConsumerState<LandingScreen>
 
     return Scaffold(
       body: SafeArea(
-        child: Center(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 900),
-              child: Column(
-                children: [
-                  isWide
-                      ? Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Expanded(
-                              child: LandingBrandingSection(
-                                theme: theme,
-                                l10n: l10n,
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            return SingleChildScrollView(
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
+              child: ConstrainedBox(
+                constraints: BoxConstraints(minHeight: constraints.maxHeight),
+                child: Center(
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(maxWidth: 900),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        isWide
+                            ? Row(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Expanded(
+                                    child: LandingBrandingSection(
+                                      theme: theme,
+                                      l10n: l10n,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 48),
+                                  SizedBox(width: 400, child: authCard),
+                                ],
+                              )
+                            : Column(
+                                crossAxisAlignment: CrossAxisAlignment.stretch,
+                                children: [
+                                  LandingBrandingSection(
+                                    theme: theme,
+                                    l10n: l10n,
+                                  ),
+                                  const SizedBox(height: 32),
+                                  ConstrainedBox(
+                                    constraints: const BoxConstraints(
+                                      maxWidth: 400,
+                                    ),
+                                    child: authCard,
+                                  ),
+                                ],
                               ),
-                            ),
-                            const SizedBox(width: 48),
-                            SizedBox(width: 400, child: authCard),
-                          ],
-                        )
-                      : Column(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            LandingBrandingSection(theme: theme, l10n: l10n),
-                            const SizedBox(height: 32),
-                            ConstrainedBox(
-                              constraints: const BoxConstraints(maxWidth: 400),
-                              child: authCard,
-                            ),
-                          ],
-                        ),
-                  const SizedBox(height: 24),
-                  const LegalFooterLinks(),
-                ],
+                        const SizedBox(height: 24),
+                        const LegalFooterLinks(),
+                      ],
+                    ),
+                  ),
+                ),
               ),
-            ),
-          ),
+            );
+          },
         ),
       ),
     );
