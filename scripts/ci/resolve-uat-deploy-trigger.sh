@@ -174,10 +174,15 @@ def api(path: str):
     with urllib.request.urlopen(req) as resp:
         return json.load(resp)
 
-for job in api(f"/repos/{repo}/actions/runs/{run_id}/jobs").get("jobs", []):
-    if job.get("name") == "Create UAT tag" and job.get("conclusion") in ("skipped", "cancelled"):
-        print("promote_tag_skipped")
-        break
+try:
+    for job in api(f"/repos/{repo}/actions/runs/{run_id}/jobs").get("jobs", []):
+        if job.get("name") == "Create UAT tag" and job.get("conclusion") in ("skipped", "cancelled"):
+            print("promote_tag_skipped")
+            break
+except Exception as err:
+    # Never let a transient API hiccup (rate limit, 5xx, network blip) hard-fail
+    # the whole deploy-uat run — fall through to find_uat_tag_for_commit below.
+    print(f"::warning::promote-tag job lookup failed ({err}); continuing to tag resolution", file=sys.stderr)
 PY
 )"
     if [[ -n "$PROMOTE_BLOCK_REASON" ]]; then
