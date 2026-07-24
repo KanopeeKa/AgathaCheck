@@ -209,16 +209,18 @@ async function main() {
   });
 
   let failedEntry = null;
-  if (!ledgerSync.skipped && ledgerSync.entry?.state === 'failed') {
-    failedEntry = ledgerSync.entry;
-  } else if (ledgerSync.deployRef) {
-    const parsed = parseUatTag(ledgerSync.deployRef);
-    if (parsed) {
-      const { state } = await loadStateFromIssue(coordinationIssue, token);
-      failedEntry =
-        state.entries.find(
-          (entry) => entry.pr_number === parsed.prNumber && entry.state === 'failed',
-        ) || null;
+  if (writeLedger) {
+    if (!ledgerSync.skipped && ledgerSync.entry?.state === 'failed') {
+      failedEntry = ledgerSync.entry;
+    } else if (ledgerSync.deployRef) {
+      const parsed = parseUatTag(ledgerSync.deployRef);
+      if (parsed) {
+        const { state } = await loadStateFromIssue(coordinationIssue, token);
+        failedEntry =
+          state.entries.find(
+            (entry) => entry.pr_number === parsed.prNumber && entry.state === 'failed',
+          ) || null;
+      }
     }
   }
 

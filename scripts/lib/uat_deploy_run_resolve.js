@@ -4,21 +4,71 @@ const { rest } = require('../../.github/scripts/github-project-lib');
 const { syncDeployResult } = require('./uat_queue_apply');
 const { resolveCoordinationIssue } = require('./uat_queue_sync');
 
+function yymmddFromIso(iso) {
+  if (!iso || iso.length < 10) {
+    return null;
+  }
+  return iso.slice(2, 4) + iso.slice(5, 7) + iso.slice(8, 10);
+}
+
+async function tagCommitSha(owner, repo, tagName, token) {
+  const ref = await rest('GET', `/repos/${owner}/${repo}/git/ref/tags/${tagName}`, token);
+  let obj = ref.object;
+  if (obj.type === 'tag') {
+    const tagObj = await rest('GET', `/repos/${owner}/${repo}/git/tags/${obj.sha}`, token);
+    obj = tagObj.object;
+  }
+  return obj.sha;
+}
+
+async function resolvePrForCommit(owner, repo, commitSha, token) {
+  const pulls = await rest('GET', `/repos/${owner}/${repo}/commits/${commitSha}/pulls`, token);
+  if (!Array.isArray(pulls) || pulls.length !== 1) {
+    return null;
+  }
+  return pulls[0].number;
+}
+
 /**
- * Read deploy_ref from a deploy-uat workflow run's resolve-trigger job outputs.
+ * Derive uat-* tag for a promoted commit (same fast path as resolve-uat-deploy-trigger.sh).
+ */
+async function resolveUatTagForCommit(owner, repo, commitSha, yymmdd, token) {
+  const prNumber = await resolvePrForCommit(owner, repo, commitSha, token);
+  if (!prNumber || !yymmdd) {
+    return null;
+  }
+  const tag = `uat-${yymmdd}-${prNumber}`;
+  try {
+    const tagSha = await tagCommitSha(owner, repo, tag, token);
+    if (tagSha === commitSha) {
+      return tag;
+    }
+  } catch {
+    return null;
+  }
+  return null;
+}
+
+/**
+ * Resolve deploy_ref for a deploy-uat workflow run.
  */
 async function extractDeployRefFromWorkflowRun(owner, repo, runId, token) {
-  const data = await rest(
-    'GET',
-    `/repos/${owner}/${repo}/actions/runs/${runId}/jobs?per_page=100`,
-    token,
-  );
-  const jobs = data.jobs || [];
-  const resolveJob = jobs.find((job) => job.name === 'Resolve deploy trigger');
-  const deployRef = resolveJob?.outputs?.deploy_ref;
-  if (deployRef && deployRef !== 'n/a') {
-    return deployRef;
+  const run = await rest('GET', `/repos/${owner}/${repo}/actions/runs/${runId}`, token);
+  const commitSha = run.head_sha;
+  if (!commitSha) {
+    return null;
   }
+
+  if (run.head_branch && /^uat-\d{6}-\d+$/.test(run.head_branch)) {
+    return run.head_branch;
+  }
+
+  const yymmdd = yymmddFromIso(run.created_at || run.run_started_at);
+  const fastTag = await resolveUatTagForCommit(owner, repo, commitSha, yymmdd, token);
+  if (fastTag) {
+    return fastTag;
+  }
+
   return null;
 }
 
@@ -66,6 +116,8 @@ async function reconcileFailedDeployLedger({
 }
 
 module.exports = {
+  yymmddFromIso,
+  resolveUatTagForCommit,
   extractDeployRefFromWorkflowRun,
   reconcileFailedDeployLedger,
 };
