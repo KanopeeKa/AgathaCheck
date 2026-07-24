@@ -204,10 +204,13 @@ async function main() {
   // evidence of a code regression) is recorded as `infra_failed` rather than
   // `failed` — this keeps queueHeadHold from freezing promotion for unrelated
   // merges. See scripts/lib/uat_coordinator_payload.js isInfraOnlyFailure.
+  // This branch only runs for a `conclusion === 'failure'` run (checked
+  // above), so there is no legitimate 'none' case here — zero non-aggregate
+  // failed jobs (e.g. a ghost/cancelled run) is unclassifiable, not evidence
+  // of "no failure", and must default to the conservative 'code' (blocking).
   const jobs = await fetchWorkflowJobs(owner, repo, workflowRunId, token);
   const failedGates = classifyFailedJobs(jobs);
-  const infraOnly = isInfraOnlyFailure(failedGates);
-  const gateFailureClass = failedGates.length === 0 ? 'none' : infraOnly ? 'infra_only' : 'code';
+  const gateFailureClass = isInfraOnlyFailure(failedGates) ? 'infra_only' : 'code';
 
   const ledgerSync = await reconcileFailedDeployLedger({
     owner,

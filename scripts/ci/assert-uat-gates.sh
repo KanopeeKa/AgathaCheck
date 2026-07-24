@@ -79,6 +79,7 @@ exec 3>&1
     fi
   done
 
+  full_e2e_gate="pass"
   if [[ "${FULL_E2E_RESULT}" == "skipped" && "${SMOKE_RESULT}" != "success" ]]; then
     printf '| uat-e2e-full (localhost) | `skipped (smoke failed)` | no | n/a |\n'
   elif [[ "${FULL_E2E_RESULT}" == "skipped" && "${UAT_FULL_E2E_CADENCE_SKIP}" == "true" ]]; then
@@ -90,6 +91,7 @@ exec 3>&1
     echo "::error title=UAT gate failed::uat-e2e-full (localhost) concluded with '${FULL_E2E_RESULT}' (expected success)" >&3
     printf '| uat-e2e-full (localhost) | `%s` | yes | no |\n' "${FULL_E2E_RESULT}"
     failed=1
+    full_e2e_gate="fail"
   fi
 
   migrate_gate="skipped"
@@ -134,7 +136,7 @@ if [[ "$failed" -ne 0 ]]; then
   gate_failure_class="infra_only"
   if [[ -n "$BUILD_RESULT" && "$BUILD_RESULT" != "success" ]]; then
     gate_failure_class="code"
-  elif [[ "$FULL_E2E_RESULT" == "failure" ]]; then
+  elif [[ "$full_e2e_gate" == "fail" ]]; then
     gate_failure_class="code"
   elif [[ "$migrate_gate" == "fail" ]]; then
     gate_failure_class="code"
