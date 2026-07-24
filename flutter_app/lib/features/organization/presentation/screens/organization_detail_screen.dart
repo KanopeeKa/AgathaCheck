@@ -91,7 +91,7 @@ class _OrganizationDetailScreenState
                 key: const Key('org_detail_back'),
                 icon: const Icon(Icons.arrow_back),
                 tooltip: MaterialLocalizations.of(context).backButtonTooltip,
-                onPressed: () => context.go('/organizations'),
+                onPressed: () => context.go('/o/orgs'),
               ),
               actions: [
                 if (isSuperUser)
@@ -99,7 +99,7 @@ class _OrganizationDetailScreenState
                     key: const Key('org_edit_button'),
                     icon: const Icon(Icons.edit),
                     tooltip: l.editOrganization,
-                    onPressed: () => context.push('/organizations/$orgId/edit'),
+                    onPressed: () => context.push('/o/orgs/$orgId/edit'),
                   ),
                 PopupMenuButton<String>(
                   key: const Key('org_detail_menu'),
@@ -236,7 +236,7 @@ class _OrganizationDetailScreenState
                     theme: theme,
                     colorScheme: colorScheme,
                     l: l,
-                    onTap: () => context.push('/organizations/$orgId/archived'),
+                    onTap: () => context.push('/o/orgs/$orgId/archived'),
                   ),
                   const SizedBox(height: 16),
                   OrganizationConnectionsSection(
@@ -307,13 +307,13 @@ class _OrganizationDetailScreenState
         );
         break;
       case 'members':
-        context.push('/organizations/$orgId/members');
+        context.push('/o/orgs/$orgId/members');
         break;
       case 'pets':
-        context.push('/organizations/$orgId/pets');
+        context.push('/o/orgs/$orgId/pets');
         break;
       case 'archived':
-        context.push('/organizations/$orgId/archived');
+        context.push('/o/orgs/$orgId/archived');
         break;
       case 'leave':
         _showLeaveDialog(context, ref);
@@ -349,7 +349,7 @@ class _OrganizationDetailScreenState
                     .leaveOrganization();
                 ref.invalidate(organizationListProvider);
                 if (context.mounted) {
-                  context.go('/organizations');
+                  context.go('/o/orgs');
                 }
               } catch (e) {
                 if (context.mounted) {
@@ -393,7 +393,7 @@ class _OrganizationDetailScreenState
                     .read(organizationListProvider.notifier)
                     .deleteOrganization(orgId);
                 if (context.mounted) {
-                  context.go('/organizations');
+                  context.go('/o/orgs');
                 }
               } catch (e) {
                 if (context.mounted) {

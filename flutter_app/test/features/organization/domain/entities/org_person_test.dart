@@ -32,7 +32,7 @@ void main() {
       expect(person.isActiveFoster, isTrue);
       expect(
         person.detailPath('org-1'),
-        '/organizations/org-1/people/member/ou-1',
+        '/o/orgs/org-1/people/member/ou-1',
       );
     });
 
@@ -51,7 +51,7 @@ void main() {
       expect(person.isActiveFoster, isFalse);
       expect(
         person.detailPath('org-9'),
-        '/organizations/org-9/people/external/fp-1',
+        '/o/orgs/org-9/people/external/fp-1',
       );
     });
   });

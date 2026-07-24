@@ -132,7 +132,7 @@ class _ArchivedPetCard extends StatelessWidget {
           child: InkWell(
             onTap: orgId != null && archivedPet.hasShadowSnapshot
                 ? () => context.push(
-                    '/organizations/$orgId/archived/${archivedPet.id}',
+                    '/o/orgs/$orgId/archived/${archivedPet.id}',
                   )
                 : null,
             child: Padding(

@@ -35,10 +35,10 @@ void main() {
     tester,
   ) async {
     final router = GoRouter(
-      initialLocation: '/organizations',
+      initialLocation: '/o/orgs',
       routes: [
         GoRoute(
-          path: '/organizations',
+          path: '/o/orgs',
           builder: (context, state) => const OrganizationListScreen(),
         ),
       ],

@@ -90,13 +90,13 @@ autonomy: halted
 current_phase: 3
 last_completed_phase: 2
 halt_reason: halted
-next_action: "start phase 3: checkout cursor/org-mode-nav-phase3-shell-acf1"
+next_action: "continue phase 3 on branch cursor/org-mode-nav-phase3-shell-acf1"
 artifact_ref:
-  branch: cursor/sync-org-mode-plan-snapshot-acf1
+  branch: cursor/org-mode-nav-phase3-shell-acf1
   plan_path: .agents/plans/org-mode-navigation-acf1.md
-  plan_commit: c9d1b33da490801d670955a5525770bb9d9f8447
+  plan_commit: b21e90cca7685f353d78ea890345d816823f1e51
   snapshot_path: .agents/plans/org-mode-navigation-acf1.snapshot.json
-  snapshot_commit: c9d1b33da490801d670955a5525770bb9d9f8447
+  snapshot_commit: b21e90cca7685f353d78ea890345d816823f1e51
 open_prs: []
 merge_commits: {}
 debt_issue_refs: []

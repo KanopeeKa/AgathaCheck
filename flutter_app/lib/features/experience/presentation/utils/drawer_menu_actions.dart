@@ -30,7 +30,7 @@ Future<void> handleExperienceDrawerItemTap(
     case 'drawer_org_view':
       ref.read(activeExperienceProvider.notifier).state =
           AppExperience.organization;
-      context.go('/organizations');
+      context.go('/o/orgs');
       return;
     case 'drawer_guardian_view':
       ref.read(activeExperienceProvider.notifier).state =
@@ -54,6 +54,7 @@ bool _useGoNavigation(String route) {
       route == AppExperience.organization.homePath() ||
       route == AppExperience.guardian.eventsPath ||
       route == AppExperience.organization.eventsPath ||
+      route == '/o/orgs' ||
       route == '/organizations' ||
       route == DrawerMenuConfig.legacyVetsPath;
 }
