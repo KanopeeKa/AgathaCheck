@@ -1,5 +1,5 @@
 import type { Page } from '@playwright/test';
-import { fillLabelledField, reachAuthenticatedHome, refreshFlutterAccessibility, waitForFlutter, flutterRoutePath } from '../support/flutter';
+import { fillLabelledField, reachAuthenticatedHome, refreshFlutterAccessibility, waitForFlutter, flutterRoutePath, dismissConsentBannerIfPresent } from '../support/flutter';
 import { isLiveHostingTarget } from '../support/hosting';
 
 export interface SignupDetails {
@@ -57,6 +57,9 @@ export class LandingPage {
       await confirmField.pressSequentially(confirmPassword, { delay: 30 });
     }
 
+    // Dismiss consent banner before submitting — on live UAT the banner can
+    // appear over the button and intercept the click.
+    await dismissConsentBannerIfPresent(this.page);
     await this.page.getByRole('button', { name: 'Create Account', exact: true }).click();
     await refreshFlutterAccessibility(this.page);
   }

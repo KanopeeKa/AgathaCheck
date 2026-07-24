@@ -18,17 +18,17 @@ type HealthProbe = 'ok' | 'waf' | 'down';
 
 async function probeBackendHealth(page: Page, baseURL: string): Promise<HealthProbe> {
   const healthUrl = `${baseURL}/backend/health`;
-  return page.evaluate(async (url) => {
+  return page.evaluate(async ([url, markers]: [string, string[]]) => {
     try {
       const res = await fetch(url, { credentials: 'include' });
       const body = await res.text();
       if (body.includes('"status":"OK"')) return 'ok';
-      if (body.includes('o2s-browser-check') || body.includes('Security check')) return 'waf';
+      if (markers.some((m) => body.includes(m))) return 'waf';
       return 'down';
     } catch {
       return 'down';
     }
-  }, healthUrl);
+  }, [healthUrl, WAF_MARKERS] as [string, string[]]);
 }
 
 async function waitForAppShell(page: Page, timeoutMs = 5_000): Promise<boolean> {
@@ -78,9 +78,16 @@ export async function passHostingWaf(page: Page, baseURL?: string): Promise<void
 
     if (await waitForAppShell(page)) {
       const health = await probeBackendHealth(page, root);
-      if (health === 'ok' || health === 'waf') {
+      if (health === 'ok') {
         sessionWafCleared = true;
         return;
+      }
+      if (health === 'waf') {
+        // The Flutter shell loaded but the API health endpoint is still returning
+        // a WAF challenge. Wait 3s and retry — the Tiger Protect session sometimes
+        // takes a moment to propagate to API requests after the page challenge clears.
+        await page.waitForTimeout(3_000);
+        continue;
       }
       throw new Error(backendDownMessage(root));
     }
