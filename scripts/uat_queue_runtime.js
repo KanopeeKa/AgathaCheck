@@ -26,13 +26,16 @@ const {
   UatQueueError,
   acquireWatcher,
   barrierCheck,
+  clearPromoteHold,
   enqueueEntry,
   findEntryByMergeSha,
   headEntryNeedingAttention,
   isWatcherLeaseActive,
+  markEntryRemedial,
   queueHeadHold,
   releaseWatcher,
   setBarrier,
+  setPromoteHold,
 } = require('./lib/uat_queue_lib');
 const {
   loadStateFromIssue,
@@ -54,6 +57,9 @@ Commands:
   acquire-watcher --holder <id> [--lease-minutes N] [--issue N] [--write]
   release-watcher [--issue N] [--write]
   set-barrier --sha <sha> [--reason text] [--issue N] [--write]
+  set-promote-hold [--reason text] [--issue N] [--write]
+  clear-promote-hold [--issue N] [--write]
+  mark-remedial [--merge <sha> | --pr <n>] [--issue N] [--write]
   reconcile [--issue N] [--write]
   render-state [--issue N]
 
@@ -316,6 +322,42 @@ async function runCommand(cmd, flags) {
       printJson({
         command: 'set-barrier',
         main_barrier_sha: state.main_barrier_sha,
+        ...saveMeta,
+      });
+      return;
+    }
+
+    case 'set-promote-hold': {
+      const { state, issueNumber } = await loadIssueState(flags);
+      setPromoteHold(state, { reason: optionalStringFlag(flags, 'reason') });
+      const saveMeta = await maybeSave(flags, issueNumber, state);
+      printJson({
+        command: 'set-promote-hold',
+        promote_hold: state.promote_hold,
+        promote_hold_reason: state.promote_hold_reason,
+        ...saveMeta,
+      });
+      return;
+    }
+
+    case 'clear-promote-hold': {
+      const { state, issueNumber } = await loadIssueState(flags);
+      clearPromoteHold(state);
+      const saveMeta = await maybeSave(flags, issueNumber, state);
+      printJson({ command: 'clear-promote-hold', promote_hold: false, ...saveMeta });
+      return;
+    }
+
+    case 'mark-remedial': {
+      const { state, issueNumber } = await loadIssueState(flags);
+      const result = markEntryRemedial(state, {
+        mergeSha: optionalStringFlag(flags, 'merge'),
+        prNumber: flags.pr ? requirePositiveIntFlag(flags, 'pr') : null,
+      });
+      const saveMeta = await maybeSave(flags, issueNumber, result.state);
+      printJson({
+        command: 'mark-remedial',
+        entry: result.entry,
         ...saveMeta,
       });
       return;

@@ -175,8 +175,45 @@ function setBarrier(state, { sha, reason, at }) {
   state.main_barrier_sha = barrierSha;
   state.main_barrier_reason = reason || null;
   state.main_barrier_at = at || nowIso();
+  clearPromoteHold(state);
   unfreezeAfterBarrier(state);
   return state;
+}
+
+function setPromoteHold(state, { reason, at }) {
+  state.promote_hold = true;
+  state.promote_hold_reason = reason || null;
+  state.promote_hold_since = at || nowIso();
+  return state;
+}
+
+function clearPromoteHold(state) {
+  state.promote_hold = false;
+  state.promote_hold_reason = null;
+  state.promote_hold_since = null;
+  return state;
+}
+
+function markEntryRemedial(state, { mergeSha, prNumber }) {
+  let entry = null;
+  if (mergeSha) {
+    entry = findEntryByMergeSha(state, mergeSha);
+  } else if (prNumber != null) {
+    entry = state.entries.find(
+      (e) => e.pr_number === Number(prNumber) && e.state !== 'superseded'
+    );
+  } else {
+    entry = headEntryNeedingAttention(state);
+  }
+  if (!entry) {
+    throw new UatQueueError('mark-remedial: no matching queue entry');
+  }
+  if (entry.state !== 'failed' && entry.state !== 'remedial') {
+    throw new UatQueueError(`mark-remedial: entry seq ${entry.seq} is ${entry.state}, expected failed`);
+  }
+  entry.state = 'remedial';
+  applyRemedialFreeze(state, entry.seq);
+  return { state, entry };
 }
 
 function updateEntry(state, mergeSha, patch) {
@@ -335,6 +372,9 @@ module.exports = {
   releaseWatcher,
   renderStateCommentBody,
   setBarrier,
+  setPromoteHold,
+  clearPromoteHold,
+  markEntryRemedial,
   updateEntry,
   updateEntryByPr,
 };
