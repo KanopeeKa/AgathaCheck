@@ -4,8 +4,8 @@
   "approved_at": "2026-07-24T23:50:00Z",
   "approved_by": "user-delegated-autonomy",
   "approved_until": "2026-07-26T23:50:00Z",
-  "content_hash": "sha256:0281502aa85fad0e2f5a88647015ccdcfcb8bda8513c8574df9502a8bcd08d13",
-  "autonomy": "active",
+  "content_hash": "sha256:9bb61ea2a3cfe0bdaab3175b134bdbe2d9089f483b53f3f8a669c2eba90ff9b0",
+  "autonomy": "completed",
   "default_merge_mode": "auto",
   "base_branch": "cursor/fostering-platform-foundation-e877-integration",
   "control_issue": 334,
@@ -72,11 +72,12 @@
       "spawn_config": null,
       "merge_method": "squash",
       "exit_checklist": "flutter-screen-split",
-      "status": "in_progress",
+      "status": "merged",
       "status_reason": null,
       "status_detail": null,
       "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/336",
-      "pr_head_sha": "d291da7",
+      "pr_head_sha": "110e31a",
+      "merge_commit": "cac4f45eb30ce2118a3530f678034c0ac72bcd32",
       "debt_issue_refs": []
     }
   ]
