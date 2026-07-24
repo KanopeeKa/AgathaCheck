@@ -1,0 +1,54 @@
+name: UAT coordinator dispatch
+
+on:
+  workflow_run:
+    workflows: ['Deploy UAT (uat.agathatrack.com)']
+    types: [completed]
+  workflow_dispatch:
+    inputs:
+      workflow_run_id:
+        description: Failed deploy-uat workflow run id (recovery)
+        required: true
+      force:
+        description: Dispatch even when watcher/head checks would skip
+        type: boolean
+        default: false
+      dry_run:
+        description: Prepare payload only (no ledger write, no Cursor API)
+        type: boolean
+        default: false
+
+concurrency:
+  group: uat-coordinator
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  issues: write
+  actions: read
+
+jobs:
+  dispatch:
+    name: Dispatch UAT coordinator
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      github.event.workflow_run.conclusion == 'failure'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+
+      - name: Dispatch coordinator agent
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          cursor_api_key: ${{ secrets.cursor_api_key }}
+          UAT_COORDINATION_ISSUE: ${{ vars.UAT_COORDINATION_ISSUE }}
+          WORKFLOW_RUN_ID: ${{ github.event_name == 'workflow_dispatch' && inputs.workflow_run_id || github.event.workflow_run.id }}
+          WORKFLOW_URL: ${{ github.event_name == 'workflow_run' && github.event.workflow_run.html_url || '' }}
+          DRY_RUN: ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run || 'false' }}
+          FORCE_DISPATCH: ${{ github.event_name == 'workflow_dispatch' && inputs.force || 'false' }}
+        run: node .github/scripts/uat-coordinator-dispatch.js

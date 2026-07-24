@@ -110,7 +110,7 @@ Analysis of the last 50 `deploy-uat.yml` runs (Jul 21 22:33 – Jul 23 22:36 UTC
 | Phase 2 skills (#307, 22:35 UTC) | Merged (too late for afternoon sprint) |
 | Coordination issue | **Not created** |
 | `UAT_COORDINATION_ISSUE` variable | **Unset** (empty in workflow logs) |
-| `uat-coordinator-dispatch.yml` | **Not built** |
+| `uat-coordinator-dispatch.yml` | **This PR** — on `deploy-uat` failure + `workflow_dispatch` |
 | Ledger enqueue/sync | Always `skipped: true` |
 
 ### Key lesson
@@ -333,11 +333,13 @@ node scripts/uat_queue_runtime.js queue-head-hold   # exit 2 → do not merge ye
 |-------------|--------|
 | `uat-coordinator-dispatch.yml` | On `deploy-uat` failure + `workflow_dispatch` |
 | `.cursor/skills/uat-coordinator/SKILL.md` | Triage playbook (§4 table) |
-| `launch-cursor-agent.js` payload | Sanitized failure context |
-| `queue-head-hold` CLI | Exit `2` when merge should wait |
-| Coordinator sets `remedial`, `set-promote-hold` | Freezes ledger + signals CI |
+| `launch-uat-coordinator.js` payload | Sanitized failure context |
+| `queue-head-hold` CLI | **Done** — exit `2` when merge should wait |
+| `set-promote-hold` / `mark-remedial` CLI | **This PR** — ledger freeze + promote signal |
 
 **Exit:** Simulated failure → one coordinator → remedial or escalate → barrier advanced.
+
+**Status:** **In PR** — dispatch workflow + skill; Phase 3b (promote hold in CI) follows.
 
 ### Phase 3b — CI promote/deploy back-pressure (new — recommended)
 
@@ -376,7 +378,7 @@ Addresses Jul 23 queue pile-up. **Not in original plan; required for merge-rate 
 | B | 1 | agent-uat-notify hooks | **Merged** (#281) |
 | C | 2 | Skill + policy updates | **Merged** (#307) |
 | **D** | **1b** | Bootstrap issue + `health-check` + operator runbook | **In PR** — issue #313 live; variable pending |
-| **E** | 3 | Dispatch workflow + coordinator skill + `queue-head-hold` | Failure owner |
+| **E** | 3 | Dispatch workflow + coordinator skill + promote-hold CLI | **In PR** |
 | **F** | 3b | Promote hold + optional deploy cancel | CI back-pressure |
 | G | 4 | Lease hardening | Duplicate coordinator resistance |
 
