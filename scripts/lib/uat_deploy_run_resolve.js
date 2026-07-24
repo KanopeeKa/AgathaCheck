@@ -83,6 +83,7 @@ async function reconcileFailedDeployLedger({
   coordinationIssue,
   token,
   write = true,
+  gateFailureClass = null,
 }) {
   const coordIssue = resolveCoordinationIssue(coordinationIssue);
   if (!coordIssue) {
@@ -99,6 +100,7 @@ async function reconcileFailedDeployLedger({
     conclusion: 'failure',
     deployRunId: String(workflowRunId),
     gateSummaryRef: workflowUrl,
+    gateFailureClass,
     issueNumber: coordIssue,
     token,
     write,

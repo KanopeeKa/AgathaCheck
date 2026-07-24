@@ -208,9 +208,9 @@ function markEntryRemedial(state, { mergeSha, prNumber }) {
   if (!entry) {
     throw new UatQueueError('mark-remedial: no matching queue entry');
   }
-  if (entry.state !== 'failed' && entry.state !== 'remedial') {
+  if (!['failed', 'infra_failed', 'remedial'].includes(entry.state)) {
     throw new UatQueueError(
-      `mark-remedial: entry seq ${entry.seq} is ${entry.state}, expected failed or remedial`,
+      `mark-remedial: entry seq ${entry.seq} is ${entry.state}, expected failed, infra_failed, or remedial`,
     );
   }
   entry.state = 'remedial';
@@ -255,7 +255,17 @@ function supersedeEarlierPending(state, currentSeq) {
   return state;
 }
 
-function applyDeployResult(state, { deployRef, conclusion, deployRunId, gateSummaryRef }) {
+/**
+ * @param {'infra_only'|'code'|'escalate'|'none'|null} [gateFailureClass]
+ *   Classification of which gates failed (see scripts/lib/uat_coordinator_payload.js
+ *   GATE_CLASSIFIERS). 'infra_only' means every failed gate is host/network infra
+ *   (WAF, SSH transport) with no evidence of a code regression — the entry is
+ *   recorded as `infra_failed` instead of `failed` so it does NOT trip
+ *   queueHeadHold and freeze promotion for unrelated merges. Unknown/omitted
+ *   classification conservatively falls back to `failed` (blocking) — see
+ *   docs/agent-efficiency/uat-coordinator-plan.md "Infra vs code classification".
+ */
+function applyDeployResult(state, { deployRef, conclusion, deployRunId, gateSummaryRef, gateFailureClass }) {
   const parsed = parseUatTag(deployRef);
   if (!parsed) {
     throw new UatQueueError(`deploy ref is not a UAT tag: ${deployRef}`);
@@ -278,8 +288,9 @@ function applyDeployResult(state, { deployRef, conclusion, deployRunId, gateSumm
     return { state, entry, skipped: false };
   }
 
-  entry.state = 'failed';
-  entry.result = 'failure';
+  const isInfraOnly = gateFailureClass === 'infra_only';
+  entry.state = isInfraOnly ? 'infra_failed' : 'failed';
+  entry.result = isInfraOnly ? 'infra_failure' : 'failure';
   entry.deploy_run_id = deployRunId || entry.deploy_run_id;
   entry.gate_summary_ref = gateSummaryRef || entry.gate_summary_ref;
   entry.completed_at = nowIso();

@@ -11,6 +11,17 @@ MAX_ATTEMPTS="${MAX_ATTEMPTS:-18}"
 SLEEP_SECS="${SLEEP_SECS:-10}"
 CURL_TLS_FLAGS="${CURL_TLS_FLAGS:--k}"
 
+# Exposes the classify_body() kind as a job output so assert-uat-gates.sh can
+# tell a WAF/Passenger-registration issue (host/config, no code signal) apart
+# from a passenger_crash or unknown response (may indicate the app itself is
+# broken — treated conservatively as a code failure, not infra_only).
+emit_failure_kind() {
+  local kind="$1"
+  if [[ -n "${GITHUB_OUTPUT:-}" ]]; then
+    printf 'failure_kind=%s\n' "$kind" >>"$GITHUB_OUTPUT"
+  fi
+}
+
 classify_body() {
   local body="$1"
   if grep -q '"status":"OK"' <<<"$body"; then
@@ -120,6 +131,7 @@ if [ "$root_kind" = "directory_listing" ]; then
     [ -n "$line" ] && echo "::notice::${line}"
   done
   emit_error "$root_kind" "$root_code"
+  emit_failure_kind "$root_kind"
   exit 1
 fi
 
@@ -142,6 +154,7 @@ for i in $(seq 1 "$MAX_ATTEMPTS"); do
     IFS='|' read -r root_code root_kind <<<"$(probe_url "${UAT_BASE_URL}/backend/")"
     if [ "$root_kind" != "backend_root" ]; then
       emit_error "$root_kind" "$root_code"
+      emit_failure_kind "$root_kind"
       exit 1
     fi
     echo "Backend root OK (HTTP ${root_code})"
@@ -152,6 +165,7 @@ for i in $(seq 1 "$MAX_ATTEMPTS"); do
     waf_rc=0
     uat_waf_note_challenge "health probe" || waf_rc=$?
     if [ "$waf_rc" -eq 2 ]; then
+      emit_failure_kind "waf"
       exit 2
     fi
   else
@@ -172,4 +186,5 @@ for i in $(seq 1 "$MAX_ATTEMPTS"); do
 done
 
 emit_error "$last_kind" "$last_code"
+emit_failure_kind "$last_kind"
 exit 1
