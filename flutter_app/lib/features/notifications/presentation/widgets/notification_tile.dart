@@ -36,7 +36,8 @@ class NotificationTile extends ConsumerWidget {
         notification.organizationId!.isNotEmpty;
     final hasPet = notification.petId != null && notification.petId!.isNotEmpty;
     final isOrgOnly = hasOrg && !hasPet;
-    final useOrgAccent = listScope == NotificationScope.organization || isOrgOnly;
+    final useOrgAccent =
+        listScope == NotificationScope.organization || isOrgOnly;
 
     switch (notification.type) {
       case NotificationType.overdue:
@@ -132,7 +133,8 @@ class NotificationTile extends ConsumerWidget {
                                           notification.petName!,
                                           style: theme.textTheme.labelMedium
                                               ?.copyWith(
-                                                color: petColor ?? accent.primary,
+                                                color:
+                                                    petColor ?? accent.primary,
                                                 fontWeight: FontWeight.w600,
                                               ),
                                         ),

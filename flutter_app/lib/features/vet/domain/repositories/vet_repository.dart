@@ -5,8 +5,10 @@ import '../entities/vet.dart';
 /// Defines the contract that data-layer implementations must fulfill
 /// to provide CRUD operations for [Vet] entities.
 abstract class VetRepository {
-  /// Retrieves all veterinarians.
-  Future<List<Vet>> getAllVets();
+  /// Retrieves all veterinarians, optionally filtered by [organizationId].
+  ///
+  /// Pass `personal` for personal vets only, or an organisation UUID.
+  Future<List<Vet>> getAllVets({String? organizationId});
 
   /// Retrieves a single veterinarian by [id].
   ///

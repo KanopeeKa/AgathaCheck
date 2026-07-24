@@ -38,17 +38,23 @@ void main() {
 
   group('getAllVets', () {
     test('returns list of vets from data source', () async {
-      when(mockDataSource.getAllVets()).thenAnswer((_) async => [testModel]);
+      when(
+        mockDataSource.getAllVets(organizationId: anyNamed('organizationId')),
+      ).thenAnswer((_) async => [testModel]);
 
       final result = await repository.getAllVets();
 
       expect(result, hasLength(1));
       expect(result.first.name, 'Dr. Smith');
-      verify(mockDataSource.getAllVets()).called(1);
+      verify(
+        mockDataSource.getAllVets(organizationId: anyNamed('organizationId')),
+      ).called(1);
     });
 
     test('returns empty list when data source returns empty', () async {
-      when(mockDataSource.getAllVets()).thenAnswer((_) async => []);
+      when(
+        mockDataSource.getAllVets(organizationId: anyNamed('organizationId')),
+      ).thenAnswer((_) async => []);
 
       final result = await repository.getAllVets();
 

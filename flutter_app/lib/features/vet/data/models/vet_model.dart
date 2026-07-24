@@ -15,6 +15,7 @@ class VetModel extends Vet {
     super.website,
     super.address,
     super.notes,
+    super.organizationId,
     super.createdAt,
     super.updatedAt,
   });
@@ -34,6 +35,7 @@ class VetModel extends Vet {
       website: json['website'] as String? ?? '',
       address: json['address'] as String? ?? '',
       notes: json['notes'] as String? ?? '',
+      organizationId: json['organization_id']?.toString(),
       createdAt: json['created_at'] != null
           ? DateTime.tryParse(json['created_at'] as String)
           : null,
@@ -56,6 +58,7 @@ class VetModel extends Vet {
       website: vet.website,
       address: vet.address,
       notes: vet.notes,
+      organizationId: vet.organizationId,
       createdAt: vet.createdAt,
       updatedAt: vet.updatedAt,
     );
@@ -74,6 +77,7 @@ class VetModel extends Vet {
       'website': website,
       'address': address,
       'notes': notes,
+      if (organizationId != null) 'organization_id': organizationId,
     };
   }
 }

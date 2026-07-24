@@ -12,10 +12,10 @@ class GetAllVets {
   /// The repository used to retrieve veterinarians.
   final VetRepository repository;
 
-  /// Executes the use case to get all veterinarians.
+  /// Executes the use case to get veterinarians.
   ///
-  /// Returns a list of all [Vet] entities.
-  Future<List<Vet>> call() {
-    return repository.getAllVets();
+  /// [organizationId]: omit for all, `personal` for personal-only, or org UUID.
+  Future<List<Vet>> call({String? organizationId}) {
+    return repository.getAllVets(organizationId: organizationId);
   }
 }

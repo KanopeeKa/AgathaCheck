@@ -56,5 +56,6 @@ bool _useGoNavigation(String route) {
       route == AppExperience.organization.eventsPath ||
       route == '/o/orgs' ||
       route == '/organizations' ||
-      route == DrawerMenuConfig.legacyVetsPath;
+      route == DrawerMenuConfig.guardianVetsPath ||
+      route == DrawerMenuConfig.orgVetsPath;
 }

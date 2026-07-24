@@ -6,9 +6,11 @@ class MockVetRepository extends Mock implements VetRepository {
   static final _fallback = Vet(id: '', name: '');
 
   @override
-  Future<List<Vet>> getAllVets() =>
+  Future<List<Vet>> getAllVets({String? organizationId}) =>
       super.noSuchMethod(
-            Invocation.method(#getAllVets, []),
+            Invocation.method(#getAllVets, [], {
+              #organizationId: organizationId,
+            }),
             returnValue: Future.value(<Vet>[]),
           )
           as Future<List<Vet>>;

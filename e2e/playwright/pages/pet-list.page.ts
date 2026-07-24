@@ -169,13 +169,13 @@ export class PetListPage {
     if (await vetsNav.isVisible({ timeout: 2_000 }).catch(() => false)) {
       await vetsNav.click();
     } else if (await isExperienceShellVisible(this.page)) {
-      await this.page.goto(flutterGotoUrl('/vets'));
+      await this.page.goto(flutterGotoUrl('/g/vets'));
       await refreshFlutterAccessibility(this.page);
-      await waitForFlutterRoutePattern(this.page, /\/vets$/, 30_000);
+      await waitForFlutterRoutePattern(this.page, /\/g\/vets$/, 30_000);
     } else {
-      await waitForFlutterRoute(this.page, '/vets');
+      await waitForFlutterRoute(this.page, '/g/vets');
     }
-    await expectAppBarTitle(this.page, 'Veterinarians');
+    await this.page.getByText(/^Veterinarians$/i).first().waitFor({ timeout: 30_000 });
   }
 
   /**

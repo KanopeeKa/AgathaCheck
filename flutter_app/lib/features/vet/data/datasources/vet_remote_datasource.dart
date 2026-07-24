@@ -5,7 +5,7 @@ import 'package:http/http.dart' as http;
 import '../models/vet_model.dart';
 
 abstract class VetRemoteDataSource {
-  Future<List<VetModel>> getAllVets();
+  Future<List<VetModel>> getAllVets({String? organizationId});
   Future<VetModel?> getVet(String id);
   Future<VetModel> createVet(VetModel vet);
   Future<VetModel> updateVet(VetModel vet);
@@ -29,9 +29,12 @@ class VetRemoteDataSourceImpl implements VetRemoteDataSource {
   };
 
   @override
-  Future<List<VetModel>> getAllVets() async {
+  Future<List<VetModel>> getAllVets({String? organizationId}) async {
+    final query = organizationId == null
+        ? ''
+        : '?organization_id=${Uri.encodeQueryComponent(organizationId)}';
     final response = await _client.get(
-      Uri.parse('$baseUrl/api/vets'),
+      Uri.parse('$baseUrl/api/vets$query'),
       headers: _headers,
     );
     _checkResponse(response);

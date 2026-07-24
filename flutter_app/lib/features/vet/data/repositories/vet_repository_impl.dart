@@ -16,8 +16,8 @@ class VetRepositoryImpl implements VetRepository {
   final VetRemoteDataSource dataSource;
 
   @override
-  Future<List<Vet>> getAllVets() {
-    return dataSource.getAllVets();
+  Future<List<Vet>> getAllVets({String? organizationId}) {
+    return dataSource.getAllVets(organizationId: organizationId);
   }
 
   @override

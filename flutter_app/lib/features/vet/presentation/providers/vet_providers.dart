@@ -47,10 +47,22 @@ final deleteVetUseCaseProvider = Provider<DeleteVet>((ref) {
   return DeleteVet(ref.watch(vetRepositoryProvider));
 });
 
+/// `null` = all vets, `'_personal'` = personal only, otherwise org id.
+final vetOrganizationFilterProvider = StateProvider<String?>((ref) => null);
+
+String? _apiOrganizationFilter(String? filter) {
+  if (filter == null) return null;
+  if (filter == '_personal') return 'personal';
+  return filter;
+}
+
 class VetListNotifier extends AsyncNotifier<List<Vet>> {
   @override
   Future<List<Vet>> build() async {
-    return ref.read(getAllVetsUseCaseProvider).call();
+    final filter = ref.watch(vetOrganizationFilterProvider);
+    return ref
+        .read(getAllVetsUseCaseProvider)
+        .call(organizationId: _apiOrganizationFilter(filter));
   }
 
   Future<void> refresh() async {
