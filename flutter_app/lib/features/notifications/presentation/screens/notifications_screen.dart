@@ -7,6 +7,7 @@ import '../../../../l10n/app_localizations.dart';
 import '../../domain/entities/notification_scope.dart';
 import '../../domain/services/notification_scope_rules.dart';
 import '../providers/notification_providers.dart';
+import '../utils/notification_accent.dart';
 import '../widgets/notification_date_groups.dart';
 import '../widgets/notification_tile.dart';
 import '../../../pet_profile/presentation/providers/pet_providers.dart';
@@ -46,6 +47,7 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
     final notificationsAsync = ref.watch(notificationsProvider);
     final theme = Theme.of(context);
     final l = AppLocalizations.of(context)!;
+    final accent = resolveNotificationAccent(context, _effectiveScope);
 
     return Scaffold(
       appBar: AppBar(
@@ -151,7 +153,7 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
                       child: Text(
                         group.label,
                         style: theme.textTheme.labelLarge?.copyWith(
-                          color: theme.colorScheme.primary,
+                          color: accent.primary,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -159,6 +161,7 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
                     ...group.notifications.map(
                       (n) => NotificationTile(
                         notification: n,
+                        listScope: _effectiveScope,
                         onTap: () async {
                           if (!n.isRead) {
                             await ref
@@ -170,7 +173,7 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
                             context.go('/pet/${n.petId}');
                           } else if (n.organizationId != null &&
                               n.organizationId!.isNotEmpty) {
-                            context.go('/organizations/${n.organizationId}');
+                            context.go('/o/orgs/${n.organizationId}');
                           }
                         },
                       ),

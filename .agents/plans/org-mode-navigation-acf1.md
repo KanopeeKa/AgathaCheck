@@ -86,17 +86,17 @@ Formalise the org-mode user journey: guardian users without org membership can e
 ## Runtime state
 
 ```yaml
-autonomy: active
+autonomy: halted
 current_phase: 3
 last_completed_phase: 2
-halt_reason: null
-next_action: "continue phase 3 on branch cursor/org-mode-nav-phase3-shell-acf1"
+halt_reason: revoked
+next_action: "resume phase 3 (revoked)"
 artifact_ref:
-  branch: cursor/org-mode-nav-phase3-shell-acf1
+  branch: main
   plan_path: .agents/plans/org-mode-navigation-acf1.md
-  plan_commit: d122c051bb92a2ee73daacc0345fbb723d8111c8
+  plan_commit: 01b4e23334a02ab7af3c6da5894a82fb143d956a
   snapshot_path: .agents/plans/org-mode-navigation-acf1.snapshot.json
-  snapshot_commit: d122c051bb92a2ee73daacc0345fbb723d8111c8
+  snapshot_commit: 01b4e23334a02ab7af3c6da5894a82fb143d956a
 open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/321"]
 merge_commits: {}
 debt_issue_refs: []

@@ -5,6 +5,8 @@ import 'package:intl/intl.dart';
 import '../../../../core/theme/experience_colors.dart';
 import '../../../pet_profile/presentation/providers/pet_providers.dart';
 import '../../domain/entities/app_notification.dart';
+import '../../domain/entities/notification_scope.dart';
+import '../utils/notification_accent.dart';
 
 /// Single notification row in the notifications list.
 class NotificationTile extends ConsumerWidget {
@@ -12,15 +14,18 @@ class NotificationTile extends ConsumerWidget {
     super.key,
     required this.notification,
     required this.onTap,
+    required this.listScope,
   });
 
   final AppNotification notification;
   final VoidCallback onTap;
+  final NotificationScope listScope;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
     final xp = context.experienceColors;
+    final accent = resolveNotificationAccent(context, listScope);
     final isUnread = !notification.isRead;
 
     IconData icon;
@@ -31,6 +36,7 @@ class NotificationTile extends ConsumerWidget {
         notification.organizationId!.isNotEmpty;
     final hasPet = notification.petId != null && notification.petId!.isNotEmpty;
     final isOrgOnly = hasOrg && !hasPet;
+    final useOrgAccent = listScope == NotificationScope.organization || isOrgOnly;
 
     switch (notification.type) {
       case NotificationType.overdue:
@@ -43,17 +49,15 @@ class NotificationTile extends ConsumerWidget {
         break;
       case NotificationType.reminder:
         icon = Icons.schedule;
-        iconColor = theme.colorScheme.primary;
+        iconColor = accent.primary;
         break;
       case NotificationType.completed:
         icon = Icons.check_circle;
         iconColor = xp.success;
         break;
       case NotificationType.general:
-        icon = isOrgOnly ? Icons.business : Icons.notifications;
-        iconColor = isOrgOnly
-            ? xp.organizationPrimary
-            : theme.colorScheme.primary;
+        icon = useOrgAccent ? Icons.business : Icons.notifications;
+        iconColor = accent.primary;
         break;
     }
 
@@ -63,10 +67,8 @@ class NotificationTile extends ConsumerWidget {
         : null;
     final petColor = pet?.colorValue != null ? Color(pet!.colorValue!) : null;
 
-    final tileColor = isUnread
-        ? theme.colorScheme.primaryContainer.withAlpha(40)
-        : null;
-    final stripColor = petColor ?? theme.colorScheme.outlineVariant;
+    final tileColor = isUnread ? accent.unreadSurface : null;
+    final stripColor = petColor ?? accent.primary.withAlpha(180);
 
     return MergeSemantics(
       child: Semantics(
@@ -123,18 +125,14 @@ class NotificationTile extends ConsumerWidget {
                                         Icon(
                                           Icons.pets,
                                           size: 13,
-                                          color:
-                                              petColor ??
-                                              theme.colorScheme.primary,
+                                          color: petColor ?? accent.primary,
                                         ),
                                         const SizedBox(width: 4),
                                         Text(
                                           notification.petName!,
                                           style: theme.textTheme.labelMedium
                                               ?.copyWith(
-                                                color:
-                                                    petColor ??
-                                                    theme.colorScheme.primary,
+                                                color: petColor ?? accent.primary,
                                                 fontWeight: FontWeight.w600,
                                               ),
                                         ),
@@ -180,7 +178,7 @@ class NotificationTile extends ConsumerWidget {
                                     width: 8,
                                     height: 8,
                                     decoration: BoxDecoration(
-                                      color: theme.colorScheme.primary,
+                                      color: accent.primary,
                                       shape: BoxShape.circle,
                                     ),
                                   ),
