@@ -3,8 +3,7 @@
 
 const test = require('node:test');
 const assert = require('node:assert/strict');
-const { createEmptyState, setPromoteHold } = require('../lib/uat_queue_lib');
-const { queueHeadHold } = require('../lib/uat_queue_lib');
+const { createEmptyState, setPromoteHold, queueHeadHold } = require('../lib/uat_queue_lib');
 
 test('queueHeadHold blocks on promote_hold flag', () => {
   const state = createEmptyState();

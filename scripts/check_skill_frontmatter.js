@@ -9,12 +9,20 @@ const fs = require('fs');
 const path = require('path');
 
 const ROOT = path.resolve(__dirname, '..');
+const COMMANDS_DIR = path.join(ROOT, '.cursor', 'commands');
 
 function loadYaml() {
   try {
     return require('js-yaml');
   } catch {
-    return require(path.join(ROOT, 'server/node_modules/js-yaml'));
+    try {
+      return require(path.join(ROOT, 'server/node_modules/js-yaml'));
+    } catch {
+      console.error(
+        'check_skill_frontmatter: js-yaml is required. Install backend deps: cd server && npm ci',
+      );
+      process.exit(1);
+    }
   }
 }
 
@@ -63,7 +71,8 @@ for (const file of files) {
     if (!data?.name || !data?.description) {
       throw new Error('frontmatter requires name and description');
     }
-    if (data.name !== path.basename(path.dirname(file)) && !file.includes('/commands/')) {
+    const isCommandFile = path.dirname(file) === COMMANDS_DIR;
+    if (!isCommandFile && data.name !== path.basename(path.dirname(file))) {
       throw new Error(`name "${data.name}" must match folder ${path.basename(path.dirname(file))}`);
     }
     console.log(`OK ${rel}`);
