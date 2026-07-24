@@ -5,6 +5,7 @@ import jwt from 'jsonwebtoken';
 import { createApiLimiter } from '../config/rateLimit.js';
 import { JWT_SECRET } from '../config/jwtSecret.js';
 import { publicError } from '../config/security.js';
+import { userInOrg } from './pets/shared.js';
 
 function extractUserId(req) {
   const auth = req.headers['authorization'] || req.headers['Authorization'];
@@ -28,9 +29,21 @@ function vetRowToMap(row) {
     website: row.website || '',
     address: row.address || '',
     notes: row.notes || '',
+    organization_id: row.organization_id ?? null,
     created_at: row.created_at,
     updated_at: row.updated_at,
   };
+}
+
+function resolveOrganizationId(body) {
+  const raw = body.organization_id ?? body.organizationId;
+  if (raw === undefined || raw === null || raw === '') return null;
+  return raw;
+}
+
+async function assertCanUseOrganizationId(pool, organizationId, userId) {
+  if (!organizationId) return true;
+  return userInOrg(pool, organizationId, userId);
 }
 
 export default function vetsRoutes(pool) {
@@ -41,7 +54,27 @@ export default function vetsRoutes(pool) {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     try {
-      const result = await pool.query('SELECT * FROM vets WHERE user_id = $1 ORDER BY name', [userId]);
+      const orgFilter = req.query.organization_id;
+      let result;
+      if (orgFilter === undefined || orgFilter === '') {
+        result = await pool.query(
+          'SELECT * FROM vets WHERE user_id = $1 ORDER BY name',
+          [userId],
+        );
+      } else if (orgFilter === 'null' || orgFilter === 'personal') {
+        result = await pool.query(
+          'SELECT * FROM vets WHERE user_id = $1 AND organization_id IS NULL ORDER BY name',
+          [userId],
+        );
+      } else {
+        if (!(await assertCanUseOrganizationId(pool, orgFilter, userId))) {
+          return res.status(403).json({ error: 'Forbidden' });
+        }
+        result = await pool.query(
+          'SELECT * FROM vets WHERE user_id = $1 AND organization_id = $2 ORDER BY name',
+          [userId, orgFilter],
+        );
+      }
       res.json(result.rows.map(vetRowToMap));
     } catch (err) {
       res.status(500).json({ error: publicError(err) });
@@ -65,10 +98,14 @@ export default function vetsRoutes(pool) {
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     try {
       const { name, clinic, phone, email, website, address, notes } = req.body;
+      const organizationId = resolveOrganizationId(req.body);
+      if (!(await assertCanUseOrganizationId(pool, organizationId, userId))) {
+        return res.status(403).json({ error: 'Forbidden' });
+      }
       const id = uuidv4();
       const result = await pool.query(
-        'INSERT INTO vets (id, user_id, name, clinic, phone, email, website, address, notes) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING *',
-        [id, userId, name, clinic || null, phone || null, email || null, website || '', address || '', notes || '']
+        'INSERT INTO vets (id, user_id, name, clinic, phone, email, website, address, notes, organization_id) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING *',
+        [id, userId, name, clinic || null, phone || null, email || null, website || '', address || '', notes || '', organizationId]
       );
       res.status(201).json(vetRowToMap(result.rows[0]));
     } catch (err) {
@@ -81,9 +118,13 @@ export default function vetsRoutes(pool) {
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     try {
       const { name, clinic, phone, email, website, address, notes } = req.body;
+      const organizationId = resolveOrganizationId(req.body);
+      if (!(await assertCanUseOrganizationId(pool, organizationId, userId))) {
+        return res.status(403).json({ error: 'Forbidden' });
+      }
       const result = await pool.query(
-        'UPDATE vets SET name = $1, clinic = $2, phone = $3, email = $4, website = $5, address = $6, notes = $7, updated_at = NOW() WHERE id = $8 AND user_id = $9 RETURNING *',
-        [name, clinic, phone, email, website || '', address || '', notes || '', req.params.id, userId]
+        'UPDATE vets SET name = $1, clinic = $2, phone = $3, email = $4, website = $5, address = $6, notes = $7, organization_id = $8, updated_at = NOW() WHERE id = $9 AND user_id = $10 RETURNING *',
+        [name, clinic, phone, email, website || '', address || '', notes || '', organizationId, req.params.id, userId]
       );
       if (result.rows.length === 0) return res.status(404).json({ error: 'Vet not found' });
       res.json(vetRowToMap(result.rows[0]));

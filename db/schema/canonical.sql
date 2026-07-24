@@ -345,7 +345,8 @@ CREATE TABLE public.vets (
     address text DEFAULT ''::text,
     notes text DEFAULT ''::text,
     created_at timestamp with time zone DEFAULT now(),
-    updated_at timestamp with time zone DEFAULT now()
+    updated_at timestamp with time zone DEFAULT now(),
+    organization_id uuid
 );
 CREATE TABLE public.weight_entries (
     id uuid NOT NULL,
@@ -459,6 +460,7 @@ CREATE INDEX idx_organizations_name ON public.organizations USING btree (name);
 CREATE UNIQUE INDEX idx_pet_access_pet_user ON public.pet_access USING btree (pet_id, user_id);
 CREATE INDEX idx_pet_share_links_code ON public.pet_share_links USING btree (code);
 CREATE INDEX idx_pet_share_links_pet_id ON public.pet_share_links USING btree (pet_id);
+CREATE INDEX idx_vets_organization_id ON public.vets USING btree (organization_id);
 ALTER TABLE ONLY public.archived_pets
     ADD CONSTRAINT archived_pets_organization_id_fkey FOREIGN KEY (organization_id) REFERENCES public.organizations(id) ON DELETE SET NULL;
 ALTER TABLE ONLY public.archived_pets
@@ -587,6 +589,8 @@ ALTER TABLE ONLY public.shared_pets
     ADD CONSTRAINT shared_pets_pet_id_fkey FOREIGN KEY (pet_id) REFERENCES public.pets(id) ON DELETE CASCADE;
 ALTER TABLE ONLY public.shared_pets
     ADD CONSTRAINT shared_pets_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE;
+ALTER TABLE ONLY public.vets
+    ADD CONSTRAINT vets_organization_id_fkey FOREIGN KEY (organization_id) REFERENCES public.organizations(id) ON DELETE SET NULL;
 ALTER TABLE ONLY public.vets
     ADD CONSTRAINT vets_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE;
 ALTER TABLE ONLY public.weight_entries
