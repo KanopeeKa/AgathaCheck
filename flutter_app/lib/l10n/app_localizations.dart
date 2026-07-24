@@ -3724,7 +3724,7 @@ abstract class AppLocalizations {
   /// No description provided for @addExternalFoster.
   ///
   /// In en, this message translates to:
-  /// **'Add external foster'**
+  /// **'Add foster manually'**
   String get addExternalFoster;
 
   /// No description provided for @fosterContactAddress.
@@ -3828,6 +3828,96 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Members and contacts who can foster organisation pets. Pet counts reflect active placements.'**
   String get fosterParentsDescription;
+
+  /// No description provided for @manageFostersTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage fosters'**
+  String get manageFostersTitle;
+
+  /// No description provided for @manageFostersDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Operational view of foster families — invite, review, and track who is fostering now.'**
+  String get manageFostersDescription;
+
+  /// No description provided for @manageFostersTabNew.
+  ///
+  /// In en, this message translates to:
+  /// **'New'**
+  String get manageFostersTabNew;
+
+  /// No description provided for @manageFostersTabFostering.
+  ///
+  /// In en, this message translates to:
+  /// **'Fostering'**
+  String get manageFostersTabFostering;
+
+  /// No description provided for @manageFostersTabRecentlyFostered.
+  ///
+  /// In en, this message translates to:
+  /// **'Recently fostered'**
+  String get manageFostersTabRecentlyFostered;
+
+  /// No description provided for @manageFostersTabInactive.
+  ///
+  /// In en, this message translates to:
+  /// **'Inactive'**
+  String get manageFostersTabInactive;
+
+  /// No description provided for @manageFostersTabAll.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get manageFostersTabAll;
+
+  /// No description provided for @manageFostersStatusFostering.
+  ///
+  /// In en, this message translates to:
+  /// **'Fostering'**
+  String get manageFostersStatusFostering;
+
+  /// No description provided for @manageFostersEmptyTab.
+  ///
+  /// In en, this message translates to:
+  /// **'No fosters match this tab'**
+  String get manageFostersEmptyTab;
+
+  /// No description provided for @manageFostersRecentlyFosteredPlaceholder.
+  ///
+  /// In en, this message translates to:
+  /// **'Recently ended foster placements will appear here once session history is available.'**
+  String get manageFostersRecentlyFosteredPlaceholder;
+
+  /// No description provided for @manageFostersApprovalFiltersLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Approval filters'**
+  String get manageFostersApprovalFiltersLabel;
+
+  /// No description provided for @manageFostersFilterUnderReview.
+  ///
+  /// In en, this message translates to:
+  /// **'Under review'**
+  String get manageFostersFilterUnderReview;
+
+  /// No description provided for @manageFostersFilterApproved.
+  ///
+  /// In en, this message translates to:
+  /// **'Approved'**
+  String get manageFostersFilterApproved;
+
+  /// No description provided for @manageFostersFilterArchived.
+  ///
+  /// In en, this message translates to:
+  /// **'Archived'**
+  String get manageFostersFilterArchived;
+
+  /// No description provided for @manageFostersApprovalFiltersComingSoon.
+  ///
+  /// In en, this message translates to:
+  /// **'Approval filters activate when foster onboarding (J1 Phase 2) ships.'**
+  String get manageFostersApprovalFiltersComingSoon;
 
   /// No description provided for @noFosterParents.
   ///
