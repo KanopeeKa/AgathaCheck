@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 import '../../../../l10n/app_localizations.dart';
+import '../../../pet_profile/presentation/utils/ownership_accent.dart';
 import '../../domain/entities/foster_placement.dart';
 
 String localizedPlacementStatus(AppLocalizations l, FosterPlacement placement) {
@@ -48,7 +49,7 @@ class FosterPetMiniCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
-    final strip = stripColor ?? colorScheme.outlineVariant;
+    final strip = stripColor ?? fosterOwnershipAccentColor(context);
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 8),
@@ -86,7 +87,7 @@ class FosterPetMiniCard extends StatelessWidget {
                             Icon(
                               Icons.pets,
                               size: 14,
-                              color: colorScheme.primary,
+                              color: strip,
                             ),
                             const SizedBox(width: 4),
                             Expanded(

@@ -3,11 +3,10 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 
 import '../../../../core/theme/app_color_tokens.dart';
-import '../../../../core/theme/experience_colors.dart';
 import '../../../../core/utils/constants.dart';
 import '../../../../l10n/app_localizations.dart';
-import '../../../organization/presentation/utils/foster_placement_display.dart';
 import '../../domain/entities/pet.dart';
+import '../utils/ownership_accent.dart';
 import '../utils/pet_accent_color.dart';
 
 /// A Material 3 card widget that displays a pet's summary information.
@@ -28,10 +27,8 @@ class PetCard extends StatelessWidget {
     final colorScheme = theme.colorScheme;
     final l = AppLocalizations.of(context)!;
     final speciesDisplay = _localizedSpecies(l, pet.species);
-    final fosterLine = petFosterPlacementCardLine(l, pet);
-    final isOrgPet =
-        pet.organizationId != null && pet.organizationId!.isNotEmpty;
-    final orgAccent = context.experienceColors.organizationPrimary;
+    final ownership = resolvePetOwnershipAccent(context, pet, l);
+    final fosterAccent = fosterOwnershipAccentColor(context);
 
     return MergeSemantics(
       child: Semantics(
@@ -67,18 +64,14 @@ class PetCard extends StatelessWidget {
                               Icon(
                                 Icons.business,
                                 size: 14,
-                                color: isOrgPet
-                                    ? orgAccent
-                                    : colorScheme.primary,
+                                color: ownership.accentColor,
                               ),
                               const SizedBox(width: 4),
                               Expanded(
                                 child: Text(
                                   pet.organizationName!,
                                   style: theme.textTheme.bodySmall?.copyWith(
-                                    color: isOrgPet
-                                        ? orgAccent
-                                        : colorScheme.primary,
+                                    color: ownership.accentColor,
                                     fontWeight: FontWeight.w500,
                                   ),
                                   maxLines: 1,
@@ -88,21 +81,25 @@ class PetCard extends StatelessWidget {
                             ],
                           ),
                         ],
-                        if (pet.isFoster) ...[
+                        if (ownership.showsFosterLabel) ...[
                           const SizedBox(height: 2),
                           Row(
                             children: [
                               Icon(
                                 Icons.home_work_outlined,
                                 size: 14,
-                                color: colorScheme.tertiary,
+                                color: fosterAccent,
                               ),
                               const SizedBox(width: 4),
-                              Text(
-                                l.fosterPlacementInProgress,
-                                style: theme.textTheme.bodySmall?.copyWith(
-                                  color: colorScheme.tertiary,
-                                  fontWeight: FontWeight.w500,
+                              Expanded(
+                                child: Text(
+                                  ownership.fosterLabel!,
+                                  style: theme.textTheme.bodySmall?.copyWith(
+                                    color: fosterAccent,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
                                 ),
                               ),
                             ],
@@ -130,30 +127,6 @@ class PetCard extends StatelessWidget {
                             style: theme.textTheme.bodySmall?.copyWith(
                               color: colorScheme.onSurfaceVariant,
                             ),
-                          ),
-                        ],
-                        if (fosterLine != null) ...[
-                          const SizedBox(height: 2),
-                          Row(
-                            children: [
-                              Icon(
-                                Icons.home_work_outlined,
-                                size: 14,
-                                color: colorScheme.primary,
-                              ),
-                              const SizedBox(width: 4),
-                              Expanded(
-                                child: Text(
-                                  fosterLine,
-                                  style: theme.textTheme.bodySmall?.copyWith(
-                                    color: colorScheme.primary,
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                  maxLines: 2,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              ),
-                            ],
                           ),
                         ],
                       ],
