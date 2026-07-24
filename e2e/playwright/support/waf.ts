@@ -18,17 +18,17 @@ type HealthProbe = 'ok' | 'waf' | 'down';
 
 async function probeBackendHealth(page: Page, baseURL: string): Promise<HealthProbe> {
   const healthUrl = `${baseURL}/backend/health`;
-  return page.evaluate(async (url) => {
+  return page.evaluate(async ([url, markers]: [string, string[]]) => {
     try {
       const res = await fetch(url, { credentials: 'include' });
       const body = await res.text();
       if (body.includes('"status":"OK"')) return 'ok';
-      if (body.includes('o2s-browser-check') || body.includes('Security check')) return 'waf';
+      if (markers.some((m) => body.includes(m))) return 'waf';
       return 'down';
     } catch {
       return 'down';
     }
-  }, healthUrl);
+  }, [healthUrl, WAF_MARKERS] as [string, string[]]);
 }
 
 async function waitForAppShell(page: Page, timeoutMs = 5_000): Promise<boolean> {
