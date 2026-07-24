@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../../core/theme/app_theme.dart';
 import '../../../../core/widgets/app_logo_title.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../providers/organization_providers.dart';
@@ -49,7 +48,9 @@ class OrganizationListScreen extends ConsumerWidget {
                   const SizedBox(height: 8),
                   ...invites.map(
                     (invite) => Card(
-                      color: colorScheme.primaryContainer.withAlpha(40),
+                      color: orgListCardColor(),
+                      elevation: 0,
+                      shape: orgListCardTheme().shape,
                       margin: const EdgeInsets.only(bottom: 8),
                       child: Padding(
                         padding: const EdgeInsets.all(12),
@@ -240,7 +241,8 @@ class OrganizationListScreen extends ConsumerWidget {
           const SizedBox(height: 12),
           SizedBox(
             width: double.infinity,
-            child: OutlinedButton.icon(
+            child: FilledButton.icon(
+              key: const Key('org_create_button'),
               icon: const Icon(Icons.add, size: 18),
               label: Text(l.create),
               onPressed: () => context.push('/organizations/new'),
@@ -255,17 +257,20 @@ class OrganizationListScreen extends ConsumerWidget {
     }
 
     return orgThemed(
-      child: Scaffold(
-        appBar: AppBar(
-          title: AppLogoTitle(title: l.myOrganizations),
-          leading: IconButton(
-            key: const Key('org_back_button'),
-            icon: const Icon(Icons.arrow_back),
-            tooltip: MaterialLocalizations.of(context).backButtonTooltip,
-            onPressed: () => context.go('/'),
+      child: Builder(
+        builder: (context) => Scaffold(
+          backgroundColor: orgListScaffoldBackground(context),
+          appBar: AppBar(
+            title: AppLogoTitle(title: l.myOrganizations),
+            leading: IconButton(
+              key: const Key('org_back_button'),
+              icon: const Icon(Icons.arrow_back),
+              tooltip: MaterialLocalizations.of(context).backButtonTooltip,
+              onPressed: () => context.go('/'),
+            ),
           ),
+          body: body,
         ),
-        body: body,
       ),
     );
   }
