@@ -27,6 +27,12 @@ export const test = base.extend<AuthFixtures>({
 
   testUser: async ({ page }, use) => {
     const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
+    // Each test runs in a fresh browser context (new cookies). Reset the WAF
+    // session flag so passHostingWaf re-validates for every test, not just the
+    // first one in the worker.
+    if (isLiveHostingTarget(baseURL)) {
+      resetHostingWafSession();
+    }
     await prepareLiveApiAccess(page, baseURL);
     try {
       const user = await createTestUser(page, baseURL);

@@ -78,9 +78,16 @@ export async function passHostingWaf(page: Page, baseURL?: string): Promise<void
 
     if (await waitForAppShell(page)) {
       const health = await probeBackendHealth(page, root);
-      if (health === 'ok' || health === 'waf') {
+      if (health === 'ok') {
         sessionWafCleared = true;
         return;
+      }
+      if (health === 'waf') {
+        // The Flutter shell loaded but the API health endpoint is still returning
+        // a WAF challenge. Wait 3s and retry — the Tiger Protect session sometimes
+        // takes a moment to propagate to API requests after the page challenge clears.
+        await page.waitForTimeout(3_000);
+        continue;
       }
       throw new Error(backendDownMessage(root));
     }
