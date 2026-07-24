@@ -344,6 +344,7 @@ CREATE TABLE public.vets (
     website character varying DEFAULT ''::character varying,
     address text DEFAULT ''::text,
     notes text DEFAULT ''::text,
+    organization_id uuid,
     created_at timestamp with time zone DEFAULT now(),
     updated_at timestamp with time zone DEFAULT now()
 );

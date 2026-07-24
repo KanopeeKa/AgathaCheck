@@ -17,6 +17,7 @@ function makeVetRow(overrides = {}) {
     website: 'https://vet.com',
     address: '123 Vet St',
     notes: 'Great vet',
+    organization_id: null,
     created_at: new Date('2025-01-01'),
     updated_at: new Date('2025-01-02'),
     ...overrides,
@@ -33,7 +34,19 @@ describe('Vets API', () => {
         lastQuery = { sql, params };
 
         if (sql.includes('SELECT * FROM vets') && sql.includes('ORDER BY name')) {
+          if (sql.includes('organization_id IS NULL')) {
+            return { rows: [makeVetRow({ organization_id: null })] };
+          }
+          if (sql.includes('organization_id = $2')) {
+            return {
+              rows: [makeVetRow({ id: 'vet-org', organization_id: params[1] })],
+            };
+          }
           return { rows: [makeVetRow(), makeVetRow({ id: 'vet-2', name: 'Dr. Jones' })] };
+        }
+
+        if (sql.includes('SELECT 1 FROM organization_users')) {
+          return { rows: params[0] === 'org-forbidden' ? [] : [{ '?column?': 1 }] };
         }
 
         if (sql.includes('SELECT * FROM vets WHERE id') && params && params[1] === userId) {
@@ -52,15 +65,16 @@ describe('Vets API', () => {
               website: params[6] || '',
               address: params[7] || '',
               notes: params[8] || '',
+              organization_id: params[9] ?? null,
             })],
           };
         }
 
         if (sql.includes('UPDATE vets SET')) {
-          if (params[7] === 'nonexistent') return { rows: [] };
+          if (params[8] === 'nonexistent') return { rows: [] };
           return {
             rows: [makeVetRow({
-              id: params[7],
+              id: params[8],
               name: params[0],
               clinic: params[1],
               phone: params[2],
@@ -68,6 +82,7 @@ describe('Vets API', () => {
               website: params[4] || '',
               address: params[5] || '',
               notes: params[6] || '',
+              organization_id: params[7] ?? null,
             })],
           };
         }
@@ -151,6 +166,7 @@ describe('Vets API', () => {
       expect(vet).toHaveProperty('website');
       expect(vet).toHaveProperty('address');
       expect(vet).toHaveProperty('notes');
+      expect(vet).toHaveProperty('organization_id');
       expect(vet).toHaveProperty('created_at');
       expect(vet).toHaveProperty('updated_at');
     });
@@ -233,6 +249,44 @@ describe('Vets API', () => {
         .set('Authorization', `Bearer ${token}`)
         .send({ name: 'Test' });
       expect(lastQuery.params[1]).toBe(userId);
+    });
+
+    it('creates an org-scoped vet when user belongs to the org', async () => {
+      const res = await request(app)
+        .post('/api/vets')
+        .set('Authorization', `Bearer ${token}`)
+        .send({ name: 'Org Vet', organization_id: 'org-1' });
+      expect(res.statusCode).toBe(201);
+      expect(res.body).toHaveProperty('organization_id', 'org-1');
+    });
+
+    it('returns 403 when organization_id is not accessible', async () => {
+      const res = await request(app)
+        .post('/api/vets')
+        .set('Authorization', `Bearer ${token}`)
+        .send({ name: 'Blocked', organization_id: 'org-forbidden' });
+      expect(res.statusCode).toBe(403);
+    });
+  });
+
+  describe('GET /api/vets organization filter', () => {
+    it('filters personal vets when organization_id=personal', async () => {
+      const res = await request(app)
+        .get('/api/vets')
+        .query({ organization_id: 'personal' })
+        .set('Authorization', `Bearer ${token}`);
+      expect(res.statusCode).toBe(200);
+      expect(res.body).toHaveLength(1);
+      expect(res.body[0].organization_id).toBeNull();
+    });
+
+    it('filters org vets when organization_id is set', async () => {
+      const res = await request(app)
+        .get('/api/vets')
+        .query({ organization_id: 'org-1' })
+        .set('Authorization', `Bearer ${token}`);
+      expect(res.statusCode).toBe(200);
+      expect(res.body[0]).toHaveProperty('organization_id', 'org-1');
     });
   });
 
