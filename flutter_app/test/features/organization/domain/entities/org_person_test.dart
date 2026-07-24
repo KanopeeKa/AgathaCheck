@@ -30,10 +30,7 @@ void main() {
       expect(person.categoryRank, 3);
       expect(person.isMember, isTrue);
       expect(person.isActiveFoster, isTrue);
-      expect(
-        person.detailPath('org-1'),
-        '/o/orgs/org-1/people/member/ou-1',
-      );
+      expect(person.detailPath('org-1'), '/o/orgs/org-1/people/member/ou-1');
     });
 
     test('parses external foster summary', () {
@@ -49,10 +46,7 @@ void main() {
       expect(person.kind, OrgPersonKind.external);
       expect(person.isExternal, isTrue);
       expect(person.isActiveFoster, isFalse);
-      expect(
-        person.detailPath('org-9'),
-        '/o/orgs/org-9/people/external/fp-1',
-      );
+      expect(person.detailPath('org-9'), '/o/orgs/org-9/people/external/fp-1');
     });
   });
 
