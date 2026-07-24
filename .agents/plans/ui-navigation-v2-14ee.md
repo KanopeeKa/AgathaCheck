@@ -50,10 +50,10 @@ next_action: "continue phase 9 on branch cursor/ui-nav-v2-phase9-vet-api-14ee"
 artifact_ref:
   branch: cursor/ui-nav-v2-phase9-vet-api-14ee
   plan_path: .agents/plans/ui-navigation-v2-14ee.md
-  plan_commit: 13edce1da8f165ba2af824ebe5d4a01e95e87d7b
+  plan_commit: df01fe81dfec204ddd904a0c96bb3e4781a7965f
   snapshot_path: .agents/plans/ui-navigation-v2-14ee.snapshot.json
-  snapshot_commit: 13edce1da8f165ba2af824ebe5d4a01e95e87d7b
-open_prs: []
+  snapshot_commit: df01fe81dfec204ddd904a0c96bb3e4781a7965f
+open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/325"]
 merge_commits: {}
 debt_issue_refs: []
 ```
