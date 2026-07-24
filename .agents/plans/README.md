@@ -19,4 +19,6 @@ Multi-phase autonomous work artifacts for `/execute-plan`.
 - [plan-template.md](../../docs/agent-efficiency/plan-template.md)
 - [autonomous-pr-policy.md](../../docs/agent-efficiency/autonomous-pr-policy.md)
 
-**Approval expiry:** 48 hours from `approved_at`. Re-approve if work exceeds window.
+**Approval expiry:** 48 hours from `approved_at` (autonomy window). **Session limit:** ~24h continuous work → `halt --reason session_limit`; resume via `resume-plan` on control issue.
+
+**Autonomy contract:** `.agents/memory/execute-plan-autonomy.md`

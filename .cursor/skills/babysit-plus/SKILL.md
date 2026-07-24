@@ -181,6 +181,8 @@ When the PR merges to `main`, UAT promotion starts (`promote-uat.yml` → `deplo
 | Poll `gh run view` / `deploy-uat.yml` in the main session | Burns agent minutes (~45–60 min); blocks next phase |
 | Call `pause` / `resume-uat` for UAT failure | UAT uses barrier only — coordinator owns failure (§8b) |
 
+**Execute-plan only:** Task sub-agents for **phase implementation** are encouraged (orchestrator retains babysit+ / merge). See `.cursor/skills/execute-plan/SKILL.md` §Phase delegation — distinct from the UAT anti-patterns above.
+
 #### 8b. Who owns UAT after enqueue (not the work agent)
 
 | Layer | Owns |

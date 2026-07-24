@@ -40,6 +40,7 @@ Institutional knowledge for cloud agents. Domain workflows live in **Skills** (`
 
 ## Quick references
 
+- **Execute-plan autonomy:** `.agents/memory/execute-plan-autonomy.md` — gate `0` = proceed; no permission prompts; per-phase workers; integration branch for 2+ phases
 - Domain map: `docs/architecture/index.md`
 - Efficiency plan: `docs/agent-efficiency-plan.md`
 - Pre-push: `./scripts/pre-push-changed.sh` (iteration) · `./scripts/pre-push.sh` (merge)

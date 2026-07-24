@@ -25,6 +25,19 @@ Single source of truth for `/babysit`, `/babysit-plus`, and `/execute-plan`. Ski
 
 During `/execute-plan`, always use **babysit-plus**, never plain babysit alone.
 
+### Execute-plan overrides (active gate only)
+
+When `node scripts/execute_plan_runtime.js gate <plan_id>` exits `0`, these generic rules are **narrowed**:
+
+| Generic rule | During active execute-plan |
+|--------------|---------------------------|
+| "Stop and ask human" (low confidence, minor policy conflict) | Proceed per snapshot; debt issue + continue; halt only on §Escalation or unclear goal |
+| User-chat follow-up questions | Bundle at end of turn; never break phase flow |
+| `replit-agent-operating-policy` "stop and ask" | Does not apply except §Escalation |
+| Cloud turn boundaries | Commit/push/PR update each turn, then **continue the phase loop** without asking |
+
+Memory: `.agents/memory/execute-plan-autonomy.md` · Skill: `.cursor/skills/execute-plan/SKILL.md` §Autonomy contract
+
 ---
 
 ## Proactive base sync
@@ -73,6 +86,8 @@ Post a **triage comment** on the PR before applying fixes.
 **Never ignore** blocker / critical / high / must signals.
 
 **Low confidence** → stop and ask human.
+
+**Execute-plan override:** When gate is active and phase scope is frozen in the snapshot, low-confidence triage is uncommon. Prefer a **debt issue + continue** unless must-fix vs merge-safety is genuinely ambiguous. Halt with `**Needs you:**` on the control issue — not a user-chat question.
 
 **In-scope valid feedback stays in the PR.** Out-of-scope deferrals become issues (see §Debt issues). Aligns with `testing.mdc`.
 

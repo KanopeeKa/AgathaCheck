@@ -3,12 +3,34 @@ name: execute-plan
 description: >-
   Multi-phase autonomous orchestrator — runs frozen plan snapshots phase-by-phase,
   gates on merge-done, delegates PR hygiene to /babysit-plus (default merge mode auto).
-  Post-merge UAT enqueue only — never Task sub-agents.
+  Post-merge UAT enqueue only — never Task sub-agents for deploy polling.
+  May spawn Task sub-agents per phase for implementation; use integration branch for 2+ phases.
 ---
 
 # Execute-plan
 
 Multi-phase autonomous orchestrator. Drives work from a **frozen snapshot** (`.agents/plans/<plan_id>.snapshot.json`) and live plan (`.agents/plans/<plan_id>.md`), one phase at a time.
+
+**Memory:** [.agents/memory/execute-plan-autonomy.md](../../.agents/memory/execute-plan-autonomy.md)
+
+## Autonomy contract
+
+When session preflight **gate** exits `0`, autonomy is **active**. You have upfront approval — **do not ask the human for permission** to implement, open/update PRs, babysit+, merge (`auto`), advance phases, or resume after a routine checkpoint.
+
+| Do | Do not |
+|----|--------|
+| Run gate every session; treat exit `0` as green light | Ask "shall I continue?" or "want me to proceed?" in user chat |
+| Post milestones on the **control issue** | Use user chat for permission-seeking mid-flow |
+| Loop to the next phase immediately after merge-done | Wait for prod-ready UAT before the next phase |
+| Halt only on §Halt / §Escalation list | Pause for non-blocking follow-ups or turn boundaries |
+
+**User chat (status only):** brief progress + what's next. Non-blocking follow-up questions may be **bundled at the end of a turn** — never as a flow break. See §Scope follow-ups.
+
+**`manual` merge_mode at phase gate:** halt with checkpoint on the control issue (`halt` or milestone comment + `next_action`). Human merges the PR, then comments `resume-plan <plan_id>`. Do not ask in chat.
+
+**Conflicting rules:** execute-plan snapshot wins over generic "stop and ask" guidance. Only halt when the **goal is unclear**, or §Escalation applies. Minor policy wording conflicts with clear intent → proceed. See autonomous-pr-policy §Execute-plan overrides.
+
+---
 
 **Canonical policy (do not restate here):**
 
@@ -81,6 +103,8 @@ Run when drafting a plan, **before** `approve-autonomous`:
      --labels execute-plan,plan:<plan_id>,autonomous-approved
    ```
    Exit `2` → halt; do not start work
+
+   **Gate exit `0` = proceed without asking the human.** This is the authoritative green light for the session.
 4. **Resume** (when subcommand `resume` or after halt):
    ```bash
    node scripts/execute_plan_runtime.js resume-check <plan_id> \
@@ -108,6 +132,63 @@ Run when drafting a plan, **before** `approve-autonomous`:
    ```
 
    **Do not** attempt GitHub Project board status updates — Cloud Agents cannot write Projects. Comments + `busy` are the agent-visible signal; you move board columns manually if needed.
+
+9. **Session limit check** — if this plan has run continuously for **~24 hours** (or the pod is near timeout), finish the current safe atomic step, then `halt --reason session_limit` with `next_action` recorded. Human comments `resume-plan <plan_id>` on the control issue (no re-approve while `approved_until` is still valid). Do **not** ask in user chat.
+
+---
+
+## Multi-phase integration branch (recommended)
+
+For plans with **2+ phases** (especially UI or the same product area), batch merges to `main`:
+
+1. At plan start, create `cursor/<plan-id>-integration-<suffix>` from `main`.
+2. Set snapshot `base_branch` to that integration branch.
+3. Each phase PR targets `base_branch` (integration), not `main`.
+4. After **all** phases are `merged` into integration, open **one** PR: integration → `main` (coordinator runs `./scripts/pre-push.sh`).
+
+Single-phase or disjoint-domain plans may keep `base_branch: main`. See uat-coordinator-plan §Goals (integration branches for multi-phase UI sprints).
+
+---
+
+## Phase delegation (orchestrator vs workers)
+
+The **orchestrator** (this session running `/execute-plan`) owns: gate, runtime sync, control-issue hygiene, babysit+, merge, UAT enqueue, and advancing phases.
+
+### Per-phase implementation worker (recommended)
+
+At each phase **§3 Implement scope**, the orchestrator **should** delegate implementation to a **Task sub-agent** (`generalPurpose`) scoped to that phase's `allowed_paths`, exit criteria, and branch — then verify diff, open/update PR, and run babysit+.
+
+| Role | Owns |
+|------|------|
+| **Orchestrator** | Gate, `set-phase`, PR registration, babysit+ §0–7, merge, UAT enqueue, next phase |
+| **Phase worker** (Task sub-agent) | Implement one phase scope; commit on phase branch; return summary |
+
+Spawn a **fresh worker at each phase boundary** (after prior phase `merged`). This limits context drift and mirrors "one agent per phase."
+
+**Do not await** the worker for UAT or deploy — only for implementation return.
+
+### Within-phase parallel (`spawn_allowed: true`)
+
+Invoke **/spawn-sprint-agents** per `spawn_config` before parallel work. Publish ownership map first. Phase PR still goes through orchestrator babysit+.
+
+### UAT — never Task sub-agents
+
+**Never** spawn Task sub-agents to poll UAT / prod-ready (session-ephemeral; agents block on return). Enqueue and continue — see §5 below.
+
+---
+
+## Scope follow-ups (snags and debt)
+
+During implementation, apply the snag ladder without breaking flow:
+
+| Follow-up | Action |
+|-----------|--------|
+| Same file, ≤15 lines, stability / correctness / low-risk tech debt in touched code | Fix inline |
+| In-scope but larger, or risky | Debt issue; continue phase |
+| Out of phase `allowed_paths` | Debt issue or halt if drift |
+| Interesting but non-blocking | Bundle as end-of-turn questions in user chat, **or** one `tech-debt` / `review-follow-up` issue — do not pause the phase |
+
+Low-confidence **review triage** (must-fix vs ignore) is rare with tight phase scope. Prefer debt issue + continue; halt only when classification affects merge safety. See autonomous-pr-policy §Review triage (execute-plan override).
 
 ---
 
@@ -159,8 +240,9 @@ Commit plan artifacts on the phase branch (`artifact_branch_policy: phase-branch
 - Commit messages: `phase(<id>/<total>): <type>: <description> [exception:<code>]`
 - Run `./scripts/pre-push-changed.sh` after each logical batch
 - On drift → `halt --reason drift` (see §Halt)
+- **Delegate implementation** to a per-phase Task worker when practical (see §Phase delegation)
 
-**Spawn:** When `spawn_allowed: true`, invoke **/spawn-sprint-agents** per `spawn_config` before parallel work. Publish ownership map first.
+**Spawn (parallel within phase):** When `spawn_allowed: true`, invoke **/spawn-sprint-agents** per `spawn_config` before parallel work. Publish ownership map first.
 
 ### 4. Open or update PR
 
@@ -243,7 +325,9 @@ This sets `autonomy: completed`, syncs runtime, and closes the control issue wit
 
 ## Halt (graceful shutdown)
 
-Stop immediately on: revoke label, past `approved_until`, escalation, drift, CI budget exhausted, debt issue create failure, merge failure, or session limit.
+Stop immediately on: revoke label, past `approved_until`, escalation, drift, CI budget exhausted, debt issue create failure, merge failure, or **session limit** (~24h continuous work — see Session preflight §9).
+
+**Session limit** is a **checkpoint**, not a revoke. Post `halt --reason session_limit` on the control issue with `next_action`. Human comments `resume-plan <plan_id>`; no chat permission prompt.
 
 **UAT prod-ready failure** → coordinator comments on control issue; use `barrier-check` before next merge — **not** a halt or `uat_paused` trigger.
 
@@ -284,6 +368,7 @@ See autonomous-pr-policy §Escalation. Includes security/crypto, breaking API, p
 |-------|------|
 | `/babysit-plus` | **Every phase PR** — triage, debt, CI, merge (default mode `auto`) |
 | `/pre-push-verify` | Before every push; full suite before merge |
-| `/spawn-sprint-agents` | Phase with `spawn_allowed: true` |
+| `/spawn-sprint-agents` | Phase with `spawn_allowed: true` (parallel within one phase) |
+| Task `generalPurpose` | Per-phase implementation worker (orchestrator retains babysit+ / merge) |
 | `/single-backend-route-change` | Route phases per exit checklist |
 | `/split-flutter-screen` | Screen-split phases per exit checklist |

@@ -142,7 +142,7 @@ Foundation for `/execute-plan` and `/babysit-plus` skills. Schema and policy doc
 
 **Exit:** Orchestrator skill operational; **babysit-plus active by default with merge mode `auto`** unless snapshot overrides; phase gate = merge-done; links to canonical policy (no duplicated prose).
 
-**Next:** Phase E merge-mode hardening → Phase F spawn-within-phase → Phase G hardening + docs.
+**Next:** Phase E merge-mode hardening → ~~Phase F spawn-within-phase~~ (documented in execute-plan skill §Phase delegation) → Phase G hardening + docs.
 
 ---
 
