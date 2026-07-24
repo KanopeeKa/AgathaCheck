@@ -90,11 +90,11 @@ curl_landing
 
 for i in $(seq 1 "$MAX_ATTEMPTS"); do
   curl_landing
-  signup_probe
-  rc=$?
+  rc=0
+  signup_probe || rc=$?
   if [ "$rc" -eq 0 ]; then
-    login_probe
-    login_rc=$?
+    login_rc=0
+    login_probe || login_rc=$?
     if [ "$login_rc" -eq 0 ]; then
       echo "UAT auth warmup OK after attempt ${i} (signup + login)"
       exit 0

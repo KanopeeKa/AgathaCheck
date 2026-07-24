@@ -24,7 +24,7 @@ uat_waf_note_challenge() {
   _uat_waf_streak=$((_uat_waf_streak + 1))
   echo "${context}: WAF challenge (streak ${_uat_waf_streak}/${WAF_FAIL_FAST_STREAK})"
   if (( _uat_waf_streak >= WAF_FAIL_FAST_STREAK )); then
-    echo "::error title=UAT WAF blocking CI::${WAF_FAIL_FAST_STREAK} consecutive o2switch WAF challenges from GitHub Actions — whitelisting runner egress is not available on this host. Failing fast to save CI minutes (~3 min vs ~18 min). Retry the deploy later or validate manually in a browser. Infra escalation: docs/e2e/uat-live-operations-runbook.md"
+    echo "::error title=UAT WAF blocking CI::${WAF_FAIL_FAST_STREAK} consecutive o2switch WAF challenges from GitHub Actions after landing priming — failing fast to save CI minutes. Retry the deploy later or validate manually. See docs/e2e/uat-live-operations-runbook.md"
     return 2
   fi
   return 1
