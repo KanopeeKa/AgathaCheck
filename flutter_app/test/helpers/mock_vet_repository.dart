@@ -8,7 +8,9 @@ class MockVetRepository extends Mock implements VetRepository {
   @override
   Future<List<Vet>> getAllVets({String? organizationId}) =>
       super.noSuchMethod(
-            Invocation.method(#getAllVets, [], {#organizationId: organizationId}),
+            Invocation.method(#getAllVets, [], {
+              #organizationId: organizationId,
+            }),
             returnValue: Future.value(<Vet>[]),
           )
           as Future<List<Vet>>;

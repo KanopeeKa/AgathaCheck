@@ -8,7 +8,9 @@ class MockVetRemoteDataSource extends Mock implements VetRemoteDataSource {
   @override
   Future<List<VetModel>> getAllVets({String? organizationId}) =>
       super.noSuchMethod(
-            Invocation.method(#getAllVets, [], {#organizationId: organizationId}),
+            Invocation.method(#getAllVets, [], {
+              #organizationId: organizationId,
+            }),
             returnValue: Future.value(<VetModel>[]),
           )
           as Future<List<VetModel>>;
