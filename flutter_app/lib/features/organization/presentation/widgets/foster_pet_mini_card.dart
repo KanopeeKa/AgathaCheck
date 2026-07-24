@@ -84,11 +84,7 @@ class FosterPetMiniCard extends StatelessWidget {
                       children: [
                         Row(
                           children: [
-                            Icon(
-                              Icons.pets,
-                              size: 14,
-                              color: strip,
-                            ),
+                            Icon(Icons.pets, size: 14, color: strip),
                             const SizedBox(width: 4),
                             Expanded(
                               child: Text(

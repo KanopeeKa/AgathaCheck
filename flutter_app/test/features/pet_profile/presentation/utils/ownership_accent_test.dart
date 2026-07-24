@@ -23,12 +23,7 @@ Widget _wrap(Widget child) {
 
 void main() {
   testWidgets('guardian-owned pet resolves plum accent', (tester) async {
-    const pet = Pet(
-      id: 'p1',
-      name: 'Buddy',
-      species: 'Dog',
-      breed: 'Mix',
-    );
+    const pet = Pet(id: 'p1', name: 'Buddy', species: 'Dog', breed: 'Mix');
 
     late PetOwnershipAccent accent;
     await tester.pumpWidget(

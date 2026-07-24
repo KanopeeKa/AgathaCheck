@@ -6,10 +6,7 @@ import '../../../organization/presentation/utils/foster_placement_display.dart';
 import '../../domain/entities/pet.dart';
 
 /// Ownership accent kind for pets (navigation v2 plum vs green).
-enum PetOwnershipKind {
-  guardianOwned,
-  organizationLinked,
-}
+enum PetOwnershipKind { guardianOwned, organizationLinked }
 
 /// Resolved plum/green accent for a pet surface.
 class PetOwnershipAccent {
