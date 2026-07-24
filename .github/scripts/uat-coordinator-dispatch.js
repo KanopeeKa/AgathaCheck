@@ -170,6 +170,15 @@ async function main() {
     return;
   }
 
+  const apiKey = process.env.cursor_api_key || process.env.CURSOR_API_KEY;
+  if (!dryRun && !apiKey) {
+    printJson({
+      skipped: true,
+      reason: 'cursor_api_key_not_configured',
+    });
+    return;
+  }
+
   const { owner, repo } = parseRepo(repository);
   const run = await fetchWorkflowRun(owner, repo, workflowRunId, token);
   if (run.conclusion !== 'failure' && process.env.FORCE_DISPATCH !== 'true') {
