@@ -567,7 +567,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 25
     outputs:
-      smoke_failure_kind: ${{ steps.health.outputs.failure_kind || steps.warmup.outputs.failure_kind }}
+      smoke_failure_kind: ${{ steps.health.outputs.failure_kind }}
     steps:
       - uses: actions/checkout@v5
 
@@ -594,13 +594,43 @@ jobs:
           WAF_FAIL_FAST_STREAK: '3'
         run: bash scripts/uat-post-deploy-smoke.sh
 
+      # Real browser, not curl: o2switch Tiger Protect serves a JavaScript
+      # challenge (o2s-browser-check) that a bare HTTP client can never solve —
+      # a curl-based warmup fails 100% of the time once WAF decides to
+      # challenge CI traffic. This reuses the same headed-Chromium + stealth
+      # path @smoke-uat already passes the WAF with (support/waf.ts,
+      # support/stealth.ts) via a single fast test instead of a doomed retry
+      # loop of POSTs. See e2e/playwright/tests/uat-auth-warmup.spec.ts.
+      - name: Set up Node.js for auth warmup
+        uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: e2e/package-lock.json
+
+      - name: Install E2E dependencies for auth warmup
+        working-directory: e2e
+        run: |
+          npm ci
+          npx playwright install chromium --with-deps
+
       - name: Warm up UAT auth before live smoke
-        id: warmup
+        working-directory: e2e
         env:
-          UAT_BASE_URL: ${{ env.UAT_BASE_URL }}
+          E2E_BASE_URL: ${{ env.UAT_BASE_URL }}
           E2E_BYPASS_TOKEN: ${{ secrets.E2E_BYPASS_TOKEN }}
+          E2E_TLS_INSECURE: '1'
           WAF_FAIL_FAST_STREAK: '3'
-        run: bash scripts/ci/warmup-uat-auth.sh
+          # cPanel auto-SSL on UAT is not trusted by GitHub runners (self-signed / incomplete chain).
+          NODE_TLS_REJECT_UNAUTHORIZED: '0'
+        run: xvfb-run --auto-servernum npm run test:warmup-uat
+
+      - name: Upload auth warmup Playwright report
+        if: always()
+        uses: actions/upload-artifact@v6
+        with:
+          name: playwright-report-uat-warmup
+          path: e2e/playwright-report/
 
       - name: Write smoke job summary
         if: always()

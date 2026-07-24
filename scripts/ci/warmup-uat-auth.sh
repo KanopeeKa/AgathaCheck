@@ -1,4 +1,13 @@
 #!/usr/bin/env bash
+# DEPRECATED for live UAT (uat.agathatrack.com) as of 2026-07-24: o2switch Tiger
+# Protect serves a JavaScript challenge (o2s-browser-check) to non-browser
+# clients, and a bare curl/HTTP client can never solve a JS challenge — this
+# script now fails 100% of the time once WAF decides to challenge CI traffic.
+# deploy-uat.yml's `smoke` job replaced this with a real-browser Playwright
+# check: e2e/playwright/tests/uat-auth-warmup.spec.ts (reuses the same
+# headed-Chromium + stealth path @smoke-uat already passes the WAF with).
+# Kept here for local/manual use against non-WAF-protected targets only.
+#
 # Confirm UAT auth signup responds after /backend/health is green.
 # Health-only probes can pass before Passenger has reloaded E2E env or auth routes
 # are ready — live @smoke-uat then stalls on #/landing for the full post-login timeout.
