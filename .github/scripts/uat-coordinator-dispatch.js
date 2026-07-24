@@ -14,9 +14,11 @@ const {
   headEntryNeedingAttention,
   isWatcherLeaseActive,
   markEntryRemedial,
+  parseUatTag,
   releaseWatcher,
   setPromoteHold,
 } = require('../../scripts/lib/uat_queue_lib');
+const { reconcileFailedDeployLedger } = require('../../scripts/lib/uat_deploy_run_resolve');
 const {
   loadStateFromIssue,
   resolveCoordinationIssue,
@@ -53,9 +55,10 @@ async function prepareDispatch({
   write = true,
   force = false,
   mergeSha = null,
+  failedEntry = null,
 }) {
   const { state, issueNumber } = await loadStateFromIssue(coordinationIssue, token);
-  let head = headEntryNeedingAttention(state);
+  let head = failedEntry || headEntryNeedingAttention(state);
 
   if (!head || !['failed', 'remedial'].includes(head.state)) {
     if (force && mergeSha) {
@@ -195,6 +198,30 @@ async function main() {
     || run.html_url
     || `https://github.com/${owner}/${repo}/actions/runs/${workflowRunId}`;
 
+  const ledgerSync = await reconcileFailedDeployLedger({
+    owner,
+    repo,
+    workflowRunId,
+    workflowUrl: resolvedUrl,
+    coordinationIssue,
+    token,
+    write: writeLedger,
+  });
+
+  let failedEntry = null;
+  if (!ledgerSync.skipped && ledgerSync.entry?.state === 'failed') {
+    failedEntry = ledgerSync.entry;
+  } else if (ledgerSync.deployRef) {
+    const parsed = parseUatTag(ledgerSync.deployRef);
+    if (parsed) {
+      const { state } = await loadStateFromIssue(coordinationIssue, token);
+      failedEntry =
+        state.entries.find(
+          (entry) => entry.pr_number === parsed.prNumber && entry.state === 'failed',
+        ) || null;
+    }
+  }
+
   const prepared = await prepareDispatch({
     coordinationIssue,
     workflowRunId,
@@ -206,10 +233,11 @@ async function main() {
     write: writeLedger,
     force: forceDispatch,
     mergeSha: run.head_sha || null,
+    failedEntry,
   });
 
   if (prepared.skipped) {
-    printJson(prepared);
+    printJson({ ...prepared, ledger_sync: ledgerSync });
     return;
   }
 
