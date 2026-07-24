@@ -50,9 +50,9 @@ next_action: "continue phase 9 on branch cursor/ui-nav-v2-phase9-vet-api-14ee"
 artifact_ref:
   branch: cursor/ui-nav-v2-phase9-vet-api-14ee
   plan_path: .agents/plans/ui-navigation-v2-14ee.md
-  plan_commit: d24f41ecfcee948db9d8677fa99ee635d3dd61c4
+  plan_commit: 13edce1da8f165ba2af824ebe5d4a01e95e87d7b
   snapshot_path: .agents/plans/ui-navigation-v2-14ee.snapshot.json
-  snapshot_commit: d24f41ecfcee948db9d8677fa99ee635d3dd61c4
+  snapshot_commit: 13edce1da8f165ba2af824ebe5d4a01e95e87d7b
 open_prs: []
 merge_commits: {}
 debt_issue_refs: []
