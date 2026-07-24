@@ -3,7 +3,7 @@ name: Replit agent operating policy (repo-aligned)
 description: Binding rules distilled from AGENTS.md, .cursor/rules/*.mdc, and CI/CD gates that Replit work must follow on every request.
 ---
 
-Repo docs are the source of truth. `.cursor/rules/*.mdc` + `AGENTS.md` are the authoritative shared engineering policy for ALL agents; `replit.md` is the project overview/preferences layer and must stay consistent with them. If any two sources conflict, stop and ask the user — never improvise a compromise. Inspect first, change second; smallest safe change.
+Repo docs are the source of truth. `.cursor/rules/*.mdc` + `AGENTS.md` are the authoritative shared engineering policy for ALL agents; `replit.md` is the project overview/preferences layer and must stay consistent with them. If sources conflict, stop and ask the user — never improvise a compromise — **except during active `/execute-plan`** when gate passes: follow `.agents/memory/execute-plan-autonomy.md` and the frozen snapshot; halt only on escalation or unclear goal. Inspect first, change second; smallest safe change.
 
 **Per-request startup:** read the `.cursor/rules/*.mdc` relevant to the touched area (single-backend, security, testing, modularity, atomic-pr), summarize applicable constraints, then implement.
 

@@ -32,7 +32,7 @@ Do not duplicate these commands in chat — run the script. Skill: `/pre-push-ve
 | `/security-error-audit` | 5xx error redaction |
 | `/pre-push-verify` | Which tests to run |
 | `/babysit-plus` | Autonomous PR triage, debt issues, CI loop, merge |
-| `/execute-plan` | Multi-phase autonomous orchestrator (delegates to `/babysit-plus`) |
+| `/execute-plan` | Multi-phase autonomous orchestrator — gate exit `0` = proceed without asking; see `.agents/memory/execute-plan-autonomy.md` |
 | `/ui-check` | Quick UX/a11y pass on UI changes |
 | `/ui-design-deep` | In-depth UX/design review or refactor planning |
 

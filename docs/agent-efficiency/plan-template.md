@@ -18,6 +18,8 @@ Copy to `.agents/plans/<plan_id>.md` and fill in. Pair with `<plan_id>.snapshot.
 | **default_merge_mode** | `manual` \| `labeled` \| `auto` (default for `/execute-plan`: **`auto`**) |
 | **artifact_branch_policy** | `phase-branch` (default) |
 
+**Multi-phase (2+):** prefer `base_branch: cursor/<plan_id>-integration-<suffix>` — phase PRs merge to integration; one final PR integration → `main`. See execute-plan skill §Multi-phase integration branch.
+
 ---
 
 ## Goal

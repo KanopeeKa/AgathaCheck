@@ -53,6 +53,17 @@ node scripts/execute_plan_runtime.js render-control-issue <plan_id> --title
 
 After creating the issue, set `control_issue` in the snapshot JSON and re-run validation.
 
+### Session limit (~24h)
+
+Voluntary checkpoint when the orchestrator has run **~24 hours** continuously on the same plan, or the pod is near timeout. Not a revoke — `approved_until` (48h default) may still be valid.
+
+```bash
+node scripts/execute_plan_runtime.js halt <plan_id> \
+  --reason session_limit --detail "checkpoint: phase N, next: babysit+ | phase N+1 implement" --write --post-comment
+```
+
+Human comments `resume-plan <plan_id>` on the control issue. Do **not** ask in user chat.
+
 ### Halt (graceful shutdown)
 
 Updates snapshot + live plan runtime block; prints JSON with `comment_preview`. Pass `--post-comment` to post on the control issue via `gh`.

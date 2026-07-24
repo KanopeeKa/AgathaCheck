@@ -132,7 +132,7 @@ Unclassified out-of-path file → `status: blocked`, `status_reason: drift`.
 | Value | `status` | Meaning |
 |-------|----------|---------|
 | `revoked` | `halted` | Control issue `autonomous-revoked` or past `approved_until` |
-| `session_limit` | `halted` | Agent checkpoint before timeout |
+| `session_limit` | `halted` | Agent checkpoint after **~24h** continuous work or approaching session timeout; human `resume-plan` (no re-approve while `approved_until` valid) |
 | `human_pause` | `halted` | Explicit pause without revoke |
 | `drift` | `blocked` | Path / scope violation |
 | `ci_exhausted` | `blocked` | CI retry budget spent |
