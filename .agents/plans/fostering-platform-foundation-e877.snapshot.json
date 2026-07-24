@@ -1,0 +1,79 @@
+{
+  "schema_version": 1,
+  "plan_id": "fostering-platform-foundation-e877",
+  "approved_at": "2026-07-24T23:50:00Z",
+  "approved_by": "user-delegated-autonomy",
+  "approved_until": "2026-07-26T23:50:00Z",
+  "content_hash": "sha256:ffd789e18122a04196bb3021d42207a64ae2ecd6e3a7d1b90ff6f6199d0c08f9",
+  "autonomy": "active",
+  "default_merge_mode": "auto",
+  "base_branch": "cursor/fostering-platform-foundation-e877-integration",
+  "control_issue": 334,
+  "artifact_branch_policy": "phase-branch",
+  "phases": [
+    {
+      "id": "1",
+      "title": "Migration appendix",
+      "branch": "cursor/fostering-migration-appendix-e877",
+      "allowed_paths": [
+        "docs/fostering-platform/**",
+        ".agents/plans/fostering-platform-foundation-e877.*"
+      ],
+      "forbidden_paths": [
+        "flutter_app/**",
+        "server/**",
+        "db/migrations/**",
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "governance",
+      "status": "in_progress",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "2",
+      "title": "J1 Manage Fosters shell",
+      "branch": "cursor/j1-manage-fosters-shell-e877",
+      "allowed_paths": [
+        "flutter_app/lib/features/organization/presentation/screens/manage_fosters/**",
+        "flutter_app/lib/features/organization/presentation/widgets/manage_fosters/**",
+        "flutter_app/lib/features/organization/presentation/providers/manage_fosters_providers.dart",
+        "flutter_app/lib/l10n/**",
+        "flutter_app/test/features/organization/presentation/screens/manage_fosters/**",
+        "flutter_app/test/features/organization/presentation/widgets/manage_fosters/**",
+        "flutter_app/test/bdd/features/foster_onboarding.feature",
+        "docs/fostering-platform/j1-foster-onboarding.md",
+        ".agents/plans/fostering-platform-foundation-e877.*"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        "db/**",
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "flutter-screen-split",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null,
+      "debt_issue_refs": []
+    }
+  ]
+}
