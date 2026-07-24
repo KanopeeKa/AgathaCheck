@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:pet_profile_app/features/experience/domain/entities/app_experience.dart';
 import 'package:pet_profile_app/features/experience/domain/services/experience_eligibility.dart';
 import 'package:pet_profile_app/features/experience/presentation/providers/experience_providers.dart';
 import 'package:pet_profile_app/features/experience/presentation/screens/experience_chooser_screen.dart';
@@ -39,6 +38,38 @@ void main() {
     ],
     orgMembershipCount: 1,
   );
+
+  testWidgets('dual-role chooser pre-selects guardian card', (tester) async {
+    await tester.pumpWidget(
+      _wrap(
+        const ExperienceChooserScreen(),
+        overrides: [
+          experienceEligibilityProvider.overrideWith(
+            (ref) => AsyncValue.data(dualEligibility),
+          ),
+        ],
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    final guardianCard = tester.widget<Material>(
+      find
+          .ancestor(
+            of: find.byKey(const Key('experience_card_guardian')),
+            matching: find.byType(Material),
+          )
+          .first,
+    );
+    expect(guardianCard.color, isNotNull);
+
+    expect(
+      find.descendant(
+        of: find.byKey(const Key('experience_card_guardian')),
+        matching: find.byIcon(Icons.check_circle),
+      ),
+      findsOneWidget,
+    );
+  });
 
   testWidgets('chooser shows remember hint for dual users', (tester) async {
     await tester.pumpWidget(

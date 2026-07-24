@@ -38,6 +38,16 @@ Feature: Experience navigation
     Then the user should see the experience chooser screen
 
   @P1
+  Scenario: Dual-role chooser pre-selects guardian
+    Given a registered user with email "dual@example.com" and password "secret123"
+    And the user belongs to an organisation
+    And the user has personal guardian pets
+    And the user is on the experience chooser screen
+    Then the "Individual Pet Guardian" option should be selected
+    When the user taps continue
+    Then the user should be navigated to the guardian home screen
+
+  @P1
   Scenario: Dual-role user remembers guardian choice
     Given a registered user with email "dual@example.com" and password "secret123"
     And the user belongs to an organisation
