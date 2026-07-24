@@ -26,7 +26,8 @@
     "017_org_people_contact_fields.sql",
     "018_org_branding_primary_contact.sql",
     "019_audit_events.sql",
-    "020_org_custody.sql"
+    "020_org_custody.sql",
+    "021_add_vet_organization_id.sql"
   ],
   "code_migrations": [
     "016_migrate_family_events_placements.sql"
