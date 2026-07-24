@@ -53,6 +53,6 @@ Orchestrator owns: gate, runtime sync, babysit+, merge, UAT enqueue, next phase.
 
 ## Integration branch (2+ phases)
 
-For multi-phase plans (especially UI / same product area): set snapshot `base_branch` to `cursor/<plan-id>-integration-<suffix>`. Phase PRs target integration; **one final PR** integration → `main` after all phases merged. Reduces repeated merges to `main` during the sprint.
+For multi-phase plans (especially UI / same product area): set snapshot `base_branch` to `cursor/<plan_id>-integration-<suffix>`. Phase PRs target integration; **one final PR** integration → `main` after all phases merged. Reduces repeated merges to `main` during the sprint.
 
 Full skill: `.cursor/skills/execute-plan/SKILL.md`

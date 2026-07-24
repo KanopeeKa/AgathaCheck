@@ -11,7 +11,7 @@ description: >-
 
 Multi-phase autonomous orchestrator. Drives work from a **frozen snapshot** (`.agents/plans/<plan_id>.snapshot.json`) and live plan (`.agents/plans/<plan_id>.md`), one phase at a time.
 
-**Memory:** [.agents/memory/execute-plan-autonomy.md](../../.agents/memory/execute-plan-autonomy.md)
+**Memory:** [.agents/memory/execute-plan-autonomy.md](../../../.agents/memory/execute-plan-autonomy.md)
 
 ## Autonomy contract
 

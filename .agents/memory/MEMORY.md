@@ -12,6 +12,7 @@ Institutional knowledge for cloud agents. Domain workflows live in **Skills** (`
 | `/spawn-sprint-agents` | Parallel sprint coordination |
 | `/security-error-audit` | 5xx redaction grep |
 | `/pre-push-verify` | Which tests to run |
+| `/execute-plan` | Multi-phase autonomy — see `execute-plan-autonomy.md` |
 | `/ui-check` | Quick UX/a11y pass on UI changes |
 | `/ui-design-deep` | In-depth UX/design review or refactor planning |
 
