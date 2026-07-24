@@ -50,10 +50,10 @@ next_action: "continue phase 7 on branch cursor/ui-nav-v2-phase7-pet-accents-14e
 artifact_ref:
   branch: cursor/ui-nav-v2-phase7-pet-accents-14ee
   plan_path: .agents/plans/ui-navigation-v2-14ee.md
-  plan_commit: 5b489705c6ad82d348bbc41de7427e0996deec1b
+  plan_commit: fe4cfd6a3d8ae585e925685c943e90fd8354f3af
   snapshot_path: .agents/plans/ui-navigation-v2-14ee.snapshot.json
-  snapshot_commit: 5b489705c6ad82d348bbc41de7427e0996deec1b
-open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/322"]
+  snapshot_commit: fe4cfd6a3d8ae585e925685c943e90fd8354f3af
+open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/322","https://github.com/KanopeeKa/AgathaCheck/pull/323"]
 merge_commits: {}
 debt_issue_refs: []
 ```
