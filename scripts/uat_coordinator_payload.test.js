@@ -56,6 +56,10 @@ test('buildUatCoordinatorPayload includes remedial branch', () => {
   assert.equal(payload.failure.pr_number, 42);
   assert.equal(payload.constraints.suggestedBranch, 'cursor/uat-fix-42-2b0b');
   assert.equal(payload.gates.escalate, false);
+  assert.deepEqual(payload.verification.after_remedial_merge, [
+    'node scripts/uat_queue_runtime.js set-barrier --sha <merge_sha> --write',
+    'node scripts/uat_queue_runtime.js release-watcher --write',
+  ]);
 });
 
 test('setPromoteHold and clearPromoteHold', () => {

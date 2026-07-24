@@ -48,7 +48,7 @@ jobs:
           cursor_api_key: ${{ secrets.cursor_api_key }}
           UAT_COORDINATION_ISSUE: ${{ vars.UAT_COORDINATION_ISSUE }}
           WORKFLOW_RUN_ID: ${{ github.event_name == 'workflow_dispatch' && inputs.workflow_run_id || github.event.workflow_run.id }}
-          WORKFLOW_URL: ${{ github.event_name == 'workflow_dispatch' && '' || github.event.workflow_run.html_url }}
+          WORKFLOW_URL: ${{ github.event_name == 'workflow_run' && github.event.workflow_run.html_url || '' }}
           DRY_RUN: ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run || 'false' }}
           FORCE_DISPATCH: ${{ github.event_name == 'workflow_dispatch' && inputs.force || 'false' }}
         run: node .github/scripts/uat-coordinator-dispatch.js

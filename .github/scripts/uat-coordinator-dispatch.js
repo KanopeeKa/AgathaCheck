@@ -14,6 +14,7 @@ const {
   headEntryNeedingAttention,
   isWatcherLeaseActive,
   markEntryRemedial,
+  releaseWatcher,
   setPromoteHold,
 } = require('../../scripts/lib/uat_queue_lib');
 const {
@@ -50,19 +51,29 @@ async function prepareDispatch({
   owner,
   repo,
   write = true,
+  force = false,
+  mergeSha = null,
 }) {
   const { state, issueNumber } = await loadStateFromIssue(coordinationIssue, token);
-  const head = headEntryNeedingAttention(state);
+  let head = headEntryNeedingAttention(state);
 
   if (!head || !['failed', 'remedial'].includes(head.state)) {
-    return {
-      skipped: true,
-      reason: 'no_failed_head_entry',
-      head: head || null,
-    };
+    if (force && mergeSha) {
+      const bySha = findEntryByMergeSha(state, mergeSha);
+      if (bySha && ['failed', 'remedial'].includes(bySha.state)) {
+        head = bySha;
+      }
+    }
+    if (!head || !['failed', 'remedial'].includes(head.state)) {
+      return {
+        skipped: true,
+        reason: 'no_failed_head_entry',
+        head: head || null,
+      };
+    }
   }
 
-  if (head.state === 'remedial' && isWatcherLeaseActive(state)) {
+  if (!force && head.state === 'remedial' && isWatcherLeaseActive(state)) {
     return {
       skipped: true,
       reason: 'remedial_in_progress',
@@ -70,17 +81,36 @@ async function prepareDispatch({
     };
   }
 
-  const watcherResult = acquireWatcher(state, {
+  if (force && isWatcherLeaseActive(state)) {
+    releaseWatcher(state);
+  }
+
+  let watcherResult = acquireWatcher(state, {
     holder,
     leaseMinutes: 90,
     watchingSeq: head.seq,
   });
   if (!watcherResult.acquired) {
-    return {
-      skipped: true,
-      reason: 'watcher_lease_held',
-      holder: watcherResult.holder,
-    };
+    if (!force) {
+      return {
+        skipped: true,
+        reason: 'watcher_lease_held',
+        holder: watcherResult.holder,
+      };
+    }
+    releaseWatcher(state);
+    watcherResult = acquireWatcher(state, {
+      holder,
+      leaseMinutes: 90,
+      watchingSeq: head.seq,
+    });
+    if (!watcherResult.acquired) {
+      return {
+        skipped: true,
+        reason: 'watcher_lease_held',
+        holder: watcherResult.holder,
+      };
+    }
   }
 
   let nextState = watcherResult.state;
@@ -125,6 +155,7 @@ async function main() {
   const workflowUrl = process.env.WORKFLOW_URL;
   const dryRun = process.env.DRY_RUN === 'true';
   const writeLedger = process.env.WRITE_LEDGER !== 'false' && !dryRun;
+  const forceDispatch = process.env.FORCE_DISPATCH === 'true';
 
   if (!repository || !token || !workflowRunId) {
     throw new Error('GITHUB_REPOSITORY, GITHUB_TOKEN, and WORKFLOW_RUN_ID are required');
@@ -164,6 +195,8 @@ async function main() {
     owner,
     repo,
     write: writeLedger,
+    force: forceDispatch,
+    mergeSha: run.head_sha || null,
   });
 
   if (prepared.skipped) {

@@ -209,7 +209,9 @@ function markEntryRemedial(state, { mergeSha, prNumber }) {
     throw new UatQueueError('mark-remedial: no matching queue entry');
   }
   if (entry.state !== 'failed' && entry.state !== 'remedial') {
-    throw new UatQueueError(`mark-remedial: entry seq ${entry.seq} is ${entry.state}, expected failed`);
+    throw new UatQueueError(
+      `mark-remedial: entry seq ${entry.seq} is ${entry.state}, expected failed or remedial`,
+    );
   }
   entry.state = 'remedial';
   applyRemedialFreeze(state, entry.seq);

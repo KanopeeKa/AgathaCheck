@@ -69,11 +69,10 @@ When `payload.gates.escalate` is true → comment on coordination issue + linked
 
 ```bash
 node scripts/uat_queue_runtime.js set-barrier --sha <remedial_merge_sha> --reason "uat fix pr-<n>" --write
-node scripts/uat_queue_runtime.js clear-promote-hold --write
 node scripts/uat_queue_runtime.js release-watcher --write
 ```
 
-Comment on coordination issue: barrier advanced, promote hold cleared.
+Comment on coordination issue: barrier advanced (`set-barrier` also clears promote hold).
 
 ### 4. Escalation (halt)
 

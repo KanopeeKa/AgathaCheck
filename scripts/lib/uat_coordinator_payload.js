@@ -111,7 +111,6 @@ function buildUatCoordinatorPayload({
       commands: ['./scripts/pre-push-changed.sh'],
       after_remedial_merge: [
         'node scripts/uat_queue_runtime.js set-barrier --sha <merge_sha> --write',
-        'node scripts/uat_queue_runtime.js clear-promote-hold --write',
         'node scripts/uat_queue_runtime.js release-watcher --write',
       ],
     },
