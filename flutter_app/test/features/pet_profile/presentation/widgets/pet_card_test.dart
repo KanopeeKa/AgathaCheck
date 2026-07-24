@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:pet_profile_app/core/theme/app_theme.dart';
+import 'package:pet_profile_app/core/theme/experience_colors.dart';
 import 'package:pet_profile_app/l10n/app_localizations.dart';
 import 'package:pet_profile_app/features/pet_profile/domain/entities/pet.dart';
 import 'package:pet_profile_app/features/pet_profile/presentation/widgets/pet_card.dart';
@@ -33,6 +35,7 @@ void main() {
 
   Widget createTestWidget(Widget child) {
     return MaterialApp(
+      theme: AppTheme.lightTheme,
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
       home: Scaffold(body: child),
@@ -77,9 +80,7 @@ void main() {
       expect(find.byIcon(Icons.business), findsOneWidget);
     });
 
-    testWidgets('displays foster placement status for org pets', (
-      tester,
-    ) async {
+    testWidgets('foster placement line uses org green accent', (tester) async {
       const orgPet = Pet(
         id: 'org-pet-id',
         name: 'Max',
@@ -92,9 +93,30 @@ void main() {
       );
 
       await tester.pumpWidget(createTestWidget(PetCard(pet: orgPet)));
+      await tester.pumpAndSettle();
 
-      expect(find.textContaining('In foster care'), findsOneWidget);
-      expect(find.textContaining('Jane Foster'), findsOneWidget);
+      final fosterText = tester.widget<Text>(
+        find.textContaining('In foster care'),
+      );
+      final orgGreen = AppTheme.lightTheme
+          .extension<ExperienceColors>()!
+          .organizationPrimary;
+      expect(fosterText.style?.color, orgGreen);
+    });
+
+    testWidgets('isFoster pet shows green foster label', (tester) async {
+      const fosterPet = Pet(
+        id: 'foster-id',
+        name: 'Luna',
+        species: 'Cat',
+        breed: '',
+        isFoster: true,
+      );
+
+      await tester.pumpWidget(createTestWidget(PetCard(pet: fosterPet)));
+      await tester.pumpAndSettle();
+
+      expect(find.text('In foster care'), findsOneWidget);
       expect(find.byIcon(Icons.home_work_outlined), findsOneWidget);
     });
 
