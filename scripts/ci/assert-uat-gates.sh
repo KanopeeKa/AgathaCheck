@@ -27,6 +27,7 @@ SMOKE_RESULT="${SMOKE_RESULT:-}"
 LIVE_SMOKE_RESULT="${LIVE_SMOKE_RESULT:-}"
 FULL_E2E_RESULT="${FULL_E2E_RESULT:-}"
 BUILD_RESULT="${BUILD_RESULT:-}"
+SMOKE_FAILURE_KIND="${SMOKE_FAILURE_KIND:-}"
 UAT_FULL_E2E_CADENCE_SKIP="${UAT_FULL_E2E_CADENCE_SKIP:-false}"
 UAT_FULL_E2E_CADENCE_REASON="${UAT_FULL_E2E_CADENCE_REASON:-}"
 DEPLOY_REF="${DEPLOY_REF:-}"
@@ -137,6 +138,19 @@ if [[ "$failed" -ne 0 ]]; then
     gate_failure_class="code"
   elif [[ "$migrate_gate" == "fail" ]]; then
     gate_failure_class="code"
+  elif [[ "$DEPLOY_RESULT" == "success" && "$SMOKE_RESULT" != "success" ]]; then
+    # Only reached when deploy itself succeeded and smoke genuinely ran (not a
+    # cascaded skip from a failed deploy, which stays infra_only above). A
+    # failed smoke job is only "infra_only" when the response body itself
+    # points at a host/config issue (WAF challenge, Passenger not registered).
+    # passenger_crash ("app failing to start") and unknown/no-signal (e.g. the
+    # SSH-deploy-proofs precheck failed before any probe ran, or smoke was
+    # cancelled) default to "code" — a crashing app can be a genuine
+    # regression, and there is no signal to prove otherwise.
+    case "$SMOKE_FAILURE_KIND" in
+      waf | apache_404 | directory_listing | flutter_spa) ;;
+      *) gate_failure_class="code" ;;
+    esac
   fi
 fi
 emit_output "gate_failure_class" "$gate_failure_class"
