@@ -5,7 +5,7 @@ Planning documents for the second-generation fostering and adoption roadmap. **N
 | Doc | Purpose |
 |-----|---------|
 | [`g0-contract-pack.md`](g0-contract-pack.md) | Platform contract layer — invariants, vocabulary, ownership, cross-journey APIs |
-| `migration-appendix.md` | Current → target entity/status mapping (TODO) |
+| [`migration-appendix.md`](migration-appendix.md) | Current → target entity/status mapping (**locked**) |
 | `j1-foster-onboarding.md` … `j5-adoption-conversion.md` | Journey specs (TODO) |
 | `g1-document-artefact-packs.md` | Template packs and register export hooks (TODO) |
 
