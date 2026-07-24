@@ -1,6 +1,9 @@
 ---
 name: execute-plan
-description: Multi-phase autonomous orchestrator — runs frozen plan snapshots phase-by-phase, gates on merge-done, delegates PR hygiene to /babysit-plus (default merge mode auto). Post-merge UAT: enqueue only — never Task sub-agents.
+description: >-
+  Multi-phase autonomous orchestrator — runs frozen plan snapshots phase-by-phase,
+  gates on merge-done, delegates PR hygiene to /babysit-plus (default merge mode auto).
+  Post-merge UAT enqueue only — never Task sub-agents.
 ---
 
 # Execute-plan
