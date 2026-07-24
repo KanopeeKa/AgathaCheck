@@ -125,6 +125,35 @@ UAT deploy runs automatically when the tag is pushed.`,
   return { results };
 }
 
+async function syncUatQueueDeployResult({
+  deployRef,
+  conclusion,
+  workflowUrl,
+  token,
+  prNumber,
+}) {
+  try {
+    const { syncDeployResult } = require('../../scripts/lib/uat_queue_apply');
+    const runId = process.env.GITHUB_RUN_ID || '';
+    const queueResult = await syncDeployResult({
+      deployRef,
+      conclusion: conclusion === 'success' ? 'success' : 'failure',
+      deployRunId: runId || null,
+      gateSummaryRef: workflowUrl,
+      token,
+    });
+    if (!queueResult.skipped) {
+      console.log(
+        `UAT queue: updated PR #${prNumber} → ${queueResult.entry.state} on issue #${queueResult.issueNumber}`,
+      );
+    }
+    return queueResult;
+  } catch (error) {
+    console.warn(`UAT queue deploy sync skipped: ${error.message}`);
+    return { skipped: true, reason: error.message };
+  }
+}
+
 async function handleUatWorkflowResult({
   owner,
   repo,
@@ -142,9 +171,23 @@ async function handleUatWorkflowResult({
   }
 
   const pr = await fetchPullRequest(owner, repo, parsed.prNumber, token);
+  const queueSync = await syncUatQueueDeployResult({
+    deployRef,
+    conclusion,
+    workflowUrl,
+    token,
+    prNumber: parsed.prNumber,
+  });
+
   const issueNumbers = parseLinkedIssues(pr.body || '');
   if (issueNumbers.length === 0) {
-    return { skipped: true, reason: 'no linked issues on PR' };
+    return {
+      skipped: true,
+      reason: 'no linked issues',
+      prNumber: parsed.prNumber,
+      queueSync,
+      results: [],
+    };
   }
 
   const results = [];
@@ -208,26 +251,7 @@ Assigned @${ASSIGNEE} for investigation. The \`question\` label was added and \`
     results.push({ issueNumber, status: 'failed', assigned: ASSIGNEE });
   }
 
-  try {
-    const { syncDeployResult } = require('../../scripts/lib/uat_queue_apply');
-    const runId = process.env.GITHUB_RUN_ID || '';
-    const queueResult = await syncDeployResult({
-      deployRef,
-      conclusion: conclusion === 'success' ? 'success' : 'failure',
-      deployRunId: runId || null,
-      gateSummaryRef: workflowUrl,
-      token,
-    });
-    if (!queueResult.skipped) {
-      console.log(
-        `UAT queue: updated PR #${parsed.prNumber} → ${queueResult.entry.state} on issue #${queueResult.issueNumber}`,
-      );
-    }
-  } catch (error) {
-    console.warn(`UAT queue deploy sync skipped: ${error.message}`);
-  }
-
-  return { prNumber: parsed.prNumber, results };
+  return { prNumber: parsed.prNumber, results, queueSync };
 }
 
 async function main() {
@@ -291,4 +315,5 @@ module.exports = {
   parseUatTag,
   handleMergedPr,
   handleUatWorkflowResult,
+  syncUatQueueDeployResult,
 };
