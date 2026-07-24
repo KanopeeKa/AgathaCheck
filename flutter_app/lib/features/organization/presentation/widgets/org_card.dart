@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/providers/api_base_url_provider.dart';
 import '../../../../core/utils/resolve_static_asset_url.dart';
 import '../../../../core/theme/app_theme.dart';
+import '../utils/org_screen_theme.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../domain/entities/organization.dart';
 import '../utils/org_member_count_label.dart';
@@ -51,7 +52,9 @@ class OrgCard extends ConsumerWidget {
             '$memberLabel, ${l.petCount(organization.petCount)}',
         child: Card(
           key: Key('org_card_${organization.id}'),
-          color: colorScheme.primaryContainer,
+          color: orgListCardColor(),
+          elevation: 0,
+          shape: orgListCardTheme().shape,
           clipBehavior: Clip.antiAlias,
           child: InkWell(
             onTap: onTap,

@@ -43,16 +43,16 @@ Deliver maintainable navigation v2: config-driven drawer (g/p/w groups), Home+Ha
 
 ```yaml
 autonomy: active
-current_phase: 4
+current_phase: 5
 last_completed_phase: 3
 halt_reason: null
-next_action: "continue phase 4 on branch cursor/ui-nav-v2-phase4-chooser-14ee"
+next_action: "continue phase 5 on branch cursor/ui-nav-v2-phase5-org-list-14ee"
 artifact_ref:
-  branch: cursor/ui-nav-v2-phase4-chooser-14ee
+  branch: cursor/ui-nav-v2-phase5-org-list-14ee
   plan_path: .agents/plans/ui-navigation-v2-14ee.md
-  plan_commit: a2b2abaa506554f88e1e6d5a75edd36ddcbb3c71
+  plan_commit: 35ebf2f9ca4521de851cd0b36cd33bdaddff4c17
   snapshot_path: .agents/plans/ui-navigation-v2-14ee.snapshot.json
-  snapshot_commit: a2b2abaa506554f88e1e6d5a75edd36ddcbb3c71
+  snapshot_commit: 35ebf2f9ca4521de851cd0b36cd33bdaddff4c17
 open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/316"]
 merge_commits: {}
 debt_issue_refs: []
