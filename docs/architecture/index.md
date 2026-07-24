@@ -103,7 +103,7 @@ Full conventions: `docs/architecture/modularity.md`.
 | Flutter | `flutter_app/lib/features/organization/` |
 | Node routes | `server/routes/organizations/`, `fosterPlacements.js`, `custodyTransfers.js` |
 | Jest | `server/test/organizations/`, `fosterPlacements.test.js`, `custodyTransfers.test.js`, `orgConnections.test.js` |
-| Architecture | `docs/architecture/org-custody-model.md` |
+| Architecture | `docs/architecture/org-custody-model.md`, `docs/fostering-platform/g0-contract-pack.md` |
 | BDD | `organisation_management.feature`, `organisation_pet_management.feature`, `pet_ownership_and_adoption.feature`, … |
 | E2E | `organisation.management.spec.ts`, `adoption.spec.ts` |
 

@@ -6,6 +6,10 @@
 
 This document is the **platform contract layer**. Journey agents (J1–J5) must reference G0 instead of redefining shared rules. G1 (document and compliance artefact packs) depends on stable hooks defined here and implemented in J3/J5.
 
+**Changelog (pre-merge):** Fixed session status enum consistency (`adoption_in_progress`, `end_pending_confirmation`); added verification, design, legal, security, schema-gap, and PR quality-gate sections per review pass.
+
+**Related:** [`README.md`](README.md) · `docs/architecture/org-custody-model.md` · `regulatory/internal/dpia-foster-directory.md` · `docs/design/index.md`
+
 ---
 
 ## 1. Design invariants
@@ -232,7 +236,8 @@ J5 starts only when:
 - J4 validation complete (if visit path), **or**
 - Direct adoption path defined in J5 spec.
 
-J5 close event: session → `converted_to_adoption` (new terminal state); triggers existing custody transfer / shadow semantics per `docs/architecture/org-custody-model.md`.
+On J5 start: session → `adoption_in_progress` (non-terminal; foster care continues).  
+J5 close event: session → `converted_to_adoption` (terminal); triggers existing custody transfer / shadow semantics per `docs/architecture/org-custody-model.md`.
 
 ### 5.7 G1 hooks (no independent state)
 
@@ -258,8 +263,8 @@ G1 supplies template content and export formats; J3/J5 own status transitions.
 |-----------------------------------|----------------------|------------------|
 | `pending` | `preparation` or new `pending_acceptance` | Map: if no prep checklist existed → `pending_acceptance`; else `preparation` |
 | `in_progress` | `active` | Direct map |
-| `waiting_adoption_confirmation` | Adoption journey in progress (J5) | Migrate to J5 workflow row; session → `end_pending` or `adoption_in_progress` |
-| `pending_adoption_conditions` | Adoption journey in progress (J5) | Same |
+| `waiting_adoption_confirmation` | `adoption_in_progress` + J5 workflow row | Create `adoption_journey`; session stays non-terminal until `converted_to_adoption` |
+| `pending_adoption_conditions` | `adoption_in_progress` + J5 workflow row | Same |
 | `adopted` | `converted_to_adoption` | Terminal |
 | `not_in_foster` | `cancelled` or `returned_to_shelter` | Infer from history where possible; else `cancelled` |
 
@@ -274,6 +279,7 @@ Exact mapping is finalised in `migration-appendix.md` before J3 agent starts. Ag
 | `ready_to_start` | No |
 | `active` | No |
 | `end_pending_confirmation` | No |
+| `adoption_in_progress` | No — foster care continues; J5 workflow open (replaces in-placement adoption statuses) |
 | `returned_to_shelter` | Yes |
 | `transferred` | Yes |
 | `converted_to_adoption` | Yes |
@@ -281,7 +287,11 @@ Exact mapping is finalised in `migration-appendix.md` before J3 agent starts. Ag
 
 ### 6.3 One active session per pet (I4)
 
-Database today enforces one open row per pet for active placement statuses (`idx_foster_placements_one_active_pet`). J3 must preserve and extend this constraint to include `preparation`, `ready_to_start`, `active`, `end_pending_confirmation`, and adoption-in-progress states as defined in migration appendix.
+Database today enforces one open row per pet for active placement statuses (`idx_foster_placements_one_active_pet`). J3 must preserve and extend this constraint to all **non-terminal** session statuses:
+
+`pending_acceptance`, `preparation`, `ready_to_start`, `active`, `end_pending_confirmation`, `adoption_in_progress`
+
+Exact index definition lives in `migration-appendix.md`.
 
 Transfer flow: current session → `transferred` (terminal); new session created in `preparation` for receiving foster.
 
@@ -465,10 +475,170 @@ Each journey spec must include:
 
 ---
 
-## 14. Document index (handoff package)
+## 14. Verification strategy (tests & BDD)
+
+G0 does not implement tests, but journey PRs must satisfy these gates.
+
+### 14.1 Layer expectations
+
+| Layer | Owner | Minimum per journey PR |
+|-------|-------|------------------------|
+| Node route tests | Journey agent | New/changed routes in `server/test/<domain>/` |
+| Flutter unit/widget | Journey agent | Domain entities + extracted widgets |
+| BDD (Gherkin) | Journey agent | 3–5 canonical scenarios per journey spec (§13) |
+| Playwright E2E | Journey agent or follow-up PR | `@bdd` header exact match; `@P1` for critical paths |
+| Migration tests | J3/J5 | Idempotent up/down or fixture assertions for status maps |
+
+### 14.2 BDD evolution (legacy scenarios)
+
+Existing `org_foster_and_adoption.feature` scenarios anchor the **legacy placement model**. Do not delete them until J3 migration appendix marks parity.
+
+| Phase | BDD action |
+|-------|------------|
+| J3 Phase 1 | Add parallel scenarios for fostering session statuses; keep legacy scenarios green via compatibility layer |
+| J5 Phase 1 | Add adoption-journey scenarios; deprecate in-placement adoption scenario titles with `@legacy` tag |
+| Post-migration | Remove `@legacy` scenarios in dedicated cleanup PR |
+
+### 14.3 Contract tests
+
+Cross-journey read models (§5) should have **Jest contract tests** owned by the exposing journey:
+
+- J1 publishes approved-foster fixture → J2 consumer test imports fixture shape (or OpenAPI snapshot if introduced)
+- J3 publishes capacity-count fixture → J2 consumer test
+
+### 14.4 Pre-push
+
+Journey agents run `./scripts/pre-push-changed.sh` during iteration; full `./scripts/pre-push.sh` before merge PRs to `main`.
+
+---
+
+## 15. Design & UX
+
+### 15.1 Experience surfaces
+
+| Surface | Route context | Primary journeys |
+|---------|---------------|------------------|
+| Shelter operations | `/o/*` org experience | J1–J5 (admin flows) |
+| Foster portal | `/g/*` or tokenised deep links | J2 responses, J3 session actions |
+| Adopter / prospect | Account or magic-link only | J4 visit outcome, J5 where applicable |
+
+Q1 (§20) blocks final UX for non-member fosters — J1 must resolve before J2 email CTAs ship.
+
+### 15.2 Design rules
+
+Follow `docs/design/index.md` and `design.mdc`:
+
+- Operational flows: direct copy, obvious next action
+- Status uses text + icon/weight, not colour alone
+- Touch targets ≥ 48×48 logical px
+- Separate UI treatment for **participant comments** vs **staff notes** (§10)
+- Manage Fosters remains an **operations screen**, not a pipeline kanban
+
+### 15.3 UI-check gates
+
+Each journey phase with new screens: `/ui-check` before merge; multi-screen flows: `/ui-design-deep`.
+
+---
+
+## 16. Legal & regulatory
+
+### 16.1 Statutory hooks (France — v1 shelters)
+
+| Obligation | Journey | G0/G1 hook |
+|------------|---------|------------|
+| Foster contract + mandatory clauses | J3 prep | `foster_contract_prepared`, `foster_contract_signed` |
+| Information document to foster family | J3 prep | `information_document_delivered` |
+| Veterinary certificate within 7 days of handover | J3 active | `veterinary_certificate_tracked` + `handover_date` |
+| Register of animals entrusted to foster families | J3 + G1 | `register_entry_created`; G1 export |
+| Certificate of commitment/knowledge ≥ 7 days before acquisition | J5 | `commitment_certificate_signed` + date validation |
+| Adoption/cession contract and transfer documentation | J5 + G1 | `adoption_contract_prepared`, `transfer_date_set` |
+
+Journey specs must cite article/practice sheet in **Legal dependencies** section; G0 owns hook key names only.
+
+### 16.2 GDPR / CNIL
+
+| Requirement | G0 section | Implementation note |
+|-------------|------------|---------------------|
+| Data minimisation | I6, I9 | Org-local prospects; no cross-shelter screening |
+| Purpose limitation | §4 ownership | Forbidden ownership column enforced in review |
+| Indirect collection transparency | I8, §9.2 | Art. 14 notice before first outreach |
+| Retention | §11 | DPO signs durations in `regulatory/` before enforcement |
+| Security of personal data | §18 | Staff notes never leak to participant APIs |
+| DPIA update | §17.3 | Required before J1 manual foster expansion or J4 prospects go live |
+
+### 16.3 Regulatory artefacts to update (not in this PR)
+
+| Artefact | Trigger |
+|----------|---------|
+| `regulatory/internal/dpia-foster-directory.md` | J1 global profile + J4 prospects |
+| Privacy notice copy | J1 Phase 4, J4 prospect notice |
+| DPA processor annex (if needed) | New sub-processors for document storage (G1) |
+
+---
+
+## 17. Security & privacy engineering
+
+| Rule | Detail |
+|------|--------|
+| Org isolation | All shelter-local queries filter `organization_id`; no cross-org reads (existing pattern — see DPIA) |
+| Staff note redaction | Foster/adopter/prospect JWT contexts must not receive staff notes (§10) |
+| Tokenised actions | Non-member foster request responses and session confirmations use expiring tokens (same pattern as org invites) |
+| Rate limiting | New public/token endpoints use `createApiLimiter()` per `security.mdc` |
+| 5xx bodies | `publicError()` only — no raw exception text |
+| Lawful basis attestation | Manual foster and prospect create require admin checkbox (§9.1); audit `actor_user_id` |
+| Opt-out | Suppresses outreach; erasure path defined per retention category (§11) |
+
+---
+
+## 18. Known schema gaps (must resolve in migration appendix)
+
+These are **current-product blockers** for the target model. G0 flags them so agents do not discover them mid-sprint.
+
+| Gap | Today | Target | Blocking |
+|-----|-------|--------|----------|
+| `foster_placements.foster_user_id NOT NULL` | Sessions require registered user | Nullable or surrogate user; link via `shelter_foster_relationship_id` | J1 Phase 3 manual foster → J3 session |
+| No `foster_profile` table | `org_foster_parents` only | Global profile + relationship split | J1 Phase 2 |
+| No approval state on foster parents | Directory only | `approval_state` on relationship | J1 Phase 2, J2 matching |
+| Adoption embedded in placement status | `waiting_adoption_confirmation` etc. | J5 `adoption_journey` + session `adoption_in_progress` | J5 |
+| Fine-grained permissions | Org roles only | Permission keys (§7) — implement gradually | J1+ (document which permissions each PR adds) |
+| Audit event storage | Partial / ad hoc | Unified `audit_events` or journey tables with G0 `event_type` | G0 contract before J1 Phase 4 |
+
+---
+
+## 19. Journey PR quality gates
+
+Before any journey PR merges to `main`:
+
+1. G0 invariant check — reviewer confirms no forbidden ownership violation
+2. Non-goals section present in journey spec
+3. Compatibility row(s) from §12 addressed or explicitly deferred with debt issue
+4. Tests per §14
+5. Legal hooks named if checklist/adoption milestones touched
+6. DPIA/privacy impact noted in PR body if PII model changes
+7. No new hand-written files > 500 lines
+
+---
+
+## 20. Open questions (G0 level only)
+
+| # | Question | Default if unresolved |
+|---|----------|----------------------|
+| Q1 | Foster portal access for approved non-member fosters? | Session participant token access; no full org membership |
+| Q2 | Adoption visits for non-fostered pets? | J4 foster-context only |
+| Q3 | Rename table `foster_placements` → `fostering_sessions` or extend in place? | Extend in place first; rename optional later |
+| Q4 | Single global `foster_profiles` table vs user profile extension? | J1 spec decides; G0 requires stable `foster_profile_id` |
+| Q5 | When does `pet_access.role = foster` attach — at `preparation`, `ready_to_start`, or `active`? | Default: `active` only (matches today: pending has no foster care access) |
+| Q6 | Unified `audit_events` table vs per-domain audit columns? | J1 Phase 4 proposes; G0 owns `event_type` names regardless |
+
+Journey-specific open questions belong in J1–J5 specs, not here.
+
+---
+
+## 21. Document index (handoff package)
 
 | Doc | Status |
 |-----|--------|
+| `README.md` | Index for this folder |
 | `g0-contract-pack.md` | **This file** |
 | `migration-appendix.md` | TODO — status mapping, dual-write plan, in-flight row handling |
 | `j1-foster-onboarding.md` | TODO |
@@ -477,16 +647,3 @@ Each journey spec must include:
 | `j4-adoption-visits.md` | TODO |
 | `j5-adoption-conversion.md` | TODO |
 | `g1-document-artefact-packs.md` | TODO — depends on J3/J5 hook freeze |
-
----
-
-## 15. Open questions (G0 level only)
-
-| # | Question | Default if unresolved |
-|---|----------|----------------------|
-| Q1 | Foster portal access for approved non-member fosters? | Session participant token access; no full org membership |
-| Q2 | Adoption visits for non-fostered pets? | J4 foster-context only |
-| Q3 | Rename table `foster_placements` → `fostering_sessions` or extend in place? | Extend in place first; rename optional later |
-| Q4 | Single global `foster_profiles` table vs user profile extension? | J1 spec decides; G0 requires stable `foster_profile_id` |
-
-Journey-specific open questions belong in J1–J5 specs, not here.
