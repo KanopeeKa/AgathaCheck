@@ -35,7 +35,7 @@ shards unchanged for prod-ready. Prod security scans noted in Phase 6 (future).
 | Stage | Blocking? | Workflow |
 |-------|-----------|----------|
 | PR → `main` | **Yes** (2 required checks) | `ci.yml` → `ci-gate`, `codeql.yml` |
-| Merge → `main` | **Yes** (auto-promotion) | `promote-uat.yml` → `uat-*` tag → `deploy-uat.yml` (`workflow_run`) |
+| Merge → `main` | **Yes** (auto-promotion; skipped when UAT queue promote hold is active) | `promote-uat.yml` → `uat-*` tag → `deploy-uat.yml` (`workflow_run`) |
 | PR granular CI jobs | Visible, not individually required | `ci.yml` (startup-smoke, test-suite, flutter-*, …) |
 | PR startup smoke | **Yes** (via `ci-gate`) | `ci.yml` → `_reusable-pr-startup-smoke.yml` |
 | PR hints | No (advisory) | `pr-governance-hints.yml` |

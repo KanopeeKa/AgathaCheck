@@ -13,6 +13,7 @@ concurrency:
 permissions:
   contents: read
   pull-requests: read
+  issues: read
 
 jobs:
   resolve-pr:
@@ -57,10 +58,57 @@ jobs:
             "run_id=${{ github.run_id }}" \
             "duration_sec=${dur}"
 
-  promote-tag:
-    name: Create UAT tag
+  evaluate-promote-hold:
+    name: Evaluate UAT queue promote hold
     needs: resolve-pr
     if: needs.resolve-pr.outputs.promotion_status == 'ok'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      promotion_status: ${{ steps.hold.outputs.promotion_status }}
+      promotion_block_reason: ${{ steps.hold.outputs.promotion_block_reason }}
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          sparse-checkout: |
+            scripts/ci/evaluate-uat-promote-hold.js
+            scripts/ci/append-summary.sh
+            scripts/lib/uat_queue_lib.js
+            scripts/lib/uat_queue_sync.js
+            scripts/lib/uat_queue_constants.js
+            scripts/lib/execute_plan_project.js
+            .github/scripts/github-project-lib.js
+          sparse-checkout-cone-mode: false
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+
+      - name: Evaluate queue promote hold
+        id: hold
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          UAT_COORDINATION_ISSUE: ${{ vars.UAT_COORDINATION_ISSUE }}
+          UAT_PROMOTE_HOLD_ENABLED: ${{ vars.UAT_PROMOTE_HOLD_ENABLED || 'true' }}
+        run: node scripts/ci/evaluate-uat-promote-hold.js
+
+      - name: Write promote hold summary
+        if: always()
+        run: |
+          bash scripts/ci/append-summary.sh "Promote UAT — queue hold" \
+            "workflow=promote-uat" \
+            "job=evaluate-promote-hold" \
+            "promotion_status=${{ steps.hold.outputs.promotion_status || 'n/a' }}" \
+            "promotion_block_reason=${{ steps.hold.outputs.promotion_block_reason || 'n/a' }}" \
+            "uat_promote_hold_enabled=${{ vars.UAT_PROMOTE_HOLD_ENABLED || 'true' }}" \
+            "run_id=${{ github.run_id }}"
+
+  promote-tag:
+    name: Create UAT tag
+    needs: [resolve-pr, evaluate-promote-hold]
+    if: >-
+      needs.resolve-pr.outputs.promotion_status == 'ok' &&
+      needs.evaluate-promote-hold.outputs.promotion_status == 'ok'
     runs-on: ubuntu-latest
     timeout-minutes: 10
     permissions:

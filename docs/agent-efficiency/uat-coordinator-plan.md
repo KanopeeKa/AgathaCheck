@@ -306,7 +306,7 @@ node scripts/uat_queue_runtime.js queue-head-hold   # exit 2 → do not merge ye
 | Deliverable | Detail |
 |-------------|--------|
 | Create coordination issue | **Done** — [#313](https://github.com/KanopeeKa/AgathaCheck/issues/313) |
-| Set `UAT_COORDINATION_ISSUE` | **Pending** — requires repo admin (`gh variable set`) |
+| Set `UAT_COORDINATION_ISSUE` | **Done** — repo variable `313` |
 | `health-check` command | **Done** |
 | CI smoke | **Done** — `uat-queue-health.yml` (weekly + dispatch) |
 | Bootstrap script + runbook | **This PR** — `scripts/uat_coordinator_bootstrap.js` |
@@ -339,7 +339,7 @@ node scripts/uat_queue_runtime.js queue-head-hold   # exit 2 → do not merge ye
 
 **Exit:** Simulated failure → one coordinator → remedial or escalate → barrier advanced.
 
-**Status:** **In PR** — dispatch workflow + skill; Phase 3b (promote hold in CI) follows.
+**Status:** **Merged** (#317) — dispatch workflow + skill; Phase 3b (promote hold in CI) follows.
 
 ### Phase 3b — CI promote/deploy back-pressure (new — recommended)
 
@@ -379,7 +379,7 @@ Addresses Jul 23 queue pile-up. **Not in original plan; required for merge-rate 
 | C | 2 | Skill + policy updates | **Merged** (#307) |
 | **D** | **1b** | Bootstrap issue + `health-check` + operator runbook | **In PR** — issue #313 live; variable pending |
 | **E** | 3 | Dispatch workflow + coordinator skill + promote-hold CLI | **In PR** |
-| **F** | 3b | Promote hold + optional deploy cancel | CI back-pressure |
+| **F** | **3b** | Promote hold + optional deploy cancel | **In PR** |
 | G | 4 | Lease hardening | Duplicate coordinator resistance |
 
 ---
