@@ -131,6 +131,7 @@ async function syncUatQueueDeployResult({
   workflowUrl,
   token,
   prNumber,
+  gateFailureClass,
 }) {
   try {
     const { syncDeployResult } = require('../../scripts/lib/uat_queue_apply');
@@ -140,6 +141,7 @@ async function syncUatQueueDeployResult({
       conclusion: conclusion === 'success' ? 'success' : 'failure',
       deployRunId: runId || null,
       gateSummaryRef: workflowUrl,
+      gateFailureClass,
       token,
     });
     if (!queueResult.skipped) {
@@ -164,6 +166,7 @@ async function handleUatWorkflowResult({
   projectsPat,
   projectId,
   statusFieldId,
+  gateFailureClass,
 }) {
   const parsed = parseUatTag(deployRef);
   if (!parsed) {
@@ -177,6 +180,7 @@ async function handleUatWorkflowResult({
     workflowUrl,
     token,
     prNumber: parsed.prNumber,
+    gateFailureClass,
   });
 
   const issueNumbers = parseLinkedIssues(pr.body || '');
@@ -231,6 +235,11 @@ Validate on UAT, then move the issue to **Done** and close when complete.`,
     await setLabels(owner, repo, issueNumber, ['question'], ['human-reviewed'], token);
     await assignIssue(owner, repo, issueNumber, ASSIGNEE, token);
 
+    const infraNote =
+      gateFailureClass === 'infra_only'
+        ? '\n\n**Infra-only failure** (WAF/deploy transport) — queue not frozen; later merges may still promote.'
+        : '';
+
     await upsertMarkerComment({
       owner,
       repo,
@@ -242,7 +251,7 @@ Validate on UAT, then move the issue to **Done** and close when complete.`,
 Tag \`${deployRef}\` (PR #${parsed.prNumber}) deployment did not pass all gates.
 
 - Workflow: ${workflowUrl}
-- Conclusion: **${conclusion}**
+- Conclusion: **${conclusion}**${infraNote}
 
 Assigned @${ASSIGNEE} for investigation. The \`question\` label was added and \`human-reviewed\` was removed to pause the workflow until resolved.`,
       token,
@@ -294,6 +303,7 @@ async function main() {
       projectsPat,
       projectId,
       statusFieldId,
+      gateFailureClass: process.env.GATE_FAILURE_CLASS || null,
     });
     console.log(JSON.stringify(result, null, 2));
     return;

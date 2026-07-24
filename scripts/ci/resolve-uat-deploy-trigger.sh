@@ -37,15 +37,17 @@ skip() {
 
 find_uat_tag_for_commit() {
   local commit_sha="$1"
+  local promote_run_id="${2:-}"
   local repo="${GITHUB_REPOSITORY:?GITHUB_REPOSITORY is required}"
   local token="${GITHUB_TOKEN:?GITHUB_TOKEN is required}"
 
-  python3 - "$commit_sha" "$repo" "$token" <<'PY'
+  python3 - "$commit_sha" "$repo" "$token" "$promote_run_id" <<'PY'
 import json
 import sys
+import urllib.error
 import urllib.request
 
-commit_sha, repo, token = sys.argv[1:4]
+commit_sha, repo, token, promote_run_id = sys.argv[1:5]
 
 def api(path: str):
     req = urllib.request.Request(
@@ -53,6 +55,7 @@ def api(path: str):
         headers={
             "Authorization": f"Bearer {token}",
             "Accept": "application/vnd.github+json",
+            "X-GitHub-Api-Version": "2022-11-28",
         },
     )
     with urllib.request.urlopen(req) as resp:
@@ -66,33 +69,59 @@ def tag_commit_sha(tag_name: str) -> str:
     tag_obj = api(f"/repos/{repo}/git/tags/{obj['sha']}")
     return tag_obj["object"]["sha"]
 
-def iter_matching_uat_refs():
+def resolve_pr_number() -> int:
+    pulls = api(f"/repos/{repo}/commits/{commit_sha}/pulls")
+    if len(pulls) != 1:
+        raise RuntimeError(f"expected 1 PR for {commit_sha}, got {len(pulls)}")
+    return int(pulls[0]["number"])
+
+def promote_yymmdd() -> str:
+    if not promote_run_id:
+        raise RuntimeError("promote_run_id required for fast tag lookup")
+    run = api(f"/repos/{repo}/actions/runs/{promote_run_id}")
+    created = run.get("created_at") or ""
+    # 2026-07-24T13:50:20Z -> 260724
+    if len(created) < 10:
+        raise RuntimeError(f"invalid promote run created_at: {created!r}")
+    return created[2:4] + created[5:7] + created[8:10]
+
+def fast_lookup() -> str:
+    pr_number = resolve_pr_number()
+    yymmdd = promote_yymmdd()
+    tag = f"uat-{yymmdd}-{pr_number}"
+    if tag_commit_sha(tag) == commit_sha:
+        return tag
+    raise RuntimeError(f"tag {tag} does not point at {commit_sha}")
+
+def slow_scan() -> str:
     page = 1
     while True:
         batch = api(f"/repos/{repo}/git/matching-refs/tags/uat-?per_page=100&page={page}")
         if not batch:
             break
         for item in batch:
-            yield item
+            ref = item.get("ref", "")
+            if not ref.startswith("refs/tags/uat-"):
+                continue
+            tag = ref.removeprefix("refs/tags/")
+            parts = tag.split("-")
+            if len(parts) != 3 or len(parts[1]) != 6 or not parts[1].isdigit() or not parts[2].isdigit():
+                continue
+            try:
+                if tag_commit_sha(tag) == commit_sha:
+                    return tag
+            except Exception:
+                continue
         if len(batch) < 100:
             break
         page += 1
+    raise RuntimeError(f"no uat tag for commit {commit_sha}")
 
-for item in iter_matching_uat_refs():
-    ref = item.get("ref", "")
-    if not ref.startswith("refs/tags/uat-"):
-        continue
-    tag = ref.removeprefix("refs/tags/")
-    parts = tag.split("-")
-    if len(parts) != 3 or len(parts[1]) != 6 or not parts[1].isdigit() or not parts[2].isdigit():
-        continue
-    try:
-        if tag_commit_sha(tag) == commit_sha:
-            print(tag)
-            raise SystemExit(0)
-    except Exception:
-        continue
-raise SystemExit(1)
+try:
+    print(fast_lookup())
+except Exception as fast_err:
+    print(f"::warning::fast UAT tag lookup failed ({fast_err}); falling back to full tag scan", file=sys.stderr)
+    print(slow_scan())
 PY
 }
 
@@ -123,11 +152,46 @@ case "$EVENT_NAME" in
     PROMOTE_RUN_ID="${WORKFLOW_RUN_ID:?WORKFLOW_RUN_ID is required for workflow_run}"
     COMMIT_SHA="${WORKFLOW_RUN_HEAD_SHA:?WORKFLOW_RUN_HEAD_SHA is required for workflow_run}"
 
-    if ! DEPLOY_REF="$(find_uat_tag_for_commit "$COMMIT_SHA")"; then
-      echo "::error::No uat-* tag found for promote commit ${COMMIT_SHA}" >&2
-      emit_output proceed false
-      emit_output skip_reason no_uat_tag_for_commit
-      exit 1
+    PROMOTE_BLOCK_REASON="$(python3 - "$PROMOTE_RUN_ID" <<'PY'
+import json
+import os
+import sys
+import urllib.request
+
+run_id = sys.argv[1]
+repo = os.environ["GITHUB_REPOSITORY"]
+token = os.environ["GITHUB_TOKEN"]
+
+def api(path: str):
+    req = urllib.request.Request(
+        f"https://api.github.com{path}",
+        headers={
+            "Authorization": f"Bearer {token}",
+            "Accept": "application/vnd.github+json",
+            "X-GitHub-Api-Version": "2022-11-28",
+        },
+    )
+    with urllib.request.urlopen(req) as resp:
+        return json.load(resp)
+
+try:
+    for job in api(f"/repos/{repo}/actions/runs/{run_id}/jobs").get("jobs", []):
+        if job.get("name") == "Create UAT tag" and job.get("conclusion") in ("skipped", "cancelled"):
+            print("promote_tag_skipped")
+            break
+except Exception as err:
+    # Never let a transient API hiccup (rate limit, 5xx, network blip) hard-fail
+    # the whole deploy-uat run — fall through to find_uat_tag_for_commit below.
+    print(f"::warning::promote-tag job lookup failed ({err}); continuing to tag resolution", file=sys.stderr)
+PY
+)"
+    if [[ -n "$PROMOTE_BLOCK_REASON" ]]; then
+      skip "$PROMOTE_BLOCK_REASON"
+    fi
+
+    if ! DEPLOY_REF="$(find_uat_tag_for_commit "$COMMIT_SHA" "$PROMOTE_RUN_ID")"; then
+      echo "::warning::No uat-* tag found for promote commit ${COMMIT_SHA} — skipping deploy" >&2
+      skip "no_uat_tag_for_commit"
     fi
 
     emit_output proceed true

@@ -13,6 +13,16 @@ MAX_ATTEMPTS="${AUTH_WARMUP_ATTEMPTS:-18}"
 SLEEP_SECS="${AUTH_WARMUP_SLEEP_SEC:-10}"
 CURL_TLS_FLAGS="${CURL_TLS_FLAGS:--k}"
 
+# Exposes whether the last probe failure was a WAF challenge vs. a genuine
+# API error (5xx/4xx from the app itself) so assert-uat-gates.sh does not
+# treat a real auth-route regression as infra_only.
+emit_failure_kind() {
+  local kind="$1"
+  if [[ -n "${GITHUB_OUTPUT:-}" ]]; then
+    printf 'failure_kind=%s\n' "$kind" >>"$GITHUB_OUTPUT"
+  fi
+}
+
 curl_landing() {
   curl -sfk ${CURL_TLS_FLAGS} "${UAT_BASE_URL}/landing" -o /dev/null 2>/dev/null || true
 }
@@ -90,11 +100,11 @@ curl_landing
 
 for i in $(seq 1 "$MAX_ATTEMPTS"); do
   curl_landing
-  signup_probe
-  rc=$?
+  rc=0
+  signup_probe || rc=$?
   if [ "$rc" -eq 0 ]; then
-    login_probe
-    login_rc=$?
+    login_rc=0
+    login_probe || login_rc=$?
     if [ "$login_rc" -eq 0 ]; then
       echo "UAT auth warmup OK after attempt ${i} (signup + login)"
       exit 0
@@ -111,6 +121,7 @@ for i in $(seq 1 "$MAX_ATTEMPTS"); do
     waf_rc=0
     uat_waf_note_challenge "signup probe" || waf_rc=$?
     if [ "$waf_rc" -eq 2 ]; then
+      emit_failure_kind "waf"
       exit 2
     fi
   else
@@ -128,4 +139,5 @@ for i in $(seq 1 "$MAX_ATTEMPTS"); do
 done
 
 echo "::error::UAT auth signup did not return 201 after ${MAX_ATTEMPTS} attempts — defer live @smoke-uat"
+emit_failure_kind "$([ "${rc:-1}" -eq 2 ] && echo waf || echo auth_error)"
 exit 1

@@ -8,6 +8,7 @@ const {
   classifyFailedJobs,
   primaryFailedGate,
   shouldEscalate,
+  isInfraOnlyFailure,
   buildUatCoordinatorPayload,
 } = require('./lib/uat_coordinator_payload');
 const {
@@ -87,6 +88,55 @@ test('markEntryRemedial freezes later pending entries', () => {
   const result = markEntryRemedial(state, { mergeSha: 'a' });
   assert.equal(result.entry.state, 'remedial');
   assert.equal(result.state.entries[1].state, 'frozen');
+});
+
+test('isInfraOnlyFailure true when every failed gate is maybe_infra', () => {
+  const gates = classifyFailedJobs([
+    { name: 'HTTP smoke', conclusion: 'failure', id: 1 },
+    { name: 'Build and deploy to UAT', conclusion: 'failure', id: 2 },
+  ]);
+  assert.equal(isInfraOnlyFailure(gates), true);
+});
+
+test('isInfraOnlyFailure false when a code gate also failed', () => {
+  const gates = classifyFailedJobs([
+    { name: 'HTTP smoke', conclusion: 'failure', id: 1 },
+    { name: 'uat-e2e-full', conclusion: 'failure', id: 2 },
+  ]);
+  assert.equal(isInfraOnlyFailure(gates), false);
+});
+
+test('isInfraOnlyFailure false when there are no failed gates', () => {
+  assert.equal(isInfraOnlyFailure([]), false);
+});
+
+// Real job names captured from a live deploy-uat run (30125158583) — regexes
+// must track actual GitHub Actions job.name text, not aspirational job ids.
+test('classifyFailedJobs matches real deploy-uat job names and excludes aggregates', () => {
+  const gates = classifyFailedJobs([
+    { name: 'Build Flutter web / Build Flutter web', conclusion: 'success', id: 1 },
+    { name: 'Build and deploy to UAT', conclusion: 'success', id: 2 },
+    { name: 'UAT post-deploy smoke', conclusion: 'failure', id: 3 },
+    { name: 'UAT live smoke E2E', conclusion: 'skipped', id: 4 },
+    { name: 'Prod ready', conclusion: 'failure', id: 5 },
+    { name: 'UAT full E2E (localhost)', conclusion: 'skipped', id: 6 },
+    { name: 'UAT release conclusion', conclusion: 'failure', id: 7 },
+  ]);
+  assert.equal(gates.length, 1);
+  assert.equal(gates[0].gate, 'http_smoke');
+  assert.equal(isInfraOnlyFailure(gates), true);
+});
+
+test('classifyFailedJob matches real job names for deploy, build, and localhost E2E', () => {
+  assert.equal(classifyFailedJob({ name: 'Build and deploy to UAT', conclusion: 'failure' }).gate, 'deploy');
+  assert.equal(
+    classifyFailedJob({ name: 'Build Flutter web / Build Flutter web', conclusion: 'failure' }).gate,
+    'flutter_build',
+  );
+  assert.equal(
+    classifyFailedJob({ name: 'UAT full E2E (localhost)', conclusion: 'failure' }).gate,
+    'localhost_e2e',
+  );
 });
 
 test('primaryFailedGate prefers migrations over e2e', () => {

@@ -99,6 +99,56 @@ test('applyDeployResult marks success and failure', () => {
   assert.equal(bad.entry.gate_summary_ref, 'run 100');
 });
 
+test('applyDeployResult marks infra-only failure as infra_failed, not failed', () => {
+  const state = createEmptyState();
+  enqueueEntry(state, { mergeSha: 'sha-infra', prNumber: 210, enqueuedBy: 'z' });
+  const result = applyDeployResult(state, {
+    deployRef: 'uat-260724-210',
+    conclusion: 'failure',
+    deployRunId: '101',
+    gateFailureClass: 'infra_only',
+  });
+  assert.equal(result.entry.state, 'infra_failed');
+  assert.equal(result.entry.result, 'infra_failure');
+});
+
+test('applyDeployResult falls back to failed when gateFailureClass is unknown', () => {
+  const state = createEmptyState();
+  enqueueEntry(state, { mergeSha: 'sha-unknown', prNumber: 211, enqueuedBy: 'z' });
+  const result = applyDeployResult(state, {
+    deployRef: 'uat-260724-211',
+    conclusion: 'failure',
+    deployRunId: '102',
+  });
+  assert.equal(result.entry.state, 'failed');
+});
+
+test('queueHeadHold does not block on an infra_failed head entry', () => {
+  const state = createEmptyState();
+  state.entries = [
+    { seq: 1, pr_number: 1, merge_sha: 'a', state: 'infra_failed' },
+    { seq: 2, pr_number: 2, merge_sha: 'b', state: 'pending' },
+  ];
+  const result = queueHeadHold(state);
+  assert.equal(result.hold, false);
+  assert.equal(result.reason, 'clear');
+});
+
+test('applyDeployResult supersedes earlier pending entries', () => {
+  const state = createEmptyState();
+  enqueueEntry(state, { mergeSha: 'sha1', prNumber: 301, enqueuedBy: 'a' });
+  enqueueEntry(state, { mergeSha: 'sha2', prNumber: 302, enqueuedBy: 'b' });
+  enqueueEntry(state, { mergeSha: 'sha3', prNumber: 303, enqueuedBy: 'c' });
+  const result = applyDeployResult(state, {
+    deployRef: 'uat-260724-303',
+    conclusion: 'failure',
+    deployRunId: '200',
+  });
+  assert.equal(state.entries[0].state, 'superseded');
+  assert.equal(state.entries[1].state, 'superseded');
+  assert.equal(result.entry.state, 'failed');
+});
+
 test('acquireWatcher respects active lease', () => {
   let state = createEmptyState();
   const now = new Date('2026-07-23T12:00:00Z');

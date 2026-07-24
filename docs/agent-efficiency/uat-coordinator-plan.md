@@ -205,7 +205,9 @@ Unchanged from v1 — see prior schema. Add optional field on ledger root:
 
 Set by coordinator on `failed`/`remedial`; cleared on `set-barrier` or infra resolution.
 
-**Entry states:** `pending` | `deploying` | `complete` | `failed` | `remedial` | `frozen` | `superseded`
+**Entry states:** `pending` | `deploying` | `complete` | `failed` | `infra_failed` | `remedial` | `frozen` | `superseded`
+
+`infra_failed` (added Jul 24 — see [Review decision 5](#5-infra-only-failures-must-not-freeze-promotion-added-jul-24)) marks a deploy failure where every failed gate classifies `maybe_infra` (WAF/deploy transport) with no code-regression evidence. Unlike `failed`, it does **not** trip `queueHeadHold` — later merges keep promoting/deploying while ops resolves the infra blocker.
 
 **Dedupe key:** `merge_sha`
 
@@ -462,6 +464,20 @@ Addresses Jul 23 queue pile-up. **Not in original plan; required for merge-rate 
 **Unchanged:** deploy failure (primary) + `workflow_dispatch` (recovery).
 
 **Add:** dispatch payload includes gate taxonomy (smoke/e2e/build) from `assert-uat-gates.sh` summary.
+
+### 5. Infra-only failures must not freeze promotion (added Jul 24)
+
+**Problem (Jul 24 WAF incident):** `agent-uat-notify` marked the ledger entry `failed` on **every** `deploy-uat` failure, including pure o2switch WAF challenges where SSH deploy had already succeeded. `queueHeadHold` reacts to `failed`/`remedial` head entries **independently of `promote_hold`** — so the entry state transition alone froze all subsequent merges, before the coordinator agent even ran. The coordinator's own `setPromoteHold` call added a second, redundant freeze on top and was never cleared for infra-only causes (WAF requires a human/host fix, not a merge).
+
+**Fix:**
+
+- `assert-uat-gates.sh` classifies the failure (`gate_failure_class`: `none` \| `infra_only` \| `code`) from known job results (deploy/smoke/live-e2e = infra candidates; build/localhost-E2E/migrations = code — any code signal wins, conservative default is `code`) and exposes it as a `prod-ready` job output.
+- `agent-uat-notify` forwards `gate_failure_class` to `applyDeployResult`, which records `infra_failed` (not `failed`) when the class is `infra_only`.
+- `headEntryNeedingAttention` / `queueHeadHold` do not react to `infra_failed` — later merges keep tagging and deploying.
+- `uat-coordinator-dispatch.js` classifies via the same `GATE_CLASSIFIERS` taxonomy (job names from the Actions API) before touching the ledger, so the `reconcileFailedDeployLedger` fallback path (used when `agent-uat-notify` skipped ledger sync) gets the same treatment, and skips `setPromoteHold` entirely for infra-only runs (no code-classified `failed`/`remedial` entry exists to act on).
+- Also fixed: `GATE_CLASSIFIERS` regexes had drifted from real job names (`UAT post-deploy smoke`, `Build and deploy to UAT`, etc. did not match) and aggregate jobs (`Prod ready`, `UAT release conclusion`) were polluting `isInfraOnlyFailure` by always appearing as an extra "failed" job.
+
+**Not changed:** genuine code failures (build, localhost E2E, migrations pending) still mark `failed`/`remedial` and freeze the queue exactly as before — this only affects the WAF/deploy-transport-only case.
 
 ---
 

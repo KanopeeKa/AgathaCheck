@@ -32,6 +32,7 @@ concurrency:
 permissions:
   contents: read
   actions: read
+  pull-requests: read
 
 jobs:
   resolve-trigger:
@@ -565,6 +566,8 @@ jobs:
     needs: [resolve-trigger, deploy]
     runs-on: ubuntu-latest
     timeout-minutes: 25
+    outputs:
+      smoke_failure_kind: ${{ steps.health.outputs.failure_kind || steps.warmup.outputs.failure_kind }}
     steps:
       - uses: actions/checkout@v5
 
@@ -585,12 +588,14 @@ jobs:
           echo "Deploy proofs OK (deploy_verification=${DEPLOY_VERIFICATION}) — proceeding to HTTP smoke."
 
       - name: Wait for UAT to become healthy
+        id: health
         env:
           UAT_BASE_URL: ${{ env.UAT_BASE_URL }}
           WAF_FAIL_FAST_STREAK: '3'
         run: bash scripts/uat-post-deploy-smoke.sh
 
       - name: Warm up UAT auth before live smoke
+        id: warmup
         env:
           UAT_BASE_URL: ${{ env.UAT_BASE_URL }}
           E2E_BYPASS_TOKEN: ${{ secrets.E2E_BYPASS_TOKEN }}
@@ -731,19 +736,27 @@ jobs:
   # Aggregate status for GitHub Environment protection on PROD (required check).
   prod-ready:
     name: Prod ready
-    needs: [resolve-trigger, deploy, smoke, uat-e2e-smoke, uat-full-e2e-decide, uat-e2e-full]
-    if: always()
+    needs: [resolve-trigger, build-web, deploy, smoke, uat-e2e-smoke, uat-full-e2e-decide, uat-e2e-full]
+    # Skip (not fail) when resolve-trigger cleanly opted out (no tag / promote-tag
+    # skipped) — otherwise this aggregate gate turns a no-op run red, which is
+    # exactly the misleading "ghost deploy failure" signal this PR removes.
+    if: always() && needs.resolve-trigger.outputs.proceed == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 5
+    outputs:
+      gate_failure_class: ${{ steps.gates.outputs.gate_failure_class }}
     steps:
       - uses: actions/checkout@v5
 
       - name: Verify all UAT gates passed
+        id: gates
         env:
           DEPLOY_RESULT: ${{ needs.deploy.result }}
           SMOKE_RESULT: ${{ needs.smoke.result }}
           LIVE_SMOKE_RESULT: ${{ needs.uat-e2e-smoke.result }}
           FULL_E2E_RESULT: ${{ needs.smoke.result != 'success' && 'skipped' || (needs.uat-full-e2e-decide.outputs.should_run == 'false' && 'skipped' || needs.uat-e2e-full.result) }}
+          BUILD_RESULT: ${{ needs.build-web.result }}
+          SMOKE_FAILURE_KIND: ${{ needs.smoke.outputs.smoke_failure_kind }}
           UAT_FULL_E2E_CADENCE_SKIP: ${{ needs.smoke.result == 'success' && needs.uat-full-e2e-decide.outputs.should_run == 'false' && 'true' || 'false' }}
           UAT_FULL_E2E_CADENCE_REASON: ${{ needs.uat-full-e2e-decide.outputs.reason || '' }}
           DEPLOY_REF: ${{ needs.resolve-trigger.outputs.deploy_ref }}
@@ -782,6 +795,7 @@ jobs:
           WORKFLOW_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
           GITHUB_RUN_ID: ${{ github.run_id }}
           UAT_COORDINATION_ISSUE: ${{ vars.UAT_COORDINATION_ISSUE }}
+          GATE_FAILURE_CLASS: ${{ needs.prod-ready.outputs.gate_failure_class }}
         run: node .github/scripts/issue-agent-handlers.js
 
   # Only dispatch deploy-prod after a green Prod ready gate — never on UAT workflow completion alone.
