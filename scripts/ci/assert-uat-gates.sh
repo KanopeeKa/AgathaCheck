@@ -26,6 +26,7 @@ DEPLOY_RESULT="${DEPLOY_RESULT:-}"
 SMOKE_RESULT="${SMOKE_RESULT:-}"
 LIVE_SMOKE_RESULT="${LIVE_SMOKE_RESULT:-}"
 FULL_E2E_RESULT="${FULL_E2E_RESULT:-}"
+BUILD_RESULT="${BUILD_RESULT:-}"
 UAT_FULL_E2E_CADENCE_SKIP="${UAT_FULL_E2E_CADENCE_SKIP:-false}"
 UAT_FULL_E2E_CADENCE_REASON="${UAT_FULL_E2E_CADENCE_REASON:-}"
 DEPLOY_REF="${DEPLOY_REF:-}"
@@ -34,6 +35,15 @@ GITHUB_RUN_ID="${GITHUB_RUN_ID:-}"
 MIGRATE_STATUS_COLLECTED="${MIGRATE_STATUS_COLLECTED:-false}"
 MIGRATE_PENDING_COUNT="${MIGRATE_PENDING_COUNT:-unknown}"
 UAT_AUTO_MIGRATE="${UAT_AUTO_MIGRATE:-false}"
+GITHUB_OUTPUT="${GITHUB_OUTPUT:-}"
+
+emit_output() {
+  local key="$1"
+  local value="$2"
+  if [[ -n "$GITHUB_OUTPUT" ]]; then
+    printf '%s=%s\n' "$key" "$value" >>"$GITHUB_OUTPUT"
+  fi
+}
 
 failed=0
 summary_tmp="$(mktemp)"
@@ -112,6 +122,25 @@ exec 3>&1
 } >"$summary_tmp"
 
 append_summary <"$summary_tmp"
+
+# Classify the failure so downstream ledger sync (agent-uat-notify) can tell
+# infra-only blockers (WAF challenge, deploy transport) apart from evidence of
+# a real code regression (build/localhost-E2E/migrations). Conservative:
+# anything not clearly infra-only defaults to "code" (blocking). See
+# docs/agent-efficiency/uat-coordinator-plan.md "Infra vs code classification".
+gate_failure_class="none"
+if [[ "$failed" -ne 0 ]]; then
+  gate_failure_class="infra_only"
+  if [[ -n "$BUILD_RESULT" && "$BUILD_RESULT" != "success" ]]; then
+    gate_failure_class="code"
+  elif [[ "$FULL_E2E_RESULT" == "failure" ]]; then
+    gate_failure_class="code"
+  elif [[ "$migrate_gate" == "fail" ]]; then
+    gate_failure_class="code"
+  fi
+fi
+emit_output "gate_failure_class" "$gate_failure_class"
+echo "gate_failure_class=${gate_failure_class}"
 
 if [[ "$failed" -ne 0 ]]; then
   echo "::error::Not all UAT gates passed — do not deploy to PROD."

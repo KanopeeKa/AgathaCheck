@@ -7,6 +7,7 @@ const { rest, parseRepo } = require('./github-project-lib');
 const {
   buildUatCoordinatorPayload,
   classifyFailedJobs,
+  isInfraOnlyFailure,
 } = require('../../scripts/lib/uat_coordinator_payload');
 const {
   acquireWatcher,
@@ -56,6 +57,7 @@ async function prepareDispatch({
   force = false,
   mergeSha = null,
   failedEntry = null,
+  failedGates = null,
 }) {
   const { state, issueNumber } = await loadStateFromIssue(coordinationIssue, token);
   let head = failedEntry || headEntryNeedingAttention(state);
@@ -130,13 +132,13 @@ async function prepareDispatch({
     await saveStateToIssue(issueNumber, nextState, token);
   }
 
-  const jobs = await fetchWorkflowJobs(owner, repo, workflowRunId, token);
-  const failedGates = classifyFailedJobs(jobs);
+  const resolvedFailedGates =
+    failedGates || classifyFailedJobs(await fetchWorkflowJobs(owner, repo, workflowRunId, token));
   const payload = buildUatCoordinatorPayload({
     coordinationIssueNumber: issueNumber,
     coordinationIssueUrl: `https://github.com/${owner}/${repo}/issues/${issueNumber}`,
     entry,
-    failedGates,
+    failedGates: resolvedFailedGates,
     workflowRunId,
     workflowUrl,
     repository: `https://github.com/${owner}/${repo}`,
@@ -147,7 +149,7 @@ async function prepareDispatch({
     issueNumber,
     entry,
     payload,
-    failed_gates: failedGates,
+    failed_gates: resolvedFailedGates,
   };
 }
 
@@ -198,6 +200,15 @@ async function main() {
     || run.html_url
     || `https://github.com/${owner}/${repo}/actions/runs/${workflowRunId}`;
 
+  // Classify once up front so an infra-only failure (WAF/deploy transport, no
+  // evidence of a code regression) is recorded as `infra_failed` rather than
+  // `failed` — this keeps queueHeadHold from freezing promotion for unrelated
+  // merges. See scripts/lib/uat_coordinator_payload.js isInfraOnlyFailure.
+  const jobs = await fetchWorkflowJobs(owner, repo, workflowRunId, token);
+  const failedGates = classifyFailedJobs(jobs);
+  const infraOnly = isInfraOnlyFailure(failedGates);
+  const gateFailureClass = failedGates.length === 0 ? 'none' : infraOnly ? 'infra_only' : 'code';
+
   const ledgerSync = await reconcileFailedDeployLedger({
     owner,
     repo,
@@ -206,6 +217,7 @@ async function main() {
     coordinationIssue,
     token,
     write: writeLedger,
+    gateFailureClass,
   });
 
   let failedEntry = null;
@@ -224,6 +236,17 @@ async function main() {
     }
   }
 
+  if (!failedEntry && ledgerSync.entry?.state === 'infra_failed') {
+    printJson({
+      skipped: true,
+      reason: 'infra_only_failure_no_hold',
+      gate_failure_class: gateFailureClass,
+      failed_gates: failedGates,
+      ledger_sync: ledgerSync,
+    });
+    return;
+  }
+
   const prepared = await prepareDispatch({
     coordinationIssue,
     workflowRunId,
@@ -236,6 +259,7 @@ async function main() {
     force: forceDispatch,
     mergeSha: run.head_sha || null,
     failedEntry,
+    failedGates,
   });
 
   if (prepared.skipped) {

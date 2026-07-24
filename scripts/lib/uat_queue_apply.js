@@ -40,6 +40,7 @@ async function syncDeployResult({
   conclusion,
   deployRunId,
   gateSummaryRef,
+  gateFailureClass,
   issueNumber = COORDINATION_ISSUE_NUMBER,
   token,
   write = true,
@@ -55,6 +56,7 @@ async function syncDeployResult({
     conclusion,
     deployRunId,
     gateSummaryRef,
+    gateFailureClass,
   });
   if (result.skipped) {
     return { skipped: true, reason: result.reason, issueNumber: coordIssue };

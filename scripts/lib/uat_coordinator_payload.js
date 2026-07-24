@@ -3,14 +3,26 @@
 const { buildSafetyConstraints } = require('../../.github/scripts/agent-safety-lib');
 const { parseUatTag } = require('./uat_queue_lib');
 
+// Patterns match the GitHub Actions job `name:` field as it renders in the
+// Jobs API (reusable-workflow jobs get a "<caller> / <called>" suffix) —
+// verify against a real run's `jobs[].name` (e.g. `gh api .../jobs`) before
+// editing; job names have drifted from these patterns before (see
+// docs/agent-efficiency/uat-coordinator-plan.md "Infra vs code classification").
 const GATE_CLASSIFIERS = [
-  { gate: 'http_smoke', pattern: /(^|\/)smoke\b|http smoke/i, remedial: 'maybe_infra' },
+  { gate: 'http_smoke', pattern: /(^|\/)smoke\b|http smoke|post-deploy smoke/i, remedial: 'maybe_infra' },
   { gate: 'live_e2e', pattern: /uat-e2e-smoke|@smoke-uat|live smoke/i, remedial: 'maybe_infra' },
-  { gate: 'localhost_e2e', pattern: /uat-e2e-full|e2e shard|playwright/i, remedial: 'yes' },
-  { gate: 'flutter_build', pattern: /build-web|flutter build/i, remedial: 'yes' },
-  { gate: 'deploy', pattern: /(^|\/)deploy\b/i, remedial: 'maybe_infra' },
-  { gate: 'migrations', pattern: /migrate|prod-ready/i, remedial: 'escalate' },
+  { gate: 'localhost_e2e', pattern: /uat-e2e-full|e2e shard|playwright|full e2e \(localhost\)/i, remedial: 'yes' },
+  { gate: 'flutter_build', pattern: /build-web|flutter build|build flutter web/i, remedial: 'yes' },
+  { gate: 'deploy', pattern: /(^|\/)deploy\b|deploy to uat/i, remedial: 'maybe_infra' },
+  { gate: 'migrations', pattern: /migrate/i, remedial: 'escalate' },
 ];
+
+// Aggregate/conclusion jobs that fail as a *symptom* of any other gate failing
+// — never a root cause. Excluding them keeps isInfraOnlyFailure() accurate:
+// without this, "Prod ready" would always show up as an extra failed job
+// (classified 'unknown'/'escalate') and defeat the all-gates-are-infra check
+// even when the one real failing gate was infra-only.
+const AGGREGATE_JOB_NAMES = new Set(['Prod ready', 'UAT release conclusion']);
 
 function classifyFailedJob(job) {
   const name = job.name || '';
@@ -27,7 +39,7 @@ function classifyFailedJob(job) {
 
 function classifyFailedJobs(jobs) {
   return (jobs || [])
-    .filter((job) => job.conclusion === 'failure')
+    .filter((job) => job.conclusion === 'failure' && !AGGREGATE_JOB_NAMES.has(job.name))
     .map(classifyFailedJob);
 }
 
@@ -55,6 +67,20 @@ function shouldEscalate(primaryGate) {
     return false;
   }
   return primaryGate.remedial === 'escalate' || primaryGate.gate === 'http_smoke';
+}
+
+/**
+ * True when every failed gate is host/network infra (WAF, SSH transport, deploy
+ * transport) with no evidence of a code regression — e.g. localhost E2E or the
+ * Flutter build did not fail. Used to keep infra-only deploy failures from
+ * freezing promotion for unrelated merges (queueHeadHold only reacts to
+ * `failed`/`remedial` entries, not `infra_failed`).
+ */
+function isInfraOnlyFailure(failedGates) {
+  if (!failedGates || failedGates.length === 0) {
+    return false;
+  }
+  return failedGates.every((row) => row.remedial === 'maybe_infra');
 }
 
 function buildUatCoordinatorPayload({
@@ -177,6 +203,7 @@ module.exports = {
   classifyFailedJobs,
   primaryFailedGate,
   shouldEscalate,
+  isInfraOnlyFailure,
   buildUatCoordinatorPayload,
   buildUatCoordinatorPrompt,
 };

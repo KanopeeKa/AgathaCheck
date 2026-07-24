@@ -9,6 +9,7 @@ const ENTRY_STATES = new Set([
   'deploying',
   'complete',
   'failed',
+  'infra_failed',
   'remedial',
   'frozen',
   'superseded',
