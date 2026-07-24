@@ -105,7 +105,7 @@ class _OrganizationFormScreenState
           ScaffoldMessenger.of(
             context,
           ).showSnackBar(SnackBar(content: Text(l.orgCreated)));
-          context.pushReplacement('/organizations/${org.id}');
+          context.pushReplacement('/o/orgs/${org.id}');
         }
       }
     } catch (e) {

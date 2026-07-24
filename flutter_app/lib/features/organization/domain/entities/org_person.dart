@@ -43,7 +43,7 @@ class OrgPersonSummary {
   }
 
   String detailPath(String orgId) =>
-      '/organizations/$orgId/people/${kind.wire}/$recordId';
+      '/o/orgs/$orgId/people/${kind.wire}/$recordId';
 
   factory OrgPersonSummary.fromJson(Map<String, dynamic> json) {
     final roleWire = json['role']?.toString();

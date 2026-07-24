@@ -9,7 +9,6 @@ import 'package:pet_profile_app/features/organization/domain/entities/organizati
 import 'package:pet_profile_app/features/organization/presentation/providers/org_provider_invites.dart';
 import 'package:pet_profile_app/features/organization/presentation/providers/organization_providers.dart';
 import 'package:pet_profile_app/features/organization/presentation/screens/organization_list_screen.dart';
-import 'package:pet_profile_app/features/organization/presentation/utils/org_screen_theme.dart';
 import 'package:pet_profile_app/l10n/app_localizations.dart';
 
 import '../../../../helpers/fakes.dart';
@@ -35,10 +34,10 @@ void main() {
     tester,
   ) async {
     final router = GoRouter(
-      initialLocation: '/organizations',
+      initialLocation: '/o/orgs',
       routes: [
         GoRoute(
-          path: '/organizations',
+          path: '/o/orgs',
           builder: (context, state) => const OrganizationListScreen(),
         ),
       ],

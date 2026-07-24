@@ -136,7 +136,7 @@ class OrganizationListScreen extends ConsumerWidget {
                                             content: Text(l.inviteAccepted),
                                           ),
                                         );
-                                        context.push('/organizations/$orgId');
+                                        context.push('/o/orgs/$orgId');
                                       }
                                     } catch (e) {
                                       if (context.mounted) {
@@ -223,7 +223,7 @@ class OrganizationListScreen extends ConsumerWidget {
                         padding: const EdgeInsets.only(bottom: 8),
                         child: OrgCard(
                           organization: org,
-                          onTap: () => context.push('/organizations/${org.id}'),
+                          onTap: () => context.push('/o/orgs/${org.id}'),
                         ),
                       ),
                     )
@@ -245,7 +245,7 @@ class OrganizationListScreen extends ConsumerWidget {
               key: const Key('org_create_button'),
               icon: const Icon(Icons.add, size: 18),
               label: Text(l.create),
-              onPressed: () => context.push('/organizations/new'),
+              onPressed: () => context.push('/o/orgs/new'),
             ),
           ),
         ],

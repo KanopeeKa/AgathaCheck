@@ -90,7 +90,7 @@ class OrganizationPetsScreen extends ConsumerWidget {
                             TextButton.icon(
                               key: Key('org_transfer_pet_${pet.id}'),
                               onPressed: () => context.push(
-                                '/organizations/$orgId/transfer/${pet.id}',
+                                '/o/orgs/$orgId/transfer/${pet.id}',
                               ),
                               icon: const Icon(Icons.swap_horiz, size: 18),
                               label: Text(l.transferPet),
@@ -98,7 +98,7 @@ class OrganizationPetsScreen extends ConsumerWidget {
                             TextButton.icon(
                               key: Key('org_transfer_org_${pet.id}'),
                               onPressed: () => context.push(
-                                '/organizations/$orgId/transfer/${pet.id}/to-org',
+                                '/o/orgs/$orgId/transfer/${pet.id}/to-org',
                               ),
                               icon: const Icon(Icons.hub_outlined, size: 18),
                               label: Text(l.transferToOrganisation),

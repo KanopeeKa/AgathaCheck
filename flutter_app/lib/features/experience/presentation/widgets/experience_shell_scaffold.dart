@@ -25,6 +25,7 @@ class ExperienceShellScaffold extends ConsumerWidget {
 
   bool get _isHome =>
       currentLocation == '/g/home' ||
+      currentLocation == '/o/orgs' ||
       currentLocation.startsWith('/o/home') ||
       (experience == AppExperience.organization &&
           RegExp(r'^/o/[^/]+$').hasMatch(currentLocation));

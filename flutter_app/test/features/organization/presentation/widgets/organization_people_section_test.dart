@@ -58,7 +58,7 @@ void main() {
           },
         ),
         GoRoute(
-          path: '/organizations/:orgId/people/:kind/:recordId',
+          path: '/o/orgs/:orgId/people/:kind/:recordId',
           builder: (context, state) => Scaffold(
             body: Text('Person ${state.pathParameters['recordId']}'),
           ),

@@ -29,7 +29,7 @@ class _AcceptConnectionScreenState
         ScaffoldMessenger.of(
           context,
         ).showSnackBar(SnackBar(content: Text(l.connectionAccepted)));
-        context.go('/organizations');
+        context.go('/o/orgs');
       }
     } catch (e) {
       if (mounted) {

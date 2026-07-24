@@ -131,9 +131,8 @@ class _ArchivedPetCard extends StatelessWidget {
           margin: const EdgeInsets.only(bottom: 8),
           child: InkWell(
             onTap: orgId != null && archivedPet.hasShadowSnapshot
-                ? () => context.push(
-                    '/organizations/$orgId/archived/${archivedPet.id}',
-                  )
+                ? () =>
+                      context.push('/o/orgs/$orgId/archived/${archivedPet.id}')
                 : null,
             child: Padding(
               padding: const EdgeInsets.all(16),

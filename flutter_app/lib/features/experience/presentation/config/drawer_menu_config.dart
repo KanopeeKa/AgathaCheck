@@ -56,7 +56,7 @@ class DrawerMenuConfig {
           semanticKey: 'drawer_org_view',
           label: l.experienceOrgView,
           group: DrawerMenuGroup.organizationGreen,
-          route: '/organizations',
+          route: '/o/orgs',
         ),
       ),
       const DrawerMenuEntry.separator(),
