@@ -127,6 +127,15 @@ class _OrganizationDetailScreenState
                         ),
                       ),
                       PopupMenuItem(
+                        value: 'fosters',
+                        child: ListTile(
+                          leading: const Icon(Icons.home_work_outlined),
+                          title: Text(l.manageFostersTitle),
+                          dense: true,
+                          contentPadding: EdgeInsets.zero,
+                        ),
+                      ),
+                      PopupMenuItem(
                         value: 'pets',
                         child: ListTile(
                           leading: const Icon(Icons.pets),
@@ -308,6 +317,9 @@ class _OrganizationDetailScreenState
         break;
       case 'members':
         context.push('/o/orgs/$orgId/members');
+        break;
+      case 'fosters':
+        context.push('/o/orgs/$orgId/fosters');
         break;
       case 'pets':
         context.push('/o/orgs/$orgId/pets');
