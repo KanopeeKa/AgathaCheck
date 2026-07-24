@@ -241,6 +241,20 @@ function updateEntryByPr(state, prNumber, patch) {
   return updateEntry(state, entry.merge_sha, patch);
 }
 
+/**
+ * UAT deploys only the latest tag — earlier pending queue entries were skipped.
+ */
+function supersedeEarlierPending(state, currentSeq) {
+  for (const entry of state.entries) {
+    if (entry.seq < currentSeq && entry.state === 'pending') {
+      entry.state = 'superseded';
+      entry.result = 'superseded';
+      entry.completed_at = nowIso();
+    }
+  }
+  return state;
+}
+
 function applyDeployResult(state, { deployRef, conclusion, deployRunId, gateSummaryRef }) {
   const parsed = parseUatTag(deployRef);
   if (!parsed) {
@@ -253,6 +267,8 @@ function applyDeployResult(state, { deployRef, conclusion, deployRunId, gateSumm
   if (!entry) {
     return { state, entry: null, skipped: true, reason: 'no_matching_entry' };
   }
+
+  supersedeEarlierPending(state, entry.seq);
 
   if (conclusion === 'success') {
     entry.state = 'complete';

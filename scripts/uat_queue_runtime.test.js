@@ -99,6 +99,21 @@ test('applyDeployResult marks success and failure', () => {
   assert.equal(bad.entry.gate_summary_ref, 'run 100');
 });
 
+test('applyDeployResult supersedes earlier pending entries', () => {
+  const state = createEmptyState();
+  enqueueEntry(state, { mergeSha: 'sha1', prNumber: 301, enqueuedBy: 'a' });
+  enqueueEntry(state, { mergeSha: 'sha2', prNumber: 302, enqueuedBy: 'b' });
+  enqueueEntry(state, { mergeSha: 'sha3', prNumber: 303, enqueuedBy: 'c' });
+  const result = applyDeployResult(state, {
+    deployRef: 'uat-260724-303',
+    conclusion: 'failure',
+    deployRunId: '200',
+  });
+  assert.equal(state.entries[0].state, 'superseded');
+  assert.equal(state.entries[1].state, 'superseded');
+  assert.equal(result.entry.state, 'failed');
+});
+
 test('acquireWatcher respects active lease', () => {
   let state = createEmptyState();
   const now = new Date('2026-07-23T12:00:00Z');

@@ -77,7 +77,7 @@ cPanel-generated backend/.htaccess (Passenger config) via FTP.
 EOF
       ;;
     waf)
-      echo 'Hosting WAF challenge page (o2switch Tiger Protect) — GitHub Actions egress cannot be whitelisted on this host; deploy will fail fast after repeated WAF responses. Retry later or validate manually.'
+    echo 'Hosting WAF challenge page (o2switch Tiger Protect) — retry with landing priming; SSH firewall whitelist is separate (port 22 only).'
       ;;
     passenger_crash)
       cat <<'EOF'

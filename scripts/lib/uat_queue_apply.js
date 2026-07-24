@@ -42,6 +42,7 @@ async function syncDeployResult({
   gateSummaryRef,
   issueNumber = COORDINATION_ISSUE_NUMBER,
   token,
+  write = true,
 }) {
   const coordIssue = resolveCoordinationIssue(issueNumber);
   if (!coordIssue) {
@@ -58,12 +59,15 @@ async function syncDeployResult({
   if (result.skipped) {
     return { skipped: true, reason: result.reason, issueNumber: coordIssue };
   }
-  await saveStateToIssue(coordIssue, result.state, token);
+  if (write) {
+    await saveStateToIssue(coordIssue, result.state, token);
+  }
   return {
     skipped: false,
     entry: result.entry,
     issueNumber: coordIssue,
     conclusion,
+    state: result.state,
   };
 }
 
