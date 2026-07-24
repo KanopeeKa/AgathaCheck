@@ -1,3 +1,7 @@
+/**
+ * Veterinarian list screen (`/g/vets`, `/o/vets`).
+ * Maps to: flutter_app/test/bdd/features/veterinarian_management.feature
+ */
 import type { Page } from '@playwright/test';
 import { expect } from '@playwright/test';
 import {
@@ -8,16 +12,12 @@ import {
   semanticsByName,
 } from '../support/flutter';
 
-/**
- * Veterinarian list screen (`/vets`).
- * Maps to: flutter_app/test/bdd/features/veterinarian_management.feature
- */
 export class VetListPage {
   constructor(private readonly page: Page) {}
 
   async expectLoaded(): Promise<void> {
     await dismissConsentBannerIfPresent(this.page);
-    await expectAppBarTitle(this.page, 'Veterinarians');
+    await this.page.getByText(/^Veterinarians$/i).first().waitFor({ timeout: 30_000 });
   }
 
   async expectEmptyState(): Promise<void> {
@@ -56,39 +56,19 @@ export class VetListPage {
     ).toHaveCount(n, { timeout: 30_000 });
   }
 
-  /** Open the three-dot options menu for the vet card matching `name`. */
-  async openVetMenu(name: string): Promise<void> {
+  async clickEditVet(name: string): Promise<void> {
     const card = semanticsByName(
       this.page,
       new RegExp(`Veterinarian:\\s*${escapeRegExp(name)}`, 'i'),
     );
     await card.waitFor({ timeout: 30_000 });
-    const box = await card.boundingBox();
-    if (!box) throw new Error(`Vet card "${name}" not found`);
-
-    const menus = this.page.getByRole('button', { name: /vet options/i });
-    const count = await menus.count();
-    for (let i = 0; i < count; i++) {
-      const menu = menus.nth(i);
-      const menuBox = await menu.boundingBox();
-      if (menuBox && Math.abs(menuBox.y - box.y) <= box.height) {
-        await menu.click();
-        await refreshFlutterAccessibility(this.page);
-        return;
-      }
-    }
-    throw new Error(`Could not find vet options menu for "${name}"`);
-  }
-
-  async clickEditVet(name: string): Promise<void> {
-    await this.openVetMenu(name);
-    await this.page.getByRole('menuitem', { name: 'Edit' }).click();
+    await card.getByRole('button', { name: /^Edit$/i }).click();
     await this.page.getByRole('textbox', { name: 'Name *' }).waitFor({ timeout: 30_000 });
   }
 
   async clickDeleteVet(name: string): Promise<void> {
-    await this.openVetMenu(name);
-    await this.page.getByRole('menuitem', { name: 'Delete' }).click();
+    await this.clickEditVet(name);
+    await this.page.getByRole('button', { name: /Delete Vet/i }).click();
     await refreshFlutterAccessibility(this.page);
   }
 
@@ -103,7 +83,12 @@ export class VetListPage {
   }
 
   async goBack(): Promise<void> {
-    await this.page.getByRole('button', { name: /go back/i }).click();
+    const home = this.page.getByRole('button', { name: /^Home$/i });
+    if (await home.isVisible({ timeout: 2_000 }).catch(() => false)) {
+      await home.click();
+    } else {
+      await this.page.getByRole('button', { name: /go back/i }).click();
+    }
     await this.page.waitForTimeout(500);
   }
 

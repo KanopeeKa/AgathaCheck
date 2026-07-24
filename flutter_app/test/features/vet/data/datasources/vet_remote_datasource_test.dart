@@ -55,6 +55,24 @@ void main() {
       expect(result, isEmpty);
     });
 
+    test('passes organization_id query when filtering', () async {
+      final client = MockClient((request) async {
+        expect(
+          request.url.toString(),
+          '$baseUrl/api/vets?organization_id=personal',
+        );
+        return http.Response(json.encode([testVetJson]), 200);
+      });
+
+      final datasource = VetRemoteDataSourceImpl(
+        baseUrl: baseUrl,
+        client: client,
+      );
+      final result = await datasource.getAllVets(organizationId: 'personal');
+
+      expect(result, hasLength(1));
+    });
+
     test('throws on 400 error with JSON body', () async {
       final client = MockClient((request) async {
         return http.Response(json.encode({'error': 'Bad request'}), 400);

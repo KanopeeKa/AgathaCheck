@@ -23,12 +23,11 @@ import '../../features/about/presentation/screens/legal_documents_screen.dart';
 import '../../features/about/domain/legal_document_id.dart';
 import '../../features/help/presentation/screens/help_screen.dart';
 import '../../features/subscription/presentation/screens/paywall_screen.dart';
-import '../../features/vet/presentation/screens/vet_form_screen.dart';
-import '../../features/vet/presentation/screens/vet_list_screen.dart';
 import '../widgets/consent_banner.dart';
 import '../providers/analytics_providers.dart';
 import 'experience_routes.dart';
 import 'organization_routes.dart';
+import 'vet_routes.dart';
 
 class AuthChangeNotifier extends ChangeNotifier {
   AuthState _authState;
@@ -94,6 +93,7 @@ final routerProvider = Provider<GoRouter>((ref) {
     },
     routes: [
       ...buildExperienceRoutes(),
+      ...buildVetExperienceRoutes(),
       GoRoute(
         path: '/landing',
         name: 'landing',
@@ -267,21 +267,18 @@ final routerProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(
         path: '/vets',
-        name: 'vetList',
-        builder: (context, state) => const VetListScreen(),
+        redirect: (context, state) => redirectLegacyVetPath(state) ?? '/g/vets',
       ),
       GoRoute(
         path: '/vets/add',
-        name: 'addVet',
-        builder: (context, state) => const VetFormScreen(),
+        redirect: (context, state) =>
+            redirectLegacyVetPath(state) ?? '/g/vets/add',
       ),
       GoRoute(
         path: '/vets/edit/:id',
-        name: 'editVet',
-        builder: (context, state) {
-          final vetId = state.pathParameters['id']!;
-          return VetFormScreen(vetId: vetId);
-        },
+        redirect: (context, state) =>
+            redirectLegacyVetPath(state) ??
+            '/g/vets/edit/${state.pathParameters['id']}',
       ),
       GoRoute(
         path: '/subscription',

@@ -13,6 +13,7 @@ class Vet {
     this.website = '',
     this.address = '',
     this.notes = '',
+    this.organizationId,
     this.createdAt,
     this.updatedAt,
   });
@@ -38,6 +39,9 @@ class Vet {
   /// Additional notes about the veterinarian.
   final String notes;
 
+  /// Organisation scope when set; null means a personal vet.
+  final String? organizationId;
+
   /// The timestamp when this veterinarian record was created.
   final DateTime? createdAt;
 
@@ -53,8 +57,10 @@ class Vet {
     String? website,
     String? address,
     String? notes,
+    String? organizationId,
     DateTime? createdAt,
     DateTime? updatedAt,
+    bool clearOrganizationId = false,
   }) {
     return Vet(
       id: id ?? this.id,
@@ -64,6 +70,9 @@ class Vet {
       website: website ?? this.website,
       address: address ?? this.address,
       notes: notes ?? this.notes,
+      organizationId: clearOrganizationId
+          ? null
+          : (organizationId ?? this.organizationId),
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
     );

@@ -10,9 +10,16 @@ import '../../domain/entities/vet.dart';
 import '../providers/vet_providers.dart';
 
 class VetFormScreen extends ConsumerStatefulWidget {
-  const VetFormScreen({super.key, this.vetId});
+  const VetFormScreen({
+    super.key,
+    this.vetId,
+    this.listPath = '/g/vets',
+    this.defaultOrganizationId,
+  });
 
   final String? vetId;
+  final String listPath;
+  final String? defaultOrganizationId;
 
   @override
   ConsumerState<VetFormScreen> createState() => _VetFormScreenState();
@@ -29,10 +36,12 @@ class _VetFormScreenState extends ConsumerState<VetFormScreen> {
 
   bool _isLoading = false;
   bool _isEdit = false;
+  String? _organizationId;
 
   @override
   void initState() {
     super.initState();
+    _organizationId = widget.defaultOrganizationId;
     if (widget.vetId != null) {
       _isEdit = true;
       _loadVet();
@@ -52,6 +61,7 @@ class _VetFormScreenState extends ConsumerState<VetFormScreen> {
           _websiteController.text = vet.website;
           _addressController.text = vet.address;
           _notesController.text = vet.notes;
+          _organizationId = vet.organizationId;
         });
       }
     } catch (e) {
@@ -85,7 +95,7 @@ class _VetFormScreenState extends ConsumerState<VetFormScreen> {
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           tooltip: l.backToVets,
-          onPressed: () => context.go('/vets'),
+          onPressed: () => context.go(widget.listPath),
         ),
       ),
       body: _isLoading
@@ -168,6 +178,20 @@ class _VetFormScreenState extends ConsumerState<VetFormScreen> {
                       if (_isEdit) ...[
                         const SizedBox(height: 24),
                         _LinkedPetsSection(vetId: widget.vetId!),
+                        const SizedBox(height: 16),
+                        OutlinedButton.icon(
+                          key: const Key('delete_vet_button'),
+                          onPressed: _isLoading
+                              ? null
+                              : () => _confirmDelete(context, l),
+                          icon: const Icon(Icons.delete_outline),
+                          label: Text(l.deleteVet),
+                          style: OutlinedButton.styleFrom(
+                            foregroundColor: Theme.of(
+                              context,
+                            ).colorScheme.error,
+                          ),
+                        ),
                       ],
                       const SizedBox(height: 24),
                       FilledButton.icon(
@@ -197,6 +221,7 @@ class _VetFormScreenState extends ConsumerState<VetFormScreen> {
         website: _websiteController.text.trim(),
         address: _addressController.text.trim(),
         notes: _notesController.text.trim(),
+        organizationId: _organizationId,
       );
 
       final notifier = ref.read(vetListProvider.notifier);
@@ -210,8 +235,42 @@ class _VetFormScreenState extends ConsumerState<VetFormScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(_isEdit ? 'Vet updated' : 'Vet added')),
         );
-        context.go('/vets');
+        context.go(widget.listPath);
       }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Error: $e')));
+      }
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
+    }
+  }
+
+  Future<void> _confirmDelete(BuildContext context, AppLocalizations l) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(l.deleteVet),
+        content: Text(l.deleteVetConfirm(_nameController.text.trim())),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(false),
+            child: Text(l.cancel),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.of(ctx).pop(true),
+            child: Text(l.delete),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true || !mounted) return;
+    setState(() => _isLoading = true);
+    try {
+      await ref.read(vetListProvider.notifier).deleteVet(widget.vetId!);
+      if (mounted) context.go(widget.listPath);
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(

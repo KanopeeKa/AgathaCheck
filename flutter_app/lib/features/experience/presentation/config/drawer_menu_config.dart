@@ -9,8 +9,8 @@ class DrawerMenuConfig {
 
   static const contactEmail = 'contact@agathatrack.com';
 
-  /// Legacy vet list until phase 10 adds `/g/vets` and `/o/vets`.
-  static const legacyVetsPath = '/vets';
+  static const guardianVetsPath = '/g/vets';
+  static const orgVetsPath = '/o/vets';
 
   static List<DrawerMenuEntry> guardianEntries({
     required AppLocalizations l,
@@ -47,7 +47,7 @@ class DrawerMenuConfig {
           semanticKey: 'drawer_my_vets',
           label: l.myVets,
           group: DrawerMenuGroup.guardianPlum,
-          route: legacyVetsPath,
+          route: guardianVetsPath,
         ),
       ),
       const DrawerMenuEntry.separator(),
@@ -105,7 +105,7 @@ class DrawerMenuConfig {
           semanticKey: 'drawer_org_vets',
           label: l.orgVets,
           group: DrawerMenuGroup.organizationGreen,
-          route: legacyVetsPath,
+          route: orgVetsPath,
         ),
       ),
       if (showGuardianView) ...[
