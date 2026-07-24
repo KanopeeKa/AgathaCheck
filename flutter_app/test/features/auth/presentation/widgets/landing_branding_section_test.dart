@@ -63,7 +63,7 @@ void main() {
     expect(find.text('See how it works'), findsOneWidget);
     expect(find.textContaining('Coordinate with your household'), findsNothing);
 
-    await tester.tap(find.text('See how it works'));
+    await tester.tap(find.byKey(const Key('landing_guardian_path_card')));
     await tester.pumpAndSettle();
 
     expect(
@@ -71,5 +71,40 @@ void main() {
       findsOneWidget,
     );
     expect(find.text('Show less'), findsOneWidget);
+  });
+
+  testWidgets('landing path cards use experience accent fills', (tester) async {
+    await tester.pumpWidget(
+      _wrap(
+        Builder(
+          builder: (context) {
+            return LandingBrandingSection(
+              theme: Theme.of(context),
+              l10n: AppLocalizations.of(context)!,
+            );
+          },
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    final guardianMaterial = tester.widget<Material>(
+      find.descendant(
+        of: find.byKey(const Key('landing_guardian_path_card')),
+        matching: find.byType(Material),
+      ),
+    );
+    final orgMaterial = tester.widget<Material>(
+      find.descendant(
+        of: find.byKey(const Key('landing_org_path_card')),
+        matching: find.byType(Material),
+      ),
+    );
+
+    expect(guardianMaterial.color, isNotNull);
+    expect(orgMaterial.color, isNotNull);
+    expect(guardianMaterial.color, isNot(equals(orgMaterial.color)));
+    expect(guardianMaterial.elevation, 0);
+    expect(orgMaterial.elevation, 0);
   });
 }
