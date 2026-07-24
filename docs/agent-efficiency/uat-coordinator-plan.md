@@ -479,6 +479,18 @@ Addresses Jul 23 queue pile-up. **Not in original plan; required for merge-rate 
 
 **Not changed:** genuine code failures (build, localhost E2E, migrations pending) still mark `failed`/`remedial` and freeze the queue exactly as before — this only affects the WAF/deploy-transport-only case.
 
+### 6. Curl-based auth warmup replaced with a real browser (added Jul 24, evening)
+
+**Problem (confirmed via live incident, not just theory):** o2switch Tiger Protect serves a **JavaScript challenge** (`o2s-browser-check`) to clients it flags as bots. A bare HTTP client (`curl`, Node `fetch`) has no JS engine — it is structurally incapable of ever solving this challenge, no matter how many retries, User-Agent tricks, or header changes are applied. `scripts/ci/warmup-uat-auth.sh` (curl-based `POST /backend/api/auth/signup`) went from occasionally passing (when Tiger Protect's bot heuristics were more lenient / rate-based) to **100% failure** as CI merge/deploy volume increased and the WAF tightened. Meanwhile `GET /backend/health` (also curl) reliably passes — Tiger Protect specifically scrutinizes the signup/login endpoints, not all traffic.
+
+This mattered beyond "the smoke gate is red": `deploy-uat.yml`'s `smoke` job gated `uat-e2e-smoke` (`if: needs.smoke.result == 'success'`) — a real headed-Chromium Playwright suite that **already** passes this exact WAF via `e2e/playwright/support/waf.ts` (`passHostingWaf`) + `stealth.ts`. A 100%-failing curl gate meant the WAF-capable test suite never even got a chance to run.
+
+**Fix:** `deploy-uat.yml`'s `smoke` job replaced the curl-based auth POST with a single Playwright test (`e2e/playwright/tests/uat-auth-warmup.spec.ts`, project `warmup-uat` in `e2e/playwright.config.ts`) that requests the `testUser` fixture — the same real-browser (headed Chromium, `--disable-blink-features=AutomationControlled`) + stealth (`navigator.webdriver` hidden) + in-browser-fetch signup path (with UI-form fallback) that `@smoke-uat` tests already use successfully. One clean browser-driven signup also reduces bot-like request volume versus the old up-to-18-attempt curl POST retry loop.
+
+`scripts/ci/warmup-uat-auth.sh` is kept for local/manual use against non-WAF-protected targets but is no longer wired into `deploy-uat.yml`.
+
+**Residual risk:** unverified against the live WAF at merge time (this repo's CI is the only place that can prove it against the real Tiger Protect challenge) — watch the next few `deploy-uat` runs' `smoke` job. If the Playwright warmup also fails, `SMOKE_FAILURE_KIND` has no signal for it (only `uat-post-deploy-smoke.sh`'s health check sets it), so `assert-uat-gates.sh` conservatively classifies it `code`, not `infra_only` — i.e. it will (correctly) freeze the queue again rather than silently assume "still just WAF."
+
 ---
 
 ## Immediate actions (operator)
@@ -513,5 +525,6 @@ Addresses Jul 23 queue pile-up. **Not in original plan; required for merge-rate 
 - `.github/workflows/deploy-uat.yml` — `agent-uat-notify`
 - `.cursor/skills/babysit-plus/SKILL.md` §8
 - `scripts/ci/assert-uat-gates.sh`
-- `scripts/ci/warmup-uat-auth.sh` — WAF detection
+- `scripts/ci/warmup-uat-auth.sh` — deprecated for live UAT (curl cannot pass a JS WAF challenge); see §6
+- `e2e/playwright/tests/uat-auth-warmup.spec.ts` — real-browser replacement (§6)
 - `docs/e2e/uat-live-operations-runbook.md`

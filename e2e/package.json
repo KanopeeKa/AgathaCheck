@@ -11,6 +11,7 @@
     "test:smoke-ci": "playwright test --project=ci-canary",
     "test:smoke-uat": "playwright test --project=uat-smoke --max-failures=1",
     "test:smoke": "npm run test:smoke-uat",
+    "test:warmup-uat": "playwright test --project=warmup-uat --max-failures=1",
     "test:ui": "playwright test --ui",
     "test:headed": "playwright test --headed",
     "report": "playwright show-report",
