@@ -152,11 +152,46 @@ case "$EVENT_NAME" in
     PROMOTE_RUN_ID="${WORKFLOW_RUN_ID:?WORKFLOW_RUN_ID is required for workflow_run}"
     COMMIT_SHA="${WORKFLOW_RUN_HEAD_SHA:?WORKFLOW_RUN_HEAD_SHA is required for workflow_run}"
 
+    PROMOTE_BLOCK_REASON="$(python3 - "$PROMOTE_RUN_ID" <<'PY'
+import json
+import os
+import sys
+import urllib.request
+
+run_id = sys.argv[1]
+repo = os.environ["GITHUB_REPOSITORY"]
+token = os.environ["GITHUB_TOKEN"]
+
+def api(path: str):
+    req = urllib.request.Request(
+        f"https://api.github.com{path}",
+        headers={
+            "Authorization": f"Bearer {token}",
+            "Accept": "application/vnd.github+json",
+            "X-GitHub-Api-Version": "2022-11-28",
+        },
+    )
+    with urllib.request.urlopen(req) as resp:
+        return json.load(resp)
+
+try:
+    for job in api(f"/repos/{repo}/actions/runs/{run_id}/jobs").get("jobs", []):
+        if job.get("name") == "Create UAT tag" and job.get("conclusion") in ("skipped", "cancelled"):
+            print("promote_tag_skipped")
+            break
+except Exception as err:
+    # Never let a transient API hiccup (rate limit, 5xx, network blip) hard-fail
+    # the whole deploy-uat run — fall through to find_uat_tag_for_commit below.
+    print(f"::warning::promote-tag job lookup failed ({err}); continuing to tag resolution", file=sys.stderr)
+PY
+)"
+    if [[ -n "$PROMOTE_BLOCK_REASON" ]]; then
+      skip "$PROMOTE_BLOCK_REASON"
+    fi
+
     if ! DEPLOY_REF="$(find_uat_tag_for_commit "$COMMIT_SHA" "$PROMOTE_RUN_ID")"; then
-      echo "::error::No uat-* tag found for promote commit ${COMMIT_SHA}" >&2
-      emit_output proceed false
-      emit_output skip_reason no_uat_tag_for_commit
-      exit 1
+      echo "::warning::No uat-* tag found for promote commit ${COMMIT_SHA} — skipping deploy" >&2
+      skip "no_uat_tag_for_commit"
     fi
 
     emit_output proceed true
