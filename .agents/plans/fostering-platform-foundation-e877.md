@@ -131,10 +131,10 @@ next_action: "continue phase 2 on branch cursor/j1-manage-fosters-shell-e877"
 artifact_ref:
   branch: cursor/j1-manage-fosters-shell-e877
   plan_path: .agents/plans/fostering-platform-foundation-e877.md
-  plan_commit: 5a6c706022b7ed7a66c787c380fc0701c3158ad3
+  plan_commit: d291da73d5188a08c5e9031619ae41d7983b1ac3
   snapshot_path: .agents/plans/fostering-platform-foundation-e877.snapshot.json
-  snapshot_commit: 5a6c706022b7ed7a66c787c380fc0701c3158ad3
-open_prs: []
+  snapshot_commit: d291da73d5188a08c5e9031619ae41d7983b1ac3
+open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/336"]
 merge_commits: {"1":"5a6c706022b7ed7a66c787c380fc0701c3158ad3"}
 debt_issue_refs: []
 ```
