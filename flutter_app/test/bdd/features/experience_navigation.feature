@@ -84,7 +84,8 @@ Feature: Experience navigation
   # Superseded by the navigation reversal (docs/experience-program/decisions-log.md D1, D5) —
   # the drawer no longer has a "settings menu" switch; replace with a scenario asserting the
   # Guardian/Organisation drawer items directly (see phase-1-navigation.md).
-  @P1 @legacy
+  @legacy
+  @P1
   Scenario: User switches to organisation view from guardian drawer
     Given a registered user with email "dual@example.com" and password "secret123"
     And the user belongs to an organisation
