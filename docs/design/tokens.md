@@ -3,6 +3,10 @@
 Canonical palette for AgathaTrack. Implemented in `flutter_app/lib/core/theme/`.  
 **Phase 0:** `app_theme.dart` + `ExperienceColors` extension. Screens adopt experience tokens in later phases.
 
+**Re-skinning the app?** See `skin-change-guide.md` for the full checklist —
+the one file to edit (`app_color_tokens.dart`) plus logos, web manifest,
+PDF report tokens, and email branding that mirror it.
+
 ## Foundations
 
 | Token | Hex | Flutter role |
@@ -114,6 +118,7 @@ Use foundation **body** / **muted** text on **w** group backgrounds — not guar
 | `app_color_tokens.dart` | const hex values |
 | `experience_colors.dart` | `ThemeExtension` + helpers |
 | `app_theme.dart` | `ThemeData`, component themes, legacy `AppTheme.org*` aliases |
+| `pdf_report_tokens.dart` | Mirrors the same hex values as `PdfColor` constants for generated PDF reports (separate type, can't share Dart consts across packages) |
 
 Default `ColorScheme.primary` = guardian plum (pet-guardian-first landing).
 

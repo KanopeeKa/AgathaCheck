@@ -71,7 +71,7 @@ class _OrganizationPersonDetailScreenState
                           value: 'delete_external',
                           child: Text(
                             l.deleteFosterParent,
-                            style: const TextStyle(color: Colors.red),
+                            style: TextStyle(color: colorScheme.error),
                           ),
                         ),
                       ];
@@ -87,7 +87,7 @@ class _OrganizationPersonDetailScreenState
                       value: 'remove',
                       child: Text(
                         l.orgRemoveMember,
-                        style: const TextStyle(color: Colors.red),
+                        style: TextStyle(color: colorScheme.error),
                       ),
                     ),
                   ];
@@ -323,7 +323,7 @@ class _OrganizationPersonDetailScreenState
                 onPressed: () => Navigator.pop(ctx, true),
                 child: Text(
                   l.delete,
-                  style: const TextStyle(color: Colors.red),
+                  style: TextStyle(color: Theme.of(context).colorScheme.error),
                 ),
               ),
             ],
@@ -358,7 +358,7 @@ class _OrganizationPersonDetailScreenState
                 onPressed: () => Navigator.pop(ctx, true),
                 child: Text(
                   l.delete,
-                  style: const TextStyle(color: Colors.red),
+                  style: TextStyle(color: Theme.of(context).colorScheme.error),
                 ),
               ),
             ],

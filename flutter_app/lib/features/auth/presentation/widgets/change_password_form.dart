@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../../../core/theme/app_color_tokens.dart';
+
 class ChangePasswordForm extends StatelessWidget {
   final GlobalKey<FormState> formKey;
   final TextEditingController currentPasswordController;
@@ -144,7 +146,7 @@ class ChangePasswordForm extends StatelessWidget {
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
                       color: passwordSuccess
-                          ? Colors.green.shade50
+                          ? AppColorTokens.successLight
                           : theme.colorScheme.errorContainer,
                       borderRadius: BorderRadius.circular(8),
                     ),
@@ -155,7 +157,7 @@ class ChangePasswordForm extends StatelessWidget {
                               ? Icons.check_circle
                               : Icons.error_outline,
                           color: passwordSuccess
-                              ? Colors.green
+                              ? AppColorTokens.success
                               : theme.colorScheme.error,
                           size: 20,
                         ),
@@ -165,7 +167,7 @@ class ChangePasswordForm extends StatelessWidget {
                             passwordMessage!,
                             style: TextStyle(
                               color: passwordSuccess
-                                  ? Colors.green.shade800
+                                  ? AppColorTokens.success
                                   : theme.colorScheme.error,
                             ),
                           ),

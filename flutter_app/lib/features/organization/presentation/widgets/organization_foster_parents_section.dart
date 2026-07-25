@@ -121,7 +121,10 @@ class OrganizationFosterParentsSection extends ConsumerWidget {
           ),
           TextButton(
             onPressed: () => Navigator.pop(ctx, true),
-            child: Text(l.delete, style: const TextStyle(color: Colors.red)),
+            child: Text(
+              l.delete,
+              style: TextStyle(color: theme.colorScheme.error),
+            ),
           ),
         ],
       ),
@@ -199,7 +202,7 @@ class _FosterParentTile extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
             decoration: BoxDecoration(
               color: parent.isExternal
-                  ? Colors.blueGrey.withAlpha(30)
+                  ? colorScheme.surfaceContainerHighest
                   : parent.role?.isSuperAdmin == true
                   ? AppTheme.orgSuperUserBg
                   : AppTheme.orgChipBg,
@@ -215,7 +218,7 @@ class _FosterParentTile extends StatelessWidget {
                 fontSize: 11,
                 fontWeight: FontWeight.w600,
                 color: parent.isExternal
-                    ? Colors.blueGrey.shade800
+                    ? colorScheme.onSurfaceVariant
                     : parent.role?.isSuperAdmin == true
                     ? AppTheme.orgSuperUserFg
                     : AppTheme.orgChipFg,

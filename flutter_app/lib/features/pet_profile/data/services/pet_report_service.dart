@@ -2,6 +2,8 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:pdf/pdf.dart';
+
+import '../../../../core/theme/pdf_report_tokens.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:intl/intl.dart';
 
@@ -59,12 +61,6 @@ class ReportSections {
 }
 
 class PetReportService {
-  static const _brandPurple = PdfColor.fromInt(0xFF6750A4);
-  static const _brandPurpleLight = PdfColor.fromInt(0xFFEADDFF);
-  static const _textMuted = PdfColor.fromInt(0xFF49454F);
-  static const _borderColor = PdfColor.fromInt(0xFFCAC4D0);
-  static const _white = PdfColors.white;
-
   /// Generates a comprehensive PDF report for a single pet.
   ///
   /// The [sections] parameter controls which parts of the report are included.
@@ -208,7 +204,7 @@ class PetReportService {
       margin: const pw.EdgeInsets.only(bottom: 14),
       padding: const pw.EdgeInsets.all(12),
       decoration: pw.BoxDecoration(
-        color: _brandPurple,
+        color: PdfReportTokens.primary,
         borderRadius: pw.BorderRadius.circular(8),
       ),
       child: pw.Row(
@@ -220,7 +216,10 @@ class PetReportService {
               margin: const pw.EdgeInsets.only(right: 12),
               decoration: pw.BoxDecoration(
                 borderRadius: pw.BorderRadius.circular(24),
-                border: pw.Border.all(color: _white, width: 1.5),
+                border: pw.Border.all(
+                  color: PdfReportTokens.inverse,
+                  width: 1.5,
+                ),
               ),
               child: pw.ClipOval(child: _buildPetImage(pet.photoPath!)),
             ),
@@ -233,7 +232,7 @@ class PetReportService {
                   style: pw.TextStyle(
                     fontSize: 18,
                     fontWeight: pw.FontWeight.bold,
-                    color: _white,
+                    color: PdfReportTokens.inverse,
                   ),
                 ),
                 pw.SizedBox(height: 2),
@@ -245,7 +244,7 @@ class PetReportService {
                   ].join(' | '),
                   style: pw.TextStyle(
                     fontSize: 10,
-                    color: PdfColor.fromInt(0xFFE8DEF8),
+                    color: PdfReportTokens.primarySoft,
                   ),
                 ),
               ],
@@ -269,7 +268,7 @@ class PetReportService {
                     style: pw.TextStyle(
                       fontSize: 9,
                       fontWeight: pw.FontWeight.bold,
-                      color: PdfColor.fromInt(0xFFE8DEF8),
+                      color: PdfReportTokens.primarySoft,
                       letterSpacing: 1.5,
                     ),
                   ),
@@ -278,7 +277,7 @@ class PetReportService {
                     l.pdfReportTitle,
                     style: pw.TextStyle(
                       fontSize: 8,
-                      color: PdfColor.fromInt(0xFFD0BCFF),
+                      color: PdfReportTokens.primarySoft,
                     ),
                   ),
                 ],
@@ -300,18 +299,26 @@ class PetReportService {
       margin: const pw.EdgeInsets.only(top: 8),
       padding: const pw.EdgeInsets.only(top: 6),
       decoration: const pw.BoxDecoration(
-        border: pw.Border(top: pw.BorderSide(color: _borderColor, width: 0.5)),
+        border: pw.Border(
+          top: pw.BorderSide(color: PdfReportTokens.border, width: 0.5),
+        ),
       ),
       child: pw.Row(
         mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
         children: [
           pw.Text(
             l.pdfGeneratedBy(dateFormat.format(generatedAt)),
-            style: const pw.TextStyle(fontSize: 8, color: _textMuted),
+            style: const pw.TextStyle(
+              fontSize: 8,
+              color: PdfReportTokens.muted,
+            ),
           ),
           pw.Text(
             l.pdfPageOf(context.pageNumber, context.pagesCount),
-            style: const pw.TextStyle(fontSize: 8, color: _textMuted),
+            style: const pw.TextStyle(
+              fontSize: 8,
+              color: PdfReportTokens.muted,
+            ),
           ),
         ],
       ),
@@ -335,11 +342,11 @@ class PetReportService {
       return pw.Container(
         width: 56,
         height: 56,
-        color: _brandPurpleLight,
+        color: PdfReportTokens.primaryLight,
         child: pw.Center(
           child: pw.Text(
             '?',
-            style: pw.TextStyle(fontSize: 20, color: _brandPurple),
+            style: pw.TextStyle(fontSize: 20, color: PdfReportTokens.primary),
           ),
         ),
       );
