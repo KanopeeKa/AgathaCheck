@@ -162,9 +162,11 @@ async function main() {
   console.log(JSON.stringify({ launched: marker }, null, 2));
 }
 
-main().catch(async (error) => {
-  console.error(error);
-  process.exit(1);
-});
+if (require.main === module) {
+  main().catch(async (error) => {
+    console.error(error);
+    process.exit(1);
+  });
+}
 
 module.exports = { launchAgent };
