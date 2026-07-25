@@ -2,12 +2,17 @@ import { v4 as uuidv4 } from 'uuid';
 import { normalizeCalendarDateInput } from '../../../lib/calendarDate.js';
 import { createNotification, userDisplayName } from '../../../lib/notificationHelper.js';
 import {
+  auditFosteringSession,
+  AUDIT_FOSTERING_SESSION_CREATED,
+  insertFosteringSession,
+  lookupShelterFosterRelationshipId,
+} from '../../../lib/fosterSessions.js';
+import {
   getActivePlacementForPet,
   loadPlacementDetail,
   placementToMap,
-  PLACEMENT_STATUS_PENDING,
-  PLACEMENT_STATUS_PENDING_CONDITIONS,
-  PLACEMENT_STATUS_WAITING_ADOPTION,
+  SESSION_STATUS_ADOPTION_IN_PROGRESS,
+  SESSION_STATUS_PENDING_ACCEPTANCE,
 } from '../../../lib/fosterPlacements.js';
 import { isFosterParentMember } from '../../../lib/orgRoles.js';
 import { extractUserId, requireOrgAdmin } from '../shared.js';
@@ -63,14 +68,36 @@ export function registerPlacementCreateRoutes(router, pool) {
       }
 
       const id = uuidv4();
-      const insertResult = await pool.query(
-        `INSERT INTO foster_placements (
-           id, organization_id, pet_id, foster_user_id, status, start_date, notes, created_by
-         ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
-         RETURNING *`,
-        [id, orgId, petId, fosterUserId, PLACEMENT_STATUS_PENDING, startDate, notes, userId],
-      );
-      const placement = insertResult.rows[0];
+      const relationshipId = data.shelter_foster_relationship_id
+        || data.shelterFosterRelationshipId
+        || await lookupShelterFosterRelationshipId(pool, orgId, fosterUserId);
+
+      const placement = await insertFosteringSession(pool, {
+        id,
+        orgId,
+        petId,
+        fosterUserId,
+        status: SESSION_STATUS_PENDING_ACCEPTANCE,
+        startDate,
+        notes,
+        createdBy: userId,
+        shelterFosterRelationshipId: relationshipId,
+        sessionType: data.session_type || data.sessionType,
+        fosterRequestResponseId: data.foster_request_response_id || data.fosterRequestResponseId,
+      });
+
+      auditFosteringSession(pool, {
+        actorUserId: userId,
+        action: AUDIT_FOSTERING_SESSION_CREATED,
+        resourceId: placement.id,
+        orgId,
+        petId,
+        metadata: {
+          session_status: SESSION_STATUS_PENDING_ACCEPTANCE,
+          shelter_foster_relationship_id: relationshipId,
+        },
+        req,
+      });
 
       const adminResult = await pool.query(
         'SELECT first_name, last_name, email FROM users WHERE id = $1',
@@ -127,18 +154,36 @@ export function registerPlacementCreateRoutes(router, pool) {
       }
 
       const placementId = uuidv4();
-      const nextStatus = adoptionConditions
-        ? PLACEMENT_STATUS_PENDING_CONDITIONS
-        : PLACEMENT_STATUS_WAITING_ADOPTION;
+      const relationshipId = data.shelter_foster_relationship_id
+        || data.shelterFosterRelationshipId
+        || await lookupShelterFosterRelationshipId(pool, orgId, fosterUserId);
+      const nextStatus = SESSION_STATUS_ADOPTION_IN_PROGRESS;
 
-      const insertResult = await pool.query(
-        `INSERT INTO foster_placements (
-           id, organization_id, pet_id, foster_user_id, status, notes,
-           adoption_conditions, created_by
-         ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
-         RETURNING *`,
-        [placementId, orgId, petId, fosterUserId, nextStatus, notes, adoptionConditions, userId],
-      );
+      const placement = await insertFosteringSession(pool, {
+        id: placementId,
+        orgId,
+        petId,
+        fosterUserId,
+        status: nextStatus,
+        notes,
+        createdBy: userId,
+        shelterFosterRelationshipId: relationshipId,
+        sessionType: data.session_type || data.sessionType,
+        adoptionConditions,
+      });
+
+      auditFosteringSession(pool, {
+        actorUserId: userId,
+        action: AUDIT_FOSTERING_SESSION_CREATED,
+        resourceId: placement.id,
+        orgId,
+        petId,
+        metadata: {
+          session_status: nextStatus,
+          direct_adopt: true,
+        },
+        req,
+      });
 
       const adminResult = await pool.query(
         'SELECT first_name, last_name, email FROM users WHERE id = $1',
@@ -157,8 +202,8 @@ export function registerPlacementCreateRoutes(router, pool) {
         type: 'general',
       });
 
-      const detail = await loadPlacementDetail(pool, insertResult.rows[0].id);
-      res.status(201).json(placementToMap(detail || insertResult.rows[0]));
+      const detail = await loadPlacementDetail(pool, placement.id);
+      res.status(201).json(placementToMap(detail || placement));
     } catch (err) {
       res.status(500).json({ error: publicError(err) });
     }

@@ -3,14 +3,18 @@ import { createNotification } from '../../../lib/notificationHelper.js';
 import {
   cancelAdoptionPlacement,
   loadPlacementDetail,
+  normalizePlacementStatus,
   placementToMap,
   PLACEMENT_STATUS_IN_PROGRESS,
-  PLACEMENT_STATUS_NOT_IN_FOSTER,
   PLACEMENT_STATUS_PENDING,
   PLACEMENT_STATUS_PENDING_CONDITIONS,
   PLACEMENT_STATUS_WAITING_ADOPTION,
   revokeFosterPetAccess,
+  SESSION_STATUS_ACTIVE,
+  SESSION_STATUS_CANCELLED,
+  SESSION_STATUS_PENDING_ACCEPTANCE,
 } from '../../../lib/fosterPlacements.js';
+import { requestSessionEnd } from '../../../lib/fosterSessions.js';
 import {
   clearOrgPetHomeHiddenForPet,
   setOrgGuardianAndCare,
@@ -46,11 +50,38 @@ export function registerPlacementActionRoutes(router, pool) {
       if (!placement) {
         return res.status(404).json({ error: 'Placement not found' });
       }
-      if (![PLACEMENT_STATUS_PENDING, PLACEMENT_STATUS_IN_PROGRESS].includes(placement.status)) {
+
+      const sessionStatus = normalizePlacementStatus(placement.status);
+      const legacyActive = [PLACEMENT_STATUS_PENDING, PLACEMENT_STATUS_IN_PROGRESS].includes(placement.status);
+      const sessionEndable = [
+        SESSION_STATUS_PENDING_ACCEPTANCE,
+        SESSION_STATUS_ACTIVE,
+      ].includes(sessionStatus);
+
+      if (!legacyActive && !sessionEndable) {
         return res.status(400).json({ error: 'Placement is not active' });
       }
 
       const petName = await loadPetName(pool, placement.pet_id);
+
+      if (sessionStatus === SESSION_STATUS_ACTIVE || placement.status === PLACEMENT_STATUS_IN_PROGRESS) {
+        const endRequest = await requestSessionEnd(pool, placement);
+        if (endRequest.error) {
+          return res.status(endRequest.status).json({ error: endRequest.error });
+        }
+
+        await createNotification(pool, {
+          userId: placement.foster_user_id,
+          petId: placement.pet_id,
+          petName,
+          title: 'Foster session ending',
+          message: `The foster session for ${petName} is awaiting return confirmation.`,
+          type: 'general',
+        });
+
+        const detail = await loadPlacementDetail(pool, placementId);
+        return res.json(placementToMap(detail || endRequest.row, { pet_name: petName }));
+      }
 
       const updateResult = await pool.query(
         `UPDATE foster_placements
@@ -59,7 +90,7 @@ export function registerPlacementActionRoutes(router, pool) {
              updated_at = NOW()
          WHERE id = $3
          RETURNING *`,
-        [PLACEMENT_STATUS_NOT_IN_FOSTER, endDate, placementId],
+        [SESSION_STATUS_CANCELLED, endDate, placementId],
       );
 
       if (placement.status === PLACEMENT_STATUS_IN_PROGRESS) {
