@@ -14,7 +14,7 @@ Playwright specs in `playwright/tests/` are annotated with `@bdd <feature>` comm
 
 **Navigation contract:** page-object actions must wait for route + ready state before returning. See [`docs/e2e-navigation-contract.md`](../docs/e2e-navigation-contract.md).
 
-**UAT live ops:** symptom triage, env checklist, and prevention patterns — [`docs/e2e/uat-live-operations-runbook.md`](../docs/e2e/uat-live-operations-runbook.md).
+**UAT live ops:** symptom triage, env checklist, and prevention patterns — [`docs/e2e/uat-live-operations-runbook.md`](../docs/e2e/uat-live-operations-runbook.md). **WAF + queue lessons (Jul 2026):** [`docs/e2e/uat-waf-queue-lessons.md`](../docs/e2e/uat-waf-queue-lessons.md).
 
 ### Current coverage
 

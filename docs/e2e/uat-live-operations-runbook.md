@@ -2,7 +2,7 @@
 
 Institutional knowledge from UAT `@smoke` / deploy hardening (July 2026). Use this to **triage failures fast** and **avoid reintroducing** the same classes of bug.
 
-**Related:** [uat-backend-node-modules-runbook.md](../uat-backend-node-modules-runbook.md) · [e2e-navigation-contract.md](../e2e-navigation-contract.md) · [e2e/README.md](../../e2e/README.md)
+**Related:** [uat-backend-node-modules-runbook.md](../uat-backend-node-modules-runbook.md) · [e2e-navigation-contract.md](../e2e-navigation-contract.md) · [e2e/README.md](../../e2e/README.md) · **[uat-waf-queue-lessons.md](./uat-waf-queue-lessons.md)** (Jul 2026 incident chain)
 
 ---
 
@@ -29,7 +29,8 @@ GitHub Actions deploy-uat.yml
 | **Auth / rate limit** | `401` on API seed; `429` on signup; **all** smoke timeout on login | UAT access logs; `server/config/rateLimit.js`; UAT Node `E2E=1` |
 | **Token shape** | `401` after login; E2E “unexpected token shape” | `e2e/playwright/support/normalize-stored-token.ts` |
 | **E2E test pattern** | Timeout on `expectPetVisible` with no API error | Spec order: seed **before** `loginAs` |
-| **Flutter / WAF** | WAF challenge HTML; semantics timeout | `e2e/playwright/support/waf.ts`, `flutter.ts` |
+| **Flutter / WAF** | WAF challenge HTML; semantics timeout; stuck `#/landing` after signup | `e2e/playwright/support/waf.ts`, `waf-markers.ts`, [uat-waf-queue-lessons.md](./uat-waf-queue-lessons.md) |
+| **UAT queue** | `promote-uat` skipped; `head_entry_failed`; coordinator never launches | `scripts/uat_queue_runtime.js`, [uat-waf-queue-lessons.md](./uat-waf-queue-lessons.md) |
 
 ---
 
@@ -61,6 +62,8 @@ GitHub Actions deploy-uat.yml
 | `expectPetVisible` timeout after `createPet` | Pet created **after** `loginAs` — home list already painted empty | **Seed via API before login** (`testUser.accessToken`); see [API seed ordering](#api-seed-ordering-critical-for-live-uat) |
 | `expectDueEntryOnHome` timeout | Home `DueEventsSection` not refreshed after API seed | `PetListPage.refreshByRemount()` after login |
 | Health dashboard entry timeout on UAT only | Live latency / WAF | `isLiveHostingTarget()` longer timeouts; `prepareLiveApiAccess` in fixture |
+| **Warmup** `test:warmup-uat` fails — WAF HTML on signup, health OK | Health-only WAF clear; auth endpoint still blocked | `passHostingWaf` auth probe (#351); see [uat-waf-queue-lessons.md](./uat-waf-queue-lessons.md) |
+| **Warmup** stuck `#/landing` 120s | Signup API WAF-blocked; UI cannot complete auth | Same as above — do not add curl/Node retries |
 | Signup smoke `429` | Bypass token not in workflow env | `E2E_BYPASS_TOKEN` on smoke step in `deploy-uat.yml` |
 | **All** `@smoke` tests timeout ~2.4 min | Login rate limit — UAT Node missing `E2E=1` | Set `E2E=1` on UAT Node app (cPanel) and restart |
 | `globalSetup` health probe fail | UAT down, WAF, or bad TLS chain | `E2E_TLS_INSECURE=1`, `NODE_TLS_REJECT_UNAUTHORIZED=0` on CI |
@@ -188,7 +191,8 @@ Localhost CI: `E2E=1` disables auth + general API rate limits — bypass not nee
 | Migration runner | `server/scripts/migrate.js` |
 | Migration SQL | `db/migrations/` |
 | Token normalization | `e2e/playwright/support/normalize-stored-token.ts` |
-| Live WAF / API access | `e2e/playwright/support/waf.ts` |
+| Live WAF / API access | `e2e/playwright/support/waf.ts`, `waf-markers.ts` |
+| WAF + queue lessons (Jul 2026) | `docs/e2e/uat-waf-queue-lessons.md` |
 | Auth fixture | `e2e/playwright/fixtures/auth.fixture.ts` |
 | Pet list remount helper | `e2e/playwright/pages/pet-list.page.ts` (`refreshByRemount`) |
 | Pets `/all` route | `server/routes/pets/coreRouter.js` |
@@ -220,3 +224,7 @@ Localhost CI: `E2E=1` disables auth + general API rate limits — bypass not nee
 | Weight `@smoke` timeout | API seed after login | Seed before login (#225) |
 | Health `@smoke` passed after migrations | Was blocked by API 500s / separate UI timing | Migrations first; remount for home due events |
 | All live `@smoke` timeout ~2.4 min | UAT Node missing `E2E=1` | Set `E2E=1` + restart; verified [run 29694789075](https://github.com/KanopeeKa/AgathaCheck/actions/runs/29694789075) |
+| Warmup WAF: health OK, signup 503 | `passHostingWaf` cleared on health only | Auth signup browser probe before `sessionWafCleared` (#351) |
+| `promote-uat` skipped after failed deploy | `failed` head blocked promote | Auto `setBarrier` on enqueue (#344); manual `set-barrier` + tag |
+| Coordinator dispatch crashes instantly | `launch-cursor-agent` ran `main()` on `require()` | `require.main === module` guard (#346) |
+| WAF smoke froze all merges | Ledger `failed` on infra-only deploy | `infra_failed` + gate classifiers (#331) |

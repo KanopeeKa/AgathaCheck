@@ -502,6 +502,32 @@ This mattered beyond "the smoke gate is red": `deploy-uat.yml`'s `smoke` job gat
 - `setBarrier` now supersedes head `failed`/`remedial` entries so promotion can resume once the fix is on `main`.
 - `scripts/ci/uat-queue-recovery.js` + `uat-queue-health.yml` clear stale leases and re-dispatch the coordinator for a stuck `failed` head.
 
+### 8. Auth signup probe required for WAF session clearance (added Jul 25)
+
+**Problem:** `passHostingWaf` treated `/backend/health` returning OK as sufficient to set `sessionWafCleared`. Tiger Protect often still returned WAF HTML on `POST /backend/api/auth/signup`. `createTestUser` then failed browser-fetch signup (503 WAF), fell through to UI signup, and stalled on `#/landing` for 120s — smoke job failed despite "health OK" in logs.
+
+**Fix (#351):** Loop until in-browser probes pass for **both** health and auth signup (invalid `{}` body → JSON 4xx = reachable). Shared markers in `waf-markers.ts`. Removed ineffective Node-fetch fallback from `createTestUser`.
+
+**Do not reintroduce:** health-only clearance; curl/Node auth warmup; direct Node signup fallback.
+
+**Full write-up:** `docs/e2e/uat-waf-queue-lessons.md`
+
+### 9. Coordinator launch `require()` side-effect (added Jul 25)
+
+**Problem:** `uat-coordinator-dispatch.yml` logged success at the ledger-sync step but crashed before Cursor API when `launch-uat-coordinator.js` required `launch-cursor-agent.js`, which unconditionally invoked `main()` → `ISSUE_NUMBER required`. Zero `<!-- uat-coordinator-run -->` markers on the coordination issue.
+
+**Fix (#346):** `if (require.main === module)` guard on `launch-cursor-agent.js` CLI entry; `launch-uat-coordinator.test.js` asserts safe `require()`.
+
+### 10. `uat-queue-health.yml` operator timing (added Jul 25)
+
+**When to dispatch:** after the current `deploy-uat` run reaches a terminal state; when a `failed`/`remedial` head has no active coordinator and no `<!-- uat-coordinator-run -->` marker.
+
+**When not to:** during an in-flight deploy/smoke; expecting recovery from `infra_failed` heads alone (`needs_coordinator_dispatch` is false for `infra_failed` — host/WAF whitelist required).
+
+**First run:** weekly cron had never executed; manual dispatch after deploy quiesces establishes baseline lease hygiene.
+
+See `docs/e2e/uat-waf-queue-lessons.md` §10 and operator cheat sheet.
+
 ---
 
 ## Immediate actions (operator)
@@ -539,3 +565,4 @@ This mattered beyond "the smoke gate is red": `deploy-uat.yml`'s `smoke` job gat
 - `scripts/ci/warmup-uat-auth.sh` — deprecated for live UAT (curl cannot pass a JS WAF challenge); see §6
 - `e2e/playwright/tests/uat-auth-warmup.spec.ts` — real-browser replacement (§6)
 - `docs/e2e/uat-live-operations-runbook.md`
+- `docs/e2e/uat-waf-queue-lessons.md` — Jul 2026 WAF/queue/coordinator incident chain (§8–10)
