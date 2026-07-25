@@ -1,6 +1,7 @@
 import { v4 as uuidv4 } from 'uuid';
 
 import { logAuditEventSafe } from './audit.js';
+import { dateToIsoDate } from './calendarDate.js';
 import {
   SESSION_STATUS_ACTIVE,
   SESSION_TYPE_FOSTER_IN_VIEW_TO_ADOPT,
@@ -14,11 +15,15 @@ export const VISIT_STATUS_CANCELLED = 'cancelled';
 export const VISIT_OUTCOME_POSITIVE = 'positive';
 export const VISIT_OUTCOME_NEGATIVE = 'negative';
 export const VISIT_OUTCOME_NO_SHOW = 'no_show';
-export const VISIT_VALIDATION_PENDING = 'pending';
-export const VISIT_VALIDATION_VALIDATED = 'validated';
-export const VISIT_VALIDATION_REJECTED = 'rejected';
+
+const VALID_VISIT_OUTCOMES = new Set([
+  VISIT_OUTCOME_POSITIVE,
+  VISIT_OUTCOME_NEGATIVE,
+  VISIT_OUTCOME_NO_SHOW,
+]);
 
 export function visitToMap(row) {
+  const visitOutcome = row.visit_outcome ?? row.outcome ?? null;
   return {
     id: row.id,
     organization_id: row.organization_id,
@@ -27,16 +32,17 @@ export function visitToMap(row) {
     pet_id: row.pet_id,
     scheduled_at: row.scheduled_at || null,
     status: row.status,
-    outcome: row.outcome || null,
+    visit_outcome: visitOutcome,
     outcome_notes: row.outcome_notes || '',
     assigned_foster_parent_id: row.assigned_foster_parent_id || null,
-    validation_status: row.validation_status || VISIT_VALIDATION_PENDING,
-    validated_at: row.validated_at || null,
-    validated_by: row.validated_by || null,
     created_by: row.created_by || null,
     created_at: row.created_at || null,
     updated_at: row.updated_at || null,
   };
+}
+
+export function normalizeVisitOutcomeInput(data) {
+  return (data.visit_outcome || data.visitOutcome || data.outcome || '').trim();
 }
 
 export function validateCreateVisitPayload(data) {
@@ -158,29 +164,24 @@ export async function createAdoptionVisit(pool, {
 export async function recordVisitOutcome(pool, {
   orgId,
   visitId,
-  outcome,
+  visitOutcome,
   outcomeNotes = '',
   actorUserId,
   auditContext = {},
 }) {
-  const validOutcomes = new Set([
-    VISIT_OUTCOME_POSITIVE,
-    VISIT_OUTCOME_NEGATIVE,
-    VISIT_OUTCOME_NO_SHOW,
-  ]);
-  if (!validOutcomes.has(outcome)) {
-    return { error: 'Invalid outcome', status: 400 };
+  if (!VALID_VISIT_OUTCOMES.has(visitOutcome)) {
+    return { error: 'Invalid visit outcome', status: 400 };
   }
 
   const result = await pool.query(
     `UPDATE adoption_visits
      SET status = $1,
-         outcome = $2,
+         visit_outcome = $2,
          outcome_notes = $3,
          updated_at = NOW()
      WHERE id = $4 AND organization_id = $5
      RETURNING *`,
-    [VISIT_STATUS_COMPLETED, outcome, outcomeNotes, visitId, orgId],
+    [VISIT_STATUS_COMPLETED, visitOutcome, outcomeNotes, visitId, orgId],
   );
   if (result.rows.length === 0) {
     return { error: 'Visit not found', status: 404 };
@@ -192,62 +193,65 @@ export async function recordVisitOutcome(pool, {
     resourceType: ADOPTION_VISIT_RESOURCE,
     resourceId: visitId,
     orgId,
-    metadata: { outcome },
+    metadata: { visit_outcome: visitOutcome },
     req: auditContext.req,
   });
 
   return { row: result.rows[0], status: 200 };
 }
 
-export async function validateAdoptionVisit(pool, {
-  orgId,
-  visitId,
-  validationStatus,
-  actorUserId,
-  auditContext = {},
-}) {
-  const validStatuses = new Set([VISIT_VALIDATION_VALIDATED, VISIT_VALIDATION_REJECTED]);
-  if (!validStatuses.has(validationStatus)) {
-    return { error: 'Invalid validation status', status: 400 };
-  }
-
-  const result = await pool.query(
-    `UPDATE adoption_visits
-     SET validation_status = $1,
-         validated_at = NOW(),
-         validated_by = $2,
-         updated_at = NOW()
-     WHERE id = $3
-       AND organization_id = $4
-       AND status = $5
-     RETURNING *`,
-    [validationStatus, actorUserId, visitId, orgId, VISIT_STATUS_COMPLETED],
-  );
-  if (result.rows.length === 0) {
-    return { error: 'Completed visit not found', status: 404 };
-  }
-
-  logAuditEventSafe(pool, {
-    actorUserId,
-    action: 'adoption_visit_validated',
-    resourceType: ADOPTION_VISIT_RESOURCE,
-    resourceId: visitId,
-    orgId,
-    metadata: { validation_status: validationStatus },
-    req: auditContext.req,
-  });
-
-  return { row: result.rows[0], status: 200 };
-}
-
-export async function hasValidatedVisitForSession(pool, fosteringSessionId) {
+export async function hasPositiveVisitForSession(pool, fosteringSessionId) {
   const result = await pool.query(
     `SELECT id
      FROM adoption_visits
      WHERE fostering_session_id = $1
-       AND validation_status = $2
+       AND status = $2
+       AND visit_outcome = $3
      LIMIT 1`,
-    [fosteringSessionId, VISIT_VALIDATION_VALIDATED],
+    [fosteringSessionId, VISIT_STATUS_COMPLETED, VISIT_OUTCOME_POSITIVE],
   );
   return result.rows.length > 0;
+}
+
+export async function assertVisitPathSatisfied(db, placement) {
+  if (placement.session_type !== SESSION_TYPE_FOSTER_IN_VIEW_TO_ADOPT) {
+    return { ok: true };
+  }
+
+  const satisfied = await hasPositiveVisitForSession(db, placement.id);
+  if (!satisfied) {
+    return {
+      error: 'A completed adoption visit with positive outcome is required',
+      code: 'visit_path_incomplete',
+      status: 409,
+    };
+  }
+
+  return { ok: true };
+}
+
+export async function loadAdoptionVisitForOrg(pool, visitId, orgId) {
+  const result = await pool.query(
+    `SELECT *
+     FROM adoption_visits
+     WHERE id = $1 AND organization_id = $2`,
+    [visitId, orgId],
+  );
+  if (result.rows.length === 0) {
+    return { error: 'Visit not found', status: 404 };
+  }
+  return { row: result.rows[0] };
+}
+
+export function assertVisitScheduledToday(visitRow) {
+  const today = dateToIsoDate(new Date());
+  const scheduledDay = dateToIsoDate(visitRow.scheduled_at);
+  if (scheduledDay !== today) {
+    return {
+      error: 'Same-day expedite requires the visit to be scheduled for today',
+      code: 'visit_not_same_day',
+      status: 400,
+    };
+  }
+  return { ok: true };
 }

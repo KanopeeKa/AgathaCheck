@@ -43,6 +43,7 @@ function makePlacementRow(status, adoptionConditions = '') {
     organization_name: 'Test Org',
     foster_name: 'Jane Foster',
     foster_email: 'foster@example.com',
+    session_type: 'standard_foster',
   };
 }
 
@@ -142,6 +143,9 @@ export function buildAdoptionJourneyMockPool() {
       ) {
         return { rows: [rowForStatus(placementStatus)] };
       }
+      return { rows: [] };
+    }
+    if (sql.includes('FROM adoption_visits') && sql.includes('visit_outcome')) {
       return { rows: [] };
     }
     if (sql.includes('SELECT * FROM foster_placements WHERE id = $1 AND organization_id')) {

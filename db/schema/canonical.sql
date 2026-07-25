@@ -28,18 +28,14 @@ CREATE TABLE public.adoption_visits (
     pet_id uuid NOT NULL,
     scheduled_at timestamp with time zone NOT NULL,
     status character varying(32) DEFAULT 'scheduled'::character varying NOT NULL,
-    outcome character varying(32),
+    visit_outcome character varying(32),
     outcome_notes text DEFAULT ''::text NOT NULL,
     assigned_foster_parent_id uuid,
-    validation_status character varying(32) DEFAULT 'pending'::character varying NOT NULL,
-    validated_at timestamp with time zone,
-    validated_by uuid,
     created_by uuid,
     created_at timestamp with time zone DEFAULT now(),
     updated_at timestamp with time zone DEFAULT now(),
-    CONSTRAINT adoption_visits_outcome_check CHECK (((outcome IS NULL) OR ((outcome)::text = ANY ((ARRAY['positive'::character varying, 'negative'::character varying, 'no_show'::character varying])::text[])))),
-    CONSTRAINT adoption_visits_status_check CHECK (((status)::text = ANY ((ARRAY['scheduled'::character varying, 'completed'::character varying, 'cancelled'::character varying])::text[]))),
-    CONSTRAINT adoption_visits_validation_status_check CHECK (((validation_status)::text = ANY ((ARRAY['pending'::character varying, 'validated'::character varying, 'rejected'::character varying])::text[])))
+    CONSTRAINT adoption_visits_visit_outcome_check CHECK (((visit_outcome IS NULL) OR ((visit_outcome)::text = ANY ((ARRAY['positive'::character varying, 'negative'::character varying, 'no_show'::character varying])::text[])))),
+    CONSTRAINT adoption_visits_status_check CHECK (((status)::text = ANY ((ARRAY['scheduled'::character varying, 'completed'::character varying, 'cancelled'::character varying])::text[])))
 );
 CREATE TABLE public.archived_pets (
     id uuid NOT NULL,
@@ -659,8 +655,6 @@ ALTER TABLE ONLY public.adoption_visits
     ADD CONSTRAINT adoption_visits_pet_id_fkey FOREIGN KEY (pet_id) REFERENCES public.pets(id) ON DELETE CASCADE;
 ALTER TABLE ONLY public.adoption_visits
     ADD CONSTRAINT adoption_visits_prospect_id_fkey FOREIGN KEY (prospect_id) REFERENCES public.prospects(id) ON DELETE SET NULL;
-ALTER TABLE ONLY public.adoption_visits
-    ADD CONSTRAINT adoption_visits_validated_by_fkey FOREIGN KEY (validated_by) REFERENCES public.users(id) ON DELETE SET NULL;
 ALTER TABLE ONLY public.archived_pets
     ADD CONSTRAINT archived_pets_organization_id_fkey FOREIGN KEY (organization_id) REFERENCES public.organizations(id) ON DELETE SET NULL;
 ALTER TABLE ONLY public.archived_pets

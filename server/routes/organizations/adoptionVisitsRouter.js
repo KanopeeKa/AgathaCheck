@@ -1,9 +1,10 @@
 import {
   createAdoptionVisit,
+  normalizeVisitOutcomeInput,
   recordVisitOutcome,
-  validateAdoptionVisit,
-  validateCreateVisitPayload,
+  VISIT_OUTCOME_POSITIVE,
   visitToMap,
+  validateCreateVisitPayload,
 } from '../../lib/adoptionVisits.js';
 import { extractUserId, requireOrgAdmin } from './shared.js';
 import { publicError } from '../../config/security.js';
@@ -66,7 +67,7 @@ export function registerAdoptionVisitsRoutes(router, pool) {
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     const { orgId, id: visitId } = req.params;
     const data = req.body || {};
-    const outcome = (data.outcome || '').trim();
+    const visitOutcome = normalizeVisitOutcomeInput(data);
     const outcomeNotes = (data.outcome_notes || data.outcomeNotes || '').trim();
 
     try {
@@ -75,34 +76,8 @@ export function registerAdoptionVisitsRoutes(router, pool) {
       const result = await recordVisitOutcome(pool, {
         orgId,
         visitId,
-        outcome,
+        visitOutcome,
         outcomeNotes,
-        actorUserId: userId,
-        auditContext: { req },
-      });
-      if (result.error) {
-        return res.status(result.status).json({ error: result.error });
-      }
-      res.json(visitToMap(result.row));
-    } catch (err) {
-      res.status(500).json({ error: publicError(err) });
-    }
-  });
-
-  router.post('/:orgId/adoption-visits/:id/validate', async (req, res) => {
-    const userId = extractUserId(req);
-    if (!userId) return res.status(401).json({ error: 'Unauthorized' });
-    const { orgId, id: visitId } = req.params;
-    const data = req.body || {};
-    const validationStatus = (data.validation_status || data.validationStatus || '').trim();
-
-    try {
-      if (!(await requireOrgAdmin(pool, res, orgId, userId))) return;
-
-      const result = await validateAdoptionVisit(pool, {
-        orgId,
-        visitId,
-        validationStatus,
         actorUserId: userId,
         auditContext: { req },
       });
