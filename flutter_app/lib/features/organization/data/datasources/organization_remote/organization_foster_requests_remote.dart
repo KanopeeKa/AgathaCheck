@@ -22,6 +22,27 @@ class OrganizationFosterRequestsRemote {
     return list.cast<Map<String, dynamic>>();
   }
 
+  Future<List<Map<String, dynamic>>> getEligibleFosterTargets(
+    String orgId, {
+    required List<String> petIds,
+    required String token,
+  }) async {
+    final query = petIds.isEmpty
+        ? ''
+        : '?pet_ids=${Uri.encodeQueryComponent(petIds.join(','))}';
+    final response = await _ctx.client.get(
+      Uri.parse(
+        '${_ctx.baseUrl}/api/organizations/$orgId/foster-requests/eligible-targets$query',
+      ),
+      headers: _ctx.headers(token),
+    );
+    if (response.statusCode >= 400) {
+      _ctx.throwApiError(response, 'Failed to get eligible foster targets');
+    }
+    final list = json.decode(response.body) as List;
+    return list.cast<Map<String, dynamic>>();
+  }
+
   Future<Map<String, dynamic>> createFosterRequest(
     String orgId, {
     required String message,

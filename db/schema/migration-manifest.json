@@ -34,7 +34,10 @@
     "025_foster_requests.sql",
     "026_fostering_sessions.sql",
     "027_prospects.sql",
-    "028_adoption_journeys.sql"
+    "028_adoption_journeys.sql",
+    "029_foster_profile_capacity.sql",
+    "030_adoption_visits.sql",
+    "031_document_templates.sql"
   ],
   "code_migrations": [
     "016_migrate_family_events_placements.sql",

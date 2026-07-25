@@ -9,6 +9,9 @@ import '../../features/organization/presentation/screens/archived_pets_screen.da
 import '../../features/organization/presentation/screens/organization_detail_screen.dart';
 import '../../features/organization/presentation/screens/organization_form_screen.dart';
 import '../../features/organization/presentation/screens/organization_list_screen.dart';
+import '../../features/organization/presentation/screens/adoption_journey/adoption_journey_detail_screen.dart';
+import '../../features/organization/presentation/screens/adoption_screening/adoption_visits_screen.dart';
+import '../../features/organization/presentation/screens/adoption_screening/prospects_screen.dart';
 import '../../features/organization/presentation/screens/foster_requests/foster_request_detail_screen.dart';
 import '../../features/organization/presentation/screens/foster_requests/foster_request_respond_screen.dart';
 import '../../features/organization/presentation/screens/foster_requests/foster_requests_screen.dart';
@@ -134,6 +137,22 @@ List<RouteBase> _orgManagementChildRoutes() {
           ],
         ),
         GoRoute(
+          path: 'prospects',
+          name: 'prospects',
+          builder: (context, state) {
+            final id = state.pathParameters['id']!;
+            return ProspectsScreen(orgId: id);
+          },
+        ),
+        GoRoute(
+          path: 'adoption-visits',
+          name: 'adoptionVisits',
+          builder: (context, state) {
+            final id = state.pathParameters['id']!;
+            return AdoptionVisitsScreen(orgId: id);
+          },
+        ),
+        GoRoute(
           path: 'people/:kind/:personId',
           name: 'organizationPersonDetail',
           builder: (context, state) {
@@ -162,6 +181,18 @@ List<RouteBase> _orgManagementChildRoutes() {
             final id = state.pathParameters['id']!;
             final placementId = state.pathParameters['placementId']!;
             return FosteringSessionDetailScreen(
+              orgId: id,
+              placementId: placementId,
+            );
+          },
+        ),
+        GoRoute(
+          path: 'placements/:placementId/adoption-journey',
+          name: 'adoptionJourneyDetail',
+          builder: (context, state) {
+            final id = state.pathParameters['id']!;
+            final placementId = state.pathParameters['placementId']!;
+            return AdoptionJourneyDetailScreen(
               orgId: id,
               placementId: placementId,
             );

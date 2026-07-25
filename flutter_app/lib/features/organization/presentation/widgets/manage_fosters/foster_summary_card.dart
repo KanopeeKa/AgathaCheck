@@ -37,10 +37,17 @@ class FosterSummaryCard extends ConsumerWidget {
     ];
 
     String? activityLabel;
-    if (fosterHasActivePlacement(parent)) {
-      activityLabel = l.manageFostersStatusFostering;
-    } else if (parent.isExternal) {
-      activityLabel = l.fosterParentNoAccount;
+    switch (parent.fosteringActivitySummary) {
+      case FosteringActivitySummary.activelyFostering:
+        activityLabel = l.manageFostersStatusFostering;
+      case FosteringActivitySummary.inPreparation:
+        activityLabel = l.fosteringSessionPreparationTitle;
+      case FosteringActivitySummary.recentlyEnded:
+        activityLabel = l.manageFostersTabRecentlyFostered;
+      case FosteringActivitySummary.notYetPlaced:
+        if (parent.isExternal) activityLabel = l.fosterParentNoAccount;
+      case FosteringActivitySummary.inactive:
+        break;
     }
 
     final statusChips = <Widget>[

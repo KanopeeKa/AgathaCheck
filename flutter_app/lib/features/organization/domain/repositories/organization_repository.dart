@@ -178,6 +178,11 @@ abstract class OrganizationRepository {
   });
 
   Future<List<FosterRequest>> getFosterRequests(String orgId, String token);
+  Future<List<String>> getEligibleFosterTargetIds(
+    String orgId, {
+    required List<String> petIds,
+    required String token,
+  });
   Future<FosterRequest> createFosterRequest(
     String orgId, {
     required String message,
@@ -288,6 +293,19 @@ abstract class OrganizationRepository {
     DateTime? endDate,
     required String token,
   });
+
+  Future<List<Map<String, dynamic>>> getProspects(String orgId, String token);
+  Future<List<Map<String, dynamic>>> getAdoptionVisits(String orgId, String token);
+  Future<Map<String, dynamic>> getAdoptionJourney(
+    String orgId,
+    String placementId,
+    String token,
+  );
+  Future<Map<String, dynamic>> getSessionChecklist(
+    String orgId,
+    String placementId,
+    String token,
+  );
 
   Future<List<OrgConnection>> getConnections(String orgId, String token);
 

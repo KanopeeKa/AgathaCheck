@@ -2,6 +2,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { logAuditEventSafe } from '../../lib/audit.js';
 import {
   assertPetsInOrg,
+  loadEligibleFosterTargetsWithCapacity,
   loadEligibleTargets,
   loadRequestDetail,
   requestToMap,
@@ -143,6 +144,34 @@ export function registerFosterRequestsRoutes(router, pool) {
         targets: [],
         responses: [],
       })));
+    } catch (err) {
+      res.status(500).json({ error: publicError(err) });
+    }
+  });
+
+  router.get('/:orgId/foster-requests/eligible-targets', async (req, res) => {
+    const userId = extractUserId(req);
+    if (!userId) return res.status(401).json({ error: 'Unauthorized' });
+    const orgId = req.params.orgId;
+    const petIds = String(req.query.pet_ids || req.query.petIds || '')
+      .split(',')
+      .map((id) => id.trim())
+      .filter(Boolean);
+    const species = (req.query.species || '').trim() || null;
+    const requiredCompetencies = String(req.query.competencies || '')
+      .split(',')
+      .map((item) => item.trim())
+      .filter(Boolean);
+
+    try {
+      if (!(await requireOrgAdmin(pool, res, orgId, userId))) return;
+
+      const targets = await loadEligibleFosterTargetsWithCapacity(pool, orgId, {
+        petIds,
+        species,
+        requiredCompetencies,
+      });
+      res.json(targets);
     } catch (err) {
       res.status(500).json({ error: publicError(err) });
     }

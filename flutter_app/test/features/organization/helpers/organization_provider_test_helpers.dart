@@ -368,6 +368,39 @@ class RecordingOrganizationRepository implements OrganizationRepository {
   ) async => [];
 
   @override
+  Future<List<String>> getEligibleFosterTargetIds(
+    String orgId, {
+    required List<String> petIds,
+    required String token,
+  }) async => [];
+
+  @override
+  Future<List<Map<String, dynamic>>> getProspects(
+    String orgId,
+    String token,
+  ) async => [];
+
+  @override
+  Future<List<Map<String, dynamic>>> getAdoptionVisits(
+    String orgId,
+    String token,
+  ) async => [];
+
+  @override
+  Future<Map<String, dynamic>> getAdoptionJourney(
+    String orgId,
+    String placementId,
+    String token,
+  ) async => {};
+
+  @override
+  Future<Map<String, dynamic>> getSessionChecklist(
+    String orgId,
+    String placementId,
+    String token,
+  ) async => {'items': []};
+
+  @override
   Future<FosterRequest> createFosterRequest(
     String orgId, {
     required String message,

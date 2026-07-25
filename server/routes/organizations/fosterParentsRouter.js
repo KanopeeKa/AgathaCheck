@@ -11,8 +11,12 @@ import {
   defaultRetentionCategoryForParent,
   registerFosterComplianceRoutes,
 } from '../../lib/fosterCompliance.js';
+import {
+  fosterParentToMap,
+  loadFosterParentListContext,
+} from '../../lib/fosterParentPresenter.js';
 import { OPEN_PLACEMENT_STATUSES } from '../../lib/fosterPlacements.js';
-import { fosterParentMemberRolesSql, normaliseRole } from '../../lib/orgRoles.js';
+import { fosterParentMemberRolesSql } from '../../lib/orgRoles.js';
 import { sendTransactionalEmail } from '../../services/mailService.js';
 import { extractUserId, requireOrgAdmin } from './shared.js';
 import { publicError } from '../../config/security.js';
@@ -22,48 +26,14 @@ const MEMBER_APPROVAL_STATE = 'approved';
 const MEMBER_CREATION_SOURCE = 'member';
 
 export function registerFosterParentsRoutes(router, pool) {
-    function fosterParentToMap(row, { kind = row.kind } = {}) {
-      const displayName = (row.display_name || '').trim();
-      let activePets = row.active_pets || [];
-      if (typeof activePets === 'string') {
-        try {
-          activePets = JSON.parse(activePets);
-        } catch (_) {
-          activePets = [];
-        }
-      }
-      const isMember = kind === 'member';
-      return {
-        id: row.id,
-        kind,
-        foster_profile_id: row.foster_profile_id || null,
-        user_id: row.user_id || null,
-        display_name: displayName || row.email || '',
-        email: row.email || null,
-        phone: row.phone || null,
-        foster_address: row.foster_address || '',
-        notes: row.notes || '',
-        role: row.role ? normaliseRole(row.role) : null,
-        photo_url: row.photo_url || null,
-        active_pet_count: parseInt(row.active_pet_count, 10) || 0,
-        active_pets: activePets,
-        approval_state: isMember
-          ? MEMBER_APPROVAL_STATE
-          : (row.approval_state || 'approved'),
-        creation_source: isMember
-          ? MEMBER_CREATION_SOURCE
-          : (row.creation_source || 'manual_shelter_entry'),
-        opt_out_at: row.opt_out_at || null,
-        retention_category: row.retention_category || 'shelter_foster_relationship',
-      };
-    }
-
     router.get('/:orgId/foster-parents', async (req, res) => {
       const userId = extractUserId(req);
       if (!userId) return res.status(401).json({ error: 'Unauthorized' });
       const orgId = req.params.orgId;
       try {
         if (!(await requireOrgAdmin(pool, res, orgId, userId))) return;
+
+        const listContext = await loadFosterParentListContext(pool, orgId);
 
         const memberResult = await pool.query(
           `SELECT ou.id,
@@ -145,8 +115,18 @@ export function registerFosterParentsRoutes(router, pool) {
         );
 
         const combined = [
-          ...memberResult.rows.map((row) => fosterParentToMap(row, { kind: 'member' })),
-          ...externalResult.rows.map((row) => fosterParentToMap(row, { kind: 'external' })),
+          ...memberResult.rows.map((row) => fosterParentToMap(row, {
+            kind: 'member',
+            profileRow: listContext.profilesByUser.get(row.user_id),
+            activityCounts: listContext.activityByUser.get(row.user_id) || {},
+            capacityUsage: listContext.usageByUser.get(row.user_id) || {},
+          })),
+          ...externalResult.rows.map((row) => fosterParentToMap(row, {
+            kind: 'external',
+            profileRow: listContext.profilesByParent.get(row.id),
+            activityCounts: listContext.activityByParent.get(row.id) || {},
+            capacityUsage: {},
+          })),
         ].sort((a, b) => a.display_name.localeCompare(b.display_name, undefined, { sensitivity: 'base' }));
 
         res.json(combined);

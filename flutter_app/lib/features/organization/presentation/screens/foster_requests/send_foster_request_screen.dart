@@ -4,7 +4,6 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../../core/widgets/app_logo_title.dart';
 import '../../../../../l10n/app_localizations.dart';
-import '../../providers/foster_requests_providers.dart';
 import '../../providers/organization_providers.dart';
 import '../../utils/org_screen_theme.dart';
 
@@ -25,6 +24,30 @@ class _SendFosterRequestScreenState
   final _selectedPetIds = <String>{};
   final _selectedFosterIds = <String>{};
   var _submitting = false;
+  Set<String> _capacityEligibleIds = {};
+
+  Future<void> _refreshCapacityFilter() async {
+    if (_selectedPetIds.isEmpty) {
+      if (mounted) setState(() => _capacityEligibleIds = {});
+      return;
+    }
+    final token = ref.read(orgTokenProvider);
+    if (token == null) return;
+    try {
+      final ids = await ref
+          .read(organizationRepositoryProvider)
+          .getEligibleFosterTargetIds(
+            widget.orgId,
+            petIds: _selectedPetIds.toList(growable: false),
+            token: token,
+          );
+      if (!mounted) return;
+      setState(() => _capacityEligibleIds = ids.toSet());
+    } catch (_) {
+      if (!mounted) return;
+      setState(() => _capacityEligibleIds = {});
+    }
+  }
 
   @override
   void dispose() {
@@ -150,6 +173,7 @@ class _SendFosterRequestScreenState
                                       _selectedPetIds.remove(pet.id);
                                     }
                                   });
+                                  _refreshCapacityFilter();
                                 },
                           title: Text(pet.name),
                           subtitle: pet.species.isNotEmpty
@@ -171,7 +195,12 @@ class _SendFosterRequestScreenState
                 loading: () => const LinearProgressIndicator(),
                 error: (e, _) => Text('$e'),
                 data: (parents) {
-                  final eligible = eligibleFosterRequestTargets(parents);
+                  var eligible = eligibleFosterRequestTargets(parents);
+                  if (_selectedPetIds.isNotEmpty && _capacityEligibleIds.isNotEmpty) {
+                    eligible = eligible
+                        .where((p) => _capacityEligibleIds.contains(p.id))
+                        .toList(growable: false);
+                  }
                   if (eligible.isEmpty) {
                     return Text(
                       l.fosterRequestNoEligibleFosters,
@@ -196,9 +225,21 @@ class _SendFosterRequestScreenState
                                   });
                                 },
                           title: Text(parent.displayName),
-                          subtitle: parent.email != null
-                              ? Text(parent.email!)
-                              : null,
+                          subtitle: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              if (parent.email != null) Text(parent.email!),
+                              if (parent.availableCapacity.isNotEmpty)
+                                Text(
+                                  parent.availableCapacity
+                                      .map((c) => '${c.species}: ${c.available}')
+                                      .join(' · '),
+                                  style: theme.textTheme.bodySmall?.copyWith(
+                                    color: colorScheme.primary,
+                                  ),
+                                ),
+                            ],
+                          ),
                           controlAffinity: ListTileControlAffinity.leading,
                         ),
                     ],

@@ -1,4 +1,13 @@
 import { dateToIsoDate, normalizeCalendarDateInput } from './calendarDate.js';
+import {
+  buildCapacityReadModel,
+  effectiveCompetencies,
+  fosterHasCapacityForSpecies,
+  fosterMatchesCompetencyFilter,
+  loadProfileRowsByParentId,
+  loadSessionUsageByFosterUser,
+  parseSpeciesCapacities,
+} from './fosterCapacity.js';
 
 export const FOSTER_REQUEST_STATUSES = new Set(['draft', 'sent', 'cancelled']);
 export const FOSTER_RESPONSE_TYPES = new Set(['can_help', 'cannot_help', 'pending']);
@@ -217,4 +226,79 @@ export async function loadRequestDetail(client, requestId, orgId) {
   ]);
 
   return requestToMap(row, { pets, targets, responses });
+}
+
+export async function loadEligibleFosterTargetsWithCapacity(pool, orgId, {
+  petIds = [],
+  species = null,
+  requiredCompetencies = [],
+} = {}) {
+  const petsResult = await pool.query(
+    `SELECT id, species
+     FROM pets
+     WHERE organization_id = $1
+       AND id = ANY($2::uuid[])`,
+    [orgId, petIds],
+  );
+  const targetSpecies = species
+    ? [species]
+    : [...new Set(petsResult.rows.map((row) => row.species).filter(Boolean))];
+
+  const parentsResult = await pool.query(
+    `SELECT fp.id AS org_foster_parent_id,
+            fp.display_name,
+            fp.email,
+            fp.user_id,
+            fp.approval_state,
+            fp.opt_out_at,
+            fp.foster_profile_id
+     FROM org_foster_parents fp
+     WHERE fp.organization_id = $1
+       AND fp.approval_state = 'approved'
+       AND fp.opt_out_at IS NULL
+     ORDER BY fp.display_name`,
+    [orgId],
+  );
+
+  const [profilesByParent, usageByUser] = await Promise.all([
+    loadProfileRowsByParentId(pool, orgId),
+    loadSessionUsageByFosterUser(pool, orgId),
+  ]);
+
+  return parentsResult.rows
+    .map((row) => {
+      const profileRow = profilesByParent.get(row.org_foster_parent_id) || {};
+      const speciesCapacities = parseSpeciesCapacities(profileRow.species_capacities);
+      const usageBySpecies = row.user_id ? (usageByUser.get(row.user_id) || {}) : {};
+      const hasCapacity = targetSpecies.length === 0
+        || targetSpecies.every((item) => fosterHasCapacityForSpecies({
+          speciesCapacities,
+          usageBySpecies,
+          species: item,
+        }));
+      const matchesCompetency = fosterMatchesCompetencyFilter(
+        profileRow,
+        requiredCompetencies,
+      );
+      return {
+        org_foster_parent_id: row.org_foster_parent_id,
+        display_name: row.display_name || '',
+        email: row.email || null,
+        user_id: row.user_id || null,
+        approval_state: row.approval_state,
+        opt_out_at: row.opt_out_at || null,
+        species_capacities: speciesCapacities,
+        effective_competencies: effectiveCompetencies(profileRow),
+        available_capacity: buildCapacityReadModel({
+          speciesCapacities,
+          usageBySpecies,
+          species: targetSpecies[0] || null,
+        }),
+        eligible: hasCapacity && matchesCompetency,
+        ineligible_reason: !hasCapacity
+          ? 'insufficient_capacity'
+          : (!matchesCompetency ? 'competency_mismatch' : null),
+      };
+    })
+    .filter((row) => row.eligible);
 }

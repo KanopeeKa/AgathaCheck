@@ -145,6 +145,16 @@ mixin OrganizationRemoteFosterDelegations {
     String token,
   ) => fosterRequestsRemote.getFosterRequests(orgId, token);
 
+  Future<List<Map<String, dynamic>>> getEligibleFosterTargets(
+    String orgId, {
+    required List<String> petIds,
+    required String token,
+  }) => fosterRequestsRemote.getEligibleFosterTargets(
+    orgId,
+    petIds: petIds,
+    token: token,
+  );
+
   Future<Map<String, dynamic>> createFosterRequest(
     String orgId, {
     required String message,

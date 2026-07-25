@@ -8,6 +8,8 @@ import { registerFosterParentsRoutes } from './fosterParentsRouter.js';
 import { registerFosterRequestsRoutes } from './fosterRequestsRouter.js';
 import { registerProspectsRoutes } from './prospectsRouter.js';
 import { registerAdoptionJourneysRoutes } from './adoptionJourneysRouter.js';
+import { registerAdoptionVisitsRoutes } from './adoptionVisitsRouter.js';
+import { registerDocumentTemplatesRoutes } from './documentTemplatesRouter.js';
 import { registerPlacementsRoutes } from './placementsRouter.js';
 import { registerConnectionRoutes } from './connectionsRouter.js';
 
@@ -23,6 +25,8 @@ export default function organizationsRoutes(pool) {
   registerFosterRequestsRoutes(router, pool);
   registerProspectsRoutes(router, pool);
   registerAdoptionJourneysRoutes(router, pool);
+  registerAdoptionVisitsRoutes(router, pool);
+  registerDocumentTemplatesRoutes(router, pool);
   registerPlacementsRoutes(router, pool);
   return router;
 }

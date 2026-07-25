@@ -1,37 +1,27 @@
 import '../../domain/entities/foster_parent.dart';
 
-/// Operational tabs for Manage Fosters (J1). Activity meaning from migration appendix §8.
+/// Operational tabs for Manage Fosters (J1). Activity meaning from J3 read model.
 enum ManageFostersTab { all, newFosters, fostering, recentlyFostered, inactive }
 
 /// Approval filters backed by `approval_state` on shelter–foster relationships (J1 Phase 2).
 enum ManageFostersApprovalFilter { underReview, approved, archived }
-
-const _activePlacementStatuses = {
-  'pending',
-  'in_progress',
-  'waiting_adoption_confirmation',
-  'pending_adoption_conditions',
-};
-
-bool fosterHasActivePlacement(FosterParent parent) {
-  if (parent.activePetCount > 0) return true;
-  return parent.activePets.any(
-    (p) => _activePlacementStatuses.contains(p.status),
-  );
-}
 
 bool fosterMatchesManageFostersTab(FosterParent parent, ManageFostersTab tab) {
   switch (tab) {
     case ManageFostersTab.all:
       return true;
     case ManageFostersTab.fostering:
-      return fosterHasActivePlacement(parent);
+      return parent.fosteringActivitySummary ==
+          FosteringActivitySummary.activelyFostering;
     case ManageFostersTab.inactive:
-      return !fosterHasActivePlacement(parent);
+      return parent.fosteringActivitySummary ==
+          FosteringActivitySummary.inactive;
     case ManageFostersTab.newFosters:
-      return parent.isExternal && !fosterHasActivePlacement(parent);
+      return parent.fosteringActivitySummary ==
+          FosteringActivitySummary.notYetPlaced;
     case ManageFostersTab.recentlyFostered:
-      return false;
+      return parent.fosteringActivitySummary ==
+          FosteringActivitySummary.recentlyEnded;
   }
 }
 

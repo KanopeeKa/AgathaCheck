@@ -7,6 +7,7 @@ import '../models/organization_member_model.dart';
 import '../models/organization_model.dart';
 import '../../domain/entities/custody_transfer.dart';
 import '../../domain/entities/org_connection.dart';
+import 'organization_remote/organization_adoption_screening_remote.dart';
 import 'organization_remote/organization_connections_remote.dart';
 import 'organization_remote/organization_custody_remote.dart';
 import 'organization_remote/organization_core_remote.dart';
@@ -30,6 +31,7 @@ class OrganizationRemoteDataSource with OrganizationRemoteFosterDelegations {
     fosterParentsRemote = OrganizationFosterParentsRemote(_ctx);
     fosterRequestsRemote = OrganizationFosterRequestsRemote(_ctx);
     placementsRemote = OrganizationPlacementsRemote(_ctx);
+    _screening = OrganizationAdoptionScreeningRemote(_ctx);
     _connections = OrganizationConnectionsRemote(_ctx);
     _custody = OrganizationCustodyRemote(_ctx);
   }
@@ -45,6 +47,7 @@ class OrganizationRemoteDataSource with OrganizationRemoteFosterDelegations {
   late final OrganizationFosterRequestsRemote fosterRequestsRemote;
   @override
   late final OrganizationPlacementsRemote placementsRemote;
+  late final OrganizationAdoptionScreeningRemote _screening;
   late final OrganizationConnectionsRemote _connections;
   late final OrganizationCustodyRemote _custody;
 
@@ -265,4 +268,24 @@ class OrganizationRemoteDataSource with OrganizationRemoteFosterDelegations {
     String orgId,
     String token,
   ) => _custody.getHomeHiddenPets(orgId, token);
+
+  Future<List<Map<String, dynamic>>> getProspects(String orgId, String token) =>
+      _screening.getProspects(orgId, token);
+
+  Future<List<Map<String, dynamic>>> getAdoptionVisits(
+    String orgId,
+    String token,
+  ) => _screening.getAdoptionVisits(orgId, token);
+
+  Future<Map<String, dynamic>> getAdoptionJourney(
+    String orgId,
+    String placementId,
+    String token,
+  ) => _screening.getAdoptionJourney(orgId, placementId, token);
+
+  Future<Map<String, dynamic>> getSessionChecklist(
+    String orgId,
+    String placementId,
+    String token,
+  ) => _screening.getSessionChecklist(orgId, placementId, token);
 }

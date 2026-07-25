@@ -78,6 +78,70 @@ class FosterMergeSuggestion {
   }
 }
 
+/// J3-published activity summary for Manage Fosters tabs (G0 §4.4).
+enum FosteringActivitySummary {
+  notYetPlaced,
+  inPreparation,
+  activelyFostering,
+  recentlyEnded,
+  inactive;
+
+  static FosteringActivitySummary fromWire(String? value) {
+    switch (value) {
+      case 'in_preparation':
+        return FosteringActivitySummary.inPreparation;
+      case 'actively_fostering':
+        return FosteringActivitySummary.activelyFostering;
+      case 'recently_ended':
+        return FosteringActivitySummary.recentlyEnded;
+      case 'inactive':
+        return FosteringActivitySummary.inactive;
+      case 'not_yet_placed':
+      default:
+        return FosteringActivitySummary.notYetPlaced;
+    }
+  }
+
+  String toWire() {
+    switch (this) {
+      case FosteringActivitySummary.inPreparation:
+        return 'in_preparation';
+      case FosteringActivitySummary.activelyFostering:
+        return 'actively_fostering';
+      case FosteringActivitySummary.recentlyEnded:
+        return 'recently_ended';
+      case FosteringActivitySummary.inactive:
+        return 'inactive';
+      case FosteringActivitySummary.notYetPlaced:
+        return 'not_yet_placed';
+    }
+  }
+}
+
+class FosterCapacityEntry {
+  const FosterCapacityEntry({
+    required this.species,
+    required this.declared,
+    required this.available,
+  });
+
+  final String species;
+  final int declared;
+  final int available;
+
+  factory FosterCapacityEntry.fromJson(Map<String, dynamic> json) {
+    return FosterCapacityEntry(
+      species: json['species']?.toString() ?? '',
+      declared: json['declared'] is int
+          ? json['declared'] as int
+          : int.tryParse(json['declared']?.toString() ?? '') ?? 0,
+      available: json['available'] is int
+          ? json['available'] as int
+          : int.tryParse(json['available']?.toString() ?? '') ?? 0,
+    );
+  }
+}
+
 /// A foster parent in the org directory — either an app member (admin/foster)
 /// or an external contact without an account.
 class FosterParent {
@@ -98,6 +162,8 @@ class FosterParent {
     this.creationSource,
     this.optOutAt,
     this.retentionCategory = 'shelter_foster_relationship',
+    this.fosteringActivitySummary = FosteringActivitySummary.notYetPlaced,
+    this.availableCapacity = const [],
   });
 
   final String id;
@@ -116,6 +182,8 @@ class FosterParent {
   final String? creationSource;
   final DateTime? optOutAt;
   final String retentionCategory;
+  final FosteringActivitySummary fosteringActivitySummary;
+  final List<FosterCapacityEntry> availableCapacity;
 
   bool get isMember => kind == FosterParentKind.member;
   bool get isExternal => kind == FosterParentKind.external;
@@ -168,6 +236,13 @@ class FosterParent {
       retentionCategory:
           json['retention_category']?.toString() ??
           'shelter_foster_relationship',
+      fosteringActivitySummary: FosteringActivitySummary.fromWire(
+        json['fostering_activity_summary']?.toString(),
+      ),
+      availableCapacity: (json['available_capacity'] as List<dynamic>? ?? const [])
+          .whereType<Map>()
+          .map((e) => FosterCapacityEntry.fromJson(Map<String, dynamic>.from(e)))
+          .toList(),
     );
   }
 }
