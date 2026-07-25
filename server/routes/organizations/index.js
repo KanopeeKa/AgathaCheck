@@ -6,6 +6,7 @@ import { registerMembersRoutes } from './membersRouter.js';
 import { registerPetsRoutes } from './petsRouter.js';
 import { registerFosterParentsRoutes } from './fosterParentsRouter.js';
 import { registerFosterRequestsRoutes } from './fosterRequestsRouter.js';
+import { registerAdoptionJourneysRoutes } from './adoptionJourneysRouter.js';
 import { registerPlacementsRoutes } from './placementsRouter.js';
 import { registerConnectionRoutes } from './connectionsRouter.js';
 
@@ -19,6 +20,7 @@ export default function organizationsRoutes(pool) {
   registerPetsRoutes(router, pool);
   registerFosterParentsRoutes(router, pool);
   registerFosterRequestsRoutes(router, pool);
+  registerAdoptionJourneysRoutes(router, pool);
   registerPlacementsRoutes(router, pool);
   return router;
 }

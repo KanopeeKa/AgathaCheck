@@ -1,7 +1,12 @@
 import { normalizeCalendarDateInput } from '../../../lib/calendarDate.js';
 import { createNotification } from '../../../lib/notificationHelper.js';
 import {
-  cancelAdoptionPlacement,
+  cancelAdoptionJourney,
+  completeAdoptionJourneyConditions,
+  placementWithJourneyResponse,
+  startAdoptionJourney,
+} from '../../../lib/adoptionJourneys.js';
+import {
   loadPlacementDetail,
   normalizePlacementStatus,
   placementToMap,
@@ -11,6 +16,7 @@ import {
   PLACEMENT_STATUS_WAITING_ADOPTION,
   revokeFosterPetAccess,
   SESSION_STATUS_ACTIVE,
+  SESSION_STATUS_ADOPTION_IN_PROGRESS,
   SESSION_STATUS_CANCELLED,
   SESSION_STATUS_PENDING_ACCEPTANCE,
 } from '../../../lib/fosterPlacements.js';
@@ -128,23 +134,23 @@ export function registerPlacementActionRoutes(router, pool) {
       if (!placement) {
         return res.status(404).json({ error: 'Placement not found' });
       }
-      if (placement.status !== PLACEMENT_STATUS_IN_PROGRESS) {
+
+      const sessionStatus = normalizePlacementStatus(placement.status);
+      const canStart = placement.status === PLACEMENT_STATUS_IN_PROGRESS
+        || sessionStatus === SESSION_STATUS_ACTIVE;
+      if (!canStart) {
         return res.status(400).json({ error: 'Placement must be in progress to start adoption' });
       }
 
-      const nextStatus = adoptionConditions
-        ? PLACEMENT_STATUS_PENDING_CONDITIONS
-        : PLACEMENT_STATUS_WAITING_ADOPTION;
-
-      const updateResult = await pool.query(
-        `UPDATE foster_placements
-         SET status = $1,
-             adoption_conditions = $2,
-             updated_at = NOW()
-         WHERE id = $3
-         RETURNING *`,
-        [nextStatus, adoptionConditions, placementId],
-      );
+      const result = await startAdoptionJourney(pool, {
+        placement,
+        adoptionConditions,
+        createdBy: userId,
+        auditContext: { req },
+      });
+      if (result.error) {
+        return res.status(result.status).json({ error: result.error });
+      }
 
       const petName = await loadPetName(pool, placement.pet_id);
 
@@ -159,8 +165,7 @@ export function registerPlacementActionRoutes(router, pool) {
         type: 'general',
       });
 
-      const detail = await loadPlacementDetail(pool, placementId);
-      res.json(placementToMap(detail || updateResult.rows[0]));
+      res.json(placementWithJourneyResponse(result.placement, result.journey));
     } catch (err) {
       res.status(500).json({ error: publicError(err) });
     }
@@ -178,17 +183,11 @@ export function registerPlacementActionRoutes(router, pool) {
       if (!placement) {
         return res.status(404).json({ error: 'Placement not found' });
       }
-      if (placement.status !== PLACEMENT_STATUS_PENDING_CONDITIONS) {
-        return res.status(400).json({ error: 'Placement is not awaiting condition completion' });
-      }
 
-      const updateResult = await pool.query(
-        `UPDATE foster_placements
-         SET status = $1, updated_at = NOW()
-         WHERE id = $2
-         RETURNING *`,
-        [PLACEMENT_STATUS_WAITING_ADOPTION, placementId],
-      );
+      const result = await completeAdoptionJourneyConditions(pool, placement);
+      if (result.error) {
+        return res.status(result.status).json({ error: result.error });
+      }
 
       const petName = await loadPetName(pool, placement.pet_id);
 
@@ -201,8 +200,7 @@ export function registerPlacementActionRoutes(router, pool) {
         type: 'general',
       });
 
-      const detail = await loadPlacementDetail(pool, placementId);
-      res.json(placementToMap(detail || updateResult.rows[0]));
+      res.json(placementWithJourneyResponse(result.placement, result.journey));
     } catch (err) {
       res.status(500).json({ error: publicError(err) });
     }
@@ -222,12 +220,24 @@ export function registerPlacementActionRoutes(router, pool) {
       if (!placement) {
         return res.status(404).json({ error: 'Placement not found' });
       }
-      if (![PLACEMENT_STATUS_WAITING_ADOPTION, PLACEMENT_STATUS_PENDING_CONDITIONS].includes(placement.status)) {
+
+      const sessionStatus = normalizePlacementStatus(placement.status);
+      const inAdoption = [
+        PLACEMENT_STATUS_WAITING_ADOPTION,
+        PLACEMENT_STATUS_PENDING_CONDITIONS,
+        SESSION_STATUS_ADOPTION_IN_PROGRESS,
+      ].includes(placement.status)
+        || sessionStatus === SESSION_STATUS_ADOPTION_IN_PROGRESS;
+      if (!inAdoption) {
         return res.status(400).json({ error: 'Placement is not in an adoption step' });
       }
 
       const petName = await loadPetName(pool, placement.pet_id);
-      const updated = await cancelAdoptionPlacement(pool, placement, endDate);
+      const cancelResult = await cancelAdoptionJourney(pool, placement, endDate);
+      if (cancelResult.error) {
+        return res.status(cancelResult.status).json({ error: cancelResult.error });
+      }
+      const updated = cancelResult.placement;
 
       await createNotification(pool, {
         userId: placement.foster_user_id,
