@@ -15,45 +15,49 @@ import '../../../../helpers/fakes.dart';
 import '../../helpers/organization_provider_test_helpers.dart';
 
 void main() {
-  testWidgets('session detail shows preparation checklist and transition action', (
-    tester,
-  ) async {
-    await tester.pumpWidget(
-      ProviderScope(
-        overrides: [
-          authProvider.overrideWith((ref) => FakeAuthNotifier()),
-          organizationRepositoryProvider.overrideWithValue(
-            _PreparationSessionRepo(),
-          ),
-          isOrgAdminProvider('org-1').overrideWith((ref) => true),
-          isOrgFosterProvider('org-1').overrideWith((ref) => false),
-        ],
-        child: const MaterialApp(
-          localizationsDelegates: AppLocalizations.localizationsDelegates,
-          supportedLocales: AppLocalizations.supportedLocales,
-          home: Scaffold(
-            body: FosteringSessionDetailScreen(
-              orgId: 'org-1',
-              placementId: 'placement-1',
+  testWidgets(
+    'session detail shows preparation checklist and transition action',
+    (tester) async {
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            authProvider.overrideWith((ref) => FakeAuthNotifier()),
+            organizationRepositoryProvider.overrideWithValue(
+              _PreparationSessionRepo(),
+            ),
+            isOrgAdminProvider('org-1').overrideWith((ref) => true),
+            isOrgFosterProvider('org-1').overrideWith((ref) => false),
+          ],
+          child: const MaterialApp(
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+            home: Scaffold(
+              body: FosteringSessionDetailScreen(
+                orgId: 'org-1',
+                placementId: 'placement-1',
+              ),
             ),
           ),
         ),
-      ),
-    );
+      );
 
-    await tester.pumpAndSettle();
+      await tester.pumpAndSettle();
 
-    expect(find.byKey(const Key('fostering_session_detail_body')), findsOneWidget);
-    expect(
-      find.byKey(const Key('fostering_session_preparation_checklist')),
-      findsOneWidget,
-    );
-    expect(find.text('Preparation'), findsOneWidget);
-    expect(
-      find.byKey(const Key('fostering_session_mark_ready')),
-      findsOneWidget,
-    );
-  });
+      expect(
+        find.byKey(const Key('fostering_session_detail_body')),
+        findsOneWidget,
+      );
+      expect(
+        find.byKey(const Key('fostering_session_preparation_checklist')),
+        findsOneWidget,
+      );
+      expect(find.text('Preparation'), findsOneWidget);
+      expect(
+        find.byKey(const Key('fostering_session_mark_ready')),
+        findsOneWidget,
+      );
+    },
+  );
 
   testWidgets('placement section links to fostering session when open', (
     tester,
@@ -72,9 +76,8 @@ void main() {
         ),
         GoRoute(
           path: '/o/orgs/:orgId/placements/:placementId/session',
-          builder: (context, state) => const Scaffold(
-            body: Text('Session detail route'),
-          ),
+          builder: (context, state) =>
+              const Scaffold(body: Text('Session detail route')),
         ),
       ],
     );
