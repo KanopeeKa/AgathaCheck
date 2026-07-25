@@ -24,13 +24,26 @@ A person becomes an approved foster for a shelter with reusable global profile d
 - [x] Flutter approval filters enabled
 - [x] Approve / decline / archive actions on external foster cards
 
-**Status:** Phase 2 complete
+**Status:** Phase 3 complete (pending integration → main)
 
-## Out of scope (Phase 2)
+## Phase 3 — Foster profiles and manual merge (in progress)
 
-- `foster_profiles` table (J1 Phase 3)
+- [x] Migration `023`: `foster_profiles` table; `foster_profile_id` on `org_foster_parents`
+- [x] Backfill profiles for existing external fosters
+- [x] GET foster-parents exposes `foster_profile_id`
+- [x] POST manual foster creates linked `foster_profiles` row
+- [x] GET `merge-suggestions?email=` for registered-user hints
+- [x] POST `/:id/merge` links manual record to target user + audit `foster_merge_completed`
+- [x] Flutter merge flow (phase 2)
+
+## Out of scope (Phase 3 backend)
+
 - Foster invite flow changes
 - Playwright E2E (debt — map BDD after API stable)
+
+## Previously out of scope (Phase 2)
+
+- ~~`foster_profiles` table (J1 Phase 3)~~ — delivered in Phase 3
 
 ## Depends on
 

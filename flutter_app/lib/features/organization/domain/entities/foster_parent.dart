@@ -54,6 +54,30 @@ enum FosterApprovalState {
   }
 }
 
+/// Registered-user hint when a manual foster email matches an existing account.
+class FosterMergeSuggestion {
+  const FosterMergeSuggestion({
+    required this.userId,
+    required this.displayName,
+    required this.email,
+    this.fosterProfileId,
+  });
+
+  final String userId;
+  final String displayName;
+  final String email;
+  final String? fosterProfileId;
+
+  factory FosterMergeSuggestion.fromJson(Map<String, dynamic> json) {
+    return FosterMergeSuggestion(
+      userId: json['user_id']?.toString() ?? '',
+      displayName: json['display_name']?.toString() ?? '',
+      email: json['email']?.toString() ?? '',
+      fosterProfileId: json['foster_profile_id']?.toString(),
+    );
+  }
+}
+
 /// A foster parent in the org directory — either an app member (admin/foster)
 /// or an external contact without an account.
 class FosterParent {
@@ -61,6 +85,7 @@ class FosterParent {
     required this.id,
     required this.kind,
     this.userId,
+    this.fosterProfileId,
     required this.displayName,
     this.email,
     this.phone,
@@ -76,6 +101,7 @@ class FosterParent {
   final String id;
   final FosterParentKind kind;
   final String? userId;
+  final String? fosterProfileId;
   final String displayName;
   final String? email;
   final String? phone;
@@ -89,6 +115,11 @@ class FosterParent {
 
   bool get isMember => kind == FosterParentKind.member;
   bool get isExternal => kind == FosterParentKind.external;
+  bool get isLinkedToRegisteredAccount => userId != null && userId!.isNotEmpty;
+  bool get canMergeIntoRegisteredAccount =>
+      isExternal &&
+      !isLinkedToRegisteredAccount &&
+      (email?.trim().isNotEmpty ?? false);
 
   String get initials {
     final parts = displayName.trim().split(RegExp(r'\s+'));
@@ -103,6 +134,7 @@ class FosterParent {
       id: json['id']?.toString() ?? '',
       kind: FosterParentKind.fromWire(json['kind']?.toString() ?? 'member'),
       userId: json['user_id']?.toString(),
+      fosterProfileId: json['foster_profile_id']?.toString(),
       displayName: json['display_name']?.toString() ?? '',
       email: json['email']?.toString(),
       phone: json['phone']?.toString(),

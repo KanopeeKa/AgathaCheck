@@ -169,4 +169,42 @@ class OrganizationFosterParentsRemote {
     }
     return data;
   }
+
+  Future<List<Map<String, dynamic>>> getFosterMergeSuggestions(
+    String orgId,
+    String email,
+    String token,
+  ) async {
+    final response = await _ctx.client.get(
+      Uri.parse(
+        '${_ctx.baseUrl}/api/organizations/$orgId/foster-parents/merge-suggestions?email=${Uri.encodeQueryComponent(email)}',
+      ),
+      headers: _ctx.headers(token),
+    );
+    if (response.statusCode >= 400) {
+      _ctx.throwApiError(response, 'Failed to get merge suggestions');
+    }
+    final list = json.decode(response.body) as List;
+    return list.cast<Map<String, dynamic>>();
+  }
+
+  Future<Map<String, dynamic>> mergeManualFoster(
+    String orgId,
+    String fosterParentId, {
+    required String targetUserId,
+    required String token,
+  }) async {
+    final response = await _ctx.client.post(
+      Uri.parse(
+        '${_ctx.baseUrl}/api/organizations/$orgId/foster-parents/$fosterParentId/merge',
+      ),
+      headers: _ctx.headers(token),
+      body: json.encode({'target_user_id': targetUserId}),
+    );
+    final data = json.decode(response.body) as Map<String, dynamic>;
+    if (response.statusCode >= 400) {
+      throw Exception(data['error'] ?? 'Failed to merge foster record');
+    }
+    return data;
+  }
 }

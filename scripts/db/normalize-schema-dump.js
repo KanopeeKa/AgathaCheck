@@ -54,7 +54,7 @@ function canonicalizePartialIndexArrays(line) {
     )
     .sort();
   if (statuses.length === 0) return line;
-  return `CREATE UNIQUE INDEX idx_foster_placements_one_active_pet ON public.foster_placements USING btree (pet_id) WHERE (normalized_status_any(${statuses.join(',')}))`;
+  return `CREATE UNIQUE INDEX idx_foster_placements_one_active_pet ON public.foster_placements USING btree (pet_id) WHERE (normalized_status_any(${statuses.join(',')}));`;
 }
 
 export function normalizeSchemaDump(raw) {

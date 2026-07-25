@@ -231,6 +231,30 @@ class OrgFosterParentsNotifier
     ref.invalidateSelf();
     ref.invalidate(orgPeopleProvider(arg));
   }
+
+  Future<List<FosterMergeSuggestion>> fetchMergeSuggestions(
+    String email,
+  ) async {
+    final token = ref.read(orgTokenProvider)!;
+    final repo = ref.read(organizationRepositoryProvider);
+    return repo.getFosterMergeSuggestions(arg, email, token: token);
+  }
+
+  Future<void> mergeIntoRegisteredAccount({
+    required String fosterParentId,
+    required String targetUserId,
+  }) async {
+    final token = ref.read(orgTokenProvider)!;
+    final repo = ref.read(organizationRepositoryProvider);
+    await repo.mergeManualFoster(
+      arg,
+      fosterParentId,
+      targetUserId: targetUserId,
+      token: token,
+    );
+    ref.invalidateSelf();
+    ref.invalidate(orgPeopleProvider(arg));
+  }
 }
 
 final orgFosterParentsProvider =

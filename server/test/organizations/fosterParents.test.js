@@ -70,10 +70,54 @@ describe('Organizations API', () => {
           kind: 'external',
           display_name: 'New Parent',
           email: 'new@example.com',
+          foster_profile_id: 'fprof-new-1',
           active_pet_count: 0,
           approval_state: 'under_review',
           creation_source: 'manual_shelter_entry',
         });
+      });
+
+      it('GET /:orgId/foster-parents/merge-suggestions returns email matches', async () => {
+        const res = await request(app)
+          .get(`/api/organizations/${orgId}/foster-parents/merge-suggestions`)
+          .query({ email: 'match@example.com' })
+          .set('Authorization', `Bearer ${token}`);
+        expect(res.statusCode).toBe(200);
+        expect(res.body).toEqual([{
+          user_id: 'registered-user-1',
+          display_name: 'Registered User',
+          email: 'match@example.com',
+          foster_profile_id: 'fprof-registered-1',
+          is_org_member: false,
+        }]);
+      });
+
+      it('GET /:orgId/foster-parents/merge-suggestions returns 400 without email', async () => {
+        const res = await request(app)
+          .get(`/api/organizations/${orgId}/foster-parents/merge-suggestions`)
+          .set('Authorization', `Bearer ${token}`);
+        expect(res.statusCode).toBe(400);
+      });
+
+      it('POST /:orgId/foster-parents/:id/merge links manual foster to registered user', async () => {
+        const res = await request(app)
+          .post(`/api/organizations/${orgId}/foster-parents/fp-external-1/merge`)
+          .set('Authorization', `Bearer ${token}`)
+          .send({ target_user_id: 'registered-user-1' });
+        expect(res.statusCode).toBe(200);
+        expect(res.body).toMatchObject({
+          kind: 'external',
+          user_id: 'registered-user-1',
+          foster_profile_id: 'fprof-registered-1',
+        });
+      });
+
+      it('POST /:orgId/foster-parents/:id/merge returns 400 without target_user_id', async () => {
+        const res = await request(app)
+          .post(`/api/organizations/${orgId}/foster-parents/fp-external-1/merge`)
+          .set('Authorization', `Bearer ${token}`)
+          .send({});
+        expect(res.statusCode).toBe(400);
       });
   
       it('POST /:orgId/foster-parents returns 400 without lawful basis confirmation', async () => {

@@ -137,6 +137,36 @@ mixin OrganizationRepositoryFosterMixin on OrganizationRepositoryImplBase {
   }
 
   @override
+  Future<List<FosterMergeSuggestion>> getFosterMergeSuggestions(
+    String orgId,
+    String email, {
+    required String token,
+  }) async {
+    final rows = await dataSource.getFosterMergeSuggestions(
+      orgId,
+      email,
+      token,
+    );
+    return rows.map(FosterMergeSuggestion.fromJson).toList();
+  }
+
+  @override
+  Future<FosterParent> mergeManualFoster(
+    String orgId,
+    String fosterParentId, {
+    required String targetUserId,
+    required String token,
+  }) async {
+    final row = await dataSource.mergeManualFoster(
+      orgId,
+      fosterParentId,
+      targetUserId: targetUserId,
+      token: token,
+    );
+    return FosterParent.fromJson(row);
+  }
+
+  @override
   Future<PetFosterPlacementState> getPetPlacement(
     String orgId,
     String petId,

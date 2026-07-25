@@ -306,6 +306,35 @@ class RecordingOrganizationRepository implements OrganizationRepository {
   );
 
   @override
+  Future<List<FosterMergeSuggestion>> getFosterMergeSuggestions(
+    String orgId,
+    String email, {
+    required String token,
+  }) async => [
+    FosterMergeSuggestion(
+      userId: 'registered-user-1',
+      displayName: 'Registered User',
+      email: email,
+      fosterProfileId: 'fprof-1',
+    ),
+  ];
+
+  @override
+  Future<FosterParent> mergeManualFoster(
+    String orgId,
+    String fosterParentId, {
+    required String targetUserId,
+    required String token,
+  }) async => FosterParent(
+    id: fosterParentId,
+    kind: FosterParentKind.external,
+    userId: targetUserId,
+    fosterProfileId: 'fprof-1',
+    displayName: 'Merged Parent',
+    email: 'merged@example.com',
+  );
+
+  @override
   Future<PetFosterPlacementState> getPetPlacement(
     String orgId,
     String petId,

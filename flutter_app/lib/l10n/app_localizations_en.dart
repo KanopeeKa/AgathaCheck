@@ -2117,6 +2117,37 @@ class AppLocalizationsEn extends AppLocalizations {
   String get manageFostersApprovalStateArchived => 'Archived';
 
   @override
+  String get manageFostersMergeIntoAccount => 'Link to registered account';
+
+  @override
+  String get manageFostersMergeSelectAccount => 'Select registered account';
+
+  @override
+  String get manageFostersMergeConfirmTitle => 'Link foster record?';
+
+  @override
+  String manageFostersMergeConfirmBody(
+    String manualName,
+    String registeredName,
+  ) {
+    return 'Link $manualName to the registered account for $registeredName? Shelter notes stay on this relationship.';
+  }
+
+  @override
+  String get manageFostersMergeConfirmAction => 'Link account';
+
+  @override
+  String get manageFostersMergeSuccess =>
+      'Foster record linked to registered account';
+
+  @override
+  String get manageFostersMergeNoMatch =>
+      'No registered account matches this email';
+
+  @override
+  String get manageFostersLinkedAccount => 'Linked account';
+
+  @override
   String get noFosterParents => 'No foster parents yet';
 
   @override
