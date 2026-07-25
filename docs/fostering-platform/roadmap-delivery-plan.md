@@ -66,13 +66,13 @@ One **execute-plan per journey wave** (48h autonomy window each). Multi-phase pl
 |---------|---------|--------|-------------------|--------|
 | `fostering-platform-foundation-e877` | G0 + J1 Ph1-2 | 2 | `cursor/fostering-platform-foundation-e877-integration` | **merged** |
 | `fostering-platform-j1-phase2-e877` | J1 Ph2 approval | 2 | `cursor/fostering-platform-j1-phase2-e877-integration` | **merged** |
-| `fostering-platform-j1-phase3-e877` | J1 Ph3 profiles + merge | 2 | `cursor/fostering-platform-j1-phase3-e877-integration` | **active** |
-| `fostering-platform-j1-phase4-e877` | J1 Ph4 compliance | 2 | `cursor/fostering-platform-j1-phase4-e877-integration` | pending |
-| `fostering-platform-j2-e877` | J2 matching + requests | 3 | `cursor/fostering-platform-j2-e877-integration` | pending (after J1 Ph3) |
-| `fostering-platform-j3-e877` | J3 fostering sessions | 4 | `cursor/fostering-platform-j3-e877-integration` | pending (after J1 Ph3) |
-| `fostering-platform-j4-e877` | J4 visits + prospects | 3 | `cursor/fostering-platform-j4-e877-integration` | pending (after J3 Ph1) |
-| `fostering-platform-j5-e877` | J5 adoption conversion | 3 | `cursor/fostering-platform-j5-e877-integration` | pending (after J4 Ph1) |
-| `fostering-platform-g1-e877` | G1 document packs | 2 | `cursor/fostering-platform-g1-e877-integration` | pending (after J3+J5 hooks) |
+| `fostering-platform-j1-phase3-e877` | J1 Ph3 profiles + merge | 2 | `cursor/fostering-platform-j1-phase3-e877-integration` | **merged** |
+| `fostering-platform-j1-phase4-e877` | J1 Ph4 compliance | 2 | `cursor/fostering-platform-j1-phase4-e877-integration` | **merged** |
+| `fostering-platform-j2-e877` | J2 matching + requests | 3 | `cursor/fostering-platform-j2-j3-e877-integration` | **merged** |
+| `fostering-platform-j3-e877` | J3 fostering sessions | 4 | `cursor/fostering-platform-j2-j3-e877-integration` | **merged** |
+| `fostering-platform-j4-e877` | J4 visits + prospects | 3 | `cursor/fostering-platform-j2-j3-e877-integration` | **merged** |
+| `fostering-platform-j5-e877` | J5 adoption conversion | 3 | `cursor/fostering-platform-j2-j3-e877-integration` | **merged** |
+| `fostering-platform-g1-e877` | G1 document packs | 2 | `cursor/fostering-platform-j2-j3-e877-integration` | **merged** |
 
 ---
 
