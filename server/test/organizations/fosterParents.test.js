@@ -33,6 +33,8 @@ describe('Organizations API', () => {
           display_name: 'Jane Foster',
           role: 'foster',
           active_pet_count: 2,
+          approval_state: 'approved',
+          creation_source: 'member',
         });
         expect(member.active_pets).toEqual([
           { pet_id: 'pet-a', pet_name: 'Max', status: 'in_progress' },
@@ -41,6 +43,8 @@ describe('Organizations API', () => {
           display_name: 'Off-app Parent',
           email: 'offapp@example.com',
           active_pet_count: 0,
+          approval_state: 'approved',
+          creation_source: 'manual_shelter_entry',
         });
       });
   
@@ -67,6 +71,8 @@ describe('Organizations API', () => {
           display_name: 'New Parent',
           email: 'new@example.com',
           active_pet_count: 0,
+          approval_state: 'under_review',
+          creation_source: 'manual_shelter_entry',
         });
       });
   
@@ -100,6 +106,46 @@ describe('Organizations API', () => {
         expect(res.statusCode).toBe(400);
       });
   
+      it('PATCH /:orgId/foster-parents/:id/approval approves an external foster', async () => {
+        const res = await request(app)
+          .patch(`/api/organizations/${orgId}/foster-parents/fp-external-1/approval`)
+          .set('Authorization', `Bearer ${token}`)
+          .send({ approval_state: 'approved' });
+        expect(res.statusCode).toBe(200);
+        expect(res.body).toMatchObject({
+          kind: 'external',
+          approval_state: 'approved',
+        });
+      });
+
+      it('PATCH /:orgId/foster-parents/:id/approval returns 400 for invalid state', async () => {
+        const res = await request(app)
+          .patch(`/api/organizations/${orgId}/foster-parents/fp-external-1/approval`)
+          .set('Authorization', `Bearer ${token}`)
+          .send({ approval_state: 'under_review' });
+        expect(res.statusCode).toBe(400);
+      });
+
+      it('PATCH /:orgId/foster-parents/:id/approval returns 404 when not found', async () => {
+        const pool = buildMockPool({
+          query: async (sql, params) => {
+            if (sql.includes('SELECT role FROM organization_users WHERE organization_id')) {
+              return { rows: [{ role: 'super_admin' }] };
+            }
+            if (sql.includes('SET approval_state = $1')) {
+              return { rows: [] };
+            }
+            return { rows: [] };
+          },
+        });
+        const localApp = createApp(pool);
+        const res = await request(localApp)
+          .patch(`/api/organizations/${orgId}/foster-parents/missing-id/approval`)
+          .set('Authorization', `Bearer ${token}`)
+          .send({ approval_state: 'approved' });
+        expect(res.statusCode).toBe(404);
+      });
+
       it('PUT /:orgId/foster-parents/:id updates an external foster parent', async () => {
         const res = await request(app)
           .put(`/api/organizations/${orgId}/foster-parents/fp-external-1`)

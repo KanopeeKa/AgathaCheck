@@ -126,8 +126,17 @@ db/**
 
 ```yaml
 autonomy: active
-current_phase: "1"
+current_phase: 1
 last_completed_phase: null
 halt_reason: null
-next_action: null
+next_action: "continue phase 1 on branch cursor/j1-approval-state-backend-e877"
+artifact_ref:
+  branch: cursor/j1-approval-state-backend-e877
+  plan_path: .agents/plans/fostering-platform-j1-phase2-e877.md
+  plan_commit: 4790938b3637090ba7d9cff7bf52c161f003d577
+  snapshot_path: .agents/plans/fostering-platform-j1-phase2-e877.snapshot.json
+  snapshot_commit: 4790938b3637090ba7d9cff7bf52c161f003d577
+open_prs: []
+merge_commits: {}
+debt_issue_refs: []
 ```

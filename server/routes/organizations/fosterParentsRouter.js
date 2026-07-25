@@ -1,4 +1,5 @@
 import { v4 as uuidv4 } from 'uuid';
+import { logAuditEventSafe } from '../../lib/audit.js';
 import { buildExternalFosterNoticeEmail } from '../../lib/email/templates/externalFosterNotice.js';
 import { resolveEmailLocale } from '../../lib/email/locale.js';
 import { OPEN_PLACEMENT_STATUSES } from '../../lib/fosterPlacements.js';
@@ -7,8 +8,12 @@ import { sendTransactionalEmail } from '../../services/mailService.js';
 import { extractUserId, requireOrgAdmin } from './shared.js';
 import { publicError } from '../../config/security.js';
 
+const APPROVAL_STATES = new Set(['under_review', 'approved', 'declined', 'archived']);
+const MEMBER_APPROVAL_STATE = 'approved';
+const MEMBER_CREATION_SOURCE = 'member';
+
 export function registerFosterParentsRoutes(router, pool) {
-    function fosterParentToMap(row) {
+    function fosterParentToMap(row, { kind = row.kind } = {}) {
       const displayName = (row.display_name || '').trim();
       let activePets = row.active_pets || [];
       if (typeof activePets === 'string') {
@@ -18,9 +23,10 @@ export function registerFosterParentsRoutes(router, pool) {
           activePets = [];
         }
       }
+      const isMember = kind === 'member';
       return {
         id: row.id,
-        kind: row.kind,
+        kind,
         user_id: row.user_id || null,
         display_name: displayName || row.email || '',
         email: row.email || null,
@@ -31,6 +37,12 @@ export function registerFosterParentsRoutes(router, pool) {
         photo_url: row.photo_url || null,
         active_pet_count: parseInt(row.active_pet_count, 10) || 0,
         active_pets: activePets,
+        approval_state: isMember
+          ? MEMBER_APPROVAL_STATE
+          : (row.approval_state || 'approved'),
+        creation_source: isMember
+          ? MEMBER_CREATION_SOURCE
+          : (row.creation_source || 'manual_shelter_entry'),
       };
     }
 
@@ -88,6 +100,8 @@ export function registerFosterParentsRoutes(router, pool) {
                   NULL AS role,
                   fp.phone,
                   fp.notes,
+                  fp.approval_state,
+                  fp.creation_source,
                   (
                     SELECT COUNT(DISTINCT fpl.pet_id)::int
                     FROM foster_placements fpl
@@ -114,8 +128,8 @@ export function registerFosterParentsRoutes(router, pool) {
         );
 
         const combined = [
-          ...memberResult.rows.map(fosterParentToMap),
-          ...externalResult.rows.map(fosterParentToMap),
+          ...memberResult.rows.map((row) => fosterParentToMap(row, { kind: 'member' })),
+          ...externalResult.rows.map((row) => fosterParentToMap(row, { kind: 'external' })),
         ].sort((a, b) => a.display_name.localeCompare(b.display_name, undefined, { sensitivity: 'base' }));
 
         res.json(combined);
@@ -160,12 +174,23 @@ export function registerFosterParentsRoutes(router, pool) {
         const result = await pool.query(
           `INSERT INTO org_foster_parents (
              id, organization_id, display_name, email, phone, foster_address, notes,
-             lawful_basis_attested_at, lawful_basis_attested_by
-           ) VALUES ($1, $2, $3, $4, $5, $6, $7, NOW(), $8)
+             lawful_basis_attested_at, lawful_basis_attested_by,
+             approval_state, creation_source
+           ) VALUES ($1, $2, $3, $4, $5, $6, $7, NOW(), $8, 'under_review', 'manual_shelter_entry')
            RETURNING *`,
           [id, orgId, displayName, email, phone, fosterAddress, notes, userId],
         );
         const row = result.rows[0];
+
+        logAuditEventSafe(pool, {
+          actorUserId: userId,
+          action: 'manual_foster_record_created',
+          resourceType: 'shelter_foster_relationship',
+          resourceId: id,
+          orgId,
+          metadata: { creation_source: 'manual_shelter_entry', approval_state: 'under_review' },
+          req,
+        });
 
         try {
           const locale = resolveEmailLocale(data.locale);
@@ -184,7 +209,69 @@ export function registerFosterParentsRoutes(router, pool) {
           photo_url: null,
           role: null,
           active_pet_count: 0,
-        }));
+          active_pets: [],
+        }, { kind: 'external' }));
+      } catch (err) {
+        res.status(500).json({ error: publicError(err) });
+      }
+    });
+
+    router.patch('/:orgId/foster-parents/:id/approval', async (req, res) => {
+      const userId = extractUserId(req);
+      if (!userId) return res.status(401).json({ error: 'Unauthorized' });
+      const orgId = req.params.orgId;
+      const fosterParentId = req.params.id;
+      const data = req.body || {};
+      const approvalState = (data.approval_state || data.approvalState || '').trim();
+
+      if (!APPROVAL_STATES.has(approvalState)) {
+        return res.status(400).json({ error: 'Invalid approval_state' });
+      }
+      if (approvalState === 'under_review') {
+        return res.status(400).json({ error: 'Cannot set approval_state to under_review' });
+      }
+
+      try {
+        if (!(await requireOrgAdmin(pool, res, orgId, userId))) return;
+
+        const result = await pool.query(
+          `UPDATE org_foster_parents
+           SET approval_state = $1, updated_at = NOW()
+           WHERE id = $2 AND organization_id = $3
+           RETURNING *`,
+          [approvalState, fosterParentId, orgId],
+        );
+        if (result.rows.length === 0) {
+          return res.status(404).json({ error: 'Foster parent not found' });
+        }
+
+        const auditActionByState = {
+          approved: 'foster_approval_granted',
+          declined: 'foster_approval_declined',
+          archived: 'foster_archived',
+        };
+        const auditAction = auditActionByState[approvalState];
+        if (auditAction) {
+          logAuditEventSafe(pool, {
+            actorUserId: userId,
+            action: auditAction,
+            resourceType: 'shelter_foster_relationship',
+            resourceId: fosterParentId,
+            orgId,
+            metadata: { approval_state: approvalState },
+            req,
+          });
+        }
+
+        const row = result.rows[0];
+        res.json(fosterParentToMap({
+          ...row,
+          kind: 'external',
+          photo_url: null,
+          role: null,
+          active_pet_count: 0,
+          active_pets: [],
+        }, { kind: 'external' }));
       } catch (err) {
         res.status(500).json({ error: publicError(err) });
       }
@@ -226,7 +313,8 @@ export function registerFosterParentsRoutes(router, pool) {
           photo_url: null,
           role: null,
           active_pet_count: 0,
-        }));
+          active_pets: [],
+        }, { kind: 'external' }));
       } catch (err) {
         res.status(500).json({ error: publicError(err) });
       }
