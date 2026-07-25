@@ -42,11 +42,13 @@ describe('Organizations API', () => {
         ['POST', `/api/organizations/${orgId}/pets/pet-1/transfer`],
         ['GET', `/api/organizations/${orgId}/pets/pet-1/foster-history`],
         ['GET', `/api/organizations/${orgId}/foster-parents`],
+        ['GET', `/api/organizations/${orgId}/foster-parents/merge-suggestions`],
         ['GET', `/api/organizations/${orgId}/people`],
         ['GET', `/api/organizations/${orgId}/people/member/ou-1`],
         ['POST', `/api/organizations/${orgId}/foster-parents`],
         ['PUT', `/api/organizations/${orgId}/foster-parents/fp-1`],
         ['PATCH', `/api/organizations/${orgId}/foster-parents/fp-1/approval`],
+        ['POST', `/api/organizations/${orgId}/foster-parents/fp-1/merge`],
         ['DELETE', `/api/organizations/${orgId}/foster-parents/fp-1`],
       ];
   

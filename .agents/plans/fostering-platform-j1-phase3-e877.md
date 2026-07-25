@@ -120,6 +120,17 @@ docs/fostering-platform/j1-foster-onboarding.md
 
 ```yaml
 autonomy: active
-current_phase: "1"
+current_phase: 1
 last_completed_phase: null
+halt_reason: null
+next_action: "continue phase 1 on branch cursor/j1-foster-profiles-backend-e877"
+artifact_ref:
+  branch: cursor/j1-foster-profiles-backend-e877
+  plan_path: .agents/plans/fostering-platform-j1-phase3-e877.md
+  plan_commit: af75bd57ca9c48c0088c7315350af5529a087d8b
+  snapshot_path: .agents/plans/fostering-platform-j1-phase3-e877.snapshot.json
+  snapshot_commit: af75bd57ca9c48c0088c7315350af5529a087d8b
+open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/"]
+merge_commits: {}
+debt_issue_refs: []
 ```

@@ -1,8 +1,52 @@
+-- Agatha Track — canonical schema snapshot (generated; do not edit by hand).
+--
+-- Source of truth for production: forward-only db/migrations/NNN_*.sql via migrate.js up.
+-- This file is produced by scripts/db/regenerate-canonical.sh and verified by
+-- scripts/db/check-schema-equivalence.sh (bootstrap path must match committed snapshot).
+--
+-- Regenerate after schema changes:
+--   scripts/db/regenerate-canonical.sh
+--
+-- See docs/db-schema-bootstrap-plan.md for the phased bootstrap model.
+--
+-- PostgreSQL database dump
+--
+
+\restrict mHtLkaxEF3R42LQPKBoeXIYjLv2vElm4fmE1AEqK7dtp9U2KzFoQhGqr9gjYuKk
+
+-- Dumped from database version 16.14 (Ubuntu 16.14-0ubuntu0.24.04.1)
+-- Dumped by pg_dump version 16.14 (Ubuntu 16.14-0ubuntu0.24.04.1)
+
+SET statement_timeout = 0;
+SET lock_timeout = 0;
+SET idle_in_transaction_session_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SELECT pg_catalog.set_config('search_path', '', false);
+SET check_function_bodies = false;
+SET xmloption = content;
+SET client_min_messages = warning;
+SET row_security = off;
+
+SET default_tablespace = '';
+
+SET default_table_access_method = heap;
+
+--
+-- Name: _migrations; Type: TABLE; Schema: public; Owner: -
+--
+
 CREATE TABLE public._migrations (
     id uuid NOT NULL,
     name character varying(255) NOT NULL,
     applied_at timestamp with time zone DEFAULT now()
 );
+
+
+--
+-- Name: archived_pets; Type: TABLE; Schema: public; Owner: -
+--
+
 CREATE TABLE public.archived_pets (
     id uuid NOT NULL,
     organization_id uuid,
@@ -20,6 +64,12 @@ CREATE TABLE public.archived_pets (
     shadow_snapshot jsonb DEFAULT '{}'::jsonb NOT NULL,
     frozen_at timestamp with time zone
 );
+
+
+--
+-- Name: audit_events; Type: TABLE; Schema: public; Owner: -
+--
+
 CREATE TABLE public.audit_events (
     id uuid NOT NULL,
     occurred_at timestamp with time zone DEFAULT now() NOT NULL,
@@ -41,6 +91,12 @@ CREATE TABLE public.audit_events (
     CONSTRAINT audit_events_outcome_check CHECK ((outcome = ANY (ARRAY['success'::text, 'failure'::text]))),
     CONSTRAINT audit_events_retention_tier_check CHECK ((retention_tier = ANY (ARRAY['hot'::text, 'warm'::text, 'cold'::text])))
 );
+
+
+--
+-- Name: custody_transfers; Type: TABLE; Schema: public; Owner: -
+--
+
 CREATE TABLE public.custody_transfers (
     id uuid NOT NULL,
     pet_id uuid NOT NULL,
@@ -58,6 +114,12 @@ CREATE TABLE public.custody_transfers (
     responded_at timestamp with time zone,
     responded_by_user_id uuid
 );
+
+
+--
+-- Name: family_event_history; Type: TABLE; Schema: public; Owner: -
+--
+
 CREATE TABLE public.family_event_history (
     id uuid NOT NULL,
     family_event_id uuid NOT NULL,
@@ -68,6 +130,12 @@ CREATE TABLE public.family_event_history (
     notes text DEFAULT ''::text,
     status character varying(50) DEFAULT 'completed'::character varying NOT NULL
 );
+
+
+--
+-- Name: family_events; Type: TABLE; Schema: public; Owner: -
+--
+
 CREATE TABLE public.family_events (
     id uuid NOT NULL,
     user_id uuid NOT NULL,
@@ -83,6 +151,12 @@ CREATE TABLE public.family_events (
     updated_at timestamp with time zone DEFAULT now(),
     marked_at timestamp with time zone
 );
+
+
+--
+-- Name: foster_placements; Type: TABLE; Schema: public; Owner: -
+--
+
 CREATE TABLE public.foster_placements (
     id uuid NOT NULL,
     organization_id uuid NOT NULL,
@@ -99,6 +173,28 @@ CREATE TABLE public.foster_placements (
     responded_at timestamp with time zone,
     adoption_conditions text DEFAULT ''::text
 );
+
+
+--
+-- Name: foster_profiles; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.foster_profiles (
+    id uuid NOT NULL,
+    user_id uuid,
+    display_name character varying(255) DEFAULT ''::character varying NOT NULL,
+    email character varying(255),
+    phone character varying(50),
+    foster_address text DEFAULT ''::text,
+    created_at timestamp with time zone DEFAULT now(),
+    updated_at timestamp with time zone DEFAULT now()
+);
+
+
+--
+-- Name: health_entries; Type: TABLE; Schema: public; Owner: -
+--
+
 CREATE TABLE public.health_entries (
     id uuid NOT NULL,
     pet_id uuid NOT NULL,
@@ -122,12 +218,24 @@ CREATE TABLE public.health_entries (
     recurrence_anchor character varying(50) DEFAULT 'from_completion'::character varying,
     repeat_end_date date
 );
+
+
+--
+-- Name: health_event_photos; Type: TABLE; Schema: public; Owner: -
+--
+
 CREATE TABLE public.health_event_photos (
     id uuid NOT NULL,
     health_entry_id uuid NOT NULL,
     url text NOT NULL,
     created_at timestamp with time zone DEFAULT now()
 );
+
+
+--
+-- Name: health_history; Type: TABLE; Schema: public; Owner: -
+--
+
 CREATE TABLE public.health_history (
     id uuid NOT NULL,
     health_entry_id uuid NOT NULL,
@@ -138,6 +246,12 @@ CREATE TABLE public.health_history (
     completed_on date,
     marked_by_user_id uuid
 );
+
+
+--
+-- Name: health_issue_events; Type: TABLE; Schema: public; Owner: -
+--
+
 CREATE TABLE public.health_issue_events (
     id uuid NOT NULL,
     health_issue_id uuid NOT NULL,
@@ -146,6 +260,12 @@ CREATE TABLE public.health_issue_events (
     notes text DEFAULT ''::text,
     created_at timestamp with time zone DEFAULT now()
 );
+
+
+--
+-- Name: health_issues; Type: TABLE; Schema: public; Owner: -
+--
+
 CREATE TABLE public.health_issues (
     id uuid NOT NULL,
     pet_id uuid NOT NULL,
@@ -159,6 +279,12 @@ CREATE TABLE public.health_issues (
     created_at timestamp with time zone DEFAULT now(),
     updated_at timestamp with time zone DEFAULT now()
 );
+
+
+--
+-- Name: notification_preferences; Type: TABLE; Schema: public; Owner: -
+--
+
 CREATE TABLE public.notification_preferences (
     id uuid NOT NULL,
     user_id uuid NOT NULL,
@@ -166,6 +292,12 @@ CREATE TABLE public.notification_preferences (
     value character varying(50) NOT NULL,
     created_at timestamp with time zone DEFAULT now()
 );
+
+
+--
+-- Name: notifications; Type: TABLE; Schema: public; Owner: -
+--
+
 CREATE TABLE public.notifications (
     id uuid NOT NULL,
     user_id uuid NOT NULL,
@@ -180,6 +312,12 @@ CREATE TABLE public.notifications (
     read boolean DEFAULT false,
     created_at timestamp with time zone DEFAULT now()
 );
+
+
+--
+-- Name: org_connection_requests; Type: TABLE; Schema: public; Owner: -
+--
+
 CREATE TABLE public.org_connection_requests (
     id uuid NOT NULL,
     requesting_org_id uuid NOT NULL,
@@ -192,6 +330,12 @@ CREATE TABLE public.org_connection_requests (
     revoked_at timestamp with time zone,
     CONSTRAINT org_connection_requests_distinct CHECK ((requesting_org_id <> target_org_id))
 );
+
+
+--
+-- Name: org_connections; Type: TABLE; Schema: public; Owner: -
+--
+
 CREATE TABLE public.org_connections (
     id uuid NOT NULL,
     org_low_id uuid NOT NULL,
@@ -202,6 +346,12 @@ CREATE TABLE public.org_connections (
     revoked_by_org_id uuid,
     CONSTRAINT org_connections_distinct CHECK ((org_low_id <> org_high_id))
 );
+
+
+--
+-- Name: org_foster_parents; Type: TABLE; Schema: public; Owner: -
+--
+
 CREATE TABLE public.org_foster_parents (
     id uuid NOT NULL,
     organization_id uuid NOT NULL,
@@ -217,15 +367,28 @@ CREATE TABLE public.org_foster_parents (
     lawful_basis_attested_by uuid,
     approval_state character varying(32) DEFAULT 'approved'::character varying NOT NULL,
     creation_source character varying(32) DEFAULT 'manual_shelter_entry'::character varying,
+    foster_profile_id uuid,
     CONSTRAINT org_foster_parents_approval_state_check CHECK (((approval_state)::text = ANY ((ARRAY['under_review'::character varying, 'approved'::character varying, 'declined'::character varying, 'archived'::character varying])::text[]))),
     CONSTRAINT org_foster_parents_creation_source_check CHECK (((creation_source)::text = ANY ((ARRAY['invite'::character varying, 'manual_shelter_entry'::character varying, 'member'::character varying])::text[])))
 );
+
+
+--
+-- Name: org_pet_home_hidden; Type: TABLE; Schema: public; Owner: -
+--
+
 CREATE TABLE public.org_pet_home_hidden (
     user_id uuid NOT NULL,
     pet_id uuid NOT NULL,
     organization_id uuid NOT NULL,
     created_at timestamp with time zone DEFAULT now() NOT NULL
 );
+
+
+--
+-- Name: organization_users; Type: TABLE; Schema: public; Owner: -
+--
+
 CREATE TABLE public.organization_users (
     id uuid NOT NULL,
     organization_id uuid NOT NULL,
@@ -237,6 +400,12 @@ CREATE TABLE public.organization_users (
     foster_address text DEFAULT ''::text,
     admin_notes text DEFAULT ''::text
 );
+
+
+--
+-- Name: organizations; Type: TABLE; Schema: public; Owner: -
+--
+
 CREATE TABLE public.organizations (
     id uuid NOT NULL,
     name character varying(255) NOT NULL,
@@ -252,6 +421,12 @@ CREATE TABLE public.organizations (
     logo_url text DEFAULT ''::text,
     primary_contact_ref text
 );
+
+
+--
+-- Name: password_reset_tokens; Type: TABLE; Schema: public; Owner: -
+--
+
 CREATE TABLE public.password_reset_tokens (
     id uuid NOT NULL,
     user_id uuid NOT NULL,
@@ -260,6 +435,12 @@ CREATE TABLE public.password_reset_tokens (
     used boolean DEFAULT false,
     created_at timestamp with time zone DEFAULT now()
 );
+
+
+--
+-- Name: pet_access; Type: TABLE; Schema: public; Owner: -
+--
+
 CREATE TABLE public.pet_access (
     id uuid NOT NULL,
     pet_id uuid NOT NULL,
@@ -271,6 +452,12 @@ CREATE TABLE public.pet_access (
     invited_by uuid,
     share_link_id uuid
 );
+
+
+--
+-- Name: pet_share_links; Type: TABLE; Schema: public; Owner: -
+--
+
 CREATE TABLE public.pet_share_links (
     id uuid NOT NULL,
     pet_id uuid NOT NULL,
@@ -281,6 +468,12 @@ CREATE TABLE public.pet_share_links (
     claimed_by uuid,
     claimed_at timestamp with time zone
 );
+
+
+--
+-- Name: pets; Type: TABLE; Schema: public; Owner: -
+--
+
 CREATE TABLE public.pets (
     id uuid NOT NULL,
     user_id uuid NOT NULL,
@@ -309,6 +502,12 @@ CREATE TABLE public.pets (
     care_holder_user_id uuid,
     care_holder_org_id uuid
 );
+
+
+--
+-- Name: refresh_tokens; Type: TABLE; Schema: public; Owner: -
+--
+
 CREATE TABLE public.refresh_tokens (
     id uuid NOT NULL,
     user_id uuid NOT NULL,
@@ -316,6 +515,12 @@ CREATE TABLE public.refresh_tokens (
     expires_at timestamp with time zone NOT NULL,
     created_at timestamp with time zone DEFAULT now()
 );
+
+
+--
+-- Name: shared_pets; Type: TABLE; Schema: public; Owner: -
+--
+
 CREATE TABLE public.shared_pets (
     id uuid NOT NULL,
     pet_id uuid NOT NULL,
@@ -325,6 +530,12 @@ CREATE TABLE public.shared_pets (
     created_at timestamp with time zone DEFAULT now(),
     updated_at timestamp with time zone DEFAULT now()
 );
+
+
+--
+-- Name: users; Type: TABLE; Schema: public; Owner: -
+--
+
 CREATE TABLE public.users (
     id uuid NOT NULL,
     email character varying(255) NOT NULL,
@@ -338,6 +549,12 @@ CREATE TABLE public.users (
     created_at timestamp with time zone DEFAULT now(),
     updated_at timestamp with time zone DEFAULT now()
 );
+
+
+--
+-- Name: vets; Type: TABLE; Schema: public; Owner: -
+--
+
 CREATE TABLE public.vets (
     id uuid NOT NULL,
     user_id uuid,
@@ -352,6 +569,12 @@ CREATE TABLE public.vets (
     updated_at timestamp with time zone DEFAULT now(),
     organization_id uuid
 );
+
+
+--
+-- Name: weight_entries; Type: TABLE; Schema: public; Owner: -
+--
+
 CREATE TABLE public.weight_entries (
     id uuid NOT NULL,
     pet_id uuid NOT NULL,
@@ -363,241 +586,1092 @@ CREATE TABLE public.weight_entries (
     measured_at timestamp with time zone DEFAULT now(),
     created_at timestamp with time zone DEFAULT now()
 );
+
+
+--
+-- Name: _migrations _migrations_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY public._migrations
     ADD CONSTRAINT _migrations_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: archived_pets archived_pets_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY public.archived_pets
     ADD CONSTRAINT archived_pets_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: audit_events audit_events_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY public.audit_events
     ADD CONSTRAINT audit_events_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: custody_transfers custody_transfers_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY public.custody_transfers
     ADD CONSTRAINT custody_transfers_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: family_event_history family_event_history_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY public.family_event_history
     ADD CONSTRAINT family_event_history_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: family_events family_events_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY public.family_events
     ADD CONSTRAINT family_events_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: foster_placements foster_placements_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY public.foster_placements
     ADD CONSTRAINT foster_placements_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: foster_profiles foster_profiles_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.foster_profiles
+    ADD CONSTRAINT foster_profiles_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: foster_profiles foster_profiles_user_id_key; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.foster_profiles
+    ADD CONSTRAINT foster_profiles_user_id_key UNIQUE (user_id);
+
+
+--
+-- Name: health_entries health_entries_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY public.health_entries
     ADD CONSTRAINT health_entries_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: health_event_photos health_event_photos_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY public.health_event_photos
     ADD CONSTRAINT health_event_photos_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: health_history health_history_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY public.health_history
     ADD CONSTRAINT health_history_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: health_issue_events health_issue_events_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY public.health_issue_events
     ADD CONSTRAINT health_issue_events_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: health_issues health_issues_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY public.health_issues
     ADD CONSTRAINT health_issues_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: notification_preferences notification_preferences_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY public.notification_preferences
     ADD CONSTRAINT notification_preferences_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: notifications notifications_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY public.notifications
     ADD CONSTRAINT notifications_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: org_connection_requests org_connection_requests_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY public.org_connection_requests
     ADD CONSTRAINT org_connection_requests_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: org_connection_requests org_connection_requests_token_key; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY public.org_connection_requests
     ADD CONSTRAINT org_connection_requests_token_key UNIQUE (token);
+
+
+--
+-- Name: org_connections org_connections_org_low_id_org_high_id_key; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY public.org_connections
     ADD CONSTRAINT org_connections_org_low_id_org_high_id_key UNIQUE (org_low_id, org_high_id);
+
+
+--
+-- Name: org_connections org_connections_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY public.org_connections
     ADD CONSTRAINT org_connections_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: org_foster_parents org_foster_parents_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY public.org_foster_parents
     ADD CONSTRAINT org_foster_parents_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: org_pet_home_hidden org_pet_home_hidden_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY public.org_pet_home_hidden
     ADD CONSTRAINT org_pet_home_hidden_pkey PRIMARY KEY (user_id, pet_id);
+
+
+--
+-- Name: organization_users organization_users_organization_id_user_id_key; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY public.organization_users
     ADD CONSTRAINT organization_users_organization_id_user_id_key UNIQUE (organization_id, user_id);
+
+
+--
+-- Name: organization_users organization_users_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY public.organization_users
     ADD CONSTRAINT organization_users_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: organizations organizations_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY public.organizations
     ADD CONSTRAINT organizations_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: password_reset_tokens password_reset_tokens_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY public.password_reset_tokens
     ADD CONSTRAINT password_reset_tokens_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: pet_access pet_access_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY public.pet_access
     ADD CONSTRAINT pet_access_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: pet_share_links pet_share_links_code_key; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY public.pet_share_links
     ADD CONSTRAINT pet_share_links_code_key UNIQUE (code);
+
+
+--
+-- Name: pet_share_links pet_share_links_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY public.pet_share_links
     ADD CONSTRAINT pet_share_links_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: pets pets_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY public.pets
     ADD CONSTRAINT pets_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: refresh_tokens refresh_tokens_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY public.refresh_tokens
     ADD CONSTRAINT refresh_tokens_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: refresh_tokens refresh_tokens_token_key; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY public.refresh_tokens
     ADD CONSTRAINT refresh_tokens_token_key UNIQUE (token);
+
+
+--
+-- Name: shared_pets shared_pets_pet_id_user_id_key; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY public.shared_pets
     ADD CONSTRAINT shared_pets_pet_id_user_id_key UNIQUE (pet_id, user_id);
+
+
+--
+-- Name: shared_pets shared_pets_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY public.shared_pets
     ADD CONSTRAINT shared_pets_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: users users_email_key; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY public.users
     ADD CONSTRAINT users_email_key UNIQUE (email);
+
+
+--
+-- Name: users users_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY public.users
     ADD CONSTRAINT users_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: vets vets_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY public.vets
     ADD CONSTRAINT vets_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: weight_entries weight_entries_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY public.weight_entries
     ADD CONSTRAINT weight_entries_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: idx_archived_pets_organization_id; Type: INDEX; Schema: public; Owner: -
+--
+
 CREATE INDEX idx_archived_pets_organization_id ON public.archived_pets USING btree (organization_id);
+
+
+--
+-- Name: idx_audit_events_action; Type: INDEX; Schema: public; Owner: -
+--
+
 CREATE INDEX idx_audit_events_action ON public.audit_events USING btree (action);
+
+
+--
+-- Name: idx_audit_events_actor_user_id; Type: INDEX; Schema: public; Owner: -
+--
+
 CREATE INDEX idx_audit_events_actor_user_id ON public.audit_events USING btree (actor_user_id) WHERE (actor_user_id IS NOT NULL);
+
+
+--
+-- Name: idx_audit_events_occurred_at; Type: INDEX; Schema: public; Owner: -
+--
+
 CREATE INDEX idx_audit_events_occurred_at ON public.audit_events USING btree (occurred_at);
+
+
+--
+-- Name: idx_audit_events_org_id; Type: INDEX; Schema: public; Owner: -
+--
+
 CREATE INDEX idx_audit_events_org_id ON public.audit_events USING btree (org_id) WHERE (org_id IS NOT NULL);
+
+
+--
+-- Name: idx_audit_events_pet_id; Type: INDEX; Schema: public; Owner: -
+--
+
 CREATE INDEX idx_audit_events_pet_id ON public.audit_events USING btree (pet_id) WHERE (pet_id IS NOT NULL);
+
+
+--
+-- Name: idx_audit_events_resource; Type: INDEX; Schema: public; Owner: -
+--
+
 CREATE INDEX idx_audit_events_resource ON public.audit_events USING btree (resource_type, resource_id);
+
+
+--
+-- Name: idx_audit_events_retention_tier; Type: INDEX; Schema: public; Owner: -
+--
+
 CREATE INDEX idx_audit_events_retention_tier ON public.audit_events USING btree (retention_tier, occurred_at);
+
+
+--
+-- Name: idx_custody_transfers_pet_status; Type: INDEX; Schema: public; Owner: -
+--
+
 CREATE INDEX idx_custody_transfers_pet_status ON public.custody_transfers USING btree (pet_id, status);
+
+
+--
+-- Name: idx_custody_transfers_to_org; Type: INDEX; Schema: public; Owner: -
+--
+
 CREATE INDEX idx_custody_transfers_to_org ON public.custody_transfers USING btree (to_org_id, status);
+
+
+--
+-- Name: idx_family_event_history_event_id; Type: INDEX; Schema: public; Owner: -
+--
+
 CREATE INDEX idx_family_event_history_event_id ON public.family_event_history USING btree (family_event_id);
+
+
+--
+-- Name: idx_family_events_org_id; Type: INDEX; Schema: public; Owner: -
+--
+
 CREATE INDEX idx_family_events_org_id ON public.family_events USING btree (organization_id);
+
+
+--
+-- Name: idx_family_events_pet_id; Type: INDEX; Schema: public; Owner: -
+--
+
 CREATE INDEX idx_family_events_pet_id ON public.family_events USING btree (pet_id);
+
+
+--
+-- Name: idx_foster_placements_foster_user_status; Type: INDEX; Schema: public; Owner: -
+--
+
 CREATE INDEX idx_foster_placements_foster_user_status ON public.foster_placements USING btree (foster_user_id, status);
+
+
+--
+-- Name: idx_foster_placements_one_active_pet; Type: INDEX; Schema: public; Owner: -
+--
+
 CREATE UNIQUE INDEX idx_foster_placements_one_active_pet ON public.foster_placements USING btree (pet_id) WHERE ((status)::text = ANY ((ARRAY['pending'::character varying, 'in_progress'::character varying, 'waiting_adoption_confirmation'::character varying, 'pending_adoption_conditions'::character varying])::text[]));
+
+
+--
+-- Name: idx_foster_placements_org_id; Type: INDEX; Schema: public; Owner: -
+--
+
 CREATE INDEX idx_foster_placements_org_id ON public.foster_placements USING btree (organization_id);
+
+
+--
+-- Name: idx_foster_profiles_email_lower; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_foster_profiles_email_lower ON public.foster_profiles USING btree (lower((email)::text)) WHERE (email IS NOT NULL);
+
+
+--
+-- Name: idx_health_entries_pet_id; Type: INDEX; Schema: public; Owner: -
+--
+
 CREATE INDEX idx_health_entries_pet_id ON public.health_entries USING btree (pet_id);
+
+
+--
+-- Name: idx_health_entries_user_id; Type: INDEX; Schema: public; Owner: -
+--
+
 CREATE INDEX idx_health_entries_user_id ON public.health_entries USING btree (user_id);
+
+
+--
+-- Name: idx_notifications_user_id; Type: INDEX; Schema: public; Owner: -
+--
+
 CREATE INDEX idx_notifications_user_id ON public.notifications USING btree (user_id);
+
+
+--
+-- Name: idx_org_connection_requests_target; Type: INDEX; Schema: public; Owner: -
+--
+
 CREATE INDEX idx_org_connection_requests_target ON public.org_connection_requests USING btree (target_org_id, status);
+
+
+--
+-- Name: idx_org_connections_high; Type: INDEX; Schema: public; Owner: -
+--
+
 CREATE INDEX idx_org_connections_high ON public.org_connections USING btree (org_high_id);
+
+
+--
+-- Name: idx_org_connections_low; Type: INDEX; Schema: public; Owner: -
+--
+
 CREATE INDEX idx_org_connections_low ON public.org_connections USING btree (org_low_id);
+
+
+--
+-- Name: idx_org_foster_parents_org_id; Type: INDEX; Schema: public; Owner: -
+--
+
 CREATE INDEX idx_org_foster_parents_org_id ON public.org_foster_parents USING btree (organization_id);
+
+
+--
+-- Name: idx_org_pet_home_hidden_org; Type: INDEX; Schema: public; Owner: -
+--
+
 CREATE INDEX idx_org_pet_home_hidden_org ON public.org_pet_home_hidden USING btree (organization_id, pet_id);
+
+
+--
+-- Name: idx_org_users_user_id; Type: INDEX; Schema: public; Owner: -
+--
+
 CREATE INDEX idx_org_users_user_id ON public.organization_users USING btree (user_id);
+
+
+--
+-- Name: idx_organizations_name; Type: INDEX; Schema: public; Owner: -
+--
+
 CREATE INDEX idx_organizations_name ON public.organizations USING btree (name);
+
+
+--
+-- Name: idx_pet_access_pet_user; Type: INDEX; Schema: public; Owner: -
+--
+
 CREATE UNIQUE INDEX idx_pet_access_pet_user ON public.pet_access USING btree (pet_id, user_id);
+
+
+--
+-- Name: idx_pet_share_links_code; Type: INDEX; Schema: public; Owner: -
+--
+
 CREATE INDEX idx_pet_share_links_code ON public.pet_share_links USING btree (code);
+
+
+--
+-- Name: idx_pet_share_links_pet_id; Type: INDEX; Schema: public; Owner: -
+--
+
 CREATE INDEX idx_pet_share_links_pet_id ON public.pet_share_links USING btree (pet_id);
+
+
+--
+-- Name: idx_vets_organization_id; Type: INDEX; Schema: public; Owner: -
+--
+
 CREATE INDEX idx_vets_organization_id ON public.vets USING btree (organization_id);
+
+
+--
+-- Name: archived_pets archived_pets_organization_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY public.archived_pets
     ADD CONSTRAINT archived_pets_organization_id_fkey FOREIGN KEY (organization_id) REFERENCES public.organizations(id) ON DELETE SET NULL;
+
+
+--
+-- Name: archived_pets archived_pets_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY public.archived_pets
     ADD CONSTRAINT archived_pets_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE SET NULL;
+
+
+--
+-- Name: audit_events audit_events_actor_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY public.audit_events
     ADD CONSTRAINT audit_events_actor_user_id_fkey FOREIGN KEY (actor_user_id) REFERENCES public.users(id) ON DELETE SET NULL;
+
+
+--
+-- Name: custody_transfers custody_transfers_from_org_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY public.custody_transfers
     ADD CONSTRAINT custody_transfers_from_org_id_fkey FOREIGN KEY (from_org_id) REFERENCES public.organizations(id) ON DELETE SET NULL;
+
+
+--
+-- Name: custody_transfers custody_transfers_from_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY public.custody_transfers
     ADD CONSTRAINT custody_transfers_from_user_id_fkey FOREIGN KEY (from_user_id) REFERENCES public.users(id) ON DELETE SET NULL;
+
+
+--
+-- Name: custody_transfers custody_transfers_pet_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY public.custody_transfers
     ADD CONSTRAINT custody_transfers_pet_id_fkey FOREIGN KEY (pet_id) REFERENCES public.pets(id) ON DELETE CASCADE;
+
+
+--
+-- Name: custody_transfers custody_transfers_requested_by_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY public.custody_transfers
     ADD CONSTRAINT custody_transfers_requested_by_user_id_fkey FOREIGN KEY (requested_by_user_id) REFERENCES public.users(id) ON DELETE CASCADE;
+
+
+--
+-- Name: custody_transfers custody_transfers_requesting_org_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY public.custody_transfers
     ADD CONSTRAINT custody_transfers_requesting_org_id_fkey FOREIGN KEY (requesting_org_id) REFERENCES public.organizations(id) ON DELETE SET NULL;
+
+
+--
+-- Name: custody_transfers custody_transfers_responded_by_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY public.custody_transfers
     ADD CONSTRAINT custody_transfers_responded_by_user_id_fkey FOREIGN KEY (responded_by_user_id) REFERENCES public.users(id) ON DELETE SET NULL;
+
+
+--
+-- Name: custody_transfers custody_transfers_to_org_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY public.custody_transfers
     ADD CONSTRAINT custody_transfers_to_org_id_fkey FOREIGN KEY (to_org_id) REFERENCES public.organizations(id) ON DELETE SET NULL;
+
+
+--
+-- Name: custody_transfers custody_transfers_to_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY public.custody_transfers
     ADD CONSTRAINT custody_transfers_to_user_id_fkey FOREIGN KEY (to_user_id) REFERENCES public.users(id) ON DELETE SET NULL;
+
+
+--
+-- Name: family_event_history family_event_history_family_event_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY public.family_event_history
     ADD CONSTRAINT family_event_history_family_event_id_fkey FOREIGN KEY (family_event_id) REFERENCES public.family_events(id) ON DELETE CASCADE;
+
+
+--
+-- Name: family_event_history family_event_history_marked_by_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY public.family_event_history
     ADD CONSTRAINT family_event_history_marked_by_user_id_fkey FOREIGN KEY (marked_by_user_id) REFERENCES public.users(id) ON DELETE SET NULL;
+
+
+--
+-- Name: family_events family_events_assigned_to_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY public.family_events
     ADD CONSTRAINT family_events_assigned_to_user_id_fkey FOREIGN KEY (assigned_to_user_id) REFERENCES public.users(id) ON DELETE SET NULL;
+
+
+--
+-- Name: family_events family_events_created_by_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY public.family_events
     ADD CONSTRAINT family_events_created_by_fkey FOREIGN KEY (created_by) REFERENCES public.users(id) ON DELETE SET NULL;
+
+
+--
+-- Name: family_events family_events_organization_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY public.family_events
     ADD CONSTRAINT family_events_organization_id_fkey FOREIGN KEY (organization_id) REFERENCES public.organizations(id) ON DELETE CASCADE;
+
+
+--
+-- Name: family_events family_events_pet_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY public.family_events
     ADD CONSTRAINT family_events_pet_id_fkey FOREIGN KEY (pet_id) REFERENCES public.pets(id) ON DELETE CASCADE;
+
+
+--
+-- Name: family_events family_events_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY public.family_events
     ADD CONSTRAINT family_events_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE;
+
+
+--
+-- Name: foster_placements foster_placements_created_by_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY public.foster_placements
     ADD CONSTRAINT foster_placements_created_by_fkey FOREIGN KEY (created_by) REFERENCES public.users(id) ON DELETE SET NULL;
+
+
+--
+-- Name: foster_placements foster_placements_foster_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY public.foster_placements
     ADD CONSTRAINT foster_placements_foster_user_id_fkey FOREIGN KEY (foster_user_id) REFERENCES public.users(id) ON DELETE CASCADE;
+
+
+--
+-- Name: foster_placements foster_placements_org_foster_parent_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY public.foster_placements
     ADD CONSTRAINT foster_placements_org_foster_parent_id_fkey FOREIGN KEY (org_foster_parent_id) REFERENCES public.org_foster_parents(id) ON DELETE SET NULL;
+
+
+--
+-- Name: foster_placements foster_placements_organization_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY public.foster_placements
     ADD CONSTRAINT foster_placements_organization_id_fkey FOREIGN KEY (organization_id) REFERENCES public.organizations(id) ON DELETE CASCADE;
+
+
+--
+-- Name: foster_placements foster_placements_pet_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY public.foster_placements
     ADD CONSTRAINT foster_placements_pet_id_fkey FOREIGN KEY (pet_id) REFERENCES public.pets(id) ON DELETE CASCADE;
+
+
+--
+-- Name: foster_profiles foster_profiles_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.foster_profiles
+    ADD CONSTRAINT foster_profiles_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE SET NULL;
+
+
+--
+-- Name: health_entries health_entries_pet_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY public.health_entries
     ADD CONSTRAINT health_entries_pet_id_fkey FOREIGN KEY (pet_id) REFERENCES public.pets(id) ON DELETE CASCADE;
+
+
+--
+-- Name: health_entries health_entries_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY public.health_entries
     ADD CONSTRAINT health_entries_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE;
+
+
+--
+-- Name: health_event_photos health_event_photos_health_entry_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY public.health_event_photos
     ADD CONSTRAINT health_event_photos_health_entry_id_fkey FOREIGN KEY (health_entry_id) REFERENCES public.health_entries(id) ON DELETE CASCADE;
+
+
+--
+-- Name: health_history health_history_health_entry_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY public.health_history
     ADD CONSTRAINT health_history_health_entry_id_fkey FOREIGN KEY (health_entry_id) REFERENCES public.health_entries(id) ON DELETE CASCADE;
+
+
+--
+-- Name: health_history health_history_marked_by_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY public.health_history
     ADD CONSTRAINT health_history_marked_by_user_id_fkey FOREIGN KEY (marked_by_user_id) REFERENCES public.users(id) ON DELETE SET NULL;
+
+
+--
+-- Name: health_issue_events health_issue_events_health_issue_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY public.health_issue_events
     ADD CONSTRAINT health_issue_events_health_issue_id_fkey FOREIGN KEY (health_issue_id) REFERENCES public.health_issues(id) ON DELETE CASCADE;
+
+
+--
+-- Name: health_issue_events health_issue_events_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY public.health_issue_events
     ADD CONSTRAINT health_issue_events_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE;
+
+
+--
+-- Name: health_issues health_issues_pet_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY public.health_issues
     ADD CONSTRAINT health_issues_pet_id_fkey FOREIGN KEY (pet_id) REFERENCES public.pets(id) ON DELETE CASCADE;
+
+
+--
+-- Name: health_issues health_issues_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY public.health_issues
     ADD CONSTRAINT health_issues_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE;
+
+
+--
+-- Name: notification_preferences notification_preferences_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY public.notification_preferences
     ADD CONSTRAINT notification_preferences_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE;
+
+
+--
+-- Name: notifications notifications_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY public.notifications
     ADD CONSTRAINT notifications_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE;
+
+
+--
+-- Name: org_connection_requests org_connection_requests_created_by_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY public.org_connection_requests
     ADD CONSTRAINT org_connection_requests_created_by_fkey FOREIGN KEY (created_by) REFERENCES public.users(id) ON DELETE CASCADE;
+
+
+--
+-- Name: org_connection_requests org_connection_requests_requesting_org_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY public.org_connection_requests
     ADD CONSTRAINT org_connection_requests_requesting_org_id_fkey FOREIGN KEY (requesting_org_id) REFERENCES public.organizations(id) ON DELETE CASCADE;
+
+
+--
+-- Name: org_connection_requests org_connection_requests_target_org_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY public.org_connection_requests
     ADD CONSTRAINT org_connection_requests_target_org_id_fkey FOREIGN KEY (target_org_id) REFERENCES public.organizations(id) ON DELETE CASCADE;
+
+
+--
+-- Name: org_connections org_connections_org_high_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY public.org_connections
     ADD CONSTRAINT org_connections_org_high_id_fkey FOREIGN KEY (org_high_id) REFERENCES public.organizations(id) ON DELETE CASCADE;
+
+
+--
+-- Name: org_connections org_connections_org_low_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY public.org_connections
     ADD CONSTRAINT org_connections_org_low_id_fkey FOREIGN KEY (org_low_id) REFERENCES public.organizations(id) ON DELETE CASCADE;
+
+
+--
+-- Name: org_connections org_connections_revoked_by_org_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY public.org_connections
     ADD CONSTRAINT org_connections_revoked_by_org_id_fkey FOREIGN KEY (revoked_by_org_id) REFERENCES public.organizations(id) ON DELETE SET NULL;
+
+
+--
+-- Name: org_foster_parents org_foster_parents_foster_profile_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.org_foster_parents
+    ADD CONSTRAINT org_foster_parents_foster_profile_id_fkey FOREIGN KEY (foster_profile_id) REFERENCES public.foster_profiles(id) ON DELETE SET NULL;
+
+
+--
+-- Name: org_foster_parents org_foster_parents_lawful_basis_attested_by_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY public.org_foster_parents
     ADD CONSTRAINT org_foster_parents_lawful_basis_attested_by_fkey FOREIGN KEY (lawful_basis_attested_by) REFERENCES public.users(id) ON DELETE SET NULL;
+
+
+--
+-- Name: org_foster_parents org_foster_parents_organization_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY public.org_foster_parents
     ADD CONSTRAINT org_foster_parents_organization_id_fkey FOREIGN KEY (organization_id) REFERENCES public.organizations(id) ON DELETE CASCADE;
+
+
+--
+-- Name: org_foster_parents org_foster_parents_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY public.org_foster_parents
     ADD CONSTRAINT org_foster_parents_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE SET NULL;
+
+
+--
+-- Name: org_pet_home_hidden org_pet_home_hidden_organization_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY public.org_pet_home_hidden
     ADD CONSTRAINT org_pet_home_hidden_organization_id_fkey FOREIGN KEY (organization_id) REFERENCES public.organizations(id) ON DELETE CASCADE;
+
+
+--
+-- Name: org_pet_home_hidden org_pet_home_hidden_pet_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY public.org_pet_home_hidden
     ADD CONSTRAINT org_pet_home_hidden_pet_id_fkey FOREIGN KEY (pet_id) REFERENCES public.pets(id) ON DELETE CASCADE;
+
+
+--
+-- Name: org_pet_home_hidden org_pet_home_hidden_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY public.org_pet_home_hidden
     ADD CONSTRAINT org_pet_home_hidden_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE;
+
+
+--
+-- Name: organization_users organization_users_organization_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY public.organization_users
     ADD CONSTRAINT organization_users_organization_id_fkey FOREIGN KEY (organization_id) REFERENCES public.organizations(id) ON DELETE CASCADE;
+
+
+--
+-- Name: organization_users organization_users_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY public.organization_users
     ADD CONSTRAINT organization_users_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE;
+
+
+--
+-- Name: password_reset_tokens password_reset_tokens_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY public.password_reset_tokens
     ADD CONSTRAINT password_reset_tokens_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE;
+
+
+--
+-- Name: pet_access pet_access_invited_by_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY public.pet_access
     ADD CONSTRAINT pet_access_invited_by_fkey FOREIGN KEY (invited_by) REFERENCES public.users(id) ON DELETE SET NULL;
+
+
+--
+-- Name: pet_access pet_access_pet_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY public.pet_access
     ADD CONSTRAINT pet_access_pet_id_fkey FOREIGN KEY (pet_id) REFERENCES public.pets(id) ON DELETE CASCADE;
+
+
+--
+-- Name: pet_access pet_access_share_link_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY public.pet_access
     ADD CONSTRAINT pet_access_share_link_id_fkey FOREIGN KEY (share_link_id) REFERENCES public.pet_share_links(id) ON DELETE SET NULL;
+
+
+--
+-- Name: pet_access pet_access_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY public.pet_access
     ADD CONSTRAINT pet_access_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE;
+
+
+--
+-- Name: pet_share_links pet_share_links_claimed_by_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY public.pet_share_links
     ADD CONSTRAINT pet_share_links_claimed_by_fkey FOREIGN KEY (claimed_by) REFERENCES public.users(id) ON DELETE SET NULL;
+
+
+--
+-- Name: pet_share_links pet_share_links_created_by_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY public.pet_share_links
     ADD CONSTRAINT pet_share_links_created_by_fkey FOREIGN KEY (created_by) REFERENCES public.users(id) ON DELETE CASCADE;
+
+
+--
+-- Name: pet_share_links pet_share_links_pet_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY public.pet_share_links
     ADD CONSTRAINT pet_share_links_pet_id_fkey FOREIGN KEY (pet_id) REFERENCES public.pets(id) ON DELETE CASCADE;
+
+
+--
+-- Name: pets pets_care_holder_org_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY public.pets
     ADD CONSTRAINT pets_care_holder_org_id_fkey FOREIGN KEY (care_holder_org_id) REFERENCES public.organizations(id) ON DELETE SET NULL;
+
+
+--
+-- Name: pets pets_care_holder_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY public.pets
     ADD CONSTRAINT pets_care_holder_user_id_fkey FOREIGN KEY (care_holder_user_id) REFERENCES public.users(id) ON DELETE SET NULL;
+
+
+--
+-- Name: pets pets_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY public.pets
     ADD CONSTRAINT pets_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE;
+
+
+--
+-- Name: pets pets_vet_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY public.pets
     ADD CONSTRAINT pets_vet_id_fkey FOREIGN KEY (vet_id) REFERENCES public.vets(id) ON DELETE SET NULL;
+
+
+--
+-- Name: refresh_tokens refresh_tokens_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY public.refresh_tokens
     ADD CONSTRAINT refresh_tokens_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE;
+
+
+--
+-- Name: shared_pets shared_pets_invited_by_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY public.shared_pets
     ADD CONSTRAINT shared_pets_invited_by_fkey FOREIGN KEY (invited_by) REFERENCES public.users(id);
+
+
+--
+-- Name: shared_pets shared_pets_pet_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY public.shared_pets
     ADD CONSTRAINT shared_pets_pet_id_fkey FOREIGN KEY (pet_id) REFERENCES public.pets(id) ON DELETE CASCADE;
+
+
+--
+-- Name: shared_pets shared_pets_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY public.shared_pets
     ADD CONSTRAINT shared_pets_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE;
+
+
+--
+-- Name: vets vets_organization_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY public.vets
     ADD CONSTRAINT vets_organization_id_fkey FOREIGN KEY (organization_id) REFERENCES public.organizations(id) ON DELETE SET NULL;
+
+
+--
+-- Name: vets vets_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY public.vets
     ADD CONSTRAINT vets_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE;
+
+
+--
+-- Name: weight_entries weight_entries_pet_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY public.weight_entries
     ADD CONSTRAINT weight_entries_pet_id_fkey FOREIGN KEY (pet_id) REFERENCES public.pets(id) ON DELETE CASCADE;
+
+
+--
+-- Name: weight_entries weight_entries_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY public.weight_entries
     ADD CONSTRAINT weight_entries_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE;
+
+
+--
+-- PostgreSQL database dump complete
+--
+
+\unrestrict mHtLkaxEF3R42LQPKBoeXIYjLv2vElm4fmE1AEqK7dtp9U2KzFoQhGqr9gjYuKk
+
