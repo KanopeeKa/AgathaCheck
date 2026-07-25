@@ -288,4 +288,44 @@ class OrganizationRemoteDataSource with OrganizationRemoteFosterDelegations {
     String placementId,
     String token,
   ) => _screening.getSessionChecklist(orgId, placementId, token);
+
+  Future<Map<String, dynamic>> updateSessionChecklistItem(
+    String orgId,
+    String placementId,
+    String itemKey, {
+    required bool completed,
+    required String token,
+  }) => _screening.updateSessionChecklistItem(
+    orgId,
+    placementId,
+    itemKey,
+    completed: completed,
+    token: token,
+  );
+
+  Future<Map<String, dynamic>> getAdoptionMilestones(
+    String orgId,
+    String placementId,
+    String token,
+  ) => _screening.getAdoptionMilestones(orgId, placementId, token);
+
+  Future<Map<String, dynamic>> updateAdoptionMilestoneItem(
+    String orgId,
+    String journeyId,
+    String itemKey, {
+    required bool completed,
+    required String token,
+  }) => _screening.updateAdoptionMilestoneItem(
+    orgId,
+    journeyId,
+    itemKey,
+    completed: completed,
+    token: token,
+  );
+
+  Future<Map<String, dynamic>> getRegisterExport(
+    String orgId,
+    String placementId,
+    String token,
+  ) => _screening.getRegisterExport(orgId, placementId, token);
 }

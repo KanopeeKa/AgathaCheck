@@ -25,4 +25,48 @@ mixin OrganizationRepositoryScreeningMixin on OrganizationRepositoryImplBase {
     String placementId,
     String token,
   ) => dataSource.getSessionChecklist(orgId, placementId, token);
+
+  @override
+  Future<Map<String, dynamic>> updateSessionChecklistItem(
+    String orgId,
+    String placementId,
+    String itemKey, {
+    required bool completed,
+    required String token,
+  }) => dataSource.updateSessionChecklistItem(
+    orgId,
+    placementId,
+    itemKey,
+    completed: completed,
+    token: token,
+  );
+
+  @override
+  Future<Map<String, dynamic>> getAdoptionMilestones(
+    String orgId,
+    String placementId,
+    String token,
+  ) => dataSource.getAdoptionMilestones(orgId, placementId, token);
+
+  @override
+  Future<Map<String, dynamic>> updateAdoptionMilestoneItem(
+    String orgId,
+    String journeyId,
+    String itemKey, {
+    required bool completed,
+    required String token,
+  }) => dataSource.updateAdoptionMilestoneItem(
+    orgId,
+    journeyId,
+    itemKey,
+    completed: completed,
+    token: token,
+  );
+
+  @override
+  Future<Map<String, dynamic>> getRegisterExport(
+    String orgId,
+    String placementId,
+    String token,
+  ) => dataSource.getRegisterExport(orgId, placementId, token);
 }

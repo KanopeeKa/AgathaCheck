@@ -197,6 +197,38 @@ mixin RecordingOrganizationRepositoryFosterMixin
   ) async => {'items': []};
 
   @override
+  Future<Map<String, dynamic>> updateSessionChecklistItem(
+    String orgId,
+    String placementId,
+    String itemKey, {
+    required bool completed,
+    required String token,
+  }) async => {'items': []};
+
+  @override
+  Future<Map<String, dynamic>> getAdoptionMilestones(
+    String orgId,
+    String placementId,
+    String token,
+  ) async => {'journey_id': 'journey-1', 'items': []};
+
+  @override
+  Future<Map<String, dynamic>> updateAdoptionMilestoneItem(
+    String orgId,
+    String journeyId,
+    String itemKey, {
+    required bool completed,
+    required String token,
+  }) async => {'items': []};
+
+  @override
+  Future<Map<String, dynamic>> getRegisterExport(
+    String orgId,
+    String placementId,
+    String token,
+  ) async => {'format': 'markdown', 'content': '# Register export'};
+
+  @override
   Future<FosterRequest> createFosterRequest(
     String orgId, {
     required String message,

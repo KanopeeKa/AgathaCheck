@@ -884,6 +884,11 @@
   "fosteringSessionStatusCancelled": "Cancelled",
   "fosteringSessionPreparationTitle": "Preparation checklist",
   "fosteringSessionPreparationPlaceholder": "Track shelter preparation steps before handover. Full checklist tracking arrives in a later release.",
+  "fosteringSessionChecklistDescription": "Track foster readiness items from your organisation templates.",
+  "fosteringSessionChecklistEmpty": "No checklist items configured yet.",
+  "fosteringSessionChecklistRequired": "Required",
+  "fosteringSessionRegisterExport": "View register export",
+  "fosteringSessionRegisterExportTitle": "Foster register export",
   "fosteringSessionChecklistSupplies": "Confirm supplies and equipment are ready",
   "fosteringSessionChecklistMedical": "Review medical records and medications",
   "fosteringSessionChecklistTransport": "Arrange transport to the foster home",
@@ -1321,5 +1326,7 @@
   "adoptionJourneyTitle": "Adoption journey",
   "adoptionJourneyStatusLabel": "Status",
   "adoptionJourneyConditionsLabel": "Conditions",
+  "adoptionJourneyMilestonesTitle": "Adoption milestones",
+  "adoptionJourneyMilestonesEmpty": "No milestones configured yet.",
   "adoptionJourneyStatusUnknown": "Unknown"
 }

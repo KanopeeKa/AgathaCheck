@@ -51,13 +51,55 @@ void main() {
         find.byKey(const Key('fostering_session_preparation_checklist')),
         findsOneWidget,
       );
-      expect(find.text('Preparation'), findsOneWidget);
+      expect(find.text('Preparation checklist'), findsOneWidget);
+      expect(
+        find.byKey(const Key('session_checklist_item_foster_contract_signed')),
+        findsOneWidget,
+      );
       expect(
         find.byKey(const Key('fostering_session_mark_ready')),
         findsOneWidget,
       );
+      expect(
+        find.byKey(const Key('fostering_session_register_export')),
+        findsOneWidget,
+      );
     },
   );
+
+  testWidgets('session checklist toggles call repository', (tester) async {
+    final repo = _ChecklistToggleRepo();
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          authProvider.overrideWith((ref) => FakeAuthNotifier()),
+          organizationRepositoryProvider.overrideWithValue(repo),
+          isOrgAdminProvider('org-1').overrideWith((ref) => true),
+          isOrgFosterProvider('org-1').overrideWith((ref) => false),
+        ],
+        child: const MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: Scaffold(
+            body: FosteringSessionDetailScreen(
+              orgId: 'org-1',
+              placementId: 'placement-1',
+            ),
+          ),
+        ),
+      ),
+    );
+
+    await tester.pumpAndSettle();
+    await tester.tap(
+      find.byKey(const Key('session_checklist_item_foster_contract_signed')),
+    );
+    await tester.pumpAndSettle();
+
+    expect(repo.updateSessionChecklistCalls, 1);
+    expect(repo.lastChecklistItemKey, 'foster_contract_signed');
+    expect(repo.lastChecklistCompleted, true);
+  });
 
   testWidgets('placement section links to fostering session when open', (
     tester,
@@ -124,6 +166,51 @@ class _PreparationSessionRepo extends RecordingOrganizationRepository {
     petName: 'Max',
     fosterName: 'Jane Foster',
   );
+
+  @override
+  Future<Map<String, dynamic>> getSessionChecklist(
+    String orgId,
+    String placementId,
+    String token,
+  ) async => {
+    'items': [
+      {
+        'key': 'foster_contract_signed',
+        'label': 'Foster contract signed',
+        'completed': false,
+        'is_required': true,
+      },
+    ],
+  };
+}
+
+class _ChecklistToggleRepo extends _PreparationSessionRepo {
+  var updateSessionChecklistCalls = 0;
+  String? lastChecklistItemKey;
+  bool? lastChecklistCompleted;
+
+  @override
+  Future<Map<String, dynamic>> updateSessionChecklistItem(
+    String orgId,
+    String placementId,
+    String itemKey, {
+    required bool completed,
+    required String token,
+  }) async {
+    updateSessionChecklistCalls++;
+    lastChecklistItemKey = itemKey;
+    lastChecklistCompleted = completed;
+    return {
+      'items': [
+        {
+          'key': itemKey,
+          'label': 'Foster contract signed',
+          'completed': completed,
+          'is_required': true,
+        },
+      ],
+    };
+  }
 }
 
 class _OpenSessionPlacementRepo extends RecordingOrganizationRepository {

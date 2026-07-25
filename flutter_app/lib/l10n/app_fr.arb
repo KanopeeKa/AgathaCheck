@@ -795,6 +795,11 @@
   "fosteringSessionStatusCancelled": "Annulée",
   "fosteringSessionPreparationTitle": "Liste de préparation",
   "fosteringSessionPreparationPlaceholder": "Suivez les étapes de préparation du refuge avant la remise. Le suivi complet de la liste arrive dans une prochaine version.",
+  "fosteringSessionChecklistDescription": "Suivez les éléments de préparation de la famille d'accueil selon les modèles de votre organisation.",
+  "fosteringSessionChecklistEmpty": "Aucun élément de liste configuré pour le moment.",
+  "fosteringSessionChecklistRequired": "Obligatoire",
+  "fosteringSessionRegisterExport": "Voir l'export du registre",
+  "fosteringSessionRegisterExportTitle": "Export du registre d'accueil",
   "fosteringSessionChecklistSupplies": "Confirmer que les fournitures et équipements sont prêts",
   "fosteringSessionChecklistMedical": "Vérifier le dossier médical et les traitements",
   "fosteringSessionChecklistTransport": "Organiser le transport vers la famille d'accueil",
@@ -1232,5 +1237,7 @@
   "adoptionJourneyTitle": "Parcours d'adoption",
   "adoptionJourneyStatusLabel": "Statut",
   "adoptionJourneyConditionsLabel": "Conditions",
+  "adoptionJourneyMilestonesTitle": "Jalons d'adoption",
+  "adoptionJourneyMilestonesEmpty": "Aucun jalon configuré pour le moment.",
   "adoptionJourneyStatusUnknown": "Inconnu"
 }

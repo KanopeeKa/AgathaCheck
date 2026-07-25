@@ -2452,6 +2452,23 @@ class AppLocalizationsEn extends AppLocalizations {
       'Track shelter preparation steps before handover. Full checklist tracking arrives in a later release.';
 
   @override
+  String get fosteringSessionChecklistDescription =>
+      'Track foster readiness items from your organisation templates.';
+
+  @override
+  String get fosteringSessionChecklistEmpty =>
+      'No checklist items configured yet.';
+
+  @override
+  String get fosteringSessionChecklistRequired => 'Required';
+
+  @override
+  String get fosteringSessionRegisterExport => 'View register export';
+
+  @override
+  String get fosteringSessionRegisterExportTitle => 'Foster register export';
+
+  @override
   String get fosteringSessionChecklistSupplies =>
       'Confirm supplies and equipment are ready';
 
@@ -3792,6 +3809,12 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get adoptionJourneyConditionsLabel => 'Conditions';
+
+  @override
+  String get adoptionJourneyMilestonesTitle => 'Adoption milestones';
+
+  @override
+  String get adoptionJourneyMilestonesEmpty => 'No milestones configured yet.';
 
   @override
   String get adoptionJourneyStatusUnknown => 'Unknown';

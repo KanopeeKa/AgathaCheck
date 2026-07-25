@@ -2476,6 +2476,24 @@ class AppLocalizationsFr extends AppLocalizations {
       'Suivez les étapes de préparation du refuge avant la remise. Le suivi complet de la liste arrive dans une prochaine version.';
 
   @override
+  String get fosteringSessionChecklistDescription =>
+      'Suivez les éléments de préparation de la famille d\'accueil selon les modèles de votre organisation.';
+
+  @override
+  String get fosteringSessionChecklistEmpty =>
+      'Aucun élément de liste configuré pour le moment.';
+
+  @override
+  String get fosteringSessionChecklistRequired => 'Obligatoire';
+
+  @override
+  String get fosteringSessionRegisterExport => 'Voir l\'export du registre';
+
+  @override
+  String get fosteringSessionRegisterExportTitle =>
+      'Export du registre d\'accueil';
+
+  @override
   String get fosteringSessionChecklistSupplies =>
       'Confirmer que les fournitures et équipements sont prêts';
 
@@ -3845,6 +3863,13 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get adoptionJourneyConditionsLabel => 'Conditions';
+
+  @override
+  String get adoptionJourneyMilestonesTitle => 'Jalons d\'adoption';
+
+  @override
+  String get adoptionJourneyMilestonesEmpty =>
+      'Aucun jalon configuré pour le moment.';
 
   @override
   String get adoptionJourneyStatusUnknown => 'Inconnu';

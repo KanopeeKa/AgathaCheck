@@ -4539,6 +4539,36 @@ abstract class AppLocalizations {
   /// **'Track shelter preparation steps before handover. Full checklist tracking arrives in a later release.'**
   String get fosteringSessionPreparationPlaceholder;
 
+  /// No description provided for @fosteringSessionChecklistDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Track foster readiness items from your organisation templates.'**
+  String get fosteringSessionChecklistDescription;
+
+  /// No description provided for @fosteringSessionChecklistEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No checklist items configured yet.'**
+  String get fosteringSessionChecklistEmpty;
+
+  /// No description provided for @fosteringSessionChecklistRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Required'**
+  String get fosteringSessionChecklistRequired;
+
+  /// No description provided for @fosteringSessionRegisterExport.
+  ///
+  /// In en, this message translates to:
+  /// **'View register export'**
+  String get fosteringSessionRegisterExport;
+
+  /// No description provided for @fosteringSessionRegisterExportTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Foster register export'**
+  String get fosteringSessionRegisterExportTitle;
+
   /// No description provided for @fosteringSessionChecklistSupplies.
   ///
   /// In en, this message translates to:
@@ -6872,6 +6902,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Conditions'**
   String get adoptionJourneyConditionsLabel;
+
+  /// No description provided for @adoptionJourneyMilestonesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Adoption milestones'**
+  String get adoptionJourneyMilestonesTitle;
+
+  /// No description provided for @adoptionJourneyMilestonesEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No milestones configured yet.'**
+  String get adoptionJourneyMilestonesEmpty;
 
   /// No description provided for @adoptionJourneyStatusUnknown.
   ///
