@@ -1,0 +1,224 @@
+{
+  "schema_version": 1,
+  "plan_id": "fostering-platform-wave-c-e877",
+  "approved_at": "2026-07-25T21:06:00Z",
+  "approved_by": "user-delegated-autonomy",
+  "approved_until": "2026-07-27T21:06:00Z",
+  "content_hash": "sha256:557c1e030db7c2b0282b7185235167da7ee8696b0f4e0f97782398d92026e587",
+  "autonomy": "active",
+  "default_merge_mode": "auto",
+  "base_branch": "cursor/fostering-platform-wave-c-e877-integration",
+  "control_issue": 369,
+  "artifact_branch_policy": "phase-branch",
+  "phases": [
+    {
+      "id": "1",
+      "title": "Contract + G0 doc fixes",
+      "branch": "cursor/wave-c-g0-contract-e877",
+      "allowed_paths": [
+        "docs/fostering-platform/g0-contract-pack.md",
+        "docs/fostering-platform/migration-appendix.md",
+        "docs/fostering-platform/roadmap-delivery-plan.md",
+        "flutter_app/test/bdd/features/fostering_platform.feature",
+        ".agents/plans/fostering-platform-wave-c-e877.*"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        "flutter_app/**",
+        "e2e/**",
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "merged",
+      "debt_issue_refs": [
+        362
+      ],
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/370",
+      "pr_head_sha": "3fee5be"
+    },
+    {
+      "id": "2",
+      "title": "J4 visit-path gate (backend)",
+      "branch": "cursor/wave-c-j4-visit-gate-e877",
+      "allowed_paths": [
+        "db/migrations/032_adoption_visit_outcome.sql",
+        "db/schema/migration-manifest.json",
+        "db/schema/canonical.sql",
+        "server/lib/adoptionVisits.js",
+        "server/lib/adoptionJourneys.js",
+        "server/routes/organizations/adoptionJourneysRouter.js",
+        "server/routes/organizations/adoptionVisitsRouter.js",
+        "server/routes/organizations/placements/actionRouter.js",
+        "server/test/adoptionVisits.test.js",
+        "server/test/adoptionJourneys.test.js",
+        "scripts/bdd-priority-tag-map.json",
+        ".agents/plans/fostering-platform-wave-c-e877.*"
+      ],
+      "forbidden_paths": [
+        "flutter_app/**",
+        "e2e/**",
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "single-backend-route",
+      "status": "pending",
+      "debt_issue_refs": [
+        362
+      ],
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": null,
+      "pr_head_sha": null
+    },
+    {
+      "id": "3",
+      "title": "G1 Flutter wiring (minimal)",
+      "branch": "cursor/wave-c-g1-flutter-e877",
+      "allowed_paths": [
+        "flutter_app/lib/features/organization/presentation/widgets/fostering_session/**",
+        "flutter_app/lib/features/organization/presentation/screens/fostering_session/**",
+        "flutter_app/lib/features/organization/presentation/screens/adoption_journey/**",
+        "flutter_app/lib/features/organization/data/**",
+        "flutter_app/lib/features/organization/domain/repositories/organization_repository.dart",
+        "flutter_app/lib/l10n/**",
+        "flutter_app/test/features/organization/**",
+        ".agents/plans/fostering-platform-wave-c-e877.*"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        "e2e/**",
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split"
+      ],
+      "spawn_allowed": true,
+      "spawn_config": {
+        "integration_branch": "cursor/fostering-platform-wave-c-e877-integration",
+        "ownership_ref": ".agents/plans/fostering-platform-wave-c-e877.md#spawn-optional-phase-3"
+      },
+      "merge_method": "squash",
+      "exit_checklist": "flutter-screen-split",
+      "status": "pending",
+      "debt_issue_refs": [
+        362
+      ],
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": null,
+      "pr_head_sha": null
+    },
+    {
+      "id": "4",
+      "title": "J4 minimal visit UI",
+      "branch": "cursor/wave-c-j4-visit-ui-min-e877",
+      "allowed_paths": [
+        "flutter_app/lib/features/organization/presentation/screens/adoption_screening/**",
+        "flutter_app/lib/features/organization/presentation/widgets/**",
+        "flutter_app/lib/features/organization/presentation/screens/fostering_session/**",
+        "flutter_app/lib/l10n/**",
+        "flutter_app/test/features/organization/**",
+        ".agents/plans/fostering-platform-wave-c-e877.*"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        "e2e/**",
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "flutter-screen-split",
+      "status": "pending",
+      "debt_issue_refs": [
+        362
+      ],
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": null,
+      "pr_head_sha": null
+    },
+    {
+      "id": "5",
+      "title": "Fostering BDD Playwright",
+      "branch": "cursor/wave-c-fostering-e2e-e877",
+      "allowed_paths": [
+        "e2e/playwright/tests/fostering.platform.spec.ts",
+        "e2e/playwright/tests/foster.onboarding.spec.ts",
+        "e2e/playwright/pages/manage-fosters.page.ts",
+        "e2e/playwright/support/api.ts",
+        "docs/quality/bdd-journey-matrix.md",
+        "e2e/README.md",
+        ".agents/plans/fostering-platform-wave-c-e877.*"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        "flutter_app/lib/**",
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "pending",
+      "debt_issue_refs": [
+        362
+      ],
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": null,
+      "pr_head_sha": null
+    },
+    {
+      "id": "6",
+      "title": "Integration merge to main",
+      "branch": "cursor/fostering-platform-wave-c-e877-integration",
+      "allowed_paths": [
+        "**"
+      ],
+      "forbidden_paths": [],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "pending",
+      "debt_issue_refs": [
+        362
+      ],
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": null,
+      "pr_head_sha": null
+    }
+  ]
+}

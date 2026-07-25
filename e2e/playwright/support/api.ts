@@ -1705,6 +1705,303 @@ export async function seedActiveFosterPlacement(
   return { pet, placement: accepted };
 }
 
+// ── Fostering platform helpers (Wave C) ─────────────────────────────────────
+
+export interface EligibleFosterTarget {
+  org_foster_parent_id: string;
+  display_name: string;
+  email?: string | null;
+  eligible?: boolean;
+  ineligible_reason?: string | null;
+}
+
+export interface TestFosterParent {
+  id: string;
+  kind: string;
+  display_name: string;
+  email?: string | null;
+  fostering_activity_summary?: string;
+  foster_profile_id?: string | null;
+}
+
+export interface TestAdoptionVisit {
+  id: string;
+  pet_id: string;
+  fostering_session_id?: string | null;
+  status: string;
+  visit_outcome?: string | null;
+  scheduled_at?: string;
+}
+
+export interface TestAdoptionJourney {
+  id: string;
+  status: string;
+  adoption_conditions?: string;
+}
+
+export async function getEligibleFosterTargets(
+  baseURL: string,
+  token: string,
+  orgId: string,
+  petIds: string[],
+): Promise<EligibleFosterTarget[]> {
+  const query = petIds.length
+    ? `?pet_ids=${encodeURIComponent(petIds.join(','))}`
+    : '';
+  const res = await apiFetch(
+    apiUrl(`/organizations/${orgId}/foster-requests/eligible-targets${query}`, baseURL),
+    { headers: { Authorization: `Bearer ${token}` } },
+  );
+  if (!res.ok) {
+    const body = await res.text();
+    throw new Error(`getEligibleFosterTargets failed (${res.status}): ${body}`);
+  }
+  return res.json();
+}
+
+export async function setFosterCapacity(
+  fosterProfileId: string,
+  speciesCapacities: Array<{ species: string; declared: number }>,
+): Promise<void> {
+  const { execSync } = await import('node:child_process');
+  const host = process.env.PGHOST ?? 'localhost';
+  const port = process.env.PGPORT ?? '5432';
+  const user = process.env.PGUSER ?? 'user';
+  const password = process.env.PGPASSWORD ?? 'password';
+  const database = process.env.PGDATABASE ?? 'agatha_db';
+  const entries = speciesCapacities
+    .map(
+      (entry) =>
+        `jsonb_build_object('species', '${entry.species}', 'declared', ${entry.declared})`,
+    )
+    .join(', ');
+  execSync(
+    `PGPASSWORD='${password}' psql -h '${host}' -p '${port}' -U '${user}' -d '${database}' -c "UPDATE foster_profiles SET species_capacities = jsonb_build_array(${entries}) WHERE id = '${fosterProfileId}'"`,
+    { stdio: 'pipe' },
+  );
+}
+
+export async function addManualFoster(
+  baseURL: string,
+  token: string,
+  orgId: string,
+  options: { displayName: string; email: string; phone?: string },
+): Promise<TestFosterParent> {
+  const res = await apiFetch(apiUrl(`/organizations/${orgId}/foster-parents`, baseURL), {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({
+      display_name: options.displayName,
+      email: options.email,
+      phone: options.phone ?? '',
+      lawful_basis_confirmed: true,
+    }),
+  });
+  if (!res.ok) {
+    const body = await res.text();
+    throw new Error(`addManualFoster failed (${res.status}): ${body}`);
+  }
+  return res.json();
+}
+
+export async function approveFosterParent(
+  baseURL: string,
+  token: string,
+  orgId: string,
+  fosterParentId: string,
+): Promise<TestFosterParent> {
+  const res = await apiFetch(
+    apiUrl(`/organizations/${orgId}/foster-parents/${fosterParentId}/approval`, baseURL),
+    {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ approval_state: 'approved' }),
+    },
+  );
+  if (!res.ok) {
+    const body = await res.text();
+    throw new Error(`approveFosterParent failed (${res.status}): ${body}`);
+  }
+  return res.json();
+}
+
+export async function getFosterParents(
+  baseURL: string,
+  token: string,
+  orgId: string,
+): Promise<TestFosterParent[]> {
+  const res = await apiFetch(apiUrl(`/organizations/${orgId}/foster-parents`, baseURL), {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!res.ok) {
+    const body = await res.text();
+    throw new Error(`getFosterParents failed (${res.status}): ${body}`);
+  }
+  return res.json();
+}
+
+export async function createViewToAdoptSession(
+  baseURL: string,
+  token: string,
+  orgId: string,
+  petId: string,
+  fosterUserId: string,
+): Promise<TestFosterPlacement> {
+  const res = await apiFetch(apiUrl(`/organizations/${orgId}/pets/${petId}/placements`, baseURL), {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({
+      foster_user_id: fosterUserId,
+      session_type: 'foster_in_view_to_adopt',
+    }),
+  });
+  if (!res.ok) {
+    const body = await res.text();
+    throw new Error(`createViewToAdoptSession failed (${res.status}): ${body}`);
+  }
+  return res.json();
+}
+
+export async function createAdoptionVisit(
+  baseURL: string,
+  token: string,
+  orgId: string,
+  options: {
+    petId: string;
+    fosteringSessionId: string;
+    scheduledAt?: string;
+  },
+): Promise<TestAdoptionVisit> {
+  const res = await apiFetch(apiUrl(`/organizations/${orgId}/adoption-visits`, baseURL), {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({
+      pet_id: options.petId,
+      fostering_session_id: options.fosteringSessionId,
+      scheduled_at: options.scheduledAt ?? new Date().toISOString(),
+    }),
+  });
+  if (!res.ok) {
+    const body = await res.text();
+    throw new Error(`createAdoptionVisit failed (${res.status}): ${body}`);
+  }
+  return res.json();
+}
+
+export async function recordAdoptionVisitOutcome(
+  baseURL: string,
+  token: string,
+  orgId: string,
+  visitId: string,
+  visitOutcome: 'positive' | 'negative' | 'no_show',
+): Promise<TestAdoptionVisit> {
+  const res = await apiFetch(
+    apiUrl(`/organizations/${orgId}/adoption-visits/${visitId}/outcome`, baseURL),
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ visit_outcome: visitOutcome }),
+    },
+  );
+  if (!res.ok) {
+    const body = await res.text();
+    throw new Error(`recordAdoptionVisitOutcome failed (${res.status}): ${body}`);
+  }
+  return res.json();
+}
+
+export async function startAdoptionJourney(
+  baseURL: string,
+  token: string,
+  orgId: string,
+  placementId: string,
+  adoptionConditions = '',
+): Promise<{ adoption_journey?: TestAdoptionJourney; placement_id?: string }> {
+  const res = await apiFetch(
+    apiUrl(`/organizations/${orgId}/placements/${placementId}/start-adoption`, baseURL),
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(
+        adoptionConditions ? { adoption_conditions: adoptionConditions } : {},
+      ),
+    },
+  );
+  const bodyText = await res.text();
+  if (!res.ok) {
+    throw new Error(`startAdoptionJourney failed (${res.status}): ${bodyText}`);
+  }
+  return JSON.parse(bodyText);
+}
+
+export async function getAdoptionJourney(
+  baseURL: string,
+  token: string,
+  orgId: string,
+  placementId: string,
+): Promise<{ adoption_journey: TestAdoptionJourney }> {
+  const res = await apiFetch(
+    apiUrl(`/organizations/${orgId}/placements/${placementId}/adoption-journey`, baseURL),
+    { headers: { Authorization: `Bearer ${token}` } },
+  );
+  if (!res.ok) {
+    const body = await res.text();
+    throw new Error(`getAdoptionJourney failed (${res.status}): ${body}`);
+  }
+  return res.json();
+}
+
+export async function completeVisitAndStartAdoption(
+  baseURL: string,
+  token: string,
+  orgId: string,
+  placementId: string,
+  options: { visitId?: string; adoptionConditions?: string } = {},
+): Promise<{ adoption_journey?: TestAdoptionJourney }> {
+  const res = await apiFetch(
+    apiUrl(
+      `/organizations/${orgId}/placements/${placementId}/adoption-path/complete-visit-and-start`,
+      baseURL,
+    ),
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        ...(options.visitId ? { visit_id: options.visitId } : {}),
+        ...(options.adoptionConditions
+          ? { adoption_conditions: options.adoptionConditions }
+          : {}),
+      }),
+    },
+  );
+  const bodyText = await res.text();
+  if (!res.ok) {
+    throw new Error(`completeVisitAndStartAdoption failed (${res.status}): ${bodyText}`);
+  }
+  return JSON.parse(bodyText);
+}
+
 // ── Org pet management helpers (Sprint 6.1 BDD) ───────────────────────────────
 
 export interface TestPetSummary {

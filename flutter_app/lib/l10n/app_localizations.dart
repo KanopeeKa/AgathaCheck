@@ -4539,6 +4539,60 @@ abstract class AppLocalizations {
   /// **'Track shelter preparation steps before handover. Full checklist tracking arrives in a later release.'**
   String get fosteringSessionPreparationPlaceholder;
 
+  /// No description provided for @fosteringSessionChecklistDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Track foster readiness items from your organisation templates.'**
+  String get fosteringSessionChecklistDescription;
+
+  /// No description provided for @fosteringSessionChecklistEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No checklist items configured yet.'**
+  String get fosteringSessionChecklistEmpty;
+
+  /// No description provided for @fosteringSessionChecklistRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Required'**
+  String get fosteringSessionChecklistRequired;
+
+  /// No description provided for @fosteringSessionRegisterExport.
+  ///
+  /// In en, this message translates to:
+  /// **'View register export'**
+  String get fosteringSessionRegisterExport;
+
+  /// No description provided for @fosteringSessionRegisterExportTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Foster register export'**
+  String get fosteringSessionRegisterExportTitle;
+
+  /// No description provided for @fosteringSessionExpediteAdoption.
+  ///
+  /// In en, this message translates to:
+  /// **'Complete visit & start adoption today'**
+  String get fosteringSessionExpediteAdoption;
+
+  /// No description provided for @fosteringSessionExpediteAdoptionSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Visit completed and adoption journey started'**
+  String get fosteringSessionExpediteAdoptionSuccess;
+
+  /// No description provided for @fosteringSessionStartAdoptionSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Adoption journey started'**
+  String get fosteringSessionStartAdoptionSuccess;
+
+  /// No description provided for @fosteringSessionVisitPathBlocked.
+  ///
+  /// In en, this message translates to:
+  /// **'Adoption cannot start yet: {reason}'**
+  String fosteringSessionVisitPathBlocked(String reason);
+
   /// No description provided for @fosteringSessionChecklistSupplies.
   ///
   /// In en, this message translates to:
@@ -6855,6 +6909,36 @@ abstract class AppLocalizations {
   /// **'No adoption visits scheduled'**
   String get adoptionVisitsEmpty;
 
+  /// No description provided for @adoptionVisitOutcomePositive.
+  ///
+  /// In en, this message translates to:
+  /// **'Positive'**
+  String get adoptionVisitOutcomePositive;
+
+  /// No description provided for @adoptionVisitOutcomeNegative.
+  ///
+  /// In en, this message translates to:
+  /// **'Negative'**
+  String get adoptionVisitOutcomeNegative;
+
+  /// No description provided for @adoptionVisitOutcomeNoShow.
+  ///
+  /// In en, this message translates to:
+  /// **'No show'**
+  String get adoptionVisitOutcomeNoShow;
+
+  /// No description provided for @adoptionVisitOutcomePending.
+  ///
+  /// In en, this message translates to:
+  /// **'Outcome pending'**
+  String get adoptionVisitOutcomePending;
+
+  /// No description provided for @adoptionVisitOutcomeSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Visit outcome recorded'**
+  String get adoptionVisitOutcomeSaved;
+
   /// No description provided for @adoptionJourneyTitle.
   ///
   /// In en, this message translates to:
@@ -6872,6 +6956,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Conditions'**
   String get adoptionJourneyConditionsLabel;
+
+  /// No description provided for @adoptionJourneyMilestonesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Adoption milestones'**
+  String get adoptionJourneyMilestonesTitle;
+
+  /// No description provided for @adoptionJourneyMilestonesEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No milestones configured yet.'**
+  String get adoptionJourneyMilestonesEmpty;
 
   /// No description provided for @adoptionJourneyStatusUnknown.
   ///

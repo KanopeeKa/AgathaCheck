@@ -9,6 +9,7 @@ import '../../../domain/entities/foster_placement.dart';
 import '../../../domain/entities/foster_session_status.dart';
 import '../../providers/fostering_session_providers.dart';
 import '../../providers/org_provider_pets.dart';
+import '../../providers/org_provider_deps.dart';
 import '../../utils/foster_placement_display.dart';
 import '../../utils/org_screen_theme.dart';
 import '../../widgets/fostering_session/fostering_session_preparation_checklist.dart';
@@ -128,6 +129,88 @@ class _FosteringSessionDetailBodyState
     );
   }
 
+  Future<void> _showRegisterExport() async {
+    final l = AppLocalizations.of(context)!;
+    final token = ref.read(orgTokenProvider);
+    if (token == null) return;
+    setState(() => _busy = true);
+    try {
+      final export = await ref
+          .read(organizationRepositoryProvider)
+          .getRegisterExport(widget.orgId, widget.placementId, token);
+      if (!mounted) return;
+      final content = export['content']?.toString() ?? '';
+      await showDialog<void>(
+        context: context,
+        builder: (ctx) => AlertDialog(
+          title: Text(l.fosteringSessionRegisterExportTitle),
+          content: SingleChildScrollView(child: SelectableText(content)),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(ctx).pop(),
+              child: Text(l.close),
+            ),
+          ],
+        ),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('$e')));
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
+  }
+
+  Future<void> _startViewToAdoptAdoption() async {
+    final l = AppLocalizations.of(context)!;
+    final token = ref.read(orgTokenProvider);
+    if (token == null) return;
+    setState(() => _busy = true);
+    try {
+      await ref
+          .read(organizationRepositoryProvider)
+          .startAdoption(widget.orgId, widget.placementId, token: token);
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l.fosteringSessionStartAdoptionSuccess)),
+      );
+      ref.invalidate(fosteringSessionDetailProvider(_key));
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l.fosteringSessionVisitPathBlocked('$e'))),
+      );
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
+  }
+
+  Future<void> _expediteVisitAndStart() async {
+    final l = AppLocalizations.of(context)!;
+    final token = ref.read(orgTokenProvider);
+    if (token == null) return;
+    setState(() => _busy = true);
+    try {
+      await ref
+          .read(organizationRepositoryProvider)
+          .completeVisitAndStartAdoption(
+            widget.orgId,
+            widget.placementId,
+            token: token,
+          );
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l.fosteringSessionExpediteAdoptionSuccess)),
+      );
+      ref.invalidate(fosteringSessionDetailProvider(_key));
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('$e')));
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context)!;
@@ -173,7 +256,10 @@ class _FosteringSessionDetailBodyState
         ],
         if (placement.isSessionPreparation) ...[
           const SizedBox(height: 16),
-          const FosteringSessionPreparationChecklist(),
+          FosteringSessionPreparationChecklist(
+            orgId: widget.orgId,
+            placementId: widget.placementId,
+          ),
         ],
         if (placement.isSessionReadyToStart) ...[
           const SizedBox(height: 16),
@@ -195,6 +281,13 @@ class _FosteringSessionDetailBodyState
           ),
         ],
         const SizedBox(height: 16),
+        if (isAdmin)
+          TextButton.icon(
+            key: const Key('fostering_session_register_export'),
+            onPressed: _busy ? null : _showRegisterExport,
+            icon: const Icon(Icons.description_outlined),
+            label: Text(l.fosteringSessionRegisterExport),
+          ),
         if (_busy)
           const Center(child: CircularProgressIndicator())
         else ...[
@@ -250,6 +343,24 @@ class _FosteringSessionDetailBodyState
               icon: const Icon(Icons.pets),
               label: Text(l.fosteringSessionConfirmFosterStart),
             ),
+          if (isAdmin &&
+              placement.sessionType == FosterSessionType.fosterInViewToAdopt &&
+              placement.isSessionActive) ...[
+            OutlinedButton.icon(
+              key: const Key('fostering_session_start_adoption'),
+              onPressed: _busy ? null : _startViewToAdoptAdoption,
+              icon: const Icon(Icons.favorite_border),
+              label: Text(l.startAdoption),
+            ),
+            const SizedBox(height: 8),
+            FilledButton.icon(
+              key: const Key('fostering_session_expedite_adoption'),
+              onPressed: _busy ? null : _expediteVisitAndStart,
+              icon: const Icon(Icons.bolt_outlined),
+              label: Text(l.fosteringSessionExpediteAdoption),
+            ),
+            const SizedBox(height: 8),
+          ],
           if (isAdmin && placement.isSessionActive)
             OutlinedButton.icon(
               key: const Key('fostering_session_request_end'),

@@ -158,7 +158,7 @@
   "fostering_platform.feature": {
     "Foster request targets respect approved capacity filters": "P2",
     "Manage Fosters tabs use fostering activity summary": "P2",
-    "Adoption visit validation gates journey start on visit path": "P2"
+    "Positive adoption visit outcome gates journey start on visit path": "P2"
   },
   "org_to_org_transfer.feature": {
     "Connected orgs can transfer a pet with recipient acceptance": "P1",

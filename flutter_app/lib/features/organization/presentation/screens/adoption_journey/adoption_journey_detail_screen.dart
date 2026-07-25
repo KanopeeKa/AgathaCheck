@@ -6,6 +6,7 @@ import '../../../../../core/widgets/app_logo_title.dart';
 import '../../../../../l10n/app_localizations.dart';
 import '../../providers/org_provider_deps.dart';
 import '../../utils/org_screen_theme.dart';
+import '../../widgets/adoption_journey/adoption_journey_milestone_checklist.dart';
 
 class AdoptionJourneyDetailScreen extends ConsumerWidget {
   const AdoptionJourneyDetailScreen({
@@ -64,6 +65,11 @@ class AdoptionJourneyDetailScreen extends ConsumerWidget {
                   style: theme.textTheme.titleSmall,
                 ),
                 Text(journey['adoption_conditions']?.toString() ?? ''),
+                const SizedBox(height: 24),
+                AdoptionJourneyMilestoneChecklist(
+                  orgId: orgId,
+                  placementId: placementId,
+                ),
               ],
             );
           },

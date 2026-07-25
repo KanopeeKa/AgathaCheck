@@ -2476,6 +2476,41 @@ class AppLocalizationsFr extends AppLocalizations {
       'Suivez les étapes de préparation du refuge avant la remise. Le suivi complet de la liste arrive dans une prochaine version.';
 
   @override
+  String get fosteringSessionChecklistDescription =>
+      'Suivez les éléments de préparation de la famille d\'accueil selon les modèles de votre organisation.';
+
+  @override
+  String get fosteringSessionChecklistEmpty =>
+      'Aucun élément de liste configuré pour le moment.';
+
+  @override
+  String get fosteringSessionChecklistRequired => 'Obligatoire';
+
+  @override
+  String get fosteringSessionRegisterExport => 'Voir l\'export du registre';
+
+  @override
+  String get fosteringSessionRegisterExportTitle =>
+      'Export du registre d\'accueil';
+
+  @override
+  String get fosteringSessionExpediteAdoption =>
+      'Terminer la visite et lancer l\'adoption aujourd\'hui';
+
+  @override
+  String get fosteringSessionExpediteAdoptionSuccess =>
+      'Visite terminée et parcours d\'adoption lancé';
+
+  @override
+  String get fosteringSessionStartAdoptionSuccess =>
+      'Parcours d\'adoption lancé';
+
+  @override
+  String fosteringSessionVisitPathBlocked(String reason) {
+    return 'L\'adoption ne peut pas encore commencer : $reason';
+  }
+
+  @override
   String get fosteringSessionChecklistSupplies =>
       'Confirmer que les fournitures et équipements sont prêts';
 
@@ -3838,6 +3873,21 @@ class AppLocalizationsFr extends AppLocalizations {
   String get adoptionVisitsEmpty => 'Aucune visite d\'adoption planifiée';
 
   @override
+  String get adoptionVisitOutcomePositive => 'Positive';
+
+  @override
+  String get adoptionVisitOutcomeNegative => 'Négative';
+
+  @override
+  String get adoptionVisitOutcomeNoShow => 'Absence';
+
+  @override
+  String get adoptionVisitOutcomePending => 'Résultat en attente';
+
+  @override
+  String get adoptionVisitOutcomeSaved => 'Résultat de visite enregistré';
+
+  @override
   String get adoptionJourneyTitle => 'Parcours d\'adoption';
 
   @override
@@ -3845,6 +3895,13 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get adoptionJourneyConditionsLabel => 'Conditions';
+
+  @override
+  String get adoptionJourneyMilestonesTitle => 'Jalons d\'adoption';
+
+  @override
+  String get adoptionJourneyMilestonesEmpty =>
+      'Aucun jalon configuré pour le moment.';
 
   @override
   String get adoptionJourneyStatusUnknown => 'Inconnu';

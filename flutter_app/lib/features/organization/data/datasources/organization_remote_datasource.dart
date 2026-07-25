@@ -288,4 +288,70 @@ class OrganizationRemoteDataSource with OrganizationRemoteFosterDelegations {
     String placementId,
     String token,
   ) => _screening.getSessionChecklist(orgId, placementId, token);
+
+  Future<Map<String, dynamic>> updateSessionChecklistItem(
+    String orgId,
+    String placementId,
+    String itemKey, {
+    required bool completed,
+    required String token,
+  }) => _screening.updateSessionChecklistItem(
+    orgId,
+    placementId,
+    itemKey,
+    completed: completed,
+    token: token,
+  );
+
+  Future<Map<String, dynamic>> getAdoptionMilestones(
+    String orgId,
+    String placementId,
+    String token,
+  ) => _screening.getAdoptionMilestones(orgId, placementId, token);
+
+  Future<Map<String, dynamic>> updateAdoptionMilestoneItem(
+    String orgId,
+    String journeyId,
+    String itemKey, {
+    required bool completed,
+    required String token,
+  }) => _screening.updateAdoptionMilestoneItem(
+    orgId,
+    journeyId,
+    itemKey,
+    completed: completed,
+    token: token,
+  );
+
+  Future<Map<String, dynamic>> getRegisterExport(
+    String orgId,
+    String placementId,
+    String token,
+  ) => _screening.getRegisterExport(orgId, placementId, token);
+
+  Future<Map<String, dynamic>> recordAdoptionVisitOutcome(
+    String orgId,
+    String visitId,
+    String visitOutcome,
+    String token,
+  ) => _screening.recordAdoptionVisitOutcome(
+    orgId,
+    visitId,
+    visitOutcome,
+    token,
+  );
+
+  Future<Map<String, dynamic>> completeVisitAndStartAdoption(
+    String orgId,
+    String placementId, {
+    String? visitId,
+    String adoptionConditions = '',
+    required String token,
+  }) => _screening.completeVisitAndStartAdoption(
+    orgId,
+    placementId,
+    visitId: visitId,
+    adoptionConditions: adoptionConditions,
+    token: token,
+  );
 }

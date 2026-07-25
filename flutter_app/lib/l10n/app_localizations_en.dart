@@ -2452,6 +2452,39 @@ class AppLocalizationsEn extends AppLocalizations {
       'Track shelter preparation steps before handover. Full checklist tracking arrives in a later release.';
 
   @override
+  String get fosteringSessionChecklistDescription =>
+      'Track foster readiness items from your organisation templates.';
+
+  @override
+  String get fosteringSessionChecklistEmpty =>
+      'No checklist items configured yet.';
+
+  @override
+  String get fosteringSessionChecklistRequired => 'Required';
+
+  @override
+  String get fosteringSessionRegisterExport => 'View register export';
+
+  @override
+  String get fosteringSessionRegisterExportTitle => 'Foster register export';
+
+  @override
+  String get fosteringSessionExpediteAdoption =>
+      'Complete visit & start adoption today';
+
+  @override
+  String get fosteringSessionExpediteAdoptionSuccess =>
+      'Visit completed and adoption journey started';
+
+  @override
+  String get fosteringSessionStartAdoptionSuccess => 'Adoption journey started';
+
+  @override
+  String fosteringSessionVisitPathBlocked(String reason) {
+    return 'Adoption cannot start yet: $reason';
+  }
+
+  @override
   String get fosteringSessionChecklistSupplies =>
       'Confirm supplies and equipment are ready';
 
@@ -3785,6 +3818,21 @@ class AppLocalizationsEn extends AppLocalizations {
   String get adoptionVisitsEmpty => 'No adoption visits scheduled';
 
   @override
+  String get adoptionVisitOutcomePositive => 'Positive';
+
+  @override
+  String get adoptionVisitOutcomeNegative => 'Negative';
+
+  @override
+  String get adoptionVisitOutcomeNoShow => 'No show';
+
+  @override
+  String get adoptionVisitOutcomePending => 'Outcome pending';
+
+  @override
+  String get adoptionVisitOutcomeSaved => 'Visit outcome recorded';
+
+  @override
   String get adoptionJourneyTitle => 'Adoption journey';
 
   @override
@@ -3792,6 +3840,12 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get adoptionJourneyConditionsLabel => 'Conditions';
+
+  @override
+  String get adoptionJourneyMilestonesTitle => 'Adoption milestones';
+
+  @override
+  String get adoptionJourneyMilestonesEmpty => 'No milestones configured yet.';
 
   @override
   String get adoptionJourneyStatusUnknown => 'Unknown';

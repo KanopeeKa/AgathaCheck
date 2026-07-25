@@ -309,6 +309,43 @@ abstract class OrganizationRepository {
     String placementId,
     String token,
   );
+  Future<Map<String, dynamic>> updateSessionChecklistItem(
+    String orgId,
+    String placementId,
+    String itemKey, {
+    required bool completed,
+    required String token,
+  });
+  Future<Map<String, dynamic>> getAdoptionMilestones(
+    String orgId,
+    String placementId,
+    String token,
+  );
+  Future<Map<String, dynamic>> updateAdoptionMilestoneItem(
+    String orgId,
+    String journeyId,
+    String itemKey, {
+    required bool completed,
+    required String token,
+  });
+  Future<Map<String, dynamic>> getRegisterExport(
+    String orgId,
+    String placementId,
+    String token,
+  );
+  Future<Map<String, dynamic>> recordAdoptionVisitOutcome(
+    String orgId,
+    String visitId,
+    String visitOutcome,
+    String token,
+  );
+  Future<Map<String, dynamic>> completeVisitAndStartAdoption(
+    String orgId,
+    String placementId, {
+    String? visitId,
+    String adoptionConditions = '',
+    required String token,
+  });
 
   Future<List<OrgConnection>> getConnections(String orgId, String token);
 

@@ -5,11 +5,21 @@ import { v4 as uuidv4 } from 'uuid';
 
 import { logAuditEventSafe } from './audit.js';
 import {
+  assertVisitPathSatisfied,
+  assertVisitScheduledToday,
+  createAdoptionVisit,
+  loadAdoptionVisitForOrg,
+  recordVisitOutcome,
+  VISIT_OUTCOME_POSITIVE,
+  VISIT_STATUS_COMPLETED,
+} from './adoptionVisits.js';
+import {
   normalizePlacementStatus,
   placementToMap,
   revokeFosterPetAccess,
   SESSION_STATUS_ADOPTION_IN_PROGRESS,
   SESSION_STATUS_CONVERTED_TO_ADOPTION,
+  SESSION_TYPE_FOSTER_IN_VIEW_TO_ADOPT,
 } from './fosterPlacements.js';
 import {
   clearOrgPetHomeHiddenForPet,
@@ -253,6 +263,11 @@ export async function startAdoptionJourney(db, {
     return { error: 'Adoption journey already in progress for this session', status: 409 };
   }
 
+  const visitPathCheck = await assertVisitPathSatisfied(db, placement);
+  if (visitPathCheck.error) {
+    return visitPathCheck;
+  }
+
   const conditions = (adoptionConditions || '').trim();
   const journeyStatus = journeyStatusFromConditions(conditions);
   const journeyId = uuidv4();
@@ -395,6 +410,64 @@ export async function finaliseAdoptionJourney(db, placement) {
     );
   }
   return journey;
+}
+
+export async function completeVisitAndStartAdoptionJourney(db, {
+  placement,
+  orgId,
+  visitId,
+  adoptionConditions = '',
+  createdBy,
+  auditContext = {},
+}) {
+  if (placement.session_type !== SESSION_TYPE_FOSTER_IN_VIEW_TO_ADOPT) {
+    return {
+      error: 'Same-day expedite applies to foster-in-view-to-adopt sessions only',
+      status: 400,
+    };
+  }
+
+  let visitRow;
+  if (visitId) {
+    const loaded = await loadAdoptionVisitForOrg(db, visitId, orgId);
+    if (loaded.error) return loaded;
+    visitRow = loaded.row;
+    if (visitRow.fostering_session_id !== placement.id) {
+      return { error: 'Visit does not belong to this fostering session', status: 400 };
+    }
+    const dayCheck = assertVisitScheduledToday(visitRow);
+    if (dayCheck.error) return dayCheck;
+  } else {
+    const created = await createAdoptionVisit(db, {
+      orgId,
+      fosteringSessionId: placement.id,
+      petId: placement.pet_id,
+      scheduledAt: new Date().toISOString(),
+      createdBy,
+      auditContext,
+    });
+    if (created.error) return created;
+    visitRow = created.row;
+  }
+
+  if (visitRow.status !== VISIT_STATUS_COMPLETED
+    || visitRow.visit_outcome !== VISIT_OUTCOME_POSITIVE) {
+    const outcomeResult = await recordVisitOutcome(db, {
+      orgId,
+      visitId: visitRow.id,
+      visitOutcome: VISIT_OUTCOME_POSITIVE,
+      actorUserId: createdBy,
+      auditContext,
+    });
+    if (outcomeResult.error) return outcomeResult;
+  }
+
+  return startAdoptionJourney(db, {
+    placement,
+    adoptionConditions,
+    createdBy,
+    auditContext,
+  });
 }
 
 export function placementWithJourneyResponse(placement, journey, extras = {}) {

@@ -7,6 +7,7 @@ import {
   fillTextbox,
   refreshFlutterAccessibility,
   selectDropdownOption,
+  waitForFlutterRoutePattern,
 } from '../support/flutter';
 import { OrganizationListPage } from './organization-list.page';
 
@@ -145,5 +146,19 @@ export class OrganizationDetailPage {
     await addButton.waitFor({ timeout: 30_000 });
     await addButton.click();
     await this.page.getByRole('button', { name: 'Save Pet' }).waitFor({ timeout: 30_000 });
+  }
+
+  async openManageFosters(): Promise<void> {
+    const orgIdMatch = this.page.url().match(/\/o\/orgs\/([^/?#]+)/);
+    await this.openMenu();
+    await this.page.getByRole('menuitem', { name: 'Manage fosters' }).click();
+    await refreshFlutterAccessibility(this.page);
+    if (orgIdMatch) {
+      await waitForFlutterRoutePattern(
+        this.page,
+        new RegExp(`/o/orgs/${orgIdMatch[1]}/fosters`),
+        60_000,
+      );
+    }
   }
 }

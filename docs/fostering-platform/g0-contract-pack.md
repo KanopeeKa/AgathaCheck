@@ -1,7 +1,7 @@
 # G0 — Platform contract pack (fostering & adoption)
 
 **Status:** Draft baseline for agent handoff  
-**Last updated:** 2026-07-24  
+**Last updated:** 2026-07-25  
 **Supersedes:** informal journey boundaries only — does not replace `docs/org-fostering-strategy.md` until journey delivery begins.
 
 This document is the **platform contract layer**. Journey agents (J1–J5) must reference G0 instead of redefining shared rules. G1 (document and compliance artefact packs) depends on stable hooks defined here and implemented in J3/J5.
@@ -20,8 +20,8 @@ These are non-negotiable architectural rules. Any journey spec or PR that violat
 |---|-----------|
 | I1 | **One foster person model** — a human is represented once at platform level (`Foster profile`), regardless of how many shelters they work with. |
 | I2 | **One shelter–foster relationship model** — approval, local screening, and shelter-confirmed data live on a per-shelter relationship, not on the global profile alone. |
-| I3 | **One fostering session / active placement model** — evolve `foster_placements`; never run a parallel placement universe. |
-| I4 | **At most one open fostering session per pet** — never more than one session in a non-terminal workflow state for the same pet at the same time. |
+| I3 | **One fostering session model** — evolve `foster_placements` into fostering sessions; never run a parallel placement universe. A **foster may hold multiple concurrent sessions** on different pets. |
+| I4 | **At most one open fostering session per pet** — never more than one session in a non-terminal workflow state for the same pet at the same time. Same-calendar-day end of one session and start of the next is allowed (brief overlap during handoff). |
 | I5 | **One adoption legal workflow** — Feature 5 supersedes legacy placement-embedded adoption completion; do not maintain two adoption paths long term. |
 | I6 | **One org-local lightweight prospect model (v1)** — prospects are owned by the creating shelter only; no cross-shelter prospect directory in v1. |
 | I7 | **Participant comments ≠ staff notes** — separate fields, separate storage, separate access rules everywhere (platform-wide). |
@@ -109,7 +109,7 @@ Journey agents may only depend on **published read models or APIs**, not another
 | J2 | G0, J1 | Approved foster list, capacity inputs, competency flags, activity summary inputs |
 | J3 | G0, J1, J2 (optional entry) | Foster profile identity, shelter–foster relationship id, positive request response id |
 | J4 | G0, J3 | Active or view-to-adopt session context, foster/pet ids |
-| J5 | G0, J3, J4 | Session type, visit validation outcome, pet adoptability |
+| J5 | G0, J3, J4 | Session type, positive adoption visit outcome (`visit_outcome`), session checklist readiness (G1) |
 | G1 | G0, J3, J5 | Checklist item keys, adoption milestone keys — **hooks only** |
 
 ### 4.3 Org member role `foster` vs approved foster
@@ -217,10 +217,18 @@ Idempotency: one session per `(foster_request_response_id, pet_id)`.
 
 J4 may schedule adoption visits when:
 
-- Session `session_type = foster_in_view_to_adopt`, **or**
-- J4 spec explicitly allows pre-session visits (open question — default **foster-context only** until J4 spec resolves).
+- Session `session_type = foster_in_view_to_adopt` (Wave C: **only** this path requires visit gating for J5).
 
-J4 triggers view-to-adopt preparation only after visit validation — does not mutate session type without J3 contract.
+Each `adoption_visit` records a **visit outcome** when completed:
+
+| Field | Values | Meaning |
+|-------|--------|---------|
+| `status` | `scheduled` \| `completed` \| `cancelled` | Visit lifecycle |
+| `visit_outcome` | `positive` \| `negative` \| `no_show` (when completed) | Result of the adoption visit meeting |
+
+**Not** the same as foster/session readiness (G1 session checklist: contracts, register items, etc.).
+
+A `visit_outcome = negative` does **not** revoke foster approval. It blocks the adoption journey for **this session** until a **later** visit records `visit_outcome = positive`.
 
 ### 5.6 J3 + J4 → J5: Adoption journey start
 
@@ -233,8 +241,9 @@ J5 **supersedes** legacy flows:
 J5 starts only when:
 
 - Fostering session exists and is eligible, **and**
-- J4 validation complete (if visit path), **or**
-- Direct adoption path defined in J5 spec.
+- For `session_type = foster_in_view_to_adopt`: at least one **completed** adoption visit with `visit_outcome = positive` linked to the session.
+
+**Same-day expedite (explicit admin action):** admin may invoke a single orchestrated action (e.g. complete visit with positive outcome and start journey) when all involved dates share the same calendar day (`YYYY-MM-DD`). All gate predicates still run; nothing is silently skipped.
 
 On J5 start: session → `adoption_in_progress` (non-terminal; foster care continues).  
 J5 close event: session → `converted_to_adoption` (terminal); triggers existing custody transfer / shadow semantics per `docs/architecture/org-custody-model.md`.
@@ -293,6 +302,8 @@ Database today enforces one open row per pet for active placement statuses (`idx
 
 Exact index definition lives in `migration-appendix.md`.
 
+**Same-calendar-day handoff:** ending session A and starting session B for the same pet on the same `YYYY-MM-DD` is permitted (brief overlap during admin handoff).
+
 Transfer flow: current session → `transferred` (terminal); new session created in `preparation` for receiving foster.
 
 ---
@@ -345,7 +356,6 @@ All events use snake_case `event_type`, include `organization_id`, `actor_user_i
 | `prospect_merge_completed` | prospect | J4 |
 | `adoption_visit_scheduled` | adoption_visit | J4 |
 | `adoption_visit_outcome_recorded` | adoption_visit | J4 |
-| `adoption_visit_validated` | adoption_visit | J4 |
 | `adoption_journey_started` | adoption_journey | J5 |
 | `adoption_certificate_signed` | adoption_journey | J5 |
 | `adoption_finalised` | adoption_journey | J5 |
