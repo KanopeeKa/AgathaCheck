@@ -23,6 +23,23 @@ function isNoiseLine(trimmed) {
   return NOISE_PREFIXES.some((prefix) => trimmed.startsWith(prefix));
 }
 
+function canonicalizeCheckConstraintArrays(line) {
+  if (!line.includes('::text = ANY')) return line;
+  const castArrayMatch = line.match(
+    /::text = ANY \(ARRAY\[((?:\('[^']+'::character varying\)::text,?\s*)+)\]\)/
+  );
+  if (!castArrayMatch) return line;
+  const values = [...castArrayMatch[1].matchAll(/\('([^']+)'::character varying\)::text/g)].map(
+    (m) => m[1]
+  );
+  if (values.length === 0) return line;
+  const arrayLiteral = values.map((v) => `'${v}'::character varying`).join(', ');
+  return line.replace(
+    /::text = ANY \(ARRAY\[[^\]]+\]\)/,
+    `::text = ANY ((ARRAY[${arrayLiteral}])::text[])`
+  );
+}
+
 function canonicalizePartialIndexArrays(line) {
   if (!line.includes('idx_foster_placements_one_active_pet')) return line;
   const statuses = [...line.matchAll(/'([a-z_]+)'/g)]
@@ -47,7 +64,7 @@ export function normalizeSchemaDump(raw) {
   for (const line of lines) {
     const trimmed = line.trimEnd();
     if (isNoiseLine(trimmed.trim())) continue;
-    kept.push(canonicalizePartialIndexArrays(trimmed));
+    kept.push(canonicalizeCheckConstraintArrays(canonicalizePartialIndexArrays(trimmed)));
   }
 
   return `${kept.join('\n').trim()}\n`;

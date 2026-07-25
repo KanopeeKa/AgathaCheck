@@ -24,6 +24,14 @@ CREATE TABLE public.users (
   );
 });
 
+test('canonicalizeCheckConstraintArrays normalizes CHECK ANY variants', () => {
+  const legacy =
+    "CONSTRAINT org_foster_parents_approval_state_check CHECK (((approval_state)::text = ANY ((ARRAY['under_review'::character varying, 'approved'::character varying])::text[])))";
+  const canonical =
+    "CONSTRAINT org_foster_parents_approval_state_check CHECK (((approval_state)::text = ANY (ARRAY[('under_review'::character varying)::text, ('approved'::character varying)::text])))";
+  assert.equal(normalizeSchemaDump(`${legacy}\n`), normalizeSchemaDump(`${canonical}\n`));
+});
+
 test('canonicalizePartialIndexArrays normalizes foster partial index variants', () => {
   const legacy =
     "CREATE UNIQUE INDEX idx_foster_placements_one_active_pet ON public.foster_placements USING btree (pet_id) WHERE ((status)::text = ANY ((ARRAY['pending'::character varying, 'in_progress'::character varying])::text[]));";

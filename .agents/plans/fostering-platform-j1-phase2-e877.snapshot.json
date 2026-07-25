@@ -1,0 +1,84 @@
+{
+  "schema_version": 1,
+  "plan_id": "fostering-platform-j1-phase2-e877",
+  "approved_at": "2026-07-25T00:05:00Z",
+  "approved_by": "user-delegated-autonomy",
+  "approved_until": "2026-07-27T00:05:00Z",
+  "content_hash": "sha256:3e575849e8d5a15d1fd852c554c3a77285d9d5db198f6cb624a078cffb27bf5b",
+  "autonomy": "completed",
+  "default_merge_mode": "auto",
+  "base_branch": "cursor/fostering-platform-j1-phase2-e877-integration",
+  "control_issue": 338,
+  "artifact_branch_policy": "phase-branch",
+  "phases": [
+    {
+      "id": "1",
+      "title": "Backend approval state",
+      "branch": "cursor/j1-approval-state-backend-e877",
+      "allowed_paths": [
+        "db/migrations/022_org_foster_parents_approval_state.sql",
+        "server/routes/organizations/fosterParentsRouter.js",
+        "server/test/organizations/fosterParents.test.js",
+        "server/test/organizations/helpers.js",
+        "docs/fostering-platform/j1-foster-onboarding.md",
+        ".agents/plans/fostering-platform-j1-phase2-e877.*"
+      ],
+      "forbidden_paths": [
+        "flutter_app/**",
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "single-backend-route",
+      "status": "merged",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/339",
+      "pr_head_sha": "09ed74d"
+    },
+    {
+      "id": "2",
+      "title": "Flutter approval UI",
+      "branch": "cursor/j1-approval-state-flutter-e877",
+      "allowed_paths": [
+        "flutter_app/lib/features/organization/domain/entities/foster_parent.dart",
+        "flutter_app/lib/features/organization/data/datasources/organization_remote/organization_foster_parents_remote.dart",
+        "flutter_app/lib/features/organization/data/datasources/organization_remote_datasource.dart",
+        "flutter_app/lib/features/organization/presentation/providers/manage_fosters_providers.dart",
+        "flutter_app/lib/features/organization/presentation/providers/organization_providers.dart",
+        "flutter_app/lib/features/organization/presentation/screens/manage_fosters/**",
+        "flutter_app/lib/features/organization/presentation/widgets/manage_fosters/**",
+        "flutter_app/lib/l10n/**",
+        "flutter_app/test/features/organization/**",
+        "docs/fostering-platform/j1-foster-onboarding.md",
+        ".agents/plans/fostering-platform-j1-phase2-e877.*"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        "db/**",
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "flutter-screen-split",
+      "status": "merged",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/340",
+      "pr_head_sha": "69c88a6"
+    }
+  ]
+}

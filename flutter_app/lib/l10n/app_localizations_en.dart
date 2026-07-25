@@ -2096,8 +2096,25 @@ class AppLocalizationsEn extends AppLocalizations {
   String get manageFostersFilterArchived => 'Archived';
 
   @override
-  String get manageFostersApprovalFiltersComingSoon =>
-      'Approval filters activate when foster onboarding (J1 Phase 2) ships.';
+  String get manageFostersApprovalApprove => 'Approve';
+
+  @override
+  String get manageFostersApprovalDecline => 'Decline';
+
+  @override
+  String get manageFostersApprovalArchive => 'Archive';
+
+  @override
+  String get manageFostersApprovalStateUnderReview => 'Under review';
+
+  @override
+  String get manageFostersApprovalStateApproved => 'Approved';
+
+  @override
+  String get manageFostersApprovalStateDeclined => 'Declined';
+
+  @override
+  String get manageFostersApprovalStateArchived => 'Archived';
 
   @override
   String get noFosterParents => 'No foster parents yet';

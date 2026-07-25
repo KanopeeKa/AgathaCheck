@@ -3913,11 +3913,47 @@ abstract class AppLocalizations {
   /// **'Archived'**
   String get manageFostersFilterArchived;
 
-  /// No description provided for @manageFostersApprovalFiltersComingSoon.
+  /// No description provided for @manageFostersApprovalApprove.
   ///
   /// In en, this message translates to:
-  /// **'Approval filters activate when foster onboarding (J1 Phase 2) ships.'**
-  String get manageFostersApprovalFiltersComingSoon;
+  /// **'Approve'**
+  String get manageFostersApprovalApprove;
+
+  /// No description provided for @manageFostersApprovalDecline.
+  ///
+  /// In en, this message translates to:
+  /// **'Decline'**
+  String get manageFostersApprovalDecline;
+
+  /// No description provided for @manageFostersApprovalArchive.
+  ///
+  /// In en, this message translates to:
+  /// **'Archive'**
+  String get manageFostersApprovalArchive;
+
+  /// No description provided for @manageFostersApprovalStateUnderReview.
+  ///
+  /// In en, this message translates to:
+  /// **'Under review'**
+  String get manageFostersApprovalStateUnderReview;
+
+  /// No description provided for @manageFostersApprovalStateApproved.
+  ///
+  /// In en, this message translates to:
+  /// **'Approved'**
+  String get manageFostersApprovalStateApproved;
+
+  /// No description provided for @manageFostersApprovalStateDeclined.
+  ///
+  /// In en, this message translates to:
+  /// **'Declined'**
+  String get manageFostersApprovalStateDeclined;
+
+  /// No description provided for @manageFostersApprovalStateArchived.
+  ///
+  /// In en, this message translates to:
+  /// **'Archived'**
+  String get manageFostersApprovalStateArchived;
 
   /// No description provided for @noFosterParents.
   ///

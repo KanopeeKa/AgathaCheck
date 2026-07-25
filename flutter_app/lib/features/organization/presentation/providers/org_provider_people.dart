@@ -215,6 +215,22 @@ class OrgFosterParentsNotifier
     await repo.deleteExternalFosterParent(arg, fosterParentId, token);
     ref.invalidateSelf();
   }
+
+  Future<void> updateApproval(
+    String fosterParentId,
+    FosterApprovalState approvalState,
+  ) async {
+    final token = ref.read(orgTokenProvider)!;
+    final repo = ref.read(organizationRepositoryProvider);
+    await repo.updateFosterApproval(
+      arg,
+      fosterParentId,
+      approvalState,
+      token: token,
+    );
+    ref.invalidateSelf();
+    ref.invalidate(orgPeopleProvider(arg));
+  }
 }
 
 final orgFosterParentsProvider =

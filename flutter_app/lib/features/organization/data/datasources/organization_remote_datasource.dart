@@ -254,6 +254,18 @@ class OrganizationRemoteDataSource {
     String token,
   ) => _fosterParents.deleteExternalFosterParent(orgId, fosterParentId, token);
 
+  Future<Map<String, dynamic>> updateFosterApproval(
+    String orgId,
+    String fosterParentId,
+    String approvalState,
+    String token,
+  ) => _fosterParents.updateFosterApproval(
+    orgId,
+    fosterParentId,
+    approvalState,
+    token,
+  );
+
   Future<Map<String, dynamic>> getPetPlacement(
     String orgId,
     String petId,

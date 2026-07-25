@@ -20,6 +20,40 @@ class FosterParentAssignedPet {
   }
 }
 
+enum FosterApprovalState {
+  underReview,
+  approved,
+  declined,
+  archived;
+
+  static FosterApprovalState fromWire(String value) {
+    switch (value) {
+      case 'under_review':
+        return FosterApprovalState.underReview;
+      case 'declined':
+        return FosterApprovalState.declined;
+      case 'archived':
+        return FosterApprovalState.archived;
+      case 'approved':
+      default:
+        return FosterApprovalState.approved;
+    }
+  }
+
+  String toWire() {
+    switch (this) {
+      case FosterApprovalState.underReview:
+        return 'under_review';
+      case FosterApprovalState.declined:
+        return 'declined';
+      case FosterApprovalState.archived:
+        return 'archived';
+      case FosterApprovalState.approved:
+        return 'approved';
+    }
+  }
+}
+
 /// A foster parent in the org directory — either an app member (admin/foster)
 /// or an external contact without an account.
 class FosterParent {
@@ -35,6 +69,8 @@ class FosterParent {
     this.photoUrl,
     this.activePetCount = 0,
     this.activePets = const [],
+    this.approvalState = FosterApprovalState.approved,
+    this.creationSource,
   });
 
   final String id;
@@ -48,6 +84,8 @@ class FosterParent {
   final String? photoUrl;
   final int activePetCount;
   final List<FosterParentAssignedPet> activePets;
+  final FosterApprovalState approvalState;
+  final String? creationSource;
 
   bool get isMember => kind == FosterParentKind.member;
   bool get isExternal => kind == FosterParentKind.external;
@@ -83,6 +121,10 @@ class FosterParent {
                 FosterParentAssignedPet.fromJson(Map<String, dynamic>.from(e)),
           )
           .toList(),
+      approvalState: FosterApprovalState.fromWire(
+        json['approval_state']?.toString() ?? 'approved',
+      ),
+      creationSource: json['creation_source']?.toString(),
     );
   }
 }

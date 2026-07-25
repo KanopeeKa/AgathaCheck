@@ -1,38 +1,46 @@
 # J1 — Foster onboarding and approval
 
-**Status:** Phase 1 in progress  
+**Status:** Phase 2 complete  
 **Parent:** [`g0-contract-pack.md`](g0-contract-pack.md) · [`migration-appendix.md`](migration-appendix.md)
 
 ## Purpose
 
 A person becomes an approved foster for a shelter with reusable global profile data and shelter-local screening.
 
-## Phase 1 (this plan) — Manage Fosters shell
+## Phase 1 — Manage Fosters shell (complete)
 
 - [x] Dedicated screen at `/o/orgs/:id/fosters`
 - [x] Tabs: New, Fostering, Recently fostered, Inactive, All
-- [x] Approval filter chips (disabled until Phase 2)
 - [x] Foster summary cards from existing foster-parents API
 - [x] Rename "Add external foster" → "Add foster manually"
 - [x] BDD skeleton (`foster_onboarding.feature`)
 
-## Out of scope (Phase 1)
+## Phase 2 — Approval state (this plan)
 
-- Global foster profile table
-- Approval workflow backend
-- Shelter-specific questionnaire
+- [x] Migration `022`: `approval_state`, `creation_source` on `org_foster_parents`
+- [x] GET foster-parents exposes `approval_state` (members virtual `approved`)
+- [x] POST manual foster → `under_review` + audit `manual_foster_record_created`
+- [x] PATCH `/:id/approval` → approve / decline / archive + G0 audit events
+- [x] Flutter approval filters enabled
+- [x] Approve / decline / archive actions on external foster cards
+
+**Status:** Phase 2 complete
+
+## Out of scope (Phase 2)
+
+- `foster_profiles` table (J1 Phase 3)
 - Foster invite flow changes
-- Playwright E2E (debt — map BDD after Phase 2 API)
+- Playwright E2E (debt — map BDD after API stable)
 
 ## Depends on
 
 - G0 contract pack
-- Migration appendix §8 (interim tab rules)
+- Migration appendix §2.2, §8
 
 ## Exposes to J2
 
-- Manage Fosters screen route
-- Tab/filter vocabulary (l10n keys)
+- Approved-foster read model with `approval_state`
+- Manage Fosters approval filters
 
 ## Open questions
 
