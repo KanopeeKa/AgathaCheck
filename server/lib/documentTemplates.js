@@ -98,29 +98,31 @@ export async function ensureDefaultTemplates(pool, orgId) {
   }
 }
 
-export async function assertKnownTemplateKey(pool, orgId, templateType, itemKey) {
-  await ensureDefaultTemplates(pool, orgId);
-  const templates = await listTemplatesForOrg(pool, orgId, templateType);
-  const allowedKeys = new Set(templates.map((template) => template.template_key));
-  if (!allowedKeys.has(itemKey)) {
-    return { error: 'Unknown checklist item', status: 400 };
-  }
-  return null;
-}
-
-function applyChecklistItemUpdate(current, itemKey, completed) {
-  const next = { ...current };
-  // itemKey is validated against org document_templates before this runs.
-  // codeql[js/remote-property-injection]: whitelist via assertKnownTemplateKey
-  next[itemKey] = completed === true;
-  const timestampKey = `${itemKey}_at`;
-  if (completed === true) {
-    // codeql[js/remote-property-injection]: derived from validated itemKey
-    next[timestampKey] = new Date().toISOString();
-  } else {
-    delete next[timestampKey];
+function storageFromRenderedItems(items) {
+  const next = {};
+  for (const item of items) {
+    next[item.key] = item.completed === true;
+    if (item.completed_at) {
+      next[`${item.key}_at`] = item.completed_at;
+    }
   }
   return next;
+}
+
+function applyTemplateCompletion(templates, storedItems, itemKey, completed) {
+  const rendered = renderChecklistFromTemplates(templates, storedItems);
+  let found = false;
+  const updated = rendered.map((item) => {
+    if (item.key !== itemKey) return item;
+    found = true;
+    return {
+      ...item,
+      completed: completed === true,
+      completed_at: completed === true ? new Date().toISOString() : null,
+    };
+  });
+  if (!found) return null;
+  return storageFromRenderedItems(updated);
 }
 
 export async function updateSessionChecklistItem(pool, {
@@ -129,13 +131,12 @@ export async function updateSessionChecklistItem(pool, {
   itemKey,
   completed,
 }) {
-  const keyError = await assertKnownTemplateKey(
+  await ensureDefaultTemplates(pool, orgId);
+  const templates = await listTemplatesForOrg(
     pool,
     orgId,
     TEMPLATE_TYPE_SESSION_CHECKLIST,
-    itemKey,
   );
-  if (keyError) return keyError;
 
   const placementResult = await pool.query(
     `SELECT id, session_checklist_items
@@ -148,7 +149,10 @@ export async function updateSessionChecklistItem(pool, {
   }
 
   const current = parseChecklistItems(placementResult.rows[0].session_checklist_items);
-  const updated = applyChecklistItemUpdate(current, itemKey, completed);
+  const updated = applyTemplateCompletion(templates, current, itemKey, completed);
+  if (!updated) {
+    return { error: 'Unknown checklist item', status: 400 };
+  }
 
   const result = await pool.query(
     `UPDATE foster_placements
@@ -168,13 +172,12 @@ export async function updateJourneyMilestoneItem(pool, {
   itemKey,
   completed,
 }) {
-  const keyError = await assertKnownTemplateKey(
+  await ensureDefaultTemplates(pool, orgId);
+  const templates = await listTemplatesForOrg(
     pool,
     orgId,
     TEMPLATE_TYPE_ADOPTION_MILESTONE,
-    itemKey,
   );
-  if (keyError) return keyError;
 
   const journeyResult = await pool.query(
     `SELECT id, milestone_items
@@ -187,7 +190,10 @@ export async function updateJourneyMilestoneItem(pool, {
   }
 
   const current = parseChecklistItems(journeyResult.rows[0].milestone_items);
-  const updated = applyChecklistItemUpdate(current, itemKey, completed);
+  const updated = applyTemplateCompletion(templates, current, itemKey, completed);
+  if (!updated) {
+    return { error: 'Unknown checklist item', status: 400 };
+  }
 
   const result = await pool.query(
     `UPDATE adoption_journeys
