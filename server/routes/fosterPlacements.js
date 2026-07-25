@@ -10,14 +10,15 @@ import { finaliseAdoptionJourney } from '../lib/adoptionJourneys.js';
 import {
   completeAdoptionTransfer,
   grantFosterPetAccess,
+  isPendingFosterAcceptance,
   normalizePlacementStatus,
   placementToMap,
-  PLACEMENT_STATUS_IN_PROGRESS,
-  PLACEMENT_STATUS_NOT_IN_FOSTER,
-  PLACEMENT_STATUS_PENDING,
+  PENDING_FOSTER_ACCEPTANCE_STATUSES,
   PLACEMENT_STATUS_WAITING_ADOPTION,
   revokeFosterPetAccess,
+  SESSION_STATUS_ACTIVE,
   SESSION_STATUS_ADOPTION_IN_PROGRESS,
+  SESSION_STATUS_CANCELLED,
 } from '../lib/fosterPlacements.js';
 import { setFosterCare } from '../lib/petCustody.js';
 
@@ -51,9 +52,9 @@ export default function fosterPlacementsRoutes(pool) {
          JOIN organizations o ON o.id = fp.organization_id
          JOIN users u ON u.id = fp.foster_user_id
          WHERE fp.foster_user_id = $1
-           AND fp.status = $2
+           AND fp.status = ANY($2::text[])
          ORDER BY fp.created_at DESC`,
-        [userId, PLACEMENT_STATUS_PENDING],
+        [userId, PENDING_FOSTER_ACCEPTANCE_STATUSES],
       );
       res.json(result.rows.map((row) => placementToMap(row)));
     } catch (err) {
@@ -108,7 +109,7 @@ export default function fosterPlacementsRoutes(pool) {
       if (placement.foster_user_id !== userId) {
         return res.status(403).json({ error: 'Forbidden' });
       }
-      if (placement.status !== PLACEMENT_STATUS_PENDING) {
+      if (!isPendingFosterAcceptance(placement.status)) {
         return res.status(400).json({ error: 'Placement is not pending' });
       }
 
@@ -122,11 +123,12 @@ export default function fosterPlacementsRoutes(pool) {
         `UPDATE foster_placements
          SET status = $1,
              start_date = COALESCE(start_date, CURRENT_DATE),
+             foster_start_confirmed_at = COALESCE(foster_start_confirmed_at, NOW()),
              responded_at = NOW(),
              updated_at = NOW()
          WHERE id = $2
          RETURNING *`,
-        [PLACEMENT_STATUS_IN_PROGRESS, placementId],
+        [SESSION_STATUS_ACTIVE, placementId],
       );
       const updated = updateResult.rows[0];
 
@@ -182,7 +184,7 @@ export default function fosterPlacementsRoutes(pool) {
       if (placement.foster_user_id !== userId) {
         return res.status(403).json({ error: 'Forbidden' });
       }
-      if (placement.status !== PLACEMENT_STATUS_PENDING) {
+      if (!isPendingFosterAcceptance(placement.status)) {
         return res.status(400).json({ error: 'Placement is not pending' });
       }
 
@@ -197,7 +199,7 @@ export default function fosterPlacementsRoutes(pool) {
          SET status = $1, responded_at = NOW(), updated_at = NOW()
          WHERE id = $2
          RETURNING *`,
-        [PLACEMENT_STATUS_NOT_IN_FOSTER, placementId],
+        [SESSION_STATUS_CANCELLED, placementId],
       );
 
       const fosterResult = await pool.query(

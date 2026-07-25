@@ -123,6 +123,20 @@ export const FOSTER_ACTIVE_STATUSES = [
 
 export const FOSTER_PET_ACCESS_ROLE = 'foster';
 
+/** DB statuses that appear in GET /foster-placements/pending (legacy + J3 pre-active). */
+export const PENDING_FOSTER_ACCEPTANCE_STATUSES = [
+  PLACEMENT_STATUS_PENDING,
+  SESSION_STATUS_PENDING_ACCEPTANCE,
+  SESSION_STATUS_PREPARATION,
+  SESSION_STATUS_READY_TO_START,
+];
+
+export function isPendingFosterAcceptance(status) {
+  if (!status) return false;
+  return PENDING_FOSTER_ACCEPTANCE_STATUSES.includes(status)
+    || PENDING_FOSTER_ACCEPTANCE_STATUSES.includes(normalizePlacementStatus(status));
+}
+
 function sessionStatusFromRow(row) {
   return normalizePlacementStatus(row.status);
 }
