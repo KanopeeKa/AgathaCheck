@@ -2026,7 +2026,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get lawfulBasisConfirm =>
-      'I confirm I have a lawful basis to store this person\'s contact details and they will be informed by email.';
+      'I confirm I have a lawful basis to store this person\'s contact details for shelter foster coordination. They will receive an email explaining retention and how to opt out of outreach.';
 
   @override
   String get lawfulBasisConfirmRequired =>
@@ -2146,6 +2146,25 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get manageFostersLinkedAccount => 'Linked account';
+
+  @override
+  String get manageFostersOutreachOptOut => 'Outreach opt-out';
+
+  @override
+  String get manageFostersRecordOutreachOptOut => 'Record outreach opt-out';
+
+  @override
+  String get manageFostersClearOutreachOptOut => 'Clear outreach opt-out';
+
+  @override
+  String get manageFostersRetentionShelterFosterRelationship =>
+      'Shelter foster relationship';
+
+  @override
+  String get manageFostersRetentionDeclinedArchived => 'Declined / archived';
+
+  @override
+  String get manageFostersRetentionManualContact => 'Manual contact';
 
   @override
   String get noFosterParents => 'No foster parents yet';

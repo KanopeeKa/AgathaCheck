@@ -3790,7 +3790,7 @@ abstract class AppLocalizations {
   /// No description provided for @lawfulBasisConfirm.
   ///
   /// In en, this message translates to:
-  /// **'I confirm I have a lawful basis to store this person\'s contact details and they will be informed by email.'**
+  /// **'I confirm I have a lawful basis to store this person\'s contact details for shelter foster coordination. They will receive an email explaining retention and how to opt out of outreach.'**
   String get lawfulBasisConfirm;
 
   /// No description provided for @lawfulBasisConfirmRequired.
@@ -4005,6 +4005,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Linked account'**
   String get manageFostersLinkedAccount;
+
+  /// No description provided for @manageFostersOutreachOptOut.
+  ///
+  /// In en, this message translates to:
+  /// **'Outreach opt-out'**
+  String get manageFostersOutreachOptOut;
+
+  /// No description provided for @manageFostersRecordOutreachOptOut.
+  ///
+  /// In en, this message translates to:
+  /// **'Record outreach opt-out'**
+  String get manageFostersRecordOutreachOptOut;
+
+  /// No description provided for @manageFostersClearOutreachOptOut.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear outreach opt-out'**
+  String get manageFostersClearOutreachOptOut;
+
+  /// No description provided for @manageFostersRetentionShelterFosterRelationship.
+  ///
+  /// In en, this message translates to:
+  /// **'Shelter foster relationship'**
+  String get manageFostersRetentionShelterFosterRelationship;
+
+  /// No description provided for @manageFostersRetentionDeclinedArchived.
+  ///
+  /// In en, this message translates to:
+  /// **'Declined / archived'**
+  String get manageFostersRetentionDeclinedArchived;
+
+  /// No description provided for @manageFostersRetentionManualContact.
+  ///
+  /// In en, this message translates to:
+  /// **'Manual contact'**
+  String get manageFostersRetentionManualContact;
 
   /// No description provided for @noFosterParents.
   ///

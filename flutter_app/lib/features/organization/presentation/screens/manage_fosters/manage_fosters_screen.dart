@@ -257,3 +257,15 @@ String localizedFosterApprovalState(
       return l.manageFostersApprovalStateArchived;
   }
 }
+
+String localizedFosterRetentionCategory(AppLocalizations l, String category) {
+  switch (category) {
+    case 'declined_archived':
+      return l.manageFostersRetentionDeclinedArchived;
+    case 'manual_contact':
+      return l.manageFostersRetentionManualContact;
+    case 'shelter_foster_relationship':
+    default:
+      return l.manageFostersRetentionShelterFosterRelationship;
+  }
+}

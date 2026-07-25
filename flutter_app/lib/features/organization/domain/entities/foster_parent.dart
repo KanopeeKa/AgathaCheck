@@ -96,6 +96,8 @@ class FosterParent {
     this.activePets = const [],
     this.approvalState = FosterApprovalState.approved,
     this.creationSource,
+    this.optOutAt,
+    this.retentionCategory = 'shelter_foster_relationship',
   });
 
   final String id;
@@ -112,6 +114,8 @@ class FosterParent {
   final List<FosterParentAssignedPet> activePets;
   final FosterApprovalState approvalState;
   final String? creationSource;
+  final DateTime? optOutAt;
+  final String retentionCategory;
 
   bool get isMember => kind == FosterParentKind.member;
   bool get isExternal => kind == FosterParentKind.external;
@@ -120,6 +124,7 @@ class FosterParent {
       isExternal &&
       !isLinkedToRegisteredAccount &&
       (email?.trim().isNotEmpty ?? false);
+  bool get hasOutreachOptOut => optOutAt != null;
 
   String get initials {
     final parts = displayName.trim().split(RegExp(r'\s+'));
@@ -157,6 +162,12 @@ class FosterParent {
         json['approval_state']?.toString() ?? 'approved',
       ),
       creationSource: json['creation_source']?.toString(),
+      optOutAt: json['opt_out_at'] != null
+          ? DateTime.tryParse(json['opt_out_at'].toString())
+          : null,
+      retentionCategory:
+          json['retention_category']?.toString() ??
+          'shelter_foster_relationship',
     );
   }
 }
