@@ -34,8 +34,8 @@ CREATE TABLE public.adoption_visits (
     created_by uuid,
     created_at timestamp with time zone DEFAULT now(),
     updated_at timestamp with time zone DEFAULT now(),
-    CONSTRAINT adoption_visits_visit_outcome_check CHECK (((visit_outcome IS NULL) OR ((visit_outcome)::text = ANY ((ARRAY['positive'::character varying, 'negative'::character varying, 'no_show'::character varying])::text[])))),
-    CONSTRAINT adoption_visits_status_check CHECK (((status)::text = ANY ((ARRAY['scheduled'::character varying, 'completed'::character varying, 'cancelled'::character varying])::text[])))
+    CONSTRAINT adoption_visits_status_check CHECK (((status)::text = ANY ((ARRAY['scheduled'::character varying, 'completed'::character varying, 'cancelled'::character varying])::text[]))),
+    CONSTRAINT adoption_visits_visit_outcome_check CHECK (((visit_outcome IS NULL) OR ((visit_outcome)::text = ANY ((ARRAY['positive'::character varying, 'negative'::character varying, 'no_show'::character varying])::text[]))))
 );
 CREATE TABLE public.archived_pets (
     id uuid NOT NULL,
