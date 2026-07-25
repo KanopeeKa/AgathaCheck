@@ -297,6 +297,34 @@ Tracks planned and completed refactor / quality work. See also `docs/refactoring
 
 ---
 
+## Fostering platform (J1–J5 + G1)
+
+**Goal:** Second-generation fostering & adoption per `docs/fostering-platform/`.  
+**Coordination:** [`roadmap-delivery-plan.md`](fostering-platform/roadmap-delivery-plan.md)  
+**Contract:** [`g0-contract-pack.md`](fostering-platform/g0-contract-pack.md) · [`migration-appendix.md`](fostering-platform/migration-appendix.md)
+
+| Wave | execute-plan | Status |
+|------|--------------|--------|
+| Foundation | `fostering-platform-foundation-e877` | merged |
+| J1 Ph2 approval | `fostering-platform-j1-phase2-e877` | merged |
+| J1 Ph3 profiles + merge | `fostering-platform-j1-phase3-e877` | **active** |
+| J1 Ph4 compliance | `fostering-platform-j1-phase4-e877` | pending |
+| J2 requests | `fostering-platform-j2-e877` | pending (after J1 Ph3) |
+| J3 sessions | `fostering-platform-j3-e877` | pending (after J1 Ph3) |
+| J4 visits | `fostering-platform-j4-e877` | pending (after J3 Ph1) |
+| J5 adoption | `fostering-platform-j5-e877` | pending (after J4) |
+| G1 documents | `fostering-platform-g1-e877` | pending (after J3+J5 hooks) |
+
+### Wave B ownership (J2 ∥ J3 — spawn after J1 Ph3)
+
+| Agent | Branch | Owns | Avoid |
+|-------|--------|------|-------|
+| j2-backend | `cursor/j2-foster-requests-backend-e877` | foster_request migrations, `fosterRequestsRouter.js`, tests | `fosterPlacements*`, flutter |
+| j3-schema | `cursor/j3-session-schema-e877` | session column migrations, `fosterPlacements.js`, placement tests | foster_requests, flutter |
+| coordinator | `cursor/fostering-platform-j2-j3-e877-integration` | capacity glue, plan artifacts | — |
+
+---
+
 ## Parallel-agent ownership matrix (reference)
 
 Use this template when spawning agents on an integration branch:
