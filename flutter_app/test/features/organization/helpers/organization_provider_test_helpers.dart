@@ -18,7 +18,8 @@ export 'recording_organization_repository_foster_mixin.dart';
 export 'recording_organization_repository_placements_mixin.dart';
 
 /// Records calls so we can assert what the notifiers delegated to the repository.
-class RecordingOrganizationRepository extends RecordingOrganizationRepositoryBase
+class RecordingOrganizationRepository
+    extends RecordingOrganizationRepositoryBase
     with
         RecordingOrganizationRepositoryCoreMixin,
         RecordingOrganizationRepositoryFosterMixin,
