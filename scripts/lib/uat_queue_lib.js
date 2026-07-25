@@ -167,6 +167,22 @@ function unfreezeAfterBarrier(state) {
   return state;
 }
 
+/**
+ * After a remedial fix merges, the coordinator advances the barrier. Head
+ * `failed`/`remedial` entries would otherwise keep queueHeadHold blocking
+ * promotion even though the fix is already on main.
+ */
+function resolveRemediatedHeadEntries(state) {
+  let head = headEntryNeedingAttention(state);
+  while (head && ['failed', 'remedial'].includes(head.state)) {
+    head.state = 'superseded';
+    head.result = 'superseded';
+    head.completed_at = nowIso();
+    head = headEntryNeedingAttention(state);
+  }
+  return state;
+}
+
 function setBarrier(state, { sha, reason, at }) {
   const barrierSha = String(sha).trim();
   if (!barrierSha) {
@@ -176,6 +192,7 @@ function setBarrier(state, { sha, reason, at }) {
   state.main_barrier_reason = reason || null;
   state.main_barrier_at = at || nowIso();
   clearPromoteHold(state);
+  resolveRemediatedHeadEntries(state);
   unfreezeAfterBarrier(state);
   return state;
 }
@@ -334,6 +351,16 @@ function releaseWatcher(state) {
 }
 
 /**
+ * Drop an expired lease from state so acquireWatcher can proceed.
+ */
+function pruneExpiredWatcher(state, now = new Date()) {
+  if (state.active_watcher && !isWatcherLeaseActive(state, now)) {
+    releaseWatcher(state);
+  }
+  return state;
+}
+
+/**
  * @param {{ barrierSha?: string|null, branchTipSha: string, isAncestor: (ancestor: string, descendant: string) => boolean }} input
  */
 function barrierCheck({ barrierSha, branchTipSha, isAncestor }) {
@@ -397,8 +424,10 @@ module.exports = {
   normalizeState,
   parseStateFromCommentBody,
   parseUatTag,
+  pruneExpiredWatcher,
   queueHeadHold,
   releaseWatcher,
+  resolveRemediatedHeadEntries,
   renderStateCommentBody,
   setBarrier,
   setPromoteHold,

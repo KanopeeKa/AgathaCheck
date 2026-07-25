@@ -491,6 +491,17 @@ This mattered beyond "the smoke gate is red": `deploy-uat.yml`'s `smoke` job gat
 
 **Residual risk:** unverified against the live WAF at merge time (this repo's CI is the only place that can prove it against the real Tiger Protect challenge) — watch the next few `deploy-uat` runs' `smoke` job. If the Playwright warmup also fails, `SMOKE_FAILURE_KIND` has no signal for it (only `uat-post-deploy-smoke.sh`'s health check sets it), so `assert-uat-gates.sh` conservatively classifies it `code`, not `infra_only` — i.e. it will (correctly) freeze the queue again rather than silently assume "still just WAF."
 
+### 7. Coordinator dispatch must not orphan watcher leases (added Jul 25)
+
+**Problem:** `prepareDispatch` acquired a 90-minute watcher lease and wrote remedial/`promote_hold` state **before** `launch-uat-coordinator.js` ran. When launch failed (or a later failure dispatch was skipped because an earlier holder's lease was still active), the ledger kept `active_watcher` and the `failed` head entry blocked **all** `promote-uat` runs — even though later merges (including the actual fix) were already on `main`. `set-barrier` also did not clear `failed`/`remedial` head entries, so advancing the barrier after a remedial merge still left promotion frozen.
+
+**Fix:**
+
+- `releaseWatcherIfHolderRunFinished` — steal the lease when the holder workflow (`gha-<runId>`) has already `completed`, even if the 90-minute lease has not expired.
+- Coordinator ledger commit is deferred until **after** a successful Cursor agent launch (no orphan lease on launch failure).
+- `setBarrier` now supersedes head `failed`/`remedial` entries so promotion can resume once the fix is on `main`.
+- `scripts/ci/uat-queue-recovery.js` + `uat-queue-health.yml` clear stale leases and re-dispatch the coordinator for a stuck `failed` head.
+
 ---
 
 ## Immediate actions (operator)

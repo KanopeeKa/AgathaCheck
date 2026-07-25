@@ -7,6 +7,7 @@ class WebAssetImage extends StatelessWidget {
   final BoxFit fit;
   final Widget? fallback;
   final bool clipOval;
+  final String semanticsLabel;
 
   const WebAssetImage({
     super.key,
@@ -16,6 +17,7 @@ class WebAssetImage extends StatelessWidget {
     this.fit = BoxFit.contain,
     this.fallback,
     this.clipOval = false,
+    this.semanticsLabel = '',
   });
 
   @override

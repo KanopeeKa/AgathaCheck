@@ -86,7 +86,8 @@ Post on coordination issue with `question` label on linked product issue if appl
 
 If dispatch was skipped (`watcher_lease_held`, `remedial_in_progress`):
 
-- Wait for lease expiry, or
+- `uat-queue-health.yml` (weekly + manual dispatch) clears stale watcher leases and re-dispatches the coordinator for a stuck `failed` head entry.
+- Or wait for lease expiry, or
 - `workflow_dispatch` on **UAT coordinator dispatch** with `workflow_run_id` + `force: true` (human only)
 
 ---

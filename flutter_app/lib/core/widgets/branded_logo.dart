@@ -57,6 +57,7 @@ class BrandedLogo extends StatelessWidget {
         fit: BoxFit.cover,
         fallback: fallback,
         clipOval: clipOval,
+        semanticsLabel: 'Agatha Track logo',
       );
     } else {
       image = Image.asset(

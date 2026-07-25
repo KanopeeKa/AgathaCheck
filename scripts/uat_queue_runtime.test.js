@@ -13,6 +13,7 @@ const {
   expectedUatTag,
   parseStateFromCommentBody,
   parseUatTag,
+  pruneExpiredWatcher,
   queueHeadHold,
   renderStateCommentBody,
   setBarrier,
@@ -65,7 +66,7 @@ test('applyRemedialFreeze freezes later pending entries', () => {
   assert.equal(state.entries[2].state, 'frozen');
 });
 
-test('setBarrier unfreezes entries', () => {
+test('setBarrier unfreezes entries and resolves remedial head', () => {
   let state = createEmptyState();
   state.entries = [
     { seq: 1, pr_number: 1, merge_sha: 'a', state: 'remedial' },
@@ -73,7 +74,48 @@ test('setBarrier unfreezes entries', () => {
   ];
   setBarrier(state, { sha: 'barrier1', reason: 'fix merged' });
   assert.equal(state.main_barrier_sha, 'barrier1');
+  assert.equal(state.entries[0].state, 'superseded');
   assert.equal(state.entries[1].state, 'pending');
+});
+
+test('setBarrier resolves failed head entries so promotion can resume', () => {
+  const state = createEmptyState();
+  state.entries = [
+    { seq: 1, pr_number: 333, merge_sha: 'a', state: 'failed' },
+    { seq: 2, pr_number: 332, merge_sha: 'b', state: 'pending' },
+  ];
+  setBarrier(state, { sha: 'fix-sha', reason: 'uat remedial merged' });
+  assert.equal(state.entries[0].state, 'superseded');
+  assert.equal(state.entries[1].state, 'pending');
+  const hold = queueHeadHold(state);
+  assert.equal(hold.hold, false);
+});
+
+test('pruneExpiredWatcher clears an expired lease', () => {
+  const state = createEmptyState();
+  state.active_watcher = {
+    holder: 'gha-1',
+    lease_until: '2026-07-23T12:00:00Z',
+    watching_seq: 1,
+  };
+  pruneExpiredWatcher(state, new Date('2026-07-23T13:00:00Z'));
+  assert.equal(state.active_watcher, null);
+});
+
+test('acquireWatcher succeeds after pruneExpiredWatcher', () => {
+  let state = createEmptyState();
+  state.active_watcher = {
+    holder: 'gha-old',
+    lease_until: '2026-07-23T12:30:00Z',
+    watching_seq: 1,
+  };
+  pruneExpiredWatcher(state, new Date('2026-07-23T14:00:00Z'));
+  const acquired = acquireWatcher(state, {
+    holder: 'gha-new',
+    leaseMinutes: 90,
+    now: new Date('2026-07-23T14:00:00Z'),
+  });
+  assert.equal(acquired.acquired, true);
 });
 
 test('applyDeployResult marks success and failure', () => {

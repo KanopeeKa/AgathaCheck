@@ -16,6 +16,7 @@ const {
   isWatcherLeaseActive,
   markEntryRemedial,
   parseUatTag,
+  pruneExpiredWatcher,
   releaseWatcher,
   setPromoteHold,
 } = require('../../scripts/lib/uat_queue_lib');
@@ -41,6 +42,32 @@ async function fetchWorkflowRun(owner, repo, runId, token) {
   return rest('GET', `/repos/${owner}/${repo}/actions/runs/${runId}`, token);
 }
 
+/**
+ * A watcher lease is tied to the failed deploy run id (`gha-<runId>`). If that
+ * run has already finished but launch-uat-coordinator failed after the lease was
+ * acquired, the lease blocks every later dispatch until expiry (90 min).
+ */
+async function releaseWatcherIfHolderRunFinished(state, owner, repo, token) {
+  pruneExpiredWatcher(state);
+  const holder = state.active_watcher?.holder;
+  if (!holder || !isWatcherLeaseActive(state)) {
+    return state;
+  }
+  const match = holder.match(/^gha-(\d+)$/);
+  if (!match) {
+    return state;
+  }
+  try {
+    const run = await rest('GET', `/repos/${owner}/${repo}/actions/runs/${match[1]}`, token);
+    if (run.status === 'completed') {
+      releaseWatcher(state);
+    }
+  } catch {
+    // Keep the lease when the holder run cannot be verified.
+  }
+  return state;
+}
+
 function printJson(obj) {
   console.log(JSON.stringify(obj, null, 2));
 }
@@ -53,13 +80,13 @@ async function prepareDispatch({
   token,
   owner,
   repo,
-  write = true,
   force = false,
   mergeSha = null,
   failedEntry = null,
   failedGates = null,
 }) {
   const { state, issueNumber } = await loadStateFromIssue(coordinationIssue, token);
+  await releaseWatcherIfHolderRunFinished(state, owner, repo, token);
   let head = failedEntry || headEntryNeedingAttention(state);
 
   if (!head || !['failed', 'remedial'].includes(head.state)) {
@@ -128,10 +155,6 @@ async function prepareDispatch({
     reason: `deploy-uat failure run ${workflowRunId}`,
   });
 
-  if (write) {
-    await saveStateToIssue(issueNumber, nextState, token);
-  }
-
   const resolvedFailedGates =
     failedGates || classifyFailedJobs(await fetchWorkflowJobs(owner, repo, workflowRunId, token));
   const payload = buildUatCoordinatorPayload({
@@ -150,6 +173,7 @@ async function prepareDispatch({
     entry,
     payload,
     failed_gates: resolvedFailedGates,
+    nextState,
   };
 }
 
@@ -258,7 +282,6 @@ async function main() {
     token,
     owner,
     repo,
-    write: writeLedger,
     force: forceDispatch,
     mergeSha: run.head_sha || null,
     failedEntry,
@@ -275,19 +298,32 @@ async function main() {
     return;
   }
 
-  execFileSync(
-    'node',
-    ['.github/scripts/launch-uat-coordinator.js'],
-    {
-      cwd: REPO_ROOT,
-      stdio: 'inherit',
-      env: {
-        ...process.env,
-        UAT_COORDINATION_ISSUE: String(prepared.issueNumber),
-        UAT_COORDINATOR_PAYLOAD: JSON.stringify(prepared.payload),
+  try {
+    execFileSync(
+      'node',
+      ['.github/scripts/launch-uat-coordinator.js'],
+      {
+        cwd: REPO_ROOT,
+        stdio: 'inherit',
+        env: {
+          ...process.env,
+          UAT_COORDINATION_ISSUE: String(prepared.issueNumber),
+          UAT_COORDINATOR_PAYLOAD: JSON.stringify(prepared.payload),
+        },
       },
-    },
-  );
+    );
+  } catch (error) {
+    printJson({
+      dispatched: false,
+      launch_error: error.message,
+      ledger_sync: ledgerSync,
+    });
+    throw error;
+  }
+
+  if (writeLedger && prepared.nextState) {
+    await saveStateToIssue(prepared.issueNumber, prepared.nextState, token);
+  }
 
   printJson({
     dispatched: true,
