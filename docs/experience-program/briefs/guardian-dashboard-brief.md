@@ -1,8 +1,8 @@
 > **Status:** Locked master brief (source of truth). Do not edit inline — track deviations in
 > [`../decisions-log.md`](../decisions-log.md) and feature-level detail in
 > [`../phase-2-guardian-journey.md`](../phase-2-guardian-journey.md). Imported verbatim 2026-07-25.
-> Note: "Events" and "family events" terminology in this brief is **redefined** by decision D15 —
-> see the decisions log before implementing.
+> Note: "Events" and "family events" terminology in this brief is **redefined** by decisions
+> D17 and D18 — see the decisions log before implementing.
 
 # Guardian dashboard redesign brief
 

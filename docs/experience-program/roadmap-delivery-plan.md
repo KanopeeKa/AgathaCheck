@@ -75,7 +75,7 @@ changes beyond doc headers and BDD tags.
 |---|---|
 | R.1 | Header-tag `docs/design/navigation-v2.md` superseded (D2); link forward to this program |
 | R.2 | Close `cursor/org-mode-nav-phase3-shell-acf1` branch + control issue #262 (D6) with a comment explaining supersession; delete the stale branch and its sibling plan-snapshot branches once closed |
-| R.3 | Tag `experience_navigation.feature`, `notifications.feature`, `organisation_pet_timeline.feature` scenarios `@legacy` (G0 §14.2 pattern) — do not delete yet |
+| R.3 | Tag `experience_navigation.feature` (one scenario) and `organisation_pet_timeline.feature` (feature-level) `@legacy` (G0 §14.2 pattern) — do not delete yet; `notifications.feature` needs no `@legacy` tag (see `program-contract.md` §6.1) |
 | R.4 | Publish this `docs/experience-program/` folder itself (this PR) |
 
 **Exit criteria:** decisions log + contract + roadmap merged to `main`; acf1 branch/issue closed;

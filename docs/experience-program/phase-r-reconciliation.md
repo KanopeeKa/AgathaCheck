@@ -69,8 +69,9 @@ Single phase, sprints R.1–R.4 (see `roadmap-delivery-plan.md`).
 - `docs/experience-program/` merged to `main`
 - `docs/design/navigation-v2.md` header updated
 - Branch `cursor/org-mode-nav-phase3-shell-acf1` and its siblings deleted; issue #262 closed
-- `@legacy` tags present on `experience_navigation.feature`, `notifications.feature`,
-  `organisation_pet_timeline.feature`
+- `@legacy` tags present on `experience_navigation.feature` (one superseded scenario) and
+  `organisation_pet_timeline.feature` (feature-level); `notifications.feature` is extended in
+  Phase 1 without `@legacy` tags per `program-contract.md` §6.1
 - `node e2e/scripts/check_bdd_coverage.js --report-only` shows no scenario count regression
   (tagging alone doesn't remove scenarios)
 
