@@ -125,12 +125,12 @@ last_completed_phase: null
 halt_reason: null
 next_action: "continue phase 1 on branch cursor/j1-foster-profiles-backend-e877"
 artifact_ref:
-  branch: cursor/fostering-platform-j1-phase3-e877-integration
+  branch: cursor/j1-foster-profiles-backend-e877
   plan_path: .agents/plans/fostering-platform-j1-phase3-e877.md
-  plan_commit: 3ef742296e286766ea58ee40fdcf021a8af6d1d0
+  plan_commit: af75bd57ca9c48c0088c7315350af5529a087d8b
   snapshot_path: .agents/plans/fostering-platform-j1-phase3-e877.snapshot.json
-  snapshot_commit: 3ef742296e286766ea58ee40fdcf021a8af6d1d0
-open_prs: []
+  snapshot_commit: af75bd57ca9c48c0088c7315350af5529a087d8b
+open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/"]
 merge_commits: {}
 debt_issue_refs: []
 ```
