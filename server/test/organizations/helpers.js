@@ -278,7 +278,7 @@ export function buildMockPool(overrides = {}) {
         }],
       };
     }
-    if (sql.includes('FROM users u') && sql.includes('LOWER(u.email)')) {
+    if (sql.includes('FROM users u') && sql.includes('LOWER(u.email)') && sql.includes('foster_profiles')) {
       return {
         rows: [{
           user_id: 'registered-user-1',
@@ -521,6 +521,102 @@ export function buildMockPool(overrides = {}) {
         };
       }
       return { rows: [] };
+    }
+    if (sql.includes('FROM prospects') && sql.includes('WHERE organization_id = $1') && sql.includes('ORDER BY display_name')) {
+      return {
+        rows: [{
+          id: 'prospect-1',
+          organization_id: orgId,
+          display_name: 'Adopter Prospect',
+          email: 'prospect@example.com',
+          phone: '555-2222',
+          notes: 'Interested in cats',
+          user_id: null,
+          creation_source: 'manual_shelter_entry',
+          lawful_basis_attested_at: new Date('2026-07-25T10:00:00Z'),
+          lawful_basis_attested_by: userId,
+          opt_out_at: null,
+          retention_category: 'manual_contact',
+          created_by: userId,
+          created_at: new Date('2026-07-25T10:00:00Z'),
+          updated_at: new Date('2026-07-25T10:00:00Z'),
+        }],
+      };
+    }
+    if (sql.includes('INSERT INTO prospects')) {
+      return {
+        rows: [{
+          id: 'prospect-new-1',
+          organization_id: orgId,
+          display_name: 'New Prospect',
+          email: 'newprospect@example.com',
+          phone: null,
+          notes: '',
+          user_id: null,
+          creation_source: 'manual_shelter_entry',
+          lawful_basis_attested_at: new Date('2026-07-25T12:00:00Z'),
+          lawful_basis_attested_by: userId,
+          opt_out_at: null,
+          retention_category: 'manual_contact',
+          created_by: userId,
+          created_at: new Date('2026-07-25T12:00:00Z'),
+          updated_at: new Date('2026-07-25T12:00:00Z'),
+        }],
+      };
+    }
+    if (sql.includes('FROM users u') && sql.includes('LOWER(u.email) = LOWER($1)') && !sql.includes('foster_profiles')) {
+      return {
+        rows: [{
+          user_id: 'registered-user-1',
+          display_name: 'Registered User',
+          email: 'match@example.com',
+        }],
+      };
+    }
+    if (sql.includes('SELECT * FROM prospects') && sql.includes('organization_id = $2')) {
+      return {
+        rows: [{
+          id: 'prospect-1',
+          organization_id: orgId,
+          user_id: null,
+          display_name: 'Adopter Prospect',
+          email: 'match@example.com',
+          phone: '555-2222',
+          notes: 'Interested in cats',
+          creation_source: 'manual_shelter_entry',
+          retention_category: 'manual_contact',
+        }],
+      };
+    }
+    if (sql.includes('UPDATE prospects') && sql.includes('user_id = $1')) {
+      return {
+        rows: [{
+          id: 'prospect-1',
+          organization_id: orgId,
+          user_id: 'registered-user-1',
+          display_name: 'Adopter Prospect',
+          email: 'match@example.com',
+          phone: '555-2222',
+          notes: 'Interested in cats',
+          creation_source: 'manual_shelter_entry',
+          retention_category: 'prospect_relationship',
+        }],
+      };
+    }
+    if (sql.includes('UPDATE prospects') && sql.includes('display_name = $1')) {
+      return {
+        rows: [{
+          id: 'prospect-1',
+          organization_id: orgId,
+          display_name: params[0],
+          email: params[1],
+          phone: params[2],
+          notes: 'Interested in cats',
+          user_id: null,
+          creation_source: 'manual_shelter_entry',
+          retention_category: 'manual_contact',
+        }],
+      };
     }
     if (sql.includes('UPDATE foster_request_responses')) {
       const updated = {
