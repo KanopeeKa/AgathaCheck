@@ -4,11 +4,11 @@ import {
   dismissConsentBannerIfPresent,
   enableFlutterAccessibility,
   escapeRegExp,
-  expectAppBarTitle,
   fillTextbox,
   refreshFlutterAccessibility,
   selectDropdownOption,
 } from '../support/flutter';
+import { OrganizationListPage } from './organization-list.page';
 
 /**
  * Organization detail screen (`/organizations/:id`).
@@ -93,7 +93,8 @@ export class OrganizationDetailPage {
     await this.openMenu();
     await this.page.getByRole('menuitem', { name: 'Leave Organization' }).click();
     await this.page.getByRole('button', { name: 'Leave Organization' }).last().click();
-    await expectAppBarTitle(this.page, 'My Organizations');
+    // Org list is embedded in the experience shell — no legacy "My Organizations" app bar.
+    await new OrganizationListPage(this.page).expectLoaded();
   }
 
   async openEdit(): Promise<void> {
