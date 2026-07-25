@@ -12,6 +12,7 @@ class WebAssetImage extends StatefulWidget {
   final BoxFit fit;
   final Widget? fallback;
   final bool clipOval;
+  final String semanticsLabel;
 
   const WebAssetImage({
     super.key,
@@ -21,6 +22,7 @@ class WebAssetImage extends StatefulWidget {
     this.fit = BoxFit.contain,
     this.fallback,
     this.clipOval = false,
+    this.semanticsLabel = '',
   });
 
   @override
@@ -53,6 +55,7 @@ class _WebAssetImageState extends State<WebAssetImage> {
       final imgElement =
           web.document.createElement('img') as web.HTMLImageElement;
       imgElement.src = 'assets/${widget.assetPath}';
+      imgElement.alt = widget.semanticsLabel;
       imgElement.style.width = '100%';
       imgElement.style.height = '100%';
       imgElement.style.setProperty('object-fit', fitValue);
