@@ -22,7 +22,10 @@ When session preflight **gate** exits `0`, autonomy is **active**. You have upfr
 | Run gate every session; treat exit `0` as green light | Ask "shall I continue?" or "want me to proceed?" in user chat |
 | Post milestones on the **control issue** | Use user chat for permission-seeking mid-flow |
 | Loop to the next phase immediately after merge-done | Wait for prod-ready UAT before the next phase |
+| When a standing grant covers a multi-plan roadmap, auto-bootstrap the next `plan_id` and keep looping (see §Roadmap chaining) | End a turn with a soft offer ("let me know", "whenever you want", "say which wave and I'll bootstrap") for scope already granted |
 | Halt only on §Halt / §Escalation list | Pause for non-blocking follow-ups or turn boundaries |
+
+**Anti-pattern (soft-stop):** phrases like "I can spin up the next plan on request," "whenever you want to keep going," or "say which wave and I'll bootstrap it" are permission-seeking even though they don't look like a question. If the human's chat authorization already names the remaining scope (multiple journeys/waves, "all phases," "the entire plan/roadmap"), treat that as the standing grant for every plan it covers — do not re-ask per slice.
 
 **User chat (status only):** brief progress + what's next. Non-blocking follow-up questions may be **bundled at the end of a turn** — never as a flow break. See §Scope follow-ups.
 
@@ -147,6 +150,21 @@ For plans with **2+ phases** (especially UI or the same product area), batch mer
 4. After **all** phases are `merged` into integration, open **one** PR: integration → `main` (coordinator runs `./scripts/pre-push.sh`).
 
 Single-phase or disjoint-domain plans may keep `base_branch: main`. See uat-coordinator-plan §Goals (integration branches for multi-phase UI sprints).
+
+---
+
+## Roadmap chaining (multi-plan grants)
+
+A single `plan_id` stays small on purpose (tight `allowed_paths`, one reviewable slice). A **roadmap** — several journeys/waves the human describes in one chat message — spans **multiple** `plan_id`s. Do not let "plan complete" silently become "session complete" when the standing grant covers more than the plan that just finished.
+
+**Trigger:** the human's authorization names scope beyond the current plan (e.g. "go ahead through the entire plan/roadmap," "all phases," "the full journey list," or explicitly invokes `/spawn-sprint-agents` for a wave you identified).
+
+**On plan completion, if the standing grant still covers remaining scope:**
+
+1. Do **not** end the turn with a soft offer. Draft the next slice's plan + snapshot immediately (§Before autonomy grant §1–3), reusing the standing grant as `approved_by` (reference the originating chat message/timestamp) instead of waiting for a fresh literal `approve-autonomous <plan_id>`.
+2. Still bootstrap a real control issue with `execute-plan`, `plan:<id>`, `autonomous-approved` and run the gate — self-authorized plans keep the same auditability, just skip the round-trip for a keyword the human already gave in spirit.
+3. Before slicing sequentially, re-check the roadmap for independent waves (disjoint `allowed_paths`, e.g. backend-only vs Flutter-only, or unrelated features). If the human named `/spawn-sprint-agents` or you identify such a wave yourself, set `spawn_allowed: true` and invoke **/spawn-sprint-agents** for that wave rather than defaulting to one plan at a time — sequential slicing when parallel was explicitly requested is itself a standing-grant violation.
+4. Only fall back to a soft closer / control-issue `**Needs you:**` when: the roadmap is genuinely exhausted, the next slice needs a decision the grant didn't cover (e.g. new escalation-list item), or `approved_until` would be exceeded before it can be re-validated.
 
 ---
 
