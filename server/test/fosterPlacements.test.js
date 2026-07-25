@@ -12,6 +12,7 @@ import {
   SESSION_STATUS_ADOPTION_IN_PROGRESS,
   SESSION_STATUS_CANCELLED,
   SESSION_STATUS_CONVERTED_TO_ADOPTION,
+  SESSION_STATUS_END_PENDING_CONFIRMATION,
   SESSION_STATUS_PENDING_ACCEPTANCE,
   normalizePlacementStatus,
   OPEN_PLACEMENT_STATUSES,
@@ -189,6 +190,10 @@ function buildMockPool() {
       placementStatus = params[4] || PLACEMENT_STATUS_PENDING;
       return { rows: [rowForStatus(placementStatus)] };
     }
+    if (sql.includes('UPDATE foster_placements') && params[0] === SESSION_STATUS_END_PENDING_CONFIRMATION) {
+      placementStatus = SESSION_STATUS_END_PENDING_CONFIRMATION;
+      return { rows: [rowForStatus(placementStatus)] };
+    }
     if (sql.includes('UPDATE foster_placements') && params[0] === PLACEMENT_STATUS_IN_PROGRESS) {
       placementStatus = PLACEMENT_STATUS_IN_PROGRESS;
       fosterAccessGranted = true;
@@ -237,6 +242,12 @@ function buildMockPool() {
       return { rows: [{ first_name: 'Test', last_name: 'User', email: 'test@example.com' }] };
     }
     if (sql.includes('INSERT INTO notifications')) {
+      return { rows: [] };
+    }
+    if (sql.includes('INSERT INTO audit_events')) {
+      return { rows: [{ id: 'audit-1' }] };
+    }
+    if (sql.includes('SELECT id FROM org_foster_parents')) {
       return { rows: [] };
     }
     if (sql.includes('FROM foster_placements fp') && sql.includes('WHERE fp.organization_id')) {
@@ -354,7 +365,7 @@ describe('Foster placements API', () => {
       expect(res.body.placement).toMatchObject({ pet_id: petId });
     });
 
-    it('ends an in-progress placement', async () => {
+    it('ends an in-progress placement via end confirmation', async () => {
       const pool = buildMockPool();
       pool.setPlacementPending();
       const app = createApp(pool);
@@ -367,7 +378,7 @@ describe('Foster placements API', () => {
         .set('Authorization', `Bearer ${adminToken}`)
         .send({});
       expect(res.statusCode).toBe(200);
-      expect(res.body.status).toBe(PLACEMENT_STATUS_NOT_IN_FOSTER);
+      expect(res.body.session_status).toBe('end_pending_confirmation');
     });
 
     it('GET /:orgId/placements returns 403 for foster', async () => {
