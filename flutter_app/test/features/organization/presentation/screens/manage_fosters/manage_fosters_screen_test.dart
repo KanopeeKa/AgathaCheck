@@ -11,7 +11,9 @@ import '../../../../../helpers/fakes.dart';
 import '../../../helpers/organization_provider_test_helpers.dart';
 
 void main() {
-  testWidgets('Manage Fosters screen shows tabs and foster cards', (tester) async {
+  testWidgets('Manage Fosters screen shows tabs and foster cards', (
+    tester,
+  ) async {
     const parents = [
       FosterParent(
         id: 'fp-1',
@@ -60,6 +62,8 @@ class _FosterParentsRepo extends RecordingOrganizationRepository {
   final List<FosterParent> _parents;
 
   @override
-  Future<List<FosterParent>> getFosterParents(String orgId, String token) async =>
-      _parents;
+  Future<List<FosterParent>> getFosterParents(
+    String orgId,
+    String token,
+  ) async => _parents;
 }

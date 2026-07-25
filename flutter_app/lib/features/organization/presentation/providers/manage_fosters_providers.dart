@@ -1,20 +1,10 @@
 import '../../domain/entities/foster_parent.dart';
 
 /// Operational tabs for Manage Fosters (J1). Activity meaning from migration appendix §8.
-enum ManageFostersTab {
-  all,
-  newFosters,
-  fostering,
-  recentlyFostered,
-  inactive,
-}
+enum ManageFostersTab { all, newFosters, fostering, recentlyFostered, inactive }
 
 /// Approval filters — UI only until J1 Phase 2 (`approval_state` column).
-enum ManageFostersApprovalFilter {
-  underReview,
-  approved,
-  archived,
-}
+enum ManageFostersApprovalFilter { underReview, approved, archived }
 
 const _activePlacementStatuses = {
   'pending',
@@ -25,7 +15,9 @@ const _activePlacementStatuses = {
 
 bool fosterHasActivePlacement(FosterParent parent) {
   if (parent.activePetCount > 0) return true;
-  return parent.activePets.any((p) => _activePlacementStatuses.contains(p.status));
+  return parent.activePets.any(
+    (p) => _activePlacementStatuses.contains(p.status),
+  );
 }
 
 bool fosterMatchesManageFostersTab(FosterParent parent, ManageFostersTab tab) {

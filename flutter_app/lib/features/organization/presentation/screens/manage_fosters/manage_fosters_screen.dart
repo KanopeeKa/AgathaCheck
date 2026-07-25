@@ -111,13 +111,13 @@ class ManageFostersScreen extends ConsumerWidget {
                         localizedRoleLabel: localizedOrgMemberRole,
                         onTap: parent.isExternal
                             ? () => context.push(
-                                  '/o/orgs/$orgId/people/external/${parent.id}',
-                                )
+                                '/o/orgs/$orgId/people/external/${parent.id}',
+                              )
                             : parent.userId != null
-                                ? () => context.push(
-                                      '/o/orgs/$orgId/people/member/${parent.userId}',
-                                    )
-                                : null,
+                            ? () => context.push(
+                                '/o/orgs/$orgId/people/member/${parent.userId}',
+                              )
+                            : null,
                       );
                     },
                   );

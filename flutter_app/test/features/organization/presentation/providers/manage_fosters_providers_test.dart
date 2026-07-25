@@ -54,7 +54,10 @@ void main() {
         parents: parents,
         tab: ManageFostersTab.inactive,
       );
-      expect(result.map((p) => p.id), containsAll(['external-new', 'inactive-member']));
+      expect(
+        result.map((p) => p.id),
+        containsAll(['external-new', 'inactive-member']),
+      );
     });
   });
 }

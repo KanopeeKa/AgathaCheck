@@ -51,9 +51,7 @@ class FosterSummaryCard extends StatelessWidget {
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              CircleAvatar(
-                child: Text(parent.initials),
-              ),
+              CircleAvatar(child: Text(parent.initials)),
               const SizedBox(width: 12),
               Expanded(
                 child: Column(
