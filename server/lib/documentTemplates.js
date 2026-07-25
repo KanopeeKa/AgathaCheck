@@ -109,9 +109,13 @@ export async function assertKnownTemplateKey(pool, orgId, templateType, itemKey)
 }
 
 function applyChecklistItemUpdate(current, itemKey, completed) {
-  const next = { ...current, [itemKey]: completed === true };
+  const next = { ...current };
+  // itemKey is validated against org document_templates before this runs.
+  // codeql[js/remote-property-injection]: whitelist via assertKnownTemplateKey
+  next[itemKey] = completed === true;
   const timestampKey = `${itemKey}_at`;
   if (completed === true) {
+    // codeql[js/remote-property-injection]: derived from validated itemKey
     next[timestampKey] = new Date().toISOString();
   } else {
     delete next[timestampKey];
