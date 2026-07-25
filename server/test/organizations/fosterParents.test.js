@@ -120,6 +120,32 @@ describe('Organizations API', () => {
         expect(res.statusCode).toBe(400);
       });
   
+      it('PATCH /:orgId/foster-parents/:id/opt-out records outreach opt-out', async () => {
+        const res = await request(app)
+          .patch(`/api/organizations/${orgId}/foster-parents/fp-external-1/opt-out`)
+          .set('Authorization', `Bearer ${token}`)
+          .send({ opt_out: true });
+        expect(res.statusCode).toBe(200);
+        expect(res.body.opt_out_at).toBeTruthy();
+      });
+
+      it('PATCH /:orgId/foster-parents/:id/retention updates retention category', async () => {
+        const res = await request(app)
+          .patch(`/api/organizations/${orgId}/foster-parents/fp-external-1/retention`)
+          .set('Authorization', `Bearer ${token}`)
+          .send({ retention_category: 'declined_archived' });
+        expect(res.statusCode).toBe(200);
+        expect(res.body.retention_category).toBe('declined_archived');
+      });
+
+      it('PATCH /:orgId/foster-parents/:id/retention returns 400 for invalid category', async () => {
+        const res = await request(app)
+          .patch(`/api/organizations/${orgId}/foster-parents/fp-external-1/retention`)
+          .set('Authorization', `Bearer ${token}`)
+          .send({ retention_category: 'invalid' });
+        expect(res.statusCode).toBe(400);
+      });
+  
       it('POST /:orgId/foster-parents returns 400 without lawful basis confirmation', async () => {
         const res = await request(app)
           .post(`/api/organizations/${orgId}/foster-parents`)

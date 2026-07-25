@@ -12,7 +12,7 @@
 -- PostgreSQL database dump
 --
 
-\restrict mHtLkaxEF3R42LQPKBoeXIYjLv2vElm4fmE1AEqK7dtp9U2KzFoQhGqr9gjYuKk
+\restrict POLYO0b405lRu1x8xNMPVEkEzvNDLc4PZTukyBla8p5FVSzg8GhNmPJS6go5iKv
 
 -- Dumped from database version 16.14 (Ubuntu 16.14-0ubuntu0.24.04.1)
 -- Dumped by pg_dump version 16.14 (Ubuntu 16.14-0ubuntu0.24.04.1)
@@ -368,8 +368,11 @@ CREATE TABLE public.org_foster_parents (
     approval_state character varying(32) DEFAULT 'approved'::character varying NOT NULL,
     creation_source character varying(32) DEFAULT 'manual_shelter_entry'::character varying,
     foster_profile_id uuid,
+    opt_out_at timestamp with time zone,
+    retention_category text DEFAULT 'shelter_foster_relationship'::text NOT NULL,
     CONSTRAINT org_foster_parents_approval_state_check CHECK (((approval_state)::text = ANY ((ARRAY['under_review'::character varying, 'approved'::character varying, 'declined'::character varying, 'archived'::character varying])::text[]))),
-    CONSTRAINT org_foster_parents_creation_source_check CHECK (((creation_source)::text = ANY ((ARRAY['invite'::character varying, 'manual_shelter_entry'::character varying, 'member'::character varying])::text[])))
+    CONSTRAINT org_foster_parents_creation_source_check CHECK (((creation_source)::text = ANY ((ARRAY['invite'::character varying, 'manual_shelter_entry'::character varying, 'member'::character varying])::text[]))),
+    CONSTRAINT org_foster_parents_retention_category_check CHECK ((retention_category = ANY (ARRAY['shelter_foster_relationship'::text, 'declined_archived'::text, 'manual_contact'::text])))
 );
 
 
@@ -1673,5 +1676,5 @@ ALTER TABLE ONLY public.weight_entries
 -- PostgreSQL database dump complete
 --
 
-\unrestrict mHtLkaxEF3R42LQPKBoeXIYjLv2vElm4fmE1AEqK7dtp9U2KzFoQhGqr9gjYuKk
+\unrestrict POLYO0b405lRu1x8xNMPVEkEzvNDLc4PZTukyBla8p5FVSzg8GhNmPJS6go5iKv
 

@@ -7,6 +7,10 @@ import {
   findMergeSuggestionsByEmail,
   mergeManualFosterIntoUser,
 } from '../../lib/fosterProfiles.js';
+import {
+  defaultRetentionCategoryForParent,
+  registerFosterComplianceRoutes,
+} from '../../lib/fosterCompliance.js';
 import { OPEN_PLACEMENT_STATUSES } from '../../lib/fosterPlacements.js';
 import { fosterParentMemberRolesSql, normaliseRole } from '../../lib/orgRoles.js';
 import { sendTransactionalEmail } from '../../services/mailService.js';
@@ -49,6 +53,8 @@ export function registerFosterParentsRoutes(router, pool) {
         creation_source: isMember
           ? MEMBER_CREATION_SOURCE
           : (row.creation_source || 'manual_shelter_entry'),
+        opt_out_at: row.opt_out_at || null,
+        retention_category: row.retention_category || 'shelter_foster_relationship',
       };
     }
 
@@ -104,6 +110,8 @@ export function registerFosterParentsRoutes(router, pool) {
                   fp.user_id,
                   fp.foster_profile_id,
                   fp.display_name,
+                  fp.opt_out_at,
+                  fp.retention_category,
                   fp.email,
                   NULL AS photo_url,
                   NULL AS role,
@@ -210,14 +218,19 @@ export function registerFosterParentsRoutes(router, pool) {
             phone,
             fosterAddress,
           });
+          const retentionCategory = defaultRetentionCategoryForParent({
+            approvalState: 'under_review',
+            creationSource: 'manual_shelter_entry',
+            userId: null,
+          });
           const result = await client.query(
             `INSERT INTO org_foster_parents (
                id, organization_id, display_name, email, phone, foster_address, notes,
                lawful_basis_attested_at, lawful_basis_attested_by,
-               approval_state, creation_source, foster_profile_id
-             ) VALUES ($1, $2, $3, $4, $5, $6, $7, NOW(), $8, 'under_review', 'manual_shelter_entry', $9)
+               approval_state, creation_source, foster_profile_id, retention_category
+             ) VALUES ($1, $2, $3, $4, $5, $6, $7, NOW(), $8, 'under_review', 'manual_shelter_entry', $9, $10)
              RETURNING *`,
-            [id, orgId, displayName, email, phone, fosterAddress, notes, userId, fosterProfileId],
+            [id, orgId, displayName, email, phone, fosterAddress, notes, userId, fosterProfileId, retentionCategory],
           );
           row = result.rows[0];
           await client.query('COMMIT');
@@ -282,7 +295,12 @@ export function registerFosterParentsRoutes(router, pool) {
 
         const result = await pool.query(
           `UPDATE org_foster_parents
-           SET approval_state = $1, updated_at = NOW()
+           SET approval_state = $1,
+               retention_category = CASE
+                 WHEN $1 IN ('declined', 'archived') THEN 'declined_archived'
+                 ELSE retention_category
+               END,
+               updated_at = NOW()
            WHERE id = $2 AND organization_id = $3
            RETURNING *`,
           [approvalState, fosterParentId, orgId],
@@ -321,6 +339,15 @@ export function registerFosterParentsRoutes(router, pool) {
       } catch (err) {
         res.status(500).json({ error: publicError(err) });
       }
+    });
+
+    registerFosterComplianceRoutes(router, {
+      pool,
+      extractUserId,
+      requireOrgAdmin,
+      logAuditEventSafe,
+      fosterParentToMap,
+      publicError,
     });
 
     router.post('/:orgId/foster-parents/:id/merge', async (req, res) => {
