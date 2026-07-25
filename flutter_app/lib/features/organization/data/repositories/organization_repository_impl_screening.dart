@@ -1,4 +1,3 @@
-import '../../domain/repositories/organization_repository.dart';
 import 'organization_repository_impl_base.dart';
 
 mixin OrganizationRepositoryScreeningMixin on OrganizationRepositoryImplBase {
