@@ -314,7 +314,8 @@ workflows) or `uat-*` tag push when the tag was created outside Actions.
 
 **Deploy cadence (default 90 minutes):** `promote-uat.yml` skips tag creation when a
 UAT deploy job started within `UAT_DEPLOY_MIN_INTERVAL_MINUTES` (repo variable, default
-`90`). Block reason: `uat_deploy_cadence`. Merges during the window batch onto the next
+`90`). Block reasons: `uat_deploy_cadence` (interval not elapsed) or
+`uat_deploy_in_progress` (deploy job still running). Merges during the window batch onto the next
 deploy — **UAT promote catch-up** (`.github/workflows/uat-promote-catchup.yml`) runs
 every 30 minutes and promotes `main` HEAD once the interval elapses. Disable with
 `UAT_DEPLOY_CADENCE_ENABLED=false`; emergency bypass: `UAT_DEPLOY_CADENCE_FORCE=true`

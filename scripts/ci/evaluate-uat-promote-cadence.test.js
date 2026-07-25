@@ -5,6 +5,7 @@ const test = require('node:test');
 const assert = require('node:assert/strict');
 const {
   evaluateDeployCadence,
+  normalizeIntervalMinutes,
   parseIsoMs,
   resolveCadenceConfig,
 } = require('../lib/uat_deploy_cadence');
@@ -63,6 +64,22 @@ test('resolveCadenceConfig defaults to 90 minutes', () => {
   assert.equal(config.minIntervalMinutes, 90);
   assert.equal(config.enabled, true);
   assert.equal(config.forceRun, false);
+});
+
+test('normalizeIntervalMinutes rejects invalid values', () => {
+  assert.equal(normalizeIntervalMinutes('bad'), 90);
+  assert.equal(normalizeIntervalMinutes(120), 120);
+});
+
+test('evaluateDeployCadence keeps waitMinutes finite when cadence active', () => {
+  const decision = evaluateDeployCadence({
+    lastDeployStartedAt: '2026-07-25T12:00:00Z',
+    nowMs: Date.parse('2026-07-25T13:00:00Z'),
+    minIntervalMinutes: 'not-a-number',
+  });
+  assert.equal(decision.status, 'blocked');
+  assert.equal(decision.minIntervalMinutes, 90);
+  assert.ok(Number.isFinite(decision.waitMinutes));
 });
 
 test('resolveCadenceConfig honors disable and force flags', () => {

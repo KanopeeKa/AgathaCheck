@@ -38,6 +38,10 @@ jobs:
           ref: main
           fetch-depth: 1
 
+      - name: Resolve main HEAD SHA
+        id: main_head
+        run: echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+
       - uses: actions/setup-node@v5
         with:
           node-version: '22'
@@ -45,7 +49,7 @@ jobs:
       - name: Resolve associated pull request for main HEAD
         id: resolve
         env:
-          COMMIT_SHA: ${{ github.sha }}
+          COMMIT_SHA: ${{ steps.main_head.outputs.sha }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: bash scripts/ci/resolve-merge-pr.sh
 
@@ -55,7 +59,7 @@ jobs:
           bash scripts/ci/append-summary.sh "UAT promote catch-up — resolve PR" \
             "workflow=uat-promote-catchup" \
             "job=resolve-pr" \
-            "commit_sha=${{ github.sha }}" \
+            "commit_sha=${{ steps.main_head.outputs.sha }}" \
             "pr_number=${{ steps.resolve.outputs.pr_number || 'n/a' }}" \
             "promotion_status=${{ steps.resolve.outputs.promotion_status || 'blocked' }}" \
             "promotion_block_reason=${{ steps.resolve.outputs.promotion_block_reason || 'n/a' }}" \
@@ -144,17 +148,22 @@ jobs:
       uat_tag: ${{ steps.promote.outputs.uat_tag }}
       promotion_status: ${{ steps.promote.outputs.promotion_status }}
       already_promoted: ${{ steps.promote.outputs.already_promoted }}
+      main_head_sha: ${{ steps.main_head.outputs.sha }}
     steps:
       - uses: actions/checkout@v5
         with:
           ref: main
           fetch-depth: 1
 
+      - name: Resolve main HEAD SHA
+        id: main_head
+        run: echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+
       - name: Create or verify UAT tag
         id: promote
         env:
           PR_NUMBER: ${{ needs.resolve-pr.outputs.pr_number }}
-          COMMIT_SHA: ${{ github.sha }}
+          COMMIT_SHA: ${{ steps.main_head.outputs.sha }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: bash scripts/ci/promote-uat-tag.sh
 
@@ -164,7 +173,7 @@ jobs:
           bash scripts/ci/append-summary.sh "UAT promote catch-up — tag" \
             "workflow=uat-promote-catchup" \
             "job=promote-tag" \
-            "commit_sha=${{ github.sha }}" \
+            "commit_sha=${{ steps.main_head.outputs.sha }}" \
             "pr_number=${{ needs.resolve-pr.outputs.pr_number }}" \
             "uat_tag=${{ steps.promote.outputs.uat_tag || 'n/a' }}" \
             "promotion_status=${{ steps.promote.outputs.promotion_status || 'skipped' }}" \

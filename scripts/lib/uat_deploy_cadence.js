@@ -24,6 +24,22 @@ function parseIsoMs(iso) {
  * @param {boolean} opts.enabled
  * @param {boolean} opts.forceRun
  */
+function normalizeIntervalMinutes(minIntervalMinutes, fallback = 90) {
+  const parsed = Number(minIntervalMinutes);
+  if (!Number.isFinite(parsed) || parsed <= 0) {
+    return fallback;
+  }
+  return parsed;
+}
+
+function normalizeNowMs(nowMs) {
+  const parsed = Number(nowMs);
+  if (!Number.isFinite(parsed) || parsed <= 0) {
+    return Date.now();
+  }
+  return parsed;
+}
+
 function evaluateDeployCadence({
   lastDeployStartedAt,
   deployInProgress = false,
@@ -32,7 +48,8 @@ function evaluateDeployCadence({
   enabled = true,
   forceRun = false,
 }) {
-  const intervalMinutes = Number(minIntervalMinutes);
+  const intervalMinutes = normalizeIntervalMinutes(minIntervalMinutes);
+  const effectiveNowMs = normalizeNowMs(nowMs);
   const minMs = intervalMinutes * 60 * 1000;
 
   if (!enabled) {
@@ -91,7 +108,7 @@ function evaluateDeployCadence({
     };
   }
 
-  const elapsedMs = Math.max(0, nowMs - startedMs);
+  const elapsedMs = Math.max(0, effectiveNowMs - startedMs);
   const minutesSinceLast = Math.floor(elapsedMs / 60_000);
 
   if (elapsedMs >= minMs) {
@@ -116,9 +133,26 @@ function evaluateDeployCadence({
   };
 }
 
+async function findDeployUatWorkflow(owner, repo, token, { perPage = 100, maxPages = 5 } = {}) {
+  for (let page = 1; page <= maxPages; page += 1) {
+    const data = await rest(
+      'GET',
+      `/repos/${owner}/${repo}/actions/workflows?per_page=${perPage}&page=${page}`,
+      token,
+    );
+    const workflow = (data.workflows || []).find((w) => w.path === DEPLOY_UAT_WORKFLOW_PATH);
+    if (workflow) {
+      return workflow;
+    }
+    if ((data.workflows || []).length < perPage) {
+      break;
+    }
+  }
+  return null;
+}
+
 async function listDeployUatRuns(owner, repo, token, { perPage = 20, maxPages = 3 } = {}) {
-  const workflows = await rest('GET', `/repos/${owner}/${repo}/actions/workflows`, token);
-  const workflow = (workflows.workflows || []).find((w) => w.path === DEPLOY_UAT_WORKFLOW_PATH);
+  const workflow = await findDeployUatWorkflow(owner, repo, token);
   if (!workflow) {
     return [];
   }
@@ -179,8 +213,11 @@ module.exports = {
   DEPLOY_JOB_NAME,
   DEPLOY_UAT_WORKFLOW_PATH,
   evaluateDeployCadence,
+  findDeployUatWorkflow,
   findLastUatDeployJob,
   listDeployUatRuns,
+  normalizeIntervalMinutes,
+  normalizeNowMs,
   parseIsoMs,
   resolveCadenceConfig,
 };
