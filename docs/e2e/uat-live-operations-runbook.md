@@ -191,7 +191,7 @@ Localhost CI: `E2E=1` disables auth + general API rate limits — bypass not nee
 | Migration runner | `server/scripts/migrate.js` |
 | Migration SQL | `db/migrations/` |
 | Token normalization | `e2e/playwright/support/normalize-stored-token.ts` |
-| Live WAF / API access | `e2e/playwright/support/waf.ts`, `waf-markers.ts` |
+| Live WAF / API access | `e2e/playwright/support/waf.ts`, `e2e/playwright/support/waf-markers.ts` |
 | WAF + queue lessons (Jul 2026) | `docs/e2e/uat-waf-queue-lessons.md` |
 | Auth fixture | `e2e/playwright/fixtures/auth.fixture.ts` |
 | Pet list remount helper | `e2e/playwright/pages/pet-list.page.ts` (`refreshByRemount`) |

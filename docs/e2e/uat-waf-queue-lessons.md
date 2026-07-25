@@ -49,7 +49,7 @@ Tiger Protect scrutinizes **signup/login** more than health. A green health prob
 1. `GET /backend/health` → JSON `{"status":"OK"}`
 2. `POST /backend/api/auth/signup` with `{}` → JSON **4xx** validation error (not WAF HTML)
 
-Helpers: `e2e/playwright/support/waf.ts`, `waf-markers.ts` (`authSignupProbeReachable`).
+Helpers: `e2e/playwright/support/waf.ts`, `e2e/playwright/support/waf-markers.ts` (`authSignupProbeReachable`).
 
 **Anti-pattern:** Marking `sessionWafCleared = true` when only health returns OK — causes `createTestUser` to hammer a still-blocked signup API, then UI signup stalls on `#/landing`.
 
