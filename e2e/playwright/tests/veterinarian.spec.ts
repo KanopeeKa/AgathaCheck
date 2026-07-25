@@ -154,6 +154,7 @@ test.describe('Veterinarian management', () => {
     await vetList.expectLoaded();
     await vetList.clickDeleteVet('Dr. Smith');
     await vetList.cancelDeletion();
+    await vetList.backToListFromEdit();
 
     await vetList.expectVetVisible('Dr. Smith');
 

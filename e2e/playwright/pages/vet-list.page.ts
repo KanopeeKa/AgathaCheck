@@ -79,7 +79,16 @@ export class VetListPage {
 
   async cancelDeletion(): Promise<void> {
     await this.page.getByRole('button', { name: 'Cancel' }).click();
-    await this.page.waitForTimeout(500);
+    // Dialog dismissed — should still be on the edit form
+    await this.page.getByRole('button', { name: /Delete Vet/i }).waitFor({ timeout: 15_000 });
+    await refreshFlutterAccessibility(this.page);
+  }
+
+  /** Vet delete cancel leaves the edit form open — return to the list before assertions. */
+  async backToListFromEdit(): Promise<void> {
+    await this.page.getByRole('button', { name: /back to veterinarians/i }).click();
+    await refreshFlutterAccessibility(this.page);
+    await this.expectLoaded();
   }
 
   async goBack(): Promise<void> {

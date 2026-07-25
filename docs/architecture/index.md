@@ -157,4 +157,4 @@ Full conventions: `docs/architecture/modularity.md`.
 | Before push | `/pre-push-verify` skill or `./scripts/pre-push-changed.sh` |
 | UI review / theme rework | `docs/design/index.md` · `/ui-check` · `/ui-design-deep` · `docs/design/ui-rework-plan.md` |
 | Security audit | `/security-error-audit` skill |
-| UAT deploy / live smoke red | `docs/e2e/uat-live-operations-runbook.md` · `.agents/memory/uat-live-e2e-triage.md` |
+| UAT deploy / live smoke red | `docs/e2e/uat-live-operations-runbook.md` · `docs/e2e/uat-waf-queue-lessons.md` · `.agents/memory/uat-live-e2e-triage.md` |
