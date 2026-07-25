@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "plan_id": "uat-queue-pr-fallback-2936",
+  "approved_at": "2026-07-25T16:20:00Z",
+  "approved_by": "user-request",
+  "approved_until": "2026-07-27T16:20:00Z",
+  "content_hash": "sha256:7fc498d754b29f6c577e3b63c7577a3cbc9f16ed0d30841b6cea5c8b03e50269",
+  "autonomy": "active",
+  "default_merge_mode": "auto",
+  "base_branch": "main",
+  "control_issue": 363,
+  "artifact_branch_policy": "phase-branch",
+  "phases": [
+    {
+      "id": "1",
+      "title": "PR-keyed enqueue fallback + #313 backfill",
+      "branch": "cursor/uat-queue-pr-fallback-2936",
+      "allowed_paths": [
+        ".github/scripts/issue-agent-handlers.js",
+        ".github/scripts/issue-agent-handlers.test.js",
+        "scripts/lib/uat_queue_apply.js",
+        "scripts/lib/uat_queue_lib.js",
+        "scripts/lib/uat_deploy_run_resolve.js",
+        "scripts/uat_deploy_run_resolve.test.js",
+        "scripts/uat_queue_apply.test.js"
+      ],
+      "forbidden_paths": [
+        "flutter_app/**",
+        "server/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_mode": "auto",
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": null,
+      "pr_head_sha": null
+    }
+  ]
+}
