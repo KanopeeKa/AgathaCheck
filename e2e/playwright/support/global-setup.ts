@@ -6,9 +6,6 @@ import { isLiveHostingTarget } from './hosting';
 const WAF_MARKERS = ['o2s-browser-check', 'Security check', 'Test de sécurité'];
 const HEALTH_OK_MARKER = '"status":"OK"';
 const PREFLIGHT_TIMEOUT_MS = 15_000;
-/** Match scripts/uat-post-deploy-smoke.sh — Tiger Protect can challenge fresh runner IPs. */
-const WAF_RETRY_ATTEMPTS = 18;
-const WAF_RETRY_SLEEP_MS = 10_000;
 const CONFIG_ERROR =
   'UAT pre-flight config error: E2E_BASE_URL (or UAT_BASE_URL fallback) is missing or malformed.';
 
@@ -129,46 +126,26 @@ export default async function globalSetup(): Promise<void> {
   const baseURL = resolveLiveBaseUrl();
   const healthURL = `${baseURL}/backend/health`;
   const started = Date.now();
-  let wafStreak = 0;
-  let sawWafChallenge = false;
 
   try {
-    for (let attempt = 1; attempt <= WAF_RETRY_ATTEMPTS; attempt += 1) {
-      const response = await fetch(healthURL, {
-        signal: AbortSignal.timeout(PREFLIGHT_TIMEOUT_MS),
-      });
-      const body = await response.text();
+    const response = await fetch(healthURL, {
+      signal: AbortSignal.timeout(PREFLIGHT_TIMEOUT_MS),
+    });
+    const body = await response.text();
 
-      if (bodyShowsWafChallenge(body)) {
-        sawWafChallenge = true;
-        wafStreak += 1;
-        if (attempt < WAF_RETRY_ATTEMPTS) {
-          console.log(
-            `UAT pre-flight WAF challenge (${wafStreak} streak, attempt ${attempt}/${WAF_RETRY_ATTEMPTS}), retrying in ${WAF_RETRY_SLEEP_MS / 1000}s...`,
-          );
-          await new Promise((resolve) => setTimeout(resolve, WAF_RETRY_SLEEP_MS));
-          continue;
-        }
-        writeWafDeferralSummary(attempt, Date.now() - started);
-        return;
-      }
-
-      wafStreak = 0;
-
-      if (response.status !== 200 || !body.includes(HEALTH_OK_MARKER)) {
-        throw new Error(
-          `UAT pre-flight failed [${response.status}]: ${bodySnippet(body)}`,
-        );
-      }
-
-      writeSuccessSummary(Date.now() - started);
+    if (bodyShowsWafChallenge(body)) {
+      // Node fetch cannot solve o2switch JS challenges (#332) — defer to browser warmup.
+      writeWafDeferralSummary(1, Date.now() - started);
       return;
     }
 
-    if (sawWafChallenge) {
-      writeWafDeferralSummary(WAF_RETRY_ATTEMPTS, Date.now() - started);
-      return;
+    if (response.status !== 200 || !body.includes(HEALTH_OK_MARKER)) {
+      throw new Error(
+        `UAT pre-flight failed [${response.status}]: ${bodySnippet(body)}`,
+      );
     }
+
+    writeSuccessSummary(Date.now() - started);
   } catch (err) {
     if (err instanceof Error && err.message.startsWith('UAT pre-flight')) {
       throw err;
