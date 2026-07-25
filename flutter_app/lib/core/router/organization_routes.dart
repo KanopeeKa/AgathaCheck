@@ -9,6 +9,7 @@ import '../../features/organization/presentation/screens/archived_pets_screen.da
 import '../../features/organization/presentation/screens/organization_detail_screen.dart';
 import '../../features/organization/presentation/screens/organization_form_screen.dart';
 import '../../features/organization/presentation/screens/organization_list_screen.dart';
+import '../../features/organization/presentation/screens/fostering_session/fostering_session_detail_screen.dart';
 import '../../features/organization/presentation/screens/manage_fosters/manage_fosters_screen.dart';
 import '../../features/organization/presentation/screens/organization_members_screen.dart';
 import '../../features/organization/presentation/screens/organization_person_detail_screen.dart';
@@ -104,6 +105,18 @@ List<RouteBase> _orgManagementChildRoutes() {
           builder: (context, state) {
             final id = state.pathParameters['id']!;
             return OrganizationPetsScreen(orgId: id);
+          },
+        ),
+        GoRoute(
+          path: 'placements/:placementId/session',
+          name: 'fosteringSessionDetail',
+          builder: (context, state) {
+            final id = state.pathParameters['id']!;
+            final placementId = state.pathParameters['placementId']!;
+            return FosteringSessionDetailScreen(
+              orgId: id,
+              placementId: placementId,
+            );
           },
         ),
         GoRoute(

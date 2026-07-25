@@ -15,6 +15,7 @@ class FosterPlacementActiveContent extends StatelessWidget {
     required this.onEnd,
     required this.onCompleteConditions,
     required this.onCancelAdoption,
+    this.sessionAction,
   });
 
   final AppLocalizations l;
@@ -24,12 +25,14 @@ class FosterPlacementActiveContent extends StatelessWidget {
   final VoidCallback onEnd;
   final VoidCallback onCompleteConditions;
   final VoidCallback onCancelAdoption;
+  final Widget? sessionAction;
 
   @override
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        if (sessionAction != null) ...[sessionAction!, const SizedBox(height: 8)],
         if (placement.startDate != null) ...[
           Text(
             l.fosterPlacementStartDate(

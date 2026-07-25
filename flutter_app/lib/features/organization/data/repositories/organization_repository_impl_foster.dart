@@ -319,4 +319,90 @@ mixin OrganizationRepositoryFosterMixin on OrganizationRepositoryImplBase {
     final rows = await dataSource.getPetFosterHistory(orgId, petId, token);
     return rows.map(FosterPlacement.fromJson).toList();
   }
+
+  @override
+  Future<FosterPlacement> getPlacementDetail(
+    String orgId,
+    String placementId,
+    String token,
+  ) async {
+    final row = await dataSource.getPlacementDetail(orgId, placementId, token);
+    return FosterPlacement.fromJson(row);
+  }
+
+  @override
+  Future<FosterPlacement> transitionFosteringSession(
+    String orgId,
+    String placementId, {
+    required String sessionStatus,
+    required String token,
+  }) async {
+    final row = await dataSource.transitionFosteringSession(
+      orgId,
+      placementId,
+      sessionStatus: sessionStatus,
+      token: token,
+    );
+    return FosterPlacement.fromJson(row);
+  }
+
+  @override
+  Future<FosterPlacement> confirmShelterSessionStart(
+    String orgId,
+    String placementId, {
+    required String token,
+  }) async {
+    final row = await dataSource.confirmShelterSessionStart(
+      orgId,
+      placementId,
+      token: token,
+    );
+    return FosterPlacement.fromJson(row);
+  }
+
+  @override
+  Future<FosterPlacement> confirmFosterSessionStart(
+    String orgId,
+    String placementId, {
+    required String token,
+  }) async {
+    final row = await dataSource.confirmFosterSessionStart(
+      orgId,
+      placementId,
+      token: token,
+    );
+    return FosterPlacement.fromJson(row);
+  }
+
+  @override
+  Future<FosterPlacement> requestFosteringSessionEnd(
+    String orgId,
+    String placementId, {
+    required String token,
+  }) async {
+    final row = await dataSource.requestFosteringSessionEnd(
+      orgId,
+      placementId,
+      token: token,
+    );
+    return FosterPlacement.fromJson(row);
+  }
+
+  @override
+  Future<FosterPlacement> endFosteringSession(
+    String orgId,
+    String placementId, {
+    required String outcome,
+    DateTime? endDate,
+    required String token,
+  }) async {
+    final row = await dataSource.endFosteringSession(
+      orgId,
+      placementId,
+      outcome: outcome,
+      endDate: endDate != null ? toCalendarDateString(endDate) : null,
+      token: token,
+    );
+    return FosterPlacement.fromJson(row);
+  }
 }

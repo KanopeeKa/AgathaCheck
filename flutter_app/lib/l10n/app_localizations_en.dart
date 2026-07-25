@@ -2268,6 +2268,135 @@ class AppLocalizationsEn extends AppLocalizations {
   String get fosterPlacementDeclined => 'Foster placement declined';
 
   @override
+  String get fosteringSessionDetailTitle => 'Fostering session';
+
+  @override
+  String get fosteringSessionManage => 'Manage fostering session';
+
+  @override
+  String get fosteringSessionStatusPendingAcceptance => 'Pending acceptance';
+
+  @override
+  String get fosteringSessionStatusPreparation => 'Preparation';
+
+  @override
+  String get fosteringSessionStatusReadyToStart => 'Ready to start';
+
+  @override
+  String get fosteringSessionStatusActive => 'Active';
+
+  @override
+  String get fosteringSessionStatusEndPending => 'End pending confirmation';
+
+  @override
+  String get fosteringSessionStatusAdoptionInProgress => 'Adoption in progress';
+
+  @override
+  String get fosteringSessionStatusReturned => 'Returned to shelter';
+
+  @override
+  String get fosteringSessionStatusTransferred => 'Transferred';
+
+  @override
+  String get fosteringSessionStatusConvertedToAdoption =>
+      'Converted to adoption';
+
+  @override
+  String get fosteringSessionStatusCancelled => 'Cancelled';
+
+  @override
+  String get fosteringSessionPreparationTitle => 'Preparation checklist';
+
+  @override
+  String get fosteringSessionPreparationPlaceholder =>
+      'Track shelter preparation steps before handover. Full checklist tracking arrives in a later release.';
+
+  @override
+  String get fosteringSessionChecklistSupplies =>
+      'Confirm supplies and equipment are ready';
+
+  @override
+  String get fosteringSessionChecklistMedical =>
+      'Review medical records and medications';
+
+  @override
+  String get fosteringSessionChecklistTransport =>
+      'Arrange transport to the foster home';
+
+  @override
+  String get fosteringSessionChecklistHandover =>
+      'Schedule handover with the foster family';
+
+  @override
+  String get fosteringSessionDualStartTitle => 'Dual-start confirmation';
+
+  @override
+  String get fosteringSessionShelterStartLabel => 'Shelter confirms handover';
+
+  @override
+  String get fosteringSessionFosterStartLabel => 'Foster confirms pickup';
+
+  @override
+  String get fosteringSessionAwaitingConfirmation => 'Awaiting confirmation';
+
+  @override
+  String fosteringSessionConfirmedAt(String timestamp) {
+    return 'Confirmed $timestamp';
+  }
+
+  @override
+  String get fosteringSessionStartPreparation => 'Start preparation';
+
+  @override
+  String get fosteringSessionMarkReady => 'Mark ready to start';
+
+  @override
+  String get fosteringSessionConfirmShelterStart => 'Confirm shelter handover';
+
+  @override
+  String get fosteringSessionConfirmFosterStart => 'Confirm foster pickup';
+
+  @override
+  String get fosteringSessionRequestEnd => 'Request end of session';
+
+  @override
+  String get fosteringSessionEndReturned => 'Confirm return to shelter';
+
+  @override
+  String get fosteringSessionEndCancelled => 'Cancel session';
+
+  @override
+  String get fosteringSessionTransitionSuccess => 'Session updated';
+
+  @override
+  String get fosteringSessionShelterStartSuccess =>
+      'Shelter handover confirmed';
+
+  @override
+  String get fosteringSessionFosterStartSuccess => 'Foster pickup confirmed';
+
+  @override
+  String get fosteringSessionRequestEndSuccess => 'End confirmation requested';
+
+  @override
+  String get fosteringSessionEndSuccess => 'Fostering session ended';
+
+  @override
+  String get fosteringSessionEndPendingDescription =>
+      'The foster period is ending. Confirm how the pet returns to shelter custody.';
+
+  @override
+  String get fosteringSessionEndConfirmTitle => 'End fostering session?';
+
+  @override
+  String get fosteringSessionEndConfirmReturned =>
+      'Confirm the pet has returned to shelter custody and close this session.';
+
+  @override
+  String get fosteringSessionEndConfirmCancelled =>
+      'Cancel this fostering session without marking a return handover.';
+
+  @override
   String get startAdoption => 'Start adoption';
 
   @override
