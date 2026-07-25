@@ -51,6 +51,16 @@ After **~24 hours** of continuous work on the same plan (or approaching pod/sess
 
 Orchestrator owns: gate, runtime sync, babysit+, merge, UAT enqueue, next phase.
 
+## Roadmap chaining (multi-plan grants)
+
+When the standing grant names scope beyond the current `plan_id` ("entire plan/roadmap," "all phases," or explicit `/spawn-sprint-agents` for a wave), plan completion is **not** session completion:
+
+- Auto-bootstrap the next slice's plan + snapshot and keep looping — do not close the turn with "let me know" / "whenever you want" / "say which wave and I'll bootstrap it." Those are soft-stops, not different from asking permission.
+- Re-check for independent waves before slicing sequentially; use `/spawn-sprint-agents` when the human named it or you identify disjoint `allowed_paths`.
+- Keep control-issue auditability per plan even when self-authorizing from a standing chat grant.
+
+Full detail: `.cursor/skills/execute-plan/SKILL.md` §Roadmap chaining.
+
 ## Integration branch (2+ phases)
 
 For multi-phase plans (especially UI / same product area): set snapshot `base_branch` to `cursor/<plan_id>-integration-<suffix>`. Phase PRs target integration; **one final PR** integration → `main` after all phases merged. Reduces repeated merges to `main` during the sprint.
