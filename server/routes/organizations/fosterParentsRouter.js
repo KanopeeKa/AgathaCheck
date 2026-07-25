@@ -275,9 +275,9 @@ export function registerFosterParentsRoutes(router, pool) {
 
         const result = await pool.query(
           `UPDATE org_foster_parents
-           SET approval_state = $1,
+           SET approval_state = $1::text,
                retention_category = CASE
-                 WHEN $1 IN ('declined', 'archived') THEN 'declined_archived'
+                 WHEN $1::text IN ('declined', 'archived') THEN 'declined_archived'
                  ELSE retention_category
                END,
                updated_at = NOW()

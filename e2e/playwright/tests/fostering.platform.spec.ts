@@ -8,7 +8,7 @@ import { test, expect } from '../fixtures/auth.fixture';
 import {
   acceptFosterPlacement,
   addManualFoster,
-  approveFosterParentDirect,
+  approveFosterParent,
   createAdoptionVisit,
   createOrgPet,
   createViewToAdoptSession,
@@ -35,7 +35,7 @@ test.describe('Fostering platform journeys', () => {
       displayName: 'Bob Capacity',
       email: `bob-cap-${Date.now()}@example.com`,
     });
-    await approveFosterParentDirect(eligibleBob.id);
+    await approveFosterParent(baseURL(), alice.accessToken, org.id, eligibleBob.id);
     if (eligibleBob.foster_profile_id) {
       await setFosterCapacity(eligibleBob.foster_profile_id, [
         { species: 'dog', declared: 2 },
@@ -46,7 +46,7 @@ test.describe('Fostering platform journeys', () => {
       displayName: 'Carol Zero',
       email: `carol-zero-${Date.now()}@example.com`,
     });
-    await approveFosterParentDirect(blockedCarol.id);
+    await approveFosterParent(baseURL(), alice.accessToken, org.id, blockedCarol.id);
     if (blockedCarol.foster_profile_id) {
       await setFosterCapacity(blockedCarol.foster_profile_id, [
         { species: 'dog', declared: 0 },

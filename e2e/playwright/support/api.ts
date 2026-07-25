@@ -1831,20 +1831,6 @@ export async function approveFosterParent(
   return res.json();
 }
 
-/** Local E2E fallback when approval PATCH hits a DB type edge case. */
-export async function approveFosterParentDirect(fosterParentId: string): Promise<void> {
-  const { execSync } = await import('node:child_process');
-  const host = process.env.PGHOST ?? 'localhost';
-  const port = process.env.PGPORT ?? '5432';
-  const user = process.env.PGUSER ?? 'user';
-  const password = process.env.PGPASSWORD ?? 'password';
-  const database = process.env.PGDATABASE ?? 'agatha_db';
-  execSync(
-    `PGPASSWORD='${password}' psql -h '${host}' -p '${port}' -U '${user}' -d '${database}' -c "UPDATE org_foster_parents SET approval_state = 'approved' WHERE id = '${fosterParentId}'"`,
-    { stdio: 'pipe' },
-  );
-}
-
 export async function getFosterParents(
   baseURL: string,
   token: string,
