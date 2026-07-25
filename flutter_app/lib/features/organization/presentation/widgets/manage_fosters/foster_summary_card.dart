@@ -8,6 +8,7 @@ import '../../providers/manage_fosters_providers.dart';
 import '../../providers/organization_providers.dart';
 import '../../screens/manage_fosters/manage_fosters_screen.dart';
 import '../organization_add_foster_parent_dialog.dart';
+import 'foster_merge_dialog.dart';
 
 class FosterSummaryCard extends ConsumerWidget {
   const FosterSummaryCard({
@@ -50,9 +51,15 @@ class FosterSummaryCard extends ConsumerWidget {
           label: Text(localizedFosterApprovalState(l, parent.approvalState)),
           visualDensity: VisualDensity.compact,
         ),
+      if (parent.isExternal && parent.isLinkedToRegisteredAccount)
+        Chip(
+          key: Key('foster_linked_chip_${parent.id}'),
+          label: Text(l.manageFostersLinkedAccount),
+          visualDensity: VisualDensity.compact,
+        ),
       if (activityLabel != null)
         Chip(label: Text(activityLabel), visualDensity: VisualDensity.compact),
-      if (parent.isExternal) _ApprovalActions(parent: parent, orgId: orgId),
+      if (parent.isExternal) _FosterActions(parent: parent, orgId: orgId),
     ];
 
     return Card(
@@ -104,8 +111,8 @@ class FosterSummaryCard extends ConsumerWidget {
   }
 }
 
-class _ApprovalActions extends ConsumerWidget {
-  const _ApprovalActions({required this.parent, required this.orgId});
+class _FosterActions extends ConsumerWidget {
+  const _FosterActions({required this.parent, required this.orgId});
 
   final FosterParent parent;
   final String orgId;
@@ -113,31 +120,41 @@ class _ApprovalActions extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l = AppLocalizations.of(context)!;
-    final items = <PopupMenuEntry<FosterApprovalState>>[];
+    final items = <PopupMenuEntry<String>>[];
+    final mergeAvailable = parent.canMergeIntoRegisteredAccount;
+
+    if (mergeAvailable) {
+      items.add(
+        PopupMenuItem(
+          value: 'merge',
+          child: Text(l.manageFostersMergeIntoAccount),
+        ),
+      );
+    }
 
     switch (parent.approvalState) {
       case FosterApprovalState.underReview:
         items.addAll([
           PopupMenuItem(
-            value: FosterApprovalState.approved,
+            value: 'approve',
             child: Text(l.manageFostersApprovalApprove),
           ),
           PopupMenuItem(
-            value: FosterApprovalState.declined,
+            value: 'decline',
             child: Text(l.manageFostersApprovalDecline),
           ),
         ]);
       case FosterApprovalState.approved:
         items.add(
           PopupMenuItem(
-            value: FosterApprovalState.archived,
+            value: 'archive',
             child: Text(l.manageFostersApprovalArchive),
           ),
         );
       case FosterApprovalState.declined:
         items.add(
           PopupMenuItem(
-            value: FosterApprovalState.approved,
+            value: 'approve',
             child: Text(l.manageFostersApprovalApprove),
           ),
         );
@@ -147,13 +164,31 @@ class _ApprovalActions extends ConsumerWidget {
 
     if (items.isEmpty) return const SizedBox.shrink();
 
-    return PopupMenuButton<FosterApprovalState>(
-      key: Key('foster_approval_menu_${parent.id}'),
+    return PopupMenuButton<String>(
+      key: Key('foster_actions_menu_${parent.id}'),
       icon: const Icon(Icons.more_vert),
-      onSelected: (state) async {
-        await ref
-            .read(orgFosterParentsProvider(orgId).notifier)
-            .updateApproval(parent.id, state);
+      onSelected: (action) async {
+        switch (action) {
+          case 'merge':
+            await showFosterMergeDialog(
+              context: context,
+              ref: ref,
+              orgId: orgId,
+              parent: parent,
+            );
+          case 'approve':
+            await ref
+                .read(orgFosterParentsProvider(orgId).notifier)
+                .updateApproval(parent.id, FosterApprovalState.approved);
+          case 'decline':
+            await ref
+                .read(orgFosterParentsProvider(orgId).notifier)
+                .updateApproval(parent.id, FosterApprovalState.declined);
+          case 'archive':
+            await ref
+                .read(orgFosterParentsProvider(orgId).notifier)
+                .updateApproval(parent.id, FosterApprovalState.archived);
+        }
       },
       itemBuilder: (context) => items,
     );

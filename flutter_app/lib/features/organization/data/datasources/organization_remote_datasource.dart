@@ -266,6 +266,24 @@ class OrganizationRemoteDataSource {
     token,
   );
 
+  Future<List<Map<String, dynamic>>> getFosterMergeSuggestions(
+    String orgId,
+    String email,
+    String token,
+  ) => _fosterParents.getFosterMergeSuggestions(orgId, email, token);
+
+  Future<Map<String, dynamic>> mergeManualFoster(
+    String orgId,
+    String fosterParentId, {
+    required String targetUserId,
+    required String token,
+  }) => _fosterParents.mergeManualFoster(
+    orgId,
+    fosterParentId,
+    targetUserId: targetUserId,
+    token: token,
+  );
+
   Future<Map<String, dynamic>> getPetPlacement(
     String orgId,
     String petId,

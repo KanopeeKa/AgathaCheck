@@ -152,6 +152,17 @@ abstract class OrganizationRepository {
     FosterApprovalState approvalState, {
     required String token,
   });
+  Future<List<FosterMergeSuggestion>> getFosterMergeSuggestions(
+    String orgId,
+    String email, {
+    required String token,
+  });
+  Future<FosterParent> mergeManualFoster(
+    String orgId,
+    String fosterParentId, {
+    required String targetUserId,
+    required String token,
+  });
 
   Future<PetFosterPlacementState> getPetPlacement(
     String orgId,
