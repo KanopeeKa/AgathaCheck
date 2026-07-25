@@ -1,4 +1,4 @@
-import 'package:pdf/pdf.dart';
+import '../../../../core/theme/pdf_report_tokens.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:intl/intl.dart';
 import '../../../../l10n/app_localizations.dart';
@@ -7,10 +7,6 @@ import '../../../vet/domain/entities/vet.dart';
 import '../../../weight_tracking/domain/entities/weight_entry.dart';
 
 class PetProfileSectionBuilder {
-  static const _borderColor = PdfColor.fromInt(0xFFCAC4D0);
-  static const _textDark = PdfColor.fromInt(0xFF1C1B1F);
-  static const _textMuted = PdfColor.fromInt(0xFF49454F);
-
   static List<pw.Widget> build(
     Pet pet,
     Vet? vet,
@@ -25,7 +21,7 @@ class PetProfileSectionBuilder {
       pw.Container(
         padding: const pw.EdgeInsets.all(10),
         decoration: pw.BoxDecoration(
-          border: pw.Border.all(color: _borderColor, width: 0.5),
+          border: pw.Border.all(color: PdfReportTokens.border, width: 0.5),
           borderRadius: pw.BorderRadius.circular(6),
         ),
         child: pw.Column(
@@ -79,10 +75,7 @@ class PetProfileSectionBuilder {
       padding: const pw.EdgeInsets.only(bottom: 4),
       decoration: const pw.BoxDecoration(
         border: pw.Border(
-          bottom: pw.BorderSide(
-            color: PdfColor.fromInt(0xFF6750A4),
-            width: 1.5,
-          ),
+          bottom: pw.BorderSide(color: PdfReportTokens.primary, width: 1.5),
         ),
       ),
       child: pw.Text(
@@ -90,7 +83,7 @@ class PetProfileSectionBuilder {
         style: pw.TextStyle(
           fontSize: 12,
           fontWeight: pw.FontWeight.bold,
-          color: PdfColor.fromInt(0xFF6750A4),
+          color: PdfReportTokens.primary,
           letterSpacing: 1,
         ),
       ),
@@ -114,7 +107,7 @@ class PetProfileSectionBuilder {
               style: pw.TextStyle(
                 fontSize: 9,
                 fontWeight: pw.FontWeight.bold,
-                color: _textMuted,
+                color: PdfReportTokens.muted,
               ),
             ),
           ),
@@ -123,7 +116,7 @@ class PetProfileSectionBuilder {
               value,
               style: pw.TextStyle(
                 fontSize: 9,
-                color: _textDark,
+                color: PdfReportTokens.heading,
                 fontWeight: highlight
                     ? pw.FontWeight.bold
                     : pw.FontWeight.normal,

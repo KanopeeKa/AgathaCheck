@@ -1,6 +1,8 @@
 import 'dart:typed_data';
 
 import 'package:pdf/pdf.dart';
+
+import '../../../../core/theme/pdf_report_tokens.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:intl/intl.dart';
 
@@ -9,12 +11,6 @@ import '../../../pet_profile/domain/entities/pet.dart';
 import '../../domain/entities/health_entry.dart';
 
 class EventsPdfService {
-  static const _brandPurple = PdfColor.fromInt(0xFF6750A4);
-  static const _brandPurpleLight = PdfColor.fromInt(0xFFEADDFF);
-  static const _textDark = PdfColor.fromInt(0xFF1C1B1F);
-  static const _textMuted = PdfColor.fromInt(0xFF49454F);
-  static const _borderColor = PdfColor.fromInt(0xFFCAC4D0);
-  static const _white = PdfColors.white;
   static const _checkboxSize = 14.0;
 
   Future<Uint8List> generate({
@@ -60,7 +56,10 @@ class EventsPdfService {
                   padding: const pw.EdgeInsets.all(40),
                   child: pw.Text(
                     l.pdfNoEventsToDisplay,
-                    style: const pw.TextStyle(fontSize: 12, color: _textMuted),
+                    style: const pw.TextStyle(
+                      fontSize: 12,
+                      color: PdfReportTokens.muted,
+                    ),
                   ),
                 ),
               ),
@@ -86,7 +85,7 @@ class EventsPdfService {
       margin: const pw.EdgeInsets.only(bottom: 14),
       padding: const pw.EdgeInsets.all(12),
       decoration: pw.BoxDecoration(
-        color: _brandPurple,
+        color: PdfReportTokens.primary,
         borderRadius: pw.BorderRadius.circular(8),
       ),
       child: pw.Row(
@@ -100,7 +99,7 @@ class EventsPdfService {
                   style: pw.TextStyle(
                     fontSize: 16,
                     fontWeight: pw.FontWeight.bold,
-                    color: _white,
+                    color: PdfReportTokens.inverse,
                   ),
                 ),
                 pw.SizedBox(height: 3),
@@ -108,7 +107,7 @@ class EventsPdfService {
                   l.pdfGroupedBy(filterLabel, groupLabel),
                   style: pw.TextStyle(
                     fontSize: 9,
-                    color: PdfColor.fromInt(0xFFE8DEF8),
+                    color: PdfReportTokens.primarySoft,
                   ),
                 ),
               ],
@@ -122,7 +121,7 @@ class EventsPdfService {
                 style: pw.TextStyle(
                   fontSize: 9,
                   fontWeight: pw.FontWeight.bold,
-                  color: PdfColor.fromInt(0xFFE8DEF8),
+                  color: PdfReportTokens.primarySoft,
                   letterSpacing: 1.5,
                 ),
               ),
@@ -131,7 +130,7 @@ class EventsPdfService {
                 dateFormat.format(now),
                 style: pw.TextStyle(
                   fontSize: 8,
-                  color: PdfColor.fromInt(0xFFD0BCFF),
+                  color: PdfReportTokens.primarySoft,
                 ),
               ),
             ],
@@ -151,18 +150,26 @@ class EventsPdfService {
       margin: const pw.EdgeInsets.only(top: 8),
       padding: const pw.EdgeInsets.only(top: 6),
       decoration: const pw.BoxDecoration(
-        border: pw.Border(top: pw.BorderSide(color: _borderColor, width: 0.5)),
+        border: pw.Border(
+          top: pw.BorderSide(color: PdfReportTokens.border, width: 0.5),
+        ),
       ),
       child: pw.Row(
         mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
         children: [
           pw.Text(
             l.pdfGeneratedBy(dateFormat.format(generatedAt)),
-            style: const pw.TextStyle(fontSize: 8, color: _textMuted),
+            style: const pw.TextStyle(
+              fontSize: 8,
+              color: PdfReportTokens.muted,
+            ),
           ),
           pw.Text(
             l.pdfPageOf(context.pageNumber, context.pagesCount),
-            style: const pw.TextStyle(fontSize: 8, color: _textMuted),
+            style: const pw.TextStyle(
+              fontSize: 8,
+              color: PdfReportTokens.muted,
+            ),
           ),
         ],
       ),
@@ -174,7 +181,7 @@ class EventsPdfService {
       margin: const pw.EdgeInsets.only(top: 10, bottom: 4),
       padding: const pw.EdgeInsets.symmetric(horizontal: 8, vertical: 5),
       decoration: pw.BoxDecoration(
-        color: _brandPurpleLight,
+        color: PdfReportTokens.primaryLight,
         borderRadius: pw.BorderRadius.circular(4),
       ),
       child: pw.Row(
@@ -183,7 +190,7 @@ class EventsPdfService {
             width: 3,
             height: 14,
             decoration: pw.BoxDecoration(
-              color: _brandPurple,
+              color: PdfReportTokens.primary,
               borderRadius: pw.BorderRadius.circular(2),
             ),
           ),
@@ -193,7 +200,7 @@ class EventsPdfService {
             style: pw.TextStyle(
               fontSize: 10,
               fontWeight: pw.FontWeight.bold,
-              color: _brandPurple,
+              color: PdfReportTokens.primary,
             ),
           ),
         ],
@@ -225,7 +232,7 @@ class EventsPdfService {
       margin: const pw.EdgeInsets.only(bottom: 3),
       padding: const pw.EdgeInsets.symmetric(horizontal: 8, vertical: 6),
       decoration: pw.BoxDecoration(
-        border: pw.Border.all(color: _borderColor, width: 0.5),
+        border: pw.Border.all(color: PdfReportTokens.border, width: 0.5),
         borderRadius: pw.BorderRadius.circular(4),
       ),
       child: pw.Row(
@@ -236,7 +243,7 @@ class EventsPdfService {
             height: _checkboxSize,
             margin: const pw.EdgeInsets.only(right: 8, top: 1),
             decoration: pw.BoxDecoration(
-              border: pw.Border.all(color: _brandPurple, width: 1.2),
+              border: pw.Border.all(color: PdfReportTokens.primary, width: 1.2),
               borderRadius: pw.BorderRadius.circular(3),
             ),
           ),
@@ -254,7 +261,7 @@ class EventsPdfService {
                         style: pw.TextStyle(
                           fontSize: 10,
                           fontWeight: pw.FontWeight.bold,
-                          color: _textDark,
+                          color: PdfReportTokens.heading,
                         ),
                       ),
                     ),
@@ -264,7 +271,7 @@ class EventsPdfService {
                         vertical: 1,
                       ),
                       decoration: pw.BoxDecoration(
-                        color: _brandPurpleLight,
+                        color: PdfReportTokens.primaryLight,
                         borderRadius: pw.BorderRadius.circular(3),
                       ),
                       child: pw.Text(
@@ -272,7 +279,7 @@ class EventsPdfService {
                         style: pw.TextStyle(
                           fontSize: 7,
                           fontWeight: pw.FontWeight.bold,
-                          color: _brandPurple,
+                          color: PdfReportTokens.primary,
                         ),
                       ),
                     ),
@@ -299,7 +306,7 @@ class EventsPdfService {
                           '${l.pdfNotesLabel}: ${entry.notes}',
                           style: const pw.TextStyle(
                             fontSize: 7,
-                            color: _textMuted,
+                            color: PdfReportTokens.muted,
                           ),
                           maxLines: 1,
                         ),
@@ -315,7 +322,7 @@ class EventsPdfService {
                     style: pw.TextStyle(
                       fontSize: 7,
                       fontWeight: pw.FontWeight.bold,
-                      color: _textMuted,
+                      color: PdfReportTokens.muted,
                     ),
                   ),
                 ],
@@ -336,12 +343,15 @@ class EventsPdfService {
             style: pw.TextStyle(
               fontSize: 7,
               fontWeight: pw.FontWeight.bold,
-              color: _textMuted,
+              color: PdfReportTokens.muted,
             ),
           ),
           pw.TextSpan(
             text: value,
-            style: const pw.TextStyle(fontSize: 7, color: _textDark),
+            style: const pw.TextStyle(
+              fontSize: 7,
+              color: PdfReportTokens.heading,
+            ),
           ),
         ],
       ),

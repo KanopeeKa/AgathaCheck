@@ -1,16 +1,10 @@
-import 'package:pdf/pdf.dart';
+import '../../../../core/theme/pdf_report_tokens.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:intl/intl.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../organization/domain/entities/foster_placement.dart';
 
 class PetFosterHistorySectionBuilder {
-  static const _borderColor = PdfColor.fromInt(0xFFCAC4D0);
-  static const _brandPurple = PdfColor.fromInt(0xFF6750A4);
-  static const _white = PdfColors.white;
-  static const _textDark = PdfColor.fromInt(0xFF1C1B1F);
-  static const _textMuted = PdfColor.fromInt(0xFF49454F);
-
   static List<pw.Widget> build(
     List<FosterPlacement> placements,
     DateFormat dateFormat,
@@ -27,14 +21,19 @@ class PetFosterHistorySectionBuilder {
     return [
       _sectionTitle(l.pdfFosterHistorySection),
       pw.TableHelper.fromTextArray(
-        border: pw.TableBorder.all(color: _borderColor, width: 0.5),
+        border: pw.TableBorder.all(color: PdfReportTokens.border, width: 0.5),
         headerStyle: pw.TextStyle(
           fontSize: 8,
           fontWeight: pw.FontWeight.bold,
-          color: _white,
+          color: PdfReportTokens.inverse,
         ),
-        headerDecoration: const pw.BoxDecoration(color: _brandPurple),
-        cellStyle: const pw.TextStyle(fontSize: 8, color: _textDark),
+        headerDecoration: const pw.BoxDecoration(
+          color: PdfReportTokens.primary,
+        ),
+        cellStyle: const pw.TextStyle(
+          fontSize: 8,
+          color: PdfReportTokens.heading,
+        ),
         cellPadding: const pw.EdgeInsets.symmetric(horizontal: 6, vertical: 3),
         headers: [
           l.pdfFosterParent,
@@ -83,7 +82,7 @@ class PetFosterHistorySectionBuilder {
       padding: const pw.EdgeInsets.only(bottom: 4),
       decoration: const pw.BoxDecoration(
         border: pw.Border(
-          bottom: pw.BorderSide(color: _brandPurple, width: 1.5),
+          bottom: pw.BorderSide(color: PdfReportTokens.primary, width: 1.5),
         ),
       ),
       child: pw.Text(
@@ -91,7 +90,7 @@ class PetFosterHistorySectionBuilder {
         style: pw.TextStyle(
           fontSize: 12,
           fontWeight: pw.FontWeight.bold,
-          color: _brandPurple,
+          color: PdfReportTokens.primary,
           letterSpacing: 1,
         ),
       ),
@@ -102,12 +101,12 @@ class PetFosterHistorySectionBuilder {
     return pw.Container(
       padding: const pw.EdgeInsets.all(8),
       decoration: pw.BoxDecoration(
-        border: pw.Border.all(color: _borderColor, width: 0.5),
+        border: pw.Border.all(color: PdfReportTokens.border, width: 0.5),
         borderRadius: pw.BorderRadius.circular(4),
       ),
       child: pw.Text(
         msg,
-        style: const pw.TextStyle(fontSize: 9, color: _textMuted),
+        style: const pw.TextStyle(fontSize: 9, color: PdfReportTokens.muted),
       ),
     );
   }

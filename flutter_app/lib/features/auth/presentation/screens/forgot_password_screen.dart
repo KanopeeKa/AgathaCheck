@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../core/theme/app_color_tokens.dart';
 import '../../../../core/widgets/app_logo_title.dart';
 import '../../../../core/widgets/branded_logo.dart';
 import '../../../../features/experience/domain/entities/app_experience.dart';
@@ -87,7 +88,11 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
         context: context,
         barrierDismissible: false,
         builder: (ctx) => AlertDialog(
-          icon: Icon(Icons.check_circle, color: Colors.green[600], size: 48),
+          icon: const Icon(
+            Icons.check_circle,
+            color: AppColorTokens.success,
+            size: 48,
+          ),
           title: Text(l10n.passwordResetTitle),
           content: Text(message),
           actions: [
@@ -159,22 +164,24 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
                     Container(
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
-                        color: Colors.green[50],
+                        color: AppColorTokens.successLight,
                         borderRadius: BorderRadius.circular(8),
-                        border: Border.all(color: Colors.green[200]!),
+                        border: Border.all(color: AppColorTokens.success),
                       ),
                       child: Row(
                         children: [
-                          Icon(
+                          const Icon(
                             Icons.check_circle_outline,
-                            color: Colors.green[700],
+                            color: AppColorTokens.success,
                             size: 20,
                           ),
                           const SizedBox(width: 8),
                           Expanded(
                             child: Text(
                               _successMessage!,
-                              style: TextStyle(color: Colors.green[800]),
+                              style: const TextStyle(
+                                color: AppColorTokens.success,
+                              ),
                             ),
                           ),
                         ],

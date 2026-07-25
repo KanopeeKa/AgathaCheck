@@ -15,12 +15,12 @@ class CategoryBadge extends StatelessWidget {
         isPro ? l10n.professionalMultiPet : l10n.petGuardian,
         style: TextStyle(
           color: isPro
-              ? Colors.deepPurple.shade900
+              ? theme.colorScheme.onPrimaryContainer
               : theme.colorScheme.onSecondaryContainer,
         ),
       ),
       backgroundColor: isPro
-          ? Colors.deepPurple.shade50
+          ? theme.colorScheme.primaryContainer
           : theme.colorScheme.secondaryContainer,
     );
   }

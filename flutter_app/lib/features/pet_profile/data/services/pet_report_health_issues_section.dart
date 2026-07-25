@@ -1,4 +1,4 @@
-import 'package:pdf/pdf.dart';
+import '../../../../core/theme/pdf_report_tokens.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:intl/intl.dart';
 import '../../../../l10n/app_localizations.dart';
@@ -6,12 +6,6 @@ import '../../../health_tracking/domain/entities/health_issue.dart';
 import '../../../health_tracking/domain/entities/health_entry.dart';
 
 class PetHealthIssuesSectionBuilder {
-  static const _borderColor = PdfColor.fromInt(0xFFCAC4D0);
-  static const _brandPurple = PdfColor.fromInt(0xFF6750A4);
-  static const _brandPurpleLight = PdfColor.fromInt(0xFFEADDFF);
-  static const _textDark = PdfColor.fromInt(0xFF1C1B1F);
-  static const _textMuted = PdfColor.fromInt(0xFF49454F);
-
   static List<pw.Widget> build(
     List<HealthIssue> issues,
     List<HealthEntry> allEntries,
@@ -38,7 +32,7 @@ class PetHealthIssuesSectionBuilder {
           margin: const pw.EdgeInsets.only(bottom: 6),
           padding: const pw.EdgeInsets.all(8),
           decoration: pw.BoxDecoration(
-            border: pw.Border.all(color: _borderColor, width: 0.5),
+            border: pw.Border.all(color: PdfReportTokens.border, width: 0.5),
             borderRadius: pw.BorderRadius.circular(4),
           ),
           child: pw.Column(
@@ -53,7 +47,7 @@ class PetHealthIssuesSectionBuilder {
                       style: pw.TextStyle(
                         fontSize: 11,
                         fontWeight: pw.FontWeight.bold,
-                        color: _textDark,
+                        color: PdfReportTokens.heading,
                       ),
                     ),
                   ),
@@ -63,7 +57,7 @@ class PetHealthIssuesSectionBuilder {
                       vertical: 2,
                     ),
                     decoration: pw.BoxDecoration(
-                      color: _brandPurpleLight,
+                      color: PdfReportTokens.primaryLight,
                       borderRadius: pw.BorderRadius.circular(3),
                     ),
                     child: pw.Text(
@@ -73,7 +67,7 @@ class PetHealthIssuesSectionBuilder {
                       style: pw.TextStyle(
                         fontSize: 7,
                         fontWeight: pw.FontWeight.bold,
-                        color: _brandPurple,
+                        color: PdfReportTokens.primary,
                       ),
                     ),
                   ),
@@ -83,7 +77,10 @@ class PetHealthIssuesSectionBuilder {
                 pw.SizedBox(height: 3),
                 pw.Text(
                   issue.description,
-                  style: const pw.TextStyle(fontSize: 9, color: _textMuted),
+                  style: const pw.TextStyle(
+                    fontSize: 9,
+                    color: PdfReportTokens.muted,
+                  ),
                 ),
               ],
               if (issue.startDate != null || issue.endDate != null) ...[
@@ -98,7 +95,7 @@ class PetHealthIssuesSectionBuilder {
                   style: pw.TextStyle(
                     fontSize: 8,
                     fontWeight: pw.FontWeight.bold,
-                    color: _textMuted,
+                    color: PdfReportTokens.muted,
                   ),
                 ),
               ],
@@ -107,7 +104,7 @@ class PetHealthIssuesSectionBuilder {
                 pw.Container(
                   padding: const pw.EdgeInsets.all(6),
                   decoration: pw.BoxDecoration(
-                    color: PdfColor.fromInt(0xFFF5F5F5),
+                    color: PdfReportTokens.neutralBg,
                     borderRadius: pw.BorderRadius.circular(3),
                   ),
                   child: pw.Column(
@@ -118,7 +115,7 @@ class PetHealthIssuesSectionBuilder {
                         style: pw.TextStyle(
                           fontSize: 8,
                           fontWeight: pw.FontWeight.bold,
-                          color: _brandPurple,
+                          color: PdfReportTokens.primary,
                         ),
                       ),
                       pw.SizedBox(height: 3),
@@ -129,7 +126,7 @@ class PetHealthIssuesSectionBuilder {
                             '- ${e.name} (${e.type.label})',
                             style: const pw.TextStyle(
                               fontSize: 8,
-                              color: _textDark,
+                              color: PdfReportTokens.heading,
                             ),
                           ),
                         ),
@@ -154,7 +151,7 @@ class PetHealthIssuesSectionBuilder {
       padding: const pw.EdgeInsets.only(bottom: 4),
       decoration: const pw.BoxDecoration(
         border: pw.Border(
-          bottom: pw.BorderSide(color: _brandPurple, width: 1.5),
+          bottom: pw.BorderSide(color: PdfReportTokens.primary, width: 1.5),
         ),
       ),
       child: pw.Text(
@@ -162,7 +159,7 @@ class PetHealthIssuesSectionBuilder {
         style: pw.TextStyle(
           fontSize: 12,
           fontWeight: pw.FontWeight.bold,
-          color: _brandPurple,
+          color: PdfReportTokens.primary,
           letterSpacing: 1,
         ),
       ),
@@ -173,12 +170,12 @@ class PetHealthIssuesSectionBuilder {
     return pw.Container(
       padding: const pw.EdgeInsets.all(8),
       decoration: pw.BoxDecoration(
-        border: pw.Border.all(color: _borderColor, width: 0.5),
+        border: pw.Border.all(color: PdfReportTokens.border, width: 0.5),
         borderRadius: pw.BorderRadius.circular(4),
       ),
       child: pw.Text(
         msg,
-        style: const pw.TextStyle(fontSize: 9, color: _textMuted),
+        style: const pw.TextStyle(fontSize: 9, color: PdfReportTokens.muted),
       ),
     );
   }

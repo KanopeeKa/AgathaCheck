@@ -171,10 +171,10 @@ class _OrganizationDetailScreenState
                       PopupMenuItem(
                         value: 'delete',
                         child: ListTile(
-                          leading: const Icon(Icons.delete, color: Colors.red),
+                          leading: Icon(Icons.delete, color: colorScheme.error),
                           title: Text(
                             l.deleteOrganization,
-                            style: const TextStyle(color: Colors.red),
+                            style: TextStyle(color: colorScheme.error),
                           ),
                           dense: true,
                           contentPadding: EdgeInsets.zero,
@@ -397,7 +397,9 @@ class _OrganizationDetailScreenState
           ),
           FilledButton(
             key: const Key('org_delete_confirm'),
-            style: FilledButton.styleFrom(backgroundColor: Colors.red),
+            style: FilledButton.styleFrom(
+              backgroundColor: Theme.of(context).colorScheme.error,
+            ),
             onPressed: () async {
               Navigator.pop(ctx);
               try {
