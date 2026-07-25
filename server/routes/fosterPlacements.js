@@ -6,15 +6,18 @@ import { JWT_SECRET } from '../config/jwtSecret.js';
 import { publicError } from '../config/security.js';
 import { normalizeCalendarDateInput } from '../lib/calendarDate.js';
 import { createNotification, userDisplayName } from '../lib/notificationHelper.js';
+import { finaliseAdoptionJourney } from '../lib/adoptionJourneys.js';
 import {
   completeAdoptionTransfer,
   grantFosterPetAccess,
+  normalizePlacementStatus,
   placementToMap,
   PLACEMENT_STATUS_IN_PROGRESS,
   PLACEMENT_STATUS_NOT_IN_FOSTER,
   PLACEMENT_STATUS_PENDING,
   PLACEMENT_STATUS_WAITING_ADOPTION,
   revokeFosterPetAccess,
+  SESSION_STATUS_ADOPTION_IN_PROGRESS,
 } from '../lib/fosterPlacements.js';
 import { setFosterCare } from '../lib/petCustody.js';
 
@@ -73,10 +76,15 @@ export default function fosterPlacementsRoutes(pool) {
          JOIN pets p ON p.id = fp.pet_id
          JOIN organizations o ON o.id = fp.organization_id
          JOIN users u ON u.id = fp.foster_user_id
+         LEFT JOIN adoption_journeys aj ON aj.fostering_session_id = fp.id
+           AND aj.status = 'awaiting_foster_confirmation'
          WHERE fp.foster_user_id = $1
-           AND fp.status = $2
+           AND (
+             fp.status = $2
+             OR (fp.status = $3 AND aj.id IS NOT NULL)
+           )
          ORDER BY fp.created_at DESC`,
-        [userId, PLACEMENT_STATUS_WAITING_ADOPTION],
+        [userId, PLACEMENT_STATUS_WAITING_ADOPTION, SESSION_STATUS_ADOPTION_IN_PROGRESS],
       );
       res.json(result.rows.map((row) => placementToMap(row)));
     } catch (err) {
@@ -236,7 +244,12 @@ export default function fosterPlacementsRoutes(pool) {
         await client.query('ROLLBACK');
         return res.status(403).json({ error: 'Forbidden' });
       }
-      if (placement.status !== PLACEMENT_STATUS_WAITING_ADOPTION) {
+
+      const sessionStatus = normalizePlacementStatus(placement.status);
+      const awaitingConfirmation = placement.status === PLACEMENT_STATUS_WAITING_ADOPTION
+        || (sessionStatus === SESSION_STATUS_ADOPTION_IN_PROGRESS
+          && !(placement.adoption_conditions || '').trim());
+      if (!awaitingConfirmation) {
         await client.query('ROLLBACK');
         return res.status(400).json({ error: 'Placement is not awaiting adoption confirmation' });
       }
@@ -252,6 +265,7 @@ export default function fosterPlacementsRoutes(pool) {
       const pet = petResult.rows[0];
 
       const updated = await completeAdoptionTransfer(client, placement, pet);
+      await finaliseAdoptionJourney(client, placement);
       await revokeFosterPetAccess(client, placement.pet_id, userId);
 
       const fosterResult = await client.query(

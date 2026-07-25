@@ -28,6 +28,7 @@ const fosterToken = jwt.sign({ id: fosterId, email: 'foster@example.com' }, JWT_
 const orgId = 'org-1';
 const petId = 'pet-1';
 const placementId = 'placement-1';
+const journeyId = 'journey-1';
 
 describe('fostering session schema (J3 Phase 1)', () => {
   it('maps legacy statuses to target session statuses (appendix §3.1)', () => {
@@ -131,6 +132,8 @@ function makePlacementRow(status, adoptionConditions = '') {
 function buildMockPool() {
   let placementStatus = null;
   let placementAdoptionConditions = '';
+  let journeyStatus = null;
+  let journeyConditions = '';
   let fosterAccessGranted = false;
   let adoptedOwnerId = null;
 
@@ -144,6 +147,65 @@ function buildMockPool() {
       const uid = params[1];
       if (uid === adminId) return { rows: [{ role: 'admin' }] };
       if (uid === fosterId) return { rows: [{ role: 'foster' }] };
+      return { rows: [] };
+    }
+    if (sql.includes('FROM adoption_journeys') && sql.includes('fostering_session_id = $1')) {
+      if (!journeyStatus) return { rows: [] };
+      return {
+        rows: [{
+          id: journeyId,
+          organization_id: orgId,
+          fostering_session_id: placementId,
+          pet_id: petId,
+          foster_user_id: fosterId,
+          status: journeyStatus,
+          adoption_conditions: journeyConditions,
+          started_at: new Date('2024-03-01'),
+          finalised_at: null,
+          cancelled_at: null,
+          created_by: adminId,
+          created_at: new Date('2024-03-01'),
+          updated_at: new Date('2024-03-01'),
+        }],
+      };
+    }
+    if (sql.includes('INSERT INTO adoption_journeys')) {
+      journeyStatus = params[5];
+      journeyConditions = params[6] || '';
+      placementStatus = SESSION_STATUS_ADOPTION_IN_PROGRESS;
+      placementAdoptionConditions = journeyConditions;
+      return {
+        rows: [{
+          id: journeyId,
+          organization_id: orgId,
+          fostering_session_id: placementId,
+          pet_id: petId,
+          foster_user_id: fosterId,
+          status: journeyStatus,
+          adoption_conditions: journeyConditions,
+          started_at: new Date(),
+          created_by: adminId,
+          created_at: new Date(),
+          updated_at: new Date(),
+        }],
+      };
+    }
+    if (sql.includes('UPDATE adoption_journeys') && sql.includes('finalised')) {
+      journeyStatus = 'finalised';
+      return { rows: [] };
+    }
+    if (sql.includes('UPDATE adoption_journeys') && sql.includes('cancelled')) {
+      journeyStatus = 'cancelled';
+      return { rows: [] };
+    }
+    if (sql.includes('FROM foster_placements fp') && sql.includes('LEFT JOIN adoption_journeys')) {
+      if (
+        placementStatus === PLACEMENT_STATUS_WAITING_ADOPTION
+        || (placementStatus === SESSION_STATUS_ADOPTION_IN_PROGRESS
+          && journeyStatus === 'awaiting_foster_confirmation')
+      ) {
+        return { rows: [rowForStatus(placementStatus)] };
+      }
       return { rows: [] };
     }
     if (sql.includes('FROM foster_placements fp') && sql.includes('fp.foster_user_id = $1') && sql.includes('fp.status = $2')) {
@@ -161,6 +223,10 @@ function buildMockPool() {
       return { rows: [rowForStatus(placementStatus)] };
     }
     if (sql.includes('SELECT * FROM foster_placements WHERE id = $1')) {
+      if (!placementStatus) return { rows: [] };
+      return { rows: [rowForStatus(placementStatus)] };
+    }
+    if (sql.includes('SELECT fp.*') && sql.includes('JOIN pets p ON p.id = fp.pet_id')) {
       if (!placementStatus) return { rows: [] };
       return { rows: [rowForStatus(placementStatus)] };
     }
@@ -198,6 +264,20 @@ function buildMockPool() {
       placementStatus = PLACEMENT_STATUS_IN_PROGRESS;
       fosterAccessGranted = true;
       return { rows: [rowForStatus(PLACEMENT_STATUS_IN_PROGRESS)] };
+    }
+    if (sql.includes('UPDATE foster_placements') && params[0] === SESSION_STATUS_ADOPTION_IN_PROGRESS) {
+      if (sql.includes("adoption_conditions = ''")) {
+        placementAdoptionConditions = '';
+      } else {
+        placementAdoptionConditions = params[1] || '';
+      }
+      placementStatus = SESSION_STATUS_ADOPTION_IN_PROGRESS;
+      return { rows: [rowForStatus(placementStatus)] };
+    }
+    if (sql.includes('UPDATE foster_placements') && params[0] === 'cancelled') {
+      placementStatus = SESSION_STATUS_CANCELLED;
+      fosterAccessGranted = false;
+      return { rows: [rowForStatus(SESSION_STATUS_CANCELLED)] };
     }
     if (sql.includes('UPDATE foster_placements') && params[0] === PLACEMENT_STATUS_WAITING_ADOPTION) {
       placementStatus = PLACEMENT_STATUS_WAITING_ADOPTION;
@@ -275,8 +355,16 @@ function buildMockPool() {
     get fosterAccessGranted() { return fosterAccessGranted; },
     get adoptedOwnerId() { return adoptedOwnerId; },
     setPlacementPending() { placementStatus = PLACEMENT_STATUS_PENDING; },
-    setPlacementInProgress() { placementStatus = PLACEMENT_STATUS_IN_PROGRESS; },
-    setPlacementWaitingAdoption() { placementStatus = PLACEMENT_STATUS_WAITING_ADOPTION; },
+    setPlacementInProgress() {
+      placementStatus = PLACEMENT_STATUS_IN_PROGRESS;
+      journeyStatus = null;
+    },
+    setPlacementWaitingAdoption() {
+      placementStatus = PLACEMENT_STATUS_WAITING_ADOPTION;
+      journeyStatus = 'awaiting_foster_confirmation';
+      journeyConditions = '';
+      placementAdoptionConditions = '';
+    },
   };
 }
 
@@ -400,7 +488,9 @@ describe('Foster placements API', () => {
         .set('Authorization', `Bearer ${adminToken}`)
         .send({});
       expect(res.statusCode).toBe(200);
+      expect(res.body.session_status).toBe(SESSION_STATUS_ADOPTION_IN_PROGRESS);
       expect(res.body.status).toBe(PLACEMENT_STATUS_WAITING_ADOPTION);
+      expect(res.body.adoption_journey).toBeDefined();
     });
 
     it('admin can start adoption with pre-adoption conditions', async () => {
@@ -413,6 +503,7 @@ describe('Foster placements API', () => {
         .send({ adoption_conditions: 'Must be neutered first' });
       expect(res.statusCode).toBe(200);
       expect(res.body.status).toBe(PLACEMENT_STATUS_PENDING_CONDITIONS);
+      expect(res.body.adoption_journey.status).toBe('pending_conditions');
     });
 
     it('foster lists pending adoption confirmations', async () => {
@@ -456,13 +547,18 @@ describe('Foster placements API', () => {
     });
 
     it('admin can start direct adopt without a foster period', async () => {
-      const app = createApp(buildMockPool());
+      const pool = buildMockPool();
+      const app = createApp(pool);
       const res = await request(app)
         .post(`/api/organizations/${orgId}/pets/${petId}/placements/direct-adopt`)
         .set('Authorization', `Bearer ${adminToken}`)
         .send({ foster_user_id: fosterId });
+      if (res.statusCode !== 201) {
+        throw new Error(`direct-adopt failed: ${res.statusCode} ${JSON.stringify(res.body)}`);
+      }
       expect(res.statusCode).toBe(201);
-      expect(res.body.status).toBe(PLACEMENT_STATUS_WAITING_ADOPTION);
+      expect(res.body.session_status).toBe(SESSION_STATUS_ADOPTION_IN_PROGRESS);
+      expect(res.body.adoption_journey).toBeDefined();
     });
   });
 });

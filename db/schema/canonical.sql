@@ -2,7 +2,7 @@
 -- PostgreSQL database dump
 --
 
-\restrict sCMNwgMSeNqwY5V88jfx0ta9UGmgBwYE7fcfN0LaP5bo9649FysEZyVOhC7oEq5
+\restrict WYItr109WZgx1W70D085vKMadxahmyrpQVCcXMhJP8slTX8lQF3tKaCe5Fg75xN
 
 -- Dumped from database version 16.14 (Ubuntu 16.14-0ubuntu0.24.04.1)
 -- Dumped by pg_dump version 16.14 (Ubuntu 16.14-0ubuntu0.24.04.1)
@@ -30,6 +30,28 @@ CREATE TABLE public._migrations (
     id uuid NOT NULL,
     name character varying(255) NOT NULL,
     applied_at timestamp with time zone DEFAULT now()
+);
+
+
+--
+-- Name: adoption_journeys; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.adoption_journeys (
+    id uuid NOT NULL,
+    organization_id uuid NOT NULL,
+    fostering_session_id uuid NOT NULL,
+    pet_id uuid NOT NULL,
+    foster_user_id uuid,
+    status character varying(64) NOT NULL,
+    adoption_conditions text DEFAULT ''::text NOT NULL,
+    started_at timestamp with time zone,
+    finalised_at timestamp with time zone,
+    cancelled_at timestamp with time zone,
+    created_by uuid,
+    created_at timestamp with time zone DEFAULT now(),
+    updated_at timestamp with time zone DEFAULT now(),
+    CONSTRAINT adoption_journeys_status_check CHECK (((status)::text = ANY ((ARRAY['awaiting_foster_confirmation'::character varying, 'pending_conditions'::character varying, 'finalised'::character varying, 'cancelled'::character varying])::text[])))
 );
 
 
@@ -564,6 +586,31 @@ CREATE TABLE public.pets (
 
 
 --
+-- Name: prospects; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.prospects (
+    id uuid NOT NULL,
+    organization_id uuid NOT NULL,
+    display_name character varying(255) DEFAULT ''::character varying NOT NULL,
+    email character varying(255),
+    phone character varying(50),
+    notes text DEFAULT ''::text,
+    lawful_basis_attested_at timestamp with time zone,
+    lawful_basis_attested_by uuid,
+    opt_out_at timestamp with time zone,
+    retention_category text DEFAULT 'manual_contact'::text NOT NULL,
+    creation_source character varying(32) DEFAULT 'manual_shelter_entry'::character varying NOT NULL,
+    user_id uuid,
+    created_by uuid,
+    created_at timestamp with time zone DEFAULT now(),
+    updated_at timestamp with time zone DEFAULT now(),
+    CONSTRAINT prospects_creation_source_check CHECK (((creation_source)::text = ANY ((ARRAY['manual_shelter_entry'::character varying, 'registered_user'::character varying])::text[]))),
+    CONSTRAINT prospects_retention_category_check CHECK ((retention_category = ANY (ARRAY['manual_contact'::text, 'declined_archived'::text, 'prospect_relationship'::text])))
+);
+
+
+--
 -- Name: refresh_tokens; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -653,6 +700,14 @@ CREATE TABLE public.weight_entries (
 
 ALTER TABLE ONLY public._migrations
     ADD CONSTRAINT _migrations_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: adoption_journeys adoption_journeys_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.adoption_journeys
+    ADD CONSTRAINT adoption_journeys_pkey PRIMARY KEY (id);
 
 
 --
@@ -944,6 +999,14 @@ ALTER TABLE ONLY public.pets
 
 
 --
+-- Name: prospects prospects_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.prospects
+    ADD CONSTRAINT prospects_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: refresh_tokens refresh_tokens_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -1005,6 +1068,27 @@ ALTER TABLE ONLY public.vets
 
 ALTER TABLE ONLY public.weight_entries
     ADD CONSTRAINT weight_entries_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: idx_adoption_journeys_one_open_per_session; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX idx_adoption_journeys_one_open_per_session ON public.adoption_journeys USING btree (fostering_session_id) WHERE ((status)::text = ANY ((ARRAY['awaiting_foster_confirmation'::character varying, 'pending_conditions'::character varying])::text[]));
+
+
+--
+-- Name: idx_adoption_journeys_org_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_adoption_journeys_org_id ON public.adoption_journeys USING btree (organization_id);
+
+
+--
+-- Name: idx_adoption_journeys_session_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_adoption_journeys_session_id ON public.adoption_journeys USING btree (fostering_session_id);
 
 
 --
@@ -1246,10 +1330,64 @@ CREATE INDEX idx_pet_share_links_pet_id ON public.pet_share_links USING btree (p
 
 
 --
+-- Name: idx_prospects_email_lower; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_prospects_email_lower ON public.prospects USING btree (lower((email)::text)) WHERE (email IS NOT NULL);
+
+
+--
+-- Name: idx_prospects_org_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_prospects_org_id ON public.prospects USING btree (organization_id);
+
+
+--
 -- Name: idx_vets_organization_id; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX idx_vets_organization_id ON public.vets USING btree (organization_id);
+
+
+--
+-- Name: adoption_journeys adoption_journeys_created_by_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.adoption_journeys
+    ADD CONSTRAINT adoption_journeys_created_by_fkey FOREIGN KEY (created_by) REFERENCES public.users(id) ON DELETE SET NULL;
+
+
+--
+-- Name: adoption_journeys adoption_journeys_foster_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.adoption_journeys
+    ADD CONSTRAINT adoption_journeys_foster_user_id_fkey FOREIGN KEY (foster_user_id) REFERENCES public.users(id) ON DELETE SET NULL;
+
+
+--
+-- Name: adoption_journeys adoption_journeys_fostering_session_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.adoption_journeys
+    ADD CONSTRAINT adoption_journeys_fostering_session_id_fkey FOREIGN KEY (fostering_session_id) REFERENCES public.foster_placements(id) ON DELETE CASCADE;
+
+
+--
+-- Name: adoption_journeys adoption_journeys_organization_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.adoption_journeys
+    ADD CONSTRAINT adoption_journeys_organization_id_fkey FOREIGN KEY (organization_id) REFERENCES public.organizations(id) ON DELETE CASCADE;
+
+
+--
+-- Name: adoption_journeys adoption_journeys_pet_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.adoption_journeys
+    ADD CONSTRAINT adoption_journeys_pet_id_fkey FOREIGN KEY (pet_id) REFERENCES public.pets(id) ON DELETE CASCADE;
 
 
 --
@@ -1821,6 +1959,38 @@ ALTER TABLE ONLY public.pets
 
 
 --
+-- Name: prospects prospects_created_by_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.prospects
+    ADD CONSTRAINT prospects_created_by_fkey FOREIGN KEY (created_by) REFERENCES public.users(id) ON DELETE SET NULL;
+
+
+--
+-- Name: prospects prospects_lawful_basis_attested_by_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.prospects
+    ADD CONSTRAINT prospects_lawful_basis_attested_by_fkey FOREIGN KEY (lawful_basis_attested_by) REFERENCES public.users(id) ON DELETE SET NULL;
+
+
+--
+-- Name: prospects prospects_organization_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.prospects
+    ADD CONSTRAINT prospects_organization_id_fkey FOREIGN KEY (organization_id) REFERENCES public.organizations(id) ON DELETE CASCADE;
+
+
+--
+-- Name: prospects prospects_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.prospects
+    ADD CONSTRAINT prospects_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE SET NULL;
+
+
+--
 -- Name: refresh_tokens refresh_tokens_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -1888,5 +2058,5 @@ ALTER TABLE ONLY public.weight_entries
 -- PostgreSQL database dump complete
 --
 
-\unrestrict sCMNwgMSeNqwY5V88jfx0ta9UGmgBwYE7fcfN0LaP5bo9649FysEZyVOhC7oEq5
+\unrestrict WYItr109WZgx1W70D085vKMadxahmyrpQVCcXMhJP8slTX8lQF3tKaCe5Fg75xN
 

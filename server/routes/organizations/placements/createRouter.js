@@ -2,6 +2,10 @@ import { v4 as uuidv4 } from 'uuid';
 import { normalizeCalendarDateInput } from '../../../lib/calendarDate.js';
 import { createNotification, userDisplayName } from '../../../lib/notificationHelper.js';
 import {
+  placementWithJourneyResponse,
+  startAdoptionJourney,
+} from '../../../lib/adoptionJourneys.js';
+import {
   auditFosteringSession,
   AUDIT_FOSTERING_SESSION_CREATED,
   insertFosteringSession,
@@ -10,7 +14,7 @@ import {
 import {
   getActivePlacementForPet,
   loadPlacementDetail,
-  placementToMap,
+  SESSION_STATUS_ACTIVE,
   SESSION_STATUS_ADOPTION_IN_PROGRESS,
   SESSION_STATUS_PENDING_ACCEPTANCE,
 } from '../../../lib/fosterPlacements.js';
@@ -157,20 +161,29 @@ export function registerPlacementCreateRoutes(router, pool) {
       const relationshipId = data.shelter_foster_relationship_id
         || data.shelterFosterRelationshipId
         || await lookupShelterFosterRelationshipId(pool, orgId, fosterUserId);
-      const nextStatus = SESSION_STATUS_ADOPTION_IN_PROGRESS;
 
       const placement = await insertFosteringSession(pool, {
         id: placementId,
         orgId,
         petId,
         fosterUserId,
-        status: nextStatus,
+        status: SESSION_STATUS_ACTIVE,
         notes,
         createdBy: userId,
         shelterFosterRelationshipId: relationshipId,
         sessionType: data.session_type || data.sessionType,
         adoptionConditions,
       });
+
+      const journeyResult = await startAdoptionJourney(pool, {
+        placement,
+        adoptionConditions,
+        createdBy: userId,
+        auditContext: { req },
+      });
+      if (journeyResult.error) {
+        return res.status(journeyResult.status).json({ error: journeyResult.error });
+      }
 
       auditFosteringSession(pool, {
         actorUserId: userId,
@@ -179,7 +192,7 @@ export function registerPlacementCreateRoutes(router, pool) {
         orgId,
         petId,
         metadata: {
-          session_status: nextStatus,
+          session_status: SESSION_STATUS_ADOPTION_IN_PROGRESS,
           direct_adopt: true,
         },
         req,
@@ -202,8 +215,11 @@ export function registerPlacementCreateRoutes(router, pool) {
         type: 'general',
       });
 
-      const detail = await loadPlacementDetail(pool, placement.id);
-      res.status(201).json(placementToMap(detail || placement));
+      const detail = await loadPlacementDetail(pool, journeyResult.placement.id);
+      res.status(201).json(placementWithJourneyResponse(
+        detail || journeyResult.placement,
+        journeyResult.journey,
+      ));
     } catch (err) {
       res.status(500).json({ error: publicError(err) });
     }
