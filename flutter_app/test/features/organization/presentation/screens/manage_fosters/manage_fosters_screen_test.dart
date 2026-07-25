@@ -101,6 +101,81 @@ void main() {
       findsOneWidget,
     );
   });
+
+  testWidgets('external foster menu records outreach opt-out', (tester) async {
+    const parents = [
+      FosterParent(
+        id: 'fp-ext-opt',
+        kind: FosterParentKind.external,
+        displayName: 'Opt Out Parent',
+        email: 'opt@example.com',
+        approvalState: FosterApprovalState.approved,
+      ),
+    ];
+    final repo = _OptOutFosterRepo(parents);
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          authProvider.overrideWith((ref) => FakeAuthNotifier()),
+          organizationRepositoryProvider.overrideWithValue(repo),
+        ],
+        child: MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: const ManageFostersScreen(orgId: 'org-1'),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('Shelter foster relationship'), findsOneWidget);
+    expect(find.text('Outreach opt-out'), findsNothing);
+
+    await tester.tap(find.byKey(const Key('foster_actions_menu_fp-ext-opt')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Record outreach opt-out'));
+    await tester.pumpAndSettle();
+
+    expect(repo.optOutCalls, 1);
+    expect(find.text('Outreach opt-out'), findsOneWidget);
+  });
+}
+
+class _OptOutFosterRepo extends _FosterParentsRepo {
+  _OptOutFosterRepo(super.parents);
+
+  int optOutCalls = 0;
+  bool lastOptOut = false;
+  DateTime? _optOutAt;
+
+  @override
+  Future<List<FosterParent>> getFosterParents(
+    String orgId,
+    String token,
+  ) async => [
+    FosterParent(
+      id: 'fp-ext-opt',
+      kind: FosterParentKind.external,
+      displayName: 'Opt Out Parent',
+      email: 'opt@example.com',
+      approvalState: FosterApprovalState.approved,
+      optOutAt: _optOutAt,
+    ),
+  ];
+
+  @override
+  Future<FosterParent> updateFosterOptOut(
+    String orgId,
+    String fosterParentId,
+    bool optOut, {
+    required String token,
+  }) async {
+    optOutCalls++;
+    lastOptOut = optOut;
+    _optOutAt = optOut ? DateTime.utc(2026, 7, 25) : null;
+    return (await getFosterParents(orgId, token)).first;
+  }
 }
 
 class _MergeFosterRepo extends _FosterParentsRepo {

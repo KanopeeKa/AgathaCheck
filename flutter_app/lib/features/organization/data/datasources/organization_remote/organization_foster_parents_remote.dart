@@ -207,4 +207,44 @@ class OrganizationFosterParentsRemote {
     }
     return data;
   }
+
+  Future<Map<String, dynamic>> updateFosterOptOut(
+    String orgId,
+    String fosterParentId,
+    bool optOut,
+    String token,
+  ) async {
+    final response = await _ctx.client.patch(
+      Uri.parse(
+        '${_ctx.baseUrl}/api/organizations/$orgId/foster-parents/$fosterParentId/opt-out',
+      ),
+      headers: _ctx.headers(token),
+      body: json.encode({'opt_out': optOut}),
+    );
+    final data = json.decode(response.body) as Map<String, dynamic>;
+    if (response.statusCode >= 400) {
+      throw Exception(data['error'] ?? 'Failed to update foster opt-out');
+    }
+    return data;
+  }
+
+  Future<Map<String, dynamic>> updateFosterRetentionCategory(
+    String orgId,
+    String fosterParentId,
+    String retentionCategory,
+    String token,
+  ) async {
+    final response = await _ctx.client.patch(
+      Uri.parse(
+        '${_ctx.baseUrl}/api/organizations/$orgId/foster-parents/$fosterParentId/retention',
+      ),
+      headers: _ctx.headers(token),
+      body: json.encode({'retention_category': retentionCategory}),
+    );
+    final data = json.decode(response.body) as Map<String, dynamic>;
+    if (response.statusCode >= 400) {
+      throw Exception(data['error'] ?? 'Failed to update retention category');
+    }
+    return data;
+  }
 }

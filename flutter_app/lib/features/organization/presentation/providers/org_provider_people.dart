@@ -255,6 +255,13 @@ class OrgFosterParentsNotifier
     ref.invalidateSelf();
     ref.invalidate(orgPeopleProvider(arg));
   }
+
+  Future<void> updateOptOut(String fosterParentId, bool optOut) async {
+    final token = ref.read(orgTokenProvider)!;
+    final repo = ref.read(organizationRepositoryProvider);
+    await repo.updateFosterOptOut(arg, fosterParentId, optOut, token: token);
+    ref.invalidateSelf();
+  }
 }
 
 final orgFosterParentsProvider =

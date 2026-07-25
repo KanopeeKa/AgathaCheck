@@ -24,9 +24,9 @@ A person becomes an approved foster for a shelter with reusable global profile d
 - [x] Flutter approval filters enabled
 - [x] Approve / decline / archive actions on external foster cards
 
-**Status:** Phase 3 complete (pending integration → main)
+**Status:** Phase 3 complete
 
-## Phase 3 — Foster profiles and manual merge (in progress)
+## Phase 3 — Foster profiles and manual merge (complete)
 
 - [x] Migration `023`: `foster_profiles` table; `foster_profile_id` on `org_foster_parents`
 - [x] Backfill profiles for existing external fosters
@@ -34,7 +34,17 @@ A person becomes an approved foster for a shelter with reusable global profile d
 - [x] POST manual foster creates linked `foster_profiles` row
 - [x] GET `merge-suggestions?email=` for registered-user hints
 - [x] POST `/:id/merge` links manual record to target user + audit `foster_merge_completed`
-- [x] Flutter merge flow (phase 2)
+- [x] Flutter merge flow
+
+## Phase 4 — Compliance, retention, and privacy copy
+
+- [x] Migration `024`: `opt_out_at`, `retention_category` on `org_foster_parents`
+- [x] PATCH opt-out and retention routes + audit events
+- [x] Refresh Art. 14 external foster notice email (EN/FR)
+- [x] DPIA checklist items for J1 Ph4
+- [x] Flutter: opt-out toggle, retention chip, updated lawful-basis copy
+
+**Status:** Phase 4 complete (pending integration → main)
 
 ## Out of scope (Phase 3 backend)
 
