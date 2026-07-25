@@ -489,7 +489,7 @@ This mattered beyond "the smoke gate is red": `deploy-uat.yml`'s `smoke` job gat
 
 `scripts/ci/warmup-uat-auth.sh` is kept for local/manual use against non-WAF-protected targets but is no longer wired into `deploy-uat.yml`.
 
-**Residual risk:** unverified against the live WAF at merge time (this repo's CI is the only place that can prove it against the real Tiger Protect challenge) — watch the next few `deploy-uat` runs' `smoke` job. If the Playwright warmup also fails, `SMOKE_FAILURE_KIND` has no signal for it (only `uat-post-deploy-smoke.sh`'s health check sets it), so `assert-uat-gates.sh` conservatively classifies it `code`, not `infra_only` — i.e. it will (correctly) freeze the queue again rather than silently assume "still just WAF."
+**Residual risk (addressed):** When Playwright warmup failed after health passed, `SMOKE_FAILURE_KIND` was unset → `gate_failure_class=code`. Fixed: `scripts/ci/classify-uat-smoke-failure.sh` emits `waf` for health-OK + warmup-fail (see `uat-waf-queue-lessons.md` §12).
 
 ### 7. Coordinator dispatch must not orphan watcher leases (added Jul 25)
 
