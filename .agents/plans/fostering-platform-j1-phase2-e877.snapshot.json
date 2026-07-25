@@ -4,8 +4,8 @@
   "approved_at": "2026-07-25T00:05:00Z",
   "approved_by": "user-delegated-autonomy",
   "approved_until": "2026-07-27T00:05:00Z",
-  "content_hash": "sha256:3128dff3f203e016968155c753c5fff021d786587396c9ab95d01c387636f3b2",
-  "autonomy": "active",
+  "content_hash": "sha256:3e575849e8d5a15d1fd852c554c3a77285d9d5db198f6cb624a078cffb27bf5b",
+  "autonomy": "completed",
   "default_merge_mode": "auto",
   "base_branch": "cursor/fostering-platform-j1-phase2-e877-integration",
   "control_issue": 338,
@@ -35,10 +35,12 @@
       "spawn_config": null,
       "merge_method": "squash",
       "exit_checklist": "single-backend-route",
-      "status": "pending",
+      "status": "merged",
       "status_reason": null,
       "status_detail": null,
-      "debt_issue_refs": []
+      "debt_issue_refs": [],
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/339",
+      "pr_head_sha": "09ed74d"
     },
     {
       "id": "2",
@@ -71,10 +73,12 @@
       "spawn_config": null,
       "merge_method": "squash",
       "exit_checklist": "flutter-screen-split",
-      "status": "in_progress",
+      "status": "merged",
       "status_reason": null,
       "status_detail": null,
-      "debt_issue_refs": []
+      "debt_issue_refs": [],
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/340",
+      "pr_head_sha": "69c88a6"
     }
   ]
 }
