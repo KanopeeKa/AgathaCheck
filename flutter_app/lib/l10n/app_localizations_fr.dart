@@ -2186,6 +2186,149 @@ class AppLocalizationsFr extends AppLocalizations {
   String get manageFostersRetentionManualContact => 'Contact manuel';
 
   @override
+  String get fosterRequestsTitle => 'Demandes d\'accueil';
+
+  @override
+  String get fosterRequestsDescription =>
+      'Envoyez des sollicitations structurées aux familles d\'accueil approuvées et suivez leurs réponses.';
+
+  @override
+  String get fosterRequestsEmpty =>
+      'Aucune demande d\'accueil pour le moment. Envoyez-en une lorsque vous avez besoin d\'aide pour placer des animaux.';
+
+  @override
+  String get fosterRequestSendNew => 'Envoyer une demande d\'accueil';
+
+  @override
+  String get fosterRequestSendDescription =>
+      'Choisissez les animaux à placer et les familles d\'accueil à contacter. Vous pouvez enregistrer un brouillon ou envoyer immédiatement.';
+
+  @override
+  String get fosterRequestMessageLabel => 'Message';
+
+  @override
+  String get fosterRequestMessageHint =>
+      'Décrivez le besoin et les délais éventuels';
+
+  @override
+  String get fosterRequestMessageRequired => 'Le message est obligatoire';
+
+  @override
+  String get fosterRequestSelectPets => 'Animaux à placer';
+
+  @override
+  String get fosterRequestSelectFosters => 'Familles d\'accueil à contacter';
+
+  @override
+  String get fosterRequestNoPets =>
+      'Aucun animal actif disponible pour cette demande';
+
+  @override
+  String get fosterRequestNoEligibleFosters =>
+      'Aucune famille d\'accueil approuvée sans opposition au contact n\'est disponible';
+
+  @override
+  String get fosterRequestSelectionRequired =>
+      'Sélectionnez au moins un animal et une famille d\'accueil';
+
+  @override
+  String get fosterRequestSaveDraft => 'Enregistrer le brouillon';
+
+  @override
+  String get fosterRequestSendNow => 'Envoyer maintenant';
+
+  @override
+  String get fosterRequestDraftSaved =>
+      'Demande d\'accueil enregistrée en brouillon';
+
+  @override
+  String get fosterRequestSendSuccess => 'Demande d\'accueil envoyée';
+
+  @override
+  String get fosterRequestStatusDraft => 'Brouillon';
+
+  @override
+  String get fosterRequestStatusSent => 'Envoyée';
+
+  @override
+  String get fosterRequestStatusCancelled => 'Annulée';
+
+  @override
+  String fosterRequestPetsLabel(String names) {
+    return 'Animaux : $names';
+  }
+
+  @override
+  String fosterRequestTargetsSummary(
+    int targetCount,
+    int canHelp,
+    int cannotHelp,
+    int pending,
+  ) {
+    return '$targetCount destinataires · $canHelp peuvent aider · $cannotHelp ne peuvent pas · $pending en attente';
+  }
+
+  @override
+  String get fosterRequestDetailTitle => 'Demande d\'accueil';
+
+  @override
+  String get fosterRequestPetsSection => 'Animaux';
+
+  @override
+  String get fosterRequestTargetsSection => 'Familles d\'accueil contactées';
+
+  @override
+  String get fosterRequestResponsesSection => 'Réponses';
+
+  @override
+  String get fosterRequestNoResponses => 'Aucune réponse pour le moment';
+
+  @override
+  String get fosterRequestResponseCanHelp => 'Peut aider';
+
+  @override
+  String get fosterRequestResponseCannotHelp => 'Ne peut pas aider';
+
+  @override
+  String get fosterRequestResponsePending => 'En attente';
+
+  @override
+  String fosterRequestEarliestAvailability(String date) {
+    return 'Disponible à partir du $date';
+  }
+
+  @override
+  String get fosterRequestRespondTitle => 'Répondre à la demande d\'accueil';
+
+  @override
+  String get fosterRequestRespondDescription =>
+      'Indiquez au refuge si vous pouvez aider et à partir de quand.';
+
+  @override
+  String get fosterRequestEarliestAvailabilityLabel =>
+      'Disponibilité la plus proche';
+
+  @override
+  String get fosterRequestSelectDate => 'Choisir une date';
+
+  @override
+  String get fosterRequestAvailabilityRequired =>
+      'La disponibilité est obligatoire si vous pouvez aider';
+
+  @override
+  String get fosterRequestRespondMessageLabel => 'Message (facultatif)';
+
+  @override
+  String get fosterRequestRespondMessageHint =>
+      'Précisez les délais, la capacité ou vos questions pour le refuge';
+
+  @override
+  String get fosterRequestRespondSubmit => 'Envoyer la réponse';
+
+  @override
+  String get fosterRequestRespondSuccess => 'Réponse envoyée';
+
+  @override
   String get noFosterParents => 'Aucune famille d\'accueil pour le moment';
 
   @override
@@ -2285,6 +2428,146 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get fosterPlacementDeclined => 'Placement refusé';
+
+  @override
+  String get fosteringSessionDetailTitle => 'Session d\'accueil';
+
+  @override
+  String get fosteringSessionManage => 'Gérer la session d\'accueil';
+
+  @override
+  String get fosteringSessionStatusPendingAcceptance =>
+      'En attente d\'acceptation';
+
+  @override
+  String get fosteringSessionStatusPreparation => 'Préparation';
+
+  @override
+  String get fosteringSessionStatusReadyToStart => 'Prête à démarrer';
+
+  @override
+  String get fosteringSessionStatusActive => 'Active';
+
+  @override
+  String get fosteringSessionStatusEndPending =>
+      'Fin en attente de confirmation';
+
+  @override
+  String get fosteringSessionStatusAdoptionInProgress => 'Adoption en cours';
+
+  @override
+  String get fosteringSessionStatusReturned => 'Retourné au refuge';
+
+  @override
+  String get fosteringSessionStatusTransferred => 'Transféré';
+
+  @override
+  String get fosteringSessionStatusConvertedToAdoption =>
+      'Converti en adoption';
+
+  @override
+  String get fosteringSessionStatusCancelled => 'Annulée';
+
+  @override
+  String get fosteringSessionPreparationTitle => 'Liste de préparation';
+
+  @override
+  String get fosteringSessionPreparationPlaceholder =>
+      'Suivez les étapes de préparation du refuge avant la remise. Le suivi complet de la liste arrive dans une prochaine version.';
+
+  @override
+  String get fosteringSessionChecklistSupplies =>
+      'Confirmer que les fournitures et équipements sont prêts';
+
+  @override
+  String get fosteringSessionChecklistMedical =>
+      'Vérifier le dossier médical et les traitements';
+
+  @override
+  String get fosteringSessionChecklistTransport =>
+      'Organiser le transport vers la famille d\'accueil';
+
+  @override
+  String get fosteringSessionChecklistHandover =>
+      'Planifier la remise avec la famille d\'accueil';
+
+  @override
+  String get fosteringSessionDualStartTitle =>
+      'Confirmation de démarrage conjointe';
+
+  @override
+  String get fosteringSessionShelterStartLabel =>
+      'Le refuge confirme la remise';
+
+  @override
+  String get fosteringSessionFosterStartLabel =>
+      'La famille d\'accueil confirme la prise en charge';
+
+  @override
+  String get fosteringSessionAwaitingConfirmation =>
+      'En attente de confirmation';
+
+  @override
+  String fosteringSessionConfirmedAt(String timestamp) {
+    return 'Confirmé le $timestamp';
+  }
+
+  @override
+  String get fosteringSessionStartPreparation => 'Commencer la préparation';
+
+  @override
+  String get fosteringSessionMarkReady => 'Marquer prête à démarrer';
+
+  @override
+  String get fosteringSessionConfirmShelterStart =>
+      'Confirmer la remise par le refuge';
+
+  @override
+  String get fosteringSessionConfirmFosterStart =>
+      'Confirmer la prise en charge par la famille';
+
+  @override
+  String get fosteringSessionRequestEnd => 'Demander la fin de session';
+
+  @override
+  String get fosteringSessionEndReturned => 'Confirmer le retour au refuge';
+
+  @override
+  String get fosteringSessionEndCancelled => 'Annuler la session';
+
+  @override
+  String get fosteringSessionTransitionSuccess => 'Session mise à jour';
+
+  @override
+  String get fosteringSessionShelterStartSuccess =>
+      'Remise par le refuge confirmée';
+
+  @override
+  String get fosteringSessionFosterStartSuccess =>
+      'Prise en charge par la famille confirmée';
+
+  @override
+  String get fosteringSessionRequestEndSuccess =>
+      'Confirmation de fin demandée';
+
+  @override
+  String get fosteringSessionEndSuccess => 'Session d\'accueil terminée';
+
+  @override
+  String get fosteringSessionEndPendingDescription =>
+      'La période d\'accueil se termine. Confirmez comment l\'animal retourne sous la garde du refuge.';
+
+  @override
+  String get fosteringSessionEndConfirmTitle =>
+      'Terminer la session d\'accueil ?';
+
+  @override
+  String get fosteringSessionEndConfirmReturned =>
+      'Confirmer que l\'animal est revenu sous la garde du refuge et clôturer cette session.';
+
+  @override
+  String get fosteringSessionEndConfirmCancelled =>
+      'Annuler cette session d\'accueil sans marquer de retour au refuge.';
 
   @override
   String get startAdoption => 'Commencer l\'adoption';
@@ -3541,4 +3824,28 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get viewOrganization => 'Voir l\'organisation';
+
+  @override
+  String get prospectsTitle => 'Candidats';
+
+  @override
+  String get prospectsEmpty => 'Aucun candidat pour le moment';
+
+  @override
+  String get adoptionVisitsTitle => 'Visites d\'adoption';
+
+  @override
+  String get adoptionVisitsEmpty => 'Aucune visite d\'adoption planifiée';
+
+  @override
+  String get adoptionJourneyTitle => 'Parcours d\'adoption';
+
+  @override
+  String get adoptionJourneyStatusLabel => 'Statut';
+
+  @override
+  String get adoptionJourneyConditionsLabel => 'Conditions';
+
+  @override
+  String get adoptionJourneyStatusUnknown => 'Inconnu';
 }

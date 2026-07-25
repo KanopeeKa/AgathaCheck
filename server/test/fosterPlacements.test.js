@@ -1,5 +1,4 @@
 import request from 'supertest';
-import jwt from 'jsonwebtoken';
 import { createApp } from '../bin/server.js';
 import {
   PLACEMENT_STATUS_ADOPTED,
@@ -8,170 +7,104 @@ import {
   PLACEMENT_STATUS_PENDING,
   PLACEMENT_STATUS_PENDING_CONDITIONS,
   PLACEMENT_STATUS_WAITING_ADOPTION,
+  SESSION_STATUS_ACTIVE,
+  SESSION_STATUS_ADOPTION_IN_PROGRESS,
+  SESSION_STATUS_CANCELLED,
+  SESSION_STATUS_CONVERTED_TO_ADOPTION,
+  SESSION_STATUS_END_PENDING_CONFIRMATION,
+  SESSION_STATUS_PENDING_ACCEPTANCE,
+  normalizePlacementStatus,
+  OPEN_PLACEMENT_STATUSES,
+  placementToMap,
+  toLegacyStatus,
 } from '../lib/fosterPlacements.js';
+import {
+  adminId,
+  adminToken,
+  buildFosterPlacementMockPool,
+  fosterId,
+  fosterToken,
+  orgId,
+  petId,
+  placementId,
+} from './helpers/fosterPlacementMockPool.js';
 
-const JWT_SECRET = process.env.JWT_SECRET || process.env.SESSION_SECRET || 'default_secret';
-const adminId = 'admin-user-id';
-const fosterId = 'foster-user-id';
-const adminToken = jwt.sign({ id: adminId, email: 'admin@example.com' }, JWT_SECRET, { expiresIn: '1h' });
-const fosterToken = jwt.sign({ id: fosterId, email: 'foster@example.com' }, JWT_SECRET, { expiresIn: '1h' });
-const orgId = 'org-1';
-const petId = 'pet-1';
-const placementId = 'placement-1';
+const buildMockPool = buildFosterPlacementMockPool;
 
-function makePlacementRow(status) {
-  return {
-    id: placementId,
-    organization_id: orgId,
-    pet_id: petId,
-    foster_user_id: fosterId,
-    org_foster_parent_id: null,
-    status,
-    start_date: null,
-    end_date: null,
-    notes: '',
-    adoption_conditions: '',
-    created_by: adminId,
-    created_at: new Date('2024-01-01'),
-    updated_at: new Date('2024-01-01'),
-    responded_at: null,
-    pet_name: 'Buddy',
-    pet_species: 'dog',
-    organization_name: 'Test Org',
-    foster_name: 'Jane Foster',
-    foster_email: 'foster@example.com',
-  };
-}
-
-function buildMockPool() {
-  let placementStatus = null;
-  let fosterAccessGranted = false;
-  let adoptedOwnerId = null;
-
-  const handleQuery = async (sql, params) => {
-    if (sql === 'BEGIN' || sql === 'COMMIT' || sql === 'ROLLBACK') {
-      return { rows: [] };
-    }
-    if (sql.includes('SELECT role FROM organization_users WHERE organization_id')) {
-      const uid = params[1];
-      if (uid === adminId) return { rows: [{ role: 'admin' }] };
-      if (uid === fosterId) return { rows: [{ role: 'foster' }] };
-      return { rows: [] };
-    }
-    if (sql.includes('FROM foster_placements fp') && sql.includes('fp.foster_user_id = $1') && sql.includes('fp.status = $2')) {
-      if (params[1] === placementStatus) {
-        return { rows: [makePlacementRow(placementStatus)] };
-      }
-      return { rows: [] };
-    }
-    if (sql.includes('SELECT * FROM foster_placements WHERE id = $1 AND organization_id')) {
-      if (!placementStatus) return { rows: [] };
-      return { rows: [makePlacementRow(placementStatus)] };
-    }
-    if (sql.includes('SELECT * FROM foster_placements WHERE id = $1 FOR UPDATE')) {
-      if (!placementStatus) return { rows: [] };
-      return { rows: [makePlacementRow(placementStatus)] };
-    }
-    if (sql.includes('SELECT * FROM foster_placements WHERE id = $1')) {
-      if (!placementStatus) return { rows: [] };
-      return { rows: [makePlacementRow(placementStatus)] };
-    }
-    if (sql.includes('SELECT fp.*') && sql.includes('WHERE fp.pet_id = $1')) {
-      if (!placementStatus || placementStatus === PLACEMENT_STATUS_NOT_IN_FOSTER || placementStatus === PLACEMENT_STATUS_ADOPTED) {
-        return { rows: [] };
-      }
-      return { rows: [makePlacementRow(placementStatus)] };
-    }
-    if (sql.includes('SELECT id, name FROM pets WHERE id = $1 AND organization_id')) {
-      return { rows: [{ id: petId, name: 'Buddy' }] };
-    }
-    if (sql.includes('SELECT id, name, species, user_id, organization_id FROM pets WHERE id = $1')) {
-      return { rows: [{ id: petId, name: 'Buddy', species: 'dog', user_id: adminId, organization_id: orgId }] };
-    }
-    if (sql.includes('SELECT id FROM pets WHERE id = $1 AND organization_id = $2')) {
-      return { rows: [{ id: petId }] };
-    }
-    if (sql.includes('SELECT name FROM pets WHERE id = $1')) {
-      return { rows: [{ name: 'Buddy' }] };
-    }
-    if (sql.includes('INSERT INTO foster_placements')) {
-      placementStatus = params[4] || PLACEMENT_STATUS_PENDING;
-      return { rows: [makePlacementRow(placementStatus)] };
-    }
-    if (sql.includes('UPDATE foster_placements') && params[0] === PLACEMENT_STATUS_IN_PROGRESS) {
-      placementStatus = PLACEMENT_STATUS_IN_PROGRESS;
-      fosterAccessGranted = true;
-      return { rows: [makePlacementRow(PLACEMENT_STATUS_IN_PROGRESS)] };
-    }
-    if (sql.includes('UPDATE foster_placements') && params[0] === PLACEMENT_STATUS_WAITING_ADOPTION) {
-      placementStatus = PLACEMENT_STATUS_WAITING_ADOPTION;
-      return { rows: [makePlacementRow(PLACEMENT_STATUS_WAITING_ADOPTION)] };
-    }
-    if (sql.includes('UPDATE foster_placements') && params[0] === PLACEMENT_STATUS_PENDING_CONDITIONS) {
-      placementStatus = PLACEMENT_STATUS_PENDING_CONDITIONS;
-      return { rows: [makePlacementRow(PLACEMENT_STATUS_PENDING_CONDITIONS)] };
-    }
-    if (sql.includes('UPDATE foster_placements') && params[0] === PLACEMENT_STATUS_ADOPTED) {
-      placementStatus = PLACEMENT_STATUS_ADOPTED;
-      adoptedOwnerId = fosterId;
-      return { rows: [makePlacementRow(PLACEMENT_STATUS_ADOPTED)] };
-    }
-    if (sql.includes('UPDATE foster_placements') && params[0] === PLACEMENT_STATUS_NOT_IN_FOSTER) {
-      const ended = makePlacementRow(PLACEMENT_STATUS_NOT_IN_FOSTER);
-      placementStatus = PLACEMENT_STATUS_NOT_IN_FOSTER;
-      fosterAccessGranted = false;
-      return { rows: [ended] };
-    }
-    if (sql.includes('UPDATE pets') && sql.includes('organization_id = NULL')) {
-      adoptedOwnerId = params[0];
-      return { rows: [] };
-    }
-    if (sql.includes('INSERT INTO archived_pets')) {
-      return { rows: [] };
-    }
-    if (sql.includes('INSERT INTO pet_access') && sql.includes("'foster'")) {
-      fosterAccessGranted = true;
-      return { rows: [] };
-    }
-    if (sql.includes('DELETE FROM pet_access')) {
-      fosterAccessGranted = false;
-      return { rows: [] };
-    }
-    if (sql.includes('SELECT first_name, last_name, email FROM users')) {
-      return { rows: [{ first_name: 'Test', last_name: 'User', email: 'test@example.com' }] };
-    }
-    if (sql.includes('INSERT INTO notifications')) {
-      return { rows: [] };
-    }
-    if (sql.includes('FROM foster_placements fp') && sql.includes('WHERE fp.organization_id')) {
-      if (!placementStatus || placementStatus === PLACEMENT_STATUS_NOT_IN_FOSTER) {
-        return { rows: [] };
-      }
-      return { rows: [makePlacementRow(placementStatus)] };
-    }
-    if (sql.includes('WHERE fp.id = $1')) {
-      if (!placementStatus) return { rows: [] };
-      return { rows: [makePlacementRow(placementStatus)] };
-    }
-    return { rows: [] };
-  };
-
-  const query = handleQuery;
-  const connect = async () => ({
-    query: handleQuery,
-    release: () => {},
+describe('fostering session schema (J3 Phase 1)', () => {
+  it('maps legacy statuses to target session statuses (appendix §3.1)', () => {
+    expect(normalizePlacementStatus(PLACEMENT_STATUS_PENDING)).toBe(SESSION_STATUS_PENDING_ACCEPTANCE);
+    expect(normalizePlacementStatus(PLACEMENT_STATUS_IN_PROGRESS)).toBe(SESSION_STATUS_ACTIVE);
+    expect(normalizePlacementStatus(PLACEMENT_STATUS_WAITING_ADOPTION)).toBe(SESSION_STATUS_ADOPTION_IN_PROGRESS);
+    expect(normalizePlacementStatus(PLACEMENT_STATUS_PENDING_CONDITIONS)).toBe(SESSION_STATUS_ADOPTION_IN_PROGRESS);
+    expect(normalizePlacementStatus(PLACEMENT_STATUS_ADOPTED)).toBe(SESSION_STATUS_CONVERTED_TO_ADOPTION);
+    expect(normalizePlacementStatus(PLACEMENT_STATUS_NOT_IN_FOSTER)).toBe(SESSION_STATUS_CANCELLED);
   });
 
-  return {
-    query,
-    connect,
-    get fosterAccessGranted() { return fosterAccessGranted; },
-    get adoptedOwnerId() { return adoptedOwnerId; },
-    setPlacementPending() { placementStatus = PLACEMENT_STATUS_PENDING; },
-    setPlacementInProgress() { placementStatus = PLACEMENT_STATUS_IN_PROGRESS; },
-    setPlacementWaitingAdoption() { placementStatus = PLACEMENT_STATUS_WAITING_ADOPTION; },
-  };
-}
+  it('passes through canonical session statuses unchanged', () => {
+    expect(normalizePlacementStatus(SESSION_STATUS_ACTIVE)).toBe(SESSION_STATUS_ACTIVE);
+    expect(normalizePlacementStatus(SESSION_STATUS_PENDING_ACCEPTANCE)).toBe(SESSION_STATUS_PENDING_ACCEPTANCE);
+  });
+
+  it('maps adoption_in_progress with conditions to legacy pending_adoption_conditions', () => {
+    expect(toLegacyStatus(SESSION_STATUS_ADOPTION_IN_PROGRESS, { adoption_conditions: 'Neuter first' }))
+      .toBe(PLACEMENT_STATUS_PENDING_CONDITIONS);
+    expect(toLegacyStatus(SESSION_STATUS_ADOPTION_IN_PROGRESS, { adoption_conditions: '' }))
+      .toBe(PLACEMENT_STATUS_WAITING_ADOPTION);
+  });
+
+  it('maps session statuses back to legacy API values', () => {
+    expect(toLegacyStatus(SESSION_STATUS_PENDING_ACCEPTANCE)).toBe(PLACEMENT_STATUS_PENDING);
+    expect(toLegacyStatus(SESSION_STATUS_ACTIVE)).toBe(PLACEMENT_STATUS_IN_PROGRESS);
+    expect(toLegacyStatus(SESSION_STATUS_ADOPTION_IN_PROGRESS)).toBe(PLACEMENT_STATUS_WAITING_ADOPTION);
+    expect(toLegacyStatus(SESSION_STATUS_CONVERTED_TO_ADOPTION)).toBe(PLACEMENT_STATUS_ADOPTED);
+    expect(toLegacyStatus(SESSION_STATUS_CANCELLED)).toBe(PLACEMENT_STATUS_NOT_IN_FOSTER);
+  });
+
+  it('includes legacy and target statuses in OPEN_PLACEMENT_STATUSES during dual-write', () => {
+    expect(OPEN_PLACEMENT_STATUSES).toEqual(expect.arrayContaining([
+      PLACEMENT_STATUS_PENDING,
+      PLACEMENT_STATUS_IN_PROGRESS,
+      SESSION_STATUS_PENDING_ACCEPTANCE,
+      SESSION_STATUS_ACTIVE,
+      SESSION_STATUS_ADOPTION_IN_PROGRESS,
+    ]));
+  });
+
+  it('placementToMap exposes session fields and dual-write status fields', () => {
+    const row = {
+      id: placementId,
+      organization_id: orgId,
+      pet_id: petId,
+      foster_user_id: fosterId,
+      org_foster_parent_id: 'rel-1',
+      shelter_foster_relationship_id: 'rel-1',
+      session_type: 'standard_foster',
+      foster_request_response_id: 'response-1',
+      shelter_start_confirmed_at: new Date('2024-02-01'),
+      foster_start_confirmed_at: new Date('2024-02-02'),
+      status: SESSION_STATUS_ACTIVE,
+      start_date: '2024-02-01',
+      end_date: null,
+      notes: 'notes',
+      adoption_conditions: '',
+      created_by: adminId,
+      created_at: new Date('2024-01-01'),
+      updated_at: new Date('2024-02-02'),
+      responded_at: new Date('2024-02-02'),
+    };
+
+    expect(placementToMap(row)).toMatchObject({
+      status: PLACEMENT_STATUS_IN_PROGRESS,
+      session_status: SESSION_STATUS_ACTIVE,
+      shelter_foster_relationship_id: 'rel-1',
+      session_type: 'standard_foster',
+      foster_request_response_id: 'response-1',
+      shelter_start_confirmed_at: row.shelter_start_confirmed_at,
+      foster_start_confirmed_at: row.foster_start_confirmed_at,
+    });
+  });
+});
 
 describe('Foster placements API', () => {
   describe('Auth guard', () => {
@@ -258,7 +191,7 @@ describe('Foster placements API', () => {
       expect(res.body.placement).toMatchObject({ pet_id: petId });
     });
 
-    it('ends an in-progress placement', async () => {
+    it('ends an in-progress placement via end confirmation', async () => {
       const pool = buildMockPool();
       pool.setPlacementPending();
       const app = createApp(pool);
@@ -271,7 +204,7 @@ describe('Foster placements API', () => {
         .set('Authorization', `Bearer ${adminToken}`)
         .send({});
       expect(res.statusCode).toBe(200);
-      expect(res.body.status).toBe(PLACEMENT_STATUS_NOT_IN_FOSTER);
+      expect(res.body.session_status).toBe('end_pending_confirmation');
     });
 
     it('GET /:orgId/placements returns 403 for foster', async () => {
@@ -293,7 +226,9 @@ describe('Foster placements API', () => {
         .set('Authorization', `Bearer ${adminToken}`)
         .send({});
       expect(res.statusCode).toBe(200);
+      expect(res.body.session_status).toBe(SESSION_STATUS_ADOPTION_IN_PROGRESS);
       expect(res.body.status).toBe(PLACEMENT_STATUS_WAITING_ADOPTION);
+      expect(res.body.adoption_journey).toBeDefined();
     });
 
     it('admin can start adoption with pre-adoption conditions', async () => {
@@ -306,6 +241,7 @@ describe('Foster placements API', () => {
         .send({ adoption_conditions: 'Must be neutered first' });
       expect(res.statusCode).toBe(200);
       expect(res.body.status).toBe(PLACEMENT_STATUS_PENDING_CONDITIONS);
+      expect(res.body.adoption_journey.status).toBe('pending_conditions');
     });
 
     it('foster lists pending adoption confirmations', async () => {
@@ -349,13 +285,18 @@ describe('Foster placements API', () => {
     });
 
     it('admin can start direct adopt without a foster period', async () => {
-      const app = createApp(buildMockPool());
+      const pool = buildMockPool();
+      const app = createApp(pool);
       const res = await request(app)
         .post(`/api/organizations/${orgId}/pets/${petId}/placements/direct-adopt`)
         .set('Authorization', `Bearer ${adminToken}`)
         .send({ foster_user_id: fosterId });
+      if (res.statusCode !== 201) {
+        throw new Error(`direct-adopt failed: ${res.statusCode} ${JSON.stringify(res.body)}`);
+      }
       expect(res.statusCode).toBe(201);
-      expect(res.body.status).toBe(PLACEMENT_STATUS_WAITING_ADOPTION);
+      expect(res.body.session_status).toBe(SESSION_STATUS_ADOPTION_IN_PROGRESS);
+      expect(res.body.adoption_journey).toBeDefined();
     });
   });
 });

@@ -1,6 +1,7 @@
 import request from 'supertest';
 import jwt from 'jsonwebtoken';
 import { createApp } from '../../bin/server.js';
+import { createFosteringMockState, handleFosteringOrgQueries } from './helpers_fosteringHandlers.js';
 
 const JWT_SECRET = process.env.JWT_SECRET || process.env.SESSION_SECRET || 'default_secret';
 const userId = 'test-user-id';
@@ -33,6 +34,7 @@ export function makeOrgRow(overrides = {}) {
 }
 
 export function buildMockPool(overrides = {}) {
+  const { fosterRequests, fosterResponses } = createFosteringMockState(orgId, userId);
   const defaultHandler = async (sql, params) => {
     if (sql.includes('SELECT o.*') && sql.includes('ORDER BY o.name')) {
       return { rows: [makeOrgRow()] };
@@ -241,7 +243,7 @@ export function buildMockPool(overrides = {}) {
         }],
       };
     }
-    if (sql.includes('FROM users u') && sql.includes('LOWER(u.email)')) {
+    if (sql.includes('FROM users u') && sql.includes('LOWER(u.email)') && sql.includes('foster_profiles')) {
       return {
         rows: [{
           user_id: 'registered-user-1',
@@ -353,13 +355,16 @@ export function buildMockPool(overrides = {}) {
     if (sql.includes('DELETE FROM org_foster_parents')) {
       return { rows: [{ id: 'fp-external-1' }] };
     }
+    const fosteringResult = await handleFosteringOrgQueries(sql, params, {
+      orgId,
+      userId,
+      fosterRequests,
+      fosterResponses,
+    });
+    if (fosteringResult) return fosteringResult;
     return { rows: [] };
   };
 
-  // The authorization guards (requireMember/requireAdmin) issue a membership
-  // lookup. Layer it on top of any custom query override so guard behavior can
-  // be controlled per-test via `memberRole` without each override re-declaring
-  // it: 'super_admin' (default), 'admin', 'foster', or null (non-member).
   const memberRole = overrides.memberRole === undefined ? 'super_admin' : overrides.memberRole;
   const inner = overrides.query || defaultHandler;
   const query = async (sql, params) => {

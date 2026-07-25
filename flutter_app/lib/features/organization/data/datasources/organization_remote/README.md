@@ -12,6 +12,7 @@ Modular HTTP clients for organization APIs. Mirrors `server/routes/organizations
 | `organization_members_remote.dart` | Members list, invite-by-email, role changes |
 | `organization_pets_remote.dart` | Org pets, transfers, archived pets, family events |
 | `organization_foster_parents_remote.dart` | Foster parent directory, people directory |
+| `organization_foster_requests_remote.dart` | Foster request send/list/detail/respond |
 | `organization_placements_remote.dart` | Foster placements and adoption lifecycle |
 
 `../organization_remote_datasource.dart` is the **facade** — same public API as before the split.

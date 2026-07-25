@@ -5,34 +5,45 @@ import 'package:pet_profile_app/features/organization/presentation/providers/man
 FosterParent _parent({
   required String id,
   FosterParentKind kind = FosterParentKind.member,
-  int activePetCount = 0,
-  List<FosterParentAssignedPet> activePets = const [],
   FosterApprovalState approvalState = FosterApprovalState.approved,
+  FosteringActivitySummary activitySummary =
+      FosteringActivitySummary.notYetPlaced,
 }) {
   return FosterParent(
     id: id,
     kind: kind,
     displayName: 'Test $id',
-    activePetCount: activePetCount,
-    activePets: activePets,
     approvalState: approvalState,
+    fosteringActivitySummary: activitySummary,
   );
 }
 
 void main() {
   group('filterFosterParentsForManageFosters', () {
     final parents = [
-      _parent(id: 'active', activePetCount: 1),
+      _parent(
+        id: 'active',
+        activitySummary: FosteringActivitySummary.activelyFostering,
+      ),
       _parent(
         id: 'external-new',
         kind: FosterParentKind.external,
         approvalState: FosterApprovalState.underReview,
+        activitySummary: FosteringActivitySummary.notYetPlaced,
       ),
-      _parent(id: 'inactive-member'),
+      _parent(
+        id: 'inactive-member',
+        activitySummary: FosteringActivitySummary.inactive,
+      ),
       _parent(
         id: 'archived-external',
         kind: FosterParentKind.external,
         approvalState: FosterApprovalState.archived,
+        activitySummary: FosteringActivitySummary.inactive,
+      ),
+      _parent(
+        id: 'recent',
+        activitySummary: FosteringActivitySummary.recentlyEnded,
       ),
     ];
 
@@ -41,10 +52,10 @@ void main() {
         parents: parents,
         tab: ManageFostersTab.all,
       );
-      expect(result.length, 4);
+      expect(result.length, 5);
     });
 
-    test('fostering tab returns active placements only', () {
+    test('fostering tab returns actively fostering parents only', () {
       final result = filterFosterParentsForManageFosters(
         parents: parents,
         tab: ManageFostersTab.fostering,
@@ -52,26 +63,31 @@ void main() {
       expect(result.map((p) => p.id), ['active']);
     });
 
-    test('new tab returns external without placements', () {
+    test('new tab returns not-yet-placed fosters', () {
       final result = filterFosterParentsForManageFosters(
         parents: parents,
         tab: ManageFostersTab.newFosters,
       );
-      expect(
-        result.map((p) => p.id),
-        containsAll(['external-new', 'archived-external']),
-      );
+      expect(result.map((p) => p.id), ['external-new']);
     });
 
-    test('inactive tab returns non-fostering members', () {
+    test('inactive tab returns inactive fosters', () {
       final result = filterFosterParentsForManageFosters(
         parents: parents,
         tab: ManageFostersTab.inactive,
       );
       expect(
         result.map((p) => p.id),
-        containsAll(['external-new', 'inactive-member', 'archived-external']),
+        containsAll(['inactive-member', 'archived-external']),
       );
+    });
+
+    test('recently fostered tab returns recently ended fosters', () {
+      final result = filterFosterParentsForManageFosters(
+        parents: parents,
+        tab: ManageFostersTab.recentlyFostered,
+      );
+      expect(result.map((p) => p.id), ['recent']);
     });
 
     test('approval filter under_review', () {

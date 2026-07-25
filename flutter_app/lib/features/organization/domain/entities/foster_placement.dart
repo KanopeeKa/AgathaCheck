@@ -1,4 +1,5 @@
 import '../../../../core/utils/calendar_date.dart';
+import 'foster_session_status.dart';
 
 class FosterPlacement {
   const FosterPlacement({
@@ -7,6 +8,11 @@ class FosterPlacement {
     required this.petId,
     required this.fosterUserId,
     required this.status,
+    this.sessionStatus = FosterSessionStatus.cancelled,
+    this.sessionType = FosterSessionType.standardFoster,
+    this.shelterFosterRelationshipId,
+    this.shelterStartConfirmedAt,
+    this.fosterStartConfirmedAt,
     this.petName = '',
     this.petSpecies = '',
     this.organizationName = '',
@@ -26,6 +32,11 @@ class FosterPlacement {
   final String petId;
   final String fosterUserId;
   final String status;
+  final String sessionStatus;
+  final String sessionType;
+  final String? shelterFosterRelationshipId;
+  final DateTime? shelterStartConfirmedAt;
+  final DateTime? fosterStartConfirmedAt;
   final String petName;
   final String petSpecies;
   final String organizationName;
@@ -49,13 +60,44 @@ class FosterPlacement {
       isPending || isInProgress || isWaitingAdoption || isPendingConditions;
   bool get isAdoptionInProgress => isWaitingAdoption || isPendingConditions;
 
+  bool get isSessionPendingAcceptance =>
+      sessionStatus == FosterSessionStatus.pendingAcceptance;
+  bool get isSessionPreparation =>
+      sessionStatus == FosterSessionStatus.preparation;
+  bool get isSessionReadyToStart =>
+      sessionStatus == FosterSessionStatus.readyToStart;
+  bool get isSessionActive => sessionStatus == FosterSessionStatus.active;
+  bool get isSessionEndPending =>
+      sessionStatus == FosterSessionStatus.endPendingConfirmation;
+  bool get isSessionAdoptionInProgress =>
+      sessionStatus == FosterSessionStatus.adoptionInProgress;
+  bool get isSessionOpen => FosterSessionStatus.isOpen(sessionStatus);
+  bool get isSessionTerminal => FosterSessionStatus.isTerminal(sessionStatus);
+  bool get shelterStartConfirmed => shelterStartConfirmedAt != null;
+  bool get fosterStartConfirmed => fosterStartConfirmedAt != null;
+
   factory FosterPlacement.fromJson(Map<String, dynamic> json) {
+    final legacyStatus = json['status']?.toString() ?? 'not_in_foster';
+    final sessionStatus = json['session_status']?.toString();
     return FosterPlacement(
       id: json['id']?.toString() ?? '',
       organizationId: json['organization_id']?.toString() ?? '',
       petId: json['pet_id']?.toString() ?? '',
       fosterUserId: json['foster_user_id']?.toString() ?? '',
-      status: json['status']?.toString() ?? 'not_in_foster',
+      status: legacyStatus,
+      sessionStatus: sessionStatus != null && sessionStatus.isNotEmpty
+          ? sessionStatus
+          : FosterSessionStatus.fromLegacyStatus(legacyStatus),
+      sessionType:
+          json['session_type']?.toString() ?? FosterSessionType.standardFoster,
+      shelterFosterRelationshipId: json['shelter_foster_relationship_id']
+          ?.toString(),
+      shelterStartConfirmedAt: json['shelter_start_confirmed_at'] != null
+          ? DateTime.tryParse(json['shelter_start_confirmed_at'].toString())
+          : null,
+      fosterStartConfirmedAt: json['foster_start_confirmed_at'] != null
+          ? DateTime.tryParse(json['foster_start_confirmed_at'].toString())
+          : null,
       petName: json['pet_name']?.toString() ?? '',
       petSpecies: json['pet_species']?.toString() ?? '',
       organizationName: json['organization_name']?.toString() ?? '',

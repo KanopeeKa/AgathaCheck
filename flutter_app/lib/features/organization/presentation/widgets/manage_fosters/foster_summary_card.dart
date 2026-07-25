@@ -4,7 +4,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../../l10n/app_localizations.dart';
 import '../../../domain/entities/foster_parent.dart';
 import '../../../domain/entities/organization_member.dart';
-import '../../providers/manage_fosters_providers.dart';
 import '../../providers/organization_providers.dart';
 import '../../screens/manage_fosters/manage_fosters_screen.dart';
 import '../organization_add_foster_parent_dialog.dart';
@@ -36,12 +35,17 @@ class FosterSummaryCard extends ConsumerWidget {
       l.assignedPets(parent.activePetCount),
     ];
 
-    String? activityLabel;
-    if (fosterHasActivePlacement(parent)) {
-      activityLabel = l.manageFostersStatusFostering;
-    } else if (parent.isExternal) {
-      activityLabel = l.fosterParentNoAccount;
-    }
+    final activityLabel = switch (parent.fosteringActivitySummary) {
+      FosteringActivitySummary.activelyFostering =>
+        l.manageFostersStatusFostering,
+      FosteringActivitySummary.inPreparation =>
+        l.fosteringSessionPreparationTitle,
+      FosteringActivitySummary.recentlyEnded =>
+        l.manageFostersTabRecentlyFostered,
+      FosteringActivitySummary.notYetPlaced =>
+        parent.isExternal ? l.fosterParentNoAccount : null,
+      FosteringActivitySummary.inactive => null,
+    };
 
     final statusChips = <Widget>[
       if (parent.isExternal &&
@@ -167,6 +171,7 @@ class _FosterActions extends ConsumerWidget {
             child: Text(l.manageFostersApprovalDecline),
           ),
         ]);
+        break;
       case FosterApprovalState.approved:
         items.add(
           PopupMenuItem(
@@ -174,6 +179,7 @@ class _FosterActions extends ConsumerWidget {
             child: Text(l.manageFostersApprovalArchive),
           ),
         );
+        break;
       case FosterApprovalState.declined:
         items.add(
           PopupMenuItem(
@@ -181,6 +187,7 @@ class _FosterActions extends ConsumerWidget {
             child: Text(l.manageFostersApprovalApprove),
           ),
         );
+        break;
       case FosterApprovalState.archived:
         break;
     }
@@ -210,26 +217,32 @@ class _FosterActions extends ConsumerWidget {
               orgId: orgId,
               parent: parent,
             );
+            break;
           case 'approve':
             await ref
                 .read(orgFosterParentsProvider(orgId).notifier)
                 .updateApproval(parent.id, FosterApprovalState.approved);
+            break;
           case 'decline':
             await ref
                 .read(orgFosterParentsProvider(orgId).notifier)
                 .updateApproval(parent.id, FosterApprovalState.declined);
+            break;
           case 'archive':
             await ref
                 .read(orgFosterParentsProvider(orgId).notifier)
                 .updateApproval(parent.id, FosterApprovalState.archived);
+            break;
           case 'record_opt_out':
             await ref
                 .read(orgFosterParentsProvider(orgId).notifier)
                 .updateOptOut(parent.id, true);
+            break;
           case 'clear_opt_out':
             await ref
                 .read(orgFosterParentsProvider(orgId).notifier)
                 .updateOptOut(parent.id, false);
+            break;
         }
       },
       itemBuilder: (context) => items,

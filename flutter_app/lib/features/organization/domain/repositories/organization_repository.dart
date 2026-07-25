@@ -4,6 +4,7 @@ import '../entities/archived_pet.dart';
 import '../entities/custody_transfer.dart';
 import '../entities/foster_parent.dart';
 import '../entities/foster_placement.dart';
+import '../entities/foster_request.dart';
 import '../entities/org_connection.dart';
 import '../entities/org_home_hidden_pet.dart';
 import '../entities/org_person.dart';
@@ -176,6 +177,39 @@ abstract class OrganizationRepository {
     required String token,
   });
 
+  Future<List<FosterRequest>> getFosterRequests(String orgId, String token);
+  Future<List<String>> getEligibleFosterTargetIds(
+    String orgId, {
+    required List<String> petIds,
+    required String token,
+  });
+  Future<FosterRequest> createFosterRequest(
+    String orgId, {
+    required String message,
+    required List<String> petIds,
+    required List<String> orgFosterParentIds,
+    bool send,
+    required String token,
+  });
+  Future<FosterRequest> getFosterRequestDetail(
+    String orgId,
+    String requestId,
+    String token,
+  );
+  Future<FosterRequest> sendFosterRequest(
+    String orgId,
+    String requestId, {
+    required String token,
+  });
+  Future<FosterRequest> respondToFosterRequest(
+    String orgId,
+    String requestId, {
+    required FosterResponseType response,
+    String? message,
+    DateTime? earliestAvailability,
+    required String token,
+  });
+
   Future<PetFosterPlacementState> getPetPlacement(
     String orgId,
     String petId,
@@ -223,6 +257,56 @@ abstract class OrganizationRepository {
   Future<List<FosterPlacement>> getPetFosterHistory(
     String orgId,
     String petId,
+    String token,
+  );
+
+  Future<FosterPlacement> getPlacementDetail(
+    String orgId,
+    String placementId,
+    String token,
+  );
+  Future<FosterPlacement> transitionFosteringSession(
+    String orgId,
+    String placementId, {
+    required String sessionStatus,
+    required String token,
+  });
+  Future<FosterPlacement> confirmShelterSessionStart(
+    String orgId,
+    String placementId, {
+    required String token,
+  });
+  Future<FosterPlacement> confirmFosterSessionStart(
+    String orgId,
+    String placementId, {
+    required String token,
+  });
+  Future<FosterPlacement> requestFosteringSessionEnd(
+    String orgId,
+    String placementId, {
+    required String token,
+  });
+  Future<FosterPlacement> endFosteringSession(
+    String orgId,
+    String placementId, {
+    required String outcome,
+    DateTime? endDate,
+    required String token,
+  });
+
+  Future<List<Map<String, dynamic>>> getProspects(String orgId, String token);
+  Future<List<Map<String, dynamic>>> getAdoptionVisits(
+    String orgId,
+    String token,
+  );
+  Future<Map<String, dynamic>> getAdoptionJourney(
+    String orgId,
+    String placementId,
+    String token,
+  );
+  Future<Map<String, dynamic>> getSessionChecklist(
+    String orgId,
+    String placementId,
     String token,
   );
 

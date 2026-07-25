@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../../l10n/app_localizations.dart';
 import '../providers/foster_placements_providers.dart';
@@ -90,6 +91,9 @@ class PetFosterPlacementSection extends ConsumerWidget {
                 fosterPlacementSummary(
                   l,
                   status: state.isNotInFoster ? null : placement?.status,
+                  sessionStatus: state.isNotInFoster
+                      ? null
+                      : placement?.sessionStatus,
                   fosterName: fosterLabel,
                 ),
                 style: theme.textTheme.bodySmall?.copyWith(
@@ -166,6 +170,18 @@ class PetFosterPlacementSection extends ConsumerWidget {
                                 petName: petName,
                                 placement: placement,
                               ),
+                          sessionAction: placement.isSessionOpen
+                              ? TextButton.icon(
+                                  key: const Key(
+                                    'open_fostering_session_button',
+                                  ),
+                                  onPressed: () => context.push(
+                                    '/o/orgs/$orgId/placements/${placement.id}/session',
+                                  ),
+                                  icon: const Icon(Icons.open_in_new, size: 18),
+                                  label: Text(l.fosteringSessionManage),
+                                )
+                              : null,
                         ),
                 ),
               ],

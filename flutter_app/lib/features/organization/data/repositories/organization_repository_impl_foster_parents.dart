@@ -1,10 +1,9 @@
-import '../../../../core/utils/calendar_date.dart';
 import '../../domain/entities/foster_parent.dart';
-import '../../domain/entities/foster_placement.dart';
 import '../../domain/entities/org_person.dart';
 import 'organization_repository_impl_base.dart';
 
-mixin OrganizationRepositoryFosterMixin on OrganizationRepositoryImplBase {
+mixin OrganizationRepositoryFosterParentsMixin
+    on OrganizationRepositoryImplBase {
   @override
   Future<List<FosterParent>> getFosterParents(
     String orgId,
@@ -196,127 +195,5 @@ mixin OrganizationRepositoryFosterMixin on OrganizationRepositoryImplBase {
       token: token,
     );
     return FosterParent.fromJson(row);
-  }
-
-  @override
-  Future<PetFosterPlacementState> getPetPlacement(
-    String orgId,
-    String petId,
-    String token,
-  ) async {
-    final row = await dataSource.getPetPlacement(orgId, petId, token);
-    return PetFosterPlacementState.fromJson(row);
-  }
-
-  @override
-  Future<FosterPlacement> startFosterPlacement(
-    String orgId,
-    String petId, {
-    required String fosterUserId,
-    DateTime? startDate,
-    String notes = '',
-    required String token,
-  }) async {
-    final row = await dataSource.startFosterPlacement(
-      orgId,
-      petId,
-      fosterUserId: fosterUserId,
-      startDate: startDate != null ? toCalendarDateString(startDate) : null,
-      notes: notes,
-      token: token,
-    );
-    return FosterPlacement.fromJson(row);
-  }
-
-  @override
-  Future<FosterPlacement> endFosterPlacement(
-    String orgId,
-    String placementId, {
-    DateTime? endDate,
-    required String token,
-  }) async {
-    final row = await dataSource.endFosterPlacement(
-      orgId,
-      placementId,
-      endDate: endDate != null ? toCalendarDateString(endDate) : null,
-      token: token,
-    );
-    return FosterPlacement.fromJson(row);
-  }
-
-  @override
-  Future<FosterPlacement> startAdoption(
-    String orgId,
-    String placementId, {
-    String adoptionConditions = '',
-    required String token,
-  }) async {
-    final row = await dataSource.startAdoption(
-      orgId,
-      placementId,
-      adoptionConditions: adoptionConditions,
-      token: token,
-    );
-    return FosterPlacement.fromJson(row);
-  }
-
-  @override
-  Future<FosterPlacement> completeAdoptionConditions(
-    String orgId,
-    String placementId, {
-    required String token,
-  }) async {
-    final row = await dataSource.completeAdoptionConditions(
-      orgId,
-      placementId,
-      token: token,
-    );
-    return FosterPlacement.fromJson(row);
-  }
-
-  @override
-  Future<FosterPlacement> cancelAdoption(
-    String orgId,
-    String placementId, {
-    DateTime? endDate,
-    required String token,
-  }) async {
-    final row = await dataSource.cancelAdoption(
-      orgId,
-      placementId,
-      endDate: endDate != null ? toCalendarDateString(endDate) : null,
-      token: token,
-    );
-    return FosterPlacement.fromJson(row);
-  }
-
-  @override
-  Future<FosterPlacement> directAdopt(
-    String orgId,
-    String petId, {
-    required String fosterUserId,
-    String adoptionConditions = '',
-    String notes = '',
-    required String token,
-  }) async {
-    final row = await dataSource.directAdopt(
-      orgId,
-      petId,
-      fosterUserId: fosterUserId,
-      adoptionConditions: adoptionConditions,
-      notes: notes,
-      token: token,
-    );
-    return FosterPlacement.fromJson(row);
-  }
-
-  @override
-  Future<List<FosterPlacement>> getPetFosterHistory(
-    String orgId,
-    String petId,
-    String token,
-  ) async {
-    final rows = await dataSource.getPetFosterHistory(orgId, petId, token);
-    return rows.map(FosterPlacement.fromJson).toList();
   }
 }

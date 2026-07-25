@@ -52,6 +52,11 @@ describe('Organizations API', () => {
         ['PATCH', `/api/organizations/${orgId}/foster-parents/fp-1/retention`],
         ['POST', `/api/organizations/${orgId}/foster-parents/fp-1/merge`],
         ['DELETE', `/api/organizations/${orgId}/foster-parents/fp-1`],
+        ['GET', `/api/organizations/${orgId}/foster-requests`],
+        ['POST', `/api/organizations/${orgId}/foster-requests`],
+        ['GET', `/api/organizations/${orgId}/foster-requests/fr-1`],
+        ['POST', `/api/organizations/${orgId}/foster-requests/fr-1/send`],
+        ['POST', `/api/organizations/${orgId}/foster-requests/fr-1/responses`],
       ];
   
       endpoints.forEach(([method, url]) => {

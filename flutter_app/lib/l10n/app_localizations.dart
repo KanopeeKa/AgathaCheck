@@ -4042,6 +4042,251 @@ abstract class AppLocalizations {
   /// **'Manual contact'**
   String get manageFostersRetentionManualContact;
 
+  /// No description provided for @fosterRequestsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Foster requests'**
+  String get fosterRequestsTitle;
+
+  /// No description provided for @fosterRequestsDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Send structured outreach to approved foster families and track their responses.'**
+  String get fosterRequestsDescription;
+
+  /// No description provided for @fosterRequestsEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No foster requests yet. Send one when you need help placing pets.'**
+  String get fosterRequestsEmpty;
+
+  /// No description provided for @fosterRequestSendNew.
+  ///
+  /// In en, this message translates to:
+  /// **'Send foster request'**
+  String get fosterRequestSendNew;
+
+  /// No description provided for @fosterRequestSendDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose pets that need placement and foster families to contact. You can save a draft or send immediately.'**
+  String get fosterRequestSendDescription;
+
+  /// No description provided for @fosterRequestMessageLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Message'**
+  String get fosterRequestMessageLabel;
+
+  /// No description provided for @fosterRequestMessageHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Describe what help you need and any timing details'**
+  String get fosterRequestMessageHint;
+
+  /// No description provided for @fosterRequestMessageRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Message is required'**
+  String get fosterRequestMessageRequired;
+
+  /// No description provided for @fosterRequestSelectPets.
+  ///
+  /// In en, this message translates to:
+  /// **'Pets needing foster care'**
+  String get fosterRequestSelectPets;
+
+  /// No description provided for @fosterRequestSelectFosters.
+  ///
+  /// In en, this message translates to:
+  /// **'Foster families to contact'**
+  String get fosterRequestSelectFosters;
+
+  /// No description provided for @fosterRequestNoPets.
+  ///
+  /// In en, this message translates to:
+  /// **'No active pets available for this request'**
+  String get fosterRequestNoPets;
+
+  /// No description provided for @fosterRequestNoEligibleFosters.
+  ///
+  /// In en, this message translates to:
+  /// **'No approved foster families without outreach opt-out are available'**
+  String get fosterRequestNoEligibleFosters;
+
+  /// No description provided for @fosterRequestSelectionRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Select at least one pet and one foster family'**
+  String get fosterRequestSelectionRequired;
+
+  /// No description provided for @fosterRequestSaveDraft.
+  ///
+  /// In en, this message translates to:
+  /// **'Save draft'**
+  String get fosterRequestSaveDraft;
+
+  /// No description provided for @fosterRequestSendNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Send now'**
+  String get fosterRequestSendNow;
+
+  /// No description provided for @fosterRequestDraftSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Foster request saved as draft'**
+  String get fosterRequestDraftSaved;
+
+  /// No description provided for @fosterRequestSendSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Foster request sent'**
+  String get fosterRequestSendSuccess;
+
+  /// No description provided for @fosterRequestStatusDraft.
+  ///
+  /// In en, this message translates to:
+  /// **'Draft'**
+  String get fosterRequestStatusDraft;
+
+  /// No description provided for @fosterRequestStatusSent.
+  ///
+  /// In en, this message translates to:
+  /// **'Sent'**
+  String get fosterRequestStatusSent;
+
+  /// No description provided for @fosterRequestStatusCancelled.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancelled'**
+  String get fosterRequestStatusCancelled;
+
+  /// No description provided for @fosterRequestPetsLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Pets: {names}'**
+  String fosterRequestPetsLabel(String names);
+
+  /// No description provided for @fosterRequestTargetsSummary.
+  ///
+  /// In en, this message translates to:
+  /// **'{targetCount} targets · {canHelp} can help · {cannotHelp} cannot help · {pending} pending'**
+  String fosterRequestTargetsSummary(
+    int targetCount,
+    int canHelp,
+    int cannotHelp,
+    int pending,
+  );
+
+  /// No description provided for @fosterRequestDetailTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Foster request'**
+  String get fosterRequestDetailTitle;
+
+  /// No description provided for @fosterRequestPetsSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Pets'**
+  String get fosterRequestPetsSection;
+
+  /// No description provided for @fosterRequestTargetsSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Foster families contacted'**
+  String get fosterRequestTargetsSection;
+
+  /// No description provided for @fosterRequestResponsesSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Responses'**
+  String get fosterRequestResponsesSection;
+
+  /// No description provided for @fosterRequestNoResponses.
+  ///
+  /// In en, this message translates to:
+  /// **'No responses yet'**
+  String get fosterRequestNoResponses;
+
+  /// No description provided for @fosterRequestResponseCanHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Can help'**
+  String get fosterRequestResponseCanHelp;
+
+  /// No description provided for @fosterRequestResponseCannotHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Cannot help'**
+  String get fosterRequestResponseCannotHelp;
+
+  /// No description provided for @fosterRequestResponsePending.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending'**
+  String get fosterRequestResponsePending;
+
+  /// No description provided for @fosterRequestEarliestAvailability.
+  ///
+  /// In en, this message translates to:
+  /// **'Available from {date}'**
+  String fosterRequestEarliestAvailability(String date);
+
+  /// No description provided for @fosterRequestRespondTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Respond to foster request'**
+  String get fosterRequestRespondTitle;
+
+  /// No description provided for @fosterRequestRespondDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Let the shelter know whether you can help and when you could start.'**
+  String get fosterRequestRespondDescription;
+
+  /// No description provided for @fosterRequestEarliestAvailabilityLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Earliest availability'**
+  String get fosterRequestEarliestAvailabilityLabel;
+
+  /// No description provided for @fosterRequestSelectDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Select a date'**
+  String get fosterRequestSelectDate;
+
+  /// No description provided for @fosterRequestAvailabilityRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Earliest availability is required when you can help'**
+  String get fosterRequestAvailabilityRequired;
+
+  /// No description provided for @fosterRequestRespondMessageLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Message (optional)'**
+  String get fosterRequestRespondMessageLabel;
+
+  /// No description provided for @fosterRequestRespondMessageHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Share timing, capacity, or questions for the shelter'**
+  String get fosterRequestRespondMessageHint;
+
+  /// No description provided for @fosterRequestRespondSubmit.
+  ///
+  /// In en, this message translates to:
+  /// **'Submit response'**
+  String get fosterRequestRespondSubmit;
+
+  /// No description provided for @fosterRequestRespondSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Response submitted'**
+  String get fosterRequestRespondSuccess;
+
   /// No description provided for @noFosterParents.
   ///
   /// In en, this message translates to:
@@ -4209,6 +4454,240 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Foster placement declined'**
   String get fosterPlacementDeclined;
+
+  /// No description provided for @fosteringSessionDetailTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Fostering session'**
+  String get fosteringSessionDetailTitle;
+
+  /// No description provided for @fosteringSessionManage.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage fostering session'**
+  String get fosteringSessionManage;
+
+  /// No description provided for @fosteringSessionStatusPendingAcceptance.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending acceptance'**
+  String get fosteringSessionStatusPendingAcceptance;
+
+  /// No description provided for @fosteringSessionStatusPreparation.
+  ///
+  /// In en, this message translates to:
+  /// **'Preparation'**
+  String get fosteringSessionStatusPreparation;
+
+  /// No description provided for @fosteringSessionStatusReadyToStart.
+  ///
+  /// In en, this message translates to:
+  /// **'Ready to start'**
+  String get fosteringSessionStatusReadyToStart;
+
+  /// No description provided for @fosteringSessionStatusActive.
+  ///
+  /// In en, this message translates to:
+  /// **'Active'**
+  String get fosteringSessionStatusActive;
+
+  /// No description provided for @fosteringSessionStatusEndPending.
+  ///
+  /// In en, this message translates to:
+  /// **'End pending confirmation'**
+  String get fosteringSessionStatusEndPending;
+
+  /// No description provided for @fosteringSessionStatusAdoptionInProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'Adoption in progress'**
+  String get fosteringSessionStatusAdoptionInProgress;
+
+  /// No description provided for @fosteringSessionStatusReturned.
+  ///
+  /// In en, this message translates to:
+  /// **'Returned to shelter'**
+  String get fosteringSessionStatusReturned;
+
+  /// No description provided for @fosteringSessionStatusTransferred.
+  ///
+  /// In en, this message translates to:
+  /// **'Transferred'**
+  String get fosteringSessionStatusTransferred;
+
+  /// No description provided for @fosteringSessionStatusConvertedToAdoption.
+  ///
+  /// In en, this message translates to:
+  /// **'Converted to adoption'**
+  String get fosteringSessionStatusConvertedToAdoption;
+
+  /// No description provided for @fosteringSessionStatusCancelled.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancelled'**
+  String get fosteringSessionStatusCancelled;
+
+  /// No description provided for @fosteringSessionPreparationTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Preparation checklist'**
+  String get fosteringSessionPreparationTitle;
+
+  /// No description provided for @fosteringSessionPreparationPlaceholder.
+  ///
+  /// In en, this message translates to:
+  /// **'Track shelter preparation steps before handover. Full checklist tracking arrives in a later release.'**
+  String get fosteringSessionPreparationPlaceholder;
+
+  /// No description provided for @fosteringSessionChecklistSupplies.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm supplies and equipment are ready'**
+  String get fosteringSessionChecklistSupplies;
+
+  /// No description provided for @fosteringSessionChecklistMedical.
+  ///
+  /// In en, this message translates to:
+  /// **'Review medical records and medications'**
+  String get fosteringSessionChecklistMedical;
+
+  /// No description provided for @fosteringSessionChecklistTransport.
+  ///
+  /// In en, this message translates to:
+  /// **'Arrange transport to the foster home'**
+  String get fosteringSessionChecklistTransport;
+
+  /// No description provided for @fosteringSessionChecklistHandover.
+  ///
+  /// In en, this message translates to:
+  /// **'Schedule handover with the foster family'**
+  String get fosteringSessionChecklistHandover;
+
+  /// No description provided for @fosteringSessionDualStartTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Dual-start confirmation'**
+  String get fosteringSessionDualStartTitle;
+
+  /// No description provided for @fosteringSessionShelterStartLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Shelter confirms handover'**
+  String get fosteringSessionShelterStartLabel;
+
+  /// No description provided for @fosteringSessionFosterStartLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Foster confirms pickup'**
+  String get fosteringSessionFosterStartLabel;
+
+  /// No description provided for @fosteringSessionAwaitingConfirmation.
+  ///
+  /// In en, this message translates to:
+  /// **'Awaiting confirmation'**
+  String get fosteringSessionAwaitingConfirmation;
+
+  /// No description provided for @fosteringSessionConfirmedAt.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirmed {timestamp}'**
+  String fosteringSessionConfirmedAt(String timestamp);
+
+  /// No description provided for @fosteringSessionStartPreparation.
+  ///
+  /// In en, this message translates to:
+  /// **'Start preparation'**
+  String get fosteringSessionStartPreparation;
+
+  /// No description provided for @fosteringSessionMarkReady.
+  ///
+  /// In en, this message translates to:
+  /// **'Mark ready to start'**
+  String get fosteringSessionMarkReady;
+
+  /// No description provided for @fosteringSessionConfirmShelterStart.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm shelter handover'**
+  String get fosteringSessionConfirmShelterStart;
+
+  /// No description provided for @fosteringSessionConfirmFosterStart.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm foster pickup'**
+  String get fosteringSessionConfirmFosterStart;
+
+  /// No description provided for @fosteringSessionRequestEnd.
+  ///
+  /// In en, this message translates to:
+  /// **'Request end of session'**
+  String get fosteringSessionRequestEnd;
+
+  /// No description provided for @fosteringSessionEndReturned.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm return to shelter'**
+  String get fosteringSessionEndReturned;
+
+  /// No description provided for @fosteringSessionEndCancelled.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel session'**
+  String get fosteringSessionEndCancelled;
+
+  /// No description provided for @fosteringSessionTransitionSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Session updated'**
+  String get fosteringSessionTransitionSuccess;
+
+  /// No description provided for @fosteringSessionShelterStartSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Shelter handover confirmed'**
+  String get fosteringSessionShelterStartSuccess;
+
+  /// No description provided for @fosteringSessionFosterStartSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Foster pickup confirmed'**
+  String get fosteringSessionFosterStartSuccess;
+
+  /// No description provided for @fosteringSessionRequestEndSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'End confirmation requested'**
+  String get fosteringSessionRequestEndSuccess;
+
+  /// No description provided for @fosteringSessionEndSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Fostering session ended'**
+  String get fosteringSessionEndSuccess;
+
+  /// No description provided for @fosteringSessionEndPendingDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'The foster period is ending. Confirm how the pet returns to shelter custody.'**
+  String get fosteringSessionEndPendingDescription;
+
+  /// No description provided for @fosteringSessionEndConfirmTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'End fostering session?'**
+  String get fosteringSessionEndConfirmTitle;
+
+  /// No description provided for @fosteringSessionEndConfirmReturned.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm the pet has returned to shelter custody and close this session.'**
+  String get fosteringSessionEndConfirmReturned;
+
+  /// No description provided for @fosteringSessionEndConfirmCancelled.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel this fostering session without marking a return handover.'**
+  String get fosteringSessionEndConfirmCancelled;
 
   /// No description provided for @startAdoption.
   ///
@@ -6351,6 +6830,54 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'View organisation'**
   String get viewOrganization;
+
+  /// No description provided for @prospectsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Prospects'**
+  String get prospectsTitle;
+
+  /// No description provided for @prospectsEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No prospects yet'**
+  String get prospectsEmpty;
+
+  /// No description provided for @adoptionVisitsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Adoption visits'**
+  String get adoptionVisitsTitle;
+
+  /// No description provided for @adoptionVisitsEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No adoption visits scheduled'**
+  String get adoptionVisitsEmpty;
+
+  /// No description provided for @adoptionJourneyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Adoption journey'**
+  String get adoptionJourneyTitle;
+
+  /// No description provided for @adoptionJourneyStatusLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Status'**
+  String get adoptionJourneyStatusLabel;
+
+  /// No description provided for @adoptionJourneyConditionsLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Conditions'**
+  String get adoptionJourneyConditionsLabel;
+
+  /// No description provided for @adoptionJourneyStatusUnknown.
+  ///
+  /// In en, this message translates to:
+  /// **'Unknown'**
+  String get adoptionJourneyStatusUnknown;
 }
 
 class _AppLocalizationsDelegate

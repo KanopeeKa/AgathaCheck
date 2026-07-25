@@ -2167,6 +2167,146 @@ class AppLocalizationsEn extends AppLocalizations {
   String get manageFostersRetentionManualContact => 'Manual contact';
 
   @override
+  String get fosterRequestsTitle => 'Foster requests';
+
+  @override
+  String get fosterRequestsDescription =>
+      'Send structured outreach to approved foster families and track their responses.';
+
+  @override
+  String get fosterRequestsEmpty =>
+      'No foster requests yet. Send one when you need help placing pets.';
+
+  @override
+  String get fosterRequestSendNew => 'Send foster request';
+
+  @override
+  String get fosterRequestSendDescription =>
+      'Choose pets that need placement and foster families to contact. You can save a draft or send immediately.';
+
+  @override
+  String get fosterRequestMessageLabel => 'Message';
+
+  @override
+  String get fosterRequestMessageHint =>
+      'Describe what help you need and any timing details';
+
+  @override
+  String get fosterRequestMessageRequired => 'Message is required';
+
+  @override
+  String get fosterRequestSelectPets => 'Pets needing foster care';
+
+  @override
+  String get fosterRequestSelectFosters => 'Foster families to contact';
+
+  @override
+  String get fosterRequestNoPets => 'No active pets available for this request';
+
+  @override
+  String get fosterRequestNoEligibleFosters =>
+      'No approved foster families without outreach opt-out are available';
+
+  @override
+  String get fosterRequestSelectionRequired =>
+      'Select at least one pet and one foster family';
+
+  @override
+  String get fosterRequestSaveDraft => 'Save draft';
+
+  @override
+  String get fosterRequestSendNow => 'Send now';
+
+  @override
+  String get fosterRequestDraftSaved => 'Foster request saved as draft';
+
+  @override
+  String get fosterRequestSendSuccess => 'Foster request sent';
+
+  @override
+  String get fosterRequestStatusDraft => 'Draft';
+
+  @override
+  String get fosterRequestStatusSent => 'Sent';
+
+  @override
+  String get fosterRequestStatusCancelled => 'Cancelled';
+
+  @override
+  String fosterRequestPetsLabel(String names) {
+    return 'Pets: $names';
+  }
+
+  @override
+  String fosterRequestTargetsSummary(
+    int targetCount,
+    int canHelp,
+    int cannotHelp,
+    int pending,
+  ) {
+    return '$targetCount targets · $canHelp can help · $cannotHelp cannot help · $pending pending';
+  }
+
+  @override
+  String get fosterRequestDetailTitle => 'Foster request';
+
+  @override
+  String get fosterRequestPetsSection => 'Pets';
+
+  @override
+  String get fosterRequestTargetsSection => 'Foster families contacted';
+
+  @override
+  String get fosterRequestResponsesSection => 'Responses';
+
+  @override
+  String get fosterRequestNoResponses => 'No responses yet';
+
+  @override
+  String get fosterRequestResponseCanHelp => 'Can help';
+
+  @override
+  String get fosterRequestResponseCannotHelp => 'Cannot help';
+
+  @override
+  String get fosterRequestResponsePending => 'Pending';
+
+  @override
+  String fosterRequestEarliestAvailability(String date) {
+    return 'Available from $date';
+  }
+
+  @override
+  String get fosterRequestRespondTitle => 'Respond to foster request';
+
+  @override
+  String get fosterRequestRespondDescription =>
+      'Let the shelter know whether you can help and when you could start.';
+
+  @override
+  String get fosterRequestEarliestAvailabilityLabel => 'Earliest availability';
+
+  @override
+  String get fosterRequestSelectDate => 'Select a date';
+
+  @override
+  String get fosterRequestAvailabilityRequired =>
+      'Earliest availability is required when you can help';
+
+  @override
+  String get fosterRequestRespondMessageLabel => 'Message (optional)';
+
+  @override
+  String get fosterRequestRespondMessageHint =>
+      'Share timing, capacity, or questions for the shelter';
+
+  @override
+  String get fosterRequestRespondSubmit => 'Submit response';
+
+  @override
+  String get fosterRequestRespondSuccess => 'Response submitted';
+
+  @override
   String get noFosterParents => 'No foster parents yet';
 
   @override
@@ -2266,6 +2406,135 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get fosterPlacementDeclined => 'Foster placement declined';
+
+  @override
+  String get fosteringSessionDetailTitle => 'Fostering session';
+
+  @override
+  String get fosteringSessionManage => 'Manage fostering session';
+
+  @override
+  String get fosteringSessionStatusPendingAcceptance => 'Pending acceptance';
+
+  @override
+  String get fosteringSessionStatusPreparation => 'Preparation';
+
+  @override
+  String get fosteringSessionStatusReadyToStart => 'Ready to start';
+
+  @override
+  String get fosteringSessionStatusActive => 'Active';
+
+  @override
+  String get fosteringSessionStatusEndPending => 'End pending confirmation';
+
+  @override
+  String get fosteringSessionStatusAdoptionInProgress => 'Adoption in progress';
+
+  @override
+  String get fosteringSessionStatusReturned => 'Returned to shelter';
+
+  @override
+  String get fosteringSessionStatusTransferred => 'Transferred';
+
+  @override
+  String get fosteringSessionStatusConvertedToAdoption =>
+      'Converted to adoption';
+
+  @override
+  String get fosteringSessionStatusCancelled => 'Cancelled';
+
+  @override
+  String get fosteringSessionPreparationTitle => 'Preparation checklist';
+
+  @override
+  String get fosteringSessionPreparationPlaceholder =>
+      'Track shelter preparation steps before handover. Full checklist tracking arrives in a later release.';
+
+  @override
+  String get fosteringSessionChecklistSupplies =>
+      'Confirm supplies and equipment are ready';
+
+  @override
+  String get fosteringSessionChecklistMedical =>
+      'Review medical records and medications';
+
+  @override
+  String get fosteringSessionChecklistTransport =>
+      'Arrange transport to the foster home';
+
+  @override
+  String get fosteringSessionChecklistHandover =>
+      'Schedule handover with the foster family';
+
+  @override
+  String get fosteringSessionDualStartTitle => 'Dual-start confirmation';
+
+  @override
+  String get fosteringSessionShelterStartLabel => 'Shelter confirms handover';
+
+  @override
+  String get fosteringSessionFosterStartLabel => 'Foster confirms pickup';
+
+  @override
+  String get fosteringSessionAwaitingConfirmation => 'Awaiting confirmation';
+
+  @override
+  String fosteringSessionConfirmedAt(String timestamp) {
+    return 'Confirmed $timestamp';
+  }
+
+  @override
+  String get fosteringSessionStartPreparation => 'Start preparation';
+
+  @override
+  String get fosteringSessionMarkReady => 'Mark ready to start';
+
+  @override
+  String get fosteringSessionConfirmShelterStart => 'Confirm shelter handover';
+
+  @override
+  String get fosteringSessionConfirmFosterStart => 'Confirm foster pickup';
+
+  @override
+  String get fosteringSessionRequestEnd => 'Request end of session';
+
+  @override
+  String get fosteringSessionEndReturned => 'Confirm return to shelter';
+
+  @override
+  String get fosteringSessionEndCancelled => 'Cancel session';
+
+  @override
+  String get fosteringSessionTransitionSuccess => 'Session updated';
+
+  @override
+  String get fosteringSessionShelterStartSuccess =>
+      'Shelter handover confirmed';
+
+  @override
+  String get fosteringSessionFosterStartSuccess => 'Foster pickup confirmed';
+
+  @override
+  String get fosteringSessionRequestEndSuccess => 'End confirmation requested';
+
+  @override
+  String get fosteringSessionEndSuccess => 'Fostering session ended';
+
+  @override
+  String get fosteringSessionEndPendingDescription =>
+      'The foster period is ending. Confirm how the pet returns to shelter custody.';
+
+  @override
+  String get fosteringSessionEndConfirmTitle => 'End fostering session?';
+
+  @override
+  String get fosteringSessionEndConfirmReturned =>
+      'Confirm the pet has returned to shelter custody and close this session.';
+
+  @override
+  String get fosteringSessionEndConfirmCancelled =>
+      'Cancel this fostering session without marking a return handover.';
 
   @override
   String get startAdoption => 'Start adoption';
@@ -3502,4 +3771,28 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get viewOrganization => 'View organisation';
+
+  @override
+  String get prospectsTitle => 'Prospects';
+
+  @override
+  String get prospectsEmpty => 'No prospects yet';
+
+  @override
+  String get adoptionVisitsTitle => 'Adoption visits';
+
+  @override
+  String get adoptionVisitsEmpty => 'No adoption visits scheduled';
+
+  @override
+  String get adoptionJourneyTitle => 'Adoption journey';
+
+  @override
+  String get adoptionJourneyStatusLabel => 'Status';
+
+  @override
+  String get adoptionJourneyConditionsLabel => 'Conditions';
+
+  @override
+  String get adoptionJourneyStatusUnknown => 'Unknown';
 }
