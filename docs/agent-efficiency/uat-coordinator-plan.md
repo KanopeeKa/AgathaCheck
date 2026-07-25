@@ -350,12 +350,15 @@ Addresses Jul 23 queue pile-up. **Not in original plan; required for merge-rate 
 | Mechanism | Detail |
 |-----------|--------|
 | **Promote hold** | `promote-uat.yml` reads ledger (or env from reconcile job): skip tag when `promote_hold=true` or head entry `remedial` |
+| **Deploy cadence** | Min interval between UAT deploy starts (default 90m via `UAT_DEPLOY_MIN_INTERVAL_MINUTES`); `uat-promote-catchup.yml` promotes latest `main` when window opens |
 | **Deploy supersede** | When `UAT_CANCEL_IN_PROGRESS=true`, cancel queued `deploy-uat` runs with no started jobs when newer tag promoted |
 | **Latest-wins deploy** | Optional: only deploy head `pending` entry's tag after hold clears |
 
 | Repo variable | Default | Effect |
 |---------------|---------|--------|
 | `UAT_PROMOTE_HOLD_ENABLED` | `true` after Phase 3b | Enforce promote skip on hold |
+| `UAT_DEPLOY_MIN_INTERVAL_MINUTES` | `90` | Min minutes between UAT deploy job starts |
+| `UAT_DEPLOY_CADENCE_ENABLED` | `true` | Set `false` to promote on every merge (legacy) |
 | `UAT_CANCEL_IN_PROGRESS` | `false` | Cancel stale queued deploys (freshness over audit) |
 
 **Trade-off:** Skipping promote delays UAT for held merges but saves ~45–60 min × N doomed runs. Aligns with [promotion-contract.md](../promotion-contract.md) §Concurrency optional freshness mode.

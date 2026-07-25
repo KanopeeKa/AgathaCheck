@@ -35,7 +35,7 @@ shards unchanged for prod-ready. Prod security scans noted in Phase 6 (future).
 | Stage | Blocking? | Workflow |
 |-------|-----------|----------|
 | PR → `main` | **Yes** (2 required checks) | `ci.yml` → `ci-gate`, `codeql.yml` |
-| Merge → `main` | **Yes** (auto-promotion; skipped when UAT queue promote hold is active) | `promote-uat.yml` → `uat-*` tag → `deploy-uat.yml` (`workflow_run`) |
+| Merge → `main` | **Yes** (auto-promotion; skipped when UAT queue promote hold or deploy cadence is active) | `promote-uat.yml` → `uat-*` tag → `deploy-uat.yml` (`workflow_run`); catch-up: `uat-promote-catchup.yml` |
 | PR granular CI jobs | Visible, not individually required | `ci.yml` (startup-smoke, test-suite, flutter-*, …) |
 | PR startup smoke | **Yes** (via `ci-gate`) | `ci.yml` → `_reusable-pr-startup-smoke.yml` |
 | PR hints | No (advisory) | `pr-governance-hints.yml` |
@@ -311,6 +311,15 @@ wait for one green **CI** run — GitHub only lists checks that have reported at
 Workflows: **Promote UAT** (`promote-uat.yml`) on merge to `main`, then **Deploy UAT**
 (`deploy-uat.yml`) via `workflow_run` (tag push from `GITHUB_TOKEN` does not chain
 workflows) or `uat-*` tag push when the tag was created outside Actions.
+
+**Deploy cadence (default 90 minutes):** `promote-uat.yml` skips tag creation when a
+UAT deploy job started within `UAT_DEPLOY_MIN_INTERVAL_MINUTES` (repo variable, default
+`90`). Block reasons: `uat_deploy_cadence` (interval not elapsed) or
+`uat_deploy_in_progress` (deploy job still running). Merges during the window batch onto the next
+deploy — **UAT promote catch-up** (`.github/workflows/uat-promote-catchup.yml`) runs
+every 30 minutes and promotes `main` HEAD once the interval elapses. Disable with
+`UAT_DEPLOY_CADENCE_ENABLED=false`; emergency bypass: `UAT_DEPLOY_CADENCE_FORCE=true`
+(promote) or catch-up `workflow_dispatch` with `force_cadence=true`.
 
 | Job | Blocking for `prod-ready`? | Purpose |
 |-----|----------------------------|---------|
