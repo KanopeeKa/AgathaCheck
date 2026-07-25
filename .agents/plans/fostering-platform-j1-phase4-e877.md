@@ -127,10 +127,10 @@ next_action: "continue phase 2 on branch cursor/j1-foster-compliance-flutter-e87
 artifact_ref:
   branch: cursor/j1-foster-compliance-flutter-e877
   plan_path: .agents/plans/fostering-platform-j1-phase4-e877.md
-  plan_commit: 7b40a0c8e61af1e634d47d11d4fbb0b640e7f383
+  plan_commit: cbe58ca7a62d1ac56dcd4ab0b7f8fd85eaeecea6
   snapshot_path: .agents/plans/fostering-platform-j1-phase4-e877.snapshot.json
-  snapshot_commit: 7b40a0c8e61af1e634d47d11d4fbb0b640e7f383
-open_prs: []
+  snapshot_commit: cbe58ca7a62d1ac56dcd4ab0b7f8fd85eaeecea6
+open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/354"]
 merge_commits: {}
 debt_issue_refs: []
 ```

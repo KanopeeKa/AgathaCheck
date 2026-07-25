@@ -4,7 +4,7 @@
   "approved_at": "2026-07-25T12:30:00Z",
   "approved_by": "user-delegated-autonomy",
   "approved_until": "2026-07-27T12:30:00Z",
-  "content_hash": "sha256:44bfe75bd4a0dced51774c672c543ec6dc6d35b54760974c016c3ac8cf5c808a",
+  "content_hash": "sha256:7de9fff1b26b5ea764fdb728fe0bb85fb3d5214b19d076df278b911d8722077f",
   "autonomy": "active",
   "default_merge_mode": "auto",
   "base_branch": "cursor/fostering-platform-j1-phase4-e877-integration",
@@ -84,7 +84,9 @@
       "status": "in_progress",
       "debt_issue_refs": [],
       "status_reason": null,
-      "status_detail": null
+      "status_detail": null,
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/354",
+      "pr_head_sha": "cbe58ca"
     }
   ]
 }
