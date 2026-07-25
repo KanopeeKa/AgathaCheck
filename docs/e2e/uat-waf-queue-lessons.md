@@ -198,7 +198,7 @@ git push origin uat-YYMMDD-<pr>
 
 | Concern | Path |
 |---------|------|
-| WAF session + probes | `e2e/playwright/support/waf.ts`, `waf-markers.ts` |
+| WAF session + probes | `e2e/playwright/support/waf.ts`, `e2e/playwright/support/waf-markers.ts` |
 | Auth warmup test | `e2e/playwright/tests/uat-auth-warmup.spec.ts` |
 | createTestUser | `e2e/playwright/support/ui-auth.ts` |
 | Node preflight deferral | `e2e/playwright/support/global-setup.ts` |

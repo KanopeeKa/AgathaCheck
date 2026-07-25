@@ -29,7 +29,7 @@ GitHub Actions deploy-uat.yml
 | **Auth / rate limit** | `401` on API seed; `429` on signup; **all** smoke timeout on login | UAT access logs; `server/config/rateLimit.js`; UAT Node `E2E=1` |
 | **Token shape** | `401` after login; E2E “unexpected token shape” | `e2e/playwright/support/normalize-stored-token.ts` |
 | **E2E test pattern** | Timeout on `expectPetVisible` with no API error | Spec order: seed **before** `loginAs` |
-| **Flutter / WAF** | WAF challenge HTML; semantics timeout; stuck `#/landing` after signup | `e2e/playwright/support/waf.ts`, `waf-markers.ts`, [uat-waf-queue-lessons.md](./uat-waf-queue-lessons.md) |
+| **Flutter / WAF** | WAF challenge HTML; semantics timeout; stuck `#/landing` after signup | `e2e/playwright/support/waf.ts`, `e2e/playwright/support/waf-markers.ts`, [uat-waf-queue-lessons.md](./uat-waf-queue-lessons.md) |
 | **UAT queue** | `promote-uat` skipped; `head_entry_failed`; coordinator never launches | `scripts/uat_queue_runtime.js`, [uat-waf-queue-lessons.md](./uat-waf-queue-lessons.md) |
 
 ---
