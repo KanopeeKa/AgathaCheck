@@ -29,7 +29,8 @@
     "020_org_custody.sql",
     "021_add_vet_organization_id.sql",
     "022_org_foster_parents_approval_state.sql",
-    "023_foster_profiles.sql"
+    "023_foster_profiles.sql",
+    "024_org_foster_parents_compliance.sql"
   ],
   "code_migrations": [
     "016_migrate_family_events_placements.sql",

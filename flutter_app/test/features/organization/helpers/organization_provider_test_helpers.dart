@@ -335,6 +335,32 @@ class RecordingOrganizationRepository implements OrganizationRepository {
   );
 
   @override
+  Future<FosterParent> updateFosterOptOut(
+    String orgId,
+    String fosterParentId,
+    bool optOut, {
+    required String token,
+  }) async => FosterParent(
+    id: fosterParentId,
+    kind: FosterParentKind.external,
+    displayName: 'Updated',
+    optOutAt: optOut ? DateTime.utc(2026, 7, 25) : null,
+  );
+
+  @override
+  Future<FosterParent> updateFosterRetentionCategory(
+    String orgId,
+    String fosterParentId,
+    String retentionCategory, {
+    required String token,
+  }) async => FosterParent(
+    id: fosterParentId,
+    kind: FosterParentKind.external,
+    displayName: 'Updated',
+    retentionCategory: retentionCategory,
+  );
+
+  @override
   Future<PetFosterPlacementState> getPetPlacement(
     String orgId,
     String petId,

@@ -266,6 +266,25 @@ class OrganizationRemoteDataSource {
     token,
   );
 
+  Future<Map<String, dynamic>> updateFosterOptOut(
+    String orgId,
+    String fosterParentId,
+    bool optOut,
+    String token,
+  ) => _fosterParents.updateFosterOptOut(orgId, fosterParentId, optOut, token);
+
+  Future<Map<String, dynamic>> updateFosterRetentionCategory(
+    String orgId,
+    String fosterParentId,
+    String retentionCategory,
+    String token,
+  ) => _fosterParents.updateFosterRetentionCategory(
+    orgId,
+    fosterParentId,
+    retentionCategory,
+    token,
+  );
+
   Future<List<Map<String, dynamic>>> getFosterMergeSuggestions(
     String orgId,
     String email,

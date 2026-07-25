@@ -48,6 +48,8 @@ describe('Organizations API', () => {
         ['POST', `/api/organizations/${orgId}/foster-parents`],
         ['PUT', `/api/organizations/${orgId}/foster-parents/fp-1`],
         ['PATCH', `/api/organizations/${orgId}/foster-parents/fp-1/approval`],
+        ['PATCH', `/api/organizations/${orgId}/foster-parents/fp-1/opt-out`],
+        ['PATCH', `/api/organizations/${orgId}/foster-parents/fp-1/retention`],
         ['POST', `/api/organizations/${orgId}/foster-parents/fp-1/merge`],
         ['DELETE', `/api/organizations/${orgId}/foster-parents/fp-1`],
       ];

@@ -43,7 +43,7 @@ class FosterSummaryCard extends ConsumerWidget {
       activityLabel = l.fosterParentNoAccount;
     }
 
-    final trailing = <Widget>[
+    final statusChips = <Widget>[
       if (parent.isExternal &&
           parent.approvalState != FosterApprovalState.approved)
         Chip(
@@ -57,9 +57,22 @@ class FosterSummaryCard extends ConsumerWidget {
           label: Text(l.manageFostersLinkedAccount),
           visualDensity: VisualDensity.compact,
         ),
+      if (parent.isExternal && parent.hasOutreachOptOut)
+        Chip(
+          key: Key('foster_opt_out_chip_${parent.id}'),
+          label: Text(l.manageFostersOutreachOptOut),
+          visualDensity: VisualDensity.compact,
+        ),
+      if (parent.isExternal)
+        Chip(
+          key: Key('foster_retention_chip_${parent.id}'),
+          label: Text(
+            localizedFosterRetentionCategory(l, parent.retentionCategory),
+          ),
+          visualDensity: VisualDensity.compact,
+        ),
       if (activityLabel != null)
         Chip(label: Text(activityLabel), visualDensity: VisualDensity.compact),
-      if (parent.isExternal) _FosterActions(parent: parent, orgId: orgId),
     ];
 
     return Card(
@@ -70,39 +83,49 @@ class FosterSummaryCard extends ConsumerWidget {
         borderRadius: BorderRadius.circular(12),
         child: Padding(
           padding: const EdgeInsets.all(12),
-          child: Row(
+          child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              CircleAvatar(child: Text(parent.initials)),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      parent.displayName,
-                      style: theme.textTheme.titleSmall?.copyWith(
-                        fontWeight: FontWeight.w600,
-                      ),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  CircleAvatar(child: Text(parent.initials)),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          parent.displayName,
+                          style: theme.textTheme.titleSmall?.copyWith(
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          subtitleParts.join(' · '),
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            color: colorScheme.onSurfaceVariant,
+                          ),
+                        ),
+                        if (parent.role != null) ...[
+                          const SizedBox(height: 4),
+                          Text(
+                            localizedRoleLabel(l, parent.role!),
+                            style: theme.textTheme.labelSmall,
+                          ),
+                        ],
+                      ],
                     ),
-                    const SizedBox(height: 4),
-                    Text(
-                      subtitleParts.join(' · '),
-                      style: theme.textTheme.bodySmall?.copyWith(
-                        color: colorScheme.onSurfaceVariant,
-                      ),
-                    ),
-                    if (parent.role != null) ...[
-                      const SizedBox(height: 4),
-                      Text(
-                        localizedRoleLabel(l, parent.role!),
-                        style: theme.textTheme.labelSmall,
-                      ),
-                    ],
-                  ],
-                ),
+                  ),
+                  if (parent.isExternal)
+                    _FosterActions(parent: parent, orgId: orgId),
+                ],
               ),
-              ...trailing,
+              if (statusChips.isNotEmpty) ...[
+                const SizedBox(height: 8),
+                Wrap(spacing: 6, runSpacing: 6, children: statusChips),
+              ],
             ],
           ),
         ),
@@ -162,6 +185,17 @@ class _FosterActions extends ConsumerWidget {
         break;
     }
 
+    items.add(
+      PopupMenuItem(
+        value: parent.hasOutreachOptOut ? 'clear_opt_out' : 'record_opt_out',
+        child: Text(
+          parent.hasOutreachOptOut
+              ? l.manageFostersClearOutreachOptOut
+              : l.manageFostersRecordOutreachOptOut,
+        ),
+      ),
+    );
+
     if (items.isEmpty) return const SizedBox.shrink();
 
     return PopupMenuButton<String>(
@@ -188,6 +222,14 @@ class _FosterActions extends ConsumerWidget {
             await ref
                 .read(orgFosterParentsProvider(orgId).notifier)
                 .updateApproval(parent.id, FosterApprovalState.archived);
+          case 'record_opt_out':
+            await ref
+                .read(orgFosterParentsProvider(orgId).notifier)
+                .updateOptOut(parent.id, true);
+          case 'clear_opt_out':
+            await ref
+                .read(orgFosterParentsProvider(orgId).notifier)
+                .updateOptOut(parent.id, false);
         }
       },
       itemBuilder: (context) => items,

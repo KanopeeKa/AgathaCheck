@@ -203,6 +203,8 @@ export function buildMockPool(overrides = {}) {
           active_pet_count: 0,
           approval_state: 'approved',
           creation_source: 'manual_shelter_entry',
+          opt_out_at: null,
+          retention_category: 'manual_contact',
         }],
       };
     }
@@ -301,6 +303,38 @@ export function buildMockPool(overrides = {}) {
     }
     if (sql.includes('DELETE FROM foster_profiles WHERE id')) {
       return { rows: [] };
+    }
+    if (sql.includes('UPDATE org_foster_parents') && sql.includes('opt_out_at')) {
+      return {
+        rows: [{
+          id: 'fp-external-1',
+          organization_id: orgId,
+          user_id: null,
+          foster_profile_id: 'fprof-external-1',
+          display_name: 'Off-app Parent',
+          email: 'offapp@example.com',
+          phone: '555-0000',
+          foster_address: '',
+          notes: '',
+          approval_state: 'approved',
+          creation_source: 'manual_shelter_entry',
+          opt_out_at: params[0] ? new Date('2026-07-25T12:00:00Z') : null,
+          retention_category: 'manual_contact',
+        }],
+      };
+    }
+    if (sql.includes('UPDATE org_foster_parents') && sql.includes('retention_category = $1')) {
+      return {
+        rows: [{
+          id: 'fp-external-1',
+          organization_id: orgId,
+          display_name: 'Off-app Parent',
+          email: 'offapp@example.com',
+          retention_category: params[0],
+          approval_state: 'approved',
+          creation_source: 'manual_shelter_entry',
+        }],
+      };
     }
     if (sql.includes('UPDATE org_foster_parents')) {
       return {

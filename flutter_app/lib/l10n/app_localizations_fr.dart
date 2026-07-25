@@ -2042,7 +2042,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get lawfulBasisConfirm =>
-      'Je confirme disposer d\'une base légale pour enregistrer ces coordonnées et que la personne sera informée par e-mail.';
+      'Je confirme disposer d\'une base légale pour enregistrer ces coordonnées pour la coordination d\'accueil. La personne recevra un e-mail expliquant la conservation et comment refuser tout contact ultérieur.';
 
   @override
   String get lawfulBasisConfirmRequired =>
@@ -2163,6 +2163,27 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get manageFostersLinkedAccount => 'Compte lié';
+
+  @override
+  String get manageFostersOutreachOptOut => 'Opposition au contact';
+
+  @override
+  String get manageFostersRecordOutreachOptOut =>
+      'Enregistrer l\'opposition au contact';
+
+  @override
+  String get manageFostersClearOutreachOptOut =>
+      'Lever l\'opposition au contact';
+
+  @override
+  String get manageFostersRetentionShelterFosterRelationship =>
+      'Relation refuge–accueil';
+
+  @override
+  String get manageFostersRetentionDeclinedArchived => 'Refusé / archivé';
+
+  @override
+  String get manageFostersRetentionManualContact => 'Contact manuel';
 
   @override
   String get noFosterParents => 'Aucune famille d\'accueil pour le moment';
