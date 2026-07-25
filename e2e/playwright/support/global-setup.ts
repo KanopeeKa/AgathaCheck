@@ -112,7 +112,7 @@ function writeWafDeferralSummary(attempts: number, elapsedMs: number): void {
   );
 }
 
-/** Fail fast when live UAT is unreachable before Playwright workers start. */
+/** Fail fast on real UAT outages; defer o2switch WAF to browser warmup (#332). */
 export default async function globalSetup(): Promise<void> {
   const baseUrlCandidate = process.env.E2E_BASE_URL ?? process.env.UAT_BASE_URL ?? '';
   if (!isLiveHostingTarget(baseUrlCandidate)) {

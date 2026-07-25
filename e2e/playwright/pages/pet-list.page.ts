@@ -154,7 +154,7 @@ export class PetListPage {
   async openOrganizations(): Promise<void> {
     await dismissConsentBannerIfPresent(this.page);
     const route = flutterRoutePath(this.page.url());
-    if (route.startsWith('/o/orgs') || route.startsWith('/organizations')) {
+    if (route === '/o/orgs' || route === '/organizations') {
       await new OrganizationListPage(this.page).expectLoaded();
       return;
     }

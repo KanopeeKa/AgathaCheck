@@ -82,7 +82,7 @@ export class ExperiencePage {
   async openDrawerOrgView(): Promise<void> {
     await openExperienceDrawer(this.page);
     await this.page.getByText('Organisation view').click();
-    await waitForFlutterRoutePattern(this.page, /\/o\/orgs(?:\?|$)/, 30_000);
+    await waitForFlutterRoutePattern(this.page, /\/(?:o\/orgs|organizations)(?:\?|$)/, 30_000);
   }
 
   async gotoChooser(): Promise<void> {
