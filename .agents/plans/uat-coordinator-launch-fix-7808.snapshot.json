@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "plan_id": "uat-coordinator-launch-fix-7808",
+  "approved_at": "2026-07-25T11:45:00Z",
+  "approved_by": "user-request",
+  "approved_until": "2026-07-27T11:45:00Z",
+  "content_hash": "sha256:68a9ac9f4dff91e712c86801d1e250600d43326cdb219113de0698c3c4ad0c2f",
+  "autonomy": "active",
+  "default_merge_mode": "auto",
+  "base_branch": "main",
+  "control_issue": 345,
+  "artifact_branch_policy": "phase-branch",
+  "phases": [
+    {
+      "id": "1",
+      "title": "Guard launch-cursor-agent main()",
+      "branch": "cursor/uat-coordinator-launch-guard-7808",
+      "allowed_paths": [
+        ".github/scripts/launch-cursor-agent.js",
+        ".github/scripts/launch-uat-coordinator.test.js"
+      ],
+      "forbidden_paths": [
+        "flutter_app/**",
+        "server/**"
+      ],
+      "allowed_exceptions": [
+        "tests"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_mode": "auto",
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "in_progress",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": []
+    }
+  ]
+}
