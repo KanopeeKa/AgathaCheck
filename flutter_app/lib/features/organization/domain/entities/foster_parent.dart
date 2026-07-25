@@ -115,10 +115,11 @@ class FosterParent {
 
   bool get isMember => kind == FosterParentKind.member;
   bool get isExternal => kind == FosterParentKind.external;
-  bool get isLinkedToRegisteredAccount =>
-      userId != null && userId!.isNotEmpty;
+  bool get isLinkedToRegisteredAccount => userId != null && userId!.isNotEmpty;
   bool get canMergeIntoRegisteredAccount =>
-      isExternal && !isLinkedToRegisteredAccount && (email?.trim().isNotEmpty ?? false);
+      isExternal &&
+      !isLinkedToRegisteredAccount &&
+      (email?.trim().isNotEmpty ?? false);
 
   String get initials {
     final parts = displayName.trim().split(RegExp(r'\s+'));

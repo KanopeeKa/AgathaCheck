@@ -142,7 +142,11 @@ mixin OrganizationRepositoryFosterMixin on OrganizationRepositoryImplBase {
     String email, {
     required String token,
   }) async {
-    final rows = await dataSource.getFosterMergeSuggestions(orgId, email, token);
+    final rows = await dataSource.getFosterMergeSuggestions(
+      orgId,
+      email,
+      token,
+    );
     return rows.map(FosterMergeSuggestion.fromJson).toList();
   }
 

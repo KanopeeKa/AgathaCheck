@@ -96,7 +96,10 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(repo.mergeCalls, 1);
-    expect(find.text('Foster record linked to registered account'), findsOneWidget);
+    expect(
+      find.text('Foster record linked to registered account'),
+      findsOneWidget,
+    );
   });
 }
 

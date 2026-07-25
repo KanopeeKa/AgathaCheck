@@ -29,9 +29,9 @@ Future<void> showFosterMergeDialog({
 
   if (!context.mounted) return;
   if (suggestions.isEmpty) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(l.manageFostersMergeNoMatch)),
-    );
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(l.manageFostersMergeNoMatch)));
     return;
   }
 
@@ -88,14 +88,16 @@ Future<void> showFosterMergeDialog({
   if (confirmed != true || !context.mounted) return;
 
   try {
-    await ref.read(orgFosterParentsProvider(orgId).notifier).mergeIntoRegisteredAccount(
-      fosterParentId: parent.id,
-      targetUserId: target.userId,
-    );
+    await ref
+        .read(orgFosterParentsProvider(orgId).notifier)
+        .mergeIntoRegisteredAccount(
+          fosterParentId: parent.id,
+          targetUserId: target.userId,
+        );
     if (context.mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l.manageFostersMergeSuccess)),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(l.manageFostersMergeSuccess)));
     }
   } catch (e) {
     if (context.mounted) {

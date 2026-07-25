@@ -232,7 +232,9 @@ class OrgFosterParentsNotifier
     ref.invalidate(orgPeopleProvider(arg));
   }
 
-  Future<List<FosterMergeSuggestion>> fetchMergeSuggestions(String email) async {
+  Future<List<FosterMergeSuggestion>> fetchMergeSuggestions(
+    String email,
+  ) async {
     final token = ref.read(orgTokenProvider)!;
     final repo = ref.read(organizationRepositoryProvider);
     return repo.getFosterMergeSuggestions(arg, email, token: token);
