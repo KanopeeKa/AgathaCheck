@@ -22,7 +22,7 @@ Restore autonomous UAT coordinator dispatch after deploy failures. `launch-uat-c
 |-------|-------|
 | **approved_at** | 2026-07-25T11:45:00Z |
 | **approved_until** | 2026-07-27T11:45:00Z |
-| **control_issue** | TBD |
+| **control_issue** | #345 |
 | **autonomy** | `active` |
 
 **Grant keyword:** `approve-autonomous uat-coordinator-launch-fix-7808`
@@ -74,9 +74,9 @@ next_action: "continue phase 1 on branch cursor/uat-coordinator-launch-guard-780
 artifact_ref:
   branch: cursor/uat-coordinator-launch-guard-7808
   plan_path: .agents/plans/uat-coordinator-launch-fix-7808.md
-  plan_commit: 016e469a9667ddae8685e6516a68ba90015c2b9f
+  plan_commit: 88d679f0430d2b6bf1832ebe4e46d0a6a79ae515
   snapshot_path: .agents/plans/uat-coordinator-launch-fix-7808.snapshot.json
-  snapshot_commit: 016e469a9667ddae8685e6516a68ba90015c2b9f
+  snapshot_commit: 88d679f0430d2b6bf1832ebe4e46d0a6a79ae515
 open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/346"]
 merge_commits: {}
 debt_issue_refs: []
