@@ -148,6 +148,62 @@ void main() {
 
     expect(find.text('Session detail route'), findsOneWidget);
   });
+  testWidgets('view-to-adopt session shows expedite adoption action', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          authProvider.overrideWith((ref) => FakeAuthNotifier()),
+          organizationRepositoryProvider.overrideWithValue(
+            _ViewToAdoptSessionRepo(),
+          ),
+          isOrgAdminProvider('org-1').overrideWith((ref) => true),
+          isOrgFosterProvider('org-1').overrideWith((ref) => false),
+        ],
+        child: const MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: Scaffold(
+            body: FosteringSessionDetailScreen(
+              orgId: 'org-1',
+              placementId: 'placement-1',
+            ),
+          ),
+        ),
+      ),
+    );
+
+    await tester.pumpAndSettle();
+
+    expect(
+      find.byKey(const Key('fostering_session_expedite_adoption')),
+      findsOneWidget,
+    );
+    expect(
+      find.byKey(const Key('fostering_session_start_adoption')),
+      findsOneWidget,
+    );
+  });
+}
+
+class _ViewToAdoptSessionRepo extends _PreparationSessionRepo {
+  @override
+  Future<FosterPlacement> getPlacementDetail(
+    String orgId,
+    String placementId,
+    String token,
+  ) async => FosterPlacement(
+    id: placementId,
+    organizationId: orgId,
+    petId: 'pet-1',
+    fosterUserId: 'user-1',
+    status: 'in_progress',
+    sessionStatus: FosterSessionStatus.active,
+    sessionType: FosterSessionType.fosterInViewToAdopt,
+    petName: 'Max',
+    fosterName: 'Jane Foster',
+  );
 }
 
 class _PreparationSessionRepo extends RecordingOrganizationRepository {

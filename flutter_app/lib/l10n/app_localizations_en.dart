@@ -2469,6 +2469,22 @@ class AppLocalizationsEn extends AppLocalizations {
   String get fosteringSessionRegisterExportTitle => 'Foster register export';
 
   @override
+  String get fosteringSessionExpediteAdoption =>
+      'Complete visit & start adoption today';
+
+  @override
+  String get fosteringSessionExpediteAdoptionSuccess =>
+      'Visit completed and adoption journey started';
+
+  @override
+  String get fosteringSessionStartAdoptionSuccess => 'Adoption journey started';
+
+  @override
+  String fosteringSessionVisitPathBlocked(String reason) {
+    return 'Adoption cannot start yet: $reason';
+  }
+
+  @override
   String get fosteringSessionChecklistSupplies =>
       'Confirm supplies and equipment are ready';
 
@@ -3800,6 +3816,21 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get adoptionVisitsEmpty => 'No adoption visits scheduled';
+
+  @override
+  String get adoptionVisitOutcomePositive => 'Positive';
+
+  @override
+  String get adoptionVisitOutcomeNegative => 'Negative';
+
+  @override
+  String get adoptionVisitOutcomeNoShow => 'No show';
+
+  @override
+  String get adoptionVisitOutcomePending => 'Outcome pending';
+
+  @override
+  String get adoptionVisitOutcomeSaved => 'Visit outcome recorded';
 
   @override
   String get adoptionJourneyTitle => 'Adoption journey';

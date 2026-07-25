@@ -150,4 +150,49 @@ class OrganizationAdoptionScreeningRemote {
     }
     return data;
   }
+
+  Future<Map<String, dynamic>> recordAdoptionVisitOutcome(
+    String orgId,
+    String visitId,
+    String visitOutcome,
+    String token,
+  ) async {
+    final response = await _ctx.client.post(
+      Uri.parse(
+        '${_ctx.baseUrl}/api/organizations/$orgId/adoption-visits/$visitId/outcome',
+      ),
+      headers: _ctx.headers(token),
+      body: json.encode({'visit_outcome': visitOutcome}),
+    );
+    final data = json.decode(response.body) as Map<String, dynamic>;
+    if (response.statusCode >= 400) {
+      throw Exception(data['error'] ?? 'Failed to record visit outcome');
+    }
+    return data;
+  }
+
+  Future<Map<String, dynamic>> completeVisitAndStartAdoption(
+    String orgId,
+    String placementId, {
+    String? visitId,
+    String adoptionConditions = '',
+    required String token,
+  }) async {
+    final response = await _ctx.client.post(
+      Uri.parse(
+        '${_ctx.baseUrl}/api/organizations/$orgId/placements/$placementId/adoption-path/complete-visit-and-start',
+      ),
+      headers: _ctx.headers(token),
+      body: json.encode({
+        if (visitId != null && visitId.isNotEmpty) 'visit_id': visitId,
+        if (adoptionConditions.isNotEmpty)
+          'adoption_conditions': adoptionConditions,
+      }),
+    );
+    final data = json.decode(response.body) as Map<String, dynamic>;
+    if (response.statusCode >= 400) {
+      throw Exception(data['error'] ?? 'Failed to complete visit and start adoption');
+    }
+    return data;
+  }
 }

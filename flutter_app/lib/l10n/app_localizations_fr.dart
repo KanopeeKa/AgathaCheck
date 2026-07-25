@@ -2494,6 +2494,23 @@ class AppLocalizationsFr extends AppLocalizations {
       'Export du registre d\'accueil';
 
   @override
+  String get fosteringSessionExpediteAdoption =>
+      'Terminer la visite et lancer l\'adoption aujourd\'hui';
+
+  @override
+  String get fosteringSessionExpediteAdoptionSuccess =>
+      'Visite terminée et parcours d\'adoption lancé';
+
+  @override
+  String get fosteringSessionStartAdoptionSuccess =>
+      'Parcours d\'adoption lancé';
+
+  @override
+  String fosteringSessionVisitPathBlocked(String reason) {
+    return 'L\'adoption ne peut pas encore commencer : $reason';
+  }
+
+  @override
   String get fosteringSessionChecklistSupplies =>
       'Confirmer que les fournitures et équipements sont prêts';
 
@@ -3854,6 +3871,21 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get adoptionVisitsEmpty => 'Aucune visite d\'adoption planifiée';
+
+  @override
+  String get adoptionVisitOutcomePositive => 'Positive';
+
+  @override
+  String get adoptionVisitOutcomeNegative => 'Négative';
+
+  @override
+  String get adoptionVisitOutcomeNoShow => 'Absence';
+
+  @override
+  String get adoptionVisitOutcomePending => 'Résultat en attente';
+
+  @override
+  String get adoptionVisitOutcomeSaved => 'Résultat de visite enregistré';
 
   @override
   String get adoptionJourneyTitle => 'Parcours d\'adoption';

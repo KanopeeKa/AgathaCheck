@@ -69,4 +69,32 @@ mixin OrganizationRepositoryScreeningMixin on OrganizationRepositoryImplBase {
     String placementId,
     String token,
   ) => dataSource.getRegisterExport(orgId, placementId, token);
+
+  @override
+  Future<Map<String, dynamic>> recordAdoptionVisitOutcome(
+    String orgId,
+    String visitId,
+    String visitOutcome,
+    String token,
+  ) => dataSource.recordAdoptionVisitOutcome(
+    orgId,
+    visitId,
+    visitOutcome,
+    token,
+  );
+
+  @override
+  Future<Map<String, dynamic>> completeVisitAndStartAdoption(
+    String orgId,
+    String placementId, {
+    String? visitId,
+    String adoptionConditions = '',
+    required String token,
+  }) => dataSource.completeVisitAndStartAdoption(
+    orgId,
+    placementId,
+    visitId: visitId,
+    adoptionConditions: adoptionConditions,
+    token: token,
+  );
 }

@@ -229,6 +229,23 @@ mixin RecordingOrganizationRepositoryFosterMixin
   ) async => {'format': 'markdown', 'content': '# Register export'};
 
   @override
+  Future<Map<String, dynamic>> recordAdoptionVisitOutcome(
+    String orgId,
+    String visitId,
+    String visitOutcome,
+    String token,
+  ) async => {'id': visitId, 'visit_outcome': visitOutcome};
+
+  @override
+  Future<Map<String, dynamic>> completeVisitAndStartAdoption(
+    String orgId,
+    String placementId, {
+    String? visitId,
+    String adoptionConditions = '',
+    required String token,
+  }) async => {'id': placementId};
+
+  @override
   Future<FosterRequest> createFosterRequest(
     String orgId, {
     required String message,

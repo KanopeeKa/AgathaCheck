@@ -333,6 +333,19 @@ abstract class OrganizationRepository {
     String placementId,
     String token,
   );
+  Future<Map<String, dynamic>> recordAdoptionVisitOutcome(
+    String orgId,
+    String visitId,
+    String visitOutcome,
+    String token,
+  );
+  Future<Map<String, dynamic>> completeVisitAndStartAdoption(
+    String orgId,
+    String placementId, {
+    String? visitId,
+    String adoptionConditions = '',
+    required String token,
+  });
 
   Future<List<OrgConnection>> getConnections(String orgId, String token);
 

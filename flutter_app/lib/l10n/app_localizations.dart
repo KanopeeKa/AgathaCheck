@@ -4569,6 +4569,30 @@ abstract class AppLocalizations {
   /// **'Foster register export'**
   String get fosteringSessionRegisterExportTitle;
 
+  /// No description provided for @fosteringSessionExpediteAdoption.
+  ///
+  /// In en, this message translates to:
+  /// **'Complete visit & start adoption today'**
+  String get fosteringSessionExpediteAdoption;
+
+  /// No description provided for @fosteringSessionExpediteAdoptionSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Visit completed and adoption journey started'**
+  String get fosteringSessionExpediteAdoptionSuccess;
+
+  /// No description provided for @fosteringSessionStartAdoptionSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Adoption journey started'**
+  String get fosteringSessionStartAdoptionSuccess;
+
+  /// No description provided for @fosteringSessionVisitPathBlocked.
+  ///
+  /// In en, this message translates to:
+  /// **'Adoption cannot start yet: {reason}'**
+  String fosteringSessionVisitPathBlocked(String reason);
+
   /// No description provided for @fosteringSessionChecklistSupplies.
   ///
   /// In en, this message translates to:
@@ -6884,6 +6908,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No adoption visits scheduled'**
   String get adoptionVisitsEmpty;
+
+  /// No description provided for @adoptionVisitOutcomePositive.
+  ///
+  /// In en, this message translates to:
+  /// **'Positive'**
+  String get adoptionVisitOutcomePositive;
+
+  /// No description provided for @adoptionVisitOutcomeNegative.
+  ///
+  /// In en, this message translates to:
+  /// **'Negative'**
+  String get adoptionVisitOutcomeNegative;
+
+  /// No description provided for @adoptionVisitOutcomeNoShow.
+  ///
+  /// In en, this message translates to:
+  /// **'No show'**
+  String get adoptionVisitOutcomeNoShow;
+
+  /// No description provided for @adoptionVisitOutcomePending.
+  ///
+  /// In en, this message translates to:
+  /// **'Outcome pending'**
+  String get adoptionVisitOutcomePending;
+
+  /// No description provided for @adoptionVisitOutcomeSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Visit outcome recorded'**
+  String get adoptionVisitOutcomeSaved;
 
   /// No description provided for @adoptionJourneyTitle.
   ///
