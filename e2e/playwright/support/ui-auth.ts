@@ -5,7 +5,6 @@ import type { TestUser } from './api';
 import { isLiveHostingTarget } from './hosting';
 import { refreshFlutterAccessibility } from './flutter';
 import { normalizeStoredToken } from './normalize-stored-token';
-import { setPlaywrightPage } from './api-fetch';
 
 export async function readAccessTokenFromPage(page: Page): Promise<string> {
   const raw = await page.evaluate(() => {
@@ -100,23 +99,6 @@ export async function createTestUser(
   // Prefer the API-created user when available: avoids WAF / consent-banner
   // pitfalls in the UI signup path that can leave the browser on /landing.
   if (firstCreatedUser) return firstCreatedUser;
-
-  // Final fallback: try direct Node.js fetch (no browser WAF session). When
-  // E2E=1 is set on the UAT server all rate-limits are disabled, and direct
-  // HTTP clients are typically not challenged by Tiger Protect WAF.
-  setPlaywrightPage(null);
-  try {
-    const user = await signupUser(baseURL, overrides);
-    console.warn('[createTestUser] direct Node.js fetch succeeded — browser WAF session was blocking');
-    return user;
-  } catch (directErr) {
-    console.warn(
-      '[createTestUser] direct Node.js fetch also failed:',
-      directErr instanceof Error ? directErr.message : String(directErr),
-    );
-  } finally {
-    setPlaywrightPage(page);
-  }
 
   return signupUserViaUi(page, overrides);
 }
