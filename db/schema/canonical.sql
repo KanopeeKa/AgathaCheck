@@ -1,18 +1,8 @@
--- Agatha Track — canonical schema snapshot (generated; do not edit by hand).
---
--- Source of truth for production: forward-only db/migrations/NNN_*.sql via migrate.js up.
--- This file is produced by scripts/db/regenerate-canonical.sh and verified by
--- scripts/db/check-schema-equivalence.sh (bootstrap path must match committed snapshot).
---
--- Regenerate after schema changes:
---   scripts/db/regenerate-canonical.sh
---
--- See docs/db-schema-bootstrap-plan.md for the phased bootstrap model.
 --
 -- PostgreSQL database dump
 --
 
-\restrict POLYO0b405lRu1x8xNMPVEkEzvNDLc4PZTukyBla8p5FVSzg8GhNmPJS6go5iKv
+\restrict rqffalcgsFozMlu2LL9YMx0m7JnlFbRvfa7gatMvgJ7ijCopzrUmfaPO2URfDU8
 
 -- Dumped from database version 16.14 (Ubuntu 16.14-0ubuntu0.24.04.1)
 -- Dumped by pg_dump version 16.14 (Ubuntu 16.14-0ubuntu0.24.04.1)
@@ -188,6 +178,66 @@ CREATE TABLE public.foster_profiles (
     foster_address text DEFAULT ''::text,
     created_at timestamp with time zone DEFAULT now(),
     updated_at timestamp with time zone DEFAULT now()
+);
+
+
+--
+-- Name: foster_request_pets; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.foster_request_pets (
+    id uuid NOT NULL,
+    foster_request_id uuid NOT NULL,
+    pet_id uuid NOT NULL,
+    created_at timestamp with time zone DEFAULT now()
+);
+
+
+--
+-- Name: foster_request_responses; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.foster_request_responses (
+    id uuid NOT NULL,
+    foster_request_id uuid NOT NULL,
+    org_foster_parent_id uuid NOT NULL,
+    response character varying(32) DEFAULT 'pending'::character varying NOT NULL,
+    message text DEFAULT ''::text NOT NULL,
+    earliest_availability date,
+    capacity_confirmed_at timestamp with time zone,
+    responded_at timestamp with time zone,
+    created_at timestamp with time zone DEFAULT now(),
+    updated_at timestamp with time zone DEFAULT now(),
+    CONSTRAINT foster_request_responses_response_check CHECK (((response)::text = ANY ((ARRAY['can_help'::character varying, 'cannot_help'::character varying, 'pending'::character varying])::text[])))
+);
+
+
+--
+-- Name: foster_request_targets; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.foster_request_targets (
+    id uuid NOT NULL,
+    foster_request_id uuid NOT NULL,
+    org_foster_parent_id uuid NOT NULL,
+    created_at timestamp with time zone DEFAULT now()
+);
+
+
+--
+-- Name: foster_requests; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.foster_requests (
+    id uuid NOT NULL,
+    organization_id uuid NOT NULL,
+    message text DEFAULT ''::text NOT NULL,
+    status character varying(32) DEFAULT 'draft'::character varying NOT NULL,
+    created_by uuid,
+    sent_at timestamp with time zone,
+    created_at timestamp with time zone DEFAULT now(),
+    updated_at timestamp with time zone DEFAULT now(),
+    CONSTRAINT foster_requests_status_check CHECK (((status)::text = ANY ((ARRAY['draft'::character varying, 'sent'::character varying, 'cancelled'::character varying])::text[])))
 );
 
 
@@ -664,6 +714,62 @@ ALTER TABLE ONLY public.foster_profiles
 
 
 --
+-- Name: foster_request_pets foster_request_pets_foster_request_id_pet_id_key; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.foster_request_pets
+    ADD CONSTRAINT foster_request_pets_foster_request_id_pet_id_key UNIQUE (foster_request_id, pet_id);
+
+
+--
+-- Name: foster_request_pets foster_request_pets_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.foster_request_pets
+    ADD CONSTRAINT foster_request_pets_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: foster_request_responses foster_request_responses_foster_request_id_org_foster_paren_key; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.foster_request_responses
+    ADD CONSTRAINT foster_request_responses_foster_request_id_org_foster_paren_key UNIQUE (foster_request_id, org_foster_parent_id);
+
+
+--
+-- Name: foster_request_responses foster_request_responses_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.foster_request_responses
+    ADD CONSTRAINT foster_request_responses_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: foster_request_targets foster_request_targets_foster_request_id_org_foster_parent__key; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.foster_request_targets
+    ADD CONSTRAINT foster_request_targets_foster_request_id_org_foster_parent__key UNIQUE (foster_request_id, org_foster_parent_id);
+
+
+--
+-- Name: foster_request_targets foster_request_targets_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.foster_request_targets
+    ADD CONSTRAINT foster_request_targets_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: foster_requests foster_requests_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.foster_requests
+    ADD CONSTRAINT foster_requests_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: health_entries health_entries_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -1015,6 +1121,34 @@ CREATE INDEX idx_foster_profiles_email_lower ON public.foster_profiles USING btr
 
 
 --
+-- Name: idx_foster_request_pets_request_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_foster_request_pets_request_id ON public.foster_request_pets USING btree (foster_request_id);
+
+
+--
+-- Name: idx_foster_request_responses_request_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_foster_request_responses_request_id ON public.foster_request_responses USING btree (foster_request_id);
+
+
+--
+-- Name: idx_foster_request_targets_request_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_foster_request_targets_request_id ON public.foster_request_targets USING btree (foster_request_id);
+
+
+--
+-- Name: idx_foster_requests_org_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_foster_requests_org_id ON public.foster_requests USING btree (organization_id);
+
+
+--
 -- Name: idx_health_entries_pet_id; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -1302,6 +1436,70 @@ ALTER TABLE ONLY public.foster_placements
 
 ALTER TABLE ONLY public.foster_profiles
     ADD CONSTRAINT foster_profiles_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE SET NULL;
+
+
+--
+-- Name: foster_request_pets foster_request_pets_foster_request_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.foster_request_pets
+    ADD CONSTRAINT foster_request_pets_foster_request_id_fkey FOREIGN KEY (foster_request_id) REFERENCES public.foster_requests(id) ON DELETE CASCADE;
+
+
+--
+-- Name: foster_request_pets foster_request_pets_pet_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.foster_request_pets
+    ADD CONSTRAINT foster_request_pets_pet_id_fkey FOREIGN KEY (pet_id) REFERENCES public.pets(id) ON DELETE CASCADE;
+
+
+--
+-- Name: foster_request_responses foster_request_responses_foster_request_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.foster_request_responses
+    ADD CONSTRAINT foster_request_responses_foster_request_id_fkey FOREIGN KEY (foster_request_id) REFERENCES public.foster_requests(id) ON DELETE CASCADE;
+
+
+--
+-- Name: foster_request_responses foster_request_responses_org_foster_parent_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.foster_request_responses
+    ADD CONSTRAINT foster_request_responses_org_foster_parent_id_fkey FOREIGN KEY (org_foster_parent_id) REFERENCES public.org_foster_parents(id) ON DELETE CASCADE;
+
+
+--
+-- Name: foster_request_targets foster_request_targets_foster_request_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.foster_request_targets
+    ADD CONSTRAINT foster_request_targets_foster_request_id_fkey FOREIGN KEY (foster_request_id) REFERENCES public.foster_requests(id) ON DELETE CASCADE;
+
+
+--
+-- Name: foster_request_targets foster_request_targets_org_foster_parent_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.foster_request_targets
+    ADD CONSTRAINT foster_request_targets_org_foster_parent_id_fkey FOREIGN KEY (org_foster_parent_id) REFERENCES public.org_foster_parents(id) ON DELETE CASCADE;
+
+
+--
+-- Name: foster_requests foster_requests_created_by_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.foster_requests
+    ADD CONSTRAINT foster_requests_created_by_fkey FOREIGN KEY (created_by) REFERENCES public.users(id) ON DELETE SET NULL;
+
+
+--
+-- Name: foster_requests foster_requests_organization_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.foster_requests
+    ADD CONSTRAINT foster_requests_organization_id_fkey FOREIGN KEY (organization_id) REFERENCES public.organizations(id) ON DELETE CASCADE;
 
 
 --
@@ -1676,5 +1874,5 @@ ALTER TABLE ONLY public.weight_entries
 -- PostgreSQL database dump complete
 --
 
-\unrestrict POLYO0b405lRu1x8xNMPVEkEzvNDLc4PZTukyBla8p5FVSzg8GhNmPJS6go5iKv
+\unrestrict rqffalcgsFozMlu2LL9YMx0m7JnlFbRvfa7gatMvgJ7ijCopzrUmfaPO2URfDU8
 
