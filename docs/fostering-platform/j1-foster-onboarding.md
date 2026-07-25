@@ -24,7 +24,7 @@ A person becomes an approved foster for a shelter with reusable global profile d
 - [x] Flutter approval filters enabled
 - [x] Approve / decline / archive actions on external foster cards
 
-**Status:** Phase 3 in progress (backend complete in phase 1 PR)
+**Status:** Phase 3 complete (pending integration → main)
 
 ## Phase 3 — Foster profiles and manual merge (in progress)
 
@@ -34,7 +34,7 @@ A person becomes an approved foster for a shelter with reusable global profile d
 - [x] POST manual foster creates linked `foster_profiles` row
 - [x] GET `merge-suggestions?email=` for registered-user hints
 - [x] POST `/:id/merge` links manual record to target user + audit `foster_merge_completed`
-- [ ] Flutter merge flow (phase 2)
+- [x] Flutter merge flow (phase 2)
 
 ## Out of scope (Phase 3 backend)
 
