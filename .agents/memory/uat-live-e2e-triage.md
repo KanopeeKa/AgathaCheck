@@ -24,7 +24,7 @@
 | **All** `@smoke` timeout ~2.4 min on login | UAT Node missing `E2E=1` — login rate limit blocks CI runner IP | Set `E2E=1` on UAT Node app + restart |
 | Pet visible timeout, API OK | Spec seeds **after** `loginAs` — fix: `createPet` before login or `refreshByRemount` |
 | Due events not on home | `refreshByRemount()` after API seed (see `e2e-navigation-contract.md`) |
-| **Health OK** but warmup fails with WAF HTML on signup | Health-only WAF clear — need auth probe in `passHostingWaf` (#351); see `uat-waf-queue-lessons.md` |
+| **Health OK** but warmup fails with WAF HTML on signup | Auth probe failure in `passHostingWaf` (#351); **`SMOKE_FAILURE_KIND` must be `waf`** via `classify-uat-smoke-failure.sh` — else gates misclassify as `code` |
 | Stuck `#/landing` 120s after signup | Signup API still WAF-blocked — do not add curl/Node retries |
 | `promote-uat` skipped / no UAT tag | Failed queue head — `set-barrier` or wait for auto-barrier on enqueue (#344) |
 | Coordinator dispatch OK, no agent | `infra_failed` → skip is expected; `failed` + no marker → launch guard (#346) |
@@ -35,6 +35,7 @@
 1. **Never** curl/Node `fetch` on live UAT auth — browser only (`passHostingWaf` + `warmup-uat`).
 2. **Health passing ≠ auth passing** — both must be probed in-browser before `createTestUser`.
 3. WAF smoke failures → ledger `infra_failed` (promotion continues), not `failed`.
+4. **Warmup failed + health OK** → `SMOKE_FAILURE_KIND=waf` (via `classify-uat-smoke-failure.sh`) so `gate_failure_class=infra_only`. Without this, promotion freezes incorrectly.
 
 ## E2E seed rule (prevention)
 

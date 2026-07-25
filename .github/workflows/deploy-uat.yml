@@ -567,7 +567,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 25
     outputs:
-      smoke_failure_kind: ${{ steps.health.outputs.failure_kind }}
+      smoke_failure_kind: ${{ steps.classify.outputs.failure_kind }}
     steps:
       - uses: actions/checkout@v5
 
@@ -615,6 +615,7 @@ jobs:
           npx playwright install chromium --with-deps
 
       - name: Warm up UAT auth before live smoke
+        id: warmup
         working-directory: e2e
         env:
           E2E_BASE_URL: ${{ env.UAT_BASE_URL }}
@@ -624,6 +625,16 @@ jobs:
           # cPanel auto-SSL on UAT is not trusted by GitHub runners (self-signed / incomplete chain).
           NODE_TLS_REJECT_UNAUTHORIZED: '0'
         run: xvfb-run --auto-servernum npm run test:warmup-uat
+
+      - name: Classify smoke failure for prod-ready gates
+        id: classify
+        if: always()
+        env:
+          HEALTH_OUTCOME: ${{ steps.health.outcome }}
+          WARMUP_OUTCOME: ${{ steps.warmup.outcome }}
+          HEALTH_FAILURE_KIND: ${{ steps.health.outputs.failure_kind }}
+          PLAYWRIGHT_REPORT_DIR: e2e/playwright-report
+        run: bash scripts/ci/classify-uat-smoke-failure.sh
 
       - name: Upload auth warmup Playwright report
         if: always()

@@ -142,6 +142,16 @@ Acquiring a 90-minute lease **before** a successful agent launch blocked all pro
 
 **Guards:** defer ledger commit until launch succeeds; `releaseWatcherIfHolderRunFinished`; `uat-queue-health` stale lease recovery.
 
+### 12. Playwright warmup failures must set `SMOKE_FAILURE_KIND=waf`
+
+**Problem:** `uat-post-deploy-smoke.sh` (curl health) sets `failure_kind` on the smoke job output. When health passes but **`test:warmup-uat`** fails (auth signup still WAF-blocked after page challenge — the #351 scenario), `SMOKE_FAILURE_KIND` stayed empty. `assert-uat-gates.sh` then classified the run as **`code`**, not `infra_only` — freezing promotion and misrouting the coordinator (uat-coordinator-plan §6 residual risk).
+
+**Symptom:** Log shows `UAT auth signup is still blocked by hosting WAF` in warmup, but notify handler logs `GATE_FAILURE_CLASS: code`.
+
+**Fix:** `scripts/ci/classify-uat-smoke-failure.sh` runs after health + warmup; when health succeeded and warmup failed → `failure_kind=waf` (health OK implies auth/WAF path, not Passenger crash).
+
+**Do not:** Treat warmup-only WAF failures as code regressions; do not add curl/Node auth retries.
+
 ---
 
 ## Operator recovery cheat sheet
@@ -203,7 +213,7 @@ git push origin uat-YYMMDD-<pr>
 | createTestUser | `e2e/playwright/support/ui-auth.ts` |
 | Node preflight deferral | `e2e/playwright/support/global-setup.ts` |
 | Deploy smoke job | `.github/workflows/deploy-uat.yml` (`smoke`, `uat-e2e-smoke`) |
-| Gate classification | `scripts/ci/assert-uat-gates.sh` |
+| Gate classification | `scripts/ci/assert-uat-gates.sh`, `scripts/ci/classify-uat-smoke-failure.sh` |
 | Queue library | `scripts/lib/uat_queue_lib.js` |
 | Queue recovery | `scripts/ci/uat-queue-recovery.js` |
 | Coordinator dispatch | `.github/scripts/uat-coordinator-dispatch.js` |
