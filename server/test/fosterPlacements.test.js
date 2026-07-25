@@ -8,6 +8,15 @@ import {
   PLACEMENT_STATUS_PENDING,
   PLACEMENT_STATUS_PENDING_CONDITIONS,
   PLACEMENT_STATUS_WAITING_ADOPTION,
+  SESSION_STATUS_ACTIVE,
+  SESSION_STATUS_ADOPTION_IN_PROGRESS,
+  SESSION_STATUS_CANCELLED,
+  SESSION_STATUS_CONVERTED_TO_ADOPTION,
+  SESSION_STATUS_PENDING_ACCEPTANCE,
+  normalizePlacementStatus,
+  OPEN_PLACEMENT_STATUSES,
+  placementToMap,
+  toLegacyStatus,
 } from '../lib/fosterPlacements.js';
 
 const JWT_SECRET = process.env.JWT_SECRET || process.env.SESSION_SECRET || 'default_secret';
@@ -19,7 +28,82 @@ const orgId = 'org-1';
 const petId = 'pet-1';
 const placementId = 'placement-1';
 
-function makePlacementRow(status) {
+describe('fostering session schema (J3 Phase 1)', () => {
+  it('maps legacy statuses to target session statuses (appendix §3.1)', () => {
+    expect(normalizePlacementStatus(PLACEMENT_STATUS_PENDING)).toBe(SESSION_STATUS_PENDING_ACCEPTANCE);
+    expect(normalizePlacementStatus(PLACEMENT_STATUS_IN_PROGRESS)).toBe(SESSION_STATUS_ACTIVE);
+    expect(normalizePlacementStatus(PLACEMENT_STATUS_WAITING_ADOPTION)).toBe(SESSION_STATUS_ADOPTION_IN_PROGRESS);
+    expect(normalizePlacementStatus(PLACEMENT_STATUS_PENDING_CONDITIONS)).toBe(SESSION_STATUS_ADOPTION_IN_PROGRESS);
+    expect(normalizePlacementStatus(PLACEMENT_STATUS_ADOPTED)).toBe(SESSION_STATUS_CONVERTED_TO_ADOPTION);
+    expect(normalizePlacementStatus(PLACEMENT_STATUS_NOT_IN_FOSTER)).toBe(SESSION_STATUS_CANCELLED);
+  });
+
+  it('passes through canonical session statuses unchanged', () => {
+    expect(normalizePlacementStatus(SESSION_STATUS_ACTIVE)).toBe(SESSION_STATUS_ACTIVE);
+    expect(normalizePlacementStatus(SESSION_STATUS_PENDING_ACCEPTANCE)).toBe(SESSION_STATUS_PENDING_ACCEPTANCE);
+  });
+
+  it('maps adoption_in_progress with conditions to legacy pending_adoption_conditions', () => {
+    expect(toLegacyStatus(SESSION_STATUS_ADOPTION_IN_PROGRESS, { adoption_conditions: 'Neuter first' }))
+      .toBe(PLACEMENT_STATUS_PENDING_CONDITIONS);
+    expect(toLegacyStatus(SESSION_STATUS_ADOPTION_IN_PROGRESS, { adoption_conditions: '' }))
+      .toBe(PLACEMENT_STATUS_WAITING_ADOPTION);
+  });
+
+  it('maps session statuses back to legacy API values', () => {
+    expect(toLegacyStatus(SESSION_STATUS_PENDING_ACCEPTANCE)).toBe(PLACEMENT_STATUS_PENDING);
+    expect(toLegacyStatus(SESSION_STATUS_ACTIVE)).toBe(PLACEMENT_STATUS_IN_PROGRESS);
+    expect(toLegacyStatus(SESSION_STATUS_ADOPTION_IN_PROGRESS)).toBe(PLACEMENT_STATUS_WAITING_ADOPTION);
+    expect(toLegacyStatus(SESSION_STATUS_CONVERTED_TO_ADOPTION)).toBe(PLACEMENT_STATUS_ADOPTED);
+    expect(toLegacyStatus(SESSION_STATUS_CANCELLED)).toBe(PLACEMENT_STATUS_NOT_IN_FOSTER);
+  });
+
+  it('includes legacy and target statuses in OPEN_PLACEMENT_STATUSES during dual-write', () => {
+    expect(OPEN_PLACEMENT_STATUSES).toEqual(expect.arrayContaining([
+      PLACEMENT_STATUS_PENDING,
+      PLACEMENT_STATUS_IN_PROGRESS,
+      SESSION_STATUS_PENDING_ACCEPTANCE,
+      SESSION_STATUS_ACTIVE,
+      SESSION_STATUS_ADOPTION_IN_PROGRESS,
+    ]));
+  });
+
+  it('placementToMap exposes session fields and dual-write status fields', () => {
+    const row = {
+      id: placementId,
+      organization_id: orgId,
+      pet_id: petId,
+      foster_user_id: fosterId,
+      org_foster_parent_id: 'rel-1',
+      shelter_foster_relationship_id: 'rel-1',
+      session_type: 'standard_foster',
+      foster_request_response_id: 'response-1',
+      shelter_start_confirmed_at: new Date('2024-02-01'),
+      foster_start_confirmed_at: new Date('2024-02-02'),
+      status: SESSION_STATUS_ACTIVE,
+      start_date: '2024-02-01',
+      end_date: null,
+      notes: 'notes',
+      adoption_conditions: '',
+      created_by: adminId,
+      created_at: new Date('2024-01-01'),
+      updated_at: new Date('2024-02-02'),
+      responded_at: new Date('2024-02-02'),
+    };
+
+    expect(placementToMap(row)).toMatchObject({
+      status: PLACEMENT_STATUS_IN_PROGRESS,
+      session_status: SESSION_STATUS_ACTIVE,
+      shelter_foster_relationship_id: 'rel-1',
+      session_type: 'standard_foster',
+      foster_request_response_id: 'response-1',
+      shelter_start_confirmed_at: row.shelter_start_confirmed_at,
+      foster_start_confirmed_at: row.foster_start_confirmed_at,
+    });
+  });
+});
+
+function makePlacementRow(status, adoptionConditions = '') {
   return {
     id: placementId,
     organization_id: orgId,
@@ -30,7 +114,7 @@ function makePlacementRow(status) {
     start_date: null,
     end_date: null,
     notes: '',
-    adoption_conditions: '',
+    adoption_conditions: adoptionConditions,
     created_by: adminId,
     created_at: new Date('2024-01-01'),
     updated_at: new Date('2024-01-01'),
@@ -45,8 +129,11 @@ function makePlacementRow(status) {
 
 function buildMockPool() {
   let placementStatus = null;
+  let placementAdoptionConditions = '';
   let fosterAccessGranted = false;
   let adoptedOwnerId = null;
+
+  const rowForStatus = (status) => makePlacementRow(status, placementAdoptionConditions);
 
   const handleQuery = async (sql, params) => {
     if (sql === 'BEGIN' || sql === 'COMMIT' || sql === 'ROLLBACK') {
@@ -60,27 +147,31 @@ function buildMockPool() {
     }
     if (sql.includes('FROM foster_placements fp') && sql.includes('fp.foster_user_id = $1') && sql.includes('fp.status = $2')) {
       if (params[1] === placementStatus) {
-        return { rows: [makePlacementRow(placementStatus)] };
+        return { rows: [rowForStatus(placementStatus)] };
       }
       return { rows: [] };
     }
     if (sql.includes('SELECT * FROM foster_placements WHERE id = $1 AND organization_id')) {
       if (!placementStatus) return { rows: [] };
-      return { rows: [makePlacementRow(placementStatus)] };
+      return { rows: [rowForStatus(placementStatus)] };
     }
     if (sql.includes('SELECT * FROM foster_placements WHERE id = $1 FOR UPDATE')) {
       if (!placementStatus) return { rows: [] };
-      return { rows: [makePlacementRow(placementStatus)] };
+      return { rows: [rowForStatus(placementStatus)] };
     }
     if (sql.includes('SELECT * FROM foster_placements WHERE id = $1')) {
       if (!placementStatus) return { rows: [] };
-      return { rows: [makePlacementRow(placementStatus)] };
+      return { rows: [rowForStatus(placementStatus)] };
     }
     if (sql.includes('SELECT fp.*') && sql.includes('WHERE fp.pet_id = $1')) {
-      if (!placementStatus || placementStatus === PLACEMENT_STATUS_NOT_IN_FOSTER || placementStatus === PLACEMENT_STATUS_ADOPTED) {
+      if (!placementStatus
+        || placementStatus === PLACEMENT_STATUS_NOT_IN_FOSTER
+        || placementStatus === PLACEMENT_STATUS_ADOPTED
+        || placementStatus === SESSION_STATUS_CANCELLED
+        || placementStatus === SESSION_STATUS_CONVERTED_TO_ADOPTION) {
         return { rows: [] };
       }
-      return { rows: [makePlacementRow(placementStatus)] };
+      return { rows: [rowForStatus(placementStatus)] };
     }
     if (sql.includes('SELECT id, name FROM pets WHERE id = $1 AND organization_id')) {
       return { rows: [{ id: petId, name: 'Buddy' }] };
@@ -96,29 +187,34 @@ function buildMockPool() {
     }
     if (sql.includes('INSERT INTO foster_placements')) {
       placementStatus = params[4] || PLACEMENT_STATUS_PENDING;
-      return { rows: [makePlacementRow(placementStatus)] };
+      return { rows: [rowForStatus(placementStatus)] };
     }
     if (sql.includes('UPDATE foster_placements') && params[0] === PLACEMENT_STATUS_IN_PROGRESS) {
       placementStatus = PLACEMENT_STATUS_IN_PROGRESS;
       fosterAccessGranted = true;
-      return { rows: [makePlacementRow(PLACEMENT_STATUS_IN_PROGRESS)] };
+      return { rows: [rowForStatus(PLACEMENT_STATUS_IN_PROGRESS)] };
     }
     if (sql.includes('UPDATE foster_placements') && params[0] === PLACEMENT_STATUS_WAITING_ADOPTION) {
       placementStatus = PLACEMENT_STATUS_WAITING_ADOPTION;
-      return { rows: [makePlacementRow(PLACEMENT_STATUS_WAITING_ADOPTION)] };
+      return { rows: [rowForStatus(PLACEMENT_STATUS_WAITING_ADOPTION)] };
     }
     if (sql.includes('UPDATE foster_placements') && params[0] === PLACEMENT_STATUS_PENDING_CONDITIONS) {
       placementStatus = PLACEMENT_STATUS_PENDING_CONDITIONS;
-      return { rows: [makePlacementRow(PLACEMENT_STATUS_PENDING_CONDITIONS)] };
+      placementAdoptionConditions = params[1] || '';
+      return { rows: [rowForStatus(PLACEMENT_STATUS_PENDING_CONDITIONS)] };
     }
-    if (sql.includes('UPDATE foster_placements') && params[0] === PLACEMENT_STATUS_ADOPTED) {
-      placementStatus = PLACEMENT_STATUS_ADOPTED;
+    if (sql.includes('UPDATE foster_placements') && (
+      params[0] === PLACEMENT_STATUS_ADOPTED || params[0] === SESSION_STATUS_CONVERTED_TO_ADOPTION
+    )) {
+      placementStatus = SESSION_STATUS_CONVERTED_TO_ADOPTION;
       adoptedOwnerId = fosterId;
-      return { rows: [makePlacementRow(PLACEMENT_STATUS_ADOPTED)] };
+      return { rows: [rowForStatus(SESSION_STATUS_CONVERTED_TO_ADOPTION)] };
     }
-    if (sql.includes('UPDATE foster_placements') && params[0] === PLACEMENT_STATUS_NOT_IN_FOSTER) {
-      const ended = makePlacementRow(PLACEMENT_STATUS_NOT_IN_FOSTER);
-      placementStatus = PLACEMENT_STATUS_NOT_IN_FOSTER;
+    if (sql.includes('UPDATE foster_placements') && (
+      params[0] === PLACEMENT_STATUS_NOT_IN_FOSTER || params[0] === SESSION_STATUS_CANCELLED
+    )) {
+      const ended = rowForStatus(SESSION_STATUS_CANCELLED);
+      placementStatus = SESSION_STATUS_CANCELLED;
       fosterAccessGranted = false;
       return { rows: [ended] };
     }
@@ -147,11 +243,11 @@ function buildMockPool() {
       if (!placementStatus || placementStatus === PLACEMENT_STATUS_NOT_IN_FOSTER) {
         return { rows: [] };
       }
-      return { rows: [makePlacementRow(placementStatus)] };
+      return { rows: [rowForStatus(placementStatus)] };
     }
     if (sql.includes('WHERE fp.id = $1')) {
       if (!placementStatus) return { rows: [] };
-      return { rows: [makePlacementRow(placementStatus)] };
+      return { rows: [rowForStatus(placementStatus)] };
     }
     return { rows: [] };
   };

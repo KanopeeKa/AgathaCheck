@@ -161,7 +161,7 @@ CREATE TABLE public.foster_placements (
     id uuid NOT NULL,
     organization_id uuid NOT NULL,
     pet_id uuid NOT NULL,
-    foster_user_id uuid NOT NULL,
+    foster_user_id uuid,
     org_foster_parent_id uuid,
     status character varying(50) DEFAULT 'pending'::character varying NOT NULL,
     start_date date,
@@ -171,7 +171,13 @@ CREATE TABLE public.foster_placements (
     created_at timestamp with time zone DEFAULT now(),
     updated_at timestamp with time zone DEFAULT now(),
     responded_at timestamp with time zone,
-    adoption_conditions text DEFAULT ''::text
+    adoption_conditions text DEFAULT ''::text,
+    shelter_foster_relationship_id uuid,
+    session_type text DEFAULT 'standard_foster'::text NOT NULL,
+    foster_request_response_id uuid,
+    shelter_start_confirmed_at timestamp with time zone,
+    foster_start_confirmed_at timestamp with time zone,
+    CONSTRAINT foster_placements_session_type_check CHECK ((session_type = ANY (ARRAY['standard_foster'::text, 'foster_in_view_to_adopt'::text])))
 );
 
 
@@ -994,10 +1000,10 @@ CREATE INDEX idx_foster_placements_foster_user_status ON public.foster_placement
 
 
 --
--- Name: idx_foster_placements_one_active_pet; Type: INDEX; Schema: public; Owner: -
+-- Name: idx_foster_placements_one_open_session_per_pet; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE UNIQUE INDEX idx_foster_placements_one_active_pet ON public.foster_placements USING btree (pet_id) WHERE ((status)::text = ANY ((ARRAY['pending'::character varying, 'in_progress'::character varying, 'waiting_adoption_confirmation'::character varying, 'pending_adoption_conditions'::character varying])::text[]));
+CREATE UNIQUE INDEX idx_foster_placements_one_open_session_per_pet ON public.foster_placements USING btree (pet_id) WHERE ((status)::text = ANY ((ARRAY['pending_acceptance'::character varying, 'preparation'::character varying, 'ready_to_start'::character varying, 'active'::character varying, 'end_pending_confirmation'::character varying, 'adoption_in_progress'::character varying, 'pending'::character varying, 'in_progress'::character varying, 'waiting_adoption_confirmation'::character varying, 'pending_adoption_conditions'::character varying])::text[]));
 
 
 --
@@ -1278,6 +1284,14 @@ ALTER TABLE ONLY public.foster_placements
 
 ALTER TABLE ONLY public.foster_placements
     ADD CONSTRAINT foster_placements_org_foster_parent_id_fkey FOREIGN KEY (org_foster_parent_id) REFERENCES public.org_foster_parents(id) ON DELETE SET NULL;
+
+
+--
+-- Name: foster_placements foster_placements_shelter_foster_relationship_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.foster_placements
+    ADD CONSTRAINT foster_placements_shelter_foster_relationship_id_fkey FOREIGN KEY (shelter_foster_relationship_id) REFERENCES public.org_foster_parents(id) ON DELETE SET NULL;
 
 
 --
