@@ -38,7 +38,8 @@
     "029_foster_profile_capacity.sql",
     "030_adoption_visits.sql",
     "031_document_templates.sql",
-    "032_adoption_visit_outcome.sql"
+    "032_adoption_visit_outcome.sql",
+    "033_notification_kind_priority_resolved.sql"
   ],
   "code_migrations": [
     "016_migrate_family_events_placements.sql",

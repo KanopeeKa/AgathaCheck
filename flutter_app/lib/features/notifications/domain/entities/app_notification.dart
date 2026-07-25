@@ -1,3 +1,5 @@
+import 'notification_kind.dart';
+
 enum NotificationType {
   dueSoon,
   overdue,
@@ -32,6 +34,9 @@ class AppNotification {
     required this.title,
     required this.message,
     required this.type,
+    this.kind = NotificationKind.care,
+    this.priority = NotificationPriority.normal,
+    this.resolvedAt,
     required this.isRead,
     required this.createdAt,
   });
@@ -45,6 +50,9 @@ class AppNotification {
   final String title;
   final String message;
   final NotificationType type;
+  final NotificationKind kind;
+  final NotificationPriority priority;
+  final DateTime? resolvedAt;
   final bool isRead;
   final DateTime createdAt;
 
@@ -58,6 +66,9 @@ class AppNotification {
     String? title,
     String? message,
     NotificationType? type,
+    NotificationKind? kind,
+    NotificationPriority? priority,
+    DateTime? resolvedAt,
     bool? isRead,
     DateTime? createdAt,
   }) {
@@ -71,6 +82,9 @@ class AppNotification {
       title: title ?? this.title,
       message: message ?? this.message,
       type: type ?? this.type,
+      kind: kind ?? this.kind,
+      priority: priority ?? this.priority,
+      resolvedAt: resolvedAt ?? this.resolvedAt,
       isRead: isRead ?? this.isRead,
       createdAt: createdAt ?? this.createdAt,
     );
@@ -85,4 +99,16 @@ class AppNotification {
 
   @override
   int get hashCode => id.hashCode;
+}
+
+/// Default kind for existing [NotificationType] values (Phase 0 — all care today).
+NotificationKind defaultKindForNotificationType(NotificationType type) {
+  switch (type) {
+    case NotificationType.dueSoon:
+    case NotificationType.overdue:
+    case NotificationType.reminder:
+    case NotificationType.completed:
+    case NotificationType.general:
+      return NotificationKind.care;
+  }
 }

@@ -6,6 +6,10 @@ import { createApiLimiter } from '../config/rateLimit.js';
 import { JWT_SECRET } from '../config/jwtSecret.js';
 import { publicError } from '../config/security.js';
 import { checkDueNotifications } from '../lib/checkDueNotifications.js';
+import {
+  normaliseKind,
+  normalisePriority,
+} from '../lib/notificationKind.js';
 
 function extractUserId(req) {
   const auth = req.headers['authorization'] || req.headers['Authorization'];
@@ -28,6 +32,11 @@ function notificationToMap(row) {
     title: row.title || '',
     message: row.message || '',
     type: row.type || 'general',
+    kind: normaliseKind(row.kind),
+    priority: normalisePriority(row.priority),
+    resolved_at: row.resolved_at
+      ? row.resolved_at.toISOString?.() || String(row.resolved_at)
+      : null,
     is_read: row.is_read ?? row.read ?? false,
     created_at: row.created_at ? row.created_at.toISOString?.() || String(row.created_at) : null,
   };

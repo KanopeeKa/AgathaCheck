@@ -1,6 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pet_profile_app/features/notifications/data/models/notification_model.dart';
 import 'package:pet_profile_app/features/notifications/domain/entities/app_notification.dart';
+import 'package:pet_profile_app/features/notifications/domain/entities/notification_kind.dart';
 
 void main() {
   group('NotificationModel', () {
@@ -17,6 +18,25 @@ void main() {
       'is_read': false,
       'created_at': '2025-06-15T10:00:00.000Z',
     };
+
+    test('fromJson defaults kind from type when kind omitted', () {
+      final model = NotificationModel.fromJson(fullJson);
+      expect(model.kind, NotificationKind.care);
+      expect(model.priority, NotificationPriority.normal);
+      expect(model.resolvedAt, isNull);
+    });
+
+    test('fromJson parses kind priority and resolved_at', () {
+      final model = NotificationModel.fromJson({
+        ...fullJson,
+        'kind': 'administrative',
+        'priority': 'urgent',
+        'resolved_at': '2025-06-16T12:00:00.000Z',
+      });
+      expect(model.kind, NotificationKind.administrative);
+      expect(model.priority, NotificationPriority.urgent);
+      expect(model.resolvedAt?.toUtc().hour, 12);
+    });
 
     test('fromJson parses all fields correctly', () {
       final model = NotificationModel.fromJson(fullJson);
