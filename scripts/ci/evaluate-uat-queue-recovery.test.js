@@ -7,7 +7,6 @@ const {
   createEmptyState,
   isWatcherLeaseActive,
   pruneExpiredWatcher,
-  releaseWatcher,
 } = require('../lib/uat_queue_lib');
 const { recoverStaleWatcher } = require('./uat-queue-recovery');
 
@@ -32,8 +31,12 @@ test('recoverStaleWatcher clears lease when holder workflow completed', async ()
     watching_seq: 1,
   };
   const originalFetch = global.fetch;
-  global.fetch = async (url) => ({
+  global.fetch = async () => ({
     ok: true,
+    status: 200,
+    async json() {
+      return { status: 'completed' };
+    },
     async text() {
       return JSON.stringify({ status: 'completed' });
     },
