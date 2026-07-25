@@ -121,6 +121,22 @@ mixin OrganizationRepositoryFosterMixin on OrganizationRepositoryImplBase {
   }
 
   @override
+  Future<FosterParent> updateFosterApproval(
+    String orgId,
+    String fosterParentId,
+    FosterApprovalState approvalState, {
+    required String token,
+  }) async {
+    final row = await dataSource.updateFosterApproval(
+      orgId,
+      fosterParentId,
+      approvalState.toWire(),
+      token,
+    );
+    return FosterParent.fromJson(row);
+  }
+
+  @override
   Future<PetFosterPlacementState> getPetPlacement(
     String orgId,
     String petId,

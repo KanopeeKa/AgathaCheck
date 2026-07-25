@@ -149,4 +149,24 @@ class OrganizationFosterParentsRemote {
       _ctx.throwApiError(response, 'Failed to delete foster parent');
     }
   }
+
+  Future<Map<String, dynamic>> updateFosterApproval(
+    String orgId,
+    String fosterParentId,
+    String approvalState,
+    String token,
+  ) async {
+    final response = await _ctx.client.patch(
+      Uri.parse(
+        '${_ctx.baseUrl}/api/organizations/$orgId/foster-parents/$fosterParentId/approval',
+      ),
+      headers: _ctx.headers(token),
+      body: json.encode({'approval_state': approvalState}),
+    );
+    final data = json.decode(response.body) as Map<String, dynamic>;
+    if (response.statusCode >= 400) {
+      throw Exception(data['error'] ?? 'Failed to update foster approval');
+    }
+    return data;
+  }
 }

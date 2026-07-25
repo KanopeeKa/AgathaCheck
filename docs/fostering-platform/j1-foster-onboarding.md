@@ -1,6 +1,6 @@
 # J1 — Foster onboarding and approval
 
-**Status:** Phase 2 in progress  
+**Status:** Phase 2 complete  
 **Parent:** [`g0-contract-pack.md`](g0-contract-pack.md) · [`migration-appendix.md`](migration-appendix.md)
 
 ## Purpose
@@ -17,12 +17,14 @@ A person becomes an approved foster for a shelter with reusable global profile d
 
 ## Phase 2 — Approval state (this plan)
 
-- [ ] Migration `022`: `approval_state`, `creation_source` on `org_foster_parents`
-- [ ] GET foster-parents exposes `approval_state` (members virtual `approved`)
-- [ ] POST manual foster → `under_review` + audit `manual_foster_record_created`
-- [ ] PATCH `/:id/approval` → approve / decline / archive + G0 audit events
-- [ ] Flutter approval filters enabled
-- [ ] Approve / decline / archive actions on external foster cards
+- [x] Migration `022`: `approval_state`, `creation_source` on `org_foster_parents`
+- [x] GET foster-parents exposes `approval_state` (members virtual `approved`)
+- [x] POST manual foster → `under_review` + audit `manual_foster_record_created`
+- [x] PATCH `/:id/approval` → approve / decline / archive + G0 audit events
+- [x] Flutter approval filters enabled
+- [x] Approve / decline / archive actions on external foster cards
+
+**Status:** Phase 2 complete
 
 ## Out of scope (Phase 2)
 

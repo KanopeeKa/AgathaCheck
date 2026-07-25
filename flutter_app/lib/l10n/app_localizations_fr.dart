@@ -2068,52 +2068,70 @@ class AppLocalizationsFr extends AppLocalizations {
       'Membres et contacts pouvant accueillir des animaux de l\'organisation. Le nombre d\'animaux reflète les placements actifs.';
 
   @override
-  String get manageFostersTitle => 'Manage fosters';
+  String get manageFostersTitle => 'Gérer les familles d\'accueil';
 
   @override
   String get manageFostersDescription =>
-      'Operational view of foster families — invite, review, and track who is fostering now.';
+      'Vue opérationnelle des familles d\'accueil — inviter, examiner et suivre qui accueille actuellement.';
 
   @override
-  String get manageFostersTabNew => 'New';
+  String get manageFostersTabNew => 'Nouveaux';
 
   @override
-  String get manageFostersTabFostering => 'Fostering';
+  String get manageFostersTabFostering => 'En accueil';
 
   @override
-  String get manageFostersTabRecentlyFostered => 'Recently fostered';
+  String get manageFostersTabRecentlyFostered => 'Accueil récent';
 
   @override
-  String get manageFostersTabInactive => 'Inactive';
+  String get manageFostersTabInactive => 'Inactifs';
 
   @override
-  String get manageFostersTabAll => 'All';
+  String get manageFostersTabAll => 'Tous';
 
   @override
-  String get manageFostersStatusFostering => 'Fostering';
+  String get manageFostersStatusFostering => 'En accueil';
 
   @override
-  String get manageFostersEmptyTab => 'No fosters match this tab';
+  String get manageFostersEmptyTab =>
+      'Aucune famille d\'accueil pour cet onglet';
 
   @override
   String get manageFostersRecentlyFosteredPlaceholder =>
-      'Recently ended foster placements will appear here once session history is available.';
+      'Les accueils récemment terminés apparaîtront ici lorsque l\'historique des sessions sera disponible.';
 
   @override
-  String get manageFostersApprovalFiltersLabel => 'Approval filters';
+  String get manageFostersApprovalFiltersLabel => 'Filtres d\'approbation';
 
   @override
-  String get manageFostersFilterUnderReview => 'Under review';
+  String get manageFostersFilterUnderReview => 'En examen';
 
   @override
-  String get manageFostersFilterApproved => 'Approved';
+  String get manageFostersFilterApproved => 'Approuvés';
 
   @override
-  String get manageFostersFilterArchived => 'Archived';
+  String get manageFostersFilterArchived => 'Archivés';
 
   @override
-  String get manageFostersApprovalFiltersComingSoon =>
-      'Approval filters activate when foster onboarding (J1 Phase 2) ships.';
+  String get manageFostersApprovalApprove => 'Approuver';
+
+  @override
+  String get manageFostersApprovalDecline => 'Refuser';
+
+  @override
+  String get manageFostersApprovalArchive => 'Archiver';
+
+  @override
+  String get manageFostersApprovalStateUnderReview => 'En examen';
+
+  @override
+  String get manageFostersApprovalStateApproved => 'Approuvé';
+
+  @override
+  String get manageFostersApprovalStateDeclined => 'Refusé';
+
+  @override
+  String get manageFostersApprovalStateArchived => 'Archivé';
 
   @override
   String get noFosterParents => 'Aucune famille d\'accueil pour le moment';

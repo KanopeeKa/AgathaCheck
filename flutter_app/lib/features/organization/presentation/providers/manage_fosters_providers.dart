@@ -3,7 +3,7 @@ import '../../domain/entities/foster_parent.dart';
 /// Operational tabs for Manage Fosters (J1). Activity meaning from migration appendix §8.
 enum ManageFostersTab { all, newFosters, fostering, recentlyFostered, inactive }
 
-/// Approval filters — UI only until J1 Phase 2 (`approval_state` column).
+/// Approval filters backed by `approval_state` on shelter–foster relationships (J1 Phase 2).
 enum ManageFostersApprovalFilter { underReview, approved, archived }
 
 const _activePlacementStatuses = {
@@ -35,11 +35,34 @@ bool fosterMatchesManageFostersTab(FosterParent parent, ManageFostersTab tab) {
   }
 }
 
+FosterApprovalState? approvalStateForFilter(
+  ManageFostersApprovalFilter filter,
+) {
+  switch (filter) {
+    case ManageFostersApprovalFilter.underReview:
+      return FosterApprovalState.underReview;
+    case ManageFostersApprovalFilter.approved:
+      return FosterApprovalState.approved;
+    case ManageFostersApprovalFilter.archived:
+      return FosterApprovalState.archived;
+  }
+}
+
+bool fosterMatchesApprovalFilter(
+  FosterParent parent,
+  ManageFostersApprovalFilter? filter,
+) {
+  if (filter == null) return true;
+  return parent.approvalState == approvalStateForFilter(filter);
+}
+
 List<FosterParent> filterFosterParentsForManageFosters({
   required List<FosterParent> parents,
   required ManageFostersTab tab,
+  ManageFostersApprovalFilter? approvalFilter,
 }) {
   return parents
       .where((p) => fosterMatchesManageFostersTab(p, tab))
+      .where((p) => fosterMatchesApprovalFilter(p, approvalFilter))
       .toList(growable: false);
 }
