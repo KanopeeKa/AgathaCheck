@@ -2134,6 +2134,37 @@ class AppLocalizationsFr extends AppLocalizations {
   String get manageFostersApprovalStateArchived => 'Archivé';
 
   @override
+  String get manageFostersMergeIntoAccount => 'Lier au compte enregistré';
+
+  @override
+  String get manageFostersMergeSelectAccount => 'Choisir le compte enregistré';
+
+  @override
+  String get manageFostersMergeConfirmTitle =>
+      'Lier ce dossier famille d\'accueil ?';
+
+  @override
+  String manageFostersMergeConfirmBody(
+    String manualName,
+    String registeredName,
+  ) {
+    return 'Lier $manualName au compte enregistré de $registeredName ? Les notes du refuge restent sur cette relation.';
+  }
+
+  @override
+  String get manageFostersMergeConfirmAction => 'Lier le compte';
+
+  @override
+  String get manageFostersMergeSuccess => 'Dossier lié au compte enregistré';
+
+  @override
+  String get manageFostersMergeNoMatch =>
+      'Aucun compte enregistré ne correspond à cet e-mail';
+
+  @override
+  String get manageFostersLinkedAccount => 'Compte lié';
+
+  @override
   String get noFosterParents => 'Aucune famille d\'accueil pour le moment';
 
   @override

@@ -54,6 +54,86 @@ void main() {
     expect(find.byKey(const Key('foster_summary_card_fp-1')), findsOneWidget);
     expect(find.text('Eve Foster'), findsOneWidget);
   });
+
+  testWidgets('external foster menu offers merge into registered account', (
+    tester,
+  ) async {
+    const parents = [
+      FosterParent(
+        id: 'fp-ext-1',
+        kind: FosterParentKind.external,
+        displayName: 'Manual Parent',
+        email: 'match@example.com',
+        approvalState: FosterApprovalState.underReview,
+      ),
+    ];
+    final repo = _MergeFosterRepo(parents);
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          authProvider.overrideWith((ref) => FakeAuthNotifier()),
+          organizationRepositoryProvider.overrideWithValue(repo),
+        ],
+        child: MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: const ManageFostersScreen(orgId: 'org-1'),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.byKey(const Key('foster_actions_menu_fp-ext-1')));
+    await tester.pumpAndSettle();
+    expect(find.text('Link to registered account'), findsOneWidget);
+
+    await tester.tap(find.text('Link to registered account'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Link foster record?'), findsOneWidget);
+    await tester.tap(find.text('Link account'));
+    await tester.pumpAndSettle();
+
+    expect(repo.mergeCalls, 1);
+    expect(find.text('Foster record linked to registered account'), findsOneWidget);
+  });
+}
+
+class _MergeFosterRepo extends _FosterParentsRepo {
+  _MergeFosterRepo(super.parents);
+
+  int mergeCalls = 0;
+
+  @override
+  Future<List<FosterMergeSuggestion>> getFosterMergeSuggestions(
+    String orgId,
+    String email, {
+    required String token,
+  }) async => [
+    const FosterMergeSuggestion(
+      userId: 'registered-user-1',
+      displayName: 'Registered User',
+      email: 'match@example.com',
+    ),
+  ];
+
+  @override
+  Future<FosterParent> mergeManualFoster(
+    String orgId,
+    String fosterParentId, {
+    required String targetUserId,
+    required String token,
+  }) async {
+    mergeCalls++;
+    return FosterParent(
+      id: fosterParentId,
+      kind: FosterParentKind.external,
+      userId: targetUserId,
+      displayName: 'Manual Parent',
+      email: 'match@example.com',
+    );
+  }
 }
 
 class _FosterParentsRepo extends RecordingOrganizationRepository {

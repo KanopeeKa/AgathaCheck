@@ -757,6 +757,20 @@
   "manageFostersApprovalStateApproved": "Approved",
   "manageFostersApprovalStateDeclined": "Declined",
   "manageFostersApprovalStateArchived": "Archived",
+  "manageFostersMergeIntoAccount": "Link to registered account",
+  "manageFostersMergeSelectAccount": "Select registered account",
+  "manageFostersMergeConfirmTitle": "Link foster record?",
+  "manageFostersMergeConfirmBody": "Link {manualName} to the registered account for {registeredName}? Shelter notes stay on this relationship.",
+  "@manageFostersMergeConfirmBody": {
+    "placeholders": {
+      "manualName": { "type": "String" },
+      "registeredName": { "type": "String" }
+    }
+  },
+  "manageFostersMergeConfirmAction": "Link account",
+  "manageFostersMergeSuccess": "Foster record linked to registered account",
+  "manageFostersMergeNoMatch": "No registered account matches this email",
+  "manageFostersLinkedAccount": "Linked account",
   "noFosterParents": "No foster parents yet",
   "addFosterParent": "Add foster parent",
   "addFosterParentDescription": "Add someone who fosters without an app account. You can assign pets to them in a later step.",

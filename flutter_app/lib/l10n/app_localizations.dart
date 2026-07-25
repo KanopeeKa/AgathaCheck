@@ -3955,6 +3955,57 @@ abstract class AppLocalizations {
   /// **'Archived'**
   String get manageFostersApprovalStateArchived;
 
+  /// No description provided for @manageFostersMergeIntoAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Link to registered account'**
+  String get manageFostersMergeIntoAccount;
+
+  /// No description provided for @manageFostersMergeSelectAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Select registered account'**
+  String get manageFostersMergeSelectAccount;
+
+  /// No description provided for @manageFostersMergeConfirmTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Link foster record?'**
+  String get manageFostersMergeConfirmTitle;
+
+  /// No description provided for @manageFostersMergeConfirmBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Link {manualName} to the registered account for {registeredName}? Shelter notes stay on this relationship.'**
+  String manageFostersMergeConfirmBody(
+    String manualName,
+    String registeredName,
+  );
+
+  /// No description provided for @manageFostersMergeConfirmAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Link account'**
+  String get manageFostersMergeConfirmAction;
+
+  /// No description provided for @manageFostersMergeSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Foster record linked to registered account'**
+  String get manageFostersMergeSuccess;
+
+  /// No description provided for @manageFostersMergeNoMatch.
+  ///
+  /// In en, this message translates to:
+  /// **'No registered account matches this email'**
+  String get manageFostersMergeNoMatch;
+
+  /// No description provided for @manageFostersLinkedAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Linked account'**
+  String get manageFostersLinkedAccount;
+
   /// No description provided for @noFosterParents.
   ///
   /// In en, this message translates to:

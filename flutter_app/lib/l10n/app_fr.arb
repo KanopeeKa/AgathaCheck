@@ -668,6 +668,20 @@
   "manageFostersApprovalStateApproved": "Approuvé",
   "manageFostersApprovalStateDeclined": "Refusé",
   "manageFostersApprovalStateArchived": "Archivé",
+  "manageFostersMergeIntoAccount": "Lier au compte enregistré",
+  "manageFostersMergeSelectAccount": "Choisir le compte enregistré",
+  "manageFostersMergeConfirmTitle": "Lier ce dossier famille d'accueil ?",
+  "manageFostersMergeConfirmBody": "Lier {manualName} au compte enregistré de {registeredName} ? Les notes du refuge restent sur cette relation.",
+  "@manageFostersMergeConfirmBody": {
+    "placeholders": {
+      "manualName": { "type": "String" },
+      "registeredName": { "type": "String" }
+    }
+  },
+  "manageFostersMergeConfirmAction": "Lier le compte",
+  "manageFostersMergeSuccess": "Dossier lié au compte enregistré",
+  "manageFostersMergeNoMatch": "Aucun compte enregistré ne correspond à cet e-mail",
+  "manageFostersLinkedAccount": "Compte lié",
   "noFosterParents": "Aucune famille d'accueil pour le moment",
   "addFosterParent": "Ajouter une famille d'accueil",
   "addFosterParentDescription": "Ajoutez une personne sans compte dans l'application. Vous pourrez lui assigner des animaux plus tard.",
