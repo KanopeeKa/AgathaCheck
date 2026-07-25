@@ -38,6 +38,7 @@ Institutional knowledge for cloud agents. Domain workflows live in **Skills** (`
 - [Flutter pub cache Matrix4 quirk](flutter-pubcache-matrix4.md) — `flutter test` failing inside the SDK's painting lib (Matrix4/Vector4 undefined) = stale cache; run `flutter pub get` first.
 - [Body-supplied organization_id validation](body-supplied-org-id-validation.md) — pet create/update must verify caller is in organization_users before persisting org_id; backend enforces 403 on non-member.
 - [UAT live E2E & deploy triage](uat-live-e2e-triage.md) — migrations/ownership, auth bypass, **`E2E=1` required on UAT Node**, API seed-before-login, 500/401/429 symptom map; full runbook `docs/e2e/uat-live-operations-runbook.md`.
+- [UAT WAF + queue lessons (Jul 2026)](../../docs/e2e/uat-waf-queue-lessons.md) — health vs auth WAF probes, `infra_failed`, promote skip, coordinator launch guard, `uat-queue-health` timing; agent summary in `uat-live-e2e-triage.md`.
 
 ## Quick references
 
