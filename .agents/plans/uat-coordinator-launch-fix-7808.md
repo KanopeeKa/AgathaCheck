@@ -74,10 +74,10 @@ next_action: "continue phase 1 on branch cursor/uat-coordinator-launch-guard-780
 artifact_ref:
   branch: cursor/uat-coordinator-launch-guard-7808
   plan_path: .agents/plans/uat-coordinator-launch-fix-7808.md
-  plan_commit: 40df205a2a2945d87c11278510dcca280b0da29c
+  plan_commit: 016e469a9667ddae8685e6516a68ba90015c2b9f
   snapshot_path: .agents/plans/uat-coordinator-launch-fix-7808.snapshot.json
-  snapshot_commit: 40df205a2a2945d87c11278510dcca280b0da29c
-open_prs: []
+  snapshot_commit: 016e469a9667ddae8685e6516a68ba90015c2b9f
+open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/346"]
 merge_commits: {}
 debt_issue_refs: []
 ```
