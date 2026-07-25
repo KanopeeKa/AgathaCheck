@@ -22,6 +22,7 @@ import dotenv from 'dotenv';
 import pg from 'pg';
 import { v4 as uuidv4 } from 'uuid';
 import { migrateFamilyEventsPlacements } from './migrations/016_migrate_family_events_placements.js';
+import { migrateFosterProfiles } from './migrations/023_foster_profiles.js';
 import { maybeAutoSeedMigrationLedger } from './lib/migration-ledger.js';
 
 const { Pool } = pg;
@@ -97,6 +98,7 @@ async function appliedMigrations(pool) {
 /** Migrations whose data changes need app-generated UUIDs (no gen_random_uuid()). */
 const CODE_MIGRATIONS = {
   '016_migrate_family_events_placements.sql': migrateFamilyEventsPlacements,
+  '023_foster_profiles.sql': migrateFosterProfiles,
 };
 
 async function applyMigration(client, name, sql) {
