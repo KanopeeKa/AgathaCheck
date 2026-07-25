@@ -1,7 +1,6 @@
 'use strict';
 
 const { rest } = require('../../.github/scripts/github-project-lib');
-const { syncDeployResult } = require('./uat_queue_apply');
 const { resolveCoordinationIssue } = require('./uat_queue_sync');
 
 function yymmddFromIso(iso) {
@@ -95,6 +94,9 @@ async function reconcileFailedDeployLedger({
     return { skipped: true, reason: 'deploy_ref_unavailable' };
   }
 
+  const run = await rest('GET', `/repos/${owner}/${repo}/actions/runs/${workflowRunId}`, token);
+
+  const { syncDeployResult } = require('./uat_queue_apply');
   const result = await syncDeployResult({
     deployRef,
     conclusion: 'failure',
@@ -104,6 +106,9 @@ async function reconcileFailedDeployLedger({
     issueNumber: coordIssue,
     token,
     write,
+    owner,
+    repo,
+    mergeSha: run.head_sha || null,
   });
 
   if (result.skipped) {
@@ -119,6 +124,7 @@ async function reconcileFailedDeployLedger({
 
 module.exports = {
   yymmddFromIso,
+  tagCommitSha,
   resolveUatTagForCommit,
   extractDeployRefFromWorkflowRun,
   reconcileFailedDeployLedger,

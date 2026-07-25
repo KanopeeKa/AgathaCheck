@@ -101,6 +101,14 @@ function findActiveEntry(state, mergeSha) {
   return entry;
 }
 
+function findActiveEntryByPr(state, prNumber) {
+  return (
+    state.entries.find(
+      (e) => e.pr_number === Number(prNumber) && e.state !== 'superseded',
+    ) || null
+  );
+}
+
 function expectedUatTag(prNumber, date = new Date()) {
   const yy = String(date.getUTCFullYear()).slice(-2);
   const mm = String(date.getUTCMonth() + 1).padStart(2, '0');
@@ -426,6 +434,7 @@ module.exports = {
   enqueueEntry,
   expectedUatTag,
   findActiveEntry,
+  findActiveEntryByPr,
   findEntryByMergeSha,
   hasRemedialEntry,
   headEntryNeedingAttention,

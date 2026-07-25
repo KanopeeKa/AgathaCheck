@@ -11,6 +11,7 @@ const {
   rest,
   parseRepo,
 } = require('./github-project-lib');
+const { resolveCoordinationIssue } = require('../../scripts/lib/uat_queue_sync');
 
 const ASSIGNEE = process.env.AGENT_ASSIGNEE || 'KanopeeKa';
 
@@ -41,6 +42,26 @@ async function fetchPullRequest(owner, repo, prNumber, token) {
   return rest('GET', `/repos/${owner}/${repo}/pulls/${prNumber}`, token);
 }
 
+async function syncEnqueueAfterMergeSafe({
+  mergeSha,
+  prNumber,
+  enqueuedBy,
+  token,
+}) {
+  try {
+    const { syncEnqueueAfterMerge } = require('../../scripts/lib/uat_queue_apply');
+    return await syncEnqueueAfterMerge({
+      mergeSha,
+      prNumber: Number(prNumber),
+      enqueuedBy,
+      token,
+    });
+  } catch (error) {
+    console.warn(`UAT queue enqueue skipped: ${error.message}`);
+    return { skipped: true, reason: error.message };
+  }
+}
+
 async function handleMergedPr({
   owner,
   repo,
@@ -53,9 +74,22 @@ async function handleMergedPr({
   statusFieldId,
 }) {
   const issueNumbers = parseLinkedIssues(prBody || '');
+  const enqueuedBy =
+    issueNumbers.length > 0
+      ? `issue-${issueNumbers.join(',')}`
+      : `pr-${prNumber}`;
+  const queueResult = await syncEnqueueAfterMergeSafe({
+    mergeSha,
+    prNumber,
+    enqueuedBy,
+    token,
+  });
+
   if (issueNumbers.length === 0) {
-    console.log(`PR #${prNumber} has no linked issues — skipping.`);
-    return { skipped: true, reason: 'no linked issues' };
+    console.log(
+      `PR #${prNumber} has no linked issues — UAT queue enqueue ${queueResult.skipped ? 'skipped' : 'done'}.`,
+    );
+    return { skipped: true, reason: 'no linked issues', queueSync: queueResult };
   }
 
   const expectedTag = `uat-YYMMDD-${Number(prNumber)}`;
@@ -105,24 +139,13 @@ UAT deploy runs automatically when the tag is pushed.`,
     );
   }
 
-  try {
-    const { syncEnqueueAfterMerge } = require('../../scripts/lib/uat_queue_apply');
-    const queueResult = await syncEnqueueAfterMerge({
-      mergeSha,
-      prNumber: Number(prNumber),
-      enqueuedBy: `issue-${issueNumbers.join(',')}`,
-      token,
-    });
-    if (!queueResult.skipped) {
-      console.log(
-        `UAT queue: enqueued PR #${prNumber} merge ${mergeSha} on issue #${queueResult.issueNumber}`,
-      );
-    }
-  } catch (error) {
-    console.warn(`UAT queue enqueue skipped: ${error.message}`);
+  if (!queueResult.skipped) {
+    console.log(
+      `UAT queue: enqueued PR #${prNumber} merge ${mergeSha} on issue #${queueResult.issueNumber}`,
+    );
   }
 
-  return { results };
+  return { results, queueSync: queueResult };
 }
 
 async function syncUatQueueDeployResult({
@@ -132,6 +155,9 @@ async function syncUatQueueDeployResult({
   token,
   prNumber,
   gateFailureClass,
+  owner,
+  repo,
+  mergeSha,
 }) {
   try {
     const { syncDeployResult } = require('../../scripts/lib/uat_queue_apply');
@@ -143,6 +169,9 @@ async function syncUatQueueDeployResult({
       gateSummaryRef: workflowUrl,
       gateFailureClass,
       token,
+      owner,
+      repo,
+      mergeSha,
     });
     if (!queueResult.skipped) {
       console.log(
@@ -156,6 +185,67 @@ async function syncUatQueueDeployResult({
   }
 }
 
+async function postCoordinationIssueUatResult({
+  owner,
+  repo,
+  coordinationIssueNumber,
+  deployRef,
+  prNumber,
+  conclusion,
+  workflowUrl,
+  gateFailureClass,
+  token,
+}) {
+  if (!coordinationIssueNumber) {
+    return { skipped: true, reason: 'coordination_issue_not_configured' };
+  }
+
+  const marker = `<!-- agent-uat-result:${deployRef} -->`;
+
+  if (conclusion === 'success') {
+    await upsertMarkerComment({
+      owner,
+      repo,
+      issueNumber: coordinationIssueNumber,
+      marker,
+      body: `${marker}
+## UAT deployment succeeded (PR-only merge)
+
+Tag \`${deployRef}\` (PR #${prNumber}) deployed successfully. No product issue was linked on the merge PR.
+
+- Workflow: ${workflowUrl}
+
+Validate on UAT before closing related debt or roadmap items.`,
+      token,
+    });
+    return { posted: true, outcome: 'success' };
+  }
+
+  const infraNote =
+    gateFailureClass === 'infra_only'
+      ? '\n\n**Infra-only failure** (WAF/deploy transport) — queue recorded as `infra_failed`; host whitelist may be required (see uat-coordinator-plan §9).'
+      : '';
+
+  await upsertMarkerComment({
+    owner,
+    repo,
+    issueNumber: coordinationIssueNumber,
+    marker,
+    body: `${marker}
+## UAT deployment failed (PR-only merge)
+
+Tag \`${deployRef}\` (PR #${prNumber}) did not pass all gates. No product issue was linked on the merge PR — tracking on coordination issue.
+
+- Workflow: ${workflowUrl}
+- Conclusion: **${conclusion}**${infraNote}
+
+UAT coordinator may dispatch for code failures; infra WAF blocks require operator action on o2switch Tiger Protect.`,
+    token,
+  });
+
+  return { posted: true, outcome: 'failure' };
+}
+
 async function handleUatWorkflowResult({
   owner,
   repo,
@@ -167,13 +257,13 @@ async function handleUatWorkflowResult({
   projectId,
   statusFieldId,
   gateFailureClass,
+  mergeSha,
 }) {
   const parsed = parseUatTag(deployRef);
   if (!parsed) {
     return { skipped: true, reason: 'deploy ref not UAT tag format' };
   }
 
-  const pr = await fetchPullRequest(owner, repo, parsed.prNumber, token);
   const queueSync = await syncUatQueueDeployResult({
     deployRef,
     conclusion,
@@ -181,15 +271,35 @@ async function handleUatWorkflowResult({
     token,
     prNumber: parsed.prNumber,
     gateFailureClass,
+    owner,
+    repo,
+    mergeSha,
   });
 
+  const pr = await fetchPullRequest(owner, repo, parsed.prNumber, token);
   const issueNumbers = parseLinkedIssues(pr.body || '');
+
   if (issueNumbers.length === 0) {
+    const coordinationIssueNumber = resolveCoordinationIssue(
+      process.env.UAT_COORDINATION_ISSUE,
+    );
+    const coordinationNote = await postCoordinationIssueUatResult({
+      owner,
+      repo,
+      coordinationIssueNumber,
+      deployRef,
+      prNumber: parsed.prNumber,
+      conclusion,
+      workflowUrl,
+      gateFailureClass,
+      token,
+    });
     return {
       skipped: true,
       reason: 'no linked issues',
       prNumber: parsed.prNumber,
       queueSync,
+      coordinationNote,
       results: [],
     };
   }
@@ -293,6 +403,21 @@ async function main() {
   }
 
   if (mode === 'uat-result') {
+    let mergeSha = process.env.MERGE_SHA || null;
+    const runId = process.env.GITHUB_RUN_ID;
+    if (!mergeSha && runId) {
+      try {
+        const run = await rest(
+          'GET',
+          `/repos/${owner}/${repo}/actions/runs/${runId}`,
+          token,
+        );
+        mergeSha = run.head_sha || null;
+      } catch {
+        mergeSha = null;
+      }
+    }
+
     const result = await handleUatWorkflowResult({
       owner,
       repo,
@@ -304,6 +429,7 @@ async function main() {
       projectId,
       statusFieldId,
       gateFailureClass: process.env.GATE_FAILURE_CLASS || null,
+      mergeSha,
     });
     console.log(JSON.stringify(result, null, 2));
     return;
@@ -326,4 +452,5 @@ module.exports = {
   handleMergedPr,
   handleUatWorkflowResult,
   syncUatQueueDeployResult,
+  postCoordinationIssueUatResult,
 };
