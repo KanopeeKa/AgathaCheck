@@ -278,4 +278,66 @@ mixin OrganizationRemoteFosterDelegations {
     String petId,
     String token,
   ) => placementsRemote.getPetFosterHistory(orgId, petId, token);
+
+  Future<Map<String, dynamic>> getPlacementDetail(
+    String orgId,
+    String placementId,
+    String token,
+  ) => placementsRemote.getPlacementDetail(orgId, placementId, token);
+
+  Future<Map<String, dynamic>> transitionFosteringSession(
+    String orgId,
+    String placementId, {
+    required String sessionStatus,
+    required String token,
+  }) => placementsRemote.transitionFosteringSession(
+    orgId,
+    placementId,
+    sessionStatus: sessionStatus,
+    token: token,
+  );
+
+  Future<Map<String, dynamic>> confirmShelterSessionStart(
+    String orgId,
+    String placementId, {
+    required String token,
+  }) => placementsRemote.confirmShelterSessionStart(
+    orgId,
+    placementId,
+    token: token,
+  );
+
+  Future<Map<String, dynamic>> confirmFosterSessionStart(
+    String orgId,
+    String placementId, {
+    required String token,
+  }) => placementsRemote.confirmFosterSessionStart(
+    orgId,
+    placementId,
+    token: token,
+  );
+
+  Future<Map<String, dynamic>> requestFosteringSessionEnd(
+    String orgId,
+    String placementId, {
+    required String token,
+  }) => placementsRemote.requestFosteringSessionEnd(
+    orgId,
+    placementId,
+    token: token,
+  );
+
+  Future<Map<String, dynamic>> endFosteringSession(
+    String orgId,
+    String placementId, {
+    required String outcome,
+    String? endDate,
+    required String token,
+  }) => placementsRemote.endFosteringSession(
+    orgId,
+    placementId,
+    outcome: outcome,
+    endDate: endDate,
+    token: token,
+  );
 }

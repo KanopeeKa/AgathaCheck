@@ -2430,6 +2430,146 @@ class AppLocalizationsFr extends AppLocalizations {
   String get fosterPlacementDeclined => 'Placement refusé';
 
   @override
+  String get fosteringSessionDetailTitle => 'Session d\'accueil';
+
+  @override
+  String get fosteringSessionManage => 'Gérer la session d\'accueil';
+
+  @override
+  String get fosteringSessionStatusPendingAcceptance =>
+      'En attente d\'acceptation';
+
+  @override
+  String get fosteringSessionStatusPreparation => 'Préparation';
+
+  @override
+  String get fosteringSessionStatusReadyToStart => 'Prête à démarrer';
+
+  @override
+  String get fosteringSessionStatusActive => 'Active';
+
+  @override
+  String get fosteringSessionStatusEndPending =>
+      'Fin en attente de confirmation';
+
+  @override
+  String get fosteringSessionStatusAdoptionInProgress => 'Adoption en cours';
+
+  @override
+  String get fosteringSessionStatusReturned => 'Retourné au refuge';
+
+  @override
+  String get fosteringSessionStatusTransferred => 'Transféré';
+
+  @override
+  String get fosteringSessionStatusConvertedToAdoption =>
+      'Converti en adoption';
+
+  @override
+  String get fosteringSessionStatusCancelled => 'Annulée';
+
+  @override
+  String get fosteringSessionPreparationTitle => 'Liste de préparation';
+
+  @override
+  String get fosteringSessionPreparationPlaceholder =>
+      'Suivez les étapes de préparation du refuge avant la remise. Le suivi complet de la liste arrive dans une prochaine version.';
+
+  @override
+  String get fosteringSessionChecklistSupplies =>
+      'Confirmer que les fournitures et équipements sont prêts';
+
+  @override
+  String get fosteringSessionChecklistMedical =>
+      'Vérifier le dossier médical et les traitements';
+
+  @override
+  String get fosteringSessionChecklistTransport =>
+      'Organiser le transport vers la famille d\'accueil';
+
+  @override
+  String get fosteringSessionChecklistHandover =>
+      'Planifier la remise avec la famille d\'accueil';
+
+  @override
+  String get fosteringSessionDualStartTitle =>
+      'Confirmation de démarrage conjointe';
+
+  @override
+  String get fosteringSessionShelterStartLabel =>
+      'Le refuge confirme la remise';
+
+  @override
+  String get fosteringSessionFosterStartLabel =>
+      'La famille d\'accueil confirme la prise en charge';
+
+  @override
+  String get fosteringSessionAwaitingConfirmation =>
+      'En attente de confirmation';
+
+  @override
+  String fosteringSessionConfirmedAt(String timestamp) {
+    return 'Confirmé le $timestamp';
+  }
+
+  @override
+  String get fosteringSessionStartPreparation => 'Commencer la préparation';
+
+  @override
+  String get fosteringSessionMarkReady => 'Marquer prête à démarrer';
+
+  @override
+  String get fosteringSessionConfirmShelterStart =>
+      'Confirmer la remise par le refuge';
+
+  @override
+  String get fosteringSessionConfirmFosterStart =>
+      'Confirmer la prise en charge par la famille';
+
+  @override
+  String get fosteringSessionRequestEnd => 'Demander la fin de session';
+
+  @override
+  String get fosteringSessionEndReturned => 'Confirmer le retour au refuge';
+
+  @override
+  String get fosteringSessionEndCancelled => 'Annuler la session';
+
+  @override
+  String get fosteringSessionTransitionSuccess => 'Session mise à jour';
+
+  @override
+  String get fosteringSessionShelterStartSuccess =>
+      'Remise par le refuge confirmée';
+
+  @override
+  String get fosteringSessionFosterStartSuccess =>
+      'Prise en charge par la famille confirmée';
+
+  @override
+  String get fosteringSessionRequestEndSuccess =>
+      'Confirmation de fin demandée';
+
+  @override
+  String get fosteringSessionEndSuccess => 'Session d\'accueil terminée';
+
+  @override
+  String get fosteringSessionEndPendingDescription =>
+      'La période d\'accueil se termine. Confirmez comment l\'animal retourne sous la garde du refuge.';
+
+  @override
+  String get fosteringSessionEndConfirmTitle =>
+      'Terminer la session d\'accueil ?';
+
+  @override
+  String get fosteringSessionEndConfirmReturned =>
+      'Confirmer que l\'animal est revenu sous la garde du refuge et clôturer cette session.';
+
+  @override
+  String get fosteringSessionEndConfirmCancelled =>
+      'Annuler cette session d\'accueil sans marquer de retour au refuge.';
+
+  @override
   String get startAdoption => 'Commencer l\'adoption';
 
   @override

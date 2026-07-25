@@ -537,6 +537,107 @@ class RecordingOrganizationRepository implements OrganizationRepository {
   ) async => [];
 
   @override
+  Future<FosterPlacement> getPlacementDetail(
+    String orgId,
+    String placementId,
+    String token,
+  ) async => FosterPlacement(
+    id: placementId,
+    organizationId: orgId,
+    petId: 'pet-1',
+    fosterUserId: 'user-1',
+    status: 'pending',
+    sessionStatus: 'preparation',
+    petName: 'Max',
+    fosterName: 'Jane Foster',
+  );
+
+  @override
+  Future<FosterPlacement> transitionFosteringSession(
+    String orgId,
+    String placementId, {
+    required String sessionStatus,
+    required String token,
+  }) async => FosterPlacement(
+    id: placementId,
+    organizationId: orgId,
+    petId: 'pet-1',
+    fosterUserId: 'user-1',
+    status: 'pending',
+    sessionStatus: sessionStatus,
+    petName: 'Max',
+    fosterName: 'Jane Foster',
+  );
+
+  @override
+  Future<FosterPlacement> confirmShelterSessionStart(
+    String orgId,
+    String placementId, {
+    required String token,
+  }) async => FosterPlacement(
+    id: placementId,
+    organizationId: orgId,
+    petId: 'pet-1',
+    fosterUserId: 'user-1',
+    status: 'pending',
+    sessionStatus: 'ready_to_start',
+    shelterStartConfirmedAt: DateTime(2024, 1, 2),
+    petName: 'Max',
+    fosterName: 'Jane Foster',
+  );
+
+  @override
+  Future<FosterPlacement> confirmFosterSessionStart(
+    String orgId,
+    String placementId, {
+    required String token,
+  }) async => FosterPlacement(
+    id: placementId,
+    organizationId: orgId,
+    petId: 'pet-1',
+    fosterUserId: 'user-1',
+    status: 'in_progress',
+    sessionStatus: 'active',
+    fosterStartConfirmedAt: DateTime(2024, 1, 2),
+    petName: 'Max',
+    fosterName: 'Jane Foster',
+  );
+
+  @override
+  Future<FosterPlacement> requestFosteringSessionEnd(
+    String orgId,
+    String placementId, {
+    required String token,
+  }) async => FosterPlacement(
+    id: placementId,
+    organizationId: orgId,
+    petId: 'pet-1',
+    fosterUserId: 'user-1',
+    status: 'in_progress',
+    sessionStatus: 'end_pending_confirmation',
+    petName: 'Max',
+    fosterName: 'Jane Foster',
+  );
+
+  @override
+  Future<FosterPlacement> endFosteringSession(
+    String orgId,
+    String placementId, {
+    required String outcome,
+    DateTime? endDate,
+    required String token,
+  }) async => FosterPlacement(
+    id: placementId,
+    organizationId: orgId,
+    petId: 'pet-1',
+    fosterUserId: 'user-1',
+    status: 'not_in_foster',
+    sessionStatus: outcome,
+    petName: 'Max',
+    fosterName: 'Jane Foster',
+  );
+
+  @override
   Future<List<OrgConnection>> getConnections(
     String orgId,
     String token,

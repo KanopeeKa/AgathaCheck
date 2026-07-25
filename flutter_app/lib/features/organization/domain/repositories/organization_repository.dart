@@ -255,6 +255,40 @@ abstract class OrganizationRepository {
     String token,
   );
 
+  Future<FosterPlacement> getPlacementDetail(
+    String orgId,
+    String placementId,
+    String token,
+  );
+  Future<FosterPlacement> transitionFosteringSession(
+    String orgId,
+    String placementId, {
+    required String sessionStatus,
+    required String token,
+  });
+  Future<FosterPlacement> confirmShelterSessionStart(
+    String orgId,
+    String placementId, {
+    required String token,
+  });
+  Future<FosterPlacement> confirmFosterSessionStart(
+    String orgId,
+    String placementId, {
+    required String token,
+  });
+  Future<FosterPlacement> requestFosteringSessionEnd(
+    String orgId,
+    String placementId, {
+    required String token,
+  });
+  Future<FosterPlacement> endFosteringSession(
+    String orgId,
+    String placementId, {
+    required String outcome,
+    DateTime? endDate,
+    required String token,
+  });
+
   Future<List<OrgConnection>> getConnections(String orgId, String token);
 
   Future<Map<String, dynamic>> createConnectionRequest(
