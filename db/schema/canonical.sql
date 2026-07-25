@@ -214,7 +214,9 @@ CREATE TABLE public.org_foster_parents (
     updated_at timestamp with time zone DEFAULT now(),
     foster_address text DEFAULT ''::text,
     lawful_basis_attested_at timestamp with time zone,
-    lawful_basis_attested_by uuid
+    lawful_basis_attested_by uuid,
+    approval_state character varying(32) DEFAULT 'approved'::character varying NOT NULL,
+    creation_source character varying(32) DEFAULT 'manual_shelter_entry'::character varying
 );
 CREATE TABLE public.org_pet_home_hidden (
     user_id uuid NOT NULL,
@@ -547,6 +549,10 @@ ALTER TABLE ONLY public.org_foster_parents
     ADD CONSTRAINT org_foster_parents_organization_id_fkey FOREIGN KEY (organization_id) REFERENCES public.organizations(id) ON DELETE CASCADE;
 ALTER TABLE ONLY public.org_foster_parents
     ADD CONSTRAINT org_foster_parents_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE SET NULL;
+ALTER TABLE ONLY public.org_foster_parents
+    ADD CONSTRAINT org_foster_parents_approval_state_check CHECK (((approval_state)::text = ANY ((ARRAY['under_review'::character varying, 'approved'::character varying, 'declined'::character varying, 'archived'::character varying])::text[])));
+ALTER TABLE ONLY public.org_foster_parents
+    ADD CONSTRAINT org_foster_parents_creation_source_check CHECK (((creation_source)::text = ANY ((ARRAY['invite'::character varying, 'manual_shelter_entry'::character varying, 'member'::character varying])::text[])));
 ALTER TABLE ONLY public.org_pet_home_hidden
     ADD CONSTRAINT org_pet_home_hidden_organization_id_fkey FOREIGN KEY (organization_id) REFERENCES public.organizations(id) ON DELETE CASCADE;
 ALTER TABLE ONLY public.org_pet_home_hidden
