@@ -1992,7 +1992,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'Everyone in your organisation. The green disk shows how many pets each person is currently fostering.';
 
   @override
-  String get addExternalFoster => 'Add external foster';
+  String get addExternalFoster => 'Add foster manually';
 
   @override
   String get fosterContactAddress => 'Foster contact address';
@@ -2050,6 +2050,54 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get fosterParentsDescription =>
       'Members and contacts who can foster organisation pets. Pet counts reflect active placements.';
+
+  @override
+  String get manageFostersTitle => 'Manage fosters';
+
+  @override
+  String get manageFostersDescription =>
+      'Operational view of foster families — invite, review, and track who is fostering now.';
+
+  @override
+  String get manageFostersTabNew => 'New';
+
+  @override
+  String get manageFostersTabFostering => 'Fostering';
+
+  @override
+  String get manageFostersTabRecentlyFostered => 'Recently fostered';
+
+  @override
+  String get manageFostersTabInactive => 'Inactive';
+
+  @override
+  String get manageFostersTabAll => 'All';
+
+  @override
+  String get manageFostersStatusFostering => 'Fostering';
+
+  @override
+  String get manageFostersEmptyTab => 'No fosters match this tab';
+
+  @override
+  String get manageFostersRecentlyFosteredPlaceholder =>
+      'Recently ended foster placements will appear here once session history is available.';
+
+  @override
+  String get manageFostersApprovalFiltersLabel => 'Approval filters';
+
+  @override
+  String get manageFostersFilterUnderReview => 'Under review';
+
+  @override
+  String get manageFostersFilterApproved => 'Approved';
+
+  @override
+  String get manageFostersFilterArchived => 'Archived';
+
+  @override
+  String get manageFostersApprovalFiltersComingSoon =>
+      'Approval filters activate when foster onboarding (J1 Phase 2) ships.';
 
   @override
   String get noFosterParents => 'No foster parents yet';

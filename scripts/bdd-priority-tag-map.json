@@ -150,6 +150,11 @@
     "Fosterer hides a fostered pet from notifications and health dashboard": "P1",
     "Hide is cleared when foster ends": "P1"
   },
+  "foster_onboarding.feature": {
+    "Opening Manage Fosters from organisation menu": "P2",
+    "Viewing fosters currently fostering": "P2",
+    "Adding a foster manually": "P2"
+  },
   "org_to_org_transfer.feature": {
     "Connected orgs can transfer a pet with recipient acceptance": "P1",
     "Org transfer requires an active connection": "P1",

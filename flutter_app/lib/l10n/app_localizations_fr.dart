@@ -2008,7 +2008,7 @@ class AppLocalizationsFr extends AppLocalizations {
       'Toutes les personnes de votre organisation. Le disque vert indique le nombre d\'animaux actuellement en famille d\'accueil.';
 
   @override
-  String get addExternalFoster => 'Ajouter une famille d\'accueil externe';
+  String get addExternalFoster => 'Ajouter une famille d\'accueil manuellement';
 
   @override
   String get fosterContactAddress => 'Adresse de contact d\'accueil';
@@ -2066,6 +2066,54 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get fosterParentsDescription =>
       'Membres et contacts pouvant accueillir des animaux de l\'organisation. Le nombre d\'animaux reflète les placements actifs.';
+
+  @override
+  String get manageFostersTitle => 'Manage fosters';
+
+  @override
+  String get manageFostersDescription =>
+      'Operational view of foster families — invite, review, and track who is fostering now.';
+
+  @override
+  String get manageFostersTabNew => 'New';
+
+  @override
+  String get manageFostersTabFostering => 'Fostering';
+
+  @override
+  String get manageFostersTabRecentlyFostered => 'Recently fostered';
+
+  @override
+  String get manageFostersTabInactive => 'Inactive';
+
+  @override
+  String get manageFostersTabAll => 'All';
+
+  @override
+  String get manageFostersStatusFostering => 'Fostering';
+
+  @override
+  String get manageFostersEmptyTab => 'No fosters match this tab';
+
+  @override
+  String get manageFostersRecentlyFosteredPlaceholder =>
+      'Recently ended foster placements will appear here once session history is available.';
+
+  @override
+  String get manageFostersApprovalFiltersLabel => 'Approval filters';
+
+  @override
+  String get manageFostersFilterUnderReview => 'Under review';
+
+  @override
+  String get manageFostersFilterApproved => 'Approved';
+
+  @override
+  String get manageFostersFilterArchived => 'Archived';
+
+  @override
+  String get manageFostersApprovalFiltersComingSoon =>
+      'Approval filters activate when foster onboarding (J1 Phase 2) ships.';
 
   @override
   String get noFosterParents => 'Aucune famille d\'accueil pour le moment';
