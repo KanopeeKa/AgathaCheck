@@ -16,11 +16,11 @@ function resolveBaseURL(baseURL?: string): string {
   return (baseURL ?? process.env.E2E_BASE_URL ?? '').replace(/\/$/, '');
 }
 
-type HealthProbe = 'ok' | 'waf' | 'down';
+type ProbeResult = 'ok' | 'waf' | 'health_down' | 'auth_down';
 
-async function probeBackendHealth(page: Page, baseURL: string): Promise<HealthProbe> {
+async function probeBackendHealth(page: Page, baseURL: string): Promise<ProbeResult> {
   const healthUrl = `${baseURL}/backend/health`;
-  return page.evaluate(async ([url, markers]: [string, string[]]) => {
+  const result = await page.evaluate(async ([url, markers]: [string, string[]]) => {
     try {
       const res = await fetch(url, { credentials: 'include' });
       const body = await res.text();
@@ -31,6 +31,11 @@ async function probeBackendHealth(page: Page, baseURL: string): Promise<HealthPr
       return 'down';
     }
   }, [healthUrl, WAF_MARKERS] as [string, string[]]);
+
+  if (result === 'ok' || result === 'waf') {
+    return result;
+  }
+  return 'health_down';
 }
 
 /**
@@ -38,10 +43,10 @@ async function probeBackendHealth(page: Page, baseURL: string): Promise<HealthPr
  * with an intentionally invalid body — a JSON 400 means the app is reachable;
  * WAF HTML (often 503) means the session is not ready for createTestUser yet.
  */
-async function probeAuthSignup(page: Page, baseURL: string): Promise<HealthProbe> {
+async function probeAuthSignup(page: Page, baseURL: string): Promise<ProbeResult> {
   const signupUrl = `${baseURL}/backend/api/auth/signup`;
   const bypassHeaders = e2eBypassHeadersForUrl(baseURL);
-  return page.evaluate(
+  const result = await page.evaluate(
     async ([url, markers, headers]: [string, string[], Record<string, string>]) => {
       try {
         const res = await fetch(url, {
@@ -52,16 +57,25 @@ async function probeAuthSignup(page: Page, baseURL: string): Promise<HealthProbe
         });
         const body = await res.text();
         if (markers.some((m) => body.includes(m))) return 'waf';
-        return 'ok';
+        if (res.status === 400 && body.includes('"error"')) return 'ok';
+        if (res.status >= 400 && res.status < 500 && body.trimStart().startsWith('{') && body.includes('"error"')) {
+          return 'ok';
+        }
+        return 'down';
       } catch {
         return 'down';
       }
     },
     [signupUrl, WAF_MARKERS, bypassHeaders] as [string, string[], Record<string, string>],
   );
+
+  if (result === 'ok' || result === 'waf') {
+    return result;
+  }
+  return 'auth_down';
 }
 
-async function liveApiProbesReady(page: Page, baseURL: string): Promise<HealthProbe> {
+async function liveApiProbesReady(page: Page, baseURL: string): Promise<ProbeResult> {
   const health = await probeBackendHealth(page, baseURL);
   if (health !== 'ok') {
     return health;
@@ -96,6 +110,24 @@ function authBlockedMessage(baseURL: string): string {
     'after the page challenge cleared. Tiger Protect often allows /backend/health before',
     'auth endpoints — retry or whitelist GitHub Actions egress in o2switch Tiger Protect.',
   ].join(' ');
+}
+
+function authUnreachableMessage(baseURL: string): string {
+  return [
+    `UAT auth signup is not reachable at ${baseURL}/backend/api/auth/signup`,
+    '(expected JSON 400 validation error for an empty body, got HTML or a server error).',
+    'Health may be OK while Passenger/auth routes are still failing — check UAT deploy logs.',
+  ].join(' ');
+}
+
+function probeFailureMessage(baseURL: string, probe: ProbeResult): string {
+  if (probe === 'waf') {
+    return authBlockedMessage(baseURL);
+  }
+  if (probe === 'auth_down') {
+    return authUnreachableMessage(baseURL);
+  }
+  return backendDownMessage(baseURL);
 }
 
 /**
@@ -133,7 +165,7 @@ export async function passHostingWaf(page: Page, baseURL?: string): Promise<void
         await page.waitForTimeout(3_000);
         continue;
       }
-      throw new Error(backendDownMessage(root));
+      throw new Error(probeFailureMessage(root, probes));
     }
 
     await page.waitForTimeout(2_000);
@@ -147,13 +179,11 @@ export async function passHostingWaf(page: Page, baseURL?: string): Promise<void
   }
 
   const finalProbe = await liveApiProbesReady(page, root);
-  if (finalProbe === 'waf') {
-    throw new Error(authBlockedMessage(root));
+  if (finalProbe === 'ok') {
+    sessionWafCleared = true;
+    return;
   }
-  if (finalProbe === 'down') {
-    throw new Error(backendDownMessage(root));
-  }
-  sessionWafCleared = true;
+  throw new Error(probeFailureMessage(root, finalProbe));
 }
 
 /** Call after clearing cookies so the next navigation re-runs the WAF warmup. */
@@ -169,7 +199,7 @@ export async function prepareLiveApiAccess(page: Page, baseURL?: string): Promis
 
   const root = resolveBaseURL(baseURL);
   if (sessionWafCleared) {
-    const probes = await liveApiProbesReady(page, root).catch((): HealthProbe => 'down');
+    const probes = await liveApiProbesReady(page, root).catch((): ProbeResult => 'health_down');
     if (probes !== 'ok') {
       sessionWafCleared = false;
     }
