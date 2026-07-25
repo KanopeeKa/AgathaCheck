@@ -52,3 +52,14 @@ Residual risk is **acceptable** for launch at current scale, subject to:
 ## 6. Consultation
 
 No supervisory authority consultation required at current processing scale and risk profile. Review if processing exceeds 10,000 data subjects or systematic monitoring is added.
+
+## 7. J1 Phase 4 compliance controls (July 2026)
+
+| Control | Implementation |
+|---------|----------------|
+| Retention category per relationship | `org_foster_parents.retention_category` — `shelter_foster_relationship`, `declined_archived`, `manual_contact` |
+| Outreach opt-out | `org_foster_parents.opt_out_at` — suppresses future foster requests (J2) |
+| Art. 14 email refresh | `externalFosterNotice` template mentions retention and opt-out |
+| Audit trail | `foster_outreach_opt_out_recorded`, `foster_retention_category_updated` |
+
+**Review checkpoint:** confirm legal sign-off on retention durations per category before enabling automated erasure jobs.
