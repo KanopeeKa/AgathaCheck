@@ -195,6 +195,17 @@ Journeys are ordered **P0 → P1 → P2** at the journey level. Within each jour
 
 ---
 
+### J8c — Fostering platform (P2, Wave C)
+
+| Feature | Scenarios | Implemented | Playwright |
+|---------|----------:|------------:|------------|
+| `fostering_platform.feature` | 3 | 3 | `fostering.platform.spec.ts` |
+| `foster_onboarding.feature` | 3 | 3 | `foster.onboarding.spec.ts` |
+
+**Subtotal:** 6 scenarios — **6/6** (API-first; visit-path scenario asserts positive `visit_outcome` before journey start)
+
+---
+
 ### J9 — Veterinarian directory (P1)
 
 **Feature:** `veterinarian_management.feature` (10) — **9/10** (`veterinarian.spec.ts`; linked-pets view pending)

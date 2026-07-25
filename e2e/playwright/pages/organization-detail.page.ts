@@ -146,4 +146,10 @@ export class OrganizationDetailPage {
     await addButton.click();
     await this.page.getByRole('button', { name: 'Save Pet' }).waitFor({ timeout: 30_000 });
   }
+
+  async openManageFosters(): Promise<void> {
+    await this.openMenu();
+    await this.page.getByRole('menuitem', { name: 'Manage fosters' }).click();
+    await refreshFlutterAccessibility(this.page);
+  }
 }
