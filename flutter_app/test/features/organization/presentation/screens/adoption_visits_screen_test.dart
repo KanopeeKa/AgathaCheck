@@ -11,34 +11,37 @@ import '../../../../helpers/fakes.dart';
 import '../../helpers/organization_provider_test_helpers.dart';
 
 void main() {
-  testWidgets('adoption visits screen shows visit_outcome and records outcome', (
-    tester,
-  ) async {
-    final repo = _AdoptionVisitsRepo();
-    await tester.pumpWidget(
-      ProviderScope(
-        overrides: [
-          authProvider.overrideWith((ref) => FakeAuthNotifier()),
-          organizationRepositoryProvider.overrideWithValue(repo),
-          isOrgAdminProvider('org-1').overrideWith((ref) => true),
-        ],
-        child: const MaterialApp(
-          localizationsDelegates: AppLocalizations.localizationsDelegates,
-          supportedLocales: AppLocalizations.supportedLocales,
-          home: Scaffold(body: AdoptionVisitsScreen(orgId: 'org-1')),
+  testWidgets(
+    'adoption visits screen shows visit_outcome and records outcome',
+    (tester) async {
+      final repo = _AdoptionVisitsRepo();
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            authProvider.overrideWith((ref) => FakeAuthNotifier()),
+            organizationRepositoryProvider.overrideWithValue(repo),
+            isOrgAdminProvider('org-1').overrideWith((ref) => true),
+          ],
+          child: const MaterialApp(
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+            home: Scaffold(body: AdoptionVisitsScreen(orgId: 'org-1')),
+          ),
         ),
-      ),
-    );
+      );
 
-    await tester.pumpAndSettle();
+      await tester.pumpAndSettle();
 
-    expect(find.textContaining('Outcome pending'), findsOneWidget);
-    await tester.tap(find.byKey(const Key('adoption_visit_visit-1_positive')));
-    await tester.pumpAndSettle();
+      expect(find.textContaining('Outcome pending'), findsOneWidget);
+      await tester.tap(
+        find.byKey(const Key('adoption_visit_visit-1_positive')),
+      );
+      await tester.pumpAndSettle();
 
-    expect(repo.recordOutcomeCalls, 1);
-    expect(repo.lastOutcome, 'positive');
-  });
+      expect(repo.recordOutcomeCalls, 1);
+      expect(repo.lastOutcome, 'positive');
+    },
+  );
 }
 
 class _AdoptionVisitsRepo extends RecordingOrganizationRepository {

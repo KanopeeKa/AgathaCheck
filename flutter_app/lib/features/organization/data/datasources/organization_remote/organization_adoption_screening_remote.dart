@@ -89,7 +89,9 @@ class OrganizationAdoptionScreeningRemote {
     );
     final data = json.decode(response.body) as Map<String, dynamic>;
     if (response.statusCode >= 400) {
-      throw Exception(data['error'] ?? 'Failed to update session checklist item');
+      throw Exception(
+        data['error'] ?? 'Failed to update session checklist item',
+      );
     }
     return data;
   }
@@ -191,7 +193,9 @@ class OrganizationAdoptionScreeningRemote {
     );
     final data = json.decode(response.body) as Map<String, dynamic>;
     if (response.statusCode >= 400) {
-      throw Exception(data['error'] ?? 'Failed to complete visit and start adoption');
+      throw Exception(
+        data['error'] ?? 'Failed to complete visit and start adoption',
+      );
     }
     return data;
   }

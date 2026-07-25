@@ -38,7 +38,9 @@ void main() {
 
     expect(find.text('Adoption milestones'), findsOneWidget);
     expect(
-      find.byKey(const Key('adoption_milestone_item_adoption_contract_prepared')),
+      find.byKey(
+        const Key('adoption_milestone_item_adoption_contract_prepared'),
+      ),
       findsOneWidget,
     );
     expect(find.text('awaiting_foster_confirmation'), findsOneWidget);

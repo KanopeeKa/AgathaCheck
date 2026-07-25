@@ -47,16 +47,15 @@ class _AdoptionVisitsScreenState extends ConsumerState<AdoptionVisitsScreen> {
     try {
       await ref
           .read(organizationRepositoryProvider)
-          .recordAdoptionVisitOutcome(
-            widget.orgId,
-            visitId,
-            outcome,
-            token,
-          );
+          .recordAdoptionVisitOutcome(widget.orgId, visitId, outcome, token);
       await _reloadVisits();
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(AppLocalizations.of(context)!.adoptionVisitOutcomeSaved)),
+        SnackBar(
+          content: Text(
+            AppLocalizations.of(context)!.adoptionVisitOutcomeSaved,
+          ),
+        ),
       );
     } catch (e) {
       if (!mounted) return;
@@ -120,7 +119,8 @@ class _AdoptionVisitsScreenState extends ConsumerState<AdoptionVisitsScreen> {
                   subtitle: Text(
                     '${visit['status']} · ${_outcomeLabel(l, visitOutcome)}',
                   ),
-                  trailing: isAdmin &&
+                  trailing:
+                      isAdmin &&
                           visitOutcome == null &&
                           visit['status'] != 'cancelled' &&
                           !busy
@@ -129,17 +129,20 @@ class _AdoptionVisitsScreenState extends ConsumerState<AdoptionVisitsScreen> {
                           children: [
                             TextButton(
                               key: Key('adoption_visit_${visitId}_positive'),
-                              onPressed: () => _recordOutcome(visitId, 'positive'),
+                              onPressed: () =>
+                                  _recordOutcome(visitId, 'positive'),
                               child: Text(l.adoptionVisitOutcomePositive),
                             ),
                             TextButton(
                               key: Key('adoption_visit_${visitId}_negative'),
-                              onPressed: () => _recordOutcome(visitId, 'negative'),
+                              onPressed: () =>
+                                  _recordOutcome(visitId, 'negative'),
                               child: Text(l.adoptionVisitOutcomeNegative),
                             ),
                             TextButton(
                               key: Key('adoption_visit_${visitId}_no_show'),
-                              onPressed: () => _recordOutcome(visitId, 'no_show'),
+                              onPressed: () =>
+                                  _recordOutcome(visitId, 'no_show'),
                               child: Text(l.adoptionVisitOutcomeNoShow),
                             ),
                           ],

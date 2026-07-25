@@ -67,9 +67,7 @@ class _AdoptionJourneyMilestoneChecklistState
       await _reloadMilestones();
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('$e')));
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('$e')));
     } finally {
       if (mounted) setState(() => _busyKey = '');
     }

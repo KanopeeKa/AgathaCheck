@@ -169,15 +169,11 @@ class _FosteringSessionDetailBodyState
     try {
       await ref
           .read(organizationRepositoryProvider)
-          .startAdoption(
-            widget.orgId,
-            widget.placementId,
-            token: token,
-          );
+          .startAdoption(widget.orgId, widget.placementId, token: token);
       if (!mounted) return;
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(l.fosteringSessionStartAdoptionSuccess)));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l.fosteringSessionStartAdoptionSuccess)),
+      );
       ref.invalidate(fosteringSessionDetailProvider(_key));
     } catch (e) {
       if (!mounted) return;
