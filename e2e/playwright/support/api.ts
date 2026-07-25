@@ -1299,6 +1299,7 @@ export async function transferOrgPetToUser(
 export interface TestFosterPlacement {
   id: string;
   status: string;
+  session_status?: string;
   pet_id: string;
   foster_user_id: string;
   organization_id: string;
@@ -1410,7 +1411,32 @@ export async function endFosterPlacement(
     const text = await res.text();
     throw new Error(`endFosterPlacement failed (${res.status}): ${text}`);
   }
-  return res.json();
+  const placement = (await res.json()) as TestFosterPlacement;
+
+  // J3 active sessions require a second step to confirm return to shelter.
+  if (placement.session_status === 'end_pending_confirmation') {
+    const completeRes = await apiFetch(
+      apiUrl(`/organizations/${orgId}/placements/${placementId}/end-session`, baseURL),
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          outcome: 'returned_to_shelter',
+          end_date: options.endDate,
+        }),
+      },
+    );
+    if (!completeRes.ok) {
+      const text = await completeRes.text();
+      throw new Error(`endFosterPlacement end-session failed (${completeRes.status}): ${text}`);
+    }
+    return completeRes.json();
+  }
+
+  return placement;
 }
 
 export async function initiateDirectAdoption(
