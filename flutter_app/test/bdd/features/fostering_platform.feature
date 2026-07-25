@@ -21,8 +21,8 @@ Feature: Fostering platform journeys
     Then foster parents should be grouped by fostering activity summary
 
   @P2
-  Scenario: Adoption visit validation gates journey start on visit path
+  Scenario: Positive adoption visit outcome gates journey start on visit path
     Given "Max" is in a foster-in-view-to-adopt session with "Eve"
-    And an adoption visit is scheduled and validated for "Max"
+    And an adoption visit for "Max" is completed with a positive outcome
     When "Alice" starts the adoption journey for "Max"
     Then the adoption journey should be awaiting foster confirmation
