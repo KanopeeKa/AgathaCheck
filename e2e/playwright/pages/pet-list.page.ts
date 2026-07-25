@@ -1,10 +1,10 @@
 import type { Page } from '@playwright/test';
 import { expect } from '@playwright/test';
 import { HealthDashboardPage } from './health-dashboard.page';
+import { OrganizationListPage } from './organization-list.page';
 import {
   dismissConsentBannerIfPresent,
   escapeRegExp,
-  expectAppBarTitle,
   expectHomeShellVisible,
   flutterGotoUrl,
   homeShellLocator,
@@ -153,14 +153,23 @@ export class PetListPage {
 
   async openOrganizations(): Promise<void> {
     await dismissConsentBannerIfPresent(this.page);
+    const route = flutterRoutePath(this.page.url());
+    if (route.startsWith('/o/orgs') || route.startsWith('/organizations')) {
+      await new OrganizationListPage(this.page).expectLoaded();
+      return;
+    }
+
     const orgNav = this.page.getByRole('button', { name: 'Organizations' });
     if (await orgNav.isVisible({ timeout: 2_000 }).catch(() => false)) {
       await orgNav.click();
+    } else if (await isExperienceShellVisible(this.page)) {
+      await this.page.goto(flutterGotoUrl('/o/orgs'));
+      await refreshFlutterAccessibility(this.page);
+      await waitForFlutterRoutePattern(this.page, /\/o\/orgs(?:\?|$)/, 30_000);
     } else {
       await waitForFlutterRoute(this.page, '/organizations');
     }
-    await refreshFlutterAccessibility(this.page);
-    await expectAppBarTitle(this.page, 'My Organizations');
+    await new OrganizationListPage(this.page).expectLoaded();
   }
 
   async openVets(): Promise<void> {

@@ -9,7 +9,6 @@ const PREFLIGHT_TIMEOUT_MS = 15_000;
 /** Match scripts/uat-post-deploy-smoke.sh — Tiger Protect can challenge fresh runner IPs. */
 const WAF_RETRY_ATTEMPTS = 18;
 const WAF_RETRY_SLEEP_MS = 10_000;
-const WAF_FAIL_FAST_STREAK = Number(process.env.WAF_FAIL_FAST_STREAK ?? '3') || 3;
 const CONFIG_ERROR =
   'UAT pre-flight config error: E2E_BASE_URL (or UAT_BASE_URL fallback) is missing or malformed.';
 
@@ -98,13 +97,22 @@ function bodySnippet(body: string): string {
   return body.slice(0, 200).replace(/[\r\n]+/g, ' ');
 }
 
-function writeSuccessSummary(elapsedMs: number): void {
-  const line = `✅ UAT pre-flight OK — /backend/health → 200 in ${elapsedMs}ms`;
+function writeSummary(line: string): void {
   console.log(line);
   const summaryPath = process.env.GITHUB_STEP_SUMMARY;
   if (summaryPath) {
     appendFileSync(summaryPath, `${line}\n`);
   }
+}
+
+function writeSuccessSummary(elapsedMs: number): void {
+  writeSummary(`✅ UAT pre-flight OK — /backend/health → 200 in ${elapsedMs}ms`);
+}
+
+function writeWafDeferralSummary(attempts: number, elapsedMs: number): void {
+  writeSummary(
+    `⚠️ UAT pre-flight deferred [waf-challenge]: Node fetch cannot solve o2switch JS challenge after ${attempts} attempts (${elapsedMs}ms). Browser warmup (passHostingWaf) will verify reachability.`,
+  );
 }
 
 /** Fail fast when live UAT is unreachable before Playwright workers start. */
@@ -113,11 +121,16 @@ export default async function globalSetup(): Promise<void> {
   if (!isLiveHostingTarget(baseUrlCandidate)) {
     return;
   }
+  if (process.env.E2E_SKIP_NODE_UAT_PREFLIGHT === '1') {
+    writeSummary('ℹ️ UAT Node pre-flight skipped (E2E_SKIP_NODE_UAT_PREFLIGHT=1).');
+    return;
+  }
 
   const baseURL = resolveLiveBaseUrl();
   const healthURL = `${baseURL}/backend/health`;
   const started = Date.now();
   let wafStreak = 0;
+  let sawWafChallenge = false;
 
   try {
     for (let attempt = 1; attempt <= WAF_RETRY_ATTEMPTS; attempt += 1) {
@@ -127,23 +140,20 @@ export default async function globalSetup(): Promise<void> {
       const body = await response.text();
 
       if (bodyShowsWafChallenge(body)) {
+        sawWafChallenge = true;
         wafStreak += 1;
-        if (wafStreak >= WAF_FAIL_FAST_STREAK) {
-          throw new Error(
-            `UAT pre-flight failed [waf-challenge]: ${WAF_FAIL_FAST_STREAK} consecutive WAF responses from GitHub Actions — fail-fast (cannot whitelist o2switch). Last body: ${bodySnippet(body)}`,
-          );
-        }
         if (attempt < WAF_RETRY_ATTEMPTS) {
           console.log(
-            `UAT pre-flight WAF challenge (${wafStreak}/${WAF_FAIL_FAST_STREAK} streak, attempt ${attempt}/${WAF_RETRY_ATTEMPTS}), retrying in ${WAF_RETRY_SLEEP_MS / 1000}s...`,
+            `UAT pre-flight WAF challenge (${wafStreak} streak, attempt ${attempt}/${WAF_RETRY_ATTEMPTS}), retrying in ${WAF_RETRY_SLEEP_MS / 1000}s...`,
           );
           await new Promise((resolve) => setTimeout(resolve, WAF_RETRY_SLEEP_MS));
           continue;
         }
-        throw new Error(
-          `UAT pre-flight failed [waf-challenge]: GET ${healthURL} — ${bodySnippet(body)}`,
-        );
+        writeWafDeferralSummary(attempt, Date.now() - started);
+        return;
       }
+
+      wafStreak = 0;
 
       if (response.status !== 200 || !body.includes(HEALTH_OK_MARKER)) {
         throw new Error(
@@ -152,6 +162,11 @@ export default async function globalSetup(): Promise<void> {
       }
 
       writeSuccessSummary(Date.now() - started);
+      return;
+    }
+
+    if (sawWafChallenge) {
+      writeWafDeferralSummary(WAF_RETRY_ATTEMPTS, Date.now() - started);
       return;
     }
   } catch (err) {
