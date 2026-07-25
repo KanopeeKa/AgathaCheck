@@ -246,16 +246,16 @@ Calendar constraint: all involved dates (`scheduled_at`, outcome recorded_at) sh
 
 ```yaml
 autonomy: active
-current_phase: 1
-last_completed_phase: null
+current_phase: 2
+last_completed_phase: 1
 halt_reason: null
-next_action: "continue phase 1 on branch cursor/wave-c-g0-contract-e877"
+next_action: "start phase 2: checkout cursor/wave-c-j4-visit-gate-e877"
 artifact_ref:
-  branch: cursor/fostering-platform-wave-c-e877-integration
+  branch: cursor/wave-c-g0-contract-e877
   plan_path: .agents/plans/fostering-platform-wave-c-e877.md
-  plan_commit: a7ef5fefc1b4c1ce07ab622a3228ea544c2f8c7e
+  plan_commit: 3fee5bed5ac9af1164a2899997e593114104f19a
   snapshot_path: .agents/plans/fostering-platform-wave-c-e877.snapshot.json
-  snapshot_commit: a7ef5fefc1b4c1ce07ab622a3228ea544c2f8c7e
+  snapshot_commit: 3fee5bed5ac9af1164a2899997e593114104f19a
 open_prs: []
 merge_commits: {}
 debt_issue_refs: [362]

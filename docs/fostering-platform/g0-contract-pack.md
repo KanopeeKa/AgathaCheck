@@ -1,7 +1,7 @@
 # G0 — Platform contract pack (fostering & adoption)
 
 **Status:** Draft baseline for agent handoff  
-**Last updated:** 2026-07-24  
+**Last updated:** 2026-07-25  
 **Supersedes:** informal journey boundaries only — does not replace `docs/org-fostering-strategy.md` until journey delivery begins.
 
 This document is the **platform contract layer**. Journey agents (J1–J5) must reference G0 instead of redefining shared rules. G1 (document and compliance artefact packs) depends on stable hooks defined here and implemented in J3/J5.
@@ -301,6 +301,8 @@ Database today enforces one open row per pet for active placement statuses (`idx
 `pending_acceptance`, `preparation`, `ready_to_start`, `active`, `end_pending_confirmation`, `adoption_in_progress`
 
 Exact index definition lives in `migration-appendix.md`.
+
+**Same-calendar-day handoff:** ending session A and starting session B for the same pet on the same `YYYY-MM-DD` is permitted (brief overlap during admin handoff).
 
 Transfer flow: current session → `transferred` (terminal); new session created in `preparation` for receiving foster.
 
