@@ -79,7 +79,8 @@ export class VetListPage {
 
   async cancelDeletion(): Promise<void> {
     await this.page.getByRole('button', { name: 'Cancel' }).click();
-    await this.page.waitForTimeout(500);
+    // Dialog dismissed — should still be on the edit form
+    await this.page.getByRole('button', { name: /Delete Vet/i }).waitFor({ timeout: 15_000 });
     await refreshFlutterAccessibility(this.page);
   }
 
