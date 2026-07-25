@@ -42,6 +42,7 @@ Institutional knowledge for cloud agents. Domain workflows live in **Skills** (`
 
 ## Quick references
 
+- **Experience program (active, 2026-07-25):** `docs/experience-program/decisions-log.md` — navigation reversal (nav-v2 superseded), Guardian dashboard rework, Organisation presentation/access-control rework. Read the decisions log before touching drawer, notifications, Guardian dashboard, or organisation detail/pets screens.
 - **Execute-plan autonomy:** `.agents/memory/execute-plan-autonomy.md` — gate `0` = proceed; no permission prompts; per-phase workers; integration branch for 2+ phases
 - Domain map: `docs/architecture/index.md`
 - Efficiency plan: `docs/agent-efficiency-plan.md`

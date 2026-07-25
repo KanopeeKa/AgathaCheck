@@ -1,6 +1,11 @@
 # Navigation v2 — specification
 
-**Status:** Approved (execute-plan `ui-navigation-v2-14ee`)  
+> **Status: SUPERSEDED (2026-07-25).** This model did not work for users and is being fully
+> reversed by the Experience program — see `docs/experience-program/decisions-log.md` (D1, D2)
+> and `docs/experience-program/phase-1-navigation.md`. Kept here as historical record only; do not
+> implement new work against this spec.
+
+**Status:** ~~Approved (execute-plan `ui-navigation-v2-14ee`)~~ Superseded — see banner above  
 **Supersedes:** Navigation section in `docs/experience-split-plan.md` (2026-07-23)  
 **Implementation:** `flutter_app/lib/features/experience/`, `flutter_app/lib/core/router/`
 

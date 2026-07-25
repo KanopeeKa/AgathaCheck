@@ -20,6 +20,7 @@ Full conventions: `docs/architecture/modularity.md`.
 | Governance scripts | `scripts/` | file size, BDD gate, priority tags |
 | Calendar dates | `docs/calendar-dates.md` | `YYYY-MM-DD` wire format |
 | Design / UX | `docs/design/index.md` | Tiers, `ui-rework-plan.md`, `/ui-check`, `/ui-design-deep` |
+| Experience program (nav reversal, Guardian/Org rework) | `docs/experience-program/` | **Active** — supersedes `docs/design/navigation-v2.md`; read `decisions-log.md` first |
 
 ---
 
@@ -103,7 +104,7 @@ Full conventions: `docs/architecture/modularity.md`.
 | Flutter | `flutter_app/lib/features/organization/` |
 | Node routes | `server/routes/organizations/`, `fosterPlacements.js`, `custodyTransfers.js` |
 | Jest | `server/test/organizations/`, `fosterPlacements.test.js`, `custodyTransfers.test.js`, `orgConnections.test.js` |
-| Architecture | `docs/architecture/org-custody-model.md`, `docs/fostering-platform/g0-contract-pack.md` |
+| Architecture | `docs/architecture/org-custody-model.md`, `docs/fostering-platform/g0-contract-pack.md`, `docs/experience-program/phase-3-organisation-presentation.md` (presentation/access-control rework, active) |
 | BDD | `organisation_management.feature`, `organisation_pet_management.feature`, `pet_ownership_and_adoption.feature`, … |
 | E2E | `organisation.management.spec.ts`, `adoption.spec.ts` |
 
