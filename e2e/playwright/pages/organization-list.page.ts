@@ -1,9 +1,17 @@
 import type { Page } from '@playwright/test';
 import { expect } from '@playwright/test';
-import { dismissConsentBannerIfPresent, expectAppBarTitle, escapeRegExp, refreshFlutterAccessibility, semanticsByName } from '../support/flutter';
+import {
+  dismissConsentBannerIfPresent,
+  expectAppBarTitle,
+  escapeRegExp,
+  isExperienceShellVisible,
+  refreshFlutterAccessibility,
+  semanticsByName,
+  waitForFlutterRoutePattern,
+} from '../support/flutter';
 
 /**
- * Organization list screen (`/organizations`).
+ * Organization list screen (`/o/orgs`, legacy `/organizations`).
  * Maps to: flutter_app/test/bdd/features/organisation_management.feature
  */
 export class OrganizationListPage {
@@ -11,6 +19,14 @@ export class OrganizationListPage {
 
   async expectLoaded(): Promise<void> {
     await dismissConsentBannerIfPresent(this.page);
+    await waitForFlutterRoutePattern(this.page, /\/o\/orgs(?:\?|$)|\/organizations/, 30_000);
+    await refreshFlutterAccessibility(this.page);
+    if (await isExperienceShellVisible(this.page)) {
+      await expect(this.page.getByRole('button', { name: 'Create' })).toBeVisible({
+        timeout: 30_000,
+      });
+      return;
+    }
     await expectAppBarTitle(this.page, 'My Organizations');
   }
 

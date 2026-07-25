@@ -6,10 +6,6 @@ import { isLiveHostingTarget } from './hosting';
 const WAF_MARKERS = ['o2s-browser-check', 'Security check', 'Test de sécurité'];
 const HEALTH_OK_MARKER = '"status":"OK"';
 const PREFLIGHT_TIMEOUT_MS = 15_000;
-/** Match scripts/uat-post-deploy-smoke.sh — Tiger Protect can challenge fresh runner IPs. */
-const WAF_RETRY_ATTEMPTS = 18;
-const WAF_RETRY_SLEEP_MS = 10_000;
-const WAF_FAIL_FAST_STREAK = Number(process.env.WAF_FAIL_FAST_STREAK ?? '3') || 3;
 const CONFIG_ERROR =
   'UAT pre-flight config error: E2E_BASE_URL (or UAT_BASE_URL fallback) is missing or malformed.';
 
@@ -98,8 +94,7 @@ function bodySnippet(body: string): string {
   return body.slice(0, 200).replace(/[\r\n]+/g, ' ');
 }
 
-function writeSuccessSummary(elapsedMs: number): void {
-  const line = `✅ UAT pre-flight OK — /backend/health → 200 in ${elapsedMs}ms`;
+function writeSummary(line: string): void {
   console.log(line);
   const summaryPath = process.env.GITHUB_STEP_SUMMARY;
   if (summaryPath) {
@@ -107,53 +102,50 @@ function writeSuccessSummary(elapsedMs: number): void {
   }
 }
 
-/** Fail fast when live UAT is unreachable before Playwright workers start. */
+function writeSuccessSummary(elapsedMs: number): void {
+  writeSummary(`✅ UAT pre-flight OK — /backend/health → 200 in ${elapsedMs}ms`);
+}
+
+function writeWafDeferralSummary(attempts: number, elapsedMs: number): void {
+  writeSummary(
+    `⚠️ UAT pre-flight deferred [waf-challenge]: Node fetch cannot solve o2switch JS challenge after ${attempts} attempts (${elapsedMs}ms). Browser warmup (passHostingWaf) will verify reachability.`,
+  );
+}
+
+/** Fail fast on real UAT outages; defer o2switch WAF to browser warmup (#332). */
 export default async function globalSetup(): Promise<void> {
   const baseUrlCandidate = process.env.E2E_BASE_URL ?? process.env.UAT_BASE_URL ?? '';
   if (!isLiveHostingTarget(baseUrlCandidate)) {
+    return;
+  }
+  if (process.env.E2E_SKIP_NODE_UAT_PREFLIGHT === '1') {
+    writeSummary('ℹ️ UAT Node pre-flight skipped (E2E_SKIP_NODE_UAT_PREFLIGHT=1).');
     return;
   }
 
   const baseURL = resolveLiveBaseUrl();
   const healthURL = `${baseURL}/backend/health`;
   const started = Date.now();
-  let wafStreak = 0;
 
   try {
-    for (let attempt = 1; attempt <= WAF_RETRY_ATTEMPTS; attempt += 1) {
-      const response = await fetch(healthURL, {
-        signal: AbortSignal.timeout(PREFLIGHT_TIMEOUT_MS),
-      });
-      const body = await response.text();
+    const response = await fetch(healthURL, {
+      signal: AbortSignal.timeout(PREFLIGHT_TIMEOUT_MS),
+    });
+    const body = await response.text();
 
-      if (bodyShowsWafChallenge(body)) {
-        wafStreak += 1;
-        if (wafStreak >= WAF_FAIL_FAST_STREAK) {
-          throw new Error(
-            `UAT pre-flight failed [waf-challenge]: ${WAF_FAIL_FAST_STREAK} consecutive WAF responses from GitHub Actions — fail-fast (cannot whitelist o2switch). Last body: ${bodySnippet(body)}`,
-          );
-        }
-        if (attempt < WAF_RETRY_ATTEMPTS) {
-          console.log(
-            `UAT pre-flight WAF challenge (${wafStreak}/${WAF_FAIL_FAST_STREAK} streak, attempt ${attempt}/${WAF_RETRY_ATTEMPTS}), retrying in ${WAF_RETRY_SLEEP_MS / 1000}s...`,
-          );
-          await new Promise((resolve) => setTimeout(resolve, WAF_RETRY_SLEEP_MS));
-          continue;
-        }
-        throw new Error(
-          `UAT pre-flight failed [waf-challenge]: GET ${healthURL} — ${bodySnippet(body)}`,
-        );
-      }
-
-      if (response.status !== 200 || !body.includes(HEALTH_OK_MARKER)) {
-        throw new Error(
-          `UAT pre-flight failed [${response.status}]: ${bodySnippet(body)}`,
-        );
-      }
-
-      writeSuccessSummary(Date.now() - started);
+    if (bodyShowsWafChallenge(body)) {
+      // Node fetch cannot solve o2switch JS challenges (#332) — defer to browser warmup.
+      writeWafDeferralSummary(1, Date.now() - started);
       return;
     }
+
+    if (response.status !== 200 || !body.includes(HEALTH_OK_MARKER)) {
+      throw new Error(
+        `UAT pre-flight failed [${response.status}]: ${bodySnippet(body)}`,
+      );
+    }
+
+    writeSuccessSummary(Date.now() - started);
   } catch (err) {
     if (err instanceof Error && err.message.startsWith('UAT pre-flight')) {
       throw err;

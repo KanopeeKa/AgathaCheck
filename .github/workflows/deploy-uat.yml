@@ -672,13 +672,24 @@ jobs:
           npm ci
           npx playwright install chromium --with-deps
 
+      - name: Warm up UAT browser session (WAF + auth)
+        working-directory: e2e
+        env:
+          E2E_BASE_URL: ${{ env.UAT_BASE_URL }}
+          E2E_BYPASS_TOKEN: ${{ secrets.E2E_BYPASS_TOKEN }}
+          E2E_TLS_INSECURE: '1'
+          E2E_SKIP_NODE_UAT_PREFLIGHT: '1'
+          # cPanel auto-SSL on UAT is not trusted by GitHub runners (self-signed / incomplete chain).
+          NODE_TLS_REJECT_UNAUTHORIZED: '0'
+        run: xvfb-run --auto-servernum npm run test:warmup-uat
+
       - name: Run @smoke-uat Playwright tests against live UAT
         working-directory: e2e
         env:
           E2E_BASE_URL: ${{ env.UAT_BASE_URL }}
           E2E_BYPASS_TOKEN: ${{ secrets.E2E_BYPASS_TOKEN }}
           E2E_TLS_INSECURE: '1'
-          WAF_FAIL_FAST_STREAK: '3'
+          E2E_SKIP_NODE_UAT_PREFLIGHT: '1'
           # cPanel auto-SSL on UAT is not trusted by GitHub runners (self-signed / incomplete chain).
           NODE_TLS_REJECT_UNAUTHORIZED: '0'
         run: xvfb-run --auto-servernum npm run test:smoke-uat
