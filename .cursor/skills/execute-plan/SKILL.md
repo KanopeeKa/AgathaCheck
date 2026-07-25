@@ -72,7 +72,7 @@ Do **not** invoke `/execute-plan example-plan` — `_example` is documentation-o
 | `plan_id` | yes | Matches `.agents/plans/<plan_id>.{md,snapshot.json}` |
 | Frozen snapshot | yes | Validated, `autonomy: active`, `approved_until` in future |
 | Control issue | yes | Labels: `execute-plan`, `plan:<id>`, `autonomous-approved`; not `autonomous-revoked` |
-| Human approval | yes (first run) | Keyword `approve-autonomous <plan_id>` on control issue |
+| Human approval | yes (first run) | Keyword `approve-autonomous <plan_id>` on control issue — **except** self-bootstrapped roadmap-chain plans, see §Roadmap chaining |
 
 ---
 
