@@ -91,6 +91,23 @@ test('setBarrier resolves failed head entries so promotion can resume', () => {
   assert.equal(hold.hold, false);
 });
 
+test('enqueueEntry auto setBarrier when a newer merge follows a failed head', () => {
+  const state = createEmptyState();
+  state.entries = [
+    { seq: 17, pr_number: 342, merge_sha: 'd8a6214', state: 'failed' },
+  ];
+  const result = enqueueEntry(state, {
+    mergeSha: 'edcb4ad',
+    prNumber: 343,
+    enqueuedBy: 'pr-343',
+  });
+  assert.equal(result.created, true);
+  assert.equal(result.state.main_barrier_sha, 'edcb4ad');
+  assert.equal(result.state.entries[0].state, 'superseded');
+  assert.equal(result.state.entries[1].state, 'pending');
+  assert.equal(queueHeadHold(result.state).hold, false);
+});
+
 test('pruneExpiredWatcher clears an expired lease', () => {
   const state = createEmptyState();
   state.active_watcher = {

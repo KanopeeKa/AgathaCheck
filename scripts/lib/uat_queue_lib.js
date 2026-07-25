@@ -141,6 +141,15 @@ function enqueueEntry(state, input) {
   });
 
   state.entries.push(entry);
+
+  const head = headEntryNeedingAttention(state);
+  if (head && head.seq < entry.seq && head.state === 'failed') {
+    setBarrier(state, {
+      sha: mergeSha,
+      reason: `auto: enqueue pr-${prNumber} supersedes failed seq-${head.seq}`,
+    });
+  }
+
   return { state, entry, created: true };
 }
 
