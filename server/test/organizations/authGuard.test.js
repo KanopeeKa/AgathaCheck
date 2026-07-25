@@ -46,6 +46,7 @@ describe('Organizations API', () => {
         ['GET', `/api/organizations/${orgId}/people/member/ou-1`],
         ['POST', `/api/organizations/${orgId}/foster-parents`],
         ['PUT', `/api/organizations/${orgId}/foster-parents/fp-1`],
+        ['PATCH', `/api/organizations/${orgId}/foster-parents/fp-1/approval`],
         ['DELETE', `/api/organizations/${orgId}/foster-parents/fp-1`],
       ];
   

@@ -169,6 +169,8 @@ export function buildMockPool(overrides = {}) {
           notes: '',
           active_pet_count: 2,
           active_pets: [{ pet_id: 'pet-a', pet_name: 'Max', status: 'in_progress' }],
+          approval_state: 'approved',
+          creation_source: 'member',
         }],
       };
     }
@@ -197,6 +199,8 @@ export function buildMockPool(overrides = {}) {
           phone: '555-0000',
           notes: 'No account',
           active_pet_count: 0,
+          approval_state: 'approved',
+          creation_source: 'manual_shelter_entry',
         }],
       };
     }
@@ -209,6 +213,23 @@ export function buildMockPool(overrides = {}) {
           email: 'new@example.com',
           phone: null,
           notes: '',
+          approval_state: 'under_review',
+          creation_source: 'manual_shelter_entry',
+        }],
+      };
+    }
+    if (sql.includes('SET approval_state = $1')) {
+      const approvalState = params[0];
+      return {
+        rows: [{
+          id: 'fp-external-1',
+          organization_id: orgId,
+          display_name: 'Off-app Parent',
+          email: 'offapp@example.com',
+          phone: '555-0000',
+          notes: 'No account',
+          approval_state: approvalState,
+          creation_source: 'manual_shelter_entry',
         }],
       };
     }
@@ -221,6 +242,8 @@ export function buildMockPool(overrides = {}) {
           email: 'updated@example.com',
           phone: '555-1111',
           notes: 'Updated',
+          approval_state: 'approved',
+          creation_source: 'manual_shelter_entry',
         }],
       };
     }
