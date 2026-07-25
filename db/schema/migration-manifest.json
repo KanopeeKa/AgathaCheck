@@ -31,7 +31,8 @@
     "022_org_foster_parents_approval_state.sql",
     "023_foster_profiles.sql",
     "024_org_foster_parents_compliance.sql",
-    "025_foster_requests.sql"
+    "025_foster_requests.sql",
+    "026_fostering_sessions.sql"
   ],
   "code_migrations": [
     "016_migrate_family_events_placements.sql",
