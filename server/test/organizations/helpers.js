@@ -161,6 +161,7 @@ export function buildMockPool(overrides = {}) {
           id: 'ou-foster-1',
           kind: 'member',
           user_id: 'foster-user-1',
+          foster_profile_id: 'fprof-member-1',
           display_name: 'Jane Foster',
           email: 'jane@example.com',
           photo_url: '/photos/jane.jpg',
@@ -192,6 +193,7 @@ export function buildMockPool(overrides = {}) {
           id: 'fp-external-1',
           kind: 'external',
           user_id: null,
+          foster_profile_id: 'fprof-external-1',
           display_name: 'Off-app Parent',
           email: 'offapp@example.com',
           photo_url: null,
@@ -204,6 +206,9 @@ export function buildMockPool(overrides = {}) {
         }],
       };
     }
+    if (sql.includes('INSERT INTO foster_profiles')) {
+      return { rows: [] };
+    }
     if (sql.includes('INSERT INTO org_foster_parents')) {
       return {
         rows: [{
@@ -213,6 +218,7 @@ export function buildMockPool(overrides = {}) {
           email: 'new@example.com',
           phone: null,
           notes: '',
+          foster_profile_id: 'fprof-new-1',
           approval_state: 'under_review',
           creation_source: 'manual_shelter_entry',
         }],
@@ -232,6 +238,69 @@ export function buildMockPool(overrides = {}) {
           creation_source: 'manual_shelter_entry',
         }],
       };
+    }
+    if (sql.includes('FROM users u') && sql.includes('LOWER(u.email)')) {
+      return {
+        rows: [{
+          user_id: 'registered-user-1',
+          display_name: 'Registered User',
+          email: 'match@example.com',
+          foster_profile_id: 'fprof-registered-1',
+        }],
+      };
+    }
+    if (sql.includes('SELECT * FROM org_foster_parents') && sql.includes('organization_id = $2')) {
+      return {
+        rows: [{
+          id: 'fp-external-1',
+          organization_id: orgId,
+          user_id: null,
+          foster_profile_id: 'fprof-external-1',
+          display_name: 'Off-app Parent',
+          email: 'match@example.com',
+          phone: '555-0000',
+          foster_address: '',
+          notes: '',
+          approval_state: 'approved',
+          creation_source: 'manual_shelter_entry',
+        }],
+      };
+    }
+    if (sql.includes('SELECT id, email, first_name, last_name FROM users WHERE id')) {
+      return {
+        rows: [{
+          id: 'registered-user-1',
+          email: 'match@example.com',
+          first_name: 'Registered',
+          last_name: 'User',
+        }],
+      };
+    }
+    if (sql.includes('SELECT id FROM foster_profiles WHERE user_id')) {
+      return { rows: [{ id: 'fprof-registered-1' }] };
+    }
+    if (sql.includes('UPDATE org_foster_parents') && sql.includes('foster_profile_id = $2')) {
+      return {
+        rows: [{
+          id: 'fp-external-1',
+          organization_id: orgId,
+          user_id: 'registered-user-1',
+          foster_profile_id: 'fprof-registered-1',
+          display_name: 'Off-app Parent',
+          email: 'match@example.com',
+          phone: '555-0000',
+          foster_address: '',
+          notes: '',
+          approval_state: 'approved',
+          creation_source: 'manual_shelter_entry',
+        }],
+      };
+    }
+    if (sql.includes('SELECT COUNT(*)::int AS count FROM org_foster_parents WHERE foster_profile_id')) {
+      return { rows: [{ count: 0 }] };
+    }
+    if (sql.includes('DELETE FROM foster_profiles WHERE id')) {
+      return { rows: [] };
     }
     if (sql.includes('UPDATE org_foster_parents')) {
       return {
@@ -268,6 +337,10 @@ export function buildMockPool(overrides = {}) {
 
   return {
     query,
+    connect: async () => ({
+      query,
+      release: () => {},
+    }),
     end: async () => {},
   };
 }

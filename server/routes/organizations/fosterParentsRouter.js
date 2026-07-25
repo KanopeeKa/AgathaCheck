@@ -2,6 +2,11 @@ import { v4 as uuidv4 } from 'uuid';
 import { logAuditEventSafe } from '../../lib/audit.js';
 import { buildExternalFosterNoticeEmail } from '../../lib/email/templates/externalFosterNotice.js';
 import { resolveEmailLocale } from '../../lib/email/locale.js';
+import {
+  createFosterProfileForManualParent,
+  findMergeSuggestionsByEmail,
+  mergeManualFosterIntoUser,
+} from '../../lib/fosterProfiles.js';
 import { OPEN_PLACEMENT_STATUSES } from '../../lib/fosterPlacements.js';
 import { fosterParentMemberRolesSql, normaliseRole } from '../../lib/orgRoles.js';
 import { sendTransactionalEmail } from '../../services/mailService.js';
@@ -27,6 +32,7 @@ export function registerFosterParentsRoutes(router, pool) {
       return {
         id: row.id,
         kind,
+        foster_profile_id: row.foster_profile_id || null,
         user_id: row.user_id || null,
         display_name: displayName || row.email || '',
         email: row.email || null,
@@ -57,6 +63,7 @@ export function registerFosterParentsRoutes(router, pool) {
           `SELECT ou.id,
                   'member' AS kind,
                   u.id AS user_id,
+                  fprof.id AS foster_profile_id,
                   TRIM(COALESCE(u.first_name, '') || ' ' || COALESCE(u.last_name, '')) AS display_name,
                   u.email,
                   u.photo_url,
@@ -84,6 +91,7 @@ export function registerFosterParentsRoutes(router, pool) {
                   ) AS active_pets
            FROM organization_users ou
            JOIN users u ON u.id = ou.user_id
+           LEFT JOIN foster_profiles fprof ON fprof.user_id = u.id
            WHERE ou.organization_id = $1
              AND ou.role IN (${fosterParentMemberRolesSql()})
            ORDER BY display_name, u.email`,
@@ -94,6 +102,7 @@ export function registerFosterParentsRoutes(router, pool) {
           `SELECT fp.id,
                   'external' AS kind,
                   fp.user_id,
+                  fp.foster_profile_id,
                   fp.display_name,
                   fp.email,
                   NULL AS photo_url,
@@ -138,6 +147,26 @@ export function registerFosterParentsRoutes(router, pool) {
       }
     });
 
+    router.get('/:orgId/foster-parents/merge-suggestions', async (req, res) => {
+      const userId = extractUserId(req);
+      if (!userId) return res.status(401).json({ error: 'Unauthorized' });
+      const orgId = req.params.orgId;
+      const email = (req.query.email || '').trim();
+
+      if (!email) {
+        return res.status(400).json({ error: 'Email query parameter is required' });
+      }
+
+      try {
+        if (!(await requireOrgAdmin(pool, res, orgId, userId))) return;
+
+        const suggestions = await findMergeSuggestionsByEmail(pool, email, orgId);
+        res.json(suggestions);
+      } catch (err) {
+        res.status(500).json({ error: publicError(err) });
+      }
+    });
+
     router.post('/:orgId/foster-parents', async (req, res) => {
       const userId = extractUserId(req);
       if (!userId) return res.status(401).json({ error: 'Unauthorized' });
@@ -171,16 +200,33 @@ export function registerFosterParentsRoutes(router, pool) {
         const orgName = orgResult.rows[0]?.name || 'Your organisation';
 
         const id = uuidv4();
-        const result = await pool.query(
-          `INSERT INTO org_foster_parents (
-             id, organization_id, display_name, email, phone, foster_address, notes,
-             lawful_basis_attested_at, lawful_basis_attested_by,
-             approval_state, creation_source
-           ) VALUES ($1, $2, $3, $4, $5, $6, $7, NOW(), $8, 'under_review', 'manual_shelter_entry')
-           RETURNING *`,
-          [id, orgId, displayName, email, phone, fosterAddress, notes, userId],
-        );
-        const row = result.rows[0];
+        const client = await pool.connect();
+        let row;
+        try {
+          await client.query('BEGIN');
+          const fosterProfileId = await createFosterProfileForManualParent(client, {
+            displayName,
+            email,
+            phone,
+            fosterAddress,
+          });
+          const result = await client.query(
+            `INSERT INTO org_foster_parents (
+               id, organization_id, display_name, email, phone, foster_address, notes,
+               lawful_basis_attested_at, lawful_basis_attested_by,
+               approval_state, creation_source, foster_profile_id
+             ) VALUES ($1, $2, $3, $4, $5, $6, $7, NOW(), $8, 'under_review', 'manual_shelter_entry', $9)
+             RETURNING *`,
+            [id, orgId, displayName, email, phone, fosterAddress, notes, userId, fosterProfileId],
+          );
+          row = result.rows[0];
+          await client.query('COMMIT');
+        } catch (txErr) {
+          try { await client.query('ROLLBACK'); } catch (_) { /* ignore */ }
+          throw txErr;
+        } finally {
+          client.release();
+        }
 
         logAuditEventSafe(pool, {
           actorUserId: userId,
@@ -264,6 +310,61 @@ export function registerFosterParentsRoutes(router, pool) {
         }
 
         const row = result.rows[0];
+        res.json(fosterParentToMap({
+          ...row,
+          kind: 'external',
+          photo_url: null,
+          role: null,
+          active_pet_count: 0,
+          active_pets: [],
+        }, { kind: 'external' }));
+      } catch (err) {
+        res.status(500).json({ error: publicError(err) });
+      }
+    });
+
+    router.post('/:orgId/foster-parents/:id/merge', async (req, res) => {
+      const userId = extractUserId(req);
+      if (!userId) return res.status(401).json({ error: 'Unauthorized' });
+      const orgId = req.params.orgId;
+      const fosterParentId = req.params.id;
+      const data = req.body || {};
+      const targetUserId = (data.target_user_id || data.targetUserId || '').trim();
+
+      if (!targetUserId) {
+        return res.status(400).json({ error: 'target_user_id is required' });
+      }
+
+      try {
+        if (!(await requireOrgAdmin(pool, res, orgId, userId))) return;
+
+        const mergeResult = await mergeManualFosterIntoUser(pool, {
+          orgId,
+          fosterParentId,
+          targetUserId,
+          actorUserId: userId,
+        });
+
+        if (mergeResult.error) {
+          return res.status(mergeResult.status).json({ error: mergeResult.error });
+        }
+
+        logAuditEventSafe(pool, {
+          actorUserId: userId,
+          action: 'foster_merge_completed',
+          resourceType: 'foster_profile',
+          resourceId: mergeResult.survivorProfileId,
+          orgId,
+          metadata: {
+            merged_from_id: mergeResult.mergedFromProfileId,
+            merged_into_id: mergeResult.survivorProfileId,
+            merged_from_relationship_id: mergeResult.mergedFromRelationshipId,
+            target_user_id: targetUserId,
+          },
+          req,
+        });
+
+        const row = mergeResult.row;
         res.json(fosterParentToMap({
           ...row,
           kind: 'external',
