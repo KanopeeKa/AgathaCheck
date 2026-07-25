@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../../core/widgets/app_logo_title.dart';
 import '../../../../../l10n/app_localizations.dart';
+import '../../../domain/entities/foster_parent.dart';
 import '../../providers/manage_fosters_providers.dart';
 import '../../providers/organization_providers.dart';
 import '../../utils/org_screen_theme.dart';
@@ -13,6 +14,11 @@ import '../../widgets/organization_role_labels.dart';
 final manageFostersTabProvider = StateProvider.family<ManageFostersTab, String>(
   (ref, orgId) => ManageFostersTab.all,
 );
+
+final manageFostersApprovalFilterProvider =
+    StateProvider.family<ManageFostersApprovalFilter?, String>(
+      (ref, orgId) => null,
+    );
 
 class ManageFostersScreen extends ConsumerWidget {
   const ManageFostersScreen({super.key, required this.orgId});
@@ -25,6 +31,9 @@ class ManageFostersScreen extends ConsumerWidget {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
     final tab = ref.watch(manageFostersTabProvider(orgId));
+    final approvalFilter = ref.watch(
+      manageFostersApprovalFilterProvider(orgId),
+    );
     final fosterParentsAsync = ref.watch(orgFosterParentsProvider(orgId));
 
     return orgThemed(
@@ -66,7 +75,7 @@ class ManageFostersScreen extends ConsumerWidget {
             _ManageFostersTabBar(orgId: orgId, selected: tab),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              child: _ApprovalFiltersPlaceholder(l: l, theme: theme),
+              child: _ApprovalFilters(orgId: orgId, selected: approvalFilter),
             ),
             Expanded(
               child: fosterParentsAsync.when(
@@ -76,6 +85,7 @@ class ManageFostersScreen extends ConsumerWidget {
                   final filtered = filterFosterParentsForManageFosters(
                     parents: parents,
                     tab: tab,
+                    approvalFilter: approvalFilter,
                   );
                   if (tab == ManageFostersTab.recentlyFostered) {
                     return Center(
@@ -173,14 +183,34 @@ class _ManageFostersTabBar extends ConsumerWidget {
   }
 }
 
-class _ApprovalFiltersPlaceholder extends StatelessWidget {
-  const _ApprovalFiltersPlaceholder({required this.l, required this.theme});
+class _ApprovalFilters extends ConsumerWidget {
+  const _ApprovalFilters({required this.orgId, required this.selected});
 
-  final AppLocalizations l;
-  final ThemeData theme;
+  final String orgId;
+  final ManageFostersApprovalFilter? selected;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l = AppLocalizations.of(context)!;
+    final theme = Theme.of(context);
+    final filters = <(ManageFostersApprovalFilter, String, Key)>[
+      (
+        ManageFostersApprovalFilter.underReview,
+        l.manageFostersFilterUnderReview,
+        const Key('manage_fosters_filter_under_review'),
+      ),
+      (
+        ManageFostersApprovalFilter.approved,
+        l.manageFostersFilterApproved,
+        const Key('manage_fosters_filter_approved'),
+      ),
+      (
+        ManageFostersApprovalFilter.archived,
+        l.manageFostersFilterArchived,
+        const Key('manage_fosters_filter_archived'),
+      ),
+    ];
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -192,29 +222,38 @@ class _ApprovalFiltersPlaceholder extends StatelessWidget {
         Wrap(
           spacing: 8,
           children: [
-            InputChip(
-              key: const Key('manage_fosters_filter_under_review'),
-              label: Text(l.manageFostersFilterUnderReview),
-              onPressed: null,
-            ),
-            InputChip(
-              key: const Key('manage_fosters_filter_approved'),
-              label: Text(l.manageFostersFilterApproved),
-              onPressed: null,
-            ),
-            InputChip(
-              key: const Key('manage_fosters_filter_archived'),
-              label: Text(l.manageFostersFilterArchived),
-              onPressed: null,
-            ),
+            for (final (filter, label, key) in filters)
+              FilterChip(
+                key: key,
+                label: Text(label),
+                selected: selected == filter,
+                onSelected: (isSelected) {
+                  ref
+                      .read(manageFostersApprovalFilterProvider(orgId).notifier)
+                      .state = isSelected
+                      ? filter
+                      : null;
+                },
+              ),
           ],
-        ),
-        const SizedBox(height: 4),
-        Text(
-          l.manageFostersApprovalFiltersComingSoon,
-          style: theme.textTheme.bodySmall,
         ),
       ],
     );
+  }
+}
+
+String localizedFosterApprovalState(
+  AppLocalizations l,
+  FosterApprovalState state,
+) {
+  switch (state) {
+    case FosterApprovalState.underReview:
+      return l.manageFostersApprovalStateUnderReview;
+    case FosterApprovalState.approved:
+      return l.manageFostersApprovalStateApproved;
+    case FosterApprovalState.declined:
+      return l.manageFostersApprovalStateDeclined;
+    case FosterApprovalState.archived:
+      return l.manageFostersApprovalStateArchived;
   }
 }

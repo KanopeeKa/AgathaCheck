@@ -293,6 +293,19 @@ class RecordingOrganizationRepository implements OrganizationRepository {
   ) async {}
 
   @override
+  Future<FosterParent> updateFosterApproval(
+    String orgId,
+    String fosterParentId,
+    FosterApprovalState approvalState, {
+    required String token,
+  }) async => FosterParent(
+    id: fosterParentId,
+    kind: FosterParentKind.external,
+    displayName: 'Updated',
+    approvalState: approvalState,
+  );
+
+  @override
   Future<PetFosterPlacementState> getPetPlacement(
     String orgId,
     String petId,

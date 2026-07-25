@@ -146,6 +146,12 @@ abstract class OrganizationRepository {
     String fosterParentId,
     String token,
   );
+  Future<FosterParent> updateFosterApproval(
+    String orgId,
+    String fosterParentId,
+    FosterApprovalState approvalState, {
+    required String token,
+  });
 
   Future<PetFosterPlacementState> getPetPlacement(
     String orgId,
