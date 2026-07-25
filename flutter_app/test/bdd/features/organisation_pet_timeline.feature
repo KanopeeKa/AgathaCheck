@@ -1,3 +1,9 @@
+# Superseded by the pet timeline feature (docs/experience-program/decisions-log.md D18, D19) —
+# "family events" (assign/from/to/notes CRUD) are replaced by a composite timeline of guardian
+# custody segments, fostering-session cards, and manual entries. Kept @legacy until the
+# replacement Playwright specs for pet_timeline.feature are green on main, then removed
+# (docs/experience-program/phase-2-guardian-journey.md).
+@legacy
 Feature: Organisation Pet Timeline
   As an organisation member
   I want to view a timeline of a pet's stays, fostering, and status changes
