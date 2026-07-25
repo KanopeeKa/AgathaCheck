@@ -7,9 +7,11 @@ import {
   PLACEMENT_STATUS_PENDING_CONDITIONS,
   PLACEMENT_STATUS_WAITING_ADOPTION,
   SESSION_STATUS_ADOPTION_IN_PROGRESS,
+  SESSION_STATUS_ACTIVE,
   SESSION_STATUS_CANCELLED,
   SESSION_STATUS_CONVERTED_TO_ADOPTION,
   SESSION_STATUS_END_PENDING_CONFIRMATION,
+  SESSION_STATUS_PENDING_ACCEPTANCE,
 } from '../../lib/fosterPlacements.js';
 
 export const adminId = 'admin-user-id';
@@ -126,6 +128,13 @@ export function buildFosterPlacementMockPool() {
       }
       return { rows: [] };
     }
+    if (sql.includes('FROM foster_placements fp') && sql.includes('fp.foster_user_id = $1') && sql.includes('fp.status = ANY($2::text[])')) {
+      const statuses = params[1] || [];
+      if (statuses.includes(placementStatus)) {
+        return { rows: [rowForStatus(placementStatus)] };
+      }
+      return { rows: [] };
+    }
     if (sql.includes('FROM foster_placements fp') && sql.includes('fp.foster_user_id = $1') && sql.includes('fp.status = $2')) {
       if (params[1] === placementStatus) {
         return { rows: [rowForStatus(placementStatus)] };
@@ -177,6 +186,11 @@ export function buildFosterPlacementMockPool() {
     if (sql.includes('UPDATE foster_placements') && params[0] === SESSION_STATUS_END_PENDING_CONFIRMATION) {
       placementStatus = SESSION_STATUS_END_PENDING_CONFIRMATION;
       return { rows: [rowForStatus(placementStatus)] };
+    }
+    if (sql.includes('UPDATE foster_placements') && params[0] === SESSION_STATUS_ACTIVE) {
+      placementStatus = SESSION_STATUS_ACTIVE;
+      fosterAccessGranted = true;
+      return { rows: [rowForStatus(SESSION_STATUS_ACTIVE)] };
     }
     if (sql.includes('UPDATE foster_placements') && params[0] === PLACEMENT_STATUS_IN_PROGRESS) {
       placementStatus = PLACEMENT_STATUS_IN_PROGRESS;
@@ -273,6 +287,7 @@ export function buildFosterPlacementMockPool() {
     get fosterAccessGranted() { return fosterAccessGranted; },
     get adoptedOwnerId() { return adoptedOwnerId; },
     setPlacementPending() { placementStatus = PLACEMENT_STATUS_PENDING; },
+    setPlacementPendingAcceptance() { placementStatus = SESSION_STATUS_PENDING_ACCEPTANCE; },
     setPlacementInProgress() {
       placementStatus = PLACEMENT_STATUS_IN_PROGRESS;
       journeyStatus = null;

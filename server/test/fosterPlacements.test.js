@@ -14,6 +14,7 @@ import {
   SESSION_STATUS_END_PENDING_CONFIRMATION,
   SESSION_STATUS_PENDING_ACCEPTANCE,
   normalizePlacementStatus,
+  isPendingFosterAcceptance,
   OPEN_PLACEMENT_STATUSES,
   placementToMap,
   toLegacyStatus,
@@ -69,6 +70,12 @@ describe('fostering session schema (J3 Phase 1)', () => {
       SESSION_STATUS_ACTIVE,
       SESSION_STATUS_ADOPTION_IN_PROGRESS,
     ]));
+  });
+
+  it('isPendingFosterAcceptance recognises legacy and J3 pending statuses', () => {
+    expect(isPendingFosterAcceptance(PLACEMENT_STATUS_PENDING)).toBe(true);
+    expect(isPendingFosterAcceptance(SESSION_STATUS_PENDING_ACCEPTANCE)).toBe(true);
+    expect(isPendingFosterAcceptance(SESSION_STATUS_ACTIVE)).toBe(false);
   });
 
   it('placementToMap exposes session fields and dual-write status fields', () => {
@@ -141,6 +148,36 @@ describe('Foster placements API', () => {
       });
     });
 
+    it('lists pending_acceptance placements (J3 session status)', async () => {
+      const pool = buildMockPool();
+      pool.setPlacementPendingAcceptance();
+      const app = createApp(pool);
+      const res = await request(app)
+        .get('/api/foster-placements/pending')
+        .set('Authorization', `Bearer ${fosterToken}`);
+      expect(res.statusCode).toBe(200);
+      expect(res.body).toHaveLength(1);
+      expect(res.body[0]).toMatchObject({
+        id: placementId,
+        pet_name: 'Buddy',
+        status: PLACEMENT_STATUS_PENDING,
+        session_status: SESSION_STATUS_PENDING_ACCEPTANCE,
+      });
+    });
+
+    it('accepts a pending_acceptance placement and grants foster access', async () => {
+      const pool = buildMockPool();
+      pool.setPlacementPendingAcceptance();
+      const app = createApp(pool);
+      const res = await request(app)
+        .post(`/api/foster-placements/${placementId}/accept`)
+        .set('Authorization', `Bearer ${fosterToken}`);
+      expect(res.statusCode).toBe(200);
+      expect(res.body.status).toBe(PLACEMENT_STATUS_IN_PROGRESS);
+      expect(res.body.session_status).toBe(SESSION_STATUS_ACTIVE);
+      expect(pool.fosterAccessGranted).toBe(true);
+    });
+
     it('accepts a pending placement and grants foster access', async () => {
       const pool = buildMockPool();
       pool.setPlacementPending();
@@ -150,6 +187,7 @@ describe('Foster placements API', () => {
         .set('Authorization', `Bearer ${fosterToken}`);
       expect(res.statusCode).toBe(200);
       expect(res.body.status).toBe(PLACEMENT_STATUS_IN_PROGRESS);
+      expect(res.body.session_status).toBe(SESSION_STATUS_ACTIVE);
       expect(pool.fosterAccessGranted).toBe(true);
     });
 
