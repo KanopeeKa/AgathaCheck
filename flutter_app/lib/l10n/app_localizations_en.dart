@@ -2167,6 +2167,146 @@ class AppLocalizationsEn extends AppLocalizations {
   String get manageFostersRetentionManualContact => 'Manual contact';
 
   @override
+  String get fosterRequestsTitle => 'Foster requests';
+
+  @override
+  String get fosterRequestsDescription =>
+      'Send structured outreach to approved foster families and track their responses.';
+
+  @override
+  String get fosterRequestsEmpty =>
+      'No foster requests yet. Send one when you need help placing pets.';
+
+  @override
+  String get fosterRequestSendNew => 'Send foster request';
+
+  @override
+  String get fosterRequestSendDescription =>
+      'Choose pets that need placement and foster families to contact. You can save a draft or send immediately.';
+
+  @override
+  String get fosterRequestMessageLabel => 'Message';
+
+  @override
+  String get fosterRequestMessageHint =>
+      'Describe what help you need and any timing details';
+
+  @override
+  String get fosterRequestMessageRequired => 'Message is required';
+
+  @override
+  String get fosterRequestSelectPets => 'Pets needing foster care';
+
+  @override
+  String get fosterRequestSelectFosters => 'Foster families to contact';
+
+  @override
+  String get fosterRequestNoPets => 'No active pets available for this request';
+
+  @override
+  String get fosterRequestNoEligibleFosters =>
+      'No approved foster families without outreach opt-out are available';
+
+  @override
+  String get fosterRequestSelectionRequired =>
+      'Select at least one pet and one foster family';
+
+  @override
+  String get fosterRequestSaveDraft => 'Save draft';
+
+  @override
+  String get fosterRequestSendNow => 'Send now';
+
+  @override
+  String get fosterRequestDraftSaved => 'Foster request saved as draft';
+
+  @override
+  String get fosterRequestSendSuccess => 'Foster request sent';
+
+  @override
+  String get fosterRequestStatusDraft => 'Draft';
+
+  @override
+  String get fosterRequestStatusSent => 'Sent';
+
+  @override
+  String get fosterRequestStatusCancelled => 'Cancelled';
+
+  @override
+  String fosterRequestPetsLabel(String names) {
+    return 'Pets: $names';
+  }
+
+  @override
+  String fosterRequestTargetsSummary(
+    int targetCount,
+    int canHelp,
+    int cannotHelp,
+    int pending,
+  ) {
+    return '$targetCount targets · $canHelp can help · $cannotHelp cannot help · $pending pending';
+  }
+
+  @override
+  String get fosterRequestDetailTitle => 'Foster request';
+
+  @override
+  String get fosterRequestPetsSection => 'Pets';
+
+  @override
+  String get fosterRequestTargetsSection => 'Foster families contacted';
+
+  @override
+  String get fosterRequestResponsesSection => 'Responses';
+
+  @override
+  String get fosterRequestNoResponses => 'No responses yet';
+
+  @override
+  String get fosterRequestResponseCanHelp => 'Can help';
+
+  @override
+  String get fosterRequestResponseCannotHelp => 'Cannot help';
+
+  @override
+  String get fosterRequestResponsePending => 'Pending';
+
+  @override
+  String fosterRequestEarliestAvailability(String date) {
+    return 'Available from $date';
+  }
+
+  @override
+  String get fosterRequestRespondTitle => 'Respond to foster request';
+
+  @override
+  String get fosterRequestRespondDescription =>
+      'Let the shelter know whether you can help and when you could start.';
+
+  @override
+  String get fosterRequestEarliestAvailabilityLabel => 'Earliest availability';
+
+  @override
+  String get fosterRequestSelectDate => 'Select a date';
+
+  @override
+  String get fosterRequestAvailabilityRequired =>
+      'Earliest availability is required when you can help';
+
+  @override
+  String get fosterRequestRespondMessageLabel => 'Message (optional)';
+
+  @override
+  String get fosterRequestRespondMessageHint =>
+      'Share timing, capacity, or questions for the shelter';
+
+  @override
+  String get fosterRequestRespondSubmit => 'Submit response';
+
+  @override
+  String get fosterRequestRespondSuccess => 'Response submitted';
+
+  @override
   String get noFosterParents => 'No foster parents yet';
 
   @override

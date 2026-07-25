@@ -8,6 +8,7 @@ import 'package:pet_profile_app/features/organization/domain/entities/org_connec
 import 'package:pet_profile_app/features/organization/domain/entities/org_home_hidden_pet.dart';
 import 'package:pet_profile_app/features/organization/domain/entities/foster_parent.dart';
 import 'package:pet_profile_app/features/organization/domain/entities/foster_placement.dart';
+import 'package:pet_profile_app/features/organization/domain/entities/foster_request.dart';
 import 'package:pet_profile_app/features/organization/domain/entities/org_person.dart';
 import 'package:pet_profile_app/features/organization/domain/entities/organization.dart';
 import 'package:pet_profile_app/features/organization/domain/entities/organization_member.dart';
@@ -358,6 +359,80 @@ class RecordingOrganizationRepository implements OrganizationRepository {
     kind: FosterParentKind.external,
     displayName: 'Updated',
     retentionCategory: retentionCategory,
+  );
+
+  @override
+  Future<List<FosterRequest>> getFosterRequests(
+    String orgId,
+    String token,
+  ) async => [];
+
+  @override
+  Future<FosterRequest> createFosterRequest(
+    String orgId, {
+    required String message,
+    required List<String> petIds,
+    required List<String> orgFosterParentIds,
+    bool send = false,
+    required String token,
+  }) async => FosterRequest(
+    id: 'fr-new',
+    organizationId: orgId,
+    message: message,
+    status: send ? FosterRequestStatus.sent : FosterRequestStatus.draft,
+    petIds: petIds,
+    pets: petIds
+        .map((id) => FosterRequestPet(petId: id, petName: 'Pet $id'))
+        .toList(),
+    targetCount: orgFosterParentIds.length,
+  );
+
+  @override
+  Future<FosterRequest> getFosterRequestDetail(
+    String orgId,
+    String requestId,
+    String token,
+  ) async => FosterRequest(
+    id: requestId,
+    organizationId: orgId,
+    message: 'Test request',
+    status: FosterRequestStatus.sent,
+  );
+
+  @override
+  Future<FosterRequest> sendFosterRequest(
+    String orgId,
+    String requestId, {
+    required String token,
+  }) async => FosterRequest(
+    id: requestId,
+    organizationId: orgId,
+    message: 'Test request',
+    status: FosterRequestStatus.sent,
+  );
+
+  @override
+  Future<FosterRequest> respondToFosterRequest(
+    String orgId,
+    String requestId, {
+    required FosterResponseType response,
+    String? message,
+    DateTime? earliestAvailability,
+    required String token,
+  }) async => FosterRequest(
+    id: requestId,
+    organizationId: orgId,
+    message: 'Test request',
+    status: FosterRequestStatus.sent,
+    responses: [
+      FosterRequestResponse(
+        id: 'frr-1',
+        orgFosterParentId: 'fp-1',
+        response: response,
+        message: message ?? '',
+        earliestAvailability: earliestAvailability,
+      ),
+    ],
   );
 
   @override

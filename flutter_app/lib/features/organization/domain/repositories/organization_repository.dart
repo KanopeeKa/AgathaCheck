@@ -4,6 +4,7 @@ import '../entities/archived_pet.dart';
 import '../entities/custody_transfer.dart';
 import '../entities/foster_parent.dart';
 import '../entities/foster_placement.dart';
+import '../entities/foster_request.dart';
 import '../entities/org_connection.dart';
 import '../entities/org_home_hidden_pet.dart';
 import '../entities/org_person.dart';
@@ -173,6 +174,34 @@ abstract class OrganizationRepository {
     String orgId,
     String fosterParentId, {
     required String targetUserId,
+    required String token,
+  });
+
+  Future<List<FosterRequest>> getFosterRequests(String orgId, String token);
+  Future<FosterRequest> createFosterRequest(
+    String orgId, {
+    required String message,
+    required List<String> petIds,
+    required List<String> orgFosterParentIds,
+    bool send,
+    required String token,
+  });
+  Future<FosterRequest> getFosterRequestDetail(
+    String orgId,
+    String requestId,
+    String token,
+  );
+  Future<FosterRequest> sendFosterRequest(
+    String orgId,
+    String requestId, {
+    required String token,
+  });
+  Future<FosterRequest> respondToFosterRequest(
+    String orgId,
+    String requestId, {
+    required FosterResponseType response,
+    String? message,
+    DateTime? earliestAvailability,
     required String token,
   });
 

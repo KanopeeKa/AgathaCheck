@@ -48,6 +48,12 @@ class ManageFostersScreen extends ConsumerWidget {
           ),
           actions: [
             IconButton(
+              key: const Key('manage_fosters_foster_requests'),
+              icon: const Icon(Icons.mail_outline),
+              tooltip: l.fosterRequestsTitle,
+              onPressed: () => context.push('/o/orgs/$orgId/foster-requests'),
+            ),
+            IconButton(
               key: const Key('manage_fosters_add_manual'),
               icon: const Icon(Icons.person_add_alt_1),
               tooltip: l.addExternalFoster,

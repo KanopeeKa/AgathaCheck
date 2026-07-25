@@ -777,6 +777,64 @@
   "manageFostersRetentionShelterFosterRelationship": "Shelter foster relationship",
   "manageFostersRetentionDeclinedArchived": "Declined / archived",
   "manageFostersRetentionManualContact": "Manual contact",
+  "fosterRequestsTitle": "Foster requests",
+  "fosterRequestsDescription": "Send structured outreach to approved foster families and track their responses.",
+  "fosterRequestsEmpty": "No foster requests yet. Send one when you need help placing pets.",
+  "fosterRequestSendNew": "Send foster request",
+  "fosterRequestSendDescription": "Choose pets that need placement and foster families to contact. You can save a draft or send immediately.",
+  "fosterRequestMessageLabel": "Message",
+  "fosterRequestMessageHint": "Describe what help you need and any timing details",
+  "fosterRequestMessageRequired": "Message is required",
+  "fosterRequestSelectPets": "Pets needing foster care",
+  "fosterRequestSelectFosters": "Foster families to contact",
+  "fosterRequestNoPets": "No active pets available for this request",
+  "fosterRequestNoEligibleFosters": "No approved foster families without outreach opt-out are available",
+  "fosterRequestSelectionRequired": "Select at least one pet and one foster family",
+  "fosterRequestSaveDraft": "Save draft",
+  "fosterRequestSendNow": "Send now",
+  "fosterRequestDraftSaved": "Foster request saved as draft",
+  "fosterRequestSendSuccess": "Foster request sent",
+  "fosterRequestStatusDraft": "Draft",
+  "fosterRequestStatusSent": "Sent",
+  "fosterRequestStatusCancelled": "Cancelled",
+  "fosterRequestPetsLabel": "Pets: {names}",
+  "@fosterRequestPetsLabel": {
+    "placeholders": {
+      "names": { "type": "String" }
+    }
+  },
+  "fosterRequestTargetsSummary": "{targetCount} targets · {canHelp} can help · {cannotHelp} cannot help · {pending} pending",
+  "@fosterRequestTargetsSummary": {
+    "placeholders": {
+      "targetCount": { "type": "int" },
+      "canHelp": { "type": "int" },
+      "cannotHelp": { "type": "int" },
+      "pending": { "type": "int" }
+    }
+  },
+  "fosterRequestDetailTitle": "Foster request",
+  "fosterRequestPetsSection": "Pets",
+  "fosterRequestTargetsSection": "Foster families contacted",
+  "fosterRequestResponsesSection": "Responses",
+  "fosterRequestNoResponses": "No responses yet",
+  "fosterRequestResponseCanHelp": "Can help",
+  "fosterRequestResponseCannotHelp": "Cannot help",
+  "fosterRequestResponsePending": "Pending",
+  "fosterRequestEarliestAvailability": "Available from {date}",
+  "@fosterRequestEarliestAvailability": {
+    "placeholders": {
+      "date": { "type": "String" }
+    }
+  },
+  "fosterRequestRespondTitle": "Respond to foster request",
+  "fosterRequestRespondDescription": "Let the shelter know whether you can help and when you could start.",
+  "fosterRequestEarliestAvailabilityLabel": "Earliest availability",
+  "fosterRequestSelectDate": "Select a date",
+  "fosterRequestAvailabilityRequired": "Earliest availability is required when you can help",
+  "fosterRequestRespondMessageLabel": "Message (optional)",
+  "fosterRequestRespondMessageHint": "Share timing, capacity, or questions for the shelter",
+  "fosterRequestRespondSubmit": "Submit response",
+  "fosterRequestRespondSuccess": "Response submitted",
   "noFosterParents": "No foster parents yet",
   "addFosterParent": "Add foster parent",
   "addFosterParentDescription": "Add someone who fosters without an app account. You can assign pets to them in a later step.",

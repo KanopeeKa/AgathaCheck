@@ -11,22 +11,25 @@ import 'organization_remote/organization_connections_remote.dart';
 import 'organization_remote/organization_custody_remote.dart';
 import 'organization_remote/organization_core_remote.dart';
 import 'organization_remote/organization_foster_parents_remote.dart';
+import 'organization_remote/organization_foster_requests_remote.dart';
 import 'organization_remote/organization_invites_remote.dart';
 import 'organization_remote/organization_members_remote.dart';
 import 'organization_remote/organization_pets_remote.dart';
 import 'organization_remote/organization_placements_remote.dart';
 import 'organization_remote/organization_remote_context.dart';
+import 'organization_remote_foster_delegations.dart';
 
 /// Facade over modular organization HTTP clients. Mirrors `server/routes/organizations/`.
-class OrganizationRemoteDataSource {
+class OrganizationRemoteDataSource with OrganizationRemoteFosterDelegations {
   OrganizationRemoteDataSource({String? baseUrl, http.Client? client})
     : _ctx = OrganizationRemoteContext(baseUrl: baseUrl, client: client) {
     _core = OrganizationCoreRemote(_ctx);
     _invites = OrganizationInvitesRemote(_ctx);
     _members = OrganizationMembersRemote(_ctx);
     _pets = OrganizationPetsRemote(_ctx);
-    _fosterParents = OrganizationFosterParentsRemote(_ctx);
-    _placements = OrganizationPlacementsRemote(_ctx);
+    fosterParentsRemote = OrganizationFosterParentsRemote(_ctx);
+    fosterRequestsRemote = OrganizationFosterRequestsRemote(_ctx);
+    placementsRemote = OrganizationPlacementsRemote(_ctx);
     _connections = OrganizationConnectionsRemote(_ctx);
     _custody = OrganizationCustodyRemote(_ctx);
   }
@@ -36,8 +39,12 @@ class OrganizationRemoteDataSource {
   late final OrganizationInvitesRemote _invites;
   late final OrganizationMembersRemote _members;
   late final OrganizationPetsRemote _pets;
-  late final OrganizationFosterParentsRemote _fosterParents;
-  late final OrganizationPlacementsRemote _placements;
+  @override
+  late final OrganizationFosterParentsRemote fosterParentsRemote;
+  @override
+  late final OrganizationFosterRequestsRemote fosterRequestsRemote;
+  @override
+  late final OrganizationPlacementsRemote placementsRemote;
   late final OrganizationConnectionsRemote _connections;
   late final OrganizationCustodyRemote _custody;
 
@@ -186,209 +193,6 @@ class OrganizationRemoteDataSource {
 
   Future<void> deleteFamilyEvent(String token, String petId, String eventId) =>
       _pets.deleteFamilyEvent(token, petId, eventId);
-
-  Future<List<Map<String, dynamic>>> getFosterParents(
-    String orgId,
-    String token,
-  ) => _fosterParents.getFosterParents(orgId, token);
-
-  Future<List<Map<String, dynamic>>> getPeople(String orgId, String token) =>
-      _fosterParents.getPeople(orgId, token);
-
-  Future<Map<String, dynamic>> getPersonDetail(
-    String orgId,
-    String kind,
-    String recordId,
-    String token,
-  ) => _fosterParents.getPersonDetail(orgId, kind, recordId, token);
-
-  Future<Map<String, dynamic>> updatePersonContact(
-    String orgId,
-    String kind,
-    String recordId,
-    Map<String, dynamic> body,
-    String token,
-  ) => _fosterParents.updatePersonContact(orgId, kind, recordId, body, token);
-
-  Future<Map<String, dynamic>> createExternalFosterParent(
-    String orgId, {
-    required String displayName,
-    required String email,
-    String? phone,
-    String fosterAddress = '',
-    String notes = '',
-    required bool lawfulBasisConfirmed,
-    required String token,
-  }) => _fosterParents.createExternalFosterParent(
-    orgId,
-    displayName: displayName,
-    email: email,
-    phone: phone,
-    fosterAddress: fosterAddress,
-    notes: notes,
-    lawfulBasisConfirmed: lawfulBasisConfirmed,
-    token: token,
-  );
-
-  Future<Map<String, dynamic>> updateExternalFosterParent(
-    String orgId,
-    String fosterParentId, {
-    required String displayName,
-    String? email,
-    String? phone,
-    String notes = '',
-    required String token,
-  }) => _fosterParents.updateExternalFosterParent(
-    orgId,
-    fosterParentId,
-    displayName: displayName,
-    email: email,
-    phone: phone,
-    notes: notes,
-    token: token,
-  );
-
-  Future<void> deleteExternalFosterParent(
-    String orgId,
-    String fosterParentId,
-    String token,
-  ) => _fosterParents.deleteExternalFosterParent(orgId, fosterParentId, token);
-
-  Future<Map<String, dynamic>> updateFosterApproval(
-    String orgId,
-    String fosterParentId,
-    String approvalState,
-    String token,
-  ) => _fosterParents.updateFosterApproval(
-    orgId,
-    fosterParentId,
-    approvalState,
-    token,
-  );
-
-  Future<Map<String, dynamic>> updateFosterOptOut(
-    String orgId,
-    String fosterParentId,
-    bool optOut,
-    String token,
-  ) => _fosterParents.updateFosterOptOut(orgId, fosterParentId, optOut, token);
-
-  Future<Map<String, dynamic>> updateFosterRetentionCategory(
-    String orgId,
-    String fosterParentId,
-    String retentionCategory,
-    String token,
-  ) => _fosterParents.updateFosterRetentionCategory(
-    orgId,
-    fosterParentId,
-    retentionCategory,
-    token,
-  );
-
-  Future<List<Map<String, dynamic>>> getFosterMergeSuggestions(
-    String orgId,
-    String email,
-    String token,
-  ) => _fosterParents.getFosterMergeSuggestions(orgId, email, token);
-
-  Future<Map<String, dynamic>> mergeManualFoster(
-    String orgId,
-    String fosterParentId, {
-    required String targetUserId,
-    required String token,
-  }) => _fosterParents.mergeManualFoster(
-    orgId,
-    fosterParentId,
-    targetUserId: targetUserId,
-    token: token,
-  );
-
-  Future<Map<String, dynamic>> getPetPlacement(
-    String orgId,
-    String petId,
-    String token,
-  ) => _placements.getPetPlacement(orgId, petId, token);
-
-  Future<Map<String, dynamic>> startFosterPlacement(
-    String orgId,
-    String petId, {
-    required String fosterUserId,
-    String? startDate,
-    String notes = '',
-    required String token,
-  }) => _placements.startFosterPlacement(
-    orgId,
-    petId,
-    fosterUserId: fosterUserId,
-    startDate: startDate,
-    notes: notes,
-    token: token,
-  );
-
-  Future<Map<String, dynamic>> endFosterPlacement(
-    String orgId,
-    String placementId, {
-    String? endDate,
-    required String token,
-  }) => _placements.endFosterPlacement(
-    orgId,
-    placementId,
-    endDate: endDate,
-    token: token,
-  );
-
-  Future<Map<String, dynamic>> startAdoption(
-    String orgId,
-    String placementId, {
-    String adoptionConditions = '',
-    required String token,
-  }) => _placements.startAdoption(
-    orgId,
-    placementId,
-    adoptionConditions: adoptionConditions,
-    token: token,
-  );
-
-  Future<Map<String, dynamic>> completeAdoptionConditions(
-    String orgId,
-    String placementId, {
-    required String token,
-  }) =>
-      _placements.completeAdoptionConditions(orgId, placementId, token: token);
-
-  Future<Map<String, dynamic>> cancelAdoption(
-    String orgId,
-    String placementId, {
-    String? endDate,
-    required String token,
-  }) => _placements.cancelAdoption(
-    orgId,
-    placementId,
-    endDate: endDate,
-    token: token,
-  );
-
-  Future<Map<String, dynamic>> directAdopt(
-    String orgId,
-    String petId, {
-    required String fosterUserId,
-    String adoptionConditions = '',
-    String notes = '',
-    required String token,
-  }) => _placements.directAdopt(
-    orgId,
-    petId,
-    fosterUserId: fosterUserId,
-    adoptionConditions: adoptionConditions,
-    notes: notes,
-    token: token,
-  );
-
-  Future<List<Map<String, dynamic>>> getPetFosterHistory(
-    String orgId,
-    String petId,
-    String token,
-  ) => _placements.getPetFosterHistory(orgId, petId, token);
 
   Future<List<OrgConnection>> getConnections(String orgId, String token) =>
       _connections.getConnections(orgId, token);

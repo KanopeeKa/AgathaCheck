@@ -4042,6 +4042,251 @@ abstract class AppLocalizations {
   /// **'Manual contact'**
   String get manageFostersRetentionManualContact;
 
+  /// No description provided for @fosterRequestsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Foster requests'**
+  String get fosterRequestsTitle;
+
+  /// No description provided for @fosterRequestsDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Send structured outreach to approved foster families and track their responses.'**
+  String get fosterRequestsDescription;
+
+  /// No description provided for @fosterRequestsEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No foster requests yet. Send one when you need help placing pets.'**
+  String get fosterRequestsEmpty;
+
+  /// No description provided for @fosterRequestSendNew.
+  ///
+  /// In en, this message translates to:
+  /// **'Send foster request'**
+  String get fosterRequestSendNew;
+
+  /// No description provided for @fosterRequestSendDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose pets that need placement and foster families to contact. You can save a draft or send immediately.'**
+  String get fosterRequestSendDescription;
+
+  /// No description provided for @fosterRequestMessageLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Message'**
+  String get fosterRequestMessageLabel;
+
+  /// No description provided for @fosterRequestMessageHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Describe what help you need and any timing details'**
+  String get fosterRequestMessageHint;
+
+  /// No description provided for @fosterRequestMessageRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Message is required'**
+  String get fosterRequestMessageRequired;
+
+  /// No description provided for @fosterRequestSelectPets.
+  ///
+  /// In en, this message translates to:
+  /// **'Pets needing foster care'**
+  String get fosterRequestSelectPets;
+
+  /// No description provided for @fosterRequestSelectFosters.
+  ///
+  /// In en, this message translates to:
+  /// **'Foster families to contact'**
+  String get fosterRequestSelectFosters;
+
+  /// No description provided for @fosterRequestNoPets.
+  ///
+  /// In en, this message translates to:
+  /// **'No active pets available for this request'**
+  String get fosterRequestNoPets;
+
+  /// No description provided for @fosterRequestNoEligibleFosters.
+  ///
+  /// In en, this message translates to:
+  /// **'No approved foster families without outreach opt-out are available'**
+  String get fosterRequestNoEligibleFosters;
+
+  /// No description provided for @fosterRequestSelectionRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Select at least one pet and one foster family'**
+  String get fosterRequestSelectionRequired;
+
+  /// No description provided for @fosterRequestSaveDraft.
+  ///
+  /// In en, this message translates to:
+  /// **'Save draft'**
+  String get fosterRequestSaveDraft;
+
+  /// No description provided for @fosterRequestSendNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Send now'**
+  String get fosterRequestSendNow;
+
+  /// No description provided for @fosterRequestDraftSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Foster request saved as draft'**
+  String get fosterRequestDraftSaved;
+
+  /// No description provided for @fosterRequestSendSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Foster request sent'**
+  String get fosterRequestSendSuccess;
+
+  /// No description provided for @fosterRequestStatusDraft.
+  ///
+  /// In en, this message translates to:
+  /// **'Draft'**
+  String get fosterRequestStatusDraft;
+
+  /// No description provided for @fosterRequestStatusSent.
+  ///
+  /// In en, this message translates to:
+  /// **'Sent'**
+  String get fosterRequestStatusSent;
+
+  /// No description provided for @fosterRequestStatusCancelled.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancelled'**
+  String get fosterRequestStatusCancelled;
+
+  /// No description provided for @fosterRequestPetsLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Pets: {names}'**
+  String fosterRequestPetsLabel(String names);
+
+  /// No description provided for @fosterRequestTargetsSummary.
+  ///
+  /// In en, this message translates to:
+  /// **'{targetCount} targets · {canHelp} can help · {cannotHelp} cannot help · {pending} pending'**
+  String fosterRequestTargetsSummary(
+    int targetCount,
+    int canHelp,
+    int cannotHelp,
+    int pending,
+  );
+
+  /// No description provided for @fosterRequestDetailTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Foster request'**
+  String get fosterRequestDetailTitle;
+
+  /// No description provided for @fosterRequestPetsSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Pets'**
+  String get fosterRequestPetsSection;
+
+  /// No description provided for @fosterRequestTargetsSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Foster families contacted'**
+  String get fosterRequestTargetsSection;
+
+  /// No description provided for @fosterRequestResponsesSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Responses'**
+  String get fosterRequestResponsesSection;
+
+  /// No description provided for @fosterRequestNoResponses.
+  ///
+  /// In en, this message translates to:
+  /// **'No responses yet'**
+  String get fosterRequestNoResponses;
+
+  /// No description provided for @fosterRequestResponseCanHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Can help'**
+  String get fosterRequestResponseCanHelp;
+
+  /// No description provided for @fosterRequestResponseCannotHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Cannot help'**
+  String get fosterRequestResponseCannotHelp;
+
+  /// No description provided for @fosterRequestResponsePending.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending'**
+  String get fosterRequestResponsePending;
+
+  /// No description provided for @fosterRequestEarliestAvailability.
+  ///
+  /// In en, this message translates to:
+  /// **'Available from {date}'**
+  String fosterRequestEarliestAvailability(String date);
+
+  /// No description provided for @fosterRequestRespondTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Respond to foster request'**
+  String get fosterRequestRespondTitle;
+
+  /// No description provided for @fosterRequestRespondDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Let the shelter know whether you can help and when you could start.'**
+  String get fosterRequestRespondDescription;
+
+  /// No description provided for @fosterRequestEarliestAvailabilityLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Earliest availability'**
+  String get fosterRequestEarliestAvailabilityLabel;
+
+  /// No description provided for @fosterRequestSelectDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Select a date'**
+  String get fosterRequestSelectDate;
+
+  /// No description provided for @fosterRequestAvailabilityRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Earliest availability is required when you can help'**
+  String get fosterRequestAvailabilityRequired;
+
+  /// No description provided for @fosterRequestRespondMessageLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Message (optional)'**
+  String get fosterRequestRespondMessageLabel;
+
+  /// No description provided for @fosterRequestRespondMessageHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Share timing, capacity, or questions for the shelter'**
+  String get fosterRequestRespondMessageHint;
+
+  /// No description provided for @fosterRequestRespondSubmit.
+  ///
+  /// In en, this message translates to:
+  /// **'Submit response'**
+  String get fosterRequestRespondSubmit;
+
+  /// No description provided for @fosterRequestRespondSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Response submitted'**
+  String get fosterRequestRespondSuccess;
+
   /// No description provided for @noFosterParents.
   ///
   /// In en, this message translates to:

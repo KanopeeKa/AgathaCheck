@@ -9,6 +9,10 @@ import '../../features/organization/presentation/screens/archived_pets_screen.da
 import '../../features/organization/presentation/screens/organization_detail_screen.dart';
 import '../../features/organization/presentation/screens/organization_form_screen.dart';
 import '../../features/organization/presentation/screens/organization_list_screen.dart';
+import '../../features/organization/presentation/screens/foster_requests/foster_request_detail_screen.dart';
+import '../../features/organization/presentation/screens/foster_requests/foster_request_respond_screen.dart';
+import '../../features/organization/presentation/screens/foster_requests/foster_requests_screen.dart';
+import '../../features/organization/presentation/screens/foster_requests/send_foster_request_screen.dart';
 import '../../features/organization/presentation/screens/manage_fosters/manage_fosters_screen.dart';
 import '../../features/organization/presentation/screens/organization_members_screen.dart';
 import '../../features/organization/presentation/screens/organization_person_detail_screen.dart';
@@ -83,6 +87,50 @@ List<RouteBase> _orgManagementChildRoutes() {
             final id = state.pathParameters['id']!;
             return ManageFostersScreen(orgId: id);
           },
+        ),
+        GoRoute(
+          path: 'foster-requests',
+          name: 'fosterRequests',
+          builder: (context, state) {
+            final id = state.pathParameters['id']!;
+            return FosterRequestsScreen(orgId: id);
+          },
+          routes: [
+            GoRoute(
+              path: 'new',
+              name: 'sendFosterRequest',
+              builder: (context, state) {
+                final id = state.pathParameters['id']!;
+                return SendFosterRequestScreen(orgId: id);
+              },
+            ),
+            GoRoute(
+              path: ':requestId',
+              name: 'fosterRequestDetail',
+              builder: (context, state) {
+                final id = state.pathParameters['id']!;
+                final requestId = state.pathParameters['requestId']!;
+                return FosterRequestDetailScreen(
+                  orgId: id,
+                  requestId: requestId,
+                );
+              },
+              routes: [
+                GoRoute(
+                  path: 'respond',
+                  name: 'fosterRequestRespond',
+                  builder: (context, state) {
+                    final id = state.pathParameters['id']!;
+                    final requestId = state.pathParameters['requestId']!;
+                    return FosterRequestRespondScreen(
+                      orgId: id,
+                      requestId: requestId,
+                    );
+                  },
+                ),
+              ],
+            ),
+          ],
         ),
         GoRoute(
           path: 'people/:kind/:personId',

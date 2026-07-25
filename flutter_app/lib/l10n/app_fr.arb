@@ -688,6 +688,64 @@
   "manageFostersRetentionShelterFosterRelationship": "Relation refuge–accueil",
   "manageFostersRetentionDeclinedArchived": "Refusé / archivé",
   "manageFostersRetentionManualContact": "Contact manuel",
+  "fosterRequestsTitle": "Demandes d'accueil",
+  "fosterRequestsDescription": "Envoyez des sollicitations structurées aux familles d'accueil approuvées et suivez leurs réponses.",
+  "fosterRequestsEmpty": "Aucune demande d'accueil pour le moment. Envoyez-en une lorsque vous avez besoin d'aide pour placer des animaux.",
+  "fosterRequestSendNew": "Envoyer une demande d'accueil",
+  "fosterRequestSendDescription": "Choisissez les animaux à placer et les familles d'accueil à contacter. Vous pouvez enregistrer un brouillon ou envoyer immédiatement.",
+  "fosterRequestMessageLabel": "Message",
+  "fosterRequestMessageHint": "Décrivez le besoin et les délais éventuels",
+  "fosterRequestMessageRequired": "Le message est obligatoire",
+  "fosterRequestSelectPets": "Animaux à placer",
+  "fosterRequestSelectFosters": "Familles d'accueil à contacter",
+  "fosterRequestNoPets": "Aucun animal actif disponible pour cette demande",
+  "fosterRequestNoEligibleFosters": "Aucune famille d'accueil approuvée sans opposition au contact n'est disponible",
+  "fosterRequestSelectionRequired": "Sélectionnez au moins un animal et une famille d'accueil",
+  "fosterRequestSaveDraft": "Enregistrer le brouillon",
+  "fosterRequestSendNow": "Envoyer maintenant",
+  "fosterRequestDraftSaved": "Demande d'accueil enregistrée en brouillon",
+  "fosterRequestSendSuccess": "Demande d'accueil envoyée",
+  "fosterRequestStatusDraft": "Brouillon",
+  "fosterRequestStatusSent": "Envoyée",
+  "fosterRequestStatusCancelled": "Annulée",
+  "fosterRequestPetsLabel": "Animaux : {names}",
+  "@fosterRequestPetsLabel": {
+    "placeholders": {
+      "names": { "type": "String" }
+    }
+  },
+  "fosterRequestTargetsSummary": "{targetCount} destinataires · {canHelp} peuvent aider · {cannotHelp} ne peuvent pas · {pending} en attente",
+  "@fosterRequestTargetsSummary": {
+    "placeholders": {
+      "targetCount": { "type": "int" },
+      "canHelp": { "type": "int" },
+      "cannotHelp": { "type": "int" },
+      "pending": { "type": "int" }
+    }
+  },
+  "fosterRequestDetailTitle": "Demande d'accueil",
+  "fosterRequestPetsSection": "Animaux",
+  "fosterRequestTargetsSection": "Familles d'accueil contactées",
+  "fosterRequestResponsesSection": "Réponses",
+  "fosterRequestNoResponses": "Aucune réponse pour le moment",
+  "fosterRequestResponseCanHelp": "Peut aider",
+  "fosterRequestResponseCannotHelp": "Ne peut pas aider",
+  "fosterRequestResponsePending": "En attente",
+  "fosterRequestEarliestAvailability": "Disponible à partir du {date}",
+  "@fosterRequestEarliestAvailability": {
+    "placeholders": {
+      "date": { "type": "String" }
+    }
+  },
+  "fosterRequestRespondTitle": "Répondre à la demande d'accueil",
+  "fosterRequestRespondDescription": "Indiquez au refuge si vous pouvez aider et à partir de quand.",
+  "fosterRequestEarliestAvailabilityLabel": "Disponibilité la plus proche",
+  "fosterRequestSelectDate": "Choisir une date",
+  "fosterRequestAvailabilityRequired": "La disponibilité est obligatoire si vous pouvez aider",
+  "fosterRequestRespondMessageLabel": "Message (facultatif)",
+  "fosterRequestRespondMessageHint": "Précisez les délais, la capacité ou vos questions pour le refuge",
+  "fosterRequestRespondSubmit": "Envoyer la réponse",
+  "fosterRequestRespondSuccess": "Réponse envoyée",
   "noFosterParents": "Aucune famille d'accueil pour le moment",
   "addFosterParent": "Ajouter une famille d'accueil",
   "addFosterParentDescription": "Ajoutez une personne sans compte dans l'application. Vous pourrez lui assigner des animaux plus tard.",
