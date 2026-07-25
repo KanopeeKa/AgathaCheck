@@ -23,24 +23,35 @@ class FosteringSessionPreparationChecklist extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(l.fosteringSessionPreparationTitle, style: theme.textTheme.titleSmall),
+            Text(
+              l.fosteringSessionPreparationTitle,
+              style: theme.textTheme.titleSmall,
+            ),
             const SizedBox(height: 4),
             Text(
               l.fosteringSessionPreparationPlaceholder,
-              style: theme.textTheme.bodySmall?.copyWith(color: colorScheme.onSurfaceVariant),
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: colorScheme.onSurfaceVariant,
+              ),
             ),
             const SizedBox(height: 12),
-            ...items.map((item) => Padding(
-              padding: const EdgeInsets.only(bottom: 8),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Icon(Icons.check_circle_outline, size: 20, color: colorScheme.outline),
-                  const SizedBox(width: 8),
-                  Expanded(child: Text(item)),
-                ],
+            ...items.map(
+              (item) => Padding(
+                padding: const EdgeInsets.only(bottom: 8),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Icon(
+                      Icons.check_circle_outline,
+                      size: 20,
+                      color: colorScheme.outline,
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(child: Text(item)),
+                  ],
+                ),
               ),
-            )),
+            ),
           ],
         ),
       ),

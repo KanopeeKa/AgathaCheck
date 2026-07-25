@@ -89,10 +89,9 @@ class FosterPlacement {
           ? sessionStatus
           : FosterSessionStatus.fromLegacyStatus(legacyStatus),
       sessionType:
-          json['session_type']?.toString() ??
-          FosterSessionType.standardFoster,
-      shelterFosterRelationshipId:
-          json['shelter_foster_relationship_id']?.toString(),
+          json['session_type']?.toString() ?? FosterSessionType.standardFoster,
+      shelterFosterRelationshipId: json['shelter_foster_relationship_id']
+          ?.toString(),
       shelterStartConfirmedAt: json['shelter_start_confirmed_at'] != null
           ? DateTime.tryParse(json['shelter_start_confirmed_at'].toString())
           : null,

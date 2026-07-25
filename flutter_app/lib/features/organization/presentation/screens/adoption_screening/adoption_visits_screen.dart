@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../../core/widgets/app_logo_title.dart';
+import '../../../../../l10n/app_localizations.dart';
 import '../../providers/org_provider_deps.dart';
 import '../../utils/org_screen_theme.dart';
 
@@ -14,11 +15,10 @@ class AdoptionVisitsScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final token = ref.watch(orgTokenProvider);
     final theme = Theme.of(context);
+    final l = AppLocalizations.of(context)!;
     return orgThemed(
       child: Scaffold(
-        appBar: AppBar(
-          title: const AppLogoTitle(title: 'Adoption visits'),
-        ),
+        appBar: AppBar(title: AppLogoTitle(title: l.adoptionVisitsTitle)),
         body: FutureBuilder<List<Map<String, dynamic>>>(
           future: token == null
               ? Future.value(const [])
@@ -36,7 +36,7 @@ class AdoptionVisitsScreen extends ConsumerWidget {
             if (visits.isEmpty) {
               return Center(
                 child: Text(
-                  'No adoption visits scheduled',
+                  l.adoptionVisitsEmpty,
                   style: theme.textTheme.bodyMedium,
                 ),
               );

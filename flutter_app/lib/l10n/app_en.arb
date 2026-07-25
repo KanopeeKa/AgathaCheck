@@ -1313,5 +1313,13 @@
   "homeAllCaughtUp": "You're all caught up",
   "homeNoDueEvents": "No events are overdue or due today.",
   "open": "Open",
-  "viewOrganization": "View organisation"
+  "viewOrganization": "View organisation",
+  "prospectsTitle": "Prospects",
+  "prospectsEmpty": "No prospects yet",
+  "adoptionVisitsTitle": "Adoption visits",
+  "adoptionVisitsEmpty": "No adoption visits scheduled",
+  "adoptionJourneyTitle": "Adoption journey",
+  "adoptionJourneyStatusLabel": "Status",
+  "adoptionJourneyConditionsLabel": "Conditions",
+  "adoptionJourneyStatusUnknown": "Unknown"
 }

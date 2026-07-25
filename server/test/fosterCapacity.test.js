@@ -41,12 +41,20 @@ describe('fosterCapacity', () => {
     }]);
   });
 
-  it('allows fosters without declared capacity data', () => {
+  it('allows fosters without declared capacity data for a species', () => {
     expect(fosterHasCapacityForSpecies({
       speciesCapacities: [],
       usageBySpecies: {},
       species: 'cat',
     })).toBe(true);
+  });
+
+  it('rejects fosters with explicitly zero declared capacity', () => {
+    expect(fosterHasCapacityForSpecies({
+      speciesCapacities: [{ species: 'cat', declared: 0 }],
+      usageBySpecies: {},
+      species: 'cat',
+    })).toBe(false);
   });
 
   it('reads declared capacity for a species', () => {

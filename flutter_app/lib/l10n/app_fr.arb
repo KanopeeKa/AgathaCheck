@@ -1224,5 +1224,13 @@
   "homeAllCaughtUp": "Tout est à jour",
   "homeNoDueEvents": "Aucun événement en retard ou prévu aujourd'hui.",
   "open": "Ouvrir",
-  "viewOrganization": "Voir l'organisation"
+  "viewOrganization": "Voir l'organisation",
+  "prospectsTitle": "Candidats",
+  "prospectsEmpty": "Aucun candidat pour le moment",
+  "adoptionVisitsTitle": "Visites d'adoption",
+  "adoptionVisitsEmpty": "Aucune visite d'adoption planifiée",
+  "adoptionJourneyTitle": "Parcours d'adoption",
+  "adoptionJourneyStatusLabel": "Statut",
+  "adoptionJourneyConditionsLabel": "Conditions",
+  "adoptionJourneyStatusUnknown": "Inconnu"
 }

@@ -6830,6 +6830,54 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'View organisation'**
   String get viewOrganization;
+
+  /// No description provided for @prospectsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Prospects'**
+  String get prospectsTitle;
+
+  /// No description provided for @prospectsEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No prospects yet'**
+  String get prospectsEmpty;
+
+  /// No description provided for @adoptionVisitsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Adoption visits'**
+  String get adoptionVisitsTitle;
+
+  /// No description provided for @adoptionVisitsEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No adoption visits scheduled'**
+  String get adoptionVisitsEmpty;
+
+  /// No description provided for @adoptionJourneyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Adoption journey'**
+  String get adoptionJourneyTitle;
+
+  /// No description provided for @adoptionJourneyStatusLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Status'**
+  String get adoptionJourneyStatusLabel;
+
+  /// No description provided for @adoptionJourneyConditionsLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Conditions'**
+  String get adoptionJourneyConditionsLabel;
+
+  /// No description provided for @adoptionJourneyStatusUnknown.
+  ///
+  /// In en, this message translates to:
+  /// **'Unknown'**
+  String get adoptionJourneyStatusUnknown;
 }
 
 class _AppLocalizationsDelegate

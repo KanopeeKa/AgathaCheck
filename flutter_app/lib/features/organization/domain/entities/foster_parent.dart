@@ -239,10 +239,14 @@ class FosterParent {
       fosteringActivitySummary: FosteringActivitySummary.fromWire(
         json['fostering_activity_summary']?.toString(),
       ),
-      availableCapacity: (json['available_capacity'] as List<dynamic>? ?? const [])
-          .whereType<Map>()
-          .map((e) => FosterCapacityEntry.fromJson(Map<String, dynamic>.from(e)))
-          .toList(),
+      availableCapacity:
+          (json['available_capacity'] as List<dynamic>? ?? const [])
+              .whereType<Map>()
+              .map(
+                (e) =>
+                    FosterCapacityEntry.fromJson(Map<String, dynamic>.from(e)),
+              )
+              .toList(),
     );
   }
 }

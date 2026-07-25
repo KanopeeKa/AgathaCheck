@@ -3771,4 +3771,28 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get viewOrganization => 'View organisation';
+
+  @override
+  String get prospectsTitle => 'Prospects';
+
+  @override
+  String get prospectsEmpty => 'No prospects yet';
+
+  @override
+  String get adoptionVisitsTitle => 'Adoption visits';
+
+  @override
+  String get adoptionVisitsEmpty => 'No adoption visits scheduled';
+
+  @override
+  String get adoptionJourneyTitle => 'Adoption journey';
+
+  @override
+  String get adoptionJourneyStatusLabel => 'Status';
+
+  @override
+  String get adoptionJourneyConditionsLabel => 'Conditions';
+
+  @override
+  String get adoptionJourneyStatusUnknown => 'Unknown';
 }

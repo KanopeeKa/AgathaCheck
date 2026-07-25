@@ -160,9 +160,13 @@ export function fosterHasCapacityForSpecies({
   species,
 }) {
   const parsed = parseSpeciesCapacities(speciesCapacities);
+  const hasDeclaredEntry = parsed.some((entry) => entry.species === species);
+  if (!hasDeclaredEntry) {
+    return true;
+  }
   const declared = declaredCapacityForSpecies(parsed, species);
   if (declared === 0) {
-    return true;
+    return false;
   }
   const usage = usageBySpecies[species] || { preparation: 0, active: 0 };
   return availableCapacity(declared, usage.preparation, usage.active) > 0;

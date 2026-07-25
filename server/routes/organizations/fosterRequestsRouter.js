@@ -211,11 +211,10 @@ export function registerFosterRequestsRoutes(router, pool) {
         }
 
         const requestId = uuidv4();
-        const insertResult = await client.query(
+        await client.query(
           `INSERT INTO foster_requests (
              id, organization_id, message, status, created_by
-           ) VALUES ($1, $2, $3, 'draft', $4)
-           RETURNING *`,
+           ) VALUES ($1, $2, $3, 'draft', $4)`,
           [requestId, orgId, message, userId],
         );
 

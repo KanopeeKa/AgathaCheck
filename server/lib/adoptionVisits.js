@@ -1,7 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 
 import { logAuditEventSafe } from './audit.js';
-import { dateToIsoDate, normalizeCalendarDateInput } from './calendarDate.js';
 import {
   SESSION_STATUS_ACTIVE,
   SESSION_TYPE_FOSTER_IN_VIEW_TO_ADOPT,

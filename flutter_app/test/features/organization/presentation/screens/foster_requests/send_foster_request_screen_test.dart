@@ -128,6 +128,13 @@ class _SendFosterRequestRepo extends RecordingOrganizationRepository {
   ];
 
   @override
+  Future<List<String>> getEligibleFosterTargetIds(
+    String orgId, {
+    required List<String> petIds,
+    required String token,
+  }) async => ['fp-1'];
+
+  @override
   Future<FosterRequest> createFosterRequest(
     String orgId, {
     required String message,

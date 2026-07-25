@@ -295,7 +295,10 @@ abstract class OrganizationRepository {
   });
 
   Future<List<Map<String, dynamic>>> getProspects(String orgId, String token);
-  Future<List<Map<String, dynamic>>> getAdoptionVisits(String orgId, String token);
+  Future<List<Map<String, dynamic>>> getAdoptionVisits(
+    String orgId,
+    String token,
+  );
   Future<Map<String, dynamic>> getAdoptionJourney(
     String orgId,
     String placementId,

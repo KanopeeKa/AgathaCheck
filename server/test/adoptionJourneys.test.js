@@ -24,7 +24,6 @@ const JWT_SECRET = process.env.JWT_SECRET || process.env.SESSION_SECRET || 'defa
 const adminId = 'admin-user-id';
 const fosterId = 'foster-user-id';
 const adminToken = jwt.sign({ id: adminId, email: 'admin@example.com' }, JWT_SECRET, { expiresIn: '1h' });
-const fosterToken = jwt.sign({ id: fosterId, email: 'foster@example.com' }, JWT_SECRET, { expiresIn: '1h' });
 const orgId = 'org-1';
 const petId = 'pet-1';
 const placementId = 'placement-1';

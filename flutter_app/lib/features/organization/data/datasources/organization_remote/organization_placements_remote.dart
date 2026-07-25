@@ -212,7 +212,9 @@ class OrganizationPlacementsRemote {
     );
     final data = json.decode(response.body) as Map<String, dynamic>;
     if (response.statusCode >= 400) {
-      throw Exception(data['error'] ?? 'Failed to transition fostering session');
+      throw Exception(
+        data['error'] ?? 'Failed to transition fostering session',
+      );
     }
     return data;
   }

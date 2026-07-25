@@ -2,7 +2,8 @@ import '../../domain/entities/foster_request.dart';
 import '../../domain/repositories/organization_repository.dart';
 import 'organization_repository_impl_base.dart';
 
-mixin OrganizationRepositoryFosterRequestsMixin on OrganizationRepositoryImplBase {
+mixin OrganizationRepositoryFosterRequestsMixin
+    on OrganizationRepositoryImplBase {
   @override
   Future<List<String>> getEligibleFosterTargetIds(
     String orgId, {

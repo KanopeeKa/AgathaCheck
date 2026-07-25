@@ -32,7 +32,10 @@ class FosterPlacementActiveContent extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        if (sessionAction != null) ...[sessionAction!, const SizedBox(height: 8)],
+        if (sessionAction != null) ...[
+          sessionAction!,
+          const SizedBox(height: 8),
+        ],
         if (placement.startDate != null) ...[
           Text(
             l.fosterPlacementStartDate(

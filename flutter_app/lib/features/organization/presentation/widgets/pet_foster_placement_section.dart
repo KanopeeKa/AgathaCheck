@@ -172,7 +172,9 @@ class PetFosterPlacementSection extends ConsumerWidget {
                               ),
                           sessionAction: placement.isSessionOpen
                               ? TextButton.icon(
-                                  key: const Key('open_fostering_session_button'),
+                                  key: const Key(
+                                    'open_fostering_session_button',
+                                  ),
                                   onPressed: () => context.push(
                                     '/o/orgs/$orgId/placements/${placement.id}/session',
                                   ),

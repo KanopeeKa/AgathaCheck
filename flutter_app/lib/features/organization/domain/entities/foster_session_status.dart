@@ -45,7 +45,8 @@ abstract final class FosterSessionStatus {
     }
   }
 
-  static bool isOpen(String sessionStatus) => openStatuses.contains(sessionStatus);
+  static bool isOpen(String sessionStatus) =>
+      openStatuses.contains(sessionStatus);
 
   static bool isTerminal(String sessionStatus) =>
       terminalStatuses.contains(sessionStatus);

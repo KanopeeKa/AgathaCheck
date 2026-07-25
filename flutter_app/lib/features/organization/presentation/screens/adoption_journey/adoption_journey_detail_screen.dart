@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../../core/widgets/app_logo_title.dart';
+import '../../../../../l10n/app_localizations.dart';
 import '../../providers/org_provider_deps.dart';
 import '../../utils/org_screen_theme.dart';
 
@@ -20,10 +21,11 @@ class AdoptionJourneyDetailScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final token = ref.watch(orgTokenProvider);
     final theme = Theme.of(context);
+    final l = AppLocalizations.of(context)!;
     return orgThemed(
       child: Scaffold(
         appBar: AppBar(
-          title: const AppLogoTitle(title: 'Adoption journey'),
+          title: AppLogoTitle(title: l.adoptionJourneyTitle),
           leading: IconButton(
             icon: const Icon(Icons.arrow_back),
             onPressed: () => context.pop(),
@@ -48,10 +50,19 @@ class AdoptionJourneyDetailScreen extends ConsumerWidget {
             return ListView(
               padding: const EdgeInsets.all(16),
               children: [
-                Text('Status', style: theme.textTheme.titleSmall),
-                Text(journey['status']?.toString() ?? 'unknown'),
+                Text(
+                  l.adoptionJourneyStatusLabel,
+                  style: theme.textTheme.titleSmall,
+                ),
+                Text(
+                  journey['status']?.toString() ??
+                      l.adoptionJourneyStatusUnknown,
+                ),
                 const SizedBox(height: 16),
-                Text('Conditions', style: theme.textTheme.titleSmall),
+                Text(
+                  l.adoptionJourneyConditionsLabel,
+                  style: theme.textTheme.titleSmall,
+                ),
                 Text(journey['adoption_conditions']?.toString() ?? ''),
               ],
             );

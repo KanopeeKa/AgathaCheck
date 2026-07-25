@@ -25,14 +25,26 @@ class _SendFosterRequestScreenState
   final _selectedFosterIds = <String>{};
   var _submitting = false;
   Set<String> _capacityEligibleIds = {};
+  var _capacityFilterLoading = false;
+  var _capacityFilterReady = false;
 
   Future<void> _refreshCapacityFilter() async {
     if (_selectedPetIds.isEmpty) {
-      if (mounted) setState(() => _capacityEligibleIds = {});
+      if (mounted) {
+        setState(() {
+          _capacityEligibleIds = {};
+          _capacityFilterLoading = false;
+          _capacityFilterReady = false;
+        });
+      }
       return;
     }
+    if (mounted) setState(() => _capacityFilterLoading = true);
     final token = ref.read(orgTokenProvider);
-    if (token == null) return;
+    if (token == null) {
+      if (mounted) setState(() => _capacityFilterLoading = false);
+      return;
+    }
     try {
       final ids = await ref
           .read(organizationRepositoryProvider)
@@ -42,10 +54,18 @@ class _SendFosterRequestScreenState
             token: token,
           );
       if (!mounted) return;
-      setState(() => _capacityEligibleIds = ids.toSet());
+      setState(() {
+        _capacityEligibleIds = ids.toSet();
+        _capacityFilterLoading = false;
+        _capacityFilterReady = true;
+      });
     } catch (_) {
       if (!mounted) return;
-      setState(() => _capacityEligibleIds = {});
+      setState(() {
+        _capacityEligibleIds = {};
+        _capacityFilterLoading = false;
+        _capacityFilterReady = true;
+      });
     }
   }
 
@@ -195,8 +215,11 @@ class _SendFosterRequestScreenState
                 loading: () => const LinearProgressIndicator(),
                 error: (e, _) => Text('$e'),
                 data: (parents) {
+                  if (_selectedPetIds.isNotEmpty && _capacityFilterLoading) {
+                    return const LinearProgressIndicator();
+                  }
                   var eligible = eligibleFosterRequestTargets(parents);
-                  if (_selectedPetIds.isNotEmpty && _capacityEligibleIds.isNotEmpty) {
+                  if (_selectedPetIds.isNotEmpty && _capacityFilterReady) {
                     eligible = eligible
                         .where((p) => _capacityEligibleIds.contains(p.id))
                         .toList(growable: false);
@@ -232,7 +255,9 @@ class _SendFosterRequestScreenState
                               if (parent.availableCapacity.isNotEmpty)
                                 Text(
                                   parent.availableCapacity
-                                      .map((c) => '${c.species}: ${c.available}')
+                                      .map(
+                                        (c) => '${c.species}: ${c.available}',
+                                      )
                                       .join(' · '),
                                   style: theme.textTheme.bodySmall?.copyWith(
                                     color: colorScheme.primary,

@@ -3824,4 +3824,28 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get viewOrganization => 'Voir l\'organisation';
+
+  @override
+  String get prospectsTitle => 'Candidats';
+
+  @override
+  String get prospectsEmpty => 'Aucun candidat pour le moment';
+
+  @override
+  String get adoptionVisitsTitle => 'Visites d\'adoption';
+
+  @override
+  String get adoptionVisitsEmpty => 'Aucune visite d\'adoption planifiée';
+
+  @override
+  String get adoptionJourneyTitle => 'Parcours d\'adoption';
+
+  @override
+  String get adoptionJourneyStatusLabel => 'Statut';
+
+  @override
+  String get adoptionJourneyConditionsLabel => 'Conditions';
+
+  @override
+  String get adoptionJourneyStatusUnknown => 'Inconnu';
 }

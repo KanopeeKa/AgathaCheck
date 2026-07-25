@@ -98,12 +98,41 @@ export async function ensureDefaultTemplates(pool, orgId) {
   }
 }
 
+export async function assertKnownTemplateKey(pool, orgId, templateType, itemKey) {
+  await ensureDefaultTemplates(pool, orgId);
+  const templates = await listTemplatesForOrg(pool, orgId, templateType);
+  const allowedKeys = new Set(templates.map((template) => template.template_key));
+  if (!allowedKeys.has(itemKey)) {
+    return { error: 'Unknown checklist item', status: 400 };
+  }
+  return null;
+}
+
+function applyChecklistItemUpdate(current, itemKey, completed) {
+  const next = { ...current, [itemKey]: completed === true };
+  const timestampKey = `${itemKey}_at`;
+  if (completed === true) {
+    next[timestampKey] = new Date().toISOString();
+  } else {
+    delete next[timestampKey];
+  }
+  return next;
+}
+
 export async function updateSessionChecklistItem(pool, {
   placementId,
   orgId,
   itemKey,
   completed,
 }) {
+  const keyError = await assertKnownTemplateKey(
+    pool,
+    orgId,
+    TEMPLATE_TYPE_SESSION_CHECKLIST,
+    itemKey,
+  );
+  if (keyError) return keyError;
+
   const placementResult = await pool.query(
     `SELECT id, session_checklist_items
      FROM foster_placements
@@ -115,12 +144,7 @@ export async function updateSessionChecklistItem(pool, {
   }
 
   const current = parseChecklistItems(placementResult.rows[0].session_checklist_items);
-  current[itemKey] = completed === true;
-  if (completed === true) {
-    current[`${itemKey}_at`] = new Date().toISOString();
-  } else {
-    delete current[`${itemKey}_at`];
-  }
+  const updated = applyChecklistItemUpdate(current, itemKey, completed);
 
   const result = await pool.query(
     `UPDATE foster_placements
@@ -128,7 +152,7 @@ export async function updateSessionChecklistItem(pool, {
          updated_at = NOW()
      WHERE id = $2
      RETURNING session_checklist_items`,
-    [JSON.stringify(current), placementId],
+    [JSON.stringify(updated), placementId],
   );
 
   return { items: parseChecklistItems(result.rows[0].session_checklist_items), status: 200 };
@@ -140,6 +164,14 @@ export async function updateJourneyMilestoneItem(pool, {
   itemKey,
   completed,
 }) {
+  const keyError = await assertKnownTemplateKey(
+    pool,
+    orgId,
+    TEMPLATE_TYPE_ADOPTION_MILESTONE,
+    itemKey,
+  );
+  if (keyError) return keyError;
+
   const journeyResult = await pool.query(
     `SELECT id, milestone_items
      FROM adoption_journeys
@@ -151,12 +183,7 @@ export async function updateJourneyMilestoneItem(pool, {
   }
 
   const current = parseChecklistItems(journeyResult.rows[0].milestone_items);
-  current[itemKey] = completed === true;
-  if (completed === true) {
-    current[`${itemKey}_at`] = new Date().toISOString();
-  } else {
-    delete current[`${itemKey}_at`];
-  }
+  const updated = applyChecklistItemUpdate(current, itemKey, completed);
 
   const result = await pool.query(
     `UPDATE adoption_journeys
@@ -164,7 +191,7 @@ export async function updateJourneyMilestoneItem(pool, {
          updated_at = NOW()
      WHERE id = $2
      RETURNING milestone_items`,
-    [JSON.stringify(current), journeyId],
+    [JSON.stringify(updated), journeyId],
   );
 
   return { items: parseChecklistItems(result.rows[0].milestone_items), status: 200 };

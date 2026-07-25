@@ -85,8 +85,9 @@ class _FosteringSessionDetailBodyState
     try {
       await action();
       if (!mounted) return;
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text(successMessage)));
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(successMessage)));
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('$e')));
@@ -120,9 +121,9 @@ class _FosteringSessionDetailBodyState
     );
     if (confirmed != true || !mounted) return;
     await _runAction(
-      () => ref.read(fosteringSessionDetailProvider(_key).notifier).endSession(
-            outcome: outcome,
-          ),
+      () => ref
+          .read(fosteringSessionDetailProvider(_key).notifier)
+          .endSession(outcome: outcome),
       successMessage: l.fosteringSessionEndSuccess,
     );
   }
@@ -176,7 +177,10 @@ class _FosteringSessionDetailBodyState
         ],
         if (placement.isSessionReadyToStart) ...[
           const SizedBox(height: 16),
-          Text(l.fosteringSessionDualStartTitle, style: theme.textTheme.titleSmall),
+          Text(
+            l.fosteringSessionDualStartTitle,
+            style: theme.textTheme.titleSmall,
+          ),
           const SizedBox(height: 8),
           _ConfirmationTile(
             label: l.fosteringSessionShelterStartLabel,
