@@ -1,10 +1,17 @@
-name: Promote UAT (tag on merge to main)
+name: UAT promote catch-up
 
-# PR merge → uat-YYMMDD-PR# tag → deploy-uat.yml (tag push).
-# See docs/promotion-contract.md
+# When merge-triggered promote-uat is blocked by the deploy cadence gate, this
+# workflow promotes the latest main HEAD once the interval elapses.
 on:
-  push:
-    branches: [main]
+  schedule:
+    # Every 30 minutes — cadence script enforces the full min interval (default 90m).
+    - cron: '15,45 * * * *'
+  workflow_dispatch:
+    inputs:
+      force_cadence:
+        description: Bypass deploy cadence gate (emergency)
+        type: boolean
+        default: false
 
 concurrency:
   group: promote-uat-main
@@ -18,7 +25,7 @@ permissions:
 
 jobs:
   resolve-pr:
-    name: Resolve merge PR
+    name: Resolve main HEAD PR
     runs-on: ubuntu-latest
     timeout-minutes: 5
     outputs:
@@ -28,36 +35,31 @@ jobs:
     steps:
       - uses: actions/checkout@v5
         with:
-          sparse-checkout: |
-            scripts/ci/resolve-merge-pr.sh
-            scripts/ci/append-summary.sh
-          sparse-checkout-cone-mode: false
+          ref: main
+          fetch-depth: 1
 
-      - name: Begin job timing
-        run: echo "JOB_START_EPOCH=$(date +%s)" >> "$GITHUB_ENV"
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
 
-      - name: Resolve associated pull request
+      - name: Resolve associated pull request for main HEAD
         id: resolve
         env:
           COMMIT_SHA: ${{ github.sha }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: bash scripts/ci/resolve-merge-pr.sh
 
-      - name: Write resolve summary
+      - name: Write catch-up resolve summary
         if: always()
         run: |
-          end=$(date +%s)
-          start="${JOB_START_EPOCH:-$end}"
-          dur=$((end - start))
-          bash scripts/ci/append-summary.sh "Promote UAT — resolve PR" \
-            "workflow=promote-uat" \
+          bash scripts/ci/append-summary.sh "UAT promote catch-up — resolve PR" \
+            "workflow=uat-promote-catchup" \
             "job=resolve-pr" \
             "commit_sha=${{ github.sha }}" \
             "pr_number=${{ steps.resolve.outputs.pr_number || 'n/a' }}" \
             "promotion_status=${{ steps.resolve.outputs.promotion_status || 'blocked' }}" \
             "promotion_block_reason=${{ steps.resolve.outputs.promotion_block_reason || 'n/a' }}" \
-            "run_id=${{ github.run_id }}" \
-            "duration_sec=${dur}"
+            "run_id=${{ github.run_id }}"
 
   evaluate-promote-hold:
     name: Evaluate UAT queue promote hold
@@ -93,17 +95,6 @@ jobs:
           UAT_PROMOTE_HOLD_ENABLED: ${{ vars.UAT_PROMOTE_HOLD_ENABLED || 'true' }}
         run: node scripts/ci/evaluate-uat-promote-hold.js
 
-      - name: Write promote hold summary
-        if: always()
-        run: |
-          bash scripts/ci/append-summary.sh "Promote UAT — queue hold" \
-            "workflow=promote-uat" \
-            "job=evaluate-promote-hold" \
-            "promotion_status=${{ steps.hold.outputs.promotion_status || 'n/a' }}" \
-            "promotion_block_reason=${{ steps.hold.outputs.promotion_block_reason || 'n/a' }}" \
-            "uat_promote_hold_enabled=${{ vars.UAT_PROMOTE_HOLD_ENABLED || 'true' }}" \
-            "run_id=${{ github.run_id }}"
-
   evaluate-promote-cadence:
     name: Evaluate UAT deploy cadence
     needs: [resolve-pr, evaluate-promote-hold]
@@ -115,8 +106,6 @@ jobs:
     outputs:
       promotion_status: ${{ steps.cadence.outputs.promotion_status }}
       promotion_block_reason: ${{ steps.cadence.outputs.promotion_block_reason }}
-      cadence_reason: ${{ steps.cadence.outputs.cadence_reason }}
-      wait_minutes: ${{ steps.cadence.outputs.wait_minutes }}
     steps:
       - uses: actions/checkout@v5
         with:
@@ -137,24 +126,11 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           UAT_DEPLOY_MIN_INTERVAL_MINUTES: ${{ vars.UAT_DEPLOY_MIN_INTERVAL_MINUTES || '90' }}
           UAT_DEPLOY_CADENCE_ENABLED: ${{ vars.UAT_DEPLOY_CADENCE_ENABLED || 'true' }}
-          UAT_DEPLOY_CADENCE_FORCE: ${{ vars.UAT_DEPLOY_CADENCE_FORCE || 'false' }}
+          UAT_DEPLOY_CADENCE_FORCE: ${{ github.event_name == 'workflow_dispatch' && inputs.force_cadence && 'true' || 'false' }}
         run: node scripts/ci/evaluate-uat-promote-cadence.js
 
-      - name: Write deploy cadence summary
-        if: always()
-        run: |
-          bash scripts/ci/append-summary.sh "Promote UAT — deploy cadence" \
-            "workflow=promote-uat" \
-            "job=evaluate-promote-cadence" \
-            "promotion_status=${{ steps.cadence.outputs.promotion_status || 'n/a' }}" \
-            "promotion_block_reason=${{ steps.cadence.outputs.promotion_block_reason || 'n/a' }}" \
-            "cadence_reason=${{ steps.cadence.outputs.cadence_reason || 'n/a' }}" \
-            "wait_minutes=${{ steps.cadence.outputs.wait_minutes || 'n/a' }}" \
-            "min_interval_minutes=${{ steps.cadence.outputs.min_interval_minutes || vars.UAT_DEPLOY_MIN_INTERVAL_MINUTES || '90' }}" \
-            "run_id=${{ github.run_id }}"
-
   promote-tag:
-    name: Create UAT tag
+    name: Create UAT tag (catch-up)
     needs: [resolve-pr, evaluate-promote-hold, evaluate-promote-cadence]
     if: >-
       needs.resolve-pr.outputs.promotion_status == 'ok' &&
@@ -171,11 +147,8 @@ jobs:
     steps:
       - uses: actions/checkout@v5
         with:
-          ref: ${{ github.sha }}
+          ref: main
           fetch-depth: 1
-
-      - name: Begin job timing
-        run: echo "JOB_START_EPOCH=$(date +%s)" >> "$GITHUB_ENV"
 
       - name: Create or verify UAT tag
         id: promote
@@ -185,35 +158,15 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: bash scripts/ci/promote-uat-tag.sh
 
-      - name: Write promotion manifest
-        env:
-          COMMIT_SHA: ${{ github.sha }}
-          PR_NUMBER: ${{ needs.resolve-pr.outputs.pr_number }}
-          UAT_TAG: ${{ steps.promote.outputs.uat_tag }}
-          PROMOTION_STATUS: ${{ steps.promote.outputs.promotion_status }}
-          PROMOTE_RUN_ID: ${{ github.run_id }}
-        run: bash scripts/ci/write-promotion-manifest.sh promotion-manifest.json
-
-      - name: Upload promotion manifest
-        uses: actions/upload-artifact@v6
-        with:
-          name: promotion-manifest-${{ steps.promote.outputs.uat_tag }}
-          path: promotion-manifest.json
-          retention-days: 90
-
-      - name: Write promote summary
+      - name: Write catch-up promote summary
         if: always()
         run: |
-          end=$(date +%s)
-          start="${JOB_START_EPOCH:-$end}"
-          dur=$((end - start))
-          bash scripts/ci/append-summary.sh "Promote UAT — tag" \
-            "workflow=promote-uat" \
+          bash scripts/ci/append-summary.sh "UAT promote catch-up — tag" \
+            "workflow=uat-promote-catchup" \
             "job=promote-tag" \
             "commit_sha=${{ github.sha }}" \
             "pr_number=${{ needs.resolve-pr.outputs.pr_number }}" \
             "uat_tag=${{ steps.promote.outputs.uat_tag || 'n/a' }}" \
-            "promotion_status=${{ steps.promote.outputs.promotion_status || 'failed' }}" \
+            "promotion_status=${{ steps.promote.outputs.promotion_status || 'skipped' }}" \
             "already_promoted=${{ steps.promote.outputs.already_promoted || 'false' }}" \
-            "run_id=${{ github.run_id }}" \
-            "duration_sec=${dur}"
+            "run_id=${{ github.run_id }}"
