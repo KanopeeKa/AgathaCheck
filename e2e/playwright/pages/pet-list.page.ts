@@ -42,20 +42,29 @@ export class PetListPage {
       options.experience === 'organization' ||
       (options.experience !== 'guardian' &&
         (route.startsWith('/o/') || route.startsWith('/organizations')));
-    const eventsPath = useOrgHome ? '/o/events' : '/g/events';
-    const eventsRoutePattern = /\/(g|o)\/events(?:\?|$)/;
+    // Guardian /g/events is the due-events inbox (D17); full tabbed dashboard is /health.
+    const dashboardPath = useOrgHome ? '/o/events' : '/health';
+    const dashboardRoutePattern = useOrgHome
+      ? /\/o\/events(?:\?|$)/
+      : /^\/health(?:\?|$)/;
     if (await isExperienceShellVisible(this.page)) {
-      await this.page.goto(flutterGotoUrl(eventsPath));
+      await this.page.goto(flutterGotoUrl(dashboardPath));
       await refreshFlutterAccessibility(this.page);
-      await waitForFlutterRoutePattern(this.page, eventsRoutePattern, 30_000);
+      await waitForFlutterRoutePattern(this.page, dashboardRoutePattern, 30_000);
     } else {
-      const eventsNav = this.page.getByRole('button', { name: /^(Events|Événements|To Do)$/i });
-      if (await eventsNav.isVisible({ timeout: 2_000 }).catch(() => false)) {
-        await eventsNav.click();
+      if (useOrgHome) {
+        const eventsNav = this.page.getByRole('button', { name: /^(Events|Événements|To Do)$/i });
+        if (await eventsNav.isVisible({ timeout: 2_000 }).catch(() => false)) {
+          await eventsNav.click();
+        } else {
+          await this.page.getByRole('button', { name: /^(To Do|À faire)$/i }).first().click();
+        }
+        await waitForFlutterRoutePattern(this.page, dashboardRoutePattern, 30_000);
       } else {
-        await this.page.getByRole('button', { name: /^(To Do|À faire)$/i }).first().click();
+        await this.page.goto(flutterGotoUrl(dashboardPath));
+        await refreshFlutterAccessibility(this.page);
+        await waitForFlutterRoutePattern(this.page, dashboardRoutePattern, 30_000);
       }
-      await waitForFlutterRoutePattern(this.page, eventsRoutePattern, 30_000);
     }
     await new HealthDashboardPage(this.page).expectLoaded();
   }

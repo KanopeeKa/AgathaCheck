@@ -58,27 +58,38 @@ export class NotificationsPage {
   /** Wait for the notification panel slide-over to be visible. */
   async expectPanelLoaded(): Promise<void> {
     await this.page
-      .getByRole('button', { name: 'Mark all as read' })
-      .or(this.page.getByText('No notifications'))
-      .first()
-      .waitFor({ timeout: 30_000 });
+      .getByRole('button', { name: /Mark all as read|Tout marquer comme lu/i })
+      .waitFor({ timeout: 15_000 });
+    await expect(async () => {
+      await refreshFlutterAccessibility(this.page);
+      const listBody = this.page
+        .getByText(/No notifications|Aucune notification/i)
+        .or(this.page.getByText(/notification:/i))
+        .or(this.page.getByRole('button', { name: /retry|try again|réessayer/i }));
+      await listBody.first().waitFor({ timeout: 3_000 });
+    }).toPass({ timeout: 30_000 });
   }
 
   async expectLoaded(): Promise<void> {
     // Try panel first, then legacy full-screen
     const panelReady = this.page
-      .getByRole('button', { name: 'Mark all as read' })
-      .or(this.page.getByText('No notifications'))
-      .first();
+      .getByRole('button', { name: /Mark all as read|Tout marquer comme lu/i })
+      .or(this.page.getByText(/No notifications|Aucune notification/i));
     const legacyTitle = this.page.getByText('Notifications').first();
     await Promise.race([
-      panelReady.waitFor({ timeout: 30_000 }),
+      panelReady.first().waitFor({ timeout: 30_000 }),
       legacyTitle.waitFor({ timeout: 30_000 }),
     ]);
   }
 
   async expectEmptyState(): Promise<void> {
-    await this.page.getByText('No notifications').waitFor({ timeout: 15_000 });
+    await expect(async () => {
+      await refreshFlutterAccessibility(this.page);
+      await this.page
+        .getByText(/No notifications|Aucune notification/i)
+        .first()
+        .waitFor({ timeout: 3_000 });
+    }).toPass({ timeout: 15_000 });
   }
 
   async expectNotificationVisible(titleText: string): Promise<void> {
