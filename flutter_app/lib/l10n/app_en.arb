@@ -14,6 +14,12 @@
   "landingOrgPathExpandCta": "See organisation features",
   "landingOrgPathCollapseCta": "Show less",
   "landingOrgPathDetail": "Manage inventory pets, coordinate staff and volunteers, and share care records across your organisation.",
+  "landingPathScrollCta": "Learn more",
+  "landingPetParentsSectionTitle": "Pet parents and foster carers",
+  "landingPetParentsSectionBody": "Track vet visits, medications, weight, and daily care in one calm dashboard. Coordinate with your household and keep every pet's health history safe. Screenshots and walkthrough copy coming soon.",
+  "landingCharitiesSectionTitle": "Shelters, rescues, and care teams",
+  "landingCharitiesSectionBody": "Manage inventory pets, coordinate staff and volunteers, and share care records across your organisation. Product screenshots and case studies will be added here.",
+  "landingScreenshotPlaceholder": "Screenshot coming soon",
 
   "signIn": "Sign In",
   "signUp": "Sign Up",
@@ -96,6 +102,18 @@
   "myFosteredPets": "My Fostered Pets",
   "noFosteredPets": "You are not fostering any pets yet.",
   "allPets": "All Pets",
+  "managePets": "Manage pets",
+  "manageEvents": "Manage events",
+  "eventsEditTab": "Edit",
+  "eventsHistoryTab": "History",
+  "noEventsYet": "No events yet",
+  "petEventsSummary": "{count, plural, =1{1 event} other{{count} events}}",
+  "@petEventsSummary": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "eventsHistoryEmpty": "No report history is available for this pet.",
   "filterByOrganization": "Filter by organization",
   "notifications": "Notifications",
   "veterinarians": "Veterinarians",
@@ -1359,7 +1377,9 @@
   "orgNotificationsDrawer": "Organisation notifications",
   "guardianNotificationsDrawer": "Guardian notifications",
   "myVets": "My vets",
+  "guardianDashboardTitle": "Guardian dashboard",
   "upcomingPetEvents": "Upcoming Pet Events",
+  "dueAndOverdue": "Due and Overdue",
   "allEvents": "All Events",
   "allVets": "All Vets",
   "addAnEvent": "Add an event",
@@ -1441,6 +1461,10 @@
   "notificationKindOrganisation": "Organisation",
   "notificationActionNeeded": "Action needed",
   "accountTitle": "Account",
+  "accountProfileSection": "Profile",
+  "accountPreferencesSection": "Preferences",
+  "accountSupportSection": "Support",
+  "accountActionsSection": "Account actions",
 
   "adminContactsTitle": "Admin contacts",
   "adminContactsDescription": "Internal directory of organisation admins. Call or message using the contact details they share.",

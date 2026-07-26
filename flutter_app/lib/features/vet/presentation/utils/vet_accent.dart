@@ -38,6 +38,12 @@ VetAccent resolveVetAccent(BuildContext context, {String? organizationId}) {
 String vetTownLabel(String address) {
   final trimmed = address.trim();
   if (trimmed.isEmpty) return '';
-  final parts = trimmed.split(',');
-  return parts.first.trim();
+  final parts = trimmed
+      .split(',')
+      .map((part) => part.trim())
+      .where((part) => part.isNotEmpty)
+      .toList();
+  if (parts.isEmpty) return '';
+  if (parts.length == 1) return parts.first;
+  return parts.last;
 }

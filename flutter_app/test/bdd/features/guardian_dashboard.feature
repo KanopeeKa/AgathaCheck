@@ -7,14 +7,14 @@ Feature: Guardian dashboard
   Scenario: Dashboard shows exactly three sections
     Given I am signed in as a guardian with pets, due health entries, and vets
     When I view the Guardian dashboard
-    Then I should see "My Pets", "Upcoming Pet Events", and "My Vets" sections only
+    Then I should see "My Pets", "Due and Overdue", and "My Vets" sections only
 
   @P1
-  Scenario: My Pets preview is capped at four
+  Scenario: My Pets shows all personal pets with Manage pets link
     Given I have 6 pets
     When I view the Guardian dashboard
-    Then I should see at most 4 pet cards
-    And I should see an "All Pets" link
+    Then I should see 6 pet cards
+    And I should see a "Manage pets" link
 
   @P1
   Scenario: Pending foster placement surfaces as a notification, not a dashboard banner

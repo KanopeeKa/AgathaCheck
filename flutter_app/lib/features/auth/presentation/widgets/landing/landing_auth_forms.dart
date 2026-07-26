@@ -7,7 +7,6 @@ import '../../../../../core/web/native_login.dart';
 import '../../../../../core/web/native_login_inline_view.dart';
 import '../../providers/auth_providers.dart';
 import 'landing_error_banner.dart';
-import 'landing_logo.dart';
 
 class LandingLoginForm extends StatefulWidget {
   const LandingLoginForm({
@@ -208,7 +207,8 @@ class LandingSignupForm extends StatefulWidget {
 }
 
 class _LandingSignupFormState extends State<LandingSignupForm> {
-  bool _obscure = true;
+  bool _obscurePassword = true;
+  bool _obscureConfirm = true;
 
   @override
   Widget build(BuildContext context) {
@@ -264,16 +264,17 @@ class _LandingSignupFormState extends State<LandingSignupForm> {
                 labelText: widget.l10n.password,
                 prefixIcon: const Icon(Icons.lock_outlined),
                 suffixIcon: IconButton(
-                  tooltip: _obscure
+                  tooltip: _obscurePassword
                       ? widget.l10n.showPassword
                       : widget.l10n.hidePassword,
                   icon: Icon(
-                    _obscure ? Icons.visibility_off : Icons.visibility,
+                    _obscurePassword ? Icons.visibility_off : Icons.visibility,
                   ),
-                  onPressed: () => setState(() => _obscure = !_obscure),
+                  onPressed: () =>
+                      setState(() => _obscurePassword = !_obscurePassword),
                 ),
               ),
-              obscureText: _obscure,
+              obscureText: _obscurePassword,
               autofillHints: const [AutofillHints.newPassword],
               validator: (v) {
                 if (v == null || v.isEmpty) return widget.l10n.passwordRequired;
@@ -288,8 +289,18 @@ class _LandingSignupFormState extends State<LandingSignupForm> {
               decoration: InputDecoration(
                 labelText: widget.l10n.confirmPassword,
                 prefixIcon: const Icon(Icons.lock_outlined),
+                suffixIcon: IconButton(
+                  tooltip: _obscureConfirm
+                      ? widget.l10n.showPassword
+                      : widget.l10n.hidePassword,
+                  icon: Icon(
+                    _obscureConfirm ? Icons.visibility_off : Icons.visibility,
+                  ),
+                  onPressed: () =>
+                      setState(() => _obscureConfirm = !_obscureConfirm),
+                ),
               ),
-              obscureText: true,
+              obscureText: _obscureConfirm,
               autofillHints: const [AutofillHints.newPassword],
               validator: (v) {
                 if (v != widget.passwordController.text) {
@@ -352,19 +363,6 @@ class LandingAuthCard extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            ClipRRect(
-              borderRadius: BorderRadius.circular(12),
-              child: buildLandingLogo(theme, size: 64),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              l10n.appTitle,
-              style: theme.textTheme.titleLarge?.copyWith(
-                fontWeight: FontWeight.bold,
-                color: theme.colorScheme.primary,
-              ),
-            ),
-            const SizedBox(height: 16),
             TabBar(
               controller: tabController,
               tabs: [

@@ -27,6 +27,7 @@ class PassedAwayPetsSection extends StatelessWidget {
         ),
         child: ExpansionTile(
           key: const Key('passed_away_section'),
+          initiallyExpanded: false,
           leading: Icon(
             Icons.favorite,
             color: theme.colorScheme.onSurfaceVariant,
@@ -64,18 +65,14 @@ class PassedAwayPetsSection extends StatelessWidget {
           children: [
             Padding(
               padding: const EdgeInsets.fromLTRB(12, 0, 12, 12),
-              child: Column(
-                children: allPassedAway
-                    .map(
-                      (pet) => Padding(
-                        padding: const EdgeInsets.only(bottom: 8),
-                        child: PetCard(
-                          pet: pet,
-                          onTap: () => context.go('/pet/${pet.id}'),
-                        ),
-                      ),
-                    )
-                    .toList(),
+              child: PetTileStrip(
+                useWrap: true,
+                pets: () {
+                  final sorted = [...allPassedAway];
+                  sortPetsByCreatedAt(sorted);
+                  return sorted;
+                }(),
+                onPetTap: (pet) => context.go('/pet/${pet.id}'),
               ),
             ),
           ],

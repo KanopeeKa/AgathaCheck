@@ -8,7 +8,7 @@ import '../../../../pet_profile/presentation/controllers/pet_list_controller.dar
 import '../../../../pet_profile/presentation/widgets/pet_card.dart';
 import 'guardian_dashboard_helpers.dart';
 
-/// My Pets dashboard section — preview grid (max 4) with All Pets link.
+/// Guardian dashboard pets: My pets + My foster pets tile strips.
 class GuardianMyPetsSection extends StatelessWidget {
   const GuardianMyPetsSection({
     super.key,
@@ -19,49 +19,53 @@ class GuardianMyPetsSection extends StatelessWidget {
   final List<Pet> allPets;
   final PetListController controller;
 
-  static const previewLimit = 4;
-
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context)!;
-    final previewPets = guardianDashboardPreviewPets(
-      allPets,
-      controller,
-      limit: previewLimit,
-    );
-    final hasMore = guardianDashboardHasMorePets(
-      allPets,
-      controller,
-      limit: previewLimit,
-    );
+    final personalPets = guardianDashboardPersonalPets(allPets, controller);
+    final fosterPets = guardianDashboardFosterPets(allPets, controller);
+    final hasAny = guardianDashboardHasAnyPets(allPets, controller);
 
-    return DashboardSection(
-      title: l.myPets,
-      headerAction: TextButton(
-        key: const Key('dashboard_add_pet_button'),
-        onPressed: () => context.push('/add'),
-        child: Text(l.dashboardAddPet),
-      ),
-      previewBuilder: (ctx) {
-        if (previewPets.isEmpty) {
-          return Text(
-            l.noPetsYet,
-            style: Theme.of(ctx).textTheme.bodyMedium?.copyWith(
-              color: Theme.of(ctx).colorScheme.onSurfaceVariant,
-            ),
-          );
-        }
-        return PetCardGrid(
-          pets: previewPets,
-          onPetTap: (pet) => context.go('/pet/${pet.id}'),
-        );
-      },
-      endLink: hasMore
-          ? DashboardSectionLink(
-              label: l.allPets,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        DashboardSection(
+          title: l.myPets,
+          previewBuilder: (ctx) {
+            if (personalPets.isEmpty) {
+              return Text(
+                l.noPetsYet,
+                style: Theme.of(ctx).textTheme.bodyMedium?.copyWith(
+                  color: Theme.of(ctx).colorScheme.onSurfaceVariant,
+                ),
+              );
+            }
+            return PetTileStrip(
+              pets: personalPets,
+              onPetTap: (pet) => context.go('/pet/${pet.id}'),
+            );
+          },
+        ),
+        if (fosterPets.isNotEmpty)
+          DashboardSection(
+            title: l.myFosteredPets,
+            previewBuilder: (ctx) {
+              return PetTileStrip(
+                pets: fosterPets,
+                onPetTap: (pet) => context.go('/pet/${pet.id}'),
+              );
+            },
+          ),
+        if (hasAny)
+          Align(
+            alignment: Alignment.centerRight,
+            child: TextButton(
+              key: const Key('dashboard_manage_pets_link'),
               onPressed: () => context.go('/g/pets'),
-            )
-          : null,
+              child: Text(l.managePets),
+            ),
+          ),
+      ],
     );
   }
 }

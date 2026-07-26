@@ -1,3 +1,5 @@
+import 'package:flutter/material.dart';
+
 import '../../../../l10n/app_localizations.dart';
 import '../../domain/entities/app_experience.dart';
 import '../../domain/entities/drawer_menu_group.dart';
@@ -22,6 +24,7 @@ class DrawerMenuConfig {
         DrawerMenuItem(
           semanticKey: 'drawer_guardian',
           label: l.drawerGuardian,
+          icon: Icons.pets_outlined,
           group: DrawerMenuGroup.guardianPlum,
           route: AppExperience.guardian.homePath(),
         ),
@@ -30,6 +33,7 @@ class DrawerMenuConfig {
         DrawerMenuItem(
           semanticKey: 'drawer_organisation',
           label: l.drawerOrganisation,
+          icon: Icons.business_outlined,
           group: DrawerMenuGroup.organizationGreen,
           route: '/o/orgs',
         ),
@@ -42,6 +46,7 @@ class DrawerMenuConfig {
     return DrawerMenuItem(
       semanticKey: 'drawer_account',
       label: l.drawerAccount,
+      icon: Icons.person_outline,
       group: DrawerMenuGroup.utility,
       route: '/account',
     );

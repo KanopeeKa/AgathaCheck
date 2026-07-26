@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../core/widgets/app_logo_title.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../notifications/presentation/providers/notification_providers.dart';
 import '../../../notifications/presentation/widgets/notification_panel.dart';
@@ -23,11 +24,19 @@ class ExperienceShellScaffold extends ConsumerWidget {
     required this.experience,
     required this.currentLocation,
     required this.child,
+    this.screenTitle,
+    this.contextualActions = const [],
   });
 
   final AppExperience experience;
   final String currentLocation;
   final Widget child;
+
+  /// Centered logo + title in the app bar (omit on screens that set their own).
+  final String? screenTitle;
+
+  /// Icons/menus to the right of the title, before `|` and the notification bell.
+  final List<Widget> contextualActions;
 
   bool _isRoot() => DrawerMenuConfig.sectionRootPaths.contains(currentLocation);
 
@@ -64,8 +73,22 @@ class ExperienceShellScaffold extends ConsumerWidget {
                   tooltip: l.goBack,
                   onPressed: () => _onBack(context),
                 ),
-          title: const SizedBox.shrink(),
+          centerTitle: true,
+          title: screenTitle == null
+              ? const SizedBox.shrink()
+              : AppLogoTitle(title: screenTitle!, experience: experience),
           actions: [
+            if (contextualActions.isNotEmpty) ...contextualActions,
+            if (contextualActions.isNotEmpty)
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 4),
+                child: Text(
+                  '|',
+                  style: theme.textTheme.titleMedium?.copyWith(
+                    color: theme.colorScheme.onSurfaceVariant,
+                  ),
+                ),
+              ),
             Builder(
               builder: (ctx) => IconButton(
                 key: const Key('experience_notification_bell'),

@@ -63,6 +63,100 @@ Widget _buildApp({
 }
 
 void main() {
+  testWidgets('section root shows centered logo title when provided', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          experienceEligibilityProvider.overrideWith(
+            (ref) => AsyncValue.data(
+              ExperienceEligibilityRules.compute(
+                pets: const [Pet(id: '1', name: 'A', species: 'Cat')],
+                orgMembershipCount: 0,
+              ),
+            ),
+          ),
+          combinedUnreadNotificationCountProvider.overrideWith((ref) => 0),
+          guardianUnreadNotificationCountProvider.overrideWith((ref) => 0),
+          orgUnreadNotificationCountProvider.overrideWith((ref) => 0),
+          authProvider.overrideWith((ref) => FakeAuthNotifier()),
+          organizationListProvider.overrideWith(_EmptyOrgListNotifier.new),
+        ],
+        child: MaterialApp(
+          localizationsDelegates: const [
+            AppLocalizations.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: ExperienceShellScaffold(
+            experience: AppExperience.guardian,
+            currentLocation: '/g/home',
+            screenTitle: 'Guardian dashboard',
+            child: const SizedBox.shrink(),
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('Guardian dashboard'), findsOneWidget);
+  });
+
+  testWidgets('contextual actions appear before pipe and bell', (tester) async {
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          experienceEligibilityProvider.overrideWith(
+            (ref) => AsyncValue.data(
+              ExperienceEligibilityRules.compute(
+                pets: const [Pet(id: '1', name: 'A', species: 'Cat')],
+                orgMembershipCount: 0,
+              ),
+            ),
+          ),
+          combinedUnreadNotificationCountProvider.overrideWith((ref) => 0),
+          guardianUnreadNotificationCountProvider.overrideWith((ref) => 0),
+          orgUnreadNotificationCountProvider.overrideWith((ref) => 0),
+          authProvider.overrideWith((ref) => FakeAuthNotifier()),
+          organizationListProvider.overrideWith(_EmptyOrgListNotifier.new),
+        ],
+        child: MaterialApp(
+          localizationsDelegates: const [
+            AppLocalizations.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: ExperienceShellScaffold(
+            experience: AppExperience.guardian,
+            currentLocation: '/g/pets',
+            screenTitle: 'All Pets',
+            contextualActions: [
+              IconButton(
+                key: const Key('contextual_test_action'),
+                onPressed: () {},
+                icon: const Icon(Icons.share_outlined),
+              ),
+            ],
+            child: const SizedBox.shrink(),
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(const Key('contextual_test_action')), findsOneWidget);
+    expect(find.text('|'), findsOneWidget);
+    expect(
+      find.byKey(const Key('experience_notification_bell')),
+      findsOneWidget,
+    );
+  });
+
   testWidgets('section root shows hamburger, not back arrow', (tester) async {
     await tester.pumpWidget(
       _buildApp(experience: AppExperience.guardian, currentLocation: '/g/home'),

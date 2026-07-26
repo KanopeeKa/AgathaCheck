@@ -42,11 +42,11 @@ export class PetListPage {
       options.experience === 'organization' ||
       (options.experience !== 'guardian' &&
         (route.startsWith('/o/') || route.startsWith('/organizations')));
-    // Guardian /g/events is the due-events inbox (D17); full tabbed dashboard is /health.
-    const dashboardPath = useOrgHome ? '/o/events' : '/health';
+    // Guardian /g/events is the due-events inbox (D17).
+    const dashboardPath = useOrgHome ? '/o/events' : '/g/events';
     const dashboardRoutePattern = useOrgHome
       ? /\/o\/events(?:\?|$)/
-      : /^\/health(?:\?|$)/;
+      : /^\/g\/events(?:\?|$)/;
     if (await isExperienceShellVisible(this.page)) {
       await this.page.goto(flutterGotoUrl(dashboardPath));
       await refreshFlutterAccessibility(this.page);
@@ -116,7 +116,7 @@ export class PetListPage {
     await refreshFlutterAccessibility(this.page);
     await expect(
       this.page
-        .getByRole('group', { name: /Upcoming events|Événements à venir/i })
+        .getByRole('group', { name: /Due and Overdue|À faire et en retard/i })
         .first(),
     ).toBeVisible({ timeout: 20_000 });
     await semanticsByName(

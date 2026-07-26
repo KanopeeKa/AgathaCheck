@@ -55,6 +55,28 @@ class AppLocalizationsFr extends AppLocalizations {
       'Gérez les animaux en inventaire, coordonnez le personnel et les bénévoles, et partagez les dossiers de soins au sein de votre organisation.';
 
   @override
+  String get landingPathScrollCta => 'En savoir plus';
+
+  @override
+  String get landingPetParentsSectionTitle =>
+      'Parents d\'animaux et familles d\'accueil';
+
+  @override
+  String get landingPetParentsSectionBody =>
+      'Suivez les visites vétérinaires, les médicaments, le poids et les soins quotidiens dans un tableau de bord simple. Coordonnez-vous avec votre foyer et gardez l\'historique de santé de chaque animal en sécurité. Captures d\'écran et texte à venir.';
+
+  @override
+  String get landingCharitiesSectionTitle =>
+      'Refuges, sauvetages et équipes de soins';
+
+  @override
+  String get landingCharitiesSectionBody =>
+      'Gérez les animaux en inventaire, coordonnez le personnel et les bénévoles, et partagez les dossiers de soins au sein de votre organisation. Captures d\'écran produit à venir.';
+
+  @override
+  String get landingScreenshotPlaceholder => 'Capture d\'écran à venir';
+
+  @override
   String get signIn => 'Se connecter';
 
   @override
@@ -287,6 +309,36 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get allPets => 'Tous les animaux';
+
+  @override
+  String get managePets => 'Gérer les animaux';
+
+  @override
+  String get manageEvents => 'Gérer les événements';
+
+  @override
+  String get eventsEditTab => 'Modifier';
+
+  @override
+  String get eventsHistoryTab => 'Historique';
+
+  @override
+  String get noEventsYet => 'Aucun événement pour le moment';
+
+  @override
+  String petEventsSummary(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count événements',
+      one: '1 événement',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get eventsHistoryEmpty =>
+      'Aucun historique de rapport n\'est disponible pour cet animal.';
 
   @override
   String get filterByOrganization => 'Filtrer par organisation';
@@ -3947,7 +3999,13 @@ class AppLocalizationsFr extends AppLocalizations {
   String get myVets => 'Mes vétérinaires';
 
   @override
+  String get guardianDashboardTitle => 'Tableau de bord gardien';
+
+  @override
   String get upcomingPetEvents => 'Événements à venir';
+
+  @override
+  String get dueAndOverdue => 'À faire et en retard';
 
   @override
   String get allEvents => 'Tous les événements';
@@ -4203,6 +4261,18 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get accountTitle => 'Compte';
+
+  @override
+  String get accountProfileSection => 'Profil';
+
+  @override
+  String get accountPreferencesSection => 'Préférences';
+
+  @override
+  String get accountSupportSection => 'Assistance';
+
+  @override
+  String get accountActionsSection => 'Actions du compte';
 
   @override
   String get adminContactsTitle => 'Contacts admin';

@@ -248,7 +248,7 @@ class _PetListScreenState extends ConsumerState<PetListScreen> {
                 children: [
                   Expanded(
                     child: Text(
-                      _bulkShareMode ? l.bulkShareSelectHint : l.allPets,
+                      _bulkShareMode ? l.bulkShareSelectHint : l.managePets,
                       style: theme.textTheme.titleMedium,
                     ),
                   ),

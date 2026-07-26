@@ -53,6 +53,27 @@ class AppLocalizationsEn extends AppLocalizations {
       'Manage inventory pets, coordinate staff and volunteers, and share care records across your organisation.';
 
   @override
+  String get landingPathScrollCta => 'Learn more';
+
+  @override
+  String get landingPetParentsSectionTitle => 'Pet parents and foster carers';
+
+  @override
+  String get landingPetParentsSectionBody =>
+      'Track vet visits, medications, weight, and daily care in one calm dashboard. Coordinate with your household and keep every pet\'s health history safe. Screenshots and walkthrough copy coming soon.';
+
+  @override
+  String get landingCharitiesSectionTitle =>
+      'Shelters, rescues, and care teams';
+
+  @override
+  String get landingCharitiesSectionBody =>
+      'Manage inventory pets, coordinate staff and volunteers, and share care records across your organisation. Product screenshots and case studies will be added here.';
+
+  @override
+  String get landingScreenshotPlaceholder => 'Screenshot coming soon';
+
+  @override
   String get signIn => 'Sign In';
 
   @override
@@ -283,6 +304,36 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get allPets => 'All Pets';
+
+  @override
+  String get managePets => 'Manage pets';
+
+  @override
+  String get manageEvents => 'Manage events';
+
+  @override
+  String get eventsEditTab => 'Edit';
+
+  @override
+  String get eventsHistoryTab => 'History';
+
+  @override
+  String get noEventsYet => 'No events yet';
+
+  @override
+  String petEventsSummary(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count events',
+      one: '1 event',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get eventsHistoryEmpty =>
+      'No report history is available for this pet.';
 
   @override
   String get filterByOrganization => 'Filter by organization';
@@ -3887,7 +3938,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get myVets => 'My vets';
 
   @override
+  String get guardianDashboardTitle => 'Guardian dashboard';
+
+  @override
   String get upcomingPetEvents => 'Upcoming Pet Events';
+
+  @override
+  String get dueAndOverdue => 'Due and Overdue';
 
   @override
   String get allEvents => 'All Events';
@@ -4139,6 +4196,18 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get accountTitle => 'Account';
+
+  @override
+  String get accountProfileSection => 'Profile';
+
+  @override
+  String get accountPreferencesSection => 'Preferences';
+
+  @override
+  String get accountSupportSection => 'Support';
+
+  @override
+  String get accountActionsSection => 'Account actions';
 
   @override
   String get adminContactsTitle => 'Admin contacts';

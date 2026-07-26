@@ -1,0 +1,117 @@
+import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+
+import '../../../../l10n/app_localizations.dart';
+import '../../../pet_profile/domain/entities/pet.dart';
+
+/// Bottom sheet: Health / Other entry types (no weight — D17 scrap).
+Future<void> showGuardianAddEventPickerSheet(
+  BuildContext context, {
+  required List<Pet> pets,
+}) {
+  final l = AppLocalizations.of(context)!;
+
+  return showModalBottomSheet<void>(
+    context: context,
+    showDragHandle: true,
+    builder: (ctx) {
+      return SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+              child: Text(
+                l.addAnEvent,
+                style: Theme.of(
+                  ctx,
+                ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+              ),
+            ),
+            ListTile(
+              leading: const Icon(Icons.medical_services_outlined),
+              title: Text(l.healthEvents),
+              subtitle: Text(l.addHealthEntry),
+              onTap: () {
+                Navigator.pop(ctx);
+                context.go('/health/add');
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.event_note_outlined),
+              title: Text(l.other),
+              subtitle: Text(l.addOtherEvent),
+              onTap: () {
+                Navigator.pop(ctx);
+                _pickPetForOther(context, pets);
+              },
+            ),
+            const SizedBox(height: 8),
+          ],
+        ),
+      );
+    },
+  );
+}
+
+void _pickPetForOther(BuildContext context, List<Pet> pets) {
+  final active = pets.where((p) => !p.passedAway).toList();
+  if (active.isEmpty) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(AppLocalizations.of(context)!.noPetsYet)),
+    );
+    return;
+  }
+  if (active.length == 1) {
+    context.go('/pet/${active.first.id}/other/add');
+    return;
+  }
+  _showPetPickerSheet(
+    context,
+    pets: active,
+    title: AppLocalizations.of(context)!.selectPetForEvent,
+    onSelected: (pet) => context.go('/pet/${pet.id}/other/add'),
+  );
+}
+
+Future<void> _showPetPickerSheet(
+  BuildContext context, {
+  required List<Pet> pets,
+  required String title,
+  required void Function(Pet pet) onSelected,
+}) {
+  return showModalBottomSheet<void>(
+    context: context,
+    showDragHandle: true,
+    builder: (ctx) {
+      return SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+              child: Text(
+                title,
+                style: Theme.of(
+                  ctx,
+                ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+              ),
+            ),
+            ...pets.map(
+              (pet) => ListTile(
+                title: Text(pet.name),
+                onTap: () {
+                  Navigator.pop(ctx);
+                  onSelected(pet);
+                },
+              ),
+            ),
+            const SizedBox(height: 8),
+          ],
+        ),
+      );
+    },
+  );
+}

@@ -176,6 +176,42 @@ abstract class AppLocalizations {
   /// **'Manage inventory pets, coordinate staff and volunteers, and share care records across your organisation.'**
   String get landingOrgPathDetail;
 
+  /// No description provided for @landingPathScrollCta.
+  ///
+  /// In en, this message translates to:
+  /// **'Learn more'**
+  String get landingPathScrollCta;
+
+  /// No description provided for @landingPetParentsSectionTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Pet parents and foster carers'**
+  String get landingPetParentsSectionTitle;
+
+  /// No description provided for @landingPetParentsSectionBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Track vet visits, medications, weight, and daily care in one calm dashboard. Coordinate with your household and keep every pet\'s health history safe. Screenshots and walkthrough copy coming soon.'**
+  String get landingPetParentsSectionBody;
+
+  /// No description provided for @landingCharitiesSectionTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Shelters, rescues, and care teams'**
+  String get landingCharitiesSectionTitle;
+
+  /// No description provided for @landingCharitiesSectionBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage inventory pets, coordinate staff and volunteers, and share care records across your organisation. Product screenshots and case studies will be added here.'**
+  String get landingCharitiesSectionBody;
+
+  /// No description provided for @landingScreenshotPlaceholder.
+  ///
+  /// In en, this message translates to:
+  /// **'Screenshot coming soon'**
+  String get landingScreenshotPlaceholder;
+
   /// No description provided for @signIn.
   ///
   /// In en, this message translates to:
@@ -619,6 +655,48 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'All Pets'**
   String get allPets;
+
+  /// No description provided for @managePets.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage pets'**
+  String get managePets;
+
+  /// No description provided for @manageEvents.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage events'**
+  String get manageEvents;
+
+  /// No description provided for @eventsEditTab.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit'**
+  String get eventsEditTab;
+
+  /// No description provided for @eventsHistoryTab.
+  ///
+  /// In en, this message translates to:
+  /// **'History'**
+  String get eventsHistoryTab;
+
+  /// No description provided for @noEventsYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No events yet'**
+  String get noEventsYet;
+
+  /// No description provided for @petEventsSummary.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 event} other{{count} events}}'**
+  String petEventsSummary(int count);
+
+  /// No description provided for @eventsHistoryEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No report history is available for this pet.'**
+  String get eventsHistoryEmpty;
 
   /// No description provided for @filterByOrganization.
   ///
@@ -7053,11 +7131,23 @@ abstract class AppLocalizations {
   /// **'My vets'**
   String get myVets;
 
+  /// No description provided for @guardianDashboardTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Guardian dashboard'**
+  String get guardianDashboardTitle;
+
   /// No description provided for @upcomingPetEvents.
   ///
   /// In en, this message translates to:
   /// **'Upcoming Pet Events'**
   String get upcomingPetEvents;
+
+  /// No description provided for @dueAndOverdue.
+  ///
+  /// In en, this message translates to:
+  /// **'Due and Overdue'**
+  String get dueAndOverdue;
 
   /// No description provided for @allEvents.
   ///
@@ -7502,6 +7592,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Account'**
   String get accountTitle;
+
+  /// No description provided for @accountProfileSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile'**
+  String get accountProfileSection;
+
+  /// No description provided for @accountPreferencesSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Preferences'**
+  String get accountPreferencesSection;
+
+  /// No description provided for @accountSupportSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Support'**
+  String get accountSupportSection;
+
+  /// No description provided for @accountActionsSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Account actions'**
+  String get accountActionsSection;
 
   /// No description provided for @adminContactsTitle.
   ///

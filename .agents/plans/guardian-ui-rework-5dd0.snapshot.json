@@ -1,0 +1,286 @@
+{
+  "schema_version": 1,
+  "plan_id": "guardian-ui-rework-5dd0",
+  "approved_at": "2026-07-26T16:35:00Z",
+  "approved_by": "user chat 2026-07-26",
+  "approved_until": "2026-07-28T16:35:00Z",
+  "content_hash": "sha256:459ca694d89e60397925a7d5af776b3b1aecb8dbd9c886782e67ad0a692d8449",
+  "autonomy": "completed",
+  "default_merge_mode": "auto",
+  "base_branch": "cursor/guardian-ui-rework-integration-5dd0",
+  "control_issue": 393,
+  "artifact_branch_policy": "phase-branch",
+  "phases": [
+    {
+      "id": "1",
+      "title": "Global shell foundation and section borders",
+      "branch": "cursor/guardian-ui-shell-foundation-5dd0",
+      "allowed_paths": [
+        "flutter_app/lib/features/experience/presentation/widgets/experience_shell_scaffold.dart",
+        "flutter_app/lib/core/widgets/app_logo_title.dart",
+        "flutter_app/lib/core/widgets/dashboard_section.dart",
+        "flutter_app/lib/core/theme/**",
+        "flutter_app/lib/core/router/experience_routes.dart",
+        "flutter_app/lib/features/experience/presentation/screens/experience_home_screens.dart",
+        "flutter_app/lib/features/experience/presentation/screens/guardian/guardian_all_pets_screen.dart",
+        "flutter_app/lib/features/experience/presentation/screens/guardian/guardian_due_events_screen.dart",
+        "flutter_app/test/features/experience/**",
+        "docs/design/tokens.md",
+        ".agents/plans/guardian-ui-rework-5dd0.md",
+        ".agents/plans/guardian-ui-rework-5dd0.snapshot.json"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "flutter-screen-split",
+      "status": "merged",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/394"
+    },
+    {
+      "id": "2",
+      "title": "Landing responsive layout and audience sections",
+      "branch": "cursor/guardian-ui-landing-5dd0",
+      "allowed_paths": [
+        "flutter_app/lib/features/auth/presentation/screens/landing_screen.dart",
+        "flutter_app/lib/features/auth/presentation/widgets/landing/**",
+        "flutter_app/lib/core/web/native_login*.dart",
+        "flutter_app/web/index.html",
+        "flutter_app/test/features/auth/**",
+        "e2e/playwright/tests/auth.login.spec.ts",
+        "e2e/playwright/pages/landing.page.ts",
+        "flutter_app/lib/l10n/**",
+        ".agents/plans/guardian-ui-rework-5dd0.md",
+        ".agents/plans/guardian-ui-rework-5dd0.snapshot.json"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "flutter-screen-split",
+      "status": "merged",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/396",
+      "pr_head_sha": "eb90f9339b1ba945e1ceca7e0d4d3f400dd31719"
+    },
+    {
+      "id": "3",
+      "title": "Pet tile system and dashboard groups",
+      "branch": "cursor/guardian-ui-pet-tiles-5dd0",
+      "allowed_paths": [
+        "server/routes/pets/coreRouter.js",
+        "server/test/pets/**",
+        "flutter_app/lib/features/pet_profile/domain/entities/pet.dart",
+        "flutter_app/lib/features/pet_profile/data/models/pet_model.dart",
+        "flutter_app/lib/features/pet_profile/presentation/widgets/pet_card.dart",
+        "flutter_app/lib/features/pet_profile/presentation/screens/pet_list_screen.dart",
+        "flutter_app/lib/features/pet_profile/presentation/widgets/personal_pets_section.dart",
+        "flutter_app/lib/features/pet_profile/presentation/widgets/fostered_pets_section.dart",
+        "flutter_app/lib/features/pet_profile/presentation/widgets/passed_away_pets_section.dart",
+        "flutter_app/lib/features/experience/presentation/screens/guardian/guardian_my_pets_section.dart",
+        "flutter_app/lib/features/experience/presentation/screens/guardian/guardian_dashboard_helpers.dart",
+        "flutter_app/lib/features/experience/presentation/screens/guardian/guardian_all_pets_screen.dart",
+        "flutter_app/lib/features/experience/presentation/widgets/guardian_shell_home_content.dart",
+        "flutter_app/test/features/pet_profile/**",
+        "flutter_app/test/features/experience/presentation/screens/guardian/**",
+        "flutter_app/test/bdd/features/guardian_dashboard.feature",
+        "e2e/playwright/tests/guardian.dashboard.spec.ts",
+        "flutter_app/lib/l10n/**",
+        ".agents/plans/guardian-ui-rework-5dd0.md",
+        ".agents/plans/guardian-ui-rework-5dd0.snapshot.json"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "bdd-journey",
+      "status": "merged",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/402",
+      "pr_head_sha": "f5ec01944ba2e7f420a8b4b9d901b86a5da87a2f"
+    },
+    {
+      "id": "4",
+      "title": "Vet list initial render and row layout",
+      "branch": "cursor/guardian-ui-vet-refresh-5dd0",
+      "allowed_paths": [
+        "flutter_app/lib/features/vet/**",
+        "flutter_app/lib/features/experience/presentation/screens/guardian/guardian_my_vets_section.dart",
+        "flutter_app/test/features/vet/**",
+        "flutter_app/test/features/experience/presentation/widgets/guardian_shell_home_content_test.dart",
+        "flutter_app/test/bdd/features/veterinarian_management.feature",
+        "e2e/playwright/tests/veterinarian.spec.ts",
+        ".agents/plans/guardian-ui-rework-5dd0.md",
+        ".agents/plans/guardian-ui-rework-5dd0.snapshot.json"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "bdd-journey",
+      "status": "merged",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/403"
+    },
+    {
+      "id": "5",
+      "title": "Due and Overdue events unification",
+      "branch": "cursor/guardian-ui-events-5dd0",
+      "allowed_paths": [
+        "flutter_app/lib/features/health_tracking/**",
+        "flutter_app/lib/features/experience/presentation/screens/guardian/guardian_upcoming_events_section.dart",
+        "flutter_app/lib/features/experience/presentation/screens/guardian/guardian_due_events_screen.dart",
+        "flutter_app/lib/features/pet_profile/presentation/screens/widgets/health_events_section.dart",
+        "flutter_app/lib/features/pet_profile/presentation/screens/widgets/other_events_section.dart",
+        "flutter_app/lib/core/router/**",
+        "flutter_app/test/features/health_tracking/**",
+        "flutter_app/test/bdd/features/guardian_dashboard.feature",
+        "flutter_app/test/bdd/features/health_tracking.feature",
+        "e2e/playwright/tests/guardian.dashboard.spec.ts",
+        "e2e/playwright/tests/health.tracking.spec.ts",
+        "flutter_app/lib/l10n/**",
+        ".agents/plans/guardian-ui-rework-5dd0.md",
+        ".agents/plans/guardian-ui-rework-5dd0.snapshot.json"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "bdd-journey",
+      "status": "merged",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/404",
+      "pr_head_sha": "b00d444ccc955177837941f2144e8a5713558c8d"
+    },
+    {
+      "id": "6",
+      "title": "Pet screen navigation and manage events",
+      "branch": "cursor/guardian-ui-pet-screen-5dd0",
+      "allowed_paths": [
+        "flutter_app/lib/features/pet_profile/presentation/screens/pet_detail_screen.dart",
+        "flutter_app/lib/features/pet_profile/presentation/widgets/pet_detail/**",
+        "flutter_app/lib/features/pet_profile/presentation/widgets/pet_timeline/**",
+        "flutter_app/lib/features/pet_profile/presentation/screens/widgets/health_events_section.dart",
+        "flutter_app/lib/features/pet_profile/presentation/screens/widgets/other_events_section.dart",
+        "flutter_app/lib/features/pet_profile/presentation/screens/widgets/pet_event_entry_list.dart",
+        "flutter_app/lib/features/pet_profile/presentation/screens/**",
+        "flutter_app/lib/core/router/app_router.dart",
+        "flutter_app/test/features/pet_profile/**",
+        "flutter_app/test/bdd/features/pet_profiles.feature",
+        "flutter_app/test/bdd/features/pet_timeline.feature",
+        "flutter_app/test/bdd/features/health_tracking.feature",
+        "e2e/playwright/tests/pet.profiles.spec.ts",
+        "flutter_app/lib/l10n/**",
+        ".agents/plans/guardian-ui-rework-5dd0.md",
+        ".agents/plans/guardian-ui-rework-5dd0.snapshot.json"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "bdd-journey",
+      "status": "merged",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/405",
+      "pr_head_sha": "5e69ebf9b5c589f3dbfc953f9786a953c8402b80"
+    },
+    {
+      "id": "7",
+      "title": "Drawer and account screen redesign",
+      "branch": "cursor/guardian-ui-drawer-account-5dd0",
+      "allowed_paths": [
+        "flutter_app/lib/features/experience/presentation/widgets/experience_section_drawer.dart",
+        "flutter_app/lib/features/experience/presentation/widgets/experience_drawer*.dart",
+        "flutter_app/lib/features/experience/presentation/screens/account_screen.dart",
+        "flutter_app/lib/features/experience/presentation/widgets/experience_settings_section.dart",
+        "flutter_app/lib/features/experience/presentation/config/drawer_menu_config.dart",
+        "flutter_app/lib/features/experience/domain/entities/drawer_menu*.dart",
+        "flutter_app/test/features/experience/**",
+        "flutter_app/test/bdd/features/experience_navigation.feature",
+        "e2e/playwright/tests/experience.navigation.spec.ts",
+        "flutter_app/lib/l10n/**",
+        ".agents/plans/guardian-ui-rework-5dd0.md",
+        ".agents/plans/guardian-ui-rework-5dd0.snapshot.json"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "bdd-journey",
+      "status": "merged",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/406",
+      "pr_head_sha": "52b130d9"
+    }
+  ]
+}

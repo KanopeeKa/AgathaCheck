@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../features/experience/domain/entities/app_experience.dart';
+import '../../l10n/app_localizations.dart';
 import '../../features/experience/presentation/screens/account_screen.dart';
 import '../../features/experience/presentation/screens/experience_chooser_screen.dart';
 import '../../features/experience/presentation/screens/experience_home_screens.dart';
@@ -130,9 +131,11 @@ class _GuardianEventsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
     return ExperienceShellScaffold(
       experience: AppExperience.guardian,
       currentLocation: GoRouterState.of(context).uri.path,
+      screenTitle: l.dueAndOverdue,
       child: const GuardianDueEventsScreen(),
     );
   }

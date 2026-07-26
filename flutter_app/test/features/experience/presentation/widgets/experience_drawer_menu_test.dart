@@ -76,19 +76,6 @@ void main() {
     expect(find.byKey(const Key('drawer_settings')), findsOneWidget);
   });
 
-  testWidgets('group materials have no border side', (tester) async {
-    await tester.pumpWidget(buildApp());
-    await tester.pumpAndSettle();
-
-    final materials = tester.widgetList<Material>(find.byType(Material));
-    for (final material in materials) {
-      final shape = material.shape;
-      if (shape is RoundedRectangleBorder) {
-        expect(shape.side, BorderSide.none);
-      }
-    }
-  });
-
   testWidgets('invokes onItemTap when row tapped', (tester) async {
     DrawerMenuItem? tapped;
     await tester.pumpWidget(

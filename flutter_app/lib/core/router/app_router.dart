@@ -7,12 +7,12 @@ import '../../features/auth/presentation/screens/forgot_password_screen.dart';
 import '../../features/auth/presentation/screens/landing_screen.dart';
 import '../../features/auth/presentation/screens/my_details_screen.dart';
 import '../../features/health_tracking/domain/entities/health_entry.dart';
-import '../../features/health_tracking/presentation/screens/health_dashboard_screen.dart';
 import '../../features/health_tracking/presentation/screens/health_entry_form_screen.dart';
 import '../../features/health_tracking/presentation/screens/other_event_form_screen.dart';
 import '../../features/notifications/presentation/screens/notification_settings_screen.dart';
 import '../../features/notifications/presentation/screens/notifications_screen.dart';
 import '../../features/pet_profile/presentation/screens/pet_detail_screen.dart';
+import '../../features/pet_profile/presentation/screens/pet_manage_events_screen.dart';
 import '../../features/pet_profile/presentation/screens/pet_form_screen.dart';
 import '../../features/pet_profile/presentation/widgets/pet_edit_permission_guard.dart';
 import '../../features/organization/presentation/screens/archived_pets_screen.dart';
@@ -176,6 +176,14 @@ final routerProvider = Provider<GoRouter>((ref) {
         },
       ),
       GoRoute(
+        path: '/pet/:petId/events',
+        name: 'petManageEvents',
+        builder: (context, state) {
+          final petId = state.pathParameters['petId']!;
+          return PetManageEventsScreen(petId: petId);
+        },
+      ),
+      GoRoute(
         path: '/pet/:petId/health/add',
         name: 'addPetHealthEntry',
         builder: (context, state) {
@@ -232,7 +240,7 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/health',
         name: 'healthDashboard',
-        builder: (context, state) => const HealthDashboardScreen(),
+        redirect: (context, state) => '/g/events',
       ),
       GoRoute(
         path: '/health/add',

@@ -245,7 +245,7 @@
   },
   "guardian_dashboard.feature": {
     "Dashboard shows exactly three sections": "P1",
-    "My Pets preview is capped at four": "P1",
+    "My Pets shows all personal pets with Manage pets link": "P1",
     "Pending foster placement surfaces as a notification, not a dashboard banner": "P1"
   },
   "organisation_discovery.feature": {

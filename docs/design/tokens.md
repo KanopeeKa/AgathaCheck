@@ -111,6 +111,14 @@ Use foundation **body** / **muted** text on **w** group backgrounds — not guar
 | success on surface | pass AA for small labels |
 | muted on background | verify; darken if weak |
 
+## Dashboard sections (guardian shell)
+
+Dashboard preview blocks on `/g/home` use **top-border accents only** — no filled card surface:
+
+- Border: 2px top edge in section theme colour (`ColorScheme.primary` or experience accent)
+- Background: transparent (scaffold `background` shows through)
+- Guardian dashboard sections: plum top border; org sections: teal when on org routes
+
 ## Implementation
 
 | File | Role |

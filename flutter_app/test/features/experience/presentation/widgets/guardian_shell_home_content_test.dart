@@ -3,11 +3,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pet_profile_app/core/theme/app_theme.dart';
 import 'package:pet_profile_app/core/widgets/dashboard_section.dart';
+import 'package:pet_profile_app/features/auth/presentation/providers/auth_providers.dart';
 import 'package:pet_profile_app/features/experience/presentation/widgets/guardian_shell_home_content.dart';
 import 'package:pet_profile_app/features/pet_profile/domain/entities/pet.dart';
 import 'package:pet_profile_app/features/pet_profile/presentation/controllers/pet_list_controller.dart';
 import 'package:pet_profile_app/features/pet_profile/presentation/providers/pet_providers.dart';
-import 'package:pet_profile_app/features/pet_profile/presentation/widgets/pet_card.dart';
+import 'package:pet_profile_app/features/experience/presentation/screens/guardian/guardian_my_pets_section.dart';
 import 'package:pet_profile_app/features/health_tracking/presentation/providers/health_providers.dart';
 import 'package:pet_profile_app/features/vet/domain/entities/vet.dart';
 import 'package:pet_profile_app/features/vet/presentation/providers/vet_providers.dart';
@@ -29,6 +30,7 @@ void main() {
     final list = petList ?? pets;
     return ProviderScope(
       overrides: [
+        authProvider.overrideWith((ref) => FakeAuthNotifier()),
         petListProvider.overrideWith(() => TestPetListNotifier(list)),
         vetListProvider.overrideWith(() => _TestVetListNotifier(vets)),
         healthEntriesNotifierProvider.overrideWith(
@@ -54,20 +56,28 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('My Pets'), findsOneWidget);
-    expect(find.text('Upcoming Pet Events'), findsOneWidget);
+    expect(find.text('Due and Overdue'), findsOneWidget);
     expect(find.text('My vets'), findsOneWidget);
     expect(find.text('All Events'), findsOneWidget);
     expect(find.text('All Vets'), findsOneWidget);
   });
 
-  testWidgets('My Pets preview is capped at four with All Pets link', (
+  testWidgets('My Pets shows all personal pets with Manage pets link', (
     tester,
   ) async {
     await tester.pumpWidget(buildDashboard());
     await tester.pumpAndSettle();
 
-    expect(find.byType(PetCard), findsNWidgets(4));
-    expect(find.text('All Pets'), findsOneWidget);
+    expect(find.text('Manage pets'), findsOneWidget);
+    expect(find.text('Pet 0'), findsOneWidget);
+
+    final listView = find.descendant(
+      of: find.byType(GuardianMyPetsSection),
+      matching: find.byType(ListView),
+    );
+    await tester.drag(listView, const Offset(-800, 0));
+    await tester.pumpAndSettle();
+    expect(find.text('Pet 5'), findsOneWidget);
   });
 
   testWidgets('empty state when no pets', (tester) async {

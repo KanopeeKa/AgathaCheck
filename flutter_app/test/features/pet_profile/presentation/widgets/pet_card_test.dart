@@ -64,7 +64,9 @@ void main() {
       expect(find.byIcon(Icons.pets), findsOneWidget);
     });
 
-    testWidgets('displays organization name for org pets', (tester) async {
+    testWidgets('org pets include organization in semantics label', (
+      tester,
+    ) async {
       const orgPet = Pet(
         id: 'org-pet-id',
         name: 'Max',
@@ -76,8 +78,9 @@ void main() {
 
       await tester.pumpWidget(createTestWidget(PetCard(pet: orgPet)));
 
-      expect(find.text('Happy Paws Shelter'), findsOneWidget);
-      expect(find.byIcon(Icons.business), findsOneWidget);
+      expect(find.text('Max'), findsOneWidget);
+      final semantics = tester.getSemantics(find.byType(PetCard));
+      expect(semantics.label, contains('Happy Paws Shelter'));
     });
 
     testWidgets('foster placement line uses org green accent', (tester) async {
@@ -117,7 +120,6 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('In foster care'), findsOneWidget);
-      expect(find.byIcon(Icons.home_work_outlined), findsOneWidget);
     });
 
     testWidgets('does not display foster placement for personal pets', (
