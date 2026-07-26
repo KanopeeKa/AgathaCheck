@@ -62,10 +62,10 @@ next_action: "continue phase 6 on branch cursor/guardian-ui-pet-screen-5dd0"
 artifact_ref:
   branch: cursor/guardian-ui-pet-screen-5dd0
   plan_path: .agents/plans/guardian-ui-rework-5dd0.md
-  plan_commit: e6028d95c99f7fb441c54eada9c283e16d7dac4a
+  plan_commit: 43d30b533b8fdb12480a876f41bcb52e75b38c1b
   snapshot_path: .agents/plans/guardian-ui-rework-5dd0.snapshot.json
-  snapshot_commit: e6028d95c99f7fb441c54eada9c283e16d7dac4a
-open_prs: []
+  snapshot_commit: 43d30b533b8fdb12480a876f41bcb52e75b38c1b
+open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/405"]
 merge_commits: {}
 debt_issue_refs: []
 ```
