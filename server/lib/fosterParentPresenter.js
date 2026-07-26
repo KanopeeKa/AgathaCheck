@@ -11,6 +11,7 @@ import {
   loadActivityCountsByFosterUser,
   loadActivityCountsByParentId,
 } from './fosteringActivitySummary.js';
+import { visibilityFieldsFromRow } from './fosterVisibility.js';
 import { normaliseRole } from './orgRoles.js';
 
 const MEMBER_APPROVAL_STATE = 'approved';
@@ -71,6 +72,10 @@ export function fosterParentToMap(row, {
     effective_competencies: effectiveCompetencies(profileRow || row),
     available_capacity: capacity,
     fostering_activity_summary: activitySummaryForFoster(activityCounts || {}),
+    ...visibilityFieldsFromRow({
+      ...row,
+      ...(profileRow || {}),
+    }),
   };
 }
 

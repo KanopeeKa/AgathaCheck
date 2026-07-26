@@ -33,4 +33,10 @@ export default function organizationsRoutes(pool) {
   return router;
 }
 
-export { getMemberRole, requireOrgAdmin, requireSuperAdmin } from './shared.js';
+export {
+  getMemberRole,
+  requireMember,
+  requireOrgAdmin,
+  requirePermission,
+  requireSuperAdmin,
+} from './shared.js';

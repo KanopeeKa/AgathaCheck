@@ -4162,6 +4162,150 @@ abstract class AppLocalizations {
   /// **'Manual contact'**
   String get manageFostersRetentionManualContact;
 
+  /// No description provided for @fosterSelfPrefsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Your visibility preferences'**
+  String get fosterSelfPrefsTitle;
+
+  /// No description provided for @fosterSelfPrefsYourCard.
+  ///
+  /// In en, this message translates to:
+  /// **'Your card'**
+  String get fosterSelfPrefsYourCard;
+
+  /// No description provided for @fosterSelfPrefsVisibleToLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Who can see your foster card'**
+  String get fosterSelfPrefsVisibleToLabel;
+
+  /// No description provided for @fosterSelfPrefsVisibleToOtherFosters.
+  ///
+  /// In en, this message translates to:
+  /// **'Other fosters'**
+  String get fosterSelfPrefsVisibleToOtherFosters;
+
+  /// No description provided for @fosterSelfPrefsVisibleToAdmins.
+  ///
+  /// In en, this message translates to:
+  /// **'Admins only'**
+  String get fosterSelfPrefsVisibleToAdmins;
+
+  /// No description provided for @fosterSelfPrefsVisibleToBoth.
+  ///
+  /// In en, this message translates to:
+  /// **'Fosters and admins'**
+  String get fosterSelfPrefsVisibleToBoth;
+
+  /// No description provided for @fosterSelfPrefsVisibleToNobody.
+  ///
+  /// In en, this message translates to:
+  /// **'Nobody'**
+  String get fosterSelfPrefsVisibleToNobody;
+
+  /// No description provided for @fosterSelfPrefsAddressVisibilityLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Address visibility'**
+  String get fosterSelfPrefsAddressVisibilityLabel;
+
+  /// No description provided for @fosterSelfPrefsAddressFull.
+  ///
+  /// In en, this message translates to:
+  /// **'Full address'**
+  String get fosterSelfPrefsAddressFull;
+
+  /// No description provided for @fosterSelfPrefsAddressTown.
+  ///
+  /// In en, this message translates to:
+  /// **'Town only'**
+  String get fosterSelfPrefsAddressTown;
+
+  /// No description provided for @fosterSelfPrefsAddressHidden.
+  ///
+  /// In en, this message translates to:
+  /// **'Hidden'**
+  String get fosterSelfPrefsAddressHidden;
+
+  /// No description provided for @fosterSelfPrefsContactVisibilityLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Contact details visibility'**
+  String get fosterSelfPrefsContactVisibilityLabel;
+
+  /// No description provided for @fosterSelfPrefsContactEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'Email only'**
+  String get fosterSelfPrefsContactEmail;
+
+  /// No description provided for @fosterSelfPrefsContactPhone.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone only'**
+  String get fosterSelfPrefsContactPhone;
+
+  /// No description provided for @fosterSelfPrefsContactNeither.
+  ///
+  /// In en, this message translates to:
+  /// **'Neither'**
+  String get fosterSelfPrefsContactNeither;
+
+  /// No description provided for @fosterSelfPrefsContactBoth.
+  ///
+  /// In en, this message translates to:
+  /// **'Email and phone'**
+  String get fosterSelfPrefsContactBoth;
+
+  /// No description provided for @fosterSelfPrefsMessageChannelLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Message notifications'**
+  String get fosterSelfPrefsMessageChannelLabel;
+
+  /// No description provided for @fosterWithdrawAgreementTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Withdraw agreement'**
+  String get fosterWithdrawAgreementTitle;
+
+  /// No description provided for @fosterWithdrawAgreementWarning.
+  ///
+  /// In en, this message translates to:
+  /// **'Withdrawing your agreement to follow organisation rules will flag your active fostering sessions for admin review and notify all organisation admins. This action is difficult to undo.'**
+  String get fosterWithdrawAgreementWarning;
+
+  /// No description provided for @fosterWithdrawAgreementConfirmLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Type withdraw to confirm'**
+  String get fosterWithdrawAgreementConfirmLabel;
+
+  /// No description provided for @fosterWithdrawAgreementConfirmHint.
+  ///
+  /// In en, this message translates to:
+  /// **'withdraw'**
+  String get fosterWithdrawAgreementConfirmHint;
+
+  /// No description provided for @fosterWithdrawAgreementSubmit.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm withdrawal'**
+  String get fosterWithdrawAgreementSubmit;
+
+  /// No description provided for @fosterWithdrawAgreementSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Agreement withdrawn. Admins have been notified.'**
+  String get fosterWithdrawAgreementSuccess;
+
+  /// No description provided for @fosterRulesAgreementLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'I agree to follow organisation rules and terms'**
+  String get fosterRulesAgreementLabel;
+
   /// No description provided for @fosterRequestsTitle.
   ///
   /// In en, this message translates to:

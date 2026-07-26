@@ -9,7 +9,7 @@ import {
   validateCreatePayload,
   validateResponsePayload,
 } from '../../lib/fosterRequests.js';
-import { extractUserId, requireMember, requireOrgAdmin } from './shared.js';
+import { extractUserId, requireMember, requirePermission } from './shared.js';
 import { publicError } from '../../config/security.js';
 
 async function insertRequestChildren(client, requestId, petIds, targetIds) {
@@ -100,7 +100,7 @@ export function registerFosterRequestsRoutes(router, pool) {
     const orgId = req.params.orgId;
 
     try {
-      if (!(await requireOrgAdmin(pool, res, orgId, userId))) return;
+      if (!(await requirePermission(pool, res, orgId, userId, 'manage_fosters'))) return;
 
       const result = await pool.query(
         `SELECT fr.*,
@@ -164,7 +164,7 @@ export function registerFosterRequestsRoutes(router, pool) {
       .filter(Boolean);
 
     try {
-      if (!(await requireOrgAdmin(pool, res, orgId, userId))) return;
+      if (!(await requirePermission(pool, res, orgId, userId, 'manage_fosters'))) return;
 
       const targets = await loadEligibleFosterTargetsWithCapacity(pool, orgId, {
         petIds,
@@ -190,7 +190,7 @@ export function registerFosterRequestsRoutes(router, pool) {
     const { message, petIds, targetIds, sendNow } = validation;
 
     try {
-      if (!(await requireOrgAdmin(pool, res, orgId, userId))) return;
+      if (!(await requirePermission(pool, res, orgId, userId, 'manage_fosters'))) return;
 
       const client = await pool.connect();
       try {
@@ -260,7 +260,7 @@ export function registerFosterRequestsRoutes(router, pool) {
     const { orgId, id: requestId } = req.params;
 
     try {
-      if (!(await requireOrgAdmin(pool, res, orgId, userId))) return;
+      if (!(await requirePermission(pool, res, orgId, userId, 'manage_fosters'))) return;
 
       const client = await pool.connect();
       try {
@@ -313,7 +313,7 @@ export function registerFosterRequestsRoutes(router, pool) {
     const { orgId, id: requestId } = req.params;
 
     try {
-      if (!(await requireOrgAdmin(pool, res, orgId, userId))) return;
+      if (!(await requirePermission(pool, res, orgId, userId, 'manage_fosters'))) return;
 
       const detail = await loadRequestDetail(pool, requestId, orgId);
       if (!detail) {

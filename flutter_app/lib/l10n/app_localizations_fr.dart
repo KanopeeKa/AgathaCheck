@@ -2251,6 +2251,87 @@ class AppLocalizationsFr extends AppLocalizations {
   String get manageFostersRetentionManualContact => 'Contact manuel';
 
   @override
+  String get fosterSelfPrefsTitle => 'Vos préférences de visibilité';
+
+  @override
+  String get fosterSelfPrefsYourCard => 'Votre fiche';
+
+  @override
+  String get fosterSelfPrefsVisibleToLabel =>
+      'Qui peut voir votre fiche d\'accueil';
+
+  @override
+  String get fosterSelfPrefsVisibleToOtherFosters =>
+      'Autres familles d\'accueil';
+
+  @override
+  String get fosterSelfPrefsVisibleToAdmins => 'Administrateurs uniquement';
+
+  @override
+  String get fosterSelfPrefsVisibleToBoth =>
+      'Familles d\'accueil et administrateurs';
+
+  @override
+  String get fosterSelfPrefsVisibleToNobody => 'Personne';
+
+  @override
+  String get fosterSelfPrefsAddressVisibilityLabel =>
+      'Visibilité de l\'adresse';
+
+  @override
+  String get fosterSelfPrefsAddressFull => 'Adresse complète';
+
+  @override
+  String get fosterSelfPrefsAddressTown => 'Ville uniquement';
+
+  @override
+  String get fosterSelfPrefsAddressHidden => 'Masquée';
+
+  @override
+  String get fosterSelfPrefsContactVisibilityLabel =>
+      'Visibilité des coordonnées';
+
+  @override
+  String get fosterSelfPrefsContactEmail => 'E-mail uniquement';
+
+  @override
+  String get fosterSelfPrefsContactPhone => 'Téléphone uniquement';
+
+  @override
+  String get fosterSelfPrefsContactNeither => 'Aucune';
+
+  @override
+  String get fosterSelfPrefsContactBoth => 'E-mail et téléphone';
+
+  @override
+  String get fosterSelfPrefsMessageChannelLabel => 'Notifications de message';
+
+  @override
+  String get fosterWithdrawAgreementTitle => 'Retirer l\'accord';
+
+  @override
+  String get fosterWithdrawAgreementWarning =>
+      'Retirer votre accord de respecter les règles de l\'organisation signalera vos sessions actives pour examen par un administrateur et notifiera tous les administrateurs. Cette action est difficile à annuler.';
+
+  @override
+  String get fosterWithdrawAgreementConfirmLabel =>
+      'Tapez withdraw pour confirmer';
+
+  @override
+  String get fosterWithdrawAgreementConfirmHint => 'withdraw';
+
+  @override
+  String get fosterWithdrawAgreementSubmit => 'Confirmer le retrait';
+
+  @override
+  String get fosterWithdrawAgreementSuccess =>
+      'Accord retiré. Les administrateurs ont été notifiés.';
+
+  @override
+  String get fosterRulesAgreementLabel =>
+      'J\'accepte de respecter les règles et conditions de l\'organisation';
+
+  @override
   String get fosterRequestsTitle => 'Demandes d\'accueil';
 
   @override

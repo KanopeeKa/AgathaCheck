@@ -62,10 +62,13 @@ export function buildAdoptionJourneyMockPool() {
     if (sql === 'BEGIN' || sql === 'COMMIT' || sql === 'ROLLBACK') {
       return { rows: [] };
     }
-    if (sql.includes('SELECT role FROM organization_users WHERE organization_id')) {
+    if (sql.includes('SELECT role') && sql.includes('organization_users')) {
       const uid = params[1];
       if (uid === adminId) return { rows: [{ role: 'admin' }] };
       if (uid === fosterId) return { rows: [{ role: 'foster' }] };
+      return { rows: [] };
+    }
+    if (sql.includes('FROM organization_permissions')) {
       return { rows: [] };
     }
     if (sql.includes('FROM adoption_journeys') && sql.includes('fostering_session_id = $1')) {

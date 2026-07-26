@@ -3,7 +3,7 @@ import {
   PLACEMENT_STATUS_NOT_IN_FOSTER,
   placementToMap,
 } from '../../../lib/fosterPlacements.js';
-import { extractUserId, requireOrgAdmin } from '../shared.js';
+import { extractUserId, requirePermission } from '../shared.js';
 import { publicError } from '../../../config/security.js';
 import { PLACEMENT_DETAIL_SELECT, queryPlacementDetailById, queryPlacementRows } from './shared.js';
 
@@ -13,7 +13,7 @@ export function registerPlacementQueryRoutes(router, pool) {
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     const { orgId, id: placementId } = req.params;
     try {
-      if (!(await requireOrgAdmin(pool, res, orgId, userId))) return;
+      if (!(await requirePermission(pool, res, orgId, userId, 'manage_fostering_sessions'))) return;
       const placementResult = await pool.query(
         'SELECT id FROM foster_placements WHERE id = $1 AND organization_id = $2',
         [placementId, orgId],
@@ -33,7 +33,7 @@ export function registerPlacementQueryRoutes(router, pool) {
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     const orgId = req.params.orgId;
     try {
-      if (!(await requireOrgAdmin(pool, res, orgId, userId))) return;
+      if (!(await requirePermission(pool, res, orgId, userId, 'manage_fostering_sessions'))) return;
       const rows = await queryPlacementRows(
         pool,
         'WHERE fp.organization_id = $1 ORDER BY fp.created_at DESC',
@@ -50,7 +50,7 @@ export function registerPlacementQueryRoutes(router, pool) {
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     const { orgId, petId } = req.params;
     try {
-      if (!(await requireOrgAdmin(pool, res, orgId, userId))) return;
+      if (!(await requirePermission(pool, res, orgId, userId, 'manage_fostering_sessions'))) return;
       const petResult = await pool.query(
         'SELECT id FROM pets WHERE id = $1 AND organization_id = $2',
         [petId, orgId],
@@ -74,7 +74,7 @@ export function registerPlacementQueryRoutes(router, pool) {
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     const { orgId, petId } = req.params;
     try {
-      if (!(await requireOrgAdmin(pool, res, orgId, userId))) return;
+      if (!(await requirePermission(pool, res, orgId, userId, 'manage_fostering_sessions'))) return;
       const petResult = await pool.query(
         'SELECT id FROM pets WHERE id = $1 AND organization_id = $2',
         [petId, orgId],

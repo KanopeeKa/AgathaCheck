@@ -8,18 +8,21 @@ import '../../providers/organization_providers.dart';
 import '../../screens/manage_fosters/manage_fosters_screen.dart';
 import '../organization_add_foster_parent_dialog.dart';
 import 'foster_merge_dialog.dart';
+import 'foster_self_prefs_section.dart';
 
 class FosterSummaryCard extends ConsumerWidget {
   const FosterSummaryCard({
     super.key,
     required this.parent,
     required this.orgId,
+    required this.canManage,
     required this.localizedRoleLabel,
     this.onTap,
   });
 
   final FosterParent parent;
   final String orgId;
+  final bool canManage;
   final String Function(AppLocalizations, OrgMemberRole) localizedRoleLabel;
   final VoidCallback? onTap;
 
@@ -100,7 +103,9 @@ class FosterSummaryCard extends ConsumerWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          parent.displayName,
+                          parent.isSelfCard
+                              ? l.fosterSelfPrefsYourCard
+                              : parent.displayName,
                           style: theme.textTheme.titleSmall?.copyWith(
                             fontWeight: FontWeight.w600,
                           ),
@@ -122,10 +127,17 @@ class FosterSummaryCard extends ConsumerWidget {
                       ],
                     ),
                   ),
-                  if (parent.isExternal)
+                  if (parent.isExternal && canManage)
                     _FosterActions(parent: parent, orgId: orgId),
                 ],
               ),
+              if (parent.isSelfCard) ...[
+                const SizedBox(height: 12),
+                FosterSelfPrefsSection(
+                  orgId: orgId,
+                  initialPrefs: parent.selfPrefs,
+                ),
+              ],
               if (statusChips.isNotEmpty) ...[
                 const SizedBox(height: 8),
                 Wrap(spacing: 6, runSpacing: 6, children: statusChips),

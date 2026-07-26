@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import '../entities/archived_pet.dart';
 import '../entities/custody_transfer.dart';
 import '../entities/foster_parent.dart';
+import '../entities/foster_self_prefs.dart';
 import '../entities/foster_placement.dart';
 import '../entities/foster_request.dart';
 import '../entities/org_connection.dart';
@@ -174,6 +175,18 @@ abstract class OrganizationRepository {
     String orgId,
     String fosterParentId, {
     required String targetUserId,
+    required String token,
+  });
+
+  Future<FosterSelfPrefs> updateFosterSelfVisibility(
+    String orgId,
+    FosterSelfPrefs prefs, {
+    required String token,
+  });
+
+  Future<void> withdrawFosterAgreement(
+    String orgId,
+    String confirmation, {
     required String token,
   });
 

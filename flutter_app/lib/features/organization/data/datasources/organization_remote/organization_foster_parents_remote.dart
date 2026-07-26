@@ -247,4 +247,42 @@ class OrganizationFosterParentsRemote {
     }
     return data;
   }
+
+  Future<Map<String, dynamic>> updateFosterSelfVisibility(
+    String orgId,
+    Map<String, dynamic> body,
+    String token,
+  ) async {
+    final response = await _ctx.client.patch(
+      Uri.parse(
+        '${_ctx.baseUrl}/api/organizations/$orgId/foster-parents/self/visibility',
+      ),
+      headers: _ctx.headers(token),
+      body: json.encode(body),
+    );
+    final data = json.decode(response.body) as Map<String, dynamic>;
+    if (response.statusCode >= 400) {
+      throw Exception(data['error'] ?? 'Failed to update foster visibility');
+    }
+    return data;
+  }
+
+  Future<Map<String, dynamic>> withdrawFosterAgreement(
+    String orgId,
+    String confirmation,
+    String token,
+  ) async {
+    final response = await _ctx.client.post(
+      Uri.parse(
+        '${_ctx.baseUrl}/api/organizations/$orgId/foster-parents/self/withdraw-agreement',
+      ),
+      headers: _ctx.headers(token),
+      body: json.encode({'confirmation': confirmation}),
+    );
+    final data = json.decode(response.body) as Map<String, dynamic>;
+    if (response.statusCode >= 400) {
+      throw Exception(data['error'] ?? 'Failed to withdraw agreement');
+    }
+    return data;
+  }
 }

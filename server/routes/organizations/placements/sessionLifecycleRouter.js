@@ -18,7 +18,7 @@ import {
   SESSION_STATUS_READY_TO_START,
   SESSION_STATUS_RETURNED_TO_SHELTER,
 } from '../../../lib/fosterPlacements.js';
-import { extractUserId, requireMember, requireOrgAdmin } from '../shared.js';
+import { extractUserId, requireMember, requirePermission } from '../shared.js';
 import { publicError } from '../../../config/security.js';
 import { queryPlacementDetailById } from './shared.js';
 
@@ -58,7 +58,7 @@ export function registerPlacementSessionLifecycleRoutes(router, pool) {
     }
 
     try {
-      if (!(await requireOrgAdmin(pool, res, orgId, userId))) return;
+      if (!(await requirePermission(pool, res, orgId, userId, 'manage_fostering_sessions'))) return;
 
       const placement = await loadPlacementForOrg(pool, placementId, orgId);
       if (!placement) {
@@ -82,7 +82,7 @@ export function registerPlacementSessionLifecycleRoutes(router, pool) {
     const { orgId, id: placementId } = req.params;
 
     try {
-      if (!(await requireOrgAdmin(pool, res, orgId, userId))) return;
+      if (!(await requirePermission(pool, res, orgId, userId, 'manage_fostering_sessions'))) return;
 
       const placement = await loadPlacementForOrg(pool, placementId, orgId);
       if (!placement) {
@@ -133,7 +133,7 @@ export function registerPlacementSessionLifecycleRoutes(router, pool) {
     const { orgId, id: placementId } = req.params;
 
     try {
-      if (!(await requireOrgAdmin(pool, res, orgId, userId))) return;
+      if (!(await requirePermission(pool, res, orgId, userId, 'manage_fostering_sessions'))) return;
 
       const placement = await loadPlacementForOrg(pool, placementId, orgId);
       if (!placement) {
@@ -166,7 +166,7 @@ export function registerPlacementSessionLifecycleRoutes(router, pool) {
     }
 
     try {
-      if (!(await requireOrgAdmin(pool, res, orgId, userId))) return;
+      if (!(await requirePermission(pool, res, orgId, userId, 'manage_fostering_sessions'))) return;
 
       const placement = await loadPlacementForOrg(pool, placementId, orgId);
       if (!placement) {

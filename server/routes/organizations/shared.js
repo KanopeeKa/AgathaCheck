@@ -4,6 +4,7 @@ import jwt from 'jsonwebtoken';
 import { v4 as uuidv4 } from 'uuid';
 
 import { JWT_SECRET } from '../../config/jwtSecret.js';
+import { hasPermissionForUser } from '../../lib/orgPermissions.js';
 import { isActiveMember, isOrgAdmin, isSuperAdmin, normaliseRole } from '../../lib/orgRoles.js';
 import { extensionForMime, saveUploadedFile } from '../../lib/safeUpload.js';
 
@@ -185,6 +186,17 @@ export async function requireOrgAdmin(pool, res, orgId, userId) {
 export async function requireSuperAdmin(pool, res, orgId, userId) {
   const role = await getMemberRole(pool, orgId, userId);
   if (!isSuperAdmin(role)) {
+    res.status(403).json({ error: 'Forbidden' });
+    return null;
+  }
+  return role;
+}
+
+export async function requirePermission(pool, res, orgId, userId, permissionKey) {
+  const role = await requireMember(pool, res, orgId, userId);
+  if (!role) return null;
+  const allowed = await hasPermissionForUser(pool, userId, orgId, permissionKey);
+  if (!allowed) {
     res.status(403).json({ error: 'Forbidden' });
     return null;
   }

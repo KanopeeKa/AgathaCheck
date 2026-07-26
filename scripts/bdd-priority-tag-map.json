@@ -165,6 +165,12 @@
     "Manage Fosters tabs use fostering activity summary": "P2",
     "Positive adoption visit outcome gates journey start on visit path": "P2"
   },
+  "foster_self_management.feature": {
+    "Foster restricts address visibility to town only": "P2",
+    "Foster self-card appears first in the directory": "P2",
+    "Withdrawing agreement requires typed confirmation": "P2",
+    "Withdrawal auto-pauses sessions and alerts admins": "P2"
+  },
   "org_to_org_transfer.feature": {
     "Connected orgs can transfer a pet with recipient acceptance": "P1",
     "Org transfer requires an active connection": "P1",
