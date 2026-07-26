@@ -20,7 +20,8 @@ class FosterSelfPrefsSection extends ConsumerStatefulWidget {
       _FosterSelfPrefsSectionState();
 }
 
-class _FosterSelfPrefsSectionState extends ConsumerState<FosterSelfPrefsSection> {
+class _FosterSelfPrefsSectionState
+    extends ConsumerState<FosterSelfPrefsSection> {
   @override
   void initState() {
     super.initState();
@@ -255,7 +256,9 @@ Future<void> showFosterWithdrawAgreementDialog({
             key: const Key('foster_withdraw_submit'),
             onPressed: () async {
               if (!(formKey.currentState?.validate() ?? false)) return;
-              final notifier = ref.read(fosterSelfPrefsProvider(orgId).notifier);
+              final notifier = ref.read(
+                fosterSelfPrefsProvider(orgId).notifier,
+              );
               await notifier.withdrawAgreement(controller.text.trim());
               if (dialogContext.mounted) {
                 Navigator.of(dialogContext).pop();

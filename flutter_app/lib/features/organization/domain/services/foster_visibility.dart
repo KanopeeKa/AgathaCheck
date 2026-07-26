@@ -54,7 +54,10 @@ bool canManageOrgPets(OrgMemberRole? role, String orgId) {
   return hasPermission(role, orgId, 'manage_pets');
 }
 
-String formatAddressForViewer(String address, FosterAddressVisibility visibility) {
+String formatAddressForViewer(
+  String address,
+  FosterAddressVisibility visibility,
+) {
   final raw = address.trim();
   if (raw.isEmpty || visibility == FosterAddressVisibility.hidden) return '';
   if (visibility == FosterAddressVisibility.full) return raw;
