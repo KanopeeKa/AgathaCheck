@@ -1,7 +1,7 @@
 /**
  * @bdd guardian_dashboard.feature
  * Scenario: Dashboard shows exactly three sections
- * Scenario: My Pets preview is capped at four
+ * Scenario: My Pets shows all personal pets with Manage pets link
  */
 import { test, expect } from '../fixtures/auth.fixture';
 import { LandingPage } from '../pages/landing.page';
@@ -45,7 +45,7 @@ test.describe('Guardian dashboard', () => {
     await expect(page.getByText('Pending Shares')).not.toBeVisible();
   });
 
-  test('My Pets preview is capped at four with All Pets link', async ({ page }) => {
+  test('My Pets shows all personal pets with Manage pets link', async ({ page }) => {
     await prepareLiveApiAccess(page, baseURL());
     const user = await signupUser(baseURL());
     for (let i = 0; i < 6; i += 1) {
@@ -59,9 +59,9 @@ test.describe('Guardian dashboard', () => {
     const experience = new ExperiencePage(page);
     await experience.expectGuardianShell();
 
-    const petCards = page.locator('[flt-semantics-identifier="pet_card"]');
-    const cardCount = await petCards.count();
-    expect(cardCount).toBeLessThanOrEqual(4);
-    await expect(page.getByText('All Pets', { exact: true })).toBeVisible();
+    for (let i = 0; i < 6; i += 1) {
+      await expect(page.getByText(`DashPet${i}`, { exact: true })).toBeVisible();
+    }
+    await expect(page.getByText('Manage pets', { exact: true })).toBeVisible();
   });
 });
