@@ -45,7 +45,8 @@ export class OrganizationListPage {
   async openOrg(name: string): Promise<void> {
     await this.expectOrgVisible(name);
     await semanticsByName(this.page, new RegExp(name, 'i')).click();
-    await this.page.waitForTimeout(750);
+    await waitForFlutterRoutePattern(this.page, /\/o\/orgs\/[^/?#]+/, 30_000);
+    await refreshFlutterAccessibility(this.page);
   }
 
   async acceptInviteForOrg(orgName: string): Promise<void> {
