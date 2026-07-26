@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
 import '../../../../core/theme/experience_colors.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../../pet_profile/presentation/providers/pet_providers.dart';
 import '../../domain/entities/app_notification.dart';
 import '../../domain/entities/notification_scope.dart';
@@ -15,11 +16,16 @@ class NotificationTile extends ConsumerWidget {
     required this.notification,
     required this.onTap,
     required this.listScope,
+    this.showActionNeeded = false,
   });
 
   final AppNotification notification;
   final VoidCallback onTap;
   final NotificationScope listScope;
+
+  /// When true, shows an "Action needed" trailing chip (D9: administrative +
+  /// open referenced object heuristic).
+  final bool showActionNeeded;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -164,6 +170,7 @@ class NotificationTile extends ConsumerWidget {
                           const SizedBox(width: 8),
                           Column(
                             mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.end,
                             children: [
                               Text(
                                 formatNotificationRelativeTime(
@@ -185,6 +192,13 @@ class NotificationTile extends ConsumerWidget {
                                     ),
                                   ),
                                 ),
+                              if (showActionNeeded)
+                                Padding(
+                                  padding: const EdgeInsets.only(top: 4),
+                                  child: _ActionNeededChip(
+                                    color: xp.organizationPrimary,
+                                  ),
+                                ),
                             ],
                           ),
                         ],
@@ -195,6 +209,33 @@ class NotificationTile extends ConsumerWidget {
               ),
             ),
           ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Trailing chip shown on administrative rows with an open referenced object.
+class _ActionNeededChip extends StatelessWidget {
+  const _ActionNeededChip({required this.color});
+
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+      decoration: BoxDecoration(
+        border: Border.all(color: color, width: 1),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Text(
+        l.notificationActionNeeded,
+        style: TextStyle(
+          color: color,
+          fontSize: 10,
+          fontWeight: FontWeight.w600,
         ),
       ),
     );

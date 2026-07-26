@@ -3849,4 +3849,39 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get adoptionJourneyStatusUnknown => 'Unknown';
+
+  @override
+  String get drawerGuardian => 'Guardian';
+
+  @override
+  String get drawerOrganisation => 'Organisation';
+
+  @override
+  String get drawerAccount => 'Account';
+
+  @override
+  String get notificationsBellTooltip => 'Open notifications';
+
+  @override
+  String get sectionDrawerTooltip => 'Open menu';
+
+  @override
+  String failedToLoadNotifications(String error) {
+    return 'Failed to load notifications: $error';
+  }
+
+  @override
+  String get notificationKindAll => 'All';
+
+  @override
+  String get notificationKindCare => 'Care';
+
+  @override
+  String get notificationKindOrganisation => 'Organisation';
+
+  @override
+  String get notificationActionNeeded => 'Action needed';
+
+  @override
+  String get accountTitle => 'Account';
 }

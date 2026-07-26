@@ -74,6 +74,25 @@ final unreadNotificationCountProvider = Provider<int>((ref) {
   return ref.watch(guardianUnreadNotificationCountProvider);
 });
 
+/// Combined unread count across both kinds and all scopes, respecting muted pets.
+final combinedUnreadNotificationCountProvider = Provider<int>((ref) {
+  final notifs = ref.watch(notificationsProvider);
+  final prefs = ref.watch(notificationPreferencesProvider).valueOrNull;
+  final mutedIds = prefs?.mutedPetIds.toSet() ?? {};
+  return notifs.whenOrNull(
+        data: (list) => list
+            .where((n) => !n.isRead)
+            .where(
+              (n) =>
+                  n.petId == null ||
+                  n.petId!.isEmpty ||
+                  !mutedIds.contains(n.petId),
+            )
+            .length,
+      ) ??
+      0;
+});
+
 final guardianUnreadNotificationCountProvider = Provider<int>((ref) {
   return _scopedUnreadCount(ref, NotificationScope.guardian);
 });

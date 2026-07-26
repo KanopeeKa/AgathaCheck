@@ -1338,5 +1338,18 @@
   "adoptionJourneyConditionsLabel": "Conditions",
   "adoptionJourneyMilestonesTitle": "Adoption milestones",
   "adoptionJourneyMilestonesEmpty": "No milestones configured yet.",
-  "adoptionJourneyStatusUnknown": "Unknown"
+  "adoptionJourneyStatusUnknown": "Unknown",
+
+  "drawerGuardian": "Guardian",
+  "drawerOrganisation": "Organisation",
+  "drawerAccount": "Account",
+  "notificationsBellTooltip": "Open notifications",
+  "sectionDrawerTooltip": "Open menu",
+  "failedToLoadNotifications": "Failed to load notifications: {error}",
+  "@failedToLoadNotifications": { "placeholders": { "error": { "type": "String" } } },
+  "notificationKindAll": "All",
+  "notificationKindCare": "Care",
+  "notificationKindOrganisation": "Organisation",
+  "notificationActionNeeded": "Action needed",
+  "accountTitle": "Account"
 }

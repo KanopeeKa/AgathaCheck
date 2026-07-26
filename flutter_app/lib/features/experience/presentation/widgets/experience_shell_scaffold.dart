@@ -4,13 +4,19 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../l10n/app_localizations.dart';
 import '../../../notifications/presentation/providers/notification_providers.dart';
+import '../../../notifications/presentation/widgets/notification_panel.dart';
 import '../../domain/entities/app_experience.dart';
-import '../providers/experience_providers.dart';
+import '../config/drawer_menu_config.dart';
 import '../utils/experience_theme.dart';
-import 'guardian_experience_drawer.dart';
-import 'org_experience_drawer.dart';
+import 'experience_section_drawer.dart';
 
-/// Top navigation + settings drawer shared by guardian and organisation shells.
+/// Shell scaffold shared by guardian and organisation experience screens.
+///
+/// Navigation reversal (phase-1-navigation.md):
+/// - Hamburger on section roots (`/g/home`, `/o/orgs`, `/account`).
+/// - Back arrow on all other screens (Navigator.canPop → pop; else → section root).
+/// - Persistent bell with combined unread badge opens notification panel (endDrawer).
+/// - No Home button.
 class ExperienceShellScaffold extends ConsumerWidget {
   const ExperienceShellScaffold({
     super.key,
@@ -23,71 +29,69 @@ class ExperienceShellScaffold extends ConsumerWidget {
   final String currentLocation;
   final Widget child;
 
-  bool get _isHome =>
-      currentLocation == '/g/home' ||
-      currentLocation == '/o/orgs' ||
-      currentLocation.startsWith('/o/home') ||
-      (experience == AppExperience.organization &&
-          RegExp(r'^/o/[^/]+$').hasMatch(currentLocation));
+  bool _isRoot() => DrawerMenuConfig.sectionRootPaths.contains(currentLocation);
+
+  String _sectionRoot() => switch (experience) {
+    AppExperience.guardian => '/g/home',
+    AppExperience.organization => '/o/orgs',
+  };
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
-    final eligibility = ref.watch(experienceEligibilityProvider).valueOrNull;
-    final guardianUnread = ref.watch(guardianUnreadNotificationCountProvider);
-    final orgUnread = ref.watch(orgUnreadNotificationCountProvider);
-    final isFosterPortal = ref.watch(isFosterPortalUserProvider);
-    final isOrg = experience == AppExperience.organization;
+    final combinedUnread = ref.watch(combinedUnreadNotificationCountProvider);
     final shellTheme = themeForAppExperience(theme, experience);
-    final menuUnread = isOrg ? orgUnread : guardianUnread;
+    final isRoot = _isRoot();
 
     return Theme(
       data: shellTheme,
       child: Scaffold(
         appBar: AppBar(
           automaticallyImplyLeading: false,
-          title: Row(
-            children: [
-              Builder(
-                builder: (ctx) => IconButton(
-                  key: const Key('experience_settings_menu'),
-                  icon: Badge(
-                    isLabelVisible: menuUnread > 0,
-                    label: Text('$menuUnread'),
-                    child: const Icon(Icons.menu),
+          leading: isRoot
+              ? Builder(
+                  builder: (ctx) => IconButton(
+                    key: const Key('experience_settings_menu'),
+                    icon: const Icon(Icons.menu),
+                    tooltip: l.sectionDrawerTooltip,
+                    onPressed: () => Scaffold.of(ctx).openDrawer(),
                   ),
-                  tooltip: l.settings,
-                  onPressed: () => Scaffold.of(ctx).openDrawer(),
+                )
+              : IconButton(
+                  key: const Key('experience_back_button'),
+                  icon: const Icon(Icons.arrow_back),
+                  tooltip: l.goBack,
+                  onPressed: () => _onBack(context),
                 ),
-              ),
-              const SizedBox(width: 4),
-              TextButton(
-                key: const Key('experience_nav_home'),
-                onPressed: _isHome
-                    ? null
-                    : () => context.go(experience.homePath()),
-                child: Text(
-                  l.home,
-                  style: TextStyle(
-                    fontWeight: _isHome ? FontWeight.bold : FontWeight.normal,
-                    color: _isHome
-                        ? shellTheme.colorScheme.primary
-                        : shellTheme.colorScheme.onSurface,
-                  ),
+          title: const SizedBox.shrink(),
+          actions: [
+            Builder(
+              builder: (ctx) => IconButton(
+                key: const Key('experience_notification_bell'),
+                icon: Badge(
+                  isLabelVisible: combinedUnread > 0,
+                  label: Text('$combinedUnread'),
+                  child: const Icon(Icons.notifications_outlined),
                 ),
+                tooltip: l.notificationsBellTooltip,
+                onPressed: () => Scaffold.of(ctx).openEndDrawer(),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
-        drawer: isOrg
-            ? OrgExperienceDrawer(
-                showGuardianView: eligibility?.canUseGuardian ?? true,
-                isFosterPortal: isFosterPortal,
-              )
-            : const GuardianExperienceDrawer(),
+        drawer: const ExperienceSectionDrawer(),
+        endDrawer: const NotificationPanel(),
         body: child,
       ),
     );
+  }
+
+  void _onBack(BuildContext context) {
+    if (Navigator.canPop(context)) {
+      Navigator.pop(context);
+    } else {
+      context.go(_sectionRoot());
+    }
   }
 }

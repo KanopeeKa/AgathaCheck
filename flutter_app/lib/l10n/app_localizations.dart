@@ -6974,6 +6974,72 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Unknown'**
   String get adoptionJourneyStatusUnknown;
+
+  /// No description provided for @drawerGuardian.
+  ///
+  /// In en, this message translates to:
+  /// **'Guardian'**
+  String get drawerGuardian;
+
+  /// No description provided for @drawerOrganisation.
+  ///
+  /// In en, this message translates to:
+  /// **'Organisation'**
+  String get drawerOrganisation;
+
+  /// No description provided for @drawerAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Account'**
+  String get drawerAccount;
+
+  /// No description provided for @notificationsBellTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Open notifications'**
+  String get notificationsBellTooltip;
+
+  /// No description provided for @sectionDrawerTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Open menu'**
+  String get sectionDrawerTooltip;
+
+  /// No description provided for @failedToLoadNotifications.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load notifications: {error}'**
+  String failedToLoadNotifications(String error);
+
+  /// No description provided for @notificationKindAll.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get notificationKindAll;
+
+  /// No description provided for @notificationKindCare.
+  ///
+  /// In en, this message translates to:
+  /// **'Care'**
+  String get notificationKindCare;
+
+  /// No description provided for @notificationKindOrganisation.
+  ///
+  /// In en, this message translates to:
+  /// **'Organisation'**
+  String get notificationKindOrganisation;
+
+  /// No description provided for @notificationActionNeeded.
+  ///
+  /// In en, this message translates to:
+  /// **'Action needed'**
+  String get notificationActionNeeded;
+
+  /// No description provided for @accountTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Account'**
+  String get accountTitle;
 }
 
 class _AppLocalizationsDelegate

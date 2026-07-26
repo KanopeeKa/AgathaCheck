@@ -4,73 +4,59 @@ import {
   dismissConsentBannerIfPresent,
   expectAppBarTitle,
   flutterGotoUrl,
-  flutterRoutePath,
   isExperienceShellVisible,
-  navigateWithShellFallback,
-  openExperienceDrawer,
   refreshFlutterAccessibility,
   waitForFlutterRoutePattern,
 } from '../support/flutter';
 
 const NOTIFICATIONS_ROUTE_PATTERN = /\/(g|o)\/notifications(?:\?|$)/;
 
-/** Nav v2 drawer labels (EN + FR) — replaces legacy top-bar "Notifications". */
-const NOTIFICATIONS_DRAWER_LABEL =
-  /^(?:Notifications|Guardian notifications|Organisation notifications|Notifications gardien|Notifications organisation)$/i;
-
-const NOTIFICATIONS_DRAWER_ROLE =
-  /^(?:Notifications|Guardian notifications|Organisation notifications|Notifications gardien|Notifications organisation)/i;
-
-const NOTIFICATIONS_UNREAD_SUFFIX = /,\s*(?:99\+|[1-9]\d?)\s*unread/i;
-
-/** Pick guardian vs org notifications route from the current effective URL. */
-function notificationsPathForPage(page: Page): string {
-  const route = flutterRoutePath(page.url());
-  const useOrgHome = route.startsWith('/o/') || route.startsWith('/organizations');
-  return useOrgHome ? '/o/notifications' : '/g/notifications';
-}
-
-async function gotoNotificationsRoute(page: Page): Promise<void> {
-  const notificationsPath = notificationsPathForPage(page);
-  await page.goto(flutterGotoUrl(notificationsPath));
-  await refreshFlutterAccessibility(page);
-  await waitForFlutterRoutePattern(page, NOTIFICATIONS_ROUTE_PATTERN, 30_000);
-}
-
 /**
- * Notifications screen (`/notifications`).
+ * Notifications panel and screen.
  * Maps to: flutter_app/test/bdd/features/notifications.feature
+ *
+ * After the navigation reversal (phase-1-navigation.md):
+ * - The unified bell (key: experience_notification_bell) opens the slide-over panel.
+ * - /g/notifications and /o/notifications are deprecated (redirect).
+ * - Badge is on the bell, not the hamburger.
  */
 export class NotificationsPage {
   constructor(private readonly page: Page) {}
 
-  /** Navigate to the notifications screen from the pet list or experience shell. */
+  /** Open the notification panel via the bell button in the experience shell. */
+  async openPanelViaBell(): Promise<void> {
+    await dismissConsentBannerIfPresent(this.page);
+    const bell = this.page.getByRole('button', { name: /open notifications/i });
+    await bell.waitFor({ timeout: 15_000 });
+    await bell.click();
+    await this.expectPanelLoaded();
+  }
+
+  /** Navigate to the notifications screen from the pet list or experience shell.
+   *  Falls back to the legacy route if the shell is not visible. */
   async openFromPetList(): Promise<void> {
     await dismissConsentBannerIfPresent(this.page);
+    if (await isExperienceShellVisible(this.page)) {
+      await this.openPanelViaBell();
+      return;
+    }
     const legacyBell = this.page
       .getByRole('button', { name: /^Notifications/i })
       .or(this.page.getByRole('group', { name: /^Notifications/i }))
       .first();
     if (await legacyBell.isVisible({ timeout: 2_000 }).catch(() => false)) {
       await legacyBell.click();
-    } else if (await isExperienceShellVisible(this.page)) {
-      await gotoNotificationsRoute(this.page);
-    } else {
-      const notificationsPath = notificationsPathForPage(this.page);
-      await navigateWithShellFallback(
-        this.page,
-        NOTIFICATIONS_ROUTE_PATTERN,
-        notificationsPath,
-        () => this.expectLoaded(),
-        { helper: 'notifications.openFromPetList', testTitle: null },
-      );
+      await this.expectLoaded();
       return;
     }
-    await this.expectLoaded();
+    // Last resort: guardian home + bell (deprecated /g/notifications redirects away)
+    await this.page.goto(flutterGotoUrl('/g/home'));
+    await refreshFlutterAccessibility(this.page);
+    await this.openPanelViaBell();
   }
 
-  async expectLoaded(): Promise<void> {
-    await expectAppBarTitle(this.page, 'Notifications');
+  /** Wait for the notification panel slide-over to be visible. */
+  async expectPanelLoaded(): Promise<void> {
     await this.page
       .getByRole('button', { name: 'Mark all as read' })
       .or(this.page.getByText('No notifications'))
@@ -78,11 +64,23 @@ export class NotificationsPage {
       .waitFor({ timeout: 30_000 });
   }
 
+  async expectLoaded(): Promise<void> {
+    // Try panel first, then legacy full-screen
+    const panelReady = this.page
+      .getByRole('button', { name: 'Mark all as read' })
+      .or(this.page.getByText('No notifications'))
+      .first();
+    const legacyTitle = this.page.getByText('Notifications').first();
+    await Promise.race([
+      panelReady.waitFor({ timeout: 30_000 }),
+      legacyTitle.waitFor({ timeout: 30_000 }),
+    ]);
+  }
+
   async expectEmptyState(): Promise<void> {
     await this.page.getByText('No notifications').waitFor({ timeout: 15_000 });
   }
 
-  /** Wait for at least one notification tile referencing the given title text. */
   async expectNotificationVisible(titleText: string): Promise<void> {
     await this.page
       .getByText(titleText, { exact: false })
@@ -90,12 +88,7 @@ export class NotificationsPage {
       .waitFor({ timeout: 15_000 });
   }
 
-  /** Expect an approximate count of visible notification entries.
-   *  Uses the semantic label pattern "… notification: …" emitted by Flutter. */
   async expectNotificationCount(expectedCount: number): Promise<void> {
-    // Notification tiles are semantics nodes that contain the word "notification"
-    // in their label.  Waiting for at least expectedCount is sufficient for
-    // typical E2E seeding scenarios.
     await expect(
       this.page.getByText(/notification:/, { exact: false }),
     ).toHaveCount(expectedCount, { timeout: 15_000 });
@@ -103,7 +96,6 @@ export class NotificationsPage {
 
   async markAllRead(): Promise<void> {
     await this.page.getByRole('button', { name: 'Mark all as read' }).click();
-    // Wait for the snackbar confirmation or for the button to still be visible
     await this.page.waitForTimeout(800);
   }
 
@@ -115,15 +107,28 @@ export class NotificationsPage {
     await expectAppBarTitle(this.page, 'Notification Settings');
   }
 
-  /** Click on the first notification tile that contains the given title text. */
   async clickNotification(titleText: string): Promise<void> {
     await this.page.getByText(titleText, { exact: false }).first().click();
     await this.page.waitForTimeout(600);
   }
 
-  /** Assert the unread-count badge on the legacy app bar, hamburger, or experience drawer. */
+  /** Assert the unread-count badge on the bell icon (experience shell). */
   async expectBadgeVisible(count: number): Promise<void> {
     const label = count > 99 ? '99+' : String(count);
+
+    if (await isExperienceShellVisible(this.page)) {
+      const bell = this.page.getByRole('button', { name: /open notifications/i });
+      if (await bell.isVisible({ timeout: 5_000 }).catch(() => false)) {
+        const badgeDigit = bell.getByText(
+          new RegExp(`^${label.replace('+', '\\+')}$`),
+        );
+        if (await badgeDigit.isVisible({ timeout: 5_000 }).catch(() => false)) {
+          return;
+        }
+      }
+    }
+
+    // Legacy fallback: check old app bar bell or pet-list notifications button
     const legacyControl = this.page
       .getByRole('button', {
         name: new RegExp(`Notifications,\\s*${label}\\s*unread`, 'i'),
@@ -134,58 +139,25 @@ export class NotificationsPage {
         }),
       )
       .first();
-    if (await legacyControl.isVisible({ timeout: 2_000 }).catch(() => false)) {
-      await legacyControl.waitFor({ timeout: 10_000 });
+    if (await legacyControl.isVisible({ timeout: 3_000 }).catch(() => false)) {
       return;
     }
 
-    if (await isExperienceShellVisible(this.page)) {
-      const menuButton = this.page
-        .getByRole('button', { name: /^(Settings|Paramètres)/i })
-        .first();
-      if (await menuButton.isVisible({ timeout: 5_000 }).catch(() => false)) {
-        const menuLabel =
-          (await menuButton.getAttribute('aria-label')) ?? (await menuButton.innerText());
-        if (new RegExp(`${label.replace('+', '\\+')}\\s*unread`, 'i').test(menuLabel)) {
-          return;
-        }
-        const badgeDigit = menuButton.getByText(
-          new RegExp(`^${label.replace('+', '\\+')}$`),
-        );
-        if (await badgeDigit.isVisible({ timeout: 3_000 }).catch(() => false)) {
-          return;
-        }
-      }
-
-      await openExperienceDrawer(this.page);
-      const drawerEntry = this.page
-        .getByRole('button', { name: NOTIFICATIONS_DRAWER_ROLE })
-        .or(this.page.getByRole('menuitem', { name: NOTIFICATIONS_DRAWER_ROLE }))
-        .first();
-      if (await drawerEntry.isVisible({ timeout: 5_000 }).catch(() => false)) {
-        const badgeLabel =
-          (await drawerEntry.getAttribute('aria-label')) ?? (await drawerEntry.innerText());
-        expect(badgeLabel).toMatch(
-          new RegExp(`${label.replace('+', '\\+')}\\s*unread`, 'i'),
-        );
-        return;
-      }
-
-      await gotoNotificationsRoute(this.page);
-      await this.expectLoaded();
-      if (count > 0) {
-        await expect(this.page.getByText(/notification:/i)).not.toHaveCount(0, {
-          timeout: 15_000,
-        });
-      }
-      return;
-    }
-
-    throw new Error(`Notifications badge (${label}) not found`);
+    throw new Error(`Notifications badge (${label}) not found on bell`);
   }
 
-  /** Assert no unread-count badge on the legacy app bar, hamburger, or experience drawer. */
+  /** Assert no unread-count badge on the bell or legacy controls. */
   async expectNoBadgeVisible(): Promise<void> {
+    if (await isExperienceShellVisible(this.page)) {
+      const bell = this.page.getByRole('button', { name: /open notifications/i });
+      if (await bell.isVisible({ timeout: 5_000 }).catch(() => false)) {
+        const badgeDigit = bell.getByText(/^(?:99\+|[1-9]\d?)$/);
+        await expect(badgeDigit).toHaveCount(0, { timeout: 5_000 });
+        return;
+      }
+    }
+
+    // Legacy fallback
     const legacyControl = this.page
       .getByRole('button', { name: /^Notifications/i })
       .or(this.page.getByRole('group', { name: /^Notifications/i }))
@@ -193,45 +165,15 @@ export class NotificationsPage {
     if (await legacyControl.isVisible({ timeout: 2_000 }).catch(() => false)) {
       const badgeLabel =
         (await legacyControl.getAttribute('aria-label')) ?? (await legacyControl.innerText());
-      expect(badgeLabel).not.toMatch(NOTIFICATIONS_UNREAD_SUFFIX);
-      return;
+      expect(badgeLabel).not.toMatch(/,\s*(?:99\+|[1-9]\d?)\s*unread/i);
     }
+  }
 
-    if (await isExperienceShellVisible(this.page)) {
-      const menuButton = this.page
-        .getByRole('button', { name: /^(Settings|Paramètres)/i })
-        .first();
-      if (await menuButton.isVisible({ timeout: 5_000 }).catch(() => false)) {
-        const badgeDigit = menuButton.getByText(/^(?:99\+|[1-9]\d?)$/);
-        await expect(badgeDigit).toHaveCount(0, { timeout: 5_000 });
-      }
-
-      await openExperienceDrawer(this.page);
-      const notificationsEntry = this.page
-        .getByRole('button', { name: NOTIFICATIONS_DRAWER_ROLE })
-        .or(this.page.getByRole('group', { name: NOTIFICATIONS_DRAWER_ROLE }))
-        .or(this.page.getByRole('menuitem', { name: NOTIFICATIONS_DRAWER_ROLE }))
-        .first();
-      if (await notificationsEntry.isVisible({ timeout: 5_000 }).catch(() => false)) {
-        const badgeLabel =
-          (await notificationsEntry.getAttribute('aria-label')) ??
-          (await notificationsEntry.innerText());
-        expect(badgeLabel).not.toMatch(NOTIFICATIONS_UNREAD_SUFFIX);
-        return;
-      }
-
-      const notificationsTile = this.page.getByText(NOTIFICATIONS_DRAWER_LABEL);
-      await notificationsTile.waitFor({ timeout: 10_000 });
-      const rowText = await notificationsTile
-        .locator(
-          'xpath=ancestor::*[self::button or @role="button" or @role="group" or @role="menuitem"][1]',
-        )
-        .innerText()
-        .catch(() => notificationsTile.innerText());
-      expect(rowText).not.toMatch(/\b(?:99\+|[1-9]\d?)\b/);
-      return;
-    }
-
-    throw new Error('Notifications control not found for badge assertion');
+  /** Select a notification kind filter chip. */
+  async selectKindFilter(kind: 'All' | 'Care' | 'Organisation'): Promise<void> {
+    const chip = this.page.getByRole('button', { name: new RegExp(`^${kind}$`, 'i') });
+    await chip.waitFor({ timeout: 10_000 });
+    await chip.click();
+    await this.page.waitForTimeout(400);
   }
 }

@@ -42,17 +42,17 @@ and `/ui-design-deep` as needed.
 
 ```yaml
 autonomy: active
-current_phase: 0
-last_completed_phase: R
+current_phase: 1
+last_completed_phase: 0
 halt_reason: null
-next_action: "continue phase 0 on branch cursor/experience-foundation-36bd"
+next_action: "continue phase 1 on branch cursor/experience-nav-shell-36bd"
 artifact_ref:
-  branch: cursor/experience-foundation-36bd
+  branch: cursor/experience-nav-shell-36bd
   plan_path: .agents/plans/experience-program-36bd.md
-  plan_commit: 32ebc9155097f79cdd9bfaab42603b460db32280
+  plan_commit: 6973eb623cd8662b2faa20f37d4f203c485e0ab8
   snapshot_path: .agents/plans/experience-program-36bd.snapshot.json
-  snapshot_commit: 32ebc9155097f79cdd9bfaab42603b460db32280
-open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/380"]
+  snapshot_commit: 6973eb623cd8662b2faa20f37d4f203c485e0ab8
+open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/381"]
 merge_commits: {"R":"15bc8a3da7b257c3ee68e9085edd3b1108b4751c"}
 debt_issue_refs: []
 ```
