@@ -20,7 +20,7 @@ test.describe('Organisation discovery', () => {
       name: 'Rescue Hearts',
       type: 'charity',
     });
-    await setOrganizationDiscoveryProfile(org.id, {
+    await setOrganizationDiscoveryProfile(baseURL, owner.accessToken, org, {
       town: 'Springfield',
       administrative_area: 'IL',
       description: 'A caring rescue shelter',
@@ -48,7 +48,7 @@ test.describe('Organisation discovery', () => {
       name: 'Quiet Shelter',
       type: 'charity',
     });
-    await setOrganizationDiscoverability(org.id, false);
+    await setOrganizationDiscoverability(baseURL, owner.accessToken, org, false);
 
     const discovery = await discoverOrganizations(baseURL);
     expect(discovery.items.some((item) => item.id === org.id)).toBe(false);

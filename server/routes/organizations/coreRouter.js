@@ -84,10 +84,42 @@ export function registerCoreRoutes(router, pool) {
       if (!userId) return res.status(401).json({ error: 'Unauthorized' });
       try {
         if (!(await requireSuperAdmin(pool, res, req.params.id, userId))) return;
-        const { name, type, email, phone, address, website, bio, photo_url, logo_url } = req.body;
+        const {
+          name,
+          type,
+          email,
+          phone,
+          address,
+          website,
+          bio,
+          photo_url,
+          logo_url,
+          town,
+          administrative_area,
+          description,
+          is_discoverable: isDiscoverable,
+        } = req.body;
         await pool.query(
-          'UPDATE organizations SET name = $1, type = $2, email = $3, phone = $4, address = $5, website = $6, bio = $7, photo_url = $8, logo_url = $9, updated_at = NOW() WHERE id = $10',
-          [name || '', type || 'professional', email || null, phone || null, address || null, website || null, bio || '', photo_url || '', logo_url || '', req.params.id]
+          `UPDATE organizations SET name = $1, type = $2, email = $3, phone = $4, address = $5,
+           website = $6, bio = $7, photo_url = $8, logo_url = $9, town = $10,
+           administrative_area = $11, description = $12, is_discoverable = $13, updated_at = NOW()
+           WHERE id = $14`,
+          [
+            name || '',
+            type || 'professional',
+            email || null,
+            phone || null,
+            address || null,
+            website || null,
+            bio || '',
+            photo_url || '',
+            logo_url || '',
+            town || '',
+            administrative_area || '',
+            description || '',
+            isDiscoverable !== false,
+            req.params.id,
+          ],
         );
         const org = await fetchOrgForUser(pool, userId, req.params.id);
         if (!org) return res.status(404).json({ error: 'Organization not found' });

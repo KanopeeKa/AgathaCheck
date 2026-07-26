@@ -310,7 +310,7 @@ export async function updateOrganization(
   baseURL: string,
   token: string,
   orgId: string,
-  data: Record<string, string>,
+  data: Record<string, string | boolean>,
 ): Promise<TestOrganization> {
   const res = await apiFetch(apiUrl(`/organizations/${orgId}`, baseURL), {
     method: 'PUT',
@@ -371,30 +371,24 @@ export async function discoverOrganizations(
   return res.json();
 }
 
-async function execPsql(sql: string): Promise<void> {
-  const { execSync } = await import('node:child_process');
-  const host = process.env.PGHOST ?? 'localhost';
-  const port = process.env.PGPORT ?? '5432';
-  const user = process.env.PGUSER ?? 'user';
-  const password = process.env.PGPASSWORD ?? 'password';
-  const database = process.env.PGDATABASE ?? 'agatha_db';
-  execSync(
-    `PGPASSWORD='${password}' psql -h '${host}' -p '${port}' -U '${user}' -d '${database}' -c "${sql}"`,
-    { stdio: 'pipe' },
-  );
-}
-
 export async function setOrganizationDiscoverability(
-  orgId: string,
+  baseURL: string,
+  token: string,
+  org: Pick<TestOrganization, 'id' | 'name' | 'type'>,
   isDiscoverable: boolean,
 ): Promise<void> {
-  await execPsql(
-    `UPDATE organizations SET is_discoverable = ${isDiscoverable} WHERE id = '${orgId}'`,
-  );
+  await updateOrganization(baseURL, token, org.id, {
+    name: org.name,
+    type: org.type,
+    bio: org.bio ?? '',
+    is_discoverable: isDiscoverable,
+  });
 }
 
 export async function setOrganizationDiscoveryProfile(
-  orgId: string,
+  baseURL: string,
+  token: string,
+  org: Pick<TestOrganization, 'id' | 'name' | 'type'>,
   profile: {
     town?: string;
     administrative_area?: string;
@@ -402,23 +396,15 @@ export async function setOrganizationDiscoveryProfile(
     logo_url?: string;
   },
 ): Promise<void> {
-  const sets: string[] = [];
-  if (profile.town != null) {
-    sets.push(`town = '${profile.town.replace(/'/g, "''")}'`);
-  }
-  if (profile.administrative_area != null) {
-    sets.push(
-      `administrative_area = '${profile.administrative_area.replace(/'/g, "''")}'`,
-    );
-  }
-  if (profile.description != null) {
-    sets.push(`description = '${profile.description.replace(/'/g, "''")}'`);
-  }
-  if (profile.logo_url != null) {
-    sets.push(`logo_url = '${profile.logo_url.replace(/'/g, "''")}'`);
-  }
-  if (sets.length === 0) return;
-  await execPsql(`UPDATE organizations SET ${sets.join(', ')} WHERE id = '${orgId}'`);
+  await updateOrganization(baseURL, token, org.id, {
+    name: org.name,
+    type: org.type,
+    bio: org.bio ?? '',
+    town: profile.town ?? '',
+    administrative_area: profile.administrative_area ?? '',
+    description: profile.description ?? '',
+    logo_url: profile.logo_url ?? '',
+  });
 }
 
 export async function inviteToOrganization(
