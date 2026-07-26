@@ -6,26 +6,55 @@ import 'package:flutter_test/flutter_test.dart';
 void main() {
   final controller = PetListController();
 
-  test('guardianDashboardPreviewPets caps at 4 active shell pets', () {
-    final pets = List.generate(
-      6,
-      (i) => Pet(id: '$i', name: 'Pet $i', species: 'Dog', breed: ''),
-    );
+  test('guardianDashboardPersonalPets returns all active personal pets sorted', () {
+    final pets = [
+      Pet(
+        id: '2',
+        name: 'Beta',
+        species: 'Dog',
+        breed: '',
+        createdAt: DateTime(2024, 2, 1),
+      ),
+      Pet(
+        id: '1',
+        name: 'Alpha',
+        species: 'Dog',
+        breed: '',
+        createdAt: DateTime(2024, 1, 1),
+      ),
+      Pet(
+        id: '3',
+        name: 'Foster',
+        species: 'Cat',
+        breed: '',
+        isFoster: true,
+        createdAt: DateTime(2024, 3, 1),
+      ),
+    ];
 
-    final preview = guardianDashboardPreviewPets(pets, controller, limit: 4);
-    expect(preview.length, 4);
+    final personal = guardianDashboardPersonalPets(pets, controller);
+    expect(personal.length, 2);
+    expect(personal.map((p) => p.name).toList(), ['Alpha', 'Beta']);
   });
 
-  test('guardianDashboardHasMorePets is true when more than 4 active pets', () {
-    final pets = List.generate(
-      6,
-      (i) => Pet(id: '$i', name: 'Pet $i', species: 'Dog', breed: ''),
-    );
+  test('guardianDashboardFosterPets returns foster pets only', () {
+    final pets = [
+      const Pet(id: '1', name: 'Mine', species: 'Dog', breed: ''),
+      const Pet(
+        id: '2',
+        name: 'Fostered',
+        species: 'Cat',
+        breed: '',
+        isFoster: true,
+      ),
+    ];
 
-    expect(guardianDashboardHasMorePets(pets, controller, limit: 4), isTrue);
+    final fostered = guardianDashboardFosterPets(pets, controller);
+    expect(fostered.length, 1);
+    expect(fostered.first.name, 'Fostered');
   });
 
-  test('passed-away pets are excluded from preview', () {
+  test('passed-away pets are excluded from dashboard groups', () {
     final pets = [
       const Pet(
         id: '1',
@@ -43,8 +72,7 @@ void main() {
       ),
     ];
 
-    final preview = guardianDashboardPreviewPets(pets, controller);
-    expect(preview.length, 1);
-    expect(preview.first.name, 'Alive');
+    expect(guardianDashboardPersonalPets(pets, controller).length, 1);
+    expect(guardianDashboardHasAnyPets(pets, controller), isTrue);
   });
 }

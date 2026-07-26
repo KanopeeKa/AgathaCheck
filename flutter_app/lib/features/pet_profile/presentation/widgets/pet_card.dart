@@ -9,14 +9,32 @@ import '../../domain/entities/pet.dart';
 import '../utils/ownership_accent.dart';
 import '../utils/pet_accent_color.dart';
 
-/// Material card showing a pet summary with image, ownership status bar, and name.
-///
-/// Vertical layout (image → status bar → name) for dashboard grids and list rows.
+/// Sort pets oldest-first (creation order), then by name.
+void sortPetsByCreatedAt(List<Pet> pets) {
+  pets.sort((a, b) {
+    final ad = a.createdAt ?? DateTime(2100);
+    final bd = b.createdAt ?? DateTime(2100);
+    final byDate = ad.compareTo(bd);
+    if (byDate != 0) return byDate;
+    return a.name.toLowerCase().compareTo(b.name.toLowerCase());
+  });
+}
+
+/// Horizontal dashboard tile: 2/3 image, 1/3 text, fixed height.
 class PetCard extends StatelessWidget {
   const PetCard({super.key, required this.pet, this.onTap});
 
   final Pet pet;
   final VoidCallback? onTap;
+
+  static const tileHeight = 100.0;
+
+  static double tileWidthFor(double maxWidth) {
+    if (maxWidth >= 900) return 220;
+    if (maxWidth >= 600) return 200;
+    if (maxWidth >= 400) return 180;
+    return 160;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -29,109 +47,70 @@ class PetCard extends StatelessWidget {
 
     return MergeSemantics(
       child: Semantics(
+        identifier: 'pet_card',
         label: _semanticsLabel(l, pet),
         child: Card(
           key: Key('pet_card_${pet.name}'),
           clipBehavior: Clip.antiAlias,
+          margin: EdgeInsets.zero,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
           ),
           child: InkWell(
             onTap: onTap,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                AspectRatio(
-                  aspectRatio: 4 / 3,
-                  child: _buildImageArea(context),
-                ),
-                Container(height: 4, color: statusBarColor),
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(10, 8, 10, 10),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        pet.name,
-                        style: theme.textTheme.titleSmall?.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      if (pet.organizationName != null &&
-                          pet.organizationName!.isNotEmpty) ...[
-                        const SizedBox(height: 2),
-                        Row(
-                          children: [
-                            Icon(
-                              Icons.business,
-                              size: 12,
-                              color: ownership.accentColor,
-                            ),
-                            const SizedBox(width: 4),
-                            Expanded(
-                              child: Text(
-                                pet.organizationName!,
-                                style: theme.textTheme.labelSmall?.copyWith(
-                                  color: ownership.accentColor,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                      if (ownership.showsFosterLabel) ...[
-                        const SizedBox(height: 2),
-                        Row(
-                          children: [
-                            Icon(
-                              Icons.home_work_outlined,
-                              size: 12,
-                              color: fosterAccent,
-                            ),
-                            const SizedBox(width: 4),
-                            Expanded(
-                              child: Text(
-                                ownership.fosterLabel!,
-                                style: theme.textTheme.labelSmall?.copyWith(
-                                  color: fosterAccent,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                                maxLines: 2,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                      const SizedBox(height: 2),
-                      Text(
-                        _speciesLine(l, pet),
-                        style: theme.textTheme.labelSmall?.copyWith(
-                          color: colorScheme.onSurfaceVariant,
-                        ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      if (_hasExtraSubtitle(pet)) ...[
-                        const SizedBox(height: 2),
-                        Text(
-                          _extraSubtitle(pet),
-                          style: theme.textTheme.labelSmall?.copyWith(
-                            color: colorScheme.onSurfaceVariant,
-                          ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ],
-                    ],
+            child: SizedBox(
+              height: tileHeight,
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Container(width: 4, color: statusBarColor),
+                  Expanded(
+                    flex: 2,
+                    child: _buildImageArea(context),
                   ),
-                ),
-              ],
+                  Expanded(
+                    flex: 1,
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(8, 8, 8, 8),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            pet.name,
+                            style: theme.textTheme.titleSmall?.copyWith(
+                              fontWeight: FontWeight.bold,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          if (ownership.showsFosterLabel) ...[
+                            const SizedBox(height: 2),
+                            Text(
+                              ownership.fosterLabel!,
+                              style: theme.textTheme.labelSmall?.copyWith(
+                                color: fosterAccent,
+                                fontWeight: FontWeight.w500,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ],
+                          const SizedBox(height: 2),
+                          Text(
+                            _speciesLine(l, pet),
+                            style: theme.textTheme.labelSmall?.copyWith(
+                              color: colorScheme.onSurfaceVariant,
+                            ),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ),
@@ -147,22 +126,10 @@ class PetCard extends StatelessWidget {
     return 'Pet: ${pet.name}, $species';
   }
 
-  bool _hasExtraSubtitle(Pet pet) {
-    return pet.ageDisplay != null ||
-        (pet.gender != null && pet.gender!.isNotEmpty);
-  }
-
   String _speciesLine(AppLocalizations l, Pet pet) {
     final species = _localizedSpecies(l, pet.species);
-    if (pet.breed.isNotEmpty) return '$species - ${pet.breed}';
+    if (pet.breed.isNotEmpty) return '$species · ${pet.breed}';
     return species;
-  }
-
-  String _extraSubtitle(Pet pet) {
-    return [
-      if (pet.ageDisplay != null) '${pet.ageDisplay!} old',
-      if (pet.gender != null && pet.gender!.isNotEmpty) pet.gender!,
-    ].join(' · ');
   }
 
   Widget _buildImageArea(BuildContext context) {
@@ -185,8 +152,8 @@ class PetCard extends StatelessWidget {
               opacity: 0.35,
               child: Image.asset(
                 'assets/rainbow_wings.png',
-                width: 48,
-                height: 48,
+                width: 36,
+                height: 36,
                 fit: BoxFit.contain,
               ),
             ),
@@ -216,7 +183,7 @@ class PetCard extends StatelessWidget {
       child: Center(
         child: AppConstants.speciesIconWidget(
           pet.species,
-          size: 40,
+          size: 32,
           color: petColor,
         ),
       ),
@@ -249,34 +216,62 @@ String _localizedSpecies(AppLocalizations l, String species) {
   }
 }
 
-/// Responsive grid of [PetCard] widgets (2 columns mobile, 3 on wider screens).
-class PetCardGrid extends StatelessWidget {
-  const PetCardGrid({super.key, required this.pets, required this.onPetTap});
+/// Responsive row of horizontal [PetCard] tiles.
+///
+/// [useWrap] lays out all tiles in a wrapping grid (manage-pets screen).
+/// Otherwise uses a horizontal scroll strip (dashboard groups).
+class PetTileStrip extends StatelessWidget {
+  const PetTileStrip({
+    super.key,
+    required this.pets,
+    required this.onPetTap,
+    this.useWrap = false,
+    this.tileBuilder,
+  });
 
   final List<Pet> pets;
   final void Function(Pet pet) onPetTap;
 
+  /// When true, tiles wrap to multiple rows instead of horizontal scroll.
+  final bool useWrap;
+
+  /// Optional wrapper (e.g. bulk-share checkbox overlay).
+  final Widget Function(Pet pet, Widget tile)? tileBuilder;
+
   @override
   Widget build(BuildContext context) {
+    if (pets.isEmpty) return const SizedBox.shrink();
+
     return LayoutBuilder(
       builder: (context, constraints) {
-        final width = constraints.maxWidth;
-        final crossAxisCount = width >= 520 ? 3 : 2;
+        final tileWidth = PetCard.tileWidthFor(constraints.maxWidth);
 
-        return GridView.builder(
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: crossAxisCount,
-            mainAxisSpacing: 8,
-            crossAxisSpacing: 8,
-            childAspectRatio: 0.72,
+        Widget buildTile(Pet pet) {
+          final card = PetCard(pet: pet, onTap: () => onPetTap(pet));
+          final wrapped = tileBuilder?.call(pet, card) ?? card;
+          return SizedBox(
+            width: tileWidth,
+            height: PetCard.tileHeight,
+            child: wrapped,
+          );
+        }
+
+        if (useWrap) {
+          return Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: pets.map(buildTile).toList(),
+          );
+        }
+
+        return SizedBox(
+          height: PetCard.tileHeight,
+          child: ListView.separated(
+            scrollDirection: Axis.horizontal,
+            itemCount: pets.length,
+            separatorBuilder: (_, __) => const SizedBox(width: 8),
+            itemBuilder: (context, index) => buildTile(pets[index]),
           ),
-          itemCount: pets.length,
-          itemBuilder: (context, index) {
-            final pet = pets[index];
-            return PetCard(pet: pet, onTap: () => onPetTap(pet));
-          },
         );
       },
     );

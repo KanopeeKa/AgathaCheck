@@ -7,7 +7,7 @@ import 'package:pet_profile_app/features/experience/presentation/widgets/guardia
 import 'package:pet_profile_app/features/pet_profile/domain/entities/pet.dart';
 import 'package:pet_profile_app/features/pet_profile/presentation/controllers/pet_list_controller.dart';
 import 'package:pet_profile_app/features/pet_profile/presentation/providers/pet_providers.dart';
-import 'package:pet_profile_app/features/pet_profile/presentation/widgets/pet_card.dart';
+import 'package:pet_profile_app/features/experience/presentation/screens/guardian/guardian_my_pets_section.dart';
 import 'package:pet_profile_app/features/health_tracking/presentation/providers/health_providers.dart';
 import 'package:pet_profile_app/features/vet/domain/entities/vet.dart';
 import 'package:pet_profile_app/features/vet/presentation/providers/vet_providers.dart';
@@ -60,14 +60,22 @@ void main() {
     expect(find.text('All Vets'), findsOneWidget);
   });
 
-  testWidgets('My Pets preview is capped at four with All Pets link', (
+  testWidgets('My Pets shows all personal pets with Manage pets link', (
     tester,
   ) async {
     await tester.pumpWidget(buildDashboard());
     await tester.pumpAndSettle();
 
-    expect(find.byType(PetCard), findsNWidgets(4));
-    expect(find.text('All Pets'), findsOneWidget);
+    expect(find.text('Manage pets'), findsOneWidget);
+    expect(find.text('Pet 0'), findsOneWidget);
+
+    final listView = find.descendant(
+      of: find.byType(GuardianMyPetsSection),
+      matching: find.byType(ListView),
+    );
+    await tester.drag(listView, const Offset(-800, 0));
+    await tester.pumpAndSettle();
+    expect(find.text('Pet 5'), findsOneWidget);
   });
 
   testWidgets('empty state when no pets', (tester) async {

@@ -29,7 +29,14 @@ class PetModel {
     this.fosterPlacementStatus,
     this.fosterName,
     this.guardianName,
+    this.createdAt,
   });
+
+  static DateTime? _parseTimestamp(dynamic raw) {
+    if (raw == null) return null;
+    if (raw is DateTime) return raw;
+    return DateTime.tryParse(raw.toString());
+  }
 
   factory PetModel.fromJson(Map<String, dynamic> json) {
     return PetModel(
@@ -59,6 +66,7 @@ class PetModel {
       fosterPlacementStatus: json['foster_placement_status'] as String?,
       fosterName: json['foster_name'] as String?,
       guardianName: json['guardian_name'] as String?,
+      createdAt: _parseTimestamp(json['createdAt'] ?? json['created_at']),
     );
   }
 
@@ -88,6 +96,7 @@ class PetModel {
       fosterPlacementStatus: pet.fosterPlacementStatus,
       fosterName: pet.fosterName,
       guardianName: pet.guardianName,
+      createdAt: pet.createdAt,
     );
   }
 
@@ -119,6 +128,7 @@ class PetModel {
   final String? fosterPlacementStatus;
   final String? fosterName;
   final String? guardianName;
+  final DateTime? createdAt;
 
   Map<String, dynamic> toJson() {
     return {
@@ -172,6 +182,7 @@ class PetModel {
       fosterPlacementStatus: fosterPlacementStatus,
       fosterName: fosterName,
       guardianName: guardianName,
+      createdAt: createdAt,
     );
   }
 }

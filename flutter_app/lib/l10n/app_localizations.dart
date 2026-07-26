@@ -656,6 +656,12 @@ abstract class AppLocalizations {
   /// **'All Pets'**
   String get allPets;
 
+  /// No description provided for @managePets.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage pets'**
+  String get managePets;
+
   /// No description provided for @filterByOrganization.
   ///
   /// In en, this message translates to:
