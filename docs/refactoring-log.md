@@ -342,6 +342,23 @@ Use this template when spawning agents on an integration branch:
 
 ---
 
+## Experience program — Phase 3 (`experience-program-phase-3`)
+
+**Integration branch:** `cursor/sprint-exp-org-presentation-integration-36bd`  
+**Control issue:** #379 · **UI review:** `docs/experience-program/phase-3-ui-design-review.md`
+
+| Agent | Branch | Owns | Avoid |
+|-------|--------|------|-------|
+| **foundation** | `cursor/exp-org-foundation-36bd` | `db/migrations/035_*`, `db/migrations/036_*`, `db/schema/canonical.sql`, `server/lib/orgPermissions.js`, `server/lib/orgRoles.js`, `server/routes/organizations/index.js` (permission helpers), `server/test/orgPermissions*.js`, Flutter `hasPermission` wiring in `flutter_app/lib/features/organization/domain/` | UI screens |
+| **discover** | `cursor/exp-org-discover-36bd` | `server/routes/organizations/discover*`, `flutter_app/lib/features/organization/presentation/widgets/org_discovery_*`, `organization_list_screen.dart` (Discover section only), `e2e/playwright/tests/organisation.discovery.spec.ts`, BDD `organisation_discovery.feature` | `organization_detail_screen.dart`, migrations |
+| **admin-contacts** | `cursor/exp-org-admin-contacts-36bd` | `flutter_app/lib/features/organization/presentation/screens/admin_contacts_screen.dart`, `widgets/admin_contacts/*`, BDD `admin_contacts.feature`, routes in `organization_routes.dart` (admin-contacts path only) | `organization_people_section.dart` (read-only reference), pets |
+| **pet-tabs** | `cursor/exp-org-pet-tabs-36bd` | `organization_pets_screen.dart`, `widgets/org_pets/*`, BDD `pet_screen_filters.feature`, `e2e/playwright/tests/organisation.pet-filters.spec.ts` | other org screens |
+| **coordinator** | `cursor/experience-org-presentation-36bd` | Org dashboard hub (3.4), Presentation screen (3.5), Legal slide-over (3.7), audit events (3.9), BDD extensions, plan artifacts | files owned by parallel agents until merged |
+
+**Sequence:** foundation merges to integration first → discover / admin-contacts / pet-tabs in parallel → coordinator merges decomposition + remaining sprints → single PR integration → `main`.
+
+---
+
 
 | Date | Change |
 |---|---|
