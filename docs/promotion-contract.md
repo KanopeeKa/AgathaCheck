@@ -1,7 +1,9 @@
 # Promotion contract
 
 Canonical reference for **auto-promotion** on `KanopeeKa/AgathaCheck`: merge to
-`main` → UAT tag → UAT deploy → prod stub/release tag.
+`main` → Pre-UAT E2E → UAT tag → UAT deploy → prod stub/release tag.
+
+Pipeline tiers: [e2e/uat-deploy-tiers.md](./e2e/uat-deploy-tiers.md).
 
 Implementation phases: PR **#A** (ci-gate) through **#F** (doc cleanup). Phase **#D**
 (prod stub + auto semver) is implemented in `deploy-prod.yml`. Phase **#E**
@@ -15,7 +17,7 @@ and branch rules: [ci-cd-gates.md](./ci-cd-gates.md).
 
 | Kind | Pattern (regex) | Example | Created by |
 |------|-----------------|---------|------------|
-| **UAT** | `^uat-[0-9]{6}-[0-9]+$` | `uat-260716-170` | `promote-uat.yml` on merge to `main` |
+| **UAT** | `^uat-[0-9]{6}-[0-9]+$` | `uat-260716-170` | `promote-uat.yml` after Pre-UAT E2E green |
 | **Prod (stable)** | `^v[0-9]+\.[0-9]+\.[0-9]+$` | `v1.0.3` | `deploy-prod.yml` when `PROD_DEPLOY_ENABLED=true` |
 | **Prod (stub / pre-infra)** | `^v[0-9]+\.[0-9]+\.[0-9]+-rc\.[0-9]+$` | `v1.0.3-rc.1` | `deploy-prod.yml` when `PROD_DEPLOY_ENABLED` is not `true` |
 
@@ -61,10 +63,11 @@ step summary for alerting (`PROMOTION_WEBHOOK_URL` optional).
 
 ## Accepted trade-off: no CI re-run on `main`
 
-After merge, **`promote-uat.yml`** does not re-run CI on the merge commit.
+After merge, **`promote-uat.yml`** does not re-run CI on the merge commit — **Pre-UAT E2E**
+runs full Playwright localhost shards on the merge SHA before tagging.
 
-**Tag push → deploy chain:** `promote-uat.yml` creates `uat-*` tags with the default
-`GITHUB_TOKEN`. GitHub does **not** fire `on: push: tags` workflows for those refs
+**Tag push → deploy chain:** `promote-uat.yml` creates `uat-*` tags after **Pre-UAT E2E**
+(`pre-uat-e2e.yml`) succeeds. GitHub does **not** fire `on: push: tags` workflows for those refs
 (to prevent recursive runs). **`deploy-uat.yml`** therefore also listens for
 `workflow_run` after **Promote UAT** completes and resolves the tag for the merge
 commit. Manual tag pushes (non-`GITHUB_TOKEN`) still trigger `deploy-uat` via tag push.

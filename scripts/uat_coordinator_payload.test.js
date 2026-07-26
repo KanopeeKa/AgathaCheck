@@ -24,10 +24,17 @@ test('classifyFailedJob maps smoke job to http_smoke', () => {
   assert.equal(row.gate, 'http_smoke');
 });
 
+test('classifyFailedJobs maps pre-uat E2E failure to pre_uat_e2e', () => {
+  const rows = classifyFailedJobs([
+    { name: 'Full localhost E2E', conclusion: 'failure', id: 1 },
+  ]);
+  assert.equal(rows[0].gate, 'pre_uat_e2e');
+});
+
 test('classifyFailedJobs ignores success jobs', () => {
   const rows = classifyFailedJobs([
     { name: 'build-web', conclusion: 'success' },
-    { name: 'uat-e2e-full', conclusion: 'failure', id: 2 },
+    { name: 'Playwright E2E (localhost shard 1/11)', conclusion: 'failure', id: 2 },
   ]);
   assert.equal(rows.length, 1);
   assert.equal(rows[0].gate, 'localhost_e2e');
@@ -49,7 +56,7 @@ test('buildUatCoordinatorPayload includes remedial branch', () => {
       uat_tag: 'uat-260724-42',
       state: 'remedial',
     },
-    failedGates: [{ gate: 'localhost_e2e', job_name: 'uat-e2e-full', remedial: 'yes' }],
+    failedGates: [{ gate: 'pre_uat_e2e', job_name: 'Pre-UAT E2E gate', remedial: 'yes' }],
     workflowRunId: '99',
     workflowUrl: 'https://github.com/o/r/actions/runs/99',
     repository: 'https://github.com/o/r',
@@ -101,7 +108,7 @@ test('isInfraOnlyFailure true when every failed gate is maybe_infra', () => {
 test('isInfraOnlyFailure false when a code gate also failed', () => {
   const gates = classifyFailedJobs([
     { name: 'HTTP smoke', conclusion: 'failure', id: 1 },
-    { name: 'uat-e2e-full', conclusion: 'failure', id: 2 },
+    { name: 'Playwright E2E (localhost shard 3/11)', conclusion: 'failure', id: 2 },
   ]);
   assert.equal(isInfraOnlyFailure(gates), false);
 });
@@ -117,10 +124,8 @@ test('classifyFailedJobs matches real deploy-uat job names and excludes aggregat
     { name: 'Build Flutter web / Build Flutter web', conclusion: 'success', id: 1 },
     { name: 'Build and deploy to UAT', conclusion: 'success', id: 2 },
     { name: 'UAT post-deploy smoke', conclusion: 'failure', id: 3 },
-    { name: 'UAT live smoke E2E', conclusion: 'skipped', id: 4 },
-    { name: 'Prod ready', conclusion: 'failure', id: 5 },
-    { name: 'UAT full E2E (localhost)', conclusion: 'skipped', id: 6 },
-    { name: 'UAT release conclusion', conclusion: 'failure', id: 7 },
+    { name: 'Prod ready', conclusion: 'failure', id: 4 },
+    { name: 'UAT release conclusion', conclusion: 'failure', id: 5 },
   ]);
   assert.equal(gates.length, 1);
   assert.equal(gates[0].gate, 'http_smoke');
@@ -134,14 +139,18 @@ test('classifyFailedJob matches real job names for deploy, build, and localhost 
     'flutter_build',
   );
   assert.equal(
-    classifyFailedJob({ name: 'UAT full E2E (localhost)', conclusion: 'failure' }).gate,
+    classifyFailedJob({ name: 'Playwright E2E (localhost shard 1/11)', conclusion: 'failure' }).gate,
     'localhost_e2e',
+  );
+  assert.equal(
+    classifyFailedJob({ name: 'Pre-UAT E2E gate', conclusion: 'failure' }).gate,
+    'pre_uat_e2e',
   );
 });
 
-test('primaryFailedGate prefers migrations over e2e', () => {
+test('primaryFailedGate prefers migrations over pre-uat e2e', () => {
   const primary = primaryFailedGate([
-    { gate: 'localhost_e2e' },
+    { gate: 'pre_uat_e2e' },
     { gate: 'migrations' },
   ]);
   assert.equal(primary.gate, 'migrations');

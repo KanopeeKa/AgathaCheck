@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
-# Assert all UAT release gates passed before PROD promotion.
-# Called from deploy-uat.yml prod-ready job. Emits a single summary table.
+# Assert UAT release gates passed before PROD promotion.
+# Deploy-uat is light: deploy + HTTP smoke only. Full E2E runs in pre-uat-e2e.yml.
+# See docs/e2e/uat-deploy-tiers.md
 set -euo pipefail
 
 SUMMARY_FILE="${GITHUB_STEP_SUMMARY:-}"
@@ -24,13 +25,8 @@ require_success() {
 
 DEPLOY_RESULT="${DEPLOY_RESULT:-}"
 SMOKE_RESULT="${SMOKE_RESULT:-}"
-LIVE_SMOKE_RESULT="${LIVE_SMOKE_RESULT:-}"
-FULL_E2E_RESULT="${FULL_E2E_RESULT:-}"
 BUILD_RESULT="${BUILD_RESULT:-}"
 SMOKE_FAILURE_KIND="${SMOKE_FAILURE_KIND:-}"
-LIVE_SMOKE_FAILURE_KIND="${LIVE_SMOKE_FAILURE_KIND:-}"
-UAT_FULL_E2E_CADENCE_SKIP="${UAT_FULL_E2E_CADENCE_SKIP:-false}"
-UAT_FULL_E2E_CADENCE_REASON="${UAT_FULL_E2E_CADENCE_REASON:-}"
 DEPLOY_REF="${DEPLOY_REF:-}"
 GITHUB_SHA="${GITHUB_SHA:-}"
 GITHUB_RUN_ID="${GITHUB_RUN_ID:-}"
@@ -50,7 +46,6 @@ emit_output() {
 failed=0
 summary_tmp="$(mktemp)"
 trap 'rm -f "$summary_tmp"' EXIT
-# Preserve workflow-command output on the original stdout outside the summary capture block.
 exec 3>&1
 
 {
@@ -67,8 +62,7 @@ exec 3>&1
 
   for row in \
     "deploy|${DEPLOY_RESULT}" \
-    "smoke (HTTP)|${SMOKE_RESULT}" \
-    "uat-e2e-smoke (live @smoke)|${LIVE_SMOKE_RESULT}"; do
+    "smoke (HTTP)|${SMOKE_RESULT}"; do
     label="${row%%|*}"
     result="${row#*|}"
     if require_success "$label" "$result"; then
@@ -79,21 +73,6 @@ exec 3>&1
       failed=1
     fi
   done
-
-  full_e2e_gate="pass"
-  if [[ "${FULL_E2E_RESULT}" == "skipped" && "${SMOKE_RESULT}" != "success" ]]; then
-    printf '| uat-e2e-full (localhost) | `skipped (smoke failed)` | no | n/a |\n'
-  elif [[ "${FULL_E2E_RESULT}" == "skipped" && "${UAT_FULL_E2E_CADENCE_SKIP}" == "true" ]]; then
-    echo "::notice::Full localhost E2E skipped by cadence (${UAT_FULL_E2E_CADENCE_REASON:-n/a}) — HTTP + live smoke gates still required." >&3
-    printf '| uat-e2e-full (localhost) | `skipped (%s)` | cadence | yes |\n' "${UAT_FULL_E2E_CADENCE_REASON:-cadence}"
-  elif require_success "uat-e2e-full (localhost)" "${FULL_E2E_RESULT}"; then
-    printf '| uat-e2e-full (localhost) | `%s` | yes | yes |\n' "${FULL_E2E_RESULT}"
-  else
-    echo "::error title=UAT gate failed::uat-e2e-full (localhost) concluded with '${FULL_E2E_RESULT}' (expected success)" >&3
-    printf '| uat-e2e-full (localhost) | `%s` | yes | no |\n' "${FULL_E2E_RESULT}"
-    failed=1
-    full_e2e_gate="fail"
-  fi
 
   migrate_gate="skipped"
   if [[ "${MIGRATE_STATUS_COLLECTED}" == "true" ]]; then
@@ -127,35 +106,15 @@ exec 3>&1
 
 append_summary <"$summary_tmp"
 
-# Classify the failure so downstream ledger sync (agent-uat-notify) can tell
-# infra-only blockers (WAF challenge, deploy transport) apart from evidence of
-# a real code regression (build/localhost-E2E/migrations). Conservative:
-# anything not clearly infra-only defaults to "code" (blocking). See
-# docs/agent-efficiency/uat-coordinator-plan.md "Infra vs code classification".
 gate_failure_class="none"
 if [[ "$failed" -ne 0 ]]; then
   gate_failure_class="infra_only"
   if [[ -n "$BUILD_RESULT" && "$BUILD_RESULT" != "success" ]]; then
     gate_failure_class="code"
-  elif [[ "$full_e2e_gate" == "fail" ]]; then
-    gate_failure_class="code"
   elif [[ "$migrate_gate" == "fail" ]]; then
     gate_failure_class="code"
   elif [[ "$DEPLOY_RESULT" == "success" && "$SMOKE_RESULT" != "success" ]]; then
-    # Only reached when deploy itself succeeded and smoke genuinely ran (not a
-    # cascaded skip from a failed deploy, which stays infra_only above). A
-    # failed smoke job is only "infra_only" when the response body itself
-    # points at a host/config issue (WAF challenge, Passenger not registered).
-    # passenger_crash ("app failing to start") and unknown/no-signal (e.g. the
-    # SSH-deploy-proofs precheck failed before any probe ran, or smoke was
-    # cancelled) default to "code" — a crashing app can be a genuine
-    # regression, and there is no signal to prove otherwise.
     case "$SMOKE_FAILURE_KIND" in
-      waf | apache_404 | directory_listing | flutter_spa) ;;
-      *) gate_failure_class="code" ;;
-    esac
-  elif [[ "$DEPLOY_RESULT" == "success" && "$LIVE_SMOKE_RESULT" != "success" ]]; then
-    case "$LIVE_SMOKE_FAILURE_KIND" in
       waf | apache_404 | directory_listing | flutter_spa) ;;
       *) gate_failure_class="code" ;;
     esac

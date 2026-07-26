@@ -47,7 +47,7 @@ Do not duplicate these commands in chat — run the script. Skill: `/pre-push-ve
 - Node.js is the canonical backend
 - Never raw exception text in prod 5xx bodies
 - Calendar dates as `YYYY-MM-DD` on the wire
-- **UAT Tiger Protect WAF:** HTTP IP whitelisting for GitHub Actions is **not available** — never ask the operator to whitelist CI egress. Mitigate in code/workflow only (browser warmup, WAF cookie persistence across Playwright contexts, single-process gate, deploy retry cooldown). See `docs/e2e/uat-waf-queue-lessons.md`.
+- **UAT Tiger Protect WAF:** HTTP IP whitelisting for GitHub Actions is **not available** — never ask the operator to whitelist CI egress. Live browser E2E is **advisory** (`uat-live-e2e.yml`); deploy path is HTTP smoke only. See `docs/e2e/uat-deploy-tiers.md` and `docs/e2e/uat-waf-queue-lessons.md`.
 
 ## Atomic PRs (summary)
 

@@ -110,17 +110,21 @@ cd e2e && npm run test:ci-shard -- 3   # run one shard locally (stack must be ru
 | `ci.yml` | PR → `main` (+ manual dispatch) | Flutter analyze + unit/widget tests + web build; backend Jest |
 | `codeql.yml` | PR → `main` (+ weekly schedule) | Static security analysis (JavaScript/TypeScript) |
 | `e2e.yml` | manual + weekly cron (non-blocking) | Full Playwright against **localhost** (11 file-balanced shards) |
-| `promote-uat.yml` | push → `main` | Create `uat-YYMMDD-PR#` tag on merge (see `docs/promotion-contract.md`) |
-| `deploy-uat.yml` | push → `uat-*` tag | Fast FTP deploy → post-deploy smoke + live `@smoke-uat` E2E + full localhost E2E → `prod-ready` gate |
+| `pre-uat-e2e.yml` | push → `main` | Full localhost Playwright (11 shards) — gates UAT promotion |
+| `promote-uat.yml` | after Pre-UAT E2E green | Create `uat-YYMMDD-PR#` tag (see `docs/promotion-contract.md`) |
+| `deploy-uat.yml` | push → `uat-*` tag | FTP deploy → HTTP post-deploy smoke → `prod-ready` gate |
+| `uat-live-e2e.yml` | nightly + manual (advisory) | Live `@smoke-uat` with WAF warmup — does not block promotion |
 | `deploy-prod.yml` | auto after UAT `prod-ready` (+ manual dispatch / release) | Stub `vX.Y.Z-rc.N` tag or live FTP + SSH deploy; post-deploy HTTP smoke |
 
 ### UAT deploy flow
 
-1. Merge PR to `main` → **`promote-uat.yml`** creates `uat-YYMMDD-PR#` tag — **no unit-test re-run** (CI already validated the code on the PR).
-2. Tag push triggers **`deploy-uat.yml`**; `deploy` job FTP-publishes frontend + backend (~5 min).
-3. After HTTP smoke: `uat-e2e-smoke` (Playwright `@smoke-uat` on live UAT), and `uat-e2e-full` when cadence allows (full suite on localhost, **11 file-balanced shards**).
-4. When all gates pass, `prod-ready` goes green — **`deploy-prod.yml`** runs automatically (stub or live per `PROD_DEPLOY_ENABLED`).
-5. UAT DB migrations: automatic when `UAT_SSH_ENABLED=true` and `UAT_AUTO_MIGRATE=true`; otherwise apply manually when `db/migrations/` changes.
+1. Merge PR to `main` → **`pre-uat-e2e.yml`** runs full localhost E2E (queued concurrency bundles rapid merges).
+2. On green E2E → **`promote-uat.yml`** creates `uat-YYMMDD-PR#` tag.
+3. Tag triggers **`deploy-uat.yml`**; deploy job FTP-publishes frontend + backend (~5–15 min).
+4. HTTP post-deploy smoke only (`scripts/uat-post-deploy-smoke.sh`) — no live WAF smoke on deploy path.
+5. When `prod-ready` is green, **`deploy-prod.yml`** runs automatically (stub or live per `PROD_DEPLOY_ENABLED`).
+6. **Advisory:** `uat-live-e2e.yml` exercises live UAT + Tiger Protect nightly.
+7. UAT DB migrations: automatic when `UAT_SSH_ENABLED=true` and `UAT_AUTO_MIGRATE=true`; otherwise apply manually when `db/migrations/` changes.
 
 ### Prod deploy
 
@@ -135,14 +139,14 @@ Tag fast, critical journeys with tier tags in the test title. Run locally:
 ```bash
 cd e2e && npm run test:smoke-ci    # PR canary (~3 journeys, retries 0, <2 min)
 cd e2e && npm run test:smoke-uat    # UAT live smoke (retries 0)
-cd e2e && npm run test:live-uat-gate # warmup-uat + smoke-uat in one Playwright run (deploy CI)
+cd e2e && npm run test:live-uat-gate # warmup-uat + smoke-uat (uat-live-e2e.yml advisory)
 cd e2e && npm run test:smoke        # alias for test:smoke-uat
 ```
 
 | Tag | Role |
 |-----|------|
 | `@smoke-ci` | PR CI canary subset (must also include `@smoke-uat`) |
-| `@smoke-uat` | UAT live smoke + broader guardian paths |
+| `@smoke-uat` | UAT live smoke (nightly advisory) + broader guardian paths |
 | `@smoke-a11y` | axe accessibility scans (weekly / UAT, not PR canary) |
 
 `@smoke-a11y` tests run **axe** after the journey completes. CI fails on **critical** and **serious** violations (see `playwright/support/axe.ts`). `@smoke-ci` excludes axe for speed.
