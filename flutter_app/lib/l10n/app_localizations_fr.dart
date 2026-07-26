@@ -55,6 +55,28 @@ class AppLocalizationsFr extends AppLocalizations {
       'Gérez les animaux en inventaire, coordonnez le personnel et les bénévoles, et partagez les dossiers de soins au sein de votre organisation.';
 
   @override
+  String get landingPathScrollCta => 'En savoir plus';
+
+  @override
+  String get landingPetParentsSectionTitle =>
+      'Parents d\'animaux et familles d\'accueil';
+
+  @override
+  String get landingPetParentsSectionBody =>
+      'Suivez les visites vétérinaires, les médicaments, le poids et les soins quotidiens dans un tableau de bord simple. Coordonnez-vous avec votre foyer et gardez l\'historique de santé de chaque animal en sécurité. Captures d\'écran et texte à venir.';
+
+  @override
+  String get landingCharitiesSectionTitle =>
+      'Refuges, sauvetages et équipes de soins';
+
+  @override
+  String get landingCharitiesSectionBody =>
+      'Gérez les animaux en inventaire, coordonnez le personnel et les bénévoles, et partagez les dossiers de soins au sein de votre organisation. Captures d\'écran produit à venir.';
+
+  @override
+  String get landingScreenshotPlaceholder => 'Capture d\'écran à venir';
+
+  @override
   String get signIn => 'Se connecter';
 
   @override

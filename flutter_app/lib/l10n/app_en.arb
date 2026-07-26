@@ -14,6 +14,12 @@
   "landingOrgPathExpandCta": "See organisation features",
   "landingOrgPathCollapseCta": "Show less",
   "landingOrgPathDetail": "Manage inventory pets, coordinate staff and volunteers, and share care records across your organisation.",
+  "landingPathScrollCta": "Learn more",
+  "landingPetParentsSectionTitle": "Pet parents and foster carers",
+  "landingPetParentsSectionBody": "Track vet visits, medications, weight, and daily care in one calm dashboard. Coordinate with your household and keep every pet's health history safe. Screenshots and walkthrough copy coming soon.",
+  "landingCharitiesSectionTitle": "Shelters, rescues, and care teams",
+  "landingCharitiesSectionBody": "Manage inventory pets, coordinate staff and volunteers, and share care records across your organisation. Product screenshots and case studies will be added here.",
+  "landingScreenshotPlaceholder": "Screenshot coming soon",
 
   "signIn": "Sign In",
   "signUp": "Sign Up",

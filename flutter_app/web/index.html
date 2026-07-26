@@ -57,7 +57,29 @@
       color: #49454F;
       margin: 0 0 6px;
     }
+    #agatha-native-login .anl-password-wrap {
+      position: relative;
+      margin-bottom: 16px;
+    }
+    #agatha-native-login .anl-password-wrap input {
+      margin-bottom: 0;
+      padding-right: 44px;
+    }
+    #agatha-native-login .anl-password-toggle {
+      position: absolute;
+      right: 8px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      padding: 6px;
+      cursor: pointer;
+      color: #49454F;
+      font-size: 12px;
+      font-weight: 600;
+    }
     #agatha-native-login label + input { margin-bottom: 16px; }
+    #agatha-native-login .anl-password-wrap label + input { margin-bottom: 0; }
     #agatha-native-login input {
       display: block;
       width: 100%;
@@ -133,9 +155,13 @@
         <input id="anl-email" name="username" type="email"
                autocomplete="username" autocapitalize="none" spellcheck="false"
                inputmode="email" required>
-        <label id="anl-password-label" for="anl-password">Password</label>
-        <input id="anl-password" name="password" type="password"
-               autocomplete="current-password" required>
+        <div class="anl-password-wrap">
+          <label id="anl-password-label" for="anl-password">Password</label>
+          <input id="anl-password" name="password" type="password"
+                 autocomplete="current-password" required>
+          <button id="anl-password-toggle" class="anl-password-toggle" type="button"
+                  aria-label="Show password" aria-pressed="false">Show</button>
+        </div>
         <div class="anl-forgot-row">
           <button id="anl-forgot" class="anl-link" type="button">Forgot Password?</button>
         </div>
@@ -157,6 +183,22 @@
       var submitBtn = document.getElementById('anl-submit');
       var forgotBtn = document.getElementById('anl-forgot');
       var errorEl = document.getElementById('anl-error');
+      var pwToggleBtn = document.getElementById('anl-password-toggle');
+
+      function setPasswordVisible(visible) {
+        pwInput.type = visible ? 'text' : 'password';
+        if (pwToggleBtn) {
+          pwToggleBtn.textContent = visible ? 'Hide' : 'Show';
+          pwToggleBtn.setAttribute('aria-label', visible ? 'Hide password' : 'Show password');
+          pwToggleBtn.setAttribute('aria-pressed', visible ? 'true' : 'false');
+        }
+      }
+
+      if (pwToggleBtn) {
+        pwToggleBtn.addEventListener('click', function () {
+          setPasswordVisible(pwInput.type === 'password');
+        });
+      }
 
       var ctrl = {
         onSubmit: null,
@@ -178,6 +220,7 @@
           this.setBusy(false);
           emailInput.value = '';
           pwInput.value = '';
+          setPasswordVisible(false);
           this.setError('');
           this.onSubmit = null;
           this.onForgot = null;
