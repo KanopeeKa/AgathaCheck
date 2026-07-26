@@ -23,7 +23,7 @@ import {
   SESSION_STATUS_PENDING_ACCEPTANCE,
 } from '../../../lib/fosterPlacements.js';
 import { isFosterParentMember } from '../../../lib/orgRoles.js';
-import { extractUserId, requireOrgAdmin } from '../shared.js';
+import { extractUserId, requirePermission } from '../shared.js';
 import { publicError } from '../../../config/security.js';
 import { queryPlacementDetailById } from './shared.js';
 
@@ -57,7 +57,7 @@ export function registerPlacementCreateRoutes(router, pool) {
     }
 
     try {
-      if (!(await requireOrgAdmin(pool, res, orgId, userId))) return;
+      if (!(await requirePermission(pool, res, orgId, userId, 'manage_fostering_sessions'))) return;
 
       const petResult = await pool.query(
         'SELECT id, name FROM pets WHERE id = $1 AND organization_id = $2',
@@ -143,7 +143,7 @@ export function registerPlacementCreateRoutes(router, pool) {
     }
 
     try {
-      if (!(await requireOrgAdmin(pool, res, orgId, userId))) return;
+      if (!(await requirePermission(pool, res, orgId, userId, 'manage_fostering_sessions'))) return;
 
       const petResult = await pool.query(
         'SELECT id, name FROM pets WHERE id = $1 AND organization_id = $2',

@@ -1,3 +1,4 @@
+import 'package:pet_profile_app/features/organization/domain/entities/foster_self_prefs.dart';
 import 'package:pet_profile_app/features/organization/domain/entities/foster_parent.dart';
 import 'package:pet_profile_app/features/organization/domain/entities/foster_request.dart';
 import 'package:pet_profile_app/features/organization/domain/entities/org_person.dart';
@@ -156,6 +157,20 @@ mixin RecordingOrganizationRepositoryFosterMixin
     displayName: 'Updated',
     retentionCategory: retentionCategory,
   );
+
+  @override
+  Future<FosterSelfPrefs> updateFosterSelfVisibility(
+    String orgId,
+    FosterSelfPrefs prefs, {
+    required String token,
+  }) async => prefs;
+
+  @override
+  Future<void> withdrawFosterAgreement(
+    String orgId,
+    String confirmation, {
+    required String token,
+  }) async {}
 
   @override
   Future<List<FosterRequest>> getFosterRequests(

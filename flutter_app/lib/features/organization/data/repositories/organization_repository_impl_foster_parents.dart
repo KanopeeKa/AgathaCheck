@@ -1,4 +1,5 @@
 import '../../domain/entities/foster_parent.dart';
+import '../../domain/entities/foster_self_prefs.dart';
 import '../../domain/entities/org_person.dart';
 import 'organization_repository_impl_base.dart';
 
@@ -195,5 +196,28 @@ mixin OrganizationRepositoryFosterParentsMixin
       token: token,
     );
     return FosterParent.fromJson(row);
+  }
+
+  @override
+  Future<FosterSelfPrefs> updateFosterSelfVisibility(
+    String orgId,
+    FosterSelfPrefs prefs, {
+    required String token,
+  }) async {
+    final row = await dataSource.updateFosterSelfVisibility(
+      orgId,
+      prefs.toJson(),
+      token,
+    );
+    return FosterSelfPrefs.fromJson(row);
+  }
+
+  @override
+  Future<void> withdrawFosterAgreement(
+    String orgId,
+    String confirmation, {
+    required String token,
+  }) async {
+    await dataSource.withdrawFosterAgreement(orgId, confirmation, token);
   }
 }

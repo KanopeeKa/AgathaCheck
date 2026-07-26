@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../domain/entities/foster_parent.dart';
+import '../../domain/entities/foster_self_prefs.dart';
 import '../../domain/entities/org_person.dart';
 import '../../domain/entities/organization_member.dart';
 import 'org_provider_deps.dart';
@@ -260,6 +261,20 @@ class OrgFosterParentsNotifier
     final token = ref.read(orgTokenProvider)!;
     final repo = ref.read(organizationRepositoryProvider);
     await repo.updateFosterOptOut(arg, fosterParentId, optOut, token: token);
+    ref.invalidateSelf();
+  }
+
+  Future<void> updateSelfVisibility(FosterSelfPrefs prefs) async {
+    final token = ref.read(orgTokenProvider)!;
+    final repo = ref.read(organizationRepositoryProvider);
+    await repo.updateFosterSelfVisibility(arg, prefs, token: token);
+    ref.invalidateSelf();
+  }
+
+  Future<void> withdrawAgreement(String confirmation) async {
+    final token = ref.read(orgTokenProvider)!;
+    final repo = ref.read(organizationRepositoryProvider);
+    await repo.withdrawFosterAgreement(arg, confirmation, token: token);
     ref.invalidateSelf();
   }
 }

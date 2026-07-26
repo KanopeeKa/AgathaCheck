@@ -1,4 +1,5 @@
 import 'organization_member.dart';
+import 'foster_self_prefs.dart';
 
 class FosterParentAssignedPet {
   const FosterParentAssignedPet({
@@ -164,6 +165,13 @@ class FosterParent {
     this.retentionCategory = 'shelter_foster_relationship',
     this.fosteringActivitySummary = FosteringActivitySummary.notYetPlaced,
     this.availableCapacity = const [],
+    this.visibleTo = FosterVisibleTo.both,
+    this.addressVisibility = FosterAddressVisibility.full,
+    this.contactVisibility = FosterContactVisibility.both,
+    this.messageChannel = FosterMessageNotificationChannel.inApp,
+    this.rulesAgreementAt,
+    this.fosterAddress = '',
+    this.isSelfCard = false,
   });
 
   final String id;
@@ -184,6 +192,21 @@ class FosterParent {
   final String retentionCategory;
   final FosteringActivitySummary fosteringActivitySummary;
   final List<FosterCapacityEntry> availableCapacity;
+  final FosterVisibleTo visibleTo;
+  final FosterAddressVisibility addressVisibility;
+  final FosterContactVisibility contactVisibility;
+  final FosterMessageNotificationChannel messageChannel;
+  final DateTime? rulesAgreementAt;
+  final String fosterAddress;
+  final bool isSelfCard;
+
+  FosterSelfPrefs get selfPrefs => FosterSelfPrefs(
+    visibleTo: visibleTo,
+    addressVisibility: addressVisibility,
+    contactVisibility: contactVisibility,
+    messageChannel: messageChannel,
+    rulesAgreementAt: rulesAgreementAt,
+  );
 
   bool get isMember => kind == FosterParentKind.member;
   bool get isExternal => kind == FosterParentKind.external;
@@ -247,6 +270,21 @@ class FosterParent {
                     FosterCapacityEntry.fromJson(Map<String, dynamic>.from(e)),
               )
               .toList(),
+      visibleTo: FosterVisibleTo.fromWire(json['visible_to']?.toString()),
+      addressVisibility: FosterAddressVisibility.fromWire(
+        json['address_visibility']?.toString(),
+      ),
+      contactVisibility: FosterContactVisibility.fromWire(
+        json['contact_visibility']?.toString(),
+      ),
+      messageChannel: FosterMessageNotificationChannel.fromWire(
+        json['notification_message_channel']?.toString(),
+      ),
+      rulesAgreementAt: json['rules_agreement_at'] != null
+          ? DateTime.tryParse(json['rules_agreement_at'].toString())
+          : null,
+      fosterAddress: json['foster_address']?.toString() ?? '',
+      isSelfCard: json['is_self_card'] == true,
     );
   }
 }

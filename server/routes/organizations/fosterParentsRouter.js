@@ -18,7 +18,12 @@ import {
 import { OPEN_PLACEMENT_STATUSES } from '../../lib/fosterPlacements.js';
 import { fosterParentMemberRolesSql } from '../../lib/orgRoles.js';
 import { sendTransactionalEmail } from '../../services/mailService.js';
-import { extractUserId, requireOrgAdmin } from './shared.js';
+import {
+  applyFosterVisibilityToMap,
+  sortFosterParentsForViewer,
+} from '../../lib/fosterVisibility.js';
+import { extractUserId, requireMember, requirePermission } from './shared.js';
+import { registerFosterSelfManagementRoutes } from './fosterSelfManagementRouter.js';
 import { publicError } from '../../config/security.js';
 
 const APPROVAL_STATES = new Set(['under_review', 'approved', 'declined', 'archived']);
@@ -26,12 +31,15 @@ const MEMBER_APPROVAL_STATE = 'approved';
 const MEMBER_CREATION_SOURCE = 'member';
 
 export function registerFosterParentsRoutes(router, pool) {
+    registerFosterSelfManagementRoutes(router, pool);
+
     router.get('/:orgId/foster-parents', async (req, res) => {
       const userId = extractUserId(req);
       if (!userId) return res.status(401).json({ error: 'Unauthorized' });
       const orgId = req.params.orgId;
       try {
-        if (!(await requireOrgAdmin(pool, res, orgId, userId))) return;
+        const role = await requireMember(pool, res, orgId, userId);
+        if (!role) return;
 
         const listContext = await loadFosterParentListContext(pool, orgId);
 
@@ -46,6 +54,12 @@ export function registerFosterParentsRoutes(router, pool) {
                   ou.role,
                   NULL::varchar AS phone,
                   ''::text AS notes,
+                  COALESCE(ofp.foster_address, fprof.foster_address, '') AS foster_address,
+                  COALESCE(ofp.visible_to, 'both') AS visible_to,
+                  COALESCE(ofp.address_visibility, 'full') AS address_visibility,
+                  COALESCE(ofp.contact_visibility, 'both') AS contact_visibility,
+                  COALESCE(ofp.notification_message_channel, 'in_app') AS notification_message_channel,
+                  ofp.rules_agreement_at,
                   (
                     SELECT COUNT(DISTINCT fpl.pet_id)::int
                     FROM foster_placements fpl
@@ -68,6 +82,8 @@ export function registerFosterParentsRoutes(router, pool) {
            FROM organization_users ou
            JOIN users u ON u.id = ou.user_id
            LEFT JOIN foster_profiles fprof ON fprof.user_id = u.id
+           LEFT JOIN org_foster_parents ofp
+             ON ofp.organization_id = ou.organization_id AND ofp.user_id = u.id
            WHERE ou.organization_id = $1
              AND ou.role IN (${fosterParentMemberRolesSql()})
            ORDER BY display_name, u.email`,
@@ -89,6 +105,11 @@ export function registerFosterParentsRoutes(router, pool) {
                   fp.notes,
                   fp.approval_state,
                   fp.creation_source,
+                  fp.visible_to,
+                  fp.address_visibility,
+                  fp.contact_visibility,
+                  fp.notification_message_channel,
+                  fp.rules_agreement_at,
                   (
                     SELECT COUNT(DISTINCT fpl.pet_id)::int
                     FROM foster_placements fpl
@@ -127,9 +148,14 @@ export function registerFosterParentsRoutes(router, pool) {
             activityCounts: listContext.activityByParent.get(row.id) || {},
             capacityUsage: {},
           })),
-        ].sort((a, b) => a.display_name.localeCompare(b.display_name, undefined, { sensitivity: 'base' }));
+        ]
+          .map((parent) => applyFosterVisibilityToMap(parent, {
+            viewerRole: role,
+            viewerUserId: userId,
+          }))
+          .filter(Boolean);
 
-        res.json(combined);
+        res.json(sortFosterParentsForViewer(combined, userId));
       } catch (err) {
         res.status(500).json({ error: publicError(err) });
       }
@@ -146,7 +172,7 @@ export function registerFosterParentsRoutes(router, pool) {
       }
 
       try {
-        if (!(await requireOrgAdmin(pool, res, orgId, userId))) return;
+        if (!(await requirePermission(pool, res, orgId, userId, 'manage_fosters'))) return;
 
         const suggestions = await findMergeSuggestionsByEmail(pool, email, orgId);
         res.json(suggestions);
@@ -179,7 +205,7 @@ export function registerFosterParentsRoutes(router, pool) {
       }
 
       try {
-        if (!(await requireOrgAdmin(pool, res, orgId, userId))) return;
+        if (!(await requirePermission(pool, res, orgId, userId, 'manage_fosters'))) return;
 
         const orgResult = await pool.query(
           'SELECT name FROM organizations WHERE id = $1',
@@ -271,7 +297,7 @@ export function registerFosterParentsRoutes(router, pool) {
       }
 
       try {
-        if (!(await requireOrgAdmin(pool, res, orgId, userId))) return;
+        if (!(await requirePermission(pool, res, orgId, userId, 'manage_fosters'))) return;
 
         const result = await pool.query(
           `UPDATE org_foster_parents
@@ -324,7 +350,7 @@ export function registerFosterParentsRoutes(router, pool) {
     registerFosterComplianceRoutes(router, {
       pool,
       extractUserId,
-      requireOrgAdmin,
+      requireOrgAdmin: (p, res, org, uid) => requirePermission(p, res, org, uid, 'manage_fosters'),
       logAuditEventSafe,
       fosterParentToMap,
       publicError,
@@ -343,7 +369,7 @@ export function registerFosterParentsRoutes(router, pool) {
       }
 
       try {
-        if (!(await requireOrgAdmin(pool, res, orgId, userId))) return;
+        if (!(await requirePermission(pool, res, orgId, userId, 'manage_fosters'))) return;
 
         const mergeResult = await mergeManualFosterIntoUser(pool, {
           orgId,
@@ -402,7 +428,7 @@ export function registerFosterParentsRoutes(router, pool) {
       }
 
       try {
-        if (!(await requireOrgAdmin(pool, res, orgId, userId))) return;
+        if (!(await requirePermission(pool, res, orgId, userId, 'manage_fosters'))) return;
 
         const result = await pool.query(
           `UPDATE org_foster_parents
@@ -435,7 +461,7 @@ export function registerFosterParentsRoutes(router, pool) {
       const fosterParentId = req.params.id;
 
       try {
-        if (!(await requireOrgAdmin(pool, res, orgId, userId))) return;
+        if (!(await requirePermission(pool, res, orgId, userId, 'manage_fosters'))) return;
 
         const result = await pool.query(
           'DELETE FROM org_foster_parents WHERE id = $1 AND organization_id = $2 RETURNING id',

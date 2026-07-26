@@ -4,6 +4,8 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../core/widgets/app_logo_title.dart';
 import '../../../../l10n/app_localizations.dart';
+import '../../domain/services/foster_visibility.dart';
+import '../providers/admin_contact_providers.dart';
 import '../providers/organization_providers.dart';
 import '../providers/org_pets_screen_providers.dart';
 import '../utils/org_pets_care_utils.dart';
@@ -20,7 +22,8 @@ class OrganizationPetsScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final screenDataAsync = ref.watch(orgPetsScreenDataProvider(orgId));
-    final isOrgAdmin = ref.watch(isOrgAdminProvider(orgId));
+    final viewerRole = ref.watch(orgViewerRoleProvider(orgId));
+    final canManagePets = canManageOrgPets(viewerRole, orgId);
     final tab = ref.watch(orgPetsTabProvider(orgId));
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
@@ -89,7 +92,7 @@ class OrganizationPetsScreen extends ConsumerWidget {
                               child: OrgPetListItem(
                                 entry: entry,
                                 orgId: orgId,
-                                isOrgAdmin: isOrgAdmin,
+                                isOrgAdmin: canManagePets,
                                 showAttentionReason:
                                     tab == OrgPetsTab.needAttention,
                               ),
@@ -101,7 +104,7 @@ class OrganizationPetsScreen extends ConsumerWidget {
             );
           },
         ),
-        floatingActionButton: isOrgAdmin
+        floatingActionButton: canManagePets
             ? FloatingActionButton.extended(
                 key: const Key('org_add_pet_fab'),
                 onPressed: () => context.push('/add?orgId=$orgId'),

@@ -5,9 +5,12 @@ import 'package:go_router/go_router.dart';
 import '../../../../../core/widgets/app_logo_title.dart';
 import '../../../../../l10n/app_localizations.dart';
 import '../../../domain/entities/foster_parent.dart';
+import '../../../domain/services/foster_visibility.dart';
+import '../../providers/admin_contact_providers.dart';
 import '../../providers/manage_fosters_providers.dart';
 import '../../providers/organization_providers.dart';
 import '../../utils/org_screen_theme.dart';
+import '../../widgets/manage_fosters/foster_self_prefs_section.dart';
 import '../../widgets/manage_fosters/foster_summary_card.dart';
 import '../../widgets/organization_role_labels.dart';
 
@@ -34,6 +37,8 @@ class ManageFostersScreen extends ConsumerWidget {
     final approvalFilter = ref.watch(
       manageFostersApprovalFilterProvider(orgId),
     );
+    final viewerRole = ref.watch(orgViewerRoleProvider(orgId));
+    final canManage = canManageFosters(viewerRole, orgId);
     final fosterParentsAsync = ref.watch(orgFosterParentsProvider(orgId));
 
     return orgThemed(
@@ -51,18 +56,21 @@ class ManageFostersScreen extends ConsumerWidget {
               key: const Key('manage_fosters_foster_requests'),
               icon: const Icon(Icons.mail_outline),
               tooltip: l.fosterRequestsTitle,
-              onPressed: () => context.push('/o/orgs/$orgId/foster-requests'),
+              onPressed: canManage
+                  ? () => context.push('/o/orgs/$orgId/foster-requests')
+                  : null,
             ),
-            IconButton(
-              key: const Key('manage_fosters_add_manual'),
-              icon: const Icon(Icons.person_add_alt_1),
-              tooltip: l.addExternalFoster,
-              onPressed: () => showManageFostersAddManualDialog(
-                context: context,
-                ref: ref,
-                orgId: orgId,
+            if (canManage)
+              IconButton(
+                key: const Key('manage_fosters_add_manual'),
+                icon: const Icon(Icons.person_add_alt_1),
+                tooltip: l.addExternalFoster,
+                onPressed: () => showManageFostersAddManualDialog(
+                  context: context,
+                  ref: ref,
+                  orgId: orgId,
+                ),
               ),
-            ),
           ],
         ),
         body: Column(
@@ -124,6 +132,7 @@ class ManageFostersScreen extends ConsumerWidget {
                       return FosterSummaryCard(
                         parent: parent,
                         orgId: orgId,
+                        canManage: canManage,
                         localizedRoleLabel: localizedOrgMemberRole,
                         onTap: parent.isExternal
                             ? () => context.push(

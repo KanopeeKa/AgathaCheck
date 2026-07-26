@@ -25,7 +25,7 @@ import {
   clearOrgPetHomeHiddenForPet,
   setOrgGuardianAndCare,
 } from '../../../lib/petCustody.js';
-import { extractUserId, requireOrgAdmin } from '../shared.js';
+import { extractUserId, requirePermission } from '../shared.js';
 import { publicError } from '../../../config/security.js';
 
 async function loadPlacementForOrg(pool, placementId, orgId) {
@@ -50,7 +50,7 @@ export function registerPlacementActionRoutes(router, pool) {
     const endDate = normalizeCalendarDateInput(data.end_date || data.endDate);
 
     try {
-      if (!(await requireOrgAdmin(pool, res, orgId, userId))) return;
+      if (!(await requirePermission(pool, res, orgId, userId, 'manage_fostering_sessions'))) return;
 
       const placement = await loadPlacementForOrg(pool, placementId, orgId);
       if (!placement) {
@@ -128,7 +128,7 @@ export function registerPlacementActionRoutes(router, pool) {
     const adoptionConditions = (data.adoption_conditions || data.adoptionConditions || '').trim();
 
     try {
-      if (!(await requireOrgAdmin(pool, res, orgId, userId))) return;
+      if (!(await requirePermission(pool, res, orgId, userId, 'manage_fostering_sessions'))) return;
 
       const placement = await loadPlacementForOrg(pool, placementId, orgId);
       if (!placement) {
@@ -177,7 +177,7 @@ export function registerPlacementActionRoutes(router, pool) {
     const { orgId, id: placementId } = req.params;
 
     try {
-      if (!(await requireOrgAdmin(pool, res, orgId, userId))) return;
+      if (!(await requirePermission(pool, res, orgId, userId, 'manage_fostering_sessions'))) return;
 
       const placement = await loadPlacementForOrg(pool, placementId, orgId);
       if (!placement) {
@@ -214,7 +214,7 @@ export function registerPlacementActionRoutes(router, pool) {
     const endDate = normalizeCalendarDateInput(data.end_date || data.endDate);
 
     try {
-      if (!(await requireOrgAdmin(pool, res, orgId, userId))) return;
+      if (!(await requirePermission(pool, res, orgId, userId, 'manage_fostering_sessions'))) return;
 
       const placement = await loadPlacementForOrg(pool, placementId, orgId);
       if (!placement) {

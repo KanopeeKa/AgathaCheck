@@ -48,12 +48,13 @@ describe('Organizations API', () => {
         });
       });
   
-      it('GET /:orgId/foster-parents returns 403 for foster', async () => {
+      it('GET /:orgId/foster-parents returns filtered list for foster members', async () => {
         const a = createApp(buildMockPool({ memberRole: 'foster' }));
         const res = await request(a)
           .get(`/api/organizations/${orgId}/foster-parents`)
           .set('Authorization', `Bearer ${token}`);
-        expect(res.statusCode).toBe(403);
+        expect(res.statusCode).toBe(200);
+        expect(Array.isArray(res.body)).toBe(true);
       });
   
       it('POST /:orgId/foster-parents creates an external foster parent', async () => {
@@ -199,8 +200,11 @@ describe('Organizations API', () => {
       it('PATCH /:orgId/foster-parents/:id/approval returns 404 when not found', async () => {
         const pool = buildMockPool({
           query: async (sql, params) => {
-            if (sql.includes('SELECT role FROM organization_users WHERE organization_id')) {
+            if (sql.includes('SELECT role') && sql.includes('organization_users')) {
               return { rows: [{ role: 'super_admin' }] };
+            }
+            if (sql.includes('FROM organization_permissions')) {
+              return { rows: [] };
             }
             if (sql.includes('SET approval_state = $1')) {
               return { rows: [] };
@@ -253,8 +257,11 @@ describe('Organizations API', () => {
       it('PUT /:orgId/foster-parents/:id returns 404 when not found', async () => {
         const pool = buildMockPool({
           query: async (sql, params) => {
-            if (sql.includes('SELECT role FROM organization_users WHERE organization_id')) {
+            if (sql.includes('SELECT role') && sql.includes('organization_users')) {
               return { rows: [{ role: 'super_admin' }] };
+            }
+            if (sql.includes('FROM organization_permissions')) {
+              return { rows: [] };
             }
             if (sql.includes('UPDATE org_foster_parents')) {
               return { rows: [] };
@@ -273,8 +280,11 @@ describe('Organizations API', () => {
       it('DELETE /:orgId/foster-parents/:id returns 404 when not found', async () => {
         const pool = buildMockPool({
           query: async (sql) => {
-            if (sql.includes('SELECT role FROM organization_users WHERE organization_id')) {
+            if (sql.includes('SELECT role') && sql.includes('organization_users')) {
               return { rows: [{ role: 'super_admin' }] };
+            }
+            if (sql.includes('FROM organization_permissions')) {
+              return { rows: [] };
             }
             if (sql.includes('DELETE FROM org_foster_parents')) {
               return { rows: [] };

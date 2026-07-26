@@ -152,6 +152,7 @@ CREATE TABLE public.foster_placements (
     shelter_start_confirmed_at timestamp with time zone,
     foster_start_confirmed_at timestamp with time zone,
     session_checklist_items jsonb DEFAULT '{}'::jsonb NOT NULL,
+    flagged_for_admin_review boolean DEFAULT false NOT NULL,
     CONSTRAINT foster_placements_session_type_check CHECK ((session_type = ANY (ARRAY['standard_foster'::text, 'foster_in_view_to_adopt'::text])))
 );
 CREATE TABLE public.foster_profiles (
@@ -329,9 +330,18 @@ CREATE TABLE public.org_foster_parents (
     foster_profile_id uuid,
     opt_out_at timestamp with time zone,
     retention_category text DEFAULT 'shelter_foster_relationship'::text NOT NULL,
+    visible_to text DEFAULT 'both'::text NOT NULL,
+    address_visibility text DEFAULT 'full'::text NOT NULL,
+    contact_visibility text DEFAULT 'both'::text NOT NULL,
+    rules_agreement_at timestamp with time zone,
+    notification_message_channel text DEFAULT 'in_app'::text NOT NULL,
+    CONSTRAINT org_foster_parents_address_visibility_check CHECK ((address_visibility = ANY (ARRAY['full'::text, 'town'::text, 'hidden'::text]))),
     CONSTRAINT org_foster_parents_approval_state_check CHECK (((approval_state)::text = ANY ((ARRAY['under_review'::character varying, 'approved'::character varying, 'declined'::character varying, 'archived'::character varying])::text[]))),
+    CONSTRAINT org_foster_parents_contact_visibility_check CHECK ((contact_visibility = ANY (ARRAY['email'::text, 'phone'::text, 'neither'::text, 'both'::text]))),
     CONSTRAINT org_foster_parents_creation_source_check CHECK (((creation_source)::text = ANY ((ARRAY['invite'::character varying, 'manual_shelter_entry'::character varying, 'member'::character varying])::text[]))),
-    CONSTRAINT org_foster_parents_retention_category_check CHECK ((retention_category = ANY (ARRAY['shelter_foster_relationship'::text, 'declined_archived'::text, 'manual_contact'::text])))
+    CONSTRAINT org_foster_parents_notification_message_channel_check CHECK ((notification_message_channel = ANY (ARRAY['in_app'::text, 'email'::text, 'both'::text]))),
+    CONSTRAINT org_foster_parents_retention_category_check CHECK ((retention_category = ANY (ARRAY['shelter_foster_relationship'::text, 'declined_archived'::text, 'manual_contact'::text]))),
+    CONSTRAINT org_foster_parents_visible_to_check CHECK ((visible_to = ANY (ARRAY['other_fosters'::text, 'admins'::text, 'both'::text, 'nobody'::text])))
 );
 CREATE TABLE public.org_pet_home_hidden (
     user_id uuid NOT NULL,

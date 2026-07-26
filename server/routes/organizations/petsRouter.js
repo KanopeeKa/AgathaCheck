@@ -9,7 +9,7 @@ import {
   TRANSFER_RETURN,
 } from '../../lib/custodyTransfers.js';
 import { petIsFosteredByOrg, setOrgGuardianAndCare } from '../../lib/petCustody.js';
-import { extractUserId, requireOrgAdmin } from './shared.js';
+import { extractUserId, requireMember, requirePermission } from './shared.js';
 import { publicError } from '../../config/security.js';
 
 export function registerPetsRoutes(router, pool) {
@@ -17,7 +17,7 @@ export function registerPetsRoutes(router, pool) {
       const userId = extractUserId(req);
       if (!userId) return res.status(401).json({ error: 'Unauthorized' });
       try {
-        if (!(await requireOrgAdmin(pool, res, req.params.orgId, userId))) return;
+        if (!(await requirePermission(pool, res, req.params.orgId, userId, 'manage_pets'))) return;
         const result = await pool.query(
           `SELECT p.*, o.name AS organization_name,
             (SELECT fp.end_date
@@ -69,7 +69,7 @@ export function registerPetsRoutes(router, pool) {
       const { orgId } = req.params;
       const data = req.body || {};
       try {
-        if (!(await requireOrgAdmin(pool, res, orgId, userId))) return;
+        if (!(await requirePermission(pool, res, orgId, userId, 'manage_pets'))) return;
 
         const id = data.id || uuidv4();
         const name = data.name;
@@ -138,7 +138,7 @@ export function registerPetsRoutes(router, pool) {
       }
 
       try {
-        if (!(await requireOrgAdmin(pool, res, orgId, userId))) return;
+        if (!(await requirePermission(pool, res, orgId, userId, 'transfer_pet_ownership'))) return;
 
         const recipientResult = await pool.query(
           'SELECT id FROM users WHERE email = $1',
@@ -183,7 +183,7 @@ export function registerPetsRoutes(router, pool) {
           if (!toOrgId) {
             return res.status(400).json({ error: 'to_org_id is required' });
           }
-        } else if (!(await requireOrgAdmin(pool, res, orgId, userId))) {
+        } else if (!(await requirePermission(pool, res, orgId, userId, 'transfer_pet_ownership'))) {
           return;
         }
 
@@ -210,7 +210,7 @@ export function registerPetsRoutes(router, pool) {
       const hidden = req.body?.hidden ?? req.body?.home_hidden ?? true;
 
       try {
-        if (!(await requireOrgAdmin(pool, res, orgId, userId))) return;
+        if (!(await requirePermission(pool, res, orgId, userId, 'manage_pets'))) return;
         if (!(await petIsFosteredByOrg(pool, petId, orgId))) {
           return res.status(400).json({ error: 'Only fostered org pets can be hidden from the home list' });
         }
@@ -239,7 +239,7 @@ export function registerPetsRoutes(router, pool) {
       if (!userId) return res.status(401).json({ error: 'Unauthorized' });
       const { orgId } = req.params;
       try {
-        if (!(await requireOrgAdmin(pool, res, orgId, userId))) return;
+        if (!(await requirePermission(pool, res, orgId, userId, 'manage_pets'))) return;
         const result = await pool.query(
           `SELECT oh.pet_id, p.name AS pet_name, oh.created_at
            FROM org_pet_home_hidden oh
@@ -258,7 +258,7 @@ export function registerPetsRoutes(router, pool) {
       const userId = extractUserId(req);
       if (!userId) return res.status(401).json({ error: 'Unauthorized' });
       try {
-        if (!(await requireOrgAdmin(pool, res, req.params.orgId, userId))) return;
+        if (!(await requirePermission(pool, res, req.params.orgId, userId, 'manage_pets'))) return;
         const result = await pool.query('SELECT * FROM archived_pets WHERE organization_id = $1 ORDER BY created_at DESC', [req.params.orgId]);
         res.json(result.rows);
       } catch (err) {

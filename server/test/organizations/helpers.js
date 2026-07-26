@@ -170,6 +170,12 @@ export function buildMockPool(overrides = {}) {
           role: 'foster',
           phone: null,
           notes: '',
+          foster_address: '',
+          visible_to: 'both',
+          address_visibility: 'full',
+          contact_visibility: 'both',
+          notification_message_channel: 'in_app',
+          rules_agreement_at: null,
           active_pet_count: 2,
           active_pets: [{ pet_id: 'pet-a', pet_name: 'Max', status: 'in_progress' }],
           approval_state: 'approved',
@@ -207,6 +213,11 @@ export function buildMockPool(overrides = {}) {
           creation_source: 'manual_shelter_entry',
           opt_out_at: null,
           retention_category: 'manual_contact',
+          visible_to: 'both',
+          address_visibility: 'full',
+          contact_visibility: 'both',
+          notification_message_channel: 'in_app',
+          rules_agreement_at: null,
         }],
       };
     }
@@ -368,8 +379,11 @@ export function buildMockPool(overrides = {}) {
   const memberRole = overrides.memberRole === undefined ? 'super_admin' : overrides.memberRole;
   const inner = overrides.query || defaultHandler;
   const query = async (sql, params) => {
-    if (sql.includes('SELECT role FROM organization_users WHERE organization_id')) {
+    if (sql.includes('SELECT role') && sql.includes('organization_users')) {
       return { rows: memberRole ? [{ role: memberRole }] : [] };
+    }
+    if (sql.includes('FROM organization_permissions')) {
+      return { rows: overrides.permissionKeys || [] };
     }
     return inner(sql, params);
   };

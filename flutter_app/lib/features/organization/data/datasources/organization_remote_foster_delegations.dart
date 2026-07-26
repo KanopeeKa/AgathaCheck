@@ -122,6 +122,18 @@ mixin OrganizationRemoteFosterDelegations {
     token,
   );
 
+  Future<Map<String, dynamic>> updateFosterSelfVisibility(
+    String orgId,
+    Map<String, dynamic> body,
+    String token,
+  ) => fosterParentsRemote.updateFosterSelfVisibility(orgId, body, token);
+
+  Future<Map<String, dynamic>> withdrawFosterAgreement(
+    String orgId,
+    String confirmation,
+    String token,
+  ) => fosterParentsRemote.withdrawFosterAgreement(orgId, confirmation, token);
+
   Future<List<Map<String, dynamic>>> getFosterMergeSuggestions(
     String orgId,
     String email,
