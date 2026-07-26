@@ -4,7 +4,7 @@
   "approved_at": "2026-07-26T16:35:00Z",
   "approved_by": "user chat 2026-07-26",
   "approved_until": "2026-07-28T16:35:00Z",
-  "content_hash": "sha256:e12e9c7ece6f5ebf8508de5a40a88316727f3608e532a741f7840707a5100399",
+  "content_hash": "sha256:f99ebe56a191a5c17d86d2cc5cec0a18eb1db2fdd988f0af9aa76cec81301125",
   "autonomy": "active",
   "default_merge_mode": "auto",
   "base_branch": "cursor/guardian-ui-rework-integration-5dd0",
@@ -237,12 +237,12 @@
       "spawn_config": null,
       "merge_method": "squash",
       "exit_checklist": "bdd-journey",
-      "status": "in_progress",
+      "status": "merged",
       "status_reason": null,
       "status_detail": null,
       "debt_issue_refs": [],
       "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/405",
-      "pr_head_sha": "43d30b53"
+      "pr_head_sha": "5e69ebf9b5c589f3dbfc953f9786a953c8402b80"
     },
     {
       "id": "7",
@@ -275,13 +275,10 @@
       "spawn_config": null,
       "merge_method": "squash",
       "exit_checklist": "bdd-journey",
-      "status": "pending",
+      "status": "in_progress",
       "status_reason": null,
       "status_detail": null,
-      "debt_issue_refs": [],
-      "pr_url": null,
-      "pr_head_sha": null,
-      "merge_commit": null
+      "debt_issue_refs": []
     }
   ]
 }

@@ -3,13 +3,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../../../../core/widgets/dashboard_section.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../auth/presentation/providers/auth_providers.dart';
 import '../config/drawer_menu_config.dart';
+import '../providers/experience_providers.dart';
 import '../widgets/experience_settings_section.dart';
-import '../widgets/experience_section_drawer.dart';
-import '../../../notifications/presentation/providers/notification_providers.dart';
-import '../../../notifications/presentation/widgets/notification_panel.dart';
+import '../widgets/experience_shell_scaffold.dart';
 
 /// Account dashboard at `/account` — global personal/app-level utilities.
 ///
@@ -21,100 +21,72 @@ class AccountScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l = AppLocalizations.of(context)!;
-    final combinedUnread = ref.watch(combinedUnreadNotificationCountProvider);
+    final experience = ref.watch(resolvedExperienceProvider);
 
-    return Scaffold(
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        title: Text(l.accountTitle),
-        leading: Builder(
-          builder: (ctx) => IconButton(
-            key: const Key('account_hamburger'),
-            icon: const Icon(Icons.menu),
-            tooltip: l.sectionDrawerTooltip,
-            onPressed: () => Scaffold.of(ctx).openDrawer(),
-          ),
-        ),
-        actions: [
-          Builder(
-            builder: (ctx) => IconButton(
-              key: const Key('experience_notification_bell'),
-              icon: Badge(
-                isLabelVisible: combinedUnread > 0,
-                label: Text('$combinedUnread'),
-                child: const Icon(Icons.notifications_outlined),
-              ),
-              tooltip: l.notificationsBellTooltip,
-              onPressed: () => Scaffold.of(ctx).openEndDrawer(),
-            ),
-          ),
-        ],
-      ),
-      drawer: const ExperienceSectionDrawer(),
-      endDrawer: const NotificationPanel(),
-      body: ListView(
-        padding: const EdgeInsets.all(16),
+    return ExperienceShellScaffold(
+      experience: experience,
+      currentLocation: '/account',
+      screenTitle: l.accountTitle,
+      child: ListView(
+        padding: const EdgeInsets.fromLTRB(16, 8, 16, 32),
         children: [
-          _AccountSection(
-            children: [
-              _AccountTile(
-                key: const Key('account_my_details'),
-                icon: Icons.person_outline,
-                label: l.myDetails,
-                onTap: () => context.push('/my-details'),
-              ),
-            ],
-          ),
-          const SizedBox(height: 16),
-          Card(
-            margin: EdgeInsets.zero,
-            child: Padding(
-              padding: const EdgeInsets.all(4),
-              child: const ExperienceSettingsSection(),
+          DashboardSection(
+            title: l.accountProfileSection,
+            previewBuilder: (context) => _AccountRow(
+              key: const Key('account_my_details'),
+              icon: Icons.person_outline,
+              label: l.myDetails,
+              onTap: () => context.push('/my-details'),
             ),
           ),
-          const SizedBox(height: 16),
-          _AccountSection(
-            children: [
-              _AccountTile(
-                key: const Key('account_help'),
-                icon: Icons.help_outline,
-                label: l.helpTitle,
-                onTap: () => context.push('/help'),
-              ),
-              _AccountTile(
-                key: const Key('account_about'),
-                icon: Icons.info_outline,
-                label: l.aboutUs,
-                onTap: () => context.push('/about'),
-              ),
-              _AccountTile(
-                key: const Key('account_contact'),
-                icon: Icons.email_outlined,
-                label: l.contact,
-                onTap: () => _launchContact(),
-              ),
-              _AccountTile(
-                key: const Key('account_legal'),
-                icon: Icons.gavel_outlined,
-                label: l.legalInformation,
-                onTap: () => context.push('/legal'),
-              ),
-            ],
+          DashboardSection(
+            title: l.accountPreferencesSection,
+            previewBuilder: (context) =>
+                const ExperienceSettingsSection(embedded: true),
           ),
-          const SizedBox(height: 16),
-          _AccountSection(
-            children: [
-              _AccountTile(
-                key: const Key('account_sign_out'),
-                icon: Icons.logout,
-                label: l.logOut,
-                isDestructive: true,
-                onTap: () => ref.read(authProvider.notifier).logout(),
-              ),
-            ],
+          DashboardSection(
+            title: l.accountSupportSection,
+            previewBuilder: (context) => Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                _AccountRow(
+                  key: const Key('account_help'),
+                  icon: Icons.help_outline,
+                  label: l.helpTitle,
+                  onTap: () => context.push('/help'),
+                ),
+                _AccountRow(
+                  key: const Key('account_about'),
+                  icon: Icons.info_outline,
+                  label: l.aboutUs,
+                  onTap: () => context.push('/about'),
+                ),
+                _AccountRow(
+                  key: const Key('account_contact'),
+                  icon: Icons.email_outlined,
+                  label: l.contact,
+                  onTap: () => _launchContact(),
+                ),
+                _AccountRow(
+                  key: const Key('account_legal'),
+                  icon: Icons.gavel_outlined,
+                  label: l.legalInformation,
+                  onTap: () => context.push('/legal'),
+                ),
+              ],
+            ),
           ),
-          const SizedBox(height: 32),
+          DashboardSection(
+            title: l.accountActionsSection,
+            accentColor: Theme.of(context).colorScheme.error,
+            previewBuilder: (context) => _AccountRow(
+              key: const Key('account_sign_out'),
+              icon: Icons.logout,
+              label: l.logOut,
+              isDestructive: true,
+              onTap: () => ref.read(authProvider.notifier).logout(),
+            ),
+          ),
         ],
       ),
     );
@@ -126,22 +98,8 @@ class AccountScreen extends ConsumerWidget {
   }
 }
 
-class _AccountSection extends StatelessWidget {
-  const _AccountSection({required this.children});
-
-  final List<Widget> children;
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      margin: EdgeInsets.zero,
-      child: Column(children: children),
-    );
-  }
-}
-
-class _AccountTile extends StatelessWidget {
-  const _AccountTile({
+class _AccountRow extends StatelessWidget {
+  const _AccountRow({
     super.key,
     required this.icon,
     required this.label,
@@ -159,11 +117,27 @@ class _AccountTile extends StatelessWidget {
     final theme = Theme.of(context);
     final color = isDestructive ? theme.colorScheme.error : null;
 
-    return ListTile(
-      leading: Icon(icon, color: color),
-      title: Text(label, style: color != null ? TextStyle(color: color) : null),
-      trailing: const Icon(Icons.chevron_right),
+    return InkWell(
       onTap: onTap,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 10),
+        child: Row(
+          children: [
+            Icon(icon, size: 22, color: color),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                label,
+                style: theme.textTheme.bodyLarge?.copyWith(color: color),
+              ),
+            ),
+            Icon(
+              Icons.chevron_right,
+              color: theme.colorScheme.onSurfaceVariant,
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

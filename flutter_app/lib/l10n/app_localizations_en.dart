@@ -4198,6 +4198,18 @@ class AppLocalizationsEn extends AppLocalizations {
   String get accountTitle => 'Account';
 
   @override
+  String get accountProfileSection => 'Profile';
+
+  @override
+  String get accountPreferencesSection => 'Preferences';
+
+  @override
+  String get accountSupportSection => 'Support';
+
+  @override
+  String get accountActionsSection => 'Account actions';
+
+  @override
   String get adminContactsTitle => 'Admin contacts';
 
   @override

@@ -7,7 +7,10 @@ import '../providers/experience_providers.dart';
 
 /// Default experience picker in Settings (`/g/settings` or `/o/settings`).
 class ExperienceSettingsSection extends ConsumerWidget {
-  const ExperienceSettingsSection({super.key});
+  const ExperienceSettingsSection({super.key, this.embedded = false});
+
+  /// When true, omits the outer [Card] for use inside [DashboardSection].
+  final bool embedded;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -23,44 +26,58 @@ class ExperienceSettingsSection extends ConsumerWidget {
 
     final options = eligibility.availableExperiences;
 
+    final content = Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        if (!embedded) ...[
+          Text(
+            l.experienceDefaultSettingTitle,
+            style: theme.textTheme.titleMedium,
+          ),
+          const SizedBox(height: 4),
+          Text(
+            l.experienceDefaultSettingSubtitle,
+            style: theme.textTheme.bodySmall?.copyWith(
+              color: theme.colorScheme.onSurfaceVariant,
+            ),
+          ),
+          const SizedBox(height: 12),
+        ] else
+          Text(
+            l.experienceDefaultSettingSubtitle,
+            style: theme.textTheme.bodySmall?.copyWith(
+              color: theme.colorScheme.onSurfaceVariant,
+            ),
+          ),
+        if (embedded) const SizedBox(height: 8),
+        ...options.map((exp) {
+          return RadioListTile<AppExperience>(
+            key: Key('default_experience_${exp.wire}'),
+            value: exp,
+            groupValue: saved ?? options.first,
+            contentPadding: EdgeInsets.zero,
+            title: Text(
+              exp == AppExperience.guardian
+                  ? l.experienceGuardianTitle
+                  : l.experienceOrganizationTitle,
+            ),
+            onChanged: (value) async {
+              if (value == null) return;
+              await store.writeDefaultExperience(value);
+              ref.invalidate(savedDefaultExperienceProvider);
+              ref.read(activeExperienceProvider.notifier).state = value;
+            },
+          );
+        }),
+      ],
+    );
+
+    if (embedded) return content;
+
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              l.experienceDefaultSettingTitle,
-              style: theme.textTheme.titleMedium,
-            ),
-            const SizedBox(height: 4),
-            Text(
-              l.experienceDefaultSettingSubtitle,
-              style: theme.textTheme.bodySmall?.copyWith(
-                color: theme.colorScheme.onSurfaceVariant,
-              ),
-            ),
-            const SizedBox(height: 12),
-            ...options.map((exp) {
-              return RadioListTile<AppExperience>(
-                key: Key('default_experience_${exp.wire}'),
-                value: exp,
-                groupValue: saved ?? options.first,
-                title: Text(
-                  exp == AppExperience.guardian
-                      ? l.experienceGuardianTitle
-                      : l.experienceOrganizationTitle,
-                ),
-                onChanged: (value) async {
-                  if (value == null) return;
-                  await store.writeDefaultExperience(value);
-                  ref.invalidate(savedDefaultExperienceProvider);
-                  ref.read(activeExperienceProvider.notifier).state = value;
-                },
-              );
-            }),
-          ],
-        ),
+        child: content,
       ),
     );
   }

@@ -1461,6 +1461,10 @@
   "notificationKindOrganisation": "Organisation",
   "notificationActionNeeded": "Action needed",
   "accountTitle": "Account",
+  "accountProfileSection": "Profile",
+  "accountPreferencesSection": "Preferences",
+  "accountSupportSection": "Support",
+  "accountActionsSection": "Account actions",
 
   "adminContactsTitle": "Admin contacts",
   "adminContactsDescription": "Internal directory of organisation admins. Call or message using the contact details they share.",
