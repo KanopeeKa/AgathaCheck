@@ -5,6 +5,15 @@ import 'organization_repository_impl_base.dart';
 mixin OrganizationRepositoryFosterPlacementsMixin
     on OrganizationRepositoryImplBase {
   @override
+  Future<List<FosterPlacement>> getOrganizationPlacements(
+    String orgId,
+    String token,
+  ) async {
+    final rows = await dataSource.getOrganizationPlacements(orgId, token);
+    return rows.map(FosterPlacement.fromJson).toList();
+  }
+
+  @override
   Future<PetFosterPlacementState> getPetPlacement(
     String orgId,
     String petId,

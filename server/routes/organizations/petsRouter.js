@@ -1,5 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 import { dateToIsoDate, normalizeCalendarDateInput } from '../../lib/calendarDate.js';
+import { OPEN_PLACEMENT_STATUSES } from '../../lib/fosterPlacements.js';
 import { transferOrgPetToUser } from '../../lib/orgPetTransfer.js';
 import {
   requestCustodyTransfer,
@@ -18,12 +19,31 @@ export function registerPetsRoutes(router, pool) {
       try {
         if (!(await requireOrgAdmin(pool, res, req.params.orgId, userId))) return;
         const result = await pool.query(
-          `SELECT p.*, o.name AS organization_name
+          `SELECT p.*, o.name AS organization_name,
+            (SELECT fp.end_date
+             FROM foster_placements fp
+             WHERE fp.pet_id = p.id
+               AND fp.status = ANY($2::text[])
+             ORDER BY fp.created_at DESC
+             LIMIT 1) AS foster_end_date,
+            (SELECT fp.status
+             FROM foster_placements fp
+             WHERE fp.pet_id = p.id
+               AND fp.status = ANY($2::text[])
+             ORDER BY fp.created_at DESC
+             LIMIT 1) AS foster_placement_status,
+            (SELECT NULLIF(TRIM(COALESCE(u.first_name, '') || ' ' || COALESCE(u.last_name, '')), '')
+             FROM foster_placements fp
+             LEFT JOIN users u ON u.id = fp.foster_user_id
+             WHERE fp.pet_id = p.id
+               AND fp.status = ANY($2::text[])
+             ORDER BY fp.created_at DESC
+             LIMIT 1) AS foster_name
            FROM pets p
            LEFT JOIN organizations o ON o.id = p.organization_id
            WHERE p.organization_id = $1
            ORDER BY p.created_at`,
-          [req.params.orgId]
+          [req.params.orgId, OPEN_PLACEMENT_STATUSES]
         );
         res.json(result.rows.map(r => ({
           id: r.id,
@@ -31,8 +51,12 @@ export function registerPetsRoutes(router, pool) {
           species: r.species,
           breed: r.breed,
           photo_path: r.photo_path || null,
+          passed_away: r.passed_away || false,
           organization_id: r.organization_id,
           organization_name: r.organization_name || null,
+          foster_placement_status: r.foster_placement_status || null,
+          foster_name: r.foster_name || null,
+          foster_end_date: r.foster_end_date ? dateToIsoDate(r.foster_end_date) : null,
         })));
       } catch (err) {
         res.status(500).json({ error: publicError(err) });

@@ -29,6 +29,7 @@ class Pet {
     this.organizationName,
     this.fosterPlacementStatus,
     this.fosterName,
+    this.fosterEndDate,
     this.guardianName,
   });
 
@@ -55,6 +56,7 @@ class Pet {
   final String? organizationName;
   final String? fosterPlacementStatus;
   final String? fosterName;
+  final DateTime? fosterEndDate;
   final String? guardianName;
 
   double? get age {
@@ -120,6 +122,7 @@ class Pet {
     String? organizationName,
     String? fosterPlacementStatus,
     String? fosterName,
+    DateTime? fosterEndDate,
     String? guardianName,
     bool clearVetId = false,
     bool clearGender = false,
@@ -153,6 +156,7 @@ class Pet {
       fosterPlacementStatus:
           fosterPlacementStatus ?? this.fosterPlacementStatus,
       fosterName: fosterName ?? this.fosterName,
+      fosterEndDate: fosterEndDate ?? this.fosterEndDate,
       guardianName: guardianName ?? this.guardianName,
     );
   }

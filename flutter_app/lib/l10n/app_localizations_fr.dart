@@ -4124,82 +4124,82 @@ class AppLocalizationsFr extends AppLocalizations {
   String get accountTitle => 'Compte';
 
   @override
-  String get adminContactsTitle => 'Admin contacts';
+  String get adminContactsTitle => 'Contacts admin';
 
   @override
   String get adminContactsDescription =>
-      'Internal directory of organisation admins. Call or message using the contact details they share.';
+      'Annuaire interne des administrateurs de l\'organisation. Appelez ou écrivez selon les coordonnées partagées.';
 
   @override
-  String get adminContactsEmpty => 'No admin contacts yet.';
+  String get adminContactsEmpty => 'Aucun contact admin pour le moment.';
 
   @override
-  String get adminContactsYourCard => 'Your card';
+  String get adminContactsYourCard => 'Votre fiche';
 
   @override
-  String get adminContactsAddAdmin => 'Add admin';
+  String get adminContactsAddAdmin => 'Ajouter un admin';
 
   @override
-  String get adminContactsCall => 'Call';
+  String get adminContactsCall => 'Appeler';
 
   @override
   String get adminContactsMessage => 'Message';
 
   @override
-  String get adminContactsMoreOptions => 'More options';
+  String get adminContactsMoreOptions => 'Plus d\'options';
 
   @override
-  String get adminContactsSelfPrefsTitle => 'Your visibility preferences';
+  String get adminContactsSelfPrefsTitle => 'Vos préférences de visibilité';
 
   @override
   String get adminContactsSelfPrefsStubNote =>
-      'Saved locally until org-scoped notification preferences are available.';
+      'Enregistré localement jusqu\'à la disponibilité des préférences de notification par organisation.';
 
   @override
   String get adminContactsPhoneVisibilityLabel =>
-      'Who can see your phone number';
+      'Qui peut voir votre numéro de téléphone';
 
   @override
-  String get adminContactsPhoneVisibilityFosters => 'Fosters';
+  String get adminContactsPhoneVisibilityFosters => 'Familles d\'accueil';
 
   @override
-  String get adminContactsPhoneVisibilityAdmins => 'Admins';
+  String get adminContactsPhoneVisibilityAdmins => 'Administrateurs';
 
   @override
-  String get adminContactsPhoneVisibilityAll => 'Everyone in the organisation';
+  String get adminContactsPhoneVisibilityAll => 'Toute l\'organisation';
 
   @override
-  String get adminContactsPhoneVisibilityNobody => 'Nobody';
+  String get adminContactsPhoneVisibilityNobody => 'Personne';
 
   @override
-  String get adminContactsMessageChannelLabel => 'Message notifications';
+  String get adminContactsMessageChannelLabel => 'Notifications de message';
 
   @override
-  String get adminContactsMessageChannelInApp => 'In app';
+  String get adminContactsMessageChannelInApp => 'Dans l\'application';
 
   @override
-  String get adminContactsMessageChannelEmail => 'Email';
+  String get adminContactsMessageChannelEmail => 'E-mail';
 
   @override
-  String get adminContactsMessageChannelBoth => 'In app and email';
+  String get adminContactsMessageChannelBoth => 'Application et e-mail';
 
   @override
   String adminContactsSelfCardSemantics(String name) {
-    return 'Your admin contact card, $name';
+    return 'Votre fiche contact admin, $name';
   }
 
   @override
   String adminContactsCardSemantics(String name, String role) {
-    return 'Admin contact $name, $role';
+    return 'Contact admin $name, $role';
   }
 
   @override
   String adminContactsRemoveConfirm(String name) {
-    return 'Remove $name from this organisation?';
+    return 'Retirer $name de cette organisation ?';
   }
 
   @override
   String adminContactsRemoved(String name) {
-    return '$name was removed';
+    return '$name a été retiré(e)';
   }
 }

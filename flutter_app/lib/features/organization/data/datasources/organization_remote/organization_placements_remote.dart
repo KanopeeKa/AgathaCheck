@@ -25,6 +25,21 @@ class OrganizationPlacementsRemote {
     return data;
   }
 
+  Future<List<Map<String, dynamic>>> getOrganizationPlacements(
+    String orgId,
+    String token,
+  ) async {
+    final response = await _ctx.client.get(
+      Uri.parse('${_ctx.baseUrl}/api/organizations/$orgId/placements'),
+      headers: _ctx.headers(token),
+    );
+    if (response.statusCode >= 400) {
+      _ctx.throwApiError(response, 'Failed to load organisation placements');
+    }
+    final list = json.decode(response.body) as List;
+    return list.cast<Map<String, dynamic>>();
+  }
+
   Future<Map<String, dynamic>> startFosterPlacement(
     String orgId,
     String petId, {
