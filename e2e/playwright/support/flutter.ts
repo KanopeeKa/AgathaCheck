@@ -128,13 +128,15 @@ export function escapeRegExp(value: string): string {
 }
 
 /**
- * Nav v2 shell home indicators: Home nav button, Add Pet FAB, empty-state text,
- * or hamburger/Settings menu (prefix match handles badge-augmented accessible names).
- * "To Do" retained for legacy local builds. Events removed — nav v2 phase 3.
+ * Post-login shell indicators: experience bell + section drawer, Add Pet FAB, empty-state,
+ * or legacy nav chrome (Home / Settings / To Do).
+ * Navigation reversal (phase-1-navigation.md): Home removed; hamburger tooltip is "Open menu".
  */
 export function homeShellLocator(page: Page): Locator {
   return page
-    .getByRole('button', { name: 'To Do' })
+    .getByRole('button', { name: /open notifications/i })
+    .or(page.getByRole('button', { name: /open menu/i }))
+    .or(page.getByRole('button', { name: 'To Do' }))
     .or(page.getByRole('button', { name: 'Add Pet' }))
     .or(page.getByText('No pets yet'))
     .or(page.getByRole('button', { name: /^(Home|Accueil)$/i }))
@@ -388,14 +390,14 @@ export async function reachAuthenticatedHome(
 }
 
 /**
- * Top-nav controls for the nav v2 experience shell (EN + FR).
- * Nav v2 (phase 3): Events removed; shell has Home + hamburger whose tooltip is
- * "Settings" / "Paramètres" — prefix match required because a badge appends the
- * unread count to the accessible name (e.g. "Settings, 3 unread").
+ * Top-nav controls for the experience shell (EN + FR).
+ * Navigation reversal: persistent bell + section drawer hamburger; no Home button.
  */
 export function experienceShellNavLocator(page: Page): Locator {
   return page
-    .getByRole('button', { name: /^(Home|Accueil)$/i })
+    .getByRole('button', { name: /open notifications/i })
+    .or(page.getByRole('button', { name: /open menu/i }))
+    .or(page.getByRole('button', { name: /^(Home|Accueil)$/i }))
     .or(page.getByRole('button', { name: /^(Settings|Paramètres)/i }));
 }
 
@@ -412,7 +414,8 @@ export async function openExperienceDrawer(page: Page): Promise<void> {
   await dismissConsentBannerIfPresent(page);
   await refreshFlutterAccessibility(page);
   const menuButton = page
-    .getByRole('button', { name: /^(Settings|Paramètres)/i })
+    .getByRole('button', { name: /open menu/i })
+    .or(page.getByRole('button', { name: /^(Settings|Paramètres)/i }))
     .or(page.getByRole('button', { name: /menu/i }))
     .first();
   await menuButton.click({ timeout: 10_000 });
