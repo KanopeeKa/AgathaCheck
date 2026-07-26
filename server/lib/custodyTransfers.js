@@ -11,7 +11,8 @@ import {
   setOrgGuardianAndCare,
   userIsOrgAdmin,
 } from './petCustody.js';
-import { createNotification, userDisplayName } from './notificationHelper.js';
+import { createNotification, resolveAdministrativeNotifications, userDisplayName } from './notificationHelper.js';
+import { NOTIFICATION_TYPE_PENDING_CUSTODY_TRANSFER_RECEIVED } from './notificationKind.js';
 import { closeActivePlacementForPet } from './fosterPlacements.js';
 
 export const TRANSFER_INDIVIDUAL = 'individual_guardianship';
@@ -134,7 +135,7 @@ export async function requestCustodyTransfer(db, {
       petName: pet.name,
       title: 'Custody transfer request',
       message: `${userDisplayName(requester.rows[0] || {})} requested a custody transfer for ${pet.name}.`,
-      type: 'general',
+      type: NOTIFICATION_TYPE_PENDING_CUSTODY_TRANSFER_RECEIVED,
     });
   }
   if (toOrgId && transferKind !== TRANSFER_RETURN) {
@@ -150,7 +151,7 @@ export async function requestCustodyTransfer(db, {
         petName: pet.name,
         title: 'Org custody transfer request',
         message: `A custody transfer for ${pet.name} is awaiting your organisation's approval.`,
-        type: 'general',
+        type: NOTIFICATION_TYPE_PENDING_CUSTODY_TRANSFER_RECEIVED,
       });
     }
   }
@@ -167,12 +168,34 @@ export async function requestCustodyTransfer(db, {
         petName: pet.name,
         title: 'Pet return request',
         message: `A return request for ${pet.name} is awaiting your organisation's approval.`,
-        type: 'general',
+        type: NOTIFICATION_TYPE_PENDING_CUSTODY_TRANSFER_RECEIVED,
       });
     }
   }
 
   return { id, transfer_kind: transferKind, status: 'pending' };
+}
+
+async function resolveCustodyTransferNotifications(db, transfer) {
+  const targets = new Set();
+  if (transfer.to_user_id) targets.add(transfer.to_user_id);
+  if (transfer.to_org_id) {
+    const admins = await db.query(
+      `SELECT user_id FROM organization_users
+       WHERE organization_id = $1 AND role IN ('super_admin', 'admin')`,
+      [transfer.to_org_id],
+    );
+    for (const row of admins.rows) {
+      targets.add(row.user_id);
+    }
+  }
+  for (const userId of targets) {
+    await resolveAdministrativeNotifications(db, {
+      userId,
+      petId: transfer.pet_id,
+      type: NOTIFICATION_TYPE_PENDING_CUSTODY_TRANSFER_RECEIVED,
+    });
+  }
 }
 
 export async function acceptCustodyTransfer(db, transferId, acceptingUserId) {
@@ -246,6 +269,8 @@ export async function acceptCustodyTransfer(db, transferId, acceptingUserId) {
     [transferId, acceptingUserId],
   );
 
+  await resolveCustodyTransferNotifications(db, transfer);
+
   return { accepted: true, pet_id: pet.id };
 }
 
@@ -262,6 +287,7 @@ export async function cancelCustodyTransfer(db, transferId, userId, reason = '')
     err.statusCode = 404;
     throw err;
   }
+  await resolveCustodyTransferNotifications(db, result.rows[0]);
   return result.rows[0];
 }
 

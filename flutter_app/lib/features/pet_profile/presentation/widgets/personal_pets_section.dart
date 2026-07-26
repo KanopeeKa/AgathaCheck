@@ -12,6 +12,9 @@ class PersonalPetsSection extends StatelessWidget {
   final ThemeData theme;
   final WidgetRef ref;
   final BuildContext parentContext;
+  final bool bulkShareMode;
+  final Set<String> selectedPetIds;
+  final ValueChanged<String>? onPetSelectionToggle;
 
   const PersonalPetsSection({
     super.key,
@@ -21,6 +24,9 @@ class PersonalPetsSection extends StatelessWidget {
     required this.theme,
     required this.ref,
     required this.parentContext,
+    this.bulkShareMode = false,
+    this.selectedPetIds = const {},
+    this.onPetSelectionToggle,
   });
 
   @override
@@ -32,10 +38,36 @@ class PersonalPetsSection extends StatelessWidget {
     return Column(
       children: personalActive
           .map(
-            (pet) => Padding(
-              padding: const EdgeInsets.only(bottom: 8),
-              child: pet.isShared
-                  ? Dismissible(
+            (pet) {
+              final selectable = bulkShareMode &&
+                  !pet.isShared &&
+                  !pet.isFoster &&
+                  pet.organizationId == null;
+              Widget card = PetCard(
+                pet: pet,
+                onTap: selectable
+                    ? () => onPetSelectionToggle?.call(pet.id)
+                    : () => context.go('/pet/${pet.id}'),
+              );
+              if (selectable) {
+                card = Stack(
+                  children: [
+                    card,
+                    Positioned(
+                      left: 8,
+                      top: 8,
+                      child: Checkbox(
+                        value: selectedPetIds.contains(pet.id),
+                        onChanged: (_) => onPetSelectionToggle?.call(pet.id),
+                      ),
+                    ),
+                  ],
+                );
+              }
+              return Padding(
+                padding: const EdgeInsets.only(bottom: 8),
+                child: pet.isShared && !bulkShareMode
+                    ? Dismissible(
                       key: Key('hide_${pet.id}'),
                       direction: DismissDirection.endToStart,
                       background: Container(
@@ -92,16 +124,11 @@ class PersonalPetsSection extends StatelessWidget {
                         }
                         return false;
                       },
-                      child: PetCard(
-                        pet: pet,
-                        onTap: () => context.go('/pet/${pet.id}'),
-                      ),
+                      child: card,
                     )
-                  : PetCard(
-                      pet: pet,
-                      onTap: () => context.go('/pet/${pet.id}'),
-                    ),
-            ),
+                  : card,
+              );
+            },
           )
           .toList(),
     );

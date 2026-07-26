@@ -2735,6 +2735,85 @@ class AppLocalizationsFr extends AppLocalizations {
   String get orgPet => 'Animal de l\'organisation';
 
   @override
+  String get petTimelineTitle => 'Chronologie';
+
+  @override
+  String get petTimelineNoData => 'Aucune donnée';
+
+  @override
+  String get petTimelineFillAction => 'Compléter';
+
+  @override
+  String get petTimelineLoadError => 'Impossible de charger la chronologie';
+
+  @override
+  String get petTimelineManualEntry => 'Entrée manuelle';
+
+  @override
+  String get petTimelineUnknownPerson => 'Inconnu';
+
+  @override
+  String get petTimelineCustodySegmentHidden => 'Garde du tuteur';
+
+  @override
+  String petTimelineFosteringSession(String fosterName) {
+    return 'Famille d\'accueil : $fosterName';
+  }
+
+  @override
+  String petTimelineCustodySegment(String guardianName) {
+    return 'Tuteur : $guardianName';
+  }
+
+  @override
+  String petTimelineDateRange(String startDate, String endDate) {
+    return '$startDate – $endDate';
+  }
+
+  @override
+  String petTimelineFillTitle(String petName) {
+    return 'Ajouter une entrée pour $petName';
+  }
+
+  @override
+  String get petTimelineFillTitleLabel => 'Titre';
+
+  @override
+  String get petTimelineFillTitleRequired => 'Le titre est obligatoire';
+
+  @override
+  String get petTimelineFillDescriptionLabel => 'Description';
+
+  @override
+  String get petTimelineFillStartDateLabel => 'Date de début';
+
+  @override
+  String get petTimelineFillStartDateRequired =>
+      'La date de début est obligatoire';
+
+  @override
+  String get petTimelineFillEndDateLabel => 'Date de fin';
+
+  @override
+  String get petTimelineFillError => 'Impossible d\'enregistrer l\'entrée';
+
+  @override
+  String get bulkShare => 'Partage groupé';
+
+  @override
+  String get bulkShareSelectHint => 'Sélectionnez les animaux à partager';
+
+  @override
+  String get bulkShareAction => 'Partager la sélection';
+
+  @override
+  String get bulkShareDone =>
+      'Liens de partage créés pour les animaux sélectionnés';
+
+  @override
+  String get bulkShareNoneSelected => 'Sélectionnez au moins un animal';
+
+  @override
   String get pendingShares => 'Partages en attente';
 
   @override

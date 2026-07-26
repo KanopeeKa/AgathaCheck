@@ -24,6 +24,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { migrateFamilyEventsPlacements } from './migrations/016_migrate_family_events_placements.js';
 import { migrateFosterProfiles } from './migrations/023_foster_profiles.js';
 import { migrateAdoptionJourneys } from './migrations/028_adoption_journeys.js';
+import { migrateFamilyEventsTimeline } from './migrations/034_migrate_family_events_timeline.js';
 import { maybeAutoSeedMigrationLedger } from './lib/migration-ledger.js';
 
 const { Pool } = pg;
@@ -101,6 +102,7 @@ const CODE_MIGRATIONS = {
   '016_migrate_family_events_placements.sql': migrateFamilyEventsPlacements,
   '023_foster_profiles.sql': migrateFosterProfiles,
   '028_adoption_journeys.sql': migrateAdoptionJourneys,
+  '034_pet_timeline_entries.sql': migrateFamilyEventsTimeline,
 };
 
 async function applyMigration(client, name, sql) {

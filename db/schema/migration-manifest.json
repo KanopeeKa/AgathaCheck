@@ -39,11 +39,13 @@
     "030_adoption_visits.sql",
     "031_document_templates.sql",
     "032_adoption_visit_outcome.sql",
-    "033_notification_kind_priority_resolved.sql"
+    "033_notification_kind_priority_resolved.sql",
+    "034_pet_timeline_entries.sql"
   ],
   "code_migrations": [
     "016_migrate_family_events_placements.sql",
     "023_foster_profiles.sql",
-    "028_adoption_journeys.sql"
+    "028_adoption_journeys.sql",
+    "034_pet_timeline_entries.sql"
   ]
 }

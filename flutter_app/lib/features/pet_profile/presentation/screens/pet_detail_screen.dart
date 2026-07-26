@@ -11,6 +11,7 @@ import '../providers/pet_detail_viewer_context_provider.dart';
 import '../providers/pet_providers.dart';
 import '../widgets/pet_detail/pet_detail_app_bar.dart';
 import '../widgets/pet_detail/pet_detail_profile_card.dart';
+import '../widgets/pet_timeline/pet_timeline_section.dart';
 import 'widgets/chip_reminder_card.dart';
 import 'widgets/download_report_section.dart';
 import 'widgets/other_events_section.dart';
@@ -85,6 +86,9 @@ class _PetDetailScreenState extends ConsumerState<PetDetailScreen> {
                     petName: pet.name,
                   ),
                 ),
+              SliverToBoxAdapter(
+                child: PetTimelineSection(petId: widget.petId, petName: pet.name),
+              ),
               SliverToBoxAdapter(
                 child: WeightTrackingSection(petId: widget.petId),
               ),

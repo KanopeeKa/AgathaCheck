@@ -1,6 +1,10 @@
 import { v4 as uuidv4 } from 'uuid';
 import { normalizeCalendarDateInput } from '../../../lib/calendarDate.js';
-import { createNotification, userDisplayName } from '../../../lib/notificationHelper.js';
+import { createNotification, resolveAdministrativeNotifications, userDisplayName } from '../../../lib/notificationHelper.js';
+import {
+  NOTIFICATION_TYPE_PENDING_ADOPTION_PLACEMENT_RECEIVED,
+  NOTIFICATION_TYPE_PENDING_FOSTER_PLACEMENT_RECEIVED,
+} from '../../../lib/notificationKind.js';
 import {
   placementWithJourneyResponse,
   startAdoptionJourney,
@@ -115,7 +119,7 @@ export function registerPlacementCreateRoutes(router, pool) {
         petName: pet.name,
         title: 'Foster placement request',
         message: `${adminName} invited you to foster ${pet.name}.`,
-        type: 'general',
+        type: NOTIFICATION_TYPE_PENDING_FOSTER_PLACEMENT_RECEIVED,
       });
 
       const detail = await queryPlacementDetailById(pool, placement.id);
@@ -212,7 +216,7 @@ export function registerPlacementCreateRoutes(router, pool) {
         message: adoptionConditions
           ? `${adminName} invited you to adopt ${pet.name}. Pre-adoption conditions apply.`
           : `${adminName} invited you to adopt ${pet.name}. Please confirm to complete adoption.`,
-        type: 'general',
+        type: NOTIFICATION_TYPE_PENDING_ADOPTION_PLACEMENT_RECEIVED,
       });
 
       const detail = await loadPlacementDetail(pool, journeyResult.placement.id);
