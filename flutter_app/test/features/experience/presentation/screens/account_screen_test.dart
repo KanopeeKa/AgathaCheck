@@ -100,18 +100,26 @@ void main() {
     expect(find.text('Support'), findsOneWidget);
   });
 
-  testWidgets('account hides preferences for guardian-only users', (
-    tester,
-  ) async {
-    final guardianOnly = ExperienceEligibilityRules.compute(
-      pets: const [],
-      orgMembershipCount: 0,
-    );
+  testWidgets(
+    'account hides default experience chooser for guardian-only users',
+    (tester) async {
+      final guardianOnly = ExperienceEligibilityRules.compute(
+        pets: const [],
+        orgMembershipCount: 0,
+      );
 
-    await tester.pumpWidget(buildApp(eligibility: guardianOnly));
-    await tester.pumpAndSettle();
+      await tester.pumpWidget(buildApp(eligibility: guardianOnly));
+      await tester.pumpAndSettle();
 
-    expect(find.byKey(const Key('default_experience_guardian')), findsNothing);
-    expect(find.text('Preferences'), findsOneWidget);
-  });
+      expect(
+        find.byKey(const Key('default_experience_guardian')),
+        findsNothing,
+      );
+      expect(
+        find.byKey(const Key('default_experience_organization')),
+        findsNothing,
+      );
+      expect(find.text('Preferences'), findsOneWidget);
+    },
+  );
 }

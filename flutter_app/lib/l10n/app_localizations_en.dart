@@ -4172,6 +4172,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get drawerAccount => 'Account';
 
   @override
+  String drawerItemUnreadSemantics(String label, int count) {
+    return '$label, $count unread';
+  }
+
+  @override
   String get notificationsBellTooltip => 'Open notifications';
 
   @override
