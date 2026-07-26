@@ -655,7 +655,6 @@ jobs:
 
       - name: Warm up UAT auth and run @smoke-uat (single Playwright run)
         id: live_gate
-        working-directory: e2e
         env:
           E2E_BASE_URL: ${{ env.UAT_BASE_URL }}
           E2E_BYPASS_TOKEN: ${{ secrets.E2E_BYPASS_TOKEN }}

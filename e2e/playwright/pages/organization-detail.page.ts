@@ -4,6 +4,7 @@ import {
   dismissConsentBannerIfPresent,
   enableFlutterAccessibility,
   escapeRegExp,
+  expectAppBarTitle,
   fillTextbox,
   refreshFlutterAccessibility,
   selectDropdownOption,
@@ -24,9 +25,10 @@ export class OrganizationDetailPage {
 
   async expectLoaded(orgName: string): Promise<void> {
     await dismissConsentBannerIfPresent(this.page);
+    await waitForFlutterRoutePattern(this.page, /\/o\/orgs\/[^/?#]+/, 30_000);
     await expect(async () => {
       await refreshFlutterAccessibility(this.page);
-      await expect(this.page.getByText(orgName, { exact: true }).first()).toBeVisible();
+      await expectAppBarTitle(this.page, orgName);
       await expect(
         this.page
           .getByText(/Organisation presentation|Organisation dashboard|Choose a section/i)
