@@ -1444,5 +1444,29 @@
   "adminContactsRemoveConfirm": "Remove {name} from this organisation?",
   "@adminContactsRemoveConfirm": { "placeholders": { "name": { "type": "String" } } },
   "adminContactsRemoved": "{name} was removed",
-  "@adminContactsRemoved": { "placeholders": { "name": { "type": "String" } } }
+  "@adminContactsRemoved": { "placeholders": { "name": { "type": "String" } } },
+
+  "orgDashboardIntro": "Choose a section to manage your organisation.",
+  "orgDashboardPetsSubtitle": "Browse pets, tabs, and care filters.",
+  "orgDashboardConnectionsSubtitle": "Manage links with other organisations.",
+  "orgDashboardEditSubtitle": "Update organisation details and branding.",
+
+  "orgPresentationTitle": "Organisation presentation",
+  "orgPresentationSubtitle": "Public-facing identity, legal details, and contact information.",
+  "orgPresentationContactTitle": "Contact",
+  "orgPresentationLegalTitle": "Legal information",
+  "orgLegalIdentifierRna": "RNA",
+  "orgLegalIdentifierSiren": "SIREN",
+  "orgLegalIdentifierSiret": "SIRET",
+
+  "orgLegalDocumentsTitle": "Legal & documents",
+  "orgLegalDocumentsSubtitle": "Read and download public organisation documents.",
+  "orgLegalDocumentsIntro": "These documents are published by your organisation for members to read and download.",
+  "orgLegalDocumentsEmpty": "No public documents are available yet.",
+  "orgLegalDocumentsTypeSession": "Session documents",
+  "orgLegalDocumentsTypeAdoption": "Adoption documents",
+  "orgLegalDocumentsDownload": "Download {title}",
+  "@orgLegalDocumentsDownload": { "placeholders": { "title": { "type": "String" } } },
+  "orgLegalDocumentsDownloaded": "Downloaded {title}",
+  "@orgLegalDocumentsDownloaded": { "placeholders": { "title": { "type": "String" } } }
 }

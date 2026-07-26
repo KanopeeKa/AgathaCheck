@@ -73,7 +73,14 @@ Feature: Organisation Management
     And "Bob" is a member of "Happy Paws Clinic"
     When "Alice" views the details of "Happy Paws Clinic"
     Then she should see the organisation name "Happy Paws Clinic"
-    And she should see 2 members listed
+    And she should see the organisation dashboard sections
+
+  @P1
+  Scenario: Viewing organisation members from the dashboard
+    Given "Alice" is a super user of organisation "Happy Paws Clinic"
+    And "Bob" is a member of "Happy Paws Clinic"
+    When "Alice" views the members of "Happy Paws Clinic"
+    Then she should see 2 members listed
     And she should see "Bob" listed as a member
 
   @P1

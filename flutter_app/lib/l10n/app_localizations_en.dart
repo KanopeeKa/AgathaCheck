@@ -4143,4 +4143,71 @@ class AppLocalizationsEn extends AppLocalizations {
   String adminContactsRemoved(String name) {
     return '$name was removed';
   }
+
+  @override
+  String get orgDashboardIntro =>
+      'Choose a section to manage your organisation.';
+
+  @override
+  String get orgDashboardPetsSubtitle => 'Browse pets, tabs, and care filters.';
+
+  @override
+  String get orgDashboardConnectionsSubtitle =>
+      'Manage links with other organisations.';
+
+  @override
+  String get orgDashboardEditSubtitle =>
+      'Update organisation details and branding.';
+
+  @override
+  String get orgPresentationTitle => 'Organisation presentation';
+
+  @override
+  String get orgPresentationSubtitle =>
+      'Public-facing identity, legal details, and contact information.';
+
+  @override
+  String get orgPresentationContactTitle => 'Contact';
+
+  @override
+  String get orgPresentationLegalTitle => 'Legal information';
+
+  @override
+  String get orgLegalIdentifierRna => 'RNA';
+
+  @override
+  String get orgLegalIdentifierSiren => 'SIREN';
+
+  @override
+  String get orgLegalIdentifierSiret => 'SIRET';
+
+  @override
+  String get orgLegalDocumentsTitle => 'Legal & documents';
+
+  @override
+  String get orgLegalDocumentsSubtitle =>
+      'Read and download public organisation documents.';
+
+  @override
+  String get orgLegalDocumentsIntro =>
+      'These documents are published by your organisation for members to read and download.';
+
+  @override
+  String get orgLegalDocumentsEmpty => 'No public documents are available yet.';
+
+  @override
+  String get orgLegalDocumentsTypeSession => 'Session documents';
+
+  @override
+  String get orgLegalDocumentsTypeAdoption => 'Adoption documents';
+
+  @override
+  String orgLegalDocumentsDownload(String title) {
+    return 'Download $title';
+  }
+
+  @override
+  String orgLegalDocumentsDownloaded(String title) {
+    return 'Downloaded $title';
+  }
 }

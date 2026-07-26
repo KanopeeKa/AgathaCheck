@@ -134,6 +134,17 @@ export function orgRowToMap(row) {
     bio: row.bio || '',
     photo_url: row.photo_url || '',
     logo_url: row.logo_url || '',
+    town: row.town || '',
+    administrative_area: row.administrative_area || '',
+    description: row.description || '',
+    is_discoverable: row.is_discoverable !== false,
+    legal_identifier_1: row.legal_identifier_1 || '',
+    legal_identifier_2: row.legal_identifier_2 || '',
+    legal_identifier_3: row.legal_identifier_3 || '',
+    public_profile_metadata:
+      row.public_profile_metadata && typeof row.public_profile_metadata === 'object'
+        ? row.public_profile_metadata
+        : {},
     primary_contact_ref: row.primary_contact_ref || null,
     primary_contact: row.primary_contact || null,
     role: row.role || null,

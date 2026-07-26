@@ -1350,5 +1350,29 @@
   "adminContactsRemoveConfirm": "Retirer {name} de cette organisation ?",
   "@adminContactsRemoveConfirm": { "placeholders": { "name": { "type": "String" } } },
   "adminContactsRemoved": "{name} a été retiré(e)",
-  "@adminContactsRemoved": { "placeholders": { "name": { "type": "String" } } }
+  "@adminContactsRemoved": { "placeholders": { "name": { "type": "String" } } },
+
+  "orgDashboardIntro": "Choisissez une section pour gérer votre organisation.",
+  "orgDashboardPetsSubtitle": "Parcourir les animaux, onglets et filtres de suivi.",
+  "orgDashboardConnectionsSubtitle": "Gérer les liens avec d'autres organisations.",
+  "orgDashboardEditSubtitle": "Mettre à jour les informations et l'image de l'organisation.",
+
+  "orgPresentationTitle": "Présentation de l'organisation",
+  "orgPresentationSubtitle": "Identité publique, informations légales et contacts.",
+  "orgPresentationContactTitle": "Contact",
+  "orgPresentationLegalTitle": "Informations légales",
+  "orgLegalIdentifierRna": "RNA",
+  "orgLegalIdentifierSiren": "SIREN",
+  "orgLegalIdentifierSiret": "SIRET",
+
+  "orgLegalDocumentsTitle": "Juridique et documents",
+  "orgLegalDocumentsSubtitle": "Consulter et télécharger les documents publics de l'organisation.",
+  "orgLegalDocumentsIntro": "Ces documents sont publiés par votre organisation pour les membres.",
+  "orgLegalDocumentsEmpty": "Aucun document public n'est disponible pour le moment.",
+  "orgLegalDocumentsTypeSession": "Documents de session",
+  "orgLegalDocumentsTypeAdoption": "Documents d'adoption",
+  "orgLegalDocumentsDownload": "Télécharger {title}",
+  "@orgLegalDocumentsDownload": { "placeholders": { "title": { "type": "String" } } },
+  "orgLegalDocumentsDownloaded": "{title} téléchargé",
+  "@orgLegalDocumentsDownloaded": { "placeholders": { "title": { "type": "String" } } }
 }

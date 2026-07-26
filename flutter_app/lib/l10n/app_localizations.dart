@@ -7496,6 +7496,120 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{name} was removed'**
   String adminContactsRemoved(String name);
+
+  /// No description provided for @orgDashboardIntro.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a section to manage your organisation.'**
+  String get orgDashboardIntro;
+
+  /// No description provided for @orgDashboardPetsSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Browse pets, tabs, and care filters.'**
+  String get orgDashboardPetsSubtitle;
+
+  /// No description provided for @orgDashboardConnectionsSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage links with other organisations.'**
+  String get orgDashboardConnectionsSubtitle;
+
+  /// No description provided for @orgDashboardEditSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Update organisation details and branding.'**
+  String get orgDashboardEditSubtitle;
+
+  /// No description provided for @orgPresentationTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Organisation presentation'**
+  String get orgPresentationTitle;
+
+  /// No description provided for @orgPresentationSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Public-facing identity, legal details, and contact information.'**
+  String get orgPresentationSubtitle;
+
+  /// No description provided for @orgPresentationContactTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Contact'**
+  String get orgPresentationContactTitle;
+
+  /// No description provided for @orgPresentationLegalTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Legal information'**
+  String get orgPresentationLegalTitle;
+
+  /// No description provided for @orgLegalIdentifierRna.
+  ///
+  /// In en, this message translates to:
+  /// **'RNA'**
+  String get orgLegalIdentifierRna;
+
+  /// No description provided for @orgLegalIdentifierSiren.
+  ///
+  /// In en, this message translates to:
+  /// **'SIREN'**
+  String get orgLegalIdentifierSiren;
+
+  /// No description provided for @orgLegalIdentifierSiret.
+  ///
+  /// In en, this message translates to:
+  /// **'SIRET'**
+  String get orgLegalIdentifierSiret;
+
+  /// No description provided for @orgLegalDocumentsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Legal & documents'**
+  String get orgLegalDocumentsTitle;
+
+  /// No description provided for @orgLegalDocumentsSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Read and download public organisation documents.'**
+  String get orgLegalDocumentsSubtitle;
+
+  /// No description provided for @orgLegalDocumentsIntro.
+  ///
+  /// In en, this message translates to:
+  /// **'These documents are published by your organisation for members to read and download.'**
+  String get orgLegalDocumentsIntro;
+
+  /// No description provided for @orgLegalDocumentsEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No public documents are available yet.'**
+  String get orgLegalDocumentsEmpty;
+
+  /// No description provided for @orgLegalDocumentsTypeSession.
+  ///
+  /// In en, this message translates to:
+  /// **'Session documents'**
+  String get orgLegalDocumentsTypeSession;
+
+  /// No description provided for @orgLegalDocumentsTypeAdoption.
+  ///
+  /// In en, this message translates to:
+  /// **'Adoption documents'**
+  String get orgLegalDocumentsTypeAdoption;
+
+  /// No description provided for @orgLegalDocumentsDownload.
+  ///
+  /// In en, this message translates to:
+  /// **'Download {title}'**
+  String orgLegalDocumentsDownload(String title);
+
+  /// No description provided for @orgLegalDocumentsDownloaded.
+  ///
+  /// In en, this message translates to:
+  /// **'Downloaded {title}'**
+  String orgLegalDocumentsDownloaded(String title);
 }
 
 class _AppLocalizationsDelegate

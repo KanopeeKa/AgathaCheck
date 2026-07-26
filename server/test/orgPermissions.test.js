@@ -3,6 +3,7 @@ import {
   PERMISSION_BUNDLE_PET_ADMIN,
   applyBundlePreset,
   grantPermission,
+  revokePermission,
   hasEffectivePermission,
   hasPermission,
   hasPermissionForUser,
@@ -168,11 +169,16 @@ describe('orgPermissions', () => {
   describe('grant and bundle helpers', () => {
     it('applyBundlePreset writes one row per bundle key', async () => {
       const inserts = [];
+      const audits = [];
       const pool = {
         query: jest.fn(async (sql, params) => {
           if (sql.includes('INSERT INTO organization_permissions')) {
             inserts.push(params);
             return { rowCount: 1 };
+          }
+          if (sql.includes('INSERT INTO audit_events')) {
+            audits.push(params);
+            return { rows: [{ id: 'audit-1' }] };
           }
           return { rows: [] };
         }),
@@ -189,6 +195,7 @@ describe('orgPermissions', () => {
       expect(inserts).toHaveLength(3);
       expect(inserts[0][3]).toBe('manage_pets');
       expect(inserts[0][4]).toBe('bundle:pet_admin');
+      expect(audits.some((params) => params.includes('bundle_preset_applied'))).toBe(true);
     });
 
     it('grantPermission skips duplicate active rows', async () => {
@@ -204,6 +211,55 @@ describe('orgPermissions', () => {
       });
 
       expect(id).toBeNull();
+    });
+
+    it('grantPermission records permission_granted audit event', async () => {
+      const audits = [];
+      const pool = {
+        query: jest.fn(async (sql, params) => {
+          if (sql.includes('INSERT INTO audit_events')) {
+            audits.push(params);
+            return { rows: [{ id: 'audit-grant' }] };
+          }
+          return { rowCount: 1 };
+        }),
+      };
+
+      const id = await grantPermission(pool, {
+        organizationId: 'org-1',
+        userId: 'user-2',
+        permissionKey: 'manage_pets',
+        grantedBy: 'admin-1',
+      });
+
+      expect(id).toBeTruthy();
+      expect(audits.some((params) => params.includes('permission_granted'))).toBe(true);
+    });
+
+    it('revokePermission records permission_revoked audit event', async () => {
+      const audits = [];
+      const pool = {
+        query: jest.fn(async (sql, params) => {
+          if (sql.includes('UPDATE organization_permissions')) {
+            return { rowCount: 1, rows: [{ id: 'perm-1' }] };
+          }
+          if (sql.includes('INSERT INTO audit_events')) {
+            audits.push(params);
+            return { rows: [{ id: 'audit-revoke' }] };
+          }
+          return { rows: [] };
+        }),
+      };
+
+      const revoked = await revokePermission(pool, {
+        organizationId: 'org-1',
+        userId: 'user-2',
+        permissionKey: 'manage_pets',
+        revokedBy: 'admin-1',
+      });
+
+      expect(revoked).toBe(true);
+      expect(audits.some((params) => params.includes('permission_revoked'))).toBe(true);
     });
   });
 });

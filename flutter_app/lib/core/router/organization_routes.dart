@@ -7,9 +7,12 @@ import '../../features/organization/presentation/screens/admin_contacts_screen.d
 import '../../features/organization/presentation/screens/accept_connection_screen.dart';
 import '../../features/organization/presentation/screens/archived_pet_detail_screen.dart';
 import '../../features/organization/presentation/screens/archived_pets_screen.dart';
-import '../../features/organization/presentation/screens/organization_detail_screen.dart';
+import '../../features/organization/presentation/screens/organization_connections_screen.dart';
+import '../../features/organization/presentation/screens/organization_dashboard_screen.dart';
 import '../../features/organization/presentation/screens/organization_form_screen.dart';
+import '../../features/organization/presentation/screens/organization_legal_documents_screen.dart';
 import '../../features/organization/presentation/screens/organization_list_screen.dart';
+import '../../features/organization/presentation/screens/organization_presentation_screen.dart';
 import '../../features/organization/presentation/screens/adoption_journey/adoption_journey_detail_screen.dart';
 import '../../features/organization/presentation/screens/adoption_screening/adoption_visits_screen.dart';
 import '../../features/organization/presentation/screens/adoption_screening/prospects_screen.dart';
@@ -66,9 +69,33 @@ List<RouteBase> _orgManagementChildRoutes() {
       name: 'organizationDetail',
       builder: (context, state) {
         final id = state.pathParameters['id']!;
-        return OrganizationDetailScreen(orgId: id);
+        return OrganizationDashboardScreen(orgId: id);
       },
       routes: [
+        GoRoute(
+          path: 'presentation',
+          name: 'organizationPresentation',
+          builder: (context, state) {
+            final id = state.pathParameters['id']!;
+            return OrganizationPresentationScreen(orgId: id);
+          },
+        ),
+        GoRoute(
+          path: 'legal-documents',
+          name: 'organizationLegalDocuments',
+          builder: (context, state) {
+            final id = state.pathParameters['id']!;
+            return OrganizationLegalDocumentsScreen(orgId: id);
+          },
+        ),
+        GoRoute(
+          path: 'connections',
+          name: 'organizationConnections',
+          builder: (context, state) {
+            final id = state.pathParameters['id']!;
+            return OrganizationConnectionsScreen(orgId: id);
+          },
+        ),
         GoRoute(
           path: 'edit',
           name: 'editOrganization',

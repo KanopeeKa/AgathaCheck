@@ -1,4 +1,5 @@
 import { v4 as uuidv4 } from 'uuid';
+import { logAuditEventSafe } from './audit.js';
 import {
   ORG_ROLE_ADMIN,
   ORG_ROLE_SUPER_ADMIN,
@@ -121,7 +122,14 @@ export async function hasPermissionForUser(pool, userId, organizationId, permiss
 
 export async function grantPermission(
   pool,
-  { organizationId, userId, permissionKey, grantedBy, source = 'individual' }
+  {
+    organizationId,
+    userId,
+    permissionKey,
+    grantedBy,
+    source = 'individual',
+    req = null,
+  }
 ) {
   const id = uuidv4();
   const { rowCount } = await pool.query(
@@ -139,42 +147,91 @@ export async function grantPermission(
     )`,
     [id, organizationId, userId, permissionKey, source, grantedBy]
   );
+  if (rowCount > 0) {
+    logAuditEventSafe(pool, {
+      actorUserId: grantedBy,
+      action: 'permission_granted',
+      resourceType: 'organization_permission',
+      resourceId: id,
+      orgId: organizationId,
+      metadata: {
+        user_id: userId,
+        permission_key: permissionKey,
+        source,
+      },
+      req,
+    });
+  }
   return rowCount > 0 ? id : null;
 }
 
 export async function revokePermission(
   pool,
-  { organizationId, userId, permissionKey, revokedBy }
+  { organizationId, userId, permissionKey, revokedBy, req = null }
 ) {
-  const { rowCount } = await pool.query(
+  const { rows, rowCount } = await pool.query(
     `UPDATE organization_permissions
      SET revoked_at = NOW(), revoked_by = $4
      WHERE organization_id = $1
        AND user_id = $2
        AND permission_key = $3
-       AND revoked_at IS NULL`,
+       AND revoked_at IS NULL
+     RETURNING id`,
     [organizationId, userId, permissionKey, revokedBy]
   );
+  if (rowCount > 0) {
+    logAuditEventSafe(pool, {
+      actorUserId: revokedBy,
+      action: 'permission_revoked',
+      resourceType: 'organization_permission',
+      resourceId: rows[0]?.id ?? null,
+      orgId: organizationId,
+      metadata: {
+        user_id: userId,
+        permission_key: permissionKey,
+      },
+      req,
+    });
+  }
   return rowCount > 0;
 }
 
 export async function applyBundlePreset(
   pool,
-  { organizationId, userId, presetName, grantedBy }
+  { organizationId, userId, presetName, grantedBy, req = null }
 ) {
   const keys = PERMISSION_BUNDLE_KEYS[presetName];
   if (!keys) {
     throw new Error(`Unknown permission bundle preset: ${presetName}`);
   }
   const source = bundleSource(presetName);
+  let grantedCount = 0;
   for (const permissionKey of keys) {
-    await grantPermission(pool, {
+    const id = await grantPermission(pool, {
       organizationId,
       userId,
       permissionKey,
       grantedBy,
       source,
+      req,
+    });
+    if (id) grantedCount += 1;
+  }
+  if (grantedCount > 0) {
+    logAuditEventSafe(pool, {
+      actorUserId: grantedBy,
+      action: 'bundle_preset_applied',
+      resourceType: 'organization_permission_bundle',
+      resourceId: presetName,
+      orgId: organizationId,
+      metadata: {
+        user_id: userId,
+        preset_name: presetName,
+        permission_keys: keys,
+        granted_count: grantedCount,
+      },
+      req,
     });
   }
-  return keys.length;
+  return grantedCount;
 }

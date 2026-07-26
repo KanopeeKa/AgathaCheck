@@ -4202,4 +4202,73 @@ class AppLocalizationsFr extends AppLocalizations {
   String adminContactsRemoved(String name) {
     return '$name a été retiré(e)';
   }
+
+  @override
+  String get orgDashboardIntro =>
+      'Choisissez une section pour gérer votre organisation.';
+
+  @override
+  String get orgDashboardPetsSubtitle =>
+      'Parcourir les animaux, onglets et filtres de suivi.';
+
+  @override
+  String get orgDashboardConnectionsSubtitle =>
+      'Gérer les liens avec d\'autres organisations.';
+
+  @override
+  String get orgDashboardEditSubtitle =>
+      'Mettre à jour les informations et l\'image de l\'organisation.';
+
+  @override
+  String get orgPresentationTitle => 'Présentation de l\'organisation';
+
+  @override
+  String get orgPresentationSubtitle =>
+      'Identité publique, informations légales et contacts.';
+
+  @override
+  String get orgPresentationContactTitle => 'Contact';
+
+  @override
+  String get orgPresentationLegalTitle => 'Informations légales';
+
+  @override
+  String get orgLegalIdentifierRna => 'RNA';
+
+  @override
+  String get orgLegalIdentifierSiren => 'SIREN';
+
+  @override
+  String get orgLegalIdentifierSiret => 'SIRET';
+
+  @override
+  String get orgLegalDocumentsTitle => 'Juridique et documents';
+
+  @override
+  String get orgLegalDocumentsSubtitle =>
+      'Consulter et télécharger les documents publics de l\'organisation.';
+
+  @override
+  String get orgLegalDocumentsIntro =>
+      'Ces documents sont publiés par votre organisation pour les membres.';
+
+  @override
+  String get orgLegalDocumentsEmpty =>
+      'Aucun document public n\'est disponible pour le moment.';
+
+  @override
+  String get orgLegalDocumentsTypeSession => 'Documents de session';
+
+  @override
+  String get orgLegalDocumentsTypeAdoption => 'Documents d\'adoption';
+
+  @override
+  String orgLegalDocumentsDownload(String title) {
+    return 'Télécharger $title';
+  }
+
+  @override
+  String orgLegalDocumentsDownloaded(String title) {
+    return '$title téléchargé';
+  }
 }
