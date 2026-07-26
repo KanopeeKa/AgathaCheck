@@ -266,10 +266,18 @@ class _PetListScreenState extends ConsumerState<PetListScreen> {
                     FilledButton(
                       key: const Key('bulk_share_action'),
                       onPressed: () async {
-                        final pets = ref.read(petListProvider).valueOrNull ?? [];
+                        final pets =
+                            ref.read(petListProvider).valueOrNull ?? [];
                         final owned = _controller
-                            .getPersonalActive(_controller.guardianShellPets(pets))
-                            .where((p) => !p.isShared && !p.isFoster && p.organizationId == null)
+                            .getPersonalActive(
+                              _controller.guardianShellPets(pets),
+                            )
+                            .where(
+                              (p) =>
+                                  !p.isShared &&
+                                  !p.isFoster &&
+                                  p.organizationId == null,
+                            )
                             .where((p) => _selectedPetIds.contains(p.id))
                             .map((p) => (id: p.id, name: p.name))
                             .toList();

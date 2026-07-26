@@ -23,9 +23,7 @@ void main() {
           theme: AppTheme.lightTheme,
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          home: const Scaffold(
-            body: GuardianUpcomingEventsSection(pets: []),
-          ),
+          home: const Scaffold(body: GuardianUpcomingEventsSection(pets: [])),
         ),
       ),
     );

@@ -8,7 +8,11 @@ import 'pet_timeline_fill_sheet.dart';
 
 /// Pet detail timeline: custody segments, fostering sessions, manual entries, gaps.
 class PetTimelineSection extends ConsumerWidget {
-  const PetTimelineSection({super.key, required this.petId, required this.petName});
+  const PetTimelineSection({
+    super.key,
+    required this.petId,
+    required this.petName,
+  });
 
   final String petId;
   final String petName;
@@ -28,7 +32,9 @@ class PetTimelineSection extends ConsumerWidget {
           leading: Icon(Icons.timeline, color: theme.colorScheme.primary),
           title: Text(
             l.petTimelineTitle,
-            style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
+            style: theme.textTheme.titleMedium?.copyWith(
+              fontWeight: FontWeight.w600,
+            ),
           ),
           children: [
             timelineAsync.when(
@@ -114,7 +120,9 @@ class _TimelineSegmentTile extends ConsumerWidget {
     }
 
     final headline = segment.isFosteringSession
-        ? l.petTimelineFosteringSession(segment.fosterName ?? l.petTimelineUnknownPerson)
+        ? l.petTimelineFosteringSession(
+            segment.fosterName ?? l.petTimelineUnknownPerson,
+          )
         : segment.isCustody
         ? (segment.guardianName != null
               ? l.petTimelineCustodySegment(segment.guardianName!)

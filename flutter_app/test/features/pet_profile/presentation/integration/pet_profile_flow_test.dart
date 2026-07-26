@@ -77,7 +77,10 @@ void main() {
       await pumpApp(tester, frames: 5);
       for (var i = 0; i < 30; i++) {
         await tester.pump(const Duration(milliseconds: 50));
-        if (find.byKey(const Key('dashboard_add_pet_button')).evaluate().isNotEmpty) {
+        if (find
+            .byKey(const Key('dashboard_add_pet_button'))
+            .evaluate()
+            .isNotEmpty) {
           return;
         }
       }

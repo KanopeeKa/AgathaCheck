@@ -64,8 +64,9 @@ Future<void> showPetTimelineFillSheet(
                   labelText: l.petTimelineFillTitleLabel,
                   border: const OutlineInputBorder(),
                 ),
-                validator: (v) =>
-                    (v == null || v.trim().isEmpty) ? l.petTimelineFillTitleRequired : null,
+                validator: (v) => (v == null || v.trim().isEmpty)
+                    ? l.petTimelineFillTitleRequired
+                    : null,
               ),
               const SizedBox(height: 12),
               TextFormField(
@@ -88,8 +89,9 @@ Future<void> showPetTimelineFillSheet(
                   suffixIcon: const Icon(Icons.calendar_today),
                 ),
                 onTap: () => pickDate(startController),
-                validator: (v) =>
-                    (v == null || v.trim().isEmpty) ? l.petTimelineFillStartDateRequired : null,
+                validator: (v) => (v == null || v.trim().isEmpty)
+                    ? l.petTimelineFillStartDateRequired
+                    : null,
               ),
               const SizedBox(height: 12),
               TextFormField(

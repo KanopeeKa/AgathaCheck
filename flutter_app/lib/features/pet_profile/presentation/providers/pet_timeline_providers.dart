@@ -5,19 +5,19 @@ import '../../../auth/presentation/providers/auth_providers.dart';
 import '../../data/datasources/pet_timeline_remote_datasource.dart';
 import '../../domain/entities/pet_timeline_segment.dart';
 
-final petTimelineDataSourceProvider = Provider<PetTimelineRemoteDataSource>((ref) {
+final petTimelineDataSourceProvider = Provider<PetTimelineRemoteDataSource>((
+  ref,
+) {
   return PetTimelineRemoteDataSource(baseUrl: ref.watch(apiBaseUrlProvider));
 });
 
-final petTimelineProvider = FutureProvider.family<List<PetTimelineSegment>, String>((
-  ref,
-  petId,
-) async {
-  final token = await ref.read(authProvider.notifier).getValidAccessToken();
-  if (token == null) return [];
-  final ds = ref.watch(petTimelineDataSourceProvider);
-  return ds.fetchTimeline(petId, token);
-});
+final petTimelineProvider =
+    FutureProvider.family<List<PetTimelineSegment>, String>((ref, petId) async {
+      final token = await ref.read(authProvider.notifier).getValidAccessToken();
+      if (token == null) return [];
+      final ds = ref.watch(petTimelineDataSourceProvider);
+      return ds.fetchTimeline(petId, token);
+    });
 
 Future<void> createPetTimelineManualEntry(
   WidgetRef ref,
@@ -29,13 +29,15 @@ Future<void> createPetTimelineManualEntry(
 }) async {
   final token = await ref.read(authProvider.notifier).getValidAccessToken();
   if (token == null) return;
-  await ref.read(petTimelineDataSourceProvider).createManualEntry(
-    petId,
-    token,
-    title: title,
-    description: description,
-    startDate: startDate,
-    endDate: endDate,
-  );
+  await ref
+      .read(petTimelineDataSourceProvider)
+      .createManualEntry(
+        petId,
+        token,
+        title: title,
+        description: description,
+        startDate: startDate,
+        endDate: endDate,
+      );
   ref.invalidate(petTimelineProvider(petId));
 }

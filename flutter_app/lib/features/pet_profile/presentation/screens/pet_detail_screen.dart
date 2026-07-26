@@ -87,7 +87,10 @@ class _PetDetailScreenState extends ConsumerState<PetDetailScreen> {
                   ),
                 ),
               SliverToBoxAdapter(
-                child: PetTimelineSection(petId: widget.petId, petName: pet.name),
+                child: PetTimelineSection(
+                  petId: widget.petId,
+                  petName: pet.name,
+                ),
               ),
               SliverToBoxAdapter(
                 child: WeightTrackingSection(petId: widget.petId),

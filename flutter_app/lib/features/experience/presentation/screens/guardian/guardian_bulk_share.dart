@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../../l10n/app_localizations.dart';
-import '../../../sharing/presentation/providers/sharing_providers.dart';
+import '../../../../../l10n/app_localizations.dart';
+import '../../../../sharing/presentation/providers/sharing_providers.dart';
 
 /// Shows the standard single-pet share link dialog (reused by bulk share).
 Future<void> showPetShareLinkDialog(
@@ -14,7 +14,9 @@ Future<void> showPetShareLinkDialog(
 }) async {
   final l = AppLocalizations.of(context)!;
   try {
-    final code = await ref.read(petShareLinksNotifierProvider(petId).notifier).createLink();
+    final code = await ref
+        .read(petShareLinksNotifierProvider(petId).notifier)
+        .createLink();
     if (!context.mounted) return;
     final baseUrl = Uri.base.origin;
     final link = '$baseUrl/#/shared/$code';
@@ -46,9 +48,9 @@ Future<void> showPetShareLinkDialog(
           FilledButton.icon(
             onPressed: () {
               Clipboard.setData(ClipboardData(text: link));
-              ScaffoldMessenger.of(ctx).showSnackBar(
-                SnackBar(content: Text(l.linkCopied)),
-              );
+              ScaffoldMessenger.of(
+                ctx,
+              ).showSnackBar(SnackBar(content: Text(l.linkCopied)));
               Navigator.pop(ctx);
             },
             icon: const Icon(Icons.copy, size: 18),
@@ -59,9 +61,9 @@ Future<void> showPetShareLinkDialog(
     );
   } catch (e) {
     if (context.mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error: $e')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Error: $e')));
     }
   }
 }
@@ -74,6 +76,11 @@ Future<void> runBulkShareForPets(
 ) async {
   for (final pet in pets) {
     if (!context.mounted) return;
-    await showPetShareLinkDialog(context, ref, petId: pet.id, petName: pet.name);
+    await showPetShareLinkDialog(
+      context,
+      ref,
+      petId: pet.id,
+      petName: pet.name,
+    );
   }
 }

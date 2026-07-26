@@ -16,7 +16,10 @@ class PetTimelineRemoteDataSource {
     'Authorization': 'Bearer $token',
   };
 
-  Future<List<PetTimelineSegment>> fetchTimeline(String petId, String token) async {
+  Future<List<PetTimelineSegment>> fetchTimeline(
+    String petId,
+    String token,
+  ) async {
     final response = await _client.get(
       Uri.parse('$baseUrl/api/pets/$petId/timeline'),
       headers: _headers(token),
@@ -50,7 +53,9 @@ class PetTimelineRemoteDataSource {
       }),
     );
     if (response.statusCode >= 400) {
-      throw Exception('Failed to create timeline entry (${response.statusCode})');
+      throw Exception(
+        'Failed to create timeline entry (${response.statusCode})',
+      );
     }
     return PetTimelineSegment.fromJson(
       json.decode(response.body) as Map<String, dynamic>,
