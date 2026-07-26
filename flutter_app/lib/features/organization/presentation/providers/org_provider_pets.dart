@@ -33,6 +33,9 @@ class OrgPetsNotifier extends FamilyAsyncNotifier<List<Pet>, String> {
             photoPath:
                 m['photoPath']?.toString() ?? m['photo_path']?.toString(),
             vetId: m['vetId']?.toString() ?? m['vet_id']?.toString(),
+            fosterPlacementStatus: m['foster_placement_status']?.toString(),
+            fosterName: m['foster_name']?.toString(),
+            fosterEndDate: parseCalendarDate(m['foster_end_date']),
             organizationId: m['organization_id']?.toString(),
             organizationName: m['organization_name']?.toString(),
           ),

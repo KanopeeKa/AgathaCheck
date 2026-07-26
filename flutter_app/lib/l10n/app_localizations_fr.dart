@@ -1536,6 +1536,22 @@ class AppLocalizationsFr extends AppLocalizations {
   String get myOrganizations => 'Mes organisations';
 
   @override
+  String get discoverOrganizations => 'Découvrir des organisations';
+
+  @override
+  String get orgDiscoveryEmpty =>
+      'Aucune organisation à découvrir pour le moment';
+
+  @override
+  String get orgDiscoveryLoadError =>
+      'Impossible de charger les organisations découvrables';
+
+  @override
+  String orgDiscoveryLocation(String town, String administrativeArea) {
+    return '$town, $administrativeArea';
+  }
+
+  @override
   String get organizations => 'Organisations';
 
   @override
@@ -1579,6 +1595,52 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get orgPets => 'Animaux';
+
+  @override
+  String get orgPetsTabNeedAttention => 'Besoin d\'attention';
+
+  @override
+  String get orgPetsTabInFoster => 'En famille d\'accueil';
+
+  @override
+  String get orgPetsTabAdopted => 'Adoptés';
+
+  @override
+  String get orgPetsTabAll => 'Tous';
+
+  @override
+  String get orgPetsFiltersLabel => 'Filtres';
+
+  @override
+  String get orgPetsFilterName => 'Nom';
+
+  @override
+  String get orgPetsFilterFosteredBy => 'Accueilli par';
+
+  @override
+  String get orgPetsFilterShadow => 'Ombre';
+
+  @override
+  String get orgPetsFilterRainbowBridge => 'Pont de l\'arc-en-ciel';
+
+  @override
+  String get orgPetsFilterNameHint => 'Rechercher par nom d\'animal';
+
+  @override
+  String get orgPetsFilterFosteredByHint => 'Rechercher par famille d\'accueil';
+
+  @override
+  String get orgPetsNeedAttentionNotInFoster => 'Pas en famille d\'accueil';
+
+  @override
+  String get orgPetsNeedAttentionFosterFinishingSoon => 'Fin d\'accueil proche';
+
+  @override
+  String get orgPetsNeedAttentionTooltip =>
+      'Animaux qui ne sont pas en famille d\'accueil, ou dont l\'accueil se termine dans les 10 jours sans session ou adoption prévue.';
+
+  @override
+  String get orgPetsEmptyTab => 'Aucun animal ne correspond à cette vue';
 
   @override
   String get orgArchived => 'Animaux archivés';
@@ -1633,6 +1695,9 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get orgFoster => 'Famille d\'accueil';
+
+  @override
+  String get orgAssociate => 'Associé';
 
   @override
   String get orgSelectNewRole => 'Choisir le nouveau rôle';
@@ -4057,4 +4122,153 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get accountTitle => 'Compte';
+
+  @override
+  String get adminContactsTitle => 'Contacts admin';
+
+  @override
+  String get adminContactsDescription =>
+      'Annuaire interne des administrateurs de l\'organisation. Appelez ou écrivez selon les coordonnées partagées.';
+
+  @override
+  String get adminContactsEmpty => 'Aucun contact admin pour le moment.';
+
+  @override
+  String get adminContactsYourCard => 'Votre fiche';
+
+  @override
+  String get adminContactsAddAdmin => 'Ajouter un admin';
+
+  @override
+  String get adminContactsCall => 'Appeler';
+
+  @override
+  String get adminContactsMessage => 'Message';
+
+  @override
+  String get adminContactsMoreOptions => 'Plus d\'options';
+
+  @override
+  String get adminContactsSelfPrefsTitle => 'Vos préférences de visibilité';
+
+  @override
+  String get adminContactsSelfPrefsStubNote =>
+      'Enregistré localement jusqu\'à la disponibilité des préférences de notification par organisation.';
+
+  @override
+  String get adminContactsPhoneVisibilityLabel =>
+      'Qui peut voir votre numéro de téléphone';
+
+  @override
+  String get adminContactsPhoneVisibilityFosters => 'Familles d\'accueil';
+
+  @override
+  String get adminContactsPhoneVisibilityAdmins => 'Administrateurs';
+
+  @override
+  String get adminContactsPhoneVisibilityAll => 'Toute l\'organisation';
+
+  @override
+  String get adminContactsPhoneVisibilityNobody => 'Personne';
+
+  @override
+  String get adminContactsMessageChannelLabel => 'Notifications de message';
+
+  @override
+  String get adminContactsMessageChannelInApp => 'Dans l\'application';
+
+  @override
+  String get adminContactsMessageChannelEmail => 'E-mail';
+
+  @override
+  String get adminContactsMessageChannelBoth => 'Application et e-mail';
+
+  @override
+  String adminContactsSelfCardSemantics(String name) {
+    return 'Votre fiche contact admin, $name';
+  }
+
+  @override
+  String adminContactsCardSemantics(String name, String role) {
+    return 'Contact admin $name, $role';
+  }
+
+  @override
+  String adminContactsRemoveConfirm(String name) {
+    return 'Retirer $name de cette organisation ?';
+  }
+
+  @override
+  String adminContactsRemoved(String name) {
+    return '$name a été retiré(e)';
+  }
+
+  @override
+  String get orgDashboardIntro =>
+      'Choisissez une section pour gérer votre organisation.';
+
+  @override
+  String get orgDashboardPetsSubtitle =>
+      'Parcourir les animaux, onglets et filtres de suivi.';
+
+  @override
+  String get orgDashboardConnectionsSubtitle =>
+      'Gérer les liens avec d\'autres organisations.';
+
+  @override
+  String get orgDashboardEditSubtitle =>
+      'Mettre à jour les informations et l\'image de l\'organisation.';
+
+  @override
+  String get orgPresentationTitle => 'Présentation de l\'organisation';
+
+  @override
+  String get orgPresentationSubtitle =>
+      'Identité publique, informations légales et contacts.';
+
+  @override
+  String get orgPresentationContactTitle => 'Contact';
+
+  @override
+  String get orgPresentationLegalTitle => 'Informations légales';
+
+  @override
+  String get orgLegalIdentifierRna => 'RNA';
+
+  @override
+  String get orgLegalIdentifierSiren => 'SIREN';
+
+  @override
+  String get orgLegalIdentifierSiret => 'SIRET';
+
+  @override
+  String get orgLegalDocumentsTitle => 'Juridique et documents';
+
+  @override
+  String get orgLegalDocumentsSubtitle =>
+      'Consulter et télécharger les documents publics de l\'organisation.';
+
+  @override
+  String get orgLegalDocumentsIntro =>
+      'Ces documents sont publiés par votre organisation pour les membres.';
+
+  @override
+  String get orgLegalDocumentsEmpty =>
+      'Aucun document public n\'est disponible pour le moment.';
+
+  @override
+  String get orgLegalDocumentsTypeSession => 'Documents de session';
+
+  @override
+  String get orgLegalDocumentsTypeAdoption => 'Documents d\'adoption';
+
+  @override
+  String orgLegalDocumentsDownload(String title) {
+    return 'Télécharger $title';
+  }
+
+  @override
+  String orgLegalDocumentsDownloaded(String title) {
+    return '$title téléchargé';
+  }
 }

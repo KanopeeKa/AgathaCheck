@@ -103,6 +103,7 @@ CREATE TABLE public.document_templates (
     is_required boolean DEFAULT false NOT NULL,
     created_at timestamp with time zone DEFAULT now(),
     updated_at timestamp with time zone DEFAULT now(),
+    is_public boolean DEFAULT false NOT NULL,
     CONSTRAINT document_templates_type_check CHECK (((template_type)::text = ANY ((ARRAY['session_checklist'::character varying, 'adoption_milestone'::character varying])::text[])))
 );
 CREATE TABLE public.family_event_history (
@@ -338,6 +339,17 @@ CREATE TABLE public.org_pet_home_hidden (
     organization_id uuid NOT NULL,
     created_at timestamp with time zone DEFAULT now() NOT NULL
 );
+CREATE TABLE public.organization_permissions (
+    id uuid NOT NULL,
+    organization_id uuid NOT NULL,
+    user_id uuid NOT NULL,
+    permission_key character varying(64) NOT NULL,
+    source character varying(32) DEFAULT 'individual'::character varying NOT NULL,
+    granted_by uuid NOT NULL,
+    granted_at timestamp with time zone DEFAULT now() NOT NULL,
+    revoked_at timestamp with time zone,
+    revoked_by uuid
+);
 CREATE TABLE public.organization_users (
     id uuid NOT NULL,
     organization_id uuid NOT NULL,
@@ -347,7 +359,8 @@ CREATE TABLE public.organization_users (
     updated_at timestamp with time zone DEFAULT now(),
     foster_phone character varying(50) DEFAULT ''::character varying,
     foster_address text DEFAULT ''::text,
-    admin_notes text DEFAULT ''::text
+    admin_notes text DEFAULT ''::text,
+    CONSTRAINT organization_users_role_check CHECK (((role)::text = ANY ((ARRAY['associate'::character varying, 'foster'::character varying, 'admin'::character varying, 'super_admin'::character varying, 'pending_associate'::character varying, 'pending_foster'::character varying, 'pending_admin'::character varying, 'pending_super_admin'::character varying])::text[])))
 );
 CREATE TABLE public.organizations (
     id uuid NOT NULL,
@@ -362,7 +375,15 @@ CREATE TABLE public.organizations (
     created_at timestamp with time zone DEFAULT now(),
     updated_at timestamp with time zone DEFAULT now(),
     logo_url text DEFAULT ''::text,
-    primary_contact_ref text
+    primary_contact_ref text,
+    town character varying(120),
+    administrative_area character varying(120),
+    description text,
+    is_discoverable boolean DEFAULT true NOT NULL,
+    legal_identifier_1 character varying(64),
+    legal_identifier_2 character varying(64),
+    legal_identifier_3 character varying(64),
+    public_profile_metadata jsonb DEFAULT '{}'::jsonb NOT NULL
 );
 CREATE TABLE public.password_reset_tokens (
     id uuid NOT NULL,
@@ -572,6 +593,8 @@ ALTER TABLE ONLY public.org_foster_parents
     ADD CONSTRAINT org_foster_parents_pkey PRIMARY KEY (id);
 ALTER TABLE ONLY public.org_pet_home_hidden
     ADD CONSTRAINT org_pet_home_hidden_pkey PRIMARY KEY (user_id, pet_id);
+ALTER TABLE ONLY public.organization_permissions
+    ADD CONSTRAINT organization_permissions_pkey PRIMARY KEY (id);
 ALTER TABLE ONLY public.organization_users
     ADD CONSTRAINT organization_users_organization_id_user_id_key UNIQUE (organization_id, user_id);
 ALTER TABLE ONLY public.organization_users
@@ -643,6 +666,8 @@ CREATE INDEX idx_org_connection_requests_target ON public.org_connection_request
 CREATE INDEX idx_org_connections_high ON public.org_connections USING btree (org_high_id);
 CREATE INDEX idx_org_connections_low ON public.org_connections USING btree (org_low_id);
 CREATE INDEX idx_org_foster_parents_org_id ON public.org_foster_parents USING btree (organization_id);
+CREATE UNIQUE INDEX idx_org_permissions_active ON public.organization_permissions USING btree (organization_id, user_id, permission_key) WHERE (revoked_at IS NULL);
+CREATE INDEX idx_org_permissions_org_user ON public.organization_permissions USING btree (organization_id, user_id);
 CREATE INDEX idx_org_pet_home_hidden_org ON public.org_pet_home_hidden USING btree (organization_id, pet_id);
 CREATE INDEX idx_org_users_user_id ON public.organization_users USING btree (user_id);
 CREATE INDEX idx_organizations_name ON public.organizations USING btree (name);
@@ -791,6 +816,14 @@ ALTER TABLE ONLY public.org_pet_home_hidden
     ADD CONSTRAINT org_pet_home_hidden_pet_id_fkey FOREIGN KEY (pet_id) REFERENCES public.pets(id) ON DELETE CASCADE;
 ALTER TABLE ONLY public.org_pet_home_hidden
     ADD CONSTRAINT org_pet_home_hidden_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE;
+ALTER TABLE ONLY public.organization_permissions
+    ADD CONSTRAINT organization_permissions_granted_by_fkey FOREIGN KEY (granted_by) REFERENCES public.users(id);
+ALTER TABLE ONLY public.organization_permissions
+    ADD CONSTRAINT organization_permissions_organization_id_fkey FOREIGN KEY (organization_id) REFERENCES public.organizations(id) ON DELETE CASCADE;
+ALTER TABLE ONLY public.organization_permissions
+    ADD CONSTRAINT organization_permissions_revoked_by_fkey FOREIGN KEY (revoked_by) REFERENCES public.users(id);
+ALTER TABLE ONLY public.organization_permissions
+    ADD CONSTRAINT organization_permissions_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE;
 ALTER TABLE ONLY public.organization_users
     ADD CONSTRAINT organization_users_organization_id_fkey FOREIGN KEY (organization_id) REFERENCES public.organizations(id) ON DELETE CASCADE;
 ALTER TABLE ONLY public.organization_users

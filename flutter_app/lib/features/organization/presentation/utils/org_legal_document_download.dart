@@ -1,0 +1,28 @@
+import 'dart:convert';
+import 'dart:js_interop';
+import 'dart:typed_data';
+
+import 'package:flutter/foundation.dart';
+import 'package:web/web.dart' as web;
+
+Future<void> downloadOrgLegalDocument({
+  required String filename,
+  required String content,
+}) async {
+  if (kIsWeb) {
+    final bytes = Uint8List.fromList(utf8.encode(content));
+    final blob = web.Blob(
+      [bytes.toJS].toJS,
+      web.BlobPropertyBag(type: 'text/markdown;charset=utf-8'),
+    );
+    final url = web.URL.createObjectURL(blob);
+    final anchor = web.document.createElement('a') as web.HTMLAnchorElement
+      ..href = url
+      ..download = filename;
+    anchor.click();
+    web.URL.revokeObjectURL(url);
+    return;
+  }
+
+  throw UnsupportedError('Legal document download is supported on web only');
+}

@@ -5,6 +5,12 @@ import 'recording_organization_repository_base.dart';
 mixin RecordingOrganizationRepositoryPlacementsMixin
     on RecordingOrganizationRepositoryBase {
   @override
+  Future<List<FosterPlacement>> getOrganizationPlacements(
+    String orgId,
+    String token,
+  ) async => [];
+
+  @override
   Future<PetFosterPlacementState> getPetPlacement(
     String orgId,
     String petId,

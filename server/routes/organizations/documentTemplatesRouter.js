@@ -1,7 +1,11 @@
 import {
+  buildPublicTemplateDownload,
   buildRegisterExport,
   ensureDefaultTemplates,
+  groupPublicTemplatesByType,
+  listPublicTemplatesForOrg,
   listTemplatesForOrg,
+  publicTemplateToMap,
   renderChecklistFromTemplates,
   TEMPLATE_TYPE_ADOPTION_MILESTONE,
   TEMPLATE_TYPE_SESSION_CHECKLIST,
@@ -10,10 +14,55 @@ import {
   updateSessionChecklistItem,
 } from '../../lib/documentTemplates.js';
 import { getJourneyForSession } from '../../lib/adoptionJourneys.js';
-import { extractUserId, requireOrgAdmin } from './shared.js';
+import { extractUserId, requireMember, requireOrgAdmin } from './shared.js';
 import { publicError } from '../../config/security.js';
 
 export function registerDocumentTemplatesRoutes(router, pool) {
+  router.get('/:orgId/legal-documents', async (req, res) => {
+    const userId = extractUserId(req);
+    if (!userId) return res.status(401).json({ error: 'Unauthorized' });
+    const orgId = req.params.orgId;
+
+    try {
+      if (!(await requireMember(pool, res, orgId, userId))) return;
+
+      const templates = await listPublicTemplatesForOrg(pool, orgId);
+      res.json(groupPublicTemplatesByType(templates));
+    } catch (err) {
+      res.status(500).json({ error: publicError(err) });
+    }
+  });
+
+  router.get('/:orgId/legal-documents/:templateId/download', async (req, res) => {
+    const userId = extractUserId(req);
+    if (!userId) return res.status(401).json({ error: 'Unauthorized' });
+    const { orgId, templateId } = req.params;
+
+    try {
+      if (!(await requireMember(pool, res, orgId, userId))) return;
+
+      const result = await pool.query(
+        `SELECT id, template_key, template_type, label, description
+         FROM document_templates
+         WHERE organization_id = $1
+           AND id = $2
+           AND is_public = true`,
+        [orgId, templateId],
+      );
+      if (result.rows.length === 0) {
+        return res.status(404).json({ error: 'Document not found' });
+      }
+
+      const template = publicTemplateToMap(result.rows[0]);
+      res.json({
+        format: 'markdown',
+        filename: `${template.template_key}.md`,
+        content: buildPublicTemplateDownload(template),
+      });
+    } catch (err) {
+      res.status(500).json({ error: publicError(err) });
+    }
+  });
   router.get('/:orgId/document-templates', async (req, res) => {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });

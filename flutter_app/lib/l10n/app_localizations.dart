@@ -2863,6 +2863,30 @@ abstract class AppLocalizations {
   /// **'My Organizations'**
   String get myOrganizations;
 
+  /// No description provided for @discoverOrganizations.
+  ///
+  /// In en, this message translates to:
+  /// **'Discover Organisations'**
+  String get discoverOrganizations;
+
+  /// No description provided for @orgDiscoveryEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No organisations to discover yet'**
+  String get orgDiscoveryEmpty;
+
+  /// No description provided for @orgDiscoveryLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load discoverable organisations'**
+  String get orgDiscoveryLoadError;
+
+  /// No description provided for @orgDiscoveryLocation.
+  ///
+  /// In en, this message translates to:
+  /// **'{town}, {administrativeArea}'**
+  String orgDiscoveryLocation(String town, String administrativeArea);
+
   /// No description provided for @organizations.
   ///
   /// In en, this message translates to:
@@ -2952,6 +2976,96 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Pets'**
   String get orgPets;
+
+  /// No description provided for @orgPetsTabNeedAttention.
+  ///
+  /// In en, this message translates to:
+  /// **'Need attention'**
+  String get orgPetsTabNeedAttention;
+
+  /// No description provided for @orgPetsTabInFoster.
+  ///
+  /// In en, this message translates to:
+  /// **'In foster'**
+  String get orgPetsTabInFoster;
+
+  /// No description provided for @orgPetsTabAdopted.
+  ///
+  /// In en, this message translates to:
+  /// **'Adopted'**
+  String get orgPetsTabAdopted;
+
+  /// No description provided for @orgPetsTabAll.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get orgPetsTabAll;
+
+  /// No description provided for @orgPetsFiltersLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Filters'**
+  String get orgPetsFiltersLabel;
+
+  /// No description provided for @orgPetsFilterName.
+  ///
+  /// In en, this message translates to:
+  /// **'Name'**
+  String get orgPetsFilterName;
+
+  /// No description provided for @orgPetsFilterFosteredBy.
+  ///
+  /// In en, this message translates to:
+  /// **'Fostered by'**
+  String get orgPetsFilterFosteredBy;
+
+  /// No description provided for @orgPetsFilterShadow.
+  ///
+  /// In en, this message translates to:
+  /// **'Shadow'**
+  String get orgPetsFilterShadow;
+
+  /// No description provided for @orgPetsFilterRainbowBridge.
+  ///
+  /// In en, this message translates to:
+  /// **'Rainbow bridge'**
+  String get orgPetsFilterRainbowBridge;
+
+  /// No description provided for @orgPetsFilterNameHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Search by pet name'**
+  String get orgPetsFilterNameHint;
+
+  /// No description provided for @orgPetsFilterFosteredByHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Search by foster parent'**
+  String get orgPetsFilterFosteredByHint;
+
+  /// No description provided for @orgPetsNeedAttentionNotInFoster.
+  ///
+  /// In en, this message translates to:
+  /// **'Not in foster'**
+  String get orgPetsNeedAttentionNotInFoster;
+
+  /// No description provided for @orgPetsNeedAttentionFosterFinishingSoon.
+  ///
+  /// In en, this message translates to:
+  /// **'Foster finishing soon'**
+  String get orgPetsNeedAttentionFosterFinishingSoon;
+
+  /// No description provided for @orgPetsNeedAttentionTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Pets that are not in foster, or whose foster placement ends within 10 days with no next session or adoption planned.'**
+  String get orgPetsNeedAttentionTooltip;
+
+  /// No description provided for @orgPetsEmptyTab.
+  ///
+  /// In en, this message translates to:
+  /// **'No pets match this view'**
+  String get orgPetsEmptyTab;
 
   /// No description provided for @orgArchived.
   ///
@@ -3054,6 +3168,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Foster'**
   String get orgFoster;
+
+  /// No description provided for @orgAssociate.
+  ///
+  /// In en, this message translates to:
+  /// **'Associate'**
+  String get orgAssociate;
 
   /// No description provided for @orgSelectNewRole.
   ///
@@ -7238,6 +7358,258 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Account'**
   String get accountTitle;
+
+  /// No description provided for @adminContactsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Admin contacts'**
+  String get adminContactsTitle;
+
+  /// No description provided for @adminContactsDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Internal directory of organisation admins. Call or message using the contact details they share.'**
+  String get adminContactsDescription;
+
+  /// No description provided for @adminContactsEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No admin contacts yet.'**
+  String get adminContactsEmpty;
+
+  /// No description provided for @adminContactsYourCard.
+  ///
+  /// In en, this message translates to:
+  /// **'Your card'**
+  String get adminContactsYourCard;
+
+  /// No description provided for @adminContactsAddAdmin.
+  ///
+  /// In en, this message translates to:
+  /// **'Add admin'**
+  String get adminContactsAddAdmin;
+
+  /// No description provided for @adminContactsCall.
+  ///
+  /// In en, this message translates to:
+  /// **'Call'**
+  String get adminContactsCall;
+
+  /// No description provided for @adminContactsMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Message'**
+  String get adminContactsMessage;
+
+  /// No description provided for @adminContactsMoreOptions.
+  ///
+  /// In en, this message translates to:
+  /// **'More options'**
+  String get adminContactsMoreOptions;
+
+  /// No description provided for @adminContactsSelfPrefsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Your visibility preferences'**
+  String get adminContactsSelfPrefsTitle;
+
+  /// No description provided for @adminContactsSelfPrefsStubNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved locally until org-scoped notification preferences are available.'**
+  String get adminContactsSelfPrefsStubNote;
+
+  /// No description provided for @adminContactsPhoneVisibilityLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Who can see your phone number'**
+  String get adminContactsPhoneVisibilityLabel;
+
+  /// No description provided for @adminContactsPhoneVisibilityFosters.
+  ///
+  /// In en, this message translates to:
+  /// **'Fosters'**
+  String get adminContactsPhoneVisibilityFosters;
+
+  /// No description provided for @adminContactsPhoneVisibilityAdmins.
+  ///
+  /// In en, this message translates to:
+  /// **'Admins'**
+  String get adminContactsPhoneVisibilityAdmins;
+
+  /// No description provided for @adminContactsPhoneVisibilityAll.
+  ///
+  /// In en, this message translates to:
+  /// **'Everyone in the organisation'**
+  String get adminContactsPhoneVisibilityAll;
+
+  /// No description provided for @adminContactsPhoneVisibilityNobody.
+  ///
+  /// In en, this message translates to:
+  /// **'Nobody'**
+  String get adminContactsPhoneVisibilityNobody;
+
+  /// No description provided for @adminContactsMessageChannelLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Message notifications'**
+  String get adminContactsMessageChannelLabel;
+
+  /// No description provided for @adminContactsMessageChannelInApp.
+  ///
+  /// In en, this message translates to:
+  /// **'In app'**
+  String get adminContactsMessageChannelInApp;
+
+  /// No description provided for @adminContactsMessageChannelEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'Email'**
+  String get adminContactsMessageChannelEmail;
+
+  /// No description provided for @adminContactsMessageChannelBoth.
+  ///
+  /// In en, this message translates to:
+  /// **'In app and email'**
+  String get adminContactsMessageChannelBoth;
+
+  /// No description provided for @adminContactsSelfCardSemantics.
+  ///
+  /// In en, this message translates to:
+  /// **'Your admin contact card, {name}'**
+  String adminContactsSelfCardSemantics(String name);
+
+  /// No description provided for @adminContactsCardSemantics.
+  ///
+  /// In en, this message translates to:
+  /// **'Admin contact {name}, {role}'**
+  String adminContactsCardSemantics(String name, String role);
+
+  /// No description provided for @adminContactsRemoveConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove {name} from this organisation?'**
+  String adminContactsRemoveConfirm(String name);
+
+  /// No description provided for @adminContactsRemoved.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} was removed'**
+  String adminContactsRemoved(String name);
+
+  /// No description provided for @orgDashboardIntro.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a section to manage your organisation.'**
+  String get orgDashboardIntro;
+
+  /// No description provided for @orgDashboardPetsSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Browse pets, tabs, and care filters.'**
+  String get orgDashboardPetsSubtitle;
+
+  /// No description provided for @orgDashboardConnectionsSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage links with other organisations.'**
+  String get orgDashboardConnectionsSubtitle;
+
+  /// No description provided for @orgDashboardEditSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Update organisation details and branding.'**
+  String get orgDashboardEditSubtitle;
+
+  /// No description provided for @orgPresentationTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Organisation presentation'**
+  String get orgPresentationTitle;
+
+  /// No description provided for @orgPresentationSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Public-facing identity, legal details, and contact information.'**
+  String get orgPresentationSubtitle;
+
+  /// No description provided for @orgPresentationContactTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Contact'**
+  String get orgPresentationContactTitle;
+
+  /// No description provided for @orgPresentationLegalTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Legal information'**
+  String get orgPresentationLegalTitle;
+
+  /// No description provided for @orgLegalIdentifierRna.
+  ///
+  /// In en, this message translates to:
+  /// **'RNA'**
+  String get orgLegalIdentifierRna;
+
+  /// No description provided for @orgLegalIdentifierSiren.
+  ///
+  /// In en, this message translates to:
+  /// **'SIREN'**
+  String get orgLegalIdentifierSiren;
+
+  /// No description provided for @orgLegalIdentifierSiret.
+  ///
+  /// In en, this message translates to:
+  /// **'SIRET'**
+  String get orgLegalIdentifierSiret;
+
+  /// No description provided for @orgLegalDocumentsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Legal & documents'**
+  String get orgLegalDocumentsTitle;
+
+  /// No description provided for @orgLegalDocumentsSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Read and download public organisation documents.'**
+  String get orgLegalDocumentsSubtitle;
+
+  /// No description provided for @orgLegalDocumentsIntro.
+  ///
+  /// In en, this message translates to:
+  /// **'These documents are published by your organisation for members to read and download.'**
+  String get orgLegalDocumentsIntro;
+
+  /// No description provided for @orgLegalDocumentsEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No public documents are available yet.'**
+  String get orgLegalDocumentsEmpty;
+
+  /// No description provided for @orgLegalDocumentsTypeSession.
+  ///
+  /// In en, this message translates to:
+  /// **'Session documents'**
+  String get orgLegalDocumentsTypeSession;
+
+  /// No description provided for @orgLegalDocumentsTypeAdoption.
+  ///
+  /// In en, this message translates to:
+  /// **'Adoption documents'**
+  String get orgLegalDocumentsTypeAdoption;
+
+  /// No description provided for @orgLegalDocumentsDownload.
+  ///
+  /// In en, this message translates to:
+  /// **'Download {title}'**
+  String orgLegalDocumentsDownload(String title);
+
+  /// No description provided for @orgLegalDocumentsDownloaded.
+  ///
+  /// In en, this message translates to:
+  /// **'Downloaded {title}'**
+  String orgLegalDocumentsDownloaded(String title);
 }
 
 class _AppLocalizationsDelegate

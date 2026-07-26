@@ -124,6 +124,7 @@
     "Inviting a user as a super user": "P1",
     "Only super users can invite new members": "P1",
     "Viewing organisation details": "P1",
+    "Viewing organisation members from the dashboard": "P1",
     "Updating organisation information": "P1",
     "Leaving an organisation": "P1"
   },
@@ -241,8 +242,26 @@
     "My Pets preview is capped at four": "P1",
     "Pending foster placement surfaces as a notification, not a dashboard banner": "P1"
   },
+  "organisation_discovery.feature": {
+    "Discover Organisations is visible without signing in": "P1",
+    "An organisation can opt out of discovery": "P1"
+  },
   "pet_timeline.feature": {
     "Timeline shows a fostering session card": "P1",
     "Timeline shows a placeholder when no data exists for a period": "P1"
+  },
+  "pet_screen_filters.feature": {
+    "A pet with no foster placement needs attention": "P1",
+    "A pet with a foster placement ending soon needs attention": "P1"
+  },
+  "admin_contacts.feature": {
+    "Admin contacts directory lists admins alphabetically": "P1",
+    "Team admin can add an admin contact": "P1",
+    "Super admin can edit another admin contact": "P1",
+    "Members can message an admin when contact details allow": "P1"
+  },
+  "organisation_permissions.feature": {
+    "Super Admin applies the Pet Admin bundle preset": "P1",
+    "Only Super Admin can manage permissions": "P1"
   }
 }

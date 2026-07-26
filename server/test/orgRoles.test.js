@@ -1,11 +1,13 @@
 import {
   ASSIGNABLE_ROLES,
   ORG_ROLE_ADMIN,
+  ORG_ROLE_ASSOCIATE,
   ORG_ROLE_FOSTER,
   ORG_ROLE_SUPER_ADMIN,
   assignableRolesFor,
   canAssignRole,
   isActiveMember,
+  isAssociate,
   isFoster,
   isFosterParentMember,
   isOrgAdmin,
@@ -54,9 +56,14 @@ describe('orgRoles', () => {
       expect(assignableRolesFor(ORG_ROLE_SUPER_ADMIN)).toEqual(ASSIGNABLE_ROLES);
     });
 
-    it('admin cannot assign super_admin', () => {
-      expect(assignableRolesFor(ORG_ROLE_ADMIN)).toEqual([ORG_ROLE_ADMIN, ORG_ROLE_FOSTER]);
+    it('admin can assign associate and foster but not super_admin', () => {
+      expect(assignableRolesFor(ORG_ROLE_ADMIN)).toEqual([
+        ORG_ROLE_ADMIN,
+        ORG_ROLE_FOSTER,
+        ORG_ROLE_ASSOCIATE,
+      ]);
       expect(canAssignRole(ORG_ROLE_ADMIN, ORG_ROLE_SUPER_ADMIN)).toBe(false);
+      expect(canAssignRole(ORG_ROLE_ADMIN, ORG_ROLE_ASSOCIATE)).toBe(true);
     });
 
     it('foster cannot assign roles', () => {
@@ -68,6 +75,13 @@ describe('orgRoles', () => {
     it('identifies foster role', () => {
       expect(isFoster(ORG_ROLE_FOSTER)).toBe(true);
       expect(isSuperAdmin(ORG_ROLE_FOSTER)).toBe(false);
+    });
+  });
+
+  describe('isAssociate', () => {
+    it('identifies associate role', () => {
+      expect(isAssociate(ORG_ROLE_ASSOCIATE)).toBe(true);
+      expect(isOrgAdmin(ORG_ROLE_ASSOCIATE)).toBe(false);
     });
   });
 

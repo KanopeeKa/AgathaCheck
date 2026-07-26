@@ -12,6 +12,14 @@ class Organization {
     this.bio = '',
     this.photoUrl = '',
     this.logoUrl = '',
+    this.town = '',
+    this.administrativeArea = '',
+    this.description = '',
+    this.isDiscoverable = true,
+    this.legalIdentifier1 = '',
+    this.legalIdentifier2 = '',
+    this.legalIdentifier3 = '',
+    this.publicProfileMetadata = const {},
     this.createdBy,
     this.role = 'admin',
     this.memberCount = 0,
@@ -32,6 +40,14 @@ class Organization {
   final String bio;
   final String photoUrl;
   final String logoUrl;
+  final String town;
+  final String administrativeArea;
+  final String description;
+  final bool isDiscoverable;
+  final String legalIdentifier1;
+  final String legalIdentifier2;
+  final String legalIdentifier3;
+  final Map<String, dynamic> publicProfileMetadata;
   final String? createdBy;
   final String role;
   final int memberCount;
@@ -58,6 +74,14 @@ class Organization {
     String? bio,
     String? photoUrl,
     String? logoUrl,
+    String? town,
+    String? administrativeArea,
+    String? description,
+    bool? isDiscoverable,
+    String? legalIdentifier1,
+    String? legalIdentifier2,
+    String? legalIdentifier3,
+    Map<String, dynamic>? publicProfileMetadata,
     String? createdBy,
     String? role,
     int? memberCount,
@@ -78,6 +102,15 @@ class Organization {
       bio: bio ?? this.bio,
       photoUrl: photoUrl ?? this.photoUrl,
       logoUrl: logoUrl ?? this.logoUrl,
+      town: town ?? this.town,
+      administrativeArea: administrativeArea ?? this.administrativeArea,
+      description: description ?? this.description,
+      isDiscoverable: isDiscoverable ?? this.isDiscoverable,
+      legalIdentifier1: legalIdentifier1 ?? this.legalIdentifier1,
+      legalIdentifier2: legalIdentifier2 ?? this.legalIdentifier2,
+      legalIdentifier3: legalIdentifier3 ?? this.legalIdentifier3,
+      publicProfileMetadata:
+          publicProfileMetadata ?? this.publicProfileMetadata,
       createdBy: createdBy ?? this.createdBy,
       role: role ?? this.role,
       memberCount: memberCount ?? this.memberCount,

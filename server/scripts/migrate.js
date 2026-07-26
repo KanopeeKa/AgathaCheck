@@ -25,6 +25,7 @@ import { migrateFamilyEventsPlacements } from './migrations/016_migrate_family_e
 import { migrateFosterProfiles } from './migrations/023_foster_profiles.js';
 import { migrateAdoptionJourneys } from './migrations/028_adoption_journeys.js';
 import { migrateFamilyEventsTimeline } from './migrations/034_migrate_family_events_timeline.js';
+import { migrateOrganizationPermissions } from './migrations/036_organization_permissions.js';
 import { maybeAutoSeedMigrationLedger } from './lib/migration-ledger.js';
 
 const { Pool } = pg;
@@ -103,6 +104,7 @@ const CODE_MIGRATIONS = {
   '023_foster_profiles.sql': migrateFosterProfiles,
   '028_adoption_journeys.sql': migrateAdoptionJourneys,
   '034_pet_timeline_entries.sql': migrateFamilyEventsTimeline,
+  '036_organization_permissions.sql': migrateOrganizationPermissions,
 };
 
 async function applyMigration(client, name, sql) {

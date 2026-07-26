@@ -1,0 +1,41 @@
+class DiscoverableOrganization {
+  const DiscoverableOrganization({
+    required this.id,
+    required this.name,
+    this.logoUrl = '',
+    this.town = '',
+    this.administrativeArea = '',
+    this.description = '',
+  });
+
+  final String id;
+  final String name;
+  final String logoUrl;
+  final String town;
+  final String administrativeArea;
+  final String description;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is DiscoverableOrganization &&
+          runtimeType == other.runtimeType &&
+          id == other.id;
+
+  @override
+  int get hashCode => id.hashCode;
+}
+
+class DiscoverOrganizationsPage {
+  const DiscoverOrganizationsPage({
+    required this.items,
+    required this.page,
+    required this.pageSize,
+    required this.totalCount,
+  });
+
+  final List<DiscoverableOrganization> items;
+  final int page;
+  final int pageSize;
+  final int totalCount;
+}

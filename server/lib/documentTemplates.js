@@ -27,9 +27,53 @@ export function templateToMap(row) {
     description: row.description || '',
     sort_order: parseInt(row.sort_order, 10) || 0,
     is_required: row.is_required === true,
+    is_public: row.is_public === true,
     created_at: row.created_at || null,
     updated_at: row.updated_at || null,
   };
+}
+
+export function publicTemplateToMap(row) {
+  const mapped = templateToMap(row);
+  return {
+    id: mapped.id,
+    template_key: mapped.template_key,
+    template_type: mapped.template_type,
+    label: mapped.label,
+    description: mapped.description,
+    sort_order: mapped.sort_order,
+  };
+}
+
+export async function listPublicTemplatesForOrg(pool, orgId) {
+  const result = await pool.query(
+    `SELECT *
+     FROM document_templates
+     WHERE organization_id = $1
+       AND is_public = true
+     ORDER BY template_type, sort_order, label`,
+    [orgId],
+  );
+  return result.rows.map(publicTemplateToMap);
+}
+
+export function groupPublicTemplatesByType(templates) {
+  const grouped = {};
+  for (const template of templates) {
+    const type = template.template_type || 'other';
+    if (!grouped[type]) grouped[type] = [];
+    grouped[type].push(template);
+  }
+  return grouped;
+}
+
+export function buildPublicTemplateDownload(template) {
+  const lines = [
+    `# ${template.label}`,
+    '',
+    template.description ? template.description : '_No description provided._',
+  ];
+  return lines.join('\n');
 }
 
 export function parseChecklistItems(raw) {

@@ -12,35 +12,38 @@ import {
 import { OrganizationListPage } from './organization-list.page';
 
 /**
- * Organization detail screen (`/organizations/:id`).
+ * Organisation dashboard hub (`/o/orgs/:id`) — replaces the legacy detail screen.
  */
 export class OrganizationDetailPage {
   constructor(private readonly page: Page) {}
 
-  private async scrollUntilVisible(locator: Locator): Promise<void> {
-    for (let i = 0; i < 12; i++) {
-      if ((await locator.count()) > 0 && (await locator.first().isVisible().catch(() => false))) {
-        return;
-      }
-      await this.page.mouse.wheel(0, 900);
-      await this.page.waitForTimeout(250);
-    }
+  private orgIdFromUrl(): string | null {
+    const match = this.page.url().match(/\/o\/orgs\/([^/?#]+)/);
+    return match?.[1] ?? null;
   }
 
   async expectLoaded(orgName: string): Promise<void> {
     await dismissConsentBannerIfPresent(this.page);
     await expect(async () => {
       await refreshFlutterAccessibility(this.page);
+      await expect(this.page.getByText(orgName, { exact: true }).first()).toBeVisible();
       await expect(
         this.page
-          .getByText(orgName, { exact: true })
-          .or(this.page.getByRole('button', { name: 'Edit Organization' }))
+          .getByText(/Organisation presentation|Organisation dashboard|Choose a section/i)
           .first(),
       ).toBeVisible();
     }).toPass({ timeout: 30_000 });
   }
 
+  async openMembers(): Promise<void> {
+    await this.openMenu();
+    await this.page.getByRole('menuitem', { name: /Members/i }).click();
+    await refreshFlutterAccessibility(this.page);
+    await this.page.getByText(/Members|People/i).first().waitFor({ timeout: 30_000 });
+  }
+
   async expectMemberVisible(name: string): Promise<void> {
+    await this.openMembers();
     const pattern = new RegExp(escapeRegExp(name), 'i');
     await this.page
       .getByRole('group', { name: pattern })
@@ -50,15 +53,31 @@ export class OrganizationDetailPage {
   }
 
   async expectMemberCount(count: number): Promise<void> {
-    const label = `${count} registered members`;
-    await this.page.getByText(label, { exact: false }).first().waitFor({ timeout: 30_000 });
+    await this.openMembers();
+    const cards = this.page.locator('flt-semantics').filter({ hasText: /@|member|admin/i });
+    await expect(cards).toHaveCount(count, { timeout: 30_000 });
+  }
+
+  async openPresentation(): Promise<void> {
+    await enableFlutterAccessibility(this.page);
+    await this.page
+      .getByText(/Organisation presentation|Présentation de l'organisation/i)
+      .first()
+      .click();
+    await refreshFlutterAccessibility(this.page);
+    await this.page
+      .getByText(/Organisation presentation|Présentation de l'organisation/i)
+      .first()
+      .waitFor({ timeout: 30_000 });
   }
 
   async expectBio(bio: string): Promise<void> {
+    await this.openPresentation();
     await expect(this.page.getByText(bio)).toBeVisible();
   }
 
   async expectPetVisible(name: string): Promise<void> {
+    await this.openPetsSection();
     const pattern = new RegExp(escapeRegExp(name), 'i');
     const pet = this.page
       .getByRole('button', { name: pattern })
@@ -94,23 +113,27 @@ export class OrganizationDetailPage {
     await this.openMenu();
     await this.page.getByRole('menuitem', { name: 'Leave Organization' }).click();
     await this.page.getByRole('button', { name: 'Leave Organization' }).last().click();
-    // Org list is embedded in the experience shell — no legacy "My Organizations" app bar.
     await new OrganizationListPage(this.page).expectLoaded();
   }
 
   async openEdit(): Promise<void> {
-    await this.page.getByRole('button', { name: 'Edit Organization' }).click();
+    await enableFlutterAccessibility(this.page);
     await this.page
-      .getByRole('button', { name: 'Edit Organization' })
+      .getByText(/Edit organisation|Edit Organization|Modifier l'organisation/i)
+      .first()
+      .click();
+    await this.page
+      .getByRole('button', { name: /Edit Organization|Edit organisation/i })
       .last()
       .waitFor({ timeout: 30_000 });
   }
 
   async openArchivedPets(): Promise<void> {
-    const archived = this.page.getByText('Archived Pets').last();
-    await this.scrollUntilVisible(archived);
-    await archived.click();
-    await refreshFlutterAccessibility(this.page);
+    const orgId = this.orgIdFromUrl();
+    if (orgId) {
+      await this.page.goto(`/o/orgs/${orgId}/archived`);
+      await refreshFlutterAccessibility(this.page);
+    }
     await this.page
       .getByText(/Archived on/i)
       .or(this.page.getByText('No archived pets'))
@@ -126,22 +149,26 @@ export class OrganizationDetailPage {
   }
 
   async expectHomeHiddenSectionVisible(): Promise<void> {
-    const hidden = this.page.getByText('Hidden from home list').last();
-    await hidden.scrollIntoViewIfNeeded();
-    await hidden.waitFor({ timeout: 30_000 });
+    throw new Error(
+      'Hidden-from-home section moved off the org dashboard hub — use org pets or a dedicated route.',
+    );
   }
 
   async expandHomeHiddenSection(): Promise<void> {
-    await this.expectHomeHiddenSectionVisible();
-    const hidden = this.page.getByText('Hidden from home list').last();
-    await hidden.click();
-    await this.page.getByRole('button', { name: 'Unhide' }).first().waitFor({ timeout: 30_000 });
+    throw new Error(
+      'Hidden-from-home section moved off the org dashboard hub — use org pets or a dedicated route.',
+    );
+  }
+
+  async openPetsSection(): Promise<void> {
+    await enableFlutterAccessibility(this.page);
+    await this.page.getByText(/^Pets$/i).first().click();
+    await refreshFlutterAccessibility(this.page);
+    await waitForFlutterRoutePattern(this.page, /\/o\/orgs\/[^/]+\/pets/, 60_000);
   }
 
   async openAddOrgPet(): Promise<void> {
-    await this.openMenu();
-    await this.page.getByRole('menuitem', { name: /^Pets$/i }).click();
-    await refreshFlutterAccessibility(this.page);
+    await this.openPetsSection();
     const addButton = this.page.getByRole('button', { name: /Add Pet/i });
     await addButton.waitFor({ timeout: 30_000 });
     await addButton.click();
@@ -149,14 +176,14 @@ export class OrganizationDetailPage {
   }
 
   async openManageFosters(): Promise<void> {
-    const orgIdMatch = this.page.url().match(/\/o\/orgs\/([^/?#]+)/);
-    await this.openMenu();
-    await this.page.getByRole('menuitem', { name: 'Manage fosters' }).click();
+    await enableFlutterAccessibility(this.page);
+    await this.page.getByText(/Manage fosters|Gérer les familles d'accueil/i).first().click();
     await refreshFlutterAccessibility(this.page);
-    if (orgIdMatch) {
+    const orgId = this.orgIdFromUrl();
+    if (orgId) {
       await waitForFlutterRoutePattern(
         this.page,
-        new RegExp(`/o/orgs/${orgIdMatch[1]}/fosters`),
+        new RegExp(`/o/orgs/${orgId}/fosters`),
         60_000,
       );
     }

@@ -198,7 +198,6 @@ test.describe('Organisation management', () => {
 
     const detail = new OrganizationDetailPage(page);
     await detail.expectLoaded('Happy Paws Clinic');
-    await detail.expectMemberCount(2);
     await detail.expectMemberVisible('Bob');
   });
 

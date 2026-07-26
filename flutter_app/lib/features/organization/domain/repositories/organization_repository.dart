@@ -210,6 +210,10 @@ abstract class OrganizationRepository {
     required String token,
   });
 
+  Future<List<FosterPlacement>> getOrganizationPlacements(
+    String orgId,
+    String token,
+  );
   Future<PetFosterPlacementState> getPetPlacement(
     String orgId,
     String petId,
