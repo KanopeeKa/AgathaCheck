@@ -49,10 +49,10 @@ next_action: "continue phase 2 on branch cursor/experience-guardian-journey-36bd
 artifact_ref:
   branch: cursor/experience-guardian-journey-36bd
   plan_path: .agents/plans/experience-program-36bd.md
-  plan_commit: 76ff37d859b5c047346df00f0dd70c4739371d5b
+  plan_commit: 897de0b55f2797c614a9c935c77cfa8a3db619ca
   snapshot_path: .agents/plans/experience-program-36bd.snapshot.json
-  snapshot_commit: 76ff37d859b5c047346df00f0dd70c4739371d5b
-open_prs: []
+  snapshot_commit: 897de0b55f2797c614a9c935c77cfa8a3db619ca
+open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/382"]
 merge_commits: {"R":"15bc8a3da7b257c3ee68e9085edd3b1108b4751c"}
 debt_issue_refs: []
 ```
