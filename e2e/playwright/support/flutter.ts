@@ -484,7 +484,8 @@ export async function logOutFromApp(page: Page): Promise<void> {
 
   if (await clickLogoutEntry()) return;
 
-  if (currentPath === '/landing' || currentPath === '/') {
+  const path = flutterRoutePath(page.url());
+  if (path === '/landing' || path === '/') {
     return;
   }
 
