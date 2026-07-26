@@ -24,7 +24,7 @@ import {
   updatePetVet,
 } from '../support/api';
 import { checkA11y } from '../support/axe';
-import { clearLiveApiAccess, passHostingWaf, prepareLiveApiAccess, resetHostingWafSession } from '../support/waf';
+import { clearLiveApiAccess, prepareLiveApiAccess } from '../support/waf';
 import { clearBrowserSessionState } from '../support/session';
 import { createTestUser } from '../support/ui-auth';
 import { PetDetailPage } from '../pages/pet-detail.page';
@@ -41,8 +41,7 @@ test.describe('Pet sharing', () => {
       const link = await createShareLink(baseURL, owner.accessToken, pet.id);
 
       await clearBrowserSessionState(page);
-      resetHostingWafSession();
-      await passHostingWaf(page, baseURL);
+      await prepareLiveApiAccess(page, baseURL);
 
       const sharedPet = new SharedPetPage(page);
       await sharedPet.goto(link.share_code);
@@ -63,8 +62,7 @@ test.describe('Pet sharing', () => {
       const link = await createShareLink(baseURL, owner.accessToken, pet.id);
 
       await clearBrowserSessionState(page);
-      resetHostingWafSession();
-      await passHostingWaf(page, baseURL);
+      await prepareLiveApiAccess(page, baseURL);
 
       const sharedPet = new SharedPetPage(page);
       await sharedPet.goto(link.share_code);

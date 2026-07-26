@@ -166,6 +166,14 @@ Acquiring a 90-minute lease **before** a successful agent launch blocked all pro
 
 **Do not:** Treat warmup-only WAF failures as code regressions; do not add curl/Node auth retries.
 
+### 15. Per-test `resetHostingWafSession()` re-probes signup (added Jul 26)
+
+**Problem:** After #387 (single Playwright run), deploy [30203441553](https://github.com/KanopeeKa/AgathaCheck/actions/runs/30203441553) passed the a11y smoke test then failed on the **second** `@smoke-uat` test. `testUser` and `loginAs` each called `resetHostingWafSession()` → full `passHostingWaf` with auth signup probe again → WAF after ~2.3m.
+
+**Fix:** Reuse in-process `sessionWafCleared` across `@smoke-uat` tests; `loginAs` clears browser cookies but does not reset the WAF session flag. Anonymous sharing tests use `prepareLiveApiAccess` after cookie clear without reset.
+
+**Do not reintroduce:** `resetHostingWafSession()` in `testUser` / `loginAs` fixtures for live UAT smoke.
+
 ---
 
 ## Operator recovery cheat sheet
