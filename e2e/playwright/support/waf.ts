@@ -142,11 +142,9 @@ function probeFailureMessage(baseURL: string, probe: ProbeResult): string {
  * then verify both health and auth signup probes succeed in-browser.
  */
 async function sessionReadyOnPage(page: Page, baseURL: string): Promise<boolean> {
-  if (!sessionWafCleared) {
-    return false;
-  }
   const probes = await liveApiProbesReady(page, baseURL).catch((): ProbeResult => 'health_down');
   if (probes === 'ok') {
+    sessionWafCleared = true;
     return true;
   }
   sessionWafCleared = false;
