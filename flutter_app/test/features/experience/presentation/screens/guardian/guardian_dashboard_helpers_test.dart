@@ -6,36 +6,39 @@ import 'package:flutter_test/flutter_test.dart';
 void main() {
   final controller = PetListController();
 
-  test('guardianDashboardPersonalPets returns all active personal pets sorted', () {
-    final pets = [
-      Pet(
-        id: '2',
-        name: 'Beta',
-        species: 'Dog',
-        breed: '',
-        createdAt: DateTime(2024, 2, 1),
-      ),
-      Pet(
-        id: '1',
-        name: 'Alpha',
-        species: 'Dog',
-        breed: '',
-        createdAt: DateTime(2024, 1, 1),
-      ),
-      Pet(
-        id: '3',
-        name: 'Foster',
-        species: 'Cat',
-        breed: '',
-        isFoster: true,
-        createdAt: DateTime(2024, 3, 1),
-      ),
-    ];
+  test(
+    'guardianDashboardPersonalPets returns all active personal pets sorted',
+    () {
+      final pets = [
+        Pet(
+          id: '2',
+          name: 'Beta',
+          species: 'Dog',
+          breed: '',
+          createdAt: DateTime(2024, 2, 1),
+        ),
+        Pet(
+          id: '1',
+          name: 'Alpha',
+          species: 'Dog',
+          breed: '',
+          createdAt: DateTime(2024, 1, 1),
+        ),
+        Pet(
+          id: '3',
+          name: 'Foster',
+          species: 'Cat',
+          breed: '',
+          isFoster: true,
+          createdAt: DateTime(2024, 3, 1),
+        ),
+      ];
 
-    final personal = guardianDashboardPersonalPets(pets, controller);
-    expect(personal.length, 2);
-    expect(personal.map((p) => p.name).toList(), ['Alpha', 'Beta']);
-  });
+      final personal = guardianDashboardPersonalPets(pets, controller);
+      expect(personal.length, 2);
+      expect(personal.map((p) => p.name).toList(), ['Alpha', 'Beta']);
+    },
+  );
 
   test('guardianDashboardFosterPets returns foster pets only', () {
     final pets = [

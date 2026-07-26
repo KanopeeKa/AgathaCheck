@@ -105,9 +105,7 @@ void main() {
     expect(find.text('Guardian dashboard'), findsOneWidget);
   });
 
-  testWidgets('contextual actions appear before pipe and bell', (
-    tester,
-  ) async {
+  testWidgets('contextual actions appear before pipe and bell', (tester) async {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [

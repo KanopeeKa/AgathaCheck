@@ -76,7 +76,6 @@ void main() {
     expect(find.byKey(const Key('drawer_settings')), findsOneWidget);
   });
 
-
   testWidgets('invokes onItemTap when row tapped', (tester) async {
     DrawerMenuItem? tapped;
     await tester.pumpWidget(

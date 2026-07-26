@@ -61,7 +61,9 @@ void main() {
         orgUnreadNotificationCountProvider.overrideWith((ref) => 0),
         organizationListProvider.overrideWith(_EmptyOrgListNotifier.new),
         activeExperienceProvider.overrideWith((ref) => AppExperience.guardian),
-        resolvedExperienceProvider.overrideWith((ref) => AppExperience.guardian),
+        resolvedExperienceProvider.overrideWith(
+          (ref) => AppExperience.guardian,
+        ),
       ],
       child: MaterialApp.router(
         localizationsDelegates: const [
@@ -109,10 +111,7 @@ void main() {
     await tester.pumpWidget(buildApp(eligibility: guardianOnly));
     await tester.pumpAndSettle();
 
-    expect(
-      find.byKey(const Key('default_experience_guardian')),
-      findsNothing,
-    );
+    expect(find.byKey(const Key('default_experience_guardian')), findsNothing);
     expect(find.text('Preferences'), findsOneWidget);
   });
 }

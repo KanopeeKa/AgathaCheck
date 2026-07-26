@@ -63,12 +63,7 @@ class ExperienceDrawerMenuItem extends StatelessWidget {
             constraints: const BoxConstraints(minHeight: 48),
             child: Row(
               children: [
-                if (isActive)
-                  Container(
-                    width: 3,
-                    height: 48,
-                    color: accent,
-                  ),
+                if (isActive) Container(width: 3, height: 48, color: accent),
                 Expanded(
                   child: Padding(
                     padding: const EdgeInsets.symmetric(

@@ -75,10 +75,7 @@ class ExperienceSettingsSection extends ConsumerWidget {
     if (embedded) return content;
 
     return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: content,
-      ),
+      child: Padding(padding: const EdgeInsets.all(16), child: content),
     );
   }
 }
