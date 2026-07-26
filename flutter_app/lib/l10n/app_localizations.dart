@@ -7107,6 +7107,12 @@ abstract class AppLocalizations {
   /// **'Upcoming Pet Events'**
   String get upcomingPetEvents;
 
+  /// No description provided for @dueAndOverdue.
+  ///
+  /// In en, this message translates to:
+  /// **'Due and Overdue'**
+  String get dueAndOverdue;
+
   /// No description provided for @allEvents.
   ///
   /// In en, this message translates to:

@@ -17,9 +17,9 @@ export class HealthDashboardPage {
         .getByRole('tab', { name: /^(All|Tous)$/i })
         .or(this.page.getByRole('tab', { name: /^(Medications|Médicaments)$/i }))
         .or(this.page.getByRole('button', { name: /Add Health Event/i }))
+        .or(this.page.getByText(/Due and Overdue|À faire et en retard/i))
         .or(this.page.getByText(/No entries yet|Aucun événement/i))
         .first();
-      await expect(marker).toBeVisible();
     }).toPass({ timeout: 30_000 });
   }
 

@@ -29,7 +29,7 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    expect(find.text('Upcoming Pet Events'), findsOneWidget);
+    expect(find.text('Due and Overdue'), findsOneWidget);
     expect(find.byType(DashboardSection), findsOneWidget);
   });
 }

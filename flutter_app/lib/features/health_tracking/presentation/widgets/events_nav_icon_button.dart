@@ -30,7 +30,7 @@ class EventsNavIconButton extends ConsumerWidget {
         fill: hasDueOrOverdue ? 1.0 : null,
       ),
       tooltip: l.events,
-      onPressed: () => context.go('/health'),
+      onPressed: () => context.go('/g/events'),
     );
   }
 }

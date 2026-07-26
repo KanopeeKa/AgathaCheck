@@ -157,7 +157,7 @@ Feature: Health Tracking
   Scenario: Due events appear on the pet list screen
     Given "Bella" has a health entry due today
     When the user views the pet list
-    Then a "Due & Overdue Events" section should be visible
+    Then a "Due and Overdue" section should be visible
     And the due entry for "Bella" should be listed
 
   @P1
