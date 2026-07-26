@@ -53,6 +53,27 @@ class AppLocalizationsEn extends AppLocalizations {
       'Manage inventory pets, coordinate staff and volunteers, and share care records across your organisation.';
 
   @override
+  String get landingPathScrollCta => 'Learn more';
+
+  @override
+  String get landingPetParentsSectionTitle => 'Pet parents and foster carers';
+
+  @override
+  String get landingPetParentsSectionBody =>
+      'Track vet visits, medications, weight, and daily care in one calm dashboard. Coordinate with your household and keep every pet\'s health history safe. Screenshots and walkthrough copy coming soon.';
+
+  @override
+  String get landingCharitiesSectionTitle =>
+      'Shelters, rescues, and care teams';
+
+  @override
+  String get landingCharitiesSectionBody =>
+      'Manage inventory pets, coordinate staff and volunteers, and share care records across your organisation. Product screenshots and case studies will be added here.';
+
+  @override
+  String get landingScreenshotPlaceholder => 'Screenshot coming soon';
+
+  @override
   String get signIn => 'Sign In';
 
   @override

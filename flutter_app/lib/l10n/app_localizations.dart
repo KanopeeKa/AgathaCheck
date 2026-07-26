@@ -176,6 +176,42 @@ abstract class AppLocalizations {
   /// **'Manage inventory pets, coordinate staff and volunteers, and share care records across your organisation.'**
   String get landingOrgPathDetail;
 
+  /// No description provided for @landingPathScrollCta.
+  ///
+  /// In en, this message translates to:
+  /// **'Learn more'**
+  String get landingPathScrollCta;
+
+  /// No description provided for @landingPetParentsSectionTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Pet parents and foster carers'**
+  String get landingPetParentsSectionTitle;
+
+  /// No description provided for @landingPetParentsSectionBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Track vet visits, medications, weight, and daily care in one calm dashboard. Coordinate with your household and keep every pet\'s health history safe. Screenshots and walkthrough copy coming soon.'**
+  String get landingPetParentsSectionBody;
+
+  /// No description provided for @landingCharitiesSectionTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Shelters, rescues, and care teams'**
+  String get landingCharitiesSectionTitle;
+
+  /// No description provided for @landingCharitiesSectionBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage inventory pets, coordinate staff and volunteers, and share care records across your organisation. Product screenshots and case studies will be added here.'**
+  String get landingCharitiesSectionBody;
+
+  /// No description provided for @landingScreenshotPlaceholder.
+  ///
+  /// In en, this message translates to:
+  /// **'Screenshot coming soon'**
+  String get landingScreenshotPlaceholder;
+
   /// No description provided for @signIn.
   ///
   /// In en, this message translates to:
