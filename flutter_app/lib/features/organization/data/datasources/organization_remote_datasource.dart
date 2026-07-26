@@ -15,6 +15,7 @@ import 'organization_remote/organization_foster_parents_remote.dart';
 import 'organization_remote/organization_foster_requests_remote.dart';
 import 'organization_remote/organization_invites_remote.dart';
 import 'organization_remote/organization_members_remote.dart';
+import 'organization_remote/organization_permissions_remote.dart';
 import 'organization_remote/organization_pets_remote.dart';
 import 'organization_remote/organization_placements_remote.dart';
 import 'organization_remote/organization_remote_context.dart';
@@ -34,6 +35,7 @@ class OrganizationRemoteDataSource with OrganizationRemoteFosterDelegations {
     _screening = OrganizationAdoptionScreeningRemote(_ctx);
     _connections = OrganizationConnectionsRemote(_ctx);
     _custody = OrganizationCustodyRemote(_ctx);
+    _permissions = OrganizationPermissionsRemote(_ctx);
   }
 
   final OrganizationRemoteContext _ctx;
@@ -50,6 +52,7 @@ class OrganizationRemoteDataSource with OrganizationRemoteFosterDelegations {
   late final OrganizationAdoptionScreeningRemote _screening;
   late final OrganizationConnectionsRemote _connections;
   late final OrganizationCustodyRemote _custody;
+  late final OrganizationPermissionsRemote _permissions;
 
   String get baseUrl => _ctx.baseUrl;
 
@@ -354,4 +357,40 @@ class OrganizationRemoteDataSource with OrganizationRemoteFosterDelegations {
     adoptionConditions: adoptionConditions,
     token: token,
   );
+
+  Future<Map<String, dynamic>> getPermissionBundles(String orgId, String token) =>
+      _permissions.getPermissionBundles(orgId, token);
+
+  Future<Map<String, dynamic>> getMemberPermissions(
+    String orgId,
+    String targetUserId,
+    String token,
+  ) => _permissions.getMemberPermissions(orgId, targetUserId, token);
+
+  Future<Map<String, dynamic>> applyPermissionBundle(
+    String orgId,
+    String targetUserId,
+    String preset,
+    String token,
+  ) => _permissions.applyPermissionBundle(orgId, targetUserId, preset, token);
+
+  Future<Map<String, dynamic>> grantPermission(
+    String orgId,
+    String targetUserId,
+    String permissionKey,
+    String token,
+  ) => _permissions.grantPermission(orgId, targetUserId, permissionKey, token);
+
+  Future<Map<String, dynamic>> revokePermission(
+    String orgId,
+    String targetUserId,
+    String permissionKey,
+    String token,
+  ) => _permissions.revokePermission(orgId, targetUserId, permissionKey, token);
+
+  Future<List<Map<String, dynamic>>> getAuditEvents(String orgId, String token) =>
+      _permissions.getAuditEvents(orgId, token);
+
+  Future<Map<String, dynamic>> getDocumentTemplates(String orgId, String token) =>
+      _permissions.getDocumentTemplates(orgId, token);
 }

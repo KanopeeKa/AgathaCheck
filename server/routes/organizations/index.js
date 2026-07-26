@@ -10,6 +10,7 @@ import { registerProspectsRoutes } from './prospectsRouter.js';
 import { registerAdoptionJourneysRoutes } from './adoptionJourneysRouter.js';
 import { registerAdoptionVisitsRoutes } from './adoptionVisitsRouter.js';
 import { registerDocumentTemplatesRoutes } from './documentTemplatesRouter.js';
+import { registerPermissionsRoutes } from './permissionsRouter.js';
 import { registerPlacementsRoutes } from './placementsRouter.js';
 import { registerConnectionRoutes } from './connectionsRouter.js';
 import { registerDiscoverRoutes } from './discoverRouter.js';
@@ -29,6 +30,7 @@ export default function organizationsRoutes(pool) {
   registerAdoptionJourneysRoutes(router, pool);
   registerAdoptionVisitsRoutes(router, pool);
   registerDocumentTemplatesRoutes(router, pool);
+  registerPermissionsRoutes(router, pool);
   registerPlacementsRoutes(router, pool);
   return router;
 }

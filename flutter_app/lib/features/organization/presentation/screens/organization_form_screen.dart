@@ -6,6 +6,7 @@ import '../../../../core/widgets/app_logo_title.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../domain/entities/organization.dart';
 import '../providers/organization_providers.dart';
+import '../widgets/org_permission_gate.dart';
 
 class OrganizationFormScreen extends ConsumerStatefulWidget {
   const OrganizationFormScreen({super.key, this.orgId});
@@ -251,6 +252,22 @@ class _OrganizationFormScreenState
                       textInputAction: TextInputAction.done,
                     ),
                     const SizedBox(height: 24),
+                    if (_isEditing)
+                      OrgPermissionGate(
+                        orgId: widget.orgId!,
+                        permissionKey: 'manage_permissions',
+                        child: Padding(
+                          padding: const EdgeInsets.only(bottom: 16),
+                          child: OutlinedButton.icon(
+                            key: const Key('org_customisations_entry'),
+                            icon: const Icon(Icons.tune),
+                            label: Text(l.orgCustomisationsTitle),
+                            onPressed: () => context.push(
+                              '/o/orgs/${widget.orgId}/customisations',
+                            ),
+                          ),
+                        ),
+                      ),
                     FilledButton(
                       key: const Key('org_save_button'),
                       onPressed: _saving ? null : _save,
