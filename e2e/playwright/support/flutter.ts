@@ -133,16 +133,17 @@ export function escapeRegExp(value: string): string {
 }
 
 /**
- * Post-login shell indicators: experience bell + section drawer, Add Pet FAB, empty-state,
- * or legacy nav chrome (Home / Settings / To Do).
+ * Post-login shell indicators: experience bell + section drawer, guardian dashboard sections,
+ * empty-state, or legacy nav chrome (Home / Settings / To Do).
  * Navigation reversal (phase-1-navigation.md): Home removed; hamburger tooltip is "Open menu".
+ * Add Pet FAB moved to `/g/pets` (guardian UI rework #407).
  */
 export function homeShellLocator(page: Page): Locator {
   return page
     .getByRole('button', { name: /open notifications/i })
     .or(page.getByRole('button', { name: /open menu/i }))
     .or(page.getByRole('button', { name: 'To Do' }))
-    .or(page.getByRole('button', { name: 'Add Pet' }))
+    .or(page.getByText('My Pets', { exact: true }))
     .or(page.getByText('No pets yet'))
     .or(page.getByRole('button', { name: /^(Home|Accueil)$/i }))
     .or(page.getByRole('button', { name: /^(Settings|Paramètres)/i }));

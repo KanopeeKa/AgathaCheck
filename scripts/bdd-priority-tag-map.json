@@ -25,7 +25,7 @@
     "Age is dynamically calculated from date of birth": "P1",
     "Viewing the pet list": "P1",
     "Viewing pet details": "P0",
-    "Empty pet list shows prompt": "P0",
+    "Empty pet list shows prompt on guardian dashboard": "P0",
     "Editing a pet's name": "P1",
     "Editing a pet's breed": "P1",
     "Deleting a pet": "P1",
