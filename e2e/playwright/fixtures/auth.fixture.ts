@@ -2,8 +2,7 @@ import { test as base, expect } from '@playwright/test';
 import { createHealthEntry, createPet, type TestUser } from '../support/api';
 import { applyLiveHostingStealth } from '../support/stealth';
 import { createTestUser } from '../support/ui-auth';
-import { setPlaywrightPage } from '../support/api-fetch';
-import { clearLiveApiAccess, passHostingWaf, prepareLiveApiAccess, resetHostingWafSession } from '../support/waf';
+import { clearLiveApiAccess, prepareLiveApiAccess } from '../support/waf';
 import { isLiveHostingTarget } from '../support/hosting';
 import { LandingPage } from '../pages/landing.page';
 import { PetListPage } from '../pages/pet-list.page';
@@ -27,12 +26,9 @@ export const test = base.extend<AuthFixtures>({
 
   testUser: async ({ page }, use) => {
     const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
-    // Each test runs in a fresh browser context (new cookies). Reset the WAF
-    // session flag so passHostingWaf re-validates for every test, not just the
-    // first one in the worker.
-    if (isLiveHostingTarget(baseURL)) {
-      resetHostingWafSession();
-    }
+    // Reuse in-process WAF clearance across @smoke-uat tests — Tiger Protect
+    // rate-limits repeated /auth/signup probes from the same CI IP when each test
+    // calls resetHostingWafSession() (see uat-waf-queue-lessons.md §15).
     await prepareLiveApiAccess(page, baseURL);
     try {
       const user = await createTestUser(page, baseURL);
@@ -66,13 +62,9 @@ export async function loginAs(
   const landing = new LandingPage(page);
   const petList = new PetListPage(page);
   const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
-  if (isLiveHostingTarget(baseURL)) {
-    resetHostingWafSession();
-  }
   await clearBrowserSessionState(page);
   if (isLiveHostingTarget(baseURL)) {
-    await passHostingWaf(page, baseURL);
-    setPlaywrightPage(page);
+    await prepareLiveApiAccess(page, baseURL);
   }
   await landing.goto();
   await landing.login(user.email, user.password);

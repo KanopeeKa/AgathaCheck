@@ -52,3 +52,28 @@ test('classify-uat-smoke-failure: combined live gate without WAF signals stays u
   });
   assert.match(out, /smoke_failure_kind=$/);
 });
+
+test('classify-uat-smoke-failure: combined live gate detects WAF in test-results', () => {
+  const fs = require('fs');
+  const os = require('os');
+  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'uat-classify-'));
+  const resultsDir = path.join(tmp, 'test-results');
+  fs.mkdirSync(resultsDir, { recursive: true });
+  fs.writeFileSync(
+    path.join(resultsDir, 'error-context.md'),
+    'UAT auth signup is still blocked by hosting WAF',
+  );
+  try {
+    const out = runClassify({
+      HEALTH_OUTCOME: 'success',
+      WARMUP_OUTCOME: 'failure',
+      COMBINED_LIVE_GATE: 'true',
+      PLAYWRIGHT_REPORT_DIR: '/nonexistent',
+      PLAYWRIGHT_RESULTS_DIR: resultsDir,
+      HEALTH_FAILURE_KIND: '',
+    });
+    assert.match(out, /smoke_failure_kind=waf/);
+  } finally {
+    fs.rmSync(tmp, { recursive: true, force: true });
+  }
+});

@@ -671,6 +671,7 @@ jobs:
           WARMUP_OUTCOME: ${{ steps.live_gate.outcome }}
           COMBINED_LIVE_GATE: 'true'
           PLAYWRIGHT_REPORT_DIR: e2e/playwright-report
+          PLAYWRIGHT_RESULTS_DIR: e2e/test-results
         run: bash scripts/ci/classify-uat-smoke-failure.sh
 
       - name: Upload Playwright report

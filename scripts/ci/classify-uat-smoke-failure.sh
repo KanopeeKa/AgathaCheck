@@ -39,6 +39,16 @@ if [[ "$WARMUP_OUTCOME" != "success" ]]; then
   if [[ "$COMBINED_LIVE_GATE" == "true" ]]; then
     # Combined warmup+smoke: only mark infra when WAF signals are present;
     # real @smoke-uat regressions stay unclassified → code gate in assert-uat-gates.sh.
+    if [[ -f "$report" ]] && grep -qiE 'blocked by hosting WAF|WAF challenge did not clear|o2s-browser-check|Test de sécurité' \
+      "$report" 2>/dev/null; then
+      emit_failure_kind "waf"
+      exit 0
+    fi
+    results_dir="${PLAYWRIGHT_RESULTS_DIR:-e2e/test-results}"
+    if [[ -d "$results_dir" ]] && grep -rqE 'blocked by hosting WAF|WAF challenge did not clear' "$results_dir" 2>/dev/null; then
+      emit_failure_kind "waf"
+      exit 0
+    fi
     emit_failure_kind ""
     exit 0
   fi
