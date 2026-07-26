@@ -6,6 +6,7 @@ import '../../../../../core/widgets/dashboard_section.dart';
 import '../../../../../l10n/app_localizations.dart';
 import '../../../../pet_profile/domain/entities/pet.dart';
 import '../../../../pet_profile/presentation/providers/pet_providers.dart';
+import '../../../auth/presentation/providers/auth_providers.dart';
 import '../../../../vet/presentation/providers/vet_providers.dart';
 import '../../../../vet/presentation/widgets/vet_compact_row.dart';
 
@@ -16,6 +17,7 @@ class GuardianMyVetsSection extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l = AppLocalizations.of(context)!;
+    final auth = ref.watch(authProvider);
     final vetListAsync = ref.watch(vetListProvider);
     final pets = ref.watch(petListProvider).valueOrNull ?? [];
 
@@ -26,16 +28,21 @@ class GuardianMyVetsSection extends ConsumerWidget {
         child: Text(l.addVet),
       ),
       previewBuilder: (ctx) {
+        if (auth.accessToken == null) {
+          return const SizedBox(
+            height: 24,
+            child: Center(child: CircularProgressIndicator(strokeWidth: 2)),
+          );
+        }
+
         return vetListAsync.when(
           loading: () => const SizedBox(
             height: 24,
             child: Center(child: CircularProgressIndicator(strokeWidth: 2)),
           ),
-          error: (_, __) => Text(
-            l.noVetsYet,
-            style: Theme.of(ctx).textTheme.bodyMedium?.copyWith(
-              color: Theme.of(ctx).colorScheme.onSurfaceVariant,
-            ),
+          error: (_, __) => TextButton(
+            onPressed: () => ref.read(vetListProvider.notifier).refresh(),
+            child: Text(l.retry),
           ),
           data: (vets) {
             if (vets.isEmpty) {
