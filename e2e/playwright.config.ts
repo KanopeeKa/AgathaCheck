@@ -45,13 +45,6 @@ export default defineConfig({
       use: sharedUse,
     },
     {
-      name: 'uat-smoke',
-      grep: /@smoke-uat/,
-      dependencies: isLiveUat ? ['warmup-uat'] : undefined,
-      retries: 0,
-      use: isLiveUat ? { ...sharedUse, storageState: uatWafStoragePath } : sharedUse,
-    },
-    {
       // Fast, WAF-capable auth check gating the full @smoke-uat/full-E2E run —
       // see playwright/tests/uat-auth-warmup.spec.ts for why this replaces a
       // curl-based warmup (curl cannot solve o2switch's JS challenge).
@@ -60,6 +53,13 @@ export default defineConfig({
       retries: 1,
       timeout: 150_000,
       use: sharedUse,
+    },
+    {
+      name: 'uat-smoke',
+      grep: /@smoke-uat/,
+      dependencies: isLiveUat ? ['warmup-uat'] : undefined,
+      retries: 0,
+      use: isLiveUat ? { ...sharedUse, storageState: uatWafStoragePath } : sharedUse,
     },
     {
       name: 'full',

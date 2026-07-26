@@ -1,6 +1,6 @@
 import type { Locator, Page } from '@playwright/test';
-import { passHostingWaf } from './waf';
 import { isLiveHostingTarget } from './hosting';
+import { passHostingWaf } from './waf';
 
 function postLoginTimeout(fallback = 60_000): number {
   return isLiveHostingTarget() ? 120_000 : fallback;
@@ -90,7 +90,12 @@ export async function waitForFlutter(page: Page): Promise<void> {
 /** Navigate to a Flutter route and enable the accessibility tree. */
 export async function waitForFlutterRoute(page: Page, path: string): Promise<void> {
   if (path === '/landing' || path === '/') {
-    await passHostingWaf(page);
+    // Live UAT gate (warmup-uat + storageState when E2E_TLS_INSECURE=1) skips redundant WAF here.
+    // Other live-hosting runs without the gate still need passHostingWaf before landing nav.
+    const liveUatGate = isLiveHostingTarget() && process.env.E2E_TLS_INSECURE === '1';
+    if (!liveUatGate && isLiveHostingTarget()) {
+      await passHostingWaf(page);
+    }
   }
   await page.goto(flutterGotoUrl(path));
   await page.waitForSelector('flutter-view, flt-glass-pane', { state: 'attached', timeout: 60_000 });

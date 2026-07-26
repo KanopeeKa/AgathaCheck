@@ -195,6 +195,18 @@ Acquiring a 90-minute lease **before** a successful agent launch blocked all pro
 
 **Do not:** Ask operators to whitelist GitHub Actions egress IPs — not available. SSH whitelist (`o2switch-ssh-whitelist.sh`) is port 22 only and unrelated to HTTP WAF.
 
+### 18. Landing navigation must not re-run WAF after warmup (added Jul 26)
+
+**Problem:** Deploy [30210675285](https://github.com/KanopeeKa/AgathaCheck/actions/runs/30210675285) — first `@smoke-uat` test (`auth.login` a11y landing) called `waitForFlutterRoute('/landing')` → `passHostingWaf` with full signup probe even after warmup + storage state. Tiger Protect rate-limited CI after ~2.2m.
+
+**Fix:**
+
+1. Remove unconditional `passHostingWaf` from `waitForFlutterRoute` — skip only when `E2E_TLS_INSECURE=1` (live UAT gate with warmup + `storageState`); other live-hosting runs still call `passHostingWaf`
+2. `sessionReadyOnPage` always probes in-browser before trusting `sessionWafCleared` (storage-state cookies can satisfy probes in a fresh context)
+3. Define `warmup-uat` before `uat-smoke` in `playwright.config.ts` (dependency already enforces order)
+
+**Do not:** Call `passHostingWaf` on every landing `goto` in live smoke — it duplicates warmup and triggers auth signup probes.
+
 ---
 
 ## Operator recovery cheat sheet
