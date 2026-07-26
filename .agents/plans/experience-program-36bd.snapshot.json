@@ -4,7 +4,7 @@
   "approved_at": "2026-07-25T23:41:00Z",
   "approved_by": "user chat 2026-07-25 (standing grant: babysit+ #377, execute-plan R–5)",
   "approved_until": "2026-07-27T23:41:00Z",
-  "content_hash": "sha256:96fcd322c7326036962b3595531d80d60e9265114f6ab22b187d690e67262908",
+  "content_hash": "sha256:84ae5d533e9870c1d9549b9f726a326d20b6cb81f323bf860f158b894c042ba1",
   "autonomy": "active",
   "default_merge_mode": "auto",
   "base_branch": "main",
@@ -238,7 +238,9 @@
       "status": "in_progress",
       "status_reason": null,
       "status_detail": null,
-      "debt_issue_refs": []
+      "debt_issue_refs": [],
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/384",
+      "pr_head_sha": "7b48b63"
     },
     {
       "id": "5",
