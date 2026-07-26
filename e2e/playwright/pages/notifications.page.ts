@@ -58,13 +58,18 @@ export class NotificationsPage {
 
   /** Wait for the notification panel slide-over to be visible. */
   async expectPanelLoaded(): Promise<void> {
+    // Kind-filter chips live only inside the endDrawer — unlike a generic Close
+    // button they cannot false-positive from unrelated page chrome (PR #397 gap).
     await expect(async () => {
       await refreshFlutterAccessibility(this.page);
-      const panelChrome = this.page
+      const allChip = this.page
+        .getByRole('button', { name: /^All$|^Tout$/i })
+        .and(this.page.locator(':visible'));
+      await allChip.waitFor({ timeout: 3_000 });
+      const markAll = this.page
         .getByRole('button', { name: /Mark all as read|Tout marquer comme lu/i })
-        .and(this.page.locator(':visible'))
-        .or(this.page.getByRole('button', { name: /close|fermer/i }).and(this.page.locator(':visible')));
-      await panelChrome.first().waitFor({ timeout: 3_000 });
+        .and(this.page.locator(':visible'));
+      await markAll.waitFor({ timeout: 3_000 });
     }).toPass({ timeout: 15_000 });
     await expect(async () => {
       await refreshFlutterAccessibility(this.page);
