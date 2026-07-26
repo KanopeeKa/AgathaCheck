@@ -6651,6 +6651,66 @@ abstract class AppLocalizations {
   /// **'My vets'**
   String get myVets;
 
+  /// No description provided for @upcomingPetEvents.
+  ///
+  /// In en, this message translates to:
+  /// **'Upcoming Pet Events'**
+  String get upcomingPetEvents;
+
+  /// No description provided for @allEvents.
+  ///
+  /// In en, this message translates to:
+  /// **'All Events'**
+  String get allEvents;
+
+  /// No description provided for @allVets.
+  ///
+  /// In en, this message translates to:
+  /// **'All Vets'**
+  String get allVets;
+
+  /// No description provided for @addAnEvent.
+  ///
+  /// In en, this message translates to:
+  /// **'Add an event'**
+  String get addAnEvent;
+
+  /// No description provided for @dashboardAddPet.
+  ///
+  /// In en, this message translates to:
+  /// **'Add a pet'**
+  String get dashboardAddPet;
+
+  /// No description provided for @vetLinkedPetCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 pet} other{{count} pets}}'**
+  String vetLinkedPetCount(int count);
+
+  /// No description provided for @vetLinkedPets.
+  ///
+  /// In en, this message translates to:
+  /// **'Linked pets'**
+  String get vetLinkedPets;
+
+  /// No description provided for @vetNotFound.
+  ///
+  /// In en, this message translates to:
+  /// **'Veterinarian not found'**
+  String get vetNotFound;
+
+  /// No description provided for @selectPetForWeight.
+  ///
+  /// In en, this message translates to:
+  /// **'Select a pet for weight entry'**
+  String get selectPetForWeight;
+
+  /// No description provided for @selectPetForEvent.
+  ///
+  /// In en, this message translates to:
+  /// **'Select a pet for this event'**
+  String get selectPetForEvent;
+
   /// No description provided for @orgVets.
   ///
   /// In en, this message translates to:

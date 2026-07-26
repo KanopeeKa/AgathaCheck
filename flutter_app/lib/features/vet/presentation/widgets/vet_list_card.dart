@@ -11,12 +11,14 @@ class VetListCard extends StatelessWidget {
     required this.vet,
     required this.linkedPetNames,
     required this.onEdit,
+    this.onTap,
     this.organizationName,
   });
 
   final Vet vet;
   final List<String> linkedPetNames;
   final VoidCallback onEdit;
+  final VoidCallback? onTap;
   final String? organizationName;
 
   @override
@@ -69,7 +71,7 @@ class VetListCard extends StatelessWidget {
               ),
             ],
           ),
-          onTap: onEdit,
+          onTap: onTap ?? onEdit,
         ),
       ),
     );

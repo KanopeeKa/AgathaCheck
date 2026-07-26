@@ -235,5 +235,14 @@
   "org_onboarding.feature": {
     "New org super-admin sees onboarding wizard after first login": "P1",
     "Org super-admin completes onboarding with inventory pet and reminder": "P1"
+  },
+  "guardian_dashboard.feature": {
+    "Dashboard shows exactly three sections": "P1",
+    "My Pets preview is capped at four": "P1",
+    "Pending foster placement surfaces as a notification, not a dashboard banner": "P1"
+  },
+  "pet_timeline.feature": {
+    "Timeline shows a fostering session card": "P1",
+    "Timeline shows a placeholder when no data exists for a period": "P1"
   }
 }

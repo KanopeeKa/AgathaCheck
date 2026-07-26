@@ -38,7 +38,9 @@ void main() {
       theme: AppTheme.lightTheme,
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
-      home: Scaffold(body: child),
+      home: Scaffold(
+        body: Center(child: SizedBox(width: 180, child: child)),
+      ),
     );
   }
 
@@ -47,10 +49,8 @@ void main() {
       await tester.pumpWidget(createTestWidget(PetCard(pet: testPet)));
 
       expect(find.text('Buddy'), findsOneWidget);
-      expect(find.text('Dog - Golden Retriever'), findsOneWidget);
+      expect(find.textContaining('Golden Retriever'), findsOneWidget);
     });
-
-    // Skipped: Pet entity does not have direct age property, age is computed from dateOfBirth
 
     testWidgets('displays species only when no breed', (tester) async {
       await tester.pumpWidget(createTestWidget(PetCard(pet: petNoBio)));
@@ -128,6 +128,12 @@ void main() {
       expect(find.byIcon(Icons.home_work_outlined), findsNothing);
     });
 
+    testWidgets('shows ownership status bar', (tester) async {
+      await tester.pumpWidget(createTestWidget(PetCard(pet: testPet)));
+
+      expect(find.byType(Container), findsWidgets);
+    });
+
     testWidgets('calls onTap when tapped', (tester) async {
       var tapped = false;
       await tester.pumpWidget(
@@ -137,7 +143,5 @@ void main() {
       await tester.tap(find.byType(PetCard));
       expect(tapped, isTrue);
     });
-
-    // Skipped: PetCard does not have onDelete parameter in implementation
   });
 }

@@ -77,7 +77,7 @@ void main() {
       await pumpApp(tester, frames: 5);
       for (var i = 0; i < 30; i++) {
         await tester.pump(const Duration(milliseconds: 50));
-        if (find.byKey(const Key('add_pet_button')).evaluate().isNotEmpty) {
+        if (find.byKey(const Key('dashboard_add_pet_button')).evaluate().isNotEmpty) {
           return;
         }
       }
@@ -104,9 +104,9 @@ void main() {
         reason: 'Should show empty state text',
       );
       expect(
-        find.byKey(const Key('add_pet_button')),
+        find.byKey(const Key('dashboard_add_pet_button')),
         findsOneWidget,
-        reason: 'Should show Add Pet FAB on guardian home',
+        reason: 'Should show Add a pet action on guardian dashboard',
       );
     });
 
@@ -125,7 +125,7 @@ void main() {
 
       final l10n = l10nFromTester(tester);
 
-      final addPetButton = find.byKey(const Key('add_pet_button'));
+      final addPetButton = find.byKey(const Key('dashboard_add_pet_button'));
       expect(
         addPetButton,
         findsOneWidget,
@@ -166,7 +166,7 @@ void main() {
 
       final l10n = l10nFromTester(tester);
 
-      final addPetButton = find.byKey(const Key('add_pet_button'));
+      final addPetButton = find.byKey(const Key('dashboard_add_pet_button'));
       expect(
         addPetButton,
         findsOneWidget,
@@ -201,7 +201,7 @@ void main() {
 
       final l10n = l10nFromTester(tester);
 
-      await tester.tap(find.byKey(const Key('add_pet_button')));
+      await tester.tap(find.byKey(const Key('dashboard_add_pet_button')));
       await pumpApp(tester);
 
       await tester.enterText(find.byKey(const Key('pet_name_field')), 'Buddy');

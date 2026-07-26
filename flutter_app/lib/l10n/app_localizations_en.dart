@@ -3670,6 +3670,44 @@ class AppLocalizationsEn extends AppLocalizations {
   String get myVets => 'My vets';
 
   @override
+  String get upcomingPetEvents => 'Upcoming Pet Events';
+
+  @override
+  String get allEvents => 'All Events';
+
+  @override
+  String get allVets => 'All Vets';
+
+  @override
+  String get addAnEvent => 'Add an event';
+
+  @override
+  String get dashboardAddPet => 'Add a pet';
+
+  @override
+  String vetLinkedPetCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count pets',
+      one: '1 pet',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get vetLinkedPets => 'Linked pets';
+
+  @override
+  String get vetNotFound => 'Veterinarian not found';
+
+  @override
+  String get selectPetForWeight => 'Select a pet for weight entry';
+
+  @override
+  String get selectPetForEvent => 'Select a pet for this event';
+
+  @override
   String get orgVets => 'Org vets';
 
   @override

@@ -4,7 +4,7 @@
   "approved_at": "2026-07-25T23:41:00Z",
   "approved_by": "user chat 2026-07-25 (standing grant: babysit+ #377, execute-plan R–5)",
   "approved_until": "2026-07-27T23:41:00Z",
-  "content_hash": "sha256:fe2f00fbd811c32872f3bc27403ac32afab38061b52ae02dc60be82f8b627b43",
+  "content_hash": "sha256:c69efdc395a2cf5c656bc6a63df15e88d280a72deced94b6f467b5668dfbfdb9",
   "autonomy": "active",
   "default_merge_mode": "auto",
   "base_branch": "main",
@@ -117,12 +117,12 @@
       "spawn_config": null,
       "merge_method": "squash",
       "exit_checklist": "bdd-journey",
-      "status": "in_progress",
+      "status": "merged",
       "status_reason": null,
       "status_detail": null,
       "debt_issue_refs": [],
       "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/381",
-      "pr_head_sha": "6973eb6"
+      "pr_head_sha": "8d258ea"
     },
     {
       "id": "2",
@@ -159,12 +159,9 @@
       "spawn_config": null,
       "merge_method": "squash",
       "exit_checklist": "bdd-journey",
-      "status": "pending",
+      "status": "in_progress",
       "status_reason": null,
       "status_detail": null,
-      "pr_url": null,
-      "pr_head_sha": null,
-      "merge_commit": null,
       "debt_issue_refs": []
     },
     {

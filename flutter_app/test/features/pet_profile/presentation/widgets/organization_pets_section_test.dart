@@ -4,6 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:pet_profile_app/features/pet_profile/domain/entities/pet.dart';
 import 'package:pet_profile_app/features/pet_profile/presentation/widgets/organization_pets_section.dart';
+import 'package:pet_profile_app/features/pet_profile/presentation/widgets/pet_card.dart';
 import 'package:pet_profile_app/l10n/app_localizations.dart';
 
 const _orgPet = Pet(
@@ -39,11 +40,16 @@ void main() {
       routes: [
         GoRoute(
           path: '/',
-          builder: (context, state) => const Scaffold(
-            body: _Host(
-              orgGroups: {
-                'Happy Paws Shelter': [_orgPet],
-              },
+          builder: (context, state) => Scaffold(
+            body: Center(
+              child: SizedBox(
+                width: 400,
+                child: _Host(
+                  orgGroups: const {
+                    'Happy Paws Shelter': [_orgPet],
+                  },
+                ),
+              ),
             ),
           ),
         ),
@@ -66,7 +72,7 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    await tester.tap(find.text('Max'));
+    await tester.tap(find.byType(PetCard));
     await tester.pumpAndSettle();
 
     expect(find.text('Pet org-pet-1'), findsOneWidget);

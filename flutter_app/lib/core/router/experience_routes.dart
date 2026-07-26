@@ -11,6 +11,8 @@ import '../../features/experience/presentation/screens/guardian_onboarding_scree
 import '../../features/experience/presentation/screens/org_onboarding_screen.dart';
 import '../../features/experience/presentation/widgets/foster_portal_route_guard.dart';
 import '../../features/experience/presentation/widgets/experience_shell_scaffold.dart';
+import '../../features/experience/presentation/screens/guardian/guardian_all_pets_screen.dart';
+import '../../features/experience/presentation/screens/guardian/guardian_due_events_screen.dart';
 import '../../features/health_tracking/domain/health_events_scope.dart';
 import '../../features/health_tracking/presentation/screens/health_dashboard_screen.dart';
 
@@ -49,6 +51,11 @@ List<RouteBase> buildExperienceRoutes() {
           path: '/g/home',
           name: 'guardianHome',
           builder: (context, state) => const GuardianHomeScreen(),
+        ),
+        GoRoute(
+          path: '/g/pets',
+          name: 'guardianAllPets',
+          builder: (context, state) => const GuardianAllPetsScreen(),
         ),
         GoRoute(
           path: '/g/events',
@@ -126,11 +133,7 @@ class _GuardianEventsScreen extends StatelessWidget {
     return ExperienceShellScaffold(
       experience: AppExperience.guardian,
       currentLocation: GoRouterState.of(context).uri.path,
-      child: const HealthDashboardScreen(
-        embeddedInShell: true,
-        scope: HealthEventsScope.guardian,
-        backPath: '/g/home',
-      ),
+      child: const GuardianDueEventsScreen(),
     );
   }
 }

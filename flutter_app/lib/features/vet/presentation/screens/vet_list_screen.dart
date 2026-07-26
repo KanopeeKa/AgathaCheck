@@ -127,6 +127,7 @@ class VetListScreen extends ConsumerWidget {
                       vet: vet,
                       linkedPetNames: linkedPets.map((p) => p.name).toList(),
                       organizationName: orgName,
+                      onTap: () => context.go('$_listPath/${vet.id}'),
                       onEdit: () => context.go('$_listPath/edit/${vet.id}'),
                     );
                   },
