@@ -28,6 +28,7 @@ LIVE_SMOKE_RESULT="${LIVE_SMOKE_RESULT:-}"
 FULL_E2E_RESULT="${FULL_E2E_RESULT:-}"
 BUILD_RESULT="${BUILD_RESULT:-}"
 SMOKE_FAILURE_KIND="${SMOKE_FAILURE_KIND:-}"
+LIVE_SMOKE_FAILURE_KIND="${LIVE_SMOKE_FAILURE_KIND:-}"
 UAT_FULL_E2E_CADENCE_SKIP="${UAT_FULL_E2E_CADENCE_SKIP:-false}"
 UAT_FULL_E2E_CADENCE_REASON="${UAT_FULL_E2E_CADENCE_REASON:-}"
 DEPLOY_REF="${DEPLOY_REF:-}"
@@ -150,6 +151,11 @@ if [[ "$failed" -ne 0 ]]; then
     # cancelled) default to "code" — a crashing app can be a genuine
     # regression, and there is no signal to prove otherwise.
     case "$SMOKE_FAILURE_KIND" in
+      waf | apache_404 | directory_listing | flutter_spa) ;;
+      *) gate_failure_class="code" ;;
+    esac
+  elif [[ "$DEPLOY_RESULT" == "success" && "$LIVE_SMOKE_RESULT" != "success" ]]; then
+    case "$LIVE_SMOKE_FAILURE_KIND" in
       waf | apache_404 | directory_listing | flutter_spa) ;;
       *) gate_failure_class="code" ;;
     esac

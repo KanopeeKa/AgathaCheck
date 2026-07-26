@@ -13,7 +13,7 @@ deploy-uat smoke failed on "Warm up UAT auth before live smoke"
   ├─ Log shows Tiger Protect HTML (503, o2s-browser-check) on signup
   │    ├─ /backend/health passed? → YES: health-only WAF clear is insufficient (#351)
   │    ├─ Fix in code: passHostingWaf must probe POST /backend/api/auth/signup (JSON 400 = OK)
-  │    └─ Still fails after #351? → Host action: whitelist GitHub Actions egress in Tiger Protect
+  │    └─ Still fails after #351? → Retry later; avoid duplicate browser warmups in same deploy
   ├─ Stuck on #/landing 120s after UI signup
   │    └─ Same root cause — Flutter signup API still WAF-blocked; do not add curl/Node retries
   ├─ promote-uat skipped (promote_tag_skipped / head_entry_failed)
@@ -142,7 +142,21 @@ Acquiring a 90-minute lease **before** a successful agent launch blocked all pro
 
 **Guards:** defer ledger commit until launch succeeds; `releaseWatcherIfHolderRunFinished`; `uat-queue-health` stale lease recovery.
 
-### 12. Playwright warmup failures must set `SMOKE_FAILURE_KIND=waf`
+### 12. Duplicate browser warmups in one deploy (added Jul 26)
+
+**Problem:** `deploy-uat.yml` ran `test:warmup-uat` in **post-deploy smoke** and again in **live smoke E2E** — separate jobs, separate Playwright processes, same GitHub Actions IP. Post-deploy warmup passed in ~5s; live smoke warmup failed after ~2min with WAF HTML on signup. Tiger Protect rate-limits repeated auth probes from one IP.
+
+**Fix:** HTTP health only in post-deploy smoke; single `test:live-uat-gate` (`warmup-uat` + `uat-smoke` projects) in one Playwright process for live smoke.
+
+**Do not reintroduce:** warmup in both smoke jobs; separate `npm run test:warmup-uat` then `test:smoke-uat` in the same job.
+
+### 13. Catch-up promote tags must trigger deploy (added Jul 26)
+
+**Problem:** `uat-promote-catchup.yml` creates `uat-*` tags after the 90-minute cadence elapses, but `deploy-uat.yml` only listened to `workflow_run` from **Promote UAT (tag on merge to main)** — not **UAT promote catch-up**. Tags from catch-up never deployed (e.g. `uat-260726-386` at 09:53, no deploy run).
+
+**Fix:** Add `UAT promote catch-up` to `deploy-uat.yml` `workflow_run.workflows` (GITHUB_TOKEN tag push still does not fire `on: push: tags`).
+
+### 14. Playwright warmup failures must set `SMOKE_FAILURE_KIND=waf`
 
 **Problem:** `uat-post-deploy-smoke.sh` (curl health) sets `failure_kind` on the smoke job output. When health passes but **`test:warmup-uat`** fails (auth signup still WAF-blocked after page challenge — the #351 scenario), `SMOKE_FAILURE_KIND` stayed empty. `assert-uat-gates.sh` then classified the run as **`code`**, not `infra_only` — freezing promotion and misrouting the coordinator (uat-coordinator-plan §6 residual risk).
 

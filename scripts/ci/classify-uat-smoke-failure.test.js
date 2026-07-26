@@ -41,3 +41,14 @@ test('classify-uat-smoke-failure: warmup failure after healthy health is waf', (
   });
   assert.match(out, /smoke_failure_kind=waf/);
 });
+
+test('classify-uat-smoke-failure: combined live gate without WAF signals stays unclassified', () => {
+  const out = runClassify({
+    HEALTH_OUTCOME: 'success',
+    WARMUP_OUTCOME: 'failure',
+    COMBINED_LIVE_GATE: 'true',
+    PLAYWRIGHT_REPORT_DIR: '/nonexistent',
+    HEALTH_FAILURE_KIND: '',
+  });
+  assert.match(out, /smoke_failure_kind=$/);
+});

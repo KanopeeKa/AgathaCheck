@@ -108,7 +108,7 @@ function authBlockedMessage(baseURL: string): string {
   return [
     `UAT auth signup is still blocked by hosting WAF at ${baseURL}/backend/api/auth/signup`,
     'after the page challenge cleared. Tiger Protect often allows /backend/health before',
-    'auth endpoints — retry or whitelist GitHub Actions egress in o2switch Tiger Protect.',
+    'auth endpoints — retry later or run warmup + smoke in a single Playwright run.',
   ].join(' ');
 }
 
@@ -174,7 +174,7 @@ export async function passHostingWaf(page: Page, baseURL?: string): Promise<void
   if (pageShowsWafChallenge(await page.content())) {
     throw new Error(
       'Hosting WAF challenge did not clear after visiting UAT. '
-      + 'Whitelist GitHub Actions IPs in o2switch Tiger Protect or disable browser challenges for UAT.',
+      + 'Retry the deploy later; Tiger Protect may be rate-limiting CI traffic.',
     );
   }
 
