@@ -7754,6 +7754,168 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Downloaded {title}'**
   String orgLegalDocumentsDownloaded(String title);
+
+  /// No description provided for @orgCustomisationsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Organisation customisations'**
+  String get orgCustomisationsTitle;
+
+  /// No description provided for @orgCustomisationsIntro.
+  ///
+  /// In en, this message translates to:
+  /// **'Configure templates and delegate permissions for this organisation.'**
+  String get orgCustomisationsIntro;
+
+  /// No description provided for @orgCustomisationsTemplatesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Document templates'**
+  String get orgCustomisationsTemplatesTitle;
+
+  /// No description provided for @orgCustomisationsTemplatesSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Session checklists and adoption milestone templates.'**
+  String get orgCustomisationsTemplatesSubtitle;
+
+  /// No description provided for @orgCustomisationsRolesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Roles & permissions'**
+  String get orgCustomisationsRolesTitle;
+
+  /// No description provided for @orgCustomisationsRolesSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Apply bundle presets, manage overrides, and review the audit log.'**
+  String get orgCustomisationsRolesSubtitle;
+
+  /// No description provided for @orgDocumentTemplatesIntro.
+  ///
+  /// In en, this message translates to:
+  /// **'Templates used for fostering sessions and adoption journeys.'**
+  String get orgDocumentTemplatesIntro;
+
+  /// No description provided for @orgDocumentTemplatesEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No document templates are configured yet.'**
+  String get orgDocumentTemplatesEmpty;
+
+  /// No description provided for @orgRolesPermissionsIntro.
+  ///
+  /// In en, this message translates to:
+  /// **'Select a member, apply a bundle preset, then fine-tune individual permissions.'**
+  String get orgRolesPermissionsIntro;
+
+  /// No description provided for @orgRolesPermissionsMemberLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Member'**
+  String get orgRolesPermissionsMemberLabel;
+
+  /// No description provided for @orgRolesPermissionsSelectMember.
+  ///
+  /// In en, this message translates to:
+  /// **'Select a member to view permissions.'**
+  String get orgRolesPermissionsSelectMember;
+
+  /// No description provided for @orgRolesPermissionsEffectiveTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Effective permissions'**
+  String get orgRolesPermissionsEffectiveTitle;
+
+  /// No description provided for @orgRolesPermissionsNone.
+  ///
+  /// In en, this message translates to:
+  /// **'No permissions granted.'**
+  String get orgRolesPermissionsNone;
+
+  /// No description provided for @orgRolesPermissionsRoleDefault.
+  ///
+  /// In en, this message translates to:
+  /// **'Granted by role'**
+  String get orgRolesPermissionsRoleDefault;
+
+  /// No description provided for @orgRolesPermissionsOverrideActive.
+  ///
+  /// In en, this message translates to:
+  /// **'Individual override'**
+  String get orgRolesPermissionsOverrideActive;
+
+  /// No description provided for @orgRolesPermissionsAuditTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Audit log'**
+  String get orgRolesPermissionsAuditTitle;
+
+  /// No description provided for @orgRolesPermissionsAuditEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No audit events recorded yet.'**
+  String get orgRolesPermissionsAuditEmpty;
+
+  /// No description provided for @orgRolesPermissionsApplyBundle.
+  ///
+  /// In en, this message translates to:
+  /// **'Apply {name}'**
+  String orgRolesPermissionsApplyBundle(String name);
+
+  /// No description provided for @orgRolesPermissionsBundleApplied.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} bundle applied'**
+  String orgRolesPermissionsBundleApplied(String name);
+
+  /// No description provided for @orgPermissionManageFosters.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage fosters'**
+  String get orgPermissionManageFosters;
+
+  /// No description provided for @orgPermissionManagePets.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage pets'**
+  String get orgPermissionManagePets;
+
+  /// No description provided for @orgPermissionManageMembers.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage members'**
+  String get orgPermissionManageMembers;
+
+  /// No description provided for @orgPermissionManageDocumentTemplates.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage document templates'**
+  String get orgPermissionManageDocumentTemplates;
+
+  /// No description provided for @orgPermissionManagePermissions.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage permissions'**
+  String get orgPermissionManagePermissions;
+
+  /// No description provided for @orgPermissionBundleFosterAdmin.
+  ///
+  /// In en, this message translates to:
+  /// **'Foster Admin'**
+  String get orgPermissionBundleFosterAdmin;
+
+  /// No description provided for @orgPermissionBundlePetAdmin.
+  ///
+  /// In en, this message translates to:
+  /// **'Pet Admin'**
+  String get orgPermissionBundlePetAdmin;
+
+  /// No description provided for @orgPermissionBundleTeamAdmin.
+  ///
+  /// In en, this message translates to:
+  /// **'Team Admin'**
+  String get orgPermissionBundleTeamAdmin;
 }
 
 class _AppLocalizationsDelegate

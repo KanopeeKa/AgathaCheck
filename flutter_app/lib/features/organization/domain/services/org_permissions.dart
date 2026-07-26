@@ -28,8 +28,26 @@ const permissionBundleFosterAdmin = 'foster_admin';
 const permissionBundlePetAdmin = 'pet_admin';
 const permissionBundleTeamAdmin = 'team_admin';
 
+/// Active permission overrides keyed by organisation — populated from API (Phase 5).
+final _viewerOverrideCache = <String, Set<String>>{};
+
+void setViewerPermissionOverrides(String orgId, Set<String> keys) {
+  _viewerOverrideCache[orgId] = keys;
+}
+
+void clearViewerPermissionOverrides([String? orgId]) {
+  if (orgId != null) {
+    _viewerOverrideCache.remove(orgId);
+  } else {
+    _viewerOverrideCache.clear();
+  }
+}
+
 /// Active permission overrides for the given org — Phase 5 UI loads from API.
-Set<String> orgPermissionOverrides(String? _) => const {};
+Set<String> orgPermissionOverrides(String? orgId) {
+  if (orgId == null) return const {};
+  return _viewerOverrideCache[orgId] ?? const {};
+}
 
 bool _hasRoleDefault(OrgMemberRole role, String permissionKey) {
   final defaults = g0PermissionDefaults[permissionKey];

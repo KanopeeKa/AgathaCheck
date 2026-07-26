@@ -5,6 +5,7 @@ import 'organization_repository_impl_foster_parents.dart';
 import 'organization_repository_impl_foster_placements.dart';
 import 'organization_repository_impl_foster_requests.dart';
 import 'organization_repository_impl_pets.dart';
+import 'organization_repository_impl_permissions.dart';
 import 'organization_repository_impl_screening.dart';
 
 class OrganizationRepositoryImpl extends OrganizationRepositoryImplBase
@@ -14,7 +15,8 @@ class OrganizationRepositoryImpl extends OrganizationRepositoryImplBase
         OrganizationRepositoryFosterPlacementsMixin,
         OrganizationRepositoryFosterRequestsMixin,
         OrganizationRepositoryScreeningMixin,
-        OrganizationRepositoryCustodyMixin {
+        OrganizationRepositoryCustodyMixin,
+        OrganizationRepositoryPermissionsMixin {
   OrganizationRepositoryImpl(OrganizationRemoteDataSource dataSource)
     : super(dataSource);
 }

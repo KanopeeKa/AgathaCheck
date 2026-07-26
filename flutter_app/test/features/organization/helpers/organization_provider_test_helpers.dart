@@ -9,12 +9,14 @@ import 'recording_organization_repository_base.dart';
 import 'recording_organization_repository_connections_mixin.dart';
 import 'recording_organization_repository_core_mixin.dart';
 import 'recording_organization_repository_foster_mixin.dart';
+import 'recording_organization_repository_permissions_mixin.dart';
 import 'recording_organization_repository_placements_mixin.dart';
 
 export 'recording_organization_repository_base.dart';
 export 'recording_organization_repository_connections_mixin.dart';
 export 'recording_organization_repository_core_mixin.dart';
 export 'recording_organization_repository_foster_mixin.dart';
+export 'recording_organization_repository_permissions_mixin.dart';
 export 'recording_organization_repository_placements_mixin.dart';
 
 /// Records calls so we can assert what the notifiers delegated to the repository.
@@ -24,7 +26,8 @@ class RecordingOrganizationRepository
         RecordingOrganizationRepositoryCoreMixin,
         RecordingOrganizationRepositoryFosterMixin,
         RecordingOrganizationRepositoryPlacementsMixin,
-        RecordingOrganizationRepositoryConnectionsMixin {}
+        RecordingOrganizationRepositoryConnectionsMixin,
+        RecordingOrganizationRepositoryPermissionsMixin {}
 
 /// Tracks foster/people provider delegation beyond the base recording repo.
 class FosterTrackingOrganizationRepository

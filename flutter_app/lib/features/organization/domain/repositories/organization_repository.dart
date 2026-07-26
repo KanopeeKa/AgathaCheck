@@ -415,4 +415,34 @@ abstract class OrganizationRepository {
   });
 
   Future<List<OrgHomeHiddenPet>> getHomeHiddenPets(String orgId, String token);
+
+  Future<Map<String, dynamic>> getPermissionBundles(String orgId, String token);
+  Future<Map<String, dynamic>> getMemberPermissions(
+    String orgId,
+    String targetUserId,
+    String token,
+  );
+  Future<Map<String, dynamic>> applyPermissionBundle(
+    String orgId,
+    String targetUserId,
+    String preset,
+    String token,
+  );
+  Future<Map<String, dynamic>> grantMemberPermission(
+    String orgId,
+    String targetUserId,
+    String permissionKey,
+    String token,
+  );
+  Future<Map<String, dynamic>> revokeMemberPermission(
+    String orgId,
+    String targetUserId,
+    String permissionKey,
+    String token,
+  );
+  Future<List<Map<String, dynamic>>> getOrgAuditEvents(
+    String orgId,
+    String token,
+  );
+  Future<Map<String, dynamic>> getDocumentTemplates(String orgId, String token);
 }

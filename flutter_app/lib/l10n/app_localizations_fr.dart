@@ -4352,4 +4352,98 @@ class AppLocalizationsFr extends AppLocalizations {
   String orgLegalDocumentsDownloaded(String title) {
     return '$title téléchargé';
   }
+
+  @override
+  String get orgCustomisationsTitle => 'Personnalisation de l\'organisation';
+
+  @override
+  String get orgCustomisationsIntro =>
+      'Configurez les modèles et déléguez les permissions pour cette organisation.';
+
+  @override
+  String get orgCustomisationsTemplatesTitle => 'Modèles de documents';
+
+  @override
+  String get orgCustomisationsTemplatesSubtitle =>
+      'Listes de session et jalons d\'adoption.';
+
+  @override
+  String get orgCustomisationsRolesTitle => 'Rôles et permissions';
+
+  @override
+  String get orgCustomisationsRolesSubtitle =>
+      'Appliquer des préréglages, gérer les dérogations et consulter le journal d\'audit.';
+
+  @override
+  String get orgDocumentTemplatesIntro =>
+      'Modèles utilisés pour les sessions d\'accueil et les parcours d\'adoption.';
+
+  @override
+  String get orgDocumentTemplatesEmpty =>
+      'Aucun modèle de document n\'est configuré pour le moment.';
+
+  @override
+  String get orgRolesPermissionsIntro =>
+      'Sélectionnez un membre, appliquez un préréglage, puis ajustez les permissions individuelles.';
+
+  @override
+  String get orgRolesPermissionsMemberLabel => 'Membre';
+
+  @override
+  String get orgRolesPermissionsSelectMember =>
+      'Sélectionnez un membre pour afficher les permissions.';
+
+  @override
+  String get orgRolesPermissionsEffectiveTitle => 'Permissions effectives';
+
+  @override
+  String get orgRolesPermissionsNone => 'Aucune permission accordée.';
+
+  @override
+  String get orgRolesPermissionsRoleDefault => 'Accordée par le rôle';
+
+  @override
+  String get orgRolesPermissionsOverrideActive => 'Dérogation individuelle';
+
+  @override
+  String get orgRolesPermissionsAuditTitle => 'Journal d\'audit';
+
+  @override
+  String get orgRolesPermissionsAuditEmpty =>
+      'Aucun événement d\'audit enregistré pour le moment.';
+
+  @override
+  String orgRolesPermissionsApplyBundle(String name) {
+    return 'Appliquer $name';
+  }
+
+  @override
+  String orgRolesPermissionsBundleApplied(String name) {
+    return 'Préréglage $name appliqué';
+  }
+
+  @override
+  String get orgPermissionManageFosters => 'Gérer les familles d\'accueil';
+
+  @override
+  String get orgPermissionManagePets => 'Gérer les animaux';
+
+  @override
+  String get orgPermissionManageMembers => 'Gérer les membres';
+
+  @override
+  String get orgPermissionManageDocumentTemplates =>
+      'Gérer les modèles de documents';
+
+  @override
+  String get orgPermissionManagePermissions => 'Gérer les permissions';
+
+  @override
+  String get orgPermissionBundleFosterAdmin => 'Admin accueil';
+
+  @override
+  String get orgPermissionBundlePetAdmin => 'Admin animaux';
+
+  @override
+  String get orgPermissionBundleTeamAdmin => 'Admin équipe';
 }

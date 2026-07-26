@@ -4286,4 +4286,97 @@ class AppLocalizationsEn extends AppLocalizations {
   String orgLegalDocumentsDownloaded(String title) {
     return 'Downloaded $title';
   }
+
+  @override
+  String get orgCustomisationsTitle => 'Organisation customisations';
+
+  @override
+  String get orgCustomisationsIntro =>
+      'Configure templates and delegate permissions for this organisation.';
+
+  @override
+  String get orgCustomisationsTemplatesTitle => 'Document templates';
+
+  @override
+  String get orgCustomisationsTemplatesSubtitle =>
+      'Session checklists and adoption milestone templates.';
+
+  @override
+  String get orgCustomisationsRolesTitle => 'Roles & permissions';
+
+  @override
+  String get orgCustomisationsRolesSubtitle =>
+      'Apply bundle presets, manage overrides, and review the audit log.';
+
+  @override
+  String get orgDocumentTemplatesIntro =>
+      'Templates used for fostering sessions and adoption journeys.';
+
+  @override
+  String get orgDocumentTemplatesEmpty =>
+      'No document templates are configured yet.';
+
+  @override
+  String get orgRolesPermissionsIntro =>
+      'Select a member, apply a bundle preset, then fine-tune individual permissions.';
+
+  @override
+  String get orgRolesPermissionsMemberLabel => 'Member';
+
+  @override
+  String get orgRolesPermissionsSelectMember =>
+      'Select a member to view permissions.';
+
+  @override
+  String get orgRolesPermissionsEffectiveTitle => 'Effective permissions';
+
+  @override
+  String get orgRolesPermissionsNone => 'No permissions granted.';
+
+  @override
+  String get orgRolesPermissionsRoleDefault => 'Granted by role';
+
+  @override
+  String get orgRolesPermissionsOverrideActive => 'Individual override';
+
+  @override
+  String get orgRolesPermissionsAuditTitle => 'Audit log';
+
+  @override
+  String get orgRolesPermissionsAuditEmpty => 'No audit events recorded yet.';
+
+  @override
+  String orgRolesPermissionsApplyBundle(String name) {
+    return 'Apply $name';
+  }
+
+  @override
+  String orgRolesPermissionsBundleApplied(String name) {
+    return '$name bundle applied';
+  }
+
+  @override
+  String get orgPermissionManageFosters => 'Manage fosters';
+
+  @override
+  String get orgPermissionManagePets => 'Manage pets';
+
+  @override
+  String get orgPermissionManageMembers => 'Manage members';
+
+  @override
+  String get orgPermissionManageDocumentTemplates =>
+      'Manage document templates';
+
+  @override
+  String get orgPermissionManagePermissions => 'Manage permissions';
+
+  @override
+  String get orgPermissionBundleFosterAdmin => 'Foster Admin';
+
+  @override
+  String get orgPermissionBundlePetAdmin => 'Pet Admin';
+
+  @override
+  String get orgPermissionBundleTeamAdmin => 'Team Admin';
 }

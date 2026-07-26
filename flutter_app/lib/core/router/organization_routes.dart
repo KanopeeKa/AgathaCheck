@@ -8,11 +8,14 @@ import '../../features/organization/presentation/screens/accept_connection_scree
 import '../../features/organization/presentation/screens/archived_pet_detail_screen.dart';
 import '../../features/organization/presentation/screens/archived_pets_screen.dart';
 import '../../features/organization/presentation/screens/organization_connections_screen.dart';
+import '../../features/organization/presentation/screens/organization_customisations_screen.dart';
 import '../../features/organization/presentation/screens/organization_dashboard_screen.dart';
+import '../../features/organization/presentation/screens/organization_document_templates_screen.dart';
 import '../../features/organization/presentation/screens/organization_form_screen.dart';
 import '../../features/organization/presentation/screens/organization_legal_documents_screen.dart';
 import '../../features/organization/presentation/screens/organization_list_screen.dart';
 import '../../features/organization/presentation/screens/organization_presentation_screen.dart';
+import '../../features/organization/presentation/screens/organization_roles_permissions_screen.dart';
 import '../../features/organization/presentation/screens/adoption_journey/adoption_journey_detail_screen.dart';
 import '../../features/organization/presentation/screens/adoption_screening/adoption_visits_screen.dart';
 import '../../features/organization/presentation/screens/adoption_screening/prospects_screen.dart';
@@ -103,6 +106,32 @@ List<RouteBase> _orgManagementChildRoutes() {
             final id = state.pathParameters['id']!;
             return OrganizationFormScreen(orgId: id);
           },
+        ),
+        GoRoute(
+          path: 'customisations',
+          name: 'organizationCustomisations',
+          builder: (context, state) {
+            final id = state.pathParameters['id']!;
+            return OrganizationCustomisationsScreen(orgId: id);
+          },
+          routes: [
+            GoRoute(
+              path: 'templates',
+              name: 'organizationDocumentTemplates',
+              builder: (context, state) {
+                final id = state.pathParameters['id']!;
+                return OrganizationDocumentTemplatesScreen(orgId: id);
+              },
+            ),
+            GoRoute(
+              path: 'roles',
+              name: 'organizationRolesPermissions',
+              builder: (context, state) {
+                final id = state.pathParameters['id']!;
+                return OrganizationRolesPermissionsScreen(orgId: id);
+              },
+            ),
+          ],
         ),
         GoRoute(
           path: 'admin-contacts',

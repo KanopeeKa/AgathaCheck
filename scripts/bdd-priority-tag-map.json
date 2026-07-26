@@ -269,5 +269,9 @@
   "organisation_permissions.feature": {
     "Super Admin applies the Pet Admin bundle preset": "P1",
     "Only Super Admin can manage permissions": "P1"
+  },
+  "organisation_customisations.feature": {
+    "Only Super Admin sees the customisations entry point": "P1",
+    "Audit log viewer shows a permission grant": "P1"
   }
 }
