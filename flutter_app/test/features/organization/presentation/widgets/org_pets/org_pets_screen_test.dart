@@ -20,12 +20,7 @@ class _OrgPetsScreenRepo extends RecordingOrganizationRepository {
     String token,
   ) async {
     return [
-      {
-        'id': 'pet-max',
-        'name': 'Max',
-        'species': 'Dog',
-        'passed_away': false,
-      },
+      {'id': 'pet-max', 'name': 'Max', 'species': 'Dog', 'passed_away': false},
     ];
   }
 
@@ -52,8 +47,12 @@ void main() {
       ProviderScope(
         overrides: [
           authProvider.overrideWith((ref) => FakeAuthNotifier()),
-          organizationRepositoryProvider.overrideWithValue(_OrgPetsScreenRepo()),
-          orgPetsTabProvider('org-1').overrideWith((ref) => OrgPetsTab.needAttention),
+          organizationRepositoryProvider.overrideWithValue(
+            _OrgPetsScreenRepo(),
+          ),
+          orgPetsTabProvider(
+            'org-1',
+          ).overrideWith((ref) => OrgPetsTab.needAttention),
         ],
         child: const MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
@@ -75,7 +74,9 @@ void main() {
       ProviderScope(
         overrides: [
           authProvider.overrideWith((ref) => FakeAuthNotifier()),
-          organizationRepositoryProvider.overrideWithValue(_OrgPetsScreenRepo()),
+          organizationRepositoryProvider.overrideWithValue(
+            _OrgPetsScreenRepo(),
+          ),
         ],
         child: const MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,

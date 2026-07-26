@@ -51,9 +51,7 @@ class OrganizationModel extends Organization {
       legalIdentifier2: json['legal_identifier_2']?.toString() ?? '',
       legalIdentifier3: json['legal_identifier_3']?.toString() ?? '',
       publicProfileMetadata: json['public_profile_metadata'] is Map
-          ? Map<String, dynamic>.from(
-              json['public_profile_metadata'] as Map,
-            )
+          ? Map<String, dynamic>.from(json['public_profile_metadata'] as Map)
           : const {},
       createdBy: json['created_by']?.toString(),
       role: json['role']?.toString() ?? 'member',
@@ -124,7 +122,8 @@ class OrganizationModel extends Organization {
       'photo_url': photoUrl,
       'logo_url': logoUrl,
       if (town.isNotEmpty) 'town': town,
-      if (administrativeArea.isNotEmpty) 'administrative_area': administrativeArea,
+      if (administrativeArea.isNotEmpty)
+        'administrative_area': administrativeArea,
       if (description.isNotEmpty) 'description': description,
       'is_discoverable': isDiscoverable,
       if (legalIdentifier1.isNotEmpty) 'legal_identifier_1': legalIdentifier1,

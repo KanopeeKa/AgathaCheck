@@ -55,17 +55,11 @@ void main() {
 
   group('canManageAdminContacts', () {
     test('admin role can manage admin contacts', () {
-      expect(
-        canManageAdminContacts(OrgMemberRole.admin, 'org-1'),
-        isTrue,
-      );
+      expect(canManageAdminContacts(OrgMemberRole.admin, 'org-1'), isTrue);
     });
 
     test('foster role cannot manage admin contacts', () {
-      expect(
-        canManageAdminContacts(OrgMemberRole.foster, 'org-1'),
-        isFalse,
-      );
+      expect(canManageAdminContacts(OrgMemberRole.foster, 'org-1'), isFalse);
     });
   });
 }

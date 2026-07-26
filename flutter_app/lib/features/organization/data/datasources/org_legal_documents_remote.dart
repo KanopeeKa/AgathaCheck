@@ -19,7 +19,9 @@ class OrgLegalDocumentsRemote {
       headers: {'Authorization': 'Bearer $token'},
     );
     if (response.statusCode != 200) {
-      throw Exception('Failed to load legal documents (${response.statusCode})');
+      throw Exception(
+        'Failed to load legal documents (${response.statusCode})',
+      );
     }
     final decoded = jsonDecode(response.body);
     if (decoded is! Map<String, dynamic>) return {};

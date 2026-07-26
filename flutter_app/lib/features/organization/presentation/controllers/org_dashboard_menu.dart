@@ -46,10 +46,10 @@ List<PopupMenuEntry<String>> buildOrgDashboardMenuItems({
   final xp = context.experienceColors;
   final colorScheme = Theme.of(context).colorScheme;
   final role = ref.watch(orgViewerRoleProvider(orgId));
-  final canManageMembers = role != null &&
-      hasPermission(role, orgId, 'manage_members');
-  final canManagePermissions = role != null &&
-      hasPermission(role, orgId, 'manage_permissions');
+  final canManageMembers =
+      role != null && hasPermission(role, orgId, 'manage_members');
+  final canManagePermissions =
+      role != null && hasPermission(role, orgId, 'manage_permissions');
 
   return [
     if (canManageMembers) ...[

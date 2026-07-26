@@ -96,8 +96,7 @@ class AdminContactSelfPrefsSection extends ConsumerWidget {
         l.adminContactsMessageChannelInApp,
       AdminMessageNotificationChannel.email =>
         l.adminContactsMessageChannelEmail,
-      AdminMessageNotificationChannel.both =>
-        l.adminContactsMessageChannelBoth,
+      AdminMessageNotificationChannel.both => l.adminContactsMessageChannelBoth,
     };
   }
 }

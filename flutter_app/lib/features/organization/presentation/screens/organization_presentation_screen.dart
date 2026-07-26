@@ -66,10 +66,7 @@ class OrganizationPresentationScreen extends ConsumerWidget {
             body: ListView(
               padding: const EdgeInsets.only(bottom: 24),
               children: [
-                OrgPresentationHero(
-                  org: org,
-                  localizedTypeLabel: typeLabel,
-                ),
+                OrgPresentationHero(org: org, localizedTypeLabel: typeLabel),
                 const SizedBox(height: 16),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16),

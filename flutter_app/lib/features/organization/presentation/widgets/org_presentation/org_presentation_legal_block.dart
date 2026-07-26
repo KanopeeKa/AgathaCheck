@@ -17,13 +17,22 @@ class OrgPresentationLegalBlock extends StatelessWidget {
   Widget build(BuildContext context) {
     final entries = <({String label, String value})>[];
     if (org.legalIdentifier1.isNotEmpty) {
-      entries.add((label: l.orgLegalIdentifierRna, value: org.legalIdentifier1));
+      entries.add((
+        label: l.orgLegalIdentifierRna,
+        value: org.legalIdentifier1,
+      ));
     }
     if (org.legalIdentifier2.isNotEmpty) {
-      entries.add((label: l.orgLegalIdentifierSiren, value: org.legalIdentifier2));
+      entries.add((
+        label: l.orgLegalIdentifierSiren,
+        value: org.legalIdentifier2,
+      ));
     }
     if (org.legalIdentifier3.isNotEmpty) {
-      entries.add((label: l.orgLegalIdentifierSiret, value: org.legalIdentifier3));
+      entries.add((
+        label: l.orgLegalIdentifierSiret,
+        value: org.legalIdentifier3,
+      ));
     }
 
     if (entries.isEmpty) return const SizedBox.shrink();

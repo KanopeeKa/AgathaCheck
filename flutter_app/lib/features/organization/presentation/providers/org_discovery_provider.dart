@@ -27,6 +27,7 @@ class OrgDiscoveryListNotifier
 }
 
 final orgDiscoveryListProvider =
-    AsyncNotifierProvider<OrgDiscoveryListNotifier, List<DiscoverableOrganization>>(
-      OrgDiscoveryListNotifier.new,
-    );
+    AsyncNotifierProvider<
+      OrgDiscoveryListNotifier,
+      List<DiscoverableOrganization>
+    >(OrgDiscoveryListNotifier.new);

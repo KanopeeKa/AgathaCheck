@@ -62,7 +62,8 @@ class LegalDocumentsDrawer extends ConsumerWidget {
                 loading: () => const Center(child: CircularProgressIndicator()),
                 error: (e, _) => _ErrorState(
                   message: '$e',
-                  onRetry: () => ref.invalidate(orgLegalDocumentsProvider(orgId)),
+                  onRetry: () =>
+                      ref.invalidate(orgLegalDocumentsProvider(orgId)),
                 ),
                 data: (grouped) {
                   if (grouped.isEmpty) {
@@ -89,10 +90,7 @@ class LegalDocumentsDrawer extends ConsumerWidget {
                         ),
                         const SizedBox(height: 8),
                         ...entry.value.map(
-                          (doc) => _DocumentTile(
-                            orgId: orgId,
-                            document: doc,
-                          ),
+                          (doc) => _DocumentTile(orgId: orgId, document: doc),
                         ),
                         const SizedBox(height: 16),
                       ],
@@ -135,7 +133,11 @@ class _DocumentTile extends ConsumerWidget {
       child: ListTile(
         title: Text(document.label),
         subtitle: document.description.isNotEmpty
-            ? Text(document.description, maxLines: 2, overflow: TextOverflow.ellipsis)
+            ? Text(
+                document.description,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              )
             : null,
         trailing: IconButton(
           key: Key('org_legal_download_${document.id}'),
@@ -165,14 +167,16 @@ class _DocumentTile extends ConsumerWidget {
       );
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l.orgLegalDocumentsDownloaded(document.label))),
+          SnackBar(
+            content: Text(l.orgLegalDocumentsDownloaded(document.label)),
+          ),
         );
       }
     } catch (e) {
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('$e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('$e')));
       }
     }
   }

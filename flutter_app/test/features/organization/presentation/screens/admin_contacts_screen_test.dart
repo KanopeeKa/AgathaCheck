@@ -88,9 +88,7 @@ void main() {
       ProviderScope(
         overrides: [
           authProvider.overrideWith((ref) => FakeAuthNotifier()),
-          organizationListProvider.overrideWith(
-            () => _OrgListNotifier(role),
-          ),
+          organizationListProvider.overrideWith(() => _OrgListNotifier(role)),
           organizationRepositoryProvider.overrideWithValue(
             _AdminContactsPeopleRepo(people),
           ),
@@ -105,26 +103,30 @@ void main() {
     await tester.pumpAndSettle();
   }
 
-  testWidgets('admin contacts screen pins self-card first then sorts by last name', (
-    tester,
-  ) async {
-    await pumpScreen(tester);
+  testWidgets(
+    'admin contacts screen pins self-card first then sorts by last name',
+    (tester) async {
+      await pumpScreen(tester);
 
-    expect(find.text('Admin contacts'), findsOneWidget);
-    expect(find.text('Your card'), findsOneWidget);
-    expect(find.text('Test User'), findsOneWidget);
+      expect(find.text('Admin contacts'), findsOneWidget);
+      expect(find.text('Your card'), findsOneWidget);
+      expect(find.text('Test User'), findsOneWidget);
 
-    final names = tester
-        .widgetList<Text>(find.byType(Text))
-        .map((w) => w.data)
-        .whereType<String>()
-        .where((t) => t.contains('Admin') || t == 'Test User')
-        .toList();
+      final names = tester
+          .widgetList<Text>(find.byType(Text))
+          .map((w) => w.data)
+          .whereType<String>()
+          .where((t) => t.contains('Admin') || t == 'Test User')
+          .toList();
 
-    expect(names.first, 'Test User');
-    expect(names.indexOf('Anna Admin'), lessThan(names.indexOf('Zara Admin')));
-    expect(find.text('Frank Foster'), findsNothing);
-  });
+      expect(names.first, 'Test User');
+      expect(
+        names.indexOf('Anna Admin'),
+        lessThan(names.indexOf('Zara Admin')),
+      );
+      expect(find.text('Frank Foster'), findsNothing);
+    },
+  );
 
   testWidgets('super admin sees add admin affordance', (tester) async {
     await pumpScreen(tester, role: 'super_admin');
@@ -133,7 +135,9 @@ void main() {
     expect(find.byKey(const Key('admin_contacts_add_button')), findsOneWidget);
   });
 
-  testWidgets('foster member does not see add admin affordance', (tester) async {
+  testWidgets('foster member does not see add admin affordance', (
+    tester,
+  ) async {
     await pumpScreen(tester, role: 'foster');
 
     expect(find.byKey(const Key('admin_contacts_add')), findsNothing);
@@ -143,8 +147,14 @@ void main() {
   testWidgets('self-card shows visibility preference controls', (tester) async {
     await pumpScreen(tester);
 
-    expect(find.byKey(const Key('admin_contact_phone_visibility')), findsOneWidget);
-    expect(find.byKey(const Key('admin_contact_message_channel')), findsOneWidget);
+    expect(
+      find.byKey(const Key('admin_contact_phone_visibility')),
+      findsOneWidget,
+    );
+    expect(
+      find.byKey(const Key('admin_contact_message_channel')),
+      findsOneWidget,
+    );
   });
 }
 

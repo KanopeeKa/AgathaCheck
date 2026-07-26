@@ -128,9 +128,9 @@ OrgPetAttentionReason? needAttentionReason(
   if (endDate == null) return null;
 
   final today = now ?? DateTime.now();
-  final daysUntilEnd = endDate.difference(
-    DateTime(today.year, today.month, today.day),
-  ).inDays;
+  final daysUntilEnd = endDate
+      .difference(DateTime(today.year, today.month, today.day))
+      .inDays;
   if (daysUntilEnd > _needAttentionHorizonDays || daysUntilEnd < 0) {
     return null;
   }

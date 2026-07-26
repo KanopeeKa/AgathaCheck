@@ -169,10 +169,7 @@ class AdminContactCard extends ConsumerWidget {
                           },
                           itemBuilder: (context) => [
                             if (canEditOther)
-                              PopupMenuItem(
-                                value: 'edit',
-                                child: Text(l.edit),
-                              ),
+                              PopupMenuItem(value: 'edit', child: Text(l.edit)),
                             if (canDeleteOther)
                               PopupMenuItem(
                                 value: 'delete',

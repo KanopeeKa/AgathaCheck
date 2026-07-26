@@ -22,7 +22,10 @@ class OrgPresentationHero extends ConsumerWidget {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
     final apiBaseUrl = ref.watch(apiBaseUrlProvider);
-    final coverUrl = resolveStaticAssetUrl(org.photoUrl, apiBaseUrl: apiBaseUrl);
+    final coverUrl = resolveStaticAssetUrl(
+      org.photoUrl,
+      apiBaseUrl: apiBaseUrl,
+    );
     final logoUrl = resolveStaticAssetUrl(org.logoUrl, apiBaseUrl: apiBaseUrl);
 
     return Semantics(
@@ -74,7 +77,10 @@ class OrgPresentationHero extends ConsumerWidget {
                 ),
                 const SizedBox(height: 8),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 4,
+                  ),
                   decoration: BoxDecoration(
                     color: org.type == OrganizationType.professional
                         ? AppTheme.orgBadgeBg

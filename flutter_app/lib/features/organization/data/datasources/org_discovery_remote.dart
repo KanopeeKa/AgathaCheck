@@ -14,12 +14,9 @@ class OrgDiscoveryRemote {
     int page = 1,
     int pageSize = 20,
   }) async {
-    final uri = Uri.parse('$baseUrl/api/organizations/discover').replace(
-      queryParameters: {
-        'page': '$page',
-        'page_size': '$pageSize',
-      },
-    );
+    final uri = Uri.parse(
+      '$baseUrl/api/organizations/discover',
+    ).replace(queryParameters: {'page': '$page', 'page_size': '$pageSize'});
     final response = await client.get(uri);
     if (response.statusCode >= 400) {
       throw OrgDiscoveryException(

@@ -7,7 +7,8 @@ import 'org_provider_list.dart';
 /// In-memory stub until org-scoped prefs persist on `notification_preferences`.
 ///
 /// Debt: wire to backend extension per program-contract §11/D31.
-class AdminContactSelfPrefsNotifier extends StateNotifier<AdminContactSelfPrefs> {
+class AdminContactSelfPrefsNotifier
+    extends StateNotifier<AdminContactSelfPrefs> {
   AdminContactSelfPrefsNotifier() : super(const AdminContactSelfPrefs());
 
   void updatePhoneVisibility(AdminPhoneVisibility value) {
@@ -19,10 +20,12 @@ class AdminContactSelfPrefsNotifier extends StateNotifier<AdminContactSelfPrefs>
   }
 }
 
-final adminContactSelfPrefsProvider = StateNotifierProvider.family<
-    AdminContactSelfPrefsNotifier,
-    AdminContactSelfPrefs,
-    String>((ref, orgId) => AdminContactSelfPrefsNotifier());
+final adminContactSelfPrefsProvider =
+    StateNotifierProvider.family<
+      AdminContactSelfPrefsNotifier,
+      AdminContactSelfPrefs,
+      String
+    >((ref, orgId) => AdminContactSelfPrefsNotifier());
 
 /// Resolved viewer role for permission gates on org routes.
 final orgViewerRoleProvider = Provider.family<OrgMemberRole?, String>((

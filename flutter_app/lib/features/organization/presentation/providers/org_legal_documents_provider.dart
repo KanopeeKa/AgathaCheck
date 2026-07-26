@@ -6,7 +6,9 @@ import '../../data/datasources/org_legal_documents_remote.dart';
 import '../../domain/entities/org_legal_document.dart';
 import 'org_provider_deps.dart';
 
-final orgLegalDocumentsRemoteProvider = Provider<OrgLegalDocumentsRemote>((ref) {
+final orgLegalDocumentsRemoteProvider = Provider<OrgLegalDocumentsRemote>((
+  ref,
+) {
   return OrgLegalDocumentsRemote(
     baseUrl: ref.watch(apiBaseUrlProvider),
     client: ref.watch(httpClientProvider),
@@ -24,7 +26,9 @@ class OrgLegalDocumentsNotifier
   }
 }
 
-final orgLegalDocumentsProvider = AsyncNotifierProvider.family<
-    OrgLegalDocumentsNotifier,
-    Map<String, List<OrgLegalDocument>>,
-    String>(OrgLegalDocumentsNotifier.new);
+final orgLegalDocumentsProvider =
+    AsyncNotifierProvider.family<
+      OrgLegalDocumentsNotifier,
+      Map<String, List<OrgLegalDocument>>,
+      String
+    >(OrgLegalDocumentsNotifier.new);

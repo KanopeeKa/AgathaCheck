@@ -16,7 +16,8 @@ final orgPetsFilterProvider = StateProvider.family<OrgPetsFilterState, String>(
   (ref, orgId) => const OrgPetsFilterState(),
 );
 
-class OrgPlacementsNotifier extends FamilyAsyncNotifier<List<FosterPlacement>, String> {
+class OrgPlacementsNotifier
+    extends FamilyAsyncNotifier<List<FosterPlacement>, String> {
   @override
   Future<List<FosterPlacement>> build(String orgId) async {
     final token = ref.watch(orgTokenProvider);
@@ -27,9 +28,11 @@ class OrgPlacementsNotifier extends FamilyAsyncNotifier<List<FosterPlacement>, S
 }
 
 final orgPlacementsProvider =
-    AsyncNotifierProvider.family<OrgPlacementsNotifier, List<FosterPlacement>, String>(
-      OrgPlacementsNotifier.new,
-    );
+    AsyncNotifierProvider.family<
+      OrgPlacementsNotifier,
+      List<FosterPlacement>,
+      String
+    >(OrgPlacementsNotifier.new);
 
 class OrgPetsScreenData {
   const OrgPetsScreenData({

@@ -36,7 +36,9 @@ Map<String, List<OrgLegalDocument>> parseGroupedLegalDocuments(
     if (items is! List) continue;
     grouped[entry.key] = items
         .whereType<Map>()
-        .map((item) => OrgLegalDocument.fromJson(Map<String, dynamic>.from(item)))
+        .map(
+          (item) => OrgLegalDocument.fromJson(Map<String, dynamic>.from(item)),
+        )
         .toList();
   }
   return grouped;
