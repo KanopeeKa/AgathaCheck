@@ -473,13 +473,11 @@ export async function logOutFromApp(page: Page): Promise<void> {
 
   const currentPath = flutterRoutePath(page.url());
   if (currentPath !== '/account') {
-    if (await isExperienceShellVisible(page)) {
-      await openAccountFromDrawer(page);
-    } else {
-      await page.goto(flutterGotoUrl('/account'));
-      await refreshFlutterAccessibility(page);
-      await waitForFlutterRoutePattern(page, /\/account(?:\?|$)/, 30_000);
-    }
+    // Direct hash-route navigation — same pattern as MyDetailsPage.openFromUserMenu.
+    // Drawer Account is bottom-pinned and often off-screen in Playwright semantics.
+    await page.goto(flutterGotoUrl('/account'));
+    await refreshFlutterAccessibility(page);
+    await waitForFlutterRoutePattern(page, /\/account(?:\?|$)/, 30_000);
   }
 
   if (await clickLogoutEntry()) return;
