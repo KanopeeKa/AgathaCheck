@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../../core/theme/app_color_tokens.dart';
 import '../../../../core/theme/experience_colors.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../domain/entities/drawer_menu_group.dart';
 import '../../domain/entities/drawer_menu_item.dart';
 
@@ -49,11 +50,13 @@ class ExperienceDrawerMenuItem extends StatelessWidget {
       );
     }
 
+    final l = AppLocalizations.of(context)!;
+
     return Semantics(
       button: true,
       selected: isActive,
       label: item.hasBadge
-          ? '${item.label}, ${item.badgeCount} unread'
+          ? l.drawerItemUnreadSemantics(item.label, item.badgeCount)
           : item.label,
       child: Material(
         color: isActive ? AppColorTokens.surfaceAlt : Colors.transparent,

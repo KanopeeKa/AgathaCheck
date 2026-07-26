@@ -1359,6 +1359,17 @@
   "drawerGuardian": "Gardien",
   "drawerOrganisation": "Organisation",
   "drawerAccount": "Compte",
+  "drawerItemUnreadSemantics": "{label}, {count} non lus",
+  "@drawerItemUnreadSemantics": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      },
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "notificationsBellTooltip": "Ouvrir les notifications",
   "sectionDrawerTooltip": "Ouvrir le menu",
   "failedToLoadNotifications": "Échec du chargement des notifications : {error}",

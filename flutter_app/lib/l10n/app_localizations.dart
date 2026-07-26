@@ -7545,6 +7545,12 @@ abstract class AppLocalizations {
   /// **'Account'**
   String get drawerAccount;
 
+  /// No description provided for @drawerItemUnreadSemantics.
+  ///
+  /// In en, this message translates to:
+  /// **'{label}, {count} unread'**
+  String drawerItemUnreadSemantics(String label, int count);
+
   /// No description provided for @notificationsBellTooltip.
   ///
   /// In en, this message translates to:
