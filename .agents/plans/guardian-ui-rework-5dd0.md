@@ -55,16 +55,16 @@ Deliver the guardian-facing UI rework from the 2026-07-26 brief: global navigati
 
 ```yaml
 autonomy: active
-current_phase: 4
+current_phase: 5
 last_completed_phase: 3
 halt_reason: null
-next_action: "continue phase 4 on branch cursor/guardian-ui-vet-refresh-5dd0"
+next_action: "continue phase 5 on branch cursor/guardian-ui-events-5dd0"
 artifact_ref:
-  branch: cursor/guardian-ui-vet-refresh-5dd0
+  branch: cursor/guardian-ui-events-5dd0
   plan_path: .agents/plans/guardian-ui-rework-5dd0.md
-  plan_commit: d771df9225bc55607e3b5f4c06d93993a652afab
+  plan_commit: 437583dec45385888a0e040c294a761d90c66461
   snapshot_path: .agents/plans/guardian-ui-rework-5dd0.snapshot.json
-  snapshot_commit: d771df9225bc55607e3b5f4c06d93993a652afab
+  snapshot_commit: 437583dec45385888a0e040c294a761d90c66461
 open_prs: []
 merge_commits: {}
 debt_issue_refs: []

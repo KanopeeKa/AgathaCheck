@@ -7,9 +7,8 @@ import '../../../../../l10n/app_localizations.dart';
 import '../../../../health_tracking/presentation/providers/health_providers.dart';
 import '../../../../pet_profile/domain/entities/pet.dart';
 import '../../../../pet_profile/presentation/widgets/pet_list/due_event_row.dart';
-import 'add_event_type_picker_sheet.dart';
 
-/// Upcoming Pet Events dashboard section — top 5 due items preview.
+/// Due and Overdue events dashboard section — top 5 items within remind window.
 class GuardianUpcomingEventsSection extends ConsumerWidget {
   const GuardianUpcomingEventsSection({super.key, required this.pets});
 
@@ -23,11 +22,7 @@ class GuardianUpcomingEventsSection extends ConsumerWidget {
     final entriesAsync = ref.watch(healthEntriesNotifierProvider);
 
     return DashboardSection(
-      title: l.upcomingPetEvents,
-      headerAction: TextButton(
-        onPressed: () => showAddEventTypePickerSheet(context, pets: pets),
-        child: Text(l.addAnEvent),
-      ),
+      title: l.dueAndOverdue,
       previewBuilder: (ctx) {
         return entriesAsync.when(
           loading: () => const SizedBox(
@@ -42,20 +37,7 @@ class GuardianUpcomingEventsSection extends ConsumerWidget {
           ),
           data: (entries) {
             final petIds = pets.map((p) => p.id).toSet();
-            final dueEntries =
-                entries
-                    .where(
-                      (e) =>
-                          petIds.contains(e.petId) &&
-                          !e.isCompleted &&
-                          (e.isOverdue || e.isDueToday),
-                    )
-                    .toList()
-                  ..sort((a, b) {
-                    final ad = a.nextDueDate ?? DateTime(2100);
-                    final bd = b.nextDueDate ?? DateTime(2100);
-                    return ad.compareTo(bd);
-                  });
+            final dueEntries = guardianDueEntries(entries, petIds);
 
             if (dueEntries.isEmpty) {
               return Text(

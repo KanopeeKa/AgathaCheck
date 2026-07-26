@@ -3917,6 +3917,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get upcomingPetEvents => 'Upcoming Pet Events';
 
   @override
+  String get dueAndOverdue => 'Due and Overdue';
+
+  @override
   String get allEvents => 'All Events';
 
   @override

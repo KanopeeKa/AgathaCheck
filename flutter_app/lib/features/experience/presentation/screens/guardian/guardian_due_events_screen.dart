@@ -3,12 +3,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../../l10n/app_localizations.dart';
 import '../../../../health_tracking/presentation/providers/health_providers.dart';
+import '../../../../health_tracking/presentation/widgets/guardian_add_event_picker_sheet.dart';
 import '../../../../pet_profile/presentation/controllers/pet_list_controller.dart';
 import '../../../../pet_profile/presentation/providers/pet_providers.dart';
 import '../../../../pet_profile/presentation/widgets/pet_list/due_event_row.dart';
-import 'add_event_type_picker_sheet.dart';
 
-/// Guardian events screen (`/g/events`) — due health/weight/other items (D17).
+/// Guardian events screen (`/g/events`) — due and overdue health/other items.
 class GuardianDueEventsScreen extends ConsumerWidget {
   const GuardianDueEventsScreen({super.key});
 
@@ -31,21 +31,7 @@ class GuardianDueEventsScreen extends ConsumerWidget {
           error: (e, _) => Center(child: Text('$e')),
           data: (entries) {
             final petIds = shellPets.map((p) => p.id).toSet();
-            final dueEntries =
-                entries
-                    .where(
-                      (e) =>
-                          petIds.contains(e.petId) &&
-                          !e.isCompleted &&
-                          (e.isOverdue || e.isDueToday),
-                    )
-                    .toList()
-                  ..sort((a, b) {
-                    final ad = a.nextDueDate ?? DateTime(2100);
-                    final bd = b.nextDueDate ?? DateTime(2100);
-                    return ad.compareTo(bd);
-                  });
-
+            final dueEntries = guardianDueEntries(entries, petIds);
             final petMap = {for (final p in shellPets) p.id: p};
 
             return Column(
@@ -57,12 +43,12 @@ class GuardianDueEventsScreen extends ConsumerWidget {
                     children: [
                       Expanded(
                         child: Text(
-                          l.eventsNavLabel,
+                          l.dueAndOverdue,
                           style: theme.textTheme.headlineSmall,
                         ),
                       ),
                       TextButton.icon(
-                        onPressed: () => showAddEventTypePickerSheet(
+                        onPressed: () => showGuardianAddEventPickerSheet(
                           context,
                           pets: shellPets,
                         ),
