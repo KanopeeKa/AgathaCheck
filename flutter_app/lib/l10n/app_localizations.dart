@@ -7053,6 +7053,12 @@ abstract class AppLocalizations {
   /// **'My vets'**
   String get myVets;
 
+  /// No description provided for @guardianDashboardTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Guardian dashboard'**
+  String get guardianDashboardTitle;
+
   /// No description provided for @upcomingPetEvents.
   ///
   /// In en, this message translates to:
