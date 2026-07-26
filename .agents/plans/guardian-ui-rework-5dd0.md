@@ -60,12 +60,12 @@ last_completed_phase: 2
 halt_reason: null
 next_action: "continue phase 3 on branch cursor/guardian-ui-pet-tiles-5dd0"
 artifact_ref:
-  branch: cursor/guardian-ui-rework-integration-5dd0
+  branch: cursor/guardian-ui-pet-tiles-5dd0
   plan_path: .agents/plans/guardian-ui-rework-5dd0.md
-  plan_commit: eb90f9339b1ba945e1ceca7e0d4d3f400dd31719
+  plan_commit: 297ac126963fe96cc4dd2a9874f17c69762aaa1d
   snapshot_path: .agents/plans/guardian-ui-rework-5dd0.snapshot.json
-  snapshot_commit: eb90f9339b1ba945e1ceca7e0d4d3f400dd31719
-open_prs: []
+  snapshot_commit: 297ac126963fe96cc4dd2a9874f17c69762aaa1d
+open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/402"]
 merge_commits: {}
 debt_issue_refs: []
 ```
