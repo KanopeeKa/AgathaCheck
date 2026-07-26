@@ -117,7 +117,7 @@ class _PanelHeader extends StatelessWidget {
           ),
           IconButton(
             icon: const Icon(Icons.close),
-            tooltip: l.goBack,
+            tooltip: l.close,
             onPressed: () => Navigator.of(context).pop(),
           ),
         ],
@@ -328,7 +328,7 @@ class _ErrorView extends StatelessWidget {
           Icon(Icons.error_outline, size: 48, color: theme.colorScheme.error),
           const SizedBox(height: 12),
           Text(
-            'Failed to load notifications',
+            l.failedToLoadNotifications(error.toString()),
             style: theme.textTheme.bodyMedium,
           ),
           const SizedBox(height: 8),

@@ -1255,6 +1255,8 @@
   "drawerOrganisation": "Organisation",
   "drawerAccount": "Compte",
   "notificationsBellTooltip": "Ouvrir les notifications",
+  "sectionDrawerTooltip": "Ouvrir le menu",
+  "failedToLoadNotifications": "Échec du chargement des notifications : {error}",
   "notificationKindAll": "Tout",
   "notificationKindCare": "Soins",
   "notificationKindOrganisation": "Organisation",

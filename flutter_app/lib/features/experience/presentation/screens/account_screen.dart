@@ -31,7 +31,7 @@ class AccountScreen extends ConsumerWidget {
           builder: (ctx) => IconButton(
             key: const Key('account_hamburger'),
             icon: const Icon(Icons.menu),
-            tooltip: l.settings,
+            tooltip: l.sectionDrawerTooltip,
             onPressed: () => Scaffold.of(ctx).openDrawer(),
           ),
         ),

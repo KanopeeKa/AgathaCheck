@@ -29,11 +29,13 @@ class ExperienceSectionDrawer extends ConsumerWidget {
     final displayName = auth.user?.firstName?.isNotEmpty == true
         ? auth.user!.firstName!
         : (auth.user?.email ?? '');
-    final initial =
-        (auth.user?.firstName?.isNotEmpty == true
-                ? auth.user!.firstName![0]
-                : auth.user?.email[0] ?? 'U')
-            .toUpperCase();
+    final firstName = auth.user?.firstName;
+    final email = auth.user?.email;
+    final initial = firstName != null && firstName.isNotEmpty
+        ? firstName[0].toUpperCase()
+        : email != null && email.isNotEmpty
+        ? email[0].toUpperCase()
+        : 'U';
 
     return Drawer(
       child: SafeArea(

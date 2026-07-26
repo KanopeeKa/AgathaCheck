@@ -3919,6 +3919,14 @@ class AppLocalizationsFr extends AppLocalizations {
   String get notificationsBellTooltip => 'Ouvrir les notifications';
 
   @override
+  String get sectionDrawerTooltip => 'Ouvrir le menu';
+
+  @override
+  String failedToLoadNotifications(String error) {
+    return 'Échec du chargement des notifications : $error';
+  }
+
+  @override
   String get notificationKindAll => 'Tout';
 
   @override

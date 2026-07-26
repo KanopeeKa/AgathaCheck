@@ -49,10 +49,10 @@ export class NotificationsPage {
       await this.expectLoaded();
       return;
     }
-    // Last resort: navigate directly to the deprecated route (it now redirects)
-    await this.page.goto(flutterGotoUrl('/g/notifications'));
+    // Last resort: guardian home + bell (deprecated /g/notifications redirects away)
+    await this.page.goto(flutterGotoUrl('/g/home'));
     await refreshFlutterAccessibility(this.page);
-    await this.expectLoaded();
+    await this.openPanelViaBell();
   }
 
   /** Wait for the notification panel slide-over to be visible. */

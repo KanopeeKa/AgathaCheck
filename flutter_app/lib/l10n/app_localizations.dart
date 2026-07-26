@@ -6999,6 +6999,18 @@ abstract class AppLocalizations {
   /// **'Open notifications'**
   String get notificationsBellTooltip;
 
+  /// No description provided for @sectionDrawerTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Open menu'**
+  String get sectionDrawerTooltip;
+
+  /// No description provided for @failedToLoadNotifications.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load notifications: {error}'**
+  String failedToLoadNotifications(String error);
+
   /// No description provided for @notificationKindAll.
   ///
   /// In en, this message translates to:
