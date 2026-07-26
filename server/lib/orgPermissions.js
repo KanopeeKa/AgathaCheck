@@ -1,10 +1,12 @@
+import { v4 as uuidv4 } from 'uuid';
 import {
   ORG_ROLE_ADMIN,
   ORG_ROLE_SUPER_ADMIN,
+  normaliseRole,
 } from './orgRoles.js';
 
 /**
- * G0 §7 permission keys — default grants until Phase 3 organization_permissions table.
+ * G0 §7 permission keys — default role grants unioned with organization_permissions rows.
  * Each value is the set of org roles that receive the key by default.
  */
 export const G0_PERMISSION_DEFAULTS = Object.freeze({
@@ -19,26 +21,160 @@ export const G0_PERMISSION_DEFAULTS = Object.freeze({
   start_adoption_journey: Object.freeze([ORG_ROLE_SUPER_ADMIN, ORG_ROLE_ADMIN]),
   confirm_return_to_shelter: Object.freeze([ORG_ROLE_SUPER_ADMIN, ORG_ROLE_ADMIN]),
   manage_document_templates: Object.freeze([ORG_ROLE_SUPER_ADMIN]),
+  manage_pets: Object.freeze([ORG_ROLE_SUPER_ADMIN, ORG_ROLE_ADMIN]),
+  transfer_pet_ownership: Object.freeze([ORG_ROLE_SUPER_ADMIN, ORG_ROLE_ADMIN]),
+  manage_admin_contacts: Object.freeze([ORG_ROLE_SUPER_ADMIN, ORG_ROLE_ADMIN]),
+  manage_members: Object.freeze([ORG_ROLE_SUPER_ADMIN, ORG_ROLE_ADMIN]),
+  manage_permissions: Object.freeze([ORG_ROLE_SUPER_ADMIN]),
 });
 
-/** Bundle preset names for Phase 3 — constants only in Phase 0. */
 export const PERMISSION_BUNDLE_FOSTER_ADMIN = 'foster_admin';
 export const PERMISSION_BUNDLE_PET_ADMIN = 'pet_admin';
 export const PERMISSION_BUNDLE_TEAM_ADMIN = 'team_admin';
 
-/**
- * Returns whether [role] has [permissionKey] under G0 default grants.
- * [org] is reserved for Phase 3 per-org overrides — ignored in Phase 0.
- */
-export function hasPermission(role, org, permissionKey) {
-  void org;
-  const defaults = G0_PERMISSION_DEFAULTS[permissionKey];
-  if (!defaults) return false;
-  return defaults.includes(role);
+/** @type {Readonly<Record<string, readonly string[]>>} */
+export const PERMISSION_BUNDLE_KEYS = Object.freeze({
+  [PERMISSION_BUNDLE_FOSTER_ADMIN]: Object.freeze([
+    'manage_fosters',
+    'review_foster_onboarding',
+    'contact_fosters',
+    'confirm_foster_competencies',
+    'home_visits',
+  ]),
+  [PERMISSION_BUNDLE_PET_ADMIN]: Object.freeze([
+    'manage_pets',
+    'manage_fostering_sessions',
+    'transfer_pet_ownership',
+  ]),
+  [PERMISSION_BUNDLE_TEAM_ADMIN]: Object.freeze([
+    'manage_admin_contacts',
+    'manage_members',
+  ]),
+});
+
+const ACTIVE_PERMISSIONS_SQL = `
+  SELECT permission_key
+  FROM organization_permissions
+  WHERE organization_id = $1
+    AND user_id = $2
+    AND revoked_at IS NULL
+`;
+
+const MEMBERSHIP_ROLE_SQL = `
+  SELECT role
+  FROM organization_users
+  WHERE organization_id = $1
+    AND user_id = $2
+  LIMIT 1
+`;
+
+export function bundleSource(presetName) {
+  return `bundle:${presetName}`;
 }
 
-export function permissionKeysForRole(role) {
-  return Object.entries(G0_PERMISSION_DEFAULTS)
-    .filter(([, roles]) => roles.includes(role))
+export function hasRoleDefaultPermission(role, permissionKey) {
+  const normalised = normaliseRole(role);
+  const defaults = G0_PERMISSION_DEFAULTS[permissionKey];
+  if (!defaults) return false;
+  return defaults.includes(normalised);
+}
+
+export function hasEffectivePermission(role, activeOverrideKeys, permissionKey) {
+  if (activeOverrideKeys.includes(permissionKey)) return true;
+  return hasRoleDefaultPermission(role, permissionKey);
+}
+
+/**
+ * Returns whether [role] has [permissionKey] under role defaults union optional overrides.
+ * [org] may be null or `{ activePermissionKeys: string[] }`.
+ */
+export function hasPermission(role, org, permissionKey) {
+  const overrideKeys = org?.activePermissionKeys ?? [];
+  return hasEffectivePermission(role, overrideKeys, permissionKey);
+}
+
+export function permissionKeysForRole(role, activeOverrideKeys = []) {
+  const defaults = Object.entries(G0_PERMISSION_DEFAULTS)
+    .filter(([, roles]) => roles.includes(normaliseRole(role)))
     .map(([key]) => key);
+  return [...new Set([...defaults, ...activeOverrideKeys])];
+}
+
+export async function loadActivePermissionKeys(pool, organizationId, userId) {
+  const { rows } = await pool.query(ACTIVE_PERMISSIONS_SQL, [organizationId, userId]);
+  return rows.map((row) => row.permission_key);
+}
+
+export async function loadMembershipRole(pool, organizationId, userId) {
+  const { rows } = await pool.query(MEMBERSHIP_ROLE_SQL, [organizationId, userId]);
+  return rows[0]?.role ?? null;
+}
+
+/** Route helper: effective permission for a user in an organisation. */
+export async function hasPermissionForUser(pool, userId, organizationId, permissionKey) {
+  const role = await loadMembershipRole(pool, organizationId, userId);
+  if (!role || role.startsWith('pending_')) return false;
+
+  const overrideKeys = await loadActivePermissionKeys(pool, organizationId, userId);
+  return hasEffectivePermission(role, overrideKeys, permissionKey);
+}
+
+export async function grantPermission(
+  pool,
+  { organizationId, userId, permissionKey, grantedBy, source = 'individual' }
+) {
+  const id = uuidv4();
+  const { rowCount } = await pool.query(
+    `INSERT INTO organization_permissions (
+      id, organization_id, user_id, permission_key, source, granted_by
+    )
+    SELECT $1, $2, $3, $4, $5, $6
+    WHERE NOT EXISTS (
+      SELECT 1
+      FROM organization_permissions
+      WHERE organization_id = $2
+        AND user_id = $3
+        AND permission_key = $4
+        AND revoked_at IS NULL
+    )`,
+    [id, organizationId, userId, permissionKey, source, grantedBy]
+  );
+  return rowCount > 0 ? id : null;
+}
+
+export async function revokePermission(
+  pool,
+  { organizationId, userId, permissionKey, revokedBy }
+) {
+  const { rowCount } = await pool.query(
+    `UPDATE organization_permissions
+     SET revoked_at = NOW(), revoked_by = $4
+     WHERE organization_id = $1
+       AND user_id = $2
+       AND permission_key = $3
+       AND revoked_at IS NULL`,
+    [organizationId, userId, permissionKey, revokedBy]
+  );
+  return rowCount > 0;
+}
+
+export async function applyBundlePreset(
+  pool,
+  { organizationId, userId, presetName, grantedBy }
+) {
+  const keys = PERMISSION_BUNDLE_KEYS[presetName];
+  if (!keys) {
+    throw new Error(`Unknown permission bundle preset: ${presetName}`);
+  }
+  const source = bundleSource(presetName);
+  for (const permissionKey of keys) {
+    await grantPermission(pool, {
+      organizationId,
+      userId,
+      permissionKey,
+      grantedBy,
+      source,
+    });
+  }
+  return keys.length;
 }
