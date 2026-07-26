@@ -1,0 +1,285 @@
+{
+  "schema_version": 1,
+  "plan_id": "experience-program-36bd",
+  "approved_at": "2026-07-25T23:41:00Z",
+  "approved_by": "user chat 2026-07-25 (standing grant: babysit+ #377, execute-plan R–5)",
+  "approved_until": "2026-07-27T23:41:00Z",
+  "content_hash": "sha256:51373d71ca7c49358ec7446e95e03437e758d220a3ff35c385d6ba2b467ad27b",
+  "autonomy": "active",
+  "default_merge_mode": "auto",
+  "base_branch": "main",
+  "control_issue": 379,
+  "artifact_branch_policy": "phase-branch",
+  "phases": [
+    {
+      "id": "R",
+      "title": "Reconciliation — docs + legacy BDD tags",
+      "branch": "cursor/experience-program-plan-36bd",
+      "allowed_paths": [
+        "docs/experience-program/**",
+        "docs/design/navigation-v2.md",
+        "docs/architecture/index.md",
+        "flutter_app/test/bdd/features/experience_navigation.feature",
+        "flutter_app/test/bdd/features/organisation_pet_timeline.feature",
+        ".agents/memory/MEMORY.md"
+      ],
+      "forbidden_paths": [
+        "flutter_app/lib/**",
+        "server/**",
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "governance",
+      "status": "merged",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/377",
+      "pr_head_sha": "8f5c46e",
+      "merge_commit": "15bc8a3da7b257c3ee68e9085edd3b1108b4751c",
+      "debt_issue_refs": []
+    },
+    {
+      "id": "0",
+      "title": "Foundation — notification schema, shared widgets, permission helpers",
+      "branch": "cursor/experience-foundation-36bd",
+      "allowed_paths": [
+        "docs/experience-program/**",
+        "db/migrations/**",
+        "db/schema/canonical.sql",
+        "server/routes/notifications/**",
+        "server/lib/**",
+        "server/test/**",
+        "flutter_app/lib/features/notifications/**",
+        "flutter_app/lib/core/widgets/**",
+        "flutter_app/lib/features/experience/presentation/screens/experience_settings_screen.dart",
+        "flutter_app/test/features/notifications/**",
+        "flutter_app/test/features/experience/**",
+        "flutter_app/test/core/**",
+        ".agents/plans/experience-program-36bd.md",
+        ".agents/plans/experience-program-36bd.snapshot.json"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "in_progress",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/380",
+      "pr_head_sha": "32ebc91"
+    },
+    {
+      "id": "1",
+      "title": "Shell & navigation reversal",
+      "branch": "cursor/experience-nav-shell-36bd",
+      "allowed_paths": [
+        "docs/experience-program/**",
+        "docs/design/**",
+        "flutter_app/lib/features/experience/**",
+        "flutter_app/lib/features/notifications/presentation/**",
+        "flutter_app/lib/core/router/**",
+        "flutter_app/lib/l10n/**",
+        "flutter_app/test/features/experience/**",
+        "flutter_app/test/features/notifications/**",
+        "flutter_app/test/bdd/features/experience_navigation.feature",
+        "flutter_app/test/bdd/features/notifications.feature",
+        "e2e/playwright/pages/experience.page.ts",
+        "e2e/playwright/pages/notifications.page.ts",
+        "e2e/playwright/tests/experience.navigation.spec.ts",
+        "e2e/playwright/tests/notifications.spec.ts",
+        ".agents/plans/experience-program-36bd.md",
+        ".agents/plans/experience-program-36bd.snapshot.json"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "bdd-journey",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "2",
+      "title": "Guardian journey — dashboard + pet timeline",
+      "branch": "cursor/experience-guardian-journey-36bd",
+      "allowed_paths": [
+        "docs/experience-program/**",
+        "flutter_app/lib/features/experience/presentation/screens/guardian/**",
+        "flutter_app/lib/features/pet_profile/**",
+        "flutter_app/lib/features/health_tracking/**",
+        "flutter_app/lib/features/weight_tracking/**",
+        "flutter_app/lib/features/vet/**",
+        "server/routes/pets/**",
+        "server/routes/timeline/**",
+        "server/test/**",
+        "flutter_app/test/**",
+        "flutter_app/test/bdd/features/guardian_dashboard.feature",
+        "flutter_app/test/bdd/features/pet_timeline.feature",
+        "flutter_app/test/bdd/features/organisation_pet_timeline.feature",
+        "e2e/playwright/tests/guardian*.spec.ts",
+        "e2e/playwright/pages/**",
+        ".agents/plans/experience-program-36bd.md",
+        ".agents/plans/experience-program-36bd.snapshot.json"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "bdd-journey",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "3",
+      "title": "Organisation presentation & access control",
+      "branch": "cursor/experience-org-presentation-36bd",
+      "allowed_paths": [
+        "docs/experience-program/**",
+        "docs/refactoring-log.md",
+        "db/migrations/**",
+        "db/schema/canonical.sql",
+        "server/routes/organizations/**",
+        "server/lib/orgRoles.js",
+        "server/test/**",
+        "flutter_app/lib/features/organization/**",
+        "flutter_app/test/features/organization/**",
+        "flutter_app/test/bdd/features/organisation*.feature",
+        "e2e/playwright/tests/organisation*.spec.ts",
+        "e2e/playwright/pages/organization*.page.ts",
+        ".agents/plans/experience-program-36bd.md",
+        ".agents/plans/experience-program-36bd.snapshot.json"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split"
+      ],
+      "spawn_allowed": true,
+      "spawn_config": {
+        "integration_branch": "cursor/sprint-exp-org-presentation-integration-36bd",
+        "ownership_ref": "docs/refactoring-log.md#experience-program-phase-3"
+      },
+      "merge_method": "squash",
+      "exit_checklist": "bdd-journey",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "4",
+      "title": "Foster & pet operations extensions",
+      "branch": "cursor/experience-foster-pet-ops-36bd",
+      "allowed_paths": [
+        "docs/experience-program/**",
+        "server/routes/organizations/**",
+        "server/test/**",
+        "flutter_app/lib/features/organization/**",
+        "flutter_app/test/features/organization/**",
+        "flutter_app/test/bdd/features/**",
+        "e2e/playwright/tests/**",
+        ".agents/plans/experience-program-36bd.md",
+        ".agents/plans/experience-program-36bd.snapshot.json"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "5",
+      "title": "Organisation customisations",
+      "branch": "cursor/experience-org-customisations-36bd",
+      "allowed_paths": [
+        "docs/experience-program/**",
+        "flutter_app/lib/features/organization/**",
+        "server/routes/organizations/**",
+        "server/test/**",
+        "flutter_app/test/features/organization/**",
+        "flutter_app/test/bdd/features/**",
+        "e2e/playwright/tests/organisation*.spec.ts",
+        ".agents/plans/experience-program-36bd.md",
+        ".agents/plans/experience-program-36bd.snapshot.json"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "flutter-screen-split",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null,
+      "debt_issue_refs": []
+    }
+  ]
+}

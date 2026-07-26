@@ -21,6 +21,9 @@ function buildMockPool(overrides = {}) {
             title: 'Reminder',
             message: 'Time for checkup',
             type: 'health',
+            kind: 'care',
+            priority: 'normal',
+            resolved_at: null,
             is_read: false,
             read: false,
             created_at: new Date('2024-01-01T00:00:00Z'),
@@ -143,6 +146,9 @@ describe('Notifications API', () => {
       expect(n).toHaveProperty('title', 'Reminder');
       expect(n).toHaveProperty('message', 'Time for checkup');
       expect(n).toHaveProperty('type', 'health');
+      expect(n).toHaveProperty('kind', 'care');
+      expect(n).toHaveProperty('priority', 'normal');
+      expect(n).toHaveProperty('resolved_at', null);
       expect(n).toHaveProperty('is_read', false);
       expect(n).toHaveProperty('created_at');
     });

@@ -1,4 +1,5 @@
 import '../../domain/entities/app_notification.dart';
+import '../../domain/entities/notification_kind.dart';
 
 class NotificationModel extends AppNotification {
   const NotificationModel({
@@ -11,6 +12,9 @@ class NotificationModel extends AppNotification {
     required super.title,
     required super.message,
     required super.type,
+    super.kind,
+    super.priority,
+    super.resolvedAt,
     required super.isRead,
     required super.createdAt,
   });
@@ -26,6 +30,15 @@ class NotificationModel extends AppNotification {
       title: json['title']?.toString() ?? '',
       message: json['message']?.toString() ?? '',
       type: _parseType(json['type']?.toString() ?? 'general'),
+      kind: json['kind'] != null
+          ? NotificationKind.fromWire(json['kind']?.toString())
+          : defaultKindForNotificationType(
+              _parseType(json['type']?.toString() ?? 'general'),
+            ),
+      priority: NotificationPriority.fromWire(json['priority']?.toString()),
+      resolvedAt: json['resolved_at'] != null
+          ? DateTime.tryParse(json['resolved_at'].toString())
+          : null,
       isRead: json['is_read'] == true,
       createdAt:
           DateTime.tryParse(json['created_at']?.toString() ?? '') ??
@@ -44,6 +57,9 @@ class NotificationModel extends AppNotification {
       'title': title,
       'message': message,
       'type': typeToApi(type),
+      'kind': kind.wireValue,
+      'priority': priority.wireValue,
+      'resolved_at': resolvedAt?.toIso8601String(),
       'is_read': isRead,
       'created_at': createdAt.toIso8601String(),
     };
