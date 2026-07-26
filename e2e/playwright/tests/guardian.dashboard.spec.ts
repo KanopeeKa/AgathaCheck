@@ -38,7 +38,7 @@ test.describe('Guardian dashboard', () => {
     await waitForFlutterRoutePattern(page, /\/g\/home/, 60_000);
 
     await expect(page.getByText('My Pets', { exact: true })).toBeVisible();
-    await expect(page.getByText('Upcoming Pet Events', { exact: true })).toBeVisible();
+    await expect(page.getByText('Due and Overdue', { exact: true })).toBeVisible();
     await expect(page.getByText('My Vets', { exact: true })).toBeVisible();
 
     await expect(page.getByText('Pending foster placements')).not.toBeVisible();

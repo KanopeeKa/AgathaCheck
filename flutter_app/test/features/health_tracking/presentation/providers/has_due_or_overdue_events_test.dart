@@ -15,6 +15,7 @@ HealthEntry _entry({
   DateTime? nextDueDate,
   HealthFrequency frequency = HealthFrequency.monthly,
   DateTime? completedOn,
+  int remindDaysBefore = 1,
 }) => HealthEntry(
   id: id,
   petId: 'pet-1',
@@ -24,6 +25,7 @@ HealthEntry _entry({
   startDate: DateTime(2025, 1, 1),
   nextDueDate: nextDueDate,
   completedOn: completedOn,
+  remindDaysBefore: remindDaysBefore,
 );
 
 void main() {
@@ -42,6 +44,24 @@ void main() {
     test('returns true when due today', () {
       final entry = _entry(id: 'a', nextDueDate: today);
       expect(isEntryDueOrOverdue(entry), isTrue);
+    });
+
+    test('returns true when due within remindDaysBefore window', () {
+      final entry = _entry(
+        id: 'a',
+        nextDueDate: today.add(const Duration(days: 2)),
+        remindDaysBefore: 3,
+      );
+      expect(isEntryDueOrOverdue(entry), isTrue);
+    });
+
+    test('returns false when due outside remindDaysBefore window', () {
+      final entry = _entry(
+        id: 'a',
+        nextDueDate: today.add(const Duration(days: 5)),
+        remindDaysBefore: 3,
+      );
+      expect(isEntryDueOrOverdue(entry), isFalse);
     });
 
     test('returns false when due in the future', () {

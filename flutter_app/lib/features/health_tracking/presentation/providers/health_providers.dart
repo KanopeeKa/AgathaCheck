@@ -190,9 +190,38 @@ final petOtherEventsByIdProvider =
           );
     });
 
-/// Whether a health entry is due today or overdue (and not completed).
-bool isEntryDueOrOverdue(HealthEntry entry) =>
-    !entry.isCompleted && (entry.isOverdue || entry.isDueToday);
+/// Whether a health entry is due or overdue within its [remindDaysBefore] window.
+bool isEntryDueOrOverdue(HealthEntry entry) {
+  if (entry.isCompleted || entry.nextDueDate == null) return false;
+  if (entry.isOverdue || entry.isDueToday) return true;
+
+  final now = DateTime.now();
+  final today = DateTime(now.year, now.month, now.day);
+  final dueDay = DateTime(
+    entry.nextDueDate!.year,
+    entry.nextDueDate!.month,
+    entry.nextDueDate!.day,
+  );
+  final daysUntilDue = dueDay.difference(today).inDays;
+  return daysUntilDue > 0 && daysUntilDue <= entry.remindDaysBefore;
+}
+
+/// Guardian due inbox entries for shell pets, oldest due first.
+List<HealthEntry> guardianDueEntries(
+  List<HealthEntry> entries,
+  Set<String> petIds,
+) {
+  final due =
+      entries
+          .where((e) => petIds.contains(e.petId) && isEntryDueOrOverdue(e))
+          .toList()
+        ..sort((a, b) {
+          final ad = a.nextDueDate ?? DateTime(2100);
+          final bd = b.nextDueDate ?? DateTime(2100);
+          return ad.compareTo(bd);
+        });
+  return due;
+}
 
 /// True when at least one health entry is due today or overdue.
 final hasDueOrOverdueEventsProvider = Provider<bool>((ref) {

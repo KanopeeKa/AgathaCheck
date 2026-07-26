@@ -6,7 +6,7 @@ import '../../../../../core/widgets/dashboard_section.dart';
 import '../../../../../l10n/app_localizations.dart';
 import '../../../../pet_profile/domain/entities/pet.dart';
 import '../../../../pet_profile/presentation/providers/pet_providers.dart';
-import '../../../auth/presentation/providers/auth_providers.dart';
+import '../../../../auth/presentation/providers/auth_providers.dart';
 import '../../../../vet/presentation/providers/vet_providers.dart';
 import '../../../../vet/presentation/widgets/vet_compact_row.dart';
 

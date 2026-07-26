@@ -7,7 +7,6 @@ import '../../features/auth/presentation/screens/forgot_password_screen.dart';
 import '../../features/auth/presentation/screens/landing_screen.dart';
 import '../../features/auth/presentation/screens/my_details_screen.dart';
 import '../../features/health_tracking/domain/entities/health_entry.dart';
-import '../../features/health_tracking/presentation/screens/health_dashboard_screen.dart';
 import '../../features/health_tracking/presentation/screens/health_entry_form_screen.dart';
 import '../../features/health_tracking/presentation/screens/other_event_form_screen.dart';
 import '../../features/notifications/presentation/screens/notification_settings_screen.dart';
@@ -232,7 +231,7 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/health',
         name: 'healthDashboard',
-        builder: (context, state) => const HealthDashboardScreen(),
+        redirect: (context, state) => '/g/events',
       ),
       GoRoute(
         path: '/health/add',

@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pet_profile_app/core/theme/app_theme.dart';
 import 'package:pet_profile_app/core/widgets/dashboard_section.dart';
+import 'package:pet_profile_app/features/auth/presentation/providers/auth_providers.dart';
 import 'package:pet_profile_app/features/experience/presentation/widgets/guardian_shell_home_content.dart';
 import 'package:pet_profile_app/features/pet_profile/domain/entities/pet.dart';
 import 'package:pet_profile_app/features/pet_profile/presentation/controllers/pet_list_controller.dart';
@@ -29,6 +30,7 @@ void main() {
     final list = petList ?? pets;
     return ProviderScope(
       overrides: [
+        authProvider.overrideWith((ref) => FakeAuthNotifier()),
         petListProvider.overrideWith(() => TestPetListNotifier(list)),
         vetListProvider.overrideWith(() => _TestVetListNotifier(vets)),
         healthEntriesNotifierProvider.overrideWith(
@@ -54,7 +56,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('My Pets'), findsOneWidget);
-    expect(find.text('Upcoming Pet Events'), findsOneWidget);
+    expect(find.text('Due and Overdue'), findsOneWidget);
     expect(find.text('My vets'), findsOneWidget);
     expect(find.text('All Events'), findsOneWidget);
     expect(find.text('All Vets'), findsOneWidget);

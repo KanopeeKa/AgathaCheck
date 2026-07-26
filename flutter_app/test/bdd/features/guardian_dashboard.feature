@@ -7,7 +7,7 @@ Feature: Guardian dashboard
   Scenario: Dashboard shows exactly three sections
     Given I am signed in as a guardian with pets, due health entries, and vets
     When I view the Guardian dashboard
-    Then I should see "My Pets", "Upcoming Pet Events", and "My Vets" sections only
+    Then I should see "My Pets", "Due and Overdue", and "My Vets" sections only
 
   @P1
   Scenario: My Pets shows all personal pets with Manage pets link

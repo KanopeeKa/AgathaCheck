@@ -3978,6 +3978,9 @@ class AppLocalizationsFr extends AppLocalizations {
   String get upcomingPetEvents => 'Événements à venir';
 
   @override
+  String get dueAndOverdue => 'À faire et en retard';
+
+  @override
   String get allEvents => 'Tous les événements';
 
   @override
