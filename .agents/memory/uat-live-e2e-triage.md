@@ -36,6 +36,7 @@
 2. **Health passing ≠ auth passing** — both must be probed in-browser before `createTestUser`.
 3. WAF smoke failures → ledger `infra_failed` (promotion continues), not `failed`.
 4. **Warmup failed + health OK** → `SMOKE_FAILURE_KIND=waf` (via `classify-uat-smoke-failure.sh`) so `gate_failure_class=infra_only`. Without this, promotion freezes incorrectly.
+5. **Never request CI IP whitelist** — not available. Persist WAF cookies across Playwright contexts; workflow retries after cooldown (`run-live-uat-gate.sh`).
 
 ## E2E seed rule (prevention)
 

@@ -223,7 +223,7 @@ Validate on UAT before closing related debt or roadmap items.`,
 
   const infraNote =
     gateFailureClass === 'infra_only'
-      ? '\n\n**Infra-only failure** (WAF/deploy transport) — queue recorded as `infra_failed`; host whitelist may be required (see uat-coordinator-plan §9).'
+      ? '\n\n**Infra-only failure** (WAF/deploy transport) — queue recorded as `infra_failed`. Workflow retries automatically; CI IP whitelist is not available (see `docs/e2e/uat-waf-queue-lessons.md` §17).'
       : '';
 
   await upsertMarkerComment({

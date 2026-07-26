@@ -79,7 +79,7 @@ When debugging CI logs:
 | Thrown message | Meaning |
 |----------------|---------|
 | `UAT backend is not healthy at …/backend/health` | Health probe failed (Passenger, SPA rewrite, etc.) |
-| `UAT auth signup is still blocked by hosting WAF at …/signup` | WAF HTML on auth after page cleared — wait or whitelist |
+| `UAT auth signup is still blocked by hosting WAF at …/signup` | WAF HTML on auth after page cleared — workflow retries after cooldown; check cookie persistence (#17) |
 | `UAT auth signup is not reachable at …/signup` | Non-WAF HTML/5xx on auth — app/route problem |
 | `Post-login route not ready (url=…#/landing)` | Signup never completed — often downstream WAF on auth API |
 
@@ -182,6 +182,19 @@ Acquiring a 90-minute lease **before** a successful agent launch blocked all pro
 
 **Do not:** Rely on full tag scan when promote/catch-up skipped tag creation — skip deploy immediately with `promote_tag_skipped`.
 
+### 17. WAF cookies must persist across Playwright test contexts (added Jul 26)
+
+**Problem:** Deploy [30210675285](https://github.com/KanopeeKa/AgathaCheck/actions/runs/30210675285) — `warmup-uat` passed but the first `uat-smoke` test failed with WAF on signup after 2.2m. #390 reused `sessionWafCleared` in Node memory, but each Playwright test gets a **fresh browser context** without Tiger Protect cookies. `passHostingWaf` returned early → new context re-ran full warmup and hit rate limits.
+
+**Fix:**
+
+1. `persistWafStorageState` after warmup saves cookies to `playwright/.uat-waf-storage.json`
+2. `uat-smoke` project loads that `storageState` and `depends: ['warmup-uat']`
+3. `passHostingWaf` verifies in-browser probes before trusting `sessionWafCleared`
+4. `scripts/ci/run-live-uat-gate.sh` retries once after 180s on WAF classification
+
+**Do not:** Ask operators to whitelist GitHub Actions egress IPs — not available. SSH whitelist (`o2switch-ssh-whitelist.sh`) is port 22 only and unrelated to HTTP WAF.
+
 ---
 
 ## Operator recovery cheat sheet
@@ -204,8 +217,8 @@ git push origin uat-YYMMDD-<pr>
 ### After merging a WAF fix
 
 1. Merge lands → `enqueue` runs (or `node scripts/uat_queue_runtime.js enqueue --merge … --pr … --write`)
-2. Wait for `deploy-uat` smoke → `test:warmup-uat`
-3. If still WAF HTML on signup → **host whitelist**, not more client retries
+2. Wait for `deploy-uat` → `run-live-uat-gate.sh` (warmup + smoke, auto-retry on WAF)
+3. If still WAF after retry → lower Tiger Protect sensitivity in cPanel or wait for rate-limit cooldown — **not** CI IP whitelist
 
 ---
 
@@ -230,7 +243,7 @@ git push origin uat-YYMMDD-<pr>
 4. **`main()` at module load** in scripts that are both CLI and `require()` libraries
 5. **Polling UAT prod-ready** in agent sessions — enqueue and continue (`babysit-plus` §8)
 6. **Running `uat-queue-health` mid-deploy** — race with in-flight smoke
-7. **Expecting coordinator auto-fix for `infra_failed`** — escalate host/WAF config instead
+7. **Expecting coordinator auto-fix for `infra_failed`** — apply workflow/code mitigations; never request CI IP whitelist
 
 ---
 
@@ -243,6 +256,7 @@ git push origin uat-YYMMDD-<pr>
 | createTestUser | `e2e/playwright/support/ui-auth.ts` |
 | Node preflight deferral | `e2e/playwright/support/global-setup.ts` |
 | Deploy smoke job | `.github/workflows/deploy-uat.yml` (`smoke`, `uat-e2e-smoke`) |
+| Live gate + WAF retry | `scripts/ci/run-live-uat-gate.sh` |
 | Gate classification | `scripts/ci/assert-uat-gates.sh`, `scripts/ci/classify-uat-smoke-failure.sh` |
 | Queue library | `scripts/lib/uat_queue_lib.js` |
 | Queue recovery | `scripts/ci/uat-queue-recovery.js` |
