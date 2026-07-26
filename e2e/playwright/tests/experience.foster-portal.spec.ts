@@ -2,6 +2,7 @@
  * Foster portal route guards — blocked org routes redirect to home.
  */
 import { test, expect } from '../fixtures/auth.fixture';
+import { ExperiencePage } from '../pages/experience.page';
 import { LandingPage } from '../pages/landing.page';
 import { seedRescueHearts } from '../support/api';
 import {
@@ -38,7 +39,8 @@ test.describe('Foster portal route guards', () => {
     await page.goto(flutterGotoUrl('/o/invite'));
     await refreshFlutterAccessibility(page);
     await waitForFlutterRoutePattern(page, /\/o\/home/, 15_000);
-    await expect(page.getByRole('button', { name: 'Home' })).toBeVisible();
+    const experience = new ExperiencePage(page);
+    await experience.expectOrgShell();
     await expect(page.getByText('Invite', { exact: true })).not.toBeVisible();
   });
 
@@ -52,7 +54,8 @@ test.describe('Foster portal route guards', () => {
     await page.goto(flutterGotoUrl('/o/events'));
     await refreshFlutterAccessibility(page);
     await waitForFlutterRoutePattern(page, /\/o\/home/, 15_000);
-    await expect(page.getByRole('button', { name: 'Home' })).toBeVisible();
+    const experience = new ExperiencePage(page);
+    await experience.expectOrgShell();
     await expect(page.getByRole('button', { name: 'Add Health Event' })).not.toBeVisible();
   });
 });
