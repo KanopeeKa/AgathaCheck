@@ -5,7 +5,9 @@ on:
     tags:
       - 'uat-*'
   workflow_run:
-    workflows: ['Promote UAT (tag on merge to main)']
+    workflows:
+      - 'Promote UAT (tag on merge to main)'
+      - 'UAT promote catch-up'
     types: [completed]
   workflow_dispatch:
     inputs:
@@ -594,54 +596,18 @@ jobs:
           WAF_FAIL_FAST_STREAK: '3'
         run: bash scripts/uat-post-deploy-smoke.sh
 
-      # Real browser, not curl: o2switch Tiger Protect serves a JavaScript
-      # challenge (o2s-browser-check) that a bare HTTP client can never solve —
-      # a curl-based warmup fails 100% of the time once WAF decides to
-      # challenge CI traffic. This reuses the same headed-Chromium + stealth
-      # path @smoke-uat already passes the WAF with (support/waf.ts,
-      # support/stealth.ts) via a single fast test instead of a doomed retry
-      # loop of POSTs. See e2e/playwright/tests/uat-auth-warmup.spec.ts.
-      - name: Set up Node.js for auth warmup
-        uses: actions/setup-node@v5
-        with:
-          node-version: 22
-          cache: npm
-          cache-dependency-path: e2e/package-lock.json
-
-      - name: Install E2E dependencies for auth warmup
-        working-directory: e2e
-        run: |
-          npm ci
-          npx playwright install chromium --with-deps
-
-      - name: Warm up UAT auth before live smoke
-        id: warmup
-        working-directory: e2e
-        env:
-          E2E_BASE_URL: ${{ env.UAT_BASE_URL }}
-          E2E_BYPASS_TOKEN: ${{ secrets.E2E_BYPASS_TOKEN }}
-          E2E_TLS_INSECURE: '1'
-          WAF_FAIL_FAST_STREAK: '3'
-          # cPanel auto-SSL on UAT is not trusted by GitHub runners (self-signed / incomplete chain).
-          NODE_TLS_REJECT_UNAUTHORIZED: '0'
-        run: xvfb-run --auto-servernum npm run test:warmup-uat
+      # Browser WAF warmup runs once in uat-e2e-smoke (single Playwright process for
+      # warmup-uat + uat-smoke). A second session from the same GitHub Actions IP
+      # re-triggers Tiger Protect on /auth/signup — see docs/e2e/uat-waf-queue-lessons.md.
 
       - name: Classify smoke failure for prod-ready gates
         id: classify
         if: always()
         env:
           HEALTH_OUTCOME: ${{ steps.health.outcome }}
-          WARMUP_OUTCOME: ${{ steps.warmup.outcome }}
+          WARMUP_OUTCOME: skipped
           HEALTH_FAILURE_KIND: ${{ steps.health.outputs.failure_kind }}
-          PLAYWRIGHT_REPORT_DIR: e2e/playwright-report
         run: bash scripts/ci/classify-uat-smoke-failure.sh
-
-      - name: Upload auth warmup Playwright report
-        if: always()
-        uses: actions/upload-artifact@v6
-        with:
-          name: playwright-report-uat-warmup
-          path: e2e/playwright-report/
 
       - name: Write smoke job summary
         if: always()
@@ -664,6 +630,8 @@ jobs:
     if: needs.smoke.result == 'success'
     runs-on: ubuntu-latest
     timeout-minutes: 30
+    outputs:
+      live_smoke_failure_kind: ${{ steps.classify.outputs.failure_kind }}
     steps:
       - uses: actions/checkout@v5
 
@@ -683,7 +651,8 @@ jobs:
           npm ci
           npx playwright install chromium --with-deps
 
-      - name: Warm up UAT browser session (WAF + auth)
+      - name: Warm up UAT auth and run @smoke-uat (single browser session)
+        id: live_gate
         working-directory: e2e
         env:
           E2E_BASE_URL: ${{ env.UAT_BASE_URL }}
@@ -692,18 +661,16 @@ jobs:
           E2E_SKIP_NODE_UAT_PREFLIGHT: '1'
           # cPanel auto-SSL on UAT is not trusted by GitHub runners (self-signed / incomplete chain).
           NODE_TLS_REJECT_UNAUTHORIZED: '0'
-        run: xvfb-run --auto-servernum npm run test:warmup-uat
+        run: xvfb-run --auto-servernum npm run test:live-uat-gate
 
-      - name: Run @smoke-uat Playwright tests against live UAT
-        working-directory: e2e
+      - name: Classify live smoke failure for prod-ready gates
+        id: classify
+        if: always()
         env:
-          E2E_BASE_URL: ${{ env.UAT_BASE_URL }}
-          E2E_BYPASS_TOKEN: ${{ secrets.E2E_BYPASS_TOKEN }}
-          E2E_TLS_INSECURE: '1'
-          E2E_SKIP_NODE_UAT_PREFLIGHT: '1'
-          # cPanel auto-SSL on UAT is not trusted by GitHub runners (self-signed / incomplete chain).
-          NODE_TLS_REJECT_UNAUTHORIZED: '0'
-        run: xvfb-run --auto-servernum npm run test:smoke-uat
+          HEALTH_OUTCOME: success
+          WARMUP_OUTCOME: ${{ steps.live_gate.outcome }}
+          PLAYWRIGHT_REPORT_DIR: e2e/playwright-report
+        run: bash scripts/ci/classify-uat-smoke-failure.sh
 
       - name: Upload Playwright report
         if: always()
@@ -809,6 +776,7 @@ jobs:
           FULL_E2E_RESULT: ${{ needs.smoke.result != 'success' && 'skipped' || (needs.uat-full-e2e-decide.outputs.should_run == 'false' && 'skipped' || needs.uat-e2e-full.result) }}
           BUILD_RESULT: ${{ needs.build-web.result }}
           SMOKE_FAILURE_KIND: ${{ needs.smoke.outputs.smoke_failure_kind }}
+          LIVE_SMOKE_FAILURE_KIND: ${{ needs.uat-e2e-smoke.outputs.live_smoke_failure_kind }}
           UAT_FULL_E2E_CADENCE_SKIP: ${{ needs.smoke.result == 'success' && needs.uat-full-e2e-decide.outputs.should_run == 'false' && 'true' || 'false' }}
           UAT_FULL_E2E_CADENCE_REASON: ${{ needs.uat-full-e2e-decide.outputs.reason || '' }}
           DEPLOY_REF: ${{ needs.resolve-trigger.outputs.deploy_ref }}
