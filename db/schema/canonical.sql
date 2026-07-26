@@ -278,13 +278,15 @@ CREATE TABLE public.notifications (
     organization_id uuid,
     title character varying(255) DEFAULT ''::character varying,
     type character varying(50) DEFAULT 'general'::character varying,
-    kind character varying(16) DEFAULT 'care'::character varying NOT NULL,
-    priority character varying(8) DEFAULT 'normal'::character varying NOT NULL,
-    resolved_at timestamp with time zone,
     message text NOT NULL,
     is_read boolean DEFAULT false,
     read boolean DEFAULT false,
-    created_at timestamp with time zone DEFAULT now()
+    created_at timestamp with time zone DEFAULT now(),
+    kind character varying(16) DEFAULT 'care'::character varying NOT NULL,
+    priority character varying(8) DEFAULT 'normal'::character varying NOT NULL,
+    resolved_at timestamp with time zone,
+    CONSTRAINT notifications_kind_check CHECK (((kind)::text = ANY ((ARRAY['care'::character varying, 'administrative'::character varying])::text[]))),
+    CONSTRAINT notifications_priority_check CHECK (((priority)::text = ANY ((ARRAY['normal'::character varying, 'urgent'::character varying])::text[])))
 );
 CREATE TABLE public.org_connection_requests (
     id uuid NOT NULL,

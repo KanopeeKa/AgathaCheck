@@ -17,10 +17,7 @@ void main() {
               icon: const Icon(Icons.add),
             ),
             previewBuilder: (context) => const Text('Preview A'),
-            endLink: DashboardSectionLink(
-              label: 'See all',
-              onPressed: () {},
-            ),
+            endLink: DashboardSectionLink(label: 'See all', onPressed: () {}),
           ),
         ),
       ),

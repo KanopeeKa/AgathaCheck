@@ -14,7 +14,11 @@ void main() {
 
     test('manage_document_templates is super_admin only', () {
       expect(
-        hasPermission(OrgMemberRole.superAdmin, null, 'manage_document_templates'),
+        hasPermission(
+          OrgMemberRole.superAdmin,
+          null,
+          'manage_document_templates',
+        ),
         isTrue,
       );
       expect(
