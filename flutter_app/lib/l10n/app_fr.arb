@@ -1367,6 +1367,10 @@
   "notificationKindOrganisation": "Organisation",
   "notificationActionNeeded": "Action requise",
   "accountTitle": "Compte",
+  "accountProfileSection": "Profil",
+  "accountPreferencesSection": "Préférences",
+  "accountSupportSection": "Assistance",
+  "accountActionsSection": "Actions du compte",
 
   "adminContactsTitle": "Contacts admin",
   "adminContactsDescription": "Annuaire interne des administrateurs de l'organisation. Appelez ou écrivez selon les coordonnées partagées.",

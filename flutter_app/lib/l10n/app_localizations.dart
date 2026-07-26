@@ -7593,6 +7593,30 @@ abstract class AppLocalizations {
   /// **'Account'**
   String get accountTitle;
 
+  /// No description provided for @accountProfileSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile'**
+  String get accountProfileSection;
+
+  /// No description provided for @accountPreferencesSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Preferences'**
+  String get accountPreferencesSection;
+
+  /// No description provided for @accountSupportSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Support'**
+  String get accountSupportSection;
+
+  /// No description provided for @accountActionsSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Account actions'**
+  String get accountActionsSection;
+
   /// No description provided for @adminContactsTitle.
   ///
   /// In en, this message translates to:

@@ -4263,6 +4263,18 @@ class AppLocalizationsFr extends AppLocalizations {
   String get accountTitle => 'Compte';
 
   @override
+  String get accountProfileSection => 'Profil';
+
+  @override
+  String get accountPreferencesSection => 'Préférences';
+
+  @override
+  String get accountSupportSection => 'Assistance';
+
+  @override
+  String get accountActionsSection => 'Actions du compte';
+
+  @override
   String get adminContactsTitle => 'Contacts admin';
 
   @override

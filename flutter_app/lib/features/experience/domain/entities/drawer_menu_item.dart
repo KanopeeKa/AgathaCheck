@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart' show IconData;
 
 import 'drawer_menu_group.dart';
 
@@ -9,6 +10,7 @@ class DrawerMenuItem {
     required this.semanticKey,
     required this.label,
     required this.group,
+    this.icon,
     this.badgeCount = 0,
     this.onTap,
     this.route,
@@ -22,6 +24,7 @@ class DrawerMenuItem {
 
   final String label;
   final DrawerMenuGroup group;
+  final IconData? icon;
   final int badgeCount;
   final VoidCallback? onTap;
   final String? route;
