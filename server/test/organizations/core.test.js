@@ -189,6 +189,59 @@ describe('Organizations API', () => {
         expect(res.body).toHaveProperty('name');
         expect(res.body).toHaveProperty('type');
       });
+
+      it('persists discovery profile fields', async () => {
+        let updateParams;
+        const pool = buildMockPool({
+          query: async (sql, params) => {
+            if (sql.includes('UPDATE organizations SET')) {
+              updateParams = params;
+              return { rows: [] };
+            }
+            if (sql.includes('SELECT o.*') && sql.includes('WHERE o.id')) {
+              return {
+                rows: [{
+                  id: orgId,
+                  name: 'Rescue Hearts',
+                  type: 'charity',
+                  town: params?.[9] ?? 'Springfield',
+                  administrative_area: params?.[10] ?? 'IL',
+                  description: params?.[11] ?? 'A caring rescue shelter',
+                  is_discoverable: params?.[12] ?? true,
+                  bio: '',
+                  photo_url: '',
+                  logo_url: '/uploads/org_photos/rescue-hearts.png',
+                  role: 'super_admin',
+                  member_count: 1,
+                  external_count: 0,
+                  pet_count: 0,
+                }],
+              };
+            }
+            return { rows: [] };
+          },
+        });
+        const a = createApp(pool);
+        const res = await request(a)
+          .put(`/api/organizations/${orgId}`)
+          .set('Authorization', `Bearer ${token}`)
+          .send({
+            name: 'Rescue Hearts',
+            type: 'charity',
+            town: 'Springfield',
+            administrative_area: 'IL',
+            description: 'A caring rescue shelter',
+            logo_url: '/uploads/org_photos/rescue-hearts.png',
+            is_discoverable: true,
+          });
+        expect(res.statusCode).toBe(200);
+        expect(updateParams[9]).toBe('Springfield');
+        expect(updateParams[10]).toBe('IL');
+        expect(updateParams[11]).toBe('A caring rescue shelter');
+        expect(updateParams[12]).toBe(true);
+        expect(res.body.town).toBe('Springfield');
+        expect(res.body.is_discoverable).toBe(true);
+      });
   
       it('returns 404 when org not found after update', async () => {
         const pool = buildMockPool({
