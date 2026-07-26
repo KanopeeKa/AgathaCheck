@@ -9,10 +9,18 @@ import '../../controllers/health_events_controller.dart';
 import 'pet_event_entry_list.dart';
 
 class HealthEventsSection extends ConsumerStatefulWidget {
-  const HealthEventsSection({required this.petId, this.pet, super.key});
+  const HealthEventsSection({
+    required this.petId,
+    this.pet,
+    this.flat = false,
+    super.key,
+  });
 
   final String petId;
   final Pet? pet;
+
+  /// When true, renders a flat list (manage-events Edit tab).
+  final bool flat;
 
   @override
   ConsumerState<HealthEventsSection> createState() =>
@@ -27,6 +35,61 @@ class _HealthEventsSectionState extends ConsumerState<HealthEventsSection> {
     final colorScheme = theme.colorScheme;
     final l = AppLocalizations.of(context)!;
     final entriesAsync = ref.watch(petHealthEventsByIdProvider(widget.petId));
+
+    final addButton = Tooltip(
+      message: l.addEntry,
+      child: FilledButton.tonalIcon(
+        key: const Key('add_health_event_button'),
+        onPressed: () => controller.onAddEntry(context, widget.petId),
+        icon: const Icon(Icons.add, size: 18),
+        label: Text(l.addEntry),
+      ),
+    );
+
+    final entriesList = entriesAsync.when(
+      loading: () => const Padding(
+        padding: EdgeInsets.all(16),
+        child: Center(child: CircularProgressIndicator()),
+      ),
+      error: (e, _) => Padding(
+        padding: const EdgeInsets.all(16),
+        child: Text(e.toString(), style: TextStyle(color: colorScheme.error)),
+      ),
+      data: (entries) => PetEventEntryList(
+        entries: entries,
+        petId: widget.petId,
+        onEntryTap: (entry) =>
+            context.go('/pet/${widget.petId}/health/edit/${entry.id}'),
+      ),
+    );
+
+    if (widget.flat) {
+      return Padding(
+        padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Row(
+              children: [
+                Icon(Icons.list_alt, color: colorScheme.primary),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    l.healthEvents,
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+                addButton,
+              ],
+            ),
+            const SizedBox(height: 8),
+            entriesList,
+          ],
+        ),
+      );
+    }
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -45,40 +108,10 @@ class _HealthEventsSectionState extends ConsumerState<HealthEventsSection> {
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  Tooltip(
-                    message: l.addEntry,
-                    child: FilledButton.tonalIcon(
-                      key: const Key('add_health_event_button'),
-                      onPressed: () {
-                        controller.onAddEntry(context, widget.petId);
-                      },
-                      icon: const Icon(Icons.add, size: 18),
-                      label: Text(l.addEntry),
-                    ),
-                  ),
-                ],
+                children: [addButton],
               ),
             ),
-            entriesAsync.when(
-              loading: () => const Padding(
-                padding: EdgeInsets.all(16),
-                child: Center(child: CircularProgressIndicator()),
-              ),
-              error: (e, _) => Padding(
-                padding: const EdgeInsets.all(16),
-                child: Text(
-                  e.toString(),
-                  style: TextStyle(color: colorScheme.error),
-                ),
-              ),
-              data: (entries) => PetEventEntryList(
-                entries: entries,
-                petId: widget.petId,
-                onEntryTap: (entry) =>
-                    context.go('/pet/${widget.petId}/health/edit/${entry.id}'),
-              ),
-            ),
+            entriesList,
           ],
         ),
       ),

@@ -309,6 +309,33 @@ class AppLocalizationsEn extends AppLocalizations {
   String get managePets => 'Manage pets';
 
   @override
+  String get manageEvents => 'Manage events';
+
+  @override
+  String get eventsEditTab => 'Edit';
+
+  @override
+  String get eventsHistoryTab => 'History';
+
+  @override
+  String get noEventsYet => 'No events yet';
+
+  @override
+  String petEventsSummary(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count events',
+      one: '1 event',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get eventsHistoryEmpty =>
+      'No report history is available for this pet.';
+
+  @override
   String get filterByOrganization => 'Filter by organization';
 
   @override
