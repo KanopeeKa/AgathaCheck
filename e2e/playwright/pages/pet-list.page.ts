@@ -137,7 +137,7 @@ export class PetListPage {
     if (!route.startsWith('/g/pets')) {
       await this.page.goto(flutterGotoUrl('/g/pets'));
       await refreshFlutterAccessibility(this.page);
-      await waitForFlutterRoutePattern(this.page, /\/g\/pets(?:\?|$)/, 30_000);
+      await waitForFlutterRoutePattern(this.page, /^\/g\/pets(?:\?|$)/, 30_000);
     }
   }
 
