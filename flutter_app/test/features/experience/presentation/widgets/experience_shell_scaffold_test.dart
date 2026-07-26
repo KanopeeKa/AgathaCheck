@@ -105,7 +105,10 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    expect(find.byKey(const Key('experience_notification_bell')), findsOneWidget);
+    expect(
+      find.byKey(const Key('experience_notification_bell')),
+      findsOneWidget,
+    );
   });
 
   testWidgets('bell badge shows combined unread count', (tester) async {
@@ -119,7 +122,10 @@ void main() {
     await tester.pumpAndSettle();
 
     final bellButton = find.byKey(const Key('experience_notification_bell'));
-    expect(find.descendant(of: bellButton, matching: find.text('5')), findsOneWidget);
+    expect(
+      find.descendant(of: bellButton, matching: find.text('5')),
+      findsOneWidget,
+    );
   });
 
   testWidgets('no Home button present (navigation reversal)', (tester) async {
@@ -158,7 +164,10 @@ void main() {
 
     // These items must not exist in the new unified drawer
     expect(find.byKey(const Key('drawer_my_pets')), findsNothing);
-    expect(find.byKey(const Key('drawer_guardian_notifications')), findsNothing);
+    expect(
+      find.byKey(const Key('drawer_guardian_notifications')),
+      findsNothing,
+    );
     expect(find.byKey(const Key('drawer_org_notifications')), findsNothing);
     expect(find.byKey(const Key('drawer_guardian_events')), findsNothing);
     expect(find.byKey(const Key('drawer_settings')), findsNothing);

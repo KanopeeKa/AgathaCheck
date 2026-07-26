@@ -81,7 +81,11 @@
     "Accessing notification settings": "P1",
     "Muting notifications for a specific pet": "P2",
     "Unmuting notifications for a pet": "P2",
-    "Organisation-related notifications display org icon": "P2"
+    "Organisation-related notifications display org icon": "P2",
+    "Bell badge shows combined count across care and administrative notifications": "P1",
+    "Notification kind filter narrows list without navigating": "P1",
+    "Administrative notification with open object shows Action needed affordance": "P1",
+    "Resolved administrative notification does not show Action needed": "P1"
   },
   "weight_tracking.feature": {
     "Adding a weight entry": "P0",
@@ -219,6 +223,9 @@
     "Remembered guardian choice skips chooser on next login": "P1",
     "Dual-role user sets default experience to organisation in settings": "P1",
     "User switches to organisation view from guardian drawer": "P1",
+    "Drawer shows exactly three destinations regardless of current mode": "P1",
+    "Bell shows a single combined unread badge across both notification kinds": "P1",
+    "Hamburger is shown only on section root screens": "P1",
     "Guardian chooser hides organisation option for guardian-only users": "P2"
   },
   "guardian_onboarding.feature": {

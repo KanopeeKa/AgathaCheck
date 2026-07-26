@@ -55,14 +55,16 @@ class AccountScreen extends ConsumerWidget {
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
-          _AccountSection(children: [
-            _AccountTile(
-              key: const Key('account_my_details'),
-              icon: Icons.person_outline,
-              label: l.myDetails,
-              onTap: () => context.push('/my-details'),
-            ),
-          ]),
+          _AccountSection(
+            children: [
+              _AccountTile(
+                key: const Key('account_my_details'),
+                icon: Icons.person_outline,
+                label: l.myDetails,
+                onTap: () => context.push('/my-details'),
+              ),
+            ],
+          ),
           const SizedBox(height: 16),
           Card(
             margin: EdgeInsets.zero,
@@ -72,43 +74,46 @@ class AccountScreen extends ConsumerWidget {
             ),
           ),
           const SizedBox(height: 16),
-          _AccountSection(children: [
-            _AccountTile(
-              key: const Key('account_help'),
-              icon: Icons.help_outline,
-              label: l.helpTitle,
-              onTap: () => context.push('/help'),
-            ),
-            _AccountTile(
-              key: const Key('account_about'),
-              icon: Icons.info_outline,
-              label: l.aboutUs,
-              onTap: () => context.push('/about'),
-            ),
-            _AccountTile(
-              key: const Key('account_contact'),
-              icon: Icons.email_outlined,
-              label: l.contact,
-              onTap: () => _launchContact(),
-            ),
-            _AccountTile(
-              key: const Key('account_legal'),
-              icon: Icons.gavel_outlined,
-              label: l.legalInformation,
-              onTap: () => context.push('/legal'),
-            ),
-          ]),
+          _AccountSection(
+            children: [
+              _AccountTile(
+                key: const Key('account_help'),
+                icon: Icons.help_outline,
+                label: l.helpTitle,
+                onTap: () => context.push('/help'),
+              ),
+              _AccountTile(
+                key: const Key('account_about'),
+                icon: Icons.info_outline,
+                label: l.aboutUs,
+                onTap: () => context.push('/about'),
+              ),
+              _AccountTile(
+                key: const Key('account_contact'),
+                icon: Icons.email_outlined,
+                label: l.contact,
+                onTap: () => _launchContact(),
+              ),
+              _AccountTile(
+                key: const Key('account_legal'),
+                icon: Icons.gavel_outlined,
+                label: l.legalInformation,
+                onTap: () => context.push('/legal'),
+              ),
+            ],
+          ),
           const SizedBox(height: 16),
-          _AccountSection(children: [
-            _AccountTile(
-              key: const Key('account_sign_out'),
-              icon: Icons.logout,
-              label: l.logOut,
-              isDestructive: true,
-              onTap: () =>
-                  ref.read(authProvider.notifier).logout(),
-            ),
-          ]),
+          _AccountSection(
+            children: [
+              _AccountTile(
+                key: const Key('account_sign_out'),
+                icon: Icons.logout,
+                label: l.logOut,
+                isDestructive: true,
+                onTap: () => ref.read(authProvider.notifier).logout(),
+              ),
+            ],
+          ),
           const SizedBox(height: 32),
         ],
       ),
@@ -116,10 +121,7 @@ class AccountScreen extends ConsumerWidget {
   }
 
   Future<void> _launchContact() async {
-    final uri = Uri(
-      scheme: 'mailto',
-      path: DrawerMenuConfig.contactEmail,
-    );
+    final uri = Uri(scheme: 'mailto', path: DrawerMenuConfig.contactEmail);
     if (await canLaunchUrl(uri)) await launchUrl(uri);
   }
 }

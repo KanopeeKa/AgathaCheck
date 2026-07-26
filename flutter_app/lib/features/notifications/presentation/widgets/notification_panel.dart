@@ -55,8 +55,7 @@ class _NotificationPanelState extends ConsumerState<NotificationPanel> {
             const Divider(height: 1),
             Expanded(
               child: notificationsAsync.when(
-                loading: () =>
-                    const Center(child: CircularProgressIndicator()),
+                loading: () => const Center(child: CircularProgressIndicator()),
                 error: (e, _) => _ErrorView(
                   error: e,
                   l: l,
@@ -280,8 +279,8 @@ class _NotificationList extends ConsumerWidget {
 
   NotificationScope _scopeForNotification(AppNotification n) =>
       n.organizationId != null && n.organizationId!.isNotEmpty
-          ? NotificationScope.organization
-          : NotificationScope.guardian;
+      ? NotificationScope.organization
+      : NotificationScope.guardian;
 
   /// Heuristic: administrative + not resolved + not read → "Action needed".
   bool _needsAction(AppNotification n) =>

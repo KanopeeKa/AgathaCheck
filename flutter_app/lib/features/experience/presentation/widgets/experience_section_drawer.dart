@@ -40,18 +40,14 @@ class ExperienceSectionDrawer extends ConsumerWidget {
         child: Column(
           children: [
             UserAccountsDrawerHeader(
-              decoration: const BoxDecoration(
-                color: AppColorTokens.surfaceAlt,
-              ),
+              decoration: const BoxDecoration(color: AppColorTokens.surfaceAlt),
               accountName: Text(
                 displayName,
                 style: TextStyle(color: xp.guardianPrimary),
               ),
               accountEmail: Text(
                 auth.user?.email ?? '',
-                style: const TextStyle(
-                  color: Color(0xFF757575),
-                ),
+                style: const TextStyle(color: Color(0xFF757575)),
               ),
               currentAccountPicture: CircleAvatar(
                 backgroundColor: xp.guardianLight,
