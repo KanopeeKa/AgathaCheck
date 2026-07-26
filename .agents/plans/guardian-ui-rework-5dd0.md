@@ -55,17 +55,17 @@ Deliver the guardian-facing UI rework from the 2026-07-26 brief: global navigati
 
 ```yaml
 autonomy: active
-current_phase: 3
-last_completed_phase: 2
+current_phase: 4
+last_completed_phase: 3
 halt_reason: null
-next_action: "continue phase 3 on branch cursor/guardian-ui-pet-tiles-5dd0"
+next_action: "continue phase 4 on branch cursor/guardian-ui-vet-refresh-5dd0"
 artifact_ref:
-  branch: cursor/guardian-ui-pet-tiles-5dd0
+  branch: cursor/guardian-ui-vet-refresh-5dd0
   plan_path: .agents/plans/guardian-ui-rework-5dd0.md
-  plan_commit: 297ac126963fe96cc4dd2a9874f17c69762aaa1d
+  plan_commit: d771df9225bc55607e3b5f4c06d93993a652afab
   snapshot_path: .agents/plans/guardian-ui-rework-5dd0.snapshot.json
-  snapshot_commit: 297ac126963fe96cc4dd2a9874f17c69762aaa1d
-open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/402"]
+  snapshot_commit: d771df9225bc55607e3b5f4c06d93993a652afab
+open_prs: []
 merge_commits: {}
 debt_issue_refs: []
 ```

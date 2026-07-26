@@ -4,28 +4,27 @@ import '../../../../l10n/app_localizations.dart';
 import '../../domain/entities/vet.dart';
 import '../utils/vet_accent.dart';
 
-/// Compact vet row for the guardian dashboard preview (name, city, pet count).
+/// Compact vet row: `Name · city` with linked pet count right-aligned.
 class VetCompactRow extends StatelessWidget {
   const VetCompactRow({
     super.key,
     required this.vet,
     required this.linkedPetCount,
     required this.onTap,
+    this.showChevron = true,
   });
 
   final Vet vet;
   final int linkedPetCount;
   final VoidCallback onTap;
+  final bool showChevron;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final l = AppLocalizations.of(context)!;
     final town = vetTownLabel(vet.address);
-    final subtitleParts = <String>[
-      if (town.isNotEmpty) town,
-      if (linkedPetCount > 0) l.vetLinkedPetCount(linkedPetCount),
-    ];
+    final titleLine = town.isEmpty ? vet.name : '${vet.name} · $town';
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 4),
@@ -46,34 +45,30 @@ class VetCompactRow extends StatelessWidget {
               ),
               const SizedBox(width: 10),
               Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      vet.name,
-                      style: theme.textTheme.bodyMedium?.copyWith(
-                        fontWeight: FontWeight.w600,
-                      ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    if (subtitleParts.isNotEmpty)
-                      Text(
-                        subtitleParts.join(' · '),
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          color: theme.colorScheme.onSurfaceVariant,
-                        ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                  ],
+                child: Text(
+                  titleLine,
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    fontWeight: FontWeight.w600,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
               ),
-              Icon(
-                Icons.chevron_right,
-                size: 18,
-                color: theme.colorScheme.onSurfaceVariant,
+              const SizedBox(width: 8),
+              Text(
+                l.vetLinkedPetCount(linkedPetCount),
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
               ),
+              if (showChevron) ...[
+                const SizedBox(width: 4),
+                Icon(
+                  Icons.chevron_right,
+                  size: 18,
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
+              ],
             ],
           ),
         ),

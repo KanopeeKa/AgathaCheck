@@ -9,6 +9,7 @@ import '../../../pet_profile/presentation/providers/pet_providers.dart';
 import '../providers/vet_providers.dart';
 import '../widgets/vet_filter_bar.dart';
 import '../widgets/vet_list_card.dart';
+import '../widgets/vet_compact_row.dart';
 
 class VetListScreen extends ConsumerWidget {
   const VetListScreen({
@@ -123,6 +124,14 @@ class VetListScreen extends ConsumerWidget {
                     final orgName = orgMatches.isEmpty
                         ? null
                         : orgMatches.first.name;
+                    if (experience == AppExperience.guardian) {
+                      return VetCompactRow(
+                        vet: vet,
+                        linkedPetCount: linkedPets.length,
+                        showChevron: false,
+                        onTap: () => context.go('$_listPath/${vet.id}'),
+                      );
+                    }
                     return VetListCard(
                       vet: vet,
                       linkedPetNames: linkedPets.map((p) => p.name).toList(),

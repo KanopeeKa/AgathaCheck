@@ -59,6 +59,9 @@ String? _apiOrganizationFilter(String? filter) {
 class VetListNotifier extends AsyncNotifier<List<Vet>> {
   @override
   Future<List<Vet>> build() async {
+    final auth = ref.watch(authProvider);
+    if (auth.accessToken == null) return [];
+
     final filter = ref.watch(vetOrganizationFilterProvider);
     return ref
         .read(getAllVetsUseCaseProvider)
