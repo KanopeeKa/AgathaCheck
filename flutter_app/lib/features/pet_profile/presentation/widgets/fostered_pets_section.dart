@@ -79,9 +79,9 @@ class FosteredPetsSection extends ConsumerWidget {
                 .read(hiddenSharedPetsProvider.notifier)
                 .hideSharedPet(pet.id);
             if (context.mounted) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text(l.petHidden(pet.name))),
-              );
+              ScaffoldMessenger.of(
+                context,
+              ).showSnackBar(SnackBar(content: Text(l.petHidden(pet.name))));
             }
           }
           return false;

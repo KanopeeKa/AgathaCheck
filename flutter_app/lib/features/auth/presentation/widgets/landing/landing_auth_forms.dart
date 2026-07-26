@@ -268,13 +268,10 @@ class _LandingSignupFormState extends State<LandingSignupForm> {
                       ? widget.l10n.showPassword
                       : widget.l10n.hidePassword,
                   icon: Icon(
-                    _obscurePassword
-                        ? Icons.visibility_off
-                        : Icons.visibility,
+                    _obscurePassword ? Icons.visibility_off : Icons.visibility,
                   ),
-                  onPressed: () => setState(
-                    () => _obscurePassword = !_obscurePassword,
-                  ),
+                  onPressed: () =>
+                      setState(() => _obscurePassword = !_obscurePassword),
                 ),
               ),
               obscureText: _obscurePassword,
@@ -297,9 +294,7 @@ class _LandingSignupFormState extends State<LandingSignupForm> {
                       ? widget.l10n.showPassword
                       : widget.l10n.hidePassword,
                   icon: Icon(
-                    _obscureConfirm
-                        ? Icons.visibility_off
-                        : Icons.visibility,
+                    _obscureConfirm ? Icons.visibility_off : Icons.visibility,
                   ),
                   onPressed: () =>
                       setState(() => _obscureConfirm = !_obscureConfirm),

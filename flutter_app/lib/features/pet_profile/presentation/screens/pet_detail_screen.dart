@@ -95,10 +95,7 @@ class _PetDetailScreenState extends ConsumerState<PetDetailScreen> {
                 child: HealthIssuesSection(petId: widget.petId, pet: pet),
               ),
               SliverToBoxAdapter(
-                child: PetEventsPreviewSection(
-                  petId: widget.petId,
-                  pet: pet,
-                ),
+                child: PetEventsPreviewSection(petId: widget.petId, pet: pet),
               ),
               if (viewerContext.can(PetDetailAction.manageSharing) ||
                   pet.isShared ||

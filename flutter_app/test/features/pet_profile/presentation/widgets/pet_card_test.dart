@@ -64,7 +64,9 @@ void main() {
       expect(find.byIcon(Icons.pets), findsOneWidget);
     });
 
-    testWidgets('org pets include organization in semantics label', (tester) async {
+    testWidgets('org pets include organization in semantics label', (
+      tester,
+    ) async {
       const orgPet = Pet(
         id: 'org-pet-id',
         name: 'Max',
@@ -78,10 +80,7 @@ void main() {
 
       expect(find.text('Max'), findsOneWidget);
       final semantics = tester.getSemantics(find.byType(PetCard));
-      expect(
-        semantics.label,
-        contains('Happy Paws Shelter'),
-      );
+      expect(semantics.label, contains('Happy Paws Shelter'));
     });
 
     testWidgets('foster placement line uses org green accent', (tester) async {

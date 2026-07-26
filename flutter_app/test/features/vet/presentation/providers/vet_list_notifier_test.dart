@@ -12,7 +12,8 @@ import 'package:pet_profile_app/features/vet/presentation/providers/vet_provider
 import '../../../../helpers/fakes.dart';
 
 class MutableAuthNotifier extends AuthNotifier {
-  MutableAuthNotifier() : super(FakeAuthService(), PrefsTokenStore(FakePrefs())) {
+  MutableAuthNotifier()
+    : super(FakeAuthService(), PrefsTokenStore(FakePrefs())) {
     state = const AuthState();
   }
 
@@ -22,35 +23,37 @@ class MutableAuthNotifier extends AuthNotifier {
 }
 
 void main() {
-  test('VetListNotifier returns empty list until access token is available', () async {
-  final auth = MutableAuthNotifier();
-  final client = MockClient((request) async {
-    return http.Response(json.encode([
-      {
-        'id': 'vet-1',
-        'name': 'Dr. Smith',
-        'address': 'Springfield',
-      },
-    ]), 200);
-  });
+  test(
+    'VetListNotifier returns empty list until access token is available',
+    () async {
+      final auth = MutableAuthNotifier();
+      final client = MockClient((request) async {
+        return http.Response(
+          json.encode([
+            {'id': 'vet-1', 'name': 'Dr. Smith', 'address': 'Springfield'},
+          ]),
+          200,
+        );
+      });
 
-  final container = ProviderContainer(
-    overrides: [
-      authProvider.overrideWith((ref) => auth),
-      apiBaseUrlProvider.overrideWithValue('http://test.local'),
-      authHttpClientProvider.overrideWithValue(client),
-    ],
+      final container = ProviderContainer(
+        overrides: [
+          authProvider.overrideWith((ref) => auth),
+          apiBaseUrlProvider.overrideWithValue('http://test.local'),
+          authHttpClientProvider.overrideWithValue(client),
+        ],
+      );
+      addTearDown(container.dispose);
+
+      final initial = await container.read(vetListProvider.future);
+      expect(initial, isEmpty);
+
+      auth.setLoggedIn();
+      await container.read(vetListProvider.future);
+
+      final loaded = container.read(vetListProvider).valueOrNull;
+      expect(loaded, hasLength(1));
+      expect(loaded!.single.name, 'Dr. Smith');
+    },
   );
-  addTearDown(container.dispose);
-
-  final initial = await container.read(vetListProvider.future);
-  expect(initial, isEmpty);
-
-  auth.setLoggedIn();
-  await container.read(vetListProvider.future);
-
-  final loaded = container.read(vetListProvider).valueOrNull;
-  expect(loaded, hasLength(1));
-  expect(loaded!.single.name, 'Dr. Smith');
-  });
 }

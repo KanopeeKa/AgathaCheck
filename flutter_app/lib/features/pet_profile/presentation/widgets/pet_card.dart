@@ -64,10 +64,7 @@ class PetCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   Container(width: 4, color: statusBarColor),
-                  Expanded(
-                    flex: 2,
-                    child: _buildImageArea(context),
-                  ),
+                  Expanded(flex: 2, child: _buildImageArea(context)),
                   Expanded(
                     flex: 1,
                     child: Padding(

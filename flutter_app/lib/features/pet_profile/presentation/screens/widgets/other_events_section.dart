@@ -52,8 +52,7 @@ class OtherEventsSection extends ConsumerWidget {
       data: (entries) => PetEventEntryList(
         entries: entries,
         petId: petId,
-        onEntryTap: (entry) =>
-            context.go('/pet/$petId/other/edit/${entry.id}'),
+        onEntryTap: (entry) => context.go('/pet/$petId/other/edit/${entry.id}'),
       ),
     );
 

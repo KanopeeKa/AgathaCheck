@@ -93,9 +93,7 @@ class PersonalPetsSection extends StatelessWidget {
                 children: [
                   Text(
                     l.hideSharedPet,
-                    style: TextStyle(
-                      color: theme.colorScheme.onSurfaceVariant,
-                    ),
+                    style: TextStyle(color: theme.colorScheme.onSurfaceVariant),
                   ),
                   const SizedBox(width: 8),
                   Icon(
