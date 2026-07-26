@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../../l10n/app_localizations.dart';
 import '../../../pet_profile/presentation/controllers/pet_list_controller.dart';
 import '../../../pet_profile/presentation/providers/pet_providers.dart';
 import '../../domain/entities/app_experience.dart';
@@ -49,7 +48,6 @@ class _GuardianHomeScreenState extends ConsumerState<GuardianHomeScreen> {
   @override
   Widget build(BuildContext context) {
     final petListAsync = ref.watch(petListProvider);
-    final l = AppLocalizations.of(context);
 
     ref.listen(petListProvider, (_, next) {
       next.whenData((_) => _redirectIfOnboardingNeeded());
@@ -61,21 +59,8 @@ class _GuardianHomeScreenState extends ConsumerState<GuardianHomeScreen> {
       child: petListAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (e, _) => Center(child: Text('$e')),
-        data: (pets) => Stack(
-          children: [
+        data: (pets) =>
             GuardianShellHomeContent(allPets: pets, controller: _controller),
-            Positioned(
-              right: 16,
-              bottom: 16,
-              child: FloatingActionButton.extended(
-                key: const Key('add_pet_button'),
-                onPressed: () => context.push('/add'),
-                icon: const Icon(Icons.add),
-                label: Text(l?.addPet ?? 'Add Pet'),
-              ),
-            ),
-          ],
-        ),
       ),
     );
   }

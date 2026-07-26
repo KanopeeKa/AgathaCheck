@@ -8,15 +8,38 @@ export const NOTIFICATION_KIND_ADMINISTRATIVE = 'administrative';
 export const NOTIFICATION_PRIORITY_NORMAL = 'normal';
 export const NOTIFICATION_PRIORITY_URGENT = 'urgent';
 
+export const NOTIFICATION_TYPE_PENDING_SHARE_RECEIVED = 'pendingShareReceived';
+export const NOTIFICATION_TYPE_PENDING_FOSTER_PLACEMENT_RECEIVED = 'pendingFosterPlacementReceived';
+export const NOTIFICATION_TYPE_PENDING_ADOPTION_PLACEMENT_RECEIVED = 'pendingAdoptionPlacementReceived';
+export const NOTIFICATION_TYPE_PENDING_CUSTODY_TRANSFER_RECEIVED = 'pendingCustodyTransferReceived';
+
 const VALID_KINDS = new Set([NOTIFICATION_KIND_CARE, NOTIFICATION_KIND_ADMINISTRATIVE]);
 const VALID_PRIORITIES = new Set([
   NOTIFICATION_PRIORITY_NORMAL,
   NOTIFICATION_PRIORITY_URGENT,
 ]);
 
-/** Existing notification `type` values default to care-kind at creation time. */
+const ADMINISTRATIVE_TYPES = new Set([
+  'fosterRequestReceived',
+  'fosterRequestResponded',
+  'fosterApprovalGranted',
+  'fosterApprovalDeclined',
+  'sessionStartingSoon',
+  'sessionEndingSoon',
+  'agreementWithdrawn',
+  'connectionRequestReceived',
+  NOTIFICATION_TYPE_PENDING_SHARE_RECEIVED,
+  NOTIFICATION_TYPE_PENDING_FOSTER_PLACEMENT_RECEIVED,
+  NOTIFICATION_TYPE_PENDING_ADOPTION_PLACEMENT_RECEIVED,
+  NOTIFICATION_TYPE_PENDING_CUSTODY_TRANSFER_RECEIVED,
+  'adminMessageReceived',
+]);
+
+/** Map notification `type` to kind at creation time. */
 export function defaultKindForType(type = 'general') {
-  void type;
+  if (ADMINISTRATIVE_TYPES.has(type)) {
+    return NOTIFICATION_KIND_ADMINISTRATIVE;
+  }
   return NOTIFICATION_KIND_CARE;
 }
 
@@ -28,4 +51,8 @@ export function normaliseKind(value) {
 export function normalisePriority(value) {
   const priority = String(value || NOTIFICATION_PRIORITY_NORMAL).toLowerCase();
   return VALID_PRIORITIES.has(priority) ? priority : NOTIFICATION_PRIORITY_NORMAL;
+}
+
+export function isAdministrativeType(type) {
+  return ADMINISTRATIVE_TYPES.has(type);
 }

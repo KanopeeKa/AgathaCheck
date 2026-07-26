@@ -2697,6 +2697,83 @@ class AppLocalizationsEn extends AppLocalizations {
   String get orgPet => 'Organisation Pet';
 
   @override
+  String get petTimelineTitle => 'Timeline';
+
+  @override
+  String get petTimelineNoData => 'No data';
+
+  @override
+  String get petTimelineFillAction => 'Fill';
+
+  @override
+  String get petTimelineLoadError => 'Could not load timeline';
+
+  @override
+  String get petTimelineManualEntry => 'Manual entry';
+
+  @override
+  String get petTimelineUnknownPerson => 'Unknown';
+
+  @override
+  String get petTimelineCustodySegmentHidden => 'Guardian custody';
+
+  @override
+  String petTimelineFosteringSession(String fosterName) {
+    return 'Fostering with $fosterName';
+  }
+
+  @override
+  String petTimelineCustodySegment(String guardianName) {
+    return 'Guardian: $guardianName';
+  }
+
+  @override
+  String petTimelineDateRange(String startDate, String endDate) {
+    return '$startDate – $endDate';
+  }
+
+  @override
+  String petTimelineFillTitle(String petName) {
+    return 'Add timeline entry for $petName';
+  }
+
+  @override
+  String get petTimelineFillTitleLabel => 'Title';
+
+  @override
+  String get petTimelineFillTitleRequired => 'Title is required';
+
+  @override
+  String get petTimelineFillDescriptionLabel => 'Description';
+
+  @override
+  String get petTimelineFillStartDateLabel => 'Start date';
+
+  @override
+  String get petTimelineFillStartDateRequired => 'Start date is required';
+
+  @override
+  String get petTimelineFillEndDateLabel => 'End date';
+
+  @override
+  String get petTimelineFillError => 'Could not save timeline entry';
+
+  @override
+  String get bulkShare => 'Bulk share';
+
+  @override
+  String get bulkShareSelectHint => 'Select pets to share';
+
+  @override
+  String get bulkShareAction => 'Share selected';
+
+  @override
+  String get bulkShareDone => 'Share links created for selected pets';
+
+  @override
+  String get bulkShareNoneSelected => 'Select at least one pet';
+
+  @override
   String get pendingShares => 'Pending Shares';
 
   @override
@@ -3668,6 +3745,44 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get myVets => 'My vets';
+
+  @override
+  String get upcomingPetEvents => 'Upcoming Pet Events';
+
+  @override
+  String get allEvents => 'All Events';
+
+  @override
+  String get allVets => 'All Vets';
+
+  @override
+  String get addAnEvent => 'Add an event';
+
+  @override
+  String get dashboardAddPet => 'Add a pet';
+
+  @override
+  String vetLinkedPetCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count pets',
+      one: '1 pet',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get vetLinkedPets => 'Linked pets';
+
+  @override
+  String get vetNotFound => 'Veterinarian not found';
+
+  @override
+  String get selectPetForWeight => 'Select a pet for weight entry';
+
+  @override
+  String get selectPetForEvent => 'Select a pet for this event';
 
   @override
   String get orgVets => 'Org vets';

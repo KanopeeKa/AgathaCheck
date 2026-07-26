@@ -393,6 +393,18 @@ CREATE TABLE public.pet_share_links (
     claimed_by uuid,
     claimed_at timestamp with time zone
 );
+CREATE TABLE public.pet_timeline_entries (
+    id uuid NOT NULL,
+    pet_id uuid NOT NULL,
+    entry_type character varying(16) DEFAULT 'manual'::character varying NOT NULL,
+    title character varying(255) DEFAULT ''::character varying NOT NULL,
+    description text DEFAULT ''::text NOT NULL,
+    start_date date NOT NULL,
+    end_date date,
+    created_by uuid,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    CONSTRAINT pet_timeline_entries_type_check CHECK (((entry_type)::text = 'manual'::text))
+);
 CREATE TABLE public.pets (
     id uuid NOT NULL,
     user_id uuid NOT NULL,
@@ -574,6 +586,8 @@ ALTER TABLE ONLY public.pet_share_links
     ADD CONSTRAINT pet_share_links_code_key UNIQUE (code);
 ALTER TABLE ONLY public.pet_share_links
     ADD CONSTRAINT pet_share_links_pkey PRIMARY KEY (id);
+ALTER TABLE ONLY public.pet_timeline_entries
+    ADD CONSTRAINT pet_timeline_entries_pkey PRIMARY KEY (id);
 ALTER TABLE ONLY public.pets
     ADD CONSTRAINT pets_pkey PRIMARY KEY (id);
 ALTER TABLE ONLY public.prospects
@@ -635,6 +649,7 @@ CREATE INDEX idx_organizations_name ON public.organizations USING btree (name);
 CREATE UNIQUE INDEX idx_pet_access_pet_user ON public.pet_access USING btree (pet_id, user_id);
 CREATE INDEX idx_pet_share_links_code ON public.pet_share_links USING btree (code);
 CREATE INDEX idx_pet_share_links_pet_id ON public.pet_share_links USING btree (pet_id);
+CREATE INDEX idx_pet_timeline_entries_pet_id ON public.pet_timeline_entries USING btree (pet_id, start_date);
 CREATE INDEX idx_prospects_email_lower ON public.prospects USING btree (lower((email)::text)) WHERE (email IS NOT NULL);
 CREATE INDEX idx_prospects_org_id ON public.prospects USING btree (organization_id);
 CREATE INDEX idx_vets_organization_id ON public.vets USING btree (organization_id);
@@ -796,6 +811,10 @@ ALTER TABLE ONLY public.pet_share_links
     ADD CONSTRAINT pet_share_links_created_by_fkey FOREIGN KEY (created_by) REFERENCES public.users(id) ON DELETE CASCADE;
 ALTER TABLE ONLY public.pet_share_links
     ADD CONSTRAINT pet_share_links_pet_id_fkey FOREIGN KEY (pet_id) REFERENCES public.pets(id) ON DELETE CASCADE;
+ALTER TABLE ONLY public.pet_timeline_entries
+    ADD CONSTRAINT pet_timeline_entries_created_by_fkey FOREIGN KEY (created_by) REFERENCES public.users(id) ON DELETE SET NULL;
+ALTER TABLE ONLY public.pet_timeline_entries
+    ADD CONSTRAINT pet_timeline_entries_pet_id_fkey FOREIGN KEY (pet_id) REFERENCES public.pets(id) ON DELETE CASCADE;
 ALTER TABLE ONLY public.pets
     ADD CONSTRAINT pets_care_holder_org_id_fkey FOREIGN KEY (care_holder_org_id) REFERENCES public.organizations(id) ON DELETE SET NULL;
 ALTER TABLE ONLY public.pets

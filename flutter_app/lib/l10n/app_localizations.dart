@@ -4971,6 +4971,144 @@ abstract class AppLocalizations {
   /// **'Organisation Pet'**
   String get orgPet;
 
+  /// No description provided for @petTimelineTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Timeline'**
+  String get petTimelineTitle;
+
+  /// No description provided for @petTimelineNoData.
+  ///
+  /// In en, this message translates to:
+  /// **'No data'**
+  String get petTimelineNoData;
+
+  /// No description provided for @petTimelineFillAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Fill'**
+  String get petTimelineFillAction;
+
+  /// No description provided for @petTimelineLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load timeline'**
+  String get petTimelineLoadError;
+
+  /// No description provided for @petTimelineManualEntry.
+  ///
+  /// In en, this message translates to:
+  /// **'Manual entry'**
+  String get petTimelineManualEntry;
+
+  /// No description provided for @petTimelineUnknownPerson.
+  ///
+  /// In en, this message translates to:
+  /// **'Unknown'**
+  String get petTimelineUnknownPerson;
+
+  /// No description provided for @petTimelineCustodySegmentHidden.
+  ///
+  /// In en, this message translates to:
+  /// **'Guardian custody'**
+  String get petTimelineCustodySegmentHidden;
+
+  /// No description provided for @petTimelineFosteringSession.
+  ///
+  /// In en, this message translates to:
+  /// **'Fostering with {fosterName}'**
+  String petTimelineFosteringSession(String fosterName);
+
+  /// No description provided for @petTimelineCustodySegment.
+  ///
+  /// In en, this message translates to:
+  /// **'Guardian: {guardianName}'**
+  String petTimelineCustodySegment(String guardianName);
+
+  /// No description provided for @petTimelineDateRange.
+  ///
+  /// In en, this message translates to:
+  /// **'{startDate} – {endDate}'**
+  String petTimelineDateRange(String startDate, String endDate);
+
+  /// No description provided for @petTimelineFillTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Add timeline entry for {petName}'**
+  String petTimelineFillTitle(String petName);
+
+  /// No description provided for @petTimelineFillTitleLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Title'**
+  String get petTimelineFillTitleLabel;
+
+  /// No description provided for @petTimelineFillTitleRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Title is required'**
+  String get petTimelineFillTitleRequired;
+
+  /// No description provided for @petTimelineFillDescriptionLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Description'**
+  String get petTimelineFillDescriptionLabel;
+
+  /// No description provided for @petTimelineFillStartDateLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Start date'**
+  String get petTimelineFillStartDateLabel;
+
+  /// No description provided for @petTimelineFillStartDateRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Start date is required'**
+  String get petTimelineFillStartDateRequired;
+
+  /// No description provided for @petTimelineFillEndDateLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'End date'**
+  String get petTimelineFillEndDateLabel;
+
+  /// No description provided for @petTimelineFillError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not save timeline entry'**
+  String get petTimelineFillError;
+
+  /// No description provided for @bulkShare.
+  ///
+  /// In en, this message translates to:
+  /// **'Bulk share'**
+  String get bulkShare;
+
+  /// No description provided for @bulkShareSelectHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Select pets to share'**
+  String get bulkShareSelectHint;
+
+  /// No description provided for @bulkShareAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Share selected'**
+  String get bulkShareAction;
+
+  /// No description provided for @bulkShareDone.
+  ///
+  /// In en, this message translates to:
+  /// **'Share links created for selected pets'**
+  String get bulkShareDone;
+
+  /// No description provided for @bulkShareNoneSelected.
+  ///
+  /// In en, this message translates to:
+  /// **'Select at least one pet'**
+  String get bulkShareNoneSelected;
+
   /// No description provided for @pendingShares.
   ///
   /// In en, this message translates to:
@@ -6650,6 +6788,66 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'My vets'**
   String get myVets;
+
+  /// No description provided for @upcomingPetEvents.
+  ///
+  /// In en, this message translates to:
+  /// **'Upcoming Pet Events'**
+  String get upcomingPetEvents;
+
+  /// No description provided for @allEvents.
+  ///
+  /// In en, this message translates to:
+  /// **'All Events'**
+  String get allEvents;
+
+  /// No description provided for @allVets.
+  ///
+  /// In en, this message translates to:
+  /// **'All Vets'**
+  String get allVets;
+
+  /// No description provided for @addAnEvent.
+  ///
+  /// In en, this message translates to:
+  /// **'Add an event'**
+  String get addAnEvent;
+
+  /// No description provided for @dashboardAddPet.
+  ///
+  /// In en, this message translates to:
+  /// **'Add a pet'**
+  String get dashboardAddPet;
+
+  /// No description provided for @vetLinkedPetCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 pet} other{{count} pets}}'**
+  String vetLinkedPetCount(int count);
+
+  /// No description provided for @vetLinkedPets.
+  ///
+  /// In en, this message translates to:
+  /// **'Linked pets'**
+  String get vetLinkedPets;
+
+  /// No description provided for @vetNotFound.
+  ///
+  /// In en, this message translates to:
+  /// **'Veterinarian not found'**
+  String get vetNotFound;
+
+  /// No description provided for @selectPetForWeight.
+  ///
+  /// In en, this message translates to:
+  /// **'Select a pet for weight entry'**
+  String get selectPetForWeight;
+
+  /// No description provided for @selectPetForEvent.
+  ///
+  /// In en, this message translates to:
+  /// **'Select a pet for this event'**
+  String get selectPetForEvent;
 
   /// No description provided for @orgVets.
   ///

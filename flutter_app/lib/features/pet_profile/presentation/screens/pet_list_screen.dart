@@ -9,7 +9,6 @@ import '../../../auth/presentation/providers/auth_providers.dart';
 import '../../../health_tracking/presentation/widgets/events_nav_icon_button.dart';
 import '../../../notifications/presentation/providers/notification_providers.dart';
 import '../providers/pet_providers.dart';
-import '../widgets/pet_card.dart';
 import '../controllers/pet_list_controller.dart';
 import '../widgets/org_filter_chips.dart';
 import '../widgets/personal_pets_section.dart';
@@ -21,19 +20,22 @@ import '../widgets/pet_list/pending_custody_transfers_section.dart';
 import '../widgets/pet_list/pending_adoption_placements_section.dart';
 import '../widgets/pet_list/pending_foster_placements_section.dart';
 import '../widgets/pet_list/pending_shares_section.dart';
+import '../../../experience/presentation/screens/guardian/guardian_bulk_share.dart';
 import '../widgets/pet_list/pet_list_section_header.dart';
 
 /// Screen that displays the list of all pets owned by the user.
-///
-/// Shows a scrollable list of [PetCard] widgets for each pet,
-/// with options to add new pets, navigate to pet details, and
-/// access veterinarian and health tracking features from the app bar.
 class PetListScreen extends ConsumerStatefulWidget {
-  /// Creates a [PetListScreen].
-  const PetListScreen({super.key, this.embeddedInShell = false});
+  const PetListScreen({
+    super.key,
+    this.embeddedInShell = false,
+    this.enableBulkShare = false,
+  });
 
   /// When true, renders list body only (guardian shell provides top nav).
   final bool embeddedInShell;
+
+  /// When true (with [embeddedInShell]), shows bulk-share multi-select for owned pets.
+  final bool enableBulkShare;
 
   @override
   ConsumerState<PetListScreen> createState() => _PetListScreenState();
@@ -41,6 +43,8 @@ class PetListScreen extends ConsumerStatefulWidget {
 
 class _PetListScreenState extends ConsumerState<PetListScreen> {
   late final PetListController _controller;
+  bool _bulkShareMode = false;
+  final Set<String> _selectedPetIds = {};
 
   @override
   void initState() {
@@ -163,11 +167,13 @@ class _PetListScreenState extends ConsumerState<PetListScreen> {
                 onSelected: (v) => setState(() => _controller.orgFilter = v),
                 l: l,
               ),
-            PendingSharesSection(),
-            PendingFosterPlacementsSection(),
-            PendingAdoptionPlacementsSection(),
-            const PendingCustodyTransfersSection(),
-            DueEventsSection(pets: allPets),
+            if (!widget.embeddedInShell) ...[
+              PendingSharesSection(),
+              PendingFosterPlacementsSection(),
+              PendingAdoptionPlacementsSection(),
+              const PendingCustodyTransfersSection(),
+            ],
+            if (!widget.embeddedInShell) DueEventsSection(pets: allPets),
             if (_controller.orgFilter == null ||
                 _controller.orgFilter == '_personal') ...[
               if (personalActive.isNotEmpty ||
@@ -185,6 +191,17 @@ class _PetListScreenState extends ConsumerState<PetListScreen> {
                 theme: theme,
                 ref: ref,
                 parentContext: context,
+                bulkShareMode: widget.enableBulkShare && _bulkShareMode,
+                selectedPetIds: _selectedPetIds,
+                onPetSelectionToggle: (petId) {
+                  setState(() {
+                    if (_selectedPetIds.contains(petId)) {
+                      _selectedPetIds.remove(petId);
+                    } else {
+                      _selectedPetIds.add(petId);
+                    }
+                  });
+                },
               ),
             ],
             if (_controller.orgFilter == null ||
@@ -221,18 +238,87 @@ class _PetListScreenState extends ConsumerState<PetListScreen> {
     );
 
     if (widget.embeddedInShell) {
-      return Stack(
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Positioned.fill(child: scaffoldBody),
-          Positioned(
-            right: 16,
-            bottom: 16,
-            child: FloatingActionButton.extended(
-              key: const Key('add_pet_button'),
-              onPressed: () => context.push('/add'),
-              tooltip: l.addNewPet,
-              icon: const Icon(Icons.add),
-              label: Text(l.addPet),
+          if (widget.enableBulkShare)
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      _bulkShareMode ? l.bulkShareSelectHint : l.allPets,
+                      style: theme.textTheme.titleMedium,
+                    ),
+                  ),
+                  TextButton(
+                    key: const Key('bulk_share_toggle'),
+                    onPressed: () {
+                      setState(() {
+                        _bulkShareMode = !_bulkShareMode;
+                        if (!_bulkShareMode) _selectedPetIds.clear();
+                      });
+                    },
+                    child: Text(_bulkShareMode ? l.cancel : l.bulkShare),
+                  ),
+                  if (_bulkShareMode)
+                    FilledButton(
+                      key: const Key('bulk_share_action'),
+                      onPressed: () async {
+                        final pets =
+                            ref.read(petListProvider).valueOrNull ?? [];
+                        final owned = _controller
+                            .getPersonalActive(
+                              _controller.guardianShellPets(pets),
+                            )
+                            .where(
+                              (p) =>
+                                  !p.isShared &&
+                                  !p.isFoster &&
+                                  p.organizationId == null,
+                            )
+                            .where((p) => _selectedPetIds.contains(p.id))
+                            .map((p) => (id: p.id, name: p.name))
+                            .toList();
+                        if (owned.isEmpty) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text(l.bulkShareNoneSelected)),
+                          );
+                          return;
+                        }
+                        await runBulkShareForPets(context, ref, owned);
+                        if (mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text(l.bulkShareDone)),
+                          );
+                          setState(() {
+                            _bulkShareMode = false;
+                            _selectedPetIds.clear();
+                          });
+                        }
+                      },
+                      child: Text(l.bulkShareAction),
+                    ),
+                ],
+              ),
+            ),
+          Expanded(
+            child: Stack(
+              children: [
+                Positioned.fill(child: scaffoldBody),
+                Positioned(
+                  right: 16,
+                  bottom: 16,
+                  child: FloatingActionButton.extended(
+                    key: const Key('add_pet_button'),
+                    onPressed: () => context.push('/add'),
+                    tooltip: l.addNewPet,
+                    icon: const Icon(Icons.add),
+                    label: Text(l.addPet),
+                  ),
+                ),
+              ],
             ),
           ),
         ],

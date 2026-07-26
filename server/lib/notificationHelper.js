@@ -3,6 +3,7 @@ import {
   defaultKindForType,
   normaliseKind,
   normalisePriority,
+  NOTIFICATION_KIND_ADMINISTRATIVE,
   NOTIFICATION_PRIORITY_NORMAL,
 } from './notificationKind.js';
 
@@ -39,6 +40,32 @@ export async function createNotification(pool, {
       resolvedPriority,
       resolvedAt,
     ]
+  );
+}
+
+/**
+ * Mark open administrative notifications resolved when a pending object transitions.
+ */
+export async function resolveAdministrativeNotifications(pool, {
+  userId,
+  petId = null,
+  type,
+}) {
+  if (!userId || !type) return;
+  const params = [userId, type, NOTIFICATION_KIND_ADMINISTRATIVE];
+  let petFilter = '';
+  if (petId) {
+    petFilter = ' AND pet_id = $4';
+    params.push(petId);
+  }
+  await pool.query(
+    `UPDATE notifications
+     SET resolved_at = NOW()
+     WHERE user_id = $1
+       AND type = $2
+       AND kind = $3
+       AND resolved_at IS NULL${petFilter}`,
+    params,
   );
 }
 

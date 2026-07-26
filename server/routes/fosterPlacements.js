@@ -5,7 +5,11 @@ import { createApiLimiter } from '../config/rateLimit.js';
 import { JWT_SECRET } from '../config/jwtSecret.js';
 import { publicError } from '../config/security.js';
 import { normalizeCalendarDateInput } from '../lib/calendarDate.js';
-import { createNotification, userDisplayName } from '../lib/notificationHelper.js';
+import { createNotification, resolveAdministrativeNotifications, userDisplayName } from '../lib/notificationHelper.js';
+import {
+  NOTIFICATION_TYPE_PENDING_ADOPTION_PLACEMENT_RECEIVED,
+  NOTIFICATION_TYPE_PENDING_FOSTER_PLACEMENT_RECEIVED,
+} from '../lib/notificationKind.js';
 import { finaliseAdoptionJourney } from '../lib/adoptionJourneys.js';
 import {
   completeAdoptionTransfer,
@@ -162,6 +166,12 @@ export default function fosterPlacementsRoutes(pool) {
         });
       }
 
+      await resolveAdministrativeNotifications(pool, {
+        userId,
+        petId: placement.pet_id,
+        type: NOTIFICATION_TYPE_PENDING_FOSTER_PLACEMENT_RECEIVED,
+      });
+
       res.json(placementToMap(updated, { pet_name: petName }));
     } catch (err) {
       res.status(500).json({ error: publicError(err) });
@@ -218,6 +228,12 @@ export default function fosterPlacementsRoutes(pool) {
           type: 'general',
         });
       }
+
+      await resolveAdministrativeNotifications(pool, {
+        userId,
+        petId: placement.pet_id,
+        type: NOTIFICATION_TYPE_PENDING_FOSTER_PLACEMENT_RECEIVED,
+      });
 
       res.json(placementToMap(updateResult.rows[0], { pet_name: petName }));
     } catch (err) {
@@ -294,6 +310,12 @@ export default function fosterPlacementsRoutes(pool) {
         title: 'Adoption complete',
         message: `You are now the owner of ${pet.name}.`,
         type: 'general',
+      });
+
+      await resolveAdministrativeNotifications(client, {
+        userId,
+        petId: placement.pet_id,
+        type: NOTIFICATION_TYPE_PENDING_ADOPTION_PLACEMENT_RECEIVED,
       });
 
       await client.query('COMMIT');

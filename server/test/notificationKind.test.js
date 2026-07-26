@@ -9,6 +9,8 @@ import {
   NOTIFICATION_KIND_CARE,
   NOTIFICATION_PRIORITY_NORMAL,
   NOTIFICATION_PRIORITY_URGENT,
+  NOTIFICATION_TYPE_PENDING_FOSTER_PLACEMENT_RECEIVED,
+  NOTIFICATION_KIND_ADMINISTRATIVE,
 } from '../lib/notificationKind.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -26,6 +28,11 @@ describe('notificationKind', () => {
     ]) {
       expect(defaultKindForType(type)).toBe(NOTIFICATION_KIND_CARE);
     }
+  });
+
+  it('maps pending inbox types to administrative kind', () => {
+    expect(defaultKindForType(NOTIFICATION_TYPE_PENDING_FOSTER_PLACEMENT_RECEIVED))
+      .toBe(NOTIFICATION_KIND_ADMINISTRATIVE);
   });
 
   it('normalises invalid kind and priority wire values', () => {
