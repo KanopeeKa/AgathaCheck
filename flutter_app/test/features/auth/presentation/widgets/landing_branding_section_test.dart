@@ -20,7 +20,7 @@ Widget _wrap(Widget child) {
 }
 
 void main() {
-  testWidgets('landing branding shows guardian and org path cards', (
+  testWidgets('landing branding shows guardian and org path buttons', (
     tester,
   ) async {
     await tester.pumpWidget(
@@ -30,6 +30,8 @@ void main() {
             return LandingBrandingSection(
               theme: Theme.of(context),
               l10n: AppLocalizations.of(context)!,
+              onPetParentsPressed: () {},
+              onCharitiesPressed: () {},
             );
           },
         ),
@@ -43,9 +45,10 @@ void main() {
     expect(find.text('For shelters, rescues, and care teams'), findsOneWidget);
   });
 
-  testWidgets('landing guardian path card expands detail on tap', (
-    tester,
-  ) async {
+  testWidgets('landing path buttons invoke scroll callbacks', (tester) async {
+    var petParentsPressed = false;
+    var charitiesPressed = false;
+
     await tester.pumpWidget(
       _wrap(
         Builder(
@@ -53,6 +56,8 @@ void main() {
             return LandingBrandingSection(
               theme: Theme.of(context),
               l10n: AppLocalizations.of(context)!,
+              onPetParentsPressed: () => petParentsPressed = true,
+              onCharitiesPressed: () => charitiesPressed = true,
             );
           },
         ),
@@ -60,17 +65,13 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    expect(find.text('See how it works'), findsOneWidget);
-    expect(find.textContaining('Coordinate with your household'), findsNothing);
-
     await tester.tap(find.byKey(const Key('landing_guardian_path_card')));
     await tester.pumpAndSettle();
+    expect(petParentsPressed, isTrue);
 
-    expect(
-      find.textContaining('Coordinate with your household'),
-      findsOneWidget,
-    );
-    expect(find.text('Show less'), findsOneWidget);
+    await tester.tap(find.byKey(const Key('landing_org_path_card')));
+    await tester.pumpAndSettle();
+    expect(charitiesPressed, isTrue);
   });
 
   testWidgets('landing path cards use experience accent fills', (tester) async {
@@ -81,6 +82,8 @@ void main() {
             return LandingBrandingSection(
               theme: Theme.of(context),
               l10n: AppLocalizations.of(context)!,
+              onPetParentsPressed: () {},
+              onCharitiesPressed: () {},
             );
           },
         ),

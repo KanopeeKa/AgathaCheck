@@ -9,6 +9,7 @@ void main() {
   ) async {
     const accent = AppColorTokens.guardianPrimary;
     const onAccent = AppColorTokens.inverse;
+    var pressed = false;
 
     await tester.pumpWidget(
       MaterialApp(
@@ -16,12 +17,11 @@ void main() {
           body: LandingPathCard(
             key: const Key('test_path_card'),
             summary: 'For pet parents',
-            expandLabel: 'See how it works',
-            collapseLabel: 'Show less',
-            detail: 'Coordinate with your household.',
+            actionLabel: 'Learn more',
             accentColor: accent,
             onAccentColor: onAccent,
             icon: Icons.pets,
+            onPressed: () => pressed = true,
           ),
         ),
       ),
@@ -37,40 +37,28 @@ void main() {
     expect(material.color, accent);
     expect(material.elevation, 0);
 
-    final decorationFinder = find.descendant(
-      of: find.byKey(const Key('test_path_card')),
-      matching: find.byType(DecoratedBox),
-    );
-    expect(decorationFinder, findsNothing);
+    await tester.tap(find.byKey(const Key('test_path_card')));
+    await tester.pumpAndSettle();
+    expect(pressed, isTrue);
   });
 
-  testWidgets('landing path card expands on tap', (tester) async {
+  testWidgets('landing path card shows forward arrow', (tester) async {
     await tester.pumpWidget(
-      const MaterialApp(
+      MaterialApp(
         home: Scaffold(
           body: LandingPathCard(
             summary: 'For pet parents',
-            expandLabel: 'See how it works',
-            collapseLabel: 'Show less',
-            detail: 'Coordinate with your household.',
+            actionLabel: 'Learn more',
             accentColor: AppColorTokens.guardianPrimary,
             onAccentColor: AppColorTokens.inverse,
             icon: Icons.pets,
+            onPressed: () {},
           ),
         ),
       ),
     );
     await tester.pumpAndSettle();
 
-    expect(find.textContaining('Coordinate with your household'), findsNothing);
-
-    await tester.tap(find.text('See how it works'));
-    await tester.pumpAndSettle();
-
-    expect(
-      find.textContaining('Coordinate with your household'),
-      findsOneWidget,
-    );
-    expect(find.text('Show less'), findsOneWidget);
+    expect(find.byIcon(Icons.arrow_forward), findsOneWidget);
   });
 }
