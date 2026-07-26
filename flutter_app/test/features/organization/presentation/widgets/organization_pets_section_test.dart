@@ -26,14 +26,16 @@ void main() {
             final l = AppLocalizations.of(context)!;
             final theme = Theme.of(context);
             return Scaffold(
-              body: OrganizationPetsSection(
-                petsAsync: const AsyncValue.data([_orgPet]),
-                isSuperUser: false,
-                theme: theme,
-                colorScheme: theme.colorScheme,
-                l: l,
-                orgId: 'org-1',
-                petsExpanded: true,
+              body: SingleChildScrollView(
+                child: OrganizationPetsSection(
+                  petsAsync: const AsyncValue.data([_orgPet]),
+                  isSuperUser: false,
+                  theme: theme,
+                  colorScheme: theme.colorScheme,
+                  l: l,
+                  orgId: 'org-1',
+                  petsExpanded: true,
+                ),
               ),
             );
           },
@@ -57,7 +59,7 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    await tester.tap(find.text('Max'));
+    await tester.tap(find.byKey(const Key('pet_card_Max')));
     await tester.pumpAndSettle();
 
     expect(find.text('Pet org-pet-1'), findsOneWidget);
