@@ -9,7 +9,7 @@ import {
   TRANSFER_RETURN,
 } from '../../lib/custodyTransfers.js';
 import { petIsFosteredByOrg, setOrgGuardianAndCare } from '../../lib/petCustody.js';
-import { extractUserId, requireMember, requirePermission } from './shared.js';
+import { extractUserId, requirePermission } from './shared.js';
 import { publicError } from '../../config/security.js';
 
 export function registerPetsRoutes(router, pool) {
