@@ -139,6 +139,6 @@ test.describe('Help / FAQ', () => {
     await help.goBack();
 
     await petList.expectLoaded();
-    await expect(page.getByRole('button', { name: 'Add Pet' })).toBeVisible();
+    await expect(page.getByText('My Pets', { exact: true })).toBeVisible();
   });
 });

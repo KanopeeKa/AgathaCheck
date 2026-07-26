@@ -130,9 +130,24 @@ export class PetListPage {
     await homeShellLocator(this.page).first().waitFor();
   }
 
+  /** Guardian dashboard (`/g/home`) no longer shows Add Pet — FAB lives on `/g/pets`. */
+  async openManagePets(): Promise<void> {
+    await dismissConsentBannerIfPresent(this.page);
+    const route = flutterRoutePath(this.page.url());
+    if (!route.startsWith('/g/pets')) {
+      await this.page.goto(flutterGotoUrl('/g/pets'));
+      await refreshFlutterAccessibility(this.page);
+      await waitForFlutterRoutePattern(this.page, /^\/g\/pets(?:\?|$)/, 30_000);
+    }
+  }
+
   async openAddPet(): Promise<void> {
     await dismissConsentBannerIfPresent(this.page);
-    await this.page.getByRole('button', { name: 'Add Pet' }).click();
+    const addPetBtn = this.page.getByRole('button', { name: 'Add Pet' });
+    if (!(await addPetBtn.isVisible({ timeout: 2_000 }).catch(() => false))) {
+      await this.openManagePets();
+    }
+    await addPetBtn.click();
     await this.page.getByRole('button', { name: 'Save Pet' }).waitFor({ timeout: 30_000 });
   }
 

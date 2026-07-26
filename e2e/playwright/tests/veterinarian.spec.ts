@@ -171,7 +171,7 @@ test.describe('Veterinarian management', () => {
     await vetList.goBack();
 
     await petList.expectLoaded();
-    await expect(page.getByRole('button', { name: 'Add Pet' })).toBeVisible();
+    await expect(page.getByText('My Pets', { exact: true })).toBeVisible();
   });
 
   test('user can navigate to vet list from the app bar', async ({ page, testUser }) => {

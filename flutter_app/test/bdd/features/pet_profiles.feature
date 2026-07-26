@@ -58,11 +58,11 @@ Feature: Pet Profiles
     And the screen should display species "Dog" and breed "Labrador"
 
   @P0
-  Scenario: Empty pet list shows prompt
+  Scenario: Empty pet list shows prompt on guardian dashboard
     Given the user has no pets
-    When the user views the pet list
+    When the user views the guardian home dashboard
     Then the user should see a "No pets yet" message
-    And the user should see the "Add Pet" button
+    And the user should see the "My Pets" section
 
   # ── Editing Pets ─────────────────────────────────────────────
 

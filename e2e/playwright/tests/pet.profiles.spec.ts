@@ -1,6 +1,6 @@
 /**
  * @bdd pet_profiles.feature
- * Scenario: Empty pet list shows prompt
+ * Scenario: Empty pet list shows prompt on guardian dashboard
  * Scenario: Creating a new pet with required fields
  * Scenario: Creating a pet with all fields populated
  * Scenario: Viewing the pet list
@@ -18,11 +18,11 @@ import { PetDetailPage } from '../pages/pet-detail.page';
 import { PetListPage } from '../pages/pet-list.page';
 
 test.describe('Pet profiles', () => {
-  test('empty pet list shows prompt and add button', async ({ page, testUser }) => {
+  test('empty pet list shows prompt on guardian dashboard', async ({ page, testUser }) => {
     const petList = await loginAs(page, testUser);
     await petList.expectEmptyState();
     await expect(page.getByText('No pets yet')).toBeVisible();
-    await expect(page.getByRole('button', { name: 'Add Pet' })).toBeVisible();
+    await expect(page.getByText('My Pets', { exact: true })).toBeVisible();
   });
 
   test('@smoke-uat user can create a pet with required fields', async ({ page, testUser }) => {

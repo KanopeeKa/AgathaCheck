@@ -85,7 +85,7 @@ Journeys are ordered **P0 → P1 → P2** at the journey level. Within each jour
 
 | Pri | Behaviour | Gherkin scenario | Playwright | Status |
 |-----|-----------|------------------|------------|--------|
-| P0 | Empty state | Empty pet list shows prompt | `pet.profiles.spec.ts` | ✅ |
+| P0 | Empty state | Empty pet list shows prompt on guardian dashboard | `pet.profiles.spec.ts` | ✅ |
 | P0 | Create pet | Creating a new pet with required fields | `pet.profiles.spec.ts` | ✅ |
 | P0 | View detail | Viewing pet details | `pet.profiles.spec.ts` | ✅ |
 | P1 | Edit pet | Editing a pet's name (breed, delete, cancel, passed away…) | `pet.profiles.spec.ts` | ✅ partial |
