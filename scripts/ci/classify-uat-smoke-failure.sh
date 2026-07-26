@@ -45,7 +45,7 @@ if [[ "$WARMUP_OUTCOME" != "success" ]]; then
       exit 0
     fi
     results_dir="${PLAYWRIGHT_RESULTS_DIR:-e2e/test-results}"
-    if [[ -d "$results_dir" ]] && grep -rqE 'blocked by hosting WAF|WAF challenge did not clear' "$results_dir" 2>/dev/null; then
+    if [[ -d "$results_dir" ]] && grep -rqiE 'blocked by hosting WAF|WAF challenge did not clear|o2s-browser-check|Test de sécurité' "$results_dir" 2>/dev/null; then
       emit_failure_kind "waf"
       exit 0
     fi
