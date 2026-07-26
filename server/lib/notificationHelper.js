@@ -1,6 +1,8 @@
 import { v4 as uuidv4 } from 'uuid';
 import {
   defaultKindForType,
+  normaliseKind,
+  normalisePriority,
   NOTIFICATION_PRIORITY_NORMAL,
 } from './notificationKind.js';
 
@@ -18,7 +20,8 @@ export async function createNotification(pool, {
   priority = NOTIFICATION_PRIORITY_NORMAL,
   resolvedAt = null,
 }) {
-  const resolvedKind = kind ?? defaultKindForType(type);
+  const resolvedKind = normaliseKind(kind ?? defaultKindForType(type));
+  const resolvedPriority = normalisePriority(priority);
   await pool.query(
     `INSERT INTO notifications (
        id, user_id, pet_id, pet_name, title, message, type, kind, priority, resolved_at
@@ -33,7 +36,7 @@ export async function createNotification(pool, {
       message,
       type,
       resolvedKind,
-      priority,
+      resolvedPriority,
       resolvedAt,
     ]
   );
