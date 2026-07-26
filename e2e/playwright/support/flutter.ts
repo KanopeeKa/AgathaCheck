@@ -423,7 +423,21 @@ export async function openExperienceDrawer(page: Page): Promise<void> {
   await refreshFlutterAccessibility(page);
 }
 
-/** Log out via legacy user menu or experience shell drawer. */
+/** Navigate to `/account` via the experience shell drawer (phase-1 navigation). */
+export async function openAccountFromDrawer(page: Page): Promise<void> {
+  await dismissConsentBannerIfPresent(page);
+  await openExperienceDrawer(page);
+  const accountEntry = page
+    .getByRole('button', { name: /^account$/i })
+    .or(page.getByText('Account', { exact: true }))
+    .or(page.getByText('Compte', { exact: true }))
+    .first();
+  await accountEntry.click({ timeout: 10_000 });
+  await waitForFlutterRoutePattern(page, /\/account(?:\?|$)/, 30_000);
+  await refreshFlutterAccessibility(page);
+}
+
+/** Log out via legacy user menu or Account screen (experience shell). */
 export async function logOutFromApp(page: Page): Promise<void> {
   await dismissConsentBannerIfPresent(page);
   await refreshFlutterAccessibility(page);
@@ -457,13 +471,20 @@ export async function logOutFromApp(page: Page): Promise<void> {
 
   if (await clickLogoutEntry()) return;
 
-  if (await isExperienceShellVisible(page)) {
-    await openExperienceDrawer(page);
-    if (await clickLogoutEntry()) return;
+  const currentPath = flutterRoutePath(page.url());
+  if (currentPath !== '/account') {
+    if (await isExperienceShellVisible(page)) {
+      await openAccountFromDrawer(page);
+    } else {
+      await page.goto(flutterGotoUrl('/account'));
+      await refreshFlutterAccessibility(page);
+      await waitForFlutterRoutePattern(page, /\/account(?:\?|$)/, 30_000);
+    }
   }
 
-  const path = flutterRoutePath(page.url());
-  if (path === '/landing' || path === '/') {
+  if (await clickLogoutEntry()) return;
+
+  if (currentPath === '/landing' || currentPath === '/') {
     return;
   }
 
