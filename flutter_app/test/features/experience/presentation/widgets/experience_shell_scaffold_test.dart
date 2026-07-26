@@ -15,278 +15,166 @@ import 'package:pet_profile_app/l10n/app_localizations.dart';
 
 import '../../../../helpers/fakes.dart';
 
-class _FosterOrgListNotifier extends OrganizationListNotifier {
-  @override
-  Future<List<Organization>> build() async => const [
-    Organization(
-      id: 'o1',
-      name: 'Shelter',
-      type: OrganizationType.charity,
-      role: 'foster',
-    ),
-  ];
-}
-
 class _EmptyOrgListNotifier extends OrganizationListNotifier {
   @override
   Future<List<Organization>> build() async => [];
 }
 
-void main() {
-  final dualEligibility = ExperienceEligibilityRules.compute(
-    pets: const [
-      Pet(id: '1', name: 'A', species: 'Cat'),
-      Pet(
-        id: '2',
-        name: 'B',
-        species: 'Dog',
-        organizationId: 'o1',
-        organizationName: 'Shelter',
+/// Builds a test app wrapping [ExperienceShellScaffold] with minimal overrides.
+Widget _buildApp({
+  required AppExperience experience,
+  required String currentLocation,
+  int combinedUnread = 0,
+}) {
+  return ProviderScope(
+    overrides: [
+      experienceEligibilityProvider.overrideWith(
+        (ref) => AsyncValue.data(
+          ExperienceEligibilityRules.compute(
+            pets: const [Pet(id: '1', name: 'A', species: 'Cat')],
+            orgMembershipCount: 0,
+          ),
+        ),
       ),
+      combinedUnreadNotificationCountProvider.overrideWith(
+        (ref) => combinedUnread,
+      ),
+      // Provide zero for legacy providers to satisfy any watchers
+      guardianUnreadNotificationCountProvider.overrideWith((ref) => 0),
+      orgUnreadNotificationCountProvider.overrideWith((ref) => 0),
+      authProvider.overrideWith((ref) => FakeAuthNotifier()),
+      organizationListProvider.overrideWith(_EmptyOrgListNotifier.new),
     ],
-    orgMembershipCount: 1,
-  );
-
-  final guardianOnlyEligibility = ExperienceEligibilityRules.compute(
-    pets: const [Pet(id: '1', name: 'A', species: 'Cat')],
-    orgMembershipCount: 0,
-  );
-
-  testWidgets('guardian shell shows home nav without top events shortcut', (
-    tester,
-  ) async {
-    await tester.pumpWidget(
-      ProviderScope(
-        overrides: [
-          experienceEligibilityProvider.overrideWith(
-            (ref) => AsyncValue.data(dualEligibility),
-          ),
-          guardianUnreadNotificationCountProvider.overrideWith((ref) => 0),
-          authProvider.overrideWith((ref) => FakeAuthNotifier()),
-        ],
-        child: MaterialApp(
-          localizationsDelegates: const [
-            AppLocalizations.delegate,
-            GlobalMaterialLocalizations.delegate,
-            GlobalWidgetsLocalizations.delegate,
-            GlobalCupertinoLocalizations.delegate,
-          ],
-          supportedLocales: AppLocalizations.supportedLocales,
-          home: ExperienceShellScaffold(
-            experience: AppExperience.guardian,
-            currentLocation: '/g/home',
-            child: const SizedBox.shrink(),
-          ),
-        ),
+    child: MaterialApp(
+      localizationsDelegates: const [
+        AppLocalizations.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: AppLocalizations.supportedLocales,
+      home: ExperienceShellScaffold(
+        experience: experience,
+        currentLocation: currentLocation,
+        child: const SizedBox.shrink(),
       ),
+    ),
+  );
+}
+
+void main() {
+  testWidgets('section root shows hamburger, not back arrow', (tester) async {
+    await tester.pumpWidget(
+      _buildApp(experience: AppExperience.guardian, currentLocation: '/g/home'),
     );
     await tester.pumpAndSettle();
 
-    expect(find.byKey(const Key('experience_nav_home')), findsOneWidget);
-    expect(find.byKey(const Key('experience_nav_events')), findsNothing);
     expect(find.byKey(const Key('experience_settings_menu')), findsOneWidget);
+    expect(find.byKey(const Key('experience_back_button')), findsNothing);
   });
 
-  testWidgets('org shell hides events from top nav', (tester) async {
+  testWidgets('non-root path shows back arrow, not hamburger', (tester) async {
     await tester.pumpWidget(
-      ProviderScope(
-        overrides: [
-          organizationListProvider.overrideWith(_EmptyOrgListNotifier.new),
-          experienceEligibilityProvider.overrideWith(
-            (ref) => AsyncValue.data(dualEligibility),
-          ),
-          orgUnreadNotificationCountProvider.overrideWith((ref) => 0),
-          guardianUnreadNotificationCountProvider.overrideWith((ref) => 0),
-          authProvider.overrideWith((ref) => FakeAuthNotifier()),
-        ],
-        child: MaterialApp(
-          localizationsDelegates: const [
-            AppLocalizations.delegate,
-            GlobalMaterialLocalizations.delegate,
-            GlobalWidgetsLocalizations.delegate,
-            GlobalCupertinoLocalizations.delegate,
-          ],
-          supportedLocales: AppLocalizations.supportedLocales,
-          home: ExperienceShellScaffold(
-            experience: AppExperience.organization,
-            currentLocation: '/o/home',
-            child: const SizedBox.shrink(),
-          ),
-        ),
+      _buildApp(
+        experience: AppExperience.guardian,
+        currentLocation: '/g/events',
       ),
     );
     await tester.pumpAndSettle();
 
-    expect(find.byKey(const Key('experience_nav_home')), findsOneWidget);
-    expect(find.byKey(const Key('experience_nav_events')), findsNothing);
+    expect(find.byKey(const Key('experience_back_button')), findsOneWidget);
+    expect(find.byKey(const Key('experience_settings_menu')), findsNothing);
   });
 
-  testWidgets('hamburger shows unread badge for guardian shell', (
-    tester,
-  ) async {
+  testWidgets('org section root /o/orgs shows hamburger', (tester) async {
     await tester.pumpWidget(
-      ProviderScope(
-        overrides: [
-          experienceEligibilityProvider.overrideWith(
-            (ref) => AsyncValue.data(dualEligibility),
-          ),
-          guardianUnreadNotificationCountProvider.overrideWith((ref) => 3),
-          authProvider.overrideWith((ref) => FakeAuthNotifier()),
-        ],
-        child: MaterialApp(
-          localizationsDelegates: const [
-            AppLocalizations.delegate,
-            GlobalMaterialLocalizations.delegate,
-            GlobalWidgetsLocalizations.delegate,
-            GlobalCupertinoLocalizations.delegate,
-          ],
-          supportedLocales: AppLocalizations.supportedLocales,
-          home: ExperienceShellScaffold(
-            experience: AppExperience.guardian,
-            currentLocation: '/g/home',
-            child: const SizedBox.shrink(),
-          ),
-        ),
+      _buildApp(
+        experience: AppExperience.organization,
+        currentLocation: '/o/orgs',
       ),
     );
     await tester.pumpAndSettle();
 
-    final menuButton = find.byKey(const Key('experience_settings_menu'));
-    expect(
-      find.descendant(of: menuButton, matching: find.text('3')),
-      findsOneWidget,
-    );
+    expect(find.byKey(const Key('experience_settings_menu')), findsOneWidget);
+    expect(find.byKey(const Key('experience_back_button')), findsNothing);
   });
 
-  testWidgets('drawer shows organisation view for dual-role guardian shell', (
+  testWidgets('bell is always visible on shell screens', (tester) async {
+    await tester.pumpWidget(
+      _buildApp(experience: AppExperience.guardian, currentLocation: '/g/home'),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(const Key('experience_notification_bell')), findsOneWidget);
+  });
+
+  testWidgets('bell badge shows combined unread count', (tester) async {
+    await tester.pumpWidget(
+      _buildApp(
+        experience: AppExperience.guardian,
+        currentLocation: '/g/home',
+        combinedUnread: 5,
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    final bellButton = find.byKey(const Key('experience_notification_bell'));
+    expect(find.descendant(of: bellButton, matching: find.text('5')), findsOneWidget);
+  });
+
+  testWidgets('no Home button present (navigation reversal)', (tester) async {
+    await tester.pumpWidget(
+      _buildApp(experience: AppExperience.guardian, currentLocation: '/g/home'),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(const Key('experience_nav_home')), findsNothing);
+  });
+
+  testWidgets('drawer shows Guardian, Organisation, Account items', (
     tester,
   ) async {
     await tester.pumpWidget(
-      ProviderScope(
-        overrides: [
-          experienceEligibilityProvider.overrideWith(
-            (ref) => AsyncValue.data(dualEligibility),
-          ),
-          guardianUnreadNotificationCountProvider.overrideWith((ref) => 0),
-          authProvider.overrideWith((ref) => FakeAuthNotifier()),
-        ],
-        child: MaterialApp(
-          localizationsDelegates: const [
-            AppLocalizations.delegate,
-            GlobalMaterialLocalizations.delegate,
-            GlobalWidgetsLocalizations.delegate,
-            GlobalCupertinoLocalizations.delegate,
-          ],
-          supportedLocales: AppLocalizations.supportedLocales,
-          home: ExperienceShellScaffold(
-            experience: AppExperience.guardian,
-            currentLocation: '/g/home',
-            child: const SizedBox.shrink(),
-          ),
-        ),
-      ),
+      _buildApp(experience: AppExperience.guardian, currentLocation: '/g/home'),
     );
     await tester.pumpAndSettle();
 
     await tester.tap(find.byKey(const Key('experience_settings_menu')));
     await tester.pumpAndSettle();
 
-    expect(find.byKey(const Key('drawer_org_view')), findsOneWidget);
-    expect(find.byKey(const Key('drawer_create_organisation')), findsNothing);
-    expect(find.byKey(const Key('drawer_my_pets')), findsOneWidget);
+    expect(find.byKey(const Key('drawer_guardian')), findsOneWidget);
+    expect(find.byKey(const Key('drawer_organisation')), findsOneWidget);
+    expect(find.byKey(const Key('drawer_account')), findsOneWidget);
   });
 
-  testWidgets(
-    'guardian drawer shows organisation view for guardian-only users',
-    (tester) async {
-      await tester.pumpWidget(
-        ProviderScope(
-          overrides: [
-            experienceEligibilityProvider.overrideWith(
-              (ref) => AsyncValue.data(guardianOnlyEligibility),
-            ),
-            guardianUnreadNotificationCountProvider.overrideWith((ref) => 0),
-            authProvider.overrideWith((ref) => FakeAuthNotifier()),
-          ],
-          child: MaterialApp(
-            localizationsDelegates: const [
-              AppLocalizations.delegate,
-              GlobalMaterialLocalizations.delegate,
-              GlobalWidgetsLocalizations.delegate,
-              GlobalCupertinoLocalizations.delegate,
-            ],
-            supportedLocales: AppLocalizations.supportedLocales,
-            home: ExperienceShellScaffold(
-              experience: AppExperience.guardian,
-              currentLocation: '/g/home',
-              child: const SizedBox.shrink(),
-            ),
-          ),
-        ),
-      );
-      await tester.pumpAndSettle();
-
-      await tester.tap(find.byKey(const Key('experience_settings_menu')));
-      await tester.pumpAndSettle();
-
-      expect(find.byKey(const Key('drawer_org_view')), findsOneWidget);
-      expect(find.byKey(const Key('drawer_create_organisation')), findsNothing);
-    },
-  );
-
-  testWidgets('org drawer uses navigation v2 menu for foster portal', (
-    tester,
-  ) async {
+  testWidgets('drawer does not contain deprecated items', (tester) async {
     await tester.pumpWidget(
-      ProviderScope(
-        overrides: [
-          organizationListProvider.overrideWith(_FosterOrgListNotifier.new),
-          experienceEligibilityProvider.overrideWith(
-            (ref) => AsyncValue.data(
-              ExperienceEligibilityRules.compute(
-                pets: const [
-                  Pet(
-                    id: '2',
-                    name: 'B',
-                    species: 'Dog',
-                    organizationId: 'o1',
-                    organizationName: 'Shelter',
-                    isFoster: true,
-                  ),
-                ],
-                orgMembershipCount: 1,
-              ),
-            ),
-          ),
-          orgUnreadNotificationCountProvider.overrideWith((ref) => 0),
-          guardianUnreadNotificationCountProvider.overrideWith((ref) => 2),
-          authProvider.overrideWith((ref) => FakeAuthNotifier()),
-        ],
-        child: MaterialApp(
-          localizationsDelegates: const [
-            AppLocalizations.delegate,
-            GlobalMaterialLocalizations.delegate,
-            GlobalWidgetsLocalizations.delegate,
-            GlobalCupertinoLocalizations.delegate,
-          ],
-          supportedLocales: AppLocalizations.supportedLocales,
-          home: ExperienceShellScaffold(
-            experience: AppExperience.organization,
-            currentLocation: '/o/home',
-            child: const SizedBox.shrink(),
-          ),
-        ),
-      ),
+      _buildApp(experience: AppExperience.guardian, currentLocation: '/g/home'),
     );
     await tester.pumpAndSettle();
 
     await tester.tap(find.byKey(const Key('experience_settings_menu')));
     await tester.pumpAndSettle();
 
-    expect(find.byKey(const Key('drawer_my_organisation')), findsOneWidget);
-    expect(find.byKey(const Key('drawer_guardian_view')), findsOneWidget);
-    expect(find.byKey(const Key('drawer_org_o1')), findsNothing);
-    expect(find.byKey(const Key('drawer_org_events')), findsOneWidget);
-    expect(find.byKey(const Key('drawer_invite')), findsNothing);
+    // These items must not exist in the new unified drawer
+    expect(find.byKey(const Key('drawer_my_pets')), findsNothing);
+    expect(find.byKey(const Key('drawer_guardian_notifications')), findsNothing);
+    expect(find.byKey(const Key('drawer_org_notifications')), findsNothing);
+    expect(find.byKey(const Key('drawer_guardian_events')), findsNothing);
+    expect(find.byKey(const Key('drawer_settings')), findsNothing);
+    expect(find.byKey(const Key('drawer_logout')), findsNothing);
+  });
+
+  testWidgets('org non-root path shows back button', (tester) async {
+    await tester.pumpWidget(
+      _buildApp(
+        experience: AppExperience.organization,
+        currentLocation: '/o/events',
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(const Key('experience_back_button')), findsOneWidget);
+    expect(find.byKey(const Key('experience_settings_menu')), findsNothing);
   });
 }

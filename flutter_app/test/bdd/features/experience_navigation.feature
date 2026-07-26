@@ -82,8 +82,8 @@ Feature: Experience navigation
     Then the user should be navigated to the organisation home screen
 
   # Superseded by the navigation reversal (docs/experience-program/decisions-log.md D1, D5) —
-  # the drawer no longer has a "settings menu" switch; replace with a scenario asserting the
-  # Guardian/Organisation drawer items directly (see phase-1-navigation.md).
+  # the drawer no longer has a "settings menu" switch; replaced by the section-switcher scenario
+  # below that asserts the unified drawer directly (see phase-1-navigation.md).
   @legacy
   @P1
   Scenario: User switches to organisation view from guardian drawer
@@ -93,6 +93,40 @@ Feature: Experience navigation
     When the user opens the settings menu
     And the user taps "Organisation view"
     Then the user should be navigated to the organisation home screen
+
+  # ── Section-switcher drawer (navigation reversal, phase-1-navigation.md) ──
+
+  @P1
+  Scenario: Drawer shows exactly three destinations regardless of current mode
+    Given a registered user with email "dual@example.com" and password "secret123"
+    And the user belongs to an organisation
+    And the user has personal guardian pets
+    And the user is on the guardian home screen
+    When the user opens the hamburger drawer
+    Then the drawer should contain "Guardian" as a section item
+    And the drawer should contain "Organisation" as a section item
+    And the drawer should contain "Account" as the bottom-pinned item
+    And the drawer should not contain "Events" as a drawer item
+    And the drawer should not contain "My vets" as a drawer item
+    And the drawer should not contain "Notifications" as a drawer item
+    And the drawer should not contain "Settings" as a drawer item
+
+  @P1
+  Scenario: Bell shows a single combined unread badge across both notification kinds
+    Given a registered user with email "guardian@example.com" and password "secret123"
+    And the user has no organisation memberships
+    And the user is on the guardian home screen
+    And the user has 2 unread care notifications and 1 unread administrative notification
+    Then the bell badge should show "3"
+
+  @P1
+  Scenario: Hamburger is shown only on section root screens
+    Given a registered user with email "guardian@example.com" and password "secret123"
+    And the user has no organisation memberships
+    And the user is on the guardian home screen
+    Then the hamburger menu button should be visible
+    When the user navigates to a sub-screen
+    Then the back arrow should be visible instead of the hamburger
 
   @P2
   Scenario: Guardian chooser hides organisation option for guardian-only users

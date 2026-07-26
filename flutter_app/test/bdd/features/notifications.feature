@@ -130,3 +130,32 @@ Feature: Notifications
     Given a notification related to organisation "Happy Paws Clinic" exists
     When the user views the notifications screen
     Then the notification should display an organisation icon
+
+  # ── Unified bell / panel (navigation reversal, phase-1-navigation.md) ────
+
+  @P1
+  Scenario: Bell badge shows combined count across care and administrative notifications
+    Given there are 2 unread care notifications
+    And there is 1 unread administrative notification
+    When the user is on any authenticated shell screen
+    Then the bell badge should show "3"
+
+  @P1
+  Scenario: Notification kind filter narrows list without navigating
+    Given there are both care and administrative notifications
+    When the user opens the notification panel via the bell
+    And the user taps the "Organisation" filter chip
+    Then only administrative notifications should be visible in the panel
+    And the underlying screen should not have changed
+
+  @P1
+  Scenario: Administrative notification with open object shows Action needed affordance
+    Given an administrative notification exists with no resolved date and is unread
+    When the user opens the notification panel via the bell
+    Then that notification should display an "Action needed" affordance
+
+  @P1
+  Scenario: Resolved administrative notification does not show Action needed
+    Given an administrative notification exists that has been resolved
+    When the user opens the notification panel via the bell
+    Then that notification should not display an "Action needed" affordance

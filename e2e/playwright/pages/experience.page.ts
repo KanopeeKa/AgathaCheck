@@ -61,27 +61,35 @@ export class ExperiencePage {
     await waitForFlutterRoutePattern(this.page, /\/o\/home/, 30_000);
   }
 
+  /** After navigation reversal: no Home button; hamburger on root, bell always present. */
   async expectGuardianShell(): Promise<void> {
-    await expect(this.page.getByRole('button', { name: 'Home' })).toBeVisible();
-    // Events moved to drawer only — see docs/design/navigation-v2.md
+    await dismissConsentBannerIfPresent(this.page);
+    await refreshFlutterAccessibility(this.page);
+    // Bell (notifications) is always present; Home button is removed.
     await expect(
-      this.page.getByRole('button', { name: 'Events' }),
+      this.page.getByRole('button', { name: /open notifications/i }),
+    ).toBeVisible({ timeout: 15_000 });
+    await expect(
+      this.page.getByRole('button', { name: /^Home$/i }),
     ).not.toBeVisible();
   }
 
+  /** After navigation reversal: org shell has bell + hamburger on /o/orgs, no Home. */
   async expectOrgShell(): Promise<void> {
     await dismissConsentBannerIfPresent(this.page);
     await refreshFlutterAccessibility(this.page);
-    await expect(this.page.getByRole('button', { name: 'Home' })).toBeVisible();
-    // Org shell hides Events from top nav (drawer only) — see experience_shell_scaffold.dart
     await expect(
-      this.page.getByRole('button', { name: 'Events' }),
+      this.page.getByRole('button', { name: /open notifications/i }),
+    ).toBeVisible({ timeout: 15_000 });
+    await expect(
+      this.page.getByRole('button', { name: /^Home$/i }),
     ).not.toBeVisible();
   }
 
+  /** Open the drawer and navigate to the Organisation section via the unified drawer. */
   async openDrawerOrgView(): Promise<void> {
     await openExperienceDrawer(this.page);
-    await this.page.getByText('Organisation view').click();
+    await this.page.getByText('Organisation', { exact: true }).first().click();
     await waitForFlutterRoutePattern(this.page, /\/(?:o\/orgs|organizations)(?:\?|$)/, 30_000);
   }
 
@@ -90,16 +98,24 @@ export class ExperiencePage {
     await refreshFlutterAccessibility(this.page);
   }
 
+  /** Navigate to /account via the Account drawer item. */
+  async gotoAccountFromDrawer(): Promise<void> {
+    await dismissConsentBannerIfPresent(this.page);
+    await openExperienceDrawer(this.page);
+    await this.page.getByText('Account', { exact: true }).click();
+    await waitForFlutterRoutePattern(this.page, /\/account(?:\?|$)/, 30_000);
+  }
+
   async gotoGuardianSettings(): Promise<void> {
     await dismissConsentBannerIfPresent(this.page);
-    await waitForFlutterRoute(this.page, '/g/settings');
+    // /g/settings now redirects to /account
+    await waitForFlutterRoute(this.page, '/account');
     await this.expectDefaultExperienceSectionVisible();
   }
 
   async openGuardianSettingsFromDrawer(): Promise<void> {
     await dismissConsentBannerIfPresent(this.page);
-    await openExperienceDrawer(this.page);
-    await this.page.getByText('Settings', { exact: true }).click();
+    await this.gotoAccountFromDrawer();
     await this.expectDefaultExperienceSectionVisible();
   }
 
@@ -126,5 +142,31 @@ export class ExperiencePage {
     }
     await refreshFlutterAccessibility(this.page);
     await this.page.waitForTimeout(400);
+  }
+
+  /** Assert the drawer contains exactly the three section-switcher items. */
+  async expectUnifiedDrawerItems(): Promise<void> {
+    await openExperienceDrawer(this.page);
+    await refreshFlutterAccessibility(this.page);
+    await expect(this.page.getByText('Guardian', { exact: true })).toBeVisible();
+    await expect(this.page.getByText('Organisation', { exact: true }).first()).toBeVisible();
+    await expect(this.page.getByText('Account', { exact: true })).toBeVisible();
+    // Deprecated items must not appear
+    await expect(this.page.getByText('Events', { exact: true })).not.toBeVisible();
+    await expect(this.page.getByText('My vets', { exact: true })).not.toBeVisible();
+    await expect(this.page.getByText('Notifications', { exact: true })).not.toBeVisible();
+    await expect(this.page.getByText('Settings', { exact: true })).not.toBeVisible();
+  }
+
+  /** Assert bell badge shows the expected count. */
+  async expectBellBadge(count: number): Promise<void> {
+    const label = String(count);
+    const bell = this.page.getByRole('button', { name: /open notifications/i });
+    await expect(bell).toBeVisible({ timeout: 10_000 });
+    if (count > 0) {
+      await expect(bell.getByText(label)).toBeVisible();
+    } else {
+      await expect(bell.getByText(/^\d+$/)).not.toBeVisible();
+    }
   }
 }

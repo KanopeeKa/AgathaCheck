@@ -9,6 +9,9 @@
  * Scenario: Dual-role user sets default experience to organisation in settings
  * Scenario: User switches to organisation view from guardian drawer
  * Scenario: Guardian chooser hides organisation option for guardian-only users
+ * Scenario: Drawer shows exactly three destinations regardless of current mode
+ * Scenario: Bell shows a single combined unread badge across both notification kinds
+ * Scenario: Hamburger is shown only on section root screens
  */
 import { test, expect } from '../fixtures/auth.fixture';
 import { LandingPage } from '../pages/landing.page';
@@ -144,7 +147,22 @@ test.describe('Experience navigation', () => {
     const experience = new ExperiencePage(page);
     await experience.chooseGuardian(false);
     await experience.openDrawerOrgView();
-    await expect(page.getByRole('button', { name: 'Home' })).toBeVisible();
+    // After navigation reversal, expect bell (not Home button)
+    await expect(
+      page.getByRole('button', { name: /open notifications/i }),
+    ).toBeVisible({ timeout: 15_000 });
+  });
+
+  test('drawer shows exactly three destinations regardless of current mode', async ({
+    page,
+  }) => {
+    await prepareLiveApiAccess(page, baseURL());
+    const { user } = await seedDualRoleUser(baseURL());
+    await loginFromLanding(page, user.email, user.password);
+    await waitForFlutterRoutePattern(page, /\/app\/choose/, 60_000);
+    const experience = new ExperiencePage(page);
+    await experience.chooseGuardian(false);
+    await experience.expectUnifiedDrawerItems();
   });
 
   test('guardian chooser hides organisation option for guardian-only users', async ({

@@ -3905,4 +3905,31 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get adoptionJourneyStatusUnknown => 'Inconnu';
+
+  @override
+  String get drawerGuardian => 'Gardien';
+
+  @override
+  String get drawerOrganisation => 'Organisation';
+
+  @override
+  String get drawerAccount => 'Compte';
+
+  @override
+  String get notificationsBellTooltip => 'Ouvrir les notifications';
+
+  @override
+  String get notificationKindAll => 'Tout';
+
+  @override
+  String get notificationKindCare => 'Soins';
+
+  @override
+  String get notificationKindOrganisation => 'Organisation';
+
+  @override
+  String get notificationActionNeeded => 'Action requise';
+
+  @override
+  String get accountTitle => 'Compte';
 }
