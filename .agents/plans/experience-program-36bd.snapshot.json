@@ -4,7 +4,7 @@
   "approved_at": "2026-07-25T23:41:00Z",
   "approved_by": "user chat 2026-07-25 (standing grant: babysit+ #377, execute-plan R–5)",
   "approved_until": "2026-07-27T23:41:00Z",
-  "content_hash": "sha256:1359f7ba7f40403728f1aced54ee4e2b7468f631cc736788e9e375d87d9e5826",
+  "content_hash": "sha256:88991fbfb31e4cb7117247582a2e59b84babd7d07538e28941082ba25b01dc5c",
   "autonomy": "active",
   "default_merge_mode": "auto",
   "base_branch": "main",
@@ -272,7 +272,8 @@
       "status": "in_progress",
       "status_reason": null,
       "status_detail": null,
-      "debt_issue_refs": []
+      "debt_issue_refs": [],
+      "pr_head_sha": "5f5cfed"
     }
   ]
 }

@@ -49,9 +49,9 @@ next_action: "continue phase 5 on branch cursor/experience-org-customisations-36
 artifact_ref:
   branch: cursor/experience-org-customisations-36bd
   plan_path: .agents/plans/experience-program-36bd.md
-  plan_commit: 93c20381d80b6bc68fa934c3d75bd057a7c26834
+  plan_commit: 5f5cfedb862e3a7c902ac5e3dc8f73905179086d
   snapshot_path: .agents/plans/experience-program-36bd.snapshot.json
-  snapshot_commit: 93c20381d80b6bc68fa934c3d75bd057a7c26834
+  snapshot_commit: 5f5cfedb862e3a7c902ac5e3dc8f73905179086d
 open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/382","https://github.com/KanopeeKa/AgathaCheck/pull/383"]
 merge_commits: {"R":"15bc8a3da7b257c3ee68e9085edd3b1108b4751c"}
 debt_issue_refs: []
