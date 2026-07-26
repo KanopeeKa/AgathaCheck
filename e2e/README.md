@@ -135,7 +135,7 @@ Tag fast, critical journeys with tier tags in the test title. Run locally:
 ```bash
 cd e2e && npm run test:smoke-ci    # PR canary (~3 journeys, retries 0, <2 min)
 cd e2e && npm run test:smoke-uat    # UAT live smoke (retries 0)
-cd e2e && npm run test:live-uat-gate # warmup-uat + smoke-uat in one browser session (deploy CI)
+cd e2e && npm run test:live-uat-gate # warmup-uat + smoke-uat in one Playwright run (deploy CI)
 cd e2e && npm run test:smoke        # alias for test:smoke-uat
 ```
 

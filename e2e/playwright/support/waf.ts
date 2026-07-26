@@ -108,7 +108,7 @@ function authBlockedMessage(baseURL: string): string {
   return [
     `UAT auth signup is still blocked by hosting WAF at ${baseURL}/backend/api/auth/signup`,
     'after the page challenge cleared. Tiger Protect often allows /backend/health before',
-    'auth endpoints — retry later or run warmup + smoke in a single browser session.',
+    'auth endpoints — retry later or run warmup + smoke in a single Playwright run.',
   ].join(' ');
 }
 

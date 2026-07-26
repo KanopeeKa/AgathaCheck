@@ -16,6 +16,7 @@ emit_failure_kind() {
 HEALTH_OUTCOME="${HEALTH_OUTCOME:-unknown}"
 WARMUP_OUTCOME="${WARMUP_OUTCOME:-skipped}"
 HEALTH_FAILURE_KIND="${HEALTH_FAILURE_KIND:-}"
+COMBINED_LIVE_GATE="${COMBINED_LIVE_GATE:-false}"
 
 if [[ "$HEALTH_OUTCOME" == "success" && "$WARMUP_OUTCOME" == "success" ]]; then
   emit_failure_kind ""
@@ -27,17 +28,21 @@ if [[ "$HEALTH_OUTCOME" != "success" ]]; then
   exit 0
 fi
 
-# Health OK but browser warmup failed — canonical infra/WAF path (not a code gate).
-# passHostingWaf probes auth signup in-browser; Tiger Protect often blocks auth
-# after health clears. Do not classify as `code` (would freeze promotion).
+# Health OK but browser gate failed.
 if [[ "$WARMUP_OUTCOME" != "success" ]]; then
-  if [[ -f "${PLAYWRIGHT_REPORT_DIR:-e2e/playwright-report}/index.html" ]]; then
-    if grep -qiE 'blocked by hosting WAF|WAF challenge did not clear|o2s-browser-check|Test de sécurité' \
-      "${PLAYWRIGHT_REPORT_DIR}/index.html" 2>/dev/null; then
-      emit_failure_kind "waf"
-      exit 0
-    fi
+  report="${PLAYWRIGHT_REPORT_DIR:-e2e/playwright-report}/index.html"
+  if [[ -f "$report" ]] && grep -qiE 'blocked by hosting WAF|WAF challenge did not clear|o2s-browser-check|Test de sécurité' \
+    "$report" 2>/dev/null; then
+    emit_failure_kind "waf"
+    exit 0
   fi
+  if [[ "$COMBINED_LIVE_GATE" == "true" ]]; then
+    # Combined warmup+smoke: only mark infra when WAF signals are present;
+    # real @smoke-uat regressions stay unclassified → code gate in assert-uat-gates.sh.
+    emit_failure_kind ""
+    exit 0
+  fi
+  # Legacy split warmup step (health OK, warmup-only failure) → infra/WAF path.
   emit_failure_kind "waf"
   exit 0
 fi

@@ -651,7 +651,7 @@ jobs:
           npm ci
           npx playwright install chromium --with-deps
 
-      - name: Warm up UAT auth and run @smoke-uat (single browser session)
+      - name: Warm up UAT auth and run @smoke-uat (single Playwright run)
         id: live_gate
         working-directory: e2e
         env:
@@ -669,6 +669,7 @@ jobs:
         env:
           HEALTH_OUTCOME: success
           WARMUP_OUTCOME: ${{ steps.live_gate.outcome }}
+          COMBINED_LIVE_GATE: 'true'
           PLAYWRIGHT_REPORT_DIR: e2e/playwright-report
         run: bash scripts/ci/classify-uat-smoke-failure.sh
 
