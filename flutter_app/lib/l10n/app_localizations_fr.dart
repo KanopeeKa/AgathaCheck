@@ -3947,6 +3947,9 @@ class AppLocalizationsFr extends AppLocalizations {
   String get myVets => 'Mes vétérinaires';
 
   @override
+  String get guardianDashboardTitle => 'Tableau de bord gardien';
+
+  @override
   String get upcomingPetEvents => 'Événements à venir';
 
   @override

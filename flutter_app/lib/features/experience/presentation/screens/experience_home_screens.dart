@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../l10n/app_localizations.dart';
 import '../../../pet_profile/presentation/controllers/pet_list_controller.dart';
 import '../../../pet_profile/presentation/providers/pet_providers.dart';
 import '../../domain/entities/app_experience.dart';
@@ -56,6 +57,7 @@ class _GuardianHomeScreenState extends ConsumerState<GuardianHomeScreen> {
     return ExperienceShellScaffold(
       experience: AppExperience.guardian,
       currentLocation: GoRouterState.of(context).uri.path,
+      screenTitle: AppLocalizations.of(context)!.guardianDashboardTitle,
       child: petListAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (e, _) => Center(child: Text('$e')),
