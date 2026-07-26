@@ -47,12 +47,12 @@ last_completed_phase: 1
 halt_reason: null
 next_action: "continue phase 3 on branch cursor/experience-org-presentation-36bd"
 artifact_ref:
-  branch: cursor/experience-org-presentation-36bd
+  branch: cursor/sprint-exp-org-presentation-integration-36bd
   plan_path: .agents/plans/experience-program-36bd.md
-  plan_commit: ea035576984aa6199cd94d78267c4f8869d37e47
+  plan_commit: 1bdb8096601c55139147cda4801dc31dd39ffd6f
   snapshot_path: .agents/plans/experience-program-36bd.snapshot.json
-  snapshot_commit: ea035576984aa6199cd94d78267c4f8869d37e47
-open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/382"]
+  snapshot_commit: 1bdb8096601c55139147cda4801dc31dd39ffd6f
+open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/382","https://github.com/KanopeeKa/AgathaCheck/pull/383"]
 merge_commits: {"R":"15bc8a3da7b257c3ee68e9085edd3b1108b4751c"}
 debt_issue_refs: []
 ```
