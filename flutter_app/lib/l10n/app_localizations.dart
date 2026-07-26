@@ -3169,6 +3169,12 @@ abstract class AppLocalizations {
   /// **'Foster'**
   String get orgFoster;
 
+  /// No description provided for @orgAssociate.
+  ///
+  /// In en, this message translates to:
+  /// **'Associate'**
+  String get orgAssociate;
+
   /// No description provided for @orgSelectNewRole.
   ///
   /// In en, this message translates to:
@@ -7352,6 +7358,144 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Account'**
   String get accountTitle;
+
+  /// No description provided for @adminContactsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Admin contacts'**
+  String get adminContactsTitle;
+
+  /// No description provided for @adminContactsDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Internal directory of organisation admins. Call or message using the contact details they share.'**
+  String get adminContactsDescription;
+
+  /// No description provided for @adminContactsEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No admin contacts yet.'**
+  String get adminContactsEmpty;
+
+  /// No description provided for @adminContactsYourCard.
+  ///
+  /// In en, this message translates to:
+  /// **'Your card'**
+  String get adminContactsYourCard;
+
+  /// No description provided for @adminContactsAddAdmin.
+  ///
+  /// In en, this message translates to:
+  /// **'Add admin'**
+  String get adminContactsAddAdmin;
+
+  /// No description provided for @adminContactsCall.
+  ///
+  /// In en, this message translates to:
+  /// **'Call'**
+  String get adminContactsCall;
+
+  /// No description provided for @adminContactsMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Message'**
+  String get adminContactsMessage;
+
+  /// No description provided for @adminContactsMoreOptions.
+  ///
+  /// In en, this message translates to:
+  /// **'More options'**
+  String get adminContactsMoreOptions;
+
+  /// No description provided for @adminContactsSelfPrefsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Your visibility preferences'**
+  String get adminContactsSelfPrefsTitle;
+
+  /// No description provided for @adminContactsSelfPrefsStubNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved locally until org-scoped notification preferences are available.'**
+  String get adminContactsSelfPrefsStubNote;
+
+  /// No description provided for @adminContactsPhoneVisibilityLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Who can see your phone number'**
+  String get adminContactsPhoneVisibilityLabel;
+
+  /// No description provided for @adminContactsPhoneVisibilityFosters.
+  ///
+  /// In en, this message translates to:
+  /// **'Fosters'**
+  String get adminContactsPhoneVisibilityFosters;
+
+  /// No description provided for @adminContactsPhoneVisibilityAdmins.
+  ///
+  /// In en, this message translates to:
+  /// **'Admins'**
+  String get adminContactsPhoneVisibilityAdmins;
+
+  /// No description provided for @adminContactsPhoneVisibilityAll.
+  ///
+  /// In en, this message translates to:
+  /// **'Everyone in the organisation'**
+  String get adminContactsPhoneVisibilityAll;
+
+  /// No description provided for @adminContactsPhoneVisibilityNobody.
+  ///
+  /// In en, this message translates to:
+  /// **'Nobody'**
+  String get adminContactsPhoneVisibilityNobody;
+
+  /// No description provided for @adminContactsMessageChannelLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Message notifications'**
+  String get adminContactsMessageChannelLabel;
+
+  /// No description provided for @adminContactsMessageChannelInApp.
+  ///
+  /// In en, this message translates to:
+  /// **'In app'**
+  String get adminContactsMessageChannelInApp;
+
+  /// No description provided for @adminContactsMessageChannelEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'Email'**
+  String get adminContactsMessageChannelEmail;
+
+  /// No description provided for @adminContactsMessageChannelBoth.
+  ///
+  /// In en, this message translates to:
+  /// **'In app and email'**
+  String get adminContactsMessageChannelBoth;
+
+  /// No description provided for @adminContactsSelfCardSemantics.
+  ///
+  /// In en, this message translates to:
+  /// **'Your admin contact card, {name}'**
+  String adminContactsSelfCardSemantics(String name);
+
+  /// No description provided for @adminContactsCardSemantics.
+  ///
+  /// In en, this message translates to:
+  /// **'Admin contact {name}, {role}'**
+  String adminContactsCardSemantics(String name, String role);
+
+  /// No description provided for @adminContactsRemoveConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove {name} from this organisation?'**
+  String adminContactsRemoveConfirm(String name);
+
+  /// No description provided for @adminContactsRemoved.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} was removed'**
+  String adminContactsRemoved(String name);
 }
 
 class _AppLocalizationsDelegate

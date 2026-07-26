@@ -10,9 +10,12 @@ String localizedOrgMemberRole(AppLocalizations l, OrgMemberRole role) {
       return l.orgAdmin;
     case OrgMemberRole.foster:
       return l.orgFoster;
+    case OrgMemberRole.associate:
+      return l.orgAssociate;
     case OrgMemberRole.pendingSuperAdmin:
     case OrgMemberRole.pendingAdmin:
     case OrgMemberRole.pendingFoster:
+    case OrgMemberRole.pendingAssociate:
       return l.invited;
   }
 }

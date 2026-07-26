@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../features/experience/domain/entities/app_experience.dart';
 import '../../features/experience/presentation/widgets/experience_shell_scaffold.dart';
+import '../../features/organization/presentation/screens/admin_contacts_screen.dart';
 import '../../features/organization/presentation/screens/accept_connection_screen.dart';
 import '../../features/organization/presentation/screens/archived_pet_detail_screen.dart';
 import '../../features/organization/presentation/screens/archived_pets_screen.dart';
@@ -74,6 +75,14 @@ List<RouteBase> _orgManagementChildRoutes() {
           builder: (context, state) {
             final id = state.pathParameters['id']!;
             return OrganizationFormScreen(orgId: id);
+          },
+        ),
+        GoRoute(
+          path: 'admin-contacts',
+          name: 'organizationAdminContacts',
+          builder: (context, state) {
+            final id = state.pathParameters['id']!;
+            return AdminContactsScreen(orgId: id);
           },
         ),
         GoRoute(

@@ -124,6 +124,7 @@
     "Inviting a user as a super user": "P1",
     "Only super users can invite new members": "P1",
     "Viewing organisation details": "P1",
+    "Viewing organisation members from the dashboard": "P1",
     "Updating organisation information": "P1",
     "Leaving an organisation": "P1"
   },
@@ -258,5 +259,9 @@
     "Team admin can add an admin contact": "P1",
     "Super admin can edit another admin contact": "P1",
     "Members can message an admin when contact details allow": "P1"
+  },
+  "organisation_permissions.feature": {
+    "Super Admin applies the Pet Admin bundle preset": "P1",
+    "Only Super Admin can manage permissions": "P1"
   }
 }

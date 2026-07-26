@@ -1681,6 +1681,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get orgFoster => 'Foster';
 
   @override
+  String get orgAssociate => 'Associate';
+
+  @override
   String get orgSelectNewRole => 'Select new role';
 
   @override
@@ -4060,4 +4063,84 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get accountTitle => 'Account';
+
+  @override
+  String get adminContactsTitle => 'Admin contacts';
+
+  @override
+  String get adminContactsDescription =>
+      'Internal directory of organisation admins. Call or message using the contact details they share.';
+
+  @override
+  String get adminContactsEmpty => 'No admin contacts yet.';
+
+  @override
+  String get adminContactsYourCard => 'Your card';
+
+  @override
+  String get adminContactsAddAdmin => 'Add admin';
+
+  @override
+  String get adminContactsCall => 'Call';
+
+  @override
+  String get adminContactsMessage => 'Message';
+
+  @override
+  String get adminContactsMoreOptions => 'More options';
+
+  @override
+  String get adminContactsSelfPrefsTitle => 'Your visibility preferences';
+
+  @override
+  String get adminContactsSelfPrefsStubNote =>
+      'Saved locally until org-scoped notification preferences are available.';
+
+  @override
+  String get adminContactsPhoneVisibilityLabel =>
+      'Who can see your phone number';
+
+  @override
+  String get adminContactsPhoneVisibilityFosters => 'Fosters';
+
+  @override
+  String get adminContactsPhoneVisibilityAdmins => 'Admins';
+
+  @override
+  String get adminContactsPhoneVisibilityAll => 'Everyone in the organisation';
+
+  @override
+  String get adminContactsPhoneVisibilityNobody => 'Nobody';
+
+  @override
+  String get adminContactsMessageChannelLabel => 'Message notifications';
+
+  @override
+  String get adminContactsMessageChannelInApp => 'In app';
+
+  @override
+  String get adminContactsMessageChannelEmail => 'Email';
+
+  @override
+  String get adminContactsMessageChannelBoth => 'In app and email';
+
+  @override
+  String adminContactsSelfCardSemantics(String name) {
+    return 'Your admin contact card, $name';
+  }
+
+  @override
+  String adminContactsCardSemantics(String name, String role) {
+    return 'Admin contact $name, $role';
+  }
+
+  @override
+  String adminContactsRemoveConfirm(String name) {
+    return 'Remove $name from this organisation?';
+  }
+
+  @override
+  String adminContactsRemoved(String name) {
+    return '$name was removed';
+  }
 }
