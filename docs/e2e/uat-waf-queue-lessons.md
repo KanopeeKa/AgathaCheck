@@ -201,7 +201,7 @@ Acquiring a 90-minute lease **before** a successful agent launch blocked all pro
 
 **Fix:**
 
-1. Remove `passHostingWaf` from `waitForFlutterRoute` — landing UI nav relies on warmup cookies via `storageState`; API paths use `prepareLiveApiAccess`
+1. Remove unconditional `passHostingWaf` from `waitForFlutterRoute` — skip only when `E2E_TLS_INSECURE=1` (live UAT gate with warmup + `storageState`); other live-hosting runs still call `passHostingWaf`
 2. `sessionReadyOnPage` always probes in-browser before trusting `sessionWafCleared` (storage-state cookies can satisfy probes in a fresh context)
 3. Define `warmup-uat` before `uat-smoke` in `playwright.config.ts` (dependency already enforces order)
 
