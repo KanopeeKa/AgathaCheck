@@ -38,7 +38,9 @@ class _OrganizationRolesPermissionsScreenState
       await action();
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('$e')));
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('$e')));
       }
     } finally {
       if (mounted) setState(() => _busy = false);
@@ -104,8 +106,9 @@ class _OrganizationRolesPermissionsScreenState
           loading: () => const Center(child: CircularProgressIndicator()),
           error: (e, _) => Center(child: Text('$e')),
           data: (members) {
-            final activeMembers =
-                members.where((m) => !m.role.isPending).toList();
+            final activeMembers = members
+                .where((m) => !m.role.isPending)
+                .toList();
             _selectedUserId ??= activeMembers.firstOrNull?.userId;
 
             return ListView(
@@ -145,9 +148,8 @@ class _OrganizationRolesPermissionsScreenState
                   loading: () => const LinearProgressIndicator(),
                   error: (e, _) => Text('$e'),
                   data: (bundleData) {
-                    final presets =
-                        (bundleData['presets'] as List? ?? [])
-                            .cast<Map<String, dynamic>>();
+                    final presets = (bundleData['presets'] as List? ?? [])
+                        .cast<Map<String, dynamic>>();
                     if (presets.isEmpty) return const SizedBox.shrink();
                     return Wrap(
                       spacing: 8,
@@ -178,7 +180,11 @@ class _OrganizationRolesPermissionsScreenState
                                     );
                                   }
                                 }),
-                          child: Text(l.orgRolesPermissionsApplyBundle(_bundleLabel(l, name))),
+                          child: Text(
+                            l.orgRolesPermissionsApplyBundle(
+                              _bundleLabel(l, name),
+                            ),
+                          ),
                         );
                       }).toList(),
                     );
@@ -196,20 +202,21 @@ class _OrganizationRolesPermissionsScreenState
                   Text(l.orgRolesPermissionsSelectMember)
                 else
                   permissionsAsync!.when(
-                    loading: () => const Center(child: CircularProgressIndicator()),
+                    loading: () =>
+                        const Center(child: CircularProgressIndicator()),
                     error: (e, _) => Text('$e'),
                     data: (data) {
                       final effectiveSet =
                           (data['effective_permissions'] as List? ?? [])
                               .cast<String>()
                               .toSet();
-                      final overrides =
-                          (data['overrides'] as List? ?? [])
-                              .cast<Map<String, dynamic>>();
+                      final overrides = (data['overrides'] as List? ?? [])
+                          .cast<Map<String, dynamic>>();
                       final overrideKeys = overrides
                           .map((row) => row['permission_key'] as String)
                           .toSet();
-                      final allKeys = g0PermissionDefaults.keys.toList()..sort();
+                      final allKeys = g0PermissionDefaults.keys.toList()
+                        ..sort();
 
                       return Column(
                         children: allKeys.map((key) {
@@ -260,7 +267,8 @@ class _OrganizationRolesPermissionsScreenState
                 ),
                 const SizedBox(height: 8),
                 auditAsync.when(
-                  loading: () => const Center(child: CircularProgressIndicator()),
+                  loading: () =>
+                      const Center(child: CircularProgressIndicator()),
                   error: (e, _) => Text('$e'),
                   data: (events) {
                     if (events.isEmpty) {

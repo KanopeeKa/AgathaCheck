@@ -46,7 +46,8 @@ class OrganizationCustomisationsScreen extends ConsumerWidget {
               title: l.orgCustomisationsTemplatesTitle,
               subtitle: l.orgCustomisationsTemplatesSubtitle,
               semanticsLabel: l.orgCustomisationsTemplatesTitle,
-              onTap: () => context.push('/o/orgs/$orgId/customisations/templates'),
+              onTap: () =>
+                  context.push('/o/orgs/$orgId/customisations/templates'),
             ),
             const SizedBox(height: 12),
             OrgSectionCard(

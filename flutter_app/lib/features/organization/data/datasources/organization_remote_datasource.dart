@@ -358,8 +358,10 @@ class OrganizationRemoteDataSource with OrganizationRemoteFosterDelegations {
     token: token,
   );
 
-  Future<Map<String, dynamic>> getPermissionBundles(String orgId, String token) =>
-      _permissions.getPermissionBundles(orgId, token);
+  Future<Map<String, dynamic>> getPermissionBundles(
+    String orgId,
+    String token,
+  ) => _permissions.getPermissionBundles(orgId, token);
 
   Future<Map<String, dynamic>> getMemberPermissions(
     String orgId,
@@ -388,9 +390,13 @@ class OrganizationRemoteDataSource with OrganizationRemoteFosterDelegations {
     String token,
   ) => _permissions.revokePermission(orgId, targetUserId, permissionKey, token);
 
-  Future<List<Map<String, dynamic>>> getAuditEvents(String orgId, String token) =>
-      _permissions.getAuditEvents(orgId, token);
+  Future<List<Map<String, dynamic>>> getAuditEvents(
+    String orgId,
+    String token,
+  ) => _permissions.getAuditEvents(orgId, token);
 
-  Future<Map<String, dynamic>> getDocumentTemplates(String orgId, String token) =>
-      _permissions.getDocumentTemplates(orgId, token);
+  Future<Map<String, dynamic>> getDocumentTemplates(
+    String orgId,
+    String token,
+  ) => _permissions.getDocumentTemplates(orgId, token);
 }

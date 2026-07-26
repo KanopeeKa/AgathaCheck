@@ -50,7 +50,8 @@ class OrganizationDocumentTemplatesScreen extends ConsumerWidget {
                 Text('$e'),
                 const SizedBox(height: 8),
                 ElevatedButton(
-                  onPressed: () => ref.invalidate(documentTemplatesProvider(orgId)),
+                  onPressed: () =>
+                      ref.invalidate(documentTemplatesProvider(orgId)),
                   child: Text(l.retry),
                 ),
               ],
@@ -58,7 +59,10 @@ class OrganizationDocumentTemplatesScreen extends ConsumerWidget {
           ),
           data: (data) {
             final sessionTemplates = _templatesFor(data, 'session_checklist');
-            final milestoneTemplates = _templatesFor(data, 'adoption_milestones');
+            final milestoneTemplates = _templatesFor(
+              data,
+              'adoption_milestones',
+            );
             final isEmpty =
                 sessionTemplates.isEmpty && milestoneTemplates.isEmpty;
 
