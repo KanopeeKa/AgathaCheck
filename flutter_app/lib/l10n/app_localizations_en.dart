@@ -3887,6 +3887,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get myVets => 'My vets';
 
   @override
+  String get guardianDashboardTitle => 'Guardian dashboard';
+
+  @override
   String get upcomingPetEvents => 'Upcoming Pet Events';
 
   @override

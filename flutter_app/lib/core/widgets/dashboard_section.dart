@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 ///
 /// Pure presentation — no domain logic. Phase 2/3 compose preview content via
 /// [previewBuilder] and optional [endLink].
+///
+/// Uses a top border accent (category theme) instead of a filled card surface.
 class DashboardSection extends StatelessWidget {
   const DashboardSection({
     super.key,
@@ -11,6 +13,7 @@ class DashboardSection extends StatelessWidget {
     this.headerAction,
     required this.previewBuilder,
     this.endLink,
+    this.accentColor,
   });
 
   final String title;
@@ -18,21 +21,22 @@ class DashboardSection extends StatelessWidget {
   final Widget Function(BuildContext context) previewBuilder;
   final DashboardSectionLink? endLink;
 
+  /// Top border colour; defaults to [ColorScheme.primary].
+  final Color? accentColor;
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
+    final borderColor = accentColor ?? theme.colorScheme.primary;
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 16),
-      child: Card(
-        elevation: 0,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-          side: BorderSide(color: colorScheme.outlineVariant),
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          border: Border(top: BorderSide(color: borderColor, width: 2)),
         ),
         child: Padding(
-          padding: const EdgeInsets.all(14),
+          padding: const EdgeInsets.only(top: 14),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
