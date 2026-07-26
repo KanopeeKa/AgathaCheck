@@ -662,6 +662,42 @@ abstract class AppLocalizations {
   /// **'Manage pets'**
   String get managePets;
 
+  /// No description provided for @manageEvents.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage events'**
+  String get manageEvents;
+
+  /// No description provided for @eventsEditTab.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit'**
+  String get eventsEditTab;
+
+  /// No description provided for @eventsHistoryTab.
+  ///
+  /// In en, this message translates to:
+  /// **'History'**
+  String get eventsHistoryTab;
+
+  /// No description provided for @noEventsYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No events yet'**
+  String get noEventsYet;
+
+  /// No description provided for @petEventsSummary.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 event} other{{count} events}}'**
+  String petEventsSummary(int count);
+
+  /// No description provided for @eventsHistoryEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No report history is available for this pet.'**
+  String get eventsHistoryEmpty;
+
   /// No description provided for @filterByOrganization.
   ///
   /// In en, this message translates to:

@@ -1,23 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+
 import '../../../../core/utils/constants.dart';
-import '../../../../core/widgets/app_logo_title.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../experience/domain/entities/app_experience.dart';
 import '../../../experience/presentation/providers/experience_providers.dart';
+import '../../../experience/presentation/widgets/experience_shell_scaffold.dart';
 import '../../../organization/presentation/widgets/pet_foster_placement_section.dart';
 import '../../domain/services/pet_detail_actions.dart';
 import '../providers/pet_detail_viewer_context_provider.dart';
 import '../providers/pet_providers.dart';
-import '../widgets/pet_detail/pet_detail_app_bar.dart';
 import '../widgets/pet_detail/pet_detail_profile_card.dart';
 import '../widgets/pet_timeline/pet_timeline_section.dart';
 import 'widgets/chip_reminder_card.dart';
-import 'widgets/download_report_section.dart';
-import 'widgets/other_events_section.dart';
-import 'widgets/health_events_section.dart';
 import 'widgets/health_issues_section.dart';
 import 'widgets/neuter_reminder_card.dart';
+import 'widgets/pet_events_preview_section.dart';
 import 'widgets/sharing_section.dart';
 import 'widgets/weight_tracking_section.dart';
 
@@ -40,16 +39,12 @@ class _PetDetailScreenState extends ConsumerState<PetDetailScreen> {
       loading: () =>
           const Scaffold(body: Center(child: CircularProgressIndicator())),
       error: (error, _) => Scaffold(
-        appBar: AppBar(title: AppLogoTitle(title: l.petDetails)),
         body: Center(child: Text(l.errorWithMessage(error.toString()))),
       ),
       data: (pets) {
         final pet = pets.where((p) => p.id == widget.petId).firstOrNull;
         if (pet == null) {
-          return Scaffold(
-            appBar: AppBar(title: AppLogoTitle(title: l.petDetails)),
-            body: Center(child: Text(l.petNotFound)),
-          );
+          return Scaffold(body: Center(child: Text(l.petNotFound)));
         }
 
         final theme = Theme.of(context);
@@ -60,12 +55,13 @@ class _PetDetailScreenState extends ConsumerState<PetDetailScreen> {
         final viewerContext = ref.watch(
           petDetailViewerContextProvider(widget.petId),
         );
-        final backPath = ref.watch(experienceHomePathProvider);
 
-        Widget body = Scaffold(
-          body: CustomScrollView(
+        Widget body = ExperienceShellScaffold(
+          experience: experience,
+          currentLocation: GoRouterState.of(context).uri.path,
+          screenTitle: pet.name,
+          child: CustomScrollView(
             slivers: [
-              PetDetailAppBar(petName: pet.name, backPath: backPath),
               SliverToBoxAdapter(
                 child: PetDetailProfileCard(
                   pet: pet,
@@ -99,10 +95,10 @@ class _PetDetailScreenState extends ConsumerState<PetDetailScreen> {
                 child: HealthIssuesSection(petId: widget.petId, pet: pet),
               ),
               SliverToBoxAdapter(
-                child: HealthEventsSection(petId: widget.petId, pet: pet),
-              ),
-              SliverToBoxAdapter(
-                child: OtherEventsSection(petId: widget.petId, pet: pet),
+                child: PetEventsPreviewSection(
+                  petId: widget.petId,
+                  pet: pet,
+                ),
               ),
               if (viewerContext.can(PetDetailAction.manageSharing) ||
                   pet.isShared ||
@@ -110,8 +106,6 @@ class _PetDetailScreenState extends ConsumerState<PetDetailScreen> {
                 SliverToBoxAdapter(
                   child: SharingSection(petId: widget.petId, pet: pet),
                 ),
-              if (viewerContext.can(PetDetailAction.downloadReport))
-                SliverToBoxAdapter(child: DownloadReportSection(pet: pet)),
               const SliverToBoxAdapter(child: SizedBox(height: 32)),
             ],
           ),

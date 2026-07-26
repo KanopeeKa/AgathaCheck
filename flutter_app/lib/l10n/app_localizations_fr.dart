@@ -314,6 +314,33 @@ class AppLocalizationsFr extends AppLocalizations {
   String get managePets => 'Gérer les animaux';
 
   @override
+  String get manageEvents => 'Gérer les événements';
+
+  @override
+  String get eventsEditTab => 'Modifier';
+
+  @override
+  String get eventsHistoryTab => 'Historique';
+
+  @override
+  String get noEventsYet => 'Aucun événement pour le moment';
+
+  @override
+  String petEventsSummary(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count événements',
+      one: '1 événement',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get eventsHistoryEmpty =>
+      'Aucun historique de rapport n\'est disponible pour cet animal.';
+
+  @override
   String get filterByOrganization => 'Filtrer par organisation';
 
   @override

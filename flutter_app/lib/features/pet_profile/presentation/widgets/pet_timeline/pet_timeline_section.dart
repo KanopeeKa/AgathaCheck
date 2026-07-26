@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../../core/widgets/dashboard_section.dart';
 import '../../../../../l10n/app_localizations.dart';
 import '../../../domain/entities/pet_timeline_segment.dart';
 import '../../providers/pet_timeline_providers.dart';
@@ -24,56 +25,38 @@ class PetTimelineSection extends ConsumerWidget {
     final timelineAsync = ref.watch(petTimelineProvider(petId));
 
     return Padding(
+      key: const Key('pet_timeline_section'),
       padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: Card(
-        clipBehavior: Clip.antiAlias,
-        child: ExpansionTile(
-          key: const Key('pet_timeline_section'),
-          leading: Icon(Icons.timeline, color: theme.colorScheme.primary),
-          title: Text(
-            l.petTimelineTitle,
-            style: theme.textTheme.titleMedium?.copyWith(
-              fontWeight: FontWeight.w600,
+      child: DashboardSection(
+        title: l.petTimelineTitle,
+        previewBuilder: (ctx) {
+          return timelineAsync.when(
+            loading: () => const SizedBox(
+              height: 48,
+              child: Center(child: CircularProgressIndicator(strokeWidth: 2)),
             ),
-          ),
-          children: [
-            timelineAsync.when(
-              loading: () => const Padding(
-                padding: EdgeInsets.all(24),
-                child: Center(child: CircularProgressIndicator()),
-              ),
-              error: (e, _) => Padding(
-                padding: const EdgeInsets.all(16),
-                child: Text(
-                  l.petTimelineLoadError,
-                  style: TextStyle(color: theme.colorScheme.error),
-                ),
-              ),
-              data: (segments) {
-                if (segments.isEmpty) {
-                  return Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: Text(l.petTimelineNoData),
-                  );
-                }
-                return Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-                  child: Column(
-                    children: segments
-                        .map(
-                          (segment) => _TimelineSegmentTile(
-                            segment: segment,
-                            petId: petId,
-                            petName: petName,
-                          ),
-                        )
-                        .toList(),
-                  ),
-                );
-              },
+            error: (e, _) => Text(
+              l.petTimelineLoadError,
+              style: TextStyle(color: theme.colorScheme.error),
             ),
-          ],
-        ),
+            data: (segments) {
+              if (segments.isEmpty) {
+                return Text(l.petTimelineNoData);
+              }
+              return Column(
+                children: segments
+                    .map(
+                      (segment) => _TimelineSegmentTile(
+                        segment: segment,
+                        petId: petId,
+                        petName: petName,
+                      ),
+                    )
+                    .toList(),
+              );
+            },
+          );
+        },
       ),
     );
   }

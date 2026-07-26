@@ -100,6 +100,17 @@
   "noFosteredPets": "Vous n'accueillez aucun animal pour le moment.",
   "allPets": "Tous les animaux",
   "managePets": "Gérer les animaux",
+  "manageEvents": "Gérer les événements",
+  "eventsEditTab": "Modifier",
+  "eventsHistoryTab": "Historique",
+  "noEventsYet": "Aucun événement pour le moment",
+  "petEventsSummary": "{count, plural, =1{1 événement} other{{count} événements}}",
+  "@petEventsSummary": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "eventsHistoryEmpty": "Aucun historique de rapport n'est disponible pour cet animal.",
   "filterByOrganization": "Filtrer par organisation",
   "notifications": "Notifications",
   "veterinarians": "Vétérinaires",

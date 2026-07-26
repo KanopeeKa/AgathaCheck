@@ -12,6 +12,7 @@ export class PetDetailPage {
     await dismissConsentBannerIfPresent(this.page);
     await this.page
       .getByRole('banner', { name: new RegExp(petName, 'i') })
+      .or(this.page.getByText(new RegExp(petName, 'i')))
       .or(this.page.getByRole('button', { name: new RegExp(`Edit Pet.*${petName}`, 'i') }))
       .first()
       .waitFor({ timeout: 30_000 });

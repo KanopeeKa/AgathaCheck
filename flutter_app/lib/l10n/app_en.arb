@@ -103,6 +103,17 @@
   "noFosteredPets": "You are not fostering any pets yet.",
   "allPets": "All Pets",
   "managePets": "Manage pets",
+  "manageEvents": "Manage events",
+  "eventsEditTab": "Edit",
+  "eventsHistoryTab": "History",
+  "noEventsYet": "No events yet",
+  "petEventsSummary": "{count, plural, =1{1 event} other{{count} events}}",
+  "@petEventsSummary": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "eventsHistoryEmpty": "No report history is available for this pet.",
   "filterByOrganization": "Filter by organization",
   "notifications": "Notifications",
   "veterinarians": "Veterinarians",
