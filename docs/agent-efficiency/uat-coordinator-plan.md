@@ -26,7 +26,7 @@ Coordinate UAT babysitting **across all agents** (issue agents, execute-plan pha
 | Cross-session ledger / barrier for rebases | **Yes** — if bootstrapped | Ledger never activated (`UAT_COORDINATION_ISSUE` unset) |
 | Single failure owner | **Yes** — Phase 3 | Failures assigned to @KanopeeKa per-issue; no coordinator dispatch |
 | **Too many promote/deploy runs** | **No (alone)** | 33 promotes on Jul 23; ledger freeze does not stop `promote-uat` |
-| **WAF / infra smoke failures** | **Partially** | Coordinator escalates (§9); does not replace host whitelist |
+| **WAF / infra smoke failures** | **Partially** | Workflow retry + cookie persistence; Tiger Protect cPanel tuning — **not** CI IP whitelist |
 | **E2E drift on large UI sprints** | **Partially** | Coordinator opens remedial PRs; prevention = integration branch + PR E2E |
 
 **Verdict:** Keep the coordinator. **Revise scope:** treat agent coordination and CI back-pressure as one system. Ledger-only freeze was a **necessary but insufficient** brake — Jul 23 proved agents keep merging when the ledger is inert or barrier-check is optional.
@@ -88,7 +88,7 @@ Analysis of the last 50 `deploy-uat.yml` runs (Jul 21 22:33 – Jul 23 22:36 UTC
 
 | Gate | Failures | Dominant error | Coordinator action |
 |------|----------|----------------|-------------------|
-| HTTP smoke | 8 | o2switch **WAF 503** on auth warmup (11/12 smoke-related) | **Escalate §9** — whitelist GitHub Actions egress; do not code-fix |
+| HTTP smoke | 8 | o2switch **WAF 503** on auth warmup (11/12 smoke-related) | Workflow retry + WAF cookie persistence — **not** CI IP whitelist |
 | Live `@smoke-uat` E2E | 12 | Stuck on `#/landing` after login (120s timeout) | Often WAF/auth readiness; check smoke first |
 | Localhost E2E shard | 9 | Nav v2 / org / notifications locator drift | Remedial PR; batch if same shard class |
 | Flutter build | 1 | `colorScheme` compile error | Should have been caught in PR CI |
@@ -244,9 +244,9 @@ Set by coordinator on `failed`/`remedial`; cleared on `set-barrier` or infra res
 
 | Failed gate | First check | Remedial? |
 |-------------|-------------|-----------|
-| HTTP smoke — WAF body | `signup probe WAF challenge` in logs | **No** — escalate §9 |
-| HTTP smoke — Passenger/404 | `uat-post-deploy-smoke.sh` hint | Infra — escalate or cPanel fix |
-| Live E2E — `#/landing` stall | HTTP smoke / WAF on same run | Often infra; else auth E2E fix |
+| HTTP smoke — WAF body | `signup probe WAF challenge` in logs | **No code PR** — workflow retry + cookie persistence; CI IP whitelist unavailable |
+| HTTP smoke — Passenger/404 | `uat-post-deploy-smoke.sh` hint | Infra — cPanel Passenger fix |
+| Live E2E — `#/landing` stall | HTTP smoke / WAF on same run | Check WAF cookie persistence (#17); else auth E2E fix |
 | Localhost E2E — single shard | Shard test name + screenshot artifact | Yes — one PR per root cause |
 | Localhost E2E — Nav v2 cluster | Multiple shards, same sprint | Batch remedial; consider integration branch stop |
 | Flutter build | Compile log | Yes — should be PR CI gap |
@@ -409,7 +409,7 @@ Addresses Jul 23 queue pile-up. **Not in original plan; required for merge-rate 
 - Replacing the 10-shard UAT E2E contract or `prod-ready` gates
 - Weakening gates to pass UAT
 - Project board writes from Cloud Agents
-- Coordinator as substitute for WAF whitelist or `UAT_SSH_ENABLED` / `UAT_AUTO_MIGRATE`
+- Coordinator as substitute for `UAT_SSH_ENABLED` / `UAT_AUTO_MIGRATE` (CI HTTP IP whitelist is not available)
 
 ## Goals (clarified — changed from original)
 
@@ -525,7 +525,7 @@ This mattered beyond "the smoke gate is red": `deploy-uat.yml`'s `smoke` job gat
 
 **When to dispatch:** after the current `deploy-uat` run reaches a terminal state; when a `failed`/`remedial` head has no active coordinator and no `<!-- uat-coordinator-run -->` marker.
 
-**When not to:** during an in-flight deploy/smoke; expecting recovery from `infra_failed` heads alone (`needs_coordinator_dispatch` is false for `infra_failed` — host/WAF whitelist required).
+**When not to:** during an in-flight deploy/smoke; expecting recovery from `infra_failed` heads alone (`needs_coordinator_dispatch` is false for `infra_failed` — rely on workflow WAF retry).
 
 **First run:** weekly cron had never executed; manual dispatch after deploy quiesces establishes baseline lease hygiene.
 
@@ -539,7 +539,7 @@ See `docs/e2e/uat-waf-queue-lessons.md` §10 and operator cheat sheet.
 2. Set `UAT_COORDINATION_ISSUE=<n>`.
 3. Merge a trivial PR; confirm merge handler log: `UAT queue: enqueued PR #…`.
 4. Prioritize PR **E** (Phase 3) then **F** (Phase 3b).
-5. Open infra issue: whitelist GitHub Actions egress on UAT (WAF) — blocks 40% of Jul 23 failures.
+5. Verify `run-live-uat-gate.sh` WAF retry + cookie persistence (§17 in `uat-waf-queue-lessons.md`) — CI IP whitelist is **not** available.
 
 ---
 

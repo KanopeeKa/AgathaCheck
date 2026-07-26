@@ -1,9 +1,12 @@
+import path from 'node:path';
+
 import { defineConfig, devices } from '@playwright/test';
 
 const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
 /** Live UAT (cPanel auto-SSL) may present a cert chain GitHub runners do not trust. */
 const tlsInsecure = process.env.E2E_TLS_INSECURE === '1';
 const isLiveUat = tlsInsecure;
+const uatWafStoragePath = path.join(__dirname, 'playwright', '.uat-waf-storage.json');
 
 const sharedUse = {
   baseURL,
@@ -44,8 +47,9 @@ export default defineConfig({
     {
       name: 'uat-smoke',
       grep: /@smoke-uat/,
+      dependencies: isLiveUat ? ['warmup-uat'] : undefined,
       retries: 0,
-      use: sharedUse,
+      use: isLiveUat ? { ...sharedUse, storageState: uatWafStoragePath } : sharedUse,
     },
     {
       // Fast, WAF-capable auth check gating the full @smoke-uat/full-E2E run —

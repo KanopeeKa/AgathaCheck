@@ -1,8 +1,14 @@
+import fs from 'node:fs';
+import path from 'node:path';
+
 import type { Page } from '@playwright/test';
 import { clearApiFetchTransports, setPlaywrightPage } from './api-fetch';
 import { e2eBypassHeadersForUrl } from './e2e-bypass';
 import { isLiveHostingTarget } from './hosting';
 import { bodyShowsWafChallenge, WAF_MARKERS } from './waf-markers';
+
+/** Persisted across Playwright tests in `test:live-uat-gate` (warmup → smoke). */
+export const UAT_WAF_STORAGE_PATH = path.join(__dirname, '..', '.uat-waf-storage.json');
 
 let sessionWafCleared = false;
 
@@ -108,7 +114,7 @@ function authBlockedMessage(baseURL: string): string {
   return [
     `UAT auth signup is still blocked by hosting WAF at ${baseURL}/backend/api/auth/signup`,
     'after the page challenge cleared. Tiger Protect often allows /backend/health before',
-    'auth endpoints — retry later or run warmup + smoke in a single Playwright run.',
+    'auth endpoints — the deploy workflow retries after a cooldown; avoid extra signup probes.',
   ].join(' ');
 }
 
@@ -135,15 +141,41 @@ function probeFailureMessage(baseURL: string, probe: ProbeResult): string {
  * Load the app in Chromium (headed on CI), wait for the challenge to finish,
  * then verify both health and auth signup probes succeed in-browser.
  */
+async function sessionReadyOnPage(page: Page, baseURL: string): Promise<boolean> {
+  if (!sessionWafCleared) {
+    return false;
+  }
+  const probes = await liveApiProbesReady(page, baseURL).catch((): ProbeResult => 'health_down');
+  if (probes === 'ok') {
+    return true;
+  }
+  sessionWafCleared = false;
+  return false;
+}
+
+/** Save Tiger Protect cookies for the next Playwright project (uat-smoke). */
+export async function persistWafStorageState(page: Page): Promise<void> {
+  if (!isLiveHostingTarget()) {
+    return;
+  }
+  fs.mkdirSync(path.dirname(UAT_WAF_STORAGE_PATH), { recursive: true });
+  await page.context().storageState({ path: UAT_WAF_STORAGE_PATH });
+}
+
+/**
+ * o2switch Tiger Protect serves a JavaScript challenge to bot-like clients.
+ * Load the app in Chromium (headed on CI), wait for the challenge to finish,
+ * then verify both health and auth signup probes succeed in-browser.
+ */
 export async function passHostingWaf(page: Page, baseURL?: string): Promise<void> {
   if (!isLiveHostingTarget(baseURL)) {
     return;
   }
-  if (sessionWafCleared) {
-    return;
-  }
 
   const root = resolveBaseURL(baseURL);
+  if (await sessionReadyOnPage(page, root)) {
+    return;
+  }
   await page.goto('/landing', { waitUntil: 'domcontentloaded', timeout: 60_000 });
 
   const deadline = Date.now() + 120_000;
@@ -174,7 +206,7 @@ export async function passHostingWaf(page: Page, baseURL?: string): Promise<void
   if (pageShowsWafChallenge(await page.content())) {
     throw new Error(
       'Hosting WAF challenge did not clear after visiting UAT. '
-      + 'Retry the deploy later; Tiger Protect may be rate-limiting CI traffic.',
+      + 'Tiger Protect may be rate-limiting CI traffic — the deploy workflow retries after a cooldown.',
     );
   }
 

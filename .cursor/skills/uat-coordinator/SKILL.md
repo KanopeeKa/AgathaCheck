@@ -46,15 +46,15 @@ Use the gate table from the payload. **Do not open code remedials for infra bloc
 
 | Failed gate | First check | Action |
 |-------------|-------------|--------|
-| HTTP smoke — WAF body | `WAF challenge` / `o2switch` in logs | **Escalate** — no code PR |
-| HTTP smoke — Passenger/404 | `uat-post-deploy-smoke.sh` hints | Infra / cPanel — escalate |
-| Live E2E — `#/landing` stall | HTTP smoke / WAF on same run | Infra first; else auth E2E fix |
+| HTTP smoke — WAF body | `WAF challenge` / `o2switch` in logs | **Infra** — retry deploy / tune Tiger Protect in cPanel; **never** request CI IP whitelist |
+| HTTP smoke — Passenger/404 | `uat-post-deploy-smoke.sh` hints | Infra / cPanel — check Passenger, not code PR |
+| Live E2E — `#/landing` stall | HTTP smoke / WAF on same run | Check WAF cookie persistence + probe path; remedial PR only for real auth/E2E drift |
 | Localhost E2E — single shard | Shard name + Playwright artifact | **Remedial PR** — one root cause |
 | Localhost E2E — Nav v2 cluster | Multiple shards, same sprint | Batch remedial; note integration branch |
 | Flutter build | Compile log | **Remedial PR** — should be PR CI gap |
 | Migrations pending | `migrate_pending_count` | Escalate if `UAT_AUTO_MIGRATE` off |
 
-When `payload.gates.escalate` is true → comment on coordination issue + linked PR; **stop** without weakening gates.
+**HTTP WAF constraint:** GitHub Actions egress **cannot** be IP-whitelisted on UAT. Do not open remedial PRs for pure WAF rate-limits; fix client/workflow mitigations (`passHostingWaf`, storage state, `run-live-uat-gate.sh` retry). Escalate only for cPanel Tiger Protect sensitivity or non-WAF host misconfig.
 
 ### 2. Remedial PR (code failures only)
 
@@ -76,9 +76,9 @@ Comment on coordination issue: barrier advanced (`set-barrier` also clears promo
 
 ### 4. Escalation (halt)
 
-Per `uat-coordinator-plan.md` §9: WAF whitelist unavailable, pending migrations with `UAT_AUTO_MIGRATE` off, SSH deploy proofs missing, security/crypto, breaking API.
+Per `uat-coordinator-plan.md` §Escalation: pending migrations with `UAT_AUTO_MIGRATE` off, SSH deploy proofs missing, security/crypto, breaking API.
 
-Post on coordination issue with `question` label on linked product issue if applicable.
+**Never escalate for:** GitHub Actions HTTP WAF IP whitelisting — it is not available. Use workflow retry, Tiger Protect cPanel tuning, and code mitigations in `docs/e2e/uat-waf-queue-lessons.md`.
 
 ---
 

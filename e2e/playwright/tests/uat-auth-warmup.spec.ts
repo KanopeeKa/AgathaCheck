@@ -16,8 +16,11 @@
  * single fast, WAF-capable check instead of a curl probe that cannot pass.
  */
 import { test, expect } from '../fixtures/auth.fixture';
+import { persistWafStorageState } from '../support/waf';
 
-test('@warmup-uat UAT auth warmup — signup succeeds through hosting WAF', async ({ testUser }) => {
+test('@warmup-uat UAT auth warmup — signup succeeds through hosting WAF', async ({ page, testUser }) => {
   expect(testUser.email).toBeTruthy();
   expect(testUser.accessToken).toBeTruthy();
+  // Each Playwright test gets a fresh browser context — persist WAF cookies for uat-smoke.
+  await persistWafStorageState(page);
 });
