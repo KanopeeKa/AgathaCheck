@@ -503,6 +503,16 @@
   "notificationsDesc": "Alertes et rappels récents",
 
   "myOrganizations": "Mes organisations",
+  "discoverOrganizations": "Découvrir des organisations",
+  "orgDiscoveryEmpty": "Aucune organisation à découvrir pour le moment",
+  "orgDiscoveryLoadError": "Impossible de charger les organisations découvrables",
+  "orgDiscoveryLocation": "{town}, {administrativeArea}",
+  "@orgDiscoveryLocation": {
+    "placeholders": {
+      "town": { "type": "String" },
+      "administrativeArea": { "type": "String" }
+    }
+  },
   "organizations": "Organisations",
   "createOrganization": "Créer une organisation",
   "editOrganization": "Modifier l'organisation",
@@ -518,6 +528,21 @@
   "orgBio": "Description",
   "orgMembers": "Membres",
   "orgPets": "Animaux",
+  "orgPetsTabNeedAttention": "Besoin d'attention",
+  "orgPetsTabInFoster": "En famille d'accueil",
+  "orgPetsTabAdopted": "Adoptés",
+  "orgPetsTabAll": "Tous",
+  "orgPetsFiltersLabel": "Filtres",
+  "orgPetsFilterName": "Nom",
+  "orgPetsFilterFosteredBy": "Accueilli par",
+  "orgPetsFilterShadow": "Ombre",
+  "orgPetsFilterRainbowBridge": "Pont de l'arc-en-ciel",
+  "orgPetsFilterNameHint": "Rechercher par nom d'animal",
+  "orgPetsFilterFosteredByHint": "Rechercher par famille d'accueil",
+  "orgPetsNeedAttentionNotInFoster": "Pas en famille d'accueil",
+  "orgPetsNeedAttentionFosterFinishingSoon": "Fin d'accueil proche",
+  "orgPetsNeedAttentionTooltip": "Animaux qui ne sont pas en famille d'accueil, ou dont l'accueil se termine dans les 10 jours sans session ou adoption prévue.",
+  "orgPetsEmptyTab": "Aucun animal ne correspond à cette vue",
   "orgArchived": "Animaux archivés",
   "orgNoOrganizations": "Aucune organisation",
   "orgCreateFirst": "Créez votre première organisation pour commencer",

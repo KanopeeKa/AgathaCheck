@@ -336,6 +336,91 @@ export async function updateOrganization(
   };
 }
 
+export interface DiscoverableOrganization {
+  id: string;
+  name: string;
+  logo_url: string;
+  town: string;
+  administrative_area: string;
+  description: string;
+}
+
+export interface DiscoverOrganizationsResponse {
+  items: DiscoverableOrganization[];
+  page: number;
+  page_size: number;
+  total_count: number;
+}
+
+export async function discoverOrganizations(
+  baseURL: string,
+  options: { page?: number; pageSize?: number } = {},
+): Promise<DiscoverOrganizationsResponse> {
+  const params = new URLSearchParams();
+  if (options.page != null) params.set('page', String(options.page));
+  if (options.pageSize != null) params.set('page_size', String(options.pageSize));
+  const qs = params.toString();
+  const path = qs ? `/organizations/discover?${qs}` : '/organizations/discover';
+  const res = await apiFetch(apiUrl(path, baseURL));
+
+  if (!res.ok) {
+    const body = await res.text();
+    throw new Error(`discoverOrganizations failed (${res.status}): ${body}`);
+  }
+
+  return res.json();
+}
+
+async function execPsql(sql: string): Promise<void> {
+  const { execSync } = await import('node:child_process');
+  const host = process.env.PGHOST ?? 'localhost';
+  const port = process.env.PGPORT ?? '5432';
+  const user = process.env.PGUSER ?? 'user';
+  const password = process.env.PGPASSWORD ?? 'password';
+  const database = process.env.PGDATABASE ?? 'agatha_db';
+  execSync(
+    `PGPASSWORD='${password}' psql -h '${host}' -p '${port}' -U '${user}' -d '${database}' -c "${sql}"`,
+    { stdio: 'pipe' },
+  );
+}
+
+export async function setOrganizationDiscoverability(
+  orgId: string,
+  isDiscoverable: boolean,
+): Promise<void> {
+  await execPsql(
+    `UPDATE organizations SET is_discoverable = ${isDiscoverable} WHERE id = '${orgId}'`,
+  );
+}
+
+export async function setOrganizationDiscoveryProfile(
+  orgId: string,
+  profile: {
+    town?: string;
+    administrative_area?: string;
+    description?: string;
+    logo_url?: string;
+  },
+): Promise<void> {
+  const sets: string[] = [];
+  if (profile.town != null) {
+    sets.push(`town = '${profile.town.replace(/'/g, "''")}'`);
+  }
+  if (profile.administrative_area != null) {
+    sets.push(
+      `administrative_area = '${profile.administrative_area.replace(/'/g, "''")}'`,
+    );
+  }
+  if (profile.description != null) {
+    sets.push(`description = '${profile.description.replace(/'/g, "''")}'`);
+  }
+  if (profile.logo_url != null) {
+    sets.push(`logo_url = '${profile.logo_url.replace(/'/g, "''")}'`);
+  }
+  if (sets.length === 0) return;
+  await execPsql(`UPDATE organizations SET ${sets.join(', ')} WHERE id = '${orgId}'`);
+}
+
 export async function inviteToOrganization(
   baseURL: string,
   token: string,

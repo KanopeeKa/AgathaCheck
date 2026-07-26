@@ -12,10 +12,12 @@ import { registerAdoptionVisitsRoutes } from './adoptionVisitsRouter.js';
 import { registerDocumentTemplatesRoutes } from './documentTemplatesRouter.js';
 import { registerPlacementsRoutes } from './placementsRouter.js';
 import { registerConnectionRoutes } from './connectionsRouter.js';
+import { registerDiscoverRoutes } from './discoverRouter.js';
 
 export default function organizationsRoutes(pool) {
   const router = express.Router();
   router.use(createApiLimiter());
+  registerDiscoverRoutes(router, pool);
   registerConnectionRoutes(router, pool);
   registerInvitesRoutes(router, pool);
   registerCoreRoutes(router, pool);

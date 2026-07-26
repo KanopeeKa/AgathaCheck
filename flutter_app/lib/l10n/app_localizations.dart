@@ -2863,6 +2863,30 @@ abstract class AppLocalizations {
   /// **'My Organizations'**
   String get myOrganizations;
 
+  /// No description provided for @discoverOrganizations.
+  ///
+  /// In en, this message translates to:
+  /// **'Discover Organisations'**
+  String get discoverOrganizations;
+
+  /// No description provided for @orgDiscoveryEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No organisations to discover yet'**
+  String get orgDiscoveryEmpty;
+
+  /// No description provided for @orgDiscoveryLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load discoverable organisations'**
+  String get orgDiscoveryLoadError;
+
+  /// No description provided for @orgDiscoveryLocation.
+  ///
+  /// In en, this message translates to:
+  /// **'{town}, {administrativeArea}'**
+  String orgDiscoveryLocation(String town, String administrativeArea);
+
   /// No description provided for @organizations.
   ///
   /// In en, this message translates to:
@@ -2952,6 +2976,96 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Pets'**
   String get orgPets;
+
+  /// No description provided for @orgPetsTabNeedAttention.
+  ///
+  /// In en, this message translates to:
+  /// **'Need attention'**
+  String get orgPetsTabNeedAttention;
+
+  /// No description provided for @orgPetsTabInFoster.
+  ///
+  /// In en, this message translates to:
+  /// **'In foster'**
+  String get orgPetsTabInFoster;
+
+  /// No description provided for @orgPetsTabAdopted.
+  ///
+  /// In en, this message translates to:
+  /// **'Adopted'**
+  String get orgPetsTabAdopted;
+
+  /// No description provided for @orgPetsTabAll.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get orgPetsTabAll;
+
+  /// No description provided for @orgPetsFiltersLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Filters'**
+  String get orgPetsFiltersLabel;
+
+  /// No description provided for @orgPetsFilterName.
+  ///
+  /// In en, this message translates to:
+  /// **'Name'**
+  String get orgPetsFilterName;
+
+  /// No description provided for @orgPetsFilterFosteredBy.
+  ///
+  /// In en, this message translates to:
+  /// **'Fostered by'**
+  String get orgPetsFilterFosteredBy;
+
+  /// No description provided for @orgPetsFilterShadow.
+  ///
+  /// In en, this message translates to:
+  /// **'Shadow'**
+  String get orgPetsFilterShadow;
+
+  /// No description provided for @orgPetsFilterRainbowBridge.
+  ///
+  /// In en, this message translates to:
+  /// **'Rainbow bridge'**
+  String get orgPetsFilterRainbowBridge;
+
+  /// No description provided for @orgPetsFilterNameHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Search by pet name'**
+  String get orgPetsFilterNameHint;
+
+  /// No description provided for @orgPetsFilterFosteredByHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Search by foster parent'**
+  String get orgPetsFilterFosteredByHint;
+
+  /// No description provided for @orgPetsNeedAttentionNotInFoster.
+  ///
+  /// In en, this message translates to:
+  /// **'Not in foster'**
+  String get orgPetsNeedAttentionNotInFoster;
+
+  /// No description provided for @orgPetsNeedAttentionFosterFinishingSoon.
+  ///
+  /// In en, this message translates to:
+  /// **'Foster finishing soon'**
+  String get orgPetsNeedAttentionFosterFinishingSoon;
+
+  /// No description provided for @orgPetsNeedAttentionTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Pets that are not in foster, or whose foster placement ends within 10 days with no next session or adoption planned.'**
+  String get orgPetsNeedAttentionTooltip;
+
+  /// No description provided for @orgPetsEmptyTab.
+  ///
+  /// In en, this message translates to:
+  /// **'No pets match this view'**
+  String get orgPetsEmptyTab;
 
   /// No description provided for @orgArchived.
   ///

@@ -550,6 +550,16 @@
   "notificationsDesc": "Recent alerts and reminders",
 
   "myOrganizations": "My Organizations",
+  "discoverOrganizations": "Discover Organisations",
+  "orgDiscoveryEmpty": "No organisations to discover yet",
+  "orgDiscoveryLoadError": "Could not load discoverable organisations",
+  "orgDiscoveryLocation": "{town}, {administrativeArea}",
+  "@orgDiscoveryLocation": {
+    "placeholders": {
+      "town": { "type": "String" },
+      "administrativeArea": { "type": "String" }
+    }
+  },
   "organizations": "Organizations",
   "createOrganization": "Create Organization",
   "editOrganization": "Edit Organization",
@@ -565,6 +575,21 @@
   "orgBio": "Bio",
   "orgMembers": "Members",
   "orgPets": "Pets",
+  "orgPetsTabNeedAttention": "Need attention",
+  "orgPetsTabInFoster": "In foster",
+  "orgPetsTabAdopted": "Adopted",
+  "orgPetsTabAll": "All",
+  "orgPetsFiltersLabel": "Filters",
+  "orgPetsFilterName": "Name",
+  "orgPetsFilterFosteredBy": "Fostered by",
+  "orgPetsFilterShadow": "Shadow",
+  "orgPetsFilterRainbowBridge": "Rainbow bridge",
+  "orgPetsFilterNameHint": "Search by pet name",
+  "orgPetsFilterFosteredByHint": "Search by foster parent",
+  "orgPetsNeedAttentionNotInFoster": "Not in foster",
+  "orgPetsNeedAttentionFosterFinishingSoon": "Foster finishing soon",
+  "orgPetsNeedAttentionTooltip": "Pets that are not in foster, or whose foster placement ends within 10 days with no next session or adoption planned.",
+  "orgPetsEmptyTab": "No pets match this view",
   "orgArchived": "Archived Pets",
   "orgNoOrganizations": "No organizations yet",
   "orgCreateFirst": "Create your first organization to get started",

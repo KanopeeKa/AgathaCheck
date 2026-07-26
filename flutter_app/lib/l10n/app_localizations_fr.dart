@@ -1536,6 +1536,22 @@ class AppLocalizationsFr extends AppLocalizations {
   String get myOrganizations => 'Mes organisations';
 
   @override
+  String get discoverOrganizations => 'Découvrir des organisations';
+
+  @override
+  String get orgDiscoveryEmpty =>
+      'Aucune organisation à découvrir pour le moment';
+
+  @override
+  String get orgDiscoveryLoadError =>
+      'Impossible de charger les organisations découvrables';
+
+  @override
+  String orgDiscoveryLocation(String town, String administrativeArea) {
+    return '$town, $administrativeArea';
+  }
+
+  @override
   String get organizations => 'Organisations';
 
   @override
@@ -1579,6 +1595,52 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get orgPets => 'Animaux';
+
+  @override
+  String get orgPetsTabNeedAttention => 'Besoin d\'attention';
+
+  @override
+  String get orgPetsTabInFoster => 'En famille d\'accueil';
+
+  @override
+  String get orgPetsTabAdopted => 'Adoptés';
+
+  @override
+  String get orgPetsTabAll => 'Tous';
+
+  @override
+  String get orgPetsFiltersLabel => 'Filtres';
+
+  @override
+  String get orgPetsFilterName => 'Nom';
+
+  @override
+  String get orgPetsFilterFosteredBy => 'Accueilli par';
+
+  @override
+  String get orgPetsFilterShadow => 'Ombre';
+
+  @override
+  String get orgPetsFilterRainbowBridge => 'Pont de l\'arc-en-ciel';
+
+  @override
+  String get orgPetsFilterNameHint => 'Rechercher par nom d\'animal';
+
+  @override
+  String get orgPetsFilterFosteredByHint => 'Rechercher par famille d\'accueil';
+
+  @override
+  String get orgPetsNeedAttentionNotInFoster => 'Pas en famille d\'accueil';
+
+  @override
+  String get orgPetsNeedAttentionFosterFinishingSoon => 'Fin d\'accueil proche';
+
+  @override
+  String get orgPetsNeedAttentionTooltip =>
+      'Animaux qui ne sont pas en famille d\'accueil, ou dont l\'accueil se termine dans les 10 jours sans session ou adoption prévue.';
+
+  @override
+  String get orgPetsEmptyTab => 'Aucun animal ne correspond à cette vue';
 
   @override
   String get orgArchived => 'Animaux archivés';

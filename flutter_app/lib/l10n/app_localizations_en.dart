@@ -1523,6 +1523,21 @@ class AppLocalizationsEn extends AppLocalizations {
   String get myOrganizations => 'My Organizations';
 
   @override
+  String get discoverOrganizations => 'Discover Organisations';
+
+  @override
+  String get orgDiscoveryEmpty => 'No organisations to discover yet';
+
+  @override
+  String get orgDiscoveryLoadError =>
+      'Could not load discoverable organisations';
+
+  @override
+  String orgDiscoveryLocation(String town, String administrativeArea) {
+    return '$town, $administrativeArea';
+  }
+
+  @override
   String get organizations => 'Organizations';
 
   @override
@@ -1566,6 +1581,52 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get orgPets => 'Pets';
+
+  @override
+  String get orgPetsTabNeedAttention => 'Need attention';
+
+  @override
+  String get orgPetsTabInFoster => 'In foster';
+
+  @override
+  String get orgPetsTabAdopted => 'Adopted';
+
+  @override
+  String get orgPetsTabAll => 'All';
+
+  @override
+  String get orgPetsFiltersLabel => 'Filters';
+
+  @override
+  String get orgPetsFilterName => 'Name';
+
+  @override
+  String get orgPetsFilterFosteredBy => 'Fostered by';
+
+  @override
+  String get orgPetsFilterShadow => 'Shadow';
+
+  @override
+  String get orgPetsFilterRainbowBridge => 'Rainbow bridge';
+
+  @override
+  String get orgPetsFilterNameHint => 'Search by pet name';
+
+  @override
+  String get orgPetsFilterFosteredByHint => 'Search by foster parent';
+
+  @override
+  String get orgPetsNeedAttentionNotInFoster => 'Not in foster';
+
+  @override
+  String get orgPetsNeedAttentionFosterFinishingSoon => 'Foster finishing soon';
+
+  @override
+  String get orgPetsNeedAttentionTooltip =>
+      'Pets that are not in foster, or whose foster placement ends within 10 days with no next session or adoption planned.';
+
+  @override
+  String get orgPetsEmptyTab => 'No pets match this view';
 
   @override
   String get orgArchived => 'Archived Pets';
