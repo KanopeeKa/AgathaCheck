@@ -17,7 +17,7 @@ class GuardianAllPetsScreen extends ConsumerWidget {
     return ExperienceShellScaffold(
       experience: AppExperience.guardian,
       currentLocation: GoRouterState.of(context).uri.path,
-      screenTitle: l.allPets,
+      screenTitle: l.managePets,
       child: const PetListScreen(embeddedInShell: true, enableBulkShare: true),
     );
   }
