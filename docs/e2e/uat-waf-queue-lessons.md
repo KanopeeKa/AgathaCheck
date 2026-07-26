@@ -174,6 +174,14 @@ Acquiring a 90-minute lease **before** a successful agent launch blocked all pro
 
 **Do not reintroduce:** `resetHostingWafSession()` in `testUser` / `loginAs` fixtures for live UAT smoke.
 
+### 16. Catch-up skip must not fall through to tag slow-scan (added Jul 26)
+
+**Problem:** Deploy [30207687290](https://github.com/KanopeeKa/AgathaCheck/actions/runs/30207687290) was **cancelled** on `Resolve trigger context` after 5 minutes. Catch-up promote [30207665212](https://github.com/KanopeeKa/AgathaCheck/actions/runs/30207665212) skipped **Create UAT tag (catch-up)** (cadence still active — 66 min wait). `resolve-uat-deploy-trigger.sh` only recognized skipped job name `Create UAT tag`, not the catch-up variant → fell through to `slow_scan()` over 137 tags → hit `resolve-trigger` `timeout-minutes: 5`.
+
+**Fix:** Treat any job whose name starts with `Create UAT tag` as the promote-tag step (merge promote + catch-up).
+
+**Do not:** Rely on full tag scan when promote/catch-up skipped tag creation — skip deploy immediately with `promote_tag_skipped`.
+
 ---
 
 ## Operator recovery cheat sheet

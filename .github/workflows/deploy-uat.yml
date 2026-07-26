@@ -51,6 +51,8 @@ jobs:
         with:
           sparse-checkout: |
             scripts/ci/resolve-uat-deploy-trigger.sh
+            scripts/ci/check-promote-run-tag-skipped.js
+            scripts/ci/uat-promote-tag-job-skipped.js
             scripts/ci/assert-uat-tag.sh
             scripts/ci/append-summary.sh
           sparse-checkout-cone-mode: false
