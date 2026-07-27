@@ -1,6 +1,6 @@
 ---
 name: babysit-plus
-description: Autonomous PR operator — triage review comments (must-fix / nits / ignore), apply fixes, track debt issues, CI retry loop, optional merge per frozen plan. Use during /execute-plan phases or when full autonomous PR hygiene is needed. Policy lives in docs/agent-efficiency/autonomous-pr-policy.md.
+description: Autonomous PR operator — mandatory pre-PR critical self-review, triage review comments (must-fix / nits / ignore), apply fixes, track debt issues, CI retry loop, optional merge per frozen plan. Use during /execute-plan phases or when full autonomous PR hygiene is needed. Policy lives in docs/agent-efficiency/autonomous-pr-policy.md.
 ---
 
 # Babysit+
@@ -25,6 +25,20 @@ During `/execute-plan`, always use **/babysit-plus**, never plain babysit alone.
 | `plan_id` | when in execute-plan | For debt-issue dedupe keys |
 | Phase snapshot | when in execute-plan | `merge_mode`, `exit_checklist`, `allowed_paths` |
 | `approved_until` | when in execute-plan | Halt if past expiry |
+
+---
+
+## Pre-PR critical review (mandatory)
+
+**Before** creating or opening the PR (first push + `ManagePullRequest create_pr`), perform a **critical self-review** of the full diff against the requirement. Do not treat this as a quick skim — actively look for problems.
+
+1. **Correctness & impact** — Re-read the requirement; trace happy paths, edge cases, error handling, and regressions. Confirm behavior matches intent; flag anything that could surprise callers or break downstream flows.
+2. **Risks** — Security (auth, input validation, data exposure), data integrity, migrations, API contract drift, concurrency, and operational impact (logs, metrics, rollback).
+3. **Design quality** — Against existing codebase patterns, assess **robustness**, **maintainability**, and **testability**. Prefer the smallest change that meets the requirement; avoid drive-by refactors.
+4. **Better solution check** — If a clearer pattern, safer abstraction, or simpler approach would satisfy the requirement with equal or less scope, **adopt it now** — adjust code and tests before opening the PR. Do not defer with "we'll fix in review."
+5. **Verification** — Run `./scripts/pre-push-changed.sh` after any adjustments from this review.
+
+Only after this review passes: commit, push, and create/update the PR. Then continue with §Workflow from step 0 (Preflight).
 
 ---
 
