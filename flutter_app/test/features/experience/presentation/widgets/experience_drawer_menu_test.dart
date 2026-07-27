@@ -81,6 +81,13 @@ void main() {
     await tester.pumpWidget(
       MaterialApp(
         theme: AppTheme.lightTheme,
+        localizationsDelegates: const [
+          AppLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales: AppLocalizations.supportedLocales,
         home: Scaffold(
           body: ExperienceDrawerMenu(
             entries: sampleEntries,

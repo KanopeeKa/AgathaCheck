@@ -97,7 +97,12 @@ class ExperienceShellScaffold extends ConsumerWidget {
                   label: Text('$combinedUnread'),
                   child: const Icon(Icons.notifications_outlined),
                 ),
-                tooltip: l.notificationsBellTooltip,
+                tooltip: combinedUnread > 0
+                    ? l.drawerItemUnreadSemantics(
+                        l.notificationsBellTooltip,
+                        combinedUnread,
+                      )
+                    : l.notificationsBellTooltip,
                 onPressed: () => Scaffold.of(ctx).openEndDrawer(),
               ),
             ),
