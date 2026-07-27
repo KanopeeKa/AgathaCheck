@@ -163,13 +163,24 @@ export class OrganizationDetailPage {
     );
   }
 
+  /** EN "Pets" / FR "Animaux" — OrgSectionCard semantics label. */
+  private static readonly petsSectionName = /^Pets$|^Animaux$/i;
+
   /**
    * OrgSectionCard exposes title via Semantics(button) + MergeSemantics — use role=button,
-   * not getByText (see PR #434 UAT remedial).
+   * not getByText (see PR #434 UAT remedial). Returns false when the card is not in the tree
+   * within `findTimeout` (Flutter web after hash-route fallback often needs direct navigation).
    */
-  private async activateSectionCard(name: RegExp): Promise<void> {
+  private async tryActivateSectionCard(
+    name: RegExp,
+    findTimeout = 10_000,
+  ): Promise<boolean> {
     await enableFlutterAccessibility(this.page);
+    await refreshFlutterAccessibility(this.page);
     const card = this.page.getByRole('button', { name }).filter({ visible: true }).first();
+    if (!(await card.isVisible({ timeout: findTimeout }).catch(() => false))) {
+      return false;
+    }
     await card.scrollIntoViewIfNeeded();
     const box = await card.boundingBox();
     if (box) {
@@ -177,16 +188,21 @@ export class OrganizationDetailPage {
     } else {
       await card.click({ force: true });
     }
+    return true;
   }
 
   async openPetsSection(): Promise<void> {
     const orgId = this.orgIdFromUrl();
     const petsRoute = /\/o\/orgs\/[^/]+\/pets/;
 
-    await this.activateSectionCard(/^Pets$/i);
-    try {
-      await waitForFlutterRoutePattern(this.page, petsRoute, 8_000);
-    } catch {
+    let navigated = false;
+    if (await this.tryActivateSectionCard(OrganizationDetailPage.petsSectionName)) {
+      navigated = await waitForFlutterRoutePattern(this.page, petsRoute, 8_000)
+        .then(() => true)
+        .catch(() => false);
+    }
+
+    if (!navigated) {
       if (!orgId) {
         await waitForFlutterRoutePattern(this.page, petsRoute, 60_000);
         return;
