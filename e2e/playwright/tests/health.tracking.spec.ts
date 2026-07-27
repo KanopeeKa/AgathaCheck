@@ -158,7 +158,7 @@ test.describe('Health tracking', () => {
     const today = new Date().toISOString().slice(0, 10);
     const entry = await createHealthEntry(baseURL, testUser.accessToken, pet.id, {
       name: 'Dental Cleaning',
-      type: 'procedure',
+      type: 'other',
       nextDueDate: today,
     });
 
