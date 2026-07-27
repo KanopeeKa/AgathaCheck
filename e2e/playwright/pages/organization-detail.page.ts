@@ -147,13 +147,26 @@ export class OrganizationDetailPage {
 
   async openArchivedPets(): Promise<void> {
     const orgId = this.orgIdFromUrl();
+    const archivedRoute = /\/o\/orgs\/[^/]+\/archived(?:\/|$|\?)/;
+
     if (orgId) {
-      await this.page.goto(`/o/orgs/${orgId}/archived`);
-      await refreshFlutterAccessibility(this.page);
+      await navigateWithShellFallback(
+        this.page,
+        archivedRoute,
+        `/o/orgs/${orgId}/archived`,
+        async () => {
+          await refreshFlutterAccessibility(this.page);
+        },
+        { helper: 'OrganizationDetailPage.openArchivedPets', testTitle: null },
+      );
+    } else {
+      await waitForFlutterRoutePattern(this.page, archivedRoute, 30_000);
     }
+
+    await refreshFlutterAccessibility(this.page);
     await this.page
-      .getByText(/Archived on/i)
-      .or(this.page.getByText('No archived pets'))
+      .getByText(/Archived on|Archivé le/i)
+      .or(this.page.getByText(/No archived pets|Aucun animal archivé/i))
       .first()
       .waitFor({ timeout: 30_000 });
   }
