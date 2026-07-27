@@ -53,4 +53,22 @@ void main() {
     expect(find.text('Row two'), findsOneWidget);
     expect(find.text('See all'), findsNothing);
   });
+
+  testWidgets('exposes section title as semantics container label', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: DashboardSection(
+            title: 'Due and Overdue',
+            previewBuilder: (context) => const Text('Preview'),
+          ),
+        ),
+      ),
+    );
+
+    final semantics = tester.getSemantics(find.byType(DashboardSection));
+    expect(semantics.label, 'Due and Overdue');
+  });
 }

@@ -29,43 +29,50 @@ class DashboardSection extends StatelessWidget {
     final theme = Theme.of(context);
     final borderColor = accentColor ?? theme.colorScheme.primary;
 
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 16),
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          border: Border(top: BorderSide(color: borderColor, width: 2)),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.only(top: 14),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  Expanded(
-                    child: Text(
-                      title,
-                      style: theme.textTheme.titleSmall?.copyWith(
-                        fontWeight: FontWeight.bold,
+    return Semantics(
+      container: true,
+      label: title,
+      explicitChildNodes: true,
+      child: Padding(
+        padding: const EdgeInsets.only(bottom: 16),
+        child: DecoratedBox(
+          decoration: BoxDecoration(
+            border: Border(top: BorderSide(color: borderColor, width: 2)),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.only(top: 14),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Expanded(
+                      child: ExcludeSemantics(
+                        child: Text(
+                          title,
+                          style: theme.textTheme.titleSmall?.copyWith(
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
                       ),
                     ),
-                  ),
-                  if (headerAction != null) headerAction!,
-                ],
-              ),
-              const SizedBox(height: 12),
-              previewBuilder(context),
-              if (endLink != null) ...[
-                const SizedBox(height: 8),
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: TextButton(
-                    onPressed: endLink!.onPressed,
-                    child: Text(endLink!.label),
-                  ),
+                    if (headerAction != null) headerAction!,
+                  ],
                 ),
+                const SizedBox(height: 12),
+                previewBuilder(context),
+                if (endLink != null) ...[
+                  const SizedBox(height: 8),
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: TextButton(
+                      onPressed: endLink!.onPressed,
+                      child: Text(endLink!.label),
+                    ),
+                  ),
+                ],
               ],
-            ],
+            ),
           ),
         ),
       ),
