@@ -139,5 +139,24 @@ describe('Pets API', () => {
         guardian_name: 'Jane Guardian',
       });
     });
+
+    it('filters org-home-hidden pets from the owned-pets union branch', async () => {
+      const captured = [];
+      const app = createApp(createMockPool(async (sql) => {
+        captured.push(sql);
+        if (sql.includes('false AS is_shared') || sql.includes('UNION ALL')) {
+          return { rows: [] };
+        }
+        return { rows: [] };
+      }));
+      await request(app)
+        .get('/api/pets/all')
+        .set('Authorization', `Bearer ${token}`);
+
+      const unionSql = captured.find((s) => s.includes('UNION ALL'));
+      expect(unionSql).toBeDefined();
+      const ownedBranch = unionSql.split('UNION ALL')[0];
+      expect(ownedBranch).toContain('org_pet_home_hidden');
+    });
   });
 });
