@@ -80,7 +80,9 @@ test.describe('Pet profiles', () => {
     await editForm.fillName('Bella Rose');
     await editForm.save();
 
-    await petList.expectLoaded();
+    // Edit save navigates to pet detail (`/pet/:id`), not the list — open All Pets
+    // before asserting the renamed card semantics (`Pet: Bella Rose, …`).
+    await petList.openManagePets();
     await petList.expectPetVisible('Bella Rose');
   });
 
