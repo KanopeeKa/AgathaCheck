@@ -83,6 +83,7 @@ export class OrganizationListPage {
   async expectLoaded(): Promise<void> {
     await dismissConsentBannerIfPresent(this.page);
     await waitForFlutterRoutePattern(this.page, /\/o\/orgs(?:\?|$)|\/organizations/, 30_000);
+    await refreshFlutterAccessibility(this.page);
     if (await isExperienceShellVisible(this.page)) {
       // Embedded shell has no app bar; the section header is always near the top.
       // The Create button sits at the bottom of a ListView and is often absent from

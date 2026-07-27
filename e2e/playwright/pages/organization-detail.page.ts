@@ -157,7 +157,7 @@ export class OrganizationDetailPage {
         async () => {
           await refreshFlutterAccessibility(this.page);
         },
-        { helper: 'OrganizationDetailPage.openArchivedPets' },
+        { helper: 'OrganizationDetailPage.openArchivedPets', testTitle: null },
       );
     } else {
       await waitForFlutterRoutePattern(this.page, archivedRoute, 30_000);
@@ -165,7 +165,7 @@ export class OrganizationDetailPage {
 
     await refreshFlutterAccessibility(this.page);
     await this.page
-      .getByText(/Archived on/i)
+      .getByText(/Archived on|Archivé le/i)
       .or(this.page.getByText(/No archived pets|Aucun animal archivé/i))
       .first()
       .waitFor({ timeout: 30_000 });
