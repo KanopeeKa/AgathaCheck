@@ -1,0 +1,561 @@
+{
+  "schema_version": 1,
+  "plan_id": "guardian-ui-wave2-5dd0",
+  "approved_at": "2026-07-27T13:10:00Z",
+  "approved_by": "user chat 2026-07-27 (/execute-plan guardian-ui-wave2)",
+  "approved_until": "2026-07-29T13:10:00Z",
+  "content_hash": "sha256:d4550bcade7bd9281867d526b546933453e601b419e09fd844fea3d50c78f3da",
+  "autonomy": "active",
+  "default_merge_mode": "auto",
+  "base_branch": "cursor/guardian-ui-wave2-integration-5dd0",
+  "control_issue": 423,
+  "artifact_branch_policy": "phase-branch",
+  "phases": [
+    {
+      "id": "1",
+      "title": "Landing password eye icon (web)",
+      "branch": "cursor/guardian-wave2-landing-eye-5dd0",
+      "allowed_paths": [
+        "flutter_app/lib/features/auth/presentation/widgets/landing/**",
+        "flutter_app/web/index.html",
+        "flutter_app/test/features/auth/**",
+        "flutter_app/test/bdd/features/authentication.feature",
+        "e2e/playwright/tests/auth.login.spec.ts",
+        ".agents/plans/guardian-ui-wave2-5dd0.md",
+        ".agents/plans/guardian-ui-wave2-5dd0.snapshot.json"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split",
+        "governance-allowlist",
+        "spawn-integration"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "flutter-screen-split",
+      "status": "in_progress",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "2",
+      "title": "Drawer user identity header",
+      "branch": "cursor/guardian-wave2-drawer-identity-5dd0",
+      "allowed_paths": [
+        "flutter_app/lib/features/experience/presentation/widgets/experience_section_drawer.dart",
+        "flutter_app/lib/core/widgets/app_logo_title.dart",
+        "flutter_app/lib/features/auth/**",
+        "flutter_app/test/features/experience/**",
+        "flutter_app/test/bdd/features/experience_navigation.feature",
+        "docs/experience-program/phase-1-navigation.md",
+        "docs/experience-program/briefs/guardian-ui-wave2-issue-briefs.md",
+        ".agents/plans/guardian-ui-wave2-5dd0.md",
+        ".agents/plans/guardian-ui-wave2-5dd0.snapshot.json"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split",
+        "governance-allowlist",
+        "spawn-integration"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "flutter-screen-split",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null
+    },
+    {
+      "id": "3",
+      "title": "Vertical wrap pet cards + merged pets section",
+      "branch": "cursor/guardian-wave2-pet-cards-5dd0",
+      "allowed_paths": [
+        "flutter_app/lib/features/pet_profile/presentation/widgets/pet_card.dart",
+        "flutter_app/lib/features/experience/presentation/screens/guardian/guardian_my_pets_section.dart",
+        "flutter_app/test/features/pet_profile/**",
+        "flutter_app/test/features/experience/presentation/screens/guardian/**",
+        "flutter_app/test/bdd/features/guardian_dashboard.feature",
+        "e2e/playwright/tests/guardian.dashboard.spec.ts",
+        "flutter_app/lib/l10n/**",
+        ".agents/plans/guardian-ui-wave2-5dd0.md",
+        ".agents/plans/guardian-ui-wave2-5dd0.snapshot.json"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split",
+        "governance-allowlist",
+        "spawn-integration"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "bdd-journey",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null
+    },
+    {
+      "id": "4",
+      "title": "Vet labels + edit pet polish",
+      "branch": "cursor/guardian-wave2-vet-edit-pet-5dd0",
+      "allowed_paths": [
+        "flutter_app/lib/features/experience/presentation/screens/guardian/guardian_my_vets_section.dart",
+        "flutter_app/lib/features/pet_profile/presentation/screens/pet_form_screen.dart",
+        "flutter_app/lib/features/pet_profile/presentation/screens/widgets/pet_species_section.dart",
+        "flutter_app/lib/features/pet_profile/presentation/widgets/pet_form/**",
+        "flutter_app/test/features/pet_profile/**",
+        "flutter_app/lib/l10n/**",
+        ".agents/plans/guardian-ui-wave2-5dd0.md",
+        ".agents/plans/guardian-ui-wave2-5dd0.snapshot.json"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split",
+        "governance-allowlist",
+        "spawn-integration"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "flutter-screen-split",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null
+    },
+    {
+      "id": "5",
+      "title": "Event types four-way migration",
+      "branch": "cursor/guardian-wave2-event-types-5dd0",
+      "allowed_paths": [
+        "db/migrations/**",
+        "db/schema/**",
+        "server/routes/healthEntries/**",
+        "server/test/healthEntries.test.js",
+        "flutter_app/lib/features/health_tracking/domain/entities/health_entry.dart",
+        "flutter_app/lib/features/health_tracking/data/models/**",
+        "flutter_app/test/features/health_tracking/data/**",
+        ".agents/plans/guardian-ui-wave2-5dd0.md",
+        ".agents/plans/guardian-ui-wave2-5dd0.snapshot.json"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split",
+        "governance-allowlist",
+        "spawn-integration"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "single-backend-route",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null
+    },
+    {
+      "id": "6",
+      "title": "DueEventCard + due sections",
+      "branch": "cursor/guardian-wave2-due-event-card-5dd0",
+      "allowed_paths": [
+        "flutter_app/lib/features/health_tracking/presentation/widgets/health_entry_card*.dart",
+        "flutter_app/lib/features/health_tracking/presentation/widgets/due_event_card.dart",
+        "flutter_app/lib/features/pet_profile/presentation/widgets/pet_list/due_event_row.dart",
+        "flutter_app/lib/features/pet_profile/presentation/widgets/pet_list/home_event_actions.dart",
+        "flutter_app/lib/features/experience/presentation/screens/guardian/guardian_upcoming_events_section.dart",
+        "flutter_app/lib/features/pet_profile/presentation/screens/widgets/pet_events_preview_section.dart",
+        "flutter_app/test/features/health_tracking/**",
+        "flutter_app/test/features/experience/**",
+        "flutter_app/lib/l10n/**",
+        ".agents/plans/guardian-ui-wave2-5dd0.md",
+        ".agents/plans/guardian-ui-wave2-5dd0.snapshot.json"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split",
+        "governance-allowlist",
+        "spawn-integration"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "bdd-journey",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null
+    },
+    {
+      "id": "7",
+      "title": "Pet profile section nav rows",
+      "branch": "cursor/guardian-wave2-profile-nav-5dd0",
+      "allowed_paths": [
+        "flutter_app/lib/features/pet_profile/presentation/screens/pet_detail_screen.dart",
+        "flutter_app/lib/core/router/app_router.dart",
+        "flutter_app/test/features/pet_profile/**",
+        ".agents/plans/guardian-ui-wave2-5dd0.md",
+        ".agents/plans/guardian-ui-wave2-5dd0.snapshot.json"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split",
+        "governance-allowlist",
+        "spawn-integration"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "flutter-screen-split",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null
+    },
+    {
+      "id": "8",
+      "title": "Spawn: weight, timeline, health-issue docs API",
+      "branch": "cursor/guardian-wave2-spawn-foundation-5dd0",
+      "allowed_paths": [
+        "docs/refactoring-log.md",
+        ".agents/plans/guardian-ui-wave2-5dd0.md",
+        ".agents/plans/guardian-ui-wave2-5dd0.snapshot.json"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split",
+        "governance-allowlist",
+        "spawn-integration"
+      ],
+      "spawn_allowed": true,
+      "spawn_config": {
+        "integration_branch": "cursor/guardian-ui-wave2-integration-5dd0",
+        "ownership_ref": ".agents/plans/guardian-ui-wave2-5dd0.md#spawn-phase-8-ownership"
+      },
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null
+    },
+    {
+      "id": "9",
+      "title": "Health issues screen + profile sharing/export",
+      "branch": "cursor/guardian-wave2-health-profile-menu-5dd0",
+      "allowed_paths": [
+        "flutter_app/lib/features/pet_profile/presentation/screens/pet_health_issues_screen.dart",
+        "flutter_app/lib/features/pet_profile/presentation/screens/widgets/health_issues_section.dart",
+        "flutter_app/lib/features/pet_profile/presentation/screens/widgets/sharing_section.dart",
+        "flutter_app/lib/features/pet_profile/presentation/controllers/download_report_controller.dart",
+        "flutter_app/lib/features/health_tracking/**",
+        "flutter_app/test/features/pet_profile/**",
+        "flutter_app/test/bdd/features/**",
+        "flutter_app/lib/l10n/**",
+        ".agents/plans/guardian-ui-wave2-5dd0.md",
+        ".agents/plans/guardian-ui-wave2-5dd0.snapshot.json"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split",
+        "governance-allowlist",
+        "spawn-integration"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "bdd-journey",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null
+    },
+    {
+      "id": "10",
+      "title": "Event lifecycle API",
+      "branch": "cursor/guardian-wave2-event-lifecycle-api-5dd0",
+      "allowed_paths": [
+        "server/routes/healthEntries/**",
+        "server/test/healthEntries.test.js",
+        "flutter_app/lib/features/health_tracking/data/**",
+        "flutter_app/lib/features/health_tracking/presentation/providers/health_providers.dart",
+        ".agents/plans/guardian-ui-wave2-5dd0.md",
+        ".agents/plans/guardian-ui-wave2-5dd0.snapshot.json"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split",
+        "governance-allowlist",
+        "spawn-integration"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "single-backend-route",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null
+    },
+    {
+      "id": "11",
+      "title": "View entry screen",
+      "branch": "cursor/guardian-wave2-view-entry-5dd0",
+      "allowed_paths": [
+        "flutter_app/lib/features/health_tracking/presentation/screens/pet_event_view_screen.dart",
+        "flutter_app/lib/features/health_tracking/presentation/widgets/**",
+        "flutter_app/lib/core/router/app_router.dart",
+        "flutter_app/test/features/health_tracking/**",
+        "flutter_app/lib/l10n/**",
+        ".agents/plans/guardian-ui-wave2-5dd0.md",
+        ".agents/plans/guardian-ui-wave2-5dd0.snapshot.json"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split",
+        "governance-allowlist",
+        "spawn-integration"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "bdd-journey",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null
+    },
+    {
+      "id": "12",
+      "title": "Manage events unified list",
+      "branch": "cursor/guardian-wave2-manage-events-list-5dd0",
+      "allowed_paths": [
+        "flutter_app/lib/features/pet_profile/presentation/screens/pet_manage_events_screen.dart",
+        "flutter_app/lib/features/pet_profile/presentation/screens/widgets/pet_event_entry_list.dart",
+        "flutter_app/test/features/pet_profile/**",
+        "flutter_app/lib/l10n/**",
+        ".agents/plans/guardian-ui-wave2-5dd0.md",
+        ".agents/plans/guardian-ui-wave2-5dd0.snapshot.json"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split",
+        "governance-allowlist",
+        "spawn-integration"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "flutter-screen-split",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null
+    },
+    {
+      "id": "13",
+      "title": "Unified event edit form",
+      "branch": "cursor/guardian-wave2-unified-event-edit-5dd0",
+      "allowed_paths": [
+        "flutter_app/lib/features/health_tracking/presentation/screens/health_entry_form_screen.dart",
+        "flutter_app/lib/features/health_tracking/presentation/screens/other_event_form_screen.dart",
+        "flutter_app/lib/core/router/app_router.dart",
+        "flutter_app/test/features/health_tracking/**",
+        "flutter_app/test/bdd/features/health_tracking.feature",
+        "e2e/playwright/tests/health.tracking.spec.ts",
+        "flutter_app/lib/l10n/**",
+        ".agents/plans/guardian-ui-wave2-5dd0.md",
+        ".agents/plans/guardian-ui-wave2-5dd0.snapshot.json"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split",
+        "governance-allowlist",
+        "spawn-integration"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "bdd-journey",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null
+    },
+    {
+      "id": "14",
+      "title": "Global /g/events rework",
+      "branch": "cursor/guardian-wave2-global-events-5dd0",
+      "allowed_paths": [
+        "flutter_app/lib/features/experience/presentation/screens/guardian/guardian_due_events_screen.dart",
+        "flutter_app/lib/features/health_tracking/presentation/screens/health_dashboard_screen.dart",
+        "flutter_app/lib/core/router/experience_routes.dart",
+        "flutter_app/test/features/experience/**",
+        "flutter_app/test/bdd/features/guardian_dashboard.feature",
+        "e2e/playwright/tests/guardian.dashboard.spec.ts",
+        ".agents/plans/guardian-ui-wave2-5dd0.md",
+        ".agents/plans/guardian-ui-wave2-5dd0.snapshot.json"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split",
+        "governance-allowlist",
+        "spawn-integration"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "bdd-journey",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null
+    },
+    {
+      "id": "15",
+      "title": "Notification deep links to view entry",
+      "branch": "cursor/guardian-wave2-notification-deeplinks-5dd0",
+      "allowed_paths": [
+        "server/lib/checkDueNotifications.js",
+        "server/routes/notifications/**",
+        "flutter_app/lib/features/notifications/**",
+        "flutter_app/lib/core/router/**",
+        "flutter_app/test/bdd/features/notifications.feature",
+        ".agents/plans/guardian-ui-wave2-5dd0.md",
+        ".agents/plans/guardian-ui-wave2-5dd0.snapshot.json"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split",
+        "governance-allowlist",
+        "spawn-integration"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "bdd-journey",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null
+    }
+  ]
+}
