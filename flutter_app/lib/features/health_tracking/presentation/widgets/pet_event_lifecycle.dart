@@ -18,10 +18,7 @@ bool isHealthEntrySeriesClosed(HealthEntry entry) {
 }
 
 String healthEntryEditRoute(HealthEntry entry, String petId) {
-  if (entry.type.isOtherEvent) {
-    return '/pet/$petId/other/edit/${entry.id}';
-  }
-  return '/pet/$petId/health/edit/${entry.id}';
+  return '/pet/$petId/events/${entry.id}/edit';
 }
 
 String formatRecurrenceSummary(AppLocalizations l, HealthEntry entry) {

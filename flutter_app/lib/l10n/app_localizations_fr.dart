@@ -3042,6 +3042,15 @@ class AppLocalizationsFr extends AppLocalizations {
   String get petTimelineFillError => 'Impossible d\'enregistrer l\'entrée';
 
   @override
+  String petTimelineJoinedAgatha(String appTitle) {
+    return 'Rejoint $appTitle';
+  }
+
+  @override
+  String get deleteTimelineEntryConfirm =>
+      'Voulez-vous vraiment supprimer cette entrée de la chronologie ?';
+
+  @override
   String get bulkShare => 'Partage groupé';
 
   @override

@@ -17,7 +17,8 @@ String petTimelineDateRangeLabel(
   return l.petTimelineDateRange(segment.startDate, end);
 }
 
-String petTimelineJoinedLabel(AppLocalizations l) => 'Joined ${l.appTitle}';
+String petTimelineJoinedLabel(AppLocalizations l) =>
+    l.petTimelineJoinedAgatha(l.appTitle);
 
 class PetTimelineEntryTile extends ConsumerWidget {
   const PetTimelineEntryTile({
@@ -143,7 +144,7 @@ class _ManualActions extends ConsumerWidget {
       context: context,
       builder: (ctx) => AlertDialog(
         title: Text(l.deleteEntry),
-        content: Text(l.deleteFamilyEventConfirm),
+        content: Text(l.deleteTimelineEntryConfirm),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),

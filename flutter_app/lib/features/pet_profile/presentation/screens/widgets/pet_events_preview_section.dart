@@ -34,10 +34,10 @@ class PetEventsPreviewSection extends ConsumerWidget {
               height: 24,
               child: Center(child: CircularProgressIndicator(strokeWidth: 2)),
             ),
-            error: (_, __) => Text(
-              l.homeNoDueEvents,
+            error: (error, _) => Text(
+              l.errorLoadingEntries(error.toString()),
               style: Theme.of(ctx).textTheme.bodyMedium?.copyWith(
-                color: Theme.of(ctx).colorScheme.onSurfaceVariant,
+                color: Theme.of(ctx).colorScheme.error,
               ),
             ),
             data: (entries) {

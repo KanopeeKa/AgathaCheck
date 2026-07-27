@@ -51,6 +51,6 @@ class HomeEventActions {
   static void openEntry(BuildContext context, HealthEntry entry) {
     final petId = entry.petId;
     if (petId.isEmpty) return;
-    context.push('/pet/$petId/health/edit/${entry.id}');
+    context.push('/pet/$petId/events/${entry.id}/edit');
   }
 }

@@ -2996,6 +2996,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get petTimelineFillError => 'Could not save timeline entry';
 
   @override
+  String petTimelineJoinedAgatha(String appTitle) {
+    return 'Joined $appTitle';
+  }
+
+  @override
+  String get deleteTimelineEntryConfirm =>
+      'Are you sure you want to delete this timeline entry?';
+
+  @override
   String get bulkShare => 'Bulk share';
 
   @override

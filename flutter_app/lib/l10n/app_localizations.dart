@@ -5505,6 +5505,18 @@ abstract class AppLocalizations {
   /// **'Could not save timeline entry'**
   String get petTimelineFillError;
 
+  /// No description provided for @petTimelineJoinedAgatha.
+  ///
+  /// In en, this message translates to:
+  /// **'Joined {appTitle}'**
+  String petTimelineJoinedAgatha(String appTitle);
+
+  /// No description provided for @deleteTimelineEntryConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to delete this timeline entry?'**
+  String get deleteTimelineEntryConfirm;
+
   /// No description provided for @bulkShare.
   ///
   /// In en, this message translates to:
