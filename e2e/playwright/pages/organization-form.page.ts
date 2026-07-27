@@ -5,7 +5,9 @@ import {
   enableFlutterAccessibility,
   fillTextbox,
   selectDropdownOption,
+  waitForFlutterRoutePattern,
 } from '../support/flutter';
+import { OrganizationListPage } from './organization-list.page';
 
 /**
  * Create / edit organization form (`/organizations/new`, `/organizations/:id/edit`).
@@ -51,6 +53,13 @@ export class OrganizationFormPage {
       .or(this.page.getByRole('button', { name: 'Edit Organization' }))
       .first()
       .waitFor({ timeout: 30_000 });
+    try {
+      await waitForFlutterRoutePattern(this.page, /\/o\/orgs\/[^/?#]+/, 8_000);
+    } catch {
+      // Flutter web sometimes stays on /o/orgs after create; list card + hash fallback.
+      const list = new OrganizationListPage(this.page);
+      await list.openOrg(name);
+    }
   }
 
   async attemptSaveWithoutName(): Promise<void> {

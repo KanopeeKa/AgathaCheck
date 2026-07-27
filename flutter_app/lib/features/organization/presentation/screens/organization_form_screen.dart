@@ -106,7 +106,9 @@ class _OrganizationFormScreenState
           ScaffoldMessenger.of(
             context,
           ).showSnackBar(SnackBar(content: Text(l.orgCreated)));
-          context.pushReplacement('/o/orgs/${org.id}');
+          // go() — pushReplacement on nested /o/orgs/* routes can leave the list
+          // hub URL on Flutter web (UAT shard 3 organisation.management).
+          context.go('/o/orgs/${org.id}');
         }
       }
     } catch (e) {
