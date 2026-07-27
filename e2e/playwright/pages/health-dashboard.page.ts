@@ -40,7 +40,6 @@ export class HealthDashboardPage {
   }
 
   async expectLoaded(): Promise<void> {
-    const { expect } = await import('@playwright/test');
     await expect(async () => {
       await refreshFlutterAccessibility(this.page);
       const marker = this.page
