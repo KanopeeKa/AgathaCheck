@@ -6963,6 +6963,90 @@ abstract class AppLocalizations {
   /// **'No history yet.'**
   String get noHistoryYet;
 
+  /// No description provided for @viewEntryTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'View {name}'**
+  String viewEntryTitle(String name);
+
+  /// No description provided for @seeHistory.
+  ///
+  /// In en, this message translates to:
+  /// **'See history'**
+  String get seeHistory;
+
+  /// No description provided for @closeEventAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Close event'**
+  String get closeEventAction;
+
+  /// No description provided for @reopenEventAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Reopen event'**
+  String get reopenEventAction;
+
+  /// No description provided for @eventStatusClosed.
+  ///
+  /// In en, this message translates to:
+  /// **'Closed'**
+  String get eventStatusClosed;
+
+  /// No description provided for @relatesToHealthIssue.
+  ///
+  /// In en, this message translates to:
+  /// **'Relates to health issue'**
+  String get relatesToHealthIssue;
+
+  /// No description provided for @pastIterations.
+  ///
+  /// In en, this message translates to:
+  /// **'Past iterations'**
+  String get pastIterations;
+
+  /// No description provided for @skipOccurrence.
+  ///
+  /// In en, this message translates to:
+  /// **'Skip'**
+  String get skipOccurrence;
+
+  /// No description provided for @unmarkDone.
+  ///
+  /// In en, this message translates to:
+  /// **'Unmark done'**
+  String get unmarkDone;
+
+  /// No description provided for @remindedDaysBefore.
+  ///
+  /// In en, this message translates to:
+  /// **'You will be reminded {count} {dayLabel} before'**
+  String remindedDaysBefore(int count, String dayLabel);
+
+  /// No description provided for @recurrenceRepeatsEveryUntil.
+  ///
+  /// In en, this message translates to:
+  /// **'Repeats every {interval} {period} until {date}'**
+  String recurrenceRepeatsEveryUntil(int interval, String period, String date);
+
+  /// No description provided for @occurrenceSkipped.
+  ///
+  /// In en, this message translates to:
+  /// **'Skipped'**
+  String get occurrenceSkipped;
+
+  /// No description provided for @entryNotFound.
+  ///
+  /// In en, this message translates to:
+  /// **'Entry not found'**
+  String get entryNotFound;
+
+  /// No description provided for @nextOccurrence.
+  ///
+  /// In en, this message translates to:
+  /// **'Next occurrence'**
+  String get nextOccurrence;
+
   /// No description provided for @deleteEntryNamedConfirm.
   ///
   /// In en, this message translates to:

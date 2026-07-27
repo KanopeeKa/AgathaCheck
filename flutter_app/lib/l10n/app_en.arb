@@ -1351,6 +1351,34 @@
   "entriesCreated": "{count} entries created",
   "@entriesCreated": { "placeholders": { "count": { "type": "int" } } },
   "noHistoryYet": "No history yet.",
+  "viewEntryTitle": "View {name}",
+  "@viewEntryTitle": { "placeholders": { "name": { "type": "String" } } },
+  "seeHistory": "See history",
+  "closeEventAction": "Close event",
+  "reopenEventAction": "Reopen event",
+  "eventStatusClosed": "Closed",
+  "relatesToHealthIssue": "Relates to health issue",
+  "pastIterations": "Past iterations",
+  "skipOccurrence": "Skip",
+  "unmarkDone": "Unmark done",
+  "remindedDaysBefore": "You will be reminded {count} {dayLabel} before",
+  "@remindedDaysBefore": {
+    "placeholders": {
+      "count": { "type": "int" },
+      "dayLabel": { "type": "String" }
+    }
+  },
+  "recurrenceRepeatsEveryUntil": "Repeats every {interval} {period} until {date}",
+  "@recurrenceRepeatsEveryUntil": {
+    "placeholders": {
+      "interval": { "type": "int" },
+      "period": { "type": "String" },
+      "date": { "type": "String" }
+    }
+  },
+  "occurrenceSkipped": "Skipped",
+  "entryNotFound": "Entry not found",
+  "nextOccurrence": "Next occurrence",
   "deleteEntryNamedConfirm": "Delete \"{name}\"? This cannot be undone.",
   "@deleteEntryNamedConfirm": { "placeholders": { "name": { "type": "String" } } },
   "failedToDelete": "Failed to delete: {error}",

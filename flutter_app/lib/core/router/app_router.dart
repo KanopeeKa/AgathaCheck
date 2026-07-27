@@ -9,6 +9,7 @@ import '../../features/auth/presentation/screens/my_details_screen.dart';
 import '../../features/health_tracking/domain/entities/health_entry.dart';
 import '../../features/health_tracking/presentation/screens/health_entry_form_screen.dart';
 import '../../features/health_tracking/presentation/screens/other_event_form_screen.dart';
+import '../../features/health_tracking/presentation/screens/pet_event_view_screen.dart';
 import '../../features/notifications/presentation/screens/notification_settings_screen.dart';
 import '../../features/notifications/presentation/screens/notifications_screen.dart';
 import '../../features/pet_profile/presentation/screens/pet_detail_screen.dart';
@@ -184,6 +185,15 @@ final routerProvider = Provider<GoRouter>((ref) {
         builder: (context, state) {
           final petId = state.pathParameters['petId']!;
           return PetManageEventsScreen(petId: petId);
+        },
+      ),
+      GoRoute(
+        path: '/pet/:petId/events/:entryId',
+        name: 'petEventView',
+        builder: (context, state) {
+          final petId = state.pathParameters['petId']!;
+          final entryId = state.pathParameters['entryId']!;
+          return PetEventViewScreen(petId: petId, entryId: entryId);
         },
       ),
       GoRoute(

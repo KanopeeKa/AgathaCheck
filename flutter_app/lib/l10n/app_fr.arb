@@ -1258,6 +1258,34 @@
   "entriesCreated": "{count} entrées créées",
   "@entriesCreated": { "placeholders": { "count": { "type": "int" } } },
   "noHistoryYet": "Aucun historique pour le moment.",
+  "viewEntryTitle": "Voir {name}",
+  "@viewEntryTitle": { "placeholders": { "name": { "type": "String" } } },
+  "seeHistory": "Voir l'historique",
+  "closeEventAction": "Fermer l'événement",
+  "reopenEventAction": "Rouvrir l'événement",
+  "eventStatusClosed": "Fermé",
+  "relatesToHealthIssue": "Lié à un problème de santé",
+  "pastIterations": "Occurrences passées",
+  "skipOccurrence": "Ignorer",
+  "unmarkDone": "Annuler le marquage",
+  "remindedDaysBefore": "Vous serez rappelé {count} {dayLabel} avant",
+  "@remindedDaysBefore": {
+    "placeholders": {
+      "count": { "type": "int" },
+      "dayLabel": { "type": "String" }
+    }
+  },
+  "recurrenceRepeatsEveryUntil": "Se répète tous les {interval} {period} jusqu'au {date}",
+  "@recurrenceRepeatsEveryUntil": {
+    "placeholders": {
+      "interval": { "type": "int" },
+      "period": { "type": "String" },
+      "date": { "type": "String" }
+    }
+  },
+  "occurrenceSkipped": "Ignoré",
+  "entryNotFound": "Entrée introuvable",
+  "nextOccurrence": "Prochaine occurrence",
   "deleteEntryNamedConfirm": "Supprimer « {name} » ? Cette action est irréversible.",
   "@deleteEntryNamedConfirm": { "placeholders": { "name": { "type": "String" } } },
   "failedToDelete": "Échec de la suppression : {error}",
