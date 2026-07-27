@@ -39,6 +39,24 @@ class PetCard extends StatelessWidget {
   /// Square tile side length — same as [tileWidthFor].
   static double tileSizeFor(double maxWidth) => tileWidthFor(maxWidth);
 
+  /// [PetCard] with responsive square constraints for list/section layouts.
+  static Widget sizedTile(
+    BuildContext context, {
+    required Pet pet,
+    VoidCallback? onTap,
+  }) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final tileSize = tileSizeFor(constraints.maxWidth);
+        return SizedBox(
+          width: tileSize,
+          height: tileSize,
+          child: PetCard(pet: pet, onTap: onTap),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);

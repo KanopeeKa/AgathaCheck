@@ -51,7 +51,11 @@ class OrganizationPetsSection extends StatelessWidget {
   }
 
   Widget _buildPetTile(BuildContext context, Pet pet) {
-    final card = PetCard(pet: pet, onTap: () => context.go('/pet/${pet.id}'));
+    final sized = PetCard.sizedTile(
+      context,
+      pet: pet,
+      onTap: () => context.go('/pet/${pet.id}'),
+    );
     if (pet.isShared) {
       return _buildDismissible(
         pet: pet,
@@ -61,7 +65,7 @@ class OrganizationPetsSection extends StatelessWidget {
         confirmMessage: l.hideSharedPetConfirm(pet.name),
         onConfirm: () =>
             ref.read(hiddenSharedPetsProvider.notifier).hideSharedPet(pet.id),
-        child: card,
+        child: sized,
       );
     }
     final orgId = pet.organizationId;
@@ -78,10 +82,10 @@ class OrganizationPetsSection extends StatelessWidget {
         confirmMessage: l.hideFromHomeListConfirm(pet.name),
         onConfirm: () =>
             ref.read(orgHomeHiddenPetsProvider(orgId).notifier).hide(pet.id),
-        child: card,
+        child: sized,
       );
     }
-    return card;
+    return sized;
   }
 
   Widget _buildDismissible({

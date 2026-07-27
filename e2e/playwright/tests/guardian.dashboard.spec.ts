@@ -8,21 +8,17 @@
 import { test, expect } from '../fixtures/auth.fixture';
 import { LandingPage } from '../pages/landing.page';
 import { ExperiencePage } from '../pages/experience.page';
-import { createPet, signupUser } from '../support/api';
+import { createPet, createHealthEntry, signupUser } from '../support/api';
 import {
   dismissConsentBannerIfPresent,
-<<<<<<< HEAD
   dashboardSectionGroup,
-=======
   flutterGotoUrl,
->>>>>>> 93facf74 (phase(14/15): Global /g/events rework (#452))
   refreshFlutterAccessibility,
   skipGuardianOnboardingIfPresent,
   waitForPostLoginRoute,
   waitForFlutterRoutePattern,
 } from '../support/flutter';
 import { prepareLiveApiAccess } from '../support/waf';
-import { createHealthEntry, createPet, signupUser } from '../support/api';
 
 const baseURL = () => process.env.E2E_BASE_URL ?? 'http://localhost:3000';
 
