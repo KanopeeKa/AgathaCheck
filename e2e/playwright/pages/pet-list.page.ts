@@ -112,6 +112,26 @@ export class PetListPage {
     }
   }
 
+  /** Guardian `/g/home` Due and Overdue section — empty when nothing is due today. */
+  async expectNoDueEventsOnHome(): Promise<void> {
+    await this.expectLoaded();
+    await expect(async () => {
+      await refreshFlutterAccessibility(this.page);
+      const dueSection = dashboardSectionGroup(this.page, 'dueAndOverdue');
+      await expect(dueSection).toBeVisible();
+      await expect(
+        dueSection
+          .getByText(/You're all caught up|Tout est à jour/i)
+          .or(
+            dueSection.getByText(
+              /No events are overdue or due today|Aucun événement en retard ou prévu aujourd'hui/i,
+            ),
+          )
+          .first(),
+      ).toBeVisible();
+    }).toPass({ timeout: 30_000 });
+  }
+
   /** Assert a due/overdue entry appears in the home DueEventsSection card. */
   async expectDueEntryOnHome(entryName: string): Promise<void> {
     await refreshFlutterAccessibility(this.page);

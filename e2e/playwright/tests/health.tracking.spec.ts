@@ -342,10 +342,8 @@ test.describe('Health tracking', () => {
     });
 
     await loginAs(page, testUser);
-    await page
-      .getByText("You're all caught up", { exact: false })
-      .first()
-      .waitFor({ timeout: 20_000 });
+    const petList = new PetListPage(page);
+    await petList.expectNoDueEventsOnHome();
   });
 
   // ── Wave C: CSV export ────────────────────────────────────────────────────
