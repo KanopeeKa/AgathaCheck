@@ -61,4 +61,49 @@ class PetTimelineRemoteDataSource {
       json.decode(response.body) as Map<String, dynamic>,
     );
   }
+
+  Future<PetTimelineSegment> updateManualEntry(
+    String petId,
+    String entryId,
+    String token, {
+    required String title,
+    required String description,
+    required String startDate,
+    String? endDate,
+  }) async {
+    final response = await _client.put(
+      Uri.parse('$baseUrl/api/pets/$petId/timeline/entries/$entryId'),
+      headers: _headers(token),
+      body: json.encode({
+        'title': title,
+        'description': description,
+        'start_date': startDate,
+        if (endDate != null && endDate.isNotEmpty) 'end_date': endDate,
+      }),
+    );
+    if (response.statusCode >= 400) {
+      throw Exception(
+        'Failed to update timeline entry (${response.statusCode})',
+      );
+    }
+    return PetTimelineSegment.fromJson(
+      json.decode(response.body) as Map<String, dynamic>,
+    );
+  }
+
+  Future<void> deleteManualEntry(
+    String petId,
+    String entryId,
+    String token,
+  ) async {
+    final response = await _client.delete(
+      Uri.parse('$baseUrl/api/pets/$petId/timeline/entries/$entryId'),
+      headers: _headers(token),
+    );
+    if (response.statusCode >= 400) {
+      throw Exception(
+        'Failed to delete timeline entry (${response.statusCode})',
+      );
+    }
+  }
 }
