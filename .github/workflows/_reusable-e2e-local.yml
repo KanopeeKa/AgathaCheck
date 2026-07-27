@@ -38,20 +38,6 @@ jobs:
       ${{ inputs.test_suite == 'smoke-ci' && 'Playwright @smoke-ci canary (localhost)' || format('Playwright E2E (localhost{0})', inputs.shard_total > 1 && format(' shard {0}/{1}', inputs.shard_index, inputs.shard_total) || '') }}
     runs-on: ubuntu-latest
     timeout-minutes: 45
-    services:
-      postgres:
-        image: postgres:16
-        env:
-          POSTGRES_USER: user
-          POSTGRES_PASSWORD: password
-          POSTGRES_DB: agatha_db
-        ports:
-          - 5432:5432
-        options: >-
-          --health-cmd "pg_isready -U user -d agatha_db"
-          --health-interval 5s
-          --health-timeout 5s
-          --health-retries 10
 
     steps:
       - uses: actions/checkout@v5
@@ -60,6 +46,9 @@ jobs:
 
       - name: Begin job timing
         run: echo "JOB_START_EPOCH=$(date +%s)" >> "$GITHUB_ENV"
+
+      - name: Start PostgreSQL
+        run: bash scripts/ci/start-postgres-ci.sh
 
       - name: Set up Node.js
         uses: actions/setup-node@v5
@@ -173,3 +162,7 @@ jobs:
             "sha=${{ github.sha }}" \
             "run_id=${{ github.run_id }}" \
             "duration_sec=${dur}"
+
+      - name: Stop PostgreSQL
+        if: always()
+        run: bash scripts/ci/stop-postgres-ci.sh
