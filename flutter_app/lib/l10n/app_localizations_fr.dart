@@ -317,10 +317,16 @@ class AppLocalizationsFr extends AppLocalizations {
   String get manageEvents => 'Gérer les événements';
 
   @override
-  String get eventsEditTab => 'Modifier';
+  String get eventFilterClosed => 'Fermé';
 
   @override
-  String get eventsHistoryTab => 'Historique';
+  String get eventFilterRecurring => 'Récurrent';
+
+  @override
+  String get eventFilterOneTime => 'Ponctuel';
+
+  @override
+  String get eventFilterShowSkipped => 'Afficher les ignorés';
 
   @override
   String get noEventsYet => 'Aucun événement pour le moment';

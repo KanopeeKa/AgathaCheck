@@ -668,17 +668,29 @@ abstract class AppLocalizations {
   /// **'Manage events'**
   String get manageEvents;
 
-  /// No description provided for @eventsEditTab.
+  /// No description provided for @eventFilterClosed.
   ///
   /// In en, this message translates to:
-  /// **'Edit'**
-  String get eventsEditTab;
+  /// **'Closed'**
+  String get eventFilterClosed;
 
-  /// No description provided for @eventsHistoryTab.
+  /// No description provided for @eventFilterRecurring.
   ///
   /// In en, this message translates to:
-  /// **'History'**
-  String get eventsHistoryTab;
+  /// **'Recurring'**
+  String get eventFilterRecurring;
+
+  /// No description provided for @eventFilterOneTime.
+  ///
+  /// In en, this message translates to:
+  /// **'One-time'**
+  String get eventFilterOneTime;
+
+  /// No description provided for @eventFilterShowSkipped.
+  ///
+  /// In en, this message translates to:
+  /// **'Show skipped'**
+  String get eventFilterShowSkipped;
 
   /// No description provided for @noEventsYet.
   ///

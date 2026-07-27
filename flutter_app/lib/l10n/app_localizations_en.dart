@@ -312,10 +312,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get manageEvents => 'Manage events';
 
   @override
-  String get eventsEditTab => 'Edit';
+  String get eventFilterClosed => 'Closed';
 
   @override
-  String get eventsHistoryTab => 'History';
+  String get eventFilterRecurring => 'Recurring';
+
+  @override
+  String get eventFilterOneTime => 'One-time';
+
+  @override
+  String get eventFilterShowSkipped => 'Show skipped';
 
   @override
   String get noEventsYet => 'No events yet';
