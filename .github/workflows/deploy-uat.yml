@@ -7,7 +7,6 @@ on:
   workflow_run:
     workflows:
       - 'Promote UAT (tag on merge to main)'
-      - 'UAT promote catch-up'
     types: [completed]
   workflow_dispatch:
     inputs:
@@ -564,7 +563,7 @@ jobs:
             "duration_sec=${dur}"
 
   # Post-deploy HTTP smoke — validates DNS, TLS, Passenger restart, API prefix.
-  # Blocking gate: failures must fail prod-ready (uat-e2e-full still runs in parallel).
+  # Blocking gate for prod-ready. Full E2E runs in pre-uat-e2e.yml before tagging.
   smoke:
     name: UAT post-deploy smoke
     needs: [resolve-trigger, deploy]
@@ -598,9 +597,7 @@ jobs:
           WAF_FAIL_FAST_STREAK: '3'
         run: bash scripts/uat-post-deploy-smoke.sh
 
-      # Browser WAF warmup runs once in uat-e2e-smoke (single Playwright process for
-      # warmup-uat + uat-smoke). A second session from the same GitHub Actions IP
-      # re-triggers Tiger Protect on /auth/signup — see docs/e2e/uat-waf-queue-lessons.md.
+      # Light HTTP smoke only — full E2E runs in pre-uat-e2e.yml; live browser E2E is nightly (uat-live-e2e.yml).
 
       - name: Classify smoke failure for prod-ready gates
         id: classify
@@ -625,140 +622,10 @@ jobs:
             "run_id=${{ github.run_id }}" \
             "duration_sec=${dur}"
 
-  # Live UAT smoke E2E — runs in parallel with manual UAT; does not block deploy.
-  uat-e2e-smoke:
-    name: UAT live smoke E2E
-    needs: [resolve-trigger, deploy, smoke]
-    if: needs.smoke.result == 'success'
-    runs-on: ubuntu-latest
-    timeout-minutes: 30
-    outputs:
-      live_smoke_failure_kind: ${{ steps.classify.outputs.failure_kind }}
-    steps:
-      - uses: actions/checkout@v5
-
-      - name: Begin job timing
-        run: echo "JOB_START_EPOCH=$(date +%s)" >> "$GITHUB_ENV"
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v5
-        with:
-          node-version: 22
-          cache: npm
-          cache-dependency-path: e2e/package-lock.json
-
-      - name: Install E2E dependencies
-        working-directory: e2e
-        run: |
-          npm ci
-          npx playwright install chromium --with-deps
-
-      - name: Warm up UAT auth and run @smoke-uat (single Playwright run)
-        id: live_gate
-        env:
-          E2E_BASE_URL: ${{ env.UAT_BASE_URL }}
-          E2E_BYPASS_TOKEN: ${{ secrets.E2E_BYPASS_TOKEN }}
-          E2E_TLS_INSECURE: '1'
-          E2E_SKIP_NODE_UAT_PREFLIGHT: '1'
-          # cPanel auto-SSL on UAT is not trusted by GitHub runners (self-signed / incomplete chain).
-          NODE_TLS_REJECT_UNAUTHORIZED: '0'
-        run: bash scripts/ci/run-live-uat-gate.sh
-
-      - name: Classify live smoke failure for prod-ready gates
-        id: classify
-        if: always()
-        env:
-          HEALTH_OUTCOME: success
-          WARMUP_OUTCOME: ${{ steps.live_gate.outcome }}
-          COMBINED_LIVE_GATE: 'true'
-          PLAYWRIGHT_REPORT_DIR: e2e/playwright-report
-          PLAYWRIGHT_RESULTS_DIR: e2e/test-results
-        run: bash scripts/ci/classify-uat-smoke-failure.sh
-
-      - name: Upload Playwright report
-        if: always()
-        uses: actions/upload-artifact@v6
-        with:
-          name: playwright-report-uat-smoke
-          path: e2e/playwright-report/
-
-      - name: Write live smoke E2E job summary
-        if: always()
-        run: |
-          end=$(date +%s)
-          start="${JOB_START_EPOCH:-$end}"
-          dur=$((end - start))
-          bash scripts/ci/append-summary.sh "UAT live smoke E2E job" \
-            "workflow=deploy-uat" \
-            "job=uat-e2e-smoke" \
-            "ref=${{ needs.resolve-trigger.outputs.deploy_ref }}" \
-            "sha=${{ github.sha }}" \
-            "run_id=${{ github.run_id }}" \
-            "duration_sec=${dur}"
-
-  # Full localhost E2E — prod-readiness gate; eleven file-balanced shards (org.onboarding isolated).
-  # Starts only after HTTP smoke passes (fail-fast — do not burn shards on WAF/deploy failures).
-  # Cadence: UAT_FULL_E2E_MERGE_THRESHOLD (default 1 = every merge); coordinator may force via UAT_FULL_E2E_FORCE_RUN.
-  uat-full-e2e-decide:
-    name: UAT full E2E cadence
-    needs: [resolve-trigger, build-web, smoke]
-    if: >-
-      needs.resolve-trigger.outputs.proceed == 'true' &&
-      needs.smoke.result == 'success'
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
-    outputs:
-      should_run: ${{ steps.cadence.outputs.should_run }}
-      reason: ${{ steps.cadence.outputs.reason }}
-      merge_count: ${{ steps.cadence.outputs.merge_count }}
-    steps:
-      - uses: actions/checkout@v5
-
-      - name: Restore full E2E cadence state
-        uses: actions/cache/restore@v5
-        with:
-          path: .ci-uat-full-e2e-state
-          key: uat-full-e2e-state-${{ github.run_id }}
-          restore-keys: |
-            uat-full-e2e-state-
-
-      - name: Decide full localhost E2E cadence
-        id: cadence
-        env:
-          UAT_FULL_E2E_STATE_FILE: .ci-uat-full-e2e-state/state.json
-          UAT_FULL_E2E_MERGE_THRESHOLD: ${{ vars.UAT_FULL_E2E_MERGE_THRESHOLD || '1' }}
-          UAT_FULL_E2E_FORCE_RUN: ${{ vars.UAT_FULL_E2E_FORCE_RUN || 'false' }}
-        run: bash scripts/ci/uat-full-e2e-cadence.sh decide
-
-      - name: Save full E2E cadence state
-        if: always()
-        uses: actions/cache/save@v5
-        with:
-          path: .ci-uat-full-e2e-state
-          key: uat-full-e2e-state-${{ github.run_id }}
-
-  uat-e2e-full:
-    name: UAT full E2E (localhost)
-    needs: [resolve-trigger, build-web, smoke, uat-full-e2e-decide]
-    if: >-
-      needs.resolve-trigger.outputs.proceed == 'true' &&
-      needs.smoke.result == 'success' &&
-      needs.uat-full-e2e-decide.outputs.should_run == 'true'
-    strategy:
-      fail-fast: true
-      # Shard count: 11 — update matrix.shard, shard_total, and e2e/scripts/shard-files.mjs together.
-      matrix:
-        shard: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
-    uses: ./.github/workflows/_reusable-e2e-local.yml
-    with:
-      shard_index: ${{ matrix.shard }}
-      shard_total: 11
-      web_artifact_name: ${{ needs.build-web.outputs.artifact_name }}
-
   # Aggregate status for GitHub Environment protection on PROD (required check).
   prod-ready:
     name: Prod ready
-    needs: [resolve-trigger, build-web, deploy, smoke, uat-e2e-smoke, uat-full-e2e-decide, uat-e2e-full]
+    needs: [resolve-trigger, build-web, deploy, smoke]
     # Skip (not fail) when resolve-trigger cleanly opted out (no tag / promote-tag
     # skipped) — otherwise this aggregate gate turns a no-op run red, which is
     # exactly the misleading "ghost deploy failure" signal this PR removes.
@@ -775,13 +642,8 @@ jobs:
         env:
           DEPLOY_RESULT: ${{ needs.deploy.result }}
           SMOKE_RESULT: ${{ needs.smoke.result }}
-          LIVE_SMOKE_RESULT: ${{ needs.uat-e2e-smoke.result }}
-          FULL_E2E_RESULT: ${{ needs.smoke.result != 'success' && 'skipped' || (needs.uat-full-e2e-decide.outputs.should_run == 'false' && 'skipped' || needs.uat-e2e-full.result) }}
           BUILD_RESULT: ${{ needs.build-web.result }}
           SMOKE_FAILURE_KIND: ${{ needs.smoke.outputs.smoke_failure_kind }}
-          LIVE_SMOKE_FAILURE_KIND: ${{ needs.uat-e2e-smoke.outputs.live_smoke_failure_kind }}
-          UAT_FULL_E2E_CADENCE_SKIP: ${{ needs.smoke.result == 'success' && needs.uat-full-e2e-decide.outputs.should_run == 'false' && 'true' || 'false' }}
-          UAT_FULL_E2E_CADENCE_REASON: ${{ needs.uat-full-e2e-decide.outputs.reason || '' }}
           DEPLOY_REF: ${{ needs.resolve-trigger.outputs.deploy_ref }}
           GITHUB_SHA: ${{ github.sha }}
           GITHUB_RUN_ID: ${{ github.run_id }}

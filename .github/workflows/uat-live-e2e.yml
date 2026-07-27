@@ -1,0 +1,64 @@
+name: UAT live E2E
+
+# Advisory live UAT browser E2E (Tiger Protect WAF). Does not block promotion.
+# See docs/e2e/uat-deploy-tiers.md
+on:
+  schedule:
+    - cron: '0 2 * * *'
+  workflow_dispatch: {}
+
+concurrency:
+  group: uat-live-e2e
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+env:
+  UAT_BASE_URL: https://uat.agathatrack.com
+
+jobs:
+  uat-live-e2e:
+    name: Live UAT smoke (@smoke-uat)
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: e2e/package-lock.json
+
+      - name: Install E2E dependencies
+        working-directory: e2e
+        run: |
+          npm ci
+          npx playwright install chromium --with-deps
+
+      - name: Run live UAT gate (WAF warmup + @smoke-uat)
+        env:
+          E2E_BASE_URL: ${{ env.UAT_BASE_URL }}
+          E2E_BYPASS_TOKEN: ${{ secrets.E2E_BYPASS_TOKEN }}
+          E2E_TLS_INSECURE: '1'
+          E2E_SKIP_NODE_UAT_PREFLIGHT: '1'
+          NODE_TLS_REJECT_UNAUTHORIZED: '0'
+        run: bash scripts/ci/run-live-uat-gate.sh
+
+      - name: Upload Playwright report
+        if: always()
+        uses: actions/upload-artifact@v6
+        with:
+          name: playwright-report-uat-live-e2e
+          path: e2e/playwright-report/
+
+  notify-on-failure:
+    if: failure()
+    needs: uat-live-e2e
+    runs-on: ubuntu-latest
+    steps:
+      - name: Live UAT E2E failed (advisory)
+        run: |
+          echo "::warning::Advisory live UAT E2E failed — promotion is not blocked. Check Tiger Protect / UAT env (E2E=1, bypass token)."

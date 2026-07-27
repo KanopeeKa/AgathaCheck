@@ -20,6 +20,10 @@ on:
         description: Pre-built web artifact to download (skips Flutter build when set)
         type: string
         default: ''
+      ref:
+        description: Git ref to checkout before running tests (SHA or branch)
+        type: string
+        default: ''
       test_suite:
         description: Playwright suite — shard (file-balanced CI shard) or smoke-ci (PR @smoke-ci canary)
         type: string
@@ -51,6 +55,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v5
+        with:
+          ref: ${{ inputs.ref != '' && inputs.ref || github.sha }}
 
       - name: Begin job timing
         run: echo "JOB_START_EPOCH=$(date +%s)" >> "$GITHUB_ENV"

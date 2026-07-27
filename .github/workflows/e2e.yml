@@ -1,8 +1,7 @@
 name: E2E (Playwright)
 
-# Full localhost E2E is intentionally NOT run on every PR commit (too slow).
-# It runs on UAT CD (deploy-uat.yml → uat-e2e-full, ten shards), weekly on main (non-blocking),
-# and can be triggered manually.
+# Full localhost E2E runs on merge via pre-uat-e2e.yml (blocking).
+# Weekly e2e.yml and nightly uat-live-e2e.yml are non-blocking signals.
 on:
   workflow_dispatch:
   schedule:

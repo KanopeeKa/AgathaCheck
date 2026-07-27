@@ -35,7 +35,7 @@ shards unchanged for prod-ready. Prod security scans noted in Phase 6 (future).
 | Stage | Blocking? | Workflow |
 |-------|-----------|----------|
 | PR → `main` | **Yes** (2 required checks) | `ci.yml` → `ci-gate`, `codeql.yml` |
-| Merge → `main` | **Yes** (auto-promotion; skipped when UAT queue promote hold or deploy cadence is active) | `promote-uat.yml` → `uat-*` tag → `deploy-uat.yml` (`workflow_run`); catch-up: `uat-promote-catchup.yml` |
+| Merge → `main` | **Yes** (after Pre-UAT E2E; queue promote hold may block tag) | `pre-uat-e2e.yml` → `promote-uat.yml` → `uat-*` tag → `deploy-uat.yml` |
 | PR granular CI jobs | Visible, not individually required | `ci.yml` (startup-smoke, test-suite, flutter-*, …) |
 | PR startup smoke | **Yes** (via `ci-gate`) | `ci.yml` → `_reusable-pr-startup-smoke.yml` |
 | PR hints | No (advisory) | `pr-governance-hints.yml` |
@@ -306,33 +306,29 @@ wait for one green **CI** run — GitHub only lists checks that have reported at
 
 ---
 
-## 3. Blocking — UAT deploy (`uat-*` tag)
+## 3. Blocking — UAT release pipeline
 
-Workflows: **Promote UAT** (`promote-uat.yml`) on merge to `main`, then **Deploy UAT**
-(`deploy-uat.yml`) via `workflow_run` (tag push from `GITHUB_TOKEN` does not chain
-workflows) or `uat-*` tag push when the tag was created outside Actions.
+Full tier model: [e2e/uat-deploy-tiers.md](./e2e/uat-deploy-tiers.md).
 
-**Deploy cadence (default 90 minutes):** `promote-uat.yml` skips tag creation when a
-UAT deploy job started within `UAT_DEPLOY_MIN_INTERVAL_MINUTES` (repo variable, default
-`90`). Block reasons: `uat_deploy_cadence` (interval not elapsed) or
-`uat_deploy_in_progress` (deploy job still running). Merges during the window batch onto the next
-deploy — **UAT promote catch-up** (`.github/workflows/uat-promote-catchup.yml`) runs
-every 30 minutes and promotes `main` HEAD once the interval elapses. Disable with
-`UAT_DEPLOY_CADENCE_ENABLED=false`; emergency bypass: `UAT_DEPLOY_CADENCE_FORCE=true`
-(promote) or catch-up `workflow_dispatch` with `force_cadence=true`.
+**Pre-UAT E2E** (`pre-uat-e2e.yml`) runs on every push to `main` (queued concurrency).
+Full localhost Playwright (11 shards) must pass before **Promote UAT** tags the merge.
 
-| Job | Blocking for `prod-ready`? | Purpose |
-|-----|----------------------------|---------|
-| `Build Flutter web` (`build-web`) | **Yes** | Shared web build + `web-build-<sha>` artifact |
-| `Build and deploy to UAT` (`deploy`) | **Yes** | Download artifact + FTP frontend/backend |
+**Promote UAT** (`promote-uat.yml`) runs via `workflow_run` after Pre-UAT E2E succeeds.
+Creates `uat-*` tag → **Deploy UAT** (`deploy-uat.yml`) via `workflow_run` (tag push from
+`GITHUB_TOKEN` does not chain workflows) or manual `uat-*` tag push.
+
+| Stage / job | Blocking? | Purpose |
+|-------------|-----------|---------|
+| Pre-UAT E2E (`pre-uat-e2e.yml`) | **Yes** (gates tag) | Full localhost Playwright on merge commit |
+| Promote UAT (`promote-uat.yml`) | **Yes** (implicit) | Create `uat-*` tag after E2E green |
+| `Build Flutter web` (`build-web`) | **Yes** | Web build + artifact for UAT deploy |
+| `Build and deploy to UAT` (`deploy`) | **Yes** | FTP/SSH deploy |
 | `UAT post-deploy smoke` (`smoke`) | **Yes** | HTTP health on live UAT (`scripts/uat-post-deploy-smoke.sh`) |
-| `UAT live smoke E2E` (`uat-e2e-smoke`) | **Yes** | Playwright `@smoke` on live UAT |
-| `UAT full E2E (localhost)` (`uat-e2e-full`) | **Yes** (cadence: every N merges via `UAT_FULL_E2E_MERGE_THRESHOLD`, default 1) | Full Playwright on localhost stack (11 file-balanced shards) |
 | `Prod ready` (`prod-ready`) | **Yes** (aggregate) | Required for PROD environment gate |
 
-**Parallelism:** `uat-e2e-full` runs eleven file-balanced Playwright shards in parallel (manifest: `e2e/scripts/shard-files.mjs`) **after HTTP smoke passes**; matrix `fail-fast: true` cancels remaining shards on first failure. HTTP smoke + live `@smoke-uat` always run when deploy proceeds. All required UAT gates must pass for `prod-ready` (full E2E may be cadence-skipped when `UAT_FULL_E2E_MERGE_THRESHOLD` > 1).
+**Advisory (non-blocking):** `uat-live-e2e.yml` — nightly live `@smoke-uat` with WAF warmup.
 
-**`prod-ready` validation:** `scripts/ci/assert-uat-gates.sh` — single summary table in the Actions run summary.
+**`prod-ready` validation:** `scripts/ci/assert-uat-gates.sh` — deploy + HTTP smoke + migrations only.
 
 **Phase 4 build experiment:** UAT `build-web` skips `flutter clean` by default (`run_clean=false`).
 Set repo variable `UAT_FLUTTER_CLEAN=true` on push, or `workflow_dispatch` input

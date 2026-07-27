@@ -2,7 +2,9 @@ name: UAT coordinator dispatch
 
 on:
   workflow_run:
-    workflows: ['Deploy UAT (uat.agathatrack.com)']
+    workflows:
+      - 'Deploy UAT (uat.agathatrack.com)'
+      - 'Pre-UAT E2E'
     types: [completed]
   workflow_dispatch:
     inputs:

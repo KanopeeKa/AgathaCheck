@@ -82,3 +82,4 @@ See `docs/github-issue-workflow.md` for the full issue lifecycle.
 - Memories: `.agents/memory/MEMORY.md`
 - Sprint log: `docs/refactoring-log.md`
 - Single-backend (Node.js only): no Dart port in `server/`
+- **UAT pipeline:** `docs/e2e/uat-deploy-tiers.md` — pre-UAT E2E gates promotion; deploy is HTTP smoke only

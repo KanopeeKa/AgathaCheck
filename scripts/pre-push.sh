@@ -13,8 +13,7 @@ node scripts/validate_execute_plan_snapshot.js --drift-test
 node --test scripts/execute_plan_runtime.test.js
 node --test scripts/uat_queue_runtime.test.js
 node --test scripts/uat_coordinator_payload.test.js
-node --test scripts/ci/evaluate-uat-promote-hold.test.js
-node --test scripts/ci/evaluate-uat-promote-cadence.test.js
+  node --test scripts/ci/evaluate-uat-promote-hold.test.js
 node scripts/check_skill_frontmatter.js
 node --test scripts/github_issue_workflow.test.js
 node --test scripts/db/normalize-schema-dump.test.js

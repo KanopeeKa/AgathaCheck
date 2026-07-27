@@ -1,0 +1,100 @@
+name: Pre-UAT E2E
+
+# Full localhost Playwright E2E on merge to main — gates UAT promotion.
+# Concurrency queues rapid merges; each run tests latest origin/main HEAD.
+# See docs/e2e/uat-deploy-tiers.md
+on:
+  push:
+    branches: [main]
+
+concurrency:
+  group: pre-uat-e2e
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  actions: read
+
+env:
+  FLUTTER_VERSION: '3.32.0'
+
+jobs:
+  resolve-commit:
+    name: Resolve test commit
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      test_sha: ${{ steps.resolve.outputs.test_sha }}
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 1
+
+      - name: Resolve latest main HEAD
+        id: resolve
+        run: bash scripts/ci/resolve-pre-uat-e2e-sha.sh
+
+  build-web:
+    name: Build Flutter web
+    needs: resolve-commit
+    uses: ./.github/workflows/_reusable-build-web.yml
+    secrets:
+      POSTHOG_API_KEY: ${{ secrets.POSTHOG_API_KEY }}
+    with:
+      ref: ${{ needs.resolve-commit.outputs.test_sha }}
+      upload_artifact: true
+      source_workflow: Pre-UAT E2E
+
+  e2e-full:
+    name: Full localhost E2E
+    needs: [resolve-commit, build-web]
+    strategy:
+      fail-fast: true
+      matrix:
+        shard: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+    uses: ./.github/workflows/_reusable-e2e-local.yml
+    with:
+      shard_index: ${{ matrix.shard }}
+      shard_total: 11
+      web_artifact_name: ${{ needs.build-web.outputs.artifact_name }}
+      ref: ${{ needs.resolve-commit.outputs.test_sha }}
+
+  gate-summary:
+    name: Pre-UAT E2E gate
+    needs: [resolve-commit, build-web, e2e-full]
+    if: always()
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 1
+
+      - name: Require green E2E shards and stable main HEAD
+        env:
+          BUILD_RESULT: ${{ needs.build-web.result }}
+          E2E_RESULT: ${{ needs.e2e-full.result }}
+          TEST_SHA: ${{ needs.resolve-commit.outputs.test_sha }}
+        run: |
+          {
+            echo "## Pre-UAT E2E summary"
+            echo
+            echo "| Field | Value |"
+            echo "|-------|-------|"
+            echo "| test_sha | \`${TEST_SHA}\` |"
+            echo "| build-web | \`${BUILD_RESULT}\` |"
+            echo "| e2e-full | \`${E2E_RESULT}\` |"
+          } >> "${GITHUB_STEP_SUMMARY:-/dev/null}"
+
+          if [[ "$BUILD_RESULT" != "success" || "$E2E_RESULT" != "success" ]]; then
+            echo "::error::Pre-UAT E2E failed — UAT promotion will not run."
+            exit 1
+          fi
+
+          git fetch origin main --depth=1
+          current_sha="$(git rev-parse origin/main)"
+          if [[ "$current_sha" != "$TEST_SHA" ]]; then
+            echo "::notice::main advanced (${TEST_SHA:0:7} → ${current_sha:0:7}) during E2E — failing so promotion waits for queued run."
+            exit 1
+          fi
+          echo "Pre-UAT E2E passed for ${TEST_SHA} — promote-uat may tag."
