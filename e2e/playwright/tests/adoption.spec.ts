@@ -187,8 +187,11 @@ test.describe('Organisation custody', () => {
     await petList.expectPetUnderOrganization('Max', 'Rescue Hearts');
     await hideOrgPetFromHome(baseURL, alice.accessToken, org.id, pet.id);
 
-    await openOrganization(page, alice, 'Rescue Hearts', org.id);
-    await expect(page.getByText('1 pets')).toBeVisible();
+    await petList.refreshByRemount({ experience: 'organization' });
+    await petList.expectPetHidden('Max');
+
+    const detail = await openOrganization(page, alice, 'Rescue Hearts', org.id);
+    await detail.expectPetVisible('Max');
 
     const hiddenResponse = await request.get(`/backend/api/organizations/${org.id}/home-hidden`, {
       headers: { Authorization: `Bearer ${alice.accessToken}` },
