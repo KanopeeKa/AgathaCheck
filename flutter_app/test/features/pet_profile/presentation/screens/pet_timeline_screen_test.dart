@@ -12,6 +12,9 @@ import 'package:pet_profile_app/features/notifications/presentation/providers/no
 import 'package:pet_profile_app/features/organization/domain/entities/organization.dart';
 import 'package:pet_profile_app/features/organization/presentation/providers/organization_providers.dart';
 import 'package:pet_profile_app/features/pet_profile/domain/entities/pet.dart';
+import 'package:pet_profile_app/features/pet_profile/domain/entities/pet_timeline_segment.dart';
+import 'package:pet_profile_app/features/pet_profile/presentation/providers/pet_providers.dart';
+import 'package:pet_profile_app/features/pet_profile/presentation/providers/pet_timeline_providers.dart';
 import 'package:pet_profile_app/features/pet_profile/presentation/screens/pet_timeline_screen.dart';
 import 'package:pet_profile_app/l10n/app_localizations.dart';
 
@@ -22,8 +25,30 @@ class _EmptyOrgListNotifier extends OrganizationListNotifier {
   Future<List<Organization>> build() async => [];
 }
 
+class _TestPetListNotifier extends PetListNotifier {
+  _TestPetListNotifier(this.pets);
+
+  final List<Pet> pets;
+
+  @override
+  Future<List<Pet>> build() async => pets;
+}
+
 void main() {
-  Widget buildApp({required String initialLocation}) {
+  final testPet = Pet(
+    id: 'pet-1',
+    name: 'Rex',
+    species: 'Dog',
+    dateOfBirth: DateTime(2020, 3, 15),
+    createdAt: DateTime(2024, 1, 10),
+    guardianName: 'Jane Doe',
+  );
+
+  Widget buildApp({
+    required String initialLocation,
+    List<Pet> pets = const [],
+    List<PetTimelineSegment> timelineSegments = const [],
+  }) {
     final router = GoRouter(
       initialLocation: initialLocation,
       routes: [
@@ -48,7 +73,7 @@ void main() {
         experienceEligibilityProvider.overrideWith(
           (ref) => AsyncValue.data(
             ExperienceEligibilityRules.compute(
-              pets: const [Pet(id: 'pet-1', name: 'Rex', species: 'Dog')],
+              pets: pets.isEmpty ? [testPet] : pets,
               orgMembershipCount: 0,
             ),
           ),
@@ -58,6 +83,10 @@ void main() {
         guardianUnreadNotificationCountProvider.overrideWith((ref) => 0),
         orgUnreadNotificationCountProvider.overrideWith((ref) => 0),
         apiBaseUrlProvider.overrideWithValue('http://test.local'),
+        petListProvider.overrideWith(
+          () => _TestPetListNotifier(pets.isEmpty ? [testPet] : pets),
+        ),
+        petTimelineProvider.overrideWith((ref, petId) async => timelineSegments),
       ],
       child: MaterialApp.router(
         theme: AppTheme.lightTheme,
@@ -79,11 +108,129 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Timeline'), findsOneWidget);
-    expect(find.text('Coming soon'), findsOneWidget);
+    expect(find.byKey(const Key('pet_timeline_list')), findsOneWidget);
 
     await tester.tap(find.byKey(const Key('experience_back_button')));
     await tester.pumpAndSettle();
 
     expect(find.text('Profile'), findsOneWidget);
+  });
+
+  testWidgets('shows DOB and joined markers when pet data exists', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      buildApp(
+        initialLocation: '/pet/pet-1/timeline',
+        timelineSegments: const [],
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('Date of Birth'), findsOneWidget);
+    expect(find.text('Joined Agatha Track'), findsOneWidget);
+    expect(find.text('Guardian: Jane Doe'), findsOneWidget);
+    expect(find.text('2020-03-15'), findsOneWidget);
+    expect(find.text('2024-01-10'), findsOneWidget);
+  });
+
+  testWidgets('shows fostering session read-only without edit actions', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      buildApp(
+        initialLocation: '/pet/pet-1/timeline',
+        timelineSegments: const [
+          PetTimelineSegment(
+            kind: 'fostering_session',
+            id: 'fp-1',
+            startDate: '2025-06-01',
+            endDate: '2025-08-31',
+            fosterName: 'Frank',
+          ),
+        ],
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('Fostering with Frank'), findsOneWidget);
+    expect(find.text('2025-06-01 – 2025-08-31'), findsOneWidget);
+    expect(find.byKey(const Key('timeline_edit_fp-1')), findsNothing);
+    expect(find.byKey(const Key('timeline_delete_fp-1')), findsNothing);
+  });
+
+  testWidgets('shows manual entry with edit and delete actions', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      buildApp(
+        initialLocation: '/pet/pet-1/timeline',
+        timelineSegments: const [
+          PetTimelineSegment(
+            kind: 'manual',
+            id: 'manual-1',
+            startDate: '2025-01-01',
+            title: 'First vet visit',
+            description: 'Annual checkup',
+          ),
+        ],
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('First vet visit'), findsOneWidget);
+    expect(find.text('Annual checkup'), findsOneWidget);
+    expect(find.byKey(const Key('timeline_edit_manual-1')), findsOneWidget);
+    expect(find.byKey(const Key('timeline_delete_manual-1')), findsOneWidget);
+  });
+
+  testWidgets('entries are sorted latest first by start date', (tester) async {
+    await tester.pumpWidget(
+      buildApp(
+        initialLocation: '/pet/pet-1/timeline',
+        timelineSegments: const [
+          PetTimelineSegment(
+            kind: 'manual',
+            id: 'old',
+            startDate: '2023-01-01',
+            title: 'Older entry',
+          ),
+          PetTimelineSegment(
+            kind: 'manual',
+            id: 'new',
+            startDate: '2025-06-01',
+            title: 'Newer entry',
+          ),
+        ],
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    final titles = tester
+        .widgetList<Text>(
+          find.descendant(
+            of: find.byKey(const Key('pet_timeline_list')),
+            matching: find.byType(Text),
+          ),
+        )
+        .map((w) => w.data)
+        .whereType<String>()
+        .toList();
+
+    final newerIndex = titles.indexOf('Newer entry');
+    final olderIndex = titles.indexOf('Older entry');
+    expect(newerIndex, greaterThan(-1));
+    expect(olderIndex, greaterThan(-1));
+    expect(newerIndex, lessThan(olderIndex));
+  });
+
+  testWidgets('add buttons are present in app bar and bottom', (tester) async {
+    await tester.pumpWidget(
+      buildApp(initialLocation: '/pet/pet-1/timeline'),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(const Key('pet_timeline_add_app_bar')), findsOneWidget);
+    expect(find.byKey(const Key('pet_timeline_add_bottom')), findsOneWidget);
   });
 }

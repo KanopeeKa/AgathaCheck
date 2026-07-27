@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../../l10n/app_localizations.dart';
+import '../../../domain/entities/pet_timeline_segment.dart';
 import '../../providers/pet_timeline_providers.dart';
 
 Future<void> showPetTimelineFillSheet(
@@ -11,12 +12,20 @@ Future<void> showPetTimelineFillSheet(
   required String petName,
   String? initialStartDate,
   String? initialEndDate,
+  PetTimelineSegment? existingEntry,
 }) async {
   final l = AppLocalizations.of(context)!;
-  final titleController = TextEditingController();
-  final descriptionController = TextEditingController();
-  final startController = TextEditingController(text: initialStartDate ?? '');
-  final endController = TextEditingController(text: initialEndDate ?? '');
+  final isEdit = existingEntry != null;
+  final titleController = TextEditingController(text: existingEntry?.title ?? '');
+  final descriptionController = TextEditingController(
+    text: existingEntry?.description ?? '',
+  );
+  final startController = TextEditingController(
+    text: initialStartDate ?? existingEntry?.startDate ?? '',
+  );
+  final endController = TextEditingController(
+    text: initialEndDate ?? existingEntry?.endDate ?? '',
+  );
   final formKey = GlobalKey<FormState>();
 
   Future<void> pickDate(TextEditingController controller) async {
@@ -53,7 +62,7 @@ Future<void> showPetTimelineFillSheet(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Text(
-                l.petTimelineFillTitle(petName),
+                isEdit ? l.editEntry : l.petTimelineFillTitle(petName),
                 style: Theme.of(ctx).textTheme.titleMedium,
               ),
               const SizedBox(height: 12),
@@ -111,16 +120,27 @@ Future<void> showPetTimelineFillSheet(
                 onPressed: () async {
                   if (!formKey.currentState!.validate()) return;
                   try {
-                    await createPetTimelineManualEntry(
-                      ref,
-                      petId,
-                      title: titleController.text.trim(),
-                      description: descriptionController.text.trim(),
-                      startDate: startController.text.trim(),
-                      endDate: endController.text.trim().isEmpty
-                          ? null
-                          : endController.text.trim(),
-                    );
+                    final end = endController.text.trim();
+                    if (isEdit) {
+                      await updatePetTimelineManualEntry(
+                        ref,
+                        petId,
+                        existingEntry.id,
+                        title: titleController.text.trim(),
+                        description: descriptionController.text.trim(),
+                        startDate: startController.text.trim(),
+                        endDate: end.isEmpty ? null : end,
+                      );
+                    } else {
+                      await createPetTimelineManualEntry(
+                        ref,
+                        petId,
+                        title: titleController.text.trim(),
+                        description: descriptionController.text.trim(),
+                        startDate: startController.text.trim(),
+                        endDate: end.isEmpty ? null : end,
+                      );
+                    }
                     if (ctx.mounted) Navigator.pop(ctx);
                   } catch (e) {
                     if (ctx.mounted) {
