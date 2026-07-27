@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../l10n/app_localizations.dart';
-import '../../../notifications/presentation/providers/notification_providers.dart';
 import '../../../pet_profile/presentation/controllers/pet_list_controller.dart';
 import '../../../pet_profile/presentation/providers/pet_providers.dart';
 import '../../domain/entities/app_experience.dart';
@@ -29,10 +28,9 @@ class _GuardianHomeScreenState extends ConsumerState<GuardianHomeScreen> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      ref.read(notificationsProvider.notifier).refresh();
-      _redirectIfOnboardingNeeded();
-    });
+    WidgetsBinding.instance.addPostFrameCallback(
+      (_) => _redirectIfOnboardingNeeded(),
+    );
   }
 
   void _redirectIfOnboardingNeeded() {

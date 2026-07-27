@@ -185,8 +185,14 @@ export class NotificationsPage {
           return;
         }
         const ariaLabel = await bell.getAttribute('aria-label');
-        if (ariaLabel && new RegExp(`${label.replace('+', '\\+')}`).test(ariaLabel)) {
-          return;
+        if (ariaLabel) {
+          const countPattern =
+            label === '99+'
+              ? /99\+/
+              : new RegExp(`\\b${label.replace('+', '\\+')}\\b`);
+          if (countPattern.test(ariaLabel)) {
+            return;
+          }
         }
       }
 
