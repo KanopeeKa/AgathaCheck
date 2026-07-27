@@ -5,6 +5,7 @@ import {
   expectAppBarTitle,
   escapeRegExp,
   isExperienceShellVisible,
+  navigateWithShellFallback,
   refreshFlutterAccessibility,
   waitForFlutterRoutePattern,
 } from '../support/flutter';
@@ -62,20 +63,33 @@ export class OrganizationListPage {
     });
   }
 
-  async openOrg(name: string): Promise<void> {
+  /**
+   * Open an organisation detail screen from the membership list.
+   * @param orgId — when set, hash-route fallback is used if the card click does not navigate
+   *   (Flutter web hit-testing on org experience shell; see PR #425 remedial).
+   */
+  async openOrg(name: string, orgId?: string): Promise<void> {
     await this.expectOrgVisible(name);
     await refreshFlutterAccessibility(this.page);
     const card = membershipOrgCardLocator(this.page, name);
     await card.scrollIntoViewIfNeeded();
     await card.click();
     try {
-      await waitForFlutterRoutePattern(this.page, /\/o\/orgs\/[^/?#]+/, 5_000);
-    } catch {
-      // Semantics activation (Enter) when pointer hit-testing misses InkWell on web.
-      await refreshFlutterAccessibility(this.page);
-      await card.focus();
-      await this.page.keyboard.press('Enter');
-      await waitForFlutterRoutePattern(this.page, /\/o\/orgs\/[^/?#]+/, 30_000);
+      await waitForFlutterRoutePattern(this.page, /\/o\/orgs\/[^/?#]+/, 8_000);
+    } catch (navErr) {
+      if (!orgId) {
+        throw navErr;
+      }
+      await navigateWithShellFallback(
+        this.page,
+        /\/o\/orgs\/[^/?#]+/,
+        `/o/orgs/${orgId}`,
+        async () => {
+          await waitForFlutterRoutePattern(this.page, /\/o\/orgs\/[^/?#]+/, 30_000);
+          await refreshFlutterAccessibility(this.page);
+        },
+        { helper: 'OrganizationListPage.openOrg', testTitle: name },
+      );
     }
     await refreshFlutterAccessibility(this.page);
   }
