@@ -1,13 +1,17 @@
 name: Promote UAT (tag on merge to main)
 
-# Pre-UAT E2E green → uat-YYMMDD-PR# tag → deploy-uat.yml (workflow_run).
-# See docs/promotion-contract.md and docs/e2e/uat-deploy-tiers.md
+# Agent or human dispatches after localhost E2E green on the target commit.
+# deploy-uat.yml chains via workflow_run (GITHUB_TOKEN tag push does not fire tag workflows).
+# See docs/e2e/uat-agent-babysit.md and docs/promotion-contract.md
 on:
-  workflow_run:
-    workflows:
-      - 'Pre-UAT E2E'
-    types: [completed]
-    branches: [main]
+  workflow_dispatch:
+    inputs:
+      commit_sha:
+        description: Merge commit to tag (full SHA)
+        required: true
+      pr_number:
+        description: Merged PR number for uat-YYMMDD-PR# tag
+        required: true
 
 concurrency:
   group: promote-uat-main
@@ -20,121 +24,76 @@ permissions:
   actions: read
 
 jobs:
-  resolve-pr:
-    name: Resolve merge PR
-    if: github.event.workflow_run.conclusion == 'success'
+  validate-inputs:
+    name: Validate promote inputs
     runs-on: ubuntu-latest
     timeout-minutes: 5
     outputs:
-      pr_number: ${{ steps.resolve.outputs.pr_number }}
-      promotion_status: ${{ steps.guard.outputs.promotion_status }}
-      promotion_block_reason: ${{ steps.guard.outputs.promotion_block_reason }}
+      commit_sha: ${{ steps.validate.outputs.commit_sha }}
+      pr_number: ${{ steps.validate.outputs.pr_number }}
+      promotion_status: ${{ steps.validate.outputs.promotion_status }}
+      promotion_block_reason: ${{ steps.validate.outputs.promotion_block_reason }}
     steps:
       - uses: actions/checkout@v5
         with:
-          sparse-checkout: |
-            scripts/ci/resolve-merge-pr.sh
-            scripts/ci/resolve-promote-commit-sha.sh
-            scripts/ci/append-summary.sh
-          sparse-checkout-cone-mode: false
+          fetch-depth: 1
 
       - name: Begin job timing
         run: echo "JOB_START_EPOCH=$(date +%s)" >> "$GITHUB_ENV"
 
-      - name: Resolve promote commit (origin/main HEAD)
-        id: commit
-        run: bash scripts/ci/resolve-promote-commit-sha.sh
-
-      - name: Resolve associated pull request
-        id: resolve
+      - name: Validate commit and PR inputs
+        id: validate
         env:
-          COMMIT_SHA: ${{ steps.commit.outputs.commit_sha }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: bash scripts/ci/resolve-merge-pr.sh
-
-      - name: Guard against stale main HEAD (merge bundling)
-        id: guard
-        env:
-          TESTED_SHA: ${{ steps.commit.outputs.commit_sha }}
+          INPUT_COMMIT_SHA: ${{ inputs.commit_sha }}
+          INPUT_PR_NUMBER: ${{ inputs.pr_number }}
         run: |
-          git fetch origin main --depth=1
-          current="$(git rev-parse origin/main)"
-          if [[ "$current" != "$TESTED_SHA" ]]; then
-            echo "::notice::Skipping tag — main advanced to ${current:0:7} after Pre-UAT E2E (${TESTED_SHA:0:7})."
-            echo "promotion_status=blocked" >> "$GITHUB_OUTPUT"
-            echo "promotion_block_reason=stale_pre_uat_head" >> "$GITHUB_OUTPUT"
-            exit 0
-          fi
-          echo "promotion_status=${{ steps.resolve.outputs.promotion_status }}" >> "$GITHUB_OUTPUT"
-          echo "promotion_block_reason=${{ steps.resolve.outputs.promotion_block_reason }}" >> "$GITHUB_OUTPUT"
+          set -euo pipefail
+          commit_sha="${INPUT_COMMIT_SHA:?}"
+          pr_number="${INPUT_PR_NUMBER:?}"
 
-      - name: Write resolve summary
+          if ! git cat-file -e "${commit_sha}^{commit}" 2>/dev/null; then
+            git fetch origin "${commit_sha}" --depth=1
+          fi
+
+          if ! git merge-base --is-ancestor "${commit_sha}" origin/main 2>/dev/null; then
+            git fetch origin main --depth=50
+          fi
+
+          if ! git merge-base --is-ancestor "${commit_sha}" origin/main; then
+            {
+              echo "promotion_status=blocked"
+              echo "promotion_block_reason=commit_not_on_main"
+            } >> "$GITHUB_OUTPUT"
+            echo "::error::commit ${commit_sha} is not on origin/main"
+            exit 1
+          fi
+
+          {
+            echo "commit_sha=${commit_sha}"
+            echo "pr_number=${pr_number}"
+            echo "promotion_status=ok"
+            echo "promotion_block_reason="
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Write validate summary
         if: always()
         run: |
           end=$(date +%s)
           start="${JOB_START_EPOCH:-$end}"
           dur=$((end - start))
-          bash scripts/ci/append-summary.sh "Promote UAT — resolve PR" \
+          bash scripts/ci/append-summary.sh "Promote UAT — validate" \
             "workflow=promote-uat" \
-            "job=resolve-pr" \
-            "commit_sha=${{ steps.commit.outputs.commit_sha }}" \
-            "pr_number=${{ steps.resolve.outputs.pr_number || 'n/a' }}" \
-            "promotion_status=${{ steps.resolve.outputs.promotion_status || 'blocked' }}" \
-            "promotion_block_reason=${{ steps.resolve.outputs.promotion_block_reason || 'n/a' }}" \
+            "job=validate-inputs" \
+            "commit_sha=${{ steps.validate.outputs.commit_sha || inputs.commit_sha }}" \
+            "pr_number=${{ steps.validate.outputs.pr_number || inputs.pr_number }}" \
+            "promotion_status=${{ steps.validate.outputs.promotion_status || 'failed' }}" \
             "run_id=${{ github.run_id }}" \
             "duration_sec=${dur}"
 
-  evaluate-promote-hold:
-    name: Evaluate UAT queue promote hold
-    needs: resolve-pr
-    if: needs.resolve-pr.outputs.promotion_status == 'ok'
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
-    outputs:
-      promotion_status: ${{ steps.hold.outputs.promotion_status }}
-      promotion_block_reason: ${{ steps.hold.outputs.promotion_block_reason }}
-    steps:
-      - uses: actions/checkout@v5
-        with:
-          sparse-checkout: |
-            scripts/ci/evaluate-uat-promote-hold.js
-            scripts/ci/append-summary.sh
-            scripts/lib/uat_queue_lib.js
-            scripts/lib/uat_queue_sync.js
-            scripts/lib/uat_queue_constants.js
-            scripts/lib/execute_plan_project.js
-            .github/scripts/github-project-lib.js
-          sparse-checkout-cone-mode: false
-
-      - uses: actions/setup-node@v5
-        with:
-          node-version: '22'
-
-      - name: Evaluate queue promote hold
-        id: hold
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          UAT_COORDINATION_ISSUE: ${{ vars.UAT_COORDINATION_ISSUE }}
-          UAT_PROMOTE_HOLD_ENABLED: ${{ vars.UAT_PROMOTE_HOLD_ENABLED || 'true' }}
-        run: node scripts/ci/evaluate-uat-promote-hold.js
-
-      - name: Write promote hold summary
-        if: always()
-        run: |
-          bash scripts/ci/append-summary.sh "Promote UAT — queue hold" \
-            "workflow=promote-uat" \
-            "job=evaluate-promote-hold" \
-            "promotion_status=${{ steps.hold.outputs.promotion_status || 'n/a' }}" \
-            "promotion_block_reason=${{ steps.hold.outputs.promotion_block_reason || 'n/a' }}" \
-            "uat_promote_hold_enabled=${{ vars.UAT_PROMOTE_HOLD_ENABLED || 'true' }}" \
-            "run_id=${{ github.run_id }}"
-
   promote-tag:
     name: Create UAT tag
-    needs: [resolve-pr, evaluate-promote-hold]
-    if: >-
-      needs.resolve-pr.outputs.promotion_status == 'ok' &&
-      needs.evaluate-promote-hold.outputs.promotion_status == 'ok'
+    needs: validate-inputs
+    if: needs.validate-inputs.outputs.promotion_status == 'ok'
     runs-on: ubuntu-latest
     timeout-minutes: 10
     permissions:
@@ -146,36 +105,28 @@ jobs:
     steps:
       - uses: actions/checkout@v5
         with:
+          ref: ${{ needs.validate-inputs.outputs.commit_sha }}
           fetch-depth: 1
 
       - name: Begin job timing
         run: echo "JOB_START_EPOCH=$(date +%s)" >> "$GITHUB_ENV"
 
-      - name: Resolve promote commit
-        id: commit
-        run: bash scripts/ci/resolve-promote-commit-sha.sh
-
-      - uses: actions/checkout@v5
-        with:
-          ref: ${{ steps.commit.outputs.commit_sha }}
-          fetch-depth: 1
-
       - name: Create or verify UAT tag
         id: promote
         env:
-          PR_NUMBER: ${{ needs.resolve-pr.outputs.pr_number }}
-          COMMIT_SHA: ${{ steps.commit.outputs.commit_sha }}
+          PR_NUMBER: ${{ needs.validate-inputs.outputs.pr_number }}
+          COMMIT_SHA: ${{ needs.validate-inputs.outputs.commit_sha }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: bash scripts/ci/promote-uat-tag.sh
 
       - name: Write promotion manifest
         env:
-          COMMIT_SHA: ${{ steps.commit.outputs.commit_sha }}
-          PR_NUMBER: ${{ needs.resolve-pr.outputs.pr_number }}
+          COMMIT_SHA: ${{ needs.validate-inputs.outputs.commit_sha }}
+          PR_NUMBER: ${{ needs.validate-inputs.outputs.pr_number }}
           UAT_TAG: ${{ steps.promote.outputs.uat_tag }}
           PROMOTION_STATUS: ${{ steps.promote.outputs.promotion_status }}
           PROMOTE_RUN_ID: ${{ github.run_id }}
-          ARTIFACT_NAME: web-build-${{ steps.commit.outputs.commit_sha }}
+          ARTIFACT_NAME: web-build-${{ needs.validate-inputs.outputs.commit_sha }}
         run: bash scripts/ci/write-promotion-manifest.sh promotion-manifest.json
 
       - name: Upload promotion manifest
@@ -194,8 +145,8 @@ jobs:
           bash scripts/ci/append-summary.sh "Promote UAT — tag" \
             "workflow=promote-uat" \
             "job=promote-tag" \
-            "commit_sha=${{ steps.commit.outputs.commit_sha }}" \
-            "pr_number=${{ needs.resolve-pr.outputs.pr_number }}" \
+            "commit_sha=${{ needs.validate-inputs.outputs.commit_sha }}" \
+            "pr_number=${{ needs.validate-inputs.outputs.pr_number }}" \
             "uat_tag=${{ steps.promote.outputs.uat_tag || 'n/a' }}" \
             "promotion_status=${{ steps.promote.outputs.promotion_status || 'failed' }}" \
             "already_promoted=${{ steps.promote.outputs.already_promoted || 'false' }}" \

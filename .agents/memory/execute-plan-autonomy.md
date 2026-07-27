@@ -47,9 +47,10 @@ After **~24 hours** of continuous work on the same plan (or approaching pod/sess
 |-------|----------|
 | Task sub-agent for **phase implementation** (one phase scope) | **Yes — recommended** at phase boundary |
 | `/spawn-sprint-agents` when `spawn_allowed: true` | **Yes** |
-| Task sub-agent to **poll UAT / prod-ready** | **Never** — enqueue + exit |
+| **UAT subagent** after merge (`agent-uat-babysit.sh`) | **Yes — fire-and-forget** (main session must not await) |
+| Main session polling `deploy-uat` / prod-ready | **Never** |
 
-Orchestrator owns: gate, runtime sync, babysit+, merge, UAT enqueue, next phase.
+Orchestrator owns: gate, runtime sync, babysit+, merge, UAT subagent spawn, next phase.
 
 ## Roadmap chaining (multi-plan grants)
 

@@ -1,10 +1,8 @@
 name: UAT queue health
 
+# DEPRECATED (Jul 2026): queue ledger no longer gates promotion.
 on:
   workflow_dispatch:
-  schedule:
-    # Weekly smoke — ledger inactive until UAT_COORDINATION_ISSUE is set.
-    - cron: '0 9 * * 1'
 
 permissions:
   contents: read

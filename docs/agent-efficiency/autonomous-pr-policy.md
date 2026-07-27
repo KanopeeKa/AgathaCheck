@@ -191,17 +191,17 @@ Verify merge commit is ancestor of `origin/<base_branch>` before next phase.
 
 ## Post-merge UAT prod-ready (babysit-plus)
 
-**Do not stop at PR merge** when the work ships to `main` and triggers UAT promotion (`promote-uat.yml` → `deploy-uat.yml`). **Do not block main work** on the UAT poll — **enqueue and exit** (babysit-plus §8).
+**Do not stop at PR merge** when the work ships to `main`. **Do not block main work** on deploy polling — **spawn UAT subagent and exit** (babysit-plus §8).
 
 After merge (or when babysitting an already-merged fix):
 
-1. Record merge SHA; **enqueue immediately** via `uat_queue_runtime.js enqueue --write` — main agent continues phase work in parallel.
-2. **Do not spawn Task / `task_v2` sub-agents** to poll deploy — session-ephemeral and agents often wait for sub-agent return even when `run_in_background: true`.
-3. **Success path:** GitHub Actions + `agent-uat-notify` comment when prod-ready is green; no agent involvement.
-4. **Failure path:** UAT coordinator agent triages and opens remedial PR; comments on PR + control issue. Work agents **do not pause** execute-plan — use `barrier-check` before the next merge/push.
-5. Before every merge attempt: `barrier-check` → rebase if behind UAT barrier (`babysit_sync_base.sh`).
+1. Record merge SHA; **spawn UAT subagent** running `scripts/agent-uat-babysit.sh` — main agent continues phase work in parallel.
+2. **Main session must not poll** `deploy-uat.yml` or await the UAT subagent return.
+3. **Success path:** subagent comments on PR when prod-ready is green.
+4. **Failure path:** subagent opens remedial PR (retry cap) or stops; **next merge agent** or human manual promote heals `main`.
+5. Spawn UAT babysit only on **final merge to `main`**, not intermediate integration-branch merges.
 
-See `docs/ci-cd-gates.md` §3 · [uat-coordinator-plan.md](./uat-coordinator-plan.md) · babysit-plus §8.
+See `docs/e2e/uat-agent-babysit.md` · `docs/ci-cd-gates.md` §3 · babysit-plus §8.
 
 **Infra-only blockers** (e.g. `UAT_AUTO_MIGRATE` unset with pending live migrations) → comment on PR/control issue and escalate; do not weaken gates.
 
