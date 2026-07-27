@@ -23,6 +23,24 @@ const NOTIFICATIONS_ROUTE_PATTERN = /\/(g|o)\/notifications(?:\?|$)/;
 export class NotificationsPage {
   constructor(private readonly page: Page) {}
 
+  /** Empty-state copy — Flutter web often merges drawer body text into the group name. */
+  private emptyStateLocator() {
+    return this.page
+      .getByText(/No notifications|Aucune notification/i)
+      .or(
+        this.page.getByRole('group', {
+          name: /No notifications|Aucune notification/i,
+        }),
+      );
+  }
+
+  /** Panel list settled: empty state, notification rows, or error retry. */
+  private listBodyLocator() {
+    return this.emptyStateLocator()
+      .or(this.page.getByText(/notification:/i))
+      .or(this.page.getByRole('button', { name: /retry|try again|réessayer/i }));
+  }
+
   /** Open the notification panel via the bell button in the experience shell. */
   async openPanelViaBell(): Promise<void> {
     await dismissConsentBannerIfPresent(this.page);
@@ -60,10 +78,7 @@ export class NotificationsPage {
   private async waitForNotificationListSettled(): Promise<void> {
     await expect(async () => {
       await refreshFlutterAccessibility(this.page);
-      await this.page
-        .getByText(/No notifications|Aucune notification/i)
-        .or(this.page.getByText(/notification:/i))
-        .or(this.page.getByRole('button', { name: /retry|try again|réessayer/i }))
+      await this.listBodyLocator()
         .or(this.page.getByText(/Failed to load notifications|Échec du chargement/i))
         .first()
         .waitFor({ timeout: 3_000 });
@@ -92,7 +107,7 @@ export class NotificationsPage {
     // Try panel first, then legacy full-screen
     const panelReady = this.page
       .getByRole('button', { name: /Mark all as read|Tout marquer comme lu/i })
-      .or(this.page.getByText(/No notifications|Aucune notification/i));
+      .or(this.emptyStateLocator());
     const legacyTitle = this.page.getByText('Notifications').first();
     await Promise.race([
       panelReady.first().waitFor({ timeout: 30_000 }),
@@ -104,10 +119,7 @@ export class NotificationsPage {
     await this.waitForNotificationListSettled();
     await expect(async () => {
       await refreshFlutterAccessibility(this.page);
-      await this.page
-        .getByText(/No notifications|Aucune notification/i)
-        .first()
-        .waitFor({ timeout: 3_000 });
+      await this.emptyStateLocator().first().waitFor({ timeout: 3_000 });
     }).toPass({ timeout: 15_000 });
   }
 
