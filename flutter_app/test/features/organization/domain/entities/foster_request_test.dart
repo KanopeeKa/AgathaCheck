@@ -6,18 +6,33 @@ void main() {
   group('FosterRequestStatus', () {
     test('fromWire and toWire round-trip', () {
       expect(FosterRequestStatus.fromWire('sent'), FosterRequestStatus.sent);
-      expect(FosterRequestStatus.fromWire('cancelled'), FosterRequestStatus.cancelled);
+      expect(
+        FosterRequestStatus.fromWire('cancelled'),
+        FosterRequestStatus.cancelled,
+      );
       expect(FosterRequestStatus.fromWire('draft'), FosterRequestStatus.draft);
-      expect(FosterRequestStatus.fromWire('unknown'), FosterRequestStatus.draft);
+      expect(
+        FosterRequestStatus.fromWire('unknown'),
+        FosterRequestStatus.draft,
+      );
       expect(FosterRequestStatus.sent.toWire(), 'sent');
     });
   });
 
   group('FosterResponseType', () {
     test('fromWire and toWire round-trip', () {
-      expect(FosterResponseType.fromWire('can_help'), FosterResponseType.canHelp);
-      expect(FosterResponseType.fromWire('cannot_help'), FosterResponseType.cannotHelp);
-      expect(FosterResponseType.fromWire('pending'), FosterResponseType.pending);
+      expect(
+        FosterResponseType.fromWire('can_help'),
+        FosterResponseType.canHelp,
+      );
+      expect(
+        FosterResponseType.fromWire('cannot_help'),
+        FosterResponseType.cannotHelp,
+      );
+      expect(
+        FosterResponseType.fromWire('pending'),
+        FosterResponseType.pending,
+      );
       expect(FosterResponseType.canHelp.toWire(), 'can_help');
       expect(FosterResponseType.cannotHelp.toWire(), 'cannot_help');
     });
@@ -37,7 +52,10 @@ void main() {
     });
 
     test('fromJson tolerates null', () {
-      expect(FosterRequestResponseSummary.fromJson(null), const FosterRequestResponseSummary());
+      expect(
+        FosterRequestResponseSummary.fromJson(null),
+        const FosterRequestResponseSummary(),
+      );
     });
   });
 

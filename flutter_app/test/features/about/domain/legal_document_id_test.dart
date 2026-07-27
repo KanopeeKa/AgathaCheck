@@ -25,7 +25,10 @@ void main() {
         LegalDocumentId.fromRouteSegment('terms-of-use'),
         LegalDocumentId.termsOfUse,
       );
-      expect(LegalDocumentId.fromRouteSegment('dpa'), LegalDocumentId.dataProcessingAddendum);
+      expect(
+        LegalDocumentId.fromRouteSegment('dpa'),
+        LegalDocumentId.dataProcessingAddendum,
+      );
       expect(LegalDocumentId.fromRouteSegment('unknown'), isNull);
     });
   });
