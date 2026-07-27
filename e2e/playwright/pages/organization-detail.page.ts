@@ -38,11 +38,55 @@ export class OrganizationDetailPage {
     }).toPass({ timeout: 30_000 });
   }
 
+  /**
+   * Members live at `/o/orgs/:id/members` (popup menu only on the dashboard hub).
+   * Flutter web often misses PopupMenuItem taps — hash-route fallback mirrors
+   * `openPetsSection` (UAT shard 3/11).
+   */
   async openMembers(): Promise<void> {
-    await this.openMenu();
-    await this.page.getByRole('menuitem', { name: /Members/i }).click();
+    const orgId = this.orgIdFromUrl();
+    const membersRoute = /\/o\/orgs\/[^/]+\/members(?:\/|$|\?)/;
+
+    let navigated = false;
+    try {
+      await enableFlutterAccessibility(this.page);
+      await this.openMenu();
+      const menuItem = this.page.getByRole('menuitem', { name: /Members|Membres/i });
+      if (await menuItem.isVisible({ timeout: 5_000 }).catch(() => false)) {
+        await menuItem.click();
+        await refreshFlutterAccessibility(this.page);
+        navigated = await waitForFlutterRoutePattern(this.page, membersRoute, 8_000)
+          .then(() => true)
+          .catch(() => false);
+      } else {
+        await this.page.keyboard.press('Escape');
+      }
+    } catch {
+      await this.page.keyboard.press('Escape').catch(() => {});
+    }
+
+    if (!navigated) {
+      if (!orgId) {
+        await waitForFlutterRoutePattern(this.page, membersRoute, 60_000);
+      } else {
+        await navigateWithShellFallback(
+          this.page,
+          membersRoute,
+          `/o/orgs/${orgId}/members`,
+          async () => {
+            await refreshFlutterAccessibility(this.page);
+          },
+          { helper: 'OrganizationDetailPage.openMembers', testTitle: null },
+        );
+      }
+    }
+
     await refreshFlutterAccessibility(this.page);
-    await this.page.getByText(/Members|People/i).first().waitFor({ timeout: 30_000 });
+    await waitForFlutterRoutePattern(this.page, membersRoute, 60_000);
+    await expect(async () => {
+      await refreshFlutterAccessibility(this.page);
+      await expectAppBarTitle(this.page, /Members|Membres/i);
+    }).toPass({ timeout: 30_000 });
   }
 
   async expectMemberVisible(name: string): Promise<void> {
