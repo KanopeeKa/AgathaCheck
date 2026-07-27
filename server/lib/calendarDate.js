@@ -50,3 +50,17 @@ export function todayCalendarIso() {
   const d = String(now.getDate()).padStart(2, '0');
   return `${y}-${m}-${d}`;
 }
+
+/**
+ * Yesterday's calendar date in the server local timezone as `YYYY-MM-DD`.
+ *
+ * @returns {string}
+ */
+export function yesterdayCalendarIso() {
+  const now = new Date();
+  now.setDate(now.getDate() - 1);
+  const y = now.getFullYear();
+  const m = String(now.getMonth() + 1).padStart(2, '0');
+  const d = String(now.getDate()).padStart(2, '0');
+  return `${y}-${m}-${d}`;
+}

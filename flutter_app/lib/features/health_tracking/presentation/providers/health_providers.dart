@@ -126,6 +126,45 @@ class HealthEntriesNotifier extends AsyncNotifier<List<HealthEntry>> {
     await refresh();
   }
 
+  /// Closes an event (status completed, repeat end yesterday).
+  Future<void> closeEvent(String id) async {
+    await ref.read(healthRepositoryProvider).closeEvent(id);
+    await refresh();
+  }
+
+  /// Reopens a closed event (clears repeat end and next due date).
+  Future<void> reopenEvent(String id) async {
+    await ref.read(healthRepositoryProvider).reopenEvent(id);
+    await refresh();
+  }
+
+  /// Marks an occurrence as skipped without advancing the series.
+  Future<HealthHistoryEntry> skipIteration(
+    String id, {
+    required DateTime dueDate,
+    String notes = '',
+  }) async {
+    final history = await ref
+        .read(healthRepositoryProvider)
+        .skipIteration(id, dueDate: dueDate, notes: notes);
+    await refresh();
+    return history;
+  }
+
+  /// Reverses a skipped occurrence.
+  Future<void> unskipIteration(String id, {required String historyId}) async {
+    await ref
+        .read(healthRepositoryProvider)
+        .unskipIteration(id, historyId: historyId);
+    await refresh();
+  }
+
+  /// Unmarks the last completed occurrence.
+  Future<void> unmarkDone(String id) async {
+    await ref.read(healthRepositoryProvider).unmarkDone(id);
+    await refresh();
+  }
+
   /// Snoozes a health entry by pushing its next due date forward by [days] from now.
   Future<void> snooze(String id, int days) async {
     final entries = state.valueOrNull ?? [];

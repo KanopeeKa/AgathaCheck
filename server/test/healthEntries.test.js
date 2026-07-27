@@ -130,6 +130,16 @@ describe('Health Entries API', () => {
           return { rows: [makeHealthRow({ id: params[1], status: 'active', completed_at: null, completed_on: null })] };
         }
 
+        if (sql.includes("UPDATE health_entries SET status = 'completed', repeat_end_date")) {
+          if (params && params[1] === 'nonexistent') return { rows: [] };
+          return { rows: [makeHealthRow({ id: params[1], status: 'completed', repeat_end_date: params[0] })] };
+        }
+
+        if (sql.includes("UPDATE health_entries SET status = 'active', repeat_end_date = NULL")) {
+          if (params && params[0] === 'nonexistent') return { rows: [] };
+          return { rows: [makeHealthRow({ id: params[0], status: 'active', repeat_end_date: null, next_due_date: null })] };
+        }
+
         if (sql.includes("UPDATE health_entries SET status = 'completed'") ||
             sql.includes('UPDATE health_entries SET status = \'completed\'')) {
           if (params && (params[2] === 'nonexistent' || params[3] === 'nonexistent')) return { rows: [] };
@@ -146,6 +156,83 @@ describe('Health Entries API', () => {
               dosage: params[2],
               frequency: params[3],
             })],
+          };
+        }
+
+        if (sql.includes("UPDATE health_history SET status = 'undone'")) {
+          return { rows: [] };
+        }
+
+        if (sql.includes("INSERT INTO health_history") && sql.includes("'skipped'")) {
+          return { rows: [] };
+        }
+
+        if (sql.includes('SELECT id FROM health_history WHERE health_entry_id') && sql.includes("'skipped'")) {
+          return { rows: [] };
+        }
+
+        if (sql.includes('SELECT hh.*') && sql.includes('WHERE hh.id = $1')) {
+          return {
+            rows: [{
+              id: params[0],
+              health_entry_id: 'he-1',
+              status: 'skipped',
+              notes: '',
+              due_date: new Date('2025-06-01'),
+              completed_on: null,
+              changed_at: new Date('2025-06-01'),
+              marked_by_user_id: userId,
+              marked_by_name: 'Test User',
+            }],
+          };
+        }
+
+        if (sql.includes('SELECT * FROM health_history WHERE id = $1 AND health_entry_id')) {
+          if (params && params[0] === 'hh-missing') return { rows: [] };
+          if (params && params[0] === 'hh-completed') {
+            return {
+              rows: [{
+                id: params[0],
+                health_entry_id: params[1],
+                status: 'completed',
+                due_date: new Date('2025-06-01'),
+              }],
+            };
+          }
+          return {
+            rows: [{
+              id: params[0],
+              health_entry_id: params[1],
+              status: 'skipped',
+              due_date: new Date('2025-06-01'),
+            }],
+          };
+        }
+
+        if (sql.includes('DELETE FROM health_history WHERE id = $1')) {
+          return { rows: [] };
+        }
+
+        if (sql.includes('SELECT * FROM health_history WHERE health_entry_id = $1') && sql.includes('ORDER BY changed_at DESC LIMIT 1')) {
+          if (params && params[0] === 'he-no-history') return { rows: [] };
+          if (params && params[0] === 'he-skipped-last') {
+            return {
+              rows: [{
+                id: 'hh-skipped',
+                health_entry_id: params[0],
+                status: 'skipped',
+                due_date: new Date('2025-06-01'),
+              }],
+            };
+          }
+          return {
+            rows: [{
+              id: 'hh-1',
+              health_entry_id: params[0],
+              status: 'completed',
+              due_date: new Date('2025-06-01'),
+              completed_on: new Date('2025-06-01'),
+            }],
           };
         }
 
@@ -253,6 +340,26 @@ describe('Health Entries API', () => {
 
     it('POST /api/health-entries/:id/undo-complete returns 401 without token', async () => {
       const res = await request(app).post('/api/health-entries/he-1/undo-complete');
+      expect(res.statusCode).toBe(401);
+    });
+
+    it('POST /api/health-entries/:id/close returns 401 without token', async () => {
+      const res = await request(app).post('/api/health-entries/he-1/close');
+      expect(res.statusCode).toBe(401);
+    });
+
+    it('POST /api/health-entries/:id/reopen returns 401 without token', async () => {
+      const res = await request(app).post('/api/health-entries/he-1/reopen');
+      expect(res.statusCode).toBe(401);
+    });
+
+    it('POST /api/health-entries/:id/skip returns 401 without token', async () => {
+      const res = await request(app).post('/api/health-entries/he-1/skip');
+      expect(res.statusCode).toBe(401);
+    });
+
+    it('POST /api/health-entries/:id/unskip returns 401 without token', async () => {
+      const res = await request(app).post('/api/health-entries/he-1/unskip');
       expect(res.statusCode).toBe(401);
     });
   });
@@ -692,6 +799,149 @@ describe('Health Entries API', () => {
       const res = await request(app)
         .post('/api/health-entries/nonexistent/undo-complete')
         .set('Authorization', `Bearer ${token}`);
+      expect(res.statusCode).toBe(404);
+    });
+
+    it('returns 400 when latest history is not completed', async () => {
+      const res = await request(app)
+        .post('/api/health-entries/he-skipped-last/undo-complete')
+        .set('Authorization', `Bearer ${token}`);
+      expect(res.statusCode).toBe(400);
+      expect(res.body.error).toMatch(/unmark/i);
+    });
+
+    it('returns 400 when no history exists', async () => {
+      const res = await request(app)
+        .post('/api/health-entries/he-no-history/undo-complete')
+        .set('Authorization', `Bearer ${token}`);
+      expect(res.statusCode).toBe(400);
+    });
+  });
+
+  describe('POST /api/health-entries/:id/close', () => {
+    it('sets status completed and repeat_end_date to yesterday', async () => {
+      const res = await request(app)
+        .post('/api/health-entries/he-1/close')
+        .set('Authorization', `Bearer ${token}`);
+      expect(res.statusCode).toBe(200);
+      expect(res.body).toHaveProperty('status', 'completed');
+      expect(res.body.repeat_end_date).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+
+      const update = queryLog.find(q =>
+        q.sql.includes("UPDATE health_entries SET status = 'completed', repeat_end_date"));
+      expect(update).toBeDefined();
+      expect(update.params[0]).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+      expect(update.params[1]).toBe('he-1');
+    });
+
+    it('returns 404 for nonexistent entry', async () => {
+      const res = await request(app)
+        .post('/api/health-entries/nonexistent/close')
+        .set('Authorization', `Bearer ${token}`);
+      expect(res.statusCode).toBe(404);
+    });
+  });
+
+  describe('POST /api/health-entries/:id/reopen', () => {
+    it('sets status active and clears repeat_end_date and next_due_date', async () => {
+      const res = await request(app)
+        .post('/api/health-entries/he-1/reopen')
+        .set('Authorization', `Bearer ${token}`);
+      expect(res.statusCode).toBe(200);
+      expect(res.body).toHaveProperty('status', 'active');
+      expect(res.body.repeat_end_date).toBeNull();
+      expect(res.body.next_due_date).toBeNull();
+
+      const update = queryLog.find(q =>
+        q.sql.includes("UPDATE health_entries SET status = 'active', repeat_end_date = NULL"));
+      expect(update).toBeDefined();
+      expect(update.params[0]).toBe('he-1');
+    });
+
+    it('returns 404 for nonexistent entry', async () => {
+      const res = await request(app)
+        .post('/api/health-entries/nonexistent/reopen')
+        .set('Authorization', `Bearer ${token}`);
+      expect(res.statusCode).toBe(404);
+    });
+  });
+
+  describe('POST /api/health-entries/:id/skip', () => {
+    it('inserts skipped history row without updating entry', async () => {
+      const res = await request(app)
+        .post('/api/health-entries/he-1/skip')
+        .set('Authorization', `Bearer ${token}`)
+        .send({ due_date: '2025-06-01' });
+      expect(res.statusCode).toBe(201);
+      expect(res.body).toHaveProperty('status', 'skipped');
+      expect(res.body).toHaveProperty('due_date', '2025-06-01');
+
+      const insert = queryLog.find(q =>
+        q.sql.includes('INSERT INTO health_history') && q.sql.includes("'skipped'"));
+      expect(insert).toBeDefined();
+      expect(insert.params[3]).toBe('2025-06-01');
+
+      const entryUpdate = queryLog.find(q =>
+        q.sql.includes('UPDATE health_entries') && !q.sql.includes('repeat_end_date'));
+      expect(entryUpdate).toBeUndefined();
+    });
+
+    it('requires due_date', async () => {
+      const res = await request(app)
+        .post('/api/health-entries/he-1/skip')
+        .set('Authorization', `Bearer ${token}`)
+        .send({});
+      expect(res.statusCode).toBe(400);
+      expect(res.body.error).toMatch(/due_date/i);
+    });
+
+    it('returns 404 for nonexistent entry', async () => {
+      const res = await request(app)
+        .post('/api/health-entries/nonexistent/skip')
+        .set('Authorization', `Bearer ${token}`)
+        .send({ due_date: '2025-06-01' });
+      expect(res.statusCode).toBe(404);
+    });
+  });
+
+  describe('POST /api/health-entries/:id/unskip', () => {
+    it('deletes skipped history row', async () => {
+      const res = await request(app)
+        .post('/api/health-entries/he-1/unskip')
+        .set('Authorization', `Bearer ${token}`)
+        .send({ history_id: 'hh-skipped' });
+      expect(res.statusCode).toBe(200);
+      expect(res.body).toHaveProperty('deleted', true);
+      expect(res.body).toHaveProperty('history_id', 'hh-skipped');
+
+      const del = queryLog.find(q => q.sql.includes('DELETE FROM health_history WHERE id'));
+      expect(del).toBeDefined();
+      expect(del.params[0]).toBe('hh-skipped');
+    });
+
+    it('requires history_id', async () => {
+      const res = await request(app)
+        .post('/api/health-entries/he-1/unskip')
+        .set('Authorization', `Bearer ${token}`)
+        .send({});
+      expect(res.statusCode).toBe(400);
+      expect(res.body.error).toMatch(/history_id/i);
+    });
+
+    it('rejects non-skipped history rows', async () => {
+      const res = await request(app)
+        .post('/api/health-entries/he-1/unskip')
+        .set('Authorization', `Bearer ${token}`)
+        .send({ history_id: 'hh-completed' });
+      expect(res.statusCode).toBe(400);
+      expect(res.body.error).toMatch(/skipped/i);
+    });
+
+    it('returns 404 for missing history row', async () => {
+      const res = await request(app)
+        .post('/api/health-entries/he-1/unskip')
+        .set('Authorization', `Bearer ${token}`)
+        .send({ history_id: 'hh-missing' });
       expect(res.statusCode).toBe(404);
     });
   });
