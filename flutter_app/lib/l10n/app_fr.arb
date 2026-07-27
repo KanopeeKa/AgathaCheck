@@ -1290,6 +1290,8 @@
   "nextOccurrence": "Prochaine occurrence",
   "deleteEntryNamedConfirm": "Supprimer « {name} » ? Cette action est irréversible.",
   "@deleteEntryNamedConfirm": { "placeholders": { "name": { "type": "String" } } },
+  "deleteRecurringEntryNamedConfirm": "Supprimer « {name} » ? Toutes les itérations de cet événement récurrent seront définitivement supprimées.",
+  "@deleteRecurringEntryNamedConfirm": { "placeholders": { "name": { "type": "String" } } },
   "failedToDelete": "Échec de la suppression : {error}",
   "@failedToDelete": { "placeholders": { "error": { "type": "String" } } },
   "failedToLoadHistory": "Échec du chargement de l'historique : {error}",

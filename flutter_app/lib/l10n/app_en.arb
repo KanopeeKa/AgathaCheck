@@ -1383,6 +1383,8 @@
   "nextOccurrence": "Next occurrence",
   "deleteEntryNamedConfirm": "Delete \"{name}\"? This cannot be undone.",
   "@deleteEntryNamedConfirm": { "placeholders": { "name": { "type": "String" } } },
+  "deleteRecurringEntryNamedConfirm": "Delete \"{name}\"? All iterations of this recurring event will be permanently removed.",
+  "@deleteRecurringEntryNamedConfirm": { "placeholders": { "name": { "type": "String" } } },
   "failedToDelete": "Failed to delete: {error}",
   "@failedToDelete": { "placeholders": { "error": { "type": "String" } } },
   "failedToLoadHistory": "Failed to load history: {error}",

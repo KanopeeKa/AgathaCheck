@@ -96,6 +96,12 @@ Feature: Health Tracking
     And the user saves the health entry
     Then "Heartworm" should have dosage "2 tablets"
 
+  @P1
+  Scenario: Unified event edit route redirects legacy paths
+    Given "Bella" has a health entry "Heartworm"
+    When the user opens the legacy health edit URL for "Heartworm"
+    Then the unified event edit form should be shown
+
   # ── Deleting Health Entries ──────────────────────────────────
 
   @P1

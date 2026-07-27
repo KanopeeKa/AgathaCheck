@@ -3901,6 +3901,11 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String deleteRecurringEntryNamedConfirm(String name) {
+    return 'Delete \"$name\"? All iterations of this recurring event will be permanently removed.';
+  }
+
+  @override
   String failedToDelete(String error) {
     return 'Failed to delete: $error';
   }

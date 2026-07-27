@@ -8,6 +8,7 @@
  * Scenario: Creating a procedure entry
  * Scenario: Editing a health entry
  * Scenario: Deleting a health entry
+ * Scenario: Unified event edit route redirects legacy paths
  * Scenario: Undoing a completed entry
  * Scenario: Snoozing a health entry
  * Scenario: Filtering entries by type using tabs
