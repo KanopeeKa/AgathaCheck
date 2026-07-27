@@ -62,7 +62,11 @@ export class WeightTrackingPage {
         name: /Delete weight entry|Supprimer l'entrée de poids/i,
       })
       .or(section.getByText(/no weight data yet|aucune donnée de poids/i))
-      .or(section.getByText(/error loading weight/i));
+      .or(
+        section.getByText(
+          /error loading weight|erreur de chargement des données de poids/i,
+        ),
+      );
   }
 
   /** Wait until the async weight list has finished loading (empty, entries, or error). */
