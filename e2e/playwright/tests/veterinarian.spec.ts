@@ -43,7 +43,7 @@ test.describe('Veterinarian management', () => {
 
     await vetList.expectLoaded();
     await vetList.expectVetVisible('Dr. Smith');
-    await vetList.expectPhoneVisible('555-1234');
+    await vetList.expectPhoneVisible('555-1234', 'Dr. Smith');
 
     const vets = await getVets(baseURL, testUser.accessToken);
     const created = vets.find((v) => v.name === 'Dr. Smith');
