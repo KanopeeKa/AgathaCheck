@@ -59,9 +59,9 @@ void main() {
   test('petHealthEventsByIdProvider returns only health event types', () async {
     final entries = [
       _entry('a', 'pet-1', HealthEntryType.medication),
-      _entry('b', 'pet-1', HealthEntryType.familyEvent),
+      _entry('b', 'pet-1', HealthEntryType.other),
       _entry('c', 'pet-1', HealthEntryType.vetVisit),
-      _entry('d', 'pet-1', HealthEntryType.procedure),
+      _entry('d', 'pet-1', HealthEntryType.other),
     ];
     final container = ProviderContainer(
       overrides: [
@@ -78,12 +78,12 @@ void main() {
   });
 
   test(
-    'petOtherEventsByIdProvider returns care and other event types',
+    'petOtherEventsByIdProvider returns other event types',
     () async {
       final entries = [
         _entry('a', 'pet-1', HealthEntryType.medication),
-        _entry('b', 'pet-1', HealthEntryType.familyEvent),
-        _entry('c', 'pet-1', HealthEntryType.procedure),
+        _entry('b', 'pet-1', HealthEntryType.other),
+        _entry('c', 'pet-1', HealthEntryType.other),
       ];
       final container = ProviderContainer(
         overrides: [

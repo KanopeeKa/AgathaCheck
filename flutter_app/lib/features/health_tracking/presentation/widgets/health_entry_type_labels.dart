@@ -10,9 +10,7 @@ String healthEntryTypeLabel(AppLocalizations l, HealthEntryType type) {
       return l.preventive;
     case HealthEntryType.vetVisit:
       return l.vetVisit;
-    case HealthEntryType.procedure:
-      return l.procedure;
-    case HealthEntryType.familyEvent:
-      return l.careEvent;
+    case HealthEntryType.other:
+      return l.other;
   }
 }

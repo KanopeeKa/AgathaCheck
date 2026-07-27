@@ -64,6 +64,34 @@ export function extractUserId(req) {
   }
 }
 
+export const HEALTH_ENTRY_TYPES = new Set([
+  'medication',
+  'preventive',
+  'vet_visit',
+  'other',
+]);
+
+const LEGACY_HEALTH_ENTRY_TYPES = new Set(['family_event', 'procedure']);
+
+export function normalizeHealthEntryTypeForRead(type) {
+  if (!type) return type;
+  if (LEGACY_HEALTH_ENTRY_TYPES.has(type)) return 'other';
+  return type;
+}
+
+export function validateHealthEntryTypeForWrite(type) {
+  if (!type) {
+    return { ok: false, error: 'Entry type is required' };
+  }
+  if (LEGACY_HEALTH_ENTRY_TYPES.has(type)) {
+    return { ok: false, error: 'Deprecated entry type; use "other" instead' };
+  }
+  if (!HEALTH_ENTRY_TYPES.has(type)) {
+    return { ok: false, error: `Invalid entry type: ${type}` };
+  }
+  return { ok: true, type };
+}
+
 export function healthEntryToMap(row) {
   return {
     id: row.id,
@@ -71,7 +99,7 @@ export function healthEntryToMap(row) {
     user_id: row.user_id,
     pet_name: row.pet_name || null,
     name: row.name || '',
-    type: row.type,
+    type: normalizeHealthEntryTypeForRead(row.type),
     dosage: row.dosage || '',
     frequency: row.frequency || 'once',
     frequency_days: row.frequency_days || null,

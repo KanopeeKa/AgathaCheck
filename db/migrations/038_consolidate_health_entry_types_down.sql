@@ -1,0 +1,2 @@
+-- Rollback for 038_consolidate_health_entry_types.sql
+-- Data migration is not reversible (other rows cannot be split back).

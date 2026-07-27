@@ -42,7 +42,7 @@ void main() {
   ) async {
     final entries = [
       _entry('h1', HealthEntryType.medication),
-      _entry('o1', HealthEntryType.familyEvent),
+      _entry('o1', HealthEntryType.other),
     ];
 
     await tester.pumpWidget(

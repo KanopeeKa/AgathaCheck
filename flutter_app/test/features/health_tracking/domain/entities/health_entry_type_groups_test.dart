@@ -9,14 +9,12 @@ void main() {
       expect(HealthEntryType.vetVisit.isHealthEvent, isTrue);
     });
 
-    test('isHealthEvent is false for care and other event types', () {
-      expect(HealthEntryType.familyEvent.isHealthEvent, isFalse);
-      expect(HealthEntryType.procedure.isHealthEvent, isFalse);
+    test('isHealthEvent is false for other event type', () {
+      expect(HealthEntryType.other.isHealthEvent, isFalse);
     });
 
-    test('isOtherEvent is true for care and misc. other types', () {
-      expect(HealthEntryType.familyEvent.isOtherEvent, isTrue);
-      expect(HealthEntryType.procedure.isOtherEvent, isTrue);
+    test('isOtherEvent is true for other type', () {
+      expect(HealthEntryType.other.isOtherEvent, isTrue);
     });
 
     test('isOtherEvent is false for health event types', () {
@@ -35,8 +33,8 @@ void main() {
       }
     });
 
-    test('familyEvent fallback label is Care event', () {
-      expect(HealthEntryType.familyEvent.label, 'Care event');
+    test('other fallback label is Other', () {
+      expect(HealthEntryType.other.label, 'Other');
     });
   });
 }
