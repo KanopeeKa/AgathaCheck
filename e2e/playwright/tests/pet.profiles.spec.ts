@@ -80,7 +80,8 @@ test.describe('Pet profiles', () => {
     await editForm.fillName('Bella Rose');
     await editForm.save();
 
-    await petList.expectLoaded();
+    // Edit save returns to pet detail — navigate home before list assertions.
+    await petList.goHome();
     await petList.expectPetVisible('Bella Rose');
   });
 
@@ -166,7 +167,7 @@ test.describe('Pet profiles', () => {
 
     // Save without changes and confirm pet still exists
     await editForm.save();
-    await petList.expectLoaded();
+    await petList.goHome();
     await petList.expectPetVisible('Charlie');
   });
 
