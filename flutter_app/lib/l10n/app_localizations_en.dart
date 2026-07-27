@@ -940,6 +940,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get editPetTitle => 'Edit Pet';
 
   @override
+  String editPetNamed(String petName) {
+    return 'Edit $petName';
+  }
+
+  @override
   String get petName => 'Name *';
 
   @override
@@ -3951,6 +3956,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get allVets => 'All Vets';
+
+  @override
+  String get manageVeterinarians => 'Manage veterinarians';
 
   @override
   String get addAnEvent => 'Add an event';

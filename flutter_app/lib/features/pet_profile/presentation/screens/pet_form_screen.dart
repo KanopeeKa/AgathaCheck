@@ -84,11 +84,22 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
       context.go('/organizations/${widget.initialOrgId}');
       return;
     }
+    if (_isEditing && widget.petId != null) {
+      context.go('/pet/${widget.petId}');
+      return;
+    }
     if (_selectedOrgId != null) {
       context.go('/organizations/$_selectedOrgId');
       return;
     }
     context.go('/');
+  }
+
+  String _formTitle(AppLocalizations l) {
+    if (!_isEditing) return l.addPetTitle;
+    final name = _nameController.text.trim();
+    if (name.isNotEmpty) return l.editPetNamed(name);
+    return l.editPetTitle;
   }
 
   @override
@@ -219,11 +230,11 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
       final petAsync = ref.watch(petByIdProvider(widget.petId!));
       return petAsync.when(
         loading: () => Scaffold(
-          appBar: AppBar(title: AppLogoTitle(title: l.editPetTitle)),
+          appBar: AppBar(title: AppLogoTitle(title: _formTitle(l))),
           body: const Center(child: CircularProgressIndicator()),
         ),
         error: (e, _) => Scaffold(
-          appBar: AppBar(title: AppLogoTitle(title: l.editPetTitle)),
+          appBar: AppBar(title: AppLogoTitle(title: _formTitle(l))),
           body: Center(child: Text('Error: $e')),
         ),
         data: (pet) {
@@ -247,7 +258,7 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
     final l = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
-        title: AppLogoTitle(title: _isEditing ? l.editPetTitle : l.addPetTitle),
+        title: AppLogoTitle(title: _formTitle(l)),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           tooltip: l.goBack,
