@@ -100,4 +100,4 @@ jobs:
             echo "::notice::main advanced (${TEST_SHA:0:7} → ${current_sha:0:7}) during E2E — failing so promotion waits for queued run."
             exit 1
           fi
-          echo "Pre-UAT E2E passed for ${TEST_SHA} — promote-uat may tag."
+          echo "Pre-UAT E2E passed for ${TEST_SHA} (ops replay — does not auto-promote)."
