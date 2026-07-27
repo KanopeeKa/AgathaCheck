@@ -142,9 +142,11 @@ export class NotificationsPage {
   }
 
   async openSettings(): Promise<void> {
-    await this.page
-      .getByRole('button', { name: /notification settings/i })
-      .click();
+    const settingsBtn = this.page
+      .getByRole('button', { name: /notification settings|paramètres de notification/i })
+      .and(this.page.locator(':visible'));
+    await settingsBtn.waitFor({ timeout: 15_000 });
+    await settingsBtn.click();
     await refreshFlutterAccessibility(this.page);
     await expectAppBarTitle(this.page, 'Notification Settings');
   }
