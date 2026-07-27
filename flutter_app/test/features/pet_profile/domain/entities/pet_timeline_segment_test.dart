@@ -30,5 +30,20 @@ void main() {
       expect(segment.isGap, isTrue);
       expect(segment.fillable, isTrue);
     });
+
+    test('dateOfBirth and joinedAgatha factories set stable kinds', () {
+      final dob = PetTimelineSegment.dateOfBirth(DateTime(2019, 5, 20));
+      final joined = PetTimelineSegment.joinedAgatha(
+        createdAt: DateTime(2024, 2, 1),
+        guardianName: 'Alex',
+      );
+
+      expect(dob.isDateOfBirth, isTrue);
+      expect(dob.id, 'date_of_birth');
+      expect(dob.startDate, '2019-05-20');
+      expect(joined.isJoinedAgatha, isTrue);
+      expect(joined.guardianName, 'Alex');
+      expect(joined.startDate, '2024-02-01');
+    });
   });
 }
