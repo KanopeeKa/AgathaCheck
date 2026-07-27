@@ -104,8 +104,10 @@
   "allPets": "All Pets",
   "managePets": "Manage pets",
   "manageEvents": "Manage events",
-  "eventsEditTab": "Edit",
-  "eventsHistoryTab": "History",
+  "eventFilterClosed": "Closed",
+  "eventFilterRecurring": "Recurring",
+  "eventFilterOneTime": "One-time",
+  "eventFilterShowSkipped": "Show skipped",
   "noEventsYet": "No events yet",
   "petEventsSummary": "{count, plural, =1{1 event} other{{count} events}}",
   "@petEventsSummary": {
