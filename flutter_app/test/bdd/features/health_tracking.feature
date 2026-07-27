@@ -82,10 +82,10 @@ Feature: Health Tracking
     Then entries should be grouped under "Dogs" and "Cats"
 
   @P1
-  Scenario: Empty health dashboard shows prompt
+  Scenario: Empty guardian due-events inbox shows all caught up
     Given "Bella" has no health entries
     When the user navigates to the health dashboard
-    Then the user should see a "No entries yet" message
+    Then the user should see a "You're all caught up" message
 
   # ── Updating Health Entries ──────────────────────────────────
 

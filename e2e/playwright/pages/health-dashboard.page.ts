@@ -9,8 +9,19 @@ import { escapeRegExp, refreshFlutterAccessibility, semanticsByName } from '../s
 export class HealthDashboardPage {
   constructor(private readonly page: Page) {}
 
+  /** Guardian `/g/events` due-events inbox (D17) — distinct from org tabbed dashboard. */
+  private guardianDueEventsEmptyLocator() {
+    return this.page
+      .getByText(/You're all caught up|Tout est à jour/i)
+      .or(
+        this.page.getByText(
+          /No events are overdue or due today|Aucun événement en retard ou prévu aujourd'hui/i,
+        ),
+      );
+  }
+
   /** Empty-state copy — Flutter web often merges tab body text into tabpanel/group names. */
-  private emptyStateLocator() {
+  private fullDashboardEmptyLocator() {
     return this.page
       .getByText(/No entries yet|Aucun événement/i)
       .or(
@@ -24,6 +35,10 @@ export class HealthDashboardPage {
         }),
       )
       .or(this.page.getByText(/Tap \+ to add one|Appuyez sur \+ pour en ajouter/i));
+  }
+
+  private emptyStateLocator() {
+    return this.fullDashboardEmptyLocator().or(this.guardianDueEventsEmptyLocator());
   }
 
   /** Wait until async health entries have settled (empty, rows, or error). */
@@ -46,6 +61,7 @@ export class HealthDashboardPage {
         .getByRole('tab', { name: /^(All|Tous)$/i })
         .or(this.page.getByRole('tab', { name: /^(Medications|Médicaments)$/i }))
         .or(this.page.getByRole('button', { name: /Add Health Event/i }))
+        .or(this.page.getByRole('button', { name: /Add an event|Ajouter un événement/i }))
         .or(this.page.getByText(/Due and Overdue|À faire et en retard/i))
         .or(this.emptyStateLocator())
         .first();
@@ -113,11 +129,16 @@ export class HealthDashboardPage {
   }
 
   async selectTab(tabName: string): Promise<void> {
-    await this.page
+    const tab = this.page
       .getByRole('tab', { name: tabName, exact: true })
       .or(this.page.getByText(tabName, { exact: true }))
-      .first()
-      .click();
+      .first();
+    if (!(await tab.isVisible({ timeout: 3_000 }).catch(() => false))) {
+      throw new Error(
+        `Health dashboard tab "${tabName}" not found — guardian /g/events uses the due-events inbox without tabs`,
+      );
+    }
+    await tab.click();
     await this.page.waitForTimeout(500);
   }
 

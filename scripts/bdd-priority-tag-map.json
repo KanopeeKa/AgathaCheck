@@ -48,7 +48,7 @@
     "Grouping entries by due date": "P1",
     "Grouping entries by pet": "P1",
     "Grouping entries by species": "P1",
-    "Empty health dashboard shows prompt": "P1",
+    "Empty guardian due-events inbox shows all caught up": "P1",
     "Editing a health entry": "P1",
     "Deleting a health entry": "P1",
     "Marking a health entry as taken": "P0",

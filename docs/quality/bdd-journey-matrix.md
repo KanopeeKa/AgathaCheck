@@ -106,7 +106,7 @@ Journeys are ordered **P0 → P1 → P2** at the journey level. Within each jour
 | P0 | Mark complete | Marking a health entry as taken | `health.tracking.spec.ts` | ✅ |
 | P0 | Add medication | Creating a medication entry | `health.tracking.spec.ts` | ✅ |
 | P1 | Entry types | preventive, vet visit, procedure, photo attachment | `health.tracking.spec.ts` (preventive, vet visit, procedure) | partial |
-| P1 | Dashboard UX | filter tabs, group by date/pet/species, empty state | `health.tracking.spec.ts` (filter tabs, empty state) | partial |
+| P1 | Dashboard UX | filter tabs, group by date/pet/species, empty state | `health.tracking.spec.ts` (due-events inbox, empty state) | partial |
 | P1 | Edit / delete / undo / snooze / history | 5 scenarios | `health.tracking.spec.ts` (edit, delete, undo, snooze) | partial |
 | P1 | Health issues & link to entries | 2 scenarios | — | ❌ |
 | P1 | Pet list due badges | due events on pet list | `health.tracking.spec.ts` | ✅ |
