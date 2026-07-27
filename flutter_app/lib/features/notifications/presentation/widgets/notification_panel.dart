@@ -109,6 +109,15 @@ class _PanelHeader extends StatelessWidget {
               ),
             ),
           ),
+          IconButton(
+            icon: const Icon(Icons.settings_outlined),
+            tooltip: l.notificationSettingsTooltip,
+            onPressed: () {
+              final router = GoRouter.of(context);
+              Navigator.of(context).pop();
+              router.push('/notifications/settings');
+            },
+          ),
           TextButton.icon(
             key: const Key('mark_all_read_button'),
             icon: const Icon(Icons.done_all, size: 18),
