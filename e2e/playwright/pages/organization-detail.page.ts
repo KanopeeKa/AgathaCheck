@@ -41,7 +41,7 @@ export class OrganizationDetailPage {
   /**
    * Members live at `/o/orgs/:id/members` (popup menu only on the dashboard hub).
    * Flutter web often misses PopupMenuItem taps — hash-route fallback mirrors
-   * `openPetsSection` (PR #453 / UAT shard 3/11).
+   * `openPetsSection` (UAT shard 3/11).
    */
   async openMembers(): Promise<void> {
     const orgId = this.orgIdFromUrl();
