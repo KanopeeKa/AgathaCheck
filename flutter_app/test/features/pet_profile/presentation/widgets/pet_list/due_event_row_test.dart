@@ -43,9 +43,9 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.byKey(const Key('due_event_open_entry-1')), findsOneWidget);
-    expect(find.byKey(const Key('due_event_snooze_entry-1')), findsOneWidget);
-    expect(find.byKey(const Key('due_event_done_entry-1')), findsOneWidget);
     expect(find.text('Open'), findsOneWidget);
+    expect(find.text('Snooze'), findsOneWidget);
+    expect(find.text('Mark as done'), findsOneWidget);
     expect(find.text('Bella'), findsOneWidget);
   });
 
