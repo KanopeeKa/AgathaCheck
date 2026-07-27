@@ -14,15 +14,19 @@ import {
  * Maps to: flutter_app/test/bdd/features/organisation_management.feature
  */
 /** OrgCard semantics include type + member/pet counts; discovery tiles are name-only and not tappable. */
-function membershipOrgCardLocator(page: Page, name: string) {
+function membershipOrgCardPattern(name: string): RegExp {
   const escaped = escapeRegExp(name);
-  const pattern = new RegExp(
+  return new RegExp(
     `${escaped},\\s*(?:Professional|Charity|Professionnel|Association).*(?:members?|pets?|membres?)`,
     'i',
   );
+}
+
+function membershipOrgCardLocator(page: Page, name: string) {
+  // OrgCard exposes role=button (Semantics.onTap). Avoid group fallback — a
+  // parent group with the same label is not activated by Playwright click.
   return page
-    .getByRole('button', { name: pattern })
-    .or(page.getByRole('group', { name: pattern }))
+    .getByRole('button', { name: membershipOrgCardPattern(name) })
     .filter({ visible: true })
     .first();
 }
@@ -64,7 +68,15 @@ export class OrganizationListPage {
     const card = membershipOrgCardLocator(this.page, name);
     await card.scrollIntoViewIfNeeded();
     await card.click();
-    await waitForFlutterRoutePattern(this.page, /\/o\/orgs\/[^/?#]+/, 30_000);
+    try {
+      await waitForFlutterRoutePattern(this.page, /\/o\/orgs\/[^/?#]+/, 5_000);
+    } catch {
+      // Semantics activation (Enter) when pointer hit-testing misses InkWell on web.
+      await refreshFlutterAccessibility(this.page);
+      await card.focus();
+      await this.page.keyboard.press('Enter');
+      await waitForFlutterRoutePattern(this.page, /\/o\/orgs\/[^/?#]+/, 30_000);
+    }
     await refreshFlutterAccessibility(this.page);
   }
 
