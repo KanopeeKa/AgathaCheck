@@ -29,7 +29,7 @@ final notificationsProvider =
 class NotificationsNotifier extends AsyncNotifier<List<AppNotification>> {
   @override
   Future<List<AppNotification>> build() async {
-    final auth = ref.read(authProvider);
+    final auth = ref.watch(authProvider);
     if (!auth.isLoggedIn || auth.accessToken == null) return [];
     return _getRepo().getNotifications();
   }
