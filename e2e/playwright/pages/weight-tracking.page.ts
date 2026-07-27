@@ -76,6 +76,7 @@ export class WeightTrackingPage {
   private async revealWeightListRows(): Promise<void> {
     const section = this.weightSectionRoot();
     await section.scrollIntoViewIfNeeded();
+    await section.hover();
     // Chart (~200px) + unit row push list tiles below the viewport on pet detail.
     for (let i = 0; i < 3; i++) {
       await this.page.mouse.wheel(0, 300);
@@ -89,7 +90,6 @@ export class WeightTrackingPage {
     const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
     const timeout = isLiveHostingTarget(baseURL) ? 45_000 : 30_000;
     await expect(async () => {
-      await refreshFlutterAccessibility(this.page);
       await this.revealWeightListRows();
       await this.weightDataSettledLocator().first().waitFor({ timeout: 3_000 });
     }).toPass({ timeout });
