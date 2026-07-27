@@ -3901,6 +3901,54 @@ class AppLocalizationsFr extends AppLocalizations {
   String get noHistoryYet => 'Aucun historique pour le moment.';
 
   @override
+  String viewEntryTitle(String name) {
+    return 'Voir $name';
+  }
+
+  @override
+  String get seeHistory => 'Voir l\'historique';
+
+  @override
+  String get closeEventAction => 'Fermer l\'événement';
+
+  @override
+  String get reopenEventAction => 'Rouvrir l\'événement';
+
+  @override
+  String get eventStatusClosed => 'Fermé';
+
+  @override
+  String get relatesToHealthIssue => 'Lié à un problème de santé';
+
+  @override
+  String get pastIterations => 'Occurrences passées';
+
+  @override
+  String get skipOccurrence => 'Ignorer';
+
+  @override
+  String get unmarkDone => 'Annuler le marquage';
+
+  @override
+  String remindedDaysBefore(int count, String dayLabel) {
+    return 'Vous serez rappelé $count $dayLabel avant';
+  }
+
+  @override
+  String recurrenceRepeatsEveryUntil(int interval, String period, String date) {
+    return 'Se répète tous les $interval $period jusqu\'au $date';
+  }
+
+  @override
+  String get occurrenceSkipped => 'Ignoré';
+
+  @override
+  String get entryNotFound => 'Entrée introuvable';
+
+  @override
+  String get nextOccurrence => 'Prochaine occurrence';
+
+  @override
   String deleteEntryNamedConfirm(String name) {
     return 'Supprimer « $name » ? Cette action est irréversible.';
   }
