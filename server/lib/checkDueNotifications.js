@@ -3,6 +3,15 @@ import { v4 as uuidv4 } from 'uuid';
 import { accessiblePetSql, petNotificationRecipientIds } from './petAccess.js';
 import { dateToIsoDate, todayCalendarIso } from './calendarDate.js';
 
+/**
+ * In-app deep link for a care notification tied to a health entry (view screen).
+ * Returns null when pet or entry id is missing.
+ */
+export function buildNotificationDeepLink(petId, healthEntryId) {
+  if (!petId || !healthEntryId) return null;
+  return `/pet/${petId}/events/${healthEntryId}`;
+}
+
 function daysBetweenCalendarDates(isoFrom, isoTo) {
   const [fy, fm, fd] = isoFrom.split('-').map(Number);
   const [ty, tm, td] = isoTo.split('-').map(Number);

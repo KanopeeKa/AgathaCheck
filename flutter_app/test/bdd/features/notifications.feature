@@ -92,8 +92,14 @@ Feature: Notifications
   # ── Notification Navigation ──────────────────────────────────
 
   @P1
-  Scenario: Tapping a pet notification navigates to pet detail
-    Given a notification exists for pet "Bella"
+  Scenario: Tapping a due event notification navigates to view entry
+    Given a notification exists for pet "Bella" with health entry "Vaccination"
+    When the user taps the notification
+    Then the user should be navigated to the view entry screen for "Vaccination"
+
+  @P1
+  Scenario: Tapping a pet notification without health entry navigates to pet detail
+    Given a notification exists for pet "Bella" without a health entry
     When the user taps the notification
     Then the user should be navigated to "Bella"'s detail screen
 

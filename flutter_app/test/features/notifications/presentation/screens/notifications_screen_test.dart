@@ -21,6 +21,7 @@ AppNotification _sampleNotification({
   bool isRead = false,
   String? petId,
   String? petName,
+  String? healthEntryId,
   DateTime? createdAt,
 }) {
   return AppNotification(
@@ -28,6 +29,7 @@ AppNotification _sampleNotification({
     userId: 'user-1',
     petId: petId,
     petName: petName,
+    healthEntryId: healthEntryId,
     title: title,
     message: message,
     type: NotificationType.dueSoon,
@@ -70,6 +72,14 @@ Widget _wrap({
             path: '/pet/:id',
             builder: (context, state) =>
                 Scaffold(body: Text('Pet ${state.pathParameters['id']}')),
+          ),
+          GoRoute(
+            path: '/pet/:petId/events/:entryId',
+            builder: (context, state) => Scaffold(
+              body: Text(
+                'View ${state.pathParameters['entryId']} for ${state.pathParameters['petId']}',
+              ),
+            ),
           ),
         ],
       ),
@@ -191,6 +201,33 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(notifier.markAllAsReadCalled, isTrue);
+  });
+
+  testWidgets('tapping due event notification navigates to view entry', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      _wrap(
+        child: const NotificationsScreen(),
+        notifications: [
+          _sampleNotification(
+            id: 'n1',
+            title: 'Vaccination overdue',
+            message: 'Due yesterday',
+            petId: 'pet-1',
+            petName: 'Bella',
+            healthEntryId: 'entry-1',
+            isRead: true,
+          ),
+        ],
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('Vaccination overdue'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('View entry-1 for pet-1'), findsOneWidget);
   });
 
   testWidgets('org scope hides owned pet notifications', (tester) async {

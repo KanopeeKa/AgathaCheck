@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 
 import '../../../../core/theme/experience_colors.dart';
 import '../../../../l10n/app_localizations.dart';
@@ -8,6 +7,7 @@ import '../../domain/entities/app_notification.dart';
 import '../../domain/entities/notification_kind.dart';
 import '../../domain/entities/notification_scope.dart';
 import '../providers/notification_providers.dart';
+import '../utils/notification_navigation.dart';
 import '../widgets/notification_date_groups.dart';
 import '../widgets/notification_tile.dart';
 
@@ -298,11 +298,7 @@ class _NotificationList extends ConsumerWidget {
     }
     if (!context.mounted) return;
     Navigator.of(context).pop();
-    if (n.petId != null && n.petId!.isNotEmpty) {
-      context.go('/pet/${n.petId}');
-    } else if (n.organizationId != null && n.organizationId!.isNotEmpty) {
-      context.go('/o/orgs/${n.organizationId}');
-    }
+    navigateFromNotification(context, n);
   }
 }
 
