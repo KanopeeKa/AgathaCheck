@@ -1,0 +1,137 @@
+{
+  "schema_version": 1,
+  "plan_id": "uat-agent-babysit-5641",
+  "approved_at": "2026-07-27T22:55:00Z",
+  "approved_by": "user-chat-execute-plan",
+  "approved_until": "2026-07-29T22:55:00Z",
+  "content_hash": "sha256:c25951aee6ee659fd4b98fd2a105390da84f38149adddcf1fa394e2c85c02533",
+  "autonomy": "active",
+  "default_merge_mode": "auto",
+  "base_branch": "cursor/uat-agent-babysit-integration-5641",
+  "control_issue": 481,
+  "artifact_branch_policy": "phase-branch",
+  "phases": [
+    {
+      "id": "1",
+      "title": "Docs and babysit contract",
+      "branch": "cursor/uat-agent-babysit-docs-5641",
+      "allowed_paths": [
+        "docs/e2e/uat-agent-babysit.md",
+        "docs/e2e/uat-promote-manual.md",
+        "docs/e2e/uat-deploy-tiers.md",
+        ".agents/plans/uat-agent-babysit-5641.*"
+      ],
+      "forbidden_paths": [],
+      "allowed_exceptions": [
+        "docs",
+        "tests",
+        "governance-allowlist"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_mode": "auto",
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "in_progress",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "2",
+      "title": "Agent babysit script",
+      "branch": "cursor/uat-agent-babysit-script-5641",
+      "allowed_paths": [
+        "scripts/agent-uat-babysit.sh",
+        "scripts/ci/trigger-promote-uat.sh",
+        "scripts/ci/wait-uat-deploy.sh",
+        ".agents/plans/uat-agent-babysit-5641.*"
+      ],
+      "forbidden_paths": [],
+      "allowed_exceptions": [
+        "docs",
+        "tests"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_mode": "auto",
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "3",
+      "title": "Workflow cutover",
+      "branch": "cursor/uat-agent-babysit-workflows-5641",
+      "allowed_paths": [
+        ".github/workflows/pre-uat-e2e.yml",
+        ".github/workflows/promote-uat.yml",
+        ".github/workflows/uat-coordinator-dispatch.yml",
+        ".github/workflows/uat-queue-health.yml",
+        "scripts/ci/evaluate-uat-promote-hold.js",
+        ".agents/plans/uat-agent-babysit-5641.*"
+      ],
+      "forbidden_paths": [],
+      "allowed_exceptions": [
+        "docs",
+        "tests",
+        "governance-allowlist"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_mode": "auto",
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "4",
+      "title": "Skills and policy sync",
+      "branch": "cursor/uat-agent-babysit-skills-5641",
+      "allowed_paths": [
+        ".cursor/skills/babysit-plus/SKILL.md",
+        ".cursor/skills/execute-plan/SKILL.md",
+        ".cursor/skills/uat-coordinator/SKILL.md",
+        "docs/agent-efficiency/autonomous-pr-policy.md",
+        "docs/ci-cd-gates.md",
+        "docs/promotion-contract.md",
+        "e2e/README.md",
+        ".agents/memory/**",
+        ".agents/plans/uat-agent-babysit-5641.*"
+      ],
+      "forbidden_paths": [],
+      "allowed_exceptions": [
+        "docs",
+        "tests",
+        "governance-allowlist"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_mode": "auto",
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null,
+      "debt_issue_refs": []
+    }
+  ]
+}
