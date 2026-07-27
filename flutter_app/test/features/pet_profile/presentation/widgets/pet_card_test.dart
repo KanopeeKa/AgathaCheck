@@ -145,5 +145,29 @@ void main() {
       await tester.tap(find.byType(PetCard));
       expect(tapped, isTrue);
     });
+
+    testWidgets('PetTileStrip lays out square vertical tiles', (tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: AppTheme.lightTheme,
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: Scaffold(
+            body: SizedBox(
+              width: 400,
+              child: PetTileStrip(
+                useWrap: true,
+                pets: const [testPet],
+                onPetTap: (_) {},
+              ),
+            ),
+          ),
+        ),
+      );
+
+      final tile = tester.getSize(find.byType(PetCard));
+      expect(tile.width, tile.height);
+      expect(tile.width, 180);
+    });
   });
 }
