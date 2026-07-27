@@ -29,3 +29,12 @@ updates:
     labels:
       - dependencies
       - flutter
+    # CI pins Flutter 3.32.0 (Dart 3.8). Ignore pub bumps that require a newer SDK
+    # until a dedicated Flutter upgrade PR lands — see closed Dependabot PRs #464–466.
+    ignore:
+      - dependency-name: "shared_preferences"
+        versions: [">= 2.5.5"]
+      - dependency-name: "cupertino_icons"
+        versions: [">= 1.0.9"]
+      - dependency-name: "go_router"
+        update-types: ["version-update:semver-major"]
