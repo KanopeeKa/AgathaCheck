@@ -1,11 +1,8 @@
 name: UAT coordinator dispatch
 
+# DEPRECATED (Jul 2026): UAT coordinator replaced by per-merge agent babysit.
+# Manual recovery only — see docs/e2e/uat-promote-manual.md
 on:
-  workflow_run:
-    workflows:
-      - 'Deploy UAT (uat.agathatrack.com)'
-      - 'Pre-UAT E2E'
-    types: [completed]
   workflow_dispatch:
     inputs:
       workflow_run_id:

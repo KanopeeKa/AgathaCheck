@@ -1,15 +1,12 @@
 name: Pre-UAT E2E
 
-# Full localhost Playwright E2E on merge to main — gates UAT promotion.
-# Concurrency queues rapid merges; each run tests latest origin/main HEAD.
-# See docs/e2e/uat-deploy-tiers.md
+# Ops replay only — full localhost Playwright E2E (11 shards).
+# Promotion is gated by agent UAT babysit (docs/e2e/uat-agent-babysit.md), not this workflow.
 on:
-  push:
-    branches: [main]
   workflow_dispatch:
     inputs:
       reason:
-        description: Manual retry reason (coordinator / ops)
+        description: Manual retry reason (ops / coordinator legacy)
         required: false
         type: string
 
