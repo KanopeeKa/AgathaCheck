@@ -69,12 +69,28 @@ export class WeightTrackingPage {
       );
   }
 
+  /**
+   * Scroll the pet-detail page so weight list rows below the chart enter the
+   * Flutter web accessibility tree (CustomScrollView clips off-screen semantics).
+   */
+  private async revealWeightListRows(): Promise<void> {
+    const section = this.weightSectionRoot();
+    await section.scrollIntoViewIfNeeded();
+    // Chart (~200px) + unit row push list tiles below the viewport on pet detail.
+    for (let i = 0; i < 3; i++) {
+      await this.page.mouse.wheel(0, 300);
+      await this.page.waitForTimeout(200);
+    }
+    await refreshFlutterAccessibility(this.page);
+  }
+
   /** Wait until the async weight list has finished loading (empty, entries, or error). */
   private async waitForWeightDataSettled(): Promise<void> {
     const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
     const timeout = isLiveHostingTarget(baseURL) ? 45_000 : 30_000;
     await expect(async () => {
       await refreshFlutterAccessibility(this.page);
+      await this.revealWeightListRows();
       await this.weightDataSettledLocator().first().waitFor({ timeout: 3_000 });
     }).toPass({ timeout });
   }
@@ -163,8 +179,18 @@ export class WeightTrackingPage {
       const entries = section.getByRole('button', {
         name: /Delete weight entry|Supprimer l'entrée de poids/i,
       });
-      if (count > 0) {
-        await entries.last().scrollIntoViewIfNeeded();
+
+      if (count === 0) {
+        await expect(entries).toHaveCount(0);
+        return;
+      }
+
+      // Walk each row into view so Flutter web exposes every delete button.
+      for (let i = 0; i < count; i++) {
+        const row = entries.nth(i);
+        await row.scrollIntoViewIfNeeded();
+        await refreshFlutterAccessibility(this.page);
+        await expect(row).toBeVisible();
       }
       await expect(entries).toHaveCount(count);
     }).toPass({ timeout });
