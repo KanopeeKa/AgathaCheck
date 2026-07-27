@@ -1,7 +1,13 @@
 'use strict';
 
 const { rest } = require('../../.github/scripts/github-project-lib');
-const { resolveCoordinationIssue } = require('./uat_queue_sync');
+const {
+  enqueueEntry,
+  findActiveEntryByPr,
+  findEntryByMergeSha,
+} = require('./uat_queue_lib');
+const { loadStateFromIssue, resolveCoordinationIssue, saveStateToIssue } =
+  require('./uat_queue_sync');
 
 function yymmddFromIso(iso) {
   if (!iso || iso.length < 10) {
@@ -72,6 +78,99 @@ async function extractDeployRefFromWorkflowRun(owner, repo, runId, token) {
 }
 
 /**
+ * True when Pre-UAT failed only because main advanced during the run (queue
+ * bundling). Do not dispatch a remedial agent — the next queued run covers HEAD.
+ */
+function isPreUatBundlingOnlyFailure(failedGates) {
+  if (!failedGates || failedGates.length === 0) {
+    return true;
+  }
+  const hasCodeFailure = failedGates.some((row) =>
+    ['localhost_e2e', 'flutter_build', 'migrations', 'unknown'].includes(row.gate),
+  );
+  if (hasCodeFailure) {
+    return false;
+  }
+  return failedGates.every((row) => row.gate === 'pre_uat_e2e');
+}
+
+/**
+ * Mark the merge commit's queue entry failed after a Pre-UAT E2E code failure.
+ * Pre-UAT runs before any uat-* tag exists, so deploy_ref reconciliation cannot apply.
+ */
+async function reconcileFailedPreUatLedger({
+  owner,
+  repo,
+  workflowRunId,
+  workflowUrl,
+  coordinationIssue,
+  token,
+  write = true,
+  failedGates = null,
+}) {
+  if (isPreUatBundlingOnlyFailure(failedGates)) {
+    return { skipped: true, reason: 'pre_uat_bundling_only' };
+  }
+
+  const coordIssue = resolveCoordinationIssue(coordinationIssue);
+  if (!coordIssue) {
+    return { skipped: true, reason: 'coordination_issue_not_configured' };
+  }
+
+  const run = await rest('GET', `/repos/${owner}/${repo}/actions/runs/${workflowRunId}`, token);
+  const mergeSha = run.head_sha || null;
+  if (!mergeSha) {
+    return { skipped: true, reason: 'merge_sha_unavailable' };
+  }
+
+  const prNumber = await resolvePrForCommit(owner, repo, mergeSha, token);
+  if (!prNumber) {
+    return { skipped: true, reason: 'pr_unresolved', mergeSha };
+  }
+
+  let { state: workingState } = await loadStateFromIssue(coordIssue, token);
+  let entry =
+    findEntryByMergeSha(workingState, mergeSha) || findActiveEntryByPr(workingState, prNumber);
+
+  if (!entry) {
+    const enqueued = enqueueEntry(workingState, {
+      mergeSha,
+      prNumber,
+      enqueuedBy: `pre-uat-run-${workflowRunId}`,
+    });
+    workingState = enqueued.state;
+    entry = enqueued.entry;
+  } else if (['complete', 'superseded'].includes(entry.state)) {
+    return {
+      skipped: true,
+      reason: 'entry_already_terminal',
+      entry,
+      mergeSha,
+      prNumber,
+    };
+  }
+
+  entry.state = 'failed';
+  entry.result = 'failure';
+  entry.gate_summary_ref = workflowUrl;
+  entry.deploy_run_id = String(workflowRunId);
+  entry.completed_at = new Date().toISOString();
+
+  if (write) {
+    await saveStateToIssue(coordIssue, workingState, token);
+  }
+
+  return {
+    skipped: false,
+    entry,
+    mergeSha,
+    prNumber,
+    issueNumber: coordIssue,
+    dryRun: !write,
+  };
+}
+
+/**
  * Apply a failed deploy result to the queue ledger when notify/sync was skipped.
  */
 async function reconcileFailedDeployLedger({
@@ -127,5 +226,7 @@ module.exports = {
   tagCommitSha,
   resolveUatTagForCommit,
   extractDeployRefFromWorkflowRun,
+  isPreUatBundlingOnlyFailure,
+  reconcileFailedPreUatLedger,
   reconcileFailedDeployLedger,
 };
