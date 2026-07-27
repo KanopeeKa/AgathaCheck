@@ -101,8 +101,10 @@
   "allPets": "Tous les animaux",
   "managePets": "Gérer les animaux",
   "manageEvents": "Gérer les événements",
-  "eventsEditTab": "Modifier",
-  "eventsHistoryTab": "Historique",
+  "eventFilterClosed": "Fermé",
+  "eventFilterRecurring": "Récurrent",
+  "eventFilterOneTime": "Ponctuel",
+  "eventFilterShowSkipped": "Afficher les ignorés",
   "noEventsYet": "Aucun événement pour le moment",
   "petEventsSummary": "{count, plural, =1{1 événement} other{{count} événements}}",
   "@petEventsSummary": {
