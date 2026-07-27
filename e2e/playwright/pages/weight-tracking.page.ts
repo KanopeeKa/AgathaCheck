@@ -38,15 +38,27 @@ export class WeightTrackingPage {
       .waitFor({ timeout: 30_000 });
   }
 
-  /** Wait until the async weight list has finished loading (empty, entries, or error). */
-  private async waitForWeightDataSettled(): Promise<void> {
-    await this.page
+  /** Empty, entry rows, or error — Flutter web merges ListTile copy into group names. */
+  private weightDataSettledLocator() {
+    return this.page
       .getByRole('group', {
         name: /no weight data yet|aucune donnée de poids|\d+\.\d+ (kg|lb)/i,
       })
-      .or(this.page.getByText(/no weight data yet|aucune donnée de poids|\d+\.\d+ (kg|lb)|error loading weight/i))
-      .first()
-      .waitFor({ timeout: 15_000 });
+      .or(
+        this.page.getByText(
+          /no weight data yet|aucune donnée de poids|\d+\.\d+ (kg|lb)|error loading weight/i,
+        ),
+      );
+  }
+
+  /** Wait until the async weight list has finished loading (empty, entries, or error). */
+  private async waitForWeightDataSettled(): Promise<void> {
+    const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
+    const timeout = isLiveHostingTarget(baseURL) ? 45_000 : 30_000;
+    await expect(async () => {
+      await refreshFlutterAccessibility(this.page);
+      await this.weightDataSettledLocator().first().waitFor({ timeout: 3_000 });
+    }).toPass({ timeout });
   }
 
   /** Expect the empty-state prompt shown when there are no weight entries. */
@@ -104,23 +116,32 @@ export class WeightTrackingPage {
    * The entry is rendered as a ListTile with text "25.5 kg".
    */
   async expectWeightEntryVisible(weight: number, unit = 'kg'): Promise<void> {
-    await this.openSection();
-    await this.waitForWeightDataSettled();
+    const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
+    const timeout = isLiveHostingTarget(baseURL) ? 45_000 : 30_000;
     const label = `${weight.toFixed(1)} ${unit}`;
     const pattern = new RegExp(label.replace('.', '\\.'), 'i');
-    await this.page
-      .getByRole('group', { name: pattern })
-      .or(this.page.getByText(label, { exact: false }))
-      .first()
-      .waitFor({ timeout: 15_000 });
+    await expect(async () => {
+      await this.openSection();
+      await this.waitForWeightDataSettled();
+      await expect(
+        this.page
+          .getByRole('group', { name: pattern })
+          .or(this.page.getByText(label, { exact: false }))
+          .first(),
+      ).toBeVisible();
+    }).toPass({ timeout });
   }
 
   /** Count weight entry rows visible in the expanded section. */
   async expectWeightEntryCount(count: number): Promise<void> {
-    await this.openSection();
-    await this.waitForWeightDataSettled();
-    const entries = this.page.getByRole('group', { name: /^\d+\.\d+ (kg|lb)/ });
-    await expect(entries).toHaveCount(count, { timeout: 15_000 });
+    const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
+    const timeout = isLiveHostingTarget(baseURL) ? 45_000 : 30_000;
+    await expect(async () => {
+      await this.openSection();
+      await this.waitForWeightDataSettled();
+      const entries = this.page.getByRole('group', { name: /^\d+\.\d+ (kg|lb)/ });
+      await expect(entries).toHaveCount(count);
+    }).toPass({ timeout });
   }
 
   /** Expect the kg / lb unit segmented control to be present. */
