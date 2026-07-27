@@ -83,19 +83,29 @@ export class OrganizationListPage {
   async expectLoaded(): Promise<void> {
     await dismissConsentBannerIfPresent(this.page);
     await waitForFlutterRoutePattern(this.page, /\/o\/orgs(?:\?|$)|\/organizations/, 30_000);
-    await refreshFlutterAccessibility(this.page);
     if (await isExperienceShellVisible(this.page)) {
-      await expect(this.page.getByRole('button', { name: 'Create' })).toBeVisible({
-        timeout: 30_000,
-      });
+      // Embedded shell has no app bar; the section header is always near the top.
+      // The Create button sits at the bottom of a ListView and is often absent from
+      // the Flutter web semantics tree until scrolled (UAT shard 1/11, PR #471).
+      await expect(async () => {
+        await refreshFlutterAccessibility(this.page);
+        await expect(
+          this.page.getByText(/My Organizations|Mes organisations/i).first(),
+        ).toBeVisible({ timeout: 3_000 });
+      }).toPass({ timeout: 30_000 });
       return;
     }
+    await refreshFlutterAccessibility(this.page);
     await expectAppBarTitle(this.page, 'My Organizations');
   }
 
   async openCreateForm(): Promise<void> {
     await dismissConsentBannerIfPresent(this.page);
-    await this.page.getByRole('button', { name: 'Create' }).click();
+    const createBtn = this.page
+      .getByRole('button', { name: /^Create$|^Créer$/i })
+      .first();
+    await createBtn.scrollIntoViewIfNeeded();
+    await createBtn.click();
     await this.page
       .getByRole('button', { name: 'Create Organization' })
       .waitFor({ timeout: 30_000 });
