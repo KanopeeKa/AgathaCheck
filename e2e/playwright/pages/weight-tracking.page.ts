@@ -4,36 +4,38 @@ import { refreshFlutterAccessibility } from '../support/flutter';
 import { isLiveHostingTarget } from '../support/hosting';
 
 /**
- * Weight Tracking section on the Pet Detail screen.
- * The section is an ExpansionTile labelled "Weight Tracking".
+ * Weight tracking screen (`/pet/:petId/weight`).
  * Maps to: flutter_app/test/bdd/features/weight_tracking.feature
  */
 export class WeightTrackingPage {
   constructor(private readonly page: Page) {}
 
-  /** Expand the Weight Tracking ExpansionTile if it is not already open. */
+  /** Navigate to the dedicated weight tracking screen from pet profile. */
   async openSection(): Promise<void> {
-    const expandedMarker = this.page.getByRole('radio', { name: 'kg' });
-    if (await expandedMarker.isVisible().catch(() => false)) {
+    const onWeightScreen = await this.page
+      .getByRole('radio', { name: 'kg' })
+      .isVisible()
+      .catch(() => false);
+    if (onWeightScreen) {
       await refreshFlutterAccessibility(this.page);
       return;
     }
 
-    const tile = this.page
+    const navRow = this.page
       .getByRole('button', { name: /Weight Tracking|Suivi du poids/i })
-      .or(this.page.getByRole('group', { name: /Weight Tracking|Suivi du poids/i }))
+      .or(this.page.getByText(/Weight Tracking|Suivi du poids/i))
       .first();
-    await tile.scrollIntoViewIfNeeded();
-    await tile.click();
+    await navRow.scrollIntoViewIfNeeded();
+    await navRow.click();
     await this.page.waitForTimeout(600);
     await refreshFlutterAccessibility(this.page);
   }
 
-  /** Wait until the Weight Tracking section header is visible on the page. */
+  /** Wait until the weight tracking screen is visible. */
   async expectLoaded(): Promise<void> {
     await this.page
-      .getByRole('button', { name: /Weight Tracking|Suivi du poids/i })
-      .or(this.page.getByRole('group', { name: /Weight Tracking|Suivi du poids/i }))
+      .getByRole('radio', { name: 'kg' })
+      .or(this.page.getByRole('button', { name: /Weight Tracking|Suivi du poids/i }))
       .first()
       .waitFor({ timeout: 30_000 });
   }
@@ -65,11 +67,13 @@ export class WeightTrackingPage {
     }).toPass({ timeout });
   }
 
-  /** Click the "Add weight entry" button to open the bottom sheet. */
+  /** Click an "Add weight entry" affordance to open the bottom sheet. */
   async openAddWeightSheet(): Promise<void> {
     await this.openSection();
-    await this.page.getByRole('button', { name: /Add weight entry/i }).click();
-    // Wait for the bottom-sheet weight input field
+    const addButton = this.page
+      .getByRole('button', { name: /Add weight entry|Ajouter une entrée de poids/i })
+      .first();
+    await addButton.click();
     await this.page
       .locator('input[aria-label*="Weight"]')
       .or(this.page.getByRole('textbox', { name: /Weight/i }))
@@ -115,7 +119,7 @@ export class WeightTrackingPage {
       .waitFor({ timeout: 15_000 });
   }
 
-  /** Count weight entry rows visible in the expanded section. */
+  /** Count weight entry rows visible on the weight screen. */
   async expectWeightEntryCount(count: number): Promise<void> {
     await this.openSection();
     await this.waitForWeightDataSettled();
@@ -126,7 +130,6 @@ export class WeightTrackingPage {
   /** Expect the kg / lb unit segmented control to be present. */
   async expectUnitSelectorVisible(): Promise<void> {
     await this.openSection();
-    // Flutter SegmentedButton exposes segments as radio controls, not buttons.
     await this.page.getByRole('radio', { name: 'kg' }).waitFor({ timeout: 10_000 });
     await this.page.getByRole('radio', { name: 'lb' }).waitFor({ timeout: 10_000 });
   }
