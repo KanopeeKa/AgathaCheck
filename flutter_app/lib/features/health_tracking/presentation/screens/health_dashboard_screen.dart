@@ -198,10 +198,6 @@ class _HealthDashboardScreenState extends ConsumerState<HealthDashboardScreen>
   Set<String>? _scopedPetIds() {
     final pets = ref.read(petListProvider).valueOrNull ?? [];
     if (widget.scope == HealthEventsScope.all) return null;
-    if (widget.scope == HealthEventsScope.guardian) {
-      final controller = PetListController();
-      return controller.guardianShellPets(pets).map((p) => p.id).toSet();
-    }
     final controller = PetListController();
     return controller.orgShellPets(pets).map((p) => p.id).toSet();
   }

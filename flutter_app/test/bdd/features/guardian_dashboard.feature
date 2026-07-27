@@ -22,3 +22,17 @@ Feature: Guardian dashboard
     When I view the Guardian dashboard
     Then I should not see a pending-placement banner on the dashboard
     And I should see an unresolved administrative notification in the bell panel
+
+  @P1
+  Scenario: Global events screen shows unified list without tabs
+    Given I am signed in as a guardian with pets, due health entries, and vets
+    When I open the global events screen
+    Then I should see an "Events" list without type tabs
+    And I should see an "Add an event" action
+
+  @P1
+  Scenario: Global events screen supports pet and cohort filters
+    Given I am signed in as a guardian with owned and foster pets and health entries
+    When I open the global events screen
+    Then I should see cohort filters for my pets and foster pets
+    And I should be able to filter events by pet
