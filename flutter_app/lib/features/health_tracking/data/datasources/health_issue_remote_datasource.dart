@@ -11,6 +11,15 @@ abstract class HealthIssueRemoteDataSource {
   Future<void> deleteIssue(String id, String token);
   Future<void> linkEvent(String issueId, String entryId, String token);
   Future<void> unlinkEvent(String issueId, String entryId, String token);
+  Future<List<Map<String, dynamic>>> getDocuments(String issueId, String token);
+  Future<Map<String, dynamic>> uploadDocument(
+    String issueId,
+    List<int> bytes,
+    String filename,
+    String mimeType,
+    String token,
+  );
+  Future<void> deleteDocument(String issueId, String documentId, String token);
 }
 
 class HealthIssueRemoteDataSourceImpl implements HealthIssueRemoteDataSource {
@@ -93,6 +102,55 @@ class HealthIssueRemoteDataSourceImpl implements HealthIssueRemoteDataSource {
   Future<void> unlinkEvent(String issueId, String entryId, String token) async {
     final response = await _client.delete(
       Uri.parse('$baseUrl/api/health-issues/$issueId/events/$entryId'),
+      headers: _headers(token),
+    );
+    _checkResponse(response);
+  }
+
+  @override
+  Future<List<Map<String, dynamic>>> getDocuments(
+    String issueId,
+    String token,
+  ) async {
+    final response = await _client.get(
+      Uri.parse('$baseUrl/api/health-issues/$issueId/documents'),
+      headers: _headers(token),
+    );
+    _checkResponse(response);
+    final list = json.decode(response.body) as List<dynamic>;
+    return list.map((e) => e as Map<String, dynamic>).toList();
+  }
+
+  @override
+  Future<Map<String, dynamic>> uploadDocument(
+    String issueId,
+    List<int> bytes,
+    String filename,
+    String mimeType,
+    String token,
+  ) async {
+    final request = http.MultipartRequest(
+      'POST',
+      Uri.parse('$baseUrl/api/health-issues/$issueId/documents'),
+    );
+    request.headers['Authorization'] = 'Bearer $token';
+    request.files.add(
+      http.MultipartFile.fromBytes('photo', bytes, filename: filename),
+    );
+    final streamed = await _client.send(request);
+    final response = await http.Response.fromStream(streamed);
+    _checkResponse(response);
+    return json.decode(response.body) as Map<String, dynamic>;
+  }
+
+  @override
+  Future<void> deleteDocument(
+    String issueId,
+    String documentId,
+    String token,
+  ) async {
+    final response = await _client.delete(
+      Uri.parse('$baseUrl/api/health-issues/$issueId/documents/$documentId'),
       headers: _headers(token),
     );
     _checkResponse(response);

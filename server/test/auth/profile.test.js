@@ -294,6 +294,7 @@ describe('Auth Routes — Profile', () => {
         org_foster_parent_records: [],
         health_history: [],
         health_event_photos: [],
+        health_issue_documents: [],
         health_issue_events: [],
       };
       const pool = buildMockPool({

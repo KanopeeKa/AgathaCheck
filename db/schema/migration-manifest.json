@@ -44,7 +44,8 @@
     "035_organizations_discoverability.sql",
     "036_organization_permissions.sql",
     "037_foster_visibility_and_agreement.sql",
-    "038_consolidate_health_entry_types.sql"
+    "038_consolidate_health_entry_types.sql",
+    "039_health_issue_documents.sql"
   ],
   "code_migrations": [
     "016_migrate_family_events_placements.sql",

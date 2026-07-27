@@ -1,49 +1,23 @@
 import express from 'express';
 import { v4 as uuidv4 } from 'uuid';
-import jwt from 'jsonwebtoken';
 
 import { createApiLimiter } from '../config/rateLimit.js';
-import { JWT_SECRET } from '../config/jwtSecret.js';
 import { publicError } from '../config/security.js';
-import { dateToIsoDate, normalizeCalendarDateInput } from '../lib/calendarDate.js';
+import { normalizeCalendarDateInput } from '../lib/calendarDate.js';
 import {
   accessiblePetSql,
   userCanManagePet,
   userCanManageHealthIssue,
 } from '../lib/petAccess.js';
-
-function extractUserId(req) {
-  const auth = req.headers['authorization'] || req.headers['Authorization'];
-  if (!auth || !auth.startsWith('Bearer ')) return null;
-  try {
-    return jwt.verify(auth.substring(7), JWT_SECRET).id;
-  } catch (_) {
-    return null;
-  }
-}
-
-function issueRowToMap(row) {
-  return {
-    id: row.id,
-    pet_id: row.pet_id,
-    user_id: row.user_id,
-    pet_name: row.pet_name || null,
-    title: row.name || '',
-    description: row.notes || '',
-    name: row.name || '',
-    issue_type: row.issue_type,
-    notes: row.notes || '',
-    start_date: row.start_date ? dateToIsoDate(row.start_date) : null,
-    end_date: row.end_date ? dateToIsoDate(row.end_date) : null,
-    status: row.status || 'active',
-    created_at: row.created_at ? row.created_at.toISOString?.() || String(row.created_at) : null,
-    updated_at: row.updated_at ? row.updated_at.toISOString?.() || String(row.updated_at) : null,
-  };
-}
+import { removeHealthDocumentFromDisk } from './healthEntries/shared.js';
+import { registerDocumentsRoutes } from './healthIssues/documentsRouter.js';
+import { extractUserId, issueRowToMap } from './healthIssues/shared.js';
 
 export default function healthIssuesRoutes(pool) {
   const router = express.Router();
   router.use(createApiLimiter());
+
+  registerDocumentsRoutes(router, pool);
 
   router.get('/', async (req, res) => {
     const userId = extractUserId(req);
@@ -158,6 +132,13 @@ export default function healthIssuesRoutes(pool) {
     try {
       if (!(await userCanManageHealthIssue(pool, req.params.id, userId))) {
         return res.status(404).json({ error: 'Not found' });
+      }
+      const docs = await pool.query(
+        'SELECT url FROM health_issue_documents WHERE health_issue_id = $1',
+        [req.params.id]
+      );
+      for (const row of docs.rows) {
+        removeHealthDocumentFromDisk(row.url);
       }
       await pool.query('DELETE FROM health_issues WHERE id = $1', [req.params.id]);
       res.json({ deleted: true });
