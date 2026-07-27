@@ -6,7 +6,6 @@ import {
   escapeRegExp,
   isExperienceShellVisible,
   refreshFlutterAccessibility,
-  semanticsByName,
   waitForFlutterRoutePattern,
 } from '../support/flutter';
 
@@ -14,6 +13,19 @@ import {
  * Organization list screen (`/o/orgs`, legacy `/organizations`).
  * Maps to: flutter_app/test/bdd/features/organisation_management.feature
  */
+/** OrgCard semantics include type + member/pet counts; discovery tiles are name-only and not tappable. */
+function membershipOrgCardLocator(page: Page, name: string) {
+  const escaped = escapeRegExp(name);
+  const pattern = new RegExp(
+    `${escaped},\\s*(?:Professional|Charity|Professionnel|Association).*(?:members?|pets?|membres?)`,
+    'i',
+  );
+  return page
+    .getByRole('button', { name: pattern })
+    .or(page.getByRole('group', { name: pattern }))
+    .first();
+}
+
 export class OrganizationListPage {
   constructor(private readonly page: Page) {}
 
@@ -39,12 +51,12 @@ export class OrganizationListPage {
   }
 
   async expectOrgVisible(name: string): Promise<void> {
-    await semanticsByName(this.page, new RegExp(name, 'i')).waitFor({ timeout: 30_000 });
+    await membershipOrgCardLocator(this.page, name).waitFor({ timeout: 30_000 });
   }
 
   async openOrg(name: string): Promise<void> {
     await this.expectOrgVisible(name);
-    await semanticsByName(this.page, new RegExp(name, 'i')).click();
+    await membershipOrgCardLocator(this.page, name).click();
     await waitForFlutterRoutePattern(this.page, /\/o\/orgs\/[^/?#]+/, 30_000);
     await refreshFlutterAccessibility(this.page);
   }
