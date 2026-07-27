@@ -55,17 +55,17 @@ Phases merge to integration branch `cursor/guardian-ui-wave2-integration-5dd0`; 
 ## Runtime state
 
 ```yaml
-autonomy: active
-current_phase: 15
+autonomy: completed
+current_phase: null
 last_completed_phase: 15
 halt_reason: null
-next_action: "phase 15 complete — open PR to integration branch"
+next_action: "plan complete"
 artifact_ref:
   branch: cursor/guardian-ui-wave2-integration-5dd0
   plan_path: .agents/plans/guardian-ui-wave2-5dd0.md
-  plan_commit: ee6f6a121cb2990fc6ddc50191231460fe02b984
+  plan_commit: 65ab9df766687f1952a2761a00ebd800da6af73b
   snapshot_path: .agents/plans/guardian-ui-wave2-5dd0.snapshot.json
-  snapshot_commit: ee6f6a121cb2990fc6ddc50191231460fe02b984
+  snapshot_commit: 65ab9df766687f1952a2761a00ebd800da6af73b
 open_prs: []
 merge_commits: {}
 debt_issue_refs: []
