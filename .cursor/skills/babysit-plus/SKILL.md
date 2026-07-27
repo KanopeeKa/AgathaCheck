@@ -165,67 +165,48 @@ gh pr view <url> --json state,mergedAt,mergeCommit
 
 Verify merge commit is ancestor of `origin/<base_branch>` before execute-plan advances to next phase.
 
-### 8. Post-merge UAT prod-ready (enqueue and exit — never block)
+### 8. Post-merge UAT subagent (spawn and exit — main session never blocks)
 
-When the PR merges to `main`, UAT promotion starts (`promote-uat.yml` → `deploy-uat.yml`). **The main agent must not block** on deploy polling — **enqueue and continue immediately**.
+When the PR merges to **`main`**, spawn a **UAT subagent** to own promotion through prod-ready. **The main agent must not block** on deploy polling — **spawn and continue immediately**.
 
-**Trigger:** merge commit is on `origin/main` (or integration base).
+**Trigger:** merge commit is on `origin/main` (spawn UAT babysit only on final merge to `main`, not integration-branch intermediate merges).
 
-#### 8a. Main agent (after merge verified — enqueue immediately)
+#### 8a. Main agent (after merge verified — spawn immediately)
 
 1. Note merge SHA and PR number (`gh pr view <url> --json mergeCommit,number`).
-2. **Enqueue** (idempotent on `merge_sha`):
+2. Post PR comment: UAT babysit started for `<merge-sha>`.
+3. **Spawn UAT subagent** (Task `generalPurpose` or dedicated session) with:
    ```bash
-   node scripts/uat_queue_runtime.js enqueue \
-     --merge <merge-sha> --pr <n> \
-     --ref "plan:<plan_id> phase-<id>" \
-     --write
+   ./scripts/agent-uat-babysit.sh \
+     --merge <merge-sha> --pr <n> --pr-url <url> \
+     --ref "plan:<plan_id> phase-<id>"
    ```
-   Use `--ref "pr-<n>"` or `issue-<n>` when not in execute-plan. Pass `--issue <coordination-issue>` when `UAT_COORDINATION_ISSUE` is unset locally.
-3. Post a short PR/control-issue comment: UAT enqueued for `<merge-sha>`; main work continues.
-4. **Declare babysit-plus done for this PR** — advance to the next execute-plan phase, next task, or end session **without waiting** for prod-ready.
-5. **Do not enqueue twice** for the same merge SHA (CLI dedupes; skip if already enqueued).
+   Use `--ref "pr-<n>"` when not in execute-plan.
+4. **Declare babysit-plus done for this PR** — advance to next phase or end session **without awaiting** the subagent.
+5. **Do not spawn twice** for the same merge SHA if a lock is active (`/tmp/agatha-uat-babysit`).
 
-**Forbidden (common failure modes):**
+**Forbidden in the main session:**
 
 | Anti-pattern | Why |
 |--------------|-----|
-| Spawn Task / `task_v2` sub-agent to poll UAT | Session-ephemeral; agents often wait for return (`isBackground: false`) |
-| `run_in_background: true` then `resume` / poll sub-agent | Defeats non-blocking intent — **never await** UAT sub-agents |
-| Poll `gh run view` / `deploy-uat.yml` in the main session | Burns agent minutes (~45–60 min); blocks next phase |
-| Call `pause` / `resume-uat` for UAT failure | UAT uses barrier only — coordinator owns failure (§8b) |
+| Poll `gh run view` / `deploy-uat.yml` | Blocks next phase (~45–60 min) |
+| `run_in_background: true` then `resume` / poll UAT subagent | Main session must not await UAT |
+| `uat_queue_runtime.js enqueue` | Replaced by agent babysit (Jul 2026) |
 
-**Execute-plan only:** Task sub-agents for **phase implementation** are encouraged (orchestrator retains babysit+ / merge). See `.cursor/skills/execute-plan/SKILL.md` §Phase delegation — distinct from the UAT anti-patterns above.
+**Allowed:** UAT subagent may block on E2E + deploy until green or retry cap — see [uat-agent-babysit.md](../../../docs/e2e/uat-agent-babysit.md).
 
-#### 8b. Who owns UAT after enqueue (not the work agent)
+#### 8b. Who owns UAT after spawn
 
 | Layer | Owns |
 |-------|------|
-| GitHub Actions | `promote-uat.yml` → `deploy-uat.yml` → `prod-ready` gates |
-| `agent-uat-notify` + ledger | Success/failure markers on linked issues; `reconcile` updates queue state |
-| **UAT coordinator agent** (on failure) | Triage, remedial PR, `set-barrier` — see [uat-coordinator-plan.md](../../../docs/agent-efficiency/uat-coordinator-plan.md) |
+| **UAT subagent** | Full localhost E2E, promote dispatch, deploy wait, remedial PRs (retry cap) |
+| GitHub Actions | `promote-uat.yml` → `deploy-uat.yml` → `prod-ready` |
+| **Next merge agent** | Heals blocking E2E on `main` if prior subagent died or hit retry cap |
+| **Human** | [uat-promote-manual.md](../../../docs/e2e/uat-promote-manual.md) |
 
-**Success path:** zero agent babysitting. `agent-uat-notify` comments when prod-ready is green.
-
-**Failure path:** coordinator comments on PR + control issue; work agents **do not pause** execute-plan. Before the next merge/push, run `barrier-check` (§8c) and rebase if `main` moved due to a remedial fix.
+**Failure path:** subagent comments on PR; execute-plan does **not** halt. Next merge agent or human promotes.
 
 **Infra-only blockers** (e.g. `UAT_AUTO_MIGRATE` off with pending migrations) → §9 Escalation (true halt; human required). Do not weaken gates.
-
-#### 8c. Barrier-check (before merge, push, or session resume)
-
-Run at execute-plan preflight and before every phase merge attempt:
-
-```bash
-# reconcile requires UAT_COORDINATION_ISSUE or --issue (skip when unset)
-node scripts/uat_queue_runtime.js reconcile --write --issue <coordination-issue>
-node scripts/uat_queue_runtime.js barrier-check --branch "$(git branch --show-current)"
-# exit 2 → needs rebase:
-./scripts/babysit_sync_base.sh --pr <url> --push
-```
-
-When `needs_rebase: true`, rebase on latest `main` (barrier SHA) before merging — usually a small rebase after a UAT remedial fix landed.
-
-Gate reference: `docs/ci-cd-gates.md` §3 · `docs/agent-efficiency/uat-coordinator-plan.md`.
 
 ### 9. Escalation (always halt)
 

@@ -3,7 +3,7 @@ name: execute-plan
 description: >-
   Multi-phase autonomous orchestrator — runs frozen plan snapshots phase-by-phase,
   gates on merge-done, delegates PR hygiene to /babysit-plus (default merge mode auto).
-  Post-merge UAT enqueue only — never Task sub-agents for deploy polling.
+  Post-merge UAT subagent spawn (fire-and-forget) — main session never polls deploy.
   May spawn Task sub-agents per phase for implementation; use integration branch for 2+ phases.
 ---
 
@@ -119,14 +119,7 @@ Run when drafting a plan, **before** `approve-autonomous`:
    node scripts/execute_plan_runtime.js current-phase <plan_id>
    ```
 6. Rebase phase branch on `origin/<base_branch>` (or integration parent when spawn phase)
-7. **UAT queue preflight** — before merge/push on any phase:
-   ```bash
-   # reconcile requires UAT_COORDINATION_ISSUE or --issue (skip when unset)
-   node scripts/uat_queue_runtime.js reconcile --write --issue <coordination-issue>
-   node scripts/uat_queue_runtime.js barrier-check --branch "$(git branch --show-current)"
-   ```
-   Exit `2` from `barrier-check` → `./scripts/babysit_sync_base.sh --pr <url> --push` before continuing.
-8. **Control issue session comment** — post what you are starting (phase id, branch, PR if any). Add `busy` on first session:
+7. **Control issue session comment** — post what you are starting (phase id, branch, PR if any). Add `busy` on first session:
    ```bash
    node scripts/github_issue_workflow.js start-work --issue <control_issue> --body "## Session start
    - phase: <id> — <title>
@@ -136,7 +129,7 @@ Run when drafting a plan, **before** `approve-autonomous`:
 
    **Do not** attempt GitHub Project board status updates — Cloud Agents cannot write Projects. Comments + `busy` are the agent-visible signal; you move board columns manually if needed.
 
-9. **Session limit check** — if this plan has run continuously for **~24 hours** (or the pod is near timeout), finish the current safe atomic step, then `halt --reason session_limit` with `next_action` recorded. Human comments `resume-plan <plan_id>` on the control issue (no re-approve while `approved_until` is still valid). Do **not** ask in user chat.
+8. **Session limit check** — if this plan has run continuously for **~24 hours** (or the pod is near timeout), finish the current safe atomic step, then `halt --reason session_limit` with `next_action` recorded. Human comments `resume-plan <plan_id>` on the control issue (no re-approve while `approved_until` is still valid). Do **not** ask in user chat.
 
 ---
 
@@ -170,7 +163,7 @@ A single `plan_id` stays small on purpose (tight `allowed_paths`, one reviewable
 
 ## Phase delegation (orchestrator vs workers)
 
-The **orchestrator** (this session running `/execute-plan`) owns: gate, runtime sync, control-issue hygiene, babysit+, merge, UAT enqueue, and advancing phases.
+The **orchestrator** (this session running `/execute-plan`) owns: gate, runtime sync, control-issue hygiene, babysit+, merge, UAT subagent spawn, and advancing phases.
 
 ### Per-phase implementation worker (recommended)
 
@@ -178,7 +171,7 @@ At each phase **§3 Implement scope**, the orchestrator **should** delegate impl
 
 | Role | Owns |
 |------|------|
-| **Orchestrator** | Gate, `set-phase`, PR registration, babysit+ §0–7, merge, UAT enqueue, next phase |
+| **Orchestrator** | Gate, `set-phase`, PR registration, babysit+ §0–7, merge, UAT subagent spawn, next phase |
 | **Phase worker** (Task sub-agent) | Implement one phase scope; commit on phase branch; return summary |
 
 Spawn a **fresh worker at each phase boundary** (after prior phase `merged`). This limits context drift and mirrors "one agent per phase."
@@ -189,9 +182,11 @@ Spawn a **fresh worker at each phase boundary** (after prior phase `merged`). Th
 
 Invoke **/spawn-sprint-agents** per `spawn_config` before parallel work. Publish ownership map first. Phase PR still goes through orchestrator babysit+.
 
-### UAT — never Task sub-agents
+### UAT subagent (fire-and-forget)
 
-**Never** spawn Task sub-agents to poll UAT / prod-ready (session-ephemeral; agents block on return). Enqueue and continue — see §5 below.
+After merge to `main`, spawn a **UAT subagent** to run `scripts/agent-uat-babysit.sh` — **do not await** return. Main orchestrator continues the next phase immediately. See babysit-plus §8 and [uat-agent-babysit.md](../../../docs/e2e/uat-agent-babysit.md).
+
+**Do not** spawn Task sub-agents to poll deploy from the **main** session — only the dedicated UAT subagent may block on E2E/deploy.
 
 ---
 
@@ -273,7 +268,7 @@ Commit plan artifacts on the phase branch (`artifact_branch_policy: phase-branch
   ```
 - Push plan artifact commits to phase branch before babysit-plus
 
-### 5. Babysit+ through merge; enqueue UAT (mandatory)
+### 5. Babysit+ through merge; spawn UAT subagent (mandatory)
 
 **Main agent** invokes **/babysit-plus** §0–7 for the phase PR (sync → triage → fixes → debt issues → CI → exit checklist → **merge** per effective mode).
 
@@ -285,23 +280,20 @@ Commit plan artifacts on the phase branch (`artifact_branch_policy: phase-branch
 | `approved_until` | from snapshot |
 | **Effective `merge_mode`** | `phase.merge_mode ?? snapshot.default_merge_mode ?? auto` |
 
-**Before merge attempt:** run `barrier-check` (session preflight §7). Rebase if behind UAT barrier.
-
-**After merge is verified** (PR `MERGED`, merge commit on base), **main agent enqueues UAT** (babysit-plus §8a) — **do not spawn Task sub-agents** and **do not wait** for prod-ready before completing the phase or starting the next one.
+**After merge is verified** (PR `MERGED`, merge commit on base), **spawn UAT subagent** (babysit-plus §8) — **do not await** prod-ready before completing the phase or starting the next one.
 
 ```bash
-node scripts/uat_queue_runtime.js enqueue \
-  --merge <merge-sha> --pr <n> \
-  --ref "plan:<plan_id> phase-<id>" \
-  --write
+./scripts/agent-uat-babysit.sh \
+  --merge <merge-sha> --pr <n> --pr-url <url> \
+  --ref "plan:<plan_id> phase-<id>"
 ```
 
 ```text
-Main agent                          UAT (passive — no agent poll)
-──────────                          ─────────────────────────────
-babysit+ §0–7 → merge ─────────────► enqueue merge SHA (~seconds)
-complete phase §6                   Actions: promote-uat → deploy-uat → prod-ready
-start next phase §7                 on failure: coordinator comments; barrier-check before next merge
+Main agent                          UAT subagent (parallel)
+──────────                          ───────────────────────
+babysit+ §0–7 → merge ─────────────► agent-uat-babysit.sh
+complete phase §6                   E2E → promote → deploy → PR comment
+start next phase §7                 on failure: remedial PR (retry cap)
 ```
 
 **Phase gate = merge-done** — do not advance until:
@@ -316,7 +308,7 @@ git fetch origin <base_branch>
 git merge-base --is-ancestor <mergeCommit.oid> origin/<base_branch>
 ```
 
-**UAT prod-ready is not a phase gate.** GitHub Actions + the UAT queue ledger own deploy observation. On failure the UAT coordinator comments; work agents continue phases and use `barrier-check` before the next merge. **Never spawn Task sub-agents to poll UAT** — agents often block waiting for sub-agent return even with `run_in_background: true`.
+**UAT prod-ready is not a phase gate.** The UAT subagent owns deploy observation; on failure the next merge agent or human manual promote heals `main`. **Main orchestrator must not poll deploy-uat.**
 
 ### 6. Complete phase
 
@@ -329,7 +321,7 @@ Update snapshot `merge_commit` via runtime (`set-phase` + `saveSnapshot`). Sync 
 
 ### 7. Next phase (parallel with UAT deploy)
 
-If more `pending` phases → loop to §1 **immediately** — prior merges' UAT deploys run in GitHub Actions; no agent polling required (babysit-plus §8).
+If more `pending` phases → loop to §1 **immediately** — UAT subagent runs in parallel; no main-session polling (babysit-plus §8).
 
 If all `merged` → **complete plan** (snapshot + close control issue):
 
@@ -347,7 +339,7 @@ Stop immediately on: revoke label, past `approved_until`, escalation, drift, CI 
 
 **Session limit** is a **checkpoint**, not a revoke. Post `halt --reason session_limit` on the control issue with `next_action`. Human comments `resume-plan <plan_id>`; no chat permission prompt.
 
-**UAT prod-ready failure** → coordinator comments on control issue; use `barrier-check` before next merge — **not** a halt or `uat_paused` trigger.
+**UAT prod-ready failure** → UAT subagent or next merge agent owns remedial work — **not** a halt or `uat_paused` trigger.
 
 ```bash
 node scripts/execute_plan_runtime.js halt <plan_id> \
