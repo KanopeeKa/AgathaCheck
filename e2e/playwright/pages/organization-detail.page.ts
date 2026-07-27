@@ -6,6 +6,7 @@ import {
   escapeRegExp,
   expectAppBarTitle,
   fillTextbox,
+  navigateWithShellFallback,
   refreshFlutterAccessibility,
   selectDropdownOption,
   waitForFlutterRoutePattern,
@@ -162,11 +163,46 @@ export class OrganizationDetailPage {
     );
   }
 
-  async openPetsSection(): Promise<void> {
+  /**
+   * OrgSectionCard exposes title via Semantics(button) + MergeSemantics — use role=button,
+   * not getByText (see PR #434 UAT remedial).
+   */
+  private async activateSectionCard(name: RegExp): Promise<void> {
     await enableFlutterAccessibility(this.page);
-    await this.page.getByText(/^Pets$/i).first().click();
+    const card = this.page.getByRole('button', { name }).filter({ visible: true }).first();
+    await card.scrollIntoViewIfNeeded();
+    const box = await card.boundingBox();
+    if (box) {
+      await this.page.mouse.click(box.x + box.width / 2, box.y + box.height / 2);
+    } else {
+      await card.click({ force: true });
+    }
+  }
+
+  async openPetsSection(): Promise<void> {
+    const orgId = this.orgIdFromUrl();
+    const petsRoute = /\/o\/orgs\/[^/]+\/pets/;
+
+    await this.activateSectionCard(/^Pets$/i);
+    try {
+      await waitForFlutterRoutePattern(this.page, petsRoute, 8_000);
+    } catch {
+      if (!orgId) {
+        await waitForFlutterRoutePattern(this.page, petsRoute, 60_000);
+        return;
+      }
+      await navigateWithShellFallback(
+        this.page,
+        petsRoute,
+        `/o/orgs/${orgId}/pets`,
+        async () => {
+          await refreshFlutterAccessibility(this.page);
+        },
+        { helper: 'OrganizationDetailPage.openPetsSection' },
+      );
+    }
     await refreshFlutterAccessibility(this.page);
-    await waitForFlutterRoutePattern(this.page, /\/o\/orgs\/[^/]+\/pets/, 60_000);
+    await waitForFlutterRoutePattern(this.page, petsRoute, 60_000);
   }
 
   async openAddOrgPet(): Promise<void> {
