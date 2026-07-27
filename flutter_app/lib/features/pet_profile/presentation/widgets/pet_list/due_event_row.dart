@@ -29,20 +29,4 @@ class DueEventRow extends ConsumerWidget {
       ),
     );
   }
-<<<<<<< HEAD
-
-  IconData _entryTypeIcon(HealthEntryType type) {
-    switch (type) {
-      case HealthEntryType.medication:
-        return Icons.medication;
-      case HealthEntryType.preventive:
-        return Icons.shield;
-      case HealthEntryType.vetVisit:
-        return Icons.local_hospital;
-      case HealthEntryType.other:
-        return Icons.more_horiz;
-    }
-  }
-=======
->>>>>>> b3f7980c (phase(6/15): feat: unified DueEventCard on dashboard and pet profile)
 }
