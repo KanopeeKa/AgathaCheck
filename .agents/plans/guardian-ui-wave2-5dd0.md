@@ -56,17 +56,17 @@ Phases merge to integration branch `cursor/guardian-ui-wave2-integration-5dd0`; 
 
 ```yaml
 autonomy: active
-current_phase: 1
-last_completed_phase: null
+current_phase: 2
+last_completed_phase: 1
 halt_reason: null
-next_action: "continue phase 1 on branch cursor/guardian-wave2-landing-eye-5dd0"
+next_action: "continue phase 2 on branch cursor/guardian-wave2-drawer-identity-5dd0"
 artifact_ref:
-  branch: cursor/guardian-wave2-landing-eye-5dd0
+  branch: cursor/guardian-wave2-drawer-identity-5dd0
   plan_path: .agents/plans/guardian-ui-wave2-5dd0.md
-  plan_commit: b5032c968e38512f99c5a4a390c9546bde6dcd8c
+  plan_commit: e92b6df31adb68e40268145613bd537a92176019
   snapshot_path: .agents/plans/guardian-ui-wave2-5dd0.snapshot.json
-  snapshot_commit: b5032c968e38512f99c5a4a390c9546bde6dcd8c
-open_prs: [true]
+  snapshot_commit: e92b6df31adb68e40268145613bd537a92176019
+open_prs: []
 merge_commits: {}
 debt_issue_refs: []
 ```
