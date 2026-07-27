@@ -125,6 +125,11 @@ export class VetListPage {
   async expectPhoneVisible(phone: string, vetName?: string): Promise<void> {
     await refreshFlutterAccessibility(this.page);
     const phoneLocator = this.page.getByText(new RegExp(escapeRegExp(phone), 'i'));
+    const detailGroupPattern =
+      vetName != null
+        ? new RegExp(`${escapeRegExp(vetName)}[\\s\\S]*${escapeRegExp(phone)}`, 'i')
+        : new RegExp(escapeRegExp(phone), 'i');
+    const phoneAssertion = semanticsByName(this.page, detailGroupPattern).or(phoneLocator).first();
 
     if (vetName) {
       const cardPattern = new RegExp(
@@ -134,9 +139,10 @@ export class VetListPage {
       if (await semanticsByName(this.page, cardPattern).isVisible({ timeout: 2_000 }).catch(() => false)) {
         return;
       }
-    }
-
-    if (await phoneLocator.first().isVisible({ timeout: 2_000 }).catch(() => false)) {
+      if (await phoneAssertion.isVisible({ timeout: 2_000 }).catch(() => false)) {
+        return;
+      }
+    } else if (await phoneLocator.first().isVisible({ timeout: 2_000 }).catch(() => false)) {
       return;
     }
 
@@ -147,6 +153,7 @@ export class VetListPage {
     await this.vetRowLocator(vetName).click();
     await waitForFlutterRoutePattern(this.page, /\/(g|o)\/vets\/[^/]+$/, 30_000);
     await refreshFlutterAccessibility(this.page);
-    await phoneLocator.first().waitFor({ timeout: 15_000 });
+    // Guardian detail card merges fields into one group label; phone is not a separate text node.
+    await phoneAssertion.waitFor({ timeout: 15_000 });
   }
 }
