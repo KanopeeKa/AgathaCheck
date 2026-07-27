@@ -267,11 +267,9 @@ export class PetListPage {
   async expectSectionHeader(title: string): Promise<void> {
     await expect(async () => {
       await refreshFlutterAccessibility(this.page);
-      await expect(
-        dashboardSectionGroup(this.page, title).or(
-          this.page.getByText(title, { exact: false }).first(),
-        ),
-      ).toBeVisible();
+      // Group role only — getByText fallback matches pet cards whose aria-label
+      // includes the org name (e.g. "Pet: Bella, Happy Paws Clinic, dog").
+      await expect(dashboardSectionGroup(this.page, title)).toBeVisible();
     }).toPass({ timeout: 30_000 });
   }
 
