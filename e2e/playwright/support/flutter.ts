@@ -508,7 +508,8 @@ export function dashboardSectionGroup(
   section: keyof typeof DASHBOARD_SECTION_NAMES | RegExp | string,
 ): Locator {
   const name =
-    typeof section === 'string' && section in DASHBOARD_SECTION_NAMES
+    typeof section === 'string' &&
+    Object.prototype.hasOwnProperty.call(DASHBOARD_SECTION_NAMES, section)
       ? DASHBOARD_SECTION_NAMES[section as keyof typeof DASHBOARD_SECTION_NAMES]
       : typeof section === 'string'
         ? new RegExp(escapeRegExp(section), 'i')

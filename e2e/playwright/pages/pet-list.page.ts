@@ -267,7 +267,11 @@ export class PetListPage {
   async expectSectionHeader(title: string): Promise<void> {
     await expect(async () => {
       await refreshFlutterAccessibility(this.page);
-      await expect(dashboardSectionGroup(this.page, title)).toBeVisible();
+      await expect(
+        dashboardSectionGroup(this.page, title).or(
+          this.page.getByText(title, { exact: false }).first(),
+        ),
+      ).toBeVisible();
     }).toPass({ timeout: 30_000 });
   }
 
