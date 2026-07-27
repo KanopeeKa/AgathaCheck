@@ -29,10 +29,7 @@ class _TestHealthEntriesNotifier extends HealthEntriesNotifier {
   Future<List<HealthEntry>> build() async => _entries;
 }
 
-Future<List<HealthHistoryEntry>> _historyFor(
-  Ref ref,
-  String entryId,
-) async {
+Future<List<HealthHistoryEntry>> _historyFor(Ref ref, String entryId) async {
   switch (entryId) {
     case 'entry-closed':
       return [

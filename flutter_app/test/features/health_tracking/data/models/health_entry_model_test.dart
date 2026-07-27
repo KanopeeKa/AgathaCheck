@@ -213,29 +213,23 @@ void main() {
       }
     });
 
-    test(
-      'preventive and other types survive a toJson/fromJson round-trip',
-      () {
-        // These previously used enum.name in toJson and would corrupt to
-        // medication after a round-trip in a release build.
-        for (final type in [
-          HealthEntryType.preventive,
-          HealthEntryType.other,
-        ]) {
-          final model = HealthEntryModel(
-            id: 'r-1',
-            petId: 'pet-1',
-            name: 'Test',
-            type: type,
-            frequency: HealthFrequency.monthly,
-            startDate: DateTime(2025, 1, 1),
-            nextDueDate: DateTime(2025, 2, 1),
-          );
-          final restored = HealthEntryModel.fromJson(model.toJson());
-          expect(restored.type, type);
-        }
-      },
-    );
+    test('preventive and other types survive a toJson/fromJson round-trip', () {
+      // These previously used enum.name in toJson and would corrupt to
+      // medication after a round-trip in a release build.
+      for (final type in [HealthEntryType.preventive, HealthEntryType.other]) {
+        final model = HealthEntryModel(
+          id: 'r-1',
+          petId: 'pet-1',
+          name: 'Test',
+          type: type,
+          frequency: HealthFrequency.monthly,
+          startDate: DateTime(2025, 1, 1),
+          nextDueDate: DateTime(2025, 2, 1),
+        );
+        final restored = HealthEntryModel.fromJson(model.toJson());
+        expect(restored.type, type);
+      }
+    });
 
     test('fromEntity preserves all data', () {
       final entity = HealthEntry(

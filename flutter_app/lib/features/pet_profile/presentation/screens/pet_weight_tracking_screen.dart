@@ -33,10 +33,7 @@ class PetWeightTrackingScreen extends ConsumerWidget {
         ),
       ],
       child: SingleChildScrollView(
-        child: WeightTrackingContent(
-          petId: petId,
-          onAddEntry: onAddEntry,
-        ),
+        child: WeightTrackingContent(petId: petId, onAddEntry: onAddEntry),
       ),
     );
   }

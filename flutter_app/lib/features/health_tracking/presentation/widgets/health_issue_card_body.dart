@@ -38,10 +38,7 @@ class HealthIssueDescriptionPreview extends StatelessWidget {
         if (!cardExpanded &&
             !expanded &&
             (text.split('\n').length > 5 || text.length > 200))
-          TextButton(
-            onPressed: onToggle,
-            child: Text(l.showMore),
-          ),
+          TextButton(onPressed: onToggle, child: Text(l.showMore)),
       ],
     );
   }
@@ -104,10 +101,7 @@ class HealthIssueReadBody extends StatelessWidget {
           Text('${l.issueResolved}: ${dateFormat.format(issue.endDate!)}'),
         if (isResolved) ...[
           const SizedBox(height: 8),
-          OutlinedButton(
-            onPressed: onReopen,
-            child: Text(l.reopenIssue),
-          ),
+          OutlinedButton(onPressed: onReopen, child: Text(l.reopenIssue)),
         ],
         const SizedBox(height: 16),
         HealthIssueDocumentsStrip(
@@ -152,7 +146,9 @@ class HealthIssueStatusRow extends StatelessWidget {
           ),
           child: Text(
             label,
-            style: Theme.of(context).textTheme.labelMedium?.copyWith(color: color),
+            style: Theme.of(
+              context,
+            ).textTheme.labelMedium?.copyWith(color: color),
           ),
         ),
       ],
@@ -254,17 +250,11 @@ class HealthIssueEditBody extends StatelessWidget {
         Row(
           children: [
             Expanded(
-              child: OutlinedButton(
-                onPressed: onCancel,
-                child: Text(l.cancel),
-              ),
+              child: OutlinedButton(onPressed: onCancel, child: Text(l.cancel)),
             ),
             const SizedBox(width: 8),
             Expanded(
-              child: FilledButton(
-                onPressed: onSave,
-                child: Text(l.save),
-              ),
+              child: FilledButton(onPressed: onSave, child: Text(l.save)),
             ),
           ],
         ),

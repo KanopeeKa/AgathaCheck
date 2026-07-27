@@ -22,7 +22,10 @@ void main() {
         legacyPetEventEditRedirectForPath('/pet/pet-1/events/entry-9/edit'),
         isNull,
       );
-      expect(legacyPetEventEditRedirectForPath('/pet/pet-1/health/add'), isNull);
+      expect(
+        legacyPetEventEditRedirectForPath('/pet/pet-1/health/add'),
+        isNull,
+      );
     });
   });
 }

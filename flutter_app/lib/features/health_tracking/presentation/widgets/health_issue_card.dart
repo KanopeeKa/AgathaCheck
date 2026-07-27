@@ -84,9 +84,9 @@ class _HealthIssueCardState extends ConsumerState<HealthIssueCard> {
   Future<void> _save() async {
     final l = AppLocalizations.of(context)!;
     if (_titleController.text.trim().isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l.issueTitleRequired)),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(l.issueTitleRequired)));
       return;
     }
 
@@ -124,9 +124,7 @@ class _HealthIssueCardState extends ConsumerState<HealthIssueCard> {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
     final dateFormat = DateFormat.yMMMd();
-    final docsAsync = ref.watch(
-      healthIssueDocumentsProvider(widget.issue.id),
-    );
+    final docsAsync = ref.watch(healthIssueDocumentsProvider(widget.issue.id));
     final hasDocuments = docsAsync.maybeWhen(
       data: (docs) => docs.isNotEmpty,
       orElse: () => false,
@@ -165,7 +163,8 @@ class _HealthIssueCardState extends ConsumerState<HealthIssueCard> {
                             expanded: _descriptionExpanded || _expanded,
                             cardExpanded: _expanded,
                             onToggle: () => setState(
-                              () => _descriptionExpanded = !_descriptionExpanded,
+                              () =>
+                                  _descriptionExpanded = !_descriptionExpanded,
                             ),
                           ),
                         ],
@@ -190,9 +189,7 @@ class _HealthIssueCardState extends ConsumerState<HealthIssueCard> {
                           color: colorScheme.onSurfaceVariant,
                         ),
                       Icon(
-                        _expanded
-                            ? Icons.expand_less
-                            : Icons.expand_more,
+                        _expanded ? Icons.expand_less : Icons.expand_more,
                         color: colorScheme.onSurfaceVariant,
                       ),
                     ],

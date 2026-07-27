@@ -130,7 +130,8 @@ class DueEventCard extends ConsumerWidget {
                         HomeEventActions.snoozeDays(context, ref, entry, days),
                   ),
                   HealthEntryMarkDoneButton(
-                    onPressed: () => HomeEventActions.markDone(context, ref, entry),
+                    onPressed: () =>
+                        HomeEventActions.markDone(context, ref, entry),
                     petStripWidth: petStripWidth,
                   ),
                 ],

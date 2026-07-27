@@ -30,14 +30,13 @@ final petHealthIssuesProvider =
       return ref.read(healthIssueRepositoryProvider).getIssues(petId, token);
     });
 
-final healthIssueDocumentsProvider =
-    FutureProvider.autoDispose.family<List<HealthIssueDocument>, String>((
-      ref,
-      issueId,
-    ) async {
+final healthIssueDocumentsProvider = FutureProvider.autoDispose
+    .family<List<HealthIssueDocument>, String>((ref, issueId) async {
       final token = ref.watch(authProvider).accessToken;
       if (token == null) return [];
-      return ref.read(healthIssueRepositoryProvider).getDocuments(issueId, token);
+      return ref
+          .read(healthIssueRepositoryProvider)
+          .getDocuments(issueId, token);
     });
 
 class HealthIssueNotifier

@@ -67,21 +67,16 @@ class _PetDetailScreenState extends ConsumerState<PetDetailScreen> {
               key: const Key('pet_detail_sharing_action'),
               tooltip: l.sharingSection,
               icon: const Icon(Icons.people_outline),
-              onPressed: () => showSharingSheet(
-                context,
-                ref,
-                petId: widget.petId,
-                pet: pet,
-              ),
+              onPressed: () =>
+                  showSharingSheet(context, ref, petId: widget.petId, pet: pet),
             ),
           if (showExport)
             IconButton(
               key: const Key('pet_detail_export_report_action'),
               tooltip: l.downloadPetReport,
               icon: const Icon(Icons.picture_as_pdf_outlined),
-              onPressed: () => DownloadReportController(
-                ref,
-              ).onDownloadReport(context, pet),
+              onPressed: () =>
+                  DownloadReportController(ref).onDownloadReport(context, pet),
             ),
         ];
 

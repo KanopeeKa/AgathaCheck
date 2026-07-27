@@ -41,13 +41,12 @@ class PetEventsPreviewSection extends ConsumerWidget {
               ),
             ),
             data: (entries) {
-              final dueEntries =
-                  entries.where(isEntryDueOrOverdue).toList()
-                    ..sort((a, b) {
-                      final ad = a.nextDueDate ?? DateTime(2100);
-                      final bd = b.nextDueDate ?? DateTime(2100);
-                      return ad.compareTo(bd);
-                    });
+              final dueEntries = entries.where(isEntryDueOrOverdue).toList()
+                ..sort((a, b) {
+                  final ad = a.nextDueDate ?? DateTime(2100);
+                  final bd = b.nextDueDate ?? DateTime(2100);
+                  return ad.compareTo(bd);
+                });
 
               if (dueEntries.isEmpty) {
                 return Text(

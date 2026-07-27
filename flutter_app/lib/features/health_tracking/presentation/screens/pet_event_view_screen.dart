@@ -67,8 +67,7 @@ class PetEventViewScreen extends ConsumerWidget {
 
             final isClosed = isHealthEntrySeriesClosed(entry);
 
-            void onEdit() =>
-                context.push(healthEntryEditRoute(entry, petId));
+            void onEdit() => context.push(healthEntryEditRoute(entry, petId));
 
             void onSeeHistory() => showPetEventHistory(context, ref, entryId);
 
@@ -105,11 +104,9 @@ class PetEventViewScreen extends ConsumerWidget {
                 ),
               ],
               child: historyAsync.when(
-                loading: () =>
-                    const Center(child: CircularProgressIndicator()),
-                error: (error, _) => Center(
-                  child: Text(l.failedToLoadHistory('$error')),
-                ),
+                loading: () => const Center(child: CircularProgressIndicator()),
+                error: (error, _) =>
+                    Center(child: Text(l.failedToLoadHistory('$error'))),
                 data: (history) => PetEventViewBody(
                   petId: petId,
                   entry: entry,

@@ -9,7 +9,6 @@ import 'package:pet_profile_app/features/health_tracking/domain/entities/health_
 import 'package:pet_profile_app/features/health_tracking/presentation/providers/health_providers.dart';
 import 'package:pet_profile_app/features/pet_profile/domain/entities/pet.dart';
 import 'package:pet_profile_app/features/pet_profile/presentation/providers/pet_providers.dart';
-import 'package:pet_profile_app/features/pet_profile/presentation/screens/widgets/pet_event_entry_list.dart';
 import 'package:pet_profile_app/l10n/app_localizations.dart';
 
 import '../../../../../helpers/fakes.dart';

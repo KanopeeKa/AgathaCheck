@@ -22,8 +22,10 @@ class _FakeHealthRepository implements HealthRepository {
   Future<HealthEntry?> getEntry(String id) async => entry;
 
   @override
-  Future<List<HealthEntry>> getEntries({String? petId, HealthEntryType? type}) async =>
-      [entry];
+  Future<List<HealthEntry>> getEntries({
+    String? petId,
+    HealthEntryType? type,
+  }) async => [entry];
 
   @override
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
@@ -146,9 +148,8 @@ Widget _wrapEditFlow({
       ),
       GoRoute(
         path: '/pet/:petId/events/:entryId',
-        builder: (context, state) => const Scaffold(
-          body: Center(child: Text('View entry')),
-        ),
+        builder: (context, state) =>
+            const Scaffold(body: Center(child: Text('View entry'))),
       ),
       GoRoute(
         path: '/pet/:petId/health/edit/:id',
@@ -160,9 +161,7 @@ Widget _wrapEditFlow({
   return ProviderScope(
     overrides: [
       petListProvider.overrideWith(_TwoPetsNotifier.new),
-      healthRepositoryProvider.overrideWithValue(
-        _FakeHealthRepository(entry),
-      ),
+      healthRepositoryProvider.overrideWithValue(_FakeHealthRepository(entry)),
       healthEntriesNotifierProvider.overrideWith(
         _TestHealthEntriesNotifier.new,
       ),
@@ -265,25 +264,30 @@ void main() {
     },
   );
 
-  testWidgets('edit form omits administration history and shows all four types',
-      (WidgetTester tester) async {
-    await tester.pumpWidget(
-      _wrapEditFlow(entry: _sampleEntry(type: HealthEntryType.other)),
-    );
-    await tester.pump();
-    await tester.pumpAndSettle();
+  testWidgets(
+    'edit form omits administration history and shows all four types',
+    (WidgetTester tester) async {
+      await tester.pumpWidget(
+        _wrapEditFlow(entry: _sampleEntry(type: HealthEntryType.other)),
+      );
+      await tester.pump();
+      await tester.pumpAndSettle();
 
-    expect(find.text('Edit Entry'), findsOneWidget);
-    expect(find.text('Administration History'), findsNothing);
-    expect(find.byKey(const Key('delete_health_entry_button')), findsOneWidget);
+      expect(find.text('Edit Entry'), findsOneWidget);
+      expect(find.text('Administration History'), findsNothing);
+      expect(
+        find.byKey(const Key('delete_health_entry_button')),
+        findsOneWidget,
+      );
 
-    await tester.tap(find.byType(DropdownButtonFormField<HealthEntryType>));
-    await tester.pumpAndSettle();
-    expect(find.text('Medication'), findsWidgets);
-    expect(find.text('Preventive'), findsWidgets);
-    expect(find.text('Vet Visit'), findsWidgets);
-    expect(find.text('Other'), findsWidgets);
-  });
+      await tester.tap(find.byType(DropdownButtonFormField<HealthEntryType>));
+      await tester.pumpAndSettle();
+      expect(find.text('Medication'), findsWidgets);
+      expect(find.text('Preventive'), findsWidgets);
+      expect(find.text('Vet Visit'), findsWidgets);
+      expect(find.text('Other'), findsWidgets);
+    },
+  );
 
   test('recurring delete copy warns all iterations are removed', () {
     final l = lookupAppLocalizations(const Locale('en'));
@@ -297,8 +301,9 @@ void main() {
     );
   });
 
-  testWidgets('legacy health edit path redirects to unified edit route',
-      (WidgetTester tester) async {
+  testWidgets('legacy health edit path redirects to unified edit route', (
+    WidgetTester tester,
+  ) async {
     await tester.pumpWidget(
       _wrapEditFlow(
         entry: _sampleEntry(),

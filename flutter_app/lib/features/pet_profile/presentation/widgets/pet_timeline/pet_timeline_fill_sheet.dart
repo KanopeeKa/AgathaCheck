@@ -16,7 +16,9 @@ Future<void> showPetTimelineFillSheet(
 }) async {
   final l = AppLocalizations.of(context)!;
   final isEdit = existingEntry != null;
-  final titleController = TextEditingController(text: existingEntry?.title ?? '');
+  final titleController = TextEditingController(
+    text: existingEntry?.title ?? '',
+  );
   final descriptionController = TextEditingController(
     text: existingEntry?.description ?? '',
   );

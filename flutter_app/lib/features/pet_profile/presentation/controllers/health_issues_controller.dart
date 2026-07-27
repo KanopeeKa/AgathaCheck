@@ -32,10 +32,7 @@ class HealthIssuesController {
     return '';
   }
 
-  Future<void> showAddIssueDialog(
-    BuildContext context,
-    String petId,
-  ) async {
+  Future<void> showAddIssueDialog(BuildContext context, String petId) async {
     final l = AppLocalizations.of(context)!;
     final titleController = TextEditingController();
     final descController = TextEditingController();
@@ -94,9 +91,7 @@ class HealthIssuesController {
         description: descController.text.trim(),
         startDate: calendarDateOnly(DateTime.now()),
       );
-      await ref
-          .read(healthIssueNotifierProvider(petId).notifier)
-          .create(issue);
+      await ref.read(healthIssueNotifierProvider(petId).notifier).create(issue);
     }
 
     titleController.dispose();
@@ -151,10 +146,7 @@ class HealthIssuesController {
     final description = issue.description.trim().isEmpty
         ? note
         : '${issue.description.trim()}\n$note';
-    return issue.copyWith(
-      description: description,
-      clearEndDate: true,
-    );
+    return issue.copyWith(description: description, clearEndDate: true);
   }
 
   String? validateDocumentBytes(String filename, int byteLength) {
@@ -176,9 +168,9 @@ class HealthIssuesController {
   }) async {
     final l = AppLocalizations.of(context)!;
     if (currentCount >= healthEntryMaxPhotos) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l.maxPhotosReached)),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(l.maxPhotosReached)));
       return;
     }
 
@@ -199,15 +191,15 @@ class HealthIssuesController {
       final data = bytes ?? await XFile(file.path!).readAsBytes();
       final validation = validateDocumentBytes(file.name, data.length);
       if (validation == 'unsupported') {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l.unsupportedDocumentFormat)),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(l.unsupportedDocumentFormat)));
         return;
       }
       if (validation == 'tooLarge') {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l.documentTooLarge)),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(l.documentTooLarge)));
         return;
       }
 
@@ -217,9 +209,9 @@ class HealthIssuesController {
           .uploadDocument(issueId, data, file.name, mimeType);
     } catch (e) {
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l.failedToAddPhoto('$e'))),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(l.failedToAddPhoto('$e'))));
       }
     }
   }
@@ -259,9 +251,9 @@ class HealthIssuesController {
           .deleteDocument(issueId, document.id);
     } catch (e) {
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l.failedToDeletePhoto('$e'))),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(l.failedToDeletePhoto('$e'))));
       }
     }
   }
@@ -286,16 +278,14 @@ class HealthIssuesController {
     final l = AppLocalizations.of(context)!;
     final entries = await ref.read(petHealthEntriesProvider(petId).future);
     final linked = issue.eventIds.toSet();
-    final available = entries
-        .where((e) => !linked.contains(e.id))
-        .toList();
+    final available = entries.where((e) => !linked.contains(e.id)).toList();
 
     if (!context.mounted) return;
 
     if (available.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l.noLinkedEvents)),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(l.noLinkedEvents)));
       return;
     }
 

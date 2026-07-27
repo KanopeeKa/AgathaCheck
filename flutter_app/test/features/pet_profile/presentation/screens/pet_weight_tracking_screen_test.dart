@@ -96,9 +96,7 @@ void main() {
     );
   }
 
-  testWidgets('shows title, back navigation, and empty state', (
-    tester,
-  ) async {
+  testWidgets('shows title, back navigation, and empty state', (tester) async {
     await tester.pumpWidget(
       buildApp(entries: const [], initialLocation: '/pet/pet-1'),
     );
@@ -111,7 +109,10 @@ void main() {
     expect(find.text('Weight Tracking'), findsOneWidget);
     expect(find.text('No weight data yet'), findsOneWidget);
     expect(find.byType(WeightChart), findsNothing);
-    expect(find.byKey(const Key('weight_tracking_add_app_bar')), findsOneWidget);
+    expect(
+      find.byKey(const Key('weight_tracking_add_app_bar')),
+      findsOneWidget,
+    );
     expect(find.byKey(const Key('weight_tracking_add_footer')), findsOneWidget);
 
     await tester.tap(find.byKey(const Key('experience_back_button')));
@@ -159,7 +160,9 @@ void main() {
     await tester.pump();
     await tester.pump();
 
-    await tester.ensureVisible(find.byKey(const Key('weight_tracking_add_footer')));
+    await tester.ensureVisible(
+      find.byKey(const Key('weight_tracking_add_footer')),
+    );
     await tester.tap(find.byKey(const Key('weight_tracking_add_footer')));
     await tester.pumpAndSettle();
 

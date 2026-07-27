@@ -33,7 +33,8 @@ class _TestHealthEntriesNotifier extends HealthEntriesNotifier {
   Future<List<HealthEntry>> build() async => _entries;
 }
 
-Future<List<HealthHistoryEntry>> _openHistory(Ref ref, String entryId) async => [
+Future<List<HealthHistoryEntry>> _openHistory(Ref ref, String entryId) async =>
+    [
       HealthHistoryEntry(
         id: 'hist-1',
         entryId: 'entry-1',
@@ -44,24 +45,27 @@ Future<List<HealthHistoryEntry>> _openHistory(Ref ref, String entryId) async => 
       ),
     ];
 
-Future<List<HealthHistoryEntry>> _closedHistory(Ref ref, String entryId) async => [
-      HealthHistoryEntry(
-        id: 'hist-2',
-        entryId: 'entry-2',
-        markedAt: DateTime(2025, 7, 1),
-        dueDate: DateTime(2025, 6, 15),
-        completedOn: DateTime(2025, 6, 15),
-        status: 'completed',
-      ),
-      HealthHistoryEntry(
-        id: 'hist-1',
-        entryId: 'entry-2',
-        markedAt: DateTime(2025, 6, 1),
-        dueDate: DateTime(2025, 5, 1),
-        completedOn: DateTime(2025, 5, 1),
-        status: 'completed',
-      ),
-    ];
+Future<List<HealthHistoryEntry>> _closedHistory(
+  Ref ref,
+  String entryId,
+) async => [
+  HealthHistoryEntry(
+    id: 'hist-2',
+    entryId: 'entry-2',
+    markedAt: DateTime(2025, 7, 1),
+    dueDate: DateTime(2025, 6, 15),
+    completedOn: DateTime(2025, 6, 15),
+    status: 'completed',
+  ),
+  HealthHistoryEntry(
+    id: 'hist-1',
+    entryId: 'entry-2',
+    markedAt: DateTime(2025, 6, 1),
+    dueDate: DateTime(2025, 5, 1),
+    completedOn: DateTime(2025, 5, 1),
+    status: 'completed',
+  ),
+];
 
 Future<List<EventPhoto>> _emptyPhotos(Ref ref, String entryId) async => [];
 
@@ -171,7 +175,10 @@ void main() {
     expect(find.text('Mark as done'), findsOneWidget);
     expect(find.text('Give with food'), findsOneWidget);
     expect(find.text('Skin allergy'), findsOneWidget);
-    expect(find.byKey(const Key('pet_event_health_issue_link')), findsOneWidget);
+    expect(
+      find.byKey(const Key('pet_event_health_issue_link')),
+      findsOneWidget,
+    );
   });
 
   testWidgets('closed entry greys status and shows reopen', (tester) async {

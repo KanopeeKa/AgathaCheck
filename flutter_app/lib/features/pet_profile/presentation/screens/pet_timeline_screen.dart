@@ -30,12 +30,7 @@ class PetTimelineScreen extends ConsumerWidget {
 
     void openAddSheet() {
       if (petName.isEmpty) return;
-      showPetTimelineFillSheet(
-        context,
-        ref,
-        petId: petId,
-        petName: petName,
-      );
+      showPetTimelineFillSheet(context, ref, petId: petId, petName: petName);
     }
 
     return ExperienceShellScaffold(
@@ -61,7 +56,9 @@ class PetTimelineScreen extends ConsumerWidget {
                   padding: const EdgeInsets.all(24),
                   child: Text(
                     l.petTimelineLoadError,
-                    style: TextStyle(color: Theme.of(context).colorScheme.error),
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.error,
+                    ),
                     textAlign: TextAlign.center,
                   ),
                 ),

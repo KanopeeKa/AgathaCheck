@@ -67,11 +67,7 @@ class HealthIssueRepositoryImpl implements HealthIssueRepository {
   }
 
   @override
-  Future<void> deleteDocument(
-    String issueId,
-    String documentId,
-    String token,
-  ) {
+  Future<void> deleteDocument(String issueId, String documentId, String token) {
     return dataSource.deleteDocument(issueId, documentId, token);
   }
 }

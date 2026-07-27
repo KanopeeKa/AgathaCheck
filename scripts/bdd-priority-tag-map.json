@@ -61,7 +61,8 @@
     "No due events shows all caught up": "P1",
     "Exporting health entries as CSV": "P2",
     "Exporting health entries as PDF": "P2",
-    "Filtering health entries by organisation": "P2"
+    "Filtering health entries by organisation": "P2",
+    "Unified event edit route redirects legacy paths": "P1"
   },
   "notifications.feature": {
     "Notification generated for overdue health entry": "P1",
@@ -77,6 +78,8 @@
     "Marking a single notification as read": "P1",
     "Marking all notifications as read": "P1",
     "Tapping a pet notification navigates to pet detail": "P1",
+    "Tapping a due event notification navigates to view entry": "P1",
+    "Tapping a pet notification without health entry navigates to pet detail": "P1",
     "Tapping an organisation notification navigates to org detail": "P1",
     "Accessing notification settings": "P1",
     "Muting notifications for a specific pet": "P2",
@@ -246,7 +249,9 @@
   "guardian_dashboard.feature": {
     "Dashboard shows exactly three sections": "P1",
     "My Pets shows all personal pets with Manage pets link": "P1",
-    "Pending foster placement surfaces as a notification, not a dashboard banner": "P1"
+    "Pending foster placement surfaces as a notification, not a dashboard banner": "P1",
+    "Global events screen shows unified list without tabs": "P1",
+    "Global events screen supports pet and cohort filters": "P1"
   },
   "organisation_discovery.feature": {
     "Discover Organisations is visible without signing in": "P1",
@@ -254,7 +259,10 @@
   },
   "pet_timeline.feature": {
     "Timeline shows a fostering session card": "P1",
-    "Timeline shows a placeholder when no data exists for a period": "P1"
+    "Timeline shows a placeholder when no data exists for a period": "P1",
+    "Timeline screen shows a fostering session card": "P1",
+    "Timeline screen shows date of birth and joined markers": "P1",
+    "Guardian navigates to timeline from pet profile": "P1"
   },
   "pet_screen_filters.feature": {
     "A pet with no foster placement needs attention": "P1",

@@ -181,10 +181,8 @@ class _DocumentTile extends StatelessWidget {
                 Image.network(
                   url,
                   fit: BoxFit.cover,
-                  errorBuilder: (_, __, ___) => Icon(
-                    Icons.broken_image,
-                    color: colorScheme.outline,
-                  ),
+                  errorBuilder: (_, __, ___) =>
+                      Icon(Icons.broken_image, color: colorScheme.outline),
                 ),
               Positioned(
                 top: 2,

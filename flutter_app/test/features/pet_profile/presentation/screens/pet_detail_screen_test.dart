@@ -31,8 +31,7 @@ class _FakeSharingRepository implements SharingRepository {
   Future<List<PetAccess>> getAccess(String petId, String token) async => [];
 
   @override
-  Future<List<ShareLink>> getShareLinks(String petId, String token) async =>
-      [];
+  Future<List<ShareLink>> getShareLinks(String petId, String token) async => [];
 
   @override
   noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
@@ -52,10 +51,7 @@ void main() {
     guardianName: 'Alex',
   );
 
-  Widget buildApp({
-    required Pet pet,
-    required String initialLocation,
-  }) {
+  Widget buildApp({required Pet pet, required String initialLocation}) {
     final router = GoRouter(
       initialLocation: initialLocation,
       routes: [
@@ -90,7 +86,9 @@ void main() {
         guardianUnreadNotificationCountProvider.overrideWith((ref) => 0),
         orgUnreadNotificationCountProvider.overrideWith((ref) => 0),
         apiBaseUrlProvider.overrideWithValue('http://test.local'),
-        sharingRepositoryProvider.overrideWith((ref) => _FakeSharingRepository()),
+        sharingRepositoryProvider.overrideWith(
+          (ref) => _FakeSharingRepository(),
+        ),
         vetListProvider.overrideWith(FakeVetListNotifier.new),
         latestWeightProvider.overrideWith((ref, arg) => null),
       ],

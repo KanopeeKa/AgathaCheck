@@ -146,7 +146,10 @@ class SharingSection extends ConsumerWidget {
             ),
             children: [
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 8,
+                ),
                 child: child,
               ),
             ],
@@ -178,11 +181,8 @@ class SharingSection extends ConsumerWidget {
               style: TextStyle(color: theme.colorScheme.error),
             ),
           ),
-          data: (links) => FosterSharingContent(
-            petId: petId,
-            pet: pet,
-            shareLinks: links,
-          ),
+          data: (links) =>
+              FosterSharingContent(petId: petId, pet: pet, shareLinks: links),
         ),
       );
     }

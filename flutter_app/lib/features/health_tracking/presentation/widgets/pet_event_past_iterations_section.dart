@@ -67,9 +67,7 @@ class _PetEventPastIterationsSectionState
                           lastCompleted?.id == row.id &&
                           row.isCompleted,
                       canSkip: !muted && !row.isCompleted && !row.isSkipped,
-                      onSkip: row.dueDate == null
-                          ? null
-                          : () => _skip(row),
+                      onSkip: row.dueDate == null ? null : () => _skip(row),
                       onUnmark: () => _unmarkDone(),
                     ),
                 ],

@@ -72,11 +72,8 @@ class HealthIssueLinkedEventsStrip extends ConsumerWidget {
                     );
                   }
                   return _AddLinkedEventChip(
-                    onTap: () => controller.showLinkEventPicker(
-                      context,
-                      petId,
-                      issue,
-                    ),
+                    onTap: () =>
+                        controller.showLinkEventPicker(context, petId, issue),
                   );
                 },
               ),

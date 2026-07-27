@@ -57,10 +57,8 @@ class PetEventDocumentsStrip extends ConsumerWidget {
                 scrollDirection: Axis.horizontal,
                 itemCount: photos.length,
                 separatorBuilder: (_, __) => const SizedBox(width: 8),
-                itemBuilder: (context, index) => _DocumentTile(
-                  photo: photos[index],
-                  baseUrl: baseUrl,
-                ),
+                itemBuilder: (context, index) =>
+                    _DocumentTile(photo: photos[index], baseUrl: baseUrl),
               ),
             );
           },
@@ -80,8 +78,9 @@ class _DocumentTile extends StatelessWidget {
       path.toLowerCase().split('?').first.endsWith('.pdf');
 
   String _documentUrl(String path) {
-    final normalizedBase =
-        baseUrl.endsWith('/') ? baseUrl.substring(0, baseUrl.length - 1) : baseUrl;
+    final normalizedBase = baseUrl.endsWith('/')
+        ? baseUrl.substring(0, baseUrl.length - 1)
+        : baseUrl;
     final normalizedPath = path.startsWith('/') ? path.substring(1) : path;
     return '$normalizedBase/$normalizedPath';
   }
@@ -161,10 +160,8 @@ class _DocumentTile extends StatelessWidget {
               : Image.network(
                   url,
                   fit: BoxFit.cover,
-                  errorBuilder: (_, __, ___) => Icon(
-                    Icons.broken_image,
-                    color: colorScheme.outline,
-                  ),
+                  errorBuilder: (_, __, ___) =>
+                      Icon(Icons.broken_image, color: colorScheme.outline),
                 ),
         ),
       ),

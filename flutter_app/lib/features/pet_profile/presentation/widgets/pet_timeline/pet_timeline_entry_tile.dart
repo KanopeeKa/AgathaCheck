@@ -59,11 +59,7 @@ class PetTimelineEntryTile extends ConsumerWidget {
         ),
         isThreeLine: subtitle != null,
         trailing: segment.isManual
-            ? _ManualActions(
-                segment: segment,
-                petId: petId,
-                petName: petName,
-              )
+            ? _ManualActions(segment: segment, petId: petId, petName: petName)
             : null,
       ),
     );
@@ -166,9 +162,9 @@ class _ManualActions extends ConsumerWidget {
       await deletePetTimelineManualEntry(ref, petId, segment.id);
     } catch (_) {
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l.petTimelineFillError)),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(l.petTimelineFillError)));
       }
     }
   }

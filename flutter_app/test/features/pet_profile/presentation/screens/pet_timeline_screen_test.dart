@@ -86,7 +86,9 @@ void main() {
         petListProvider.overrideWith(
           () => _TestPetListNotifier(pets.isEmpty ? [testPet] : pets),
         ),
-        petTimelineProvider.overrideWith((ref, petId) async => timelineSegments),
+        petTimelineProvider.overrideWith(
+          (ref, petId) async => timelineSegments,
+        ),
       ],
       child: MaterialApp.router(
         theme: AppTheme.lightTheme,
@@ -225,9 +227,7 @@ void main() {
   });
 
   testWidgets('add buttons are present in app bar and bottom', (tester) async {
-    await tester.pumpWidget(
-      buildApp(initialLocation: '/pet/pet-1/timeline'),
-    );
+    await tester.pumpWidget(buildApp(initialLocation: '/pet/pet-1/timeline'));
     await tester.pumpAndSettle();
 
     expect(find.byKey(const Key('pet_timeline_add_app_bar')), findsOneWidget);

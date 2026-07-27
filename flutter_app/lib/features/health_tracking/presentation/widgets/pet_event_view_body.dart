@@ -147,7 +147,9 @@ class _TypeDosageRow extends StatelessWidget {
     final l = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
-    final iconColor = muted ? colorScheme.onSurfaceVariant : colorScheme.primary;
+    final iconColor = muted
+        ? colorScheme.onSurfaceVariant
+        : colorScheme.primary;
 
     return Row(
       children: [
@@ -348,9 +350,7 @@ class _HealthIssueLink extends StatelessWidget {
         const SizedBox(height: 4),
         InkWell(
           key: const Key('pet_event_health_issue_link'),
-          onTap: muted
-              ? null
-              : () => context.push('/pet/$petId/health-issues'),
+          onTap: muted ? null : () => context.push('/pet/$petId/health-issues'),
           child: Row(
             children: [
               Expanded(
@@ -390,8 +390,8 @@ Future<void> showPetEventHistory(
     await showPetEventAdministrationHistoryDialog(context, history: history);
   } catch (error) {
     if (!context.mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(l.failedToLoadHistory('$error'))),
-    );
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(l.failedToLoadHistory('$error'))));
   }
 }

@@ -77,26 +77,23 @@ void main() {
     expect(health.map((e) => e.id), ['a', 'c']);
   });
 
-  test(
-    'petOtherEventsByIdProvider returns other event types',
-    () async {
-      final entries = [
-        _entry('a', 'pet-1', HealthEntryType.medication),
-        _entry('b', 'pet-1', HealthEntryType.other),
-        _entry('c', 'pet-1', HealthEntryType.other),
-      ];
-      final container = ProviderContainer(
-        overrides: [
-          healthEntriesNotifierProvider.overrideWith(
-            () => _FakeHealthEntriesNotifier(entries),
-          ),
-        ],
-      );
-      addTearDown(container.dispose);
-      await container.read(healthEntriesNotifierProvider.future);
+  test('petOtherEventsByIdProvider returns other event types', () async {
+    final entries = [
+      _entry('a', 'pet-1', HealthEntryType.medication),
+      _entry('b', 'pet-1', HealthEntryType.other),
+      _entry('c', 'pet-1', HealthEntryType.other),
+    ];
+    final container = ProviderContainer(
+      overrides: [
+        healthEntriesNotifierProvider.overrideWith(
+          () => _FakeHealthEntriesNotifier(entries),
+        ),
+      ],
+    );
+    addTearDown(container.dispose);
+    await container.read(healthEntriesNotifierProvider.future);
 
-      final other = container.read(petOtherEventsByIdProvider('pet-1')).value!;
-      expect(other.map((e) => e.id), ['b', 'c']);
-    },
-  );
+    final other = container.read(petOtherEventsByIdProvider('pet-1')).value!;
+    expect(other.map((e) => e.id), ['b', 'c']);
+  });
 }

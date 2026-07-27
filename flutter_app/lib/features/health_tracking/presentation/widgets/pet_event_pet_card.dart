@@ -65,7 +65,12 @@ class _PetAvatar extends StatelessWidget {
             border: Border.all(color: petColor, width: 2),
           ),
           child: ClipOval(
-            child: Image.memory(bytes, width: 44, height: 44, fit: BoxFit.cover),
+            child: Image.memory(
+              bytes,
+              width: 44,
+              height: 44,
+              fit: BoxFit.cover,
+            ),
           ),
         );
       } catch (_) {}

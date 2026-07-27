@@ -4,11 +4,7 @@ import '../../../../core/theme/app_color_tokens.dart';
 import '../../../../l10n/app_localizations.dart';
 
 class HealthEntryOpenButton extends StatelessWidget {
-  const HealthEntryOpenButton({
-    super.key,
-    this.onPressed,
-    this.semanticKey,
-  });
+  const HealthEntryOpenButton({super.key, this.onPressed, this.semanticKey});
 
   final VoidCallback? onPressed;
   final Key? semanticKey;

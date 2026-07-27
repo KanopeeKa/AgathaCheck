@@ -67,7 +67,9 @@ void main() {
       );
     });
 
-    testWidgets('shows action columns when showActions is true', (tester) async {
+    testWidgets('shows action columns when showActions is true', (
+      tester,
+    ) async {
       await tester.pumpWidget(buildCard(overdueEntry, cardPet: pet));
       await tester.pumpAndSettle();
 
@@ -77,7 +79,9 @@ void main() {
       expect(find.text('Mark as done'), findsOneWidget);
     });
 
-    testWidgets('hides action columns when showActions is false', (tester) async {
+    testWidgets('hides action columns when showActions is false', (
+      tester,
+    ) async {
       await tester.pumpWidget(
         buildCard(overdueEntry, cardPet: pet, showActions: false),
       );

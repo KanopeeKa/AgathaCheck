@@ -16,9 +16,5 @@ abstract class HealthIssueRepository {
     String mimeType,
     String token,
   );
-  Future<void> deleteDocument(
-    String issueId,
-    String documentId,
-    String token,
-  );
+  Future<void> deleteDocument(String issueId, String documentId, String token);
 }

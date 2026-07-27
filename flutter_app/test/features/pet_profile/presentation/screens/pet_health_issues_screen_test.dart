@@ -29,10 +29,7 @@ class _FakeHealthIssueNotifier extends HealthIssueNotifier {
   Future<List<HealthIssue>> build(String arg) async => _issues;
 }
 
-Future<List<HealthIssueDocument>> _emptyDocuments(
-  ref,
-  String issueId,
-) async =>
+Future<List<HealthIssueDocument>> _emptyDocuments(ref, String issueId) async =>
     [];
 
 void main() {
@@ -54,9 +51,8 @@ void main() {
       routes: [
         GoRoute(
           path: '/pet/:petId/health-issues',
-          builder: (context, state) => PetHealthIssuesScreen(
-            petId: state.pathParameters['petId']!,
-          ),
+          builder: (context, state) =>
+              PetHealthIssuesScreen(petId: state.pathParameters['petId']!),
         ),
       ],
     );

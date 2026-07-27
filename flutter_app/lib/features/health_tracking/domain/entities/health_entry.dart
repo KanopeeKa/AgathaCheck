@@ -16,9 +16,7 @@ const kHealthEventTypes = {
 
 /// Misc. other entries shown in the pet profile "Other events" section.
 /// Not to be confused with organisation [FamilyEvent] assignments.
-const kOtherEventTypes = {
-  HealthEntryType.other,
-};
+const kOtherEventTypes = {HealthEntryType.other};
 
 class HealthEntry {
   /// Creates a new [HealthEntry] instance.

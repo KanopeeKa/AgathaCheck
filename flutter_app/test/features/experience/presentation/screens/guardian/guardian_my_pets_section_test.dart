@@ -23,7 +23,9 @@ void main() {
     );
   }
 
-  testWidgets('merged section uses wrap grid for personal pets', (tester) async {
+  testWidgets('merged section uses wrap grid for personal pets', (
+    tester,
+  ) async {
     final pets = [
       const Pet(id: 'p1', name: 'Buddy', species: 'Dog', breed: 'Mix'),
       const Pet(id: 'p2', name: 'Whiskers', species: 'Cat', breed: ''),

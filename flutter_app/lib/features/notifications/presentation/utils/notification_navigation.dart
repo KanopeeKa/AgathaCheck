@@ -7,7 +7,10 @@ import '../../domain/entities/app_notification.dart';
 ///
 /// Care notifications with a health entry open the view-entry screen.
 /// Other pet notifications fall back to the pet profile.
-void navigateFromNotification(BuildContext context, AppNotification notification) {
+void navigateFromNotification(
+  BuildContext context,
+  AppNotification notification,
+) {
   final petId = notification.petId;
   final entryId = notification.healthEntryId;
 

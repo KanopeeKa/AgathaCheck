@@ -108,9 +108,7 @@ class WeightTrackingContent extends ConsumerWidget {
                       ),
                       subtitle: Text(
                         dateLabel +
-                            (entry.notes.isNotEmpty
-                                ? ' — ${entry.notes}'
-                                : ''),
+                            (entry.notes.isNotEmpty ? ' — ${entry.notes}' : ''),
                         style: theme.textTheme.bodySmall?.copyWith(
                           color: colorScheme.onSurfaceVariant,
                         ),
@@ -123,10 +121,7 @@ class WeightTrackingContent extends ConsumerWidget {
                         ),
                         tooltip: l.deleteWeightEntry,
                         onPressed: () async {
-                          await controller.deleteWeightEntry(
-                            petId,
-                            entry.id,
-                          );
+                          await controller.deleteWeightEntry(petId, entry.id);
                         },
                       ),
                     );
@@ -201,10 +196,7 @@ class _EmptyWeightState extends StatelessWidget {
 }
 
 class _AddEntryFooterButton extends StatelessWidget {
-  const _AddEntryFooterButton({
-    required this.onPressed,
-    required this.label,
-  });
+  const _AddEntryFooterButton({required this.onPressed, required this.label});
 
   final VoidCallback onPressed;
   final String label;

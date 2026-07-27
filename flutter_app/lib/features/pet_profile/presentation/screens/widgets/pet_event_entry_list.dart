@@ -159,7 +159,9 @@ bool matchesManageEventsFilters(
       if (!closed) return false;
     case ManageEventsStatusFilter.dueOverdue:
       if (closed || entry.isCompleted) return false;
-      if (!entry.isOverdue && !entry.isDueToday && !isEntryDueOrOverdue(entry)) {
+      if (!entry.isOverdue &&
+          !entry.isDueToday &&
+          !isEntryDueOrOverdue(entry)) {
         return false;
       }
   }
@@ -231,10 +233,7 @@ class ManageEventsFilterBar extends StatelessWidget {
               _statusChip(ManageEventsStatusFilter.all, l.all),
               _statusChip(ManageEventsStatusFilter.open, l.open),
               _statusChip(ManageEventsStatusFilter.closed, l.eventFilterClosed),
-              _statusChip(
-                ManageEventsStatusFilter.dueOverdue,
-                l.dueAndOverdue,
-              ),
+              _statusChip(ManageEventsStatusFilter.dueOverdue, l.dueAndOverdue),
             ],
           ),
           const SizedBox(height: 8),
