@@ -69,11 +69,12 @@ async function openOrganization(
   page: import('@playwright/test').Page,
   user: TestUser,
   orgName: string,
+  orgId: string,
 ) {
   const petList = await loginAs(page, user);
   await petList.openOrganizations();
   const orgList = new OrganizationListPage(page);
-  await orgList.openOrg(orgName);
+  await orgList.openOrg(orgName, orgId);
   const detail = new OrganizationDetailPage(page);
   await detail.expectLoaded(orgName);
   return detail;
@@ -186,7 +187,7 @@ test.describe('Organisation custody', () => {
     await petList.expectPetUnderOrganization('Max', 'Rescue Hearts');
     await hideOrgPetFromHome(baseURL, alice.accessToken, org.id, pet.id);
 
-    const detail = await openOrganization(page, alice, 'Rescue Hearts');
+    await openOrganization(page, alice, 'Rescue Hearts', org.id);
     await expect(page.getByText('1 pets')).toBeVisible();
 
     const hiddenResponse = await request.get(`/backend/api/organizations/${org.id}/home-hidden`, {
@@ -455,7 +456,7 @@ test.describe('Organisation custody', () => {
     const shadowAfter = archivedAfter.find((row) => row.pet_name === 'Max');
     expect(shadowAfter?.shadow_snapshot).toEqual(shadowBefore?.shadow_snapshot);
 
-    const detail = await openOrganization(page, alice, 'Rescue Hearts');
+    const detail = await openOrganization(page, alice, 'Rescue Hearts', org.id);
     await detail.openArchivedPets();
     await expect(page.locator('body')).toContainText(/Max,\s*dog,\s*Adoption/i);
     await expect(page.locator('body')).not.toContainText('Post Adoption Check');
