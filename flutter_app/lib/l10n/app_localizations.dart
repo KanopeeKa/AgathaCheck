@@ -1771,6 +1771,72 @@ abstract class AppLocalizations {
   /// **'No linked events'**
   String get noLinkedEvents;
 
+  /// No description provided for @addHealthIssue.
+  ///
+  /// In en, this message translates to:
+  /// **'Add health issue'**
+  String get addHealthIssue;
+
+  /// No description provided for @issueDescriptionRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Description is required'**
+  String get issueDescriptionRequired;
+
+  /// No description provided for @issueSince.
+  ///
+  /// In en, this message translates to:
+  /// **'Issue since'**
+  String get issueSince;
+
+  /// No description provided for @issueResolved.
+  ///
+  /// In en, this message translates to:
+  /// **'Issue resolved'**
+  String get issueResolved;
+
+  /// No description provided for @issueStatusLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Status'**
+  String get issueStatusLabel;
+
+  /// No description provided for @issueStatusOpen.
+  ///
+  /// In en, this message translates to:
+  /// **'Open'**
+  String get issueStatusOpen;
+
+  /// No description provided for @issueStatusResolved.
+  ///
+  /// In en, this message translates to:
+  /// **'Resolved'**
+  String get issueStatusResolved;
+
+  /// No description provided for @reopenIssue.
+  ///
+  /// In en, this message translates to:
+  /// **'Reopen issue'**
+  String get reopenIssue;
+
+  /// No description provided for @issueReopenedNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Issue previously closed on {closedDate} and reopened on {reopenedDate}'**
+  String issueReopenedNote(String closedDate, String reopenedDate);
+
+  /// No description provided for @linkEvent.
+  ///
+  /// In en, this message translates to:
+  /// **'Link event'**
+  String get linkEvent;
+
+  /// No description provided for @showMore.
+  ///
+  /// In en, this message translates to:
+  /// **'Show more'**
+  String get showMore;
+
   /// No description provided for @addPetTitle.
   ///
   /// In en, this message translates to:
