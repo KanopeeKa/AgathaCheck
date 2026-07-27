@@ -80,7 +80,9 @@ test.describe('Pet profiles', () => {
     await editForm.fillName('Bella Rose');
     await editForm.save();
 
-    await petList.expectLoaded();
+    // Edit save returns to pet detail (PetFormScreen._navigateAfterForm), not the list.
+    await detail.expectLoaded('Bella Rose');
+    await petList.openManagePets();
     await petList.expectPetVisible('Bella Rose');
   });
 
@@ -166,7 +168,8 @@ test.describe('Pet profiles', () => {
 
     // Save without changes and confirm pet still exists
     await editForm.save();
-    await petList.expectLoaded();
+    await detail.expectLoaded('Charlie');
+    await petList.openManagePets();
     await petList.expectPetVisible('Charlie');
   });
 
