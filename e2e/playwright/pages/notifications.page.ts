@@ -148,7 +148,10 @@ export class NotificationsPage {
     await settingsBtn.waitFor({ timeout: 15_000 });
     await settingsBtn.click();
     await refreshFlutterAccessibility(this.page);
-    await expectAppBarTitle(this.page, 'Notification Settings');
+    await expectAppBarTitle(
+      this.page,
+      /Notification Settings|Paramètres de notification/i,
+    );
   }
 
   async clickNotification(titleText: string): Promise<void> {
