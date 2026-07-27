@@ -287,10 +287,8 @@ export class PetListPage {
       (options.experience !== 'guardian' &&
         (route.startsWith('/o/') || route.startsWith('/organizations')));
     const home = useOrgHome ? '/o/home' : '/g/home';
-    const onHome =
-      route === home ||
-      (useOrgHome && route.startsWith('/o/') && !route.includes('/onboarding')) ||
-      (!useOrgHome && route.startsWith('/g/') && !route.includes('/onboarding'));
+    // Match only the home route — not other /o/* or /g/* shells (e.g. /o/orgs/:id/pets).
+    const onHome = route === home;
 
     await dismissConsentBannerIfPresent(this.page);
     if (!onHome) {
