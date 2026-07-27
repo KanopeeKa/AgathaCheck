@@ -46,6 +46,7 @@ class OrgCard extends ConsumerWidget {
 
     return MergeSemantics(
       child: Semantics(
+        button: true,
         label:
             '${organization.name}, ${typeLabel(organization.type)}, '
             '$memberLabel, ${l.petCount(organization.petCount)}',

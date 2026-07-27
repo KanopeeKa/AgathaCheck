@@ -23,6 +23,7 @@ function membershipOrgCardLocator(page: Page, name: string) {
   return page
     .getByRole('button', { name: pattern })
     .or(page.getByRole('group', { name: pattern }))
+    .filter({ visible: true })
     .first();
 }
 
@@ -51,12 +52,18 @@ export class OrganizationListPage {
   }
 
   async expectOrgVisible(name: string): Promise<void> {
-    await membershipOrgCardLocator(this.page, name).waitFor({ timeout: 30_000 });
+    await membershipOrgCardLocator(this.page, name).waitFor({
+      state: 'visible',
+      timeout: 30_000,
+    });
   }
 
   async openOrg(name: string): Promise<void> {
     await this.expectOrgVisible(name);
-    await membershipOrgCardLocator(this.page, name).click();
+    await refreshFlutterAccessibility(this.page);
+    const card = membershipOrgCardLocator(this.page, name);
+    await card.scrollIntoViewIfNeeded();
+    await card.click();
     await waitForFlutterRoutePattern(this.page, /\/o\/orgs\/[^/?#]+/, 30_000);
     await refreshFlutterAccessibility(this.page);
   }
