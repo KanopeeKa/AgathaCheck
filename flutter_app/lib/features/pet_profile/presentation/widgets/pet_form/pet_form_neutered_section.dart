@@ -87,7 +87,7 @@ class PetFormNeuteredSection extends StatelessWidget {
                 labelText: l.date,
                 suffixIcon: neuteredDate != null
                     ? IconButton(
-                        icon: const Icon(Icons.clear),
+                        icon: const Icon(Icons.clear, size: 18),
                         tooltip: 'Clear date',
                         onPressed: onClearNeuteredDate,
                       )
