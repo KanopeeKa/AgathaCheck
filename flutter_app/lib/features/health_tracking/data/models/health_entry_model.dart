@@ -119,10 +119,8 @@ class HealthEntryModel extends HealthEntry {
         return 'preventive';
       case HealthEntryType.vetVisit:
         return 'vet_visit';
-      case HealthEntryType.procedure:
-        return 'procedure';
-      case HealthEntryType.familyEvent:
-        return 'family_event';
+      case HealthEntryType.other:
+        return 'other';
     }
   }
 
@@ -154,11 +152,12 @@ class HealthEntryModel extends HealthEntry {
       case 'vet_visit':
       case 'vetVisit':
         return HealthEntryType.vetVisit;
+      case 'other':
+        return HealthEntryType.other;
       case 'procedure':
-        return HealthEntryType.procedure;
       case 'family_event':
       case 'familyEvent':
-        return HealthEntryType.familyEvent;
+        return HealthEntryType.other;
       default:
         return HealthEntryType.medication;
     }

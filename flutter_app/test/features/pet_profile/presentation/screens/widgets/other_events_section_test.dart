@@ -34,8 +34,8 @@ void main() {
   ) async {
     final entries = [
       _otherEntry('h1', 'p1', HealthEntryType.medication),
-      _otherEntry('o1', 'p1', HealthEntryType.familyEvent),
-      _otherEntry('o2', 'p1', HealthEntryType.procedure),
+      _otherEntry('o1', 'p1', HealthEntryType.other),
+      _otherEntry('o2', 'p1', HealthEntryType.other),
     ];
 
     await tester.pumpWidget(
@@ -106,11 +106,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.byType(OtherEventFormScreen), findsOneWidget);
-    expect(find.text('Care event'), findsOneWidget);
-    expect(find.text('Medication'), findsNothing);
-
-    await tester.tap(find.byType(DropdownButtonFormField<HealthEntryType>));
-    await tester.pumpAndSettle();
     expect(find.text('Other'), findsOneWidget);
+    expect(find.text('Medication'), findsNothing);
   });
 }

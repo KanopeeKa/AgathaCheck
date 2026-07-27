@@ -8,7 +8,12 @@ import {
   userCanManagePet,
   userCanManageHealthEntry,
 } from '../../lib/petAccess.js';
-import { extractUserId, healthEntryToMap, csvCell } from './shared.js';
+import {
+  extractUserId,
+  healthEntryToMap,
+  csvCell,
+  validateHealthEntryTypeForWrite,
+} from './shared.js';
 
 export function registerCrudRoutes(router, pool) {
   router.get('/', async (req, res) => {
@@ -110,13 +115,17 @@ export function registerCrudRoutes(router, pool) {
       } catch (e) {
         return res.status(400).json({ error: e.message });
       }
+      const typeValidation = validateHealthEntryTypeForWrite(data.type || 'vet_visit');
+      if (!typeValidation.ok) {
+        return res.status(400).json({ error: typeValidation.error });
+      }
       const result = await pool.query(
         `INSERT INTO health_entries (id, pet_id, user_id, name, type, dosage, frequency, frequency_days, frequency_interval, start_date, next_due_date, completed_on, recurrence_anchor, repeat_end_date, notes, health_issue_id, remind_days_before, status)
          VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18) RETURNING *`,
         [
           id, petId, userId,
           data.name || '',
-          data.type || 'vet_visit',
+          typeValidation.type,
           data.dosage || '',
           data.frequency || 'once',
           data.frequency_days || data.frequencyDays || null,
@@ -156,6 +165,10 @@ export function registerCrudRoutes(router, pool) {
       } catch (e) {
         return res.status(400).json({ error: e.message });
       }
+      const typeValidation = validateHealthEntryTypeForWrite(data.type || 'vet_visit');
+      if (!typeValidation.ok) {
+        return res.status(400).json({ error: typeValidation.error });
+      }
       const result = await pool.query(
         `UPDATE health_entries SET name = $1, type = $2, dosage = $3, frequency = $4, frequency_days = $5,
           frequency_interval = $6, start_date = $7, next_due_date = $8, completed_on = $9,
@@ -164,7 +177,7 @@ export function registerCrudRoutes(router, pool) {
          WHERE id = $16 RETURNING *`,
         [
           data.name || '',
-          data.type || 'vet_visit',
+          typeValidation.type,
           data.dosage || '',
           data.frequency || 'once',
           data.frequency_days || data.frequencyDays || null,

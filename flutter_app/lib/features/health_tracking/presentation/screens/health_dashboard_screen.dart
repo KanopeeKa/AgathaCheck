@@ -58,14 +58,13 @@ class _HealthDashboardScreenState extends ConsumerState<HealthDashboardScreen>
     HealthEntryType.medication,
     HealthEntryType.preventive,
     HealthEntryType.vetVisit,
-    HealthEntryType.procedure,
-    HealthEntryType.familyEvent,
+    HealthEntryType.other,
   ];
 
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 6, vsync: this);
+    _tabController = TabController(length: 5, vsync: this);
   }
 
   @override
@@ -118,7 +117,6 @@ class _HealthDashboardScreenState extends ConsumerState<HealthDashboardScreen>
         Tab(key: const Key('health_tab_preventives'), text: l.preventives),
         Tab(key: const Key('health_tab_vet_visits'), text: l.vetVisits),
         Tab(key: const Key('health_tab_other'), text: l.other),
-        Tab(key: const Key('health_tab_family'), text: l.careEvents),
       ],
       isScrollable: true,
     );

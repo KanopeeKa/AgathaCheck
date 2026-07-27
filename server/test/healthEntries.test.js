@@ -391,6 +391,30 @@ describe('Health Entries API', () => {
       expect(res.statusCode).toBe(404);
       expect(res.body).toHaveProperty('error', 'Entry not found');
     });
+
+    it('maps legacy family_event and procedure types to other on read', async () => {
+      for (const legacyType of ['family_event', 'procedure']) {
+        const pool = {
+          query: async (sql, params) => {
+            const access = handlePetAccessQuery(sql, params, { userId, ownedPetIds: ['pet-1'] });
+            if (access) return access;
+            const manageEntry = handleManageEntryQuery(sql, params, { tableName: 'health_entries he' });
+            if (manageEntry) return manageEntry;
+            if (sql.includes('SELECT he.*') && sql.includes('WHERE he.id')) {
+              return { rows: [makeHealthRow({ id: params[0], type: legacyType })] };
+            }
+            return { rows: [] };
+          },
+          end: async () => {},
+        };
+        const a = createApp(pool);
+        const res = await request(a)
+          .get('/api/health-entries/he-legacy')
+          .set('Authorization', `Bearer ${token}`);
+        expect(res.statusCode).toBe(200);
+        expect(res.body).toHaveProperty('type', 'other');
+      }
+    });
   });
 
   describe('POST /api/health-entries (create)', () => {
@@ -482,6 +506,51 @@ describe('Health Entries API', () => {
         .send({ name: 'Orphan' });
       expect(res.statusCode).toBe(403);
     });
+
+    it('accepts canonical other type on create', async () => {
+      const entry = {
+        pet_id: 'pet-1',
+        name: 'Grooming',
+        type: 'other',
+        next_due_date: '2025-01-01',
+      };
+      const res = await request(app)
+        .post('/api/health-entries')
+        .set('Authorization', `Bearer ${token}`)
+        .send(entry);
+      expect(res.statusCode).toBe(201);
+      expect(res.body).toHaveProperty('type', 'other');
+    });
+
+    it('rejects deprecated family_event type on create', async () => {
+      const entry = {
+        pet_id: 'pet-1',
+        name: 'Legacy care',
+        type: 'family_event',
+        next_due_date: '2025-01-01',
+      };
+      const res = await request(app)
+        .post('/api/health-entries')
+        .set('Authorization', `Bearer ${token}`)
+        .send(entry);
+      expect(res.statusCode).toBe(400);
+      expect(res.body.error).toMatch(/Deprecated entry type/i);
+    });
+
+    it('rejects deprecated procedure type on create', async () => {
+      const entry = {
+        pet_id: 'pet-1',
+        name: 'Legacy other',
+        type: 'procedure',
+        next_due_date: '2025-01-01',
+      };
+      const res = await request(app)
+        .post('/api/health-entries')
+        .set('Authorization', `Bearer ${token}`)
+        .send(entry);
+      expect(res.statusCode).toBe(400);
+      expect(res.body.error).toMatch(/Deprecated entry type/i);
+    });
   });
 
   describe('PUT /api/health-entries/:id (update)', () => {
@@ -513,6 +582,15 @@ describe('Health Entries API', () => {
       const updateQuery = queryLog.find(q => q.sql.includes('UPDATE health_entries SET name'));
       expect(accessQuery).toBeDefined();
       expect(updateQuery.params[15]).toBe('he-1');
+    });
+
+    it('rejects deprecated types on update', async () => {
+      const res = await request(app)
+        .put('/api/health-entries/he-1')
+        .set('Authorization', `Bearer ${token}`)
+        .send({ name: 'Legacy', type: 'family_event', next_due_date: '2026-01-01' });
+      expect(res.statusCode).toBe(400);
+      expect(res.body.error).toMatch(/Deprecated entry type/i);
     });
   });
 
