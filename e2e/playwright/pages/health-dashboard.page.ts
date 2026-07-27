@@ -71,7 +71,9 @@ export class HealthDashboardPage {
   }
 
   async openAddEntry(): Promise<void> {
-    const fab = this.page.getByRole('button', { name: 'Add Health Event' });
+    const fab = this.page
+      .getByRole('button', { name: /Add Health Event|Add an event|Ajouter un événement/i })
+      .first();
     const box = await fab.boundingBox();
     if (!box) {
       throw new Error('Add Health Event button not found');
