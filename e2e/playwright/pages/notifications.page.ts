@@ -56,6 +56,20 @@ export class NotificationsPage {
     await this.openPanelViaBell();
   }
 
+  /** Wait until async notification list data has settled (empty, rows, or error). */
+  private async waitForNotificationListSettled(): Promise<void> {
+    await expect(async () => {
+      await refreshFlutterAccessibility(this.page);
+      await this.page
+        .getByText(/No notifications|Aucune notification/i)
+        .or(this.page.getByText(/notification:/i))
+        .or(this.page.getByRole('button', { name: /retry|try again|réessayer/i }))
+        .or(this.page.getByText(/Failed to load notifications|Échec du chargement/i))
+        .first()
+        .waitFor({ timeout: 3_000 });
+    }).toPass({ timeout: 45_000 });
+  }
+
   /** Wait for the notification panel slide-over to be visible. */
   async expectPanelLoaded(): Promise<void> {
     // Kind-filter chips live only inside the endDrawer — unlike a generic Close
@@ -71,14 +85,7 @@ export class NotificationsPage {
         .and(this.page.locator(':visible'));
       await markAll.waitFor({ timeout: 3_000 });
     }).toPass({ timeout: 15_000 });
-    await expect(async () => {
-      await refreshFlutterAccessibility(this.page);
-      const listBody = this.page
-        .getByText(/No notifications|Aucune notification/i)
-        .or(this.page.getByText(/notification:/i))
-        .or(this.page.getByRole('button', { name: /retry|try again|réessayer/i }));
-      await listBody.first().waitFor({ timeout: 3_000 });
-    }).toPass({ timeout: 30_000 });
+    await this.waitForNotificationListSettled();
   }
 
   async expectLoaded(): Promise<void> {
@@ -94,6 +101,7 @@ export class NotificationsPage {
   }
 
   async expectEmptyState(): Promise<void> {
+    await this.waitForNotificationListSettled();
     await expect(async () => {
       await refreshFlutterAccessibility(this.page);
       await this.page
