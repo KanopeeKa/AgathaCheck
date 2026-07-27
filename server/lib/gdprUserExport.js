@@ -11,6 +11,7 @@ export async function buildUserDataExport(pool, userId) {
     healthIssuesResult,
     healthHistoryResult,
     healthEventPhotosResult,
+    healthIssueDocumentsResult,
     healthIssueEventsResult,
     weightEntriesResult,
     notificationsResult,
@@ -39,6 +40,12 @@ export async function buildUserDataExport(pool, userId) {
       `SELECT hep.* FROM health_event_photos hep
        INNER JOIN health_entries he ON he.id = hep.health_entry_id
        WHERE he.user_id = $1`,
+      [userId],
+    ),
+    pool.query(
+      `SELECT hid.* FROM health_issue_documents hid
+       INNER JOIN health_issues hi ON hi.id = hid.health_issue_id
+       WHERE hi.user_id = $1`,
       [userId],
     ),
     pool.query('SELECT * FROM health_issue_events WHERE user_id = $1', [userId]),
@@ -83,6 +90,7 @@ export async function buildUserDataExport(pool, userId) {
     health_issues: healthIssuesResult.rows,
     health_history: healthHistoryResult.rows,
     health_event_photos: healthEventPhotosResult.rows,
+    health_issue_documents: healthIssueDocumentsResult.rows,
     health_issue_events: healthIssueEventsResult.rows,
     weight_entries: weightEntriesResult.rows,
     notifications: notificationsResult.rows,

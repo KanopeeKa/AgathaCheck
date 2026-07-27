@@ -1,10 +1,11 @@
 import path from 'path';
+import fs from 'fs';
 import multer from 'multer';
 import jwt from 'jsonwebtoken';
 
 import { JWT_SECRET } from '../../config/jwtSecret.js';
 import { dateToIsoDate } from '../../lib/calendarDate.js';
-import { extensionForMime, saveUploadedFile } from '../../lib/safeUpload.js';
+import { extensionForMime, resolvePathUnderRoot, saveUploadedFile } from '../../lib/safeUpload.js';
 
 export const MAX_HEALTH_DOCUMENT_BYTES = 2 * 1024 * 1024;
 export const HEALTH_DOCUMENT_EXTENSIONS = new Set(['.jpg', '.jpeg', '.png', '.pdf']);
@@ -42,6 +43,21 @@ export function saveHealthDocument(file, id) {
     maxBytes: MAX_HEALTH_DOCUMENT_BYTES,
   });
   return `/uploads/health_documents/${filename}`;
+}
+
+/** Best-effort removal of a persisted health document by its public URL path. */
+export function removeHealthDocumentFromDisk(url) {
+  if (!url || typeof url !== 'string') return;
+  const prefix = '/uploads/health_documents/';
+  if (!url.startsWith(prefix)) return;
+  const filename = url.slice(prefix.length);
+  if (!filename || filename.includes('/') || filename.includes('\\')) return;
+  try {
+    const filePath = resolvePathUnderRoot(healthUploadDir(), filename);
+    if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
+  } catch (_) {
+    // ignore missing or invalid paths
+  }
 }
 
 export function handleDocumentUpload(req, res, next) {

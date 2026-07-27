@@ -1,5 +1,8 @@
 import request from 'supertest';
 import jwt from 'jsonwebtoken';
+import fs from 'fs';
+import os from 'os';
+import path from 'path';
 import { createApp } from '../bin/server.js';
 import { handlePetAccessQuery, handleManageEntryQuery } from './helpers/petAccessMocks.js';
 
@@ -28,8 +31,12 @@ function makeIssueRow(overrides = {}) {
 describe('Health Issues API', () => {
   let app;
   let lastQuery;
+  let uploadDir;
+  let documentCount = 0;
 
   beforeAll(() => {
+    uploadDir = fs.mkdtempSync(path.join(os.tmpdir(), 'health-issue-documents-'));
+    process.env.HEALTH_UPLOAD_DIR = uploadDir;
     const mockPool = {
       query: async (sql, params) => {
         lastQuery = { sql, params };
@@ -95,6 +102,50 @@ describe('Health Issues API', () => {
           return { rows: [] };
         }
 
+        if (sql.includes('SELECT url FROM health_issue_documents WHERE health_issue_id')) {
+          return {
+            rows: [{ url: '/uploads/health_documents/doc-1.pdf' }],
+          };
+        }
+
+        if (sql.includes('SELECT * FROM health_issue_documents') && sql.includes('ORDER BY')) {
+          return {
+            rows: [{
+              id: 'doc-1',
+              health_issue_id: params[0],
+              url: '/uploads/health_documents/doc-1.pdf',
+              created_at: new Date(),
+            }],
+          };
+        }
+
+        if (sql.includes('SELECT COUNT(*)::int AS count FROM health_issue_documents')) {
+          return { rows: [{ count: documentCount }] };
+        }
+
+        if (sql.includes('INSERT INTO health_issue_documents')) {
+          documentCount += 1;
+          return {
+            rows: [{
+              id: params[0],
+              health_issue_id: params[1],
+              url: params[2],
+              created_at: new Date(),
+            }],
+          };
+        }
+
+        if (sql.includes('SELECT url FROM health_issue_documents WHERE id =')) {
+          return {
+            rows: [{ url: '/uploads/health_documents/doc-1.pdf' }],
+          };
+        }
+
+        if (sql.includes('DELETE FROM health_issue_documents')) {
+          documentCount = Math.max(0, documentCount - 1);
+          return { rows: [] };
+        }
+
         if (sql.includes('SELECT * FROM health_issue_events') && sql.includes('ORDER BY')) {
           return {
             rows: [{
@@ -116,6 +167,17 @@ describe('Health Issues API', () => {
       end: async () => {},
     };
     app = createApp(mockPool);
+  });
+
+  afterAll(() => {
+    delete process.env.HEALTH_UPLOAD_DIR;
+    if (uploadDir && fs.existsSync(uploadDir)) {
+      fs.rmSync(uploadDir, { recursive: true, force: true });
+    }
+  });
+
+  beforeEach(() => {
+    documentCount = 0;
   });
 
   describe('Auth guard', () => {
@@ -399,6 +461,152 @@ describe('Health Issues API', () => {
         .set('Authorization', `Bearer ${token}`);
       expect(lastQuery.sql).toContain('DELETE FROM health_issues WHERE id = $1');
       expect(lastQuery.params[0]).toBe('hi-1');
+    });
+
+    it('removes document files from disk when deleting an issue', async () => {
+      const docPath = path.join(uploadDir, 'doc-1.pdf');
+      fs.writeFileSync(docPath, 'pdf-content');
+      const res = await request(app)
+        .delete('/api/health-issues/hi-1')
+        .set('Authorization', `Bearer ${token}`);
+      expect(res.statusCode).toBe(200);
+      expect(fs.existsSync(docPath)).toBe(false);
+    });
+  });
+
+  describe('GET /api/health-issues/:id/documents', () => {
+    it('returns 401 without token', async () => {
+      const res = await request(app).get('/api/health-issues/hi-1/documents');
+      expect(res.statusCode).toBe(401);
+    });
+
+    it('returns documents array', async () => {
+      const res = await request(app)
+        .get('/api/health-issues/hi-1/documents')
+        .set('Authorization', `Bearer ${token}`);
+      expect(res.statusCode).toBe(200);
+      expect(Array.isArray(res.body)).toBe(true);
+      expect(res.body[0]).toHaveProperty('id');
+      expect(res.body[0]).toHaveProperty('health_issue_id');
+      expect(res.body[0]).toHaveProperty('url');
+      expect(res.body[0]).toHaveProperty('created_at');
+    });
+
+    it('returns 404 when the issue belongs to another user (IDOR)', async () => {
+      const res = await request(app)
+        .get('/api/health-issues/hi-notmine/documents')
+        .set('Authorization', `Bearer ${token}`);
+      expect(res.statusCode).toBe(404);
+    });
+  });
+
+  describe('POST /api/health-issues/:id/documents', () => {
+    it('returns 401 without token', async () => {
+      const res = await request(app)
+        .post('/api/health-issues/hi-1/documents')
+        .send({ url: '/uploads/test.jpg' });
+      expect(res.statusCode).toBe(401);
+    });
+
+    it('creates a document record', async () => {
+      const res = await request(app)
+        .post('/api/health-issues/hi-1/documents')
+        .set('Authorization', `Bearer ${token}`)
+        .send({ url: '/uploads/test.jpg' });
+      expect(res.statusCode).toBe(201);
+      expect(res.body).toHaveProperty('id');
+      expect(res.body).toHaveProperty('health_issue_id');
+      expect(res.body).toHaveProperty('url');
+    });
+
+    it.each([
+      ['JPG', 'document.jpg', 'image/jpeg'],
+      ['PNG', 'document.png', 'image/png'],
+      ['PDF', 'document.pdf', 'application/pdf'],
+    ])('accepts %s document uploads up to 2 MB', async (_label, filename, contentType) => {
+      const res = await request(app)
+        .post('/api/health-issues/hi-1/documents')
+        .set('Authorization', `Bearer ${token}`)
+        .attach('photo', Buffer.from('document'), { filename, contentType });
+      expect(res.statusCode).toBe(201);
+      expect(res.body.url).toMatch(
+        new RegExp(`/uploads/health_documents/.+\\.${filename.split('.').pop()}$`)
+      );
+    });
+
+    it('rejects unsupported file types', async () => {
+      const res = await request(app)
+        .post('/api/health-issues/hi-1/documents')
+        .set('Authorization', `Bearer ${token}`)
+        .attach('photo', Buffer.from('document'), {
+          filename: 'document.txt',
+          contentType: 'text/plain',
+        });
+      expect(res.statusCode).toBe(400);
+      expect(res.body.error).toBe('Only JPG, PNG, and PDF documents are allowed');
+    });
+
+    it('rejects documents larger than 2 MB', async () => {
+      const res = await request(app)
+        .post('/api/health-issues/hi-1/documents')
+        .set('Authorization', `Bearer ${token}`)
+        .attach('photo', Buffer.alloc(2 * 1024 * 1024 + 1), {
+          filename: 'document.pdf',
+          contentType: 'application/pdf',
+        });
+      expect(res.statusCode).toBe(400);
+      expect(res.body.error).toBe('Document must be 2 MB or smaller');
+    });
+
+    it('rejects more than 4 documents per issue', async () => {
+      documentCount = 4;
+      const res = await request(app)
+        .post('/api/health-issues/hi-1/documents')
+        .set('Authorization', `Bearer ${token}`)
+        .send({ url: '/uploads/test.jpg' });
+      expect(res.statusCode).toBe(400);
+      expect(res.body.error).toBe('Maximum 4 documents per health issue');
+    });
+
+    it('returns 404 when the issue belongs to another user (IDOR)', async () => {
+      const res = await request(app)
+        .post('/api/health-issues/hi-notmine/documents')
+        .set('Authorization', `Bearer ${token}`)
+        .send({ url: '/uploads/test.jpg' });
+      expect(res.statusCode).toBe(404);
+    });
+  });
+
+  describe('DELETE /api/health-issues/:issueId/documents/:documentId', () => {
+    it('returns 401 without token', async () => {
+      const res = await request(app)
+        .delete('/api/health-issues/hi-1/documents/doc-1');
+      expect(res.statusCode).toBe(401);
+    });
+
+    it('deletes a document and returns success', async () => {
+      const res = await request(app)
+        .delete('/api/health-issues/hi-1/documents/doc-1')
+        .set('Authorization', `Bearer ${token}`);
+      expect(res.statusCode).toBe(200);
+      expect(res.body).toHaveProperty('deleted', true);
+    });
+
+    it('removes the document file from disk', async () => {
+      const docPath = path.join(uploadDir, 'doc-1.pdf');
+      fs.writeFileSync(docPath, 'pdf-content');
+      const res = await request(app)
+        .delete('/api/health-issues/hi-1/documents/doc-1')
+        .set('Authorization', `Bearer ${token}`);
+      expect(res.statusCode).toBe(200);
+      expect(fs.existsSync(docPath)).toBe(false);
+    });
+
+    it('returns 404 when the issue belongs to another user (IDOR)', async () => {
+      const res = await request(app)
+        .delete('/api/health-issues/hi-notmine/documents/doc-1')
+        .set('Authorization', `Bearer ${token}`);
+      expect(res.statusCode).toBe(404);
     });
   });
 
