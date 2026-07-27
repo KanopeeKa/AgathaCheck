@@ -18,11 +18,15 @@ import {
 
 const baseURL = () => process.env.E2E_BASE_URL ?? 'http://localhost:3000';
 
-async function openRescueHearts(page: import('@playwright/test').Page, user: TestUser) {
+async function openRescueHearts(
+  page: import('@playwright/test').Page,
+  user: TestUser,
+  orgId: string,
+) {
   const petList = await loginAs(page, user);
   await petList.openOrganizations();
   const orgList = new OrganizationListPage(page);
-  await orgList.openOrg('Rescue Hearts');
+  await orgList.openOrg('Rescue Hearts', orgId);
   const detail = new OrganizationDetailPage(page);
   await detail.expectLoaded('Rescue Hearts');
   return detail;
@@ -30,8 +34,8 @@ async function openRescueHearts(page: import('@playwright/test').Page, user: Tes
 
 test.describe('Foster onboarding and approval', () => {
   test('opening manage fosters from organisation menu', async ({ page }) => {
-    const { alice } = await seedRescueHearts(baseURL());
-    const detail = await openRescueHearts(page, alice);
+    const { alice, org } = await seedRescueHearts(baseURL());
+    const detail = await openRescueHearts(page, alice, org.id);
     await detail.openManageFosters();
     const fosters = new ManageFostersPage(page);
     await fosters.expectLoaded();
@@ -52,7 +56,7 @@ test.describe('Foster onboarding and approval', () => {
     );
     await acceptFosterPlacement(baseURL(), eve.accessToken, placement.id);
 
-    const detail = await openRescueHearts(page, alice);
+    const detail = await openRescueHearts(page, alice, org.id);
     await detail.openManageFosters();
     const fosters = new ManageFostersPage(page);
     await fosters.expectLoaded();
@@ -61,8 +65,8 @@ test.describe('Foster onboarding and approval', () => {
   });
 
   test('adding a foster manually', async ({ page }) => {
-    const { alice } = await seedRescueHearts(baseURL());
-    const detail = await openRescueHearts(page, alice);
+    const { alice, org } = await seedRescueHearts(baseURL());
+    const detail = await openRescueHearts(page, alice, org.id);
     await detail.openManageFosters();
     const fosters = new ManageFostersPage(page);
     await fosters.expectLoaded();

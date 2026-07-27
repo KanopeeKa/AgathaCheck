@@ -37,6 +37,33 @@ function isOrgDetailRoute(page: Page): boolean {
   return /\/o\/orgs\/[^/?#]+/.test(flutterRoutePath(page.url()));
 }
 
+/** Read org id from OrgCard semantics identifier (`org_membership_<id>`). */
+async function resolveMembershipOrgId(page: Page, name: string): Promise<string | undefined> {
+  await refreshFlutterAccessibility(page);
+  const card = membershipOrgCardLocator(page, name);
+  if (!(await card.count())) {
+    return undefined;
+  }
+  return card
+    .evaluate((button) => {
+      const match = (el: Element | null): string | undefined => {
+        while (el) {
+          const raw =
+            el.getAttribute('flt-semantics-identifier') ??
+            el.getAttribute('identifier') ??
+            (el.id.startsWith('org_membership_') ? el.id : null);
+          if (raw?.startsWith('org_membership_')) {
+            return raw.slice('org_membership_'.length);
+          }
+          el = el.parentElement;
+        }
+        return undefined;
+      };
+      return match(button);
+    })
+    .catch(() => undefined);
+}
+
 /** Flutter web often misses InkWell when Playwright clicks the semantics node. */
 async function activateMembershipCard(page: Page, name: string): Promise<void> {
   await refreshFlutterAccessibility(page);
@@ -89,6 +116,8 @@ export class OrganizationListPage {
   async openOrg(name: string, orgId?: string): Promise<void> {
     await this.expectOrgVisible(name);
 
+    const resolvedOrgId = orgId ?? (await resolveMembershipOrgId(this.page, name));
+
     await activateMembershipCard(this.page, name);
     if (!isOrgDetailRoute(this.page)) {
       try {
@@ -103,11 +132,11 @@ export class OrganizationListPage {
             try {
               await waitForFlutterRoutePattern(this.page, /\/o\/orgs\/[^/?#]+/, 8_000);
             } catch {
-              if (!orgId) {
+              if (!resolvedOrgId) {
                 throw navErr;
               }
             }
-          } else if (!orgId) {
+          } else if (!resolvedOrgId) {
             throw navErr;
           }
         }
@@ -115,13 +144,13 @@ export class OrganizationListPage {
     }
 
     if (!isOrgDetailRoute(this.page)) {
-      if (!orgId) {
+      if (!resolvedOrgId) {
         await waitForFlutterRoutePattern(this.page, /\/o\/orgs\/[^/?#]+/, 30_000);
       } else {
         await navigateWithShellFallback(
           this.page,
           /\/o\/orgs\/[^/?#]+/,
-          `/o/orgs/${orgId}`,
+          `/o/orgs/${resolvedOrgId}`,
           async () => {
             await waitForFlutterRoutePattern(this.page, /\/o\/orgs\/[^/?#]+/, 30_000);
             await refreshFlutterAccessibility(this.page);
