@@ -24,11 +24,22 @@ test('classifyFailedJob maps smoke job to http_smoke', () => {
   assert.equal(row.gate, 'http_smoke');
 });
 
-test('classifyFailedJobs maps pre-uat E2E failure to pre_uat_e2e', () => {
+test('classifyFailedJobs maps pre-uat E2E gate failure to pre_uat_e2e', () => {
   const rows = classifyFailedJobs([
-    { name: 'Full localhost E2E', conclusion: 'failure', id: 1 },
+    { name: 'Pre-UAT E2E gate', conclusion: 'failure', id: 1 },
   ]);
   assert.equal(rows[0].gate, 'pre_uat_e2e');
+});
+
+test('classifyFailedJobs maps localhost shard jobs to localhost_e2e not pre_uat_e2e', () => {
+  const rows = classifyFailedJobs([
+    {
+      name: 'Full localhost E2E (2) / Playwright E2E (localhost shard 2/11)',
+      conclusion: 'failure',
+      id: 1,
+    },
+  ]);
+  assert.equal(rows[0].gate, 'localhost_e2e');
 });
 
 test('classifyFailedJobs ignores success jobs', () => {
