@@ -4,6 +4,7 @@ import {
   dismissConsentBannerIfPresent,
   expectAppBarTitle,
   escapeRegExp,
+  flutterRoutePath,
   isExperienceShellVisible,
   navigateWithShellFallback,
   refreshFlutterAccessibility,
@@ -30,6 +31,23 @@ function membershipOrgCardLocator(page: Page, name: string) {
     .getByRole('button', { name: membershipOrgCardPattern(name) })
     .filter({ visible: true })
     .first();
+}
+
+function isOrgDetailRoute(page: Page): boolean {
+  return /\/o\/orgs\/[^/?#]+/.test(flutterRoutePath(page.url()));
+}
+
+/** Flutter web often misses InkWell when Playwright clicks the semantics node. */
+async function activateMembershipCard(page: Page, name: string): Promise<void> {
+  await refreshFlutterAccessibility(page);
+  const card = membershipOrgCardLocator(page, name);
+  await card.scrollIntoViewIfNeeded();
+  const box = await card.boundingBox();
+  if (box) {
+    await page.mouse.click(box.x + box.width / 2, box.y + box.height / 2);
+    return;
+  }
+  await card.click({ force: true });
 }
 
 export class OrganizationListPage {
@@ -70,27 +88,49 @@ export class OrganizationListPage {
    */
   async openOrg(name: string, orgId?: string): Promise<void> {
     await this.expectOrgVisible(name);
-    await refreshFlutterAccessibility(this.page);
-    const card = membershipOrgCardLocator(this.page, name);
-    await card.scrollIntoViewIfNeeded();
-    await card.click();
-    try {
-      await waitForFlutterRoutePattern(this.page, /\/o\/orgs\/[^/?#]+/, 8_000);
-    } catch (navErr) {
-      if (!orgId) {
-        throw navErr;
-      }
-      await navigateWithShellFallback(
-        this.page,
-        /\/o\/orgs\/[^/?#]+/,
-        `/o/orgs/${orgId}`,
-        async () => {
-          await waitForFlutterRoutePattern(this.page, /\/o\/orgs\/[^/?#]+/, 30_000);
+
+    await activateMembershipCard(this.page, name);
+    if (!isOrgDetailRoute(this.page)) {
+      try {
+        await waitForFlutterRoutePattern(this.page, /\/o\/orgs\/[^/?#]+/, 8_000);
+      } catch (navErr) {
+        if (!isOrgDetailRoute(this.page)) {
           await refreshFlutterAccessibility(this.page);
-        },
-        { helper: 'OrganizationListPage.openOrg', testTitle: name },
-      );
+          const card = membershipOrgCardLocator(this.page, name);
+          if (await card.isVisible().catch(() => false)) {
+            await card.focus();
+            await this.page.keyboard.press('Enter');
+            try {
+              await waitForFlutterRoutePattern(this.page, /\/o\/orgs\/[^/?#]+/, 8_000);
+            } catch {
+              if (!orgId) {
+                throw navErr;
+              }
+            }
+          } else if (!orgId) {
+            throw navErr;
+          }
+        }
+      }
     }
+
+    if (!isOrgDetailRoute(this.page)) {
+      if (!orgId) {
+        await waitForFlutterRoutePattern(this.page, /\/o\/orgs\/[^/?#]+/, 30_000);
+      } else {
+        await navigateWithShellFallback(
+          this.page,
+          /\/o\/orgs\/[^/?#]+/,
+          `/o/orgs/${orgId}`,
+          async () => {
+            await waitForFlutterRoutePattern(this.page, /\/o\/orgs\/[^/?#]+/, 30_000);
+            await refreshFlutterAccessibility(this.page);
+          },
+          { helper: 'OrganizationListPage.openOrg', testTitle: name },
+        );
+      }
+    }
+
     await refreshFlutterAccessibility(this.page);
   }
 
