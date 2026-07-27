@@ -5,7 +5,10 @@ import jwt from 'jsonwebtoken';
 import { createApiLimiter } from '../config/rateLimit.js';
 import { JWT_SECRET } from '../config/jwtSecret.js';
 import { publicError } from '../config/security.js';
-import { checkDueNotifications } from '../lib/checkDueNotifications.js';
+import {
+  buildNotificationDeepLink,
+  checkDueNotifications,
+} from '../lib/checkDueNotifications.js';
 import {
   normaliseKind,
   normalisePriority,
@@ -22,12 +25,15 @@ function extractUserId(req) {
 }
 
 function notificationToMap(row) {
+  const petId = row.pet_id || null;
+  const healthEntryId = row.health_entry_id || null;
   return {
     id: row.id,
     user_id: row.user_id,
-    pet_id: row.pet_id || null,
+    pet_id: petId,
     pet_name: row.pet_name || null,
-    health_entry_id: row.health_entry_id || null,
+    health_entry_id: healthEntryId,
+    deep_link: buildNotificationDeepLink(petId, healthEntryId),
     organization_id: row.organization_id || null,
     title: row.title || '',
     message: row.message || '',

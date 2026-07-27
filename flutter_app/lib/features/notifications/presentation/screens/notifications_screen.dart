@@ -8,6 +8,7 @@ import '../../domain/entities/notification_scope.dart';
 import '../../domain/services/notification_scope_rules.dart';
 import '../providers/notification_providers.dart';
 import '../utils/notification_accent.dart';
+import '../utils/notification_navigation.dart';
 import '../widgets/notification_date_groups.dart';
 import '../widgets/notification_tile.dart';
 import '../../../pet_profile/presentation/providers/pet_providers.dart';
@@ -169,12 +170,7 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
                                 .markAsRead(n.id);
                           }
                           if (!context.mounted) return;
-                          if (n.petId != null && n.petId!.isNotEmpty) {
-                            context.go('/pet/${n.petId}');
-                          } else if (n.organizationId != null &&
-                              n.organizationId!.isNotEmpty) {
-                            context.go('/o/orgs/${n.organizationId}');
-                          }
+                          navigateFromNotification(context, n);
                         },
                       ),
                     ),

@@ -4,7 +4,7 @@
   "approved_at": "2026-07-27T13:10:00Z",
   "approved_by": "user chat 2026-07-27 (/execute-plan guardian-ui-wave2)",
   "approved_until": "2026-07-29T13:10:00Z",
-  "content_hash": "sha256:0f0617bb97571d8fc415f2354b2f3bcca354c744375adc130d509b0d0d79b77f",
+  "content_hash": "sha256:7474bc43c5cef176e65001e453bbfdf50a6a3568876e0a80c3f52f4dc26a6cd4",
   "autonomy": "active",
   "default_merge_mode": "auto",
   "base_branch": "cursor/guardian-ui-wave2-integration-5dd0",
@@ -76,7 +76,7 @@
       "spawn_config": null,
       "merge_method": "squash",
       "exit_checklist": "flutter-screen-split",
-      "status": "in_progress",
+      "status": "pending",
       "status_reason": null,
       "status_detail": null,
       "debt_issue_refs": []
@@ -513,13 +513,12 @@
       "spawn_config": null,
       "merge_method": "squash",
       "exit_checklist": "bdd-journey",
-      "status": "pending",
+      "status": "merged",
       "status_reason": null,
       "status_detail": null,
       "debt_issue_refs": [],
-      "pr_url": null,
-      "pr_head_sha": null,
-      "merge_commit": null
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/452",
+      "pr_head_sha": "efc7a34dc54f5094f1d7eb50058d93c64bd2ee3b"
     },
     {
       "id": "15",
@@ -548,13 +547,10 @@
       "spawn_config": null,
       "merge_method": "squash",
       "exit_checklist": "bdd-journey",
-      "status": "pending",
+      "status": "done",
       "status_reason": null,
-      "status_detail": null,
-      "debt_issue_refs": [],
-      "pr_url": null,
-      "pr_head_sha": null,
-      "merge_commit": null
+      "status_detail": "PR opened to integration branch",
+      "debt_issue_refs": []
     }
   ]
 }

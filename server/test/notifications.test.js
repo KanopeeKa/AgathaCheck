@@ -142,6 +142,7 @@ describe('Notifications API', () => {
       expect(n).toHaveProperty('pet_id', 'pet-1');
       expect(n).toHaveProperty('pet_name', 'Buddy');
       expect(n).toHaveProperty('health_entry_id', 'he-1');
+      expect(n).toHaveProperty('deep_link', '/pet/pet-1/events/he-1');
       expect(n).toHaveProperty('organization_id', 'org-1');
       expect(n).toHaveProperty('title', 'Reminder');
       expect(n).toHaveProperty('message', 'Time for checkup');
@@ -161,6 +162,7 @@ describe('Notifications API', () => {
       expect(n.pet_id).toBeNull();
       expect(n.pet_name).toBeNull();
       expect(n.health_entry_id).toBeNull();
+      expect(n.deep_link).toBeNull();
       expect(n.organization_id).toBeNull();
       expect(n.is_read).toBe(true);
     });
