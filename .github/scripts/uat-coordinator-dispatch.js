@@ -20,7 +20,7 @@ const {
   releaseWatcher,
   setPromoteHold,
 } = require('../../scripts/lib/uat_queue_lib');
-const { reconcileFailedDeployLedger } = require('../../scripts/lib/uat_deploy_run_resolve');
+const { reconcileFailedDeployLedger, reconcileFailedPreUatLedger } = require('../../scripts/lib/uat_deploy_run_resolve');
 const {
   loadStateFromIssue,
   resolveCoordinationIssue,
@@ -84,6 +84,7 @@ async function prepareDispatch({
   mergeSha = null,
   failedEntry = null,
   failedGates = null,
+  skipPromoteHold = false,
 }) {
   const { state, issueNumber } = await loadStateFromIssue(coordinationIssue, token);
   await releaseWatcherIfHolderRunFinished(state, owner, repo, token);
@@ -151,9 +152,11 @@ async function prepareDispatch({
     nextState = remedial.state;
   }
   const entry = findEntryByMergeSha(nextState, head.merge_sha) || head;
-  setPromoteHold(nextState, {
-    reason: `deploy-uat failure run ${workflowRunId}`,
-  });
+  if (!skipPromoteHold) {
+    setPromoteHold(nextState, {
+      reason: `deploy-uat failure run ${workflowRunId}`,
+    });
+  }
 
   const resolvedFailedGates =
     failedGates || classifyFailedJobs(await fetchWorkflowJobs(owner, repo, workflowRunId, token));
@@ -236,16 +239,29 @@ async function main() {
   const failedGates = classifyFailedJobs(jobs);
   const gateFailureClass = isInfraOnlyFailure(failedGates) ? 'infra_only' : 'code';
 
-  const ledgerSync = await reconcileFailedDeployLedger({
-    owner,
-    repo,
-    workflowRunId,
-    workflowUrl: resolvedUrl,
-    coordinationIssue,
-    token,
-    write: writeLedger,
-    gateFailureClass,
-  });
+  const isPreUatRun = /^pre-uat e2e$/i.test(String(run.name || '').trim());
+
+  const ledgerSync = isPreUatRun
+    ? await reconcileFailedPreUatLedger({
+        owner,
+        repo,
+        workflowRunId,
+        workflowUrl: resolvedUrl,
+        coordinationIssue,
+        token,
+        write: writeLedger,
+        failedGates,
+      })
+    : await reconcileFailedDeployLedger({
+        owner,
+        repo,
+        workflowRunId,
+        workflowUrl: resolvedUrl,
+        coordinationIssue,
+        token,
+        write: writeLedger,
+        gateFailureClass,
+      });
 
   let failedEntry = null;
   if (writeLedger) {
@@ -286,6 +302,7 @@ async function main() {
     mergeSha: run.head_sha || null,
     failedEntry,
     failedGates,
+    skipPromoteHold: isPreUatRun,
   });
 
   if (prepared.skipped) {
