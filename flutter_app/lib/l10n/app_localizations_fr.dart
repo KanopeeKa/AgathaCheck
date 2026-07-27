@@ -943,6 +943,41 @@ class AppLocalizationsFr extends AppLocalizations {
   String get noLinkedEvents => 'Aucun événement lié';
 
   @override
+  String get addHealthIssue => 'Ajouter un problème de santé';
+
+  @override
+  String get issueDescriptionRequired => 'La description est requise';
+
+  @override
+  String get issueSince => 'Problème depuis';
+
+  @override
+  String get issueResolved => 'Problème résolu';
+
+  @override
+  String get issueStatusLabel => 'Statut';
+
+  @override
+  String get issueStatusOpen => 'Ouvert';
+
+  @override
+  String get issueStatusResolved => 'Résolu';
+
+  @override
+  String get reopenIssue => 'Rouvrir le problème';
+
+  @override
+  String issueReopenedNote(String closedDate, String reopenedDate) {
+    return 'Problème précédemment fermé le $closedDate et rouvert le $reopenedDate';
+  }
+
+  @override
+  String get linkEvent => 'Lier un événement';
+
+  @override
+  String get showMore => 'Voir plus';
+
+  @override
   String get addPetTitle => 'Ajouter un animal';
 
   @override

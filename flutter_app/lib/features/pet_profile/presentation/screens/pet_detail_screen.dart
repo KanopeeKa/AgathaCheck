@@ -9,6 +9,7 @@ import '../../../experience/presentation/providers/experience_providers.dart';
 import '../../../experience/presentation/widgets/experience_shell_scaffold.dart';
 import '../../../organization/presentation/widgets/pet_foster_placement_section.dart';
 import '../../domain/services/pet_detail_actions.dart';
+import '../controllers/download_report_controller.dart';
 import '../providers/pet_detail_viewer_context_provider.dart';
 import '../providers/pet_providers.dart';
 import '../widgets/pet_detail/pet_detail_profile_card.dart';
@@ -54,10 +55,41 @@ class _PetDetailScreenState extends ConsumerState<PetDetailScreen> {
           petDetailViewerContextProvider(widget.petId),
         );
 
+        final showSharing =
+            viewerContext.can(PetDetailAction.manageSharing) ||
+            pet.isShared ||
+            pet.isFoster;
+        final showExport = viewerContext.can(PetDetailAction.downloadReport);
+
+        final contextualActions = <Widget>[
+          if (showSharing)
+            IconButton(
+              key: const Key('pet_detail_sharing_action'),
+              tooltip: l.sharingSection,
+              icon: const Icon(Icons.people_outline),
+              onPressed: () => showSharingSheet(
+                context,
+                ref,
+                petId: widget.petId,
+                pet: pet,
+              ),
+            ),
+          if (showExport)
+            IconButton(
+              key: const Key('pet_detail_export_report_action'),
+              tooltip: l.downloadPetReport,
+              icon: const Icon(Icons.picture_as_pdf_outlined),
+              onPressed: () => DownloadReportController(
+                ref,
+              ).onDownloadReport(context, pet),
+            ),
+        ];
+
         Widget body = ExperienceShellScaffold(
           experience: experience,
           currentLocation: GoRouterState.of(context).uri.path,
           screenTitle: pet.name,
+          contextualActions: contextualActions,
           child: CustomScrollView(
             slivers: [
               SliverToBoxAdapter(
@@ -86,12 +118,6 @@ class _PetDetailScreenState extends ConsumerState<PetDetailScreen> {
               SliverToBoxAdapter(
                 child: PetEventsPreviewSection(petId: widget.petId, pet: pet),
               ),
-              if (viewerContext.can(PetDetailAction.manageSharing) ||
-                  pet.isShared ||
-                  pet.isFoster)
-                SliverToBoxAdapter(
-                  child: SharingSection(petId: widget.petId, pet: pet),
-                ),
               const SliverToBoxAdapter(child: SizedBox(height: 32)),
             ],
           ),

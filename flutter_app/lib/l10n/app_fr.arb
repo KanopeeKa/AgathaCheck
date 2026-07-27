@@ -308,6 +308,23 @@
   "endDateOptional": "Date de fin",
   "linkedEvents": "Événements liés",
   "noLinkedEvents": "Aucun événement lié",
+  "addHealthIssue": "Ajouter un problème de santé",
+  "issueDescriptionRequired": "La description est requise",
+  "issueSince": "Problème depuis",
+  "issueResolved": "Problème résolu",
+  "issueStatusLabel": "Statut",
+  "issueStatusOpen": "Ouvert",
+  "issueStatusResolved": "Résolu",
+  "reopenIssue": "Rouvrir le problème",
+  "issueReopenedNote": "Problème précédemment fermé le {closedDate} et rouvert le {reopenedDate}",
+  "@issueReopenedNote": {
+    "placeholders": {
+      "closedDate": { "type": "String" },
+      "reopenedDate": { "type": "String" }
+    }
+  },
+  "linkEvent": "Lier un événement",
+  "showMore": "Voir plus",
 
   "addPetTitle": "Ajouter un animal",
   "editPetTitle": "Modifier l'animal",

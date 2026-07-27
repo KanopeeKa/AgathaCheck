@@ -934,6 +934,41 @@ class AppLocalizationsEn extends AppLocalizations {
   String get noLinkedEvents => 'No linked events';
 
   @override
+  String get addHealthIssue => 'Add health issue';
+
+  @override
+  String get issueDescriptionRequired => 'Description is required';
+
+  @override
+  String get issueSince => 'Issue since';
+
+  @override
+  String get issueResolved => 'Issue resolved';
+
+  @override
+  String get issueStatusLabel => 'Status';
+
+  @override
+  String get issueStatusOpen => 'Open';
+
+  @override
+  String get issueStatusResolved => 'Resolved';
+
+  @override
+  String get reopenIssue => 'Reopen issue';
+
+  @override
+  String issueReopenedNote(String closedDate, String reopenedDate) {
+    return 'Issue previously closed on $closedDate and reopened on $reopenedDate';
+  }
+
+  @override
+  String get linkEvent => 'Link event';
+
+  @override
+  String get showMore => 'Show more';
+
+  @override
   String get addPetTitle => 'Add Pet';
 
   @override
