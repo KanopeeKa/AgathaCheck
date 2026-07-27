@@ -11,6 +11,17 @@ import { isLiveHostingTarget } from '../support/hosting';
 export class WeightTrackingPage {
   constructor(private readonly page: Page) {}
 
+  /**
+   * ExpansionTile root for the Weight Tracking card.
+   * Scoped locators avoid false matches on the profile header weight chip
+   * (latest weight shows the same "{value} kg" pattern before the list loads).
+   */
+  private weightSectionRoot() {
+    return this.page
+      .getByRole('group', { name: /Weight Tracking|Suivi du poids/i })
+      .first();
+  }
+
   /** Expand the Weight Tracking ExpansionTile if it is not already open. */
   async openSection(): Promise<void> {
     const expandedMarker = this.page.getByRole('radio', { name: 'kg' });
@@ -38,14 +49,15 @@ export class WeightTrackingPage {
       .waitFor({ timeout: 30_000 });
   }
 
-  /** Empty, entry rows, or error — Flutter web merges ListTile copy into group names. */
+  /** Empty, entry rows, or error — scoped to the section, not profile header chips. */
   private weightDataSettledLocator() {
-    return this.page
+    const section = this.weightSectionRoot();
+    return section
       .getByRole('group', {
         name: /no weight data yet|aucune donnée de poids|\d+\.\d+ (kg|lb)/i,
       })
       .or(
-        this.page.getByText(
+        section.getByText(
           /no weight data yet|aucune donnée de poids|\d+\.\d+ (kg|lb)|error loading weight/i,
         ),
       );
@@ -68,10 +80,11 @@ export class WeightTrackingPage {
     await expect(async () => {
       await this.openSection();
       await this.waitForWeightDataSettled();
+      const section = this.weightSectionRoot();
       await expect(
-        this.page
+        section
           .getByText(/no weight data yet|aucune donnée de poids/i)
-          .or(this.page.getByRole('group', { name: /No weight data yet|Aucune donnée de poids/i }))
+          .or(section.getByRole('group', { name: /No weight data yet|Aucune donnée de poids/i }))
           .first(),
       ).toBeVisible();
     }).toPass({ timeout });
@@ -123,10 +136,11 @@ export class WeightTrackingPage {
     await expect(async () => {
       await this.openSection();
       await this.waitForWeightDataSettled();
+      const section = this.weightSectionRoot();
       await expect(
-        this.page
+        section
           .getByRole('group', { name: pattern })
-          .or(this.page.getByText(label, { exact: false }))
+          .or(section.getByText(label, { exact: false }))
           .first(),
       ).toBeVisible();
     }).toPass({ timeout });
@@ -139,7 +153,8 @@ export class WeightTrackingPage {
     await expect(async () => {
       await this.openSection();
       await this.waitForWeightDataSettled();
-      const entries = this.page.getByRole('group', { name: /^\d+\.\d+ (kg|lb)/ });
+      const section = this.weightSectionRoot();
+      const entries = section.getByRole('group', { name: /^\d+\.\d+ (kg|lb)/ });
       await expect(entries).toHaveCount(count);
     }).toPass({ timeout });
   }
