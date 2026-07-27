@@ -2,7 +2,7 @@
  * @bdd health_tracking.feature
  * Scenario: Marking a health entry as taken
  * Scenario: Creating a medication entry
- * Scenario: Empty health dashboard shows prompt
+ * Scenario: Empty guardian due-events inbox shows all caught up
  * Scenario: Creating a preventive entry
  * Scenario: Creating a vet visit entry
  * Scenario: Creating a procedure entry
@@ -95,7 +95,10 @@ test.describe('Health tracking', () => {
 
   // ── Wave A: Empty state ───────────────────────────────────────────────────
 
-  test('empty health dashboard shows "No entries yet" prompt', async ({ page, testUser }) => {
+  test('empty guardian due-events inbox shows all caught up when no entries are due', async ({
+    page,
+    testUser,
+  }) => {
     const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
     await createPet(baseURL, testUser.accessToken, 'Bella');
 
@@ -282,7 +285,7 @@ test.describe('Health tracking', () => {
 
   // ── Wave C: Tab filtering ─────────────────────────────────────────────────
 
-  test('Medications tab shows medication entries', async ({ page, testUser }) => {
+  test('medication entry due today appears on guardian due-events inbox', async ({ page, testUser }) => {
     const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
     const pet = await createPet(baseURL, testUser.accessToken, 'Bella');
     const today = new Date().toISOString().slice(0, 10);
@@ -298,7 +301,7 @@ test.describe('Health tracking', () => {
 
     const dashboard = new HealthDashboardPage(page);
     await dashboard.expectLoaded();
-    await dashboard.selectTab('Medications');
+    // Guardian /g/events is a due-events inbox (no type tabs); due medication rows surface directly.
     await dashboard.expectEntryVisible('Heartworm');
   });
 
