@@ -95,7 +95,7 @@ test.describe('Organisation management', () => {
     await petList.openOrganizations();
 
     const orgList = new OrganizationListPage(page);
-    await orgList.openOrg('Happy Paws Clinic');
+    await orgList.openOrg('Happy Paws Clinic', org.id);
 
     const detail = new OrganizationDetailPage(page);
     await detail.inviteMember(bob.email, 'Admin');
@@ -137,14 +137,14 @@ test.describe('Organisation management', () => {
     const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
     const alice = await signupUser(baseURL, { firstName: 'Alice', lastName: 'Owner' });
     const carol = await signupUser(baseURL, { firstName: 'Carol', lastName: 'Admin' });
-    await createOrganization(baseURL, alice.accessToken, { name: 'Happy Paws Clinic' });
+    const org = await createOrganization(baseURL, alice.accessToken, { name: 'Happy Paws Clinic' });
 
     await loginAs(page, alice);
     const petList = new PetListPage(page);
     await petList.openOrganizations();
 
     const orgList = new OrganizationListPage(page);
-    await orgList.openOrg('Happy Paws Clinic');
+    await orgList.openOrg('Happy Paws Clinic', org.id);
 
     const detail = new OrganizationDetailPage(page);
     await detail.inviteMember(carol.email, 'Super admin');
@@ -177,7 +177,7 @@ test.describe('Organisation management', () => {
     await petList.openOrganizations();
 
     const orgList = new OrganizationListPage(page);
-    await orgList.openOrg('Happy Paws Clinic');
+    await orgList.openOrg('Happy Paws Clinic', org.id);
 
     const detail = new OrganizationDetailPage(page);
     await detail.expectInviteMenuHidden();
@@ -187,14 +187,14 @@ test.describe('Organisation management', () => {
     const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
     const alice = await signupUser(baseURL, { firstName: 'Alice', lastName: 'Owner' });
     const bob = await signupUser(baseURL, { firstName: 'Bob', lastName: 'Member' });
-    await seedOrgWithMember(baseURL, alice, bob, 'Happy Paws Clinic');
+    const org = await seedOrgWithMember(baseURL, alice, bob, 'Happy Paws Clinic');
 
     await loginAs(page, alice);
     const petList = new PetListPage(page);
     await petList.openOrganizations();
 
     const orgList = new OrganizationListPage(page);
-    await orgList.openOrg('Happy Paws Clinic');
+    await orgList.openOrg('Happy Paws Clinic', org.id);
 
     const detail = new OrganizationDetailPage(page);
     await detail.expectLoaded('Happy Paws Clinic');
@@ -204,14 +204,14 @@ test.describe('Organisation management', () => {
   test('super user can update organisation bio', async ({ page }) => {
     const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
     const alice = await signupUser(baseURL, { firstName: 'Alice', lastName: 'Owner' });
-    await createOrganization(baseURL, alice.accessToken, { name: 'Happy Paws Clinic' });
+    const org = await createOrganization(baseURL, alice.accessToken, { name: 'Happy Paws Clinic' });
 
     await loginAs(page, alice);
     const petList = new PetListPage(page);
     await petList.openOrganizations();
 
     const orgList = new OrganizationListPage(page);
-    await orgList.openOrg('Happy Paws Clinic');
+    await orgList.openOrg('Happy Paws Clinic', org.id);
 
     const detail = new OrganizationDetailPage(page);
     await detail.openEdit();
@@ -227,14 +227,14 @@ test.describe('Organisation management', () => {
     const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
     const alice = await signupUser(baseURL, { firstName: 'Alice', lastName: 'Owner' });
     const bob = await signupUser(baseURL, { firstName: 'Bob', lastName: 'Member' });
-    await seedOrgWithMember(baseURL, alice, bob, 'Happy Paws Clinic');
+    const org = await seedOrgWithMember(baseURL, alice, bob, 'Happy Paws Clinic');
 
     await loginAs(page, bob);
     const petList = new PetListPage(page);
     await petList.openOrganizations();
 
     const orgList = new OrganizationListPage(page);
-    await orgList.openOrg('Happy Paws Clinic');
+    await orgList.openOrg('Happy Paws Clinic', org.id);
 
     const detail = new OrganizationDetailPage(page);
     await detail.leaveOrganization();
