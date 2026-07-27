@@ -22,6 +22,7 @@ export class VetListPage {
     const rowPattern = new RegExp(escaped, 'i');
     return semanticsByName(this.page, cardPattern)
       .or(this.page.getByRole('button', { name: rowPattern }))
+      .or(this.page.getByRole('group', { name: rowPattern }))
       .or(this.page.getByText(rowPattern))
       .first();
   }
@@ -51,6 +52,7 @@ export class VetListPage {
     await expect(
       semanticsByName(this.page, new RegExp(`Veterinarian:\\s*${escaped}`, 'i'))
         .or(this.page.getByRole('button', { name: new RegExp(escaped, 'i') }))
+        .or(this.page.getByRole('group', { name: new RegExp(escaped, 'i') }))
         .or(this.page.getByText(new RegExp(escaped, 'i'))),
     ).toHaveCount(0);
   }
