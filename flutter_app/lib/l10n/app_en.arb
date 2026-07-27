@@ -333,6 +333,23 @@
   "endDateOptional": "End Date",
   "linkedEvents": "Linked Events",
   "noLinkedEvents": "No linked events",
+  "addHealthIssue": "Add health issue",
+  "issueDescriptionRequired": "Description is required",
+  "issueSince": "Issue since",
+  "issueResolved": "Issue resolved",
+  "issueStatusLabel": "Status",
+  "issueStatusOpen": "Open",
+  "issueStatusResolved": "Resolved",
+  "reopenIssue": "Reopen issue",
+  "issueReopenedNote": "Issue previously closed on {closedDate} and reopened on {reopenedDate}",
+  "@issueReopenedNote": {
+    "placeholders": {
+      "closedDate": { "type": "String" },
+      "reopenedDate": { "type": "String" }
+    }
+  },
+  "linkEvent": "Link event",
+  "showMore": "Show more",
 
   "addPetTitle": "Add Pet",
   "editPetTitle": "Edit Pet",
