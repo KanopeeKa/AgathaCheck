@@ -45,7 +45,7 @@ Phases merge to integration branch `cursor/guardian-ui-wave2-integration-5dd0`; 
 | **approved_at** | `2026-07-27T13:10:00Z` |
 | **approved_until** | `2026-07-29T13:10:00Z` |
 | **approved_by** | user chat 2026-07-27 (`/execute-plan` + wave-2 briefs) |
-| **control_issue** | (see snapshot) |
+| **control_issue** | #423 |
 | **autonomy** | `active` |
 
 ## Sanity check
@@ -63,10 +63,10 @@ next_action: "continue phase 1 on branch cursor/guardian-wave2-landing-eye-5dd0"
 artifact_ref:
   branch: cursor/guardian-wave2-landing-eye-5dd0
   plan_path: .agents/plans/guardian-ui-wave2-5dd0.md
-  plan_commit: aa0304bdf28aee645e2ba3582e7a6ed15ee673c2
+  plan_commit: b5032c968e38512f99c5a4a390c9546bde6dcd8c
   snapshot_path: .agents/plans/guardian-ui-wave2-5dd0.snapshot.json
-  snapshot_commit: aa0304bdf28aee645e2ba3582e7a6ed15ee673c2
-open_prs: []
+  snapshot_commit: b5032c968e38512f99c5a4a390c9546bde6dcd8c
+open_prs: [true]
 merge_commits: {}
 debt_issue_refs: []
 ```

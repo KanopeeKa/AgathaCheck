@@ -4,7 +4,7 @@
   "approved_at": "2026-07-27T13:10:00Z",
   "approved_by": "user chat 2026-07-27 (/execute-plan guardian-ui-wave2)",
   "approved_until": "2026-07-29T13:10:00Z",
-  "content_hash": "sha256:d4550bcade7bd9281867d526b546933453e601b419e09fd844fea3d50c78f3da",
+  "content_hash": "sha256:bcde182dacc1171b45c2168dd3277ecad3b3da6e130ac4e4ddbd3bf5ca87f000",
   "autonomy": "active",
   "default_merge_mode": "auto",
   "base_branch": "cursor/guardian-ui-wave2-integration-5dd0",
@@ -42,7 +42,9 @@
       "status": "in_progress",
       "status_reason": null,
       "status_detail": null,
-      "debt_issue_refs": []
+      "debt_issue_refs": [],
+      "pr_url": true,
+      "pr_head_sha": "b5032c968e38512f99c5a4a390c9546bde6dcd8c"
     },
     {
       "id": "2",
