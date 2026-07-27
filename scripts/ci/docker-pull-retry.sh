@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Pull a Docker image with exponential backoff (mitigates Docker Hub flakes on GHA).
+# Pull a Docker image with linear backoff (mitigates Docker Hub flakes on GHA).
 #
 # Usage:
 #   scripts/ci/docker-pull-retry.sh <image> [max_attempts]

@@ -29,5 +29,5 @@ for attempt in $(seq 1 30); do
 done
 
 echo "PostgreSQL did not become ready in time" >&2
-docker logs "$CONTAINER_NAME" 2>&1 | tail -50 >&2
+docker logs "$CONTAINER_NAME" 2>&1 | tail -50 >&2 || true
 exit 1
