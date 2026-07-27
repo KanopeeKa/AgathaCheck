@@ -183,11 +183,14 @@ test.describe('Organisation custody', () => {
     const { alice, eve, org } = await seedRescueHearts(baseURL);
     const { pet } = await seedActiveFosterPlacement(baseURL, alice, eve, org, 'Max');
 
-    const petList = await loginAs(page, alice);
+    const petList = await loginAs(page, alice, { experience: 'organization' });
     await petList.expectPetUnderOrganization('Max', 'Rescue Hearts');
     await hideOrgPetFromHome(baseURL, alice.accessToken, org.id, pet.id);
 
-    await petList.refreshByRemount({ experience: 'organization' });
+    // API hide does not invalidate in-memory petListProvider — reload like fosterer hide test.
+    await page.reload();
+    await reachAuthenticatedHome(page, { experience: 'organization' });
+    await petList.expectLoaded();
     await petList.expectPetHidden('Max');
 
     const detail = await openOrganization(page, alice, 'Rescue Hearts', org.id);
