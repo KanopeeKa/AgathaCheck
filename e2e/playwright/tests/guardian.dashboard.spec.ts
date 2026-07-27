@@ -9,6 +9,7 @@ import { ExperiencePage } from '../pages/experience.page';
 import { createPet, signupUser } from '../support/api';
 import {
   dismissConsentBannerIfPresent,
+  dashboardSectionGroup,
   refreshFlutterAccessibility,
   skipGuardianOnboardingIfPresent,
   waitForPostLoginRoute,
@@ -37,9 +38,9 @@ test.describe('Guardian dashboard', () => {
     await loginGuardian(page, testUser.email, testUser.password);
     await waitForFlutterRoutePattern(page, /\/g\/home/, 60_000);
 
-    await expect(page.getByText('My Pets', { exact: true })).toBeVisible();
-    await expect(page.getByText('Due and Overdue', { exact: true })).toBeVisible();
-    await expect(page.getByText('My Vets', { exact: true })).toBeVisible();
+    await expect(dashboardSectionGroup(page, 'myPets')).toBeVisible();
+    await expect(dashboardSectionGroup(page, 'dueAndOverdue')).toBeVisible();
+    await expect(dashboardSectionGroup(page, 'myVets')).toBeVisible();
 
     await expect(page.getByText('Pending foster placements')).not.toBeVisible();
     await expect(page.getByText('Pending Shares')).not.toBeVisible();

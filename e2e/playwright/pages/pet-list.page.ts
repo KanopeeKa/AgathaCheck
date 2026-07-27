@@ -3,6 +3,7 @@ import { expect } from '@playwright/test';
 import { HealthDashboardPage } from './health-dashboard.page';
 import { OrganizationListPage } from './organization-list.page';
 import {
+  dashboardSectionGroup,
   dismissConsentBannerIfPresent,
   escapeRegExp,
   expectHomeShellVisible,
@@ -114,11 +115,9 @@ export class PetListPage {
   /** Assert a due/overdue entry appears in the home DueEventsSection card. */
   async expectDueEntryOnHome(entryName: string): Promise<void> {
     await refreshFlutterAccessibility(this.page);
-    await expect(
-      this.page
-        .getByRole('group', { name: /Due and Overdue|À faire et en retard/i })
-        .first(),
-    ).toBeVisible({ timeout: 20_000 });
+    await expect(dashboardSectionGroup(this.page, 'dueAndOverdue')).toBeVisible({
+      timeout: 20_000,
+    });
     await semanticsByName(
       this.page,
       new RegExp(escapeRegExp(entryName), 'i'),
@@ -268,7 +267,11 @@ export class PetListPage {
   async expectSectionHeader(title: string): Promise<void> {
     await expect(async () => {
       await refreshFlutterAccessibility(this.page);
-      await expect(this.page.getByText(title, { exact: false }).first()).toBeVisible();
+      await expect(
+        dashboardSectionGroup(this.page, title).or(
+          this.page.getByText(title, { exact: false }).first(),
+        ),
+      ).toBeVisible();
     }).toPass({ timeout: 30_000 });
   }
 

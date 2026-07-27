@@ -16,13 +16,14 @@ import { createPet, getPet } from '../support/api';
 import { PetFormPage } from '../pages/pet-form.page';
 import { PetDetailPage } from '../pages/pet-detail.page';
 import { PetListPage } from '../pages/pet-list.page';
+import { dashboardSectionGroup } from '../support/flutter';
 
 test.describe('Pet profiles', () => {
   test('empty pet list shows prompt on guardian dashboard', async ({ page, testUser }) => {
     const petList = await loginAs(page, testUser);
     await petList.expectEmptyState();
     await expect(page.getByText('No pets yet')).toBeVisible();
-    await expect(page.getByText('My Pets', { exact: true })).toBeVisible();
+    await expect(dashboardSectionGroup(page, 'myPets')).toBeVisible();
   });
 
   test('@smoke-uat user can create a pet with required fields', async ({ page, testUser }) => {

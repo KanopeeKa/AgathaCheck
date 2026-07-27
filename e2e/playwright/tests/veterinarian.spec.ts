@@ -20,6 +20,7 @@ import { checkA11y } from '../support/axe';
 import { PetListPage } from '../pages/pet-list.page';
 import { VetListPage } from '../pages/vet-list.page';
 import { VetFormPage } from '../pages/vet-form.page';
+import { dashboardSectionGroup } from '../support/flutter';
 
 test.describe('Veterinarian management', () => {
   test('user can create a vet with all details', async ({ page, testUser }) => {
@@ -170,7 +171,7 @@ test.describe('Veterinarian management', () => {
     await vetList.goBack();
 
     await petList.expectLoaded();
-    await expect(page.getByText('My Pets', { exact: true })).toBeVisible();
+    await expect(dashboardSectionGroup(page, 'myPets')).toBeVisible();
   });
 
   test('user can navigate to vet list from the app bar', async ({ page, testUser }) => {

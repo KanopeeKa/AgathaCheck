@@ -143,7 +143,7 @@ export function homeShellLocator(page: Page): Locator {
     .getByRole('button', { name: /open notifications/i })
     .or(page.getByRole('button', { name: /open menu/i }))
     .or(page.getByRole('button', { name: 'To Do' }))
-    .or(page.getByText('My Pets', { exact: true }))
+    .or(page.getByRole('group', { name: DASHBOARD_SECTION_NAMES.myPets }))
     .or(page.getByText('No pets yet'))
     .or(page.getByRole('button', { name: /^(Home|Accueil)$/i }))
     .or(page.getByRole('button', { name: /^(Settings|Paramètres)/i }));
@@ -494,6 +494,27 @@ export async function logOutFromApp(page: Page): Promise<void> {
   }
 
   throw new Error('Could not find a logout entry point');
+}
+
+/** Guardian dashboard [DashboardSection] titles are semantics group labels, not plain text. */
+export const DASHBOARD_SECTION_NAMES = {
+  myPets: /My Pets|Mes animaux/i,
+  dueAndOverdue: /Due and Overdue|À faire et en retard/i,
+  myVets: /My [Vv]ets|Mes vétérinaires/i,
+} as const;
+
+export function dashboardSectionGroup(
+  page: Page,
+  section: keyof typeof DASHBOARD_SECTION_NAMES | RegExp | string,
+): Locator {
+  const name =
+    typeof section === 'string' &&
+    Object.prototype.hasOwnProperty.call(DASHBOARD_SECTION_NAMES, section)
+      ? DASHBOARD_SECTION_NAMES[section as keyof typeof DASHBOARD_SECTION_NAMES]
+      : typeof section === 'string'
+        ? new RegExp(escapeRegExp(section), 'i')
+        : section;
+  return page.getByRole('group', { name }).first();
 }
 
 /** Flutter MergeSemantics nodes may surface as button or group depending on the widget. */
