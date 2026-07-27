@@ -80,7 +80,7 @@ export class OrganizationDetailPage {
   }
 
   /** EN "All" / FR "Tous" — inclusive org pets tab (default is Need attention). */
-  private static readonly allPetsTabName = /^All$|^Tous$/i;
+  private static readonly allPetsTabName = /^(All|Tous)$/i;
 
   private async selectOrgPetsTab(name: RegExp): Promise<void> {
     await enableFlutterAccessibility(this.page);
