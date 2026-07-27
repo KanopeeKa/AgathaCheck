@@ -9,10 +9,10 @@ const { parseUatTag } = require('./uat_queue_lib');
 // editing; job names have drifted from these patterns before (see
 // docs/agent-efficiency/uat-coordinator-plan.md "Infra vs code classification").
 const GATE_CLASSIFIERS = [
-  { gate: 'pre_uat_e2e', pattern: /pre-uat e2e|pre-uat-e2e|full localhost e2e|pre-uat e2e gate/i, remedial: 'yes' },
+  { gate: 'localhost_e2e', pattern: /playwright e2e \(localhost|full localhost e2e|e2e shard/i, remedial: 'yes' },
+  { gate: 'pre_uat_e2e', pattern: /pre-uat e2e gate|pre-uat-e2e/i, remedial: 'yes' },
   { gate: 'http_smoke', pattern: /(^|\/)smoke\b|http smoke|post-deploy smoke/i, remedial: 'maybe_infra' },
   { gate: 'live_e2e', pattern: /uat-live-e2e|live uat smoke|@smoke-uat|live smoke/i, remedial: 'maybe_infra' },
-  { gate: 'localhost_e2e', pattern: /playwright e2e \(localhost|e2e shard/i, remedial: 'yes' },
   { gate: 'flutter_build', pattern: /build-web|flutter build|build flutter web/i, remedial: 'yes' },
   { gate: 'deploy', pattern: /(^|\/)deploy\b|deploy to uat/i, remedial: 'maybe_infra' },
   { gate: 'migrations', pattern: /migrate/i, remedial: 'escalate' },
