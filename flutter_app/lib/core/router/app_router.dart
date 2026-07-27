@@ -8,12 +8,15 @@ import '../../features/auth/presentation/screens/landing_screen.dart';
 import '../../features/auth/presentation/screens/my_details_screen.dart';
 import '../../features/health_tracking/domain/entities/health_entry.dart';
 import '../../features/health_tracking/presentation/screens/health_entry_form_screen.dart';
-import '../../features/health_tracking/presentation/screens/other_event_form_screen.dart';
+import '../../features/health_tracking/presentation/screens/pet_event_view_screen.dart';
 import '../../features/notifications/presentation/screens/notification_settings_screen.dart';
 import '../../features/notifications/presentation/screens/notifications_screen.dart';
 import '../../features/pet_profile/presentation/screens/pet_detail_screen.dart';
+import '../../features/pet_profile/presentation/screens/pet_health_issues_screen.dart';
 import '../../features/pet_profile/presentation/screens/pet_manage_events_screen.dart';
 import '../../features/pet_profile/presentation/screens/pet_form_screen.dart';
+import '../../features/pet_profile/presentation/screens/pet_timeline_screen.dart';
+import '../../features/pet_profile/presentation/screens/pet_weight_tracking_screen.dart';
 import '../../features/pet_profile/presentation/widgets/pet_edit_permission_guard.dart';
 import '../../features/organization/presentation/screens/archived_pets_screen.dart';
 import '../../features/sharing/presentation/screens/shared_pet_screen.dart';
@@ -184,6 +187,52 @@ final routerProvider = Provider<GoRouter>((ref) {
         },
       ),
       GoRoute(
+        path: '/pet/:petId/events/:entryId/edit',
+        name: 'editPetEvent',
+        builder: (context, state) {
+          final petId = state.pathParameters['petId']!;
+          final entryId = state.pathParameters['entryId']!;
+          return HealthEntryFormScreen(
+            entryId: entryId,
+            petId: petId,
+            allowedTypes: kAllPetEventTypes,
+          );
+        },
+      ),
+      GoRoute(
+        path: '/pet/:petId/events/:entryId',
+        name: 'petEventView',
+        builder: (context, state) {
+          final petId = state.pathParameters['petId']!;
+          final entryId = state.pathParameters['entryId']!;
+          return PetEventViewScreen(petId: petId, entryId: entryId);
+        },
+      ),
+      GoRoute(
+        path: '/pet/:petId/timeline',
+        name: 'petTimeline',
+        builder: (context, state) {
+          final petId = state.pathParameters['petId']!;
+          return PetTimelineScreen(petId: petId);
+        },
+      ),
+      GoRoute(
+        path: '/pet/:petId/weight',
+        name: 'petWeightTracking',
+        builder: (context, state) {
+          final petId = state.pathParameters['petId']!;
+          return PetWeightTrackingScreen(petId: petId);
+        },
+      ),
+      GoRoute(
+        path: '/pet/:petId/health-issues',
+        name: 'petHealthIssues',
+        builder: (context, state) {
+          final petId = state.pathParameters['petId']!;
+          return PetHealthIssuesScreen(petId: petId);
+        },
+      ),
+      GoRoute(
         path: '/pet/:petId/health/add',
         name: 'addPetHealthEntry',
         builder: (context, state) {
@@ -204,15 +253,7 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/pet/:petId/health/edit/:id',
         name: 'editPetHealthEntry',
-        builder: (context, state) {
-          final petId = state.pathParameters['petId']!;
-          final entryId = state.pathParameters['id']!;
-          return HealthEntryFormScreen(
-            entryId: entryId,
-            petId: petId,
-            allowedTypes: kHealthEventTypes.toList(),
-          );
-        },
+        redirect: (context, state) => redirectLegacyPetEventEditPath(state),
       ),
       GoRoute(
         path: '/pet/:petId/other/add',
@@ -224,18 +265,18 @@ final routerProvider = Provider<GoRouter>((ref) {
               ? HealthEntryType.values
                     .where((t) => t.name == typeParam)
                     .firstOrNull
-              : null;
-          return OtherEventFormScreen(petId: petId, initialType: initialType);
+              : HealthEntryType.other;
+          return HealthEntryFormScreen(
+            petId: petId,
+            initialType: initialType,
+            allowedTypes: kOtherEventTypes.toList(),
+          );
         },
       ),
       GoRoute(
         path: '/pet/:petId/other/edit/:id',
         name: 'editPetOtherEvent',
-        builder: (context, state) {
-          final petId = state.pathParameters['petId']!;
-          final entryId = state.pathParameters['id']!;
-          return OtherEventFormScreen(entryId: entryId, petId: petId);
-        },
+        redirect: (context, state) => redirectLegacyPetEventEditPath(state),
       ),
       GoRoute(
         path: '/health',

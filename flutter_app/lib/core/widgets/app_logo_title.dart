@@ -16,34 +16,52 @@ class AppLogoTitle extends StatelessWidget {
   /// Optional experience override; otherwise resolved from the current route.
   final AppExperience? experience;
 
-  const AppLogoTitle({super.key, required this.title, this.experience});
+  /// When false, the logo is not tappable (e.g. section drawer header).
+  final bool linkLogo;
+
+  /// When false, only the logo is shown (no title text).
+  final bool showTitle;
+
+  const AppLogoTitle({
+    super.key,
+    required this.title,
+    this.experience,
+    this.linkLogo = true,
+    this.showTitle = true,
+  });
 
   @override
   Widget build(BuildContext context) {
     final resolved = experience ?? LogoAssets.experienceForContext(context);
     final assetPath = LogoAssets.pngFor(resolved);
 
+    final logo = ClipRRect(
+      borderRadius: BorderRadius.circular(6),
+      child: Image.asset(
+        assetPath,
+        height: 32,
+        width: 32,
+        fit: BoxFit.cover,
+        semanticLabel: linkLogo
+            ? 'Agatha Track logo – tap to go home'
+            : 'Agatha Track logo',
+      ),
+    );
+
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        GestureDetector(
-          onTap: () => context.go('/'),
-          child: Tooltip(
-            message: 'Go to home',
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(6),
-              child: Image.asset(
-                assetPath,
-                height: 32,
-                width: 32,
-                fit: BoxFit.cover,
-                semanticLabel: 'Agatha Track logo – tap to go home',
-              ),
-            ),
-          ),
-        ),
-        const SizedBox(width: 8),
-        Flexible(child: Text(title, overflow: TextOverflow.ellipsis)),
+        if (linkLogo)
+          GestureDetector(
+            onTap: () => context.go('/'),
+            child: Tooltip(message: 'Go to home', child: logo),
+          )
+        else
+          logo,
+        if (showTitle) ...[
+          const SizedBox(width: 8),
+          Flexible(child: Text(title, overflow: TextOverflow.ellipsis)),
+        ],
       ],
     );
   }

@@ -5,9 +5,10 @@ import 'package:go_router/go_router.dart';
 import '../../../../../core/widgets/dashboard_section.dart';
 import '../../../../../l10n/app_localizations.dart';
 import '../../../../health_tracking/presentation/providers/health_providers.dart';
+import '../../../../health_tracking/presentation/widgets/due_event_card.dart';
 import '../../../domain/entities/pet.dart';
 
-/// Pet detail events preview with link to the manage-events screen.
+/// Pet profile due/overdue preview with link to manage events.
 class PetEventsPreviewSection extends ConsumerWidget {
   const PetEventsPreviewSection({
     super.key,
@@ -21,37 +22,56 @@ class PetEventsPreviewSection extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l = AppLocalizations.of(context)!;
-    final healthAsync = ref.watch(petHealthEventsByIdProvider(petId));
-    final otherAsync = ref.watch(petOtherEventsByIdProvider(petId));
+    final entriesAsync = ref.watch(petHealthEntriesByIdProvider(petId));
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: DashboardSection(
-        title: l.manageEvents,
+        title: l.dueAndOverdue,
         previewBuilder: (ctx) {
-          final healthCount = healthAsync.valueOrNull?.length ?? 0;
-          final otherCount = otherAsync.valueOrNull?.length ?? 0;
-          final total = healthCount + otherCount;
-
-          if (healthAsync.isLoading || otherAsync.isLoading) {
-            return const SizedBox(
+          return entriesAsync.when(
+            loading: () => const SizedBox(
               height: 24,
               child: Center(child: CircularProgressIndicator(strokeWidth: 2)),
-            );
-          }
-
-          if (total == 0) {
-            return Text(
-              l.noEventsYet,
+            ),
+            error: (error, _) => Text(
+              l.errorLoadingEntries(error.toString()),
               style: Theme.of(ctx).textTheme.bodyMedium?.copyWith(
-                color: Theme.of(ctx).colorScheme.onSurfaceVariant,
+                color: Theme.of(ctx).colorScheme.error,
               ),
-            );
-          }
+            ),
+            data: (entries) {
+              final dueEntries = entries.where(isEntryDueOrOverdue).toList()
+                ..sort((a, b) {
+                  final ad = a.nextDueDate ?? DateTime(2100);
+                  final bd = b.nextDueDate ?? DateTime(2100);
+                  return ad.compareTo(bd);
+                });
 
-          return Text(
-            l.petEventsSummary(total),
-            style: Theme.of(ctx).textTheme.bodyMedium,
+              if (dueEntries.isEmpty) {
+                return Text(
+                  l.homeNoDueEvents,
+                  style: Theme.of(ctx).textTheme.bodyMedium?.copyWith(
+                    color: Theme.of(ctx).colorScheme.onSurfaceVariant,
+                  ),
+                );
+              }
+
+              return Column(
+                children: dueEntries
+                    .map(
+                      (entry) => Padding(
+                        padding: const EdgeInsets.only(bottom: 8),
+                        child: DueEventCard(
+                          entry: entry,
+                          pet: pet,
+                          showActions: true,
+                        ),
+                      ),
+                    )
+                    .toList(),
+              );
+            },
           );
         },
         endLink: DashboardSectionLink(

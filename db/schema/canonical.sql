@@ -243,6 +243,12 @@ CREATE TABLE public.health_history (
     completed_on date,
     marked_by_user_id uuid
 );
+CREATE TABLE public.health_issue_documents (
+    id uuid NOT NULL,
+    health_issue_id uuid NOT NULL,
+    url text NOT NULL,
+    created_at timestamp with time zone DEFAULT now()
+);
 CREATE TABLE public.health_issue_events (
     id uuid NOT NULL,
     health_issue_id uuid NOT NULL,
@@ -583,6 +589,8 @@ ALTER TABLE ONLY public.health_event_photos
     ADD CONSTRAINT health_event_photos_pkey PRIMARY KEY (id);
 ALTER TABLE ONLY public.health_history
     ADD CONSTRAINT health_history_pkey PRIMARY KEY (id);
+ALTER TABLE ONLY public.health_issue_documents
+    ADD CONSTRAINT health_issue_documents_pkey PRIMARY KEY (id);
 ALTER TABLE ONLY public.health_issue_events
     ADD CONSTRAINT health_issue_events_pkey PRIMARY KEY (id);
 ALTER TABLE ONLY public.health_issues
@@ -671,6 +679,7 @@ CREATE INDEX idx_foster_request_targets_request_id ON public.foster_request_targ
 CREATE INDEX idx_foster_requests_org_id ON public.foster_requests USING btree (organization_id);
 CREATE INDEX idx_health_entries_pet_id ON public.health_entries USING btree (pet_id);
 CREATE INDEX idx_health_entries_user_id ON public.health_entries USING btree (user_id);
+CREATE INDEX idx_health_issue_documents_issue_id ON public.health_issue_documents USING btree (health_issue_id);
 CREATE INDEX idx_notifications_user_id ON public.notifications USING btree (user_id);
 CREATE INDEX idx_org_connection_requests_target ON public.org_connection_requests USING btree (target_org_id, status);
 CREATE INDEX idx_org_connections_high ON public.org_connections USING btree (org_high_id);
@@ -788,6 +797,8 @@ ALTER TABLE ONLY public.health_history
     ADD CONSTRAINT health_history_health_entry_id_fkey FOREIGN KEY (health_entry_id) REFERENCES public.health_entries(id) ON DELETE CASCADE;
 ALTER TABLE ONLY public.health_history
     ADD CONSTRAINT health_history_marked_by_user_id_fkey FOREIGN KEY (marked_by_user_id) REFERENCES public.users(id) ON DELETE SET NULL;
+ALTER TABLE ONLY public.health_issue_documents
+    ADD CONSTRAINT health_issue_documents_health_issue_id_fkey FOREIGN KEY (health_issue_id) REFERENCES public.health_issues(id) ON DELETE CASCADE;
 ALTER TABLE ONLY public.health_issue_events
     ADD CONSTRAINT health_issue_events_health_issue_id_fkey FOREIGN KEY (health_issue_id) REFERENCES public.health_issues(id) ON DELETE CASCADE;
 ALTER TABLE ONLY public.health_issue_events

@@ -3,6 +3,7 @@ library;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:pet_profile_app/features/pet_profile/presentation/providers/pet_providers.dart';
 import 'package:pet_profile_app/features/pet_profile/domain/entities/pet.dart';
 import 'package:pet_profile_app/features/auth/presentation/providers/auth_providers.dart';
@@ -77,13 +78,17 @@ void main() {
       await pumpApp(tester, frames: 5);
       for (var i = 0; i < 30; i++) {
         await tester.pump(const Duration(milliseconds: 50));
-        if (find
-            .byKey(const Key('dashboard_add_pet_button'))
-            .evaluate()
-            .isNotEmpty) {
+        if (find.text(l10nFromTester(tester).myPets).evaluate().isNotEmpty) {
           return;
         }
       }
+    }
+
+    Future<void> navigateToAddPetForm(WidgetTester tester) async {
+      final l10n = l10nFromTester(tester);
+      final context = tester.element(find.text(l10n.myPets).first);
+      GoRouter.of(context).go('/add');
+      await pumpApp(tester, frames: 5);
     }
 
     testWidgets('shows empty state initially', (tester) async {
@@ -107,9 +112,9 @@ void main() {
         reason: 'Should show empty state text',
       );
       expect(
-        find.byKey(const Key('dashboard_add_pet_button')),
-        findsOneWidget,
-        reason: 'Should show Add a pet action on guardian dashboard',
+        find.text(l10n.myPets),
+        findsWidgets,
+        reason: 'Should show My pets section on guardian dashboard',
       );
     });
 
@@ -128,14 +133,7 @@ void main() {
 
       final l10n = l10nFromTester(tester);
 
-      final addPetButton = find.byKey(const Key('dashboard_add_pet_button'));
-      expect(
-        addPetButton,
-        findsOneWidget,
-        reason: 'Should find Add Pet button',
-      );
-      await tester.tap(addPetButton);
-      await pumpApp(tester);
+      await navigateToAddPetForm(tester);
 
       expect(
         find.text(l10n.petName),
@@ -169,14 +167,7 @@ void main() {
 
       final l10n = l10nFromTester(tester);
 
-      final addPetButton = find.byKey(const Key('dashboard_add_pet_button'));
-      expect(
-        addPetButton,
-        findsOneWidget,
-        reason: 'Should find Add Pet button',
-      );
-      await tester.tap(addPetButton);
-      await pumpApp(tester);
+      await navigateToAddPetForm(tester);
 
       final saveButton = find.byKey(const Key('save_pet_button'));
       await tester.ensureVisible(saveButton);
@@ -204,8 +195,7 @@ void main() {
 
       final l10n = l10nFromTester(tester);
 
-      await tester.tap(find.byKey(const Key('dashboard_add_pet_button')));
-      await pumpApp(tester);
+      await navigateToAddPetForm(tester);
 
       await tester.enterText(find.byKey(const Key('pet_name_field')), 'Buddy');
       await tester.tap(find.byKey(const Key('pet_species_field')));

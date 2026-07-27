@@ -668,17 +668,29 @@ abstract class AppLocalizations {
   /// **'Manage events'**
   String get manageEvents;
 
-  /// No description provided for @eventsEditTab.
+  /// No description provided for @eventFilterClosed.
   ///
   /// In en, this message translates to:
-  /// **'Edit'**
-  String get eventsEditTab;
+  /// **'Closed'**
+  String get eventFilterClosed;
 
-  /// No description provided for @eventsHistoryTab.
+  /// No description provided for @eventFilterRecurring.
   ///
   /// In en, this message translates to:
-  /// **'History'**
-  String get eventsHistoryTab;
+  /// **'Recurring'**
+  String get eventFilterRecurring;
+
+  /// No description provided for @eventFilterOneTime.
+  ///
+  /// In en, this message translates to:
+  /// **'One-time'**
+  String get eventFilterOneTime;
+
+  /// No description provided for @eventFilterShowSkipped.
+  ///
+  /// In en, this message translates to:
+  /// **'Show skipped'**
+  String get eventFilterShowSkipped;
 
   /// No description provided for @noEventsYet.
   ///
@@ -1771,6 +1783,72 @@ abstract class AppLocalizations {
   /// **'No linked events'**
   String get noLinkedEvents;
 
+  /// No description provided for @addHealthIssue.
+  ///
+  /// In en, this message translates to:
+  /// **'Add health issue'**
+  String get addHealthIssue;
+
+  /// No description provided for @issueDescriptionRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Description is required'**
+  String get issueDescriptionRequired;
+
+  /// No description provided for @issueSince.
+  ///
+  /// In en, this message translates to:
+  /// **'Issue since'**
+  String get issueSince;
+
+  /// No description provided for @issueResolved.
+  ///
+  /// In en, this message translates to:
+  /// **'Issue resolved'**
+  String get issueResolved;
+
+  /// No description provided for @issueStatusLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Status'**
+  String get issueStatusLabel;
+
+  /// No description provided for @issueStatusOpen.
+  ///
+  /// In en, this message translates to:
+  /// **'Open'**
+  String get issueStatusOpen;
+
+  /// No description provided for @issueStatusResolved.
+  ///
+  /// In en, this message translates to:
+  /// **'Resolved'**
+  String get issueStatusResolved;
+
+  /// No description provided for @reopenIssue.
+  ///
+  /// In en, this message translates to:
+  /// **'Reopen issue'**
+  String get reopenIssue;
+
+  /// No description provided for @issueReopenedNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Issue previously closed on {closedDate} and reopened on {reopenedDate}'**
+  String issueReopenedNote(String closedDate, String reopenedDate);
+
+  /// No description provided for @linkEvent.
+  ///
+  /// In en, this message translates to:
+  /// **'Link event'**
+  String get linkEvent;
+
+  /// No description provided for @showMore.
+  ///
+  /// In en, this message translates to:
+  /// **'Show more'**
+  String get showMore;
+
   /// No description provided for @addPetTitle.
   ///
   /// In en, this message translates to:
@@ -1782,6 +1860,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Edit Pet'**
   String get editPetTitle;
+
+  /// No description provided for @editPetNamed.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit {petName}'**
+  String editPetNamed(String petName);
 
   /// No description provided for @petName.
   ///
@@ -5421,6 +5505,18 @@ abstract class AppLocalizations {
   /// **'Could not save timeline entry'**
   String get petTimelineFillError;
 
+  /// No description provided for @petTimelineJoinedAgatha.
+  ///
+  /// In en, this message translates to:
+  /// **'Joined {appTitle}'**
+  String petTimelineJoinedAgatha(String appTitle);
+
+  /// No description provided for @deleteTimelineEntryConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to delete this timeline entry?'**
+  String get deleteTimelineEntryConfirm;
+
   /// No description provided for @bulkShare.
   ///
   /// In en, this message translates to:
@@ -6891,11 +6987,101 @@ abstract class AppLocalizations {
   /// **'No history yet.'**
   String get noHistoryYet;
 
+  /// No description provided for @viewEntryTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'View {name}'**
+  String viewEntryTitle(String name);
+
+  /// No description provided for @seeHistory.
+  ///
+  /// In en, this message translates to:
+  /// **'See history'**
+  String get seeHistory;
+
+  /// No description provided for @closeEventAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Close event'**
+  String get closeEventAction;
+
+  /// No description provided for @reopenEventAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Reopen event'**
+  String get reopenEventAction;
+
+  /// No description provided for @eventStatusClosed.
+  ///
+  /// In en, this message translates to:
+  /// **'Closed'**
+  String get eventStatusClosed;
+
+  /// No description provided for @relatesToHealthIssue.
+  ///
+  /// In en, this message translates to:
+  /// **'Relates to health issue'**
+  String get relatesToHealthIssue;
+
+  /// No description provided for @pastIterations.
+  ///
+  /// In en, this message translates to:
+  /// **'Past iterations'**
+  String get pastIterations;
+
+  /// No description provided for @skipOccurrence.
+  ///
+  /// In en, this message translates to:
+  /// **'Skip'**
+  String get skipOccurrence;
+
+  /// No description provided for @unmarkDone.
+  ///
+  /// In en, this message translates to:
+  /// **'Unmark done'**
+  String get unmarkDone;
+
+  /// No description provided for @remindedDaysBefore.
+  ///
+  /// In en, this message translates to:
+  /// **'You will be reminded {count} {dayLabel} before'**
+  String remindedDaysBefore(int count, String dayLabel);
+
+  /// No description provided for @recurrenceRepeatsEveryUntil.
+  ///
+  /// In en, this message translates to:
+  /// **'Repeats every {interval} {period} until {date}'**
+  String recurrenceRepeatsEveryUntil(int interval, String period, String date);
+
+  /// No description provided for @occurrenceSkipped.
+  ///
+  /// In en, this message translates to:
+  /// **'Skipped'**
+  String get occurrenceSkipped;
+
+  /// No description provided for @entryNotFound.
+  ///
+  /// In en, this message translates to:
+  /// **'Entry not found'**
+  String get entryNotFound;
+
+  /// No description provided for @nextOccurrence.
+  ///
+  /// In en, this message translates to:
+  /// **'Next occurrence'**
+  String get nextOccurrence;
+
   /// No description provided for @deleteEntryNamedConfirm.
   ///
   /// In en, this message translates to:
   /// **'Delete \"{name}\"? This cannot be undone.'**
   String deleteEntryNamedConfirm(String name);
+
+  /// No description provided for @deleteRecurringEntryNamedConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete \"{name}\"? All iterations of this recurring event will be permanently removed.'**
+  String deleteRecurringEntryNamedConfirm(String name);
 
   /// No description provided for @failedToDelete.
   ///
@@ -7160,6 +7346,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'All Vets'**
   String get allVets;
+
+  /// No description provided for @manageVeterinarians.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage veterinarians'**
+  String get manageVeterinarians;
 
   /// No description provided for @addAnEvent.
   ///

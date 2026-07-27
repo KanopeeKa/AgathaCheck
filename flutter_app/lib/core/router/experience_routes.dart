@@ -135,7 +135,7 @@ class _GuardianEventsScreen extends StatelessWidget {
     return ExperienceShellScaffold(
       experience: AppExperience.guardian,
       currentLocation: GoRouterState.of(context).uri.path,
-      screenTitle: l.dueAndOverdue,
+      screenTitle: l.eventsNavLabel,
       child: const GuardianDueEventsScreen(),
     );
   }

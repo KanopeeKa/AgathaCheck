@@ -312,10 +312,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get manageEvents => 'Manage events';
 
   @override
-  String get eventsEditTab => 'Edit';
+  String get eventFilterClosed => 'Closed';
 
   @override
-  String get eventsHistoryTab => 'History';
+  String get eventFilterRecurring => 'Recurring';
+
+  @override
+  String get eventFilterOneTime => 'One-time';
+
+  @override
+  String get eventFilterShowSkipped => 'Show skipped';
 
   @override
   String get noEventsYet => 'No events yet';
@@ -934,10 +940,50 @@ class AppLocalizationsEn extends AppLocalizations {
   String get noLinkedEvents => 'No linked events';
 
   @override
+  String get addHealthIssue => 'Add health issue';
+
+  @override
+  String get issueDescriptionRequired => 'Description is required';
+
+  @override
+  String get issueSince => 'Issue since';
+
+  @override
+  String get issueResolved => 'Issue resolved';
+
+  @override
+  String get issueStatusLabel => 'Status';
+
+  @override
+  String get issueStatusOpen => 'Open';
+
+  @override
+  String get issueStatusResolved => 'Resolved';
+
+  @override
+  String get reopenIssue => 'Reopen issue';
+
+  @override
+  String issueReopenedNote(String closedDate, String reopenedDate) {
+    return 'Issue previously closed on $closedDate and reopened on $reopenedDate';
+  }
+
+  @override
+  String get linkEvent => 'Link event';
+
+  @override
+  String get showMore => 'Show more';
+
+  @override
   String get addPetTitle => 'Add Pet';
 
   @override
   String get editPetTitle => 'Edit Pet';
+
+  @override
+  String editPetNamed(String petName) {
+    return 'Edit $petName';
+  }
 
   @override
   String get petName => 'Name *';
@@ -2950,6 +2996,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get petTimelineFillError => 'Could not save timeline entry';
 
   @override
+  String petTimelineJoinedAgatha(String appTitle) {
+    return 'Joined $appTitle';
+  }
+
+  @override
+  String get deleteTimelineEntryConfirm =>
+      'Are you sure you want to delete this timeline entry?';
+
+  @override
   String get bulkShare => 'Bulk share';
 
   @override
@@ -3802,8 +3857,61 @@ class AppLocalizationsEn extends AppLocalizations {
   String get noHistoryYet => 'No history yet.';
 
   @override
+  String viewEntryTitle(String name) {
+    return 'View $name';
+  }
+
+  @override
+  String get seeHistory => 'See history';
+
+  @override
+  String get closeEventAction => 'Close event';
+
+  @override
+  String get reopenEventAction => 'Reopen event';
+
+  @override
+  String get eventStatusClosed => 'Closed';
+
+  @override
+  String get relatesToHealthIssue => 'Relates to health issue';
+
+  @override
+  String get pastIterations => 'Past iterations';
+
+  @override
+  String get skipOccurrence => 'Skip';
+
+  @override
+  String get unmarkDone => 'Unmark done';
+
+  @override
+  String remindedDaysBefore(int count, String dayLabel) {
+    return 'You will be reminded $count $dayLabel before';
+  }
+
+  @override
+  String recurrenceRepeatsEveryUntil(int interval, String period, String date) {
+    return 'Repeats every $interval $period until $date';
+  }
+
+  @override
+  String get occurrenceSkipped => 'Skipped';
+
+  @override
+  String get entryNotFound => 'Entry not found';
+
+  @override
+  String get nextOccurrence => 'Next occurrence';
+
+  @override
   String deleteEntryNamedConfirm(String name) {
     return 'Delete \"$name\"? This cannot be undone.';
+  }
+
+  @override
+  String deleteRecurringEntryNamedConfirm(String name) {
+    return 'Delete \"$name\"? All iterations of this recurring event will be permanently removed.';
   }
 
   @override
@@ -3951,6 +4059,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get allVets => 'All Vets';
+
+  @override
+  String get manageVeterinarians => 'Manage veterinarians';
 
   @override
   String get addAnEvent => 'Add an event';

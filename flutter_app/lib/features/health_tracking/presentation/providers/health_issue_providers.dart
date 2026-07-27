@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../data/datasources/health_issue_remote_datasource.dart';
 import '../../data/repositories/health_issue_repository_impl.dart';
 import '../../domain/entities/health_issue.dart';
+import '../../domain/entities/health_issue_document.dart';
 import '../../domain/repositories/health_issue_repository.dart';
 import 'package:pet_profile_app/core/providers/api_base_url_provider.dart';
 import 'package:pet_profile_app/features/auth/presentation/providers/auth_providers.dart';
@@ -27,6 +28,15 @@ final petHealthIssuesProvider =
       final token = ref.watch(authProvider).accessToken;
       if (token == null) return Future.value([]);
       return ref.read(healthIssueRepositoryProvider).getIssues(petId, token);
+    });
+
+final healthIssueDocumentsProvider = FutureProvider.autoDispose
+    .family<List<HealthIssueDocument>, String>((ref, issueId) async {
+      final token = ref.watch(authProvider).accessToken;
+      if (token == null) return [];
+      return ref
+          .read(healthIssueRepositoryProvider)
+          .getDocuments(issueId, token);
     });
 
 class HealthIssueNotifier
@@ -82,6 +92,30 @@ class HealthIssueNotifier
         .read(healthIssueRepositoryProvider)
         .unlinkEvent(issueId, entryId, token);
     await refresh();
+  }
+
+  Future<HealthIssueDocument> uploadDocument(
+    String issueId,
+    List<int> bytes,
+    String filename,
+    String mimeType,
+  ) async {
+    final token = _token;
+    if (token == null) throw Exception('Not authenticated');
+    final doc = await ref
+        .read(healthIssueRepositoryProvider)
+        .uploadDocument(issueId, bytes, filename, mimeType, token);
+    ref.invalidate(healthIssueDocumentsProvider(issueId));
+    return doc;
+  }
+
+  Future<void> deleteDocument(String issueId, String documentId) async {
+    final token = _token;
+    if (token == null) return;
+    await ref
+        .read(healthIssueRepositoryProvider)
+        .deleteDocument(issueId, documentId, token);
+    ref.invalidate(healthIssueDocumentsProvider(issueId));
   }
 }
 

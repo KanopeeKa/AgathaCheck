@@ -4,6 +4,11 @@ import 'package:pet_profile_app/features/health_tracking/presentation/widgets/he
 import 'package:pet_profile_app/features/health_tracking/presentation/widgets/health_entry_type_labels.dart';
 import 'package:pet_profile_app/l10n/app_localizations.dart';
 
+export 'event_list_card.dart';
+export 'manage_events_filter_bar.dart';
+export 'manage_events_filters.dart';
+
+/// Legacy list tile layout used by pet profile health/other sections.
 class PetEventEntryList extends StatelessWidget {
   const PetEventEntryList({
     super.key,
@@ -24,10 +29,8 @@ class PetEventEntryList extends StatelessWidget {
         return Icons.shield_outlined;
       case HealthEntryType.vetVisit:
         return Icons.local_hospital_outlined;
-      case HealthEntryType.procedure:
+      case HealthEntryType.other:
         return Icons.more_horiz_outlined;
-      case HealthEntryType.familyEvent:
-        return Icons.event_outlined;
     }
   }
 

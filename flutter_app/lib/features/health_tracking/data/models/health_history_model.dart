@@ -12,6 +12,7 @@ class HealthHistoryModel extends HealthHistoryEntry {
     super.markedByUserId,
     super.markedByName,
     super.notes,
+    super.status,
   });
 
   factory HealthHistoryModel.fromJson(Map<String, dynamic> json) {
@@ -26,6 +27,7 @@ class HealthHistoryModel extends HealthHistoryEntry {
       markedByUserId: json['marked_by_user_id'] as String?,
       markedByName: json['marked_by_name'] as String?,
       notes: json['notes'] as String? ?? '',
+      status: json['status'] as String? ?? 'completed',
     );
   }
 }

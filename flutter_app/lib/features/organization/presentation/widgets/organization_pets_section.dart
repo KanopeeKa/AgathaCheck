@@ -119,7 +119,8 @@ class OrganizationPetsSection extends StatelessWidget {
                         ...pets.map(
                           (pet) => Padding(
                             padding: const EdgeInsets.only(bottom: 8),
-                            child: PetCard(
+                            child: PetCard.sizedTile(
+                              context,
                               pet: pet,
                               onTap: () => context.push('/pet/${pet.id}'),
                             ),

@@ -101,8 +101,10 @@
   "allPets": "Tous les animaux",
   "managePets": "Gérer les animaux",
   "manageEvents": "Gérer les événements",
-  "eventsEditTab": "Modifier",
-  "eventsHistoryTab": "Historique",
+  "eventFilterClosed": "Fermé",
+  "eventFilterRecurring": "Récurrent",
+  "eventFilterOneTime": "Ponctuel",
+  "eventFilterShowSkipped": "Afficher les ignorés",
   "noEventsYet": "Aucun événement pour le moment",
   "petEventsSummary": "{count, plural, =1{1 événement} other{{count} événements}}",
   "@petEventsSummary": {
@@ -308,9 +310,28 @@
   "endDateOptional": "Date de fin",
   "linkedEvents": "Événements liés",
   "noLinkedEvents": "Aucun événement lié",
+  "addHealthIssue": "Ajouter un problème de santé",
+  "issueDescriptionRequired": "La description est requise",
+  "issueSince": "Problème depuis",
+  "issueResolved": "Problème résolu",
+  "issueStatusLabel": "Statut",
+  "issueStatusOpen": "Ouvert",
+  "issueStatusResolved": "Résolu",
+  "reopenIssue": "Rouvrir le problème",
+  "issueReopenedNote": "Problème précédemment fermé le {closedDate} et rouvert le {reopenedDate}",
+  "@issueReopenedNote": {
+    "placeholders": {
+      "closedDate": { "type": "String" },
+      "reopenedDate": { "type": "String" }
+    }
+  },
+  "linkEvent": "Lier un événement",
+  "showMore": "Voir plus",
 
   "addPetTitle": "Ajouter un animal",
   "editPetTitle": "Modifier l'animal",
+  "editPetNamed": "Modifier {petName}",
+  "@editPetNamed": { "placeholders": { "petName": { "type": "String" } } },
   "petName": "Nom *",
   "petNameRequired": "Le nom est requis",
   "species": "Espèce *",
@@ -961,6 +982,9 @@
   "petTimelineFillStartDateRequired": "La date de début est obligatoire",
   "petTimelineFillEndDateLabel": "Date de fin",
   "petTimelineFillError": "Impossible d'enregistrer l'entrée",
+  "petTimelineJoinedAgatha": "Rejoint {appTitle}",
+  "@petTimelineJoinedAgatha": { "placeholders": { "appTitle": { "type": "String" } } },
+  "deleteTimelineEntryConfirm": "Voulez-vous vraiment supprimer cette entrée de la chronologie ?",
   "bulkShare": "Partage groupé",
   "bulkShareSelectHint": "Sélectionnez les animaux à partager",
   "bulkShareAction": "Partager la sélection",
@@ -1239,8 +1263,38 @@
   "entriesCreated": "{count} entrées créées",
   "@entriesCreated": { "placeholders": { "count": { "type": "int" } } },
   "noHistoryYet": "Aucun historique pour le moment.",
+  "viewEntryTitle": "Voir {name}",
+  "@viewEntryTitle": { "placeholders": { "name": { "type": "String" } } },
+  "seeHistory": "Voir l'historique",
+  "closeEventAction": "Fermer l'événement",
+  "reopenEventAction": "Rouvrir l'événement",
+  "eventStatusClosed": "Fermé",
+  "relatesToHealthIssue": "Lié à un problème de santé",
+  "pastIterations": "Occurrences passées",
+  "skipOccurrence": "Ignorer",
+  "unmarkDone": "Annuler le marquage",
+  "remindedDaysBefore": "Vous serez rappelé {count} {dayLabel} avant",
+  "@remindedDaysBefore": {
+    "placeholders": {
+      "count": { "type": "int" },
+      "dayLabel": { "type": "String" }
+    }
+  },
+  "recurrenceRepeatsEveryUntil": "Se répète tous les {interval} {period} jusqu'au {date}",
+  "@recurrenceRepeatsEveryUntil": {
+    "placeholders": {
+      "interval": { "type": "int" },
+      "period": { "type": "String" },
+      "date": { "type": "String" }
+    }
+  },
+  "occurrenceSkipped": "Ignoré",
+  "entryNotFound": "Entrée introuvable",
+  "nextOccurrence": "Prochaine occurrence",
   "deleteEntryNamedConfirm": "Supprimer « {name} » ? Cette action est irréversible.",
   "@deleteEntryNamedConfirm": { "placeholders": { "name": { "type": "String" } } },
+  "deleteRecurringEntryNamedConfirm": "Supprimer « {name} » ? Toutes les itérations de cet événement récurrent seront définitivement supprimées.",
+  "@deleteRecurringEntryNamedConfirm": { "placeholders": { "name": { "type": "String" } } },
   "failedToDelete": "Échec de la suppression : {error}",
   "@failedToDelete": { "placeholders": { "error": { "type": "String" } } },
   "failedToLoadHistory": "Échec du chargement de l'historique : {error}",
@@ -1289,6 +1343,7 @@
   "dueAndOverdue": "À faire et en retard",
   "allEvents": "Tous les événements",
   "allVets": "Tous les vétérinaires",
+  "manageVeterinarians": "Gérer les vétérinaires",
   "addAnEvent": "Ajouter un événement",
   "dashboardAddPet": "Ajouter un animal",
   "vetLinkedPetCount": "{count, plural, =1{1 animal} other{{count} animaux}}",

@@ -45,6 +45,15 @@ abstract class HealthRemoteDataSource {
     DateTime? completedOn,
   });
   Future<HealthEntryModel> undoComplete(String id);
+  Future<HealthEntryModel> closeEvent(String id);
+  Future<HealthEntryModel> reopenEvent(String id);
+  Future<HealthHistoryModel> skipIteration(
+    String id, {
+    required DateTime dueDate,
+    String notes = '',
+  });
+  Future<void> unskipIteration(String id, {required String historyId});
+  Future<HealthEntryModel> unmarkDone(String id);
   Future<List<HealthHistoryModel>> getHistory(String entryId);
   Future<String> exportCsv({String? petId});
   Future<List<EventPhoto>> getPhotos(String entryId);
@@ -183,6 +192,65 @@ class HealthRemoteDataSourceImpl implements HealthRemoteDataSource {
       json.decode(response.body) as Map<String, dynamic>,
     );
   }
+
+  @override
+  Future<HealthEntryModel> closeEvent(String id) async {
+    final response = await _client.post(
+      Uri.parse('$baseUrl/api/health-entries/$id/close'),
+      headers: _authHeaders(jsonBody: true),
+      body: json.encode({}),
+    );
+    _checkResponse(response);
+    return HealthEntryModel.fromJson(
+      json.decode(response.body) as Map<String, dynamic>,
+    );
+  }
+
+  @override
+  Future<HealthEntryModel> reopenEvent(String id) async {
+    final response = await _client.post(
+      Uri.parse('$baseUrl/api/health-entries/$id/reopen'),
+      headers: _authHeaders(jsonBody: true),
+      body: json.encode({}),
+    );
+    _checkResponse(response);
+    return HealthEntryModel.fromJson(
+      json.decode(response.body) as Map<String, dynamic>,
+    );
+  }
+
+  @override
+  Future<HealthHistoryModel> skipIteration(
+    String id, {
+    required DateTime dueDate,
+    String notes = '',
+  }) async {
+    final response = await _client.post(
+      Uri.parse('$baseUrl/api/health-entries/$id/skip'),
+      headers: _authHeaders(jsonBody: true),
+      body: json.encode({
+        'due_date': toCalendarDateString(dueDate),
+        'notes': notes,
+      }),
+    );
+    _checkResponse(response);
+    return HealthHistoryModel.fromJson(
+      json.decode(response.body) as Map<String, dynamic>,
+    );
+  }
+
+  @override
+  Future<void> unskipIteration(String id, {required String historyId}) async {
+    final response = await _client.post(
+      Uri.parse('$baseUrl/api/health-entries/$id/unskip'),
+      headers: _authHeaders(jsonBody: true),
+      body: json.encode({'history_id': historyId}),
+    );
+    _checkResponse(response);
+  }
+
+  @override
+  Future<HealthEntryModel> unmarkDone(String id) => undoComplete(id);
 
   @override
   Future<List<HealthHistoryModel>> getHistory(String entryId) async {

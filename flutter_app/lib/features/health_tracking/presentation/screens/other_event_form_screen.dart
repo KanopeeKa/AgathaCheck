@@ -42,7 +42,7 @@ class _OtherEventFormScreenState extends ConsumerState<OtherEventFormScreen> {
   final _nameController = TextEditingController();
   final _notesController = TextEditingController();
 
-  HealthEntryType _type = HealthEntryType.familyEvent;
+  HealthEntryType _type = HealthEntryType.other;
   HealthFrequency _frequency = HealthFrequency.once;
   int _frequencyInterval = 1;
   DateTime _startDate = DateTime.now();

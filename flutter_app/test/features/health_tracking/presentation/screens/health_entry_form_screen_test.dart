@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:pet_profile_app/core/providers/api_base_url_provider.dart';
 import 'package:pet_profile_app/features/health_tracking/domain/entities/health_entry.dart';
+import 'package:pet_profile_app/features/health_tracking/domain/repositories/health_repository.dart';
 import 'package:pet_profile_app/features/health_tracking/presentation/providers/health_providers.dart';
 import 'package:pet_profile_app/features/health_tracking/presentation/controllers/health_entry_form_constants.dart';
 import 'package:pet_profile_app/features/health_tracking/presentation/screens/health_entry_form_screen.dart';
@@ -11,6 +12,24 @@ import 'package:pet_profile_app/features/pet_profile/domain/entities/pet.dart';
 import 'package:pet_profile_app/features/pet_profile/presentation/providers/pet_providers.dart';
 import 'package:pet_profile_app/features/pet_profile/presentation/screens/widgets/health_events_section.dart';
 import 'package:pet_profile_app/l10n/app_localizations.dart';
+
+class _FakeHealthRepository implements HealthRepository {
+  _FakeHealthRepository(this.entry);
+
+  final HealthEntry entry;
+
+  @override
+  Future<HealthEntry?> getEntry(String id) async => entry;
+
+  @override
+  Future<List<HealthEntry>> getEntries({
+    String? petId,
+    HealthEntryType? type,
+  }) async => [entry];
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
+}
 
 class _TwoPetsNotifier extends PetListNotifier {
   @override
@@ -28,6 +47,14 @@ class _NoPetsNotifier extends PetListNotifier {
 class _EmptyHealthEntriesNotifier extends HealthEntriesNotifier {
   @override
   Future<List<HealthEntry>> build() async => [];
+}
+
+class _TestHealthEntriesNotifier extends HealthEntriesNotifier {
+  @override
+  Future<List<HealthEntry>> build() async => [];
+
+  @override
+  Future<void> updateEntry(HealthEntry entry) async {}
 }
 
 Widget _wrap(PetListNotifier Function() notifier, {Locale? locale}) {
@@ -76,6 +103,67 @@ Widget _wrapPetProfileHealthEventFlow() {
       petListProvider.overrideWith(_TwoPetsNotifier.new),
       healthEntriesNotifierProvider.overrideWith(
         _EmptyHealthEntriesNotifier.new,
+      ),
+      apiBaseUrlProvider.overrideWithValue('http://test.local'),
+    ],
+    child: MaterialApp.router(
+      routerConfig: router,
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      supportedLocales: AppLocalizations.supportedLocales,
+    ),
+  );
+}
+
+HealthEntry _sampleEntry({
+  HealthEntryType type = HealthEntryType.preventive,
+  HealthFrequency frequency = HealthFrequency.monthly,
+}) {
+  return HealthEntry(
+    id: 'entry-1',
+    petId: 'p1',
+    name: 'Heartworm',
+    type: type,
+    dosage: '1 tablet',
+    frequency: frequency,
+    frequencyInterval: 1,
+    startDate: DateTime(2025, 1, 1),
+    nextDueDate: DateTime(2025, 8, 1),
+  );
+}
+
+Widget _wrapEditFlow({
+  required HealthEntry entry,
+  String initialLocation = '/pet/p1/events/entry-1/edit',
+}) {
+  final router = GoRouter(
+    initialLocation: initialLocation,
+    routes: [
+      GoRoute(
+        path: '/pet/:petId/events/:entryId/edit',
+        builder: (context, state) => HealthEntryFormScreen(
+          entryId: state.pathParameters['entryId'],
+          petId: state.pathParameters['petId'],
+          allowedTypes: kAllPetEventTypes,
+        ),
+      ),
+      GoRoute(
+        path: '/pet/:petId/events/:entryId',
+        builder: (context, state) =>
+            const Scaffold(body: Center(child: Text('View entry'))),
+      ),
+      GoRoute(
+        path: '/pet/:petId/health/edit/:id',
+        redirect: (context, state) => redirectLegacyPetEventEditPath(state),
+      ),
+    ],
+  );
+
+  return ProviderScope(
+    overrides: [
+      petListProvider.overrideWith(_TwoPetsNotifier.new),
+      healthRepositoryProvider.overrideWithValue(_FakeHealthRepository(entry)),
+      healthEntriesNotifierProvider.overrideWith(
+        _TestHealthEntriesNotifier.new,
       ),
       apiBaseUrlProvider.overrideWithValue('http://test.local'),
     ],
@@ -175,4 +263,57 @@ void main() {
       expect(find.text('Pet profile for p1'), findsOneWidget);
     },
   );
+
+  testWidgets(
+    'edit form omits administration history and shows all four types',
+    (WidgetTester tester) async {
+      await tester.pumpWidget(
+        _wrapEditFlow(entry: _sampleEntry(type: HealthEntryType.other)),
+      );
+      await tester.pump();
+      await tester.pumpAndSettle();
+
+      expect(find.text('Edit Entry'), findsOneWidget);
+      expect(find.text('Administration History'), findsNothing);
+      expect(
+        find.byKey(const Key('delete_health_entry_button')),
+        findsOneWidget,
+      );
+
+      await tester.tap(find.byType(DropdownButtonFormField<HealthEntryType>));
+      await tester.pumpAndSettle();
+      expect(find.text('Medication'), findsWidgets);
+      expect(find.text('Preventive'), findsWidgets);
+      expect(find.text('Vet Visit'), findsWidgets);
+      expect(find.text('Other'), findsWidgets);
+    },
+  );
+
+  test('recurring delete copy warns all iterations are removed', () {
+    final l = lookupAppLocalizations(const Locale('en'));
+    expect(
+      l.deleteRecurringEntryNamedConfirm('Heartworm'),
+      contains('permanently removed'),
+    );
+    expect(
+      l.deleteRecurringEntryNamedConfirm('Heartworm'),
+      contains('iterations'),
+    );
+  });
+
+  testWidgets('legacy health edit path redirects to unified edit route', (
+    WidgetTester tester,
+  ) async {
+    await tester.pumpWidget(
+      _wrapEditFlow(
+        entry: _sampleEntry(),
+        initialLocation: '/pet/p1/health/edit/entry-1',
+      ),
+    );
+    await tester.pump();
+    await tester.pumpAndSettle();
+
+    expect(find.text('Edit Entry'), findsOneWidget);
+    expect(find.byType(HealthEntryFormScreen), findsOneWidget);
+  });
 }

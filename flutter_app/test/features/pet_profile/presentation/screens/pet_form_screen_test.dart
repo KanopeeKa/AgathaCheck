@@ -129,6 +129,7 @@ void main() {
     await tester.pump();
     await tester.pump();
 
+    expect(find.text('Edit Bella'), findsOneWidget);
     expect(_fieldText(tester, const Key('pet_name_field')), 'Bella');
     expect(_fieldText(tester, const Key('pet_breed_field')), 'Collie');
     expect(_fieldText(tester, const Key('pet_weight_field')), '12.5');

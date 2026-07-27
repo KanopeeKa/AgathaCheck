@@ -366,10 +366,8 @@ class EventsPdfService {
         return l.preventive;
       case HealthEntryType.vetVisit:
         return l.vetVisit;
-      case HealthEntryType.procedure:
-        return l.procedure;
-      case HealthEntryType.familyEvent:
-        return l.careEvents;
+      case HealthEntryType.other:
+        return l.other;
     }
   }
 

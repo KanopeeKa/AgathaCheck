@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 
-import '../../../../core/theme/app_color_tokens.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:intl/intl.dart';
 
 import '../../../../core/widgets/app_logo_title.dart';
 import '../../../../l10n/app_localizations.dart';
@@ -14,7 +12,6 @@ import '../providers/health_providers.dart';
 import '../widgets/health_entry_type_labels.dart';
 import '../widgets/entry_due_completed_row.dart';
 import '../widgets/health_entry_form/health_entry_document_handler.dart';
-import '../widgets/health_entry_form/health_entry_edit_actions.dart';
 import '../widgets/health_entry_form/health_entry_frequency_section.dart';
 import '../widgets/health_entry_form/health_entry_health_issue_dropdown.dart';
 import '../widgets/health_entry_form/health_entry_pet_selector.dart';
@@ -24,8 +21,30 @@ import '../widgets/health_entry_form/health_entry_text_fields.dart';
 
 import '../controllers/health_entry_form_controller.dart';
 import '../controllers/health_entry_form_outcomes.dart';
-import '../widgets/event_history_formatter.dart';
 import 'package:pet_profile_app/core/providers/api_base_url_provider.dart';
+
+/// All pet event types on the unified edit form (W18).
+const kAllPetEventTypes = HealthEntryType.values;
+
+/// Redirects legacy `/pet/:petId/health/edit/:id` and `/other/edit/:id` paths.
+String? legacyPetEventEditRedirectForPath(String path) {
+  final healthMatch = RegExp(
+    r'^/pet/([^/]+)/health/edit/([^/]+)$',
+  ).firstMatch(path);
+  if (healthMatch != null) {
+    return '/pet/${healthMatch.group(1)}/events/${healthMatch.group(2)}/edit';
+  }
+  final otherMatch = RegExp(
+    r'^/pet/([^/]+)/other/edit/([^/]+)$',
+  ).firstMatch(path);
+  if (otherMatch != null) {
+    return '/pet/${otherMatch.group(1)}/events/${otherMatch.group(2)}/edit';
+  }
+  return null;
+}
+
+String? redirectLegacyPetEventEditPath(GoRouterState state) =>
+    legacyPetEventEditRedirectForPath(state.uri.path);
 
 class HealthEntryFormScreen extends ConsumerStatefulWidget {
   const HealthEntryFormScreen({
@@ -50,28 +69,17 @@ class HealthEntryFormScreen extends ConsumerStatefulWidget {
 
 class _HealthEntryFormScreenState extends ConsumerState<HealthEntryFormScreen> {
   final _formKey = GlobalKey<FormState>();
-
-  HealthEntryFormParams get _params => HealthEntryFormParams(
-    entryId: widget.entryId,
-    petId: widget.petId,
-    initialType: widget.initialType,
-    allowedTypes: widget.allowedTypes,
-  );
-
-  HealthEntryFormController get _controller =>
-      ref.read(healthEntryFormControllerProvider(_params).notifier);
-
-  HealthEntryDocumentHandler get _documents => HealthEntryDocumentHandler(
-    ref: ref,
-    context: context,
-    controller: _controller,
-    entryId: widget.entryId,
-    isMounted: () => mounted,
-  );
+  late final HealthEntryFormParams _params;
 
   @override
   void initState() {
     super.initState();
+    _params = HealthEntryFormParams(
+      entryId: widget.entryId,
+      petId: widget.petId,
+      initialType: widget.initialType,
+      allowedTypes: widget.allowedTypes,
+    );
     if (widget.entryId != null) {
       Future.microtask(() async {
         try {
@@ -92,6 +100,17 @@ class _HealthEntryFormScreenState extends ConsumerState<HealthEntryFormScreen> {
     }
   }
 
+  HealthEntryFormController get _controller =>
+      ref.read(healthEntryFormControllerProvider(_params).notifier);
+
+  HealthEntryDocumentHandler get _documents => HealthEntryDocumentHandler(
+    ref: ref,
+    context: context,
+    controller: _controller,
+    entryId: widget.entryId,
+    isMounted: () => mounted,
+  );
+
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context)!;
@@ -106,13 +125,7 @@ class _HealthEntryFormScreenState extends ConsumerState<HealthEntryFormScreen> {
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           tooltip: l.goBack,
-          onPressed: () {
-            if (widget.petId != null && widget.petId!.isNotEmpty) {
-              context.go('/pet/${widget.petId}');
-            } else {
-              context.go('/g/events');
-            }
-          },
+          onPressed: () => _navigateBack(context, form.isEdit),
         ),
       ),
       body: form.isLoading
@@ -235,9 +248,25 @@ class _HealthEntryFormScreenState extends ConsumerState<HealthEntryFormScreen> {
                       ),
                     ),
                     if (form.isEdit)
-                      HealthEntryEditActions(
-                        onViewHistory: _viewHistory,
-                        onDelete: _confirmDelete,
+                      Padding(
+                        padding: const EdgeInsets.only(top: 12),
+                        child: OutlinedButton.icon(
+                          key: const Key('delete_health_entry_button'),
+                          onPressed: _confirmDelete,
+                          icon: Icon(
+                            Icons.delete_outline,
+                            color: theme.colorScheme.error,
+                          ),
+                          style: OutlinedButton.styleFrom(
+                            foregroundColor: theme.colorScheme.error,
+                            side: BorderSide(
+                              color: theme.colorScheme.error.withValues(
+                                alpha: 0.5,
+                              ),
+                            ),
+                          ),
+                          label: Text(l.deleteEntry),
+                        ),
                       ),
                   ],
                 ),
@@ -314,7 +343,12 @@ class _HealthEntryFormScreenState extends ConsumerState<HealthEntryFormScreen> {
             ),
           ),
         );
-        if (widget.petId != null && widget.petId!.isNotEmpty) {
+        if (isEdit &&
+            widget.entryId != null &&
+            widget.petId != null &&
+            widget.petId!.isNotEmpty) {
+          context.go('/pet/${widget.petId}/events/${widget.entryId}');
+        } else if (widget.petId != null && widget.petId!.isNotEmpty) {
           context.go('/pet/${widget.petId}');
         } else {
           context.go('/g/events');
@@ -324,83 +358,32 @@ class _HealthEntryFormScreenState extends ConsumerState<HealthEntryFormScreen> {
     }
   }
 
-  Future<void> _viewHistory() async {
-    if (widget.entryId == null) return;
-
-    try {
-      final history = await ref
-          .read(healthRepositoryProvider)
-          .getHistory(widget.entryId!);
-
-      if (!mounted) return;
-
-      showDialog(
-        context: context,
-        builder: (ctx) {
-          final l = AppLocalizations.of(context)!;
-          final dateFormat = DateFormat.yMMMd();
-          final dateTimeFormat = DateFormat.yMMMd().add_jm();
-          return AlertDialog(
-            title: Text(l.administrationHistory),
-            content: SizedBox(
-              width: double.maxFinite,
-              child: history.isEmpty
-                  ? Text(l.noHistoryYet)
-                  : ListView.builder(
-                      shrinkWrap: true,
-                      itemCount: history.length,
-                      itemBuilder: (_, i) {
-                        final h = history[i];
-                        return ListTile(
-                          leading: Icon(
-                            Icons.check_circle,
-                            color: AppColorTokens.success,
-                          ),
-                          title: Text(
-                            formatEventHistoryLine(
-                              h,
-                              l,
-                              dateFormat,
-                              dateTimeFormat,
-                            ),
-                          ),
-                          subtitle: h.notes.isNotEmpty ? Text(h.notes) : null,
-                        );
-                      },
-                    ),
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.of(ctx).pop(),
-                child: Text(l.close),
-              ),
-            ],
-          );
-        },
-      );
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              AppLocalizations.of(context)!.failedToLoadHistory('$e'),
-            ),
-          ),
-        );
-      }
+  void _navigateBack(BuildContext context, bool isEdit) {
+    if (isEdit &&
+        widget.entryId != null &&
+        widget.petId != null &&
+        widget.petId!.isNotEmpty) {
+      context.go('/pet/${widget.petId}/events/${widget.entryId}');
+    } else if (widget.petId != null && widget.petId!.isNotEmpty) {
+      context.go('/pet/${widget.petId}');
+    } else {
+      context.go('/g/events');
     }
   }
 
   Future<void> _confirmDelete() async {
     if (widget.entryId == null) return;
+    final form = ref.read(healthEntryFormControllerProvider(_params));
+    final l = AppLocalizations.of(context)!;
+    final isRecurring = form.frequency != HealthFrequency.once;
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: Text(AppLocalizations.of(context)!.deleteEntry),
+        title: Text(l.deleteEntry),
         content: Text(
-          AppLocalizations.of(context)!.deleteEntryNamedConfirm(
-            ref.read(healthEntryFormControllerProvider(_params)).name,
-          ),
+          isRecurring
+              ? l.deleteRecurringEntryNamedConfirm(form.name)
+              : l.deleteEntryNamedConfirm(form.name),
         ),
         actions: [
           TextButton(

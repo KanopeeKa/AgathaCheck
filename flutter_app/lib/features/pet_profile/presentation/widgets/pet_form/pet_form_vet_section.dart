@@ -41,7 +41,7 @@ class PetFormVetSection extends ConsumerWidget {
             labelText: l.veterinarians,
             suffixIcon: selectedVetId != null
                 ? IconButton(
-                    icon: const Icon(Icons.clear),
+                    icon: const Icon(Icons.clear, size: 18),
                     tooltip: 'Clear veterinarian',
                     onPressed: () {
                       onVetSelected(null);

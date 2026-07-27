@@ -317,10 +317,16 @@ class AppLocalizationsFr extends AppLocalizations {
   String get manageEvents => 'Gérer les événements';
 
   @override
-  String get eventsEditTab => 'Modifier';
+  String get eventFilterClosed => 'Fermé';
 
   @override
-  String get eventsHistoryTab => 'Historique';
+  String get eventFilterRecurring => 'Récurrent';
+
+  @override
+  String get eventFilterOneTime => 'Ponctuel';
+
+  @override
+  String get eventFilterShowSkipped => 'Afficher les ignorés';
 
   @override
   String get noEventsYet => 'Aucun événement pour le moment';
@@ -943,10 +949,50 @@ class AppLocalizationsFr extends AppLocalizations {
   String get noLinkedEvents => 'Aucun événement lié';
 
   @override
+  String get addHealthIssue => 'Ajouter un problème de santé';
+
+  @override
+  String get issueDescriptionRequired => 'La description est requise';
+
+  @override
+  String get issueSince => 'Problème depuis';
+
+  @override
+  String get issueResolved => 'Problème résolu';
+
+  @override
+  String get issueStatusLabel => 'Statut';
+
+  @override
+  String get issueStatusOpen => 'Ouvert';
+
+  @override
+  String get issueStatusResolved => 'Résolu';
+
+  @override
+  String get reopenIssue => 'Rouvrir le problème';
+
+  @override
+  String issueReopenedNote(String closedDate, String reopenedDate) {
+    return 'Problème précédemment fermé le $closedDate et rouvert le $reopenedDate';
+  }
+
+  @override
+  String get linkEvent => 'Lier un événement';
+
+  @override
+  String get showMore => 'Voir plus';
+
+  @override
   String get addPetTitle => 'Ajouter un animal';
 
   @override
   String get editPetTitle => 'Modifier l\'animal';
+
+  @override
+  String editPetNamed(String petName) {
+    return 'Modifier $petName';
+  }
 
   @override
   String get petName => 'Nom *';
@@ -2996,6 +3042,15 @@ class AppLocalizationsFr extends AppLocalizations {
   String get petTimelineFillError => 'Impossible d\'enregistrer l\'entrée';
 
   @override
+  String petTimelineJoinedAgatha(String appTitle) {
+    return 'Rejoint $appTitle';
+  }
+
+  @override
+  String get deleteTimelineEntryConfirm =>
+      'Voulez-vous vraiment supprimer cette entrée de la chronologie ?';
+
+  @override
   String get bulkShare => 'Partage groupé';
 
   @override
@@ -3861,8 +3916,61 @@ class AppLocalizationsFr extends AppLocalizations {
   String get noHistoryYet => 'Aucun historique pour le moment.';
 
   @override
+  String viewEntryTitle(String name) {
+    return 'Voir $name';
+  }
+
+  @override
+  String get seeHistory => 'Voir l\'historique';
+
+  @override
+  String get closeEventAction => 'Fermer l\'événement';
+
+  @override
+  String get reopenEventAction => 'Rouvrir l\'événement';
+
+  @override
+  String get eventStatusClosed => 'Fermé';
+
+  @override
+  String get relatesToHealthIssue => 'Lié à un problème de santé';
+
+  @override
+  String get pastIterations => 'Occurrences passées';
+
+  @override
+  String get skipOccurrence => 'Ignorer';
+
+  @override
+  String get unmarkDone => 'Annuler le marquage';
+
+  @override
+  String remindedDaysBefore(int count, String dayLabel) {
+    return 'Vous serez rappelé $count $dayLabel avant';
+  }
+
+  @override
+  String recurrenceRepeatsEveryUntil(int interval, String period, String date) {
+    return 'Se répète tous les $interval $period jusqu\'au $date';
+  }
+
+  @override
+  String get occurrenceSkipped => 'Ignoré';
+
+  @override
+  String get entryNotFound => 'Entrée introuvable';
+
+  @override
+  String get nextOccurrence => 'Prochaine occurrence';
+
+  @override
   String deleteEntryNamedConfirm(String name) {
     return 'Supprimer « $name » ? Cette action est irréversible.';
+  }
+
+  @override
+  String deleteRecurringEntryNamedConfirm(String name) {
+    return 'Supprimer « $name » ? Toutes les itérations de cet événement récurrent seront définitivement supprimées.';
   }
 
   @override
@@ -4012,6 +4120,9 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get allVets => 'Tous les vétérinaires';
+
+  @override
+  String get manageVeterinarians => 'Gérer les vétérinaires';
 
   @override
   String get addAnEvent => 'Ajouter un événement';

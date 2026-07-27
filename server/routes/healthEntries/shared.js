@@ -1,10 +1,11 @@
 import path from 'path';
+import fs from 'fs';
 import multer from 'multer';
 import jwt from 'jsonwebtoken';
 
 import { JWT_SECRET } from '../../config/jwtSecret.js';
 import { dateToIsoDate } from '../../lib/calendarDate.js';
-import { extensionForMime, saveUploadedFile } from '../../lib/safeUpload.js';
+import { extensionForMime, resolvePathUnderRoot, saveUploadedFile } from '../../lib/safeUpload.js';
 
 export const MAX_HEALTH_DOCUMENT_BYTES = 2 * 1024 * 1024;
 export const HEALTH_DOCUMENT_EXTENSIONS = new Set(['.jpg', '.jpeg', '.png', '.pdf']);
@@ -44,6 +45,21 @@ export function saveHealthDocument(file, id) {
   return `/uploads/health_documents/${filename}`;
 }
 
+/** Best-effort removal of a persisted health document by its public URL path. */
+export function removeHealthDocumentFromDisk(url) {
+  if (!url || typeof url !== 'string') return;
+  const prefix = '/uploads/health_documents/';
+  if (!url.startsWith(prefix)) return;
+  const filename = url.slice(prefix.length);
+  if (!filename || filename.includes('/') || filename.includes('\\')) return;
+  try {
+    const filePath = resolvePathUnderRoot(healthUploadDir(), filename);
+    if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
+  } catch (_) {
+    // ignore missing or invalid paths
+  }
+}
+
 export function handleDocumentUpload(req, res, next) {
   _upload.single('photo')(req, res, (err) => {
     if (!err) return next();
@@ -64,6 +80,34 @@ export function extractUserId(req) {
   }
 }
 
+export const HEALTH_ENTRY_TYPES = new Set([
+  'medication',
+  'preventive',
+  'vet_visit',
+  'other',
+]);
+
+const LEGACY_HEALTH_ENTRY_TYPES = new Set(['family_event', 'procedure']);
+
+export function normalizeHealthEntryTypeForRead(type) {
+  if (!type) return type;
+  if (LEGACY_HEALTH_ENTRY_TYPES.has(type)) return 'other';
+  return type;
+}
+
+export function validateHealthEntryTypeForWrite(type) {
+  if (!type) {
+    return { ok: false, error: 'Entry type is required' };
+  }
+  if (LEGACY_HEALTH_ENTRY_TYPES.has(type)) {
+    return { ok: false, error: 'Deprecated entry type; use "other" instead' };
+  }
+  if (!HEALTH_ENTRY_TYPES.has(type)) {
+    return { ok: false, error: `Invalid entry type: ${type}` };
+  }
+  return { ok: true, type };
+}
+
 export function healthEntryToMap(row) {
   return {
     id: row.id,
@@ -71,7 +115,7 @@ export function healthEntryToMap(row) {
     user_id: row.user_id,
     pet_name: row.pet_name || null,
     name: row.name || '',
-    type: row.type,
+    type: normalizeHealthEntryTypeForRead(row.type),
     dosage: row.dosage || '',
     frequency: row.frequency || 'once',
     frequency_days: row.frequency_days || null,

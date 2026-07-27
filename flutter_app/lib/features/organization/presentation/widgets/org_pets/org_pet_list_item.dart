@@ -50,7 +50,11 @@ class OrgPetListItem extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        PetCard(pet: pet, onTap: () => context.push('/pet/${pet.id}')),
+        PetCard.sizedTile(
+          context,
+          pet: pet,
+          onTap: () => context.push('/pet/${pet.id}'),
+        ),
         if (showAttentionReason && entry.attentionReason != null)
           Padding(
             padding: const EdgeInsets.only(left: 16, top: 4),

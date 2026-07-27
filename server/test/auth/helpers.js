@@ -75,7 +75,7 @@ export function buildMockPool(overrides = {}) {
       if (sql.includes('SELECT * FROM vets')) return handlers.selectVets(sql, params);
       if (sql.includes('FROM health_entries') || sql.includes('FROM health_issues')
         || sql.includes('FROM health_history') || sql.includes('FROM health_event_photos')
-        || sql.includes('FROM health_issue_events') || sql.includes('FROM weight_entries')
+        || sql.includes('FROM health_issue_documents') || sql.includes('FROM health_issue_events') || sql.includes('FROM weight_entries')
         || sql.includes('FROM notifications') || sql.includes('FROM notification_preferences')
         || sql.includes('FROM organization_users') || sql.includes('FROM organizations o')
         || sql.includes('FROM pet_access') || sql.includes('FROM pet_share_links')

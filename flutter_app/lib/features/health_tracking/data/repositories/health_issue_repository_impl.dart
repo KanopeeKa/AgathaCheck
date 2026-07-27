@@ -1,4 +1,5 @@
 import '../../domain/entities/health_issue.dart';
+import '../../domain/entities/health_issue_document.dart';
 import '../../domain/repositories/health_issue_repository.dart';
 import '../datasources/health_issue_remote_datasource.dart';
 import '../models/health_issue_model.dart';
@@ -36,5 +37,37 @@ class HealthIssueRepositoryImpl implements HealthIssueRepository {
   @override
   Future<void> unlinkEvent(String issueId, String entryId, String token) {
     return dataSource.unlinkEvent(issueId, entryId, token);
+  }
+
+  @override
+  Future<List<HealthIssueDocument>> getDocuments(
+    String issueId,
+    String token,
+  ) async {
+    final rows = await dataSource.getDocuments(issueId, token);
+    return rows.map(HealthIssueDocument.fromJson).toList();
+  }
+
+  @override
+  Future<HealthIssueDocument> uploadDocument(
+    String issueId,
+    List<int> bytes,
+    String filename,
+    String mimeType,
+    String token,
+  ) async {
+    final row = await dataSource.uploadDocument(
+      issueId,
+      bytes,
+      filename,
+      mimeType,
+      token,
+    );
+    return HealthIssueDocument.fromJson(row);
+  }
+
+  @override
+  Future<void> deleteDocument(String issueId, String documentId, String token) {
+    return dataSource.deleteDocument(issueId, documentId, token);
   }
 }

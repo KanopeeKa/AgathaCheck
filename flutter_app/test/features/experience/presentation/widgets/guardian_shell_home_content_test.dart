@@ -59,26 +59,35 @@ void main() {
     expect(find.text('Due and Overdue'), findsOneWidget);
     expect(find.text('My vets'), findsOneWidget);
     expect(find.text('All Events'), findsOneWidget);
-    expect(find.text('All Vets'), findsOneWidget);
+    expect(find.text('Manage veterinarians'), findsOneWidget);
   });
 
-  testWidgets('My Pets shows all personal pets with Manage pets link', (
-    tester,
-  ) async {
-    await tester.pumpWidget(buildDashboard());
-    await tester.pumpAndSettle();
+  testWidgets(
+    'My Pets shows all personal pets in wrap grid with Manage pets link',
+    (tester) async {
+      await tester.pumpWidget(buildDashboard());
+      await tester.pumpAndSettle();
 
-    expect(find.text('Manage pets'), findsOneWidget);
-    expect(find.text('Pet 0'), findsOneWidget);
+      expect(find.text('Manage pets'), findsOneWidget);
+      expect(find.text('Pet 0'), findsOneWidget);
+      expect(find.text('Pet 5'), findsOneWidget);
 
-    final listView = find.descendant(
-      of: find.byType(GuardianMyPetsSection),
-      matching: find.byType(ListView),
-    );
-    await tester.drag(listView, const Offset(-800, 0));
-    await tester.pumpAndSettle();
-    expect(find.text('Pet 5'), findsOneWidget);
-  });
+      expect(
+        find.descendant(
+          of: find.byType(GuardianMyPetsSection),
+          matching: find.byType(Wrap),
+        ),
+        findsOneWidget,
+      );
+      expect(
+        find.descendant(
+          of: find.byType(GuardianMyPetsSection),
+          matching: find.byType(ListView),
+        ),
+        findsNothing,
+      );
+    },
+  );
 
   testWidgets('empty state when no pets', (tester) async {
     await tester.pumpWidget(buildDashboard(petList: []));

@@ -1,3 +1,5 @@
+import '../../../../core/utils/calendar_date.dart';
+
 /// A segment on a pet's composite timeline (custody, fostering, manual, or gap).
 class PetTimelineSegment {
   const PetTimelineSegment({
@@ -26,6 +28,30 @@ class PetTimelineSegment {
   bool get isFosteringSession => kind == 'fostering_session';
   bool get isManual => kind == 'manual';
   bool get isCustody => kind == 'custody';
+  bool get isDateOfBirth => kind == 'date_of_birth';
+  bool get isJoinedAgatha => kind == 'joined_agatha';
+
+  /// Read-only marker for the pet's date of birth.
+  factory PetTimelineSegment.dateOfBirth(DateTime date) {
+    return PetTimelineSegment(
+      kind: 'date_of_birth',
+      id: 'date_of_birth',
+      startDate: toCalendarDateString(date)!,
+    );
+  }
+
+  /// Read-only marker for when the pet joined Agatha Track.
+  factory PetTimelineSegment.joinedAgatha({
+    required DateTime createdAt,
+    String? guardianName,
+  }) {
+    return PetTimelineSegment(
+      kind: 'joined_agatha',
+      id: 'joined_agatha',
+      startDate: toCalendarDateString(createdAt)!,
+      guardianName: guardianName,
+    );
+  }
 
   factory PetTimelineSegment.fromJson(Map<String, dynamic> json) {
     return PetTimelineSegment(

@@ -5,8 +5,8 @@ import 'package:go_router/go_router.dart';
 import '../../../../../core/widgets/dashboard_section.dart';
 import '../../../../../l10n/app_localizations.dart';
 import '../../../../health_tracking/presentation/providers/health_providers.dart';
+import '../../../../health_tracking/presentation/widgets/due_event_card.dart';
 import '../../../../pet_profile/domain/entities/pet.dart';
-import '../../../../pet_profile/presentation/widgets/pet_list/due_event_row.dart';
 
 /// Due and Overdue events dashboard section — top 5 items within remind window.
 class GuardianUpcomingEventsSection extends ConsumerWidget {
@@ -54,10 +54,13 @@ class GuardianUpcomingEventsSection extends ConsumerWidget {
             return Column(
               children: preview
                   .map(
-                    (entry) => DueEventRow(
-                      entry: entry,
-                      pet: petMap[entry.petId],
-                      showInlineActions: false,
+                    (entry) => Padding(
+                      padding: const EdgeInsets.only(bottom: 8),
+                      child: DueEventCard(
+                        entry: entry,
+                        pet: petMap[entry.petId],
+                        showActions: true,
+                      ),
                     ),
                   )
                   .toList(),

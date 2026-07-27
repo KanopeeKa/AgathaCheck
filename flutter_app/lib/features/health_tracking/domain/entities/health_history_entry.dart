@@ -10,6 +10,7 @@ class HealthHistoryEntry {
     this.markedByUserId,
     this.markedByName,
     this.notes = '',
+    this.status = 'completed',
   });
 
   final String id;
@@ -27,6 +28,12 @@ class HealthHistoryEntry {
   final String? markedByUserId;
   final String? markedByName;
   final String notes;
+
+  /// History row status: `completed`, `skipped`, or `undone`.
+  final String status;
+
+  bool get isSkipped => status == 'skipped';
+  bool get isCompleted => status == 'completed';
 
   /// Legacy alias for [markedAt].
   DateTime get takenAt => markedAt;

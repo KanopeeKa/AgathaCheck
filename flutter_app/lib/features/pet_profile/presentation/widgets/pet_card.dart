@@ -20,20 +20,41 @@ void sortPetsByCreatedAt(List<Pet> pets) {
   });
 }
 
-/// Horizontal dashboard tile: 2/3 image, 1/3 text, fixed height.
+/// Vertical dashboard tile: top ~2/3 photo, bottom ~1/3 name + species.
+///
+/// Tile width and height are equal (160–220px responsive via [tileSizeFor]).
 class PetCard extends StatelessWidget {
   const PetCard({super.key, required this.pet, this.onTap});
 
   final Pet pet;
   final VoidCallback? onTap;
 
-  static const tileHeight = 100.0;
-
   static double tileWidthFor(double maxWidth) {
     if (maxWidth >= 900) return 220;
     if (maxWidth >= 600) return 200;
     if (maxWidth >= 400) return 180;
     return 160;
+  }
+
+  /// Square tile side length — same as [tileWidthFor].
+  static double tileSizeFor(double maxWidth) => tileWidthFor(maxWidth);
+
+  /// [PetCard] with responsive square constraints for list/section layouts.
+  static Widget sizedTile(
+    BuildContext context, {
+    required Pet pet,
+    VoidCallback? onTap,
+  }) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final tileSize = tileSizeFor(constraints.maxWidth);
+        return SizedBox(
+          width: tileSize,
+          height: tileSize,
+          child: PetCard(pet: pet, onTap: onTap),
+        );
+      },
+    );
   }
 
   @override
@@ -58,56 +79,64 @@ class PetCard extends StatelessWidget {
           ),
           child: InkWell(
             onTap: onTap,
-            child: SizedBox(
-              height: tileHeight,
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Container(width: 4, color: statusBarColor),
-                  Expanded(flex: 2, child: _buildImageArea(context)),
-                  Expanded(
-                    flex: 1,
-                    child: Padding(
-                      padding: const EdgeInsets.fromLTRB(8, 8, 8, 8),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            pet.name,
-                            style: theme.textTheme.titleSmall?.copyWith(
-                              fontWeight: FontWeight.bold,
-                            ),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                          if (ownership.showsFosterLabel) ...[
-                            const SizedBox(height: 2),
-                            Text(
-                              ownership.fosterLabel!,
-                              style: theme.textTheme.labelSmall?.copyWith(
-                                color: fosterAccent,
-                                fontWeight: FontWeight.w500,
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Container(width: 4, color: statusBarColor),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Expanded(flex: 2, child: _buildImageArea(context)),
+                      Expanded(
+                        flex: 1,
+                        child: Padding(
+                          padding: const EdgeInsets.fromLTRB(8, 4, 8, 6),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Flexible(
+                                child: Text(
+                                  pet.name,
+                                  style: theme.textTheme.titleSmall?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
                               ),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ],
-                          const SizedBox(height: 2),
-                          Text(
-                            _speciesLine(l, pet),
-                            style: theme.textTheme.labelSmall?.copyWith(
-                              color: colorScheme.onSurfaceVariant,
-                            ),
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
+                              if (ownership.showsFosterLabel) ...[
+                                Flexible(
+                                  child: Text(
+                                    ownership.fosterLabel!,
+                                    style: theme.textTheme.labelSmall?.copyWith(
+                                      color: fosterAccent,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                              ],
+                              Flexible(
+                                child: Text(
+                                  _speciesLine(l, pet),
+                                  style: theme.textTheme.labelSmall?.copyWith(
+                                    color: colorScheme.onSurfaceVariant,
+                                  ),
+                                  maxLines: ownership.showsFosterLabel ? 1 : 2,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                            ],
                           ),
-                        ],
+                        ),
                       ),
-                    ),
+                    ],
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
         ),
@@ -213,10 +242,10 @@ String _localizedSpecies(AppLocalizations l, String species) {
   }
 }
 
-/// Responsive row of horizontal [PetCard] tiles.
+/// Responsive grid or strip of vertical [PetCard] tiles.
 ///
-/// [useWrap] lays out all tiles in a wrapping grid (manage-pets screen).
-/// Otherwise uses a horizontal scroll strip (dashboard groups).
+/// [useWrap] lays out all tiles in a wrapping grid (dashboard, manage-pets).
+/// Otherwise uses a horizontal scroll strip.
 class PetTileStrip extends StatelessWidget {
   const PetTileStrip({
     super.key,
@@ -241,16 +270,12 @@ class PetTileStrip extends StatelessWidget {
 
     return LayoutBuilder(
       builder: (context, constraints) {
-        final tileWidth = PetCard.tileWidthFor(constraints.maxWidth);
+        final tileSize = PetCard.tileSizeFor(constraints.maxWidth);
 
         Widget buildTile(Pet pet) {
           final card = PetCard(pet: pet, onTap: () => onPetTap(pet));
           final wrapped = tileBuilder?.call(pet, card) ?? card;
-          return SizedBox(
-            width: tileWidth,
-            height: PetCard.tileHeight,
-            child: wrapped,
-          );
+          return SizedBox(width: tileSize, height: tileSize, child: wrapped);
         }
 
         if (useWrap) {
@@ -262,7 +287,7 @@ class PetTileStrip extends StatelessWidget {
         }
 
         return SizedBox(
-          height: PetCard.tileHeight,
+          height: tileSize,
           child: ListView.separated(
             scrollDirection: Axis.horizontal,
             itemCount: pets.length,

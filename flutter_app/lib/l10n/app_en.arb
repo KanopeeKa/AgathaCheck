@@ -104,8 +104,10 @@
   "allPets": "All Pets",
   "managePets": "Manage pets",
   "manageEvents": "Manage events",
-  "eventsEditTab": "Edit",
-  "eventsHistoryTab": "History",
+  "eventFilterClosed": "Closed",
+  "eventFilterRecurring": "Recurring",
+  "eventFilterOneTime": "One-time",
+  "eventFilterShowSkipped": "Show skipped",
   "noEventsYet": "No events yet",
   "petEventsSummary": "{count, plural, =1{1 event} other{{count} events}}",
   "@petEventsSummary": {
@@ -333,9 +335,28 @@
   "endDateOptional": "End Date",
   "linkedEvents": "Linked Events",
   "noLinkedEvents": "No linked events",
+  "addHealthIssue": "Add health issue",
+  "issueDescriptionRequired": "Description is required",
+  "issueSince": "Issue since",
+  "issueResolved": "Issue resolved",
+  "issueStatusLabel": "Status",
+  "issueStatusOpen": "Open",
+  "issueStatusResolved": "Resolved",
+  "reopenIssue": "Reopen issue",
+  "issueReopenedNote": "Issue previously closed on {closedDate} and reopened on {reopenedDate}",
+  "@issueReopenedNote": {
+    "placeholders": {
+      "closedDate": { "type": "String" },
+      "reopenedDate": { "type": "String" }
+    }
+  },
+  "linkEvent": "Link event",
+  "showMore": "Show more",
 
   "addPetTitle": "Add Pet",
   "editPetTitle": "Edit Pet",
+  "editPetNamed": "Edit {petName}",
+  "@editPetNamed": { "placeholders": { "petName": { "type": "String" } } },
   "petName": "Name *",
   "petNameRequired": "Name is required",
   "species": "Species *",
@@ -1054,6 +1075,9 @@
   "petTimelineFillStartDateRequired": "Start date is required",
   "petTimelineFillEndDateLabel": "End date",
   "petTimelineFillError": "Could not save timeline entry",
+  "petTimelineJoinedAgatha": "Joined {appTitle}",
+  "@petTimelineJoinedAgatha": { "placeholders": { "appTitle": { "type": "String" } } },
+  "deleteTimelineEntryConfirm": "Are you sure you want to delete this timeline entry?",
   "bulkShare": "Bulk share",
   "bulkShareSelectHint": "Select pets to share",
   "bulkShareAction": "Share selected",
@@ -1332,8 +1356,38 @@
   "entriesCreated": "{count} entries created",
   "@entriesCreated": { "placeholders": { "count": { "type": "int" } } },
   "noHistoryYet": "No history yet.",
+  "viewEntryTitle": "View {name}",
+  "@viewEntryTitle": { "placeholders": { "name": { "type": "String" } } },
+  "seeHistory": "See history",
+  "closeEventAction": "Close event",
+  "reopenEventAction": "Reopen event",
+  "eventStatusClosed": "Closed",
+  "relatesToHealthIssue": "Relates to health issue",
+  "pastIterations": "Past iterations",
+  "skipOccurrence": "Skip",
+  "unmarkDone": "Unmark done",
+  "remindedDaysBefore": "You will be reminded {count} {dayLabel} before",
+  "@remindedDaysBefore": {
+    "placeholders": {
+      "count": { "type": "int" },
+      "dayLabel": { "type": "String" }
+    }
+  },
+  "recurrenceRepeatsEveryUntil": "Repeats every {interval} {period} until {date}",
+  "@recurrenceRepeatsEveryUntil": {
+    "placeholders": {
+      "interval": { "type": "int" },
+      "period": { "type": "String" },
+      "date": { "type": "String" }
+    }
+  },
+  "occurrenceSkipped": "Skipped",
+  "entryNotFound": "Entry not found",
+  "nextOccurrence": "Next occurrence",
   "deleteEntryNamedConfirm": "Delete \"{name}\"? This cannot be undone.",
   "@deleteEntryNamedConfirm": { "placeholders": { "name": { "type": "String" } } },
+  "deleteRecurringEntryNamedConfirm": "Delete \"{name}\"? All iterations of this recurring event will be permanently removed.",
+  "@deleteRecurringEntryNamedConfirm": { "placeholders": { "name": { "type": "String" } } },
   "failedToDelete": "Failed to delete: {error}",
   "@failedToDelete": { "placeholders": { "error": { "type": "String" } } },
   "failedToLoadHistory": "Failed to load history: {error}",
@@ -1382,6 +1436,7 @@
   "dueAndOverdue": "Due and Overdue",
   "allEvents": "All Events",
   "allVets": "All Vets",
+  "manageVeterinarians": "Manage veterinarians",
   "addAnEvent": "Add an event",
   "dashboardAddPet": "Add a pet",
   "vetLinkedPetCount": "{count, plural, =1{1 pet} other{{count} pets}}",

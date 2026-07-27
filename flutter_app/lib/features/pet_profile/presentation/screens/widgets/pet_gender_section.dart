@@ -22,7 +22,7 @@ class PetGenderSection extends StatelessWidget {
         helperText: 'Useful for health and behaviour tracking',
         suffixIcon: selectedGender != null
             ? IconButton(
-                icon: const Icon(Icons.clear),
+                icon: const Icon(Icons.clear, size: 18),
                 tooltip: 'Clear gender',
                 onPressed: () => onChanged(null),
               )

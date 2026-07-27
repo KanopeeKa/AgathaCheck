@@ -20,6 +20,24 @@ export class HealthDashboardPage {
       );
   }
 
+  /** Guardian `/g/events` global list (phase 14+) — filter bar + EventListCard rows. */
+  private guardianGlobalEventsLoadedLocator() {
+    return this.page
+      .getByRole('button', { name: /Add an event|Ajouter un événement/i })
+      .or(this.page.getByText(/^Events$|^Événements$/i))
+      .or(this.page.getByText(/Due and Overdue|À faire et en retard/i))
+      .or(this.page.getByText(/No entries yet|Aucun événement/i));
+  }
+
+  /** EventListCard semantics include type in the label (`name, Medication, date`). */
+  private guardianGlobalEventsEntryLocator() {
+    return this.page
+      .locator('flt-semantics')
+      .filter({
+        hasText: /, (Medication|Médicament|Preventive|Préventif|Vet Visit|Visite vétérinaire|Other|Autre), /i,
+      });
+  }
+
   /** Empty-state copy — Flutter web often merges tab body text into tabpanel/group names. */
   private fullDashboardEmptyLocator() {
     return this.page
@@ -46,6 +64,8 @@ export class HealthDashboardPage {
     await expect(async () => {
       await refreshFlutterAccessibility(this.page);
       await this.emptyStateLocator()
+        .or(this.guardianGlobalEventsLoadedLocator())
+        .or(this.guardianGlobalEventsEntryLocator())
         .or(this.page.getByText(/Mark as done|Marquer comme fait/i))
         .or(this.page.getByRole('button', { name: /retry|try again|réessayer/i }))
         .or(this.page.getByText(/Error loading entries|Error loading pets/i))
@@ -64,6 +84,7 @@ export class HealthDashboardPage {
         .or(this.page.getByRole('button', { name: /Add an event|Ajouter un événement/i }))
         .or(this.page.getByText(/Due and Overdue|À faire et en retard/i))
         .or(this.emptyStateLocator())
+        .or(this.guardianGlobalEventsLoadedLocator())
         .first();
       await expect(marker).toBeVisible();
     }).toPass({ timeout: 30_000 });
