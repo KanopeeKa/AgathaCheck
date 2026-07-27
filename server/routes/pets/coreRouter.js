@@ -33,6 +33,10 @@ export function registerCoreRoutes(router, pool) {
          FROM pets p
          LEFT JOIN organizations o ON o.id = p.organization_id
          WHERE p.user_id = $1
+           AND NOT EXISTS (
+             SELECT 1 FROM org_pet_home_hidden oh
+             WHERE oh.pet_id = p.id AND oh.user_id = $1
+           )
          UNION ALL
          SELECT p.*, true AS is_shared, false AS is_foster, o.name AS organization_name,
                 ${FOSTER_PLACEMENT_SELECT_SQL},
