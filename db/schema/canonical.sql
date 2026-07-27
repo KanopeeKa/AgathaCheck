@@ -679,6 +679,7 @@ CREATE INDEX idx_foster_request_targets_request_id ON public.foster_request_targ
 CREATE INDEX idx_foster_requests_org_id ON public.foster_requests USING btree (organization_id);
 CREATE INDEX idx_health_entries_pet_id ON public.health_entries USING btree (pet_id);
 CREATE INDEX idx_health_entries_user_id ON public.health_entries USING btree (user_id);
+CREATE INDEX idx_health_issue_documents_issue_id ON public.health_issue_documents USING btree (health_issue_id);
 CREATE INDEX idx_notifications_user_id ON public.notifications USING btree (user_id);
 CREATE INDEX idx_org_connection_requests_target ON public.org_connection_requests USING btree (target_org_id, status);
 CREATE INDEX idx_org_connections_high ON public.org_connections USING btree (org_high_id);

@@ -23,9 +23,25 @@ void main() {
         entryId: 'entry-1',
         markedAt: DateTime(2025, 1, 15),
         notes: 'Given with food',
+        status: 'skipped',
       );
 
       expect(entry.notes, 'Given with food');
+      expect(entry.status, 'skipped');
+      expect(entry.isSkipped, isTrue);
+      expect(entry.isCompleted, isFalse);
+    });
+
+    test('defaults status to completed', () {
+      final entry = HealthHistoryEntry(
+        id: 'h1',
+        entryId: 'entry-1',
+        markedAt: DateTime(2025, 1, 15),
+      );
+
+      expect(entry.status, 'completed');
+      expect(entry.isCompleted, isTrue);
+      expect(entry.isSkipped, isFalse);
     });
 
     test('equality is based on id', () {
