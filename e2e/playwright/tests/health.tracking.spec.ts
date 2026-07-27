@@ -280,7 +280,9 @@ test.describe('Health tracking', () => {
 
     const dashboard = new HealthDashboardPage(page);
     await dashboard.expectLoaded();
-    await dashboard.expectEntryVisible(entry.name);
+    // Guardian /g/events is a due-events inbox — snoozed entries fall outside remind window.
+    await dashboard.expectEntryNotVisible(entry.name);
+    await dashboard.expectEmptyState();
   });
 
   // ── Wave C: Tab filtering ─────────────────────────────────────────────────
