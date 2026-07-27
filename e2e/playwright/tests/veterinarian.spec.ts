@@ -43,14 +43,13 @@ test.describe('Veterinarian management', () => {
 
     await vetList.expectLoaded();
     await vetList.expectVetVisible('Dr. Smith');
-    await vetList.expectPhoneVisible('555-1234');
+    await checkA11y(page, 'vet list after create');
+    await vetList.expectPhoneVisible('555-1234', 'Dr. Smith');
 
     const vets = await getVets(baseURL, testUser.accessToken);
     const created = vets.find((v) => v.name === 'Dr. Smith');
     expect(created).toBeTruthy();
     expect(created?.phone).toBe('555-1234');
-
-    await checkA11y(page, 'vet list after create');
   });
 
   test('user can create a vet with only a name', async ({ page, testUser }) => {

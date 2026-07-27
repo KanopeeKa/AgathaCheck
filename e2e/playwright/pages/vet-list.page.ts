@@ -2,18 +2,30 @@
  * Veterinarian list screen (`/g/vets`, `/o/vets`).
  * Maps to: flutter_app/test/bdd/features/veterinarian_management.feature
  */
-import type { Page } from '@playwright/test';
+import type { Locator, Page } from '@playwright/test';
 import { expect } from '@playwright/test';
 import {
   dismissConsentBannerIfPresent,
   escapeRegExp,
-  expectAppBarTitle,
   refreshFlutterAccessibility,
   semanticsByName,
+  waitForFlutterRoutePattern,
 } from '../support/flutter';
 
 export class VetListPage {
   constructor(private readonly page: Page) {}
+
+  /** Org list cards (`Veterinarian: …`) or guardian compact rows (`Name · town`). */
+  private vetRowLocator(name: string): Locator {
+    const escaped = escapeRegExp(name);
+    const cardPattern = new RegExp(`Veterinarian:\\s*${escaped}`, 'i');
+    const rowPattern = new RegExp(escaped, 'i');
+    return semanticsByName(this.page, cardPattern)
+      .or(this.page.getByRole('button', { name: rowPattern }))
+      .or(this.page.getByRole('group', { name: rowPattern }))
+      .or(this.page.getByText(rowPattern))
+      .first();
+  }
 
   async expectLoaded(): Promise<void> {
     await dismissConsentBannerIfPresent(this.page);
@@ -30,39 +42,48 @@ export class VetListPage {
   }
 
   async expectVetVisible(name: string): Promise<void> {
-    await semanticsByName(
-      this.page,
-      new RegExp(`Veterinarian:\\s*${escapeRegExp(name)}`, 'i'),
-    ).waitFor({ timeout: 30_000 });
+    await refreshFlutterAccessibility(this.page);
+    await this.vetRowLocator(name).waitFor({ timeout: 30_000 });
   }
 
   async expectVetNotVisible(name: string): Promise<void> {
+    await refreshFlutterAccessibility(this.page);
+    const escaped = escapeRegExp(name);
     await expect(
-      this.page
-        .getByRole('button', { name: new RegExp(`Veterinarian:\\s*${escapeRegExp(name)}`, 'i') })
-        .or(
-          this.page.getByRole('group', {
-            name: new RegExp(`Veterinarian:\\s*${escapeRegExp(name)}`, 'i'),
-          }),
-        ),
+      semanticsByName(this.page, new RegExp(`Veterinarian:\\s*${escaped}`, 'i'))
+        .or(this.page.getByRole('button', { name: new RegExp(escaped, 'i') }))
+        .or(this.page.getByRole('group', { name: new RegExp(escaped, 'i') }))
+        .or(this.page.getByText(new RegExp(escaped, 'i'))),
     ).toHaveCount(0);
   }
 
   async expectVetCount(n: number): Promise<void> {
-    await expect(
-      this.page
-        .getByRole('button', { name: /Veterinarian:/i })
-        .or(this.page.getByRole('group', { name: /Veterinarian:/i })),
-    ).toHaveCount(n, { timeout: 30_000 });
+    await refreshFlutterAccessibility(this.page);
+    const legacyCards = this.page
+      .getByRole('button', { name: /Veterinarian:/i })
+      .or(this.page.getByRole('group', { name: /Veterinarian:/i }));
+    if ((await legacyCards.count()) > 0) {
+      await expect(legacyCards).toHaveCount(n, { timeout: 30_000 });
+      return;
+    }
+    await expect(this.page.getByText(/\b\d+ pets?\b/i)).toHaveCount(n, { timeout: 30_000 });
   }
 
   async clickEditVet(name: string): Promise<void> {
+    await refreshFlutterAccessibility(this.page);
     const card = semanticsByName(
       this.page,
       new RegExp(`Veterinarian:\\s*${escapeRegExp(name)}`, 'i'),
     );
-    await card.waitFor({ timeout: 30_000 });
-    await card.getByRole('button', { name: /^Edit$/i }).click();
+    const inlineEdit = card.getByRole('button', { name: /^Edit$/i });
+    if (await inlineEdit.isVisible({ timeout: 2_000 }).catch(() => false)) {
+      await inlineEdit.click();
+    } else {
+      await this.vetRowLocator(name).click();
+      await waitForFlutterRoutePattern(this.page, /\/(g|o)\/vets\/[^/]+$/, 30_000);
+      await refreshFlutterAccessibility(this.page);
+      await this.page.getByRole('button', { name: /^Edit$/i }).click();
+    }
     await this.page.getByRole('textbox', { name: 'Name *' }).waitFor({ timeout: 30_000 });
   }
 
@@ -103,14 +124,29 @@ export class VetListPage {
 
   async expectPhoneVisible(phone: string, vetName?: string): Promise<void> {
     await refreshFlutterAccessibility(this.page);
-    const pattern = vetName
-      ? new RegExp(
-          `Veterinarian:\\s*${escapeRegExp(vetName)}[\\s\\S]*${escapeRegExp(phone)}`,
-          'i',
-        )
-      : new RegExp(escapeRegExp(phone), 'i');
-    await semanticsByName(this.page, pattern).waitFor({
-      timeout: 15_000,
-    });
+    const phoneLocator = this.page.getByText(new RegExp(escapeRegExp(phone), 'i'));
+
+    if (vetName) {
+      const cardPattern = new RegExp(
+        `Veterinarian:\\s*${escapeRegExp(vetName)}[\\s\\S]*${escapeRegExp(phone)}`,
+        'i',
+      );
+      if (await semanticsByName(this.page, cardPattern).isVisible({ timeout: 2_000 }).catch(() => false)) {
+        return;
+      }
+    }
+
+    if (await phoneLocator.first().isVisible({ timeout: 2_000 }).catch(() => false)) {
+      return;
+    }
+
+    if (!vetName) {
+      throw new Error('expectPhoneVisible: vetName required for guardian compact-row list');
+    }
+
+    await this.vetRowLocator(vetName).click();
+    await waitForFlutterRoutePattern(this.page, /\/(g|o)\/vets\/[^/]+$/, 30_000);
+    await refreshFlutterAccessibility(this.page);
+    await phoneLocator.first().waitFor({ timeout: 15_000 });
   }
 }
