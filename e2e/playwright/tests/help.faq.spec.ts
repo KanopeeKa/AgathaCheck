@@ -13,6 +13,7 @@
  */
 import { test, expect, loginAs } from '../fixtures/auth.fixture';
 import { PetListPage } from '../pages/pet-list.page';
+import { dashboardSectionGroup } from '../support/flutter';
 import { MyDetailsPage } from '../pages/my-details.page';
 import {
   FAQ_SECTIONS_EN,
@@ -139,6 +140,6 @@ test.describe('Help / FAQ', () => {
     await help.goBack();
 
     await petList.expectLoaded();
-    await expect(page.getByText('My Pets', { exact: true })).toBeVisible();
+    await expect(dashboardSectionGroup(page, 'myPets')).toBeVisible();
   });
 });
