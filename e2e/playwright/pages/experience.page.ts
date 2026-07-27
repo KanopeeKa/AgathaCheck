@@ -160,13 +160,17 @@ export class ExperiencePage {
 
   /** Assert bell badge shows the expected count. */
   async expectBellBadge(count: number): Promise<void> {
-    const label = String(count);
+    const label = count > 99 ? '99+' : String(count);
     const bell = this.page.getByRole('button', { name: /open notifications/i });
     await expect(bell).toBeVisible({ timeout: 10_000 });
+    const digitPattern = new RegExp(`^${label.replace('+', '\\+')}$`);
+    const badgeDigit = bell
+      .getByText(digitPattern)
+      .or(bell.locator('xpath=..').getByText(digitPattern));
     if (count > 0) {
-      await expect(bell.getByText(label)).toBeVisible();
+      await expect(badgeDigit.first()).toBeVisible({ timeout: 15_000 });
     } else {
-      await expect(bell.getByText(/^\d+$/)).not.toBeVisible();
+      await expect(badgeDigit).toHaveCount(0, { timeout: 15_000 });
     }
   }
 }

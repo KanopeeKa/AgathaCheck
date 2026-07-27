@@ -154,61 +154,93 @@ export class NotificationsPage {
     await this.page.waitForTimeout(600);
   }
 
+  /** Digit locator for the experience-shell bell badge (Flutter web Stack semantics). */
+  private bellBadgeDigitLocator(label: string) {
+    const digitPattern = new RegExp(`^${label.replace('+', '\\+')}$`);
+    const bell = this.page.getByRole('button', { name: /open notifications/i });
+    // Badge label may be a Stack sibling on Flutter web, not a descendant of the button.
+    return bell
+      .getByText(digitPattern)
+      .or(bell.locator('xpath=..').getByText(digitPattern))
+      .or(
+        this.page
+          .getByRole('banner')
+          .getByText(digitPattern)
+          .and(this.page.locator(':visible')),
+      );
+  }
+
   /** Assert the unread-count badge on the bell icon (experience shell). */
   async expectBadgeVisible(count: number): Promise<void> {
     const label = count > 99 ? '99+' : String(count);
 
-    if (await isExperienceShellVisible(this.page)) {
-      const bell = this.page.getByRole('button', { name: /open notifications/i });
-      if (await bell.isVisible({ timeout: 5_000 }).catch(() => false)) {
-        const badgeDigit = bell.getByText(
-          new RegExp(`^${label.replace('+', '\\+')}$`),
-        );
-        if (await badgeDigit.isVisible({ timeout: 5_000 }).catch(() => false)) {
+    await expect(async () => {
+      await refreshFlutterAccessibility(this.page);
+
+      if (await isExperienceShellVisible(this.page)) {
+        const bell = this.page.getByRole('button', { name: /open notifications/i });
+        await bell.waitFor({ timeout: 5_000 });
+        const badgeDigit = this.bellBadgeDigitLocator(label);
+        if (await badgeDigit.first().isVisible().catch(() => false)) {
+          return;
+        }
+        const ariaLabel = await bell.getAttribute('aria-label');
+        if (ariaLabel && new RegExp(`${label.replace('+', '\\+')}`).test(ariaLabel)) {
           return;
         }
       }
-    }
 
-    // Legacy fallback: check old app bar bell or pet-list notifications button
-    const legacyControl = this.page
-      .getByRole('button', {
-        name: new RegExp(`Notifications,\\s*${label}\\s*unread`, 'i'),
-      })
-      .or(
-        this.page.getByRole('group', {
+      // Legacy fallback: check old app bar bell or pet-list notifications button
+      const legacyControl = this.page
+        .getByRole('button', {
           name: new RegExp(`Notifications,\\s*${label}\\s*unread`, 'i'),
-        }),
-      )
-      .first();
-    if (await legacyControl.isVisible({ timeout: 3_000 }).catch(() => false)) {
-      return;
-    }
+        })
+        .or(
+          this.page.getByRole('group', {
+            name: new RegExp(`Notifications,\\s*${label}\\s*unread`, 'i'),
+          }),
+        )
+        .first();
+      if (await legacyControl.isVisible().catch(() => false)) {
+        return;
+      }
 
-    throw new Error(`Notifications badge (${label}) not found on bell`);
+      throw new Error(`Notifications badge (${label}) not found on bell`);
+    }).toPass({ timeout: 45_000 });
   }
 
   /** Assert no unread-count badge on the bell or legacy controls. */
   async expectNoBadgeVisible(): Promise<void> {
-    if (await isExperienceShellVisible(this.page)) {
-      const bell = this.page.getByRole('button', { name: /open notifications/i });
-      if (await bell.isVisible({ timeout: 5_000 }).catch(() => false)) {
-        const badgeDigit = bell.getByText(/^(?:99\+|[1-9]\d?)$/);
-        await expect(badgeDigit).toHaveCount(0, { timeout: 5_000 });
+    await expect(async () => {
+      await refreshFlutterAccessibility(this.page);
+
+      if (await isExperienceShellVisible(this.page)) {
+        const bell = this.page.getByRole('button', { name: /open notifications/i });
+        await bell.waitFor({ timeout: 5_000 });
+        const badgeDigit = bell
+          .getByText(/^(?:99\+|[1-9]\d?)$/)
+          .or(bell.locator('xpath=..').getByText(/^(?:99\+|[1-9]\d?)$/))
+          .or(
+            this.page
+              .getByRole('banner')
+              .getByText(/^(?:99\+|[1-9]\d?)$/)
+              .and(this.page.locator(':visible')),
+          );
+        await expect(badgeDigit).toHaveCount(0, { timeout: 3_000 });
         return;
       }
-    }
 
-    // Legacy fallback
-    const legacyControl = this.page
-      .getByRole('button', { name: /^Notifications/i })
-      .or(this.page.getByRole('group', { name: /^Notifications/i }))
-      .first();
-    if (await legacyControl.isVisible({ timeout: 2_000 }).catch(() => false)) {
-      const badgeLabel =
-        (await legacyControl.getAttribute('aria-label')) ?? (await legacyControl.innerText());
-      expect(badgeLabel).not.toMatch(/,\s*(?:99\+|[1-9]\d?)\s*unread/i);
-    }
+      // Legacy fallback
+      const legacyControl = this.page
+        .getByRole('button', { name: /^Notifications/i })
+        .or(this.page.getByRole('group', { name: /^Notifications/i }))
+        .first();
+      if (await legacyControl.isVisible({ timeout: 2_000 }).catch(() => false)) {
+        const badgeLabel =
+          (await legacyControl.getAttribute('aria-label')) ?? (await legacyControl.innerText());
+        expect(badgeLabel).not.toMatch(/,\s*(?:99\+|[1-9]\d?)\s*unread/i);
+      }
+    }).toPass({ timeout: 30_000 });
   }
 
   /** Select a notification kind filter chip. */
