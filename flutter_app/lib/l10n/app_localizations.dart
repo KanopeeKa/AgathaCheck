@@ -1783,6 +1783,12 @@ abstract class AppLocalizations {
   /// **'Edit Pet'**
   String get editPetTitle;
 
+  /// No description provided for @editPetNamed.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit {petName}'**
+  String editPetNamed(String petName);
+
   /// No description provided for @petName.
   ///
   /// In en, this message translates to:
@@ -7160,6 +7166,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'All Vets'**
   String get allVets;
+
+  /// No description provided for @manageVeterinarians.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage veterinarians'**
+  String get manageVeterinarians;
 
   /// No description provided for @addAnEvent.
   ///

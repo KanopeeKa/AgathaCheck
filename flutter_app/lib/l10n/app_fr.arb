@@ -311,6 +311,8 @@
 
   "addPetTitle": "Ajouter un animal",
   "editPetTitle": "Modifier l'animal",
+  "editPetNamed": "Modifier {petName}",
+  "@editPetNamed": { "placeholders": { "petName": { "type": "String" } } },
   "petName": "Nom *",
   "petNameRequired": "Le nom est requis",
   "species": "Espèce *",
@@ -1289,6 +1291,7 @@
   "dueAndOverdue": "À faire et en retard",
   "allEvents": "Tous les événements",
   "allVets": "Tous les vétérinaires",
+  "manageVeterinarians": "Gérer les vétérinaires",
   "addAnEvent": "Ajouter un événement",
   "dashboardAddPet": "Ajouter un animal",
   "vetLinkedPetCount": "{count, plural, =1{1 animal} other{{count} animaux}}",

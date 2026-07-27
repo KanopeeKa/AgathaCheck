@@ -46,7 +46,6 @@ class PetSpeciesSection extends StatelessWidget {
       decoration: InputDecoration(
         labelText: l.species,
         helperText: 'Select the type of animal',
-        suffixIcon: const Icon(Icons.pets),
       ),
       items: AppConstants.species
           .map(

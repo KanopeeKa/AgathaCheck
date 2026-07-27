@@ -23,10 +23,6 @@ class GuardianMyVetsSection extends ConsumerWidget {
 
     return DashboardSection(
       title: l.myVets,
-      headerAction: TextButton(
-        onPressed: () => context.go('/g/vets/add'),
-        child: Text(l.addVet),
-      ),
       previewBuilder: (ctx) {
         if (auth.accessToken == null) {
           return const SizedBox(
@@ -69,7 +65,7 @@ class GuardianMyVetsSection extends ConsumerWidget {
         );
       },
       endLink: DashboardSectionLink(
-        label: l.allVets,
+        label: l.manageVeterinarians,
         onPressed: () => context.go('/g/vets'),
       ),
     );
