@@ -46,6 +46,7 @@ class OrgCard extends ConsumerWidget {
 
     return MergeSemantics(
       child: Semantics(
+        identifier: 'org_membership_${organization.id}',
         button: onTap != null,
         onTap: onTap,
         label:
