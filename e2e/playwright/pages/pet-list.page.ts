@@ -117,11 +117,13 @@ export class PetListPage {
     await this.expectLoaded();
     await expect(async () => {
       await refreshFlutterAccessibility(this.page);
+      const dueSection = dashboardSectionGroup(this.page, 'dueAndOverdue');
+      await expect(dueSection).toBeVisible();
       await expect(
-        this.page
+        dueSection
           .getByText(/You're all caught up|Tout est à jour/i)
           .or(
-            this.page.getByText(
+            dueSection.getByText(
               /No events are overdue or due today|Aucun événement en retard ou prévu aujourd'hui/i,
             ),
           )
