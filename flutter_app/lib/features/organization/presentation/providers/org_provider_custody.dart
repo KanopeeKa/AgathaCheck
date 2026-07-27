@@ -58,6 +58,7 @@ class OrgHomeHiddenPetsNotifier
     await repo.setPetHomeHidden(arg, petId, hidden: false, token: token);
     ref.invalidateSelf();
     ref.invalidate(allPetsIncludingOrgProvider);
+    ref.invalidate(petListProvider);
   }
 
   Future<void> hide(String petId) async {
@@ -67,6 +68,7 @@ class OrgHomeHiddenPetsNotifier
     await repo.setPetHomeHidden(arg, petId, hidden: true, token: token);
     ref.invalidateSelf();
     ref.invalidate(allPetsIncludingOrgProvider);
+    ref.invalidate(petListProvider);
   }
 }
 
