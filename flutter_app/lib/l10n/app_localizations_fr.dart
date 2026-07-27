@@ -3960,6 +3960,11 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
+  String deleteRecurringEntryNamedConfirm(String name) {
+    return 'Supprimer « $name » ? Toutes les itérations de cet événement récurrent seront définitivement supprimées.';
+  }
+
+  @override
   String failedToDelete(String error) {
     return 'Échec de la suppression : $error';
   }
