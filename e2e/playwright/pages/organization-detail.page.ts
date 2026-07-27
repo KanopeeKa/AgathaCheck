@@ -79,8 +79,22 @@ export class OrganizationDetailPage {
     await expect(this.page.getByText(bio)).toBeVisible();
   }
 
+  /** EN "All" / FR "Tous" — inclusive org pets tab (default is Need attention). */
+  private static readonly allPetsTabName = /^All$|^Tous$/i;
+
+  private async selectOrgPetsTab(name: RegExp): Promise<void> {
+    await enableFlutterAccessibility(this.page);
+    await refreshFlutterAccessibility(this.page);
+    const tab = this.page.getByRole('button', { name }).filter({ visible: true }).first();
+    await tab.waitFor({ timeout: 15_000 });
+    await tab.click();
+    await refreshFlutterAccessibility(this.page);
+  }
+
   async expectPetVisible(name: string): Promise<void> {
     await this.openPetsSection();
+    // Fostered pets live on In foster / All — not the default Need attention tab.
+    await this.selectOrgPetsTab(OrganizationDetailPage.allPetsTabName);
     const pattern = new RegExp(escapeRegExp(name), 'i');
     const pet = this.page
       .getByRole('button', { name: pattern })
