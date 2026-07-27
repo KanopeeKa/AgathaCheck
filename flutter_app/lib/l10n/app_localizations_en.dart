@@ -3842,6 +3842,54 @@ class AppLocalizationsEn extends AppLocalizations {
   String get noHistoryYet => 'No history yet.';
 
   @override
+  String viewEntryTitle(String name) {
+    return 'View $name';
+  }
+
+  @override
+  String get seeHistory => 'See history';
+
+  @override
+  String get closeEventAction => 'Close event';
+
+  @override
+  String get reopenEventAction => 'Reopen event';
+
+  @override
+  String get eventStatusClosed => 'Closed';
+
+  @override
+  String get relatesToHealthIssue => 'Relates to health issue';
+
+  @override
+  String get pastIterations => 'Past iterations';
+
+  @override
+  String get skipOccurrence => 'Skip';
+
+  @override
+  String get unmarkDone => 'Unmark done';
+
+  @override
+  String remindedDaysBefore(int count, String dayLabel) {
+    return 'You will be reminded $count $dayLabel before';
+  }
+
+  @override
+  String recurrenceRepeatsEveryUntil(int interval, String period, String date) {
+    return 'Repeats every $interval $period until $date';
+  }
+
+  @override
+  String get occurrenceSkipped => 'Skipped';
+
+  @override
+  String get entryNotFound => 'Entry not found';
+
+  @override
+  String get nextOccurrence => 'Next occurrence';
+
+  @override
   String deleteEntryNamedConfirm(String name) {
     return 'Delete \"$name\"? This cannot be undone.';
   }
