@@ -27,6 +27,10 @@ job_in_skip_list() {
   python3 -c 'import json,sys; job=sys.argv[1]; data=json.loads(sys.stdin.read()); sys.exit(0 if job in data.get("skip_jobs", []) else 1)' "$job" <<<"$SCOPE_JSON"
 }
 
+job_expects_skip() {
+  job_in_skip_list "$@"
+}
+
 job_passes() {
   local job="$1"
   local result="$2"
@@ -74,6 +78,11 @@ if [[ -n "$SCOPE_JSON" ]]; then
   scope_label="$(python3 -c 'import json,sys; print(json.load(sys.stdin).get("scope","?"))' <<<"$SCOPE_JSON")"
 fi
 
+# Write summary to a temp file — NOT a pipe. A pipe would run the block in a subshell and
+# `failed=1` would never propagate to the exit check below.
+SUMMARY_TMP="$(mktemp)"
+trap 'rm -f "$SUMMARY_TMP"' EXIT
+
 {
   echo "## CI gate summary"
   if [[ -n "$scope_label" ]]; then
@@ -114,7 +123,9 @@ fi
     echo
     echo "Granular checks remain visible on the PR; only \`ci-gate / CI passed\` is required for merge."
   fi
-} | append_summary
+} >"$SUMMARY_TMP"
+
+append_summary <"$SUMMARY_TMP"
 
 if [[ "$failed" -ne 0 ]]; then
   echo "::error::CI gate failed — see summary table for failing jobs."

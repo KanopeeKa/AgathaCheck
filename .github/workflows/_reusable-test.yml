@@ -43,6 +43,9 @@ jobs:
       - name: File size gate (500 lines)
         run: node scripts/check_file_size.js
 
+      - name: CI gate assertion tests
+        run: node --test scripts/ci/assert-ci-gate.test.js
+
       - name: Write governance job summary
         if: always()
         run: |
