@@ -7065,6 +7065,12 @@ abstract class AppLocalizations {
   /// **'Delete \"{name}\"? This cannot be undone.'**
   String deleteEntryNamedConfirm(String name);
 
+  /// No description provided for @deleteRecurringEntryNamedConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete \"{name}\"? All iterations of this recurring event will be permanently removed.'**
+  String deleteRecurringEntryNamedConfirm(String name);
+
   /// No description provided for @failedToDelete.
   ///
   /// In en, this message translates to:

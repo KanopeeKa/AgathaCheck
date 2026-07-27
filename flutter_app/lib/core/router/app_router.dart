@@ -8,7 +8,6 @@ import '../../features/auth/presentation/screens/landing_screen.dart';
 import '../../features/auth/presentation/screens/my_details_screen.dart';
 import '../../features/health_tracking/domain/entities/health_entry.dart';
 import '../../features/health_tracking/presentation/screens/health_entry_form_screen.dart';
-import '../../features/health_tracking/presentation/screens/other_event_form_screen.dart';
 import '../../features/health_tracking/presentation/screens/pet_event_view_screen.dart';
 import '../../features/notifications/presentation/screens/notification_settings_screen.dart';
 import '../../features/notifications/presentation/screens/notifications_screen.dart';
@@ -188,6 +187,19 @@ final routerProvider = Provider<GoRouter>((ref) {
         },
       ),
       GoRoute(
+        path: '/pet/:petId/events/:entryId/edit',
+        name: 'editPetEvent',
+        builder: (context, state) {
+          final petId = state.pathParameters['petId']!;
+          final entryId = state.pathParameters['entryId']!;
+          return HealthEntryFormScreen(
+            entryId: entryId,
+            petId: petId,
+            allowedTypes: kAllPetEventTypes,
+          );
+        },
+      ),
+      GoRoute(
         path: '/pet/:petId/events/:entryId',
         name: 'petEventView',
         builder: (context, state) {
@@ -241,15 +253,7 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/pet/:petId/health/edit/:id',
         name: 'editPetHealthEntry',
-        builder: (context, state) {
-          final petId = state.pathParameters['petId']!;
-          final entryId = state.pathParameters['id']!;
-          return HealthEntryFormScreen(
-            entryId: entryId,
-            petId: petId,
-            allowedTypes: kHealthEventTypes.toList(),
-          );
-        },
+        redirect: (context, state) => redirectLegacyPetEventEditPath(state),
       ),
       GoRoute(
         path: '/pet/:petId/other/add',
@@ -261,18 +265,18 @@ final routerProvider = Provider<GoRouter>((ref) {
               ? HealthEntryType.values
                     .where((t) => t.name == typeParam)
                     .firstOrNull
-              : null;
-          return OtherEventFormScreen(petId: petId, initialType: initialType);
+              : HealthEntryType.other;
+          return HealthEntryFormScreen(
+            petId: petId,
+            initialType: initialType,
+            allowedTypes: kOtherEventTypes.toList(),
+          );
         },
       ),
       GoRoute(
         path: '/pet/:petId/other/edit/:id',
         name: 'editPetOtherEvent',
-        builder: (context, state) {
-          final petId = state.pathParameters['petId']!;
-          final entryId = state.pathParameters['id']!;
-          return OtherEventFormScreen(entryId: entryId, petId: petId);
-        },
+        redirect: (context, state) => redirectLegacyPetEventEditPath(state),
       ),
       GoRoute(
         path: '/health',
