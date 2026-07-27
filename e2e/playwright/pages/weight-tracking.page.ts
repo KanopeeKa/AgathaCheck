@@ -26,6 +26,7 @@ export class WeightTrackingPage {
   async openSection(): Promise<void> {
     const expandedMarker = this.page.getByRole('radio', { name: 'kg' });
     if (await expandedMarker.isVisible().catch(() => false)) {
+      await this.weightSectionRoot().scrollIntoViewIfNeeded();
       await refreshFlutterAccessibility(this.page);
       return;
     }
@@ -49,16 +50,21 @@ export class WeightTrackingPage {
       .waitFor({ timeout: 30_000 });
   }
 
-  /** Empty, entry rows, or error — scoped to the section, not profile header chips. */
+  /**
+   * List rows, empty state, or error — scoped to the section.
+   * Avoids false positives from the profile header chip or chart axis labels
+   * (chart can render before list rows are scrolled into view).
+   */
   private weightDataSettledLocator() {
     const section = this.weightSectionRoot();
     return section
-      .getByRole('group', {
-        name: /no weight data yet|aucune donnée de poids|\d+\.\d+ (kg|lb)/i,
+      .getByRole('button', {
+        name: /Delete weight entry|Supprimer l'entrée de poids/i,
       })
+      .or(section.getByText(/no weight data yet|aucune donnée de poids/i))
       .or(
         section.getByText(
-          /no weight data yet|aucune donnée de poids|\d+\.\d+ (kg|lb)|error loading weight/i,
+          /error loading weight|erreur de chargement des données de poids/i,
         ),
       );
   }
@@ -137,12 +143,12 @@ export class WeightTrackingPage {
       await this.openSection();
       await this.waitForWeightDataSettled();
       const section = this.weightSectionRoot();
-      await expect(
-        section
-          .getByRole('group', { name: pattern })
-          .or(section.getByText(label, { exact: false }))
-          .first(),
-      ).toBeVisible();
+      const entry = section
+        .getByRole('group', { name: pattern })
+        .or(section.getByText(label, { exact: false }))
+        .first();
+      await entry.scrollIntoViewIfNeeded();
+      await expect(entry).toBeVisible();
     }).toPass({ timeout });
   }
 
@@ -154,7 +160,12 @@ export class WeightTrackingPage {
       await this.openSection();
       await this.waitForWeightDataSettled();
       const section = this.weightSectionRoot();
-      const entries = section.getByRole('group', { name: /^\d+\.\d+ (kg|lb)/ });
+      const entries = section.getByRole('button', {
+        name: /Delete weight entry|Supprimer l'entrée de poids/i,
+      });
+      if (count > 0) {
+        await entries.last().scrollIntoViewIfNeeded();
+      }
       await expect(entries).toHaveCount(count);
     }).toPass({ timeout });
   }
