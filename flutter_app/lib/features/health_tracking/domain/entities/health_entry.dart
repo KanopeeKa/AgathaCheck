@@ -6,7 +6,7 @@ import 'recurrence_anchor.dart';
 /// or other events for a pet with scheduling and dosage information.
 ///
 /// **Pet profile sections:** [kHealthEventTypes] (Health Events) and
-/// [kOtherEventTypes] (Other events: care + misc.). This is separate from
+/// [kOtherEventTypes] (Other events). This is separate from
 /// organisation [FamilyEvent] foster/placement records under `organization/`.
 const kHealthEventTypes = {
   HealthEntryType.medication,
@@ -14,12 +14,10 @@ const kHealthEventTypes = {
   HealthEntryType.vetVisit,
 };
 
-/// Care event ([HealthEntryType.familyEvent]) and misc. other
-/// ([HealthEntryType.procedure]) entries shown in the pet profile "Other events"
-/// section. Not to be confused with organisation [FamilyEvent] assignments.
+/// Misc. other entries shown in the pet profile "Other events" section.
+/// Not to be confused with organisation [FamilyEvent] assignments.
 const kOtherEventTypes = {
-  HealthEntryType.familyEvent,
-  HealthEntryType.procedure,
+  HealthEntryType.other,
 };
 
 class HealthEntry {
@@ -224,12 +222,8 @@ enum HealthEntryType {
   /// A vet visit (checkup, dental, surgery, etc.).
   vetVisit,
 
-  /// Any other non-health event (misc.).
-  procedure,
-
-  /// A care event (e.g. grooming, boarding). API type `family_event`.
-  /// UI label "Care event" — not the organisation [FamilyEvent] entity.
-  familyEvent;
+  /// Any other non-health event (grooming, boarding, misc.).
+  other;
 
   /// Human-readable fallback label (prefer [AppLocalizations] in UI).
   String get label {
@@ -240,10 +234,8 @@ enum HealthEntryType {
         return 'Preventive';
       case HealthEntryType.vetVisit:
         return 'Vet Visit';
-      case HealthEntryType.procedure:
+      case HealthEntryType.other:
         return 'Other';
-      case HealthEntryType.familyEvent:
-        return 'Care event';
     }
   }
 }

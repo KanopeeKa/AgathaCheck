@@ -147,8 +147,8 @@ class HealthDashboardEntryList extends ConsumerWidget {
             return _buildHeader(context, group.title);
           }
           final item = group as _GroupEntry;
-          final isCareEvent = item.entry.type == HealthEntryType.familyEvent;
-          final editRoute = isCareEvent
+          final isOtherEvent = item.entry.type == HealthEntryType.other;
+          final editRoute = isOtherEvent
               ? '/pet/${item.entry.petId}/other/edit/${item.entry.id}'
               : '/health/edit/${item.entry.id}';
           return Padding(

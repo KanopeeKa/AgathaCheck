@@ -24,10 +24,8 @@ class PetEventEntryList extends StatelessWidget {
         return Icons.shield_outlined;
       case HealthEntryType.vetVisit:
         return Icons.local_hospital_outlined;
-      case HealthEntryType.procedure:
+      case HealthEntryType.other:
         return Icons.more_horiz_outlined;
-      case HealthEntryType.familyEvent:
-        return Icons.event_outlined;
     }
   }
 

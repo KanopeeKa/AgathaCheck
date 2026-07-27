@@ -100,9 +100,10 @@ void main() {
         'vaccine': HealthEntryType.preventive,
         'vet_visit': HealthEntryType.vetVisit,
         'vetVisit': HealthEntryType.vetVisit,
-        'procedure': HealthEntryType.procedure,
-        'family_event': HealthEntryType.familyEvent,
-        'familyEvent': HealthEntryType.familyEvent,
+        'other': HealthEntryType.other,
+        'procedure': HealthEntryType.other,
+        'family_event': HealthEntryType.other,
+        'familyEvent': HealthEntryType.other,
       };
       for (final entry in expected.entries) {
         final model = HealthEntryModel.fromJson({
@@ -167,11 +168,11 @@ void main() {
       expect(output['type'], 'vet_visit');
     });
 
-    test('toJson serializes family_event type correctly', () {
-      final json = {...fullJson, 'type': 'family_event'};
+    test('toJson serializes other type correctly', () {
+      final json = {...fullJson, 'type': 'other'};
       final model = HealthEntryModel.fromJson(json);
       final output = model.toJson();
-      expect(output['type'], 'family_event');
+      expect(output['type'], 'other');
     });
 
     test('toJson serializes every type to its canonical API string', () {
@@ -180,8 +181,7 @@ void main() {
         HealthEntryType.medication: 'medication',
         HealthEntryType.preventive: 'preventive',
         HealthEntryType.vetVisit: 'vet_visit',
-        HealthEntryType.procedure: 'procedure',
-        HealthEntryType.familyEvent: 'family_event',
+        HealthEntryType.other: 'other',
       };
       for (final entry in expected.entries) {
         expect(HealthEntryModel.typeToApi(entry.key), entry.value);
@@ -214,13 +214,13 @@ void main() {
     });
 
     test(
-      'preventive and procedure types survive a toJson/fromJson round-trip',
+      'preventive and other types survive a toJson/fromJson round-trip',
       () {
         // These previously used enum.name in toJson and would corrupt to
         // medication after a round-trip in a release build.
         for (final type in [
           HealthEntryType.preventive,
-          HealthEntryType.procedure,
+          HealthEntryType.other,
         ]) {
           final model = HealthEntryModel(
             id: 'r-1',
