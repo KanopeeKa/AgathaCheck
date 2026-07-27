@@ -6,6 +6,12 @@ name: Pre-UAT E2E
 on:
   push:
     branches: [main]
+  workflow_dispatch:
+    inputs:
+      reason:
+        description: Manual retry reason (coordinator / ops)
+        required: false
+        type: string
 
 concurrency:
   group: pre-uat-e2e
