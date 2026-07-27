@@ -280,7 +280,10 @@ test.describe('Health tracking', () => {
 
     const dashboard = new HealthDashboardPage(page);
     await dashboard.expectLoaded();
-    await dashboard.expectEntryVisible(entry.name);
+    // Guardian /g/events due-events inbox: +3 days with default remind_days_before=1
+    // moves the entry outside the reminder window, so the caught-up empty state shows.
+    await dashboard.expectEntryNotVisible(entry.name);
+    await dashboard.expectEmptyState();
   });
 
   // ── Wave C: Tab filtering ─────────────────────────────────────────────────
