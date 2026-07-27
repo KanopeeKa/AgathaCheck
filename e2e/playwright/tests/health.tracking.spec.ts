@@ -280,7 +280,8 @@ test.describe('Health tracking', () => {
 
     const dashboard = new HealthDashboardPage(page);
     await dashboard.expectLoaded();
-    // Guardian /g/events is a due-events inbox — snoozed entries fall outside remind window.
+    // Guardian /g/events due-events inbox: +3 days with default remind_days_before=1
+    // moves the entry outside the reminder window, so the caught-up empty state shows.
     await dashboard.expectEntryNotVisible(entry.name);
     await dashboard.expectEmptyState();
   });
