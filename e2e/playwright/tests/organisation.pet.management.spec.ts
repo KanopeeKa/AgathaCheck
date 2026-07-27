@@ -35,7 +35,7 @@ test.describe('Organisation pet management', () => {
     await petList.openOrganizations();
 
     const orgList = new OrganizationListPage(page);
-    await orgList.openOrg(ORG_NAME);
+    await orgList.openOrg(ORG_NAME, org.id);
 
     const detail = new OrganizationDetailPage(page);
     await detail.expectLoaded(ORG_NAME);
@@ -97,7 +97,7 @@ test.describe('Organisation pet management', () => {
     await petList.openOrganizations();
 
     const orgList = new OrganizationListPage(page);
-    await orgList.openOrg(ORG_NAME);
+    await orgList.openOrg(ORG_NAME, org.id);
 
     const detail = new OrganizationDetailPage(page);
     await detail.expectLoaded(ORG_NAME);
