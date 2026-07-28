@@ -38,3 +38,5 @@ updates:
         versions: [">= 1.0.9"]
       - dependency-name: "go_router"
         update-types: ["version-update:semver-major"]
+      - dependency-name: "image_picker"
+        versions: [">= 1.2.3"]
