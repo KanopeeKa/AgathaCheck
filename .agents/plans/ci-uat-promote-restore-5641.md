@@ -40,9 +40,9 @@ next_action: "continue phase 1 on branch cursor/ci-uat-promote-restore-5641"
 artifact_ref:
   branch: cursor/ci-uat-promote-restore-5641
   plan_path: .agents/plans/ci-uat-promote-restore-5641.md
-  plan_commit: 077d2d8263370c818377c2eb94efe2a6deecdf1d
+  plan_commit: 3380d0e701317379d544fca3460b4a18aab0fce1
   snapshot_path: .agents/plans/ci-uat-promote-restore-5641.snapshot.json
-  snapshot_commit: 077d2d8263370c818377c2eb94efe2a6deecdf1d
+  snapshot_commit: 3380d0e701317379d544fca3460b4a18aab0fce1
 open_prs: []
 merge_commits: {}
 debt_issue_refs: []
