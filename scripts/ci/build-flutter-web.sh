@@ -9,7 +9,7 @@
 #   VERIFY_ARTIFACT   — true|false (default true)
 #   ARTIFACT_NAME     — manifest field (default web-build)
 #   SOURCE_WORKFLOW   — manifest field (default GITHUB_WORKFLOW)
-#   FLUTTER_VERSION   — manifest field (default 3.32.0)
+#   FLUTTER_VERSION   — manifest field (default 3.44.0)
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
@@ -19,7 +19,7 @@ RUN_CLEAN="${RUN_CLEAN:-false}"
 RUN_CODEGEN="${RUN_CODEGEN:-true}"
 WRITE_MANIFEST="${WRITE_MANIFEST:-true}"
 VERIFY_ARTIFACT="${VERIFY_ARTIFACT:-true}"
-FLUTTER_VERSION="${FLUTTER_VERSION:-3.32.0}"
+FLUTTER_VERSION="${FLUTTER_VERSION:-3.44.0}"
 ARTIFACT_NAME="${ARTIFACT_NAME:-web-build}"
 SOURCE_WORKFLOW="${SOURCE_WORKFLOW:-${GITHUB_WORKFLOW:-local}}"
 POSTHOG_HOST="${POSTHOG_HOST:-https://eu.i.posthog.com}"
