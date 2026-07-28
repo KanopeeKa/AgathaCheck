@@ -31,6 +31,11 @@ export class NotificationsPage {
         this.page.getByRole('group', {
           name: /No notifications|Aucune notification/i,
         }),
+      )
+      .or(
+        this.page.getByRole('region', {
+          name: /No notifications|Aucune notification/i,
+        }),
       );
   }
 

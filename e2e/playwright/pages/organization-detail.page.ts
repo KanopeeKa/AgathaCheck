@@ -129,7 +129,12 @@ export class OrganizationDetailPage {
   private async selectOrgPetsTab(name: RegExp): Promise<void> {
     await enableFlutterAccessibility(this.page);
     await refreshFlutterAccessibility(this.page);
-    const tab = this.page.getByRole('button', { name }).filter({ visible: true }).first();
+    const tab = this.page
+      .getByRole('tab', { name })
+      .or(this.page.getByRole('button', { name }))
+      .or(this.page.getByRole('checkbox', { name }))
+      .filter({ visible: true })
+      .first();
     await tab.waitFor({ timeout: 15_000 });
     await tab.click();
     await refreshFlutterAccessibility(this.page);

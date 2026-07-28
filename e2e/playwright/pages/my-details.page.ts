@@ -60,7 +60,12 @@ export class MyDetailsPage {
     const pattern = new RegExp(name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i');
     await expect(async () => {
       await refreshFlutterAccessibility(this.page);
-      await expect(this.page.getByRole('button', { name: pattern }).first()).toBeVisible();
+      await expect(
+        this.page
+          .getByRole('button', { name: pattern })
+          .or(this.page.getByRole('checkbox', { name: pattern }))
+          .first(),
+      ).toBeVisible();
     }).toPass({ timeout: 20_000 });
   }
 
@@ -68,7 +73,12 @@ export class MyDetailsPage {
     const pattern = new RegExp(email.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i');
     await expect(async () => {
       await refreshFlutterAccessibility(this.page);
-      await expect(this.page.getByRole('button', { name: pattern }).first()).toBeVisible();
+      await expect(
+        this.page
+          .getByRole('button', { name: pattern })
+          .or(this.page.getByRole('checkbox', { name: pattern }))
+          .first(),
+      ).toBeVisible();
     }).toPass({ timeout: 20_000 });
   }
 
@@ -178,13 +188,21 @@ export class MyDetailsPage {
   }
 
   async deleteAccount(password: string): Promise<void> {
-    const deleteButton = this.page.getByRole('button', { name: /Delete Account/i }).first();
+    const deleteButton = this.page
+      .getByRole('button', { name: /Delete Account|Supprimer le compte/i })
+      .first();
     await deleteButton.scrollIntoViewIfNeeded();
     await deleteButton.click();
-    await this.page.getByRole('dialog', { name: 'Alert' }).waitFor({ timeout: 15_000 });
-    await fillLabelledField(this.page, 'Current Password', password);
     await this.page
-      .getByRole('button', { name: 'Delete Account', exact: true })
+      .getByRole('dialog', { name: /Alert|Alerte/i })
+      .or(this.page.getByText(/Delete Account|Supprimer le compte/i))
+      .first()
+      .waitFor({ timeout: 15_000 });
+    await fillLabelledField(this.page, 'Current Password', password).catch(() =>
+      fillLabelledField(this.page, 'Mot de passe actuel', password),
+    );
+    await this.page
+      .getByRole('button', { name: /Delete Account|Supprimer le compte/i, exact: true })
       .last()
       .click();
     await this.page.waitForTimeout(2000);

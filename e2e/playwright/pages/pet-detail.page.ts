@@ -52,18 +52,30 @@ export class PetDetailPage {
 
   async createShareLink(): Promise<void> {
     await this.openSharingSection();
-    const copyLinksBefore = await this.page.getByRole('button', { name: 'Copy link' }).count();
-    const shareButton = this.page.getByRole('button', { name: 'Share Link' });
+    const copyLinkPattern = /Copy link|Copier le lien/i;
+    const copyLinksBefore = await this.page
+      .getByRole('button', { name: copyLinkPattern })
+      .or(this.page.getByRole('checkbox', { name: copyLinkPattern }))
+      .count();
+    const shareButton = this.page
+      .getByRole('button', { name: /Share Link|Partager le lien/i })
+      .first();
     await shareButton.scrollIntoViewIfNeeded();
     await shareButton.click();
     await this.page.keyboard.press('Escape');
     await this.page
-      .getByRole('button', { name: 'Copy link' })
+      .getByRole('button', { name: copyLinkPattern })
+      .or(this.page.getByRole('checkbox', { name: copyLinkPattern }))
       .nth(copyLinksBefore)
       .waitFor({ timeout: 15_000 });
   }
 
   async expectShareLinkDialog(): Promise<void> {
-    await this.page.getByRole('button', { name: 'Copy link' }).first().waitFor();
+    const copyLinkPattern = /Copy link|Copier le lien/i;
+    await this.page
+      .getByRole('button', { name: copyLinkPattern })
+      .or(this.page.getByRole('checkbox', { name: copyLinkPattern }))
+      .first()
+      .waitFor();
   }
 }

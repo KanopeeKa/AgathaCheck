@@ -514,15 +514,22 @@ export function dashboardSectionGroup(
       : typeof section === 'string'
         ? new RegExp(escapeRegExp(section), 'i')
         : section;
-  return page.getByRole('group', { name }).first();
+  // Flutter 3.44 web may expose DashboardSection as group, region, or merged tabpanel.
+  return page
+    .getByRole('group', { name })
+    .or(page.getByRole('region', { name }))
+    .or(page.getByRole('tabpanel', { name }))
+    .first();
 }
 
-/** Flutter MergeSemantics nodes may surface as button or group depending on the widget. */
+/** Flutter MergeSemantics nodes may surface as button, checkbox, tab, or group (3.44 web). */
 export function semanticsByName(page: Page, pattern: string | RegExp) {
   const name =
     typeof pattern === 'string' ? new RegExp(escapeRegExp(pattern), 'i') : pattern;
   return page
     .getByRole('button', { name })
+    .or(page.getByRole('checkbox', { name }))
+    .or(page.getByRole('tab', { name }))
     .or(page.getByRole('group', { name }))
     .first();
 }
