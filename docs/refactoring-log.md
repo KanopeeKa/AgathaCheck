@@ -255,19 +255,19 @@ Tracks planned and completed refactor / quality work. See also `docs/refactoring
 
 ---
 
-## Sprint 10 — Flutter 3.44 / Dart 3.12 toolchain upgrade (planned)
+## Sprint 10 — Flutter 3.44 / Dart 3.12 toolchain upgrade (in progress)
 
 **Goal:** Upgrade Flutter 3.32 → 3.44 (Dart 3.8 → 3.12); unblock blocked pub Dependabot PRs (#77–#81).  
 **Execution plan:** `docs/sprint-10-flutter-344-execution-plan.md`  
-**Integration branch:** `cursor/sprint-10-flutter-344-integration-c246` → single PR to `main`
+**Integration branch:** `cursor/sprint-10-flutter-344-integration-4379` → single PR to `main`
 
 | # | Action | Status | Agent / notes |
 |---|--------|--------|---------------|
-| 10.A | Foundation: CI pins, SDK constraints, docs | Planned | `foundation-toolchain` — workflows + `pubspec.yaml` SDK only |
-| 10.B | Pub batch: fl_chart, pdf, printing, mockito, flutter_lints | Planned | `pub-upgrade` — lockfiles + `build_runner` |
-| 10.C | `fl_chart` 1.x migration (`weight_chart.dart`) | Planned | `fl-chart-migration` |
-| 10.D | `flutter_lints` 6 analyze cleanup | Planned | `lints-cleanup` |
-| 10.E | Full `./scripts/pre-push.sh`; rebase Dependabot #77–#81 | Planned | Coordinator |
+| 10.A | Foundation: CI pins, SDK constraints, docs | In progress | CI workflows + Dockerfile + SDK bump |
+| 10.B | Pub batch: fl_chart, pdf, printing, mockito, flutter_lints | In progress | lockfiles + `build_runner` |
+| 10.C | `fl_chart` 1.x migration (`weight_chart.dart`) | In progress | API fixes if needed |
+| 10.D | `flutter_lints` 6 analyze cleanup | In progress | analyze fixes |
+| 10.E | Full `./scripts/pre-push.sh`; rebase Dependabot #77–#81 | Pending | Coordinator |
 
 **Out of scope:** Babel 8 (#73, #75) — close/ignore until separate decision.
 

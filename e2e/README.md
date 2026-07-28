@@ -58,7 +58,7 @@ e2e/
 ## Prerequisites
 
 - PostgreSQL 16 (`agatha_db` with default dev credentials)
-- Flutter 3.32+ at `/opt/flutter/bin`
+- Flutter 3.44+ at `/opt/flutter/bin`
 - Node 22+
 - Flutter web build at `flutter_app/build/web`
 

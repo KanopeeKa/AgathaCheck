@@ -68,7 +68,7 @@ Uploaded path: `flutter_app/build/web/`
 | `git_sha` | Full commit SHA |
 | `git_ref` | `refs/heads/main` |
 | `repo` | `owner/repo` |
-| `flutter_version` | `3.32.0` |
+| `flutter_version` | `3.44.0` |
 | `pubspec_lock_sha256` | SHA-256 of `pubspec.lock` |
 | `posthog_injected` | `true` / `false` |
 | `dart_defines.POSTHOG_HOST` | `https://eu.i.posthog.com` |

@@ -153,7 +153,7 @@ Tests span domain, data, provider/controller, and widget layers, with integratio
 
 ### Prerequisites
 
-- Flutter SDK 3.8+ / Dart 3.8+ (CI pins Flutter 3.32.0)
+- Flutter SDK 3.12+ / Dart 3.12+ (CI pins Flutter 3.44.0)
 - Node.js 20+ (backend)
 - PostgreSQL 14+
 

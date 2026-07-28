@@ -3,7 +3,7 @@ description: Install Flutter SDK with tool-cache and one retry on download flake
 
 inputs:
   flutter-version:
-    description: Flutter version (e.g. 3.32.0)
+    description: Flutter version (e.g. 3.44.0)
     required: true
   channel:
     description: Flutter channel
