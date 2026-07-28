@@ -4,6 +4,7 @@ Single source of truth for `/babysit`, `/babysit-plus`, and `/execute-plan`. Ski
 
 | Topic | Canonical location |
 |-------|-------------------|
+| Pre-PR self-review, Bugbot settings, model policy | [pr-review-cost-efficiency.md](./pr-review-cost-efficiency.md) |
 | One-outcome PRs + snag ladder | [atomic-pr-policy.md](./atomic-pr-policy.md) |
 | Plan snapshot schema | [execute-plan-schema.md](./execute-plan-schema.md) |
 | Phase exit profiles | [phase-exit-checklists.md](./phase-exit-checklists.md) |
@@ -55,21 +56,36 @@ Script: `scripts/babysit_sync_base.sh` — fetches `origin/<base>`, rebases when
 
 ---
 
+## Pre-PR critical self-review (mandatory — all PR work)
+
+Applies to **every** agent session and human-driven agent use **before** the first push that opens a PR and before any behavior-changing PR update. Not limited to `/babysit-plus`.
+
+Checklist and optional `/review-bugbot` dedupe: [pr-review-cost-efficiency.md](./pr-review-cost-efficiency.md) §Pre-PR critical self-review. Always-on rule: `.cursor/rules/pr-hygiene.mdc`.
+
+Only after self-review passes: commit, push, create/update PR. Then continue with babysit workflow below.
+
+---
+
 ## Automatic reviews (mandatory wait)
 
 Applies to `/babysit` and `/babysit-plus`.
 
-1. Automatic reviewers (Copilot, Bugbot, etc.) run only after the PR is **ready for review** — not while draft.
-2. If draft: mark ready first (`gh pr ready <url>`).
-3. **Poll** until bot reviews land or the wait budget expires — even when CI is already green.
+**Primary reviewer:** Cursor **Bugbot** (`Cursor Bugbot` check). **Copilot** is supplementary when credits are available.
+
+**Model:** PR babysitting (poll, triage, fixes, CI, merge) uses **`composer-2.5` only** — see [pr-review-cost-efficiency.md](./pr-review-cost-efficiency.md) §Cloud Agent model policy.
+
+1. Mark PR **ready for review** before merge gates (`gh pr ready <url>` when draft). Bugbot may also review drafts when enabled in dashboard; ready is still required for merge.
+2. **Poll** until **Bugbot** has completed or the wait budget expires — even when CI is already green.
    - `gh api repos/{owner}/{repo}/pulls/{n}/reviews` — formal reviews
    - `gh api repos/{owner}/{repo}/pulls/{n}/comments` — inline review comments
    - `gh api repos/{owner}/{repo}/issues/{n}/comments` — PR conversation comments (some bots post here only)
    - (`{n}` = PR number)
-4. Poll every **30–60s** for up to **15 minutes**.
-5. Do not triage, merge, or declare done while expected automatic reviews are still pending.
-6. On timeout: comment on the PR listing pending reviewers and halt.
-7. After each push that changes the diff, repeat when new automatic reviews are expected.
+3. Poll every **30–60s** for up to **15 minutes**. Track **Bugbot**; note Copilot if requested.
+4. Do not triage, merge, or declare done while **Bugbot** is still pending.
+5. **Copilot unavailable / timeout:** Do **not** halt if Bugbot has reviewed and triage can proceed. Comment on the PR: `Copilot unavailable; Bugbot + babysit+ triage used.` See [pr-review-cost-efficiency.md](./pr-review-cost-efficiency.md) §Copilot unavailable.
+6. **Bugbot timeout:** Comment listing pending reviewers and **halt** — do not skip triage.
+7. With dashboard **once per PR** trigger, do not expect a new Bugbot run after fix pushes; rely on triage + `./scripts/pre-push-changed.sh` + CI.
+8. **Autofix:** Off by policy — babysit+ owns fixes (no duplicate Cloud Agent spend).
 
 ---
 

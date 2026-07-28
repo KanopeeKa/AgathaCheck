@@ -24,17 +24,18 @@ Repo docs are the source of truth. `.cursor/rules/*.mdc` + `AGENTS.md` are the a
 **PR flow (user decision):** GitHub branch protection enforces PRs to `main`; prefer routing changes through a PR (so ci-gate + CodeQL run) where practical rather than direct-to-main commits.
 
 **PR checklist — follow in this order every time:**
-1. **Rebase first**: `git fetch origin && git rebase origin/main` — resolve any conflicts before pushing; never open a PR that is behind main.
-2. **Push branch** (avoid embedding token in URL — use credential helper to prevent leaking via shell history/`git remote -v`):
+1. **Pre-PR critical self-review** — mandatory before first PR push (`docs/agent-efficiency/pr-review-cost-efficiency.md`, `.cursor/rules/pr-hygiene.mdc`).
+2. **Rebase first**: `git fetch origin && git rebase origin/main` — resolve any conflicts before pushing; never open a PR that is behind main.
+3. **Push branch** (avoid embedding token in URL — use credential helper to prevent leaking via shell history/`git remote -v`):
    ```bash
    git -c credential.helper='!f() { echo "username=x-access-token"; echo "password=$GITHUB_TOKEN"; }; f' \
      push origin HEAD:refs/heads/replit/<topic>
    ```
    If local git commit is blocked by the sandbox, push files directly via `PUT /repos/KanopeeKa/AgathaCheck/contents/<path>` GitHub API (base64-encode content, supply current blob SHA + branch name).
-3. **Open PR via GitHub REST API** using the `GITHUB_TOKEN` environment secret. Create as ready (not draft) so automatic reviewers fire immediately.
-4. **Request Copilot review immediately** (parallel to CI — do not wait for CI first): `POST /repos/KanopeeKa/AgathaCheck/pulls/{n}/requested_reviewers` with `{"reviewers":["copilot-pull-request-reviewer"]}`. Canonical policy: `.cursor/skills/babysit-plus/SKILL.md` §0b — poll reviews every 30–60 s for up to 15 min alongside CI; triage must-fix / nit / ignore before merging.
-5. **Monitor CI** via `GET /repos/KanopeeKa/AgathaCheck/commits/{sha}/check-runs` — poll every 60–90 s; address failures. Flutter test shards take ~3–5 min, full suite ~8–10 min.
-6. **After both CI and reviews are green/triaged**: merge is user's click (branch protection). After merge, sync local main: `git fetch origin && git reset --hard origin/main` (or delegate if destructive).
+4. **Open PR via GitHub REST API** using the `GITHUB_TOKEN` environment secret. Create as ready (not draft) so Bugbot runs immediately.
+5. **Bugbot** reviews automatically (primary). **Copilot** only when credits available: `POST /repos/KanopeeKa/AgathaCheck/pulls/{n}/requested_reviewers` with `{"reviewers":["copilot-pull-request-reviewer"]}`. Poll Bugbot every 30–60 s for up to 15 min; do not halt on Copilot timeout — see `docs/agent-efficiency/pr-review-cost-efficiency.md`.
+6. **Monitor CI** via `GET /repos/KanopeeKa/AgathaCheck/commits/{sha}/check-runs` — poll every 60–90 s; address failures. Flutter test shards take ~3–5 min, full suite ~8–10 min.
+7. **After CI and Bugbot triage are complete**: merge is user's click (branch protection). Babysit work uses **`composer-2.5` only**. After merge, sync local main: `git fetch origin && git reset --hard origin/main` (or delegate if destructive).
 
 **Single backend:** Node.js (`server/routes/*.js`) is the only backend. Replit preview runs the Node server.
 

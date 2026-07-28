@@ -13,6 +13,20 @@ When shell detection or drawer clicks fail, call `navigateWithShellFallback()` i
 
 Use fallback **only** after the normal path fails. Healthy localhost runs should emit **zero** fallback warnings.
 
+## Flutter 3.44 semantics fallbacks (PR #497+)
+
+Flutter web 3.44 changed how some widgets surface in the accessibility tree:
+
+| Widget pattern | Prefer | Fallback roles |
+|----------------|--------|----------------|
+| MergeSemantics labels (pet cards, profile rows) | `button` | `checkbox`, `tab`, `group` — use `semanticsByName()` |
+| Dashboard sections (`DueEventsSection`) | `group` | `region`, `tabpanel` — use `dashboardSectionGroup()` |
+| Org pets filter tabs (`All` / `Tous`) | `tab` | `button`, `checkbox` |
+| Profile field values on My Details | `button` | `checkbox` |
+| Share sheet **Copy link** | `button` | `checkbox` |
+
+When adding new page-object locators, chain `.or()` fallbacks in this order rather than asserting a single role.
+
 ## API seed ordering (live UAT)
 
 When seeding via `playwright/support/api.ts` and asserting on the **home pet list**, create data **before** `loginAs` using `testUser.accessToken`. Post-login API creates leave a stale empty list on live UAT (passes on fast localhost).

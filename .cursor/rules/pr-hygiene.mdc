@@ -1,0 +1,37 @@
+---
+description: Mandatory pre-PR self-review, Bugbot-first automatic review, and composer-2.5 for PR babysitting
+alwaysApply: true
+---
+
+# PR hygiene (always on)
+
+Canonical policy: `docs/agent-efficiency/pr-review-cost-efficiency.md` · `docs/agent-efficiency/autonomous-pr-policy.md`
+
+## Pre-PR critical self-review (mandatory — every PR)
+
+**Before** the first push that opens a PR, and **before** every `ManagePullRequest create_pr` / PR update that ships new behavior, perform a **critical self-review** of the full diff against the requirement. Applies to **all** agent work — ad-hoc cloud agents, `/babysit`, `/babysit-plus`, `/execute-plan` workers, and humans using agents.
+
+1. **Correctness & impact** — Happy paths, edge cases, error handling, regressions.
+2. **Risks** — Security, data integrity, migrations, API contract drift, concurrency.
+3. **Design quality** — Smallest change that meets intent; match repo patterns.
+4. **Better solution** — Adopt a clearer/safer approach now; do not defer to review.
+5. **Verification** — Run `./scripts/pre-push-changed.sh` after any adjustments.
+
+Optional cost saver: `/review-bugbot` on the branch diff before push dedupes a paid Bugbot PR review when the patch is unchanged.
+
+Only after this review passes: commit, push, create/update the PR.
+
+## Automatic review (Bugbot-first)
+
+- **Primary:** Cursor **Bugbot** on every PR (`Cursor Bugbot` check). Copilot is optional when credits are available.
+- **Babysit wait:** Poll for **Bugbot**; do **not** halt on Copilot timeout when Bugbot + triage are complete. See autonomous-pr-policy §Automatic reviews.
+- **Autofix:** **Off** — babysit+ owns triage and fixes (avoids double Cloud Agent spend).
+
+## Model for PR babysitting
+
+| Phase | Model |
+|-------|--------|
+| Implementation, architecture, large refactors | `composer-2.5` default; thinking models (e.g. Claude Sonnet) only when the task explicitly needs deep reasoning |
+| **PR babysitting** (`/babysit`, `/babysit-plus`, post-PR triage, CI loop, merge) | **`composer-2.5` only** — never thinking/high models |
+
+If the session model is not `composer-2.5` when starting babysit work, **stop and switch model** (Cursor dashboard → Models, or start a new cloud agent on `composer-2.5`) before triage, fixes, or merge steps.

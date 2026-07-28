@@ -4,6 +4,7 @@ import {
   dismissConsentBannerIfPresent,
   expectAppBarTitle,
   escapeRegExp,
+  flutterGotoUrl,
   flutterRoutePath,
   isExperienceShellVisible,
   navigateWithShellFallback,
@@ -104,11 +105,19 @@ export class OrganizationListPage {
     await dismissConsentBannerIfPresent(this.page);
     const createBtn = this.page
       .getByRole('button', { name: /^Create$|^Créer$/i })
+      .or(this.page.getByRole('checkbox', { name: /^Create$|^Créer$/i }))
       .first();
-    await createBtn.scrollIntoViewIfNeeded();
-    await createBtn.click();
+    if (await createBtn.isVisible({ timeout: 5_000 }).catch(() => false)) {
+      await createBtn.scrollIntoViewIfNeeded();
+      await createBtn.click();
+    } else {
+      // FilledButton at list bottom — hash-route when discovery section delays scroll.
+      await this.page.goto(flutterGotoUrl('/o/orgs/new'));
+      await refreshFlutterAccessibility(this.page);
+      await waitForFlutterRoutePattern(this.page, /\/o\/orgs\/new/, 30_000);
+    }
     await this.page
-      .getByRole('button', { name: 'Create Organization' })
+      .getByRole('button', { name: /Create Organization|Créer une organisation/i })
       .waitFor({ timeout: 30_000 });
   }
 

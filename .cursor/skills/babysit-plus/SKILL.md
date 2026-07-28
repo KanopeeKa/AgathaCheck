@@ -30,6 +30,8 @@ During `/execute-plan`, always use **/babysit-plus**, never plain babysit alone.
 
 ## Pre-PR critical review (mandatory)
 
+Required for **all** agent PR work (not only babysit+). Canonical checklist: `docs/agent-efficiency/pr-review-cost-efficiency.md` · always-on rule: `.cursor/rules/pr-hygiene.mdc`.
+
 **Before** creating or opening the PR (first push + `ManagePullRequest create_pr`), perform a **critical self-review** of the full diff against the requirement. Do not treat this as a quick skim — actively look for problems.
 
 1. **Correctness & impact** — Re-read the requirement; trace happy paths, edge cases, error handling, and regressions. Confirm behavior matches intent; flag anything that could surprise callers or break downstream flows.
@@ -38,7 +40,13 @@ During `/execute-plan`, always use **/babysit-plus**, never plain babysit alone.
 4. **Better solution check** — If a clearer pattern, safer abstraction, or simpler approach would satisfy the requirement with equal or less scope, **adopt it now** — adjust code and tests before opening the PR. Do not defer with "we'll fix in review."
 5. **Verification** — Run `./scripts/pre-push-changed.sh` after any adjustments from this review.
 
+Optional: `/review-bugbot` on the branch diff before push to dedupe a paid Bugbot PR review.
+
 Only after this review passes: commit, push, and create/update the PR. Then continue with §Workflow from step 0 (Preflight).
+
+## Model (babysit phase)
+
+Use **`composer-2.5` only** for steps §0–7 (sync, poll, triage, fixes, CI, merge). If the session is on a thinking/high model, **switch to `composer-2.5`** or spawn a fresh cloud agent before babysit work. Implementation may use other models; babysitting may not.
 
 ---
 
@@ -58,22 +66,25 @@ Only after this review passes: commit, push, and create/update the PR. Then cont
    - **Execute-plan** (active phase snapshot): `phase.merge_mode` → else `default_merge_mode` from snapshot. Caller `merge_mode` input is ignored unless the run explicitly documents an override.
    - **Standalone** (no snapshot): caller `merge_mode` input if provided → else **`auto`**.
 
-### 0b. Ready for review + wait for automatic reviews (mandatory)
+### 0b. Ready for review + wait for Bugbot (mandatory)
 
-Applies to **both** `/babysit` and `/babysit-plus`. Automatic reviewers run only after the PR is ready — not while draft.
+Applies to **both** `/babysit` and `/babysit-plus`. **Bugbot** is the primary automatic reviewer; **Copilot** is optional. Policy: `docs/agent-efficiency/pr-review-cost-efficiency.md`.
 
-1. If `isDraft`: `gh pr ready <url>` (or equivalent).
-2. Poll until configured bot reviews land or the wait budget expires — **even when CI is already green** (reviews often arrive later).
+1. Confirm session model is **`composer-2.5`** before this step (see §Model).
+2. If `isDraft`: `gh pr ready <url>` (or equivalent).
+3. Poll until **Bugbot** (`Cursor Bugbot` check / `cursor` bot reviews) lands or the wait budget expires — **even when CI is already green**.
    ```bash
    gh api repos/{owner}/{repo}/pulls/{n}/reviews
    gh api repos/{owner}/{repo}/pulls/{n}/comments
    gh api repos/{owner}/{repo}/issues/{n}/comments
    ```
    (`{n}` = PR number; PRs are issues in the GitHub API. Conversation comments catch bot feedback that never creates a formal review.)
-3. Poll every **30–60s** for up to **15 minutes**. Track which bots have submitted (`copilot`, `bugbot`, etc.).
-4. Do **not** triage, merge, or declare done while expected automatic reviews are still pending.
-5. On timeout: comment on the PR listing pending reviewers and **halt** — do not skip review triage.
-6. After each push that changes the diff, repeat this step when new automatic reviews are expected.
+4. Poll every **30–60s** for up to **15 minutes**. Track **Bugbot**; note Copilot only if requested and credits available.
+5. Do **not** triage, merge, or declare done while **Bugbot** is still pending.
+6. **Copilot timeout / unavailable:** Proceed when Bugbot is done; comment `Copilot unavailable; Bugbot + babysit+ triage used.` — do **not** halt.
+7. **Bugbot timeout:** Comment listing pending reviewers and **halt** — do not skip triage.
+8. Dashboard **once per PR** trigger: do not expect a new Bugbot run after fix pushes; triage existing comments + CI.
+9. **Autofix:** Off — babysit+ owns fixes; do not re-run adversarial review in agent turns (slim babysit).
 
 ### 1. Sync and conflicts
 

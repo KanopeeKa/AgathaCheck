@@ -1,0 +1,69 @@
+{
+  "schema_version": 1,
+  "plan_id": "e2e-flutter344-uat-unblock-5641",
+  "approved_at": "2026-07-28T12:40:00Z",
+  "approved_by": "user-chat-execute-plan-standing-grant",
+  "approved_until": "2026-07-30T12:40:00Z",
+  "autonomy": "active",
+  "default_merge_mode": "auto",
+  "base_branch": "main",
+  "control_issue": 500,
+  "artifact_branch_policy": "phase-branch",
+  "phases": [
+    {
+      "id": "1",
+      "title": "E2E semantics fallbacks",
+      "branch": "cursor/e2e-flutter344-uat-unblock-5641",
+      "allowed_paths": [
+        "e2e/playwright/**",
+        "docs/e2e-navigation-contract.md",
+        ".agents/plans/e2e-flutter344-uat-unblock-5641.*"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "docs",
+        "tests"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_mode": "auto",
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "in_progress",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/501",
+      "pr_head_sha": "b465ba62"
+    },
+    {
+      "id": "2",
+      "title": "Babysit retry hygiene",
+      "branch": "cursor/e2e-babysit-retry-hygiene-5641",
+      "allowed_paths": [
+        "scripts/agent-uat-babysit.sh",
+        "docs/e2e/uat-agent-babysit.md",
+        ".agents/plans/e2e-flutter344-uat-unblock-5641.*"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "docs",
+        "tests"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_mode": "auto",
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": []
+    }
+  ],
+  "content_hash": "sha256:e756b47e0efc042e2daea4292854ba9604d9e561283264addb0c9891d95ac1f5"
+}
