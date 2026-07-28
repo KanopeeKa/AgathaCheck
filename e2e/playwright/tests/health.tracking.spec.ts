@@ -281,8 +281,10 @@ test.describe('Health tracking', () => {
 
     const dashboard = new HealthDashboardPage(page);
     await dashboard.expectLoaded();
-    // Guardian /g/events due-events inbox: +3 days with default remind_days_before=1
-    // moves the entry outside the reminder window, so the caught-up empty state shows.
+    // Global /g/events list shows all entries; snoozed +3 days is still in the unfiltered list.
+    await dashboard.expectEntryVisible(entry.name);
+    // Due and Overdue filter: +3 days with default remind_days_before=1 is outside the window.
+    await dashboard.selectDueOverdueFilter();
     await dashboard.expectEntryNotVisible(entry.name);
     await dashboard.expectEmptyState();
   });

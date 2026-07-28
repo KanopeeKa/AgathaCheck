@@ -165,6 +165,21 @@ export class HealthDashboardPage {
     await this.page.waitForTimeout(500);
   }
 
+  /** Guardian `/g/events` global list — status filter chip (manage-events filter bar). */
+  async selectDueOverdueFilter(): Promise<void> {
+    const chip = this.page
+      .getByRole('button', { name: /Due and Overdue|À faire et en retard/i })
+      .first();
+    if (!(await chip.isVisible({ timeout: 3_000 }).catch(() => false))) {
+      throw new Error(
+        'Due and Overdue filter chip not found — guardian /g/events may not have loaded manage-events filters',
+      );
+    }
+    await chip.click();
+    await refreshFlutterAccessibility(this.page);
+    await this.page.waitForTimeout(500);
+  }
+
   async expectEntryNotVisible(name: string): Promise<void> {
     const matches = this.page.getByText(name, { exact: false });
     const count = await matches.count();
