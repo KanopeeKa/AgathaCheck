@@ -30,7 +30,7 @@ on:
         default: shard
 
 env:
-  FLUTTER_VERSION: '3.32.0'
+  FLUTTER_VERSION: '3.44.0'
 
 jobs:
   e2e:

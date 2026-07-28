@@ -4,7 +4,7 @@ FROM ubuntu:24.04
 
 ARG DEBIAN_FRONTEND=noninteractive
 ARG NODE_MAJOR=22
-ARG FLUTTER_VERSION=3.32.0
+ARG FLUTTER_VERSION=3.44.0
 ARG PG_VERSION=16
 
 # git + sudo are required for Cloud Agent clone and permission management.
@@ -17,7 +17,7 @@ RUN apt-get update \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/*
 
-# Flutter SDK — pinned to AGENTS.md / CI (3.32.0).
+# Flutter SDK — pinned to AGENTS.md / CI (3.44.0).
 RUN git clone https://github.com/flutter/flutter.git \
     -b "${FLUTTER_VERSION}" --depth 1 /opt/flutter
 ENV PATH="/opt/flutter/bin:${PATH}"

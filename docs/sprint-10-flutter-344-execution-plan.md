@@ -1,6 +1,6 @@
 # Sprint 10 — Flutter 3.44 / Dart 3.12 toolchain upgrade
 
-**Status:** Planned  
+**Status:** In progress  
 **Goal:** Move Agatha Track from **Flutter 3.32.0 / Dart 3.8.0** to **Flutter 3.44 / Dart 3.12**, unblock blocked Dependabot pub PRs, and keep CI + UAT deploy green.
 
 **Integration branch:** `cursor/sprint-10-flutter-344-integration-c246`  

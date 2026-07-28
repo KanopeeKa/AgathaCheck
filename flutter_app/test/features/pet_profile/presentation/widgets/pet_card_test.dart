@@ -79,8 +79,10 @@ void main() {
       await tester.pumpWidget(createTestWidget(PetCard(pet: orgPet)));
 
       expect(find.text('Max'), findsOneWidget);
-      final semantics = tester.getSemantics(find.byType(PetCard));
-      expect(semantics.label, contains('Happy Paws Shelter'));
+      expect(
+        find.bySemanticsLabel('Pet: Max, Happy Paws Shelter, Dog'),
+        findsOneWidget,
+      );
     });
 
     testWidgets('foster placement line uses org green accent', (tester) async {
