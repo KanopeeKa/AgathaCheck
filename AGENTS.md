@@ -76,6 +76,7 @@ See `docs/github-issue-workflow.md` for the full issue lifecycle.
 
 ### Policies (details in `.cursor/rules/` + Skills)
 
+- **PR hygiene:** mandatory pre-PR self-review, Bugbot-first review, `composer-2.5` for babysit — `docs/agent-efficiency/pr-review-cost-efficiency.md`
 - **Atomic PRs:** one verifiable outcome per PR; cross-domain OK when serving that outcome. Snag ladder + zero untracked debt → `docs/agent-efficiency/atomic-pr-policy.md`
 - Modularity ≤500 lines · BDD 105/165 gate
 - Single-agent PRs → `main`; multi-agent → integration branch (`/spawn-sprint-agents`)
