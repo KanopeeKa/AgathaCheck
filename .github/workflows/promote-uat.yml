@@ -54,8 +54,11 @@ jobs:
       - name: Begin job timing
         run: echo "JOB_START_EPOCH=$(date +%s)" >> "$GITHUB_ENV"
 
-      - name: Resolve promote commit (origin/main HEAD)
+      - name: Resolve promote commit (Pre-UAT tested SHA)
         id: commit
+        env:
+          PRE_UAT_RUN_ID: ${{ github.event.workflow_run.id }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: bash scripts/ci/resolve-promote-commit-sha.sh
 
       - name: Resolve associated pull request
@@ -73,7 +76,7 @@ jobs:
           git fetch origin main --depth=1
           current="$(git rev-parse origin/main)"
           if [[ "$current" != "$TESTED_SHA" ]]; then
-            echo "::notice::Skipping tag — main advanced to ${current:0:7} after Pre-UAT E2E (${TESTED_SHA:0:7})."
+            echo "::notice::Skipping tag — main is ${current:0:7}, Pre-UAT tested ${TESTED_SHA:0:7}."
             echo "promotion_status=blocked" >> "$GITHUB_OUTPUT"
             echo "promotion_block_reason=stale_pre_uat_head" >> "$GITHUB_OUTPUT"
             exit 0
