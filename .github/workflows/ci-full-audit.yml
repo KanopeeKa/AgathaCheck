@@ -67,12 +67,26 @@ jobs:
     if: needs.decide.outputs.should_run == 'true'
     uses: ./.github/workflows/_reusable-flutter-analyze.yml
 
-  flutter-test-pet:
+  flutter-test-pet-core:
     needs: [decide, flutter-analyze]
     if: needs.decide.outputs.should_run == 'true'
     uses: ./.github/workflows/_reusable-flutter-test-shard.yml
     with:
-      shard: pet
+      shard: pet-core
+
+  flutter-test-pet-screens:
+    needs: [decide, flutter-analyze]
+    if: needs.decide.outputs.should_run == 'true'
+    uses: ./.github/workflows/_reusable-flutter-test-shard.yml
+    with:
+      shard: pet-screens
+
+  flutter-test-pet-widgets:
+    needs: [decide, flutter-analyze]
+    if: needs.decide.outputs.should_run == 'true'
+    uses: ./.github/workflows/_reusable-flutter-test-shard.yml
+    with:
+      shard: pet-widgets
 
   flutter-test-health:
     needs: [decide, flutter-analyze]
@@ -105,7 +119,9 @@ jobs:
   flutter-coverage:
     needs:
       - decide
-      - flutter-test-pet
+      - flutter-test-pet-core
+      - flutter-test-pet-screens
+      - flutter-test-pet-widgets
       - flutter-test-health
       - flutter-test-org
       - flutter-test-rest-a
@@ -146,7 +162,9 @@ jobs:
       - startup-smoke
       - test-suite
       - flutter-analyze
-      - flutter-test-pet
+      - flutter-test-pet-core
+      - flutter-test-pet-screens
+      - flutter-test-pet-widgets
       - flutter-test-health
       - flutter-test-org
       - flutter-test-rest-a
@@ -173,7 +191,9 @@ jobs:
           STARTUP_SMOKE: ${{ needs.startup-smoke.result }}
           TEST_SUITE: ${{ needs.test-suite.result }}
           FLUTTER_ANALYZE: ${{ needs.flutter-analyze.result }}
-          FLUTTER_TEST_PET: ${{ needs.flutter-test-pet.result }}
+          FLUTTER_TEST_PET_CORE: ${{ needs.flutter-test-pet-core.result }}
+          FLUTTER_TEST_PET_SCREENS: ${{ needs.flutter-test-pet-screens.result }}
+          FLUTTER_TEST_PET_WIDGETS: ${{ needs.flutter-test-pet-widgets.result }}
           FLUTTER_TEST_HEALTH: ${{ needs.flutter-test-health.result }}
           FLUTTER_TEST_ORG: ${{ needs.flutter-test-org.result }}
           FLUTTER_TEST_REST_A: ${{ needs.flutter-test-rest-a.result }}

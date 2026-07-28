@@ -5,7 +5,7 @@ set -uo pipefail
 
 SHARD="${1:-}"
 if [[ -z "$SHARD" ]]; then
-  echo "usage: run_tests_ci_shard.sh <pet|health|org|rest-a|rest-b>" >&2
+  echo "usage: run_tests_ci_shard.sh <pet-core|pet-screens|pet-widgets|health|org|rest-a|rest-b>" >&2
   exit 1
 fi
 
@@ -13,7 +13,19 @@ cd "$(dirname "$0")/.."
 
 shard_paths() {
   case "$SHARD" in
-    pet) printf '%s\n' test/features/pet_profile ;;
+    pet-core)
+      printf '%s\n' \
+        test/features/pet_profile/data \
+        test/features/pet_profile/domain
+      ;;
+    pet-screens) printf '%s\n' test/features/pet_profile/presentation/screens ;;
+    pet-widgets)
+      printf '%s\n' \
+        test/features/pet_profile/presentation/widgets \
+        test/features/pet_profile/presentation/controllers \
+        test/features/pet_profile/presentation/providers \
+        test/features/pet_profile/presentation/utils
+      ;;
     health) printf '%s\n' test/features/health_tracking ;;
     org) printf '%s\n' test/features/organization ;;
     rest-a)
@@ -33,7 +45,7 @@ shard_paths() {
         test/features/api_base_url_wiring_test.dart
       ;;
     *)
-      echo "::error::Unknown shard '${SHARD}' (expected pet|health|org|rest-a|rest-b)" >&2
+      echo "::error::Unknown shard '${SHARD}' (expected pet-core|pet-screens|pet-widgets|health|org|rest-a|rest-b)" >&2
       return 1
       ;;
   esac

@@ -9,7 +9,9 @@ all_success_env() {
   export STARTUP_SMOKE=success
   export TEST_SUITE=success
   export FLUTTER_ANALYZE=success
-  export FLUTTER_TEST_PET=success
+  export FLUTTER_TEST_PET_CORE=success
+  export FLUTTER_TEST_PET_SCREENS=success
+  export FLUTTER_TEST_PET_WIDGETS=success
   export FLUTTER_TEST_HEALTH=success
   export FLUTTER_TEST_ORG=success
   export FLUTTER_TEST_REST_A=success
@@ -58,7 +60,9 @@ assert_exit 1 "flutter-coverage failure fails gate"
 # Scoped skip: skipped job in skip_jobs is ok
 all_success_env
 export FLUTTER_ANALYZE=skipped
-export FLUTTER_TEST_PET=skipped
+export FLUTTER_TEST_PET_CORE=skipped
+export FLUTTER_TEST_PET_SCREENS=skipped
+export FLUTTER_TEST_PET_WIDGETS=skipped
 export FLUTTER_TEST_HEALTH=skipped
 export FLUTTER_TEST_ORG=skipped
 export FLUTTER_TEST_REST_A=skipped
@@ -67,7 +71,7 @@ export FLUTTER_COVERAGE=skipped
 export FLUTTER_INTEGRATION=skipped
 export FLUTTER_BUILD_WEB=skipped
 export CI_E2E_CANARY=skipped
-export CI_SCOPE_JSON='{"scope":"SERVER_ONLY","skip_jobs":["flutter-analyze","flutter-test-pet","flutter-test-health","flutter-test-org","flutter-test-rest-a","flutter-test-rest-b","flutter-coverage","flutter-integration","flutter-build-web","ci-e2e-canary"]}'
+export CI_SCOPE_JSON='{"scope":"SERVER_ONLY","skip_jobs":["flutter-analyze","flutter-test-pet-core","flutter-test-pet-screens","flutter-test-pet-widgets","flutter-test-health","flutter-test-org","flutter-test-rest-a","flutter-test-rest-b","flutter-coverage","flutter-integration","flutter-build-web","ci-e2e-canary"]}'
 assert_exit 0 "scoped skips accepted when listed in skip_jobs"
 
 # Skipped job not in skip_jobs → fail
@@ -85,7 +89,7 @@ assert_exit 1 "canary failure fails when build succeeded"
 all_success_env
 export FLUTTER_BUILD_WEB=skipped
 export CI_E2E_CANARY=skipped
-export CI_SCOPE_JSON='{"scope":"SERVER_ONLY","skip_jobs":["flutter-analyze","flutter-test-pet","flutter-test-health","flutter-test-org","flutter-test-rest-a","flutter-test-rest-b","flutter-coverage","flutter-integration","flutter-build-web","ci-e2e-canary"]}'
+export CI_SCOPE_JSON='{"scope":"SERVER_ONLY","skip_jobs":["flutter-analyze","flutter-test-pet-core","flutter-test-pet-screens","flutter-test-pet-widgets","flutter-test-health","flutter-test-org","flutter-test-rest-a","flutter-test-rest-b","flutter-coverage","flutter-integration","flutter-build-web","ci-e2e-canary"]}'
 assert_exit 0 "canary skip ok when build skipped (scoped)"
 
 echo "assert-ci-gate tests passed"
