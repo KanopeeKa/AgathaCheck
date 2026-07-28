@@ -110,16 +110,16 @@ cd e2e && npm run test:ci-shard -- 3   # run one shard locally (stack must be ru
 | `ci.yml` | PR → `main` (+ manual dispatch) | Flutter analyze + unit/widget tests + web build; backend Jest |
 | `codeql.yml` | PR → `main` (+ weekly schedule) | Static security analysis (JavaScript/TypeScript) |
 | `e2e.yml` | manual + weekly cron (non-blocking) | Full Playwright against **localhost** (11 file-balanced shards) |
-| `promote-uat.yml` | after agent E2E green (`workflow_dispatch`) | Create `uat-YYMMDD-PR#` tag (see `docs/promotion-contract.md`) |
-| `pre-uat-e2e.yml` | `workflow_dispatch` (ops replay) | Full localhost Playwright (11 shards) — does not block merges |
+| `promote-uat.yml` | after Pre-UAT E2E green (`workflow_run`) + manual dispatch | Create `uat-YYMMDD-PR#` tag (see `docs/promotion-contract.md`) |
+| `pre-uat-e2e.yml` | `push` → `main` + `workflow_dispatch` | Full localhost Playwright (11 shards) — async post-merge, does not block merges |
 | `deploy-uat.yml` | push → `uat-*` tag | FTP deploy → HTTP post-deploy smoke → `prod-ready` gate |
 | `uat-live-e2e.yml` | nightly + manual (advisory) | Live `@smoke-uat` with WAF warmup — does not block promotion |
 | `deploy-prod.yml` | auto after UAT `prod-ready` (+ manual dispatch / release) | Stub `vX.Y.Z-rc.N` tag or live FTP + SSH deploy; post-deploy HTTP smoke |
 
 ### UAT deploy flow
 
-1. Merge PR to `main` → **UAT subagent** runs full localhost E2E (`scripts/agent-uat-babysit.sh`).
-2. On green E2E → dispatches **`promote-uat.yml`** → creates `uat-YYMMDD-PR#` tag.
+1. Merge PR to `main` → **Pre-UAT E2E** (`pre-uat-e2e.yml`) runs full localhost Playwright on `origin/main` HEAD.
+2. On green E2E at HEAD → **`promote-uat.yml`** (`workflow_run`) creates `uat-YYMMDD-PR#` tag.
 3. Tag triggers **`deploy-uat.yml`**; deploy job FTP-publishes frontend + backend (~5–15 min).
 4. HTTP post-deploy smoke only (`scripts/uat-post-deploy-smoke.sh`) — no live WAF smoke on deploy path.
 5. When `prod-ready` is green, **`deploy-prod.yml`** runs automatically (stub or live per `PROD_DEPLOY_ENABLED`).

@@ -63,11 +63,12 @@ step summary for alerting (`PROMOTION_WEBHOOK_URL` optional).
 
 ## Accepted trade-off: no CI re-run on `main`
 
-After merge, **`promote-uat.yml`** does not re-run CI on the merge commit — the **UAT subagent**
-runs full Playwright localhost shards before dispatching promote.
+After merge, **`pre-uat-e2e.yml`** runs full Playwright localhost shards on `origin/main`
+HEAD (async, non-blocking). **`promote-uat.yml`** chains via `workflow_run` when Pre-UAT
+is green at current HEAD (throttle skips stale runs).
 
-**Tag push → deploy chain:** `promote-uat.yml` creates `uat-*` tags after agent E2E green
-(`workflow_dispatch` with `commit_sha` + `pr_number`). GitHub does **not** fire `on: push: tags` workflows for those refs
+**Tag push → deploy chain:** `promote-uat.yml` creates `uat-*` tags after Pre-UAT E2E green
+(auto `workflow_run` or manual `workflow_dispatch` with `commit_sha` + `pr_number`). GitHub does **not** fire `on: push: tags` workflows for those refs
 (to prevent recursive runs). **`deploy-uat.yml`** therefore also listens for
 `workflow_run` after **Promote UAT** completes and resolves the tag for the merge
 commit. Manual tag pushes (non-`GITHUB_TOKEN`) still trigger `deploy-uat` via tag push.

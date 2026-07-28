@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
-# UAT subagent entry: full localhost E2E → promote tag → wait deploy → PR comment.
+# Manual ops: full localhost E2E → promote dispatch → wait deploy → PR comment.
+# Default UAT path is CI (pre-uat-e2e.yml → promote-uat.yml). Use this for ops replay only.
 #
 # Usage:
 #   ./scripts/agent-uat-babysit.sh --merge <sha> --pr <n> --pr-url <url> [--ref "plan:…"]

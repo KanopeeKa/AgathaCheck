@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Dispatch promote-uat.yml after agent localhost E2E is green.
+# Manual ops: dispatch promote-uat.yml (normally chained from Pre-UAT E2E workflow_run).
 #
 # Usage:
 #   ./scripts/ci/trigger-promote-uat.sh --commit <sha> --pr <n>

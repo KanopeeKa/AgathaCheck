@@ -3,7 +3,7 @@ name: execute-plan
 description: >-
   Multi-phase autonomous orchestrator — runs frozen plan snapshots phase-by-phase,
   gates on merge-done, delegates PR hygiene to /babysit-plus (default merge mode auto).
-  Post-merge UAT subagent spawn (fire-and-forget) — main session never polls deploy.
+  Post-merge UAT is CI-owned (pre-uat-e2e) — main session never polls deploy.
   May spawn Task sub-agents per phase for implementation; use integration branch for 2+ phases.
 ---
 
@@ -163,7 +163,7 @@ A single `plan_id` stays small on purpose (tight `allowed_paths`, one reviewable
 
 ## Phase delegation (orchestrator vs workers)
 
-The **orchestrator** (this session running `/execute-plan`) owns: gate, runtime sync, control-issue hygiene, babysit+, merge, UAT subagent spawn, and advancing phases.
+The **orchestrator** (this session running `/execute-plan`) owns: gate, runtime sync, control-issue hygiene, babysit+, merge, and advancing phases.
 
 ### Per-phase implementation worker (recommended)
 
@@ -171,22 +171,20 @@ At each phase **§3 Implement scope**, the orchestrator **should** delegate impl
 
 | Role | Owns |
 |------|------|
-| **Orchestrator** | Gate, `set-phase`, PR registration, babysit+ §0–7, merge, UAT subagent spawn, next phase |
+| **Orchestrator** | Gate, `set-phase`, PR registration, babysit+ §0–7, merge, next phase |
 | **Phase worker** (Task sub-agent) | Implement one phase scope; commit on phase branch; return summary |
 
 Spawn a **fresh worker at each phase boundary** (after prior phase `merged`). This limits context drift and mirrors "one agent per phase."
 
-**Do not await** the worker for UAT or deploy — only for implementation return.
+**Do not await** the worker for deploy — only for implementation return.
 
 ### Within-phase parallel (`spawn_allowed: true`)
 
 Invoke **/spawn-sprint-agents** per `spawn_config` before parallel work. Publish ownership map first. Phase PR still goes through orchestrator babysit+.
 
-### UAT subagent (fire-and-forget)
+### Post-merge UAT (CI-owned)
 
-After merge to `main`, spawn a **UAT subagent** to run `scripts/agent-uat-babysit.sh` — **do not await** return. Main orchestrator continues the next phase immediately. See babysit-plus §8 and [uat-agent-babysit.md](../../../docs/e2e/uat-agent-babysit.md).
-
-**Do not** spawn Task sub-agents to poll deploy from the **main** session — only the dedicated UAT subagent may block on E2E/deploy.
+After merge to `main`, **GitHub Actions** runs Pre-UAT E2E and promotion — **do not** spawn UAT subagents or poll deploy from the main session. See babysit-plus §8 and [uat-deploy-tiers.md](../../../docs/e2e/uat-deploy-tiers.md).
 
 ---
 
@@ -268,7 +266,7 @@ Commit plan artifacts on the phase branch (`artifact_branch_policy: phase-branch
   ```
 - Push plan artifact commits to phase branch before babysit-plus
 
-### 5. Babysit+ through merge; spawn UAT subagent (mandatory)
+### 5. Babysit+ through merge
 
 **Main agent** invokes **/babysit-plus** §0–7 for the phase PR (sync → triage → fixes → debt issues → CI → exit checklist → **merge** per effective mode).
 
@@ -280,21 +278,7 @@ Commit plan artifacts on the phase branch (`artifact_branch_policy: phase-branch
 | `approved_until` | from snapshot |
 | **Effective `merge_mode`** | `phase.merge_mode ?? snapshot.default_merge_mode ?? auto` |
 
-**After merge is verified** (PR `MERGED`, merge commit on base), **spawn UAT subagent** (babysit-plus §8) — **do not await** prod-ready before completing the phase or starting the next one.
-
-```bash
-./scripts/agent-uat-babysit.sh \
-  --merge <merge-sha> --pr <n> --pr-url <url> \
-  --ref "plan:<plan_id> phase-<id>"
-```
-
-```text
-Main agent                          UAT subagent (parallel)
-──────────                          ───────────────────────
-babysit+ §0–7 → merge ─────────────► agent-uat-babysit.sh
-complete phase §6                   E2E → promote → deploy → PR comment
-start next phase §7                 on failure: remedial PR (retry cap)
-```
+**After merge is verified** (PR `MERGED`, merge commit on base), complete the phase — CI runs Pre-UAT E2E async. **Do not** spawn subagents or poll deploy.
 
 **Phase gate = merge-done** — do not advance until:
 
@@ -308,7 +292,7 @@ git fetch origin <base_branch>
 git merge-base --is-ancestor <mergeCommit.oid> origin/<base_branch>
 ```
 
-**UAT prod-ready is not a phase gate.** The UAT subagent owns deploy observation; on failure the next merge agent or human manual promote heals `main`. **Main orchestrator must not poll deploy-uat.**
+**UAT prod-ready is not a phase gate.** CI owns deploy observation; on failure the next merge agent or human manual promote heals `main`. **Main orchestrator must not poll deploy-uat.**
 
 ### 6. Complete phase
 
@@ -319,9 +303,9 @@ node scripts/execute_plan_runtime.js set-phase <plan_id> \
 
 Update snapshot `merge_commit` via runtime (`set-phase` + `saveSnapshot`). Sync live plan; comment phase summary on control issue.
 
-### 7. Next phase (parallel with UAT deploy)
+### 7. Next phase
 
-If more `pending` phases → loop to §1 **immediately** — UAT subagent runs in parallel; no main-session polling (babysit-plus §8).
+If more `pending` phases → loop to §1 **immediately** — no main-session UAT polling.
 
 If all `merged` → **complete plan** (snapshot + close control issue):
 
@@ -339,7 +323,7 @@ Stop immediately on: revoke label, past `approved_until`, escalation, drift, CI 
 
 **Session limit** is a **checkpoint**, not a revoke. Post `halt --reason session_limit` on the control issue with `next_action`. Human comments `resume-plan <plan_id>`; no chat permission prompt.
 
-**UAT prod-ready failure** → UAT subagent or next merge agent owns remedial work — **not** a halt or `uat_paused` trigger.
+**UAT prod-ready failure** → next merge agent or human manual promote owns remedial work — **not** a halt or `uat_paused` trigger.
 
 ```bash
 node scripts/execute_plan_runtime.js halt <plan_id> \

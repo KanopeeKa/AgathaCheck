@@ -47,10 +47,10 @@ After **~24 hours** of continuous work on the same plan (or approaching pod/sess
 |-------|----------|
 | Task sub-agent for **phase implementation** (one phase scope) | **Yes — recommended** at phase boundary |
 | `/spawn-sprint-agents` when `spawn_allowed: true` | **Yes** |
-| **UAT subagent** after merge (`agent-uat-babysit.sh`) | **Yes — fire-and-forget** (main session must not await) |
+| **UAT subagent** after merge (`agent-uat-babysit.sh`) | **No** — CI Pre-UAT owns promotion |
 | Main session polling `deploy-uat` / prod-ready | **Never** |
 
-Orchestrator owns: gate, runtime sync, babysit+, merge, UAT subagent spawn, next phase.
+Orchestrator owns: gate, runtime sync, babysit+, merge, next phase.
 
 ## Roadmap chaining (multi-plan grants)
 

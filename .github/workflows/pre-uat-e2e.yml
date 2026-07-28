@@ -1,12 +1,16 @@
 name: Pre-UAT E2E
 
-# Ops replay only — full localhost Playwright E2E (11 shards).
-# Promotion is gated by agent UAT babysit (docs/e2e/uat-agent-babysit.md), not this workflow.
+# Full localhost Playwright E2E on merge to main — gates UAT promotion.
+# Concurrency queues rapid merges; each run tests latest origin/main HEAD.
+# Throttle: gate passes only when test_sha == origin/main (newer merges get their own run).
+# See docs/e2e/uat-deploy-tiers.md
 on:
+  push:
+    branches: [main]
   workflow_dispatch:
     inputs:
       reason:
-        description: Manual retry reason (ops / coordinator legacy)
+        description: Manual replay reason (ops)
         required: false
         type: string
 
@@ -97,7 +101,7 @@ jobs:
           git fetch origin main --depth=1
           current_sha="$(git rev-parse origin/main)"
           if [[ "$current_sha" != "$TEST_SHA" ]]; then
-            echo "::notice::main advanced (${TEST_SHA:0:7} → ${current_sha:0:7}) during E2E — failing so promotion waits for queued run."
+            echo "::notice::main advanced (${TEST_SHA:0:7} → ${current_sha:0:7}) during E2E — skipping promotion; a newer Pre-UAT run will gate deploy."
             exit 1
           fi
-          echo "Pre-UAT E2E passed for ${TEST_SHA} (ops replay — does not auto-promote)."
+          echo "Pre-UAT E2E passed for ${TEST_SHA} — promote-uat will tag on workflow_run success."
