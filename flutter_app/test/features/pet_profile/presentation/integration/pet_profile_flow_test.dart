@@ -193,8 +193,6 @@ void main() {
       );
       await pumpGuardianHome(tester);
 
-      final l10n = l10nFromTester(tester);
-
       await navigateToAddPetForm(tester);
 
       await tester.enterText(find.byKey(const Key('pet_name_field')), 'Buddy');

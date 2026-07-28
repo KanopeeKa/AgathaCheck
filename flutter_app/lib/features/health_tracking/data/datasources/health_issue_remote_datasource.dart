@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:http/http.dart' as http;
+import 'package:http_parser/http_parser.dart';
 
 import '../models/health_issue_model.dart';
 
@@ -135,7 +136,12 @@ class HealthIssueRemoteDataSourceImpl implements HealthIssueRemoteDataSource {
     );
     request.headers['Authorization'] = 'Bearer $token';
     request.files.add(
-      http.MultipartFile.fromBytes('photo', bytes, filename: filename),
+      http.MultipartFile.fromBytes(
+        'photo',
+        bytes,
+        filename: filename,
+        contentType: mimeType.trim().isEmpty ? null : MediaType.parse(mimeType),
+      ),
     );
     final streamed = await _client.send(request);
     final response = await http.Response.fromStream(streamed);
