@@ -90,21 +90,29 @@ class ExperienceShellScaffold extends ConsumerWidget {
                 ),
               ),
             Builder(
-              builder: (ctx) => IconButton(
-                key: const Key('experience_notification_bell'),
-                icon: Badge(
-                  isLabelVisible: combinedUnread > 0,
-                  label: Text('$combinedUnread'),
-                  child: const Icon(Icons.notifications_outlined),
-                ),
-                tooltip: combinedUnread > 0
+              builder: (ctx) {
+                final bellTooltip = combinedUnread > 0
                     ? l.drawerItemUnreadSemantics(
                         l.notificationsBellTooltip,
                         combinedUnread,
                       )
-                    : l.notificationsBellTooltip,
-                onPressed: () => Scaffold.of(ctx).openEndDrawer(),
-              ),
+                    : l.notificationsBellTooltip;
+                // Omit Badge when count is zero — hidden Badge labels leave stale
+                // aria-owns targets on Flutter web (axe aria-valid-attr-value).
+                final bellIcon = combinedUnread > 0
+                    ? Badge(
+                        isLabelVisible: true,
+                        label: Text('$combinedUnread'),
+                        child: const Icon(Icons.notifications_outlined),
+                      )
+                    : const Icon(Icons.notifications_outlined);
+                return IconButton(
+                  key: const Key('experience_notification_bell'),
+                  icon: bellIcon,
+                  tooltip: bellTooltip,
+                  onPressed: () => Scaffold.of(ctx).openEndDrawer(),
+                );
+              },
             ),
           ],
         ),
