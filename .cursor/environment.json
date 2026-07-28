@@ -1,4 +1,5 @@
 {
+  "name": "Agatha Track (Flutter 3.44)",
   "build": {
     "dockerfile": "Dockerfile"
   },

@@ -29,7 +29,7 @@ manifest = {
     "git_sha": os.environ.get("GITHUB_SHA", ""),
     "git_ref": os.environ.get("GITHUB_REF", ""),
     "repo": os.environ.get("GITHUB_REPOSITORY", ""),
-    "flutter_version": os.environ.get("FLUTTER_VERSION", "3.32.0"),
+    "flutter_version": os.environ.get("FLUTTER_VERSION", "3.44.0"),
     "pubspec_lock_sha256": os.environ.get("LOCKFILE_SHA256", ""),
     "posthog_injected": os.environ.get("POSTHOG_INJECTED", "false") == "true",
     "dart_defines": {

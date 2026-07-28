@@ -1,4 +1,5 @@
 # Cursor Cloud base image for Agatha Track (Flutter web + Node API + PostgreSQL).
+# Image revision: flutter-3.44.0-2026-07-28 — bump comment to invalidate Cloud build cache.
 # Do not COPY the repo — Cursor checks out the workspace at runtime.
 FROM ubuntu:24.04
 
