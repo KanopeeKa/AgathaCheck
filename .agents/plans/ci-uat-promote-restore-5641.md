@@ -40,10 +40,10 @@ next_action: "continue phase 1 on branch cursor/ci-uat-promote-restore-5641"
 artifact_ref:
   branch: cursor/ci-uat-promote-restore-5641
   plan_path: .agents/plans/ci-uat-promote-restore-5641.md
-  plan_commit: 3380d0e701317379d544fca3460b4a18aab0fce1
+  plan_commit: 613e2fd746286700823bb94ed5c002e8ff36a8fc
   snapshot_path: .agents/plans/ci-uat-promote-restore-5641.snapshot.json
-  snapshot_commit: 3380d0e701317379d544fca3460b4a18aab0fce1
-open_prs: []
+  snapshot_commit: 613e2fd746286700823bb94ed5c002e8ff36a8fc
+open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/507"]
 merge_commits: {}
 debt_issue_refs: []
 ```
