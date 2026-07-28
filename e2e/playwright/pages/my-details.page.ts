@@ -96,10 +96,12 @@ export class MyDetailsPage {
   }
 
   async openEditSheet(): Promise<void> {
+    await refreshFlutterAccessibility(this.page);
     const editButton = this.page
-      .getByRole('button', { name: /edit.profile/i })
-      .or(this.page.getByRole('button', { name: 'Edit profile', exact: false }))
+      .getByRole('button', { name: /edit profile|modifier le profil/i })
+      .or(this.page.getByRole('checkbox', { name: /edit profile|modifier le profil/i }))
       .first();
+    await editButton.scrollIntoViewIfNeeded();
     await editButton.waitFor({ timeout: 15_000 });
     await editButton.click();
     // Wait for the sheet to appear (Save button becomes visible)

@@ -522,6 +522,17 @@ export function dashboardSectionGroup(
     .first();
 }
 
+/** Flutter FilterChip / ChoiceChip — button in older web, checkbox/tab in 3.44. */
+export function filterChipByName(page: Page, pattern: string | RegExp): Locator {
+  const name =
+    typeof pattern === 'string' ? new RegExp(escapeRegExp(pattern), 'i') : pattern;
+  return page
+    .getByRole('button', { name })
+    .or(page.getByRole('checkbox', { name }))
+    .or(page.getByRole('tab', { name }))
+    .first();
+}
+
 /** Flutter MergeSemantics nodes may surface as button, checkbox, tab, or group (3.44 web). */
 export function semanticsByName(page: Page, pattern: string | RegExp) {
   const name =

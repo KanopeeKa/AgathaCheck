@@ -167,9 +167,11 @@ export class HealthDashboardPage {
 
   /** Guardian `/g/events` global list — status filter chip (manage-events filter bar). */
   async selectDueOverdueFilter(): Promise<void> {
-    const chip = this.page
-      .getByRole('button', { name: /Due and Overdue|À faire et en retard/i })
-      .first();
+    const { filterChipByName } = await import('../support/flutter');
+    const chip = filterChipByName(
+      this.page,
+      /Due and Overdue|À faire et en retard/i,
+    );
     if (!(await chip.isVisible({ timeout: 3_000 }).catch(() => false))) {
       throw new Error(
         'Due and Overdue filter chip not found — guardian /g/events may not have loaded manage-events filters',

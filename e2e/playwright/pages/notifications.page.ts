@@ -3,6 +3,7 @@ import { expect } from '@playwright/test';
 import {
   dismissConsentBannerIfPresent,
   expectAppBarTitle,
+  filterChipByName,
   flutterGotoUrl,
   isExperienceShellVisible,
   refreshFlutterAccessibility,
@@ -96,12 +97,17 @@ export class NotificationsPage {
     // button they cannot false-positive from unrelated page chrome (PR #397 gap).
     await expect(async () => {
       await refreshFlutterAccessibility(this.page);
-      const allChip = this.page
-        .getByRole('button', { name: /^All$|^Tout$/i })
-        .and(this.page.locator(':visible'));
+      const allChip = filterChipByName(this.page, /^All$|^Tout$/i).and(
+        this.page.locator(':visible'),
+      );
       await allChip.waitFor({ timeout: 3_000 });
       const markAll = this.page
         .getByRole('button', { name: /Mark all as read|Tout marquer comme lu/i })
+        .or(
+          this.page.getByRole('checkbox', {
+            name: /Mark all as read|Tout marquer comme lu/i,
+          }),
+        )
         .and(this.page.locator(':visible'));
       await markAll.waitFor({ timeout: 3_000 });
     }).toPass({ timeout: 15_000 });
