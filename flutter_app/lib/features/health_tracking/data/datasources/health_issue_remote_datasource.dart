@@ -140,9 +140,7 @@ class HealthIssueRemoteDataSourceImpl implements HealthIssueRemoteDataSource {
         'photo',
         bytes,
         filename: filename,
-        contentType: mimeType.trim().isEmpty
-            ? null
-            : MediaType.parse(mimeType),
+        contentType: mimeType.trim().isEmpty ? null : MediaType.parse(mimeType),
       ),
     );
     final streamed = await _client.send(request);
