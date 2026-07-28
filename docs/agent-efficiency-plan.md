@@ -16,7 +16,7 @@ workflows. Pauses functional product sprints while infra lands on `main`.
 | Less duplicated context per turn | Slim always-on rules; path-scoped rules + Skills |
 | Faster agent iterations | `scripts/pre-push-changed.sh` default during work |
 | Repeatable sprint mechanics | Six Skills under `.cursor/skills/` |
-| Self-service PR hygiene | `/babysit` command + PR governance workflow |
+| Self-service PR hygiene | `/babysit` command + PR governance workflow; Bugbot + cost policy in `docs/agent-efficiency/pr-review-cost-efficiency.md` |
 | Autonomous multi-phase plans | `/execute-plan` + schema in `docs/agent-efficiency/` (Sprint 12+) |
 | Onboarding without re-explaining | `docs/architecture/index.md` domain map |
 

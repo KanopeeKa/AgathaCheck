@@ -209,6 +209,6 @@ Track in [ci-cd-gates.md](./ci-cd-gates.md) § follow-up when scheduled.
 
 ## References
 
-- Copilot/babysit review polling: [autonomous-pr-policy.md](./agent-efficiency/autonomous-pr-policy.md) §Automatic reviews
+- Bugbot/babysit review polling: [pr-review-cost-efficiency.md](./agent-efficiency/pr-review-cost-efficiency.md) · [autonomous-pr-policy.md](./agent-efficiency/autonomous-pr-policy.md) §Automatic reviews
 - Shard manifest: [e2e/scripts/shard-files.mjs](../e2e/scripts/shard-files.mjs)
 - UAT gate table: [scripts/ci/assert-uat-gates.sh](../scripts/ci/assert-uat-gates.sh)

@@ -44,7 +44,7 @@ When session preflight **gate** exits `0`, autonomy is **active**. You have upfr
 - [github-labels.md](../../docs/agent-efficiency/github-labels.md) — control issue + debt labels
 - [plan-template.md](../../docs/agent-efficiency/plan-template.md) — authoring template
 
-**PR hygiene:** Always delegate to **/babysit-plus**, never plain `/babysit` alone.
+**PR hygiene:** Always delegate to **/babysit-plus**, never plain `/babysit` alone. Orchestrator babysit steps use **`composer-2.5` only**. Workers must complete **pre-PR critical self-review** before opening/updating a PR (`docs/agent-efficiency/pr-review-cost-efficiency.md`).
 
 **Default merge mode:** When triggering `/execute-plan`, use **babysit-plus with `auto` merge** unless the frozen snapshot sets `default_merge_mode` or a per-phase `merge_mode` override. Effective mode per phase:
 
