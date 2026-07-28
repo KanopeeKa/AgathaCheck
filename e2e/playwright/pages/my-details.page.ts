@@ -195,10 +195,9 @@ export class MyDetailsPage {
       .first();
     await deleteButton.scrollIntoViewIfNeeded();
     await deleteButton.click();
+    // Wait for dialog body — not "Delete Account" text (matches the trigger button).
     await this.page
-      .getByRole('dialog', { name: /Alert|Alerte/i })
-      .or(this.page.getByText(/Delete Account|Supprimer le compte/i))
-      .first()
+      .getByRole('textbox', { name: /Current Password|Mot de passe actuel/i })
       .waitFor({ timeout: 15_000 });
     await fillLabelledField(this.page, 'Current Password', password).catch(() =>
       fillLabelledField(this.page, 'Mot de passe actuel', password),
