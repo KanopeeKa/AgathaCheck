@@ -7,6 +7,7 @@ import {
   flutterGotoUrl,
   isExperienceShellVisible,
   refreshFlutterAccessibility,
+  semanticsByName,
   waitForFlutterRoutePattern,
 } from '../support/flutter';
 
@@ -60,12 +61,7 @@ export class MyDetailsPage {
     const pattern = new RegExp(name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i');
     await expect(async () => {
       await refreshFlutterAccessibility(this.page);
-      await expect(
-        this.page
-          .getByRole('button', { name: pattern })
-          .or(this.page.getByRole('checkbox', { name: pattern }))
-          .first(),
-      ).toBeVisible();
+      await expect(semanticsByName(this.page, pattern)).toBeVisible();
     }).toPass({ timeout: 20_000 });
   }
 
@@ -73,12 +69,7 @@ export class MyDetailsPage {
     const pattern = new RegExp(email.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i');
     await expect(async () => {
       await refreshFlutterAccessibility(this.page);
-      await expect(
-        this.page
-          .getByRole('button', { name: pattern })
-          .or(this.page.getByRole('checkbox', { name: pattern }))
-          .first(),
-      ).toBeVisible();
+      await expect(semanticsByName(this.page, pattern)).toBeVisible();
     }).toPass({ timeout: 20_000 });
   }
 
@@ -86,12 +77,8 @@ export class MyDetailsPage {
     const pattern = new RegExp(bio.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i');
     await expect(async () => {
       await refreshFlutterAccessibility(this.page);
-      await expect(
-        this.page
-          .getByRole('button', { name: pattern })
-          .or(this.page.getByText(bio, { exact: false }))
-          .first(),
-      ).toBeVisible();
+      // Bio lives in ProfileHeaderCard MergeSemantics (not plain text in 3.44 web).
+      await expect(semanticsByName(this.page, pattern)).toBeVisible();
     }).toPass({ timeout: 20_000 });
   }
 
@@ -131,6 +118,7 @@ export class MyDetailsPage {
 
   async saveProfileEdits(): Promise<void> {
     await this.page.getByRole('button', { name: 'Save', exact: true }).click();
+    await this.page.getByRole('button', { name: 'Save', exact: true }).waitFor({ state: 'hidden', timeout: 15_000 });
     await this.expectProfileUpdated();
     await this.page.waitForTimeout(500);
     await refreshFlutterAccessibility(this.page);
