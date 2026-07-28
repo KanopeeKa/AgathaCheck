@@ -1,6 +1,6 @@
 import type { Page } from '@playwright/test';
 import { expect } from '@playwright/test';
-import { dismissConsentBannerIfPresent, enableFlutterAccessibility } from '../support/flutter';
+import { dismissConsentBannerIfPresent, enableFlutterAccessibility, refreshFlutterAccessibility } from '../support/flutter';
 import { isLiveHostingTarget } from '../support/hosting';
 import { passHostingWaf } from '../support/waf';
 
@@ -43,6 +43,9 @@ export class SharedPetPage {
     const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
     const timeout = isLiveHostingTarget(baseURL) ? 45_000 : 30_000;
     await expect(async () => {
+      await refreshFlutterAccessibility(this.page);
+      const byId = this.page.locator('[flt-semantics-identifier="view_only_badge"]');
+      if (await byId.isVisible().catch(() => false)) return;
       await expect(this.page.getByText(/^(View Only|Lecture seule)$/i)).toBeVisible();
     }).toPass({ timeout });
   }
