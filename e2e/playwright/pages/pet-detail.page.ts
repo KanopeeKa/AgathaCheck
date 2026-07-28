@@ -43,11 +43,12 @@ export class PetDetailPage {
   async openSharingSection(): Promise<void> {
     const sharing = this.page.getByRole('button', { name: /^Sharing\b/i });
     await sharing.scrollIntoViewIfNeeded();
-    const expanded = await sharing.getAttribute('aria-expanded');
-    if (expanded !== 'true') {
-      await sharing.click();
-      await this.page.waitForTimeout(500);
+    const shareLink = this.page.getByRole('button', { name: 'Share Link' });
+    if (await shareLink.isVisible().catch(() => false)) {
+      return;
     }
+    await sharing.click();
+    await shareLink.waitFor({ timeout: 15_000 });
   }
 
   async createShareLink(): Promise<void> {
@@ -62,6 +63,8 @@ export class PetDetailPage {
       .first();
     await shareButton.scrollIntoViewIfNeeded();
     await shareButton.click();
+    // Link creation is async; wait for the dialog before dismissing (Escape too early closes the sheet).
+    await this.page.getByRole('dialog', { name: 'Share Link' }).waitFor({ timeout: 30_000 });
     await this.page.keyboard.press('Escape');
     await this.page
       .getByRole('button', { name: copyLinkPattern })
