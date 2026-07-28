@@ -93,10 +93,10 @@ next_action: "continue phase 1 on branch cursor/e2e-flutter344-uat-unblock-5641"
 artifact_ref:
   branch: cursor/e2e-flutter344-uat-unblock-5641
   plan_path: .agents/plans/e2e-flutter344-uat-unblock-5641.md
-  plan_commit: 77f88ef7947089554ac96f5d2a77b2e0269604b1
+  plan_commit: b465ba6200c0b8cca1641d6cea9cee111edf9b2b
   snapshot_path: .agents/plans/e2e-flutter344-uat-unblock-5641.snapshot.json
-  snapshot_commit: 77f88ef7947089554ac96f5d2a77b2e0269604b1
-open_prs: []
+  snapshot_commit: b465ba6200c0b8cca1641d6cea9cee111edf9b2b
+open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/501"]
 merge_commits: {}
 debt_issue_refs: []
 ```

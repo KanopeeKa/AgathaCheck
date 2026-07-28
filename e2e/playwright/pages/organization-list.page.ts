@@ -4,6 +4,7 @@ import {
   dismissConsentBannerIfPresent,
   expectAppBarTitle,
   escapeRegExp,
+  flutterGotoUrl,
   flutterRoutePath,
   isExperienceShellVisible,
   navigateWithShellFallback,

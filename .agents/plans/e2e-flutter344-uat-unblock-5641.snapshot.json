@@ -34,7 +34,9 @@
       "status": "in_progress",
       "status_reason": null,
       "status_detail": null,
-      "debt_issue_refs": []
+      "debt_issue_refs": [],
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/501",
+      "pr_head_sha": "b465ba62"
     },
     {
       "id": "2",
@@ -63,5 +65,5 @@
       "debt_issue_refs": []
     }
   ],
-  "content_hash": "sha256:d55c64e179d6dd45d2fbb9da799e59b920fc3efbb83f2037c7c781fa28a1a5d2"
+  "content_hash": "sha256:e756b47e0efc042e2daea4292854ba9604d9e561283264addb0c9891d95ac1f5"
 }
