@@ -235,7 +235,9 @@ if not run_analyze:
 if not run_stack:
     skip_jobs.extend(
         [
-            "flutter-test-pet",
+            "flutter-test-pet-core",
+            "flutter-test-pet-screens",
+            "flutter-test-pet-widgets",
             "flutter-test-health",
             "flutter-test-org",
             "flutter-test-rest-a",

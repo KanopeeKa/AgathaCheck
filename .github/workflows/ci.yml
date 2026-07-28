@@ -58,12 +58,26 @@ jobs:
     if: needs.ci-scope.outputs.run_flutter_analyze == 'true'
     uses: ./.github/workflows/_reusable-flutter-analyze.yml
 
-  flutter-test-pet:
+  flutter-test-pet-core:
     needs: [ci-scope, flutter-analyze]
     if: needs.ci-scope.outputs.run_flutter_stack == 'true'
     uses: ./.github/workflows/_reusable-flutter-test-shard.yml
     with:
-      shard: pet
+      shard: pet-core
+
+  flutter-test-pet-screens:
+    needs: [ci-scope, flutter-analyze]
+    if: needs.ci-scope.outputs.run_flutter_stack == 'true'
+    uses: ./.github/workflows/_reusable-flutter-test-shard.yml
+    with:
+      shard: pet-screens
+
+  flutter-test-pet-widgets:
+    needs: [ci-scope, flutter-analyze]
+    if: needs.ci-scope.outputs.run_flutter_stack == 'true'
+    uses: ./.github/workflows/_reusable-flutter-test-shard.yml
+    with:
+      shard: pet-widgets
 
   flutter-test-health:
     needs: [ci-scope, flutter-analyze]
@@ -96,7 +110,9 @@ jobs:
   flutter-coverage:
     needs:
       - ci-scope
-      - flutter-test-pet
+      - flutter-test-pet-core
+      - flutter-test-pet-screens
+      - flutter-test-pet-widgets
       - flutter-test-health
       - flutter-test-org
       - flutter-test-rest-a
@@ -141,7 +157,9 @@ jobs:
       - startup-smoke
       - test-suite
       - flutter-analyze
-      - flutter-test-pet
+      - flutter-test-pet-core
+      - flutter-test-pet-screens
+      - flutter-test-pet-widgets
       - flutter-test-health
       - flutter-test-org
       - flutter-test-rest-a
@@ -157,7 +175,9 @@ jobs:
       startup_smoke: ${{ needs.startup-smoke.result }}
       test_suite: ${{ needs.test-suite.result }}
       flutter_analyze: ${{ needs.flutter-analyze.result }}
-      flutter_test_pet: ${{ needs.flutter-test-pet.result }}
+      flutter_test_pet_core: ${{ needs.flutter-test-pet-core.result }}
+      flutter_test_pet_screens: ${{ needs.flutter-test-pet-screens.result }}
+      flutter_test_pet_widgets: ${{ needs.flutter-test-pet-widgets.result }}
       flutter_test_health: ${{ needs.flutter-test-health.result }}
       flutter_test_org: ${{ needs.flutter-test-org.result }}
       flutter_test_rest_a: ${{ needs.flutter-test-rest-a.result }}

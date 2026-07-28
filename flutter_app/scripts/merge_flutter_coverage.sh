@@ -6,7 +6,7 @@ cd "$(dirname "$0")/.."
 INPUT_ROOT="${1:-_coverage_shards}"
 THRESHOLD="${DOMAIN_COVERAGE_THRESHOLD:-70}"
 
-shards=(pet health org rest-a rest-b)
+shards=(pet-core pet-screens pet-widgets health org rest-a rest-b)
 merged="coverage/lcov.merged.info"
 mkdir -p coverage
 rm -f "$merged"

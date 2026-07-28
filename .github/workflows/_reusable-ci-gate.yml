@@ -17,7 +17,13 @@ on:
       flutter_analyze:
         required: true
         type: string
-      flutter_test_pet:
+      flutter_test_pet_core:
+        required: true
+        type: string
+      flutter_test_pet_screens:
+        required: true
+        type: string
+      flutter_test_pet_widgets:
         required: true
         type: string
       flutter_test_health:
@@ -66,7 +72,9 @@ jobs:
           STARTUP_SMOKE: ${{ inputs.startup_smoke }}
           TEST_SUITE: ${{ inputs.test_suite }}
           FLUTTER_ANALYZE: ${{ inputs.flutter_analyze }}
-          FLUTTER_TEST_PET: ${{ inputs.flutter_test_pet }}
+          FLUTTER_TEST_PET_CORE: ${{ inputs.flutter_test_pet_core }}
+          FLUTTER_TEST_PET_SCREENS: ${{ inputs.flutter_test_pet_screens }}
+          FLUTTER_TEST_PET_WIDGETS: ${{ inputs.flutter_test_pet_widgets }}
           FLUTTER_TEST_HEALTH: ${{ inputs.flutter_test_health }}
           FLUTTER_TEST_ORG: ${{ inputs.flutter_test_org }}
           FLUTTER_TEST_REST_A: ${{ inputs.flutter_test_rest_a }}

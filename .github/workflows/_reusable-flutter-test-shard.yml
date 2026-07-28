@@ -1,5 +1,5 @@
 # Run one Flutter domain test shard with per-shard coverage output.
-# Caller: ci.yml jobs flutter-test-{pet,health,org,rest}.
+# Caller: ci.yml jobs flutter-test-{pet-core,pet-screens,pet-widgets,health,org,rest}.
 # Canonical codegen + legal sync run in flutter-analyze; this job restores that prep artifact.
 name: Reusable Flutter test shard
 
@@ -7,7 +7,7 @@ on:
   workflow_call:
     inputs:
       shard:
-        description: Domain shard name (pet, health, org, rest-a, or rest-b)
+        description: Domain shard name (pet-core, pet-screens, pet-widgets, health, org, rest-a, or rest-b)
         type: string
         required: true
 
