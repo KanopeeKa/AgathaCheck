@@ -89,9 +89,10 @@ run_localhost_e2e() {
   cd "${ROOT}/server"
   export PGUSER=user PGPASSWORD=password PGHOST=localhost PGPORT=5432 PGDATABASE=agatha_db
   export E2E=1
-  if lsof -i :3000 >/dev/null 2>&1; then
+  if fuser 3000/tcp >/dev/null 2>&1; then
+    echo "Port 3000 in use — stopping existing process"
     fuser -k 3000/tcp 2>/dev/null || true
-    sleep 1
+    sleep 2
   fi
   node bin/start.js &
   SERVER_PID=$!
