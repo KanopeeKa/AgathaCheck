@@ -32,18 +32,18 @@ Standing grant: user chat 2026-07-28 — CI owns promotion; babysit+ fixes E2E o
 ## Runtime
 
 ```yaml
-autonomy: active
-current_phase: 1
-last_completed_phase: null
+autonomy: completed
+current_phase: null
+last_completed_phase: 2
 halt_reason: null
-next_action: "continue phase 1 on branch cursor/ci-uat-promote-restore-5641"
+next_action: "plan complete"
 artifact_ref:
-  branch: cursor/ci-uat-promote-restore-5641
+  branch: main
   plan_path: .agents/plans/ci-uat-promote-restore-5641.md
-  plan_commit: 613e2fd746286700823bb94ed5c002e8ff36a8fc
+  plan_commit: f7b8c9e1246dc3fa49e8144d5e473acf8b48da11
   snapshot_path: .agents/plans/ci-uat-promote-restore-5641.snapshot.json
-  snapshot_commit: 613e2fd746286700823bb94ed5c002e8ff36a8fc
-open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/507"]
+  snapshot_commit: f7b8c9e1246dc3fa49e8144d5e473acf8b48da11
+open_prs: []
 merge_commits: {}
 debt_issue_refs: []
 ```
