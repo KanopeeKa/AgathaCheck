@@ -1,8 +1,8 @@
 # UAT deploy tiers
 
-Single source of truth for the UAT release pipeline after agent-babysit cutover (Jul 2026).
+Single source of truth for the UAT release pipeline (CI-driven, Jul 2026).
 
-**Related:** [ci-cd-gates.md](../ci-cd-gates.md) · [promotion-contract.md](../promotion-contract.md) · [uat-agent-babysit.md](./uat-agent-babysit.md) · [uat-promote-manual.md](./uat-promote-manual.md)
+**Related:** [ci-cd-gates.md](../ci-cd-gates.md) · [promotion-contract.md](../promotion-contract.md) · [uat-promote-manual.md](./uat-promote-manual.md)
 
 ---
 
@@ -11,36 +11,39 @@ Single source of truth for the UAT release pipeline after agent-babysit cutover 
 ```mermaid
 flowchart TD
   PR["PR CI (@smoke-ci + unit tests)"] --> MERGE[merge to main]
-  MERGE --> SUB[UAT subagent — full localhost E2E]
-  SUB -->|pass| PROMOTE[promote-uat.yml — uat-* tag]
+  MERGE --> PRE["pre-uat-e2e.yml — 11-shard localhost E2E"]
+  PRE -->|green + HEAD match| PROMOTE[promote-uat.yml — uat-* tag]
   PROMOTE --> DEPLOY["deploy-uat.yml — deploy + HTTP smoke"]
   DEPLOY --> READY[prod-ready]
   READY --> PROD[deploy-prod.yml]
 
-  MANUAL["pre-uat-e2e.yml — workflow_dispatch"] -.->|ops replay| SUB
   NIGHTLY["uat-live-e2e.yml — nightly / manual"] -.->|advisory| WARN[warning only]
 ```
 
-| Tier | Workflow / agent | Blocking? | WAF exposure |
-|------|------------------|-----------|--------------|
-| **PR** | `ci.yml` (`@smoke-ci`) | Yes (via `ci-gate`) | None |
-| **1 — Agent E2E** | UAT subagent + `scripts/agent-uat-babysit.sh` | Yes (gates tagging) | None |
-| **2 — UAT deploy** | `deploy-uat.yml` (HTTP smoke) | Yes (`prod-ready`) | Low (health curl) |
-| **3 — Live UAT** | `uat-live-e2e.yml` | **No** (advisory) | High (browser + Tiger Protect) |
+| Tier | Workflow | Blocking merge? | Gates UAT deploy? |
+|------|----------|-----------------|-------------------|
+| **PR** | `ci.yml` (`@smoke-ci`) | Yes (via `ci-gate`) | — |
+| **1 — Pre-UAT E2E** | `pre-uat-e2e.yml` on `push: main` | **No** (async) | Yes |
+| **2 — UAT deploy** | `deploy-uat.yml` (HTTP smoke) | — | Yes (`prod-ready`) |
+| **3 — Live UAT** | `uat-live-e2e.yml` | **No** (advisory) | No |
 
-**Ops replay:** `pre-uat-e2e.yml` (`workflow_dispatch` only) — same 11-shard localhost E2E without blocking every merge.
+**Throttle:** only the **latest green E2E at `origin/main` HEAD** promotes. If `main` advances during a run, that run skips promote; the queued run for the newer HEAD is authoritative.
+
+**Ops replay:** `workflow_dispatch` on `pre-uat-e2e.yml` or `promote-uat.yml` — see [uat-promote-manual.md](./uat-promote-manual.md).
 
 ---
 
-## Tier 1: Agent localhost E2E
+## Tier 1: Pre-UAT localhost E2E
 
-**Trigger:** merge agent spawns UAT subagent after PR lands on `main`.
+**Trigger:** every push to `main` (queued via `concurrency: pre-uat-e2e`).
 
-**Steps:** latest `origin/main` HEAD → build web → 11-shard Playwright → `promote-uat` dispatch.
+**Steps:** resolve `origin/main` HEAD → build web → 11-shard Playwright → gate-summary.
 
-**On failure:** subagent opens remedial PR (retry cap); next merge agent may also heal drift.
+**On green + HEAD match:** `promote-uat.yml` runs via `workflow_run` → `uat-*` tag → `deploy-uat.yml`.
 
-**Manual:** [uat-promote-manual.md](./uat-promote-manual.md) · [uat-agent-babysit.md](./uat-agent-babysit.md)
+**On failure:** no tag until a remedial merge fixes E2E. Agents (babysit+) open remedial PRs; CI re-runs automatically on the fix merge.
+
+**Manual localhost replay:** `scripts/agent-uat-babysit.sh` (ops only — does not replace CI).
 
 ---
 
@@ -82,19 +85,19 @@ flowchart TD
 
 | Event | Outcome |
 |-------|---------|
-| Agent E2E pass + promote dispatch | `uat-*` tag created |
+| Pre-UAT E2E green + HEAD match | `uat-*` tag created |
 | Deploy + HTTP smoke pass | `prod-ready` green → PROD |
-| Agent E2E fail (retry cap) | No tag until remedial or manual promote |
+| Pre-UAT E2E red on `main` | No tag until remedial merge |
+| `main` advanced during E2E | Stale run skips promote; newer run decides |
 | Live UAT E2E fail (nightly) | Advisory only |
-| Subagent death | Next merge agent or manual promote |
 
-**Removed:** UAT coordinator, queue ledger promote hold, blocking `pre-uat-e2e` on `push: main`.
+**Removed:** UAT coordinator dispatch, queue ledger promote hold, per-merge agent UAT subagent as default path.
 
 ---
 
 ## Forbidden regressions
 
-1. Blocking `push: main` on `pre-uat-e2e.yml` (use agent babysit or manual dispatch)
+1. Making Pre-UAT E2E a **required** PR check (it is async post-merge only)
 2. Curl or Node auth warmup in deploy smoke
 3. `@smoke-uat` or full E2E shards inside `deploy-uat.yml`
 4. `resetHostingWafSession()` in live smoke fixtures
@@ -106,11 +109,11 @@ flowchart TD
 
 | Concern | Path |
 |---------|------|
-| Agent babysit | `scripts/agent-uat-babysit.sh` |
-| Ops E2E replay | `.github/workflows/pre-uat-e2e.yml` |
-| Promote (dispatch) | `.github/workflows/promote-uat.yml` |
+| Pre-UAT E2E | `.github/workflows/pre-uat-e2e.yml` |
+| Promote tag | `.github/workflows/promote-uat.yml` |
 | Light deploy | `.github/workflows/deploy-uat.yml` |
 | Advisory live E2E | `.github/workflows/uat-live-e2e.yml` |
 | HTTP smoke | `scripts/uat-post-deploy-smoke.sh` |
 | Prod-ready gates | `scripts/ci/assert-uat-gates.sh` |
 | Manual runbook | `docs/e2e/uat-promote-manual.md` |
+| Ops localhost replay | `scripts/agent-uat-babysit.sh` |

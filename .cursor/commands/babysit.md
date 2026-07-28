@@ -31,7 +31,7 @@ Check PR status, comments, and latest CI and resolve any issues until the PR is 
 7. **Verify locally:** `./scripts/pre-push-changed.sh` for scoped fix; `./scripts/pre-push.sh` before final push when near merge.
 8. **Push** scoped fixes and re-watch CI until mergeable + green + comments triaged. Run `./scripts/babysit_sync_base.sh --pr <url>` before each push.
 
-**Babysit+ only (after merge to `main`):** spawn UAT subagent per `.cursor/skills/babysit-plus/SKILL.md` §8 — **do not** block main work on deploy polling.
+**After merge to `main`:** CI runs Pre-UAT E2E and promotion automatically — babysit+ does not spawn agents or poll deploy (babysit-plus §8).
 
 Escalate to human when: security/crypto changes, breaking API contracts, migration risk, or product/legal decisions.
 

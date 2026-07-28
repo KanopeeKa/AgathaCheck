@@ -176,46 +176,21 @@ gh pr view <url> --json state,mergedAt,mergeCommit
 
 Verify merge commit is ancestor of `origin/<base_branch>` before execute-plan advances to next phase.
 
-### 8. Post-merge UAT subagent (spawn and exit — main session never blocks)
+### 8. Post-merge UAT (CI-owned — do not spawn or poll)
 
-When the PR merges to **`main`**, spawn a **UAT subagent** to own promotion through prod-ready. **The main agent must not block** on deploy polling — **spawn and continue immediately**.
+When the PR merges to **`main`**, **GitHub Actions** owns promotion: `pre-uat-e2e.yml`
+(push) → `promote-uat.yml` (`workflow_run`) → `deploy-uat.yml` → `prod-ready`.
 
-**Trigger:** merge commit is on `origin/main` (spawn UAT babysit only on final merge to `main`, not integration-branch intermediate merges).
-
-#### 8a. Main agent (after merge verified — spawn immediately)
-
-1. Note merge SHA and PR number (`gh pr view <url> --json mergeCommit,number`).
-2. Post PR comment: UAT babysit started for `<merge-sha>`.
-3. **Spawn UAT subagent** (Task `generalPurpose` or dedicated session) with:
-   ```bash
-   ./scripts/agent-uat-babysit.sh \
-     --merge <merge-sha> --pr <n> --pr-url <url> \
-     --ref "plan:<plan_id> phase-<id>"
-   ```
-   Use `--ref "pr-<n>"` when not in execute-plan.
-4. **Declare babysit-plus done for this PR** — advance to next phase or end session **without awaiting** the subagent.
-5. **Do not spawn twice** for the same merge SHA if a lock is active (`/tmp/agatha-uat-babysit`).
-
-**Forbidden in the main session:**
-
-| Anti-pattern | Why |
-|--------------|-----|
-| Poll `gh run view` / `deploy-uat.yml` | Blocks next phase (~45–60 min) |
-| `run_in_background: true` then `resume` / poll UAT subagent | Main session must not await UAT |
-| `uat_queue_runtime.js enqueue` | Replaced by agent babysit (Jul 2026) |
-
-**Allowed:** UAT subagent may block on E2E + deploy until green or retry cap — see [uat-agent-babysit.md](../../../docs/e2e/uat-agent-babysit.md).
-
-#### 8b. Who owns UAT after spawn
+**Babysit+ ends at merge** (§7). Do **not** spawn UAT subagents, poll `deploy-uat.yml`,
+or dispatch promote from the main session.
 
 | Layer | Owns |
 |-------|------|
-| **UAT subagent** | Full localhost E2E, promote dispatch, deploy wait, remedial PRs (retry cap) |
-| GitHub Actions | `promote-uat.yml` → `deploy-uat.yml` → `prod-ready` |
-| **Next merge agent** | Heals blocking E2E on `main` if prior subagent died or hit retry cap |
-| **Human** | [uat-promote-manual.md](../../../docs/e2e/uat-promote-manual.md) |
+| **GitHub Actions** | Pre-UAT E2E, promote tag, deploy, prod-ready |
+| **Next merge agent** | Remedial PR when Pre-UAT E2E on `main` is red |
+| **Human** | [uat-promote-manual.md](../../../docs/e2e/uat-promote-manual.md); ops localhost replay via `scripts/agent-uat-babysit.sh` |
 
-**Failure path:** subagent comments on PR; execute-plan does **not** halt. Next merge agent or human promotes.
+**UAT prod-ready is not a phase gate** for execute-plan. E2E/deploy failure does **not** halt the orchestrator.
 
 **Infra-only blockers** (e.g. `UAT_AUTO_MIGRATE` off with pending migrations) → §9 Escalation (true halt; human required). Do not weaken gates.
 

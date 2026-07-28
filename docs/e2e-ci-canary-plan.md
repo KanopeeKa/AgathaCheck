@@ -138,22 +138,12 @@ flowchart TD
 
 ---
 
-## Phase 5 — Post-merge UAT coordination (cross-agent)
+## Phase 5 — Post-merge UAT coordination (superseded)
 
-**Canonical plan:** [uat-coordinator-plan.md](./agent-efficiency/uat-coordinator-plan.md) (draft for review).
+**Superseded (Jul 2026):** CI owns promotion — `pre-uat-e2e.yml` on merge to `main`,
+`promote-uat.yml` via `workflow_run`, no coordinator dispatch or queue ledger hold.
 
-Supersedes the earlier per-merge Task sub-agent sketch. Cross-agent queue ledger + main barrier + coordinator dispatch on failure only.
-
-| Item | Detail |
-|------|--------|
-| Runtime | `scripts/uat_queue_runtime.js` — enqueue, barrier-check, reconcile, watcher lease |
-| Passive success | Extend `agent-uat-notify` to update ledger; no agent poll on green `prod-ready` |
-| Failure | `uat-coordinator-dispatch.yml` + `.cursor/skills/uat-coordinator/SKILL.md` |
-| Work agents | babysit-plus §8 → `enqueue` after merge; preflight `barrier-check` |
-
-**Exit:** Main work does not wait on UAT poll; success path uses zero agent babysitting; one coordinator owns failure remedial + barrier.
-
-**Risk:** Medium — coordinator autonomy window; infra vs code classification.
+See [uat-deploy-tiers.md](./e2e/uat-deploy-tiers.md). Historical: [uat-coordinator-plan.md](./agent-efficiency/uat-coordinator-plan.md).
 
 ---
 

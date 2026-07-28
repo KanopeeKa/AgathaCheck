@@ -85,6 +85,6 @@ Example: `uat-260727-481` for PR #481 merged on 2026-07-27.
 
 - Blocking `pre-uat-e2e.yml` on every `main` push (now manual/advisory only)
 - UAT coordinator dispatch and queue ledger promote hold
-- `uat_queue_runtime.js enqueue` after merge (agents use babysit spawn instead)
+- `uat_queue_runtime.js enqueue` after merge (removed — CI Pre-UAT owns promotion)
 
 Pre-UAT E2E remains available as **workflow_dispatch** for ops replay.

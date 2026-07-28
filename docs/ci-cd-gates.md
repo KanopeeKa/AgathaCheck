@@ -35,7 +35,7 @@ shards unchanged for prod-ready. Prod security scans noted in Phase 6 (future).
 | Stage | Blocking? | Workflow |
 |-------|-----------|----------|
 | PR → `main` | **Yes** (2 required checks) | `ci.yml` → `ci-gate`, `codeql.yml` |
-| Merge → `main` | **Yes** (agent UAT babysit after merge) | `agent-uat-babysit.sh` → `promote-uat.yml` (dispatch) → `uat-*` tag → `deploy-uat.yml` |
+| Merge → `main` | **Yes** (async, does not block merge) | `pre-uat-e2e.yml` → `promote-uat.yml` → `uat-*` tag → `deploy-uat.yml` |
 | PR granular CI jobs | Visible, not individually required | `ci.yml` (startup-smoke, test-suite, flutter-*, …) |
 | PR startup smoke | **Yes** (via `ci-gate`) | `ci.yml` → `_reusable-pr-startup-smoke.yml` |
 | PR hints | No (advisory) | `pr-governance-hints.yml` |
@@ -310,19 +310,19 @@ wait for one green **CI** run — GitHub only lists checks that have reported at
 
 Full tier model: [e2e/uat-deploy-tiers.md](./e2e/uat-deploy-tiers.md).
 
-**Agent UAT babysit** (`scripts/agent-uat-babysit.sh`) runs full localhost E2E after merge, then dispatches **Promote UAT**.
+**CI owns promotion:** every merge to `main` triggers async **Pre-UAT E2E**
+(`pre-uat-e2e.yml` on `push`). Green E2E at current `origin/main` HEAD chains to
+**Promote UAT** (`promote-uat.yml` via `workflow_run`) → `uat-*` tag → **Deploy UAT**
+(`deploy-uat.yml` via `workflow_run`). Throttle: stale runs skip when `main` advanced.
 
-**Pre-UAT E2E** (`pre-uat-e2e.yml`) is **workflow_dispatch only** (ops replay — does not block merges).
-
-**Promote UAT** (`promote-uat.yml`) runs via **`workflow_dispatch`** after agent E2E green.
-Creates `uat-*` tag → **Deploy UAT** (`deploy-uat.yml`) via `workflow_run` (tag push from
-`GITHUB_TOKEN` does not chain workflows) or manual `uat-*` tag push.
+Pre-UAT does **not** block merge — it runs post-merge only. Manual replay:
+`workflow_dispatch` on `pre-uat-e2e.yml` or `promote-uat.yml`; ops localhost replay:
+`scripts/agent-uat-babysit.sh` (see [e2e/uat-agent-babysit.md](./e2e/uat-agent-babysit.md)).
 
 | Stage / job | Blocking? | Purpose |
 |-------------|-----------|---------|
-| Agent E2E + promote dispatch | **Yes** (gates tag) | Full localhost Playwright on merge commit via UAT subagent |
-| Pre-UAT E2E (`pre-uat-e2e.yml`) | **No** (ops replay) | Manual `workflow_dispatch` only |
-| Promote UAT (`promote-uat.yml`) | **Yes** (implicit) | Create `uat-*` tag after E2E green |
+| Pre-UAT E2E (`pre-uat-e2e.yml`) | **No** (post-merge async) | Full localhost Playwright on `origin/main` HEAD |
+| Promote UAT (`promote-uat.yml`) | **Yes** (implicit) | Create `uat-*` tag after green Pre-UAT at HEAD |
 | `Build Flutter web` (`build-web`) | **Yes** | Web build + artifact for UAT deploy |
 | `Build and deploy to UAT` (`deploy`) | **Yes** | FTP/SSH deploy |
 | `UAT post-deploy smoke` (`smoke`) | **Yes** | HTTP health on live UAT (`scripts/uat-post-deploy-smoke.sh`) |

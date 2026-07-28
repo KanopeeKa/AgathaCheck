@@ -1,9 +1,15 @@
 name: Promote UAT (tag on merge to main)
 
-# Agent or human dispatches after localhost E2E green on the target commit.
-# deploy-uat.yml chains via workflow_run (GITHUB_TOKEN tag push does not fire tag workflows).
-# See docs/e2e/uat-agent-babysit.md and docs/promotion-contract.md
+# Pre-UAT E2E green → uat-YYMMDD-PR# tag → deploy-uat.yml (workflow_run).
+# Manual replay: workflow_dispatch with commit_sha + pr_number.
+# Throttle: tag only when origin/main HEAD matches the green E2E commit.
+# See docs/promotion-contract.md and docs/e2e/uat-deploy-tiers.md
 on:
+  workflow_run:
+    workflows:
+      - 'Pre-UAT E2E'
+    types: [completed]
+    branches: [main]
   workflow_dispatch:
     inputs:
       commit_sha:
@@ -24,8 +30,79 @@ permissions:
   actions: read
 
 jobs:
+  resolve-pr:
+    name: Resolve merge PR
+    if: >-
+      github.event_name == 'workflow_run' &&
+      github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      commit_sha: ${{ steps.commit.outputs.commit_sha }}
+      pr_number: ${{ steps.resolve.outputs.pr_number }}
+      promotion_status: ${{ steps.guard.outputs.promotion_status }}
+      promotion_block_reason: ${{ steps.guard.outputs.promotion_block_reason }}
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          sparse-checkout: |
+            scripts/ci/resolve-merge-pr.sh
+            scripts/ci/resolve-promote-commit-sha.sh
+            scripts/ci/append-summary.sh
+          sparse-checkout-cone-mode: false
+
+      - name: Begin job timing
+        run: echo "JOB_START_EPOCH=$(date +%s)" >> "$GITHUB_ENV"
+
+      - name: Resolve promote commit (Pre-UAT tested SHA)
+        id: commit
+        env:
+          PRE_UAT_RUN_ID: ${{ github.event.workflow_run.id }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: bash scripts/ci/resolve-promote-commit-sha.sh
+
+      - name: Resolve associated pull request
+        id: resolve
+        env:
+          COMMIT_SHA: ${{ steps.commit.outputs.commit_sha }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: bash scripts/ci/resolve-merge-pr.sh
+
+      - name: Guard against stale main HEAD (latest-green throttle)
+        id: guard
+        env:
+          TESTED_SHA: ${{ steps.commit.outputs.commit_sha }}
+        run: |
+          git fetch origin main --depth=1
+          current="$(git rev-parse origin/main)"
+          if [[ "$current" != "$TESTED_SHA" ]]; then
+            echo "::notice::Skipping tag — main is ${current:0:7}, Pre-UAT tested ${TESTED_SHA:0:7}."
+            echo "promotion_status=blocked" >> "$GITHUB_OUTPUT"
+            echo "promotion_block_reason=stale_pre_uat_head" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          echo "promotion_status=${{ steps.resolve.outputs.promotion_status }}" >> "$GITHUB_OUTPUT"
+          echo "promotion_block_reason=${{ steps.resolve.outputs.promotion_block_reason }}" >> "$GITHUB_OUTPUT"
+
+      - name: Write resolve summary
+        if: always()
+        run: |
+          end=$(date +%s)
+          start="${JOB_START_EPOCH:-$end}"
+          dur=$((end - start))
+          bash scripts/ci/append-summary.sh "Promote UAT — resolve PR" \
+            "workflow=promote-uat" \
+            "job=resolve-pr" \
+            "commit_sha=${{ steps.commit.outputs.commit_sha }}" \
+            "pr_number=${{ steps.resolve.outputs.pr_number || 'n/a' }}" \
+            "promotion_status=${{ steps.guard.outputs.promotion_status || 'blocked' }}" \
+            "promotion_block_reason=${{ steps.guard.outputs.promotion_block_reason || 'n/a' }}" \
+            "run_id=${{ github.run_id }}" \
+            "duration_sec=${dur}"
+
   validate-inputs:
     name: Validate promote inputs
+    if: github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     timeout-minutes: 5
     outputs:
@@ -92,8 +169,12 @@ jobs:
 
   promote-tag:
     name: Create UAT tag
-    needs: validate-inputs
-    if: needs.validate-inputs.outputs.promotion_status == 'ok'
+    needs: [resolve-pr, validate-inputs]
+    if: |
+      always() && (
+        (needs.resolve-pr.result == 'success' && needs.resolve-pr.outputs.promotion_status == 'ok') ||
+        (needs.validate-inputs.result == 'success' && needs.validate-inputs.outputs.promotion_status == 'ok')
+      )
     runs-on: ubuntu-latest
     timeout-minutes: 10
     permissions:
@@ -102,10 +183,13 @@ jobs:
       uat_tag: ${{ steps.promote.outputs.uat_tag }}
       promotion_status: ${{ steps.promote.outputs.promotion_status }}
       already_promoted: ${{ steps.promote.outputs.already_promoted }}
+    env:
+      COMMIT_SHA: ${{ needs.resolve-pr.outputs.commit_sha || needs.validate-inputs.outputs.commit_sha }}
+      PR_NUMBER: ${{ needs.resolve-pr.outputs.pr_number || needs.validate-inputs.outputs.pr_number }}
     steps:
       - uses: actions/checkout@v5
         with:
-          ref: ${{ needs.validate-inputs.outputs.commit_sha }}
+          ref: ${{ env.COMMIT_SHA }}
           fetch-depth: 1
 
       - name: Begin job timing
@@ -114,19 +198,15 @@ jobs:
       - name: Create or verify UAT tag
         id: promote
         env:
-          PR_NUMBER: ${{ needs.validate-inputs.outputs.pr_number }}
-          COMMIT_SHA: ${{ needs.validate-inputs.outputs.commit_sha }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: bash scripts/ci/promote-uat-tag.sh
 
       - name: Write promotion manifest
         env:
-          COMMIT_SHA: ${{ needs.validate-inputs.outputs.commit_sha }}
-          PR_NUMBER: ${{ needs.validate-inputs.outputs.pr_number }}
           UAT_TAG: ${{ steps.promote.outputs.uat_tag }}
           PROMOTION_STATUS: ${{ steps.promote.outputs.promotion_status }}
           PROMOTE_RUN_ID: ${{ github.run_id }}
-          ARTIFACT_NAME: web-build-${{ needs.validate-inputs.outputs.commit_sha }}
+          ARTIFACT_NAME: web-build-${{ env.COMMIT_SHA }}
         run: bash scripts/ci/write-promotion-manifest.sh promotion-manifest.json
 
       - name: Upload promotion manifest
@@ -145,8 +225,8 @@ jobs:
           bash scripts/ci/append-summary.sh "Promote UAT — tag" \
             "workflow=promote-uat" \
             "job=promote-tag" \
-            "commit_sha=${{ needs.validate-inputs.outputs.commit_sha }}" \
-            "pr_number=${{ needs.validate-inputs.outputs.pr_number }}" \
+            "commit_sha=${{ env.COMMIT_SHA }}" \
+            "pr_number=${{ env.PR_NUMBER }}" \
             "uat_tag=${{ steps.promote.outputs.uat_tag || 'n/a' }}" \
             "promotion_status=${{ steps.promote.outputs.promotion_status || 'failed' }}" \
             "already_promoted=${{ steps.promote.outputs.already_promoted || 'false' }}" \

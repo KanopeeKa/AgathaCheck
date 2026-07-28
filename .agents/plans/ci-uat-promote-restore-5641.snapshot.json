@@ -1,0 +1,78 @@
+{
+  "schema_version": 1,
+  "plan_id": "ci-uat-promote-restore-5641",
+  "approved_at": "2026-07-28T14:40:00Z",
+  "approved_by": "user-chat-execute-plan-standing-grant",
+  "approved_until": "2026-07-30T14:40:00Z",
+  "autonomy": "active",
+  "default_merge_mode": "auto",
+  "base_branch": "main",
+  "control_issue": 506,
+  "artifact_branch_policy": "phase-branch",
+  "phases": [
+    {
+      "id": "1",
+      "title": "Workflow restore",
+      "branch": "cursor/ci-uat-promote-restore-5641",
+      "allowed_paths": [
+        ".github/workflows/pre-uat-e2e.yml",
+        ".github/workflows/promote-uat.yml",
+        ".github/workflows/uat-coordinator-dispatch.yml",
+        ".github/workflows/uat-queue-health.yml",
+        ".agents/plans/ci-uat-promote-restore-5641.*"
+      ],
+      "forbidden_paths": [],
+      "allowed_exceptions": [
+        "docs",
+        "tests",
+        "governance-allowlist"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_mode": "auto",
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "in_progress",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_head_sha": "613e2fd7",
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/507"
+    },
+    {
+      "id": "2",
+      "title": "Docs and skills sync",
+      "branch": "cursor/ci-uat-promote-restore-5641",
+      "allowed_paths": [
+        "docs/**",
+        "e2e/README.md",
+        "README.md",
+        ".cursor/skills/babysit-plus/SKILL.md",
+        ".cursor/skills/execute-plan/SKILL.md",
+        ".cursor/skills/uat-coordinator/SKILL.md",
+        ".cursor/commands/babysit.md",
+        "docs/agent-efficiency/autonomous-pr-policy.md",
+        ".agents/memory/**",
+        "scripts/agent-uat-babysit.sh",
+        "scripts/ci/trigger-promote-uat.sh",
+        ".agents/plans/ci-uat-promote-restore-5641.*"
+      ],
+      "forbidden_paths": [],
+      "allowed_exceptions": [
+        "docs",
+        "tests",
+        "governance-allowlist"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_mode": "auto",
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": []
+    }
+  ],
+  "content_hash": "sha256:71f8cae1cdfd77f271f59206a25b09797f9e28672ac8bc3503ed5c519ed05312"
+}

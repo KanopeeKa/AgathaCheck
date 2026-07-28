@@ -1,14 +1,17 @@
 ---
 name: uat-coordinator
 description: >-
-  DEPRECATED (Jul 2026) — replaced by per-merge UAT subagent (docs/e2e/uat-agent-babysit.md).
-  Manual recovery only via uat-coordinator-dispatch workflow_dispatch.
+  REMOVED (Jul 2026) — UAT coordinator dispatch and queue health workflows deleted.
+  CI owns promotion (pre-uat-e2e → promote-uat → deploy-uat). Manual recovery only.
 ---
 
-# UAT coordinator (deprecated)
+# UAT coordinator (removed)
 
-**Replaced by:** [uat-agent-babysit.md](../../../docs/e2e/uat-agent-babysit.md) and `scripts/agent-uat-babysit.sh`.
+**Removed:** `uat-coordinator-dispatch.yml`, `uat-queue-health.yml`, queue ledger promote hold.
 
-Do not use for new work. For legacy manual recovery, see [uat-promote-manual.md](../../../docs/e2e/uat-promote-manual.md).
+**Current path:** [uat-deploy-tiers.md](../../../docs/e2e/uat-deploy-tiers.md) — merge to `main`
+triggers Pre-UAT E2E; green at HEAD auto-promotes.
+
+**Manual recovery:** [uat-promote-manual.md](../../../docs/e2e/uat-promote-manual.md) · ops localhost replay via `scripts/agent-uat-babysit.sh`.
 
 Historical plan: `docs/agent-efficiency/uat-coordinator-plan.md` (archived).
