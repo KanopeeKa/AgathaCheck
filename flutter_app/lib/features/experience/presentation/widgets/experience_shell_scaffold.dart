@@ -106,11 +106,16 @@ class ExperienceShellScaffold extends ConsumerWidget {
                         child: const Icon(Icons.notifications_outlined),
                       )
                     : const Icon(Icons.notifications_outlined);
-                return IconButton(
-                  key: const Key('experience_notification_bell'),
-                  icon: bellIcon,
-                  tooltip: bellTooltip,
-                  onPressed: () => Scaffold.of(ctx).openEndDrawer(),
+                return Semantics(
+                  button: true,
+                  label: bellTooltip,
+                  child: ExcludeSemantics(
+                    child: IconButton(
+                      key: const Key('experience_notification_bell'),
+                      icon: bellIcon,
+                      onPressed: () => Scaffold.of(ctx).openEndDrawer(),
+                    ),
+                  ),
                 );
               },
             ),

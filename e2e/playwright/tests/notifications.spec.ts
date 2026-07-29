@@ -22,6 +22,7 @@ import {
   type TestNotification,
 } from '../support/api';
 import { checkA11y } from '../support/axe';
+import { refreshFlutterAccessibility } from '../support/flutter';
 import { NotificationsPage } from '../pages/notifications.page';
 import { PetListPage } from '../pages/pet-list.page';
 
@@ -43,6 +44,7 @@ test.describe('Notifications', () => {
 
     await notifications.expectEmptyState();
 
+    await refreshFlutterAccessibility(page);
     await checkA11y(page, 'notifications empty state');
   });
 
