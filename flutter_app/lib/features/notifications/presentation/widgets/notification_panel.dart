@@ -218,7 +218,9 @@ class _FilterChip extends StatelessWidget {
           color: selected ? color.withAlpha(40) : Colors.transparent,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(8),
-            side: selected ? BorderSide(color: color, width: 1.5) : BorderSide.none,
+            side: selected
+                ? BorderSide(color: color, width: 1.5)
+                : BorderSide.none,
           ),
           child: InkWell(
             onTap: onTap,
