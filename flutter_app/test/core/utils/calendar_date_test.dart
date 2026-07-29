@@ -44,10 +44,7 @@ void main() {
 
   group('formatCalendarDateDisplay', () {
     test('formats as dd/MM/yyyy', () {
-      expect(
-        formatCalendarDateDisplay(DateTime(2023, 12, 23)),
-        '23/12/2023',
-      );
+      expect(formatCalendarDateDisplay(DateTime(2023, 12, 23)), '23/12/2023');
     });
   });
 
