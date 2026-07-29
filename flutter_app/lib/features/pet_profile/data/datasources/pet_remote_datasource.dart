@@ -73,7 +73,7 @@ class PetRemoteDataSourceImpl implements PetRemoteDataSource {
     final response = await _client.post(
       Uri.parse('$baseUrl/api/pets'),
       headers: _headers(token),
-      body: json.encode(pet.toJson()),
+      body: json.encode(pet.toJson(includeWeightEntryDate: true)),
     );
     if (response.statusCode >= 400) {
       throw PetRemoteException(
@@ -91,7 +91,7 @@ class PetRemoteDataSourceImpl implements PetRemoteDataSource {
     final response = await _client.put(
       Uri.parse('$baseUrl/api/pets/${pet.id}'),
       headers: _headers(token),
-      body: json.encode(pet.toJson()),
+      body: json.encode(pet.toJson(includeWeightEntryDate: true)),
     );
     if (response.statusCode >= 400) {
       throw PetRemoteException(

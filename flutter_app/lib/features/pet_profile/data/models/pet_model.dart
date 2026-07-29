@@ -130,7 +130,7 @@ class PetModel {
   final String? guardianName;
   final DateTime? createdAt;
 
-  Map<String, dynamic> toJson() {
+  Map<String, dynamic> toJson({bool includeWeightEntryDate = false}) {
     return {
       'id': id,
       'name': name,
@@ -151,6 +151,10 @@ class PetModel {
       'passedAway': passedAway,
       'organization_id': organizationId,
       'organization_name': organizationName,
+      if (includeWeightEntryDate && weight != null)
+        'weightEntryDate': toCalendarDateString(
+          calendarDateOnly(DateTime.now()),
+        ),
     };
   }
 

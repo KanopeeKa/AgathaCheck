@@ -4,6 +4,7 @@ import {
   refreshPetWeightCache,
   createWeightEntryAndSyncPet,
   maybeCreateWeightEntryFromPetPayload,
+  resolveWeightEntryDateFromBody,
 } from '../../lib/petWeightSync.js';
 
 describe('petWeightSync', () => {
@@ -71,6 +72,25 @@ describe('petWeightSync', () => {
     });
   });
 
+  describe('resolveWeightEntryDateFromBody', () => {
+    it('uses weightEntryDate from the body', () => {
+      expect(resolveWeightEntryDateFromBody({ weightEntryDate: '2026-07-29' })).toBe(
+        '2026-07-29',
+      );
+    });
+
+    it('accepts snake_case weight_entry_date', () => {
+      expect(resolveWeightEntryDateFromBody({ weight_entry_date: '2026-07-28' })).toBe(
+        '2026-07-28',
+      );
+    });
+
+    it('falls back to today when absent', () => {
+      const result = resolveWeightEntryDateFromBody({});
+      expect(result).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+    });
+  });
+
   describe('maybeCreateWeightEntryFromPetPayload', () => {
     it('skips when weight is null', async () => {
       const pool = { query: jest.fn() };
@@ -95,9 +115,11 @@ describe('petWeightSync', () => {
         petId: 'pet-1',
         userId: 'user-1',
         weight: 12,
+        date: '2026-07-29',
       });
       expect(pool.query).toHaveBeenCalledTimes(3);
       expect(pool.query.mock.calls[1][0]).toContain('INSERT INTO weight_entries');
+      expect(pool.query.mock.calls[1][1][5]).toBe('2026-07-29');
     });
 
     it('does not create an entry when weight matches latest', async () => {

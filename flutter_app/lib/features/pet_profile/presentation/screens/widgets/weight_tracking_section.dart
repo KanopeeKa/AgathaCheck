@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
 import '../../../../../l10n/app_localizations.dart';
+import '../../../../weight_tracking/domain/weight_entry_sort.dart';
 import '../../../../weight_tracking/presentation/providers/weight_providers.dart';
 import '../../controllers/weight_tracking_controller.dart';
 import 'add_weight_entry_sheet.dart';
@@ -60,7 +61,8 @@ class WeightTrackingContent extends ConsumerWidget {
             ),
           ),
           data: (entries) {
-            if (entries.isEmpty) {
+            final sortedEntries = sortWeightEntriesNewestFirst(entries);
+            if (sortedEntries.isEmpty) {
               return _EmptyWeightState(
                 onAddEntry: onAddEntry,
                 addEntryLabel: l.addWeightEntry,
@@ -70,23 +72,23 @@ class WeightTrackingContent extends ConsumerWidget {
             return Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                if (entries.length >= 2)
+                if (sortedEntries.length >= 2)
                   Padding(
                     padding: const EdgeInsets.fromLTRB(16, 8, 24, 8),
                     child: SizedBox(
                       height: 200,
-                      child: WeightChart(entries: entries, unit: unit),
+                      child: WeightChart(entries: sortedEntries, unit: unit),
                     ),
                   ),
-                if (entries.length >= 2) const SizedBox(height: 12),
+                if (sortedEntries.length >= 2) const SizedBox(height: 12),
                 ListView.separated(
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
                   padding: const EdgeInsets.symmetric(horizontal: 16),
-                  itemCount: entries.length,
+                  itemCount: sortedEntries.length,
                   separatorBuilder: (_, __) => const Divider(height: 1),
                   itemBuilder: (context, index) {
-                    final entry = entries[entries.length - 1 - index];
+                    final entry = sortedEntries[index];
                     final displayWeight =
                         '${convertWeight(entry.weight, unit).toStringAsFixed(1)} $unitLabel';
                     final dateLabel = DateFormat.yMMMd().format(entry.date);

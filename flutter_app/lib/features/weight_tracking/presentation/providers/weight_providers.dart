@@ -6,6 +6,7 @@ import 'package:pet_profile_app/core/providers/api_base_url_provider.dart';
 import 'package:pet_profile_app/core/providers/pet_weight_invalidation.dart';
 import 'package:pet_profile_app/features/auth/presentation/providers/auth_providers.dart';
 import '../../data/repositories/weight_repository_impl.dart';
+import '../../domain/weight_entry_sort.dart';
 import '../../domain/entities/weight_entry.dart';
 import '../../domain/repositories/weight_repository.dart';
 
@@ -79,7 +80,7 @@ final weightEntriesProvider = FutureProvider.family<List<WeightEntry>, String>((
   final auth = ref.watch(authProvider);
   final token = auth.accessToken;
   if (token == null) return [];
-  return repo.getEntries(petId, token);
+  return sortWeightEntriesNewestFirst(await repo.getEntries(petId, token));
 });
 
 final latestWeightProvider = FutureProvider.family<WeightEntry?, String>((
@@ -101,7 +102,7 @@ class WeightEntriesNotifier
     final auth = ref.read(authProvider);
     final token = auth.accessToken;
     if (token == null) return [];
-    return repo.getEntries(arg, token);
+    return sortWeightEntriesNewestFirst(await repo.getEntries(arg, token));
   }
 
   String? get _token => ref.read(authProvider).accessToken;
@@ -112,7 +113,9 @@ class WeightEntriesNotifier
     if (token == null) return;
     await repo.createEntry(entry, token);
     invalidatePetWeightData(ref, arg);
-    state = AsyncValue.data(await repo.getEntries(arg, token));
+    state = AsyncValue.data(
+      sortWeightEntriesNewestFirst(await repo.getEntries(arg, token)),
+    );
   }
 
   Future<void> deleteEntry(String id) async {
@@ -121,7 +124,9 @@ class WeightEntriesNotifier
     if (token == null) return;
     await repo.deleteEntry(id, token);
     invalidatePetWeightData(ref, arg);
-    state = AsyncValue.data(await repo.getEntries(arg, token));
+    state = AsyncValue.data(
+      sortWeightEntriesNewestFirst(await repo.getEntries(arg, token)),
+    );
   }
 
   Future<void> refresh() async {
@@ -129,7 +134,9 @@ class WeightEntriesNotifier
     final token = _token;
     if (token == null) return;
     ref.invalidate(latestWeightProvider(arg));
-    state = AsyncValue.data(await repo.getEntries(arg, token));
+    state = AsyncValue.data(
+      sortWeightEntriesNewestFirst(await repo.getEntries(arg, token)),
+    );
   }
 }
 

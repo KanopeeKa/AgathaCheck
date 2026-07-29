@@ -16,7 +16,7 @@ Future<void> showAddWeightEntrySheet({
   final unitLabel = weightUnitLabel(unit);
   final weightController = TextEditingController();
   final notesController = TextEditingController();
-  var selectedDate = DateTime.now();
+  var selectedDate = calendarDateOnly(DateTime.now());
   String? weightError;
 
   return showModalBottomSheet(

@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 
-import { todayCalendarIso } from './calendarDate.js';
+import { normalizeCalendarDateInput, todayCalendarIso } from './calendarDate.js';
 
 const LATEST_WEIGHT_ENTRY_SQL = `
   SELECT id, weight, unit, date, notes, created_at
@@ -82,13 +82,29 @@ export async function createWeightEntryAndSyncPet(db, {
 }
 
 /**
+ * Resolves the calendar date for a weight entry from a pet write payload.
+ *
+ * @param {object|null|undefined} body
+ * @returns {string}
+ */
+export function resolveWeightEntryDateFromBody(body) {
+  const fromBody = body?.weightEntryDate ?? body?.weight_entry_date;
+  return normalizeCalendarDateInput(fromBody) || todayCalendarIso();
+}
+
+/**
  * When a pet create/update payload includes weight, append a history row when the
  * value changed relative to the latest entry (pet edit / initial weight).
  *
  * @param {import('pg').Pool | import('pg').PoolClient} db
- * @param {{ petId: string, userId: string, weight: number|null|undefined }} params
+ * @param {{ petId: string, userId: string, weight: number|null|undefined, date?: string }} params
  */
-export async function maybeCreateWeightEntryFromPetPayload(db, { petId, userId, weight }) {
+export async function maybeCreateWeightEntryFromPetPayload(db, {
+  petId,
+  userId,
+  weight,
+  date,
+}) {
   if (weight == null || weight === '') return;
   const weightVal = typeof weight === 'number' ? weight : parseFloat(weight);
   if (Number.isNaN(weightVal)) return;
@@ -100,7 +116,7 @@ export async function maybeCreateWeightEntryFromPetPayload(db, { petId, userId, 
     petId,
     userId,
     weight: weightVal,
-    date: todayCalendarIso(),
+    date: date || todayCalendarIso(),
     notes: '',
     unit: 'kg',
   });

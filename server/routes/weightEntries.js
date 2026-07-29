@@ -54,7 +54,7 @@ export default function weightEntriesRoutes(pool) {
           `SELECT we.*, p.name as pet_name FROM weight_entries we
            JOIN pets p ON we.pet_id = p.id
            WHERE we.pet_id = $1 AND ${accessiblePetSql('p', '$2')}
-           ORDER BY we.date DESC`,
+           ORDER BY we.date DESC, we.created_at DESC`,
           [petId, userId]
         );
       } else {
@@ -62,7 +62,7 @@ export default function weightEntriesRoutes(pool) {
           `SELECT we.*, p.name as pet_name FROM weight_entries we
            JOIN pets p ON we.pet_id = p.id
            WHERE ${accessiblePetSql('p', '$1')}
-           ORDER BY we.date DESC`,
+           ORDER BY we.date DESC, we.created_at DESC`,
           [userId]
         );
       }
@@ -87,7 +87,7 @@ export default function weightEntriesRoutes(pool) {
         `SELECT we.*, p.name as pet_name FROM weight_entries we
          JOIN pets p ON we.pet_id = p.id
          WHERE we.pet_id = $1 AND ${accessiblePetSql('p', '$2')}
-         ORDER BY we.date DESC LIMIT 1`,
+         ORDER BY we.date DESC, we.created_at DESC LIMIT 1`,
         [petId, userId]
       );
       if (result.rows.length === 0) return res.status(404).json({ error: 'No weight entries found' });

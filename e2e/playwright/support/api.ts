@@ -255,7 +255,13 @@ export async function updatePetProfile(
   baseURL: string,
   token: string,
   petId: string,
-  data: { name: string; species: string; weight?: number | null; breed?: string },
+  data: {
+    name: string;
+    species: string;
+    weight?: number | null;
+    breed?: string;
+    weightEntryDate?: string;
+  },
 ): Promise<TestPet & { weight?: number | null }> {
   const res = await apiFetch(apiUrl(`/pets/${petId}`, baseURL), {
     method: 'PUT',

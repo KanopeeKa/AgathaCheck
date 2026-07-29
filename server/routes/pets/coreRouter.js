@@ -5,6 +5,7 @@ import { normalizeCalendarDateInput } from '../../lib/calendarDate.js';
 import {
   maybeCreateWeightEntryFromPetPayload,
   refreshPetWeightCache,
+  resolveWeightEntryDateFromBody,
 } from '../../lib/petWeightSync.js';
 import { logAuditEventSafe } from '../../lib/audit.js';
 import {
@@ -188,6 +189,7 @@ export function registerCoreRoutes(router, pool) {
         petId: pet.id,
         userId,
         weight,
+        date: resolveWeightEntryDateFromBody(req.body),
       });
       await refreshPetWeightCache(pool, pet.id);
       const refreshed = await pool.query('SELECT * FROM pets WHERE id = $1', [pet.id]);
@@ -254,6 +256,7 @@ export function registerCoreRoutes(router, pool) {
         petId: id,
         userId,
         weight,
+        date: resolveWeightEntryDateFromBody(req.body),
       });
       await refreshPetWeightCache(pool, id);
       const refreshed = await pool.query('SELECT * FROM pets WHERE id = $1', [id]);
