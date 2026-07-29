@@ -110,8 +110,8 @@ class _PanelHeader extends StatelessWidget {
               ),
             ),
           ),
-          IconButton(
-            icon: const Icon(Icons.settings_outlined),
+          _headerIconButton(
+            icon: Icons.settings_outlined,
             tooltip: l.notificationSettingsTooltip,
             onPressed: () {
               final router = GoRouter.of(context);
@@ -125,8 +125,8 @@ class _PanelHeader extends StatelessWidget {
             label: Text(l.markAllRead),
             onPressed: onMarkAllRead,
           ),
-          IconButton(
-            icon: const Icon(Icons.close),
+          _headerIconButton(
+            icon: Icons.close,
             tooltip: l.close,
             onPressed: () => Navigator.of(context).pop(),
           ),
@@ -134,6 +134,20 @@ class _PanelHeader extends StatelessWidget {
       ),
     );
   }
+}
+
+Widget _headerIconButton({
+  required IconData icon,
+  required String tooltip,
+  required VoidCallback onPressed,
+}) {
+  return Semantics(
+    button: true,
+    label: tooltip,
+    child: ExcludeSemantics(
+      child: IconButton(icon: Icon(icon), onPressed: onPressed),
+    ),
+  );
 }
 
 class _KindFilterChips extends StatelessWidget {
@@ -195,17 +209,35 @@ class _FilterChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // ChoiceChip avoids FilterChip's checkbox aria-owns tree on Flutter web.
-    return ChoiceChip(
-      label: Text(label),
+    return Semantics(
+      button: true,
       selected: selected,
-      onSelected: (_) => onTap(),
-      selectedColor: color.withAlpha(40),
-      labelStyle: TextStyle(
-        color: selected ? color : null,
-        fontWeight: selected ? FontWeight.w600 : FontWeight.normal,
+      label: label,
+      child: ExcludeSemantics(
+        child: Material(
+          color: selected ? color.withAlpha(40) : Colors.transparent,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(8),
+            side: selected
+                ? BorderSide(color: color, width: 1.5)
+                : BorderSide.none,
+          ),
+          child: InkWell(
+            onTap: onTap,
+            borderRadius: BorderRadius.circular(8),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              child: Text(
+                label,
+                style: TextStyle(
+                  color: selected ? color : null,
+                  fontWeight: selected ? FontWeight.w600 : FontWeight.normal,
+                ),
+              ),
+            ),
+          ),
+        ),
       ),
-      side: selected ? BorderSide(color: color, width: 1.5) : null,
     );
   }
 }
