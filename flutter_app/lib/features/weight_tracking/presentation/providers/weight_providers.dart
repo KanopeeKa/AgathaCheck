@@ -80,9 +80,7 @@ final weightEntriesProvider = FutureProvider.family<List<WeightEntry>, String>((
   final auth = ref.watch(authProvider);
   final token = auth.accessToken;
   if (token == null) return [];
-  return sortWeightEntriesNewestFirst(
-    await repo.getEntries(petId, token),
-  );
+  return sortWeightEntriesNewestFirst(await repo.getEntries(petId, token));
 });
 
 final latestWeightProvider = FutureProvider.family<WeightEntry?, String>((
