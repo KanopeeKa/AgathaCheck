@@ -6,6 +6,7 @@ import '../../../../../core/theme/experience_colors.dart';
 import '../../../../../core/utils/constants.dart';
 import '../../../../../l10n/app_localizations.dart';
 import '../../../../vet/presentation/providers/vet_providers.dart';
+import '../../../../weight_tracking/presentation/providers/weight_providers.dart';
 import '../../../domain/entities/pet.dart';
 import '../../../domain/services/pet_detail_actions.dart';
 import '../../providers/pet_providers.dart';
