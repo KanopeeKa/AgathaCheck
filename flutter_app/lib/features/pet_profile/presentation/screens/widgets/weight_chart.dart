@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 import '../../../../weight_tracking/domain/entities/weight_entry.dart';
+import '../../../../weight_tracking/domain/weight_entry_sort.dart';
 import '../../../../weight_tracking/presentation/providers/weight_providers.dart';
 
 /// A line chart visualising a pet's weight history over time.
@@ -25,7 +26,7 @@ class WeightChart extends StatelessWidget {
     final colorScheme = theme.colorScheme;
     final unitLabel = weightUnitLabel(unit);
 
-    final sorted = [...entries]..sort((a, b) => a.date.compareTo(b.date));
+    final sorted = sortWeightEntriesChronological(entries);
     final spots = <FlSpot>[
       for (var i = 0; i < sorted.length; i++)
         FlSpot(i.toDouble(), convertWeight(sorted[i].weight, unit)),

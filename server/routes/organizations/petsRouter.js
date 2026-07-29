@@ -3,6 +3,7 @@ import { dateToIsoDate, normalizeCalendarDateInput } from '../../lib/calendarDat
 import {
   maybeCreateWeightEntryFromPetPayload,
   refreshPetWeightCache,
+  resolveWeightEntryDateFromBody,
 } from '../../lib/petWeightSync.js';
 import { OPEN_PLACEMENT_STATUSES } from '../../lib/fosterPlacements.js';
 import { transferOrgPetToUser } from '../../lib/orgPetTransfer.js';
@@ -118,6 +119,7 @@ export function registerPetsRoutes(router, pool) {
           petId: id,
           userId,
           weight: data.weight,
+          date: resolveWeightEntryDateFromBody(data),
         });
         await refreshPetWeightCache(pool, id);
         const row = result.rows[0];

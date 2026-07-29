@@ -195,12 +195,25 @@ void main() {
       expect(json['organization_name'], 'Happy Paws');
     });
 
+    test('includes weightEntryDate when requested and weight is set', () {
+      final json = fullModel.toJson(includeWeightEntryDate: true);
+
+      expect(json['weightEntryDate'], matches(RegExp(r'^\d{4}-\d{2}-\d{2}$')));
+    });
+
+    test('omits weightEntryDate by default', () {
+      final json = fullModel.toJson();
+
+      expect(json.containsKey('weightEntryDate'), isFalse);
+    });
+
     test('null optional fields produce null in JSON', () {
       const model = PetModel(id: 'x', name: 'X', species: 'Cat');
       final json = model.toJson();
 
       expect(json['dateOfBirth'], isNull);
       expect(json['weight'], isNull);
+      expect(json['weightEntryDate'], isNull);
       expect(json['gender'], isNull);
       expect(json['neuteredDate'], isNull);
       expect(json['photoPath'], isNull);

@@ -237,9 +237,12 @@ describe('Pets API', () => {
           name: 'Fluffy',
           species: 'cat',
           weight: 5,
+          weightEntryDate: '2026-07-29',
         });
       expect(res.statusCode).toBe(200);
-      expect(queries.some((q) => q.sql.includes('INSERT INTO weight_entries'))).toBe(true);
+      const insert = queries.find((q) => q.sql.includes('INSERT INTO weight_entries'));
+      expect(insert).toBeTruthy();
+      expect(insert.params[5]).toBe('2026-07-29');
     });
 
     it('returns 404 when pet not found', async () => {

@@ -175,17 +175,20 @@ test.describe('Weight tracking', () => {
       date: '2025-04-01',
     });
 
+    const clientDate = new Date().toLocaleDateString('en-CA');
+
     const updated = await updatePetProfile(baseURL, testUser.accessToken, pet.id, {
       name: pet.name,
       species: 'Dog',
       weight: 25.0,
+      weightEntryDate: clientDate,
     });
     expect(updated.weight).toBeCloseTo(25.0, 1);
 
     const entries = await getWeightEntries(baseURL, testUser.accessToken, pet.id);
     const todayEntry = entries.find((entry) => entry.weight === 25 && entry.notes === '');
     expect(todayEntry).toBeTruthy();
-    expect(todayEntry?.date).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+    expect(todayEntry?.date).toBe(clientDate);
   });
 
   // ── Editing weight entries ────────────────────────────────────────────────
