@@ -1,8 +1,12 @@
 #!/usr/bin/env bash
 # Resolve the commit to promote after a green Pre-UAT E2E run.
 #
-# Auto path (workflow_run): PRE_UAT_RUN_ID — read test_sha from the Pre-UAT
-#   "Resolve test commit" job output (the SHA that run actually tested).
+# Auto path (workflow_run):
+#   1. Parse test_sha from Pre-UAT run logs (authoritative when runs queue)
+#   2. PRE_UAT_RUN_ID — fetch run head_sha via API
+#   3. PRE_UAT_HEAD_SHA — workflow_run trigger commit (last resort)
+# Job outputs are null cross-workflow on GitHub's jobs API.
+#
 # Fallback: origin/main HEAD when PRE_UAT_RUN_ID is unset (manual / legacy).
 #
 # Outputs to GITHUB_OUTPUT:
@@ -18,27 +22,86 @@ emit_output() {
   printf '%s=%s\n' "$key" "$value"
 }
 
+resolve_test_sha_from_pre_uat_logs() {
+  local run_id="$1"
+  local repo="${GITHUB_REPOSITORY:?}"
+  local sha=""
+
+  if ! command -v gh >/dev/null 2>&1; then
+    return 0
+  fi
+
+  local logs
+  logs="$(gh run view "$run_id" --repo "$repo" --log 2>/dev/null || true)"
+  if [[ -z "$logs" ]]; then
+    return 0
+  fi
+
+  sha="$(printf '%s\n' "$logs" | rg -m1 'Pre-UAT E2E passed for ([0-9a-f]{40})' -o -r '$1' 2>/dev/null || true)"
+  if [[ -z "$sha" ]]; then
+    sha="$(printf '%s\n' "$logs" | rg -m1 'Pre-UAT E2E will test origin/main at ([0-9a-f]{40})' -o -r '$1' 2>/dev/null || true)"
+  fi
+
+  if [[ -n "$sha" ]]; then
+    printf '%s' "$sha"
+  fi
+}
+
+commit_sha=""
+source=""
+
 if [[ -n "${PRE_UAT_RUN_ID:-}" ]]; then
   : "${GITHUB_TOKEN:?GITHUB_TOKEN required when PRE_UAT_RUN_ID is set}"
   repo="${GITHUB_REPOSITORY:?}"
   owner="${repo%%/*}"
   name="${repo##*/}"
 
-  test_sha="$(gh api "repos/${owner}/${name}/actions/runs/${PRE_UAT_RUN_ID}/jobs" \
-    --paginate \
-    --jq '.jobs[] | select(.name == "Resolve test commit") | .outputs.test_sha' \
-    | head -1)"
-
-  if [[ -z "$test_sha" ]]; then
-    echo "::error::Could not read test_sha from Pre-UAT run ${PRE_UAT_RUN_ID}" >&2
-    exit 1
+  log_test_sha="$(resolve_test_sha_from_pre_uat_logs "$PRE_UAT_RUN_ID")"
+  if [[ -n "$log_test_sha" ]]; then
+    commit_sha="$log_test_sha"
+    source="pre_uat_run_logs"
   fi
 
-  commit_sha="$test_sha"
+  if [[ -z "$commit_sha" ]]; then
+    run_json="$(gh api "repos/${owner}/${name}/actions/runs/${PRE_UAT_RUN_ID}")"
+    run_conclusion="$(printf '%s' "$run_json" | jq -r '.conclusion // empty')"
+    run_head_sha="$(printf '%s' "$run_json" | jq -r '.head_sha // empty')"
+
+    if [[ -n "$run_head_sha" ]]; then
+      if [[ -n "$run_conclusion" && "$run_conclusion" != "success" ]]; then
+        echo "::error::Pre-UAT run ${PRE_UAT_RUN_ID} conclusion is ${run_conclusion}" >&2
+        exit 1
+      fi
+      commit_sha="$run_head_sha"
+      source="pre_uat_run_api_head_sha"
+    fi
+  fi
+
+  if [[ -z "$commit_sha" && -n "${PRE_UAT_HEAD_SHA:-}" ]]; then
+    commit_sha="$PRE_UAT_HEAD_SHA"
+    source="workflow_run_head_sha"
+  fi
+
+  if [[ -z "$commit_sha" ]]; then
+    job_test_sha="$(gh api "repos/${owner}/${name}/actions/runs/${PRE_UAT_RUN_ID}/jobs" \
+      --paginate \
+      --jq '.jobs[] | select(.name == "Resolve test commit") | .outputs.test_sha // empty' \
+      | head -1)"
+    if [[ -n "$job_test_sha" ]]; then
+      commit_sha="$job_test_sha"
+      source="resolve_test_commit_job_output"
+    fi
+  fi
+
+  if [[ -z "$commit_sha" ]]; then
+    echo "::error::Could not resolve tested SHA from Pre-UAT run ${PRE_UAT_RUN_ID}" >&2
+    exit 1
+  fi
 else
   git fetch origin main --depth=1
   commit_sha="$(git rev-parse origin/main)"
+  source="origin_main_head"
 fi
 
 emit_output commit_sha "$commit_sha"
-echo "Promote target commit: ${commit_sha}"
+echo "Promote target commit: ${commit_sha} (source=${source})"
