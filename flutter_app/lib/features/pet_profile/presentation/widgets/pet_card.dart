@@ -20,9 +20,10 @@ void sortPetsByCreatedAt(List<Pet> pets) {
   });
 }
 
-/// Vertical dashboard tile: top ~2/3 photo, bottom ~1/3 name + species.
+/// Vertical dashboard tile: top ~2/3 photo, bottom ~1/3 pet name.
 ///
-/// Tile width fits [wrapColumnsFor] per row; height matches width (1:1 ratio).
+/// Tile width fits [wrapColumnsFor] per row (capped on wide screens); height
+/// matches width (1:1 ratio).
 class PetCard extends StatelessWidget {
   const PetCard({super.key, required this.pet, this.onTap});
 
@@ -39,10 +40,18 @@ class PetCard extends StatelessWidget {
     return 3;
   }
 
+  static double _maxTileSizeFor(double maxWidth) {
+    if (maxWidth >= 900) return 220;
+    if (maxWidth >= 600) return 200;
+    return double.infinity;
+  }
+
   /// Tile width for available [maxWidth], fitting [wrapColumnsFor] per row.
   static double tileWidthFor(double maxWidth) {
     final columns = wrapColumnsFor(maxWidth);
-    return (maxWidth - (columns - 1) * tileSpacing) / columns;
+    final computed = (maxWidth - (columns - 1) * tileSpacing) / columns;
+    final maxSize = _maxTileSizeFor(maxWidth);
+    return computed > maxSize ? maxSize : computed;
   }
 
   /// Tile height preserving the 1:1 aspect ratio ([tileWidthFor]).
@@ -73,7 +82,6 @@ class PetCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
     final l = AppLocalizations.of(context)!;
     final ownership = resolvePetOwnershipAccent(context, pet, l);
     final fosterAccent = fosterOwnershipAccentColor(context);
@@ -105,44 +113,16 @@ class PetCard extends StatelessWidget {
                         flex: 1,
                         child: Padding(
                           padding: const EdgeInsets.fromLTRB(8, 4, 8, 6),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Flexible(
-                                child: Text(
-                                  pet.name,
-                                  style: theme.textTheme.titleSmall?.copyWith(
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
+                          child: Align(
+                            alignment: Alignment.centerLeft,
+                            child: Text(
+                              pet.name,
+                              style: theme.textTheme.titleSmall?.copyWith(
+                                fontWeight: FontWeight.bold,
                               ),
-                              if (ownership.showsFosterLabel) ...[
-                                Flexible(
-                                  child: Text(
-                                    ownership.fosterLabel!,
-                                    style: theme.textTheme.labelSmall?.copyWith(
-                                      color: fosterAccent,
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                ),
-                              ],
-                              Flexible(
-                                child: Text(
-                                  _speciesLine(l, pet),
-                                  style: theme.textTheme.labelSmall?.copyWith(
-                                    color: colorScheme.onSurfaceVariant,
-                                  ),
-                                  maxLines: ownership.showsFosterLabel ? 1 : 2,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              ),
-                            ],
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
                           ),
                         ),
                       ),
@@ -163,12 +143,6 @@ class PetCard extends StatelessWidget {
       return 'Pet: ${pet.name}, ${pet.organizationName}, $species';
     }
     return 'Pet: ${pet.name}, $species';
-  }
-
-  String _speciesLine(AppLocalizations l, Pet pet) {
-    final species = _localizedSpecies(l, pet.species);
-    if (pet.breed.isNotEmpty) return '$species · ${pet.breed}';
-    return species;
   }
 
   Widget _buildImageArea(BuildContext context) {
