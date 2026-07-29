@@ -1,7 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../domain/entities/pet.dart';
 import '../../../vet/presentation/providers/vet_providers.dart';
-import '../../../weight_tracking/presentation/providers/weight_providers.dart';
 
 class PetProfileController {
   final WidgetRef ref;
@@ -19,9 +18,5 @@ class PetProfileController {
         : null;
   }
 
-  double? getDisplayWeight(Pet pet) {
-    final latestWeightAsync = ref.watch(latestWeightProvider(pet.id));
-    final latestWeight = latestWeightAsync.valueOrNull;
-    return latestWeight?.weight ?? pet.weight;
-  }
+  double? getDisplayWeight(Pet pet) => pet.weight;
 }

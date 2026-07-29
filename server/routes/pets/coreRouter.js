@@ -2,6 +2,10 @@ import { v4 as uuidv4 } from 'uuid';
 
 import { publicError } from '../../config/security.js';
 import { normalizeCalendarDateInput } from '../../lib/calendarDate.js';
+import {
+  maybeCreateWeightEntryFromPetPayload,
+  refreshPetWeightCache,
+} from '../../lib/petWeightSync.js';
 import { logAuditEventSafe } from '../../lib/audit.js';
 import {
   userCanAccessPet,
@@ -180,6 +184,14 @@ export function registerCoreRoutes(router, pool) {
          passedAway, organization_id || null]
       );
       const pet = result.rows[0];
+      await maybeCreateWeightEntryFromPetPayload(pool, {
+        petId: pet.id,
+        userId,
+        weight,
+      });
+      await refreshPetWeightCache(pool, pet.id);
+      const refreshed = await pool.query('SELECT * FROM pets WHERE id = $1', [pet.id]);
+      const syncedPet = refreshed.rows[0] || pet;
       logAuditEventSafe(pool, {
         actorUserId: userId,
         action: 'pet.created',
@@ -190,7 +202,7 @@ export function registerCoreRoutes(router, pool) {
         metadata: { species: pet.species },
         req,
       });
-      res.status(201).json(petRowToMap(pet));
+      res.status(201).json(petRowToMap(syncedPet));
     } catch (err) {
       res.status(500).json({ error: publicError(err, 'Error creating pet', `Error creating pet: ${err.message}`) });
     }
@@ -238,6 +250,14 @@ export function registerCoreRoutes(router, pool) {
         return res.status(404).json({ error: 'Pet not found' });
       }
       const pet = result.rows[0];
+      await maybeCreateWeightEntryFromPetPayload(pool, {
+        petId: id,
+        userId,
+        weight,
+      });
+      await refreshPetWeightCache(pool, id);
+      const refreshed = await pool.query('SELECT * FROM pets WHERE id = $1', [id]);
+      const syncedPet = refreshed.rows[0] || pet;
       logAuditEventSafe(pool, {
         actorUserId: userId,
         action: 'pet.updated',
@@ -247,7 +267,7 @@ export function registerCoreRoutes(router, pool) {
         orgId: pet.organization_id || null,
         req,
       });
-      res.json(petRowToMap(pet));
+      res.json(petRowToMap(syncedPet));
     } catch (err) {
       res.status(500).json({ error: publicError(err, 'Error updating pet', `Error updating pet: ${err.message}`) });
     }

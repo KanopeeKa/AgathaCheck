@@ -5,6 +5,7 @@
  * Scenario: Viewing weight entries as a list
  * Scenario: Viewing weight chart
  * Scenario: Viewing latest weight on pet profile
+ * Scenario: Editing pet weight from profile creates a weight entry for today
  * Scenario: Editing a weight entry
  * Scenario: Deleting a weight entry
  * Scenario: Selecting weight unit
@@ -16,6 +17,7 @@ import {
   createWeightEntry,
   getWeightEntries,
   getLatestWeightEntry,
+  updatePetProfile,
   updateWeightEntry,
   deleteWeightEntry,
   signupUser,
@@ -160,6 +162,30 @@ test.describe('Weight tracking', () => {
 
     const weightPage = new WeightTrackingPage(page);
     await weightPage.expectWeightEntryVisible(25.0);
+  });
+
+  test('editing pet weight via API creates a weight entry for today with no notes', async ({
+    testUser,
+  }) => {
+    const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
+    const pet = await createPet(baseURL, testUser.accessToken, 'Bella');
+
+    await createWeightEntry(baseURL, testUser.accessToken, pet.id, {
+      weight: 24.0,
+      date: '2025-04-01',
+    });
+
+    const updated = await updatePetProfile(baseURL, testUser.accessToken, pet.id, {
+      name: pet.name,
+      species: 'Dog',
+      weight: 25.0,
+    });
+    expect(updated.weight).toBeCloseTo(25.0, 1);
+
+    const entries = await getWeightEntries(baseURL, testUser.accessToken, pet.id);
+    const todayEntry = entries.find((entry) => entry.weight === 25 && entry.notes === '');
+    expect(todayEntry).toBeTruthy();
+    expect(todayEntry?.date).toMatch(/^\d{4}-\d{2}-\d{2}$/);
   });
 
   // ── Editing weight entries ────────────────────────────────────────────────

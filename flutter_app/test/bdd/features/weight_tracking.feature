@@ -37,6 +37,14 @@ Feature: Weight Tracking
     Then a line chart should be displayed showing weight over time
 
   @P2
+  Scenario: Editing pet weight from profile creates a weight entry for today
+    Given "Bella" has a weight entry of 24.0 kg on "2025-04-01"
+    When the user edits "Bella"'s weight to 25.0 kg from the pet edit screen
+    And the user saves the pet profile
+    Then "Bella" should have a weight entry of 25.0 kg for today with no notes
+    And "25.0 kg" should be displayed on the pet detail screen
+
+  @P2
   Scenario: Viewing latest weight on pet profile
     Given "Bella" has a latest weight entry of 25.0 kg
     When the user views the profile of "Bella"

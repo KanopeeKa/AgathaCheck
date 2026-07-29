@@ -6,6 +6,7 @@ import { createApiLimiter } from '../config/rateLimit.js';
 import { JWT_SECRET } from '../config/jwtSecret.js';
 import { publicError } from '../config/security.js';
 import { dateToIsoDate, normalizeCalendarDateInput, todayCalendarIso } from '../lib/calendarDate.js';
+import { refreshPetWeightCache } from '../lib/petWeightSync.js';
 import {
   accessiblePetSql,
   userCanManagePet,
@@ -113,6 +114,7 @@ export default function weightEntriesRoutes(pool) {
         'INSERT INTO weight_entries (id, pet_id, user_id, weight, unit, date, notes) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *',
         [id, petId, userId, weightVal, data.unit || 'kg', dateVal, data.notes || '']
       );
+      await refreshPetWeightCache(pool, petId);
       res.status(201).json(weightEntryToMap(result.rows[0]));
     } catch (err) {
       res.status(500).json({ error: publicError(err) });
@@ -135,7 +137,9 @@ export default function weightEntriesRoutes(pool) {
         [weightVal, data.unit || 'kg', dateVal, data.notes || '', req.params.id]
       );
       if (result.rows.length === 0) return res.status(404).json({ error: 'Not found' });
-      res.json(weightEntryToMap(result.rows[0]));
+      const row = result.rows[0];
+      await refreshPetWeightCache(pool, row.pet_id);
+      res.json(weightEntryToMap(row));
     } catch (err) {
       res.status(500).json({ error: publicError(err) });
     }
@@ -148,7 +152,15 @@ export default function weightEntriesRoutes(pool) {
       if (!(await userCanManageWeightEntry(pool, req.params.id, userId))) {
         return res.status(404).json({ error: 'Not found' });
       }
+      const existing = await pool.query(
+        'SELECT pet_id FROM weight_entries WHERE id = $1',
+        [req.params.id],
+      );
       await pool.query('DELETE FROM weight_entries WHERE id = $1', [req.params.id]);
+      const petId = existing.rows[0]?.pet_id;
+      if (petId) {
+        await refreshPetWeightCache(pool, petId);
+      }
       res.json({ deleted: true });
     } catch (err) {
       res.status(500).json({ error: publicError(err) });

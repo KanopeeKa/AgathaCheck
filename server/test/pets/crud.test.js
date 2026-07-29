@@ -54,6 +54,10 @@ describe('Pets API', () => {
       const returnedRow = makePetRow();
       const app = createApp(createMockPool(async (sql) => {
         if (sql.includes('organization_users')) return { rows: [{ '?column?': 1 }] };
+        if (sql.includes('FROM weight_entries')) return { rows: [] };
+        if (sql.includes('INSERT INTO weight_entries')) return { rows: [] };
+        if (sql.includes('UPDATE pets SET weight = (')) return { rows: [] };
+        if (sql.includes('SELECT * FROM pets WHERE id = $1')) return { rows: [returnedRow] };
         if (sql.includes('INSERT INTO pets')) return { rows: [returnedRow] };
         return { rows: [] };
       }));
@@ -93,6 +97,10 @@ describe('Pets API', () => {
       const returnedRow = makePetRow();
       let capturedParams;
       const app = createApp(createMockPool(async (sql, params) => {
+        if (sql.includes('FROM weight_entries')) return { rows: [] };
+        if (sql.includes('INSERT INTO weight_entries')) return { rows: [] };
+        if (sql.includes('UPDATE pets SET weight = (')) return { rows: [] };
+        if (sql.includes('SELECT * FROM pets WHERE id = $1')) return { rows: [returnedRow] };
         if (sql.includes('INSERT INTO pets')) {
           capturedParams = params;
           return { rows: [returnedRow] };
@@ -111,6 +119,10 @@ describe('Pets API', () => {
       const returnedRow = makePetRow();
       let capturedParams;
       const app = createApp(createMockPool(async (sql, params) => {
+        if (sql.includes('FROM weight_entries')) return { rows: [] };
+        if (sql.includes('INSERT INTO weight_entries')) return { rows: [] };
+        if (sql.includes('UPDATE pets SET weight = (')) return { rows: [] };
+        if (sql.includes('SELECT * FROM pets WHERE id = $1')) return { rows: [returnedRow] };
         if (sql.includes('INSERT INTO pets')) {
           capturedParams = params;
           return { rows: [returnedRow] };
@@ -128,6 +140,10 @@ describe('Pets API', () => {
       const returnedRow = makePetRow();
       let capturedParams;
       const app = createApp(createMockPool(async (sql, params) => {
+        if (sql.includes('FROM weight_entries')) return { rows: [] };
+        if (sql.includes('INSERT INTO weight_entries')) return { rows: [] };
+        if (sql.includes('UPDATE pets SET weight = (')) return { rows: [] };
+        if (sql.includes('SELECT * FROM pets WHERE id = $1')) return { rows: [returnedRow] };
         if (sql.includes('INSERT INTO pets')) {
           capturedParams = params;
           return { rows: [returnedRow] };
@@ -167,6 +183,10 @@ describe('Pets API', () => {
         if (sql.includes('SELECT organization_id FROM pets WHERE id = $1')) {
           return { rows: [{ organization_id: 'org-uuid-1' }] };
         }
+        if (sql.includes('FROM weight_entries')) return { rows: [{ weight: 4.5 }] };
+        if (sql.includes('INSERT INTO weight_entries')) return { rows: [] };
+        if (sql.includes('UPDATE pets SET weight = (')) return { rows: [] };
+        if (sql.includes('SELECT * FROM pets WHERE id = $1')) return { rows: [updatedRow] };
         if (sql.includes('UPDATE pets SET')) return { rows: [updatedRow] };
         return { rows: [] };
       }));
@@ -191,6 +211,35 @@ describe('Pets API', () => {
         });
       expect(res.statusCode).toBe(200);
       expect(res.body.name).toBe('Fluffy Updated');
+    });
+
+    it('creates a weight entry when weight changes on update', async () => {
+      const updatedRow = makePetRow({ weight: 5 });
+      const queries = [];
+      const app = createApp(createMockPool(async (sql, params) => {
+        queries.push({ sql, params });
+        const access = handlePetAccessQuery(sql, params, { userId, ownedPetIds: [petId] });
+        if (access) return access;
+        if (sql.includes('SELECT organization_id FROM pets WHERE id = $1')) {
+          return { rows: [{ organization_id: null }] };
+        }
+        if (sql.includes('FROM weight_entries')) return { rows: [{ weight: 4.5 }] };
+        if (sql.includes('INSERT INTO weight_entries')) return { rows: [] };
+        if (sql.includes('UPDATE pets SET weight = (')) return { rows: [] };
+        if (sql.includes('SELECT * FROM pets WHERE id = $1')) return { rows: [updatedRow] };
+        if (sql.includes('UPDATE pets SET')) return { rows: [updatedRow] };
+        return { rows: [] };
+      }));
+      const res = await request(app)
+        .put(`/api/pets/${petId}`)
+        .set('Authorization', `Bearer ${token}`)
+        .send({
+          name: 'Fluffy',
+          species: 'cat',
+          weight: 5,
+        });
+      expect(res.statusCode).toBe(200);
+      expect(queries.some((q) => q.sql.includes('INSERT INTO weight_entries'))).toBe(true);
     });
 
     it('returns 404 when pet not found', async () => {

@@ -24,11 +24,14 @@ function makeWeightRow(overrides = {}) {
 describe('Weight Entries API', () => {
   let app;
   let lastQuery;
+  let allQueries;
 
   beforeAll(() => {
+    allQueries = [];
     const mockPool = {
       query: async (sql, params) => {
         lastQuery = { sql, params };
+        allQueries.push(lastQuery);
 
         const access = handlePetAccessQuery(sql, params, {
           userId,
@@ -75,12 +78,21 @@ describe('Weight Entries API', () => {
           return {
             rows: [makeWeightRow({
               id: params[4],
+              pet_id: 'pet-1',
               weight: params[0],
               unit: params[1],
               date: params[2],
               notes: params[3] || '',
             })],
           };
+        }
+
+        if (sql.includes('SELECT pet_id FROM weight_entries WHERE id = $1')) {
+          return { rows: [{ pet_id: 'pet-1' }] };
+        }
+
+        if (sql.includes('UPDATE pets SET weight = (')) {
+          return { rows: [] };
         }
 
         if (sql.includes('DELETE FROM weight_entries')) {
@@ -227,7 +239,8 @@ describe('Weight Entries API', () => {
         .set('Authorization', `Bearer ${token}`)
         .send(entry);
       expect(res.statusCode).toBe(201);
-      expect(lastQuery.params[4]).toBe('kg');
+      const insert = [...allQueries].reverse().find((q) => q.sql.includes('INSERT INTO weight_entries'));
+      expect(insert.params[4]).toBe('kg');
     });
 
     it('normalizes ISO timestamps to date-only on create', async () => {
@@ -239,7 +252,8 @@ describe('Weight Entries API', () => {
           weight: 4.0,
           date: '2026-04-01T00:00:00.000Z',
         });
-      expect(lastQuery.params[5]).toBe('2026-04-01');
+      const insert = [...allQueries].reverse().find((q) => q.sql.includes('INSERT INTO weight_entries'));
+      expect(insert.params[5]).toBe('2026-04-01');
     });
 
     it('scopes create by authenticated user_id', async () => {
@@ -249,8 +263,9 @@ describe('Weight Entries API', () => {
         .set('Authorization', `Bearer ${token}`)
         .send(entry);
       expect(res.statusCode).toBe(201);
-      expect(lastQuery.sql).toContain('INSERT INTO weight_entries');
-      expect(lastQuery.params[2]).toBe(userId);
+      const insert = [...allQueries].reverse().find((q) => q.sql.includes('INSERT INTO weight_entries'));
+      expect(insert.sql).toContain('INSERT INTO weight_entries');
+      expect(insert.params[2]).toBe(userId);
     });
 
     it('accepts petId alias for pet_id', async () => {
@@ -260,7 +275,8 @@ describe('Weight Entries API', () => {
         .set('Authorization', `Bearer ${token}`)
         .send(entry);
       expect(res.statusCode).toBe(201);
-      expect(lastQuery.params[1]).toBe('pet-2');
+      const insert = [...allQueries].reverse().find((q) => q.sql.includes('INSERT INTO weight_entries'));
+      expect(insert.params[1]).toBe('pet-2');
     });
 
     it('parses weight from string', async () => {
@@ -270,7 +286,8 @@ describe('Weight Entries API', () => {
         .set('Authorization', `Bearer ${token}`)
         .send(entry);
       expect(res.statusCode).toBe(201);
-      expect(lastQuery.params[3]).toBe(6.7);
+      const insert = [...allQueries].reverse().find((q) => q.sql.includes('INSERT INTO weight_entries'));
+      expect(insert.params[3]).toBe(6.7);
     });
 
     it('returns 403 when the pet belongs to another user', async () => {
@@ -279,6 +296,15 @@ describe('Weight Entries API', () => {
         .set('Authorization', `Bearer ${token}`)
         .send({ pet_id: 'pet-notmine', weight: 4.2 });
       expect(res.statusCode).toBe(403);
+    });
+
+    it('refreshes pets.weight after create', async () => {
+      await request(app)
+        .post('/api/weight-entries')
+        .set('Authorization', `Bearer ${token}`)
+        .send({ pet_id: 'pet-1', weight: 4.2 });
+      const cacheUpdate = lastQuery.sql.includes('UPDATE pets SET weight = (');
+      expect(cacheUpdate).toBe(true);
     });
   });
 
@@ -307,8 +333,9 @@ describe('Weight Entries API', () => {
         .put('/api/weight-entries/we-1')
         .set('Authorization', `Bearer ${token}`)
         .send({ weight: 5 });
-      expect(lastQuery.sql).toContain('UPDATE weight_entries');
-      expect(lastQuery.params[4]).toBe('we-1');
+      const update = [...allQueries].reverse().find((q) => q.sql.includes('UPDATE weight_entries'));
+      expect(update.sql).toContain('UPDATE weight_entries');
+      expect(update.params[4]).toBe('we-1');
     });
   });
 
@@ -325,8 +352,37 @@ describe('Weight Entries API', () => {
       await request(app)
         .delete('/api/weight-entries/we-1')
         .set('Authorization', `Bearer ${token}`);
-      expect(lastQuery.sql).toContain('DELETE FROM weight_entries WHERE id = $1');
-      expect(lastQuery.params[0]).toBe('we-1');
+      const del = [...allQueries].reverse().find((q) => q.sql.includes('DELETE FROM weight_entries WHERE id = $1'));
+      expect(del.sql).toContain('DELETE FROM weight_entries WHERE id = $1');
+      expect(del.params[0]).toBe('we-1');
+    });
+
+    it('refreshes pets.weight after delete', async () => {
+      const queries = [];
+      const mockPool = {
+        query: async (sql, params) => {
+          queries.push(sql);
+          const access = handlePetAccessQuery(sql, params, {
+            userId,
+            ownedPetIds: ['pet-1'],
+          });
+          if (access) return access;
+          const manageWeight = handleManageEntryQuery(sql, params, { tableName: 'weight_entries we' });
+          if (manageWeight) return manageWeight;
+          if (sql.includes('SELECT pet_id FROM weight_entries WHERE id = $1')) {
+            return { rows: [{ pet_id: 'pet-1' }] };
+          }
+          if (sql.includes('UPDATE pets SET weight = (')) return { rows: [] };
+          if (sql.includes('DELETE FROM weight_entries')) return { rows: [] };
+          return { rows: [] };
+        },
+        end: async () => {},
+      };
+      const deleteApp = createApp(mockPool);
+      await request(deleteApp)
+        .delete('/api/weight-entries/we-1')
+        .set('Authorization', `Bearer ${token}`);
+      expect(queries.some((sql) => sql.includes('UPDATE pets SET weight = ('))).toBe(true);
     });
   });
 

@@ -251,6 +251,32 @@ export async function createPet(
   return { id: json.id, name: json.name };
 }
 
+export async function updatePetProfile(
+  baseURL: string,
+  token: string,
+  petId: string,
+  data: { name: string; species: string; weight?: number | null; breed?: string },
+): Promise<TestPet & { weight?: number | null }> {
+  const res = await apiFetch(apiUrl(`/pets/${petId}`, baseURL), {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({
+      breed: '',
+      ...data,
+    }),
+  });
+
+  if (!res.ok) {
+    const body = await res.text();
+    throw new Error(`updatePetProfile failed (${res.status}): ${body}`);
+  }
+
+  return res.json();
+}
+
 export async function createOrganization(
   baseURL: string,
   token: string,

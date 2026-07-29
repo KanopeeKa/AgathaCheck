@@ -37,9 +37,7 @@ class PetDetailProfileCard extends ConsumerWidget {
         ? vets.where((v) => v.id == pet.vetId).firstOrNull
         : null;
 
-    final latestWeightAsync = ref.watch(latestWeightProvider(pet.id));
-    final latestWeight = latestWeightAsync.valueOrNull;
-    final displayWeight = latestWeight?.weight ?? pet.weight;
+    final displayWeight = pet.weight;
     final l = AppLocalizations.of(context)!;
     final canEdit = viewerContext.can(PetDetailAction.editProfile);
     final canAssignVet = viewerContext.can(PetDetailAction.assignVet);
