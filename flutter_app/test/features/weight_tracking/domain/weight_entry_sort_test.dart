@@ -7,14 +7,13 @@ WeightEntry _entry(
   DateTime date,
   double weight, {
   DateTime? createdAt,
-}) =>
-    WeightEntry(
-      id: id,
-      petId: 'pet-1',
-      date: date,
-      weight: weight,
-      createdAt: createdAt,
-    );
+}) => WeightEntry(
+  id: id,
+  petId: 'pet-1',
+  date: date,
+  weight: weight,
+  createdAt: createdAt,
+);
 
 void main() {
   group('compareWeightEntriesChronological', () {
