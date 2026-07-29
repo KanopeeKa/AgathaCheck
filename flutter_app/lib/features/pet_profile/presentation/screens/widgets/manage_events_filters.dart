@@ -86,7 +86,9 @@ class ManageEventsFilters {
   }
 
   bool isTypeSelected(ManageEventsTypeFilter value) =>
-      value == ManageEventsTypeFilter.all ? types.isEmpty : types.contains(value);
+      value == ManageEventsTypeFilter.all
+      ? types.isEmpty
+      : types.contains(value);
 
   bool isStatusSelected(ManageEventsStatusFilter value) =>
       value == ManageEventsStatusFilter.all
@@ -178,10 +180,7 @@ ManageEventsTypeFilter? _typeFilterForEntry(HealthEntry entry) {
   };
 }
 
-bool _matchesTypeFilters(
-  HealthEntry entry,
-  Set<ManageEventsTypeFilter> types,
-) {
+bool _matchesTypeFilters(HealthEntry entry, Set<ManageEventsTypeFilter> types) {
   if (types.isEmpty) return true;
   final filter = _typeFilterForEntry(entry);
   return filter != null && types.contains(filter);
@@ -193,8 +192,7 @@ bool _matchesRecurringFilters(
 ) {
   if (recurring.isEmpty) return true;
   final isOneTime = entry.frequency == HealthFrequency.once;
-  if (recurring.contains(ManageEventsRecurringFilter.recurring) &&
-      !isOneTime) {
+  if (recurring.contains(ManageEventsRecurringFilter.recurring) && !isOneTime) {
     return true;
   }
   if (recurring.contains(ManageEventsRecurringFilter.oneTime) && isOneTime) {

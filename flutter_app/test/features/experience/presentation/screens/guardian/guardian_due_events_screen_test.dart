@@ -178,7 +178,10 @@ void main() {
         ),
       );
 
-      expect(pets.map((pet) => pet.id), containsAll(['pet-owned', 'pet-shared', 'pet-foster']));
+      expect(
+        pets.map((pet) => pet.id),
+        containsAll(['pet-owned', 'pet-shared', 'pet-foster']),
+      );
     });
   });
 

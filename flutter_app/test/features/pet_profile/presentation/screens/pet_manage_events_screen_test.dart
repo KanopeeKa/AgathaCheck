@@ -140,7 +140,8 @@ void main() {
       routes: [
         GoRoute(
           path: '/pet/:petId',
-          builder: (context, state) => const Scaffold(body: Text('Pet profile')),
+          builder: (context, state) =>
+              const Scaffold(body: Text('Pet profile')),
         ),
         GoRoute(
           path: '/pet/:petId/events',
@@ -237,7 +238,10 @@ void main() {
         const {},
       );
 
-      expect(visible.map((e) => e.id), containsAll(['entry-open-med', 'entry-overdue', 'entry-closed']));
+      expect(
+        visible.map((e) => e.id),
+        containsAll(['entry-open-med', 'entry-overdue', 'entry-closed']),
+      );
       expect(visible.any((e) => e.id == 'entry-other'), isFalse);
     });
 
@@ -311,7 +315,8 @@ void main() {
           path: '/pet/:petId',
           builder: (context, state) => Scaffold(
             body: TextButton(
-              onPressed: () => context.push('/pet/${state.pathParameters['petId']}/events'),
+              onPressed: () =>
+                  context.push('/pet/${state.pathParameters['petId']}/events'),
               child: const Text('Open manage events'),
             ),
           ),
