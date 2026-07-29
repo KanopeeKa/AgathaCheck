@@ -1,4 +1,5 @@
 import type { Page } from '@playwright/test';
+import { expect } from '@playwright/test';
 import { dismissConsentBannerIfPresent, escapeRegExp } from '../support/flutter';
 
 /**
@@ -54,23 +55,29 @@ export class PetDetailPage {
   async createShareLink(): Promise<void> {
     await this.openSharingSection();
     const copyLinkPattern = /Copy link|Copier le lien/i;
-    const copyLinksBefore = await this.page
+    const shareButtonPattern = /Share Link|Partager le lien|Lien de partage/i;
+    const copyLinkLocator = this.page
       .getByRole('button', { name: copyLinkPattern })
-      .or(this.page.getByRole('checkbox', { name: copyLinkPattern }))
-      .count();
-    const shareButton = this.page
-      .getByRole('button', { name: /Share Link|Partager le lien/i })
-      .first();
+      .or(this.page.getByRole('checkbox', { name: copyLinkPattern }));
+    const copyLinksBefore = await copyLinkLocator.count();
+
+    const shareButton = this.page.getByRole('button', { name: shareButtonPattern }).first();
     await shareButton.scrollIntoViewIfNeeded();
     await shareButton.click();
-    // Link creation is async; wait for the dialog before dismissing (Escape too early closes the sheet).
-    await this.page.getByRole('dialog', { name: 'Share Link' }).waitFor({ timeout: 30_000 });
-    await this.page.keyboard.press('Escape');
-    await this.page
-      .getByRole('button', { name: copyLinkPattern })
-      .or(this.page.getByRole('checkbox', { name: copyLinkPattern }))
-      .nth(copyLinksBefore)
-      .waitFor({ timeout: 15_000 });
+
+    // Link creation is async. Wait for a new Copy link tile (count-based) so pre-existing
+    // pending links cannot satisfy the assertion. Click once — retries only poll the UI.
+    const newCopyLink = copyLinkLocator.nth(copyLinksBefore);
+    await expect(async () => {
+      await newCopyLink.waitFor({ timeout: 5_000 });
+
+      // Dismiss optional share-link AlertDialog without closing the sharing sheet.
+      const shareDialog = this.page.getByRole('dialog', { name: shareButtonPattern });
+      if (await shareDialog.isVisible().catch(() => false)) {
+        await this.page.keyboard.press('Escape');
+        await shareDialog.waitFor({ state: 'hidden', timeout: 5_000 }).catch(() => {});
+      }
+    }).toPass({ timeout: 30_000 });
   }
 
   async expectShareLinkDialog(): Promise<void> {
