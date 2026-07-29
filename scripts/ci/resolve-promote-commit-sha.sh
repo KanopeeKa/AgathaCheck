@@ -2,8 +2,11 @@
 # Resolve the commit to promote after a green Pre-UAT E2E run.
 #
 # Auto path (workflow_run):
-#   1. PRE_UAT_HEAD_SHA — github.event.workflow_run.head_sha (push commit tested)
-#   2. PRE_UAT_RUN_ID — fetch run head_sha via API (job outputs are null cross-workflow)
+#   1. Parse test_sha from Pre-UAT run logs (authoritative when runs queue)
+#   2. PRE_UAT_RUN_ID — fetch run head_sha via API
+#   3. PRE_UAT_HEAD_SHA — workflow_run trigger commit (last resort)
+# Job outputs are null cross-workflow on GitHub's jobs API.
+#
 # Fallback: origin/main HEAD when PRE_UAT_RUN_ID is unset (manual / legacy).
 #
 # Outputs to GITHUB_OUTPUT:
@@ -19,29 +22,64 @@ emit_output() {
   printf '%s=%s\n' "$key" "$value"
 }
 
+resolve_test_sha_from_pre_uat_logs() {
+  local run_id="$1"
+  local repo="${GITHUB_REPOSITORY:?}"
+  local sha=""
+
+  if ! command -v gh >/dev/null 2>&1; then
+    return 0
+  fi
+
+  local logs
+  logs="$(gh run view "$run_id" --repo "$repo" --log 2>/dev/null || true)"
+  if [[ -z "$logs" ]]; then
+    return 0
+  fi
+
+  sha="$(printf '%s\n' "$logs" | rg -m1 'Pre-UAT E2E passed for ([0-9a-f]{40})' -o -r '$1' 2>/dev/null || true)"
+  if [[ -z "$sha" ]]; then
+    sha="$(printf '%s\n' "$logs" | rg -m1 'Pre-UAT E2E will test origin/main at ([0-9a-f]{40})' -o -r '$1' 2>/dev/null || true)"
+  fi
+
+  if [[ -n "$sha" ]]; then
+    printf '%s' "$sha"
+  fi
+}
+
 commit_sha=""
 source=""
 
-if [[ -n "${PRE_UAT_HEAD_SHA:-}" ]]; then
-  commit_sha="$PRE_UAT_HEAD_SHA"
-  source="workflow_run_head_sha"
-elif [[ -n "${PRE_UAT_RUN_ID:-}" ]]; then
+if [[ -n "${PRE_UAT_RUN_ID:-}" ]]; then
   : "${GITHUB_TOKEN:?GITHUB_TOKEN required when PRE_UAT_RUN_ID is set}"
   repo="${GITHUB_REPOSITORY:?}"
   owner="${repo%%/*}"
   name="${repo##*/}"
 
-  run_json="$(gh api "repos/${owner}/${name}/actions/runs/${PRE_UAT_RUN_ID}")"
-  run_conclusion="$(printf '%s' "$run_json" | jq -r '.conclusion // empty')"
-  run_head_sha="$(printf '%s' "$run_json" | jq -r '.head_sha // empty')"
+  log_test_sha="$(resolve_test_sha_from_pre_uat_logs "$PRE_UAT_RUN_ID")"
+  if [[ -n "$log_test_sha" ]]; then
+    commit_sha="$log_test_sha"
+    source="pre_uat_run_logs"
+  fi
 
-  if [[ -n "$run_head_sha" ]]; then
-    if [[ -n "$run_conclusion" && "$run_conclusion" != "success" ]]; then
-      echo "::error::Pre-UAT run ${PRE_UAT_RUN_ID} conclusion is ${run_conclusion}" >&2
-      exit 1
+  if [[ -z "$commit_sha" ]]; then
+    run_json="$(gh api "repos/${owner}/${name}/actions/runs/${PRE_UAT_RUN_ID}")"
+    run_conclusion="$(printf '%s' "$run_json" | jq -r '.conclusion // empty')"
+    run_head_sha="$(printf '%s' "$run_json" | jq -r '.head_sha // empty')"
+
+    if [[ -n "$run_head_sha" ]]; then
+      if [[ -n "$run_conclusion" && "$run_conclusion" != "success" ]]; then
+        echo "::error::Pre-UAT run ${PRE_UAT_RUN_ID} conclusion is ${run_conclusion}" >&2
+        exit 1
+      fi
+      commit_sha="$run_head_sha"
+      source="pre_uat_run_api_head_sha"
     fi
-    commit_sha="$run_head_sha"
-    source="pre_uat_run_api_head_sha"
+  fi
+
+  if [[ -z "$commit_sha" && -n "${PRE_UAT_HEAD_SHA:-}" ]]; then
+    commit_sha="$PRE_UAT_HEAD_SHA"
+    source="workflow_run_head_sha"
   fi
 
   if [[ -z "$commit_sha" ]]; then

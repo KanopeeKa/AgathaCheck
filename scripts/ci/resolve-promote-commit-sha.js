@@ -4,16 +4,17 @@
  * Resolve the commit SHA to promote after a green Pre-UAT E2E run.
  *
  * GitHub does not expose job `outputs` on the cross-workflow jobs API
- * (`.outputs` is null). Use workflow_run.head_sha (push commit) instead.
+ * (`.outputs` is null). Parse test_sha from Pre-UAT logs when available.
  */
 function resolvePromoteCommitSha({
-  preUatHeadSha,
+  preUatLogTestSha,
   runHeadSha,
   runConclusion,
+  preUatHeadSha,
   jobTestSha,
 }) {
-  if (preUatHeadSha) {
-    return { commitSha: preUatHeadSha, source: 'workflow_run_head_sha' };
+  if (preUatLogTestSha) {
+    return { commitSha: preUatLogTestSha, source: 'pre_uat_run_logs' };
   }
 
   if (runHeadSha) {
@@ -21,6 +22,10 @@ function resolvePromoteCommitSha({
       throw new Error(`Pre-UAT run conclusion is ${runConclusion}, expected success`);
     }
     return { commitSha: runHeadSha, source: 'pre_uat_run_api_head_sha' };
+  }
+
+  if (preUatHeadSha) {
+    return { commitSha: preUatHeadSha, source: 'workflow_run_head_sha' };
   }
 
   if (jobTestSha) {

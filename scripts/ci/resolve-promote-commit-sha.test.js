@@ -5,21 +5,22 @@ const assert = require('node:assert/strict');
 const { resolvePromoteCommitSha } = require('./resolve-promote-commit-sha');
 
 const SHA = 'eec1971c46e485e72c772a8e9c009a17a6e8f1e2';
+const OTHER = 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa';
 
-test('resolvePromoteCommitSha prefers workflow_run head_sha from event', () => {
+test('resolvePromoteCommitSha prefers Pre-UAT log test_sha over trigger head', () => {
   const result = resolvePromoteCommitSha({
-    preUatHeadSha: SHA,
-    runHeadSha: 'other',
-    jobTestSha: 'ignored',
+    preUatLogTestSha: SHA,
+    preUatHeadSha: OTHER,
+    runHeadSha: OTHER,
   });
-  assert.deepEqual(result, { commitSha: SHA, source: 'workflow_run_head_sha' });
+  assert.deepEqual(result, { commitSha: SHA, source: 'pre_uat_run_logs' });
 });
 
 test('resolvePromoteCommitSha falls back to Pre-UAT run API head_sha', () => {
   const result = resolvePromoteCommitSha({
     runHeadSha: SHA,
     runConclusion: 'success',
-    jobTestSha: null,
+    preUatHeadSha: OTHER,
   });
   assert.deepEqual(result, { commitSha: SHA, source: 'pre_uat_run_api_head_sha' });
 });
@@ -33,6 +34,13 @@ test('resolvePromoteCommitSha rejects non-success Pre-UAT run', () => {
       }),
     /conclusion is failure/,
   );
+});
+
+test('resolvePromoteCommitSha uses workflow_run head_sha when API unavailable', () => {
+  const result = resolvePromoteCommitSha({
+    preUatHeadSha: SHA,
+  });
+  assert.deepEqual(result, { commitSha: SHA, source: 'workflow_run_head_sha' });
 });
 
 test('resolvePromoteCommitSha uses job output only as last resort', () => {
