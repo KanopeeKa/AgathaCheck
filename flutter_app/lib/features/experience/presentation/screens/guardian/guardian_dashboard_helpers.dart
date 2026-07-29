@@ -2,17 +2,15 @@ import '../../../../pet_profile/domain/entities/pet.dart';
 import '../../../../pet_profile/presentation/controllers/pet_list_controller.dart';
 import '../../../../pet_profile/presentation/widgets/pet_card.dart';
 
-/// Active personal pets (owned + shared) for the guardian dashboard, oldest first.
+/// Active owned pets (not shared or foster) for the guardian dashboard, oldest first.
 List<Pet> guardianDashboardPersonalPets(
   List<Pet> allPets,
   PetListController controller,
 ) {
   final shellPets = controller.guardianShellPets(allPets);
-  final personal = shellPets
-      .where((p) => !p.passedAway && !p.isFoster)
-      .toList();
-  sortPetsByCreatedAt(personal);
-  return personal;
+  final owned = controller.getOwnedPets(shellPets);
+  sortPetsByCreatedAt(owned);
+  return owned;
 }
 
 /// Active foster pets for the guardian dashboard, oldest first.
