@@ -1,5 +1,9 @@
 import { v4 as uuidv4 } from 'uuid';
 import { dateToIsoDate, normalizeCalendarDateInput } from '../../lib/calendarDate.js';
+import {
+  maybeCreateWeightEntryFromPetPayload,
+  refreshPetWeightCache,
+} from '../../lib/petWeightSync.js';
 import { OPEN_PLACEMENT_STATUSES } from '../../lib/fosterPlacements.js';
 import { transferOrgPetToUser } from '../../lib/orgPetTransfer.js';
 import {
@@ -110,6 +114,12 @@ export function registerPetsRoutes(router, pool) {
           ],
         );
         await setOrgGuardianAndCare(pool, id, orgId);
+        await maybeCreateWeightEntryFromPetPayload(pool, {
+          petId: id,
+          userId,
+          weight: data.weight,
+        });
+        await refreshPetWeightCache(pool, id);
         const row = result.rows[0];
         res.status(201).json({
           id: row.id,

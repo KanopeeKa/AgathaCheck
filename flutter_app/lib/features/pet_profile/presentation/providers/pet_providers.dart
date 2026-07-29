@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../../../core/providers/shared_preferences_provider.dart';
+import '../../../../core/providers/pet_weight_invalidation.dart';
 import 'package:pet_profile_app/core/providers/api_base_url_provider.dart';
 import '../../../auth/presentation/providers/auth_providers.dart';
 import '../../data/datasources/pet_local_datasource.dart';
@@ -145,6 +146,9 @@ class PetListNotifier extends AsyncNotifier<List<Pet>> {
       organizationId: organizationId,
     );
     await ref.read(addPetUseCaseProvider).call(pet);
+    if (weight != null) {
+      invalidatePetWeightData(ref, pet.id);
+    }
     ref.invalidateSelf();
     ref.invalidate(allPetsIncludingOrgProvider);
     return pet.id;
@@ -152,6 +156,7 @@ class PetListNotifier extends AsyncNotifier<List<Pet>> {
 
   Future<void> updatePet(Pet pet) async {
     await ref.read(updatePetUseCaseProvider).call(pet);
+    invalidatePetWeightData(ref, pet.id);
     ref.invalidateSelf();
     ref.invalidate(allPetsIncludingOrgProvider);
   }
