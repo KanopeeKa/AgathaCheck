@@ -1,3 +1,5 @@
+import 'package:intl/intl.dart';
+
 /// Helpers for **calendar dates** (due dates, DOB, weight day, etc.).
 ///
 /// These are wall-clock dates with no meaningful time-of-day. They must be
@@ -44,3 +46,8 @@ String? toCalendarDateString(DateTime? date) {
 
 /// Strips time from a date-picker value so only the calendar day is kept.
 DateTime calendarDateOnly(DateTime date) => _localCalendarParts(date);
+
+/// User-facing calendar date display (`dd/MM/yyyy`).
+String formatCalendarDateDisplay(DateTime date) {
+  return DateFormat('dd/MM/yyyy').format(calendarDateOnly(date));
+}

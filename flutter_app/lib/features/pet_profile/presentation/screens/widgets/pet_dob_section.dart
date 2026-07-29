@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import '../../../../../l10n/app_localizations.dart';
 import '../../../../../core/utils/calendar_date.dart';
+import '../../../../../core/utils/calendar_date_picker.dart';
 
 class PetDobSection extends StatelessWidget {
   final DateTime? dateOfBirth;
@@ -21,7 +21,7 @@ class PetDobSection extends StatelessWidget {
       child: InkWell(
         key: const Key('pet_dob_field'),
         onTap: () async {
-          final picked = await showDatePicker(
+          final picked = await showCalendarDatePicker(
             context: context,
             initialDate: dateOfBirth ?? DateTime.now(),
             firstDate: DateTime(1980),
@@ -29,7 +29,7 @@ class PetDobSection extends StatelessWidget {
             helpText: 'Select date of birth',
           );
           if (picked != null) {
-            onChanged(calendarDateOnly(picked));
+            onChanged(picked);
           }
         },
         child: InputDecorator(
@@ -45,9 +45,7 @@ class PetDobSection extends StatelessWidget {
                 : const Icon(Icons.calendar_today, size: 18),
           ),
           child: Text(
-            dateOfBirth != null
-                ? DateFormat('dd/MM/yyyy').format(dateOfBirth!)
-                : '',
+            dateOfBirth != null ? formatCalendarDateDisplay(dateOfBirth!) : '',
             style: Theme.of(context).textTheme.bodyLarge,
           ),
         ),
