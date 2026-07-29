@@ -3,7 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:pet_profile_app/core/theme/app_theme.dart';
+import 'package:pet_profile_app/features/experience/domain/entities/app_experience.dart';
 import 'package:pet_profile_app/features/experience/presentation/screens/guardian/guardian_due_events_screen.dart';
+import 'package:pet_profile_app/features/experience/presentation/widgets/experience_shell_scaffold.dart';
 import 'package:pet_profile_app/features/health_tracking/domain/entities/health_entry.dart';
 import 'package:pet_profile_app/features/health_tracking/domain/entities/health_history_entry.dart';
 import 'package:pet_profile_app/features/health_tracking/presentation/providers/health_providers.dart';
@@ -85,8 +87,25 @@ void main() {
       routes: [
         GoRoute(
           path: '/g/events',
+          builder: (context, state) => ExperienceShellScaffold(
+            experience: AppExperience.guardian,
+            currentLocation: state.uri.path,
+            screenTitle: 'Events',
+            backPath: '/g/home',
+            contextualActions: [
+              IconButton(
+                key: const Key('global_events_add_app_bar'),
+                onPressed: () => context.push('/health/add'),
+                icon: const Icon(Icons.add),
+              ),
+            ],
+            child: const GuardianDueEventsScreen(),
+          ),
+        ),
+        GoRoute(
+          path: '/health/add',
           builder: (context, state) =>
-              const Scaffold(body: GuardianDueEventsScreen()),
+              const Scaffold(body: Text('Add health entry')),
         ),
         GoRoute(
           path: '/pet/:petId/events/:entryId',
@@ -121,7 +140,7 @@ void main() {
       final pets = guardianGlobalEventsPets(
         shellPets,
         const GuardianGlobalEventsFilters(
-          cohort: GuardianEventsCohortFilter.myPets,
+          cohorts: {GuardianEventsCohortFilter.myPets},
         ),
       );
 
@@ -132,7 +151,7 @@ void main() {
       final pets = guardianGlobalEventsPets(
         shellPets,
         const GuardianGlobalEventsFilters(
-          cohort: GuardianEventsCohortFilter.fosterPets,
+          cohorts: {GuardianEventsCohortFilter.fosterPets},
         ),
       );
 
@@ -142,10 +161,27 @@ void main() {
     test('pet filter narrows cohort selection', () {
       final pets = guardianGlobalEventsPets(
         shellPets,
-        const GuardianGlobalEventsFilters(petId: 'pet-owned'),
+        const GuardianGlobalEventsFilters(petIds: {'pet-owned'}),
       );
 
       expect(pets, [ownedPet]);
+    });
+
+    test('multi-select cohorts combine with OR', () {
+      final pets = guardianGlobalEventsPets(
+        shellPets,
+        const GuardianGlobalEventsFilters(
+          cohorts: {
+            GuardianEventsCohortFilter.myPets,
+            GuardianEventsCohortFilter.fosterPets,
+          },
+        ),
+      );
+
+      expect(
+        pets.map((pet) => pet.id),
+        containsAll(['pet-owned', 'pet-shared', 'pet-foster']),
+      );
     });
   });
 
@@ -153,12 +189,24 @@ void main() {
     await tester.pumpWidget(buildScreen());
     await tester.pumpAndSettle();
 
-    expect(find.text('Events'), findsOneWidget);
+    expect(find.text('Events'), findsNWidgets(2));
     expect(find.byType(TabBar), findsNothing);
     expect(find.text('Heartgard'), findsOneWidget);
     expect(find.text('Flea treatment'), findsOneWidget);
     expect(find.text('Grooming'), findsOneWidget);
-    expect(find.text('Add an event'), findsOneWidget);
+    expect(find.byKey(const Key('global_events_add_app_bar')), findsOneWidget);
+  });
+
+  testWidgets('add app bar button navigates to unified health entry form', (
+    tester,
+  ) async {
+    await tester.pumpWidget(buildScreen());
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.byKey(const Key('global_events_add_app_bar')));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Add health entry'), findsOneWidget);
   });
 
   testWidgets('EventListCard navigates to view entry', (tester) async {
@@ -207,15 +255,17 @@ void main() {
     expect(find.text('Grooming'), findsNothing);
   });
 
-  testWidgets('pet filter shows only selected pet entries', (tester) async {
+  testWidgets('multi-select pet filters combine with OR', (tester) async {
     await tester.pumpWidget(buildScreen());
     await tester.pumpAndSettle();
 
+    await tester.tap(find.byKey(const Key('global_events_pet_pet-owned')));
+    await tester.pumpAndSettle();
     await tester.tap(find.byKey(const Key('global_events_pet_pet-foster')));
     await tester.pumpAndSettle();
 
+    expect(find.text('Heartgard'), findsOneWidget);
     expect(find.text('Flea treatment'), findsOneWidget);
-    expect(find.text('Heartgard'), findsNothing);
     expect(find.text('Grooming'), findsNothing);
   });
 }

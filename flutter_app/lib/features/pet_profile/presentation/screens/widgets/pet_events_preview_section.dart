@@ -76,7 +76,7 @@ class PetEventsPreviewSection extends ConsumerWidget {
         },
         endLink: DashboardSectionLink(
           label: l.manageEvents,
-          onPressed: () => context.go('/pet/$petId/events'),
+          onPressed: () => context.push('/pet/$petId/events'),
         ),
       ),
     );

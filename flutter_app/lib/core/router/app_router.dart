@@ -246,7 +246,7 @@ final routerProvider = Provider<GoRouter>((ref) {
           return HealthEntryFormScreen(
             petId: petId,
             initialType: initialType,
-            allowedTypes: kHealthEventTypes.toList(),
+            allowedTypes: kAllPetEventTypes,
           );
         },
       ),

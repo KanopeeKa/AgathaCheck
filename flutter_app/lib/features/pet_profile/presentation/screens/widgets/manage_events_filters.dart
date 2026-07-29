@@ -17,32 +17,88 @@ enum ManageEventsRecurringFilter { all, recurring, oneTime }
 enum ManageEventsStatusFilter { all, open, closed, dueOverdue }
 
 /// Combined filter state for manage-events list screens.
+///
+/// Empty [types], [statuses], and [recurring] sets mean "all" for that row.
 class ManageEventsFilters {
   const ManageEventsFilters({
-    this.type = ManageEventsTypeFilter.all,
-    this.recurring = ManageEventsRecurringFilter.all,
-    this.status = ManageEventsStatusFilter.all,
+    this.types = const {},
+    this.recurring = const {},
+    this.statuses = const {},
     this.showSkipped = true,
   });
 
-  final ManageEventsTypeFilter type;
-  final ManageEventsRecurringFilter recurring;
-  final ManageEventsStatusFilter status;
+  final Set<ManageEventsTypeFilter> types;
+  final Set<ManageEventsRecurringFilter> recurring;
+  final Set<ManageEventsStatusFilter> statuses;
   final bool showSkipped;
 
   ManageEventsFilters copyWith({
-    ManageEventsTypeFilter? type,
-    ManageEventsRecurringFilter? recurring,
-    ManageEventsStatusFilter? status,
+    Set<ManageEventsTypeFilter>? types,
+    Set<ManageEventsRecurringFilter>? recurring,
+    Set<ManageEventsStatusFilter>? statuses,
     bool? showSkipped,
   }) {
     return ManageEventsFilters(
-      type: type ?? this.type,
+      types: types ?? this.types,
       recurring: recurring ?? this.recurring,
-      status: status ?? this.status,
+      statuses: statuses ?? this.statuses,
       showSkipped: showSkipped ?? this.showSkipped,
     );
   }
+
+  ManageEventsFilters toggleType(ManageEventsTypeFilter value) {
+    if (value == ManageEventsTypeFilter.all) {
+      return copyWith(types: {});
+    }
+    final next = Set<ManageEventsTypeFilter>.from(types);
+    if (next.contains(value)) {
+      next.remove(value);
+    } else {
+      next.add(value);
+    }
+    return copyWith(types: next);
+  }
+
+  ManageEventsFilters toggleStatus(ManageEventsStatusFilter value) {
+    if (value == ManageEventsStatusFilter.all) {
+      return copyWith(statuses: {});
+    }
+    final next = Set<ManageEventsStatusFilter>.from(statuses);
+    if (next.contains(value)) {
+      next.remove(value);
+    } else {
+      next.add(value);
+    }
+    return copyWith(statuses: next);
+  }
+
+  ManageEventsFilters toggleRecurring(ManageEventsRecurringFilter value) {
+    if (value == ManageEventsRecurringFilter.all) {
+      return copyWith(recurring: {});
+    }
+    final next = Set<ManageEventsRecurringFilter>.from(recurring);
+    if (next.contains(value)) {
+      next.remove(value);
+    } else {
+      next.add(value);
+    }
+    return copyWith(recurring: next);
+  }
+
+  bool isTypeSelected(ManageEventsTypeFilter value) =>
+      value == ManageEventsTypeFilter.all
+      ? types.isEmpty
+      : types.contains(value);
+
+  bool isStatusSelected(ManageEventsStatusFilter value) =>
+      value == ManageEventsStatusFilter.all
+      ? statuses.isEmpty
+      : statuses.contains(value);
+
+  bool isRecurringSelected(ManageEventsRecurringFilter value) =>
+      value == ManageEventsRecurringFilter.all
+      ? recurring.isEmpty
+      : recurring.contains(value);
 }
 
 /// Histories keyed by entry id for manage-events sorting and skipped display.
@@ -115,6 +171,60 @@ DateTime manageEventSortKey(
   return entry.nextDueDate ?? entry.startDate;
 }
 
+ManageEventsTypeFilter? _typeFilterForEntry(HealthEntry entry) {
+  return switch (entry.type) {
+    HealthEntryType.medication => ManageEventsTypeFilter.medication,
+    HealthEntryType.preventive => ManageEventsTypeFilter.preventive,
+    HealthEntryType.vetVisit => ManageEventsTypeFilter.vetVisit,
+    HealthEntryType.other => ManageEventsTypeFilter.other,
+  };
+}
+
+bool _matchesTypeFilters(HealthEntry entry, Set<ManageEventsTypeFilter> types) {
+  if (types.isEmpty) return true;
+  final filter = _typeFilterForEntry(entry);
+  return filter != null && types.contains(filter);
+}
+
+bool _matchesRecurringFilters(
+  HealthEntry entry,
+  Set<ManageEventsRecurringFilter> recurring,
+) {
+  if (recurring.isEmpty) return true;
+  final isOneTime = entry.frequency == HealthFrequency.once;
+  if (recurring.contains(ManageEventsRecurringFilter.recurring) && !isOneTime) {
+    return true;
+  }
+  if (recurring.contains(ManageEventsRecurringFilter.oneTime) && isOneTime) {
+    return true;
+  }
+  return false;
+}
+
+bool _matchesStatusFilters(
+  HealthEntry entry,
+  Set<ManageEventsStatusFilter> statuses,
+) {
+  if (statuses.isEmpty) return true;
+
+  final closed = isHealthEntrySeriesClosed(entry);
+  final dueOrOverdue =
+      !closed &&
+      !entry.isCompleted &&
+      (entry.isOverdue || entry.isDueToday || isEntryDueOrOverdue(entry));
+
+  if (statuses.contains(ManageEventsStatusFilter.open) && !closed) {
+    return true;
+  }
+  if (statuses.contains(ManageEventsStatusFilter.closed) && closed) {
+    return true;
+  }
+  if (statuses.contains(ManageEventsStatusFilter.dueOverdue) && dueOrOverdue) {
+    return true;
+  }
+  return false;
+}
+
 bool matchesManageEventsFilters(
   HealthEntry entry,
   ManageEventsFilters filters,
@@ -124,44 +234,9 @@ bool matchesManageEventsFilters(
     return false;
   }
 
-  switch (filters.type) {
-    case ManageEventsTypeFilter.all:
-      break;
-    case ManageEventsTypeFilter.medication:
-      if (entry.type != HealthEntryType.medication) return false;
-    case ManageEventsTypeFilter.preventive:
-      if (entry.type != HealthEntryType.preventive) return false;
-    case ManageEventsTypeFilter.vetVisit:
-      if (entry.type != HealthEntryType.vetVisit) return false;
-    case ManageEventsTypeFilter.other:
-      if (entry.type != HealthEntryType.other) return false;
-  }
-
-  switch (filters.recurring) {
-    case ManageEventsRecurringFilter.all:
-      break;
-    case ManageEventsRecurringFilter.recurring:
-      if (entry.frequency == HealthFrequency.once) return false;
-    case ManageEventsRecurringFilter.oneTime:
-      if (entry.frequency != HealthFrequency.once) return false;
-  }
-
-  final closed = isHealthEntrySeriesClosed(entry);
-  switch (filters.status) {
-    case ManageEventsStatusFilter.all:
-      break;
-    case ManageEventsStatusFilter.open:
-      if (closed) return false;
-    case ManageEventsStatusFilter.closed:
-      if (!closed) return false;
-    case ManageEventsStatusFilter.dueOverdue:
-      if (closed || entry.isCompleted) return false;
-      if (!entry.isOverdue &&
-          !entry.isDueToday &&
-          !isEntryDueOrOverdue(entry)) {
-        return false;
-      }
-  }
+  if (!_matchesTypeFilters(entry, filters.types)) return false;
+  if (!_matchesRecurringFilters(entry, filters.recurring)) return false;
+  if (!_matchesStatusFilters(entry, filters.statuses)) return false;
 
   return true;
 }
