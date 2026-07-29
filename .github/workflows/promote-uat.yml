@@ -58,6 +58,7 @@ jobs:
         id: commit
         env:
           PRE_UAT_RUN_ID: ${{ github.event.workflow_run.id }}
+          PRE_UAT_HEAD_SHA: ${{ github.event.workflow_run.head_sha }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: bash scripts/ci/resolve-promote-commit-sha.sh
 
