@@ -55,26 +55,21 @@ export class PetDetailPage {
   async createShareLink(): Promise<void> {
     await this.openSharingSection();
     const copyLinkPattern = /Copy link|Copier le lien/i;
-    const pendingPattern = /New link pending|Nouveau lien en attente/i;
     const shareButtonPattern = /Share Link|Partager le lien|Lien de partage/i;
     const copyLinkLocator = this.page
       .getByRole('button', { name: copyLinkPattern })
       .or(this.page.getByRole('checkbox', { name: copyLinkPattern }));
     const copyLinksBefore = await copyLinkLocator.count();
 
-    await expect(async () => {
-      const shareButton = this.page.getByRole('button', { name: shareButtonPattern }).first();
-      await shareButton.scrollIntoViewIfNeeded();
-      await shareButton.click();
+    const shareButton = this.page.getByRole('button', { name: shareButtonPattern }).first();
+    await shareButton.scrollIntoViewIfNeeded();
+    await shareButton.click();
 
-      // Flutter 3.44 web shows the new link inline in the sharing bottom sheet
-      // ("New link pending" + Copy link). A nested AlertDialog may appear but does
-      // not reliably expose role=dialog with the Share Link accessible name.
-      const pendingLink = this.page
-        .getByText(pendingPattern)
-        .or(this.page.getByRole('group', { name: pendingPattern }));
-      const newCopyLink = copyLinkLocator.nth(copyLinksBefore);
-      await pendingLink.or(newCopyLink).first().waitFor({ timeout: 5_000 });
+    // Link creation is async. Wait for a new Copy link tile (count-based) so pre-existing
+    // pending links cannot satisfy the assertion. Click once — retries only poll the UI.
+    const newCopyLink = copyLinkLocator.nth(copyLinksBefore);
+    await expect(async () => {
+      await newCopyLink.waitFor({ timeout: 5_000 });
 
       // Dismiss optional share-link AlertDialog without closing the sharing sheet.
       const shareDialog = this.page.getByRole('dialog', { name: shareButtonPattern });
