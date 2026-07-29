@@ -42,6 +42,15 @@ void main() {
     });
   });
 
+  group('formatCalendarDateDisplay', () {
+    test('formats as dd/MM/yyyy', () {
+      expect(
+        formatCalendarDateDisplay(DateTime(2023, 12, 23)),
+        '23/12/2023',
+      );
+    });
+  });
+
   group('calendarDateOnly', () {
     test('strips time from picker value', () {
       final picked = DateTime(2026, 6, 30, 14, 30);

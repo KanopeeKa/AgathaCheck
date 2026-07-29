@@ -63,7 +63,11 @@ class PetProfileApp extends ConsumerWidget {
       routerConfig: router,
       debugShowCheckedModeBanner: false,
       locale: locale,
-      supportedLocales: AppLocalizations.supportedLocales,
+      supportedLocales: const [
+        ...AppLocalizations.supportedLocales,
+        Locale('en', 'GB'),
+        Locale('fr', 'FR'),
+      ],
       localizationsDelegates: const [
         AppLocalizations.delegate,
         GlobalMaterialLocalizations.delegate,

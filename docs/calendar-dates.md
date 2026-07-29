@@ -77,6 +77,12 @@ After `showDatePicker`, always normalize:
 onChanged(calendarDateOnly(picked));
 ```
 
+For user-facing calendar dates, display as **dd/MM/yyyy** via
+`formatCalendarDateDisplay`. Use `showCalendarDatePicker` (from
+`calendar_date_picker.dart`) so manual entry in the picker matches that format;
+it passes a day-first Material locale (`en_GB` / `fr_FR`) without changing app
+language.
+
 `calendarDateOnly` / `toCalendarDateString` convert UTC-flagged instants through
 `toLocal()` before reading Y-M-D. On Flutter web, a picked calendar day can be
 represented as a UTC `DateTime` (e.g. July 8 00:00 CEST → `…T22:00:00.000Z`);
