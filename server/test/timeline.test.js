@@ -45,6 +45,19 @@ function buildMockPool() {
           }],
         };
       }
+      if (sql.includes('FROM pet_timeline_entries') && sql.includes('WHERE id')) {
+        return {
+          rows: [{
+            id: 'entry-1',
+            pet_id: petId,
+            entry_type: 'manual',
+            title: 'Shelter stay',
+            description: 'Temporary boarding',
+            start_date: '2024-03-01',
+            end_date: '2024-03-15',
+          }],
+        };
+      }
       if (sql.includes('FROM pet_timeline_entries')) {
         return { rows: [] };
       }
@@ -58,6 +71,20 @@ function buildMockPool() {
             end_date: params[5],
           }],
         };
+      }
+      if (sql.includes('UPDATE pet_timeline_entries')) {
+        return {
+          rows: [{
+            id: params[4],
+            title: params[0],
+            description: params[1],
+            start_date: params[2],
+            end_date: params[3],
+          }],
+        };
+      }
+      if (sql.includes('DELETE FROM pet_timeline_entries')) {
+        return { rows: [{ id: params[0] }] };
       }
       if (sql.includes('INSERT INTO audit_events')) {
         return { rows: [] };
@@ -102,5 +129,38 @@ describe('Pet timeline API', () => {
     expect(res.body.kind).toBe('manual');
     expect(res.body.title).toBe('Shelter stay');
     expect(pool.queries.some((q) => q.sql.includes('INSERT INTO pet_timeline_entries'))).toBe(true);
+  });
+
+  it('PUT /api/pets/:id/timeline/entries/:entryId updates a manual entry', async () => {
+    const pool = buildMockPool();
+    const app = createApp(pool);
+    const res = await request(app)
+      .put(`/api/pets/${petId}/timeline/entries/entry-1`)
+      .set('Authorization', `Bearer ${token}`)
+      .send({
+        title: 'Updated stay',
+        description: 'Extended boarding',
+        start_date: '2024-03-01',
+        end_date: '2024-03-20',
+      });
+
+    expect(res.status).toBe(200);
+    expect(res.body.kind).toBe('manual');
+    expect(res.body.title).toBe('Updated stay');
+    expect(res.body.description).toBe('Extended boarding');
+    expect(res.body.end_date).toBe('2024-03-20');
+    expect(pool.queries.some((q) => q.sql.includes('UPDATE pet_timeline_entries'))).toBe(true);
+  });
+
+  it('DELETE /api/pets/:id/timeline/entries/:entryId deletes a manual entry', async () => {
+    const pool = buildMockPool();
+    const app = createApp(pool);
+    const res = await request(app)
+      .delete(`/api/pets/${petId}/timeline/entries/entry-1`)
+      .set('Authorization', `Bearer ${token}`);
+
+    expect(res.status).toBe(200);
+    expect(res.body.deleted).toBe(true);
+    expect(pool.queries.some((q) => q.sql.includes('DELETE FROM pet_timeline_entries'))).toBe(true);
   });
 });

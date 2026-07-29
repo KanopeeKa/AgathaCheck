@@ -44,24 +44,28 @@ class PetTimelineEntryTile extends ConsumerWidget {
     return Card(
       key: Key('timeline_entry_${segment.kind}_${segment.id}'),
       margin: const EdgeInsets.only(bottom: 8),
-      child: ListTile(
-        leading: Icon(icon, color: theme.colorScheme.primary),
-        title: Text(headline),
-        subtitle: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(petTimelineDateRangeLabel(segment, l)),
-            if (subtitle != null)
-              Padding(
-                padding: const EdgeInsets.only(top: 4),
-                child: Text(subtitle),
-              ),
-          ],
-        ),
-        isThreeLine: subtitle != null,
-        trailing: segment.isManual
-            ? _ManualActions(segment: segment, petId: petId, petName: petName)
-            : null,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          ListTile(
+            leading: Icon(icon, color: theme.colorScheme.primary),
+            title: Text(headline),
+            subtitle: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(petTimelineDateRangeLabel(segment, l)),
+                if (subtitle != null)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 4),
+                    child: Text(subtitle),
+                  ),
+              ],
+            ),
+            isThreeLine: subtitle != null,
+          ),
+          if (segment.isManual)
+            _ManualActions(segment: segment, petId: petId, petName: petName),
+        ],
       ),
     );
   }
@@ -109,29 +113,40 @@ class _ManualActions extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l = AppLocalizations.of(context)!;
+    final colorScheme = Theme.of(context).colorScheme;
 
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        IconButton(
-          key: Key('timeline_edit_${segment.id}'),
-          icon: const Icon(Icons.edit_outlined),
-          tooltip: l.edit,
-          onPressed: () => showPetTimelineFillSheet(
-            context,
-            ref,
-            petId: petId,
-            petName: petName,
-            existingEntry: segment,
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(8, 0, 8, 8),
+      child: Row(
+        children: [
+          Expanded(
+            child: OutlinedButton.icon(
+              key: Key('timeline_edit_${segment.id}'),
+              onPressed: () => showPetTimelineFillSheet(
+                context,
+                ref,
+                petId: petId,
+                petName: petName,
+                existingEntry: segment,
+              ),
+              icon: const Icon(Icons.edit_outlined),
+              label: Text(l.edit),
+            ),
           ),
-        ),
-        IconButton(
-          key: Key('timeline_delete_${segment.id}'),
-          icon: const Icon(Icons.delete_outline),
-          tooltip: l.delete,
-          onPressed: () => _confirmDelete(context, ref, l),
-        ),
-      ],
+          const SizedBox(width: 8),
+          Expanded(
+            child: OutlinedButton.icon(
+              key: Key('timeline_delete_${segment.id}'),
+              onPressed: () => _confirmDelete(context, ref, l),
+              icon: Icon(Icons.delete_outline, color: colorScheme.error),
+              label: Text(l.delete, style: TextStyle(color: colorScheme.error)),
+              style: OutlinedButton.styleFrom(
+                side: BorderSide(color: colorScheme.error),
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 
