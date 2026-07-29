@@ -64,11 +64,7 @@ class PetTimelineEntryTile extends ConsumerWidget {
             isThreeLine: subtitle != null,
           ),
           if (segment.isManual)
-            _ManualActions(
-              segment: segment,
-              petId: petId,
-              petName: petName,
-            ),
+            _ManualActions(segment: segment, petId: petId, petName: petName),
         ],
       ),
     );
@@ -143,10 +139,7 @@ class _ManualActions extends ConsumerWidget {
               key: Key('timeline_delete_${segment.id}'),
               onPressed: () => _confirmDelete(context, ref, l),
               icon: Icon(Icons.delete_outline, color: colorScheme.error),
-              label: Text(
-                l.delete,
-                style: TextStyle(color: colorScheme.error),
-              ),
+              label: Text(l.delete, style: TextStyle(color: colorScheme.error)),
               style: OutlinedButton.styleFrom(
                 side: BorderSide(color: colorScheme.error),
               ),
