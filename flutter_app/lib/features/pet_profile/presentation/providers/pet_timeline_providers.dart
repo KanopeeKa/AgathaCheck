@@ -49,6 +49,7 @@ Future<void> createPetTimelineManualEntry(
         endDate: endDate,
       );
   ref.invalidate(petTimelineProvider(petId));
+  ref.invalidate(petTimelineListProvider(petId));
 }
 
 Future<void> updatePetTimelineManualEntry(
@@ -74,6 +75,7 @@ Future<void> updatePetTimelineManualEntry(
         endDate: endDate,
       );
   ref.invalidate(petTimelineProvider(petId));
+  ref.invalidate(petTimelineListProvider(petId));
 }
 
 Future<void> deletePetTimelineManualEntry(
@@ -87,4 +89,5 @@ Future<void> deletePetTimelineManualEntry(
       .read(petTimelineDataSourceProvider)
       .deleteManualEntry(petId, entryId, token);
   ref.invalidate(petTimelineProvider(petId));
+  ref.invalidate(petTimelineListProvider(petId));
 }
