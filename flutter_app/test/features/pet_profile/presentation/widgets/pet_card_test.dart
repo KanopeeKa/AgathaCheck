@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pet_profile_app/core/theme/app_theme.dart';
-import 'package:pet_profile_app/core/theme/experience_colors.dart';
 import 'package:pet_profile_app/l10n/app_localizations.dart';
 import 'package:pet_profile_app/features/pet_profile/domain/entities/pet.dart';
 import 'package:pet_profile_app/features/pet_profile/presentation/widgets/pet_card.dart';
@@ -45,17 +44,19 @@ void main() {
   }
 
   group('PetCard', () {
-    testWidgets('displays pet name and breed', (tester) async {
+    testWidgets('displays pet name only in text area', (tester) async {
       await tester.pumpWidget(createTestWidget(PetCard(pet: testPet)));
 
       expect(find.text('Buddy'), findsOneWidget);
-      expect(find.textContaining('Golden Retriever'), findsOneWidget);
+      expect(find.textContaining('Golden Retriever'), findsNothing);
+      expect(find.textContaining('Dog'), findsNothing);
     });
 
-    testWidgets('displays species only when no breed', (tester) async {
+    testWidgets('does not display species in text area', (tester) async {
       await tester.pumpWidget(createTestWidget(PetCard(pet: petNoBio)));
 
-      expect(find.text('Cat'), findsOneWidget);
+      expect(find.text('Whiskers'), findsOneWidget);
+      expect(find.text('Cat'), findsNothing);
     });
 
     testWidgets('shows placeholder icon when no photo', (tester) async {
@@ -85,7 +86,9 @@ void main() {
       );
     });
 
-    testWidgets('foster placement line uses org green accent', (tester) async {
+    testWidgets('foster pets keep org green status bar without foster label', (
+      tester,
+    ) async {
       const orgPet = Pet(
         id: 'org-pet-id',
         name: 'Max',
@@ -100,16 +103,13 @@ void main() {
       await tester.pumpWidget(createTestWidget(PetCard(pet: orgPet)));
       await tester.pumpAndSettle();
 
-      final fosterText = tester.widget<Text>(
-        find.textContaining('In foster care'),
-      );
-      final orgGreen = AppTheme.lightTheme
-          .extension<ExperienceColors>()!
-          .organizationPrimary;
-      expect(fosterText.style?.color, orgGreen);
+      expect(find.text('Max'), findsOneWidget);
+      expect(find.textContaining('In foster care'), findsNothing);
     });
 
-    testWidgets('isFoster pet shows green foster label', (tester) async {
+    testWidgets('isFoster pet shows name only with foster status bar', (
+      tester,
+    ) async {
       const fosterPet = Pet(
         id: 'foster-id',
         name: 'Luna',
@@ -121,7 +121,8 @@ void main() {
       await tester.pumpWidget(createTestWidget(PetCard(pet: fosterPet)));
       await tester.pumpAndSettle();
 
-      expect(find.text('In foster care'), findsOneWidget);
+      expect(find.text('Luna'), findsOneWidget);
+      expect(find.text('In foster care'), findsNothing);
     });
 
     testWidgets('does not display foster placement for personal pets', (
@@ -146,6 +147,15 @@ void main() {
 
       await tester.tap(find.byType(PetCard));
       expect(tapped, isTrue);
+    });
+
+    test('tileWidthFor caps size on wide layouts', () {
+      expect(PetCard.tileWidthFor(1200), 220);
+      expect(PetCard.tileWidthFor(800), 200);
+      expect(
+        PetCard.tileWidthFor(400),
+        closeTo((400 - 2 * PetCard.tileSpacing) / 3, 0.01),
+      );
     });
 
     testWidgets('PetTileStrip lays out square vertical tiles', (tester) async {

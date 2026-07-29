@@ -57,7 +57,6 @@ void main() {
 
     expect(find.text('My Fostered Pets'), findsOneWidget);
     expect(find.text('Luna'), findsOneWidget);
-    expect(find.text('In foster care'), findsOneWidget);
     expect(find.byType(Wrap), findsNWidgets(2));
   });
 
