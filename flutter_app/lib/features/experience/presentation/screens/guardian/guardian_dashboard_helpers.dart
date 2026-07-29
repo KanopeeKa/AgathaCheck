@@ -24,6 +24,17 @@ List<Pet> guardianDashboardFosterPets(
   return fostered;
 }
 
+/// Active shared pets for the guardian dashboard, oldest first.
+List<Pet> guardianDashboardSharedPets(
+  List<Pet> allPets,
+  PetListController controller,
+) {
+  final shellPets = controller.guardianShellPets(allPets);
+  final shared = shellPets.where((p) => !p.passedAway && p.isShared).toList();
+  sortPetsByCreatedAt(shared);
+  return shared;
+}
+
 /// Whether the guardian has any active shell pets (personal or foster).
 bool guardianDashboardHasAnyPets(
   List<Pet> allPets,

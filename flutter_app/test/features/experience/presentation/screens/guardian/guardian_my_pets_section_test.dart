@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pet_profile_app/core/theme/app_theme.dart';
 import 'package:pet_profile_app/features/experience/presentation/screens/guardian/guardian_my_pets_section.dart';
@@ -8,15 +9,17 @@ import 'package:pet_profile_app/l10n/app_localizations.dart';
 
 void main() {
   Widget buildSection({required List<Pet> pets}) {
-    return MaterialApp(
-      theme: AppTheme.lightTheme,
-      localizationsDelegates: AppLocalizations.localizationsDelegates,
-      supportedLocales: AppLocalizations.supportedLocales,
-      home: Scaffold(
-        body: SingleChildScrollView(
-          child: GuardianMyPetsSection(
-            allPets: pets,
-            controller: PetListController(),
+    return ProviderScope(
+      child: MaterialApp(
+        theme: AppTheme.lightTheme,
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: Scaffold(
+          body: SingleChildScrollView(
+            child: GuardianMyPetsSection(
+              allPets: pets,
+              controller: PetListController(),
+            ),
           ),
         ),
       ),
@@ -66,5 +69,25 @@ void main() {
 
     expect(find.text('No pets yet'), findsOneWidget);
     expect(find.text('My Fostered Pets'), findsNothing);
+    expect(find.text('Shared Pets'), findsNothing);
+  });
+
+  testWidgets('shows shared subgroup when shared pets exist', (tester) async {
+    final pets = [
+      const Pet(
+        id: 'p1',
+        name: 'Max',
+        species: 'Dog',
+        breed: '',
+        isShared: true,
+      ),
+    ];
+
+    await tester.pumpWidget(buildSection(pets: pets));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Shared Pets'), findsOneWidget);
+    expect(find.text('Max'), findsOneWidget);
+    expect(find.text('No pets yet'), findsNothing);
   });
 }

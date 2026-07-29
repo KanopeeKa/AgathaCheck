@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../../core/widgets/dashboard_section.dart';
@@ -6,10 +7,11 @@ import '../../../../../l10n/app_localizations.dart';
 import '../../../../pet_profile/domain/entities/pet.dart';
 import '../../../../pet_profile/presentation/controllers/pet_list_controller.dart';
 import '../../../../pet_profile/presentation/widgets/pet_card.dart';
+import '../../widgets/guardian_shell_shared_pet_card.dart';
 import 'guardian_dashboard_helpers.dart';
 
-/// Guardian dashboard pets: one section with My pets / My foster pets subgroups.
-class GuardianMyPetsSection extends StatelessWidget {
+/// Guardian dashboard pets: owned, fostered, and shared subgroups.
+class GuardianMyPetsSection extends ConsumerWidget {
   const GuardianMyPetsSection({
     super.key,
     required this.allPets,
@@ -20,13 +22,16 @@ class GuardianMyPetsSection extends StatelessWidget {
   final PetListController controller;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final l = AppLocalizations.of(context)!;
+    final theme = Theme.of(context);
     final personalPets = guardianDashboardPersonalPets(allPets, controller);
     final fosterPets = guardianDashboardFosterPets(allPets, controller);
+    final sharedPets = guardianDashboardSharedPets(allPets, controller);
     final hasAny = guardianDashboardHasAnyPets(allPets, controller);
     final showPersonalSubgroupTitle =
-        fosterPets.isNotEmpty && personalPets.isNotEmpty;
+        personalPets.isNotEmpty &&
+        (fosterPets.isNotEmpty || sharedPets.isNotEmpty);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -39,14 +44,16 @@ class GuardianMyPetsSection extends StatelessWidget {
               children: [
                 if (showPersonalSubgroupTitle)
                   _PetSubgroupTitle(title: l.myPets),
-                if (personalPets.isEmpty)
+                if (personalPets.isEmpty &&
+                    fosterPets.isEmpty &&
+                    sharedPets.isEmpty)
                   Text(
                     l.noPetsYet,
                     style: Theme.of(ctx).textTheme.bodyMedium?.copyWith(
                       color: Theme.of(ctx).colorScheme.onSurfaceVariant,
                     ),
                   )
-                else
+                else if (personalPets.isNotEmpty)
                   PetTileStrip(
                     useWrap: true,
                     pets: personalPets,
@@ -60,6 +67,23 @@ class GuardianMyPetsSection extends StatelessWidget {
                     useWrap: true,
                     pets: fosterPets,
                     onPetTap: (pet) => context.go('/pet/${pet.id}'),
+                  ),
+                ],
+                if (sharedPets.isNotEmpty) ...[
+                  const SizedBox(height: 16),
+                  _PetSubgroupTitle(title: l.sharedPets),
+                  const SizedBox(height: 8),
+                  PetTileStrip(
+                    useWrap: true,
+                    pets: sharedPets,
+                    onPetTap: (pet) => context.go('/pet/${pet.id}'),
+                    tileBuilder: (pet, tile) => GuardianShellSharedPetCard(
+                      pet: pet,
+                      l: l,
+                      theme: theme,
+                      ref: ref,
+                      parentContext: context,
+                    ),
                   ),
                 ],
               ],
