@@ -105,22 +105,51 @@ export class OrganizationDetailPage {
     await expect(cards).toHaveCount(count, { timeout: 30_000 });
   }
 
+  /** EN presentation section — OrgSectionCard semantics label. */
+  private static readonly presentationSectionName =
+    /Organisation presentation|Présentation de l'organisation/i;
+
   async openPresentation(): Promise<void> {
-    await enableFlutterAccessibility(this.page);
-    await this.page
-      .getByText(/Organisation presentation|Présentation de l'organisation/i)
-      .first()
-      .click();
+    const orgId = this.orgIdFromUrl();
+    const presentationRoute = /\/o\/orgs\/[^/]+\/presentation(?:\/|$|\?)/;
+
+    let navigated = false;
+    if (await this.tryActivateSectionCard(OrganizationDetailPage.presentationSectionName)) {
+      navigated = await waitForFlutterRoutePattern(this.page, presentationRoute, 8_000)
+        .then(() => true)
+        .catch(() => false);
+    }
+
+    if (!navigated) {
+      if (!orgId) {
+        await waitForFlutterRoutePattern(this.page, presentationRoute, 60_000);
+      } else {
+        await navigateWithShellFallback(
+          this.page,
+          presentationRoute,
+          `/o/orgs/${orgId}/presentation`,
+          async () => {
+            await refreshFlutterAccessibility(this.page);
+          },
+          { helper: 'OrganizationDetailPage.openPresentation', testTitle: null },
+        );
+      }
+    }
+
     await refreshFlutterAccessibility(this.page);
-    await this.page
-      .getByText(/Organisation presentation|Présentation de l'organisation/i)
-      .first()
-      .waitFor({ timeout: 30_000 });
+    await waitForFlutterRoutePattern(this.page, presentationRoute, 60_000);
+    await expect(async () => {
+      await refreshFlutterAccessibility(this.page);
+      await expectAppBarTitle(this.page, OrganizationDetailPage.presentationSectionName);
+    }).toPass({ timeout: 30_000 });
   }
 
   async expectBio(bio: string): Promise<void> {
     await this.openPresentation();
-    await expect(this.page.getByText(bio)).toBeVisible();
+    const pattern = new RegExp(escapeRegExp(bio), 'i');
+    await expect(
+      this.page.getByText(pattern).or(this.page.getByRole('group', { name: pattern })),
+    ).toBeVisible();
   }
 
   /** EN "All" / FR "Tous" — inclusive org pets tab (default is Need attention). */
