@@ -233,8 +233,20 @@ export class PetListPage {
   /**
    * Simulate a left swipe on a shared-pet card to trigger the hide-pet
    * Dismissible action (DismissDirection.endToStart).
+   * Guardian dashboard (`/g/home`) tiles are not dismissible — use `/g/pets`.
    */
   async swipeLeftPetCard(name: string): Promise<void> {
+    const route = flutterRoutePath(this.page.url());
+    if (route === '/g/home' || route === '/') {
+      await this.openManagePets();
+    }
+    await this.expectPetVisible(name);
+
+    const hideAffordance = this.page
+      .getByText(new RegExp(`Hide\\s+${escapeRegExp(name)}`, 'i'))
+      .or(this.page.getByText(/Hide Pet|Masquer l'animal/i))
+      .or(this.page.getByRole('dialog', { name: /Hide Pet|Masquer l'animal/i }));
+
     const card = semanticsByName(
       this.page,
       new RegExp(`Pet:\\s*${escapeRegExp(name)}`, 'i'),
@@ -252,13 +264,11 @@ export class PetListPage {
     }
     await this.page.waitForTimeout(300);
     await this.page.mouse.up();
-    await this.page.waitForTimeout(500);
-    await refreshFlutterAccessibility(this.page);
-    await this.page
-      .getByText(new RegExp(`Hide\\s+${escapeRegExp(name)}`, 'i'))
-      .or(this.page.getByText(/Hide Pet/i))
-      .first()
-      .waitFor({ timeout: 15_000 });
+
+    await expect(async () => {
+      await refreshFlutterAccessibility(this.page);
+      await hideAffordance.first().waitFor({ timeout: 3_000 });
+    }).toPass({ timeout: 30_000 });
   }
 
   async confirmHidePet(): Promise<void> {
