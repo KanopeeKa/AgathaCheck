@@ -52,7 +52,14 @@ export class WeightTrackingPage {
 
       const route = flutterRoutePath(this.page.url());
       const petMatch = route.match(/^\/pet\/([^/]+)(?:\/|$)/);
-      if (petMatch && !route.includes('/weight')) {
+      if (petMatch && route.includes('/weight')) {
+        // Already on the weight route — wait for shell; never click profile nav here.
+        await waitForFlutterRoutePattern(
+          this.page,
+          new RegExp(`^/pet/${petMatch[1]}/weight(?:\\?|$)`),
+          5_000,
+        );
+      } else if (petMatch) {
         const weightRoute = `/pet/${petMatch[1]}/weight`;
         await this.page.goto(flutterGotoUrl(weightRoute));
         await refreshFlutterAccessibility(this.page);
