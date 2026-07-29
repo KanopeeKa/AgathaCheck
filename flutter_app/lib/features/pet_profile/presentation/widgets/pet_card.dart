@@ -289,11 +289,7 @@ class PetTileStrip extends StatelessWidget {
         Widget buildTile(Pet pet) {
           final card = PetCard(pet: pet, onTap: () => onPetTap(pet));
           final wrapped = tileBuilder?.call(pet, card) ?? card;
-          return SizedBox(
-            width: tileWidth,
-            height: tileHeight,
-            child: wrapped,
-          );
+          return SizedBox(width: tileWidth, height: tileHeight, child: wrapped);
         }
 
         if (useWrap) {
