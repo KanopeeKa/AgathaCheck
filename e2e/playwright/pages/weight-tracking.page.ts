@@ -1,6 +1,12 @@
 import type { Page } from '@playwright/test';
 import { expect } from '@playwright/test';
-import { refreshFlutterAccessibility } from '../support/flutter';
+import {
+  flutterGotoUrl,
+  flutterRoutePath,
+  refreshFlutterAccessibility,
+  semanticsByName,
+  waitForFlutterRoutePattern,
+} from '../support/flutter';
 import { isLiveHostingTarget } from '../support/hosting';
 
 /**
@@ -10,34 +16,73 @@ import { isLiveHostingTarget } from '../support/hosting';
 export class WeightTrackingPage {
   constructor(private readonly page: Page) {}
 
+  /** Flutter 3.44 web SegmentedButton exposes kg/lb as button, not radio. */
+  private kgUnitLocator() {
+    return this.page
+      .getByRole('button', { name: /^kg$/i })
+      .or(this.page.getByRole('radio', { name: 'kg' }));
+  }
+
+  private lbUnitLocator() {
+    return this.page
+      .getByRole('button', { name: /^lb$/i })
+      .or(this.page.getByRole('radio', { name: 'lb' }));
+  }
+
+  /** Any stable affordance that the dedicated weight screen is open. */
+  private weightScreenLocator() {
+    return this.kgUnitLocator()
+      .or(this.page.getByRole('banner', { name: /Weight Tracking|Suivi du poids/i }))
+      .or(
+        this.page.getByRole('button', {
+          name: /Add weight entry|Ajouter une entrée de poids/i,
+        }),
+      );
+  }
+
   /** Navigate to the dedicated weight tracking screen from pet profile. */
   async openSection(): Promise<void> {
-    const onWeightScreen = await this.page
-      .getByRole('radio', { name: 'kg' })
-      .isVisible()
-      .catch(() => false);
-    if (onWeightScreen) {
+    if (await this.weightScreenLocator().first().isVisible().catch(() => false)) {
       await refreshFlutterAccessibility(this.page);
       return;
     }
 
-    const navRow = this.page
-      .getByRole('button', { name: /Weight Tracking|Suivi du poids/i })
-      .or(this.page.getByText(/Weight Tracking|Suivi du poids/i))
-      .first();
-    await navRow.scrollIntoViewIfNeeded();
-    await navRow.click();
-    await this.page.waitForTimeout(600);
+    await expect(async () => {
+      await refreshFlutterAccessibility(this.page);
+
+      const route = flutterRoutePath(this.page.url());
+      const petMatch = route.match(/^\/pet\/([^/]+)(?:\/|$)/);
+      if (petMatch && route.includes('/weight')) {
+        // Already on the weight route — wait for shell; never click profile nav here.
+        await waitForFlutterRoutePattern(
+          this.page,
+          new RegExp(`^/pet/${petMatch[1]}/weight(?:\\?|$)`),
+          5_000,
+        );
+      } else if (petMatch) {
+        const weightRoute = `/pet/${petMatch[1]}/weight`;
+        await this.page.goto(flutterGotoUrl(weightRoute));
+        await refreshFlutterAccessibility(this.page);
+        await waitForFlutterRoutePattern(
+          this.page,
+          new RegExp(`^/pet/${petMatch[1]}/weight(?:\\?|$)`),
+          15_000,
+        );
+      } else {
+        const navRow = semanticsByName(this.page, /Weight Tracking|Suivi du poids/i);
+        await navRow.scrollIntoViewIfNeeded();
+        await navRow.click();
+      }
+
+      await this.weightScreenLocator().first().waitFor({ timeout: 5_000 });
+    }).toPass({ timeout: 30_000 });
+
     await refreshFlutterAccessibility(this.page);
   }
 
   /** Wait until the weight tracking screen is visible. */
   async expectLoaded(): Promise<void> {
-    await this.page
-      .getByRole('radio', { name: 'kg' })
-      .or(this.page.getByRole('button', { name: /Weight Tracking|Suivi du poids/i }))
-      .first()
-      .waitFor({ timeout: 30_000 });
+    await this.weightScreenLocator().first().waitFor({ timeout: 30_000 });
   }
 
   /** Wait until the async weight list has finished loading (empty, entries, or error). */
@@ -130,7 +175,7 @@ export class WeightTrackingPage {
   /** Expect the kg / lb unit segmented control to be present. */
   async expectUnitSelectorVisible(): Promise<void> {
     await this.openSection();
-    await this.page.getByRole('radio', { name: 'kg' }).waitFor({ timeout: 10_000 });
-    await this.page.getByRole('radio', { name: 'lb' }).waitFor({ timeout: 10_000 });
+    await this.kgUnitLocator().waitFor({ timeout: 10_000 });
+    await this.lbUnitLocator().waitFor({ timeout: 10_000 });
   }
 }
