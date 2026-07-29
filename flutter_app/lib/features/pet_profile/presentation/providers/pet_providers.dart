@@ -147,7 +147,7 @@ class PetListNotifier extends AsyncNotifier<List<Pet>> {
     );
     await ref.read(addPetUseCaseProvider).call(pet);
     if (weight != null) {
-      invalidatePetWeightData(ref, pet.id);
+      invalidateWeightEntryProviders(ref, pet.id);
     }
     ref.invalidateSelf();
     ref.invalidate(allPetsIncludingOrgProvider);
@@ -156,7 +156,7 @@ class PetListNotifier extends AsyncNotifier<List<Pet>> {
 
   Future<void> updatePet(Pet pet) async {
     await ref.read(updatePetUseCaseProvider).call(pet);
-    invalidatePetWeightData(ref, pet.id);
+    invalidateWeightEntryProviders(ref, pet.id);
     ref.invalidateSelf();
     ref.invalidate(allPetsIncludingOrgProvider);
   }
