@@ -195,12 +195,12 @@ class _FilterChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return FilterChip(
+    // ChoiceChip avoids FilterChip's checkbox aria-owns tree on Flutter web.
+    return ChoiceChip(
       label: Text(label),
       selected: selected,
       onSelected: (_) => onTap(),
       selectedColor: color.withAlpha(40),
-      checkmarkColor: color,
       labelStyle: TextStyle(
         color: selected ? color : null,
         fontWeight: selected ? FontWeight.w600 : FontWeight.normal,
