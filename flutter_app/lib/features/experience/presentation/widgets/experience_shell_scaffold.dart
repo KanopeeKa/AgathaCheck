@@ -26,6 +26,7 @@ class ExperienceShellScaffold extends ConsumerWidget {
     required this.child,
     this.screenTitle,
     this.contextualActions = const [],
+    this.backPath,
   });
 
   final AppExperience experience;
@@ -37,6 +38,9 @@ class ExperienceShellScaffold extends ConsumerWidget {
 
   /// Icons/menus to the right of the title, before `|` and the notification bell.
   final List<Widget> contextualActions;
+
+  /// When [Navigator.canPop] is false, navigate here instead of the section root.
+  final String? backPath;
 
   bool _isRoot() => DrawerMenuConfig.sectionRootPaths.contains(currentLocation);
 
@@ -132,7 +136,7 @@ class ExperienceShellScaffold extends ConsumerWidget {
     if (Navigator.canPop(context)) {
       Navigator.pop(context);
     } else {
-      context.go(_sectionRoot());
+      context.go(backPath ?? _sectionRoot());
     }
   }
 }

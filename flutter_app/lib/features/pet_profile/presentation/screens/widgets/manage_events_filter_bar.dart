@@ -71,8 +71,8 @@ class ManageEventsFilterBar extends StatelessWidget {
     return FilterChip(
       key: Key('manage_events_type_${value.name}'),
       label: Text(label),
-      selected: filters.type == value,
-      onSelected: (_) => onChanged(filters.copyWith(type: value)),
+      selected: filters.isTypeSelected(value),
+      onSelected: (_) => onChanged(filters.toggleType(value)),
     );
   }
 
@@ -80,8 +80,8 @@ class ManageEventsFilterBar extends StatelessWidget {
     return FilterChip(
       key: Key('manage_events_status_${value.name}'),
       label: Text(label),
-      selected: filters.status == value,
-      onSelected: (_) => onChanged(filters.copyWith(status: value)),
+      selected: filters.isStatusSelected(value),
+      onSelected: (_) => onChanged(filters.toggleStatus(value)),
     );
   }
 
@@ -89,8 +89,8 @@ class ManageEventsFilterBar extends StatelessWidget {
     return FilterChip(
       key: Key('manage_events_recurring_${value.name}'),
       label: Text(label),
-      selected: filters.recurring == value,
-      onSelected: (_) => onChanged(filters.copyWith(recurring: value)),
+      selected: filters.isRecurringSelected(value),
+      onSelected: (_) => onChanged(filters.toggleRecurring(value)),
     );
   }
 }

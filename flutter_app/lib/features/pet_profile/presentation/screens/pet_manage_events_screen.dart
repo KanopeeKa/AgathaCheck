@@ -6,6 +6,7 @@ import '../../../../l10n/app_localizations.dart';
 import '../../../experience/presentation/providers/experience_providers.dart';
 import '../../../experience/presentation/widgets/experience_shell_scaffold.dart';
 import '../../../health_tracking/presentation/providers/health_providers.dart';
+import '../../../health_tracking/presentation/widgets/add_health_entry_navigation.dart';
 import '../providers/pet_providers.dart';
 import 'widgets/pet_event_entry_list.dart';
 
@@ -35,6 +36,15 @@ class PetManageEventsScreen extends ConsumerWidget {
           experience: experience,
           currentLocation: GoRouterState.of(context).uri.path,
           screenTitle: l.manageEvents,
+          backPath: '/pet/$petId',
+          contextualActions: [
+            IconButton(
+              key: const Key('manage_events_add_app_bar'),
+              tooltip: l.addAnEvent,
+              icon: const Icon(Icons.add),
+              onPressed: () => navigateToAddHealthEntry(context, petId: petId),
+            ),
+          ],
           child: ManageEventsList(petId: petId),
         );
       },

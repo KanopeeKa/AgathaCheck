@@ -139,9 +139,18 @@ void main() {
       initialLocation: '/pet/pet-1/events',
       routes: [
         GoRoute(
+          path: '/pet/:petId',
+          builder: (context, state) => const Scaffold(body: Text('Pet profile')),
+        ),
+        GoRoute(
           path: '/pet/:petId/events',
           builder: (context, state) =>
               PetManageEventsScreen(petId: state.pathParameters['petId']!),
+        ),
+        GoRoute(
+          path: '/pet/:petId/health/add',
+          builder: (context, state) =>
+              const Scaffold(body: Text('Add health entry')),
         ),
         GoRoute(
           path: '/pet/:petId/events/:entryId',
@@ -205,15 +214,31 @@ void main() {
     test('filters by type and recurring', () {
       final visible = filterAndSortManageEvents(
         allEntries,
-        const ManageEventsFilters(
-          type: ManageEventsTypeFilter.other,
-          recurring: ManageEventsRecurringFilter.oneTime,
+        ManageEventsFilters(
+          types: {ManageEventsTypeFilter.other},
+          recurring: {ManageEventsRecurringFilter.oneTime},
         ),
         const {},
       );
 
       expect(visible, hasLength(1));
       expect(visible.single.id, 'entry-other');
+    });
+
+    test('type filter combines multiple selections with OR', () {
+      final visible = filterAndSortManageEvents(
+        allEntries,
+        const ManageEventsFilters(
+          types: {
+            ManageEventsTypeFilter.medication,
+            ManageEventsTypeFilter.preventive,
+          },
+        ),
+        const {},
+      );
+
+      expect(visible.map((e) => e.id), containsAll(['entry-open-med', 'entry-overdue', 'entry-closed']));
+      expect(visible.any((e) => e.id == 'entry-other'), isFalse);
     });
 
     test('hides skipped entries when showSkipped is false', () {
@@ -266,16 +291,87 @@ void main() {
     expect(find.text('Skipped'), findsOneWidget);
   });
 
-  testWidgets('type filter shows only matching entries', (tester) async {
+  testWidgets('add app bar button navigates to unified health entry form', (
+    tester,
+  ) async {
     await tester.pumpWidget(buildScreen());
     await tester.pumpAndSettle();
 
-    await tester.tap(find.byKey(const Key('manage_events_type_other')));
+    await tester.tap(find.byKey(const Key('manage_events_add_app_bar')));
     await tester.pumpAndSettle();
 
-    expect(find.text('Grooming'), findsOneWidget);
-    expect(find.text('Heartgard'), findsNothing);
-    expect(find.text('Flea treatment'), findsNothing);
+    expect(find.text('Add health entry'), findsOneWidget);
+  });
+
+  testWidgets('back navigates to pet profile', (tester) async {
+    final router = GoRouter(
+      initialLocation: '/pet/pet-1',
+      routes: [
+        GoRoute(
+          path: '/pet/:petId',
+          builder: (context, state) => Scaffold(
+            body: TextButton(
+              onPressed: () => context.push('/pet/${state.pathParameters['petId']}/events'),
+              child: const Text('Open manage events'),
+            ),
+          ),
+        ),
+        GoRoute(
+          path: '/pet/:petId/events',
+          builder: (context, state) =>
+              PetManageEventsScreen(petId: state.pathParameters['petId']!),
+        ),
+      ],
+    );
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          authProvider.overrideWith((ref) => FakeAuthNotifier()),
+          resolvedExperienceProvider.overrideWith(
+            (ref) => AppExperience.guardian,
+          ),
+          allPetsIncludingOrgProvider.overrideWith((ref) async => [pet]),
+          healthEntriesNotifierProvider.overrideWith(
+            () => _TestHealthEntriesNotifier(allEntries),
+          ),
+          entryHistoryProvider.overrideWith(_historyFor),
+          combinedUnreadNotificationCountProvider.overrideWith((ref) => 0),
+          apiBaseUrlProvider.overrideWithValue('http://test.local'),
+        ],
+        child: MaterialApp.router(
+          theme: AppTheme.lightTheme,
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          routerConfig: router,
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('Open manage events'));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('manage_events_add_app_bar')), findsOneWidget);
+
+    await tester.tap(find.byKey(const Key('experience_back_button')));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Open manage events'), findsOneWidget);
+  });
+
+  testWidgets('multi-select type filters combine with OR', (tester) async {
+    await tester.pumpWidget(buildScreen());
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.byKey(const Key('manage_events_type_medication')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('manage_events_type_preventive')));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Heartgard'), findsOneWidget);
+    expect(find.text('Flea treatment'), findsOneWidget);
+    expect(find.text('Dewormer'), findsOneWidget);
+    expect(find.text('Grooming'), findsNothing);
   });
 
   testWidgets('due/overdue filter hides non-due entries', (tester) async {

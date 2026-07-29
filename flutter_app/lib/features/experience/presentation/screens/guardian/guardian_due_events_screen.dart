@@ -5,7 +5,6 @@ import '../../../../../l10n/app_localizations.dart';
 import '../../../../health_tracking/domain/entities/health_entry.dart';
 import '../../../../health_tracking/domain/entities/health_history_entry.dart';
 import '../../../../health_tracking/presentation/providers/health_providers.dart';
-import '../../../../health_tracking/presentation/widgets/guardian_add_event_picker_sheet.dart';
 import '../../../../pet_profile/domain/entities/pet.dart';
 import '../../../../pet_profile/presentation/controllers/pet_list_controller.dart';
 import '../../../../pet_profile/presentation/providers/pet_providers.dart';
@@ -18,26 +17,56 @@ enum GuardianEventsCohortFilter { all, myPets, fosterPets }
 class GuardianGlobalEventsFilters {
   const GuardianGlobalEventsFilters({
     this.eventFilters = const ManageEventsFilters(),
-    this.cohort = GuardianEventsCohortFilter.all,
-    this.petId,
+    this.cohorts = const {},
+    this.petIds = const {},
   });
 
   final ManageEventsFilters eventFilters;
-  final GuardianEventsCohortFilter cohort;
-  final String? petId;
+  final Set<GuardianEventsCohortFilter> cohorts;
+  final Set<String> petIds;
 
   GuardianGlobalEventsFilters copyWith({
     ManageEventsFilters? eventFilters,
-    GuardianEventsCohortFilter? cohort,
-    String? petId,
-    bool clearPetId = false,
+    Set<GuardianEventsCohortFilter>? cohorts,
+    Set<String>? petIds,
   }) {
     return GuardianGlobalEventsFilters(
       eventFilters: eventFilters ?? this.eventFilters,
-      cohort: cohort ?? this.cohort,
-      petId: clearPetId ? null : (petId ?? this.petId),
+      cohorts: cohorts ?? this.cohorts,
+      petIds: petIds ?? this.petIds,
     );
   }
+
+  GuardianGlobalEventsFilters toggleCohort(GuardianEventsCohortFilter value) {
+    if (value == GuardianEventsCohortFilter.all) {
+      return copyWith(cohorts: {});
+    }
+    final next = Set<GuardianEventsCohortFilter>.from(cohorts);
+    if (next.contains(value)) {
+      next.remove(value);
+    } else {
+      next.add(value);
+    }
+    return copyWith(cohorts: next);
+  }
+
+  GuardianGlobalEventsFilters togglePetId(String petId) {
+    final next = Set<String>.from(petIds);
+    if (next.contains(petId)) {
+      next.remove(petId);
+    } else {
+      next.add(petId);
+    }
+    return copyWith(petIds: next);
+  }
+
+  bool isCohortSelected(GuardianEventsCohortFilter value) =>
+      value == GuardianEventsCohortFilter.all
+      ? cohorts.isEmpty
+      : cohorts.contains(value);
+
+  bool isPetSelected(String? petId) =>
+      petId == null ? petIds.isEmpty : petIds.contains(petId);
 }
 
 /// Histories for all guardian shell-pet entries (global events list).
@@ -67,17 +96,23 @@ List<Pet> guardianGlobalEventsPets(
   GuardianGlobalEventsFilters filters,
 ) {
   var pets = shellPets;
-  switch (filters.cohort) {
-    case GuardianEventsCohortFilter.all:
-      break;
-    case GuardianEventsCohortFilter.myPets:
-      pets = pets.where((pet) => !pet.isFoster).toList();
-    case GuardianEventsCohortFilter.fosterPets:
-      pets = pets.where((pet) => pet.isFoster).toList();
+
+  if (filters.cohorts.isNotEmpty) {
+    pets = pets.where((pet) {
+      final matchesMyPets =
+          filters.cohorts.contains(GuardianEventsCohortFilter.myPets) &&
+          !pet.isFoster;
+      final matchesFoster =
+          filters.cohorts.contains(GuardianEventsCohortFilter.fosterPets) &&
+          pet.isFoster;
+      return matchesMyPets || matchesFoster;
+    }).toList();
   }
-  if (filters.petId != null) {
-    pets = pets.where((pet) => pet.id == filters.petId).toList();
+
+  if (filters.petIds.isNotEmpty) {
+    pets = pets.where((pet) => filters.petIds.contains(pet.id)).toList();
   }
+
   return pets;
 }
 
@@ -166,25 +201,11 @@ class _GlobalEventsListState extends ConsumerState<GlobalEventsList> {
                   children: [
                     Padding(
                       padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
-                      child: Row(
-                        children: [
-                          Expanded(
-                            child: Text(
-                              l.eventsNavLabel,
-                              style: theme.textTheme.titleMedium?.copyWith(
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          ),
-                          TextButton.icon(
-                            onPressed: () => showGuardianAddEventPickerSheet(
-                              context,
-                              pets: widget.shellPets,
-                            ),
-                            icon: const Icon(Icons.add, size: 18),
-                            label: Text(l.addAnEvent),
-                          ),
-                        ],
+                      child: Text(
+                        l.eventsNavLabel,
+                        style: theme.textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
                     ),
                     GuardianGlobalEventsFilterBar(
@@ -278,17 +299,15 @@ class GuardianGlobalEventsFilterBar extends StatelessWidget {
                 FilterChip(
                   key: const Key('global_events_pet_all'),
                   label: Text(l.allPets),
-                  selected: filters.petId == null,
-                  onSelected: (_) =>
-                      onChanged(filters.copyWith(clearPetId: true)),
+                  selected: filters.isPetSelected(null),
+                  onSelected: (_) => onChanged(filters.copyWith(petIds: {})),
                 ),
                 for (final pet in sortedPets)
                   FilterChip(
                     key: Key('global_events_pet_${pet.id}'),
                     label: Text(pet.name),
-                    selected: filters.petId == pet.id,
-                    onSelected: (_) =>
-                        onChanged(filters.copyWith(petId: pet.id)),
+                    selected: filters.isPetSelected(pet.id),
+                    onSelected: (_) => onChanged(filters.togglePetId(pet.id)),
                   ),
               ],
             ),
@@ -302,8 +321,8 @@ class GuardianGlobalEventsFilterBar extends StatelessWidget {
     return FilterChip(
       key: Key('global_events_cohort_${value.name}'),
       label: Text(label),
-      selected: filters.cohort == value,
-      onSelected: (_) => onChanged(filters.copyWith(cohort: value)),
+      selected: filters.isCohortSelected(value),
+      onSelected: (_) => onChanged(filters.toggleCohort(value)),
     );
   }
 }

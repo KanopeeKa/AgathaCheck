@@ -16,6 +16,7 @@ import '../../features/experience/presentation/screens/guardian/guardian_all_pet
 import '../../features/experience/presentation/screens/guardian/guardian_due_events_screen.dart';
 import '../../features/health_tracking/domain/health_events_scope.dart';
 import '../../features/health_tracking/presentation/screens/health_dashboard_screen.dart';
+import '../../features/health_tracking/presentation/widgets/add_health_entry_navigation.dart';
 
 List<RouteBase> buildExperienceRoutes() {
   return [
@@ -136,6 +137,15 @@ class _GuardianEventsScreen extends StatelessWidget {
       experience: AppExperience.guardian,
       currentLocation: GoRouterState.of(context).uri.path,
       screenTitle: l.eventsNavLabel,
+      backPath: '/g/home',
+      contextualActions: [
+        IconButton(
+          key: const Key('global_events_add_app_bar'),
+          tooltip: l.addAnEvent,
+          icon: const Icon(Icons.add),
+          onPressed: () => navigateToAddHealthEntry(context),
+        ),
+      ],
       child: const GuardianDueEventsScreen(),
     );
   }
