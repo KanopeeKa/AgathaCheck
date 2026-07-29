@@ -22,19 +22,31 @@ void sortPetsByCreatedAt(List<Pet> pets) {
 
 /// Vertical dashboard tile: top ~2/3 photo, bottom ~1/3 name + species.
 ///
-/// Tile width and height are equal (160–220px responsive via [tileSizeFor]).
+/// Tile width fits [wrapColumnsFor] per row; height matches width (1:1 ratio).
 class PetCard extends StatelessWidget {
   const PetCard({super.key, required this.pet, this.onTap});
 
   final Pet pet;
   final VoidCallback? onTap;
 
-  static double tileWidthFor(double maxWidth) {
-    if (maxWidth >= 900) return 220;
-    if (maxWidth >= 600) return 200;
-    if (maxWidth >= 400) return 180;
-    return 160;
+  /// Spacing between tiles in [PetTileStrip] wrap/scroll layouts.
+  static const double tileSpacing = 8;
+
+  /// Target columns per row for wrap layouts at a given width.
+  static int wrapColumnsFor(double maxWidth) {
+    if (maxWidth >= 900) return 4;
+    if (maxWidth >= 600) return 3;
+    return 3;
   }
+
+  /// Tile width for available [maxWidth], fitting [wrapColumnsFor] per row.
+  static double tileWidthFor(double maxWidth) {
+    final columns = wrapColumnsFor(maxWidth);
+    return (maxWidth - (columns - 1) * tileSpacing) / columns;
+  }
+
+  /// Tile height preserving the 1:1 aspect ratio ([tileWidthFor]).
+  static double tileHeightFor(double maxWidth) => tileWidthFor(maxWidth);
 
   /// Square tile side length — same as [tileWidthFor].
   static double tileSizeFor(double maxWidth) => tileWidthFor(maxWidth);
@@ -47,10 +59,11 @@ class PetCard extends StatelessWidget {
   }) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        final tileSize = tileSizeFor(constraints.maxWidth);
+        final tileWidth = tileWidthFor(constraints.maxWidth);
+        final tileHeight = tileHeightFor(constraints.maxWidth);
         return SizedBox(
-          width: tileSize,
-          height: tileSize,
+          width: tileWidth,
+          height: tileHeight,
           child: PetCard(pet: pet, onTap: onTap),
         );
       },
@@ -270,28 +283,30 @@ class PetTileStrip extends StatelessWidget {
 
     return LayoutBuilder(
       builder: (context, constraints) {
-        final tileSize = PetCard.tileSizeFor(constraints.maxWidth);
+        final tileWidth = PetCard.tileWidthFor(constraints.maxWidth);
+        final tileHeight = PetCard.tileHeightFor(constraints.maxWidth);
 
         Widget buildTile(Pet pet) {
           final card = PetCard(pet: pet, onTap: () => onPetTap(pet));
           final wrapped = tileBuilder?.call(pet, card) ?? card;
-          return SizedBox(width: tileSize, height: tileSize, child: wrapped);
+          return SizedBox(width: tileWidth, height: tileHeight, child: wrapped);
         }
 
         if (useWrap) {
           return Wrap(
-            spacing: 8,
-            runSpacing: 8,
+            spacing: PetCard.tileSpacing,
+            runSpacing: PetCard.tileSpacing,
             children: pets.map(buildTile).toList(),
           );
         }
 
         return SizedBox(
-          height: tileSize,
+          height: tileHeight,
           child: ListView.separated(
             scrollDirection: Axis.horizontal,
             itemCount: pets.length,
-            separatorBuilder: (_, __) => const SizedBox(width: 8),
+            separatorBuilder: (_, __) =>
+                const SizedBox(width: PetCard.tileSpacing),
             itemBuilder: (context, index) => buildTile(pets[index]),
           ),
         );

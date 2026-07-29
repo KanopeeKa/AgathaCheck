@@ -169,7 +169,7 @@ void main() {
 
       final tile = tester.getSize(find.byType(PetCard));
       expect(tile.width, tile.height);
-      expect(tile.width, 180);
+      expect(tile.width, closeTo((400 - 2 * PetCard.tileSpacing) / 3, 0.01));
     });
   });
 }
