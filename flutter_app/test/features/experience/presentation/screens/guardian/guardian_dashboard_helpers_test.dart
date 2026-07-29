@@ -68,6 +68,29 @@ void main() {
     expect(personal.map((p) => p.name).toList(), ['Mine']);
   });
 
+  test('guardianDashboardSharedPets returns shared pets only', () {
+    final pets = [
+      const Pet(id: '1', name: 'Mine', species: 'Dog', breed: ''),
+      const Pet(
+        id: '2',
+        name: 'Shared',
+        species: 'Cat',
+        breed: '',
+        isShared: true,
+      ),
+      const Pet(
+        id: '3',
+        name: 'Fostered',
+        species: 'Cat',
+        breed: '',
+        isFoster: true,
+      ),
+    ];
+
+    final shared = guardianDashboardSharedPets(pets, controller);
+    expect(shared.map((p) => p.name).toList(), ['Shared']);
+  });
+
   test('guardianDashboardFosterPets returns foster pets only', () {
     final pets = [
       const Pet(id: '1', name: 'Mine', species: 'Dog', breed: ''),
