@@ -74,5 +74,16 @@ void main() {
         ),
       );
     });
+
+    test('round-trips UTC-flagged picker values through toJson/fromJson', () {
+      final picked = DateTime.parse('2026-07-07T22:00:00.000Z');
+      final wire = toCalendarDateString(calendarDateOnly(picked));
+      final restored = parseCalendarDate(wire);
+      expect(restored, isNotNull);
+      expect(
+        toCalendarDateString(calendarDateOnly(restored!)),
+        toCalendarDateString(picked.toLocal()),
+      );
+    });
   });
 }

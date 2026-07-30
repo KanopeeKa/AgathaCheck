@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
+import 'package:pet_profile_app/core/utils/calendar_date.dart';
 
 import 'package:pet_profile_app/features/weight_tracking/data/datasources/weight_remote_datasource.dart';
 import 'package:pet_profile_app/features/weight_tracking/data/models/weight_entry_model.dart';
@@ -48,6 +49,23 @@ void main() {
         return http.Response(json.encode(testEntryJson), 201);
       });
       final entry = WeightEntryModel.fromJson(testEntryJson);
+      await makeDatasource(client).createEntry(entry, token);
+    });
+
+    test('createEntry sends date as YYYY-MM-DD without timestamp', () async {
+      final utcPickerValue = DateTime.parse('2026-07-07T22:00:00.000Z');
+      final entry = WeightEntryModel(
+        id: '',
+        petId: 'pet-1',
+        date: utcPickerValue,
+        weight: 12.5,
+      );
+      final client = MockClient((request) async {
+        final body = json.decode(request.body) as Map<String, dynamic>;
+        expect(body['date'], toCalendarDateString(utcPickerValue.toLocal()));
+        expect(body['date'], isNot(contains('T')));
+        return http.Response(json.encode(testEntryJson), 201);
+      });
       await makeDatasource(client).createEntry(entry, token);
     });
 

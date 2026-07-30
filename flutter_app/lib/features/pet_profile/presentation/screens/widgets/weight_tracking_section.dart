@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
+import '../../../../../core/utils/calendar_date.dart';
 import '../../../../../l10n/app_localizations.dart';
 import '../../../../weight_tracking/domain/weight_entry_sort.dart';
 import '../../../../weight_tracking/presentation/providers/weight_providers.dart';
@@ -91,7 +92,9 @@ class WeightTrackingContent extends ConsumerWidget {
                     final entry = sortedEntries[index];
                     final displayWeight =
                         '${convertWeight(entry.weight, unit).toStringAsFixed(1)} $unitLabel';
-                    final dateLabel = DateFormat.yMMMd().format(entry.date);
+                    final dateLabel = DateFormat.yMMMd().format(
+                      calendarDateOnly(entry.date),
+                    );
                     return ListTile(
                       contentPadding: EdgeInsets.zero,
                       leading: CircleAvatar(

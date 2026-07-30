@@ -10,7 +10,7 @@ Future<DateTime?> showMarkCompleteSheet(
   String? notes,
 }) async {
   final l = AppLocalizations.of(context)!;
-  var selected = initialDate ?? DateTime.now();
+  var selected = calendarDateOnly(initialDate ?? DateTime.now());
   final notesController = TextEditingController(text: notes ?? '');
 
   return showModalBottomSheet<DateTime>(
