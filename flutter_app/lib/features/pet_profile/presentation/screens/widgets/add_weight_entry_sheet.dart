@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 import '../../../../../core/utils/calendar_date.dart';
+import '../../../../../core/utils/calendar_date_picker.dart';
 import '../../../../../l10n/app_localizations.dart';
 import '../../../../weight_tracking/domain/entities/weight_entry.dart';
 import '../../../../weight_tracking/presentation/providers/weight_providers.dart';
@@ -48,16 +49,14 @@ Future<void> showAddWeightEntrySheet({
                 button: true,
                 child: InkWell(
                   onTap: () async {
-                    final picked = await showDatePicker(
+                    final picked = await showCalendarDatePicker(
                       context: ctx,
                       initialDate: selectedDate,
                       firstDate: DateTime(2000),
-                      lastDate: DateTime.now(),
+                      lastDate: calendarDateOnly(DateTime.now()),
                     );
                     if (picked != null) {
-                      setSheetState(
-                        () => selectedDate = calendarDateOnly(picked),
-                      );
+                      setSheetState(() => selectedDate = picked);
                     }
                   },
                   child: InputDecorator(
@@ -66,7 +65,9 @@ Future<void> showAddWeightEntrySheet({
                       prefixIcon: const Icon(Icons.calendar_today),
                       border: const OutlineInputBorder(),
                     ),
-                    child: Text(DateFormat.yMMMd().format(selectedDate)),
+                    child: Text(
+                      DateFormat.yMMMd().format(calendarDateOnly(selectedDate)),
+                    ),
                   ),
                 ),
               ),
@@ -120,7 +121,7 @@ Future<void> showAddWeightEntrySheet({
                   final entry = WeightEntry(
                     id: '',
                     petId: petId,
-                    date: selectedDate,
+                    date: calendarDateOnly(selectedDate),
                     weight: weightInKg,
                     notes: notesController.text.trim(),
                   );

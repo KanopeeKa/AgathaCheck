@@ -1,4 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:pet_profile_app/core/utils/calendar_date.dart';
 import 'package:pet_profile_app/features/weight_tracking/data/models/weight_entry_model.dart';
 import 'package:pet_profile_app/features/weight_tracking/domain/entities/weight_entry.dart';
 
@@ -86,6 +87,39 @@ void main() {
       final model = WeightEntryModel.fromJson(fullJson);
       final json = model.toJson();
       expect(json['date'], matches(RegExp(r'^\d{4}-\d{2}-\d{2}$')));
+    });
+
+    test('toJson preserves picked day when date is UTC-flagged on web', () {
+      final model = WeightEntryModel(
+        id: 'w-utc',
+        petId: 'pet-1',
+        date: DateTime.parse('2026-07-07T22:00:00.000Z'),
+        weight: 12.0,
+      );
+      final json = model.toJson();
+      expect(
+        json['date'],
+        toCalendarDateString(
+          DateTime.parse('2026-07-07T22:00:00.000Z').toLocal(),
+        ),
+      );
+      expect(json['date'], isNot(contains('T')));
+    });
+
+    test('fromEntity normalizes UTC-flagged picker values', () {
+      final entity = WeightEntry(
+        id: 'w-utc',
+        petId: 'pet-1',
+        date: DateTime.parse('2026-07-07T22:00:00.000Z'),
+        weight: 12.0,
+      );
+      final model = WeightEntryModel.fromEntity(entity);
+      expect(
+        toCalendarDateString(model.date),
+        toCalendarDateString(
+          DateTime.parse('2026-07-07T22:00:00.000Z').toLocal(),
+        ),
+      );
     });
 
     test('toJson does not include created_at', () {

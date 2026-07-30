@@ -2,6 +2,7 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
+import '../../../../../core/utils/calendar_date.dart';
 import '../../../../weight_tracking/domain/entities/weight_entry.dart';
 import '../../../../weight_tracking/domain/weight_entry_sort.dart';
 import '../../../../weight_tracking/presentation/providers/weight_providers.dart';
@@ -105,7 +106,9 @@ class WeightChart extends StatelessWidget {
                 return Padding(
                   padding: const EdgeInsets.only(top: 6),
                   child: Text(
-                    DateFormat.Md().format(sorted[index].date),
+                    DateFormat.Md().format(
+                      calendarDateOnly(sorted[index].date),
+                    ),
                     style: theme.textTheme.labelSmall?.copyWith(
                       color: colorScheme.onSurfaceVariant,
                     ),
@@ -119,7 +122,7 @@ class WeightChart extends StatelessWidget {
           touchTooltipData: LineTouchTooltipData(
             getTooltipColor: (_) => colorScheme.inverseSurface,
             getTooltipItems: (touchedSpots) => touchedSpots.map((spot) {
-              final date = sorted[spot.x.round()].date;
+              final date = calendarDateOnly(sorted[spot.x.round()].date);
               return LineTooltipItem(
                 '${spot.y.toStringAsFixed(1)} $unitLabel\n'
                 '${DateFormat.yMMMd().format(date)}',

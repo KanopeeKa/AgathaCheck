@@ -1,4 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:pet_profile_app/core/utils/calendar_date.dart';
 import 'package:pet_profile_app/features/pet_profile/data/models/pet_model.dart';
 import 'package:pet_profile_app/features/pet_profile/domain/entities/pet.dart';
 
@@ -199,6 +200,20 @@ void main() {
       final json = fullModel.toJson(includeWeightEntryDate: true);
 
       expect(json['weightEntryDate'], matches(RegExp(r'^\d{4}-\d{2}-\d{2}$')));
+    });
+
+    test('weightEntryDate uses local calendar day at serialization time', () {
+      final json = PetModel(
+        id: 'test-id',
+        name: 'Buddy',
+        species: 'Dog',
+        weight: 30.0,
+      ).toJson(includeWeightEntryDate: true);
+
+      expect(
+        json['weightEntryDate'],
+        toCalendarDateString(calendarDateOnly(DateTime.now())),
+      );
     });
 
     test('omits weightEntryDate by default', () {
