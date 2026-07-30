@@ -5,6 +5,8 @@ import '../../../../l10n/app_localizations.dart';
 import '../../../weight_tracking/domain/entities/weight_entry.dart';
 
 class PetWeightSectionBuilder {
+  static final DateFormat _chartDateFormat = DateFormat('dd/MMM/yy');
+
   static List<pw.Widget> build(
     List<WeightEntry> entries,
     DateFormat dateFormat,
@@ -37,14 +39,18 @@ class PetWeightSectionBuilder {
           child: pw.Chart(
             grid: pw.CartesianGrid(
               xAxis: pw.FixedAxis(
-                _chartDateLabels(sorted),
+                _chartWeightLabels(sorted, weightUnit),
+                format: (v) => v.toStringAsFixed(2),
                 textStyle: const pw.TextStyle(
                   fontSize: 7,
                   color: PdfReportTokens.muted,
                 ),
               ),
               yAxis: pw.FixedAxis(
-                _chartWeightLabels(sorted, weightUnit),
+                _chartDateLabels(sorted),
+                format: (v) => _chartDateFormat.format(
+                  DateTime.fromMillisecondsSinceEpoch(v.toInt()),
+                ),
                 textStyle: const pw.TextStyle(
                   fontSize: 7,
                   color: PdfReportTokens.muted,
@@ -53,7 +59,7 @@ class PetWeightSectionBuilder {
             ),
             datasets: [
               pw.LineDataSet(
-                data: _chartDataPoints(sorted),
+                data: _chartDataPoints(sorted, weightUnit),
                 color: PdfReportTokens.primary,
                 lineWidth: 2,
                 drawPoints: true,
@@ -144,31 +150,41 @@ class PetWeightSectionBuilder {
     List<WeightEntry> sorted,
     String weightUnit,
   ) {
-    final weights = sorted.map((e) => e.weight).toList();
-    final minW = weights.reduce((a, b) => a < b ? a : b);
+    final weights = sorted
+        .map((e) => _displayWeight(e.weight, weightUnit))
+        .toList();
     final maxW = weights.reduce((a, b) => a > b ? a : b);
-    final range = maxW == minW ? 1.0 : maxW - minW;
-    final paddedMin = minW - range * 0.1;
-    final paddedMax = maxW + range * 0.1;
-    final step = (paddedMax - paddedMin) / 4;
-    return List.generate(5, (i) => paddedMin + step * i);
+    final paddedMax = maxW == 0 ? 1.0 : maxW + (maxW * 0.1).clamp(0.1, double.infinity);
+    final step = paddedMax / 4;
+    return List.generate(5, (i) => step * i);
   }
 
-  static List<pw.PointChartValue> _chartDataPoints(List<WeightEntry> sorted) {
+  static List<pw.PointChartValue> _chartDataPoints(
+    List<WeightEntry> sorted,
+    String weightUnit,
+  ) {
     return sorted
         .map(
           (e) => pw.PointChartValue(
+            _displayWeight(e.weight, weightUnit),
             e.date.millisecondsSinceEpoch.toDouble(),
-            e.weight,
           ),
         )
         .toList();
   }
 
-  static String _formatWeight(double kg, String unit) {
+  static double _displayWeight(double kg, String unit) {
     if (unit == 'lb') {
-      return '${(kg * 2.20462).toStringAsFixed(1)} lb';
+      return kg * 2.20462;
     }
-    return '${kg.toStringAsFixed(1)} kg';
+    return kg;
+  }
+
+  static String _formatWeight(double kg, String unit) {
+    final value = _displayWeight(kg, unit);
+    if (unit == 'lb') {
+      return '${value.toStringAsFixed(1)} lb';
+    }
+    return '${value.toStringAsFixed(1)} kg';
   }
 }
