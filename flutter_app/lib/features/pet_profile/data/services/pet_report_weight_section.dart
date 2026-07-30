@@ -154,7 +154,9 @@ class PetWeightSectionBuilder {
         .map((e) => _displayWeight(e.weight, weightUnit))
         .toList();
     final maxW = weights.reduce((a, b) => a > b ? a : b);
-    final paddedMax = maxW == 0 ? 1.0 : maxW + (maxW * 0.1).clamp(0.1, double.infinity);
+    final paddedMax = maxW == 0
+        ? 1.0
+        : maxW + (maxW * 0.1).clamp(0.1, double.infinity);
     final step = paddedMax / 4;
     return List.generate(5, (i) => step * i);
   }
