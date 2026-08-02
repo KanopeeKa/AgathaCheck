@@ -33,7 +33,7 @@ Repo docs are the source of truth. `.cursor/rules/*.mdc` + `AGENTS.md` are the a
    ```
    If local git commit is blocked by the sandbox, push files directly via `PUT /repos/KanopeeKa/AgathaCheck/contents/<path>` GitHub API (base64-encode content, supply current blob SHA + branch name).
 4. **Open PR via GitHub REST API** using the `GITHUB_TOKEN` environment secret. Create as ready (not draft) so Bugbot runs immediately.
-5. **Bugbot** reviews automatically (primary). **Copilot** only when credits available: `POST /repos/KanopeeKa/AgathaCheck/pulls/{n}/requested_reviewers` with `{"reviewers":["copilot-pull-request-reviewer"]}`. Poll Bugbot every 30–60 s for up to 15 min; do not halt on Copilot timeout — see `docs/agent-efficiency/pr-review-cost-efficiency.md`.
+5. **Bugbot** reviews automatically (primary). **Copilot** only when credits available: `POST /repos/KanopeeKa/AgathaCheck/pulls/{n}/requested_reviewers` with `{"reviewers":["copilot-pull-request-reviewer"]}`. Babysit wait: `node scripts/babysit_pr_reviews.js wait --pr <url>` (up to 15 min). Babysit triage: `node scripts/babysit_pr_reviews.js collect --pr <url>` — triage **all** threads (Bugbot + Copilot + human); never skip Copilot because Bugbot hit usage limits. See `docs/agent-efficiency/pr-review-cost-efficiency.md`.
 6. **Monitor CI** via `GET /repos/KanopeeKa/AgathaCheck/commits/{sha}/check-runs` — poll every 60–90 s; address failures. Flutter test shards take ~3–5 min, full suite ~8–10 min.
 7. **After CI and Bugbot triage are complete**: merge is user's click (branch protection). Babysit work uses **`composer-2.5` only**. After merge, sync local main: `git fetch origin && git reset --hard origin/main` (or delegate if destructive).
 

@@ -66,22 +66,24 @@ Use **`composer-2.5` only** for steps §0–7 (sync, poll, triage, fixes, CI, me
    - **Execute-plan** (active phase snapshot): `phase.merge_mode` → else `default_merge_mode` from snapshot. Caller `merge_mode` input is ignored unless the run explicitly documents an override.
    - **Standalone** (no snapshot): caller `merge_mode` input if provided → else **`auto`**.
 
-### 0b. Ready for review + wait for Bugbot (mandatory)
+### 0b. Ready for review + wait for automatic reviews (mandatory)
 
-Applies to **both** `/babysit` and `/babysit-plus`. **Bugbot** is the primary automatic reviewer; **Copilot** is optional. Policy: `docs/agent-efficiency/pr-review-cost-efficiency.md`.
+Applies to **both** `/babysit` and `/babysit-plus`. **Bugbot** is the primary automatic reviewer; **Copilot** is supplementary but **must be triaged when present**. Policy: `docs/agent-efficiency/pr-review-cost-efficiency.md`.
 
 1. Confirm session model is **`composer-2.5`** before this step (see §Model).
 2. If `isDraft`: `gh pr ready <url>` (or equivalent).
-3. Poll until **Bugbot** (`Cursor Bugbot` check / `cursor` bot reviews) lands or the wait budget expires — **even when CI is already green**.
+3. **Wait for Bugbot** (do not block on Copilot timeout):
    ```bash
-   gh api repos/{owner}/{repo}/pulls/{n}/reviews
-   gh api repos/{owner}/{repo}/pulls/{n}/comments
-   gh api repos/{owner}/{repo}/issues/{n}/comments
+   node scripts/babysit_pr_reviews.js wait --pr <url>
    ```
-   (`{n}` = PR number; PRs are issues in the GitHub API. Conversation comments catch bot feedback that never creates a formal review.)
-4. Poll every **30–60s** for up to **15 minutes**. Track **Bugbot**; note Copilot only if requested and credits available.
-5. Do **not** triage, merge, or declare done while **Bugbot** is still pending.
-6. **Copilot timeout / unavailable:** Proceed when Bugbot is done; comment `Copilot unavailable; Bugbot + babysit+ triage used.` — do **not** halt.
+   Polls every 45s for up to 15 minutes. Exit `0` when Bugbot has reviewed or is **unavailable** (e.g. usage limit). Exit `1` on Bugbot timeout — comment pending reviewers and **halt**.
+4. **Collect all review threads before triage** (mandatory — do not hand-roll `gh api` calls):
+   ```bash
+   node scripts/babysit_pr_reviews.js collect --pr <url>
+   ```
+   The JSON `threads` array lists **every unresolved thread** from Bugbot, Copilot, and humans. Triage **each** thread — never declare “no automated review” while `summary.copilotCount > 0` or `threads` is non-empty.
+5. Do **not** triage, merge, or declare done while **Bugbot** is still `pending` (wait step not finished).
+6. **Copilot timeout / unavailable:** Proceed when Bugbot is done or unavailable; comment `Copilot unavailable; Bugbot + babysit+ triage used.` only when Copilot never posted — do **not** halt.
 7. **Bugbot timeout:** Comment listing pending reviewers and **halt** — do not skip triage.
 8. Dashboard **once per PR** trigger: do not expect a new Bugbot run after fix pushes; triage existing comments + CI.
 9. **Autofix:** Off — babysit+ owns fixes; do not re-run adversarial review in agent turns (slim babysit).
@@ -91,6 +93,8 @@ Applies to **both** `/babysit` and `/babysit-plus`. **Bugbot** is the primary au
 Same as `/babysit`: resolve merge conflicts preserving intent; escalate if intents conflict.
 
 ### 2. Triage (mandatory before fixes)
+
+Run `node scripts/babysit_pr_reviews.js collect --pr <url>` and triage **every** entry in `threads` (Bugbot, Copilot, human — filter resolved threads via the script output).
 
 Post a **triage comment** on the PR summarizing every active unresolved thread:
 

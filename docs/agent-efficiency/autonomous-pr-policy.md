@@ -70,19 +70,23 @@ Only after self-review passes: commit, push, create/update PR. Then continue wit
 
 Applies to `/babysit` and `/babysit-plus`.
 
-**Primary reviewer:** Cursor **Bugbot** (`Cursor Bugbot` check). **Copilot** is supplementary when credits are available.
+**Primary reviewer:** Cursor **Bugbot** (`Cursor Bugbot` check). **Copilot** is supplementary when credits are available but **must be triaged when it posts review threads**.
 
 **Model:** PR babysitting (poll, triage, fixes, CI, merge) uses **`composer-2.5` only** — see [pr-review-cost-efficiency.md](./pr-review-cost-efficiency.md) §Cloud Agent model policy.
 
 1. Mark PR **ready for review** before merge gates (`gh pr ready <url>` when draft). Bugbot may also review drafts when enabled in dashboard; ready is still required for merge.
-2. **Poll** until **Bugbot** has completed or the wait budget expires — even when CI is already green.
-   - `gh api repos/{owner}/{repo}/pulls/{n}/reviews` — formal reviews
-   - `gh api repos/{owner}/{repo}/pulls/{n}/comments` — inline review comments
-   - `gh api repos/{owner}/{repo}/issues/{n}/comments` — PR conversation comments (some bots post here only)
-   - (`{n}` = PR number)
-3. Poll every **30–60s** for up to **15 minutes**. Track **Bugbot**; note Copilot if requested.
-4. Do not triage, merge, or declare done while **Bugbot** is still pending.
-5. **Copilot unavailable / timeout:** Do **not** halt if Bugbot has reviewed and triage can proceed. Comment on the PR: `Copilot unavailable; Bugbot + babysit+ triage used.` See [pr-review-cost-efficiency.md](./pr-review-cost-efficiency.md) §Copilot unavailable.
+2. **Wait for Bugbot** — even when CI is already green:
+   ```bash
+   node scripts/babysit_pr_reviews.js wait --pr <url>
+   ```
+   Polls every 45s for up to **15 minutes**. Proceed when Bugbot has reviewed or is **unavailable** (e.g. usage limit). **Do not halt** solely because Copilot never responded.
+3. **Collect all review threads before triage** (mandatory):
+   ```bash
+   node scripts/babysit_pr_reviews.js collect --pr <url>
+   ```
+   Triage **every** unresolved thread in the JSON `threads` array (Bugbot, Copilot, human). Never declare “no automated review” while Copilot threads exist (`summary.copilotCount > 0`).
+4. Do not triage, merge, or declare done while **Bugbot** is still `pending`.
+5. **Copilot unavailable / timeout:** Do **not** halt if Bugbot has reviewed (or is unavailable) and triage can proceed. Comment on the PR: `Copilot unavailable; Bugbot + babysit+ triage used.` only when Copilot never posted. See [pr-review-cost-efficiency.md](./pr-review-cost-efficiency.md) §Copilot unavailable.
 6. **Bugbot timeout:** Comment listing pending reviewers and **halt** — do not skip triage.
 7. With dashboard **once per PR** trigger, do not expect a new Bugbot run after fix pushes; rely on triage + `./scripts/pre-push-changed.sh` + CI.
 8. **Autofix:** Off by policy — babysit+ owns fixes (no duplicate Cloud Agent spend).
@@ -90,6 +94,8 @@ Applies to `/babysit` and `/babysit-plus`.
 ---
 
 ## Review triage
+
+Run `node scripts/babysit_pr_reviews.js collect --pr <url>` and triage **every** unresolved thread in the output before applying fixes.
 
 Post a **triage comment** on the PR before applying fixes.
 

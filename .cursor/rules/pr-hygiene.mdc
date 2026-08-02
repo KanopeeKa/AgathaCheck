@@ -23,8 +23,9 @@ Only after this review passes: commit, push, create/update the PR.
 
 ## Automatic review (Bugbot-first)
 
-- **Primary:** Cursor **Bugbot** on every PR (`Cursor Bugbot` check). Copilot is optional when credits are available.
-- **Babysit wait:** Poll for **Bugbot**; do **not** halt on Copilot timeout when Bugbot + triage are complete. See autonomous-pr-policy §Automatic reviews.
+- **Primary:** Cursor **Bugbot** on every PR (`Cursor Bugbot` check). Copilot is optional for the **wait** step but must be **triaged when threads exist**.
+- **Babysit wait:** `node scripts/babysit_pr_reviews.js wait --pr <url>` — poll for **Bugbot**; do **not** halt on Copilot timeout when Bugbot + triage are complete. See autonomous-pr-policy §Automatic reviews.
+- **Babysit triage:** `node scripts/babysit_pr_reviews.js collect --pr <url>` — triage every unresolved thread (Bugbot, Copilot, human).
 - **Autofix:** **Off** — babysit+ owns triage and fixes (avoids double Cloud Agent spend).
 
 ## Model for PR babysitting
