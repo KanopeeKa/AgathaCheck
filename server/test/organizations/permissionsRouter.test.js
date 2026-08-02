@@ -57,6 +57,62 @@ function buildPermissionsPool({
 }
 
 describe('Organizations permissions API', () => {
+  describe('GET /:orgId/permissions/me', () => {
+    it('returns effective view permissions for an associate member', async () => {
+      const app = createApp(buildPermissionsPool({ viewerRole: 'associate' }));
+      const res = await request(app)
+        .get(`/api/organizations/${orgId}/permissions/me`)
+        .set('Authorization', `Bearer ${token}`);
+
+      expect(res.statusCode).toBe(200);
+      expect(res.body.role).toBe('associate');
+      expect(res.body.effective_permissions).toContain('view_org_pets');
+      expect(res.body.effective_permissions).not.toContain('view_fostering_sessions');
+      expect(res.body.effective_permissions).not.toContain('manage_pets');
+    });
+
+    it('returns fostering sessions view for admin', async () => {
+      const app = createApp(buildPermissionsPool({ viewerRole: 'admin' }));
+      const res = await request(app)
+        .get(`/api/organizations/${orgId}/permissions/me`)
+        .set('Authorization', `Bearer ${token}`);
+
+      expect(res.statusCode).toBe(200);
+      expect(res.body.effective_permissions).toContain('view_fostering_sessions');
+    });
+
+    it('unions bundle overrides into effective permissions', async () => {
+      const app = createApp(
+        buildPermissionsPool({
+          viewerRole: 'foster',
+          permissionRows: [
+            {
+              permission_key: 'view_fostering_sessions',
+              source: 'individual',
+              granted_at: new Date('2026-07-25T12:00:00Z'),
+            },
+          ],
+        }),
+      );
+      const res = await request(app)
+        .get(`/api/organizations/${orgId}/permissions/me`)
+        .set('Authorization', `Bearer ${token}`);
+
+      expect(res.statusCode).toBe(200);
+      expect(res.body.effective_permissions).toContain('view_fostering_sessions');
+      expect(res.body.overrides).toHaveLength(1);
+    });
+
+    it('returns 403 for pending membership', async () => {
+      const app = createApp(buildPermissionsPool({ viewerRole: 'pending_admin' }));
+      const res = await request(app)
+        .get(`/api/organizations/${orgId}/permissions/me`)
+        .set('Authorization', `Bearer ${token}`);
+
+      expect(res.statusCode).toBe(403);
+    });
+  });
+
   describe('GET /:orgId/permission-bundles', () => {
     it('returns bundle presets for super admin', async () => {
       const app = createApp(buildPermissionsPool());

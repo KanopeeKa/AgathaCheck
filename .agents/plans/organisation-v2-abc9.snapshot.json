@@ -4,7 +4,7 @@
   "approved_at": "2026-08-02T22:40:00Z",
   "approved_by": "user chat 2026-08-02 (standing grant: full /execute-plan organisation v2, Option B associate pet view)",
   "approved_until": "2026-08-04T22:40:00Z",
-  "content_hash": "sha256:ab08bba7ad045116ce3edcdc4afe8451bd6411f6058a25d1036777fa6fe6af79",
+  "content_hash": "sha256:ee9dbf9979ea5d74d28319cf4f1afaae9a007f9727f4b9edd6dc7c36b63791fc",
   "autonomy": "active",
   "default_merge_mode": "auto",
   "base_branch": "cursor/organisation-v2-integration-abc9",
@@ -36,7 +36,7 @@
       "spawn_config": null,
       "merge_method": "squash",
       "exit_checklist": "governance",
-      "status": "in_progress",
+      "status": "pending",
       "status_reason": null,
       "status_detail": null,
       "debt_issue_refs": []
@@ -69,12 +69,9 @@
       "spawn_config": null,
       "merge_method": "squash",
       "exit_checklist": "backend-route",
-      "status": "pending",
+      "status": "in_progress",
       "status_reason": null,
       "status_detail": null,
-      "pr_url": null,
-      "pr_head_sha": null,
-      "merge_commit": null,
       "debt_issue_refs": []
     },
     {

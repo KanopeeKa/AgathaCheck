@@ -363,6 +363,9 @@ class OrganizationRemoteDataSource with OrganizationRemoteFosterDelegations {
     String token,
   ) => _permissions.getPermissionBundles(orgId, token);
 
+  Future<Map<String, dynamic>> getMyPermissions(String orgId, String token) =>
+      _permissions.getMyPermissions(orgId, token);
+
   Future<Map<String, dynamic>> getMemberPermissions(
     String orgId,
     String targetUserId,

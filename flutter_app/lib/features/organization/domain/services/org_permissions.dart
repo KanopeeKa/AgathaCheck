@@ -1,7 +1,32 @@
 import '../entities/organization_member.dart';
 
-/// G0 §7 permission keys — default role grants unioned with org overrides (Phase 3).
+/// G0 §7 permission keys — default role grants unioned with org overrides (Phase 3 + v2 view keys).
 const Map<String, Set<OrgMemberRole>> g0PermissionDefaults = {
+  'view_org_internal': {
+    OrgMemberRole.superAdmin,
+    OrgMemberRole.admin,
+    OrgMemberRole.foster,
+    OrgMemberRole.associate,
+  },
+  'view_admin_contacts': {
+    OrgMemberRole.superAdmin,
+    OrgMemberRole.admin,
+    OrgMemberRole.foster,
+    OrgMemberRole.associate,
+  },
+  'view_org_pets': {
+    OrgMemberRole.superAdmin,
+    OrgMemberRole.admin,
+    OrgMemberRole.foster,
+    OrgMemberRole.associate,
+  },
+  'view_connections': {
+    OrgMemberRole.superAdmin,
+    OrgMemberRole.admin,
+    OrgMemberRole.foster,
+    OrgMemberRole.associate,
+  },
+  'view_fostering_sessions': {OrgMemberRole.superAdmin, OrgMemberRole.admin},
   'manage_fosters': {OrgMemberRole.superAdmin, OrgMemberRole.admin},
   'review_foster_onboarding': {OrgMemberRole.superAdmin, OrgMemberRole.admin},
   'contact_fosters': {OrgMemberRole.superAdmin, OrgMemberRole.admin},
@@ -22,6 +47,15 @@ const Map<String, Set<OrgMemberRole>> g0PermissionDefaults = {
   'manage_members': {OrgMemberRole.superAdmin, OrgMemberRole.admin},
   'manage_permissions': {OrgMemberRole.superAdmin},
 };
+
+/// Organisation v2 view keys — mirrors server VIEW_PERMISSION_KEYS.
+const viewPermissionKeys = [
+  'view_org_internal',
+  'view_admin_contacts',
+  'view_org_pets',
+  'view_connections',
+  'view_fostering_sessions',
+];
 
 /// Bundle preset names (Phase 3 constants — UI applies in Phase 5).
 const permissionBundleFosterAdmin = 'foster_admin';
