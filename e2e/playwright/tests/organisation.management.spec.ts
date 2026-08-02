@@ -9,6 +9,7 @@
  * Scenario: Inviting a user as a super user
  * Scenario: Only super users can invite new members
  * Scenario: Viewing organisation details
+ * Scenario: Viewing organisation members from the dashboard
  * Scenario: Updating organisation information
  * Scenario: Leaving an organisation
  */
@@ -17,6 +18,7 @@ import {
   acceptInvite,
   createOrganization,
   declineInvite,
+  getOrgMembers,
   getOrganizations,
   getPendingInvites,
   inviteToOrganization,
@@ -199,6 +201,17 @@ test.describe('Organisation management', () => {
     const detail = new OrganizationDetailPage(page);
     await detail.expectLoaded('Happy Paws Clinic');
     await detail.expectMemberVisible('Bob');
+  });
+
+  test('@legacy @P1 super user can list organisation members from API', async () => {
+    const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
+    const alice = await signupUser(baseURL, { firstName: 'Alice', lastName: 'Owner' });
+    const bob = await signupUser(baseURL, { firstName: 'Bob', lastName: 'Member' });
+    const org = await seedOrgWithMember(baseURL, alice, bob, 'Happy Paws Clinic');
+
+    const members = await getOrgMembers(baseURL, alice.accessToken, org.id);
+    expect(members.length).toBe(2);
+    expect(members.some((m) => m.email === bob.email)).toBe(true);
   });
 
   test('super user can update organisation bio', async ({ page }) => {

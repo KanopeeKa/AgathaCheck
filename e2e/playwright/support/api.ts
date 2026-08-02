@@ -2193,6 +2193,219 @@ export async function createFamilyEvent(
   return res.json();
 }
 
+export async function deleteFamilyEvent(
+  baseURL: string,
+  token: string,
+  petId: string,
+  eventId: string,
+): Promise<void> {
+  const res = await apiFetch(apiUrl(`/pets/${petId}/family-events/${eventId}`, baseURL), {
+    method: 'DELETE',
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!res.ok) {
+    const bodyText = await res.text();
+    throw new Error(`deleteFamilyEvent failed (${res.status}): ${bodyText}`);
+  }
+}
+
+export interface OrgPersonSummary {
+  kind: string;
+  record_id: string;
+  user_id?: string;
+  display_name: string;
+  email?: string;
+  role?: string;
+  phone?: string;
+  message_allowed?: boolean;
+}
+
+export async function getOrgPeople(
+  baseURL: string,
+  token: string,
+  orgId: string,
+): Promise<OrgPersonSummary[]> {
+  const res = await apiFetch(apiUrl(`/organizations/${orgId}/people`, baseURL), {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!res.ok) {
+    const body = await res.text();
+    throw new Error(`getOrgPeople failed (${res.status}): ${body}`);
+  }
+  return res.json();
+}
+
+export async function updateOrgPersonContact(
+  baseURL: string,
+  token: string,
+  orgId: string,
+  kind: 'member' | 'external',
+  personId: string,
+  contact: { phone?: string; notes?: string },
+): Promise<Record<string, unknown>> {
+  const res = await apiFetch(
+    apiUrl(`/organizations/${orgId}/people/${kind}/${personId}/contact`, baseURL),
+    {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(contact),
+    },
+  );
+  if (!res.ok) {
+    const body = await res.text();
+    throw new Error(`updateOrgPersonContact failed (${res.status}): ${body}`);
+  }
+  return res.json();
+}
+
+export interface OrgConnectionRow {
+  id: string;
+  peer_org_id: string;
+  peer_org_name: string;
+  peer_org_email?: string;
+}
+
+export async function getOrgConnections(
+  baseURL: string,
+  token: string,
+  orgId: string,
+): Promise<OrgConnectionRow[]> {
+  const res = await apiFetch(apiUrl(`/organizations/${orgId}/connections`, baseURL), {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!res.ok) {
+    const body = await res.text();
+    throw new Error(`getOrgConnections failed (${res.status}): ${body}`);
+  }
+  return res.json();
+}
+
+export interface OrgPermissionsMe {
+  role: string;
+  effective_permissions: string[];
+}
+
+export async function getOrgPermissionsMe(
+  baseURL: string,
+  token: string,
+  orgId: string,
+): Promise<OrgPermissionsMe> {
+  const res = await apiFetch(apiUrl(`/organizations/${orgId}/permissions/me`, baseURL), {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!res.ok) {
+    const body = await res.text();
+    throw new Error(`getOrgPermissionsMe failed (${res.status}): ${body}`);
+  }
+  return res.json();
+}
+
+export async function applyOrgPermissionBundle(
+  baseURL: string,
+  token: string,
+  orgId: string,
+  targetUserId: string,
+  preset: string,
+): Promise<{ preset: string; granted_count: number; effective_permissions: string[] }> {
+  const res = await apiFetch(
+    apiUrl(`/organizations/${orgId}/members/${targetUserId}/permissions/bundle`, baseURL),
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ preset }),
+    },
+  );
+  if (!res.ok) {
+    const body = await res.text();
+    throw new Error(`applyOrgPermissionBundle failed (${res.status}): ${body}`);
+  }
+  return res.json();
+}
+
+export async function tryGrantOrgPermission(
+  baseURL: string,
+  token: string,
+  orgId: string,
+  targetUserId: string,
+  permissionKey: string,
+): Promise<{ ok: boolean; status: number }> {
+  const res = await apiFetch(
+    apiUrl(`/organizations/${orgId}/members/${targetUserId}/permissions`, baseURL),
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ permission_key: permissionKey }),
+    },
+  );
+  return { ok: res.ok, status: res.status };
+}
+
+export interface OrgAuditEvent {
+  id: string;
+  action: string;
+  occurred_at: string;
+  metadata?: Record<string, unknown>;
+}
+
+export async function getOrgAuditEvents(
+  baseURL: string,
+  token: string,
+  orgId: string,
+): Promise<OrgAuditEvent[]> {
+  const res = await apiFetch(apiUrl(`/organizations/${orgId}/audit-events`, baseURL), {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!res.ok) {
+    const body = await res.text();
+    throw new Error(`getOrgAuditEvents failed (${res.status}): ${body}`);
+  }
+  return res.json();
+}
+
+export async function getOrgPublicProfile(
+  baseURL: string,
+  orgId: string,
+  token?: string,
+): Promise<Record<string, unknown>> {
+  const headers: Record<string, string> = {};
+  if (token) headers.Authorization = `Bearer ${token}`;
+  const res = await apiFetch(apiUrl(`/organizations/${orgId}/public`, baseURL), { headers });
+  if (!res.ok) {
+    const body = await res.text();
+    throw new Error(`getOrgPublicProfile failed (${res.status}): ${body}`);
+  }
+  return res.json();
+}
+
+/** Invite an existing user and accept membership (BDD org journeys). */
+export async function addMemberToOrg(
+  baseURL: string,
+  ownerToken: string,
+  orgId: string,
+  member: TestUser,
+  role: string,
+): Promise<void> {
+  await inviteToOrganization(baseURL, ownerToken, orgId, {
+    email: member.email,
+    role: mapBddOrgRole(role),
+  });
+  const invites = await getPendingInvites(baseURL, member.accessToken);
+  const invite = invites.find((item) => item.organization_id === orgId);
+  if (!invite) {
+    throw new Error(`No pending invite for org ${orgId}`);
+  }
+  await acceptInvite(baseURL, member.accessToken, invite.id);
+}
+
 /** Dual-role user: personal pet + organisation membership (BDD experience journeys). */
 export async function seedDualRoleUser(
   baseURL: string,
