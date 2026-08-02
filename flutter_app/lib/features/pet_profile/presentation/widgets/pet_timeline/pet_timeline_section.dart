@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../../l10n/app_localizations.dart';
-import 'pet_timeline_entry_tile.dart';
+import 'pet_timeline_labels.dart';
 
 /// Legacy inline timeline section — navigation to [PetTimelineScreen] preferred.
 class PetTimelineSection extends ConsumerWidget {

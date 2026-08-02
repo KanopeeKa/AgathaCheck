@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "plan_id": "pet-timeline-view-a03d",
+  "approved_at": "2026-08-02T16:56:00Z",
+  "approved_by": "user chat standing grant",
+  "approved_until": "2026-08-04T16:56:00Z",
+  "content_hash": "sha256:a7ff4e7efe58fc528306c4c9c6fcdbb5515572f95aee50e3cd326ba0a6c71013",
+  "autonomy": "active",
+  "default_merge_mode": "auto",
+  "base_branch": "main",
+  "control_issue": 530,
+  "artifact_branch_policy": "phase-branch",
+  "phases": [
+    {
+      "id": "1",
+      "title": "Custom timeline view",
+      "branch": "cursor/pet-timeline-view-a03d",
+      "allowed_paths": [
+        "flutter_app/lib/features/pet_profile/presentation/widgets/pet_timeline/**",
+        "flutter_app/lib/features/pet_profile/presentation/screens/pet_timeline_screen.dart",
+        "flutter_app/test/features/pet_profile/**"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_mode": null,
+      "merge_method": "squash",
+      "exit_checklist": "flutter-screen-split",
+      "status": "in_progress",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": [],
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/531",
+      "pr_head_sha": "2669a89838bfc1dd1f60cc08adb9b74567ef080c"
+    }
+  ]
+}

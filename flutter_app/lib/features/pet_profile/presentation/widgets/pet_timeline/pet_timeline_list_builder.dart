@@ -1,12 +1,15 @@
 import '../../../domain/entities/pet.dart';
 import '../../../domain/entities/pet_timeline_segment.dart';
+import 'pet_timeline_display_options.dart';
 
-/// Builds the v1 timeline list: synthetic markers + fostering + manual entries.
+/// Builds the timeline list: synthetic markers + API segments.
 ///
-/// Excludes custody segments and gap placeholders. Sorted latest-first by start date.
+/// Sorted latest-first by start date. Custody/gap inclusion is controlled by
+/// [options] so future phases can enable them without changing the view layer.
 List<PetTimelineSegment> buildPetTimelineList({
   required Pet? pet,
   required List<PetTimelineSegment> apiSegments,
+  PetTimelineDisplayOptions options = PetTimelineDisplayOptions.v1,
 }) {
   final entries = <PetTimelineSegment>[];
 
@@ -23,8 +26,12 @@ List<PetTimelineSegment> buildPetTimelineList({
   }
 
   for (final segment in apiSegments) {
-    if (segment.isGap || segment.isCustody) continue;
-    if (segment.isFosteringSession || segment.isManual) {
+    if (segment.isGap && !options.includeGaps) continue;
+    if (segment.isCustody && !options.includeCustody) continue;
+    if (segment.isFosteringSession ||
+        segment.isManual ||
+        (options.includeCustody && segment.isCustody) ||
+        (options.includeGaps && segment.isGap)) {
       entries.add(segment);
     }
   }

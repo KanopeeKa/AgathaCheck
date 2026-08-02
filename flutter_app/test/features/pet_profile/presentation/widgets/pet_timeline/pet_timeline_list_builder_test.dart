@@ -2,6 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'package:pet_profile_app/features/pet_profile/domain/entities/pet.dart';
 import 'package:pet_profile_app/features/pet_profile/domain/entities/pet_timeline_segment.dart';
+import 'package:pet_profile_app/features/pet_profile/presentation/widgets/pet_timeline/pet_timeline_display_options.dart';
 import 'package:pet_profile_app/features/pet_profile/presentation/widgets/pet_timeline/pet_timeline_list_builder.dart';
 
 void main() {
@@ -75,6 +76,33 @@ void main() {
 
       expect(list.first.startDate, '2025-06-01');
       expect(list.last.startDate, '2020-01-01');
+    });
+
+    test('includes custody and gaps when display options enable them', () {
+      final list = buildPetTimelineList(
+        pet: null,
+        apiSegments: const [
+          PetTimelineSegment(
+            kind: 'gap',
+            id: 'gap-1',
+            startDate: '2023-01-01',
+            fillable: true,
+          ),
+          PetTimelineSegment(
+            kind: 'custody',
+            id: 'c-1',
+            startDate: '2022-01-01',
+            guardianName: 'Bob',
+          ),
+        ],
+        options: const PetTimelineDisplayOptions(
+          includeCustody: true,
+          includeGaps: true,
+        ),
+      );
+
+      expect(list.where((s) => s.isGap), hasLength(1));
+      expect(list.where((s) => s.isCustody), hasLength(1));
     });
   });
 }
