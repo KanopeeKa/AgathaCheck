@@ -1,6 +1,7 @@
 import {
   G0_PERMISSION_DEFAULTS,
   PERMISSION_BUNDLE_PET_ADMIN,
+  VIEW_PERMISSION_KEYS,
   applyBundlePreset,
   grantPermission,
   revokePermission,
@@ -98,6 +99,61 @@ describe('orgPermissions', () => {
       expect(hasPermission(ORG_ROLE_ASSOCIATE, null, 'manage_fosters')).toBe(false);
       expect(hasPermission(ORG_ROLE_FOSTER, null, 'manage_pets')).toBe(false);
       expect(hasPermission(ORG_ROLE_ASSOCIATE, null, 'manage_members')).toBe(false);
+    });
+  });
+
+  describe('view permission defaults (Organisation v2)', () => {
+    const VIEW_MATRIX = {
+      view_org_internal: [
+        ORG_ROLE_SUPER_ADMIN,
+        ORG_ROLE_ADMIN,
+        ORG_ROLE_FOSTER,
+        ORG_ROLE_ASSOCIATE,
+      ],
+      view_admin_contacts: [
+        ORG_ROLE_SUPER_ADMIN,
+        ORG_ROLE_ADMIN,
+        ORG_ROLE_FOSTER,
+        ORG_ROLE_ASSOCIATE,
+      ],
+      view_org_pets: [
+        ORG_ROLE_SUPER_ADMIN,
+        ORG_ROLE_ADMIN,
+        ORG_ROLE_FOSTER,
+        ORG_ROLE_ASSOCIATE,
+      ],
+      view_connections: [
+        ORG_ROLE_SUPER_ADMIN,
+        ORG_ROLE_ADMIN,
+        ORG_ROLE_FOSTER,
+        ORG_ROLE_ASSOCIATE,
+      ],
+      view_fostering_sessions: [ORG_ROLE_SUPER_ADMIN, ORG_ROLE_ADMIN],
+    };
+
+    it('documents every view key in VIEW_PERMISSION_KEYS', () => {
+      expect([...VIEW_PERMISSION_KEYS].sort()).toEqual(
+        Object.keys(VIEW_MATRIX).sort()
+      );
+    });
+
+    for (const [key, grantedRoles] of Object.entries(VIEW_MATRIX)) {
+      for (const role of [
+        ORG_ROLE_SUPER_ADMIN,
+        ORG_ROLE_ADMIN,
+        ORG_ROLE_FOSTER,
+        ORG_ROLE_ASSOCIATE,
+      ]) {
+        it(`${role} ${grantedRoles.includes(role) ? 'has' : 'lacks'} ${key}`, () => {
+          expect(hasPermission(role, null, key)).toBe(grantedRoles.includes(role));
+        });
+      }
+    }
+
+    it('bundle override can grant view_fostering_sessions to associate', () => {
+      expect(
+        hasEffectivePermission(ORG_ROLE_ASSOCIATE, ['view_fostering_sessions'], 'view_fostering_sessions')
+      ).toBe(true);
     });
   });
 

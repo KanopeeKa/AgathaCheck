@@ -417,6 +417,7 @@ abstract class OrganizationRepository {
   Future<List<OrgHomeHiddenPet>> getHomeHiddenPets(String orgId, String token);
 
   Future<Map<String, dynamic>> getPermissionBundles(String orgId, String token);
+  Future<Map<String, dynamic>> getMyPermissions(String orgId, String token);
   Future<Map<String, dynamic>> getMemberPermissions(
     String orgId,
     String targetUserId,

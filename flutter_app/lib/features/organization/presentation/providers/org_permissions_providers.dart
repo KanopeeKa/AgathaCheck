@@ -45,6 +45,7 @@ class MemberPermissionsNotifier
     );
     state = AsyncData(result);
     ref.invalidate(orgAuditEventsProvider(arg.orgId));
+    ref.invalidate(orgEffectivePermissionsProvider(arg.orgId));
   }
 
   Future<void> grantPermission(String permissionKey) async {
@@ -58,6 +59,7 @@ class MemberPermissionsNotifier
     );
     state = AsyncData(result);
     ref.invalidate(orgAuditEventsProvider(arg.orgId));
+    ref.invalidate(orgEffectivePermissionsProvider(arg.orgId));
   }
 
   Future<void> revokePermission(String permissionKey) async {
@@ -71,6 +73,7 @@ class MemberPermissionsNotifier
     );
     state = AsyncData(result);
     ref.invalidate(orgAuditEventsProvider(arg.orgId));
+    ref.invalidate(orgEffectivePermissionsProvider(arg.orgId));
   }
 }
 
@@ -117,25 +120,38 @@ final documentTemplatesProvider =
       String
     >(DocumentTemplatesNotifier.new);
 
-/// Loads the signed-in viewer's permission overrides for [orgId] into the cache.
+void _syncOverrideCache(String orgId, Map<String, dynamic> data) {
+  final overrides = (data['overrides'] as List? ?? [])
+      .map((row) => (row as Map<String, dynamic>)['permission_key'] as String)
+      .toSet();
+  setViewerPermissionOverrides(orgId, overrides);
+}
+
+/// Effective permission keys for the signed-in viewer in [orgId] (server source of truth).
+final orgEffectivePermissionsProvider =
+    FutureProvider.family<Set<String>, String>((ref, orgId) async {
+      final token = ref.watch(orgTokenProvider);
+      if (token == null) {
+        clearViewerPermissionOverrides(orgId);
+        return {};
+      }
+      try {
+        final repo = ref.read(organizationRepositoryProvider);
+        final data = await repo.getMyPermissions(orgId, token);
+        _syncOverrideCache(orgId, data);
+        final keys = (data['effective_permissions'] as List? ?? [])
+            .cast<String>();
+        return keys.toSet();
+      } catch (_) {
+        clearViewerPermissionOverrides(orgId);
+        return {};
+      }
+    });
+
+/// Preloads viewer overrides via [orgEffectivePermissionsProvider] for legacy [hasPermission] calls.
 final viewerPermissionOverridesProvider = FutureProvider.family<void, String>((
   ref,
   orgId,
 ) async {
-  final token = ref.watch(orgTokenProvider);
-  final userId = ref.watch(authProvider.select((s) => s.user?.id));
-  if (token == null || userId == null) {
-    clearViewerPermissionOverrides(orgId);
-    return;
-  }
-  try {
-    final repo = ref.read(organizationRepositoryProvider);
-    final data = await repo.getMemberPermissions(orgId, userId, token);
-    final overrides = (data['overrides'] as List? ?? [])
-        .map((row) => (row as Map<String, dynamic>)['permission_key'] as String)
-        .toSet();
-    setViewerPermissionOverrides(orgId, overrides);
-  } catch (_) {
-    clearViewerPermissionOverrides(orgId);
-  }
+  await ref.watch(orgEffectivePermissionsProvider(orgId).future);
 });

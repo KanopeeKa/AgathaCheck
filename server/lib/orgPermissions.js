@@ -2,6 +2,8 @@ import { v4 as uuidv4 } from 'uuid';
 import { logAuditEventSafe } from './audit.js';
 import {
   ORG_ROLE_ADMIN,
+  ORG_ROLE_ASSOCIATE,
+  ORG_ROLE_FOSTER,
   ORG_ROLE_SUPER_ADMIN,
   normaliseRole,
 } from './orgRoles.js';
@@ -11,6 +13,32 @@ import {
  * Each value is the set of org roles that receive the key by default.
  */
 export const G0_PERMISSION_DEFAULTS = Object.freeze({
+  // View keys (Organisation v2 — additive grants only)
+  view_org_internal: Object.freeze([
+    ORG_ROLE_SUPER_ADMIN,
+    ORG_ROLE_ADMIN,
+    ORG_ROLE_FOSTER,
+    ORG_ROLE_ASSOCIATE,
+  ]),
+  view_admin_contacts: Object.freeze([
+    ORG_ROLE_SUPER_ADMIN,
+    ORG_ROLE_ADMIN,
+    ORG_ROLE_FOSTER,
+    ORG_ROLE_ASSOCIATE,
+  ]),
+  view_org_pets: Object.freeze([
+    ORG_ROLE_SUPER_ADMIN,
+    ORG_ROLE_ADMIN,
+    ORG_ROLE_FOSTER,
+    ORG_ROLE_ASSOCIATE,
+  ]),
+  view_connections: Object.freeze([
+    ORG_ROLE_SUPER_ADMIN,
+    ORG_ROLE_ADMIN,
+    ORG_ROLE_FOSTER,
+    ORG_ROLE_ASSOCIATE,
+  ]),
+  view_fostering_sessions: Object.freeze([ORG_ROLE_SUPER_ADMIN, ORG_ROLE_ADMIN]),
   manage_fosters: Object.freeze([ORG_ROLE_SUPER_ADMIN, ORG_ROLE_ADMIN]),
   review_foster_onboarding: Object.freeze([ORG_ROLE_SUPER_ADMIN, ORG_ROLE_ADMIN]),
   contact_fosters: Object.freeze([ORG_ROLE_SUPER_ADMIN, ORG_ROLE_ADMIN]),
@@ -28,6 +56,15 @@ export const G0_PERMISSION_DEFAULTS = Object.freeze({
   manage_members: Object.freeze([ORG_ROLE_SUPER_ADMIN, ORG_ROLE_ADMIN]),
   manage_permissions: Object.freeze([ORG_ROLE_SUPER_ADMIN]),
 });
+
+/** Organisation v2 view permission keys (subset of G0_PERMISSION_DEFAULTS). */
+export const VIEW_PERMISSION_KEYS = Object.freeze([
+  'view_org_internal',
+  'view_admin_contacts',
+  'view_org_pets',
+  'view_connections',
+  'view_fostering_sessions',
+]);
 
 export const PERMISSION_BUNDLE_FOSTER_ADMIN = 'foster_admin';
 export const PERMISSION_BUNDLE_PET_ADMIN = 'pet_admin';
