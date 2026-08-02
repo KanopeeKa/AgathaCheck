@@ -2,6 +2,7 @@ import { v4 as uuidv4 } from 'uuid';
 
 import { publicError } from '../../config/security.js';
 import { userCanManageHealthEntry } from '../../lib/petAccess.js';
+import { recordPetActivityForPet } from '../../lib/petActivity.js';
 import { extractUserId, handleDocumentUpload, saveHealthDocument } from './shared.js';
 
 export function registerDocumentsRoutes(router, pool) {
@@ -34,6 +35,10 @@ export function registerDocumentsRoutes(router, pool) {
       if (!(await userCanManageHealthEntry(pool, req.params.id, userId))) {
         return res.status(404).json({ error: 'Entry not found' });
       }
+      const entryRow = await pool.query(
+        'SELECT pet_id FROM health_entries WHERE id = $1',
+        [req.params.id],
+      );
       const id = uuidv4();
       const url = req.file
         ? saveHealthDocument(req.file, id)
@@ -42,6 +47,12 @@ export function registerDocumentsRoutes(router, pool) {
         'INSERT INTO health_event_photos (id, health_entry_id, url) VALUES ($1, $2, $3) RETURNING *',
         [id, req.params.id, url]
       );
+      recordPetActivityForPet(pool, {
+        petId: entryRow.rows[0]?.pet_id,
+        actorUserId: userId,
+        eventType: 'document_upload',
+        metadata: { document_count: 1 },
+      });
       res.status(201).json(result.rows[0]);
     } catch (err) {
       res.status(500).json({ error: publicError(err) });

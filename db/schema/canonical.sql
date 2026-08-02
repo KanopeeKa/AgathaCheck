@@ -442,6 +442,16 @@ CREATE TABLE public.pet_timeline_entries (
     created_at timestamp with time zone DEFAULT now() NOT NULL,
     CONSTRAINT pet_timeline_entries_type_check CHECK (((entry_type)::text = 'manual'::text))
 );
+CREATE TABLE public.pet_activity_events (
+    id uuid NOT NULL,
+    pet_id uuid NOT NULL,
+    org_id uuid NOT NULL,
+    event_type text NOT NULL,
+    actor_user_id uuid,
+    occurred_at timestamp with time zone DEFAULT now() NOT NULL,
+    metadata jsonb DEFAULT '{}'::jsonb NOT NULL,
+    CONSTRAINT pet_activity_events_event_type_check CHECK ((event_type = ANY (ARRAY['health_log'::text, 'foster_session'::text, 'profile_edit'::text, 'document_upload'::text])))
+);
 CREATE TABLE public.pets (
     id uuid NOT NULL,
     user_id uuid NOT NULL,
@@ -468,7 +478,8 @@ CREATE TABLE public.pets (
     updated_at timestamp with time zone DEFAULT now(),
     care_holder_kind character varying(10),
     care_holder_user_id uuid,
-    care_holder_org_id uuid
+    care_holder_org_id uuid,
+    last_activity_at timestamp with time zone
 );
 CREATE TABLE public.prospects (
     id uuid NOT NULL,
@@ -629,6 +640,8 @@ ALTER TABLE ONLY public.pet_share_links
     ADD CONSTRAINT pet_share_links_pkey PRIMARY KEY (id);
 ALTER TABLE ONLY public.pet_timeline_entries
     ADD CONSTRAINT pet_timeline_entries_pkey PRIMARY KEY (id);
+ALTER TABLE ONLY public.pet_activity_events
+    ADD CONSTRAINT pet_activity_events_pkey PRIMARY KEY (id);
 ALTER TABLE ONLY public.pets
     ADD CONSTRAINT pets_pkey PRIMARY KEY (id);
 ALTER TABLE ONLY public.prospects
@@ -694,6 +707,9 @@ CREATE UNIQUE INDEX idx_pet_access_pet_user ON public.pet_access USING btree (pe
 CREATE INDEX idx_pet_share_links_code ON public.pet_share_links USING btree (code);
 CREATE INDEX idx_pet_share_links_pet_id ON public.pet_share_links USING btree (pet_id);
 CREATE INDEX idx_pet_timeline_entries_pet_id ON public.pet_timeline_entries USING btree (pet_id, start_date);
+CREATE INDEX idx_pet_activity_events_pet_id ON public.pet_activity_events USING btree (pet_id);
+CREATE INDEX idx_pet_activity_events_org_id ON public.pet_activity_events USING btree (org_id);
+CREATE INDEX idx_pet_activity_events_occurred_at ON public.pet_activity_events USING btree (occurred_at);
 CREATE INDEX idx_prospects_email_lower ON public.prospects USING btree (lower((email)::text)) WHERE (email IS NOT NULL);
 CREATE INDEX idx_prospects_org_id ON public.prospects USING btree (organization_id);
 CREATE INDEX idx_vets_organization_id ON public.vets USING btree (organization_id);
@@ -869,6 +885,12 @@ ALTER TABLE ONLY public.pet_timeline_entries
     ADD CONSTRAINT pet_timeline_entries_created_by_fkey FOREIGN KEY (created_by) REFERENCES public.users(id) ON DELETE SET NULL;
 ALTER TABLE ONLY public.pet_timeline_entries
     ADD CONSTRAINT pet_timeline_entries_pet_id_fkey FOREIGN KEY (pet_id) REFERENCES public.pets(id) ON DELETE CASCADE;
+ALTER TABLE ONLY public.pet_activity_events
+    ADD CONSTRAINT pet_activity_events_actor_user_id_fkey FOREIGN KEY (actor_user_id) REFERENCES public.users(id) ON DELETE SET NULL;
+ALTER TABLE ONLY public.pet_activity_events
+    ADD CONSTRAINT pet_activity_events_org_id_fkey FOREIGN KEY (org_id) REFERENCES public.organizations(id) ON DELETE CASCADE;
+ALTER TABLE ONLY public.pet_activity_events
+    ADD CONSTRAINT pet_activity_events_pet_id_fkey FOREIGN KEY (pet_id) REFERENCES public.pets(id) ON DELETE CASCADE;
 ALTER TABLE ONLY public.pets
     ADD CONSTRAINT pets_care_holder_org_id_fkey FOREIGN KEY (care_holder_org_id) REFERENCES public.organizations(id) ON DELETE SET NULL;
 ALTER TABLE ONLY public.pets

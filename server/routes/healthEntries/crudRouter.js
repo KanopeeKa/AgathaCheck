@@ -14,6 +14,7 @@ import {
   csvCell,
   validateHealthEntryTypeForWrite,
 } from './shared.js';
+import { recordPetActivityForPet } from '../../lib/petActivity.js';
 
 export function registerCrudRoutes(router, pool) {
   router.get('/', async (req, res) => {
@@ -140,6 +141,12 @@ export function registerCrudRoutes(router, pool) {
       );
       const entry = result.rows[0];
       entry.pet_name = null;
+      recordPetActivityForPet(pool, {
+        petId: petId,
+        actorUserId: userId,
+        eventType: 'health_log',
+        metadata: { action: 'create', entry_type: typeValidation.type },
+      });
       res.status(201).json(healthEntryToMap(entry));
     } catch (err) {
       res.status(500).json({ error: publicError(err, 'Error creating entry', `Error creating entry: ${err.message}`) });
@@ -194,6 +201,12 @@ export function registerCrudRoutes(router, pool) {
       if (result.rows.length === 0) return res.status(404).json({ error: 'Entry not found' });
       const entry = result.rows[0];
       entry.pet_name = null;
+      recordPetActivityForPet(pool, {
+        petId: entry.pet_id,
+        actorUserId: userId,
+        eventType: 'health_log',
+        metadata: { action: 'update', entry_type: typeValidation.type },
+      });
       res.json(healthEntryToMap(entry));
     } catch (err) {
       res.status(500).json({ error: publicError(err, 'Error updating entry', `Error updating entry: ${err.message}`) });

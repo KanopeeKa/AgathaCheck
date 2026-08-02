@@ -5,6 +5,7 @@ import { nextOccurrence } from '../../lib/recurrenceHelper.js';
 import { dateToIsoDate, normalizeCalendarDateInput, todayCalendarIso, yesterdayCalendarIso } from '../../lib/calendarDate.js';
 import { userCanManageHealthEntry } from '../../lib/petAccess.js';
 import { logAuditEventSafe } from '../../lib/audit.js';
+import { recordPetActivityForPet } from '../../lib/petActivity.js';
 import { extractUserId, healthEntryToMap, historyToMap } from './shared.js';
 
 export function registerCompletionRoutes(router, pool) {
@@ -56,6 +57,12 @@ export function registerCompletionRoutes(router, pool) {
           metadata: { entry_type: row.type, frequency: row.frequency || 'once' },
           req,
         });
+        recordPetActivityForPet(pool, {
+          petId: row.pet_id,
+          actorUserId: userId,
+          eventType: 'health_log',
+          metadata: { action: 'complete', entry_type: row.type },
+        });
         const entry = result.rows[0];
         entry.pet_name = null;
         return res.json(healthEntryToMap(entry));
@@ -80,6 +87,12 @@ export function registerCompletionRoutes(router, pool) {
         petId: row.pet_id,
         metadata: { entry_type: row.type, frequency: row.frequency || 'once' },
         req,
+      });
+      recordPetActivityForPet(pool, {
+        petId: row.pet_id,
+        actorUserId: userId,
+        eventType: 'health_log',
+        metadata: { action: 'complete', entry_type: row.type },
       });
       const entry = result.rows[0];
       entry.pet_name = null;
@@ -133,6 +146,12 @@ export function registerCompletionRoutes(router, pool) {
         metadata: { entry_type: row.type },
         req,
       });
+      recordPetActivityForPet(pool, {
+        petId: row.pet_id,
+        actorUserId: userId,
+        eventType: 'health_log',
+        metadata: { action: 'undo_complete', entry_type: row.type },
+      });
       const entry = result.rows[0];
       entry.pet_name = null;
       res.json(healthEntryToMap(entry));
@@ -166,6 +185,12 @@ export function registerCompletionRoutes(router, pool) {
         metadata: { entry_type: row.type, repeat_end_date: yesterday },
         req,
       });
+      recordPetActivityForPet(pool, {
+        petId: row.pet_id,
+        actorUserId: userId,
+        eventType: 'health_log',
+        metadata: { action: 'close', entry_type: row.type },
+      });
       row.pet_name = null;
       res.json(healthEntryToMap(row));
     } catch (err) {
@@ -197,6 +222,12 @@ export function registerCompletionRoutes(router, pool) {
         petId: row.pet_id,
         metadata: { entry_type: row.type },
         req,
+      });
+      recordPetActivityForPet(pool, {
+        petId: row.pet_id,
+        actorUserId: userId,
+        eventType: 'health_log',
+        metadata: { action: 'reopen', entry_type: row.type },
       });
       row.pet_name = null;
       res.json(healthEntryToMap(row));
@@ -248,6 +279,12 @@ export function registerCompletionRoutes(router, pool) {
         petId: row.pet_id,
         metadata: { entry_type: row.type, due_date: dueDateIso },
         req,
+      });
+      recordPetActivityForPet(pool, {
+        petId: row.pet_id,
+        actorUserId: userId,
+        eventType: 'health_log',
+        metadata: { action: 'skip', entry_type: row.type },
       });
       const histRow = await pool.query(
         `SELECT hh.*,
@@ -301,6 +338,12 @@ export function registerCompletionRoutes(router, pool) {
         petId: row.pet_id,
         metadata: { history_id: historyId, due_date: dateToIsoDate(hist.rows[0].due_date) },
         req,
+      });
+      recordPetActivityForPet(pool, {
+        petId: row.pet_id,
+        actorUserId: userId,
+        eventType: 'health_log',
+        metadata: { action: 'unskip', entry_type: row.type },
       });
       res.json({ deleted: true, history_id: historyId });
     } catch (err) {

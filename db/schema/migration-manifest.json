@@ -46,7 +46,8 @@
     "037_foster_visibility_and_agreement.sql",
     "038_consolidate_health_entry_types.sql",
     "039_health_issue_documents.sql",
-    "040_backfill_weight_entries_from_pets.sql"
+    "040_backfill_weight_entries_from_pets.sql",
+    "041_pet_activity_events.sql"
   ],
   "code_migrations": [
     "016_migrate_family_events_placements.sql",
@@ -54,6 +55,7 @@
     "028_adoption_journeys.sql",
     "034_pet_timeline_entries.sql",
     "036_organization_permissions.sql",
-    "040_backfill_weight_entries_from_pets.sql"
+    "040_backfill_weight_entries_from_pets.sql",
+    "041_pet_activity_events.sql"
   ]
 }
