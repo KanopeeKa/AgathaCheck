@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
+import '../../../../../core/utils/calendar_date.dart';
 import '../../../../../core/theme/experience_colors.dart';
 import '../../../../../core/utils/constants.dart';
 import '../../../../../l10n/app_localizations.dart';
@@ -169,8 +170,8 @@ class PetDetailProfileCard extends ConsumerWidget {
                             ),
                             const SizedBox(width: 8),
                             Text(
-                              AppLocalizations.of(context)!.neuteredSpayed(
-                                DateFormat.yMMMd().format(pet.neuteredDate!),
+                              l.neuteredSpayed(
+                                formatCalendarDateMedium(pet.neuteredDate!),
                               ),
                               style: theme.textTheme.bodyMedium?.copyWith(
                                 color: colorScheme.onSurfaceVariant,

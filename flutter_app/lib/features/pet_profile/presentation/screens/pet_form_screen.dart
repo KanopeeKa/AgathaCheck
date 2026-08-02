@@ -6,7 +6,7 @@ import '../controllers/pet_form_controller.dart';
 import '../controllers/pet_form_outcomes.dart';
 
 import '../../../../core/utils/constants.dart';
-import '../../../../core/utils/calendar_date.dart';
+import '../../../../core/utils/calendar_date_picker.dart';
 import '../../../../core/widgets/app_logo_title.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../domain/entities/pet.dart';
@@ -144,14 +144,14 @@ class _PetFormScreenState extends ConsumerState<PetFormScreen> {
 
   Future<void> _pickNeuteredDate() async {
     final now = DateTime.now();
-    final picked = await showDatePicker(
+    final picked = await showCalendarDatePicker(
       context: context,
       initialDate: _neuteredDate ?? now,
       firstDate: DateTime(1990),
       lastDate: now,
     );
     if (picked != null) {
-      final date = calendarDateOnly(picked);
+      final date = picked;
       setState(() {
         _neuteredDate = date;
       });

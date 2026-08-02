@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 
-import '../../../../l10n/app_localizations.dart';
 import '../../../../core/utils/calendar_date.dart';
+import '../../../../core/utils/calendar_date_picker.dart';
+import '../../../../l10n/app_localizations.dart';
 
 /// Bottom sheet to capture when an event was actually completed.
 Future<DateTime?> showMarkCompleteSheet(
@@ -41,19 +42,17 @@ Future<DateTime?> showMarkCompleteSheet(
             ListTile(
               contentPadding: EdgeInsets.zero,
               title: Text(l.completedOn),
-              subtitle: Text(
-                MaterialLocalizations.of(ctx).formatMediumDate(selected),
-              ),
+              subtitle: Text(formatCalendarDateDisplay(selected)),
               trailing: const Icon(Icons.calendar_today),
               onTap: () async {
-                final picked = await showDatePicker(
+                final picked = await showCalendarDatePicker(
                   context: ctx,
                   initialDate: selected,
                   firstDate: DateTime(2000),
                   lastDate: DateTime(2100),
                 );
                 if (picked != null) {
-                  selected = calendarDateOnly(picked);
+                  selected = picked;
                   (ctx as Element).markNeedsBuild();
                 }
               },

@@ -91,6 +91,8 @@ reading UTC `.day` would shift the stored date back one day east of UTC.
 ## Tests
 
 - `flutter_app/test/core/utils/calendar_date_test.dart`
+- `flutter_app/test/core/utils/calendar_date_fields_test.dart` — inventory-driven regression for every calendar-date field in models (see field inventory above)
+- `flutter_app/test/helpers/calendar_date_field_expectations.dart`
 - `server/test/calendarDate.test.js`
 - Model tests: `pet_model_test.dart`, `health_entry_model_test.dart`,
   `health_issue_model_test.dart`, `weight_entry_model_test.dart`,

@@ -25,9 +25,20 @@ describe('dateToIsoDate', () => {
   });
 });
 
-describe('normalizeCalendarDateInput', () => {
-  it('normalizes date-only request values', () => {
-    expect(normalizeCalendarDateInput('2026-07-15')).toBe('2026-07-15');
+describe('calendar date field inventory (docs/calendar-dates.md)', () => {
+  const samples = [
+    '2026-12-18',
+    '2026-12-18T00:00:00.000Z',
+    '2026-12-18 00:00:00.000Z',
+    new Date('2026-12-18T00:00:00.000Z'),
+  ];
+
+  it.each(samples)('dateToIsoDate preserves day for %p', (value) => {
+    expect(dateToIsoDate(value)).toBe('2026-12-18');
+  });
+
+  it.each(samples)('normalizeCalendarDateInput preserves day for %p', (value) => {
+    expect(normalizeCalendarDateInput(value)).toBe('2026-12-18');
   });
 });
 

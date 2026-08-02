@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
-
+import '../../../../../core/utils/calendar_date.dart';
 import '../../../../../l10n/app_localizations.dart';
 import 'pet_form_info_tooltip.dart';
 
@@ -24,7 +23,6 @@ class PetFormNeuteredSection extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final l = AppLocalizations.of(context)!;
-    final dateFormat = DateFormat.yMMMd();
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -95,7 +93,7 @@ class PetFormNeuteredSection extends StatelessWidget {
               ),
               child: Text(
                 neuteredDate != null
-                    ? dateFormat.format(neuteredDate!)
+                    ? formatCalendarDateDisplay(neuteredDate!)
                     : 'Select date (optional)',
                 style: theme.textTheme.bodyLarge?.copyWith(
                   color: neuteredDate != null

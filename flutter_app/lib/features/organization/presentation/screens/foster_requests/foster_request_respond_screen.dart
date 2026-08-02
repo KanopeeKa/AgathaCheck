@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../../core/utils/calendar_date.dart';
+import '../../../../../core/utils/calendar_date_picker.dart';
 import '../../../../../core/widgets/app_logo_title.dart';
 import '../../../../../l10n/app_localizations.dart';
 import '../../../domain/entities/foster_request.dart';
@@ -40,7 +41,7 @@ class _FosterRequestRespondScreenState
 
   Future<void> _pickDate() async {
     final now = DateTime.now();
-    final picked = await showDatePicker(
+    final picked = await showCalendarDatePicker(
       context: context,
       initialDate: _earliestAvailability ?? now,
       firstDate: now,
@@ -149,7 +150,7 @@ class _FosterRequestRespondScreenState
                   title: Text(l.fosterRequestEarliestAvailabilityLabel),
                   subtitle: Text(
                     _earliestAvailability != null
-                        ? toCalendarDateString(_earliestAvailability)!
+                        ? formatCalendarDateDisplay(_earliestAvailability!)
                         : l.fosterRequestSelectDate,
                   ),
                   trailing: IconButton(
