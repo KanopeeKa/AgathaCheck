@@ -342,7 +342,7 @@ export async function updateOrganization(
   baseURL: string,
   token: string,
   orgId: string,
-  data: Record<string, string | boolean>,
+  data: Record<string, string | boolean | Record<string, string>>,
 ): Promise<TestOrganization> {
   const res = await apiFetch(apiUrl(`/organizations/${orgId}`, baseURL), {
     method: 'PUT',
@@ -372,6 +372,8 @@ export interface DiscoverableOrganization {
   id: string;
   name: string;
   logo_url: string;
+  photo_url: string;
+  display_locality: string;
   town: string;
   administrative_area: string;
   description: string;
@@ -426,6 +428,7 @@ export async function setOrganizationDiscoveryProfile(
     administrative_area?: string;
     description?: string;
     logo_url?: string;
+    photo_url?: string;
   },
 ): Promise<void> {
   await updateOrganization(baseURL, token, org.id, {
@@ -436,6 +439,7 @@ export async function setOrganizationDiscoveryProfile(
     administrative_area: profile.administrative_area ?? '',
     description: profile.description ?? '',
     logo_url: profile.logo_url ?? '',
+    photo_url: profile.photo_url ?? '',
   });
 }
 

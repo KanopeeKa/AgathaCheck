@@ -15,6 +15,7 @@ void main() {
     type: OrganizationType.charity,
     memberCount: 3,
     petCount: 12,
+    photoUrl: '/uploads/org_photos/hero.jpg',
   );
 
   testWidgets('org card uses surface fill without elevation', (tester) async {
@@ -36,5 +37,28 @@ void main() {
     expect(card.color, orgListCardColor());
     expect(card.elevation, 0);
     expect((card.shape as RoundedRectangleBorder).side, BorderSide.none);
+  });
+
+  testWidgets('org card shows hero strip when photo is set', (tester) async {
+    await tester.pumpWidget(
+      ProviderScope(
+        child: MaterialApp(
+          theme: AppTheme.lightTheme,
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: orgThemed(
+            child: Scaffold(body: OrgCard(organization: organization)),
+          ),
+        ),
+      ),
+    );
+    await tester.pump();
+
+    expect(
+      find.byWidgetPredicate(
+        (widget) => widget is SizedBox && widget.height == 72,
+      ),
+      findsOneWidget,
+    );
   });
 }

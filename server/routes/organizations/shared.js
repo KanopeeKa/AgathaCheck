@@ -142,6 +142,19 @@ export function safePublicProfileMetadata(raw) {
   return safe;
 }
 
+/** Server-computed locality for discovery tiles: postcode → town → administrative_area. */
+export function computeDisplayLocality(org) {
+  const metadata =
+    org.public_profile_metadata && typeof org.public_profile_metadata === 'object'
+      ? org.public_profile_metadata
+      : {};
+  const postcode = String(metadata.postcode ?? '').trim();
+  if (postcode) return postcode;
+  const town = String(org.town ?? '').trim();
+  if (town) return town;
+  return String(org.administrative_area ?? '').trim();
+}
+
 export function publicPrimaryContactToMap(contact) {
   if (!contact) return null;
   return {

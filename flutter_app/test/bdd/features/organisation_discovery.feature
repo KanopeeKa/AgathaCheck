@@ -15,3 +15,23 @@ Feature: Organisation discovery
     Given "Quiet Shelter" has opted out of discovery
     When an anonymous visitor requests the organisations discovery list
     Then "Quiet Shelter" should not appear
+
+  @P1
+  Scenario: Discover API returns display_locality from postcode when set
+    Given "Rescue Hearts" has postcode "62701" in public profile metadata
+    And "Rescue Hearts" has town "Springfield" and administrative area "IL"
+    When an anonymous visitor requests the organisations discovery list
+    Then "Rescue Hearts" should appear with display_locality "62701"
+
+  @P1
+  Scenario: Discover API includes photo_url for hero imagery
+    Given "Rescue Hearts" is discoverable with a cover photo
+    When an anonymous visitor requests the organisations discovery list
+    Then "Rescue Hearts" should include photo_url in the discovery response
+
+  @P1
+  Scenario: Discover API falls back display_locality to town then administrative area
+    Given "Rescue Hearts" has no postcode in public profile metadata
+    And "Rescue Hearts" has town "Springfield" and administrative area "IL"
+    When an anonymous visitor requests the organisations discovery list
+    Then "Rescue Hearts" should appear with display_locality "Springfield"

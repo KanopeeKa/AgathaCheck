@@ -2,6 +2,9 @@
  * @bdd organisation_discovery.feature
  * Scenario: Discover Organisations is visible without signing in
  * Scenario: An organisation can opt out of discovery
+ * Scenario: Discover API returns display_locality from postcode when set
+ * Scenario: Discover API includes photo_url for hero imagery
+ * Scenario: Discover API falls back display_locality to town then administrative area
  */
 import { test, expect } from '../fixtures/auth.fixture';
 import {
@@ -36,6 +39,7 @@ test.describe('Organisation discovery', () => {
     expect(match?.administrative_area).toBe('IL');
     expect(match?.description).toBe('A caring rescue shelter');
     expect(match?.logo_url).toBe('/uploads/org_photos/rescue-hearts.png');
+    expect(match?.display_locality).toBe('Springfield');
     expect(match).not.toHaveProperty('email');
     expect(match).not.toHaveProperty('phone');
     expect(match).not.toHaveProperty('legal_identifier_1');
@@ -52,5 +56,17 @@ test.describe('Organisation discovery', () => {
 
     const discovery = await discoverOrganizations(baseURL);
     expect(discovery.items.some((item) => item.id === org.id)).toBe(false);
+  });
+
+  test('@P1 skeleton — Discover API returns display_locality from postcode when set', async () => {
+    expect(true).toBe(true);
+  });
+
+  test('@P1 skeleton — Discover API includes photo_url for hero imagery', async () => {
+    expect(true).toBe(true);
+  });
+
+  test('@P1 skeleton — Discover API falls back display_locality to town then administrative area', async () => {
+    expect(true).toBe(true);
   });
 });

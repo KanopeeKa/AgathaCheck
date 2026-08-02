@@ -6,9 +6,11 @@ const discoverableOrg = {
   id: 'org-discover-1',
   name: 'Rescue Hearts',
   logo_url: '/uploads/org_photos/logo.jpg',
+  photo_url: '/uploads/org_photos/hero.jpg',
   town: 'Springfield',
   administrative_area: 'IL',
   description: 'A caring rescue shelter',
+  public_profile_metadata: {},
 };
 
 const hiddenOrg = {
@@ -54,9 +56,11 @@ describe('GET /organizations/discover', () => {
     expect(Object.keys(org).sort()).toEqual([
       'administrative_area',
       'description',
+      'display_locality',
       'id',
       'logo_url',
       'name',
+      'photo_url',
       'town',
     ]);
     expect(org).not.toHaveProperty('email');
@@ -107,6 +111,41 @@ describe('GET /organizations/discover', () => {
     const app = createApp(pool);
     await request(app).get('/api/organizations/discover?page_size=100');
     expect(limit).toBe(50);
+  });
+
+  it('computes display_locality from postcode, town, or administrative_area', async () => {
+    const withPostcode = {
+      ...discoverableOrg,
+      id: 'org-postcode',
+      public_profile_metadata: { postcode: '62701' },
+    };
+    const townOnly = {
+      ...discoverableOrg,
+      id: 'org-town',
+      town: 'Paris',
+      administrative_area: 'IDF',
+      public_profile_metadata: {},
+    };
+    const areaOnly = {
+      ...discoverableOrg,
+      id: 'org-area',
+      town: '',
+      administrative_area: 'TX',
+      public_profile_metadata: {},
+    };
+    const app = createApp(buildDiscoverPool([withPostcode, townOnly, areaOnly], 3));
+    const res = await request(app).get('/api/organizations/discover');
+    expect(res.statusCode).toBe(200);
+    const byId = Object.fromEntries(res.body.items.map((o) => [o.id, o]));
+    expect(byId['org-postcode'].display_locality).toBe('62701');
+    expect(byId['org-town'].display_locality).toBe('Paris');
+    expect(byId['org-area'].display_locality).toBe('TX');
+  });
+
+  it('includes photo_url for hero imagery', async () => {
+    const app = createApp(buildDiscoverPool());
+    const res = await request(app).get('/api/organizations/discover');
+    expect(res.body.items[0].photo_url).toBe('/uploads/org_photos/hero.jpg');
   });
 
   it('does not include opted-out organisations in results', async () => {
