@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../../l10n/app_localizations.dart';
+import 'organisation_profile_admin_contacts.dart';
+import 'organisation_profile_connections.dart';
 import 'organisation_profile_pets.dart';
 import 'organisation_profile_section.dart';
 
-/// Member-tier profile sections (empty shells gated by view_* permissions).
+/// Member-tier profile sections gated by view_* permissions.
 class OrganisationProfileMemberSections extends StatelessWidget {
   const OrganisationProfileMemberSections({super.key, required this.orgId});
 
@@ -29,7 +31,9 @@ class OrganisationProfileMemberSections extends StatelessWidget {
             permissionKey: 'view_admin_contacts',
             sectionKey: const Key('org_profile_section_admin_contacts'),
             title: l.adminContactsTitle,
-            preview: Text(l.adminContactsDescription, style: mutedStyle),
+            preview: OrganisationProfileAdminContacts(orgId: orgId),
+            manageLinkLabel: l.adminContactsTitle,
+            onManage: () => context.push('/o/orgs/$orgId/admin-contacts'),
           ),
         ),
         Padding(
@@ -78,7 +82,10 @@ class OrganisationProfileMemberSections extends StatelessWidget {
             permissionKey: 'view_connections',
             sectionKey: const Key('org_profile_section_connections'),
             title: l.orgConnections,
-            preview: Text(l.orgDashboardConnectionsSubtitle, style: mutedStyle),
+            preview: OrganisationProfileConnections(orgId: orgId),
+            manageLinkLabel: l.orgPermissionManageMembers,
+            managePermissionKey: 'manage_members',
+            onManage: () => context.push('/o/orgs/$orgId/connections'),
           ),
         ),
       ],
