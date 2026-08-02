@@ -1,6 +1,7 @@
 import { dateToIsoDate } from './calendarDate.js';
 import { userDisplayName } from './notificationHelper.js';
-import { userCanAccessPet, userOwnsPet } from './petAccess.js';
+import { userOwnsPet } from './petAccess.js';
+import { userCanAccessOrgPetOperational } from './orgPetViewAccess.js';
 import { orgPetViewerRolesSql } from './orgRoles.js';
 
 function isoDate(value) {
@@ -185,7 +186,7 @@ function buildGapSegments(coveredRanges, timelineStartMs, timelineEndMs) {
  * Build chronological pet timeline: custody + fostering + manual + gap placeholders.
  */
 export async function buildPetTimeline(pool, petId, viewerId) {
-  if (!(await userCanAccessPet(pool, petId, viewerId))) {
+  if (!(await userCanAccessOrgPetOperational(pool, petId, viewerId))) {
     const err = new Error('Forbidden');
     err.statusCode = 403;
     throw err;

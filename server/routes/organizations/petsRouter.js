@@ -14,6 +14,10 @@ import {
   TRANSFER_RETURN,
 } from '../../lib/custodyTransfers.js';
 import { petIsFosteredByOrg, setOrgGuardianAndCare } from '../../lib/petCustody.js';
+import {
+  redactedOrgPetToMap,
+  userCanViewRedactedOrgPet,
+} from '../../lib/orgPetViewAccess.js';
 import { extractUserId, requirePermission } from './shared.js';
 import { publicError } from '../../config/security.js';
 
@@ -62,6 +66,30 @@ export function registerPetsRoutes(router, pool) {
           [orgId, limit],
         );
         res.json(result.rows.map(petSummaryRowToMap));
+      } catch (err) {
+        res.status(500).json({ error: publicError(err) });
+      }
+    });
+
+    router.get('/:orgId/pets/:petId/redacted', async (req, res) => {
+      const userId = extractUserId(req);
+      if (!userId) return res.status(401).json({ error: 'Unauthorized' });
+      const { orgId, petId } = req.params;
+      try {
+        if (!(await userCanViewRedactedOrgPet(pool, orgId, petId, userId))) {
+          return res.status(403).json({ error: 'Forbidden' });
+        }
+        const result = await pool.query(
+          `SELECT id, name, species, breed, photo_path, date_of_birth, age, organization_id
+           FROM pets
+           WHERE id = $1 AND organization_id = $2
+             AND COALESCE(passed_away, false) = false`,
+          [petId, orgId],
+        );
+        if (result.rows.length === 0) {
+          return res.status(404).json({ error: 'Pet not found' });
+        }
+        res.json(redactedOrgPetToMap(result.rows[0]));
       } catch (err) {
         res.status(500).json({ error: publicError(err) });
       }

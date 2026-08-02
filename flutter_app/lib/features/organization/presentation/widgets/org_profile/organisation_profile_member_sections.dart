@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../../l10n/app_localizations.dart';
+import 'organisation_profile_pets.dart';
 import 'organisation_profile_section.dart';
 
 /// Member-tier profile sections (empty shells gated by view_* permissions).
@@ -64,7 +65,10 @@ class OrganisationProfileMemberSections extends StatelessWidget {
             permissionKey: 'view_org_pets',
             sectionKey: const Key('org_profile_section_pets'),
             title: l.orgPets,
-            preview: Text(l.orgDashboardPetsSubtitle, style: mutedStyle),
+            preview: OrganisationProfilePets(orgId: orgId),
+            manageLinkLabel: l.orgPermissionManagePets,
+            managePermissionKey: 'manage_pets',
+            onManage: () => context.push('/o/orgs/$orgId/pets'),
           ),
         ),
         Padding(
