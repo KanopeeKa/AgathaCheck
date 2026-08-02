@@ -242,6 +242,41 @@ describe('Organizations API', () => {
         expect(res.body.town).toBe('Springfield');
         expect(res.body.is_discoverable).toBe(true);
       });
+
+      it('persists postcode in public_profile_metadata', async () => {
+        let updateParams;
+        const pool = buildMockPool({
+          query: async (sql, params) => {
+            if (sql.includes('SELECT public_profile_metadata FROM organizations')) {
+              return { rows: [{ public_profile_metadata: { postcode: 'OLD' } }] };
+            }
+            if (sql.includes('UPDATE organizations SET')) {
+              updateParams = params;
+              return { rows: [] };
+            }
+            if (sql.includes('SELECT o.*') && sql.includes('WHERE o.id')) {
+              return {
+                rows: [{
+                  ...makeOrgRow(),
+                  public_profile_metadata: JSON.parse(updateParams?.[13] ?? '{}'),
+                }],
+              };
+            }
+            return { rows: [] };
+          },
+        });
+        const a = createApp(pool);
+        const res = await request(a)
+          .put(`/api/organizations/${orgId}`)
+          .set('Authorization', `Bearer ${token}`)
+          .send({
+            name: 'Rescue Hearts',
+            public_profile_metadata: { postcode: '62701' },
+          });
+        expect(res.statusCode).toBe(200);
+        expect(JSON.parse(updateParams[13])).toEqual({ postcode: '62701' });
+        expect(res.body.public_profile_metadata).toEqual({ postcode: '62701' });
+      });
   
       it('returns 404 when org not found after update', async () => {
         const pool = buildMockPool({

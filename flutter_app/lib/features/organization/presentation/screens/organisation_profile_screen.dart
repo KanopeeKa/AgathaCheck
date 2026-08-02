@@ -7,6 +7,7 @@ import '../../../../l10n/app_localizations.dart';
 import '../../domain/entities/organization.dart';
 import '../providers/org_provider_profile.dart';
 import '../utils/org_screen_theme.dart';
+import '../widgets/org_permission_gate.dart';
 import '../widgets/org_presentation/org_presentation_contact_block.dart';
 import '../widgets/org_presentation/org_presentation_hero.dart';
 import '../widgets/org_presentation/org_presentation_legal_block.dart';
@@ -56,6 +57,18 @@ class OrganisationProfileScreen extends ConsumerWidget {
                 tooltip: MaterialLocalizations.of(context).backButtonTooltip,
                 onPressed: () => context.go('/o/orgs'),
               ),
+              actions: [
+                OrgPermissionGate(
+                  orgId: orgId,
+                  permissionKey: 'manage_permissions',
+                  child: IconButton(
+                    key: const Key('org_profile_settings'),
+                    icon: const Icon(Icons.settings_outlined),
+                    tooltip: l.orgProfileSettingsTooltip,
+                    onPressed: () => context.push('/o/orgs/$orgId/edit'),
+                  ),
+                ),
+              ],
             ),
             body: ListView(
               padding: const EdgeInsets.only(bottom: 24),

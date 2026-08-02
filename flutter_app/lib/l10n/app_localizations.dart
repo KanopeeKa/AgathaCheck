@@ -3115,6 +3115,42 @@ abstract class AppLocalizations {
   /// **'Address'**
   String get orgAddress;
 
+  /// No description provided for @orgTown.
+  ///
+  /// In en, this message translates to:
+  /// **'Town or city'**
+  String get orgTown;
+
+  /// No description provided for @orgAdministrativeArea.
+  ///
+  /// In en, this message translates to:
+  /// **'Region or state'**
+  String get orgAdministrativeArea;
+
+  /// No description provided for @orgPostcode.
+  ///
+  /// In en, this message translates to:
+  /// **'Postcode'**
+  String get orgPostcode;
+
+  /// No description provided for @orgImageHeroGuidance.
+  ///
+  /// In en, this message translates to:
+  /// **'Landscape image (~8:3), at least 1200×450 px. JPG, PNG, or WebP up to 2 MB.'**
+  String get orgImageHeroGuidance;
+
+  /// No description provided for @orgImageLogoGuidance.
+  ///
+  /// In en, this message translates to:
+  /// **'Square logo, at least 256×256 px. Shown as a circle. JPG, PNG, or WebP up to 2 MB.'**
+  String get orgImageLogoGuidance;
+
+  /// No description provided for @orgProfileSettingsTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit organisation settings'**
+  String get orgProfileSettingsTooltip;
+
   /// No description provided for @orgWebsite.
   ///
   /// In en, this message translates to:
@@ -7976,6 +8012,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Fostering sessions'**
   String get orgProfileFosteringSessionsTitle;
+
+  /// No description provided for @orgFosteringSessionsListTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Fostering sessions'**
+  String get orgFosteringSessionsListTitle;
+
+  /// No description provided for @orgFosteringSessionsManage.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage sessions'**
+  String get orgFosteringSessionsManage;
+
+  /// No description provided for @orgFosteringSessionsEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No fostering sessions match this view'**
+  String get orgFosteringSessionsEmpty;
+
+  /// No description provided for @fosteringSessionDerivedNearlyFinished.
+  ///
+  /// In en, this message translates to:
+  /// **'Nearly finished'**
+  String get fosteringSessionDerivedNearlyFinished;
 
   /// No description provided for @orgDashboardEditSubtitle.
   ///

@@ -128,12 +128,29 @@ export function registerCoreRoutes(router, pool) {
           administrative_area,
           description,
           is_discoverable: isDiscoverable,
+          public_profile_metadata: publicProfileMetadata,
+          postcode,
         } = req.body;
+        const existingResult = await pool.query(
+          'SELECT public_profile_metadata FROM organizations WHERE id = $1',
+          [req.params.id],
+        );
+        const existingMetadata = existingResult.rows[0]?.public_profile_metadata;
+        const baseMetadata = existingMetadata && typeof existingMetadata === 'object'
+          ? { ...existingMetadata }
+          : {};
+        const mergedMetadata = publicProfileMetadata && typeof publicProfileMetadata === 'object'
+          ? { ...baseMetadata, ...publicProfileMetadata }
+          : baseMetadata;
+        if (postcode !== undefined) {
+          mergedMetadata.postcode = String(postcode ?? '').trim();
+        }
         await pool.query(
           `UPDATE organizations SET name = $1, type = $2, email = $3, phone = $4, address = $5,
            website = $6, bio = $7, photo_url = $8, logo_url = $9, town = $10,
-           administrative_area = $11, description = $12, is_discoverable = $13, updated_at = NOW()
-           WHERE id = $14`,
+           administrative_area = $11, description = $12, is_discoverable = $13,
+           public_profile_metadata = $14, updated_at = NOW()
+           WHERE id = $15`,
           [
             name || '',
             type || 'professional',
@@ -148,6 +165,7 @@ export function registerCoreRoutes(router, pool) {
             administrative_area || '',
             description || '',
             isDiscoverable !== false,
+            JSON.stringify(mergedMetadata),
             req.params.id,
           ],
         );
