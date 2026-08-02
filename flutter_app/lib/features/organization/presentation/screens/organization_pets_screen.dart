@@ -39,6 +39,15 @@ class OrganizationPetsScreen extends ConsumerWidget {
             tooltip: MaterialLocalizations.of(context).backButtonTooltip,
             onPressed: () => context.pop(),
           ),
+          actions: [
+            if (canManagePets)
+              IconButton(
+                key: const Key('org_add_pet_nav'),
+                icon: const Icon(Icons.add),
+                tooltip: l.orgAddPet,
+                onPressed: () => context.push('/add?orgId=$orgId'),
+              ),
+          ],
         ),
         body: screenDataAsync.when(
           loading: () => const Center(child: CircularProgressIndicator()),

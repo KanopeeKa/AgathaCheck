@@ -2,10 +2,17 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/providers/api_base_url_provider.dart';
 import '../../../auth/presentation/providers/auth_providers.dart';
+import '../../../notifications/presentation/providers/notification_providers.dart';
 import '../../../pet_profile/presentation/providers/pet_providers.dart';
 import '../../data/datasources/foster_placements_remote_datasource.dart';
 import '../../domain/entities/foster_placement.dart';
 import 'organization_providers.dart';
+
+void invalidatePlacementMutationProviders(ProviderContainer container) {
+  container.invalidate(pendingFosterPlacementsProvider);
+  container.invalidate(pendingAdoptionPlacementsProvider);
+  container.invalidate(notificationsProvider);
+}
 
 final fosterPlacementsDataSourceProvider =
     Provider<FosterPlacementsRemoteDataSource>((ref) {
@@ -109,6 +116,7 @@ class PetFosterPlacementNotifier
       notes: notes,
       token: token,
     );
+    invalidatePlacementMutationProviders(ref.container);
     ref.invalidateSelf();
   }
 
@@ -141,6 +149,7 @@ class PetFosterPlacementNotifier
       adoptionConditions: adoptionConditions,
       token: token,
     );
+    invalidatePlacementMutationProviders(ref.container);
     ref.invalidateSelf();
   }
 
@@ -180,6 +189,7 @@ class PetFosterPlacementNotifier
       notes: notes,
       token: token,
     );
+    invalidatePlacementMutationProviders(ref.container);
     ref.invalidateSelf();
   }
 }
