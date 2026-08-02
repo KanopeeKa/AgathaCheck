@@ -1445,7 +1445,7 @@ export async function createFosterPlacement(
   orgId: string,
   petId: string,
   fosterUserId: string,
-  options: { startDate?: string; notes?: string } = {},
+  options: { startDate?: string; endDate?: string; notes?: string } = {},
 ): Promise<TestFosterPlacement> {
   const res = await apiFetch(apiUrl(`/organizations/${orgId}/pets/${petId}/placements`, baseURL), {
     method: 'POST',
@@ -1456,6 +1456,7 @@ export async function createFosterPlacement(
     body: JSON.stringify({
       foster_user_id: fosterUserId,
       start_date: options.startDate,
+      end_date: options.endDate,
       notes: options.notes ?? '',
     }),
   });

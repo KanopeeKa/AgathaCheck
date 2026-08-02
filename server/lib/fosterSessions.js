@@ -295,6 +295,7 @@ export async function insertFosteringSession(pool, {
   fosterUserId,
   status,
   startDate,
+  endDate,
   notes,
   createdBy,
   shelterFosterRelationshipId,
@@ -304,10 +305,10 @@ export async function insertFosteringSession(pool, {
 }) {
   const insertResult = await pool.query(
     `INSERT INTO foster_placements (
-       id, organization_id, pet_id, foster_user_id, status, start_date, notes,
+       id, organization_id, pet_id, foster_user_id, status, start_date, end_date, notes,
        created_by, shelter_foster_relationship_id, org_foster_parent_id,
        session_type, foster_request_response_id, adoption_conditions
-     ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $9, $10, $11, $12)
+     ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $10, $11, $12, $13)
      RETURNING *`,
     [
       id,
@@ -316,6 +317,7 @@ export async function insertFosteringSession(pool, {
       fosterUserId || null,
       status,
       startDate,
+      endDate,
       notes,
       createdBy,
       shelterFosterRelationshipId,
