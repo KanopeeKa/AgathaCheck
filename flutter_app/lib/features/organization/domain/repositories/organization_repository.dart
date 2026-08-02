@@ -62,6 +62,15 @@ abstract class OrganizationRepository {
     String orgId,
     String token,
   );
+  Future<List<Map<String, dynamic>>> getOrganizationPetSummary(
+    String orgId,
+    String token,
+  );
+  Future<Map<String, dynamic>> getRedactedOrganizationPet(
+    String orgId,
+    String petId,
+    String token,
+  );
   Future<Map<String, dynamic>> createOrganizationPet(
     String orgId,
     Map<String, dynamic> petJson,

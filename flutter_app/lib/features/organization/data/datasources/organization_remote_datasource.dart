@@ -140,6 +140,17 @@ class OrganizationRemoteDataSource with OrganizationRemoteFosterDelegations {
     String token,
   ) => _pets.getOrganizationPets(orgId, token);
 
+  Future<List<Map<String, dynamic>>> getOrganizationPetSummary(
+    String orgId,
+    String token,
+  ) => _pets.getOrganizationPetSummary(orgId, token);
+
+  Future<Map<String, dynamic>> getRedactedOrganizationPet(
+    String orgId,
+    String petId,
+    String token,
+  ) => _pets.getRedactedOrganizationPet(orgId, petId, token);
+
   Future<Map<String, dynamic>> createOrganizationPet(
     String orgId,
     Map<String, dynamic> petJson,

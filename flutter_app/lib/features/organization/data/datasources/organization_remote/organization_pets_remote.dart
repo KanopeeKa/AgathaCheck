@@ -23,6 +23,40 @@ class OrganizationPetsRemote {
     return list.cast<Map<String, dynamic>>();
   }
 
+  Future<List<Map<String, dynamic>>> getOrganizationPetSummary(
+    String orgId,
+    String token,
+  ) async {
+    final response = await _ctx.client.get(
+      Uri.parse(
+        '${_ctx.baseUrl}/api/organizations/$orgId/pets/summary?sort=last_activity&limit=12',
+      ),
+      headers: _ctx.headers(token),
+    );
+    if (response.statusCode >= 400) {
+      _ctx.throwApiError(response, 'Failed to get organization pet summary');
+    }
+    final list = json.decode(response.body) as List;
+    return list.cast<Map<String, dynamic>>();
+  }
+
+  Future<Map<String, dynamic>> getRedactedOrganizationPet(
+    String orgId,
+    String petId,
+    String token,
+  ) async {
+    final response = await _ctx.client.get(
+      Uri.parse(
+        '${_ctx.baseUrl}/api/organizations/$orgId/pets/$petId/redacted',
+      ),
+      headers: _ctx.headers(token),
+    );
+    if (response.statusCode >= 400) {
+      _ctx.throwApiError(response, 'Failed to get redacted organization pet');
+    }
+    return json.decode(response.body) as Map<String, dynamic>;
+  }
+
   Future<Map<String, dynamic>> createOrganizationPet(
     String orgId,
     Map<String, dynamic> petJson,
