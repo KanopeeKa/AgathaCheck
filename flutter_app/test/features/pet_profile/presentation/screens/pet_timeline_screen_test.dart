@@ -161,6 +161,58 @@ void main() {
     expect(find.byKey(const Key('timeline_delete_fp-1')), findsNothing);
   });
 
+  testWidgets('shows custody segment read-only without edit actions', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      buildApp(
+        initialLocation: '/pet/pet-1/timeline',
+        timelineSegments: const [
+          PetTimelineSegment(
+            kind: 'custody',
+            id: 'custody-1',
+            startDate: '2024-06-01',
+            guardianName: 'Bob',
+          ),
+        ],
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    final custodyCard = find.byKey(
+      const Key('timeline_entry_custody_custody-1'),
+    );
+    expect(
+      find.descendant(of: custodyCard, matching: find.text('Guardian: Bob')),
+      findsOneWidget,
+    );
+    expect(find.byKey(const Key('timeline_edit_custody-1')), findsNothing);
+    expect(find.byKey(const Key('timeline_delete_custody-1')), findsNothing);
+  });
+
+  testWidgets('shows fillable gap with fill action', (tester) async {
+    await tester.pumpWidget(
+      buildApp(
+        initialLocation: '/pet/pet-1/timeline',
+        timelineSegments: const [
+          PetTimelineSegment(
+            kind: 'gap',
+            id: 'gap-1',
+            startDate: '2023-01-01',
+            endDate: '2023-12-31',
+            fillable: true,
+          ),
+        ],
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('No data'), findsOneWidget);
+    expect(find.text('2023-01-01 – 2023-12-31'), findsOneWidget);
+    expect(find.byKey(const Key('timeline_fill_gap-1')), findsOneWidget);
+    expect(find.byKey(const Key('timeline_edit_gap-1')), findsNothing);
+  });
+
   testWidgets('shows manual entry with edit and delete actions', (
     tester,
   ) async {

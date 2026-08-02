@@ -10,7 +10,7 @@ import '../providers/pet_timeline_providers.dart';
 import '../widgets/pet_timeline/pet_timeline_view.dart';
 import '../widgets/pet_timeline/pet_timeline_fill_sheet.dart';
 
-/// Dedicated pet timeline screen (vertical spine; custody/gap fill deferred).
+/// Dedicated pet timeline screen with vertical spine and full composite segments.
 class PetTimelineScreen extends ConsumerWidget {
   const PetTimelineScreen({super.key, required this.petId});
 

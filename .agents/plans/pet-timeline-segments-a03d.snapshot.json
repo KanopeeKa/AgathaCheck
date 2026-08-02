@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "plan_id": "pet-timeline-segments-a03d",
+  "approved_at": "2026-08-02T18:05:00Z",
+  "approved_by": "user chat standing grant (execute-plan continuation)",
+  "approved_until": "2026-08-04T18:05:00Z",
+  "content_hash": "sha256:ab34aa7c0c3e12f81c5352313458424955cbf724c5938c72552ca6b46ce5104b",
+  "autonomy": "active",
+  "default_merge_mode": "auto",
+  "base_branch": "main",
+  "control_issue": 532,
+  "artifact_branch_policy": "phase-branch",
+  "phases": [
+    {
+      "id": "1",
+      "title": "Custody and gap segments",
+      "branch": "cursor/pet-timeline-segments-a03d",
+      "allowed_paths": [
+        "flutter_app/lib/features/pet_profile/presentation/widgets/pet_timeline/**",
+        "flutter_app/lib/features/pet_profile/presentation/screens/pet_timeline_screen.dart",
+        "flutter_app/lib/features/pet_profile/presentation/providers/pet_timeline_providers.dart",
+        "flutter_app/test/features/pet_profile/**"
+      ],
+      "forbidden_paths": [
+        "server/**",
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_mode": null,
+      "merge_method": "squash",
+      "exit_checklist": "flutter-screen-split",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null,
+      "debt_issue_refs": []
+    }
+  ]
+}

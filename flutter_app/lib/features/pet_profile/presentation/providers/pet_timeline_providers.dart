@@ -4,6 +4,7 @@ import '../../../../core/providers/api_base_url_provider.dart';
 import '../../../auth/presentation/providers/auth_providers.dart';
 import '../../data/datasources/pet_timeline_remote_datasource.dart';
 import '../../domain/entities/pet_timeline_segment.dart';
+import '../widgets/pet_timeline/pet_timeline_display_options.dart';
 import '../widgets/pet_timeline/pet_timeline_list_builder.dart';
 import 'pet_providers.dart';
 
@@ -25,7 +26,11 @@ final petTimelineListProvider =
     FutureProvider.family<List<PetTimelineSegment>, String>((ref, petId) async {
       final pet = await ref.watch(petByIdProvider(petId).future);
       final segments = await ref.watch(petTimelineProvider(petId).future);
-      return buildPetTimelineList(pet: pet, apiSegments: segments);
+      return buildPetTimelineList(
+        pet: pet,
+        apiSegments: segments,
+        options: PetTimelineDisplayOptions.full,
+      );
     });
 
 Future<void> createPetTimelineManualEntry(
