@@ -19,12 +19,102 @@ describe('Organizations API', () => {
   });
 
   describe('People directory', () => {
-      it('GET /:orgId/people returns 403 for foster role', async () => {
-        const fosterApp = createApp(buildMockPool({ memberRole: 'foster' }));
+      it('GET /:orgId/people returns redacted summary for foster role', async () => {
+        const pool = buildMockPool({
+          memberRole: 'foster',
+          query: async (sql) => {
+            if (sql.includes('primary_contact_ref FROM organizations')) {
+              return { rows: [{ primary_contact_ref: null }] };
+            }
+            if (sql.includes('FROM organization_users ou') && sql.includes('JOIN users u')) {
+              return {
+                rows: [{
+                  kind: 'member',
+                  record_id: 'ou-1',
+                  user_id: memberId,
+                  display_name: 'Grace Admin',
+                  email: 'grace@example.com',
+                  photo_url: null,
+                  role: 'admin',
+                  is_pending: false,
+                  active_foster_count: 2,
+                }],
+              };
+            }
+            if (sql.includes('FROM org_foster_parents fp')) {
+              return { rows: [] };
+            }
+            return { rows: [] };
+          },
+        });
+        const fosterApp = createApp(pool);
         const res = await request(fosterApp)
           .get(`/api/organizations/${orgId}/people`)
           .set('Authorization', `Bearer ${token}`);
+        expect(res.statusCode).toBe(200);
+        expect(res.body[0]).toMatchObject({
+          display_name: 'Grace Admin',
+          email: 'grace@example.com',
+          active_foster_count: 0,
+        });
+      });
+
+      it('GET /:orgId/people returns 403 without view_admin_contacts membership', async () => {
+        const pendingApp = createApp(buildMockPool({ memberRole: 'pending_foster' }));
+        const res = await request(pendingApp)
+          .get(`/api/organizations/${orgId}/people`)
+          .set('Authorization', `Bearer ${token}`);
         expect(res.statusCode).toBe(403);
+      });
+
+      it('GET /:orgId/people/:kind/:personId redacts detail for foster viewers', async () => {
+        const pool = buildMockPool({
+          memberRole: 'foster',
+          query: async (sql) => {
+            if (sql.includes('primary_contact_ref FROM organizations')) {
+              return { rows: [{ primary_contact_ref: null }] };
+            }
+            if (sql.includes('FROM organization_users ou') && sql.includes('ou.id = $2')) {
+              return {
+                rows: [{
+                  kind: 'member',
+                  record_id: 'ou-1',
+                  user_id: memberId,
+                  display_name: 'Other Admin',
+                  email: 'admin@example.com',
+                  photo_url: '/photos/admin.jpg',
+                  role: 'admin',
+                  is_pending: false,
+                  foster_phone: '555-2222',
+                  foster_address: '9 Admin Rd',
+                  admin_notes: 'Team lead',
+                  active_foster_count: 0,
+                }],
+              };
+            }
+            if (sql.includes('FROM foster_placements fp') && sql.includes('fp.foster_user_id = $2')) {
+              return { rows: [] };
+            }
+            if (sql.includes('SELECT DISTINCT ON (pet_id)')) {
+              return { rows: [] };
+            }
+            return { rows: [] };
+          },
+        });
+        const localApp = createApp(pool);
+        const res = await request(localApp)
+          .get(`/api/organizations/${orgId}/people/member/ou-1`)
+          .set('Authorization', `Bearer ${token}`);
+        expect(res.statusCode).toBe(200);
+        expect(res.body).toMatchObject({
+          display_name: 'Other Admin',
+          email: 'admin@example.com',
+          foster_phone: '',
+          foster_address: '',
+          admin_notes: '',
+        });
+        expect(res.body.current_placements).toEqual([]);
+        expect(res.body.past_placements).toEqual([]);
       });
   
       it('GET /:orgId/people/:kind/:personId returns member detail', async () => {

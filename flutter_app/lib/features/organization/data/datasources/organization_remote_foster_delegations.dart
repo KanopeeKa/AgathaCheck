@@ -219,8 +219,13 @@ mixin OrganizationRemoteFosterDelegations {
 
   Future<List<Map<String, dynamic>>> getOrganizationPlacements(
     String orgId,
-    String token,
-  ) => placementsRemote.getOrganizationPlacements(orgId, token);
+    String token, {
+    Map<String, String>? filters,
+  }) => placementsRemote.getOrganizationPlacements(
+    orgId,
+    token,
+    filters: filters,
+  );
 
   Future<Map<String, dynamic>> startFosterPlacement(
     String orgId,

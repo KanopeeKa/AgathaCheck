@@ -39,3 +39,28 @@ Feature: Admin contacts
     And "Grace" is a member of "Rescue Hearts" with role "admin"
     When "Frank" opens the admin contacts screen for "Rescue Hearts"
     Then he should see a message affordance for "Grace"
+
+  @P1
+  Scenario: Member sees admin contacts preview on organisation profile
+    Given a registered user "Hank"
+    And "Hank" is a foster member of "Rescue Hearts"
+    And a registered user "Ivy"
+    And "Ivy" is a member of "Rescue Hearts" with role "admin"
+    When "Hank" opens the organisation profile for "Rescue Hearts"
+    Then he should see an admin contacts preview for "Ivy"
+    And the preview should show a message affordance for "Ivy"
+
+  @P1
+  Scenario: Member sees connected organisation tiles on profile
+    Given a registered user "Jill"
+    And "Jill" is a member of "Rescue Hearts" with role "admin"
+    And "Rescue Hearts" is connected to organisation "Partner Paws"
+    When "Jill" opens the organisation profile for "Rescue Hearts"
+    Then she should see a connected organisation tile for "Partner Paws"
+
+  @P1
+  Scenario: Team admin sees manage connections entry on profile
+    Given a registered user "Ken"
+    And "Ken" is a member of "Rescue Hearts" with role "admin"
+    When "Ken" opens the organisation profile for "Rescue Hearts"
+    Then he should see a manage connections entry on the profile

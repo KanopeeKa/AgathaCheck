@@ -11,6 +11,7 @@ import {
   NOTIFICATION_TYPE_PENDING_FOSTER_PLACEMENT_RECEIVED,
 } from '../lib/notificationKind.js';
 import { finaliseAdoptionJourney } from '../lib/adoptionJourneys.js';
+import { recordFosterSessionActivity } from '../lib/petActivity.js';
 import {
   completeAdoptionTransfer,
   grantFosterPetAccess,
@@ -172,6 +173,11 @@ export default function fosterPlacementsRoutes(pool) {
         type: NOTIFICATION_TYPE_PENDING_FOSTER_PLACEMENT_RECEIVED,
       });
 
+      recordFosterSessionActivity(pool, updated, userId, {
+        mutation: 'accepted',
+        session_status: SESSION_STATUS_ACTIVE,
+      });
+
       res.json(placementToMap(updated, { pet_name: petName }));
     } catch (err) {
       res.status(500).json({ error: publicError(err) });
@@ -233,6 +239,12 @@ export default function fosterPlacementsRoutes(pool) {
         userId,
         petId: placement.pet_id,
         type: NOTIFICATION_TYPE_PENDING_FOSTER_PLACEMENT_RECEIVED,
+      });
+
+      recordFosterSessionActivity(pool, updateResult.rows[0], userId, {
+        mutation: 'declined',
+        session_status: SESSION_STATUS_CANCELLED,
+        outcome: SESSION_STATUS_CANCELLED,
       });
 
       res.json(placementToMap(updateResult.rows[0], { pet_name: petName }));

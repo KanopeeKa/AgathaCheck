@@ -1683,6 +1683,27 @@ class AppLocalizationsFr extends AppLocalizations {
   String get orgAddress => 'Adresse';
 
   @override
+  String get orgTown => 'Ville';
+
+  @override
+  String get orgAdministrativeArea => 'Région';
+
+  @override
+  String get orgPostcode => 'Code postal';
+
+  @override
+  String get orgImageHeroGuidance =>
+      'Image paysage (~8:3), au moins 1200×450 px. JPG, PNG ou WebP jusqu\'à 2 Mo.';
+
+  @override
+  String get orgImageLogoGuidance =>
+      'Logo carré, au moins 256×256 px. Affiché en cercle. JPG, PNG ou WebP jusqu\'à 2 Mo.';
+
+  @override
+  String get orgProfileSettingsTooltip =>
+      'Modifier les paramètres de l\'organisation';
+
+  @override
   String get orgWebsite => 'Site web';
 
   @override
@@ -1901,116 +1922,118 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get transferRequestSent =>
-      'Custody transfer request sent. The recipient must accept to complete the transfer.';
+      'Demande de transfert de garde envoyée. Le destinataire doit accepter pour finaliser le transfert.';
 
   @override
-  String get pendingCustodyTransfers => 'Pending custody transfers';
+  String get pendingCustodyTransfers => 'Transferts de garde en attente';
 
   @override
-  String get acceptCustodyTransfer => 'Accept transfer';
+  String get acceptCustodyTransfer => 'Accepter le transfert';
 
   @override
-  String get custodyTransferAccepted => 'Custody transfer accepted';
+  String get custodyTransferAccepted => 'Transfert de garde accepté';
 
   @override
-  String get custodyTransferKindIndividual => 'Adoption to individual';
+  String get custodyTransferKindIndividual => 'Adoption par un particulier';
 
   @override
-  String get custodyTransferKindOrgToOrg => 'Transfer to organisation';
+  String get custodyTransferKindOrgToOrg => 'Transfert vers une organisation';
 
   @override
-  String get custodyTransferKindReturn => 'Return to organisation';
+  String get custodyTransferKindReturn => 'Retour à l\'organisation';
 
   @override
-  String get orgConnections => 'Connected organisations';
+  String get orgConnections => 'Organisations connectées';
 
   @override
-  String get orgConnectionsEmpty => 'No connected organisations yet';
+  String get orgConnectionsEmpty =>
+      'Aucune organisation connectée pour le moment';
 
   @override
-  String get createConnectionRequest => 'Connect to organisation';
+  String get createConnectionRequest => 'Se connecter à une organisation';
 
   @override
-  String get targetOrgId => 'Target organisation ID';
+  String get targetOrgId => 'ID de l\'organisation cible';
 
   @override
   String get connectionTokenCreated =>
-      'Connection link created. Share this token with the other organisation\'s admin:';
+      'Lien de connexion créé. Partagez ce jeton avec l\'administrateur de l\'autre organisation :';
 
   @override
-  String get acceptConnection => 'Accept connection';
+  String get acceptConnection => 'Accepter la connexion';
 
   @override
-  String get connectionAccepted => 'Organisations are now connected';
+  String get connectionAccepted =>
+      'Les organisations sont maintenant connectées';
 
   @override
-  String get disconnectOrganisation => 'Disconnect';
+  String get disconnectOrganisation => 'Déconnecter';
 
   @override
   String disconnectOrganisationConfirm(String orgName) {
-    return 'Disconnect from $orgName? Pending transfers between you will be cancelled.';
+    return 'Déconnecter de $orgName ? Les transferts en attente entre vous seront annulés.';
   }
 
   @override
-  String get transferToOrganisation => 'Transfer to organisation';
+  String get transferToOrganisation => 'Transférer vers une organisation';
 
   @override
-  String get selectConnectedOrg => 'Select connected organisation';
+  String get selectConnectedOrg => 'Sélectionner une organisation connectée';
 
   @override
-  String get requestReturnToOrg => 'Return to organisation';
+  String get requestReturnToOrg => 'Retour à l\'organisation';
 
   @override
-  String get returnRequestSent => 'Return request sent';
+  String get returnRequestSent => 'Demande de retour envoyée';
 
   @override
-  String get homeHiddenPets => 'Hidden from home list';
+  String get homeHiddenPets => 'Masqués de la liste d\'accueil';
 
   @override
-  String get hideFromHomeList => 'Hide from home list';
+  String get hideFromHomeList => 'Masquer de la liste d\'accueil';
 
   @override
   String hideFromHomeListConfirm(String petName) {
-    return 'Hide $petName from your home pet list? The pet stays visible in the organisation section.';
+    return 'Masquer $petName de votre liste d\'animaux ? L\'animal reste visible dans la section organisation.';
   }
 
   @override
-  String get hideFosteredPet => 'Hide fostered pet';
+  String get hideFosteredPet => 'Masquer l\'animal en accueil';
 
   @override
   String hideFosteredPetConfirm(String petName) {
-    return 'Hide $petName from your list and health dashboard?';
+    return 'Masquer $petName de votre liste et du tableau de bord santé ?';
   }
 
   @override
-  String get frozenShadow => 'Frozen shadow';
+  String get frozenShadow => 'Ombre figée';
 
   @override
   String get shadowSnapshotReadOnly =>
-      'Point-in-time snapshot — does not sync with the live pet.';
+      'Instantané figé — ne se synchronise pas avec l\'animal en direct.';
 
   @override
   String shadowCapturedAt(String date) {
-    return 'Captured $date';
+    return 'Capturé le $date';
   }
 
   @override
-  String get shadowHealthEntries => 'Health entries in snapshot';
+  String get shadowHealthEntries => 'Entrées santé dans l\'instantané';
 
   @override
-  String get shadowWeightEntries => 'Weight entries in snapshot';
+  String get shadowWeightEntries => 'Entrées de poids dans l\'instantané';
 
   @override
-  String get revokeConnectionRequest => 'Revoke request';
+  String get revokeConnectionRequest => 'Révoquer la demande';
 
   @override
-  String get connectionRequests => 'Connection requests';
+  String get connectionRequests => 'Demandes de connexion';
 
   @override
-  String get noConnectionRequests => 'No connection requests';
+  String get noConnectionRequests => 'Aucune demande de connexion';
 
   @override
-  String get orgToOrgTransferNotes => 'Transfer notes (optional)';
+  String get orgToOrgTransferNotes => 'Notes de transfert (facultatif)';
 
   @override
   String get transferOwnership => 'Transférer la propriété';
@@ -4481,6 +4504,22 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get orgDashboardConnectionsSubtitle =>
       'Gérer les liens avec d\'autres organisations.';
+
+  @override
+  String get orgProfileFosteringSessionsTitle => 'Sessions d\'accueil';
+
+  @override
+  String get orgFosteringSessionsListTitle => 'Fostering sessions';
+
+  @override
+  String get orgFosteringSessionsManage => 'Manage sessions';
+
+  @override
+  String get orgFosteringSessionsEmpty =>
+      'No fostering sessions match this view';
+
+  @override
+  String get fosteringSessionDerivedNearlyFinished => 'Nearly finished';
 
   @override
   String get orgDashboardEditSubtitle =>

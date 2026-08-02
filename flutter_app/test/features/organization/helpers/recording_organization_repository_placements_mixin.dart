@@ -7,8 +7,9 @@ mixin RecordingOrganizationRepositoryPlacementsMixin
   @override
   Future<List<FosterPlacement>> getOrganizationPlacements(
     String orgId,
-    String token,
-  ) async => [];
+    String token, {
+    Map<String, String>? filters,
+  }) async => [];
 
   @override
   Future<PetFosterPlacementState> getPetPlacement(

@@ -59,6 +59,16 @@ mixin RecordingOrganizationRepositoryCoreMixin
       );
 
   @override
+  Future<Organization> getPublicOrganization(
+    String id, {
+    String? token,
+  }) async => const Organization(
+    id: 'x',
+    name: 'x',
+    type: OrganizationType.professional,
+  );
+
+  @override
   Future<Organization> uploadPhoto(
     String id,
     Uint8List bytes,
@@ -131,6 +141,19 @@ mixin RecordingOrganizationRepositoryCoreMixin
     String orgId,
     String token,
   ) async => [];
+
+  @override
+  Future<List<Map<String, dynamic>>> getOrganizationPetSummary(
+    String orgId,
+    String token,
+  ) async => [];
+
+  @override
+  Future<Map<String, dynamic>> getRedactedOrganizationPet(
+    String orgId,
+    String petId,
+    String token,
+  ) async => {};
 
   @override
   Future<Map<String, dynamic>> createOrganizationPet(

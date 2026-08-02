@@ -6,7 +6,7 @@ import {
   OPEN_PLACEMENT_STATUSES,
   placementToMap,
 } from './fosterPlacements.js';
-import { normaliseRole } from './orgRoles.js';
+import { isOrgAdmin, normaliseRole } from './orgRoles.js';
 
 const FOSTER_ACTIVE_SQL = FOSTER_ACTIVE_STATUSES.map((s) => `'${s}'`).join(', ');
 const OPEN_SQL = OPEN_PLACEMENT_STATUSES.map((s) => `'${s}'`).join(', ');
@@ -74,6 +74,31 @@ export function personDetailToMap(row, extras = {}) {
     admin_notes: row.admin_notes || '',
     current_placements: extras.current_placements || [],
     past_placements: extras.past_placements || [],
+  };
+}
+
+/** Admin directory viewers without org-admin role receive redacted people payloads. */
+export function viewerHasFullPeopleAccess(role) {
+  return isOrgAdmin(role);
+}
+
+export function redactPersonSummary(person, fullAccess) {
+  if (fullAccess) return person;
+  return {
+    ...person,
+    active_foster_count: 0,
+  };
+}
+
+export function redactPersonDetail(person, fullAccess) {
+  if (fullAccess) return person;
+  return {
+    ...redactPersonSummary(person, false),
+    foster_phone: '',
+    foster_address: '',
+    admin_notes: '',
+    current_placements: [],
+    past_placements: [],
   };
 }
 

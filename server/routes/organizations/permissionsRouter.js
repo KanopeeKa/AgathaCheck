@@ -91,6 +91,29 @@ async function loadActiveOverrides(pool, organizationId, userId) {
 }
 
 export function registerPermissionsRoutes(router, pool) {
+  router.get('/:orgId/permissions/me', async (req, res) => {
+    const userId = extractUserId(req);
+    if (!userId) return res.status(401).json({ error: 'Unauthorized' });
+    const { orgId } = req.params;
+
+    try {
+      const role = await loadMembershipRole(pool, orgId, userId);
+      if (!role || role.startsWith('pending_')) {
+        return res.status(403).json({ error: 'Forbidden' });
+      }
+
+      const overrideKeys = await loadActivePermissionKeys(pool, orgId, userId);
+      const overrides = await loadActiveOverrides(pool, orgId, userId);
+      res.json({
+        role,
+        effective_permissions: permissionKeysForRole(role, overrideKeys),
+        overrides,
+      });
+    } catch (err) {
+      res.status(500).json({ error: publicError(err) });
+    }
+  });
+
   router.get('/:orgId/permission-bundles', async (req, res) => {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });

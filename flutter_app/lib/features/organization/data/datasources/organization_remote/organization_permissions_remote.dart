@@ -7,6 +7,20 @@ class OrganizationPermissionsRemote {
 
   final OrganizationRemoteContext _ctx;
 
+  Future<Map<String, dynamic>> getMyPermissions(
+    String orgId,
+    String token,
+  ) async {
+    final response = await _ctx.client.get(
+      Uri.parse('${_ctx.baseUrl}/api/organizations/$orgId/permissions/me'),
+      headers: _ctx.headers(token),
+    );
+    if (response.statusCode >= 400) {
+      _ctx.throwApiError(response, 'Failed to load permissions');
+    }
+    return json.decode(response.body) as Map<String, dynamic>;
+  }
+
   Future<Map<String, dynamic>> getPermissionBundles(
     String orgId,
     String token,

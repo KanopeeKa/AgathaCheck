@@ -24,6 +24,11 @@ abstract class OrganizationRepositoryImplBase
   }
 
   @override
+  Future<Organization> getPublicOrganization(String id, {String? token}) async {
+    return await dataSource.getPublicOrganization(id, token: token);
+  }
+
+  @override
   Future<Organization> createOrganization(
     Organization org,
     String token,

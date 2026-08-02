@@ -62,6 +62,9 @@ class OrganizationRemoteDataSource with OrganizationRemoteFosterDelegations {
   Future<OrganizationModel> getOrganization(String id, String token) =>
       _core.getOrganization(id, token);
 
+  Future<OrganizationModel> getPublicOrganization(String id, {String? token}) =>
+      _core.getPublicOrganization(id, token: token);
+
   Future<OrganizationModel> createOrganization(
     Map<String, dynamic> orgJson,
     String token,
@@ -134,6 +137,17 @@ class OrganizationRemoteDataSource with OrganizationRemoteFosterDelegations {
     String orgId,
     String token,
   ) => _pets.getOrganizationPets(orgId, token);
+
+  Future<List<Map<String, dynamic>>> getOrganizationPetSummary(
+    String orgId,
+    String token,
+  ) => _pets.getOrganizationPetSummary(orgId, token);
+
+  Future<Map<String, dynamic>> getRedactedOrganizationPet(
+    String orgId,
+    String petId,
+    String token,
+  ) => _pets.getRedactedOrganizationPet(orgId, petId, token);
 
   Future<Map<String, dynamic>> createOrganizationPet(
     String orgId,
@@ -362,6 +376,9 @@ class OrganizationRemoteDataSource with OrganizationRemoteFosterDelegations {
     String orgId,
     String token,
   ) => _permissions.getPermissionBundles(orgId, token);
+
+  Future<Map<String, dynamic>> getMyPermissions(String orgId, String token) =>
+      _permissions.getMyPermissions(orgId, token);
 
   Future<Map<String, dynamic>> getMemberPermissions(
     String orgId,

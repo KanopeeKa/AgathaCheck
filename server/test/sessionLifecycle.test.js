@@ -119,9 +119,9 @@ function buildSessionMockPool() {
       placement = makePlacementRow({
         id: params[0],
         status: params[4],
-        shelter_foster_relationship_id: params[8] || relationshipId,
-        org_foster_parent_id: params[8] || relationshipId,
-        session_type: params[9] || 'standard_foster',
+        shelter_foster_relationship_id: params[9] || relationshipId,
+        org_foster_parent_id: params[9] || relationshipId,
+        session_type: params[10] || 'standard_foster',
       });
       return { rows: [placement] };
     }

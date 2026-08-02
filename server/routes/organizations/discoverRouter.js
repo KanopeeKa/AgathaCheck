@@ -1,4 +1,5 @@
 import { publicError } from '../../config/security.js';
+import { computeDisplayLocality } from './shared.js';
 
 const DEFAULT_PAGE_SIZE = 20;
 const MAX_PAGE_SIZE = 50;
@@ -18,6 +19,8 @@ export function discoverRowToMap(row) {
     id: row.id,
     name: row.name,
     logo_url: row.logo_url || '',
+    photo_url: row.photo_url || '',
+    display_locality: computeDisplayLocality(row),
     town: row.town || '',
     administrative_area: row.administrative_area || '',
     description: row.description || '',
@@ -30,7 +33,8 @@ export function registerDiscoverRoutes(router, pool) {
     try {
       const [itemsResult, countResult] = await Promise.all([
         pool.query(
-          `SELECT id, name, logo_url, town, administrative_area, description
+          `SELECT id, name, logo_url, photo_url, town, administrative_area,
+                  description, public_profile_metadata
            FROM organizations
            WHERE is_discoverable = true
            ORDER BY name ASC

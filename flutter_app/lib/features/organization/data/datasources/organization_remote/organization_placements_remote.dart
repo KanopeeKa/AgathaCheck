@@ -27,10 +27,14 @@ class OrganizationPlacementsRemote {
 
   Future<List<Map<String, dynamic>>> getOrganizationPlacements(
     String orgId,
-    String token,
-  ) async {
+    String token, {
+    Map<String, String>? filters,
+  }) async {
+    final query = filters == null || filters.isEmpty
+        ? ''
+        : '?${Uri(queryParameters: filters).query}';
     final response = await _ctx.client.get(
-      Uri.parse('${_ctx.baseUrl}/api/organizations/$orgId/placements'),
+      Uri.parse('${_ctx.baseUrl}/api/organizations/$orgId/placements$query'),
       headers: _ctx.headers(token),
     );
     if (response.statusCode >= 400) {

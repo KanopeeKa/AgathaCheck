@@ -3,15 +3,22 @@ import {
   ORG_COUNT_SELECT,
   extractUserId,
   fetchOrgForUser,
+  getMemberRole,
   handleOrgImageUpload,
   loadPrimaryContact,
   orgRowToMap,
+  publicOrgRowToMap,
   requireOrgAdmin,
   requireSuperAdmin,
   saveOrgImage,
 } from './shared.js';
 import { publicError } from '../../config/security.js';
-import { ORG_ROLE_SUPER_ADMIN, isOrgAdmin, normaliseRole } from '../../lib/orgRoles.js';
+import {
+  ORG_ROLE_SUPER_ADMIN,
+  isActiveMember,
+  isOrgAdmin,
+  normaliseRole,
+} from '../../lib/orgRoles.js';
 
 export function registerCoreRoutes(router, pool) {
     router.get('/', async (req, res) => {
@@ -35,6 +42,29 @@ export function registerCoreRoutes(router, pool) {
           });
         }));
         res.json(orgs);
+      } catch (err) {
+        res.status(500).json({ error: publicError(err) });
+      }
+    });
+
+    router.get('/:id/public', async (req, res) => {
+      const userId = extractUserId(req);
+      const { id } = req.params;
+      try {
+        const orgResult = await pool.query('SELECT * FROM organizations WHERE id = $1', [id]);
+        if (!orgResult.rows.length) {
+          return res.status(404).json({ error: 'Organization not found' });
+        }
+        const row = orgResult.rows[0];
+        const isDiscoverable = row.is_discoverable !== false;
+        if (!isDiscoverable) {
+          const role = userId ? await getMemberRole(pool, id, userId) : null;
+          if (!isActiveMember(role)) {
+            return res.status(404).json({ error: 'Organization not found' });
+          }
+        }
+        const primaryContact = await loadPrimaryContact(pool, id, row.primary_contact_ref);
+        res.json(publicOrgRowToMap({ ...row, primary_contact: primaryContact }));
       } catch (err) {
         res.status(500).json({ error: publicError(err) });
       }
@@ -98,12 +128,29 @@ export function registerCoreRoutes(router, pool) {
           administrative_area,
           description,
           is_discoverable: isDiscoverable,
+          public_profile_metadata: publicProfileMetadata,
+          postcode,
         } = req.body;
+        const existingResult = await pool.query(
+          'SELECT public_profile_metadata FROM organizations WHERE id = $1',
+          [req.params.id],
+        );
+        const existingMetadata = existingResult.rows[0]?.public_profile_metadata;
+        const baseMetadata = existingMetadata && typeof existingMetadata === 'object'
+          ? { ...existingMetadata }
+          : {};
+        const mergedMetadata = publicProfileMetadata && typeof publicProfileMetadata === 'object'
+          ? { ...baseMetadata, ...publicProfileMetadata }
+          : baseMetadata;
+        if (postcode !== undefined) {
+          mergedMetadata.postcode = String(postcode ?? '').trim();
+        }
         await pool.query(
           `UPDATE organizations SET name = $1, type = $2, email = $3, phone = $4, address = $5,
            website = $6, bio = $7, photo_url = $8, logo_url = $9, town = $10,
-           administrative_area = $11, description = $12, is_discoverable = $13, updated_at = NOW()
-           WHERE id = $14`,
+           administrative_area = $11, description = $12, is_discoverable = $13,
+           public_profile_metadata = $14, updated_at = NOW()
+           WHERE id = $15`,
           [
             name || '',
             type || 'professional',
@@ -118,6 +165,7 @@ export function registerCoreRoutes(router, pool) {
             administrative_area || '',
             description || '',
             isDiscoverable !== false,
+            JSON.stringify(mergedMetadata),
             req.params.id,
           ],
         );

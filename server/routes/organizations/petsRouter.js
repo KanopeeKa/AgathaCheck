@@ -14,10 +14,87 @@ import {
   TRANSFER_RETURN,
 } from '../../lib/custodyTransfers.js';
 import { petIsFosteredByOrg, setOrgGuardianAndCare } from '../../lib/petCustody.js';
+import {
+  redactedOrgPetToMap,
+  userCanViewRedactedOrgPet,
+} from '../../lib/orgPetViewAccess.js';
 import { extractUserId, requirePermission } from './shared.js';
 import { publicError } from '../../config/security.js';
 
+const DEFAULT_PET_SUMMARY_LIMIT = 12;
+const MAX_PET_SUMMARY_LIMIT = 50;
+
+function parsePetSummaryLimit(raw) {
+  let limit = parseInt(raw, 10);
+  if (!Number.isFinite(limit) || limit < 1) limit = DEFAULT_PET_SUMMARY_LIMIT;
+  if (limit > MAX_PET_SUMMARY_LIMIT) limit = MAX_PET_SUMMARY_LIMIT;
+  return limit;
+}
+
+function petSummaryRowToMap(row) {
+  return {
+    id: row.id,
+    name: row.name,
+    species: row.species,
+    breed: row.breed || '',
+    photo_path: row.photo_path || null,
+    organization_id: row.organization_id,
+    last_activity_at: row.last_activity_at ? row.last_activity_at.toISOString() : null,
+  };
+}
+
 export function registerPetsRoutes(router, pool) {
+    router.get('/:orgId/pets/summary', async (req, res) => {
+      const userId = extractUserId(req);
+      if (!userId) return res.status(401).json({ error: 'Unauthorized' });
+      const { orgId } = req.params;
+      const sort = (req.query.sort || 'last_activity').trim();
+      if (sort !== 'last_activity') {
+        return res.status(400).json({ error: 'Unsupported sort; use sort=last_activity' });
+      }
+      const limit = parsePetSummaryLimit(req.query.limit);
+      try {
+        if (!(await requirePermission(pool, res, orgId, userId, 'view_org_pets'))) return;
+        const result = await pool.query(
+          `SELECT p.id, p.name, p.species, p.breed, p.photo_path, p.organization_id,
+                  p.last_activity_at, p.created_at
+           FROM pets p
+           WHERE p.organization_id = $1
+             AND COALESCE(p.passed_away, false) = false
+           ORDER BY COALESCE(p.last_activity_at, p.created_at) DESC
+           LIMIT $2`,
+          [orgId, limit],
+        );
+        res.json(result.rows.map(petSummaryRowToMap));
+      } catch (err) {
+        res.status(500).json({ error: publicError(err) });
+      }
+    });
+
+    router.get('/:orgId/pets/:petId/redacted', async (req, res) => {
+      const userId = extractUserId(req);
+      if (!userId) return res.status(401).json({ error: 'Unauthorized' });
+      const { orgId, petId } = req.params;
+      try {
+        if (!(await userCanViewRedactedOrgPet(pool, orgId, petId, userId))) {
+          return res.status(403).json({ error: 'Forbidden' });
+        }
+        const result = await pool.query(
+          `SELECT id, name, species, breed, photo_path, date_of_birth, age, organization_id
+           FROM pets
+           WHERE id = $1 AND organization_id = $2
+             AND COALESCE(passed_away, false) = false`,
+          [petId, orgId],
+        );
+        if (result.rows.length === 0) {
+          return res.status(404).json({ error: 'Pet not found' });
+        }
+        res.json(redactedOrgPetToMap(result.rows[0]));
+      } catch (err) {
+        res.status(500).json({ error: publicError(err) });
+      }
+    });
+
     router.get('/:orgId/pets', async (req, res) => {
       const userId = extractUserId(req);
       if (!userId) return res.status(401).json({ error: 'Unauthorized' });

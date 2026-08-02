@@ -67,6 +67,7 @@ Feature: Organisation Management
 
   # ── Organisation Details ─────────────────────────────────────
 
+  @legacy @P1
   @P1
   Scenario: Viewing organisation details
     Given "Alice" is a super user of organisation "Happy Paws Clinic"
@@ -75,6 +76,7 @@ Feature: Organisation Management
     Then she should see the organisation name "Happy Paws Clinic"
     And she should see the organisation dashboard sections
 
+  @legacy @P1
   @P1
   Scenario: Viewing organisation members from the dashboard
     Given "Alice" is a super user of organisation "Happy Paws Clinic"

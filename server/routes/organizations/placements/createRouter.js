@@ -50,6 +50,7 @@ export function registerPlacementCreateRoutes(router, pool) {
     const data = req.body || {};
     const fosterUserId = data.foster_user_id || data.fosterUserId;
     const startDate = normalizeCalendarDateInput(data.start_date || data.startDate);
+    const endDate = normalizeCalendarDateInput(data.end_date || data.endDate);
     const notes = (data.notes || '').trim();
 
     if (!fosterUserId) {
@@ -87,6 +88,7 @@ export function registerPlacementCreateRoutes(router, pool) {
         fosterUserId,
         status: SESSION_STATUS_PENDING_ACCEPTANCE,
         startDate,
+        endDate,
         notes,
         createdBy: userId,
         shelterFosterRelationshipId: relationshipId,

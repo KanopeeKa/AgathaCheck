@@ -5,7 +5,7 @@ import {
   listConnectionsForOrg,
   revokeConnectionRequest,
 } from '../../lib/orgConnections.js';
-import { extractUserId, requireOrgAdmin } from './shared.js';
+import { extractUserId, requireOrgAdmin, requirePermission } from './shared.js';
 import { publicError } from '../../config/security.js';
 
 export function registerConnectionRoutes(router, pool) {
@@ -25,7 +25,7 @@ export function registerConnectionRoutes(router, pool) {
     const userId = extractUserId(req);
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     try {
-      if (!(await requireOrgAdmin(pool, res, req.params.orgId, userId))) return;
+      if (!(await requirePermission(pool, res, req.params.orgId, userId, 'view_connections'))) return;
       const rows = await listConnectionsForOrg(pool, req.params.orgId);
       res.json(rows.map((r) => ({
         id: r.id,

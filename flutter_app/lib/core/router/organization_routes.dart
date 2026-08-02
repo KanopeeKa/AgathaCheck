@@ -9,12 +9,12 @@ import '../../features/organization/presentation/screens/archived_pet_detail_scr
 import '../../features/organization/presentation/screens/archived_pets_screen.dart';
 import '../../features/organization/presentation/screens/organization_connections_screen.dart';
 import '../../features/organization/presentation/screens/organization_customisations_screen.dart';
-import '../../features/organization/presentation/screens/organization_dashboard_screen.dart';
+import '../../features/organization/presentation/screens/organisation_profile_screen.dart';
+import '../../features/organization/presentation/screens/organisation_redacted_pet_screen.dart';
 import '../../features/organization/presentation/screens/organization_document_templates_screen.dart';
 import '../../features/organization/presentation/screens/organization_form_screen.dart';
 import '../../features/organization/presentation/screens/organization_legal_documents_screen.dart';
 import '../../features/organization/presentation/screens/organization_list_screen.dart';
-import '../../features/organization/presentation/screens/organization_presentation_screen.dart';
 import '../../features/organization/presentation/screens/organization_roles_permissions_screen.dart';
 import '../../features/organization/presentation/screens/adoption_journey/adoption_journey_detail_screen.dart';
 import '../../features/organization/presentation/screens/adoption_screening/adoption_visits_screen.dart';
@@ -24,6 +24,7 @@ import '../../features/organization/presentation/screens/foster_requests/foster_
 import '../../features/organization/presentation/screens/foster_requests/foster_requests_screen.dart';
 import '../../features/organization/presentation/screens/foster_requests/send_foster_request_screen.dart';
 import '../../features/organization/presentation/screens/fostering_session/fostering_session_detail_screen.dart';
+import '../../features/organization/presentation/screens/fostering_sessions/fostering_sessions_list_screen.dart';
 import '../../features/organization/presentation/screens/manage_fosters/manage_fosters_screen.dart';
 import '../../features/organization/presentation/screens/organization_members_screen.dart';
 import '../../features/organization/presentation/screens/organization_person_detail_screen.dart';
@@ -72,15 +73,15 @@ List<RouteBase> _orgManagementChildRoutes() {
       name: 'organizationDetail',
       builder: (context, state) {
         final id = state.pathParameters['id']!;
-        return OrganizationDashboardScreen(orgId: id);
+        return OrganisationProfileScreen(orgId: id);
       },
       routes: [
         GoRoute(
           path: 'presentation',
           name: 'organizationPresentation',
-          builder: (context, state) {
+          redirect: (context, state) {
             final id = state.pathParameters['id']!;
-            return OrganizationPresentationScreen(orgId: id);
+            return '/o/orgs/$id';
           },
         ),
         GoRoute(
@@ -237,6 +238,25 @@ List<RouteBase> _orgManagementChildRoutes() {
           builder: (context, state) {
             final id = state.pathParameters['id']!;
             return OrganizationPetsScreen(orgId: id);
+          },
+          routes: [
+            GoRoute(
+              path: ':petId/redacted',
+              name: 'organizationRedactedPet',
+              builder: (context, state) {
+                final id = state.pathParameters['id']!;
+                final petId = state.pathParameters['petId']!;
+                return OrganisationRedactedPetScreen(orgId: id, petId: petId);
+              },
+            ),
+          ],
+        ),
+        GoRoute(
+          path: 'sessions',
+          name: 'fosteringSessionsList',
+          builder: (context, state) {
+            final id = state.pathParameters['id']!;
+            return FosteringSessionsListScreen(orgId: id);
           },
         ),
         GoRoute(

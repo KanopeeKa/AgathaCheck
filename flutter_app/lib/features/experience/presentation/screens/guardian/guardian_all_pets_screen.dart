@@ -18,6 +18,14 @@ class GuardianAllPetsScreen extends ConsumerWidget {
       experience: AppExperience.guardian,
       currentLocation: GoRouterState.of(context).uri.path,
       screenTitle: l.managePets,
+      contextualActions: [
+        IconButton(
+          key: const Key('add_pet_app_bar'),
+          icon: const Icon(Icons.add),
+          tooltip: l.addPet,
+          onPressed: () => context.push('/add'),
+        ),
+      ],
       child: const PetListScreen(embeddedInShell: true, enableBulkShare: true),
     );
   }

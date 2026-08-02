@@ -8,6 +8,10 @@ mixin OrganizationRepositoryPermissionsMixin on OrganizationRepositoryImplBase {
   ) => dataSource.getPermissionBundles(orgId, token);
 
   @override
+  Future<Map<String, dynamic>> getMyPermissions(String orgId, String token) =>
+      dataSource.getMyPermissions(orgId, token);
+
+  @override
   Future<Map<String, dynamic>> getMemberPermissions(
     String orgId,
     String targetUserId,

@@ -165,6 +165,24 @@ List<OrgPetListEntry> buildOrgPetEntries({
   return [...live, ...archived];
 }
 
+/// Filter algebra for the organisation pets screen.
+///
+/// Evaluation order (each step narrows or unions the working set):
+/// 1. **Tab** — primary partition:
+///    - `needAttention`: live pets with a non-null [OrgPetAttentionReason].
+///    - `inFoster`: live pets where [petIsInFoster] is true.
+///    - `adopted`: archived pets with adoption transfer type.
+///    - `all`: live pets (excluding passed-away unless rainbow-bridge chip is on)
+///      plus shadow archives when the shadow chip is on.
+/// 2. **Text filters** (only when the corresponding chip is active):
+///    - Name: case-insensitive substring on [OrgPetListEntry.name].
+///    - Fostered by: case-insensitive substring on foster name (live rows only).
+/// 3. **Union filters** (additive — re-include matching rows from the full entry list):
+///    - Shadow: archived shadow pets on every tab except `adopted`.
+///    - Rainbow bridge: passed-away live pets on every tab except `needAttention`.
+///
+/// Chips combine with AND semantics within a step; shadow and rainbow-bridge unions
+/// are OR additions to the tab-filtered set.
 List<OrgPetListEntry> filterOrgPetEntries({
   required List<OrgPetListEntry> entries,
   required OrgPetsTab tab,

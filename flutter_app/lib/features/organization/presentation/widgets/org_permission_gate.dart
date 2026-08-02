@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../domain/entities/organization_member.dart';
 import '../../domain/services/org_permissions.dart';
-import '../providers/admin_contact_providers.dart';
+import '../providers/org_permissions_providers.dart';
 
 /// Shows [child] only when the viewer has [permissionKey] in this organisation.
 class OrgPermissionGate extends ConsumerWidget {
@@ -20,13 +19,12 @@ class OrgPermissionGate extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final role = ref.watch(orgViewerRoleProvider(orgId));
-    if (!_can(role)) return const SizedBox.shrink();
-    return child;
-  }
-
-  bool _can(OrgMemberRole? role) {
-    if (role == null) return false;
-    return hasPermission(role, orgId, permissionKey);
+    final permissions = ref.watch(orgEffectivePermissionsProvider(orgId));
+    return permissions.when(
+      data: (keys) =>
+          keys.contains(permissionKey) ? child : const SizedBox.shrink(),
+      loading: () => const SizedBox.shrink(),
+      error: (_, _) => const SizedBox.shrink(),
+    );
   }
 }

@@ -11,6 +11,23 @@ mixin OrganizationRepositoryPetsMixin on OrganizationRepositoryImplBase {
   }
 
   @override
+  Future<List<Map<String, dynamic>>> getOrganizationPetSummary(
+    String orgId,
+    String token,
+  ) async {
+    return await dataSource.getOrganizationPetSummary(orgId, token);
+  }
+
+  @override
+  Future<Map<String, dynamic>> getRedactedOrganizationPet(
+    String orgId,
+    String petId,
+    String token,
+  ) async {
+    return await dataSource.getRedactedOrganizationPet(orgId, petId, token);
+  }
+
+  @override
   Future<Map<String, dynamic>> createOrganizationPet(
     String orgId,
     Map<String, dynamic> petJson,

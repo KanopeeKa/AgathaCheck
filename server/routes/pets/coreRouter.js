@@ -8,6 +8,7 @@ import {
   resolveWeightEntryDateFromBody,
 } from '../../lib/petWeightSync.js';
 import { logAuditEventSafe } from '../../lib/audit.js';
+import { recordPetActivityForPet } from '../../lib/petActivity.js';
 import {
   userCanAccessPet,
   userCanManagePet,
@@ -270,6 +271,14 @@ export function registerCoreRoutes(router, pool) {
         orgId: pet.organization_id || null,
         req,
       });
+      if (syncedPet.organization_id) {
+        recordPetActivityForPet(pool, {
+          petId: id,
+          actorUserId: userId,
+          eventType: 'profile_edit',
+          metadata: { field_count: Object.keys(req.body || {}).length },
+        });
+      }
       res.json(petRowToMap(syncedPet));
     } catch (err) {
       res.status(500).json({ error: publicError(err, 'Error updating pet', `Error updating pet: ${err.message}`) });

@@ -1,5 +1,4 @@
 import { v4 as uuidv4 } from 'uuid';
-import { extractUserId, requireOrgAdmin } from './shared.js';
 import { publicError } from '../../config/security.js';
 import {
   ASSIGNABLE_ROLES,
@@ -10,8 +9,12 @@ import {
 import {
   getOrgPersonDetail,
   listOrgPeople,
+  redactPersonDetail,
+  redactPersonSummary,
   updateOrgPersonContact,
+  viewerHasFullPeopleAccess,
 } from '../../lib/orgPeople.js';
+import { extractUserId, requireOrgAdmin, requirePermission } from './shared.js';
 
 export function registerMembersRoutes(router, pool) {
     router.get('/:orgId/members', async (req, res) => {
@@ -47,9 +50,11 @@ export function registerMembersRoutes(router, pool) {
       if (!userId) return res.status(401).json({ error: 'Unauthorized' });
       const orgId = req.params.orgId;
       try {
-        if (!(await requireOrgAdmin(pool, res, orgId, userId))) return;
+        const role = await requirePermission(pool, res, orgId, userId, 'view_admin_contacts');
+        if (!role) return;
+        const fullAccess = viewerHasFullPeopleAccess(role);
         const people = await listOrgPeople(pool, orgId);
-        res.json(people);
+        res.json(people.map((person) => redactPersonSummary(person, fullAccess)));
       } catch (err) {
         res.status(500).json({ error: publicError(err) });
       }
@@ -63,10 +68,12 @@ export function registerMembersRoutes(router, pool) {
         return res.status(400).json({ error: 'Invalid person kind' });
       }
       try {
-        if (!(await requireOrgAdmin(pool, res, orgId, userId))) return;
+        const role = await requirePermission(pool, res, orgId, userId, 'view_admin_contacts');
+        if (!role) return;
         const detail = await getOrgPersonDetail(pool, orgId, kind, personId);
         if (!detail) return res.status(404).json({ error: 'Person not found' });
-        res.json(detail);
+        const fullAccess = viewerHasFullPeopleAccess(role);
+        res.json(redactPersonDetail(detail, fullAccess));
       } catch (err) {
         res.status(500).json({ error: publicError(err) });
       }

@@ -3,12 +3,15 @@
  * Scenario: Recording a foster stay for a pet
  * Scenario: Recording an open-ended placement
  * Scenario: Viewing all family events for a pet
+ * Scenario: Removing a family event
  * Scenario: Family events appear in the health dashboard
+ * Scenario: Notifications for ending family events
  */
 import { test, expect, loginAs } from '../fixtures/auth.fixture';
 import {
   createFamilyEvent,
   createOrgPet,
+  deleteFamilyEvent,
   getFamilyEvents,
   inviteToOrganization,
   acceptInvite,
@@ -127,6 +130,24 @@ test.describe('Organisation pet timeline', () => {
     expect(fromDates).toEqual(['2025-06-01', '2025-09-01']);
   });
 
+  test('@legacy removing a family event deletes it via API', async () => {
+    const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
+    const { alice, org, pet } = await seedRescueHeartsWithPet(baseURL);
+    const frank = await inviteMember(baseURL, alice, org, 'Frank', 'Member');
+
+    const event = await createFamilyEvent(baseURL, alice.accessToken, pet.id, {
+      assignedToUserId: frank.userId,
+      fromDate: '2025-06-01',
+      toDate: '2025-08-31',
+    });
+
+    await deleteFamilyEvent(baseURL, alice.accessToken, pet.id, event.id);
+
+    const events = await getFamilyEvents(baseURL, alice.accessToken, pet.id);
+    expect(events.find((e) => e.id === event.id)).toBeFalsy();
+    expect(events.find((e) => e.assigned_to_user_id === frank.userId)).toBeFalsy();
+  });
+
   // Legacy family_events API rows are not mirrored on the health dashboard feed yet.
   // See docs/refactoring-debt.md — dashboard lists HealthEntry rows only.
   test.skip('family events appear in the health dashboard', async ({ page }) => {
@@ -149,5 +170,10 @@ test.describe('Organisation pet timeline', () => {
     await dashboard.selectTab('Care events');
     await dashboard.selectOrgFilter(ORG_NAME);
     await dashboard.expectEntryVisible('Max');
+  });
+
+  // Family-event due notifications are superseded by fostering-session reminders (D18/D19).
+  test.skip('notifications for ending family events', async () => {
+    expect(true).toBe(true);
   });
 });

@@ -15,6 +15,7 @@ import '../entities/organization_member.dart';
 abstract class OrganizationRepository {
   Future<List<Organization>> getOrganizations(String token);
   Future<Organization> getOrganization(String id, String token);
+  Future<Organization> getPublicOrganization(String id, {String? token});
   Future<Organization> createOrganization(Organization org, String token);
   Future<Organization> updateOrganization(Organization org, String token);
   Future<void> deleteOrganization(String id, String token);
@@ -59,6 +60,15 @@ abstract class OrganizationRepository {
 
   Future<List<Map<String, dynamic>>> getOrganizationPets(
     String orgId,
+    String token,
+  );
+  Future<List<Map<String, dynamic>>> getOrganizationPetSummary(
+    String orgId,
+    String token,
+  );
+  Future<Map<String, dynamic>> getRedactedOrganizationPet(
+    String orgId,
+    String petId,
     String token,
   );
   Future<Map<String, dynamic>> createOrganizationPet(
@@ -225,8 +235,9 @@ abstract class OrganizationRepository {
 
   Future<List<FosterPlacement>> getOrganizationPlacements(
     String orgId,
-    String token,
-  );
+    String token, {
+    Map<String, String>? filters,
+  });
   Future<PetFosterPlacementState> getPetPlacement(
     String orgId,
     String petId,
@@ -417,6 +428,7 @@ abstract class OrganizationRepository {
   Future<List<OrgHomeHiddenPet>> getHomeHiddenPets(String orgId, String token);
 
   Future<Map<String, dynamic>> getPermissionBundles(String orgId, String token);
+  Future<Map<String, dynamic>> getMyPermissions(String orgId, String token);
   Future<Map<String, dynamic>> getMemberPermissions(
     String orgId,
     String targetUserId,

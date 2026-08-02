@@ -60,102 +60,141 @@ class OrgCard extends ConsumerWidget {
           clipBehavior: Clip.antiAlias,
           child: InkWell(
             onTap: onTap,
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Row(
-                children: [
-                  OrgImageAvatar(
-                    imageUrl: organization.photoUrl,
-                    type: organization.type,
-                    radius: 28,
-                    resolvedUrl: resolvedPhoto,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                if (organization.photoUrl.isNotEmpty)
+                  SizedBox(
+                    height: 72,
+                    child: Image.network(
+                      resolvedPhoto,
+                      fit: BoxFit.cover,
+                      errorBuilder: (_, __, ___) =>
+                          _HeroStripPlaceholder(type: organization.type),
+                    ),
                   ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          organization.name,
-                          style: theme.textTheme.titleMedium?.copyWith(
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        const SizedBox(height: 4),
-                        Row(
+                Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Row(
+                    children: [
+                      OrgImageAvatar(
+                        imageUrl: organization.photoUrl,
+                        type: organization.type,
+                        radius: 28,
+                        resolvedUrl: resolvedPhoto,
+                      ),
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            _TypeBadge(
-                              type: organization.type,
-                              label: typeLabel(organization.type),
-                            ),
-                            const SizedBox(width: 8),
-                            if (organization.isSuperUser)
-                              _RoleBadge(
-                                label: l.orgSuperAdmin,
-                                bg: AppTheme.orgSuperUserBg,
-                                fg: AppTheme.orgSuperUserFg,
-                                icon: Icons.star,
-                              )
-                            else if (organization.isOrgAdmin)
-                              _RoleBadge(
-                                label: l.orgAdmin,
-                                bg: AppTheme.orgBadgeBg,
-                                fg: AppTheme.orgBadgeFg,
-                              )
-                            else if (organization.isFoster)
-                              _RoleBadge(
-                                label: l.orgFoster,
-                                bg: AppTheme.orgCharityBadgeBg,
-                                fg: AppTheme.orgCharityBadgeFg,
-                                icon: Icons.home_work_outlined,
+                            Text(
+                              organization.name,
+                              style: theme.textTheme.titleMedium?.copyWith(
+                                fontWeight: FontWeight.bold,
                               ),
-                          ],
-                        ),
-                        const SizedBox(height: 6),
-                        Row(
-                          children: [
-                            Icon(
-                              Icons.people_outline,
-                              size: 16,
-                              color: theme.colorScheme.onSurfaceVariant,
                             ),
-                            const SizedBox(width: 4),
-                            Expanded(
-                              child: Text(
-                                memberLabel,
-                                style: theme.textTheme.bodySmall?.copyWith(
+                            const SizedBox(height: 4),
+                            Row(
+                              children: [
+                                _TypeBadge(
+                                  type: organization.type,
+                                  label: typeLabel(organization.type),
+                                ),
+                                const SizedBox(width: 8),
+                                if (organization.isSuperUser)
+                                  _RoleBadge(
+                                    label: l.orgSuperAdmin,
+                                    bg: AppTheme.orgSuperUserBg,
+                                    fg: AppTheme.orgSuperUserFg,
+                                    icon: Icons.star,
+                                  )
+                                else if (organization.isOrgAdmin)
+                                  _RoleBadge(
+                                    label: l.orgAdmin,
+                                    bg: AppTheme.orgBadgeBg,
+                                    fg: AppTheme.orgBadgeFg,
+                                  )
+                                else if (organization.isFoster)
+                                  _RoleBadge(
+                                    label: l.orgFoster,
+                                    bg: AppTheme.orgCharityBadgeBg,
+                                    fg: AppTheme.orgCharityBadgeFg,
+                                    icon: Icons.home_work_outlined,
+                                  ),
+                              ],
+                            ),
+                            const SizedBox(height: 6),
+                            Row(
+                              children: [
+                                Icon(
+                                  Icons.people_outline,
+                                  size: 16,
                                   color: theme.colorScheme.onSurfaceVariant,
                                 ),
-                              ),
-                            ),
-                            const SizedBox(width: 12),
-                            Icon(
-                              Icons.pets,
-                              size: 16,
-                              color: theme.colorScheme.onSurfaceVariant,
-                            ),
-                            const SizedBox(width: 4),
-                            Text(
-                              l.petCount(organization.petCount),
-                              style: theme.textTheme.bodySmall?.copyWith(
-                                color: theme.colorScheme.onSurfaceVariant,
-                              ),
+                                const SizedBox(width: 4),
+                                Expanded(
+                                  child: Text(
+                                    memberLabel,
+                                    style: theme.textTheme.bodySmall?.copyWith(
+                                      color: theme.colorScheme.onSurfaceVariant,
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(width: 12),
+                                Icon(
+                                  Icons.pets,
+                                  size: 16,
+                                  color: theme.colorScheme.onSurfaceVariant,
+                                ),
+                                const SizedBox(width: 4),
+                                Text(
+                                  l.petCount(organization.petCount),
+                                  style: theme.textTheme.bodySmall?.copyWith(
+                                    color: theme.colorScheme.onSurfaceVariant,
+                                  ),
+                                ),
+                              ],
                             ),
                           ],
                         ),
-                      ],
-                    ),
+                      ),
+                      ExcludeSemantics(
+                        child: Icon(
+                          Icons.chevron_right,
+                          color: theme.colorScheme.onSurfaceVariant,
+                        ),
+                      ),
+                    ],
                   ),
-                  ExcludeSemantics(
-                    child: Icon(
-                      Icons.chevron_right,
-                      color: theme.colorScheme.onSurfaceVariant,
-                    ),
-                  ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
+        ),
+      ),
+    );
+  }
+}
+
+class _HeroStripPlaceholder extends StatelessWidget {
+  const _HeroStripPlaceholder({required this.type});
+
+  final OrganizationType type;
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    return ColoredBox(
+      color: colorScheme.surfaceContainerHighest,
+      child: Center(
+        child: Icon(
+          type == OrganizationType.professional
+              ? Icons.business
+              : Icons.volunteer_activism,
+          size: 28,
+          color: colorScheme.onSurfaceVariant,
         ),
       ),
     );

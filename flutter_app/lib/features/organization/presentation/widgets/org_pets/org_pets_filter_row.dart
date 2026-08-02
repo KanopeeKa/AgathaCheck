@@ -121,10 +121,13 @@ class OrgPetsNeedAttentionHelp extends StatelessWidget {
         child: Tooltip(
           key: const Key('org_pets_need_attention_tooltip'),
           message: l.orgPetsNeedAttentionTooltip,
-          child: Icon(
-            Icons.info_outline,
-            size: 20,
-            color: Theme.of(context).colorScheme.onSurfaceVariant,
+          child: Semantics(
+            identifier: 'org_pets_need_attention_tooltip',
+            child: Icon(
+              Icons.info_outline,
+              size: 20,
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
+            ),
           ),
         ),
       ),

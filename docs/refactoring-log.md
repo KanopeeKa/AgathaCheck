@@ -386,3 +386,19 @@ Use this template when spawning agents on an integration branch:
 | 2026-07-07 | Sprint 2.8: Playwright sharing.feature E2E tests |
 | 2026-07-07 | Sprint 2.5: health_entry_form_screen split (756 → 425 lines) |
 | 2026-07-07 | Sprint 1 plan created; governance + CI implementation |
+
+---
+
+## Sprint — Organisation v2 (`organisation-v2-abc9`, 2026-08-02)
+
+**Goal:** Profile composer IA, view permissions, activity log, discover tiles, BDD gate ratchet.  
+**Integration branch:** `cursor/organisation-v2-integration-abc9` → single PR to `main` when complete.  
+**Control issue:** #537 · **Plan:** `.agents/plans/organisation-v2-abc9.md`
+
+| Agent / phase | Branch | Owns | Avoid |
+|---------------|--------|------|-------|
+| F0-F1 docs | `cursor/org-v2-f0-docs-abc9` | `docs/experience-program/**`, `docs/architecture/pet-activity-model.md` | product code |
+| F0-F2 perms | `cursor/org-v2-f0-perms-abc9` | `server/lib/orgPermissions.js`, permissions routes, Flutter org permission providers | profile UI |
+| Slice 1+ | per snapshot | see `organisation-v2-delivery-plan.md` | — |
+| 8a–9 hardening | `cursor/org-v2-8-9-hardening-abc9` | BDD completion (admin contacts, permissions, customisations); gate **150/231**; docs + FR l10n | — |
+
