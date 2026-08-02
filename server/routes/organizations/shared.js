@@ -5,7 +5,15 @@ import { v4 as uuidv4 } from 'uuid';
 
 import { JWT_SECRET } from '../../config/jwtSecret.js';
 import { hasPermissionForUser } from '../../lib/orgPermissions.js';
-import { isActiveMember, isOrgAdmin, isSuperAdmin, normaliseRole } from '../../lib/orgRoles.js';
+import {
+  isActiveMember,
+  isOrgAdmin,
+  isSuperAdmin,
+  normaliseRole,
+} from '../../lib/orgRoles.js';
+
+/** Keys allowed in public_profile_metadata on unauthenticated-safe endpoints. */
+export const SAFE_PUBLIC_PROFILE_METADATA_KEYS = ['postcode'];
 import { extensionForMime, saveUploadedFile } from '../../lib/safeUpload.js';
 
 const MAX_ORG_IMAGE_BYTES = 2 * 1024 * 1024;
@@ -121,6 +129,57 @@ export function extractUserId(req) {
   } catch (_) {
     return null;
   }
+}
+
+export function safePublicProfileMetadata(raw) {
+  if (!raw || typeof raw !== 'object') return {};
+  const safe = {};
+  for (const key of SAFE_PUBLIC_PROFILE_METADATA_KEYS) {
+    if (raw[key] != null && raw[key] !== '') {
+      safe[key] = String(raw[key]);
+    }
+  }
+  return safe;
+}
+
+export function publicPrimaryContactToMap(contact) {
+  if (!contact) return null;
+  return {
+    id: contact.id,
+    display_name: contact.display_name,
+    email: contact.email,
+    phone: contact.phone,
+    photo_url: contact.photo_url,
+  };
+}
+
+export function publicOrgRowToMap(row) {
+  return {
+    id: row.id,
+    name: row.name,
+    type: row.type || 'professional',
+    logo_url: row.logo_url || '',
+    photo_url: row.photo_url || '',
+    description: row.description || '',
+    town: row.town || '',
+    administrative_area: row.administrative_area || '',
+    public_profile_metadata: safePublicProfileMetadata(row.public_profile_metadata),
+    legal_identifier_1: row.legal_identifier_1 || '',
+    legal_identifier_2: row.legal_identifier_2 || '',
+    legal_identifier_3: row.legal_identifier_3 || '',
+    email: row.email || null,
+    phone: row.phone || null,
+    website: row.website || null,
+    primary_contact: publicPrimaryContactToMap(row.primary_contact),
+  };
+}
+
+export async function fetchPublicOrg(pool, orgId) {
+  const result = await pool.query('SELECT * FROM organizations WHERE id = $1', [orgId]);
+  if (!result.rows.length) return null;
+  const row = result.rows[0];
+  const primaryContact = await loadPrimaryContact(pool, orgId, row.primary_contact_ref);
+  return publicOrgRowToMap({ ...row, primary_contact: primaryContact });
 }
 
 export function orgRowToMap(row) {

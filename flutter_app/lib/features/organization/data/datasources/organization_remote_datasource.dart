@@ -62,6 +62,11 @@ class OrganizationRemoteDataSource with OrganizationRemoteFosterDelegations {
   Future<OrganizationModel> getOrganization(String id, String token) =>
       _core.getOrganization(id, token);
 
+  Future<OrganizationModel> getPublicOrganization(
+    String id, {
+    String? token,
+  }) => _core.getPublicOrganization(id, token: token);
+
   Future<OrganizationModel> createOrganization(
     Map<String, dynamic> orgJson,
     String token,

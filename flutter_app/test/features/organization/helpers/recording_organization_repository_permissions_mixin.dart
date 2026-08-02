@@ -3,6 +3,16 @@ import 'recording_organization_repository_base.dart';
 mixin RecordingOrganizationRepositoryPermissionsMixin
     on RecordingOrganizationRepositoryBase {
   @override
+  Future<Map<String, dynamic>> getMyPermissions(
+    String orgId,
+    String token,
+  ) async => {
+    'role': 'admin',
+    'effective_permission_keys': <String>[],
+    'active_override_keys': <String>[],
+  };
+
+  @override
   Future<Map<String, dynamic>> getPermissionBundles(
     String orgId,
     String token,
