@@ -83,6 +83,32 @@ Source: agent/human chat, 2026-07-25 — analysis + Q&A rounds. See
 | **D32** | A dedicated **Phase R (Reconciliation)** runs before Phase 0, closing out D2/D6 and tagging affected BDD scenarios `@legacy` per the existing G0 §14.2 pattern. | locked | Phase R |
 | **D33** | Default delivery mode is **single-agent, sequential, direct-to-`main` per phase** (merge-policy.mdc "single-agent / single-domain PRs → main"). `/spawn-sprint-agents` stays available as an option for any phase where disjoint-path parallelism is later judged worthwhile (e.g. Phase 3 admin-contacts vs pet-tabs), but is not the default plan. | locked | All |
 
+## I — Organisation v2 (profile composer)
+
+| ID | Decision | Status | Phase |
+|----|----------|--------|-------|
+| **D-v2-IA-1** | `/o/orgs/:id` is a **profile composer** (header + stacked sections), not a link-only dashboard. | locked | v2 Slice 2 |
+| **D-v2-IA-2** | `/o/orgs/:id/presentation` **redirects** to profile — no separate primary destination. | locked | v2 Slice 2 |
+| **D-v2-IA-3** | Discover tile tap → profile route; **non-members see public tier only** (opted-out orgs → 404). | locked | v2 Slice 3 |
+| **D-v2-IA-4** | Profile shows **12 pets** (preview), sorted by last activity. | locked | v2 Slice 4 |
+| **D-v2-PERM-1** | Formal **`view_*` permission keys** + `GET /organizations/:orgId/permissions/me`. | locked | v2 F0 |
+| **D-v2-PERM-2** | **Associates** see 12-pet preview; pet tap opens **redacted org pet profile** (Option B) — no timeline, sessions, health, documents unless granted. **Server-enforced.** | locked | v2 Slice 4 |
+| **D-v2-PERM-3** | Admin contact tile subtitle = existing **role label** (Admin, Super Admin, etc.). | locked | v2 Slice 4 |
+| **D-v2-PERM-4** | Permission overrides are **additive grants only** — no deny overrides. | locked | v2 F0 |
+| **D-v2-ACT-1** | `pet_activity_events` + `pets.last_activity_at`; **no backfill**. See `docs/architecture/pet-activity-model.md`. | locked | v2 Slice 1 |
+| **D-v2-ACT-2** | Foster update activity = session mutations + foster-visible health/document writes. | locked | v2 Slice 1 |
+| **D-v2-ACT-3** | Activity events carry **no sensitive payloads** (metadata keys/counts only). | locked | v2 Slice 1 |
+| **D-v2-PUBLIC-1** | Non-discoverable or opted-out orgs return **404** on public profile for non-members. | locked | v2 Slice 2 |
+| **D-v2-FILTER-1** | Shadow / Rainbow Bridge filters remain **additive** (union onto tab results). | locked | v2 Slice 7 |
+| **D-v2-ADDR-1** | Postcode in `public_profile_metadata.postcode`; discover uses server-computed `display_locality`. | locked | v2 Slice 3/5 |
+| **D-v2-MSG-1** | Message actions = **mailto/tel** everywhere. | locked | v2 Slice 4 |
+| **D-v2-NOTIF-1** | In-app notifications only; email deferred. | locked | v2 Slice 7 |
+| **D-v2-NOTIF-2** | Placement side-effects at **repository boundary** (invalidate pending + notification providers). | locked | v2 Slice 7 |
+| **D-v2-CONN-1** | Connected-org disconnect = **simple confirm** (no typed REMOVE). | locked | v2 Slice 4 |
+| **D-v2-SESSION-1** | Sessions list on `foster_placements`; `/direct-adopt` stays until future unification. | locked | v2 Slice 6 |
+| **D-v2-BDD-1** | `@legacy` scenarios remain in BDD gate denominator. | locked | v2 Slice 8 |
+| **D-v2-ROLL-1** | Deep routes (pets list, sessions, admin directory) **remain**; profile changes entry points only. | locked | v2 |
+
 ---
 
 ## How to use this log

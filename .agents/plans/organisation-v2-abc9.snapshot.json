@@ -1,0 +1,576 @@
+{
+  "schema_version": 1,
+  "plan_id": "organisation-v2-abc9",
+  "approved_at": "2026-08-02T22:40:00Z",
+  "approved_by": "user chat 2026-08-02 (standing grant: full /execute-plan organisation v2, Option B associate pet view)",
+  "approved_until": "2026-08-04T22:40:00Z",
+  "content_hash": "sha256:ab08bba7ad045116ce3edcdc4afe8451bd6411f6058a25d1036777fa6fe6af79",
+  "autonomy": "active",
+  "default_merge_mode": "auto",
+  "base_branch": "cursor/organisation-v2-integration-abc9",
+  "control_issue": 537,
+  "artifact_branch_policy": "phase-branch",
+  "phases": [
+    {
+      "id": "F0-F1",
+      "title": "v2 decisions & architecture docs",
+      "branch": "cursor/org-v2-f0-docs-abc9",
+      "allowed_paths": [
+        "docs/experience-program/**",
+        "docs/architecture/**",
+        "docs/observability.md",
+        "docs/refactoring-log.md",
+        ".agents/plans/organisation-v2-abc9.md",
+        ".agents/plans/organisation-v2-abc9.snapshot.json"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split",
+        "governance-allowlist"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "governance",
+      "status": "in_progress",
+      "status_reason": null,
+      "status_detail": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "F0-F2",
+      "title": "View permissions foundation",
+      "branch": "cursor/org-v2-f0-perms-abc9",
+      "allowed_paths": [
+        "server/lib/orgPermissions.js",
+        "server/routes/organizations/**",
+        "server/test/**",
+        "flutter_app/lib/features/organization/domain/**",
+        "flutter_app/lib/features/organization/presentation/providers/org_permissions_providers.dart",
+        "flutter_app/lib/features/organization/data/**",
+        "flutter_app/test/features/organization/**",
+        ".agents/plans/organisation-v2-abc9.md",
+        ".agents/plans/organisation-v2-abc9.snapshot.json"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split",
+        "governance-allowlist"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "backend-route",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "1a",
+      "title": "Activity log core",
+      "branch": "cursor/org-v2-1a-activity-abc9",
+      "allowed_paths": [
+        "db/migrations/**",
+        "db/schema/**",
+        "server/lib/petActivity.js",
+        "server/routes/**",
+        "server/test/**",
+        ".agents/plans/organisation-v2-abc9.md",
+        ".agents/plans/organisation-v2-abc9.snapshot.json"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split",
+        "governance-allowlist"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "backend-route",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "1b",
+      "title": "Pet summary read API",
+      "branch": "cursor/org-v2-1b-pet-summary-abc9",
+      "allowed_paths": [
+        "server/routes/organizations/**",
+        "server/test/organizations/**",
+        ".agents/plans/organisation-v2-abc9.md",
+        ".agents/plans/organisation-v2-abc9.snapshot.json"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split",
+        "governance-allowlist"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "backend-route",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "2a",
+      "title": "Public API + profile composer",
+      "branch": "cursor/org-v2-2a-profile-abc9",
+      "allowed_paths": [
+        "server/routes/organizations/**",
+        "server/test/organizations/**",
+        "flutter_app/lib/features/organization/**",
+        "flutter_app/test/features/organization/**",
+        "flutter_app/test/bdd/features/organisation_profile.feature",
+        "e2e/playwright/tests/organisation.profile.spec.ts",
+        "e2e/playwright/pages/**",
+        ".agents/plans/organisation-v2-abc9.md",
+        ".agents/plans/organisation-v2-abc9.snapshot.json"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split",
+        "governance-allowlist"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "bdd-journey",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "2b",
+      "title": "Profile section framework",
+      "branch": "cursor/org-v2-2b-sections-abc9",
+      "allowed_paths": [
+        "flutter_app/lib/features/organization/**",
+        "flutter_app/test/features/organization/**",
+        ".agents/plans/organisation-v2-abc9.md",
+        ".agents/plans/organisation-v2-abc9.snapshot.json"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split",
+        "governance-allowlist"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "flutter-screen-split",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "3",
+      "title": "Landing + discover tiles",
+      "branch": "cursor/org-v2-3-discover-abc9",
+      "allowed_paths": [
+        "server/routes/organizations/**",
+        "server/test/**",
+        "flutter_app/lib/features/organization/**",
+        "flutter_app/test/**",
+        "flutter_app/test/bdd/features/organisation_discovery.feature",
+        "e2e/playwright/tests/organisation.discovery.spec.ts",
+        ".agents/plans/organisation-v2-abc9.md",
+        ".agents/plans/organisation-v2-abc9.snapshot.json"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split",
+        "governance-allowlist"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "bdd-journey",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "4a",
+      "title": "Pets preview + redacted associate view",
+      "branch": "cursor/org-v2-4a-pets-abc9",
+      "allowed_paths": [
+        "server/routes/**",
+        "server/test/**",
+        "flutter_app/lib/features/organization/**",
+        "flutter_app/test/**",
+        "e2e/playwright/tests/organisation.profile.spec.ts",
+        ".agents/plans/organisation-v2-abc9.md",
+        ".agents/plans/organisation-v2-abc9.snapshot.json"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split",
+        "governance-allowlist"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "bdd-journey",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "4b",
+      "title": "Admin contacts + connections",
+      "branch": "cursor/org-v2-4b-contacts-abc9",
+      "allowed_paths": [
+        "server/routes/**",
+        "server/test/**",
+        "flutter_app/lib/features/organization/**",
+        "flutter_app/test/**",
+        "flutter_app/test/bdd/features/admin_contacts.feature",
+        "e2e/playwright/**",
+        ".agents/plans/organisation-v2-abc9.md",
+        ".agents/plans/organisation-v2-abc9.snapshot.json"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split",
+        "governance-allowlist"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "bdd-journey",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "5",
+      "title": "Organisation edit & media",
+      "branch": "cursor/org-v2-5-edit-abc9",
+      "allowed_paths": [
+        "server/routes/organizations/**",
+        "server/test/**",
+        "flutter_app/lib/features/organization/**",
+        "flutter_app/lib/l10n/**",
+        "flutter_app/test/**",
+        "flutter_app/test/bdd/features/organisation_edit.feature",
+        "e2e/playwright/tests/organisation.edit.spec.ts",
+        ".agents/plans/organisation-v2-abc9.md",
+        ".agents/plans/organisation-v2-abc9.snapshot.json"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split",
+        "governance-allowlist"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "bdd-journey",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "6",
+      "title": "Fostering sessions list",
+      "branch": "cursor/org-v2-6-sessions-abc9",
+      "allowed_paths": [
+        "server/routes/**",
+        "server/lib/**",
+        "server/test/**",
+        "flutter_app/lib/features/organization/**",
+        "flutter_app/test/**",
+        "flutter_app/test/bdd/features/fostering_sessions.feature",
+        "e2e/playwright/tests/organisation.sessions.spec.ts",
+        ".agents/plans/organisation-v2-abc9.md",
+        ".agents/plans/organisation-v2-abc9.snapshot.json"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split",
+        "governance-allowlist"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "bdd-journey",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "7a",
+      "title": "Pets screen polish + filters",
+      "branch": "cursor/org-v2-7a-filters-abc9",
+      "allowed_paths": [
+        "flutter_app/lib/features/organization/**",
+        "flutter_app/test/**",
+        "flutter_app/test/bdd/features/pet_screen_filters.feature",
+        "e2e/playwright/tests/organisation.pet-filters.spec.ts",
+        ".agents/plans/organisation-v2-abc9.md",
+        ".agents/plans/organisation-v2-abc9.snapshot.json"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split",
+        "governance-allowlist"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "bdd-journey",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "7b",
+      "title": "Notifications + people API",
+      "branch": "cursor/org-v2-7b-notif-abc9",
+      "allowed_paths": [
+        "server/routes/**",
+        "server/test/**",
+        "flutter_app/lib/features/organization/data/**",
+        "flutter_app/test/**",
+        ".agents/plans/organisation-v2-abc9.md",
+        ".agents/plans/organisation-v2-abc9.snapshot.json"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split",
+        "governance-allowlist"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "backend-route",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "8a",
+      "title": "BDD completion",
+      "branch": "cursor/org-v2-8a-bdd-abc9",
+      "allowed_paths": [
+        "flutter_app/test/bdd/**",
+        "e2e/playwright/**",
+        "docs/quality/**",
+        ".agents/plans/organisation-v2-abc9.md",
+        ".agents/plans/organisation-v2-abc9.snapshot.json"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split",
+        "governance-allowlist"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "bdd-journey",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "8b",
+      "title": "BDD gate ratchet",
+      "branch": "cursor/org-v2-8b-gate-abc9",
+      "allowed_paths": [
+        "e2e/scripts/check_bdd_coverage.js",
+        "docs/quality/**",
+        "docs/refactoring-log.md",
+        ".agents/plans/organisation-v2-abc9.md",
+        ".agents/plans/organisation-v2-abc9.snapshot.json"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split",
+        "governance-allowlist"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "governance",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "9",
+      "title": "Documentation & l10n sweep",
+      "branch": "cursor/org-v2-9-docs-abc9",
+      "allowed_paths": [
+        "docs/**",
+        "flutter_app/lib/l10n/**",
+        ".agents/plans/organisation-v2-abc9.md",
+        ".agents/plans/organisation-v2-abc9.snapshot.json"
+      ],
+      "forbidden_paths": [
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split",
+        "governance-allowlist"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "governance",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "INT",
+      "title": "Integration PR to main",
+      "branch": "cursor/organisation-v2-integration-abc9",
+      "allowed_paths": [
+        "**"
+      ],
+      "forbidden_paths": [],
+      "allowed_exceptions": [
+        "tests",
+        "docs",
+        "file-split",
+        "governance-allowlist"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": null,
+      "pr_head_sha": null,
+      "merge_commit": null,
+      "debt_issue_refs": []
+    }
+  ]
+}
