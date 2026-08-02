@@ -1,10 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:pet_profile_app/features/auth/presentation/providers/auth_providers.dart';
 import 'package:pet_profile_app/features/organization/presentation/providers/org_permissions_providers.dart';
+import 'package:pet_profile_app/features/organization/presentation/providers/organization_providers.dart';
 import 'package:pet_profile_app/features/organization/presentation/widgets/org_profile/organisation_profile_member_sections.dart';
 import 'package:pet_profile_app/features/organization/presentation/widgets/org_profile/organisation_profile_section.dart';
 import 'package:pet_profile_app/l10n/app_localizations.dart';
+
+import '../../../../helpers/fakes.dart';
+import '../../helpers/organization_provider_test_helpers.dart';
 
 const _orgId = 'org-1';
 
@@ -16,6 +21,10 @@ Future<void> _pumpSection(
   await tester.pumpWidget(
     ProviderScope(
       overrides: [
+        authProvider.overrideWith((ref) => FakeAuthNotifier()),
+        organizationRepositoryProvider.overrideWithValue(
+          RecordingOrganizationRepository(),
+        ),
         orgEffectivePermissionsProvider(_orgId).overrideWith(
           (ref) async => permissions,
         ),
@@ -130,6 +139,7 @@ void main() {
         find.byKey(const Key('org_profile_section_admin_contacts')),
         findsOneWidget,
       );
+      expect(find.text('Admin contacts'), findsWidgets);
       expect(find.byKey(const Key('org_profile_section_fosters')), findsNothing);
       expect(
         find.byKey(const Key('org_profile_section_fostering_sessions')),
@@ -203,6 +213,34 @@ void main() {
       expect(find.byKey(const Key('org_profile_section_fosters')), findsNothing);
     });
 
+    testWidgets('shows connections manage link when manage_members granted', (
+      tester,
+    ) async {
+      await _pumpSection(
+        tester,
+        permissions: {'view_connections', 'manage_members'},
+        child: const OrganisationProfileMemberSections(orgId: _orgId),
+      );
+
+      expect(
+        find.byKey(const Key('org_profile_section_connections')),
+        findsOneWidget,
+      );
+      expect(find.text('Manage members'), findsOneWidget);
+    });
+
+    testWidgets('hides connections manage link without manage_members', (
+      tester,
+    ) async {
+      await _pumpSection(
+        tester,
+        permissions: {'view_connections'},
+        child: const OrganisationProfileMemberSections(orgId: _orgId),
+      );
+
+      expect(find.text('Manage members'), findsNothing);
+    });
+
     testWidgets('shows all member sections when all view keys are granted', (
       tester,
     ) async {
@@ -215,6 +253,7 @@ void main() {
           'view_org_pets',
           'view_connections',
           'manage_fosters',
+          'manage_members',
         },
         child: const OrganisationProfileMemberSections(orgId: _orgId),
       );
@@ -234,6 +273,7 @@ void main() {
         findsOneWidget,
       );
       expect(find.text('Manage fosters'), findsOneWidget);
+      expect(find.text('Manage members'), findsOneWidget);
     });
   });
 }
