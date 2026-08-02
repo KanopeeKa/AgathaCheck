@@ -25,8 +25,9 @@ class EntryDatePickerField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context)!;
-    final formatted =
-        date != null ? formatCalendarDateDisplay(date!) : l.notSet;
+    final formatted = date != null
+        ? formatCalendarDateDisplay(date!)
+        : l.notSet;
     return Semantics(
       label: '$label: $formatted',
       button: true,

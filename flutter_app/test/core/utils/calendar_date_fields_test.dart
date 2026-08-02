@@ -83,9 +83,9 @@ void main() {
     expectCalendarDateFieldBehavior(
       entity: 'HealthEntryModel',
       field: 'startDate',
-      readParsed: () => HealthEntryModel.fromJson(_healthEntryJson({
-        'start_date': calendarFieldIso,
-      })).startDate,
+      readParsed: () => HealthEntryModel.fromJson(
+        _healthEntryJson({'start_date': calendarFieldIso}),
+      ).startDate,
       readFromUtcMidnightPicker: () => HealthEntryModel(
         id: 'e1',
         petId: 'pet1',
@@ -94,22 +94,24 @@ void main() {
         frequency: HealthFrequency.once,
         startDate: calendarDateOnly(calendarFieldUtcMidnightPicker),
       ).startDate,
-      readSerializedWire: () => HealthEntryModel(
-        id: 'e1',
-        petId: 'pet1',
-        name: 'Meds',
-        type: HealthEntryType.medication,
-        frequency: HealthFrequency.once,
-        startDate: calendarDateOnly(calendarFieldUtcMidnightPicker),
-      ).toJson()['start_date'] as String?,
+      readSerializedWire: () =>
+          HealthEntryModel(
+                id: 'e1',
+                petId: 'pet1',
+                name: 'Meds',
+                type: HealthEntryType.medication,
+                frequency: HealthFrequency.once,
+                startDate: calendarDateOnly(calendarFieldUtcMidnightPicker),
+              ).toJson()['start_date']
+              as String?,
     );
 
     expectCalendarDateFieldBehavior(
       entity: 'HealthEntryModel',
       field: 'nextDueDate',
-      readParsed: () => HealthEntryModel.fromJson(_healthEntryJson({
-        'next_due_date': calendarFieldLegacyUtc,
-      })).nextDueDate,
+      readParsed: () => HealthEntryModel.fromJson(
+        _healthEntryJson({'next_due_date': calendarFieldLegacyUtc}),
+      ).nextDueDate,
       readFromUtcMidnightPicker: () => HealthEntryModel(
         id: 'e1',
         petId: 'pet1',
@@ -119,23 +121,25 @@ void main() {
         startDate: DateTime(2026, 1, 1),
         nextDueDate: calendarDateOnly(calendarFieldUtcMidnightPicker),
       ).nextDueDate,
-      readSerializedWire: () => HealthEntryModel(
-        id: 'e1',
-        petId: 'pet1',
-        name: 'Meds',
-        type: HealthEntryType.medication,
-        frequency: HealthFrequency.once,
-        startDate: DateTime(2026, 1, 1),
-        nextDueDate: calendarDateOnly(calendarFieldUtcMidnightPicker),
-      ).toJson()['next_due_date'] as String?,
+      readSerializedWire: () =>
+          HealthEntryModel(
+                id: 'e1',
+                petId: 'pet1',
+                name: 'Meds',
+                type: HealthEntryType.medication,
+                frequency: HealthFrequency.once,
+                startDate: DateTime(2026, 1, 1),
+                nextDueDate: calendarDateOnly(calendarFieldUtcMidnightPicker),
+              ).toJson()['next_due_date']
+              as String?,
     );
 
     expectCalendarDateFieldBehavior(
       entity: 'HealthEntryModel',
       field: 'completedOn',
-      readParsed: () => HealthEntryModel.fromJson(_healthEntryJson({
-        'completed_on': calendarFieldIso,
-      })).completedOn,
+      readParsed: () => HealthEntryModel.fromJson(
+        _healthEntryJson({'completed_on': calendarFieldIso}),
+      ).completedOn,
       readFromUtcMidnightPicker: () => HealthEntryModel(
         id: 'e1',
         petId: 'pet1',
@@ -145,23 +149,25 @@ void main() {
         startDate: DateTime(2026, 1, 1),
         completedOn: calendarDateOnly(calendarFieldUtcMidnightPicker),
       ).completedOn,
-      readSerializedWire: () => HealthEntryModel(
-        id: 'e1',
-        petId: 'pet1',
-        name: 'Meds',
-        type: HealthEntryType.medication,
-        frequency: HealthFrequency.once,
-        startDate: DateTime(2026, 1, 1),
-        completedOn: calendarDateOnly(calendarFieldUtcMidnightPicker),
-      ).toJson()['completed_on'] as String?,
+      readSerializedWire: () =>
+          HealthEntryModel(
+                id: 'e1',
+                petId: 'pet1',
+                name: 'Meds',
+                type: HealthEntryType.medication,
+                frequency: HealthFrequency.once,
+                startDate: DateTime(2026, 1, 1),
+                completedOn: calendarDateOnly(calendarFieldUtcMidnightPicker),
+              ).toJson()['completed_on']
+              as String?,
     );
 
     expectCalendarDateFieldBehavior(
       entity: 'HealthEntryModel',
       field: 'repeatEndDate',
-      readParsed: () => HealthEntryModel.fromJson(_healthEntryJson({
-        'repeat_end_date': calendarFieldLegacyUtc,
-      })).repeatEndDate,
+      readParsed: () => HealthEntryModel.fromJson(
+        _healthEntryJson({'repeat_end_date': calendarFieldLegacyUtc}),
+      ).repeatEndDate,
       readFromUtcMidnightPicker: () => HealthEntryModel(
         id: 'e1',
         petId: 'pet1',
@@ -171,15 +177,17 @@ void main() {
         startDate: DateTime(2026, 1, 1),
         repeatEndDate: calendarDateOnly(calendarFieldUtcMidnightPicker),
       ).repeatEndDate,
-      readSerializedWire: () => HealthEntryModel(
-        id: 'e1',
-        petId: 'pet1',
-        name: 'Meds',
-        type: HealthEntryType.medication,
-        frequency: HealthFrequency.weekly,
-        startDate: DateTime(2026, 1, 1),
-        repeatEndDate: calendarDateOnly(calendarFieldUtcMidnightPicker),
-      ).toJson()['repeat_end_date'] as String?,
+      readSerializedWire: () =>
+          HealthEntryModel(
+                id: 'e1',
+                petId: 'pet1',
+                name: 'Meds',
+                type: HealthEntryType.medication,
+                frequency: HealthFrequency.weekly,
+                startDate: DateTime(2026, 1, 1),
+                repeatEndDate: calendarDateOnly(calendarFieldUtcMidnightPicker),
+              ).toJson()['repeat_end_date']
+              as String?,
     );
 
     expectCalendarDateFieldBehavior(
@@ -197,12 +205,14 @@ void main() {
         title: 'Issue',
         startDate: calendarDateOnly(calendarFieldUtcMidnightPicker),
       ).startDate,
-      readSerializedWire: () => HealthIssueModel(
-        id: 'hi1',
-        petId: 'pet1',
-        title: 'Issue',
-        startDate: calendarDateOnly(calendarFieldUtcMidnightPicker),
-      ).toJson()['start_date'] as String?,
+      readSerializedWire: () =>
+          HealthIssueModel(
+                id: 'hi1',
+                petId: 'pet1',
+                title: 'Issue',
+                startDate: calendarDateOnly(calendarFieldUtcMidnightPicker),
+              ).toJson()['start_date']
+              as String?,
     );
 
     expectCalendarDateFieldBehavior(
@@ -220,12 +230,14 @@ void main() {
         title: 'Issue',
         endDate: calendarDateOnly(calendarFieldUtcMidnightPicker),
       ).endDate,
-      readSerializedWire: () => HealthIssueModel(
-        id: 'hi1',
-        petId: 'pet1',
-        title: 'Issue',
-        endDate: calendarDateOnly(calendarFieldUtcMidnightPicker),
-      ).toJson()['end_date'] as String?,
+      readSerializedWire: () =>
+          HealthIssueModel(
+                id: 'hi1',
+                petId: 'pet1',
+                title: 'Issue',
+                endDate: calendarDateOnly(calendarFieldUtcMidnightPicker),
+              ).toJson()['end_date']
+              as String?,
     );
 
     expectCalendarDateFieldBehavior(
@@ -277,12 +289,14 @@ void main() {
         date: calendarDateOnly(calendarFieldUtcMidnightPicker),
         weight: 12.5,
       ).date,
-      readSerializedWire: () => WeightEntryModel(
-        id: 'w1',
-        petId: 'pet1',
-        date: calendarDateOnly(calendarFieldUtcMidnightPicker),
-        weight: 12.5,
-      ).toJson()['date'] as String?,
+      readSerializedWire: () =>
+          WeightEntryModel(
+                id: 'w1',
+                petId: 'pet1',
+                date: calendarDateOnly(calendarFieldUtcMidnightPicker),
+                weight: 12.5,
+              ).toJson()['date']
+              as String?,
     );
 
     expectCalendarDateFieldBehavior(

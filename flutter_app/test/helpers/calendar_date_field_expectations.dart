@@ -17,8 +17,9 @@ final calendarFieldUtcMidnightPicker = DateTime.utc(
 );
 
 /// Web picker: local midnight encoded as prior-evening UTC (CEST-style example).
-final calendarFieldLocalMidnightPicker =
-    DateTime.parse('2026-07-07T22:00:00.000Z');
+final calendarFieldLocalMidnightPicker = DateTime.parse(
+  '2026-07-07T22:00:00.000Z',
+);
 
 void expectCalendarDay(DateTime? date) {
   expect(date, isNotNull, reason: 'expected a calendar date');
