@@ -60,6 +60,9 @@ class OrganisationProfileMemberSections extends StatelessWidget {
               l.fosteringSessionPreparationPlaceholder,
               style: mutedStyle,
             ),
+            manageLinkLabel: l.orgFosteringSessionsManage,
+            managePermissionKey: 'manage_fostering_sessions',
+            onManage: () => context.push('/o/orgs/$orgId/sessions'),
           ),
         ),
         Padding(

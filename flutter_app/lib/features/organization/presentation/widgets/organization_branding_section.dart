@@ -87,6 +87,13 @@ class OrganizationBrandingSection extends ConsumerWidget {
                 fontWeight: FontWeight.bold,
               ),
             ),
+            const SizedBox(height: 4),
+            Text(
+              l.orgImageLogoGuidance,
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: colorScheme.onSurfaceVariant,
+              ),
+            ),
             const SizedBox(height: 8),
             Row(
               children: [
@@ -109,6 +116,13 @@ class OrganizationBrandingSection extends ConsumerWidget {
               l.orgPicture,
               style: theme.textTheme.titleSmall?.copyWith(
                 fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              l.orgImageHeroGuidance,
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: colorScheme.onSurfaceVariant,
               ),
             ),
             const SizedBox(height: 8),

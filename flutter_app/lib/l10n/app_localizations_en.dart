@@ -1668,6 +1668,26 @@ class AppLocalizationsEn extends AppLocalizations {
   String get orgAddress => 'Address';
 
   @override
+  String get orgTown => 'Town or city';
+
+  @override
+  String get orgAdministrativeArea => 'Region or state';
+
+  @override
+  String get orgPostcode => 'Postcode';
+
+  @override
+  String get orgImageHeroGuidance =>
+      'Landscape image (~8:3), at least 1200×450 px. JPG, PNG, or WebP up to 2 MB.';
+
+  @override
+  String get orgImageLogoGuidance =>
+      'Square logo, at least 256×256 px. Shown as a circle. JPG, PNG, or WebP up to 2 MB.';
+
+  @override
+  String get orgProfileSettingsTooltip => 'Edit organisation settings';
+
+  @override
   String get orgWebsite => 'Website';
 
   @override
@@ -4418,6 +4438,19 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get orgProfileFosteringSessionsTitle => 'Fostering sessions';
+
+  @override
+  String get orgFosteringSessionsListTitle => 'Fostering sessions';
+
+  @override
+  String get orgFosteringSessionsManage => 'Manage sessions';
+
+  @override
+  String get orgFosteringSessionsEmpty =>
+      'No fostering sessions match this view';
+
+  @override
+  String get fosteringSessionDerivedNearlyFinished => 'Nearly finished';
 
   @override
   String get orgDashboardEditSubtitle =>
