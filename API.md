@@ -64,6 +64,23 @@ checks (`super_admin`, `admin`, `foster`). See `docs/org-fostering-strategy.md`.
 | POST | `/:orgId/placements/:id/cancel-adoption` | adoption step → `not_in_foster`; revokes foster `pet_access` |
 | POST | `/:orgId/placements/:id/end` | end foster period → `not_in_foster`; revokes foster `pet_access` |
 | GET | `/:orgId/pets`, `/:orgId/archived` | `super_admin` or `admin` (not foster) |
+| GET | `/discover` | **public** — discoverable org tiles (`display_locality`, hero imagery) |
+| GET | `/:id/public` | **public** (or member for opted-out orgs) — public-tier profile fields only |
+| GET | `/:orgId/permissions/me` | active member — effective `view_*` and `manage_*` keys for viewer |
+| GET | `/:orgId/people` | `view_admin_contacts` — admin contacts directory (redacted per viewer role) |
+| GET | `/:orgId/people/:kind/:personId` | `view_admin_contacts` — member or external foster detail |
+| PUT | `/:orgId/people/:kind/:personId/contact` | `super_admin` or `admin` — update contact card |
+| GET | `/:orgId/connections` | `view_connections` — connected organisation tiles |
+| GET | `/:orgId/pets/summary` | `view_org_pets` — profile preview list (12 pets, last-activity sort) |
+| GET | `/:orgId/pets/:petId/redacted` | `view_org_pets` — associate-safe pet summary (Option B) |
+| GET | `/:orgId/audit-events` | `manage_permissions` — permission audit log |
+| GET | `/:orgId/permission-bundles` | `manage_permissions` — bundle preset catalog |
+| POST | `/:orgId/members/:targetUserId/permissions/bundle` | `manage_permissions`; body `{ preset }` e.g. `pet_admin` |
+| POST | `/:orgId/members/:targetUserId/permissions` | `manage_permissions` — grant individual override |
+| DELETE | `/:orgId/members/:targetUserId/permissions/:permissionKey` | `manage_permissions` — revoke override |
+| POST | `/:id/logo` | `super_admin` or `admin` — organisation logo upload |
+| PUT | `/:orgId/primary-contact` | `super_admin` or `admin` — set primary contact ref |
+| DELETE | `/:orgId/primary-contact` | `super_admin` or `admin` — clear primary contact |
 
 ### Foster placements (`/api/foster-placements`)
 | Method | Path | Authorization |
