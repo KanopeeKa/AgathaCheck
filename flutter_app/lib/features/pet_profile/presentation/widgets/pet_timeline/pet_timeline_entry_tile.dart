@@ -49,7 +49,43 @@ class PetTimelineEntryTile extends ConsumerWidget {
           ),
           if (segment.isManual)
             _ManualActions(segment: segment, petId: petId, petName: petName),
+          if (segment.isGap && segment.fillable)
+            _GapFillAction(segment: segment, petId: petId, petName: petName),
         ],
+      ),
+    );
+  }
+}
+
+class _GapFillAction extends ConsumerWidget {
+  const _GapFillAction({
+    required this.segment,
+    required this.petId,
+    required this.petName,
+  });
+
+  final PetTimelineSegment segment;
+  final String petId;
+  final String petName;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l = AppLocalizations.of(context)!;
+
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(8, 0, 8, 8),
+      child: FilledButton.icon(
+        key: Key('timeline_fill_${segment.id}'),
+        onPressed: () => showPetTimelineFillSheet(
+          context,
+          ref,
+          petId: petId,
+          petName: petName,
+          initialStartDate: segment.startDate,
+          initialEndDate: segment.endDate,
+        ),
+        icon: const Icon(Icons.edit_note_outlined),
+        label: Text(l.petTimelineFillAction),
       ),
     );
   }
