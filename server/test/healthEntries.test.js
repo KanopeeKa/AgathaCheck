@@ -1028,7 +1028,7 @@ describe('Health Entries API', () => {
         .set('Authorization', `Bearer ${token}`)
         .attach('photo', Buffer.from('document'), { filename, contentType });
       expect(res.statusCode).toBe(201);
-      expect(lastQuery.params[2]).toMatch(
+      expect(res.body.url).toMatch(
         new RegExp(`/uploads/health_documents/.+\\.${filename.split('.').pop()}$`)
       );
     });

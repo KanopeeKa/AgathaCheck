@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import '../../../../l10n/app_localizations.dart';
-import '../../domain/entities/foster_placement.dart';
-import '../utils/foster_placement_display.dart';
+import '../../../../../l10n/app_localizations.dart';
+import '../../../domain/entities/foster_placement.dart';
+import '../../utils/foster_placement_display.dart';
 
 class FosteringSessionListTile extends StatelessWidget {
   const FosteringSessionListTile({
