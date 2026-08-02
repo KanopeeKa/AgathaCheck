@@ -3,6 +3,8 @@ class DiscoverableOrganization {
     required this.id,
     required this.name,
     this.logoUrl = '',
+    this.photoUrl = '',
+    this.displayLocality = '',
     this.town = '',
     this.administrativeArea = '',
     this.description = '',
@@ -11,6 +13,8 @@ class DiscoverableOrganization {
   final String id;
   final String name;
   final String logoUrl;
+  final String photoUrl;
+  final String displayLocality;
   final String town;
   final String administrativeArea;
   final String description;
