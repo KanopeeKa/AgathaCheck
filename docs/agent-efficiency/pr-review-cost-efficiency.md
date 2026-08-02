@@ -68,13 +68,14 @@ Bugbot (Default effort, once per PR)
   → primary automatic reviewer (~$1–1.50/run, separate from Cloud Agent pool)
 
 Babysit+ slim (composer-2.5 only)
-  → poll Bugbot (do not block on Copilot timeout)
+  → node scripts/babysit_pr_reviews.js wait --pr <url>  (Bugbot; do not block on Copilot timeout)
+  → node scripts/babysit_pr_reviews.js collect --pr <url>  (triage all threads: Bugbot + Copilot + human)
   → triage must-fix / nit / ignore
   → fix + ./scripts/pre-push-changed.sh
   → CI loop → ./scripts/pre-push.sh before merge
 ```
 
-**Copilot:** Request when credits are available; treat as **supplementary**. When Copilot is unavailable or times out, proceed if **Bugbot** has reviewed and triage is complete.
+**Copilot:** Request when credits are available; treat as **supplementary for the wait step** but **mandatory for triage when threads exist**. When Copilot is unavailable or times out, proceed if **Bugbot** has reviewed (or is unavailable) and triage is complete. When Bugbot is unavailable but Copilot posted threads, triage all Copilot threads before merge.
 
 **CI + CodeQL:** Unchanged — still required on merge to `main`.
 
@@ -108,7 +109,7 @@ Cursor cannot enforce model choice from the repo alone; rules + dashboard defaul
 | `/review-bugbot` pre-push | Avoid duplicate Bugbot run |
 | Pre-PR self-review | Fewer fix iterations after open |
 | `composer-2.5` for babysit | Avoid thinking-model token burn on triage/CI |
-| Slim babysit+ | Triage Bugbot comments; do not re-run adversarial review in agent turns |
+| Slim babysit+ | Triage all collected review threads (Bugbot + Copilot + human); do not re-run adversarial review in agent turns |
 | Skip Copilot wait when unavailable | No 15-minute stall |
 
 ---
@@ -119,8 +120,10 @@ When GitHub Copilot PR review credits are exhausted:
 
 1. Do **not** request `copilot-pull-request-reviewer`.
 2. Rely on **Bugbot** (+ mandatory pre-PR self-review).
-3. Babysit poll: wait for **Bugbot** up to 15 minutes; **do not halt** solely because Copilot never responded.
+3. Babysit poll: wait for **Bugbot** up to 15 minutes (`node scripts/babysit_pr_reviews.js wait --pr <url>`); **do not halt** solely because Copilot never responded.
 4. Comment on the PR if Copilot was skipped: `Copilot unavailable; Bugbot + babysit+ triage used.`
+
+When **Bugbot** is unavailable (usage limit) but **Copilot** has posted review threads, use `node scripts/babysit_pr_reviews.js collect --pr <url>` and triage **all** Copilot threads before merge — do not treat Bugbot unavailability as “no automated review.”
 
 ---
 
