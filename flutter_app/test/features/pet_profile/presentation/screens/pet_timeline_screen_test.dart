@@ -302,9 +302,20 @@ void main() {
     );
     await tester.pumpAndSettle();
 
+    // Top of list (newest years) is visible without scrolling.
     expect(find.byKey(const Key('pet_timeline_year_2025')), findsOneWidget);
-    expect(find.byKey(const Key('pet_timeline_year_2023')), findsOneWidget);
     expect(find.byKey(const Key('pet_timeline_year_2024')), findsOneWidget);
+    expect(find.byKey(const Key('pet_timeline_year_2023')), findsOneWidget);
+
+    // DOB year divider is below the fold in the lazy list.
+    await tester.scrollUntilVisible(
+      find.byKey(const Key('pet_timeline_year_2020')),
+      120,
+      scrollable: find.byType(Scrollable),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(const Key('pet_timeline_year_2020')), findsOneWidget);
   });
 
   testWidgets('add buttons are present in app bar and bottom', (tester) async {

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../../../l10n/app_localizations.dart';
 import '../../../domain/entities/pet_timeline_segment.dart';
 import 'pet_timeline_labels.dart';
 
@@ -8,10 +9,12 @@ class PetTimelineNode extends StatelessWidget {
   const PetTimelineNode({
     super.key,
     required this.icon,
+    required this.semanticsLabel,
     required this.showConnectorBelow,
   });
 
   final IconData icon;
+  final String semanticsLabel;
   final bool showConnectorBelow;
 
   static const double nodeSize = 40;
@@ -27,7 +30,7 @@ class PetTimelineNode extends StatelessWidget {
         children: [
           Semantics(
             container: true,
-            label: 'Timeline event',
+            label: semanticsLabel,
             child: Container(
               width: nodeSize,
               height: nodeSize,
@@ -46,6 +49,7 @@ class PetTimelineNode extends StatelessWidget {
               child: Align(
                 alignment: Alignment.center,
                 child: Container(
+                  key: const Key('pet_timeline_node_connector'),
                   width: 2,
                   color: colorScheme.outlineVariant.withValues(alpha: 0.45),
                 ),
@@ -72,12 +76,15 @@ class PetTimelineEventRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
+
     return IntrinsicHeight(
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           PetTimelineNode(
             icon: petTimelineIcon(segment),
+            semanticsLabel: petTimelineHeadline(segment, l),
             showConnectorBelow: showConnectorBelow,
           ),
           const SizedBox(width: 8),
