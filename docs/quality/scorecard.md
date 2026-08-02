@@ -2,7 +2,7 @@
 
 Living metrics for Agatha Track quality. Update when CI or test counts change materially.
 
-**Last updated:** 2026-07-08 (Sprint 5.1 governance)
+**Last updated:** 2026-08-02 (Organisation v2 phases 8a–9)
 
 ---
 
@@ -14,8 +14,8 @@ Living metrics for Agatha Track quality. Update when CI or test counts change ma
 | Flutter integration | 1 flow | CI on `main` (blocking) |
 | Node Jest | 544 | CI on `main` |
 | Playwright E2E | 79 | UAT deploy |
-| BDD Gherkin scenarios | 167 | Spec (hybrid — Playwright executor) |
-| BDD → Playwright coverage | **69% (115/167)** | CI gate **105/165** — `e2e/scripts/check_bdd_coverage.js` |
+| BDD Gherkin scenarios | 231 | Spec (hybrid — Playwright executor) |
+| BDD → Playwright coverage | **72.3% (167/231)** | CI gate **150/231** — `e2e/scripts/check_bdd_coverage.js` |
 
 ## CI security
 
@@ -31,7 +31,7 @@ Living metrics for Agatha Track quality. Update when CI or test counts change ma
 | Check | Blocks `main`? |
 |---|---|
 | `flutter analyze` | Yes |
-| BDD scenarios mapped ≥ 105/165 | Yes |
+| BDD scenarios mapped ≥ 150/231 | Yes |
 | Hand-written file size ≤ 500 lines | Yes (grandfather ratchet) |
 
 ## Coverage
@@ -72,6 +72,7 @@ Run `cd server && npm audit` locally. CI blocks **high** and **critical** (clean
 
 | Date | Change |
 |---|---|
+| 2026-08-02 | Organisation v2 8a–9: BDD 167/231 mapped; gate ratchet **150/231**; admin contacts + permissions E2E |
 | 2026-07-08 | Sprint 5.5–5.6: GDPR export completeness; @P0/@P1/@P2 on all 161 scenarios + CI gate |
 | 2026-07-08 | Sprint 5.4b: all 5 remaining monoliths split; grandfather allowlist cleared |
 | 2026-07-08 | Sprint 5.4: placements split; grandfather allowlist 8→5 |

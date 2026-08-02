@@ -176,7 +176,22 @@ Journeys are ordered **P0 → P1 → P2** at the journey level. Within each jour
 | P0 | Create org | Creating a Professional organisation | `organisation.management.spec.ts` | ✅ (demoted @smoke Sprint 6.5) |
 | P1 | Full org CRUD & membership | remaining 10 scenarios | `organisation.management.spec.ts` | ✅ |
 
-**Feature:** `organisation_management.feature` (11) — **11/11 (100%)**
+**Feature:** `organisation_management.feature` (12) — **12/12 (100%)** (dashboard scenarios `@legacy`)
+
+---
+
+### J7b — Organisation v2 profile & permissions (2026-08)
+
+| Feature | Scenarios | Mapped | Playwright |
+|---------|----------:|-------:|------------|
+| `organisation_profile.feature` | 4 | 4 | `organisation.profile.spec.ts` |
+| `organisation_discovery.feature` | 5 | 5 | `organisation.discovery.spec.ts` |
+| `admin_contacts.feature` | 7 | 7 | `organisation.admin-contacts.spec.ts` |
+| `organisation_permissions.feature` | 2 | 2 | `organisation.permissions.spec.ts` |
+| `organisation_customisations.feature` | 2 | 2 | `organisation.customisations.spec.ts` |
+| `pet_screen_filters.feature` | 2 | 2 | `organisation.pet-filters.spec.ts` |
+
+**Subtotal:** 22 scenarios — **22/22**
 
 ---
 
@@ -185,13 +200,13 @@ Journeys are ordered **P0 → P1 → P2** at the journey level. Within each jour
 | Feature | Scenarios | Implemented |
 |---------|----------:|------------:|
 | `organisation_pet_management.feature` | 6 | 6 |
-| `organisation_pet_timeline.feature` | 6 | 4 |
+| `organisation_pet_timeline.feature` | 6 | 6 |
 | `org_foster_and_adoption.feature` | 5 | 5 |
 | `org_to_org_transfer.feature` | 3 | 3 |
 | `org_pet_return.feature` | 2 | 2 |
 | `pet_ownership_and_adoption.feature` | 2 | 2 |
 
-**Subtotal:** 24 scenarios mapped in Sprint 6 — **22/24** (2 timeline scenarios deferred)
+**Subtotal:** 24 scenarios mapped in Sprint 6 — **24/24**
 
 ---
 
