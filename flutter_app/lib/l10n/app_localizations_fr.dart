@@ -4483,6 +4483,9 @@ class AppLocalizationsFr extends AppLocalizations {
       'Gérer les liens avec d\'autres organisations.';
 
   @override
+  String get orgProfileFosteringSessionsTitle => 'Sessions d\'accueil';
+
+  @override
   String get orgDashboardEditSubtitle =>
       'Mettre à jour les informations et l\'image de l\'organisation.';
 

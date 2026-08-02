@@ -1,0 +1,83 @@
+import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+
+import '../../../../../l10n/app_localizations.dart';
+import 'organisation_profile_section.dart';
+
+/// Member-tier profile sections (empty shells gated by view_* permissions).
+class OrganisationProfileMemberSections extends StatelessWidget {
+  const OrganisationProfileMemberSections({super.key, required this.orgId});
+
+  final String orgId;
+
+  @override
+  Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
+    final theme = Theme.of(context);
+    final mutedStyle = theme.textTheme.bodyMedium?.copyWith(
+      color: theme.colorScheme.onSurfaceVariant,
+    );
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: OrganisationProfileSection(
+            orgId: orgId,
+            permissionKey: 'view_admin_contacts',
+            sectionKey: const Key('org_profile_section_admin_contacts'),
+            title: l.adminContactsTitle,
+            preview: Text(l.adminContactsDescription, style: mutedStyle),
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: OrganisationProfileSection(
+            orgId: orgId,
+            permissionKey: 'view_org_internal',
+            sectionKey: const Key('org_profile_section_fosters'),
+            title: l.fosterParents,
+            preview: Text(l.manageFostersDescription, style: mutedStyle),
+            manageLinkLabel: l.orgPermissionManageFosters,
+            managePermissionKey: 'manage_fosters',
+            onManage: () => context.push('/o/orgs/$orgId/fosters'),
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: OrganisationProfileSection(
+            orgId: orgId,
+            permissionKey: 'view_fostering_sessions',
+            sectionKey: const Key('org_profile_section_fostering_sessions'),
+            title: l.orgProfileFosteringSessionsTitle,
+            preview: Text(
+              l.fosteringSessionPreparationPlaceholder,
+              style: mutedStyle,
+            ),
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: OrganisationProfileSection(
+            orgId: orgId,
+            permissionKey: 'view_org_pets',
+            sectionKey: const Key('org_profile_section_pets'),
+            title: l.orgPets,
+            preview: Text(l.orgDashboardPetsSubtitle, style: mutedStyle),
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: OrganisationProfileSection(
+            orgId: orgId,
+            permissionKey: 'view_connections',
+            sectionKey: const Key('org_profile_section_connections'),
+            title: l.orgConnections,
+            preview: Text(l.orgDashboardConnectionsSubtitle, style: mutedStyle),
+          ),
+        ),
+      ],
+    );
+  }
+}

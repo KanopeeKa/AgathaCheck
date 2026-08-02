@@ -4417,6 +4417,9 @@ class AppLocalizationsEn extends AppLocalizations {
       'Manage links with other organisations.';
 
   @override
+  String get orgProfileFosteringSessionsTitle => 'Fostering sessions';
+
+  @override
   String get orgDashboardEditSubtitle =>
       'Update organisation details and branding.';
 
