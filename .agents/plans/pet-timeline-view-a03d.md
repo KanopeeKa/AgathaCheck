@@ -74,10 +74,10 @@ next_action: "continue phase 1 on branch cursor/pet-timeline-view-a03d"
 artifact_ref:
   branch: cursor/pet-timeline-view-a03d
   plan_path: .agents/plans/pet-timeline-view-a03d.md
-  plan_commit: cca93b9dc247739ce79d98a946927204e2a2c578
+  plan_commit: 2669a89838bfc1dd1f60cc08adb9b74567ef080c
   snapshot_path: .agents/plans/pet-timeline-view-a03d.snapshot.json
-  snapshot_commit: cca93b9dc247739ce79d98a946927204e2a2c578
-open_prs: []
+  snapshot_commit: 2669a89838bfc1dd1f60cc08adb9b74567ef080c
+open_prs: ["https://github.com/KanopeeKa/AgathaCheck/pull/531"]
 merge_commits: {}
 debt_issue_refs: []
 ```
