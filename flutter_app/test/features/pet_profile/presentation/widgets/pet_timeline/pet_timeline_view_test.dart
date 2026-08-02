@@ -34,7 +34,10 @@ void main() {
                   title: 'Test',
                 ),
                 showConnectorBelow: true,
-                child: const SizedBox(height: 80, child: Card(child: Text('x'))),
+                child: const SizedBox(
+                  height: 80,
+                  child: Card(child: Text('x')),
+                ),
               ),
             ),
           ),
