@@ -6,6 +6,7 @@ import 'package:uuid/uuid.dart';
 
 import '../../../../core/theme/experience_colors.dart';
 import '../../../../core/utils/calendar_date.dart';
+import '../../../../core/utils/calendar_date_picker.dart';
 import '../../../../core/utils/constants.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../health_tracking/domain/entities/health_entry.dart';
@@ -193,7 +194,7 @@ class _OrgOnboardingScreenState extends ConsumerState<OrgOnboardingScreen> {
         dueDate: _dueDate,
         onPickDate: () async {
           final today = calendarDateOnly(DateTime.now());
-          final picked = await showDatePicker(
+          final picked = await showCalendarDatePicker(
             context: context,
             initialDate: calendarDateOnly(_dueDate),
             firstDate: today,
@@ -202,7 +203,7 @@ class _OrgOnboardingScreenState extends ConsumerState<OrgOnboardingScreen> {
             ),
           );
           if (picked != null) {
-            setState(() => _dueDate = calendarDateOnly(picked));
+            setState(() => _dueDate = picked);
           }
         },
       ),
@@ -454,7 +455,7 @@ class _ReminderStep extends StatelessWidget {
           key: const Key('onboarding_org_reminder_due_date'),
           contentPadding: EdgeInsets.zero,
           title: Text(l.nextDueDate),
-          subtitle: Text(DateFormat.yMMMd().format(dueDate)),
+          subtitle: Text(formatCalendarDateDisplay(dueDate)),
           trailing: const Icon(Icons.calendar_today),
           onTap: onPickDate,
         ),

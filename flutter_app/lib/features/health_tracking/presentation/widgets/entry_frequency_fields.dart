@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../../l10n/app_localizations.dart';
-import '../../../../core/utils/calendar_date.dart';
+import '../../../../core/utils/calendar_date_picker.dart';
 import '../../domain/entities/health_entry.dart';
 import 'entry_form_labels.dart';
 
@@ -96,7 +96,7 @@ class EntryFrequencyFields extends StatelessWidget {
                   ),
                   selected: repeatEndDate != null,
                   onSelected: (_) async {
-                    final picked = await showDatePicker(
+                    final picked = await showCalendarDatePicker(
                       context: context,
                       initialDate:
                           repeatEndDate ??
@@ -104,8 +104,7 @@ class EntryFrequencyFields extends StatelessWidget {
                       firstDate: DateTime.now(),
                       lastDate: DateTime(2100),
                     );
-                    if (picked != null)
-                      onRepeatEndChanged(calendarDateOnly(picked));
+                    if (picked != null) onRepeatEndChanged(picked);
                   },
                 ),
               ],

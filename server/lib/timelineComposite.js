@@ -152,8 +152,8 @@ function buildGapSegments(coveredRanges, timelineStartMs, timelineEndMs) {
       gaps.push({
         kind: 'gap',
         id: `gap-${cursor}-${block.start}`,
-        start_date: new Date(cursor).toISOString().slice(0, 10),
-        end_date: new Date(block.start - 86400000).toISOString().slice(0, 10),
+        start_date: dateToIsoDate(new Date(cursor)),
+        end_date: dateToIsoDate(new Date(block.start - 86400000)),
         title: '',
         description: '',
         guardian_name: null,
@@ -168,8 +168,8 @@ function buildGapSegments(coveredRanges, timelineStartMs, timelineEndMs) {
     gaps.push({
       kind: 'gap',
       id: `gap-${cursor}-${timelineEndMs}`,
-      start_date: new Date(cursor).toISOString().slice(0, 10),
-      end_date: new Date(timelineEndMs).toISOString().slice(0, 10),
+      start_date: dateToIsoDate(new Date(cursor)),
+      end_date: dateToIsoDate(new Date(timelineEndMs)),
       title: '',
       description: '',
       guardian_name: null,
@@ -218,8 +218,8 @@ export async function buildPetTimeline(pool, petId, viewerId) {
     ? [{
         kind: 'gap',
         id: `gap-empty-${petId}`,
-        start_date: new Date(timelineStartMs).toISOString().slice(0, 10),
-        end_date: new Date(timelineEndMs).toISOString().slice(0, 10),
+        start_date: dateToIsoDate(new Date(timelineStartMs)),
+        end_date: dateToIsoDate(new Date(timelineEndMs)),
         title: '',
         description: '',
         guardian_name: null,

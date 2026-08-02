@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
 import '../../../../core/utils/calendar_date.dart';
+import '../../../../core/utils/calendar_date_picker.dart';
 import '../../../../l10n/app_localizations.dart';
-import 'entry_form_labels.dart';
 
 class EntryDatePickerField extends StatelessWidget {
   const EntryDatePickerField({
@@ -11,31 +11,37 @@ class EntryDatePickerField extends StatelessWidget {
     required this.date,
     required this.onChanged,
     this.allowClear = false,
+    this.firstDate,
+    this.lastDate,
   });
 
   final String label;
   final DateTime? date;
   final ValueChanged<DateTime?> onChanged;
   final bool allowClear;
+  final DateTime? firstDate;
+  final DateTime? lastDate;
 
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context)!;
-    final formatted = date != null ? formatEntryDate(date!) : l.notSet;
+    final formatted = date != null
+        ? formatCalendarDateDisplay(date!)
+        : l.notSet;
     return Semantics(
       label: '$label: $formatted',
       button: true,
       hint: l.tapToChangeDate,
       child: InkWell(
         onTap: () async {
-          final picked = await showDatePicker(
+          final picked = await showCalendarDatePicker(
             context: context,
             initialDate: date ?? DateTime.now(),
-            firstDate: DateTime(2020),
-            lastDate: DateTime(2100),
+            firstDate: firstDate ?? DateTime(2020),
+            lastDate: lastDate ?? DateTime(2100),
           );
           if (picked != null) {
-            onChanged(calendarDateOnly(picked));
+            onChanged(picked);
           }
         },
         child: InputDecorator(

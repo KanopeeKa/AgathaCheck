@@ -1,3 +1,4 @@
+import '../../../../../core/utils/calendar_date.dart';
 import '../../../../../l10n/app_localizations.dart';
 import '../../../domain/entities/health_entry.dart';
 
@@ -39,6 +40,5 @@ String healthEntryPeriodLabel(
   }
 }
 
-String formatHealthEntryCalendarDate(DateTime dt) {
-  return '${dt.year}-${dt.month.toString().padLeft(2, '0')}-${dt.day.toString().padLeft(2, '0')}';
-}
+String formatHealthEntryCalendarDate(DateTime dt) =>
+    formatCalendarDateDisplay(dt);

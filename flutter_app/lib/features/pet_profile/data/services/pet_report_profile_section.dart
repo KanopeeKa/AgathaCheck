@@ -1,6 +1,6 @@
 import '../../../../core/theme/pdf_report_tokens.dart';
+import '../../../../core/utils/calendar_date.dart';
 import 'package:pdf/widgets.dart' as pw;
-import 'package:intl/intl.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../domain/entities/pet.dart';
 import '../../../vet/domain/entities/vet.dart';
@@ -35,7 +35,7 @@ class PetProfileSectionBuilder {
             if (pet.dateOfBirth != null)
               _detailRow(
                 l.pdfDateOfBirth,
-                '${pet.dateOfBirth!.day}/${pet.dateOfBirth!.month}/${pet.dateOfBirth!.year}',
+                formatCalendarDateDisplay(pet.dateOfBirth!),
               ),
             if (latestWeight != null)
               _detailRow(
@@ -47,7 +47,7 @@ class PetProfileSectionBuilder {
             if (pet.neuteredDate != null)
               _detailRow(
                 l.pdfNeuteredSpayed,
-                DateFormat.yMMMd().format(pet.neuteredDate!),
+                formatCalendarDateMedium(pet.neuteredDate!),
               ),
             if (pet.chipId.isNotEmpty) _detailRow(l.pdfIdMicrochip, pet.chipId),
             if (pet.insurance.isNotEmpty)

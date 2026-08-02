@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../../core/utils/calendar_date.dart';
+import '../../../../../core/utils/calendar_date_picker.dart';
 import '../../../../../l10n/app_localizations.dart';
 import '../../../domain/entities/pet_timeline_segment.dart';
 import '../../providers/pet_timeline_providers.dart';
@@ -31,18 +33,16 @@ Future<void> showPetTimelineFillSheet(
   final formKey = GlobalKey<FormState>();
 
   Future<void> pickDate(TextEditingController controller) async {
-    final initial = DateTime.tryParse(controller.text) ?? DateTime.now();
-    final picked = await showDatePicker(
+    final initial =
+        parseCalendarDate(controller.text) ?? calendarDateOnly(DateTime.now());
+    final picked = await showCalendarDatePicker(
       context: context,
       initialDate: initial,
       firstDate: DateTime(1990),
       lastDate: DateTime(2100),
     );
     if (picked != null) {
-      controller.text =
-          '${picked.year.toString().padLeft(4, '0')}-'
-          '${picked.month.toString().padLeft(2, '0')}-'
-          '${picked.day.toString().padLeft(2, '0')}';
+      controller.text = toCalendarDateString(picked)!;
     }
   }
 

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 import '../../../../core/theme/app_color_tokens.dart';
+import '../../../../core/utils/calendar_date.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../domain/entities/health_entry.dart';
 
@@ -9,7 +10,7 @@ import '../../domain/entities/health_entry.dart';
 final DateFormat healthEntryStatusDateFormat = DateFormat('dd MMM yy');
 
 String formatHealthEntryStatusDate(DateTime date) =>
-    healthEntryStatusDateFormat.format(date);
+    healthEntryStatusDateFormat.format(calendarDateOnly(date));
 
 /// Date-only status text: [AppLocalizations.doneOn] when completed, otherwise due date.
 String formatHealthEntryStatusLine(HealthEntry entry, AppLocalizations l) {

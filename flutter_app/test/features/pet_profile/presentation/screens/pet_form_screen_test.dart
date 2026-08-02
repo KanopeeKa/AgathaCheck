@@ -143,7 +143,7 @@ void main() {
     expect(find.text('Dog'), findsOneWidget);
     expect(find.text('Female'), findsOneWidget);
     expect(find.text('15/03/2020'), findsOneWidget);
-    expect(find.text('Jun 20, 2021'), findsOneWidget);
+    expect(find.text('20/06/2021'), findsOneWidget);
     expect(find.text('Dr Smith'), findsOneWidget);
   });
 

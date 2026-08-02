@@ -37,8 +37,9 @@ void main() {
       expect(toCalendarDateString(null), isNull);
     });
 
-    test('serializes UTC midnight selected day via local wall-clock', () {
+    test('serializes UTC midnight using UTC calendar components', () {
       expect(toCalendarDateString(DateTime.utc(2026, 7, 8)), '2026-07-08');
+      expect(toCalendarDateString(DateTime.utc(2026, 12, 18)), '2026-12-18');
     });
   });
 
@@ -83,6 +84,28 @@ void main() {
       expect(
         toCalendarDateString(calendarDateOnly(restored!)),
         toCalendarDateString(picked.toLocal()),
+      );
+    });
+
+    test('keeps UTC midnight calendar day for west-of-UTC semantics', () {
+      final utcMidnight = DateTime.utc(2026, 12, 18);
+      final normalized = calendarDateOnly(utcMidnight);
+      expect(normalized.year, 2026);
+      expect(normalized.month, 12);
+      expect(normalized.day, 18);
+      expect(formatCalendarDateDisplay(utcMidnight), '18/12/2026');
+    });
+  });
+
+  group('formatCalendarDateMedium', () {
+    test('formats normalized calendar date', () {
+      expect(
+        formatCalendarDateMedium(DateTime.utc(2026, 12, 18)),
+        contains('18'),
+      );
+      expect(
+        formatCalendarDateMedium(DateTime.utc(2026, 12, 18)),
+        contains('2026'),
       );
     });
   });

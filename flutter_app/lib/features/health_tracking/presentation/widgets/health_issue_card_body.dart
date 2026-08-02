@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 
 import '../../../../core/utils/calendar_date.dart';
 import '../../../../l10n/app_localizations.dart';
@@ -66,7 +65,6 @@ class HealthIssueReadBody extends StatelessWidget {
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
-    final dateFormat = DateFormat.yMMMd();
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -96,9 +94,13 @@ class HealthIssueReadBody extends StatelessWidget {
         HealthIssueStatusRow(isResolved: isResolved),
         const SizedBox(height: 8),
         if (issue.startDate != null)
-          Text('${l.issueSince}: ${dateFormat.format(issue.startDate!)}'),
+          Text(
+            '${l.issueSince}: ${formatCalendarDateMedium(issue.startDate!)}',
+          ),
         if (issue.endDate != null)
-          Text('${l.issueResolved}: ${dateFormat.format(issue.endDate!)}'),
+          Text(
+            '${l.issueResolved}: ${formatCalendarDateMedium(issue.endDate!)}',
+          ),
         if (isResolved) ...[
           const SizedBox(height: 8),
           OutlinedButton(onPressed: onReopen, child: Text(l.reopenIssue)),
@@ -208,41 +210,12 @@ class HealthIssueEditBody extends StatelessWidget {
           allowClear: true,
         ),
         const SizedBox(height: 8),
-        Semantics(
+        EntryDatePickerField(
           label: l.issueResolved,
-          child: InkWell(
-            onTap: () async {
-              final picked = await showDatePicker(
-                context: context,
-                initialDate: endDate ?? today,
-                firstDate: DateTime(2020),
-                lastDate: today,
-              );
-              if (picked != null) {
-                onEndDateChanged(calendarDateOnly(picked));
-              }
-            },
-            child: InputDecorator(
-              decoration: InputDecoration(
-                labelText: l.issueResolved,
-                suffixIcon: endDate != null
-                    ? IconButton(
-                        icon: const Icon(Icons.clear, size: 18),
-                        tooltip: l.clear,
-                        onPressed: () => onEndDateChanged(null),
-                      )
-                    : null,
-              ),
-              child: Text(
-                endDate != null
-                    ? DateFormat.yMMMd().format(endDate!)
-                    : l.notSet,
-                style: endDate == null
-                    ? TextStyle(color: Theme.of(context).hintColor)
-                    : null,
-              ),
-            ),
-          ),
+          date: endDate,
+          onChanged: onEndDateChanged,
+          allowClear: true,
+          lastDate: today,
         ),
         const SizedBox(height: 8),
         HealthIssueStatusRow(isResolved: isResolved),
