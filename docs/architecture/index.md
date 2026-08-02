@@ -104,7 +104,7 @@ Full conventions: `docs/architecture/modularity.md`.
 | Flutter | `flutter_app/lib/features/organization/` |
 | Node routes | `server/routes/organizations/`, `fosterPlacements.js`, `custodyTransfers.js` |
 | Jest | `server/test/organizations/`, `fosterPlacements.test.js`, `custodyTransfers.test.js`, `orgConnections.test.js` |
-| Architecture | `docs/architecture/org-custody-model.md`, `docs/fostering-platform/g0-contract-pack.md`, `docs/experience-program/phase-3-organisation-presentation.md` (presentation/access-control rework, active) |
+| Architecture | `docs/architecture/org-custody-model.md`, `docs/fostering-platform/g0-contract-pack.md`, `docs/experience-program/phase-3-organisation-presentation.md` (presentation/access-control rework, active), **`docs/experience-program/organisation-v2-delivery-plan.md`** (v2 profile composer — active), **`docs/architecture/pet-activity-model.md`** |
 | BDD | `organisation_management.feature`, `organisation_pet_management.feature`, `pet_ownership_and_adoption.feature`, … |
 | E2E | `organisation.management.spec.ts`, `adoption.spec.ts` |
 
