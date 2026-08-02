@@ -3,15 +3,22 @@ import {
   ORG_COUNT_SELECT,
   extractUserId,
   fetchOrgForUser,
+  getMemberRole,
   handleOrgImageUpload,
   loadPrimaryContact,
   orgRowToMap,
+  publicOrgRowToMap,
   requireOrgAdmin,
   requireSuperAdmin,
   saveOrgImage,
 } from './shared.js';
 import { publicError } from '../../config/security.js';
-import { ORG_ROLE_SUPER_ADMIN, isOrgAdmin, normaliseRole } from '../../lib/orgRoles.js';
+import {
+  ORG_ROLE_SUPER_ADMIN,
+  isActiveMember,
+  isOrgAdmin,
+  normaliseRole,
+} from '../../lib/orgRoles.js';
 
 export function registerCoreRoutes(router, pool) {
     router.get('/', async (req, res) => {
@@ -35,6 +42,29 @@ export function registerCoreRoutes(router, pool) {
           });
         }));
         res.json(orgs);
+      } catch (err) {
+        res.status(500).json({ error: publicError(err) });
+      }
+    });
+
+    router.get('/:id/public', async (req, res) => {
+      const userId = extractUserId(req);
+      const { id } = req.params;
+      try {
+        const orgResult = await pool.query('SELECT * FROM organizations WHERE id = $1', [id]);
+        if (!orgResult.rows.length) {
+          return res.status(404).json({ error: 'Organization not found' });
+        }
+        const row = orgResult.rows[0];
+        const isDiscoverable = row.is_discoverable !== false;
+        if (!isDiscoverable) {
+          const role = userId ? await getMemberRole(pool, id, userId) : null;
+          if (!isActiveMember(role)) {
+            return res.status(404).json({ error: 'Organization not found' });
+          }
+        }
+        const primaryContact = await loadPrimaryContact(pool, id, row.primary_contact_ref);
+        res.json(publicOrgRowToMap({ ...row, primary_contact: primaryContact }));
       } catch (err) {
         res.status(500).json({ error: publicError(err) });
       }

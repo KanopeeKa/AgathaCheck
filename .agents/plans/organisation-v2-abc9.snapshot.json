@@ -4,7 +4,7 @@
   "approved_at": "2026-08-02T22:40:00Z",
   "approved_by": "user chat 2026-08-02 (standing grant: full /execute-plan organisation v2, Option B associate pet view)",
   "approved_until": "2026-08-04T22:40:00Z",
-  "content_hash": "sha256:76b1c6bbaf6558200d05c7559ff30b47a6c87ef2ec9bf6f9b5f74524f9c289b4",
+  "content_hash": "sha256:47f47422f19093996b581b9a605a674296b37d103097b3e1b8d3b4bf8ad27b74",
   "autonomy": "active",
   "default_merge_mode": "auto",
   "base_branch": "cursor/organisation-v2-integration-abc9",
@@ -36,10 +36,12 @@
       "spawn_config": null,
       "merge_method": "squash",
       "exit_checklist": "governance",
-      "status": "pending",
+      "status": "merged",
       "status_reason": null,
       "status_detail": null,
-      "debt_issue_refs": []
+      "debt_issue_refs": [],
+      "pr_url": "https://github.com/KanopeeKa/AgathaCheck/pull/538",
+      "pr_head_sha": "bb572d9d"
     },
     {
       "id": "F0-F2",
@@ -169,12 +171,9 @@
       "spawn_config": null,
       "merge_method": "squash",
       "exit_checklist": "bdd-journey",
-      "status": "pending",
+      "status": "in_progress",
       "status_reason": null,
       "status_detail": null,
-      "pr_url": null,
-      "pr_head_sha": null,
-      "merge_commit": null,
       "debt_issue_refs": []
     },
     {

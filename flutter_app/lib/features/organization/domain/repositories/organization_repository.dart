@@ -15,6 +15,7 @@ import '../entities/organization_member.dart';
 abstract class OrganizationRepository {
   Future<List<Organization>> getOrganizations(String token);
   Future<Organization> getOrganization(String id, String token);
+  Future<Organization> getPublicOrganization(String id, {String? token});
   Future<Organization> createOrganization(Organization org, String token);
   Future<Organization> updateOrganization(Organization org, String token);
   Future<void> deleteOrganization(String id, String token);

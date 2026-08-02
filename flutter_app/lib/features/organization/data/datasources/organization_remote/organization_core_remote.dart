@@ -38,6 +38,25 @@ class OrganizationCoreRemote {
     );
   }
 
+  Future<OrganizationModel> getPublicOrganization(
+    String id, {
+    String? token,
+  }) async {
+    final headers = token != null
+        ? _ctx.headers(token)
+        : const {'Content-Type': 'application/json'};
+    final response = await _ctx.client.get(
+      Uri.parse('${_ctx.baseUrl}/api/organizations/$id/public'),
+      headers: headers,
+    );
+    if (response.statusCode >= 400) {
+      _ctx.throwApiError(response, 'Failed to get public organization profile');
+    }
+    return OrganizationModel.fromJson(
+      json.decode(response.body) as Map<String, dynamic>,
+    );
+  }
+
   Future<OrganizationModel> createOrganization(
     Map<String, dynamic> orgJson,
     String token,
