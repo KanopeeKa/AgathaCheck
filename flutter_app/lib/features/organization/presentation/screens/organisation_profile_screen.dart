@@ -10,6 +10,7 @@ import '../utils/org_screen_theme.dart';
 import '../widgets/org_presentation/org_presentation_contact_block.dart';
 import '../widgets/org_presentation/org_presentation_hero.dart';
 import '../widgets/org_presentation/org_presentation_legal_block.dart';
+import '../widgets/org_profile/organisation_profile_member_sections.dart';
 import '../widgets/organization_emergency_contact_card.dart';
 
 class OrganisationProfileScreen extends ConsumerWidget {
@@ -86,6 +87,10 @@ class OrganisationProfileScreen extends ConsumerWidget {
                     l: l,
                   ),
                 ),
+                if (profile.isMember) ...[
+                  const SizedBox(height: 24),
+                  OrganisationProfileMemberSections(orgId: orgId),
+                ],
               ],
             ),
           ),

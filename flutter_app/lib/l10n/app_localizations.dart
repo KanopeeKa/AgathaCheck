@@ -7971,6 +7971,12 @@ abstract class AppLocalizations {
   /// **'Manage links with other organisations.'**
   String get orgDashboardConnectionsSubtitle;
 
+  /// No description provided for @orgProfileFosteringSessionsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Fostering sessions'**
+  String get orgProfileFosteringSessionsTitle;
+
   /// No description provided for @orgDashboardEditSubtitle.
   ///
   /// In en, this message translates to:
