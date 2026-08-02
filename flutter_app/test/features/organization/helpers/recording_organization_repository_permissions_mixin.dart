@@ -8,8 +8,8 @@ mixin RecordingOrganizationRepositoryPermissionsMixin
     String token,
   ) async => {
     'role': 'admin',
-    'effective_permission_keys': <String>[],
-    'active_override_keys': <String>[],
+    'effective_permissions': <String>[],
+    'overrides': <Map<String, dynamic>>[],
   };
 
   @override
@@ -25,8 +25,8 @@ mixin RecordingOrganizationRepositoryPermissionsMixin
     String token,
   ) async => {
     'role': 'admin',
-    'effective_permission_keys': <String>[],
-    'active_override_keys': <String>[],
+    'effective_permissions': <String>[],
+    'overrides': <Map<String, dynamic>>[],
   };
 
   @override

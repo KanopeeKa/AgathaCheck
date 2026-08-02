@@ -135,9 +135,10 @@ export function safePublicProfileMetadata(raw) {
   if (!raw || typeof raw !== 'object') return {};
   const safe = {};
   for (const key of SAFE_PUBLIC_PROFILE_METADATA_KEYS) {
-    if (raw[key] != null && raw[key] !== '') {
-      safe[key] = String(raw[key]);
-    }
+    const value = raw[key];
+    if (value == null || value === '') continue;
+    const text = String(value).trim();
+    if (text) safe[key] = text;
   }
   return safe;
 }

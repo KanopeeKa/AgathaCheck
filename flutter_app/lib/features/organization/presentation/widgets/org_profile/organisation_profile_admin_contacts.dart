@@ -58,7 +58,7 @@ class OrganisationProfileAdminContacts extends ConsumerWidget {
               phoneVisibility: isSelf
                   ? selfPrefs.phoneVisibility
                   : AdminPhoneVisibility.admins,
-              isSelf: false,
+              isSelf: isSelf,
               onView: person.isPending
                   ? null
                   : () => context.push(person.detailPath(orgId)),
