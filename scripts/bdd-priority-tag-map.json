@@ -256,7 +256,10 @@
   },
   "organisation_discovery.feature": {
     "Discover Organisations is visible without signing in": "P1",
-    "An organisation can opt out of discovery": "P1"
+    "An organisation can opt out of discovery": "P1",
+    "Discover API returns display_locality from postcode when set": "P1",
+    "Discover API includes photo_url for hero imagery": "P1",
+    "Discover API falls back display_locality to town then administrative area": "P1"
   },
   "pet_timeline.feature": {
     "Timeline shows a fostering session card": "P1",
@@ -267,13 +270,36 @@
   },
   "pet_screen_filters.feature": {
     "A pet with no foster placement needs attention": "P1",
-    "A pet with a foster placement ending soon needs attention": "P1"
+    "A pet with a foster placement ending soon needs attention": "P1",
+    "In foster tab shows pets currently in foster care": "P1",
+    "Name filter narrows pets on the All tab": "P1",
+    "Shadow filter shows adopted shadow pets on the All tab": "P1",
+    "Need attention info icon explains care criteria": "P1"
   },
   "admin_contacts.feature": {
     "Admin contacts directory lists admins alphabetically": "P1",
     "Team admin can add an admin contact": "P1",
     "Super admin can edit another admin contact": "P1",
-    "Members can message an admin when contact details allow": "P1"
+    "Members can message an admin when contact details allow": "P1",
+    "Member sees admin contacts preview on organisation profile": "P1",
+    "Member sees connected organisation tiles on profile": "P1",
+    "Team admin sees manage connections entry on profile": "P1"
+  },
+  "fostering_sessions.feature": {
+    "Admin can open the fostering sessions list from the profile": "P1",
+    "Sessions list highlights nearly finished placements": "P1",
+    "Admin can message a foster from the sessions list": "P1"
+  },
+  "organisation_edit.feature": {
+    "Super admin can update structured address and postcode": "P1",
+    "Super admin can upload hero and logo images": "P1",
+    "Profile settings cog opens edit form for manage_permissions users": "P1"
+  },
+  "organisation_profile.feature": {
+    "Anonymous visitor can view a discoverable organisation profile": "P1",
+    "Opted-out organisation profile is hidden from anonymous visitors": "P1",
+    "Active member can view opted-out organisation public profile": "P1",
+    "Public profile API exposes only public-tier fields": "P1"
   },
   "organisation_permissions.feature": {
     "Super Admin applies the Pet Admin bundle preset": "P1",

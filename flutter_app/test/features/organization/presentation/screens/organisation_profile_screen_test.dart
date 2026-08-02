@@ -38,8 +38,7 @@ void main() {
       routes: [
         GoRoute(
           path: '/o/orgs',
-          builder: (context, state) =>
-              const Scaffold(body: Text('org list')),
+          builder: (context, state) => const Scaffold(body: Text('org list')),
         ),
         GoRoute(
           path: '/o/orgs/:id',
@@ -56,7 +55,9 @@ void main() {
         overrides: [
           authProvider.overrideWith((ref) => FakeAuthNotifier()),
           organizationListProvider.overrideWith(_EmptyOrgsNotifier.new),
-          organizationRepositoryProvider.overrideWithValue(_PublicProfileRepo()),
+          organizationRepositoryProvider.overrideWithValue(
+            _PublicProfileRepo(),
+          ),
         ],
         child: MaterialApp.router(
           localizationsDelegates: AppLocalizations.localizationsDelegates,

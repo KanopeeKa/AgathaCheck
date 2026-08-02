@@ -65,19 +65,30 @@ void main() {
 
     expect(find.byKey(const Key('org_form_screen')), findsOneWidget);
     expect(find.byKey(const Key('org_town_field')), findsOneWidget);
-    expect(find.byKey(const Key('org_administrative_area_field')), findsOneWidget);
+    expect(
+      find.byKey(const Key('org_administrative_area_field')),
+      findsOneWidget,
+    );
     expect(find.byKey(const Key('org_postcode_field')), findsOneWidget);
     expect(
-      tester.widget<TextFormField>(find.byKey(const Key('org_postcode_field'))).controller?.text,
+      tester
+          .widget<TextFormField>(find.byKey(const Key('org_postcode_field')))
+          .controller
+          ?.text,
       '62701',
     );
     expect(
-      tester.widget<TextFormField>(find.byKey(const Key('org_town_field'))).controller?.text,
+      tester
+          .widget<TextFormField>(find.byKey(const Key('org_town_field')))
+          .controller
+          ?.text,
       'Springfield',
     );
     expect(
       tester
-          .widget<TextFormField>(find.byKey(const Key('org_administrative_area_field')))
+          .widget<TextFormField>(
+            find.byKey(const Key('org_administrative_area_field')),
+          )
           .controller
           ?.text,
       'IL',

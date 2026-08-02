@@ -29,7 +29,10 @@ class OrganisationProfileNotifier
       error: (_, __) => false,
     );
 
-    return OrganisationProfileView(organization: organization, isMember: isMember);
+    return OrganisationProfileView(
+      organization: organization,
+      isMember: isMember,
+    );
   }
 
   Future<void> refresh() async {

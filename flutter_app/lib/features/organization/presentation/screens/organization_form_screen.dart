@@ -104,7 +104,8 @@ class _OrganizationFormScreenState
       'administrative_area': _administrativeAreaController.text.trim(),
       'website': _websiteController.text.trim(),
       'bio': _bioController.text.trim(),
-      if (postcode.isNotEmpty) 'public_profile_metadata': {'postcode': postcode},
+      if (postcode.isNotEmpty)
+        'public_profile_metadata': {'postcode': postcode},
     };
 
     try {
@@ -169,8 +170,7 @@ class _OrganizationFormScreenState
 
     final editingOrg = _isEditing
         ? orgsAsync.maybeWhen(
-            data: (orgs) =>
-                orgs.where((o) => o.id == widget.orgId).firstOrNull,
+            data: (orgs) => orgs.where((o) => o.id == widget.orgId).firstOrNull,
             orElse: () => null,
           )
         : null;
@@ -306,7 +306,9 @@ class _OrganizationFormScreenState
                         controller: _postcodeController,
                         decoration: InputDecoration(
                           labelText: l.orgPostcode,
-                          prefixIcon: const Icon(Icons.markunread_mailbox_outlined),
+                          prefixIcon: const Icon(
+                            Icons.markunread_mailbox_outlined,
+                          ),
                         ),
                         textInputAction: TextInputAction.next,
                       ),

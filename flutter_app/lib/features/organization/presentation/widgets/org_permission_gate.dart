@@ -21,9 +21,8 @@ class OrgPermissionGate extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final permissions = ref.watch(orgEffectivePermissionsProvider(orgId));
     return permissions.when(
-      data: (keys) => keys.contains(permissionKey)
-          ? child
-          : const SizedBox.shrink(),
+      data: (keys) =>
+          keys.contains(permissionKey) ? child : const SizedBox.shrink(),
       loading: () => const SizedBox.shrink(),
       error: (_, _) => const SizedBox.shrink(),
     );

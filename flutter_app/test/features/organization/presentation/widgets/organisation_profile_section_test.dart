@@ -25,9 +25,9 @@ Future<void> _pumpSection(
         organizationRepositoryProvider.overrideWithValue(
           RecordingOrganizationRepository(),
         ),
-        orgEffectivePermissionsProvider(_orgId).overrideWith(
-          (ref) async => permissions,
-        ),
+        orgEffectivePermissionsProvider(
+          _orgId,
+        ).overrideWith((ref) async => permissions),
       ],
       child: MaterialApp(
         localizationsDelegates: AppLocalizations.localizationsDelegates,
@@ -140,7 +140,10 @@ void main() {
         findsOneWidget,
       );
       expect(find.text('Admin contacts'), findsWidgets);
-      expect(find.byKey(const Key('org_profile_section_fosters')), findsNothing);
+      expect(
+        find.byKey(const Key('org_profile_section_fosters')),
+        findsNothing,
+      );
       expect(
         find.byKey(const Key('org_profile_section_fostering_sessions')),
         findsNothing,
@@ -152,19 +155,23 @@ void main() {
       );
     });
 
-    testWidgets('shows fosters section without manage link for view-only member', (
-      tester,
-    ) async {
-      await _pumpSection(
-        tester,
-        permissions: {'view_org_internal'},
-        child: const OrganisationProfileMemberSections(orgId: _orgId),
-      );
+    testWidgets(
+      'shows fosters section without manage link for view-only member',
+      (tester) async {
+        await _pumpSection(
+          tester,
+          permissions: {'view_org_internal'},
+          child: const OrganisationProfileMemberSections(orgId: _orgId),
+        );
 
-      expect(find.byKey(const Key('org_profile_section_fosters')), findsOneWidget);
-      expect(find.text('Foster parents'), findsOneWidget);
-      expect(find.text('Manage fosters'), findsNothing);
-    });
+        expect(
+          find.byKey(const Key('org_profile_section_fosters')),
+          findsOneWidget,
+        );
+        expect(find.text('Foster parents'), findsOneWidget);
+        expect(find.text('Manage fosters'), findsNothing);
+      },
+    );
 
     testWidgets('shows fosters manage link when manage_fosters is granted', (
       tester,
@@ -175,7 +182,10 @@ void main() {
         child: const OrganisationProfileMemberSections(orgId: _orgId),
       );
 
-      expect(find.byKey(const Key('org_profile_section_fosters')), findsOneWidget);
+      expect(
+        find.byKey(const Key('org_profile_section_fosters')),
+        findsOneWidget,
+      );
       expect(find.text('Manage fosters'), findsOneWidget);
     });
 
@@ -210,7 +220,10 @@ void main() {
         find.byKey(const Key('org_profile_section_connections')),
         findsOneWidget,
       );
-      expect(find.byKey(const Key('org_profile_section_fosters')), findsNothing);
+      expect(
+        find.byKey(const Key('org_profile_section_fosters')),
+        findsNothing,
+      );
     });
 
     testWidgets('shows connections manage link when manage_members granted', (
@@ -262,7 +275,10 @@ void main() {
         find.byKey(const Key('org_profile_section_admin_contacts')),
         findsOneWidget,
       );
-      expect(find.byKey(const Key('org_profile_section_fosters')), findsOneWidget);
+      expect(
+        find.byKey(const Key('org_profile_section_fosters')),
+        findsOneWidget,
+      );
       expect(
         find.byKey(const Key('org_profile_section_fostering_sessions')),
         findsOneWidget,

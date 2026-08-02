@@ -30,10 +30,7 @@ class OrgDiscoverySkeletonList extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    Expanded(
-                      flex: 2,
-                      child: ColoredBox(color: placeholder),
-                    ),
+                    Expanded(flex: 2, child: ColoredBox(color: placeholder)),
                     Expanded(
                       flex: 1,
                       child: Padding(

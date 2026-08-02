@@ -28,8 +28,9 @@ class _FosteringSessionsListScreenState
     super.initState();
     final filters = ref.read(fosteringSessionsFiltersProvider(widget.orgId));
     _petNameController = TextEditingController(text: filters['pet_name'] ?? '');
-    _fosterNameController =
-        TextEditingController(text: filters['foster_name'] ?? '');
+    _fosterNameController = TextEditingController(
+      text: filters['foster_name'] ?? '',
+    );
   }
 
   @override
@@ -54,7 +55,9 @@ class _FosteringSessionsListScreenState
     final l = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
-    final sessionsAsync = ref.watch(fosteringSessionsListProvider(widget.orgId));
+    final sessionsAsync = ref.watch(
+      fosteringSessionsListProvider(widget.orgId),
+    );
 
     return orgThemed(
       child: Scaffold(

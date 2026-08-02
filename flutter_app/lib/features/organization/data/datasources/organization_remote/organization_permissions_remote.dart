@@ -7,7 +7,10 @@ class OrganizationPermissionsRemote {
 
   final OrganizationRemoteContext _ctx;
 
-  Future<Map<String, dynamic>> getMyPermissions(String orgId, String token) async {
+  Future<Map<String, dynamic>> getMyPermissions(
+    String orgId,
+    String token,
+  ) async {
     final response = await _ctx.client.get(
       Uri.parse('${_ctx.baseUrl}/api/organizations/$orgId/permissions/me'),
       headers: _ctx.headers(token),

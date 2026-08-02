@@ -47,27 +47,23 @@ class OrganisationProfileAdminContacts extends ConsumerWidget {
 
         return Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: sorted
-              .map(
-                (person) {
-                  final isSelf = viewerHasAdminSelfCard(person, viewerUserId);
-                  return AdminContactCard(
-                    key: Key('org_profile_admin_contact_${person.recordId}'),
-                    person: person,
-                    orgId: orgId,
-                    viewerRole: viewerRole,
-                    viewerUserId: viewerUserId,
-                    phoneVisibility: isSelf
-                        ? selfPrefs.phoneVisibility
-                        : AdminPhoneVisibility.admins,
-                    isSelf: false,
-                    onView: person.isPending
-                        ? null
-                        : () => context.push(person.detailPath(orgId)),
-                  );
-                },
-              )
-              .toList(),
+          children: sorted.map((person) {
+            final isSelf = viewerHasAdminSelfCard(person, viewerUserId);
+            return AdminContactCard(
+              key: Key('org_profile_admin_contact_${person.recordId}'),
+              person: person,
+              orgId: orgId,
+              viewerRole: viewerRole,
+              viewerUserId: viewerUserId,
+              phoneVisibility: isSelf
+                  ? selfPrefs.phoneVisibility
+                  : AdminPhoneVisibility.admins,
+              isSelf: false,
+              onView: person.isPending
+                  ? null
+                  : () => context.push(person.detailPath(orgId)),
+            );
+          }).toList(),
         );
       },
     );

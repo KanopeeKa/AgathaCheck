@@ -46,9 +46,7 @@ void main() {
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
           home: orgThemed(
-            child: Scaffold(
-              body: OrgDiscoveryTile(organization: _sampleOrg),
-            ),
+            child: Scaffold(body: OrgDiscoveryTile(organization: _sampleOrg)),
           ),
         ),
       ),
@@ -57,7 +55,10 @@ void main() {
 
     expect(find.text('Rescue Hearts'), findsOneWidget);
     expect(find.text('62701'), findsOneWidget);
-    expect(find.byKey(const Key('org_discovery_tile_org-discover-1')), findsOneWidget);
+    expect(
+      find.byKey(const Key('org_discovery_tile_org-discover-1')),
+      findsOneWidget,
+    );
   });
 
   testWidgets('tapping discovery tile navigates to organisation profile', (
@@ -69,16 +70,13 @@ void main() {
         GoRoute(
           path: '/o/orgs',
           builder: (context, state) => orgThemed(
-            child: Scaffold(
-              body: OrgDiscoveryTile(organization: _sampleOrg),
-            ),
+            child: Scaffold(body: OrgDiscoveryTile(organization: _sampleOrg)),
           ),
         ),
         GoRoute(
           path: '/o/orgs/:id',
-          builder: (context, state) => Scaffold(
-            body: Text('profile:${state.pathParameters['id']}'),
-          ),
+          builder: (context, state) =>
+              Scaffold(body: Text('profile:${state.pathParameters['id']}')),
         ),
       ],
     );
@@ -95,7 +93,9 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    await tester.tap(find.byKey(const Key('org_discovery_tile_org-discover-1')));
+    await tester.tap(
+      find.byKey(const Key('org_discovery_tile_org-discover-1')),
+    );
     await tester.pumpAndSettle();
 
     expect(find.text('profile:org-discover-1'), findsOneWidget);
@@ -117,7 +117,10 @@ void main() {
     );
     await tester.pump();
 
-    expect(find.byKey(const Key('org_discovery_skeleton_list')), findsOneWidget);
+    expect(
+      find.byKey(const Key('org_discovery_skeleton_list')),
+      findsOneWidget,
+    );
   });
 
   testWidgets('discovery list shows empty state when no organisations', (
@@ -126,7 +129,9 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
-          orgDiscoveryListProvider.overrideWith(() => _DiscoveryListNotifier([])),
+          orgDiscoveryListProvider.overrideWith(
+            () => _DiscoveryListNotifier([]),
+          ),
         ],
         child: MaterialApp(
           theme: AppTheme.lightTheme,
@@ -161,19 +166,27 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.byKey(const Key('org_discovery_results')), findsOneWidget);
-    expect(find.byKey(const Key('org_discovery_tile_org-discover-1')), findsOneWidget);
+    expect(
+      find.byKey(const Key('org_discovery_tile_org-discover-1')),
+      findsOneWidget,
+    );
   });
 
   testWidgets('skeleton list renders placeholder cards', (tester) async {
     await tester.pumpWidget(
       MaterialApp(
         theme: AppTheme.lightTheme,
-        home: orgThemed(child: const Scaffold(body: OrgDiscoverySkeletonList())),
+        home: orgThemed(
+          child: const Scaffold(body: OrgDiscoverySkeletonList()),
+        ),
       ),
     );
     await tester.pumpAndSettle();
 
-    expect(find.byKey(const Key('org_discovery_skeleton_list')), findsOneWidget);
+    expect(
+      find.byKey(const Key('org_discovery_skeleton_list')),
+      findsOneWidget,
+    );
     expect(find.byType(Card), findsNWidgets(2));
   });
 }

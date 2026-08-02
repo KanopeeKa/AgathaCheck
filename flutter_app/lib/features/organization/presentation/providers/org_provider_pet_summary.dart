@@ -65,6 +65,8 @@ class OrgRedactedPetNotifier
 }
 
 final orgRedactedPetProvider =
-    AsyncNotifierProvider.family<OrgRedactedPetNotifier, Pet, OrgRedactedPetKey>(
-      OrgRedactedPetNotifier.new,
-    );
+    AsyncNotifierProvider.family<
+      OrgRedactedPetNotifier,
+      Pet,
+      OrgRedactedPetKey
+    >(OrgRedactedPetNotifier.new);

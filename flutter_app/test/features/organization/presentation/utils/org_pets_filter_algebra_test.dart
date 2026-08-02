@@ -41,10 +41,7 @@ FosterPlacement _placement({
   );
 }
 
-OrgPetListEntry _live(
-  Pet pet, {
-  OrgPetAttentionReason? attention,
-}) {
+OrgPetListEntry _live(Pet pet, {OrgPetAttentionReason? attention}) {
   return OrgPetListEntry.live(pet: pet, attentionReason: attention);
 }
 
@@ -104,131 +101,134 @@ void main() {
     nonShadowArchive,
   ];
 
-  final cases = <({
-    String label,
-    OrgPetsTab tab,
-    OrgPetsFilterState filters,
-    List<String> expectedNames,
-  })>[
-    (
-      label: 'needAttention tab keeps only attention pets',
-      tab: OrgPetsTab.needAttention,
-      filters: const OrgPetsFilterState(),
-      expectedNames: ['Max'],
-    ),
-    (
-      label: 'inFoster tab keeps pets in active foster',
-      tab: OrgPetsTab.inFoster,
-      filters: const OrgPetsFilterState(),
-      expectedNames: ['Bella'],
-    ),
-    (
-      label: 'adopted tab keeps adopted archives only',
-      tab: OrgPetsTab.adopted,
-      filters: const OrgPetsFilterState(),
-      expectedNames: ['Adopted'],
-    ),
-    (
-      label: 'all tab excludes passed-away without rainbow bridge',
-      tab: OrgPetsTab.all,
-      filters: const OrgPetsFilterState(),
-      expectedNames: ['Max', 'Bella'],
-    ),
-    (
-      label: 'all tab with shadow chip includes shadow archives',
-      tab: OrgPetsTab.all,
-      filters: const OrgPetsFilterState(
-        activeFilters: {OrgPetsActiveFilter.shadow},
-      ),
-      expectedNames: ['Max', 'Bella', 'Shadow'],
-    ),
-    (
-      label: 'all tab with rainbow bridge includes passed-away pets',
-      tab: OrgPetsTab.all,
-      filters: const OrgPetsFilterState(
-        activeFilters: {OrgPetsActiveFilter.rainbowBridge},
-      ),
-      expectedNames: ['Max', 'Bella', 'Rainbow'],
-    ),
-    (
-      label: 'name filter narrows all tab',
-      tab: OrgPetsTab.all,
-      filters: const OrgPetsFilterState(
-        activeFilters: {OrgPetsActiveFilter.name},
-        nameQuery: 'bel',
-      ),
-      expectedNames: ['Bella'],
-    ),
-    (
-      label: 'fostered-by filter narrows inFoster tab',
-      tab: OrgPetsTab.inFoster,
-      filters: const OrgPetsFilterState(
-        activeFilters: {OrgPetsActiveFilter.fosteredBy},
-        fosteredByQuery: 'eve',
-      ),
-      expectedNames: ['Bella'],
-    ),
-    (
-      label: 'empty name query does not exclude rows',
-      tab: OrgPetsTab.all,
-      filters: const OrgPetsFilterState(
-        activeFilters: {OrgPetsActiveFilter.name},
-        nameQuery: '   ',
-      ),
-      expectedNames: ['Max', 'Bella'],
-    ),
-    (
-      label: 'shadow union adds shadow rows on needAttention tab',
-      tab: OrgPetsTab.needAttention,
-      filters: const OrgPetsFilterState(
-        activeFilters: {OrgPetsActiveFilter.shadow},
-      ),
-      expectedNames: ['Max', 'Shadow'],
-    ),
-    (
-      label: 'rainbow bridge union on inFoster tab',
-      tab: OrgPetsTab.inFoster,
-      filters: const OrgPetsFilterState(
-        activeFilters: {OrgPetsActiveFilter.rainbowBridge},
-      ),
-      expectedNames: ['Bella', 'Rainbow'],
-    ),
-    (
-      label: 'combined name and fostered-by filters use AND',
-      tab: OrgPetsTab.inFoster,
-      filters: const OrgPetsFilterState(
-        activeFilters: {
-          OrgPetsActiveFilter.name,
-          OrgPetsActiveFilter.fosteredBy,
-        },
-        nameQuery: 'bella',
-        fosteredByQuery: 'eve',
-      ),
-      expectedNames: ['Bella'],
-    ),
-    (
-      label: 'passed-away pets excluded from needAttention',
-      tab: OrgPetsTab.needAttention,
-      filters: const OrgPetsFilterState(
-        activeFilters: {OrgPetsActiveFilter.rainbowBridge},
-      ),
-      expectedNames: ['Max'],
-    ),
-    (
-      label: 'non-shadow archive hidden on all without shadow chip',
-      tab: OrgPetsTab.all,
-      filters: const OrgPetsFilterState(),
-      expectedNames: ['Max', 'Bella'],
-    ),
-    (
-      label: 'adopted tab ignores shadow union',
-      tab: OrgPetsTab.adopted,
-      filters: const OrgPetsFilterState(
-        activeFilters: {OrgPetsActiveFilter.shadow},
-      ),
-      expectedNames: ['Adopted'],
-    ),
-  ];
+  final cases =
+      <
+        ({
+          String label,
+          OrgPetsTab tab,
+          OrgPetsFilterState filters,
+          List<String> expectedNames,
+        })
+      >[
+        (
+          label: 'needAttention tab keeps only attention pets',
+          tab: OrgPetsTab.needAttention,
+          filters: const OrgPetsFilterState(),
+          expectedNames: ['Max'],
+        ),
+        (
+          label: 'inFoster tab keeps pets in active foster',
+          tab: OrgPetsTab.inFoster,
+          filters: const OrgPetsFilterState(),
+          expectedNames: ['Bella'],
+        ),
+        (
+          label: 'adopted tab keeps adopted archives only',
+          tab: OrgPetsTab.adopted,
+          filters: const OrgPetsFilterState(),
+          expectedNames: ['Adopted'],
+        ),
+        (
+          label: 'all tab excludes passed-away without rainbow bridge',
+          tab: OrgPetsTab.all,
+          filters: const OrgPetsFilterState(),
+          expectedNames: ['Max', 'Bella'],
+        ),
+        (
+          label: 'all tab with shadow chip includes shadow archives',
+          tab: OrgPetsTab.all,
+          filters: const OrgPetsFilterState(
+            activeFilters: {OrgPetsActiveFilter.shadow},
+          ),
+          expectedNames: ['Max', 'Bella', 'Shadow'],
+        ),
+        (
+          label: 'all tab with rainbow bridge includes passed-away pets',
+          tab: OrgPetsTab.all,
+          filters: const OrgPetsFilterState(
+            activeFilters: {OrgPetsActiveFilter.rainbowBridge},
+          ),
+          expectedNames: ['Max', 'Bella', 'Rainbow'],
+        ),
+        (
+          label: 'name filter narrows all tab',
+          tab: OrgPetsTab.all,
+          filters: const OrgPetsFilterState(
+            activeFilters: {OrgPetsActiveFilter.name},
+            nameQuery: 'bel',
+          ),
+          expectedNames: ['Bella'],
+        ),
+        (
+          label: 'fostered-by filter narrows inFoster tab',
+          tab: OrgPetsTab.inFoster,
+          filters: const OrgPetsFilterState(
+            activeFilters: {OrgPetsActiveFilter.fosteredBy},
+            fosteredByQuery: 'eve',
+          ),
+          expectedNames: ['Bella'],
+        ),
+        (
+          label: 'empty name query does not exclude rows',
+          tab: OrgPetsTab.all,
+          filters: const OrgPetsFilterState(
+            activeFilters: {OrgPetsActiveFilter.name},
+            nameQuery: '   ',
+          ),
+          expectedNames: ['Max', 'Bella'],
+        ),
+        (
+          label: 'shadow union adds shadow rows on needAttention tab',
+          tab: OrgPetsTab.needAttention,
+          filters: const OrgPetsFilterState(
+            activeFilters: {OrgPetsActiveFilter.shadow},
+          ),
+          expectedNames: ['Max', 'Shadow'],
+        ),
+        (
+          label: 'rainbow bridge union on inFoster tab',
+          tab: OrgPetsTab.inFoster,
+          filters: const OrgPetsFilterState(
+            activeFilters: {OrgPetsActiveFilter.rainbowBridge},
+          ),
+          expectedNames: ['Bella', 'Rainbow'],
+        ),
+        (
+          label: 'combined name and fostered-by filters use AND',
+          tab: OrgPetsTab.inFoster,
+          filters: const OrgPetsFilterState(
+            activeFilters: {
+              OrgPetsActiveFilter.name,
+              OrgPetsActiveFilter.fosteredBy,
+            },
+            nameQuery: 'bella',
+            fosteredByQuery: 'eve',
+          ),
+          expectedNames: ['Bella'],
+        ),
+        (
+          label: 'passed-away pets excluded from needAttention',
+          tab: OrgPetsTab.needAttention,
+          filters: const OrgPetsFilterState(
+            activeFilters: {OrgPetsActiveFilter.rainbowBridge},
+          ),
+          expectedNames: ['Max'],
+        ),
+        (
+          label: 'non-shadow archive hidden on all without shadow chip',
+          tab: OrgPetsTab.all,
+          filters: const OrgPetsFilterState(),
+          expectedNames: ['Max', 'Bella'],
+        ),
+        (
+          label: 'adopted tab ignores shadow union',
+          tab: OrgPetsTab.adopted,
+          filters: const OrgPetsFilterState(
+            activeFilters: {OrgPetsActiveFilter.shadow},
+          ),
+          expectedNames: ['Adopted'],
+        ),
+      ];
 
   for (final testCase in cases) {
     test(testCase.label, () {

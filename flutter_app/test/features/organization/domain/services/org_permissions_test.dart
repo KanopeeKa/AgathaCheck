@@ -44,22 +44,14 @@ void main() {
         isTrue,
       );
       expect(
-        hasPermission(
-          OrgMemberRole.associate,
-          null,
-          'view_fostering_sessions',
-        ),
+        hasPermission(OrgMemberRole.associate, null, 'view_fostering_sessions'),
         isFalse,
       );
     });
 
     test('admin has view_fostering_sessions', () {
       expect(
-        hasPermission(
-          OrgMemberRole.admin,
-          null,
-          'view_fostering_sessions',
-        ),
+        hasPermission(OrgMemberRole.admin, null, 'view_fostering_sessions'),
         isTrue,
       );
     });
@@ -67,11 +59,7 @@ void main() {
     test('override grants view_fostering_sessions to foster', () {
       setViewerPermissionOverrides('org-1', {'view_fostering_sessions'});
       expect(
-        hasPermission(
-          OrgMemberRole.foster,
-          'org-1',
-          'view_fostering_sessions',
-        ),
+        hasPermission(OrgMemberRole.foster, 'org-1', 'view_fostering_sessions'),
         isTrue,
       );
       clearViewerPermissionOverrides('org-1');

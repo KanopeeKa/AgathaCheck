@@ -42,21 +42,18 @@ Future<void> _pumpWithRouter(
       ),
       GoRoute(
         path: '/o/orgs/:id/pets/:petId/redacted',
-        builder: (context, state) => const Scaffold(
-          body: Text('redacted-route'),
-        ),
+        builder: (context, state) =>
+            const Scaffold(body: Text('redacted-route')),
       ),
       GoRoute(
         path: '/pet/:id',
-        builder: (context, state) => const Scaffold(
-          body: Text('full-pet-route'),
-        ),
+        builder: (context, state) =>
+            const Scaffold(body: Text('full-pet-route')),
       ),
       GoRoute(
         path: '/o/orgs/:id/pets',
-        builder: (context, state) => const Scaffold(
-          body: Text('manage-pets-route'),
-        ),
+        builder: (context, state) =>
+            const Scaffold(body: Text('manage-pets-route')),
       ),
     ],
   );
@@ -68,9 +65,9 @@ Future<void> _pumpWithRouter(
         organizationRepositoryProvider.overrideWithValue(
           _PetSummaryRepo(summaryPets),
         ),
-        orgEffectivePermissionsProvider(_orgId).overrideWith(
-          (ref) async => permissions,
-        ),
+        orgEffectivePermissionsProvider(
+          _orgId,
+        ).overrideWith((ref) async => permissions),
       ],
       child: MaterialApp.router(
         routerConfig: router,

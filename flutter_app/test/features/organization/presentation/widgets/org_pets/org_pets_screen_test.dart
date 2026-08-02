@@ -84,7 +84,9 @@ void main() {
     expect(find.text('Not in foster'), findsOneWidget);
   });
 
-  testWidgets('Need attention info icon exposes tooltip message', (tester) async {
+  testWidgets('Need attention info icon exposes tooltip message', (
+    tester,
+  ) async {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
@@ -128,9 +130,8 @@ void main() {
         ),
         GoRoute(
           path: '/add',
-          builder: (context, state) => const Scaffold(
-            body: Text('add-pet-route'),
-          ),
+          builder: (context, state) =>
+              const Scaffold(body: Text('add-pet-route')),
         ),
       ],
     );

@@ -41,8 +41,7 @@ class FosteringSessionListTile extends StatelessWidget {
 
     final subtitleParts = <String>[
       if (placement.fosterName.isNotEmpty) placement.fosterName,
-      if (placement.startDate != null)
-        dateFormat.format(placement.startDate!),
+      if (placement.startDate != null) dateFormat.format(placement.startDate!),
       if (placement.endDate != null)
         '– ${dateFormat.format(placement.endDate!)}',
     ];
@@ -51,8 +50,12 @@ class FosteringSessionListTile extends StatelessWidget {
       key: Key('fostering_session_row_${placement.id}'),
       child: ListTile(
         onTap: onTap,
-        title: Text(placement.petName.isNotEmpty ? placement.petName : l.orgPets),
-        subtitle: subtitleParts.isEmpty ? null : Text(subtitleParts.join(' · ')),
+        title: Text(
+          placement.petName.isNotEmpty ? placement.petName : l.orgPets,
+        ),
+        subtitle: subtitleParts.isEmpty
+            ? null
+            : Text(subtitleParts.join(' · ')),
         trailing: Row(
           mainAxisSize: MainAxisSize.min,
           children: [

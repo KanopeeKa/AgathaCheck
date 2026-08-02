@@ -116,10 +116,7 @@ class OrgDiscoveryTile extends ConsumerWidget {
 }
 
 class _HeroCover extends StatelessWidget {
-  const _HeroCover({
-    required this.photoUrl,
-    required this.resolvedPhotoUrl,
-  });
+  const _HeroCover({required this.photoUrl, required this.resolvedPhotoUrl});
 
   final String photoUrl;
   final String resolvedPhotoUrl;

@@ -70,9 +70,8 @@ class OrgCard extends ConsumerWidget {
                     child: Image.network(
                       resolvedPhoto,
                       fit: BoxFit.cover,
-                      errorBuilder: (_, __, ___) => _HeroStripPlaceholder(
-                        type: organization.type,
-                      ),
+                      errorBuilder: (_, __, ___) =>
+                          _HeroStripPlaceholder(type: organization.type),
                     ),
                   ),
                 Padding(

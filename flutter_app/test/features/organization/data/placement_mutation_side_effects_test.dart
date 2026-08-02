@@ -4,18 +4,27 @@ import 'package:pet_profile_app/features/notifications/presentation/providers/no
 import 'package:pet_profile_app/features/organization/presentation/providers/foster_placements_providers.dart';
 
 void main() {
-  test('invalidatePlacementMutationProviders invalidates pending and notifications', () {
-    final container = ProviderContainer();
-    addTearDown(container.dispose);
+  test(
+    'invalidatePlacementMutationProviders invalidates pending and notifications',
+    () {
+      final container = ProviderContainer();
+      addTearDown(container.dispose);
 
-    container.read(pendingFosterPlacementsProvider);
-    container.read(pendingAdoptionPlacementsProvider);
-    container.read(notificationsProvider);
+      container.read(pendingFosterPlacementsProvider);
+      container.read(pendingAdoptionPlacementsProvider);
+      container.read(notificationsProvider);
 
-    invalidatePlacementMutationProviders(container);
+      invalidatePlacementMutationProviders(container);
 
-    expect(container.read(pendingFosterPlacementsProvider), isA<AsyncLoading>());
-    expect(container.read(pendingAdoptionPlacementsProvider), isA<AsyncLoading>());
-    expect(container.read(notificationsProvider), isA<AsyncLoading>());
-  });
+      expect(
+        container.read(pendingFosterPlacementsProvider),
+        isA<AsyncLoading>(),
+      );
+      expect(
+        container.read(pendingAdoptionPlacementsProvider),
+        isA<AsyncLoading>(),
+      );
+      expect(container.read(notificationsProvider), isA<AsyncLoading>());
+    },
+  );
 }
