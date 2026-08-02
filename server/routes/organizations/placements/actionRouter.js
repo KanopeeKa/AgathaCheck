@@ -27,6 +27,7 @@ import {
 } from '../../../lib/petCustody.js';
 import { extractUserId, requirePermission } from '../shared.js';
 import { publicError } from '../../../config/security.js';
+import { recordFosterSessionActivity } from '../../../lib/petActivity.js';
 
 async function loadPlacementForOrg(pool, placementId, orgId) {
   const placementResult = await pool.query(
@@ -104,6 +105,12 @@ export function registerPlacementActionRoutes(router, pool) {
         await setOrgGuardianAndCare(pool, placement.pet_id, orgId);
         await clearOrgPetHomeHiddenForPet(pool, placement.pet_id);
       }
+
+      recordFosterSessionActivity(pool, updateResult.rows[0], userId, {
+        mutation: 'ended',
+        session_status: SESSION_STATUS_CANCELLED,
+        outcome: SESSION_STATUS_CANCELLED,
+      });
 
       await createNotification(pool, {
         userId: placement.foster_user_id,

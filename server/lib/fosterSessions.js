@@ -2,6 +2,7 @@
  * J3 Phase 2: fostering session lifecycle transitions and audit events (G0 §5.4, §6).
  */
 import { logAuditEventSafe } from './audit.js';
+import { recordFosterSessionActivity } from './petActivity.js';
 import {
   grantFosterPetAccess,
   normalizePlacementStatus,
@@ -90,6 +91,11 @@ export async function transitionSessionStatus(pool, placement, targetStatus, aud
     [targetStatus, placement.id],
   );
 
+  recordFosterSessionActivity(pool, updateResult.rows[0], auditContext.actorUserId, {
+    mutation: 'transition',
+    session_status: targetStatus,
+  });
+
   return { row: updateResult.rows[0], status: 200 };
 }
 
@@ -129,6 +135,11 @@ export async function activateSessionIfReady(pool, placement) {
     placement.organization_id,
   );
 
+  recordFosterSessionActivity(pool, activated, placement.created_by, {
+    mutation: 'activated',
+    session_status: SESSION_STATUS_ACTIVE,
+  });
+
   return activated;
 }
 
@@ -161,6 +172,10 @@ export async function confirmShelterSessionStart(pool, placement, auditContext =
   });
 
   updated = await activateSessionIfReady(pool, updated);
+  recordFosterSessionActivity(pool, updated, auditContext.actorUserId, {
+    mutation: 'shelter_start_confirmed',
+    session_status: sessionStatusFromPlacement(updated),
+  });
   return { row: updated, status: 200 };
 }
 
@@ -196,6 +211,10 @@ export async function confirmFosterSessionStart(pool, placement, fosterUserId, a
   });
 
   updated = await activateSessionIfReady(pool, updated);
+  recordFosterSessionActivity(pool, updated, fosterUserId, {
+    mutation: 'foster_start_confirmed',
+    session_status: sessionStatusFromPlacement(updated),
+  });
   return { row: updated, status: 200 };
 }
 
@@ -213,6 +232,11 @@ export async function requestSessionEnd(pool, placement) {
      RETURNING *`,
     [SESSION_STATUS_END_PENDING_CONFIRMATION, placement.id],
   );
+
+  recordFosterSessionActivity(pool, updateResult.rows[0], null, {
+    mutation: 'end_requested',
+    session_status: SESSION_STATUS_END_PENDING_CONFIRMATION,
+  });
 
   return { row: updateResult.rows[0], status: 200 };
 }
@@ -255,6 +279,12 @@ export async function completeSessionEnd(pool, placement, outcome, endDate, audi
     });
   }
 
+  recordFosterSessionActivity(pool, updated, auditContext.actorUserId, {
+    mutation: 'end_completed',
+    session_status: outcome,
+    outcome,
+  });
+
   return { row: updated, status: 200 };
 }
 
@@ -294,5 +324,10 @@ export async function insertFosteringSession(pool, {
       adoptionConditions || '',
     ],
   );
-  return insertResult.rows[0];
+  const inserted = insertResult.rows[0];
+  recordFosterSessionActivity(pool, inserted, createdBy, {
+    mutation: 'created',
+    session_status: status,
+  });
+  return inserted;
 }

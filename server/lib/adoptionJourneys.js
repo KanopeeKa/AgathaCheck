@@ -4,6 +4,7 @@
 import { v4 as uuidv4 } from 'uuid';
 
 import { logAuditEventSafe } from './audit.js';
+import { recordFosterSessionActivity } from './petActivity.js';
 import {
   assertVisitPathSatisfied,
   assertVisitScheduledToday,
@@ -313,6 +314,11 @@ export async function startAdoptionJourney(db, {
     req: auditContext.req,
   });
 
+  recordFosterSessionActivity(db, placementResult.rows[0], createdBy, {
+    mutation: 'adoption_started',
+    session_status: SESSION_STATUS_ADOPTION_IN_PROGRESS,
+  });
+
   return {
     journey: journeyResult.rows[0],
     placement: placementResult.rows[0],
@@ -350,6 +356,11 @@ export async function completeAdoptionJourneyConditions(db, placement) {
      RETURNING *`,
     [SESSION_STATUS_ADOPTION_IN_PROGRESS, placement.id],
   );
+
+  recordFosterSessionActivity(db, placementResult.rows[0], null, {
+    mutation: 'adoption_conditions_completed',
+    session_status: SESSION_STATUS_ADOPTION_IN_PROGRESS,
+  });
 
   return {
     journey: journeyResult.rows[0],
@@ -393,6 +404,12 @@ export async function cancelAdoptionJourney(db, placement, endDate = null) {
   }
   await setOrgGuardianAndCare(db, placement.pet_id, placement.organization_id);
   await clearOrgPetHomeHiddenForPet(db, placement.pet_id);
+
+  recordFosterSessionActivity(db, placementResult.rows[0], null, {
+    mutation: 'adoption_cancelled',
+    session_status: 'cancelled',
+    outcome: 'cancelled',
+  });
 
   return { placement: placementResult.rows[0], status: 200 };
 }

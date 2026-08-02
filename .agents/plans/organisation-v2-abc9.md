@@ -25,16 +25,16 @@ Rebuild the Organisation area around a single organisation profile (pet-profile-
 
 ```yaml
 autonomy: active
-current_phase: F0-F2
-last_completed_phase: null
+current_phase: F0-F1
+last_completed_phase: F0-F2
 halt_reason: null
-next_action: "continue phase F0-F2 on branch cursor/org-v2-f0-perms-abc9"
+next_action: "start phase F0-F1: checkout cursor/org-v2-f0-docs-abc9"
 artifact_ref:
   branch: cursor/org-v2-f0-perms-abc9
   plan_path: .agents/plans/organisation-v2-abc9.md
-  plan_commit: 334a74417500a0eea0ccb190236e44e71824d631
+  plan_commit: 0ee634e32eee516bb85be58bffb5bfd556cf83db
   snapshot_path: .agents/plans/organisation-v2-abc9.snapshot.json
-  snapshot_commit: 334a74417500a0eea0ccb190236e44e71824d631
+  snapshot_commit: 0ee634e32eee516bb85be58bffb5bfd556cf83db
 open_prs: []
 merge_commits: {}
 debt_issue_refs: []
