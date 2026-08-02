@@ -6,6 +6,11 @@ import {
 import { extractUserId, requirePermission } from '../shared.js';
 import { publicError } from '../../../config/security.js';
 import { PLACEMENT_DETAIL_SELECT, queryPlacementDetailById, queryPlacementRows } from './shared.js';
+import {
+  applyDerivedStatusFilter,
+  buildPlacementListFilters,
+  enrichPlacementRow,
+} from './listFilters.js';
 
 export function registerPlacementQueryRoutes(router, pool) {
   router.get('/:orgId/placements/:id', async (req, res) => {
@@ -33,12 +38,11 @@ export function registerPlacementQueryRoutes(router, pool) {
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     const orgId = req.params.orgId;
     try {
-      if (!(await requirePermission(pool, res, orgId, userId, 'manage_fostering_sessions'))) return;
-      const rows = await queryPlacementRows(
-        pool,
-        'WHERE fp.organization_id = $1 ORDER BY fp.created_at DESC',
-        [orgId],
-      );
+      if (!(await requirePermission(pool, res, orgId, userId, 'view_fostering_sessions'))) return;
+      const { sqlSuffix, params, derivedStatus } = buildPlacementListFilters(orgId, req.query);
+      const rawRows = await pool.query(`${PLACEMENT_DETAIL_SELECT} ${sqlSuffix}`, params);
+      const filteredRows = applyDerivedStatusFilter(rawRows.rows, derivedStatus);
+      const rows = filteredRows.map((row) => enrichPlacementRow(placementToMap(row)));
       res.json(rows);
     } catch (err) {
       res.status(500).json({ error: publicError(err) });

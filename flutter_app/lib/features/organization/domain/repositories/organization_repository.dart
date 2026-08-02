@@ -235,8 +235,9 @@ abstract class OrganizationRepository {
 
   Future<List<FosterPlacement>> getOrganizationPlacements(
     String orgId,
-    String token,
-  );
+    String token, {
+    Map<String, String>? filters,
+  });
   Future<PetFosterPlacementState> getPetPlacement(
     String orgId,
     String petId,

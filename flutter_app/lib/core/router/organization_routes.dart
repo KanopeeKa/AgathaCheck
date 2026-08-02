@@ -24,6 +24,7 @@ import '../../features/organization/presentation/screens/foster_requests/foster_
 import '../../features/organization/presentation/screens/foster_requests/foster_requests_screen.dart';
 import '../../features/organization/presentation/screens/foster_requests/send_foster_request_screen.dart';
 import '../../features/organization/presentation/screens/fostering_session/fostering_session_detail_screen.dart';
+import '../../features/organization/presentation/screens/fostering_sessions/fostering_sessions_list_screen.dart';
 import '../../features/organization/presentation/screens/manage_fosters/manage_fosters_screen.dart';
 import '../../features/organization/presentation/screens/organization_members_screen.dart';
 import '../../features/organization/presentation/screens/organization_person_detail_screen.dart';
@@ -249,6 +250,14 @@ List<RouteBase> _orgManagementChildRoutes() {
               },
             ),
           ],
+        ),
+        GoRoute(
+          path: 'sessions',
+          name: 'fosteringSessionsList',
+          builder: (context, state) {
+            final id = state.pathParameters['id']!;
+            return FosteringSessionsListScreen(orgId: id);
+          },
         ),
         GoRoute(
           path: 'placements/:placementId/session',

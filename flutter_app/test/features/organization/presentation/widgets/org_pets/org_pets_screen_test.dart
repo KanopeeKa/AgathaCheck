@@ -27,8 +27,9 @@ class _OrgPetsScreenRepo extends RecordingOrganizationRepository {
   @override
   Future<List<FosterPlacement>> getOrganizationPlacements(
     String orgId,
-    String token,
-  ) async {
+    String token, {
+    Map<String, String>? filters,
+  }) async {
     return const [];
   }
 

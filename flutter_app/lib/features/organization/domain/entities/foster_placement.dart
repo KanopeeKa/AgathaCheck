@@ -25,6 +25,9 @@ class FosterPlacement {
     this.createdBy,
     this.createdAt,
     this.respondedAt,
+    this.derivedStatus,
+    this.nearlyFinished = false,
+    this.inViewToAdopt = false,
   });
 
   final String id;
@@ -49,6 +52,9 @@ class FosterPlacement {
   final String? createdBy;
   final DateTime? createdAt;
   final DateTime? respondedAt;
+  final String? derivedStatus;
+  final bool nearlyFinished;
+  final bool inViewToAdopt;
 
   bool get isPending => status == 'pending';
   bool get isInProgress => status == 'in_progress';
@@ -114,6 +120,9 @@ class FosterPlacement {
       respondedAt: json['responded_at'] != null
           ? DateTime.tryParse(json['responded_at'].toString())
           : null,
+      derivedStatus: json['derived_status']?.toString(),
+      nearlyFinished: json['nearly_finished'] == true,
+      inViewToAdopt: json['in_view_to_adopt'] == true,
     );
   }
 }

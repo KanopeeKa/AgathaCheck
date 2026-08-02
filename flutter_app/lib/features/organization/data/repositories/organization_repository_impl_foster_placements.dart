@@ -7,9 +7,14 @@ mixin OrganizationRepositoryFosterPlacementsMixin
   @override
   Future<List<FosterPlacement>> getOrganizationPlacements(
     String orgId,
-    String token,
-  ) async {
-    final rows = await dataSource.getOrganizationPlacements(orgId, token);
+    String token, {
+    Map<String, String>? filters,
+  }) async {
+    final rows = await dataSource.getOrganizationPlacements(
+      orgId,
+      token,
+      filters: filters,
+    );
     return rows.map(FosterPlacement.fromJson).toList();
   }
 
