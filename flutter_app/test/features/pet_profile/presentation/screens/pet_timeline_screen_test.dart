@@ -226,6 +226,35 @@ void main() {
     expect(newerIndex, lessThan(olderIndex));
   });
 
+  testWidgets('shows year dividers when entries span multiple years', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      buildApp(
+        initialLocation: '/pet/pet-1/timeline',
+        timelineSegments: const [
+          PetTimelineSegment(
+            kind: 'manual',
+            id: 'new',
+            startDate: '2025-06-01',
+            title: 'Newer entry',
+          ),
+          PetTimelineSegment(
+            kind: 'manual',
+            id: 'old',
+            startDate: '2023-01-01',
+            title: 'Older entry',
+          ),
+        ],
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(const Key('pet_timeline_year_2025')), findsOneWidget);
+    expect(find.byKey(const Key('pet_timeline_year_2023')), findsOneWidget);
+    expect(find.byKey(const Key('pet_timeline_year_2024')), findsOneWidget);
+  });
+
   testWidgets('add buttons are present in app bar and bottom', (tester) async {
     await tester.pumpWidget(buildApp(initialLocation: '/pet/pet-1/timeline'));
     await tester.pumpAndSettle();

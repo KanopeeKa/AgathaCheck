@@ -7,10 +7,10 @@ import '../../../experience/presentation/providers/experience_providers.dart';
 import '../../../experience/presentation/widgets/experience_shell_scaffold.dart';
 import '../providers/pet_providers.dart';
 import '../providers/pet_timeline_providers.dart';
-import '../widgets/pet_timeline/pet_timeline_entry_tile.dart';
+import '../widgets/pet_timeline/pet_timeline_view.dart';
 import '../widgets/pet_timeline/pet_timeline_fill_sheet.dart';
 
-/// Dedicated pet timeline list screen (v1 — no arrow, custody, or gap fill).
+/// Dedicated pet timeline screen (vertical spine; custody/gap fill deferred).
 class PetTimelineScreen extends ConsumerWidget {
   const PetTimelineScreen({super.key, required this.petId});
 
@@ -79,18 +79,10 @@ class PetTimelineScreen extends ConsumerWidget {
                   );
                 }
 
-                return ListView.builder(
-                  key: const Key('pet_timeline_list'),
-                  padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
-                  itemCount: entries.length,
-                  itemBuilder: (context, index) {
-                    final segment = entries[index];
-                    return PetTimelineEntryTile(
-                      segment: segment,
-                      petId: petId,
-                      petName: petName,
-                    );
-                  },
+                return PetTimelineView(
+                  segments: entries,
+                  petId: petId,
+                  petName: petName,
                 );
               },
             ),
