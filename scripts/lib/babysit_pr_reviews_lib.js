@@ -27,10 +27,14 @@ function isBugbotUnavailableComment(body) {
   return BUGBOT_UNAVAILABLE_PATTERNS.some((pattern) => text.includes(pattern));
 }
 
+function isBugbotLogin(login) {
+  return BUGBOT_LOGINS.has(normalizeLogin(login));
+}
+
 function detectBugbotUnavailableFromIssueComments(comments) {
   for (const comment of comments || []) {
-    const login = normalizeLogin(comment.user?.login || comment.author?.login);
-    if (!login.includes('cursor')) continue;
+    const login = comment.user?.login || comment.author?.login;
+    if (!isBugbotLogin(login)) continue;
     if (isBugbotUnavailableComment(comment.body)) {
       return {
         unavailable: true,
@@ -44,10 +48,8 @@ function detectBugbotUnavailableFromIssueComments(comments) {
 
 function hasBugbotReview(reviews) {
   return (reviews || []).some((review) => {
-    const login = normalizeLogin(review.user?.login || review.author?.login);
-    if (BUGBOT_LOGINS.has(login)) return true;
-    const body = String(review.body || '').toLowerCase();
-    return body.includes('bugbot');
+    const login = review.user?.login || review.author?.login;
+    return isBugbotLogin(login);
   });
 }
 
@@ -89,7 +91,7 @@ function assessBugbotStatus({ reviews, issueComments, checkRuns }) {
     if (status === 'IN_PROGRESS' || status === 'QUEUED' || status === 'PENDING') {
       return { state: 'pending', reason: 'check_in_progress' };
     }
-    if (conclusion === 'SUCCESS' || conclusion === 'NEUTRAL' || conclusion === 'FAILURE') {
+    if (status === 'COMPLETED' && conclusion) {
       return { state: 'complete', reason: 'check_finished' };
     }
   }
@@ -160,6 +162,7 @@ function buildCollectReport({
   copilot,
   threads,
   timedOut = false,
+  truncated = false,
 }) {
   const unresolvedThreads = threads.filter((thread) => !thread.isResolved);
   const copilotThreads = unresolvedThreads.filter((thread) => thread.reviewer === 'copilot');
@@ -167,12 +170,11 @@ function buildCollectReport({
   const humanThreads = unresolvedThreads.filter((thread) => thread.reviewer === 'human');
 
   const bugbotBlocking = bugbot.state === 'pending' && !timedOut;
-  const readyForTriage = !bugbotBlocking;
-
   let haltReason = null;
   if (timedOut && bugbot.state === 'pending') {
     haltReason = 'bugbot_timeout';
   }
+  const readyForTriage = !bugbotBlocking && !haltReason;
 
   const warnings = [];
   if (bugbot.state === 'unavailable' && copilotThreads.length > 0) {
@@ -182,6 +184,11 @@ function buildCollectReport({
   }
   if (bugbot.state === 'unavailable' && unresolvedThreads.length === 0) {
     warnings.push('Bugbot unavailable and no unresolved review threads found.');
+  }
+  if (truncated) {
+    warnings.push(
+      'Review thread collection was truncated (GraphQL page limit). Re-run collect or inspect GitHub UI for additional threads.'
+    );
   }
 
   return {
@@ -193,6 +200,7 @@ function buildCollectReport({
       copilotCount: copilotThreads.length,
       bugbotCount: bugbotThreads.length,
       humanCount: humanThreads.length,
+      truncated,
     },
     readyForTriage,
     halt: Boolean(haltReason),
@@ -231,6 +239,7 @@ module.exports = {
   BUGBOT_LOGINS,
   COPILOT_LOGIN_PREFIX,
   classifyReviewer,
+  isBugbotLogin,
   detectBugbotUnavailableFromIssueComments,
   assessBugbotStatus,
   assessCopilotStatus,

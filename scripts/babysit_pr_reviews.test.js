@@ -44,6 +44,34 @@ test('assessBugbotStatus marks unavailable when cursor posts usage limit', () =>
   assert.equal(status.state, 'unavailable');
 });
 
+test('detectBugbotUnavailableFromIssueComments ignores non-bugbot cursor logins', () => {
+  const result = detectBugbotUnavailableFromIssueComments([
+    {
+      user: { login: 'cursor-fan' },
+      body: 'Bugbot hit a usage limit',
+    },
+  ]);
+  assert.equal(result.unavailable, false);
+});
+
+test('assessBugbotStatus ignores human review mentioning bugbot', () => {
+  const status = assessBugbotStatus({
+    reviews: [{ user: { login: 'human-dev' }, body: 'Waiting on bugbot here' }],
+    issueComments: [],
+    checkRuns: [],
+  });
+  assert.equal(status.state, 'pending');
+});
+
+test('assessBugbotStatus complete when bugbot check cancelled', () => {
+  const status = assessBugbotStatus({
+    reviews: [],
+    issueComments: [],
+    checkRuns: [{ name: 'Cursor Bugbot', status: 'COMPLETED', conclusion: 'CANCELLED' }],
+  });
+  assert.equal(status.state, 'complete');
+});
+
 test('assessBugbotStatus pending when bugbot check is in progress', () => {
   const status = assessBugbotStatus({
     reviews: [],
@@ -119,6 +147,7 @@ test('buildCollectReport halts on bugbot timeout', () => {
     timedOut: true,
   });
   assert.equal(report.halt, true);
+  assert.equal(report.readyForTriage, false);
   assert.equal(report.haltReason, 'bugbot_timeout');
 });
 

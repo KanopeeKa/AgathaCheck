@@ -11,6 +11,7 @@
  */
 
 const { execSync, spawnSync } = require('child_process');
+const { setTimeout: sleepMs } = require('timers/promises');
 const { parseFlags } = require('./lib/github_issue_workflow_lib');
 const {
   assessBugbotStatus,
@@ -26,6 +27,9 @@ query($owner: String!, $repo: String!, $number: Int!) {
   repository(owner: $owner, name: $repo) {
     pullRequest(number: $number) {
       reviewThreads(first: 100) {
+        pageInfo {
+          hasNextPage
+        }
         nodes {
           isResolved
           comments(first: 10) {
@@ -95,6 +99,9 @@ function fetchReviewSnapshot({ owner, repo, number }) {
   ]);
   const threadNodes =
     graphql?.data?.repository?.pullRequest?.reviewThreads?.nodes || [];
+  const truncated = Boolean(
+    graphql?.data?.repository?.pullRequest?.reviewThreads?.pageInfo?.hasNextPage
+  );
 
   const bugbot = assessBugbotStatus({
     reviews,
@@ -113,11 +120,16 @@ function fetchReviewSnapshot({ owner, repo, number }) {
     bugbot,
     copilot,
     threads,
+    truncated,
   });
 }
 
-function sleep(seconds) {
-  spawnSync('sleep', [String(seconds)], { stdio: 'ignore' });
+function parsePositiveInt(value, flagName) {
+  const parsed = Number(value);
+  if (!Number.isFinite(parsed) || parsed <= 0) {
+    throw new Error(`${flagName} must be a positive number (got ${value})`);
+  }
+  return parsed;
 }
 
 function collect(flags) {
@@ -127,9 +139,9 @@ function collect(flags) {
   process.exit(0);
 }
 
-function wait(flags) {
-  const timeoutMin = Number(flags['timeout-min'] || 15);
-  const intervalSec = Number(flags['interval-sec'] || 45);
+async function wait(flags) {
+  const timeoutMin = parsePositiveInt(flags['timeout-min'] || 15, '--timeout-min');
+  const intervalSec = parsePositiveInt(flags['interval-sec'] || 45, '--interval-sec');
   const deadline = Date.now() + timeoutMin * 60 * 1000;
   const pr = resolvePr(flags);
 
@@ -147,11 +159,12 @@ function wait(flags) {
         copilot: lastReport.reviewers.copilot,
         threads: lastReport.threads,
         timedOut: true,
+        truncated: lastReport.summary?.truncated,
       });
       console.log(JSON.stringify(timedOutReport, null, 2));
       process.exit(1);
     }
-    sleep(intervalSec);
+    await sleepMs(intervalSec * 1000);
   }
 }
 
@@ -172,7 +185,10 @@ function main() {
       collect(flags);
       break;
     case 'wait':
-      wait(flags);
+      wait(flags).catch((error) => {
+        console.error(error.message);
+        process.exit(1);
+      });
       break;
     default:
       usage();
