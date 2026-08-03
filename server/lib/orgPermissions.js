@@ -173,13 +173,13 @@ export async function grantPermission(
     `INSERT INTO organization_permissions (
       id, organization_id, user_id, permission_key, source, granted_by
     )
-    SELECT $1, $2, $3, $4, $5, $6
+    SELECT $1::uuid, $2::uuid, $3::uuid, $4::varchar, $5::varchar, $6::uuid
     WHERE NOT EXISTS (
       SELECT 1
       FROM organization_permissions
-      WHERE organization_id = $2
-        AND user_id = $3
-        AND permission_key = $4
+      WHERE organization_id = $2::uuid
+        AND user_id = $3::uuid
+        AND permission_key = $4::varchar
         AND revoked_at IS NULL
     )`,
     [id, organizationId, userId, permissionKey, source, grantedBy]

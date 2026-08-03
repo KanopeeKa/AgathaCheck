@@ -12,8 +12,10 @@ import { createPet, createHealthEntry, signupUser } from '../support/api';
 import {
   dismissConsentBannerIfPresent,
   dashboardSectionGroup,
+  escapeRegExp,
   flutterGotoUrl,
   refreshFlutterAccessibility,
+  semanticsByName,
   skipGuardianOnboardingIfPresent,
   waitForPostLoginRoute,
   waitForFlutterRoutePattern,
@@ -53,7 +55,7 @@ test.describe('Guardian dashboard', () => {
     await prepareLiveApiAccess(page, baseURL());
     const user = await signupUser(baseURL());
     for (let i = 0; i < 6; i += 1) {
-      await createPet(baseURL(), user.token, { name: `DashPet${i}` });
+      await createPet(baseURL(), user.accessToken, `DashPet${i}`);
     }
 
     await loginGuardian(page, user.email, user.password);
@@ -64,9 +66,16 @@ test.describe('Guardian dashboard', () => {
     await experience.expectGuardianShell();
 
     for (let i = 0; i < 6; i += 1) {
-      await expect(page.getByText(`DashPet${i}`, { exact: true })).toBeVisible();
+      await expect(
+        semanticsByName(page, new RegExp(`Pet:\\s*DashPet${i}`, 'i')).first(),
+      ).toBeVisible();
     }
-    await expect(page.getByText('Manage pets', { exact: true })).toBeVisible();
+    await expect(
+      page
+        .getByRole('button', { name: /Manage pets/i })
+        .or(page.getByText('Manage pets', { exact: true }))
+        .first(),
+    ).toBeVisible();
   });
 
   test('global events screen shows unified list without tabs', async ({
@@ -74,7 +83,7 @@ test.describe('Guardian dashboard', () => {
     testUser,
   }) => {
     const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
-    const pet = await createPet(baseURL, testUser.accessToken, { name: 'EventsPet' });
+    const pet = await createPet(baseURL, testUser.accessToken, 'EventsPet');
     await createHealthEntry(baseURL, testUser.accessToken, pet.id, {
       name: 'Due Med',
       nextDueDate: new Date().toISOString().slice(0, 10),
@@ -87,20 +96,20 @@ test.describe('Guardian dashboard', () => {
 
     await expect(page.getByText('Events', { exact: true }).first()).toBeVisible();
     await expect(page.getByRole('tab')).toHaveCount(0);
-    await expect(page.getByText('Add an event', { exact: true })).toBeVisible();
-    await expect(page.getByText('Due Med', { exact: true })).toBeVisible();
+    await expect(page.getByRole('button', { name: /Add an event/i })).toBeVisible();
+    await expect(semanticsByName(page, /Due Med/i).first()).toBeVisible();
   });
 
   test('global events screen supports pet and cohort filters', async ({ page }) => {
     await prepareLiveApiAccess(page, baseURL());
     const user = await signupUser(baseURL());
-    const owned = await createPet(baseURL(), user.token, { name: 'OwnedPet' });
-    const foster = await createPet(baseURL(), user.token, { name: 'FosterPet' });
-    await createHealthEntry(baseURL(), user.token, owned.id, {
+    const owned = await createPet(baseURL(), user.accessToken, 'OwnedPet');
+    const foster = await createPet(baseURL(), user.accessToken, 'FosterPet');
+    await createHealthEntry(baseURL(), user.accessToken, owned.id, {
       name: 'Owned Entry',
       nextDueDate: new Date().toISOString().slice(0, 10),
     });
-    await createHealthEntry(baseURL(), user.token, foster.id, {
+    await createHealthEntry(baseURL(), user.accessToken, foster.id, {
       name: 'Foster Entry',
       nextDueDate: new Date().toISOString().slice(0, 10),
     });
@@ -110,10 +119,12 @@ test.describe('Guardian dashboard', () => {
     await refreshFlutterAccessibility(page);
     await waitForFlutterRoutePattern(page, /^\/g\/events(?:\?|$)/, 60_000);
 
-    await expect(page.getByText('My Pets', { exact: true })).toBeVisible();
-    await expect(page.getByText('My Fostered Pets', { exact: true })).toBeVisible();
-    await expect(page.getByText('All Pets', { exact: true })).toBeVisible();
-    await expect(page.getByText('OwnedPet', { exact: true })).toBeVisible();
-    await expect(page.getByText('FosterPet', { exact: true })).toBeVisible();
+    await expect(page.getByRole('checkbox', { name: 'My Pets', exact: true })).toBeVisible();
+    await expect(
+      page.getByRole('checkbox', { name: 'My Fostered Pets', exact: true }),
+    ).toBeVisible();
+    await expect(page.getByRole('checkbox', { name: 'All Pets', exact: true })).toBeVisible();
+    await expect(page.getByRole('checkbox', { name: 'OwnedPet', exact: true })).toBeVisible();
+    await expect(page.getByRole('checkbox', { name: 'FosterPet', exact: true })).toBeVisible();
   });
 });

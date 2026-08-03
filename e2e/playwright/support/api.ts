@@ -405,6 +405,25 @@ export async function discoverOrganizations(
   return res.json();
 }
 
+/** Paginate discover results until [orgId] is found (or return undefined). */
+export async function findDiscoverableOrganization(
+  baseURL: string,
+  orgId: string,
+): Promise<DiscoverOrganizationsResponse['items'][number] | undefined> {
+  let page = 1;
+  const pageSize = 50;
+  while (true) {
+    const discovery = await discoverOrganizations(baseURL, { page, pageSize });
+    const match = discovery.items.find((item) => item.id === orgId);
+    if (match) return match;
+    const fetched = page * discovery.page_size;
+    if (fetched >= discovery.total_count || discovery.items.length === 0) {
+      return undefined;
+    }
+    page += 1;
+  }
+}
+
 export async function setOrganizationDiscoverability(
   baseURL: string,
   token: string,
