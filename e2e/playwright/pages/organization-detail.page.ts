@@ -386,7 +386,7 @@ export class OrganizationDetailPage {
         async () => {
           await refreshFlutterAccessibility(this.page);
         },
-        { helper: 'OrganizationDetailPage.openManageFosters' },
+        { helper: 'OrganizationDetailPage.openManageFosters', testTitle: 'Manage fosters' },
       );
     }
     await refreshFlutterAccessibility(this.page);

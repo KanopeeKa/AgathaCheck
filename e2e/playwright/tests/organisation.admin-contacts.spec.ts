@@ -55,7 +55,11 @@ test.describe('Admin contacts', () => {
     await addMemberToOrg(baseURL, alice.accessToken, org.id, carol, 'admin');
 
     const people = await getOrgPeople(baseURL, alice.accessToken, org.id);
-    const admins = people.filter((p) => p.kind === 'member' && p.role === 'admin');
+    const admins = people.filter(
+      (p) =>
+        p.kind === 'member' &&
+        (p.role === 'admin' || p.role === 'super_admin'),
+    );
     expect(admins.length).toBeGreaterThanOrEqual(3);
     expect(admins[0].display_name).toContain('Alice');
     const afterSelf = admins.slice(1).map((p) => p.display_name);
