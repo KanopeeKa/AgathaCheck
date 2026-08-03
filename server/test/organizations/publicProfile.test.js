@@ -15,6 +15,7 @@ const PUBLIC_ALLOWLIST = [
   'logo_url',
   'photo_url',
   'description',
+  'bio',
   'town',
   'administrative_area',
   'public_profile_metadata',
@@ -74,7 +75,7 @@ describe('GET /organizations/:id/public', () => {
     expect(res.body.town).toBe('Springfield');
     expect(res.body.public_profile_metadata).toEqual({ postcode: '62701' });
     expect(res.body).not.toHaveProperty('address');
-    expect(res.body).not.toHaveProperty('bio');
+    expect(res.body.bio).toBe('A test organization');
     expect(res.body).not.toHaveProperty('role');
     expect(res.body).not.toHaveProperty('member_count');
     expect(res.body.primary_contact).toEqual({
