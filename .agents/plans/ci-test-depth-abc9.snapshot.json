@@ -4,7 +4,7 @@
   "approved_at": "2026-08-03T18:45:00Z",
   "approved_by": "user chat 2026-08-03 standing grant",
   "approved_until": "2026-08-05T18:45:00Z",
-  "content_hash": "sha256:8677cd32f1f6613c4f7ccde88154174dc83f76bef0785fa4bbc7763da415cb8e",
+  "content_hash": "sha256:81d5e5e77f1c22a7fc903d87359db1b555f356fad36e459bc06740e5d1715486",
   "autonomy": "active",
   "default_merge_mode": "auto",
   "base_branch": "cursor/ci-test-depth-integration-abc9",
@@ -38,11 +38,9 @@
       "spawn_config": null,
       "merge_method": "squash",
       "exit_checklist": "governance",
-      "status": "pending",
+      "status": "in_progress",
       "status_reason": null,
       "status_detail": null,
-      "pr_url": null,
-      "pr_head_sha": null,
       "debt_issue_refs": []
     },
     {

@@ -28,9 +28,11 @@ git rebase origin/main   # or rebase onto integration parent
 |---------------|------|
 | `server/routes/**`, `server/test/**` | Targeted or full Jest |
 | `server/lib/**` | Jest |
-| `flutter_app/lib/features/<x>/**` | analyze + `test/features/<x>/` |
+| `flutter_app/lib/features/<x>/**` | analyze + `test/features/<x>/` (domain-scoped) |
 | `e2e/**` | BDD coverage + file size gates |
 | `scripts/**`, `.github/**` | Governance gates |
+
+**Local vs PR CI:** `pre-push-changed.sh` targets **feature domains** touched in the diff. PR CI currently runs **all Flutter test shards** whenever the Flutter stack runs — Phase F2 of `ci-test-depth-abc9` will align PR shards with changed domains.
 
 ## Full script includes
 

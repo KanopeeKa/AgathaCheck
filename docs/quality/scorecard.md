@@ -2,7 +2,7 @@
 
 Living metrics for Agatha Track quality. Update when CI or test counts change materially.
 
-**Last updated:** 2026-08-02 (Organisation v2 phases 8a–9)
+**Last updated:** 2026-08-03 (ci-test-depth-abc9 F0 doc truth)
 
 ---
 
@@ -13,9 +13,9 @@ Living metrics for Agatha Track quality. Update when CI or test counts change ma
 | Flutter unit/widget | 449 | CI on `main` |
 | Flutter integration | 1 flow | CI on `main` (blocking) |
 | Node Jest | 544 | CI on `main` |
-| Playwright E2E | 79 | UAT deploy |
-| BDD Gherkin scenarios | 231 | Spec (hybrid — Playwright executor) |
-| BDD → Playwright coverage | **72.3% (167/231)** | CI gate **150/231** — `e2e/scripts/check_bdd_coverage.js` |
+| Playwright E2E | 79 | Pre-UAT E2E (post-merge) |
+| BDD Gherkin scenarios | 241 | Spec (hybrid — Playwright executor) |
+| BDD → Playwright coverage | **73.4% (177/241)** | CI gate **150/241** — `e2e/scripts/check_bdd_coverage.js` |
 
 ## CI security
 
@@ -24,14 +24,14 @@ Living metrics for Agatha Track quality. Update when CI or test counts change ma
 | `npm audit --audit-level=high` | server, e2e | Yes |
 | CodeQL (JavaScript) | `.github/workflows/codeql.yml` | Yes (default query suite) |
 | Dependabot | weekly PRs | Via review |
-| axe (critical + serious) | UAT `@smoke` Playwright | UAT `prod-ready` gate |
+| axe (critical + serious) | `uat-live-e2e.yml` (advisory) | No — not prod-ready deploy gate |
 
 ## Static analysis
 
 | Check | Blocks `main`? |
 |---|---|
 | `flutter analyze` | Yes |
-| BDD scenarios mapped ≥ 150/231 | Yes |
+| BDD scenarios mapped ≥ 150/241 | Yes |
 | Hand-written file size ≤ 500 lines | Yes (grandfather ratchet) |
 
 ## Coverage
@@ -72,6 +72,7 @@ Run `cd server && npm audit` locally. CI blocks **high** and **critical** (clean
 
 | Date | Change |
 |---|---|
+| 2026-08-03 | ci-test-depth-abc9 F0: BDD **177/241** mapped; gate **150/241**; Pre-UAT vs deploy-tier doc alignment |
 | 2026-08-02 | Organisation v2 8a–9: BDD 167/231 mapped; gate ratchet **150/231**; admin contacts + permissions E2E |
 | 2026-07-08 | Sprint 5.5–5.6: GDPR export completeness; @P0/@P1/@P2 on all 161 scenarios + CI gate |
 | 2026-07-08 | Sprint 5.4b: all 5 remaining monoliths split; grandfather allowlist cleared |

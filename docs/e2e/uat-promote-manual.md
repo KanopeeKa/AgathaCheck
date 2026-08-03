@@ -81,10 +81,15 @@ Example: `uat-260727-481` for PR #481 merged on 2026-07-27.
 
 ---
 
-## What was removed
+## What was removed (Jul 2026)
 
-- Blocking `pre-uat-e2e.yml` on every `main` push (now manual/advisory only)
-- UAT coordinator dispatch and queue ledger promote hold
-- `uat_queue_runtime.js enqueue` after merge (removed — CI Pre-UAT owns promotion)
+- Blocking **Pre-UAT E2E on PRs** — PR CI no longer waits on full Playwright shards
+- **UAT coordinator** dispatch, queue ledger promote hold, and post-merge `enqueue`
+- Agent babysit polling UAT deploy until `prod-ready`
 
-Pre-UAT E2E remains available as **workflow_dispatch** for ops replay.
+## What still runs automatically
+
+- **`pre-uat-e2e.yml` on every push to `main`** — async post-merge; gates `promote-uat` via `workflow_run` (see [uat-deploy-tiers.md](./uat-deploy-tiers.md))
+- **`promote-uat.yml`** → **`deploy-uat.yml`** chain after Pre-UAT passes
+
+**`workflow_dispatch`** on promote/deploy workflows is **ops replay** when automation fails — not the only path to UAT.

@@ -1,6 +1,8 @@
 # E2E fail-fast canary — phased implementation plan
 
 **Status:** Partially superseded by [e2e/uat-deploy-tiers.md](./e2e/uat-deploy-tiers.md) (Jul 2026) — full E2E now runs in `pre-uat-e2e.yml`; live `@smoke-uat` is advisory via `uat-live-e2e.yml`. PR `@smoke-ci` goals below remain current.
+
+**Historical:** Phase 3–4 deploy-path goals (full E2E + `@smoke-uat` inside `deploy-uat.yml`) superseded Jul 2026 — see [uat-deploy-tiers.md](./e2e/uat-deploy-tiers.md).
 **Owner track:** CI/CD reliability (see [ci-cd-gates.md](./ci-cd-gates.md), [ci-cd-baseline.md](./ci-cd-baseline.md))  
 **Related:** [e2e/README.md](../e2e/README.md), [promotion-contract.md](./promotion-contract.md)  
 **Agent policy:** `cursor/*` PRs may edit `.github/workflows/` (see `agent-safety-lib.js`); update `ci-gate` / `assert-ci-gate.sh` / `docs/ci-cd-gates.md` in the same PR when adding blocking jobs.

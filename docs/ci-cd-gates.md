@@ -121,6 +121,10 @@ PR Playwright canary (`@smoke-ci`, retries 0). Required when `flutter-build-web`
 
 **Never skip (force full):** migrations, `server/config/security.js`, `flutter_app/lib/core/**`, `e2e/**`, `.github/workflows/**`, lockfiles, `scripts/ci/**`.
 
+#### Per-domain Flutter shard selection (planned F2)
+
+Today `run_flutter_stack` in ci-scope JSON is a **boolean**: either all seven Flutter test shards run, or the entire Flutter stack is skipped. `pre-push-changed.sh` already narrows locally by running `flutter test` under `test/features/<domain>/` when only that domain changed. **Phase F2** will add a `run_shards[]` array to ci-scope JSON so PR CI can run a subset of shards (e.g. only `health` when `flutter_app/test/features/health/**` changed) instead of the all-or-nothing boolean.
+
 **Drift backstop:** non-blocking **`CI full audit (main)`** (`ci-full-audit.yml`) runs the **full** suite on `main` every **12 merges** (counter in Actions cache `.ci-full-audit-state`) or when the last audit is older than **7 days**. Failures open an `agent-approved` issue for `agent-dispatch.yml`. Weekly `audit-advisory.yml` runs non-blocking `npm audit` on `main`.
 
 #### Accepted trade-off: no CI re-run on merge to `main`
@@ -232,7 +236,7 @@ display strings exactly.
 | GitHub check name (job) | Workflow file | What it enforces |
 |-------------------------|---------------|------------------|
 | `startup-smoke / PR startup smoke` | `_reusable-pr-startup-smoke.yml` | Postgres bootstrap, `node bin/start.js`, `/backend/health` + root |
-| `test-suite / Governance (BDD + file size)` | `_reusable-test.yml` | BDD mapping ≥ 105 scenarios, priority tags, file size ≤ 500 lines |
+| `test-suite / Governance (BDD + file size)` | `_reusable-test.yml` | BDD mapping gate (`check_bdd_coverage.js`; run `--report-only` for live ≥150 mapped, totals drift), priority tags, file size ≤ 500 lines |
 | `flutter-analyze / Flutter (analyze & format)` | `_reusable-flutter-analyze.yml` | format, legal sync, codegen, analyze; uploads `flutter-prep-<sha>` |
 | `flutter-test-* / Flutter tests (<shard>)` | `_reusable-flutter-test-shard.yml` | domain test shards (pet-core, pet-screens, pet-widgets, health, org, rest-a, rest-b) with per-shard coverage |
 | `flutter-coverage / Flutter domain coverage` | `_reusable-flutter-coverage.yml` | merge shard lcov, domain coverage ≥ 65% |
@@ -460,7 +464,7 @@ Confirm **`Deploy UAT / Prod ready`** appears in the PROD environment required c
 
 Live counts: `node e2e/scripts/check_bdd_coverage.js --report-only`
 
-Gate: **≥ 105 mapped scenarios** (ratchet defined in `e2e/scripts/check_bdd_coverage.js`). Do not hard-code scenario totals in workflow comments — they drift as features grow.
+Gate: **≥150 mapped scenarios** (ratchet in `e2e/scripts/check_bdd_coverage.js`; run `--report-only` for live counts — currently 150/241 mapped, totals drift as features grow). Do not hard-code scenario totals in workflow comments.
 
 ---
 

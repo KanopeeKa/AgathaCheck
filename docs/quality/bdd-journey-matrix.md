@@ -182,16 +182,20 @@ Journeys are ordered **P0 → P1 → P2** at the journey level. Within each jour
 
 ### J7b — Organisation v2 profile & permissions (2026-08)
 
-| Feature | Scenarios | Mapped | Playwright |
-|---------|----------:|-------:|------------|
-| `organisation_profile.feature` | 4 | 4 | `organisation.profile.spec.ts` |
-| `organisation_discovery.feature` | 5 | 5 | `organisation.discovery.spec.ts` |
-| `admin_contacts.feature` | 7 | 7 | `organisation.admin-contacts.spec.ts` |
-| `organisation_permissions.feature` | 2 | 2 | `organisation.permissions.spec.ts` |
-| `organisation_customisations.feature` | 2 | 2 | `organisation.customisations.spec.ts` |
-| `pet_screen_filters.feature` | 2 | 2 | `organisation.pet-filters.spec.ts` |
+| Feature | Scenarios | Mapped | Playwright | Pre-UAT executed |
+|---------|----------:|-------:|------------|------------------|
+| `organisation_profile.feature` | 4 | 4 | `organisation.profile.spec.ts` | pending F3 |
+| `organisation_discovery.feature` | 5 | 5 | `organisation.discovery.spec.ts` | pending F3 |
+| `admin_contacts.feature` | 7 | 7 | `organisation.admin-contacts.spec.ts` | pending F3 |
+| `organisation_permissions.feature` | 2 | 2 | `organisation.permissions.spec.ts` | pending F3 |
+| `organisation_customisations.feature` | 2 | 2 | `organisation.customisations.spec.ts` | pending F3 |
+| `pet_screen_filters.feature` | 6 | 6 | `organisation.pet-filters.spec.ts` | pending F3 |
+| `fostering_sessions.feature` | 3 | 3 | `organisation.sessions.spec.ts` | pending F3 |
+| `organisation_edit.feature` | 3 | 3 | `organisation.edit.spec.ts` | pending F3 |
 
-**Subtotal:** 22 scenarios — **22/22**
+**Subtotal:** 32 scenarios — **32/32**
+
+**Note:** **Pre-UAT executed** column tracks post-merge shard inclusion (`ci-test-depth-abc9` Phase F3); mapping ≠ guaranteed Pre-UAT run until manifest rebalance lands.
 
 ---
 

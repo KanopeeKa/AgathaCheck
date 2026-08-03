@@ -6,6 +6,24 @@ Tracks planned and completed refactor / quality work. See also `docs/refactoring
 
 ---
 
+## ci-test-depth-abc9 — CI test depth & gate remediation (started 2026-08-03)
+
+**Goal:** Close gap between BDD mapping metrics and real test execution; domain-scoped PR Flutter shards; Pre-UAT manifest hygiene; stale CI/CD doc truth.  
+**Plan:** `.agents/plans/ci-test-depth-abc9.md` · **Integration branch:** `cursor/ci-test-depth-integration-abc9`  
+**Control issue:** #558
+
+| Phase | Outcome | Status |
+|-------|---------|--------|
+| F0 | Doc truth (UAT tiers, scorecard, coordinator superseded, pre-push skill) | **In progress** |
+| F1 | Quality metrics tooling (depth/execution scorecard) | Pending |
+| F2 | PR domain-scoped Flutter shards | Pending |
+| F3 | Pre-UAT shard manifest + rebalance (12 shards, 0 orphans) | Pending |
+| F4 | Org v2 test deepening | Pending |
+| F5 | General widening + scorecard update | Pending |
+| F6 | Integration → `main` | Pending |
+
+---
+
 ## Sprint 1 — Governance & CI (2026-07-07)
 
 **Goal:** Codify standards in Cursor + CI; security and a11y pipelines; no product refactors.
