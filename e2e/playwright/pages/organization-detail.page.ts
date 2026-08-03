@@ -134,11 +134,13 @@ export class OrganizationDetailPage {
   }
 
   async expectBio(bio: string): Promise<void> {
-    await this.openPresentation();
     const pattern = new RegExp(escapeRegExp(bio), 'i');
-    await expect(
-      this.page.getByText(pattern).or(this.page.getByRole('group', { name: pattern })),
-    ).toBeVisible();
+    await expect(async () => {
+      await refreshFlutterAccessibility(this.page);
+      await expect(
+        this.page.locator('flt-semantics').filter({ hasText: pattern }).first(),
+      ).toBeVisible();
+    }).toPass({ timeout: 30_000 });
   }
 
   /** EN "All" / FR "Tous" — inclusive org pets tab (default is Need attention). */
@@ -324,7 +326,11 @@ export class OrganizationDetailPage {
 
   async openAddOrgPet(): Promise<void> {
     await this.openPetsSection();
-    const addButton = this.page.getByRole('button', { name: /Add Pet/i });
+    // App bar FAB and empty-state CTA both expose "Add Pet" — prefer exact app-bar label.
+    const addButton = this.page
+      .getByRole('button', { name: 'Add Pet', exact: true })
+      .filter({ visible: true })
+      .first();
     await addButton.waitFor({ timeout: 30_000 });
     await addButton.click();
     await this.page.getByRole('button', { name: 'Save Pet' }).waitFor({ timeout: 30_000 });
