@@ -61,6 +61,8 @@ if [[ -n "${GITHUB_OUTPUT:-}" ]]; then
   run_backend="$(python3 -c 'import json,sys; print("true" if json.load(sys.stdin)["run_backend"] else "false")' <<<"$json")"
   run_e2e_audit="$(python3 -c 'import json,sys; print("true" if json.load(sys.stdin)["run_e2e_audit"] else "false")' <<<"$json")"
   run_integration="$(python3 -c 'import json,sys; print("true" if json.load(sys.stdin)["run_flutter_integration"] else "false")' <<<"$json")"
+  run_flutter_coverage="$(python3 -c 'import json,sys; print("true" if json.load(sys.stdin)["run_flutter_coverage"] else "false")' <<<"$json")"
+  run_shards="$(python3 -c 'import json,sys; print(json.dumps(json.load(sys.stdin)["run_shards"]))' <<<"$json")"
   {
     echo "scope_json<<EOF"
     echo "$json"
@@ -71,6 +73,8 @@ if [[ -n "${GITHUB_OUTPUT:-}" ]]; then
     echo "run_backend=$run_backend"
     echo "run_e2e_audit=$run_e2e_audit"
     echo "run_flutter_integration=$run_integration"
+    echo "run_flutter_coverage=$run_flutter_coverage"
+    echo "run_shards=$run_shards"
   } >>"$GITHUB_OUTPUT"
 fi
 
@@ -82,6 +86,8 @@ if [[ -n "${GITHUB_STEP_SUMMARY:-}" ]]; then
     echo "- **Base → head:** \`${BASE_SHA:0:7}\` → \`${HEAD_SHA:0:7}\`"
     echo "- **Flutter analyze:** $run_analyze"
     echo "- **Flutter stack (shards/build/canary):** $run_stack"
+    echo "- **Flutter shards:** \`$run_shards\`"
+    echo "- **Flutter coverage (all shards):** $run_flutter_coverage"
     echo "- **Backend Jest:** $run_backend"
     echo "- **E2E npm audit:** $run_e2e_audit"
     echo "- **Flutter integration:** $run_integration"

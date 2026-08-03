@@ -66,5 +66,11 @@ ci_scope_classify_paths $'flutter_app/lib/features/auth/presentation/screens/log
 json="$(ci_scope_emit_json)"
 assert_json_field "$json" run_backend False "flutter-only skips backend"
 assert_json_field "$json" run_flutter_integration False "flutter-only without pet_profile skips integration"
+python3 -c 'import json,sys; shards=json.load(sys.stdin)["run_shards"]; assert shards==["rest-a"], shards' <<<"$json"
+
+# Organisation-only runs org shard
+ci_scope_classify_paths $'flutter_app/lib/features/organization/presentation/screens/organisation_profile_screen.dart'
+json="$(ci_scope_emit_json)"
+python3 -c 'import json,sys; shards=json.load(sys.stdin)["run_shards"]; assert shards==["org"], shards' <<<"$json"
 
 echo "ci-scope tests passed"

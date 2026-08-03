@@ -26,6 +26,8 @@ jobs:
       scope_name: ${{ steps.scope.outputs.scope_name }}
       run_flutter_analyze: ${{ steps.scope.outputs.run_flutter_analyze }}
       run_flutter_stack: ${{ steps.scope.outputs.run_flutter_stack }}
+      run_flutter_coverage: ${{ steps.scope.outputs.run_flutter_coverage }}
+      run_shards: ${{ steps.scope.outputs.run_shards }}
       run_backend: ${{ steps.scope.outputs.run_backend }}
       run_e2e_audit: ${{ steps.scope.outputs.run_e2e_audit }}
       run_flutter_integration: ${{ steps.scope.outputs.run_flutter_integration }}
@@ -60,49 +62,63 @@ jobs:
 
   flutter-test-pet-core:
     needs: [ci-scope, flutter-analyze]
-    if: needs.ci-scope.outputs.run_flutter_stack == 'true'
+    if: >-
+      needs.ci-scope.outputs.run_flutter_stack == 'true' &&
+      contains(fromJSON(needs.ci-scope.outputs.run_shards), 'pet-core')
     uses: ./.github/workflows/_reusable-flutter-test-shard.yml
     with:
       shard: pet-core
 
   flutter-test-pet-screens:
     needs: [ci-scope, flutter-analyze]
-    if: needs.ci-scope.outputs.run_flutter_stack == 'true'
+    if: >-
+      needs.ci-scope.outputs.run_flutter_stack == 'true' &&
+      contains(fromJSON(needs.ci-scope.outputs.run_shards), 'pet-screens')
     uses: ./.github/workflows/_reusable-flutter-test-shard.yml
     with:
       shard: pet-screens
 
   flutter-test-pet-widgets:
     needs: [ci-scope, flutter-analyze]
-    if: needs.ci-scope.outputs.run_flutter_stack == 'true'
+    if: >-
+      needs.ci-scope.outputs.run_flutter_stack == 'true' &&
+      contains(fromJSON(needs.ci-scope.outputs.run_shards), 'pet-widgets')
     uses: ./.github/workflows/_reusable-flutter-test-shard.yml
     with:
       shard: pet-widgets
 
   flutter-test-health:
     needs: [ci-scope, flutter-analyze]
-    if: needs.ci-scope.outputs.run_flutter_stack == 'true'
+    if: >-
+      needs.ci-scope.outputs.run_flutter_stack == 'true' &&
+      contains(fromJSON(needs.ci-scope.outputs.run_shards), 'health')
     uses: ./.github/workflows/_reusable-flutter-test-shard.yml
     with:
       shard: health
 
   flutter-test-org:
     needs: [ci-scope, flutter-analyze]
-    if: needs.ci-scope.outputs.run_flutter_stack == 'true'
+    if: >-
+      needs.ci-scope.outputs.run_flutter_stack == 'true' &&
+      contains(fromJSON(needs.ci-scope.outputs.run_shards), 'org')
     uses: ./.github/workflows/_reusable-flutter-test-shard.yml
     with:
       shard: org
 
   flutter-test-rest-a:
     needs: [ci-scope, flutter-analyze]
-    if: needs.ci-scope.outputs.run_flutter_stack == 'true'
+    if: >-
+      needs.ci-scope.outputs.run_flutter_stack == 'true' &&
+      contains(fromJSON(needs.ci-scope.outputs.run_shards), 'rest-a')
     uses: ./.github/workflows/_reusable-flutter-test-shard.yml
     with:
       shard: rest-a
 
   flutter-test-rest-b:
     needs: [ci-scope, flutter-analyze]
-    if: needs.ci-scope.outputs.run_flutter_stack == 'true'
+    if: >-
+      needs.ci-scope.outputs.run_flutter_stack == 'true' &&
+      contains(fromJSON(needs.ci-scope.outputs.run_shards), 'rest-b')
     uses: ./.github/workflows/_reusable-flutter-test-shard.yml
     with:
       shard: rest-b
@@ -117,7 +133,7 @@ jobs:
       - flutter-test-org
       - flutter-test-rest-a
       - flutter-test-rest-b
-    if: needs.ci-scope.outputs.run_flutter_stack == 'true'
+    if: needs.ci-scope.outputs.run_flutter_coverage == 'true'
     uses: ./.github/workflows/_reusable-flutter-coverage.yml
 
   flutter-integration:
