@@ -4,7 +4,7 @@
   "approved_at": "2026-08-03T18:45:00Z",
   "approved_by": "user chat 2026-08-03 standing grant",
   "approved_until": "2026-08-05T18:45:00Z",
-  "content_hash": "sha256:a52f7efbf0d33efa83bfbb06ad225095516e079bc4657c941d71d76f86437756",
+  "content_hash": "sha256:6c54c958620bcfb4e78c9283952bf7fa5e5c11c35a3e249df1c571a7a8e073be",
   "autonomy": "active",
   "default_merge_mode": "auto",
   "base_branch": "cursor/ci-test-depth-integration-abc9",
@@ -131,11 +131,9 @@
       "spawn_config": null,
       "merge_method": "squash",
       "exit_checklist": "governance",
-      "status": "pending",
+      "status": "merged",
       "status_reason": null,
       "status_detail": null,
-      "pr_url": null,
-      "pr_head_sha": null,
       "debt_issue_refs": []
     },
     {
@@ -171,11 +169,9 @@
       },
       "merge_method": "squash",
       "exit_checklist": "default",
-      "status": "pending",
+      "status": "merged",
       "status_reason": null,
       "status_detail": null,
-      "pr_url": null,
-      "pr_head_sha": null,
       "debt_issue_refs": []
     },
     {
@@ -205,11 +201,9 @@
       "spawn_config": null,
       "merge_method": "squash",
       "exit_checklist": "default",
-      "status": "pending",
+      "status": "merged",
       "status_reason": null,
       "status_detail": null,
-      "pr_url": null,
-      "pr_head_sha": null,
       "debt_issue_refs": []
     },
     {
@@ -232,11 +226,9 @@
       "spawn_config": null,
       "merge_method": "squash",
       "exit_checklist": "governance",
-      "status": "pending",
+      "status": "in_progress",
       "status_reason": null,
       "status_detail": null,
-      "pr_url": null,
-      "pr_head_sha": null,
       "debt_issue_refs": []
     }
   ]
