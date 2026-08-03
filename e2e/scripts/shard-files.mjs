@@ -55,6 +55,7 @@ export const SHARDS = [
     'playwright/tests/organisation.profile.spec.ts',
     'playwright/tests/organisation.edit.spec.ts',
     'playwright/tests/organisation.sessions.spec.ts',
+    'playwright/tests/organisation.redacted-pet.spec.ts',
     'playwright/tests/organisation.admin-contacts.spec.ts',
     'playwright/tests/fostering.platform.spec.ts',
     'playwright/tests/foster.onboarding.spec.ts',

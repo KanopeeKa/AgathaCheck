@@ -13,10 +13,12 @@ Living metrics for Agatha Track quality. Update when CI or test counts change ma
 | Flutter unit/widget | 449 | CI on `main` |
 | Flutter integration | 1 flow | CI on `main` (blocking) |
 | Node Jest | 544 | CI on `main` |
-| Playwright E2E | 79 | Pre-UAT E2E (post-merge) |
-| BDD Gherkin scenarios | 241 | Spec (hybrid — Playwright executor) |
-| BDD → Playwright coverage | **73.4% (177/241)** | CI gate **150/241** — `e2e/scripts/check_bdd_coverage.js` |
+| Playwright E2E | 79+ | Pre-UAT E2E (12-shard, post-merge) |
+| BDD Gherkin scenarios | 244 | Spec (hybrid — Playwright executor) |
+| BDD → Playwright coverage | **73.8% (180/244)** | CI gate **150/244** — `e2e/scripts/check_bdd_coverage.js` |
 | Test quality scorecard | D1–D6 metrics | `node e2e/scripts/check_test_quality.js --report-only` (CI governance) |
+| Pre-UAT shard orphans | **0** | `e2e/scripts/validate-shard-manifest.mjs` |
+| @smoke-ci PR canary | **5** | `ci-e2e-canary` job |
 
 ## CI security
 
@@ -74,6 +76,7 @@ Run `cd server && npm audit` locally. CI blocks **high** and **critical** (clean
 | Date | Change |
 |---|---|
 | 2026-08-03 | ci-test-depth-abc9 F0: BDD **177/241** mapped; gate **150/241**; Pre-UAT vs deploy-tier doc alignment |
+| 2026-08-03 | ci-test-depth-abc9: D1–D6 scorecard, 12-shard Pre-UAT manifest, PR domain Flutter shards, org v2 E2E depth + redacted pet |
 | 2026-08-02 | Organisation v2 8a–9: BDD 167/231 mapped; gate ratchet **150/231**; admin contacts + permissions E2E |
 | 2026-07-08 | Sprint 5.5–5.6: GDPR export completeness; @P0/@P1/@P2 on all 161 scenarios + CI gate |
 | 2026-07-08 | Sprint 5.4b: all 5 remaining monoliths split; grandfather allowlist cleared |

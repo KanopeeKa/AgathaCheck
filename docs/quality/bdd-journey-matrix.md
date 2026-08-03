@@ -184,18 +184,19 @@ Journeys are ordered **P0 → P1 → P2** at the journey level. Within each jour
 
 | Feature | Scenarios | Mapped | Playwright | Pre-UAT executed |
 |---------|----------:|-------:|------------|------------------|
-| `organisation_profile.feature` | 4 | 4 | `organisation.profile.spec.ts` | pending F3 |
-| `organisation_discovery.feature` | 5 | 5 | `organisation.discovery.spec.ts` | pending F3 |
-| `admin_contacts.feature` | 7 | 7 | `organisation.admin-contacts.spec.ts` | pending F3 |
-| `organisation_permissions.feature` | 2 | 2 | `organisation.permissions.spec.ts` | pending F3 |
-| `organisation_customisations.feature` | 2 | 2 | `organisation.customisations.spec.ts` | pending F3 |
-| `pet_screen_filters.feature` | 6 | 6 | `organisation.pet-filters.spec.ts` | pending F3 |
-| `fostering_sessions.feature` | 3 | 3 | `organisation.sessions.spec.ts` | pending F3 |
-| `organisation_edit.feature` | 3 | 3 | `organisation.edit.spec.ts` | pending F3 |
+| `organisation_profile.feature` | 4 | 4 | `organisation.profile.spec.ts` (`@smoke-ci` anonymous profile) | yes |
+| `organisation_discovery.feature` | 5 | 5 | `organisation.discovery.spec.ts` | yes |
+| `admin_contacts.feature` | 7 | 7 | `organisation.admin-contacts.spec.ts` | yes |
+| `organisation_permissions.feature` | 2 | 2 | `organisation.permissions.spec.ts` | yes |
+| `organisation_customisations.feature` | 2 | 2 | `organisation.customisations.spec.ts` | yes |
+| `pet_screen_filters.feature` | 6 | 6 | `organisation.pet-filters.spec.ts` | yes |
+| `fostering_sessions.feature` | 3 | 3 | `organisation.sessions.spec.ts` | yes |
+| `organisation_edit.feature` | 3 | 3 | `organisation.edit.spec.ts` | yes |
+| `redacted_org_pet.feature` | 3 | 3 | `organisation.redacted-pet.spec.ts` | yes |
 
-**Subtotal:** 32 scenarios — **32/32**
+**Subtotal:** 35 scenarios — **35/35**
 
-**Note:** **Pre-UAT executed** column tracks post-merge shard inclusion (`ci-test-depth-abc9` Phase F3); mapping ≠ guaranteed Pre-UAT run until manifest rebalance lands.
+**Note:** **Pre-UAT executed** = listed in `e2e/scripts/shard-files.mjs` (12-shard manifest, Aug 2026).
 
 ---
 
