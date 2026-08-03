@@ -12,7 +12,6 @@ import { createPet, createHealthEntry, signupUser } from '../support/api';
 import {
   dismissConsentBannerIfPresent,
   dashboardSectionGroup,
-  escapeRegExp,
   flutterGotoUrl,
   refreshFlutterAccessibility,
   semanticsByName,
