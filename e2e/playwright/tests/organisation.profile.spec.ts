@@ -7,18 +7,17 @@
  */
 import { test, expect } from '../fixtures/auth.fixture';
 import {
-  addMemberToOrg,
   createOrganization,
   getOrgPublicProfile,
   setOrganizationDiscoveryProfile,
   signupUser,
   tryGetOrgPublicProfile,
   updateOrganization,
+  addMemberToOrg,
 } from '../support/api';
-import { enableFlutterAccessibility } from '../support/flutter';
 import { clearLiveApiAccess, prepareLiveApiAccess } from '../support/waf';
 import { clearBrowserSessionState } from '../support/session';
-import { createTestUser } from '../support/ui-auth';
+import { OrganizationDetailPage } from '../pages/organization-detail.page';
 
 const PUBLIC_ALLOWLIST = [
   'id',
@@ -50,7 +49,7 @@ test.describe('Organisation profile', () => {
     const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
     await prepareLiveApiAccess(page, baseURL);
     try {
-      const owner = await createTestUser(page, baseURL, {
+      const owner = await signupUser(baseURL, {
         firstName: 'Rescue',
         lastName: 'Admin',
       });
@@ -67,9 +66,9 @@ test.describe('Organisation profile', () => {
       await clearBrowserSessionState(page);
       await prepareLiveApiAccess(page, baseURL);
       await page.goto(`${baseURL}/o/orgs/${org.id}`);
-      await enableFlutterAccessibility(page);
 
-      await expect(page.getByText(ORG_NAME, { exact: true }).first()).toBeVisible();
+      const detail = new OrganizationDetailPage(page);
+      await detail.expectLoaded(ORG_NAME);
       await expect(page.getByText(DESCRIPTION).first()).toBeVisible();
       await expect(page.getByRole('button', { name: /^Pets$|^Animaux$/i })).toHaveCount(0);
       await expect(page.getByText('Fostering sessions')).toHaveCount(0);

@@ -79,6 +79,7 @@ final routerProvider = Provider<GoRouter>((ref) {
         if (path == '/landing') return null;
         if (path == '/forgot-password') return null;
         if (path.startsWith('/shared/')) return null;
+        if (isPublicOrganizationProfilePath(path)) return null;
         if (LegalDocumentId.publicRoutes.contains(path)) return null;
         if (path.startsWith('/legal/')) return null;
         return '/landing';
