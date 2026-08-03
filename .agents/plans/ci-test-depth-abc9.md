@@ -168,16 +168,16 @@ Close the gap between BDD mapping metrics and real test execution: add depth/exe
 
 ```yaml
 autonomy: active
-current_phase: F0
-last_completed_phase: null
+current_phase: F1
+last_completed_phase: F0
 halt_reason: null
-next_action: "continue phase F0 on branch cursor/ci-test-depth-f0-docs-abc9"
+next_action: "start phase F1: checkout cursor/ci-test-depth-f1-metrics-abc9"
 artifact_ref:
-  branch: cursor/ci-test-depth-f0-docs-abc9
+  branch: cursor/ci-test-depth-integration-abc9
   plan_path: .agents/plans/ci-test-depth-abc9.md
-  plan_commit: 5809714b28996e279ed09d59bba4fcfa148604dc
+  plan_commit: 9f2c68ec67e8ef645a155446a4dcaffd7fa7db60
   snapshot_path: .agents/plans/ci-test-depth-abc9.snapshot.json
-  snapshot_commit: 5809714b28996e279ed09d59bba4fcfa148604dc
+  snapshot_commit: 9f2c68ec67e8ef645a155446a4dcaffd7fa7db60
 open_prs: []
 merge_commits: {}
 debt_issue_refs: []

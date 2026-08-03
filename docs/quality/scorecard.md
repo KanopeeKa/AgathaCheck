@@ -16,6 +16,7 @@ Living metrics for Agatha Track quality. Update when CI or test counts change ma
 | Playwright E2E | 79 | Pre-UAT E2E (post-merge) |
 | BDD Gherkin scenarios | 241 | Spec (hybrid — Playwright executor) |
 | BDD → Playwright coverage | **73.4% (177/241)** | CI gate **150/241** — `e2e/scripts/check_bdd_coverage.js` |
+| Test quality scorecard | D1–D6 metrics | `node e2e/scripts/check_test_quality.js --report-only` (CI governance) |
 
 ## CI security
 

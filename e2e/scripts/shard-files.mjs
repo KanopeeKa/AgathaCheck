@@ -48,17 +48,21 @@ if (SHARDS.length !== SHARD_TOTAL) {
   throw new Error(`shard-files.mjs: expected ${SHARD_TOTAL} shards, got ${SHARDS.length}`);
 }
 
-const shardArg = process.argv[2];
-if (shardArg === undefined || shardArg === '--summary') {
-  for (let i = 0; i < SHARDS.length; i++) {
-    const files = SHARDS[i];
-    console.log(`Shard ${i + 1}/${SHARD_TOTAL}: ${files.join(', ')}`);
+import { fileURLToPath } from 'node:url';
+
+if (process.argv[1] && fileURLToPath(import.meta.url) === fileURLToPath(`file://${process.argv[1]}`)) {
+  const shardArg = process.argv[2];
+  if (shardArg === undefined || shardArg === '--summary') {
+    for (let i = 0; i < SHARDS.length; i++) {
+      const files = SHARDS[i];
+      console.log(`Shard ${i + 1}/${SHARD_TOTAL}: ${files.join(', ')}`);
+    }
+  } else {
+    const index = Number(shardArg);
+    if (!Number.isInteger(index) || index < 1 || index > SHARD_TOTAL) {
+      console.error(`usage: shard-files.mjs <1-${SHARD_TOTAL}>`);
+      process.exit(1);
+    }
+    console.log(SHARDS[index - 1].join(' '));
   }
-} else {
-  const index = Number(shardArg);
-  if (!Number.isInteger(index) || index < 1 || index > SHARD_TOTAL) {
-    console.error(`usage: shard-files.mjs <1-${SHARD_TOTAL}>`);
-    process.exit(1);
-  }
-  console.log(SHARDS[index - 1].join(' '));
 }

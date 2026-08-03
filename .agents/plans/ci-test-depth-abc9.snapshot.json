@@ -4,7 +4,7 @@
   "approved_at": "2026-08-03T18:45:00Z",
   "approved_by": "user chat 2026-08-03 standing grant",
   "approved_until": "2026-08-05T18:45:00Z",
-  "content_hash": "sha256:81d5e5e77f1c22a7fc903d87359db1b555f356fad36e459bc06740e5d1715486",
+  "content_hash": "sha256:3f7f2e4f367a8314230bd320649c6184e74384161ab17c535037f556b876a153",
   "autonomy": "active",
   "default_merge_mode": "auto",
   "base_branch": "cursor/ci-test-depth-integration-abc9",
@@ -38,10 +38,11 @@
       "spawn_config": null,
       "merge_method": "squash",
       "exit_checklist": "governance",
-      "status": "in_progress",
+      "status": "merged",
       "status_reason": null,
       "status_detail": null,
-      "debt_issue_refs": []
+      "debt_issue_refs": [],
+      "pr_head_sha": "9f2c68ec"
     },
     {
       "id": "F1",
