@@ -162,10 +162,16 @@ export class PetListPage {
 
   async openAddPet(): Promise<void> {
     await dismissConsentBannerIfPresent(this.page);
-    const addPetBtn = this.page.getByRole('button', { name: 'Add Pet' });
-    if (!(await addPetBtn.isVisible({ timeout: 2_000 }).catch(() => false))) {
+    const resolveAddButton = () =>
+      this.page
+        .getByRole('button', { name: 'Add Pet', exact: true })
+        .filter({ visible: true })
+        .first();
+    if (!(await resolveAddButton().isVisible({ timeout: 2_000 }).catch(() => false))) {
       await this.openManagePets();
     }
+    const addPetBtn = resolveAddButton();
+    await addPetBtn.waitFor({ timeout: 30_000 });
     await addPetBtn.click();
     await this.page.getByRole('button', { name: 'Save Pet' }).waitFor({ timeout: 30_000 });
   }

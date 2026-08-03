@@ -28,8 +28,13 @@ class OrgPresentationHero extends ConsumerWidget {
     );
     final logoUrl = resolveStaticAssetUrl(org.logoUrl, apiBaseUrl: apiBaseUrl);
 
+    final summaryText = org.description.isNotEmpty ? org.description : org.bio;
+    final semanticsLabel = summaryText.isNotEmpty
+        ? '${org.name}, $localizedTypeLabel, $summaryText'
+        : '${org.name}, $localizedTypeLabel';
+
     return Semantics(
-      label: '${org.name}, $localizedTypeLabel',
+      label: semanticsLabel,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [

@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../data/models/organization_model.dart';
 import '../../domain/entities/organization.dart';
 import 'org_provider_deps.dart';
+import 'org_provider_profile.dart';
 import 'org_provider_people.dart';
 
 class OrganizationListNotifier extends AsyncNotifier<List<Organization>> {
@@ -39,6 +40,7 @@ class OrganizationListNotifier extends AsyncNotifier<List<Organization>> {
       token,
     );
     ref.invalidateSelf();
+    ref.invalidate(organisationProfileProvider(orgId));
   }
 
   Future<void> deleteOrganization(String orgId) async {

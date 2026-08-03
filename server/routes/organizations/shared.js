@@ -175,6 +175,7 @@ export function publicOrgRowToMap(row) {
     logo_url: row.logo_url || '',
     photo_url: row.photo_url || '',
     description: row.description || '',
+    bio: row.bio || '',
     town: row.town || '',
     administrative_area: row.administrative_area || '',
     public_profile_metadata: safePublicProfileMetadata(row.public_profile_metadata),
