@@ -18,6 +18,7 @@ import {
 import { clearLiveApiAccess, prepareLiveApiAccess } from '../support/waf';
 import { clearBrowserSessionState } from '../support/session';
 import { OrganizationDetailPage } from '../pages/organization-detail.page';
+import { waitForFlutterRoute } from '../support/flutter';
 
 const PUBLIC_ALLOWLIST = [
   'id',
@@ -65,7 +66,7 @@ test.describe('Organisation profile', () => {
 
       await clearBrowserSessionState(page);
       await prepareLiveApiAccess(page, baseURL);
-      await page.goto(`${baseURL}/o/orgs/${org.id}`);
+      await waitForFlutterRoute(page, `/o/orgs/${org.id}`);
 
       const detail = new OrganizationDetailPage(page);
       await detail.expectLoaded(ORG_NAME);
