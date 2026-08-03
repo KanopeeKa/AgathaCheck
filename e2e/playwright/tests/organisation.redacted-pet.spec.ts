@@ -12,7 +12,7 @@ import {
   getRedactedOrgPet,
   signupUser,
 } from '../support/api';
-import { enableFlutterAccessibility, refreshFlutterAccessibility } from '../support/flutter';
+import { enableFlutterAccessibility, refreshFlutterAccessibility, waitForFlutterRoute } from '../support/flutter';
 import { OrganizationDetailPage } from '../pages/organization-detail.page';
 import { OrganizationListPage } from '../pages/organization-list.page';
 
@@ -76,7 +76,7 @@ test.describe('Redacted organisation pet profile', () => {
     const { bob, org, pet } = await seedAssociatePetView(baseURL);
 
     await loginAs(page, bob, { experience: 'organization' });
-    await page.goto(`${baseURL}/o/orgs/${org.id}/pets/${pet.id}/redacted`);
+    await waitForFlutterRoute(page, `/o/orgs/${org.id}/pets/${pet.id}/redacted`);
     await enableFlutterAccessibility(page);
     await refreshFlutterAccessibility(page);
 

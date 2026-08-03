@@ -81,6 +81,20 @@ async function activateMembershipCard(page: Page, name: string): Promise<void> {
 export class OrganizationListPage {
   constructor(private readonly page: Page) {}
 
+  /** Navigate to the membership org list (`/o/orgs`) from org or guardian shell. */
+  async openOrganizations(): Promise<void> {
+    await dismissConsentBannerIfPresent(this.page);
+    const route = flutterRoutePath(this.page.url());
+    if (/\/o\/orgs(?:\?|$)/.test(route) || route === '/organizations') {
+      await this.expectLoaded();
+      return;
+    }
+    await this.page.goto(flutterGotoUrl('/o/orgs'));
+    await refreshFlutterAccessibility(this.page);
+    await waitForFlutterRoutePattern(this.page, /\/o\/orgs(?:\?|$)/, 30_000);
+    await this.expectLoaded();
+  }
+
   async expectLoaded(): Promise<void> {
     await dismissConsentBannerIfPresent(this.page);
     await waitForFlutterRoutePattern(this.page, /\/o\/orgs(?:\?|$)|\/organizations/, 30_000);

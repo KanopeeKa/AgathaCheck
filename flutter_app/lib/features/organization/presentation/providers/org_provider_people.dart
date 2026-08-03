@@ -87,6 +87,7 @@ class OrgPeopleNotifier
       token: token,
     );
     ref.invalidateSelf();
+    ref.invalidate(orgFosterParentsProvider(arg));
   }
 
   Future<void> deleteExternal(String recordId) async {

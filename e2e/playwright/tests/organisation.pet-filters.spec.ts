@@ -17,7 +17,7 @@ import {
   seedHappyPawsClinic,
   seedRescueHearts,
 } from '../support/api';
-import { enableFlutterAccessibility, refreshFlutterAccessibility } from '../support/flutter';
+import { enableFlutterAccessibility, refreshFlutterAccessibility, waitForFlutterRoutePattern, escapeRegExp, semanticsByName } from '../support/flutter';
 import { OrganizationDetailPage } from '../pages/organization-detail.page';
 import { OrganizationListPage } from '../pages/organization-list.page';
 
@@ -43,17 +43,58 @@ async function openOrgPetsScreen(
 
   const detail = new OrganizationDetailPage(page);
   await detail.expectLoaded(orgName);
-
-  await page.goto(`${baseURL}/o/orgs/${org.id}/pets`);
+  await detail.openPetsSection();
+  await waitForFlutterRoutePattern(page, /\/o\/orgs\/[^/]+\/pets/, 30_000);
   await enableFlutterAccessibility(page);
   await refreshFlutterAccessibility(page);
 }
+
+async function expectOrgPetVisible(page: import('@playwright/test').Page, petName: string) {
+  const petPattern = new RegExp(`Pet:\\s*${escapeRegExp(petName)}`, 'i');
+  const shadowPattern = new RegExp(`${escapeRegExp(petName)}.*frozen shadow`, 'i');
+  await expect(
+    semanticsByName(page, petPattern)
+      .or(page.getByRole('button', { name: shadowPattern }))
+      .first(),
+  ).toBeVisible();
+}
+
+async function expectAttentionReasonVisible(
+  page: import('@playwright/test').Page,
+  reason: string,
+) {
+  await expect(
+    page
+      .getByRole('group', { name: new RegExp(escapeRegExp(reason), 'i') })
+      .or(page.getByText(reason, { exact: true }))
+      .first(),
+  ).toBeVisible();
+}
+
+const ORG_PETS_TAB_KEYS: Record<string, string> = {
+  'Need attention': 'org_pets_tab_needAttention',
+  'In foster': 'org_pets_tab_inFoster',
+  Adopted: 'org_pets_tab_adopted',
+  All: 'org_pets_tab_all',
+};
 
 async function selectOrgPetsTab(
   page: import('@playwright/test').Page,
   tabLabel: string,
 ) {
-  await page.getByRole('button', { name: tabLabel }).click();
+  const tabKey = ORG_PETS_TAB_KEYS[tabLabel];
+  if (tabKey) {
+    const chip = page.locator(`[flt-semantics-identifier="${tabKey}"]`);
+    if (await chip.count()) {
+      await chip.click();
+      await refreshFlutterAccessibility(page);
+      return;
+    }
+  }
+  const tab = page
+    .getByRole('button', { name: tabLabel })
+    .or(page.getByRole('checkbox', { name: tabLabel }));
+  await tab.first().click();
   await refreshFlutterAccessibility(page);
 }
 
@@ -69,8 +110,8 @@ test.describe('Organisation pet filters', () => {
     await openOrgPetsScreen(page, baseURL, alice, org, ORG_NAME);
     await selectOrgPetsTab(page, 'Need attention');
 
-    await expect(page.getByText('Max', { exact: true }).first()).toBeVisible();
-    await expect(page.getByText('Not in foster').first()).toBeVisible();
+    await expectOrgPetVisible(page, 'Max');
+    await expectAttentionReasonVisible(page, 'Not in foster');
   });
 
   test('Need attention tab shows foster finishing soon message', async ({ page }) => {
@@ -93,8 +134,8 @@ test.describe('Organisation pet filters', () => {
     await openOrgPetsScreen(page, baseURL, alice, org, 'Rescue Hearts');
     await selectOrgPetsTab(page, 'Need attention');
 
-    await expect(page.getByText('Bella', { exact: true }).first()).toBeVisible();
-    await expect(page.getByText('Foster finishing soon').first()).toBeVisible();
+    await expectOrgPetVisible(page, 'Bella');
+    await expectAttentionReasonVisible(page, 'Foster finishing soon');
   });
 
   test('In foster tab lists pets currently in foster care', async ({ page }) => {
@@ -116,7 +157,7 @@ test.describe('Organisation pet filters', () => {
     await openOrgPetsScreen(page, baseURL, alice, org, 'Rescue Hearts');
     await selectOrgPetsTab(page, 'In foster');
 
-    await expect(page.getByText('Bella', { exact: true }).first()).toBeVisible();
+    await expectOrgPetVisible(page, 'Bella');
   });
 
   test('Name filter narrows pets on the All tab', async ({ page }) => {
@@ -128,12 +169,12 @@ test.describe('Organisation pet filters', () => {
     await openOrgPetsScreen(page, baseURL, alice, org, ORG_NAME);
     await selectOrgPetsTab(page, 'All');
 
-    await page.getByRole('button', { name: 'Name' }).click();
+    await page.getByRole('checkbox', { name: 'Name' }).click();
     await refreshFlutterAccessibility(page);
     await page.getByLabel('Search by pet name').fill('Max');
     await refreshFlutterAccessibility(page);
 
-    await expect(page.getByText('Max', { exact: true }).first()).toBeVisible();
+    await expectOrgPetVisible(page, 'Max');
     await expect(page.getByText('Bella', { exact: true })).toHaveCount(0);
   });
 
@@ -155,10 +196,10 @@ test.describe('Organisation pet filters', () => {
 
     await openOrgPetsScreen(page, baseURL, alice, org, 'Rescue Hearts');
     await selectOrgPetsTab(page, 'All');
-    await page.getByRole('button', { name: 'Shadow' }).click();
+    await page.getByRole('checkbox', { name: 'Shadow' }).click();
     await refreshFlutterAccessibility(page);
 
-    await expect(page.getByText('Shadow', { exact: true }).first()).toBeVisible();
+    await expectOrgPetVisible(page, 'Shadow');
   });
 
   test('Need attention info icon is visible with guidance', async ({ page }) => {

@@ -129,8 +129,6 @@ test.describe('Experience navigation', () => {
     await refreshFlutterAccessibility(page);
     await logOutFromApp(page);
 
-    await logOutFromApp(page);
-
     await loginFromLanding(page, user.email, user.password);
     await waitForFlutterRoutePattern(page, /\/o\/home/, 60_000);
     await experience.expectOrgShell();

@@ -89,7 +89,11 @@ export class ExperiencePage {
   /** Open the drawer and navigate to the Organisation section via the unified drawer. */
   async openDrawerOrgView(): Promise<void> {
     await openExperienceDrawer(this.page);
-    await this.page.getByText('Organisation', { exact: true }).first().click();
+    await this.page
+      .getByRole('button', { name: /^Organisation\b/i })
+      .or(this.page.locator('[flt-semantics-identifier="drawer_organisation"]'))
+      .first()
+      .click();
     await waitForFlutterRoutePattern(this.page, /\/(?:o\/orgs|organizations)(?:\?|$)/, 30_000);
   }
 
@@ -102,7 +106,11 @@ export class ExperiencePage {
   async gotoAccountFromDrawer(): Promise<void> {
     await dismissConsentBannerIfPresent(this.page);
     await openExperienceDrawer(this.page);
-    await this.page.getByText('Account', { exact: true }).click();
+    await this.page
+      .getByRole('button', { name: /^Account\b/i })
+      .or(this.page.locator('[flt-semantics-identifier="drawer_account"]'))
+      .first()
+      .click();
     await waitForFlutterRoutePattern(this.page, /\/account(?:\?|$)/, 30_000);
   }
 
@@ -148,9 +156,10 @@ export class ExperiencePage {
   async expectUnifiedDrawerItems(): Promise<void> {
     await openExperienceDrawer(this.page);
     await refreshFlutterAccessibility(this.page);
-    await expect(this.page.getByText('Guardian', { exact: true })).toBeVisible();
-    await expect(this.page.getByText('Organisation', { exact: true }).first()).toBeVisible();
-    await expect(this.page.getByText('Account', { exact: true })).toBeVisible();
+    // Flutter web exposes drawer rows as buttons (label may repeat in accessible name).
+    await expect(this.page.getByRole('button', { name: /^Guardian\b/i })).toBeVisible();
+    await expect(this.page.getByRole('button', { name: /^Organisation\b/i })).toBeVisible();
+    await expect(this.page.getByRole('button', { name: /^Account\b/i })).toBeVisible();
     // Deprecated items must not appear
     await expect(this.page.getByText('Events', { exact: true })).not.toBeVisible();
     await expect(this.page.getByText('My vets', { exact: true })).not.toBeVisible();

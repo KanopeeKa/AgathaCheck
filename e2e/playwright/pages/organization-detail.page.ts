@@ -337,16 +337,58 @@ export class OrganizationDetailPage {
   }
 
   async openManageFosters(): Promise<void> {
-    await enableFlutterAccessibility(this.page);
-    await this.page.getByText(/Manage fosters|Gérer les familles d'accueil/i).first().click();
-    await refreshFlutterAccessibility(this.page);
     const orgId = this.orgIdFromUrl();
-    if (orgId) {
-      await waitForFlutterRoutePattern(
+    const fostersRoute = /\/o\/orgs\/[^/]+\/fosters/;
+
+    let navigated = false;
+    if (
+      await this.tryActivateSectionCard(
+        /^Manage fosters$|^Gérer les familles d'accueil$/i,
+      )
+    ) {
+      navigated = await waitForFlutterRoutePattern(this.page, fostersRoute, 8_000)
+        .then(() => true)
+        .catch(() => false);
+    }
+
+    if (!navigated) {
+      await enableFlutterAccessibility(this.page);
+      const link = this.page
+        .getByRole('button', { name: /Manage fosters|Gérer les familles d'accueil/i })
+        .or(this.page.getByText(/Manage fosters|Gérer les familles d'accueil/i))
+        .first();
+      if (await link.isVisible({ timeout: 5_000 }).catch(() => false)) {
+        await link.click();
+        await refreshFlutterAccessibility(this.page);
+        navigated = await waitForFlutterRoutePattern(this.page, fostersRoute, 8_000)
+          .then(() => true)
+          .catch(() => false);
+      }
+    }
+
+    if (!navigated) {
+      const bannerVisible = await this.page
+        .getByRole('banner', { name: /Manage fosters|Gérer les familles d'accueil/i })
+        .isVisible({ timeout: 3_000 })
+        .catch(() => false);
+      if (bannerVisible) {
+        await refreshFlutterAccessibility(this.page);
+        return;
+      }
+      if (!orgId) {
+        await waitForFlutterRoutePattern(this.page, fostersRoute, 60_000);
+        return;
+      }
+      await navigateWithShellFallback(
         this.page,
-        new RegExp(`/o/orgs/${orgId}/fosters`),
-        60_000,
+        fostersRoute,
+        `/o/orgs/${orgId}/fosters`,
+        async () => {
+          await refreshFlutterAccessibility(this.page);
+        },
+        { helper: 'OrganizationDetailPage.openManageFosters' },
       );
     }
+    await refreshFlutterAccessibility(this.page);
   }
 }

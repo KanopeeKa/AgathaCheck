@@ -9,7 +9,7 @@
 import { test, expect } from '../fixtures/auth.fixture';
 import {
   createOrganization,
-  discoverOrganizations,
+  findDiscoverableOrganization,
   setOrganizationDiscoverability,
   setOrganizationDiscoveryProfile,
   signupUser,
@@ -31,8 +31,7 @@ test.describe('Organisation discovery', () => {
       logo_url: '/uploads/org_photos/rescue-hearts.png',
     });
 
-    const discovery = await discoverOrganizations(baseURL);
-    const match = discovery.items.find((item) => item.id === org.id);
+    const match = await findDiscoverableOrganization(baseURL, org.id);
 
     expect(match).toBeTruthy();
     expect(match?.name).toBe('Rescue Hearts');
@@ -55,8 +54,7 @@ test.describe('Organisation discovery', () => {
     });
     await setOrganizationDiscoverability(baseURL, owner.accessToken, org, false);
 
-    const discovery = await discoverOrganizations(baseURL);
-    expect(discovery.items.some((item) => item.id === org.id)).toBe(false);
+    expect(await findDiscoverableOrganization(baseURL, org.id)).toBeUndefined();
   });
 
   test('@P1 discover API returns display_locality from postcode when set', async () => {
@@ -80,8 +78,7 @@ test.describe('Organisation discovery', () => {
       postcode: '62701',
     });
 
-    const discovery = await discoverOrganizations(baseURL);
-    const match = discovery.items.find((item) => item.id === org.id);
+    const match = await findDiscoverableOrganization(baseURL, org.id);
     expect(match?.display_locality).toBe('62701');
   });
 
@@ -99,8 +96,7 @@ test.describe('Organisation discovery', () => {
       photo_url: '/uploads/org_photos/rescue-hearts-cover.jpg',
     });
 
-    const discovery = await discoverOrganizations(baseURL);
-    const match = discovery.items.find((item) => item.id === org.id);
+    const match = await findDiscoverableOrganization(baseURL, org.id);
     expect(match?.photo_url).toBe('/uploads/org_photos/rescue-hearts-cover.jpg');
   });
 
@@ -117,8 +113,7 @@ test.describe('Organisation discovery', () => {
       description: 'A caring rescue shelter',
     });
 
-    const discovery = await discoverOrganizations(baseURL);
-    const match = discovery.items.find((item) => item.id === org.id);
+    const match = await findDiscoverableOrganization(baseURL, org.id);
     expect(match?.display_locality).toBe('Springfield');
   });
 });
