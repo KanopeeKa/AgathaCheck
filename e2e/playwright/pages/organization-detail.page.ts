@@ -14,10 +14,14 @@ import {
 import { OrganizationListPage } from './organization-list.page';
 
 /**
- * Organisation dashboard hub (`/o/orgs/:id`) — replaces the legacy detail screen.
+ * Organisation profile composer (`/o/orgs/:id`) — v2 hub replacing the legacy dashboard.
  */
 export class OrganizationDetailPage {
   constructor(private readonly page: Page) {}
+
+  /** Visible on v2 profile (public blocks and/or gated member sections). */
+  private static readonly profileLoadedMarker =
+    /Contact|Legal information|Admin contacts|Foster parents|Fostering sessions|^Pets$|^Animaux$|Connections|Professional|Charity|Professionnel|Association|Organisation presentation|Organisation dashboard|Choose a section/i;
 
   private orgIdFromUrl(): string | null {
     const match = this.page.url().match(/\/o\/orgs\/([^/?#]+)/);
@@ -31,9 +35,7 @@ export class OrganizationDetailPage {
       await refreshFlutterAccessibility(this.page);
       await expectAppBarTitle(this.page, orgName);
       await expect(
-        this.page
-          .getByText(/Organisation presentation|Organisation dashboard|Choose a section/i)
-          .first(),
+        this.page.getByText(OrganizationDetailPage.profileLoadedMarker).first(),
       ).toBeVisible();
     }).toPass({ timeout: 30_000 });
   }
@@ -111,37 +113,24 @@ export class OrganizationDetailPage {
 
   async openPresentation(): Promise<void> {
     const orgId = this.orgIdFromUrl();
-    const presentationRoute = /\/o\/orgs\/[^/]+\/presentation(?:\/|$|\?)/;
+    const profileRoute = /\/o\/orgs\/[^/?#]+(?:\/|$|\?)/;
 
-    let navigated = false;
-    if (await this.tryActivateSectionCard(OrganizationDetailPage.presentationSectionName)) {
-      navigated = await waitForFlutterRoutePattern(this.page, presentationRoute, 8_000)
-        .then(() => true)
-        .catch(() => false);
-    }
-
-    if (!navigated) {
-      if (!orgId) {
-        await waitForFlutterRoutePattern(this.page, presentationRoute, 60_000);
-      } else {
-        await navigateWithShellFallback(
-          this.page,
-          presentationRoute,
-          `/o/orgs/${orgId}/presentation`,
-          async () => {
-            await refreshFlutterAccessibility(this.page);
-          },
-          { helper: 'OrganizationDetailPage.openPresentation', testTitle: null },
-        );
-      }
+    if (!orgId) {
+      await waitForFlutterRoutePattern(this.page, profileRoute, 60_000);
+    } else {
+      await navigateWithShellFallback(
+        this.page,
+        profileRoute,
+        `/o/orgs/${orgId}/presentation`,
+        async () => {
+          await refreshFlutterAccessibility(this.page);
+        },
+        { helper: 'OrganizationDetailPage.openPresentation', testTitle: null },
+      );
     }
 
     await refreshFlutterAccessibility(this.page);
-    await waitForFlutterRoutePattern(this.page, presentationRoute, 60_000);
-    await expect(async () => {
-      await refreshFlutterAccessibility(this.page);
-      await expectAppBarTitle(this.page, OrganizationDetailPage.presentationSectionName);
-    }).toPass({ timeout: 30_000 });
+    await waitForFlutterRoutePattern(this.page, profileRoute, 60_000);
   }
 
   async expectBio(bio: string): Promise<void> {
@@ -213,10 +202,17 @@ export class OrganizationDetailPage {
 
   async openEdit(): Promise<void> {
     await enableFlutterAccessibility(this.page);
-    await this.page
-      .getByText(/Edit organisation|Edit Organization|Modifier l'organisation/i)
-      .first()
-      .click();
+    const settings = this.page.getByRole('button', {
+      name: /Edit organisation settings|Modifier les paramètres de l'organisation/i,
+    });
+    if (await settings.isVisible({ timeout: 5_000 }).catch(() => false)) {
+      await settings.click();
+    } else {
+      await this.page
+        .getByText(/Edit organisation|Edit Organization|Modifier l'organisation/i)
+        .first()
+        .click();
+    }
     await this.page
       .getByRole('button', { name: /Edit Organization|Edit organisation/i })
       .last()
