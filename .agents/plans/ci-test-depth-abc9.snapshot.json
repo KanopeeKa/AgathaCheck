@@ -1,0 +1,246 @@
+{
+  "schema_version": 1,
+  "plan_id": "ci-test-depth-abc9",
+  "approved_at": "2026-08-03T18:45:00Z",
+  "approved_by": "user chat 2026-08-03 standing grant",
+  "approved_until": "2026-08-05T18:45:00Z",
+  "content_hash": "sha256:8677cd32f1f6613c4f7ccde88154174dc83f76bef0785fa4bbc7763da415cb8e",
+  "autonomy": "active",
+  "default_merge_mode": "auto",
+  "base_branch": "cursor/ci-test-depth-integration-abc9",
+  "control_issue": 558,
+  "artifact_branch_policy": "phase-branch",
+  "phases": [
+    {
+      "id": "F0",
+      "title": "Doc truth and contracts",
+      "branch": "cursor/ci-test-depth-f0-docs-abc9",
+      "allowed_paths": [
+        "docs/**",
+        "AGENTS.md",
+        "CONTRIBUTING.md",
+        ".cursor/rules/agent-core.mdc",
+        ".cursor/rules/testing.mdc",
+        ".cursor/skills/pre-push-verify/SKILL.md",
+        "e2e/README.md",
+        ".agents/plans/**"
+      ],
+      "forbidden_paths": [
+        "db/migrations/**",
+        "server/config/security.js",
+        "infra/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "governance",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": null,
+      "pr_head_sha": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "F1",
+      "title": "Quality metrics tooling",
+      "branch": "cursor/ci-test-depth-f1-metrics-abc9",
+      "allowed_paths": [
+        "e2e/scripts/**",
+        "scripts/check_bdd_priority_tags.js",
+        ".github/workflows/_reusable-test.yml",
+        "docs/quality/scorecard.md",
+        ".agents/plans/**"
+      ],
+      "forbidden_paths": [
+        "db/migrations/**",
+        "server/config/security.js",
+        "infra/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "governance",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": null,
+      "pr_head_sha": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "F2",
+      "title": "PR domain-scoped Flutter shards",
+      "branch": "cursor/ci-test-depth-f2-ci-scope-abc9",
+      "allowed_paths": [
+        "scripts/ci/**",
+        ".github/workflows/ci.yml",
+        ".github/workflows/_reusable-ci-gate.yml",
+        ".github/workflows/_reusable-flutter-coverage.yml",
+        "docs/ci-cd-gates.md",
+        ".agents/plans/**"
+      ],
+      "forbidden_paths": [
+        "db/migrations/**",
+        "server/config/security.js",
+        "infra/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "governance",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": null,
+      "pr_head_sha": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "F3",
+      "title": "Pre-UAT shard manifest + rebalance",
+      "branch": "cursor/ci-test-depth-f3-shards-abc9",
+      "allowed_paths": [
+        "e2e/scripts/shard-files.mjs",
+        "e2e/scripts/run-ci-shard.mjs",
+        ".github/workflows/pre-uat-e2e.yml",
+        ".github/workflows/e2e.yml",
+        "e2e/README.md",
+        "docs/ci-cd-gates.md",
+        ".agents/plans/**"
+      ],
+      "forbidden_paths": [
+        "db/migrations/**",
+        "server/config/security.js",
+        "infra/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "governance",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": null,
+      "pr_head_sha": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "F4",
+      "title": "Org v2 test deepening",
+      "branch": "cursor/ci-test-depth-f4-org-tests-abc9",
+      "allowed_paths": [
+        "e2e/playwright/tests/organisation.*",
+        "e2e/playwright/pages/organization*.ts",
+        "flutter_app/test/bdd/features/organisation_*",
+        "flutter_app/test/bdd/features/admin_contacts.feature",
+        "flutter_app/test/bdd/features/fostering_sessions.feature",
+        "flutter_app/test/bdd/features/pet_screen_filters.feature",
+        "flutter_app/test/features/organization/**",
+        "server/test/organizations/**",
+        "docs/quality/bdd-journey-matrix.md",
+        ".agents/plans/**"
+      ],
+      "forbidden_paths": [
+        "db/migrations/**",
+        "server/config/security.js",
+        "infra/**",
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs"
+      ],
+      "spawn_allowed": true,
+      "spawn_config": {
+        "integration_branch": "cursor/ci-test-depth-integration-abc9",
+        "ownership_ref": "docs/refactoring-log.md#ci-test-depth-abc9"
+      },
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": null,
+      "pr_head_sha": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "F5",
+      "title": "General widening + scorecard",
+      "branch": "cursor/ci-test-depth-f5-widen-abc9",
+      "allowed_paths": [
+        "e2e/playwright/tests/fostering.platform.spec.ts",
+        "e2e/playwright/tests/foster.onboarding.spec.ts",
+        "e2e/playwright/tests/guardian.dashboard.spec.ts",
+        "e2e/playwright/tests/experience.navigation.spec.ts",
+        "docs/quality/**",
+        "docs/architecture/index.md",
+        ".agents/plans/**"
+      ],
+      "forbidden_paths": [
+        "db/migrations/**",
+        "server/config/security.js",
+        "infra/**",
+        ".github/workflows/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "default",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": null,
+      "pr_head_sha": null,
+      "debt_issue_refs": []
+    },
+    {
+      "id": "F6",
+      "title": "Integration to main",
+      "branch": "cursor/ci-test-depth-integration-abc9",
+      "allowed_paths": [
+        ".agents/plans/**",
+        "docs/refactoring-log.md"
+      ],
+      "forbidden_paths": [
+        "db/migrations/**",
+        "server/config/security.js",
+        "infra/**"
+      ],
+      "allowed_exceptions": [
+        "docs"
+      ],
+      "spawn_allowed": false,
+      "spawn_config": null,
+      "merge_method": "squash",
+      "exit_checklist": "governance",
+      "status": "pending",
+      "status_reason": null,
+      "status_detail": null,
+      "pr_url": null,
+      "pr_head_sha": null,
+      "debt_issue_refs": []
+    }
+  ]
+}
