@@ -40,8 +40,8 @@ jobs:
       - name: Test quality scorecard (depth metrics)
         run: node e2e/scripts/check_test_quality.js --report-only
 
-      - name: Playwright shard manifest (report orphans)
-        run: node e2e/scripts/validate-shard-manifest.mjs --report-only
+      - name: Playwright shard manifest (enforce completeness)
+        run: node e2e/scripts/validate-shard-manifest.mjs
 
       - name: Smoke tag invariant (@smoke-ci ⊆ @smoke-uat)
         run: node e2e/scripts/check-smoke-tags.mjs
