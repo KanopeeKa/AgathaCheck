@@ -14,13 +14,13 @@ Tracks planned and completed refactor / quality work. See also `docs/refactoring
 
 | Phase | Outcome | Status |
 |-------|---------|--------|
-| F0 | Doc truth (UAT tiers, scorecard, coordinator superseded, pre-push skill) | **In progress** |
-| F1 | Quality metrics tooling (depth/execution scorecard) | Pending |
-| F2 | PR domain-scoped Flutter shards | Pending |
-| F3 | Pre-UAT shard manifest + rebalance (12 shards, 0 orphans) | Pending |
-| F4 | Org v2 test deepening | Pending |
-| F5 | General widening + scorecard update | Pending |
-| F6 | Integration → `main` | Pending |
+| F0 | Doc truth (UAT tiers, scorecard, coordinator superseded, pre-push skill) | **Done** |
+| F1 | Quality metrics tooling (depth/execution scorecard) | **Done** |
+| F2 | PR domain-scoped Flutter shards | **Done** |
+| F3 | Pre-UAT shard manifest + rebalance (12 shards, 0 orphans) | **Done** |
+| F4 | Org v2 test deepening | **Done** |
+| F5 | General widening + scorecard update | **Done** |
+| F6 | Integration → `main` | **In progress** |
 
 ---
 
