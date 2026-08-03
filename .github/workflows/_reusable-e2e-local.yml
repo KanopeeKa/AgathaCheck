@@ -1,7 +1,7 @@
 # Playwright E2E against a local stack (Postgres + Flutter web + Node server).
 # Used on uat-* tag deploy (deploy-uat.yml), weekly manual/cron (e2e.yml), and PR CI canary (ci.yml).
 # Full suite: eleven parallel matrix legs (file-balanced manifest in e2e/scripts/shard-files.mjs);
-# callers pass shard_total: 11 and matrix.shard [1..11] — keep in sync when changing shard count.
+# callers pass shard_total: 12 and matrix.shard [1..12] — keep in sync when changing shard count.
 # PR canary: test_suite smoke-ci runs @smoke-ci only (retries 0).
 name: Reusable E2E (localhost)
 

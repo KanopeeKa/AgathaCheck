@@ -34,8 +34,17 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
 
-      - name: BDD scenario coverage gate (≥105 mapped)
+      - name: BDD scenario coverage gate (live script)
         run: node e2e/scripts/check_bdd_coverage.js
+
+      - name: Test quality scorecard (depth metrics)
+        run: node e2e/scripts/check_test_quality.js --report-only
+
+      - name: Playwright shard manifest (enforce completeness)
+        run: node e2e/scripts/validate-shard-manifest.mjs
+
+      - name: Smoke tag invariant (@smoke-ci ⊆ @smoke-uat)
+        run: node e2e/scripts/check-smoke-tags.mjs
 
       - name: BDD priority tags (@P0/@P1/@P2 on every scenario)
         run: node scripts/check_bdd_priority_tags.js

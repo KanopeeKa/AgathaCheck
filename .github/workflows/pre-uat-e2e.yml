@@ -58,11 +58,11 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        shard: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+        shard: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
     uses: ./.github/workflows/_reusable-e2e-local.yml
     with:
       shard_index: ${{ matrix.shard }}
-      shard_total: 11
+      shard_total: 12
       web_artifact_name: ${{ needs.build-web.outputs.artifact_name }}
       ref: ${{ needs.resolve-commit.outputs.test_sha }}
 

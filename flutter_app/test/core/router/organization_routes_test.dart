@@ -21,4 +21,16 @@ void main() {
       expect(legacyOrganizationRedirectForPath('/o/orgs'), isNull);
     });
   });
+
+  group('isPublicOrganizationProfilePath', () {
+    test('allows anonymous org profile hub', () {
+      expect(isPublicOrganizationProfilePath('/o/orgs/org-1'), isTrue);
+    });
+
+    test('rejects member-only sub-routes and reserved segments', () {
+      expect(isPublicOrganizationProfilePath('/o/orgs/org-1/pets'), isFalse);
+      expect(isPublicOrganizationProfilePath('/o/orgs/new'), isFalse);
+      expect(isPublicOrganizationProfilePath('/o/orgs'), isFalse);
+    });
+  });
 }

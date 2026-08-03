@@ -1,6 +1,8 @@
 # Cross-agent UAT coordinator — implementation plan
 
-**Status:** Phase 1–2 merged (#281, #307); **Phase 1b bootstrap in progress**; Phase 3 not started  
+> **SUPERSEDED (Jul 2026):** UAT coordinator removed. CI owns promotion via `pre-uat-e2e.yml` → `promote-uat.yml` → `deploy-uat.yml`. See [uat-deploy-tiers.md](../e2e/uat-deploy-tiers.md). This document is retained for historical context only.
+
+**Status:** ~~Phase 1–2 merged (#281, #307); **Phase 1b bootstrap in progress**; Phase 3 not started~~ **Removed Jul 2026**  
 **Soak:** Jul 23 2026 — 50 deploy runs, 26% success; see [§Jul 23 soak review](#jul-23-soak-review)  
 **Owner track:** Agent efficiency + CI/CD reliability  
 **Related:** [autonomous-pr-policy.md](./autonomous-pr-policy.md) §Post-merge UAT, [e2e-ci-canary-plan.md](../e2e-ci-canary-plan.md) Phase 5, [promotion-contract.md](../promotion-contract.md), [github-issue-workflow.md](../github-issue-workflow.md)  

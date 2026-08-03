@@ -17,7 +17,7 @@ Run `./scripts/pre-push-changed.sh` during iteration or `./scripts/pre-push.sh` 
 | Flutter domain/data | `flutter test` | Models, repos, datasources |
 | Flutter UI | Widget tests | Extracted widgets + critical screens |
 | Integration | `flutter test` integration dir | **Blocking in CI** — no `continue-on-error` |
-| Journeys | Playwright (`e2e/`) | UAT gate only; annotate `@bdd` + `@smoke` for critical paths |
+| Journeys | Playwright (`e2e/`) | Full suite: **pre-uat-e2e.yml** post-merge to `main` + weekly **e2e.yml** cron; PR: **@smoke-ci** canary only; annotate `@bdd` + `@smoke` for critical paths |
 
 ## BDD (hybrid — no Cucumber runner)
 

@@ -4,10 +4,105 @@
  * Scenario: Super admin can upload hero and logo images
  * Scenario: Profile settings cog opens edit form for manage_permissions users
  */
-import { test, expect } from '../fixtures/auth.fixture';
+import { test, expect, loginAs } from '../fixtures/auth.fixture';
+import {
+  createOrganization,
+  getOrgPublicProfile,
+  getOrgPermissionsMe,
+  signupUser,
+  updateOrganization,
+} from '../support/api';
+import { enableFlutterAccessibility } from '../support/flutter';
+import { OrganizationDetailPage } from '../pages/organization-detail.page';
+import { OrganizationListPage } from '../pages/organization-list.page';
+
+const ORG_NAME = 'Rescue Hearts';
 
 test.describe('Organisation edit', () => {
-  test('@P1 skeleton — mapped in organisation_edit.feature', async () => {
-    expect(true).toBe(true);
+  test('@P1 super admin persists postcode in public profile metadata', async () => {
+    const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
+    const alice = await signupUser(baseURL, {
+      firstName: 'Alice',
+      lastName: 'Super',
+      email: `alice-${Date.now()}@example.com`,
+    });
+    const org = await createOrganization(baseURL, alice.accessToken, {
+      name: ORG_NAME,
+      type: 'charity',
+    });
+
+    await updateOrganization(baseURL, alice.accessToken, org.id, {
+      name: org.name,
+      type: org.type,
+      bio: org.bio ?? '',
+      town: 'Springfield',
+      postcode: '62701',
+    });
+
+    const profile = await getOrgPublicProfile(baseURL, org.id);
+    expect(profile.town).toBe('Springfield');
+    expect(profile.public_profile_metadata).toEqual({ postcode: '62701' });
+  });
+
+  test('@P1 super admin sees hero and logo upload controls with guidance', async ({ page }) => {
+    const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
+    const alice = await signupUser(baseURL, {
+      firstName: 'Alice',
+      lastName: 'Super',
+      email: `alice-${Date.now()}@example.com`,
+    });
+    const org = await createOrganization(baseURL, alice.accessToken, {
+      name: ORG_NAME,
+      type: 'charity',
+    });
+
+    await loginAs(page, alice, { experience: 'organization' });
+    const orgList = new OrganizationListPage(page);
+    await orgList.openOrganizations();
+    await orgList.openOrg(ORG_NAME, org.id);
+
+    const detail = new OrganizationDetailPage(page);
+    await detail.expectLoaded(ORG_NAME);
+    await detail.openEdit();
+    await enableFlutterAccessibility(page);
+
+    await expect(page.getByRole('button', { name: 'Upload logo' })).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Upload picture' })).toBeVisible();
+    await expect(
+      page.getByText('Square logo, at least 256×256 px. Shown as a circle. JPG, PNG, or WebP up to 2 MB.'),
+    ).toBeVisible();
+    await expect(
+      page.getByText('Landscape image (~8:3), at least 1200×450 px. JPG, PNG, or WebP up to 2 MB.'),
+    ).toBeVisible();
+  });
+
+  test('@P1 manage_permissions user sees settings control that opens edit form', async ({
+    page,
+  }) => {
+    const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
+    const alice = await signupUser(baseURL, {
+      firstName: 'Alice',
+      lastName: 'Super',
+      email: `alice-${Date.now()}@example.com`,
+    });
+    const org = await createOrganization(baseURL, alice.accessToken, {
+      name: ORG_NAME,
+      type: 'charity',
+    });
+
+    const perms = await getOrgPermissionsMe(baseURL, alice.accessToken, org.id);
+    expect(perms.effective_permissions).toContain('manage_permissions');
+
+    await loginAs(page, alice, { experience: 'organization' });
+    const orgList = new OrganizationListPage(page);
+    await orgList.openOrganizations();
+    await orgList.openOrg(ORG_NAME, org.id);
+
+    const detail = new OrganizationDetailPage(page);
+    await detail.expectLoaded(ORG_NAME);
+    await enableFlutterAccessibility(page);
+
+    await page.getByRole('button', { name: 'Edit organisation settings' }).click();
+    await expect(page.getByRole('button', { name: 'Edit Organization' })).toBeVisible();
   });
 });

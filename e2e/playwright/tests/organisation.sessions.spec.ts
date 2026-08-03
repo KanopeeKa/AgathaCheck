@@ -5,9 +5,94 @@
  * Scenario: Admin can message a foster from the sessions list
  */
 import { test, expect } from '../fixtures/auth.fixture';
+import {
+  acceptFosterPlacement,
+  createFosterPlacement,
+  createOrgPet,
+  createOrganization,
+  getOrgPlacements,
+  signupUser,
+} from '../support/api';
+
+const ORG_NAME = 'Rescue Hearts';
+
+function isoDay(offsetDays: number): string {
+  const date = new Date();
+  date.setUTCDate(date.getUTCDate() + offsetDays);
+  return date.toISOString().slice(0, 10);
+}
+
+async function seedRescueHeartsWithSession(
+  baseURL: string,
+  options: { endDate?: string } = {},
+) {
+  const alice = await signupUser(baseURL, {
+    firstName: 'Alice',
+    lastName: 'Super',
+    email: `alice-${Date.now()}@example.com`,
+  });
+  const jane = await signupUser(baseURL, {
+    firstName: 'Jane',
+    lastName: 'Foster',
+    email: `jane-${Date.now()}@example.com`,
+  });
+  const org = await createOrganization(baseURL, alice.accessToken, {
+    name: ORG_NAME,
+    type: 'charity',
+  });
+  const pet = await createOrgPet(baseURL, alice.accessToken, org.id, {
+    name: 'Buddy',
+    species: 'dog',
+  });
+  const placement = await createFosterPlacement(
+    baseURL,
+    alice.accessToken,
+    org.id,
+    pet.id,
+    jane.userId,
+    {
+      startDate: isoDay(-20),
+      endDate: options.endDate ?? isoDay(30),
+    },
+  );
+  await acceptFosterPlacement(baseURL, jane.accessToken, placement.id);
+  return { alice, jane, org, pet, placement };
+}
 
 test.describe('Fostering sessions list', () => {
-  test('@P1 skeleton — mapped in fostering_sessions.feature', async () => {
-    expect(true).toBe(true);
+  test('@P1 admin can load fostering sessions list with pet and foster names', async () => {
+    const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
+    const { alice, org } = await seedRescueHeartsWithSession(baseURL);
+
+    const sessions = await getOrgPlacements(baseURL, alice.accessToken, org.id);
+    expect(sessions.length).toBeGreaterThanOrEqual(1);
+    const row = sessions.find((item) => item.pet_name === 'Buddy');
+    expect(row).toBeTruthy();
+    expect(row?.foster_name).toContain('Jane');
+  });
+
+  test('@P1 sessions list highlights nearly finished placements', async () => {
+    const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
+    const { alice, org } = await seedRescueHeartsWithSession(baseURL, {
+      endDate: isoDay(5),
+    });
+
+    const sessions = await getOrgPlacements(baseURL, alice.accessToken, org.id, {
+      derived_status: 'nearly_finished',
+    });
+    expect(sessions.length).toBeGreaterThanOrEqual(1);
+    const row = sessions.find((item) => item.pet_name === 'Buddy');
+    expect(row?.derived_status).toBe('nearly_finished');
+    expect(row?.nearly_finished).toBe(true);
+  });
+
+  test('@P1 admin sees foster email for mailto affordance on sessions list', async () => {
+    const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
+    const { alice, jane, org } = await seedRescueHeartsWithSession(baseURL);
+
+    const sessions = await getOrgPlacements(baseURL, alice.accessToken, org.id);
+    const row = sessions.find((item) => item.pet_name === 'Buddy');
+    expect(row).toBeTruthy();
+    expect(row?.foster_email).toBe(jane.email);
   });
 });

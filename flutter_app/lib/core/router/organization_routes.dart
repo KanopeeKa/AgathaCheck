@@ -353,3 +353,13 @@ String _withQuery(String path, String query) {
   if (query.isEmpty) return path;
   return '$path?$query';
 }
+
+const _reservedOrgRouteSegments = {'new', 'join', 'connect'};
+
+/// Anonymous visitors may view discoverable organisation public profiles.
+bool isPublicOrganizationProfilePath(String path) {
+  final segments = Uri.parse(path).pathSegments;
+  if (segments.length != 3) return false;
+  if (segments[0] != 'o' || segments[1] != 'orgs') return false;
+  return !_reservedOrgRouteSegments.contains(segments[2]);
+}

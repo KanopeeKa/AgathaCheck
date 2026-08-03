@@ -13,6 +13,7 @@ import {
   setOrganizationDiscoverability,
   setOrganizationDiscoveryProfile,
   signupUser,
+  updateOrganization,
 } from '../support/api';
 
 test.describe('Organisation discovery', () => {
@@ -58,15 +59,66 @@ test.describe('Organisation discovery', () => {
     expect(discovery.items.some((item) => item.id === org.id)).toBe(false);
   });
 
-  test('@P1 skeleton — Discover API returns display_locality from postcode when set', async () => {
-    expect(true).toBe(true);
+  test('@P1 discover API returns display_locality from postcode when set', async () => {
+    const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
+    const owner = await signupUser(baseURL, { firstName: 'Rescue', lastName: 'Admin' });
+    const org = await createOrganization(baseURL, owner.accessToken, {
+      name: 'Rescue Hearts',
+      type: 'charity',
+    });
+    await setOrganizationDiscoveryProfile(baseURL, owner.accessToken, org, {
+      town: 'Springfield',
+      administrative_area: 'IL',
+      description: 'A caring rescue shelter',
+    });
+    await updateOrganization(baseURL, owner.accessToken, org.id, {
+      name: org.name,
+      type: org.type,
+      bio: org.bio ?? '',
+      town: 'Springfield',
+      administrative_area: 'IL',
+      postcode: '62701',
+    });
+
+    const discovery = await discoverOrganizations(baseURL);
+    const match = discovery.items.find((item) => item.id === org.id);
+    expect(match?.display_locality).toBe('62701');
   });
 
-  test('@P1 skeleton — Discover API includes photo_url for hero imagery', async () => {
-    expect(true).toBe(true);
+  test('@P1 discover API includes photo_url for hero imagery', async () => {
+    const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
+    const owner = await signupUser(baseURL, { firstName: 'Rescue', lastName: 'Admin' });
+    const org = await createOrganization(baseURL, owner.accessToken, {
+      name: 'Rescue Hearts',
+      type: 'charity',
+    });
+    await setOrganizationDiscoveryProfile(baseURL, owner.accessToken, org, {
+      town: 'Springfield',
+      administrative_area: 'IL',
+      description: 'A caring rescue shelter',
+      photo_url: '/uploads/org_photos/rescue-hearts-cover.jpg',
+    });
+
+    const discovery = await discoverOrganizations(baseURL);
+    const match = discovery.items.find((item) => item.id === org.id);
+    expect(match?.photo_url).toBe('/uploads/org_photos/rescue-hearts-cover.jpg');
   });
 
-  test('@P1 skeleton — Discover API falls back display_locality to town then administrative area', async () => {
-    expect(true).toBe(true);
+  test('@P1 discover API falls back display_locality to town then administrative area', async () => {
+    const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
+    const owner = await signupUser(baseURL, { firstName: 'Rescue', lastName: 'Admin' });
+    const org = await createOrganization(baseURL, owner.accessToken, {
+      name: 'Rescue Hearts',
+      type: 'charity',
+    });
+    await setOrganizationDiscoveryProfile(baseURL, owner.accessToken, org, {
+      town: 'Springfield',
+      administrative_area: 'IL',
+      description: 'A caring rescue shelter',
+    });
+
+    const discovery = await discoverOrganizations(baseURL);
+    const match = discovery.items.find((item) => item.id === org.id);
+    expect(match?.display_locality).toBe('Springfield');
   });
 });

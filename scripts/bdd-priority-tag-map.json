@@ -308,5 +308,10 @@
   "organisation_customisations.feature": {
     "Only Super Admin sees the customisations entry point": "P1",
     "Audit log viewer shows a permission grant": "P1"
+  },
+  "redacted_org_pet.feature": {
+    "Associate sees pet preview on organisation profile": "P1",
+    "Associate tap opens redacted pet profile with summary fields only": "P1",
+    "Redacted pet API exposes allowlisted fields only": "P1"
   }
 }

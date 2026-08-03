@@ -86,13 +86,13 @@ Use the PR template checklist. In summary:
 - CodeQL (JavaScript)
 - `dart format --set-exit-if-changed` (Flutter code only, blocks merge)
 - Flutter domain line coverage ≥ 65% (`check_domain_coverage.js`)
-- BDD scenario mapping ≥ 105 mapped scenarios (`e2e/scripts/check_bdd_coverage.js`; live total via `--report-only`)
+- BDD scenario mapping gate: `node e2e/scripts/check_bdd_coverage.js --report-only` (currently ≥150 mapped of 241 total; totals drift)
 - Hand-written file size ≤ 500 lines (`scripts/check_file_size.js`; grandfather ratchet for legacy monoliths)
 - Coverage artifacts: full Flutter lcov + Jest Istanbul (report-only beyond domain gate)
 
 ## E2E and UAT
 
-- Full Playwright suite: UAT deploy (`uat-*` tag push after merge to `main`) and manual `workflow_dispatch`.
+- Full Playwright suite: **Pre-UAT E2E** on merge to `main` (`pre-uat-e2e.yml`); UAT deploy is HTTP smoke only (`deploy-uat.yml`). Weekly non-blocking cron: `e2e.yml`.
 - `@smoke` tests run against live UAT and include axe accessibility checks (critical + serious).
 - Weekly non-blocking E2E cron on `main` (see `.github/workflows/e2e.yml`).
 

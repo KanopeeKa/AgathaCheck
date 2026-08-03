@@ -20,6 +20,15 @@ CI_SCOPE_HAS_PET_PROFILE=false
 CI_SCOPE_SERVER_LOCK_CHANGED=false
 CI_SCOPE_E2E_LOCK_CHANGED=false
 
+# Per-domain Flutter CI shards (see flutter_app/scripts/run_tests_ci_shard.sh).
+CI_SCOPE_SHARD_PET_CORE=false
+CI_SCOPE_SHARD_PET_SCREENS=false
+CI_SCOPE_SHARD_PET_WIDGETS=false
+CI_SCOPE_SHARD_HEALTH=false
+CI_SCOPE_SHARD_ORG=false
+CI_SCOPE_SHARD_REST_A=false
+CI_SCOPE_SHARD_REST_B=false
+
 ci_scope_reset() {
   CI_SCOPE_FORCE_FULL=false
   CI_SCOPE_ESCAPE_FULL=false
@@ -36,6 +45,112 @@ ci_scope_reset() {
   CI_SCOPE_HAS_PET_PROFILE=false
   CI_SCOPE_SERVER_LOCK_CHANGED=false
   CI_SCOPE_E2E_LOCK_CHANGED=false
+  CI_SCOPE_SHARD_PET_CORE=false
+  CI_SCOPE_SHARD_PET_SCREENS=false
+  CI_SCOPE_SHARD_PET_WIDGETS=false
+  CI_SCOPE_SHARD_HEALTH=false
+  CI_SCOPE_SHARD_ORG=false
+  CI_SCOPE_SHARD_REST_A=false
+  CI_SCOPE_SHARD_REST_B=false
+}
+
+ci_scope_enable_shard() {
+  case "$1" in
+    pet-core) CI_SCOPE_SHARD_PET_CORE=true ;;
+    pet-screens) CI_SCOPE_SHARD_PET_SCREENS=true ;;
+    pet-widgets) CI_SCOPE_SHARD_PET_WIDGETS=true ;;
+    health) CI_SCOPE_SHARD_HEALTH=true ;;
+    org) CI_SCOPE_SHARD_ORG=true ;;
+    rest-a) CI_SCOPE_SHARD_REST_A=true ;;
+    rest-b) CI_SCOPE_SHARD_REST_B=true ;;
+    *) ;;
+  esac
+}
+
+ci_scope_enable_all_shards() {
+  CI_SCOPE_SHARD_PET_CORE=true
+  CI_SCOPE_SHARD_PET_SCREENS=true
+  CI_SCOPE_SHARD_PET_WIDGETS=true
+  CI_SCOPE_SHARD_HEALTH=true
+  CI_SCOPE_SHARD_ORG=true
+  CI_SCOPE_SHARD_REST_A=true
+  CI_SCOPE_SHARD_REST_B=true
+}
+
+ci_scope_any_shard_enabled() {
+  [[ "$CI_SCOPE_SHARD_PET_CORE" == true \
+    || "$CI_SCOPE_SHARD_PET_SCREENS" == true \
+    || "$CI_SCOPE_SHARD_PET_WIDGETS" == true \
+    || "$CI_SCOPE_SHARD_HEALTH" == true \
+    || "$CI_SCOPE_SHARD_ORG" == true \
+    || "$CI_SCOPE_SHARD_REST_A" == true \
+    || "$CI_SCOPE_SHARD_REST_B" == true ]]
+}
+
+ci_scope_finalize_flutter_shards() {
+  if [[ "$CI_SCOPE_FORCE_FULL" == true || "$CI_SCOPE_ESCAPE_FULL" == true ]]; then
+    ci_scope_enable_all_shards
+    return
+  fi
+  if [[ "$CI_SCOPE_HAS_FLUTTER" != true ]]; then
+    return
+  fi
+  if ! ci_scope_any_shard_enabled; then
+    ci_scope_enable_all_shards
+  fi
+}
+
+ci_scope_classify_flutter_shard() {
+  local f="$1"
+  case "$f" in
+    flutter_app/lib/features/pet_profile/data/*|flutter_app/lib/features/pet_profile/domain/* \
+      |flutter_app/test/features/pet_profile/data/*|flutter_app/test/features/pet_profile/domain/*)
+      ci_scope_enable_shard pet-core
+      ;;
+    flutter_app/lib/features/pet_profile/presentation/screens/* \
+      |flutter_app/test/features/pet_profile/presentation/screens/*)
+      ci_scope_enable_shard pet-screens
+      ;;
+    flutter_app/lib/features/pet_profile/presentation/widgets/* \
+      |flutter_app/lib/features/pet_profile/presentation/controllers/* \
+      |flutter_app/lib/features/pet_profile/presentation/providers/* \
+      |flutter_app/lib/features/pet_profile/presentation/utils/* \
+      |flutter_app/test/features/pet_profile/presentation/widgets/* \
+      |flutter_app/test/features/pet_profile/presentation/controllers/* \
+      |flutter_app/test/features/pet_profile/presentation/providers/* \
+      |flutter_app/test/features/pet_profile/presentation/utils/*)
+      ci_scope_enable_shard pet-widgets
+      ;;
+    flutter_app/lib/features/pet_profile/*|flutter_app/test/features/pet_profile/*)
+      ci_scope_enable_shard pet-core
+      ci_scope_enable_shard pet-screens
+      ci_scope_enable_shard pet-widgets
+      ;;
+    flutter_app/lib/features/health_tracking/*|flutter_app/test/features/health_tracking/*)
+      ci_scope_enable_shard health
+      ;;
+    flutter_app/lib/features/organization/*|flutter_app/test/features/organization/*)
+      ci_scope_enable_shard org
+      ;;
+    flutter_app/lib/features/auth/*|flutter_app/lib/features/sharing/* \
+      |flutter_app/lib/features/notifications/*|flutter_app/lib/features/subscription/* \
+      |flutter_app/test/features/auth/*|flutter_app/test/features/sharing/* \
+      |flutter_app/test/features/notifications/*|flutter_app/test/features/subscription/*)
+      ci_scope_enable_shard rest-a
+      ;;
+    flutter_app/lib/features/experience/*|flutter_app/lib/features/vet/* \
+      |flutter_app/lib/features/weight_tracking/*|flutter_app/lib/features/help/* \
+      |flutter_app/lib/features/about/* \
+      |flutter_app/test/features/experience/*|flutter_app/test/features/vet/* \
+      |flutter_app/test/features/weight_tracking/*|flutter_app/test/features/help/* \
+      |flutter_app/test/features/about/* \
+      |flutter_app/test/features/api_base_url_wiring_test.dart)
+      ci_scope_enable_shard rest-b
+      ;;
+    flutter_app/lib/*|flutter_app/test/*)
+      ci_scope_enable_all_shards
+      ;;
+  esac
 }
 
 ci_scope_is_doc_path() {
@@ -87,9 +202,15 @@ ci_scope_classify_path() {
     flutter_app/lib/features/pet_profile/*|flutter_app/test/features/pet_profile/*)
       CI_SCOPE_HAS_PET_PROFILE=true
       CI_SCOPE_HAS_FLUTTER=true
+      ci_scope_classify_flutter_shard "$f"
+      ;;
+    flutter_app/lib/features/*|flutter_app/test/features/*)
+      CI_SCOPE_HAS_FLUTTER=true
+      ci_scope_classify_flutter_shard "$f"
       ;;
     flutter_app/lib/*|flutter_app/test/*)
       CI_SCOPE_HAS_FLUTTER=true
+      ci_scope_classify_flutter_shard "$f"
       ;;
     e2e/*)
       CI_SCOPE_FORCE_FULL=true
@@ -120,6 +241,7 @@ ci_scope_classify_paths() {
   while IFS= read -r f; do
     ci_scope_classify_path "$f"
   done <<<"$paths"
+  ci_scope_finalize_flutter_shards
 }
 
 ci_scope_server_touch() {
@@ -210,7 +332,9 @@ ci_scope_emit_json() {
   run_e2e_audit="$(ci_scope_bool ci_scope_run_e2e_audit)"
   run_integration="$(ci_scope_bool ci_scope_run_integration)"
 
-  python3 - "$scope" "$CI_SCOPE_FORCE_FULL" "$CI_SCOPE_ESCAPE_FULL" "$run_analyze" "$run_stack" "$run_backend" "$run_e2e_audit" "$run_integration" <<'PY'
+  python3 - "$scope" "$CI_SCOPE_FORCE_FULL" "$CI_SCOPE_ESCAPE_FULL" "$run_analyze" "$run_stack" "$run_backend" "$run_e2e_audit" "$run_integration" \
+    "$CI_SCOPE_SHARD_PET_CORE" "$CI_SCOPE_SHARD_PET_SCREENS" "$CI_SCOPE_SHARD_PET_WIDGETS" \
+    "$CI_SCOPE_SHARD_HEALTH" "$CI_SCOPE_SHARD_ORG" "$CI_SCOPE_SHARD_REST_A" "$CI_SCOPE_SHARD_REST_B" <<'PY'
 import json, sys
 
 (
@@ -222,12 +346,45 @@ import json, sys
     run_backend,
     run_e2e_audit,
     run_integration,
-) = sys.argv[1:9]
-run_analyze = run_analyze == "true"
-run_stack = run_stack == "true"
-run_backend = run_backend == "true"
-run_e2e_audit = run_e2e_audit == "true"
-run_integration = run_integration == "true"
+    shard_pet_core,
+    shard_pet_screens,
+    shard_pet_widgets,
+    shard_health,
+    shard_org,
+    shard_rest_a,
+    shard_rest_b,
+) = sys.argv[1:16]
+
+def b(v):
+    return v == "true"
+
+run_analyze = b(run_analyze)
+run_stack = b(run_stack)
+run_backend = b(run_backend)
+run_e2e_audit = b(run_e2e_audit)
+run_integration = b(run_integration)
+
+shard_map = {
+    "pet-core": b(shard_pet_core),
+    "pet-screens": b(shard_pet_screens),
+    "pet-widgets": b(shard_pet_widgets),
+    "health": b(shard_health),
+    "org": b(shard_org),
+    "rest-a": b(shard_rest_a),
+    "rest-b": b(shard_rest_b),
+}
+
+job_ids = {
+    "pet-core": "flutter-test-pet-core",
+    "pet-screens": "flutter-test-pet-screens",
+    "pet-widgets": "flutter-test-pet-widgets",
+    "health": "flutter-test-health",
+    "org": "flutter-test-org",
+    "rest-a": "flutter-test-rest-a",
+    "rest-b": "flutter-test-rest-b",
+}
+
+run_shards = [name for name, enabled in shard_map.items() if enabled]
 
 skip_jobs = []
 if not run_analyze:
@@ -235,20 +392,22 @@ if not run_analyze:
 if not run_stack:
     skip_jobs.extend(
         [
-            "flutter-test-pet-core",
-            "flutter-test-pet-screens",
-            "flutter-test-pet-widgets",
-            "flutter-test-health",
-            "flutter-test-org",
-            "flutter-test-rest-a",
-            "flutter-test-rest-b",
+            *job_ids.values(),
             "flutter-coverage",
             "flutter-build-web",
             "ci-e2e-canary",
         ]
     )
+else:
+    for name, job_id in job_ids.items():
+        if not shard_map[name]:
+            skip_jobs.append(job_id)
+    if len(run_shards) < len(shard_map):
+        skip_jobs.append("flutter-coverage")
 if not run_integration:
     skip_jobs.append("flutter-integration")
+
+run_flutter_coverage = run_stack and len(run_shards) == len(shard_map)
 
 print(
     json.dumps(
@@ -258,9 +417,11 @@ print(
             "escape_full": escape_full == "true",
             "run_flutter_analyze": run_analyze,
             "run_flutter_stack": run_stack,
+            "run_flutter_coverage": run_flutter_coverage,
             "run_backend": run_backend,
             "run_e2e_audit": run_e2e_audit,
             "run_flutter_integration": run_integration,
+            "run_shards": run_shards,
             "skip_jobs": skip_jobs,
         },
         separators=(",", ":"),

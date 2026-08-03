@@ -2386,6 +2386,97 @@ export async function getOrgPublicProfile(
   return res.json();
 }
 
+export async function tryGetOrgPublicProfile(
+  baseURL: string,
+  orgId: string,
+  token?: string,
+): Promise<{ ok: boolean; status: number; body?: Record<string, unknown> }> {
+  const headers: Record<string, string> = {};
+  if (token) headers.Authorization = `Bearer ${token}`;
+  const res = await apiFetch(apiUrl(`/organizations/${orgId}/public`, baseURL), { headers });
+  if (!res.ok) {
+    return { ok: false, status: res.status };
+  }
+  return { ok: true, status: res.status, body: await res.json() };
+}
+
+export interface OrgFosteringSessionRow {
+  id: string;
+  pet_name: string;
+  foster_name: string;
+  foster_email: string;
+  derived_status?: string;
+  nearly_finished?: boolean;
+}
+
+export async function getOrgPlacements(
+  baseURL: string,
+  token: string,
+  orgId: string,
+  query: { derived_status?: string; pet_name?: string; foster_name?: string } = {},
+): Promise<OrgFosteringSessionRow[]> {
+  const params = new URLSearchParams();
+  if (query.derived_status) params.set('derived_status', query.derived_status);
+  if (query.pet_name) params.set('pet_name', query.pet_name);
+  if (query.foster_name) params.set('foster_name', query.foster_name);
+  const qs = params.toString();
+  const path = qs
+    ? `/organizations/${orgId}/placements?${qs}`
+    : `/organizations/${orgId}/placements`;
+  const res = await apiFetch(apiUrl(path, baseURL), {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!res.ok) {
+    const body = await res.text();
+    throw new Error(`getOrgPlacements failed (${res.status}): ${body}`);
+  }
+  return res.json();
+}
+
+export interface RedactedOrgPet {
+  id: string;
+  name: string;
+  species: string;
+  breed: string;
+  photo_path: string | null;
+  date_of_birth: string | null;
+  age: number | null;
+  organization_id: string;
+}
+
+export async function getRedactedOrgPet(
+  baseURL: string,
+  token: string,
+  orgId: string,
+  petId: string,
+): Promise<RedactedOrgPet> {
+  const res = await apiFetch(
+    apiUrl(`/organizations/${orgId}/pets/${petId}/redacted`, baseURL),
+    { headers: { Authorization: `Bearer ${token}` } },
+  );
+  if (!res.ok) {
+    const body = await res.text();
+    throw new Error(`getRedactedOrgPet failed (${res.status}): ${body}`);
+  }
+  return res.json();
+}
+
+export async function tryGetRedactedOrgPet(
+  baseURL: string,
+  token: string,
+  orgId: string,
+  petId: string,
+): Promise<{ ok: boolean; status: number; body?: RedactedOrgPet }> {
+  const res = await apiFetch(
+    apiUrl(`/organizations/${orgId}/pets/${petId}/redacted`, baseURL),
+    { headers: { Authorization: `Bearer ${token}` } },
+  );
+  if (!res.ok) {
+    return { ok: false, status: res.status };
+  }
+  return { ok: true, status: res.status, body: await res.json() };
+}
+
 /** Invite an existing user and accept membership (BDD org journeys). */
 export async function addMemberToOrg(
   baseURL: string,
