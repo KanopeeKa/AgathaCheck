@@ -546,6 +546,15 @@
   "discoverOrganizations": "Découvrir des organisations",
   "orgDiscoveryEmpty": "Aucune organisation à découvrir pour le moment",
   "orgDiscoveryLoadError": "Impossible de charger les organisations découvrables",
+  "orgDiscoverySearchPlaceholder": "Rechercher par nom",
+  "orgDiscoverySearchEmpty": "Aucune organisation correspond à votre recherche",
+  "orgDiscoverBrowsingAs": "Vous parcourez en tant que {name}",
+  "@orgDiscoverBrowsingAs": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "orgDiscoverBrowsingAsFallback": "votre compte",
   "orgDiscoveryLocation": "{town}, {administrativeArea}",
   "@orgDiscoveryLocation": {
     "placeholders": {

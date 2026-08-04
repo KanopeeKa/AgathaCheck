@@ -1648,6 +1648,21 @@ class AppLocalizationsFr extends AppLocalizations {
       'Impossible de charger les organisations découvrables';
 
   @override
+  String get orgDiscoverySearchPlaceholder => 'Rechercher par nom';
+
+  @override
+  String get orgDiscoverySearchEmpty =>
+      'Aucune organisation correspond à votre recherche';
+
+  @override
+  String orgDiscoverBrowsingAs(String name) {
+    return 'Vous parcourez en tant que $name';
+  }
+
+  @override
+  String get orgDiscoverBrowsingAsFallback => 'votre compte';
+
+  @override
   String orgDiscoveryLocation(String town, String administrativeArea) {
     return '$town, $administrativeArea';
   }

@@ -5,11 +5,24 @@ import { discoverRowToMap } from '../routes/organizations/discoverRouter.js';
 const discoverableOrg = {
   id: 'org-discover-1',
   name: 'Rescue Hearts',
+  type: 'charity',
   logo_url: '/uploads/org_photos/logo.jpg',
   photo_url: '/uploads/org_photos/hero.jpg',
   town: 'Springfield',
   administrative_area: 'IL',
   description: 'A caring rescue shelter',
+  public_profile_metadata: {},
+};
+
+const secondDiscoverableOrg = {
+  id: 'org-discover-2',
+  name: 'Happy Tails Rescue',
+  type: 'charity',
+  logo_url: '',
+  photo_url: '',
+  town: 'Shelbyville',
+  administrative_area: 'IL',
+  description: 'Another rescue',
   public_profile_metadata: {},
 };
 
@@ -62,6 +75,7 @@ describe('GET /organizations/discover', () => {
       'name',
       'photo_url',
       'town',
+      'type',
     ]);
     expect(org).not.toHaveProperty('email');
     expect(org).not.toHaveProperty('phone');
@@ -153,6 +167,101 @@ describe('GET /organizations/discover', () => {
     const res = await request(app).get('/api/organizations/discover');
     expect(res.body.items.some((o) => o.name === hiddenOrg.name)).toBe(false);
     expect(res.body.items.some((o) => o.name === discoverableOrg.name)).toBe(true);
+  });
+
+  describe('name search (?q=)', () => {
+    it.each([
+      {
+        q: 'rescue',
+        expectedNames: ['Rescue Hearts', 'Happy Tails Rescue'],
+      },
+      {
+        q: 'Hearts',
+        expectedNames: ['Rescue Hearts'],
+      },
+      {
+        q: '  hearts  ',
+        expectedNames: ['Rescue Hearts'],
+      },
+      {
+        q: 'nomatch',
+        expectedNames: [],
+      },
+    ])('filters discoverable organisations by name ILIKE for q=$q', async ({ q, expectedNames }) => {
+      const pool = {
+        query: async (sql, params) => {
+          if (sql.includes('COUNT(*)::int AS total_count')) {
+            const filtered = [discoverableOrg, secondDiscoverableOrg].filter((org) =>
+              org.name.toLowerCase().includes(q.trim().toLowerCase()),
+            );
+            return { rows: [{ total_count: filtered.length }] };
+          }
+          if (sql.includes('name ILIKE $1')) {
+            expect(params[0]).toBe(`%${q.trim()}%`);
+            const filtered = [discoverableOrg, secondDiscoverableOrg].filter((org) =>
+              org.name.toLowerCase().includes(q.trim().toLowerCase()),
+            );
+            return { rows: filtered };
+          }
+          return { rows: [] };
+        },
+      };
+      const app = createApp(pool);
+      const res = await request(app).get(`/api/organizations/discover?q=${encodeURIComponent(q)}`);
+      expect(res.statusCode).toBe(200);
+      expect(res.body.items.map((item) => item.name)).toEqual(expectedNames);
+      expect(res.body.total_count).toBe(expectedNames.length);
+    });
+
+    it('preserves pagination when q is non-empty', async () => {
+      let limit;
+      let offset;
+      const pool = {
+        query: async (sql, params) => {
+          if (sql.includes('COUNT(*)::int AS total_count')) {
+            return { rows: [{ total_count: 42 }] };
+          }
+          if (sql.includes('LIMIT $2 OFFSET $3')) {
+            expect(params[0]).toBe('%rescue%');
+            limit = params[1];
+            offset = params[2];
+            return { rows: [discoverableOrg] };
+          }
+          return { rows: [] };
+        },
+      };
+      const app = createApp(pool);
+      const res = await request(app).get(
+        '/api/organizations/discover?q=rescue&page=3&page_size=10',
+      );
+      expect(res.statusCode).toBe(200);
+      expect(limit).toBe(10);
+      expect(offset).toBe(20);
+      expect(res.body.page).toBe(3);
+      expect(res.body.page_size).toBe(10);
+      expect(res.body.total_count).toBe(42);
+    });
+
+    it('does not apply ILIKE filter when q is empty or whitespace', async () => {
+      let usedIlike = false;
+      const pool = {
+        query: async (sql) => {
+          if (sql.includes('name ILIKE')) usedIlike = true;
+          if (sql.includes('COUNT(*)::int AS total_count')) {
+            return { rows: [{ total_count: 2 }] };
+          }
+          if (sql.includes('LIMIT $1 OFFSET $2')) {
+            return { rows: [discoverableOrg, secondDiscoverableOrg] };
+          }
+          return { rows: [] };
+        },
+      };
+      const app = createApp(pool);
+      const res = await request(app).get('/api/organizations/discover?q=   ');
+      expect(res.statusCode).toBe(200);
+      expect(usedIlike).toBe(false);
+      expect(res.body.items.length).toBe(2);
+    });
   });
 
   it('returns 500 with redacted error on database failure', async () => {

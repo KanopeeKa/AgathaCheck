@@ -35,3 +35,18 @@ Feature: Organisation discovery
     And "Rescue Hearts" has town "Springfield" and administrative area "IL"
     When an anonymous visitor requests the organisations discovery list
     Then "Rescue Hearts" should appear with display_locality "Springfield"
+
+  @P1
+  Scenario: Discover API filters organisations by name when q is provided
+    Given "Rescue Hearts" is discoverable
+    And "Happy Tails Rescue" is discoverable
+    When an anonymous visitor searches discoverable organisations for "Hearts"
+    Then "Rescue Hearts" should appear in the discovery response
+    And "Happy Tails Rescue" should not appear in the discovery response
+
+  @P1
+  Scenario: Discover API search preserves pagination metadata
+    Given "Rescue Hearts" is discoverable
+    When an anonymous visitor searches discoverable organisations for "Hearts" with page 2 and page_size 5
+    Then the discovery response page should be 2
+    And the discovery response page_size should be 5

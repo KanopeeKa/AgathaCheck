@@ -7,11 +7,14 @@ import 'org_discovery_skeleton_list.dart';
 import 'org_discovery_tile.dart';
 
 class OrgDiscoveryList extends ConsumerWidget {
-  const OrgDiscoveryList({super.key});
+  const OrgDiscoveryList({super.key, this.emptyMessageForSearch});
+
+  final String? emptyMessageForSearch;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final discoveryAsync = ref.watch(orgDiscoveryListProvider);
+    final searchQuery = ref.watch(orgDiscoverySearchQueryProvider);
     final theme = Theme.of(context);
     final l = AppLocalizations.of(context)!;
 
@@ -38,11 +41,17 @@ class OrgDiscoveryList extends ConsumerWidget {
       ),
       data: (organizations) {
         if (organizations.isEmpty) {
+          final emptyMessage = searchQuery.trim().isNotEmpty
+              ? (emptyMessageForSearch ?? l.orgDiscoverySearchEmpty)
+              : l.orgDiscoveryEmpty;
+          final emptyKey = searchQuery.trim().isNotEmpty
+              ? const Key('org_discovery_search_empty')
+              : const Key('org_discovery_empty');
           return Semantics(
-            key: const Key('org_discovery_empty'),
-            label: l.orgDiscoveryEmpty,
+            key: emptyKey,
+            label: emptyMessage,
             child: Text(
-              l.orgDiscoveryEmpty,
+              emptyMessage,
               style: theme.textTheme.bodyMedium?.copyWith(
                 color: theme.colorScheme.onSurfaceVariant,
               ),

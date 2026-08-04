@@ -7,6 +7,7 @@ import 'package:go_router/go_router.dart';
 import 'package:pet_profile_app/core/theme/app_theme.dart';
 import 'package:pet_profile_app/features/organization/domain/entities/discoverable_organization.dart';
 import 'package:pet_profile_app/features/organization/presentation/utils/org_screen_theme.dart';
+import 'package:pet_profile_app/features/organization/domain/entities/organization.dart';
 import 'package:pet_profile_app/features/organization/presentation/widgets/org_discovery/org_discovery_list.dart';
 import 'package:pet_profile_app/features/organization/presentation/widgets/org_discovery/org_discovery_skeleton_list.dart';
 import 'package:pet_profile_app/features/organization/presentation/widgets/org_discovery/org_discovery_tile.dart';
@@ -16,6 +17,7 @@ import 'package:pet_profile_app/l10n/app_localizations.dart';
 const _sampleOrg = DiscoverableOrganization(
   id: 'org-discover-1',
   name: 'Rescue Hearts',
+  type: OrganizationType.charity,
   logoUrl: '/uploads/org_photos/logo.jpg',
   photoUrl: '/uploads/org_photos/hero.jpg',
   displayLocality: '62701',
@@ -55,6 +57,7 @@ void main() {
 
     expect(find.text('Rescue Hearts'), findsOneWidget);
     expect(find.text('62701'), findsOneWidget);
+    expect(find.text('Charity'), findsOneWidget);
     expect(
       find.byKey(const Key('org_discovery_tile_org-discover-1')),
       findsOneWidget,

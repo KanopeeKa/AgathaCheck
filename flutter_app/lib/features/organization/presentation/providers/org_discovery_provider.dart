@@ -12,12 +12,17 @@ final orgDiscoveryRemoteProvider = Provider<OrgDiscoveryRemote>((ref) {
   );
 });
 
+final orgDiscoverySearchQueryProvider = StateProvider<String>((ref) => '');
+
 class OrgDiscoveryListNotifier
     extends AsyncNotifier<List<DiscoverableOrganization>> {
   @override
   Future<List<DiscoverableOrganization>> build() async {
+    final query = ref.watch(orgDiscoverySearchQueryProvider);
     final remote = ref.read(orgDiscoveryRemoteProvider);
-    final page = await remote.fetchDiscoverableOrganizations();
+    final page = await remote.fetchDiscoverableOrganizations(
+      query: query.isEmpty ? null : query,
+    );
     return page.items;
   }
 

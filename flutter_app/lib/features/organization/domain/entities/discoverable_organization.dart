@@ -1,7 +1,10 @@
+import 'organization.dart';
+
 class DiscoverableOrganization {
   const DiscoverableOrganization({
     required this.id,
     required this.name,
+    this.type = OrganizationType.professional,
     this.logoUrl = '',
     this.photoUrl = '',
     this.displayLocality = '',
@@ -12,6 +15,7 @@ class DiscoverableOrganization {
 
   final String id;
   final String name;
+  final OrganizationType type;
   final String logoUrl;
   final String photoUrl;
   final String displayLocality;

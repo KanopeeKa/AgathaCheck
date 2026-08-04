@@ -3049,6 +3049,30 @@ abstract class AppLocalizations {
   /// **'Could not load discoverable organisations'**
   String get orgDiscoveryLoadError;
 
+  /// No description provided for @orgDiscoverySearchPlaceholder.
+  ///
+  /// In en, this message translates to:
+  /// **'Search by name'**
+  String get orgDiscoverySearchPlaceholder;
+
+  /// No description provided for @orgDiscoverySearchEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No organisations match your search'**
+  String get orgDiscoverySearchEmpty;
+
+  /// No description provided for @orgDiscoverBrowsingAs.
+  ///
+  /// In en, this message translates to:
+  /// **'You are browsing as {name}'**
+  String orgDiscoverBrowsingAs(String name);
+
+  /// No description provided for @orgDiscoverBrowsingAsFallback.
+  ///
+  /// In en, this message translates to:
+  /// **'your account'**
+  String get orgDiscoverBrowsingAsFallback;
+
   /// No description provided for @orgDiscoveryLocation.
   ///
   /// In en, this message translates to:

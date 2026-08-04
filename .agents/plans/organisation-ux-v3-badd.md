@@ -50,18 +50,18 @@ Full `allowed_paths` / branches: `.agents/plans/organisation-ux-v3-badd.snapshot
 
 ```yaml
 autonomy: active
-current_phase: 2
-last_completed_phase: 1
+current_phase: 5
+last_completed_phase: 4
 halt_reason: null
-next_action: "start phase 2: checkout cursor/org-ux-v3-2-visibility-badd"
+next_action: "start phase 5: checkout cursor/org-ux-v3-5-discover-badd"
 artifact_ref:
-  branch: cursor/org-ux-v3-2-visibility-badd
+  branch: cursor/organisation-ux-v3-integration-badd
   plan_path: .agents/plans/organisation-ux-v3-badd.md
-  plan_commit: dec66de12fde5d17da492645be8982cb28821885
+  plan_commit: 6ee3a07f6397dfbd82c1302323e79e5556b429c8
   snapshot_path: .agents/plans/organisation-ux-v3-badd.snapshot.json
-  snapshot_commit: dec66de12fde5d17da492645be8982cb28821885
+  snapshot_commit: 6ee3a07f6397dfbd82c1302323e79e5556b429c8
 open_prs: []
-merge_commits: {"0":"d70ee21aae3c3754cc7887a9a21d1b4b21755e72","1":"135c3ee703f65ff46dac9ee692eda578f1d6788b"}
+merge_commits: {"0":"d70ee21aae3c3754cc7887a9a21d1b4b21755e72","1":"135c3ee703f65ff46dac9ee692eda578f1d6788b","2":"3feee757e54493a6a44a908177c122e81dfb6de7","3":"f3bbe62f82de413b8ed297872c9951235effd9ab","4":"6ee3a07f6397dfbd82c1302323e79e5556b429c8"}
 debt_issue_refs: [568,569,570]
 ```
 

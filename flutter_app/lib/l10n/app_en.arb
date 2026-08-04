@@ -593,6 +593,15 @@
   "discoverOrganizations": "Discover Organisations",
   "orgDiscoveryEmpty": "No organisations to discover yet",
   "orgDiscoveryLoadError": "Could not load discoverable organisations",
+  "orgDiscoverySearchPlaceholder": "Search by name",
+  "orgDiscoverySearchEmpty": "No organisations match your search",
+  "orgDiscoverBrowsingAs": "You are browsing as {name}",
+  "@orgDiscoverBrowsingAs": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "orgDiscoverBrowsingAsFallback": "your account",
   "orgDiscoveryLocation": "{town}, {administrativeArea}",
   "@orgDiscoveryLocation": {
     "placeholders": {
