@@ -11,6 +11,7 @@
 import { test, expect } from '../fixtures/auth.fixture';
 import {
   createOrganization,
+  discoverOrganizations,
   findDiscoverableOrganization,
   setOrganizationDiscoverability,
   setOrganizationDiscoveryProfile,
