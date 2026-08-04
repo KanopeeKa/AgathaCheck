@@ -109,7 +109,7 @@ test.describe('Admin contacts', () => {
       eveRow!.record_id,
       { phone: '555-0100', notes: 'On-call admin' },
     );
-    expect(updated.phone ?? updated.foster_phone).toBeTruthy();
+    expect(String(updated.foster_phone ?? '')).toBe('555-0100');
   });
 
   test('@P1 foster member sees message affordance for admin with contact details', async () => {
