@@ -36,4 +36,14 @@ export class OrganizationDiscoverPage {
     );
     await expect(this.page.getByText(pattern).first()).toBeVisible({ timeout: 30_000 });
   }
+
+  async searchByName(query: string): Promise<void> {
+    await refreshFlutterAccessibility(this.page);
+    const field = this.page
+      .getByRole('textbox', { name: /Search by name|Rechercher par nom/i })
+      .filter({ visible: true })
+      .last();
+    await field.fill(query);
+    await refreshFlutterAccessibility(this.page);
+  }
 }

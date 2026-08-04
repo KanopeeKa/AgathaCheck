@@ -6,6 +6,7 @@
 import { test, loginAs } from '../fixtures/auth.fixture';
 import {
   createOrganization,
+  setOrganizationDiscoverability,
   setOrganizationDiscoveryProfile,
   signupUser,
 } from '../support/api';
@@ -20,9 +21,10 @@ test.describe('Organisation connections discover flow', () => {
     page,
   }) => {
     const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
+    const rescueName = `Rescue Hearts ${Date.now()}`;
     const owner = await signupUser(baseURL, { firstName: 'Rescue', lastName: 'Admin' });
     const org = await createOrganization(baseURL, owner.accessToken, {
-      name: 'Rescue Hearts',
+      name: rescueName,
       type: 'charity',
     });
     await setOrganizationDiscoveryProfile(baseURL, owner.accessToken, org, {
@@ -30,6 +32,7 @@ test.describe('Organisation connections discover flow', () => {
       administrative_area: 'IL',
       description: 'A caring rescue shelter',
     });
+    await setOrganizationDiscoverability(baseURL, owner.accessToken, org, true);
 
     const alice = await signupUser(baseURL, { firstName: 'Alice', lastName: 'Walker' });
     const clinic = await createOrganization(baseURL, alice.accessToken, {
@@ -55,7 +58,8 @@ test.describe('Organisation connections discover flow', () => {
     const discover = new OrganizationDiscoverPage(page);
     await discover.expectLoaded();
     await discover.expectBrowseAsOrg('Happy Paws Clinic');
-    await discover.expectOrgVisible('Rescue Hearts');
+    await discover.searchByName(rescueName);
+    await discover.expectOrgVisible(rescueName);
   });
 
   test('@P1 connections screen back returns to organisation profile', async ({ page }) => {
