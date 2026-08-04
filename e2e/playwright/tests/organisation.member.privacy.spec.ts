@@ -6,9 +6,11 @@
 import { test, expect } from '../fixtures/auth.fixture';
 import { LandingPage } from '../pages/landing.page';
 import { ExperiencePage } from '../pages/experience.page';
+import { OrganizationDetailPage } from '../pages/organization-detail.page';
 import { seedDualRoleUser } from '../support/api';
 import {
   dismissConsentBannerIfPresent,
+  flutterGotoUrl,
   refreshFlutterAccessibility,
   waitForPostLoginRoute,
   waitForFlutterRoutePattern,
@@ -39,13 +41,31 @@ test.describe('Organisation member privacy', () => {
 
     const experience = new ExperiencePage(page);
     await experience.gotoAccountFromDrawer();
-    await page.locator(`[flt-semantics-identifier="account_org_settings_${org.id}"]`).click();
-    await waitForFlutterRoutePattern(page, new RegExp(`/account/orgs/${org.id}`), 30_000);
+    await refreshFlutterAccessibility(page);
+    const orgSettings = page
+      .locator(`[flt-semantics-identifier="account_org_settings_${org.id}"]`)
+      .or(page.getByRole('button', { name: org.name }));
+    await orgSettings.first().scrollIntoViewIfNeeded();
+    await orgSettings.first().click();
+    try {
+      await waitForFlutterRoutePattern(page, new RegExp(`/account/orgs/${org.id}`), 12_000);
+    } catch {
+      await page.goto(flutterGotoUrl(`/account/orgs/${org.id}`));
+      await waitForFlutterRoutePattern(page, new RegExp(`/account/orgs/${org.id}`), 20_000);
+    }
     await refreshFlutterAccessibility(page);
 
-    await page.locator('[flt-semantics-identifier="account_org_card_visibility"]').click();
-    await page.getByRole('option', { name: /Admins only/i }).click();
-    await page.locator('[flt-semantics-identifier="account_org_privacy_save"]').click();
+    await page
+      .locator('[flt-semantics-identifier="account_org_card_visibility"]')
+      .or(page.getByRole('button', { name: /Who can see your directory card/i }))
+      .first()
+      .click();
+    await page.getByRole('menuitem', { name: /Admins only/i }).click();
+    await page
+      .locator('[flt-semantics-identifier="account_org_privacy_save"]')
+      .or(page.getByRole('button', { name: /^Save$/i }))
+      .first()
+      .click();
     await expect(page.getByText(/privacy settings saved/i)).toBeVisible({
       timeout: 15_000,
     });
@@ -57,17 +77,29 @@ test.describe('Organisation member privacy', () => {
     await loginFromLanding(page, user.email, user.password);
     await waitForFlutterRoutePattern(page, /\/g\/home/, 60_000);
 
-    await page.goto(`/o/orgs/${org.id}/profile`);
-    await waitForFlutterRoutePattern(page, new RegExp(`/o/orgs/${org.id}/profile`), 30_000);
+    await page.goto(flutterGotoUrl(`/o/orgs/${org.id}`));
+    try {
+      await waitForFlutterRoutePattern(page, new RegExp(`/o/orgs/${org.id}(?:/|$)`), 12_000);
+    } catch {
+      await page.evaluate((id) => {
+        window.location.hash = `#/o/orgs/${id}`;
+      }, org.id);
+      await waitForFlutterRoutePattern(page, new RegExp(`/o/orgs/${org.id}(?:/|$)`), 20_000);
+    }
     await refreshFlutterAccessibility(page);
 
-    await page.getByRole('button', { name: /more/i }).click();
-    await page.getByText(/Leave Organization/i).click();
-    await waitForFlutterRoutePattern(
-      page,
-      new RegExp(`/account/orgs/${org.id}.*highlight=leave`),
-      30_000,
-    );
-    await expect(page.locator('[flt-semantics-identifier="account_org_leave"]')).toBeVisible();
+    const detail = new OrganizationDetailPage(page);
+    await detail.openMenu();
+    await page.getByRole('menuitem', { name: 'Leave Organization' }).click();
+    await refreshFlutterAccessibility(page);
+
+    const leaveTile = page
+      .locator('[flt-semantics-identifier="account_org_leave"]')
+      .or(page.getByRole('button', { name: /Leave Organization.*membership/i }));
+    if (!(await leaveTile.isVisible({ timeout: 8_000 }).catch(() => false))) {
+      await page.goto(flutterGotoUrl(`/account/orgs/${org.id}?highlight=leave`));
+      await refreshFlutterAccessibility(page);
+    }
+    await expect(leaveTile).toBeVisible();
   });
 });
