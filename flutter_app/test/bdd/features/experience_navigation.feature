@@ -122,7 +122,7 @@ Feature: Experience navigation
     And the drawer should not contain "Organisation" as a section item
     And the drawer should contain "Account" as the bottom-pinned item
 
-  @P1
+  @P0
   Scenario: Drawer shows Organisation when user is an org member
     Given a registered user with email "dual@example.com" and password "secret123"
     And the user belongs to an organisation
@@ -156,6 +156,7 @@ Feature: Experience navigation
 
   @P2
   @legacy
+  @P2
   Scenario: Guardian chooser hides organisation option for guardian-only users
     Given a registered user with email "guardian@example.com" and password "secret123"
     And the user has no organisation memberships

@@ -31,7 +31,7 @@ Feature: Admin contacts
     When "Alice" edits the admin contact card for "Eve" on "Rescue Hearts"
     Then she should be able to update "Eve"'s contact details
 
-  @P1
+  @P2
   Scenario: Message affordance is hidden until in-app messaging ships
     Given a registered user "Frank"
     And "Frank" is a foster member of "Rescue Hearts"
